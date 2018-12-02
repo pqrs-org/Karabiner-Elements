@@ -1,6 +1,6 @@
 #pragma once
 
-#include "types/absolute_time_point.hpp"
+#include "types.hpp"
 #include <cstdint>
 #include <ostream>
 #include <pqrs/osx/iokit_types.hpp>
@@ -23,23 +23,23 @@ public:
     pointing_button_pressed,
   };
 
-  grabbable_state(void) : grabbable_state(pqrs::osx::iokit_registry_entry_id(0),
+  grabbable_state(void) : grabbable_state(device_id(0),
                                           state::grabbable,
                                           ungrabbable_temporarily_reason::none,
                                           absolute_time_point(0)) {
   }
 
-  grabbable_state(pqrs::osx::iokit_registry_entry_id registry_entry_id,
+  grabbable_state(device_id device_id,
                   state state,
                   ungrabbable_temporarily_reason ungrabbable_temporarily_reason,
-                  absolute_time_point time_stamp) : registry_entry_id_(registry_entry_id),
+                  absolute_time_point time_stamp) : device_id_(device_id),
                                                     state_(state),
                                                     ungrabbable_temporarily_reason_(ungrabbable_temporarily_reason),
                                                     time_stamp_(time_stamp) {
   }
 
-  pqrs::osx::iokit_registry_entry_id get_registry_entry_id(void) const {
-    return registry_entry_id_;
+  device_id get_device_id(void) const {
+    return device_id_;
   }
 
   state get_state(void) const {
@@ -55,13 +55,13 @@ public:
   }
 
   bool equals_except_time_stamp(const grabbable_state& other) const {
-    return registry_entry_id_ == other.registry_entry_id_ &&
+    return device_id_ == other.device_id_ &&
            state_ == other.state_ &&
            ungrabbable_temporarily_reason_ == other.ungrabbable_temporarily_reason_;
   }
 
   bool operator==(const grabbable_state& other) const {
-    return registry_entry_id_ == other.registry_entry_id_ &&
+    return device_id_ == other.device_id_ &&
            state_ == other.state_ &&
            ungrabbable_temporarily_reason_ == other.ungrabbable_temporarily_reason_ &&
            time_stamp_ == other.time_stamp_;
@@ -70,7 +70,7 @@ public:
   bool operator!=(const grabbable_state& other) const { return !(*this == other); }
 
 private:
-  pqrs::osx::iokit_registry_entry_id registry_entry_id_;
+  device_id device_id_;
   state state_;
   ungrabbable_temporarily_reason ungrabbable_temporarily_reason_;
   absolute_time_point time_stamp_;
@@ -117,7 +117,7 @@ inline std::ostream& operator<<(std::ostream& stream, const grabbable_state::ung
 
 inline std::ostream& operator<<(std::ostream& stream, const grabbable_state& value) {
   stream << "["
-         << value.get_registry_entry_id() << ","
+         << value.get_device_id() << ","
          << value.get_state() << ","
          << value.get_ungrabbable_temporarily_reason() << ","
          << value.get_time_stamp()

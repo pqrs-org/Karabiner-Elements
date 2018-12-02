@@ -4,7 +4,6 @@
 
 #include "boost_defs.hpp"
 
-#include "device_detail.hpp"
 #include "event_queue.hpp"
 #include "grabbable_state_queue.hpp"
 #include <boost/optional.hpp>
@@ -18,7 +17,7 @@ class grabbable_state_queues_manager final : public pqrs::dispatcher::extra::dis
 public:
   // Signals (invoked from the shared dispatcher thread)
 
-  boost::signals2::signal<void(pqrs::osx::iokit_registry_entry_id, boost::optional<grabbable_state>)> grabbable_state_changed;
+  boost::signals2::signal<void(device_id, boost::optional<grabbable_state>)> grabbable_state_changed;
 
   // Methods
 
@@ -32,10 +31,10 @@ public:
     });
   }
 
-  boost::optional<grabbable_state> find_current_grabbable_state(pqrs::osx::iokit_registry_entry_id registry_entry_id) const {
+  boost::optional<grabbable_state> find_current_grabbable_state(device_id device_id) const {
     std::lock_guard<std::mutex> lock(queues_mutex_);
 
-    auto it = queues_.find(registry_entry_id);
+    auto it = queues_.find(device_id);
     if (it != std::end(queues_)) {
       return it->second->find_current_grabbable_state();
     }
@@ -50,7 +49,7 @@ public:
   }
 
   bool update_grabbable_state(const grabbable_state& state) {
-    auto queue = find_or_create_queue(state.get_registry_entry_id());
+    auto queue = find_or_create_queue(state.get_device_id());
     return queue->push_back_grabbable_state(state);
   }
 
@@ -58,56 +57,53 @@ public:
     bool result = false;
 
     for (const auto& entry : event_queue.get_entries()) {
-      if (auto device_detail = types::find_device_detail(entry.get_device_id())) {
-        if (auto registry_entry_id = device_detail->get_registry_entry_id()) {
-          auto queue = find_or_create_queue(*registry_entry_id);
-          auto time_stamp = entry.get_event_time_stamp().get_time_stamp();
-          if (queue->update_first_grabbed_event_time_stamp(time_stamp)) {
-            logger::get_logger().info("first grabbed event: registry_entry_id:{0} time_stamp:{1}",
-                                      type_safe::get(*registry_entry_id),
-                                      type_safe::get(time_stamp));
+      auto device_id = entry.get_device_id();
+      auto queue = find_or_create_queue(device_id);
+      auto time_stamp = entry.get_event_time_stamp().get_time_stamp();
+      if (queue->update_first_grabbed_event_time_stamp(time_stamp)) {
+        logger::get_logger().info("first grabbed event: device_id:{0} time_stamp:{1}",
+                                  type_safe::get(device_id),
+                                  type_safe::get(time_stamp));
 
-            result = true;
-          }
-        }
+        result = true;
       }
     }
 
     return result;
   }
 
-  void unset_first_grabbed_event_time_stamp(pqrs::osx::iokit_registry_entry_id registry_entry_id) {
-    auto queue = find_or_create_queue(registry_entry_id);
+  void unset_first_grabbed_event_time_stamp(device_id device_id) {
+    auto queue = find_or_create_queue(device_id);
     queue->unset_first_grabbed_event_time_stamp();
   }
 
-  void erase_queue(pqrs::osx::iokit_registry_entry_id registry_entry_id) {
+  void erase_queue(device_id device_id) {
     std::lock_guard<std::mutex> lock(queues_mutex_);
 
-    queues_.erase(registry_entry_id);
+    queues_.erase(device_id);
   }
 
 private:
-  std::shared_ptr<grabbable_state_queue> find_or_create_queue(pqrs::osx::iokit_registry_entry_id registry_entry_id) {
+  std::shared_ptr<grabbable_state_queue> find_or_create_queue(device_id device_id) {
     std::lock_guard<std::mutex> lock(queues_mutex_);
 
-    auto it = queues_.find(registry_entry_id);
+    auto it = queues_.find(device_id);
     if (it != std::end(queues_)) {
       return it->second;
     }
 
     auto queue = std::make_shared<grabbable_state_queue>();
-    queue->grabbable_state_changed.connect([this, registry_entry_id](auto&& grabbable_state) {
-      enqueue_to_dispatcher([this, registry_entry_id, grabbable_state] {
-        grabbable_state_changed(registry_entry_id, grabbable_state);
+    queue->grabbable_state_changed.connect([this, device_id](auto&& grabbable_state) {
+      enqueue_to_dispatcher([this, device_id, grabbable_state] {
+        grabbable_state_changed(device_id, grabbable_state);
       });
     });
 
-    queues_[registry_entry_id] = queue;
+    queues_[device_id] = queue;
     return queue;
   }
 
-  std::unordered_map<pqrs::osx::iokit_registry_entry_id, std::shared_ptr<grabbable_state_queue>> queues_;
+  std::unordered_map<device_id, std::shared_ptr<grabbable_state_queue>> queues_;
   mutable std::mutex queues_mutex_;
 };
 } // namespace krbn

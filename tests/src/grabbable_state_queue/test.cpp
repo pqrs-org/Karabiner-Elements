@@ -7,10 +7,6 @@
 #include "grabbable_state_queue.hpp"
 #include <boost/optional/optional_io.hpp>
 
-namespace {
-auto registry_entry_id1 = pqrs::osx::iokit_registry_entry_id(1);
-} // namespace
-
 TEST_CASE("initialize") {
   krbn::dispatcher_utility::initialize_dispatchers();
 }
@@ -34,7 +30,7 @@ TEST_CASE("grabbable_state_queue") {
     REQUIRE(grabbable_state_changed_count == 0);
 
     for (krbn::absolute_time_point time_stamp(1000); time_stamp < krbn::absolute_time_point(10000); time_stamp += krbn::absolute_time_duration(1000)) {
-      krbn::grabbable_state state(registry_entry_id1,
+      krbn::grabbable_state state(krbn::device_id(1),
                                   krbn::grabbable_state::state::grabbable,
                                   krbn::grabbable_state::ungrabbable_temporarily_reason::none,
                                   time_stamp);
@@ -45,7 +41,7 @@ TEST_CASE("grabbable_state_queue") {
 
     // Check `grabbable_state_changed` signal
     {
-      krbn::grabbable_state expected(registry_entry_id1,
+      krbn::grabbable_state expected(krbn::device_id(1),
                                      krbn::grabbable_state::state::grabbable,
                                      krbn::grabbable_state::ungrabbable_temporarily_reason::none,
                                      krbn::absolute_time_point(1000));
@@ -71,7 +67,7 @@ TEST_CASE("grabbable_state_queue") {
 
     // Ignore events after first_grabbed_event_time_stamp_.
     {
-      krbn::grabbable_state state(registry_entry_id1,
+      krbn::grabbable_state state(krbn::device_id(1),
                                   krbn::grabbable_state::state::grabbable,
                                   krbn::grabbable_state::ungrabbable_temporarily_reason::none,
                                   krbn::absolute_time_point(6000));
@@ -79,7 +75,7 @@ TEST_CASE("grabbable_state_queue") {
       REQUIRE(queue->find_current_grabbable_state()->get_time_stamp() == krbn::absolute_time_point(4000));
     }
     {
-      krbn::grabbable_state state(registry_entry_id1,
+      krbn::grabbable_state state(krbn::device_id(1),
                                   krbn::grabbable_state::state::ungrabbable_temporarily,
                                   krbn::grabbable_state::ungrabbable_temporarily_reason::key_repeating,
                                   krbn::absolute_time_point(4500));
@@ -102,7 +98,7 @@ TEST_CASE("grabbable_state_queue") {
 
     // Check `grabbable_state_changed` signal
     {
-      krbn::grabbable_state expected(registry_entry_id1,
+      krbn::grabbable_state expected(krbn::device_id(1),
                                      krbn::grabbable_state::state::grabbable,
                                      krbn::grabbable_state::ungrabbable_temporarily_reason::none,
                                      krbn::absolute_time_point(2000));
@@ -127,7 +123,7 @@ TEST_CASE("grabbable_state_queue.circular_buffer") {
   auto queue = std::make_unique<krbn::grabbable_state_queue>();
 
   for (int i = 0; i < 10000; ++i) {
-    queue->push_back_grabbable_state(krbn::grabbable_state(registry_entry_id1,
+    queue->push_back_grabbable_state(krbn::grabbable_state(krbn::device_id(1),
                                                            krbn::grabbable_state::state::grabbable,
                                                            krbn::grabbable_state::ungrabbable_temporarily_reason::none,
                                                            krbn::absolute_time_point(i)));

@@ -1,11 +1,17 @@
 #pragma once
 
+#include "event_queue.hpp"
+#include "keyboard_repeat_detector.hpp"
+#include <unordered_set>
+
+namespace krbn {
+namespace grabbable_state_manager {
 class entry final {
 public:
-  entry(pqrs::osx::iokit_registry_entry_id registry_entry_id) : grabbable_state_(registry_entry_id,
-                                                                                 grabbable_state::state::none,
-                                                                                 grabbable_state::ungrabbable_temporarily_reason::none,
-                                                                                 absolute_time_point(0)) {
+  entry(device_id device_id) : grabbable_state_(device_id,
+                                                grabbable_state::state::none,
+                                                grabbable_state::ungrabbable_temporarily_reason::none,
+                                                absolute_time_point(0)) {
   }
 
   const grabbable_state& get_grabbable_state(void) const {
@@ -16,7 +22,7 @@ public:
     grabbable_state_ = grabbable_state;
   }
 
-  void update(pqrs::osx::iokit_registry_entry_id registry_entry_id,
+  void update(device_id device_id,
               absolute_time_point time_stamp,
               const event_queue::entry& entry) {
     if (auto key_code = entry.get_event().get_key_code()) {
@@ -56,16 +62,16 @@ public:
       }
     }
 
-    update_grabbable_state(registry_entry_id, time_stamp);
+    update_grabbable_state(device_id, time_stamp);
   }
 
 private:
-  void update_grabbable_state(pqrs::osx::iokit_registry_entry_id registry_entry_id,
+  void update_grabbable_state(device_id device_id,
                               absolute_time_point time_stamp) {
     // Ungrabbable while key repeating
 
     if (keyboard_repeat_detector_.is_repeating()) {
-      grabbable_state_ = grabbable_state(registry_entry_id,
+      grabbable_state_ = grabbable_state(device_id,
                                          grabbable_state::state::ungrabbable_temporarily,
                                          grabbable_state::ungrabbable_temporarily_reason::key_repeating,
                                          time_stamp);
@@ -78,7 +84,7 @@ private:
     // (See DEVELOPMENT.md > Modifier flags handling in kernel)
 
     if (!pressed_modifier_flags_.empty()) {
-      grabbable_state_ = grabbable_state(registry_entry_id,
+      grabbable_state_ = grabbable_state(device_id,
                                          grabbable_state::state::ungrabbable_temporarily,
                                          grabbable_state::ungrabbable_temporarily_reason::modifier_key_pressed,
                                          time_stamp);
@@ -91,14 +97,14 @@ private:
     // (To release the button, we have to send a hid report to the device. But we cannot do it.)
 
     if (!pressed_pointing_buttons_.empty()) {
-      grabbable_state_ = grabbable_state(registry_entry_id,
+      grabbable_state_ = grabbable_state(device_id,
                                          grabbable_state::state::ungrabbable_temporarily,
                                          grabbable_state::ungrabbable_temporarily_reason::pointing_button_pressed,
                                          time_stamp);
       return;
     }
 
-    grabbable_state_ = grabbable_state(registry_entry_id,
+    grabbable_state_ = grabbable_state(device_id,
                                        grabbable_state::state::grabbable,
                                        grabbable_state::ungrabbable_temporarily_reason::none,
                                        time_stamp);
@@ -109,3 +115,5 @@ private:
   std::unordered_set<pointing_button> pressed_pointing_buttons_;
   grabbable_state grabbable_state_;
 };
+} // namespace grabbable_state_manager
+} // namespace krbn
