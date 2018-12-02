@@ -2,8 +2,8 @@
 
 // `krbn::event_queue::entry` can be used safely in a multi-threaded environment.
 
-#include "event_queue/event.hpp"
-#include "event_queue/event_time_stamp.hpp"
+#include "event.hpp"
+#include "event_time_stamp.hpp"
 #include "json_utility.hpp"
 #include "types.hpp"
 
@@ -43,7 +43,7 @@ public:
   }
 
   static entry make_from_json(const nlohmann::json& json) {
-    entry result(device_id::zero,
+    entry result(device_id(0),
                  event_time_stamp(absolute_time_point(0)),
                  event(),
                  event_type::key_down,
@@ -144,7 +144,7 @@ public:
 
   nlohmann::json to_json(void) const {
     return nlohmann::json({
-        {"device_id", static_cast<uint32_t>(get_device_id())},
+        {"device_id", type_safe::get(get_device_id())},
         {"event_time_stamp", get_event_time_stamp()},
         {"valid", get_valid()},
         {"lazy", get_lazy()},
