@@ -1,11 +1,13 @@
 #pragma once
 
-#include "event_queue/queue.hpp"
+#include "queue.hpp"
 #include "types.hpp"
+#include "utility.hpp"
 #include <pqrs/cf_ptr.hpp>
 
 namespace krbn {
 namespace event_queue {
+namespace osx {
 inline std::shared_ptr<queue> make_queue(device_id device_id,
                                          std::shared_ptr<std::vector<pqrs::cf_ptr<IOHIDValueRef>>> values) {
   auto result = std::make_shared<queue>();
@@ -16,13 +18,11 @@ inline std::shared_ptr<queue> make_queue(device_id device_id,
       hid_values.emplace_back(*v);
     }
 
-    for (const auto& pair : queue::make_entries(hid_values, device_id)) {
-      auto& entry = pair.second;
-      result->push_back_event(entry);
-    }
+    result = utility::make_queue(device_id, hid_values);
   }
 
   return result;
 }
+} // namespace osx
 } // namespace event_queue
 } // namespace krbn

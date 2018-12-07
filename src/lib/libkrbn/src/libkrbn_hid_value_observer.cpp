@@ -40,17 +40,7 @@ public:
         });
 
         hid_queue_value_monitor->values_arrived.connect([this, device_id](auto&& values_ptr) {
-          std::vector<krbn::hid_value> hid_values;
-          for (const auto& value_ptr : *values_ptr) {
-            hid_values.emplace_back(*value_ptr);
-          }
-
-          krbn::event_queue::queue event_queue;
-          for (const auto& pair : krbn::event_queue::queue::make_entries(hid_values, device_id)) {
-            auto& entry = pair.second;
-            event_queue.push_back_event(entry);
-          }
-
+          auto event_queue = krbn::event_queue::osx::make_queue(device_id, values_ptr);
           values_arrived(event_queue);
         });
 
@@ -90,8 +80,8 @@ public:
   }
 
 private:
-  void values_arrived(const krbn::event_queue::queue& event_queue) {
-    for (const auto& entry : event_queue.get_entries()) {
+  void values_arrived(std::shared_ptr<krbn::event_queue::queue> event_queue) {
+    for (const auto& entry : event_queue->get_entries()) {
       libkrbn_hid_value_event_type event_type = libkrbn_hid_value_event_type_key_down;
       switch (entry.get_event_type()) {
         case krbn::event_type::key_down:

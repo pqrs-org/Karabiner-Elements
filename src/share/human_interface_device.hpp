@@ -489,18 +489,6 @@ private:
     });
   }
 
-  void post_device_keys_and_pointing_buttons_are_released_event_if_needed(std::shared_ptr<event_queue::queue> input_event_queue,
-                                                                          absolute_time_point time_stamp) {
-    if (pressed_keys_.empty()) {
-      auto event = event_queue::event::make_device_keys_and_pointing_buttons_are_released_event();
-      input_event_queue->emplace_back_event(device_id_,
-                                            event_queue::event_time_stamp(time_stamp),
-                                            event,
-                                            event_type::single,
-                                            event);
-    }
-  }
-
   uint64_t elements_key(hid_usage_page usage_page, hid_usage usage) const {
     return ((static_cast<uint64_t>(usage_page) << 32) | static_cast<uint32_t>(usage));
   }

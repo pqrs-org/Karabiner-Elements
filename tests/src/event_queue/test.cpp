@@ -507,7 +507,12 @@ TEST_CASE("caps_lock_state_changed") {
   }
 }
 
-TEST_CASE("make_entries") {
+TEST_CASE("hash") {
+  REQUIRE(hash_value(krbn::event_queue::event(krbn::key_code::a)) !=
+          hash_value(krbn::event_queue::event(krbn::key_code::b)));
+}
+
+TEST_CASE("utility::make_queue") {
   std::vector<krbn::hid_value> hid_values;
 
   hid_values.emplace_back(krbn::hid_value(krbn::absolute_time_point(1000),
@@ -572,65 +577,69 @@ TEST_CASE("make_entries") {
                                           krbn::hid_usage_page::generic_desktop,
                                           krbn::hid_usage::gd_x));
 
-  auto entrys = krbn::event_queue::queue::make_entries(hid_values,
-                                                       krbn::device_id(1));
-  REQUIRE(entrys.size() == 8);
-  REQUIRE(*(entrys[0].first) == hid_values[0]);
-  REQUIRE(*(entrys[1].first) == hid_values[1]);
-  REQUIRE(*(entrys[2].first) == hid_values[2]);
-  REQUIRE(*(entrys[3].first) == hid_values[3]);
-  REQUIRE(!entrys[4].first);
-  REQUIRE(!entrys[5].first);
-  REQUIRE(!entrys[6].first);
-  REQUIRE(!entrys[7].first);
+  auto queue = krbn::event_queue::utility::make_queue(krbn::device_id(1),
+                                                      hid_values);
+  REQUIRE(queue->get_entries().size() == 8);
 
-  REQUIRE(entrys[0].second.get_device_id() == krbn::device_id(1));
-  REQUIRE(entrys[0].second.get_event_time_stamp().get_time_stamp() == krbn::absolute_time_point(1000));
-  REQUIRE(entrys[0].second.get_event().get_key_code() == krbn::key_code::spacebar);
-  REQUIRE(entrys[0].second.get_event_type() == krbn::event_type::key_down);
-
-  REQUIRE(entrys[1].second.get_device_id() == krbn::device_id(1));
-  REQUIRE(entrys[1].second.get_event_time_stamp().get_time_stamp() == krbn::absolute_time_point(2000));
-  REQUIRE(entrys[1].second.get_event().get_key_code() == krbn::key_code::spacebar);
-  REQUIRE(entrys[1].second.get_event_type() == krbn::event_type::key_up);
-
-  REQUIRE(entrys[2].second.get_device_id() == krbn::device_id(1));
-  REQUIRE(entrys[2].second.get_event_time_stamp().get_time_stamp() == krbn::absolute_time_point(3000));
-  REQUIRE(entrys[2].second.get_event().get_consumer_key_code() == krbn::consumer_key_code::mute);
-  REQUIRE(entrys[2].second.get_event_type() == krbn::event_type::key_down);
-
-  REQUIRE(entrys[3].second.get_device_id() == krbn::device_id(1));
-  REQUIRE(entrys[3].second.get_event_time_stamp().get_time_stamp() == krbn::absolute_time_point(4000));
-  REQUIRE(entrys[3].second.get_event().get_consumer_key_code() == krbn::consumer_key_code::mute);
-  REQUIRE(entrys[3].second.get_event_type() == krbn::event_type::key_up);
-
-  REQUIRE(entrys[4].second.get_device_id() == krbn::device_id(1));
-  REQUIRE(entrys[4].second.get_event_time_stamp().get_time_stamp() == krbn::absolute_time_point(5000));
-  REQUIRE(entrys[4].second.get_event().get_pointing_motion() == krbn::pointing_motion(10, 20, 30, 40));
-  REQUIRE(entrys[4].second.get_event_type() == krbn::event_type::single);
-
-  REQUIRE(entrys[5].second.get_device_id() == krbn::device_id(1));
-  REQUIRE(entrys[5].second.get_event_time_stamp().get_time_stamp() == krbn::absolute_time_point(6000));
-  REQUIRE(entrys[5].second.get_event().get_pointing_motion() == krbn::pointing_motion(-10, -20, -30, -40));
-  REQUIRE(entrys[5].second.get_event_type() == krbn::event_type::single);
-
-  REQUIRE(entrys[6].second.get_device_id() == krbn::device_id(1));
-  REQUIRE(entrys[6].second.get_event_time_stamp().get_time_stamp() == krbn::absolute_time_point(7000));
-  REQUIRE(entrys[6].second.get_event().get_pointing_motion() == krbn::pointing_motion(10, 0, 0, 0));
-  REQUIRE(entrys[6].second.get_event_type() == krbn::event_type::single);
-
-  REQUIRE(entrys[7].second.get_device_id() == krbn::device_id(1));
-  REQUIRE(entrys[7].second.get_event_time_stamp().get_time_stamp() == krbn::absolute_time_point(8000));
-  REQUIRE(entrys[7].second.get_event().get_pointing_motion() == krbn::pointing_motion(0, 0, 0, 0));
-  REQUIRE(entrys[7].second.get_event_type() == krbn::event_type::single);
+  {
+    auto& e = queue->get_entries()[0];
+    REQUIRE(e.get_device_id() == krbn::device_id(1));
+    REQUIRE(e.get_event_time_stamp().get_time_stamp() == krbn::absolute_time_point(1000));
+    REQUIRE(e.get_event().get_key_code() == krbn::key_code::spacebar);
+    REQUIRE(e.get_event_type() == krbn::event_type::key_down);
+  }
+  {
+    auto& e = queue->get_entries()[1];
+    REQUIRE(e.get_device_id() == krbn::device_id(1));
+    REQUIRE(e.get_event_time_stamp().get_time_stamp() == krbn::absolute_time_point(2000));
+    REQUIRE(e.get_event().get_key_code() == krbn::key_code::spacebar);
+    REQUIRE(e.get_event_type() == krbn::event_type::key_up);
+  }
+  {
+    auto& e = queue->get_entries()[2];
+    REQUIRE(e.get_device_id() == krbn::device_id(1));
+    REQUIRE(e.get_event_time_stamp().get_time_stamp() == krbn::absolute_time_point(3000));
+    REQUIRE(e.get_event().get_consumer_key_code() == krbn::consumer_key_code::mute);
+    REQUIRE(e.get_event_type() == krbn::event_type::key_down);
+  }
+  {
+    auto& e = queue->get_entries()[3];
+    REQUIRE(e.get_device_id() == krbn::device_id(1));
+    REQUIRE(e.get_event_time_stamp().get_time_stamp() == krbn::absolute_time_point(4000));
+    REQUIRE(e.get_event().get_consumer_key_code() == krbn::consumer_key_code::mute);
+    REQUIRE(e.get_event_type() == krbn::event_type::key_up);
+  }
+  {
+    auto& e = queue->get_entries()[4];
+    REQUIRE(e.get_device_id() == krbn::device_id(1));
+    REQUIRE(e.get_event_time_stamp().get_time_stamp() == krbn::absolute_time_point(5000));
+    REQUIRE(e.get_event().get_pointing_motion() == krbn::pointing_motion(10, 20, 30, 40));
+    REQUIRE(e.get_event_type() == krbn::event_type::single);
+  }
+  {
+    auto& e = queue->get_entries()[5];
+    REQUIRE(e.get_device_id() == krbn::device_id(1));
+    REQUIRE(e.get_event_time_stamp().get_time_stamp() == krbn::absolute_time_point(6000));
+    REQUIRE(e.get_event().get_pointing_motion() == krbn::pointing_motion(-10, -20, -30, -40));
+    REQUIRE(e.get_event_type() == krbn::event_type::single);
+  }
+  {
+    auto& e = queue->get_entries()[6];
+    REQUIRE(e.get_device_id() == krbn::device_id(1));
+    REQUIRE(e.get_event_time_stamp().get_time_stamp() == krbn::absolute_time_point(7000));
+    REQUIRE(e.get_event().get_pointing_motion() == krbn::pointing_motion(10, 0, 0, 0));
+    REQUIRE(e.get_event_type() == krbn::event_type::single);
+  }
+  {
+    auto& e = queue->get_entries()[7];
+    REQUIRE(e.get_device_id() == krbn::device_id(1));
+    REQUIRE(e.get_event_time_stamp().get_time_stamp() == krbn::absolute_time_point(8000));
+    REQUIRE(e.get_event().get_pointing_motion() == krbn::pointing_motion(0, 0, 0, 0));
+    REQUIRE(e.get_event_type() == krbn::event_type::single);
+  }
 }
 
-TEST_CASE("hash") {
-  REQUIRE(hash_value(krbn::event_queue::event(krbn::key_code::a)) !=
-          hash_value(krbn::event_queue::event(krbn::key_code::b)));
-}
-
-TEST_CASE("insert_device_keys_and_pointing_buttons_are_released_event") {
+TEST_CASE("utility::insert_device_keys_and_pointing_buttons_are_released_event") {
   {
     // Normal
 
