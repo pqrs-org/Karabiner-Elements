@@ -16,7 +16,7 @@ public:
   queue(void) : time_stamp_delay_(0) {
   }
 
-  void emplace_back_event(device_id device_id,
+  void emplace_back_entry(device_id device_id,
                           const event_time_stamp& event_time_stamp,
                           const class event& event,
                           event_type event_type,
@@ -97,8 +97,8 @@ public:
     }
   }
 
-  void push_back_event(const entry& entry) {
-    emplace_back_event(entry.get_device_id(),
+  void push_back_entry(const entry& entry) {
+    emplace_back_entry(entry.get_device_id(),
                        entry.get_event_time_stamp(),
                        entry.get_event(),
                        entry.get_event_type(),

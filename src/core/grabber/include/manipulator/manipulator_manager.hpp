@@ -138,7 +138,7 @@ public:
           }
 
           if (input_event_queue->get_front_event().get_valid()) {
-            output_event_queue->push_back_event(input_event_queue->get_front_event());
+            output_event_queue->push_back_entry(input_event_queue->get_front_event());
           }
 
           input_event_queue->erase_front_event();

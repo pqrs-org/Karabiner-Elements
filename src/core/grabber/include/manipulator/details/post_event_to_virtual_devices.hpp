@@ -53,7 +53,7 @@ public:
         return manipulate_result::passed;
       }
 
-      output_event_queue->push_back_event(front_input_event);
+      output_event_queue->push_back_entry(front_input_event);
       front_input_event.set_valid(false);
 
       // Dispatch modifier key event only when front_input_event is key_down or modifier key.

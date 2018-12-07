@@ -71,7 +71,7 @@ TEST_CASE("grabbable_state_queues_manager") {
     // `update_first_grabbed_event_time_stamp`
     {
       krbn::event_queue::queue event_queue;
-      event_queue.emplace_back_event(krbn::device_id(1),
+      event_queue.emplace_back_entry(krbn::device_id(1),
                                      krbn::event_queue::event_time_stamp(krbn::absolute_time_point(5000)),
                                      krbn::event_queue::event(krbn::key_code::a),
                                      krbn::event_type::key_down,
@@ -96,7 +96,7 @@ TEST_CASE("grabbable_state_queues_manager") {
     // Ignore events after first_grabbed_event_time_stamp_.
     {
       krbn::event_queue::queue event_queue;
-      event_queue.emplace_back_event(krbn::device_id(1),
+      event_queue.emplace_back_entry(krbn::device_id(1),
                                      krbn::event_queue::event_time_stamp(krbn::absolute_time_point(4000)),
                                      krbn::event_queue::event(krbn::key_code::a),
                                      krbn::event_type::key_down,

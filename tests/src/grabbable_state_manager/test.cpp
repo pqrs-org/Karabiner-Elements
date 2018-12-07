@@ -31,12 +31,12 @@ TEST_CASE("grabbable_state_manager") {
   }
 
   event_queue.clear_events();
-  event_queue.emplace_back_event(krbn::device_id(1),
+  event_queue.emplace_back_entry(krbn::device_id(1),
                                  krbn::event_queue::event_time_stamp(krbn::absolute_time_point(1000)),
                                  krbn::event_queue::event(krbn::key_code::a),
                                  krbn::event_type::key_up,
                                  krbn::event_queue::event(krbn::key_code::a));
-  event_queue.emplace_back_event(krbn::device_id(2),
+  event_queue.emplace_back_entry(krbn::device_id(2),
                                  krbn::event_queue::event_time_stamp(krbn::absolute_time_point(1010)),
                                  krbn::event_queue::event(krbn::key_code::a),
                                  krbn::event_type::key_up,
@@ -74,7 +74,7 @@ TEST_CASE("grabbable_state_manager") {
   // key repeating
 
   event_queue.clear_events();
-  event_queue.emplace_back_event(krbn::device_id(1),
+  event_queue.emplace_back_entry(krbn::device_id(1),
                                  krbn::event_queue::event_time_stamp(krbn::absolute_time_point(2000)),
                                  krbn::event_queue::event(krbn::key_code::a),
                                  krbn::event_type::key_down,
@@ -108,7 +108,7 @@ TEST_CASE("grabbable_state_manager") {
   // cancel key repeating
 
   event_queue.clear_events();
-  event_queue.emplace_back_event(krbn::device_id(1),
+  event_queue.emplace_back_entry(krbn::device_id(1),
                                  krbn::event_queue::event_time_stamp(krbn::absolute_time_point(3000)),
                                  krbn::event_queue::event(krbn::key_code::a),
                                  krbn::event_type::key_up,
@@ -142,7 +142,7 @@ TEST_CASE("grabbable_state_manager") {
   // key repeating (consumer_key)
 
   event_queue.clear_events();
-  event_queue.emplace_back_event(krbn::device_id(1),
+  event_queue.emplace_back_entry(krbn::device_id(1),
                                  krbn::event_queue::event_time_stamp(krbn::absolute_time_point(4000)),
                                  krbn::event_queue::event(krbn::consumer_key_code::volume_increment),
                                  krbn::event_type::key_down,
@@ -176,7 +176,7 @@ TEST_CASE("grabbable_state_manager") {
   // cancel key repeating (consumer_key)
 
   event_queue.clear_events();
-  event_queue.emplace_back_event(krbn::device_id(1),
+  event_queue.emplace_back_entry(krbn::device_id(1),
                                  krbn::event_queue::event_time_stamp(krbn::absolute_time_point(5000)),
                                  krbn::event_queue::event(krbn::consumer_key_code::volume_increment),
                                  krbn::event_type::key_up,
@@ -210,7 +210,7 @@ TEST_CASE("grabbable_state_manager") {
   // modifier_key_pressed
 
   event_queue.clear_events();
-  event_queue.emplace_back_event(krbn::device_id(1),
+  event_queue.emplace_back_entry(krbn::device_id(1),
                                  krbn::event_queue::event_time_stamp(krbn::absolute_time_point(6000)),
                                  krbn::event_queue::event(krbn::key_code::left_shift),
                                  krbn::event_type::key_down,
@@ -244,7 +244,7 @@ TEST_CASE("grabbable_state_manager") {
   // cancel modifier_key_pressed
 
   event_queue.clear_events();
-  event_queue.emplace_back_event(krbn::device_id(1),
+  event_queue.emplace_back_entry(krbn::device_id(1),
                                  krbn::event_queue::event_time_stamp(krbn::absolute_time_point(7000)),
                                  krbn::event_queue::event(krbn::key_code::left_shift),
                                  krbn::event_type::key_up,
@@ -278,7 +278,7 @@ TEST_CASE("grabbable_state_manager") {
   // pointing_button_pressed
 
   event_queue.clear_events();
-  event_queue.emplace_back_event(krbn::device_id(2),
+  event_queue.emplace_back_entry(krbn::device_id(2),
                                  krbn::event_queue::event_time_stamp(krbn::absolute_time_point(8000)),
                                  krbn::event_queue::event(krbn::pointing_button::button1),
                                  krbn::event_type::key_down,
@@ -312,7 +312,7 @@ TEST_CASE("grabbable_state_manager") {
   // cancel pointing_button_pressed
 
   event_queue.clear_events();
-  event_queue.emplace_back_event(krbn::device_id(2),
+  event_queue.emplace_back_entry(krbn::device_id(2),
                                  krbn::event_queue::event_time_stamp(krbn::absolute_time_point(9000)),
                                  krbn::event_queue::event(krbn::pointing_button::button1),
                                  krbn::event_type::key_up,
@@ -346,22 +346,22 @@ TEST_CASE("grabbable_state_manager") {
   // multiple reasons
 
   event_queue.clear_events();
-  event_queue.emplace_back_event(krbn::device_id(1),
+  event_queue.emplace_back_entry(krbn::device_id(1),
                                  krbn::event_queue::event_time_stamp(krbn::absolute_time_point(10000)),
                                  krbn::event_queue::event(krbn::key_code::left_shift),
                                  krbn::event_type::key_down,
                                  krbn::event_queue::event(krbn::key_code::left_shift));
-  event_queue.emplace_back_event(krbn::device_id(1),
+  event_queue.emplace_back_entry(krbn::device_id(1),
                                  krbn::event_queue::event_time_stamp(krbn::absolute_time_point(11000)),
                                  krbn::event_queue::event(krbn::key_code::a),
                                  krbn::event_type::key_down,
                                  krbn::event_queue::event(krbn::key_code::a));
-  event_queue.emplace_back_event(krbn::device_id(1),
+  event_queue.emplace_back_entry(krbn::device_id(1),
                                  krbn::event_queue::event_time_stamp(krbn::absolute_time_point(12000)),
                                  krbn::event_queue::event(krbn::key_code::a),
                                  krbn::event_type::key_up,
                                  krbn::event_queue::event(krbn::key_code::a));
-  event_queue.emplace_back_event(krbn::device_id(1),
+  event_queue.emplace_back_entry(krbn::device_id(1),
                                  krbn::event_queue::event_time_stamp(krbn::absolute_time_point(13000)),
                                  krbn::event_queue::event(krbn::key_code::left_shift),
                                  krbn::event_type::key_up,
@@ -433,7 +433,7 @@ TEST_CASE("device_error") {
   // key repeating (device_error will be canceled by `grabbable_state_manager::update`.)
 
   event_queue.clear_events();
-  event_queue.emplace_back_event(krbn::device_id(1),
+  event_queue.emplace_back_entry(krbn::device_id(1),
                                  krbn::event_queue::event_time_stamp(krbn::absolute_time_point(2000)),
                                  krbn::event_queue::event(krbn::key_code::a),
                                  krbn::event_type::key_down,

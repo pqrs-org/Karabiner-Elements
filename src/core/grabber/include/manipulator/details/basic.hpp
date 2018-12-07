@@ -330,7 +330,7 @@ public:
                       //  the o key is repeated even if the s key is pressed.
                       //  To avoid this issue, we post stop_keyboard_repeat here.
 
-                      output_event_queue->emplace_back_event(front_input_event.get_device_id(),
+                      output_event_queue->emplace_back_entry(front_input_event.get_device_id(),
                                                              front_input_event.get_event_time_stamp(),
                                                              event_queue::event::make_stop_keyboard_repeat_event(),
                                                              event_type::single,
@@ -731,7 +731,7 @@ public:
             auto t = front_input_event.get_event_time_stamp();
             t.set_time_stamp(t.get_time_stamp() + time_stamp_delay++);
 
-            output_event_queue.emplace_back_event(front_input_event.get_device_id(),
+            output_event_queue.emplace_back_entry(front_input_event.get_device_id(),
                                                   t,
                                                   e,
                                                   event_type::key_down,
@@ -746,7 +746,7 @@ public:
           auto t = front_input_event.get_event_time_stamp();
           t.set_time_stamp(t.get_time_stamp() + time_stamp_delay++);
 
-          output_event_queue.emplace_back_event(front_input_event.get_device_id(),
+          output_event_queue.emplace_back_entry(front_input_event.get_device_id(),
                                                 t,
                                                 *event,
                                                 event_type::key_down,
@@ -766,7 +766,7 @@ public:
           auto t = front_input_event.get_event_time_stamp();
           t.set_time_stamp(t.get_time_stamp() + time_stamp_delay++);
 
-          output_event_queue.emplace_back_event(front_input_event.get_device_id(),
+          output_event_queue.emplace_back_entry(front_input_event.get_device_id(),
                                                 t,
                                                 *event,
                                                 event_type::key_up,
@@ -792,7 +792,7 @@ public:
               auto t = front_input_event.get_event_time_stamp();
               t.set_time_stamp(t.get_time_stamp() + time_stamp_delay++);
 
-              output_event_queue.emplace_back_event(front_input_event.get_device_id(),
+              output_event_queue.emplace_back_entry(front_input_event.get_device_id(),
                                                     t,
                                                     e,
                                                     event_type::key_up,
@@ -812,7 +812,7 @@ public:
     for (const auto& e : current_manipulated_original_event.get_events_at_key_up().get_events()) {
       auto t = front_input_event.get_event_time_stamp();
       t.set_time_stamp(t.get_time_stamp() + time_stamp_delay++);
-      output_event_queue.push_back_event(e.make_entry(t));
+      output_event_queue.push_back_entry(e.make_entry(t));
     }
     current_manipulated_original_event.get_events_at_key_up().clear_events();
   }
@@ -864,7 +864,7 @@ private:
                                  event_type,
                                  front_input_event.get_original_event(),
                                  true);
-        output_event_queue.push_back_event(event);
+        output_event_queue.push_back_entry(event);
       }
     }
   }
@@ -889,7 +889,7 @@ private:
           auto t = front_input_event.get_event_time_stamp();
           t.set_time_stamp(t.get_time_stamp() + time_stamp_delay++);
 
-          output_event_queue.emplace_back_event(front_input_event.get_device_id(),
+          output_event_queue.emplace_back_entry(front_input_event.get_device_id(),
                                                 t,
                                                 e,
                                                 event_type::key_down,
@@ -903,7 +903,7 @@ private:
           auto t = front_input_event.get_event_time_stamp();
           t.set_time_stamp(t.get_time_stamp() + time_stamp_delay++);
 
-          output_event_queue.emplace_back_event(front_input_event.get_device_id(),
+          output_event_queue.emplace_back_entry(front_input_event.get_device_id(),
                                                 t,
                                                 *event,
                                                 event_type::key_down,
@@ -923,7 +923,7 @@ private:
           auto t = front_input_event.get_event_time_stamp();
           t.set_time_stamp(t.get_time_stamp() + time_stamp_delay++);
 
-          output_event_queue.emplace_back_event(front_input_event.get_device_id(),
+          output_event_queue.emplace_back_entry(front_input_event.get_device_id(),
                                                 t,
                                                 *event,
                                                 event_type::key_up,
@@ -937,7 +937,7 @@ private:
           auto t = front_input_event.get_event_time_stamp();
           t.set_time_stamp(t.get_time_stamp() + time_stamp_delay++);
 
-          output_event_queue.emplace_back_event(front_input_event.get_device_id(),
+          output_event_queue.emplace_back_entry(front_input_event.get_device_id(),
                                                 t,
                                                 e,
                                                 event_type::key_up,

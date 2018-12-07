@@ -136,7 +136,7 @@ public:
           } else {
             auto e = event_queue::entry::make_from_json(j);
 
-            event_queues->front()->push_back_event(e);
+            event_queues->front()->push_back_entry(e);
 
             advance_now(time_utility::to_milliseconds(e.get_event_time_stamp().get_time_stamp() - absolute_time_point(0)));
 

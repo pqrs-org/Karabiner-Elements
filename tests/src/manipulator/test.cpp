@@ -120,7 +120,7 @@ TEST_CASE("min_input_event_time_stamp") {
 
   // ----------------------------------------
 
-  event_queues[2]->emplace_back_event(krbn::device_id(1),
+  event_queues[2]->emplace_back_entry(krbn::device_id(1),
                                       krbn::event_queue::event_time_stamp(krbn::absolute_time_point(5000)),
                                       krbn::event_queue::event(krbn::key_code::a),
                                       krbn::event_type::key_down,
@@ -130,7 +130,7 @@ TEST_CASE("min_input_event_time_stamp") {
 
   // ----------------------------------------
 
-  event_queues[0]->emplace_back_event(krbn::device_id(1),
+  event_queues[0]->emplace_back_entry(krbn::device_id(1),
                                       krbn::event_queue::event_time_stamp(krbn::absolute_time_point(4000)),
                                       krbn::event_queue::event(krbn::key_code::a),
                                       krbn::event_type::key_down,
@@ -141,12 +141,12 @@ TEST_CASE("min_input_event_time_stamp") {
   // ----------------------------------------
   // min_input_event_time_stamp uses only the front entry.
 
-  event_queues[3]->emplace_back_event(krbn::device_id(1),
+  event_queues[3]->emplace_back_entry(krbn::device_id(1),
                                       krbn::event_queue::event_time_stamp(krbn::absolute_time_point(3000)),
                                       krbn::event_queue::event(krbn::key_code::a),
                                       krbn::event_type::key_down,
                                       krbn::event_queue::event(krbn::key_code::a));
-  event_queues[0]->emplace_back_event(krbn::device_id(1),
+  event_queues[0]->emplace_back_entry(krbn::device_id(1),
                                       krbn::event_queue::event_time_stamp(krbn::absolute_time_point(2000)),
                                       krbn::event_queue::event(krbn::key_code::a),
                                       krbn::event_type::key_down,

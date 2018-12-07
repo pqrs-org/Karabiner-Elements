@@ -457,7 +457,7 @@ private:
         auto& hid_value = pair.first;
         auto& entry = pair.second;
 
-        input_event_queue->push_back_event(entry);
+        input_event_queue->push_back_entry(entry);
 
         if (hid_value) {
           if (auto hid_usage_page = hid_value->get_hid_usage_page()) {

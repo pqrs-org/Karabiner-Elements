@@ -206,7 +206,7 @@ TEST_CASE("get_frontmost_application_bundle_identifier") {
   }
 }
 
-TEST_CASE("emplace_back_event") {
+TEST_CASE("emplace_back_entry") {
   // Normal order
   {
     krbn::event_queue::queue event_queue;
