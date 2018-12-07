@@ -9,7 +9,7 @@
 #include <vector>
 
 namespace boost {
-std::size_t hash_value(const boost::blank& v) {
+inline std::size_t hash_value(const boost::blank& v) {
   return 0;
 }
 } // namespace boost
