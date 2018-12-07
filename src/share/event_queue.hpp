@@ -5,3 +5,4 @@
 #include "event_queue/event_time_stamp.hpp"
 #include "event_queue/osx.hpp"
 #include "event_queue/queue.hpp"
+#include "event_queue/utility.hpp"

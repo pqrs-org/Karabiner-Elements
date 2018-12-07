@@ -629,3 +629,120 @@ TEST_CASE("hash") {
   REQUIRE(hash_value(krbn::event_queue::event(krbn::key_code::a)) !=
           hash_value(krbn::event_queue::event(krbn::key_code::b)));
 }
+
+TEST_CASE("insert_device_keys_and_pointing_buttons_are_released_event") {
+  {
+    // Normal
+
+    auto event_queue = std::make_shared<krbn::event_queue::queue>();
+    auto pressed_keys_manager = std::make_shared<krbn::pressed_keys_manager>();
+
+    ENQUEUE_EVENT((*event_queue), 1, 100, a_event, key_down, a_event);
+    ENQUEUE_EVENT((*event_queue), 1, 200, a_event, key_up, a_event);
+    ENQUEUE_EVENT((*event_queue), 1, 300, b_event, key_down, b_event);
+    ENQUEUE_EVENT((*event_queue), 1, 400, b_event, key_up, b_event);
+    ENQUEUE_EVENT((*event_queue), 1, 500, mute_event, key_down, mute_event);
+    ENQUEUE_EVENT((*event_queue), 1, 600, mute_event, key_up, mute_event);
+    ENQUEUE_EVENT((*event_queue), 1, 700, button2_event, key_down, button2_event);
+    ENQUEUE_EVENT((*event_queue), 1, 800, button2_event, key_up, button2_event);
+
+    event_queue = krbn::event_queue::utility::insert_device_keys_and_pointing_buttons_are_released_event(event_queue,
+                                                                                                         krbn::device_id(1),
+                                                                                                         pressed_keys_manager);
+
+    REQUIRE(event_queue->get_entries().size() == 12); // (2 + 1) * 4
+
+    {
+      auto& e = event_queue->get_entries()[0];
+      REQUIRE(e.get_event().get_type() == krbn::event_queue::event::type::key_code);
+      REQUIRE(e.get_event_type() == krbn::event_type::key_down);
+      REQUIRE(e.get_event_time_stamp().get_time_stamp() == krbn::absolute_time_point(100));
+    }
+    {
+      auto& e = event_queue->get_entries()[1];
+      REQUIRE(e.get_event().get_type() == krbn::event_queue::event::type::key_code);
+      REQUIRE(e.get_event_type() == krbn::event_type::key_up);
+      REQUIRE(e.get_event_time_stamp().get_time_stamp() == krbn::absolute_time_point(200));
+    }
+    {
+      auto& e = event_queue->get_entries()[2];
+      REQUIRE(e.get_event().get_type() == krbn::event_queue::event::type::device_keys_and_pointing_buttons_are_released);
+      REQUIRE(e.get_event_time_stamp().get_time_stamp() == krbn::absolute_time_point(200));
+    }
+    {
+      auto& e = event_queue->get_entries()[3];
+      REQUIRE(e.get_event().get_type() == krbn::event_queue::event::type::key_code);
+      REQUIRE(e.get_event_type() == krbn::event_type::key_down);
+      REQUIRE(e.get_event_time_stamp().get_time_stamp() == krbn::absolute_time_point(300));
+    }
+
+    REQUIRE(pressed_keys_manager->empty());
+  }
+
+  {
+    // Different device_id
+
+    auto event_queue = std::make_shared<krbn::event_queue::queue>();
+    auto pressed_keys_manager = std::make_shared<krbn::pressed_keys_manager>();
+
+    ENQUEUE_EVENT((*event_queue), 1, 100, a_event, key_down, a_event);
+    ENQUEUE_EVENT((*event_queue), 2, 200, a_event, key_up, a_event);
+
+    event_queue = krbn::event_queue::utility::insert_device_keys_and_pointing_buttons_are_released_event(event_queue,
+                                                                                                         krbn::device_id(1),
+                                                                                                         pressed_keys_manager);
+
+    REQUIRE(event_queue->get_entries().size() == 2);
+    REQUIRE(!pressed_keys_manager->empty());
+  }
+
+  {
+    // Multiple key_down
+
+    auto event_queue = std::make_shared<krbn::event_queue::queue>();
+    auto pressed_keys_manager = std::make_shared<krbn::pressed_keys_manager>();
+
+    ENQUEUE_EVENT((*event_queue), 1, 100, a_event, key_down, a_event);
+    ENQUEUE_EVENT((*event_queue), 1, 200, b_event, key_down, b_event);
+    ENQUEUE_EVENT((*event_queue), 1, 300, b_event, key_up, b_event);
+    ENQUEUE_EVENT((*event_queue), 1, 400, a_event, key_up, a_event);
+
+    event_queue = krbn::event_queue::utility::insert_device_keys_and_pointing_buttons_are_released_event(event_queue,
+                                                                                                         krbn::device_id(1),
+                                                                                                         pressed_keys_manager);
+
+    REQUIRE(event_queue->get_entries().size() == 5);
+
+    {
+      auto& e = event_queue->get_entries()[0];
+      REQUIRE(e.get_event().get_type() == krbn::event_queue::event::type::key_code);
+      REQUIRE(e.get_event_type() == krbn::event_type::key_down);
+      REQUIRE(e.get_event_time_stamp().get_time_stamp() == krbn::absolute_time_point(100));
+    }
+    {
+      auto& e = event_queue->get_entries()[1];
+      REQUIRE(e.get_event().get_type() == krbn::event_queue::event::type::key_code);
+      REQUIRE(e.get_event_type() == krbn::event_type::key_down);
+      REQUIRE(e.get_event_time_stamp().get_time_stamp() == krbn::absolute_time_point(200));
+    }
+    {
+      auto& e = event_queue->get_entries()[2];
+      REQUIRE(e.get_event().get_type() == krbn::event_queue::event::type::key_code);
+      REQUIRE(e.get_event_type() == krbn::event_type::key_up);
+      REQUIRE(e.get_event_time_stamp().get_time_stamp() == krbn::absolute_time_point(300));
+    }
+    {
+      auto& e = event_queue->get_entries()[3];
+      REQUIRE(e.get_event().get_type() == krbn::event_queue::event::type::key_code);
+      REQUIRE(e.get_event_type() == krbn::event_type::key_up);
+      REQUIRE(e.get_event_time_stamp().get_time_stamp() == krbn::absolute_time_point(400));
+    }
+    {
+      auto& e = event_queue->get_entries()[4];
+      REQUIRE(e.get_event().get_type() == krbn::event_queue::event::type::device_keys_and_pointing_buttons_are_released);
+      REQUIRE(e.get_event_time_stamp().get_time_stamp() == krbn::absolute_time_point(400));
+    }
+
+    REQUIRE(pressed_keys_manager->empty());
+  }
+}
