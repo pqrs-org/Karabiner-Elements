@@ -70,7 +70,8 @@ public:
         if (iokit_utility::is_karabiner_virtual_hid_device(*device_ptr)) {
           // Handle caps_lock_state_changed event only if the hid is Karabiner-VirtualHIDDevice.
           hid_queue_value_monitor->values_arrived.connect([this, device_id](auto&& values_ptr) {
-            auto event_queue = krbn::event_queue::osx::make_queue(device_id, values_ptr);
+            auto event_queue = krbn::event_queue::utility::make_queue(device_id,
+                                                                      krbn::iokit_utility::make_hid_values(values_ptr));
 
             for (const auto& e : event_queue->get_entries()) {
               if (e.get_event().get_type() == event_queue::event::type::caps_lock_state_changed) {
@@ -84,7 +85,8 @@ public:
           });
         } else {
           hid_queue_value_monitor->values_arrived.connect([this, device_id](auto&& values_ptr) {
-            auto event_queue = krbn::event_queue::osx::make_queue(device_id, values_ptr);
+            auto event_queue = krbn::event_queue::utility::make_queue(device_id,
+                                                                      krbn::iokit_utility::make_hid_values(values_ptr));
             grabbable_state_manager_->update(*event_queue);
           });
         }

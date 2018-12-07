@@ -44,7 +44,8 @@ public:
         hid_queue_value_monitors_[device_id] = hid_queue_value_monitor;
 
         hid_queue_value_monitor->values_arrived.connect([this, device_id](auto&& values_ptr) {
-          auto event_queue = krbn::event_queue::osx::make_queue(device_id, values_ptr);
+          auto event_queue = krbn::event_queue::utility::make_queue(device_id,
+                                                                    krbn::iokit_utility::make_hid_values(values_ptr));
           for (const auto& entry : event_queue->get_entries()) {
             output_value(entry);
           }
