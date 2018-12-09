@@ -34,6 +34,17 @@ public:
     transport_ = hid_device.find_transport();
     is_keyboard_ = iokit_utility::is_keyboard(device);
     is_pointing_device_ = iokit_utility::is_pointing_device(device);
+
+    if (product_ && is_keyboard_ && is_pointing_device_) {
+      if ((*product_).find("Apple Internal ") != std::string::npos) {
+        if (*is_keyboard_ == true && *is_pointing_device_ == false) {
+          is_built_in_keyboard_ = true;
+        }
+        if (*is_keyboard_ == false && *is_pointing_device_ == true) {
+          is_built_in_pointing_device_ = true;
+        }
+      }
+    }
   }
 
   nlohmann::json to_json(void) const {
@@ -67,6 +78,12 @@ public:
     }
     if (is_pointing_device_) {
       json["is_pointing_device"] = *is_pointing_device_;
+    }
+    if (is_built_in_keyboard_) {
+      json["is_built_in_keyboard"] = *is_built_in_keyboard_;
+    }
+    if (is_built_in_pointing_device_) {
+      json["is_built_in_pointing_device"] = *is_built_in_pointing_device_;
     }
 
     return json;
@@ -263,6 +280,8 @@ private:
   std::optional<std::string> transport_;
   std::optional<bool> is_keyboard_;
   std::optional<bool> is_pointing_device_;
+  std::optional<bool> is_built_in_keyboard_;
+  std::optional<bool> is_built_in_pointing_device_;
 };
 
 inline void to_json(nlohmann::json& json, const device_properties& device_properties) {
