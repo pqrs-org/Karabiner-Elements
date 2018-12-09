@@ -38,6 +38,7 @@ public:
 
         auto device_properties = std::make_shared<krbn::device_properties>(device_id,
                                                                            *device_ptr);
+        std::cout << std::setw(4) << device_properties->to_json() << std::endl;
 
         auto hid_queue_value_monitor = std::make_shared<pqrs::osx::iokit_hid_queue_value_monitor>(weak_dispatcher_,
                                                                                                   *device_ptr);
