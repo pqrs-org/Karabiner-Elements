@@ -45,6 +45,12 @@ public:
         }
       }
     }
+
+    device_identifiers_ = std::make_shared<device_identifiers>(
+        vendor_id_.value_or(vendor_id(0)),
+        product_id_.value_or(product_id(0)),
+        is_keyboard_.value_or(false),
+        is_pointing_device_.value_or(false));
   }
 
   nlohmann::json to_json(void) const {
@@ -182,8 +188,8 @@ public:
   bool compare(const device_properties& other) {
     // product
     {
-      auto p1 = make_product_value();
-      auto p2 = other.make_product_value();
+      auto p1 = product_.value_or("");
+      auto p2 = other.product_.value_or("");
       if (p1 != p2) {
         return p1 < p2;
       }
@@ -191,8 +197,8 @@ public:
 
     // manufacturer
     {
-      auto m1 = make_manufacturer_value();
-      auto m2 = other.make_manufacturer_value();
+      auto m1 = manufacturer_.value_or("");
+      auto m2 = other.manufacturer_.value_or("");
       if (m1 != m2) {
         return m1 < m2;
       }
@@ -200,8 +206,8 @@ public:
 
     // is_keyboard
     {
-      auto k1 = make_is_keyboard_value();
-      auto k2 = other.make_is_keyboard_value();
+      auto k1 = is_keyboard_.value_or(false);
+      auto k2 = other.is_keyboard_.value_or(false);
       if (k1 != k2) {
         return k1;
       }
@@ -209,8 +215,8 @@ public:
 
     // is_pointing_device
     {
-      auto p1 = make_is_pointing_device_value();
-      auto p2 = other.make_is_pointing_device_value();
+      auto p1 = is_pointing_device_.value_or(false);
+      auto p2 = other.is_pointing_device_.value_or(false);
       if (p1 != p2) {
         return p1;
       }
@@ -242,34 +248,6 @@ public:
   }
 
 private:
-  std::string make_manufacturer_value(void) const {
-    if (manufacturer_) {
-      return *manufacturer_;
-    }
-    return "";
-  }
-
-  std::string make_product_value(void) const {
-    if (product_) {
-      return *product_;
-    }
-    return "";
-  }
-
-  bool make_is_keyboard_value(void) const {
-    if (is_keyboard_) {
-      return *is_keyboard_;
-    }
-    return false;
-  }
-
-  bool make_is_pointing_device_value(void) const {
-    if (is_pointing_device_) {
-      return *is_pointing_device_;
-    }
-    return false;
-  }
-
   device_id device_id_;
   std::optional<vendor_id> vendor_id_;
   std::optional<product_id> product_id_;
@@ -282,6 +260,7 @@ private:
   std::optional<bool> is_pointing_device_;
   std::optional<bool> is_built_in_keyboard_;
   std::optional<bool> is_built_in_pointing_device_;
+  std::shared_ptr<device_identifiers> device_identifiers_;
 };
 
 inline void to_json(nlohmann::json& json, const device_properties& device_properties) {
