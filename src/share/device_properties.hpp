@@ -185,6 +185,10 @@ public:
     return *this;
   }
 
+  std::shared_ptr<device_identifiers> get_device_identifiers(void) const {
+    return device_identifiers_;
+  }
+
   bool compare(const device_properties& other) {
     // product
     {
