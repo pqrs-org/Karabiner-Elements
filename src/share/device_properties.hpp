@@ -46,6 +46,8 @@ public:
       }
     }
 
+    is_karabiner_virtual_hid_device_ = iokit_utility::is_karabiner_virtual_hid_device(device);
+
     device_identifiers_ = std::make_shared<device_identifiers>(
         vendor_id_.value_or(vendor_id(0)),
         product_id_.value_or(product_id(0)),
@@ -90,6 +92,9 @@ public:
     }
     if (is_built_in_pointing_device_) {
       json["is_built_in_pointing_device"] = *is_built_in_pointing_device_;
+    }
+    if (is_karabiner_virtual_hid_device_) {
+      json["is_karabiner_virtual_hid_device"] = *is_karabiner_virtual_hid_device_;
     }
 
     return json;
@@ -185,6 +190,10 @@ public:
     return *this;
   }
 
+  std::optional<bool> get_is_karabiner_virtual_hid_device(void) const {
+    return is_karabiner_virtual_hid_device_;
+  }
+
   std::shared_ptr<device_identifiers> get_device_identifiers(void) const {
     return device_identifiers_;
   }
@@ -264,6 +273,7 @@ private:
   std::optional<bool> is_pointing_device_;
   std::optional<bool> is_built_in_keyboard_;
   std::optional<bool> is_built_in_pointing_device_;
+  std::optional<bool> is_karabiner_virtual_hid_device_;
   std::shared_ptr<device_identifiers> device_identifiers_;
 };
 
