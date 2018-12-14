@@ -190,6 +190,14 @@ public:
     return *this;
   }
 
+  std::optional<bool> get_is_built_in_keyboard(void) const {
+    return is_built_in_keyboard_;
+  }
+
+  std::optional<bool> get_is_built_in_pointing_device(void) const {
+    return is_built_in_pointing_device_;
+  }
+
   std::optional<bool> get_is_karabiner_virtual_hid_device(void) const {
     return is_karabiner_virtual_hid_device_;
   }
