@@ -1,21 +1,19 @@
 #pragma once
 
-#include "boost_defs.hpp"
-
 #include "async_file_writer.hpp"
 #include "filesystem.hpp"
 #include "logger.hpp"
-#include <boost/optional.hpp>
 #include <fstream>
 #include <nlohmann/json.hpp>
+#include <optional>
 #include <unistd.h>
 
 namespace krbn {
 class json_utility final {
 public:
   template <typename T>
-  static boost::optional<T> find_optional(const nlohmann::json& json,
-                                          const std::string& key) {
+  static std::optional<T> find_optional(const nlohmann::json& json,
+                                        const std::string& key) {
     auto it = json.find(key);
     if (it != std::end(json)) {
       try {
@@ -24,7 +22,7 @@ public:
       }
     }
 
-    return boost::none;
+    return std::nullopt;
   }
 
   static const nlohmann::json* find_array(const nlohmann::json& json,
