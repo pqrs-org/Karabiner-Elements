@@ -11,14 +11,10 @@ public:
                const std::string& product) : manufacturer_(manufacturer),
                                              product_(product) {
   }
-  descriptions(const nlohmann::json& json) {
-    if (auto v = json_utility::find_optional<std::string>(json, "manufacturer")) {
-      manufacturer_ = *v;
-    }
 
-    if (auto v = json_utility::find_optional<std::string>(json, "product")) {
-      product_ = *v;
-    }
+  static descriptions make_from_json(const nlohmann::json& json) {
+    return descriptions(json_utility::find_optional<std::string>(json, "manufacturer").value_or(""),
+                        json_utility::find_optional<std::string>(json, "product").value_or(""));
   }
 
   nlohmann::json to_json(void) const {

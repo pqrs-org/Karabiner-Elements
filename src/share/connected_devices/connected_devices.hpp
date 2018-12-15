@@ -57,7 +57,7 @@ public:
 
         if (json.is_array()) {
           for (const auto& j : json) {
-            devices_.emplace_back(details::device(j));
+            devices_.emplace_back(details::device::make_from_json(j));
           }
         }
 

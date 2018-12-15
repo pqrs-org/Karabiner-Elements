@@ -17,17 +17,14 @@ public:
                                       is_built_in_keyboard_(is_built_in_keyboard),
                                       is_built_in_trackpad_(is_built_in_trackpad) {
   }
-  device(const nlohmann::json& json) : descriptions_(json_utility::find_copy(json, "descriptions", nlohmann::json())),
-                                       identifiers_(json_utility::find_copy(json, "identifiers", nlohmann::json())),
-                                       is_built_in_keyboard_(false),
-                                       is_built_in_trackpad_(false) {
-    if (auto v = json_utility::find_optional<bool>(json, "is_built_in_keyboard")) {
-      is_built_in_keyboard_ = *v;
-    }
 
-    if (auto v = json_utility::find_optional<bool>(json, "is_built_in_trackpad")) {
-      is_built_in_trackpad_ = *v;
-    }
+  static device make_from_json(const nlohmann::json& json) {
+    return device(descriptions::make_from_json(
+                      json_utility::find_copy(json, "descriptions", nlohmann::json())),
+                  device_identifiers::make_from_json(
+                      json_utility::find_copy(json, "identifiers", nlohmann::json())),
+                  json_utility::find_optional<bool>(json, "is_built_in_keyboard").value_or(false),
+                  json_utility::find_optional<bool>(json, "is_built_in_trackpad").value_or(false));
   }
 
   nlohmann::json to_json(void) const {
