@@ -87,7 +87,7 @@ private:
   type type_;
   std::vector<input_source_selector> input_source_selectors_;
 
-  mutable boost::optional<std::pair<input_source_identifiers, bool>> cached_result_;
+  mutable std::optional<std::pair<input_source_identifiers, bool>> cached_result_;
 };
 } // namespace conditions
 } // namespace details

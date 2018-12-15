@@ -13,9 +13,9 @@
 #include "types.hpp"
 #include "virtual_hid_device_client.hpp"
 #include "virtual_hid_device_utility.hpp"
-#include <boost/optional.hpp>
 #include <boost/variant.hpp>
 #include <mach/mach_time.h>
+#include <optional>
 
 #include "post_event_to_virtual_devices_detail/key_event_dispatcher.hpp"
 #include "post_event_to_virtual_devices_detail/mouse_key_handler.hpp"
@@ -61,7 +61,7 @@ public:
       bool dispatch_modifier_key_event = false;
       bool dispatch_modifier_key_event_before = false;
       {
-        boost::optional<modifier_flag> m;
+        std::optional<modifier_flag> m;
         if (auto key_code = front_input_event.get_event().get_key_code()) {
           m = types::make_modifier_flag(*key_code);
         }
@@ -111,7 +111,7 @@ public:
           if (auto key_code = front_input_event.get_event().get_key_code()) {
             if (auto hid_usage_page = types::make_hid_usage_page(*key_code)) {
               if (auto hid_usage = types::make_hid_usage(*key_code)) {
-                if (types::make_modifier_flag(*key_code) == boost::none) {
+                if (types::make_modifier_flag(*key_code) == std::nullopt) {
                   switch (front_input_event.get_event_type()) {
                     case event_type::key_down:
                       key_event_dispatcher_.dispatch_key_down_event(front_input_event.get_device_id(),

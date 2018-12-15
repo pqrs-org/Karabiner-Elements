@@ -12,8 +12,8 @@ int main(int argc, char** argv) {
   krbn::input_source_manager input_source_manager;
 
   input_source_manager.select(krbn::input_source_selector(std::string("fr"),
-                                                          boost::none,
-                                                          boost::none));
+                                                          std::nullopt,
+                                                          std::nullopt));
 
   for (int i = 0; i < 10; ++i) {
     std::cout << i << "/9" << std::endl;
@@ -21,8 +21,8 @@ int main(int argc, char** argv) {
   }
 
   input_source_manager.select(krbn::input_source_selector(std::string("en"),
-                                                          boost::none,
-                                                          boost::none));
+                                                          std::nullopt,
+                                                          std::nullopt));
 
   std::cout << "type control-c" << std::endl;
 

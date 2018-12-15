@@ -140,7 +140,7 @@ private:
       }
 
       if (total.is_zero()) {
-        last_mouse_key_total_ = boost::none;
+        last_mouse_key_total_ = std::nullopt;
         return false;
 
       } else {
@@ -177,7 +177,7 @@ private:
   std::vector<std::pair<device_id, mouse_key>> entries_;
   std::atomic<bool> active_;
   std::weak_ptr<event_queue::queue> weak_output_event_queue_;
-  boost::optional<mouse_key> last_mouse_key_total_;
+  std::optional<mouse_key> last_mouse_key_total_;
   count_converter x_count_converter_;
   count_converter y_count_converter_;
   count_converter vertical_wheel_count_converter_;

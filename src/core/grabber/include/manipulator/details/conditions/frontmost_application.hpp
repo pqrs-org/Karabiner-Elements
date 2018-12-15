@@ -137,7 +137,7 @@ private:
   std::vector<std::regex> bundle_identifiers_;
   std::vector<std::regex> file_paths_;
 
-  mutable boost::optional<std::pair<manipulator_environment::frontmost_application, bool>> cached_result_;
+  mutable std::optional<std::pair<manipulator_environment::frontmost_application, bool>> cached_result_;
 };
 } // namespace conditions
 } // namespace details

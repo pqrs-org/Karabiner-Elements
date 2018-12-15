@@ -718,7 +718,7 @@ public:
 
         bool is_modifier_key_event = false;
         if (auto key_code = event->get_key_code()) {
-          if (types::make_modifier_flag(*key_code) != boost::none) {
+          if (types::make_modifier_flag(*key_code) != std::nullopt) {
             is_modifier_key_event = true;
           }
         }
@@ -839,7 +839,7 @@ private:
 
     if (auto event = to_events.back().get_event_definition().to_event()) {
       if (auto key_code = event->get_key_code()) {
-        if (types::make_modifier_flag(*key_code) != boost::none) {
+        if (types::make_modifier_flag(*key_code) != std::nullopt) {
           return true;
         }
       }

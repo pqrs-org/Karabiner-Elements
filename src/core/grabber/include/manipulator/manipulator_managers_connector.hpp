@@ -48,13 +48,13 @@ public:
       return false;
     }
 
-    boost::optional<absolute_time_point> make_input_event_time_stamp_with_input_delay(void) const {
+    std::optional<absolute_time_point> make_input_event_time_stamp_with_input_delay(void) const {
       if (auto input_event_queue = weak_input_event_queue_.lock()) {
         if (!input_event_queue->get_entries().empty()) {
           return input_event_queue->get_entries().front().get_event_time_stamp().make_time_stamp_with_input_delay();
         }
       }
-      return boost::none;
+      return std::nullopt;
     }
 
     void log_events_sizes(void) const {
@@ -124,10 +124,10 @@ public:
                        });
   }
 
-  boost::optional<absolute_time_point> min_input_event_time_stamp(void) const {
+  std::optional<absolute_time_point> min_input_event_time_stamp(void) const {
     std::lock_guard<std::mutex> lock(connections_mutex_);
 
-    boost::optional<absolute_time_point> result;
+    std::optional<absolute_time_point> result;
 
     for (const auto& c : connections_) {
       if (auto t = c.make_input_event_time_stamp_with_input_delay()) {

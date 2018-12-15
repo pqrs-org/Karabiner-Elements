@@ -2,7 +2,7 @@
 
 #include "device_properties_manager.hpp"
 #include "manipulator/details/conditions/base.hpp"
-#include <boost/optional.hpp>
+#include <optional>
 #include <string>
 #include <vector>
 
@@ -99,11 +99,11 @@ public:
 
 private:
   struct definition final {
-    boost::optional<vendor_id> vendor_id;
-    boost::optional<product_id> product_id;
-    boost::optional<location_id> location_id;
-    boost::optional<bool> is_keyboard;
-    boost::optional<bool> is_pointing_device;
+    std::optional<vendor_id> vendor_id;
+    std::optional<product_id> product_id;
+    std::optional<location_id> location_id;
+    std::optional<bool> is_keyboard;
+    std::optional<bool> is_pointing_device;
   };
 
   void handle_identifiers_json(const nlohmann::json& json) {

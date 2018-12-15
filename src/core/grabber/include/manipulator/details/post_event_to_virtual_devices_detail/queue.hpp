@@ -131,53 +131,53 @@ public:
       return type_;
     }
 
-    boost::optional<pqrs::karabiner_virtual_hid_device::hid_report::keyboard_input> get_keyboard_input(void) const {
+    std::optional<pqrs::karabiner_virtual_hid_device::hid_report::keyboard_input> get_keyboard_input(void) const {
       if (type_ == type::keyboard_input) {
         return boost::get<pqrs::karabiner_virtual_hid_device::hid_report::keyboard_input>(value_);
       }
-      return boost::none;
+      return std::nullopt;
     }
 
-    boost::optional<pqrs::karabiner_virtual_hid_device::hid_report::consumer_input> get_consumer_input(void) const {
+    std::optional<pqrs::karabiner_virtual_hid_device::hid_report::consumer_input> get_consumer_input(void) const {
       if (type_ == type::consumer_input) {
         return boost::get<pqrs::karabiner_virtual_hid_device::hid_report::consumer_input>(value_);
       }
-      return boost::none;
+      return std::nullopt;
     }
 
-    boost::optional<pqrs::karabiner_virtual_hid_device::hid_report::apple_vendor_top_case_input> get_apple_vendor_top_case_input(void) const {
+    std::optional<pqrs::karabiner_virtual_hid_device::hid_report::apple_vendor_top_case_input> get_apple_vendor_top_case_input(void) const {
       if (type_ == type::apple_vendor_top_case_input) {
         return boost::get<pqrs::karabiner_virtual_hid_device::hid_report::apple_vendor_top_case_input>(value_);
       }
-      return boost::none;
+      return std::nullopt;
     }
 
-    boost::optional<pqrs::karabiner_virtual_hid_device::hid_report::apple_vendor_keyboard_input> get_apple_vendor_keyboard_input(void) const {
+    std::optional<pqrs::karabiner_virtual_hid_device::hid_report::apple_vendor_keyboard_input> get_apple_vendor_keyboard_input(void) const {
       if (type_ == type::apple_vendor_keyboard_input) {
         return boost::get<pqrs::karabiner_virtual_hid_device::hid_report::apple_vendor_keyboard_input>(value_);
       }
-      return boost::none;
+      return std::nullopt;
     }
 
-    boost::optional<pqrs::karabiner_virtual_hid_device::hid_report::pointing_input> get_pointing_input(void) const {
+    std::optional<pqrs::karabiner_virtual_hid_device::hid_report::pointing_input> get_pointing_input(void) const {
       if (type_ == type::pointing_input) {
         return boost::get<pqrs::karabiner_virtual_hid_device::hid_report::pointing_input>(value_);
       }
-      return boost::none;
+      return std::nullopt;
     }
 
-    boost::optional<std::string> get_shell_command(void) const {
+    std::optional<std::string> get_shell_command(void) const {
       if (type_ == type::shell_command) {
         return boost::get<std::string>(value_);
       }
-      return boost::none;
+      return std::nullopt;
     }
 
-    boost::optional<std::vector<input_source_selector>> get_input_source_selectors(void) const {
+    std::optional<std::vector<input_source_selector>> get_input_source_selectors(void) const {
       if (type_ == type::select_input_source) {
         return boost::get<std::vector<input_source_selector>>(value_);
       }
-      return boost::none;
+      return std::nullopt;
     }
 
     absolute_time_point get_time_stamp(void) const {
@@ -249,7 +249,7 @@ public:
                               absolute_time_point time_stamp) {
     adjust_time_stamp(time_stamp,
                       event_type,
-                      types::make_modifier_flag(hid_usage_page, hid_usage) != boost::none);
+                      types::make_modifier_flag(hid_usage_page, hid_usage) != std::nullopt);
 
     switch (hid_usage_page) {
       case hid_usage_page::keyboard_or_keypad: {

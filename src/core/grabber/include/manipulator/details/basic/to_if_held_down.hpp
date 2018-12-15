@@ -116,7 +116,7 @@ private:
   basic& basic_;
 
   std::vector<to_event_definition> to_;
-  boost::optional<event_queue::entry> front_input_event_;
+  std::optional<event_queue::entry> front_input_event_;
   std::weak_ptr<manipulated_original_event> current_manipulated_original_event_;
   std::weak_ptr<event_queue::queue> output_event_queue_;
   int current_held_down_id_;

@@ -5,9 +5,9 @@
 #include "event_queue.hpp"
 #include "modifier_flag_manager.hpp"
 #include "stream_utility.hpp"
-#include <boost/optional.hpp>
 #include <boost/variant.hpp>
 #include <nlohmann/json.hpp>
+#include <optional>
 #include <unordered_set>
 
 namespace krbn {
@@ -38,66 +38,66 @@ public:
     return type_;
   }
 
-  boost::optional<key_code> get_key_code(void) const {
+  std::optional<key_code> get_key_code(void) const {
     if (type_ == type::key_code) {
       return boost::get<key_code>(value_);
     }
-    return boost::none;
+    return std::nullopt;
   }
 
-  boost::optional<consumer_key_code> get_consumer_key_code(void) const {
+  std::optional<consumer_key_code> get_consumer_key_code(void) const {
     if (type_ == type::consumer_key_code) {
       return boost::get<consumer_key_code>(value_);
     }
-    return boost::none;
+    return std::nullopt;
   }
 
-  boost::optional<pointing_button> get_pointing_button(void) const {
+  std::optional<pointing_button> get_pointing_button(void) const {
     if (type_ == type::pointing_button) {
       return boost::get<pointing_button>(value_);
     }
-    return boost::none;
+    return std::nullopt;
   }
 
-  boost::optional<type> get_any_type(void) const {
+  std::optional<type> get_any_type(void) const {
     if (type_ == type::any) {
       return boost::get<type>(value_);
     }
-    return boost::none;
+    return std::nullopt;
   }
 
-  boost::optional<std::string> get_shell_command(void) const {
+  std::optional<std::string> get_shell_command(void) const {
     if (type_ == type::shell_command) {
       return boost::get<std::string>(value_);
     }
-    return boost::none;
+    return std::nullopt;
   }
 
-  boost::optional<std::vector<input_source_selector>> get_input_source_selectors(void) const {
+  std::optional<std::vector<input_source_selector>> get_input_source_selectors(void) const {
     if (type_ == type::select_input_source) {
       return boost::get<std::vector<input_source_selector>>(value_);
     }
-    return boost::none;
+    return std::nullopt;
   }
 
-  boost::optional<std::pair<std::string, int>> get_set_variable(void) const {
+  std::optional<std::pair<std::string, int>> get_set_variable(void) const {
     if (type_ == type::set_variable) {
       return boost::get<std::pair<std::string, int>>(value_);
     }
-    return boost::none;
+    return std::nullopt;
   }
 
-  boost::optional<mouse_key> get_mouse_key(void) const {
+  std::optional<mouse_key> get_mouse_key(void) const {
     if (type_ == type::mouse_key) {
       return boost::get<mouse_key>(value_);
     }
-    return boost::none;
+    return std::nullopt;
   }
 
-  boost::optional<event_queue::event> to_event(void) const {
+  std::optional<event_queue::event> to_event(void) const {
     switch (type_) {
       case type::none:
-        return boost::none;
+        return std::nullopt;
       case type::key_code:
         return event_queue::event(boost::get<key_code>(value_));
       case type::consumer_key_code:
@@ -105,7 +105,7 @@ public:
       case type::pointing_button:
         return event_queue::event(boost::get<pointing_button>(value_));
       case type::any:
-        return boost::none;
+        return std::nullopt;
       case type::shell_command:
         return event_queue::event::make_shell_command_event(boost::get<std::string>(value_));
       case type::select_input_source:

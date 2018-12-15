@@ -101,17 +101,17 @@ public:
                 p->input_mode_id[sizeof(p->input_mode_id) - 1] = '\0';
 
                 auto time_stamp = p->time_stamp;
-                boost::optional<std::string> language(std::string(p->language));
-                boost::optional<std::string> input_source_id(std::string(p->input_source_id));
-                boost::optional<std::string> input_mode_id(std::string(p->input_mode_id));
+                std::optional<std::string> language(std::string(p->language));
+                std::optional<std::string> input_source_id(std::string(p->input_source_id));
+                std::optional<std::string> input_mode_id(std::string(p->input_mode_id));
                 if (language && language->empty()) {
-                  language = boost::none;
+                  language = std::nullopt;
                 }
                 if (input_source_id && input_source_id->empty()) {
-                  input_source_id = boost::none;
+                  input_source_id = std::nullopt;
                 }
                 if (input_mode_id && input_mode_id->empty()) {
-                  input_mode_id = boost::none;
+                  input_mode_id = std::nullopt;
                 }
 
                 input_source_selector input_source_selector(language,
