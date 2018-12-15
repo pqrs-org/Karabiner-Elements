@@ -1,10 +1,7 @@
 #define CATCH_CONFIG_MAIN
 #include <catch2/catch.hpp>
 
-#include "boost_defs.hpp"
-
 #include "filesystem.hpp"
-#include <boost/optional/optional_io.hpp>
 #include <ostream>
 
 TEST_CASE("initialize") {
@@ -185,7 +182,7 @@ TEST_CASE("realpath") {
   REQUIRE(*actual == "/bin/ls");
 
   actual = krbn::filesystem::realpath("/var/log/not_found");
-  REQUIRE(actual == boost::none);
+  REQUIRE(actual == std::nullopt);
 
   actual = krbn::filesystem::realpath("/etc/hosts");
   REQUIRE(*actual == "/private/etc/hosts");

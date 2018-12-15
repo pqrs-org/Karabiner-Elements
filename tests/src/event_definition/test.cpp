@@ -4,7 +4,6 @@
 #include "filesystem.hpp"
 #include "manipulator/details/basic.hpp"
 #include "manipulator/details/types.hpp"
-#include <boost/optional/optional_io.hpp>
 
 namespace {
 krbn::modifier_flag_manager::active_modifier_flag left_command_1(krbn::modifier_flag_manager::active_modifier_flag::type::increase,
@@ -106,7 +105,7 @@ TEST_CASE("manipulator.details.to_event_definition") {
     krbn::manipulator::details::to_event_definition event_definition(json);
     REQUIRE(event_definition.get_event_definition().get_type() == krbn::manipulator::details::event_definition::type::key_code);
     REQUIRE(event_definition.get_event_definition().get_key_code() == krbn::key_code::spacebar);
-    REQUIRE(event_definition.get_event_definition().get_pointing_button() == boost::none);
+    REQUIRE(event_definition.get_event_definition().get_pointing_button() == std::nullopt);
     REQUIRE(event_definition.get_modifiers() == std::unordered_set<krbn::manipulator::details::modifier_definition::modifier>({
                                                     krbn::manipulator::details::modifier_definition::modifier::shift,
                                                     krbn::manipulator::details::modifier_definition::modifier::left_command,
@@ -131,7 +130,7 @@ TEST_CASE("manipulator.details.to_event_definition") {
     krbn::manipulator::details::to_event_definition event_definition(json);
     REQUIRE(event_definition.get_event_definition().get_type() == krbn::manipulator::details::event_definition::type::key_code);
     REQUIRE(event_definition.get_event_definition().get_key_code() == krbn::key_code::right_option);
-    REQUIRE(event_definition.get_event_definition().get_pointing_button() == boost::none);
+    REQUIRE(event_definition.get_event_definition().get_pointing_button() == std::nullopt);
     REQUIRE(event_definition.get_modifiers() == std::unordered_set<krbn::manipulator::details::modifier_definition::modifier>({
                                                     krbn::manipulator::details::modifier_definition::modifier::shift,
                                                     krbn::manipulator::details::modifier_definition::modifier::left_command,
@@ -150,8 +149,8 @@ TEST_CASE("manipulator.details.to_event_definition") {
     });
     krbn::manipulator::details::to_event_definition event_definition(json);
     REQUIRE(event_definition.get_event_definition().get_type() == krbn::manipulator::details::event_definition::type::none);
-    REQUIRE(event_definition.get_event_definition().get_key_code() == boost::none);
-    REQUIRE(event_definition.get_event_definition().get_pointing_button() == boost::none);
+    REQUIRE(event_definition.get_event_definition().get_key_code() == std::nullopt);
+    REQUIRE(event_definition.get_event_definition().get_pointing_button() == std::nullopt);
     REQUIRE(event_definition.get_modifiers().size() == 0);
     REQUIRE(event_definition.make_modifier_events() == std::vector<krbn::event_queue::event>({}));
   }
@@ -162,35 +161,35 @@ TEST_CASE("manipulator.details.to_event_definition") {
     });
     krbn::manipulator::details::to_event_definition event_definition(json);
     REQUIRE(event_definition.get_event_definition().get_type() == krbn::manipulator::details::event_definition::type::shell_command);
-    REQUIRE(event_definition.get_event_definition().get_key_code() == boost::none);
-    REQUIRE(event_definition.get_event_definition().get_pointing_button() == boost::none);
+    REQUIRE(event_definition.get_event_definition().get_key_code() == std::nullopt);
+    REQUIRE(event_definition.get_event_definition().get_pointing_button() == std::nullopt);
     REQUIRE(event_definition.get_event_definition().get_shell_command() == shell_command);
-    REQUIRE(event_definition.get_event_definition().get_input_source_selectors() == boost::none);
+    REQUIRE(event_definition.get_event_definition().get_input_source_selectors() == std::nullopt);
   }
   // select_input_source
   {
-    krbn::input_source_selector input_source_selector(boost::none,
+    krbn::input_source_selector input_source_selector(std::nullopt,
                                                       std::string("com.apple.keylayout.US"),
-                                                      boost::none);
+                                                      std::nullopt);
 
     nlohmann::json json;
     json["select_input_source"]["input_source_id"] = "com.apple.keylayout.US";
 
     krbn::manipulator::details::to_event_definition event_definition(json);
     REQUIRE(event_definition.get_event_definition().get_type() == krbn::manipulator::details::event_definition::type::select_input_source);
-    REQUIRE(event_definition.get_event_definition().get_key_code() == boost::none);
-    REQUIRE(event_definition.get_event_definition().get_pointing_button() == boost::none);
-    REQUIRE(event_definition.get_event_definition().get_shell_command() == boost::none);
+    REQUIRE(event_definition.get_event_definition().get_key_code() == std::nullopt);
+    REQUIRE(event_definition.get_event_definition().get_pointing_button() == std::nullopt);
+    REQUIRE(event_definition.get_event_definition().get_shell_command() == std::nullopt);
     REQUIRE(event_definition.get_event_definition().get_input_source_selectors() == std::vector<krbn::input_source_selector>({input_source_selector}));
   }
   // select_input_source (array)
   {
-    krbn::input_source_selector input_source_selector1(boost::none,
+    krbn::input_source_selector input_source_selector1(std::nullopt,
                                                        std::string("com.apple.keylayout.US"),
-                                                       boost::none);
+                                                       std::nullopt);
     krbn::input_source_selector input_source_selector2(std::string("en"),
-                                                       boost::none,
-                                                       boost::none);
+                                                       std::nullopt,
+                                                       std::nullopt);
 
     nlohmann::json json;
     json["select_input_source"] = nlohmann::json::array();
@@ -201,9 +200,9 @@ TEST_CASE("manipulator.details.to_event_definition") {
 
     krbn::manipulator::details::to_event_definition event_definition(json);
     REQUIRE(event_definition.get_event_definition().get_type() == krbn::manipulator::details::event_definition::type::select_input_source);
-    REQUIRE(event_definition.get_event_definition().get_key_code() == boost::none);
-    REQUIRE(event_definition.get_event_definition().get_pointing_button() == boost::none);
-    REQUIRE(event_definition.get_event_definition().get_shell_command() == boost::none);
+    REQUIRE(event_definition.get_event_definition().get_key_code() == std::nullopt);
+    REQUIRE(event_definition.get_event_definition().get_pointing_button() == std::nullopt);
+    REQUIRE(event_definition.get_event_definition().get_shell_command() == std::nullopt);
     REQUIRE(event_definition.get_event_definition().get_input_source_selectors() == std::vector<krbn::input_source_selector>({input_source_selector1,
                                                                                                                               input_source_selector2}));
   }

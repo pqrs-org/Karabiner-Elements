@@ -1,11 +1,8 @@
 #define CATCH_CONFIG_MAIN
 #include <catch2/catch.hpp>
 
-#include "boost_defs.hpp"
-
 #include "dispatcher_utility.hpp"
 #include "grabbable_state_queue.hpp"
-#include <boost/optional/optional_io.hpp>
 
 TEST_CASE("initialize") {
   krbn::dispatcher_utility::initialize_dispatchers();
@@ -15,7 +12,7 @@ TEST_CASE("grabbable_state_queue") {
   {
     auto queue = std::make_unique<krbn::grabbable_state_queue>();
 
-    boost::optional<krbn::grabbable_state> last_changed_grabbable_state;
+    std::optional<krbn::grabbable_state> last_changed_grabbable_state;
     int grabbable_state_changed_count = 0;
 
     queue->grabbable_state_changed.connect([&](auto&& grabbable_state) {
@@ -112,7 +109,7 @@ TEST_CASE("grabbable_state_queue") {
 
     // Check `grabbable_state_changed` signal
     std::this_thread::sleep_for(std::chrono::milliseconds(500));
-    REQUIRE(last_changed_grabbable_state == boost::none);
+    REQUIRE(last_changed_grabbable_state == std::nullopt);
     REQUIRE(grabbable_state_changed_count == 4);
 
     queue = nullptr;

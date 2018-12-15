@@ -3,7 +3,6 @@
 
 #include "../share/manipulator_helper.hpp"
 #include "dispatcher_utility.hpp"
-#include <boost/optional/optional_io.hpp>
 
 TEST_CASE("initialize") {
   krbn::dispatcher_utility::initialize_dispatchers();

@@ -4,7 +4,6 @@
 #include "core_configuration/core_configuration.hpp"
 #include "manipulator/details/basic.hpp"
 #include "manipulator/details/types.hpp"
-#include <boost/optional/optional_io.hpp>
 #include <iostream>
 
 using simple_modifications = krbn::core_configuration::details::simple_modifications;

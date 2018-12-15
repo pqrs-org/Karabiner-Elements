@@ -2,7 +2,6 @@
 #include <catch2/catch.hpp>
 
 #include "types.hpp"
-#include <boost/optional/optional_io.hpp>
 
 TEST_CASE("sizeof") {
   REQUIRE(sizeof(krbn::absolute_time_point) == 8);
@@ -159,17 +158,17 @@ TEST_CASE("pointing_motion::clear") {
 TEST_CASE("grabbable_state") {
   {
     krbn::grabbable_state grabbable_state;
-    REQUIRE(grabbable_state.get_registry_entry_id() == pqrs::osx::iokit_registry_entry_id(0));
+    REQUIRE(grabbable_state.get_device_id() == krbn::device_id(0));
     REQUIRE(grabbable_state.get_state() == krbn::grabbable_state::state::grabbable);
     REQUIRE(grabbable_state.get_ungrabbable_temporarily_reason() == krbn::grabbable_state::ungrabbable_temporarily_reason::none);
     REQUIRE(grabbable_state.get_time_stamp() == krbn::absolute_time_point(0));
   }
   {
-    krbn::grabbable_state grabbable_state(pqrs::osx::iokit_registry_entry_id(1234),
+    krbn::grabbable_state grabbable_state(krbn::device_id(1234),
                                           krbn::grabbable_state::state::ungrabbable_temporarily,
                                           krbn::grabbable_state::ungrabbable_temporarily_reason::key_repeating,
                                           krbn::absolute_time_point(1000));
-    REQUIRE(grabbable_state.get_registry_entry_id() == pqrs::osx::iokit_registry_entry_id(1234));
+    REQUIRE(grabbable_state.get_device_id() == krbn::device_id(1234));
     REQUIRE(grabbable_state.get_state() == krbn::grabbable_state::state::ungrabbable_temporarily);
     REQUIRE(grabbable_state.get_ungrabbable_temporarily_reason() == krbn::grabbable_state::ungrabbable_temporarily_reason::key_repeating);
     REQUIRE(grabbable_state.get_time_stamp() == krbn::absolute_time_point(1000));
@@ -178,15 +177,15 @@ TEST_CASE("grabbable_state") {
 
 TEST_CASE("grabbable_state::equals_except_time_stamp") {
   {
-    krbn::grabbable_state grabbable_state1(pqrs::osx::iokit_registry_entry_id(1234),
+    krbn::grabbable_state grabbable_state1(krbn::device_id(1234),
                                            krbn::grabbable_state::state::ungrabbable_temporarily,
                                            krbn::grabbable_state::ungrabbable_temporarily_reason::key_repeating,
                                            krbn::absolute_time_point(1000));
-    krbn::grabbable_state grabbable_state2(pqrs::osx::iokit_registry_entry_id(1234),
+    krbn::grabbable_state grabbable_state2(krbn::device_id(1234),
                                            krbn::grabbable_state::state::ungrabbable_temporarily,
                                            krbn::grabbable_state::ungrabbable_temporarily_reason::key_repeating,
                                            krbn::absolute_time_point(2000));
-    krbn::grabbable_state grabbable_state3(pqrs::osx::iokit_registry_entry_id(1234),
+    krbn::grabbable_state grabbable_state3(krbn::device_id(1234),
                                            krbn::grabbable_state::state::device_error,
                                            krbn::grabbable_state::ungrabbable_temporarily_reason::none,
                                            krbn::absolute_time_point(3000));
@@ -211,14 +210,43 @@ TEST_CASE("device_identifiers") {
                                 false);
     REQUIRE(di.is_apple() == true);
   }
+  {
+    auto di = krbn::device_identifiers::make_from_json(nlohmann::json());
+    REQUIRE(di.get_vendor_id() == krbn::vendor_id(0));
+    REQUIRE(di.get_product_id() == krbn::product_id(0));
+    REQUIRE(di.get_is_keyboard() == false);
+    REQUIRE(di.get_is_pointing_device() == false);
+  }
+  {
+    nlohmann::json json;
+    json["vendor_id"] = 1234;
+    json["product_id"] = 5678;
+    json["is_keyboard"] = true;
+    json["is_pointing_device"] = false;
+    json["dummy key"] = "dummy value";
+
+    auto di = krbn::device_identifiers::make_from_json(json);
+    REQUIRE(di.get_vendor_id() == krbn::vendor_id(1234));
+    REQUIRE(di.get_product_id() == krbn::product_id(5678));
+    REQUIRE(di.get_is_keyboard() == true);
+    REQUIRE(di.get_is_pointing_device() == false);
+    REQUIRE(di.to_json() == json);
+  }
+  {
+    nlohmann::json json;
+    json["is_pointing_device"] = true;
+
+    auto di = krbn::device_identifiers::make_from_json(json);
+    REQUIRE(di.get_is_pointing_device() == true);
+  }
 }
 
 TEST_CASE("input_source_selector") {
   // language
   {
     krbn::input_source_selector selector(std::string("^en$"),
-                                         boost::none,
-                                         boost::none);
+                                         std::nullopt,
+                                         std::nullopt);
 
     {
       nlohmann::json expected;
@@ -226,13 +254,13 @@ TEST_CASE("input_source_selector") {
       REQUIRE(selector.to_json() == expected);
     }
 
-    REQUIRE(selector.test(krbn::input_source_identifiers(boost::none,
-                                                         boost::none,
-                                                         boost::none)) == false);
+    REQUIRE(selector.test(krbn::input_source_identifiers(std::nullopt,
+                                                         std::nullopt,
+                                                         std::nullopt)) == false);
 
     REQUIRE(selector.test(krbn::input_source_identifiers(std::string("en"),
-                                                         boost::none,
-                                                         boost::none)) == true);
+                                                         std::nullopt,
+                                                         std::nullopt)) == true);
 
     REQUIRE(selector.test(krbn::input_source_identifiers(std::string("en"),
                                                          std::string("com.apple.keylayout.US"),
@@ -240,15 +268,15 @@ TEST_CASE("input_source_selector") {
 
     // regex
     REQUIRE(selector.test(krbn::input_source_identifiers(std::string("en2"),
-                                                         boost::none,
-                                                         boost::none)) == false);
+                                                         std::nullopt,
+                                                         std::nullopt)) == false);
   }
 
   // input_source_id
   {
-    krbn::input_source_selector selector(boost::none,
+    krbn::input_source_selector selector(std::nullopt,
                                          std::string("^com\\.apple\\.keylayout\\.US$"),
-                                         boost::none);
+                                         std::nullopt);
 
     {
       nlohmann::json expected;
@@ -256,28 +284,28 @@ TEST_CASE("input_source_selector") {
       REQUIRE(selector.to_json() == expected);
     }
 
-    REQUIRE(selector.test(krbn::input_source_identifiers(boost::none,
-                                                         boost::none,
-                                                         boost::none)) == false);
+    REQUIRE(selector.test(krbn::input_source_identifiers(std::nullopt,
+                                                         std::nullopt,
+                                                         std::nullopt)) == false);
 
-    REQUIRE(selector.test(krbn::input_source_identifiers(boost::none,
+    REQUIRE(selector.test(krbn::input_source_identifiers(std::nullopt,
                                                          std::string("com.apple.keylayout.US"),
-                                                         boost::none)) == true);
+                                                         std::nullopt)) == true);
 
     REQUIRE(selector.test(krbn::input_source_identifiers(std::string("en"),
                                                          std::string("com.apple.keylayout.US"),
                                                          std::string("com.apple.inputmethod.Japanese.FullWidthRoman"))) == true);
 
     // regex
-    REQUIRE(selector.test(krbn::input_source_identifiers(boost::none,
+    REQUIRE(selector.test(krbn::input_source_identifiers(std::nullopt,
                                                          std::string("com/apple/keylayout/US"),
-                                                         boost::none)) == false);
+                                                         std::nullopt)) == false);
   }
 
   // input_mode_id
   {
-    krbn::input_source_selector selector(boost::none,
-                                         boost::none,
+    krbn::input_source_selector selector(std::nullopt,
+                                         std::nullopt,
                                          std::string("^com\\.apple\\.inputmethod\\.Japanese\\.FullWidthRoman$"));
 
     {
@@ -286,12 +314,12 @@ TEST_CASE("input_source_selector") {
       REQUIRE(selector.to_json() == expected);
     }
 
-    REQUIRE(selector.test(krbn::input_source_identifiers(boost::none,
-                                                         boost::none,
-                                                         boost::none)) == false);
+    REQUIRE(selector.test(krbn::input_source_identifiers(std::nullopt,
+                                                         std::nullopt,
+                                                         std::nullopt)) == false);
 
-    REQUIRE(selector.test(krbn::input_source_identifiers(boost::none,
-                                                         boost::none,
+    REQUIRE(selector.test(krbn::input_source_identifiers(std::nullopt,
+                                                         std::nullopt,
                                                          std::string("com.apple.inputmethod.Japanese.FullWidthRoman"))) == true);
 
     REQUIRE(selector.test(krbn::input_source_identifiers(std::string("en"),
@@ -299,8 +327,8 @@ TEST_CASE("input_source_selector") {
                                                          std::string("com.apple.inputmethod.Japanese.FullWidthRoman"))) == true);
 
     // regex
-    REQUIRE(selector.test(krbn::input_source_identifiers(boost::none,
-                                                         boost::none,
+    REQUIRE(selector.test(krbn::input_source_identifiers(std::nullopt,
+                                                         std::nullopt,
                                                          std::string("com/apple/inputmethod/Japanese/FullWidthRoman"))) == false);
   }
 
@@ -310,20 +338,20 @@ TEST_CASE("input_source_selector") {
                                          std::string("^com\\.apple\\.keylayout\\.US$"),
                                          std::string("^com\\.apple\\.inputmethod\\.Japanese\\.FullWidthRoman$"));
 
-    REQUIRE(selector.test(krbn::input_source_identifiers(boost::none,
-                                                         boost::none,
-                                                         boost::none)) == false);
+    REQUIRE(selector.test(krbn::input_source_identifiers(std::nullopt,
+                                                         std::nullopt,
+                                                         std::nullopt)) == false);
 
     REQUIRE(selector.test(krbn::input_source_identifiers(std::string("en"),
-                                                         boost::none,
-                                                         boost::none)) == false);
+                                                         std::nullopt,
+                                                         std::nullopt)) == false);
 
-    REQUIRE(selector.test(krbn::input_source_identifiers(boost::none,
+    REQUIRE(selector.test(krbn::input_source_identifiers(std::nullopt,
                                                          std::string("com.apple.keylayout.US"),
-                                                         boost::none)) == false);
+                                                         std::nullopt)) == false);
 
-    REQUIRE(selector.test(krbn::input_source_identifiers(boost::none,
-                                                         boost::none,
+    REQUIRE(selector.test(krbn::input_source_identifiers(std::nullopt,
+                                                         std::nullopt,
                                                          std::string("com.apple.inputmethod.Japanese.FullWidthRoman"))) == false);
 
     REQUIRE(selector.test(krbn::input_source_identifiers(std::string("en"),
@@ -338,24 +366,24 @@ TEST_CASE("input_source_selector") {
 
   // none selector
   {
-    krbn::input_source_selector selector(boost::none,
-                                         boost::none,
-                                         boost::none);
+    krbn::input_source_selector selector(std::nullopt,
+                                         std::nullopt,
+                                         std::nullopt);
 
-    REQUIRE(selector.test(krbn::input_source_identifiers(boost::none,
-                                                         boost::none,
-                                                         boost::none)) == true);
+    REQUIRE(selector.test(krbn::input_source_identifiers(std::nullopt,
+                                                         std::nullopt,
+                                                         std::nullopt)) == true);
 
     REQUIRE(selector.test(krbn::input_source_identifiers(std::string("en"),
-                                                         boost::none,
-                                                         boost::none)) == true);
+                                                         std::nullopt,
+                                                         std::nullopt)) == true);
 
-    REQUIRE(selector.test(krbn::input_source_identifiers(boost::none,
+    REQUIRE(selector.test(krbn::input_source_identifiers(std::nullopt,
                                                          std::string("com.apple.keylayout.US"),
-                                                         boost::none)) == true);
+                                                         std::nullopt)) == true);
 
-    REQUIRE(selector.test(krbn::input_source_identifiers(boost::none,
-                                                         boost::none,
+    REQUIRE(selector.test(krbn::input_source_identifiers(std::nullopt,
+                                                         std::nullopt,
                                                          std::string("com.apple.inputmethod.Japanese.FullWidthRoman"))) == true);
 
     REQUIRE(selector.test(krbn::input_source_identifiers(std::string("en"),
@@ -429,7 +457,7 @@ TEST_CASE("mouse_key") {
 
 TEST_CASE("make_key_code") {
   REQUIRE(krbn::types::make_key_code("spacebar") == krbn::key_code::spacebar);
-  REQUIRE(krbn::types::make_key_code("unknown") == boost::none);
+  REQUIRE(krbn::types::make_key_code("unknown") == std::nullopt);
   REQUIRE(krbn::types::make_key_code_name(krbn::key_code::spacebar) == std::string("spacebar"));
   REQUIRE(krbn::types::make_key_code_name(krbn::key_code::left_option) == std::string("left_alt"));
 
@@ -451,12 +479,12 @@ TEST_CASE("make_key_code") {
   {
     auto actual = krbn::types::make_key_code(krbn::hid_usage_page(kHIDPage_Button),
                                              krbn::hid_usage(1));
-    REQUIRE(actual == boost::none);
+    REQUIRE(actual == std::nullopt);
   }
 }
 
 TEST_CASE("make_key_code (modifier_flag)") {
-  REQUIRE(krbn::types::make_key_code(krbn::modifier_flag::zero) == boost::none);
+  REQUIRE(krbn::types::make_key_code(krbn::modifier_flag::zero) == std::nullopt);
   REQUIRE(krbn::types::make_key_code(krbn::modifier_flag::caps_lock) == krbn::key_code::caps_lock);
   REQUIRE(krbn::types::make_key_code(krbn::modifier_flag::left_control) == krbn::key_code::left_control);
   REQUIRE(krbn::types::make_key_code(krbn::modifier_flag::left_shift) == krbn::key_code::left_shift);
@@ -467,11 +495,11 @@ TEST_CASE("make_key_code (modifier_flag)") {
   REQUIRE(krbn::types::make_key_code(krbn::modifier_flag::right_option) == krbn::key_code::right_option);
   REQUIRE(krbn::types::make_key_code(krbn::modifier_flag::right_command) == krbn::key_code::right_command);
   REQUIRE(krbn::types::make_key_code(krbn::modifier_flag::fn) == krbn::key_code::fn);
-  REQUIRE(krbn::types::make_key_code(krbn::modifier_flag::end_) == boost::none);
+  REQUIRE(krbn::types::make_key_code(krbn::modifier_flag::end_) == std::nullopt);
 }
 
 TEST_CASE("make_modifier_flag") {
-  REQUIRE(krbn::types::make_modifier_flag(krbn::key_code::caps_lock) == boost::none);
+  REQUIRE(krbn::types::make_modifier_flag(krbn::key_code::caps_lock) == std::nullopt);
   REQUIRE(krbn::types::make_modifier_flag(krbn::key_code::left_control) == krbn::modifier_flag::left_control);
   REQUIRE(krbn::types::make_modifier_flag(krbn::key_code::left_shift) == krbn::modifier_flag::left_shift);
   REQUIRE(krbn::types::make_modifier_flag(krbn::key_code::left_option) == krbn::modifier_flag::left_option);
@@ -482,10 +510,10 @@ TEST_CASE("make_modifier_flag") {
   REQUIRE(krbn::types::make_modifier_flag(krbn::key_code::right_command) == krbn::modifier_flag::right_command);
   REQUIRE(krbn::types::make_modifier_flag(krbn::key_code::fn) == krbn::modifier_flag::fn);
 
-  REQUIRE(krbn::types::make_modifier_flag(krbn::hid_usage_page::keyboard_or_keypad, krbn::hid_usage(kHIDUsage_KeyboardA)) == boost::none);
-  REQUIRE(krbn::types::make_modifier_flag(krbn::hid_usage_page::keyboard_or_keypad, krbn::hid_usage(kHIDUsage_KeyboardErrorRollOver)) == boost::none);
+  REQUIRE(krbn::types::make_modifier_flag(krbn::hid_usage_page::keyboard_or_keypad, krbn::hid_usage(kHIDUsage_KeyboardA)) == std::nullopt);
+  REQUIRE(krbn::types::make_modifier_flag(krbn::hid_usage_page::keyboard_or_keypad, krbn::hid_usage(kHIDUsage_KeyboardErrorRollOver)) == std::nullopt);
   REQUIRE(krbn::types::make_modifier_flag(krbn::hid_usage_page::keyboard_or_keypad, krbn::hid_usage(kHIDUsage_KeyboardLeftShift)) == krbn::modifier_flag::left_shift);
-  REQUIRE(krbn::types::make_modifier_flag(krbn::hid_usage_page::button, krbn::hid_usage(1)) == boost::none);
+  REQUIRE(krbn::types::make_modifier_flag(krbn::hid_usage_page::button, krbn::hid_usage(1)) == std::nullopt);
 }
 
 TEST_CASE("make_consumer_key_code") {
@@ -515,6 +543,6 @@ TEST_CASE("make_pointing_button") {
   {
     auto actual = krbn::types::make_pointing_button(krbn::hid_usage_page(kHIDPage_KeyboardOrKeypad),
                                                     krbn::hid_usage(kHIDUsage_KeyboardTab));
-    REQUIRE(actual == boost::none);
+    REQUIRE(actual == std::nullopt);
   }
 }

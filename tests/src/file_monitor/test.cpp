@@ -1,11 +1,8 @@
 #define CATCH_CONFIG_MAIN
 #include <catch2/catch.hpp>
 
-#include "boost_defs.hpp"
-
 #include "dispatcher_utility.hpp"
 #include "monitor/file_monitor.hpp"
-#include <boost/optional/optional_io.hpp>
 
 namespace {
 std::string file_path_1_1 = "target/sub1/file1_1";
@@ -40,7 +37,7 @@ public:
           last_file_body1_1_ = std::string(std::begin(*changed_file_body),
                                            std::end(*changed_file_body));
         } else {
-          last_file_body1_1_ = boost::none;
+          last_file_body1_1_ = std::nullopt;
         }
       }
       if (changed_file_path == file_path_1_2) {
@@ -48,7 +45,7 @@ public:
           last_file_body1_2_ = std::string(std::begin(*changed_file_body),
                                            std::end(*changed_file_body));
         } else {
-          last_file_body1_2_ = boost::none;
+          last_file_body1_2_ = std::nullopt;
         }
       }
       if (changed_file_path == file_path_2_1) {
@@ -56,7 +53,7 @@ public:
           last_file_body2_1_ = std::string(std::begin(*changed_file_body),
                                            std::end(*changed_file_body));
         } else {
-          last_file_body2_1_ = boost::none;
+          last_file_body2_1_ = std::nullopt;
         }
       }
     });
@@ -70,28 +67,28 @@ public:
     return count_;
   }
 
-  const boost::optional<std::string>& get_last_file_path(void) const {
+  const std::optional<std::string>& get_last_file_path(void) const {
     return last_file_path_;
   }
 
-  const boost::optional<std::string>& get_last_file_body1_1(void) const {
+  const std::optional<std::string>& get_last_file_body1_1(void) const {
     return last_file_body1_1_;
   }
 
-  const boost::optional<std::string>& get_last_file_body1_2(void) const {
+  const std::optional<std::string>& get_last_file_body1_2(void) const {
     return last_file_body1_2_;
   }
 
-  const boost::optional<std::string>& get_last_file_body2_1(void) const {
+  const std::optional<std::string>& get_last_file_body2_1(void) const {
     return last_file_body2_1_;
   }
 
   void clear_results(void) {
     count_ = 0;
-    last_file_path_ = boost::none;
-    last_file_body1_1_ = boost::none;
-    last_file_body1_2_ = boost::none;
-    last_file_body2_1_ = boost::none;
+    last_file_path_ = std::nullopt;
+    last_file_body1_1_ = std::nullopt;
+    last_file_body1_2_ = std::nullopt;
+    last_file_body2_1_ = std::nullopt;
   }
 
   void wait(void) {
@@ -104,12 +101,12 @@ public:
 
 private:
   std::unique_ptr<krbn::file_monitor> file_monitor_;
-  boost::optional<std::thread::id> file_monitor_thread_id_;
+  std::optional<std::thread::id> file_monitor_thread_id_;
   size_t count_;
-  boost::optional<std::string> last_file_path_;
-  boost::optional<std::string> last_file_body1_1_;
-  boost::optional<std::string> last_file_body1_2_;
-  boost::optional<std::string> last_file_body2_1_;
+  std::optional<std::string> last_file_path_;
+  std::optional<std::string> last_file_body1_1_;
+  std::optional<std::string> last_file_body1_2_;
+  std::optional<std::string> last_file_body2_1_;
 };
 } // namespace
 
@@ -133,7 +130,7 @@ TEST_CASE("file_monitor") {
     REQUIRE(monitor.get_last_file_path() == file_path_2_1);
     REQUIRE(monitor.get_last_file_body1_1() == "1_1_0"s);
     REQUIRE(monitor.get_last_file_body1_2() == "1_2_0"s);
-    REQUIRE(monitor.get_last_file_body2_1() == boost::none);
+    REQUIRE(monitor.get_last_file_body2_1() == std::nullopt);
 
     // ========================================
     // Generic file modification (update file1_1)
@@ -148,8 +145,8 @@ TEST_CASE("file_monitor") {
     REQUIRE(monitor.get_count() >= 1);
     REQUIRE(monitor.get_last_file_path() == file_path_1_1);
     REQUIRE(monitor.get_last_file_body1_1() == "1_1_1"s);
-    REQUIRE(monitor.get_last_file_body1_2() == boost::none);
-    REQUIRE(monitor.get_last_file_body2_1() == boost::none);
+    REQUIRE(monitor.get_last_file_body1_2() == std::nullopt);
+    REQUIRE(monitor.get_last_file_body2_1() == std::nullopt);
 
     // ========================================
     // Generic file modification (update file1_1 again)
@@ -164,8 +161,8 @@ TEST_CASE("file_monitor") {
     REQUIRE(monitor.get_count() >= 1);
     REQUIRE(monitor.get_last_file_path() == file_path_1_1);
     REQUIRE(monitor.get_last_file_body1_1() == "1_1_2"s);
-    REQUIRE(monitor.get_last_file_body1_2() == boost::none);
-    REQUIRE(monitor.get_last_file_body2_1() == boost::none);
+    REQUIRE(monitor.get_last_file_body1_2() == std::nullopt);
+    REQUIRE(monitor.get_last_file_body2_1() == std::nullopt);
 
     // ========================================
     // Generic file modification (update file1_2)
@@ -179,9 +176,9 @@ TEST_CASE("file_monitor") {
 
     REQUIRE(monitor.get_count() >= 1);
     REQUIRE(monitor.get_last_file_path() == file_path_1_2);
-    REQUIRE(monitor.get_last_file_body1_1() == boost::none);
+    REQUIRE(monitor.get_last_file_body1_1() == std::nullopt);
     REQUIRE(monitor.get_last_file_body1_2() == "1_2_1"s);
-    REQUIRE(monitor.get_last_file_body2_1() == boost::none);
+    REQUIRE(monitor.get_last_file_body2_1() == std::nullopt);
 
     // ========================================
     // Generic file modification (update file1_2 again)
@@ -195,9 +192,9 @@ TEST_CASE("file_monitor") {
 
     REQUIRE(monitor.get_count() >= 1);
     REQUIRE(monitor.get_last_file_path() == file_path_1_2);
-    REQUIRE(monitor.get_last_file_body1_1() == boost::none);
+    REQUIRE(monitor.get_last_file_body1_1() == std::nullopt);
     REQUIRE(monitor.get_last_file_body1_2() == "1_2_2"s);
-    REQUIRE(monitor.get_last_file_body2_1() == boost::none);
+    REQUIRE(monitor.get_last_file_body2_1() == std::nullopt);
 
     // ========================================
     // Generic file modification (update file1_1 again)
@@ -212,8 +209,8 @@ TEST_CASE("file_monitor") {
     REQUIRE(monitor.get_count() >= 1);
     REQUIRE(monitor.get_last_file_path() == file_path_1_1);
     REQUIRE(monitor.get_last_file_body1_1() == "1_1_3"s);
-    REQUIRE(monitor.get_last_file_body1_2() == boost::none);
-    REQUIRE(monitor.get_last_file_body2_1() == boost::none);
+    REQUIRE(monitor.get_last_file_body1_2() == std::nullopt);
+    REQUIRE(monitor.get_last_file_body2_1() == std::nullopt);
 
     // ========================================
     // Generic file modification (update file2_1)
@@ -227,8 +224,8 @@ TEST_CASE("file_monitor") {
 
     REQUIRE(monitor.get_count() >= 1);
     REQUIRE(monitor.get_last_file_path() == file_path_2_1);
-    REQUIRE(monitor.get_last_file_body1_1() == boost::none);
-    REQUIRE(monitor.get_last_file_body1_2() == boost::none);
+    REQUIRE(monitor.get_last_file_body1_1() == std::nullopt);
+    REQUIRE(monitor.get_last_file_body1_2() == std::nullopt);
     REQUIRE(monitor.get_last_file_body2_1() == "2_1_1"s);
 
     // ========================================
@@ -243,9 +240,9 @@ TEST_CASE("file_monitor") {
 
     REQUIRE(monitor.get_count() >= 1);
     REQUIRE(monitor.get_last_file_path() == file_path_1_2);
-    REQUIRE(monitor.get_last_file_body1_1() == boost::none);
-    REQUIRE(monitor.get_last_file_body1_2() == boost::none);
-    REQUIRE(monitor.get_last_file_body2_1() == boost::none);
+    REQUIRE(monitor.get_last_file_body1_1() == std::nullopt);
+    REQUIRE(monitor.get_last_file_body1_2() == std::nullopt);
+    REQUIRE(monitor.get_last_file_body2_1() == std::nullopt);
 
     // ========================================
     // File removal
@@ -259,9 +256,9 @@ TEST_CASE("file_monitor") {
 
     REQUIRE(monitor.get_count() >= 1);
     REQUIRE(monitor.get_last_file_path() == file_path_2_1);
-    REQUIRE(monitor.get_last_file_body1_1() == boost::none);
-    REQUIRE(monitor.get_last_file_body1_2() == boost::none);
-    REQUIRE(monitor.get_last_file_body2_1() == boost::none);
+    REQUIRE(monitor.get_last_file_body1_1() == std::nullopt);
+    REQUIRE(monitor.get_last_file_body1_2() == std::nullopt);
+    REQUIRE(monitor.get_last_file_body2_1() == std::nullopt);
 
     // ========================================
     // Directory removal
@@ -275,9 +272,9 @@ TEST_CASE("file_monitor") {
 
     REQUIRE(monitor.get_count() >= 1);
     REQUIRE(monitor.get_last_file_path() == file_path_1_1);
-    REQUIRE(monitor.get_last_file_body1_1() == boost::none);
-    REQUIRE(monitor.get_last_file_body1_2() == boost::none);
-    REQUIRE(monitor.get_last_file_body2_1() == boost::none);
+    REQUIRE(monitor.get_last_file_body1_1() == std::nullopt);
+    REQUIRE(monitor.get_last_file_body1_2() == std::nullopt);
+    REQUIRE(monitor.get_last_file_body2_1() == std::nullopt);
 
     // ========================================
     // Generic file modification
@@ -296,8 +293,8 @@ TEST_CASE("file_monitor") {
     REQUIRE(monitor.get_count() >= 1);
     REQUIRE(monitor.get_last_file_path() == file_path_1_1);
     REQUIRE(monitor.get_last_file_body1_1() == "1_1_4"s);
-    REQUIRE(monitor.get_last_file_body1_2() == boost::none);
-    REQUIRE(monitor.get_last_file_body2_1() == boost::none);
+    REQUIRE(monitor.get_last_file_body1_2() == std::nullopt);
+    REQUIRE(monitor.get_last_file_body2_1() == std::nullopt);
 
     // ========================================
     // Move file
@@ -313,8 +310,8 @@ TEST_CASE("file_monitor") {
     REQUIRE(monitor.get_count() >= 1);
     REQUIRE(monitor.get_last_file_path() == file_path_1_1);
     REQUIRE(monitor.get_last_file_body1_1() == "1_1_5"s);
-    REQUIRE(monitor.get_last_file_body1_2() == boost::none);
-    REQUIRE(monitor.get_last_file_body2_1() == boost::none);
+    REQUIRE(monitor.get_last_file_body1_2() == std::nullopt);
+    REQUIRE(monitor.get_last_file_body2_1() == std::nullopt);
 
     // ========================================
     // Move directory
@@ -337,8 +334,8 @@ TEST_CASE("file_monitor") {
     REQUIRE(monitor.get_count() >= 2);
     REQUIRE(monitor.get_last_file_path() == file_path_1_1);
     REQUIRE(monitor.get_last_file_body1_1() == "1_1_6"s);
-    REQUIRE(monitor.get_last_file_body1_2() == boost::none);
-    REQUIRE(monitor.get_last_file_body2_1() == boost::none);
+    REQUIRE(monitor.get_last_file_body1_2() == std::nullopt);
+    REQUIRE(monitor.get_last_file_body2_1() == std::nullopt);
 
     // ========================================
     // Ignore own process
@@ -353,10 +350,10 @@ TEST_CASE("file_monitor") {
     monitor.wait();
 
     REQUIRE(monitor.get_count() == 0);
-    REQUIRE(monitor.get_last_file_path() == boost::none);
-    REQUIRE(monitor.get_last_file_body1_1() == boost::none);
-    REQUIRE(monitor.get_last_file_body1_2() == boost::none);
-    REQUIRE(monitor.get_last_file_body2_1() == boost::none);
+    REQUIRE(monitor.get_last_file_path() == std::nullopt);
+    REQUIRE(monitor.get_last_file_body1_1() == std::nullopt);
+    REQUIRE(monitor.get_last_file_body1_2() == std::nullopt);
+    REQUIRE(monitor.get_last_file_body2_1() == std::nullopt);
 
     // ========================================
     // enqueue_file_changed
@@ -371,8 +368,8 @@ TEST_CASE("file_monitor") {
     REQUIRE(monitor.get_count() >= 1);
     REQUIRE(monitor.get_last_file_path() == file_path_1_1);
     REQUIRE(monitor.get_last_file_body1_1() == "1_1_7"s);
-    REQUIRE(monitor.get_last_file_body1_2() == boost::none);
-    REQUIRE(monitor.get_last_file_body2_1() == boost::none);
+    REQUIRE(monitor.get_last_file_body1_2() == std::nullopt);
+    REQUIRE(monitor.get_last_file_body2_1() == std::nullopt);
   }
 
   {
@@ -386,9 +383,9 @@ TEST_CASE("file_monitor") {
 
     REQUIRE(monitor.get_count() >= 3);
     REQUIRE(monitor.get_last_file_path() == file_path_2_1);
-    REQUIRE(monitor.get_last_file_body1_1() == boost::none);
-    REQUIRE(monitor.get_last_file_body1_2() == boost::none);
-    REQUIRE(monitor.get_last_file_body2_1() == boost::none);
+    REQUIRE(monitor.get_last_file_body1_1() == std::nullopt);
+    REQUIRE(monitor.get_last_file_body1_2() == std::nullopt);
+    REQUIRE(monitor.get_last_file_body2_1() == std::nullopt);
 
     // ========================================
     // Generic file modification
@@ -404,8 +401,8 @@ TEST_CASE("file_monitor") {
     REQUIRE(monitor.get_count() >= 1);
     REQUIRE(monitor.get_last_file_path() == file_path_1_1);
     REQUIRE(monitor.get_last_file_body1_1() == "1_1_0"s);
-    REQUIRE(monitor.get_last_file_body1_2() == boost::none);
-    REQUIRE(monitor.get_last_file_body2_1() == boost::none);
+    REQUIRE(monitor.get_last_file_body1_2() == std::nullopt);
+    REQUIRE(monitor.get_last_file_body2_1() == std::nullopt);
   }
 }
 

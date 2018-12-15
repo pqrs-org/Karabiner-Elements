@@ -4,7 +4,6 @@
 #include "filesystem.hpp"
 #include "manipulator/details/basic.hpp"
 #include "manipulator/details/types.hpp"
-#include <boost/optional/optional_io.hpp>
 
 namespace {
 krbn::modifier_flag_manager::active_modifier_flag left_command_1(krbn::modifier_flag_manager::active_modifier_flag::type::increase,
@@ -118,7 +117,7 @@ TEST_CASE("from_event_definition.test_modifiers") {
     {
       krbn::modifier_flag_manager modifier_flag_manager;
       modifier_flag_manager.push_back_active_modifier_flag(left_shift_1);
-      REQUIRE(event_definition.test_modifiers(modifier_flag_manager) == boost::none);
+      REQUIRE(event_definition.test_modifiers(modifier_flag_manager) == std::nullopt);
     }
   }
 
@@ -141,7 +140,7 @@ TEST_CASE("from_event_definition.test_modifiers") {
     {
       krbn::modifier_flag_manager modifier_flag_manager;
       modifier_flag_manager.push_back_active_modifier_flag(left_shift_1);
-      REQUIRE(event_definition.test_modifiers(modifier_flag_manager) == boost::none);
+      REQUIRE(event_definition.test_modifiers(modifier_flag_manager) == std::nullopt);
     }
   }
 
@@ -232,7 +231,7 @@ TEST_CASE("from_event_definition.test_modifiers") {
 
     {
       krbn::modifier_flag_manager modifier_flag_manager;
-      REQUIRE(event_definition.test_modifiers(modifier_flag_manager) == boost::none);
+      REQUIRE(event_definition.test_modifiers(modifier_flag_manager) == std::nullopt);
     }
     {
       krbn::modifier_flag_manager modifier_flag_manager;
@@ -253,7 +252,7 @@ TEST_CASE("from_event_definition.test_modifiers") {
       krbn::modifier_flag_manager modifier_flag_manager;
       modifier_flag_manager.push_back_active_modifier_flag(left_control_1);
       modifier_flag_manager.push_back_active_modifier_flag(left_option_1);
-      REQUIRE(event_definition.test_modifiers(modifier_flag_manager) == boost::none);
+      REQUIRE(event_definition.test_modifiers(modifier_flag_manager) == std::nullopt);
     }
   }
 
@@ -275,7 +274,7 @@ TEST_CASE("from_event_definition.test_modifiers") {
 
     {
       krbn::modifier_flag_manager modifier_flag_manager;
-      REQUIRE(event_definition.test_modifiers(modifier_flag_manager) == boost::none);
+      REQUIRE(event_definition.test_modifiers(modifier_flag_manager) == std::nullopt);
     }
     {
       krbn::modifier_flag_manager modifier_flag_manager;
@@ -312,7 +311,7 @@ TEST_CASE("from_event_definition.test_modifiers") {
     {
       krbn::modifier_flag_manager modifier_flag_manager;
       modifier_flag_manager.push_back_active_modifier_flag(left_command_1);
-      REQUIRE(event_definition.test_modifiers(modifier_flag_manager) == boost::none);
+      REQUIRE(event_definition.test_modifiers(modifier_flag_manager) == std::nullopt);
     }
     {
       krbn::modifier_flag_manager modifier_flag_manager;
@@ -325,7 +324,7 @@ TEST_CASE("from_event_definition.test_modifiers") {
       krbn::modifier_flag_manager modifier_flag_manager;
       modifier_flag_manager.push_back_active_modifier_flag(left_shift_1);
       modifier_flag_manager.push_back_active_modifier_flag(right_shift_1);
-      REQUIRE(event_definition.test_modifiers(modifier_flag_manager) == boost::none);
+      REQUIRE(event_definition.test_modifiers(modifier_flag_manager) == std::nullopt);
     }
   }
 
@@ -348,7 +347,7 @@ TEST_CASE("from_event_definition.test_modifiers") {
     {
       krbn::modifier_flag_manager modifier_flag_manager;
       modifier_flag_manager.push_back_active_modifier_flag(left_command_1);
-      REQUIRE(event_definition.test_modifiers(modifier_flag_manager) == boost::none);
+      REQUIRE(event_definition.test_modifiers(modifier_flag_manager) == std::nullopt);
     }
     {
       krbn::modifier_flag_manager modifier_flag_manager;
@@ -401,7 +400,7 @@ TEST_CASE("from_event_definition.test_modifiers") {
     {
       krbn::modifier_flag_manager modifier_flag_manager;
       modifier_flag_manager.push_back_active_modifier_flag(left_command_1);
-      REQUIRE(event_definition.test_modifiers(modifier_flag_manager) == boost::none);
+      REQUIRE(event_definition.test_modifiers(modifier_flag_manager) == std::nullopt);
     }
     {
       krbn::modifier_flag_manager modifier_flag_manager;
@@ -430,7 +429,7 @@ TEST_CASE("from_event_definition.test_modifiers") {
       modifier_flag_manager.push_back_active_modifier_flag(left_command_1);
       modifier_flag_manager.push_back_active_modifier_flag(left_shift_1);
       modifier_flag_manager.push_back_active_modifier_flag(right_shift_1);
-      REQUIRE(event_definition.test_modifiers(modifier_flag_manager) == boost::none);
+      REQUIRE(event_definition.test_modifiers(modifier_flag_manager) == std::nullopt);
     }
   }
 }
@@ -462,7 +461,7 @@ TEST_CASE("manipulator.details.basic::from_event_definition") {
     REQUIRE(event_definition.get_event_definitions().size() == 1);
     REQUIRE(event_definition.get_event_definitions().front().get_type() == krbn::manipulator::details::event_definition::type::key_code);
     REQUIRE(event_definition.get_event_definitions().front().get_key_code() == krbn::key_code::spacebar);
-    REQUIRE(event_definition.get_event_definitions().front().get_pointing_button() == boost::none);
+    REQUIRE(event_definition.get_event_definitions().front().get_pointing_button() == std::nullopt);
     REQUIRE(event_definition.get_mandatory_modifiers() == std::unordered_set<krbn::manipulator::details::modifier_definition::modifier>({
                                                               krbn::manipulator::details::modifier_definition::modifier::shift,
                                                               krbn::manipulator::details::modifier_definition::modifier::left_command,
@@ -494,7 +493,7 @@ TEST_CASE("manipulator.details.basic::from_event_definition") {
     REQUIRE(event_definition.get_event_definitions().size() == 1);
     REQUIRE(event_definition.get_event_definitions().front().get_type() == krbn::manipulator::details::event_definition::type::key_code);
     REQUIRE(event_definition.get_event_definitions().front().get_key_code() == krbn::key_code::right_option);
-    REQUIRE(event_definition.get_event_definitions().front().get_pointing_button() == boost::none);
+    REQUIRE(event_definition.get_event_definitions().front().get_pointing_button() == std::nullopt);
     REQUIRE(event_definition.get_mandatory_modifiers() == std::unordered_set<krbn::manipulator::details::modifier_definition::modifier>({
                                                               krbn::manipulator::details::modifier_definition::modifier::shift,
                                                               krbn::manipulator::details::modifier_definition::modifier::left_command,

@@ -1,11 +1,8 @@
 #define CATCH_CONFIG_MAIN
 #include <catch2/catch.hpp>
 
-#include "boost_defs.hpp"
-
 #include "dispatcher_utility.hpp"
 #include "monitor/grabber_alerts_monitor.hpp"
-#include <boost/optional/optional_io.hpp>
 
 TEST_CASE("initialize") {
   krbn::dispatcher_utility::initialize_dispatchers();
@@ -19,7 +16,7 @@ TEST_CASE("grabber_alerts_monitor") {
     std::string file_path = "target/karabiner_grabber_alerts.json";
     krbn::grabber_alerts_monitor grabber_alerts_monitor(file_path);
 
-    boost::optional<std::string> last_alerts;
+    std::optional<std::string> last_alerts;
 
     grabber_alerts_monitor.alerts_changed.connect([&](auto&& alerts) {
       last_alerts = alerts->dump();
@@ -36,7 +33,7 @@ TEST_CASE("grabber_alerts_monitor") {
     // ========================================
 
     {
-      last_alerts = boost::none;
+      last_alerts = std::nullopt;
 
       auto json = nlohmann::json::object({{"alerts", nlohmann::json::array()}});
 
@@ -53,7 +50,7 @@ TEST_CASE("grabber_alerts_monitor") {
     // ========================================
 
     {
-      last_alerts = boost::none;
+      last_alerts = std::nullopt;
 
       auto json = nlohmann::json::object({{"alerts", nlohmann::json::array({"example"})}});
 
@@ -70,7 +67,7 @@ TEST_CASE("grabber_alerts_monitor") {
     // ========================================
 
     {
-      last_alerts = boost::none;
+      last_alerts = std::nullopt;
 
       system(fmt::format("echo '[' > {0}", file_path).c_str());
 

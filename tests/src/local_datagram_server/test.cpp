@@ -1,15 +1,12 @@
 #define CATCH_CONFIG_MAIN
 #include <catch2/catch.hpp>
 
-#include "boost_defs.hpp"
-
 #include "dispatcher_utility.hpp"
 #include "filesystem.hpp"
 #include "local_datagram/client.hpp"
 #include "local_datagram/client_manager.hpp"
 #include "local_datagram/server.hpp"
 #include "local_datagram/server_manager.hpp"
-#include <boost/optional/optional_io.hpp>
 
 TEST_CASE("initialize") {
   krbn::dispatcher_utility::initialize_dispatchers();
@@ -64,7 +61,7 @@ public:
     server_ = nullptr;
   }
 
-  boost::optional<bool> get_bound(void) const {
+  std::optional<bool> get_bound(void) const {
     return bound_;
   }
 
@@ -77,7 +74,7 @@ public:
   }
 
 private:
-  boost::optional<bool> bound_;
+  std::optional<bool> bound_;
   bool closed_;
   size_t received_count_;
   std::unique_ptr<krbn::local_datagram::server> server_;
@@ -114,7 +111,7 @@ public:
     client_ = nullptr;
   }
 
-  boost::optional<bool> get_connected(void) const {
+  std::optional<bool> get_connected(void) const {
     return connected_;
   }
 
@@ -133,7 +130,7 @@ public:
   }
 
 private:
-  boost::optional<bool> connected_;
+  std::optional<bool> connected_;
   bool closed_;
   std::unique_ptr<krbn::local_datagram::client> client_;
 };

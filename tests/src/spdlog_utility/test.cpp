@@ -1,10 +1,7 @@
 #define CATCH_CONFIG_MAIN
 #include <catch2/catch.hpp>
 
-#include "boost_defs.hpp"
-
 #include "spdlog_utility.hpp"
-#include <boost/optional/optional_io.hpp>
 #include <ostream>
 
 TEST_CASE("get_timestamp_number") {
@@ -14,11 +11,11 @@ TEST_CASE("get_timestamp_number") {
   }
   {
     auto actual = krbn::spdlog_utility::get_sort_key("[]");
-    REQUIRE(actual == boost::none);
+    REQUIRE(actual == std::nullopt);
   }
   {
     auto actual = krbn::spdlog_utility::get_sort_key("[yyyy-mm-dd hh:mm:ss.mmm]");
-    REQUIRE(actual == boost::none);
+    REQUIRE(actual == std::nullopt);
   }
 }
 
@@ -33,19 +30,19 @@ TEST_CASE("get_level") {
   }
   {
     auto actual = krbn::spdlog_utility::get_level("[2016-10-15 00:09:47.283] [unknown] [grabber] version 0.90.50");
-    REQUIRE(actual == boost::none);
+    REQUIRE(actual == std::nullopt);
   }
   {
     auto actual = krbn::spdlog_utility::get_level("[2016-10-15 00:09:47.283] ");
-    REQUIRE(actual == boost::none);
+    REQUIRE(actual == std::nullopt);
   }
   {
     auto actual = krbn::spdlog_utility::get_level("[2016-10-15 00:09:47.283] [");
-    REQUIRE(actual == boost::none);
+    REQUIRE(actual == std::nullopt);
   }
   {
     auto actual = krbn::spdlog_utility::get_level("[2016-10-15 00:09:47.283] [info");
-    REQUIRE(actual == boost::none);
+    REQUIRE(actual == std::nullopt);
   }
   {
     auto actual = krbn::spdlog_utility::get_level("[2016-10-15 00:09:47.283] [info]");

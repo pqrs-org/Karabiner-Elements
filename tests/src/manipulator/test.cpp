@@ -3,7 +3,6 @@
 
 #include "../share/manipulator_helper.hpp"
 #include "dispatcher_utility.hpp"
-#include <boost/optional/optional_io.hpp>
 
 using krbn::manipulator::details::event_definition;
 using krbn::manipulator::details::modifier_definition;
@@ -72,7 +71,7 @@ TEST_CASE("manipulator.manipulator_factory") {
     REQUIRE(basic->get_from().get_event_definitions().size() == 1);
     REQUIRE(basic->get_from().get_event_definitions().front().get_type() == event_definition::type::key_code);
     REQUIRE(basic->get_from().get_event_definitions().front().get_key_code() == krbn::key_code::escape);
-    REQUIRE(basic->get_from().get_event_definitions().front().get_pointing_button() == boost::none);
+    REQUIRE(basic->get_from().get_event_definitions().front().get_pointing_button() == std::nullopt);
     REQUIRE(basic->get_from().get_mandatory_modifiers() == std::unordered_set<modifier_definition::modifier>({
                                                                modifier_definition::modifier::left_shift,
                                                                modifier_definition::modifier::left_option,
@@ -82,7 +81,7 @@ TEST_CASE("manipulator.manipulator_factory") {
                                                           }));
     REQUIRE(basic->get_to().size() == 1);
     REQUIRE(basic->get_to()[0].get_event_definition().get_type() == event_definition::type::pointing_button);
-    REQUIRE(basic->get_to()[0].get_event_definition().get_key_code() == boost::none);
+    REQUIRE(basic->get_to()[0].get_event_definition().get_key_code() == std::nullopt);
     REQUIRE(basic->get_to()[0].get_event_definition().get_pointing_button() == krbn::pointing_button::button1);
     REQUIRE(basic->get_to()[0].get_modifiers() == std::unordered_set<modifier_definition::modifier>());
   }

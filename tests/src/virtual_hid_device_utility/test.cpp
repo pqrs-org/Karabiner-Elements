@@ -2,7 +2,6 @@
 #include <catch2/catch.hpp>
 
 #include "virtual_hid_device_utility.hpp"
-#include <boost/optional/optional_io.hpp>
 
 TEST_CASE("karabiner_virtual_hid_device::hid_report::modifiers") {
   {

@@ -25,11 +25,13 @@ TEST_CASE("connected_devices::details::descriptions") {
     REQUIRE(descriptions1 != descriptions2);
   }
   {
-    krbn::connected_devices::details::descriptions descriptions1(nlohmann::json(nullptr));
-    krbn::connected_devices::details::descriptions descriptions2(nlohmann::json({
-        {"manufacturer", "manufacturer2"},
-        {"product", "product2"},
-    }));
+    auto descriptions1 = krbn::connected_devices::details::descriptions::make_from_json(
+        nlohmann::json(nullptr));
+    auto descriptions2 = krbn::connected_devices::details::descriptions::make_from_json(
+        nlohmann::json({
+            {"manufacturer", "manufacturer2"},
+            {"product", "product2"},
+        }));
 
     REQUIRE(descriptions1.get_manufacturer() == "");
     REQUIRE(descriptions1.get_product() == "");
@@ -102,8 +104,8 @@ TEST_CASE("connected_devices::details::device") {
                                      }}));
   }
   {
-    krbn::connected_devices::details::device device1(nlohmann::json(nullptr));
-    krbn::connected_devices::details::device device2(nlohmann::json(
+    auto device1 = krbn::connected_devices::details::device::make_from_json(nlohmann::json(nullptr));
+    auto device2 = krbn::connected_devices::details::device::make_from_json(nlohmann::json(
         {{
              "descriptions",
              {

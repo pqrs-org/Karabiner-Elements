@@ -1,11 +1,8 @@
 #define CATCH_CONFIG_MAIN
 #include <catch2/catch.hpp>
 
-#include "boost_defs.hpp"
-
 #include "dispatcher_utility.hpp"
 #include "grabbable_state_queues_manager.hpp"
-#include <boost/optional/optional_io.hpp>
 
 TEST_CASE("initialize") {
   krbn::dispatcher_utility::initialize_dispatchers();
@@ -15,9 +12,9 @@ TEST_CASE("grabbable_state_queues_manager") {
   {
     auto manager = std::make_unique<krbn::grabbable_state_queues_manager>();
 
-    std::unordered_map<krbn::device_id, boost::optional<krbn::grabbable_state>> last_changed_grabbable_states;
-    last_changed_grabbable_states[krbn::device_id(1)] = boost::none;
-    last_changed_grabbable_states[krbn::device_id(2)] = boost::none;
+    std::unordered_map<krbn::device_id, std::optional<krbn::grabbable_state>> last_changed_grabbable_states;
+    last_changed_grabbable_states[krbn::device_id(1)] = std::nullopt;
+    last_changed_grabbable_states[krbn::device_id(2)] = std::nullopt;
 
     std::unordered_map<krbn::device_id, int> changed_counts;
     changed_counts[krbn::device_id(1)] = 0;
@@ -36,10 +33,10 @@ TEST_CASE("grabbable_state_queues_manager") {
 
     // Check last_changed_grabbable_states
     {
-      REQUIRE(last_changed_grabbable_states[krbn::device_id(1)] == boost::none);
+      REQUIRE(last_changed_grabbable_states[krbn::device_id(1)] == std::nullopt);
       REQUIRE(changed_counts[krbn::device_id(1)] == 0);
 
-      REQUIRE(last_changed_grabbable_states[krbn::device_id(2)] == boost::none);
+      REQUIRE(last_changed_grabbable_states[krbn::device_id(2)] == std::nullopt);
       REQUIRE(changed_counts[krbn::device_id(2)] == 0);
     }
 
@@ -64,7 +61,7 @@ TEST_CASE("grabbable_state_queues_manager") {
       REQUIRE(last_changed_grabbable_states[krbn::device_id(1)] == state);
       REQUIRE(changed_counts[krbn::device_id(1)] == 1);
 
-      REQUIRE(last_changed_grabbable_states[krbn::device_id(2)] == boost::none);
+      REQUIRE(last_changed_grabbable_states[krbn::device_id(2)] == std::nullopt);
       REQUIRE(changed_counts[krbn::device_id(2)] == 0);
     }
 
