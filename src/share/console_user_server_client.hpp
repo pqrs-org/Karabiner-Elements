@@ -28,7 +28,7 @@ public:
   console_user_server_client(void) : dispatcher_client() {
     console_user_id_monitor_ = std::make_unique<console_user_id_monitor>();
 
-    console_user_id_monitor_->console_user_id_changed.connect([this](boost::optional<uid_t> uid) {
+    console_user_id_monitor_->console_user_id_changed.connect([this](std::optional<uid_t> uid) {
       if (uid) {
         client_manager_ = nullptr;
 

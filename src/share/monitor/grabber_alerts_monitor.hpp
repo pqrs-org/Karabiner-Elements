@@ -71,6 +71,6 @@ public:
 
 private:
   std::unique_ptr<file_monitor> file_monitor_;
-  boost::optional<std::string> last_json_string_;
+  std::optional<std::string> last_json_string_;
 };
 } // namespace krbn

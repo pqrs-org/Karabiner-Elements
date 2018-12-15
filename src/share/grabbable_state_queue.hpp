@@ -7,9 +7,9 @@
 #include "event_queue.hpp"
 #include "types.hpp"
 #include <boost/circular_buffer.hpp>
-#include <boost/optional.hpp>
 #include <boost/signals2.hpp>
 #include <memory>
+#include <optional>
 #include <pqrs/dispatcher.hpp>
 
 namespace krbn {
@@ -17,7 +17,7 @@ class grabbable_state_queue final : public pqrs::dispatcher::extra::dispatcher_c
 public:
   // Signals (invoked from the shared dispatcher thread)
 
-  boost::signals2::signal<void(boost::optional<grabbable_state>)> grabbable_state_changed;
+  boost::signals2::signal<void(std::optional<grabbable_state>)> grabbable_state_changed;
 
   // Methods
 
@@ -34,13 +34,13 @@ public:
     });
   }
 
-  boost::optional<absolute_time_point> get_first_grabbed_event_time_stamp(void) const {
+  std::optional<absolute_time_point> get_first_grabbed_event_time_stamp(void) const {
     std::lock_guard<std::mutex> lock(mutex_);
 
     return first_grabbed_event_time_stamp_;
   }
 
-  boost::optional<grabbable_state> find_current_grabbable_state(void) const {
+  std::optional<grabbable_state> find_current_grabbable_state(void) const {
     std::lock_guard<std::mutex> lock(mutex_);
 
     return find_current_grabbable_state_();
@@ -52,7 +52,7 @@ public:
     auto old_state = find_current_grabbable_state_();
 
     grabbable_states_.clear();
-    first_grabbed_event_time_stamp_ = boost::none;
+    first_grabbed_event_time_stamp_ = std::nullopt;
 
     auto new_state = find_current_grabbable_state_();
 
@@ -123,20 +123,20 @@ public:
   void unset_first_grabbed_event_time_stamp(void) {
     std::lock_guard<std::mutex> lock(mutex_);
 
-    first_grabbed_event_time_stamp_ = boost::none;
+    first_grabbed_event_time_stamp_ = std::nullopt;
   }
 
 private:
-  boost::optional<grabbable_state> find_current_grabbable_state_(void) const {
+  std::optional<grabbable_state> find_current_grabbable_state_(void) const {
     if (grabbable_states_.empty()) {
-      return boost::none;
+      return std::nullopt;
     }
 
     return grabbable_states_.back();
   }
 
-  void call_grabbable_state_changed_if_needed(boost::optional<grabbable_state> old_state,
-                                              boost::optional<grabbable_state> new_state) {
+  void call_grabbable_state_changed_if_needed(std::optional<grabbable_state> old_state,
+                                              std::optional<grabbable_state> new_state) {
     if (!old_state &&
         !new_state) {
       return;
@@ -157,7 +157,7 @@ private:
   // (We should remove entries after first_grabbed_event_time_stamp_.)
   boost::circular_buffer<grabbable_state> grabbable_states_;
 
-  boost::optional<absolute_time_point> first_grabbed_event_time_stamp_;
+  std::optional<absolute_time_point> first_grabbed_event_time_stamp_;
 
   mutable std::mutex mutex_;
 };

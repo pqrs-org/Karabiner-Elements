@@ -4,8 +4,8 @@
 
 #include "logger.hpp"
 #include <CoreFoundation/CoreFoundation.h>
-#include <boost/optional.hpp>
 #include <mutex>
+#include <optional>
 #include <string>
 #include <thread>
 
@@ -22,13 +22,13 @@ public:
                                      kCFStringEncodingUTF8);
   }
 
-  static boost::optional<int64_t> to_int64_t(CFTypeRef _Nullable value) {
+  static std::optional<int64_t> to_int64_t(CFTypeRef _Nullable value) {
     if (!value) {
-      return boost::none;
+      return std::nullopt;
     }
 
     if (CFNumberGetTypeID() != CFGetTypeID(value)) {
-      return boost::none;
+      return std::nullopt;
     }
 
     auto cfnumber = static_cast<CFNumberRef>(value);
@@ -38,7 +38,7 @@ public:
       return result;
     }
 
-    return boost::none;
+    return std::nullopt;
   }
 
   // ========================================

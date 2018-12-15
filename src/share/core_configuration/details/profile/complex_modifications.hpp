@@ -54,8 +54,8 @@ public:
     }
   }
 
-  boost::optional<std::pair<int, int>> minmax_parameter_value(const std::string& name) const {
-    boost::optional<std::pair<int, int>> result;
+  std::optional<std::pair<int, int>> minmax_parameter_value(const std::string& name) const {
+    std::optional<std::pair<int, int>> result;
 
     if (auto value = parameters_.get_value(name)) {
       if (!result) {

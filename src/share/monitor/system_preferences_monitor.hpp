@@ -88,6 +88,6 @@ private:
 
   pqrs::dispatcher::extra::timer timer_;
   boost_utility::signals2_connections configuration_monitor_connections_;
-  boost::optional<system_preferences> last_system_preferences_;
+  std::optional<system_preferences> last_system_preferences_;
 };
 } // namespace krbn

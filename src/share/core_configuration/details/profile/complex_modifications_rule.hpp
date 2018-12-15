@@ -81,7 +81,7 @@ public:
   }
 
 private:
-  boost::optional<std::string> find_description(const nlohmann::json& json) const {
+  std::optional<std::string> find_description(const nlohmann::json& json) const {
     if (auto v = json_utility::find_optional<std::string>(json, "description")) {
       return *v;
     }
@@ -95,7 +95,7 @@ private:
       }
     }
 
-    return boost::none;
+    return std::nullopt;
   }
 
   nlohmann::json json_;

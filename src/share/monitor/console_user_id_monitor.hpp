@@ -6,9 +6,9 @@
 
 #include "logger.hpp"
 #include "session.hpp"
-#include <boost/optional.hpp>
 #include <boost/signals2.hpp>
 #include <memory>
+#include <optional>
 #include <pqrs/dispatcher.hpp>
 
 namespace krbn {
@@ -16,7 +16,7 @@ class console_user_id_monitor final : public pqrs::dispatcher::extra::dispatcher
 public:
   // Signals (invoked from the shared dispatcher thread)
 
-  boost::signals2::signal<void(boost::optional<uid_t>)> console_user_id_changed;
+  boost::signals2::signal<void(std::optional<uid_t>)> console_user_id_changed;
 
   // Methods
 
@@ -52,7 +52,7 @@ private:
   void check(void) {
     auto u = session::get_current_console_user_id();
     if (!uid_ || *uid_ != u) {
-      uid_ = std::make_unique<boost::optional<uid_t>>(u);
+      uid_ = std::make_unique<std::optional<uid_t>>(u);
       enqueue_to_dispatcher([this, u] {
         console_user_id_changed(u);
       });
@@ -60,6 +60,6 @@ private:
   }
 
   pqrs::dispatcher::extra::timer timer_;
-  std::unique_ptr<boost::optional<uid_t>> uid_;
+  std::unique_ptr<std::optional<uid_t>> uid_;
 };
 } // namespace krbn

@@ -1,25 +1,23 @@
 #pragma once
 
-#include "boost_defs.hpp"
-
 #include "types/absolute_time_point.hpp"
 #include "types/hid_usage.hpp"
 #include "types/hid_usage_page.hpp"
 #include <IOKit/hid/IOHIDElement.h>
 #include <IOKit/hid/IOHIDValue.h>
-#include <boost/optional.hpp>
 #include <nlohmann/json.hpp>
+#include <optional>
 
 namespace krbn {
 class hid_value final {
 public:
   hid_value(absolute_time_point time_stamp,
             CFIndex integer_value,
-            boost::optional<hid_usage_page> hid_usage_page,
-            boost::optional<hid_usage> hid_usage) : time_stamp_(time_stamp),
-                                                    integer_value_(integer_value),
-                                                    hid_usage_page_(hid_usage_page),
-                                                    hid_usage_(hid_usage) {
+            std::optional<hid_usage_page> hid_usage_page,
+            std::optional<hid_usage> hid_usage) : time_stamp_(time_stamp),
+                                                  integer_value_(integer_value),
+                                                  hid_usage_page_(hid_usage_page),
+                                                  hid_usage_(hid_usage) {
   }
 
   hid_value(IOHIDValueRef value) {
@@ -52,11 +50,11 @@ public:
     return integer_value_;
   }
 
-  boost::optional<hid_usage_page> get_hid_usage_page(void) const {
+  std::optional<hid_usage_page> get_hid_usage_page(void) const {
     return hid_usage_page_;
   }
 
-  boost::optional<hid_usage> get_hid_usage(void) const {
+  std::optional<hid_usage> get_hid_usage(void) const {
     return hid_usage_;
   }
 
@@ -76,7 +74,7 @@ public:
 private:
   absolute_time_point time_stamp_;
   CFIndex integer_value_;
-  boost::optional<hid_usage_page> hid_usage_page_;
-  boost::optional<hid_usage> hid_usage_;
+  std::optional<hid_usage_page> hid_usage_page_;
+  std::optional<hid_usage> hid_usage_;
 };
 } // namespace krbn

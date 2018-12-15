@@ -1,11 +1,9 @@
 #pragma once
 
-#include "boost_defs.hpp"
-
 #include <array>
-#include <boost/optional.hpp>
 #include <climits>
 #include <fstream>
+#include <optional>
 #include <string>
 #include <sys/stat.h>
 #include <vector>
@@ -54,18 +52,18 @@ public:
     ofstream << ifstream.rdbuf();
   }
 
-  static boost::optional<mode_t> file_access_permissions(const std::string& path) {
+  static std::optional<mode_t> file_access_permissions(const std::string& path) {
     struct stat s;
     if (stat(path.c_str(), &s) != 0) {
-      return boost::none;
+      return std::nullopt;
     }
     return s.st_mode & ACCESSPERMS;
   }
 
-  static boost::optional<off_t> file_size(const std::string& path) {
+  static std::optional<off_t> file_size(const std::string& path) {
     struct stat s;
     if (stat(path.c_str(), &s) != 0) {
-      return boost::none;
+      return std::nullopt;
     }
     return s.st_size;
   }
@@ -142,10 +140,10 @@ public:
     path.resize(dest);
   }
 
-  static boost::optional<std::string> realpath(const std::string& path) {
+  static std::optional<std::string> realpath(const std::string& path) {
     std::array<char, PATH_MAX> resolved_path;
     if (!::realpath(path.c_str(), &(resolved_path[0]))) {
-      return boost::none;
+      return std::nullopt;
     }
     return std::string(&(resolved_path[0]));
   }

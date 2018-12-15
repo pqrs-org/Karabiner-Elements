@@ -18,7 +18,7 @@ public:
   // Methods
 
   client_manager(const std::string& path,
-                 boost::optional<std::chrono::milliseconds> server_check_interval,
+                 std::optional<std::chrono::milliseconds> server_check_interval,
                  std::chrono::milliseconds reconnect_interval) : dispatcher_client(),
                                                                  path_(path),
                                                                  server_check_interval_(server_check_interval),
@@ -121,7 +121,7 @@ private:
   }
 
   std::string path_;
-  boost::optional<std::chrono::milliseconds> server_check_interval_;
+  std::optional<std::chrono::milliseconds> server_check_interval_;
   std::chrono::milliseconds reconnect_interval_;
 
   std::shared_ptr<client> client_;

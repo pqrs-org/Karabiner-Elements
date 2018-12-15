@@ -6,13 +6,13 @@
 
 #include "event_queue.hpp"
 #include <CoreGraphics/CoreGraphics.h>
-#include <boost/optional.hpp>
+#include <optional>
 
 namespace krbn {
 class event_tap_utility final {
 public:
-  static boost::optional<std::pair<event_type, event_queue::event>> make_event(CGEventType type,
-                                                                               CGEventRef event) {
+  static std::optional<std::pair<event_type, event_queue::event>> make_event(CGEventType type,
+                                                                             CGEventRef event) {
     switch (type) {
       case kCGEventLeftMouseDown:
         return std::make_pair(event_type::key_down,
@@ -64,7 +64,7 @@ public:
         break;
     }
 
-    return boost::none;
+    return std::nullopt;
   }
 };
 } // namespace krbn

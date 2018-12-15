@@ -52,13 +52,13 @@ public:
     normalize();
   }
 
-  boost::optional<int> get_value(const std::string& name) const {
+  std::optional<int> get_value(const std::string& name) const {
     auto map = make_map();
     auto it = map.find(name);
     if (it != std::end(map)) {
       return it->second;
     }
-    return boost::none;
+    return std::nullopt;
   }
 
   void set_value(const std::string& name, int value) {
@@ -74,12 +74,12 @@ public:
 private:
   void normalize(void) {
     normalize(basic_simultaneous_threshold_milliseconds_, 0, 1000, "basic.simultaneous_threshold_milliseconds");
-    normalize(basic_to_if_alone_timeout_milliseconds_, 0, boost::none, "basic.to_if_alone_timeout_milliseconds");
-    normalize(basic_to_if_held_down_threshold_milliseconds_, 0, boost::none, "basic.to_if_held_down_threshold_milliseconds");
-    normalize(basic_to_delayed_action_delay_milliseconds_, 0, boost::none, "basic.to_delayed_action_delay_milliseconds");
+    normalize(basic_to_if_alone_timeout_milliseconds_, 0, std::nullopt, "basic.to_if_alone_timeout_milliseconds");
+    normalize(basic_to_if_held_down_threshold_milliseconds_, 0, std::nullopt, "basic.to_if_held_down_threshold_milliseconds");
+    normalize(basic_to_delayed_action_delay_milliseconds_, 0, std::nullopt, "basic.to_delayed_action_delay_milliseconds");
   }
 
-  void normalize(int& value, boost::optional<int> min, boost::optional<int> max, const std::string& name) {
+  void normalize(int& value, std::optional<int> min, std::optional<int> max, const std::string& name) {
     if (min) {
       if (value < *min) {
         logger::get_logger().warn("{0} should be >= {1}.", name, *min);

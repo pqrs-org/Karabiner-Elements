@@ -1,15 +1,13 @@
 #pragma once
 
-#include "boost_defs.hpp"
-
 #include "types.hpp"
-#include <boost/optional.hpp>
+#include <optional>
 #include <utility>
 
 namespace krbn {
 class keyboard_repeat_detector final {
 public:
-  boost::optional<std::pair<hid_usage_page, hid_usage>> get_repeating_key(void) const {
+  std::optional<std::pair<hid_usage_page, hid_usage>> get_repeating_key(void) const {
     return repeating_key_;
   }
 
@@ -18,7 +16,7 @@ public:
            event_type event_type) {
     switch (event_type) {
       case event_type::key_down:
-        if (types::make_modifier_flag(hid_usage_page, hid_usage) == boost::none) {
+        if (types::make_modifier_flag(hid_usage_page, hid_usage) == std::nullopt) {
           repeating_key_ = std::make_pair(hid_usage_page, hid_usage);
         }
         break;
@@ -27,7 +25,7 @@ public:
         if (repeating_key_ &&
             repeating_key_->first == hid_usage_page &&
             repeating_key_->second == hid_usage) {
-          repeating_key_ = boost::none;
+          repeating_key_ = std::nullopt;
         }
         break;
 
@@ -48,14 +46,14 @@ public:
   }
 
   void clear(void) {
-    repeating_key_ = boost::none;
+    repeating_key_ = std::nullopt;
   }
 
   bool is_repeating(void) const {
-    return repeating_key_ != boost::none;
+    return repeating_key_ != std::nullopt;
   }
 
 private:
-  boost::optional<std::pair<hid_usage_page, hid_usage>> repeating_key_;
+  std::optional<std::pair<hid_usage_page, hid_usage>> repeating_key_;
 };
 } // namespace krbn

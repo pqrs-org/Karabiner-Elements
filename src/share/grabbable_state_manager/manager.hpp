@@ -94,14 +94,14 @@ public:
     entries_.erase(device_id);
   }
 
-  boost::optional<grabbable_state> get_grabbable_state(device_id device_id) const {
+  std::optional<grabbable_state> get_grabbable_state(device_id device_id) const {
     std::lock_guard<std::mutex> lock(entries_mutex_);
 
     auto it = entries_.find(device_id);
     if (it != std::end(entries_)) {
       return it->second.get_grabbable_state();
     }
-    return boost::none;
+    return std::nullopt;
   }
 
 private:

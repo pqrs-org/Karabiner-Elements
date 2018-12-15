@@ -100,8 +100,8 @@ private:
 
       for (const auto& j : json) {
         if (j.is_object()) {
-          boost::optional<std::string> from_json_string;
-          boost::optional<std::string> to_json_string;
+          std::optional<std::string> from_json_string;
+          std::optional<std::string> to_json_string;
 
           for (auto it = j.begin(); it != j.end(); ++it) {
             // it.key() is always std::string.

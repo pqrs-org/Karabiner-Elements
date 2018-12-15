@@ -47,7 +47,7 @@ public:
 
   void async_bind(const std::string& path,
                   size_t buffer_size,
-                  boost::optional<std::chrono::milliseconds> server_check_interval) {
+                  std::optional<std::chrono::milliseconds> server_check_interval) {
     async_close();
 
     io_service_.post([this, path, buffer_size, server_check_interval] {
@@ -155,7 +155,7 @@ private:
 
   // This method is executed in `io_service_thread_`.
   void start_server_check(const std::string& path,
-                          boost::optional<std::chrono::milliseconds> server_check_interval) {
+                          std::optional<std::chrono::milliseconds> server_check_interval) {
     if (server_check_interval) {
       server_check_timer_.start(
           [this, path] {
@@ -190,7 +190,7 @@ private:
         });
       });
 
-      server_check_client_->async_connect(path, boost::none);
+      server_check_client_->async_connect(path, std::nullopt);
     }
   }
 

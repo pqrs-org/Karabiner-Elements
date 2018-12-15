@@ -20,7 +20,7 @@ public:
 
   server_manager(const std::string& path,
                  size_t buffer_size,
-                 boost::optional<std::chrono::milliseconds> server_check_interval,
+                 std::optional<std::chrono::milliseconds> server_check_interval,
                  std::chrono::milliseconds reconnect_interval) : dispatcher_client(),
                                                                  path_(path),
                                                                  buffer_size_(buffer_size),
@@ -125,7 +125,7 @@ private:
 
   std::string path_;
   size_t buffer_size_;
-  boost::optional<std::chrono::milliseconds> server_check_interval_;
+  std::optional<std::chrono::milliseconds> server_check_interval_;
   std::chrono::milliseconds reconnect_interval_;
 
   std::unique_ptr<server> server_;

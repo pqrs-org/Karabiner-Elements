@@ -1,17 +1,15 @@
 #pragma once
 
-#include "boost_defs.hpp"
-
 #include "cf_utility.hpp"
 #include "types.hpp"
 #include <CoreFoundation/CoreFoundation.h>
-#include <boost/optional.hpp>
+#include <optional>
 
 namespace krbn {
 class system_preferences_utility final {
 public:
-  static boost::optional<bool> get_bool_property(CFStringRef _Nonnull key, CFStringRef _Nonnull application_id) {
-    boost::optional<bool> value = boost::none;
+  static std::optional<bool> get_bool_property(CFStringRef _Nonnull key, CFStringRef _Nonnull application_id) {
+    std::optional<bool> value = std::nullopt;
     if (auto v = CFPreferencesCopyAppValue(key, application_id)) {
       if (CFBooleanGetTypeID() == CFGetTypeID(v)) {
         value = CFBooleanGetValue(static_cast<CFBooleanRef>(v));
@@ -21,8 +19,8 @@ public:
     return value;
   }
 
-  static boost::optional<float> get_float_property(CFStringRef _Nonnull key, CFStringRef _Nonnull application_id) {
-    boost::optional<float> value = boost::none;
+  static std::optional<float> get_float_property(CFStringRef _Nonnull key, CFStringRef _Nonnull application_id) {
+    std::optional<float> value = std::nullopt;
     if (auto v = CFPreferencesCopyAppValue(key, application_id)) {
       if (CFNumberGetTypeID() == CFGetTypeID(v)) {
         float vv;

@@ -6,9 +6,9 @@
 
 #include "event_queue.hpp"
 #include "grabbable_state_queue.hpp"
-#include <boost/optional.hpp>
 #include <boost/signals2.hpp>
 #include <mutex>
+#include <optional>
 #include <pqrs/osx/iokit_types.hpp>
 #include <unordered_map>
 
@@ -17,7 +17,7 @@ class grabbable_state_queues_manager final : public pqrs::dispatcher::extra::dis
 public:
   // Signals (invoked from the shared dispatcher thread)
 
-  boost::signals2::signal<void(device_id, boost::optional<grabbable_state>)> grabbable_state_changed;
+  boost::signals2::signal<void(device_id, std::optional<grabbable_state>)> grabbable_state_changed;
 
   // Methods
 
@@ -31,7 +31,7 @@ public:
     });
   }
 
-  boost::optional<grabbable_state> find_current_grabbable_state(device_id device_id) const {
+  std::optional<grabbable_state> find_current_grabbable_state(device_id device_id) const {
     std::lock_guard<std::mutex> lock(queues_mutex_);
 
     auto it = queues_.find(device_id);
@@ -39,7 +39,7 @@ public:
       return it->second->find_current_grabbable_state();
     }
 
-    return boost::none;
+    return std::nullopt;
   }
 
   void clear(void) {

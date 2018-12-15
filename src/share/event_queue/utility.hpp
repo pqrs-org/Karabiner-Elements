@@ -13,11 +13,11 @@ static inline std::shared_ptr<queue> make_queue(device_id device_id,
   // The pointing motion usage (hid_usage::gd_x, hid_usage::gd_y, etc.) are splitted from one HID report.
   // We have to join them into one pointing_motion event to avoid VMware Remote Console problem that VMRC ignores frequently events.
 
-  boost::optional<absolute_time_point> pointing_motion_time_stamp;
-  boost::optional<int> pointing_motion_x;
-  boost::optional<int> pointing_motion_y;
-  boost::optional<int> pointing_motion_vertical_wheel;
-  boost::optional<int> pointing_motion_horizontal_wheel;
+  std::optional<absolute_time_point> pointing_motion_time_stamp;
+  std::optional<int> pointing_motion_x;
+  std::optional<int> pointing_motion_y;
+  std::optional<int> pointing_motion_vertical_wheel;
+  std::optional<int> pointing_motion_horizontal_wheel;
 
   auto emplace_back_pointing_motion_event = [&] {
     if (pointing_motion_time_stamp) {
@@ -35,11 +35,11 @@ static inline std::shared_ptr<queue> make_queue(device_id device_id,
                                  event_type::single,
                                  event);
 
-      pointing_motion_time_stamp = boost::none;
-      pointing_motion_x = boost::none;
-      pointing_motion_y = boost::none;
-      pointing_motion_vertical_wheel = boost::none;
-      pointing_motion_horizontal_wheel = boost::none;
+      pointing_motion_time_stamp = std::nullopt;
+      pointing_motion_x = std::nullopt;
+      pointing_motion_y = std::nullopt;
+      pointing_motion_vertical_wheel = std::nullopt;
+      pointing_motion_horizontal_wheel = std::nullopt;
     }
   };
 

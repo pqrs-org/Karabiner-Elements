@@ -37,10 +37,10 @@
 #include <IOKit/hidsystem/IOHIDShared.h>
 #include <IOKit/hidsystem/ev_keymap.h>
 #include <boost/functional/hash.hpp>
-#include <boost/optional.hpp>
 #include <cstring>
 #include <iostream>
 #include <nlohmann/json.hpp>
+#include <optional>
 #include <string>
 #include <thread>
 #include <type_safe/strong_typedef.hpp>
@@ -67,15 +67,15 @@ enum class operation_type : uint8_t {
 class types final {
 public:
   // Find operation_type from operation_type_*_struct .
-  static boost::optional<operation_type> find_operation_type(const std::vector<uint8_t>& buffer) {
+  static std::optional<operation_type> find_operation_type(const std::vector<uint8_t>& buffer) {
     if (buffer.empty()) {
-      return boost::none;
+      return std::nullopt;
     }
     return operation_type(buffer[0]);
   }
 
-  static boost::optional<modifier_flag> make_modifier_flag(key_code key_code) {
-    // make_modifier_flag(key_code::caps_lock) == boost::none
+  static std::optional<modifier_flag> make_modifier_flag(key_code key_code) {
+    // make_modifier_flag(key_code::caps_lock) == std::nullopt
 
     switch (key_code) {
       case key_code::left_control:
@@ -97,28 +97,28 @@ public:
       case key_code::fn:
         return modifier_flag::fn;
       default:
-        return boost::none;
+        return std::nullopt;
     }
   }
 
-  static boost::optional<modifier_flag> make_modifier_flag(hid_usage_page usage_page, hid_usage usage) {
+  static std::optional<modifier_flag> make_modifier_flag(hid_usage_page usage_page, hid_usage usage) {
     if (auto key_code = make_key_code(usage_page, usage)) {
       return make_modifier_flag(*key_code);
     }
-    return boost::none;
+    return std::nullopt;
   }
 
-  static boost::optional<modifier_flag> make_modifier_flag(const hid_value& hid_value) {
+  static std::optional<modifier_flag> make_modifier_flag(const hid_value& hid_value) {
     if (auto hid_usage_page = hid_value.get_hid_usage_page()) {
       if (auto hid_usage = hid_value.get_hid_usage()) {
         return make_modifier_flag(*hid_usage_page,
                                   *hid_usage);
       }
     }
-    return boost::none;
+    return std::nullopt;
   }
 
-  static boost::optional<pqrs::karabiner_virtual_hid_device::hid_report::modifier> make_hid_report_modifier(modifier_flag modifier_flag) {
+  static std::optional<pqrs::karabiner_virtual_hid_device::hid_report::modifier> make_hid_report_modifier(modifier_flag modifier_flag) {
     switch (modifier_flag) {
       case modifier_flag::left_control:
         return pqrs::karabiner_virtual_hid_device::hid_report::modifier::left_control;
@@ -137,14 +137,14 @@ public:
       case modifier_flag::right_command:
         return pqrs::karabiner_virtual_hid_device::hid_report::modifier::right_command;
       default:
-        return boost::none;
+        return std::nullopt;
     }
   }
 
-  static boost::optional<key_code> make_key_code(modifier_flag modifier_flag) {
+  static std::optional<key_code> make_key_code(modifier_flag modifier_flag) {
     switch (modifier_flag) {
       case modifier_flag::zero:
-        return boost::none;
+        return std::nullopt;
 
       case modifier_flag::caps_lock:
         return key_code::caps_lock;
@@ -177,7 +177,7 @@ public:
         return key_code::fn;
 
       case modifier_flag::end_:
-        return boost::none;
+        return std::nullopt;
     }
   }
 
@@ -425,26 +425,26 @@ public:
     return map;
   }
 
-  static boost::optional<key_code> make_key_code(const std::string& name) {
+  static std::optional<key_code> make_key_code(const std::string& name) {
     auto& map = get_key_code_name_value_map();
     auto it = map.find(name);
     if (it == map.end()) {
       logger::get_logger().error("unknown key_code: \"{0}\"", name);
-      return boost::none;
+      return std::nullopt;
     }
     return it->second;
   }
 
-  static boost::optional<std::string> make_key_code_name(key_code key_code) {
+  static std::optional<std::string> make_key_code_name(key_code key_code) {
     for (const auto& pair : get_key_code_name_value_pairs()) {
       if (pair.second == key_code) {
         return pair.first;
       }
     }
-    return boost::none;
+    return std::nullopt;
   }
 
-  static boost::optional<key_code> make_key_code(hid_usage_page usage_page, hid_usage usage) {
+  static std::optional<key_code> make_key_code(hid_usage_page usage_page, hid_usage usage) {
     auto u = static_cast<uint32_t>(usage);
 
     switch (usage_page) {
@@ -494,20 +494,20 @@ public:
         break;
     }
 
-    return boost::none;
+    return std::nullopt;
   }
 
-  static boost::optional<key_code> make_key_code(const hid_value& hid_value) {
+  static std::optional<key_code> make_key_code(const hid_value& hid_value) {
     if (auto hid_usage_page = hid_value.get_hid_usage_page()) {
       if (auto hid_usage = hid_value.get_hid_usage()) {
         return make_key_code(*hid_usage_page,
                              *hid_usage);
       }
     }
-    return boost::none;
+    return std::nullopt;
   }
 
-  static boost::optional<hid_usage_page> make_hid_usage_page(key_code key_code) {
+  static std::optional<hid_usage_page> make_hid_usage_page(key_code key_code) {
     switch (key_code) {
       case key_code::fn:
       case key_code::illumination_decrement:
@@ -535,14 +535,14 @@ public:
         return hid_usage_page::consumer;
 
       case key_code::vk_none:
-        return boost::none;
+        return std::nullopt;
 
       default:
         return hid_usage_page::keyboard_or_keypad;
     }
   }
 
-  static boost::optional<hid_usage> make_hid_usage(key_code key_code) {
+  static std::optional<hid_usage> make_hid_usage(key_code key_code) {
     switch (key_code) {
       case key_code::fn:
         return hid_usage::av_top_case_keyboard_fn;
@@ -602,7 +602,7 @@ public:
         return hid_usage::csmr_eject;
 
       case key_code::vk_none:
-        return boost::none;
+        return std::nullopt;
 
       default:
         return hid_usage(key_code);
@@ -651,26 +651,26 @@ public:
     return map;
   }
 
-  static boost::optional<consumer_key_code> make_consumer_key_code(const std::string& name) {
+  static std::optional<consumer_key_code> make_consumer_key_code(const std::string& name) {
     auto& map = get_consumer_key_code_name_value_map();
     auto it = map.find(name);
     if (it == map.end()) {
       logger::get_logger().error("unknown consumer_key_code: \"{0}\"", name);
-      return boost::none;
+      return std::nullopt;
     }
     return it->second;
   }
 
-  static boost::optional<std::string> make_consumer_key_code_name(consumer_key_code consumer_key_code) {
+  static std::optional<std::string> make_consumer_key_code_name(consumer_key_code consumer_key_code) {
     for (const auto& pair : get_consumer_key_code_name_value_pairs()) {
       if (pair.second == consumer_key_code) {
         return pair.first;
       }
     }
-    return boost::none;
+    return std::nullopt;
   }
 
-  static boost::optional<consumer_key_code> make_consumer_key_code(hid_usage_page usage_page, hid_usage usage) {
+  static std::optional<consumer_key_code> make_consumer_key_code(hid_usage_page usage_page, hid_usage usage) {
     auto u = static_cast<uint32_t>(usage);
 
     switch (usage_page) {
@@ -695,24 +695,24 @@ public:
         break;
     }
 
-    return boost::none;
+    return std::nullopt;
   }
 
-  static boost::optional<consumer_key_code> make_consumer_key_code(const hid_value& hid_value) {
+  static std::optional<consumer_key_code> make_consumer_key_code(const hid_value& hid_value) {
     if (auto hid_usage_page = hid_value.get_hid_usage_page()) {
       if (auto hid_usage = hid_value.get_hid_usage()) {
         return make_consumer_key_code(*hid_usage_page,
                                       *hid_usage);
       }
     }
-    return boost::none;
+    return std::nullopt;
   }
 
-  static boost::optional<hid_usage_page> make_hid_usage_page(consumer_key_code consumer_key_code) {
+  static std::optional<hid_usage_page> make_hid_usage_page(consumer_key_code consumer_key_code) {
     return hid_usage_page::consumer;
   }
 
-  static boost::optional<hid_usage> make_hid_usage(consumer_key_code consumer_key_code) {
+  static std::optional<hid_usage> make_hid_usage(consumer_key_code consumer_key_code) {
     return hid_usage(static_cast<uint32_t>(consumer_key_code));
   }
 
@@ -783,40 +783,40 @@ public:
     return map;
   }
 
-  static boost::optional<pointing_button> make_pointing_button(const std::string& name) {
+  static std::optional<pointing_button> make_pointing_button(const std::string& name) {
     auto& map = get_pointing_button_name_value_map();
     auto it = map.find(name);
     if (it == map.end()) {
       logger::get_logger().error("unknown pointing_button: \"{0}\"", name);
-      return boost::none;
+      return std::nullopt;
     }
     return it->second;
   }
 
-  static boost::optional<std::string> make_pointing_button_name(pointing_button pointing_button) {
+  static std::optional<std::string> make_pointing_button_name(pointing_button pointing_button) {
     for (const auto& pair : get_pointing_button_name_value_pairs()) {
       if (pair.second == pointing_button) {
         return pair.first;
       }
     }
-    return boost::none;
+    return std::nullopt;
   }
 
-  static boost::optional<pointing_button> make_pointing_button(hid_usage_page usage_page, hid_usage usage) {
+  static std::optional<pointing_button> make_pointing_button(hid_usage_page usage_page, hid_usage usage) {
     if (usage_page == hid_usage_page::button) {
       return pointing_button(usage);
     }
-    return boost::none;
+    return std::nullopt;
   }
 
-  static boost::optional<pointing_button> make_pointing_button(const hid_value& hid_value) {
+  static std::optional<pointing_button> make_pointing_button(const hid_value& hid_value) {
     if (auto hid_usage_page = hid_value.get_hid_usage_page()) {
       if (auto hid_usage = hid_value.get_hid_usage()) {
         return make_pointing_button(*hid_usage_page,
                                     *hid_usage);
       }
     }
-    return boost::none;
+    return std::nullopt;
   }
 };
 

@@ -201,7 +201,7 @@ private:
           // FSEvents passes realpathed file path to callback.
           // Thus, we should to convert it to file path in `files_`.
 
-          boost::optional<std::string> changed_file_path;
+          std::optional<std::string> changed_file_path;
 
           if (auto realpath = filesystem::realpath(e.file_path)) {
             auto it = std::find_if(std::begin(files_),
