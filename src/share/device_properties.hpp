@@ -11,6 +11,7 @@ namespace krbn {
 class device_properties final {
 public:
   device_properties(void) {
+    update_device_identifiers();
   }
 
   device_properties(device_id device_id,
@@ -48,11 +49,7 @@ public:
 
     is_karabiner_virtual_hid_device_ = iokit_utility::is_karabiner_virtual_hid_device(device);
 
-    device_identifiers_ = std::make_shared<device_identifiers>(
-        vendor_id_.value_or(vendor_id(0)),
-        product_id_.value_or(product_id(0)),
-        is_keyboard_.value_or(false),
-        is_pointing_device_.value_or(false));
+    update_device_identifiers();
   }
 
   nlohmann::json to_json(void) const {
@@ -106,6 +103,7 @@ public:
 
   device_properties& set(vendor_id value) {
     vendor_id_ = value;
+    update_device_identifiers();
     return *this;
   }
 
@@ -115,6 +113,7 @@ public:
 
   device_properties& set(product_id value) {
     product_id_ = value;
+    update_device_identifiers();
     return *this;
   }
 
@@ -178,6 +177,7 @@ public:
 
   device_properties& set_is_keyboard(bool value) {
     is_keyboard_ = value;
+    update_device_identifiers();
     return *this;
   }
 
@@ -187,6 +187,7 @@ public:
 
   device_properties& set_is_pointing_device(bool value) {
     is_pointing_device_ = value;
+    update_device_identifiers();
     return *this;
   }
 
@@ -269,6 +270,14 @@ public:
   }
 
 private:
+  void update_device_identifiers(void) {
+    device_identifiers_ = std::make_shared<device_identifiers>(
+        vendor_id_.value_or(vendor_id(0)),
+        product_id_.value_or(product_id(0)),
+        is_keyboard_.value_or(false),
+        is_pointing_device_.value_or(false));
+  }
+
   device_id device_id_;
   std::optional<vendor_id> vendor_id_;
   std::optional<product_id> product_id_;
