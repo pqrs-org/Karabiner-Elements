@@ -1,5 +1,6 @@
 #pragma once
 
+#include "device_properties.hpp"
 #include "json_utility.hpp"
 
 namespace krbn {
@@ -7,9 +8,16 @@ namespace connected_devices {
 namespace details {
 class descriptions {
 public:
+  descriptions(void) : descriptions("", "") {
+  }
+
   descriptions(const std::string& manufacturer,
                const std::string& product) : manufacturer_(manufacturer),
                                              product_(product) {
+  }
+
+  descriptions(const device_properties& device_properties) : descriptions(device_properties.get_manufacturer().value_or(""),
+                                                                          device_properties.get_product().value_or("")) {
   }
 
   static descriptions make_from_json(const nlohmann::json& json) {

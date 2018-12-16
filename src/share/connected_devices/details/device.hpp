@@ -1,6 +1,7 @@
 #pragma once
 
 #include "descriptions.hpp"
+#include "device_properties.hpp"
 #include "json_utility.hpp"
 #include "types.hpp"
 
@@ -16,6 +17,18 @@ public:
                                       identifiers_(identifiers),
                                       is_built_in_keyboard_(is_built_in_keyboard),
                                       is_built_in_trackpad_(is_built_in_trackpad) {
+  }
+
+  device(const device_properties& device_properties) {
+    descriptions_ = descriptions(device_properties);
+
+    if (auto device_identifiers = device_properties.get_device_identifiers()) {
+      identifiers_ = *device_identifiers;
+    }
+
+    is_built_in_keyboard_ = device_properties.get_is_built_in_keyboard().value_or(false);
+
+    is_built_in_trackpad_ = device_properties.get_is_built_in_pointing_device().value_or(false);
   }
 
   static device make_from_json(const nlohmann::json& json) {
