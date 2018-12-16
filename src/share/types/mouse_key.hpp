@@ -142,6 +142,10 @@ public:
            speed_multiplier_ == other.speed_multiplier_;
   }
 
+  bool operator!=(const mouse_key& other) const {
+    return !(*this == other);
+  }
+
   friend size_t hash_value(const mouse_key& value) {
     size_t h = 0;
     boost::hash_combine(h, value.x_);

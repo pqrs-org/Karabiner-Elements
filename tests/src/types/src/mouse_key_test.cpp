@@ -64,3 +64,11 @@ TEST_CASE("mouse_key") {
     REQUIRE(!krbn::mouse_key(0, 0, 0, 4, 1.0).is_zero());
   }
 }
+
+TEST_CASE("mouse_key operators") {
+  krbn::mouse_key mouse_key1(10, 20, 30, 40, 1.0);
+  krbn::mouse_key mouse_key2 = mouse_key1;
+  krbn::mouse_key mouse_key3(1, 2, 3, 4, 2.0);
+  REQUIRE(mouse_key1 == mouse_key2);
+  REQUIRE(mouse_key1 != mouse_key3);
+}
