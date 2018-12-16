@@ -8,7 +8,9 @@ include_directories(../../../src/core/grabber/include)
 
 add_executable(
   karabiner_test
-  test.cpp
+  src/device_test.cpp
+  src/global_configuration_test.cpp
+  src/test.cpp
 )
 
 target_link_libraries(
