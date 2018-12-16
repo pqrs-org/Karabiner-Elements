@@ -9,11 +9,14 @@ namespace details {
 class device final {
 public:
   device(const nlohmann::json& json) : json_(json),
-                                       identifiers_(json_utility::find_copy(json, "identifiers", nlohmann::json())),
+                                       identifiers_(
+                                           device_identifiers::make_from_json(
+                                               json_utility::find_copy(json, "identifiers", nlohmann::json()))),
                                        ignore_(false),
                                        manipulate_caps_lock_led_(false),
                                        disable_built_in_keyboard_if_exists_(false),
-                                       simple_modifications_(json_utility::find_copy(json, "simple_modifications", nlohmann::json::array())),
+                                       simple_modifications_(
+                                           json_utility::find_copy(json, "simple_modifications", nlohmann::json::array())),
                                        fn_function_keys_(make_default_fn_function_keys_json()) {
     // ----------------------------------------
     // Set default value
