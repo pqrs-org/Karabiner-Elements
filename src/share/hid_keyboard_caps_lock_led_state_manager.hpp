@@ -36,6 +36,10 @@ public:
     std::lock_guard<std::mutex> lock(state_mutex_);
 
     state_ = value;
+
+    enqueue_to_dispatcher([this] {
+      update_caps_lock_led();
+    });
   }
 
   void async_start(void) {
@@ -43,7 +47,7 @@ public:
         [this] {
           update_caps_lock_led();
         },
-        std::chrono::milliseconds(1000));
+        std::chrono::milliseconds(3000));
   }
 
   void async_stop(void) {
