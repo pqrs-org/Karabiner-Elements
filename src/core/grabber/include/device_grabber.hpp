@@ -194,8 +194,8 @@ public:
                                   it->second->get_device_name());
 
         if (auto device_properties = it->second->get_device_properties()) {
-          if (device_properties->get_is_keyboard() &&
-              device_properties->get_is_karabiner_virtual_hid_device()) {
+          if (device_properties->get_is_keyboard().value_or(false) &&
+              device_properties->get_is_karabiner_virtual_hid_device().value_or(false)) {
             virtual_hid_device_client_->async_close();
             async_ungrab_devices();
 
