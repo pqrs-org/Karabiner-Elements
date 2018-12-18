@@ -36,8 +36,7 @@ public:
   device_grabber(std::weak_ptr<grabbable_state_queues_manager> weak_grabbable_state_queues_manager,
                  std::weak_ptr<console_user_server_client> weak_console_user_server_client) : dispatcher_client(),
                                                                                               weak_grabbable_state_queues_manager_(weak_grabbable_state_queues_manager),
-                                                                                              profile_(nlohmann::json()),
-                                                                                              grab_timer_(*this) {
+                                                                                              profile_(nlohmann::json()) {
     simple_modifications_manipulator_manager_ = std::make_shared<manipulator::manipulator_manager>();
     complex_modifications_manipulator_manager_ = std::make_shared<manipulator::manipulator_manager>();
     fn_function_keys_manipulator_manager_ = std::make_shared<manipulator::manipulator_manager>();
@@ -66,7 +65,7 @@ public:
 
     if (auto m = weak_grabbable_state_queues_manager_.lock()) {
       grabbable_state_changed_connection_ = m->grabbable_state_changed.connect([this](auto&& device_id, auto&& grabbable_state) {
-        retry_grab(device_id, grabbable_state);
+        async_grab_devices();
       });
     }
 
@@ -295,12 +294,6 @@ public:
       configuration_monitor_->async_start();
 
       virtual_hid_device_client_->async_connect();
-
-      grab_timer_.start(
-          [this] {
-            async_grab_devices();
-          },
-          std::chrono::milliseconds(3000));
     });
   }
 
@@ -407,8 +400,6 @@ public:
 
 private:
   void stop(void) {
-    grab_timer_.stop();
-
     configuration_monitor_ = nullptr;
 
     async_ungrab_devices();
@@ -416,32 +407,6 @@ private:
     event_tap_monitor_ = nullptr;
 
     virtual_hid_device_client_->async_close();
-  }
-
-  void retry_grab(device_id device_id, std::optional<grabbable_state> grabbable_state) {
-    auto it = entries_.find(device_id);
-    if (it != std::end(entries_)) {
-      // Check grabbable state
-
-      bool grabbable = false;
-      if (grabbable_state &&
-          grabbable_state->get_state() == grabbable_state::state::grabbable) {
-        grabbable = true;
-      }
-
-      // Grab device
-
-      if (grabbable) {
-        // Call `grab` again if current_grabbable_state is `grabbable` and not grabbed yet.
-        if (!it->second->get_grabbed()) {
-          it->second->async_stop_queue_value_monitor();
-          it->second->async_start_queue_value_monitor();
-        }
-      } else {
-        // We should `ungrab` since current_grabbable_state is not `grabbable`.
-        it->second->async_stop_queue_value_monitor();
-      }
-    }
   }
 
   // This method is executed in the shared dispatcher thread.
@@ -997,8 +962,6 @@ private:
   std::shared_ptr<manipulator::details::post_event_to_virtual_devices> post_event_to_virtual_devices_manipulator_;
   std::shared_ptr<manipulator::manipulator_manager> post_event_to_virtual_devices_manipulator_manager_;
   std::shared_ptr<event_queue::queue> posted_event_queue_;
-
-  pqrs::dispatcher::extra::timer grab_timer_;
 
   mutable logger::unique_filter logger_unique_filter_;
 };
