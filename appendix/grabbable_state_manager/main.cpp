@@ -52,7 +52,8 @@ public:
 
         hid_queue_value_monitor->values_arrived.connect([this, device_id](auto&& values_ptr) {
           if (grabbable_state_manager_) {
-            auto event_queue = krbn::iokit_utility::make_event_queue(device_id, values_ptr);
+            auto event_queue = krbn::event_queue::utility::make_queue(device_id,
+                                                                      krbn::iokit_utility::make_hid_values(values_ptr));
             grabbable_state_manager_->update(*event_queue);
           }
         });
