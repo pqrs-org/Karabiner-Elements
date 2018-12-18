@@ -65,7 +65,10 @@ public:
 
     if (auto m = weak_grabbable_state_queues_manager_.lock()) {
       grabbable_state_changed_connection_ = m->grabbable_state_changed.connect([this](auto&& device_id, auto&& grabbable_state) {
-        async_grab_devices();
+        auto it = entries_.find(device_id);
+        if (it != std::end(entries_)) {
+          grab_device(it->second);
+        }
       });
     }
 
@@ -123,8 +126,6 @@ public:
                                                                      core_configuration_);
         entries_[device_id] = entry;
 
-        post_device_grabbed_event(entry->get_device_properties());
-
         entry->get_hid_queue_value_monitor()->values_arrived.connect([this, device_id](auto&& values_ptr) {
           auto it = entries_.find(device_id);
           if (it != std::end(entries_)) {
@@ -142,6 +143,8 @@ public:
           if (it != std::end(entries_)) {
             logger::get_logger().info("{0} is grabbed.",
                                       it->second->get_device_name());
+
+            post_device_grabbed_event(it->second->get_device_properties());
 
             it->second->set_grabbed(true);
 
@@ -306,11 +309,7 @@ public:
   void async_grab_devices(void) {
     enqueue_to_dispatcher([this] {
       for (auto&& e : entries_) {
-        if (make_grabbable_state(e.second) == grabbable_state::state::grabbable) {
-          e.second->async_start_queue_value_monitor();
-        } else {
-          e.second->async_stop_queue_value_monitor();
-        }
+        grab_device(e.second);
       }
     });
   }
@@ -502,6 +501,14 @@ private:
     merged_input_event_queue_->push_back_entry(entry);
 
     krbn_notification_center::get_instance().enqueue_input_event_arrived(*this);
+  }
+
+  void grab_device(std::shared_ptr<device_grabber_details::entry> entry) const {
+    if (make_grabbable_state(entry) == grabbable_state::state::grabbable) {
+      entry->async_start_queue_value_monitor();
+    } else {
+      entry->async_stop_queue_value_monitor();
+    }
   }
 
   grabbable_state::state make_grabbable_state(std::shared_ptr<device_grabber_details::entry> entry) const {
