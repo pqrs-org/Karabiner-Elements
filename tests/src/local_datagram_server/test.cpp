@@ -2,11 +2,11 @@
 #include <catch2/catch.hpp>
 
 #include "dispatcher_utility.hpp"
-#include "filesystem.hpp"
 #include "local_datagram/client.hpp"
 #include "local_datagram/client_manager.hpp"
 #include "local_datagram/server.hpp"
 #include "local_datagram/server_manager.hpp"
+#include <pqrs/filesystem.hpp>
 
 TEST_CASE("initialize") {
   krbn::dispatcher_utility::initialize_dispatchers();
@@ -138,7 +138,7 @@ private:
 
 TEST_CASE("socket file") {
   unlink(socket_path.c_str());
-  REQUIRE(!krbn::filesystem::exists(socket_path));
+  REQUIRE(!pqrs::filesystem::exists(socket_path));
 
   {
     krbn::local_datagram::server server;
@@ -149,10 +149,10 @@ TEST_CASE("socket file") {
 
     std::this_thread::sleep_for(std::chrono::milliseconds(500));
 
-    REQUIRE(krbn::filesystem::exists(socket_path));
+    REQUIRE(pqrs::filesystem::exists(socket_path));
   }
 
-  REQUIRE(!krbn::filesystem::exists(socket_path));
+  REQUIRE(!pqrs::filesystem::exists(socket_path));
 }
 
 TEST_CASE("fail to create socket file") {
@@ -181,7 +181,7 @@ TEST_CASE("keep existing file in destructor") {
     file << regular_file_path << std::endl;
   }
 
-  REQUIRE(krbn::filesystem::exists(regular_file_path));
+  REQUIRE(pqrs::filesystem::exists(regular_file_path));
 
   {
     krbn::local_datagram::server server;
@@ -192,7 +192,7 @@ TEST_CASE("keep existing file in destructor") {
     std::this_thread::sleep_for(std::chrono::milliseconds(500));
   }
 
-  REQUIRE(krbn::filesystem::exists(regular_file_path));
+  REQUIRE(pqrs::filesystem::exists(regular_file_path));
 }
 
 TEST_CASE("permission error") {
@@ -276,7 +276,7 @@ TEST_CASE("local_datagram::server") {
 
   // Send after server is destroyed.
   {
-    REQUIRE(!krbn::filesystem::exists(socket_path));
+    REQUIRE(!pqrs::filesystem::exists(socket_path));
 
     test_client client;
 

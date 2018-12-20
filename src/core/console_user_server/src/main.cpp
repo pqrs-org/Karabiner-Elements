@@ -1,12 +1,12 @@
 #include "components_manager.hpp"
 #include "constants.hpp"
 #include "dispatcher_utility.hpp"
-#include "filesystem.hpp"
 #include "karabiner_version.h"
 #include "logger.hpp"
 #include "migration.hpp"
 #include "process_utility.hpp"
 #include <pqrs/dispatcher.hpp>
+#include <pqrs/filesystem.hpp>
 
 int main(int argc, const char* argv[]) {
   krbn::dispatcher_utility::initialize_dispatchers();
@@ -37,8 +37,8 @@ int main(int argc, const char* argv[]) {
 
   // Create directories
 
-  krbn::filesystem::create_directory_with_intermediate_directories(krbn::constants::get_user_configuration_directory(), 0700);
-  krbn::filesystem::create_directory_with_intermediate_directories(krbn::constants::get_user_complex_modifications_assets_directory(), 0700);
+  pqrs::filesystem::create_directory_with_intermediate_directories(krbn::constants::get_user_configuration_directory(), 0700);
+  pqrs::filesystem::create_directory_with_intermediate_directories(krbn::constants::get_user_complex_modifications_assets_directory(), 0700);
 
   // Run components_manager
 

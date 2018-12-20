@@ -3,9 +3,9 @@
 // `krbn::async_file_writer` can be used safely in a multi-threaded environment.
 
 #include "dispatcher_utility.hpp"
-#include "filesystem.hpp"
 #include "logger.hpp"
 #include <fstream>
+#include <pqrs/filesystem.hpp>
 #include <pqrs/thread_wait.hpp>
 #include <sys/stat.h>
 #include <sys/types.h>
@@ -22,8 +22,8 @@ public:
                       mode_t file_mode) {
     dispatcher_utility::enqueue_to_file_writer_dispatcher([file_path, body, parent_directory_mode, file_mode] {
       try {
-        filesystem::create_directory_with_intermediate_directories(filesystem::dirname(file_path),
-                                                                   parent_directory_mode);
+        pqrs::filesystem::create_directory_with_intermediate_directories(pqrs::filesystem::dirname(file_path),
+                                                                         parent_directory_mode);
 
         std::string tmp_file_path = file_path + ".tmp";
 

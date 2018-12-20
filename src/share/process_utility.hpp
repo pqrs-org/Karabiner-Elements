@@ -3,9 +3,9 @@
 // `krbn::process_utility` can be used safely in a multi-threaded environment.
 
 #include "constants.hpp"
-#include "filesystem.hpp"
 #include <fcntl.h>
 #include <mutex>
+#include <pqrs/filesystem.hpp>
 #include <sstream>
 #include <string>
 #include <sys/file.h>
@@ -16,13 +16,13 @@ public:
   static bool lock_single_application(const std::string& pid_file_path) {
     std::lock_guard<std::mutex> lock(get_mutex());
 
-    auto pid_directory = filesystem::dirname(pid_file_path);
+    auto pid_directory = pqrs::filesystem::dirname(pid_file_path);
     if (pid_directory.empty()) {
       throw std::runtime_error("failed to get user pid directory");
     }
 
-    filesystem::create_directory_with_intermediate_directories(pid_directory, 0755);
-    if (!filesystem::is_directory(pid_directory)) {
+    pqrs::filesystem::create_directory_with_intermediate_directories(pid_directory, 0755);
+    if (!pqrs::filesystem::is_directory(pid_directory)) {
       throw std::runtime_error("failed to create pid directory");
     }
 

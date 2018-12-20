@@ -2,13 +2,13 @@
 
 #include "boost_defs.hpp"
 
-#include "filesystem.hpp"
 #include "spdlog_utility.hpp"
 #include <CoreFoundation/CoreFoundation.h>
 #include <boost/signals2.hpp>
 #include <deque>
 #include <fstream>
 #include <pqrs/dispatcher.hpp>
+#include <pqrs/filesystem.hpp>
 #include <thread>
 #include <type_safe/strong_typedef.hpp>
 #include <vector>
@@ -54,7 +54,7 @@ public:
           [this] {
             ++timer_count_;
             for (const auto& file : files_) {
-              if (auto size = filesystem::file_size(file)) {
+              if (auto size = pqrs::filesystem::file_size(file)) {
                 auto it = read_position_.find(file);
                 if (it != read_position_.end()) {
                   if (it->second != *size) {
@@ -141,7 +141,7 @@ private:
 
     auto it = read_position_.find(file_path);
     if (it != read_position_.end()) {
-      if (auto size = filesystem::file_size(file_path)) {
+      if (auto size = pqrs::filesystem::file_size(file_path)) {
         if (it->second < *size) {
           stream.seekg(it->second);
         }

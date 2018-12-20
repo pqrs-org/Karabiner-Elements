@@ -8,7 +8,6 @@
 #include "details/profile/device.hpp"
 #include "details/profile/simple_modifications.hpp"
 #include "details/profile/virtual_hid_keyboard.hpp"
-#include "filesystem.hpp"
 #include "json_utility.hpp"
 #include "logger.hpp"
 #include "session.hpp"
@@ -17,6 +16,7 @@
 #include <fstream>
 #include <glob.h>
 #include <nlohmann/json.hpp>
+#include <pqrs/filesystem.hpp>
 #include <string>
 #include <unordered_map>
 
@@ -35,12 +35,12 @@ public:
     bool valid_file_owner = false;
 
     // Load karabiner.json only when the owner is root or current session user.
-    if (filesystem::exists(file_path)) {
-      if (filesystem::is_owned(file_path, 0)) {
+    if (pqrs::filesystem::exists(file_path)) {
+      if (pqrs::filesystem::is_owned(file_path, 0)) {
         valid_file_owner = true;
       } else {
         if (auto console_user_id = session::get_current_console_user_id()) {
-          if (filesystem::is_owned(file_path, *console_user_id)) {
+          if (pqrs::filesystem::is_owned(file_path, *console_user_id)) {
             valid_file_owner = true;
           }
         }
@@ -164,7 +164,7 @@ private:
   void make_backup_file(void) {
     auto file_path = constants::get_user_core_configuration_file_path();
 
-    if (!filesystem::exists(file_path)) {
+    if (!pqrs::filesystem::exists(file_path)) {
       return;
     }
 
@@ -173,15 +173,15 @@ private:
       return;
     }
 
-    filesystem::create_directory_with_intermediate_directories(backups_directory, 0700);
+    pqrs::filesystem::create_directory_with_intermediate_directories(backups_directory, 0700);
 
     auto backup_file_path = backups_directory +
                             "/karabiner_" + time_utility::make_current_local_yyyymmdd_string() + ".json";
-    if (filesystem::exists(backup_file_path)) {
+    if (pqrs::filesystem::exists(backup_file_path)) {
       return;
     }
 
-    filesystem::copy(file_path, backup_file_path);
+    pqrs::filesystem::copy(file_path, backup_file_path);
   }
 
   void remove_old_backup_files(void) {

@@ -1,8 +1,8 @@
 #pragma once
 
-#include "filesystem.hpp"
 #include "spdlog_utility.hpp"
 #include <memory>
+#include <pqrs/filesystem.hpp>
 #include <spdlog/async.h>
 #include <spdlog/sinks/rotating_file_sink.h>
 #include <spdlog/sinks/stdout_sinks.h>
@@ -32,9 +32,9 @@ public:
   static void set_async_rotating_logger(const std::string& logger_name,
                                         const std::string& log_file_path,
                                         mode_t log_directory_mode) {
-    auto directory = filesystem::dirname(log_file_path);
-    filesystem::create_directory_with_intermediate_directories(directory, log_directory_mode);
-    if (filesystem::is_directory(directory)) {
+    auto directory = pqrs::filesystem::dirname(log_file_path);
+    pqrs::filesystem::create_directory_with_intermediate_directories(directory, log_directory_mode);
+    if (pqrs::filesystem::is_directory(directory)) {
       auto l = spdlog::rotating_logger_mt<spdlog::async_factory>(logger_name,
                                                                  log_file_path,
                                                                  256 * 1024,

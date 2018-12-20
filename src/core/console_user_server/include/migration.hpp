@@ -11,10 +11,10 @@ public:
     auto new_file_path = constants::get_user_core_configuration_file_path();
 
     if (!old_file_path.empty() && !new_file_path.empty()) {
-      if (filesystem::exists(old_file_path) && !filesystem::exists(new_file_path)) {
-        auto new_directory = filesystem::dirname(new_file_path);
-        filesystem::create_directory_with_intermediate_directories(new_directory, 0700);
-        if (filesystem::exists(new_directory)) {
+      if (pqrs::filesystem::exists(old_file_path) && !pqrs::filesystem::exists(new_file_path)) {
+        auto new_directory = pqrs::filesystem::dirname(new_file_path);
+        pqrs::filesystem::create_directory_with_intermediate_directories(new_directory, 0700);
+        if (pqrs::filesystem::exists(new_directory)) {
           rename(old_file_path.c_str(), new_file_path.c_str());
         }
       }

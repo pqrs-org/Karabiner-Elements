@@ -6,12 +6,12 @@
 
 #include "cf_utility.hpp"
 #include "file_utility.hpp"
-#include "filesystem.hpp"
 #include "logger.hpp"
 #include <CoreServices/CoreServices.h>
 #include <boost/signals2.hpp>
 #include <pqrs/cf_run_loop_thread.hpp>
 #include <pqrs/dispatcher.hpp>
+#include <pqrs/filesystem.hpp>
 #include <utility>
 #include <vector>
 
@@ -32,7 +32,7 @@ public:
 
     std::vector<std::string> directories;
     for (const auto& f : files) {
-      auto directory = filesystem::dirname(f);
+      auto directory = pqrs::filesystem::dirname(f);
       if (std::none_of(std::begin(directories),
                        std::end(directories),
                        [&](auto&& d) {
@@ -203,11 +203,11 @@ private:
 
           std::optional<std::string> changed_file_path;
 
-          if (auto realpath = filesystem::realpath(e.file_path)) {
+          if (auto realpath = pqrs::filesystem::realpath(e.file_path)) {
             auto it = std::find_if(std::begin(files_),
                                    std::end(files_),
                                    [&](auto&& p) {
-                                     return *realpath == filesystem::realpath(p);
+                                     return *realpath == pqrs::filesystem::realpath(p);
                                    });
             if (it != std::end(files_)) {
               stream_file_paths_[e.file_path] = *it;

@@ -95,7 +95,7 @@ void libkrbn_launch_preferences(void) {
 }
 
 bool libkrbn_system_core_configuration_file_path_exists(void) {
-  return krbn::filesystem::exists(krbn::constants::get_system_core_configuration_file_path());
+  return pqrs::filesystem::exists(krbn::constants::get_system_core_configuration_file_path());
 }
 
 void libkrbn_get_key_code_name(char* buffer, size_t length, uint32_t key_code) {

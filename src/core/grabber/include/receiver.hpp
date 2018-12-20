@@ -195,7 +195,7 @@ public:
 private:
   void start_grabbing_if_system_core_configuration_file_exists(void) {
     auto file_path = constants::get_system_core_configuration_file_path();
-    if (filesystem::exists(file_path)) {
+    if (pqrs::filesystem::exists(file_path)) {
       stop_device_grabber();
       start_device_grabber(file_path);
     }
