@@ -1,6 +1,6 @@
 #pragma once
 
-// pqrs::iokit_hid_queue_value_monitor v1.4
+// pqrs::iokit_hid_queue_value_monitor v1.5
 
 // (C) Copyright Takayama Fumihiko 2018.
 // Distributed under the Boost Software License, Version 1.0.
@@ -11,7 +11,7 @@
 #include <chrono>
 #include <nod/nod.hpp>
 #include <optional>
-#include <pqrs/cf_run_loop_thread.hpp>
+#include <pqrs/cf/run_loop_thread.hpp>
 #include <pqrs/dispatcher.hpp>
 #include <pqrs/osx/iokit_hid_device.hpp>
 #include <pqrs/osx/iokit_return.hpp>
@@ -19,13 +19,13 @@
 
 namespace pqrs {
 namespace osx {
-class iokit_hid_queue_value_monitor final : public pqrs::dispatcher::extra::dispatcher_client {
+class iokit_hid_queue_value_monitor final : public dispatcher::extra::dispatcher_client {
 public:
   // Signals (invoked from the shared dispatcher thread)
 
   nod::signal<void(void)> started;
   nod::signal<void(void)> stopped;
-  nod::signal<void(std::shared_ptr<std::vector<cf_ptr<IOHIDValueRef>>>)> values_arrived;
+  nod::signal<void(std::shared_ptr<std::vector<cf::cf_ptr<IOHIDValueRef>>>)> values_arrived;
   nod::signal<void(const std::string&, iokit_return)> error_occurred;
 
   // Methods
@@ -37,7 +37,7 @@ public:
                                                          device_scheduled_(false),
                                                          open_timer_(*this),
                                                          last_open_error_(kIOReturnSuccess) {
-    cf_run_loop_thread_ = std::make_unique<cf_run_loop_thread>();
+    cf_run_loop_thread_ = std::make_unique<cf::run_loop_thread>();
 
     // Schedule device
 
@@ -228,7 +228,7 @@ private:
 
   void queue_value_available_callback(void) {
     if (queue_) {
-      auto values = std::make_shared<std::vector<cf_ptr<IOHIDValueRef>>>();
+      auto values = std::make_shared<std::vector<cf::cf_ptr<IOHIDValueRef>>>();
 
       while (auto v = IOHIDQueueCopyNextValueWithTimeout(*queue_, 0.0)) {
         values->emplace_back(v);
@@ -243,12 +243,12 @@ private:
   }
 
   iokit_hid_device hid_device_;
-  std::unique_ptr<cf_run_loop_thread> cf_run_loop_thread_;
+  std::unique_ptr<cf::run_loop_thread> cf_run_loop_thread_;
   bool device_scheduled_;
-  pqrs::dispatcher::extra::timer open_timer_;
+  dispatcher::extra::timer open_timer_;
   std::optional<IOOptionBits> open_options_;
   iokit_return last_open_error_;
-  cf_ptr<IOHIDQueueRef> queue_;
+  cf::cf_ptr<IOHIDQueueRef> queue_;
 };
 } // namespace osx
 } // namespace pqrs

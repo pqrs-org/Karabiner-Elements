@@ -1,6 +1,6 @@
 #pragma once
 
-// pqrs::iokit_hid_device v2.3
+// pqrs::iokit_hid_device v2.4
 
 // (C) Copyright Takayama Fumihiko 2018.
 // Distributed under the Boost Software License, Version 1.0.
@@ -9,8 +9,8 @@
 #include <IOKit/hid/IOHIDDevice.h>
 #include <IOKit/hid/IOHIDQueue.h>
 #include <optional>
-#include <pqrs/cf_array.hpp>
-#include <pqrs/cf_string.hpp>
+#include <pqrs/cf/array.hpp>
+#include <pqrs/cf/string.hpp>
 #include <pqrs/osx/iokit_types.hpp>
 
 namespace pqrs {
@@ -23,7 +23,7 @@ public:
   virtual ~iokit_hid_device(void) {
   }
 
-  cf_ptr<IOHIDDeviceRef> get_device(void) const {
+  cf::cf_ptr<IOHIDDeviceRef> get_device(void) const {
     return device_;
   }
 
@@ -46,7 +46,7 @@ public:
   std::optional<std::string> find_string_property(CFStringRef key) const {
     if (device_) {
       auto property = IOHIDDeviceGetProperty(*device_, key);
-      return make_string(property);
+      return cf::make_string(property);
     }
 
     return std::nullopt;
@@ -93,8 +93,8 @@ public:
     return find_string_property(CFSTR(kIOHIDTransportKey));
   }
 
-  std::vector<pqrs::cf_ptr<IOHIDElementRef>> make_elements(void) {
-    std::vector<pqrs::cf_ptr<IOHIDElementRef>> result;
+  std::vector<cf::cf_ptr<IOHIDElementRef>> make_elements(void) {
+    std::vector<cf::cf_ptr<IOHIDElementRef>> result;
 
     if (device_) {
       // Note:
@@ -116,7 +116,7 @@ public:
 
       if (auto elements = IOHIDDeviceCopyMatchingElements(*device_, nullptr, kIOHIDOptionsTypeNone)) {
         for (CFIndex i = 0; i < CFArrayGetCount(elements); ++i) {
-          auto e = get_cf_array_value<IOHIDElementRef>(elements, i);
+          auto e = cf::get_cf_array_value<IOHIDElementRef>(elements, i);
           if (e) {
             result.emplace_back(e);
           }
@@ -129,8 +129,8 @@ public:
     return result;
   }
 
-  cf_ptr<IOHIDQueueRef> make_queue(CFIndex depth) const {
-    cf_ptr<IOHIDQueueRef> result;
+  cf::cf_ptr<IOHIDQueueRef> make_queue(CFIndex depth) const {
+    cf::cf_ptr<IOHIDQueueRef> result;
 
     if (device_) {
       if (auto queue = IOHIDQueueCreate(kCFAllocatorDefault, *device_, depth, kIOHIDOptionsTypeNone)) {
@@ -144,7 +144,7 @@ public:
   }
 
 private:
-  cf_ptr<IOHIDDeviceRef> device_;
+  cf::cf_ptr<IOHIDDeviceRef> device_;
 };
 } // namespace osx
 } // namespace pqrs

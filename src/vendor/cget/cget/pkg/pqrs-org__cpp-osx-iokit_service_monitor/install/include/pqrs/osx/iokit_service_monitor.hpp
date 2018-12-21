@@ -1,6 +1,6 @@
 #pragma once
 
-// pqrs::iokit_service_monitor v3.1
+// pqrs::iokit_service_monitor v3.2
 
 // (C) Copyright Takayama Fumihiko 2018.
 // Distributed under the Boost Software License, Version 1.0.
@@ -10,7 +10,7 @@
 
 #include <nod/nod.hpp>
 #include <optional>
-#include <pqrs/cf_run_loop_thread.hpp>
+#include <pqrs/cf/run_loop_thread.hpp>
 #include <pqrs/dispatcher.hpp>
 #include <pqrs/osx/iokit_object_ptr.hpp>
 #include <pqrs/osx/iokit_return.hpp>
@@ -34,7 +34,7 @@ public:
                         CFDictionaryRef _Nonnull matching_dictionary) : dispatcher_client(weak_dispatcher),
                                                                         matching_dictionary_(matching_dictionary),
                                                                         notification_port_(nullptr) {
-    cf_run_loop_thread_ = std::make_unique<cf_run_loop_thread>();
+    cf_run_loop_thread_ = std::make_unique<cf::run_loop_thread>();
   }
 
   virtual ~iokit_service_monitor(void) {
@@ -249,9 +249,9 @@ private:
     return std::nullopt;
   }
 
-  cf_ptr<CFDictionaryRef> matching_dictionary_;
+  cf::cf_ptr<CFDictionaryRef> matching_dictionary_;
 
-  std::unique_ptr<cf_run_loop_thread> cf_run_loop_thread_;
+  std::unique_ptr<cf::run_loop_thread> cf_run_loop_thread_;
   IONotificationPortRef _Nullable notification_port_;
   iokit_object_ptr matched_notification_;
   iokit_object_ptr terminated_notification_;

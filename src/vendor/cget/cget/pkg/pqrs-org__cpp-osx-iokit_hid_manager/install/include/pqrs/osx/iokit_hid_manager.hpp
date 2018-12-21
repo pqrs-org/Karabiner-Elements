@@ -1,6 +1,6 @@
 #pragma once
 
-// pqrs::iokit_hid_manager v2.1
+// pqrs::iokit_hid_manager v2.2
 
 // (C) Copyright Takayama Fumihiko 2018.
 // Distributed under the Boost Software License, Version 1.0.
@@ -9,18 +9,18 @@
 // `pqrs::osx::iokit_hid_manager` can be used safely in a multi-threaded environment.
 
 #include <IOKit/hid/IOHIDDevice.h>
-#include <pqrs/cf_number.hpp>
+#include <pqrs/cf/number.hpp>
 #include <pqrs/osx/iokit_service_monitor.hpp>
 #include <unordered_map>
 #include <vector>
 
 namespace pqrs {
 namespace osx {
-class iokit_hid_manager final : public pqrs::dispatcher::extra::dispatcher_client {
+class iokit_hid_manager final : public dispatcher::extra::dispatcher_client {
 public:
   // Signals (invoked from the shared dispatcher thread)
 
-  nod::signal<void(iokit_registry_entry_id, cf_ptr<IOHIDDeviceRef>)> device_matched;
+  nod::signal<void(iokit_registry_entry_id, cf::cf_ptr<IOHIDDeviceRef>)> device_matched;
   nod::signal<void(iokit_registry_entry_id)> device_terminated;
   nod::signal<void(const std::string&, iokit_return)> error_occurred;
 
@@ -29,8 +29,8 @@ public:
   iokit_hid_manager(const iokit_hid_manager&) = delete;
 
   iokit_hid_manager(std::weak_ptr<dispatcher::dispatcher> weak_dispatcher,
-                    const std::vector<cf_ptr<CFDictionaryRef>>& matching_dictionaries) : dispatcher_client(weak_dispatcher),
-                                                                                         matching_dictionaries_(matching_dictionaries) {
+                    const std::vector<cf::cf_ptr<CFDictionaryRef>>& matching_dictionaries) : dispatcher_client(weak_dispatcher),
+                                                                                             matching_dictionaries_(matching_dictionaries) {
   }
 
   virtual ~iokit_hid_manager(void) {
@@ -45,17 +45,17 @@ public:
     });
   }
 
-  static cf_ptr<CFDictionaryRef> make_matching_dictionary(iokit_hid_usage_page hid_usage_page,
-                                                          iokit_hid_usage hid_usage) {
-    cf_ptr<CFDictionaryRef> result;
+  static cf::cf_ptr<CFDictionaryRef> make_matching_dictionary(iokit_hid_usage_page hid_usage_page,
+                                                              iokit_hid_usage hid_usage) {
+    cf::cf_ptr<CFDictionaryRef> result;
 
     if (auto matching_dictionary = IOServiceMatching(kIOHIDDeviceKey)) {
-      if (auto number = pqrs::make_cf_number(type_safe::get(hid_usage_page))) {
+      if (auto number = cf::make_cf_number(type_safe::get(hid_usage_page))) {
         CFDictionarySetValue(matching_dictionary,
                              CFSTR(kIOHIDDeviceUsagePageKey),
                              *number);
       }
-      if (auto number = pqrs::make_cf_number(type_safe::get(hid_usage))) {
+      if (auto number = cf::make_cf_number(type_safe::get(hid_usage))) {
         CFDictionarySetValue(matching_dictionary,
                              CFSTR(kIOHIDDeviceUsageKey),
                              *number);
@@ -69,11 +69,11 @@ public:
     return result;
   }
 
-  static cf_ptr<CFDictionaryRef> make_matching_dictionary(iokit_hid_usage_page hid_usage_page) {
-    cf_ptr<CFDictionaryRef> result;
+  static cf::cf_ptr<CFDictionaryRef> make_matching_dictionary(iokit_hid_usage_page hid_usage_page) {
+    cf::cf_ptr<CFDictionaryRef> result;
 
     if (auto matching_dictionary = IOServiceMatching(kIOHIDDeviceKey)) {
-      if (auto number = pqrs::make_cf_number(type_safe::get(hid_usage_page))) {
+      if (auto number = cf::make_cf_number(type_safe::get(hid_usage_page))) {
         CFDictionarySetValue(matching_dictionary,
                              CFSTR(kIOHIDDeviceUsagePageKey),
                              *number);
@@ -92,13 +92,13 @@ private:
   void start(void) {
     for (const auto& matching_dictionary : matching_dictionaries_) {
       if (matching_dictionary) {
-        auto monitor = std::make_shared<pqrs::osx::iokit_service_monitor>(weak_dispatcher_,
-                                                                          *matching_dictionary);
+        auto monitor = std::make_shared<iokit_service_monitor>(weak_dispatcher_,
+                                                               *matching_dictionary);
 
         monitor->service_matched.connect([this](auto&& registry_entry_id, auto&& service_ptr) {
           if (devices_.find(registry_entry_id) == std::end(devices_)) {
             if (auto device = IOHIDDeviceCreate(kCFAllocatorDefault, *service_ptr)) {
-              auto device_ptr = pqrs::cf_ptr<IOHIDDeviceRef>(device);
+              auto device_ptr = cf::cf_ptr<IOHIDDeviceRef>(device);
               devices_[registry_entry_id] = device_ptr;
 
               enqueue_to_dispatcher([this, registry_entry_id, device_ptr] {
@@ -140,10 +140,10 @@ private:
     devices_.clear();
   }
 
-  std::vector<cf_ptr<CFDictionaryRef>> matching_dictionaries_;
+  std::vector<cf::cf_ptr<CFDictionaryRef>> matching_dictionaries_;
 
   std::vector<std::shared_ptr<iokit_service_monitor>> service_monitors_;
-  std::unordered_map<pqrs::osx::iokit_registry_entry_id, pqrs::cf_ptr<IOHIDDeviceRef>> devices_;
+  std::unordered_map<iokit_registry_entry_id, cf::cf_ptr<IOHIDDeviceRef>> devices_;
 };
 } // namespace osx
 } // namespace pqrs
