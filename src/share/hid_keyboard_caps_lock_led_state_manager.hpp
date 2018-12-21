@@ -89,8 +89,8 @@ private:
     return std::nullopt;
   }
 
-  pqrs::cf_ptr<IOHIDDeviceRef> device_;
-  pqrs::cf_ptr<IOHIDElementRef> element_;
+  pqrs::cf::cf_ptr<IOHIDDeviceRef> device_;
+  pqrs::cf::cf_ptr<IOHIDElementRef> element_;
   std::optional<led_state> state_;
   mutable std::mutex state_mutex_;
   pqrs::dispatcher::extra::timer timer_;

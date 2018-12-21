@@ -3,7 +3,7 @@
 #include "cf_utility.hpp"
 #include <Security/CodeSigning.h>
 #include <optional>
-#include <pqrs/cf_string.hpp>
+#include <pqrs/cf/string.hpp>
 #include <string>
 
 namespace krbn {
@@ -25,7 +25,7 @@ public:
                 auto certificate = cf_utility::get_value<SecCertificateRef>(certificates, 0);
                 CFStringRef common_name_string;
                 if (SecCertificateCopyCommonName(certificate, &common_name_string) == errSecSuccess) {
-                  common_name = pqrs::make_string(common_name_string);
+                  common_name = pqrs::cf::make_string(common_name_string);
                   CFRelease(common_name_string);
                 }
               }

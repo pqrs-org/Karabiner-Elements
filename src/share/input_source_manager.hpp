@@ -5,7 +5,7 @@
 #include "logger.hpp"
 #include "types.hpp"
 #include <Carbon/Carbon.h>
-#include <pqrs/cf_ptr.hpp>
+#include <pqrs/cf/cf_ptr.hpp>
 
 namespace krbn {
 class input_source_manager final {
@@ -62,7 +62,7 @@ private:
 
   private:
     input_source_identifiers input_source_identifiers_;
-    pqrs::cf_ptr<TISInputSourceRef> tis_input_source_ref_;
+    pqrs::cf::cf_ptr<TISInputSourceRef> tis_input_source_ref_;
   };
 
   static void static_enabled_input_sources_changed_callback(CFNotificationCenterRef center,

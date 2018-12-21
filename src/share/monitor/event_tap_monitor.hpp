@@ -7,7 +7,7 @@
 #include "event_tap_utility.hpp"
 #include "logger.hpp"
 #include <boost/signals2.hpp>
-#include <pqrs/cf_run_loop_thread.hpp>
+#include <pqrs/cf/run_loop_thread.hpp>
 #include <pqrs/dispatcher.hpp>
 
 namespace krbn {
@@ -24,7 +24,7 @@ public:
   event_tap_monitor(void) : dispatcher_client(),
                             event_tap_(nullptr),
                             run_loop_source_(nullptr) {
-    cf_run_loop_thread_ = std::make_unique<pqrs::cf_run_loop_thread>();
+    cf_run_loop_thread_ = std::make_unique<pqrs::cf::run_loop_thread>();
   }
 
   ~event_tap_monitor(void) {
@@ -148,7 +148,7 @@ private:
     return event;
   }
 
-  std::unique_ptr<pqrs::cf_run_loop_thread> cf_run_loop_thread_;
+  std::unique_ptr<pqrs::cf::run_loop_thread> cf_run_loop_thread_;
   CFMachPortRef _Nullable event_tap_;
   CFRunLoopSourceRef _Nullable run_loop_source_;
 };

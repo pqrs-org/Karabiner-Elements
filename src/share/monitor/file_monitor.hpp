@@ -9,9 +9,9 @@
 #include "logger.hpp"
 #include <CoreServices/CoreServices.h>
 #include <boost/signals2.hpp>
-#include <pqrs/cf_array.hpp>
-#include <pqrs/cf_run_loop_thread.hpp>
-#include <pqrs/cf_string.hpp>
+#include <pqrs/cf/array.hpp>
+#include <pqrs/cf/run_loop_thread.hpp>
+#include <pqrs/cf/string.hpp>
 #include <pqrs/dispatcher.hpp>
 #include <pqrs/filesystem.hpp>
 #include <utility>
@@ -28,9 +28,9 @@ public:
 
   file_monitor(const std::vector<std::string>& files) : dispatcher_client(),
                                                         files_(files),
-                                                        directories_(pqrs::make_cf_mutable_array()),
+                                                        directories_(pqrs::cf::make_cf_mutable_array()),
                                                         stream_(nullptr) {
-    cf_run_loop_thread_ = std::make_unique<pqrs::cf_run_loop_thread>();
+    cf_run_loop_thread_ = std::make_unique<pqrs::cf::run_loop_thread>();
 
     std::vector<std::string> directories;
     for (const auto& f : files) {
@@ -46,7 +46,7 @@ public:
 
     if (directories_) {
       for (const auto& d : directories) {
-        if (auto directory = pqrs::make_cf_string(d)) {
+        if (auto directory = pqrs::cf::make_cf_string(d)) {
           CFArrayAppendValue(*directories_, *directory);
         }
       }
@@ -263,8 +263,8 @@ private:
 
   std::vector<std::string> files_;
 
-  std::unique_ptr<pqrs::cf_run_loop_thread> cf_run_loop_thread_;
-  pqrs::cf_ptr<CFMutableArrayRef> directories_;
+  std::unique_ptr<pqrs::cf::run_loop_thread> cf_run_loop_thread_;
+  pqrs::cf::cf_ptr<CFMutableArrayRef> directories_;
   FSEventStreamRef stream_;
   // FSEventStreamEventPath -> file in files_
   // {

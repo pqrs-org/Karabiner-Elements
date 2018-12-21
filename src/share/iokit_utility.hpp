@@ -42,7 +42,7 @@ public:
     return false;
   }
 
-  static std::vector<hid_value> make_hid_values(std::shared_ptr<std::vector<pqrs::cf_ptr<IOHIDValueRef>>> values) {
+  static std::vector<hid_value> make_hid_values(std::shared_ptr<std::vector<pqrs::cf::cf_ptr<IOHIDValueRef>>> values) {
     std::vector<hid_value> hid_values;
 
     for (const auto& v : *values) {

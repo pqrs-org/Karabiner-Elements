@@ -14,7 +14,7 @@ public:
   libkrbn_hid_value_observer_class(libkrbn_hid_value_observer_callback callback,
                                    void* refcon) : callback_(callback),
                                                    refcon_(refcon) {
-    std::vector<pqrs::cf_ptr<CFDictionaryRef>> matching_dictionaries{
+    std::vector<pqrs::cf::cf_ptr<CFDictionaryRef>> matching_dictionaries{
         pqrs::osx::iokit_hid_manager::make_matching_dictionary(
             pqrs::osx::iokit_hid_usage_page_generic_desktop,
             pqrs::osx::iokit_hid_usage_generic_desktop_keyboard),
