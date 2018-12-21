@@ -1,6 +1,6 @@
 #pragma once
 
-// pqrs::filesystem v1.0
+// pqrs::filesystem v1.1
 
 // (C) Copyright Takayama Fumihiko 2018.
 // Distributed under the Boost Software License, Version 1.0.
@@ -45,6 +45,30 @@ inline std::string dirname(const std::string& path) {
   return path.substr(0, pos);
 }
 
+inline std::optional<std::string> realpath(const std::string& path) {
+  std::array<char, PATH_MAX> resolved_path;
+  if (!::realpath(path.c_str(), &(resolved_path[0]))) {
+    return std::nullopt;
+  }
+  return std::string(&(resolved_path[0]));
+}
+
+inline std::optional<mode_t> file_access_permissions(const std::string& path) {
+  struct stat s;
+  if (stat(path.c_str(), &s) != 0) {
+    return std::nullopt;
+  }
+  return s.st_mode & ACCESSPERMS;
+}
+
+inline std::optional<off_t> file_size(const std::string& path) {
+  struct stat s;
+  if (stat(path.c_str(), &s) != 0) {
+    return std::nullopt;
+  }
+  return s.st_size;
+}
+
 inline bool create_directory_with_intermediate_directories(const std::string& path, mode_t mode) {
   std::vector<std::string> parents;
   auto directory = path;
@@ -80,83 +104,5 @@ inline void copy(const std::string& from_file_path,
   }
   ofstream << ifstream.rdbuf();
 }
-
-inline std::optional<mode_t> file_access_permissions(const std::string& path) {
-  struct stat s;
-  if (stat(path.c_str(), &s) != 0) {
-    return std::nullopt;
-  }
-  return s.st_mode & ACCESSPERMS;
-}
-
-inline std::optional<off_t> file_size(const std::string& path) {
-  struct stat s;
-  if (stat(path.c_str(), &s) != 0) {
-    return std::nullopt;
-  }
-  return s.st_size;
-}
-
-inline void normalize_file_path(std::string& path) {
-  if (path.empty()) {
-    path += '.';
-    return;
-  }
-
-  size_t end = path.size();
-  size_t dest = 1;
-  for (size_t src = 1; src < end; ++src) {
-    // Skip multiple slashes.
-    if (path[dest - 1] == '/' && path[src] == '/') {
-      continue;
-    }
-
-    // Handling . and ..
-    if (path[src] == '/') {
-      dest = impl::process_dot(path, dest);
-      dest = impl::process_dotdot(path, dest);
-
-      if (dest == 0) {
-        if (path[0] != '/') {
-          continue;
-        }
-      } else {
-        if (path[dest - 1] == '/') {
-          continue;
-        }
-      }
-    }
-
-    if (dest != src) {
-      path[dest] = path[src];
-    }
-
-    ++dest;
-  }
-
-  dest = impl::process_dot(path, dest);
-  dest = impl::process_dotdot(path, dest);
-
-  if (dest == 0) {
-    path[0] = '.';
-    dest = 1;
-  }
-
-  path.resize(dest);
-}
-
-inline std::string normalize_file_path_copy(std::string path) {
-  normalize_file_path(path);
-  return path;
-}
-
-inline std::optional<std::string> realpath(const std::string& path) {
-  std::array<char, PATH_MAX> resolved_path;
-  if (!::realpath(path.c_str(), &(resolved_path[0]))) {
-    return std::nullopt;
-  }
-  return std::string(&(resolved_path[0]));
-}
-
 } // namespace filesystem
 } // namespace pqrs

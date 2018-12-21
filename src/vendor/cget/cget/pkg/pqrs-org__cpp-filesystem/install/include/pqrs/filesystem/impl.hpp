@@ -41,62 +41,6 @@ inline size_t get_dirname_position(const std::string& path, size_t pos = std::st
   }
   return i;
 }
-
-inline size_t process_dot(const std::string& path, size_t pos) {
-  if (path.empty()) return pos;
-
-  // foo/bar/./
-  //          ^
-  //         pos
-  //
-  if (pos > 2 &&
-      path[pos - 2] == '/' &&
-      path[pos - 1] == '.') {
-    return pos - 2;
-  }
-
-  // ./foo/bar
-  //  ^
-  //  pos
-  //
-  if (pos == 1 &&
-      path[0] == '.') {
-    return 0;
-  }
-
-  return pos;
-}
-
-inline size_t process_dotdot(const std::string& path, size_t pos) {
-  // Ignore ../../
-  if (pos > 4 &&
-      path[pos - 5] == '.' &&
-      path[pos - 4] == '.' &&
-      path[pos - 3] == '/' &&
-      path[pos - 2] == '.' &&
-      path[pos - 1] == '.') {
-    return pos;
-  }
-
-  // foo/bar/../
-  //           ^
-  //          pos
-  //
-  if (pos > 2 &&
-      path[pos - 3] == '/' &&
-      path[pos - 2] == '.' &&
-      path[pos - 1] == '.') {
-    pos = get_dirname_position(path, pos - 3);
-
-    // foo/bar/../
-    //    ^
-    //   pos
-
-    return pos;
-  }
-
-  return pos;
-}
 } // namespace impl
 } // namespace filesystem
 } // namespace pqrs
