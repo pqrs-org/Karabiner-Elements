@@ -3,6 +3,7 @@
 #include "cf_utility.hpp"
 #include <Security/CodeSigning.h>
 #include <optional>
+#include <pqrs/cf/array.hpp>
 #include <pqrs/cf/string.hpp>
 #include <string>
 
@@ -22,7 +23,7 @@ public:
           if (SecCodeCopySigningInformation(guest, kSecCSSigningInformation, &information) == errSecSuccess) {
             if (auto certificates = static_cast<CFArrayRef>(CFDictionaryGetValue(information, kSecCodeInfoCertificates))) {
               if (CFArrayGetCount(certificates) > 0) {
-                auto certificate = cf_utility::get_value<SecCertificateRef>(certificates, 0);
+                auto certificate = pqrs::cf::get_cf_array_value<SecCertificateRef>(certificates, 0);
                 CFStringRef common_name_string;
                 if (SecCertificateCopyCommonName(certificate, &common_name_string) == errSecSuccess) {
                   common_name = pqrs::cf::make_string(common_name_string);

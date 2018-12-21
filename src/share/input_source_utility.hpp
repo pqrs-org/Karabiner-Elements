@@ -3,6 +3,7 @@
 #include "cf_utility.hpp"
 #include <Carbon/Carbon.h>
 #include <optional>
+#include <pqrs/cf/array.hpp>
 #include <pqrs/cf/string.hpp>
 
 namespace krbn {
@@ -11,7 +12,7 @@ public:
   static std::optional<std::string> get_language(TISInputSourceRef input_source) {
     if (input_source) {
       if (auto languages = static_cast<CFArrayRef>(TISGetInputSourceProperty(input_source, kTISPropertyInputSourceLanguages))) {
-        if (auto s = cf_utility::get_value<CFStringRef>(languages, 0)) {
+        if (auto s = pqrs::cf::get_cf_array_value<CFStringRef>(languages, 0)) {
           return pqrs::cf::make_string(s);
         }
       }

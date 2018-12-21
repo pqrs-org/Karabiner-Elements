@@ -5,6 +5,7 @@
 #include "logger.hpp"
 #include "types.hpp"
 #include <Carbon/Carbon.h>
+#include <pqrs/cf/array.hpp>
 #include <pqrs/cf/cf_ptr.hpp>
 
 namespace krbn {
@@ -85,7 +86,7 @@ private:
 
       if (auto input_sources = TISCreateInputSourceList(properties, false)) {
         for (CFIndex i = 0;; ++i) {
-          auto s = cf_utility::get_value<TISInputSourceRef>(input_sources, i);
+          auto s = pqrs::cf::get_cf_array_value<TISInputSourceRef>(input_sources, i);
           if (!s) {
             break;
           }
