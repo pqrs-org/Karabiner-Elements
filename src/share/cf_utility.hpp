@@ -16,12 +16,6 @@ public:
   // Converts
   // ========================================
 
-  static CFStringRef _Nullable create_cfstring(const std::string& string) {
-    return CFStringCreateWithCString(kCFAllocatorDefault,
-                                     string.c_str(),
-                                     kCFStringEncodingUTF8);
-  }
-
   static std::optional<int64_t> to_int64_t(CFTypeRef _Nullable value) {
     if (!value) {
       return std::nullopt;
@@ -44,14 +38,6 @@ public:
   // ========================================
   // CFArray, CFMutableArray
   // ========================================
-
-  static CFArrayRef _Nonnull create_empty_cfarray(void) {
-    return CFArrayCreate(nullptr, nullptr, 0, &kCFTypeArrayCallBacks);
-  }
-
-  static CFMutableArrayRef _Nonnull create_cfmutablearray(CFIndex capacity = 0) {
-    return CFArrayCreateMutable(nullptr, capacity, &kCFTypeArrayCallBacks);
-  }
 
   template <typename T>
   static T _Nullable get_value(CFArrayRef _Nonnull array, CFIndex index) {

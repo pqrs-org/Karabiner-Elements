@@ -9,7 +9,9 @@
 #include "logger.hpp"
 #include <CoreServices/CoreServices.h>
 #include <boost/signals2.hpp>
+#include <pqrs/cf_array.hpp>
 #include <pqrs/cf_run_loop_thread.hpp>
+#include <pqrs/cf_string.hpp>
 #include <pqrs/dispatcher.hpp>
 #include <pqrs/filesystem.hpp>
 #include <utility>
@@ -26,7 +28,7 @@ public:
 
   file_monitor(const std::vector<std::string>& files) : dispatcher_client(),
                                                         files_(files),
-                                                        directories_(cf_utility::create_cfmutablearray()),
+                                                        directories_(pqrs::make_cf_mutable_array()),
                                                         stream_(nullptr) {
     cf_run_loop_thread_ = std::make_unique<pqrs::cf_run_loop_thread>();
 
@@ -42,12 +44,11 @@ public:
       }
     }
 
-    for (const auto& d : directories) {
-      if (auto directory = cf_utility::create_cfstring(d)) {
-        if (directories_) {
-          CFArrayAppendValue(directories_, directory);
+    if (directories_) {
+      for (const auto& d : directories) {
+        if (auto directory = pqrs::make_cf_string(d)) {
+          CFArrayAppendValue(*directories_, *directory);
         }
-        CFRelease(directory);
       }
     }
   }
@@ -59,11 +60,6 @@ public:
 
     cf_run_loop_thread_->terminate();
     cf_run_loop_thread_ = nullptr;
-
-    if (directories_) {
-      CFRelease(directories_);
-      directories_ = nullptr;
-    }
   }
 
   void async_start(void) {
@@ -84,6 +80,10 @@ private:
     // Skip if already started.
 
     if (stream_) {
+      return;
+    }
+
+    if (!directories_) {
       return;
     }
 
@@ -128,7 +128,7 @@ private:
     stream_ = FSEventStreamCreate(kCFAllocatorDefault,
                                   static_stream_callback,
                                   &context,
-                                  directories_,
+                                  *directories_,
                                   kFSEventStreamEventIdSinceNow,
                                   0.1, // 100 ms
                                   flags);
@@ -264,7 +264,7 @@ private:
   std::vector<std::string> files_;
 
   std::unique_ptr<pqrs::cf_run_loop_thread> cf_run_loop_thread_;
-  CFMutableArrayRef directories_;
+  pqrs::cf_ptr<CFMutableArrayRef> directories_;
   FSEventStreamRef stream_;
   // FSEventStreamEventPath -> file in files_
   // {
