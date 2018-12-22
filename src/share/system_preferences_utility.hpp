@@ -1,9 +1,9 @@
 #pragma once
 
-#include "cf_utility.hpp"
 #include "types.hpp"
 #include <CoreFoundation/CoreFoundation.h>
 #include <optional>
+#include <pqrs/cf/number.hpp>
 
 namespace krbn {
 class system_preferences_utility final {
@@ -73,8 +73,8 @@ public:
                                                    .c_str(),
                                                kCFStringEncodingUTF8)) {
         if (auto keyboard_type = CFDictionaryGetValue(value, key)) {
-          if (auto v = cf_utility::to_int64_t(keyboard_type)) {
-            return *v;
+          if (auto v = pqrs::cf::make_number<int64_t>(keyboard_type)) {
+            return static_cast<uint8_t>(*v);
           }
         }
 
