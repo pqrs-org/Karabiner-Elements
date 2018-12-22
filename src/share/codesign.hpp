@@ -4,6 +4,8 @@
 #include <Security/CodeSigning.h>
 #include <optional>
 #include <pqrs/cf/array.hpp>
+#include <pqrs/cf/dictionary.hpp>
+#include <pqrs/cf/number.hpp>
 #include <pqrs/cf/string.hpp>
 #include <string>
 
@@ -13,12 +15,12 @@ public:
   static std::optional<std::string> get_common_name_of_process(pid_t pid) {
     std::optional<std::string> common_name;
 
-    if (auto attributes = cf_utility::create_cfmutabledictionary()) {
-      if (auto pid_number = CFNumberCreate(kCFAllocatorDefault, kCFNumberIntType, &pid)) {
-        CFDictionarySetValue(attributes, kSecGuestAttributePid, pid_number);
+    if (auto attributes = pqrs::cf::make_cf_mutable_dictionary()) {
+      if (auto pid_number = pqrs::cf::make_cf_number(static_cast<int64_t>(pid))) {
+        CFDictionarySetValue(*attributes, kSecGuestAttributePid, *pid_number);
 
         SecCodeRef guest;
-        if (SecCodeCopyGuestWithAttributes(nullptr, attributes, kSecCSDefaultFlags, &guest) == errSecSuccess) {
+        if (SecCodeCopyGuestWithAttributes(nullptr, *attributes, kSecCSDefaultFlags, &guest) == errSecSuccess) {
           CFDictionaryRef information;
           if (SecCodeCopySigningInformation(guest, kSecCSSigningInformation, &information) == errSecSuccess) {
             if (auto certificates = static_cast<CFArrayRef>(CFDictionaryGetValue(information, kSecCodeInfoCertificates))) {
@@ -37,11 +39,7 @@ public:
 
           CFRelease(guest);
         }
-
-        CFRelease(pid_number);
       }
-
-      CFRelease(attributes);
     }
 
     return common_name;
