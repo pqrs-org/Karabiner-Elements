@@ -2,6 +2,7 @@ gabime/spdlog@v1.2.1 --cmake header
 jarro2783/cxxopts@v2.1.1 --cmake header
 nlohmann/json@v3.4.0 --cmake header
 pqrs-org/cpp-cf-number
+pqrs-org/cpp-cf-dictionary
 pqrs-org/cpp-filesystem
 pqrs-org/cpp-osx-iokit_hid_manager
 pqrs-org/cpp-osx-iokit_hid_queue_value_monitor
