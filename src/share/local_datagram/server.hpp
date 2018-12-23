@@ -3,6 +3,7 @@
 // `krbn::local_datagram::server` can be used safely in a multi-threaded environment.
 
 #include "local_datagram/client.hpp"
+#include <nod/nod.hpp>
 #include <pqrs/dispatcher.hpp>
 #include <unistd.h>
 
@@ -12,10 +13,10 @@ class server final : public pqrs::dispatcher::extra::dispatcher_client {
 public:
   // Signals (invoked from the shared dispatcher thread)
 
-  boost::signals2::signal<void(void)> bound;
-  boost::signals2::signal<void(const boost::system::error_code&)> bind_failed;
-  boost::signals2::signal<void(void)> closed;
-  boost::signals2::signal<void(const std::shared_ptr<std::vector<uint8_t>>)> received;
+  nod::signal<void(void)> bound;
+  nod::signal<void(const boost::system::error_code&)> bind_failed;
+  nod::signal<void(void)> closed;
+  nod::signal<void(const std::shared_ptr<std::vector<uint8_t>>)> received;
 
   // Methods
 

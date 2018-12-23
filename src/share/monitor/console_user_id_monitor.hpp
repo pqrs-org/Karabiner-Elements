@@ -2,12 +2,10 @@
 
 // `krbn::console_user_id_monitor` can be used safely in a multi-threaded environment.
 
-#include "boost_defs.hpp"
-
 #include "logger.hpp"
 #include "session.hpp"
-#include <boost/signals2.hpp>
 #include <memory>
+#include <nod/nod.hpp>
 #include <optional>
 #include <pqrs/dispatcher.hpp>
 
@@ -16,7 +14,7 @@ class console_user_id_monitor final : public pqrs::dispatcher::extra::dispatcher
 public:
   // Signals (invoked from the shared dispatcher thread)
 
-  boost::signals2::signal<void(std::optional<uid_t>)> console_user_id_changed;
+  nod::signal<void(std::optional<uid_t>)> console_user_id_changed;
 
   // Methods
 

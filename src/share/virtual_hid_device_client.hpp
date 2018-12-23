@@ -1,19 +1,17 @@
 #pragma once
 
-#include "boost_defs.hpp"
-
 #include "Karabiner-VirtualHIDDevice/dist/include/karabiner_virtual_hid_device_methods.hpp"
 #include "iokit_utility.hpp"
-#include <boost/signals2.hpp>
+#include <nod/nod.hpp>
 #include <pqrs/osx/iokit_return.hpp>
 #include <pqrs/osx/iokit_service_monitor.hpp>
 
 namespace krbn {
 class virtual_hid_device_client final : public pqrs::dispatcher::extra::dispatcher_client {
 public:
-  boost::signals2::signal<void(void)> client_connected;
-  boost::signals2::signal<void(void)> client_disconnected;
-  boost::signals2::signal<void(void)> virtual_hid_keyboard_ready;
+  nod::signal<void(void)> client_connected;
+  nod::signal<void(void)> client_disconnected;
+  nod::signal<void(void)> virtual_hid_keyboard_ready;
 
   virtual_hid_device_client(const virtual_hid_device_client&) = delete;
 

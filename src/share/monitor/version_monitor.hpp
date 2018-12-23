@@ -2,29 +2,27 @@
 
 // `krbn::version_monitor` can be used safely in a multi-threaded environment.
 
-#include "boost_defs.hpp"
-
 #include "constants.hpp"
 #include "logger.hpp"
 #include "monitor/file_monitor.hpp"
-#include <boost/algorithm/string.hpp>
-#include <boost/signals2.hpp>
 #include <fstream>
+#include <nod/nod.hpp>
 #include <pqrs/filesystem.hpp>
+#include <pqrs/string.hpp>
 
 namespace krbn {
 class version_monitor final : public pqrs::dispatcher::extra::dispatcher_client {
 public:
   // Signals (invoked from the shared dispatcher thread)
 
-  boost::signals2::signal<void(const std::string& version)> changed;
+  nod::signal<void(const std::string& version)> changed;
 
   // Methods
 
   version_monitor(const version_monitor&) = delete;
 
   version_monitor(const std::string& version_file_path) : version_file_path_(version_file_path) {
-    version_ = file_utility::read_file(version_file_path_);
+    version_ = file_monitor::read_file(version_file_path_);
 
     std::vector<std::string> targets = {
         version_file_path_,
@@ -45,7 +43,7 @@ public:
 
         std::string version_string(std::begin(*changed_file_body),
                                    std::end(*changed_file_body));
-        boost::trim(version_string);
+        pqrs::string::trim(version_string);
 
         logger::get_logger().info("Version is changed to {0}", version_string);
 

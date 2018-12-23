@@ -2,7 +2,6 @@
 
 #include "boost_defs.hpp"
 
-#include "boost_utility.hpp"
 #include "console_user_server_client.hpp"
 #include "keyboard_repeat_detector.hpp"
 #include "krbn_notification_center.hpp"

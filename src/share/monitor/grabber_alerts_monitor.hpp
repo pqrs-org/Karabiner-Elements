@@ -7,6 +7,7 @@
 #include "logger.hpp"
 #include "monitor/file_monitor.hpp"
 #include <fstream>
+#include <nod/nod.hpp>
 #include <pqrs/filesystem.hpp>
 
 namespace krbn {
@@ -14,7 +15,7 @@ class grabber_alerts_monitor final : public pqrs::dispatcher::extra::dispatcher_
 public:
   // Signals (invoked from the shared dispatcher thread)
 
-  boost::signals2::signal<void(std::shared_ptr<nlohmann::json> alerts)> alerts_changed;
+  nod::signal<void(std::shared_ptr<nlohmann::json> alerts)> alerts_changed;
 
   // Methods
 

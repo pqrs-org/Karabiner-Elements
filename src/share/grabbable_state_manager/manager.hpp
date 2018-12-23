@@ -5,7 +5,7 @@
 #include "boost_defs.hpp"
 
 #include "grabbable_state_manager/entry.hpp"
-#include <boost/signals2.hpp>
+#include <nod/nod.hpp>
 #include <pqrs/dispatcher.hpp>
 #include <pqrs/osx/iokit_types.hpp>
 
@@ -15,7 +15,7 @@ class manager final : public pqrs::dispatcher::extra::dispatcher_client {
 public:
   // Signals (invoked from the shared dispatcher thread)
 
-  boost::signals2::signal<void(const grabbable_state&)> grabbable_state_changed;
+  nod::signal<void(const grabbable_state&)> grabbable_state_changed;
 
   // Methods
 

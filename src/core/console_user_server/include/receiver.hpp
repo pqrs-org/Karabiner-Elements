@@ -6,6 +6,7 @@
 #include "local_datagram/server_manager.hpp"
 #include "shell_utility.hpp"
 #include "types.hpp"
+#include <nod/nod.hpp>
 #include <pqrs/dispatcher.hpp>
 #include <vector>
 
@@ -14,9 +15,9 @@ class receiver final : public pqrs::dispatcher::extra::dispatcher_client {
 public:
   // Signals (invoked from the shared dispatcher thread)
 
-  boost::signals2::signal<void(void)> bound;
-  boost::signals2::signal<void(const boost::system::error_code&)> bind_failed;
-  boost::signals2::signal<void(void)> closed;
+  nod::signal<void(void)> bound;
+  nod::signal<void(const boost::system::error_code&)> bind_failed;
+  nod::signal<void(void)> closed;
 
   // Methods
 

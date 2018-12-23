@@ -7,6 +7,7 @@
 #include "logger.hpp"
 #include "session.hpp"
 #include "types.hpp"
+#include <nod/nod.hpp>
 #include <pqrs/dispatcher.hpp>
 #include <pqrs/filesystem.hpp>
 #include <unistd.h>
@@ -19,9 +20,9 @@ public:
 
   // Note: These signals are fired on local_datagram::client's thread.
 
-  boost::signals2::signal<void(void)> connected;
-  boost::signals2::signal<void(const boost::system::error_code&)> connect_failed;
-  boost::signals2::signal<void(void)> closed;
+  nod::signal<void(void)> connected;
+  nod::signal<void(const boost::system::error_code&)> connect_failed;
+  nod::signal<void(void)> closed;
 
   // Methods
 

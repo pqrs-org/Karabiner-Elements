@@ -1,7 +1,5 @@
 #pragma once
 
-#include "boost_defs.hpp"
-
 #include "apple_hid_usage_tables.hpp"
 #include "constants.hpp"
 #include "device_grabber_details/entry.hpp"
@@ -20,10 +18,10 @@
 #include "system_preferences_utility.hpp"
 #include "types.hpp"
 #include "virtual_hid_device_client.hpp"
-#include <boost/algorithm/string.hpp>
 #include <deque>
 #include <fstream>
 #include <nlohmann/json.hpp>
+#include <nod/nod.hpp>
 #include <pqrs/osx/iokit_hid_manager.hpp>
 #include <thread>
 #include <time.h>
@@ -50,26 +48,27 @@ public:
 
     virtual_hid_device_client_ = std::make_shared<virtual_hid_device_client>();
 
-    client_connected_connection_ = virtual_hid_device_client_->client_connected.connect([this] {
+    virtual_hid_device_client_->client_connected.connect([this] {
       logger::get_logger().info("virtual_hid_device_client_ is connected");
 
       update_virtual_hid_keyboard();
       update_virtual_hid_pointing();
     });
 
-    client_disconnected_connection_ = virtual_hid_device_client_->client_disconnected.connect([this] {
+    virtual_hid_device_client_->client_disconnected.connect([this] {
       logger::get_logger().info("virtual_hid_device_client_ is disconnected");
 
       stop();
     });
 
     if (auto m = weak_grabbable_state_queues_manager_.lock()) {
-      grabbable_state_changed_connection_ = m->grabbable_state_changed.connect([this](auto&& device_id, auto&& grabbable_state) {
-        auto it = entries_.find(device_id);
-        if (it != std::end(entries_)) {
-          grab_device(it->second);
-        }
-      });
+      external_signal_connections_.emplace_back(
+          m->grabbable_state_changed.connect([this](auto&& device_id, auto&& grabbable_state) {
+            auto it = entries_.find(device_id);
+            if (it != std::end(entries_)) {
+              grab_device(it->second);
+            }
+          }));
     }
 
     post_event_to_virtual_devices_manipulator_ = std::make_shared<manipulator::details::post_event_to_virtual_devices>(system_preferences_,
@@ -90,9 +89,10 @@ public:
     manipulator_managers_connector_.emplace_back_connection(post_event_to_virtual_devices_manipulator_manager_,
                                                             posted_event_queue_);
 
-    input_event_arrived_connection_ = krbn_notification_center::get_instance().input_event_arrived.connect([this] {
-      manipulate(time_utility::mach_absolute_time_point());
-    });
+    external_signal_connections_.emplace_back(
+        krbn_notification_center::get_instance().input_event_arrived.connect([this] {
+          manipulate(time_utility::mach_absolute_time_point());
+        }));
 
     // hid_manager_
 
@@ -239,12 +239,7 @@ public:
 
       hid_manager_ = nullptr;
 
-      input_event_arrived_connection_.disconnect();
-
-      grabbable_state_changed_connection_.disconnect();
-
-      client_connected_connection_.disconnect();
-      client_disconnected_connection_.disconnect();
+      external_signal_connections_.clear();
 
       post_event_to_virtual_devices_manipulator_ = nullptr;
 
@@ -936,10 +931,8 @@ private:
   std::weak_ptr<grabbable_state_queues_manager> weak_grabbable_state_queues_manager_;
 
   std::shared_ptr<virtual_hid_device_client> virtual_hid_device_client_;
-  boost::signals2::connection client_connected_connection_;
-  boost::signals2::connection client_disconnected_connection_;
 
-  boost::signals2::connection grabbable_state_changed_connection_;
+  std::vector<nod::scoped_connection> external_signal_connections_;
 
   std::unique_ptr<configuration_monitor> configuration_monitor_;
   std::shared_ptr<const core_configuration::core_configuration> core_configuration_;
@@ -953,7 +946,6 @@ private:
   system_preferences system_preferences_;
 
   manipulator::manipulator_managers_connector manipulator_managers_connector_;
-  boost::signals2::connection input_event_arrived_connection_;
 
   std::shared_ptr<event_queue::queue> merged_input_event_queue_;
 

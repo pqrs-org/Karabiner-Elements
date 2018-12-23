@@ -6,10 +6,10 @@
 
 BEGIN_BOOST_INCLUDE
 #include <boost/asio.hpp>
-#include <boost/signals2.hpp>
 END_BOOST_INCLUDE
 
 #include "logger.hpp"
+#include <nod/nod.hpp>
 #include <pqrs/dispatcher.hpp>
 
 namespace krbn {
@@ -18,9 +18,9 @@ class client final : public pqrs::dispatcher::extra::dispatcher_client {
 public:
   // Signals (invoked from the shared dispatcher thread)
 
-  boost::signals2::signal<void(void)> connected;
-  boost::signals2::signal<void(const boost::system::error_code&)> connect_failed;
-  boost::signals2::signal<void(void)> closed;
+  nod::signal<void(void)> connected;
+  nod::signal<void(const boost::system::error_code&)> connect_failed;
+  nod::signal<void(void)> closed;
 
   // Methods
 

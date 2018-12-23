@@ -2,11 +2,9 @@
 
 // `krbn::event_tap_monitor` can be used safely in a multi-threaded environment.
 
-#include "boost_defs.hpp"
-
 #include "event_tap_utility.hpp"
 #include "logger.hpp"
-#include <boost/signals2.hpp>
+#include <nod/nod.hpp>
 #include <pqrs/cf/run_loop_thread.hpp>
 #include <pqrs/dispatcher.hpp>
 
@@ -15,7 +13,7 @@ class event_tap_monitor final : pqrs::dispatcher::extra::dispatcher_client {
 public:
   // Signals (invoked from the shared dispatcher thread)
 
-  boost::signals2::signal<void(event_type, event_queue::event)> pointing_device_event_arrived;
+  nod::signal<void(event_type, event_queue::event)> pointing_device_event_arrived;
 
   // Methods
 

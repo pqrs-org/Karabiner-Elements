@@ -1,12 +1,10 @@
 #pragma once
 
-#include "boost_defs.hpp"
-
 #include "spdlog_utility.hpp"
 #include <CoreFoundation/CoreFoundation.h>
-#include <boost/signals2.hpp>
 #include <deque>
 #include <fstream>
+#include <nod/nod.hpp>
 #include <pqrs/dispatcher.hpp>
 #include <pqrs/filesystem.hpp>
 #include <thread>
@@ -18,7 +16,7 @@ class log_monitor final : public pqrs::dispatcher::extra::dispatcher_client {
 public:
   // Signals (invoked from the shared dispatcher thread)
 
-  boost::signals2::signal<void(const std::string& line)> new_log_line_arrived;
+  nod::signal<void(const std::string& line)> new_log_line_arrived;
 
   // Methods
 

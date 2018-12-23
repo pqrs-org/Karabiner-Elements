@@ -7,8 +7,8 @@
 #include "event_queue.hpp"
 #include "types.hpp"
 #include <boost/circular_buffer.hpp>
-#include <boost/signals2.hpp>
 #include <memory>
+#include <nod/nod.hpp>
 #include <optional>
 #include <pqrs/dispatcher.hpp>
 
@@ -17,7 +17,7 @@ class grabbable_state_queue final : public pqrs::dispatcher::extra::dispatcher_c
 public:
   // Signals (invoked from the shared dispatcher thread)
 
-  boost::signals2::signal<void(std::optional<grabbable_state>)> grabbable_state_changed;
+  nod::signal<void(std::optional<grabbable_state>)> grabbable_state_changed;
 
   // Methods
 

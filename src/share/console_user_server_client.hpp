@@ -5,6 +5,7 @@
 #include "logger.hpp"
 #include "monitor/console_user_id_monitor.hpp"
 #include "types.hpp"
+#include <nod/nod.hpp>
 #include <pqrs/dispatcher.hpp>
 #include <sstream>
 #include <unistd.h>
@@ -17,9 +18,9 @@ public:
 
   // Note: These signals are fired on local_datagram::client's thread.
 
-  boost::signals2::signal<void(void)> connected;
-  boost::signals2::signal<void(const boost::system::error_code&)> connect_failed;
-  boost::signals2::signal<void(void)> closed;
+  nod::signal<void(void)> connected;
+  nod::signal<void(const boost::system::error_code&)> connect_failed;
+  nod::signal<void(void)> closed;
 
   // Methods
 

@@ -2,12 +2,9 @@
 
 // `krbn::file_monitor` can be used safely in a multi-threaded environment.
 
-#include "boost_defs.hpp"
-
-#include "file_utility.hpp"
 #include "logger.hpp"
 #include <CoreServices/CoreServices.h>
-#include <boost/signals2.hpp>
+#include <nod/nod.hpp>
 #include <pqrs/cf/array.hpp>
 #include <pqrs/cf/run_loop_thread.hpp>
 #include <pqrs/cf/string.hpp>
@@ -21,7 +18,7 @@ class file_monitor final : public pqrs::dispatcher::extra::dispatcher_client {
 public:
   // Signals (invoked from the shared dispatcher thread)
 
-  boost::signals2::signal<void(const std::string& changed_file_path, std::shared_ptr<std::vector<uint8_t>> changed_file_body)> file_changed;
+  nod::signal<void(const std::string& changed_file_path, std::shared_ptr<std::vector<uint8_t>> changed_file_body)> file_changed;
 
   // Methods
 
@@ -71,6 +68,21 @@ public:
     enqueue_to_dispatcher([this, file_path] {
       call_file_changed_slots(file_path);
     });
+  }
+
+  static std::shared_ptr<std::vector<uint8_t>> read_file(const std::string& path) {
+    std::ifstream ifstream(path);
+    if (ifstream) {
+      ifstream.seekg(0, std::fstream::end);
+      auto size = ifstream.tellg();
+      ifstream.seekg(0, std::fstream::beg);
+
+      auto buffer = std::make_shared<std::vector<uint8_t>>(size);
+      ifstream.read(reinterpret_cast<char*>(&((*buffer)[0])), size);
+
+      return buffer;
+    }
+    return nullptr;
   }
 
 private:
@@ -238,7 +250,7 @@ private:
                     [&](auto&& p) {
                       return file_path == p;
                     })) {
-      auto file_body = file_utility::read_file(file_path);
+      auto file_body = read_file(file_path);
       auto it = file_bodies_.find(file_path);
       if (it != std::end(file_bodies_)) {
         if (it->second && file_body) {
@@ -255,7 +267,7 @@ private:
 
       enqueue_to_dispatcher([this, file_path] {
         file_changed(file_path,
-                     file_utility::read_file(file_path));
+                     read_file(file_path));
       });
     }
   }

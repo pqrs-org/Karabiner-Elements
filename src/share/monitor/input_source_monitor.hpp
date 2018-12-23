@@ -2,13 +2,11 @@
 
 // `krbn::input_source_monitor` can be used safely in a multi-threaded environment.
 
-#include "boost_defs.hpp"
-
 #include "input_source_utility.hpp"
 #include "logger.hpp"
 #include "types.hpp"
 #include <Carbon/Carbon.h>
-#include <boost/signals2.hpp>
+#include <nod/nod.hpp>
 #include <pqrs/dispatcher.hpp>
 
 namespace krbn {
@@ -16,7 +14,7 @@ class input_source_monitor final : public pqrs::dispatcher::extra::dispatcher_cl
 public:
   // Signals (invoked from the shared dispatcher thread)
 
-  boost::signals2::signal<void(const input_source_identifiers& input_source_identifiers)> input_source_changed;
+  nod::signal<void(const input_source_identifiers& input_source_identifiers)> input_source_changed;
 
   // Methods
 

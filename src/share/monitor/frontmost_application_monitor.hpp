@@ -2,11 +2,9 @@
 
 // `krbn::frontmost_application_monitor` can be used safely in a multi-threaded environment.
 
-#include "boost_defs.hpp"
-
 #include "frontmost_application_monitor_objc.h"
 #include "logger.hpp"
-#include <boost/signals2.hpp>
+#include <nod/nod.hpp>
 #include <pqrs/dispatcher.hpp>
 
 namespace krbn {
@@ -14,7 +12,7 @@ class frontmost_application_monitor final : public pqrs::dispatcher::extra::disp
 public:
   // Signals (invoked from the shared dispatcher thread)
 
-  boost::signals2::signal<void(const std::string& bundle_identifier, const std::string& file_path)> frontmost_application_changed;
+  nod::signal<void(const std::string& bundle_identifier, const std::string& file_path)> frontmost_application_changed;
 
   // Methods
 

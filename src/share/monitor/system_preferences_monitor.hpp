@@ -2,10 +2,10 @@
 
 // `krbn::system_preferences_monitor` can be used safely in a multi-threaded environment.
 
-#include "boost_utility.hpp"
 #include "configuration_monitor.hpp"
 #include "logger.hpp"
 #include "system_preferences_utility.hpp"
+#include <nod/nod.hpp>
 #include <pqrs/dispatcher.hpp>
 
 namespace krbn {
@@ -13,7 +13,7 @@ class system_preferences_monitor final : public pqrs::dispatcher::extra::dispatc
 public:
   // Signals (invoked from the shared dispatcher thread)
 
-  boost::signals2::signal<void(const system_preferences& value)> system_preferences_changed;
+  nod::signal<void(const system_preferences& value)> system_preferences_changed;
 
   // Methods
 
@@ -21,13 +21,10 @@ public:
                                                                                                 weak_configuration_monitor_(weak_configuration_monitor),
                                                                                                 timer_(*this) {
     if (auto configuration_monitor = weak_configuration_monitor_.lock()) {
-      // core_configuration_updated
-      {
-        auto c = configuration_monitor->core_configuration_updated.connect([this](auto&&) {
-          check_system_preferences();
-        });
-        configuration_monitor_connections_.push_back(c);
-      }
+      external_signal_connections_.emplace_back(
+          configuration_monitor->core_configuration_updated.connect([this](auto&&) {
+            check_system_preferences();
+          }));
     }
   }
 
@@ -35,7 +32,7 @@ public:
     detach_from_dispatcher([this] {
       timer_.stop();
 
-      configuration_monitor_connections_.disconnect_all_connections();
+      external_signal_connections_.clear();
     });
 
     logger::get_logger().info("system_preferences_monitor is stopped.");
@@ -87,7 +84,7 @@ private:
   std::weak_ptr<configuration_monitor> weak_configuration_monitor_;
 
   pqrs::dispatcher::extra::timer timer_;
-  boost_utility::signals2_connections configuration_monitor_connections_;
+  std::vector<nod::scoped_connection> external_signal_connections_;
   std::optional<system_preferences> last_system_preferences_;
 };
 } // namespace krbn

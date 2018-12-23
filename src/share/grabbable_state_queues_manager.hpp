@@ -2,12 +2,10 @@
 
 // `krbn::grabbable_state_queues_manager` can be used safely in a multi-threaded environment.
 
-#include "boost_defs.hpp"
-
 #include "event_queue.hpp"
 #include "grabbable_state_queue.hpp"
-#include <boost/signals2.hpp>
 #include <mutex>
+#include <nod/nod.hpp>
 #include <optional>
 #include <pqrs/osx/iokit_types.hpp>
 #include <unordered_map>
@@ -17,7 +15,7 @@ class grabbable_state_queues_manager final : public pqrs::dispatcher::extra::dis
 public:
   // Signals (invoked from the shared dispatcher thread)
 
-  boost::signals2::signal<void(device_id, std::optional<grabbable_state>)> grabbable_state_changed;
+  nod::signal<void(device_id, std::optional<grabbable_state>)> grabbable_state_changed;
 
   // Methods
 

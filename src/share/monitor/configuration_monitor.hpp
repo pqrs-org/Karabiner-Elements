@@ -6,13 +6,14 @@
 #include "core_configuration/core_configuration.hpp"
 #include "logger.hpp"
 #include "monitor/file_monitor.hpp"
+#include <nod/nod.hpp>
 
 namespace krbn {
 class configuration_monitor final : public pqrs::dispatcher::extra::dispatcher_client {
 public:
   // Signals (invoked from the shared dispatcher thread)
 
-  boost::signals2::signal<void(std::weak_ptr<core_configuration::core_configuration>)> core_configuration_updated;
+  nod::signal<void(std::weak_ptr<core_configuration::core_configuration>)> core_configuration_updated;
 
   // Methods
 
