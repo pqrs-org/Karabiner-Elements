@@ -1,6 +1,5 @@
 #pragma once
 
-#include "cf_utility.hpp"
 #include <Security/CodeSigning.h>
 #include <optional>
 #include <pqrs/cf/array.hpp>

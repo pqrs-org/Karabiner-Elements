@@ -1,6 +1,5 @@
 #pragma once
 
-#include "cf_utility.hpp"
 #include "input_source_utility.hpp"
 #include "logger.hpp"
 #include "types.hpp"
