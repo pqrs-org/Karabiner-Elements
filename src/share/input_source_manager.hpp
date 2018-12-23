@@ -7,6 +7,7 @@
 #include <Carbon/Carbon.h>
 #include <pqrs/cf/array.hpp>
 #include <pqrs/cf/cf_ptr.hpp>
+#include <pqrs/cf/dictionary.hpp>
 
 namespace krbn {
 class input_source_manager final {
@@ -80,11 +81,11 @@ private:
   void enabled_input_sources_changed_callback(void) {
     entries_.clear();
 
-    if (auto properties = cf_utility::create_cfmutabledictionary()) {
-      CFDictionarySetValue(properties, kTISPropertyInputSourceIsSelectCapable, kCFBooleanTrue);
-      CFDictionarySetValue(properties, kTISPropertyInputSourceCategory, kTISCategoryKeyboardInputSource);
+    if (auto properties = pqrs::cf::make_cf_mutable_dictionary()) {
+      CFDictionarySetValue(*properties, kTISPropertyInputSourceIsSelectCapable, kCFBooleanTrue);
+      CFDictionarySetValue(*properties, kTISPropertyInputSourceCategory, kTISCategoryKeyboardInputSource);
 
-      if (auto input_sources = TISCreateInputSourceList(properties, false)) {
+      if (auto input_sources = TISCreateInputSourceList(*properties, false)) {
         for (CFIndex i = 0;; ++i) {
           auto s = pqrs::cf::get_cf_array_value<TISInputSourceRef>(input_sources, i);
           if (!s) {
@@ -96,8 +97,6 @@ private:
 
         CFRelease(input_sources);
       }
-
-      CFRelease(properties);
     }
   }
 
