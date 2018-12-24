@@ -5,10 +5,10 @@
 #include "constants.hpp"
 #include "json_utility.hpp"
 #include "logger.hpp"
-#include "monitor/file_monitor.hpp"
 #include <fstream>
 #include <nod/nod.hpp>
 #include <pqrs/filesystem.hpp>
+#include <pqrs/osx/file_monitor.hpp>
 
 namespace krbn {
 class grabber_alerts_monitor final : public pqrs::dispatcher::extra::dispatcher_client {
@@ -26,7 +26,8 @@ public:
         grabber_alerts_json_file_path,
     };
 
-    file_monitor_ = std::make_unique<file_monitor>(targets);
+    file_monitor_ = std::make_unique<pqrs::osx::file_monitor>(weak_dispatcher_,
+                                                              targets);
 
     file_monitor_->file_changed.connect([this](auto&& changed_file_path,
                                                auto&& changed_file_body) {
@@ -71,7 +72,7 @@ public:
   }
 
 private:
-  std::unique_ptr<file_monitor> file_monitor_;
+  std::unique_ptr<pqrs::osx::file_monitor> file_monitor_;
   std::optional<std::string> last_json_string_;
 };
 } // namespace krbn

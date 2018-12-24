@@ -4,10 +4,10 @@
 
 #include "constants.hpp"
 #include "logger.hpp"
-#include "monitor/file_monitor.hpp"
 #include <fstream>
 #include <nod/nod.hpp>
 #include <pqrs/filesystem.hpp>
+#include <pqrs/osx/file_monitor.hpp>
 #include <pqrs/string.hpp>
 
 namespace krbn {
@@ -22,13 +22,14 @@ public:
   version_monitor(const version_monitor&) = delete;
 
   version_monitor(const std::string& version_file_path) : version_file_path_(version_file_path) {
-    version_ = file_monitor::read_file(version_file_path_);
+    version_ = pqrs::osx::file_monitor::read_file(version_file_path_);
 
     std::vector<std::string> targets = {
         version_file_path_,
     };
 
-    file_monitor_ = std::make_unique<file_monitor>(targets);
+    file_monitor_ = std::make_unique<pqrs::osx::file_monitor>(weak_dispatcher_,
+                                                              targets);
 
     file_monitor_->file_changed.connect([this](auto&& changed_file_path,
                                                auto&& changed_file_body) {
@@ -74,6 +75,6 @@ private:
   std::string version_file_path_;
 
   std::shared_ptr<std::vector<uint8_t>> version_;
-  std::unique_ptr<file_monitor> file_monitor_;
+  std::unique_ptr<pqrs::osx::file_monitor> file_monitor_;
 };
 } // namespace krbn

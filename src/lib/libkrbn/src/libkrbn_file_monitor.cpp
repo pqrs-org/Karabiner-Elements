@@ -1,7 +1,7 @@
 #include "constants.hpp"
 #include "libkrbn.h"
-#include "monitor/file_monitor.hpp"
 #include <pqrs/filesystem.hpp>
+#include <pqrs/osx/file_monitor.hpp>
 
 namespace {
 class libkrbn_file_monitor_class final {
@@ -15,7 +15,8 @@ public:
       std::vector<std::string> targets = {
           file_path,
       };
-      file_monitor_ = std::make_unique<krbn::file_monitor>(targets);
+      file_monitor_ = std::make_unique<pqrs::osx::file_monitor>(pqrs::dispatcher::extra::get_shared_dispatcher(),
+                                                                targets);
 
       file_monitor_->file_changed.connect([callback, refcon](auto&& changed_file_path,
                                                              auto&& changed_file_body) {
@@ -33,7 +34,7 @@ public:
   }
 
 private:
-  std::unique_ptr<krbn::file_monitor> file_monitor_;
+  std::unique_ptr<pqrs::osx::file_monitor> file_monitor_;
 };
 } // namespace
 

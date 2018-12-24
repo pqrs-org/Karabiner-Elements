@@ -5,8 +5,8 @@
 #include "constants.hpp"
 #include "core_configuration/core_configuration.hpp"
 #include "logger.hpp"
-#include "monitor/file_monitor.hpp"
 #include <nod/nod.hpp>
+#include <pqrs/osx/file_monitor.hpp>
 
 namespace krbn {
 class configuration_monitor final : public pqrs::dispatcher::extra::dispatcher_client {
@@ -24,7 +24,8 @@ public:
         system_core_configuration_file_path,
     };
 
-    file_monitor_ = std::make_unique<file_monitor>(targets);
+    file_monitor_ = std::make_unique<pqrs::osx::file_monitor>(weak_dispatcher_,
+                                                              targets);
 
     file_monitor_->file_changed.connect([this, user_core_configuration_file_path, system_core_configuration_file_path](auto&& changed_file_path,
                                                                                                                        auto&& changed_file_body) {
@@ -96,7 +97,7 @@ public:
   }
 
 private:
-  std::unique_ptr<file_monitor> file_monitor_;
+  std::unique_ptr<pqrs::osx::file_monitor> file_monitor_;
 
   std::shared_ptr<core_configuration::core_configuration> core_configuration_;
   mutable std::mutex core_configuration_mutex_;
