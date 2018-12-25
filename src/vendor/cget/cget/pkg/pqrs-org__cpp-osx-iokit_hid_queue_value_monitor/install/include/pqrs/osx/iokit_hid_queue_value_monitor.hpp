@@ -1,6 +1,6 @@
 #pragma once
 
-// pqrs::iokit_hid_queue_value_monitor v1.5
+// pqrs::iokit_hid_queue_value_monitor v1.6
 
 // (C) Copyright Takayama Fumihiko 2018.
 // Distributed under the Boost Software License, Version 1.0.
@@ -33,7 +33,8 @@ public:
   iokit_hid_queue_value_monitor(const iokit_hid_queue_value_monitor&) = delete;
 
   iokit_hid_queue_value_monitor(std::weak_ptr<dispatcher::dispatcher> weak_dispatcher,
-                                IOHIDDeviceRef device) : hid_device_(device),
+                                IOHIDDeviceRef device) : dispatcher_client(weak_dispatcher),
+                                                         hid_device_(device),
                                                          device_scheduled_(false),
                                                          open_timer_(*this),
                                                          last_open_error_(kIOReturnSuccess) {
