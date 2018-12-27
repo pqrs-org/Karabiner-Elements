@@ -1,6 +1,6 @@
 #pragma once
 
-// pqrs::osx::file_monitor v1.0
+// pqrs::osx::file_monitor v1.1
 
 // (C) Copyright Takayama Fumihiko 2018.
 // Distributed under the Boost Software License, Version 1.0.
@@ -59,7 +59,14 @@ public:
   }
 
   virtual ~file_monitor(void) {
-    detach_from_dispatcher([this] {
+    // dispatcher_client
+
+    detach_from_dispatcher([] {
+    });
+
+    // cf_run_loop_thread
+
+    cf_run_loop_thread_->enqueue(^{
       unregister_stream();
     });
 
@@ -68,13 +75,13 @@ public:
   }
 
   void async_start(void) {
-    enqueue_to_dispatcher([this] {
+    cf_run_loop_thread_->enqueue(^{
       register_stream();
     });
   }
 
   void enqueue_file_changed(const std::string& file_path) {
-    enqueue_to_dispatcher([this, file_path] {
+    cf_run_loop_thread_->enqueue(^{
       call_file_changed_slots(file_path);
     });
   }
@@ -170,7 +177,7 @@ private:
     }
   }
 
-  // This method is executed in the dispatcher thread.
+  // This method is executed in cf_run_loop_thread_.
   void unregister_stream(void) {
     if (stream_) {
       FSEventStreamStop(stream_);
@@ -180,6 +187,11 @@ private:
     }
   }
 
+  struct fs_event {
+    std::string file_path;
+    FSEventStreamEventFlags flags;
+  };
+
   static void static_stream_callback(ConstFSEventStreamRef stream,
                                      void* client_callback_info,
                                      size_t num_events,
@@ -187,76 +199,70 @@ private:
                                      const FSEventStreamEventFlags event_flags[],
                                      const FSEventStreamEventId event_ids[]) {
     auto self = reinterpret_cast<file_monitor*>(client_callback_info);
-    if (self) {
-      self->stream_callback(num_events,
-                            static_cast<const char**>(event_paths),
-                            event_flags,
-                            event_ids);
+    if (!self) {
+      return;
     }
-  }
 
-  void stream_callback(size_t num_events,
-                       const char* event_paths[],
-                       const FSEventStreamEventFlags event_flags[],
-                       const FSEventStreamEventId event_ids[]) {
-    struct event {
-      std::string file_path;
-      FSEventStreamEventFlags flags;
-    };
-    auto events = std::make_shared<std::vector<event>>(num_events);
+    auto fs_events = std::make_shared<std::vector<fs_event>>();
 
+    auto paths = static_cast<const char**>(event_paths);
     for (size_t i = 0; i < num_events; ++i) {
-      if (event_paths[i]) {
-        events->push_back({event_paths[i],
-                           event_flags[i]});
+      if (paths[i]) {
+        fs_events->push_back({paths[i],
+                              event_flags[i]});
       }
     }
 
-    enqueue_to_dispatcher([this, events] {
-      for (auto e : *events) {
-        if (e.flags & (kFSEventStreamEventFlagRootChanged |
-                       kFSEventStreamEventFlagKernelDropped |
-                       kFSEventStreamEventFlagUserDropped)) {
-          // re-register stream
-          unregister_stream();
-          register_stream();
-
-        } else {
-          // FSEvents passes realpathed file path to callback.
-          // Thus, we should to convert it to file path in `files_`.
-
-          std::optional<std::string> changed_file_path;
-
-          if (auto realpath = filesystem::realpath(e.file_path)) {
-            auto it = std::find_if(std::begin(files_),
-                                   std::end(files_),
-                                   [&](auto&& p) {
-                                     return *realpath == filesystem::realpath(p);
-                                   });
-            if (it != std::end(files_)) {
-              stream_file_paths_[e.file_path] = *it;
-              changed_file_path = *it;
-            }
-          } else {
-            // file_path might be removed.
-            // (`realpath` fails if file does not exist.)
-
-            auto it = stream_file_paths_.find(e.file_path);
-            if (it != std::end(stream_file_paths_)) {
-              changed_file_path = it->second;
-              stream_file_paths_.erase(it);
-            }
-          }
-
-          if (changed_file_path) {
-            call_file_changed_slots(*changed_file_path);
-          }
-        }
-      }
+    self->cf_run_loop_thread_->enqueue(^{
+      self->stream_callback(fs_events);
     });
   }
 
-  // This method is executed in the dispatcher thread.
+  // This method is executed in cf_run_loop_thread_.
+  void stream_callback(const std::shared_ptr<std::vector<fs_event>>& fs_events) {
+    for (auto e : *fs_events) {
+      if (e.flags & (kFSEventStreamEventFlagRootChanged |
+                     kFSEventStreamEventFlagKernelDropped |
+                     kFSEventStreamEventFlagUserDropped)) {
+        // re-register stream
+        unregister_stream();
+        register_stream();
+
+      } else {
+        // FSEvents passes realpathed file path to callback.
+        // Thus, we should to convert it to file path in `files_`.
+
+        std::optional<std::string> changed_file_path;
+
+        if (auto realpath = filesystem::realpath(e.file_path)) {
+          auto it = std::find_if(std::begin(files_),
+                                 std::end(files_),
+                                 [&](auto&& p) {
+                                   return *realpath == filesystem::realpath(p);
+                                 });
+          if (it != std::end(files_)) {
+            stream_file_paths_[e.file_path] = *it;
+            changed_file_path = *it;
+          }
+        } else {
+          // file_path might be removed.
+          // (`realpath` fails if file does not exist.)
+
+          auto it = stream_file_paths_.find(e.file_path);
+          if (it != std::end(stream_file_paths_)) {
+            changed_file_path = it->second;
+            stream_file_paths_.erase(it);
+          }
+        }
+
+        if (changed_file_path) {
+          call_file_changed_slots(*changed_file_path);
+        }
+      }
+    }
+  }
+
+  // This method is executed in cf_run_loop_thread_.
   void call_file_changed_slots(const std::string& file_path) {
     if (std::any_of(std::begin(files_),
                     std::end(files_),
@@ -278,9 +284,9 @@ private:
       }
       file_bodies_[file_path] = file_body;
 
-      enqueue_to_dispatcher([this, file_path] {
+      enqueue_to_dispatcher([this, file_path, file_body] {
         file_changed(file_path,
-                     read_file(file_path));
+                     file_body);
       });
     }
   }
