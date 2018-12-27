@@ -14,7 +14,6 @@
 #include "manipulator/manipulator_managers_connector.hpp"
 #include "monitor/configuration_monitor.hpp"
 #include "monitor/event_tap_monitor.hpp"
-#include "spdlog_utility.hpp"
 #include "system_preferences_utility.hpp"
 #include "types.hpp"
 #include "virtual_hid_device_client.hpp"

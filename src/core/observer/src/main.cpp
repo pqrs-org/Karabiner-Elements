@@ -4,7 +4,6 @@
 #include "karabiner_version.h"
 #include "logger.hpp"
 #include "process_utility.hpp"
-#include "spdlog_utility.hpp"
 #include <iostream>
 #include <pqrs/filesystem.hpp>
 #include <sstream>

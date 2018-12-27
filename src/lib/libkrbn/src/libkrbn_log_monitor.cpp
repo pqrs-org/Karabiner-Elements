@@ -1,7 +1,7 @@
 #include "constants.hpp"
 #include "libkrbn.h"
 #include "monitor/log_monitor.hpp"
-#include "spdlog_utility.hpp"
+#include <pqrs/spdlog.hpp>
 
 namespace {
 class libkrbn_log_monitor_class final {
@@ -93,9 +93,9 @@ void libkrbn_log_monitor_start(libkrbn_log_monitor* p) {
 }
 
 bool libkrbn_is_warn_log(const char* line) {
-  return krbn::spdlog_utility::get_level(line) == spdlog::level::warn;
+  return pqrs::spdlog::find_level(line) == spdlog::level::warn;
 }
 
 bool libkrbn_is_err_log(const char* line) {
-  return krbn::spdlog_utility::get_level(line) == spdlog::level::err;
+  return pqrs::spdlog::find_level(line) == spdlog::level::err;
 }

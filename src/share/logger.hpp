@@ -1,8 +1,9 @@
 #pragma once
 
-#include "spdlog_utility.hpp"
+#include <deque>
 #include <memory>
 #include <pqrs/filesystem.hpp>
+#include <pqrs/spdlog.hpp>
 #include <spdlog/async.h>
 #include <spdlog/sinks/rotating_file_sink.h>
 #include <spdlog/sinks/stdout_sinks.h>
@@ -40,7 +41,7 @@ public:
                                                                  256 * 1024,
                                                                  3);
       l->flush_on(spdlog::level::info);
-      l->set_pattern(spdlog_utility::get_pattern());
+      l->set_pattern(pqrs::spdlog::get_pattern());
       set_logger(l);
     }
   }

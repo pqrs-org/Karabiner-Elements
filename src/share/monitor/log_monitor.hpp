@@ -1,12 +1,12 @@
 #pragma once
 
-#include "spdlog_utility.hpp"
 #include <CoreFoundation/CoreFoundation.h>
 #include <deque>
 #include <fstream>
 #include <nod/nod.hpp>
 #include <pqrs/dispatcher.hpp>
 #include <pqrs/filesystem.hpp>
+#include <pqrs/spdlog.hpp>
 #include <thread>
 #include <type_safe/strong_typedef.hpp>
 #include <vector>
@@ -98,7 +98,7 @@ private:
   }
 
   bool add_initial_line(const std::string& line) {
-    if (auto sort_key = spdlog_utility::get_sort_key(line)) {
+    if (auto sort_key = pqrs::spdlog::make_sort_key(line)) {
       if (initial_lines_.empty()) {
         initial_lines_.push_back(std::make_pair(*sort_key, line));
         return true;
@@ -152,7 +152,7 @@ private:
     std::string line;
     std::streampos read_position;
     while (std::getline(stream, line)) {
-      if (auto sort_key = spdlog_utility::get_sort_key(line)) {
+      if (auto sort_key = pqrs::spdlog::make_sort_key(line)) {
         added_lines_.push_back(std::make_tuple(timer_count_, *sort_key, line));
       }
       read_position = stream.tellg();
