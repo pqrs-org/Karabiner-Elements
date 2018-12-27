@@ -3,6 +3,7 @@
 #include "event_queue.hpp"
 #include "iokit_utility.hpp"
 #include <csignal>
+#include <iomanip>
 #include <pqrs/osx/iokit_hid_manager.hpp>
 #include <pqrs/osx/iokit_hid_queue_value_monitor.hpp>
 
