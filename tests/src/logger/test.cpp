@@ -1,7 +1,10 @@
 #define CATCH_CONFIG_MAIN
 #include <catch2/catch.hpp>
 
+#include "boost_defs.hpp"
+
 #include "logger.hpp"
+#include <boost/lexical_cast.hpp>
 #include <ostream>
 
 TEST_CASE("unique_filter") {
