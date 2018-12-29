@@ -4,6 +4,8 @@
 // Distributed under the Boost Software License, Version 1.0.
 // (See http://www.boost.org/LICENSE_1_0.txt)
 
+// `pqrs::spdlog::monitor` can be used safely in a multi-threaded environment.
+
 #include "reader.hpp"
 #include "spdlog.hpp"
 #include <nod/nod.hpp>
