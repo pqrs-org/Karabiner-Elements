@@ -64,7 +64,7 @@ public:
     });
 
     hid_manager_->device_terminated.connect([this](auto&& registry_entry_id) {
-      krbn::logger::get_logger().info("registry_entry_id:{0} is terminated.", type_safe::get(registry_entry_id));
+      krbn::logger::get_logger()->info("registry_entry_id:{0} is terminated.", type_safe::get(registry_entry_id));
 
       auto device_id = krbn::make_device_id(registry_entry_id);
       hid_queue_value_monitors_.erase(device_id);

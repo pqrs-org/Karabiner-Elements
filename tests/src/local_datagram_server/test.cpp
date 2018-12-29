@@ -38,7 +38,7 @@ public:
     });
 
     server_->received.connect([this](auto&& buffer) {
-      krbn::logger::get_logger().info("server received {0}", buffer->size());
+      krbn::logger::get_logger()->info("server received {0}", buffer->size());
       received_count_ += buffer->size();
 
       if (buffer->size() == 32) {
@@ -321,17 +321,17 @@ TEST_CASE("local_datagram::client_manager") {
 
     client_manager->connected.connect([&] {
       ++connected_count;
-      krbn::logger::get_logger().info("client_manager connected: {0}", connected_count);
+      krbn::logger::get_logger()->info("client_manager connected: {0}", connected_count);
     });
 
     client_manager->connect_failed.connect([&](auto&& error_code) {
       ++connect_failed_count;
-      krbn::logger::get_logger().info("client_manager connect_failed: {0}", connect_failed_count);
+      krbn::logger::get_logger()->info("client_manager connect_failed: {0}", connect_failed_count);
     });
 
     client_manager->closed.connect([&] {
       ++closed_count;
-      krbn::logger::get_logger().info("client_manager closed: {0}", closed_count);
+      krbn::logger::get_logger()->info("client_manager closed: {0}", closed_count);
     });
 
     // Create client before server
@@ -385,17 +385,17 @@ TEST_CASE("local_datagram::server_manager") {
 
     server_manager->bound.connect([&] {
       ++bound_count;
-      krbn::logger::get_logger().info("server_manager bound: {0}", bound_count);
+      krbn::logger::get_logger()->info("server_manager bound: {0}", bound_count);
     });
 
     server_manager->bind_failed.connect([&](auto&& error_code) {
       ++bind_failed_count;
-      krbn::logger::get_logger().info("server_manager bind_failed: {0}", bind_failed_count);
+      krbn::logger::get_logger()->info("server_manager bind_failed: {0}", bind_failed_count);
     });
 
     server_manager->closed.connect([&] {
       ++closed_count;
-      krbn::logger::get_logger().info("server_manager closed: {0}", closed_count);
+      krbn::logger::get_logger()->info("server_manager closed: {0}", closed_count);
     });
 
     server_manager->async_start();

@@ -24,7 +24,7 @@ public:
         auto device_id = krbn::make_device_id(registry_entry_id);
         auto device_name = krbn::iokit_utility::make_device_name_for_log(device_id,
                                                                          *device_ptr);
-        krbn::logger::get_logger().info("{0} is matched.", device_name);
+        krbn::logger::get_logger()->info("{0} is matched.", device_name);
 
         pqrs::osx::iokit_return r = IOHIDDeviceOpen(*device_ptr, kIOHIDOptionsTypeNone);
         if (!r) {
@@ -42,7 +42,7 @@ public:
     });
 
     hid_manager_->device_terminated.connect([this](auto&& registry_entry_id) {
-      krbn::logger::get_logger().info("registry_entry_id:{0} is terminated.",
+      krbn::logger::get_logger()->info("registry_entry_id:{0} is terminated.",
                                       type_safe::get(registry_entry_id));
 
       caps_lock_led_state_managers_.erase(registry_entry_id);
@@ -73,12 +73,12 @@ int main(int argc, const char* argv[]) {
   });
 
   if (getuid() != 0) {
-    krbn::logger::get_logger().error("control_led requires root privilege.");
+    krbn::logger::get_logger()->error("control_led requires root privilege.");
   } else {
     if (argc == 1) {
-      krbn::logger::get_logger().error("Usage: control_led on|off");
-      krbn::logger::get_logger().error("  Example: control_led on");
-      krbn::logger::get_logger().error("  Example: control_led off");
+      krbn::logger::get_logger()->error("Usage: control_led on|off");
+      krbn::logger::get_logger()->error("  Example: control_led on");
+      krbn::logger::get_logger()->error("  Example: control_led off");
     } else {
       auto p = std::make_unique<control_led>(std::string(argv[1]) == "on" ? krbn::led_state::on : krbn::led_state::off);
 

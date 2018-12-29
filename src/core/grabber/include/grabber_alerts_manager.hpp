@@ -40,7 +40,7 @@ public:
 
       if (enabled) {
         alerts_.insert(alert);
-        logger::get_logger().warn("grabber_alert: {0}", to_string(alert));
+        logger::get_logger()->warn("grabber_alert: {0}", to_string(alert));
       } else {
         alerts_.erase(alert);
       }

@@ -75,7 +75,7 @@ public:
       try {
         files_.emplace_back(file_path);
       } catch (std::exception& e) {
-        logger::get_logger().error("Error in {0}: {1}", file_path, e.what());
+        logger::get_logger()->error("Error in {0}: {1}", file_path, e.what());
       }
     }
 
@@ -91,7 +91,7 @@ public:
             files_.emplace_back(file_path);
 
           } catch (std::exception& e) {
-            logger::get_logger().error("Error in {0}: {1}", file_path, e.what());
+            logger::get_logger()->error("Error in {0}: {1}", file_path, e.what());
           }
         }
       }

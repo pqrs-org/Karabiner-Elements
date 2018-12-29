@@ -33,7 +33,7 @@ public:
     hid_manager_->device_matched.connect([this](auto&& registry_entry_id, auto&& device_ptr) {
       if (device_ptr) {
         auto device_id = krbn::make_device_id(registry_entry_id);
-        krbn::logger::get_logger().info("{0} is matched.",
+        krbn::logger::get_logger()->info("{0} is matched.",
                                         krbn::iokit_utility::make_device_name_for_log(device_id,
                                                                                       *device_ptr));
 
@@ -61,7 +61,7 @@ public:
     hid_manager_->device_terminated.connect([this](auto&& registry_entry_id) {
       auto device_id = krbn::make_device_id(registry_entry_id);
 
-      krbn::logger::get_logger().info("device_id:{0} is terminated.", type_safe::get(device_id));
+      krbn::logger::get_logger()->info("device_id:{0} is terminated.", type_safe::get(device_id));
 
       hid_queue_value_monitors_.erase(device_id);
     });

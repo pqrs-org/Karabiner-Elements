@@ -40,7 +40,7 @@ public:
   void async_start(void) {
     enqueue_to_dispatcher([this] {
       if (client_manager_) {
-        logger::get_logger().warn("grabber_client is already started.");
+        logger::get_logger()->warn("grabber_client is already started.");
         return;
       }
 
@@ -53,7 +53,7 @@ public:
                                                                          reconnect_interval);
 
       client_manager_->connected.connect([this] {
-        logger::get_logger().info("grabber_client is connected.");
+        logger::get_logger()->info("grabber_client is connected.");
 
         enqueue_to_dispatcher([this] {
           connected();
@@ -67,7 +67,7 @@ public:
       });
 
       client_manager_->closed.connect([this] {
-        logger::get_logger().info("grabber_client is closed.");
+        logger::get_logger()->info("grabber_client is closed.");
 
         enqueue_to_dispatcher([this] {
           closed();
@@ -76,7 +76,7 @@ public:
 
       client_manager_->async_start();
 
-      logger::get_logger().info("grabber_client is started.");
+      logger::get_logger()->info("grabber_client is started.");
     });
   }
 
@@ -173,7 +173,7 @@ private:
 
     client_manager_ = nullptr;
 
-    logger::get_logger().info("grabber_client is stopped.");
+    logger::get_logger()->info("grabber_client is stopped.");
   }
 
   void call_async_send(const uint8_t* _Nonnull p, size_t length) const {

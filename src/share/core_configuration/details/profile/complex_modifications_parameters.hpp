@@ -82,14 +82,14 @@ private:
   void normalize(int& value, std::optional<int> min, std::optional<int> max, const std::string& name) {
     if (min) {
       if (value < *min) {
-        logger::get_logger().warn("{0} should be >= {1}.", name, *min);
+        logger::get_logger()->warn("{0} should be >= {1}.", name, *min);
       }
       value = std::max(value, *min);
     }
 
     if (max) {
       if (value > *max) {
-        logger::get_logger().warn("{0} should be <= {1}.", name, *max);
+        logger::get_logger()->warn("{0} should be <= {1}.", name, *max);
       }
       value = std::min(value, *max);
     }

@@ -60,7 +60,7 @@ public:
     void log_events_sizes(void) const {
       if (auto input_event_queue = weak_input_event_queue_.lock()) {
         if (auto output_event_queue = weak_output_event_queue_.lock()) {
-          logger::get_logger().info("connection events sizes: {0} -> {1}",
+          logger::get_logger()->info("connection events sizes: {0} -> {1}",
                                     input_event_queue->get_entries().size(),
                                     output_event_queue->get_entries().size());
         }

@@ -53,7 +53,7 @@ public:
       }
 
       if (pqrs::filesystem::exists(file_path)) {
-        logger::get_logger().info("Load {0}...", file_path);
+        logger::get_logger()->info("Load {0}...", file_path);
       }
 
       auto c = std::make_shared<core_configuration::core_configuration>(file_path);
@@ -72,7 +72,7 @@ public:
         core_configuration_ = c;
       }
 
-      logger::get_logger().info("core_configuration is updated.");
+      logger::get_logger()->info("core_configuration is updated.");
 
       enqueue_to_dispatcher([this, c] {
         core_configuration_updated(c);

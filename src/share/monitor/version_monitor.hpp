@@ -46,7 +46,7 @@ public:
                                    std::end(*changed_file_body));
         pqrs::string::trim(version_string);
 
-        logger::get_logger().info("Version is changed to {0}", version_string);
+        logger::get_logger()->info("Version is changed to {0}", version_string);
 
         version_ = changed_file_body;
 

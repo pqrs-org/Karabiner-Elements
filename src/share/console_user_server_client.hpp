@@ -42,7 +42,7 @@ public:
                                                                            reconnect_interval);
 
         client_manager_->connected.connect([this, uid] {
-          logger::get_logger().info("console_user_server_client is connected. (uid:{0})", *uid);
+          logger::get_logger()->info("console_user_server_client is connected. (uid:{0})", *uid);
 
           enqueue_to_dispatcher([this] {
             connected();
@@ -56,7 +56,7 @@ public:
         });
 
         client_manager_->closed.connect([this, uid] {
-          logger::get_logger().info("console_user_server_client is closed. (uid:{0})", *uid);
+          logger::get_logger()->info("console_user_server_client is closed. (uid:{0})", *uid);
 
           enqueue_to_dispatcher([this] {
             closed();
@@ -95,7 +95,7 @@ public:
       operation_type_shell_command_execution_struct s;
 
       if (shell_command.length() >= sizeof(s.shell_command)) {
-        logger::get_logger().error("shell_command is too long: {0}", shell_command);
+        logger::get_logger()->error("shell_command is too long: {0}", shell_command);
         return;
       }
 
@@ -115,7 +115,7 @@ public:
 
       if (auto& v = input_source_selector.get_language_string()) {
         if (v->length() >= sizeof(s.language)) {
-          logger::get_logger().error("language is too long: {0}", *v);
+          logger::get_logger()->error("language is too long: {0}", *v);
           return;
         }
 
@@ -126,7 +126,7 @@ public:
 
       if (auto& v = input_source_selector.get_input_source_id_string()) {
         if (v->length() >= sizeof(s.input_source_id)) {
-          logger::get_logger().error("input_source_id is too long: {0}", *v);
+          logger::get_logger()->error("input_source_id is too long: {0}", *v);
           return;
         }
 
@@ -137,7 +137,7 @@ public:
 
       if (auto& v = input_source_selector.get_input_mode_id_string()) {
         if (v->length() >= sizeof(s.input_mode_id)) {
-          logger::get_logger().error("input_mode_id is too long: {0}", *v);
+          logger::get_logger()->error("input_mode_id is too long: {0}", *v);
           return;
         }
 

@@ -32,7 +32,7 @@ public:
       server_manager_ = nullptr;
     });
 
-    logger::get_logger().info("receiver is terminated");
+    logger::get_logger()->info("receiver is terminated");
   }
 
   void async_start(void) {
@@ -78,7 +78,7 @@ public:
           switch (*type) {
             case operation_type::shell_command_execution:
               if (buffer->size() != sizeof(operation_type_shell_command_execution_struct)) {
-                logger::get_logger().error("invalid size for operation_type::shell_command_execution");
+                logger::get_logger()->error("invalid size for operation_type::shell_command_execution");
               } else {
                 auto p = reinterpret_cast<operation_type_shell_command_execution_struct*>(&((*buffer)[0]));
 
@@ -92,7 +92,7 @@ public:
 
             case operation_type::select_input_source:
               if (buffer->size() != sizeof(operation_type_select_input_source_struct)) {
-                logger::get_logger().error("invalid size for operation_type::select_input_source");
+                logger::get_logger()->error("invalid size for operation_type::select_input_source");
               } else {
                 auto p = reinterpret_cast<operation_type_select_input_source_struct*>(&((*buffer)[0]));
 
@@ -136,7 +136,7 @@ public:
 
       server_manager_->async_start();
 
-      logger::get_logger().info("receiver is initialized");
+      logger::get_logger()->info("receiver is initialized");
     });
   }
 

@@ -78,29 +78,29 @@ public:
                                   IOHIDDeviceRef _Nonnull device) {
     pqrs::osx::iokit_hid_device hid_device(device);
 
-    logger::get_logger().info("matching device:");
-    logger::get_logger().info("  registry_entry_id: {0}", type_safe::get(registry_entry_id));
+    logger::get_logger()->info("matching device:");
+    logger::get_logger()->info("  registry_entry_id: {0}", type_safe::get(registry_entry_id));
 
     if (auto manufacturer = hid_device.find_manufacturer()) {
-      logger::get_logger().info("  manufacturer: {0}", *manufacturer);
+      logger::get_logger()->info("  manufacturer: {0}", *manufacturer);
     }
     if (auto product = hid_device.find_product()) {
-      logger::get_logger().info("  product: {0}", *product);
+      logger::get_logger()->info("  product: {0}", *product);
     }
     if (auto vendor_id = hid_device.find_vendor_id()) {
-      logger::get_logger().info("  vendor_id: {0}", type_safe::get(*vendor_id));
+      logger::get_logger()->info("  vendor_id: {0}", type_safe::get(*vendor_id));
     }
     if (auto product_id = hid_device.find_product_id()) {
-      logger::get_logger().info("  product_id: {0}", type_safe::get(*product_id));
+      logger::get_logger()->info("  product_id: {0}", type_safe::get(*product_id));
     }
     if (auto location_id = hid_device.find_location_id()) {
-      logger::get_logger().info("  location_id: {0:#x}", type_safe::get(*location_id));
+      logger::get_logger()->info("  location_id: {0:#x}", type_safe::get(*location_id));
     }
     if (auto serial_number = hid_device.find_serial_number()) {
-      logger::get_logger().info("  serial_number: {0}", *serial_number);
+      logger::get_logger()->info("  serial_number: {0}", *serial_number);
     }
-    logger::get_logger().info("  is_keyboard: {0}", is_keyboard(device));
-    logger::get_logger().info("  is_pointing_device: {0}", is_pointing_device(device));
+    logger::get_logger()->info("  is_keyboard: {0}", is_keyboard(device));
+    logger::get_logger()->info("  is_pointing_device: {0}", is_pointing_device(device));
   }
 };
 } // namespace krbn

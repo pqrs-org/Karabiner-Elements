@@ -11,7 +11,7 @@ public:
         to_.emplace_back(j);
       }
     } else {
-      logger::get_logger().error("complex_modifications json error: `to_if_held_down` should be object: {0}", json.dump());
+      logger::get_logger()->error("complex_modifications json error: `to_if_held_down` should be object: {0}", json.dump());
     }
   }
 

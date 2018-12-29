@@ -53,7 +53,7 @@ public:
 
         service_monitor_->async_start();
 
-        logger::get_logger().info("virtual_hid_device_client is started.");
+        logger::get_logger()->info("virtual_hid_device_client is started.");
 
         CFRelease(matching_dictionary);
       }
@@ -84,11 +84,11 @@ public:
       virtual_hid_keyboard_properties_ = properties;
       virtual_hid_keyboard_ready_ = false;
 
-      logger::get_logger().info("initialize_virtual_hid_keyboard");
-      logger::get_logger().info("  country_code:{0}", static_cast<uint32_t>(virtual_hid_keyboard_properties_.country_code));
+      logger::get_logger()->info("initialize_virtual_hid_keyboard");
+      logger::get_logger()->info("  country_code:{0}", static_cast<uint32_t>(virtual_hid_keyboard_properties_.country_code));
 
       if (!connect_) {
-        logger::get_logger().warn("connect_ is IO_OBJECT_NULL");
+        logger::get_logger()->warn("connect_ is IO_OBJECT_NULL");
         return;
       }
 
@@ -210,7 +210,7 @@ private:
 
     pqrs::osx::iokit_return r = IOServiceOpen(service_, mach_task_self(), kIOHIDServerConnectType, &connect_);
     if (r) {
-      logger::get_logger().info("virtual_hid_device_client is opened.");
+      logger::get_logger()->info("virtual_hid_device_client is opened.");
 
       connected_ = true;
 
@@ -219,7 +219,7 @@ private:
       });
 
     } else {
-      logger::get_logger().error("virtual_hid_device_client::open_connection is failed: {0}",
+      logger::get_logger()->error("virtual_hid_device_client::open_connection is failed: {0}",
                                  r.to_string());
       connect_ = IO_OBJECT_NULL;
     }
@@ -230,7 +230,7 @@ private:
     if (connect_) {
       pqrs::osx::iokit_return r = IOServiceClose(connect_);
       if (!r) {
-        logger::get_logger().error("virtual_hid_device_client::close_connection error: {0}",
+        logger::get_logger()->error("virtual_hid_device_client::close_connection error: {0}",
                                    r.to_string());
       }
       connect_ = IO_OBJECT_NULL;
@@ -241,7 +241,7 @@ private:
         client_disconnected();
       });
 
-      logger::get_logger().info("virtual_hid_device_client is closed.");
+      logger::get_logger()->info("virtual_hid_device_client is closed.");
     }
 
     if (service_) {

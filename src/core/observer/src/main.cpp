@@ -26,7 +26,7 @@ int main(int argc, const char* argv[]) {
                                           "/var/log/karabiner/observer.log",
                                           0755);
 
-  krbn::logger::get_logger().info("version {0}", karabiner_version);
+  krbn::logger::get_logger()->info("version {0}", karabiner_version);
 
   // Check another process
 
@@ -34,7 +34,7 @@ int main(int argc, const char* argv[]) {
     std::string pid_file_path = krbn::constants::get_pid_directory() + "/karabiner_observer.pid";
     if (!krbn::process_utility::lock_single_application(pid_file_path)) {
       auto message = "Exit since another process is running.";
-      krbn::logger::get_logger().info(message);
+      krbn::logger::get_logger()->info(message);
       std::cerr << message << std::endl;
       exit(1);
     }
@@ -48,7 +48,7 @@ int main(int argc, const char* argv[]) {
 
   components_manager = nullptr;
 
-  krbn::logger::get_logger().info("karabiner_observer is terminated.");
+  krbn::logger::get_logger()->info("karabiner_observer is terminated.");
 
   krbn::dispatcher_utility::terminate_dispatchers();
 

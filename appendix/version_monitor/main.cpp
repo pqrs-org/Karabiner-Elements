@@ -11,7 +11,7 @@ int main(int argc, const char* argv[]) {
   auto monitor = std::make_unique<krbn::version_monitor>(krbn::constants::get_version_file_path());
 
   monitor->changed.connect([](auto&& version) {
-    krbn::logger::get_logger().info("changed");
+    krbn::logger::get_logger()->info("changed");
   });
 
   monitor->async_start();

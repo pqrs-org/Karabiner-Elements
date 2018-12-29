@@ -89,7 +89,7 @@ private:
     grabber_alerts_monitor_ = std::make_unique<grabber_alerts_monitor>(constants::get_grabber_alerts_json_file_path());
 
     grabber_alerts_monitor_->alerts_changed.connect([](auto&& alerts) {
-      logger::get_logger().info("karabiner_grabber_alerts.json is updated.");
+      logger::get_logger()->info("karabiner_grabber_alerts.json is updated.");
       if (!alerts->empty()) {
         application_launcher::launch_preferences();
       }

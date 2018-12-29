@@ -117,7 +117,7 @@ private:
               to_json.erase("");
               to_json_string = to_json.dump();
             } else {
-              logger::get_logger().error("json error: Unknown key: {0} in {1}", key, j.dump());
+              logger::get_logger()->error("json error: Unknown key: {0} in {1}", key, j.dump());
             }
           }
 
@@ -157,7 +157,7 @@ private:
       }
 
     } else {
-      logger::get_logger().error("json error: Invalid type: {0}", json.dump());
+      logger::get_logger()->error("json error: Invalid type: {0}", json.dump());
     }
 
     std::sort(pairs_.begin(), pairs_.end(), [](auto& a, auto& b) {

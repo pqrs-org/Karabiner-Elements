@@ -22,12 +22,12 @@ int main(int argc, const char* argv[]) {
                                             0700);
   }
 
-  krbn::logger::get_logger().info("version {0}", karabiner_version);
+  krbn::logger::get_logger()->info("version {0}", karabiner_version);
 
   // Check another process
 
   if (!krbn::process_utility::lock_single_application_with_user_pid_file("karabiner_console_user_server.pid")) {
-    krbn::logger::get_logger().info("Exit since another process is running.");
+    krbn::logger::get_logger()->info("Exit since another process is running.");
     exit(0);
   }
 
@@ -48,7 +48,7 @@ int main(int argc, const char* argv[]) {
 
   components_manager = nullptr;
 
-  krbn::logger::get_logger().info("karabiner_console_user_server is terminated.");
+  krbn::logger::get_logger()->info("karabiner_console_user_server is terminated.");
 
   krbn::dispatcher_utility::terminate_dispatchers();
 

@@ -33,7 +33,7 @@ public:
 
       if (key == "to") {
         if (!value.is_array()) {
-          logger::get_logger().error("complex_modifications json error: `to` should be array: {0}", json.dump());
+          logger::get_logger()->error("complex_modifications json error: `to` should be array: {0}", json.dump());
           continue;
         }
 
@@ -43,7 +43,7 @@ public:
 
       } else if (key == "to_after_key_up") {
         if (!value.is_array()) {
-          logger::get_logger().error("complex_modifications json error: `to_after_key_up` should be array: {0}", json.dump());
+          logger::get_logger()->error("complex_modifications json error: `to_after_key_up` should be array: {0}", json.dump());
           continue;
         }
 
@@ -53,7 +53,7 @@ public:
 
       } else if (key == "to_if_alone") {
         if (!value.is_array()) {
-          logger::get_logger().error("complex_modifications json error: `to_if_alone` should be array: {0}", json.dump());
+          logger::get_logger()->error("complex_modifications json error: `to_if_alone` should be array: {0}", json.dump());
           continue;
         }
 
@@ -76,7 +76,7 @@ public:
                  key == "type") {
         // Do nothing
       } else {
-        logger::get_logger().error("complex_modifications json error: Unknown key: {0} in {1}", key, json.dump());
+        logger::get_logger()->error("complex_modifications json error: Unknown key: {0} in {1}", key, json.dump());
       }
     }
   }
@@ -994,7 +994,7 @@ inline void from_json(const nlohmann::json& json, basic::from_event_definition::
   } else if (s == "strict_inverse") {
     value = basic::from_event_definition::simultaneous_options::key_order::strict_inverse;
   } else {
-    logger::get_logger().error("complex_modifications json error: Unknown simultaneous_options::key_order: {0}", json.dump());
+    logger::get_logger()->error("complex_modifications json error: Unknown simultaneous_options::key_order: {0}", json.dump());
     value = basic::from_event_definition::simultaneous_options::key_order::insensitive;
   }
 }
@@ -1007,7 +1007,7 @@ inline void from_json(const nlohmann::json& json, basic::from_event_definition::
   } else if (s == "all") {
     value = basic::from_event_definition::simultaneous_options::key_up_when::all;
   } else {
-    logger::get_logger().error("complex_modifications json error: Unknown simultaneous_options::key_up_when: {0}", json.dump());
+    logger::get_logger()->error("complex_modifications json error: Unknown simultaneous_options::key_up_when: {0}", json.dump());
     value = basic::from_event_definition::simultaneous_options::key_up_when::any;
   }
 }

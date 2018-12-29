@@ -12,7 +12,7 @@ namespace krbn {
 class input_source_manager final {
 public:
   input_source_manager(void) {
-    logger::get_logger().info("input_source_manager initialize");
+    logger::get_logger()->info("input_source_manager initialize");
 
     CFNotificationCenterAddObserver(CFNotificationCenterGetDistributedCenter(),
                                     this,
@@ -25,7 +25,7 @@ public:
   }
 
   ~input_source_manager(void) {
-    logger::get_logger().info("input_source_manager terminate");
+    logger::get_logger()->info("input_source_manager terminate");
 
     CFNotificationCenterRemoveObserver(CFNotificationCenterGetDistributedCenter(),
                                        this,

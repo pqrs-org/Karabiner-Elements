@@ -22,7 +22,7 @@ int main(int argc, const char* argv[]) {
   });
 
   client->connect_failed.connect([](auto&& error_code) {
-    krbn::logger::get_logger().error("Failed to connect");
+    krbn::logger::get_logger()->error("Failed to connect");
   });
 
   client->async_start();

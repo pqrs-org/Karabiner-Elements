@@ -29,7 +29,7 @@ public:
 
         if (key == "detect_key_down_uninterruptedly") {
           if (!value.is_boolean()) {
-            logger::get_logger().error("complex_modifications json error: `detect_key_down_uninterruptedly` should be boolean: {0}", json.dump());
+            logger::get_logger()->error("complex_modifications json error: `detect_key_down_uninterruptedly` should be boolean: {0}", json.dump());
             continue;
           }
 
@@ -40,7 +40,7 @@ public:
 
         if (key == "key_down_order") {
           if (!value.is_string()) {
-            logger::get_logger().error("complex_modifications json error: `key_down_order` should be string: {0}", json.dump());
+            logger::get_logger()->error("complex_modifications json error: `key_down_order` should be string: {0}", json.dump());
             continue;
           }
 
@@ -51,7 +51,7 @@ public:
 
         if (key == "key_up_order") {
           if (!value.is_string()) {
-            logger::get_logger().error("complex_modifications json error: `key_up_order` should be string: {0}", json.dump());
+            logger::get_logger()->error("complex_modifications json error: `key_up_order` should be string: {0}", json.dump());
             continue;
           }
 
@@ -62,7 +62,7 @@ public:
 
         if (key == "key_up_when") {
           if (!value.is_string()) {
-            logger::get_logger().error("complex_modifications json error: `key_up_when` should be string: {0}", json.dump());
+            logger::get_logger()->error("complex_modifications json error: `key_up_when` should be string: {0}", json.dump());
             continue;
           }
 
@@ -73,7 +73,7 @@ public:
 
         if (key == "to_after_key_up") {
           if (!value.is_array()) {
-            logger::get_logger().error("complex_modifications json error: `to_after_key_up` should be array: {0}", json.dump());
+            logger::get_logger()->error("complex_modifications json error: `to_after_key_up` should be array: {0}", json.dump());
             continue;
           }
 
@@ -84,7 +84,7 @@ public:
           continue;
         }
 
-        logger::get_logger().error("complex_modifications json error: Unknown key: {0} in {1}", key, json.dump());
+        logger::get_logger()->error("complex_modifications json error: Unknown key: {0} in {1}", key, json.dump());
       }
     }
 
@@ -118,7 +118,7 @@ public:
 
   from_event_definition(const nlohmann::json& json) {
     if (!json.is_object()) {
-      logger::get_logger().error("complex_modifications json error: Invalid form of from_event_definition: {0}", json.dump());
+      logger::get_logger()->error("complex_modifications json error: Invalid form of from_event_definition: {0}", json.dump());
       return;
     }
 
@@ -135,7 +135,7 @@ public:
 
       if (key == "simultaneous") {
         if (!value.is_array()) {
-          logger::get_logger().error("complex_modifications json error: Invalid form of simultaneous: {0}", value.dump());
+          logger::get_logger()->error("complex_modifications json error: Invalid form of simultaneous: {0}", value.dump());
           continue;
         }
 
@@ -160,7 +160,7 @@ public:
 
       if (key == "simultaneous_options") {
         if (!value.is_object()) {
-          logger::get_logger().error("complex_modifications json error: Invalid form of simultaneous_options: {0}", value.dump());
+          logger::get_logger()->error("complex_modifications json error: Invalid form of simultaneous_options: {0}", value.dump());
           continue;
         }
 
@@ -171,7 +171,7 @@ public:
 
       if (key == "modifiers") {
         if (!value.is_object()) {
-          logger::get_logger().error("complex_modifications json error: Invalid form of modifiers: {0}", value.dump());
+          logger::get_logger()->error("complex_modifications json error: Invalid form of modifiers: {0}", value.dump());
           continue;
         }
 
@@ -185,14 +185,14 @@ public:
           } else if (k == "optional") {
             optional_modifiers_ = modifier_definition::make_modifiers(v);
           } else {
-            logger::get_logger().error("complex_modifications json error: Unknown key: {0} in {1}", k, value.dump());
+            logger::get_logger()->error("complex_modifications json error: Unknown key: {0} in {1}", k, value.dump());
           }
         }
 
         continue;
       }
 
-      logger::get_logger().error("complex_modifications json error: Unknown key: {0} in {1}", key, json.dump());
+      logger::get_logger()->error("complex_modifications json error: Unknown key: {0} in {1}", key, json.dump());
     }
 
     if (event_definitions_.empty() &&
@@ -215,7 +215,7 @@ public:
         case event_definition::type::select_input_source:
         case event_definition::type::set_variable:
         case event_definition::type::mouse_key:
-          logger::get_logger().error("complex_modifications json error: Invalid type in from_event_definition: {0}", json.dump());
+          logger::get_logger()->error("complex_modifications json error: Invalid type in from_event_definition: {0}", json.dump());
           break;
       }
     }

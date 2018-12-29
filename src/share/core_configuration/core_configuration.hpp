@@ -47,7 +47,7 @@ public:
       }
 
       if (!valid_file_owner) {
-        logger::get_logger().warn("{0} is not owned by a valid user.", file_path);
+        logger::get_logger()->warn("{0} is not owned by a valid user.", file_path);
 
       } else {
         std::ifstream input(file_path);
@@ -68,11 +68,11 @@ public:
             loaded_ = true;
 
           } catch (std::exception& e) {
-            logger::get_logger().error("parse error in {0}: {1}", file_path, e.what());
+            logger::get_logger()->error("parse error in {0}: {1}", file_path, e.what());
             json_ = nlohmann::json();
           }
         } else {
-          logger::get_logger().error("Failed to open {0}", file_path);
+          logger::get_logger()->error("Failed to open {0}", file_path);
         }
       }
     }

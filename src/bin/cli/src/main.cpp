@@ -26,7 +26,7 @@ void select_profile(const std::string& name) {
           goto finish;
         }
       }
-      krbn::logger::get_logger().error("`{0}` is not found.", name);
+      krbn::logger::get_logger()->error("`{0}` is not found.", name);
     }
 
   finish:
@@ -47,11 +47,11 @@ int copy_current_profile_to_system_default_profile(void) {
 
 int remove_system_default_profile(void) {
   if (!pqrs::filesystem::exists(krbn::constants::get_system_core_configuration_file_path())) {
-    krbn::logger::get_logger().error("{0} is not found.", krbn::constants::get_system_core_configuration_file_path());
+    krbn::logger::get_logger()->error("{0} is not found.", krbn::constants::get_system_core_configuration_file_path());
     return 1;
   }
   if (unlink(krbn::constants::get_system_core_configuration_file_path()) != 0) {
-    krbn::logger::get_logger().error("Failed to unlink {0}.");
+    krbn::logger::get_logger()->error("Failed to unlink {0}.");
     return 1;
   }
   return 0;
@@ -92,7 +92,7 @@ int main(int argc, char** argv) {
       std::string key = "copy-current-profile-to-system-default-profile";
       if (parse_result.count(key)) {
         if (getuid() != 0) {
-          krbn::logger::get_logger().error("--{0} requires root privilege.", key);
+          krbn::logger::get_logger()->error("--{0} requires root privilege.", key);
           exit_code = 1;
           goto finish;
         }
@@ -105,7 +105,7 @@ int main(int argc, char** argv) {
       std::string key = "remove-system-default-profile";
       if (parse_result.count(key)) {
         if (getuid() != 0) {
-          krbn::logger::get_logger().error("--{0} requires root privilege.", key);
+          krbn::logger::get_logger()->error("--{0} requires root privilege.", key);
           exit_code = 1;
           goto finish;
         }

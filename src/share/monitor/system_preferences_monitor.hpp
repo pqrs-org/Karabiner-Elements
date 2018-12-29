@@ -35,7 +35,7 @@ public:
       external_signal_connections_.clear();
     });
 
-    logger::get_logger().info("system_preferences_monitor is stopped.");
+    logger::get_logger()->info("system_preferences_monitor is stopped.");
   }
 
   void async_start(void) {
@@ -45,7 +45,7 @@ public:
         },
         std::chrono::milliseconds(3000));
 
-    logger::get_logger().info("system_preferences_monitor is started.");
+    logger::get_logger()->info("system_preferences_monitor is started.");
   }
 
 private:
@@ -72,7 +72,7 @@ private:
   void check_system_preferences(void) {
     auto v = make_system_preferences();
     if (!last_system_preferences_ || *last_system_preferences_ != v) {
-      logger::get_logger().info("system_preferences is updated.");
+      logger::get_logger()->info("system_preferences is updated.");
 
       last_system_preferences_ = v;
       enqueue_to_dispatcher([this, v] {

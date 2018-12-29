@@ -28,10 +28,10 @@ public:
       uid_t console_user_server_socket_uid = 0;
 
       if (uid) {
-        logger::get_logger().info("current_console_user_id: {0}", *uid);
+        logger::get_logger()->info("current_console_user_id: {0}", *uid);
         console_user_server_socket_uid = *uid;
       } else {
-        logger::get_logger().info("current_console_user_id: none");
+        logger::get_logger()->info("current_console_user_id: none");
       }
 
       if (version_monitor_) {

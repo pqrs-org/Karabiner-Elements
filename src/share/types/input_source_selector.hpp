@@ -27,26 +27,26 @@ public:
           if (value.is_string()) {
             language_string_ = value.get<std::string>();
           } else {
-            logger::get_logger().error("complex_modifications json error: input_source_selector.language should be string: {0}", json.dump());
+            logger::get_logger()->error("complex_modifications json error: input_source_selector.language should be string: {0}", json.dump());
           }
         } else if (key == "input_source_id") {
           if (value.is_string()) {
             input_source_id_string_ = value.get<std::string>();
           } else {
-            logger::get_logger().error("complex_modifications json error: input_source_selector.input_source_id should be string: {0}", json.dump());
+            logger::get_logger()->error("complex_modifications json error: input_source_selector.input_source_id should be string: {0}", json.dump());
           }
         } else if (key == "input_mode_id") {
           if (value.is_string()) {
             input_mode_id_string_ = value.get<std::string>();
           } else {
-            logger::get_logger().error("complex_modifications json error: input_source_selector.input_mode_id should be string: {0}", json.dump());
+            logger::get_logger()->error("complex_modifications json error: input_source_selector.input_mode_id should be string: {0}", json.dump());
           }
         } else {
-          logger::get_logger().error("complex_modifications json error: Unknown key: {0} in {1}", key, json.dump());
+          logger::get_logger()->error("complex_modifications json error: Unknown key: {0} in {1}", key, json.dump());
         }
       }
     } else {
-      logger::get_logger().error("complex_modifications json error: input_source_selector should be array of object: {0}", json.dump());
+      logger::get_logger()->error("complex_modifications json error: input_source_selector should be array of object: {0}", json.dump());
     }
 
     update_regexs();
@@ -165,7 +165,7 @@ private:
         input_mode_id_regex_ = std::regex(s);
       }
     } catch (std::exception& e) {
-      logger::get_logger().error("complex_modifications json error: Regex error: \"{0}\" {1}", s, e.what());
+      logger::get_logger()->error("complex_modifications json error: Regex error: \"{0}\" {1}", s, e.what());
     }
   }
 

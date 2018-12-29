@@ -11,14 +11,12 @@
 namespace krbn {
 class logger final {
 public:
-#include "logger/unique_filter.hpp"
-
-  static spdlog::logger& get_logger(void) {
+  static std::shared_ptr<spdlog::logger> get_logger(void) {
     std::lock_guard<std::mutex> guard(get_mutex());
 
     auto ptr = get_ptr();
     if (ptr) {
-      return *ptr;
+      return ptr;
     }
 
     return get_stdout_logger();
@@ -47,13 +45,13 @@ public:
   }
 
 private:
-  static spdlog::logger& get_stdout_logger(void) {
+  static std::shared_ptr<spdlog::logger> get_stdout_logger(void) {
     static std::shared_ptr<spdlog::logger> logger;
     if (!logger) {
       logger = spdlog::stdout_logger_mt("karabiner");
     }
 
-    return *logger;
+    return logger;
   }
 
   static std::mutex& get_mutex(void) {

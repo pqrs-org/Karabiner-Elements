@@ -38,26 +38,26 @@ public:
           if (value.is_string()) {
             language_ = value.get<std::string>();
           } else {
-            logger::get_logger().error("language should be string: {0}", json.dump());
+            logger::get_logger()->error("language should be string: {0}", json.dump());
           }
         } else if (key == "input_source_id") {
           if (value.is_string()) {
             input_source_id_ = value.get<std::string>();
           } else {
-            logger::get_logger().error("input_source_id should be string: {0}", json.dump());
+            logger::get_logger()->error("input_source_id should be string: {0}", json.dump());
           }
         } else if (key == "input_mode_id") {
           if (value.is_string()) {
             input_mode_id_ = value.get<std::string>();
           } else {
-            logger::get_logger().error("input_mode_id should be string: {0}", json.dump());
+            logger::get_logger()->error("input_mode_id should be string: {0}", json.dump());
           }
         } else {
-          logger::get_logger().error("json error: Unknown key: {0} in {1}", key, json.dump());
+          logger::get_logger()->error("json error: Unknown key: {0} in {1}", key, json.dump());
         }
       }
     } else {
-      logger::get_logger().error("input_source_identifiers should be object: {0}", json.dump());
+      logger::get_logger()->error("input_source_identifiers should be object: {0}", json.dump());
     }
   }
 

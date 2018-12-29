@@ -27,7 +27,7 @@ public:
     file_monitor_->file_changed.connect([this](auto&& changed_file_path,
                                                auto&& changed_file_body) {
       if (pqrs::filesystem::exists(changed_file_path)) {
-        logger::get_logger().info("Load {0}...", changed_file_path);
+        logger::get_logger()->info("Load {0}...", changed_file_path);
       }
 
       auto c = std::make_shared<connected_devices::connected_devices>(changed_file_path);
@@ -42,7 +42,7 @@ public:
         connected_devices_ = c;
       }
 
-      logger::get_logger().info("connected_devices are updated.");
+      logger::get_logger()->info("connected_devices are updated.");
 
       enqueue_to_dispatcher([this, c] {
         connected_devices_updated(c);

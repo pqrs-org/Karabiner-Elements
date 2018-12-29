@@ -127,11 +127,11 @@ public:
 
     if (key == "key_code") {
       if (type_ != type::none) {
-        logger::get_logger().error("complex_modifications json error: Duplicated type definition: {0}", json.dump());
+        logger::get_logger()->error("complex_modifications json error: Duplicated type definition: {0}", json.dump());
         return true;
       }
       if (!value.is_string()) {
-        logger::get_logger().error("complex_modifications json error: Invalid form of key_code: {0}", json.dump());
+        logger::get_logger()->error("complex_modifications json error: Invalid form of key_code: {0}", json.dump());
         return true;
       }
 
@@ -148,11 +148,11 @@ public:
 
     if (key == "consumer_key_code") {
       if (type_ != type::none) {
-        logger::get_logger().error("complex_modifications json error: Duplicated type definition: {0}", json.dump());
+        logger::get_logger()->error("complex_modifications json error: Duplicated type definition: {0}", json.dump());
         return true;
       }
       if (!value.is_string()) {
-        logger::get_logger().error("complex_modifications json error: Invalid form of consumer_key_code: {0}", json.dump());
+        logger::get_logger()->error("complex_modifications json error: Invalid form of consumer_key_code: {0}", json.dump());
         return true;
       }
 
@@ -169,11 +169,11 @@ public:
 
     if (key == "pointing_button") {
       if (type_ != type::none) {
-        logger::get_logger().error("complex_modifications json error: Duplicated type definition: {0}", json.dump());
+        logger::get_logger()->error("complex_modifications json error: Duplicated type definition: {0}", json.dump());
         return true;
       }
       if (!value.is_string()) {
-        logger::get_logger().error("complex_modifications json error: Invalid form of pointing_button: {0}", json.dump());
+        logger::get_logger()->error("complex_modifications json error: Invalid form of pointing_button: {0}", json.dump());
         return true;
       }
 
@@ -190,11 +190,11 @@ public:
 
     if (key == "any") {
       if (type_ != type::none) {
-        logger::get_logger().error("complex_modifications json error: Duplicated type definition: {0}", json.dump());
+        logger::get_logger()->error("complex_modifications json error: Duplicated type definition: {0}", json.dump());
         return true;
       }
       if (!value.is_string()) {
-        logger::get_logger().error("complex_modifications json error: Invalid form of any: {0}", json.dump());
+        logger::get_logger()->error("complex_modifications json error: Invalid form of any: {0}", json.dump());
         return true;
       }
 
@@ -208,7 +208,7 @@ public:
         type_ = type::any;
         value_ = type::pointing_button;
       } else {
-        logger::get_logger().error("complex_modifications json error: Unknown value of any: {0}", json.dump());
+        logger::get_logger()->error("complex_modifications json error: Unknown value of any: {0}", json.dump());
       }
 
       return true;
@@ -219,11 +219,11 @@ public:
 
     if (key == "shell_command") {
       if (type_ != type::none) {
-        logger::get_logger().error("complex_modifications json error: Duplicated type definition: {0}", json.dump());
+        logger::get_logger()->error("complex_modifications json error: Duplicated type definition: {0}", json.dump());
         return true;
       }
       if (!value.is_string()) {
-        logger::get_logger().error("complex_modifications json error: Invalid form of shell_command: {0}", json.dump());
+        logger::get_logger()->error("complex_modifications json error: Invalid form of shell_command: {0}", json.dump());
         return true;
       }
 
@@ -238,7 +238,7 @@ public:
 
     if (key == "select_input_source") {
       if (type_ != type::none) {
-        logger::get_logger().error("complex_modifications json error: Duplicated type definition: {0}", json.dump());
+        logger::get_logger()->error("complex_modifications json error: Duplicated type definition: {0}", json.dump());
         return true;
       }
 
@@ -251,7 +251,7 @@ public:
           input_source_selectors.emplace_back(v);
         }
       } else {
-        logger::get_logger().error("complex_modifications json error: Invalid form of select_input_source: {0}", json.dump());
+        logger::get_logger()->error("complex_modifications json error: Invalid form of select_input_source: {0}", json.dump());
         return true;
       }
 
@@ -266,11 +266,11 @@ public:
 
     if (key == "set_variable") {
       if (type_ != type::none) {
-        logger::get_logger().error("complex_modifications json error: Duplicated type definition: {0}", json.dump());
+        logger::get_logger()->error("complex_modifications json error: Duplicated type definition: {0}", json.dump());
         return true;
       }
       if (!value.is_object()) {
-        logger::get_logger().error("complex_modifications json error: Invalid form of set_variable: {0}", json.dump());
+        logger::get_logger()->error("complex_modifications json error: Invalid form of set_variable: {0}", json.dump());
         return true;
       }
 
@@ -279,10 +279,10 @@ public:
           type_ = type::set_variable;
           value_ = std::make_pair(*n, *v);
         } else {
-          logger::get_logger().error("complex_modifications json error: valid `value` is not found in set_variable: {0}", json.dump());
+          logger::get_logger()->error("complex_modifications json error: valid `value` is not found in set_variable: {0}", json.dump());
         }
       } else {
-        logger::get_logger().error("complex_modifications json error: valid `name` is not found in set_variable: {0}", json.dump());
+        logger::get_logger()->error("complex_modifications json error: valid `name` is not found in set_variable: {0}", json.dump());
       }
 
       return true;
@@ -293,11 +293,11 @@ public:
 
     if (key == "mouse_key") {
       if (type_ != type::none) {
-        logger::get_logger().error("complex_modifications json error: Duplicated type definition: {0}", json.dump());
+        logger::get_logger()->error("complex_modifications json error: Duplicated type definition: {0}", json.dump());
         return true;
       }
       if (!value.is_object()) {
-        logger::get_logger().error("complex_modifications json error: Invalid form of mouse_key: {0}", json.dump());
+        logger::get_logger()->error("complex_modifications json error: Invalid form of mouse_key: {0}", json.dump());
         return true;
       }
 
@@ -356,7 +356,7 @@ public:
 
     for (const auto& j : json) {
       if (!j.is_string()) {
-        logger::get_logger().error("complex_modifications json error: modifier should be string form: {0}", j.dump());
+        logger::get_logger()->error("complex_modifications json error: modifier should be string form: {0}", j.dump());
 
       } else {
         const std::string& name = j;
@@ -391,7 +391,7 @@ public:
         } else if (name == "shift") {
           modifiers.insert(modifier::shift);
         } else {
-          logger::get_logger().error("complex_modifications json error: Unknown modifier: {0}", name);
+          logger::get_logger()->error("complex_modifications json error: Unknown modifier: {0}", name);
         }
       }
     }
@@ -497,7 +497,7 @@ public:
                                                              halt_(false),
                                                              hold_down_milliseconds_(0) {
     if (!json.is_object()) {
-      logger::get_logger().error("complex_modifications json error: Invalid form of to_event_definition: {0}", json.dump());
+      logger::get_logger()->error("complex_modifications json error: Invalid form of to_event_definition: {0}", json.dump());
       return;
     }
 
@@ -517,7 +517,7 @@ public:
 
       if (key == "lazy") {
         if (!value.is_boolean()) {
-          logger::get_logger().error("complex_modifications json error: Invalid form of lazy: {0}", json.dump());
+          logger::get_logger()->error("complex_modifications json error: Invalid form of lazy: {0}", json.dump());
           continue;
         }
 
@@ -528,7 +528,7 @@ public:
 
       if (key == "repeat") {
         if (!value.is_boolean()) {
-          logger::get_logger().error("complex_modifications json error: Invalid form of repeat: {0}", json.dump());
+          logger::get_logger()->error("complex_modifications json error: Invalid form of repeat: {0}", json.dump());
           continue;
         }
 
@@ -539,7 +539,7 @@ public:
 
       if (key == "halt") {
         if (!value.is_boolean()) {
-          logger::get_logger().error("complex_modifications json error: Invalid form of halt: {0}", json.dump());
+          logger::get_logger()->error("complex_modifications json error: Invalid form of halt: {0}", json.dump());
           continue;
         }
 
@@ -551,7 +551,7 @@ public:
       if (key == "hold_down_milliseconds" ||
           key == "held_down_milliseconds") {
         if (!value.is_number()) {
-          logger::get_logger().error("complex_modifications json error: Invalid form of hold_down_milliseconds: {0}", json.dump());
+          logger::get_logger()->error("complex_modifications json error: Invalid form of hold_down_milliseconds: {0}", json.dump());
           continue;
         }
 
@@ -560,7 +560,7 @@ public:
         continue;
       }
 
-      logger::get_logger().error("complex_modifications json error: Unknown key: {0} in {1}", key, json.dump());
+      logger::get_logger()->error("complex_modifications json error: Unknown key: {0} in {1}", key, json.dump());
     }
 
     // ----------------------------------------
@@ -577,7 +577,7 @@ public:
 
       case event_definition::type::none:
       case event_definition::type::any:
-        logger::get_logger().error("complex_modifications json error: Invalid type in to_event_definition: {0}", json.dump());
+        logger::get_logger()->error("complex_modifications json error: Invalid type in to_event_definition: {0}", json.dump());
         break;
     }
   }

@@ -92,7 +92,7 @@ public:
         }
 
         hid_queue_value_monitor->started.connect([this, device_id, device_name] {
-          logger::get_logger().info("{0} is observed.", device_name);
+          logger::get_logger()->info("{0} is observed.", device_name);
 
           if (auto state = grabbable_state_manager_->get_grabbable_state(device_id)) {
             // Keep grabbable_state if the state is already changed by value_callback.
@@ -113,18 +113,18 @@ public:
     hid_manager_->device_terminated.connect([this](auto&& registry_entry_id) {
       auto device_id = make_device_id(registry_entry_id);
 
-      logger::get_logger().info("device_id:{0} is terminated.", type_safe::get(device_id));
+      logger::get_logger()->info("device_id:{0} is terminated.", type_safe::get(device_id));
 
       hid_queue_value_monitors_.erase(device_id);
     });
 
     hid_manager_->error_occurred.connect([](auto&& message, auto&& iokit_return) {
-      logger::get_logger().error("{0}: {1}", message, iokit_return.to_string());
+      logger::get_logger()->error("{0}: {1}", message, iokit_return.to_string());
     });
 
     hid_manager_->async_start();
 
-    logger::get_logger().info("device_observer is started.");
+    logger::get_logger()->info("device_observer is started.");
   }
 
   virtual ~device_observer(void) {
@@ -134,7 +134,7 @@ public:
       grabbable_state_manager_ = nullptr;
     });
 
-    logger::get_logger().info("device_observer is stopped.");
+    logger::get_logger()->info("device_observer is stopped.");
   }
 
 private:

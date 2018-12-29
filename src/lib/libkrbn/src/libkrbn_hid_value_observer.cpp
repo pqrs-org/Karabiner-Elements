@@ -63,7 +63,7 @@ public:
     });
 
     hid_manager_->error_occurred.connect([](auto&& message, auto&& iokit_return) {
-      krbn::logger::get_logger().error("{0}: {1}", message, iokit_return.to_string());
+      krbn::logger::get_logger()->error("{0}: {1}", message, iokit_return.to_string());
     });
 
     hid_manager_->async_start();

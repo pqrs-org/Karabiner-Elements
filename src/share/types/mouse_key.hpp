@@ -39,34 +39,34 @@ public:
           if (value.is_number()) {
             x_ = value.get<int>();
           } else {
-            logger::get_logger().error("complex_modifications json error: mouse_key.x should be number: {0}", json.dump());
+            logger::get_logger()->error("complex_modifications json error: mouse_key.x should be number: {0}", json.dump());
           }
         } else if (key == "y") {
           if (value.is_number()) {
             y_ = value.get<int>();
           } else {
-            logger::get_logger().error("complex_modifications json error: mouse_key.y should be number: {0}", json.dump());
+            logger::get_logger()->error("complex_modifications json error: mouse_key.y should be number: {0}", json.dump());
           }
         } else if (key == "vertical_wheel") {
           if (value.is_number()) {
             vertical_wheel_ = value.get<int>();
           } else {
-            logger::get_logger().error("complex_modifications json error: mouse_key.vertical_wheel should be number: {0}", json.dump());
+            logger::get_logger()->error("complex_modifications json error: mouse_key.vertical_wheel should be number: {0}", json.dump());
           }
         } else if (key == "horizontal_wheel") {
           if (value.is_number()) {
             horizontal_wheel_ = value.get<int>();
           } else {
-            logger::get_logger().error("complex_modifications json error: mouse_key.horizontal_wheel should be number: {0}", json.dump());
+            logger::get_logger()->error("complex_modifications json error: mouse_key.horizontal_wheel should be number: {0}", json.dump());
           }
         } else if (key == "speed_multiplier") {
           if (value.is_number()) {
             speed_multiplier_ = value.get<double>();
           } else {
-            logger::get_logger().error("complex_modifications json error: mouse_key.speed_multiplier should be number: {0}", json.dump());
+            logger::get_logger()->error("complex_modifications json error: mouse_key.speed_multiplier should be number: {0}", json.dump());
           }
         } else {
-          logger::get_logger().error("complex_modifications json error: Unknown key: {0} in {1}", key, json.dump());
+          logger::get_logger()->error("complex_modifications json error: Unknown key: {0} in {1}", key, json.dump());
         }
       }
     }

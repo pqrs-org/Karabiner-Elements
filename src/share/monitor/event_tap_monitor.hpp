@@ -41,7 +41,7 @@ public:
         CFRelease(event_tap_);
         event_tap_ = nullptr;
       }
-      logger::get_logger().info("event_tap_monitor terminated");
+      logger::get_logger()->info("event_tap_monitor terminated");
     });
 
     cf_run_loop_thread_->terminate();
@@ -90,7 +90,7 @@ public:
 
           cf_run_loop_thread_->wake();
 
-          logger::get_logger().info("event_tap_monitor initialized");
+          logger::get_logger()->info("event_tap_monitor initialized");
         }
       }
     });
@@ -108,7 +108,7 @@ private:
   CGEventRef _Nullable callback(CGEventTapProxy _Nullable proxy, CGEventType type, CGEventRef _Nullable event) {
     switch (type) {
       case kCGEventTapDisabledByTimeout:
-        logger::get_logger().info("Re-enable event_tap_ by kCGEventTapDisabledByTimeout");
+        logger::get_logger()->info("Re-enable event_tap_ by kCGEventTapDisabledByTimeout");
         CGEventTapEnable(event_tap_, true);
         break;
 

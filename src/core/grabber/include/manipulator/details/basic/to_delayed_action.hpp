@@ -14,7 +14,7 @@ public:
 
         if (key == "to_if_invoked") {
           if (!value.is_array()) {
-            logger::get_logger().error("complex_modifications json error: `to_if_invoked` should be array: {0}", json.dump());
+            logger::get_logger()->error("complex_modifications json error: `to_if_invoked` should be array: {0}", json.dump());
             continue;
           }
 
@@ -24,7 +24,7 @@ public:
 
         } else if (key == "to_if_canceled") {
           if (!value.is_array()) {
-            logger::get_logger().error("complex_modifications json error: `to_if_canceled` should be array: {0}", json.dump());
+            logger::get_logger()->error("complex_modifications json error: `to_if_canceled` should be array: {0}", json.dump());
             continue;
           }
 
@@ -33,11 +33,11 @@ public:
           }
 
         } else {
-          logger::get_logger().error("complex_modifications json error: Unknown key: {0} in {1}", key, json.dump());
+          logger::get_logger()->error("complex_modifications json error: Unknown key: {0} in {1}", key, json.dump());
         }
       }
     } else {
-      logger::get_logger().error("complex_modifications json error: `to_delayed_action` should be object: {0}", json.dump());
+      logger::get_logger()->error("complex_modifications json error: `to_delayed_action` should be object: {0}", json.dump());
     }
   }
 

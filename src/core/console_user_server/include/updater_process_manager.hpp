@@ -20,7 +20,7 @@ public:
                 checked_ = true;
 
                 if (core_configuration->get_global_configuration().get_check_for_updates_on_startup()) {
-                  logger::get_logger().info("Check for updates...");
+                  logger::get_logger()->info("Check for updates...");
                   update_utility::check_for_updates_in_background();
                 }
               }

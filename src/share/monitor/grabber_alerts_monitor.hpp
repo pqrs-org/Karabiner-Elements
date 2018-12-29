@@ -55,7 +55,7 @@ public:
             }
           }
         } catch (std::exception& e) {
-          logger::get_logger().error("parse error in {0}: {1}", changed_file_path, e.what());
+          logger::get_logger()->error("parse error in {0}: {1}", changed_file_path, e.what());
         }
       }
     });

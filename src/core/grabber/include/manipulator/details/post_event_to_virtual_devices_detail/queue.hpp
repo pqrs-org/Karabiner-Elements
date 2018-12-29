@@ -449,7 +449,7 @@ public:
                   client->async_shell_command_execution(*shell_command);
                 }
               } catch (std::exception& e) {
-                logger::get_logger().error("error in shell_command: {0}", e.what());
+                logger::get_logger()->error("error in shell_command: {0}", e.what());
               }
             }
             if (auto input_source_selectors = e.get_input_source_selectors()) {
@@ -460,7 +460,7 @@ public:
                   }
                 }
               } catch (std::exception& e) {
-                logger::get_logger().error("error in select_input_source: {0}", e.what());
+                logger::get_logger()->error("error in select_input_source: {0}", e.what());
               }
             }
 

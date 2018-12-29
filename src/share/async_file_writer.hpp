@@ -38,11 +38,11 @@ public:
 
           chmod(file_path.c_str(), file_mode);
         } else {
-          logger::get_logger().error("async_file_writer failed to open: {0}", file_path);
+          logger::get_logger()->error("async_file_writer failed to open: {0}", file_path);
         }
 
       } catch (std::exception& e) {
-        logger::get_logger().error("async_file_writer error: {0}", e.what());
+        logger::get_logger()->error("async_file_writer error: {0}", e.what());
       }
     });
   }

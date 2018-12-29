@@ -22,6 +22,7 @@
 #include <nlohmann/json.hpp>
 #include <nod/nod.hpp>
 #include <pqrs/osx/iokit_hid_manager.hpp>
+#include <pqrs/spdlog.hpp>
 #include <thread>
 #include <time.h>
 
@@ -33,7 +34,8 @@ public:
   device_grabber(std::weak_ptr<grabbable_state_queues_manager> weak_grabbable_state_queues_manager,
                  std::weak_ptr<console_user_server_client> weak_console_user_server_client) : dispatcher_client(),
                                                                                               weak_grabbable_state_queues_manager_(weak_grabbable_state_queues_manager),
-                                                                                              profile_(nlohmann::json()) {
+                                                                                              profile_(nlohmann::json()),
+                                                                                              logger_unique_filter_(logger::get_logger()) {
     simple_modifications_manipulator_manager_ = std::make_shared<manipulator::manipulator_manager>();
     complex_modifications_manipulator_manager_ = std::make_shared<manipulator::manipulator_manager>();
     fn_function_keys_manipulator_manager_ = std::make_shared<manipulator::manipulator_manager>();
@@ -48,14 +50,14 @@ public:
     virtual_hid_device_client_ = std::make_shared<virtual_hid_device_client>();
 
     virtual_hid_device_client_->client_connected.connect([this] {
-      logger::get_logger().info("virtual_hid_device_client_ is connected");
+      logger::get_logger()->info("virtual_hid_device_client_ is connected");
 
       update_virtual_hid_keyboard();
       update_virtual_hid_pointing();
     });
 
     virtual_hid_device_client_->client_disconnected.connect([this] {
-      logger::get_logger().info("virtual_hid_device_client_ is disconnected");
+      logger::get_logger()->info("virtual_hid_device_client_ is disconnected");
 
       stop();
     });
@@ -140,7 +142,7 @@ public:
         entry->get_hid_queue_value_monitor()->started.connect([this, device_id] {
           auto it = entries_.find(device_id);
           if (it != std::end(entries_)) {
-            logger::get_logger().info("{0} is grabbed.",
+            logger::get_logger()->info("{0} is grabbed.",
                                       it->second->get_device_name());
 
             post_device_grabbed_event(it->second->get_device_properties());
@@ -158,7 +160,7 @@ public:
         entry->get_hid_queue_value_monitor()->stopped.connect([this, device_id] {
           auto it = entries_.find(device_id);
           if (it != std::end(entries_)) {
-            logger::get_logger().info("{0} is ungrabbed.",
+            logger::get_logger()->info("{0} is ungrabbed.",
                                       it->second->get_device_name());
 
             it->second->set_grabbed(false);
@@ -191,7 +193,7 @@ public:
 
       auto it = entries_.find(device_id);
       if (it != std::end(entries_)) {
-        logger::get_logger().info("{0} is terminated.",
+        logger::get_logger()->info("{0} is terminated.",
                                   it->second->get_device_name());
 
         if (auto device_properties = it->second->get_device_properties()) {
@@ -226,7 +228,7 @@ public:
     });
 
     hid_manager_->error_occurred.connect([](auto&& message, auto&& iokit_return) {
-      logger::get_logger().error("{0}: {1}", message, iokit_return.to_string());
+      logger::get_logger()->error("{0}: {1}", message, iokit_return.to_string());
     });
 
     hid_manager_->async_start();
@@ -314,7 +316,7 @@ public:
         e.second->get_hid_queue_value_monitor()->async_stop();
       }
 
-      logger::get_logger().info("Connected devices are ungrabbed");
+      logger::get_logger()->info("Connected devices are ungrabbed");
     });
   }
 
@@ -961,6 +963,6 @@ private:
   std::shared_ptr<manipulator::manipulator_manager> post_event_to_virtual_devices_manipulator_manager_;
   std::shared_ptr<event_queue::queue> posted_event_queue_;
 
-  mutable logger::unique_filter logger_unique_filter_;
+  mutable pqrs::spdlog::unique_filter logger_unique_filter_;
 };
 } // namespace krbn

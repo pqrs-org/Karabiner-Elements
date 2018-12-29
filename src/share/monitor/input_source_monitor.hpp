@@ -33,7 +33,7 @@ public:
   void async_start(void) {
     enqueue_to_dispatcher([this] {
       if (started_) {
-        logger::get_logger().warn("input_source_monitor is already started.");
+        logger::get_logger()->warn("input_source_monitor is already started.");
         return;
       }
 
@@ -46,7 +46,7 @@ public:
                                       nullptr,
                                       CFNotificationSuspensionBehaviorDeliverImmediately);
 
-      logger::get_logger().info("input_source_monitor is started.");
+      logger::get_logger()->info("input_source_monitor is started.");
 
       // Call `input_source_changed` slots for the current input source.
 
@@ -73,7 +73,7 @@ private:
 
     started_ = false;
 
-    logger::get_logger().info("input_source_monitor is stopped.");
+    logger::get_logger()->info("input_source_monitor is stopped.");
   }
 
   static void static_input_source_changed_callback(CFNotificationCenterRef center,

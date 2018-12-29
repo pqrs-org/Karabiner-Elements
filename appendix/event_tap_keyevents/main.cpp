@@ -10,7 +10,7 @@ CGEventRef callback(CGEventTapProxy proxy, CGEventType type, CGEventRef event, v
 
   switch (type) {
     case kCGEventTapDisabledByTimeout:
-      krbn::logger::get_logger().info("Re-enable event_tap_ by kCGEventTapDisabledByTimeout");
+      krbn::logger::get_logger()->info("Re-enable event_tap_ by kCGEventTapDisabledByTimeout");
       CGEventTapEnable(eventtap_, true);
       break;
 
@@ -31,7 +31,7 @@ CGEventRef callback(CGEventTapProxy proxy, CGEventType type, CGEventRef event, v
 
 int main(int argc, const char* argv[]) {
   if (getuid() != 0) {
-    krbn::logger::get_logger().error("eventtap requires root privilege to use kCGHIDEventTap.");
+    krbn::logger::get_logger()->error("eventtap requires root privilege to use kCGHIDEventTap.");
     return 0;
   }
 

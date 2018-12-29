@@ -38,34 +38,34 @@ public:
           if (value.is_number()) {
             result.vendor_id_ = vendor_id(static_cast<uint32_t>(value));
           } else {
-            logger::get_logger().error("Invalid form of {0}: {1}", key, value.dump());
+            logger::get_logger()->error("Invalid form of {0}: {1}", key, value.dump());
           }
         }
         if (key == "product_id") {
           if (value.is_number()) {
             result.product_id_ = product_id(static_cast<uint32_t>(value));
           } else {
-            logger::get_logger().error("Invalid form of {0}: {1}", key, value.dump());
+            logger::get_logger()->error("Invalid form of {0}: {1}", key, value.dump());
           }
         }
         if (key == "is_keyboard") {
           if (value.is_boolean()) {
             result.is_keyboard_ = value;
           } else {
-            logger::get_logger().error("Invalid form of {0}: {1}", key, value.dump());
+            logger::get_logger()->error("Invalid form of {0}: {1}", key, value.dump());
           }
         }
         if (key == "is_pointing_device") {
           if (value.is_boolean()) {
             result.is_pointing_device_ = value;
           } else {
-            logger::get_logger().error("Invalid form of {0}: {1}", key, value.dump());
+            logger::get_logger()->error("Invalid form of {0}: {1}", key, value.dump());
           }
         }
       }
 
     } else {
-      logger::get_logger().error("Invalid form of device_identifiers: {0}", json.dump());
+      logger::get_logger()->error("Invalid form of device_identifiers: {0}", json.dump());
     }
 
     return result;

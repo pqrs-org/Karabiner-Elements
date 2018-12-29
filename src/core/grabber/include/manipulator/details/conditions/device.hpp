@@ -38,12 +38,12 @@ public:
           if (value.is_array()) {
             handle_identifiers_json(value);
           } else {
-            logger::get_logger().error("complex_modifications json error: {0} should be array {1}", key, json.dump());
+            logger::get_logger()->error("complex_modifications json error: {0} should be array {1}", key, json.dump());
           }
         } else if (key == "description") {
           // Do nothing
         } else {
-          logger::get_logger().error("complex_modifications json error: Unknown key: {0} in {1}", key, json.dump());
+          logger::get_logger()->error("complex_modifications json error: Unknown key: {0} in {1}", key, json.dump());
         }
       }
     }
@@ -120,36 +120,36 @@ private:
             if (value.is_number()) {
               d.vendor_id = vendor_id(value.get<int>());
             } else {
-              logger::get_logger().error("complex_modifications json error: Invalid form of {0} in {1}", key, j.dump());
+              logger::get_logger()->error("complex_modifications json error: Invalid form of {0} in {1}", key, j.dump());
             }
           } else if (key == "product_id") {
             if (value.is_number()) {
               d.product_id = product_id(value.get<int>());
             } else {
-              logger::get_logger().error("complex_modifications json error: Invalid form of {0} in {1}", key, j.dump());
+              logger::get_logger()->error("complex_modifications json error: Invalid form of {0} in {1}", key, j.dump());
             }
           } else if (key == "location_id") {
             if (value.is_number()) {
               d.location_id = location_id(value.get<int>());
             } else {
-              logger::get_logger().error("complex_modifications json error: Invalid form of {0} in {1}", key, j.dump());
+              logger::get_logger()->error("complex_modifications json error: Invalid form of {0} in {1}", key, j.dump());
             }
           } else if (key == "is_keyboard") {
             if (value.is_boolean()) {
               d.is_keyboard = value.get<bool>();
             } else {
-              logger::get_logger().error("complex_modifications json error: Invalid form of {0} in {1}", key, j.dump());
+              logger::get_logger()->error("complex_modifications json error: Invalid form of {0} in {1}", key, j.dump());
             }
           } else if (key == "is_pointing_device") {
             if (value.is_boolean()) {
               d.is_pointing_device = value.get<bool>();
             } else {
-              logger::get_logger().error("complex_modifications json error: Invalid form of {0} in {1}", key, j.dump());
+              logger::get_logger()->error("complex_modifications json error: Invalid form of {0} in {1}", key, j.dump());
             }
           } else if (key == "description") {
             // Do nothing
           } else {
-            logger::get_logger().error("complex_modifications json error: Unknown key: {0} in {1}", key, j.dump());
+            logger::get_logger()->error("complex_modifications json error: Unknown key: {0} in {1}", key, j.dump());
           }
         }
 
@@ -158,7 +158,7 @@ private:
         }
 
       } else {
-        logger::get_logger().error("complex_modifications json error: `identifiers` children should be object {0}", json.dump());
+        logger::get_logger()->error("complex_modifications json error: `identifiers` children should be object {0}", json.dump());
       }
     }
   }

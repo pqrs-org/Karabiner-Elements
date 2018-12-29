@@ -13,7 +13,7 @@ int main(int argc, char** argv) {
     CFRunLoopStop(CFRunLoopGetMain());
   });
 
-  krbn::logger::get_logger().set_level(spdlog::level::off);
+  krbn::logger::get_logger()->set_level(spdlog::level::off);
 
   for (int i = 0; i < 100; ++i) {
     // Check destructor working properly.
@@ -21,14 +21,14 @@ int main(int argc, char** argv) {
     m->async_start();
   }
 
-  krbn::logger::get_logger().set_level(spdlog::level::info);
+  krbn::logger::get_logger()->set_level(spdlog::level::info);
 
   auto m = std::make_unique<krbn::frontmost_application_monitor>();
 
   m->frontmost_application_changed.connect([](auto&& bundle_identifier, auto&& file_path) {
-    krbn::logger::get_logger().info("callback");
-    krbn::logger::get_logger().info("  bundle_identifier:{0}", bundle_identifier);
-    krbn::logger::get_logger().info("  file_path:{0}", file_path);
+    krbn::logger::get_logger()->info("callback");
+    krbn::logger::get_logger()->info("  bundle_identifier:{0}", bundle_identifier);
+    krbn::logger::get_logger()->info("  file_path:{0}", file_path);
   });
 
   m->async_start();

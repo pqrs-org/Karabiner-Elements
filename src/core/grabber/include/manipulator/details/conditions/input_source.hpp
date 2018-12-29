@@ -37,7 +37,7 @@ public:
             input_source_selectors_.emplace_back(j);
           }
         } else {
-          logger::get_logger().error("complex_modifications json error: Unknown key: {0} in {1}", key, json.dump());
+          logger::get_logger()->error("complex_modifications json error: Unknown key: {0} in {1}", key, json.dump());
         }
       }
     }

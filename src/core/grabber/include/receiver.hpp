@@ -44,7 +44,7 @@ public:
     });
 
     server_manager_->bind_failed.connect([](auto&& error_code) {
-      logger::get_logger().error("receiver bind_failed");
+      logger::get_logger()->error("receiver bind_failed");
     });
 
     server_manager_->received.connect([this](auto&& buffer) {
@@ -52,7 +52,7 @@ public:
         switch (*type) {
           case operation_type::grabbable_state_changed:
             if (buffer->size() != sizeof(operation_type_grabbable_state_changed_struct)) {
-              logger::get_logger().error("Invalid size for `operation_type::grabbable_state_changed`.");
+              logger::get_logger()->error("Invalid size for `operation_type::grabbable_state_changed`.");
             } else {
               auto p = reinterpret_cast<operation_type_grabbable_state_changed_struct*>(&((*buffer)[0]));
 
@@ -64,7 +64,7 @@ public:
 
           case operation_type::caps_lock_state_changed:
             if (buffer->size() != sizeof(operation_type_caps_lock_state_changed_struct)) {
-              logger::get_logger().error("Invalid size for `operation_type::caps_lock_state_changed`.");
+              logger::get_logger()->error("Invalid size for `operation_type::caps_lock_state_changed`.");
             } else {
               auto p = reinterpret_cast<operation_type_caps_lock_state_changed_struct*>(&((*buffer)[0]));
 
@@ -76,7 +76,7 @@ public:
 
           case operation_type::connect_console_user_server:
             if (buffer->size() != sizeof(operation_type_connect_console_user_server_struct)) {
-              logger::get_logger().error("Invalid size for `operation_type::connect_console_user_server`.");
+              logger::get_logger()->error("Invalid size for `operation_type::connect_console_user_server`.");
             } else {
               auto p = reinterpret_cast<operation_type_connect_console_user_server_struct*>(&((*buffer)[0]));
 
@@ -84,7 +84,7 @@ public:
               p->user_core_configuration_file_path[sizeof(p->user_core_configuration_file_path) - 1] = '\0';
               std::string user_core_configuration_file_path(p->user_core_configuration_file_path);
 
-              logger::get_logger().info("karabiner_console_user_server is connected (pid:{0})", p->pid);
+              logger::get_logger()->info("karabiner_console_user_server is connected (pid:{0})", p->pid);
 
               console_user_server_client_ = nullptr;
               console_user_server_client_ = std::make_shared<console_user_server_client>();
@@ -114,7 +114,7 @@ public:
 
           case operation_type::system_preferences_updated:
             if (buffer->size() < sizeof(operation_type_system_preferences_updated_struct)) {
-              logger::get_logger().error("Invalid size for `operation_type::system_preferences_updated`.");
+              logger::get_logger()->error("Invalid size for `operation_type::system_preferences_updated`.");
             } else {
               auto p = reinterpret_cast<operation_type_system_preferences_updated_struct*>(&((*buffer)[0]));
 
@@ -124,13 +124,13 @@ public:
                 device_grabber_->async_set_system_preferences(p->system_preferences);
               }
 
-              logger::get_logger().info("`system_preferences` is updated.");
+              logger::get_logger()->info("`system_preferences` is updated.");
             }
             break;
 
           case operation_type::frontmost_application_changed:
             if (buffer->size() < sizeof(operation_type_frontmost_application_changed_struct)) {
-              logger::get_logger().error("Invalid size for `operation_type::frontmost_application_changed`.");
+              logger::get_logger()->error("Invalid size for `operation_type::frontmost_application_changed`.");
             } else {
               auto p = reinterpret_cast<operation_type_frontmost_application_changed_struct*>(&((*buffer)[0]));
 
@@ -150,7 +150,7 @@ public:
 
           case operation_type::input_source_changed:
             if (buffer->size() < sizeof(operation_type_input_source_changed_struct)) {
-              logger::get_logger().error("Invalid size for `operation_type::input_source_changed`.");
+              logger::get_logger()->error("Invalid size for `operation_type::input_source_changed`.");
             } else {
               auto p = reinterpret_cast<operation_type_input_source_changed_struct*>(&((*buffer)[0]));
 
@@ -179,7 +179,7 @@ public:
 
     start_grabbing_if_system_core_configuration_file_exists();
 
-    logger::get_logger().info("receiver is initialized");
+    logger::get_logger()->info("receiver is initialized");
   }
 
   virtual ~receiver(void) {
@@ -189,7 +189,7 @@ public:
       stop_device_grabber();
     });
 
-    logger::get_logger().info("receiver is terminated");
+    logger::get_logger()->info("receiver is terminated");
   }
 
 private:
@@ -216,7 +216,7 @@ private:
 
     device_grabber_->async_start(configuration_file_path);
 
-    logger::get_logger().info("device_grabber is started.");
+    logger::get_logger()->info("device_grabber is started.");
   }
 
   void stop_device_grabber(void) {
@@ -226,7 +226,7 @@ private:
 
     device_grabber_ = nullptr;
 
-    logger::get_logger().info("device_grabber is stopped.");
+    logger::get_logger()->info("device_grabber is stopped.");
   }
 
   std::weak_ptr<grabbable_state_queues_manager> weak_grabbable_state_queues_manager_;

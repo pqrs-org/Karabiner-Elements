@@ -28,7 +28,7 @@ int main(int argc, const char* argv[]) {
                                           "/var/log/karabiner/grabber.log",
                                           0755);
 
-  krbn::logger::get_logger().info("version {0}", karabiner_version);
+  krbn::logger::get_logger()->info("version {0}", karabiner_version);
 
   // Check another process
 
@@ -36,7 +36,7 @@ int main(int argc, const char* argv[]) {
     std::string pid_file_path = krbn::constants::get_pid_directory() + "/karabiner_grabber.pid";
     if (!krbn::process_utility::lock_single_application(pid_file_path)) {
       std::string message("Exit since another process is running.");
-      krbn::logger::get_logger().info(message);
+      krbn::logger::get_logger()->info(message);
       std::cerr << message << std::endl;
       return 0;
     }
@@ -53,10 +53,10 @@ int main(int argc, const char* argv[]) {
        << "/Library/Application Support/org.pqrs/Karabiner-VirtualHIDDevice/Extensions/"
        << pqrs::karabiner_virtual_hid_device::get_kernel_extension_name()
        << "'";
-    krbn::logger::get_logger().info(ss.str());
+    krbn::logger::get_logger()->info(ss.str());
     int exit_status = system(ss.str().c_str());
     exit_status >>= 8;
-    krbn::logger::get_logger().info("kextload exit status: {0}", exit_status);
+    krbn::logger::get_logger()->info("kextload exit status: {0}", exit_status);
 
     if (exit_status == 0) {
       break;
@@ -102,7 +102,7 @@ int main(int argc, const char* argv[]) {
 
   components_manager = nullptr;
 
-  krbn::logger::get_logger().info("karabiner_grabber is terminated.");
+  krbn::logger::get_logger()->info("karabiner_grabber is terminated.");
 
   krbn::dispatcher_utility::terminate_dispatchers();
 

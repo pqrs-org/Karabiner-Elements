@@ -27,16 +27,16 @@ public:
             return std::make_shared<details::basic>(json,
                                                     parameters);
           } else {
-            logger::get_logger().error("complex_modifications json error: Unknown `type` {0} in {1}", *value, json.dump());
+            logger::get_logger()->error("complex_modifications json error: Unknown `type` {0} in {1}", *value, json.dump());
             return std::make_shared<details::nop>();
           }
         }
       }
-      logger::get_logger().error("complex_modifications json error: `type` is not found in {0}", json.dump());
+      logger::get_logger()->error("complex_modifications json error: `type` is not found in {0}", json.dump());
       return std::make_shared<details::nop>();
 
     } catch (std::exception& e) {
-      logger::get_logger().error("complex_modifications json error: {0}: {1}", e.what(), json.dump());
+      logger::get_logger()->error("complex_modifications json error: {0}: {1}", e.what(), json.dump());
       return std::make_shared<details::nop>();
     }
   }
@@ -61,16 +61,16 @@ public:
                      *value == "keyboard_type_unless") {
             return std::make_shared<details::conditions::keyboard_type>(json);
           } else {
-            logger::get_logger().error("complex_modifications json error: unknown `type` {0} in {1}", *value, json.dump());
+            logger::get_logger()->error("complex_modifications json error: unknown `type` {0} in {1}", *value, json.dump());
             return std::make_shared<details::conditions::nop>();
           }
         }
       }
-      logger::get_logger().error("complex_modifications json error: `type` is not found in {0}", json.dump());
+      logger::get_logger()->error("complex_modifications json error: `type` is not found in {0}", json.dump());
       return std::make_shared<details::conditions::nop>();
 
     } catch (std::exception& e) {
-      logger::get_logger().error("complex_modifications json error: {0}: {1}", e.what(), json.dump());
+      logger::get_logger()->error("complex_modifications json error: {0}: {1}", e.what(), json.dump());
       return std::make_shared<details::conditions::nop>();
     }
   }

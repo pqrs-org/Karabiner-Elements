@@ -29,7 +29,7 @@ public:
   void async_start(void) {
     enqueue_to_dispatcher([this] {
       if (monitor_) {
-        logger::get_logger().warn("frontmost_application_monitor is already started.");
+        logger::get_logger()->warn("frontmost_application_monitor is already started.");
         return;
       }
 
@@ -37,7 +37,7 @@ public:
                                                     static_cpp_callback,
                                                     this);
 
-      logger::get_logger().info("frontmost_application_monitor is started.");
+      logger::get_logger()->info("frontmost_application_monitor is started.");
     });
   }
 
@@ -56,7 +56,7 @@ private:
     krbn_frontmost_application_monitor_terminate(&monitor_);
     monitor_ = nullptr;
 
-    logger::get_logger().info("frontmost_application_monitor is stopped.");
+    logger::get_logger()->info("frontmost_application_monitor is stopped.");
   }
 
   static void static_cpp_callback(const char* bundle_identifier,

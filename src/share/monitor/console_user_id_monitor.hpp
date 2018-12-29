@@ -36,13 +36,13 @@ public:
         },
         std::chrono::milliseconds(1000));
 
-    logger::get_logger().info("console_user_id_monitor is started.");
+    logger::get_logger()->info("console_user_id_monitor is started.");
   }
 
   void async_stop(void) {
     timer_.stop();
 
-    logger::get_logger().info("console_user_id_monitor is stopped.");
+    logger::get_logger()->info("console_user_id_monitor is stopped.");
   }
 
 private:

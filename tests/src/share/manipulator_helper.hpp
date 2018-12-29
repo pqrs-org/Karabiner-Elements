@@ -31,10 +31,10 @@ public:
 
   void run_tests(const nlohmann::json& json,
                  bool overwrite_expected_results = false) {
-    logger::get_logger().info("krbn::unit_testing::manipulator_helper::run_tests");
+    logger::get_logger()->info("krbn::unit_testing::manipulator_helper::run_tests");
 
     for (const auto& test : json) {
-      logger::get_logger().info("{0}", test["description"].get<std::string>());
+      logger::get_logger()->info("{0}", test["description"].get<std::string>());
 
       pseudo_time_source_->set_now(pqrs::dispatcher::time_point(std::chrono::milliseconds(0)));
 
@@ -208,7 +208,7 @@ public:
         REQUIRE(nlohmann::json(post_event_to_virtual_devices_manipulator->get_queue().get_events()).dump() == expected.dump());
 
       } else {
-        logger::get_logger().error("There are not expected results.");
+        logger::get_logger()->error("There are not expected results.");
         REQUIRE(false);
       }
 
@@ -218,7 +218,7 @@ public:
       post_event_to_virtual_devices_manipulator = nullptr;
     }
 
-    logger::get_logger().info("krbn::unit_testing::manipulator_helper::run_tests finished");
+    logger::get_logger()->info("krbn::unit_testing::manipulator_helper::run_tests finished");
   }
 
 private:

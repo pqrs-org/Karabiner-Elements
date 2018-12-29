@@ -12,7 +12,7 @@ int main(int argc, const char* argv[]) {
   });
 
   if (getuid() != 0) {
-    krbn::logger::get_logger().error("virtual_device_client requires root privilege.");
+    krbn::logger::get_logger()->error("virtual_device_client requires root privilege.");
   }
 
   auto console_user_server_client = std::make_shared<krbn::console_user_server_client>();
