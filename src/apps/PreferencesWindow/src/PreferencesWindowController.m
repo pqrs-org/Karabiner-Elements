@@ -109,10 +109,6 @@
   [NSApp activateIgnoringOtherApps:YES];
 }
 
-- (void)tabView:(NSTabView*)tabView didSelectTabViewItem:(NSTabViewItem*)tabViewItem {
-  [self.logFileTextViewController updateTabLabel];
-}
-
 - (void)setupVirtualHIDKeyboardCountryCode:(id)sender {
   KarabinerKitCoreConfigurationModel* coreConfigurationModel = [KarabinerKitConfigurationManager sharedManager].coreConfigurationModel;
   NSInteger countryCode = coreConfigurationModel.selectedProfileVirtualHIDKeyboardCountryCode;

@@ -5,7 +5,7 @@
 typedef enum {
   LogLevelInfo,
   LogLevelWarn,
-  LogLevelErr,
+  LogLevelError,
 } LogLevel;
 
 @interface LogFileTextViewController ()
@@ -16,30 +16,20 @@ typedef enum {
 @property dispatch_source_t timer;
 @property NSDate* fileModificationDate;
 @property libkrbn_log_monitor* libkrbn_log_monitor;
-@property NSInteger errorLogCount;
 
-- (NSString*)logLineString:(const char*)line;
-- (void)appendLogLine:(NSString*)line;
+- (NSMutableAttributedString*)logLinesString:(libkrbn_log_lines*)logLines;
+- (void)updateLogLines:(NSAttributedString*)logLinesString;
 
 @end
 
-static void log_updated_callback(const char* line, void* refcon) {
-  LogFileTextViewController* controller = (__bridge LogFileTextViewController*)(refcon);
-  if (!controller) {
-    return;
-  }
-
-  NSString* lineString = [controller logLineString:line];
-
-  @weakify(controller);
-  dispatch_async(dispatch_get_main_queue(), ^{
-    @strongify(controller);
-    if (!controller) {
-      return;
+static void log_updated_callback(libkrbn_log_lines* logLines, void* refcon) {
+  if (logLines) {
+    LogFileTextViewController* controller = (__bridge LogFileTextViewController*)(refcon);
+    if (controller) {
+      NSMutableAttributedString* logLinesString = [controller logLinesString:logLines];
+      [controller updateLogLines:logLinesString];
     }
-
-    [controller appendLogLine:lineString];
-  });
+  }
 }
 
 @implementation LogFileTextViewController
@@ -53,26 +43,6 @@ static void log_updated_callback(const char* line, void* refcon) {
     return;
   }
   self.libkrbn_log_monitor = p;
-
-  // update textView
-
-  [self.textView.textStorage beginEditing];
-  {
-    size_t size = libkrbn_log_monitor_initial_lines_size(self.libkrbn_log_monitor);
-    for (size_t i = 0; i < size; ++i) {
-      NSString* line = [self logLineString:libkrbn_log_monitor_initial_line(self.libkrbn_log_monitor, i)];
-      LogLevel level = [self getLogLevel:line];
-      if (line) {
-        [self.textView.textStorage appendAttributedString:[[NSAttributedString alloc] initWithString:line
-                                                                                          attributes:[self stringAttributes:level]]];
-        [self.textView.textStorage appendAttributedString:[[NSAttributedString alloc] initWithString:@"\n"
-                                                                                          attributes:[self stringAttributes:level]]];
-      }
-    }
-  }
-  [self.textView.textStorage endEditing];
-  [self scrollToBottom];
-
   libkrbn_log_monitor_start(self.libkrbn_log_monitor);
 
   // ----------------------------------------
@@ -97,10 +67,6 @@ static void log_updated_callback(const char* line, void* refcon) {
   }
 }
 
-- (void)resetErrorLogCount {
-  self.errorLogCount = 0;
-}
-
 - (void)dealloc {
   if (self.libkrbn_log_monitor) {
     libkrbn_log_monitor* p = self.libkrbn_log_monitor;
@@ -108,21 +74,7 @@ static void log_updated_callback(const char* line, void* refcon) {
   }
 }
 
-- (NSString*)logLineString:(const char*)line {
-  NSString* lineString = [NSString stringWithUTF8String:line];
-  if (!lineString) {
-    lineString = @"(This line contains corrupted characters.)";
-  }
-  return lineString;
-}
-
-- (void)appendLogLine:(NSString*)line {
-  LogLevel level = [self getLogLevel:line];
-
-  if (level == LogLevelErr) {
-    ++(self.errorLogCount);
-  }
-
+- (void)updateLogLines:(NSAttributedString*)logLinesString {
   @weakify(self);
   dispatch_async(dispatch_get_main_queue(), ^{
     @strongify(self);
@@ -131,42 +83,19 @@ static void log_updated_callback(const char* line, void* refcon) {
     }
 
     [self.textView.textStorage beginEditing];
-
-    // Clear if text is huge.
-    if (self.textView.textStorage.length > 1024 * 1024) {
-      [self.textView.textStorage setAttributedString:[[NSAttributedString alloc] initWithString:@""]];
-    }
-
-    [self.textView.textStorage appendAttributedString:[[NSAttributedString alloc] initWithString:line
-                                                                                      attributes:[self stringAttributes:level]]];
-    [self.textView.textStorage appendAttributedString:[[NSAttributedString alloc] initWithString:@"\n"
-                                                                                      attributes:[self stringAttributes:level]]];
+    [self.textView.textStorage setAttributedString:logLinesString];
     [self.textView.textStorage endEditing];
 
     [self scrollToBottom];
-    [self updateTabLabel];
   });
 }
 
-- (void)updateTabLabel {
-  if (self.logTabViewItem.tabState == NSSelectedTab) {
-    [self resetErrorLogCount];
-  } else {
-    if (self.errorLogCount > 0) {
-      self.logTabViewItem.label = [NSString stringWithFormat:@"Log \u2666%ld", self.errorLogCount];
-      return;
-    }
-  }
-
-  self.logTabViewItem.label = @"Log";
-}
-
-- (LogLevel)getLogLevel:(NSString*)line {
-  if (libkrbn_is_warn_log([line UTF8String])) {
+- (LogLevel)getLogLevel:(const char*)line {
+  if (libkrbn_log_lines_is_warn_line(line)) {
     return LogLevelWarn;
   }
-  if (libkrbn_is_err_log([line UTF8String])) {
-    return LogLevelErr;
+  if (libkrbn_log_lines_is_error_line(line)) {
+    return LogLevelError;
   }
   return LogLevelInfo;
 }
@@ -179,7 +108,7 @@ static void log_updated_callback(const char* line, void* refcon) {
                             blue:(CGFloat)(0xe3) / 255
                            alpha:1.0];
   }
-  if (level == LogLevelErr) {
+  if (level == LogLevelError) {
     // #f2dede
     return [NSColor colorWithRed:(CGFloat)(0xf2) / 255
                            green:(CGFloat)(0xde) / 255
@@ -197,7 +126,7 @@ static void log_updated_callback(const char* line, void* refcon) {
                             blue:(CGFloat)(0x3b) / 255
                            alpha:1.0];
   }
-  if (level == LogLevelErr) {
+  if (level == LogLevelError) {
     // #a94442
     return [NSColor colorWithRed:(CGFloat)(0xa9) / 255
                            green:(CGFloat)(0x44) / 255
@@ -213,6 +142,32 @@ static void log_updated_callback(const char* line, void* refcon) {
     NSBackgroundColorAttributeName : [self getBackgroundColor:level],
     NSForegroundColorAttributeName : [self getForegroundColor:level],
   };
+}
+
+- (NSMutableAttributedString*)logLinesString:(libkrbn_log_lines*)logLines {
+  NSMutableAttributedString* result = [NSMutableAttributedString new];
+
+  if (logLines) {
+    size_t size = libkrbn_log_lines_get_size(logLines);
+    for (size_t i = 0; i < size; ++i) {
+      const char* line = libkrbn_log_lines_get_line(logLines, i);
+      if (line) {
+        LogLevel level = [self getLogLevel:line];
+        NSDictionary* attributes = [self stringAttributes:level];
+
+        NSString* lineString = [NSString stringWithCString:line
+                                                  encoding:NSUTF8StringEncoding];
+        if (lineString) {
+          [result appendAttributedString:[[NSAttributedString alloc] initWithString:lineString
+                                                                         attributes:attributes]];
+          [result appendAttributedString:[[NSAttributedString alloc] initWithString:@"\n"
+                                                                         attributes:attributes]];
+        }
+      }
+    }
+  }
+
+  return result;
 }
 
 - (void)scrollToBottom {

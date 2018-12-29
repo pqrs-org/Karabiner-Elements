@@ -1,45 +1,57 @@
 #include "constants.hpp"
 #include "libkrbn.h"
-#include "monitor/log_monitor.hpp"
 #include <pqrs/spdlog.hpp>
 
 namespace {
+class libkrbn_log_lines_class final {
+public:
+  libkrbn_log_lines_class(std::shared_ptr<std::deque<std::string>> lines) : lines_(lines) {
+  }
+
+  std::shared_ptr<std::deque<std::string>> get_lines(void) const {
+    return lines_;
+  }
+
+private:
+  std::shared_ptr<std::deque<std::string>> lines_;
+};
+
 class libkrbn_log_monitor_class final {
 public:
   libkrbn_log_monitor_class(const libkrbn_log_monitor_class&) = delete;
 
   libkrbn_log_monitor_class(libkrbn_log_monitor_callback callback, void* refcon) : callback_(callback), refcon_(refcon) {
     std::vector<std::string> targets = {
-        "/var/log/karabiner/grabber.log",
         "/var/log/karabiner/observer.log",
+        "/var/log/karabiner/grabber.log",
     };
     auto log_directory = krbn::constants::get_user_log_directory();
     if (!log_directory.empty()) {
       targets.push_back(log_directory + "/console_user_server.log");
     }
 
-    log_monitor_ = std::make_unique<krbn::log_monitor>(targets);
+    log_monitor_ = std::make_unique<pqrs::spdlog::monitor>(pqrs::dispatcher::extra::get_shared_dispatcher(),
+                                                           targets,
+                                                           250);
 
-    log_monitor_->new_log_line_arrived.connect([this](auto&& line) {
+    log_monitor_->log_file_updated.connect([this](auto&& lines) {
       if (callback_) {
-        callback_(line.c_str(), refcon_);
+        auto log_lines = new libkrbn_log_lines_class(lines);
+        callback_(reinterpret_cast<libkrbn_log_lines*>(log_lines), refcon_);
+        delete log_lines;
       }
     });
   }
 
-  const std::vector<std::pair<uint64_t, std::string>>& get_initial_lines(void) const {
-    return log_monitor_->get_initial_lines();
-  }
-
   void async_start(void) {
-    log_monitor_->async_start();
+    log_monitor_->async_start(std::chrono::milliseconds(1000));
   }
 
 private:
   libkrbn_log_monitor_callback callback_;
   void* refcon_;
 
-  std::unique_ptr<krbn::log_monitor> log_monitor_;
+  std::unique_ptr<pqrs::spdlog::monitor> log_monitor_;
 };
 } // namespace
 
@@ -59,30 +71,6 @@ void libkrbn_log_monitor_terminate(libkrbn_log_monitor** p) {
   }
 }
 
-size_t libkrbn_log_monitor_initial_lines_size(libkrbn_log_monitor* p) {
-  auto log_monitor = reinterpret_cast<libkrbn_log_monitor_class*>(p);
-  if (!log_monitor) {
-    return 0;
-  }
-
-  auto& initial_lines = log_monitor->get_initial_lines();
-  return initial_lines.size();
-}
-
-const char* libkrbn_log_monitor_initial_line(libkrbn_log_monitor* p, size_t index) {
-  auto log_monitor = reinterpret_cast<libkrbn_log_monitor_class*>(p);
-  if (!log_monitor) {
-    return 0;
-  }
-
-  auto& initial_lines = log_monitor->get_initial_lines();
-  if (index >= initial_lines.size()) {
-    return nullptr;
-  }
-
-  return initial_lines[index].second.c_str();
-}
-
 void libkrbn_log_monitor_start(libkrbn_log_monitor* p) {
   auto log_monitor = reinterpret_cast<libkrbn_log_monitor_class*>(p);
   if (!log_monitor) {
@@ -92,10 +80,42 @@ void libkrbn_log_monitor_start(libkrbn_log_monitor* p) {
   log_monitor->async_start();
 }
 
-bool libkrbn_is_warn_log(const char* line) {
+size_t libkrbn_log_lines_get_size(libkrbn_log_lines* p) {
+  auto log_lines = reinterpret_cast<libkrbn_log_lines_class*>(p);
+  if (!log_lines) {
+    return 0;
+  }
+
+  auto lines = log_lines->get_lines();
+  if (!lines) {
+    return 0;
+  }
+
+  return lines->size();
+}
+
+const char* libkrbn_log_lines_get_line(libkrbn_log_lines* p, size_t index) {
+  auto log_lines = reinterpret_cast<libkrbn_log_lines_class*>(p);
+  if (!log_lines) {
+    return nullptr;
+  }
+
+  auto lines = log_lines->get_lines();
+  if (!lines) {
+    return nullptr;
+  }
+
+  if (index >= lines->size()) {
+    return nullptr;
+  }
+
+  return (*lines)[index].c_str();
+}
+
+bool libkrbn_log_lines_is_warn_line(const char* line) {
   return pqrs::spdlog::find_level(line) == spdlog::level::warn;
 }
 
-bool libkrbn_is_err_log(const char* line) {
+bool libkrbn_log_lines_is_error_line(const char* line) {
   return pqrs::spdlog::find_level(line) == spdlog::level::err;
 }
