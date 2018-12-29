@@ -6,6 +6,7 @@
 
 #include <optional>
 #include <spdlog/common.h>
+#include <spdlog/sinks/rotating_file_sink.h>
 #include <sstream>
 
 namespace pqrs {
@@ -123,6 +124,10 @@ inline std::optional<::spdlog::level::level_enum> find_level(const std::string& 
   }
 
   return std::nullopt;
+}
+
+inline ::spdlog::filename_t make_rotated_file_path(::spdlog::filename_t file_path) {
+  return ::spdlog::sinks::rotating_file_sink<std::mutex>::calc_filename(file_path, 1);
 }
 } // namespace spdlog
 } // namespace pqrs

@@ -1,6 +1,6 @@
 #pragma once
 
-// pqrs::iokit_hid_queue_value_monitor v1.6
+// pqrs::iokit_hid_queue_value_monitor v1.7
 
 // (C) Copyright Takayama Fumihiko 2018.
 // Distributed under the Boost Software License, Version 1.0.
@@ -103,7 +103,7 @@ public:
   }
 
 private:
-  bool start(IOOptionBits open_options) {
+  void start(IOOptionBits open_options) {
     if (hid_device_.get_device()) {
       if (!open_options_) {
         iokit_return r = IOHIDDeviceOpen(*(hid_device_.get_device()),

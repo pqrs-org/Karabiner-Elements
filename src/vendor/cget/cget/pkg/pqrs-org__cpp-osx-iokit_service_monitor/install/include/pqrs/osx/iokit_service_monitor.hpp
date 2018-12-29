@@ -1,6 +1,6 @@
 #pragma once
 
-// pqrs::iokit_service_monitor v3.2
+// pqrs::iokit_service_monitor v3.3
 
 // (C) Copyright Takayama Fumihiko 2018.
 // Distributed under the Boost Software License, Version 1.0.
@@ -40,7 +40,7 @@ public:
   virtual ~iokit_service_monitor(void) {
     // dispatcher_client
 
-    detach_from_dispatcher([this] {
+    detach_from_dispatcher([] {
     });
 
     // cf_run_loop_thread
