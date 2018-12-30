@@ -3,10 +3,10 @@
 #include "constants.hpp"
 #include "local_datagram/client_manager.hpp"
 #include "logger.hpp"
-#include "monitor/console_user_id_monitor.hpp"
 #include "types.hpp"
 #include <nod/nod.hpp>
 #include <pqrs/dispatcher.hpp>
+#include <pqrs/osx/session.hpp>
 #include <sstream>
 #include <unistd.h>
 #include <vector>
@@ -27,9 +27,9 @@ public:
   console_user_server_client(const console_user_server_client&) = delete;
 
   console_user_server_client(void) : dispatcher_client() {
-    console_user_id_monitor_ = std::make_unique<console_user_id_monitor>();
+    session_monitor_ = std::make_unique<pqrs::osx::session::monitor>(weak_dispatcher_);
 
-    console_user_id_monitor_->console_user_id_changed.connect([this](std::optional<uid_t> uid) {
+    session_monitor_->console_user_id_changed.connect([this](std::optional<uid_t> uid) {
       if (uid) {
         client_manager_ = nullptr;
 
@@ -70,7 +70,7 @@ public:
 
   virtual ~console_user_server_client(void) {
     detach_from_dispatcher([this] {
-      console_user_id_monitor_ = nullptr;
+      session_monitor_ = nullptr;
 
       client_manager_ = nullptr;
     });
@@ -78,13 +78,13 @@ public:
 
   void async_start(void) {
     enqueue_to_dispatcher([this] {
-      console_user_id_monitor_->async_start();
+      session_monitor_->async_start(std::chrono::milliseconds(1000));
     });
   }
 
   void async_stop(void) {
     enqueue_to_dispatcher([this] {
-      console_user_id_monitor_->async_stop();
+      session_monitor_->async_stop();
 
       client_manager_ = nullptr;
     });
@@ -169,7 +169,7 @@ private:
     }
   }
 
-  std::unique_ptr<console_user_id_monitor> console_user_id_monitor_;
+  std::unique_ptr<pqrs::osx::session::monitor> session_monitor_;
   std::unique_ptr<local_datagram::client_manager> client_manager_;
 };
 } // namespace krbn

@@ -5,12 +5,11 @@
 #include "console_user_server_client.hpp"
 #include "constants.hpp"
 #include "logger.hpp"
-#include "monitor/console_user_id_monitor.hpp"
 #include "monitor/version_monitor.hpp"
 #include "monitor/version_monitor_utility.hpp"
 #include "receiver.hpp"
-#include "session.hpp"
 #include <pqrs/dispatcher.hpp>
+#include <pqrs/osx/session.hpp>
 
 namespace krbn {
 class components_manager final : public pqrs::dispatcher::extra::dispatcher_client {
@@ -22,9 +21,9 @@ public:
 
     grabbable_state_queues_manager_ = std::make_shared<grabbable_state_queues_manager>();
 
-    console_user_id_monitor_ = std::make_unique<console_user_id_monitor>();
+    session_monitor_ = std::make_unique<pqrs::osx::session::monitor>(weak_dispatcher_);
 
-    console_user_id_monitor_->console_user_id_changed.connect([this](auto&& uid) {
+    session_monitor_->console_user_id_changed.connect([this](auto&& uid) {
       uid_t console_user_server_socket_uid = 0;
 
       if (uid) {
@@ -50,12 +49,12 @@ public:
       receiver_ = std::make_unique<receiver>(grabbable_state_queues_manager_);
     });
 
-    console_user_id_monitor_->async_start();
+    session_monitor_->async_start(std::chrono::milliseconds(1000));
   }
 
   virtual ~components_manager(void) {
     detach_from_dispatcher([this] {
-      console_user_id_monitor_ = nullptr;
+      session_monitor_ = nullptr;
       receiver_ = nullptr;
       grabbable_state_queues_manager_ = nullptr;
       version_monitor_ = nullptr;
@@ -65,7 +64,7 @@ public:
 private:
   std::shared_ptr<version_monitor> version_monitor_;
   std::shared_ptr<grabbable_state_queues_manager> grabbable_state_queues_manager_;
-  std::unique_ptr<console_user_id_monitor> console_user_id_monitor_;
+  std::unique_ptr<pqrs::osx::session::monitor> session_monitor_;
   std::unique_ptr<receiver> receiver_;
 };
 } // namespace krbn

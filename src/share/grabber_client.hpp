@@ -5,7 +5,6 @@
 #include "constants.hpp"
 #include "local_datagram/client_manager.hpp"
 #include "logger.hpp"
-#include "session.hpp"
 #include "types.hpp"
 #include <nod/nod.hpp>
 #include <pqrs/dispatcher.hpp>

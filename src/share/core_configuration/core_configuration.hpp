@@ -10,13 +10,13 @@
 #include "details/profile/virtual_hid_keyboard.hpp"
 #include "json_utility.hpp"
 #include "logger.hpp"
-#include "session.hpp"
 #include "time_utility.hpp"
 #include "types.hpp"
 #include <fstream>
 #include <glob.h>
 #include <nlohmann/json.hpp>
 #include <pqrs/filesystem.hpp>
+#include <pqrs/osx/session.hpp>
 #include <string>
 #include <unordered_map>
 
@@ -39,7 +39,7 @@ public:
       if (pqrs::filesystem::is_owned(file_path, 0)) {
         valid_file_owner = true;
       } else {
-        if (auto console_user_id = session::get_current_console_user_id()) {
+        if (auto console_user_id = pqrs::osx::session::find_console_user_id()) {
           if (pqrs::filesystem::is_owned(file_path, *console_user_id)) {
             valid_file_owner = true;
           }

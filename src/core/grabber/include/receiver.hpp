@@ -7,9 +7,9 @@
 #include "device_grabber.hpp"
 #include "grabbable_state_queues_manager.hpp"
 #include "local_datagram/server_manager.hpp"
-#include "session.hpp"
 #include "types.hpp"
 #include <pqrs/dispatcher.hpp>
+#include <pqrs/osx/session.hpp>
 #include <vector>
 
 namespace krbn {
@@ -33,7 +33,7 @@ public:
                                                                        reconnect_interval);
 
     server_manager_->bound.connect([this, socket_file_path] {
-      if (auto uid = session::get_current_console_user_id()) {
+      if (auto uid = pqrs::osx::session::find_console_user_id()) {
         chown(socket_file_path.c_str(), *uid, 0);
       }
       chmod(socket_file_path.c_str(), 0600);
