@@ -4,10 +4,10 @@
 #include "constants.hpp"
 #include "input_source_manager.hpp"
 #include "local_datagram/server_manager.hpp"
-#include "shell_utility.hpp"
 #include "types.hpp"
 #include <nod/nod.hpp>
 #include <pqrs/dispatcher.hpp>
+#include <pqrs/shell.hpp>
 #include <vector>
 
 namespace krbn {
@@ -85,7 +85,7 @@ public:
                 // Ensure shell_command is null-terminated string even if corrupted data is sent.
                 p->shell_command[sizeof(p->shell_command) - 1] = '\0';
 
-                std::string background_shell_command = shell_utility::make_background_command(p->shell_command);
+                auto background_shell_command = pqrs::shell::make_background_command_string(p->shell_command);
                 system(background_shell_command.c_str());
               }
               break;
