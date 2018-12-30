@@ -1,6 +1,6 @@
 #pragma once
 
-// pqrs::iokit_hid_queue_value_monitor v1.7
+// pqrs::iokit_hid_queue_value_monitor v1.8
 
 // (C) Copyright Takayama Fumihiko 2018.
 // Distributed under the Boost Software License, Version 1.0.
@@ -21,7 +21,7 @@ namespace pqrs {
 namespace osx {
 class iokit_hid_queue_value_monitor final : public dispatcher::extra::dispatcher_client {
 public:
-  // Signals (invoked from the shared dispatcher thread)
+  // Signals (invoked from the dispatcher thread)
 
   nod::signal<void(void)> started;
   nod::signal<void(void)> stopped;

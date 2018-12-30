@@ -1,6 +1,6 @@
 #pragma once
 
-// pqrs::osx::file_monitor v1.1
+// pqrs::osx::file_monitor v1.2
 
 // (C) Copyright Takayama Fumihiko 2018.
 // Distributed under the Boost Software License, Version 1.0.
@@ -30,7 +30,7 @@ namespace pqrs {
 namespace osx {
 class file_monitor final : public dispatcher::extra::dispatcher_client {
 public:
-  // Signals (invoked from the shared dispatcher thread)
+  // Signals (invoked from the dispatcher thread)
 
   nod::signal<void(const std::string& changed_file_path, std::shared_ptr<std::vector<uint8_t>> changed_file_body)> file_changed;
   nod::signal<void(const std::string&)> error_occurred;

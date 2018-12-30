@@ -1,6 +1,6 @@
 #pragma once
 
-// pqrs::iokit_hid_manager v2.2
+// pqrs::iokit_hid_manager v2.3
 
 // (C) Copyright Takayama Fumihiko 2018.
 // Distributed under the Boost Software License, Version 1.0.
@@ -18,7 +18,7 @@ namespace pqrs {
 namespace osx {
 class iokit_hid_manager final : public dispatcher::extra::dispatcher_client {
 public:
-  // Signals (invoked from the shared dispatcher thread)
+  // Signals (invoked from the dispatcher thread)
 
   nod::signal<void(iokit_registry_entry_id, cf::cf_ptr<IOHIDDeviceRef>)> device_matched;
   nod::signal<void(iokit_registry_entry_id)> device_terminated;

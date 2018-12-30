@@ -7,6 +7,7 @@ pqrs-org/cpp-filesystem
 pqrs-org/cpp-osx-file_monitor
 pqrs-org/cpp-osx-iokit_hid_manager
 pqrs-org/cpp-osx-iokit_hid_queue_value_monitor
+pqrs-org/cpp-osx-session
 pqrs-org/cpp-spdlog
 pqrs-org/cpp-string
 scopeInfinity/NaturalSort@12f74beb58d9b18a41b25339d994da0e222fe80f --cmake header
