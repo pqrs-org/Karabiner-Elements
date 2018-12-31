@@ -73,10 +73,7 @@ public:
     if (auto m = weak_grabbable_state_queues_manager_.lock()) {
       external_signal_connections_.emplace_back(
           m->grabbable_state_changed.connect([this](auto&& device_id, auto&& grabbable_state) {
-            auto it = entries_.find(device_id);
-            if (it != std::end(entries_)) {
-              grab_device(it->second);
-            }
+            async_grab_devices();
           }));
     }
 
