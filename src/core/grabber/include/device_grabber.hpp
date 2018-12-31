@@ -54,6 +54,14 @@ public:
 
       update_virtual_hid_keyboard();
       update_virtual_hid_pointing();
+
+      update_devices_disabled();
+      async_grab_devices();
+    });
+
+    virtual_hid_device_client_->virtual_hid_keyboard_ready.connect([this] {
+      update_devices_disabled();
+      async_grab_devices();
     });
 
     virtual_hid_device_client_->client_disconnected.connect([this] {
@@ -143,7 +151,7 @@ public:
           auto it = entries_.find(device_id);
           if (it != std::end(entries_)) {
             logger::get_logger()->info("{0} is grabbed.",
-                                      it->second->get_device_name());
+                                       it->second->get_device_name());
 
             post_device_grabbed_event(it->second->get_device_properties());
 
@@ -161,7 +169,7 @@ public:
           auto it = entries_.find(device_id);
           if (it != std::end(entries_)) {
             logger::get_logger()->info("{0} is ungrabbed.",
-                                      it->second->get_device_name());
+                                       it->second->get_device_name());
 
             it->second->set_grabbed(false);
 
@@ -194,7 +202,7 @@ public:
       auto it = entries_.find(device_id);
       if (it != std::end(entries_)) {
         logger::get_logger()->info("{0} is terminated.",
-                                  it->second->get_device_name());
+                                   it->second->get_device_name());
 
         if (auto device_properties = it->second->get_device_properties()) {
           if (device_properties->get_is_keyboard().value_or(false) &&
@@ -284,9 +292,6 @@ public:
 
           logger_unique_filter_.reset();
           set_profile(core_configuration->get_selected_profile());
-
-          update_devices_disabled();
-          async_grab_devices();
         }
       });
 
@@ -722,6 +727,9 @@ private:
 
     update_virtual_hid_keyboard();
     update_virtual_hid_pointing();
+
+    update_devices_disabled();
+    async_grab_devices();
   }
 
   void update_simple_modifications_manipulators(void) {
