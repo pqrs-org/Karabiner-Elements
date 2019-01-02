@@ -11,6 +11,7 @@
 #include <deque>
 #include <exception>
 #include <mutex>
+#include <optional>
 #include <pqrs/thread_wait.hpp>
 #include <thread>
 
@@ -110,9 +111,29 @@ public:
         }
 
         if (e) {
-          std::lock_guard<std::mutex> lock(function_mutex_);
+          // Set running_function_object_id_
+
+          {
+            std::lock_guard<std::mutex> lock(running_function_object_id_mutex_);
+
+            running_function_object_id_ = e->get_object_id_value();
+          }
+
+          running_function_object_id_cv_.notify_all();
+
+          // Run function
 
           e->call_function();
+
+          // Unset running_function_object_id_
+
+          {
+            std::lock_guard<std::mutex> lock(running_function_object_id_mutex_);
+
+            running_function_object_id_ = std::nullopt;
+          }
+
+          running_function_object_id_cv_.notify_all();
         }
       }
     });
@@ -174,13 +195,22 @@ public:
                    std::end(queue_));
     }
 
-    if (!dispatcher_thread()) {
-      // Wait until current running function is finised.
-      std::lock_guard<std::mutex> lock(function_mutex_);
+    if (!dispatcher_thread() && !running_detached_function()) {
+      // Wait the running function if the running function is owned by object_id.
+
+      std::unique_lock<std::mutex> lock(running_function_object_id_mutex_);
+
+      running_function_object_id_cv_.wait(lock, [this, &object_id] {
+        return running_function_object_id_ != object_id.get();
+      });
     }
 
     return true;
   }
+
+  // dispatcher guarantees that
+  // the argument `function` and enqueued functions with `object_id`
+  // are not run at the same time.
 
   void detach(const object_id& object_id,
               const std::function<void(void)>& function) {
@@ -200,7 +230,19 @@ public:
 
     // Execute function
 
-    if (dispatcher_thread()) {
+    if (dispatcher_thread() || running_detached_function()) {
+      // Call function directly in the following cases.
+      // - `detach` is called in the dispatcher thread.
+      // - `detach` is called from another detached function.
+      //   (We have to call detached function directly in order to avoid a deadlock.)
+      //
+      //   If the running function is detached function,
+      //   the enqueued functions with `object_id` will not be called
+      //   because the current running function is not and
+      //   other functions are already erased in the above `detach(object_id)`.
+      //
+      //   Thus, we can call the `function` directly without conflict.
+
       function();
     } else {
       auto w = make_thread_wait();
@@ -227,6 +269,12 @@ public:
 
   bool dispatcher_thread(void) const {
     return std::this_thread::get_id() == worker_thread_id_;
+  }
+
+  bool running_detached_function(void) const {
+    std::lock_guard<std::mutex> lock(running_function_object_id_mutex_);
+
+    return running_function_object_id_ == object_id_.get();
   }
 
   void terminate(void) {
@@ -377,11 +425,14 @@ private:
   std::mutex mutex_;
   std::condition_variable cv_;
 
+  // `object_id_` is for a function after detach
   object_id object_id_;
   std::unordered_set<uint64_t> object_ids_;
   std::mutex object_ids_mutex_;
 
-  std::mutex function_mutex_;
+  std::optional<uint64_t> running_function_object_id_;
+  mutable std::mutex running_function_object_id_mutex_;
+  std::condition_variable running_function_object_id_cv_;
 };
 } // namespace dispatcher
 } // namespace pqrs

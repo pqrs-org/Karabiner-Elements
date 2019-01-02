@@ -1,0 +1,1 @@
+../../../cget/pkg/chriskohlhoff__asio/install/include/asio/detail/old_win_sdk_compat.hpp

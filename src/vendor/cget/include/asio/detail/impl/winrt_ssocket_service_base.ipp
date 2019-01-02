@@ -1,0 +1,1 @@
+../../../../cget/pkg/chriskohlhoff__asio/install/include/asio/detail/impl/winrt_ssocket_service_base.ipp

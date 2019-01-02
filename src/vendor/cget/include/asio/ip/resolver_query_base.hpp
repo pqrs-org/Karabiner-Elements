@@ -1,0 +1,1 @@
+../../../cget/pkg/chriskohlhoff__asio/install/include/asio/ip/resolver_query_base.hpp

@@ -1,0 +1,1 @@
+../../../cget/pkg/chriskohlhoff__asio/install/include/asio/detail/is_buffer_sequence.hpp

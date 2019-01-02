@@ -1,0 +1,1 @@
+../../cget/pkg/chriskohlhoff__asio/install/include/asio/is_write_buffered.hpp

@@ -4,6 +4,7 @@ pqrs-org/cpp-cf-dictionary
 pqrs-org/cpp-cf-number
 pqrs-org/cpp-environment_variable
 pqrs-org/cpp-filesystem
+pqrs-org/cpp-local_datagram
 pqrs-org/cpp-osx-file_monitor
 pqrs-org/cpp-osx-iokit_hid_manager
 pqrs-org/cpp-osx-iokit_hid_queue_value_monitor
