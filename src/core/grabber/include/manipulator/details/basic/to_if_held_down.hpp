@@ -16,8 +16,7 @@ public:
   }
 
   virtual ~to_if_held_down(void) {
-    detach_from_dispatcher([] {
-    });
+    detach_from_dispatcher();
   }
 
   void setup(const event_queue::entry& front_input_event,

@@ -25,8 +25,7 @@ public:
   }
 
   virtual ~grabbable_state_queues_manager(void) {
-    detach_from_dispatcher([] {
-    });
+    detach_from_dispatcher();
   }
 
   std::optional<grabbable_state> find_current_grabbable_state(device_id device_id) const {

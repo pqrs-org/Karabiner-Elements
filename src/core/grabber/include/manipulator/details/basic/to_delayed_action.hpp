@@ -42,8 +42,7 @@ public:
   }
 
   virtual ~to_delayed_action(void) {
-    detach_from_dispatcher([] {
-    });
+    detach_from_dispatcher();
   }
 
   void setup(const event_queue::entry& front_input_event,

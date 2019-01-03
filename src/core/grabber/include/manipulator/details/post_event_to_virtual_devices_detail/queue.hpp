@@ -231,8 +231,7 @@ public:
   }
 
   virtual ~queue(void) {
-    detach_from_dispatcher([] {
-    });
+    detach_from_dispatcher();
   }
 
   const std::vector<event>& get_events(void) const {

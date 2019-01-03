@@ -25,8 +25,7 @@ public:
   }
 
   virtual ~manager(void) {
-    detach_from_dispatcher([] {
-    });
+    detach_from_dispatcher();
   }
 
   void update(const grabbable_state& state) {

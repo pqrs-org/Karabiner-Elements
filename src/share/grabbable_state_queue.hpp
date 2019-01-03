@@ -30,8 +30,7 @@ public:
   }
 
   virtual ~grabbable_state_queue(void) {
-    detach_from_dispatcher([] {
-    });
+    detach_from_dispatcher();
   }
 
   std::optional<absolute_time_point> get_first_grabbed_event_time_stamp(void) const {
