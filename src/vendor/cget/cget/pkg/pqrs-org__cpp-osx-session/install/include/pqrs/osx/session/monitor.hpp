@@ -29,8 +29,7 @@ public:
   }
 
   virtual ~monitor(void) {
-    detach_from_dispatcher([] {
-    });
+    detach_from_dispatcher();
   }
 
   void async_start(std::chrono::milliseconds check_interval) {

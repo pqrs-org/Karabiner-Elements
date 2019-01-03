@@ -1,6 +1,6 @@
 #pragma once
 
-// pqrs::iokit_hid_queue_value_monitor v1.8
+// pqrs::iokit_hid_queue_value_monitor v1.9
 
 // (C) Copyright Takayama Fumihiko 2018.
 // Distributed under the Boost Software License, Version 1.0.
@@ -60,8 +60,7 @@ public:
   virtual ~iokit_hid_queue_value_monitor(void) {
     // dispatcher_client
 
-    detach_from_dispatcher([] {
-    });
+    detach_from_dispatcher();
 
     // cf_run_loop_thread
 

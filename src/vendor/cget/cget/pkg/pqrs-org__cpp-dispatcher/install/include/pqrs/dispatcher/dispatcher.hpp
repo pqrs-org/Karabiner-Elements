@@ -195,7 +195,7 @@ public:
                    std::end(queue_));
     }
 
-    if (!dispatcher_thread() && !running_detached_function()) {
+    if (!dispatcher_thread()) {
       // Wait the running function if the running function is owned by object_id.
 
       std::unique_lock<std::mutex> lock(running_function_object_id_mutex_);
@@ -208,10 +208,8 @@ public:
     return true;
   }
 
-  // dispatcher guarantees that
-  // the argument `function` and enqueued functions with `object_id`
-  // are not run at the same time.
-
+  // Note:
+  // Do not wait (thread::join, etc.) in `function` in order to avoid a deadlock.
   void detach(const object_id& object_id,
               const std::function<void(void)>& function) {
     if (!detach(object_id)) {
@@ -230,19 +228,7 @@ public:
 
     // Execute function
 
-    if (dispatcher_thread() || running_detached_function()) {
-      // Call function directly in the following cases.
-      // - `detach` is called in the dispatcher thread.
-      // - `detach` is called from another detached function.
-      //   (We have to call detached function directly in order to avoid a deadlock.)
-      //
-      //   If the running function is detached function,
-      //   the enqueued functions with `object_id` will not be called
-      //   because the current running function is not and
-      //   other functions are already erased in the above `detach(object_id)`.
-      //
-      //   Thus, we can call the `function` directly without conflict.
-
+    if (dispatcher_thread()) {
       function();
     } else {
       auto w = make_thread_wait();
@@ -326,6 +312,8 @@ public:
     }
   }
 
+  // Note:
+  // Do not wait (thread::join, etc.) in `function` in order to avoid a deadlock.
   void enqueue(const object_id& object_id,
                const std::function<void(void)>& function,
                time_point when = when_immediately()) {

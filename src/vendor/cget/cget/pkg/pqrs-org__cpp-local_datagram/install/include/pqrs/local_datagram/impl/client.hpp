@@ -48,8 +48,7 @@ public:
       io_service_thread_.join();
     }
 
-    detach_from_dispatcher([] {
-    });
+    detach_from_dispatcher();
   }
 
   void async_connect(const std::string& path,

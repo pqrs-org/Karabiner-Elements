@@ -31,6 +31,12 @@ public:
     }
   }
 
+  void detach_from_dispatcher(void) const {
+    if (auto d = weak_dispatcher_.lock()) {
+      d->detach(object_id_);
+    }
+  }
+
   void detach_from_dispatcher(const std::function<void(void)>& function) const {
     if (auto d = weak_dispatcher_.lock()) {
       d->detach(object_id_, function);
