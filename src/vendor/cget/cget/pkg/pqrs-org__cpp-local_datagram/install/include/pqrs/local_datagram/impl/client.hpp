@@ -6,10 +6,15 @@
 
 // `pqrs::local_datagram::impl::client` can be used safely in a multi-threaded environment.
 
+#ifdef ASIO_STANDALONE
+#include <asio.hpp>
+#else
 #define ASIO_STANDALONE
+#include <asio.hpp>
+#undef ASIO_STANDALONE
+#endif
 
 #include "buffer.hpp"
-#include <asio.hpp>
 #include <nod/nod.hpp>
 #include <optional>
 #include <pqrs/dispatcher.hpp>
