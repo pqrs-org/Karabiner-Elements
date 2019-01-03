@@ -6,9 +6,9 @@
 #include "constants.hpp"
 #include "device_grabber.hpp"
 #include "grabbable_state_queues_manager.hpp"
-#include "local_datagram/server_manager.hpp"
 #include "types.hpp"
 #include <pqrs/dispatcher.hpp>
+#include <pqrs/local_datagram.hpp>
 #include <pqrs/osx/session.hpp>
 #include <vector>
 
@@ -24,15 +24,13 @@ public:
     unlink(socket_file_path.c_str());
 
     size_t buffer_size = 32 * 1024;
-    std::chrono::milliseconds server_check_interval(3000);
-    std::chrono::milliseconds reconnect_interval(1000);
+    server_ = std::make_unique<pqrs::local_datagram::server>(weak_dispatcher_,
+                                                             socket_file_path,
+                                                             buffer_size);
+    server_->set_server_check_interval(std::chrono::milliseconds(3000));
+    server_->set_reconnect_interval(std::chrono::milliseconds(1000));
 
-    server_manager_ = std::make_unique<local_datagram::server_manager>(socket_file_path,
-                                                                       buffer_size,
-                                                                       server_check_interval,
-                                                                       reconnect_interval);
-
-    server_manager_->bound.connect([this, socket_file_path] {
+    server_->bound.connect([this, socket_file_path] {
       if (auto uid = pqrs::osx::session::find_console_user_id()) {
         chown(socket_file_path.c_str(), *uid, 0);
       }
@@ -43,11 +41,11 @@ public:
       }
     });
 
-    server_manager_->bind_failed.connect([](auto&& error_code) {
+    server_->bind_failed.connect([](auto&& error_code) {
       logger::get_logger()->error("receiver bind_failed");
     });
 
-    server_manager_->received.connect([this](auto&& buffer) {
+    server_->received.connect([this](auto&& buffer) {
       if (auto type = types::find_operation_type(*buffer)) {
         switch (*type) {
           case operation_type::grabbable_state_changed:
@@ -175,7 +173,7 @@ public:
       }
     });
 
-    server_manager_->async_start();
+    server_->async_start();
 
     start_grabbing_if_system_core_configuration_file_exists();
 
@@ -184,7 +182,7 @@ public:
 
   virtual ~receiver(void) {
     detach_from_dispatcher([this] {
-      server_manager_ = nullptr;
+      server_ = nullptr;
       console_user_server_client_ = nullptr;
       stop_device_grabber();
     });
@@ -231,7 +229,7 @@ private:
 
   std::weak_ptr<grabbable_state_queues_manager> weak_grabbable_state_queues_manager_;
 
-  std::unique_ptr<local_datagram::server_manager> server_manager_;
+  std::unique_ptr<pqrs::local_datagram::server> server_;
   std::shared_ptr<console_user_server_client> console_user_server_client_;
   std::unique_ptr<device_grabber> device_grabber_;
 

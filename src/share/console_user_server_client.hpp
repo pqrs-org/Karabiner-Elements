@@ -1,11 +1,11 @@
 #pragma once
 
 #include "constants.hpp"
-#include "local_datagram/client_manager.hpp"
 #include "logger.hpp"
 #include "types.hpp"
 #include <nod/nod.hpp>
 #include <pqrs/dispatcher.hpp>
+#include <pqrs/local_datagram.hpp>
 #include <pqrs/osx/session.hpp>
 #include <sstream>
 #include <unistd.h>
@@ -16,10 +16,8 @@ class console_user_server_client final : public pqrs::dispatcher::extra::dispatc
 public:
   // Signals (invoked from the shared dispatcher thread)
 
-  // Note: These signals are fired on local_datagram::client's thread.
-
   nod::signal<void(void)> connected;
-  nod::signal<void(const boost::system::error_code&)> connect_failed;
+  nod::signal<void(const asio::error_code&)> connect_failed;
   nod::signal<void(void)> closed;
 
   // Methods
@@ -31,17 +29,15 @@ public:
 
     session_monitor_->console_user_id_changed.connect([this](std::optional<uid_t> uid) {
       if (uid) {
-        client_manager_ = nullptr;
+        client_ = nullptr;
 
         auto socket_file_path = make_console_user_server_socket_file_path(*uid);
-        std::chrono::milliseconds server_check_interval(3000);
-        std::chrono::milliseconds reconnect_interval(1000);
+        client_ = std::make_unique<pqrs::local_datagram::client>(weak_dispatcher_,
+                                                                 socket_file_path);
+        client_->set_server_check_interval(std::chrono::milliseconds(3000));
+        client_->set_reconnect_interval(std::chrono::milliseconds(1000));
 
-        client_manager_ = std::make_unique<local_datagram::client_manager>(socket_file_path,
-                                                                           server_check_interval,
-                                                                           reconnect_interval);
-
-        client_manager_->connected.connect([this, uid] {
+        client_->connected.connect([this, uid] {
           logger::get_logger()->info("console_user_server_client is connected. (uid:{0})", *uid);
 
           enqueue_to_dispatcher([this] {
@@ -49,13 +45,13 @@ public:
           });
         });
 
-        client_manager_->connect_failed.connect([this](auto&& error_code) {
+        client_->connect_failed.connect([this](auto&& error_code) {
           enqueue_to_dispatcher([this, error_code] {
             connect_failed(error_code);
           });
         });
 
-        client_manager_->closed.connect([this, uid] {
+        client_->closed.connect([this, uid] {
           logger::get_logger()->info("console_user_server_client is closed. (uid:{0})", *uid);
 
           enqueue_to_dispatcher([this] {
@@ -63,7 +59,7 @@ public:
           });
         });
 
-        client_manager_->async_start();
+        client_->async_start();
       }
     });
   }
@@ -72,7 +68,7 @@ public:
     detach_from_dispatcher([this] {
       session_monitor_ = nullptr;
 
-      client_manager_ = nullptr;
+      client_ = nullptr;
     });
   }
 
@@ -86,7 +82,7 @@ public:
     enqueue_to_dispatcher([this] {
       session_monitor_->async_stop();
 
-      client_manager_ = nullptr;
+      client_ = nullptr;
     });
   }
 
@@ -162,14 +158,12 @@ public:
 
 private:
   void async_send(const uint8_t* _Nonnull p, size_t length) const {
-    if (client_manager_) {
-      if (auto client = client_manager_->get_client()) {
-        client->async_send(p, length);
-      }
+    if (client_) {
+      client_->async_send(p, length);
     }
   }
 
   std::unique_ptr<pqrs::osx::session::monitor> session_monitor_;
-  std::unique_ptr<local_datagram::client_manager> client_manager_;
+  std::unique_ptr<pqrs::local_datagram::client> client_;
 };
 } // namespace krbn

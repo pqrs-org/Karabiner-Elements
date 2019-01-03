@@ -3,10 +3,10 @@
 #include "console_user_server_client.hpp"
 #include "constants.hpp"
 #include "input_source_manager.hpp"
-#include "local_datagram/server_manager.hpp"
 #include "types.hpp"
 #include <nod/nod.hpp>
 #include <pqrs/dispatcher.hpp>
+#include <pqrs/local_datagram.hpp>
 #include <pqrs/shell.hpp>
 #include <vector>
 
@@ -16,7 +16,7 @@ public:
   // Signals (invoked from the shared dispatcher thread)
 
   nod::signal<void(void)> bound;
-  nod::signal<void(const boost::system::error_code&)> bind_failed;
+  nod::signal<void(const asio::error_code&)> bind_failed;
   nod::signal<void(void)> closed;
 
   // Methods
@@ -29,7 +29,7 @@ public:
 
   virtual ~receiver(void) {
     detach_from_dispatcher([this] {
-      server_manager_ = nullptr;
+      server_ = nullptr;
     });
 
     logger::get_logger()->info("receiver is terminated");
@@ -37,7 +37,7 @@ public:
 
   void async_start(void) {
     enqueue_to_dispatcher([this] {
-      if (server_manager_) {
+      if (server_) {
         return;
       }
 
@@ -47,33 +47,31 @@ public:
       unlink(socket_file_path.c_str());
 
       size_t buffer_size = 32 * 1024;
-      std::chrono::milliseconds server_check_interval(3000);
-      std::chrono::milliseconds reconnect_interval(1000);
+      server_ = std::make_unique<pqrs::local_datagram::server>(weak_dispatcher_,
+                                                               socket_file_path,
+                                                               buffer_size);
+      server_->set_server_check_interval(std::chrono::milliseconds(3000));
+      server_->set_reconnect_interval(std::chrono::milliseconds(1000));
 
-      server_manager_ = std::make_unique<local_datagram::server_manager>(socket_file_path,
-                                                                         buffer_size,
-                                                                         server_check_interval,
-                                                                         reconnect_interval);
-
-      server_manager_->bound.connect([this] {
+      server_->bound.connect([this] {
         enqueue_to_dispatcher([this] {
           bound();
         });
       });
 
-      server_manager_->bind_failed.connect([this](auto&& error_code) {
+      server_->bind_failed.connect([this](auto&& error_code) {
         enqueue_to_dispatcher([this, error_code] {
           bind_failed(error_code);
         });
       });
 
-      server_manager_->closed.connect([this] {
+      server_->closed.connect([this] {
         enqueue_to_dispatcher([this] {
           closed();
         });
       });
 
-      server_manager_->received.connect([this](auto&& buffer) {
+      server_->received.connect([this](auto&& buffer) {
         if (auto type = types::find_operation_type(*buffer)) {
           switch (*type) {
             case operation_type::shell_command_execution:
@@ -134,14 +132,14 @@ public:
         }
       });
 
-      server_manager_->async_start();
+      server_->async_start();
 
       logger::get_logger()->info("receiver is initialized");
     });
   }
 
 private:
-  std::unique_ptr<local_datagram::server_manager> server_manager_;
+  std::unique_ptr<pqrs::local_datagram::server> server_;
   input_source_manager input_source_manager_;
   absolute_time_point last_select_input_source_time_stamp_;
 };
