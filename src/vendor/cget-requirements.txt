@@ -12,4 +12,5 @@ pqrs-org/cpp-osx-session
 pqrs-org/cpp-shell
 pqrs-org/cpp-spdlog
 pqrs-org/cpp-string
+pqrs-org/objc-weakify
 scopeInfinity/NaturalSort@12f74beb58d9b18a41b25339d994da0e222fe80f --cmake header
