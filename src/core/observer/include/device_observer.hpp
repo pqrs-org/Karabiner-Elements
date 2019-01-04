@@ -137,6 +137,18 @@ public:
     logger::get_logger()->info("device_observer is stopped.");
   }
 
+  void async_post_all_states_to_grabber(void) {
+    enqueue_to_dispatcher([this] {
+      if (auto client = grabber_client_.lock()) {
+        if (grabbable_state_manager_) {
+          for (const auto& s : grabbable_state_manager_->make_grabbable_states()) {
+            client->async_grabbable_state_changed(s);
+          }
+        }
+      }
+    });
+  }
+
 private:
   std::weak_ptr<grabber_client> grabber_client_;
 
