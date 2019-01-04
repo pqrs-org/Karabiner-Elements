@@ -70,6 +70,13 @@ TEST_CASE("grabbable_state_manager") {
     REQUIRE(*actual == expected);
   }
 
+  // make_grabbable_states
+
+  {
+    auto actual = grabbable_state_manager->make_grabbable_states();
+    REQUIRE(actual.size() == 2);
+  }
+
   // key repeating
 
   event_queue.clear_events();

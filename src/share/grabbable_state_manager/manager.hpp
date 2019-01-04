@@ -103,6 +103,17 @@ public:
     return std::nullopt;
   }
 
+  std::vector<grabbable_state> make_grabbable_states(void) const {
+    std::lock_guard<std::mutex> lock(entries_mutex_);
+
+    std::vector<grabbable_state> result;
+    for (const auto& pair : entries_) {
+      result.push_back(pair.second.get_grabbable_state());
+    }
+
+    return result;
+  }
+
 private:
   std::unordered_map<device_id, entry> entries_;
   mutable std::mutex entries_mutex_;
