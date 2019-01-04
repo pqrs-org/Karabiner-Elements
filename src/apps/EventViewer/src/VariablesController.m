@@ -1,6 +1,6 @@
 #import "VariablesController.h"
 #import "libkrbn.h"
-#import "weakify.h"
+#import <pqrs/weakify.h>
 
 @interface VariablesController ()
 

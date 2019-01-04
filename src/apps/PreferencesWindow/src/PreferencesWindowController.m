@@ -12,7 +12,7 @@
 #import "SystemPreferencesManager.h"
 #import "VirtualHIDKeyboardTypeBackgroundView.h"
 #import "libkrbn.h"
-#import "weakify.h"
+#import <pqrs/weakify.h>
 
 @interface PreferencesWindowController ()
 

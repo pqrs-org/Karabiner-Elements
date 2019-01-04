@@ -1,6 +1,6 @@
 #import "DevicesController.h"
 #import "libkrbn.h"
-#import "weakify.h"
+#import <pqrs/weakify.h>
 
 @interface DevicesController ()
 

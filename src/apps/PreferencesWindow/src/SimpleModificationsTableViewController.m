@@ -3,7 +3,7 @@
 #import "NotificationKeys.h"
 #import "SimpleModificationsTableCellView.h"
 #import "SimpleModificationsTargetDeviceMenuManager.h"
-#import "weakify.h"
+#import <pqrs/weakify.h>
 
 @interface SimpleModificationsTableViewController ()
 

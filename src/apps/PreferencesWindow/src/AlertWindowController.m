@@ -1,7 +1,7 @@
 #import "AlertWindowController.h"
 #import "KarabinerKit/KarabinerKit.h"
 #import "libkrbn.h"
-#import "weakify.h"
+#import <pqrs/weakify.h>
 
 @interface AlertWindowController ()
 

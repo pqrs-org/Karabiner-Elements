@@ -1,6 +1,6 @@
 #import "LogFileTextViewController.h"
 #import "libkrbn.h"
-#import "weakify.h"
+#import <pqrs/weakify.h>
 
 typedef enum {
   LogLevelInfo,

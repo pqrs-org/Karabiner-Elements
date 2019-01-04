@@ -1,6 +1,6 @@
 #import "frontmost_application_monitor_objc.h"
-#import "weakify.h"
 #import <Cocoa/Cocoa.h>
+#import <pqrs/weakify.h>
 
 @interface KrbnFrontmostApplicationMonitor : NSObject
 

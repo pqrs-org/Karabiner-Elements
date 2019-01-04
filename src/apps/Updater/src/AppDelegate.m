@@ -1,5 +1,5 @@
 #import "AppDelegate.h"
-#import "weakify.h"
+#import <pqrs/weakify.h>
 @import Sparkle;
 
 @interface AppDelegate ()

@@ -4,7 +4,7 @@
 #import "SimpleModificationsTableCellView.h"
 #import "SimpleModificationsTableViewController.h"
 #import "SimpleModificationsTargetDeviceMenuManager.h"
-#import "weakify.h"
+#import <pqrs/weakify.h>
 
 @interface FnFunctionKeysTableViewController ()
 

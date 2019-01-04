@@ -1,6 +1,6 @@
 #import "FrontmostApplicationController.h"
 #import "monitor/frontmost_application_monitor_objc.h"
-#import "weakify.h"
+#import <pqrs/weakify.h>
 
 @interface FrontmostApplicationController ()
 
