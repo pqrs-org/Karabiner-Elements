@@ -1,11 +1,12 @@
-jarro2783/cxxopts@v2.1.1 --cmake header
-nlohmann/json@v3.4.0 --cmake header
+jarro2783/cxxopts@v2.1.1 --cmake header -H sha256:e19216251427d04f0273e6487c0246ae2dbb4154bf178f43896af8fa1ef89f3f
+nlohmann/json@v3.5.0 --cmake header -H sha256:e0b1fc6cc6ca05706cce99118a87aca5248bd9db3113e703023d23f044995c1d
 pqrs-org/cpp-cf-dictionary
 pqrs-org/cpp-cf-number
 pqrs-org/cpp-environment_variable
 pqrs-org/cpp-filesystem
 pqrs-org/cpp-local_datagram
 pqrs-org/cpp-osx-file_monitor
+pqrs-org/cpp-osx-frontmost_application_monitor
 pqrs-org/cpp-osx-iokit_hid_manager
 pqrs-org/cpp-osx-iokit_hid_queue_value_monitor
 pqrs-org/cpp-osx-session
@@ -13,4 +14,4 @@ pqrs-org/cpp-shell
 pqrs-org/cpp-spdlog
 pqrs-org/cpp-string
 pqrs-org/objc-weakify
-scopeInfinity/NaturalSort@12f74beb58d9b18a41b25339d994da0e222fe80f --cmake header
+scopeInfinity/NaturalSort@12f74beb58d9b18a41b25339d994da0e222fe80f --cmake header -H sha256:d284b2c55704bf58cddabfc07e71e5e39b4bc2f747cd9cf72b5b14975fe02a7c
