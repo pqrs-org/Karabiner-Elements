@@ -5,7 +5,6 @@
 #include "Karabiner-VirtualHIDDevice/dist/include/karabiner_virtual_hid_device_methods.hpp"
 #include "apple_hid_usage_tables.hpp"
 #include "constants.hpp"
-#include "input_source_utility.hpp"
 #include "json_utility.hpp"
 #include "logger.hpp"
 #include "stream_utility.hpp"

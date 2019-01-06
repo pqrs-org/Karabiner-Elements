@@ -2,12 +2,12 @@
 
 // `krbn::input_source_monitor` can be used safely in a multi-threaded environment.
 
-#include "input_source_utility.hpp"
 #include "logger.hpp"
 #include "types.hpp"
 #include <Carbon/Carbon.h>
 #include <nod/nod.hpp>
 #include <pqrs/dispatcher.hpp>
+#include <pqrs/osx/input_source.hpp>
 
 namespace krbn {
 class input_source_monitor final : public pqrs::dispatcher::extra::dispatcher_client {
@@ -89,14 +89,12 @@ private:
 
   void input_source_changed_callback(void) {
     enqueue_to_dispatcher([this] {
-      if (auto p = TISCopyCurrentKeyboardInputSource()) {
-        input_source_identifiers identifiers(p);
+      if (auto input_source = pqrs::osx::input_source::make_current_keyboard_input_source()) {
+        input_source_identifiers identifiers(*input_source);
 
         enqueue_to_dispatcher([this, identifiers] {
           input_source_changed(identifiers);
         });
-
-        CFRelease(p);
       }
     });
   }

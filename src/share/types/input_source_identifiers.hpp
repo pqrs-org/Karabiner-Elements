@@ -8,6 +8,7 @@
 #include <cstdint>
 #include <nlohmann/json.hpp>
 #include <optional>
+#include <pqrs/osx/input_source.hpp>
 
 namespace krbn {
 class input_source_identifiers final {
@@ -15,9 +16,9 @@ public:
   input_source_identifiers(void) {
   }
 
-  input_source_identifiers(TISInputSourceRef p) : language_(input_source_utility::get_language(p)),
-                                                  input_source_id_(input_source_utility::get_input_source_id(p)),
-                                                  input_mode_id_(input_source_utility::get_input_mode_id(p)) {
+  input_source_identifiers(TISInputSourceRef p) : language_(pqrs::osx::input_source::make_first_language(p)),
+                                                  input_source_id_(pqrs::osx::input_source::make_input_source_id(p)),
+                                                  input_mode_id_(pqrs::osx::input_source::make_input_mode_id(p)) {
   }
 
   input_source_identifiers(const std::optional<std::string>& language,

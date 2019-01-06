@@ -11,6 +11,8 @@ int main(int argc, char** argv) {
 
   krbn::input_source_manager input_source_manager;
 
+  std::cout << "change to fr input source" << std::endl;
+
   input_source_manager.select(krbn::input_source_selector(std::string("fr"),
                                                           std::nullopt,
                                                           std::nullopt));
@@ -19,6 +21,8 @@ int main(int argc, char** argv) {
     std::cout << i << "/9" << std::endl;
     std::this_thread::sleep_for(std::chrono::milliseconds(500));
   }
+
+  std::cout << "change to en input source" << std::endl;
 
   input_source_manager.select(krbn::input_source_selector(std::string("en"),
                                                           std::nullopt,

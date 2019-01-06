@@ -1,12 +1,12 @@
 #pragma once
 
-#include "input_source_utility.hpp"
 #include "logger.hpp"
 #include "types.hpp"
 #include <Carbon/Carbon.h>
 #include <pqrs/cf/array.hpp>
 #include <pqrs/cf/cf_ptr.hpp>
 #include <pqrs/cf/dictionary.hpp>
+#include <pqrs/osx/input_source.hpp>
 
 namespace krbn {
 class input_source_manager final {
@@ -80,21 +80,9 @@ private:
   void enabled_input_sources_changed_callback(void) {
     entries_.clear();
 
-    if (auto properties = pqrs::cf::make_cf_mutable_dictionary()) {
-      CFDictionarySetValue(*properties, kTISPropertyInputSourceIsSelectCapable, kCFBooleanTrue);
-      CFDictionarySetValue(*properties, kTISPropertyInputSourceCategory, kTISCategoryKeyboardInputSource);
-
-      if (auto input_sources = TISCreateInputSourceList(*properties, false)) {
-        for (CFIndex i = 0;; ++i) {
-          auto s = pqrs::cf::get_cf_array_value<TISInputSourceRef>(input_sources, i);
-          if (!s) {
-            break;
-          }
-
-          entries_.push_back(std::make_unique<entry>(s));
-        }
-
-        CFRelease(input_sources);
+    for (const auto& input_source : pqrs::osx::input_source::make_selectable_keyboard_input_sources()) {
+      if (input_source) {
+        entries_.push_back(std::make_unique<entry>(*input_source));
       }
     }
   }

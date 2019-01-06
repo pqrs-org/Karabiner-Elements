@@ -8,7 +8,7 @@
 namespace krbn {
 class grabbable_state final {
 public:
-  enum class state : uint32 {
+  enum class state : uint32_t {
     none,
     grabbable,
     ungrabbable_temporarily,
@@ -16,7 +16,7 @@ public:
     device_error,
   };
 
-  enum class ungrabbable_temporarily_reason : uint32 {
+  enum class ungrabbable_temporarily_reason : uint32_t {
     none,
     key_repeating,
     modifier_key_pressed,
