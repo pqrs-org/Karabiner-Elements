@@ -1,11 +1,11 @@
 #import "FrontmostApplicationController.h"
-#import "monitor/frontmost_application_monitor_objc.h"
+#import "libkrbn.h"
 #import <pqrs/weakify.h>
 
 @interface FrontmostApplicationController ()
 
 @property(unsafe_unretained) IBOutlet NSTextView* textView;
-@property krbn_frontmost_application_monitor_objc* monitor;
+@property libkrbn_frontmost_application_monitor* monitor;
 
 - (void)callback:(NSString*)bundleIdentifier
         filePath:(NSString*)filePath;
@@ -23,16 +23,16 @@ static void staticCallback(const char* bundle_identifier,
 @implementation FrontmostApplicationController
 
 - (void)setup {
-  krbn_frontmost_application_monitor_objc* p = nil;
-  krbn_frontmost_application_monitor_initialize(&p,
-                                                staticCallback,
-                                                (__bridge void*)(self));
+  libkrbn_frontmost_application_monitor* p = nil;
+  libkrbn_frontmost_application_monitor_initialize(&p,
+                                                   staticCallback,
+                                                   (__bridge void*)(self));
   self.monitor = p;
 }
 
 - (void)dealloc {
-  krbn_frontmost_application_monitor_objc* p = self.monitor;
-  krbn_frontmost_application_monitor_terminate(&p);
+  libkrbn_frontmost_application_monitor* p = self.monitor;
+  libkrbn_frontmost_application_monitor_terminate(&p);
   self.monitor = nil;
 }
 

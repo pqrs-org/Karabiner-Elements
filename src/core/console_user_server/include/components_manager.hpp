@@ -8,7 +8,6 @@
 #include "logger.hpp"
 #include "menu_process_manager.hpp"
 #include "monitor/configuration_monitor.hpp"
-#include "monitor/frontmost_application_monitor.hpp"
 #include "monitor/grabber_alerts_monitor.hpp"
 #include "monitor/input_source_monitor.hpp"
 #include "monitor/system_preferences_monitor.hpp"
@@ -17,6 +16,7 @@
 #include "receiver.hpp"
 #include "updater_process_manager.hpp"
 #include <pqrs/dispatcher.hpp>
+#include <pqrs/osx/frontmost_application_monitor.hpp>
 #include <pqrs/osx/session.hpp>
 #include <thread>
 
@@ -166,16 +166,18 @@ private:
 
     // frontmost_application_monitor_
 
-    frontmost_application_monitor_ = std::make_unique<frontmost_application_monitor>();
+    frontmost_application_monitor_ = std::make_unique<pqrs::osx::frontmost_application_monitor::monitor>(weak_dispatcher_);
 
-    frontmost_application_monitor_->frontmost_application_changed.connect([this](auto&& bundle_identifier, auto&& file_path) {
-      if (bundle_identifier == "org.pqrs.Karabiner.EventViewer" ||
-          bundle_identifier == "org.pqrs.Karabiner-EventViewer") {
-        return;
-      }
+    frontmost_application_monitor_->frontmost_application_changed.connect([this](auto&& application_ptr) {
+      if (application_ptr) {
+        if (application_ptr->get_bundle_identifier() == "org.pqrs.Karabiner.EventViewer" ||
+            application_ptr->get_bundle_identifier() == "org.pqrs.Karabiner-EventViewer") {
+          return;
+        }
 
-      if (grabber_client_) {
-        grabber_client_->async_frontmost_application_changed(bundle_identifier, file_path);
+        if (grabber_client_) {
+          grabber_client_->async_frontmost_application_changed(application_ptr);
+        }
       }
     });
 
@@ -225,7 +227,7 @@ private:
   std::unique_ptr<system_preferences_monitor> system_preferences_monitor_;
   // `frontmost_application_monitor` does not work properly in karabiner_grabber after fast user switching.
   // Therefore, we have to use `frontmost_application_monitor` in `console_user_server`.
-  std::unique_ptr<frontmost_application_monitor> frontmost_application_monitor_;
+  std::unique_ptr<pqrs::osx::frontmost_application_monitor::monitor> frontmost_application_monitor_;
   std::unique_ptr<input_source_monitor> input_source_monitor_;
 };
 } // namespace krbn

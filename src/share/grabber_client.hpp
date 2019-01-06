@@ -9,6 +9,7 @@
 #include <pqrs/dispatcher.hpp>
 #include <pqrs/filesystem.hpp>
 #include <pqrs/local_datagram.hpp>
+#include <pqrs/osx/frontmost_application_monitor.hpp>
 #include <unistd.h>
 #include <vector>
 
@@ -118,18 +119,21 @@ public:
     });
   }
 
-  void async_frontmost_application_changed(const std::string& bundle_identifier,
-                                           const std::string& file_path) const {
-    enqueue_to_dispatcher([this, bundle_identifier, file_path] {
+  void async_frontmost_application_changed(std::shared_ptr<pqrs::osx::frontmost_application_monitor::application> application) const {
+    enqueue_to_dispatcher([this, application] {
       operation_type_frontmost_application_changed_struct s;
 
-      strlcpy(s.bundle_identifier,
-              bundle_identifier.c_str(),
-              sizeof(s.bundle_identifier));
+      if (auto& bundle_identifier = application->get_bundle_identifier()) {
+        strlcpy(s.bundle_identifier,
+                bundle_identifier->c_str(),
+                sizeof(s.bundle_identifier));
+      }
 
-      strlcpy(s.file_path,
-              file_path.c_str(),
-              sizeof(s.file_path));
+      if (auto& file_path = application->get_file_path()) {
+        strlcpy(s.file_path,
+                file_path->c_str(),
+                sizeof(s.file_path));
+      }
 
       call_async_send(reinterpret_cast<uint8_t*>(&s), sizeof(s));
     });

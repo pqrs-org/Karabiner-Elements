@@ -11,7 +11,7 @@ include_directories(
 add_executable(
   karabiner_console_user_server
   src/main.cpp
-  ../../share/monitor/frontmost_application_monitor_objc.m
+  ../../vendor/cget/src/pqrs/osx/frontmost_application_monitor/objc.m
 )
 
 target_link_libraries(

@@ -10,14 +10,15 @@ include_directories(
 
 add_library(
   krbn
-  src/libkrbn.cpp
   src/libkrbn_complex_modifications_assets_manager.cpp
   src/libkrbn_configuration.cpp
   src/libkrbn_connected_devices.cpp
   src/libkrbn_file_monitor.cpp
+  src/libkrbn_frontmost_application_monitor.cpp
   src/libkrbn_hid_value_observer.cpp
   src/libkrbn_log_monitor.cpp
   src/libkrbn_system_preferences_monitor.cpp
   src/libkrbn_version_monitor.cpp
-  ../../share/monitor/frontmost_application_monitor_objc.m
+  src/libkrbn.cpp
+  ../../vendor/cget/src/pqrs/osx/frontmost_application_monitor/objc.m
 )

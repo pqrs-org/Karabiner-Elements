@@ -269,6 +269,18 @@ bool libkrbn_file_monitor_initialize(libkrbn_file_monitor** out,
 void libkrbn_file_monitor_terminate(libkrbn_file_monitor** p);
 
 // ----------------------------------------
+// libkrbn_frontmost_application_monitor
+
+typedef void libkrbn_frontmost_application_monitor;
+typedef void (*libkrbn_frontmost_application_monitor_callback)(const char* bundle_identifier,
+                                                               const char* file_path,
+                                                               void* refcon);
+bool libkrbn_frontmost_application_monitor_initialize(libkrbn_frontmost_application_monitor** out,
+                                                      libkrbn_frontmost_application_monitor_callback callback,
+                                                      void* refcon);
+void libkrbn_frontmost_application_monitor_terminate(libkrbn_frontmost_application_monitor** p);
+
+// ----------------------------------------
 // libkrbn_hid_value_observer
 
 enum libkrbn_hid_value_type {
