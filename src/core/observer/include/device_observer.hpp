@@ -121,10 +121,6 @@ public:
     hid_manager_->error_occurred.connect([](auto&& message, auto&& iokit_return) {
       logger::get_logger()->error("{0}: {1}", message, iokit_return.to_string());
     });
-
-    hid_manager_->async_start();
-
-    logger::get_logger()->info("device_observer is started.");
   }
 
   virtual ~device_observer(void) {
@@ -135,6 +131,14 @@ public:
     });
 
     logger::get_logger()->info("device_observer is stopped.");
+  }
+
+  void async_start(void) const {
+    enqueue_to_dispatcher([this] {
+      hid_manager_->async_start();
+
+      logger::get_logger()->info("device_observer is started.");
+    });
   }
 
   void async_post_all_states_to_grabber(void) {

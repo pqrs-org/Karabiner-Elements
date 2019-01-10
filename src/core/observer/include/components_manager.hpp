@@ -5,7 +5,7 @@
 #include "constants.hpp"
 #include "device_observer.hpp"
 #include "grabber_client.hpp"
-#include "monitor/version_monitor_utility.hpp"
+#include "monitor/version_monitor.hpp"
 #include <pqrs/dispatcher.hpp>
 
 namespace krbn {
@@ -13,18 +13,15 @@ class components_manager final : public pqrs::dispatcher::extra::dispatcher_clie
 public:
   components_manager(const components_manager&) = delete;
 
-  components_manager(void) : dispatcher_client() {
-    // version_monitor_
-
-    version_monitor_ = version_monitor_utility::make_version_monitor_stops_main_run_loop_when_version_changed();
-
+  components_manager(std::weak_ptr<version_monitor> weak_version_monitor) : dispatcher_client(),
+                                                                            weak_version_monitor_(weak_version_monitor) {
     // grabber_client_
 
     grabber_client_ = std::make_shared<grabber_client>();
 
     grabber_client_->connected.connect([this] {
-      if (version_monitor_) {
-        version_monitor_->async_manual_check();
+      if (auto m = weak_version_monitor_.lock()) {
+        m->async_manual_check();
       }
 
       if (device_observer_) {
@@ -33,38 +30,38 @@ public:
     });
 
     grabber_client_->connect_failed.connect([this](auto&& error_code) {
-      if (version_monitor_) {
-        version_monitor_->async_manual_check();
+      if (auto m = weak_version_monitor_.lock()) {
+        m->async_manual_check();
       }
     });
 
     grabber_client_->closed.connect([this] {
-      if (version_monitor_) {
-        version_monitor_->async_manual_check();
+      if (auto m = weak_version_monitor_.lock()) {
+        m->async_manual_check();
       }
     });
 
     // device_observer_
 
     device_observer_ = std::make_shared<device_observer>(grabber_client_);
-
-    // start
-
-    grabber_client_->async_start();
   }
 
   virtual ~components_manager(void) {
     detach_from_dispatcher([this] {
       device_observer_ = nullptr;
-
       grabber_client_ = nullptr;
+    });
+  }
 
-      version_monitor_ = nullptr;
+  void async_start(void) const {
+    enqueue_to_dispatcher([this] {
+      device_observer_->async_start();
+      grabber_client_->async_start();
     });
   }
 
 private:
-  std::shared_ptr<version_monitor> version_monitor_;
+  std::weak_ptr<version_monitor> weak_version_monitor_;
   std::shared_ptr<grabber_client> grabber_client_;
   std::shared_ptr<device_observer> device_observer_;
 };

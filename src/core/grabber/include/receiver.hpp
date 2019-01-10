@@ -15,6 +15,14 @@
 namespace krbn {
 class receiver final : public pqrs::dispatcher::extra::dispatcher_client {
 public:
+  // Signals (invoked from the shared dispatcher thread)
+
+  nod::signal<void(void)> bound;
+  nod::signal<void(const asio::error_code&)> bind_failed;
+  nod::signal<void(void)> closed;
+
+  // Methods
+
   receiver(const receiver&) = delete;
 
   receiver(std::weak_ptr<grabbable_state_queues_manager> weak_grabbable_state_queues_manager) : dispatcher_client(),

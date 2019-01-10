@@ -6,7 +6,6 @@
 #include "constants.hpp"
 #include "logger.hpp"
 #include "monitor/version_monitor.hpp"
-#include "monitor/version_monitor_utility.hpp"
 #include "receiver.hpp"
 #include <pqrs/dispatcher.hpp>
 #include <pqrs/osx/session.hpp>
@@ -16,9 +15,8 @@ class components_manager final : public pqrs::dispatcher::extra::dispatcher_clie
 public:
   components_manager(const components_manager&) = delete;
 
-  components_manager(void) : dispatcher_client() {
-    version_monitor_ = version_monitor_utility::make_version_monitor_stops_main_run_loop_when_version_changed();
-
+  components_manager(std::weak_ptr<version_monitor> weak_version_monitor) : dispatcher_client(),
+                                                                            weak_version_monitor_(weak_version_monitor) {
     grabbable_state_queues_manager_ = std::make_shared<grabbable_state_queues_manager>();
 
     session_monitor_ = std::make_unique<pqrs::osx::session::monitor>(weak_dispatcher_);
@@ -33,8 +31,8 @@ public:
         logger::get_logger()->info("current_console_user_id: none");
       }
 
-      if (version_monitor_) {
-        version_monitor_->async_manual_check();
+      if (auto m = weak_version_monitor_.lock()) {
+        m->async_manual_check();
       }
 
       // Prepare console_user_server_socket_directory
@@ -45,11 +43,30 @@ public:
         chmod(socket_file_path.c_str(), 0700);
       }
 
-      receiver_ = nullptr;
-      receiver_ = std::make_unique<receiver>(grabbable_state_queues_manager_);
-    });
+      // receiver_
 
-    session_monitor_->async_start(std::chrono::milliseconds(1000));
+      receiver_ = nullptr;
+
+      receiver_ = std::make_unique<receiver>(grabbable_state_queues_manager_);
+
+      receiver_->bound.connect([this] {
+        if (auto m = weak_version_monitor_.lock()) {
+          m->async_manual_check();
+        }
+      });
+
+      receiver_->bind_failed.connect([this](auto&& error_code) {
+        if (auto m = weak_version_monitor_.lock()) {
+          m->async_manual_check();
+        }
+      });
+
+      receiver_->closed.connect([this] {
+        if (auto m = weak_version_monitor_.lock()) {
+          m->async_manual_check();
+        }
+      });
+    });
   }
 
   virtual ~components_manager(void) {
@@ -57,12 +74,17 @@ public:
       session_monitor_ = nullptr;
       receiver_ = nullptr;
       grabbable_state_queues_manager_ = nullptr;
-      version_monitor_ = nullptr;
+    });
+  }
+
+  void async_start(void) const {
+    enqueue_to_dispatcher([this] {
+      session_monitor_->async_start(std::chrono::milliseconds(1000));
     });
   }
 
 private:
-  std::shared_ptr<version_monitor> version_monitor_;
+  std::weak_ptr<version_monitor> weak_version_monitor_;
   std::shared_ptr<grabbable_state_queues_manager> grabbable_state_queues_manager_;
   std::unique_ptr<pqrs::osx::session::monitor> session_monitor_;
   std::unique_ptr<receiver> receiver_;

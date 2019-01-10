@@ -42,11 +42,25 @@ int main(int argc, const char* argv[]) {
 
   // Run components_manager
 
-  auto components_manager = std::make_unique<krbn::components_manager>();
+  std::shared_ptr<krbn::components_manager> components_manager;
+
+  auto version_monitor = std::make_shared<krbn::version_monitor>(krbn::constants::get_version_file_path());
+
+  version_monitor->changed.connect([&](auto&& version) {
+    dispatch_async(dispatch_get_main_queue(), ^{
+      components_manager = nullptr;
+      CFRunLoopStop(CFRunLoopGetCurrent());
+    });
+  });
+
+  components_manager = std::make_unique<krbn::components_manager>(version_monitor);
+
+  version_monitor->async_start();
+  components_manager->async_start();
 
   CFRunLoopRun();
 
-  components_manager = nullptr;
+  version_monitor = nullptr;
 
   krbn::logger::get_logger()->info("karabiner_console_user_server is terminated.");
 
