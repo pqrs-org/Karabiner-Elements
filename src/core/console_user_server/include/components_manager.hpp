@@ -73,7 +73,7 @@ public:
     });
   }
 
-  void async_start(void) const {
+  void async_start(void) {
     enqueue_to_dispatcher([this] {
       start_grabber_alerts_monitor();
       session_monitor_->async_start(std::chrono::milliseconds(1000));
