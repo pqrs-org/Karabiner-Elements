@@ -20,5 +20,5 @@ add_library(
   src/libkrbn_system_preferences_monitor.cpp
   src/libkrbn_version_monitor.cpp
   src/libkrbn.cpp
-  ../../vendor/cget/src/pqrs/osx/frontmost_application_monitor/objc.m
+  ../../vendor/cget/src/pqrs/osx/frontmost_application_monitor/impl/objc.m
 )

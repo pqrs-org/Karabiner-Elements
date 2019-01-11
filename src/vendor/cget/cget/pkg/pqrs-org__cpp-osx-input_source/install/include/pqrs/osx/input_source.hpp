@@ -1,6 +1,6 @@
 #pragma once
 
-// pqrs::osx::input_source v1.0
+// pqrs::osx::input_source v1.1
 
 // (C) Copyright Takayama Fumihiko 2019.
 // Distributed under the Boost Software License, Version 1.0.
@@ -16,6 +16,7 @@
 namespace pqrs {
 namespace osx {
 namespace input_source {
+// You have to call this method in main thread since TIS/TSM requires to be called in main thread.
 inline cf::cf_ptr<TISInputSourceRef> make_current_keyboard_input_source(void) {
   cf::cf_ptr<TISInputSourceRef> result;
 
@@ -27,6 +28,7 @@ inline cf::cf_ptr<TISInputSourceRef> make_current_keyboard_input_source(void) {
   return result;
 }
 
+// You have to call this method in main thread since TIS/TSM requires to be called in main thread.
 inline std::vector<cf::cf_ptr<TISInputSourceRef>> make_selectable_keyboard_input_sources(void) {
   std::vector<cf::cf_ptr<TISInputSourceRef>> result;
 
@@ -49,6 +51,7 @@ inline std::vector<cf::cf_ptr<TISInputSourceRef>> make_selectable_keyboard_input
   return result;
 }
 
+// You have to call this method in main thread since TIS/TSM requires to be called in main thread.
 inline std::optional<std::string> make_input_source_id(TISInputSourceRef input_source) {
   if (input_source) {
     if (auto s = static_cast<CFStringRef>(TISGetInputSourceProperty(input_source, kTISPropertyInputSourceID))) {
@@ -59,6 +62,7 @@ inline std::optional<std::string> make_input_source_id(TISInputSourceRef input_s
   return std::nullopt;
 }
 
+// You have to call this method in main thread since TIS/TSM requires to be called in main thread.
 inline std::optional<std::string> make_localized_name(TISInputSourceRef input_source) {
   if (input_source) {
     if (auto s = static_cast<CFStringRef>(TISGetInputSourceProperty(input_source, kTISPropertyLocalizedName))) {
@@ -69,6 +73,7 @@ inline std::optional<std::string> make_localized_name(TISInputSourceRef input_so
   return std::nullopt;
 }
 
+// You have to call this method in main thread since TIS/TSM requires to be called in main thread.
 inline std::optional<std::string> make_input_mode_id(TISInputSourceRef input_source) {
   if (input_source) {
     if (auto s = static_cast<CFStringRef>(TISGetInputSourceProperty(input_source, kTISPropertyInputModeID))) {
@@ -79,6 +84,7 @@ inline std::optional<std::string> make_input_mode_id(TISInputSourceRef input_sou
   return std::nullopt;
 }
 
+// You have to call this method in main thread since TIS/TSM requires to be called in main thread.
 inline std::vector<std::string> make_languages(TISInputSourceRef input_source) {
   std::vector<std::string> result;
 
@@ -98,6 +104,7 @@ inline std::vector<std::string> make_languages(TISInputSourceRef input_source) {
   return result;
 }
 
+// You have to call this method in main thread since TIS/TSM requires to be called in main thread.
 inline std::optional<std::string> make_first_language(TISInputSourceRef input_source) {
   if (input_source) {
     if (auto languages = static_cast<CFArrayRef>(TISGetInputSourceProperty(input_source, kTISPropertyInputSourceLanguages))) {

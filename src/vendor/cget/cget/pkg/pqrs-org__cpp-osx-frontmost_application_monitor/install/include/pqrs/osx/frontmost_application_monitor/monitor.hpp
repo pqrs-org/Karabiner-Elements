@@ -7,7 +7,7 @@
 // `pqrs::osx::frontmost_application_monitor` can be used safely in a multi-threaded environment.
 
 #include "application.hpp"
-#include "objc.h"
+#include "impl/objc.h"
 #include <nod/nod.hpp>
 #include <pqrs/dispatcher.hpp>
 

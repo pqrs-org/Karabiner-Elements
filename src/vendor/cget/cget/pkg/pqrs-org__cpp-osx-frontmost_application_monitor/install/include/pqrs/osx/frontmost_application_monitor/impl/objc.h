@@ -8,6 +8,8 @@
 extern "C" {
 #endif
 
+// Do not use these functions directly.
+
 typedef void pqrs_osx_frontmost_application_monitor_objc;
 typedef void (*pqrs_osx_frontmost_application_monitor_callback)(const char* bundle_identifier,
                                                                 const char* file_path,
