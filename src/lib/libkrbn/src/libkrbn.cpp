@@ -6,6 +6,7 @@
 #include "json_utility.hpp"
 #include "launchctl_utility.hpp"
 #include "libkrbn/impl/libkrbn_cpp.hpp"
+#include "libkrbn/impl/libkrbn_frontmost_application_monitor.hpp"
 #include "libkrbn/impl/libkrbn_version_monitor.hpp"
 #include "process_utility.hpp"
 #include "types.hpp"
@@ -13,7 +14,6 @@
 #include <fstream>
 #include <iostream>
 #include <nlohmann/json.hpp>
-#include <pqrs/osx/frontmost_application_monitor.hpp>
 #include <string>
 
 namespace {
@@ -40,21 +40,8 @@ public:
 
   void enable_frontmost_application_monitor(libkrbn_frontmost_application_monitor_callback callback,
                                             void* refcon) {
-    frontmost_application_monitor_ = std::make_unique<pqrs::osx::frontmost_application_monitor::monitor>(
-        pqrs::dispatcher::extra::get_shared_dispatcher());
-
-    frontmost_application_monitor_->frontmost_application_changed.connect([callback, refcon](auto&& application_ptr) {
-      if (application_ptr && callback) {
-        std::string bundle_identifier = application_ptr->get_bundle_identifier().value_or("");
-        std::string file_path = application_ptr->get_file_path().value_or("");
-
-        callback(bundle_identifier.c_str(),
-                 file_path.c_str(),
-                 refcon);
-      }
-    });
-
-    frontmost_application_monitor_->async_start();
+    frontmost_application_monitor_ = std::make_unique<libkrbn_frontmost_application_monitor>(callback,
+                                                                                             refcon);
   }
 
   void disable_frontmost_application_monitor(void) {
@@ -63,7 +50,7 @@ public:
 
 private:
   std::unique_ptr<libkrbn_version_monitor> version_monitor_;
-  std::unique_ptr<pqrs::osx::frontmost_application_monitor::monitor> frontmost_application_monitor_;
+  std::unique_ptr<libkrbn_frontmost_application_monitor> frontmost_application_monitor_;
 };
 
 std::unique_ptr<libkrbn_components_manager> libkrbn_components_manager_;

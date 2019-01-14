@@ -2,8 +2,10 @@
 
 #include "monitor/version_monitor.hpp"
 
-class libkrbn_version_monitor {
+class libkrbn_version_monitor final {
 public:
+  libkrbn_version_monitor(const libkrbn_version_monitor&) = delete;
+
   libkrbn_version_monitor(libkrbn_version_monitor_callback callback,
                           void* refcon) {
     monitor_ = std::make_unique<krbn::version_monitor>(krbn::constants::get_version_file_path());
