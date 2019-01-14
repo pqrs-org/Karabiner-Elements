@@ -4,6 +4,7 @@
 
 @interface FrontmostApplicationController ()
 
+@property NSMutableAttributedString* text;
 @property(unsafe_unretained) IBOutlet NSTextView* textView;
 
 - (void)callback:(NSString*)bundleIdentifier
@@ -22,6 +23,8 @@ static void staticCallback(const char* bundle_identifier,
 @implementation FrontmostApplicationController
 
 - (void)setup {
+  self.text = [NSMutableAttributedString new];
+
   libkrbn_enable_frontmost_application_monitor(staticCallback,
                                                (__bridge void*)(self));
 }
@@ -31,10 +34,26 @@ static void staticCallback(const char* bundle_identifier,
 }
 
 - (void)callback:(NSString*)bundleIdentifier filePath:(NSString*)filePath {
-  if ([@"org.pqrs.Karabiner.EventViewer" isEqualToString:bundleIdentifier] ||
-      [@"org.pqrs.Karabiner-EventViewer" isEqualToString:bundleIdentifier]) {
-    return;
+  // Update self.text
+
+  if (![@"org.pqrs.Karabiner.EventViewer" isEqualToString:bundleIdentifier] &&
+      ![@"org.pqrs.Karabiner-EventViewer" isEqualToString:bundleIdentifier]) {
+    // Clear if text is huge.
+    if (self.text.length > 1024 * 1024) {
+      [self.text setAttributedString:[[NSAttributedString alloc] initWithString:@""]];
+    }
+
+    NSString* bundleIdentifierLine = [NSString stringWithFormat:@"Bundle Identifier:  %@\n", bundleIdentifier];
+    NSString* filePathLine = [NSString stringWithFormat:@"File Path:          %@\n\n", filePath];
+    NSDictionary* attributes = @{NSFontAttributeName : [NSFont fontWithName:@"Menlo" size:11]};
+
+    [self.text appendAttributedString:[[NSAttributedString alloc] initWithString:bundleIdentifierLine
+                                                                      attributes:attributes]];
+    [self.text appendAttributedString:[[NSAttributedString alloc] initWithString:filePathLine
+                                                                      attributes:attributes]];
   }
+
+  // Update self.textView
 
   @weakify(self);
   dispatch_async(dispatch_get_main_queue(), ^{
@@ -44,23 +63,15 @@ static void staticCallback(const char* bundle_identifier,
     }
 
     NSTextStorage* textStorage = self.textView.textStorage;
-
     [textStorage beginEditing];
-
-    // Clear if text is huge.
-    if (textStorage.length > 1024 * 1024) {
-      [textStorage setAttributedString:[[NSAttributedString alloc] initWithString:@""]];
+    if (self.text.length == 0) {
+      NSString* placeholder = @"Please switch to apps which you want to know Bundle Identifier.";
+      [textStorage setAttributedString:[[NSAttributedString alloc] initWithString:placeholder]];
+    } else {
+      [textStorage setAttributedString:self.text];
     }
-
-    NSString* bundleIdentifierLine = [NSString stringWithFormat:@"Bundle Identifier:  %@\n", bundleIdentifier];
-    NSString* filePathLine = [NSString stringWithFormat:@"File Path:          %@\n\n", filePath];
-    NSFont* font = [NSFont fontWithName:@"Menlo" size:11];
-    [textStorage appendAttributedString:[[NSAttributedString alloc] initWithString:bundleIdentifierLine
-                                                                        attributes:@{NSFontAttributeName : font}]];
-    [textStorage appendAttributedString:[[NSAttributedString alloc] initWithString:filePathLine
-                                                                        attributes:@{NSFontAttributeName : font}]];
-
     [textStorage endEditing];
+
     [self.textView scrollRangeToVisible:NSMakeRange(self.textView.string.length, 0)];
   });
 }
