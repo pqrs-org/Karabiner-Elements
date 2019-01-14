@@ -1,6 +1,6 @@
 #pragma once
 
-#include "libkrbn.h"
+#include "libkrbn/libkrbn.h"
 #include "monitor/configuration_monitor.hpp"
 #include <pqrs/thread_wait.hpp>
 

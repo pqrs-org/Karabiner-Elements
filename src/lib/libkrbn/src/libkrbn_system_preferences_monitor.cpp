@@ -1,6 +1,6 @@
 #include "constants.hpp"
-#include "libkrbn.h"
-#include "libkrbn_cpp.hpp"
+#include "libkrbn/impl/libkrbn_cpp.hpp"
+#include "libkrbn/libkrbn.h"
 #include "monitor/system_preferences_monitor.hpp"
 
 namespace {

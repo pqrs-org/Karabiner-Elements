@@ -11,7 +11,7 @@
 #import "SimpleModificationsTableViewController.h"
 #import "SystemPreferencesManager.h"
 #import "VirtualHIDKeyboardTypeBackgroundView.h"
-#import "libkrbn.h"
+#import "libkrbn/libkrbn.h"
 #import <pqrs/weakify.h>
 
 @interface PreferencesWindowController ()

@@ -1,5 +1,5 @@
 #include "complex_modifications_assets_manager.hpp"
-#include "libkrbn.h"
+#include "libkrbn/libkrbn.h"
 
 // libkrbn_configuration.cpp
 void libkrbn_core_configuration_push_back_complex_modifications_rule_to_selected_profile(libkrbn_core_configuration* p,

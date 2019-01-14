@@ -1,5 +1,5 @@
 #include "constants.hpp"
-#include "libkrbn.h"
+#include "libkrbn/libkrbn.h"
 #include <pqrs/filesystem.hpp>
 #include <pqrs/osx/file_monitor.hpp>
 

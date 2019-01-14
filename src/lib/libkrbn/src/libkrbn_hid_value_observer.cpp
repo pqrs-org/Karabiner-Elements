@@ -1,7 +1,7 @@
 #include "device_properties_manager.hpp"
 #include "event_queue.hpp"
-#include "libkrbn.h"
-#include "libkrbn_cpp.hpp"
+#include "libkrbn/libkrbn.h"
+#include "libkrbn/impl/libkrbn_cpp.hpp"
 #include <pqrs/osx/iokit_hid_manager.hpp>
 #include <pqrs/osx/iokit_hid_queue_value_monitor.hpp>
 #include <unordered_set>

@@ -1,5 +1,5 @@
 #import "KarabinerKit/JsonUtility.h"
-#include "libkrbn.h"
+#include "libkrbn/libkrbn.h"
 
 @implementation KarabinerKitJsonUtility
 

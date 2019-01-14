@@ -2,7 +2,7 @@
 #import "DevicesTableCellView.h"
 #import "DevicesTableViewController.h"
 #import "KarabinerKit/KarabinerKit.h"
-#import "libkrbn.h"
+#import "libkrbn/libkrbn.h"
 
 @interface DevicesTableViewDelegate ()
 

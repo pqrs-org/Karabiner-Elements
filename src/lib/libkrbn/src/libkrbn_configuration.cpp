@@ -1,4 +1,4 @@
-#include "libkrbn_cpp.hpp"
+#include "libkrbn/impl/libkrbn_cpp.hpp"
 
 namespace {
 krbn::core_configuration::details::simple_modifications* find_simple_modifications(libkrbn_core_configuration* p,

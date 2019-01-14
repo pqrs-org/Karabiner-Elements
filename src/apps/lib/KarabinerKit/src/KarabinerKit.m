@@ -1,5 +1,5 @@
 #import "KarabinerKit/KarabinerKit.h"
-#import "libkrbn.h"
+#import "libkrbn/libkrbn.h"
 
 static void version_changed_callback(void* refcon) {
   [KarabinerKit relaunch];

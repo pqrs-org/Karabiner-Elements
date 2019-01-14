@@ -1,4 +1,4 @@
-#import "libkrbn.h"
+#import "libkrbn/libkrbn.h"
 #import <Cocoa/Cocoa.h>
 
 int main(int argc, const char* argv[]) {

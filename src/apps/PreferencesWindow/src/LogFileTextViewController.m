@@ -1,5 +1,5 @@
 #import "LogFileTextViewController.h"
-#import "libkrbn.h"
+#import "libkrbn/libkrbn.h"
 #import <pqrs/weakify.h>
 
 typedef enum {

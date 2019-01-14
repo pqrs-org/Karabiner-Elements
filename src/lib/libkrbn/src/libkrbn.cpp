@@ -1,12 +1,12 @@
-#include "libkrbn.h"
+#include "libkrbn/libkrbn.h"
 #include "application_launcher.hpp"
 #include "constants.hpp"
 #include "core_configuration/core_configuration.hpp"
 #include "dispatcher_utility.hpp"
 #include "json_utility.hpp"
 #include "launchctl_utility.hpp"
-#include "libkrbn_cpp.hpp"
-#include "monitor/version_monitor.hpp"
+#include "libkrbn/impl/libkrbn_cpp.hpp"
+#include "libkrbn/impl/libkrbn_version_monitor.hpp"
 #include "process_utility.hpp"
 #include "types.hpp"
 #include "update_utility.hpp"
@@ -28,15 +28,8 @@ public:
 
   void enable_version_monitor(libkrbn_version_monitor_callback callback,
                               void* refcon) {
-    version_monitor_ = std::make_unique<krbn::version_monitor>(krbn::constants::get_version_file_path());
-
-    version_monitor_->changed.connect([callback, refcon](auto&& version) {
-      if (callback) {
-        callback(refcon);
-      }
-    });
-
-    version_monitor_->async_start();
+    version_monitor_ = std::make_unique<libkrbn_version_monitor>(callback,
+                                                                 refcon);
   }
 
   void disable_version_monitor(void) {
@@ -69,7 +62,7 @@ public:
   }
 
 private:
-  std::unique_ptr<krbn::version_monitor> version_monitor_;
+  std::unique_ptr<libkrbn_version_monitor> version_monitor_;
   std::unique_ptr<pqrs::osx::frontmost_application_monitor::monitor> frontmost_application_monitor_;
 };
 

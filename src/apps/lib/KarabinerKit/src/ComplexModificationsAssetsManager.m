@@ -1,6 +1,6 @@
 #import "KarabinerKit/ComplexModificationsAssetsManager.h"
 #import "KarabinerKit/ComplexModificationsAssetsFileModel.h"
-#import "libkrbn.h"
+#import "libkrbn/libkrbn.h"
 
 @interface KarabinerKitComplexModificationsAssetsManager ()
 

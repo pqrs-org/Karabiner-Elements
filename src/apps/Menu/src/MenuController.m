@@ -1,6 +1,6 @@
 #import "MenuController.h"
 #import "KarabinerKit/KarabinerKit.h"
-#import "libkrbn.h"
+#import "libkrbn/libkrbn.h"
 
 @interface MenuController ()
 

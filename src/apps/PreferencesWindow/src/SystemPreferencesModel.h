@@ -1,7 +1,7 @@
 // -*- Mode: objc -*-
 
 @import Cocoa;
-#import "libkrbn.h"
+#import "libkrbn/libkrbn.h"
 
 @interface SystemPreferencesModel : NSObject
 

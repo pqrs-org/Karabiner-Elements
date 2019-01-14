@@ -1,5 +1,5 @@
 #import "FrontmostApplicationController.h"
-#import "libkrbn.h"
+#import "libkrbn/libkrbn.h"
 #import <pqrs/weakify.h>
 
 @interface FrontmostApplicationController ()

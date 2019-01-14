@@ -1,7 +1,7 @@
 #import "KarabinerKit/ConfigurationManager.h"
 #import "KarabinerKit/JsonUtility.h"
 #import "KarabinerKit/NotificationKeys.h"
-#import "libkrbn.h"
+#import "libkrbn/libkrbn.h"
 
 @interface KarabinerKitConfigurationManager ()
 

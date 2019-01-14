@@ -1,6 +1,6 @@
 #import "ComplexModificationsFileImportWindowController.h"
 #import "ComplexModificationsRulesTableViewController.h"
-#import "libkrbn.h"
+#import "libkrbn/libkrbn.h"
 
 @interface ComplexModificationsFileImportWindowController ()
 

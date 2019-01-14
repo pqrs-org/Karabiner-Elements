@@ -1,4 +1,4 @@
-#include "../../src/lib/libkrbn/include/libkrbn.h"
+#include "../../src/lib/libkrbn/include/libkrbn/libkrbn.h"
 #include <CoreFoundation/CoreFoundation.h>
 #include <iostream>
 #include <thread>

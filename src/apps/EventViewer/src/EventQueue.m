@@ -1,7 +1,7 @@
 #import "EventQueue.h"
 #import "KarabinerKit/KarabinerKit.h"
 #import "PreferencesKeys.h"
-#import "libkrbn.h"
+#import "libkrbn/libkrbn.h"
 #import <pqrs/weakify.h>
 
 @interface EventQueue ()

@@ -6,6 +6,7 @@ project (krbn)
 
 include_directories(
   ./include
+  ./impl/include
 )
 
 add_library(

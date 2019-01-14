@@ -5,7 +5,7 @@
 #import "PreferencesWindowController.h"
 #import "SimpleModificationsTableViewController.h"
 #import "SystemPreferencesManager.h"
-#import "libkrbn.h"
+#import "libkrbn/libkrbn.h"
 
 @interface AppDelegate ()
 

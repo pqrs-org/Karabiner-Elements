@@ -7,7 +7,7 @@
 #import "KeyResponder.h"
 #import "PreferencesKeys.h"
 #import "VariablesController.h"
-#import "libkrbn.h"
+#import "libkrbn/libkrbn.h"
 #import <pqrs/weakify.h>
 
 @interface AppDelegate ()

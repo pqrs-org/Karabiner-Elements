@@ -1,5 +1,5 @@
 @import Cocoa;
-#import "libkrbn.h"
+#import "libkrbn/libkrbn.h"
 
 int main(int argc, const char* argv[]) {
   libkrbn_initialize();
