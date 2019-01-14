@@ -7,6 +7,7 @@
 #include "launchctl_utility.hpp"
 #include "libkrbn/impl/libkrbn_cpp.hpp"
 #include "libkrbn/impl/libkrbn_frontmost_application_monitor.hpp"
+#include "libkrbn/impl/libkrbn_log_monitor.hpp"
 #include "libkrbn/impl/libkrbn_version_monitor.hpp"
 #include "process_utility.hpp"
 #include "types.hpp"
@@ -22,6 +23,7 @@ public:
   ~libkrbn_components_manager(void) {
     version_monitor_ = nullptr;
     frontmost_application_monitor_ = nullptr;
+    log_monitor_ = nullptr;
   }
 
   // version_monitor_
@@ -48,9 +50,22 @@ public:
     frontmost_application_monitor_ = nullptr;
   }
 
+  // log_monitor_
+
+  void enable_log_monitor(libkrbn_log_monitor_callback callback,
+                          void* refcon) {
+    log_monitor_ = std::make_unique<libkrbn_log_monitor>(callback,
+                                                         refcon);
+  }
+
+  void disable_log_monitor(void) {
+    log_monitor_ = nullptr;
+  }
+
 private:
   std::unique_ptr<libkrbn_version_monitor> version_monitor_;
   std::unique_ptr<libkrbn_frontmost_application_monitor> frontmost_application_monitor_;
+  std::unique_ptr<libkrbn_log_monitor> log_monitor_;
 };
 
 std::unique_ptr<libkrbn_components_manager> libkrbn_components_manager_;
@@ -169,6 +184,8 @@ bool libkrbn_device_identifiers_is_apple(const libkrbn_device_identifiers* p) {
   return false;
 }
 
+// version_monitor
+
 void libkrbn_enable_version_monitor(libkrbn_version_monitor_callback callback,
                                     void* refcon) {
   if (libkrbn_components_manager_) {
@@ -183,6 +200,8 @@ void libkrbn_disable_version_monitor(void) {
   }
 }
 
+// frontmost_application_monitor
+
 void libkrbn_enable_frontmost_application_monitor(libkrbn_frontmost_application_monitor_callback callback,
                                                   void* refcon) {
   if (libkrbn_components_manager_) {
@@ -195,4 +214,60 @@ void libkrbn_disable_frontmost_application_monitor(void) {
   if (libkrbn_components_manager_) {
     libkrbn_components_manager_->disable_frontmost_application_monitor();
   }
+}
+
+// log_monitor
+
+void libkrbn_enable_log_monitor(libkrbn_log_monitor_callback callback,
+                                void* refcon) {
+  if (libkrbn_components_manager_) {
+    libkrbn_components_manager_->enable_log_monitor(callback,
+                                                    refcon);
+  }
+}
+
+void libkrbn_disable_log_monitor(void) {
+  if (libkrbn_components_manager_) {
+    libkrbn_components_manager_->disable_log_monitor();
+  }
+}
+
+size_t libkrbn_log_lines_get_size(libkrbn_log_lines* p) {
+  auto log_lines = reinterpret_cast<libkrbn_log_lines_class*>(p);
+  if (!log_lines) {
+    return 0;
+  }
+
+  auto lines = log_lines->get_lines();
+  if (!lines) {
+    return 0;
+  }
+
+  return lines->size();
+}
+
+const char* libkrbn_log_lines_get_line(libkrbn_log_lines* p, size_t index) {
+  auto log_lines = reinterpret_cast<libkrbn_log_lines_class*>(p);
+  if (!log_lines) {
+    return nullptr;
+  }
+
+  auto lines = log_lines->get_lines();
+  if (!lines) {
+    return nullptr;
+  }
+
+  if (index >= lines->size()) {
+    return nullptr;
+  }
+
+  return (*lines)[index].c_str();
+}
+
+bool libkrbn_log_lines_is_warn_line(const char* line) {
+  return pqrs::spdlog::find_level(line) == spdlog::level::warn;
+}
+
+bool libkrbn_log_lines_is_error_line(const char* line) {
+  return pqrs::spdlog::find_level(line) == spdlog::level::err;
 }

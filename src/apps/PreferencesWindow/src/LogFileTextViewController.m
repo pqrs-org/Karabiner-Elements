@@ -15,7 +15,6 @@ typedef enum {
 @property(weak) IBOutlet NSTabViewItem* logTabViewItem;
 @property dispatch_source_t timer;
 @property NSDate* fileModificationDate;
-@property libkrbn_log_monitor* libkrbn_log_monitor;
 
 - (NSMutableAttributedString*)logLinesString:(libkrbn_log_lines*)logLines;
 - (void)updateLogLines:(NSAttributedString*)logLinesString;
@@ -38,12 +37,8 @@ static void log_updated_callback(libkrbn_log_lines* logLines, void* refcon) {
   // ----------------------------------------
   // setup libkrbn_log_monitor
 
-  libkrbn_log_monitor* p = NULL;
-  if (!libkrbn_log_monitor_initialize(&p, log_updated_callback, (__bridge void*)(self))) {
-    return;
-  }
-  self.libkrbn_log_monitor = p;
-  libkrbn_log_monitor_start(self.libkrbn_log_monitor);
+  libkrbn_enable_log_monitor(log_updated_callback,
+                             (__bridge void*)(self));
 
   // ----------------------------------------
   // setup timer_.
@@ -68,10 +63,7 @@ static void log_updated_callback(libkrbn_log_lines* logLines, void* refcon) {
 }
 
 - (void)dealloc {
-  if (self.libkrbn_log_monitor) {
-    libkrbn_log_monitor* p = self.libkrbn_log_monitor;
-    libkrbn_log_monitor_terminate(&p);
-  }
+  libkrbn_disable_log_monitor();
 }
 
 - (void)updateLogLines:(NSAttributedString*)logLinesString {

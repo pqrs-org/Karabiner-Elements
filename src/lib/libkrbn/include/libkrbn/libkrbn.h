@@ -231,27 +231,6 @@ bool libkrbn_connected_devices_monitor_initialize(libkrbn_connected_devices_moni
 void libkrbn_connected_devices_monitor_terminate(libkrbn_connected_devices_monitor** p);
 
 // ----------------------------------------
-// libkrbn_log_monitor
-
-typedef void libkrbn_log_monitor;
-typedef void libkrbn_log_lines;
-typedef void (*libkrbn_log_monitor_callback)(libkrbn_log_lines* log_lines, void* refcon);
-bool libkrbn_log_monitor_initialize(libkrbn_log_monitor** out,
-                                    libkrbn_log_monitor_callback callback,
-                                    void* refcon);
-void libkrbn_log_monitor_terminate(libkrbn_log_monitor** p);
-void libkrbn_log_monitor_start(libkrbn_log_monitor* p);
-
-size_t libkrbn_log_lines_get_size(libkrbn_log_lines* p);
-const char* libkrbn_log_lines_get_line(libkrbn_log_lines* p, size_t index);
-bool libkrbn_log_lines_is_warn_line(const char* line);
-bool libkrbn_log_lines_is_error_line(const char* line);
-
-void libkrbn_enable_log_monitor(libkrbn_log_monitor_callback callback,
-                                void* refcon);
-void libkrbn_disable_log_monitor(void);
-
-// ----------------------------------------
 typedef void (*libkrbn_version_monitor_callback)(void* refcon);
 void libkrbn_enable_version_monitor(libkrbn_version_monitor_callback callback,
                                     void* refcon);
@@ -302,6 +281,20 @@ bool libkrbn_hid_value_observer_initialize(libkrbn_hid_value_observer** out,
                                            void* refcon);
 void libkrbn_hid_value_observer_terminate(libkrbn_hid_value_observer** p);
 size_t libkrbn_hid_value_observer_calculate_observed_device_count(libkrbn_hid_value_observer* p);
+
+// ----------------------------------------
+// libkrbn_log_monitor
+
+typedef void libkrbn_log_lines;
+typedef void (*libkrbn_log_monitor_callback)(libkrbn_log_lines* log_lines, void* refcon);
+void libkrbn_enable_log_monitor(libkrbn_log_monitor_callback callback,
+                                void* refcon);
+void libkrbn_disable_log_monitor(void);
+
+size_t libkrbn_log_lines_get_size(libkrbn_log_lines* p);
+const char* libkrbn_log_lines_get_line(libkrbn_log_lines* p, size_t index);
+bool libkrbn_log_lines_is_warn_line(const char* line);
+bool libkrbn_log_lines_is_error_line(const char* line);
 
 #ifdef __cplusplus
 }
