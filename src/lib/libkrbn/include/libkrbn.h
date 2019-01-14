@@ -251,6 +251,7 @@ bool libkrbn_log_lines_is_error_line(const char* line);
 typedef void (*libkrbn_version_monitor_callback)(void* refcon);
 void libkrbn_enable_version_monitor(libkrbn_version_monitor_callback callback,
                                     void* refcon);
+void libkrbn_disable_version_monitor(void);
 
 // ----------------------------------------
 // libkrbn_file_monitor
@@ -266,14 +267,12 @@ void libkrbn_file_monitor_terminate(libkrbn_file_monitor** p);
 // ----------------------------------------
 // libkrbn_frontmost_application_monitor
 
-typedef void libkrbn_frontmost_application_monitor;
 typedef void (*libkrbn_frontmost_application_monitor_callback)(const char* bundle_identifier,
                                                                const char* file_path,
                                                                void* refcon);
-bool libkrbn_frontmost_application_monitor_initialize(libkrbn_frontmost_application_monitor** out,
-                                                      libkrbn_frontmost_application_monitor_callback callback,
-                                                      void* refcon);
-void libkrbn_frontmost_application_monitor_terminate(libkrbn_frontmost_application_monitor** p);
+void libkrbn_enable_frontmost_application_monitor(libkrbn_frontmost_application_monitor_callback callback,
+                                                  void* refcon);
+void libkrbn_disable_frontmost_application_monitor(void);
 
 // ----------------------------------------
 // libkrbn_hid_value_observer

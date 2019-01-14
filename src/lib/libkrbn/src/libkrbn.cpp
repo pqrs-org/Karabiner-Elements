@@ -13,6 +13,7 @@
 #include <fstream>
 #include <iostream>
 #include <nlohmann/json.hpp>
+#include <pqrs/osx/frontmost_application_monitor.hpp>
 #include <string>
 
 namespace {
@@ -20,7 +21,10 @@ class libkrbn_components_manager {
 public:
   ~libkrbn_components_manager(void) {
     version_monitor_ = nullptr;
+    frontmost_application_monitor_ = nullptr;
   }
+
+  // version_monitor_
 
   void enable_version_monitor(libkrbn_version_monitor_callback callback,
                               void* refcon) {
@@ -35,8 +39,38 @@ public:
     version_monitor_->async_start();
   }
 
+  void disable_version_monitor(void) {
+    version_monitor_ = nullptr;
+  }
+
+  // frontmost_application_monitor_
+
+  void enable_frontmost_application_monitor(libkrbn_frontmost_application_monitor_callback callback,
+                                            void* refcon) {
+    frontmost_application_monitor_ = std::make_unique<pqrs::osx::frontmost_application_monitor::monitor>(
+        pqrs::dispatcher::extra::get_shared_dispatcher());
+
+    frontmost_application_monitor_->frontmost_application_changed.connect([callback, refcon](auto&& application_ptr) {
+      if (application_ptr && callback) {
+        std::string bundle_identifier = application_ptr->get_bundle_identifier().value_or("");
+        std::string file_path = application_ptr->get_file_path().value_or("");
+
+        callback(bundle_identifier.c_str(),
+                 file_path.c_str(),
+                 refcon);
+      }
+    });
+
+    frontmost_application_monitor_->async_start();
+  }
+
+  void disable_frontmost_application_monitor(void) {
+    frontmost_application_monitor_ = nullptr;
+  }
+
 private:
   std::unique_ptr<krbn::version_monitor> version_monitor_;
+  std::unique_ptr<pqrs::osx::frontmost_application_monitor::monitor> frontmost_application_monitor_;
 };
 
 std::unique_ptr<libkrbn_components_manager> libkrbn_components_manager_;
@@ -160,5 +194,25 @@ void libkrbn_enable_version_monitor(libkrbn_version_monitor_callback callback,
   if (libkrbn_components_manager_) {
     libkrbn_components_manager_->enable_version_monitor(callback,
                                                         refcon);
+  }
+}
+
+void libkrbn_disable_version_monitor(void) {
+  if (libkrbn_components_manager_) {
+    libkrbn_components_manager_->disable_version_monitor();
+  }
+}
+
+void libkrbn_enable_frontmost_application_monitor(libkrbn_frontmost_application_monitor_callback callback,
+                                                  void* refcon) {
+  if (libkrbn_components_manager_) {
+    libkrbn_components_manager_->enable_frontmost_application_monitor(callback,
+                                                                      refcon);
+  }
+}
+
+void libkrbn_disable_frontmost_application_monitor(void) {
+  if (libkrbn_components_manager_) {
+    libkrbn_components_manager_->disable_frontmost_application_monitor();
   }
 }

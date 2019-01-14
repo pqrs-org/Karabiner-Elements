@@ -5,7 +5,6 @@
 @interface FrontmostApplicationController ()
 
 @property(unsafe_unretained) IBOutlet NSTextView* textView;
-@property libkrbn_frontmost_application_monitor* monitor;
 
 - (void)callback:(NSString*)bundleIdentifier
         filePath:(NSString*)filePath;
@@ -23,17 +22,12 @@ static void staticCallback(const char* bundle_identifier,
 @implementation FrontmostApplicationController
 
 - (void)setup {
-  libkrbn_frontmost_application_monitor* p = nil;
-  libkrbn_frontmost_application_monitor_initialize(&p,
-                                                   staticCallback,
-                                                   (__bridge void*)(self));
-  self.monitor = p;
+  libkrbn_enable_frontmost_application_monitor(staticCallback,
+                                               (__bridge void*)(self));
 }
 
 - (void)dealloc {
-  libkrbn_frontmost_application_monitor* p = self.monitor;
-  libkrbn_frontmost_application_monitor_terminate(&p);
-  self.monitor = nil;
+  libkrbn_disable_frontmost_application_monitor();
 }
 
 - (void)callback:(NSString*)bundleIdentifier filePath:(NSString*)filePath {
