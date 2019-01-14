@@ -6,6 +6,7 @@
 #include "json_utility.hpp"
 #include "launchctl_utility.hpp"
 #include "libkrbn_cpp.hpp"
+#include "monitor/version_monitor.hpp"
 #include "process_utility.hpp"
 #include "types.hpp"
 #include "update_utility.hpp"
@@ -14,11 +15,46 @@
 #include <nlohmann/json.hpp>
 #include <string>
 
+namespace {
+class libkrbn_components_manager {
+public:
+  ~libkrbn_components_manager(void) {
+    version_monitor_ = nullptr;
+  }
+
+  void enable_version_monitor(libkrbn_version_monitor_callback callback,
+                              void* refcon) {
+    version_monitor_ = std::make_unique<krbn::version_monitor>(krbn::constants::get_version_file_path());
+
+    version_monitor_->changed.connect([callback, refcon](auto&& version) {
+      if (callback) {
+        callback(refcon);
+      }
+    });
+
+    version_monitor_->async_start();
+  }
+
+private:
+  std::unique_ptr<krbn::version_monitor> version_monitor_;
+};
+
+std::unique_ptr<libkrbn_components_manager> libkrbn_components_manager_;
+} // namespace
+
 void libkrbn_initialize(void) {
   krbn::dispatcher_utility::initialize_dispatchers();
+
+  if (!libkrbn_components_manager_) {
+    libkrbn_components_manager_ = std::make_unique<libkrbn_components_manager>();
+  }
 }
 
 void libkrbn_terminate(void) {
+  if (libkrbn_components_manager_) {
+    libkrbn_components_manager_ = nullptr;
+  }
+
   krbn::dispatcher_utility::terminate_dispatchers();
 }
 
@@ -117,4 +153,12 @@ bool libkrbn_device_identifiers_is_apple(const libkrbn_device_identifiers* p) {
     return libkrbn_cpp::make_device_identifiers(*p).is_apple();
   }
   return false;
+}
+
+void libkrbn_enable_version_monitor(libkrbn_version_monitor_callback callback,
+                                    void* refcon) {
+  if (libkrbn_components_manager_) {
+    libkrbn_components_manager_->enable_version_monitor(callback,
+                                                        refcon);
+  }
 }

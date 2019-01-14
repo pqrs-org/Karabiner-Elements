@@ -248,14 +248,9 @@ bool libkrbn_log_lines_is_warn_line(const char* line);
 bool libkrbn_log_lines_is_error_line(const char* line);
 
 // ----------------------------------------
-// libkrbn_version_monitor
-
-typedef void libkrbn_version_monitor;
 typedef void (*libkrbn_version_monitor_callback)(void* refcon);
-bool libkrbn_version_monitor_initialize(libkrbn_version_monitor** out,
-                                        libkrbn_version_monitor_callback callback,
-                                        void* refcon);
-void libkrbn_version_monitor_terminate(libkrbn_version_monitor** p);
+void libkrbn_enable_version_monitor(libkrbn_version_monitor_callback callback,
+                                    void* refcon);
 
 // ----------------------------------------
 // libkrbn_file_monitor

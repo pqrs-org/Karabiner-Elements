@@ -1,8 +1,6 @@
 #import "KarabinerKit/KarabinerKit.h"
 #import "libkrbn.h"
 
-static libkrbn_version_monitor* libkrbn_version_monitor_ = NULL;
-
 static void version_changed_callback(void* refcon) {
   [KarabinerKit relaunch];
 }
@@ -17,7 +15,7 @@ static void version_changed_callback(void* refcon) {
     [KarabinerKitConfigurationManager sharedManager];
     [KarabinerKitDeviceManager sharedManager];
 
-    libkrbn_version_monitor_initialize(&libkrbn_version_monitor_, version_changed_callback, NULL);
+    libkrbn_enable_version_monitor(version_changed_callback, NULL);
   });
 }
 
