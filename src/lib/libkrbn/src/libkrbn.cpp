@@ -8,6 +8,7 @@
 #include "libkrbn/impl/libkrbn_cpp.hpp"
 #include "libkrbn/impl/libkrbn_frontmost_application_monitor.hpp"
 #include "libkrbn/impl/libkrbn_log_monitor.hpp"
+#include "libkrbn/impl/libkrbn_system_preferences_monitor.hpp"
 #include "libkrbn/impl/libkrbn_version_monitor.hpp"
 #include "process_utility.hpp"
 #include "types.hpp"
@@ -22,6 +23,7 @@ class libkrbn_components_manager {
 public:
   ~libkrbn_components_manager(void) {
     version_monitor_ = nullptr;
+    system_preferences_monitor_ = nullptr;
     frontmost_application_monitor_ = nullptr;
     log_monitor_ = nullptr;
   }
@@ -36,6 +38,18 @@ public:
 
   void disable_version_monitor(void) {
     version_monitor_ = nullptr;
+  }
+
+  // system_preferences_monitor_
+
+  void enable_system_preferences_monitor(libkrbn_system_preferences_monitor_callback callback,
+                                         void* refcon) {
+    system_preferences_monitor_ = std::make_unique<libkrbn_system_preferences_monitor>(callback,
+                                                                                       refcon);
+  }
+
+  void disable_system_preferences_monitor(void) {
+    system_preferences_monitor_ = nullptr;
   }
 
   // frontmost_application_monitor_
@@ -64,6 +78,7 @@ public:
 
 private:
   std::unique_ptr<libkrbn_version_monitor> version_monitor_;
+  std::unique_ptr<libkrbn_system_preferences_monitor> system_preferences_monitor_;
   std::unique_ptr<libkrbn_frontmost_application_monitor> frontmost_application_monitor_;
   std::unique_ptr<libkrbn_log_monitor> log_monitor_;
 };
@@ -197,6 +212,22 @@ void libkrbn_enable_version_monitor(libkrbn_version_monitor_callback callback,
 void libkrbn_disable_version_monitor(void) {
   if (libkrbn_components_manager_) {
     libkrbn_components_manager_->disable_version_monitor();
+  }
+}
+
+// system_preferences_monitor
+
+void libkrbn_enable_system_preferences_monitor(libkrbn_system_preferences_monitor_callback _Nullable callback,
+                                               void* _Nullable refcon) {
+  if (libkrbn_components_manager_) {
+    libkrbn_components_manager_->enable_system_preferences_monitor(callback,
+                                                                   refcon);
+  }
+}
+
+void libkrbn_disable_system_preferences_monitor(void) {
+  if (libkrbn_components_manager_) {
+    libkrbn_components_manager_->disable_system_preferences_monitor();
   }
 }
 

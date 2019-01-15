@@ -6,7 +6,6 @@
 @interface SystemPreferencesManager ()
 
 @property libkrbn_configuration_monitor* libkrbn_configuration_monitor;
-@property libkrbn_system_preferences_monitor* libkrbn_system_preferences_monitor;
 @property(readwrite) SystemPreferencesModel* systemPreferencesModel;
 
 @end
@@ -47,20 +46,13 @@ static void system_preferences_updated_callback(const struct libkrbn_system_pref
     self.libkrbn_configuration_monitor = configuration_monitor;
   }
 
-  libkrbn_system_preferences_monitor* system_preferences_monitor = NULL;
-  if (libkrbn_system_preferences_monitor_initialize(&system_preferences_monitor,
-                                                    system_preferences_updated_callback,
-                                                    (__bridge void*)(self),
-                                                    configuration_monitor)) {
-    self.libkrbn_system_preferences_monitor = system_preferences_monitor;
-  }
+  libkrbn_enable_system_preferences_monitor(system_preferences_updated_callback,
+                                            (__bridge void*)(self));
 }
 
 - (void)dealloc {
-  if (self.libkrbn_system_preferences_monitor) {
-    libkrbn_system_preferences_monitor* p = self.libkrbn_system_preferences_monitor;
-    libkrbn_system_preferences_monitor_terminate(&p);
-  }
+  libkrbn_disable_system_preferences_monitor();
+
   if (self.libkrbn_configuration_monitor) {
     libkrbn_configuration_monitor* p = self.libkrbn_configuration_monitor;
     libkrbn_configuration_monitor_terminate(&p);

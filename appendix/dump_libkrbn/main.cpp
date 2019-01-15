@@ -4,6 +4,12 @@
 #include <thread>
 
 namespace {
+void system_preferences_monitor_callback(const struct libkrbn_system_preferences* system_preferences,
+                                         void* refcon) {
+  std::cout << "system_preferences_monitor_callback" << std::endl;
+  std::cout << "  keyboard_fn_state: " << system_preferences->keyboard_fn_state << std::endl;
+}
+
 void hid_value_observer_callback(libkrbn_hid_value_type type,
                                  uint32_t value,
                                  libkrbn_hid_value_event_type event_type,
@@ -75,6 +81,10 @@ int main(int argc, const char* argv[]) {
   std::cout << "observed_device_count: "
             << libkrbn_hid_value_observer_calculate_observed_device_count(observer)
             << std::endl;
+
+  libkrbn_enable_system_preferences_monitor(
+      system_preferences_monitor_callback,
+      nullptr);
 
   CFRunLoopRun();
 
