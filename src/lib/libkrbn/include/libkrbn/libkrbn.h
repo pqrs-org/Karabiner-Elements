@@ -219,13 +219,11 @@ bool libkrbn_connected_devices_get_device_identifiers(libkrbn_connected_devices*
 bool libkrbn_connected_devices_get_is_built_in_keyboard(libkrbn_connected_devices* p, size_t index);
 bool libkrbn_connected_devices_get_is_built_in_trackpad(libkrbn_connected_devices* p, size_t index);
 
-typedef void libkrbn_connected_devices_monitor;
 typedef void (*libkrbn_connected_devices_monitor_callback)(libkrbn_connected_devices* initialized_connected_devices,
                                                            void* refcon);
-bool libkrbn_connected_devices_monitor_initialize(libkrbn_connected_devices_monitor** out,
-                                                  libkrbn_connected_devices_monitor_callback callback,
-                                                  void* refcon);
-void libkrbn_connected_devices_monitor_terminate(libkrbn_connected_devices_monitor** p);
+void libkrbn_enable_connected_devices_monitor(libkrbn_connected_devices_monitor_callback callback,
+                                              void* refcon);
+void libkrbn_disable_connected_devices_monitor(void);
 
 // ----------------------------------------
 typedef void (*libkrbn_version_monitor_callback)(void* refcon);

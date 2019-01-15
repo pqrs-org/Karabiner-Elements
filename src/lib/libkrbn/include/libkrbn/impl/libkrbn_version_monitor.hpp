@@ -1,5 +1,6 @@
 #pragma once
 
+#include "libkrbn/libkrbn.h"
 #include "monitor/version_monitor.hpp"
 
 class libkrbn_version_monitor final {

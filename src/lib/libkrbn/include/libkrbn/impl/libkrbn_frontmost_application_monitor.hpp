@@ -1,5 +1,6 @@
 #pragma once
 
+#include "libkrbn/libkrbn.h"
 #include <pqrs/osx/frontmost_application_monitor.hpp>
 
 class libkrbn_frontmost_application_monitor final {

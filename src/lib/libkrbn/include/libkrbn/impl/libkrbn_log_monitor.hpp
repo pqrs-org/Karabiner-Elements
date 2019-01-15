@@ -1,5 +1,7 @@
 #pragma once
 
+#include "constants.hpp"
+#include "libkrbn/libkrbn.h"
 #include <pqrs/spdlog.hpp>
 
 class libkrbn_log_lines_class final {

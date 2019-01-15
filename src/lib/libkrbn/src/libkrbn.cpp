@@ -5,11 +5,8 @@
 #include "dispatcher_utility.hpp"
 #include "json_utility.hpp"
 #include "launchctl_utility.hpp"
+#include "libkrbn/impl/libkrbn_components_manager.hpp"
 #include "libkrbn/impl/libkrbn_cpp.hpp"
-#include "libkrbn/impl/libkrbn_frontmost_application_monitor.hpp"
-#include "libkrbn/impl/libkrbn_log_monitor.hpp"
-#include "libkrbn/impl/libkrbn_system_preferences_monitor.hpp"
-#include "libkrbn/impl/libkrbn_version_monitor.hpp"
 #include "process_utility.hpp"
 #include "types.hpp"
 #include "update_utility.hpp"
@@ -19,70 +16,6 @@
 #include <string>
 
 namespace {
-class libkrbn_components_manager {
-public:
-  ~libkrbn_components_manager(void) {
-    version_monitor_ = nullptr;
-    system_preferences_monitor_ = nullptr;
-    frontmost_application_monitor_ = nullptr;
-    log_monitor_ = nullptr;
-  }
-
-  // version_monitor_
-
-  void enable_version_monitor(libkrbn_version_monitor_callback callback,
-                              void* refcon) {
-    version_monitor_ = std::make_unique<libkrbn_version_monitor>(callback,
-                                                                 refcon);
-  }
-
-  void disable_version_monitor(void) {
-    version_monitor_ = nullptr;
-  }
-
-  // system_preferences_monitor_
-
-  void enable_system_preferences_monitor(libkrbn_system_preferences_monitor_callback callback,
-                                         void* refcon) {
-    system_preferences_monitor_ = std::make_unique<libkrbn_system_preferences_monitor>(callback,
-                                                                                       refcon);
-  }
-
-  void disable_system_preferences_monitor(void) {
-    system_preferences_monitor_ = nullptr;
-  }
-
-  // frontmost_application_monitor_
-
-  void enable_frontmost_application_monitor(libkrbn_frontmost_application_monitor_callback callback,
-                                            void* refcon) {
-    frontmost_application_monitor_ = std::make_unique<libkrbn_frontmost_application_monitor>(callback,
-                                                                                             refcon);
-  }
-
-  void disable_frontmost_application_monitor(void) {
-    frontmost_application_monitor_ = nullptr;
-  }
-
-  // log_monitor_
-
-  void enable_log_monitor(libkrbn_log_monitor_callback callback,
-                          void* refcon) {
-    log_monitor_ = std::make_unique<libkrbn_log_monitor>(callback,
-                                                         refcon);
-  }
-
-  void disable_log_monitor(void) {
-    log_monitor_ = nullptr;
-  }
-
-private:
-  std::unique_ptr<libkrbn_version_monitor> version_monitor_;
-  std::unique_ptr<libkrbn_system_preferences_monitor> system_preferences_monitor_;
-  std::unique_ptr<libkrbn_frontmost_application_monitor> frontmost_application_monitor_;
-  std::unique_ptr<libkrbn_log_monitor> log_monitor_;
-};
-
 std::unique_ptr<libkrbn_components_manager> libkrbn_components_manager_;
 } // namespace
 
@@ -199,7 +132,9 @@ bool libkrbn_device_identifiers_is_apple(const libkrbn_device_identifiers* p) {
   return false;
 }
 
+// ============================================================
 // version_monitor
+// ============================================================
 
 void libkrbn_enable_version_monitor(libkrbn_version_monitor_callback callback,
                                     void* refcon) {
@@ -215,7 +150,9 @@ void libkrbn_disable_version_monitor(void) {
   }
 }
 
+// ============================================================
 // system_preferences_monitor
+// ============================================================
 
 void libkrbn_enable_system_preferences_monitor(libkrbn_system_preferences_monitor_callback _Nullable callback,
                                                void* _Nullable refcon) {
@@ -231,7 +168,98 @@ void libkrbn_disable_system_preferences_monitor(void) {
   }
 }
 
+// ============================================================
+// connected_devices_monitor
+// ============================================================
+
+void libkrbn_connected_devices_terminate(libkrbn_connected_devices** p) {
+  if (p && *p) {
+    delete reinterpret_cast<libkrbn_connected_devices_class*>(*p);
+    *p = nullptr;
+  }
+}
+
+size_t libkrbn_connected_devices_get_size(libkrbn_connected_devices* p) {
+  if (auto c = reinterpret_cast<libkrbn_connected_devices_class*>(p)) {
+    return c->get_connected_devices().get_devices().size();
+  }
+  return 0;
+}
+
+const char* libkrbn_connected_devices_get_descriptions_manufacturer(libkrbn_connected_devices* p, size_t index) {
+  if (auto c = reinterpret_cast<libkrbn_connected_devices_class*>(p)) {
+    const auto& devices = c->get_connected_devices().get_devices();
+    if (index < devices.size()) {
+      return devices[index].get_descriptions().get_manufacturer().c_str();
+    }
+  }
+  return nullptr;
+}
+
+const char* libkrbn_connected_devices_get_descriptions_product(libkrbn_connected_devices* p, size_t index) {
+  if (auto c = reinterpret_cast<libkrbn_connected_devices_class*>(p)) {
+    const auto& devices = c->get_connected_devices().get_devices();
+    if (index < devices.size()) {
+      return devices[index].get_descriptions().get_product().c_str();
+    }
+  }
+  return nullptr;
+}
+
+bool libkrbn_connected_devices_get_device_identifiers(libkrbn_connected_devices* p, size_t index, libkrbn_device_identifiers* device_identifiers) {
+  if (auto c = reinterpret_cast<libkrbn_connected_devices_class*>(p)) {
+    if (device_identifiers) {
+      const auto& devices = c->get_connected_devices().get_devices();
+      if (index < devices.size()) {
+        auto identifiers = devices[index].get_identifiers();
+        device_identifiers->vendor_id = static_cast<uint32_t>(identifiers.get_vendor_id());
+        device_identifiers->product_id = static_cast<uint32_t>(identifiers.get_product_id());
+        device_identifiers->is_keyboard = static_cast<uint32_t>(identifiers.get_is_keyboard());
+        device_identifiers->is_pointing_device = static_cast<uint32_t>(identifiers.get_is_pointing_device());
+        return true;
+      }
+    }
+  }
+  return false;
+}
+
+bool libkrbn_connected_devices_get_is_built_in_keyboard(libkrbn_connected_devices* p, size_t index) {
+  if (auto c = reinterpret_cast<libkrbn_connected_devices_class*>(p)) {
+    const auto& devices = c->get_connected_devices().get_devices();
+    if (index < devices.size()) {
+      return devices[index].get_is_built_in_keyboard();
+    }
+  }
+  return 0;
+}
+
+bool libkrbn_connected_devices_get_is_built_in_trackpad(libkrbn_connected_devices* p, size_t index) {
+  if (auto c = reinterpret_cast<libkrbn_connected_devices_class*>(p)) {
+    const auto& devices = c->get_connected_devices().get_devices();
+    if (index < devices.size()) {
+      return devices[index].get_is_built_in_trackpad();
+    }
+  }
+  return 0;
+}
+
+void libkrbn_enable_connected_devices_monitor(libkrbn_connected_devices_monitor_callback callback,
+                                              void* refcon) {
+  if (libkrbn_components_manager_) {
+    libkrbn_components_manager_->enable_connected_devices_monitor(callback,
+                                                                  refcon);
+  }
+}
+
+void libkrbn_disable_connected_devices_monitor(void) {
+  if (libkrbn_components_manager_) {
+    libkrbn_components_manager_->disable_connected_devices_monitor();
+  }
+}
+
+// ============================================================
 // frontmost_application_monitor
+// ============================================================
 
 void libkrbn_enable_frontmost_application_monitor(libkrbn_frontmost_application_monitor_callback callback,
                                                   void* refcon) {
@@ -247,7 +275,9 @@ void libkrbn_disable_frontmost_application_monitor(void) {
   }
 }
 
+// ============================================================
 // log_monitor
+// ============================================================
 
 void libkrbn_enable_log_monitor(libkrbn_log_monitor_callback callback,
                                 void* refcon) {
@@ -261,44 +291,4 @@ void libkrbn_disable_log_monitor(void) {
   if (libkrbn_components_manager_) {
     libkrbn_components_manager_->disable_log_monitor();
   }
-}
-
-size_t libkrbn_log_lines_get_size(libkrbn_log_lines* p) {
-  auto log_lines = reinterpret_cast<libkrbn_log_lines_class*>(p);
-  if (!log_lines) {
-    return 0;
-  }
-
-  auto lines = log_lines->get_lines();
-  if (!lines) {
-    return 0;
-  }
-
-  return lines->size();
-}
-
-const char* libkrbn_log_lines_get_line(libkrbn_log_lines* p, size_t index) {
-  auto log_lines = reinterpret_cast<libkrbn_log_lines_class*>(p);
-  if (!log_lines) {
-    return nullptr;
-  }
-
-  auto lines = log_lines->get_lines();
-  if (!lines) {
-    return nullptr;
-  }
-
-  if (index >= lines->size()) {
-    return nullptr;
-  }
-
-  return (*lines)[index].c_str();
-}
-
-bool libkrbn_log_lines_is_warn_line(const char* line) {
-  return pqrs::spdlog::find_level(line) == spdlog::level::warn;
-}
-
-bool libkrbn_log_lines_is_error_line(const char* line) {
-  return pqrs::spdlog::find_level(line) == spdlog::level::err;
 }

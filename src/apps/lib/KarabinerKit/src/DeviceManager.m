@@ -4,7 +4,6 @@
 
 @interface KarabinerKitDeviceManager ()
 
-@property libkrbn_connected_devices_monitor* libkrbn_connected_devices_monitor;
 @property(readwrite) KarabinerKitConnectedDevices* connectedDevices;
 
 @end
@@ -38,20 +37,14 @@ static void connected_devices_updated_callback(libkrbn_connected_devices* initia
   self = [super init];
 
   if (self) {
-    libkrbn_connected_devices_monitor* p = NULL;
-    if (libkrbn_connected_devices_monitor_initialize(&p, connected_devices_updated_callback, (__bridge void*)(self))) {
-      _libkrbn_connected_devices_monitor = p;
-    }
+    libkrbn_enable_connected_devices_monitor(connected_devices_updated_callback, (__bridge void*)(self));
   }
 
   return self;
 }
 
 - (void)dealloc {
-  if (self.libkrbn_connected_devices_monitor) {
-    libkrbn_connected_devices_monitor* p = self.libkrbn_connected_devices_monitor;
-    libkrbn_connected_devices_monitor_terminate(&p);
-  }
+  libkrbn_disable_connected_devices_monitor();
 }
 
 @end

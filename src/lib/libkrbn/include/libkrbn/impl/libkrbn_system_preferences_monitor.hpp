@@ -1,5 +1,5 @@
-#include "constants.hpp"
-#include "libkrbn/impl/libkrbn_cpp.hpp"
+#pragma once
+
 #include "libkrbn/libkrbn.h"
 #include "monitor/system_preferences_monitor.hpp"
 
