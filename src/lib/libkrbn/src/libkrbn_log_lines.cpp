@@ -1,5 +1,4 @@
 #include "libkrbn/impl/libkrbn_log_monitor.hpp"
-#include "libkrbn/libkrbn.h"
 
 size_t libkrbn_log_lines_get_size(libkrbn_log_lines* p) {
   auto log_lines = reinterpret_cast<libkrbn_log_lines_class*>(p);
