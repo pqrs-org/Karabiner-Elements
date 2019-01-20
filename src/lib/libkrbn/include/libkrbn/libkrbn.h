@@ -253,31 +253,6 @@ void libkrbn_enable_frontmost_application_monitor(libkrbn_frontmost_application_
 void libkrbn_disable_frontmost_application_monitor(void);
 
 // ----------------------------------------
-// libkrbn_hid_value_observer
-
-enum libkrbn_hid_value_type {
-  libkrbn_hid_value_type_key_code,
-  libkrbn_hid_value_type_consumer_key_code,
-};
-
-enum libkrbn_hid_value_event_type {
-  libkrbn_hid_value_event_type_key_down,
-  libkrbn_hid_value_event_type_key_up,
-  libkrbn_hid_value_event_type_single,
-};
-
-typedef void libkrbn_hid_value_observer;
-typedef void (*libkrbn_hid_value_observer_callback)(enum libkrbn_hid_value_type type,
-                                                    uint32_t value,
-                                                    enum libkrbn_hid_value_event_type event_type,
-                                                    void* refcon);
-bool libkrbn_hid_value_observer_initialize(libkrbn_hid_value_observer** out,
-                                           libkrbn_hid_value_observer_callback callback,
-                                           void* refcon);
-void libkrbn_hid_value_observer_terminate(libkrbn_hid_value_observer** p);
-size_t libkrbn_hid_value_observer_calculate_observed_device_count(libkrbn_hid_value_observer* p);
-
-// ----------------------------------------
 // libkrbn_log_monitor
 
 typedef void libkrbn_log_lines;
@@ -290,6 +265,29 @@ size_t libkrbn_log_lines_get_size(libkrbn_log_lines* p);
 const char* libkrbn_log_lines_get_line(libkrbn_log_lines* p, size_t index);
 bool libkrbn_log_lines_is_warn_line(const char* line);
 bool libkrbn_log_lines_is_error_line(const char* line);
+
+// ----------------------------------------
+// libkrbn_hid_value_monitor
+
+enum libkrbn_hid_value_type {
+  libkrbn_hid_value_type_key_code,
+  libkrbn_hid_value_type_consumer_key_code,
+};
+
+enum libkrbn_hid_value_event_type {
+  libkrbn_hid_value_event_type_key_down,
+  libkrbn_hid_value_event_type_key_up,
+  libkrbn_hid_value_event_type_single,
+};
+
+typedef void (*libkrbn_hid_value_monitor_callback)(enum libkrbn_hid_value_type type,
+                                                   uint32_t value,
+                                                   enum libkrbn_hid_value_event_type event_type,
+                                                   void* refcon);
+void libkrbn_enable_hid_value_monitor(libkrbn_hid_value_monitor_callback callback,
+                                      void* refcon);
+void libkrbn_disable_hid_value_monitor(void);
+bool libkrbn_hid_value_monitor_observed(void);
 
 #ifdef __cplusplus
 }

@@ -6,7 +6,6 @@
 
 @interface EventQueue ()
 
-@property libkrbn_hid_value_observer* libkrbn_hid_value_observer;
 @property NSMutableArray* queue;
 @property(copy) NSString* simpleModificationJsonString;
 @property(weak) IBOutlet NSTableView* view;
@@ -116,24 +115,12 @@ enum {
 }
 
 - (void)initializeHidValueObserver {
-  if (self.libkrbn_hid_value_observer) {
-    [self terminateHidValueObserver];
-  }
-
-  libkrbn_hid_value_observer* p = NULL;
-  if (libkrbn_hid_value_observer_initialize(&p,
-                                            hid_value_observer_callback,
-                                            (__bridge void*)(self))) {
-    self.libkrbn_hid_value_observer = p;
-  }
+  libkrbn_enable_hid_value_monitor(hid_value_observer_callback,
+                                   (__bridge void*)(self));
 }
 
 - (void)terminateHidValueObserver {
-  if (self.libkrbn_hid_value_observer) {
-    libkrbn_hid_value_observer* p = self.libkrbn_hid_value_observer;
-    libkrbn_hid_value_observer_terminate(&p);
-    self.libkrbn_hid_value_observer = nil;
-  }
+  libkrbn_disable_hid_value_monitor();
 }
 
 - (void)updateAddSimpleModificationButton:(NSString*)title {
@@ -149,12 +136,8 @@ enum {
   [self initializeHidValueObserver];
 }
 
-- (NSInteger)observedDeviceCount {
-  if (self.libkrbn_hid_value_observer) {
-    libkrbn_hid_value_observer* p = self.libkrbn_hid_value_observer;
-    return libkrbn_hid_value_observer_calculate_observed_device_count(p);
-  }
-  return 0;
+- (BOOL)observed {
+  return libkrbn_hid_value_monitor_observed();
 }
 
 - (NSInteger)numberOfRowsInTableView:(NSTableView*)aTableView {

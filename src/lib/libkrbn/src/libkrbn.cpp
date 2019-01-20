@@ -221,3 +221,28 @@ void libkrbn_disable_log_monitor(void) {
     libkrbn_components_manager_->disable_log_monitor();
   }
 }
+
+// ============================================================
+// hid_value_monitor
+// ============================================================
+
+void libkrbn_enable_hid_value_monitor(libkrbn_hid_value_monitor_callback callback,
+                                      void* refcon) {
+  if (libkrbn_components_manager_) {
+    libkrbn_components_manager_->enable_hid_value_monitor(callback,
+                                                          refcon);
+  }
+}
+
+void libkrbn_disable_hid_value_monitor(void) {
+  if (libkrbn_components_manager_) {
+    libkrbn_components_manager_->disable_hid_value_monitor();
+  }
+}
+
+bool libkrbn_hid_value_monitor_observed(void) {
+  if (libkrbn_components_manager_) {
+    return libkrbn_components_manager_->hid_value_monitor_observed();
+  }
+  return false;
+}

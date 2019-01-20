@@ -4,7 +4,7 @@
 
 @interface EventQueue : NSObject
 
-@property(readonly) NSInteger observedDeviceCount;
+@property(readonly) BOOL observed;
 
 - (void)setup;
 - (void)pushMouseEvent:(NSEvent*)event;

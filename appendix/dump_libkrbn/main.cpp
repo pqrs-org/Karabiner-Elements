@@ -1,6 +1,7 @@
 #include "../../src/lib/libkrbn/include/libkrbn/libkrbn.h"
 #include <CoreFoundation/CoreFoundation.h>
 #include <iostream>
+#include <pqrs/thread_wait.hpp>
 #include <thread>
 
 namespace {
@@ -10,16 +11,16 @@ void system_preferences_monitor_callback(const struct libkrbn_system_preferences
   std::cout << "  keyboard_fn_state: " << system_preferences->keyboard_fn_state << std::endl;
 }
 
-void hid_value_observer_callback(libkrbn_hid_value_type type,
-                                 uint32_t value,
-                                 libkrbn_hid_value_event_type event_type,
-                                 void* refcon) {
+void hid_value_monitor_callback(libkrbn_hid_value_type type,
+                                uint32_t value,
+                                libkrbn_hid_value_event_type event_type,
+                                void* refcon) {
   char buffer[256];
 
   switch (type) {
     case libkrbn_hid_value_type_key_code:
       libkrbn_get_key_code_name(buffer, sizeof(buffer), value);
-      std::cout << "hid_value_observer_callback"
+      std::cout << "hid_value_monitor_callback"
                 << " " << buffer
                 << " event_type:" << event_type
                 << std::endl;
@@ -27,20 +28,22 @@ void hid_value_observer_callback(libkrbn_hid_value_type type,
 
     case libkrbn_hid_value_type_consumer_key_code:
       libkrbn_get_consumer_key_code_name(buffer, sizeof(buffer), value);
-      std::cout << "hid_value_observer_callback"
+      std::cout << "hid_value_monitor_callback"
                 << " " << buffer
                 << " event_type:" << event_type
                 << std::endl;
       break;
   }
 }
+
+auto global_wait = pqrs::make_thread_wait();
 } // namespace
 
 int main(int argc, const char* argv[]) {
   libkrbn_initialize();
 
   signal(SIGINT, [](int) {
-    CFRunLoopStop(CFRunLoopGetMain());
+    global_wait->notify();
   });
 
   {
@@ -68,8 +71,7 @@ int main(int argc, const char* argv[]) {
     }
   }
 
-  libkrbn_hid_value_observer* observer = nullptr;
-  libkrbn_hid_value_observer_initialize(&observer, hid_value_observer_callback, nullptr);
+  libkrbn_enable_hid_value_monitor(hid_value_monitor_callback, nullptr);
 
   std::cout << std::endl;
   for (int i = 0; i < 10; ++i) {
@@ -78,21 +80,31 @@ int main(int argc, const char* argv[]) {
   }
   std::cout << std::endl;
 
-  std::cout << "observed_device_count: "
-            << libkrbn_hid_value_observer_calculate_observed_device_count(observer)
+  std::cout << "libkrbn_hid_value_monitor_observed: "
+            << libkrbn_hid_value_monitor_observed()
             << std::endl;
 
   libkrbn_enable_system_preferences_monitor(
       system_preferences_monitor_callback,
       nullptr);
 
+  std::thread thread([] {
+    global_wait->wait_notice();
+
+    libkrbn_terminate();
+
+    CFRunLoopStop(CFRunLoopGetMain());
+  });
+
+  // ============================================================
+
   CFRunLoopRun();
 
-  libkrbn_hid_value_observer_terminate(&observer);
+  // ============================================================
 
-  std::cout << std::endl;
+  thread.join();
 
-  libkrbn_terminate();
+  std::cout << "finished" << std::endl;
 
   return 0;
 }

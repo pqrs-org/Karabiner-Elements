@@ -2,6 +2,7 @@
 
 #include "libkrbn/impl/libkrbn_connected_devices_monitor.hpp"
 #include "libkrbn/impl/libkrbn_frontmost_application_monitor.hpp"
+#include "libkrbn/impl/libkrbn_hid_value_monitor.hpp"
 #include "libkrbn/impl/libkrbn_log_monitor.hpp"
 #include "libkrbn/impl/libkrbn_system_preferences_monitor.hpp"
 #include "libkrbn/impl/libkrbn_version_monitor.hpp"
@@ -11,8 +12,10 @@ public:
   ~libkrbn_components_manager(void) {
     version_monitor_ = nullptr;
     system_preferences_monitor_ = nullptr;
+    connected_devices_monitor_ = nullptr;
     frontmost_application_monitor_ = nullptr;
     log_monitor_ = nullptr;
+    hid_value_monitor_ = nullptr;
   }
 
   // version_monitor_
@@ -75,10 +78,30 @@ public:
     log_monitor_ = nullptr;
   }
 
+  // hid_value_monitor_
+
+  void enable_hid_value_monitor(libkrbn_hid_value_monitor_callback callback,
+                                void* refcon) {
+    hid_value_monitor_ = std::make_unique<libkrbn_hid_value_monitor>(callback,
+                                                                     refcon);
+  }
+
+  void disable_hid_value_monitor(void) {
+    hid_value_monitor_ = nullptr;
+  }
+
+  bool hid_value_monitor_observed(void) {
+    if (hid_value_monitor_) {
+      return hid_value_monitor_->get_observed();
+    }
+    return false;
+  }
+
 private:
   std::unique_ptr<libkrbn_version_monitor> version_monitor_;
   std::unique_ptr<libkrbn_system_preferences_monitor> system_preferences_monitor_;
   std::unique_ptr<libkrbn_connected_devices_monitor> connected_devices_monitor_;
   std::unique_ptr<libkrbn_frontmost_application_monitor> frontmost_application_monitor_;
   std::unique_ptr<libkrbn_log_monitor> log_monitor_;
+  std::unique_ptr<libkrbn_hid_value_monitor> hid_value_monitor_;
 };
