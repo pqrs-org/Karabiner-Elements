@@ -47,20 +47,8 @@ const char* libkrbn_get_distributed_notification_device_grabbing_state_is_change
   return krbn::constants::get_distributed_notification_device_grabbing_state_is_changed();
 }
 
-const char* libkrbn_get_grabber_alerts_json_file_path(void) {
-  return krbn::constants::get_grabber_alerts_json_file_path();
-}
-
 const char* libkrbn_get_devices_json_file_path(void) {
   return krbn::constants::get_devices_json_file_path();
-}
-
-const char* libkrbn_get_device_details_json_file_path(void) {
-  return krbn::constants::get_device_details_json_file_path();
-}
-
-const char* libkrbn_get_manipulator_environment_json_file_path(void) {
-  return krbn::constants::get_manipulator_environment_json_file_path();
 }
 
 const char* libkrbn_get_user_complex_modifications_assets_directory(void) {
@@ -183,6 +171,60 @@ void libkrbn_enable_connected_devices_monitor(libkrbn_connected_devices_monitor_
 void libkrbn_disable_connected_devices_monitor(void) {
   if (libkrbn_components_manager_) {
     libkrbn_components_manager_->disable_connected_devices_monitor();
+  }
+}
+
+// ============================================================
+// device_details_json_file_monitor
+// ============================================================
+
+void libkrbn_enable_device_details_json_file_monitor(libkrbn_file_monitor_callback callback,
+                                                     void* refcon) {
+  if (libkrbn_components_manager_) {
+    libkrbn_components_manager_->enable_device_details_json_file_monitor(callback,
+                                                                         refcon);
+  }
+}
+
+void libkrbn_disable_device_details_json_file_monitor(void) {
+  if (libkrbn_components_manager_) {
+    libkrbn_components_manager_->disable_device_details_json_file_monitor();
+  }
+}
+
+// ============================================================
+// manipulator_environment_json_file_monitor
+// ============================================================
+
+void libkrbn_enable_manipulator_environment_json_file_monitor(libkrbn_file_monitor_callback callback,
+                                                              void* refcon) {
+  if (libkrbn_components_manager_) {
+    libkrbn_components_manager_->enable_manipulator_environment_json_file_monitor(callback,
+                                                                                  refcon);
+  }
+}
+
+void libkrbn_disable_manipulator_environment_json_file_monitor(void) {
+  if (libkrbn_components_manager_) {
+    libkrbn_components_manager_->disable_manipulator_environment_json_file_monitor();
+  }
+}
+
+// ============================================================
+// grabber_alerts_json_file_monitor
+// ============================================================
+
+void libkrbn_enable_grabber_alerts_json_file_monitor(libkrbn_file_monitor_callback callback,
+                                                     void* refcon) {
+  if (libkrbn_components_manager_) {
+    libkrbn_components_manager_->enable_grabber_alerts_json_file_monitor(callback,
+                                                                         refcon);
+  }
+}
+
+void libkrbn_disable_grabber_alerts_json_file_monitor(void) {
+  if (libkrbn_components_manager_) {
+    libkrbn_components_manager_->disable_grabber_alerts_json_file_monitor();
   }
 }
 

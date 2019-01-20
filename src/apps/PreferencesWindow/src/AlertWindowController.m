@@ -6,39 +6,33 @@
 @interface AlertWindowController ()
 
 @property(weak) IBOutlet NSWindow* preferencesWindow;
-@property libkrbn_file_monitor* libkrbn_file_monitor;
 @property BOOL shown;
 
-- (void)callback;
+- (void)callback:(NSString*)filePath;
 
 @end
 
-static void staticCallback(void* context) {
+static void staticCallback(const char* filePath,
+                           void* context) {
   AlertWindowController* p = (__bridge AlertWindowController*)(context);
-  [p callback];
+  if (p && filePath) {
+    [p callback:[NSString stringWithUTF8String:filePath]];
+  }
 }
 
 @implementation AlertWindowController
 
 - (void)setup {
-  libkrbn_file_monitor* p = nil;
-  libkrbn_file_monitor_initialize(&p,
-                                  libkrbn_get_grabber_alerts_json_file_path(),
-                                  staticCallback,
-                                  (__bridge void*)(self));
-  self.libkrbn_file_monitor = p;
+  libkrbn_enable_grabber_alerts_json_file_monitor(staticCallback,
+                                                  (__bridge void*)(self));
 }
 
 - (void)dealloc {
-  libkrbn_file_monitor* p = self.libkrbn_file_monitor;
-  libkrbn_file_monitor_terminate(&p);
-  self.libkrbn_file_monitor = nil;
+  libkrbn_disable_grabber_alerts_json_file_monitor();
 }
 
-- (void)showIfNeeded {
-  NSString* alertsJsonFilePath = [NSString stringWithUTF8String:libkrbn_get_grabber_alerts_json_file_path()];
-
-  NSDictionary* json = [KarabinerKitJsonUtility loadFile:alertsJsonFilePath];
+- (void)showIfNeeded:(NSString*)filePath {
+  NSDictionary* json = [KarabinerKitJsonUtility loadFile:filePath];
   for (NSString* alert in json[@"alerts"]) {
     if ([alert isEqualToString:@"system_policy_prevents_loading_kext"]) {
       if (!self.shown) {
@@ -54,7 +48,7 @@ static void staticCallback(void* context) {
   self.shown = NO;
 }
 
-- (void)callback {
+- (void)callback:(NSString*)filePath {
   @weakify(self);
   dispatch_async(dispatch_get_main_queue(), ^{
     @strongify(self);
@@ -62,7 +56,7 @@ static void staticCallback(void* context) {
       return;
     }
 
-    [self showIfNeeded];
+    [self showIfNeeded:filePath];
   });
 }
 

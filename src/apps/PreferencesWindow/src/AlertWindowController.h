@@ -5,6 +5,5 @@
 @interface AlertWindowController : NSWindowController
 
 - (void)setup;
-- (void)showIfNeeded;
 
 @end

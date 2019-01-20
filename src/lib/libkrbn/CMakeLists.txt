@@ -14,7 +14,6 @@ add_library(
   src/libkrbn_complex_modifications_assets_manager.cpp
   src/libkrbn_configuration.cpp
   src/libkrbn_connected_devices.cpp
-  src/libkrbn_file_monitor.cpp
   src/libkrbn_log_lines.cpp
   src/libkrbn.cpp
   ../../vendor/cget/src/pqrs/osx/frontmost_application_monitor/impl/objc.m

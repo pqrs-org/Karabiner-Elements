@@ -5,35 +5,31 @@
 @interface DevicesController ()
 
 @property(unsafe_unretained) IBOutlet NSTextView* textView;
-@property libkrbn_file_monitor* libkrbn_file_monitor;
 
-- (void)callback;
+- (void)callback:(NSString*)filePath;
 
 @end
 
-static void staticCallback(void* context) {
+static void staticCallback(const char* filePath,
+                           void* context) {
   DevicesController* p = (__bridge DevicesController*)(context);
-  [p callback];
+  if (p && filePath) {
+    [p callback:[NSString stringWithUTF8String:filePath]];
+  }
 }
 
 @implementation DevicesController
 
 - (void)setup {
-  libkrbn_file_monitor* p = nil;
-  libkrbn_file_monitor_initialize(&p,
-                                  libkrbn_get_device_details_json_file_path(),
-                                  staticCallback,
-                                  (__bridge void*)(self));
-  self.libkrbn_file_monitor = p;
+  libkrbn_enable_device_details_json_file_monitor(staticCallback,
+                                                  (__bridge void*)(self));
 }
 
 - (void)dealloc {
-  libkrbn_file_monitor* p = self.libkrbn_file_monitor;
-  libkrbn_file_monitor_terminate(&p);
-  self.libkrbn_file_monitor = nil;
+  libkrbn_disable_device_details_json_file_monitor();
 }
 
-- (void)callback {
+- (void)callback:(NSString*)filePath {
   @weakify(self);
   dispatch_async(dispatch_get_main_queue(), ^{
     @strongify(self);
@@ -41,7 +37,7 @@ static void staticCallback(void* context) {
       return;
     }
 
-    NSString* string = [NSString stringWithContentsOfFile:[NSString stringWithUTF8String:libkrbn_get_device_details_json_file_path()]
+    NSString* string = [NSString stringWithContentsOfFile:filePath
                                                  encoding:NSUTF8StringEncoding
                                                     error:nil];
     if (string) {

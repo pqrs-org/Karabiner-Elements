@@ -1,3 +1,5 @@
+#pragma once
+
 #include "event_queue.hpp"
 #include "libkrbn/libkrbn.h"
 #include <atomic>
