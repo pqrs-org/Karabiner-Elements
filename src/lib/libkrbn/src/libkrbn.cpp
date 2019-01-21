@@ -139,6 +139,24 @@ void libkrbn_disable_version_monitor(void) {
 }
 
 // ============================================================
+// configuration_monitor
+// ============================================================
+
+void libkrbn_enable_configuration_monitor(libkrbn_configuration_monitor_callback callback,
+                                          void* refcon) {
+  if (libkrbn_components_manager_) {
+    libkrbn_components_manager_->enable_configuration_monitor(callback,
+                                                              refcon);
+  }
+}
+
+void libkrbn_disable_configuration_monitor(void) {
+  if (libkrbn_components_manager_) {
+    libkrbn_components_manager_->disable_configuration_monitor();
+  }
+}
+
+// ============================================================
 // system_preferences_monitor
 // ============================================================
 

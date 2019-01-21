@@ -5,7 +5,6 @@
 
 @interface KarabinerKitConfigurationManager ()
 
-@property libkrbn_configuration_monitor* libkrbn_configuration_monitor;
 @property(readwrite) KarabinerKitCoreConfigurationModel* coreConfigurationModel;
 
 @end
@@ -39,20 +38,15 @@ static void configuration_file_updated_callback(libkrbn_core_configuration* init
   self = [super init];
 
   if (self) {
-    libkrbn_configuration_monitor* p = NULL;
-    if (libkrbn_configuration_monitor_initialize(&p, configuration_file_updated_callback, (__bridge void*)(self))) {
-      _libkrbn_configuration_monitor = p;
-    }
+    libkrbn_enable_configuration_monitor(configuration_file_updated_callback,
+                                         (__bridge void*)(self));
   }
 
   return self;
 }
 
 - (void)dealloc {
-  if (self.libkrbn_configuration_monitor) {
-    libkrbn_configuration_monitor* p = self.libkrbn_configuration_monitor;
-    libkrbn_configuration_monitor_terminate(&p);
-  }
+  libkrbn_disable_configuration_monitor();
 }
 
 @end

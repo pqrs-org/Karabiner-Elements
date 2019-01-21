@@ -179,14 +179,12 @@ void libkrbn_complex_modifications_assets_manager_erase_file(libkrbn_complex_mod
 // ----------------------------------------
 // libkrbn_configuration_monitor
 
-typedef void libkrbn_configuration_monitor;
 // You have to call `libkrbn_core_configuration_terminate(&initialized_core_configuration)`.
 typedef void (*libkrbn_configuration_monitor_callback)(libkrbn_core_configuration* initialized_core_configuration,
                                                        void* refcon);
-bool libkrbn_configuration_monitor_initialize(libkrbn_configuration_monitor** out,
-                                              libkrbn_configuration_monitor_callback callback,
-                                              void* refcon);
-void libkrbn_configuration_monitor_terminate(libkrbn_configuration_monitor** p);
+void libkrbn_enable_configuration_monitor(libkrbn_configuration_monitor_callback callback,
+                                          void* refcon);
+void libkrbn_disable_configuration_monitor(void);
 
 // ----------------------------------------
 // libkrbn_system_preferences_monitor

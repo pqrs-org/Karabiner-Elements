@@ -1,9 +1,10 @@
+#include "libkrbn/impl/libkrbn_configuration_monitor.hpp"
 #include "libkrbn/impl/libkrbn_cpp.hpp"
 
 namespace {
 krbn::core_configuration::details::simple_modifications* find_simple_modifications(libkrbn_core_configuration* p,
                                                                                    const libkrbn_device_identifiers* device_identifiers) {
-  if (auto c = reinterpret_cast<libkrbn_cpp::libkrbn_core_configuration_class*>(p)) {
+  if (auto c = reinterpret_cast<libkrbn_core_configuration_class*>(p)) {
     if (device_identifiers) {
       return c->get_core_configuration().get_selected_profile().find_simple_modifications(libkrbn_cpp::make_device_identifiers(*device_identifiers));
     } else {
@@ -15,7 +16,7 @@ krbn::core_configuration::details::simple_modifications* find_simple_modificatio
 
 krbn::core_configuration::details::simple_modifications* find_fn_function_keys(libkrbn_core_configuration* p,
                                                                                const libkrbn_device_identifiers* device_identifiers) {
-  if (auto c = reinterpret_cast<libkrbn_cpp::libkrbn_core_configuration_class*>(p)) {
+  if (auto c = reinterpret_cast<libkrbn_core_configuration_class*>(p)) {
     if (device_identifiers) {
       return c->get_core_configuration().get_selected_profile().find_fn_function_keys(libkrbn_cpp::make_device_identifiers(*device_identifiers));
     } else {
@@ -28,65 +29,65 @@ krbn::core_configuration::details::simple_modifications* find_fn_function_keys(l
 
 void libkrbn_core_configuration_terminate(libkrbn_core_configuration** p) {
   if (p && *p) {
-    delete reinterpret_cast<libkrbn_cpp::libkrbn_core_configuration_class*>(*p);
+    delete reinterpret_cast<libkrbn_core_configuration_class*>(*p);
     *p = nullptr;
   }
 }
 
 void libkrbn_core_configuration_save(libkrbn_core_configuration* p) {
-  if (auto c = reinterpret_cast<libkrbn_cpp::libkrbn_core_configuration_class*>(p)) {
+  if (auto c = reinterpret_cast<libkrbn_core_configuration_class*>(p)) {
     c->get_core_configuration().sync_save_to_file();
   }
 }
 
 bool libkrbn_core_configuration_get_global_configuration_check_for_updates_on_startup(libkrbn_core_configuration* p) {
-  if (auto c = reinterpret_cast<libkrbn_cpp::libkrbn_core_configuration_class*>(p)) {
+  if (auto c = reinterpret_cast<libkrbn_core_configuration_class*>(p)) {
     return c->get_core_configuration().get_global_configuration().get_check_for_updates_on_startup();
   }
   return false;
 }
 
 void libkrbn_core_configuration_set_global_configuration_check_for_updates_on_startup(libkrbn_core_configuration* p, bool value) {
-  if (auto c = reinterpret_cast<libkrbn_cpp::libkrbn_core_configuration_class*>(p)) {
+  if (auto c = reinterpret_cast<libkrbn_core_configuration_class*>(p)) {
     c->get_core_configuration().get_global_configuration().set_check_for_updates_on_startup(value);
   }
 }
 
 bool libkrbn_core_configuration_get_global_configuration_show_in_menu_bar(libkrbn_core_configuration* p) {
-  if (auto c = reinterpret_cast<libkrbn_cpp::libkrbn_core_configuration_class*>(p)) {
+  if (auto c = reinterpret_cast<libkrbn_core_configuration_class*>(p)) {
     return c->get_core_configuration().get_global_configuration().get_show_in_menu_bar();
   }
   return false;
 }
 
 void libkrbn_core_configuration_set_global_configuration_show_in_menu_bar(libkrbn_core_configuration* p, bool value) {
-  if (auto c = reinterpret_cast<libkrbn_cpp::libkrbn_core_configuration_class*>(p)) {
+  if (auto c = reinterpret_cast<libkrbn_core_configuration_class*>(p)) {
     return c->get_core_configuration().get_global_configuration().set_show_in_menu_bar(value);
   }
 }
 
 bool libkrbn_core_configuration_get_global_configuration_show_profile_name_in_menu_bar(libkrbn_core_configuration* p) {
-  if (auto c = reinterpret_cast<libkrbn_cpp::libkrbn_core_configuration_class*>(p)) {
+  if (auto c = reinterpret_cast<libkrbn_core_configuration_class*>(p)) {
     return c->get_core_configuration().get_global_configuration().get_show_profile_name_in_menu_bar();
   }
   return false;
 }
 
 void libkrbn_core_configuration_set_global_configuration_show_profile_name_in_menu_bar(libkrbn_core_configuration* p, bool value) {
-  if (auto c = reinterpret_cast<libkrbn_cpp::libkrbn_core_configuration_class*>(p)) {
+  if (auto c = reinterpret_cast<libkrbn_core_configuration_class*>(p)) {
     return c->get_core_configuration().get_global_configuration().set_show_profile_name_in_menu_bar(value);
   }
 }
 
 size_t libkrbn_core_configuration_get_profiles_size(libkrbn_core_configuration* p) {
-  if (auto c = reinterpret_cast<libkrbn_cpp::libkrbn_core_configuration_class*>(p)) {
+  if (auto c = reinterpret_cast<libkrbn_core_configuration_class*>(p)) {
     return c->get_core_configuration().get_profiles().size();
   }
   return 0;
 }
 
 const char* libkrbn_core_configuration_get_profile_name(libkrbn_core_configuration* p, size_t index) {
-  if (auto c = reinterpret_cast<libkrbn_cpp::libkrbn_core_configuration_class*>(p)) {
+  if (auto c = reinterpret_cast<libkrbn_core_configuration_class*>(p)) {
     const auto& profiles = c->get_core_configuration().get_profiles();
     if (index < profiles.size()) {
       return profiles[index].get_name().c_str();
@@ -96,7 +97,7 @@ const char* libkrbn_core_configuration_get_profile_name(libkrbn_core_configurati
 }
 
 void libkrbn_core_configuration_set_profile_name(libkrbn_core_configuration* p, size_t index, const char* value) {
-  if (auto c = reinterpret_cast<libkrbn_cpp::libkrbn_core_configuration_class*>(p)) {
+  if (auto c = reinterpret_cast<libkrbn_core_configuration_class*>(p)) {
     if (value) {
       c->get_core_configuration().set_profile_name(index, value);
     }
@@ -104,7 +105,7 @@ void libkrbn_core_configuration_set_profile_name(libkrbn_core_configuration* p, 
 }
 
 bool libkrbn_core_configuration_get_profile_selected(libkrbn_core_configuration* p, size_t index) {
-  if (auto c = reinterpret_cast<libkrbn_cpp::libkrbn_core_configuration_class*>(p)) {
+  if (auto c = reinterpret_cast<libkrbn_core_configuration_class*>(p)) {
     const auto& profiles = c->get_core_configuration().get_profiles();
     if (index < profiles.size()) {
       return profiles[index].get_selected();
@@ -114,26 +115,26 @@ bool libkrbn_core_configuration_get_profile_selected(libkrbn_core_configuration*
 }
 
 void libkrbn_core_configuration_select_profile(libkrbn_core_configuration* p, size_t index) {
-  if (auto c = reinterpret_cast<libkrbn_cpp::libkrbn_core_configuration_class*>(p)) {
+  if (auto c = reinterpret_cast<libkrbn_core_configuration_class*>(p)) {
     c->get_core_configuration().select_profile(index);
   }
 }
 
 const char* libkrbn_core_configuration_get_selected_profile_name(libkrbn_core_configuration* p) {
-  if (auto c = reinterpret_cast<libkrbn_cpp::libkrbn_core_configuration_class*>(p)) {
+  if (auto c = reinterpret_cast<libkrbn_core_configuration_class*>(p)) {
     return c->get_core_configuration().get_selected_profile().get_name().c_str();
   }
   return nullptr;
 }
 
 void libkrbn_core_configuration_push_back_profile(libkrbn_core_configuration* p) {
-  if (auto c = reinterpret_cast<libkrbn_cpp::libkrbn_core_configuration_class*>(p)) {
+  if (auto c = reinterpret_cast<libkrbn_core_configuration_class*>(p)) {
     c->get_core_configuration().push_back_profile();
   }
 }
 
 void libkrbn_core_configuration_erase_profile(libkrbn_core_configuration* p, size_t index) {
-  if (auto c = reinterpret_cast<libkrbn_cpp::libkrbn_core_configuration_class*>(p)) {
+  if (auto c = reinterpret_cast<libkrbn_core_configuration_class*>(p)) {
     c->get_core_configuration().erase_profile(index);
   }
 }
@@ -243,7 +244,7 @@ void libkrbn_core_configuration_replace_selected_profile_fn_function_key(libkrbn
 }
 
 size_t libkrbn_core_configuration_get_selected_profile_complex_modifications_rules_size(libkrbn_core_configuration* p) {
-  if (auto c = reinterpret_cast<libkrbn_cpp::libkrbn_core_configuration_class*>(p)) {
+  if (auto c = reinterpret_cast<libkrbn_core_configuration_class*>(p)) {
     return c->get_core_configuration().get_selected_profile().get_complex_modifications().get_rules().size();
   }
   return 0;
@@ -251,25 +252,25 @@ size_t libkrbn_core_configuration_get_selected_profile_complex_modifications_rul
 
 void libkrbn_core_configuration_push_back_complex_modifications_rule_to_selected_profile(libkrbn_core_configuration* p,
                                                                                          const krbn::core_configuration::details::complex_modifications_rule& rule) {
-  if (auto c = reinterpret_cast<libkrbn_cpp::libkrbn_core_configuration_class*>(p)) {
+  if (auto c = reinterpret_cast<libkrbn_core_configuration_class*>(p)) {
     c->get_core_configuration().get_selected_profile().push_back_complex_modifications_rule(rule);
   }
 }
 
 void libkrbn_core_configuration_erase_selected_profile_complex_modifications_rule(libkrbn_core_configuration* p, size_t index) {
-  if (auto c = reinterpret_cast<libkrbn_cpp::libkrbn_core_configuration_class*>(p)) {
+  if (auto c = reinterpret_cast<libkrbn_core_configuration_class*>(p)) {
     c->get_core_configuration().get_selected_profile().erase_complex_modifications_rule(index);
   }
 }
 
 void libkrbn_core_configuration_swap_selected_profile_complex_modifications_rules(libkrbn_core_configuration* p, size_t index1, size_t index2) {
-  if (auto c = reinterpret_cast<libkrbn_cpp::libkrbn_core_configuration_class*>(p)) {
+  if (auto c = reinterpret_cast<libkrbn_core_configuration_class*>(p)) {
     c->get_core_configuration().get_selected_profile().swap_complex_modifications_rules(index1, index2);
   }
 }
 
 const char* _Nullable libkrbn_core_configuration_get_selected_profile_complex_modifications_rule_description(libkrbn_core_configuration* p, size_t index) {
-  if (auto c = reinterpret_cast<libkrbn_cpp::libkrbn_core_configuration_class*>(p)) {
+  if (auto c = reinterpret_cast<libkrbn_core_configuration_class*>(p)) {
     const auto& rules = c->get_core_configuration().get_selected_profile().get_complex_modifications().get_rules();
     if (index < rules.size()) {
       return rules[index].get_description().c_str();
@@ -280,7 +281,7 @@ const char* _Nullable libkrbn_core_configuration_get_selected_profile_complex_mo
 
 int libkrbn_core_configuration_get_selected_profile_complex_modifications_parameter(libkrbn_core_configuration* p,
                                                                                     const char* name) {
-  if (auto c = reinterpret_cast<libkrbn_cpp::libkrbn_core_configuration_class*>(p)) {
+  if (auto c = reinterpret_cast<libkrbn_core_configuration_class*>(p)) {
     if (name) {
       if (auto value = c->get_core_configuration().get_selected_profile().get_complex_modifications().get_parameters().get_value(name)) {
         return *value;
@@ -293,7 +294,7 @@ int libkrbn_core_configuration_get_selected_profile_complex_modifications_parame
 void libkrbn_core_configuration_set_selected_profile_complex_modifications_parameter(libkrbn_core_configuration* p,
                                                                                      const char* name,
                                                                                      int value) {
-  if (auto c = reinterpret_cast<libkrbn_cpp::libkrbn_core_configuration_class*>(p)) {
+  if (auto c = reinterpret_cast<libkrbn_core_configuration_class*>(p)) {
     if (name) {
       c->get_core_configuration().get_selected_profile().set_complex_modifications_parameter(name, value);
     }
@@ -301,21 +302,21 @@ void libkrbn_core_configuration_set_selected_profile_complex_modifications_param
 }
 
 uint8_t libkrbn_core_configuration_get_selected_profile_virtual_hid_keyboard_country_code(libkrbn_core_configuration* p) {
-  if (auto c = reinterpret_cast<libkrbn_cpp::libkrbn_core_configuration_class*>(p)) {
+  if (auto c = reinterpret_cast<libkrbn_core_configuration_class*>(p)) {
     return c->get_core_configuration().get_selected_profile().get_virtual_hid_keyboard().get_country_code();
   }
   return 0;
 }
 
 void libkrbn_core_configuration_set_selected_profile_virtual_hid_keyboard_country_code(libkrbn_core_configuration* p, uint8_t value) {
-  if (auto c = reinterpret_cast<libkrbn_cpp::libkrbn_core_configuration_class*>(p)) {
+  if (auto c = reinterpret_cast<libkrbn_core_configuration_class*>(p)) {
     c->get_core_configuration().get_selected_profile().get_virtual_hid_keyboard().set_country_code(value);
   }
 }
 
 bool libkrbn_core_configuration_get_selected_profile_device_ignore(libkrbn_core_configuration* p,
                                                                    const libkrbn_device_identifiers* device_identifiers) {
-  if (auto c = reinterpret_cast<libkrbn_cpp::libkrbn_core_configuration_class*>(p)) {
+  if (auto c = reinterpret_cast<libkrbn_core_configuration_class*>(p)) {
     if (device_identifiers) {
       auto identifiers = libkrbn_cpp::make_device_identifiers(*device_identifiers);
       return c->get_core_configuration().get_selected_profile().get_device_ignore(identifiers);
@@ -327,7 +328,7 @@ bool libkrbn_core_configuration_get_selected_profile_device_ignore(libkrbn_core_
 void libkrbn_core_configuration_set_selected_profile_device_ignore(libkrbn_core_configuration* p,
                                                                    const libkrbn_device_identifiers* device_identifiers,
                                                                    bool value) {
-  if (auto c = reinterpret_cast<libkrbn_cpp::libkrbn_core_configuration_class*>(p)) {
+  if (auto c = reinterpret_cast<libkrbn_core_configuration_class*>(p)) {
     if (device_identifiers) {
       auto identifiers = libkrbn_cpp::make_device_identifiers(*device_identifiers);
       c->get_core_configuration().get_selected_profile().set_device_ignore(identifiers, value);
@@ -337,7 +338,7 @@ void libkrbn_core_configuration_set_selected_profile_device_ignore(libkrbn_core_
 
 bool libkrbn_core_configuration_get_selected_profile_device_manipulate_caps_lock_led(libkrbn_core_configuration* p,
                                                                                      const libkrbn_device_identifiers* device_identifiers) {
-  if (auto c = reinterpret_cast<libkrbn_cpp::libkrbn_core_configuration_class*>(p)) {
+  if (auto c = reinterpret_cast<libkrbn_core_configuration_class*>(p)) {
     if (device_identifiers) {
       auto identifiers = libkrbn_cpp::make_device_identifiers(*device_identifiers);
       return c->get_core_configuration().get_selected_profile().get_device_manipulate_caps_lock_led(identifiers);
@@ -349,7 +350,7 @@ bool libkrbn_core_configuration_get_selected_profile_device_manipulate_caps_lock
 void libkrbn_core_configuration_set_selected_profile_device_manipulate_caps_lock_led(libkrbn_core_configuration* p,
                                                                                      const libkrbn_device_identifiers* device_identifiers,
                                                                                      bool value) {
-  if (auto c = reinterpret_cast<libkrbn_cpp::libkrbn_core_configuration_class*>(p)) {
+  if (auto c = reinterpret_cast<libkrbn_core_configuration_class*>(p)) {
     if (device_identifiers) {
       auto identifiers = libkrbn_cpp::make_device_identifiers(*device_identifiers);
       c->get_core_configuration().get_selected_profile().set_device_manipulate_caps_lock_led(identifiers, value);
@@ -359,7 +360,7 @@ void libkrbn_core_configuration_set_selected_profile_device_manipulate_caps_lock
 
 bool libkrbn_core_configuration_get_selected_profile_device_disable_built_in_keyboard_if_exists(libkrbn_core_configuration* p,
                                                                                                 const libkrbn_device_identifiers* device_identifiers) {
-  if (auto c = reinterpret_cast<libkrbn_cpp::libkrbn_core_configuration_class*>(p)) {
+  if (auto c = reinterpret_cast<libkrbn_core_configuration_class*>(p)) {
     if (device_identifiers) {
       auto identifiers = libkrbn_cpp::make_device_identifiers(*device_identifiers);
       return c->get_core_configuration().get_selected_profile().get_device_disable_built_in_keyboard_if_exists(identifiers);
@@ -371,26 +372,10 @@ bool libkrbn_core_configuration_get_selected_profile_device_disable_built_in_key
 void libkrbn_core_configuration_set_selected_profile_device_disable_built_in_keyboard_if_exists(libkrbn_core_configuration* p,
                                                                                                 const libkrbn_device_identifiers* device_identifiers,
                                                                                                 bool value) {
-  if (auto c = reinterpret_cast<libkrbn_cpp::libkrbn_core_configuration_class*>(p)) {
+  if (auto c = reinterpret_cast<libkrbn_core_configuration_class*>(p)) {
     if (device_identifiers) {
       auto identifiers = libkrbn_cpp::make_device_identifiers(*device_identifiers);
       c->get_core_configuration().get_selected_profile().set_device_disable_built_in_keyboard_if_exists(identifiers, value);
     }
-  }
-}
-
-bool libkrbn_configuration_monitor_initialize(libkrbn_configuration_monitor** out, libkrbn_configuration_monitor_callback callback, void* refcon) {
-  if (!out) return false;
-  // return if already initialized.
-  if (*out) return false;
-
-  *out = reinterpret_cast<libkrbn_configuration_monitor*>(new libkrbn_cpp::libkrbn_configuration_monitor_class(callback, refcon));
-  return true;
-}
-
-void libkrbn_configuration_monitor_terminate(libkrbn_configuration_monitor** p) {
-  if (p && *p) {
-    delete reinterpret_cast<libkrbn_cpp::libkrbn_configuration_monitor_class*>(*p);
-    *p = nullptr;
   }
 }
