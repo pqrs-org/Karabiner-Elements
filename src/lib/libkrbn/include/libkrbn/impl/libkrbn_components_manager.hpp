@@ -1,5 +1,6 @@
 #pragma once
 
+#include "libkrbn/impl/libkrbn_complex_modifications_assets_manager.hpp"
 #include "libkrbn/impl/libkrbn_configuration_monitor.hpp"
 #include "libkrbn/impl/libkrbn_connected_devices_monitor.hpp"
 #include "libkrbn/impl/libkrbn_file_monitor.hpp"
@@ -11,19 +12,6 @@
 
 class libkrbn_components_manager {
 public:
-  ~libkrbn_components_manager(void) {
-    version_monitor_ = nullptr;
-    configuration_monitor_ = nullptr;
-    system_preferences_monitor_ = nullptr;
-    connected_devices_monitor_ = nullptr;
-    device_details_json_file_monitor_ = nullptr;
-    manipulator_environment_json_file_monitor_ = nullptr;
-    grabber_alerts_json_file_monitor_ = nullptr;
-    frontmost_application_monitor_ = nullptr;
-    log_monitor_ = nullptr;
-    hid_value_monitor_ = nullptr;
-  }
-
   // version_monitor_
 
   void enable_version_monitor(libkrbn_version_monitor_callback callback,
@@ -46,6 +34,20 @@ public:
 
   void disable_configuration_monitor(void) {
     configuration_monitor_ = nullptr;
+  }
+
+  // complex_modifications_assets_manager_;
+
+  void enable_complex_modifications_assets_manager(void) {
+    complex_modifications_assets_manager_ = std::make_unique<libkrbn_complex_modifications_assets_manager>();
+  }
+
+  void disable_complex_modifications_assets_manager(void) {
+    complex_modifications_assets_manager_ = nullptr;
+  }
+
+  std::shared_ptr<libkrbn_complex_modifications_assets_manager> get_complex_modifications_assets_manager(void) const {
+    return complex_modifications_assets_manager_;
   }
 
   // system_preferences_monitor_
@@ -157,6 +159,7 @@ public:
 private:
   std::unique_ptr<libkrbn_version_monitor> version_monitor_;
   std::unique_ptr<libkrbn_configuration_monitor> configuration_monitor_;
+  std::shared_ptr<libkrbn_complex_modifications_assets_manager> complex_modifications_assets_manager_;
   std::unique_ptr<libkrbn_system_preferences_monitor> system_preferences_monitor_;
   std::unique_ptr<libkrbn_connected_devices_monitor> connected_devices_monitor_;
   std::unique_ptr<libkrbn_file_monitor> device_details_json_file_monitor_;

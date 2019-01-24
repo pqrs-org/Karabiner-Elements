@@ -150,31 +150,23 @@ void libkrbn_core_configuration_set_selected_profile_device_disable_built_in_key
 // ----------------------------------------
 // libkrbn_complex_modifications_assets_manager
 
-typedef void libkrbn_complex_modifications_assets_manager;
+void libkrbn_enable_complex_modifications_assets_manager(void);
+void libkrbn_disable_complex_modifications_assets_manager(void);
 
-bool libkrbn_complex_modifications_assets_manager_initialize(libkrbn_complex_modifications_assets_manager** out);
-void libkrbn_complex_modifications_assets_manager_terminate(libkrbn_complex_modifications_assets_manager** p);
+void libkrbn_complex_modifications_assets_manager_reload(void);
 
-void libkrbn_complex_modifications_assets_manager_reload(libkrbn_complex_modifications_assets_manager* p);
+size_t libkrbn_complex_modifications_assets_manager_get_files_size(void);
+const char* libkrbn_complex_modifications_assets_manager_get_file_title(size_t index);
 
-size_t libkrbn_complex_modifications_assets_manager_get_files_size(libkrbn_complex_modifications_assets_manager* p);
-const char* libkrbn_complex_modifications_assets_manager_get_file_title(libkrbn_complex_modifications_assets_manager* p,
-                                                                        size_t index);
+size_t libkrbn_complex_modifications_assets_manager_get_rules_size(size_t file_index);
+const char* libkrbn_complex_modifications_assets_manager_get_rule_description(size_t file_index,
+                                                                              size_t index);
 
-size_t libkrbn_complex_modifications_assets_manager_get_file_rules_size(libkrbn_complex_modifications_assets_manager* p,
-                                                                        size_t file_index);
-const char* libkrbn_complex_modifications_assets_manager_get_file_rule_description(libkrbn_complex_modifications_assets_manager* p,
-                                                                                   size_t file_index,
-                                                                                   size_t index);
-
-void libkrbn_complex_modifications_assets_manager_add_rule_to_core_configuration_selected_profile(libkrbn_complex_modifications_assets_manager* p,
-                                                                                                  size_t file_index,
+void libkrbn_complex_modifications_assets_manager_add_rule_to_core_configuration_selected_profile(size_t file_index,
                                                                                                   size_t index,
-                                                                                                  libkrbn_core_configuration* q);
-bool libkrbn_complex_modifications_assets_manager_is_user_file(libkrbn_complex_modifications_assets_manager* p,
-                                                               size_t index);
-void libkrbn_complex_modifications_assets_manager_erase_file(libkrbn_complex_modifications_assets_manager* p,
-                                                             size_t index);
+                                                                                                  libkrbn_core_configuration* core_configuration);
+bool libkrbn_complex_modifications_assets_manager_user_file(size_t index);
+void libkrbn_complex_modifications_assets_manager_erase_file(size_t index);
 
 // ----------------------------------------
 // libkrbn_configuration_monitor

@@ -4,7 +4,6 @@
 
 @interface KarabinerKitComplexModificationsAssetsManager ()
 
-@property libkrbn_complex_modifications_assets_manager* libkrbn_complex_modifications_assets_manager;
 @property(copy, readwrite) NSArray* assetsFileModels;
 
 @end
@@ -25,10 +24,7 @@
   self = [super init];
 
   if (self) {
-    libkrbn_complex_modifications_assets_manager* p = NULL;
-    if (libkrbn_complex_modifications_assets_manager_initialize(&p)) {
-      _libkrbn_complex_modifications_assets_manager = p;
-    }
+    libkrbn_enable_complex_modifications_assets_manager();
 
     _assetsFileModels = @[];
   }
@@ -37,19 +33,16 @@
 }
 
 - (void)dealloc {
-  if (self.libkrbn_complex_modifications_assets_manager) {
-    libkrbn_complex_modifications_assets_manager* p = self.libkrbn_complex_modifications_assets_manager;
-    libkrbn_complex_modifications_assets_manager_terminate(&p);
-  }
+  libkrbn_disable_complex_modifications_assets_manager();
 }
 
 - (void)reload {
-  libkrbn_complex_modifications_assets_manager_reload(self.libkrbn_complex_modifications_assets_manager);
+  libkrbn_complex_modifications_assets_manager_reload();
 
   NSMutableArray* models = [NSMutableArray new];
-  size_t size = libkrbn_complex_modifications_assets_manager_get_files_size(self.libkrbn_complex_modifications_assets_manager);
+  size_t size = libkrbn_complex_modifications_assets_manager_get_files_size();
   for (size_t i = 0; i < size; ++i) {
-    [models addObject:[[KarabinerKitComplexModificationsAssetsFileModel alloc] initWithManager:self.libkrbn_complex_modifications_assets_manager index:i]];
+    [models addObject:[[KarabinerKitComplexModificationsAssetsFileModel alloc] initWithFileIndex:i]];
   }
   self.assetsFileModels = models;
 }

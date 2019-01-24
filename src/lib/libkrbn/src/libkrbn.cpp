@@ -157,6 +157,97 @@ void libkrbn_disable_configuration_monitor(void) {
 }
 
 // ============================================================
+// complex_modifications_assets_manager
+// ============================================================
+
+void libkrbn_enable_complex_modifications_assets_manager(void) {
+  if (libkrbn_components_manager_) {
+    libkrbn_components_manager_->enable_complex_modifications_assets_manager();
+  }
+}
+
+void libkrbn_disable_complex_modifications_assets_manager(void) {
+  if (libkrbn_components_manager_) {
+    libkrbn_components_manager_->disable_complex_modifications_assets_manager();
+  }
+}
+
+void libkrbn_complex_modifications_assets_manager_reload(void) {
+  if (libkrbn_components_manager_) {
+    if (auto m = libkrbn_components_manager_->get_complex_modifications_assets_manager()) {
+      m->reload();
+    }
+  }
+}
+
+size_t libkrbn_complex_modifications_assets_manager_get_files_size(void) {
+  if (libkrbn_components_manager_) {
+    if (auto m = libkrbn_components_manager_->get_complex_modifications_assets_manager()) {
+      return m->get_files_size();
+    }
+  }
+  return 0;
+}
+
+const char* libkrbn_complex_modifications_assets_manager_get_file_title(size_t index) {
+  if (libkrbn_components_manager_) {
+    if (auto m = libkrbn_components_manager_->get_complex_modifications_assets_manager()) {
+      return m->get_file_title(index);
+    }
+  }
+  return nullptr;
+}
+
+size_t libkrbn_complex_modifications_assets_manager_get_rules_size(size_t file_index) {
+  if (libkrbn_components_manager_) {
+    if (auto m = libkrbn_components_manager_->get_complex_modifications_assets_manager()) {
+      return m->get_rules_size(file_index);
+    }
+  }
+  return 0;
+}
+
+const char* libkrbn_complex_modifications_assets_manager_get_rule_description(size_t file_index,
+                                                                              size_t index) {
+  if (libkrbn_components_manager_) {
+    if (auto m = libkrbn_components_manager_->get_complex_modifications_assets_manager()) {
+      return m->get_rule_description(file_index,
+                                     index);
+    }
+  }
+  return nullptr;
+}
+
+void libkrbn_complex_modifications_assets_manager_add_rule_to_core_configuration_selected_profile(size_t file_index,
+                                                                                                  size_t index,
+                                                                                                  libkrbn_core_configuration* core_configuration) {
+  if (libkrbn_components_manager_) {
+    if (auto m = libkrbn_components_manager_->get_complex_modifications_assets_manager()) {
+      m->add_rule_to_core_configuration_selected_profile(file_index,
+                                                         index,
+                                                         core_configuration);
+    }
+  }
+}
+
+bool libkrbn_complex_modifications_assets_manager_user_file(size_t index) {
+  if (libkrbn_components_manager_) {
+    if (auto m = libkrbn_components_manager_->get_complex_modifications_assets_manager()) {
+      return m->user_file(index);
+    }
+  }
+  return false;
+}
+
+void libkrbn_complex_modifications_assets_manager_erase_file(size_t index) {
+  if (libkrbn_components_manager_) {
+    if (auto m = libkrbn_components_manager_->get_complex_modifications_assets_manager()) {
+      return m->erase_file(index);
+    }
+  }
+}
+
+// ============================================================
 // system_preferences_monitor
 // ============================================================
 

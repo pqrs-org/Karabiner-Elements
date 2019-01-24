@@ -56,7 +56,7 @@ public:
       unlink(file_path_.c_str());
     }
 
-    bool is_user_file(void) const {
+    bool user_file(void) const {
       return boost::starts_with(file_path_, constants::get_user_complex_modifications_assets_directory());
     }
 
