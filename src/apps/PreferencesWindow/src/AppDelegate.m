@@ -41,6 +41,8 @@
   [self.alertWindowController setup];
 }
 
+// Note:
+// We have to set NSSupportsSuddenTermination `NO` to use `applicationWillTerminate`.
 - (void)applicationWillTerminate:(NSNotification*)notification {
   libkrbn_terminate();
 }

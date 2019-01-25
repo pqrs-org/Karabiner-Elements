@@ -29,6 +29,6 @@
     <key>LSUIElement</key>
     <string>1</string>
     <key>NSSupportsSuddenTermination</key>
-    <string>YES</string>
+    <string>NO</string>
   </dict>
 </plist>
