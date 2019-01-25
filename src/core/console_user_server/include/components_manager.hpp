@@ -9,13 +9,13 @@
 #include "menu_process_manager.hpp"
 #include "monitor/configuration_monitor.hpp"
 #include "monitor/grabber_alerts_monitor.hpp"
-#include "monitor/input_source_monitor.hpp"
 #include "monitor/system_preferences_monitor.hpp"
 #include "monitor/version_monitor.hpp"
 #include "receiver.hpp"
 #include "updater_process_manager.hpp"
 #include <pqrs/dispatcher.hpp>
 #include <pqrs/osx/frontmost_application_monitor.hpp>
+#include <pqrs/osx/input_source_monitor.hpp>
 #include <pqrs/osx/session.hpp>
 #include <thread>
 
@@ -186,11 +186,13 @@ private:
 
     // input_source_monitor_
 
-    input_source_monitor_ = std::make_unique<input_source_monitor>();
+    input_source_monitor_ = std::make_unique<pqrs::osx::input_source_monitor>(
+        pqrs::dispatcher::extra::get_shared_dispatcher());
 
-    input_source_monitor_->input_source_changed.connect([this](auto&& input_source_identifiers) {
-      if (grabber_client_) {
-        grabber_client_->async_input_source_changed(input_source_identifiers);
+    input_source_monitor_->input_source_changed.connect([this](auto&& input_source_ptr) {
+      if (input_source_ptr && grabber_client_) {
+        auto identifiers = std::make_shared<input_source_identifiers>(*input_source_ptr);
+        grabber_client_->async_input_source_changed(identifiers);
       }
     });
 
@@ -229,6 +231,6 @@ private:
   // `frontmost_application_monitor` does not work properly in karabiner_grabber after fast user switching.
   // Therefore, we have to use `frontmost_application_monitor` in `console_user_server`.
   std::unique_ptr<pqrs::osx::frontmost_application_monitor::monitor> frontmost_application_monitor_;
-  std::unique_ptr<input_source_monitor> input_source_monitor_;
+  std::unique_ptr<pqrs::osx::input_source_monitor> input_source_monitor_;
 };
 } // namespace krbn
