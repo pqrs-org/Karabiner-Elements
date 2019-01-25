@@ -2,6 +2,7 @@
 
 #include "constants.hpp"
 #include "libkrbn/libkrbn.h"
+#include "logger.hpp"
 #include <pqrs/spdlog.hpp>
 
 class libkrbn_log_lines_class final {
@@ -23,6 +24,8 @@ public:
 
   libkrbn_log_monitor(libkrbn_log_monitor_callback callback,
                       void* refcon) {
+    krbn::logger::get_logger()->info(__func__);
+
     std::vector<std::string> targets = {
         "/var/log/karabiner/observer.log",
         "/var/log/karabiner/grabber.log",
@@ -45,6 +48,10 @@ public:
     });
 
     monitor_->async_start(std::chrono::milliseconds(1000));
+  }
+
+  ~libkrbn_log_monitor(void) {
+    krbn::logger::get_logger()->info(__func__);
   }
 
 private:

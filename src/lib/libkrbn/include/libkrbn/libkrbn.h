@@ -16,6 +16,9 @@ typedef struct {
   bool is_pointing_device;
 } libkrbn_device_identifiers;
 
+void libkrbn_set_logging_level_off(void);
+void libkrbn_set_logging_level_info(void);
+
 void libkrbn_initialize(void);
 void libkrbn_terminate(void);
 

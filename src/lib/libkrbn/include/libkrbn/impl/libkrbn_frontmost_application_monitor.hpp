@@ -9,6 +9,8 @@ public:
 
   libkrbn_frontmost_application_monitor(libkrbn_frontmost_application_monitor_callback callback,
                                         void* refcon) {
+    krbn::logger::get_logger()->info(__func__);
+
     monitor_ = std::make_unique<pqrs::osx::frontmost_application_monitor::monitor>(
         pqrs::dispatcher::extra::get_shared_dispatcher());
 
@@ -24,6 +26,10 @@ public:
     });
 
     monitor_->async_start();
+  }
+
+  ~libkrbn_frontmost_application_monitor(void) {
+    krbn::logger::get_logger()->info(__func__);
   }
 
 private:

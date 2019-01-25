@@ -9,6 +9,8 @@ public:
 
   libkrbn_version_monitor(libkrbn_version_monitor_callback callback,
                           void* refcon) {
+    krbn::logger::get_logger()->info(__func__);
+
     monitor_ = std::make_unique<krbn::version_monitor>(krbn::constants::get_version_file_path());
 
     monitor_->changed.connect([callback, refcon](auto&& version) {
@@ -18,6 +20,10 @@ public:
     });
 
     monitor_->async_start();
+  }
+
+  ~libkrbn_version_monitor(void) {
+    krbn::logger::get_logger()->info(__func__);
   }
 
 private:

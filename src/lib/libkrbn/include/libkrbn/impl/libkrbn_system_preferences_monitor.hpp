@@ -10,6 +10,8 @@ public:
 
   libkrbn_system_preferences_monitor(libkrbn_system_preferences_monitor_callback callback,
                                      void* refcon) {
+    krbn::logger::get_logger()->info(__func__);
+
     // configuration_monitor_
 
     configuration_monitor_ = std::make_shared<krbn::configuration_monitor>(
@@ -33,6 +35,8 @@ public:
   }
 
   ~libkrbn_system_preferences_monitor(void) {
+    krbn::logger::get_logger()->info(__func__);
+
     monitor_ = nullptr;
     configuration_monitor_ = nullptr;
   }

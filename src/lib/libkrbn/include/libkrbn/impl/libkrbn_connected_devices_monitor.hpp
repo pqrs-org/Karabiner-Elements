@@ -22,6 +22,8 @@ public:
   libkrbn_connected_devices_monitor(const libkrbn_connected_devices_monitor&) = delete;
 
   libkrbn_connected_devices_monitor(libkrbn_connected_devices_monitor_callback callback, void* refcon) {
+    krbn::logger::get_logger()->info(__func__);
+
     monitor_ = std::make_unique<krbn::connected_devices_monitor>(
         krbn::constants::get_devices_json_file_path());
 
@@ -38,7 +40,7 @@ public:
   }
 
   ~libkrbn_connected_devices_monitor(void) {
-    monitor_ = nullptr;
+    krbn::logger::get_logger()->info(__func__);
   }
 
 private:

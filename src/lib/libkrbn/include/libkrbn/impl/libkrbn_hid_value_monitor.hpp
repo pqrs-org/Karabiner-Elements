@@ -12,6 +12,8 @@ public:
 
   libkrbn_hid_value_monitor(libkrbn_hid_value_monitor_callback callback,
                             void* refcon) : observed_(false) {
+    krbn::logger::get_logger()->info(__func__);
+
     std::vector<pqrs::cf::cf_ptr<CFDictionaryRef>> matching_dictionaries{
         pqrs::osx::iokit_hid_manager::make_matching_dictionary(
             pqrs::osx::iokit_hid_usage_page_generic_desktop,
@@ -60,6 +62,8 @@ public:
   }
 
   ~libkrbn_hid_value_monitor(void) {
+    krbn::logger::get_logger()->info(__func__);
+
     hid_manager_ = nullptr;
     hid_queue_value_monitors_.clear();
   }

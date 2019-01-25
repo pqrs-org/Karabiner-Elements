@@ -41,6 +41,10 @@ public:
     wait->wait_notice();
   }
 
+  ~libkrbn_configuration_monitor(void) {
+    krbn::logger::get_logger()->info(__func__);
+  }
+
 private:
   std::unique_ptr<krbn::configuration_monitor> monitor_;
 };

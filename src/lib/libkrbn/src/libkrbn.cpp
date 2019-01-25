@@ -19,7 +19,17 @@ namespace {
 std::unique_ptr<libkrbn_components_manager> libkrbn_components_manager_;
 } // namespace
 
+void libkrbn_set_logging_level_off(void) {
+  krbn::logger::get_logger()->set_level(spdlog::level::off);
+}
+
+void libkrbn_set_logging_level_info(void) {
+  krbn::logger::get_logger()->set_level(spdlog::level::info);
+}
+
 void libkrbn_initialize(void) {
+  krbn::logger::get_logger()->info(__func__);
+
   krbn::dispatcher_utility::initialize_dispatchers();
 
   if (!libkrbn_components_manager_) {
@@ -28,6 +38,8 @@ void libkrbn_initialize(void) {
 }
 
 void libkrbn_terminate(void) {
+  krbn::logger::get_logger()->info(__func__);
+
   if (libkrbn_components_manager_) {
     libkrbn_components_manager_ = nullptr;
   }
