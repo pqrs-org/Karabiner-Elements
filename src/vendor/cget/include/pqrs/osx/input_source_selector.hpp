@@ -1,0 +1,1 @@
+../../../cget/pkg/pqrs-org__cpp-osx-input_source_selector/install/include/pqrs/osx/input_source_selector.hpp

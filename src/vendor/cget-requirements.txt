@@ -8,6 +8,8 @@ pqrs-org/cpp-local_datagram
 pqrs-org/cpp-osx-file_monitor
 pqrs-org/cpp-osx-frontmost_application_monitor
 pqrs-org/cpp-osx-input_source
+pqrs-org/cpp-osx-input_source_monitor
+pqrs-org/cpp-osx-input_source_selector
 pqrs-org/cpp-osx-iokit_hid_manager
 pqrs-org/cpp-osx-iokit_hid_queue_value_monitor
 pqrs-org/cpp-osx-session
