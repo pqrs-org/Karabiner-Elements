@@ -901,20 +901,6 @@ struct operation_type_shell_command_execution_struct {
   char shell_command[256];
 };
 
-struct operation_type_select_input_source_struct {
-  operation_type_select_input_source_struct(void) : operation_type(operation_type::select_input_source) {
-    language[0] = '\0';
-    input_source_id[0] = '\0';
-    input_mode_id[0] = '\0';
-  }
-
-  const operation_type operation_type;
-  absolute_time_point time_stamp;
-  char language[256];
-  char input_source_id[256];
-  char input_mode_id[256];
-};
-
 // stream output
 
 #define KRBN_TYPES_STREAM_OUTPUT(TYPE)                                                                                                               \
