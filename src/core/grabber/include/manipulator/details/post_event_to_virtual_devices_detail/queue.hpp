@@ -3,6 +3,7 @@
 #include "types.hpp"
 #include "virtual_hid_device_client.hpp"
 #include <pqrs/dispatcher.hpp>
+#include <pqrs/osx/input_source_selector.hpp>
 
 namespace krbn {
 namespace manipulator {
@@ -452,14 +453,26 @@ public:
               }
             }
             if (auto input_source_selectors = e.get_input_source_selectors()) {
-              try {
-                if (auto client = weak_console_user_server_client.lock()) {
-                  for (const auto& s : *input_source_selectors) {
-                    client->async_select_input_source(s, now);
+              if (auto client = weak_console_user_server_client.lock()) {
+                auto input_source_specifiers = std::make_shared<std::vector<pqrs::osx::input_source_selector::specifier>>();
+                for (const auto& s : *input_source_selectors) {
+                  pqrs::osx::input_source_selector::specifier specifier;
+
+                  if (auto& v = s.get_language_string()) {
+                    specifier.set_language(*v);
                   }
+
+                  if (auto& v = s.get_input_source_id_string()) {
+                    specifier.set_input_source_id(*v);
+                  }
+
+                  if (auto& v = s.get_input_mode_id_string()) {
+                    specifier.set_input_mode_id(*v);
+                  }
+
+                  input_source_specifiers->push_back(specifier);
                 }
-              } catch (std::exception& e) {
-                logger::get_logger()->error("error in select_input_source: {0}", e.what());
+                client->async_select_input_source(input_source_specifiers);
               }
             }
 

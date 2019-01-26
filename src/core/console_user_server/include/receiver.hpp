@@ -2,11 +2,12 @@
 
 #include "console_user_server_client.hpp"
 #include "constants.hpp"
-#include "input_source_manager.hpp"
 #include "types.hpp"
 #include <nod/nod.hpp>
 #include <pqrs/dispatcher.hpp>
 #include <pqrs/local_datagram.hpp>
+#include <pqrs/osx/input_source_selector.hpp>
+#include <pqrs/osx/input_source_selector/extra/nlohmann_json.hpp>
 #include <pqrs/shell.hpp>
 #include <vector>
 
@@ -23,13 +24,14 @@ public:
 
   receiver(const receiver&) = delete;
 
-  receiver(void) : dispatcher_client(),
-                   last_select_input_source_time_stamp_(0) {
+  receiver(void) : dispatcher_client() {
+    input_source_selector_ = std::make_unique<pqrs::osx::input_source_selector::selector>(weak_dispatcher_);
   }
 
   virtual ~receiver(void) {
     detach_from_dispatcher([this] {
       server_ = nullptr;
+      input_source_selector_ = nullptr;
     });
 
     logger::get_logger()->info("receiver is terminated");
@@ -72,62 +74,47 @@ public:
       });
 
       server_->received.connect([this](auto&& buffer) {
-        if (auto type = types::find_operation_type(*buffer)) {
-          switch (*type) {
-            case operation_type::shell_command_execution:
-              if (buffer->size() != sizeof(operation_type_shell_command_execution_struct)) {
-                logger::get_logger()->error("invalid size for operation_type::shell_command_execution");
-              } else {
-                auto p = reinterpret_cast<operation_type_shell_command_execution_struct*>(&((*buffer)[0]));
+        if (buffer) {
+          if (buffer->empty()) {
+            return;
+          }
 
-                // Ensure shell_command is null-terminated string even if corrupted data is sent.
-                p->shell_command[sizeof(p->shell_command) - 1] = '\0';
-
-                auto background_shell_command = pqrs::shell::make_background_command_string(p->shell_command);
-                system(background_shell_command.c_str());
+          try {
+            nlohmann::json json = nlohmann::json::from_msgpack(*buffer);
+            switch (json.at("operation_type").get<operation_type>()) {
+              case operation_type::select_input_source: {
+                using specifiers_t = std::vector<pqrs::osx::input_source_selector::specifier>;
+                auto specifiers = json.at("input_source_specifiers").get<specifiers_t>();
+                input_source_selector_->async_select(std::make_shared<specifiers_t>(specifiers));
+                break;
               }
-              break;
 
-            case operation_type::select_input_source:
-              if (buffer->size() != sizeof(operation_type_select_input_source_struct)) {
-                logger::get_logger()->error("invalid size for operation_type::select_input_source");
-              } else {
-                auto p = reinterpret_cast<operation_type_select_input_source_struct*>(&((*buffer)[0]));
+              default:
+                break;
+            }
+            return;
+          } catch (...) {
+          }
 
-                // Ensure input_source_selector's strings are null-terminated string even if corrupted data is sent.
-                p->language[sizeof(p->language) - 1] = '\0';
-                p->input_source_id[sizeof(p->input_source_id) - 1] = '\0';
-                p->input_mode_id[sizeof(p->input_mode_id) - 1] = '\0';
+          if (auto type = types::find_operation_type(*buffer)) {
+            switch (*type) {
+              case operation_type::shell_command_execution:
+                if (buffer->size() != sizeof(operation_type_shell_command_execution_struct)) {
+                  logger::get_logger()->error("invalid size for operation_type::shell_command_execution");
+                } else {
+                  auto p = reinterpret_cast<operation_type_shell_command_execution_struct*>(&((*buffer)[0]));
 
-                auto time_stamp = p->time_stamp;
-                std::optional<std::string> language(std::string(p->language));
-                std::optional<std::string> input_source_id(std::string(p->input_source_id));
-                std::optional<std::string> input_mode_id(std::string(p->input_mode_id));
-                if (language && language->empty()) {
-                  language = std::nullopt;
+                  // Ensure shell_command is null-terminated string even if corrupted data is sent.
+                  p->shell_command[sizeof(p->shell_command) - 1] = '\0';
+
+                  auto background_shell_command = pqrs::shell::make_background_command_string(p->shell_command);
+                  system(background_shell_command.c_str());
                 }
-                if (input_source_id && input_source_id->empty()) {
-                  input_source_id = std::nullopt;
-                }
-                if (input_mode_id && input_mode_id->empty()) {
-                  input_mode_id = std::nullopt;
-                }
+                break;
 
-                input_source_selector input_source_selector(language,
-                                                            input_source_id,
-                                                            input_mode_id);
-
-                if (last_select_input_source_time_stamp_ == time_stamp) {
-                  return;
-                }
-                if (input_source_manager_.select(input_source_selector)) {
-                  last_select_input_source_time_stamp_ = time_stamp;
-                }
-              }
-              break;
-
-            default:
-              break;
+              default:
+                break;
+            }
           }
         }
       });
@@ -140,7 +127,6 @@ public:
 
 private:
   std::unique_ptr<pqrs::local_datagram::server> server_;
-  input_source_manager input_source_manager_;
-  absolute_time_point last_select_input_source_time_stamp_;
+  std::unique_ptr<pqrs::osx::input_source_selector::selector> input_source_selector_;
 };
 } // namespace krbn

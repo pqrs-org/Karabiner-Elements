@@ -6,6 +6,8 @@
 #include <nod/nod.hpp>
 #include <pqrs/dispatcher.hpp>
 #include <pqrs/local_datagram.hpp>
+#include <pqrs/osx/input_source_selector.hpp>
+#include <pqrs/osx/input_source_selector/extra/nlohmann_json.hpp>
 #include <pqrs/osx/session.hpp>
 #include <sstream>
 #include <unistd.h>
@@ -103,46 +105,18 @@ public:
     });
   }
 
-  void async_select_input_source(const input_source_selector& input_source_selector,
-                                 absolute_time_point time_stamp) {
-    enqueue_to_dispatcher([this, input_source_selector, time_stamp] {
-      operation_type_select_input_source_struct s;
-      s.time_stamp = time_stamp;
+  void async_select_input_source(std::shared_ptr<std::vector<pqrs::osx::input_source_selector::specifier>> input_source_specifiers) {
+    enqueue_to_dispatcher([this, input_source_specifiers] {
+      if (input_source_specifiers) {
+        nlohmann::json json{
+            {"operation_type", operation_type::select_input_source},
+            {"input_source_specifiers", *input_source_specifiers},
+        };
 
-      if (auto& v = input_source_selector.get_language_string()) {
-        if (v->length() >= sizeof(s.language)) {
-          logger::get_logger()->error("language is too long: {0}", *v);
-          return;
+        if (client_) {
+          client_->async_send(nlohmann::json::to_msgpack(json));
         }
-
-        strlcpy(s.language,
-                v->c_str(),
-                sizeof(s.language));
       }
-
-      if (auto& v = input_source_selector.get_input_source_id_string()) {
-        if (v->length() >= sizeof(s.input_source_id)) {
-          logger::get_logger()->error("input_source_id is too long: {0}", *v);
-          return;
-        }
-
-        strlcpy(s.input_source_id,
-                v->c_str(),
-                sizeof(s.input_source_id));
-      }
-
-      if (auto& v = input_source_selector.get_input_mode_id_string()) {
-        if (v->length() >= sizeof(s.input_mode_id)) {
-          logger::get_logger()->error("input_mode_id is too long: {0}", *v);
-          return;
-        }
-
-        strlcpy(s.input_mode_id,
-                v->c_str(),
-                sizeof(s.input_mode_id));
-      }
-
-      async_send(reinterpret_cast<const uint8_t*>(&s), sizeof(s));
     });
   }
 
