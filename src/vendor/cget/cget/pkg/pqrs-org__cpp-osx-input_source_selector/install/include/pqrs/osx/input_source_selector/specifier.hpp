@@ -5,6 +5,7 @@
 // (See http://www.boost.org/LICENSE_1_0.txt)
 
 #include <optional>
+#include <pqrs/osx/input_source.hpp>
 #include <regex>
 #include <string>
 

@@ -42,12 +42,16 @@ public:
     });
   }
 
-  void async_select(const specifier& s) {
-    enqueue_to_dispatcher([this, s] {
-      for (const auto& e : entries_) {
-        if (s.test(e.get_properties())) {
-          e.select();
-          break;
+  void async_select(std::shared_ptr<std::vector<specifier>> specifiers) {
+    enqueue_to_dispatcher([this, specifiers] {
+      if (specifiers) {
+        for (const auto& s : *specifiers) {
+          for (const auto& e : entries_) {
+            if (s.test(e.get_properties())) {
+              e.select();
+              return;
+            }
+          }
         }
       }
     });
