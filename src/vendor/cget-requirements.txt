@@ -6,6 +6,7 @@ pqrs-org/cpp-environment_variable
 pqrs-org/cpp-filesystem
 pqrs-org/cpp-json
 pqrs-org/cpp-local_datagram
+pqrs-org/cpp-osx-chrono
 pqrs-org/cpp-osx-file_monitor
 pqrs-org/cpp-osx-frontmost_application_monitor
 pqrs-org/cpp-osx-input_source

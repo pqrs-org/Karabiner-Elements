@@ -1,9 +1,11 @@
 #pragma once
 
-// pqrs::osx::input_source_selector v2.1
+// pqrs::osx::chrono v1.0
 
 // (C) Copyright Takayama Fumihiko 2019.
 // Distributed under the Boost Software License, Version 1.0.
 // (See http://www.boost.org/LICENSE_1_0.txt)
 
-#include "input_source_selector/selector.hpp"
+#include "chrono/absolute_time_duration.hpp"
+#include "chrono/absolute_time_point.hpp"
+#include "chrono/chrono.hpp"
