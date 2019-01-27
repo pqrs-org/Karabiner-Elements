@@ -10,21 +10,21 @@
 namespace pqrs {
 namespace osx {
 namespace chrono {
-void to_json(nlohmann::json& j, const absolute_time_duration& p) {
+inline void to_json(nlohmann::json& j, const absolute_time_duration& p) {
   j = type_safe::get(p);
 }
 
-void from_json(const nlohmann::json& j, absolute_time_duration& p) {
+inline void from_json(const nlohmann::json& j, absolute_time_duration& p) {
   try {
     p = absolute_time_duration(j.get<int64_t>());
   } catch (...) {}
 }
 
-void to_json(nlohmann::json& j, const absolute_time_point& p) {
+inline void to_json(nlohmann::json& j, const absolute_time_point& p) {
   j = type_safe::get(p);
 }
 
-void from_json(const nlohmann::json& j, absolute_time_point& p) {
+inline void from_json(const nlohmann::json& j, absolute_time_point& p) {
   try {
     p = absolute_time_point(j.get<uint64_t>());
   } catch (...) {}

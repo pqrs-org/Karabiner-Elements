@@ -10,7 +10,7 @@
 namespace pqrs {
 namespace osx {
 namespace input_source_selector {
-void to_json(nlohmann::json& j, const specifier& s) {
+inline void to_json(nlohmann::json& j, const specifier& s) {
   j = nlohmann::json::object();
 
   if (auto& v = s.get_language_string()) {
@@ -26,7 +26,7 @@ void to_json(nlohmann::json& j, const specifier& s) {
   }
 }
 
-void from_json(const nlohmann::json& j, specifier& s) {
+inline void from_json(const nlohmann::json& j, specifier& s) {
   try {
     s.set_language(j.at("language").get<std::string>());
   } catch (...) {}

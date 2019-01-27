@@ -10,7 +10,7 @@
 namespace pqrs {
 namespace osx {
 namespace input_source {
-void to_json(nlohmann::json& j, const properties& p) {
+inline void to_json(nlohmann::json& j, const properties& p) {
   j = nlohmann::json::object();
 
   if (auto& v = p.get_input_source_id()) {
@@ -34,7 +34,7 @@ void to_json(nlohmann::json& j, const properties& p) {
   }
 }
 
-void from_json(const nlohmann::json& j, properties& p) {
+inline void from_json(const nlohmann::json& j, properties& p) {
   try {
     p.set_input_source_id(j.at("input_source_id").get<std::string>());
   } catch (...) {}
