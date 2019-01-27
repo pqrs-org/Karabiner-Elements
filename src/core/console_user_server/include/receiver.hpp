@@ -89,32 +89,19 @@ public:
                 break;
               }
 
+              case operation_type::shell_command_execution: {
+                auto shell_command = json.at("shell_command").get<std::string>();
+                auto background_shell_command = pqrs::shell::make_background_command_string(shell_command);
+                system(background_shell_command.c_str());
+                break;
+              }
+
               default:
                 break;
             }
             return;
-          } catch (...) {
-          }
-
-          if (auto type = types::find_operation_type(*buffer)) {
-            switch (*type) {
-              case operation_type::shell_command_execution:
-                if (buffer->size() != sizeof(operation_type_shell_command_execution_struct)) {
-                  logger::get_logger()->error("invalid size for operation_type::shell_command_execution");
-                } else {
-                  auto p = reinterpret_cast<operation_type_shell_command_execution_struct*>(&((*buffer)[0]));
-
-                  // Ensure shell_command is null-terminated string even if corrupted data is sent.
-                  p->shell_command[sizeof(p->shell_command) - 1] = '\0';
-
-                  auto background_shell_command = pqrs::shell::make_background_command_string(p->shell_command);
-                  system(background_shell_command.c_str());
-                }
-                break;
-
-              default:
-                break;
-            }
+          } catch (std::exception& e) {
+            logger::get_logger()->error("Received data is corrupted: {0}", e.what());
           }
         }
       });

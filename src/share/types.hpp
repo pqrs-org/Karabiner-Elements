@@ -892,15 +892,6 @@ struct operation_type_input_source_changed_struct {
   char input_mode_id[256];
 };
 
-struct operation_type_shell_command_execution_struct {
-  operation_type_shell_command_execution_struct(void) : operation_type(operation_type::shell_command_execution) {
-    shell_command[0] = '\0';
-  }
-
-  const operation_type operation_type;
-  char shell_command[256];
-};
-
 // stream output
 
 #define KRBN_TYPES_STREAM_OUTPUT(TYPE)                                                                                                               \

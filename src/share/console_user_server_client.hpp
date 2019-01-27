@@ -90,18 +90,14 @@ public:
 
   void async_shell_command_execution(const std::string& shell_command) const {
     enqueue_to_dispatcher([this, shell_command] {
-      operation_type_shell_command_execution_struct s;
+      nlohmann::json json{
+          {"operation_type", operation_type::shell_command_execution},
+          {"shell_command", shell_command},
+      };
 
-      if (shell_command.length() >= sizeof(s.shell_command)) {
-        logger::get_logger()->error("shell_command is too long: {0}", shell_command);
-        return;
+      if (client_) {
+        client_->async_send(nlohmann::json::to_msgpack(json));
       }
-
-      strlcpy(s.shell_command,
-              shell_command.c_str(),
-              sizeof(s.shell_command));
-
-      async_send(reinterpret_cast<const uint8_t*>(&s), sizeof(s));
     });
   }
 
