@@ -4,7 +4,6 @@
 #include "krbn_notification_center.hpp"
 #include "manipulator/details/base.hpp"
 #include "manipulator/details/types.hpp"
-#include "time_utility.hpp"
 #include <nlohmann/json.hpp>
 #include <pqrs/dispatcher.hpp>
 #include <unordered_set>
@@ -191,7 +190,7 @@ public:
                 std::vector<event_queue::event> ordered_key_up_events;
                 std::chrono::milliseconds simultaneous_threshold_milliseconds(parameters_.get_basic_simultaneous_threshold_milliseconds());
                 auto end_time_stamp = front_input_event.get_event_time_stamp().get_time_stamp() +
-                                      time_utility::to_absolute_time_duration(simultaneous_threshold_milliseconds);
+                                      pqrs::osx::chrono::make_absolute_time_duration(simultaneous_threshold_milliseconds);
 
                 for (const auto& entry : input_event_queue.get_entries()) {
                   if (!is_target) {
@@ -311,7 +310,7 @@ public:
                   auto found = all_from_events_found(from_events);
                   if (needs_wait_key_up || !found) {
                     auto d = std::max(front_input_event.get_event_time_stamp().get_input_delay_duration(),
-                                      time_utility::to_absolute_time_duration(simultaneous_threshold_milliseconds));
+                                      pqrs::osx::chrono::make_absolute_time_duration(simultaneous_threshold_milliseconds));
                     front_input_event.get_event_time_stamp().set_input_delay_duration(d);
 
                     if (now < front_input_event.get_event_time_stamp().make_time_stamp_with_input_delay()) {
@@ -452,7 +451,7 @@ public:
                   // to_if_alone_
 
                   if (!to_if_alone_.empty()) {
-                    auto duration = time_utility::to_milliseconds(front_input_event.get_event_time_stamp().get_time_stamp() - current_manipulated_original_event->get_key_down_time_stamp());
+                    auto duration = pqrs::osx::chrono::make_milliseconds(front_input_event.get_event_time_stamp().get_time_stamp() - current_manipulated_original_event->get_key_down_time_stamp());
                     if (current_manipulated_original_event->get_alone() &&
                         duration < std::chrono::milliseconds(parameters_.get_basic_to_if_alone_timeout_milliseconds())) {
                       post_from_mandatory_modifiers_key_up(front_input_event,
@@ -761,7 +760,7 @@ public:
         // Post key_up event
 
         if (it != std::end(to_events) - 1 || !it->get_repeat()) {
-          time_stamp_delay += time_utility::to_absolute_time_duration(it->get_hold_down_milliseconds());
+          time_stamp_delay += pqrs::osx::chrono::make_absolute_time_duration(it->get_hold_down_milliseconds());
 
           auto t = front_input_event.get_event_time_stamp();
           t.set_time_stamp(t.get_time_stamp() + time_stamp_delay++);
@@ -918,7 +917,7 @@ private:
         // Post key_up event
 
         {
-          time_stamp_delay += time_utility::to_absolute_time_duration(it->get_hold_down_milliseconds());
+          time_stamp_delay += pqrs::osx::chrono::make_absolute_time_duration(it->get_hold_down_milliseconds());
 
           auto t = front_input_event.get_event_time_stamp();
           t.set_time_stamp(t.get_time_stamp() + time_stamp_delay++);

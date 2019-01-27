@@ -7,7 +7,6 @@
 #include "grabber_client.hpp"
 #include "iokit_utility.hpp"
 #include "logger.hpp"
-#include "time_utility.hpp"
 #include "types.hpp"
 #include <pqrs/dispatcher.hpp>
 #include <pqrs/osx/iokit_hid_manager.hpp>
@@ -61,7 +60,7 @@ public:
         grabbable_state_manager_->update(grabbable_state(device_id,
                                                          grabbable_state::state::device_error,
                                                          grabbable_state::ungrabbable_temporarily_reason::none,
-                                                         time_utility::mach_absolute_time_point()));
+                                                         pqrs::osx::chrono::mach_absolute_time_point()));
 
         auto hid_queue_value_monitor = std::make_shared<pqrs::osx::iokit_hid_queue_value_monitor>(weak_dispatcher_,
                                                                                                   *device_ptr);
@@ -100,7 +99,7 @@ public:
               grabbable_state_manager_->update(grabbable_state(device_id,
                                                                grabbable_state::state::grabbable,
                                                                grabbable_state::ungrabbable_temporarily_reason::none,
-                                                               time_utility::mach_absolute_time_point()));
+                                                               pqrs::osx::chrono::mach_absolute_time_point()));
             }
           }
         });

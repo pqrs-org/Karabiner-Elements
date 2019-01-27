@@ -74,7 +74,7 @@ public:
     nlohmann::json to_json(void) const {
       nlohmann::json json;
       json["type"] = to_c_string(type_);
-      json["time_stamp"] = time_utility::to_milliseconds(time_stamp_ - absolute_time_point(0)).count();
+      json["time_stamp"] = pqrs::osx::chrono::make_milliseconds(time_stamp_ - absolute_time_point(0)).count();
 
       switch (type_) {
         case type::keyboard_input:
@@ -395,7 +395,7 @@ public:
                          std::weak_ptr<console_user_server_client> weak_console_user_server_client) {
     enqueue_to_dispatcher(
         [this, weak_virtual_hid_device_client, weak_console_user_server_client] {
-          auto now = time_utility::mach_absolute_time_point();
+          auto now = pqrs::osx::chrono::mach_absolute_time_point();
 
           while (!events_.empty()) {
             auto& e = events_.front();
@@ -405,7 +405,7 @@ public:
               absolute_time_duration duration(0);
               if (now < e.get_time_stamp()) {
                 duration = std::min(e.get_time_stamp() - now,
-                                    time_utility::to_absolute_time_duration(std::chrono::milliseconds(3000)));
+                                    pqrs::osx::chrono::make_absolute_time_duration(std::chrono::milliseconds(3000)));
               }
 
               enqueue_to_dispatcher(
@@ -413,7 +413,7 @@ public:
                     async_post_events(weak_virtual_hid_device_client,
                                       weak_console_user_server_client);
                   },
-                  when_now() + time_utility::to_milliseconds(duration));
+                  when_now() + pqrs::osx::chrono::make_milliseconds(duration));
 
               return;
             }
@@ -496,7 +496,7 @@ private:
     // * If wait is 1 millisecond, Google Chrome issue below is sometimes happen.
     //
 
-    auto wait = time_utility::to_absolute_time_duration(std::chrono::milliseconds(5));
+    auto wait = pqrs::osx::chrono::make_absolute_time_duration(std::chrono::milliseconds(5));
 
     bool skip = false;
     switch (et) {

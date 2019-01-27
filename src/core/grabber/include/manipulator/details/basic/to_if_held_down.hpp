@@ -38,7 +38,7 @@ public:
     output_event_queue_ = output_event_queue;
 
     auto held_down_id = current_held_down_id_;
-    auto duration = time_utility::to_absolute_time_duration(threshold_milliseconds);
+    auto duration = pqrs::osx::chrono::make_absolute_time_duration(threshold_milliseconds);
 
     enqueue_to_dispatcher(
         [this, held_down_id] {
@@ -92,7 +92,7 @@ public:
             }
           }
         },
-        when_now() + time_utility::to_milliseconds(duration));
+        when_now() + pqrs::osx::chrono::make_milliseconds(duration));
   }
 
   void cancel(const event_queue::entry& front_input_event) {

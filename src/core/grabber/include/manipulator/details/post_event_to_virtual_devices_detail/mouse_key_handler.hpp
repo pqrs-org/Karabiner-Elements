@@ -118,7 +118,7 @@ private:
         [this, time_stamp] {
           absolute_time_point t = time_stamp;
           if (post_event(t)) {
-            t += time_utility::to_absolute_time_duration(std::chrono::milliseconds(20));
+            t += pqrs::osx::chrono::make_absolute_time_duration(std::chrono::milliseconds(20));
             krbn_notification_center::get_instance().enqueue_input_event_arrived(*this);
 
           } else {

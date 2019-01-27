@@ -97,7 +97,7 @@ public:
 
     external_signal_connections_.emplace_back(
         krbn_notification_center::get_instance().input_event_arrived.connect([this] {
-          manipulate(time_utility::mach_absolute_time_point());
+          manipulate(pqrs::osx::chrono::mach_absolute_time_point());
         }));
 
     // hid_manager_
@@ -265,7 +265,7 @@ public:
       event_tap_monitor_->pointing_device_event_arrived.connect([this](auto&& event_type, auto&& event) {
         auto e = event_queue::event::make_pointing_device_event_from_event_tap_event();
         event_queue::entry entry(device_id(0),
-                                 event_queue::event_time_stamp(time_utility::mach_absolute_time_point()),
+                                 event_queue::event_time_stamp(pqrs::osx::chrono::mach_absolute_time_point()),
                                  e,
                                  event_type,
                                  event);
@@ -353,7 +353,7 @@ public:
       auto event = event_queue::event::make_frontmost_application_changed_event(bundle_identifier,
                                                                                 file_path);
       event_queue::entry entry(device_id(0),
-                               event_queue::event_time_stamp(time_utility::mach_absolute_time_point()),
+                               event_queue::event_time_stamp(pqrs::osx::chrono::mach_absolute_time_point()),
                                event,
                                event_type::single,
                                event);
@@ -368,7 +368,7 @@ public:
     enqueue_to_dispatcher([this, input_source_identifiers] {
       auto event = event_queue::event::make_input_source_changed_event(input_source_identifiers);
       event_queue::entry entry(device_id(0),
-                               event_queue::event_time_stamp(time_utility::mach_absolute_time_point()),
+                               event_queue::event_time_stamp(pqrs::osx::chrono::mach_absolute_time_point()),
                                event,
                                event_type::single,
                                event);
@@ -384,7 +384,7 @@ public:
       auto keyboard_type_string = system_preferences_utility::get_keyboard_type_string(system_preferences_.get_keyboard_type());
       auto event = event_queue::event::make_keyboard_type_changed_event(keyboard_type_string);
       event_queue::entry entry(device_id(0),
-                               event_queue::event_time_stamp(time_utility::mach_absolute_time_point()),
+                               event_queue::event_time_stamp(pqrs::osx::chrono::mach_absolute_time_point()),
                                event,
                                event_type::single,
                                event);
@@ -416,7 +416,7 @@ private:
     if (auto min = manipulator_managers_connector_.min_input_event_time_stamp()) {
       auto when = when_now();
       if (now < *min) {
-        when += time_utility::to_milliseconds(*min - now);
+        when += pqrs::osx::chrono::make_milliseconds(*min - now);
       }
 
       enqueue_to_dispatcher(
@@ -463,7 +463,7 @@ private:
       if (auto device_id = device_properties->get_device_id()) {
         auto event = event_queue::event::make_device_grabbed_event(*device_properties);
         event_queue::entry entry(*device_id,
-                                 event_queue::event_time_stamp(time_utility::mach_absolute_time_point()),
+                                 event_queue::event_time_stamp(pqrs::osx::chrono::mach_absolute_time_point()),
                                  event,
                                  event_type::single,
                                  event);
@@ -478,7 +478,7 @@ private:
   void post_device_ungrabbed_event(device_id device_id) {
     auto event = event_queue::event::make_device_ungrabbed_event();
     event_queue::entry entry(device_id,
-                             event_queue::event_time_stamp(time_utility::mach_absolute_time_point()),
+                             event_queue::event_time_stamp(pqrs::osx::chrono::mach_absolute_time_point()),
                              event,
                              event_type::single,
                              event);
@@ -491,7 +491,7 @@ private:
   void post_caps_lock_state_changed_event(bool caps_lock_state) {
     event_queue::event event(event_queue::event::type::caps_lock_state_changed, caps_lock_state);
     event_queue::entry entry(device_id(0),
-                             event_queue::event_time_stamp(time_utility::mach_absolute_time_point()),
+                             event_queue::event_time_stamp(pqrs::osx::chrono::mach_absolute_time_point()),
                              event,
                              event_type::single,
                              event);

@@ -2,7 +2,6 @@
 
 // `krbn::event_queue::event_time_stamp` can be used safely in a multi-threaded environment.
 
-#include "time_utility.hpp"
 #include "types.hpp"
 #include <nlohmann/json.hpp>
 #include <ostream>
@@ -40,11 +39,11 @@ public:
                             absolute_time_duration(0));
 
     if (auto v = json_utility::find_optional<uint64_t>(json, "time_stamp")) {
-      result.time_stamp_ += time_utility::to_absolute_time_duration(std::chrono::milliseconds(*v));
+      result.time_stamp_ += pqrs::osx::chrono::make_absolute_time_duration(std::chrono::milliseconds(*v));
     }
 
     if (auto v = json_utility::find_optional<uint64_t>(json, "input_delay_duration")) {
-      result.input_delay_duration_ += time_utility::to_absolute_time_duration(std::chrono::milliseconds(*v));
+      result.input_delay_duration_ += pqrs::osx::chrono::make_absolute_time_duration(std::chrono::milliseconds(*v));
     }
 
     return result;
@@ -84,8 +83,8 @@ public:
 
   nlohmann::json to_json(void) const {
     return nlohmann::json::object({
-        {"time_stamp", time_utility::to_milliseconds(get_time_stamp() - absolute_time_point(0)).count()},
-        {"input_delay_duration", time_utility::to_milliseconds(get_input_delay_duration()).count()},
+        {"time_stamp", pqrs::osx::chrono::make_milliseconds(get_time_stamp() - absolute_time_point(0)).count()},
+        {"input_delay_duration", pqrs::osx::chrono::make_milliseconds(get_input_delay_duration()).count()},
     });
   }
 

@@ -10,7 +10,6 @@
 #include "details/profile/virtual_hid_keyboard.hpp"
 #include "json_utility.hpp"
 #include "logger.hpp"
-#include "time_utility.hpp"
 #include "types.hpp"
 #include <fstream>
 #include <glob.h>
@@ -176,7 +175,7 @@ private:
     pqrs::filesystem::create_directory_with_intermediate_directories(backups_directory, 0700);
 
     auto backup_file_path = backups_directory +
-                            "/karabiner_" + time_utility::make_current_local_yyyymmdd_string() + ".json";
+                            "/karabiner_" + make_current_local_yyyymmdd_string() + ".json";
     if (pqrs::filesystem::exists(backup_file_path)) {
       return;
     }
@@ -200,6 +199,18 @@ private:
       }
     }
     globfree(&glob_result);
+  }
+
+  static std::string make_current_local_yyyymmdd_string(void) {
+    auto t = time(nullptr);
+
+    tm tm;
+    localtime_r(&t, &tm);
+
+    return fmt::format("{0:04d}{1:02d}{2:02d}",
+                       tm.tm_year + 1900,
+                       tm.tm_mon + 1,
+                       tm.tm_mday);
   }
 
   nlohmann::json json_;

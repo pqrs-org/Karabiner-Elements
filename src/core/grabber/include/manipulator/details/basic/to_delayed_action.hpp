@@ -65,7 +65,7 @@ public:
     output_event_queue_ = output_event_queue;
 
     auto delayed_action_id = current_delayed_action_id_;
-    auto duration = time_utility::to_absolute_time_duration(delay_milliseconds);
+    auto duration = pqrs::osx::chrono::make_absolute_time_duration(delay_milliseconds);
 
     enqueue_to_dispatcher(
         [this, delayed_action_id] {
@@ -75,7 +75,7 @@ public:
 
           post_events(to_if_invoked_);
         },
-        when_now() + time_utility::to_milliseconds(duration));
+        when_now() + pqrs::osx::chrono::make_milliseconds(duration));
   }
 
   void cancel(const event_queue::entry& front_input_event) {

@@ -1,7 +1,6 @@
 #include "dispatcher_utility.hpp"
 #include "logger.hpp"
 #include "manipulator/details/post_event_to_virtual_devices.hpp"
-#include "time_utility.hpp"
 #include "virtual_hid_device_client.hpp"
 
 int main(int argc, const char* argv[]) {
@@ -31,7 +30,7 @@ int main(int argc, const char* argv[]) {
     std::cout << "virtual_hid_keyboard_ready" << std::endl;
 
     {
-      auto time_stamp = krbn::time_utility::mach_absolute_time_point();
+      auto time_stamp = pqrs::osx::chrono::mach_absolute_time_point();
       queue.emplace_back_key_event(krbn::hid_usage_page::keyboard_or_keypad,
                                    krbn::hid_usage(kHIDUsage_KeyboardSpacebar),
                                    krbn::event_type::key_down,
@@ -40,7 +39,7 @@ int main(int argc, const char* argv[]) {
                               console_user_server_client);
     }
     {
-      auto time_stamp = krbn::time_utility::mach_absolute_time_point();
+      auto time_stamp = pqrs::osx::chrono::mach_absolute_time_point();
       queue.emplace_back_key_event(krbn::hid_usage_page::keyboard_or_keypad,
                                    krbn::hid_usage(kHIDUsage_KeyboardSpacebar),
                                    krbn::event_type::key_up,
@@ -50,7 +49,7 @@ int main(int argc, const char* argv[]) {
     }
 
     {
-      auto time_stamp = krbn::time_utility::mach_absolute_time_point();
+      auto time_stamp = pqrs::osx::chrono::mach_absolute_time_point();
 
       // Put `Bc`.
 
@@ -112,8 +111,8 @@ int main(int argc, const char* argv[]) {
     }
 
     {
-      auto time_stamp = krbn::time_utility::mach_absolute_time_point() +
-                        krbn::time_utility::to_absolute_time_duration(std::chrono::milliseconds(1000));
+      auto time_stamp = pqrs::osx::chrono::mach_absolute_time_point() +
+                        pqrs::osx::chrono::make_absolute_time_duration(std::chrono::milliseconds(1000));
       queue.emplace_back_key_event(krbn::hid_usage_page::keyboard_or_keypad,
                                    krbn::hid_usage(kHIDUsage_KeyboardA),
                                    krbn::event_type::key_down,
@@ -122,8 +121,8 @@ int main(int argc, const char* argv[]) {
                               console_user_server_client);
     }
     {
-      auto time_stamp = krbn::time_utility::mach_absolute_time_point() +
-                        krbn::time_utility::to_absolute_time_duration(std::chrono::milliseconds(2000));
+      auto time_stamp = pqrs::osx::chrono::mach_absolute_time_point() +
+                        pqrs::osx::chrono::make_absolute_time_duration(std::chrono::milliseconds(2000));
       queue.emplace_back_key_event(krbn::hid_usage_page::keyboard_or_keypad,
                                    krbn::hid_usage(kHIDUsage_KeyboardA),
                                    krbn::event_type::key_up,
@@ -133,7 +132,7 @@ int main(int argc, const char* argv[]) {
     }
 
     {
-      auto time_stamp = krbn::time_utility::mach_absolute_time_point();
+      auto time_stamp = pqrs::osx::chrono::mach_absolute_time_point();
       queue.emplace_back_key_event(krbn::hid_usage_page::keyboard_or_keypad,
                                    krbn::hid_usage(kHIDUsage_KeyboardB),
                                    krbn::event_type::key_down,
@@ -142,7 +141,7 @@ int main(int argc, const char* argv[]) {
                               console_user_server_client);
     }
     {
-      auto time_stamp = krbn::time_utility::mach_absolute_time_point();
+      auto time_stamp = pqrs::osx::chrono::mach_absolute_time_point();
       queue.emplace_back_key_event(krbn::hid_usage_page::keyboard_or_keypad,
                                    krbn::hid_usage(kHIDUsage_KeyboardB),
                                    krbn::event_type::key_up,

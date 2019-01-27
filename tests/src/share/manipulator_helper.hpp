@@ -120,7 +120,7 @@ public:
               if (auto t = json_utility::find_optional<uint64_t>(j, "time_stamp")) {
                 auto ms = std::chrono::milliseconds(*t);
                 time_stamp = absolute_time_point(0) +
-                             time_utility::to_absolute_time_duration(ms);
+                             pqrs::osx::chrono::make_absolute_time_duration(ms);
                 advance_now(ms);
               }
 
@@ -138,7 +138,7 @@ public:
 
             event_queues->front()->push_back_entry(e);
 
-            advance_now(time_utility::to_milliseconds(e.get_event_time_stamp().get_time_stamp() - absolute_time_point(0)));
+            advance_now(pqrs::osx::chrono::make_milliseconds(e.get_event_time_stamp().get_time_stamp() - absolute_time_point(0)));
 
             if (!pause_manipulation) {
               connector->manipulate(now_);
@@ -225,7 +225,7 @@ private:
   void advance_now(std::chrono::milliseconds ms) {
     if (pqrs::dispatcher::time_point(ms) > pseudo_time_source_->now()) {
       pseudo_time_source_->set_now(pqrs::dispatcher::time_point(ms));
-      now_ = absolute_time_point(0) + time_utility::to_absolute_time_duration(ms);
+      now_ = absolute_time_point(0) + pqrs::osx::chrono::make_absolute_time_duration(ms);
     }
   }
 

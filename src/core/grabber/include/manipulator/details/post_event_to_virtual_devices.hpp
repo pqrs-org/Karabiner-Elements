@@ -8,7 +8,6 @@
 #include "manipulator/details/base.hpp"
 #include "manipulator/details/types.hpp"
 #include "stream_utility.hpp"
-#include "time_utility.hpp"
 #include "types.hpp"
 #include "virtual_hid_device_client.hpp"
 #include "virtual_hid_device_utility.hpp"
