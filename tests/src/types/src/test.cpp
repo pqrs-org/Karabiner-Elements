@@ -4,42 +4,9 @@
 #include "types.hpp"
 
 TEST_CASE("sizeof") {
-  REQUIRE(sizeof(krbn::absolute_time_point) == 8);
   REQUIRE(sizeof(krbn::vendor_id) == 4);
   REQUIRE(sizeof(krbn::product_id) == 4);
   REQUIRE(sizeof(krbn::location_id) == 4);
-}
-
-TEST_CASE("absolute_time_point") {
-  krbn::absolute_time_point t1(1000);
-  krbn::absolute_time_point t2(2000);
-
-  {
-    auto d = t2 - t1;
-    REQUIRE(d == krbn::absolute_time_duration(1000));
-  }
-  {
-    auto d = t1 - t2;
-    REQUIRE(d == krbn::absolute_time_duration(-1000));
-  }
-  {
-    auto t = t1 + krbn::absolute_time_duration(100);
-    REQUIRE(t == krbn::absolute_time_point(1100));
-  }
-  {
-    auto t = t1 - krbn::absolute_time_duration(100);
-    REQUIRE(t == krbn::absolute_time_point(900));
-  }
-  {
-    auto t = t1;
-    t += krbn::absolute_time_duration(100);
-    REQUIRE(t == krbn::absolute_time_point(1100));
-  }
-  {
-    auto t = t1;
-    t -= krbn::absolute_time_duration(100);
-    REQUIRE(t == krbn::absolute_time_point(900));
-  }
 }
 
 TEST_CASE("operation_type") {
