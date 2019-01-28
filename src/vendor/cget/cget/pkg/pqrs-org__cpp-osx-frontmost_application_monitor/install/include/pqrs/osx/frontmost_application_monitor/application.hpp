@@ -42,6 +42,15 @@ public:
     file_path_ = value;
   }
 
+  bool operator==(const application& other) const {
+    return bundle_identifier_ == other.bundle_identifier_ &&
+           file_path_ == other.file_path_;
+  }
+
+  bool operator!=(const application& other) const {
+    return !(*this == other);
+  }
+
 private:
   std::optional<std::string> bundle_identifier_;
   std::optional<std::string> file_path_;
