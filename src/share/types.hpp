@@ -16,7 +16,6 @@
 #include "types/hid_usage.hpp"
 #include "types/hid_usage_page.hpp"
 #include "types/hid_value.hpp"
-#include "types/input_source_selector.hpp"
 #include "types/key_code.hpp"
 #include "types/led_state.hpp"
 #include "types/location_id.hpp"
@@ -39,6 +38,9 @@
 #include <pqrs/osx/input_source.hpp>
 #include <pqrs/osx/input_source/extra/boost.hpp>
 #include <pqrs/osx/input_source/extra/nlohmann_json.hpp>
+#include <pqrs/osx/input_source_selector.hpp>
+#include <pqrs/osx/input_source_selector/extra/boost.hpp>
+#include <pqrs/osx/input_source_selector/extra/nlohmann_json.hpp>
 #include <string>
 #include <thread>
 #include <type_safe/strong_typedef.hpp>

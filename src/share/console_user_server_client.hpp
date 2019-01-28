@@ -6,8 +6,6 @@
 #include <nod/nod.hpp>
 #include <pqrs/dispatcher.hpp>
 #include <pqrs/local_datagram.hpp>
-#include <pqrs/osx/input_source_selector.hpp>
-#include <pqrs/osx/input_source_selector/extra/nlohmann_json.hpp>
 #include <pqrs/osx/session.hpp>
 #include <sstream>
 #include <unistd.h>

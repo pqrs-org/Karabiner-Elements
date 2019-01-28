@@ -73,9 +73,9 @@ public:
     return std::nullopt;
   }
 
-  std::optional<std::vector<input_source_selector>> get_input_source_selectors(void) const {
+  std::optional<std::vector<pqrs::osx::input_source_selector::specifier>> get_input_source_specifiers(void) const {
     if (type_ == type::select_input_source) {
-      return boost::get<std::vector<input_source_selector>>(value_);
+      return boost::get<std::vector<pqrs::osx::input_source_selector::specifier>>(value_);
     }
     return std::nullopt;
   }
@@ -109,7 +109,7 @@ public:
       case type::shell_command:
         return event_queue::event::make_shell_command_event(boost::get<std::string>(value_));
       case type::select_input_source:
-        return event_queue::event::make_select_input_source_event(boost::get<std::vector<input_source_selector>>(value_));
+        return event_queue::event::make_select_input_source_event(boost::get<std::vector<pqrs::osx::input_source_selector::specifier>>(value_));
       case type::set_variable:
         return event_queue::event::make_set_variable_event(boost::get<std::pair<std::string, int>>(value_));
       case type::mouse_key:
@@ -242,13 +242,13 @@ public:
         return true;
       }
 
-      std::vector<input_source_selector> input_source_selectors;
+      std::vector<pqrs::osx::input_source_selector::specifier> input_source_specifiers;
 
       if (value.is_object()) {
-        input_source_selectors.emplace_back(value);
+        input_source_specifiers.emplace_back(value);
       } else if (value.is_array()) {
         for (const auto& v : value) {
-          input_source_selectors.emplace_back(v);
+          input_source_specifiers.emplace_back(v);
         }
       } else {
         logger::get_logger()->error("complex_modifications json error: Invalid form of select_input_source: {0}", json.dump());
@@ -256,7 +256,7 @@ public:
       }
 
       type_ = type::select_input_source;
-      value_ = input_source_selectors;
+      value_ = input_source_specifiers;
 
       return true;
     }
@@ -321,11 +321,11 @@ protected:
   boost::variant<key_code,
                  consumer_key_code,
                  pointing_button,
-                 type,                               // For any
-                 std::string,                        // For shell_command
-                 std::vector<input_source_selector>, // For select_input_source
-                 std::pair<std::string, int>,        // For set_variable
-                 mouse_key                           // For mouse_key
+                 type,                                                     // For any
+                 std::string,                                              // For shell_command
+                 std::vector<pqrs::osx::input_source_selector::specifier>, // For select_input_source
+                 std::pair<std::string, int>,                              // For set_variable
+                 mouse_key                                                 // For mouse_key
                  >
       value_;
 };

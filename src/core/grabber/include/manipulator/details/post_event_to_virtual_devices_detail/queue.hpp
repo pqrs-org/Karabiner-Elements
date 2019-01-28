@@ -3,7 +3,6 @@
 #include "types.hpp"
 #include "virtual_hid_device_client.hpp"
 #include <pqrs/dispatcher.hpp>
-#include <pqrs/osx/input_source_selector.hpp>
 
 namespace krbn {
 namespace manipulator {
@@ -62,11 +61,11 @@ public:
       return e;
     }
 
-    static event make_select_input_source_event(const std::vector<input_source_selector>& input_source_selector,
+    static event make_select_input_source_event(const std::vector<pqrs::osx::input_source_selector::specifier>& input_source_specifiers,
                                                 absolute_time_point time_stamp) {
       event e;
       e.type_ = type::select_input_source;
-      e.value_ = input_source_selector;
+      e.value_ = input_source_specifiers;
       e.time_stamp_ = time_stamp;
       return e;
     }
@@ -119,8 +118,8 @@ public:
           break;
 
         case type::select_input_source:
-          if (auto v = get_input_source_selectors()) {
-            json["input_source_selectors"] = *v;
+          if (auto v = get_input_source_specifiers()) {
+            json["input_source_specifiers"] = *v;
           }
           break;
       }
@@ -174,9 +173,9 @@ public:
       return std::nullopt;
     }
 
-    std::optional<std::vector<input_source_selector>> get_input_source_selectors(void) const {
+    std::optional<std::vector<pqrs::osx::input_source_selector::specifier>> get_input_source_specifiers(void) const {
       if (type_ == type::select_input_source) {
-        return boost::get<std::vector<input_source_selector>>(value_);
+        return boost::get<std::vector<pqrs::osx::input_source_selector::specifier>>(value_);
       }
       return std::nullopt;
     }
@@ -219,8 +218,8 @@ public:
                    pqrs::karabiner_virtual_hid_device::hid_report::apple_vendor_top_case_input,
                    pqrs::karabiner_virtual_hid_device::hid_report::apple_vendor_keyboard_input,
                    pqrs::karabiner_virtual_hid_device::hid_report::pointing_input,
-                   std::string,                       // For shell_command
-                   std::vector<input_source_selector> // For select_input_source
+                   std::string,                                             // For shell_command
+                   std::vector<pqrs::osx::input_source_selector::specifier> // For select_input_source
                    >
         value_;
     absolute_time_point time_stamp_;
@@ -378,10 +377,10 @@ public:
     events_.push_back(e);
   }
 
-  void push_back_select_input_source_event(const std::vector<input_source_selector>& input_source_selectors,
+  void push_back_select_input_source_event(const std::vector<pqrs::osx::input_source_selector::specifier>& input_source_specifiers,
                                            absolute_time_point time_stamp) {
     // Do not call adjust_time_stamp.
-    auto e = event::make_select_input_source_event(input_source_selectors,
+    auto e = event::make_select_input_source_event(input_source_specifiers,
                                                    time_stamp);
 
     events_.push_back(e);
@@ -452,10 +451,10 @@ public:
                 logger::get_logger()->error("error in shell_command: {0}", e.what());
               }
             }
-            if (auto input_source_selectors = e.get_input_source_selectors()) {
+            if (auto input_source_specifiers = e.get_input_source_specifiers()) {
               if (auto client = weak_console_user_server_client.lock()) {
-                auto input_source_specifiers = std::make_shared<std::vector<pqrs::osx::input_source_selector::specifier>>();
-                for (const auto& s : *input_source_selectors) {
+                auto specifiers = std::make_shared<std::vector<pqrs::osx::input_source_selector::specifier>>();
+                for (const auto& s : *input_source_specifiers) {
                   pqrs::osx::input_source_selector::specifier specifier;
 
                   if (auto& v = s.get_language_string()) {
@@ -470,9 +469,9 @@ public:
                     specifier.set_input_mode_id(*v);
                   }
 
-                  input_source_specifiers->push_back(specifier);
+                  specifiers->push_back(specifier);
                 }
-                client->async_select_input_source(input_source_specifiers);
+                client->async_select_input_source(specifiers);
               }
             }
 

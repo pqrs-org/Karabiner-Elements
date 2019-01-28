@@ -195,9 +195,9 @@ public:
           break;
 
         case event_queue::event::type::select_input_source:
-          if (auto input_source_selectors = front_input_event.get_event().get_input_source_selectors()) {
+          if (auto input_source_specifiers = front_input_event.get_event().get_input_source_specifiers()) {
             if (front_input_event.get_event_type() == event_type::key_down) {
-              queue_.push_back_select_input_source_event(*input_source_selectors,
+              queue_.push_back_select_input_source_event(*input_source_specifiers,
                                                          front_input_event.get_event_time_stamp().get_time_stamp());
             }
           }

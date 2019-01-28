@@ -97,12 +97,12 @@ public:
         break;
 
       case type::select_input_source:
-        if (auto v = json_utility::find_array(json, "input_source_selectors")) {
-          std::vector<input_source_selector> input_source_selectors;
+        if (auto v = json_utility::find_array(json, "input_source_specifiers")) {
+          std::vector<pqrs::osx::input_source_selector::specifier> input_source_specifiers;
           for (const auto& j : *v) {
-            input_source_selectors.emplace_back(j);
+            input_source_specifiers.emplace_back(j);
           }
-          result.value_ = input_source_selectors;
+          result.value_ = input_source_specifiers;
         }
         break;
 
@@ -205,8 +205,8 @@ public:
         break;
 
       case type::select_input_source:
-        if (auto v = get_input_source_selectors()) {
-          json["input_source_selectors"] = *v;
+        if (auto v = get_input_source_specifiers()) {
+          json["input_source_specifiers"] = *v;
         }
         break;
 
@@ -280,10 +280,10 @@ public:
     return e;
   }
 
-  static event make_select_input_source_event(const std::vector<input_source_selector>& input_source_selector) {
+  static event make_select_input_source_event(const std::vector<pqrs::osx::input_source_selector::specifier>& input_source_specifiers) {
     event e;
     e.type_ = type::select_input_source;
-    e.value_ = input_source_selector;
+    e.value_ = input_source_specifiers;
     return e;
   }
 
@@ -416,10 +416,10 @@ public:
     return std::nullopt;
   }
 
-  std::optional<std::vector<input_source_selector>> get_input_source_selectors(void) const {
+  std::optional<std::vector<pqrs::osx::input_source_selector::specifier>> get_input_source_specifiers(void) const {
     try {
       if (type_ == type::select_input_source) {
-        return boost::get<std::vector<input_source_selector>>(value_);
+        return boost::get<std::vector<pqrs::osx::input_source_selector::specifier>>(value_);
       }
     } catch (boost::bad_get&) {
     }
@@ -560,19 +560,19 @@ private:
 
   type type_;
 
-  boost::variant<key_code,                                       // For type::key_code
-                 consumer_key_code,                              // For type::consumer_key_code
-                 pointing_button,                                // For type::pointing_button
-                 pointing_motion,                                // For type::pointing_motion
-                 int64_t,                                        // For type::caps_lock_state_changed
-                 std::string,                                    // For shell_command, keyboard_type_changed
-                 std::vector<input_source_selector>,             // For select_input_source
-                 std::pair<std::string, int>,                    // For set_variable
-                 mouse_key,                                      // For mouse_key
-                 manipulator_environment::frontmost_application, // For frontmost_application_changed
-                 pqrs::osx::input_source::properties,            // For input_source_changed
-                 device_properties,                              // For device_grabbed
-                 boost::blank>                                   // For virtual events
+  boost::variant<key_code,                                                 // For type::key_code
+                 consumer_key_code,                                        // For type::consumer_key_code
+                 pointing_button,                                          // For type::pointing_button
+                 pointing_motion,                                          // For type::pointing_motion
+                 int64_t,                                                  // For type::caps_lock_state_changed
+                 std::string,                                              // For shell_command, keyboard_type_changed
+                 std::vector<pqrs::osx::input_source_selector::specifier>, // For select_input_source
+                 std::pair<std::string, int>,                              // For set_variable
+                 mouse_key,                                                // For mouse_key
+                 manipulator_environment::frontmost_application,           // For frontmost_application_changed
+                 pqrs::osx::input_source::properties,                      // For input_source_changed
+                 device_properties,                                        // For device_grabbed
+                 boost::blank>                                             // For virtual events
       value_;
 };
 

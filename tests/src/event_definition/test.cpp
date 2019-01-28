@@ -164,7 +164,7 @@ TEST_CASE("manipulator.details.to_event_definition") {
     REQUIRE(event_definition.get_event_definition().get_key_code() == std::nullopt);
     REQUIRE(event_definition.get_event_definition().get_pointing_button() == std::nullopt);
     REQUIRE(event_definition.get_event_definition().get_shell_command() == shell_command);
-    REQUIRE(event_definition.get_event_definition().get_input_source_selectors() == std::nullopt);
+    REQUIRE(event_definition.get_event_definition().get_input_source_specifiers() == std::nullopt);
   }
   // select_input_source
   {
@@ -179,7 +179,7 @@ TEST_CASE("manipulator.details.to_event_definition") {
     REQUIRE(event_definition.get_event_definition().get_key_code() == std::nullopt);
     REQUIRE(event_definition.get_event_definition().get_pointing_button() == std::nullopt);
     REQUIRE(event_definition.get_event_definition().get_shell_command() == std::nullopt);
-    REQUIRE(event_definition.get_event_definition().get_input_source_selectors() == std::vector<pqrs::osx::input_source_selector::specifier>({s}));
+    REQUIRE(event_definition.get_event_definition().get_input_source_specifiers() == std::vector<pqrs::osx::input_source_selector::specifier>({s}));
   }
   // select_input_source (array)
   {
@@ -201,7 +201,7 @@ TEST_CASE("manipulator.details.to_event_definition") {
     REQUIRE(event_definition.get_event_definition().get_key_code() == std::nullopt);
     REQUIRE(event_definition.get_event_definition().get_pointing_button() == std::nullopt);
     REQUIRE(event_definition.get_event_definition().get_shell_command() == std::nullopt);
-    REQUIRE(event_definition.get_event_definition().get_input_source_selectors() == specifiers);
+    REQUIRE(event_definition.get_event_definition().get_input_source_specifiers() == specifiers);
   }
   // lazy
   {

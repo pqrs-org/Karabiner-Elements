@@ -34,7 +34,7 @@ public:
           }
         } else if (key == "input_sources") {
           for (const auto& j : value) {
-            input_source_selectors_.emplace_back(j);
+            input_source_specifiers_.emplace_back(j);
           }
         } else {
           logger::get_logger()->error("complex_modifications json error: Unknown key: {0} in {1}", key, json.dump());
@@ -54,7 +54,7 @@ public:
 
     bool result = false;
 
-    for (const auto& s : input_source_selectors_) {
+    for (const auto& s : input_source_specifiers_) {
       if (s.test(manipulator_environment.get_input_source_properties())) {
         switch (type_) {
           case type::input_source_if:
@@ -85,7 +85,7 @@ public:
 
 private:
   type type_;
-  std::vector<input_source_selector> input_source_selectors_;
+  std::vector<pqrs::osx::input_source_selector::specifier> input_source_specifiers_;
 
   mutable std::optional<std::pair<pqrs::osx::input_source::properties, bool>> cached_result_;
 };

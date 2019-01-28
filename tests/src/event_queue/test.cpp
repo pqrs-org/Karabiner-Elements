@@ -112,9 +112,9 @@ TEST_CASE("json") {
   {
     nlohmann::json expected;
     expected["type"] = "select_input_source";
-    expected["input_source_selectors"] = nlohmann::json::array();
-    expected["input_source_selectors"].push_back(nlohmann::json::object());
-    expected["input_source_selectors"].back()["language"] = "^en$";
+    expected["input_source_specifiers"] = nlohmann::json::array();
+    expected["input_source_specifiers"].push_back(nlohmann::json::object());
+    expected["input_source_specifiers"].back()["language"] = "^en$";
     std::vector<pqrs::osx::input_source_selector::specifier> specifiers;
     pqrs::osx::input_source_selector::specifier s;
     s.set_language("^en$");
