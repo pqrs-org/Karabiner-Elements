@@ -12,6 +12,9 @@ namespace osx {
 namespace frontmost_application_monitor {
 class application final {
 public:
+  application(void) {
+  }
+
   application(const char* bundle_identifier,
               const char* file_path) {
     if (bundle_identifier) {
@@ -26,8 +29,16 @@ public:
     return bundle_identifier_;
   }
 
+  void set_bundle_identifier(const std::optional<std::string>& value) {
+    bundle_identifier_ = value;
+  }
+
   const std::optional<std::string>& get_file_path(void) const {
     return file_path_;
+  }
+
+  void set_file_path(const std::optional<std::string>& value) {
+    file_path_ = value;
   }
 
 private:
@@ -37,3 +48,24 @@ private:
 } // namespace frontmost_application_monitor
 } // namespace osx
 } // namespace pqrs
+
+namespace std {
+template <>
+struct hash<pqrs::osx::frontmost_application_monitor::application> final {
+  std::size_t operator()(const pqrs::osx::frontmost_application_monitor::application& value) const {
+    size_t h = 0;
+
+    if (auto& bundle_identifier = value.get_bundle_identifier()) {
+      h = std::hash<std::string>{}(*bundle_identifier);
+      h <<= 1;
+    }
+
+    if (auto& file_path = value.get_file_path()) {
+      h = std::hash<std::string>{}(*file_path);
+      h <<= 1;
+    }
+
+    return h;
+  }
+};
+} // namespace std
