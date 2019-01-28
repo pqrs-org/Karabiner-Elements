@@ -6,8 +6,12 @@
 
 #include <pqrs/osx/input_source/properties.hpp>
 
-namespace boost {
-inline std::size_t hash_value(const pqrs::osx::input_source::properties& value) {
-  return std::hash<pqrs::osx::input_source::properties>{}(value);
+namespace pqrs {
+namespace osx {
+namespace input_source {
+inline std::size_t hash_value(const properties& value) {
+  return std::hash<properties>{}(value);
 }
-} // namespace boost
+} // namespace input_source
+} // namespace osx
+} // namespace pqrs

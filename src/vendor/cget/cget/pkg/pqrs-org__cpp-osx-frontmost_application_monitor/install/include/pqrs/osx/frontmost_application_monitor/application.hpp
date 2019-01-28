@@ -5,6 +5,7 @@
 // (See http://www.boost.org/LICENSE_1_0.txt)
 
 #include <optional>
+#include <pqrs/hash.hpp>
 #include <string>
 
 namespace pqrs {
@@ -56,13 +57,11 @@ struct hash<pqrs::osx::frontmost_application_monitor::application> final {
     size_t h = 0;
 
     if (auto& bundle_identifier = value.get_bundle_identifier()) {
-      h = std::hash<std::string>{}(*bundle_identifier);
-      h <<= 1;
+      pqrs::hash_combine(h, *bundle_identifier);
     }
 
     if (auto& file_path = value.get_file_path()) {
-      h = std::hash<std::string>{}(*file_path);
-      h <<= 1;
+      pqrs::hash_combine(h, *file_path);
     }
 
     return h;

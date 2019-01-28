@@ -5,6 +5,7 @@
 // (See http://www.boost.org/LICENSE_1_0.txt)
 
 #include <optional>
+#include <pqrs/hash.hpp>
 #include <pqrs/osx/input_source.hpp>
 #include <regex>
 #include <string>
@@ -132,18 +133,15 @@ struct hash<pqrs::osx::input_source_selector::specifier> final {
     size_t h = 0;
 
     if (auto& s = value.get_language_string()) {
-      h = std::hash<std::string>{}(*s);
-      h <<= 1;
+      pqrs::hash_combine(h, *s);
     }
 
     if (auto& s = value.get_input_source_id_string()) {
-      h = std::hash<std::string>{}(*s);
-      h <<= 1;
+      pqrs::hash_combine(h, *s);
     }
 
     if (auto& s = value.get_input_mode_id_string()) {
-      h = std::hash<std::string>{}(*s);
-      h <<= 1;
+      pqrs::hash_combine(h, *s);
     }
 
     return h;

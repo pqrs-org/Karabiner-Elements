@@ -6,8 +6,12 @@
 
 #include <pqrs/osx/frontmost_application_monitor/application.hpp>
 
-namespace boost {
-inline std::size_t hash_value(const pqrs::osx::frontmost_application_monitor::application& value) {
-  return std::hash<pqrs::osx::frontmost_application_monitor::application>{}(value);
+namespace pqrs {
+namespace osx {
+namespace frontmost_application_monitor {
+inline std::size_t hash_value(const application& value) {
+  return std::hash<application>{}(value);
 }
-} // namespace boost
+} // namespace frontmost_application_monitor
+} // namespace osx
+} // namespace pqrs

@@ -5,6 +5,7 @@
 // (See http://www.boost.org/LICENSE_1_0.txt)
 
 #include "input_source.hpp"
+#include <pqrs/hash.hpp>
 
 namespace pqrs {
 namespace osx {
@@ -96,7 +97,7 @@ struct hash<pqrs::osx::input_source::properties> final {
     size_t h = 0;
 
     if (auto& input_source_id = value.get_input_source_id()) {
-      h = std::hash<std::string>{}(*input_source_id);
+      pqrs::hash_combine(h, *input_source_id);
     }
 
     return h;
