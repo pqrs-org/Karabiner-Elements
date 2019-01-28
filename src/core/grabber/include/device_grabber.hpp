@@ -364,9 +364,9 @@ public:
     });
   }
 
-  void async_post_input_source_changed_event(const input_source_identifiers& input_source_identifiers) {
-    enqueue_to_dispatcher([this, input_source_identifiers] {
-      auto event = event_queue::event::make_input_source_changed_event(input_source_identifiers);
+  void async_post_input_source_changed_event(const pqrs::osx::input_source::properties& properties) {
+    enqueue_to_dispatcher([this, properties] {
+      auto event = event_queue::event::make_input_source_changed_event(properties);
       event_queue::entry entry(device_id(0),
                                event_queue::event_time_stamp(pqrs::osx::chrono::mach_absolute_time_point()),
                                event,

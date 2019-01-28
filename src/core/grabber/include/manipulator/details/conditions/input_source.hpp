@@ -48,14 +48,14 @@ public:
 
   virtual bool is_fulfilled(const event_queue::entry& entry,
                             const manipulator_environment& manipulator_environment) const {
-    if (cached_result_ && cached_result_->first == manipulator_environment.get_input_source_identifiers()) {
+    if (cached_result_ && cached_result_->first == manipulator_environment.get_input_source_properties()) {
       return cached_result_->second;
     }
 
     bool result = false;
 
     for (const auto& s : input_source_selectors_) {
-      if (s.test(manipulator_environment.get_input_source_identifiers())) {
+      if (s.test(manipulator_environment.get_input_source_properties())) {
         switch (type_) {
           case type::input_source_if:
             result = true;
@@ -79,7 +79,7 @@ public:
     }
 
   finish:
-    cached_result_ = std::make_pair(manipulator_environment.get_input_source_identifiers(), result);
+    cached_result_ = std::make_pair(manipulator_environment.get_input_source_properties(), result);
     return result;
   }
 
@@ -87,7 +87,7 @@ private:
   type type_;
   std::vector<input_source_selector> input_source_selectors_;
 
-  mutable std::optional<std::pair<input_source_identifiers, bool>> cached_result_;
+  mutable std::optional<std::pair<pqrs::osx::input_source::properties, bool>> cached_result_;
 };
 } // namespace conditions
 } // namespace details

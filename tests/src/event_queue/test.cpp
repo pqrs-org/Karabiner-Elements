@@ -150,8 +150,8 @@ TEST_CASE("json") {
   {
     nlohmann::json expected;
     expected["type"] = "input_source_changed";
-    expected["input_source_identifiers"]["first_language"] = "en";
-    expected["input_source_identifiers"]["input_source_id"] = "com.apple.keylayout.US";
+    expected["input_source_properties"]["first_language"] = "en";
+    expected["input_source_properties"]["input_source_id"] = "com.apple.keylayout.US";
 
     pqrs::osx::input_source::properties properties;
     properties.set_first_language("en");

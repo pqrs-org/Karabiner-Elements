@@ -191,8 +191,8 @@ private:
 
     input_source_monitor_->input_source_changed.connect([this](auto&& input_source_ptr) {
       if (input_source_ptr && grabber_client_) {
-        auto identifiers = std::make_shared<input_source_identifiers>(*input_source_ptr);
-        grabber_client_->async_input_source_changed(identifiers);
+        auto properties = std::make_shared<pqrs::osx::input_source::properties>(*input_source_ptr);
+        grabber_client_->async_input_source_changed(properties);
       }
     });
 

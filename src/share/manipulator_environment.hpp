@@ -93,13 +93,13 @@ public:
 
   nlohmann::json to_json(void) const {
     nlohmann::json input_source_json;
-    if (auto& v = input_source_identifiers_.get_first_language()) {
+    if (auto& v = input_source_properties_.get_first_language()) {
       input_source_json["language"] = *v;
     }
-    if (auto& v = input_source_identifiers_.get_input_source_id()) {
+    if (auto& v = input_source_properties_.get_input_source_id()) {
       input_source_json["input_source_id"] = *v;
     }
-    if (auto& v = input_source_identifiers_.get_input_mode_id()) {
+    if (auto& v = input_source_properties_.get_input_mode_id()) {
       input_source_json["input_mode_id"] = *v;
     }
 
@@ -141,12 +141,12 @@ public:
     async_save_to_file();
   }
 
-  const input_source_identifiers& get_input_source_identifiers(void) const {
-    return input_source_identifiers_;
+  const pqrs::osx::input_source::properties& get_input_source_properties(void) const {
+    return input_source_properties_;
   }
 
-  void set_input_source_identifiers(const input_source_identifiers& value) {
-    input_source_identifiers_ = value;
+  void set_input_source_properties(const pqrs::osx::input_source::properties& value) {
+    input_source_properties_ = value;
     async_save_to_file();
   }
 
@@ -183,7 +183,7 @@ private:
   std::string output_json_file_path_;
   device_properties_manager device_properties_manager_;
   frontmost_application frontmost_application_;
-  input_source_identifiers input_source_identifiers_;
+  pqrs::osx::input_source::properties input_source_properties_;
   std::unordered_map<std::string, int> variables_;
   std::string keyboard_type_;
 };

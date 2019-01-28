@@ -156,7 +156,7 @@ TEST_CASE("manipulator_environment.save_to_file") {
   pqrs::osx::input_source::properties properties;
   properties.set_first_language("en");
   properties.set_input_source_id("com.apple.keylayout.US");
-  manipulator_environment.set_input_source_identifiers(properties);
+  manipulator_environment.set_input_source_properties(properties);
   manipulator_environment.set_variable("value1", 100);
   manipulator_environment.set_variable("value2", 200);
   manipulator_environment.set_keyboard_type("iso");
@@ -225,7 +225,7 @@ TEST_CASE("conditions.input_source") {
     pqrs::osx::input_source::properties properties;
     properties.set_first_language("en");
     properties.set_input_source_id("com.apple.keylayout.Australian");
-    manipulator_environment.set_input_source_identifiers(properties);
+    manipulator_environment.set_input_source_properties(properties);
     REQUIRE(helper.get_condition_manager().is_fulfilled(entry,
                                                         manipulator_environment) == true);
     // use cache
@@ -238,7 +238,7 @@ TEST_CASE("conditions.input_source") {
     pqrs::osx::input_source::properties properties;
     properties.set_first_language("ja");
     properties.set_input_source_id("com/apple/keylayout/Australian");
-    manipulator_environment.set_input_source_identifiers(properties);
+    manipulator_environment.set_input_source_properties(properties);
     REQUIRE(helper.get_condition_manager().is_fulfilled(entry,
                                                         manipulator_environment) == false);
     // use cache
@@ -251,7 +251,7 @@ TEST_CASE("conditions.input_source") {
     pqrs::osx::input_source::properties properties;
     properties.set_first_language("ja");
     properties.set_input_source_id("com.apple.keylayout.US");
-    manipulator_environment.set_input_source_identifiers(properties);
+    manipulator_environment.set_input_source_properties(properties);
     REQUIRE(helper.get_condition_manager().is_fulfilled(entry,
                                                         manipulator_environment) == true);
   }
@@ -262,7 +262,7 @@ TEST_CASE("conditions.input_source") {
     properties.set_first_language("ja");
     properties.set_input_source_id("com.apple.keylayout.Australian");
     properties.set_input_mode_id("com.apple.inputmethod.Japanese.FullWidthRoman");
-    manipulator_environment.set_input_source_identifiers(properties);
+    manipulator_environment.set_input_source_properties(properties);
     REQUIRE(helper.get_condition_manager().is_fulfilled(entry,
                                                         manipulator_environment) == true);
   }
@@ -272,7 +272,7 @@ TEST_CASE("conditions.input_source") {
     pqrs::osx::input_source::properties properties;
     properties.set_first_language("fr");
     properties.set_input_source_id("com.apple.keylayout.US");
-    manipulator_environment.set_input_source_identifiers(properties);
+    manipulator_environment.set_input_source_properties(properties);
     REQUIRE(helper.get_condition_manager().is_fulfilled(entry,
                                                         manipulator_environment) == false);
   }

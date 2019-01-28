@@ -1,7 +1,5 @@
 #pragma once
 
-#include "boost_defs.hpp"
-
 #include "Karabiner-VirtualHIDDevice/dist/include/karabiner_virtual_hid_device_methods.hpp"
 #include "apple_hid_usage_tables.hpp"
 #include "constants.hpp"
@@ -18,7 +16,6 @@
 #include "types/hid_usage.hpp"
 #include "types/hid_usage_page.hpp"
 #include "types/hid_value.hpp"
-#include "types/input_source_identifiers.hpp"
 #include "types/input_source_selector.hpp"
 #include "types/key_code.hpp"
 #include "types/led_state.hpp"
@@ -35,11 +32,13 @@
 #include <IOKit/hid/IOHIDUsageTables.h>
 #include <IOKit/hidsystem/IOHIDShared.h>
 #include <IOKit/hidsystem/ev_keymap.h>
-#include <boost/functional/hash.hpp>
 #include <cstring>
 #include <iostream>
 #include <nlohmann/json.hpp>
 #include <optional>
+#include <pqrs/osx/input_source.hpp>
+#include <pqrs/osx/input_source/extra/boost.hpp>
+#include <pqrs/osx/input_source/extra/nlohmann_json.hpp>
 #include <string>
 #include <thread>
 #include <type_safe/strong_typedef.hpp>

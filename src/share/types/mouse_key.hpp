@@ -1,11 +1,9 @@
 #pragma once
 
-#include "boost_defs.hpp"
-
 #include "logger.hpp"
-#include <boost/functional/hash.hpp>
 #include <cstdint>
 #include <ostream>
+#include <pqrs/hash.hpp>
 
 namespace krbn {
 class mouse_key final {
@@ -146,16 +144,6 @@ public:
     return !(*this == other);
   }
 
-  friend size_t hash_value(const mouse_key& value) {
-    size_t h = 0;
-    boost::hash_combine(h, value.x_);
-    boost::hash_combine(h, value.y_);
-    boost::hash_combine(h, value.vertical_wheel_);
-    boost::hash_combine(h, value.horizontal_wheel_);
-    boost::hash_combine(h, value.speed_multiplier_);
-    return h;
-  }
-
 private:
   int x_;
   int y_;
@@ -168,8 +156,22 @@ private:
 namespace std {
 template <>
 struct hash<krbn::mouse_key> final {
-  std::size_t operator()(const krbn::mouse_key& v) const {
-    return hash_value(v);
+  std::size_t operator()(const krbn::mouse_key& value) const {
+    std::size_t h = 0;
+
+    pqrs::hash_combine(h, value.get_x());
+    pqrs::hash_combine(h, value.get_y());
+    pqrs::hash_combine(h, value.get_vertical_wheel());
+    pqrs::hash_combine(h, value.get_horizontal_wheel());
+    pqrs::hash_combine(h, value.get_speed_multiplier());
+
+    return h;
   }
 };
 } // namespace std
+
+namespace krbn {
+inline std::size_t hash_value(const mouse_key& value) {
+  return std::hash<mouse_key>{}(value);
+}
+} // namespace krbn

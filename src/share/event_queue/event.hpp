@@ -10,6 +10,7 @@
 #include "types.hpp"
 #include <boost/variant.hpp>
 #include <optional>
+#include <pqrs/hash.hpp>
 
 namespace krbn {
 namespace event_queue {
@@ -131,8 +132,8 @@ public:
         break;
 
       case type::input_source_changed:
-        if (auto v = json_utility::find_json(json, "input_source_identifiers")) {
-          result.value_ = input_source_identifiers(*v);
+        if (auto v = json_utility::find_json(json, "input_source_properties")) {
+          result.value_ = pqrs::osx::input_source::properties(*v);
         }
         break;
 
@@ -229,8 +230,8 @@ public:
         break;
 
       case type::input_source_changed:
-        if (auto v = get_input_source_identifiers()) {
-          json["input_source_identifiers"] = *v;
+        if (auto v = get_input_source_properties()) {
+          json["input_source_properties"] = *v;
         }
         break;
 
@@ -332,10 +333,10 @@ public:
     return e;
   }
 
-  static event make_input_source_changed_event(const input_source_identifiers& input_source_identifiers) {
+  static event make_input_source_changed_event(const pqrs::osx::input_source::properties& properties) {
     event e;
     e.type_ = type::input_source_changed;
-    e.value_ = input_source_identifiers;
+    e.value_ = properties;
     return e;
   }
 
@@ -455,10 +456,10 @@ public:
     return std::nullopt;
   }
 
-  std::optional<input_source_identifiers> get_input_source_identifiers(void) const {
+  std::optional<pqrs::osx::input_source::properties> get_input_source_properties(void) const {
     try {
       if (type_ == type::input_source_changed) {
-        return boost::get<input_source_identifiers>(value_);
+        return boost::get<pqrs::osx::input_source::properties>(value_);
       }
     } catch (boost::bad_get&) {
     }
@@ -569,7 +570,7 @@ private:
                  std::pair<std::string, int>,                    // For set_variable
                  mouse_key,                                      // For mouse_key
                  manipulator_environment::frontmost_application, // For frontmost_application_changed
-                 input_source_identifiers,                       // For input_source_changed
+                 pqrs::osx::input_source::properties,            // For input_source_changed
                  device_properties,                              // For device_grabbed
                  boost::blank>                                   // For virtual events
       value_;

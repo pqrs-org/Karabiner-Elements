@@ -83,8 +83,8 @@ public:
     if (auto frontmost_application = event.get_frontmost_application()) {
       manipulator_environment_.set_frontmost_application(*frontmost_application);
     }
-    if (auto input_source_identifiers = event.get_input_source_identifiers()) {
-      manipulator_environment_.set_input_source_identifiers(*input_source_identifiers);
+    if (auto properties = event.get_input_source_properties()) {
+      manipulator_environment_.set_input_source_properties(*properties);
     }
     if (event_type == event_type::key_down) {
       if (auto set_variable = event.get_set_variable()) {
