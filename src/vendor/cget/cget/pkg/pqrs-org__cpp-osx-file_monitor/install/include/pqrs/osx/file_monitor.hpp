@@ -1,6 +1,6 @@
 #pragma once
 
-// pqrs::osx::file_monitor v1.3
+// pqrs::osx::file_monitor v1.4
 
 // (C) Copyright Takayama Fumihiko 2018.
 // Distributed under the Boost Software License, Version 1.0.
@@ -81,7 +81,14 @@ public:
 
   void enqueue_file_changed(const std::string& file_path) {
     cf_run_loop_thread_->enqueue(^{
-      call_file_changed_slots(file_path);
+      auto it = file_bodies_.find(file_path);
+      if (it != std::end(file_bodies_)) {
+        auto changed_file_body = it->second;
+        enqueue_to_dispatcher([this, file_path, changed_file_body] {
+          file_changed(file_path,
+                       changed_file_body);
+        });
+      }
     });
   }
 
@@ -128,8 +135,15 @@ private:
     //
     // Thus, we should signal manually once.
 
-    for (const auto& file : files_) {
-      call_file_changed_slots(file);
+    for (const auto& file_path : files_) {
+      auto [updated, file_body] = update_file_bodies(file_path);
+      if (updated) {
+        auto changed_file_body = file_body;
+        enqueue_to_dispatcher([this, file_path, changed_file_body] {
+          file_changed(file_path,
+                       changed_file_body);
+        });
+      }
     }
 
     // ----------------------------------------
@@ -148,7 +162,7 @@ private:
 
     auto flags = FSEventStreamCreateFlags(0);
     flags |= kFSEventStreamCreateFlagWatchRoot;
-    flags |= kFSEventStreamCreateFlagIgnoreSelf;
+    flags |= kFSEventStreamCreateFlagMarkSelf;
     flags |= kFSEventStreamCreateFlagFileEvents;
 
     stream_ = FSEventStreamCreate(kCFAllocatorDefault,
@@ -255,14 +269,25 @@ private:
         }
 
         if (changed_file_path) {
-          call_file_changed_slots(*changed_file_path);
+          auto file_path = *changed_file_path;
+          auto [updated, file_body] = update_file_bodies(file_path);
+          if (updated) {
+            bool own_event = e.flags & kFSEventStreamEventFlagOwnEvent;
+            if (!own_event) {
+              auto changed_file_body = file_body;
+              enqueue_to_dispatcher([this, file_path, changed_file_body] {
+                file_changed(file_path,
+                             changed_file_body);
+              });
+            }
+          }
         }
       }
     }
   }
 
   // This method is executed in cf_run_loop_thread_.
-  void call_file_changed_slots(const std::string& file_path) {
+  std::pair<bool, std::shared_ptr<std::vector<uint8_t>>> update_file_bodies(const std::string& file_path) {
     if (std::any_of(std::begin(files_),
                     std::end(files_),
                     [&](auto&& p) {
@@ -274,20 +299,19 @@ private:
         if (it->second && file_body) {
           if (*(it->second) == *(file_body)) {
             // file_body is not changed
-            return;
+            return std::make_pair(false, nullptr);
           }
         } else if (!it->second && !file_body) {
           // file_body is not changed
-          return;
+          return std::make_pair(false, nullptr);
         }
       }
       file_bodies_[file_path] = file_body;
 
-      enqueue_to_dispatcher([this, file_path, file_body] {
-        file_changed(file_path,
-                     file_body);
-      });
+      return std::make_pair(true, file_body);
     }
+
+    return std::make_pair(false, nullptr);
   }
 
   std::vector<std::string> files_;
