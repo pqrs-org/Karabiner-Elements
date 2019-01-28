@@ -114,10 +114,12 @@ TEST_CASE("json") {
     expected["type"] = "select_input_source";
     expected["input_source_selectors"] = nlohmann::json::array();
     expected["input_source_selectors"].push_back(nlohmann::json::object());
-    expected["input_source_selectors"].back()["language"] = "en";
-    auto e = krbn::event_queue::event::make_select_input_source_event({krbn::input_source_selector(std::string("en"),
-                                                                                                   std::nullopt,
-                                                                                                   std::nullopt)});
+    expected["input_source_selectors"].back()["language"] = "^en$";
+    std::vector<pqrs::osx::input_source_selector::specifier> specifiers;
+    pqrs::osx::input_source_selector::specifier s;
+    s.set_language("^en$");
+    specifiers.push_back(s);
+    auto e = krbn::event_queue::event::make_select_input_source_event(specifiers);
     auto json = e.to_json();
     REQUIRE(json == expected);
     auto event_from_json = krbn::event_queue::event::make_from_json(json);
@@ -148,12 +150,13 @@ TEST_CASE("json") {
   {
     nlohmann::json expected;
     expected["type"] = "input_source_changed";
-    expected["input_source_identifiers"]["language"] = "en";
+    expected["input_source_identifiers"]["first_language"] = "en";
     expected["input_source_identifiers"]["input_source_id"] = "com.apple.keylayout.US";
 
-    auto e = krbn::event_queue::event::make_input_source_changed_event({std::string("en"),
-                                                                        std::string("com.apple.keylayout.US"),
-                                                                        std::nullopt});
+    pqrs::osx::input_source::properties properties;
+    properties.set_first_language("en");
+    properties.set_input_source_id("com.apple.keylayout.US");
+    auto e = krbn::event_queue::event::make_input_source_changed_event(properties);
     auto json = e.to_json();
     REQUIRE(json == expected);
     auto event_from_json = krbn::event_queue::event::make_from_json(json);

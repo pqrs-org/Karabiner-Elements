@@ -168,43 +168,40 @@ TEST_CASE("manipulator.details.to_event_definition") {
   }
   // select_input_source
   {
-    krbn::input_source_selector input_source_selector(std::nullopt,
-                                                      std::string("com.apple.keylayout.US"),
-                                                      std::nullopt);
+    pqrs::osx::input_source_selector::specifier s;
+    s.set_input_source_id("^com\\.apple\\.keylayout\\.US$");
 
     nlohmann::json json;
-    json["select_input_source"]["input_source_id"] = "com.apple.keylayout.US";
+    json["select_input_source"]["input_source_id"] = "^com\\.apple\\.keylayout\\.US$";
 
     krbn::manipulator::details::to_event_definition event_definition(json);
     REQUIRE(event_definition.get_event_definition().get_type() == krbn::manipulator::details::event_definition::type::select_input_source);
     REQUIRE(event_definition.get_event_definition().get_key_code() == std::nullopt);
     REQUIRE(event_definition.get_event_definition().get_pointing_button() == std::nullopt);
     REQUIRE(event_definition.get_event_definition().get_shell_command() == std::nullopt);
-    REQUIRE(event_definition.get_event_definition().get_input_source_selectors() == std::vector<krbn::input_source_selector>({input_source_selector}));
+    REQUIRE(event_definition.get_event_definition().get_input_source_selectors() == std::vector<pqrs::osx::input_source_selector::specifier>({s}));
   }
   // select_input_source (array)
   {
-    krbn::input_source_selector input_source_selector1(std::nullopt,
-                                                       std::string("com.apple.keylayout.US"),
-                                                       std::nullopt);
-    krbn::input_source_selector input_source_selector2(std::string("en"),
-                                                       std::nullopt,
-                                                       std::nullopt);
+    pqrs::osx::input_source_selector::specifier s1;
+    s1.set_input_source_id("^com\\.apple\\.keylayout\\.US$");
+    pqrs::osx::input_source_selector::specifier s2;
+    s2.set_language("^en$");
+    std::vector<pqrs::osx::input_source_selector::specifier> specifiers{s1, s2};
 
     nlohmann::json json;
     json["select_input_source"] = nlohmann::json::array();
     json["select_input_source"].push_back(nlohmann::json::object());
-    json["select_input_source"].back()["input_source_id"] = "com.apple.keylayout.US";
+    json["select_input_source"].back()["input_source_id"] = "^com\\.apple\\.keylayout\\.US$";
     json["select_input_source"].push_back(nlohmann::json::object());
-    json["select_input_source"].back()["language"] = "en";
+    json["select_input_source"].back()["language"] = "^en$";
 
     krbn::manipulator::details::to_event_definition event_definition(json);
     REQUIRE(event_definition.get_event_definition().get_type() == krbn::manipulator::details::event_definition::type::select_input_source);
     REQUIRE(event_definition.get_event_definition().get_key_code() == std::nullopt);
     REQUIRE(event_definition.get_event_definition().get_pointing_button() == std::nullopt);
     REQUIRE(event_definition.get_event_definition().get_shell_command() == std::nullopt);
-    REQUIRE(event_definition.get_event_definition().get_input_source_selectors() == std::vector<krbn::input_source_selector>({input_source_selector1,
-                                                                                                                              input_source_selector2}));
+    REQUIRE(event_definition.get_event_definition().get_input_source_selectors() == specifiers);
   }
   // lazy
   {

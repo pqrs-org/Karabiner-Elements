@@ -54,129 +54,132 @@ public:
     });
 
     server_->received.connect([this](auto&& buffer) {
-      if (auto type = types::find_operation_type(*buffer)) {
-        switch (*type) {
-          case operation_type::grabbable_state_changed:
-            if (buffer->size() != sizeof(operation_type_grabbable_state_changed_struct)) {
-              logger::get_logger()->error("Invalid size for `operation_type::grabbable_state_changed`.");
-            } else {
-              auto p = reinterpret_cast<operation_type_grabbable_state_changed_struct*>(&((*buffer)[0]));
+      if (buffer) {
+        if (buffer->empty()) {
+          return;
+        }
 
-              if (auto m = weak_grabbable_state_queues_manager_.lock()) {
-                m->update_grabbable_state(p->grabbable_state);
-              }
-            }
-            break;
-
-          case operation_type::caps_lock_state_changed:
-            if (buffer->size() != sizeof(operation_type_caps_lock_state_changed_struct)) {
-              logger::get_logger()->error("Invalid size for `operation_type::caps_lock_state_changed`.");
-            } else {
-              auto p = reinterpret_cast<operation_type_caps_lock_state_changed_struct*>(&((*buffer)[0]));
-
+        try {
+          nlohmann::json json = nlohmann::json::from_msgpack(*buffer);
+          switch (json.at("operation_type").get<operation_type>()) {
+            case operation_type::input_source_changed:
+              input_source_properties_ = json.at("input_source_properties").get<pqrs::osx::input_source::properties>();
               if (device_grabber_) {
-                device_grabber_->async_set_caps_lock_state(p->state);
+                device_grabber_->async_post_input_source_changed_event(input_source_properties_);
               }
-            }
-            break;
+              break;
 
-          case operation_type::connect_console_user_server:
-            if (buffer->size() != sizeof(operation_type_connect_console_user_server_struct)) {
-              logger::get_logger()->error("Invalid size for `operation_type::connect_console_user_server`.");
-            } else {
-              auto p = reinterpret_cast<operation_type_connect_console_user_server_struct*>(&((*buffer)[0]));
+            default:
+              break;
+          }
+          return;
+        } catch (std::exception& e) {
+          //          logger::get_logger()->error("Received data is corrupted: {0}", e.what());
+        }
 
-              // Ensure user_core_configuration_file_path is null-terminated string even if corrupted data is sent.
-              p->user_core_configuration_file_path[sizeof(p->user_core_configuration_file_path) - 1] = '\0';
-              std::string user_core_configuration_file_path(p->user_core_configuration_file_path);
+        if (auto type = types::find_operation_type(*buffer)) {
+          switch (*type) {
+            case operation_type::grabbable_state_changed:
+              if (buffer->size() != sizeof(operation_type_grabbable_state_changed_struct)) {
+                logger::get_logger()->error("Invalid size for `operation_type::grabbable_state_changed`.");
+              } else {
+                auto p = reinterpret_cast<operation_type_grabbable_state_changed_struct*>(&((*buffer)[0]));
 
-              logger::get_logger()->info("karabiner_console_user_server is connected (pid:{0})", p->pid);
+                if (auto m = weak_grabbable_state_queues_manager_.lock()) {
+                  m->update_grabbable_state(p->grabbable_state);
+                }
+              }
+              break;
 
-              console_user_server_client_ = nullptr;
-              console_user_server_client_ = std::make_shared<console_user_server_client>();
+            case operation_type::caps_lock_state_changed:
+              if (buffer->size() != sizeof(operation_type_caps_lock_state_changed_struct)) {
+                logger::get_logger()->error("Invalid size for `operation_type::caps_lock_state_changed`.");
+              } else {
+                auto p = reinterpret_cast<operation_type_caps_lock_state_changed_struct*>(&((*buffer)[0]));
 
-              console_user_server_client_->connected.connect([this, user_core_configuration_file_path] {
-                stop_device_grabber();
-                start_device_grabber(user_core_configuration_file_path);
-              });
+                if (device_grabber_) {
+                  device_grabber_->async_set_caps_lock_state(p->state);
+                }
+              }
+              break;
 
-              console_user_server_client_->connect_failed.connect([this](auto&& error_code) {
+            case operation_type::connect_console_user_server:
+              if (buffer->size() != sizeof(operation_type_connect_console_user_server_struct)) {
+                logger::get_logger()->error("Invalid size for `operation_type::connect_console_user_server`.");
+              } else {
+                auto p = reinterpret_cast<operation_type_connect_console_user_server_struct*>(&((*buffer)[0]));
+
+                // Ensure user_core_configuration_file_path is null-terminated string even if corrupted data is sent.
+                p->user_core_configuration_file_path[sizeof(p->user_core_configuration_file_path) - 1] = '\0';
+                std::string user_core_configuration_file_path(p->user_core_configuration_file_path);
+
+                logger::get_logger()->info("karabiner_console_user_server is connected (pid:{0})", p->pid);
+
                 console_user_server_client_ = nullptr;
+                console_user_server_client_ = std::make_shared<console_user_server_client>();
 
-                stop_device_grabber();
-                start_grabbing_if_system_core_configuration_file_exists();
-              });
+                console_user_server_client_->connected.connect([this, user_core_configuration_file_path] {
+                  stop_device_grabber();
+                  start_device_grabber(user_core_configuration_file_path);
+                });
 
-              console_user_server_client_->closed.connect([this] {
-                console_user_server_client_ = nullptr;
+                console_user_server_client_->connect_failed.connect([this](auto&& error_code) {
+                  console_user_server_client_ = nullptr;
 
-                stop_device_grabber();
-                start_grabbing_if_system_core_configuration_file_exists();
-              });
+                  stop_device_grabber();
+                  start_grabbing_if_system_core_configuration_file_exists();
+                });
 
-              console_user_server_client_->async_start();
-            }
-            break;
+                console_user_server_client_->closed.connect([this] {
+                  console_user_server_client_ = nullptr;
 
-          case operation_type::system_preferences_updated:
-            if (buffer->size() < sizeof(operation_type_system_preferences_updated_struct)) {
-              logger::get_logger()->error("Invalid size for `operation_type::system_preferences_updated`.");
-            } else {
-              auto p = reinterpret_cast<operation_type_system_preferences_updated_struct*>(&((*buffer)[0]));
+                  stop_device_grabber();
+                  start_grabbing_if_system_core_configuration_file_exists();
+                });
 
-              system_preferences_ = p->system_preferences;
-
-              if (device_grabber_) {
-                device_grabber_->async_set_system_preferences(p->system_preferences);
+                console_user_server_client_->async_start();
               }
+              break;
 
-              logger::get_logger()->info("`system_preferences` is updated.");
-            }
-            break;
+            case operation_type::system_preferences_updated:
+              if (buffer->size() < sizeof(operation_type_system_preferences_updated_struct)) {
+                logger::get_logger()->error("Invalid size for `operation_type::system_preferences_updated`.");
+              } else {
+                auto p = reinterpret_cast<operation_type_system_preferences_updated_struct*>(&((*buffer)[0]));
 
-          case operation_type::frontmost_application_changed:
-            if (buffer->size() < sizeof(operation_type_frontmost_application_changed_struct)) {
-              logger::get_logger()->error("Invalid size for `operation_type::frontmost_application_changed`.");
-            } else {
-              auto p = reinterpret_cast<operation_type_frontmost_application_changed_struct*>(&((*buffer)[0]));
+                system_preferences_ = p->system_preferences;
 
-              // Ensure bundle_identifier and file_path are null-terminated string even if corrupted data is sent.
-              p->bundle_identifier[sizeof(p->bundle_identifier) - 1] = '\0';
-              p->file_path[sizeof(p->file_path) - 1] = '\0';
+                if (device_grabber_) {
+                  device_grabber_->async_set_system_preferences(p->system_preferences);
+                }
 
-              frontmost_application_bundle_identifier_ = p->bundle_identifier;
-              frontmost_application_file_path_ = p->file_path;
-
-              if (device_grabber_) {
-                device_grabber_->async_post_frontmost_application_changed_event(frontmost_application_bundle_identifier_,
-                                                                                frontmost_application_file_path_);
+                logger::get_logger()->info("`system_preferences` is updated.");
               }
-            }
-            break;
+              break;
 
-          case operation_type::input_source_changed:
-            if (buffer->size() < sizeof(operation_type_input_source_changed_struct)) {
-              logger::get_logger()->error("Invalid size for `operation_type::input_source_changed`.");
-            } else {
-              auto p = reinterpret_cast<operation_type_input_source_changed_struct*>(&((*buffer)[0]));
+            case operation_type::frontmost_application_changed:
+              if (buffer->size() < sizeof(operation_type_frontmost_application_changed_struct)) {
+                logger::get_logger()->error("Invalid size for `operation_type::frontmost_application_changed`.");
+              } else {
+                auto p = reinterpret_cast<operation_type_frontmost_application_changed_struct*>(&((*buffer)[0]));
 
-              // Ensure bundle_identifier and file_path are null-terminated string even if corrupted data is sent.
-              p->language[sizeof(p->language) - 1] = '\0';
-              p->input_source_id[sizeof(p->input_source_id) - 1] = '\0';
-              p->input_mode_id[sizeof(p->input_mode_id) - 1] = '\0';
+                // Ensure bundle_identifier and file_path are null-terminated string even if corrupted data is sent.
+                p->bundle_identifier[sizeof(p->bundle_identifier) - 1] = '\0';
+                p->file_path[sizeof(p->file_path) - 1] = '\0';
 
-              input_source_identifiers_ = input_source_identifiers(std::string(p->language),
-                                                                   std::string(p->input_source_id),
-                                                                   std::string(p->input_mode_id));
+                frontmost_application_bundle_identifier_ = p->bundle_identifier;
+                frontmost_application_file_path_ = p->file_path;
 
-              if (device_grabber_) {
-                device_grabber_->async_post_input_source_changed_event(input_source_identifiers_);
+                if (device_grabber_) {
+                  device_grabber_->async_post_frontmost_application_changed_event(frontmost_application_bundle_identifier_,
+                                                                                  frontmost_application_file_path_);
+                }
               }
-            }
-            break;
+              break;
 
-          default:
-            break;
+            default:
+              break;
+          }
         }
       }
     });
@@ -218,7 +221,7 @@ private:
     device_grabber_->async_set_system_preferences(system_preferences_);
     device_grabber_->async_post_frontmost_application_changed_event(frontmost_application_bundle_identifier_,
                                                                     frontmost_application_file_path_);
-    device_grabber_->async_post_input_source_changed_event(input_source_identifiers_);
+    device_grabber_->async_post_input_source_changed_event(input_source_properties_);
 
     device_grabber_->async_start(configuration_file_path);
 
@@ -244,6 +247,6 @@ private:
   system_preferences system_preferences_;
   std::string frontmost_application_bundle_identifier_;
   std::string frontmost_application_file_path_;
-  input_source_identifiers input_source_identifiers_;
+  pqrs::osx::input_source::properties input_source_properties_;
 };
 } // namespace krbn

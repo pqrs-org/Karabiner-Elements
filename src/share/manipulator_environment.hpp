@@ -92,9 +92,20 @@ public:
   }
 
   nlohmann::json to_json(void) const {
+    nlohmann::json input_source_json;
+    if (auto& v = input_source_identifiers_.get_first_language()) {
+      input_source_json["language"] = *v;
+    }
+    if (auto& v = input_source_identifiers_.get_input_source_id()) {
+      input_source_json["input_source_id"] = *v;
+    }
+    if (auto& v = input_source_identifiers_.get_input_mode_id()) {
+      input_source_json["input_mode_id"] = *v;
+    }
+
     return nlohmann::json({
         {"frontmost_application", frontmost_application_.to_json()},
-        {"input_source_identifiers", input_source_identifiers_.to_json()},
+        {"input_source", input_source_json},
         {"variables", variables_},
         {"keyboard_type", keyboard_type_},
     });

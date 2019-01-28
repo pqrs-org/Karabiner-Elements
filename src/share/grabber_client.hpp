@@ -139,30 +139,17 @@ public:
     });
   }
 
-  void async_input_source_changed(std::shared_ptr<input_source_identifiers> input_source_identifiers) const {
-    enqueue_to_dispatcher([this, input_source_identifiers] {
-      if (input_source_identifiers) {
-        operation_type_input_source_changed_struct s;
+  void async_input_source_changed(std::shared_ptr<pqrs::osx::input_source::properties> properties) const {
+    enqueue_to_dispatcher([this, properties] {
+      if (properties) {
+        nlohmann::json json{
+            {"operation_type", operation_type::input_source_changed},
+            {"input_source_properties", *properties},
+        };
 
-        if (auto& v = input_source_identifiers->get_language()) {
-          strlcpy(s.language,
-                  v->c_str(),
-                  sizeof(s.language));
+        if (client_) {
+          client_->async_send(nlohmann::json::to_msgpack(json));
         }
-
-        if (auto& v = input_source_identifiers->get_input_source_id()) {
-          strlcpy(s.input_source_id,
-                  v->c_str(),
-                  sizeof(s.input_source_id));
-        }
-
-        if (auto& v = input_source_identifiers->get_input_mode_id()) {
-          strlcpy(s.input_mode_id,
-                  v->c_str(),
-                  sizeof(s.input_mode_id));
-        }
-
-        call_async_send(reinterpret_cast<uint8_t*>(&s), sizeof(s));
       }
     });
   }

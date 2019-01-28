@@ -1,10 +1,9 @@
 {
     "frontmost_application": {
         "bundle_identifier": "com.apple.Terminal",
-        "file_path":
-            "/Applications/Utilities/Terminal.app/Contents/MacOS/Terminal"
+        "file_path": "/Applications/Utilities/Terminal.app/Contents/MacOS/Terminal"
     },
-    "input_source_identifiers": {
+    "input_source": {
         "input_source_id": "com.apple.keylayout.US",
         "language": "en"
     },

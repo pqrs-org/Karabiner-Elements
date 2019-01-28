@@ -230,7 +230,7 @@ public:
 
       case type::input_source_changed:
         if (auto v = get_input_source_identifiers()) {
-          json["input_source_identifiers"] = v->to_json();
+          json["input_source_identifiers"] = *v;
         }
         break;
 

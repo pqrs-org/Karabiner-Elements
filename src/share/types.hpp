@@ -879,19 +879,6 @@ struct operation_type_frontmost_application_changed_struct {
   char file_path[_POSIX_PATH_MAX];
 };
 
-struct operation_type_input_source_changed_struct {
-  operation_type_input_source_changed_struct(void) : operation_type(operation_type::input_source_changed) {
-    language[0] = '\0';
-    input_source_id[0] = '\0';
-    input_mode_id[0] = '\0';
-  }
-
-  const operation_type operation_type;
-  char language[256];
-  char input_source_id[256];
-  char input_mode_id[256];
-};
-
 // stream output
 
 #define KRBN_TYPES_STREAM_OUTPUT(TYPE)                                                                                                               \

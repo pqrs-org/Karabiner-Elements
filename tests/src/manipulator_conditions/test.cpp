@@ -153,9 +153,10 @@ TEST_CASE("manipulator_environment.save_to_file") {
   manipulator_environment.enable_json_output("tmp/manipulator_environment.json");
   manipulator_environment.set_frontmost_application({"com.apple.Terminal",
                                                      "/Applications/Utilities/Terminal.app/Contents/MacOS/Terminal"});
-  manipulator_environment.set_input_source_identifiers({std::string("en"),
-                                                        std::string("com.apple.keylayout.US"),
-                                                        std::nullopt});
+  pqrs::osx::input_source::properties properties;
+  properties.set_first_language("en");
+  properties.set_input_source_id("com.apple.keylayout.US");
+  manipulator_environment.set_input_source_identifiers(properties);
   manipulator_environment.set_variable("value1", 100);
   manipulator_environment.set_variable("value2", 200);
   manipulator_environment.set_keyboard_type("iso");
@@ -220,45 +221,61 @@ TEST_CASE("conditions.input_source") {
                                  krbn::event_queue::event(krbn::key_code::a));
 
   // language matching
-  manipulator_environment.set_input_source_identifiers({std::string("en"),
-                                                        std::string("com.apple.keylayout.Australian"),
-                                                        std::nullopt});
-  REQUIRE(helper.get_condition_manager().is_fulfilled(entry,
-                                                      manipulator_environment) == true);
-  // use cache
-  REQUIRE(helper.get_condition_manager().is_fulfilled(entry,
-                                                      manipulator_environment) == true);
+  {
+    pqrs::osx::input_source::properties properties;
+    properties.set_first_language("en");
+    properties.set_input_source_id("com.apple.keylayout.Australian");
+    manipulator_environment.set_input_source_identifiers(properties);
+    REQUIRE(helper.get_condition_manager().is_fulfilled(entry,
+                                                        manipulator_environment) == true);
+    // use cache
+    REQUIRE(helper.get_condition_manager().is_fulfilled(entry,
+                                                        manipulator_environment) == true);
+  }
 
   // Test regex escape works properly
-  manipulator_environment.set_input_source_identifiers({std::string("ja"),
-                                                        std::string("com/apple/keylayout/Australian"),
-                                                        std::nullopt});
-  REQUIRE(helper.get_condition_manager().is_fulfilled(entry,
-                                                      manipulator_environment) == false);
-  // use cache
-  REQUIRE(helper.get_condition_manager().is_fulfilled(entry,
-                                                      manipulator_environment) == false);
+  {
+    pqrs::osx::input_source::properties properties;
+    properties.set_first_language("ja");
+    properties.set_input_source_id("com/apple/keylayout/Australian");
+    manipulator_environment.set_input_source_identifiers(properties);
+    REQUIRE(helper.get_condition_manager().is_fulfilled(entry,
+                                                        manipulator_environment) == false);
+    // use cache
+    REQUIRE(helper.get_condition_manager().is_fulfilled(entry,
+                                                        manipulator_environment) == false);
+  }
 
   // input_source_id matching
-  manipulator_environment.set_input_source_identifiers({std::string("ja"),
-                                                        std::string("com.apple.keylayout.US"),
-                                                        std::nullopt});
-  REQUIRE(helper.get_condition_manager().is_fulfilled(entry,
-                                                      manipulator_environment) == true);
+  {
+    pqrs::osx::input_source::properties properties;
+    properties.set_first_language("ja");
+    properties.set_input_source_id("com.apple.keylayout.US");
+    manipulator_environment.set_input_source_identifiers(properties);
+    REQUIRE(helper.get_condition_manager().is_fulfilled(entry,
+                                                        manipulator_environment) == true);
+  }
 
   // input_mode_id matching
-  manipulator_environment.set_input_source_identifiers({std::string("ja"),
-                                                        std::string("com.apple.keylayout.Australian"),
-                                                        std::string("com.apple.inputmethod.Japanese.FullWidthRoman")});
-  REQUIRE(helper.get_condition_manager().is_fulfilled(entry,
-                                                      manipulator_environment) == true);
+  {
+    pqrs::osx::input_source::properties properties;
+    properties.set_first_language("ja");
+    properties.set_input_source_id("com.apple.keylayout.Australian");
+    properties.set_input_mode_id("com.apple.inputmethod.Japanese.FullWidthRoman");
+    manipulator_environment.set_input_source_identifiers(properties);
+    REQUIRE(helper.get_condition_manager().is_fulfilled(entry,
+                                                        manipulator_environment) == true);
+  }
 
   // input_source_unless
-  manipulator_environment.set_input_source_identifiers({std::string("fr"),
-                                                        std::string("com.apple.keylayout.US"),
-                                                        std::nullopt});
-  REQUIRE(helper.get_condition_manager().is_fulfilled(entry,
-                                                      manipulator_environment) == false);
+  {
+    pqrs::osx::input_source::properties properties;
+    properties.set_first_language("fr");
+    properties.set_input_source_id("com.apple.keylayout.US");
+    manipulator_environment.set_input_source_identifiers(properties);
+    REQUIRE(helper.get_condition_manager().is_fulfilled(entry,
+                                                        manipulator_environment) == false);
+  }
 }
 
 TEST_CASE("conditions.device") {
