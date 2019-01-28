@@ -35,6 +35,9 @@
 #include <iostream>
 #include <nlohmann/json.hpp>
 #include <optional>
+#include <pqrs/osx/frontmost_application_monitor.hpp>
+#include <pqrs/osx/frontmost_application_monitor/extra/boost.hpp>
+#include <pqrs/osx/frontmost_application_monitor/extra/nlohmann_json.hpp>
 #include <pqrs/osx/input_source.hpp>
 #include <pqrs/osx/input_source/extra/boost.hpp>
 #include <pqrs/osx/input_source/extra/nlohmann_json.hpp>
@@ -867,17 +870,6 @@ struct operation_type_system_preferences_updated_struct {
 
   const operation_type operation_type;
   system_preferences system_preferences;
-};
-
-struct operation_type_frontmost_application_changed_struct {
-  operation_type_frontmost_application_changed_struct(void) : operation_type(operation_type::frontmost_application_changed) {
-    bundle_identifier[0] = '\0';
-    file_path[0] = '\0';
-  }
-
-  const operation_type operation_type;
-  char bundle_identifier[256];
-  char file_path[_POSIX_PATH_MAX];
 };
 
 // stream output

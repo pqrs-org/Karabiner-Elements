@@ -98,11 +98,7 @@ public:
 
       case type::select_input_source:
         if (auto v = json_utility::find_array(json, "input_source_specifiers")) {
-          std::vector<pqrs::osx::input_source_selector::specifier> input_source_specifiers;
-          for (const auto& j : *v) {
-            input_source_specifiers.emplace_back(j);
-          }
-          result.value_ = input_source_specifiers;
+          result.value_ = v->get<std::vector<pqrs::osx::input_source_selector::specifier>>();
         }
         break;
 
@@ -127,13 +123,13 @@ public:
 
       case type::frontmost_application_changed:
         if (auto v = json_utility::find_json(json, "frontmost_application")) {
-          result.value_ = manipulator_environment::frontmost_application(*v);
+          result.value_ = v->get<pqrs::osx::frontmost_application_monitor::application>();
         }
         break;
 
       case type::input_source_changed:
         if (auto v = json_utility::find_json(json, "input_source_properties")) {
-          result.value_ = pqrs::osx::input_source::properties(*v);
+          result.value_ = v->get<pqrs::osx::input_source::properties>();
         }
         break;
 
@@ -225,7 +221,7 @@ public:
 
       case type::frontmost_application_changed:
         if (auto v = get_frontmost_application()) {
-          json["frontmost_application"] = v->to_json();
+          json["frontmost_application"] = *v;
         }
         break;
 
@@ -324,12 +320,10 @@ public:
     return make_virtual_event(type::pointing_device_event_from_event_tap);
   }
 
-  static event make_frontmost_application_changed_event(const std::string& bundle_identifier,
-                                                        const std::string& file_path) {
+  static event make_frontmost_application_changed_event(const pqrs::osx::frontmost_application_monitor::application& application) {
     event e;
     e.type_ = type::frontmost_application_changed;
-    e.value_ = manipulator_environment::frontmost_application(bundle_identifier,
-                                                              file_path);
+    e.value_ = application;
     return e;
   }
 
@@ -446,10 +440,10 @@ public:
     return std::nullopt;
   }
 
-  std::optional<manipulator_environment::frontmost_application> get_frontmost_application(void) const {
+  std::optional<pqrs::osx::frontmost_application_monitor::application> get_frontmost_application(void) const {
     try {
       if (type_ == type::frontmost_application_changed) {
-        return boost::get<manipulator_environment::frontmost_application>(value_);
+        return boost::get<pqrs::osx::frontmost_application_monitor::application>(value_);
       }
     } catch (boost::bad_get&) {
     }
@@ -569,7 +563,7 @@ private:
                  std::vector<pqrs::osx::input_source_selector::specifier>, // For select_input_source
                  std::pair<std::string, int>,                              // For set_variable
                  mouse_key,                                                // For mouse_key
-                 manipulator_environment::frontmost_application,           // For frontmost_application_changed
+                 pqrs::osx::frontmost_application_monitor::application,    // For frontmost_application_changed
                  pqrs::osx::input_source::properties,                      // For input_source_changed
                  device_properties,                                        // For device_grabbed
                  boost::blank>                                             // For virtual events

@@ -77,41 +77,42 @@ public:
       return cached_result_->second;
     }
 
-    auto& current_bundle_identifier = manipulator_environment.get_frontmost_application().get_bundle_identifier();
-    auto& current_file_path = manipulator_environment.get_frontmost_application().get_file_path();
+    bool result = false;
 
     // Bundle identifiers
 
-    bool result = false;
-
-    for (const auto& b : bundle_identifiers_) {
-      if (regex_search(std::begin(current_bundle_identifier),
-                       std::end(current_bundle_identifier),
-                       b)) {
-        switch (type_) {
-          case type::frontmost_application_if:
-            result = true;
-            goto finish;
-          case type::frontmost_application_unless:
-            result = false;
-            goto finish;
+    if (auto& current_bundle_identifier = manipulator_environment.get_frontmost_application().get_bundle_identifier()) {
+      for (const auto& b : bundle_identifiers_) {
+        if (regex_search(std::begin(*current_bundle_identifier),
+                         std::end(*current_bundle_identifier),
+                         b)) {
+          switch (type_) {
+            case type::frontmost_application_if:
+              result = true;
+              goto finish;
+            case type::frontmost_application_unless:
+              result = false;
+              goto finish;
+          }
         }
       }
     }
 
     // File paths
 
-    for (const auto& f : file_paths_) {
-      if (regex_search(std::begin(current_file_path),
-                       std::end(current_file_path),
-                       f)) {
-        switch (type_) {
-          case type::frontmost_application_if:
-            result = true;
-            goto finish;
-          case type::frontmost_application_unless:
-            result = false;
-            goto finish;
+    if (auto& current_file_path = manipulator_environment.get_frontmost_application().get_file_path()) {
+      for (const auto& f : file_paths_) {
+        if (regex_search(std::begin(*current_file_path),
+                         std::end(*current_file_path),
+                         f)) {
+          switch (type_) {
+            case type::frontmost_application_if:
+              result = true;
+              goto finish;
+            case type::frontmost_application_unless:
+              result = false;
+              goto finish;
+          }
         }
       }
     }
@@ -137,7 +138,7 @@ private:
   std::vector<std::regex> bundle_identifiers_;
   std::vector<std::regex> file_paths_;
 
-  mutable std::optional<std::pair<manipulator_environment::frontmost_application, bool>> cached_result_;
+  mutable std::optional<std::pair<pqrs::osx::frontmost_application_monitor::application, bool>> cached_result_;
 };
 } // namespace conditions
 } // namespace details

@@ -62,6 +62,13 @@ public:
         try {
           nlohmann::json json = nlohmann::json::from_msgpack(*buffer);
           switch (json.at("operation_type").get<operation_type>()) {
+            case operation_type::frontmost_application_changed:
+              frontmost_application_ = json.at("frontmost_application").get<pqrs::osx::frontmost_application_monitor::application>();
+              if (device_grabber_) {
+                device_grabber_->async_post_frontmost_application_changed_event(frontmost_application_);
+              }
+              break;
+
             case operation_type::input_source_changed:
               input_source_properties_ = json.at("input_source_properties").get<pqrs::osx::input_source::properties>();
               if (device_grabber_) {
@@ -157,26 +164,6 @@ public:
               }
               break;
 
-            case operation_type::frontmost_application_changed:
-              if (buffer->size() < sizeof(operation_type_frontmost_application_changed_struct)) {
-                logger::get_logger()->error("Invalid size for `operation_type::frontmost_application_changed`.");
-              } else {
-                auto p = reinterpret_cast<operation_type_frontmost_application_changed_struct*>(&((*buffer)[0]));
-
-                // Ensure bundle_identifier and file_path are null-terminated string even if corrupted data is sent.
-                p->bundle_identifier[sizeof(p->bundle_identifier) - 1] = '\0';
-                p->file_path[sizeof(p->file_path) - 1] = '\0';
-
-                frontmost_application_bundle_identifier_ = p->bundle_identifier;
-                frontmost_application_file_path_ = p->file_path;
-
-                if (device_grabber_) {
-                  device_grabber_->async_post_frontmost_application_changed_event(frontmost_application_bundle_identifier_,
-                                                                                  frontmost_application_file_path_);
-                }
-              }
-              break;
-
             default:
               break;
           }
@@ -219,8 +206,7 @@ private:
                                                        console_user_server_client_);
 
     device_grabber_->async_set_system_preferences(system_preferences_);
-    device_grabber_->async_post_frontmost_application_changed_event(frontmost_application_bundle_identifier_,
-                                                                    frontmost_application_file_path_);
+    device_grabber_->async_post_frontmost_application_changed_event(frontmost_application_);
     device_grabber_->async_post_input_source_changed_event(input_source_properties_);
 
     device_grabber_->async_start(configuration_file_path);
@@ -245,8 +231,7 @@ private:
   std::unique_ptr<device_grabber> device_grabber_;
 
   system_preferences system_preferences_;
-  std::string frontmost_application_bundle_identifier_;
-  std::string frontmost_application_file_path_;
+  pqrs::osx::frontmost_application_monitor::application frontmost_application_;
   pqrs::osx::input_source::properties input_source_properties_;
 };
 } // namespace krbn

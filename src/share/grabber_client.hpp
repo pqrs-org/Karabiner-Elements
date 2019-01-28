@@ -121,21 +121,16 @@ public:
 
   void async_frontmost_application_changed(std::shared_ptr<pqrs::osx::frontmost_application_monitor::application> application) const {
     enqueue_to_dispatcher([this, application] {
-      operation_type_frontmost_application_changed_struct s;
+      if (application) {
+        nlohmann::json json{
+            {"operation_type", operation_type::frontmost_application_changed},
+            {"frontmost_application", *application},
+        };
 
-      if (auto& bundle_identifier = application->get_bundle_identifier()) {
-        strlcpy(s.bundle_identifier,
-                bundle_identifier->c_str(),
-                sizeof(s.bundle_identifier));
+        if (client_) {
+          client_->async_send(nlohmann::json::to_msgpack(json));
+        }
       }
-
-      if (auto& file_path = application->get_file_path()) {
-        strlcpy(s.file_path,
-                file_path->c_str(),
-                sizeof(s.file_path));
-      }
-
-      call_async_send(reinterpret_cast<uint8_t*>(&s), sizeof(s));
     });
   }
 

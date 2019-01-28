@@ -16,76 +16,6 @@
 namespace krbn {
 class manipulator_environment final {
 public:
-  class frontmost_application final {
-  public:
-    frontmost_application(void) {
-    }
-
-    frontmost_application(const std::string& bundle_identifier,
-                          const std::string& file_path) : bundle_identifier_(bundle_identifier),
-                                                          file_path_(file_path) {
-    }
-
-    frontmost_application(const nlohmann::json& json) {
-      if (json.is_object()) {
-        for (auto it = std::begin(json); it != std::end(json); std::advance(it, 1)) {
-          // it.key() is always std::string.
-          const auto& key = it.key();
-          const auto& value = it.value();
-
-          if (key == "bundle_identifier") {
-            if (value.is_string()) {
-              bundle_identifier_ = value.get<std::string>();
-            } else {
-              logger::get_logger()->error("bundle_identifier should be string: {0}", json.dump());
-            }
-          } else if (key == "file_path") {
-            if (value.is_string()) {
-              file_path_ = value.get<std::string>();
-            } else {
-              logger::get_logger()->error("file_path should be string: {0}", json.dump());
-            }
-          } else {
-            logger::get_logger()->error("json error: Unknown key: {0} in {1}", key, json.dump());
-          }
-        }
-      } else {
-        logger::get_logger()->error("frontmost_application should be object: {0}", json.dump());
-      }
-    }
-
-    nlohmann::json to_json(void) const {
-      return nlohmann::json({
-          {"bundle_identifier", bundle_identifier_},
-          {"file_path", file_path_},
-      });
-    }
-
-    const std::string& get_bundle_identifier(void) const {
-      return bundle_identifier_;
-    }
-
-    const std::string& get_file_path(void) const {
-      return file_path_;
-    }
-
-    bool operator==(const frontmost_application& other) const {
-      return bundle_identifier_ == other.bundle_identifier_ &&
-             file_path_ == other.file_path_;
-    }
-
-    friend size_t hash_value(const frontmost_application& value) {
-      size_t h = 0;
-      boost::hash_combine(h, value.bundle_identifier_);
-      boost::hash_combine(h, value.file_path_);
-      return h;
-    }
-
-  private:
-    std::string bundle_identifier_;
-    std::string file_path_;
-  };
-
   manipulator_environment(const manipulator_environment&) = delete;
 
   manipulator_environment(void) {
@@ -104,7 +34,7 @@ public:
     }
 
     return nlohmann::json({
-        {"frontmost_application", frontmost_application_.to_json()},
+        {"frontmost_application", frontmost_application_},
         {"input_source", input_source_json},
         {"variables", variables_},
         {"keyboard_type", keyboard_type_},
@@ -132,11 +62,11 @@ public:
     device_properties_manager_.erase(device_id);
   }
 
-  const frontmost_application& get_frontmost_application(void) const {
+  const pqrs::osx::frontmost_application_monitor::application& get_frontmost_application(void) const {
     return frontmost_application_;
   }
 
-  void set_frontmost_application(const frontmost_application& value) {
+  void set_frontmost_application(const pqrs::osx::frontmost_application_monitor::application& value) {
     frontmost_application_ = value;
     async_save_to_file();
   }
@@ -182,23 +112,9 @@ private:
 
   std::string output_json_file_path_;
   device_properties_manager device_properties_manager_;
-  frontmost_application frontmost_application_;
+  pqrs::osx::frontmost_application_monitor::application frontmost_application_;
   pqrs::osx::input_source::properties input_source_properties_;
   std::unordered_map<std::string, int> variables_;
   std::string keyboard_type_;
 };
-
-inline std::ostream& operator<<(std::ostream& stream, const manipulator_environment::frontmost_application& value) {
-  stream << value.get_bundle_identifier() << "," << value.get_file_path();
-  return stream;
-}
 } // namespace krbn
-
-namespace std {
-template <>
-struct hash<krbn::manipulator_environment::frontmost_application> final {
-  std::size_t operator()(const krbn::manipulator_environment::frontmost_application& v) const {
-    return hash_value(v);
-  }
-};
-} // namespace std

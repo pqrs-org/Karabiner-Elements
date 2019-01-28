@@ -347,11 +347,9 @@ public:
     });
   }
 
-  void async_post_frontmost_application_changed_event(const std::string& bundle_identifier,
-                                                      const std::string& file_path) {
-    enqueue_to_dispatcher([this, bundle_identifier, file_path] {
-      auto event = event_queue::event::make_frontmost_application_changed_event(bundle_identifier,
-                                                                                file_path);
+  void async_post_frontmost_application_changed_event(const pqrs::osx::frontmost_application_monitor::application& application) {
+    enqueue_to_dispatcher([this, application] {
+      auto event = event_queue::event::make_frontmost_application_changed_event(application);
       event_queue::entry entry(device_id(0),
                                event_queue::event_time_stamp(pqrs::osx::chrono::mach_absolute_time_point()),
                                event,
