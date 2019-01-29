@@ -558,6 +558,7 @@ private:
 
       switch (state->get_state()) {
         case grabbable_state::state::none:
+        case grabbable_state::state::end_:
           return grabbable_state::state::ungrabbable_temporarily;
 
         case grabbable_state::state::grabbable:
@@ -586,6 +587,8 @@ private:
                                     entry->get_device_name());
               break;
             }
+            case grabbable_state::ungrabbable_temporarily_reason::end_:
+              break;
           }
           logger_unique_filter_.warn(message);
 

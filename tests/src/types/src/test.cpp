@@ -9,46 +9,6 @@ TEST_CASE("sizeof") {
   REQUIRE(sizeof(krbn::location_id) == 4);
 }
 
-TEST_CASE("grabbable_state") {
-  {
-    krbn::grabbable_state grabbable_state;
-    REQUIRE(grabbable_state.get_device_id() == krbn::device_id(0));
-    REQUIRE(grabbable_state.get_state() == krbn::grabbable_state::state::grabbable);
-    REQUIRE(grabbable_state.get_ungrabbable_temporarily_reason() == krbn::grabbable_state::ungrabbable_temporarily_reason::none);
-    REQUIRE(grabbable_state.get_time_stamp() == krbn::absolute_time_point(0));
-  }
-  {
-    krbn::grabbable_state grabbable_state(krbn::device_id(1234),
-                                          krbn::grabbable_state::state::ungrabbable_temporarily,
-                                          krbn::grabbable_state::ungrabbable_temporarily_reason::key_repeating,
-                                          krbn::absolute_time_point(1000));
-    REQUIRE(grabbable_state.get_device_id() == krbn::device_id(1234));
-    REQUIRE(grabbable_state.get_state() == krbn::grabbable_state::state::ungrabbable_temporarily);
-    REQUIRE(grabbable_state.get_ungrabbable_temporarily_reason() == krbn::grabbable_state::ungrabbable_temporarily_reason::key_repeating);
-    REQUIRE(grabbable_state.get_time_stamp() == krbn::absolute_time_point(1000));
-  }
-}
-
-TEST_CASE("grabbable_state::equals_except_time_stamp") {
-  {
-    krbn::grabbable_state grabbable_state1(krbn::device_id(1234),
-                                           krbn::grabbable_state::state::ungrabbable_temporarily,
-                                           krbn::grabbable_state::ungrabbable_temporarily_reason::key_repeating,
-                                           krbn::absolute_time_point(1000));
-    krbn::grabbable_state grabbable_state2(krbn::device_id(1234),
-                                           krbn::grabbable_state::state::ungrabbable_temporarily,
-                                           krbn::grabbable_state::ungrabbable_temporarily_reason::key_repeating,
-                                           krbn::absolute_time_point(2000));
-    krbn::grabbable_state grabbable_state3(krbn::device_id(1234),
-                                           krbn::grabbable_state::state::device_error,
-                                           krbn::grabbable_state::ungrabbable_temporarily_reason::none,
-                                           krbn::absolute_time_point(3000));
-    REQUIRE(grabbable_state1 != grabbable_state2);
-    REQUIRE(grabbable_state1.equals_except_time_stamp(grabbable_state2));
-    REQUIRE(!grabbable_state1.equals_except_time_stamp(grabbable_state3));
-  }
-}
-
 TEST_CASE("make_key_code") {
   REQUIRE(krbn::types::make_key_code("spacebar") == krbn::key_code::spacebar);
   REQUIRE(krbn::types::make_key_code("unknown") == std::nullopt);
