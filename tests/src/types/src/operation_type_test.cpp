@@ -2,7 +2,7 @@
 
 #include "types.hpp"
 
-TEST_CASE("json") {
+TEST_CASE("operation_type json") {
   for (uint8_t i = static_cast<uint8_t>(krbn::operation_type::none);
        i < static_cast<uint8_t>(krbn::operation_type::end_);
        ++i) {
