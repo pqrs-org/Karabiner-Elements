@@ -112,10 +112,14 @@ public:
 
   void async_system_preferences_updated(const system_preferences& system_preferences) const {
     enqueue_to_dispatcher([this, system_preferences] {
-      operation_type_system_preferences_updated_struct s;
-      s.system_preferences = system_preferences;
+      nlohmann::json json{
+          {"operation_type", operation_type::system_preferences_updated},
+          {"system_preferences", system_preferences},
+      };
 
-      call_async_send(reinterpret_cast<uint8_t*>(&s), sizeof(s));
+      if (client_) {
+        client_->async_send(nlohmann::json::to_msgpack(json));
+      }
     });
   }
 

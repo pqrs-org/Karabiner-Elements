@@ -62,6 +62,14 @@ public:
         try {
           nlohmann::json json = nlohmann::json::from_msgpack(*buffer);
           switch (json.at("operation_type").get<operation_type>()) {
+            case operation_type::system_preferences_updated:
+              system_preferences_ = json.at("system_preferences").get<system_preferences>();
+              if (device_grabber_) {
+                device_grabber_->async_set_system_preferences(system_preferences_);
+              }
+              logger::get_logger()->info("`system_preferences` is updated.");
+              break;
+
             case operation_type::frontmost_application_changed:
               frontmost_application_ = json.at("frontmost_application").get<pqrs::osx::frontmost_application_monitor::application>();
               if (device_grabber_) {
@@ -145,22 +153,6 @@ public:
                 });
 
                 console_user_server_client_->async_start();
-              }
-              break;
-
-            case operation_type::system_preferences_updated:
-              if (buffer->size() < sizeof(operation_type_system_preferences_updated_struct)) {
-                logger::get_logger()->error("Invalid size for `operation_type::system_preferences_updated`.");
-              } else {
-                auto p = reinterpret_cast<operation_type_system_preferences_updated_struct*>(&((*buffer)[0]));
-
-                system_preferences_ = p->system_preferences;
-
-                if (device_grabber_) {
-                  device_grabber_->async_set_system_preferences(p->system_preferences);
-                }
-
-                logger::get_logger()->info("`system_preferences` is updated.");
               }
               break;
 

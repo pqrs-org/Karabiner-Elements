@@ -865,13 +865,6 @@ struct operation_type_connect_console_user_server_struct {
   char user_core_configuration_file_path[_POSIX_PATH_MAX];
 };
 
-struct operation_type_system_preferences_updated_struct {
-  operation_type_system_preferences_updated_struct(void) : operation_type(operation_type::system_preferences_updated) {}
-
-  const operation_type operation_type;
-  system_preferences system_preferences;
-};
-
 // stream output
 
 #define KRBN_TYPES_STREAM_OUTPUT(TYPE)                                                                                                               \
