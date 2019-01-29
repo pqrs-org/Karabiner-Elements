@@ -48,4 +48,26 @@ private:
   bool swipe_scroll_direction_;
   uint8_t keyboard_type_;
 };
+
+inline void to_json(nlohmann::json& j, const system_preferences& p) {
+  j = nlohmann::json{
+      {"keyboard_fn_state", p.get_keyboard_fn_state()},
+      {"swipe_scroll_direction", p.get_swipe_scroll_direction()},
+      {"keyboard_type", p.get_keyboard_type()},
+  };
+}
+
+inline void from_json(const nlohmann::json& j, system_preferences& p) {
+  try {
+    p.set_keyboard_fn_state(j.at("keyboard_fn_state").get<bool>());
+  } catch (...) {}
+
+  try {
+    p.set_swipe_scroll_direction(j.at("swipe_scroll_direction").get<bool>());
+  } catch (...) {}
+
+  try {
+    p.set_keyboard_type(j.at("keyboard_type").get<uint8_t>());
+  } catch (...) {}
+}
 } // namespace krbn
