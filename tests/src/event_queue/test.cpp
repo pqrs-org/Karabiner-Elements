@@ -140,8 +140,10 @@ TEST_CASE("json") {
     expected["type"] = "frontmost_application_changed";
     expected["frontmost_application"]["bundle_identifier"] = "com.apple.Terminal";
     expected["frontmost_application"]["file_path"] = "/Applications/Utilities/Terminal.app/Contents/MacOS/Terminal";
-    auto e = krbn::event_queue::event::make_frontmost_application_changed_event("com.apple.Terminal",
-                                                                                "/Applications/Utilities/Terminal.app/Contents/MacOS/Terminal");
+    pqrs::osx::frontmost_application_monitor::application application;
+    application.set_bundle_identifier("com.apple.Terminal");
+    application.set_file_path("/Applications/Utilities/Terminal.app/Contents/MacOS/Terminal");
+    auto e = krbn::event_queue::event::make_frontmost_application_changed_event(application);
     auto json = e.to_json();
     REQUIRE(json == expected);
     auto event_from_json = krbn::event_queue::event::make_from_json(json);
@@ -201,8 +203,10 @@ TEST_CASE("get_frontmost_application_bundle_identifier") {
   {
     std::string bundle_identifier = "org.pqrs.example";
     std::string file_path = "/opt/bin/examle";
-    auto e = krbn::event_queue::event::make_frontmost_application_changed_event(bundle_identifier,
-                                                                                file_path);
+    pqrs::osx::frontmost_application_monitor::application application;
+    application.set_bundle_identifier(bundle_identifier);
+    application.set_file_path(file_path);
+    auto e = krbn::event_queue::event::make_frontmost_application_changed_event(application);
     REQUIRE(e.get_frontmost_application() != std::nullopt);
     REQUIRE(e.get_frontmost_application()->get_bundle_identifier() == bundle_identifier);
     REQUIRE(e.get_frontmost_application()->get_file_path() == file_path);
