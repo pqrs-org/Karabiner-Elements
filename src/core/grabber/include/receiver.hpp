@@ -62,6 +62,14 @@ public:
         try {
           nlohmann::json json = nlohmann::json::from_msgpack(*buffer);
           switch (json.at("operation_type").get<operation_type>()) {
+            case operation_type::caps_lock_state_changed: {
+              auto caps_lock_state = json.at("caps_lock_state").get<bool>();
+              if (device_grabber_) {
+                device_grabber_->async_set_caps_lock_state(caps_lock_state);
+              }
+              break;
+            }
+
             case operation_type::connect_console_user_server: {
               auto user_core_configuration_file_path =
                   json.at("user_core_configuration_file_path").get<std::string>();
@@ -134,18 +142,6 @@ public:
 
                 if (auto m = weak_grabbable_state_queues_manager_.lock()) {
                   m->update_grabbable_state(p->grabbable_state);
-                }
-              }
-              break;
-
-            case operation_type::caps_lock_state_changed:
-              if (buffer->size() != sizeof(operation_type_caps_lock_state_changed_struct)) {
-                logger::get_logger()->error("Invalid size for `operation_type::caps_lock_state_changed`.");
-              } else {
-                auto p = reinterpret_cast<operation_type_caps_lock_state_changed_struct*>(&((*buffer)[0]));
-
-                if (device_grabber_) {
-                  device_grabber_->async_set_caps_lock_state(p->state);
                 }
               }
               break;

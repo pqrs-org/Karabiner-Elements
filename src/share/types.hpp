@@ -846,13 +846,6 @@ struct operation_type_grabbable_state_changed_struct {
   grabbable_state grabbable_state;
 };
 
-struct operation_type_caps_lock_state_changed_struct {
-  operation_type_caps_lock_state_changed_struct(void) : operation_type(operation_type::caps_lock_state_changed) {}
-
-  const operation_type operation_type;
-  bool state;
-};
-
 // stream output
 
 #define KRBN_TYPES_STREAM_OUTPUT(TYPE)                                                                                                               \
