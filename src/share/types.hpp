@@ -21,6 +21,7 @@
 #include "types/location_id.hpp"
 #include "types/modifier_flag.hpp"
 #include "types/mouse_key.hpp"
+#include "types/operation_type.hpp"
 #include "types/pointing_button.hpp"
 #include "types/pointing_motion.hpp"
 #include "types/product_id.hpp"
@@ -52,37 +53,6 @@
 #include <vector>
 
 namespace krbn {
-enum class operation_type : uint8_t {
-  none,
-  // observer -> grabber
-  grabbable_state_changed,
-  caps_lock_state_changed,
-  // console_user_server -> grabber
-  connect_console_user_server,
-  system_preferences_updated,
-  frontmost_application_changed,
-  input_source_changed,
-  // grabber -> console_user_server
-  shell_command_execution,
-  select_input_source,
-  end_,
-};
-
-NLOHMANN_JSON_SERIALIZE_ENUM(
-    operation_type,
-    {
-        {operation_type::none, nullptr},
-        {operation_type::grabbable_state_changed, "grabbable_state_changed"},
-        {operation_type::caps_lock_state_changed, "caps_lock_state_changed"},
-        {operation_type::connect_console_user_server, "connect_console_user_server"},
-        {operation_type::system_preferences_updated, "system_preferences_updated"},
-        {operation_type::frontmost_application_changed, "frontmost_application_changed"},
-        {operation_type::input_source_changed, "input_source_changed"},
-        {operation_type::shell_command_execution, "shell_command_execution"},
-        {operation_type::select_input_source, "select_input_source"},
-        {operation_type::end_, "end_"},
-    });
-
 class types final {
 public:
   static std::optional<modifier_flag> make_modifier_flag(key_code key_code) {
@@ -830,25 +800,4 @@ public:
     return std::nullopt;
   }
 };
-
-// stream output
-
-#define KRBN_TYPES_STREAM_OUTPUT(TYPE)                                                                                                               \
-  inline std::ostream& operator<<(std::ostream& stream, const TYPE& value) {                                                                         \
-    return stream_utility::output_enum(stream, value);                                                                                               \
-  }                                                                                                                                                  \
-                                                                                                                                                     \
-  template <template <class T, class A> class container>                                                                                             \
-  inline std::ostream& operator<<(std::ostream& stream, const container<TYPE, std::allocator<TYPE>>& values) {                                       \
-    return stream_utility::output_enums(stream, values);                                                                                             \
-  }                                                                                                                                                  \
-                                                                                                                                                     \
-  template <template <class T, class H, class K, class A> class container>                                                                           \
-  inline std::ostream& operator<<(std::ostream& stream, const container<TYPE, std::hash<TYPE>, std::equal_to<TYPE>, std::allocator<TYPE>>& values) { \
-    return stream_utility::output_enums(stream, values);                                                                                             \
-  }
-
-KRBN_TYPES_STREAM_OUTPUT(operation_type);
-
-#undef KRBN_TYPES_STREAM_OUTPUT
 } // namespace krbn
