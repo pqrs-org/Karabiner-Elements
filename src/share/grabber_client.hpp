@@ -85,10 +85,14 @@ public:
 
   void async_grabbable_state_changed(const grabbable_state& grabbable_state) const {
     enqueue_to_dispatcher([this, grabbable_state] {
-      operation_type_grabbable_state_changed_struct s;
-      s.grabbable_state = grabbable_state;
+      nlohmann::json json{
+          {"operation_type", operation_type::grabbable_state_changed},
+          {"grabbable_state", grabbable_state},
+      };
 
-      call_async_send(reinterpret_cast<uint8_t*>(&s), sizeof(s));
+      if (client_) {
+        client_->async_send(nlohmann::json::to_msgpack(json));
+      }
     });
   }
 

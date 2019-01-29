@@ -62,6 +62,14 @@ public:
         try {
           nlohmann::json json = nlohmann::json::from_msgpack(*buffer);
           switch (json.at("operation_type").get<operation_type>()) {
+            case operation_type::grabbable_state_changed: {
+              auto state = json.at("grabbable_state").get<grabbable_state>();
+              if (auto m = weak_grabbable_state_queues_manager_.lock()) {
+                m->update_grabbable_state(state);
+              }
+              break;
+            }
+
             case operation_type::caps_lock_state_changed: {
               auto caps_lock_state = json.at("caps_lock_state").get<bool>();
               if (device_grabber_) {
@@ -129,26 +137,7 @@ public:
           }
           return;
         } catch (std::exception& e) {
-          //          logger::get_logger()->error("Received data is corrupted: {0}", e.what());
-        }
-
-        if (auto type = types::find_operation_type(*buffer)) {
-          switch (*type) {
-            case operation_type::grabbable_state_changed:
-              if (buffer->size() != sizeof(operation_type_grabbable_state_changed_struct)) {
-                logger::get_logger()->error("Invalid size for `operation_type::grabbable_state_changed`.");
-              } else {
-                auto p = reinterpret_cast<operation_type_grabbable_state_changed_struct*>(&((*buffer)[0]));
-
-                if (auto m = weak_grabbable_state_queues_manager_.lock()) {
-                  m->update_grabbable_state(p->grabbable_state);
-                }
-              }
-              break;
-
-            default:
-              break;
-          }
+          logger::get_logger()->error("Received data is corrupted: {0}", e.what());
         }
       }
     });

@@ -85,14 +85,6 @@ NLOHMANN_JSON_SERIALIZE_ENUM(
 
 class types final {
 public:
-  // Find operation_type from operation_type_*_struct .
-  static std::optional<operation_type> find_operation_type(const std::vector<uint8_t>& buffer) {
-    if (buffer.empty()) {
-      return std::nullopt;
-    }
-    return operation_type(buffer[0]);
-  }
-
   static std::optional<modifier_flag> make_modifier_flag(key_code key_code) {
     // make_modifier_flag(key_code::caps_lock) == std::nullopt
 
@@ -837,13 +829,6 @@ public:
     }
     return std::nullopt;
   }
-};
-
-struct operation_type_grabbable_state_changed_struct {
-  operation_type_grabbable_state_changed_struct(void) : operation_type(operation_type::grabbable_state_changed) {}
-
-  const operation_type operation_type;
-  grabbable_state grabbable_state;
 };
 
 // stream output
