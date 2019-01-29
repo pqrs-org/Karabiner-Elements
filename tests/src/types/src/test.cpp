@@ -9,13 +9,6 @@ TEST_CASE("sizeof") {
   REQUIRE(sizeof(krbn::location_id) == 4);
 }
 
-TEST_CASE("operation_type") {
-  krbn::operation_type_connect_console_user_server_struct s;
-  std::vector<uint8_t> buffer(sizeof(s));
-  memcpy(&(buffer[0]), &s, sizeof(s));
-  REQUIRE(krbn::types::find_operation_type(buffer) == krbn::operation_type::connect_console_user_server);
-}
-
 TEST_CASE("grabbable_state") {
   {
     krbn::grabbable_state grabbable_state;

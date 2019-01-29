@@ -853,18 +853,6 @@ struct operation_type_caps_lock_state_changed_struct {
   bool state;
 };
 
-struct operation_type_connect_console_user_server_struct {
-  operation_type_connect_console_user_server_struct(void) : operation_type(operation_type::connect_console_user_server) {
-    strlcpy(user_core_configuration_file_path,
-            constants::get_user_core_configuration_file_path().c_str(),
-            sizeof(user_core_configuration_file_path));
-  }
-
-  const operation_type operation_type;
-  pid_t pid;
-  char user_core_configuration_file_path[_POSIX_PATH_MAX];
-};
-
 // stream output
 
 #define KRBN_TYPES_STREAM_OUTPUT(TYPE)                                                                                                               \

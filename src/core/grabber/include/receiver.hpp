@@ -62,6 +62,38 @@ public:
         try {
           nlohmann::json json = nlohmann::json::from_msgpack(*buffer);
           switch (json.at("operation_type").get<operation_type>()) {
+            case operation_type::connect_console_user_server: {
+              auto user_core_configuration_file_path =
+                  json.at("user_core_configuration_file_path").get<std::string>();
+
+              logger::get_logger()->info("karabiner_console_user_server is connected.");
+
+              console_user_server_client_ = nullptr;
+              console_user_server_client_ = std::make_shared<console_user_server_client>();
+
+              console_user_server_client_->connected.connect([this, user_core_configuration_file_path] {
+                stop_device_grabber();
+                start_device_grabber(user_core_configuration_file_path);
+              });
+
+              console_user_server_client_->connect_failed.connect([this](auto&& error_code) {
+                console_user_server_client_ = nullptr;
+
+                stop_device_grabber();
+                start_grabbing_if_system_core_configuration_file_exists();
+              });
+
+              console_user_server_client_->closed.connect([this] {
+                console_user_server_client_ = nullptr;
+
+                stop_device_grabber();
+                start_grabbing_if_system_core_configuration_file_exists();
+              });
+
+              console_user_server_client_->async_start();
+              break;
+            }
+
             case operation_type::system_preferences_updated:
               system_preferences_ = json.at("system_preferences").get<system_preferences>();
               if (device_grabber_) {
@@ -115,44 +147,6 @@ public:
                 if (device_grabber_) {
                   device_grabber_->async_set_caps_lock_state(p->state);
                 }
-              }
-              break;
-
-            case operation_type::connect_console_user_server:
-              if (buffer->size() != sizeof(operation_type_connect_console_user_server_struct)) {
-                logger::get_logger()->error("Invalid size for `operation_type::connect_console_user_server`.");
-              } else {
-                auto p = reinterpret_cast<operation_type_connect_console_user_server_struct*>(&((*buffer)[0]));
-
-                // Ensure user_core_configuration_file_path is null-terminated string even if corrupted data is sent.
-                p->user_core_configuration_file_path[sizeof(p->user_core_configuration_file_path) - 1] = '\0';
-                std::string user_core_configuration_file_path(p->user_core_configuration_file_path);
-
-                logger::get_logger()->info("karabiner_console_user_server is connected (pid:{0})", p->pid);
-
-                console_user_server_client_ = nullptr;
-                console_user_server_client_ = std::make_shared<console_user_server_client>();
-
-                console_user_server_client_->connected.connect([this, user_core_configuration_file_path] {
-                  stop_device_grabber();
-                  start_device_grabber(user_core_configuration_file_path);
-                });
-
-                console_user_server_client_->connect_failed.connect([this](auto&& error_code) {
-                  console_user_server_client_ = nullptr;
-
-                  stop_device_grabber();
-                  start_grabbing_if_system_core_configuration_file_exists();
-                });
-
-                console_user_server_client_->closed.connect([this] {
-                  console_user_server_client_ = nullptr;
-
-                  stop_device_grabber();
-                  start_grabbing_if_system_core_configuration_file_exists();
-                });
-
-                console_user_server_client_->async_start();
               }
               break;
 

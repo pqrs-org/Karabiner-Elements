@@ -103,10 +103,14 @@ public:
 
   void async_connect_console_user_server(void) const {
     enqueue_to_dispatcher([this] {
-      operation_type_connect_console_user_server_struct s;
-      s.pid = getpid();
+      nlohmann::json json{
+          {"operation_type", operation_type::connect_console_user_server},
+          {"user_core_configuration_file_path", constants::get_user_core_configuration_file_path().c_str()},
+      };
 
-      call_async_send(reinterpret_cast<uint8_t*>(&s), sizeof(s));
+      if (client_) {
+        client_->async_send(nlohmann::json::to_msgpack(json));
+      }
     });
   }
 
