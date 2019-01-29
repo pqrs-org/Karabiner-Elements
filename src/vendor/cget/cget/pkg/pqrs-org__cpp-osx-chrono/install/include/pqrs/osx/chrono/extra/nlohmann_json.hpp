@@ -15,9 +15,7 @@ inline void to_json(nlohmann::json& j, const absolute_time_duration& p) {
 }
 
 inline void from_json(const nlohmann::json& j, absolute_time_duration& p) {
-  try {
-    p = absolute_time_duration(j.get<int64_t>());
-  } catch (...) {}
+  p = absolute_time_duration(j.get<int64_t>());
 }
 
 inline void to_json(nlohmann::json& j, const absolute_time_point& p) {
@@ -25,9 +23,7 @@ inline void to_json(nlohmann::json& j, const absolute_time_point& p) {
 }
 
 inline void from_json(const nlohmann::json& j, absolute_time_point& p) {
-  try {
-    p = absolute_time_point(j.get<uint64_t>());
-  } catch (...) {}
+  p = absolute_time_point(j.get<uint64_t>());
 }
 } // namespace chrono
 } // namespace osx
