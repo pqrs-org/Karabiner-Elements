@@ -15,9 +15,7 @@ public:
 
     grabbable_state_manager_->grabbable_state_changed.connect([](auto&& grabbable_state) {
       std::cout << "grabbable_state_changed "
-                << grabbable_state.get_device_id()
-                << " "
-                << grabbable_state.get_state()
+                << grabbable_state
                 << std::endl;
     });
 
