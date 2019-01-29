@@ -16,30 +16,22 @@ public:
   application(void) {
   }
 
-  application(const char* bundle_identifier,
-              const char* file_path) {
-    if (bundle_identifier) {
-      bundle_identifier_ = bundle_identifier;
-    }
-    if (file_path) {
-      file_path_ = file_path;
-    }
-  }
-
   const std::optional<std::string>& get_bundle_identifier(void) const {
     return bundle_identifier_;
   }
 
-  void set_bundle_identifier(const std::optional<std::string>& value) {
+  application& set_bundle_identifier(const std::optional<std::string>& value) {
     bundle_identifier_ = value;
+    return *this;
   }
 
   const std::optional<std::string>& get_file_path(void) const {
     return file_path_;
   }
 
-  void set_file_path(const std::optional<std::string>& value) {
+  application& set_file_path(const std::optional<std::string>& value) {
     file_path_ = value;
+    return *this;
   }
 
   bool operator==(const application& other) const {

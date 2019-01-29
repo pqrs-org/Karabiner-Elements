@@ -73,8 +73,14 @@ private:
 
   void cpp_callback(const char* bundle_identifier,
                     const char* file_path) {
-    auto application_ptr = std::make_shared<application>(bundle_identifier,
-                                                         file_path);
+    auto application_ptr = std::make_shared<application>();
+    if (bundle_identifier) {
+      application_ptr->set_bundle_identifier(bundle_identifier);
+    }
+    if (file_path) {
+      application_ptr->set_file_path(file_path);
+    }
+
     enqueue_to_dispatcher([this, application_ptr] {
       frontmost_application_changed(application_ptr);
     });
