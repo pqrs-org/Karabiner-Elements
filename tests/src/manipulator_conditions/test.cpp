@@ -151,12 +151,17 @@ private:
 TEST_CASE("manipulator_environment.save_to_file") {
   krbn::manipulator_environment manipulator_environment;
   manipulator_environment.enable_json_output("tmp/manipulator_environment.json");
-  manipulator_environment.set_frontmost_application({"com.apple.Terminal",
-                                                     "/Applications/Utilities/Terminal.app/Contents/MacOS/Terminal"});
+
+  pqrs::osx::frontmost_application_monitor::application application;
+  application.set_bundle_identifier("com.apple.Terminal");
+  application.set_file_path("/Applications/Utilities/Terminal.app/Contents/MacOS/Terminal");
+  manipulator_environment.set_frontmost_application(application);
+
   pqrs::osx::input_source::properties properties;
   properties.set_first_language("en");
   properties.set_input_source_id("com.apple.keylayout.US");
   manipulator_environment.set_input_source_properties(properties);
+
   manipulator_environment.set_variable("value1", 100);
   manipulator_environment.set_variable("value2", 200);
   manipulator_environment.set_keyboard_type("iso");
@@ -177,38 +182,63 @@ TEST_CASE("conditions.frontmost_application") {
                                  krbn::event_queue::event(krbn::key_code::a));
 
   // bundle_identifiers matching
-  manipulator_environment.set_frontmost_application({"com.apple.Terminal",
-                                                     "/not_found"});
-  REQUIRE(helper.get_condition_manager().is_fulfilled(entry,
-                                                      manipulator_environment) == true);
-  // use cache
-  REQUIRE(helper.get_condition_manager().is_fulfilled(entry,
-                                                      manipulator_environment) == true);
+  {
+    pqrs::osx::frontmost_application_monitor::application application;
+    application.set_bundle_identifier("com.apple.Terminal");
+    application.set_file_path("/not_found");
+    manipulator_environment.set_frontmost_application(application);
+    REQUIRE(helper.get_condition_manager().is_fulfilled(entry,
+                                                        manipulator_environment) == true);
+    // use cache
+    REQUIRE(helper.get_condition_manager().is_fulfilled(entry,
+                                                        manipulator_environment) == true);
+  }
 
   // Test regex escape works properly
-  manipulator_environment.set_frontmost_application({"com/apple/Terminal",
-                                                     "/not_found"});
-  REQUIRE(helper.get_condition_manager().is_fulfilled(entry,
-                                                      manipulator_environment) == false);
-  // use cache
-  REQUIRE(helper.get_condition_manager().is_fulfilled(entry,
-                                                      manipulator_environment) == false);
+  {
+    pqrs::osx::frontmost_application_monitor::application application;
+    application.set_bundle_identifier("com/apple/Terminal");
+    application.set_file_path("/not_found");
+    manipulator_environment.set_frontmost_application(application);
+
+    REQUIRE(helper.get_condition_manager().is_fulfilled(entry,
+                                                        manipulator_environment) == false);
+    // use cache
+    REQUIRE(helper.get_condition_manager().is_fulfilled(entry,
+                                                        manipulator_environment) == false);
+  }
 
   // file_path matching
-  manipulator_environment.set_frontmost_application({"com/apple/Terminal",
-                                                     "/Applications/Utilities/Terminal.app/Contents/MacOS/Terminal"});
-  REQUIRE(helper.get_condition_manager().is_fulfilled(entry,
-                                                      manipulator_environment) == true);
+  {
+    pqrs::osx::frontmost_application_monitor::application application;
+    application.set_bundle_identifier("com/apple/Terminal");
+    application.set_file_path("/Applications/Utilities/Terminal.app/Contents/MacOS/Terminal");
+    manipulator_environment.set_frontmost_application(application);
+
+    REQUIRE(helper.get_condition_manager().is_fulfilled(entry,
+                                                        manipulator_environment) == true);
+  }
 
   // frontmost_application_unless
-  manipulator_environment.set_frontmost_application({"com.googlecode.iterm2",
-                                                     "/Applications/iTerm.app"});
-  REQUIRE(helper.get_condition_manager().is_fulfilled(entry,
-                                                      manipulator_environment) == true);
-  manipulator_environment.set_frontmost_application({"com.googlecode.iterm2",
-                                                     "/Users/tekezo/Applications/iTerm.app"});
-  REQUIRE(helper.get_condition_manager().is_fulfilled(entry,
-                                                      manipulator_environment) == false);
+  {
+    pqrs::osx::frontmost_application_monitor::application application;
+    application.set_bundle_identifier("com.googlecode.iterm2");
+    application.set_file_path("/Applications/iTerm.app");
+    manipulator_environment.set_frontmost_application(application);
+
+    REQUIRE(helper.get_condition_manager().is_fulfilled(entry,
+                                                        manipulator_environment) == true);
+  }
+
+  {
+    pqrs::osx::frontmost_application_monitor::application application;
+    application.set_bundle_identifier("com.googlecode.iterm2");
+    application.set_file_path("/Users/tekezo/Applications/iTerm.app");
+    manipulator_environment.set_frontmost_application(application);
+
+    REQUIRE(helper.get_condition_manager().is_fulfilled(entry,
+                                                        manipulator_environment) == false);
+  }
 }
 
 TEST_CASE("conditions.input_source") {
