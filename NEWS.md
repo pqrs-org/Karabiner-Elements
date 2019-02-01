@@ -1,6 +1,6 @@
 # Changelog
 
-## Next release
+## Version 12.2.0
 
 - Fixed an issue that Caps Lock LED does not work on macOS Mojave.
 - `shell_command` string max length has been expanded. (256 byte -> 32 KB)
