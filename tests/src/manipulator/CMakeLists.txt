@@ -8,6 +8,8 @@ include_directories(../../../src/core/grabber/include)
 
 add_executable(
   karabiner_test
+  manipulator_factory_test.cpp
+  manipulator_manager_test.cpp
   test.cpp
 )
 
