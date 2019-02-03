@@ -1,4 +1,5 @@
 jarro2783/cxxopts@v2.1.1 --cmake header -H sha256:e19216251427d04f0273e6487c0246ae2dbb4154bf178f43896af8fa1ef89f3f
+martinmoene/variant-lite@v1.1.0 --cmake header -H sha256:259b8a4c16cd7130f0ab7078518422baef3c99b80d78c2c7ddf387799611a736
 nlohmann/json@v3.5.0 --cmake header -H sha256:e0b1fc6cc6ca05706cce99118a87aca5248bd9db3113e703023d23f044995c1d
 pqrs-org/cpp-cf-dictionary
 pqrs-org/cpp-cf-number
