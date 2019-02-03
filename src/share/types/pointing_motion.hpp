@@ -1,11 +1,9 @@
 #pragma once
 
-#include "boost_defs.hpp"
-
 #include "stream_utility.hpp"
-#include <boost/functional/hash.hpp>
 #include <cstdint>
 #include <nlohmann/json.hpp>
+#include <pqrs/hash.hpp>
 
 namespace krbn {
 class pointing_motion final {
@@ -104,10 +102,12 @@ public:
 
   friend size_t hash_value(const pointing_motion& value) {
     size_t h = 0;
-    boost::hash_combine(h, value.x_);
-    boost::hash_combine(h, value.y_);
-    boost::hash_combine(h, value.vertical_wheel_);
-    boost::hash_combine(h, value.horizontal_wheel_);
+
+    pqrs::hash_combine(h, value.x_);
+    pqrs::hash_combine(h, value.y_);
+    pqrs::hash_combine(h, value.vertical_wheel_);
+    pqrs::hash_combine(h, value.horizontal_wheel_);
+
     return h;
   }
 
