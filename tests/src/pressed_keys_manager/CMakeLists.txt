@@ -7,4 +7,5 @@ project (karabiner_test)
 add_executable(
   karabiner_test
   test.cpp
+  pressed_keys_manager_test.cpp
 )
