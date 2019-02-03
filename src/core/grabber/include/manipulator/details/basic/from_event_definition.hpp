@@ -22,10 +22,12 @@ public:
     }
 
     void handle_json(const nlohmann::json& json) {
-      for (auto it = std::begin(json); it != std::end(json); std::advance(it, 1)) {
-        // it.key() is always std::string.
-        const auto& key = it.key();
-        const auto& value = it.value();
+      if (!json.is_object()) {
+        return;
+      }
+
+      for (const auto& [key, value] : json.items()) {
+        // key is always std::string.
 
         if (key == "detect_key_down_uninterruptedly") {
           if (!value.is_boolean()) {
@@ -124,10 +126,8 @@ public:
 
     event_definition default_event_definition;
 
-    for (auto it1 = std::begin(json); it1 != std::end(json); std::advance(it1, 1)) {
-      // it1.key() is always std::string.
-      const auto& key = it1.key();
-      const auto& value = it1.value();
+    for (const auto& [key, value] : json.items()) {
+      // key is always std::string.
 
       if (default_event_definition.handle_json(key, value, json)) {
         continue;
@@ -140,18 +140,18 @@ public:
         }
 
         for (const auto& j : value) {
-          event_definition d;
+          if (j.is_object()) {
+            event_definition d;
 
-          for (auto it2 = std::begin(j); it2 != std::end(j); std::advance(it2, 1)) {
-            // it.key() is always std::string.
-            const auto& k = it2.key();
-            const auto& v = it2.value();
+            for (const auto& [k, v] : j.items()) {
+              // k is always std::string.
 
-            d.handle_json(k, v, j);
-          }
+              d.handle_json(k, v, j);
+            }
 
-          if (d.get_type() != event_definition::type::none) {
-            event_definitions_.push_back(d);
+            if (d.get_type() != event_definition::type::none) {
+              event_definitions_.push_back(d);
+            }
           }
         }
 
@@ -175,10 +175,8 @@ public:
           continue;
         }
 
-        for (auto it2 = std::begin(value); it2 != std::end(value); std::advance(it2, 1)) {
-          // it.key() is always std::string.
-          const auto& k = it2.key();
-          const auto& v = it2.value();
+        for (const auto& [k, v] : value.items()) {
+          // k is always std::string.
 
           if (k == "mandatory") {
             mandatory_modifiers_ = modifier_definition::make_modifiers(v);
