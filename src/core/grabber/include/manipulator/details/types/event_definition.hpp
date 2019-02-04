@@ -4,7 +4,6 @@
 #include <mpark/variant.hpp>
 #include <nlohmann/json.hpp>
 #include <optional>
-#include <unordered_set>
 
 namespace krbn {
 namespace manipulator {
