@@ -33,15 +33,10 @@ You can download previous versions of Karabiner-Elements from here:
 
 System requirements to build Karabiner-Elements:
 
-* macOS 10.13+
-* Xcode 9+
+* macOS 10.14+
+* Xcode 10+
 * Command Line Tools for Xcode
-* Boost 1.61.0+ (header-only) <http://www.boost.org/>
 * CMake (`brew install cmake`)
-
-To install the Boost requirement, [download the latest Boost release](http://www.boost.org/), open the `boost` folder inside of it, and move all of the files there into `/opt/local/include/boost/`.
-
-(For example, the version.hpp should be located in `/opt/local/include/boost/version.hpp`)
 
 ### Step 1: Getting source code
 
