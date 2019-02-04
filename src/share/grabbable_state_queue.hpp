@@ -2,11 +2,9 @@
 
 // `krbn::grabbable_state_queue` can be used safely in a multi-threaded environment.
 
-#include "boost_defs.hpp"
-
 #include "event_queue.hpp"
 #include "types.hpp"
-#include <boost/circular_buffer.hpp>
+#include <deque>
 #include <memory>
 #include <nod/nod.hpp>
 #include <optional>
@@ -21,12 +19,9 @@ public:
 
   // Methods
 
-  const int max_entries = 32;
-
   grabbable_state_queue(const grabbable_state_queue&) = delete;
 
-  grabbable_state_queue(void) : dispatcher_client(),
-                                grabbable_states_(max_entries) {
+  grabbable_state_queue(void) : dispatcher_client() {
   }
 
   virtual ~grabbable_state_queue(void) {
@@ -73,6 +68,11 @@ public:
     auto old_state = find_current_grabbable_state_();
 
     grabbable_states_.push_back(state);
+
+    const int max_entries = 32;
+    while (grabbable_states_.size() > max_entries) {
+      grabbable_states_.pop_front();
+    }
 
     auto new_state = find_current_grabbable_state_();
 
@@ -154,7 +154,7 @@ private:
 
   // Keep multiple entries for when `push_back_entry` is called multiple times before `set_first_grabbed_event_time_stamp`.
   // (We should remove entries after first_grabbed_event_time_stamp_.)
-  boost::circular_buffer<grabbable_state> grabbable_states_;
+  std::deque<grabbable_state> grabbable_states_;
 
   std::optional<absolute_time_point> first_grabbed_event_time_stamp_;
 
