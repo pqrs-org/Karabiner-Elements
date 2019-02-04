@@ -1,7 +1,7 @@
 #pragma once
 
-#include "../types.hpp"
-#include "base.hpp"
+#include "../../types.hpp"
+#include "../base.hpp"
 #include "core_configuration/core_configuration.hpp"
 #include "krbn_notification_center.hpp"
 #include <nlohmann/json.hpp>
@@ -12,13 +12,14 @@
 namespace krbn {
 namespace manipulator {
 namespace manipulators {
+namespace basic {
 class basic final : public base, public pqrs::dispatcher::extra::dispatcher_client {
 public:
-#include "basic/from_event_definition.hpp"
-#include "basic/manipulated_original_event.hpp"
+#include "from_event_definition.hpp"
+#include "manipulated_original_event.hpp"
 
-#include "basic/to_delayed_action.hpp"
-#include "basic/to_if_held_down.hpp"
+#include "to_delayed_action.hpp"
+#include "to_if_held_down.hpp"
 
   basic(const nlohmann::json& json,
         const core_configuration::details::complex_modifications_parameters& parameters) : base(),
@@ -1010,6 +1011,7 @@ inline void from_json(const nlohmann::json& json, basic::from_event_definition::
     value = basic::from_event_definition::simultaneous_options::key_up_when::any;
   }
 }
+} // namespace basic
 } // namespace manipulators
 } // namespace manipulator
 } // namespace krbn

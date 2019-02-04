@@ -1,7 +1,7 @@
 #define CATCH_CONFIG_MAIN
 #include <catch2/catch.hpp>
 
-#include "manipulator/manipulators/basic.hpp"
+#include "manipulator/manipulators/basic/basic.hpp"
 #include "manipulator/types.hpp"
 #include <pqrs/filesystem.hpp>
 
@@ -39,7 +39,7 @@ void set_null_logger(void) {
 TEST_CASE("modifier_definition.test_modifier") {
   using krbn::manipulator::event_definition;
   using krbn::manipulator::modifier_definition;
-  using krbn::manipulator::manipulators::basic;
+  using krbn::manipulator::manipulators::basic::basic;
 
   {
     krbn::modifier_flag_manager modifier_flag_manager;
@@ -96,7 +96,7 @@ TEST_CASE("modifier_definition.test_modifier") {
 TEST_CASE("from_event_definition.test_modifiers") {
   using krbn::manipulator::event_definition;
   using krbn::manipulator::modifier_definition;
-  using krbn::manipulator::manipulators::basic;
+  using krbn::manipulator::manipulators::basic::basic;
 
   // empty
 
@@ -435,7 +435,7 @@ TEST_CASE("from_event_definition.test_modifiers") {
 }
 
 TEST_CASE("manipulator.details.basic::from_event_definition") {
-  using krbn::manipulator::manipulators::basic;
+  using krbn::manipulator::manipulators::basic::basic;
 
   {
     nlohmann::json json;
@@ -537,7 +537,7 @@ TEST_CASE("manipulator.details.basic::from_event_definition") {
 }
 
 TEST_CASE("event_definition.error_messages") {
-  using krbn::manipulator::manipulators::basic;
+  using krbn::manipulator::manipulators::basic::basic;
 
   set_file_logger("tmp/error_messages.log");
 
@@ -553,7 +553,7 @@ TEST_CASE("event_definition.error_messages") {
 }
 
 TEST_CASE("basic::from_event_definition.test_event") {
-  using krbn::manipulator::manipulators::basic;
+  using krbn::manipulator::manipulators::basic::basic;
 
   {
     basic::from_event_definition d(nlohmann::json::object({}));
@@ -631,7 +631,7 @@ TEST_CASE("basic::from_event_definition.test_event") {
 }
 
 TEST_CASE("simultaneous_options") {
-  using krbn::manipulator::manipulators::basic;
+  using krbn::manipulator::manipulators::basic::basic;
 
   {
     basic::from_event_definition event_definition(nlohmann::json::object({

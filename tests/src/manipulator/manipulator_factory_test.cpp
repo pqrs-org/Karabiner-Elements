@@ -13,7 +13,7 @@ TEST_CASE("manipulator.manipulator_factory") {
     auto manipulator = krbn::manipulator::manipulator_factory::make_manipulator(json,
                                                                                 parameters);
     REQUIRE(dynamic_cast<krbn::manipulator::manipulators::nop*>(manipulator.get()) != nullptr);
-    REQUIRE(dynamic_cast<krbn::manipulator::manipulators::basic*>(manipulator.get()) == nullptr);
+    REQUIRE(dynamic_cast<krbn::manipulator::manipulators::basic::basic*>(manipulator.get()) == nullptr);
     REQUIRE(manipulator->get_valid() == true);
     REQUIRE(manipulator->active() == false);
   }
@@ -56,12 +56,12 @@ TEST_CASE("manipulator.manipulator_factory") {
     krbn::core_configuration::details::complex_modifications_parameters parameters;
     auto manipulator = krbn::manipulator::manipulator_factory::make_manipulator(json,
                                                                                 parameters);
-    REQUIRE(dynamic_cast<krbn::manipulator::manipulators::basic*>(manipulator.get()) != nullptr);
+    REQUIRE(dynamic_cast<krbn::manipulator::manipulators::basic::basic*>(manipulator.get()) != nullptr);
     REQUIRE(dynamic_cast<krbn::manipulator::manipulators::nop*>(manipulator.get()) == nullptr);
     REQUIRE(manipulator->get_valid() == true);
     REQUIRE(manipulator->active() == false);
 
-    auto basic = dynamic_cast<krbn::manipulator::manipulators::basic*>(manipulator.get());
+    auto basic = dynamic_cast<krbn::manipulator::manipulators::basic::basic*>(manipulator.get());
     REQUIRE(basic->get_from().get_event_definitions().size() == 1);
     REQUIRE(basic->get_from().get_event_definitions().front().get_type() == event_definition::type::key_code);
     REQUIRE(basic->get_from().get_event_definitions().front().get_key_code() == krbn::key_code::escape);

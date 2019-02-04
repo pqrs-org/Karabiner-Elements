@@ -9,7 +9,7 @@
 #include "core_configuration/core_configuration.hpp"
 #include "json_utility.hpp"
 #include "manipulator/manipulators/base.hpp"
-#include "manipulator/manipulators/basic.hpp"
+#include "manipulator/manipulators/basic/basic.hpp"
 #include "manipulator/manipulators/nop.hpp"
 #include "manipulator/types.hpp"
 #include <memory>
@@ -24,8 +24,8 @@ public:
       {
         if (auto value = json_utility::find_optional<std::string>(json, "type")) {
           if (*value == "basic") {
-            return std::make_shared<manipulators::basic>(json,
-                                                         parameters);
+            return std::make_shared<manipulators::basic::basic>(json,
+                                                                parameters);
           } else {
             logger::get_logger()->error("complex_modifications json error: Unknown `type` {0} in {1}", *value, json.dump());
             return std::make_shared<manipulators::nop>();
