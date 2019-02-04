@@ -1,10 +1,9 @@
 #pragma once
 
-#include "manipulator/details/conditions/base.hpp"
+#include "base.hpp"
 
 namespace krbn {
 namespace manipulator {
-namespace details {
 namespace conditions {
 class nop final : public base {
 public:
@@ -20,6 +19,5 @@ public:
   }
 };
 } // namespace conditions
-} // namespace details
 } // namespace manipulator
 } // namespace krbn

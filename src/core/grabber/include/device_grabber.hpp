@@ -750,7 +750,7 @@ private:
     }
   }
 
-  std::shared_ptr<manipulator::details::conditions::base> make_device_if_condition(const core_configuration::details::device& device) const {
+  std::shared_ptr<manipulator::conditions::base> make_device_if_condition(const core_configuration::details::device& device) const {
     nlohmann::json json;
     json["type"] = "device_if";
     json["identifiers"] = nlohmann::json::array();
@@ -759,7 +759,7 @@ private:
     json["identifiers"].back()["product_id"] = type_safe::get(device.get_identifiers().get_product_id());
     json["identifiers"].back()["is_keyboard"] = device.get_identifiers().get_is_keyboard();
     json["identifiers"].back()["is_pointing_device"] = device.get_identifiers().get_is_pointing_device();
-    return std::make_shared<manipulator::details::conditions::device>(json);
+    return std::make_shared<manipulator::conditions::device>(json);
   }
 
   std::shared_ptr<manipulator::details::base> make_simple_modifications_manipulator(const std::pair<std::string, std::string>& pair) const {

@@ -5,7 +5,6 @@
 
 namespace krbn {
 namespace manipulator {
-namespace details {
 namespace conditions {
 class base {
 protected:
@@ -20,6 +19,5 @@ public:
                             const manipulator_environment& manipulator_environment) const = 0;
 };
 } // namespace conditions
-} // namespace details
 } // namespace manipulator
 } // namespace krbn

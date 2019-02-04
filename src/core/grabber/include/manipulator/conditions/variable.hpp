@@ -1,12 +1,11 @@
 #pragma once
 
-#include "manipulator/details/conditions/base.hpp"
+#include "base.hpp"
 #include <string>
 #include <vector>
 
 namespace krbn {
 namespace manipulator {
-namespace details {
 namespace conditions {
 class variable final : public base {
 public:
@@ -70,6 +69,5 @@ private:
   int value_;
 };
 } // namespace conditions
-} // namespace details
 } // namespace manipulator
 } // namespace krbn

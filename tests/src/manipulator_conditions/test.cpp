@@ -14,8 +14,8 @@ TEST_CASE("manipulator.manipulator_factory") {
   {
     nlohmann::json json;
     auto condition = krbn::manipulator::manipulator_factory::make_condition(json);
-    REQUIRE(dynamic_cast<krbn::manipulator::details::conditions::nop*>(condition.get()) != nullptr);
-    REQUIRE(dynamic_cast<krbn::manipulator::details::conditions::frontmost_application*>(condition.get()) == nullptr);
+    REQUIRE(dynamic_cast<krbn::manipulator::conditions::nop*>(condition.get()) != nullptr);
+    REQUIRE(dynamic_cast<krbn::manipulator::conditions::frontmost_application*>(condition.get()) == nullptr);
   }
   {
     nlohmann::json json({
@@ -29,8 +29,8 @@ TEST_CASE("manipulator.manipulator_factory") {
         },
     });
     auto condition = krbn::manipulator::manipulator_factory::make_condition(json);
-    REQUIRE(dynamic_cast<krbn::manipulator::details::conditions::frontmost_application*>(condition.get()) != nullptr);
-    REQUIRE(dynamic_cast<krbn::manipulator::details::conditions::nop*>(condition.get()) == nullptr);
+    REQUIRE(dynamic_cast<krbn::manipulator::conditions::frontmost_application*>(condition.get()) != nullptr);
+    REQUIRE(dynamic_cast<krbn::manipulator::conditions::nop*>(condition.get()) == nullptr);
   }
   {
     nlohmann::json json({
@@ -45,8 +45,8 @@ TEST_CASE("manipulator.manipulator_factory") {
         },
     });
     auto condition = krbn::manipulator::manipulator_factory::make_condition(json);
-    REQUIRE(dynamic_cast<krbn::manipulator::details::conditions::frontmost_application*>(condition.get()) != nullptr);
-    REQUIRE(dynamic_cast<krbn::manipulator::details::conditions::nop*>(condition.get()) == nullptr);
+    REQUIRE(dynamic_cast<krbn::manipulator::conditions::frontmost_application*>(condition.get()) != nullptr);
+    REQUIRE(dynamic_cast<krbn::manipulator::conditions::nop*>(condition.get()) == nullptr);
   }
   {
     nlohmann::json json;
@@ -56,24 +56,24 @@ TEST_CASE("manipulator.manipulator_factory") {
     json["file_paths"] = nlohmann::json::array();
     json["file_paths"].push_back("invalid(regex");
     auto condition = krbn::manipulator::manipulator_factory::make_condition(json);
-    REQUIRE(dynamic_cast<krbn::manipulator::details::conditions::frontmost_application*>(condition.get()) != nullptr);
-    REQUIRE(dynamic_cast<krbn::manipulator::details::conditions::nop*>(condition.get()) == nullptr);
+    REQUIRE(dynamic_cast<krbn::manipulator::conditions::frontmost_application*>(condition.get()) != nullptr);
+    REQUIRE(dynamic_cast<krbn::manipulator::conditions::nop*>(condition.get()) == nullptr);
   }
   {
     nlohmann::json json({
         {"type", "input_source_if"},
     });
     auto condition = krbn::manipulator::manipulator_factory::make_condition(json);
-    REQUIRE(dynamic_cast<krbn::manipulator::details::conditions::input_source*>(condition.get()) != nullptr);
-    REQUIRE(dynamic_cast<krbn::manipulator::details::conditions::nop*>(condition.get()) == nullptr);
+    REQUIRE(dynamic_cast<krbn::manipulator::conditions::input_source*>(condition.get()) != nullptr);
+    REQUIRE(dynamic_cast<krbn::manipulator::conditions::nop*>(condition.get()) == nullptr);
   }
   {
     nlohmann::json json({
         {"type", "input_source_unless"},
     });
     auto condition = krbn::manipulator::manipulator_factory::make_condition(json);
-    REQUIRE(dynamic_cast<krbn::manipulator::details::conditions::input_source*>(condition.get()) != nullptr);
-    REQUIRE(dynamic_cast<krbn::manipulator::details::conditions::nop*>(condition.get()) == nullptr);
+    REQUIRE(dynamic_cast<krbn::manipulator::conditions::input_source*>(condition.get()) != nullptr);
+    REQUIRE(dynamic_cast<krbn::manipulator::conditions::nop*>(condition.get()) == nullptr);
   }
   {
     nlohmann::json json;
@@ -87,8 +87,8 @@ TEST_CASE("manipulator.manipulator_factory") {
       json["input_sources"].push_back(j);
     }
     auto condition = krbn::manipulator::manipulator_factory::make_condition(json);
-    REQUIRE(dynamic_cast<krbn::manipulator::details::conditions::input_source*>(condition.get()) != nullptr);
-    REQUIRE(dynamic_cast<krbn::manipulator::details::conditions::nop*>(condition.get()) == nullptr);
+    REQUIRE(dynamic_cast<krbn::manipulator::conditions::input_source*>(condition.get()) != nullptr);
+    REQUIRE(dynamic_cast<krbn::manipulator::conditions::nop*>(condition.get()) == nullptr);
   }
   {
     nlohmann::json json({
@@ -97,8 +97,8 @@ TEST_CASE("manipulator.manipulator_factory") {
         {"value", 1},
     });
     auto condition = krbn::manipulator::manipulator_factory::make_condition(json);
-    REQUIRE(dynamic_cast<krbn::manipulator::details::conditions::variable*>(condition.get()) != nullptr);
-    REQUIRE(dynamic_cast<krbn::manipulator::details::conditions::nop*>(condition.get()) == nullptr);
+    REQUIRE(dynamic_cast<krbn::manipulator::conditions::variable*>(condition.get()) != nullptr);
+    REQUIRE(dynamic_cast<krbn::manipulator::conditions::nop*>(condition.get()) == nullptr);
   }
   {
     nlohmann::json json({
@@ -107,24 +107,24 @@ TEST_CASE("manipulator.manipulator_factory") {
         {"value", 1},
     });
     auto condition = krbn::manipulator::manipulator_factory::make_condition(json);
-    REQUIRE(dynamic_cast<krbn::manipulator::details::conditions::variable*>(condition.get()) != nullptr);
-    REQUIRE(dynamic_cast<krbn::manipulator::details::conditions::nop*>(condition.get()) == nullptr);
+    REQUIRE(dynamic_cast<krbn::manipulator::conditions::variable*>(condition.get()) != nullptr);
+    REQUIRE(dynamic_cast<krbn::manipulator::conditions::nop*>(condition.get()) == nullptr);
   }
   {
     nlohmann::json json;
     json["type"] = "keyboard_type_if";
     json["keyboard_types"] = nlohmann::json::array({"iso"});
     auto condition = krbn::manipulator::manipulator_factory::make_condition(json);
-    REQUIRE(dynamic_cast<krbn::manipulator::details::conditions::keyboard_type*>(condition.get()) != nullptr);
-    REQUIRE(dynamic_cast<krbn::manipulator::details::conditions::nop*>(condition.get()) == nullptr);
+    REQUIRE(dynamic_cast<krbn::manipulator::conditions::keyboard_type*>(condition.get()) != nullptr);
+    REQUIRE(dynamic_cast<krbn::manipulator::conditions::nop*>(condition.get()) == nullptr);
   }
   {
     nlohmann::json json;
     json["type"] = "keyboard_type_unless";
     json["keyboard_types"] = nlohmann::json::array({"iso"});
     auto condition = krbn::manipulator::manipulator_factory::make_condition(json);
-    REQUIRE(dynamic_cast<krbn::manipulator::details::conditions::keyboard_type*>(condition.get()) != nullptr);
-    REQUIRE(dynamic_cast<krbn::manipulator::details::conditions::nop*>(condition.get()) == nullptr);
+    REQUIRE(dynamic_cast<krbn::manipulator::conditions::keyboard_type*>(condition.get()) != nullptr);
+    REQUIRE(dynamic_cast<krbn::manipulator::conditions::nop*>(condition.get()) == nullptr);
   }
 }
 
@@ -418,7 +418,7 @@ TEST_CASE("conditions.device") {
     json["identifiers"].back()["product_id"] = 2000;
     json["identifiers"].back()["is_keyboard"] = true;
     json["identifiers"].back()["is_pointing_device"] = false;
-    krbn::manipulator::details::conditions::device condition(json);
+    krbn::manipulator::conditions::device condition(json);
 
     REQUIRE(condition.is_fulfilled(ENTRY(device_id_1000_2000),
                                    manipulator_environment) == true);
@@ -483,7 +483,7 @@ TEST_CASE("conditions.device") {
     json["identifiers"].back()["vendor_id"] = 1000;
     json["identifiers"].back()["product_id"] = 2000;
     json["identifiers"].back()["location_id"] = 3000;
-    krbn::manipulator::details::conditions::device condition(json);
+    krbn::manipulator::conditions::device condition(json);
 
     {
       auto dp = krbn::device_properties()

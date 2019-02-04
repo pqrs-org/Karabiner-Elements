@@ -1,6 +1,6 @@
 #pragma once
 
-#include "manipulator/details/conditions/base.hpp"
+#include "conditions/base.hpp"
 
 namespace krbn {
 namespace manipulator {
@@ -11,7 +11,7 @@ public:
   condition_manager(void) {
   }
 
-  void push_back_condition(const std::shared_ptr<manipulator::details::conditions::base>& condition) {
+  void push_back_condition(const std::shared_ptr<manipulator::conditions::base>& condition) {
     conditions_.push_back(condition);
   }
 
@@ -30,7 +30,7 @@ public:
   }
 
 private:
-  std::vector<std::shared_ptr<manipulator::details::conditions::base>> conditions_;
+  std::vector<std::shared_ptr<manipulator::conditions::base>> conditions_;
 };
 } // namespace manipulator
 } // namespace krbn

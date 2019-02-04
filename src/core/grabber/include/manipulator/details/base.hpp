@@ -45,7 +45,7 @@ public:
     valid_ = value;
   }
 
-  void push_back_condition(const std::shared_ptr<manipulator::details::conditions::base>& condition) {
+  void push_back_condition(const std::shared_ptr<manipulator::conditions::base>& condition) {
     condition_manager_.push_back_condition(condition);
   }
 

@@ -1,13 +1,12 @@
 #pragma once
 
-#include "manipulator/details/conditions/base.hpp"
+#include "base.hpp"
 #include <regex>
 #include <string>
 #include <vector>
 
 namespace krbn {
 namespace manipulator {
-namespace details {
 namespace conditions {
 class frontmost_application final : public base {
 public:
@@ -141,6 +140,5 @@ private:
   mutable std::optional<std::pair<pqrs::osx::frontmost_application_monitor::application, bool>> cached_result_;
 };
 } // namespace conditions
-} // namespace details
 } // namespace manipulator
 } // namespace krbn

@@ -1,12 +1,11 @@
 #pragma once
 
-#include "manipulator/details/conditions/base.hpp"
+#include "base.hpp"
 #include <string>
 #include <vector>
 
 namespace krbn {
 namespace manipulator {
-namespace details {
 namespace conditions {
 class keyboard_type final : public base {
 public:
@@ -76,6 +75,5 @@ private:
   std::vector<std::string> keyboard_types_;
 };
 } // namespace conditions
-} // namespace details
 } // namespace manipulator
 } // namespace krbn

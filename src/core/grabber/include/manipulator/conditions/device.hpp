@@ -1,14 +1,13 @@
 #pragma once
 
+#include "base.hpp"
 #include "device_properties_manager.hpp"
-#include "manipulator/details/conditions/base.hpp"
 #include <optional>
 #include <string>
 #include <vector>
 
 namespace krbn {
 namespace manipulator {
-namespace details {
 namespace conditions {
 class device final : public base {
 public:
@@ -167,6 +166,5 @@ private:
   std::vector<definition> definitions_;
 };
 } // namespace conditions
-} // namespace details
 } // namespace manipulator
 } // namespace krbn

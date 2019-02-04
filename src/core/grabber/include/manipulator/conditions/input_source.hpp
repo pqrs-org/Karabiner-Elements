@@ -1,12 +1,11 @@
 #pragma once
 
-#include "manipulator/details/conditions/base.hpp"
+#include "base.hpp"
 #include <string>
 #include <vector>
 
 namespace krbn {
 namespace manipulator {
-namespace details {
 namespace conditions {
 class input_source final : public base {
 public:
@@ -90,6 +89,5 @@ private:
   mutable std::optional<std::pair<pqrs::osx::input_source::properties, bool>> cached_result_;
 };
 } // namespace conditions
-} // namespace details
 } // namespace manipulator
 } // namespace krbn
