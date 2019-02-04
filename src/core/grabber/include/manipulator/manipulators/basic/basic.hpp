@@ -6,7 +6,7 @@
 #include "event_sender.hpp"
 #include "from_event_definition.hpp"
 #include "krbn_notification_center.hpp"
-#include "manipulated_original_event.hpp"
+#include "manipulated_original_event/manipulated_original_event.hpp"
 #include "to_delayed_action.hpp"
 #include "to_if_held_down.hpp"
 #include <nlohmann/json.hpp>
@@ -144,7 +144,7 @@ public:
       bool is_target = from_event_definition::test_event(front_input_event.get_event(), from_);
 
       if (is_target) {
-        std::shared_ptr<manipulated_original_event> current_manipulated_original_event;
+        std::shared_ptr<manipulated_original_event::manipulated_original_event> current_manipulated_original_event;
 
         manipulated_original_event::from_event from_event(front_input_event.get_device_id(),
                                                           front_input_event.get_event(),
@@ -181,7 +181,7 @@ public:
 
               // Check all from_events_ are pressed
 
-              std::unordered_set<manipulated_original_event::from_event, manipulated_original_event::from_event_hash> from_events;
+              std::unordered_set<manipulated_original_event::from_event> from_events;
 
               {
                 std::vector<event_queue::event> ordered_key_down_events;
@@ -351,9 +351,11 @@ public:
                 // Add manipulated_original_event if not manipulated.
 
                 if (!current_manipulated_original_event) {
-                  current_manipulated_original_event = std::make_shared<manipulated_original_event>(from_events,
-                                                                                                    from_mandatory_modifiers,
-                                                                                                    front_input_event.get_event_time_stamp().get_time_stamp());
+                  current_manipulated_original_event =
+                      std::make_shared<manipulated_original_event::manipulated_original_event>(
+                          from_events,
+                          from_mandatory_modifiers,
+                          front_input_event.get_event_time_stamp().get_time_stamp());
                   manipulated_original_events_.push_back(current_manipulated_original_event);
                 }
               }
@@ -619,7 +621,7 @@ public:
   }
 
 private:
-  bool all_from_events_found(const std::unordered_set<manipulated_original_event::from_event, manipulated_original_event::from_event_hash>& from_events) const {
+  bool all_from_events_found(const std::unordered_set<manipulated_original_event::from_event>& from_events) const {
     for (const auto& d : from_.get_event_definitions()) {
       if (std::none_of(std::begin(from_events),
                        std::end(from_events),
@@ -666,7 +668,7 @@ private:
   std::unique_ptr<to_if_held_down> to_if_held_down_;
   std::unique_ptr<to_delayed_action> to_delayed_action_;
 
-  std::vector<std::shared_ptr<manipulated_original_event>> manipulated_original_events_;
+  std::vector<std::shared_ptr<manipulated_original_event::manipulated_original_event>> manipulated_original_events_;
 };
 
 inline void from_json(const nlohmann::json& json, from_event_definition::simultaneous_options::key_order& value) {

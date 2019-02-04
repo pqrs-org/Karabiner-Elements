@@ -53,7 +53,7 @@ public:
   }
 
   void setup(const event_queue::entry& front_input_event,
-             const std::shared_ptr<manipulated_original_event>& current_manipulated_original_event,
+             const std::shared_ptr<manipulated_original_event::manipulated_original_event>& current_manipulated_original_event,
              const std::shared_ptr<event_queue::queue>& output_event_queue,
              std::chrono::milliseconds delay_milliseconds) {
     if (front_input_event.get_event_type() != event_type::key_down) {
@@ -151,7 +151,7 @@ private:
   std::vector<to_event_definition> to_if_invoked_;
   std::vector<to_event_definition> to_if_canceled_;
   std::optional<event_queue::entry> front_input_event_;
-  std::shared_ptr<manipulated_original_event> current_manipulated_original_event_;
+  std::shared_ptr<manipulated_original_event::manipulated_original_event> current_manipulated_original_event_;
   std::weak_ptr<event_queue::queue> output_event_queue_;
   int current_delayed_action_id_;
 };

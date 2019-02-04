@@ -27,7 +27,7 @@ public:
   }
 
   void setup(const event_queue::entry& front_input_event,
-             std::weak_ptr<manipulated_original_event> current_manipulated_original_event,
+             std::weak_ptr<manipulated_original_event::manipulated_original_event> current_manipulated_original_event,
              std::weak_ptr<event_queue::queue> output_event_queue,
              std::chrono::milliseconds threshold_milliseconds) {
     ++current_held_down_id_;
@@ -121,7 +121,7 @@ public:
 private:
   std::vector<to_event_definition> to_;
   std::optional<event_queue::entry> front_input_event_;
-  std::weak_ptr<manipulated_original_event> current_manipulated_original_event_;
+  std::weak_ptr<manipulated_original_event::manipulated_original_event> current_manipulated_original_event_;
   std::weak_ptr<event_queue::queue> output_event_queue_;
   int current_held_down_id_;
 };

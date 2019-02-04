@@ -2,7 +2,7 @@
 
 #include "../../types.hpp"
 #include "event_queue.hpp"
-#include "manipulated_original_event.hpp"
+#include "manipulated_original_event/manipulated_original_event.hpp"
 #include "types.hpp"
 
 namespace krbn {
@@ -48,7 +48,7 @@ inline void post_lazy_modifier_key_events(const event_queue::entry& front_input_
 }
 
 inline void post_from_mandatory_modifiers_key_up(const event_queue::entry& front_input_event,
-                                                 manipulated_original_event& current_manipulated_original_event,
+                                                 manipulated_original_event::manipulated_original_event& current_manipulated_original_event,
                                                  absolute_time_duration& time_stamp_delay,
                                                  event_queue::queue& output_event_queue) {
   // ----------------------------------------
@@ -99,7 +99,7 @@ inline void post_from_mandatory_modifiers_key_up(const event_queue::entry& front
 }
 
 inline void post_from_mandatory_modifiers_key_down(const event_queue::entry& front_input_event,
-                                                   manipulated_original_event& current_manipulated_original_event,
+                                                   manipulated_original_event::manipulated_original_event& current_manipulated_original_event,
                                                    absolute_time_duration& time_stamp_delay,
                                                    event_queue::queue& output_event_queue) {
   // ----------------------------------------
@@ -129,7 +129,7 @@ inline void post_from_mandatory_modifiers_key_down(const event_queue::entry& fro
 
 inline void post_events_at_key_down(const event_queue::entry& front_input_event,
                                     std::vector<to_event_definition> to_events,
-                                    manipulated_original_event& current_manipulated_original_event,
+                                    manipulated_original_event::manipulated_original_event& current_manipulated_original_event,
                                     absolute_time_duration& time_stamp_delay,
                                     event_queue::queue& output_event_queue) {
   if (current_manipulated_original_event.get_halted()) {
@@ -232,7 +232,7 @@ inline void post_events_at_key_down(const event_queue::entry& front_input_event,
 }
 
 inline void post_events_at_key_up(const event_queue::entry& front_input_event,
-                                  manipulated_original_event& current_manipulated_original_event,
+                                  manipulated_original_event::manipulated_original_event& current_manipulated_original_event,
                                   absolute_time_duration& time_stamp_delay,
                                   event_queue::queue& output_event_queue) {
   for (const auto& e : current_manipulated_original_event.get_events_at_key_up().get_events()) {
@@ -245,7 +245,7 @@ inline void post_events_at_key_up(const event_queue::entry& front_input_event,
 
 inline void post_extra_to_events(const event_queue::entry& front_input_event,
                                  const std::vector<to_event_definition>& to_events,
-                                 manipulated_original_event& current_manipulated_original_event,
+                                 manipulated_original_event::manipulated_original_event& current_manipulated_original_event,
                                  absolute_time_duration& time_stamp_delay,
                                  event_queue::queue& output_event_queue) {
   if (current_manipulated_original_event.get_halted()) {
