@@ -17,7 +17,7 @@ int main(int argc, const char* argv[]) {
   auto console_user_server_client = std::make_shared<krbn::console_user_server_client>();
 
   auto virtual_hid_device_client = std::make_shared<krbn::virtual_hid_device_client>();
-  krbn::manipulator::details::post_event_to_virtual_devices_detail::queue queue;
+  krbn::manipulator::manipulators::post_event_to_virtual_devices_detail::queue queue;
 
   virtual_hid_device_client->client_connected.connect([&] {
     std::cout << "connected" << std::endl;

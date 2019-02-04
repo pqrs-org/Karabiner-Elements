@@ -5,7 +5,7 @@
 
 namespace krbn {
 namespace manipulator {
-namespace details {
+namespace manipulators {
 class nop final : public base {
 public:
   nop(void) : base() {
@@ -46,6 +46,6 @@ public:
                                                            event_queue::queue& output_event_queue) {
   }
 };
-} // namespace details
+} // namespace manipulators
 } // namespace manipulator
 } // namespace krbn

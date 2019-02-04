@@ -18,26 +18,26 @@ namespace krbn {
 namespace manipulator {
 class manipulator_factory final {
 public:
-  static std::shared_ptr<details::base> make_manipulator(const nlohmann::json& json,
-                                                         const core_configuration::details::complex_modifications_parameters& parameters) {
+  static std::shared_ptr<manipulators::base> make_manipulator(const nlohmann::json& json,
+                                                              const core_configuration::details::complex_modifications_parameters& parameters) {
     try {
       {
         if (auto value = json_utility::find_optional<std::string>(json, "type")) {
           if (*value == "basic") {
-            return std::make_shared<details::basic>(json,
-                                                    parameters);
+            return std::make_shared<manipulators::basic>(json,
+                                                         parameters);
           } else {
             logger::get_logger()->error("complex_modifications json error: Unknown `type` {0} in {1}", *value, json.dump());
-            return std::make_shared<details::nop>();
+            return std::make_shared<manipulators::nop>();
           }
         }
       }
       logger::get_logger()->error("complex_modifications json error: `type` is not found in {0}", json.dump());
-      return std::make_shared<details::nop>();
+      return std::make_shared<manipulators::nop>();
 
     } catch (std::exception& e) {
       logger::get_logger()->error("complex_modifications json error: {0}: {1}", e.what(), json.dump());
-      return std::make_shared<details::nop>();
+      return std::make_shared<manipulators::nop>();
     }
   }
 

@@ -4,7 +4,7 @@
 
 namespace krbn {
 namespace manipulator {
-namespace details {
+namespace manipulators {
 namespace post_event_to_virtual_devices_detail {
 class mouse_key_handler final : public pqrs::dispatcher::extra::dispatcher_client {
 public:
@@ -185,6 +185,6 @@ private:
   pqrs::dispatcher::extra::timer timer_;
 };
 } // namespace post_event_to_virtual_devices_detail
-} // namespace details
+} // namespace manipulators
 } // namespace manipulator
 } // namespace krbn

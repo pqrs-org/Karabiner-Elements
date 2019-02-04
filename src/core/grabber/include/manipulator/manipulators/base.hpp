@@ -7,7 +7,7 @@
 
 namespace krbn {
 namespace manipulator {
-namespace details {
+namespace manipulators {
 class base {
 protected:
   base(void) : valid_(true) {
@@ -53,6 +53,6 @@ protected:
   bool valid_;
   condition_manager condition_manager_;
 };
-} // namespace details
+} // namespace manipulators
 } // namespace manipulator
 } // namespace krbn

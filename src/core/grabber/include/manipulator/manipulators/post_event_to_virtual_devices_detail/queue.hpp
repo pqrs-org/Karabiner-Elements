@@ -7,7 +7,7 @@
 
 namespace krbn {
 namespace manipulator {
-namespace details {
+namespace manipulators {
 namespace post_event_to_virtual_devices_detail {
 class queue final : pqrs::dispatcher::extra::dispatcher_client {
 public:
@@ -587,6 +587,6 @@ inline void to_json(nlohmann::json& json, const queue::event& value) {
   json = value.to_json();
 }
 } // namespace post_event_to_virtual_devices_detail
-} // namespace details
+} // namespace manipulators
 } // namespace manipulator
 } // namespace krbn

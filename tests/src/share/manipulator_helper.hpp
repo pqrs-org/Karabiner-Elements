@@ -43,7 +43,7 @@ public:
       auto connector = std::make_shared<manipulator::manipulator_managers_connector>();
       auto manipulator_managers = std::make_shared<std::vector<std::shared_ptr<manipulator::manipulator_manager>>>();
       auto event_queues = std::make_shared<std::vector<std::shared_ptr<event_queue::queue>>>();
-      std::shared_ptr<krbn::manipulator::details::post_event_to_virtual_devices> post_event_to_virtual_devices_manipulator;
+      std::shared_ptr<krbn::manipulator::manipulators::post_event_to_virtual_devices> post_event_to_virtual_devices_manipulator;
 
       // Build manipulators
 
@@ -82,8 +82,8 @@ public:
       }
 
       if (json_utility::find_optional<std::string>(test, "expected_post_event_to_virtual_devices_queue")) {
-        post_event_to_virtual_devices_manipulator = std::make_shared<krbn::manipulator::details::post_event_to_virtual_devices>(system_preferences,
-                                                                                                                                console_user_server_client);
+        post_event_to_virtual_devices_manipulator = std::make_shared<krbn::manipulator::manipulators::post_event_to_virtual_devices>(system_preferences,
+                                                                                                                                     console_user_server_client);
 
         manipulator_managers->push_back(std::make_unique<manipulator::manipulator_manager>());
         manipulator_managers->back()->push_back_manipulator(post_event_to_virtual_devices_manipulator);

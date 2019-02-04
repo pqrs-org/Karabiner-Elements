@@ -11,7 +11,7 @@
 
 namespace krbn {
 namespace manipulator {
-namespace details {
+namespace manipulators {
 class basic final : public base, public pqrs::dispatcher::extra::dispatcher_client {
 public:
 #include "basic/from_event_definition.hpp"
@@ -1010,6 +1010,6 @@ inline void from_json(const nlohmann::json& json, basic::from_event_definition::
     value = basic::from_event_definition::simultaneous_options::key_up_when::any;
   }
 }
-} // namespace details
+} // namespace manipulators
 } // namespace manipulator
 } // namespace krbn

@@ -26,7 +26,7 @@ public:
     }
   }
 
-  void push_back_manipulator(std::shared_ptr<details::base> ptr) {
+  void push_back_manipulator(std::shared_ptr<manipulators::base> ptr) {
     std::lock_guard<std::mutex> lock(manipulators_mutex_);
 
     manipulators_.push_back(ptr);
@@ -191,7 +191,7 @@ private:
                         std::end(manipulators_));
   }
 
-  std::vector<std::shared_ptr<details::base>> manipulators_;
+  std::vector<std::shared_ptr<manipulators::base>> manipulators_;
   mutable std::mutex manipulators_mutex_;
 };
 } // namespace manipulator

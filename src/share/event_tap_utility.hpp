@@ -46,7 +46,7 @@ public:
                               event_queue::event(pointing_motion()));
 
       case kCGEventScrollWheel: {
-        // Set non-zero value for `manipulator::details::base::unset_alone_if_needed`.
+        // Set non-zero value for `manipulator::manipulators::base::unset_alone_if_needed`.
         pointing_motion pointing_motion;
         pointing_motion.set_vertical_wheel(1);
         return std::make_pair(event_type::single,

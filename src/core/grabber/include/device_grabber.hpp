@@ -10,8 +10,8 @@
 #include "json_utility.hpp"
 #include "krbn_notification_center.hpp"
 #include "logger.hpp"
-#include "manipulator/manipulators/post_event_to_virtual_devices.hpp"
 #include "manipulator/manipulator_managers_connector.hpp"
+#include "manipulator/manipulators/post_event_to_virtual_devices.hpp"
 #include "monitor/configuration_monitor.hpp"
 #include "monitor/event_tap_monitor.hpp"
 #include "system_preferences_utility.hpp"
@@ -77,9 +77,9 @@ public:
           }));
     }
 
-    post_event_to_virtual_devices_manipulator_ = std::make_shared<manipulator::details::post_event_to_virtual_devices>(system_preferences_,
-                                                                                                                       weak_console_user_server_client);
-    post_event_to_virtual_devices_manipulator_manager_->push_back_manipulator(std::shared_ptr<manipulator::details::base>(post_event_to_virtual_devices_manipulator_));
+    post_event_to_virtual_devices_manipulator_ = std::make_shared<manipulator::manipulators::post_event_to_virtual_devices>(system_preferences_,
+                                                                                                                            weak_console_user_server_client);
+    post_event_to_virtual_devices_manipulator_manager_->push_back_manipulator(std::shared_ptr<manipulator::manipulators::base>(post_event_to_virtual_devices_manipulator_));
 
     complex_modifications_applied_event_queue_->enable_manipulator_environment_json_output(constants::get_manipulator_environment_json_file_path());
 
@@ -762,7 +762,7 @@ private:
     return std::make_shared<manipulator::conditions::device>(json);
   }
 
-  std::shared_ptr<manipulator::details::base> make_simple_modifications_manipulator(const std::pair<std::string, std::string>& pair) const {
+  std::shared_ptr<manipulator::manipulators::base> make_simple_modifications_manipulator(const std::pair<std::string, std::string>& pair) const {
     if (!pair.first.empty() && !pair.second.empty()) {
       try {
         auto from_json = nlohmann::json::parse(pair.first);
@@ -771,8 +771,8 @@ private:
 
         auto to_json = nlohmann::json::parse(pair.second);
 
-        return std::make_shared<manipulator::details::basic>(manipulator::details::basic::from_event_definition(from_json),
-                                                             manipulator::to_event_definition(to_json));
+        return std::make_shared<manipulator::manipulators::basic>(manipulator::manipulators::basic::from_event_definition(from_json),
+                                                                  manipulator::to_event_definition(to_json));
       } catch (std::exception&) {
       }
     }
@@ -831,9 +831,9 @@ private:
             {"modifiers", nlohmann::json::array({"fn"})},
         });
 
-        auto manipulator = std::make_shared<manipulator::details::basic>(manipulator::details::basic::from_event_definition(from_json),
-                                                                         manipulator::to_event_definition(to_json));
-        fn_function_keys_manipulator_manager_->push_back_manipulator(std::shared_ptr<manipulator::details::base>(manipulator));
+        auto manipulator = std::make_shared<manipulator::manipulators::basic>(manipulator::manipulators::basic::from_event_definition(from_json),
+                                                                              manipulator::to_event_definition(to_json));
+        fn_function_keys_manipulator_manager_->push_back_manipulator(std::shared_ptr<manipulator::manipulators::base>(manipulator));
       }
     }
 
@@ -903,17 +903,17 @@ private:
         auto to_json = d["to"];
         to_json["modifiers"] = nlohmann::json::array({"fn"});
 
-        auto manipulator = std::make_shared<manipulator::details::basic>(manipulator::details::basic::from_event_definition(from_json),
-                                                                         manipulator::to_event_definition(to_json));
-        fn_function_keys_manipulator_manager_->push_back_manipulator(std::shared_ptr<manipulator::details::base>(manipulator));
+        auto manipulator = std::make_shared<manipulator::manipulators::basic>(manipulator::manipulators::basic::from_event_definition(from_json),
+                                                                              manipulator::to_event_definition(to_json));
+        fn_function_keys_manipulator_manager_->push_back_manipulator(std::shared_ptr<manipulator::manipulators::base>(manipulator));
       }
     }
   }
 
-  std::shared_ptr<manipulator::details::base> make_fn_function_keys_manipulator(const std::pair<std::string, std::string>& pair,
-                                                                                const nlohmann::json& from_mandatory_modifiers,
-                                                                                const nlohmann::json& from_optional_modifiers,
-                                                                                const nlohmann::json& to_modifiers) {
+  std::shared_ptr<manipulator::manipulators::base> make_fn_function_keys_manipulator(const std::pair<std::string, std::string>& pair,
+                                                                                     const nlohmann::json& from_mandatory_modifiers,
+                                                                                     const nlohmann::json& from_optional_modifiers,
+                                                                                     const nlohmann::json& to_modifiers) {
     try {
       auto from_json = nlohmann::json::parse(pair.first);
       if (from_json.empty()) {
@@ -928,8 +928,8 @@ private:
       }
       to_json["modifiers"] = to_modifiers;
 
-      return std::make_shared<manipulator::details::basic>(manipulator::details::basic::from_event_definition(from_json),
-                                                           manipulator::to_event_definition(to_json));
+      return std::make_shared<manipulator::manipulators::basic>(manipulator::manipulators::basic::from_event_definition(from_json),
+                                                                manipulator::to_event_definition(to_json));
     } catch (std::exception&) {
     }
     return nullptr;
@@ -965,7 +965,7 @@ private:
   std::shared_ptr<manipulator::manipulator_manager> fn_function_keys_manipulator_manager_;
   std::shared_ptr<event_queue::queue> fn_function_keys_applied_event_queue_;
 
-  std::shared_ptr<manipulator::details::post_event_to_virtual_devices> post_event_to_virtual_devices_manipulator_;
+  std::shared_ptr<manipulator::manipulators::post_event_to_virtual_devices> post_event_to_virtual_devices_manipulator_;
   std::shared_ptr<manipulator::manipulator_manager> post_event_to_virtual_devices_manipulator_manager_;
   std::shared_ptr<event_queue::queue> posted_event_queue_;
 

@@ -21,7 +21,7 @@
 
 namespace krbn {
 namespace manipulator {
-namespace details {
+namespace manipulators {
 class post_event_to_virtual_devices final : public base, public pqrs::dispatcher::extra::dispatcher_client {
 public:
   post_event_to_virtual_devices(const system_preferences& system_preferences,
@@ -393,6 +393,6 @@ private:
   std::unordered_set<modifier_flag> pressed_modifier_flags_;
   pqrs::karabiner_virtual_hid_device::hid_report::buttons pressed_buttons_;
 };
-} // namespace details
+} // namespace manipulators
 } // namespace manipulator
 } // namespace krbn
