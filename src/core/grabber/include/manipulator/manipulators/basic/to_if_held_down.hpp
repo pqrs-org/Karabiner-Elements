@@ -1,10 +1,17 @@
 #pragma once
 
+#include "../../types.hpp"
+#include "event_sender.hpp"
+#include <unordered_set>
+#include <vector>
+
+namespace krbn {
+namespace manipulator {
+namespace manipulators {
+namespace basic {
 class to_if_held_down final : public pqrs::dispatcher::extra::dispatcher_client {
 public:
-  to_if_held_down(basic& basic,
-                  const nlohmann::json& json) : dispatcher_client(),
-                                                basic_(basic),
+  to_if_held_down(const nlohmann::json& json) : dispatcher_client(),
                                                 current_held_down_id_(0) {
     if (json.is_array()) {
       for (const auto& j : json) {
@@ -54,35 +61,35 @@ public:
                 // ----------------------------------------
                 // Post events_at_key_up_
 
-                basic_.post_events_at_key_up(*front_input_event_,
-                                             *cmoe,
-                                             time_stamp_delay,
-                                             *oeq);
+                event_sender::post_events_at_key_up(*front_input_event_,
+                                                    *cmoe,
+                                                    time_stamp_delay,
+                                                    *oeq);
 
-                basic_.post_from_mandatory_modifiers_key_down(*front_input_event_,
-                                                              *cmoe,
-                                                              time_stamp_delay,
-                                                              *oeq);
+                event_sender::post_from_mandatory_modifiers_key_down(*front_input_event_,
+                                                                     *cmoe,
+                                                                     time_stamp_delay,
+                                                                     *oeq);
 
                 // ----------------------------------------
                 // Post to_
 
-                basic_.post_from_mandatory_modifiers_key_up(*front_input_event_,
-                                                            *cmoe,
-                                                            time_stamp_delay,
-                                                            *oeq);
+                event_sender::post_from_mandatory_modifiers_key_up(*front_input_event_,
+                                                                   *cmoe,
+                                                                   time_stamp_delay,
+                                                                   *oeq);
 
-                basic_.post_events_at_key_down(*front_input_event_,
-                                               to_,
-                                               *cmoe,
-                                               time_stamp_delay,
-                                               *oeq);
+                event_sender::post_events_at_key_down(*front_input_event_,
+                                                      to_,
+                                                      *cmoe,
+                                                      time_stamp_delay,
+                                                      *oeq);
 
-                if (!basic_.is_last_to_event_modifier_key_event(to_)) {
-                  basic_.post_from_mandatory_modifiers_key_down(*front_input_event_,
-                                                                *cmoe,
-                                                                time_stamp_delay,
-                                                                *oeq);
+                if (!event_sender::is_last_to_event_modifier_key_event(to_)) {
+                  event_sender::post_from_mandatory_modifiers_key_down(*front_input_event_,
+                                                                       *cmoe,
+                                                                       time_stamp_delay,
+                                                                       *oeq);
                 }
 
                 // ----------------------------------------
@@ -112,11 +119,13 @@ public:
   }
 
 private:
-  basic& basic_;
-
   std::vector<to_event_definition> to_;
   std::optional<event_queue::entry> front_input_event_;
   std::weak_ptr<manipulated_original_event> current_manipulated_original_event_;
   std::weak_ptr<event_queue::queue> output_event_queue_;
   int current_held_down_id_;
 };
+} // namespace basic
+} // namespace manipulators
+} // namespace manipulator
+} // namespace krbn

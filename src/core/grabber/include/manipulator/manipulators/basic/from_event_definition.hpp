@@ -1,5 +1,14 @@
 #pragma once
 
+#include "../../types.hpp"
+#include <nlohmann/json.hpp>
+#include <unordered_set>
+#include <vector>
+
+namespace krbn {
+namespace manipulator {
+namespace manipulators {
+namespace basic {
 class from_event_definition final {
 public:
   class simultaneous_options final {
@@ -393,3 +402,7 @@ private:
   std::unordered_set<modifier_definition::modifier> optional_modifiers_;
   simultaneous_options simultaneous_options_;
 };
+} // namespace basic
+} // namespace manipulators
+} // namespace manipulator
+} // namespace krbn

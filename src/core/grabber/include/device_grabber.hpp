@@ -771,7 +771,7 @@ private:
 
         auto to_json = nlohmann::json::parse(pair.second);
 
-        return std::make_shared<manipulator::manipulators::basic::basic>(manipulator::manipulators::basic::basic::from_event_definition(from_json),
+        return std::make_shared<manipulator::manipulators::basic::basic>(manipulator::manipulators::basic::from_event_definition(from_json),
                                                                          manipulator::to_event_definition(to_json));
       } catch (std::exception&) {
       }
@@ -831,7 +831,7 @@ private:
             {"modifiers", nlohmann::json::array({"fn"})},
         });
 
-        auto manipulator = std::make_shared<manipulator::manipulators::basic::basic>(manipulator::manipulators::basic::basic::from_event_definition(from_json),
+        auto manipulator = std::make_shared<manipulator::manipulators::basic::basic>(manipulator::manipulators::basic::from_event_definition(from_json),
                                                                                      manipulator::to_event_definition(to_json));
         fn_function_keys_manipulator_manager_->push_back_manipulator(std::shared_ptr<manipulator::manipulators::base>(manipulator));
       }
@@ -903,7 +903,7 @@ private:
         auto to_json = d["to"];
         to_json["modifiers"] = nlohmann::json::array({"fn"});
 
-        auto manipulator = std::make_shared<manipulator::manipulators::basic::basic>(manipulator::manipulators::basic::basic::from_event_definition(from_json),
+        auto manipulator = std::make_shared<manipulator::manipulators::basic::basic>(manipulator::manipulators::basic::from_event_definition(from_json),
                                                                                      manipulator::to_event_definition(to_json));
         fn_function_keys_manipulator_manager_->push_back_manipulator(std::shared_ptr<manipulator::manipulators::base>(manipulator));
       }
@@ -928,7 +928,7 @@ private:
       }
       to_json["modifiers"] = to_modifiers;
 
-      return std::make_shared<manipulator::manipulators::basic::basic>(manipulator::manipulators::basic::basic::from_event_definition(from_json),
+      return std::make_shared<manipulator::manipulators::basic::basic>(manipulator::manipulators::basic::from_event_definition(from_json),
                                                                        manipulator::to_event_definition(to_json));
     } catch (std::exception&) {
     }

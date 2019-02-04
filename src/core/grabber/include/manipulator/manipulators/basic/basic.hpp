@@ -3,7 +3,12 @@
 #include "../../types.hpp"
 #include "../base.hpp"
 #include "core_configuration/core_configuration.hpp"
+#include "event_sender.hpp"
+#include "from_event_definition.hpp"
 #include "krbn_notification_center.hpp"
+#include "manipulated_original_event.hpp"
+#include "to_delayed_action.hpp"
+#include "to_if_held_down.hpp"
 #include <nlohmann/json.hpp>
 #include <pqrs/dispatcher.hpp>
 #include <unordered_set>
@@ -15,12 +20,6 @@ namespace manipulators {
 namespace basic {
 class basic final : public base, public pqrs::dispatcher::extra::dispatcher_client {
 public:
-#include "from_event_definition.hpp"
-#include "manipulated_original_event.hpp"
-
-#include "to_delayed_action.hpp"
-#include "to_if_held_down.hpp"
-
   basic(const nlohmann::json& json,
         const core_configuration::details::complex_modifications_parameters& parameters) : base(),
                                                                                            dispatcher_client(),
@@ -62,12 +61,10 @@ public:
         }
 
       } else if (key == "to_if_held_down") {
-        to_if_held_down_ = std::make_unique<to_if_held_down>(*this,
-                                                             value);
+        to_if_held_down_ = std::make_unique<to_if_held_down>(value);
 
       } else if (key == "to_delayed_action") {
-        to_delayed_action_ = std::make_unique<to_delayed_action>(*this,
-                                                                 value);
+        to_delayed_action_ = std::make_unique<to_delayed_action>(value);
 
       } else if (key == "description" ||
                  key == "conditions" ||
@@ -399,22 +396,22 @@ public:
             case event_type::key_down:
               // Release from_mandatory_modifiers
 
-              post_from_mandatory_modifiers_key_up(front_input_event,
-                                                   *current_manipulated_original_event,
-                                                   time_stamp_delay,
-                                                   *output_event_queue);
+              event_sender::post_from_mandatory_modifiers_key_up(front_input_event,
+                                                                 *current_manipulated_original_event,
+                                                                 time_stamp_delay,
+                                                                 *output_event_queue);
 
-              post_events_at_key_down(front_input_event,
-                                      to_,
-                                      *current_manipulated_original_event,
-                                      time_stamp_delay,
-                                      *output_event_queue);
+              event_sender::post_events_at_key_down(front_input_event,
+                                                    to_,
+                                                    *current_manipulated_original_event,
+                                                    time_stamp_delay,
+                                                    *output_event_queue);
 
-              if (!is_last_to_event_modifier_key_event(to_)) {
-                post_from_mandatory_modifiers_key_down(front_input_event,
-                                                       *current_manipulated_original_event,
-                                                       time_stamp_delay,
-                                                       *output_event_queue);
+              if (!event_sender::is_last_to_event_modifier_key_event(to_)) {
+                event_sender::post_from_mandatory_modifiers_key_down(front_input_event,
+                                                                     *current_manipulated_original_event,
+                                                                     time_stamp_delay,
+                                                                     *output_event_queue);
               }
 
               break;
@@ -439,15 +436,15 @@ public:
 
                   // to_
 
-                  post_events_at_key_up(front_input_event,
-                                        *current_manipulated_original_event,
-                                        time_stamp_delay,
-                                        *output_event_queue);
+                  event_sender::post_events_at_key_up(front_input_event,
+                                                      *current_manipulated_original_event,
+                                                      time_stamp_delay,
+                                                      *output_event_queue);
 
-                  post_from_mandatory_modifiers_key_down(front_input_event,
-                                                         *current_manipulated_original_event,
-                                                         time_stamp_delay,
-                                                         *output_event_queue);
+                  event_sender::post_from_mandatory_modifiers_key_down(front_input_event,
+                                                                       *current_manipulated_original_event,
+                                                                       time_stamp_delay,
+                                                                       *output_event_queue);
 
                   // to_if_alone_
 
@@ -455,42 +452,42 @@ public:
                     auto duration = pqrs::osx::chrono::make_milliseconds(front_input_event.get_event_time_stamp().get_time_stamp() - current_manipulated_original_event->get_key_down_time_stamp());
                     if (current_manipulated_original_event->get_alone() &&
                         duration < std::chrono::milliseconds(parameters_.get_basic_to_if_alone_timeout_milliseconds())) {
-                      post_from_mandatory_modifiers_key_up(front_input_event,
-                                                           *current_manipulated_original_event,
-                                                           time_stamp_delay,
-                                                           *output_event_queue);
+                      event_sender::post_from_mandatory_modifiers_key_up(front_input_event,
+                                                                         *current_manipulated_original_event,
+                                                                         time_stamp_delay,
+                                                                         *output_event_queue);
 
-                      post_extra_to_events(front_input_event,
-                                           to_if_alone_,
-                                           *current_manipulated_original_event,
-                                           time_stamp_delay,
-                                           *output_event_queue);
+                      event_sender::post_extra_to_events(front_input_event,
+                                                         to_if_alone_,
+                                                         *current_manipulated_original_event,
+                                                         time_stamp_delay,
+                                                         *output_event_queue);
 
-                      post_from_mandatory_modifiers_key_down(front_input_event,
-                                                             *current_manipulated_original_event,
-                                                             time_stamp_delay,
-                                                             *output_event_queue);
+                      event_sender::post_from_mandatory_modifiers_key_down(front_input_event,
+                                                                           *current_manipulated_original_event,
+                                                                           time_stamp_delay,
+                                                                           *output_event_queue);
                     }
                   }
 
                   // to_after_key_up_
 
                   if (!to_after_key_up_.empty()) {
-                    post_from_mandatory_modifiers_key_up(front_input_event,
-                                                         *current_manipulated_original_event,
-                                                         time_stamp_delay,
-                                                         *output_event_queue);
+                    event_sender::post_from_mandatory_modifiers_key_up(front_input_event,
+                                                                       *current_manipulated_original_event,
+                                                                       time_stamp_delay,
+                                                                       *output_event_queue);
 
-                    post_extra_to_events(front_input_event,
-                                         to_after_key_up_,
-                                         *current_manipulated_original_event,
-                                         time_stamp_delay,
-                                         *output_event_queue);
+                    event_sender::post_extra_to_events(front_input_event,
+                                                       to_after_key_up_,
+                                                       *current_manipulated_original_event,
+                                                       time_stamp_delay,
+                                                       *output_event_queue);
 
-                    post_from_mandatory_modifiers_key_down(front_input_event,
-                                                           *current_manipulated_original_event,
-                                                           time_stamp_delay,
-                                                           *output_event_queue);
+                    event_sender::post_from_mandatory_modifiers_key_down(front_input_event,
+                                                                         *current_manipulated_original_event,
+                                                                         time_stamp_delay,
+                                                                         *output_event_queue);
                   }
                 }
 
@@ -498,21 +495,21 @@ public:
 
                 if (!from_.get_simultaneous_options().get_to_after_key_up().empty()) {
                   if (current_manipulated_original_event->get_from_events().empty()) {
-                    post_from_mandatory_modifiers_key_up(front_input_event,
-                                                         *current_manipulated_original_event,
-                                                         time_stamp_delay,
-                                                         *output_event_queue);
+                    event_sender::post_from_mandatory_modifiers_key_up(front_input_event,
+                                                                       *current_manipulated_original_event,
+                                                                       time_stamp_delay,
+                                                                       *output_event_queue);
 
-                    post_extra_to_events(front_input_event,
-                                         from_.get_simultaneous_options().get_to_after_key_up(),
-                                         *current_manipulated_original_event,
-                                         time_stamp_delay,
-                                         *output_event_queue);
+                    event_sender::post_extra_to_events(front_input_event,
+                                                       from_.get_simultaneous_options().get_to_after_key_up(),
+                                                       *current_manipulated_original_event,
+                                                       time_stamp_delay,
+                                                       *output_event_queue);
 
-                    post_from_mandatory_modifiers_key_down(front_input_event,
-                                                           *current_manipulated_original_event,
-                                                           time_stamp_delay,
-                                                           *output_event_queue);
+                    event_sender::post_from_mandatory_modifiers_key_down(front_input_event,
+                                                                         *current_manipulated_original_event,
+                                                                         time_stamp_delay,
+                                                                         *output_event_queue);
                   }
                 }
               }
@@ -621,202 +618,6 @@ public:
     return to_;
   }
 
-  void post_from_mandatory_modifiers_key_up(const event_queue::entry& front_input_event,
-                                            manipulated_original_event& current_manipulated_original_event,
-                                            absolute_time_duration& time_stamp_delay,
-                                            event_queue::queue& output_event_queue) const {
-    // ----------------------------------------
-    // Make target modifiers
-
-    std::unordered_set<modifier_flag> modifiers;
-
-    for (const auto& m : current_manipulated_original_event.get_from_mandatory_modifiers()) {
-      auto& key_up_posted_from_mandatory_modifiers = current_manipulated_original_event.get_key_up_posted_from_mandatory_modifiers();
-
-      if (key_up_posted_from_mandatory_modifiers.find(m) != std::end(key_up_posted_from_mandatory_modifiers)) {
-        continue;
-      }
-
-      // All from_mandatory_modifiers are usually pressed when `post_from_mandatory_modifiers_key_up` is called.
-      // However, there are some exceptional cases.
-      //
-      // Example:
-      //   - from:            left_shift+f2
-      //   - to:              left_shift+f3
-      //   - to_after_key_up: left_shift+tab
-      //
-      //   1. left_shift key_down
-      //   2. f2 key_down
-      //   3. left_shift key_up
-      //   4. f2 key_up
-      //
-      //   to_after_key_up is called at 4.
-      //   to_after_key_up calls `post_from_mandatory_modifiers_key_up` but `left_shift` is not pressed.
-      //
-      // We should not post key_up event in this case.
-
-      if (!output_event_queue.get_modifier_flag_manager().is_pressed(m)) {
-        continue;
-      }
-
-      modifiers.insert(m);
-      key_up_posted_from_mandatory_modifiers.insert(m);
-    }
-
-    // ----------------------------------------
-
-    post_lazy_modifier_key_events(front_input_event,
-                                  modifiers,
-                                  event_type::key_up,
-                                  time_stamp_delay,
-                                  output_event_queue);
-  }
-
-  void post_from_mandatory_modifiers_key_down(const event_queue::entry& front_input_event,
-                                              manipulated_original_event& current_manipulated_original_event,
-                                              absolute_time_duration& time_stamp_delay,
-                                              event_queue::queue& output_event_queue) const {
-    // ----------------------------------------
-    // Make target modifiers
-
-    std::unordered_set<modifier_flag> modifiers;
-
-    for (const auto& m : current_manipulated_original_event.get_from_mandatory_modifiers()) {
-      auto& key_up_posted_from_mandatory_modifiers = current_manipulated_original_event.get_key_up_posted_from_mandatory_modifiers();
-
-      if (key_up_posted_from_mandatory_modifiers.find(m) == std::end(key_up_posted_from_mandatory_modifiers)) {
-        continue;
-      }
-
-      modifiers.insert(m);
-      key_up_posted_from_mandatory_modifiers.erase(m);
-    }
-
-    // ----------------------------------------
-
-    post_lazy_modifier_key_events(front_input_event,
-                                  modifiers,
-                                  event_type::key_down,
-                                  time_stamp_delay,
-                                  output_event_queue);
-  }
-
-  void post_events_at_key_down(const event_queue::entry& front_input_event,
-                               std::vector<to_event_definition> to_events,
-                               manipulated_original_event& current_manipulated_original_event,
-                               absolute_time_duration& time_stamp_delay,
-                               event_queue::queue& output_event_queue) const {
-    if (current_manipulated_original_event.get_halted()) {
-      return;
-    }
-
-    for (auto it = std::begin(to_events); it != std::end(to_events); std::advance(it, 1)) {
-      if (auto event = it->get_event_definition().to_event()) {
-        // to_modifier down, to_key down, to_key up, to_modifier up
-
-        auto to_modifier_events = it->make_modifier_events();
-
-        bool is_modifier_key_event = false;
-        if (auto key_code = event->get_key_code()) {
-          if (types::make_modifier_flag(*key_code) != std::nullopt) {
-            is_modifier_key_event = true;
-          }
-        }
-
-        {
-          // Unset lazy if event is modifier key event in order to keep modifier keys order.
-
-          bool lazy = !is_modifier_key_event || it->get_lazy();
-          for (const auto& e : to_modifier_events) {
-            auto t = front_input_event.get_event_time_stamp();
-            t.set_time_stamp(t.get_time_stamp() + time_stamp_delay++);
-
-            output_event_queue.emplace_back_entry(front_input_event.get_device_id(),
-                                                  t,
-                                                  e,
-                                                  event_type::key_down,
-                                                  front_input_event.get_original_event(),
-                                                  lazy);
-          }
-        }
-
-        // Post key_down event
-
-        {
-          auto t = front_input_event.get_event_time_stamp();
-          t.set_time_stamp(t.get_time_stamp() + time_stamp_delay++);
-
-          output_event_queue.emplace_back_entry(front_input_event.get_device_id(),
-                                                t,
-                                                *event,
-                                                event_type::key_down,
-                                                front_input_event.get_original_event(),
-                                                it->get_lazy());
-
-          if (it->get_halt()) {
-            current_manipulated_original_event.set_halted();
-          }
-        }
-
-        // Post key_up event
-
-        if (it != std::end(to_events) - 1 || !it->get_repeat()) {
-          time_stamp_delay += pqrs::osx::chrono::make_absolute_time_duration(it->get_hold_down_milliseconds());
-
-          auto t = front_input_event.get_event_time_stamp();
-          t.set_time_stamp(t.get_time_stamp() + time_stamp_delay++);
-
-          output_event_queue.emplace_back_entry(front_input_event.get_device_id(),
-                                                t,
-                                                *event,
-                                                event_type::key_up,
-                                                front_input_event.get_original_event(),
-                                                it->get_lazy());
-        } else {
-          current_manipulated_original_event.get_events_at_key_up().emplace_back_event(front_input_event.get_device_id(),
-                                                                                       *event,
-                                                                                       event_type::key_up,
-                                                                                       front_input_event.get_original_event(),
-                                                                                       it->get_lazy());
-        }
-
-        {
-          for (const auto& e : to_modifier_events) {
-            if (it == std::end(to_events) - 1 && is_modifier_key_event) {
-              current_manipulated_original_event.get_events_at_key_up().emplace_back_event(front_input_event.get_device_id(),
-                                                                                           e,
-                                                                                           event_type::key_up,
-                                                                                           front_input_event.get_original_event(),
-                                                                                           true);
-            } else {
-              auto t = front_input_event.get_event_time_stamp();
-              t.set_time_stamp(t.get_time_stamp() + time_stamp_delay++);
-
-              output_event_queue.emplace_back_entry(front_input_event.get_device_id(),
-                                                    t,
-                                                    e,
-                                                    event_type::key_up,
-                                                    front_input_event.get_original_event(),
-                                                    true);
-            }
-          }
-        }
-      }
-    }
-  }
-
-  void post_events_at_key_up(const event_queue::entry& front_input_event,
-                             manipulated_original_event& current_manipulated_original_event,
-                             absolute_time_duration& time_stamp_delay,
-                             event_queue::queue& output_event_queue) const {
-    for (const auto& e : current_manipulated_original_event.get_events_at_key_up().get_events()) {
-      auto t = front_input_event.get_event_time_stamp();
-      t.set_time_stamp(t.get_time_stamp() + time_stamp_delay++);
-      output_event_queue.push_back_entry(e.make_entry(t));
-    }
-    current_manipulated_original_event.get_events_at_key_up().clear_events();
-  }
-
 private:
   bool all_from_events_found(const std::unordered_set<manipulated_original_event::from_event, manipulated_original_event::from_event_hash>& from_events) const {
     for (const auto& d : from_.get_event_definitions()) {
@@ -830,122 +631,6 @@ private:
     }
 
     return true;
-  }
-
-  bool is_last_to_event_modifier_key_event(const std::vector<to_event_definition>& to_events) const {
-    if (to_events.empty()) {
-      return false;
-    }
-
-    if (auto event = to_events.back().get_event_definition().to_event()) {
-      if (auto key_code = event->get_key_code()) {
-        if (types::make_modifier_flag(*key_code) != std::nullopt) {
-          return true;
-        }
-      }
-    }
-
-    return false;
-  }
-
-  void post_lazy_modifier_key_events(const event_queue::entry& front_input_event,
-                                     const std::unordered_set<modifier_flag>& modifiers,
-                                     event_type event_type,
-                                     absolute_time_duration& time_stamp_delay,
-                                     event_queue::queue& output_event_queue) const {
-    for (const auto& m : modifiers) {
-      if (auto key_code = types::make_key_code(m)) {
-        auto t = front_input_event.get_event_time_stamp();
-        t.set_time_stamp(t.get_time_stamp() + time_stamp_delay++);
-
-        event_queue::entry event(front_input_event.get_device_id(),
-                                 t,
-                                 event_queue::event(*key_code),
-                                 event_type,
-                                 front_input_event.get_original_event(),
-                                 true);
-        output_event_queue.push_back_entry(event);
-      }
-    }
-  }
-
-  void post_extra_to_events(const event_queue::entry& front_input_event,
-                            const std::vector<to_event_definition>& to_events,
-                            manipulated_original_event& current_manipulated_original_event,
-                            absolute_time_duration& time_stamp_delay,
-                            event_queue::queue& output_event_queue) const {
-    if (current_manipulated_original_event.get_halted()) {
-      return;
-    }
-
-    for (auto it = std::begin(to_events); it != std::end(to_events); std::advance(it, 1)) {
-      auto& to = *it;
-      if (auto event = to.get_event_definition().to_event()) {
-        auto to_modifier_events = to.make_modifier_events();
-
-        // Post modifier events
-
-        for (const auto& e : to_modifier_events) {
-          auto t = front_input_event.get_event_time_stamp();
-          t.set_time_stamp(t.get_time_stamp() + time_stamp_delay++);
-
-          output_event_queue.emplace_back_entry(front_input_event.get_device_id(),
-                                                t,
-                                                e,
-                                                event_type::key_down,
-                                                front_input_event.get_original_event(),
-                                                true);
-        }
-
-        // Post key_down event
-
-        {
-          auto t = front_input_event.get_event_time_stamp();
-          t.set_time_stamp(t.get_time_stamp() + time_stamp_delay++);
-
-          output_event_queue.emplace_back_entry(front_input_event.get_device_id(),
-                                                t,
-                                                *event,
-                                                event_type::key_down,
-                                                front_input_event.get_original_event(),
-                                                it->get_lazy());
-
-          if (it->get_halt()) {
-            current_manipulated_original_event.set_halted();
-          }
-        }
-
-        // Post key_up event
-
-        {
-          time_stamp_delay += pqrs::osx::chrono::make_absolute_time_duration(it->get_hold_down_milliseconds());
-
-          auto t = front_input_event.get_event_time_stamp();
-          t.set_time_stamp(t.get_time_stamp() + time_stamp_delay++);
-
-          output_event_queue.emplace_back_entry(front_input_event.get_device_id(),
-                                                t,
-                                                *event,
-                                                event_type::key_up,
-                                                front_input_event.get_original_event(),
-                                                it->get_lazy());
-        }
-
-        // Post modifier events
-
-        for (const auto& e : to_modifier_events) {
-          auto t = front_input_event.get_event_time_stamp();
-          t.set_time_stamp(t.get_time_stamp() + time_stamp_delay++);
-
-          output_event_queue.emplace_back_entry(front_input_event.get_device_id(),
-                                                t,
-                                                e,
-                                                event_type::key_up,
-                                                front_input_event.get_original_event(),
-                                                true);
-        }
-      }
-    }
   }
 
   void unset_alone_if_needed(const event_queue::event& event,
@@ -984,31 +669,31 @@ private:
   std::vector<std::shared_ptr<manipulated_original_event>> manipulated_original_events_;
 };
 
-inline void from_json(const nlohmann::json& json, basic::from_event_definition::simultaneous_options::key_order& value) {
+inline void from_json(const nlohmann::json& json, from_event_definition::simultaneous_options::key_order& value) {
   auto s = json.get<std::string>();
 
   if (s == "insensitive") {
-    value = basic::from_event_definition::simultaneous_options::key_order::insensitive;
+    value = from_event_definition::simultaneous_options::key_order::insensitive;
   } else if (s == "strict") {
-    value = basic::from_event_definition::simultaneous_options::key_order::strict;
+    value = from_event_definition::simultaneous_options::key_order::strict;
   } else if (s == "strict_inverse") {
-    value = basic::from_event_definition::simultaneous_options::key_order::strict_inverse;
+    value = from_event_definition::simultaneous_options::key_order::strict_inverse;
   } else {
     logger::get_logger()->error("complex_modifications json error: Unknown simultaneous_options::key_order: {0}", json.dump());
-    value = basic::from_event_definition::simultaneous_options::key_order::insensitive;
+    value = from_event_definition::simultaneous_options::key_order::insensitive;
   }
 }
 
-inline void from_json(const nlohmann::json& json, basic::from_event_definition::simultaneous_options::key_up_when& value) {
+inline void from_json(const nlohmann::json& json, from_event_definition::simultaneous_options::key_up_when& value) {
   auto s = json.get<std::string>();
 
   if (s == "any") {
-    value = basic::from_event_definition::simultaneous_options::key_up_when::any;
+    value = from_event_definition::simultaneous_options::key_up_when::any;
   } else if (s == "all") {
-    value = basic::from_event_definition::simultaneous_options::key_up_when::all;
+    value = from_event_definition::simultaneous_options::key_up_when::all;
   } else {
     logger::get_logger()->error("complex_modifications json error: Unknown simultaneous_options::key_up_when: {0}", json.dump());
-    value = basic::from_event_definition::simultaneous_options::key_up_when::any;
+    value = from_event_definition::simultaneous_options::key_up_when::any;
   }
 }
 } // namespace basic

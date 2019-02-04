@@ -1,5 +1,13 @@
 #pragma once
 
+#include "../../types.hpp"
+#include <unordered_set>
+#include <vector>
+
+namespace krbn {
+namespace manipulator {
+namespace manipulators {
+namespace basic {
 class manipulated_original_event final {
 public:
   class from_event final {
@@ -202,3 +210,7 @@ private:
   events_at_key_up events_at_key_up_;
   bool key_up_posted_;
 };
+} // namespace basic
+} // namespace manipulators
+} // namespace manipulator
+} // namespace krbn

@@ -1,10 +1,17 @@
 #pragma once
 
+#include "../../types.hpp"
+#include "event_sender.hpp"
+#include <unordered_set>
+#include <vector>
+
+namespace krbn {
+namespace manipulator {
+namespace manipulators {
+namespace basic {
 class to_delayed_action final : public pqrs::dispatcher::extra::dispatcher_client {
 public:
-  to_delayed_action(basic& basic,
-                    const nlohmann::json& json) : dispatcher_client(),
-                                                  basic_(basic),
+  to_delayed_action(const nlohmann::json& json) : dispatcher_client(),
                                                   current_delayed_action_id_(0) {
     if (json.is_object()) {
       for (auto it = std::begin(json); it != std::end(json); std::advance(it, 1)) {
@@ -111,27 +118,27 @@ private:
 
           // Release from_mandatory_modifiers
 
-          basic_.post_lazy_modifier_key_events(*front_input_event_,
-                                               current_manipulated_original_event_->get_from_mandatory_modifiers(),
-                                               event_type::key_up,
-                                               time_stamp_delay,
-                                               *oeq);
+          event_sender::post_lazy_modifier_key_events(*front_input_event_,
+                                                      current_manipulated_original_event_->get_from_mandatory_modifiers(),
+                                                      event_type::key_up,
+                                                      time_stamp_delay,
+                                                      *oeq);
 
           // Post events
 
-          basic_.post_extra_to_events(*front_input_event_,
-                                      events,
-                                      *current_manipulated_original_event_,
-                                      time_stamp_delay,
-                                      *oeq);
+          event_sender::post_extra_to_events(*front_input_event_,
+                                             events,
+                                             *current_manipulated_original_event_,
+                                             time_stamp_delay,
+                                             *oeq);
 
           // Restore from_mandatory_modifiers
 
-          basic_.post_lazy_modifier_key_events(*front_input_event_,
-                                               current_manipulated_original_event_->get_from_mandatory_modifiers(),
-                                               event_type::key_down,
-                                               time_stamp_delay,
-                                               *oeq);
+          event_sender::post_lazy_modifier_key_events(*front_input_event_,
+                                                      current_manipulated_original_event_->get_from_mandatory_modifiers(),
+                                                      event_type::key_down,
+                                                      time_stamp_delay,
+                                                      *oeq);
 
           krbn_notification_center::get_instance().enqueue_input_event_arrived(*this);
         }
@@ -141,8 +148,6 @@ private:
     current_manipulated_original_event_ = nullptr;
   }
 
-  basic& basic_;
-
   std::vector<to_event_definition> to_if_invoked_;
   std::vector<to_event_definition> to_if_canceled_;
   std::optional<event_queue::entry> front_input_event_;
@@ -150,3 +155,7 @@ private:
   std::weak_ptr<event_queue::queue> output_event_queue_;
   int current_delayed_action_id_;
 };
+} // namespace basic
+} // namespace manipulators
+} // namespace manipulator
+} // namespace krbn
