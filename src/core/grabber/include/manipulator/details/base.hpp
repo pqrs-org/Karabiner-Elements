@@ -2,7 +2,7 @@
 
 #include "event_queue.hpp"
 #include "manipulator/condition_manager.hpp"
-#include "manipulator/details/types.hpp"
+#include "manipulator/types.hpp"
 #include "modifier_flag_manager.hpp"
 
 namespace krbn {

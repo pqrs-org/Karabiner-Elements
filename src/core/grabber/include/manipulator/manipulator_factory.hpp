@@ -11,7 +11,7 @@
 #include "manipulator/details/base.hpp"
 #include "manipulator/details/basic.hpp"
 #include "manipulator/details/nop.hpp"
-#include "manipulator/details/types.hpp"
+#include "manipulator/types.hpp"
 #include <memory>
 
 namespace krbn {

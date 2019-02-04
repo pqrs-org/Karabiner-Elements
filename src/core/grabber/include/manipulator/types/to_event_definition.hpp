@@ -6,7 +6,6 @@
 
 namespace krbn {
 namespace manipulator {
-namespace details {
 class to_event_definition final {
 public:
   explicit to_event_definition(const nlohmann::json& json) : lazy_(false),
@@ -162,6 +161,5 @@ private:
   bool halt_;
   std::chrono::milliseconds hold_down_milliseconds_;
 };
-} // namespace details
 } // namespace manipulator
 } // namespace krbn

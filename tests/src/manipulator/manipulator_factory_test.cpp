@@ -2,9 +2,9 @@
 
 #include "../share/manipulator_helper.hpp"
 
-using krbn::manipulator::details::event_definition;
-using krbn::manipulator::details::modifier_definition;
-using krbn::manipulator::details::to_event_definition;
+using krbn::manipulator::event_definition;
+using krbn::manipulator::modifier_definition;
+using krbn::manipulator::to_event_definition;
 
 TEST_CASE("manipulator.manipulator_factory") {
   {

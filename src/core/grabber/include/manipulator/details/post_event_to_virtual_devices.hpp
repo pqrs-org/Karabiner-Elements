@@ -6,7 +6,7 @@
 #include "keyboard_repeat_detector.hpp"
 #include "krbn_notification_center.hpp"
 #include "manipulator/details/base.hpp"
-#include "manipulator/details/types.hpp"
+#include "manipulator/types.hpp"
 #include "stream_utility.hpp"
 #include "types.hpp"
 #include "virtual_hid_device_client.hpp"

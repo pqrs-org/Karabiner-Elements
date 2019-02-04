@@ -3,7 +3,7 @@
 
 #include "core_configuration/core_configuration.hpp"
 #include "manipulator/details/basic.hpp"
-#include "manipulator/details/types.hpp"
+#include "manipulator/types.hpp"
 #include <iostream>
 
 using simple_modifications = krbn::core_configuration::details::simple_modifications;
@@ -1012,7 +1012,7 @@ TEST_CASE("simple_modifications.to_json") {
     REQUIRE(simple_modifications.to_json() == expected);
   }
   {
-    // simple_modifications.to_json have to be compatible with manipulator::details::event_definition
+    // simple_modifications.to_json have to be compatible with manipulator::event_definition
 
     auto json = nlohmann::json::array();
     json.push_back(nlohmann::json::object());
@@ -1029,7 +1029,7 @@ TEST_CASE("simple_modifications.to_json") {
       REQUIRE(from_event_definition.get_event_definitions().front().get_consumer_key_code() == krbn::consumer_key_code::mute);
     }
     {
-      krbn::manipulator::details::to_event_definition to_event_definition(nlohmann::json::parse(simple_modifications.get_pairs()[0].second));
+      krbn::manipulator::to_event_definition to_event_definition(nlohmann::json::parse(simple_modifications.get_pairs()[0].second));
       REQUIRE(to_event_definition.get_event_definition().get_pointing_button() == krbn::pointing_button::button3);
     }
     {
@@ -1038,7 +1038,7 @@ TEST_CASE("simple_modifications.to_json") {
       REQUIRE(from_event_definition.get_event_definitions().front().get_key_code() == krbn::key_code::a);
     }
     {
-      krbn::manipulator::details::to_event_definition to_event_definition(nlohmann::json::parse(simple_modifications.get_pairs()[1].second));
+      krbn::manipulator::to_event_definition to_event_definition(nlohmann::json::parse(simple_modifications.get_pairs()[1].second));
       REQUIRE(to_event_definition.get_event_definition().get_key_code() == krbn::key_code::f1);
     }
   }

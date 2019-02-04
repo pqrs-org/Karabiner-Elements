@@ -7,7 +7,6 @@
 
 namespace krbn {
 namespace manipulator {
-namespace details {
 class event_definition {
 public:
   enum class type {
@@ -323,6 +322,5 @@ protected:
                  >
       value_;
 };
-} // namespace details
 } // namespace manipulator
 } // namespace krbn

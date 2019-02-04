@@ -6,7 +6,6 @@
 
 namespace krbn {
 namespace manipulator {
-namespace details {
 class modifier_definition final {
 public:
   enum class modifier {
@@ -210,6 +209,5 @@ inline std::ostream& operator<<(std::ostream& stream,
                                                 std::allocator<modifier_definition::modifier>>& values) {
   return stream_utility::output_enums(stream, values);
 }
-} // namespace details
 } // namespace manipulator
 } // namespace krbn

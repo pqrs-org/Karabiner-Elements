@@ -123,12 +123,12 @@ public:
                                          now);
 
                   switch (r) {
-                    case details::manipulate_result::passed:
-                    case details::manipulate_result::manipulated:
+                    case manipulate_result::passed:
+                    case manipulate_result::manipulated:
                       // Do nothing
                       break;
 
-                    case details::manipulate_result::needs_wait_until_time_stamp:
+                    case manipulate_result::needs_wait_until_time_stamp:
                       goto finish;
                   }
                 }

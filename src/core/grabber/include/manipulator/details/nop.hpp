@@ -1,7 +1,7 @@
 #pragma once
 
 #include "manipulator/details/base.hpp"
-#include "manipulator/details/types.hpp"
+#include "manipulator/types.hpp"
 
 namespace krbn {
 namespace manipulator {

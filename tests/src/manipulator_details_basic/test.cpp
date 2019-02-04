@@ -2,7 +2,7 @@
 #include <catch2/catch.hpp>
 
 #include "manipulator/details/basic.hpp"
-#include "manipulator/details/types.hpp"
+#include "manipulator/types.hpp"
 #include <pqrs/filesystem.hpp>
 
 namespace {
@@ -37,9 +37,9 @@ void set_null_logger(void) {
 } // namespace
 
 TEST_CASE("modifier_definition.test_modifier") {
+  using krbn::manipulator::event_definition;
+  using krbn::manipulator::modifier_definition;
   using krbn::manipulator::details::basic;
-  using krbn::manipulator::details::event_definition;
-  using krbn::manipulator::details::modifier_definition;
 
   {
     krbn::modifier_flag_manager modifier_flag_manager;
@@ -94,9 +94,9 @@ TEST_CASE("modifier_definition.test_modifier") {
 }
 
 TEST_CASE("from_event_definition.test_modifiers") {
+  using krbn::manipulator::event_definition;
+  using krbn::manipulator::modifier_definition;
   using krbn::manipulator::details::basic;
-  using krbn::manipulator::details::event_definition;
-  using krbn::manipulator::details::modifier_definition;
 
   // empty
 
@@ -459,15 +459,15 @@ TEST_CASE("manipulator.details.basic::from_event_definition") {
     });
     basic::from_event_definition event_definition(json);
     REQUIRE(event_definition.get_event_definitions().size() == 1);
-    REQUIRE(event_definition.get_event_definitions().front().get_type() == krbn::manipulator::details::event_definition::type::key_code);
+    REQUIRE(event_definition.get_event_definitions().front().get_type() == krbn::manipulator::event_definition::type::key_code);
     REQUIRE(event_definition.get_event_definitions().front().get_key_code() == krbn::key_code::spacebar);
     REQUIRE(event_definition.get_event_definitions().front().get_pointing_button() == std::nullopt);
-    REQUIRE(event_definition.get_mandatory_modifiers() == std::unordered_set<krbn::manipulator::details::modifier_definition::modifier>({
-                                                              krbn::manipulator::details::modifier_definition::modifier::shift,
-                                                              krbn::manipulator::details::modifier_definition::modifier::left_command,
+    REQUIRE(event_definition.get_mandatory_modifiers() == std::unordered_set<krbn::manipulator::modifier_definition::modifier>({
+                                                              krbn::manipulator::modifier_definition::modifier::shift,
+                                                              krbn::manipulator::modifier_definition::modifier::left_command,
                                                           }));
-    REQUIRE(event_definition.get_optional_modifiers() == std::unordered_set<krbn::manipulator::details::modifier_definition::modifier>({
-                                                             krbn::manipulator::details::modifier_definition::modifier::any,
+    REQUIRE(event_definition.get_optional_modifiers() == std::unordered_set<krbn::manipulator::modifier_definition::modifier>({
+                                                             krbn::manipulator::modifier_definition::modifier::any,
                                                          }));
     REQUIRE(event_definition.get_event_definitions().front().to_event() == krbn::event_queue::event(krbn::key_code::spacebar));
   }
@@ -491,15 +491,15 @@ TEST_CASE("manipulator.details.basic::from_event_definition") {
     });
     basic::from_event_definition event_definition(json);
     REQUIRE(event_definition.get_event_definitions().size() == 1);
-    REQUIRE(event_definition.get_event_definitions().front().get_type() == krbn::manipulator::details::event_definition::type::key_code);
+    REQUIRE(event_definition.get_event_definitions().front().get_type() == krbn::manipulator::event_definition::type::key_code);
     REQUIRE(event_definition.get_event_definitions().front().get_key_code() == krbn::key_code::right_option);
     REQUIRE(event_definition.get_event_definitions().front().get_pointing_button() == std::nullopt);
-    REQUIRE(event_definition.get_mandatory_modifiers() == std::unordered_set<krbn::manipulator::details::modifier_definition::modifier>({
-                                                              krbn::manipulator::details::modifier_definition::modifier::shift,
-                                                              krbn::manipulator::details::modifier_definition::modifier::left_command,
+    REQUIRE(event_definition.get_mandatory_modifiers() == std::unordered_set<krbn::manipulator::modifier_definition::modifier>({
+                                                              krbn::manipulator::modifier_definition::modifier::shift,
+                                                              krbn::manipulator::modifier_definition::modifier::left_command,
                                                           }));
-    REQUIRE(event_definition.get_optional_modifiers() == std::unordered_set<krbn::manipulator::details::modifier_definition::modifier>({
-                                                             krbn::manipulator::details::modifier_definition::modifier::any,
+    REQUIRE(event_definition.get_optional_modifiers() == std::unordered_set<krbn::manipulator::modifier_definition::modifier>({
+                                                             krbn::manipulator::modifier_definition::modifier::any,
                                                          }));
   }
   {
