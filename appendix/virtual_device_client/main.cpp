@@ -1,6 +1,6 @@
 #include "dispatcher_utility.hpp"
 #include "logger.hpp"
-#include "manipulator/details/post_event_to_virtual_devices.hpp"
+#include "manipulator/manipulators/post_event_to_virtual_devices.hpp"
 #include "virtual_hid_device_client.hpp"
 
 int main(int argc, const char* argv[]) {

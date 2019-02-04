@@ -2,7 +2,7 @@
 #include <catch2/catch.hpp>
 
 #include "core_configuration/core_configuration.hpp"
-#include "manipulator/details/basic.hpp"
+#include "manipulator/manipulators/basic.hpp"
 #include "manipulator/types.hpp"
 #include <iostream>
 

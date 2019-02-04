@@ -10,7 +10,7 @@
 #include "json_utility.hpp"
 #include "krbn_notification_center.hpp"
 #include "logger.hpp"
-#include "manipulator/details/post_event_to_virtual_devices.hpp"
+#include "manipulator/manipulators/post_event_to_virtual_devices.hpp"
 #include "manipulator/manipulator_managers_connector.hpp"
 #include "monitor/configuration_monitor.hpp"
 #include "monitor/event_tap_monitor.hpp"

@@ -2,10 +2,10 @@
 
 #include "event_queue.hpp"
 #include "json_utility.hpp"
-#include "manipulator/details/post_event_to_virtual_devices.hpp"
 #include "manipulator/manipulator_factory.hpp"
 #include "manipulator/manipulator_manager.hpp"
 #include "manipulator/manipulator_managers_connector.hpp"
+#include "manipulator/manipulators/post_event_to_virtual_devices.hpp"
 #include <pqrs/thread_wait.hpp>
 
 namespace krbn {

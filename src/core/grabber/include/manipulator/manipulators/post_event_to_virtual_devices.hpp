@@ -2,11 +2,11 @@
 
 #include "boost_defs.hpp"
 
+#include "../types.hpp"
+#include "base.hpp"
 #include "console_user_server_client.hpp"
 #include "keyboard_repeat_detector.hpp"
 #include "krbn_notification_center.hpp"
-#include "manipulator/details/base.hpp"
-#include "manipulator/types.hpp"
 #include "stream_utility.hpp"
 #include "types.hpp"
 #include "virtual_hid_device_client.hpp"

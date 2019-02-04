@@ -1,7 +1,7 @@
 #define CATCH_CONFIG_MAIN
 #include <catch2/catch.hpp>
 
-#include "manipulator/details/basic.hpp"
+#include "manipulator/manipulators/basic.hpp"
 #include "manipulator/types.hpp"
 #include <pqrs/filesystem.hpp>
 

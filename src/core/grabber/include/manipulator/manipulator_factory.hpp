@@ -8,9 +8,9 @@
 #include "conditions/variable.hpp"
 #include "core_configuration/core_configuration.hpp"
 #include "json_utility.hpp"
-#include "manipulator/details/base.hpp"
-#include "manipulator/details/basic.hpp"
-#include "manipulator/details/nop.hpp"
+#include "manipulator/manipulators/base.hpp"
+#include "manipulator/manipulators/basic.hpp"
+#include "manipulator/manipulators/nop.hpp"
 #include "manipulator/types.hpp"
 #include <memory>
 
