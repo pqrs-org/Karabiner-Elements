@@ -5,6 +5,7 @@
 #include "types.hpp"
 #include <nlohmann/json.hpp>
 #include <ostream>
+#include <pqrs/hash.hpp>
 
 namespace krbn {
 namespace event_queue {
@@ -99,8 +100,10 @@ public:
 
   friend size_t hash_value(const event_time_stamp& value) {
     size_t h = 0;
-    boost::hash_combine(h, type_safe::get(value.get_time_stamp()));
-    boost::hash_combine(h, type_safe::get(value.get_input_delay_duration()));
+
+    pqrs::hash_combine(h, type_safe::get(value.get_time_stamp()));
+    pqrs::hash_combine(h, type_safe::get(value.get_input_delay_duration()));
+
     return h;
   }
 
