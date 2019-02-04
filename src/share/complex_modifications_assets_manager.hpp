@@ -4,8 +4,8 @@
 
 #include "constants.hpp"
 #include "core_configuration/core_configuration.hpp"
-#include <boost/algorithm/string/predicate.hpp>
 #include <dirent.h>
+#include <pqrs/string.hpp>
 #include <unistd.h>
 
 namespace krbn {
@@ -57,7 +57,7 @@ public:
     }
 
     bool user_file(void) const {
-      return boost::starts_with(file_path_, constants::get_user_complex_modifications_assets_directory());
+      return pqrs::string::starts_with(file_path_, constants::get_user_complex_modifications_assets_directory());
     }
 
   private:
