@@ -100,17 +100,6 @@ public:
            horizontal_wheel_ == other.horizontal_wheel_;
   }
 
-  friend size_t hash_value(const pointing_motion& value) {
-    size_t h = 0;
-
-    pqrs::hash_combine(h, value.x_);
-    pqrs::hash_combine(h, value.y_);
-    pqrs::hash_combine(h, value.vertical_wheel_);
-    pqrs::hash_combine(h, value.horizontal_wheel_);
-
-    return h;
-  }
-
 private:
   int x_;
   int y_;
@@ -131,8 +120,15 @@ inline void to_json(nlohmann::json& json, const pointing_motion& pointing_motion
 namespace std {
 template <>
 struct hash<krbn::pointing_motion> final {
-  std::size_t operator()(const krbn::pointing_motion& v) const {
-    return hash_value(v);
+  std::size_t operator()(const krbn::pointing_motion& value) const {
+    std::size_t h = 0;
+
+    pqrs::hash_combine(h, value.get_x());
+    pqrs::hash_combine(h, value.get_y());
+    pqrs::hash_combine(h, value.get_vertical_wheel());
+    pqrs::hash_combine(h, value.get_horizontal_wheel());
+
+    return h;
   }
 };
 } // namespace std

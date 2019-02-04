@@ -169,9 +169,3 @@ struct hash<krbn::mouse_key> final {
   }
 };
 } // namespace std
-
-namespace krbn {
-inline std::size_t hash_value(const mouse_key& value) {
-  return std::hash<mouse_key>{}(value);
-}
-} // namespace krbn

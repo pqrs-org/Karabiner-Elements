@@ -11,7 +11,6 @@
 #include "types.hpp"
 #include "virtual_hid_device_client.hpp"
 #include "virtual_hid_device_utility.hpp"
-#include <boost/variant.hpp>
 #include <mach/mach_time.h>
 #include <optional>
 

@@ -297,12 +297,20 @@ private:
 inline void to_json(nlohmann::json& json, const device_properties& device_properties) {
   json = device_properties.to_json();
 }
-
-inline size_t hash_value(const device_properties& value) {
-  // We can treat device_id_ as the unique value of device_properties.
-  if (auto id = value.get_device_id()) {
-    return std::hash<device_id>{}(*id);
-  }
-  return 0;
-}
 } // namespace krbn
+
+namespace std {
+template <>
+struct hash<krbn::device_properties> final {
+  std::size_t operator()(const krbn::device_properties& value) const {
+    std::size_t h = 0;
+
+    // We can treat device_id_ as the unique value of device_properties.
+    if (auto device_id = value.get_device_id()) {
+      pqrs::hash_combine(h, *device_id);
+    }
+
+    return h;
+  }
+};
+} // namespace std

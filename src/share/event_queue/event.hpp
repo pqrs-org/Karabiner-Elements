@@ -2,13 +2,12 @@
 
 // `krbn::event_queue::event` can be used safely in a multi-threaded environment.
 
-#include "boost_defs.hpp"
-
 #include "device_properties.hpp"
+#include "hash.hpp"
 #include "json_utility.hpp"
 #include "manipulator_environment.hpp"
 #include "types.hpp"
-#include <boost/variant.hpp>
+#include <mpark/variant.hpp>
 #include <optional>
 #include <pqrs/hash.hpp>
 
@@ -39,8 +38,22 @@ public:
     keyboard_type_changed,
   };
 
+  using value_t = mpark::variant<key_code,                                                 // For type::key_code
+                                 consumer_key_code,                                        // For type::consumer_key_code
+                                 pointing_button,                                          // For type::pointing_button
+                                 pointing_motion,                                          // For type::pointing_motion
+                                 int64_t,                                                  // For type::caps_lock_state_changed
+                                 std::string,                                              // For shell_command, keyboard_type_changed
+                                 std::vector<pqrs::osx::input_source_selector::specifier>, // For select_input_source
+                                 std::pair<std::string, int>,                              // For set_variable
+                                 mouse_key,                                                // For mouse_key
+                                 pqrs::osx::frontmost_application_monitor::application,    // For frontmost_application_changed
+                                 pqrs::osx::input_source::properties,                      // For input_source_changed
+                                 device_properties,                                        // For device_grabbed
+                                 mpark::monostate>;                                        // For virtual events
+
   event(void) : type_(type::none),
-                value_(boost::blank()) {
+                value_(mpark::monostate()) {
   }
 
   static event make_from_json(const nlohmann::json& json) {
@@ -345,17 +358,21 @@ public:
     return type_;
   }
 
+  const value_t& get_value(void) const {
+    return value_;
+  }
+
   template <typename T>
   const T* find(void) const {
-    return boost::get<const T>(&value_);
+    return mpark::get_if<T>(&value_);
   }
 
   std::optional<key_code> get_key_code(void) const {
     try {
       if (type_ == type::key_code) {
-        return boost::get<key_code>(value_);
+        return mpark::get<key_code>(value_);
       }
-    } catch (boost::bad_get&) {
+    } catch (mpark::bad_variant_access&) {
     }
     return std::nullopt;
   }
@@ -363,9 +380,9 @@ public:
   std::optional<consumer_key_code> get_consumer_key_code(void) const {
     try {
       if (type_ == type::consumer_key_code) {
-        return boost::get<consumer_key_code>(value_);
+        return mpark::get<consumer_key_code>(value_);
       }
-    } catch (boost::bad_get&) {
+    } catch (mpark::bad_variant_access&) {
     }
     return std::nullopt;
   }
@@ -373,9 +390,9 @@ public:
   std::optional<pointing_button> get_pointing_button(void) const {
     try {
       if (type_ == type::pointing_button) {
-        return boost::get<pointing_button>(value_);
+        return mpark::get<pointing_button>(value_);
       }
-    } catch (boost::bad_get&) {
+    } catch (mpark::bad_variant_access&) {
     }
     return std::nullopt;
   }
@@ -383,9 +400,9 @@ public:
   std::optional<pointing_motion> get_pointing_motion(void) const {
     try {
       if (type_ == type::pointing_motion) {
-        return boost::get<pointing_motion>(value_);
+        return mpark::get<pointing_motion>(value_);
       }
-    } catch (boost::bad_get&) {
+    } catch (mpark::bad_variant_access&) {
     }
     return std::nullopt;
   }
@@ -393,9 +410,9 @@ public:
   std::optional<int64_t> get_integer_value(void) const {
     try {
       if (type_ == type::caps_lock_state_changed) {
-        return boost::get<int64_t>(value_);
+        return mpark::get<int64_t>(value_);
       }
-    } catch (boost::bad_get&) {
+    } catch (mpark::bad_variant_access&) {
     }
     return std::nullopt;
   }
@@ -403,9 +420,9 @@ public:
   std::optional<std::string> get_shell_command(void) const {
     try {
       if (type_ == type::shell_command) {
-        return boost::get<std::string>(value_);
+        return mpark::get<std::string>(value_);
       }
-    } catch (boost::bad_get&) {
+    } catch (mpark::bad_variant_access&) {
     }
     return std::nullopt;
   }
@@ -413,9 +430,9 @@ public:
   std::optional<std::vector<pqrs::osx::input_source_selector::specifier>> get_input_source_specifiers(void) const {
     try {
       if (type_ == type::select_input_source) {
-        return boost::get<std::vector<pqrs::osx::input_source_selector::specifier>>(value_);
+        return mpark::get<std::vector<pqrs::osx::input_source_selector::specifier>>(value_);
       }
-    } catch (boost::bad_get&) {
+    } catch (mpark::bad_variant_access&) {
     }
     return std::nullopt;
   }
@@ -423,9 +440,9 @@ public:
   std::optional<std::pair<std::string, int>> get_set_variable(void) const {
     try {
       if (type_ == type::set_variable) {
-        return boost::get<std::pair<std::string, int>>(value_);
+        return mpark::get<std::pair<std::string, int>>(value_);
       }
-    } catch (boost::bad_get&) {
+    } catch (mpark::bad_variant_access&) {
     }
     return std::nullopt;
   }
@@ -433,9 +450,9 @@ public:
   std::optional<mouse_key> get_mouse_key(void) const {
     try {
       if (type_ == type::mouse_key) {
-        return boost::get<mouse_key>(value_);
+        return mpark::get<mouse_key>(value_);
       }
-    } catch (boost::bad_get&) {
+    } catch (mpark::bad_variant_access&) {
     }
     return std::nullopt;
   }
@@ -443,9 +460,9 @@ public:
   std::optional<pqrs::osx::frontmost_application_monitor::application> get_frontmost_application(void) const {
     try {
       if (type_ == type::frontmost_application_changed) {
-        return boost::get<pqrs::osx::frontmost_application_monitor::application>(value_);
+        return mpark::get<pqrs::osx::frontmost_application_monitor::application>(value_);
       }
-    } catch (boost::bad_get&) {
+    } catch (mpark::bad_variant_access&) {
     }
     return std::nullopt;
   }
@@ -453,9 +470,9 @@ public:
   std::optional<pqrs::osx::input_source::properties> get_input_source_properties(void) const {
     try {
       if (type_ == type::input_source_changed) {
-        return boost::get<pqrs::osx::input_source::properties>(value_);
+        return mpark::get<pqrs::osx::input_source::properties>(value_);
       }
-    } catch (boost::bad_get&) {
+    } catch (mpark::bad_variant_access&) {
     }
     return std::nullopt;
   }
@@ -463,9 +480,9 @@ public:
   std::optional<std::string> get_keyboard_type(void) const {
     try {
       if (type_ == type::keyboard_type_changed) {
-        return boost::get<std::string>(value_);
+        return mpark::get<std::string>(value_);
       }
-    } catch (boost::bad_get&) {
+    } catch (mpark::bad_variant_access&) {
     }
     return std::nullopt;
   }
@@ -475,18 +492,11 @@ public:
            value_ == other.value_;
   }
 
-  friend size_t hash_value(const event& value) {
-    size_t h = 0;
-    boost::hash_combine(h, value.type_);
-    boost::hash_combine(h, value.value_);
-    return h;
-  }
-
 private:
   static event make_virtual_event(type type) {
     event e;
     e.type_ = type;
-    e.value_ = boost::blank();
+    e.value_ = mpark::monostate();
     return e;
   }
 
@@ -553,21 +563,7 @@ private:
   }
 
   type type_;
-
-  boost::variant<key_code,                                                 // For type::key_code
-                 consumer_key_code,                                        // For type::consumer_key_code
-                 pointing_button,                                          // For type::pointing_button
-                 pointing_motion,                                          // For type::pointing_motion
-                 int64_t,                                                  // For type::caps_lock_state_changed
-                 std::string,                                              // For shell_command, keyboard_type_changed
-                 std::vector<pqrs::osx::input_source_selector::specifier>, // For select_input_source
-                 std::pair<std::string, int>,                              // For set_variable
-                 mouse_key,                                                // For mouse_key
-                 pqrs::osx::frontmost_application_monitor::application,    // For frontmost_application_changed
-                 pqrs::osx::input_source::properties,                      // For input_source_changed
-                 device_properties,                                        // For device_grabbed
-                 boost::blank>                                             // For virtual events
-      value_;
+  value_t value_;
 };
 
 inline std::ostream& operator<<(std::ostream& stream, const event::type& value) {
@@ -605,8 +601,13 @@ inline void to_json(nlohmann::json& json, const event& value) {
 namespace std {
 template <>
 struct hash<krbn::event_queue::event> final {
-  std::size_t operator()(const krbn::event_queue::event& v) const {
-    return hash_value(v);
+  std::size_t operator()(const krbn::event_queue::event& value) const {
+    std::size_t h = 0;
+
+    pqrs::hash_combine(h, value.get_type());
+    pqrs::hash_combine(h, value.get_value());
+
+    return h;
   }
 };
 } // namespace std

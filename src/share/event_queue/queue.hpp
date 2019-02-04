@@ -3,7 +3,6 @@
 #include "event_queue/entry.hpp"
 #include "event_queue/event.hpp"
 #include "event_queue/event_time_stamp.hpp"
-#include "hash_utility.hpp"
 #include "modifier_flag_manager.hpp"
 #include "pointing_button_manager.hpp"
 

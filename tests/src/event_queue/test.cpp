@@ -465,8 +465,9 @@ TEST_CASE("caps_lock_state_changed") {
 }
 
 TEST_CASE("hash") {
-  REQUIRE(hash_value(krbn::event_queue::event(krbn::key_code::a)) !=
-          hash_value(krbn::event_queue::event(krbn::key_code::b)));
+  using event = krbn::event_queue::event;
+  REQUIRE(std::hash<event>{}(event(krbn::key_code::a)) !=
+          std::hash<event>{}(event(krbn::key_code::b)));
 }
 
 int main(int argc, char* argv[]) {

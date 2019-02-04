@@ -98,15 +98,6 @@ public:
     return !(*this == other);
   }
 
-  friend size_t hash_value(const event_time_stamp& value) {
-    size_t h = 0;
-
-    pqrs::hash_combine(h, type_safe::get(value.get_time_stamp()));
-    pqrs::hash_combine(h, type_safe::get(value.get_input_delay_duration()));
-
-    return h;
-  }
-
 private:
   absolute_time_point time_stamp_;
   absolute_time_duration input_delay_duration_;
@@ -131,8 +122,13 @@ inline void to_json(nlohmann::json& json, const event_time_stamp& value) {
 namespace std {
 template <>
 struct hash<krbn::event_queue::event_time_stamp> final {
-  std::size_t operator()(const krbn::event_queue::event_time_stamp& v) const {
-    return hash_value(v);
+  std::size_t operator()(const krbn::event_queue::event_time_stamp& value) const {
+    std::size_t h = 0;
+
+    pqrs::hash_combine(h, type_safe::get(value.get_time_stamp()));
+    pqrs::hash_combine(h, type_safe::get(value.get_input_delay_duration()));
+
+    return h;
   }
 };
 } // namespace std

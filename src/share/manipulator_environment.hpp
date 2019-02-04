@@ -6,7 +6,6 @@
 #include "json_utility.hpp"
 #include "logger.hpp"
 #include "types.hpp"
-#include <boost/functional/hash.hpp>
 #include <fstream>
 #include <iostream>
 #include <nlohmann/json.hpp>
