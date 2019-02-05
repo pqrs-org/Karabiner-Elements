@@ -13,6 +13,7 @@ add_executable(
   src/pointing_motion_test.cpp
   src/system_preferences_test.cpp
   src/test.cpp
+  src/types_test.cpp
 )
 
 target_link_libraries(

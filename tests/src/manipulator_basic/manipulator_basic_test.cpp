@@ -1,9 +1,7 @@
-#define CATCH_CONFIG_MAIN
 #include <catch2/catch.hpp>
 
 #include "manipulator/manipulators/basic/basic.hpp"
 #include "manipulator/types.hpp"
-#include <pqrs/filesystem.hpp>
 
 namespace {
 krbn::modifier_flag_manager::active_modifier_flag left_command_1(krbn::modifier_flag_manager::active_modifier_flag::type::increase,

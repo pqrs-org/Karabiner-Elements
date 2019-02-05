@@ -1,13 +1,8 @@
-#define CATCH_CONFIG_MAIN
 #include <catch2/catch.hpp>
 
 #include "dispatcher_utility.hpp"
 #include "grabbable_state_manager/manager.hpp"
 #include "stream_utility.hpp"
-
-TEST_CASE("initialize") {
-  krbn::dispatcher_utility::initialize_dispatchers();
-}
 
 TEST_CASE("grabbable_state_manager") {
   auto time_source = std::make_shared<pqrs::dispatcher::hardware_time_source>();
@@ -470,8 +465,4 @@ TEST_CASE("device_error") {
 
   dispatcher->terminate();
   dispatcher = nullptr;
-}
-
-TEST_CASE("terminate") {
-  krbn::dispatcher_utility::terminate_dispatchers();
 }

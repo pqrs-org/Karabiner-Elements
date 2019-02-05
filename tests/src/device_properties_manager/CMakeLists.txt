@@ -6,6 +6,7 @@ project (karabiner_test)
 
 add_executable(
   karabiner_test
+  device_properties_manager_test.cpp
   test.cpp
 )
 

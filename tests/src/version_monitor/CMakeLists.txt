@@ -7,6 +7,7 @@ project (karabiner_test)
 add_executable(
   karabiner_test
   test.cpp
+  version_monitor_test.cpp
 )
 
 target_link_libraries(

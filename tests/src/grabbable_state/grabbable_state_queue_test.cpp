@@ -1,12 +1,6 @@
-#define CATCH_CONFIG_MAIN
 #include <catch2/catch.hpp>
 
-#include "dispatcher_utility.hpp"
 #include "grabbable_state_queue.hpp"
-
-TEST_CASE("initialize") {
-  krbn::dispatcher_utility::initialize_dispatchers();
-}
 
 TEST_CASE("grabbable_state_queue") {
   {
@@ -129,8 +123,4 @@ TEST_CASE("grabbable_state_queue.circular_buffer") {
   }
 
   queue = nullptr;
-}
-
-TEST_CASE("terminate") {
-  krbn::dispatcher_utility::terminate_dispatchers();
 }

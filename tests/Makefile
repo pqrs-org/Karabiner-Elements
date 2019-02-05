@@ -1,5 +1,5 @@
 all:
-	@for d in `find * -type d`; do \
+	@for d in `find * -type d | sort`; do \
 		if [ -f "$$d/Makefile" ]; then \
 			echo "[Test] $$d"; \
 			make -C $$d || exit 1; \
@@ -7,7 +7,7 @@ all:
 	done
 
 clean:
-	@for d in `find * -type d`; do \
+	@for d in `find * -type d | sort`; do \
 		if [ -f "$$d/Makefile" ]; then \
 			make -C $$d clean; \
 		fi; \

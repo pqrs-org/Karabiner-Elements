@@ -6,6 +6,7 @@ project (karabiner_test)
 
 add_executable(
   karabiner_test
+  keyboard_repeat_detector_test.cpp
   test.cpp
 )
 

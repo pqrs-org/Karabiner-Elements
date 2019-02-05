@@ -6,6 +6,7 @@ project (karabiner_test)
 
 add_executable(
   karabiner_test
+  grabber_alerts_monitor_test.cpp
   test.cpp
 )
 

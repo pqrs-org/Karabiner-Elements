@@ -6,6 +6,7 @@ project (karabiner_test)
 
 add_executable(
   karabiner_test
+  event_tap_utility_test.cpp
   test.cpp
 )
 
