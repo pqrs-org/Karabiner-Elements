@@ -11,10 +11,8 @@
                     "/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include/c++",
                     "/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include/c++/v1",
                     "/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/lib/clang/10.0.0/include",
-                    "/opt/local/include",
                     "/usr/include",
-                    "/usr/include/c++/4.2.1",
-                    "/usr/local/include"
+                    "/usr/include/c++/4.2.1"
                 ],
                 "limitSymbolsToIncludedHeaders": true,
                 "databaseFilename": "${workspaceFolder}/.vscode/browse.vc.db"
@@ -28,10 +26,8 @@
                 "/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include/c++",
                 "/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include/c++/v1",
                 "/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/lib/clang/10.0.0/include",
-                "/opt/local/include",
                 "/usr/include",
-                "/usr/include/c++/4.2.1",
-                "/usr/local/include"
+                "/usr/include/c++/4.2.1"
             ],
             "macFrameworkPath": []
         }
