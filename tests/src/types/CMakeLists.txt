@@ -14,3 +14,8 @@ add_executable(
   src/system_preferences_test.cpp
   src/test.cpp
 )
+
+target_link_libraries(
+  karabiner_test
+  test_runner
+)

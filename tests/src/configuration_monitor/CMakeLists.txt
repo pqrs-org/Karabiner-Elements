@@ -6,11 +6,13 @@ project (karabiner_test)
 
 add_executable(
   karabiner_test
+  configuration_monitor_test.cpp
   test.cpp
 )
 
 target_link_libraries(
   karabiner_test
+  test_runner
   "-framework CoreServices"
   "-framework SystemConfiguration"
 )

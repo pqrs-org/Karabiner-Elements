@@ -13,6 +13,7 @@ add_executable(
 
 target_link_libraries(
   karabiner_test
+  test_runner
   "-framework CoreFoundation"
 )
 
@@ -23,5 +24,6 @@ add_executable(
 
 target_link_libraries(
   overwrite_expected_results
+  test_runner
   "-framework CoreFoundation"
 )

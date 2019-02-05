@@ -8,3 +8,8 @@ add_executable(
   karabiner_test
   test.cpp
 )
+
+target_link_libraries(
+  karabiner_test
+  test_runner
+)

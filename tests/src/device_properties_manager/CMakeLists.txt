@@ -11,6 +11,7 @@ add_executable(
 
 target_link_libraries(
   karabiner_test
+  test_runner
   "-framework CoreFoundation"
   "-framework IOKit"
 )
