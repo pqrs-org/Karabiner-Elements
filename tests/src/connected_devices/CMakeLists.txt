@@ -11,3 +11,8 @@ add_executable(
   src/device_test.cpp
   src/test.cpp
 )
+
+target_link_libraries(
+  karabiner_test
+  test_runner
+)
