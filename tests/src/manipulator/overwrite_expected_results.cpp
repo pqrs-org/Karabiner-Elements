@@ -1,12 +1,7 @@
-#define CATCH_CONFIG_MAIN
 #include <catch2/catch.hpp>
 
 #include "../share/manipulator_helper.hpp"
-#include "dispatcher_utility.hpp"
-
-TEST_CASE("initialize") {
-  krbn::dispatcher_utility::initialize_dispatchers();
-}
+#include "test_runner.hpp"
 
 TEST_CASE("actual examples") {
   auto helper = std::make_unique<krbn::unit_testing::manipulator_helper>();
@@ -16,6 +11,6 @@ TEST_CASE("actual examples") {
   helper = nullptr;
 }
 
-TEST_CASE("terminate") {
-  krbn::dispatcher_utility::terminate_dispatchers();
+int main(int argc, char* argv[]) {
+  return run_tests(argc, argv);
 }
