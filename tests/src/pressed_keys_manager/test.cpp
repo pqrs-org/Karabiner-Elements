@@ -1,2 +1,5 @@
-#define CATCH_CONFIG_MAIN
-#include <catch2/catch.hpp>
+#include "test_runner.hpp"
+
+int main(int argc, char* argv[]) {
+  return run_tests(argc, argv);
+}
