@@ -1,7 +1,5 @@
 #pragma once
 
-#include "boost_defs.hpp"
-
 #include "device_properties_manager.hpp"
 #include "json_utility.hpp"
 #include "logger.hpp"

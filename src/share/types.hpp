@@ -37,13 +37,10 @@
 #include <nlohmann/json.hpp>
 #include <optional>
 #include <pqrs/osx/frontmost_application_monitor.hpp>
-#include <pqrs/osx/frontmost_application_monitor/extra/boost.hpp>
 #include <pqrs/osx/frontmost_application_monitor/extra/nlohmann_json.hpp>
 #include <pqrs/osx/input_source.hpp>
-#include <pqrs/osx/input_source/extra/boost.hpp>
 #include <pqrs/osx/input_source/extra/nlohmann_json.hpp>
 #include <pqrs/osx/input_source_selector.hpp>
-#include <pqrs/osx/input_source_selector/extra/boost.hpp>
 #include <pqrs/osx/input_source_selector/extra/nlohmann_json.hpp>
 #include <string>
 #include <thread>

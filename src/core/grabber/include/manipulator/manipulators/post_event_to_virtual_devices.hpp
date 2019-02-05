@@ -1,7 +1,5 @@
 #pragma once
 
-#include "boost_defs.hpp"
-
 #include "../types.hpp"
 #include "base.hpp"
 #include "console_user_server_client.hpp"

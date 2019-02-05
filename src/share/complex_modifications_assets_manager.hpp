@@ -1,7 +1,5 @@
 #pragma once
 
-#include "boost_defs.hpp"
-
 #include "constants.hpp"
 #include "core_configuration/core_configuration.hpp"
 #include <dirent.h>
