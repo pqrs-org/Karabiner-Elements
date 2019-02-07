@@ -1,26 +1,8 @@
 #include <catch2/catch.hpp>
 
-#include "manipulator/manipulators/basic/basic.hpp"
 #include "manipulator/types.hpp"
-#include <pqrs/filesystem.hpp>
 
 namespace {
-krbn::modifier_flag_manager::active_modifier_flag left_command_1(krbn::modifier_flag_manager::active_modifier_flag::type::increase,
-                                                                 krbn::modifier_flag::left_command,
-                                                                 krbn::device_id(1));
-krbn::modifier_flag_manager::active_modifier_flag left_control_1(krbn::modifier_flag_manager::active_modifier_flag::type::increase,
-                                                                 krbn::modifier_flag::left_control,
-                                                                 krbn::device_id(1));
-krbn::modifier_flag_manager::active_modifier_flag left_option_1(krbn::modifier_flag_manager::active_modifier_flag::type::increase,
-                                                                krbn::modifier_flag::left_option,
-                                                                krbn::device_id(1));
-krbn::modifier_flag_manager::active_modifier_flag left_shift_1(krbn::modifier_flag_manager::active_modifier_flag::type::increase,
-                                                               krbn::modifier_flag::left_shift,
-                                                               krbn::device_id(1));
-krbn::modifier_flag_manager::active_modifier_flag right_shift_1(krbn::modifier_flag_manager::active_modifier_flag::type::increase,
-                                                                krbn::modifier_flag::right_shift,
-                                                                krbn::device_id(1));
-
 void set_file_logger(const std::string& file_path) {
   unlink(file_path.c_str());
   auto l = spdlog::rotating_logger_mt(file_path, file_path, 256 * 1024, 3);
@@ -34,53 +16,6 @@ void set_null_logger(void) {
   krbn::logger::set_logger(l);
 }
 } // namespace
-
-TEST_CASE("modifier_definition.make_modifiers") {
-  using krbn::manipulator::event_definition;
-  using krbn::manipulator::modifier_definition;
-
-  {
-    nlohmann::json json({"left_command", "left_shift", "fn", "any"});
-    auto actual = modifier_definition::make_modifiers(json);
-    auto expected = std::unordered_set<modifier_definition::modifier>({
-        modifier_definition::modifier::left_command,
-        modifier_definition::modifier::left_shift,
-        modifier_definition::modifier::fn,
-        modifier_definition::modifier::any,
-    });
-    REQUIRE(actual == expected);
-  }
-
-  {
-    nlohmann::json json("left_command");
-    auto actual = modifier_definition::make_modifiers(json);
-    auto expected = std::unordered_set<modifier_definition::modifier>({
-        modifier_definition::modifier::left_command,
-    });
-    REQUIRE(actual == expected);
-  }
-
-  {
-    nlohmann::json json("unknown");
-    auto actual = modifier_definition::make_modifiers(json);
-    auto expected = std::unordered_set<modifier_definition::modifier>({});
-    REQUIRE(actual == expected);
-  }
-
-  {
-    nlohmann::json json(nullptr);
-    auto actual = modifier_definition::make_modifiers(json);
-    auto expected = std::unordered_set<modifier_definition::modifier>({});
-    REQUIRE(actual == expected);
-  }
-}
-
-TEST_CASE("modifier_definition.get_modifier") {
-  using krbn::manipulator::modifier_definition;
-
-  REQUIRE(modifier_definition::get_modifier(krbn::modifier_flag::zero) == modifier_definition::modifier::end_);
-  REQUIRE(modifier_definition::get_modifier(krbn::modifier_flag::left_shift) == modifier_definition::modifier::left_shift);
-}
 
 TEST_CASE("manipulator.details.to_event_definition") {
   {
