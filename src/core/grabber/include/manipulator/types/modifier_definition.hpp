@@ -32,45 +32,11 @@ public:
     std::unordered_set<modifier> modifiers;
 
     for (const auto& j : json) {
-      if (!j.is_string()) {
-        logger::get_logger()->error("complex_modifications json error: modifier should be string form: {0}", j.dump());
-
-      } else {
-        const std::string& name = j;
-        if (name == "any") {
-          modifiers.insert(modifier::any);
-        } else if (name == "caps_lock") {
-          modifiers.insert(modifier::caps_lock);
-        } else if (name == "command") {
-          modifiers.insert(modifier::command);
-        } else if (name == "control") {
-          modifiers.insert(modifier::control);
-        } else if (name == "fn") {
-          modifiers.insert(modifier::fn);
-        } else if (name == "left_command") {
-          modifiers.insert(modifier::left_command);
-        } else if (name == "left_control") {
-          modifiers.insert(modifier::left_control);
-        } else if (name == "left_option") {
-          modifiers.insert(modifier::left_option);
-        } else if (name == "left_shift") {
-          modifiers.insert(modifier::left_shift);
-        } else if (name == "option") {
-          modifiers.insert(modifier::option);
-        } else if (name == "right_command") {
-          modifiers.insert(modifier::right_command);
-        } else if (name == "right_control") {
-          modifiers.insert(modifier::right_control);
-        } else if (name == "right_option") {
-          modifiers.insert(modifier::right_option);
-        } else if (name == "right_shift") {
-          modifiers.insert(modifier::right_shift);
-        } else if (name == "shift") {
-          modifiers.insert(modifier::shift);
-        } else {
-          logger::get_logger()->error("complex_modifications json error: Unknown modifier: {0}", name);
-        }
-      }
+      try {
+        modifiers.insert(j.get<modifier>());
+      } catch (const json_unmarshal_error& e) {
+        logger::get_logger()->error(e.what());
+      } catch (...) {}
     }
 
     return modifiers;
