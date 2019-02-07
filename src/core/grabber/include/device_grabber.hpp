@@ -11,7 +11,7 @@
 #include "krbn_notification_center.hpp"
 #include "logger.hpp"
 #include "manipulator/manipulator_managers_connector.hpp"
-#include "manipulator/manipulators/post_event_to_virtual_devices.hpp"
+#include "manipulator/manipulators/post_event_to_virtual_devices/post_event_to_virtual_devices.hpp"
 #include "monitor/configuration_monitor.hpp"
 #include "monitor/event_tap_monitor.hpp"
 #include "system_preferences_utility.hpp"
@@ -77,8 +77,10 @@ public:
           }));
     }
 
-    post_event_to_virtual_devices_manipulator_ = std::make_shared<manipulator::manipulators::post_event_to_virtual_devices>(system_preferences_,
-                                                                                                                            weak_console_user_server_client);
+    post_event_to_virtual_devices_manipulator_ =
+        std::make_shared<manipulator::manipulators::post_event_to_virtual_devices::post_event_to_virtual_devices>(
+            system_preferences_,
+            weak_console_user_server_client);
     post_event_to_virtual_devices_manipulator_manager_->push_back_manipulator(std::shared_ptr<manipulator::manipulators::base>(post_event_to_virtual_devices_manipulator_));
 
     complex_modifications_applied_event_queue_->enable_manipulator_environment_json_output(constants::get_manipulator_environment_json_file_path());
@@ -965,7 +967,7 @@ private:
   std::shared_ptr<manipulator::manipulator_manager> fn_function_keys_manipulator_manager_;
   std::shared_ptr<event_queue::queue> fn_function_keys_applied_event_queue_;
 
-  std::shared_ptr<manipulator::manipulators::post_event_to_virtual_devices> post_event_to_virtual_devices_manipulator_;
+  std::shared_ptr<manipulator::manipulators::post_event_to_virtual_devices::post_event_to_virtual_devices> post_event_to_virtual_devices_manipulator_;
   std::shared_ptr<manipulator::manipulator_manager> post_event_to_virtual_devices_manipulator_manager_;
   std::shared_ptr<event_queue::queue> posted_event_queue_;
 

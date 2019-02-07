@@ -1,32 +1,28 @@
 #pragma once
 
-#include "../types.hpp"
-#include "base.hpp"
+#include "../../types.hpp"
+#include "../base.hpp"
 #include "console_user_server_client.hpp"
+#include "key_event_dispatcher.hpp"
 #include "keyboard_repeat_detector.hpp"
 #include "krbn_notification_center.hpp"
-#include "stream_utility.hpp"
+#include "mouse_key_handler.hpp"
+#include "queue.hpp"
 #include "types.hpp"
 #include "virtual_hid_device_client.hpp"
-#include "virtual_hid_device_utility.hpp"
-#include <mach/mach_time.h>
-#include <optional>
-
-#include "post_event_to_virtual_devices_detail/key_event_dispatcher.hpp"
-#include "post_event_to_virtual_devices_detail/mouse_key_handler.hpp"
-#include "post_event_to_virtual_devices_detail/queue.hpp"
 
 namespace krbn {
 namespace manipulator {
 namespace manipulators {
+namespace post_event_to_virtual_devices {
 class post_event_to_virtual_devices final : public base, public pqrs::dispatcher::extra::dispatcher_client {
 public:
   post_event_to_virtual_devices(const system_preferences& system_preferences,
                                 std::weak_ptr<console_user_server_client> weak_console_user_server_client) : base(),
                                                                                                              dispatcher_client(),
                                                                                                              weak_console_user_server_client_(weak_console_user_server_client) {
-    mouse_key_handler_ = std::make_unique<post_event_to_virtual_devices_detail::mouse_key_handler>(queue_,
-                                                                                                   system_preferences);
+    mouse_key_handler_ = std::make_unique<mouse_key_handler>(queue_,
+                                                             system_preferences);
   }
 
   virtual ~post_event_to_virtual_devices(void) {
@@ -369,7 +365,7 @@ public:
         });
   }
 
-  const post_event_to_virtual_devices_detail::queue& get_queue(void) const {
+  const queue& get_queue(void) const {
     return queue_;
   }
 
@@ -377,19 +373,20 @@ public:
     return queue_.clear();
   }
 
-  const post_event_to_virtual_devices_detail::key_event_dispatcher& get_key_event_dispatcher(void) const {
+  const key_event_dispatcher& get_key_event_dispatcher(void) const {
     return key_event_dispatcher_;
   }
 
 private:
   std::weak_ptr<console_user_server_client> weak_console_user_server_client_;
 
-  post_event_to_virtual_devices_detail::queue queue_;
-  post_event_to_virtual_devices_detail::key_event_dispatcher key_event_dispatcher_;
-  std::unique_ptr<post_event_to_virtual_devices_detail::mouse_key_handler> mouse_key_handler_;
+  queue queue_;
+  key_event_dispatcher key_event_dispatcher_;
+  std::unique_ptr<mouse_key_handler> mouse_key_handler_;
   std::unordered_set<modifier_flag> pressed_modifier_flags_;
   pqrs::karabiner_virtual_hid_device::hid_report::buttons pressed_buttons_;
 };
+} // namespace post_event_to_virtual_devices
 } // namespace manipulators
 } // namespace manipulator
 } // namespace krbn

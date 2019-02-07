@@ -1,14 +1,16 @@
 #pragma once
 
+#include "keyboard_repeat_detector.hpp"
 #include "types.hpp"
 #include "virtual_hid_device_client.hpp"
+#include "virtual_hid_device_utility.hpp"
 #include <mpark/variant.hpp>
 #include <pqrs/dispatcher.hpp>
 
 namespace krbn {
 namespace manipulator {
 namespace manipulators {
-namespace post_event_to_virtual_devices_detail {
+namespace post_event_to_virtual_devices {
 class queue final : pqrs::dispatcher::extra::dispatcher_client {
 public:
   class event final {
@@ -586,7 +588,7 @@ inline std::ostream& operator<<(std::ostream& stream, const queue::event& event)
 inline void to_json(nlohmann::json& json, const queue::event& value) {
   json = value.to_json();
 }
-} // namespace post_event_to_virtual_devices_detail
+} // namespace post_event_to_virtual_devices
 } // namespace manipulators
 } // namespace manipulator
 } // namespace krbn

@@ -5,7 +5,7 @@
 namespace krbn {
 namespace manipulator {
 namespace manipulators {
-namespace post_event_to_virtual_devices_detail {
+namespace post_event_to_virtual_devices {
 class key_event_dispatcher final {
 public:
   void dispatch_key_down_event(device_id device_id,
@@ -131,7 +131,7 @@ private:
   std::vector<std::pair<device_id, std::pair<hid_usage_page, hid_usage>>> pressed_keys_;
   std::unordered_set<modifier_flag> pressed_modifier_flags_;
 };
-} // namespace post_event_to_virtual_devices_detail
+} // namespace post_event_to_virtual_devices
 } // namespace manipulators
 } // namespace manipulator
 } // namespace krbn

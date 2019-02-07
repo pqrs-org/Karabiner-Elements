@@ -1,6 +1,6 @@
 #include "dispatcher_utility.hpp"
 #include "logger.hpp"
-#include "manipulator/manipulators/post_event_to_virtual_devices.hpp"
+#include "manipulator/manipulators/post_event_to_virtual_devices/post_event_to_virtual_devices.hpp"
 #include "virtual_hid_device_client.hpp"
 
 int main(int argc, const char* argv[]) {
@@ -17,7 +17,7 @@ int main(int argc, const char* argv[]) {
   auto console_user_server_client = std::make_shared<krbn::console_user_server_client>();
 
   auto virtual_hid_device_client = std::make_shared<krbn::virtual_hid_device_client>();
-  krbn::manipulator::manipulators::post_event_to_virtual_devices_detail::queue queue;
+  krbn::manipulator::manipulators::post_event_to_virtual_devices::queue queue;
 
   virtual_hid_device_client->client_connected.connect([&] {
     std::cout << "connected" << std::endl;

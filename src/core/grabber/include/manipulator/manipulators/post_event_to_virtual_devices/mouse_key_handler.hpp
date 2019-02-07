@@ -5,7 +5,7 @@
 namespace krbn {
 namespace manipulator {
 namespace manipulators {
-namespace post_event_to_virtual_devices_detail {
+namespace post_event_to_virtual_devices {
 class mouse_key_handler final : public pqrs::dispatcher::extra::dispatcher_client {
 public:
   class count_converter final {
@@ -184,7 +184,7 @@ private:
   count_converter horizontal_wheel_count_converter_;
   pqrs::dispatcher::extra::timer timer_;
 };
-} // namespace post_event_to_virtual_devices_detail
+} // namespace post_event_to_virtual_devices
 } // namespace manipulators
 } // namespace manipulator
 } // namespace krbn
