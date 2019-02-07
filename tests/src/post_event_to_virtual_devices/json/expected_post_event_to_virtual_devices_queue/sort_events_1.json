@@ -1,0 +1,24 @@
+[
+    {
+        "keyboard_input": {
+            "keys": [],
+            "modifiers": [
+                "left_shift"
+            ]
+        },
+        "time_stamp": 1000,
+        "type": "keyboard_input"
+    },
+    {
+        "keyboard_input": {
+            "keys": [
+                "f2"
+            ],
+            "modifiers": [
+                "left_shift"
+            ]
+        },
+        "time_stamp": 1005,
+        "type": "keyboard_input"
+    }
+]
