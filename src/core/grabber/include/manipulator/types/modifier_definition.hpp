@@ -1,6 +1,7 @@
 #pragma once
 
 #include "stream_utility.hpp"
+#include "types/json_unmarshal_error.hpp"
 #include "types/modifier_flag.hpp"
 #include <unordered_set>
 
@@ -165,6 +166,49 @@ public:
     }
   }
 };
+
+inline void from_json(const nlohmann::json& json, modifier_definition::modifier& value) {
+  if (!json.is_string()) {
+    throw json_unmarshal_error(fmt::format("complex_modifications json error: modifier should be string form: {0}", json.dump()));
+  }
+
+  auto name = json.get<std::string>();
+  if (name == "any") {
+    value = modifier_definition::modifier::any;
+  } else if (name == "caps_lock") {
+    value = modifier_definition::modifier::caps_lock;
+  } else if (name == "command") {
+    value = modifier_definition::modifier::command;
+  } else if (name == "control") {
+    value = modifier_definition::modifier::control;
+  } else if (name == "fn") {
+    value = modifier_definition::modifier::fn;
+  } else if (name == "left_command") {
+    value = modifier_definition::modifier::left_command;
+  } else if (name == "left_control") {
+    value = modifier_definition::modifier::left_control;
+  } else if (name == "left_option") {
+    value = modifier_definition::modifier::left_option;
+  } else if (name == "left_shift") {
+    value = modifier_definition::modifier::left_shift;
+  } else if (name == "option") {
+    value = modifier_definition::modifier::option;
+  } else if (name == "right_command") {
+    value = modifier_definition::modifier::right_command;
+  } else if (name == "right_control") {
+    value = modifier_definition::modifier::right_control;
+  } else if (name == "right_option") {
+    value = modifier_definition::modifier::right_option;
+  } else if (name == "right_shift") {
+    value = modifier_definition::modifier::right_shift;
+  } else if (name == "shift") {
+    value = modifier_definition::modifier::shift;
+  } else if (name == "end_") {
+    value = modifier_definition::modifier::end_;
+  } else {
+    throw json_unmarshal_error(fmt::format("complex_modifications json error: unknown modifier: {0}", name));
+  }
+}
 
 inline std::ostream& operator<<(std::ostream& stream, const modifier_definition::modifier& value) {
 #define KRBN_MANIPULATOR_DETAILS_MODIFIER_OUTPUT(MODIFIER) \
