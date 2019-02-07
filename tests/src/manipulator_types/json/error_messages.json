@@ -3,10 +3,13 @@
         {
             "description": "Invalid modifiers",
             "modifiers": {
-                "mandatory": [
-                    "shift"
-                ]
+                "mandatory": ["shift"]
             }
+        },
+        {
+            "description": "Invalid modifiers",
+            "key_code": "escape",
+            "modifiers": ["unknown"]
         },
         {
             "description": "shell_command is not string",
