@@ -1,6 +1,5 @@
 #pragma once
 
-#include "stream_utility.hpp"
 #include "types/json_unmarshal_error.hpp"
 #include "types/modifier_flag.hpp"
 #include <unordered_set>
@@ -133,6 +132,61 @@ public:
   }
 };
 
+inline void to_json(nlohmann::json& json, const modifier_definition::modifier& value) {
+  switch (value) {
+    case modifier_definition::modifier::any:
+      json = "any";
+      break;
+    case modifier_definition::modifier::caps_lock:
+      json = "caps_lock";
+      break;
+    case modifier_definition::modifier::command:
+      json = "command";
+      break;
+    case modifier_definition::modifier::control:
+      json = "control";
+      break;
+    case modifier_definition::modifier::fn:
+      json = "fn";
+      break;
+    case modifier_definition::modifier::left_command:
+      json = "left_command";
+      break;
+    case modifier_definition::modifier::left_control:
+      json = "left_control";
+      break;
+    case modifier_definition::modifier::left_option:
+      json = "left_option";
+      break;
+    case modifier_definition::modifier::left_shift:
+      json = "left_shift";
+      break;
+    case modifier_definition::modifier::option:
+      json = "option";
+      break;
+    case modifier_definition::modifier::right_command:
+      json = "right_command";
+      break;
+    case modifier_definition::modifier::right_control:
+      json = "right_control";
+      break;
+    case modifier_definition::modifier::right_option:
+      json = "right_option";
+      break;
+    case modifier_definition::modifier::right_shift:
+      json = "right_shift";
+      break;
+    case modifier_definition::modifier::shift:
+      json = "shift";
+      break;
+    case modifier_definition::modifier::end_:
+      json = "end_";
+      break;
+    default:
+      json = nullptr;
+  }
+}
+
 inline void from_json(const nlohmann::json& json, modifier_definition::modifier& value) {
   if (!json.is_string()) {
     throw json_unmarshal_error(fmt::format("complex_modifications json error: modifier should be string form: {0}", json.dump()));
@@ -177,38 +231,12 @@ inline void from_json(const nlohmann::json& json, modifier_definition::modifier&
 }
 
 inline std::ostream& operator<<(std::ostream& stream, const modifier_definition::modifier& value) {
-#define KRBN_MANIPULATOR_DETAILS_MODIFIER_OUTPUT(MODIFIER) \
-  case modifier_definition::modifier::MODIFIER:            \
-    stream << #MODIFIER;                                   \
-    break;
-
-  switch (value) {
-    KRBN_MANIPULATOR_DETAILS_MODIFIER_OUTPUT(any);
-    KRBN_MANIPULATOR_DETAILS_MODIFIER_OUTPUT(caps_lock);
-    KRBN_MANIPULATOR_DETAILS_MODIFIER_OUTPUT(command);
-    KRBN_MANIPULATOR_DETAILS_MODIFIER_OUTPUT(control);
-    KRBN_MANIPULATOR_DETAILS_MODIFIER_OUTPUT(fn);
-    KRBN_MANIPULATOR_DETAILS_MODIFIER_OUTPUT(left_command);
-    KRBN_MANIPULATOR_DETAILS_MODIFIER_OUTPUT(left_control);
-    KRBN_MANIPULATOR_DETAILS_MODIFIER_OUTPUT(left_option);
-    KRBN_MANIPULATOR_DETAILS_MODIFIER_OUTPUT(left_shift);
-    KRBN_MANIPULATOR_DETAILS_MODIFIER_OUTPUT(option);
-    KRBN_MANIPULATOR_DETAILS_MODIFIER_OUTPUT(right_command);
-    KRBN_MANIPULATOR_DETAILS_MODIFIER_OUTPUT(right_control);
-    KRBN_MANIPULATOR_DETAILS_MODIFIER_OUTPUT(right_option);
-    KRBN_MANIPULATOR_DETAILS_MODIFIER_OUTPUT(right_shift);
-    KRBN_MANIPULATOR_DETAILS_MODIFIER_OUTPUT(shift);
-    KRBN_MANIPULATOR_DETAILS_MODIFIER_OUTPUT(end_);
-  }
-
-#undef KRBN_MANIPULATOR_DETAILS_MODIFIER_OUTPUT
-
-  return stream;
+  return stream << nlohmann::json(value);
 }
 
 template <template <class T, class A> class container>
 inline std::ostream& operator<<(std::ostream& stream, const container<modifier_definition::modifier, std::allocator<modifier_definition::modifier>>& values) {
-  return stream_utility::output_enums(stream, values);
+  return stream << nlohmann::json(values);
 }
 
 template <template <class T, class H, class K, class A> class container>
@@ -217,7 +245,7 @@ inline std::ostream& operator<<(std::ostream& stream,
                                                 std::hash<modifier_definition::modifier>,
                                                 std::equal_to<modifier_definition::modifier>,
                                                 std::allocator<modifier_definition::modifier>>& values) {
-  return stream_utility::output_enums(stream, values);
+  return stream << nlohmann::json(values);
 }
 } // namespace manipulator
 } // namespace krbn

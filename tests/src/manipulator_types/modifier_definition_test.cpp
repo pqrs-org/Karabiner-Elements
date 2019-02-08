@@ -24,8 +24,17 @@ TEST_CASE("modifier_definition.modifier json") {
       std::make_pair(modifier_definition::modifier::end_, "end_"),
   };
   for (const auto& [m, name] : pairs) {
-    nlohmann::json json = name;
-    REQUIRE(json.get<modifier_definition::modifier>() == m);
+    // from_json
+    {
+      nlohmann::json json = name;
+      REQUIRE(json.get<modifier_definition::modifier>() == m);
+    }
+
+    // to_json
+    {
+      nlohmann::json json = m;
+      REQUIRE(json.get<modifier_definition::modifier>() == m);
+    }
   }
 
   // json is not string.
