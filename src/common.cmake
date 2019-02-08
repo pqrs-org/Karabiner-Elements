@@ -11,9 +11,8 @@ include_directories(${CMAKE_CURRENT_LIST_DIR}/share)
 add_compile_options(-Wall)
 add_compile_options(-Werror)
 add_compile_options(-O2)
-add_compile_options($<$<COMPILE_LANGUAGE:CXX>:-std=c++14>)
-add_compile_options($<$<COMPILE_LANGUAGE:C>:-fobjc-arc>)
-add_compile_options($<$<COMPILE_LANGUAGE:C>:-fmodules>)
+add_compile_options(-fobjc-arc)
+add_compile_options(-fmodules)
 
 # Version
 
