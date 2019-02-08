@@ -1,4 +1,4 @@
-[error] complex_modifications json error: Unknown modifier: unknown_modifier
+[error] complex_modifications json error: unknown modifier: unknown_modifier
 [error] complex_modifications json error: Invalid form of from_event_definition: "not_object"
 [error] complex_modifications json error: Invalid form of key_code: {"description":"key_code is not string","key_code":1234}
 [error] complex_modifications json error: Invalid form of pointing_button: {"description":"pointing_button is not string","pointing_button":1234}
