@@ -4,5 +4,5 @@
   - version: v6.10.0
   - url: <https://github.com/tekezo/Karabiner-VirtualHIDDevice/releases>
 - Sparkle:
-  - version: 1.20.0
+  - version: 1.21.2
   - url: <https://github.com/sparkle-project/Sparkle/releases>

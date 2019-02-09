@@ -3,7 +3,7 @@
 <plist version="1.0">
 <dict>
 	<key>BuildMachineOSBuild</key>
-	<string>18A336e</string>
+	<string>18C54</string>
 	<key>CFBundleDevelopmentRegion</key>
 	<string>English</string>
 	<key>CFBundleExecutable</key>
@@ -21,7 +21,7 @@
 	<key>CFBundlePackageType</key>
 	<string>APPL</string>
 	<key>CFBundleShortVersionString</key>
-	<string>1.5</string>
+	<string>1.5.1</string>
 	<key>CFBundleSignature</key>
 	<string>????</string>
 	<key>CFBundleSupportedPlatforms</key>
@@ -29,21 +29,21 @@
 		<string>MacOSX</string>
 	</array>
 	<key>CFBundleVersion</key>
-	<string>1.5</string>
+	<string>1.5.1</string>
 	<key>DTCompiler</key>
 	<string>com.apple.compilers.llvm.clang.1_0</string>
 	<key>DTPlatformBuild</key>
-	<string>10L213o</string>
+	<string>10B61</string>
 	<key>DTPlatformVersion</key>
 	<string>GM</string>
 	<key>DTSDKBuild</key>
-	<string>18A336d</string>
+	<string>18B71</string>
 	<key>DTSDKName</key>
 	<string>macosx10.14</string>
 	<key>DTXcode</key>
-	<string>1000</string>
+	<string>1010</string>
 	<key>DTXcodeBuild</key>
-	<string>10L213o</string>
+	<string>10B61</string>
 	<key>NSAppTransportSecurity</key>
 	<dict>
 		<key>NSAllowsArbitraryLoads</key>
@@ -57,7 +57,7 @@
 	<true/>
 	<key>SUFeedURL</key>
 	<string>http://localhost:1337/sparkletestcast.xml</string>
-	<key>SUPublicDSAKeyFile</key>
-	<string>test_app_only_dsa_pub.pem</string>
+	<key>SUPublicEDKey</key>
+	<string>eRFPLZuNM6m8bltmtpPX4fzKbufI1z6rKJHtgIIsllk=</string>
 </dict>
 </plist>

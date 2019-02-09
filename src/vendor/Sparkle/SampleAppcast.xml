@@ -10,6 +10,7 @@
                 http://you.com/app/2.0.html
             </sparkle:releaseNotesLink>
             <pubDate>Wed, 09 Jan 2006 19:20:11 +0000</pubDate>
+            <!-- Sparkle 1.21+ uses sparkle::edSignature="ed25519" instead of sparkle::dsaSignature="deprecated DSA" -->
             <enclosure url="http://you.com/app/Your%20Great%20App%202.0.zip" sparkle:version="2.0" length="1623481" type="application/octet-stream" sparkle:dsaSignature="BAFJW4B6B1K1JyW30nbkBwainOzrN6EQuAh" />
             <sparkle:minimumSystemVersion>10.7</sparkle:minimumSystemVersion>
         </item>
@@ -20,6 +21,7 @@
                 http://you.com/app/1.5.html
             </sparkle:releaseNotesLink>
             <pubDate>Wed, 01 Jan 2006 12:20:11 +0000</pubDate>
+            <!-- Sparkle 1.21+ uses sparkle::edSignature="ed25519" instead of sparkle::dsaSignature="deprecated DSA" -->
             <enclosure url="http://you.com/app/Your%20Great%20App%201.5.zip" sparkle:version="1.5" length="1472893" type="application/octet-stream" sparkle:dsaSignature="234818feCa1JyW30nbkBwainOzrN6EQuAh" />
             <sparkle:minimumSystemVersion>10.7</sparkle:minimumSystemVersion>
         </item>
@@ -31,6 +33,7 @@
                 http://you.com/app/1.4.html
             </sparkle:releaseNotesLink>
             <pubDate>Wed, 25 Dec 2005 12:20:11 +0000</pubDate>
+            <!-- Sparkle 1.21+ uses sparkle::edSignature="ed25519" instead of sparkle::dsaSignature="deprecated DSA" -->
             <enclosure url="http://you.com/app/Your%20Great%20App%201.4.zip" sparkle:version="241" sparkle:shortVersionString="1.4" sparkle:dsaSignature="MC0CFBfeCa1JyW30nbkBwainOzrN6EQuAh=" length="1472349" type="application/octet-stream" />
             <sparkle:minimumSystemVersion>10.7</sparkle:minimumSystemVersion>
         </item>
