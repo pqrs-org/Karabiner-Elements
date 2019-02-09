@@ -116,9 +116,12 @@ inline std::optional<::spdlog::level::level_enum> find_level(const std::string& 
 
   for (int i = 0; i < ::spdlog::level::off; ++i) {
     auto level = ::spdlog::level::level_enum(i);
-    auto level_name = std::string(::spdlog::level::to_c_str(level)) + "]";
+    auto level_name = ::spdlog::level::to_string_view(level);
 
-    if (line.compare(front, level_name.size(), level_name) == 0) {
+    std::string level_name_string(level_name.data(), level_name.size());
+    level_name_string += "]";
+
+    if (line.compare(front, level_name_string.size(), level_name_string) == 0) {
       return level;
     }
   }
