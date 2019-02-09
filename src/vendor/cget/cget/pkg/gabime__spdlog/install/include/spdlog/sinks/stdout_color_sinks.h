@@ -5,7 +5,10 @@
 
 #pragma once
 
+#ifndef SPDLOG_H
 #include "spdlog/spdlog.h"
+#endif
+
 #ifdef _WIN32
 #include "spdlog/sinks/wincolor_sink.h"
 #else

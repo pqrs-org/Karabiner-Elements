@@ -18,20 +18,20 @@ template<typename It>
 inline spdlog::async_logger::async_logger(
     std::string logger_name, It begin, It end, std::weak_ptr<details::thread_pool> tp, async_overflow_policy overflow_policy)
     : logger(std::move(logger_name), begin, end)
-    , thread_pool_(tp)
+    , thread_pool_(std::move(tp))
     , overflow_policy_(overflow_policy)
 {
 }
 
 inline spdlog::async_logger::async_logger(
     std::string logger_name, sinks_init_list sinks_list, std::weak_ptr<details::thread_pool> tp, async_overflow_policy overflow_policy)
-    : async_logger(std::move(logger_name), sinks_list.begin(), sinks_list.end(), tp, overflow_policy)
+    : async_logger(std::move(logger_name), sinks_list.begin(), sinks_list.end(), std::move(tp), overflow_policy)
 {
 }
 
 inline spdlog::async_logger::async_logger(
     std::string logger_name, sink_ptr single_sink, std::weak_ptr<details::thread_pool> tp, async_overflow_policy overflow_policy)
-    : async_logger(std::move(logger_name), {single_sink}, tp, overflow_policy)
+    : async_logger(std::move(logger_name), {std::move(single_sink)}, std::move(tp), overflow_policy)
 {
 }
 
@@ -43,7 +43,7 @@ inline void spdlog::async_logger::sink_it_(details::log_msg &msg)
 #endif
     if (auto pool_ptr = thread_pool_.lock())
     {
-        pool_ptr->post_log(shared_from_this(), std::move(msg), overflow_policy_);
+        pool_ptr->post_log(shared_from_this(), msg, overflow_policy_);
     }
     else
     {

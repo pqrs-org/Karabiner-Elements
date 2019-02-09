@@ -47,7 +47,7 @@ namespace cxxopts
 {
   static constexpr struct {
     uint8_t major, minor, patch;
-  } version = {2, 1, 0};
+  } version = {2, 1, 2};
 }
 
 //when we ask cxxopts to use Unicode, help strings are processed using ICU,
@@ -202,7 +202,7 @@ namespace cxxopts
   T
   toLocalString(T&& t)
   {
-    return t;
+    return std::forward<T>(t);
   }
 
   inline

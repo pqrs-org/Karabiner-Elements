@@ -5,6 +5,10 @@
 
 #pragma once
 
+#ifndef SPDLOG_H
+#include "spdlog/spdlog.h"
+#endif
+
 #include "spdlog/details/null_mutex.h"
 #include "spdlog/sinks/base_sink.h"
 

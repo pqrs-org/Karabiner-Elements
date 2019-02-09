@@ -5,8 +5,11 @@
 
 #pragma once
 
-#include "spdlog/sinks/base_sink.h"
+#ifndef SPDLOG_H
 #include "spdlog/spdlog.h"
+#endif
+
+#include "spdlog/sinks/base_sink.h"
 
 #include <array>
 #include <string>
@@ -50,7 +53,7 @@ public:
 protected:
     void sink_it_(const details::log_msg &msg) override
     {
-        ::syslog(syslog_prio_from_level(msg), "%s", fmt::to_string(msg.raw).c_str());
+        ::syslog(syslog_prio_from_level(msg), "%s", fmt::to_string(msg.payload).c_str());
     }
 
     void flush_() override {}
