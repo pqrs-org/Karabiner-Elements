@@ -775,7 +775,10 @@ private:
 
         return std::make_shared<manipulator::manipulators::basic::basic>(manipulator::manipulators::basic::from_event_definition(from_json),
                                                                          manipulator::to_event_definition(to_json));
-      } catch (std::exception&) {
+      } catch (const json_unmarshal_error& e) {
+        logger::get_logger()->error(fmt::format("karabiner.json error: {0}", e.what()));
+      } catch (const std::exception& e) {
+        logger::get_logger()->error(e.what());
       }
     }
     return nullptr;
@@ -833,9 +836,15 @@ private:
             {"modifiers", nlohmann::json::array({"fn"})},
         });
 
-        auto manipulator = std::make_shared<manipulator::manipulators::basic::basic>(manipulator::manipulators::basic::from_event_definition(from_json),
-                                                                                     manipulator::to_event_definition(to_json));
-        fn_function_keys_manipulator_manager_->push_back_manipulator(std::shared_ptr<manipulator::manipulators::base>(manipulator));
+        try {
+          auto manipulator = std::make_shared<manipulator::manipulators::basic::basic>(manipulator::manipulators::basic::from_event_definition(from_json),
+                                                                                       manipulator::to_event_definition(to_json));
+          fn_function_keys_manipulator_manager_->push_back_manipulator(std::shared_ptr<manipulator::manipulators::base>(manipulator));
+        } catch (const json_unmarshal_error& e) {
+          logger::get_logger()->error(fmt::format("karabiner.json error: {0}", e.what()));
+        } catch (const std::exception& e) {
+          logger::get_logger()->error(e.what());
+        }
       }
     }
 
@@ -905,9 +914,15 @@ private:
         auto to_json = d["to"];
         to_json["modifiers"] = nlohmann::json::array({"fn"});
 
-        auto manipulator = std::make_shared<manipulator::manipulators::basic::basic>(manipulator::manipulators::basic::from_event_definition(from_json),
-                                                                                     manipulator::to_event_definition(to_json));
-        fn_function_keys_manipulator_manager_->push_back_manipulator(std::shared_ptr<manipulator::manipulators::base>(manipulator));
+        try {
+          auto manipulator = std::make_shared<manipulator::manipulators::basic::basic>(manipulator::manipulators::basic::from_event_definition(from_json),
+                                                                                       manipulator::to_event_definition(to_json));
+          fn_function_keys_manipulator_manager_->push_back_manipulator(std::shared_ptr<manipulator::manipulators::base>(manipulator));
+        } catch (const json_unmarshal_error& e) {
+          logger::get_logger()->error(fmt::format("karabiner.json error: {0}", e.what()));
+        } catch (const std::exception& e) {
+          logger::get_logger()->error(e.what());
+        }
       }
     }
   }
@@ -932,8 +947,12 @@ private:
 
       return std::make_shared<manipulator::manipulators::basic::basic>(manipulator::manipulators::basic::from_event_definition(from_json),
                                                                        manipulator::to_event_definition(to_json));
-    } catch (std::exception&) {
+    } catch (const json_unmarshal_error& e) {
+      logger::get_logger()->error(fmt::format("karabiner.json error: {0}", e.what()));
+    } catch (const std::exception& e) {
+      logger::get_logger()->error(e.what());
     }
+
     return nullptr;
   }
 
