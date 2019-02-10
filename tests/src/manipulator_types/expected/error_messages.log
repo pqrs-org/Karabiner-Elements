@@ -1,6 +1,5 @@
-[error] complex_modifications json error: modifier should be string form: ["shift"]
-[error] complex_modifications json error: Invalid type in to_event_definition: {"description":"Invalid modifiers","modifiers":{"mandatory":["shift"]}}
-[error] complex_modifications json error: unknown modifier: unknown
+[error] karabiner.json error: `modifiers` must be array or string, but is `{"mandatory":["shift"]}`
+[error] karabiner.json error: unknown modifier: `unknown`
 [error] complex_modifications json error: Invalid form of shell_command: {"description":"shell_command is not string","shell_command":1234}
 [error] complex_modifications json error: Invalid type in to_event_definition: {"description":"shell_command is not string","shell_command":1234}
 [error] complex_modifications json error: Invalid form of set_variable: {"description":"set_variable is not object","set_variable":1234}

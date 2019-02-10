@@ -81,12 +81,12 @@ TEST_CASE("manipulator.details.to_event_definition") {
                           "dummy",
                       }},
     });
-    krbn::manipulator::to_event_definition event_definition(json);
-    REQUIRE(event_definition.get_event_definition().get_type() == krbn::manipulator::event_definition::type::none);
-    REQUIRE(event_definition.get_event_definition().get_key_code() == std::nullopt);
-    REQUIRE(event_definition.get_event_definition().get_pointing_button() == std::nullopt);
-    REQUIRE(event_definition.get_modifiers().size() == 0);
-    REQUIRE(event_definition.make_modifier_events() == std::vector<krbn::event_queue::event>({}));
+    REQUIRE_THROWS_AS(
+        krbn::manipulator::to_event_definition(json),
+        krbn::json_unmarshal_error);
+    REQUIRE_THROWS_WITH(
+        krbn::manipulator::to_event_definition(json),
+        "unknown modifier: `dummy`");
   }
   {
     std::string shell_command = "open /Applications/Safari.app";
@@ -162,7 +162,13 @@ TEST_CASE("event_definition.error_messages") {
     std::ifstream json_file("json/error_messages.json");
     auto json = nlohmann::json::parse(json_file);
     for (const auto& j : json["to_event_definition"]) {
-      krbn::manipulator::to_event_definition to_event_definition(j);
+      try {
+        krbn::manipulator::to_event_definition to_event_definition(j);
+      } catch (const krbn::json_unmarshal_error& e) {
+        krbn::logger::get_logger()->error(fmt::format("karabiner.json error: {0}", e.what()));
+      } catch (const std::exception& e) {
+        REQUIRE(false);
+      }
     }
   }
 

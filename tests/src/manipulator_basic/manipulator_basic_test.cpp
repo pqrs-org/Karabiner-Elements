@@ -36,8 +36,8 @@ void set_null_logger(void) {
 
 TEST_CASE("modifier_definition.test_modifier") {
   namespace basic = krbn::manipulator::manipulators::basic;
+  namespace modifier_definition = krbn::manipulator::modifier_definition;
   using krbn::manipulator::event_definition;
-  using krbn::manipulator::modifier_definition;
 
   {
     krbn::modifier_flag_manager modifier_flag_manager;
@@ -93,8 +93,8 @@ TEST_CASE("modifier_definition.test_modifier") {
 
 TEST_CASE("from_event_definition.test_modifiers") {
   namespace basic = krbn::manipulator::manipulators::basic;
+  namespace modifier_definition = krbn::manipulator::modifier_definition;
   using krbn::manipulator::event_definition;
-  using krbn::manipulator::modifier_definition;
 
   // empty
 
@@ -529,9 +529,12 @@ TEST_CASE("manipulator.details.basic::from_event_definition") {
                                         }},
                       }},
     });
-    basic::from_event_definition event_definition(json);
-    REQUIRE(event_definition.get_event_definitions().size() == 0);
-    REQUIRE(event_definition.get_mandatory_modifiers().size() == 0);
+    REQUIRE_THROWS_AS(
+        basic::from_event_definition(json),
+        krbn::json_unmarshal_error);
+    REQUIRE_THROWS_WITH(
+        basic::from_event_definition(json),
+        "unknown modifier: `dummy`");
   }
 }
 
@@ -543,9 +546,20 @@ TEST_CASE("event_definition.error_messages") {
   {
     std::ifstream json_file("json/error_messages.json");
     auto json = nlohmann::json::parse(json_file);
+    std::vector<std::string> error_messages;
     for (const auto& j : json["from_event_definition"]) {
-      basic::from_event_definition from_event_definition(j);
+      try {
+        basic::from_event_definition from_event_definition(j);
+      } catch (const krbn::json_unmarshal_error& e) {
+        error_messages.push_back(e.what());
+      } catch (const std::exception& e) {
+        REQUIRE(false);
+      }
     }
+
+    REQUIRE(error_messages == std::vector<std::string>{
+                                  "unknown modifier: `unknown_modifier`",
+                              });
   }
 
   set_null_logger();
