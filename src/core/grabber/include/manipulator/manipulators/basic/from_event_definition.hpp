@@ -188,9 +188,9 @@ public:
           // k is always std::string.
 
           if (k == "mandatory") {
-            mandatory_modifiers_ = modifier_definition::make_modifiers(v);
+            mandatory_modifiers_ = modifier_definition::make_modifiers(v, "modifiers.mandatory");
           } else if (k == "optional") {
-            optional_modifiers_ = modifier_definition::make_modifiers(v);
+            optional_modifiers_ = modifier_definition::make_modifiers(v, "modifiers.optional");
           } else {
             logger::get_logger()->error("complex_modifications json error: Unknown key: {0} in {1}", k, value.dump());
           }

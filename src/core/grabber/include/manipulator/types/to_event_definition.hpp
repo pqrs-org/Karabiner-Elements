@@ -27,7 +27,7 @@ public:
       }
 
       if (key == "modifiers") {
-        modifiers_ = modifier_definition::make_modifiers(value);
+        modifiers_ = modifier_definition::make_modifiers(value, "modifiers");
         continue;
       }
 

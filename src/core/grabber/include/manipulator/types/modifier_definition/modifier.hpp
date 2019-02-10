@@ -82,7 +82,7 @@ inline void to_json(nlohmann::json& json, const modifier& value) {
 
 inline void from_json(const nlohmann::json& json, modifier& value) {
   if (!json.is_string()) {
-    throw json_unmarshal_error(fmt::format("complex_modifications json error: modifier should be string form: {0}", json.dump()));
+    throw json_unmarshal_error(fmt::format("modifier must be string, but is `{0}`", json.dump()));
   }
 
   auto name = json.get<std::string>();
@@ -119,7 +119,7 @@ inline void from_json(const nlohmann::json& json, modifier& value) {
   } else if (name == "end_") {
     value = modifier::end_;
   } else {
-    throw json_unmarshal_error(fmt::format("complex_modifications json error: unknown modifier: {0}", name));
+    throw json_unmarshal_error(fmt::format("unknown modifier: `{0}`", name));
   }
 }
 

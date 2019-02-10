@@ -8,14 +8,24 @@
 namespace krbn {
 namespace manipulator {
 namespace modifier_definition {
-inline std::unordered_set<modifier> make_modifiers(const nlohmann::json& json) {
-  std::unordered_set<modifier> modifiers;
-
-  for (const auto& j : json) {
-    modifiers.insert(j.get<modifier>());
+inline std::unordered_set<modifier> make_modifiers(const nlohmann::json& json, const std::string_view& field) {
+  if (json.is_null()) {
+    return std::unordered_set<modifier>{};
   }
 
-  return modifiers;
+  if (json.is_string()) {
+    return std::unordered_set<modifier>{
+        json.get<modifier>(),
+    };
+  }
+
+  if (json.is_array()) {
+    return json.get<std::unordered_set<modifier>>();
+  }
+
+  throw json_unmarshal_error(fmt::format("`{0}` must be array or string, but is `{1}`",
+                                         field,
+                                         json.dump()));
 }
 
 inline std::vector<modifier_flag> get_modifier_flags(modifier modifier) {
