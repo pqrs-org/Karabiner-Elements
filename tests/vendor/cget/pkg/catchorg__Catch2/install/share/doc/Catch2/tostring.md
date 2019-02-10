@@ -23,7 +23,7 @@ std::ostream& operator << ( std::ostream& os, T const& value ) {
 
 (where ```T``` is your type and ```convertMyTypeToString``` is where you'll write whatever code is necessary to make your type printable - it doesn't have to be in another function).
 
-You should put this function in the same namespace as your type and have it declared before including Catch's header.
+You should put this function in the same namespace as your type, or the global namespace, and have it declared before including Catch's header.
 
 ## Catch::StringMaker specialisation
 If you don't want to provide an ```operator <<``` overload, or you want to convert your type differently for testing purposes, you can provide a specialization for `Catch::StringMaker<T>`:

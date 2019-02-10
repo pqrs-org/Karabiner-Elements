@@ -200,11 +200,12 @@ On Windows Catch includes `windows.h`. To minimize global namespace clutter in t
 
 By default, Catch does not stringify some types from the standard library. This is done to avoid dragging in various standard library headers by default. However, Catch does contain these and can be configured to provide them, using these macros:
 
-    CATCH_CONFIG_ENABLE_PAIR_STRINGMAKER    // Provide StringMaker specialization for std::pair
-    CATCH_CONFIG_ENABLE_TUPLE_STRINGMAKER   // Provide StringMaker specialization for std::tuple
-    CATCH_CONFIG_ENABLE_CHRONO_STRINGMAKER  // Provide StringMaker specialization for std::chrono::duration, std::chrono::timepoint
-    CATCH_CONFIG_ENABLE_VARIANT_STRINGMAKER // Provide StringMaker specialization for std::variant, std::monostate (on C++17)
-    CATCH_CONFIG_ENABLE_ALL_STRINGMAKERS    // Defines all of the above
+    CATCH_CONFIG_ENABLE_PAIR_STRINGMAKER     // Provide StringMaker specialization for std::pair
+    CATCH_CONFIG_ENABLE_TUPLE_STRINGMAKER    // Provide StringMaker specialization for std::tuple
+    CATCH_CONFIG_ENABLE_CHRONO_STRINGMAKER   // Provide StringMaker specialization for std::chrono::duration, std::chrono::timepoint
+    CATCH_CONFIG_ENABLE_VARIANT_STRINGMAKER  // Provide StringMaker specialization for std::variant, std::monostate (on C++17)
+    CATCH_CONFIG_ENABLE_OPTIONAL_STRINGMAKER // Provide StringMaker specialization for std::optional (on C++17)
+    CATCH_CONFIG_ENABLE_ALL_STRINGMAKERS     // Defines all of the above
 
 
 ## Disabling exceptions

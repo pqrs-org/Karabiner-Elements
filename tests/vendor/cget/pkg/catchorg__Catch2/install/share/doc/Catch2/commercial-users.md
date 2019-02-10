@@ -13,5 +13,6 @@ fact then please let us know - either directly, via a PR or
 [issue](https://github.com/philsquared/Catch/issues), or on the [forums](https://groups.google.com/forum/?fromgroups#!forum/catch-forum).
  
  - Bloomberg
+ - [Bloomlife](https://bloomlife.com)
  - NASA
  - [Inscopix Inc.](https://www.inscopix.com/)

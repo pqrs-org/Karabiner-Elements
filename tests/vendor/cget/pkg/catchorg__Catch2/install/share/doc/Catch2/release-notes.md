@@ -2,6 +2,8 @@
 
 # Release notes
 **Contents**<br>
+[2.6.0](#260)<br>
+[2.5.0](#250)<br>
 [2.4.2](#242)<br>
 [2.4.1](#241)<br>
 [2.4.0](#240)<br>
@@ -16,6 +18,72 @@
 [2.0.1](#201)<br>
 [Older versions](#older-versions)<br>
 [Even Older versions](#even-older-versions)<br>
+
+## 2.6.0
+
+**With this release the data generator feature is now fully supported.**
+
+
+### Improvements
+* Added `TEMPLATE_PRODUCT_TEST_CASE` (#1454, #1468)
+  * This allows you to easily test various type combinations, see documentation for details
+* The error message for `&&` and `||` inside assertions has been improved (#1273, #1480)
+* The error message for chained comparisons inside assertions has been improved (#1481)
+* Added `StringMaker` specialization for `std::optional` (#1510)
+* The generator interface has been redone once again (#1516)
+  * It is no longer considered experimental and is fully supported
+  * The new interface supports "Input" generators
+  * The generator documentation has been fully updated
+  * We also added 2 generator examples
+
+
+### Fixes
+* Fixed `-Wredundant-move` on newer Clang (#1474)
+* Removed unreachable mentions `std::current_exception`, `std::rethrow_exception` in no-exceptions mode (#1462)
+  * This should fix compilation with IAR
+* Fixed missing `<type_traits>` include (#1494)
+* Fixed various static analysis warnings
+  * Unrestored stream state in `XmlWriter` (#1489)
+  * Potential division by zero in `estimateClockResolution` (#1490)
+  * Uninitialized member in `RunContext` (#1491)
+  * `SourceLineInfo` move ops are now marked `noexcept`
+  * `CATCH_BREAK_INTO_DEBUGGER` is now always a function
+* Fix double run of a test case if user asks for a specific section (#1394, #1492)
+* ANSI colour code output now respects `-o` flag and writes to the file as well (#1502)
+* Fixed detection of `std::variant` support for compilers other than Clang (#1511)
+
+
+### Contrib
+* `ParseAndAddCatchTests` has learned how to use `DISABLED` CTest property (#1452)
+* `ParseAndAddCatchTests` now works when there is a whitspace before the test name (#1493)
+
+
+### Miscellaneous
+* We added new issue templates for reporting issues on GitHub
+* `contributing.md` has been updated to reflect the current test status (#1484)
+
+
+
+## 2.5.0
+
+### Improvements
+* Added support for templated tests via `TEMPLATE_TEST_CASE` (#1437)
+
+
+### Fixes
+* Fixed compilation of `PredicateMatcher<const char*>` by removing partial specialization of `MatcherMethod<T*>`
+* Listeners now implicitly support any verbosity (#1426)
+* Fixed compilation with Embarcadero builder by introducing `Catch::isnan` polyfill (#1438)
+* Fixed `CAPTURE` asserting for non-trivial captures (#1436, #1448)
+
+
+### Miscellaneous
+* We should now be providing first party Conan support via https://bintray.com/catchorg/Catch2 (#1443)
+* Added new section "deprecations and planned changes" to the documentation
+  * It contains summary of what is deprecated and might change with next major version
+* From this release forward, the released headers should be pgp signed (#430)
+  * KeyID `E29C 46F3 B8A7 5028 6079 3B7D ECC9 C20E 314B 2360`
+  * or https://codingnest.com/files/horenmar-publickey.asc
 
 
 ## 2.4.2

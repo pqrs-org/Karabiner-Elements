@@ -32,6 +32,9 @@ A, single-header-only, type-safe, command line parser - which also prints format
 ### [Couchbase-lite-core](https://github.com/couchbase/couchbase-lite-core)
 The next-generation core storage and query engine for Couchbase Lite
 
+### [cppcodec](https://github.com/tplgy/cppcodec)
+Header-only C++11 library to encode/decode base64, base64url, base32, base32hex and hex (a.k.a. base16) as specified in RFC 4648, plus Crockford's base32.
+
 ### [DtCraft](https://github.com/twhuang-uiuc/DtCraft)
 A High-performance Cluster Computing Engine
 

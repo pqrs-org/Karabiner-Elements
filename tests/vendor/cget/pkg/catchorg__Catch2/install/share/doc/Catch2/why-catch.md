@@ -6,7 +6,7 @@ including (but not limited to),
 [Google Test](http://code.google.com/p/googletest/),
 [Boost.Test](http://www.boost.org/doc/libs/1_49_0/libs/test/doc/html/index.html),
 [CppUnit](http://sourceforge.net/apps/mediawiki/cppunit/index.php?title=Main_Page),
-[Cute](http://r2.ifs.hsr.ch/cute),
+[Cute](http://www.cute-test.com),
 [many, many more](http://en.wikipedia.org/wiki/List_of_unit_testing_frameworks#C.2B.2B).
 
 So what does Catch bring to the party that differentiates it from these? Apart from a Catchy name, of course.

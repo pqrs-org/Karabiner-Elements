@@ -1,2 +1,4 @@
 /vendor/cget/cget.cmake
+/vendor/cget/pkg/pqrs-org__cget-recipes/
+/vendor/etc/cget/recipes/
 /vendor/**/pkgconfig/

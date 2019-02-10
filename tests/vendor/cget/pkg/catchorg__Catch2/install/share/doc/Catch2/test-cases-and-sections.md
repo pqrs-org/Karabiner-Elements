@@ -1,6 +1,12 @@
 <a id="top"></a>
 # Test cases and sections
 
+**Contents**<br>
+[Tags](#tags)<br>
+[Tag aliases](#tag-aliases)<br>
+[BDD-style test cases](#bdd-style-test-cases)<br>
+[Type parametrised test cases](#type-parametrised-test-cases)<br>
+
 While Catch fully supports the traditional, xUnit, style of class-based fixtures containing test case methods this is not the preferred style.
 
 Instead Catch provides a powerful mechanism for nesting test case sections within a test case. For a more detailed discussion see the [tutorial](tutorial.md#test-cases-and-sections).
@@ -85,6 +91,105 @@ Similar to ```WHEN``` and ```THEN``` except that the prefixes start with "and ".
 When any of these macros are used the console reporter recognises them and formats the test case header such that the Givens, Whens and Thens are aligned to aid readability.
 
 Other than the additional prefixes and the formatting in the console reporter these macros behave exactly as ```TEST_CASE```s and ```SECTION```s. As such there is nothing enforcing the correct sequencing of these macros - that's up to the programmer!
+
+## Type parametrised test cases
+
+In addition to `TEST_CASE`s, Catch2 also supports test cases parametrised
+by types, in the form of `TEMPLATE_TEST_CASE` and
+`TEMPLATE_PRODUCT_TEST_CASE`.
+
+* **TEMPLATE_TEST_CASE(** _test name_ , _tags_,  _type1_, _type2_, ..., _typen_ **)**
+
+_test name_ and _tag_ are exactly the same as they are in `TEST_CASE`,
+with the difference that the tag string must be provided (however, it
+can be empty). _type1_ through _typen_ is the list of types for which
+this test case should run, and, inside the test code, the current type
+is available as the `TestType` type.
+
+Because of limitations of the C++ preprocessor, if you want to specify
+a type with multiple template parameters, you need to enclose it in
+parentheses, e.g. `std::map<int, std::string>` needs to be passed as
+`(std::map<int, std::string>)`.
+
+Example:
+```cpp
+TEMPLATE_TEST_CASE( "vectors can be sized and resized", "[vector][template]", int, std::string, (std::tuple<int,float>) ) {
+
+    std::vector<TestType> v( 5 );
+
+    REQUIRE( v.size() == 5 );
+    REQUIRE( v.capacity() >= 5 );
+
+    SECTION( "resizing bigger changes size and capacity" ) {
+        v.resize( 10 );
+
+        REQUIRE( v.size() == 10 );
+        REQUIRE( v.capacity() >= 10 );
+    }
+    SECTION( "resizing smaller changes size but not capacity" ) {
+        v.resize( 0 );
+
+        REQUIRE( v.size() == 0 );
+        REQUIRE( v.capacity() >= 5 );
+
+        SECTION( "We can use the 'swap trick' to reset the capacity" ) {
+            std::vector<TestType> empty;
+            empty.swap( v );
+
+            REQUIRE( v.capacity() == 0 );
+        }
+    }
+    SECTION( "reserving smaller does not change size or capacity" ) {
+        v.reserve( 0 );
+
+        REQUIRE( v.size() == 5 );
+        REQUIRE( v.capacity() >= 5 );
+    }
+}
+```
+
+* **TEMPLATE_PRODUCT_TEST_CASE(** _test name_ , _tags_, (_template-type1_, _template-type2_, ..., _template-typen_), (_template-arg1_, _template-arg2_, ..., _template-argm_) **)**
+
+_template-type1_ through _template-typen_ is list of template template
+types which should be combined with each of _template-arg1_ through
+ _template-argm_, resulting in _n * m_ test cases. Inside the test case,
+the resulting type is available under the name of `TestType`.
+
+To specify more than 1 type as a single _template-type_ or _template-arg_,
+you must enclose the types in an additional set of parentheses, e.g.
+`((int, float), (char, double))` specifies 2 template-args, each
+consisting of 2 concrete types (`int`, `float` and `char`, `double`
+respectively). You can also omit the outer set of parentheses if you
+specify only one type as the full set of either the _template-types_,
+or the _template-args_.
+
+
+Example:
+```cpp
+template< typename T>
+struct Foo {
+    size_t size() {
+        return 0;
+    }
+};
+
+TEMPLATE_PRODUCT_TEST_CASE("A Template product test case", "[template][product]", (std::vector, Foo), (int, float)) {
+    TestType x;
+    REQUIRE(x.size() == 0);
+}
+```
+
+You can also have different arities in the _template-arg_ packs:
+```cpp
+TEMPLATE_PRODUCT_TEST_CASE("Product with differing arities", "[template][product]", std::tuple, (int, (int, double), (int, double, float))) {
+    TestType x;
+    REQUIRE(std::tuple_size<TestType>::value >= 1);
+}
+```
+
+_While there is an upper limit on the number of types you can specify
+in single `TEMPLATE_TEST_CASE` or `TEMPLATE_PRODUCT_TEST_CASE`, the limit
+is very high and should not be encountered in practice._
 
 ---
 

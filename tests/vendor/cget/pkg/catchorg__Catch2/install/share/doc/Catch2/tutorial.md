@@ -8,6 +8,7 @@
 [Test cases and sections](#test-cases-and-sections)<br>
 [BDD-Style](#bdd-style)<br>
 [Scaling up](#scaling-up)<br>
+[Type parametrised test cases](#type-parametrised-test-cases)<br>
 [Next steps](#next-steps)<br>
 
 ## Getting Catch2
@@ -22,7 +23,7 @@ The full source for Catch2, including test projects, documentation, and other th
 
 ## Where to put it?
 
-Catch2 is header only. All you need to do is drop the file somewhere reachable from your project - either in some central location you can set your header search path to find, or directly into your project tree itself! This is a particularly good option for other Open-Source projects that want to use Catch for their test suite. See [this blog entry for more on that](http://www.levelofindirection.com/journal/2011/5/27/unit-testing-in-c-and-objective-c-just-got-ridiculously-easi.html). 
+Catch2 is header only. All you need to do is drop the file somewhere reachable from your project - either in some central location you can set your header search path to find, or directly into your project tree itself! This is a particularly good option for other Open-Source projects that want to use Catch for their test suite. See [this blog entry for more on that](http://www.levelofindirection.com/journal/2011/5/27/unit-testing-in-c-and-objective-c-just-got-ridiculously-easi.html).
 
 The rest of this tutorial will assume that the Catch2 single-include header (or the include folder) is available unqualified - but you may need to prefix it with a folder name if necessary.
 
@@ -31,7 +32,7 @@ package, you need to include the header as `#include <catch2/catch.hpp>`_
 
 ## Writing tests
 
-Let's start with a really simple example ([code](../examples/010-TestCase.cpp)). Say you have written a function to calculate factorials and now you want to test it (let's leave aside TDD for now). 
+Let's start with a really simple example ([code](../examples/010-TestCase.cpp)). Say you have written a function to calculate factorials and now you want to test it (let's leave aside TDD for now).
 
 ```c++
 unsigned int Factorial( unsigned int number ) {
@@ -122,31 +123,31 @@ Catch takes a different approach (to both NUnit and xUnit) that is a more natura
 TEST_CASE( "vectors can be sized and resized", "[vector]" ) {
 
     std::vector<int> v( 5 );
-    
+
     REQUIRE( v.size() == 5 );
     REQUIRE( v.capacity() >= 5 );
-    
+
     SECTION( "resizing bigger changes size and capacity" ) {
         v.resize( 10 );
-        
+
         REQUIRE( v.size() == 10 );
         REQUIRE( v.capacity() >= 10 );
     }
     SECTION( "resizing smaller changes size but not capacity" ) {
         v.resize( 0 );
-        
+
         REQUIRE( v.size() == 0 );
         REQUIRE( v.capacity() >= 5 );
     }
     SECTION( "reserving bigger changes capacity but not size" ) {
         v.reserve( 10 );
-        
+
         REQUIRE( v.size() == 5 );
         REQUIRE( v.capacity() >= 10 );
     }
     SECTION( "reserving smaller does not change size or capacity" ) {
         v.reserve( 0 );
-        
+
         REQUIRE( v.size() == 5 );
         REQUIRE( v.capacity() >= 5 );
     }
@@ -163,13 +164,13 @@ The power of sections really shows, however, when we need to execute a sequence 
 ```c++
     SECTION( "reserving bigger changes capacity but not size" ) {
         v.reserve( 10 );
-        
+
         REQUIRE( v.size() == 5 );
         REQUIRE( v.capacity() >= 10 );
-    
+
         SECTION( "reserving smaller again does not change capacity" ) {
             v.reserve( 7 );
-            
+
             REQUIRE( v.capacity() >= 10 );
         }
     }
@@ -188,13 +189,13 @@ SCENARIO( "vectors can be sized and resized", "[vector]" ) {
 
     GIVEN( "A vector with some items" ) {
         std::vector<int> v( 5 );
-        
+
         REQUIRE( v.size() == 5 );
         REQUIRE( v.capacity() >= 5 );
-        
+
         WHEN( "the size is increased" ) {
             v.resize( 10 );
-            
+
             THEN( "the size and capacity change" ) {
                 REQUIRE( v.size() == 10 );
                 REQUIRE( v.capacity() >= 10 );
@@ -202,7 +203,7 @@ SCENARIO( "vectors can be sized and resized", "[vector]" ) {
         }
         WHEN( "the size is reduced" ) {
             v.resize( 0 );
-            
+
             THEN( "the size changes but not capacity" ) {
                 REQUIRE( v.size() == 0 );
                 REQUIRE( v.capacity() >= 5 );
@@ -210,7 +211,7 @@ SCENARIO( "vectors can be sized and resized", "[vector]" ) {
         }
         WHEN( "more capacity is reserved" ) {
             v.reserve( 10 );
-            
+
             THEN( "the capacity changes but not the size" ) {
                 REQUIRE( v.size() == 5 );
                 REQUIRE( v.capacity() >= 10 );
@@ -218,7 +219,7 @@ SCENARIO( "vectors can be sized and resized", "[vector]" ) {
         }
         WHEN( "less capacity is reserved" ) {
             v.reserve( 0 );
-            
+
             THEN( "neither size nor capacity are changed" ) {
                 REQUIRE( v.size() == 5 );
                 REQUIRE( v.capacity() >= 5 );
@@ -254,6 +255,17 @@ appears in _exactly one_ source file. Use as many additional cpp files (or whate
 In fact it is usually a good idea to put the block with the ```#define``` [in its own source file](slow-compiles.md#top) (code example [main](../examples/020-TestCase-1.cpp), [tests](../examples/020-TestCase-2.cpp)).
 
 Do not write your tests in header files!
+
+
+## Type parametrised test cases
+
+Test cases in Catch2 can be also parametrised by type, via the
+`TEMPLATE_TEST_CASE` and `TEMPLATE_PRODUCT_TEST_CASE` macros,
+which behave in the same way the `TEST_CASE` macro, but are run for
+every type or type combination.
+
+For more details, see our documentation on [test cases and
+sections](test-cases-and-sections.md#type-parametrised-test-cases).
 
 
 ## Next steps

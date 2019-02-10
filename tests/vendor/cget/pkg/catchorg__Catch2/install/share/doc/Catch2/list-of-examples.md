@@ -14,6 +14,9 @@
 - Report: [TeamCity reporter](../examples/207-Rpt-TeamCityReporter.cpp)
 - Listener: [Listeners](../examples/210-Evt-EventListeners.cpp)
 - Configuration: [Provide your own output streams](../examples/231-Cfg-OutputStreams.cpp)
+- Generators: [Create your own generator](../examples/300-Gen-OwnGenerator.cpp)
+- Generators: [Use variables in generator expressions](../examples/310-Gen-VariablesInGenerators.cpp)
+
 
 ## Planned
 
