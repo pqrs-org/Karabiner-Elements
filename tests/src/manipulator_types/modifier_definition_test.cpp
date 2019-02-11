@@ -67,6 +67,8 @@ TEST_CASE("modifier_definition.make_modifiers") {
   namespace modifier_definition = krbn::manipulator::modifier_definition;
   using krbn::manipulator::event_definition;
 
+  // array
+
   {
     nlohmann::json json({"left_command", "left_shift", "fn", "any"});
     auto actual = modifier_definition::make_modifiers(json, "modifiers");
@@ -79,6 +81,8 @@ TEST_CASE("modifier_definition.make_modifiers") {
     REQUIRE(actual == expected);
   }
 
+  // string
+
   {
     nlohmann::json json("left_command");
     auto actual = modifier_definition::make_modifiers(json, "modifiers");
@@ -88,6 +92,29 @@ TEST_CASE("modifier_definition.make_modifiers") {
     REQUIRE(actual == expected);
   }
 
+  // null
+
+  {
+    nlohmann::json json(nullptr);
+    auto actual = modifier_definition::make_modifiers(json, "modifiers");
+    auto expected = std::unordered_set<modifier_definition::modifier>({});
+    REQUIRE(actual == expected);
+  }
+
+  // type error
+
+  {
+    auto json = nlohmann::json::object();
+    REQUIRE_THROWS_AS(
+        modifier_definition::make_modifiers(json, "modifiers"),
+        krbn::json_unmarshal_error);
+    REQUIRE_THROWS_WITH(
+        modifier_definition::make_modifiers(json, "modifiers"),
+        "`modifiers` must be array or string, but is `{}`");
+  }
+
+  // unknown modifier
+
   {
     nlohmann::json json("unknown");
     REQUIRE_THROWS_AS(
@@ -96,13 +123,6 @@ TEST_CASE("modifier_definition.make_modifiers") {
     REQUIRE_THROWS_WITH(
         modifier_definition::make_modifiers(json, "modifiers"),
         "unknown modifier: `unknown`");
-  }
-
-  {
-    nlohmann::json json(nullptr);
-    auto actual = modifier_definition::make_modifiers(json, "modifiers");
-    auto expected = std::unordered_set<modifier_definition::modifier>({});
-    REQUIRE(actual == expected);
   }
 }
 
