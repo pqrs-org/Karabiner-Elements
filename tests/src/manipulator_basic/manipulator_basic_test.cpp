@@ -531,7 +531,7 @@ TEST_CASE("manipulator.details.basic::from_event_definition") {
     });
     REQUIRE_THROWS_AS(
         basic::from_event_definition(json),
-        krbn::json_unmarshal_error);
+        pqrs::json::unmarshal_error);
     REQUIRE_THROWS_WITH(
         basic::from_event_definition(json),
         "unknown modifier: `dummy`");
@@ -550,7 +550,7 @@ TEST_CASE("event_definition.error_messages") {
     for (const auto& j : json["from_event_definition"]) {
       try {
         basic::from_event_definition from_event_definition(j);
-      } catch (const krbn::json_unmarshal_error& e) {
+      } catch (const pqrs::json::unmarshal_error& e) {
         error_messages.push_back(e.what());
       } catch (const std::exception& e) {
         REQUIRE(false);

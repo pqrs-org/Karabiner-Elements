@@ -74,20 +74,41 @@ TEST_CASE("manipulator.details.to_event_definition") {
                                                            krbn::event_queue::event(krbn::key_code::left_shift),
                                                        }));
   }
+
+  // key_code error
+
   {
     nlohmann::json json({
         {"key_code", nlohmann::json::array()},
+        {"modifiers", {
+                          "left_shift",
+                      }},
+    });
+    REQUIRE_THROWS_AS(
+        krbn::manipulator::to_event_definition(json),
+        pqrs::json::unmarshal_error);
+    REQUIRE_THROWS_WITH(
+        krbn::manipulator::to_event_definition(json),
+        "`key_code` must be string, but is `[]`");
+  }
+
+  // modifiers error
+
+  {
+    nlohmann::json json({
+        {"key_code", "a"},
         {"modifiers", {
                           "dummy",
                       }},
     });
     REQUIRE_THROWS_AS(
         krbn::manipulator::to_event_definition(json),
-        krbn::json_unmarshal_error);
+        pqrs::json::unmarshal_error);
     REQUIRE_THROWS_WITH(
         krbn::manipulator::to_event_definition(json),
         "unknown modifier: `dummy`");
   }
+
   {
     std::string shell_command = "open /Applications/Safari.app";
     nlohmann::json json({
@@ -161,15 +182,28 @@ TEST_CASE("event_definition.error_messages") {
   {
     std::ifstream json_file("json/error_messages.json");
     auto json = nlohmann::json::parse(json_file);
+    std::vector<std::string> error_messages;
     for (const auto& j : json["to_event_definition"]) {
       try {
         krbn::manipulator::to_event_definition to_event_definition(j);
-      } catch (const krbn::json_unmarshal_error& e) {
-        krbn::logger::get_logger()->error(fmt::format("karabiner.json error: {0}", e.what()));
+      } catch (const pqrs::json::unmarshal_error& e) {
+        error_messages.push_back(e.what());
       } catch (const std::exception& e) {
         REQUIRE(false);
       }
     }
+
+    REQUIRE(error_messages == std::vector<std::string>{
+                                  "`modifiers` must be array or string, but is `{\"mandatory\":[\"shift\"]}`",
+                                  "unknown modifier: `unknown`",
+                                  "`shell_command` must be string, but is `1234`",
+                                  "`select_input_source` must be object or array of objects, but is `1234`",
+                                  "`set_variable` must be object, but is `1234`",
+                                  "`set_variable.name` is not found in `{\"value\":1234}`",
+                                  "`set_variable.name` must be string, but is `1234`",
+                                  "`set_variable.value` is not found in `{\"name\":\"variable_name\"}`",
+                                  "`set_variable.value` must be number, but is `\"1234\"`",
+                              });
   }
 
   set_null_logger();

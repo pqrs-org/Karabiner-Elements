@@ -44,10 +44,10 @@ TEST_CASE("modifier_definition.modifier json") {
     json.push_back("hello");
     REQUIRE_THROWS_AS(
         json.get<modifier>(),
-        krbn::json_unmarshal_error);
+        pqrs::json::unmarshal_error);
     REQUIRE_THROWS_WITH(
         json.get<modifier>(),
-        Catch::Equals("modifier must be string, but is `[\"hello\"]`"));
+        Catch::Equals("`modifier` must be string, but is `[\"hello\"]`"));
   }
 
   // json is invalid string.
@@ -56,7 +56,7 @@ TEST_CASE("modifier_definition.modifier json") {
     nlohmann::json json = "hello";
     REQUIRE_THROWS_AS(
         json.get<modifier>(),
-        krbn::json_unmarshal_error);
+        pqrs::json::unmarshal_error);
     REQUIRE_THROWS_WITH(
         json.get<modifier>(),
         Catch::Equals("unknown modifier: `hello`"));
@@ -107,7 +107,7 @@ TEST_CASE("modifier_definition.make_modifiers") {
     auto json = nlohmann::json::object();
     REQUIRE_THROWS_AS(
         modifier_definition::make_modifiers(json, "modifiers"),
-        krbn::json_unmarshal_error);
+        pqrs::json::unmarshal_error);
     REQUIRE_THROWS_WITH(
         modifier_definition::make_modifiers(json, "modifiers"),
         "`modifiers` must be array or string, but is `{}`");
@@ -119,7 +119,7 @@ TEST_CASE("modifier_definition.make_modifiers") {
     nlohmann::json json("unknown");
     REQUIRE_THROWS_AS(
         modifier_definition::make_modifiers(json, "modifiers"),
-        krbn::json_unmarshal_error);
+        pqrs::json::unmarshal_error);
     REQUIRE_THROWS_WITH(
         modifier_definition::make_modifiers(json, "modifiers"),
         "unknown modifier: `unknown`");

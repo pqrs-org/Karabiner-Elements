@@ -16,6 +16,10 @@
             "shell_command": 1234
         },
         {
+            "description": "shell_command is not string",
+            "select_input_source": 1234
+        },
+        {
             "description": "set_variable is not object",
             "set_variable": 1234
         },
