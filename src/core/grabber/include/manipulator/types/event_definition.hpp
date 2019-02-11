@@ -4,6 +4,7 @@
 #include <mpark/variant.hpp>
 #include <nlohmann/json.hpp>
 #include <optional>
+#include <pqrs/json.hpp>
 
 namespace krbn {
 namespace manipulator {
@@ -135,18 +136,17 @@ public:
     // key_code
 
     if (key == "key_code") {
-      if (type_ != type::none) {
-        logger::get_logger()->error("complex_modifications json error: Duplicated type definition: {0}", json.dump());
-        return true;
-      }
+      check_type(json);
+
       if (!value.is_string()) {
-        logger::get_logger()->error("complex_modifications json error: Invalid form of key_code: {0}", json.dump());
-        return true;
+        throw pqrs::json::unmarshal_error(fmt::format("`{0}` must be string, but is `{1}`", key, value.dump()));
       }
 
       if (auto key_code = types::make_key_code(value.get<std::string>())) {
         type_ = type::key_code;
         value_ = *key_code;
+      } else {
+        throw pqrs::json::unmarshal_error(fmt::format("unknown `{0}`: `{1}`", key, value.dump()));
       }
 
       return true;
@@ -156,18 +156,17 @@ public:
     // consumer_key_code
 
     if (key == "consumer_key_code") {
-      if (type_ != type::none) {
-        logger::get_logger()->error("complex_modifications json error: Duplicated type definition: {0}", json.dump());
-        return true;
-      }
+      check_type(json);
+
       if (!value.is_string()) {
-        logger::get_logger()->error("complex_modifications json error: Invalid form of consumer_key_code: {0}", json.dump());
-        return true;
+        throw pqrs::json::unmarshal_error(fmt::format("`{0}` must be string, but is `{1}`", key, value.dump()));
       }
 
       if (auto consumer_key_code = types::make_consumer_key_code(value.get<std::string>())) {
         type_ = type::consumer_key_code;
         value_ = *consumer_key_code;
+      } else {
+        throw pqrs::json::unmarshal_error(fmt::format("unknown `{0}`: `{1}`", key, value.dump()));
       }
 
       return true;
@@ -177,18 +176,17 @@ public:
     // pointing_button
 
     if (key == "pointing_button") {
-      if (type_ != type::none) {
-        logger::get_logger()->error("complex_modifications json error: Duplicated type definition: {0}", json.dump());
-        return true;
-      }
+      check_type(json);
+
       if (!value.is_string()) {
-        logger::get_logger()->error("complex_modifications json error: Invalid form of pointing_button: {0}", json.dump());
-        return true;
+        throw pqrs::json::unmarshal_error(fmt::format("`{0}` must be string, but is `{1}`", key, value.dump()));
       }
 
       if (auto pointing_button = types::make_pointing_button(value.get<std::string>())) {
         type_ = type::pointing_button;
         value_ = *pointing_button;
+      } else {
+        throw pqrs::json::unmarshal_error(fmt::format("unknown `{0}`: `{1}`", key, value.dump()));
       }
 
       return true;
@@ -198,13 +196,10 @@ public:
     // any
 
     if (key == "any") {
-      if (type_ != type::none) {
-        logger::get_logger()->error("complex_modifications json error: Duplicated type definition: {0}", json.dump());
-        return true;
-      }
+      check_type(json);
+
       if (!value.is_string()) {
-        logger::get_logger()->error("complex_modifications json error: Invalid form of any: {0}", json.dump());
-        return true;
+        throw pqrs::json::unmarshal_error(fmt::format("`{0}` must be string, but is `{1}`", key, value.dump()));
       }
 
       if (value == "key_code") {
@@ -217,7 +212,7 @@ public:
         type_ = type::any;
         value_ = type::pointing_button;
       } else {
-        logger::get_logger()->error("complex_modifications json error: Unknown value of any: {0}", json.dump());
+        throw pqrs::json::unmarshal_error(fmt::format("unknown `{0}`: `{1}`", key, value.dump()));
       }
 
       return true;
@@ -227,13 +222,10 @@ public:
     // shell_command
 
     if (key == "shell_command") {
-      if (type_ != type::none) {
-        logger::get_logger()->error("complex_modifications json error: Duplicated type definition: {0}", json.dump());
-        return true;
-      }
+      check_type(json);
+
       if (!value.is_string()) {
-        logger::get_logger()->error("complex_modifications json error: Invalid form of shell_command: {0}", json.dump());
-        return true;
+        throw pqrs::json::unmarshal_error(fmt::format("`{0}` must be string, but is `{1}`", key, value.dump()));
       }
 
       type_ = type::shell_command;
@@ -246,22 +238,16 @@ public:
     // select_input_source
 
     if (key == "select_input_source") {
-      if (type_ != type::none) {
-        logger::get_logger()->error("complex_modifications json error: Duplicated type definition: {0}", json.dump());
-        return true;
-      }
+      check_type(json);
 
       std::vector<pqrs::osx::input_source_selector::specifier> input_source_specifiers;
 
       if (value.is_object()) {
-        input_source_specifiers.emplace_back(value);
+        input_source_specifiers.push_back(value.get<pqrs::osx::input_source_selector::specifier>());
       } else if (value.is_array()) {
-        for (const auto& v : value) {
-          input_source_specifiers.emplace_back(v);
-        }
+        input_source_specifiers = value.get<std::vector<pqrs::osx::input_source_selector::specifier>>();
       } else {
-        logger::get_logger()->error("complex_modifications json error: Invalid form of select_input_source: {0}", json.dump());
-        return true;
+        throw pqrs::json::unmarshal_error(fmt::format("`{0}` must be object or array of objects, but is `{1}`", key, value.dump()));
       }
 
       type_ = type::select_input_source;
@@ -274,25 +260,46 @@ public:
     // set_variable
 
     if (key == "set_variable") {
-      if (type_ != type::none) {
-        logger::get_logger()->error("complex_modifications json error: Duplicated type definition: {0}", json.dump());
-        return true;
-      }
+      check_type(json);
+
       if (!value.is_object()) {
-        logger::get_logger()->error("complex_modifications json error: Invalid form of set_variable: {0}", json.dump());
-        return true;
+        throw pqrs::json::unmarshal_error(fmt::format("`{0}` must be object, but is `{1}`", key, value.dump()));
       }
 
-      if (auto n = json_utility::find_optional<std::string>(value, "name")) {
-        if (auto v = json_utility::find_optional<int>(value, "value")) {
-          type_ = type::set_variable;
-          value_ = std::make_pair(*n, *v);
-        } else {
-          logger::get_logger()->error("complex_modifications json error: valid `value` is not found in set_variable: {0}", json.dump());
+      // name
+
+      std::string variable_name;
+
+      {
+        auto it = value.find("name");
+        if (it == std::end(value)) {
+          throw pqrs::json::unmarshal_error(fmt::format("`{0}.name` is not found in `{1}`", key, value.dump()));
         }
-      } else {
-        logger::get_logger()->error("complex_modifications json error: valid `name` is not found in set_variable: {0}", json.dump());
+
+        if (!it.value().is_string()) {
+          throw pqrs::json::unmarshal_error(fmt::format("`{0}.name` must be string, but is `{1}`", key, it.value().dump()));
+        }
+        variable_name = it.value().get<std::string>();
       }
+
+      // value
+
+      int variable_value;
+
+      {
+        auto it = value.find("value");
+        if (it == std::end(value)) {
+          throw pqrs::json::unmarshal_error(fmt::format("`{0}.value` is not found in `{1}`", key, value.dump()));
+        }
+
+        if (!it.value().is_number()) {
+          throw pqrs::json::unmarshal_error(fmt::format("`{0}.value` must be number, but is `{1}`", key, it.value().dump()));
+        }
+        variable_value = it.value().get<int>();
+      }
+
+      type_ = type::set_variable;
+      value_ = std::make_pair(variable_name, variable_value);
 
       return true;
     }
@@ -301,13 +308,10 @@ public:
     // mouse_key
 
     if (key == "mouse_key") {
-      if (type_ != type::none) {
-        logger::get_logger()->error("complex_modifications json error: Duplicated type definition: {0}", json.dump());
-        return true;
-      }
+      check_type(json);
+
       if (!value.is_object()) {
-        logger::get_logger()->error("complex_modifications json error: Invalid form of mouse_key: {0}", json.dump());
-        return true;
+        throw pqrs::json::unmarshal_error(fmt::format("`{0}` must be object, but is `{1}`", key, value.dump()));
       }
 
       type_ = type::mouse_key;
@@ -323,6 +327,12 @@ public:
     }
 
     return false;
+  }
+
+  void check_type(const nlohmann::json& json) const {
+    if (type_ != type::none) {
+      throw pqrs::json::unmarshal_error(fmt::format("multiple types are specified: `{0}`", json.dump()));
+    }
   }
 
 protected:

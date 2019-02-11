@@ -1,8 +1,8 @@
 #pragma once
 
 #include "modifier_definition/modifier.hpp"
-#include "types/json_unmarshal_error.hpp"
 #include "types/modifier_flag.hpp"
+#include <pqrs/json.hpp>
 #include <unordered_set>
 
 namespace krbn {
@@ -23,9 +23,9 @@ inline std::unordered_set<modifier> make_modifiers(const nlohmann::json& json, c
     return json.get<std::unordered_set<modifier>>();
   }
 
-  throw json_unmarshal_error(fmt::format("`{0}` must be array or string, but is `{1}`",
-                                         field,
-                                         json.dump()));
+  throw pqrs::json::unmarshal_error(fmt::format("`{0}` must be array or string, but is `{1}`",
+                                                field,
+                                                json.dump()));
 }
 
 inline std::vector<modifier_flag> get_modifier_flags(modifier modifier) {

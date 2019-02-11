@@ -775,7 +775,7 @@ private:
 
         return std::make_shared<manipulator::manipulators::basic::basic>(manipulator::manipulators::basic::from_event_definition(from_json),
                                                                          manipulator::to_event_definition(to_json));
-      } catch (const json_unmarshal_error& e) {
+      } catch (const pqrs::json::unmarshal_error& e) {
         logger::get_logger()->error(fmt::format("karabiner.json error: {0}", e.what()));
       } catch (const std::exception& e) {
         logger::get_logger()->error(e.what());
@@ -840,7 +840,7 @@ private:
           auto manipulator = std::make_shared<manipulator::manipulators::basic::basic>(manipulator::manipulators::basic::from_event_definition(from_json),
                                                                                        manipulator::to_event_definition(to_json));
           fn_function_keys_manipulator_manager_->push_back_manipulator(std::shared_ptr<manipulator::manipulators::base>(manipulator));
-        } catch (const json_unmarshal_error& e) {
+        } catch (const pqrs::json::unmarshal_error& e) {
           logger::get_logger()->error(fmt::format("karabiner.json error: {0}", e.what()));
         } catch (const std::exception& e) {
           logger::get_logger()->error(e.what());
@@ -918,7 +918,7 @@ private:
           auto manipulator = std::make_shared<manipulator::manipulators::basic::basic>(manipulator::manipulators::basic::from_event_definition(from_json),
                                                                                        manipulator::to_event_definition(to_json));
           fn_function_keys_manipulator_manager_->push_back_manipulator(std::shared_ptr<manipulator::manipulators::base>(manipulator));
-        } catch (const json_unmarshal_error& e) {
+        } catch (const pqrs::json::unmarshal_error& e) {
           logger::get_logger()->error(fmt::format("karabiner.json error: {0}", e.what()));
         } catch (const std::exception& e) {
           logger::get_logger()->error(e.what());
@@ -947,7 +947,7 @@ private:
 
       return std::make_shared<manipulator::manipulators::basic::basic>(manipulator::manipulators::basic::from_event_definition(from_json),
                                                                        manipulator::to_event_definition(to_json));
-    } catch (const json_unmarshal_error& e) {
+    } catch (const pqrs::json::unmarshal_error& e) {
       logger::get_logger()->error(fmt::format("karabiner.json error: {0}", e.what()));
     } catch (const std::exception& e) {
       logger::get_logger()->error(e.what());

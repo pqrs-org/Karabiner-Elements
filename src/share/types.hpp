@@ -16,7 +16,6 @@
 #include "types/hid_usage.hpp"
 #include "types/hid_usage_page.hpp"
 #include "types/hid_value.hpp"
-#include "types/json_unmarshal_error.hpp"
 #include "types/key_code.hpp"
 #include "types/led_state.hpp"
 #include "types/location_id.hpp"
