@@ -21,7 +21,19 @@ public:
     mouse_key,
   };
 
-  event_definition(void) : type_(type::none) {
+  using value_t = mpark::variant<mpark::monostate,
+                                 key_code,
+                                 consumer_key_code,
+                                 pointing_button,
+                                 type,                                                     // For any
+                                 std::string,                                              // For shell_command
+                                 std::vector<pqrs::osx::input_source_selector::specifier>, // For select_input_source
+                                 std::pair<std::string, int>,                              // For set_variable
+                                 mouse_key                                                 // For mouse_key
+                                 >;
+
+  event_definition(void) : type_(type::none),
+                           value_(mpark::monostate()) {
   }
 
   virtual ~event_definition(void) {
@@ -29,6 +41,10 @@ public:
 
   type get_type(void) const {
     return type_;
+  }
+
+  const value_t& get_value(void) const {
+    return value_;
   }
 
   std::optional<key_code> get_key_code(void) const {
@@ -311,16 +327,7 @@ public:
 
 protected:
   type type_;
-  mpark::variant<key_code,
-                 consumer_key_code,
-                 pointing_button,
-                 type,                                                     // For any
-                 std::string,                                              // For shell_command
-                 std::vector<pqrs::osx::input_source_selector::specifier>, // For select_input_source
-                 std::pair<std::string, int>,                              // For set_variable
-                 mouse_key                                                 // For mouse_key
-                 >
-      value_;
+  value_t value_;
 };
 } // namespace manipulator
 } // namespace krbn
