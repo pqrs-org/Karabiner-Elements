@@ -4,7 +4,7 @@
 // Distributed under the Boost Software License, Version 1.0.
 // (See http://www.boost.org/LICENSE_1_0.txt)
 
-#include <nlohmann/json.hpp>
+#include <pqrs/json.hpp>
 #include <pqrs/osx/chrono/absolute_time_point.hpp>
 
 namespace pqrs {
@@ -15,6 +15,11 @@ inline void to_json(nlohmann::json& j, const absolute_time_duration& p) {
 }
 
 inline void from_json(const nlohmann::json& j, absolute_time_duration& p) {
+  if (!j.is_number()) {
+    using namespace std::string_literals;
+    throw pqrs::json::unmarshal_error("json must be number, but is `"s + j.dump() + "`"s);
+  }
+
   p = absolute_time_duration(j.get<int64_t>());
 }
 
@@ -23,6 +28,11 @@ inline void to_json(nlohmann::json& j, const absolute_time_point& p) {
 }
 
 inline void from_json(const nlohmann::json& j, absolute_time_point& p) {
+  if (!j.is_number()) {
+    using namespace std::string_literals;
+    throw pqrs::json::unmarshal_error("json must be number, but is `"s + j.dump() + "`"s);
+  }
+
   p = absolute_time_point(j.get<uint64_t>());
 }
 } // namespace chrono

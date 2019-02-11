@@ -4,7 +4,7 @@
 // Distributed under the Boost Software License, Version 1.0.
 // (See http://www.boost.org/LICENSE_1_0.txt)
 
-#include <nlohmann/json.hpp>
+#include <pqrs/json.hpp>
 #include <pqrs/osx/input_source_selector/specifier.hpp>
 
 namespace pqrs {
@@ -27,17 +27,35 @@ inline void to_json(nlohmann::json& j, const specifier& s) {
 }
 
 inline void from_json(const nlohmann::json& j, specifier& s) {
-  try {
-    s.set_language(j.at("language").get<std::string>());
-  } catch (...) {}
+  using namespace std::string_literals;
 
-  try {
-    s.set_input_source_id(j.at("input_source_id").get<std::string>());
-  } catch (...) {}
+  if (!j.is_object()) {
+    throw pqrs::json::unmarshal_error("json must be object, but is `"s + j.dump() + "`"s);
+  }
 
-  try {
-    s.set_input_mode_id(j.at("input_mode_id").get<std::string>());
-  } catch (...) {}
+  for (const auto& [key, value] : j.items()) {
+    if (key == "language") {
+      if (!value.is_string()) {
+        throw pqrs::json::unmarshal_error("`"s + key + "` must be string, but is `"s + value.dump() + "`"s);
+      }
+      s.set_language(value.get<std::string>());
+
+    } else if (key == "input_source_id") {
+      if (!value.is_string()) {
+        throw pqrs::json::unmarshal_error("`"s + key + "` must be string, but is `"s + value.dump() + "`"s);
+      }
+      s.set_input_source_id(value.get<std::string>());
+
+    } else if (key == "input_mode_id") {
+      if (!value.is_string()) {
+        throw pqrs::json::unmarshal_error("`"s + key + "` must be string, but is `"s + value.dump() + "`"s);
+      }
+      s.set_input_mode_id(value.get<std::string>());
+
+    } else {
+      throw pqrs::json::unmarshal_error("unknown key: `"s + key + "`"s);
+    }
+  }
 }
 } // namespace input_source_selector
 } // namespace osx

@@ -4,7 +4,7 @@
 // Distributed under the Boost Software License, Version 1.0.
 // (See http://www.boost.org/LICENSE_1_0.txt)
 
-#include <nlohmann/json.hpp>
+#include <pqrs/json.hpp>
 #include <pqrs/osx/input_source/properties.hpp>
 
 namespace pqrs {
@@ -35,25 +35,55 @@ inline void to_json(nlohmann::json& j, const properties& p) {
 }
 
 inline void from_json(const nlohmann::json& j, properties& p) {
-  try {
-    p.set_input_source_id(j.at("input_source_id").get<std::string>());
-  } catch (...) {}
+  using namespace std::string_literals;
 
-  try {
-    p.set_localized_name(j.at("localized_name").get<std::string>());
-  } catch (...) {}
+  if (!j.is_object()) {
+    throw pqrs::json::unmarshal_error("json must be object, but is `"s + j.dump() + "`"s);
+  }
 
-  try {
-    p.set_input_mode_id(j.at("input_mode_id").get<std::string>());
-  } catch (...) {}
+  for (const auto& [key, value] : j.items()) {
+    if (key == "input_source_id") {
+      if (!value.is_string()) {
+        throw pqrs::json::unmarshal_error("`"s + key + "` must be string, but is `"s + value.dump() + "`"s);
+      }
+      p.set_input_source_id(value.get<std::string>());
 
-  try {
-    p.set_languages(j.at("languages").get<std::vector<std::string>>());
-  } catch (...) {}
+    } else if (key == "localized_name") {
+      if (!value.is_string()) {
+        throw pqrs::json::unmarshal_error("`"s + key + "` must be string, but is `"s + value.dump() + "`"s);
+      }
+      p.set_localized_name(value.get<std::string>());
 
-  try {
-    p.set_first_language(j.at("first_language").get<std::string>());
-  } catch (...) {}
+    } else if (key == "input_mode_id") {
+      if (!value.is_string()) {
+        throw pqrs::json::unmarshal_error("`"s + key + "` must be string, but is `"s + value.dump() + "`"s);
+      }
+      p.set_input_mode_id(value.get<std::string>());
+
+    } else if (key == "languages") {
+      if (!value.is_array()) {
+        throw pqrs::json::unmarshal_error("`"s + key + "` must be array, but is `"s + value.dump() + "`"s);
+      }
+
+      std::vector<std::string> languages;
+      for (const auto& v : value) {
+        if (!v.is_string()) {
+          throw pqrs::json::unmarshal_error("`"s + key + "` must be array of strings, but is `"s + value.dump() + "`"s);
+        }
+        languages.push_back(v.get<std::string>());
+      }
+      p.set_languages(languages);
+
+    } else if (key == "first_language") {
+      if (!value.is_string()) {
+        throw pqrs::json::unmarshal_error("`"s + key + "` must be string, but is `"s + value.dump() + "`"s);
+      }
+      p.set_first_language(value.get<std::string>());
+
+    } else {
+      throw pqrs::json::unmarshal_error("unknown key: `"s + key + "`"s);
+    }
+  }
 }
 } // namespace input_source
 } // namespace osx
