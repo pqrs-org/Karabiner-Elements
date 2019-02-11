@@ -1,8 +1,3 @@
 [error] complex_modifications json error: Invalid form of from_event_definition: "not_object"
-[error] complex_modifications json error: Invalid form of key_code: {"description":"key_code is not string","key_code":1234}
-[error] complex_modifications json error: Invalid form of pointing_button: {"description":"pointing_button is not string","pointing_button":1234}
-[error] complex_modifications json error: Invalid form of any: {"any":1234,"description":"any is not string"}
-[error] complex_modifications json error: Unknown value of any: {"any":"unknown_any","description":"any value is not known"}
-[error] complex_modifications json error: Duplicated type definition: {"description":"Duplicated type description","key_code":"spacebar","pointing_button":"button1"}
 [error] complex_modifications json error: Unknown key: unknown_key in {"description":"Unknown key","unknown_key":"dummy"}
 [error] complex_modifications json error: Unknown key: unknown_modifiers in {"unknown_modifiers":"dummy"}

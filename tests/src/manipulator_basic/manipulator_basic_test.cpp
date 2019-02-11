@@ -522,7 +522,7 @@ TEST_CASE("manipulator.details.basic::from_event_definition") {
   }
   {
     nlohmann::json json({
-        {"key_code", nlohmann::json::array()},
+        {"key_code", "a"},
         {"modifiers", {
                           {"mandatory", {
                                             "dummy",
@@ -535,6 +535,22 @@ TEST_CASE("manipulator.details.basic::from_event_definition") {
     REQUIRE_THROWS_WITH(
         basic::from_event_definition(json),
         "unknown modifier: `dummy`");
+  }
+  {
+    nlohmann::json json({
+        {"key_code", nlohmann::json::array()},
+        {"modifiers", {
+                          {"mandatory", {
+                                            "left_shift",
+                                        }},
+                      }},
+    });
+    REQUIRE_THROWS_AS(
+        basic::from_event_definition(json),
+        pqrs::json::unmarshal_error);
+    REQUIRE_THROWS_WITH(
+        basic::from_event_definition(json),
+        "`key_code` must be string, but is `[]`");
   }
 }
 
@@ -559,6 +575,11 @@ TEST_CASE("event_definition.error_messages") {
 
     REQUIRE(error_messages == std::vector<std::string>{
                                   "unknown modifier: `unknown_modifier`",
+                                  "`key_code` must be string, but is `1234`",
+                                  "`pointing_button` must be string, but is `1234`",
+                                  "`any` must be string, but is `1234`",
+                                  "unknown `any`: `\"unknown_any\"`",
+                                  "multiple types are specified: `{\"description\":\"Duplicated type description\",\"key_code\":\"spacebar\",\"pointing_button\":\"button1\"}`",
                               });
   }
 
