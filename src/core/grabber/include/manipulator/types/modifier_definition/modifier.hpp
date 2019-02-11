@@ -1,6 +1,7 @@
 #pragma once
 
 #include "types/json_unmarshal_error.hpp"
+#include <nlohmann/json.hpp>
 #include <unordered_set>
 
 namespace krbn {
