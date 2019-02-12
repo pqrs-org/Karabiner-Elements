@@ -75,14 +75,28 @@ TEST_CASE("manipulator.manipulator_factory") {
     json["input_sources"] = nlohmann::json::array();
     {
       nlohmann::json j;
+      j["language"] = "^en$";
+      j["input_source_id"] = "^com\\.apple\\.keylayout\\.US$";
+      j["input_mode_id"] = "^com\\.apple\\.inputmethod\\.SCIM\\.ITABC$";
+      json["input_sources"].push_back(j);
+    }
+    auto condition = krbn::manipulator::manipulator_factory::make_condition(json);
+    REQUIRE(dynamic_cast<krbn::manipulator::conditions::input_source*>(condition.get()) != nullptr);
+    REQUIRE(dynamic_cast<krbn::manipulator::conditions::nop*>(condition.get()) == nullptr);
+  }
+  {
+    nlohmann::json json;
+    json["type"] = "input_source_if";
+    json["input_sources"] = nlohmann::json::array();
+    {
+      nlohmann::json j;
       j["language"] = "invalid(regex";
       j["input_source_id"] = "invalid(regex";
       j["input_mode_id"] = "invalid(regex";
       json["input_sources"].push_back(j);
     }
     auto condition = krbn::manipulator::manipulator_factory::make_condition(json);
-    REQUIRE(dynamic_cast<krbn::manipulator::conditions::input_source*>(condition.get()) != nullptr);
-    REQUIRE(dynamic_cast<krbn::manipulator::conditions::nop*>(condition.get()) == nullptr);
+    REQUIRE(dynamic_cast<krbn::manipulator::conditions::nop*>(condition.get()) != nullptr);
   }
   {
     nlohmann::json json({
