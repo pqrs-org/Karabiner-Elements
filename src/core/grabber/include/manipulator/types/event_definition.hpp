@@ -243,9 +243,17 @@ public:
       std::vector<pqrs::osx::input_source_selector::specifier> input_source_specifiers;
 
       if (value.is_object()) {
-        input_source_specifiers.push_back(value.get<pqrs::osx::input_source_selector::specifier>());
+        try {
+          input_source_specifiers.push_back(value.get<pqrs::osx::input_source_selector::specifier>());
+        } catch (const pqrs::json::unmarshal_error& e) {
+          throw pqrs::json::unmarshal_error(fmt::format("`{0}` error: {1}", key, e.what()));
+        }
       } else if (value.is_array()) {
-        input_source_specifiers = value.get<std::vector<pqrs::osx::input_source_selector::specifier>>();
+        try {
+          input_source_specifiers = value.get<std::vector<pqrs::osx::input_source_selector::specifier>>();
+        } catch (const pqrs::json::unmarshal_error& e) {
+          throw pqrs::json::unmarshal_error(fmt::format("`{0}` error: {1}", key, e.what()));
+        }
       } else {
         throw pqrs::json::unmarshal_error(fmt::format("`{0}` must be object or array of objects, but is `{1}`", key, value.dump()));
       }
