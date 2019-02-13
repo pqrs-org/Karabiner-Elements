@@ -36,7 +36,7 @@
             ]
         },
         {
-            "description": "select_input_source regex error",
+            "description": "select_input_source regex error (object)",
             "input": {
                 "select_input_source": {
                     "language": "(regex"
@@ -44,6 +44,20 @@
             },
             "errors": [
                 "`select_input_source` error: The expression contained mismatched ( and ).: `\"language\":\"(regex\"`"
+            ]
+        },
+        {
+            "description": "select_input_source regex error (array of objects)",
+            "input": {
+                "select_input_source": [
+                    {
+                        "language": "^en$",
+                        "input_source_id": "(regex"
+                    }
+                ]
+            },
+            "errors": [
+                "`select_input_source` error: The expression contained mismatched ( and ).: `\"input_source_id\":\"(regex\"`"
             ]
         },
         {
