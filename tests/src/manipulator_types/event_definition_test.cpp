@@ -2,21 +2,6 @@
 
 #include "manipulator/types.hpp"
 
-namespace {
-void set_file_logger(const std::string& file_path) {
-  unlink(file_path.c_str());
-  auto l = spdlog::rotating_logger_mt(file_path, file_path, 256 * 1024, 3);
-  l->set_pattern("[%l] %v");
-  krbn::logger::set_logger(l);
-}
-
-void set_null_logger(void) {
-  static auto l = spdlog::stdout_logger_mt("null");
-  l->flush_on(spdlog::level::off);
-  krbn::logger::set_logger(l);
-}
-} // namespace
-
 TEST_CASE("manipulator.details.to_event_definition") {
   {
     nlohmann::json json;
@@ -177,24 +162,18 @@ TEST_CASE("manipulator.details.to_event_definition") {
 }
 
 TEST_CASE("event_definition.error_messages") {
-  set_file_logger("tmp/error_messages.log");
-
-  {
-    std::ifstream json_file("json/error_messages.json");
-    auto json = nlohmann::json::parse(json_file);
-    for (const auto& j : json["to_event_definition"]) {
-      std::vector<std::string> error_messages;
-      try {
-        krbn::manipulator::to_event_definition to_event_definition(j["input"]);
-      } catch (const pqrs::json::unmarshal_error& e) {
-        error_messages.push_back(e.what());
-      } catch (const std::exception& e) {
-        REQUIRE(false);
-      }
-
-      REQUIRE(error_messages == j["errors"].get<std::vector<std::string>>());
+  std::ifstream json_file("json/error_messages.json");
+  auto json = nlohmann::json::parse(json_file);
+  for (const auto& j : json["to_event_definition"]) {
+    std::vector<std::string> error_messages;
+    try {
+      krbn::manipulator::to_event_definition to_event_definition(j["input"]);
+    } catch (const pqrs::json::unmarshal_error& e) {
+      error_messages.push_back(e.what());
+    } catch (const std::exception& e) {
+      REQUIRE(false);
     }
-  }
 
-  set_null_logger();
+    REQUIRE(error_messages == j["errors"].get<std::vector<std::string>>());
+  }
 }

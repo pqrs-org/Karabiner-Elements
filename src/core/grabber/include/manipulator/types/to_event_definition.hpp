@@ -33,8 +33,7 @@ public:
 
       if (key == "lazy") {
         if (!value.is_boolean()) {
-          logger::get_logger()->error("complex_modifications json error: Invalid form of lazy: {0}", json.dump());
-          continue;
+          throw pqrs::json::unmarshal_error(fmt::format("`{0}` must be boolean, but is `{1}`", key, value.dump()));
         }
 
         lazy_ = value;
@@ -44,8 +43,7 @@ public:
 
       if (key == "repeat") {
         if (!value.is_boolean()) {
-          logger::get_logger()->error("complex_modifications json error: Invalid form of repeat: {0}", json.dump());
-          continue;
+          throw pqrs::json::unmarshal_error(fmt::format("`{0}` must be boolean, but is `{1}`", key, value.dump()));
         }
 
         repeat_ = value;
@@ -55,8 +53,7 @@ public:
 
       if (key == "halt") {
         if (!value.is_boolean()) {
-          logger::get_logger()->error("complex_modifications json error: Invalid form of halt: {0}", json.dump());
-          continue;
+          throw pqrs::json::unmarshal_error(fmt::format("`{0}` must be boolean, but is `{1}`", key, value.dump()));
         }
 
         halt_ = value;
