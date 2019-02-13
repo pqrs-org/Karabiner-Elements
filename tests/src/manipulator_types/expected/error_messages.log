@@ -1,4 +1,4 @@
-[error] complex_modifications json error: Invalid form of lazy: {"description":"lazy is not boolean","lazy":[]}
-[error] complex_modifications json error: Invalid type in to_event_definition: {"description":"lazy is not boolean","lazy":[]}
-[error] complex_modifications json error: Invalid form of repeat: {"description":"repeat is not boolean","repeat":[]}
-[error] complex_modifications json error: Invalid type in to_event_definition: {"description":"repeat is not boolean","repeat":[]}
+[error] complex_modifications json error: Invalid form of lazy: {"lazy":[]}
+[error] complex_modifications json error: Invalid type in to_event_definition: {"lazy":[]}
+[error] complex_modifications json error: Invalid form of repeat: {"repeat":[]}
+[error] complex_modifications json error: Invalid type in to_event_definition: {"repeat":[]}

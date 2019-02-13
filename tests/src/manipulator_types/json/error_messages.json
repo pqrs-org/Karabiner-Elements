@@ -2,60 +2,110 @@
     "to_event_definition": [
         {
             "description": "Invalid modifiers",
-            "modifiers": {
-                "mandatory": ["shift"]
-            }
+            "input": {
+                "modifiers": {
+                    "mandatory": ["shift"]
+                }
+            },
+            "errors": [
+                "`modifiers` must be array or string, but is `{\"mandatory\":[\"shift\"]}`"
+            ]
         },
         {
             "description": "Invalid modifiers",
-            "key_code": "escape",
-            "modifiers": ["unknown"]
+            "input": {
+                "key_code": "escape",
+                "modifiers": ["unknown"]
+            },
+            "errors": ["unknown modifier: `unknown`"]
         },
         {
             "description": "shell_command is not string",
-            "shell_command": 1234
+            "input": {
+                "shell_command": 1234
+            },
+            "errors": ["`shell_command` must be string, but is `1234`"]
         },
         {
-            "description": "shell_command is not string",
-            "select_input_source": 1234
+            "description": "select_input_source type error",
+            "input": {
+                "select_input_source": 1234
+            },
+            "errors": [
+                "`select_input_source` must be object or array of objects, but is `1234`"
+            ]
+        },
+        {
+            "description": "select_input_source regex error",
+            "input": {
+                "select_input_source": {
+                    "language": "(regex"
+                }
+            },
+            "errors": [
+                "`select_input_source` error: The expression contained mismatched ( and ).: `\"language\":\"(regex\"`"
+            ]
         },
         {
             "description": "set_variable is not object",
-            "set_variable": 1234
+            "input": {
+                "set_variable": 1234
+            },
+            "errors": ["`set_variable` must be object, but is `1234`"]
         },
         {
             "description": "set_variable.name is not found",
-            "set_variable": {
-                "value": 1234
-            }
+            "input": {
+                "set_variable": {
+                    "value": 1234
+                }
+            },
+            "errors": ["`set_variable.name` is not found in `{\"value\":1234}`"]
         },
         {
             "description": "set_variable.name is not string",
-            "set_variable": {
-                "name": 1234,
-                "value": 1234
-            }
+            "input": {
+                "set_variable": {
+                    "name": 1234,
+                    "value": 1234
+                }
+            },
+            "errors": ["`set_variable.name` must be string, but is `1234`"]
         },
         {
             "description": "set_variable.value is not found",
-            "set_variable": {
-                "name": "variable_name"
-            }
+            "input": {
+                "set_variable": {
+                    "name": "variable_name"
+                }
+            },
+            "errors": [
+                "`set_variable.value` is not found in `{\"name\":\"variable_name\"}`"
+            ]
         },
         {
             "description": "set_variable.name is not number",
-            "set_variable": {
-                "name": "variable_name",
-                "value": "1234"
-            }
+            "input": {
+                "set_variable": {
+                    "name": "variable_name",
+                    "value": "1234"
+                }
+            },
+            "errors": ["`set_variable.value` must be number, but is `\"1234\"`"]
         },
         {
             "description": "lazy is not boolean",
-            "lazy": []
+            "input": {
+                "lazy": []
+            },
+            "errors": []
         },
         {
             "description": "repeat is not boolean",
-            "repeat": []
+            "input": {
+                "repeat": []
+            },
+            "errors": []
         }
     ]
 }
