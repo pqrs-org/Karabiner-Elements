@@ -8,7 +8,8 @@
 namespace krbn {
 namespace manipulator {
 namespace modifier_definition {
-inline std::unordered_set<modifier> make_modifiers(const nlohmann::json& json, const std::string_view& field) {
+inline std::unordered_set<modifier> make_modifiers(const nlohmann::json& json,
+                                                   const std::string_view& field) {
   if (json.is_null()) {
     return std::unordered_set<modifier>{};
   }
