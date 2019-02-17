@@ -52,24 +52,6 @@ TEST_CASE("manipulator.manipulator_factory") {
     REQUIRE(dynamic_cast<krbn::manipulator::conditions::nop*>(condition.get()) == nullptr);
   }
   {
-    nlohmann::json json;
-    json["type"] = "input_source_if";
-    json["input_sources"] = nlohmann::json::array();
-    {
-      nlohmann::json j;
-      j["language"] = "invalid(regex";
-      j["input_source_id"] = "invalid(regex";
-      j["input_mode_id"] = "invalid(regex";
-      json["input_sources"].push_back(j);
-    }
-    REQUIRE_THROWS_AS(
-        krbn::manipulator::manipulator_factory::make_condition(json),
-        pqrs::json::unmarshal_error);
-    REQUIRE_THROWS_WITH(
-        krbn::manipulator::manipulator_factory::make_condition(json),
-        "The expression contained mismatched ( and ).: `\"input_mode_id\":\"invalid(regex\"`");
-  }
-  {
     nlohmann::json json({
         {"type", "variable_if"},
         {"name", "variable_name"},
@@ -104,17 +86,6 @@ TEST_CASE("manipulator.manipulator_factory") {
     auto condition = krbn::manipulator::manipulator_factory::make_condition(json);
     REQUIRE(dynamic_cast<krbn::manipulator::conditions::keyboard_type*>(condition.get()) != nullptr);
     REQUIRE(dynamic_cast<krbn::manipulator::conditions::nop*>(condition.get()) == nullptr);
-  }
-
-  // type error
-  {
-    nlohmann::json json;
-    REQUIRE_THROWS_AS(
-        krbn::manipulator::manipulator_factory::make_condition(json),
-        pqrs::json::unmarshal_error);
-    REQUIRE_THROWS_WITH(
-        krbn::manipulator::manipulator_factory::make_condition(json),
-        "condition type is not specified in `null`");
   }
 }
 

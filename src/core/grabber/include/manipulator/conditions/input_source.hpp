@@ -20,26 +20,42 @@ public:
       throw pqrs::json::unmarshal_error(fmt::format("input_source must be object, but is `{0}`", json.dump()));
     }
 
-    for (auto it = std::begin(json); it != std::end(json); std::advance(it, 1)) {
-      // it.key() is always std::string.
-      const auto& key = it.key();
-      const auto& value = it.value();
+    for (const auto& [key, value] : json.items()) {
+      // key is always std::string.
 
       if (key == "type") {
-        if (value.is_string()) {
-          if (value == "input_source_if") {
-            type_ = type::input_source_if;
-          }
-          if (value == "input_source_unless") {
-            type_ = type::input_source_unless;
-          }
+        if (!value.is_string()) {
+          throw pqrs::json::unmarshal_error(fmt::format("{0} must be string, but is `{1}`", key, value.dump()));
         }
+
+        auto t = value.get<std::string>();
+
+        if (t == "input_source_if") {
+          type_ = type::input_source_if;
+        } else if (t == "input_source_unless") {
+          type_ = type::input_source_unless;
+        } else {
+          throw pqrs::json::unmarshal_error(fmt::format("unknown type `{0}`", t));
+        }
+
       } else if (key == "input_sources") {
-        for (const auto& j : value) {
-          input_source_specifiers_.emplace_back(j);
+        if (!value.is_array()) {
+          throw pqrs::json::unmarshal_error(fmt::format("`{0}` must be array, but is `{1}`", key, value.dump()));
         }
+
+        for (const auto& j : value) {
+          try {
+            input_source_specifiers_.emplace_back(j);
+          } catch (pqrs::json::unmarshal_error& e) {
+            throw pqrs::json::unmarshal_error(fmt::format("`{0}` entry error: {1}", key, e.what()));
+          }
+        }
+
+      } else if (key == "description") {
+        // Do nothing
+
       } else {
-        logger::get_logger()->error("complex_modifications json error: Unknown key: {0} in {1}", key, json.dump());
+        throw pqrs::json::unmarshal_error(fmt::format("unknown key `{0}` in `{1}`", key, json.dump()));
       }
     }
   }

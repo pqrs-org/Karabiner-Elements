@@ -1,5 +1,11 @@
 [
     {
+        "name": "type error",
+        "error": "condition type is not specified in `{}`",
+        "input": {}
+    },
+
+    {
         "name": "device identifiers type error",
         "error": "`identifiers` must be array, but is `null`",
         "input": {
@@ -154,6 +160,43 @@
         "input": {
             "type": "frontmost_application_if",
             "bundle-identifiers": []
+        }
+    },
+
+    {
+        "name": "input_source input_sources type error",
+        "error": "`input_sources` must be array, but is `null`",
+        "input": {
+            "type": "input_source_if",
+            "input_sources": null
+        }
+    },
+    {
+        "name": "input_source input_sources entry type error",
+        "error": "`input_sources` entry error: json must be object, but is `null`",
+        "input": {
+            "type": "input_source_if",
+            "input_sources": [null]
+        }
+    },
+    {
+        "name": "input_source input_sources entry regex error",
+        "error": "`input_sources` entry error: The expression contained mismatched ( and ).: `\"language\":\"regex(\"`",
+        "input": {
+            "type": "input_source_if",
+            "input_sources": [
+                {
+                    "language": "regex("
+                }
+            ]
+        }
+    },
+    {
+        "name": "input_source unknown key error",
+        "error": "unknown key `input-sources` in `{\"input-sources\":[],\"type\":\"input_source_if\"}`",
+        "input": {
+            "type": "input_source_if",
+            "input-sources": []
         }
     }
 ]
