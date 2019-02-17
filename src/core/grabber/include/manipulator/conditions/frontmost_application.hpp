@@ -17,56 +17,74 @@ public:
 
   frontmost_application(const nlohmann::json& json) : base(),
                                                       type_(type::frontmost_application_if) {
-    if (json.is_object()) {
-      for (const auto& [key, value] : json.items()) {
-        // key is always std::string.
+    if (!json.is_object()) {
+      throw pqrs::json::unmarshal_error(fmt::format("frontmost_application must be object, but is `{0}`", json.dump()));
+    }
 
-        if (key == "type") {
-          if (value.is_string()) {
-            if (value == "frontmost_application_if") {
-              type_ = type::frontmost_application_if;
-            }
-            if (value == "frontmost_application_unless") {
-              type_ = type::frontmost_application_unless;
-            }
-          }
+    for (const auto& [key, value] : json.items()) {
+      // key is always std::string.
 
-        } else if (key == "bundle_identifiers") {
-          if (value.is_array()) {
-            for (const auto& j : value) {
-              if (j.is_string()) {
-                std::string s = j;
-                try {
-                  std::regex r(s);
-                  bundle_identifiers_.push_back(r);
-                } catch (std::exception& e) {
-                  throw pqrs::json::unmarshal_error(fmt::format("{0}: `{1}:{2}`", e.what(), key, value.dump()));
-                }
-              }
-            }
-          }
-
-        } else if (key == "file_paths") {
-          if (value.is_array()) {
-            for (const auto& j : value) {
-              if (j.is_string()) {
-                std::string s = j;
-                try {
-                  std::regex r(s);
-                  file_paths_.push_back(r);
-                } catch (std::exception& e) {
-                  throw pqrs::json::unmarshal_error(fmt::format("{0}: `{1}:{2}`", e.what(), key, value.dump()));
-                }
-              }
-            }
-          }
-
-        } else if (key == "description") {
-          // Do nothing
-
-        } else {
-          throw pqrs::json::unmarshal_error(fmt::format("unknown key `{0}` in `{1}`", key, json.dump()));
+      if (key == "type") {
+        if (!value.is_string()) {
+          throw pqrs::json::unmarshal_error(fmt::format("{0} must be string, but is `{1}`", key, value.dump()));
         }
+
+        auto t = value.get<std::string>();
+
+        if (t == "frontmost_application_if") {
+          type_ = type::frontmost_application_if;
+        } else if (t == "frontmost_application_unless") {
+          type_ = type::frontmost_application_unless;
+        } else {
+          throw pqrs::json::unmarshal_error(fmt::format("unknown type `{0}`", t));
+        }
+
+      } else if (key == "bundle_identifiers") {
+        if (!value.is_array()) {
+          throw pqrs::json::unmarshal_error(fmt::format("`{0}` must be array, but is `{1}`", key, value.dump()));
+        }
+
+        for (const auto& j : value) {
+          if (!j.is_string()) {
+            throw pqrs::json::unmarshal_error(fmt::format("bundle_identifiers entry must be string, but is `{0}`", j.dump()));
+          }
+
+          auto s = j.get<std::string>();
+
+          try {
+            std::regex r(s);
+            bundle_identifiers_.push_back(r);
+          } catch (std::exception& e) {
+            throw pqrs::json::unmarshal_error(fmt::format("{0}: `{1}:{2}`", e.what(), key, value.dump()));
+          }
+        }
+
+      } else if (key == "file_paths") {
+        if (!value.is_array()) {
+          throw pqrs::json::unmarshal_error(fmt::format("`{0}` must be array, but is `{1}`", key, value.dump()));
+        }
+
+        for (const auto& j : value) {
+          if (!j.is_string()) {
+            throw pqrs::json::unmarshal_error(fmt::format("file_paths entry must be string, but is `{0}`", j.dump()));
+          }
+
+          if (j.is_string()) {
+            std::string s = j;
+            try {
+              std::regex r(s);
+              file_paths_.push_back(r);
+            } catch (std::exception& e) {
+              throw pqrs::json::unmarshal_error(fmt::format("{0}: `{1}:{2}`", e.what(), key, value.dump()));
+            }
+          }
+        }
+
+      } else if (key == "description") {
+        // Do nothing
+
+      } else {
+        throw pqrs::json::unmarshal_error(fmt::format("unknown key `{0}` in `{1}`", key, json.dump()));
       }
     }
   }

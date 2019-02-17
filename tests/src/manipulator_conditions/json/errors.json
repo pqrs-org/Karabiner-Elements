@@ -1,0 +1,58 @@
+[
+    {
+        "name": "frontmost_application bundle_identifiers type error",
+        "error": "`bundle_identifiers` must be array, but is `null`",
+        "input": {
+            "type": "frontmost_application_if",
+            "bundle_identifiers": null
+        }
+    },
+    {
+        "name": "frontmost_application bundle_identifiers entry type error",
+        "error": "bundle_identifiers entry must be string, but is `null`",
+        "input": {
+            "type": "frontmost_application_if",
+            "bundle_identifiers": [null]
+        }
+    },
+    {
+        "name": "frontmost_application bundle_identifiers entry regex error",
+        "error": "The expression contained mismatched ( and ).: `bundle_identifiers:[\"regex(\"]`",
+        "input": {
+            "type": "frontmost_application_if",
+            "bundle_identifiers": ["regex("]
+        }
+    },
+    {
+        "name": "frontmost_application file_paths type error",
+        "error": "file_paths entry must be string, but is `null`",
+        "input": {
+            "type": "frontmost_application_if",
+            "file_paths": [null]
+        }
+    },
+    {
+        "name": "frontmost_application file_paths entry type error",
+        "error": "The expression contained mismatched ( and ).: `file_paths:[\"regex(\"]`",
+        "input": {
+            "type": "frontmost_application_if",
+            "file_paths": ["regex("]
+        }
+    },
+    {
+        "name": "frontmost_application file_paths entry regex error",
+        "error": "The expression contained mismatched ( and ).: `bundle_identifiers:[\"regex(\"]`",
+        "input": {
+            "type": "frontmost_application_if",
+            "bundle_identifiers": ["regex("]
+        }
+    },
+    {
+        "name": "frontmost_application unknown key",
+        "error": "unknown key `bundle-identifiers` in `{\"bundle-identifiers\":[],\"type\":\"frontmost_application_if\"}`",
+        "input": {
+            "type": "frontmost_application_if",
+            "bundle-identifiers": []
+        }
+    }
+]

@@ -18,33 +18,40 @@ public:
 
   device(const nlohmann::json& json) : base(),
                                        type_(type::device_if) {
-    if (json.is_object()) {
-      for (const auto& [key, value] : json.items()) {
-        // key is always std::string.
+    if (!json.is_object()) {
+      throw pqrs::json::unmarshal_error(fmt::format("device must be object, but is `{0}`", json.dump()));
+    }
 
-        if (key == "type") {
-          if (value.is_string()) {
-            if (value == "device_if") {
-              type_ = type::device_if;
-            }
-            if (value == "device_unless") {
-              type_ = type::device_unless;
-            }
-          }
+    for (const auto& [key, value] : json.items()) {
+      // key is always std::string.
 
-        } else if (key == "identifiers") {
-          if (!value.is_array()) {
-            throw pqrs::json::unmarshal_error(fmt::format("`{0}` should be array, but is `{1}`", key, value.dump()));
-          }
-
-          handle_identifiers_json(value);
-
-        } else if (key == "description") {
-          // Do nothing
-
-        } else {
-          throw pqrs::json::unmarshal_error(fmt::format("unknown key `{0}` in `{1}`", key, json.dump()));
+      if (key == "type") {
+        if (!value.is_string()) {
+          throw pqrs::json::unmarshal_error(fmt::format("{0} must be string, but is `{1}`", key, value.dump()));
         }
+
+        auto t = value.get<std::string>();
+
+        if (t == "device_if") {
+          type_ = type::device_if;
+        } else if (t == "device_unless") {
+          type_ = type::device_unless;
+        } else {
+          throw pqrs::json::unmarshal_error(fmt::format("unknown type `{0}`", t));
+        }
+
+      } else if (key == "identifiers") {
+        if (!value.is_array()) {
+          throw pqrs::json::unmarshal_error(fmt::format("`{0}` must be array, but is `{1}`", key, value.dump()));
+        }
+
+        handle_identifiers_json(value);
+
+      } else if (key == "description") {
+        // Do nothing
+
+      } else {
+        throw pqrs::json::unmarshal_error(fmt::format("unknown key `{0}` in `{1}`", key, json.dump()));
       }
     }
   }

@@ -22,39 +22,6 @@ TEST_CASE("manipulator.manipulator_factory") {
   }
   {
     nlohmann::json json({
-        {"type", "frontmost_application_unless"},
-        {
-            "bundle_identifiers",
-            {
-                "^com\\.apple\\.Terminal$",
-                "^com\\.googlecode\\.iterm2$",
-                "broken(regex",
-            },
-        },
-    });
-    REQUIRE_THROWS_AS(
-        krbn::manipulator::manipulator_factory::make_condition(json),
-        pqrs::json::unmarshal_error);
-    REQUIRE_THROWS_WITH(
-        krbn::manipulator::manipulator_factory::make_condition(json),
-        "The expression contained mismatched ( and ).: `bundle_identifiers:[\"^com\\\\.apple\\\\.Terminal$\",\"^com\\\\.googlecode\\\\.iterm2$\",\"broken(regex\"]`");
-  }
-  {
-    auto json = nlohmann::json::object({
-        {"type", "frontmost_application_if"},
-        {"file_paths", nlohmann::json::array({
-                           "invalid(regex",
-                       })},
-    });
-    REQUIRE_THROWS_AS(
-        krbn::manipulator::manipulator_factory::make_condition(json),
-        pqrs::json::unmarshal_error);
-    REQUIRE_THROWS_WITH(
-        krbn::manipulator::manipulator_factory::make_condition(json),
-        "The expression contained mismatched ( and ).: `file_paths:[\"invalid(regex\"]`");
-  }
-  {
-    nlohmann::json json({
         {"type", "input_source_if"},
     });
     auto condition = krbn::manipulator::manipulator_factory::make_condition(json);
@@ -597,5 +564,18 @@ TEST_CASE("conditions.keyboard_type") {
     manipulator_environment.set_keyboard_type("ansi");
     REQUIRE(helper.get_condition_manager().is_fulfilled(entry,
                                                         manipulator_environment) == true);
+  }
+}
+
+TEST_CASE("errors") {
+  std::ifstream input("json/errors.json");
+  auto json = nlohmann::json::parse(input);
+  for (const auto& j : json) {
+    REQUIRE_THROWS_AS(
+        krbn::manipulator::manipulator_factory::make_condition(j["input"]),
+        pqrs::json::unmarshal_error);
+    REQUIRE_THROWS_WITH(
+        krbn::manipulator::manipulator_factory::make_condition(j["input"]),
+        j["error"]);
   }
 }

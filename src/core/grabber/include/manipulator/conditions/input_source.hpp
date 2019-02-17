@@ -16,28 +16,30 @@ public:
 
   input_source(const nlohmann::json& json) : base(),
                                              type_(type::input_source_if) {
-    if (json.is_object()) {
-      for (auto it = std::begin(json); it != std::end(json); std::advance(it, 1)) {
-        // it.key() is always std::string.
-        const auto& key = it.key();
-        const auto& value = it.value();
+    if (!json.is_object()) {
+      throw pqrs::json::unmarshal_error(fmt::format("input_source must be object, but is `{0}`", json.dump()));
+    }
 
-        if (key == "type") {
-          if (value.is_string()) {
-            if (value == "input_source_if") {
-              type_ = type::input_source_if;
-            }
-            if (value == "input_source_unless") {
-              type_ = type::input_source_unless;
-            }
+    for (auto it = std::begin(json); it != std::end(json); std::advance(it, 1)) {
+      // it.key() is always std::string.
+      const auto& key = it.key();
+      const auto& value = it.value();
+
+      if (key == "type") {
+        if (value.is_string()) {
+          if (value == "input_source_if") {
+            type_ = type::input_source_if;
           }
-        } else if (key == "input_sources") {
-          for (const auto& j : value) {
-            input_source_specifiers_.emplace_back(j);
+          if (value == "input_source_unless") {
+            type_ = type::input_source_unless;
           }
-        } else {
-          logger::get_logger()->error("complex_modifications json error: Unknown key: {0} in {1}", key, json.dump());
         }
+      } else if (key == "input_sources") {
+        for (const auto& j : value) {
+          input_source_specifiers_.emplace_back(j);
+        }
+      } else {
+        logger::get_logger()->error("complex_modifications json error: Unknown key: {0} in {1}", key, json.dump());
       }
     }
   }
