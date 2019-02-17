@@ -176,7 +176,7 @@ private:
 
       if (!d.vendor_id) {
         throw pqrs::json::unmarshal_error(
-            fmt::format("identifiers entry `vendor_id` must be specified: `{0}`", j.dump()));
+            fmt::format("`vendor_id` must be specified: `{0}`", j.dump()));
       }
 
       definitions_.push_back(d);

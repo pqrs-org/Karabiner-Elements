@@ -384,7 +384,7 @@ TEST_CASE("conditions.device") {
 
     REQUIRE(helper.get_error_messages() ==
             std::vector<std::string>({
-                "identifiers entry `vendor_id` must be specified: `{\"description\":\"vendor_id missing error\"}`",
+                "`vendor_id` must be specified: `{\"description\":\"condition is ignored if error\"}`",
             }));
 
     REQUIRE(helper.get_condition_manager().is_fulfilled(ENTRY(device_id_8888_9999),
@@ -405,7 +405,7 @@ TEST_CASE("conditions.device") {
 
     REQUIRE(helper.get_error_messages() ==
             std::vector<std::string>({
-                "identifiers entry `vendor_id` must be specified: `{\"description\":\"vendor_id missing error\"}`",
+                "`vendor_id` must be specified: `{\"description\":\"condition is ignored if error\"}`",
             }));
 
     REQUIRE(helper.get_condition_manager().is_fulfilled(ENTRY(device_id_8888_9999),

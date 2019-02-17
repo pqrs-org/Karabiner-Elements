@@ -1,5 +1,106 @@
 [
     {
+        "name": "device identifiers type error",
+        "error": "`identifiers` must be array, but is `null`",
+        "input": {
+            "type": "device_if",
+            "identifiers": null
+        }
+    },
+    {
+        "name": "device identifiers entry type error",
+        "error": "identifiers entry must be object, but is `null`",
+        "input": {
+            "type": "device_if",
+            "identifiers": [null]
+        }
+    },
+    {
+        "name": "device identifiers entry vendor_id type error",
+        "error": "identifiers entry `vendor_id` must be number, but is `null`",
+        "input": {
+            "type": "device_if",
+            "identifiers": [
+                {
+                    "vendor_id": null
+                }
+            ]
+        }
+    },
+    {
+        "name": "device identifiers entry product_id type error",
+        "error": "identifiers entry `product_id` must be number, but is `null`",
+        "input": {
+            "type": "device_if",
+            "identifiers": [
+                {
+                    "product_id": null
+                }
+            ]
+        }
+    },
+    {
+        "name": "device identifiers entry location_id type error",
+        "error": "identifiers entry `location_id` must be number, but is `null`",
+        "input": {
+            "type": "device_if",
+            "identifiers": [
+                {
+                    "location_id": null
+                }
+            ]
+        }
+    },
+    {
+        "name": "device identifiers entry is_keyboard type error",
+        "error": "identifiers entry `is_keyboard` must be boolean, but is `null`",
+        "input": {
+            "type": "device_if",
+            "identifiers": [
+                {
+                    "is_keyboard": null
+                }
+            ]
+        }
+    },
+    {
+        "name": "device identifiers entry is_pointing_device type error",
+        "error": "identifiers entry `is_pointing_device` must be boolean, but is `null`",
+        "input": {
+            "type": "device_if",
+            "identifiers": [
+                {
+                    "is_pointing_device": null
+                }
+            ]
+        }
+    },
+    {
+        "name": "device identifiers entry unknown key error",
+        "error": "unknown key `is-pointing-device` in `{\"is-pointing-device\":true}`",
+        "input": {
+            "type": "device_if",
+            "identifiers": [
+                {
+                    "is-pointing-device": true
+                }
+            ]
+        }
+    },
+    {
+        "name": "device identifiers entry vendor_id is not specified error",
+        "error": "`vendor_id` must be specified: `{\"product_id\":1234}`",
+        "input": {
+            "type": "device_if",
+            "identifiers": [
+                {
+                    "product_id": 1234
+                }
+            ]
+        }
+    },
+
+    {
         "name": "frontmost_application bundle_identifiers type error",
         "error": "`bundle_identifiers` must be array, but is `null`",
         "input": {
@@ -48,7 +149,7 @@
         }
     },
     {
-        "name": "frontmost_application unknown key",
+        "name": "frontmost_application unknown key error",
         "error": "unknown key `bundle-identifiers` in `{\"bundle-identifiers\":[],\"type\":\"frontmost_application_if\"}`",
         "input": {
             "type": "frontmost_application_if",

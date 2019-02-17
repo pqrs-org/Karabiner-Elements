@@ -23,7 +23,7 @@
                 "vendor_id": 8888
             },
             {
-                "description": "vendor_id missing error"
+                "description": "condition is ignored if error"
             }
         ]
     }
