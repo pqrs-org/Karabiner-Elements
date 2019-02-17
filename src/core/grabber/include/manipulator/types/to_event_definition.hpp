@@ -13,14 +13,11 @@ public:
                                                              halt_(false),
                                                              hold_down_milliseconds_(0) {
     if (!json.is_object()) {
-      logger::get_logger()->error("complex_modifications json error: Invalid form of to_event_definition: {0}", json.dump());
-      return;
+      throw pqrs::json::unmarshal_error(fmt::format("to_event_definition must be object, but is `{0}`", json.dump()));
     }
 
-    for (auto it = std::begin(json); it != std::end(json); std::advance(it, 1)) {
-      // it.key() is always std::string.
-      const auto& key = it.key();
-      const auto& value = it.value();
+    for (const auto& [key, value] : json.items()) {
+      // key is always std::string.
 
       if (event_definition_.handle_json(key, value, json)) {
         continue;
@@ -64,8 +61,7 @@ public:
       if (key == "hold_down_milliseconds" ||
           key == "held_down_milliseconds") {
         if (!value.is_number()) {
-          logger::get_logger()->error("complex_modifications json error: Invalid form of hold_down_milliseconds: {0}", json.dump());
-          continue;
+          throw pqrs::json::unmarshal_error(fmt::format("`{0}` must be number, but is `{1}`", key, value.dump()));
         }
 
         hold_down_milliseconds_ = std::chrono::milliseconds(value);
@@ -73,7 +69,7 @@ public:
         continue;
       }
 
-      logger::get_logger()->error("complex_modifications json error: Unknown key: {0} in {1}", key, json.dump());
+      throw pqrs::json::unmarshal_error(fmt::format("to_event_definition error: unknown key `{0}` in `{1}`", key, value.dump()));
     }
 
     // ----------------------------------------
@@ -90,7 +86,7 @@ public:
 
       case event_definition::type::none:
       case event_definition::type::any:
-        logger::get_logger()->error("complex_modifications json error: Invalid type in to_event_definition: {0}", json.dump());
+        throw pqrs::json::unmarshal_error(fmt::format("to_event_definition error: event type is invalid: `{0}`", json.dump()));
         break;
     }
   }

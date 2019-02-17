@@ -2,17 +2,7 @@
 
 #include "manipulator/types.hpp"
 
-TEST_CASE("manipulator.details.to_event_definition") {
-  {
-    nlohmann::json json;
-    krbn::manipulator::to_event_definition event_definition(json);
-    REQUIRE(event_definition.get_event_definition().get_type() == krbn::manipulator::event_definition::type::none);
-    REQUIRE(event_definition.get_modifiers().size() == 0);
-    REQUIRE(event_definition.get_lazy() == false);
-    REQUIRE(event_definition.get_repeat() == true);
-    REQUIRE(!(event_definition.get_event_definition().to_event()));
-    REQUIRE(event_definition.make_modifier_events() == std::vector<krbn::event_queue::event>());
-  }
+TEST_CASE("to_event_definition") {
   {
     nlohmann::json json({
         {"key_code", "spacebar"},
@@ -58,6 +48,18 @@ TEST_CASE("manipulator.details.to_event_definition") {
                                                            krbn::event_queue::event(krbn::key_code::left_command),
                                                            krbn::event_queue::event(krbn::key_code::left_shift),
                                                        }));
+  }
+
+  // type error
+
+  {
+    nlohmann::json json;
+    REQUIRE_THROWS_AS(
+        krbn::manipulator::to_event_definition(json),
+        pqrs::json::unmarshal_error);
+    REQUIRE_THROWS_WITH(
+        krbn::manipulator::to_event_definition(json),
+        "to_event_definition must be object, but is `null`");
   }
 
   // key_code error
@@ -145,16 +147,20 @@ TEST_CASE("manipulator.details.to_event_definition") {
   }
   // lazy
   {
-    nlohmann::json json;
-    json["lazy"] = true;
+    auto json = nlohmann::json::object({
+        {"key_code", "left_shift"},
+        {"lazy", true},
+    });
 
     krbn::manipulator::to_event_definition event_definition(json);
     REQUIRE(event_definition.get_lazy() == true);
   }
   // lazy
   {
-    nlohmann::json json;
-    json["repeat"] = false;
+    auto json = nlohmann::json::object({
+        {"key_code", "a"},
+        {"repeat", false},
+    });
 
     krbn::manipulator::to_event_definition event_definition(json);
     REQUIRE(event_definition.get_repeat() == false);
