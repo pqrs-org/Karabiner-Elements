@@ -19,10 +19,8 @@ public:
   device(const nlohmann::json& json) : base(),
                                        type_(type::device_if) {
     if (json.is_object()) {
-      for (auto it = std::begin(json); it != std::end(json); std::advance(it, 1)) {
-        // it.key() is always std::string.
-        const auto& key = it.key();
-        const auto& value = it.value();
+      for (const auto& [key, value] : json.items()) {
+        // key is always std::string.
 
         if (key == "type") {
           if (value.is_string()) {
@@ -33,16 +31,19 @@ public:
               type_ = type::device_unless;
             }
           }
+
         } else if (key == "identifiers") {
-          if (value.is_array()) {
-            handle_identifiers_json(value);
-          } else {
-            logger::get_logger()->error("complex_modifications json error: {0} should be array {1}", key, json.dump());
+          if (!value.is_array()) {
+            throw pqrs::json::unmarshal_error(fmt::format("`{0}` should be array, but is `{1}`", key, value.dump()));
           }
+
+          handle_identifiers_json(value);
+
         } else if (key == "description") {
           // Do nothing
+
         } else {
-          logger::get_logger()->error("complex_modifications json error: Unknown key: {0} in {1}", key, json.dump());
+          throw pqrs::json::unmarshal_error(fmt::format("unknown key `{0}` in `{1}`", key, json.dump()));
         }
       }
     }
@@ -107,58 +108,71 @@ private:
 
   void handle_identifiers_json(const nlohmann::json& json) {
     for (const auto& j : json) {
-      if (j.is_object()) {
-        definition d;
-
-        for (auto it = std::begin(j); it != std::end(j); std::advance(it, 1)) {
-          // it.key() is always std::string.
-          const auto& key = it.key();
-          const auto& value = it.value();
-
-          if (key == "vendor_id") {
-            if (value.is_number()) {
-              d.vendor_id = vendor_id(value.get<int>());
-            } else {
-              logger::get_logger()->error("complex_modifications json error: Invalid form of {0} in {1}", key, j.dump());
-            }
-          } else if (key == "product_id") {
-            if (value.is_number()) {
-              d.product_id = product_id(value.get<int>());
-            } else {
-              logger::get_logger()->error("complex_modifications json error: Invalid form of {0} in {1}", key, j.dump());
-            }
-          } else if (key == "location_id") {
-            if (value.is_number()) {
-              d.location_id = location_id(value.get<int>());
-            } else {
-              logger::get_logger()->error("complex_modifications json error: Invalid form of {0} in {1}", key, j.dump());
-            }
-          } else if (key == "is_keyboard") {
-            if (value.is_boolean()) {
-              d.is_keyboard = value.get<bool>();
-            } else {
-              logger::get_logger()->error("complex_modifications json error: Invalid form of {0} in {1}", key, j.dump());
-            }
-          } else if (key == "is_pointing_device") {
-            if (value.is_boolean()) {
-              d.is_pointing_device = value.get<bool>();
-            } else {
-              logger::get_logger()->error("complex_modifications json error: Invalid form of {0} in {1}", key, j.dump());
-            }
-          } else if (key == "description") {
-            // Do nothing
-          } else {
-            logger::get_logger()->error("complex_modifications json error: Unknown key: {0} in {1}", key, j.dump());
-          }
-        }
-
-        if (d.vendor_id) {
-          definitions_.push_back(d);
-        }
-
-      } else {
-        logger::get_logger()->error("complex_modifications json error: `identifiers` children should be object {0}", json.dump());
+      if (!j.is_object()) {
+        throw pqrs::json::unmarshal_error(
+            fmt::format("identifiers entry must be object, but is `{0}`", j.dump()));
       }
+
+      definition d;
+
+      for (const auto& [key, value] : j.items()) {
+        // key is always std::string.
+
+        if (key == "vendor_id") {
+          if (!value.is_number()) {
+            throw pqrs::json::unmarshal_error(
+                fmt::format("identifiers entry `{0}` must be number, but is `{1}`", key, value.dump()));
+          }
+
+          d.vendor_id = vendor_id(value.get<int>());
+
+        } else if (key == "product_id") {
+          if (!value.is_number()) {
+            throw pqrs::json::unmarshal_error(
+                fmt::format("identifiers entry `{0}` must be number, but is `{1}`", key, value.dump()));
+          }
+
+          d.product_id = product_id(value.get<int>());
+
+        } else if (key == "location_id") {
+          if (!value.is_number()) {
+            throw pqrs::json::unmarshal_error(
+                fmt::format("identifiers entry `{0}` must be number, but is `{1}`", key, value.dump()));
+          }
+
+          d.location_id = location_id(value.get<int>());
+
+        } else if (key == "is_keyboard") {
+          if (!value.is_boolean()) {
+            throw pqrs::json::unmarshal_error(
+                fmt::format("identifiers entry `{0}` must be boolean, but is `{1}`", key, value.dump()));
+          }
+
+          d.is_keyboard = value.get<bool>();
+
+        } else if (key == "is_pointing_device") {
+          if (!value.is_boolean()) {
+            throw pqrs::json::unmarshal_error(
+                fmt::format("identifiers entry `{0}` must be boolean, but is `{1}`", key, value.dump()));
+          }
+
+          d.is_pointing_device = value.get<bool>();
+
+        } else if (key == "description") {
+          // Do nothing
+
+        } else {
+          throw pqrs::json::unmarshal_error(
+              fmt::format("unknown key `{0}` in `{1}`", key, j.dump()));
+        }
+      }
+
+      if (!d.vendor_id) {
+        throw pqrs::json::unmarshal_error(
+            fmt::format("identifiers entry `vendor_id` must be specified: `{0}`", j.dump()));
+      }
+
+      definitions_.push_back(d);
     }
   }
 

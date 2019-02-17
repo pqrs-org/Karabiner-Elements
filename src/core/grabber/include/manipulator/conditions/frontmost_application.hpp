@@ -18,10 +18,8 @@ public:
   frontmost_application(const nlohmann::json& json) : base(),
                                                       type_(type::frontmost_application_if) {
     if (json.is_object()) {
-      for (auto it = std::begin(json); it != std::end(json); std::advance(it, 1)) {
-        // it.key() is always std::string.
-        const auto& key = it.key();
-        const auto& value = it.value();
+      for (const auto& [key, value] : json.items()) {
+        // key is always std::string.
 
         if (key == "type") {
           if (value.is_string()) {
@@ -32,6 +30,7 @@ public:
               type_ = type::frontmost_application_unless;
             }
           }
+
         } else if (key == "bundle_identifiers") {
           if (value.is_array()) {
             for (const auto& j : value) {
@@ -41,11 +40,12 @@ public:
                   std::regex r(s);
                   bundle_identifiers_.push_back(r);
                 } catch (std::exception& e) {
-                  logger::get_logger()->error("complex_modifications json error: Regex error: \"{0}\" {1}", s, e.what());
+                  throw pqrs::json::unmarshal_error(fmt::format("{0}: `{1}:{2}`", e.what(), key, value.dump()));
                 }
               }
             }
           }
+
         } else if (key == "file_paths") {
           if (value.is_array()) {
             for (const auto& j : value) {
@@ -55,13 +55,17 @@ public:
                   std::regex r(s);
                   file_paths_.push_back(r);
                 } catch (std::exception& e) {
-                  logger::get_logger()->error("complex_modifications json error: Regex error: \"{0}\" {1}", s, e.what());
+                  throw pqrs::json::unmarshal_error(fmt::format("{0}: `{1}:{2}`", e.what(), key, value.dump()));
                 }
               }
             }
           }
+
+        } else if (key == "description") {
+          // Do nothing
+
         } else {
-          logger::get_logger()->error("complex_modifications json error: Unknown key: {0} in {1}", key, json.dump());
+          throw pqrs::json::unmarshal_error(fmt::format("unknown key `{0}` in `{1}`", key, json.dump()));
         }
       }
     }

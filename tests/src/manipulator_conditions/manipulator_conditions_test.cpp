@@ -6,12 +6,6 @@
 
 TEST_CASE("manipulator.manipulator_factory") {
   {
-    nlohmann::json json;
-    auto condition = krbn::manipulator::manipulator_factory::make_condition(json);
-    REQUIRE(dynamic_cast<krbn::manipulator::conditions::nop*>(condition.get()) != nullptr);
-    REQUIRE(dynamic_cast<krbn::manipulator::conditions::frontmost_application*>(condition.get()) == nullptr);
-  }
-  {
     nlohmann::json json({
         {"type", "frontmost_application_if"},
         {
@@ -34,24 +28,30 @@ TEST_CASE("manipulator.manipulator_factory") {
             {
                 "^com\\.apple\\.Terminal$",
                 "^com\\.googlecode\\.iterm2$",
-                "broken([regex",
+                "broken(regex",
             },
         },
     });
-    auto condition = krbn::manipulator::manipulator_factory::make_condition(json);
-    REQUIRE(dynamic_cast<krbn::manipulator::conditions::frontmost_application*>(condition.get()) != nullptr);
-    REQUIRE(dynamic_cast<krbn::manipulator::conditions::nop*>(condition.get()) == nullptr);
+    REQUIRE_THROWS_AS(
+        krbn::manipulator::manipulator_factory::make_condition(json),
+        pqrs::json::unmarshal_error);
+    REQUIRE_THROWS_WITH(
+        krbn::manipulator::manipulator_factory::make_condition(json),
+        "The expression contained mismatched ( and ).: `bundle_identifiers:[\"^com\\\\.apple\\\\.Terminal$\",\"^com\\\\.googlecode\\\\.iterm2$\",\"broken(regex\"]`");
   }
   {
-    nlohmann::json json;
-    json["type"] = "frontmost_application_if";
-    json["bundle_identifiers"] = nlohmann::json::array();
-    json["bundle_identifiers"].push_back("invalid(regex");
-    json["file_paths"] = nlohmann::json::array();
-    json["file_paths"].push_back("invalid(regex");
-    auto condition = krbn::manipulator::manipulator_factory::make_condition(json);
-    REQUIRE(dynamic_cast<krbn::manipulator::conditions::frontmost_application*>(condition.get()) != nullptr);
-    REQUIRE(dynamic_cast<krbn::manipulator::conditions::nop*>(condition.get()) == nullptr);
+    auto json = nlohmann::json::object({
+        {"type", "frontmost_application_if"},
+        {"file_paths", nlohmann::json::array({
+                           "invalid(regex",
+                       })},
+    });
+    REQUIRE_THROWS_AS(
+        krbn::manipulator::manipulator_factory::make_condition(json),
+        pqrs::json::unmarshal_error);
+    REQUIRE_THROWS_WITH(
+        krbn::manipulator::manipulator_factory::make_condition(json),
+        "The expression contained mismatched ( and ).: `file_paths:[\"invalid(regex\"]`");
   }
   {
     nlohmann::json json({
@@ -95,8 +95,12 @@ TEST_CASE("manipulator.manipulator_factory") {
       j["input_mode_id"] = "invalid(regex";
       json["input_sources"].push_back(j);
     }
-    auto condition = krbn::manipulator::manipulator_factory::make_condition(json);
-    REQUIRE(dynamic_cast<krbn::manipulator::conditions::nop*>(condition.get()) != nullptr);
+    REQUIRE_THROWS_AS(
+        krbn::manipulator::manipulator_factory::make_condition(json),
+        pqrs::json::unmarshal_error);
+    REQUIRE_THROWS_WITH(
+        krbn::manipulator::manipulator_factory::make_condition(json),
+        "The expression contained mismatched ( and ).: `\"input_mode_id\":\"invalid(regex\"`");
   }
   {
     nlohmann::json json({
@@ -134,6 +138,17 @@ TEST_CASE("manipulator.manipulator_factory") {
     REQUIRE(dynamic_cast<krbn::manipulator::conditions::keyboard_type*>(condition.get()) != nullptr);
     REQUIRE(dynamic_cast<krbn::manipulator::conditions::nop*>(condition.get()) == nullptr);
   }
+
+  // type error
+  {
+    nlohmann::json json;
+    REQUIRE_THROWS_AS(
+        krbn::manipulator::manipulator_factory::make_condition(json),
+        pqrs::json::unmarshal_error);
+    REQUIRE_THROWS_WITH(
+        krbn::manipulator::manipulator_factory::make_condition(json),
+        "condition type is not specified in `null`");
+  }
 }
 
 namespace {
@@ -143,7 +158,13 @@ public:
     std::ifstream input(std::string("json/") + file_name);
     auto json = nlohmann::json::parse(input);
     for (const auto& j : json) {
-      condition_manager_.push_back_condition(krbn::manipulator::manipulator_factory::make_condition(j));
+      try {
+        condition_manager_.push_back_condition(krbn::manipulator::manipulator_factory::make_condition(j));
+      } catch (pqrs::json::unmarshal_error& e) {
+        error_messages_.push_back(e.what());
+      } catch (std::exception& e) {
+        REQUIRE(false);
+      }
     }
   }
 
@@ -151,8 +172,13 @@ public:
     return condition_manager_;
   }
 
+  const std::vector<std::string> get_error_messages(void) const {
+    return error_messages_;
+  }
+
 private:
   krbn::manipulator::condition_manager condition_manager_;
+  std::vector<std::string> error_messages_;
 };
 } // namespace
 
@@ -388,6 +414,12 @@ TEST_CASE("conditions.device") {
 
   {
     actual_examples_helper helper("device_if.json");
+
+    REQUIRE(helper.get_error_messages() ==
+            std::vector<std::string>({
+                "identifiers entry `vendor_id` must be specified: `{\"description\":\"vendor_id missing error\"}`",
+            }));
+
     REQUIRE(helper.get_condition_manager().is_fulfilled(ENTRY(device_id_8888_9999),
                                                         manipulator_environment) == false);
     REQUIRE(helper.get_condition_manager().is_fulfilled(ENTRY(device_id_1000_2000),
@@ -403,6 +435,12 @@ TEST_CASE("conditions.device") {
   }
   {
     actual_examples_helper helper("device_unless.json");
+
+    REQUIRE(helper.get_error_messages() ==
+            std::vector<std::string>({
+                "identifiers entry `vendor_id` must be specified: `{\"description\":\"vendor_id missing error\"}`",
+            }));
+
     REQUIRE(helper.get_condition_manager().is_fulfilled(ENTRY(device_id_8888_9999),
                                                         manipulator_environment) == true);
     REQUIRE(helper.get_condition_manager().is_fulfilled(ENTRY(device_id_1000_2000),

@@ -737,10 +737,18 @@ private:
 
     for (const auto& device : profile_.get_devices()) {
       for (const auto& pair : device.get_simple_modifications().get_pairs()) {
-        if (auto m = make_simple_modifications_manipulator(pair)) {
-          auto c = make_device_if_condition(device);
-          m->push_back_condition(c);
-          simple_modifications_manipulator_manager_->push_back_manipulator(m);
+        try {
+          if (auto m = make_simple_modifications_manipulator(pair)) {
+            auto c = make_device_if_condition(device);
+            m->push_back_condition(c);
+            simple_modifications_manipulator_manager_->push_back_manipulator(m);
+          }
+
+        } catch (const pqrs::json::unmarshal_error& e) {
+          logger::get_logger()->error(fmt::format("karabiner.json error: {0}", e.what()));
+
+        } catch (const std::exception& e) {
+          logger::get_logger()->error(e.what());
         }
       }
     }
@@ -775,8 +783,10 @@ private:
 
         return std::make_shared<manipulator::manipulators::basic::basic>(manipulator::manipulators::basic::from_event_definition(from_json),
                                                                          manipulator::to_event_definition(to_json));
+
       } catch (const pqrs::json::unmarshal_error& e) {
         logger::get_logger()->error(fmt::format("karabiner.json error: {0}", e.what()));
+
       } catch (const std::exception& e) {
         logger::get_logger()->error(e.what());
       }
@@ -789,12 +799,20 @@ private:
 
     for (const auto& rule : profile_.get_complex_modifications().get_rules()) {
       for (const auto& manipulator : rule.get_manipulators()) {
-        auto m = manipulator::manipulator_factory::make_manipulator(manipulator.get_json(),
-                                                                    manipulator.get_parameters());
-        for (const auto& c : manipulator.get_conditions()) {
-          m->push_back_condition(manipulator::manipulator_factory::make_condition(c.get_json()));
+        try {
+          auto m = manipulator::manipulator_factory::make_manipulator(manipulator.get_json(),
+                                                                      manipulator.get_parameters());
+          for (const auto& c : manipulator.get_conditions()) {
+            m->push_back_condition(manipulator::manipulator_factory::make_condition(c.get_json()));
+          }
+          complex_modifications_manipulator_manager_->push_back_manipulator(m);
+
+        } catch (const pqrs::json::unmarshal_error& e) {
+          logger::get_logger()->error(fmt::format("karabiner.json error: {0}", e.what()));
+
+        } catch (const std::exception& e) {
+          logger::get_logger()->error(e.what());
         }
-        complex_modifications_manipulator_manager_->push_back_manipulator(m);
       }
     }
   }
@@ -840,8 +858,10 @@ private:
           auto manipulator = std::make_shared<manipulator::manipulators::basic::basic>(manipulator::manipulators::basic::from_event_definition(from_json),
                                                                                        manipulator::to_event_definition(to_json));
           fn_function_keys_manipulator_manager_->push_back_manipulator(std::shared_ptr<manipulator::manipulators::base>(manipulator));
+
         } catch (const pqrs::json::unmarshal_error& e) {
           logger::get_logger()->error(fmt::format("karabiner.json error: {0}", e.what()));
+
         } catch (const std::exception& e) {
           logger::get_logger()->error(e.what());
         }
@@ -852,13 +872,21 @@ private:
 
     for (const auto& device : profile_.get_devices()) {
       for (const auto& pair : device.get_fn_function_keys().get_pairs()) {
-        if (auto m = make_fn_function_keys_manipulator(pair,
-                                                       from_mandatory_modifiers,
-                                                       from_optional_modifiers,
-                                                       to_modifiers)) {
-          auto c = make_device_if_condition(device);
-          m->push_back_condition(c);
-          fn_function_keys_manipulator_manager_->push_back_manipulator(m);
+        try {
+          if (auto m = make_fn_function_keys_manipulator(pair,
+                                                         from_mandatory_modifiers,
+                                                         from_optional_modifiers,
+                                                         to_modifiers)) {
+            auto c = make_device_if_condition(device);
+            m->push_back_condition(c);
+            fn_function_keys_manipulator_manager_->push_back_manipulator(m);
+          }
+
+        } catch (const pqrs::json::unmarshal_error& e) {
+          logger::get_logger()->error(fmt::format("karabiner.json error: {0}", e.what()));
+
+        } catch (const std::exception& e) {
+          logger::get_logger()->error(e.what());
         }
       }
     }
@@ -918,8 +946,10 @@ private:
           auto manipulator = std::make_shared<manipulator::manipulators::basic::basic>(manipulator::manipulators::basic::from_event_definition(from_json),
                                                                                        manipulator::to_event_definition(to_json));
           fn_function_keys_manipulator_manager_->push_back_manipulator(std::shared_ptr<manipulator::manipulators::base>(manipulator));
+
         } catch (const pqrs::json::unmarshal_error& e) {
           logger::get_logger()->error(fmt::format("karabiner.json error: {0}", e.what()));
+
         } catch (const std::exception& e) {
           logger::get_logger()->error(e.what());
         }

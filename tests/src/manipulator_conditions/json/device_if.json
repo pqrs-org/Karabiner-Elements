@@ -13,9 +13,17 @@
             {
                 "description": "any product_id",
                 "vendor_id": 1099
+            }
+        ]
+    },
+    {
+        "type": "device_if",
+        "identifiers": [
+            {
+                "vendor_id": 8888
             },
             {
-                "description": "ignored if vendor_id and product_id are not set"
+                "description": "vendor_id missing error"
             }
         ]
     }

@@ -12,8 +12,17 @@
             },
             {
                 "vendor_id": 1099
+            }
+        ]
+    },
+    {
+        "type": "device_unless",
+        "identifiers": [
+            {
+                "vendor_id": 8888
             },
             {
+                "description": "vendor_id missing error"
             }
         ]
     }
