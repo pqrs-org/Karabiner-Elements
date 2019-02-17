@@ -16,13 +16,21 @@ public:
 
   void push_back_manipulator(const nlohmann::json& json,
                              const core_configuration::details::complex_modifications_parameters& parameters) {
-    auto m = manipulator_factory::make_manipulator(json,
-                                                   parameters);
+    try {
+      auto m = manipulator_factory::make_manipulator(json,
+                                                     parameters);
 
-    {
-      std::lock_guard<std::mutex> lock(manipulators_mutex_);
+      {
+        std::lock_guard<std::mutex> lock(manipulators_mutex_);
 
-      manipulators_.push_back(m);
+        manipulators_.push_back(m);
+      }
+
+    } catch (const pqrs::json::unmarshal_error& e) {
+      logger::get_logger()->error(fmt::format("karabiner.json error: {0}", e.what()));
+
+    } catch (const std::exception& e) {
+      logger::get_logger()->error(e.what());
     }
   }
 
