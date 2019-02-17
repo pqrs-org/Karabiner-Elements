@@ -542,11 +542,49 @@ TEST_CASE("errors") {
   std::ifstream input("json/errors.json");
   auto json = nlohmann::json::parse(input);
   for (const auto& j : json) {
-    REQUIRE_THROWS_AS(
-        krbn::manipulator::manipulator_factory::make_condition(j["input"]),
-        pqrs::json::unmarshal_error);
-    REQUIRE_THROWS_WITH(
-        krbn::manipulator::manipulator_factory::make_condition(j["input"]),
-        j["error"]);
+    auto c = j.at("class").get<std::string>();
+    if (c == "device") {
+      REQUIRE_THROWS_AS(
+          krbn::manipulator::conditions::device(j.at("input")),
+          pqrs::json::unmarshal_error);
+      REQUIRE_THROWS_WITH(
+          krbn::manipulator::conditions::device(j.at("input")),
+          j.at("error"));
+
+    } else if (c == "frontmost_application") {
+      REQUIRE_THROWS_AS(
+          krbn::manipulator::conditions::frontmost_application(j.at("input")),
+          pqrs::json::unmarshal_error);
+      REQUIRE_THROWS_WITH(
+          krbn::manipulator::conditions::frontmost_application(j.at("input")),
+          j.at("error"));
+
+    } else if (c == "input_source") {
+      REQUIRE_THROWS_AS(
+          krbn::manipulator::conditions::input_source(j.at("input")),
+          pqrs::json::unmarshal_error);
+      REQUIRE_THROWS_WITH(
+          krbn::manipulator::conditions::input_source(j.at("input")),
+          j.at("error"));
+
+    } else if (c == "keyboard_type") {
+      REQUIRE_THROWS_AS(
+          krbn::manipulator::conditions::keyboard_type(j.at("input")),
+          pqrs::json::unmarshal_error);
+      REQUIRE_THROWS_WITH(
+          krbn::manipulator::conditions::keyboard_type(j.at("input")),
+          j.at("error"));
+
+    } else if (c == "variable") {
+      REQUIRE_THROWS_AS(
+          krbn::manipulator::conditions::variable(j.at("input")),
+          pqrs::json::unmarshal_error);
+      REQUIRE_THROWS_WITH(
+          krbn::manipulator::conditions::variable(j.at("input")),
+          j.at("error"));
+
+    } else {
+      REQUIRE(false);
+    }
   }
 }

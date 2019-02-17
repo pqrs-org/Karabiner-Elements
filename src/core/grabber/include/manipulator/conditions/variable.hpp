@@ -15,37 +15,49 @@ public:
   };
 
   variable(const nlohmann::json& json) : base(),
-                                         type_(type::variable_if) {
-    if (json.is_object()) {
-      for (auto it = std::begin(json); it != std::end(json); std::advance(it, 1)) {
-        // it.key() is always std::string.
-        const auto& key = it.key();
-        const auto& value = it.value();
+                                         type_(type::variable_if),
+                                         value_(0) {
+    if (!json.is_object()) {
+      throw pqrs::json::unmarshal_error(fmt::format("variable must be object, but is `{0}`", json.dump()));
+    }
 
-        if (key == "type") {
-          if (value.is_string()) {
-            if (value == "variable_if") {
-              type_ = type::variable_if;
-            }
-            if (value == "variable_unless") {
-              type_ = type::variable_unless;
-            }
-          }
-        } else if (key == "name") {
-          if (value.is_string()) {
-            name_ = value;
-          } else {
-            logger::get_logger()->error("complex_modifications json error: Invalid form of {0} in {1}", key, json.dump());
-          }
-        } else if (key == "value") {
-          if (value.is_number()) {
-            value_ = value;
-          } else {
-            logger::get_logger()->error("complex_modifications json error: Invalid form of {0} in {1}", key, json.dump());
-          }
-        } else {
-          logger::get_logger()->error("complex_modifications json error: Unknown key: {0} in {1}", key, json.dump());
+    for (const auto& [key, value] : json.items()) {
+      // key is always std::string.
+
+      if (key == "type") {
+        if (!value.is_string()) {
+          throw pqrs::json::unmarshal_error(fmt::format("{0} must be string, but is `{1}`", key, value.dump()));
         }
+
+        auto t = value.get<std::string>();
+
+        if (t == "variable_if") {
+          type_ = type::variable_if;
+        } else if (t == "variable_unless") {
+          type_ = type::variable_unless;
+        } else {
+          throw pqrs::json::unmarshal_error(fmt::format("unknown type `{0}`", t));
+        }
+
+      } else if (key == "name") {
+        if (!value.is_string()) {
+          throw pqrs::json::unmarshal_error(fmt::format("`{0}` must be string, but is `{1}`", key, value.dump()));
+        }
+
+        name_ = value.get<std::string>();
+
+      } else if (key == "value") {
+        if (!value.is_number()) {
+          throw pqrs::json::unmarshal_error(fmt::format("`{0}` must be number, but is `{1}`", key, value.dump()));
+        }
+
+        value_ = value.get<int>();
+
+      } else if (key == "description") {
+        // Do nothing
+
+      } else {
+        throw pqrs::json::unmarshal_error(fmt::format("unknown key `{0}` in `{1}`", key, json.dump()));
       }
     }
   }

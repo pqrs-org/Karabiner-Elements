@@ -69,14 +69,13 @@ public:
             throw pqrs::json::unmarshal_error(fmt::format("file_paths entry must be string, but is `{0}`", j.dump()));
           }
 
-          if (j.is_string()) {
-            std::string s = j;
-            try {
-              std::regex r(s);
-              file_paths_.push_back(r);
-            } catch (std::exception& e) {
-              throw pqrs::json::unmarshal_error(fmt::format("{0}: `{1}:{2}`", e.what(), key, value.dump()));
-            }
+          auto s = j.get<std::string>();
+
+          try {
+            std::regex r(s);
+            file_paths_.push_back(r);
+          } catch (std::exception& e) {
+            throw pqrs::json::unmarshal_error(fmt::format("{0}: `{1}:{2}`", e.what(), key, value.dump()));
           }
         }
 

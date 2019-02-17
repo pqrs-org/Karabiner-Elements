@@ -1,12 +1,25 @@
 [
     {
-        "name": "type error",
-        "error": "condition type is not specified in `{}`",
-        "input": {}
+        "class": "device",
+        "error": "device must be object, but is `null`",
+        "input": null
     },
-
     {
-        "name": "device identifiers type error",
+        "class": "device",
+        "error": "type must be string, but is `null`",
+        "input": {
+            "type": null
+        }
+    },
+    {
+        "class": "device",
+        "error": "unknown type `device-if`",
+        "input": {
+            "type": "device-if"
+        }
+    },
+    {
+        "class": "device",
         "error": "`identifiers` must be array, but is `null`",
         "input": {
             "type": "device_if",
@@ -14,7 +27,7 @@
         }
     },
     {
-        "name": "device identifiers entry type error",
+        "class": "device",
         "error": "identifiers entry must be object, but is `null`",
         "input": {
             "type": "device_if",
@@ -22,7 +35,7 @@
         }
     },
     {
-        "name": "device identifiers entry vendor_id type error",
+        "class": "device",
         "error": "identifiers entry `vendor_id` must be number, but is `null`",
         "input": {
             "type": "device_if",
@@ -34,7 +47,7 @@
         }
     },
     {
-        "name": "device identifiers entry product_id type error",
+        "class": "device",
         "error": "identifiers entry `product_id` must be number, but is `null`",
         "input": {
             "type": "device_if",
@@ -46,7 +59,7 @@
         }
     },
     {
-        "name": "device identifiers entry location_id type error",
+        "class": "device",
         "error": "identifiers entry `location_id` must be number, but is `null`",
         "input": {
             "type": "device_if",
@@ -58,7 +71,7 @@
         }
     },
     {
-        "name": "device identifiers entry is_keyboard type error",
+        "class": "device",
         "error": "identifiers entry `is_keyboard` must be boolean, but is `null`",
         "input": {
             "type": "device_if",
@@ -70,7 +83,7 @@
         }
     },
     {
-        "name": "device identifiers entry is_pointing_device type error",
+        "class": "device",
         "error": "identifiers entry `is_pointing_device` must be boolean, but is `null`",
         "input": {
             "type": "device_if",
@@ -82,7 +95,7 @@
         }
     },
     {
-        "name": "device identifiers entry unknown key error",
+        "class": "device",
         "error": "unknown key `is-pointing-device` in `{\"is-pointing-device\":true}`",
         "input": {
             "type": "device_if",
@@ -94,7 +107,7 @@
         }
     },
     {
-        "name": "device identifiers entry vendor_id is not specified error",
+        "class": "device",
         "error": "`vendor_id` must be specified: `{\"product_id\":1234}`",
         "input": {
             "type": "device_if",
@@ -107,7 +120,26 @@
     },
 
     {
-        "name": "frontmost_application bundle_identifiers type error",
+        "class": "frontmost_application",
+        "error": "frontmost_application must be object, but is `null`",
+        "input": null
+    },
+    {
+        "class": "frontmost_application",
+        "error": "type must be string, but is `null`",
+        "input": {
+            "type": null
+        }
+    },
+    {
+        "class": "frontmost_application",
+        "error": "unknown type `frontmost-application-if`",
+        "input": {
+            "type": "frontmost-application-if"
+        }
+    },
+    {
+        "class": "frontmost_application",
         "error": "`bundle_identifiers` must be array, but is `null`",
         "input": {
             "type": "frontmost_application_if",
@@ -115,7 +147,7 @@
         }
     },
     {
-        "name": "frontmost_application bundle_identifiers entry type error",
+        "class": "frontmost_application",
         "error": "bundle_identifiers entry must be string, but is `null`",
         "input": {
             "type": "frontmost_application_if",
@@ -123,7 +155,7 @@
         }
     },
     {
-        "name": "frontmost_application bundle_identifiers entry regex error",
+        "class": "frontmost_application",
         "error": "The expression contained mismatched ( and ).: `bundle_identifiers:[\"regex(\"]`",
         "input": {
             "type": "frontmost_application_if",
@@ -131,7 +163,7 @@
         }
     },
     {
-        "name": "frontmost_application file_paths type error",
+        "class": "frontmost_application",
         "error": "file_paths entry must be string, but is `null`",
         "input": {
             "type": "frontmost_application_if",
@@ -139,7 +171,7 @@
         }
     },
     {
-        "name": "frontmost_application file_paths entry type error",
+        "class": "frontmost_application",
         "error": "The expression contained mismatched ( and ).: `file_paths:[\"regex(\"]`",
         "input": {
             "type": "frontmost_application_if",
@@ -147,7 +179,7 @@
         }
     },
     {
-        "name": "frontmost_application file_paths entry regex error",
+        "class": "frontmost_application",
         "error": "The expression contained mismatched ( and ).: `bundle_identifiers:[\"regex(\"]`",
         "input": {
             "type": "frontmost_application_if",
@@ -155,7 +187,7 @@
         }
     },
     {
-        "name": "frontmost_application unknown key error",
+        "class": "frontmost_application",
         "error": "unknown key `bundle-identifiers` in `{\"bundle-identifiers\":[],\"type\":\"frontmost_application_if\"}`",
         "input": {
             "type": "frontmost_application_if",
@@ -164,7 +196,26 @@
     },
 
     {
-        "name": "input_source input_sources type error",
+        "class": "input_source",
+        "error": "input_source must be object, but is `null`",
+        "input": null
+    },
+    {
+        "class": "input_source",
+        "error": "type must be string, but is `null`",
+        "input": {
+            "type": null
+        }
+    },
+    {
+        "class": "input_source",
+        "error": "unknown type `input-source-if`",
+        "input": {
+            "type": "input-source-if"
+        }
+    },
+    {
+        "class": "input_source",
         "error": "`input_sources` must be array, but is `null`",
         "input": {
             "type": "input_source_if",
@@ -172,7 +223,7 @@
         }
     },
     {
-        "name": "input_source input_sources entry type error",
+        "class": "input_source",
         "error": "`input_sources` entry error: json must be object, but is `null`",
         "input": {
             "type": "input_source_if",
@@ -180,7 +231,7 @@
         }
     },
     {
-        "name": "input_source input_sources entry regex error",
+        "class": "input_source",
         "error": "`input_sources` entry error: The expression contained mismatched ( and ).: `\"language\":\"regex(\"`",
         "input": {
             "type": "input_source_if",
@@ -192,7 +243,7 @@
         }
     },
     {
-        "name": "input_source unknown key error",
+        "class": "input_source",
         "error": "unknown key `input-sources` in `{\"input-sources\":[],\"type\":\"input_source_if\"}`",
         "input": {
             "type": "input_source_if",
@@ -201,7 +252,26 @@
     },
 
     {
-        "name": "keyboard_type keyboard_types type error",
+        "class": "keyboard_type",
+        "error": "keyboard_type must be object, but is `null`",
+        "input": null
+    },
+    {
+        "class": "keyboard_type",
+        "error": "type must be string, but is `null`",
+        "input": {
+            "type": null
+        }
+    },
+    {
+        "class": "keyboard_type",
+        "error": "unknown type `keyboard-type-if`",
+        "input": {
+            "type": "keyboard-type-if"
+        }
+    },
+    {
+        "class": "keyboard_type",
         "error": "`keyboard_types` must be array, but is `null`",
         "input": {
             "type": "keyboard_type_if",
@@ -209,7 +279,7 @@
         }
     },
     {
-        "name": "keyboard_type keyboard_types entry type error",
+        "class": "keyboard_type",
         "error": "keyboard_types entry must be string, but is `null`",
         "input": {
             "type": "keyboard_type_if",
@@ -217,11 +287,55 @@
         }
     },
     {
-        "name": "keyboard_type unknown key error",
+        "class": "keyboard_type",
         "error": "unknown key `keyboard-types` in `{\"keyboard-types\":[],\"type\":\"keyboard_type_if\"}`",
         "input": {
             "type": "keyboard_type_if",
             "keyboard-types": []
+        }
+    },
+
+    {
+        "class": "variable",
+        "error": "variable must be object, but is `null`",
+        "input": null
+    },
+    {
+        "class": "variable",
+        "error": "type must be string, but is `null`",
+        "input": {
+            "type": null
+        }
+    },
+    {
+        "class": "variable",
+        "error": "unknown type `variable-if`",
+        "input": {
+            "type": "variable-if"
+        }
+    },
+    {
+        "class": "variable",
+        "error": "`name` must be string, but is `null`",
+        "input": {
+            "type": "variable_if",
+            "name": null
+        }
+    },
+    {
+        "class": "variable",
+        "error": "`value` must be number, but is `null`",
+        "input": {
+            "type": "variable_if",
+            "value": null
+        }
+    },
+    {
+        "class": "variable",
+        "error": "unknown key `Name` in `{\"Name\":\"name\",\"type\":\"variable_if\"}`",
+        "input": {
+            "type": "variable_if",
+            "Name": "name"
         }
     }
 ]
