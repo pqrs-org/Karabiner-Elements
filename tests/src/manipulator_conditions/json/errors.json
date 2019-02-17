@@ -198,5 +198,30 @@
             "type": "input_source_if",
             "input-sources": []
         }
+    },
+
+    {
+        "name": "keyboard_type keyboard_types type error",
+        "error": "`keyboard_types` must be array, but is `null`",
+        "input": {
+            "type": "keyboard_type_if",
+            "keyboard_types": null
+        }
+    },
+    {
+        "name": "keyboard_type keyboard_types entry type error",
+        "error": "keyboard_types entry must be string, but is `null`",
+        "input": {
+            "type": "keyboard_type_if",
+            "keyboard_types": [null]
+        }
+    },
+    {
+        "name": "keyboard_type unknown key error",
+        "error": "unknown key `keyboard-types` in `{\"keyboard-types\":[],\"type\":\"keyboard_type_if\"}`",
+        "input": {
+            "type": "keyboard_type_if",
+            "keyboard-types": []
+        }
     }
 ]
