@@ -538,53 +538,34 @@ TEST_CASE("conditions.keyboard_type") {
   }
 }
 
+namespace {
+void make_condition(const nlohmann::json& json) {
+  auto c = json.at("class").get<std::string>();
+  if (c == "device") {
+    krbn::manipulator::conditions::device(json.at("input"));
+  } else if (c == "frontmost_application") {
+    krbn::manipulator::conditions::frontmost_application(json.at("input"));
+  } else if (c == "input_source") {
+    krbn::manipulator::conditions::input_source(json.at("input"));
+  } else if (c == "keyboard_type") {
+    krbn::manipulator::conditions::keyboard_type(json.at("input"));
+  } else if (c == "variable") {
+    krbn::manipulator::conditions::variable(json.at("input"));
+  } else {
+    REQUIRE(false);
+  }
+}
+} // namespace
+
 TEST_CASE("errors") {
   std::ifstream input("json/errors.json");
   auto json = nlohmann::json::parse(input);
   for (const auto& j : json) {
-    auto c = j.at("class").get<std::string>();
-    if (c == "device") {
-      REQUIRE_THROWS_AS(
-          krbn::manipulator::conditions::device(j.at("input")),
-          pqrs::json::unmarshal_error);
-      REQUIRE_THROWS_WITH(
-          krbn::manipulator::conditions::device(j.at("input")),
-          j.at("error"));
-
-    } else if (c == "frontmost_application") {
-      REQUIRE_THROWS_AS(
-          krbn::manipulator::conditions::frontmost_application(j.at("input")),
-          pqrs::json::unmarshal_error);
-      REQUIRE_THROWS_WITH(
-          krbn::manipulator::conditions::frontmost_application(j.at("input")),
-          j.at("error"));
-
-    } else if (c == "input_source") {
-      REQUIRE_THROWS_AS(
-          krbn::manipulator::conditions::input_source(j.at("input")),
-          pqrs::json::unmarshal_error);
-      REQUIRE_THROWS_WITH(
-          krbn::manipulator::conditions::input_source(j.at("input")),
-          j.at("error"));
-
-    } else if (c == "keyboard_type") {
-      REQUIRE_THROWS_AS(
-          krbn::manipulator::conditions::keyboard_type(j.at("input")),
-          pqrs::json::unmarshal_error);
-      REQUIRE_THROWS_WITH(
-          krbn::manipulator::conditions::keyboard_type(j.at("input")),
-          j.at("error"));
-
-    } else if (c == "variable") {
-      REQUIRE_THROWS_AS(
-          krbn::manipulator::conditions::variable(j.at("input")),
-          pqrs::json::unmarshal_error);
-      REQUIRE_THROWS_WITH(
-          krbn::manipulator::conditions::variable(j.at("input")),
-          j.at("error"));
-
-    } else {
-      REQUIRE(false);
-    }
+    REQUIRE_THROWS_AS(
+        make_condition(j),
+        pqrs::json::unmarshal_error);
+    REQUIRE_THROWS_WITH(
+        make_condition(j),
+        j.at("error"));
   }
 }
