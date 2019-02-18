@@ -8,16 +8,6 @@ using krbn::manipulator::to_event_definition;
 
 TEST_CASE("manipulator.manipulator_factory") {
   {
-    nlohmann::json json;
-    krbn::core_configuration::details::complex_modifications_parameters parameters;
-    auto manipulator = krbn::manipulator::manipulator_factory::make_manipulator(json,
-                                                                                parameters);
-    REQUIRE(dynamic_cast<krbn::manipulator::manipulators::nop*>(manipulator.get()) != nullptr);
-    REQUIRE(dynamic_cast<krbn::manipulator::manipulators::basic::basic*>(manipulator.get()) == nullptr);
-    REQUIRE(manipulator->get_valid() == true);
-    REQUIRE(manipulator->active() == false);
-  }
-  {
     nlohmann::json json({
         {"type", "basic"},
         {
@@ -78,5 +68,18 @@ TEST_CASE("manipulator.manipulator_factory") {
     REQUIRE(basic->get_to()[0].get_event_definition().get_key_code() == std::nullopt);
     REQUIRE(basic->get_to()[0].get_event_definition().get_pointing_button() == krbn::pointing_button::button1);
     REQUIRE(basic->get_to()[0].get_modifiers() == std::unordered_set<modifier_definition::modifier>());
+  }
+}
+
+TEST_CASE("errors") {
+  {
+    nlohmann::json json;
+    krbn::core_configuration::details::complex_modifications_parameters parameters;
+    REQUIRE_THROWS_AS(
+        krbn::manipulator::manipulator_factory::make_manipulator(json, parameters),
+        pqrs::json::unmarshal_error);
+    REQUIRE_THROWS_WITH(
+        krbn::manipulator::manipulator_factory::make_manipulator(json, parameters),
+        "`type` must be specified: null");
   }
 }
