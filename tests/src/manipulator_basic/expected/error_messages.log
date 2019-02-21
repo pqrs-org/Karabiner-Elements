@@ -1,3 +1,0 @@
-[error] complex_modifications json error: Invalid form of from_event_definition: "not_object"
-[error] complex_modifications json error: Unknown key: unknown_key in {"description":"Unknown key","unknown_key":"dummy"}
-[error] complex_modifications json error: Unknown key: unknown_modifiers in {"unknown_modifiers":"dummy"}

@@ -69,7 +69,7 @@ public:
         continue;
       }
 
-      throw pqrs::json::unmarshal_error(fmt::format("to_event_definition error: unknown key `{0}` in `{1}`", key, value.dump()));
+      throw pqrs::json::unmarshal_error(fmt::format("to_event_definition error: unknown key `{0}` in `{1}`", key, json.dump()));
     }
 
     // ----------------------------------------

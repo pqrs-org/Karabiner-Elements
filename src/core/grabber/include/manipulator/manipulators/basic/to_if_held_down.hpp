@@ -2,6 +2,7 @@
 
 #include "../../types.hpp"
 #include "event_sender.hpp"
+#include <pqrs/json.hpp>
 #include <unordered_set>
 #include <vector>
 
@@ -13,12 +14,12 @@ class to_if_held_down final : public pqrs::dispatcher::extra::dispatcher_client 
 public:
   to_if_held_down(const nlohmann::json& json) : dispatcher_client(),
                                                 current_held_down_id_(0) {
-    if (json.is_array()) {
-      for (const auto& j : json) {
-        to_.emplace_back(j);
-      }
-    } else {
-      logger::get_logger()->error("complex_modifications json error: `to_if_held_down` should be object: {0}", json.dump());
+    if (!json.is_array()) {
+      throw new pqrs::json::unmarshal_error(fmt::format("`to_if_held_down` must be array, but is `{0}`", json.dump()));
+    }
+
+    for (const auto& j : json) {
+      to_.emplace_back(j);
     }
   }
 

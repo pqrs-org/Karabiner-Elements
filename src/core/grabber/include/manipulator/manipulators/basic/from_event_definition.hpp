@@ -1,7 +1,7 @@
 #pragma once
 
 #include "../../types.hpp"
-#include <nlohmann/json.hpp>
+#include <pqrs/json.hpp>
 #include <unordered_set>
 #include <vector>
 
@@ -32,7 +32,7 @@ public:
 
     void handle_json(const nlohmann::json& json) {
       if (!json.is_object()) {
-        return;
+        throw pqrs::json::unmarshal_error(fmt::format("`simultaneous_options` must be object, but is `{0}`", json.dump()));
       }
 
       for (const auto& [key, value] : json.items()) {
@@ -46,10 +46,7 @@ public:
 
           detect_key_down_uninterruptedly_ = value;
 
-          continue;
-        }
-
-        if (key == "key_down_order") {
+        } else if (key == "key_down_order") {
           if (!value.is_string()) {
             logger::get_logger()->error("complex_modifications json error: `key_down_order` should be string: {0}", json.dump());
             continue;
@@ -57,10 +54,7 @@ public:
 
           key_down_order_ = value;
 
-          continue;
-        }
-
-        if (key == "key_up_order") {
+        } else if (key == "key_up_order") {
           if (!value.is_string()) {
             logger::get_logger()->error("complex_modifications json error: `key_up_order` should be string: {0}", json.dump());
             continue;
@@ -68,10 +62,7 @@ public:
 
           key_up_order_ = value;
 
-          continue;
-        }
-
-        if (key == "key_up_when") {
+        } else if (key == "key_up_when") {
           if (!value.is_string()) {
             logger::get_logger()->error("complex_modifications json error: `key_up_when` should be string: {0}", json.dump());
             continue;
@@ -79,10 +70,7 @@ public:
 
           key_up_when_ = value;
 
-          continue;
-        }
-
-        if (key == "to_after_key_up") {
+        } else if (key == "to_after_key_up") {
           if (!value.is_array()) {
             logger::get_logger()->error("complex_modifications json error: `to_after_key_up` should be array: {0}", json.dump());
             continue;
@@ -92,10 +80,12 @@ public:
             to_after_key_up_.emplace_back(j);
           }
 
-          continue;
-        }
+        } else if (key == "description") {
+          // Do nothing
 
-        logger::get_logger()->error("complex_modifications json error: Unknown key: {0} in {1}", key, json.dump());
+        } else {
+          throw pqrs::json::unmarshal_error(fmt::format("`simultaneous_options` error: unknown key `{0}` in `{1}`", key, json.dump()));
+        }
       }
     }
 
@@ -129,8 +119,7 @@ public:
 
   from_event_definition(const nlohmann::json& json) {
     if (!json.is_object()) {
-      logger::get_logger()->error("complex_modifications json error: Invalid form of from_event_definition: {0}", json.dump());
-      return;
+      throw pqrs::json::unmarshal_error(fmt::format("`from` must be object, but is `{0}`", json.dump()));
     }
 
     event_definition default_event_definition;
@@ -140,9 +129,8 @@ public:
 
       if (default_event_definition.handle_json(key, value, json)) {
         continue;
-      }
 
-      if (key == "simultaneous") {
+      } else if (key == "simultaneous") {
         if (!value.is_array()) {
           logger::get_logger()->error("complex_modifications json error: Invalid form of simultaneous: {0}", value.dump());
           continue;
@@ -164,10 +152,7 @@ public:
           }
         }
 
-        continue;
-      }
-
-      if (key == "simultaneous_options") {
+      } else if (key == "simultaneous_options") {
         if (!value.is_object()) {
           logger::get_logger()->error("complex_modifications json error: Invalid form of simultaneous_options: {0}", value.dump());
           continue;
@@ -175,10 +160,7 @@ public:
 
         simultaneous_options_.handle_json(value);
 
-        continue;
-      }
-
-      if (key == "modifiers") {
+      } else if (key == "modifiers") {
         if (!value.is_object()) {
           logger::get_logger()->error("complex_modifications json error: Invalid form of modifiers: {0}", value.dump());
           continue;
@@ -189,17 +171,21 @@ public:
 
           if (k == "mandatory") {
             mandatory_modifiers_ = modifier_definition::make_modifiers(v, "modifiers.mandatory");
+
           } else if (k == "optional") {
             optional_modifiers_ = modifier_definition::make_modifiers(v, "modifiers.optional");
+
+          } else if (key == "description") {
+            // Do nothing
+
           } else {
-            logger::get_logger()->error("complex_modifications json error: Unknown key: {0} in {1}", k, value.dump());
+            throw pqrs::json::unmarshal_error(fmt::format("`{0}` error: unknown key `{1}` in `{2}`", key, k, value.dump()));
           }
         }
 
-        continue;
+      } else {
+        throw pqrs::json::unmarshal_error(fmt::format("`from` error: unknown key `{0}` in `{1}`", key, json.dump()));
       }
-
-      logger::get_logger()->error("complex_modifications json error: Unknown key: {0} in {1}", key, json.dump());
     }
 
     if (event_definitions_.empty() &&

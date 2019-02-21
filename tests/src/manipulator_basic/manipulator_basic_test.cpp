@@ -19,19 +19,6 @@ krbn::modifier_flag_manager::active_modifier_flag left_shift_1(krbn::modifier_fl
 krbn::modifier_flag_manager::active_modifier_flag right_shift_1(krbn::modifier_flag_manager::active_modifier_flag::type::increase,
                                                                 krbn::modifier_flag::right_shift,
                                                                 krbn::device_id(1));
-
-void set_file_logger(const std::string& file_path) {
-  unlink(file_path.c_str());
-  auto l = spdlog::rotating_logger_mt(file_path, file_path, 256 * 1024, 3);
-  l->set_pattern("[%l] %v");
-  krbn::logger::set_logger(l);
-}
-
-void set_null_logger(void) {
-  static auto l = spdlog::stdout_logger_mt("null");
-  l->flush_on(spdlog::level::off);
-  krbn::logger::set_logger(l);
-}
 } // namespace
 
 TEST_CASE("modifier_definition.test_modifier") {
@@ -437,13 +424,6 @@ TEST_CASE("manipulator.details.basic::from_event_definition") {
   //
 
   {
-    nlohmann::json json;
-    basic::from_event_definition event_definition(json);
-    REQUIRE(event_definition.get_event_definitions().size() == 0);
-    REQUIRE(event_definition.get_mandatory_modifiers().size() == 0);
-    REQUIRE(event_definition.get_optional_modifiers().size() == 0);
-  }
-  {
     nlohmann::json json({
         {"key_code", "spacebar"},
         {"modifiers", {
@@ -554,36 +534,31 @@ TEST_CASE("manipulator.details.basic::from_event_definition") {
   }
 }
 
-TEST_CASE("event_definition.error_messages") {
+namespace {
+void handle_json(const nlohmann::json& json) {
+  auto c = json.at("class").get<std::string>();
+  if (c == "from_event_definition") {
+    krbn::manipulator::manipulators::basic::from_event_definition(json.at("input"));
+  } else {
+    REQUIRE(false);
+  }
+}
+} // namespace
+
+TEST_CASE("errors") {
   namespace basic = krbn::manipulator::manipulators::basic;
 
-  set_file_logger("tmp/error_messages.log");
-
-  {
-    std::ifstream json_file("json/error_messages.json");
-    auto json = nlohmann::json::parse(json_file);
-    std::vector<std::string> error_messages;
-    for (const auto& j : json["from_event_definition"]) {
-      try {
-        basic::from_event_definition from_event_definition(j);
-      } catch (const pqrs::json::unmarshal_error& e) {
-        error_messages.push_back(e.what());
-      } catch (const std::exception& e) {
-        REQUIRE(false);
-      }
-    }
-
-    REQUIRE(error_messages == std::vector<std::string>{
-                                  "unknown modifier: `unknown_modifier`",
-                                  "`key_code` must be string, but is `1234`",
-                                  "`pointing_button` must be string, but is `1234`",
-                                  "`any` must be string, but is `1234`",
-                                  "unknown `any`: `\"unknown_any\"`",
-                                  "multiple types are specified: `{\"description\":\"Duplicated type description\",\"key_code\":\"spacebar\",\"pointing_button\":\"button1\"}`",
-                              });
+  std::ifstream json_file("json/errors.json");
+  auto json = nlohmann::json::parse(json_file);
+  std::vector<std::string> error_messages;
+  for (const auto& j : json) {
+    REQUIRE_THROWS_AS(
+        handle_json(j),
+        pqrs::json::unmarshal_error);
+    REQUIRE_THROWS_WITH(
+        handle_json(j),
+        j.at("error").get<std::string>());
   }
-
-  set_null_logger();
 }
 
 TEST_CASE("basic::from_event_definition.test_event") {
