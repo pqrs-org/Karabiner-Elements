@@ -1,0 +1,134 @@
+[
+    {
+        "class": "to_event_definition",
+        "description": "Invalid modifiers",
+        "input": {
+            "modifiers": {
+                "mandatory": ["shift"]
+            }
+        },
+        "error": "`modifiers` must be array or string, but is `{\"mandatory\":[\"shift\"]}`"
+    },
+    {
+        "class": "to_event_definition",
+        "description": "Invalid modifiers",
+        "input": {
+            "key_code": "escape",
+            "modifiers": ["unknown"]
+        },
+        "error": "unknown modifier: `unknown`"
+    },
+    {
+        "class": "to_event_definition",
+        "description": "shell_command is not string",
+        "input": {
+            "shell_command": 1234
+        },
+        "error": "`shell_command` must be string, but is `1234`"
+    },
+    {
+        "class": "to_event_definition",
+        "description": "select_input_source type error",
+        "input": {
+            "select_input_source": 1234
+        },
+        "error": "`select_input_source` must be object or array of objects, but is `1234`"
+    },
+    {
+        "class": "to_event_definition",
+        "description": "select_input_source regex error (object)",
+        "input": {
+            "select_input_source": {
+                "language": "(regex"
+            }
+        },
+        "error": "`select_input_source` error: The expression contained mismatched ( and ).: `\"language\":\"(regex\"`"
+    },
+    {
+        "class": "to_event_definition",
+        "description": "select_input_source regex error (array of objects)",
+        "input": {
+            "select_input_source": [
+                {
+                    "language": "^en$",
+                    "input_source_id": "(regex"
+                }
+            ]
+        },
+        "error": "`select_input_source` error: The expression contained mismatched ( and ).: `\"input_source_id\":\"(regex\"`"
+    },
+    {
+        "class": "to_event_definition",
+        "description": "set_variable is not object",
+        "input": {
+            "set_variable": 1234
+        },
+        "error": "`set_variable` must be object, but is `1234`"
+    },
+    {
+        "class": "to_event_definition",
+        "description": "set_variable.name is not found",
+        "input": {
+            "set_variable": {
+                "value": 1234
+            }
+        },
+        "error": "`set_variable.name` is not found in `{\"value\":1234}`"
+    },
+    {
+        "class": "to_event_definition",
+        "description": "set_variable.name is not string",
+        "input": {
+            "set_variable": {
+                "name": 1234,
+                "value": 1234
+            }
+        },
+        "error": "`set_variable.name` must be string, but is `1234`"
+    },
+    {
+        "class": "to_event_definition",
+        "description": "set_variable.value is not found",
+        "input": {
+            "set_variable": {
+                "name": "variable_name"
+            }
+        },
+        "error": "`set_variable.value` is not found in `{\"name\":\"variable_name\"}`"
+    },
+    {
+        "class": "to_event_definition",
+        "description": "set_variable.name is not number",
+        "input": {
+            "set_variable": {
+                "name": "variable_name",
+                "value": "1234"
+            }
+        },
+        "error": "`set_variable.value` must be number, but is `\"1234\"`"
+    },
+    {
+        "class": "to_event_definition",
+        "description": "lazy is not boolean",
+        "input": {
+            "lazy": []
+        },
+        "error": "`lazy` must be boolean, but is `[]`"
+    },
+    {
+        "class": "to_event_definition",
+        "description": "repeat is not boolean",
+        "input": {
+            "repeat": []
+        },
+        "error": "`repeat` must be boolean, but is `[]`"
+    },
+    {
+        "class": "to_event_definition",
+        "description": "halt type error",
+        "input": {
+            "halt": null
+        },
+        "error": "`halt` must be boolean, but is `null`"
+    }
+]

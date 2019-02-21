@@ -166,20 +166,3 @@ TEST_CASE("to_event_definition") {
     REQUIRE(event_definition.get_repeat() == false);
   }
 }
-
-TEST_CASE("event_definition.error_messages") {
-  std::ifstream json_file("json/error_messages.json");
-  auto json = nlohmann::json::parse(json_file);
-  for (const auto& j : json["to_event_definition"]) {
-    std::vector<std::string> error_messages;
-    try {
-      krbn::manipulator::to_event_definition to_event_definition(j["input"]);
-    } catch (const pqrs::json::unmarshal_error& e) {
-      error_messages.push_back(e.what());
-    } catch (const std::exception& e) {
-      REQUIRE(false);
-    }
-
-    REQUIRE(error_messages == j["errors"].get<std::vector<std::string>>());
-  }
-}
