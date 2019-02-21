@@ -26,45 +26,6 @@
     },
     {
         "class": "to_event_definition",
-        "description": "shell_command is not string",
-        "input": {
-            "shell_command": 1234
-        },
-        "error": "`shell_command` must be string, but is `1234`"
-    },
-    {
-        "class": "to_event_definition",
-        "description": "select_input_source type error",
-        "input": {
-            "select_input_source": 1234
-        },
-        "error": "`select_input_source` must be object or array of objects, but is `1234`"
-    },
-    {
-        "class": "to_event_definition",
-        "description": "select_input_source regex error (object)",
-        "input": {
-            "select_input_source": {
-                "language": "(regex"
-            }
-        },
-        "error": "`select_input_source` error: The expression contained mismatched ( and ).: `\"language\":\"(regex\"`"
-    },
-    {
-        "class": "to_event_definition",
-        "description": "select_input_source regex error (array of objects)",
-        "input": {
-            "select_input_source": [
-                {
-                    "language": "^en$",
-                    "input_source_id": "(regex"
-                }
-            ]
-        },
-        "error": "`select_input_source` error: The expression contained mismatched ( and ).: `\"input_source_id\":\"(regex\"`"
-    },
-    {
-        "class": "to_event_definition",
         "description": "set_variable is not object",
         "input": {
             "set_variable": 1234

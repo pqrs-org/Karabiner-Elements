@@ -65,5 +65,50 @@
             "shell_command": null
         },
         "error": "`shell_command` must be string, but is `null`"
+    },
+
+    {
+        "class": "event_definition",
+        "input": {
+            "select_input_source": null
+        },
+        "error": "`select_input_source` must be object or array of objects, but is `null`"
+    },
+    {
+        "class": "event_definition",
+        "input": {
+            "select_input_source": {
+                "language": null
+            }
+        },
+        "error": "`select_input_source` error: `language` must be string, but is `null`"
+    },
+    {
+        "class": "event_definition",
+        "input": {
+            "select_input_source": [
+                {
+                    "language": null
+                }
+            ]
+        },
+        "error": "`select_input_source` error: `language` must be string, but is `null`"
+    },
+
+    {
+        "class": "event_definition",
+        "input": {
+            "set_variable": null
+        },
+        "error": "`set_variable` must be object, but is `null`"
+    },
+    {
+        "class": "event_definition",
+        "input": {
+            "set_variable": {
+                "name": null
+            }
+        },
+        "error": "`set_variable.name` must be string, but is `null`"
     }
 ]
