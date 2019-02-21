@@ -48,6 +48,18 @@
     },
     {
         "class": "input_source",
+        "error": "`input_sources` entry error: unknown key: `LANGUAGE`",
+        "input": {
+            "type": "input_source_if",
+            "input_sources": [
+                {
+                    "LANGUAGE": "en"
+                }
+            ]
+        }
+    },
+    {
+        "class": "input_source",
         "error": "unknown key `input-sources` in `{\"input-sources\":[],\"type\":\"input_source_if\"}`",
         "input": {
             "type": "input_source_if",
