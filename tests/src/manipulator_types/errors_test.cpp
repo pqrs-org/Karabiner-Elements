@@ -5,7 +5,12 @@
 namespace {
 void handle_json(const nlohmann::json& json) {
   auto c = json.at("class").get<std::string>();
-  if (c == "to_event_definition") {
+  if (c == "event_definition") {
+    krbn::manipulator::event_definition event_definition;
+    for (const auto& [key, value] : json.at("input").items()) {
+      event_definition.handle_json(key, value, json);
+    }
+  } else if (c == "to_event_definition") {
     krbn::manipulator::to_event_definition(json.at("input"));
   } else {
     REQUIRE(false);

@@ -1,0 +1,69 @@
+[
+    {
+        "class": "event_definition",
+        "input": {
+            "key_code": null
+        },
+        "error": "`key_code` must be string, but is `null`"
+    },
+    {
+        "class": "event_definition",
+        "input": {
+            "key_code": "unknown_key_code"
+        },
+        "error": "unknown `key_code`: `\"unknown_key_code\"`"
+    },
+
+    {
+        "class": "event_definition",
+        "input": {
+            "consumer_key_code": null
+        },
+        "error": "`consumer_key_code` must be string, but is `null`"
+    },
+    {
+        "class": "event_definition",
+        "input": {
+            "consumer_key_code": "unknown_consumer_key_code"
+        },
+        "error": "unknown `consumer_key_code`: `\"unknown_consumer_key_code\"`"
+    },
+
+    {
+        "class": "event_definition",
+        "input": {
+            "pointing_button": null
+        },
+        "error": "`pointing_button` must be string, but is `null`"
+    },
+    {
+        "class": "event_definition",
+        "input": {
+            "pointing_button": "unknown_pointing_button"
+        },
+        "error": "unknown `pointing_button`: `\"unknown_pointing_button\"`"
+    },
+
+    {
+        "class": "event_definition",
+        "input": {
+            "any": null
+        },
+        "error": "`any` must be string, but is `null`"
+    },
+    {
+        "class": "event_definition",
+        "input": {
+            "any": "unknown"
+        },
+        "error": "unknown `any`: `\"unknown\"`"
+    },
+
+    {
+        "class": "event_definition",
+        "input": {
+            "shell_command": null
+        },
+        "error": "`shell_command` must be string, but is `null`"
+    }
+]

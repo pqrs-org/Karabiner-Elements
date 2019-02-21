@@ -50,35 +50,6 @@ TEST_CASE("to_event_definition") {
                                                        }));
   }
 
-  // type error
-
-  {
-    nlohmann::json json;
-    REQUIRE_THROWS_AS(
-        krbn::manipulator::to_event_definition(json),
-        pqrs::json::unmarshal_error);
-    REQUIRE_THROWS_WITH(
-        krbn::manipulator::to_event_definition(json),
-        "to_event_definition must be object, but is `null`");
-  }
-
-  // key_code error
-
-  {
-    nlohmann::json json({
-        {"key_code", nlohmann::json::array()},
-        {"modifiers", {
-                          "left_shift",
-                      }},
-    });
-    REQUIRE_THROWS_AS(
-        krbn::manipulator::to_event_definition(json),
-        pqrs::json::unmarshal_error);
-    REQUIRE_THROWS_WITH(
-        krbn::manipulator::to_event_definition(json),
-        "`key_code` must be string, but is `[]`");
-  }
-
   // modifiers error
 
   {

@@ -1,1 +1,4 @@
-["errors/to_event_definition_errors.json"]
+[
+    "errors/event_definition_errors.json",
+    "errors/to_event_definition_errors.json"
+]
