@@ -1,0 +1,45 @@
+[
+    {
+        "class": "keyboard_type",
+        "error": "keyboard_type must be object, but is `null`",
+        "input": null
+    },
+    {
+        "class": "keyboard_type",
+        "error": "type must be string, but is `null`",
+        "input": {
+            "type": null
+        }
+    },
+    {
+        "class": "keyboard_type",
+        "error": "unknown type `keyboard-type-if`",
+        "input": {
+            "type": "keyboard-type-if"
+        }
+    },
+    {
+        "class": "keyboard_type",
+        "error": "`keyboard_types` must be array, but is `null`",
+        "input": {
+            "type": "keyboard_type_if",
+            "keyboard_types": null
+        }
+    },
+    {
+        "class": "keyboard_type",
+        "error": "keyboard_types entry must be string, but is `null`",
+        "input": {
+            "type": "keyboard_type_if",
+            "keyboard_types": [null]
+        }
+    },
+    {
+        "class": "keyboard_type",
+        "error": "unknown key `keyboard-types` in `{\"keyboard-types\":[],\"type\":\"keyboard_type_if\"}`",
+        "input": {
+            "type": "keyboard_type_if",
+            "keyboard-types": []
+        }
+    }
+]

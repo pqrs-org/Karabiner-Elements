@@ -1,0 +1,121 @@
+[
+    {
+        "class": "device",
+        "error": "device must be object, but is `null`",
+        "input": null
+    },
+    {
+        "class": "device",
+        "error": "type must be string, but is `null`",
+        "input": {
+            "type": null
+        }
+    },
+    {
+        "class": "device",
+        "error": "unknown type `device-if`",
+        "input": {
+            "type": "device-if"
+        }
+    },
+    {
+        "class": "device",
+        "error": "`identifiers` must be array, but is `null`",
+        "input": {
+            "type": "device_if",
+            "identifiers": null
+        }
+    },
+    {
+        "class": "device",
+        "error": "identifiers entry must be object, but is `null`",
+        "input": {
+            "type": "device_if",
+            "identifiers": [null]
+        }
+    },
+    {
+        "class": "device",
+        "error": "identifiers entry `vendor_id` must be number, but is `null`",
+        "input": {
+            "type": "device_if",
+            "identifiers": [
+                {
+                    "vendor_id": null
+                }
+            ]
+        }
+    },
+    {
+        "class": "device",
+        "error": "identifiers entry `product_id` must be number, but is `null`",
+        "input": {
+            "type": "device_if",
+            "identifiers": [
+                {
+                    "product_id": null
+                }
+            ]
+        }
+    },
+    {
+        "class": "device",
+        "error": "identifiers entry `location_id` must be number, but is `null`",
+        "input": {
+            "type": "device_if",
+            "identifiers": [
+                {
+                    "location_id": null
+                }
+            ]
+        }
+    },
+    {
+        "class": "device",
+        "error": "identifiers entry `is_keyboard` must be boolean, but is `null`",
+        "input": {
+            "type": "device_if",
+            "identifiers": [
+                {
+                    "is_keyboard": null
+                }
+            ]
+        }
+    },
+    {
+        "class": "device",
+        "error": "identifiers entry `is_pointing_device` must be boolean, but is `null`",
+        "input": {
+            "type": "device_if",
+            "identifiers": [
+                {
+                    "is_pointing_device": null
+                }
+            ]
+        }
+    },
+    {
+        "class": "device",
+        "error": "unknown key `is-pointing-device` in `{\"is-pointing-device\":true}`",
+        "input": {
+            "type": "device_if",
+            "identifiers": [
+                {
+                    "is-pointing-device": true
+                }
+            ]
+        }
+    },
+    {
+        "class": "device",
+        "error": "`vendor_id` must be specified: `{\"product_id\":1234}`",
+        "input": {
+            "type": "device_if",
+            "identifiers": [
+                {
+                    "product_id": 1234
+                }
+            ]
+        }
+    }
+]

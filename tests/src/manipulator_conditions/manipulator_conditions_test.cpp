@@ -561,11 +561,15 @@ TEST_CASE("errors") {
   std::ifstream input("json/errors.json");
   auto json = nlohmann::json::parse(input);
   for (const auto& j : json) {
-    REQUIRE_THROWS_AS(
-        make_condition(j),
-        pqrs::json::unmarshal_error);
-    REQUIRE_THROWS_WITH(
-        make_condition(j),
-        j.at("error"));
+    std::ifstream error_json_input("json/" + j.get<std::string>());
+    auto error_json = nlohmann::json::parse(error_json_input);
+    for (const auto& e : error_json) {
+      REQUIRE_THROWS_AS(
+          make_condition(e),
+          pqrs::json::unmarshal_error);
+      REQUIRE_THROWS_WITH(
+          make_condition(e),
+          e.at("error"));
+    }
   }
 }

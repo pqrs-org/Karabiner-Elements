@@ -1,0 +1,77 @@
+[
+    {
+        "class": "frontmost_application",
+        "error": "frontmost_application must be object, but is `null`",
+        "input": null
+    },
+    {
+        "class": "frontmost_application",
+        "error": "type must be string, but is `null`",
+        "input": {
+            "type": null
+        }
+    },
+    {
+        "class": "frontmost_application",
+        "error": "unknown type `frontmost-application-if`",
+        "input": {
+            "type": "frontmost-application-if"
+        }
+    },
+    {
+        "class": "frontmost_application",
+        "error": "`bundle_identifiers` must be array, but is `null`",
+        "input": {
+            "type": "frontmost_application_if",
+            "bundle_identifiers": null
+        }
+    },
+    {
+        "class": "frontmost_application",
+        "error": "bundle_identifiers entry must be string, but is `null`",
+        "input": {
+            "type": "frontmost_application_if",
+            "bundle_identifiers": [null]
+        }
+    },
+    {
+        "class": "frontmost_application",
+        "error": "The expression contained mismatched ( and ).: `bundle_identifiers:[\"regex(\"]`",
+        "input": {
+            "type": "frontmost_application_if",
+            "bundle_identifiers": ["regex("]
+        }
+    },
+    {
+        "class": "frontmost_application",
+        "error": "file_paths entry must be string, but is `null`",
+        "input": {
+            "type": "frontmost_application_if",
+            "file_paths": [null]
+        }
+    },
+    {
+        "class": "frontmost_application",
+        "error": "The expression contained mismatched ( and ).: `file_paths:[\"regex(\"]`",
+        "input": {
+            "type": "frontmost_application_if",
+            "file_paths": ["regex("]
+        }
+    },
+    {
+        "class": "frontmost_application",
+        "error": "The expression contained mismatched ( and ).: `bundle_identifiers:[\"regex(\"]`",
+        "input": {
+            "type": "frontmost_application_if",
+            "bundle_identifiers": ["regex("]
+        }
+    },
+    {
+        "class": "frontmost_application",
+        "error": "unknown key `bundle-identifiers` in `{\"bundle-identifiers\":[],\"type\":\"frontmost_application_if\"}`",
+        "input": {
+            "type": "frontmost_application_if",
+            "bundle-identifiers": []
+        }
+    }
+]

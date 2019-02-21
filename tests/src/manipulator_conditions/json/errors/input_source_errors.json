@@ -1,0 +1,57 @@
+[
+    {
+        "class": "input_source",
+        "error": "input_source must be object, but is `null`",
+        "input": null
+    },
+    {
+        "class": "input_source",
+        "error": "type must be string, but is `null`",
+        "input": {
+            "type": null
+        }
+    },
+    {
+        "class": "input_source",
+        "error": "unknown type `input-source-if`",
+        "input": {
+            "type": "input-source-if"
+        }
+    },
+    {
+        "class": "input_source",
+        "error": "`input_sources` must be array, but is `null`",
+        "input": {
+            "type": "input_source_if",
+            "input_sources": null
+        }
+    },
+    {
+        "class": "input_source",
+        "error": "`input_sources` entry error: json must be object, but is `null`",
+        "input": {
+            "type": "input_source_if",
+            "input_sources": [null]
+        }
+    },
+    {
+        "class": "input_source",
+        "error": "`input_sources` entry error: The expression contained mismatched ( and ).: `\"language\":\"regex(\"`",
+        "input": {
+            "type": "input_source_if",
+            "input_sources": [
+                {
+                    "language": "regex("
+                }
+            ]
+        }
+    },
+    {
+        "class": "input_source",
+        "error": "unknown key `input-sources` in `{\"input-sources\":[],\"type\":\"input_source_if\"}`",
+        "input": {
+            "type": "input_source_if",
+            "input-sources": []
+        }
+    }
+]
