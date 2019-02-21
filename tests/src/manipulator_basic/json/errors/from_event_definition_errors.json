@@ -1,6 +1,11 @@
 [
     {
         "class": "from_event_definition",
+        "input": null,
+        "error": "`from` must be object, but is `null`"
+    },
+    {
+        "class": "from_event_definition",
         "input": {
             "key_code": "spacebar",
             "modifiers": {
@@ -8,11 +13,6 @@
             }
         },
         "error": "unknown modifier: `unknown_modifier`"
-    },
-    {
-        "class": "from_event_definition",
-        "input": null,
-        "error": "`from` must be object, but is `null`"
     },
     {
         "class": "from_event_definition",
