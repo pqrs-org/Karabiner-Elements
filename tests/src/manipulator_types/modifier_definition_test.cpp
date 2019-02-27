@@ -36,31 +36,6 @@ TEST_CASE("modifier_definition.modifier json") {
       REQUIRE(json.get<modifier>() == m);
     }
   }
-
-  // json is not string.
-
-  {
-    auto json = nlohmann::json::array();
-    json.push_back("hello");
-    REQUIRE_THROWS_AS(
-        json.get<modifier>(),
-        pqrs::json::unmarshal_error);
-    REQUIRE_THROWS_WITH(
-        json.get<modifier>(),
-        Catch::Equals("`modifier` must be string, but is `[\"hello\"]`"));
-  }
-
-  // json is invalid string.
-
-  {
-    nlohmann::json json = "hello";
-    REQUIRE_THROWS_AS(
-        json.get<modifier>(),
-        pqrs::json::unmarshal_error);
-    REQUIRE_THROWS_WITH(
-        json.get<modifier>(),
-        Catch::Equals("unknown modifier: `hello`"));
-  }
 }
 
 TEST_CASE("modifier_definition.make_modifiers") {
@@ -99,30 +74,6 @@ TEST_CASE("modifier_definition.make_modifiers") {
     auto actual = modifier_definition::make_modifiers(json, "modifiers");
     auto expected = std::unordered_set<modifier_definition::modifier>({});
     REQUIRE(actual == expected);
-  }
-
-  // type error
-
-  {
-    auto json = nlohmann::json::object();
-    REQUIRE_THROWS_AS(
-        modifier_definition::make_modifiers(json, "modifiers"),
-        pqrs::json::unmarshal_error);
-    REQUIRE_THROWS_WITH(
-        modifier_definition::make_modifiers(json, "modifiers"),
-        "`modifiers` must be array or string, but is `{}`");
-  }
-
-  // unknown modifier
-
-  {
-    nlohmann::json json("unknown");
-    REQUIRE_THROWS_AS(
-        modifier_definition::make_modifiers(json, "modifiers"),
-        pqrs::json::unmarshal_error);
-    REQUIRE_THROWS_WITH(
-        modifier_definition::make_modifiers(json, "modifiers"),
-        "unknown modifier: `unknown`");
   }
 }
 

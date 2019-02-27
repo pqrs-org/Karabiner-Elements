@@ -1,0 +1,28 @@
+[
+    {
+        "class": "modifier",
+        "input": null,
+        "error": "`modifier` must be string, but is `null`"
+    },
+    {
+        "class": "modifier",
+        "input": "unknown",
+        "error": "unknown modifier: `unknown`"
+    },
+
+    {
+        "class": "modifier_definition",
+        "input": 1234,
+        "error": "`field` must be array or string, but is `1234`"
+    },
+    {
+        "class": "modifier_definition",
+        "input": [1234],
+        "error": "`modifier` must be string, but is `1234`"
+    },
+    {
+        "class": "modifier_definition",
+        "input": ["unknown"],
+        "error": "unknown modifier: `unknown`"
+    }
+]

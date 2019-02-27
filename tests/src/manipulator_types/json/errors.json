@@ -1,4 +1,5 @@
 [
     "errors/event_definition_errors.json",
+    "errors/modifier_definition_errors.json",
     "errors/to_event_definition_errors.json"
 ]
