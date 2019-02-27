@@ -69,5 +69,11 @@
             "repeat": false
         },
         "error": "to_event_definition error: unknown key `Lazy` in `{\"Lazy\":true,\"repeat\":false}`"
+    },
+
+    {
+        "class": "to_event_definition",
+        "input": {},
+        "error": "to_event_definition error: event type is invalid: `{}`"
     }
 ]
