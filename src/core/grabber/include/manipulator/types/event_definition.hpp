@@ -274,40 +274,42 @@ public:
         throw pqrs::json::unmarshal_error(fmt::format("`{0}` must be object, but is `{1}`", key, value.dump()));
       }
 
-      // name
+      std::optional<std::string> variable_name;
+      std::optional<int> variable_value;
 
-      std::string variable_name;
+      for (const auto& [k, v] : value.items()) {
+        // k is always std::string.
 
-      {
-        auto it = value.find("name");
-        if (it == std::end(value)) {
-          throw pqrs::json::unmarshal_error(fmt::format("`{0}.name` is not found in `{1}`", key, value.dump()));
+        if (k == "name") {
+          if (!v.is_string()) {
+            throw pqrs::json::unmarshal_error(fmt::format("`{0}.name` must be string, but is `{1}`", key, v.dump()));
+          }
+          variable_name = v.get<std::string>();
+
+        } else if (k == "value") {
+          if (!v.is_number()) {
+            throw pqrs::json::unmarshal_error(fmt::format("`{0}.value` must be number, but is `{1}`", key, v.dump()));
+          }
+          variable_value = v.get<int>();
+
+        } else if (k == "description") {
+          // Do nothing
+
+        } else {
+          throw pqrs::json::unmarshal_error(fmt::format("unknown key `{0}` in `{1}`", k, value.dump()));
         }
-
-        if (!it.value().is_string()) {
-          throw pqrs::json::unmarshal_error(fmt::format("`{0}.name` must be string, but is `{1}`", key, it.value().dump()));
-        }
-        variable_name = it.value().get<std::string>();
       }
 
-      // value
+      if (!variable_name) {
+        throw pqrs::json::unmarshal_error(fmt::format("`{0}.name` is not found in `{1}`", key, value.dump()));
+      }
 
-      int variable_value;
-
-      {
-        auto it = value.find("value");
-        if (it == std::end(value)) {
-          throw pqrs::json::unmarshal_error(fmt::format("`{0}.value` is not found in `{1}`", key, value.dump()));
-        }
-
-        if (!it.value().is_number()) {
-          throw pqrs::json::unmarshal_error(fmt::format("`{0}.value` must be number, but is `{1}`", key, it.value().dump()));
-        }
-        variable_value = it.value().get<int>();
+      if (!variable_value) {
+        throw pqrs::json::unmarshal_error(fmt::format("`{0}.value` is not found in `{1}`", key, value.dump()));
       }
 
       type_ = type::set_variable;
-      value_ = std::make_pair(variable_name, variable_value);
+      value_ = std::make_pair(*variable_name, *variable_value);
 
       return true;
     }
@@ -323,7 +325,12 @@ public:
       }
 
       type_ = type::mouse_key;
-      value_ = mouse_key(value);
+
+      try {
+        value_ = value.get<mouse_key>();
+      } catch (const pqrs::json::unmarshal_error& e) {
+        throw pqrs::json::unmarshal_error(fmt::format("`{0}` error: {1}", key, e.what()));
+      }
 
       return true;
     }

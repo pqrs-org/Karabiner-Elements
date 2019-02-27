@@ -8,7 +8,7 @@ void handle_json(const nlohmann::json& json) {
   if (c == "event_definition") {
     krbn::manipulator::event_definition event_definition;
     for (const auto& [key, value] : json.at("input").items()) {
-      event_definition.handle_json(key, value, json);
+      event_definition.handle_json(key, value, json.at("input"));
     }
   } else if (c == "modifier") {
     json.at("input").get<krbn::manipulator::modifier_definition::modifier>();

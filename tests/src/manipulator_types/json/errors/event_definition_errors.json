@@ -2,6 +2,15 @@
     {
         "class": "event_definition",
         "input": {
+            "key_code": "a",
+            "consumer_key_code": "mute"
+        },
+        "error": "multiple types are specified: `{\"consumer_key_code\":\"mute\",\"key_code\":\"a\"}`"
+    },
+
+    {
+        "class": "event_definition",
+        "input": {
             "key_code": null
         },
         "error": "`key_code` must be string, but is `null`"
@@ -110,5 +119,58 @@
             }
         },
         "error": "`set_variable.name` must be string, but is `null`"
+    },
+    {
+        "class": "event_definition",
+        "input": {
+            "set_variable": {
+                "value": null
+            }
+        },
+        "error": "`set_variable.value` must be number, but is `null`"
+    },
+    {
+        "class": "event_definition",
+        "input": {
+            "set_variable": {
+                "Name": "flag"
+            }
+        },
+        "error": "unknown key `Name` in `{\"Name\":\"flag\"}`"
+    },
+    {
+        "class": "event_definition",
+        "input": {
+            "set_variable": {
+                "value": 1
+            }
+        },
+        "error": "`set_variable.name` is not found in `{\"value\":1}`"
+    },
+    {
+        "class": "event_definition",
+        "input": {
+            "set_variable": {
+                "name": "flag"
+            }
+        },
+        "error": "`set_variable.value` is not found in `{\"name\":\"flag\"}`"
+    },
+
+    {
+        "class": "event_definition",
+        "input": {
+            "mouse_key": null
+        },
+        "error": "`mouse_key` must be object, but is `null`"
+    },
+    {
+        "class": "event_definition",
+        "input": {
+            "mouse_key": {
+                "x": null
+            }
+        },
+        "error": "`mouse_key` error: `x` must be number, but is `null`"
     }
 ]

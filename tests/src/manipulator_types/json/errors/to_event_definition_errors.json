@@ -24,33 +24,6 @@
     },
     {
         "class": "to_event_definition",
-        "description": "Invalid modifiers",
-        "input": {
-            "key_code": "escape",
-            "modifiers": ["unknown"]
-        },
-        "error": "unknown modifier: `unknown`"
-    },
-    {
-        "class": "to_event_definition",
-        "description": "set_variable is not object",
-        "input": {
-            "set_variable": 1234
-        },
-        "error": "`set_variable` must be object, but is `1234`"
-    },
-    {
-        "class": "to_event_definition",
-        "description": "set_variable.name is not found",
-        "input": {
-            "set_variable": {
-                "value": 1234
-            }
-        },
-        "error": "`set_variable.name` is not found in `{\"value\":1234}`"
-    },
-    {
-        "class": "to_event_definition",
         "description": "set_variable.name is not string",
         "input": {
             "set_variable": {
