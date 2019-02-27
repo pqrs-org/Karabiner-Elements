@@ -11,40 +11,32 @@ TEST_CASE("mouse_key") {
     REQUIRE(mouse_key.get_horizontal_wheel() == 40);
     REQUIRE(mouse_key.get_speed_multiplier() == Approx(1.0));
 
-    nlohmann::json json;
-    json["x"] = 10;
-    json["y"] = 20;
-    json["vertical_wheel"] = 30;
-    json["horizontal_wheel"] = 40;
-    json["speed_multiplier"] = 1.0;
+    auto json = nlohmann::json::object({
+        {"x", 10},
+        {"y", 20},
+        {"vertical_wheel", 30},
+        {"horizontal_wheel", 40},
+        {"speed_multiplier", 1.0},
+    });
 
-    REQUIRE(mouse_key.to_json() == json);
+    REQUIRE(nlohmann::json(mouse_key) == json);
   }
   {
-    nlohmann::json json;
-    krbn::mouse_key mouse_key(json);
-    REQUIRE(mouse_key.get_x() == 0);
-    REQUIRE(mouse_key.get_y() == 0);
-    REQUIRE(mouse_key.get_vertical_wheel() == 0);
-    REQUIRE(mouse_key.get_horizontal_wheel() == 0);
-    REQUIRE(mouse_key.get_speed_multiplier() == Approx(1.0));
-  }
-  {
-    nlohmann::json json;
-    json["x"] = 10;
-    json["y"] = 20;
-    json["vertical_wheel"] = 30;
-    json["horizontal_wheel"] = 40;
-    json["speed_multiplier"] = 1.0;
+    auto json = nlohmann::json::object({
+        {"x", 10},
+        {"y", 20},
+        {"vertical_wheel", 30},
+        {"horizontal_wheel", 40},
+        {"speed_multiplier", 1.0},
+    });
 
-    krbn::mouse_key mouse_key(json);
+    auto mouse_key = json.get<krbn::mouse_key>();
+
     REQUIRE(mouse_key.get_x() == 10);
     REQUIRE(mouse_key.get_y() == 20);
     REQUIRE(mouse_key.get_vertical_wheel() == 30);
     REQUIRE(mouse_key.get_horizontal_wheel() == 40);
     REQUIRE(mouse_key.get_speed_multiplier() == Approx(1.0));
-
-    REQUIRE(mouse_key.to_json() == json);
   }
   {
     krbn::mouse_key mouse_key1(10, 20, 30, 40, 1.0);

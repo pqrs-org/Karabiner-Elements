@@ -1,0 +1,50 @@
+[
+    {
+        "class": "mouse_key",
+        "input": null,
+        "error": "json must be object, but is `null`"
+    },
+    {
+        "class": "mouse_key",
+        "input": {
+            "x": null
+        },
+        "error": "`x` must be number, but is `null`"
+    },
+    {
+        "class": "mouse_key",
+        "input": {
+            "y": null
+        },
+        "error": "`y` must be number, but is `null`"
+    },
+    {
+        "class": "mouse_key",
+        "input": {
+            "vertical_wheel": null
+        },
+        "error": "`vertical_wheel` must be number, but is `null`"
+    },
+    {
+        "class": "mouse_key",
+        "input": {
+            "horizontal_wheel": null
+        },
+        "error": "`horizontal_wheel` must be number, but is `null`"
+    },
+    {
+        "class": "mouse_key",
+        "input": {
+            "speed_multiplier": null
+        },
+        "error": "`speed_multiplier` must be number, but is `null`"
+    },
+    {
+        "class": "mouse_key",
+        "input": {
+            "x": 100,
+            "speed-multiplier": 2.0
+        },
+        "error": "unknown key: `speed-multiplier`"
+    }
+]
