@@ -130,7 +130,7 @@ public:
 
       case type::mouse_key:
         if (auto v = json_utility::find_json(json, "mouse_key")) {
-          result.value_ = mouse_key(*v);
+          result.value_ = v->get<mouse_key>();
         }
         break;
 
@@ -228,7 +228,7 @@ public:
 
       case type::mouse_key:
         if (auto v = get_mouse_key()) {
-          json["mouse_key"] = v->to_json();
+          json["mouse_key"] = *v;
         }
         break;
 
