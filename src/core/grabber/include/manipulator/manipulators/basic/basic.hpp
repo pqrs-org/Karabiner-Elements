@@ -282,12 +282,12 @@ public:
 
                 if (is_target) {
                   switch (from_.get_simultaneous_options().get_key_up_order()) {
-                    case from_event_definition::simultaneous_options::key_order::insensitive:
+                    case simultaneous_options::key_order::insensitive:
                       // Do nothing
                       break;
 
-                    case from_event_definition::simultaneous_options::key_order::strict:
-                    case from_event_definition::simultaneous_options::key_order::strict_inverse:
+                    case simultaneous_options::key_order::strict:
+                    case simultaneous_options::key_order::strict_inverse:
                       if (!from_event_definition::test_key_order(ordered_key_up_events,
                                                                  from_.get_simultaneous_options().get_key_up_order(),
                                                                  from_.get_event_definitions())) {
@@ -422,10 +422,10 @@ public:
               bool skip = false;
 
               switch (from_.get_simultaneous_options().get_key_up_when()) {
-                case from_event_definition::simultaneous_options::key_up_when::any:
+                case simultaneous_options::key_up_when::any:
                   break;
 
-                case from_event_definition::simultaneous_options::key_up_when::all:
+                case simultaneous_options::key_up_when::all:
                   if (!current_manipulated_original_event->get_from_events().empty()) {
                     skip = true;
                   }
@@ -671,33 +671,6 @@ private:
   std::vector<std::shared_ptr<manipulated_original_event::manipulated_original_event>> manipulated_original_events_;
 };
 
-inline void from_json(const nlohmann::json& json, from_event_definition::simultaneous_options::key_order& value) {
-  auto s = json.get<std::string>();
-
-  if (s == "insensitive") {
-    value = from_event_definition::simultaneous_options::key_order::insensitive;
-  } else if (s == "strict") {
-    value = from_event_definition::simultaneous_options::key_order::strict;
-  } else if (s == "strict_inverse") {
-    value = from_event_definition::simultaneous_options::key_order::strict_inverse;
-  } else {
-    logger::get_logger()->error("complex_modifications json error: Unknown simultaneous_options::key_order: {0}", json.dump());
-    value = from_event_definition::simultaneous_options::key_order::insensitive;
-  }
-}
-
-inline void from_json(const nlohmann::json& json, from_event_definition::simultaneous_options::key_up_when& value) {
-  auto s = json.get<std::string>();
-
-  if (s == "any") {
-    value = from_event_definition::simultaneous_options::key_up_when::any;
-  } else if (s == "all") {
-    value = from_event_definition::simultaneous_options::key_up_when::all;
-  } else {
-    logger::get_logger()->error("complex_modifications json error: Unknown simultaneous_options::key_up_when: {0}", json.dump());
-    value = from_event_definition::simultaneous_options::key_up_when::any;
-  }
-}
 } // namespace basic
 } // namespace manipulators
 } // namespace manipulator

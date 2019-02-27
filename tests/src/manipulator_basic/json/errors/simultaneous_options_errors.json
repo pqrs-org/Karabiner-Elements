@@ -1,0 +1,78 @@
+[
+    {
+        "class": "simultaneous_options::key_order",
+        "input": null,
+        "error": "json must be string, but is `null`"
+    },
+    {
+        "class": "simultaneous_options::key_order",
+        "input": "unknown",
+        "error": "unknown value: `unknown`"
+    },
+
+    {
+        "class": "simultaneous_options::key_up_when",
+        "input": null,
+        "error": "json must be string, but is `null`"
+    },
+    {
+        "class": "simultaneous_options::key_up_when",
+        "input": "unknown",
+        "error": "unknown value: `unknown`"
+    },
+
+    {
+        "class": "simultaneous_options",
+        "input": null,
+        "error": "json must be object, but is `null`"
+    },
+    {
+        "class": "simultaneous_options",
+        "input": {
+            "detect_key_down_uninterruptedly": null
+        },
+        "error": "`detect_key_down_uninterruptedly` must be boolean, but is `null`"
+    },
+    {
+        "class": "simultaneous_options",
+        "input": {
+            "key_down_order": null
+        },
+        "error": "`key_down_order` error: json must be string, but is `null`"
+    },
+    {
+        "class": "simultaneous_options",
+        "input": {
+            "key_up_order": null
+        },
+        "error": "`key_up_order` error: json must be string, but is `null`"
+    },
+    {
+        "class": "simultaneous_options",
+        "input": {
+            "key_up_when": null
+        },
+        "error": "`key_up_when` error: json must be string, but is `null`"
+    },
+    {
+        "class": "simultaneous_options",
+        "input": {
+            "to_after_key_up": null
+        },
+        "error": "`to_after_key_up` must be array, but is `null`"
+    },
+    {
+        "class": "simultaneous_options",
+        "input": {
+            "to_after_key_up": [null]
+        },
+        "error": "`to_after_key_up` entry error: json must be object, but is `null`"
+    },
+    {
+        "class": "simultaneous_options",
+        "input": {
+            "to-after-key-up": []
+        },
+        "error": "unknown key `to-after-key-up` in `{\"to-after-key-up\":[]}`"
+    }
+]

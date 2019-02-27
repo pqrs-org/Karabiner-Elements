@@ -534,36 +534,6 @@ TEST_CASE("manipulator.details.basic::from_event_definition") {
   }
 }
 
-namespace {
-void handle_json(const nlohmann::json& json) {
-  auto c = json.at("class").get<std::string>();
-  if (c == "from_event_definition") {
-    krbn::manipulator::manipulators::basic::from_event_definition(json.at("input"));
-  } else {
-    REQUIRE(false);
-  }
-}
-} // namespace
-
-TEST_CASE("errors") {
-  namespace basic = krbn::manipulator::manipulators::basic;
-
-  std::ifstream json_file("json/errors.json");
-  auto json = nlohmann::json::parse(json_file);
-  for (const auto& j : json) {
-    std::ifstream error_json_input("json/" + j.get<std::string>());
-    auto error_json = nlohmann::json::parse(error_json_input);
-    for (const auto& e : error_json) {
-      REQUIRE_THROWS_AS(
-          handle_json(e),
-          pqrs::json::unmarshal_error);
-      REQUIRE_THROWS_WITH(
-          handle_json(e),
-          e.at("error").get<std::string>());
-    }
-  }
-}
-
 TEST_CASE("basic::from_event_definition.test_event") {
   namespace basic = krbn::manipulator::manipulators::basic;
 
@@ -660,36 +630,8 @@ TEST_CASE("simultaneous_options") {
     }));
 
     REQUIRE(event_definition.get_simultaneous_options().get_detect_key_down_uninterruptedly() == true);
-    REQUIRE(event_definition.get_simultaneous_options().get_key_down_order() == basic::from_event_definition::simultaneous_options::key_order::strict);
-    REQUIRE(event_definition.get_simultaneous_options().get_key_up_order() == basic::from_event_definition::simultaneous_options::key_order::strict_inverse);
-    REQUIRE(event_definition.get_simultaneous_options().get_key_up_when() == basic::from_event_definition::simultaneous_options::key_up_when::all);
-  }
-
-  {
-    basic::from_event_definition event_definition(nlohmann::json::object({
-        {"simultaneous_options", nlohmann::json::object({
-                                     {"detect_key_down_uninterruptedly", "unknown"},
-                                     {"key_down_order", "unknown"},
-                                     {"key_up_order", nlohmann::json::array()},
-                                     {"key_up_when", "unknown"},
-                                     {"to_after_key_up", "unknown"},
-                                 })},
-    }));
-
-    REQUIRE(event_definition.get_simultaneous_options().get_detect_key_down_uninterruptedly() == false);
-    REQUIRE(event_definition.get_simultaneous_options().get_key_down_order() == basic::from_event_definition::simultaneous_options::key_order::insensitive);
-    REQUIRE(event_definition.get_simultaneous_options().get_key_up_order() == basic::from_event_definition::simultaneous_options::key_order::insensitive);
-    REQUIRE(event_definition.get_simultaneous_options().get_key_up_when() == basic::from_event_definition::simultaneous_options::key_up_when::any);
-  }
-
-  {
-    basic::from_event_definition event_definition(nlohmann::json::object({
-        {"simultaneous_options", "unknown"},
-    }));
-
-    REQUIRE(event_definition.get_simultaneous_options().get_detect_key_down_uninterruptedly() == false);
-    REQUIRE(event_definition.get_simultaneous_options().get_key_down_order() == basic::from_event_definition::simultaneous_options::key_order::insensitive);
-    REQUIRE(event_definition.get_simultaneous_options().get_key_up_order() == basic::from_event_definition::simultaneous_options::key_order::insensitive);
-    REQUIRE(event_definition.get_simultaneous_options().get_key_up_when() == basic::from_event_definition::simultaneous_options::key_up_when::any);
+    REQUIRE(event_definition.get_simultaneous_options().get_key_down_order() == basic::simultaneous_options::key_order::strict);
+    REQUIRE(event_definition.get_simultaneous_options().get_key_up_order() == basic::simultaneous_options::key_order::strict_inverse);
+    REQUIRE(event_definition.get_simultaneous_options().get_key_up_when() == basic::simultaneous_options::key_up_when::all);
   }
 }

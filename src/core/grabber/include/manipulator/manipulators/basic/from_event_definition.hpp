@@ -1,6 +1,7 @@
 #pragma once
 
 #include "../../types.hpp"
+#include "simultaneous_options.hpp"
 #include <pqrs/json.hpp>
 #include <unordered_set>
 #include <vector>
@@ -11,112 +12,6 @@ namespace manipulators {
 namespace basic {
 class from_event_definition final {
 public:
-  class simultaneous_options final {
-  public:
-    enum class key_order {
-      insensitive,
-      strict,
-      strict_inverse,
-    };
-
-    enum class key_up_when {
-      any,
-      all,
-    };
-
-    simultaneous_options(void) : detect_key_down_uninterruptedly_(false),
-                                 key_down_order_(key_order::insensitive),
-                                 key_up_order_(key_order::insensitive),
-                                 key_up_when_(key_up_when::any) {
-    }
-
-    void handle_json(const nlohmann::json& json) {
-      if (!json.is_object()) {
-        throw pqrs::json::unmarshal_error(fmt::format("`simultaneous_options` must be object, but is `{0}`", json.dump()));
-      }
-
-      for (const auto& [key, value] : json.items()) {
-        // key is always std::string.
-
-        if (key == "detect_key_down_uninterruptedly") {
-          if (!value.is_boolean()) {
-            logger::get_logger()->error("complex_modifications json error: `detect_key_down_uninterruptedly` should be boolean: {0}", json.dump());
-            continue;
-          }
-
-          detect_key_down_uninterruptedly_ = value;
-
-        } else if (key == "key_down_order") {
-          if (!value.is_string()) {
-            logger::get_logger()->error("complex_modifications json error: `key_down_order` should be string: {0}", json.dump());
-            continue;
-          }
-
-          key_down_order_ = value;
-
-        } else if (key == "key_up_order") {
-          if (!value.is_string()) {
-            logger::get_logger()->error("complex_modifications json error: `key_up_order` should be string: {0}", json.dump());
-            continue;
-          }
-
-          key_up_order_ = value;
-
-        } else if (key == "key_up_when") {
-          if (!value.is_string()) {
-            logger::get_logger()->error("complex_modifications json error: `key_up_when` should be string: {0}", json.dump());
-            continue;
-          }
-
-          key_up_when_ = value;
-
-        } else if (key == "to_after_key_up") {
-          if (!value.is_array()) {
-            logger::get_logger()->error("complex_modifications json error: `to_after_key_up` should be array: {0}", json.dump());
-            continue;
-          }
-
-          for (const auto& j : value) {
-            to_after_key_up_.emplace_back(j);
-          }
-
-        } else if (key == "description") {
-          // Do nothing
-
-        } else {
-          throw pqrs::json::unmarshal_error(fmt::format("`simultaneous_options` error: unknown key `{0}` in `{1}`", key, json.dump()));
-        }
-      }
-    }
-
-    bool get_detect_key_down_uninterruptedly(void) const {
-      return detect_key_down_uninterruptedly_;
-    }
-
-    key_order get_key_down_order(void) const {
-      return key_down_order_;
-    }
-
-    key_order get_key_up_order(void) const {
-      return key_up_order_;
-    }
-
-    key_up_when get_key_up_when(void) const {
-      return key_up_when_;
-    }
-
-    const std::vector<to_event_definition>& get_to_after_key_up(void) const {
-      return to_after_key_up_;
-    }
-
-  private:
-    bool detect_key_down_uninterruptedly_;
-    key_order key_down_order_;
-    key_order key_up_order_;
-    key_up_when key_up_when_;
-    std::vector<to_event_definition> to_after_key_up_;
-  };
-
   from_event_definition(const nlohmann::json& json) {
     if (!json.is_object()) {
       throw pqrs::json::unmarshal_error(fmt::format("`from` must be object, but is `{0}`", json.dump()));
@@ -158,7 +53,11 @@ public:
           continue;
         }
 
-        simultaneous_options_.handle_json(value);
+        try {
+          simultaneous_options_ = value.get<simultaneous_options>();
+        } catch (const pqrs::json::unmarshal_error& e) {
+          throw pqrs::json::unmarshal_error(fmt::format("`{0}` error: {1}", key, e.what()));
+        }
 
       } else if (key == "modifiers") {
         if (!value.is_object()) {
