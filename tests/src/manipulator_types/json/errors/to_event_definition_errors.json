@@ -22,60 +22,52 @@
         },
         "error": "`modifiers` must be array or string, but is `{\"mandatory\":[\"shift\"]}`"
     },
+
     {
         "class": "to_event_definition",
-        "description": "set_variable.name is not string",
-        "input": {
-            "set_variable": {
-                "name": 1234,
-                "value": 1234
-            }
-        },
-        "error": "`set_variable.name` must be string, but is `1234`"
-    },
-    {
-        "class": "to_event_definition",
-        "description": "set_variable.value is not found",
-        "input": {
-            "set_variable": {
-                "name": "variable_name"
-            }
-        },
-        "error": "`set_variable.value` is not found in `{\"name\":\"variable_name\"}`"
-    },
-    {
-        "class": "to_event_definition",
-        "description": "set_variable.name is not number",
-        "input": {
-            "set_variable": {
-                "name": "variable_name",
-                "value": "1234"
-            }
-        },
-        "error": "`set_variable.value` must be number, but is `\"1234\"`"
-    },
-    {
-        "class": "to_event_definition",
-        "description": "lazy is not boolean",
         "input": {
             "lazy": []
         },
         "error": "`lazy` must be boolean, but is `[]`"
     },
+
     {
         "class": "to_event_definition",
-        "description": "repeat is not boolean",
         "input": {
             "repeat": []
         },
         "error": "`repeat` must be boolean, but is `[]`"
     },
+
     {
         "class": "to_event_definition",
-        "description": "halt type error",
         "input": {
             "halt": null
         },
         "error": "`halt` must be boolean, but is `null`"
+    },
+
+    {
+        "class": "to_event_definition",
+        "input": {
+            "hold_down_milliseconds": null
+        },
+        "error": "`hold_down_milliseconds` must be number, but is `null`"
+    },
+    {
+        "class": "to_event_definition",
+        "input": {
+            "held_down_milliseconds": null
+        },
+        "error": "`held_down_milliseconds` must be number, but is `null`"
+    },
+
+    {
+        "class": "to_event_definition",
+        "input": {
+            "Lazy": true,
+            "repeat": false
+        },
+        "error": "to_event_definition error: unknown key `Lazy` in `{\"Lazy\":true,\"repeat\":false}`"
     }
 ]
