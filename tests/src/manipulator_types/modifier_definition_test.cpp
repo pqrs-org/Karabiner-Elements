@@ -46,8 +46,8 @@ TEST_CASE("modifier_definition.make_modifiers") {
 
   {
     nlohmann::json json({"left_command", "left_shift", "fn", "any"});
-    auto actual = modifier_definition::make_modifiers(json, "modifiers");
-    auto expected = std::unordered_set<modifier_definition::modifier>({
+    auto actual = modifier_definition::make_modifiers(json);
+    auto expected = std::set<modifier_definition::modifier>({
         modifier_definition::modifier::left_command,
         modifier_definition::modifier::left_shift,
         modifier_definition::modifier::fn,
@@ -60,19 +60,10 @@ TEST_CASE("modifier_definition.make_modifiers") {
 
   {
     nlohmann::json json("left_command");
-    auto actual = modifier_definition::make_modifiers(json, "modifiers");
-    auto expected = std::unordered_set<modifier_definition::modifier>({
+    auto actual = modifier_definition::make_modifiers(json);
+    auto expected = std::set<modifier_definition::modifier>({
         modifier_definition::modifier::left_command,
     });
-    REQUIRE(actual == expected);
-  }
-
-  // null
-
-  {
-    nlohmann::json json(nullptr);
-    auto actual = modifier_definition::make_modifiers(json, "modifiers");
-    auto expected = std::unordered_set<modifier_definition::modifier>({});
     REQUIRE(actual == expected);
   }
 }

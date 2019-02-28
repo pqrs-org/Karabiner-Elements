@@ -2,7 +2,7 @@
     {
         "class": "to_event_definition",
         "input": null,
-        "error": "to_event_definition must be object, but is `null`"
+        "error": "json must be object, but is `null`"
     },
 
     {
@@ -20,7 +20,7 @@
                 "mandatory": ["shift"]
             }
         },
-        "error": "`modifiers` must be array or string, but is `{\"mandatory\":[\"shift\"]}`"
+        "error": "`modifiers` error: json must be array or string, but is `{\"mandatory\":[\"shift\"]}`"
     },
 
     {
@@ -68,12 +68,12 @@
             "Lazy": true,
             "repeat": false
         },
-        "error": "to_event_definition error: unknown key `Lazy` in `{\"Lazy\":true,\"repeat\":false}`"
+        "error": "unknown key `Lazy` in `{\"Lazy\":true,\"repeat\":false}`"
     },
 
     {
         "class": "to_event_definition",
         "input": {},
-        "error": "to_event_definition error: event type is invalid: `{}`"
+        "error": "event type is invalid: `{}`"
     }
 ]

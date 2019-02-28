@@ -3,30 +3,25 @@
 #include "modifier_definition/modifier.hpp"
 #include "types/modifier_flag.hpp"
 #include <pqrs/json.hpp>
-#include <unordered_set>
+#include <set>
 
 namespace krbn {
 namespace manipulator {
 namespace modifier_definition {
-inline std::unordered_set<modifier> make_modifiers(const nlohmann::json& json,
-                                                   const std::string_view& field) {
-  if (json.is_null()) {
-    return std::unordered_set<modifier>{};
-  }
-
+// Note:
+// We use `std::set` instead of `std::unordered_set` in order to use modifiers with to_event_definition.
+inline std::set<modifier> make_modifiers(const nlohmann::json& json) {
   if (json.is_string()) {
-    return std::unordered_set<modifier>{
+    return std::set<modifier>{
         json.get<modifier>(),
     };
   }
 
   if (json.is_array()) {
-    return json.get<std::unordered_set<modifier>>();
+    return json.get<std::set<modifier>>();
   }
 
-  throw pqrs::json::unmarshal_error(fmt::format("`{0}` must be array or string, but is `{1}`",
-                                                field,
-                                                json.dump()));
+  throw pqrs::json::unmarshal_error(fmt::format("json must be array or string, but is `{0}`", json.dump()));
 }
 
 inline std::vector<modifier_flag> get_modifier_flags(modifier modifier) {

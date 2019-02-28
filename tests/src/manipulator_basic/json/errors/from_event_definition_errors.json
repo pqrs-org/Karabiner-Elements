@@ -2,59 +2,111 @@
     {
         "class": "from_event_definition",
         "input": null,
-        "error": "`from` must be object, but is `null`"
+        "error": "json must be object, but is `null`"
     },
+
     {
         "class": "from_event_definition",
         "input": {
-            "key_code": "spacebar",
-            "modifiers": {
-                "mandatory": ["shift", "unknown_modifier"]
-            }
-        },
-        "error": "unknown modifier: `unknown_modifier`"
-    },
-    {
-        "class": "from_event_definition",
-        "input": {
-            "description": "key_code is not string",
             "key_code": 1234
         },
         "error": "`key_code` must be string, but is `1234`"
     },
+
     {
         "class": "from_event_definition",
         "input": {
-            "description": "pointing_button is not string",
-            "pointing_button": 1234
+            "simultaneous": null
         },
-        "error": "`pointing_button` must be string, but is `1234`"
+        "error": "`simultaneous` must be array, but is `null`"
     },
     {
         "class": "from_event_definition",
         "input": {
-            "description": "any is not string",
-            "any": 1234
+            "simultaneous": [null]
         },
-        "error": "`any` must be string, but is `1234`"
+        "error": "`simultaneous` entry must be object, but is `null`"
     },
     {
         "class": "from_event_definition",
         "input": {
-            "description": "any value is not known",
-            "any": "unknown_any"
+            "simultaneous": [
+                {
+                    "unknown_key": "unknown_value"
+                }
+            ]
         },
-        "error": "unknown `any`: `\"unknown_any\"`"
+        "error": "unknown key: `unknown_key` in `{\"unknown_key\":\"unknown_value\"}"
     },
     {
         "class": "from_event_definition",
         "input": {
-            "description": "Duplicated type description",
-            "key_code": "spacebar",
-            "pointing_button": "button1"
+            "simultaneous": [{}]
         },
-        "error": "multiple types are specified: `{\"description\":\"Duplicated type description\",\"key_code\":\"spacebar\",\"pointing_button\":\"button1\"}`"
+        "error": "event type is invalid: `{\"simultaneous\":[{}]}`"
     },
+
+    {
+        "class": "from_event_definition",
+        "input": {
+            "simultaneous_options": null
+        },
+        "error": "`simultaneous_options` error: json must be object, but is `null`"
+    },
+
+    {
+        "class": "from_event_definition",
+        "input": {
+            "modifiers": null
+        },
+        "error": "`modifiers` must be object, but is `null`"
+    },
+    {
+        "class": "from_event_definition",
+        "input": {
+            "modifiers": {
+                "mandatory": null
+            }
+        },
+        "error": "`modifiers.mandatory` error: json must be array or string, but is `null`"
+    },
+    {
+        "class": "from_event_definition",
+        "input": {
+            "modifiers": {
+                "mandatory": [null]
+            }
+        },
+        "error": "`modifiers.mandatory` error: `modifier` must be string, but is `null`"
+    },
+    {
+        "class": "from_event_definition",
+        "input": {
+            "modifiers": {
+                "optional": null
+            }
+        },
+        "error": "`modifiers.optional` error: json must be array or string, but is `null`"
+    },
+    {
+        "class": "from_event_definition",
+        "input": {
+            "modifiers": {
+                "optional": [null]
+            }
+        },
+        "error": "`modifiers.optional` error: `modifier` must be string, but is `null`"
+    },
+    {
+        "class": "from_event_definition",
+        "input": {
+            "modifiers": {
+                "Optional": [null]
+            }
+        },
+        "error": "`modifiers` error: unknown key `Optional` in `{\"Optional\":[null]}`"
+    },
+
     {
         "class": "from_event_definition",
         "input": {
@@ -62,22 +114,17 @@
         },
         "error": "`from` error: unknown key `unknown_key` in `{\"unknown_key\":\"dummy\"}`"
     },
+
     {
         "class": "from_event_definition",
-        "input": {
-            "modifiers": {
-                "unknown_modifiers": "dummy"
-            }
-        },
-        "error": "`modifiers` error: unknown key `unknown_modifiers` in `{\"unknown_modifiers\":\"dummy\"}`"
+        "input": {},
+        "error": "event is not specified: `{}`"
     },
     {
         "class": "from_event_definition",
         "input": {
-            "modifiers": {
-                "unknown_modifiers": "dummy"
-            }
+            "shell_command": "ls"
         },
-        "error": "`modifiers` error: unknown key `unknown_modifiers` in `{\"unknown_modifiers\":\"dummy\"}`"
+        "error": "event type is invalid: `{\"shell_command\":\"ls\"}`"
     }
 ]

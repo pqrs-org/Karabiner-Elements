@@ -92,8 +92,8 @@ TEST_CASE("from_event_definition.test_modifiers") {
 
     REQUIRE(event_definition.get_event_definitions().size() == 1);
     REQUIRE(event_definition.get_event_definitions().front().get_key_code() == krbn::key_code::spacebar);
-    REQUIRE(event_definition.get_mandatory_modifiers() == std::unordered_set<modifier_definition::modifier>{});
-    REQUIRE(event_definition.get_optional_modifiers() == std::unordered_set<modifier_definition::modifier>{});
+    REQUIRE(event_definition.get_mandatory_modifiers() == std::set<modifier_definition::modifier>{});
+    REQUIRE(event_definition.get_optional_modifiers() == std::set<modifier_definition::modifier>{});
 
     {
       krbn::modifier_flag_manager modifier_flag_manager;
@@ -115,8 +115,8 @@ TEST_CASE("from_event_definition.test_modifiers") {
 
     REQUIRE(event_definition.get_event_definitions().size() == 1);
     REQUIRE(event_definition.get_event_definitions().front().get_key_code() == krbn::key_code::left_shift);
-    REQUIRE(event_definition.get_mandatory_modifiers() == std::unordered_set<modifier_definition::modifier>{});
-    REQUIRE(event_definition.get_optional_modifiers() == std::unordered_set<modifier_definition::modifier>{});
+    REQUIRE(event_definition.get_mandatory_modifiers() == std::set<modifier_definition::modifier>{});
+    REQUIRE(event_definition.get_optional_modifiers() == std::set<modifier_definition::modifier>{});
 
     {
       krbn::modifier_flag_manager modifier_flag_manager;
@@ -141,8 +141,8 @@ TEST_CASE("from_event_definition.test_modifiers") {
 
     REQUIRE(event_definition.get_event_definitions().size() == 1);
     REQUIRE(event_definition.get_event_definitions().front().get_key_code() == krbn::key_code::spacebar);
-    REQUIRE(event_definition.get_mandatory_modifiers() == std::unordered_set<modifier_definition::modifier>{modifier_definition::modifier::any});
-    REQUIRE(event_definition.get_optional_modifiers() == std::unordered_set<modifier_definition::modifier>{});
+    REQUIRE(event_definition.get_mandatory_modifiers() == std::set<modifier_definition::modifier>{modifier_definition::modifier::any});
+    REQUIRE(event_definition.get_optional_modifiers() == std::set<modifier_definition::modifier>{});
 
     {
       krbn::modifier_flag_manager modifier_flag_manager;
@@ -178,8 +178,8 @@ TEST_CASE("from_event_definition.test_modifiers") {
 
     REQUIRE(event_definition.get_event_definitions().size() == 1);
     REQUIRE(event_definition.get_event_definitions().front().get_key_code() == krbn::key_code::spacebar);
-    REQUIRE(event_definition.get_mandatory_modifiers() == std::unordered_set<modifier_definition::modifier>{});
-    REQUIRE(event_definition.get_optional_modifiers() == std::unordered_set<modifier_definition::modifier>{modifier_definition::modifier::any});
+    REQUIRE(event_definition.get_mandatory_modifiers() == std::set<modifier_definition::modifier>{});
+    REQUIRE(event_definition.get_optional_modifiers() == std::set<modifier_definition::modifier>{modifier_definition::modifier::any});
 
     {
       krbn::modifier_flag_manager modifier_flag_manager;
@@ -211,8 +211,8 @@ TEST_CASE("from_event_definition.test_modifiers") {
 
     REQUIRE(event_definition.get_event_definitions().size() == 1);
     REQUIRE(event_definition.get_event_definitions().front().get_key_code() == krbn::key_code::p);
-    REQUIRE(event_definition.get_mandatory_modifiers() == std::unordered_set<modifier_definition::modifier>{modifier_definition::modifier::control});
-    REQUIRE(event_definition.get_optional_modifiers() == std::unordered_set<modifier_definition::modifier>{modifier_definition::modifier::shift});
+    REQUIRE(event_definition.get_mandatory_modifiers() == std::set<modifier_definition::modifier>{modifier_definition::modifier::control});
+    REQUIRE(event_definition.get_optional_modifiers() == std::set<modifier_definition::modifier>{modifier_definition::modifier::shift});
 
     {
       krbn::modifier_flag_manager modifier_flag_manager;
@@ -254,8 +254,8 @@ TEST_CASE("from_event_definition.test_modifiers") {
 
     REQUIRE(event_definition.get_event_definitions().size() == 1);
     REQUIRE(event_definition.get_event_definitions().front().get_key_code() == krbn::key_code::spacebar);
-    REQUIRE(event_definition.get_mandatory_modifiers() == std::unordered_set<modifier_definition::modifier>{modifier_definition::modifier::left_shift});
-    REQUIRE(event_definition.get_optional_modifiers() == std::unordered_set<modifier_definition::modifier>{modifier_definition::modifier::any});
+    REQUIRE(event_definition.get_mandatory_modifiers() == std::set<modifier_definition::modifier>{modifier_definition::modifier::left_shift});
+    REQUIRE(event_definition.get_optional_modifiers() == std::set<modifier_definition::modifier>{modifier_definition::modifier::any});
 
     {
       krbn::modifier_flag_manager modifier_flag_manager;
@@ -290,8 +290,8 @@ TEST_CASE("from_event_definition.test_modifiers") {
 
     REQUIRE(event_definition.get_event_definitions().size() == 1);
     REQUIRE(event_definition.get_event_definitions().front().get_key_code() == krbn::key_code::spacebar);
-    REQUIRE(event_definition.get_mandatory_modifiers() == std::unordered_set<modifier_definition::modifier>{modifier_definition::modifier::left_shift});
-    REQUIRE(event_definition.get_optional_modifiers() == std::unordered_set<modifier_definition::modifier>{});
+    REQUIRE(event_definition.get_mandatory_modifiers() == std::set<modifier_definition::modifier>{modifier_definition::modifier::left_shift});
+    REQUIRE(event_definition.get_optional_modifiers() == std::set<modifier_definition::modifier>{});
 
     {
       krbn::modifier_flag_manager modifier_flag_manager;
@@ -326,8 +326,8 @@ TEST_CASE("from_event_definition.test_modifiers") {
 
     REQUIRE(event_definition.get_event_definitions().size() == 1);
     REQUIRE(event_definition.get_event_definitions().front().get_key_code() == krbn::key_code::spacebar);
-    REQUIRE(event_definition.get_mandatory_modifiers() == std::unordered_set<modifier_definition::modifier>{modifier_definition::modifier::shift});
-    REQUIRE(event_definition.get_optional_modifiers() == std::unordered_set<modifier_definition::modifier>{modifier_definition::modifier::any});
+    REQUIRE(event_definition.get_mandatory_modifiers() == std::set<modifier_definition::modifier>{modifier_definition::modifier::shift});
+    REQUIRE(event_definition.get_optional_modifiers() == std::set<modifier_definition::modifier>{modifier_definition::modifier::any});
 
     {
       krbn::modifier_flag_manager modifier_flag_manager;
@@ -379,8 +379,8 @@ TEST_CASE("from_event_definition.test_modifiers") {
 
     REQUIRE(event_definition.get_event_definitions().size() == 1);
     REQUIRE(event_definition.get_event_definitions().front().get_key_code() == krbn::key_code::spacebar);
-    REQUIRE(event_definition.get_mandatory_modifiers() == std::unordered_set<modifier_definition::modifier>{modifier_definition::modifier::shift});
-    REQUIRE(event_definition.get_optional_modifiers() == std::unordered_set<modifier_definition::modifier>{});
+    REQUIRE(event_definition.get_mandatory_modifiers() == std::set<modifier_definition::modifier>{modifier_definition::modifier::shift});
+    REQUIRE(event_definition.get_optional_modifiers() == std::set<modifier_definition::modifier>{});
 
     {
       krbn::modifier_flag_manager modifier_flag_manager;
@@ -441,11 +441,11 @@ TEST_CASE("manipulator.details.basic::from_event_definition") {
     REQUIRE(event_definition.get_event_definitions().front().get_type() == krbn::manipulator::event_definition::type::key_code);
     REQUIRE(event_definition.get_event_definitions().front().get_key_code() == krbn::key_code::spacebar);
     REQUIRE(event_definition.get_event_definitions().front().get_pointing_button() == std::nullopt);
-    REQUIRE(event_definition.get_mandatory_modifiers() == std::unordered_set<krbn::manipulator::modifier_definition::modifier>({
+    REQUIRE(event_definition.get_mandatory_modifiers() == std::set<krbn::manipulator::modifier_definition::modifier>({
                                                               krbn::manipulator::modifier_definition::modifier::shift,
                                                               krbn::manipulator::modifier_definition::modifier::left_command,
                                                           }));
-    REQUIRE(event_definition.get_optional_modifiers() == std::unordered_set<krbn::manipulator::modifier_definition::modifier>({
+    REQUIRE(event_definition.get_optional_modifiers() == std::set<krbn::manipulator::modifier_definition::modifier>({
                                                              krbn::manipulator::modifier_definition::modifier::any,
                                                          }));
     REQUIRE(event_definition.get_event_definitions().front().to_event() == krbn::event_queue::event(krbn::key_code::spacebar));
@@ -473,11 +473,11 @@ TEST_CASE("manipulator.details.basic::from_event_definition") {
     REQUIRE(event_definition.get_event_definitions().front().get_type() == krbn::manipulator::event_definition::type::key_code);
     REQUIRE(event_definition.get_event_definitions().front().get_key_code() == krbn::key_code::right_option);
     REQUIRE(event_definition.get_event_definitions().front().get_pointing_button() == std::nullopt);
-    REQUIRE(event_definition.get_mandatory_modifiers() == std::unordered_set<krbn::manipulator::modifier_definition::modifier>({
+    REQUIRE(event_definition.get_mandatory_modifiers() == std::set<krbn::manipulator::modifier_definition::modifier>({
                                                               krbn::manipulator::modifier_definition::modifier::shift,
                                                               krbn::manipulator::modifier_definition::modifier::left_command,
                                                           }));
-    REQUIRE(event_definition.get_optional_modifiers() == std::unordered_set<krbn::manipulator::modifier_definition::modifier>({
+    REQUIRE(event_definition.get_optional_modifiers() == std::set<krbn::manipulator::modifier_definition::modifier>({
                                                              krbn::manipulator::modifier_definition::modifier::any,
                                                          }));
   }
@@ -500,52 +500,12 @@ TEST_CASE("manipulator.details.basic::from_event_definition") {
     REQUIRE(event_definition.get_event_definitions()[0].get_key_code() == krbn::key_code::left_shift);
     REQUIRE(event_definition.get_event_definitions()[1].get_key_code() == krbn::key_code::right_shift);
   }
-  {
-    nlohmann::json json({
-        {"key_code", "a"},
-        {"modifiers", {
-                          {"mandatory", {
-                                            "dummy",
-                                        }},
-                      }},
-    });
-    REQUIRE_THROWS_AS(
-        basic::from_event_definition(json),
-        pqrs::json::unmarshal_error);
-    REQUIRE_THROWS_WITH(
-        basic::from_event_definition(json),
-        "unknown modifier: `dummy`");
-  }
-  {
-    nlohmann::json json({
-        {"key_code", nlohmann::json::array()},
-        {"modifiers", {
-                          {"mandatory", {
-                                            "left_shift",
-                                        }},
-                      }},
-    });
-    REQUIRE_THROWS_AS(
-        basic::from_event_definition(json),
-        pqrs::json::unmarshal_error);
-    REQUIRE_THROWS_WITH(
-        basic::from_event_definition(json),
-        "`key_code` must be string, but is `[]`");
-  }
 }
 
 TEST_CASE("basic::from_event_definition.test_event") {
   namespace basic = krbn::manipulator::manipulators::basic;
 
   // Empty json
-
-  {
-    basic::from_event_definition d(nlohmann::json::object({}));
-
-    REQUIRE(!basic::from_event_definition::test_event(krbn::event_queue::event(krbn::key_code::a), d));
-    REQUIRE(!basic::from_event_definition::test_event(krbn::event_queue::event(krbn::consumer_key_code::mute), d));
-    REQUIRE(!basic::from_event_definition::test_event(krbn::event_queue::event(krbn::pointing_button::button1), d));
-  }
 
   {
     basic::from_event_definition d(nlohmann::json::object({
@@ -621,6 +581,7 @@ TEST_CASE("simultaneous_options") {
 
   {
     basic::from_event_definition event_definition(nlohmann::json::object({
+        {"key_code", "escape"},
         {"simultaneous_options", nlohmann::json::object({
                                      {"detect_key_down_uninterruptedly", true},
                                      {"key_down_order", "strict"},

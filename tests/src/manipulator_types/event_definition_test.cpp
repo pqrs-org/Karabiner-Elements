@@ -6,16 +6,16 @@ TEST_CASE("to_event_definition") {
   {
     nlohmann::json json({
         {"key_code", "spacebar"},
-        {"modifiers", {
+        {"modifiers", nlohmann::json::array({
                           "shift",
                           "left_command",
-                      }},
+                      })},
     });
     krbn::manipulator::to_event_definition event_definition(json);
     REQUIRE(event_definition.get_event_definition().get_type() == krbn::manipulator::event_definition::type::key_code);
     REQUIRE(event_definition.get_event_definition().get_key_code() == krbn::key_code::spacebar);
     REQUIRE(event_definition.get_event_definition().get_pointing_button() == std::nullopt);
-    REQUIRE(event_definition.get_modifiers() == std::unordered_set<krbn::manipulator::modifier_definition::modifier>({
+    REQUIRE(event_definition.get_modifiers() == std::set<krbn::manipulator::modifier_definition::modifier>({
                                                     krbn::manipulator::modifier_definition::modifier::shift,
                                                     krbn::manipulator::modifier_definition::modifier::left_command,
                                                 }));
@@ -40,7 +40,7 @@ TEST_CASE("to_event_definition") {
     REQUIRE(event_definition.get_event_definition().get_type() == krbn::manipulator::event_definition::type::key_code);
     REQUIRE(event_definition.get_event_definition().get_key_code() == krbn::key_code::right_option);
     REQUIRE(event_definition.get_event_definition().get_pointing_button() == std::nullopt);
-    REQUIRE(event_definition.get_modifiers() == std::unordered_set<krbn::manipulator::modifier_definition::modifier>({
+    REQUIRE(event_definition.get_modifiers() == std::set<krbn::manipulator::modifier_definition::modifier>({
                                                     krbn::manipulator::modifier_definition::modifier::shift,
                                                     krbn::manipulator::modifier_definition::modifier::left_command,
                                                 }));
@@ -48,23 +48,6 @@ TEST_CASE("to_event_definition") {
                                                            krbn::event_queue::event(krbn::key_code::left_command),
                                                            krbn::event_queue::event(krbn::key_code::left_shift),
                                                        }));
-  }
-
-  // modifiers error
-
-  {
-    nlohmann::json json({
-        {"key_code", "a"},
-        {"modifiers", {
-                          "dummy",
-                      }},
-    });
-    REQUIRE_THROWS_AS(
-        krbn::manipulator::to_event_definition(json),
-        pqrs::json::unmarshal_error);
-    REQUIRE_THROWS_WITH(
-        krbn::manipulator::to_event_definition(json),
-        "unknown modifier: `dummy`");
   }
 
   {

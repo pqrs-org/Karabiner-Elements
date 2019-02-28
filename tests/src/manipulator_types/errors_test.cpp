@@ -13,9 +13,9 @@ void handle_json(const nlohmann::json& json) {
   } else if (c == "modifier") {
     json.at("input").get<krbn::manipulator::modifier_definition::modifier>();
   } else if (c == "modifier_definition") {
-    krbn::manipulator::modifier_definition::make_modifiers(json.at("input"), "field");
+    krbn::manipulator::modifier_definition::make_modifiers(json.at("input"));
   } else if (c == "to_event_definition") {
-    krbn::manipulator::to_event_definition(json.at("input"));
+    json.at("input").get<krbn::manipulator::to_event_definition>();
   } else {
     REQUIRE(false);
   }

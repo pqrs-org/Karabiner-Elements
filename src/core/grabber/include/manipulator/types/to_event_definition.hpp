@@ -3,6 +3,7 @@
 #include "event_definition.hpp"
 #include "event_queue.hpp"
 #include "modifier_definition.hpp"
+#include <set>
 
 namespace krbn {
 namespace manipulator {
@@ -26,11 +27,11 @@ public:
         static_cast<const to_event_definition&>(*this).get_event_definition());
   }
 
-  const std::unordered_set<modifier_definition::modifier>& get_modifiers(void) const {
+  const std::set<modifier_definition::modifier>& get_modifiers(void) const {
     return modifiers_;
   }
 
-  void set_modifiers(const std::unordered_set<modifier_definition::modifier>& value) {
+  void set_modifiers(const std::set<modifier_definition::modifier>& value) {
     modifiers_ = value;
   }
 
@@ -96,7 +97,7 @@ public:
 
 private:
   event_definition event_definition_;
-  std::unordered_set<modifier_definition::modifier> modifiers_;
+  std::set<modifier_definition::modifier> modifiers_;
   bool lazy_;
   bool repeat_;
   bool halt_;
@@ -113,7 +114,11 @@ inline void from_json(const nlohmann::json& json, to_event_definition& d) {
       // Do nothing
 
     } else if (key == "modifiers") {
-      d.set_modifiers(modifier_definition::make_modifiers(value, "modifiers"));
+      try {
+        d.set_modifiers(modifier_definition::make_modifiers(value));
+      } catch (const pqrs::json::unmarshal_error& e) {
+        throw pqrs::json::unmarshal_error(fmt::format("`{0}` error: {1}", key, e.what()));
+      }
 
     } else if (key == "lazy") {
       if (!value.is_boolean()) {
@@ -164,9 +169,7 @@ inline void from_json(const nlohmann::json& json, to_event_definition& d) {
     case event_definition::type::none:
     case event_definition::type::any:
       throw pqrs::json::unmarshal_error(fmt::format("event type is invalid: `{0}`", json.dump()));
-      break;
   }
 }
-
 } // namespace manipulator
 } // namespace krbn
