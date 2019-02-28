@@ -12,117 +12,7 @@ namespace manipulators {
 namespace basic {
 class from_event_definition final {
 public:
-  from_event_definition(const nlohmann::json& json) {
-    if (!json.is_object()) {
-      throw pqrs::json::unmarshal_error(fmt::format("json must be object, but is `{0}`", json.dump()));
-    }
-
-    event_definition default_event_definition;
-
-    for (const auto& [key, value] : json.items()) {
-      // key is always std::string.
-
-      if (default_event_definition.handle_json(key, value, json)) {
-        // Do nothing
-
-      } else if (key == "simultaneous") {
-        if (!value.is_array()) {
-          throw pqrs::json::unmarshal_error(fmt::format("`{0}` must be array, but is `{1}`", key, value.dump()));
-        }
-
-        for (const auto& j : value) {
-          if (!j.is_object()) {
-            throw pqrs::json::unmarshal_error(fmt::format("`{0}` entry must be object, but is `{1}`", key, j.dump()));
-          }
-
-          event_definition d;
-
-          for (const auto& [k, v] : j.items()) {
-            // k is always std::string.
-
-            if (d.handle_json(k, v, j)) {
-              // Do nothing
-            } else {
-              throw pqrs::json::unmarshal_error(fmt::format("unknown key: `{0}` in `{1}", k, j.dump()));
-            }
-          }
-
-          if (d.get_type() == event_definition::type::none) {
-            throw pqrs::json::unmarshal_error(fmt::format("event type is invalid: `{0}`", json.dump()));
-          }
-
-          event_definitions_.push_back(d);
-        }
-
-      } else if (key == "simultaneous_options") {
-        try {
-          simultaneous_options_ = value.get<simultaneous_options>();
-        } catch (const pqrs::json::unmarshal_error& e) {
-          throw pqrs::json::unmarshal_error(fmt::format("`{0}` error: {1}", key, e.what()));
-        }
-
-      } else if (key == "modifiers") {
-        if (!value.is_object()) {
-          throw pqrs::json::unmarshal_error(fmt::format("`{0}` must be object, but is `{1}`", key, value.dump()));
-        }
-
-        for (const auto& [k, v] : value.items()) {
-          // k is always std::string.
-
-          if (k == "mandatory") {
-            try {
-              mandatory_modifiers_ = modifier_definition::make_modifiers(v);
-            } catch (const pqrs::json::unmarshal_error& e) {
-              throw pqrs::json::unmarshal_error(fmt::format("`{0}.{1}` error: {2}", key, k, e.what()));
-            }
-
-          } else if (k == "optional") {
-            try {
-              optional_modifiers_ = modifier_definition::make_modifiers(v);
-            } catch (const pqrs::json::unmarshal_error& e) {
-              throw pqrs::json::unmarshal_error(fmt::format("`{0}.{1}` error: {2}", key, k, e.what()));
-            }
-
-          } else if (key == "description") {
-            // Do nothing
-
-          } else {
-            throw pqrs::json::unmarshal_error(fmt::format("`{0}` error: unknown key `{1}` in `{2}`", key, k, value.dump()));
-          }
-        }
-
-      } else {
-        throw pqrs::json::unmarshal_error(fmt::format("`from` error: unknown key `{0}` in `{1}`", key, json.dump()));
-      }
-    }
-
-    if (event_definitions_.empty() &&
-        default_event_definition.get_type() != event_definition::type::none) {
-      event_definitions_.push_back(default_event_definition);
-    }
-
-    // ----------------------------------------
-
-    if (event_definitions_.empty()) {
-      throw pqrs::json::unmarshal_error(fmt::format("event is not specified: `{0}`", json.dump()));
-    }
-
-    for (const auto& d : event_definitions_) {
-      switch (d.get_type()) {
-        case event_definition::type::key_code:
-        case event_definition::type::consumer_key_code:
-        case event_definition::type::pointing_button:
-        case event_definition::type::any:
-          break;
-
-        case event_definition::type::none:
-        case event_definition::type::shell_command:
-        case event_definition::type::select_input_source:
-        case event_definition::type::set_variable:
-        case event_definition::type::mouse_key:
-          throw pqrs::json::unmarshal_error(fmt::format("event type is invalid: `{0}`", json.dump()));
-      }
-    }
+  from_event_definition(void) {
   }
 
   virtual ~from_event_definition(void) {
@@ -132,16 +22,32 @@ public:
     return event_definitions_;
   }
 
+  void set_event_definitions(const std::vector<event_definition>& value) {
+    event_definitions_ = value;
+  }
+
   const std::set<modifier_definition::modifier>& get_mandatory_modifiers(void) const {
     return mandatory_modifiers_;
+  }
+
+  void set_mandatory_modifiers(const std::set<modifier_definition::modifier>& value) {
+    mandatory_modifiers_ = value;
   }
 
   const std::set<modifier_definition::modifier>& get_optional_modifiers(void) const {
     return optional_modifiers_;
   }
 
+  void set_optional_modifiers(const std::set<modifier_definition::modifier>& value) {
+    optional_modifiers_ = value;
+  }
+
   const simultaneous_options& get_simultaneous_options(void) const {
     return simultaneous_options_;
+  }
+
+  void set_simultaneous_options(const simultaneous_options& value) {
+    simultaneous_options_ = value;
   }
 
   std::optional<std::unordered_set<modifier_flag>> test_modifiers(const modifier_flag_manager& modifier_flag_manager) const {
@@ -299,6 +205,122 @@ private:
   std::set<modifier_definition::modifier> optional_modifiers_;
   simultaneous_options simultaneous_options_;
 };
+
+inline void from_json(const nlohmann::json& json, from_event_definition& d) {
+  if (!json.is_object()) {
+    throw pqrs::json::unmarshal_error(fmt::format("json must be object, but is `{0}`", json.dump()));
+  }
+
+  std::vector<event_definition> event_definitions;
+  event_definition default_event_definition;
+
+  for (const auto& [key, value] : json.items()) {
+    // key is always std::string.
+
+    if (default_event_definition.handle_json(key, value, json)) {
+      // Do nothing
+
+    } else if (key == "simultaneous") {
+      if (!value.is_array()) {
+        throw pqrs::json::unmarshal_error(fmt::format("`{0}` must be array, but is `{1}`", key, value.dump()));
+      }
+
+      for (const auto& j : value) {
+        if (!j.is_object()) {
+          throw pqrs::json::unmarshal_error(fmt::format("`{0}` entry must be object, but is `{1}`", key, j.dump()));
+        }
+
+        event_definition d;
+
+        for (const auto& [k, v] : j.items()) {
+          // k is always std::string.
+
+          if (d.handle_json(k, v, j)) {
+            // Do nothing
+          } else {
+            throw pqrs::json::unmarshal_error(fmt::format("unknown key: `{0}` in `{1}", k, j.dump()));
+          }
+        }
+
+        if (d.get_type() == event_definition::type::none) {
+          throw pqrs::json::unmarshal_error(fmt::format("event type is invalid: `{0}`", json.dump()));
+        }
+
+        event_definitions.push_back(d);
+      }
+
+    } else if (key == "simultaneous_options") {
+      try {
+        d.set_simultaneous_options(value.get<simultaneous_options>());
+      } catch (const pqrs::json::unmarshal_error& e) {
+        throw pqrs::json::unmarshal_error(fmt::format("`{0}` error: {1}", key, e.what()));
+      }
+
+    } else if (key == "modifiers") {
+      if (!value.is_object()) {
+        throw pqrs::json::unmarshal_error(fmt::format("`{0}` must be object, but is `{1}`", key, value.dump()));
+      }
+
+      for (const auto& [k, v] : value.items()) {
+        // k is always std::string.
+
+        if (k == "mandatory") {
+          try {
+            d.set_mandatory_modifiers(modifier_definition::make_modifiers(v));
+          } catch (const pqrs::json::unmarshal_error& e) {
+            throw pqrs::json::unmarshal_error(fmt::format("`{0}.{1}` error: {2}", key, k, e.what()));
+          }
+
+        } else if (k == "optional") {
+          try {
+            d.set_optional_modifiers(modifier_definition::make_modifiers(v));
+          } catch (const pqrs::json::unmarshal_error& e) {
+            throw pqrs::json::unmarshal_error(fmt::format("`{0}.{1}` error: {2}", key, k, e.what()));
+          }
+
+        } else if (key == "description") {
+          // Do nothing
+
+        } else {
+          throw pqrs::json::unmarshal_error(fmt::format("`{0}` error: unknown key `{1}` in `{2}`", key, k, value.dump()));
+        }
+      }
+
+    } else {
+      throw pqrs::json::unmarshal_error(fmt::format("`from` error: unknown key `{0}` in `{1}`", key, json.dump()));
+    }
+  }
+
+  if (event_definitions.empty() &&
+      default_event_definition.get_type() != event_definition::type::none) {
+    event_definitions.push_back(default_event_definition);
+  }
+
+  // ----------------------------------------
+
+  if (event_definitions.empty()) {
+    throw pqrs::json::unmarshal_error(fmt::format("event is not specified: `{0}`", json.dump()));
+  }
+
+  for (const auto& d : event_definitions) {
+    switch (d.get_type()) {
+      case event_definition::type::key_code:
+      case event_definition::type::consumer_key_code:
+      case event_definition::type::pointing_button:
+      case event_definition::type::any:
+        break;
+
+      case event_definition::type::none:
+      case event_definition::type::shell_command:
+      case event_definition::type::select_input_source:
+      case event_definition::type::set_variable:
+      case event_definition::type::mouse_key:
+        throw pqrs::json::unmarshal_error(fmt::format("event type is invalid: `{0}`", json.dump()));
+    }
+  }
+
+  d.set_event_definitions(event_definitions);
+}
 } // namespace basic
 } // namespace manipulators
 } // namespace manipulator

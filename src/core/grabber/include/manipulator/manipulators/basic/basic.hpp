@@ -23,14 +23,20 @@ public:
   basic(const nlohmann::json& json,
         const core_configuration::details::complex_modifications_parameters& parameters) : base(),
                                                                                            dispatcher_client(),
-                                                                                           parameters_(parameters),
-                                                                                           from_(json_utility::find_copy(json, "from", nlohmann::json())) {
-    for (auto it = std::begin(json); it != std::end(json); std::advance(it, 1)) {
-      // it.key() is always std::string.
-      const auto& key = it.key();
-      const auto& value = it.value();
+                                                                                           parameters_(parameters) {
+    if (!json.is_object()) {
+      throw pqrs::json::unmarshal_error(fmt::format("json must be object, but is `{0}`", json.dump()));
+    }
 
-      if (key == "to") {
+    for (const auto& [key, value] : json.items()) {
+      if (key == "from") {
+        try {
+          from_ = value.get<from_event_definition>();
+        } catch (const pqrs::json::unmarshal_error& e) {
+          throw pqrs::json::unmarshal_error(fmt::format("`{0}` error: {1}", key, e.what()));
+        }
+
+      } else if (key == "to") {
         if (!value.is_array()) {
           logger::get_logger()->error("complex_modifications json error: `to` should be array: {0}", json.dump());
           continue;

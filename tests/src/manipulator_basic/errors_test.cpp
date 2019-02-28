@@ -7,7 +7,7 @@ namespace {
 void handle_json(const nlohmann::json& json) {
   auto c = json.at("class").get<std::string>();
   if (c == "from_event_definition") {
-    krbn::manipulator::manipulators::basic::from_event_definition(json.at("input"));
+    json.at("input").get<krbn::manipulator::manipulators::basic::from_event_definition>();
   } else if (c == "simultaneous_options::key_order") {
     json.at("input").get<krbn::manipulator::manipulators::basic::simultaneous_options::key_order>();
   } else if (c == "simultaneous_options::key_up_when") {
