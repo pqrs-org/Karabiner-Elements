@@ -1,9 +1,13 @@
 [
+    // from_event_definition
+
     {
         "class": "from_event_definition",
         "input": null,
         "error": "json must be object, but is `null`"
     },
+
+    // from_event_definition.event_definition
 
     {
         "class": "from_event_definition",
@@ -12,6 +16,8 @@
         },
         "error": "`key_code` must be string, but is `1234`"
     },
+
+    // from_event_definition.simultaneous
 
     {
         "class": "from_event_definition",
@@ -46,6 +52,8 @@
         "error": "event type is invalid: `{\"simultaneous\":[{}]}`"
     },
 
+    // from_event_definition.simultaneous_options
+
     {
         "class": "from_event_definition",
         "input": {
@@ -53,6 +61,8 @@
         },
         "error": "`simultaneous_options` error: json must be object, but is `null`"
     },
+
+    // from_event_definition.modifiers
 
     {
         "class": "from_event_definition",
@@ -107,6 +117,8 @@
         "error": "`modifiers` error: unknown key `Optional` in `{\"Optional\":[null]}`"
     },
 
+    // unknown key
+
     {
         "class": "from_event_definition",
         "input": {
@@ -114,6 +126,8 @@
         },
         "error": "`from` error: unknown key `unknown_key` in `{\"unknown_key\":\"dummy\"}`"
     },
+
+    // extra errors
 
     {
         "class": "from_event_definition",

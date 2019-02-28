@@ -1,4 +1,6 @@
 [
+    // simultaneous_options::key_order
+
     {
         "class": "simultaneous_options::key_order",
         "input": null,
@@ -10,6 +12,8 @@
         "error": "unknown value: `unknown`"
     },
 
+    // simultaneous_options::key_up_when
+
     {
         "class": "simultaneous_options::key_up_when",
         "input": null,
@@ -20,6 +24,8 @@
         "input": "unknown",
         "error": "unknown value: `unknown`"
     },
+
+    // simultaneous_options
 
     {
         "class": "simultaneous_options",
