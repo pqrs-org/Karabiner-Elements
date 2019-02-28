@@ -1,7 +1,10 @@
 #pragma once
 
 #include <fstream>
+#include <iostream>
 #include <nlohmann/json.hpp>
+#include <pqrs/string.hpp>
+#include <sstream>
 #include <string>
 
 namespace krbn {
@@ -26,6 +29,27 @@ public:
     }
 
     return false;
+  }
+
+  // Rough implementation
+  static nlohmann::json load_jsonc(const std::string& file_path) {
+    if (pqrs::string::ends_with(file_path, ".jsonc")) {
+      std::stringstream ss;
+
+      std::ifstream json_file(file_path);
+      for (std::string line; std::getline(json_file, line);) {
+        if (pqrs::string::starts_with(pqrs::string::trim_copy(line), "//")) {
+          continue;
+        }
+
+        ss << line;
+      }
+
+      return nlohmann::json::parse(ss);
+    }
+
+    std::ifstream json_file(file_path);
+    return nlohmann::json::parse(json_file);
   }
 };
 } // namespace unit_testing

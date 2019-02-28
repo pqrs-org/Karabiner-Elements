@@ -24,63 +24,84 @@ public:
         const core_configuration::details::complex_modifications_parameters& parameters) : base(),
                                                                                            dispatcher_client(),
                                                                                            parameters_(parameters) {
-    if (!json.is_object()) {
-      throw pqrs::json::unmarshal_error(fmt::format("json must be object, but is `{0}`", json.dump()));
-    }
-
-    for (const auto& [key, value] : json.items()) {
-      if (key == "from") {
-        try {
-          from_ = value.get<from_event_definition>();
-        } catch (const pqrs::json::unmarshal_error& e) {
-          throw pqrs::json::unmarshal_error(fmt::format("`{0}` error: {1}", key, e.what()));
-        }
-
-      } else if (key == "to") {
-        if (!value.is_array()) {
-          logger::get_logger()->error("complex_modifications json error: `to` should be array: {0}", json.dump());
-          continue;
-        }
-
-        for (const auto& j : value) {
-          to_.emplace_back(j);
-        }
-
-      } else if (key == "to_after_key_up") {
-        if (!value.is_array()) {
-          logger::get_logger()->error("complex_modifications json error: `to_after_key_up` should be array: {0}", json.dump());
-          continue;
-        }
-
-        for (const auto& j : value) {
-          to_after_key_up_.emplace_back(j);
-        }
-
-      } else if (key == "to_if_alone") {
-        if (!value.is_array()) {
-          logger::get_logger()->error("complex_modifications json error: `to_if_alone` should be array: {0}", json.dump());
-          continue;
-        }
-
-        for (const auto& j : value) {
-          to_if_alone_.emplace_back(j);
-        }
-
-      } else if (key == "to_if_held_down") {
-        to_if_held_down_ = std::make_unique<to_if_held_down>(value);
-
-      } else if (key == "to_delayed_action") {
-        to_delayed_action_ = std::make_unique<to_delayed_action>(value);
-
-      } else if (key == "description" ||
-                 key == "conditions" ||
-                 key == "parameters" ||
-                 key == "from" ||
-                 key == "type") {
-        // Do nothing
-      } else {
-        logger::get_logger()->error("complex_modifications json error: Unknown key: {0} in {1}", key, json.dump());
+    try {
+      if (!json.is_object()) {
+        throw pqrs::json::unmarshal_error(fmt::format("json must be object, but is `{0}`", json.dump()));
       }
+
+      for (const auto& [key, value] : json.items()) {
+        if (key == "from") {
+          try {
+            from_ = value.get<from_event_definition>();
+          } catch (const pqrs::json::unmarshal_error& e) {
+            throw pqrs::json::unmarshal_error(fmt::format("`{0}` error: {1}", key, e.what()));
+          }
+
+        } else if (key == "to") {
+          if (!value.is_array()) {
+            throw pqrs::json::unmarshal_error(fmt::format("`{0}` must be array, but is `{1}`", key, value.dump()));
+          }
+
+          try {
+            to_ = value.get<std::vector<to_event_definition>>();
+          } catch (const pqrs::json::unmarshal_error& e) {
+            throw pqrs::json::unmarshal_error(fmt::format("`{0}` entry error: {1}", key, e.what()));
+          }
+
+        } else if (key == "to_after_key_up") {
+          if (!value.is_array()) {
+            throw pqrs::json::unmarshal_error(fmt::format("`{0}` must be array, but is `{1}`", key, value.dump()));
+          }
+
+          try {
+            to_after_key_up_ = value.get<std::vector<to_event_definition>>();
+          } catch (const pqrs::json::unmarshal_error& e) {
+            throw pqrs::json::unmarshal_error(fmt::format("`{0}` entry error: {1}", key, e.what()));
+          }
+
+        } else if (key == "to_if_alone") {
+          if (!value.is_array()) {
+            throw pqrs::json::unmarshal_error(fmt::format("`{0}` must be array, but is `{1}`", key, value.dump()));
+          }
+
+          try {
+            to_if_alone_ = value.get<std::vector<to_event_definition>>();
+          } catch (const pqrs::json::unmarshal_error& e) {
+            throw pqrs::json::unmarshal_error(fmt::format("`{0}` entry error: {1}", key, e.what()));
+          }
+
+        } else if (key == "to_if_held_down") {
+          try {
+            to_if_held_down_ = std::make_unique<to_if_held_down>(value);
+          } catch (const pqrs::json::unmarshal_error& e) {
+            throw pqrs::json::unmarshal_error(fmt::format("`{0}` error: {1}", key, e.what()));
+          }
+
+        } else if (key == "to_delayed_action") {
+          try {
+            to_delayed_action_ = std::make_unique<to_delayed_action>(value);
+          } catch (const pqrs::json::unmarshal_error& e) {
+            throw pqrs::json::unmarshal_error(fmt::format("`{0}` error: {1}", key, e.what()));
+          }
+
+        } else if (key == "description" ||
+                   key == "conditions" ||
+                   key == "parameters" ||
+                   key == "type") {
+          // Do nothing
+
+        } else {
+          throw pqrs::json::unmarshal_error(fmt::format("unknown key `{0}` in `{1}`", key, json.dump()));
+        }
+      }
+
+    } catch (...) {
+      detach_from_dispatcher([this] {
+        to_if_held_down_ = nullptr;
+        to_delayed_action_ = nullptr;
+      });
+
+      throw;
     }
   }
 

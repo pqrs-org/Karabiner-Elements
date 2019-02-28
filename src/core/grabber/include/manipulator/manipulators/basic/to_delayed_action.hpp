@@ -13,38 +13,42 @@ class to_delayed_action final : public pqrs::dispatcher::extra::dispatcher_clien
 public:
   to_delayed_action(const nlohmann::json& json) : dispatcher_client(),
                                                   current_delayed_action_id_(0) {
-    if (json.is_object()) {
-      for (auto it = std::begin(json); it != std::end(json); std::advance(it, 1)) {
-        // it.key() is always std::string.
-        const auto& key = it.key();
-        const auto& value = it.value();
+    try {
+      if (!json.is_object()) {
+        throw pqrs::json::unmarshal_error(fmt::format("json must be object, but is `{0}`", json.dump()));
+      }
 
+      for (const auto& [key, value] : json.items()) {
         if (key == "to_if_invoked") {
           if (!value.is_array()) {
-            logger::get_logger()->error("complex_modifications json error: `to_if_invoked` should be array: {0}", json.dump());
-            continue;
+            throw pqrs::json::unmarshal_error(fmt::format("`{0}` must be array, but is `{1}`", key, value.dump()));
           }
 
-          for (const auto& j : value) {
-            to_if_invoked_.emplace_back(j);
+          try {
+            to_if_invoked_ = value.get<std::vector<to_event_definition>>();
+          } catch (const pqrs::json::unmarshal_error& e) {
+            throw pqrs::json::unmarshal_error(fmt::format("`{0}` entry error: {1}", key, e.what()));
           }
 
         } else if (key == "to_if_canceled") {
           if (!value.is_array()) {
-            logger::get_logger()->error("complex_modifications json error: `to_if_canceled` should be array: {0}", json.dump());
-            continue;
+            throw pqrs::json::unmarshal_error(fmt::format("`{0}` must be array, but is `{1}`", key, value.dump()));
           }
 
-          for (const auto& j : value) {
-            to_if_canceled_.emplace_back(j);
+          try {
+            to_if_canceled_ = value.get<std::vector<to_event_definition>>();
+          } catch (const pqrs::json::unmarshal_error& e) {
+            throw pqrs::json::unmarshal_error(fmt::format("`{0}` entry error: {1}", key, e.what()));
           }
 
         } else {
-          logger::get_logger()->error("complex_modifications json error: Unknown key: {0} in {1}", key, json.dump());
+          throw pqrs::json::unmarshal_error(fmt::format("unknown key `{0}` in `{1}`", key, json.dump()));
         }
       }
-    } else {
-      logger::get_logger()->error("complex_modifications json error: `to_delayed_action` should be object: {0}", json.dump());
+
+    } catch (...) {
+      detach_from_dispatcher();
+      throw;
     }
   }
 

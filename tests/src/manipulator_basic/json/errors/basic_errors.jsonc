@@ -1,0 +1,152 @@
+[
+    // basic
+
+    {
+        "class": "basic",
+        "input": null,
+        "error": "json must be object, but is `null`"
+    },
+
+    // basic.form
+
+    {
+        "class": "basic",
+        "input": {
+            "from": null
+        },
+        "error": "`from` error: json must be object, but is `null`"
+    },
+
+    // basic.to
+
+    {
+        "class": "basic",
+        "input": {
+            "to": null
+        },
+        "error": "`to` must be array, but is `null`"
+    },
+    {
+        "class": "basic",
+        "input": {
+            "to": [null]
+        },
+        "error": "`to` entry error: json must be object, but is `null`"
+    },
+
+    // basic.to_after_key_up
+
+    {
+        "class": "basic",
+        "input": {
+            "to_after_key_up": null
+        },
+        "error": "`to_after_key_up` must be array, but is `null`"
+    },
+    {
+        "class": "basic",
+        "input": {
+            "to_after_key_up": [null]
+        },
+        "error": "`to_after_key_up` entry error: json must be object, but is `null`"
+    },
+
+    // basic.to_if_alone
+
+    {
+        "class": "basic",
+        "input": {
+            "to_if_alone": null
+        },
+        "error": "`to_if_alone` must be array, but is `null`"
+    },
+    {
+        "class": "basic",
+        "input": {
+            "to_if_alone": [null]
+        },
+        "error": "`to_if_alone` entry error: json must be object, but is `null`"
+    },
+
+    // basic.to_if_held_down
+
+    {
+        "class": "basic",
+        "input": {
+            "to_if_held_down": null
+        },
+        "error": "`to_if_held_down` error: json must be array, but is `null`"
+    },
+    {
+        "class": "basic",
+        "input": {
+            "to_if_held_down": [null]
+        },
+        "error": "`to_if_held_down` error: json must be object, but is `null`"
+    },
+
+    // basic.to_delayed_action
+
+    {
+        "class": "basic",
+        "input": {
+            "to_delayed_action": null
+        },
+        "error": "`to_delayed_action` error: json must be object, but is `null`"
+    },
+    {
+        "class": "basic",
+        "input": {
+            "to_delayed_action": {
+                "to_if_invoked": null
+            }
+        },
+        "error": "`to_delayed_action` error: `to_if_invoked` must be array, but is `null`"
+    },
+    {
+        "class": "basic",
+        "input": {
+            "to_delayed_action": {
+                "to_if_invoked": [null]
+            }
+        },
+        "error": "`to_delayed_action` error: `to_if_invoked` entry error: json must be object, but is `null`"
+    },
+    {
+        "class": "basic",
+        "input": {
+            "to_delayed_action": {
+                "to_if_canceled": null
+            }
+        },
+        "error": "`to_delayed_action` error: `to_if_canceled` must be array, but is `null`"
+    },
+    {
+        "class": "basic",
+        "input": {
+            "to_delayed_action": {
+                "to_if_canceled": [null]
+            }
+        },
+        "error": "`to_delayed_action` error: `to_if_canceled` entry error: json must be object, but is `null`"
+    },
+    {
+        "class": "basic",
+        "input": {
+            "to_delayed_action": {
+                "unknown_key": "unknown_value"
+            }
+        },
+        "error": "`to_delayed_action` error: unknown key `unknown_key` in `{\"unknown_key\":\"unknown_value\"}`"
+    },
+
+    // unknown key
+
+    {
+        "class": "basic",
+        "input": {
+            "unknown_key": "unknown_value"
+        },
+        "error": "unknown key `unknown_key` in `{\"unknown_key\":\"unknown_value\"}`"
+    }
+]

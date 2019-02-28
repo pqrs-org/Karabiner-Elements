@@ -1,12 +1,16 @@
 #include <catch2/catch.hpp>
 
+#include "../share/json_helper.hpp"
 #include "manipulator/manipulators/basic/basic.hpp"
 #include "manipulator/types.hpp"
 
 namespace {
 void handle_json(const nlohmann::json& json) {
   auto c = json.at("class").get<std::string>();
-  if (c == "from_event_definition") {
+  if (c == "basic") {
+    krbn::core_configuration::details::complex_modifications_parameters parameters;
+    krbn::manipulator::manipulators::basic::basic(json.at("input"), parameters);
+  } else if (c == "from_event_definition") {
     json.at("input").get<krbn::manipulator::manipulators::basic::from_event_definition>();
   } else if (c == "simultaneous_options::key_order") {
     json.at("input").get<krbn::manipulator::manipulators::basic::simultaneous_options::key_order>();
@@ -23,11 +27,9 @@ void handle_json(const nlohmann::json& json) {
 TEST_CASE("errors") {
   namespace basic = krbn::manipulator::manipulators::basic;
 
-  std::ifstream json_file("json/errors.json");
-  auto json = nlohmann::json::parse(json_file);
+  auto json = krbn::unit_testing::json_helper::load_jsonc("json/errors.json");
   for (const auto& j : json) {
-    std::ifstream error_json_input("json/" + j.get<std::string>());
-    auto error_json = nlohmann::json::parse(error_json_input);
+    auto error_json = krbn::unit_testing::json_helper::load_jsonc("json/" + j.get<std::string>());
     for (const auto& e : error_json) {
       REQUIRE_THROWS_AS(
           handle_json(e),

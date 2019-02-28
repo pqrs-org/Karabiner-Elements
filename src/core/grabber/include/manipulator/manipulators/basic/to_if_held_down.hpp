@@ -14,12 +14,16 @@ class to_if_held_down final : public pqrs::dispatcher::extra::dispatcher_client 
 public:
   to_if_held_down(const nlohmann::json& json) : dispatcher_client(),
                                                 current_held_down_id_(0) {
-    if (!json.is_array()) {
-      throw new pqrs::json::unmarshal_error(fmt::format("`to_if_held_down` must be array, but is `{0}`", json.dump()));
-    }
+    try {
+      if (!json.is_array()) {
+        throw pqrs::json::unmarshal_error(fmt::format("json must be array, but is `{0}`", json.dump()));
+      }
 
-    for (const auto& j : json) {
-      to_.emplace_back(j);
+      to_ = json.get<std::vector<to_event_definition>>();
+
+    } catch (...) {
+      detach_from_dispatcher();
+      throw;
     }
   }
 

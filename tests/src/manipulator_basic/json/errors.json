@@ -1,4 +1,5 @@
 [
+    "errors/basic_errors.jsonc",
     "errors/from_event_definition_errors.json",
     "errors/simultaneous_options_errors.json"
 ]
