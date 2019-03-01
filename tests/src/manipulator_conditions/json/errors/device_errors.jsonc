@@ -1,9 +1,12 @@
 [
     {
         "class": "device",
-        "error": "device must be object, but is `null`",
+        "error": "json must be object, but is `null`",
         "input": null
     },
+
+    // type
+
     {
         "class": "device",
         "error": "type must be string, but is `null`",
@@ -18,6 +21,9 @@
             "type": "device-if"
         }
     },
+
+    // identifiers
+
     {
         "class": "device",
         "error": "`identifiers` must be array, but is `null`",
@@ -94,6 +100,7 @@
             ]
         }
     },
+
     {
         "class": "device",
         "error": "unknown key `is-pointing-device` in `{\"is-pointing-device\":true,\"vendor_id\":1234}`",
@@ -107,6 +114,9 @@
             ]
         }
     },
+
+    // extra errors
+
     {
         "class": "device",
         "error": "`vendor_id` must be specified: `{\"product_id\":1234}`",
@@ -119,6 +129,9 @@
             ]
         }
     },
+
+    // unknown key
+
     {
         "class": "device",
         "error": "unknown key `IDENTIFIERS` in `{\"IDENTIFIERS\":[],\"type\":\"device_if\"}`",

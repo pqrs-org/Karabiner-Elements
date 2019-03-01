@@ -17,7 +17,7 @@ public:
   keyboard_type(const nlohmann::json& json) : base(),
                                               type_(type::keyboard_type_if) {
     if (!json.is_object()) {
-      throw pqrs::json::unmarshal_error(fmt::format("keyboard_type must be object, but is `{0}`", json.dump()));
+      throw pqrs::json::unmarshal_error(fmt::format("json must be object, but is `{0}`", json.dump()));
     }
 
     for (const auto& [key, value] : json.items()) {

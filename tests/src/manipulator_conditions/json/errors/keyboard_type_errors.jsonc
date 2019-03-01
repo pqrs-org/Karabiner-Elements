@@ -1,9 +1,12 @@
 [
     {
         "class": "keyboard_type",
-        "error": "keyboard_type must be object, but is `null`",
+        "error": "json must be object, but is `null`",
         "input": null
     },
+
+    // type
+
     {
         "class": "keyboard_type",
         "error": "type must be string, but is `null`",
@@ -18,6 +21,9 @@
             "type": "keyboard-type-if"
         }
     },
+
+    // keyboard_types
+
     {
         "class": "keyboard_type",
         "error": "`keyboard_types` must be array, but is `null`",
@@ -34,6 +40,9 @@
             "keyboard_types": [null]
         }
     },
+
+    // unknown key
+
     {
         "class": "keyboard_type",
         "error": "unknown key `keyboard-types` in `{\"keyboard-types\":[],\"type\":\"keyboard_type_if\"}`",

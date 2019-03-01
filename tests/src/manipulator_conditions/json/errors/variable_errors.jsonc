@@ -1,0 +1,76 @@
+[
+    {
+        "class": "variable",
+        "input": null,
+        "error": "json must be object, but is `null`"
+    },
+
+    // type
+
+    {
+        "class": "variable",
+        "input": {
+            "type": null
+        },
+        "error": "type must be string, but is `null`"
+    },
+    {
+        "class": "variable",
+        "input": {
+            "type": "variable-if"
+        },
+        "error": "unknown type `variable-if`"
+    },
+
+    // name
+
+    {
+        "class": "variable",
+        "input": {
+            "type": "variable_if",
+            "name": null
+        },
+        "error": "`name` must be string, but is `null`"
+    },
+
+    // value
+
+    {
+        "class": "variable",
+        "input": {
+            "type": "variable_if",
+            "value": null
+        },
+        "error": "`value` must be number, but is `null`"
+    },
+
+    // unknown key
+
+    {
+        "class": "variable",
+        "input": {
+            "type": "variable_if",
+            "Name": "name"
+        },
+        "error": "unknown key `Name` in `{\"Name\":\"name\",\"type\":\"variable_if\"}`"
+    },
+
+    // extra errors
+
+    {
+        "class": "variable",
+        "input": {
+            "type": "variable_if",
+            "name": "variable_name"
+        },
+        "error": "`value` is not found in `{\"name\":\"variable_name\",\"type\":\"variable_if\"}`"
+    },
+    {
+        "class": "variable",
+        "input": {
+            "type": "variable_if",
+            "value": 1234
+        },
+        "error": "`name` is not found in `{\"type\":\"variable_if\",\"value\":1234}`"
+    }
+]

@@ -15,10 +15,9 @@ public:
   };
 
   variable(const nlohmann::json& json) : base(),
-                                         type_(type::variable_if),
-                                         value_(0) {
+                                         type_(type::variable_if) {
     if (!json.is_object()) {
-      throw pqrs::json::unmarshal_error(fmt::format("variable must be object, but is `{0}`", json.dump()));
+      throw pqrs::json::unmarshal_error(fmt::format("json must be object, but is `{0}`", json.dump()));
     }
 
     for (const auto& [key, value] : json.items()) {
@@ -60,6 +59,14 @@ public:
         throw pqrs::json::unmarshal_error(fmt::format("unknown key `{0}` in `{1}`", key, json.dump()));
       }
     }
+
+    if (!name_) {
+      throw pqrs::json::unmarshal_error(fmt::format("`name` is not found in `{0}`", json.dump()));
+    }
+
+    if (!value_) {
+      throw pqrs::json::unmarshal_error(fmt::format("`value` is not found in `{0}`", json.dump()));
+    }
   }
 
   virtual ~variable(void) {
@@ -69,16 +76,16 @@ public:
                             const manipulator_environment& manipulator_environment) const {
     switch (type_) {
       case type::variable_if:
-        return manipulator_environment.get_variable(name_) == value_;
+        return manipulator_environment.get_variable(*name_) == *value_;
       case type::variable_unless:
-        return manipulator_environment.get_variable(name_) != value_;
+        return manipulator_environment.get_variable(*name_) != *value_;
     }
   }
 
 private:
   type type_;
-  std::string name_;
-  int value_;
+  std::optional<std::string> name_;
+  std::optional<int> value_;
 };
 } // namespace conditions
 } // namespace manipulator

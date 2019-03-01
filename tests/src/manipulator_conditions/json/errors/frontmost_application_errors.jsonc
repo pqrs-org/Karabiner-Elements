@@ -1,77 +1,89 @@
 [
     {
         "class": "frontmost_application",
-        "error": "frontmost_application must be object, but is `null`",
-        "input": null
+        "input": null,
+        "error": "json must be object, but is `null`"
     },
+
+    // type
+
     {
         "class": "frontmost_application",
-        "error": "type must be string, but is `null`",
         "input": {
             "type": null
-        }
+        },
+        "error": "type must be string, but is `null`"
     },
     {
         "class": "frontmost_application",
-        "error": "unknown type `frontmost-application-if`",
         "input": {
             "type": "frontmost-application-if"
-        }
+        },
+        "error": "unknown type `frontmost-application-if`"
     },
+
+    // bundle_identifiers
+
     {
         "class": "frontmost_application",
-        "error": "`bundle_identifiers` must be array, but is `null`",
         "input": {
             "type": "frontmost_application_if",
             "bundle_identifiers": null
-        }
+        },
+        "error": "`bundle_identifiers` must be array, but is `null`"
     },
     {
         "class": "frontmost_application",
-        "error": "bundle_identifiers entry must be string, but is `null`",
         "input": {
             "type": "frontmost_application_if",
             "bundle_identifiers": [null]
-        }
+        },
+        "error": "bundle_identifiers entry must be string, but is `null`"
     },
     {
         "class": "frontmost_application",
-        "error": "The expression contained mismatched ( and ).: `bundle_identifiers:[\"regex(\"]`",
         "input": {
             "type": "frontmost_application_if",
             "bundle_identifiers": ["regex("]
-        }
+        },
+        "error": "The expression contained mismatched ( and ).: `bundle_identifiers:[\"regex(\"]`"
+    },
+
+    // file_paths
+
+    {
+        "class": "frontmost_application",
+        "input": {
+            "type": "frontmost_application_if",
+            "file_paths": null
+        },
+        "error": "`file_paths` must be array, but is `null`"
     },
     {
         "class": "frontmost_application",
-        "error": "file_paths entry must be string, but is `null`",
         "input": {
             "type": "frontmost_application_if",
             "file_paths": [null]
-        }
+        },
+        "error": "file_paths entry must be string, but is `null`"
     },
     {
         "class": "frontmost_application",
-        "error": "The expression contained mismatched ( and ).: `file_paths:[\"regex(\"]`",
         "input": {
             "type": "frontmost_application_if",
             "file_paths": ["regex("]
-        }
+        },
+        "error": "The expression contained mismatched ( and ).: `file_paths:[\"regex(\"]`"
     },
+
+    // unknown key
+
     {
         "class": "frontmost_application",
-        "error": "The expression contained mismatched ( and ).: `bundle_identifiers:[\"regex(\"]`",
-        "input": {
-            "type": "frontmost_application_if",
-            "bundle_identifiers": ["regex("]
-        }
-    },
-    {
-        "class": "frontmost_application",
-        "error": "unknown key `bundle-identifiers` in `{\"bundle-identifiers\":[],\"type\":\"frontmost_application_if\"}`",
         "input": {
             "type": "frontmost_application_if",
             "bundle-identifiers": []
-        }
+        },
+        "error": "unknown key `bundle-identifiers` in `{\"bundle-identifiers\":[],\"type\":\"frontmost_application_if\"}`"
     }
 ]

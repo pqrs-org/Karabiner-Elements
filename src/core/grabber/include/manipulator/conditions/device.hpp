@@ -19,7 +19,7 @@ public:
   device(const nlohmann::json& json) : base(),
                                        type_(type::device_if) {
     if (!json.is_object()) {
-      throw pqrs::json::unmarshal_error(fmt::format("device must be object, but is `{0}`", json.dump()));
+      throw pqrs::json::unmarshal_error(fmt::format("json must be object, but is `{0}`", json.dump()));
     }
 
     for (const auto& [key, value] : json.items()) {

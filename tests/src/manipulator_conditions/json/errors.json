@@ -1,7 +1,0 @@
-[
-    "errors/device_errors.json",
-    "errors/frontmost_application_errors.json",
-    "errors/input_source_errors.json",
-    "errors/keyboard_type_errors.json",
-    "errors/variable_errors.json"
-]

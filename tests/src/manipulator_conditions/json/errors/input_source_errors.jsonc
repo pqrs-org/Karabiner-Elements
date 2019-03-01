@@ -1,9 +1,12 @@
 [
     {
         "class": "input_source",
-        "error": "input_source must be object, but is `null`",
+        "error": "json must be object, but is `null`",
         "input": null
     },
+
+    // type
+
     {
         "class": "input_source",
         "error": "type must be string, but is `null`",
@@ -18,6 +21,9 @@
             "type": "input-source-if"
         }
     },
+
+    // input_sources
+
     {
         "class": "input_source",
         "error": "`input_sources` must be array, but is `null`",
@@ -58,6 +64,9 @@
             ]
         }
     },
+
+    // unknown key
+
     {
         "class": "input_source",
         "error": "unknown key `input-sources` in `{\"input-sources\":[],\"type\":\"input_source_if\"}`",
