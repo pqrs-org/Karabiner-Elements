@@ -407,7 +407,6 @@ public:
     auto& map = get_key_code_name_value_map();
     auto it = map.find(name);
     if (it == map.end()) {
-      logger::get_logger()->error("unknown key_code: \"{0}\"", name);
       return std::nullopt;
     }
     return it->second;
@@ -633,7 +632,6 @@ public:
     auto& map = get_consumer_key_code_name_value_map();
     auto it = map.find(name);
     if (it == map.end()) {
-      logger::get_logger()->error("unknown consumer_key_code: \"{0}\"", name);
       return std::nullopt;
     }
     return it->second;
@@ -765,7 +763,6 @@ public:
     auto& map = get_pointing_button_name_value_map();
     auto it = map.find(name);
     if (it == map.end()) {
-      logger::get_logger()->error("unknown pointing_button: \"{0}\"", name);
       return std::nullopt;
     }
     return it->second;
