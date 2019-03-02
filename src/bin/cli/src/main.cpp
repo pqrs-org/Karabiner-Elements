@@ -5,6 +5,7 @@
 
 #include "constants.hpp"
 #include "dispatcher_utility.hpp"
+#include "karabiner_version.h"
 #include "logger.hpp"
 #include "monitor/configuration_monitor.hpp"
 #include <iostream>
@@ -75,6 +76,8 @@ int main(int argc, char** argv) {
   options.add_options()("select-profile", "Select a profile by name.", cxxopts::value<std::string>());
   options.add_options()("copy-current-profile-to-system-default-profile", "Copy the current profile to system default profile.");
   options.add_options()("remove-system-default-profile", "Remove the system default profile.");
+  options.add_options()("version", "Displays version.");
+  options.add_options()("version-number", "Displays version_number.");
   options.add_options()("help", "Print help.");
 
   try {
@@ -110,6 +113,43 @@ int main(int argc, char** argv) {
           goto finish;
         }
         exit_code = remove_system_default_profile();
+        goto finish;
+      }
+    }
+
+    {
+      std::string key = "version";
+      if (parse_result.count(key)) {
+        std::cout << karabiner_version << std::endl;
+        goto finish;
+      }
+    }
+
+    {
+      std::string key = "version-number";
+      if (parse_result.count(key)) {
+        int n = 0;
+        std::string number;
+
+        for (const auto& c : std::string_view(karabiner_version)) {
+          if (c == '.') {
+            if (!number.empty()) {
+              n += stoi(number);
+              number.clear();
+            }
+            n *= 100;
+
+          } else {
+            number += c;
+          }
+        }
+
+        if (!number.empty()) {
+          n += stoi(number);
+          number.clear();
+        }
+
+        std::cout << n << std::endl;
         goto finish;
       }
     }
