@@ -1,0 +1,5 @@
+[
+    "errors/event_definition_errors.jsonc",
+    "errors/modifier_definition_errors.jsonc",
+    "errors/to_event_definition_errors.jsonc"
+]

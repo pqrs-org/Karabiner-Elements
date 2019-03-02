@@ -8,6 +8,8 @@
         "error": "multiple types are specified: `{\"consumer_key_code\":\"mute\",\"key_code\":\"a\"}`"
     },
 
+    // key_code
+
     {
         "class": "event_definition",
         "input": {
@@ -22,6 +24,8 @@
         },
         "error": "unknown `key_code`: `\"unknown_key_code\"`"
     },
+
+    // consumer_key_code
 
     {
         "class": "event_definition",
