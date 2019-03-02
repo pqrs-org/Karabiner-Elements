@@ -96,11 +96,7 @@ public:
       }
 
     } catch (...) {
-      detach_from_dispatcher([this] {
-        to_if_held_down_ = nullptr;
-        to_delayed_action_ = nullptr;
-      });
-
+      detach_from_dispatcher();
       throw;
     }
   }
@@ -113,10 +109,7 @@ public:
   }
 
   virtual ~basic(void) {
-    detach_from_dispatcher([this] {
-      to_if_held_down_ = nullptr;
-      to_delayed_action_ = nullptr;
-    });
+    detach_from_dispatcher();
   }
 
   virtual bool already_manipulated(const event_queue::entry& front_input_event) {
@@ -697,7 +690,6 @@ private:
 
   std::vector<std::shared_ptr<manipulated_original_event::manipulated_original_event>> manipulated_original_events_;
 };
-
 } // namespace basic
 } // namespace manipulators
 } // namespace manipulator
