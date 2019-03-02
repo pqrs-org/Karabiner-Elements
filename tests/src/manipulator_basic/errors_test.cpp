@@ -27,7 +27,7 @@ void handle_json(const nlohmann::json& json) {
 TEST_CASE("errors") {
   namespace basic = krbn::manipulator::manipulators::basic;
 
-  auto json = krbn::unit_testing::json_helper::load_jsonc("json/errors.json");
+  auto json = krbn::unit_testing::json_helper::load_jsonc("json/errors.jsonc");
   for (const auto& j : json) {
     auto error_json = krbn::unit_testing::json_helper::load_jsonc("json/" + j.get<std::string>());
     for (const auto& e : error_json) {
