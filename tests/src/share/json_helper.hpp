@@ -31,7 +31,11 @@ public:
     return false;
   }
 
-  // Rough implementation
+  // Rough implementation. Only entire line comments are supported.
+  //
+  // `// Supported`
+  // `[1,2,3], // Not supported this comment`
+  // `/* Not supported this comment */`
   static nlohmann::json load_jsonc(const std::string& file_path) {
     if (pqrs::string::ends_with(file_path, ".jsonc")) {
       std::stringstream ss;

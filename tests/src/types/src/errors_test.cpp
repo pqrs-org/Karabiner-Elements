@@ -1,5 +1,6 @@
 #include <catch2/catch.hpp>
 
+#include "../../share/json_helper.hpp"
 #include "types.hpp"
 
 namespace {
@@ -14,11 +15,9 @@ void handle_json(const nlohmann::json& json) {
 } // namespace
 
 TEST_CASE("errors") {
-  std::ifstream json_file("json/errors.json");
-  auto json = nlohmann::json::parse(json_file);
+  auto json = krbn::unit_testing::json_helper::load_jsonc("json/errors.jsonc");
   for (const auto& j : json) {
-    std::ifstream error_json_input("json/" + j.get<std::string>());
-    auto error_json = nlohmann::json::parse(error_json_input);
+    auto error_json = krbn::unit_testing::json_helper::load_jsonc("json/" + j.get<std::string>());
     for (const auto& e : error_json) {
       REQUIRE_THROWS_AS(
           handle_json(e),

@@ -42,6 +42,8 @@
         "error": "unknown `consumer_key_code`: `\"unknown_consumer_key_code\"`"
     },
 
+    // pointing_button
+
     {
         "class": "event_definition",
         "input": {
@@ -56,6 +58,8 @@
         },
         "error": "unknown `pointing_button`: `\"unknown_pointing_button\"`"
     },
+
+    // any
 
     {
         "class": "event_definition",
@@ -72,6 +76,8 @@
         "error": "unknown `any`: `\"unknown\"`"
     },
 
+    // shell_command
+
     {
         "class": "event_definition",
         "input": {
@@ -79,6 +85,8 @@
         },
         "error": "`shell_command` must be string, but is `null`"
     },
+
+    // select_input_source
 
     {
         "class": "event_definition",
@@ -107,6 +115,8 @@
         },
         "error": "`select_input_source` error: `language` must be string, but is `null`"
     },
+
+    // set_variable
 
     {
         "class": "event_definition",
@@ -160,6 +170,8 @@
         },
         "error": "`set_variable.value` is not found in `{\"name\":\"flag\"}`"
     },
+
+    // mouse_key
 
     {
         "class": "event_definition",
