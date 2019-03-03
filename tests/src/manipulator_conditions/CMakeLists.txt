@@ -4,8 +4,6 @@ include (../../tests.cmake)
 
 project (karabiner_test)
 
-include_directories(../../../src/core/grabber/include)
-
 add_executable(
   karabiner_test
   errors_test.cpp

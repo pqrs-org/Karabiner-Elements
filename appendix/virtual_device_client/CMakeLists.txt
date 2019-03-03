@@ -4,10 +4,6 @@ include (../../src/common.cmake)
 
 project (a.out)
 
-include_directories(
-  ../../src/core/grabber/include
-)
-
 add_executable(
   a.out
   main.cpp
