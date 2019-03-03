@@ -71,7 +71,7 @@ public:
   }
 
 private:
-  const krbn::complex_modifications_assets_manager::file* find_file(size_t index) const {
+  const krbn::complex_modifications_assets_file* find_file(size_t index) const {
     auto& files = manager_->get_files();
     if (index < files.size()) {
       return &(files[index]);
