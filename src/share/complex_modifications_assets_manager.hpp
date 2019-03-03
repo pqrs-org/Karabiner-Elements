@@ -1,69 +1,12 @@
 #pragma once
 
-#include "constants.hpp"
-#include "core_configuration/core_configuration.hpp"
+#include "complex_modifications_assets_file.hpp"
 #include <dirent.h>
-#include <pqrs/string.hpp>
 #include <unistd.h>
 
 namespace krbn {
 class complex_modifications_assets_manager final {
 public:
-  class file final {
-  public:
-    file(const std::string& file_path) : file_path_(file_path) {
-      std::ifstream stream(file_path);
-      if (!stream) {
-        throw std::runtime_error(std::string("Failed to open ") + file_path);
-      } else {
-        auto json = nlohmann::json::parse(stream);
-
-        if (auto v = json_utility::find_optional<std::string>(json, "title")) {
-          title_ = *v;
-        }
-
-        if (auto v = json_utility::find_array(json, "rules")) {
-          core_configuration::details::complex_modifications_parameters parameters;
-          for (const auto& j : *v) {
-            rules_.emplace_back(j, parameters);
-          }
-        }
-      }
-    }
-
-    const std::string& get_file_path(void) const {
-      return file_path_;
-    }
-
-    const std::string& get_title(void) const {
-      return title_;
-    }
-
-    const std::vector<core_configuration::details::complex_modifications_rule>& get_rules(void) const {
-      return rules_;
-    }
-
-    void push_back_rule_to_core_configuration_profile(core_configuration::details::profile& profile,
-                                                      size_t index) {
-      if (index < rules_.size()) {
-        profile.push_back_complex_modifications_rule(rules_[index]);
-      }
-    }
-
-    void unlink_file(void) const {
-      unlink(file_path_.c_str());
-    }
-
-    bool user_file(void) const {
-      return pqrs::string::starts_with(file_path_, constants::get_user_complex_modifications_assets_directory());
-    }
-
-  private:
-    std::string file_path_;
-    std::string title_;
-    std::vector<core_configuration::details::complex_modifications_rule> rules_;
-  };
-
   void reload(const std::string& directory, bool load_system_example_file = true) {
     files_.clear();
 
@@ -104,11 +47,11 @@ public:
               });
   }
 
-  const std::vector<file>& get_files(void) const {
+  const std::vector<complex_modifications_assets_file>& get_files(void) const {
     return files_;
   }
 
 private:
-  std::vector<file> files_;
+  std::vector<complex_modifications_assets_file> files_;
 };
 } // namespace krbn
