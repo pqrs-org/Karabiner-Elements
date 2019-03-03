@@ -1,0 +1,17 @@
+[
+    {
+        "input": "assets/conditions_error.json",
+        "errors": [
+            "condition type must be string, but is `null`",
+            "`bundle_identifiers` must be array, but is `null`"
+        ]
+    },
+    {
+        "input": "assets/manipulators_error.json",
+        "errors": [
+            "`type` must be specified: {\"from\":{\"key_code\":\"escape\",\"modifiers\":{\"mandatory\":[\"control\"],\"optional\":[\"any\"]}},\"to\":[{\"key_code\":\"mission_control\"}]}",
+            "`from` error: `pointing_button` must be string, but is `null`"
+        ]
+    },
+    { "input": "assets/valid.json", "errors": [] }
+]

@@ -1,0 +1,40 @@
+{
+    "title": "valid title",
+    "rules": [
+        {
+            "description": "valid rule 1",
+            "manipulators": [
+                {
+                    "from": {
+                        "key_code": "escape",
+                        "modifiers": {
+                            "mandatory": ["control"],
+                            "optional": ["any"]
+                        }
+                    },
+                    "to": [
+                        {
+                            "key_code": "mission_control"
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "description": "valid rule 2",
+            "manipulators": [
+                {
+                    "type": "basic",
+                    "from": {
+                        "pointing_button": null
+                    },
+                    "to": [
+                        {
+                            "key_code": "mission_control"
+                        }
+                    ]
+                }
+            ]
+        }
+    ]
+}

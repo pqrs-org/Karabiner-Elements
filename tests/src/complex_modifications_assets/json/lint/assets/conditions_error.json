@@ -1,0 +1,43 @@
+{
+    "title": "valid title",
+    "rules": [
+        {
+            "description": "valid rule 1",
+            "manipulators": [
+                {
+                    "type": "basic",
+                    "from": {
+                        "key_code": "escape"
+                    },
+                    "conditions": [
+                        {
+                            "type": null
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "description": "valid rule 2",
+            "manipulators": [
+                {
+                    "type": "basic",
+                    "from": {
+                        "pointing_button": "button3"
+                    },
+                    "to": [
+                        {
+                            "key_code": "mission_control"
+                        }
+                    ],
+                    "conditions": [
+                        {
+                            "type": "frontmost_application_if",
+                            "bundle_identifiers": null
+                        }
+                    ]
+                }
+            ]
+        }
+    ]
+}
