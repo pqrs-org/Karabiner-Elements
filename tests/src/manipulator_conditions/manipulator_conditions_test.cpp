@@ -146,7 +146,7 @@ TEST_CASE("manipulator_environment.save_to_file") {
 
 TEST_CASE("conditions.frontmost_application") {
   actual_examples_helper helper("frontmost_application.json");
-  krbn::manipulator_environment manipulator_environment;
+  krbn::manipulator::manipulator_environment manipulator_environment;
   krbn::event_queue::entry entry(krbn::device_id(1),
                                  krbn::event_queue::event_time_stamp(krbn::absolute_time_point(0)),
                                  krbn::event_queue::event(krbn::key_code::a),
@@ -215,7 +215,7 @@ TEST_CASE("conditions.frontmost_application") {
 
 TEST_CASE("conditions.input_source") {
   actual_examples_helper helper("input_source.json");
-  krbn::manipulator_environment manipulator_environment;
+  krbn::manipulator::manipulator_environment manipulator_environment;
   krbn::event_queue::entry entry(krbn::device_id(1),
                                  krbn::event_queue::event_time_stamp(krbn::absolute_time_point(0)),
                                  krbn::event_queue::event(krbn::key_code::a),
@@ -281,7 +281,7 @@ TEST_CASE("conditions.input_source") {
 }
 
 TEST_CASE("conditions.device") {
-  krbn::manipulator_environment manipulator_environment;
+  krbn::manipulator::manipulator_environment manipulator_environment;
 
   auto device_id_8888_9999 = krbn::device_id(88889999);
   auto device_properties_8888_9999 = krbn::device_properties()
@@ -507,7 +507,7 @@ TEST_CASE("conditions.device") {
 }
 
 TEST_CASE("conditions.keyboard_type") {
-  krbn::manipulator_environment manipulator_environment;
+  krbn::manipulator::manipulator_environment manipulator_environment;
   krbn::event_queue::entry entry(krbn::device_id(1),
                                  krbn::event_queue::event_time_stamp(krbn::absolute_time_point(0)),
                                  krbn::event_queue::event(krbn::key_code::a),
