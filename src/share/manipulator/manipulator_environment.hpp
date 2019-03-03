@@ -3,14 +3,18 @@
 #include "device_properties_manager.hpp"
 #include "json_utility.hpp"
 #include "logger.hpp"
-#include "types.hpp"
 #include <fstream>
 #include <iostream>
 #include <nlohmann/json.hpp>
 #include <pqrs/filesystem.hpp>
+#include <pqrs/osx/frontmost_application_monitor.hpp>
+#include <pqrs/osx/frontmost_application_monitor/extra/nlohmann_json.hpp>
+#include <pqrs/osx/input_source.hpp>
+#include <pqrs/osx/input_source/extra/nlohmann_json.hpp>
 #include <string>
 
 namespace krbn {
+namespace manipulator {
 class manipulator_environment final {
 public:
   manipulator_environment(const manipulator_environment&) = delete;
@@ -114,4 +118,5 @@ private:
   std::unordered_map<std::string, int> variables_;
   std::string keyboard_type_;
 };
+} // namespace manipulator
 } // namespace krbn

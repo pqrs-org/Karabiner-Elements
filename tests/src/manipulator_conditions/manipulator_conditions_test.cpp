@@ -121,7 +121,7 @@ private:
 } // namespace
 
 TEST_CASE("manipulator_environment.save_to_file") {
-  krbn::manipulator_environment manipulator_environment;
+  krbn::manipulator::manipulator_environment manipulator_environment;
   manipulator_environment.enable_json_output("tmp/manipulator_environment.json");
 
   pqrs::osx::frontmost_application_monitor::application application;

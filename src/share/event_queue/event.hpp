@@ -5,7 +5,7 @@
 #include "device_properties.hpp"
 #include "hash.hpp"
 #include "json_utility.hpp"
-#include "manipulator_environment.hpp"
+#include "manipulator/manipulator_environment.hpp"
 #include "types.hpp"
 #include <mpark/variant.hpp>
 #include <optional>

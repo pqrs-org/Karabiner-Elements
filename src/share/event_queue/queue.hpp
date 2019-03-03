@@ -154,7 +154,7 @@ public:
     pointing_button_manager_.erase_all_active_pointing_buttons(device_id);
   }
 
-  const manipulator_environment& get_manipulator_environment(void) const {
+  const manipulator::manipulator_environment& get_manipulator_environment(void) const {
     return manipulator_environment_;
   }
 
@@ -266,7 +266,7 @@ private:
   std::vector<entry> events_;
   modifier_flag_manager modifier_flag_manager_;
   pointing_button_manager pointing_button_manager_;
-  manipulator_environment manipulator_environment_;
+  manipulator::manipulator_environment manipulator_environment_;
   absolute_time_duration time_stamp_delay_;
 };
 } // namespace event_queue
