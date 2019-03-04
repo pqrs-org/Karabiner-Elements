@@ -2,7 +2,7 @@
     "title": "valid title",
     "rules": [
         {
-            "description": "valid rule 1",
+            "description": "rule 1",
             "manipulators": [
                 {
                     "from": {
@@ -21,7 +21,7 @@
             ]
         },
         {
-            "description": "valid rule 2",
+            "description": "rule 2",
             "manipulators": [
                 {
                     "type": "basic",

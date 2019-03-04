@@ -11,7 +11,7 @@ public:
   complex_modifications_assets_file(const std::string& file_path) : file_path_(file_path) {
     std::ifstream stream(file_path);
     if (!stream) {
-      throw std::runtime_error(std::string("Failed to open ") + file_path);
+      throw std::runtime_error(std::string("failed to open ") + file_path);
     } else {
       auto json = nlohmann::json::parse(stream);
 
@@ -68,7 +68,9 @@ public:
           }
 
         } catch (const std::exception& e) {
-          error_messages.push_back(e.what());
+          error_messages.push_back(fmt::format("`{0}` error: {1}",
+                                               rule.get_description(),
+                                               e.what()));
         }
       }
     }

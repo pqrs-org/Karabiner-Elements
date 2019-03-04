@@ -1,17 +1,27 @@
 [
     {
+        "input": "assets/broken.json",
+        "errors": [
+            "[json.exception.parse_error.101] parse error at line 2, column 1: syntax error while parsing object key - unexpected end of input; expected string literal"
+        ]
+    },
+    {
         "input": "assets/conditions_error.json",
         "errors": [
-            "condition type must be string, but is `null`",
-            "`bundle_identifiers` must be array, but is `null`"
+            "`rule 1` error: condition type must be string, but is `null`",
+            "`rule 2` error: `bundle_identifiers` must be array, but is `null`"
         ]
     },
     {
         "input": "assets/manipulators_error.json",
         "errors": [
-            "`type` must be specified: {\"from\":{\"key_code\":\"escape\",\"modifiers\":{\"mandatory\":[\"control\"],\"optional\":[\"any\"]}},\"to\":[{\"key_code\":\"mission_control\"}]}",
-            "`from` error: `pointing_button` must be string, but is `null`"
+            "`rule 1` error: `type` must be specified: {\"from\":{\"key_code\":\"escape\",\"modifiers\":{\"mandatory\":[\"control\"],\"optional\":[\"any\"]}},\"to\":[{\"key_code\":\"mission_control\"}]}",
+            "`rule 2` error: `from` error: `pointing_button` must be string, but is `null`"
         ]
+    },
+    {
+        "input": "assets/not_found.json",
+        "errors": ["failed to open json/lint/assets/not_found.json"]
     },
     { "input": "assets/valid.json", "errors": [] }
 ]

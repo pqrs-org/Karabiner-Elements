@@ -71,7 +71,7 @@ public:
             json_ = nlohmann::json();
           }
         } else {
-          logger::get_logger()->error("Failed to open {0}", file_path);
+          logger::get_logger()->error("failed to open {0}", file_path);
         }
       }
     }
