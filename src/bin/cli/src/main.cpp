@@ -3,6 +3,7 @@
 #include <cxxopts.hpp>
 #pragma clang diagnostic pop
 
+#include "complex_modifications_assets_file.hpp"
 #include "constants.hpp"
 #include "dispatcher_utility.hpp"
 #include "karabiner_version.h"
@@ -76,6 +77,7 @@ int main(int argc, char** argv) {
   options.add_options()("select-profile", "Select a profile by name.", cxxopts::value<std::string>());
   options.add_options()("copy-current-profile-to-system-default-profile", "Copy the current profile to system default profile.");
   options.add_options()("remove-system-default-profile", "Remove the system default profile.");
+  options.add_options()("lint-complex-modifications", "Check complex_modifications.", cxxopts::value<std::string>());
   options.add_options()("version", "Displays version.");
   options.add_options()("version-number", "Displays version_number.");
   options.add_options()("help", "Print help.");
@@ -114,6 +116,33 @@ int main(int argc, char** argv) {
         }
         exit_code = remove_system_default_profile();
         goto finish;
+      }
+    }
+
+    {
+      std::string key = "lint-complex-modifications";
+      if (parse_result.count(key)) {
+        auto file_path = parse_result[key].as<std::string>();
+        try {
+          auto assets_file = krbn::complex_modifications_assets_file(file_path);
+          auto error_messages = assets_file.lint();
+          if (error_messages.empty()) {
+            std::cout << "ok" << std::endl;
+
+          } else {
+            exit_code = 1;
+
+            for (const auto& e : error_messages) {
+              std::cout << e << std::endl;
+            }
+          }
+          goto finish;
+
+        } catch (std::exception& e) {
+          exit_code = 1;
+          std::cout << e.what() << std::endl;
+          goto finish;
+        }
       }
     }
 
