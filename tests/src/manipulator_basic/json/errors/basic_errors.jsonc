@@ -24,7 +24,7 @@
         "input": {
             "to": null
         },
-        "error": "`to` must be array, but is `null`"
+        "error": "`to` must be object or array, but is `null`"
     },
     {
         "class": "basic",
