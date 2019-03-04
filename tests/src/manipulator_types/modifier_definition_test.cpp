@@ -36,6 +36,13 @@ TEST_CASE("modifier_definition.modifier json") {
       REQUIRE(json.get<modifier>() == m);
     }
   }
+
+  // aliases
+
+  REQUIRE(nlohmann::json("left_gui").get<modifier>() == modifier::left_command);
+  REQUIRE(nlohmann::json("right_gui").get<modifier>() == modifier::right_command);
+  REQUIRE(nlohmann::json("left_alt").get<modifier>() == modifier::left_option);
+  REQUIRE(nlohmann::json("right_alt").get<modifier>() == modifier::right_option);
 }
 
 TEST_CASE("modifier_definition.make_modifiers") {

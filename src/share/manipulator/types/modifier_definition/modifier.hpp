@@ -97,21 +97,25 @@ inline void from_json(const nlohmann::json& json, modifier& value) {
     value = modifier::control;
   } else if (name == "fn") {
     value = modifier::fn;
-  } else if (name == "left_command") {
+  } else if (name == "left_command" ||
+             name == "left_gui") {
     value = modifier::left_command;
   } else if (name == "left_control") {
     value = modifier::left_control;
-  } else if (name == "left_option") {
+  } else if (name == "left_option" ||
+             name == "left_alt") {
     value = modifier::left_option;
   } else if (name == "left_shift") {
     value = modifier::left_shift;
   } else if (name == "option") {
     value = modifier::option;
-  } else if (name == "right_command") {
+  } else if (name == "right_command" ||
+             name == "right_gui") {
     value = modifier::right_command;
   } else if (name == "right_control") {
     value = modifier::right_control;
-  } else if (name == "right_option") {
+  } else if (name == "right_option" ||
+             name == "right_alt") {
     value = modifier::right_option;
   } else if (name == "right_shift") {
     value = modifier::right_shift;
