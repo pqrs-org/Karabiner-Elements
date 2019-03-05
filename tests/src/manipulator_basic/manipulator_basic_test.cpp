@@ -574,29 +574,6 @@ TEST_CASE("basic::from_event_definition.test_event") {
   }
 }
 
-TEST_CASE("simultaneous_options") {
-  namespace basic = krbn::manipulator::manipulators::basic;
-
-  // from_json
-
-  {
-    basic::from_event_definition event_definition(nlohmann::json::object({
-        {"key_code", "escape"},
-        {"simultaneous_options", nlohmann::json::object({
-                                     {"detect_key_down_uninterruptedly", true},
-                                     {"key_down_order", "strict"},
-                                     {"key_up_order", "strict_inverse"},
-                                     {"key_up_when", "all"},
-                                 })},
-    }));
-
-    REQUIRE(event_definition.get_simultaneous_options().get_detect_key_down_uninterruptedly() == true);
-    REQUIRE(event_definition.get_simultaneous_options().get_key_down_order() == basic::simultaneous_options::key_order::strict);
-    REQUIRE(event_definition.get_simultaneous_options().get_key_up_order() == basic::simultaneous_options::key_order::strict_inverse);
-    REQUIRE(event_definition.get_simultaneous_options().get_key_up_when() == basic::simultaneous_options::key_up_when::all);
-  }
-}
-
 TEST_CASE("to") {
   namespace basic = krbn::manipulator::manipulators::basic;
   using krbn::manipulator::event_definition;

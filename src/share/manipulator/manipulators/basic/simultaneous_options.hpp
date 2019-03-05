@@ -146,14 +146,24 @@ inline void from_json(const nlohmann::json& json, simultaneous_options& o) {
       }
 
     } else if (key == "to_after_key_up") {
-      if (!value.is_array()) {
-        throw pqrs::json::unmarshal_error(fmt::format("`{0}` must be array, but is `{1}`", key, value.dump()));
-      }
+      if (value.is_object()) {
+        try {
+          o.set_to_after_key_up(std::vector<to_event_definition>{
+              value.get<to_event_definition>(),
+          });
+        } catch (const pqrs::json::unmarshal_error& e) {
+          throw pqrs::json::unmarshal_error(fmt::format("`{0}` error: {1}", key, e.what()));
+        }
 
-      try {
-        o.set_to_after_key_up(value.get<std::vector<to_event_definition>>());
-      } catch (const pqrs::json::unmarshal_error& e) {
-        throw pqrs::json::unmarshal_error(fmt::format("`{0}` entry error: {1}", key, e.what()));
+      } else if (value.is_array()) {
+        try {
+          o.set_to_after_key_up(value.get<std::vector<to_event_definition>>());
+        } catch (const pqrs::json::unmarshal_error& e) {
+          throw pqrs::json::unmarshal_error(fmt::format("`{0}` entry error: {1}", key, e.what()));
+        }
+
+      } else {
+        throw pqrs::json::unmarshal_error(fmt::format("`{0}` must be object or array, but is `{1}`", key, value.dump()));
       }
 
     } else if (key == "description") {

@@ -8,6 +8,7 @@ add_executable(
   karabiner_test
   errors_test.cpp
   manipulator_basic_test.cpp
+  simultaneous_options_test.cpp
   test.cpp
 )
 
