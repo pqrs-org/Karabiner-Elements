@@ -41,7 +41,7 @@
         "input": {
             "to_after_key_up": null
         },
-        "error": "`to_after_key_up` must be array, but is `null`"
+        "error": "`to_after_key_up` must be object or array, but is `null`"
     },
     {
         "class": "basic",
