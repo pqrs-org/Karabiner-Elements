@@ -40,7 +40,9 @@ public:
         } else if (key == "to") {
           if (value.is_object()) {
             try {
-              to_.push_back(value.get<to_event_definition>());
+              to_ = std::vector<to_event_definition>{
+                  value.get<to_event_definition>(),
+              };
             } catch (const pqrs::json::unmarshal_error& e) {
               throw pqrs::json::unmarshal_error(fmt::format("`{0}` error: {1}", key, e.what()));
             }
