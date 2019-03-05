@@ -29,6 +29,13 @@
     {
         "class": "basic",
         "input": {
+            "to": {}
+        },
+        "error": "`to` error: event type is invalid: `{}`"
+    },
+    {
+        "class": "basic",
+        "input": {
             "to": [null]
         },
         "error": "`to` entry error: json must be object, but is `null`"
@@ -46,6 +53,13 @@
     {
         "class": "basic",
         "input": {
+            "to_after_key_up": {}
+        },
+        "error": "`to_after_key_up` error: event type is invalid: `{}`"
+    },
+    {
+        "class": "basic",
+        "input": {
             "to_after_key_up": [null]
         },
         "error": "`to_after_key_up` entry error: json must be object, but is `null`"
@@ -59,6 +73,13 @@
             "to_if_alone": null
         },
         "error": "`to_if_alone` must be array, but is `null`"
+    },
+    {
+        "class": "basic",
+        "input": {
+            "to_if_alone": {}
+        },
+        "error": "`to_if_alone` error: event type is invalid: `{}`"
     },
     {
         "class": "basic",

@@ -80,14 +80,24 @@ public:
           }
 
         } else if (key == "to_if_alone") {
-          if (!value.is_array()) {
-            throw pqrs::json::unmarshal_error(fmt::format("`{0}` must be array, but is `{1}`", key, value.dump()));
-          }
+          if (value.is_object()) {
+            try {
+              to_if_alone_ = std::vector<to_event_definition>{
+                  value.get<to_event_definition>(),
+              };
+            } catch (const pqrs::json::unmarshal_error& e) {
+              throw pqrs::json::unmarshal_error(fmt::format("`{0}` error: {1}", key, e.what()));
+            }
 
-          try {
-            to_if_alone_ = value.get<std::vector<to_event_definition>>();
-          } catch (const pqrs::json::unmarshal_error& e) {
-            throw pqrs::json::unmarshal_error(fmt::format("`{0}` entry error: {1}", key, e.what()));
+          } else if (value.is_array()) {
+            try {
+              to_if_alone_ = value.get<std::vector<to_event_definition>>();
+            } catch (const pqrs::json::unmarshal_error& e) {
+              throw pqrs::json::unmarshal_error(fmt::format("`{0}` entry error: {1}", key, e.what()));
+            }
+
+          } else {
+            throw pqrs::json::unmarshal_error(fmt::format("`{0}` must be array, but is `{1}`", key, value.dump()));
           }
 
         } else if (key == "to_if_held_down") {
@@ -662,6 +672,10 @@ public:
 
   const std::vector<to_event_definition>& get_to_after_key_up(void) const {
     return to_after_key_up_;
+  }
+
+  const std::vector<to_event_definition>& get_to_if_alone(void) const {
+    return to_if_alone_;
   }
 
 private:

@@ -70,6 +70,13 @@
     {
         "class": "simultaneous_options",
         "input": {
+            "to_after_key_up": {}
+        },
+        "error": "`to_after_key_up` error: event type is invalid: `{}`"
+    },
+    {
+        "class": "simultaneous_options",
+        "input": {
             "to_after_key_up": [null]
         },
         "error": "`to_after_key_up` entry error: json must be object, but is `null`"
