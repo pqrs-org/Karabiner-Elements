@@ -11,7 +11,9 @@ add_executable(
   simultaneous_options_test.cpp
   test.cpp
   to_after_key_up_test.cpp
+  to_delayed_action_test.cpp
   to_if_alone_test.cpp
+  to_if_held_down_test.cpp
 )
 
 target_link_libraries(

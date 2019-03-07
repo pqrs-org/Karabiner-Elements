@@ -15,11 +15,17 @@ public:
   to_if_held_down(const nlohmann::json& json) : dispatcher_client(),
                                                 current_held_down_id_(0) {
     try {
-      if (!json.is_array()) {
-        throw pqrs::json::unmarshal_error(fmt::format("json must be array, but is `{0}`", json.dump()));
-      }
+      if (json.is_object()) {
+        to_ = std::vector<to_event_definition>{
+            json.get<to_event_definition>(),
+        };
 
-      to_ = json.get<std::vector<to_event_definition>>();
+      } else if (json.is_array()) {
+        to_ = json.get<std::vector<to_event_definition>>();
+
+      } else {
+        throw pqrs::json::unmarshal_error(fmt::format("json must be object or array, but is `{0}`", json.dump()));
+      }
 
     } catch (...) {
       detach_from_dispatcher();
@@ -29,6 +35,10 @@ public:
 
   virtual ~to_if_held_down(void) {
     detach_from_dispatcher();
+  }
+
+  const std::vector<to_event_definition>& get_to(void) const {
+    return to_;
   }
 
   void setup(const event_queue::entry& front_input_event,

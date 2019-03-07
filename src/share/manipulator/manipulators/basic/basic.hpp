@@ -97,19 +97,19 @@ public:
             }
 
           } else {
-            throw pqrs::json::unmarshal_error(fmt::format("`{0}` must be array, but is `{1}`", key, value.dump()));
+            throw pqrs::json::unmarshal_error(fmt::format("`{0}` must be object or array, but is `{1}`", key, value.dump()));
           }
 
         } else if (key == "to_if_held_down") {
           try {
-            to_if_held_down_ = std::make_unique<to_if_held_down>(value);
+            to_if_held_down_ = std::make_shared<to_if_held_down>(value);
           } catch (const pqrs::json::unmarshal_error& e) {
             throw pqrs::json::unmarshal_error(fmt::format("`{0}` error: {1}", key, e.what()));
           }
 
         } else if (key == "to_delayed_action") {
           try {
-            to_delayed_action_ = std::make_unique<to_delayed_action>(value);
+            to_delayed_action_ = std::make_shared<to_delayed_action>(value);
           } catch (const pqrs::json::unmarshal_error& e) {
             throw pqrs::json::unmarshal_error(fmt::format("`{0}` error: {1}", key, e.what()));
           }
@@ -678,6 +678,14 @@ public:
     return to_if_alone_;
   }
 
+  std::shared_ptr<to_if_held_down> get_to_if_held_down(void) const {
+    return to_if_held_down_;
+  }
+
+  std::shared_ptr<to_delayed_action> get_to_delayed_action(void) const {
+    return to_delayed_action_;
+  }
+
 private:
   bool all_from_events_found(const std::unordered_set<manipulated_original_event::from_event>& from_events) const {
     for (const auto& d : from_.get_event_definitions()) {
@@ -723,8 +731,8 @@ private:
   std::vector<to_event_definition> to_;
   std::vector<to_event_definition> to_after_key_up_;
   std::vector<to_event_definition> to_if_alone_;
-  std::unique_ptr<to_if_held_down> to_if_held_down_;
-  std::unique_ptr<to_delayed_action> to_delayed_action_;
+  std::shared_ptr<to_if_held_down> to_if_held_down_;
+  std::shared_ptr<to_delayed_action> to_delayed_action_;
 
   std::vector<std::shared_ptr<manipulated_original_event::manipulated_original_event>> manipulated_original_events_;
 };

@@ -20,25 +20,45 @@ public:
 
       for (const auto& [key, value] : json.items()) {
         if (key == "to_if_invoked") {
-          if (!value.is_array()) {
-            throw pqrs::json::unmarshal_error(fmt::format("`{0}` must be array, but is `{1}`", key, value.dump()));
-          }
+          if (value.is_object()) {
+            try {
+              to_if_invoked_ = std::vector<to_event_definition>{
+                  value.get<to_event_definition>(),
+              };
+            } catch (const pqrs::json::unmarshal_error& e) {
+              throw pqrs::json::unmarshal_error(fmt::format("`{0}` error: {1}", key, e.what()));
+            }
 
-          try {
-            to_if_invoked_ = value.get<std::vector<to_event_definition>>();
-          } catch (const pqrs::json::unmarshal_error& e) {
-            throw pqrs::json::unmarshal_error(fmt::format("`{0}` entry error: {1}", key, e.what()));
+          } else if (value.is_array()) {
+            try {
+              to_if_invoked_ = value.get<std::vector<to_event_definition>>();
+            } catch (const pqrs::json::unmarshal_error& e) {
+              throw pqrs::json::unmarshal_error(fmt::format("`{0}` entry error: {1}", key, e.what()));
+            }
+
+          } else {
+            throw pqrs::json::unmarshal_error(fmt::format("`{0}` must be object or array, but is `{1}`", key, value.dump()));
           }
 
         } else if (key == "to_if_canceled") {
-          if (!value.is_array()) {
-            throw pqrs::json::unmarshal_error(fmt::format("`{0}` must be array, but is `{1}`", key, value.dump()));
-          }
+          if (value.is_object()) {
+            try {
+              to_if_canceled_ = std::vector<to_event_definition>{
+                  value.get<to_event_definition>(),
+              };
+            } catch (const pqrs::json::unmarshal_error& e) {
+              throw pqrs::json::unmarshal_error(fmt::format("`{0}` error: {1}", key, e.what()));
+            }
 
-          try {
-            to_if_canceled_ = value.get<std::vector<to_event_definition>>();
-          } catch (const pqrs::json::unmarshal_error& e) {
-            throw pqrs::json::unmarshal_error(fmt::format("`{0}` entry error: {1}", key, e.what()));
+          } else if (value.is_array()) {
+            try {
+              to_if_canceled_ = value.get<std::vector<to_event_definition>>();
+            } catch (const pqrs::json::unmarshal_error& e) {
+              throw pqrs::json::unmarshal_error(fmt::format("`{0}` entry error: {1}", key, e.what()));
+            }
+
+          } else {
+            throw pqrs::json::unmarshal_error(fmt::format("`{0}` must be object or array, but is `{1}`", key, value.dump()));
           }
 
         } else {
@@ -54,6 +74,14 @@ public:
 
   virtual ~to_delayed_action(void) {
     detach_from_dispatcher();
+  }
+
+  const std::vector<to_event_definition>& get_to_if_invoked(void) const {
+    return to_if_invoked_;
+  }
+
+  const std::vector<to_event_definition>& get_to_if_canceled(void) const {
+    return to_if_canceled_;
   }
 
   void setup(const event_queue::entry& front_input_event,
