@@ -77,7 +77,9 @@ int main(int argc, char** argv) {
   options.add_options()("select-profile", "Select a profile by name.", cxxopts::value<std::string>());
   options.add_options()("copy-current-profile-to-system-default-profile", "Copy the current profile to system default profile.");
   options.add_options()("remove-system-default-profile", "Remove the system default profile.");
-  options.add_options()("lint-complex-modifications", "Check complex_modifications.", cxxopts::value<std::string>());
+  options.add_options()("lint-complex-modifications", "Check complex_modifications.json",
+                        cxxopts::value<std::string>(),
+                        "complex_modifications.json");
   options.add_options()("version", "Displays version.");
   options.add_options()("version-number", "Displays version_number.");
   options.add_options()("help", "Print help.");
