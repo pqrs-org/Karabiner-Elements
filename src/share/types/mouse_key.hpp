@@ -63,7 +63,7 @@ public:
     return speed_multiplier_;
   }
 
-  void set_speed_multiplier(int value) {
+  void set_speed_multiplier(double value) {
     speed_multiplier_ = value;
   }
 
