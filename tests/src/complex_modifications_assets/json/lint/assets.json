@@ -23,5 +23,22 @@
         "input": "assets/not_found.json",
         "errors": ["failed to open json/lint/assets/not_found.json"]
     },
+    {
+        "input": "assets/rules_error.json",
+        "errors": ["`rules` must be array, but is `null`"]
+    },
+    {
+        "input": "assets/title_error.json",
+        "errors": ["`title` must be string, but is `null`"]
+    },
+    {
+        "input": "assets/type_error.json",
+        "errors": ["json must be object, but is `[]`"]
+    },
+    {
+        "input": "assets/unknown_key.json",
+        "errors": [
+        ]
+    },
     { "input": "assets/valid.json", "errors": [] }
 ]
