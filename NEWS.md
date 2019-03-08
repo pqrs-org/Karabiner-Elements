@@ -1,5 +1,10 @@
 # Changelog
 
+## Beta
+
+- Added `--lint-complex-modifications` option into `karabiner_cli`.
+  It allows you checks a complex-modifications json file.
+
 ## Version 12.2.0
 
 - Fixed an issue that Caps Lock LED does not work on macOS Mojave.
