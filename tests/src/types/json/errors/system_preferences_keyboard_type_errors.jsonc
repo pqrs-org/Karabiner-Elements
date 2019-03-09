@@ -1,0 +1,42 @@
+[
+    {
+        "class": "system_preferences_keyboard_type",
+        "input": null,
+        "error": "json must be object, but is `null`"
+    },
+    {
+        "class": "system_preferences_keyboard_type",
+        "input": {
+            "vendor_id": null
+        },
+        "error": "json must be number, but is `null`"
+    },
+    {
+        "class": "system_preferences_keyboard_type",
+        "input": {
+            "product_id": null
+        },
+        "error": "json must be number, but is `null`"
+    },
+    {
+        "class": "system_preferences_keyboard_type",
+        "input": {
+            "country_code": null
+        },
+        "error": "json must be number, but is `null`"
+    },
+    {
+        "class": "system_preferences_keyboard_type",
+        "input": {
+            "keyboard_type": null
+        },
+        "error": "json must be number, but is `null`"
+    },
+    {
+        "class": "system_preferences_keyboard_type",
+        "input": {
+            "vendor-id": null
+        },
+        "error": "unknown key `vendor-id` in `{\"vendor-id\":null}`"
+    }
+]

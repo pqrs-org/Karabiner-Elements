@@ -8,6 +8,8 @@ void handle_json(const nlohmann::json& json) {
   auto c = json.at("class").get<std::string>();
   if (c == "mouse_key") {
     json.at("input").get<krbn::mouse_key>();
+  } else if (c == "system_preferences_keyboard_type") {
+    json.at("input").get<krbn::system_preferences_keyboard_type>();
   } else {
     REQUIRE(false);
   }

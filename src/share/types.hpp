@@ -26,6 +26,7 @@
 #include "types/pointing_motion.hpp"
 #include "types/product_id.hpp"
 #include "types/system_preferences.hpp"
+#include "types/system_preferences_keyboard_type.hpp"
 #include "types/vendor_id.hpp"
 #include <CoreFoundation/CoreFoundation.h>
 #include <IOKit/IOKitLib.h>
