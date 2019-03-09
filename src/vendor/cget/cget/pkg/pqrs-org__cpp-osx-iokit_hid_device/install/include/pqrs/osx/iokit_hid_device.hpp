@@ -1,6 +1,6 @@
 #pragma once
 
-// pqrs::iokit_hid_device v2.4
+// pqrs::iokit_hid_device v2.5
 
 // (C) Copyright Takayama Fumihiko 2018.
 // Distributed under the Boost Software License, Version 1.0.
@@ -73,6 +73,13 @@ public:
   std::optional<iokit_hid_location_id> find_location_id(void) const {
     if (auto value = find_int64_property(CFSTR(kIOHIDLocationIDKey))) {
       return iokit_hid_location_id(*value);
+    }
+    return std::nullopt;
+  }
+
+  std::optional<iokit_hid_country_code> find_country_code(void) const {
+    if (auto value = find_int64_property(CFSTR(kIOHIDCountryCodeKey))) {
+      return iokit_hid_country_code(*value);
     }
     return std::nullopt;
   }

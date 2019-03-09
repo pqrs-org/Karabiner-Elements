@@ -4,9 +4,9 @@
 // Distributed under the Boost Software License, Version 1.0.
 // (See http://www.boost.org/LICENSE_1_0.txt)
 
+#include <functional>
 #include <iostream>
 #include <type_safe/strong_typedef.hpp>
-#include <unordered_set>
 
 namespace pqrs {
 namespace osx {
