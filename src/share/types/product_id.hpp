@@ -20,6 +20,9 @@ inline std::ostream& operator<<(std::ostream& stream, const product_id& value) {
 inline product_id make_product_id(const pqrs::osx::iokit_hid_product_id& value) {
   return product_id(type_safe::get(value));
 }
+
+constexpr product_id product_id_karabiner_virtual_hid_keyboard(0x27db);
+constexpr product_id product_id_karabiner_virtual_hid_pointing(0x27da);
 } // namespace krbn
 
 namespace std {
