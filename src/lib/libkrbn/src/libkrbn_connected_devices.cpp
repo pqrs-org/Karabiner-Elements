@@ -40,10 +40,10 @@ bool libkrbn_connected_devices_get_device_identifiers(libkrbn_connected_devices*
       const auto& devices = c->get_connected_devices().get_devices();
       if (index < devices.size()) {
         auto identifiers = devices[index].get_identifiers();
-        device_identifiers->vendor_id = static_cast<uint32_t>(identifiers.get_vendor_id());
-        device_identifiers->product_id = static_cast<uint32_t>(identifiers.get_product_id());
-        device_identifiers->is_keyboard = static_cast<uint32_t>(identifiers.get_is_keyboard());
-        device_identifiers->is_pointing_device = static_cast<uint32_t>(identifiers.get_is_pointing_device());
+        device_identifiers->vendor_id = type_safe::get(identifiers.get_vendor_id());
+        device_identifiers->product_id = type_safe::get(identifiers.get_product_id());
+        device_identifiers->is_keyboard = identifiers.get_is_keyboard();
+        device_identifiers->is_pointing_device = identifiers.get_is_pointing_device();
         return true;
       }
     }

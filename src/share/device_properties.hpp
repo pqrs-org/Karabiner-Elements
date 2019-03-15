@@ -20,15 +20,9 @@ public:
 
     pqrs::osx::iokit_hid_device hid_device(device);
 
-    if (auto value = hid_device.find_vendor_id()) {
-      vendor_id_ = make_vendor_id(*value);
-    }
-    if (auto value = hid_device.find_product_id()) {
-      product_id_ = make_product_id(*value);
-    }
-    if (auto value = hid_device.find_location_id()) {
-      location_id_ = make_location_id(*value);
-    }
+    vendor_id_ = hid_device.find_vendor_id();
+    product_id_ = hid_device.find_product_id();
+    location_id_ = hid_device.find_location_id();
     manufacturer_ = hid_device.find_manufacturer();
     product_ = hid_device.find_product();
     serial_number_ = hid_device.find_serial_number();

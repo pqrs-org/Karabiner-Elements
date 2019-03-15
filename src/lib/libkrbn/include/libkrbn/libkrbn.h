@@ -10,8 +10,8 @@ extern "C" {
 #endif
 
 typedef struct {
-  uint32_t vendor_id;
-  uint32_t product_id;
+  uint64_t vendor_id;
+  uint64_t product_id;
   bool is_keyboard;
   bool is_pointing_device;
 } libkrbn_device_identifiers;

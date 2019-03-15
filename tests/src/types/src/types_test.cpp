@@ -2,12 +2,6 @@
 
 #include "types.hpp"
 
-TEST_CASE("sizeof") {
-  REQUIRE(sizeof(krbn::vendor_id) == 4);
-  REQUIRE(sizeof(krbn::product_id) == 4);
-  REQUIRE(sizeof(krbn::location_id) == 4);
-}
-
 TEST_CASE("make_key_code") {
   REQUIRE(krbn::types::make_key_code("spacebar") == krbn::key_code::spacebar);
   REQUIRE(krbn::types::make_key_code("unknown") == std::nullopt);

@@ -71,7 +71,7 @@
     NSTableCellView* result = [tableView makeViewWithIdentifier:@"DevicesVendorIdCellView" owner:self];
     KarabinerKitConnectedDevices* connectedDevices = [KarabinerKitDeviceManager sharedManager].connectedDevices;
     libkrbn_device_identifiers deviceIdentifiers = [connectedDevices deviceIdentifiersAtIndex:row];
-    result.textField.stringValue = [NSString stringWithFormat:@"%d", deviceIdentifiers.vendor_id];
+    result.textField.stringValue = [NSString stringWithFormat:@"%lld", deviceIdentifiers.vendor_id];
     return result;
   }
 
@@ -79,7 +79,7 @@
     NSTableCellView* result = [tableView makeViewWithIdentifier:@"DevicesVendorIdCellView" owner:self];
     KarabinerKitConnectedDevices* connectedDevices = [KarabinerKitDeviceManager sharedManager].connectedDevices;
     libkrbn_device_identifiers deviceIdentifiers = [connectedDevices deviceIdentifiersAtIndex:row];
-    result.textField.stringValue = [NSString stringWithFormat:@"%d", deviceIdentifiers.product_id];
+    result.textField.stringValue = [NSString stringWithFormat:@"%lld", deviceIdentifiers.product_id];
     return result;
   }
 
@@ -98,7 +98,7 @@
     KarabinerKitConnectedDevices* connectedDevices = [KarabinerKitDeviceManager sharedManager].connectedDevices;
     libkrbn_device_identifiers deviceIdentifiers = [connectedDevices deviceIdentifiersAtIndex:row];
 
-    result.checkbox.title = [NSString stringWithFormat:@"%@ (%@) [%d,%d]",
+    result.checkbox.title = [NSString stringWithFormat:@"%@ (%@) [%lld,%lld]",
                                                        [connectedDevices productAtIndex:row],
                                                        [connectedDevices manufacturerAtIndex:row],
                                                        deviceIdentifiers.vendor_id,
