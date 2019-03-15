@@ -20,6 +20,8 @@ inline std::ostream& operator<<(std::ostream& stream, const vendor_id& value) {
 inline vendor_id make_vendor_id(const pqrs::osx::iokit_hid_vendor_id& value) {
   return vendor_id(type_safe::get(value));
 }
+
+constexpr vendor_id vendor_id_karabiner_virtual_hid_device(0x16c0);
 } // namespace krbn
 
 namespace std {
