@@ -10,6 +10,8 @@
 #include <pqrs/filesystem.hpp>
 #include <pqrs/local_datagram.hpp>
 #include <pqrs/osx/frontmost_application_monitor.hpp>
+#include <pqrs/osx/system_preferences.hpp>
+#include <pqrs/osx/system_preferences/extra/nlohmann_json.hpp>
 #include <unistd.h>
 #include <vector>
 
@@ -122,15 +124,17 @@ public:
     });
   }
 
-  void async_system_preferences_updated(const system_preferences& system_preferences) const {
-    enqueue_to_dispatcher([this, system_preferences] {
-      nlohmann::json json{
-          {"operation_type", operation_type::system_preferences_updated},
-          {"system_preferences", system_preferences},
-      };
+  void async_system_preferences_updated(std::shared_ptr<pqrs::osx::system_preferences::properties> properties) const {
+    enqueue_to_dispatcher([this, properties] {
+      if (properties) {
+        nlohmann::json json{
+            {"operation_type", operation_type::system_preferences_updated},
+            {"system_preferences_properties", *properties},
+        };
 
-      if (client_) {
-        client_->async_send(nlohmann::json::to_msgpack(json));
+        if (client_) {
+          client_->async_send(nlohmann::json::to_msgpack(json));
+        }
       }
     });
   }

@@ -9,7 +9,6 @@
 #include "menu_process_manager.hpp"
 #include "monitor/configuration_monitor.hpp"
 #include "monitor/grabber_alerts_monitor.hpp"
-#include "monitor/system_preferences_monitor.hpp"
 #include "monitor/version_monitor.hpp"
 #include "receiver.hpp"
 #include "updater_process_manager.hpp"
@@ -17,6 +16,7 @@
 #include <pqrs/osx/frontmost_application_monitor.hpp>
 #include <pqrs/osx/input_source_monitor.hpp>
 #include <pqrs/osx/session.hpp>
+#include <pqrs/osx/system_preferences_monitor.hpp>
 #include <thread>
 
 namespace krbn {
@@ -155,15 +155,15 @@ private:
 
     // system_preferences_monitor_
 
-    system_preferences_monitor_ = std::make_unique<system_preferences_monitor>(configuration_monitor_);
+    system_preferences_monitor_ = std::make_unique<pqrs::osx::system_preferences_monitor>(weak_dispatcher_);
 
-    system_preferences_monitor_->system_preferences_changed.connect([this](auto&& system_preferences) {
+    system_preferences_monitor_->system_preferences_changed.connect([this](auto&& properties_ptr) {
       if (grabber_client_) {
-        grabber_client_->async_system_preferences_updated(system_preferences);
+        grabber_client_->async_system_preferences_updated(properties_ptr);
       }
     });
 
-    system_preferences_monitor_->async_start();
+    system_preferences_monitor_->async_start(std::chrono::milliseconds(3000));
 
     // frontmost_application_monitor_
 
@@ -227,7 +227,7 @@ private:
   std::shared_ptr<configuration_monitor> configuration_monitor_;
   std::unique_ptr<menu_process_manager> menu_process_manager_;
   std::unique_ptr<updater_process_manager> updater_process_manager_;
-  std::unique_ptr<system_preferences_monitor> system_preferences_monitor_;
+  std::unique_ptr<pqrs::osx::system_preferences_monitor> system_preferences_monitor_;
   // `frontmost_application_monitor` does not work properly in karabiner_grabber after fast user switching.
   // Therefore, we have to use `frontmost_application_monitor` in `console_user_server`.
   std::unique_ptr<pqrs::osx::frontmost_application_monitor::monitor> frontmost_application_monitor_;
