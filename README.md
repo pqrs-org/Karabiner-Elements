@@ -55,7 +55,7 @@ make package
 
 The `make` script will create a redistributable **Karabiner-Elements-VERSION.dmg** in the current directory.
 
-### About pre-built binaries in the source tree
+### Note: About pre-built binaries in the source tree
 
 Karabiner-Elements uses some pre-built binaries in the source tree.
 
