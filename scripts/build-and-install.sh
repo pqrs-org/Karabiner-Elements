@@ -14,7 +14,7 @@ main() {
         git pull --rebase
     fi
 
-    make
+    make package
 
     DMG=$(ls *.dmg)
     VOL=`hdiutil attach "$DMG" | grep -o "/Volumes/.*"`
