@@ -65,7 +65,8 @@ Karabiner-Elements uses some pre-built binaries in the source tree.
 Above `make package` command does not rebuild these binaries.<br/>
 (These binaries will be copied in the distributed package.)
 
-If you want to rebuild these binaries, you have to build them manually.
+If you want to rebuild these binaries, you have to build them manually.<br/>
+Please follow the instruction of these projects.
 
 #### About rebuilding kext in Karabiner-VirtualHIDDevice
 
