@@ -21,9 +21,9 @@ You can download previous versions of Karabiner-Elements from here:
 
 ## System requirements
 
-* macOS Sierra (10.12)
-* macOS High Sierra (10.13)
-* macOS Mojave (10.14)
+- macOS Sierra (10.12)
+- macOS High Sierra (10.13)
+- macOS Mojave (10.14)
 
 # Usage
 
@@ -33,10 +33,10 @@ You can download previous versions of Karabiner-Elements from here:
 
 System requirements to build Karabiner-Elements:
 
-* macOS 10.14+
-* Xcode 10+
-* Command Line Tools for Xcode
-* CMake (`brew install cmake`)
+- macOS 10.14+
+- Xcode 10+
+- Command Line Tools for Xcode
+- CMake (`brew install cmake`)
 
 ### Step 1: Getting source code
 
@@ -54,6 +54,25 @@ make package
 ```
 
 The `make` script will create a redistributable **Karabiner-Elements-VERSION.dmg** in the current directory.
+
+### About pre-built binaries in the source tree
+
+Karabiner-Elements uses some pre-built binaries in the source tree.
+
+- `src/vendor/Karabiner-VirtualHIDDevice/dist/*.kext`
+- `src/vendor/Sparkle/Sparkle.framework`
+
+Above `make package` command does not build these binaries.<br/>
+(These binaries will be copied in the distributed package.)
+
+If you want to rebuild these binaries, you have to build them manually.
+
+#### About rebuilding kext in Karabiner-VirtualHIDDevice
+
+If you want to build kext in Karabiner-VirtualHIDDevice, macOS requires a valid certificate which be able to sign the built kext.<br/>
+Please read a documentation about [System Integrity Protection Guide](https://developer.apple.com/library/archive/documentation/Security/Conceptual/System_Integrity_Protection_Guide/KernelExtensions/KernelExtensions.html) for more details.
+
+(We are including the pre-built kext binary to avoid the restriction that macOS requires a uncommon certificate.)
 
 # Donations
 
