@@ -50,7 +50,7 @@ git clone --depth 1 https://github.com/tekezo/Karabiner-Elements.git
 
 ```shell
 cd Karabiner-Elements
-make
+make package
 ```
 
 The `make` script will create a redistributable **Karabiner-Elements-VERSION.dmg** in the current directory.
