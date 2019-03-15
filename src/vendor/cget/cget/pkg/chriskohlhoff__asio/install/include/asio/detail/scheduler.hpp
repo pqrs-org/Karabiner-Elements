@@ -2,7 +2,7 @@
 // detail/scheduler.hpp
 // ~~~~~~~~~~~~~~~~~~~~
 //
-// Copyright (c) 2003-2018 Christopher M. Kohlhoff (chris at kohlhoff dot com)
+// Copyright (c) 2003-2019 Christopher M. Kohlhoff (chris at kohlhoff dot com)
 //
 // Distributed under the Boost Software License, Version 1.0. (See accompanying
 // file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
@@ -25,6 +25,7 @@
 #include "asio/detail/op_queue.hpp"
 #include "asio/detail/reactor_fwd.hpp"
 #include "asio/detail/scheduler_operation.hpp"
+#include "asio/detail/thread.hpp"
 #include "asio/detail/thread_context.hpp"
 
 #include "asio/detail/push_options.hpp"
@@ -44,7 +45,10 @@ public:
   // Constructor. Specifies the number of concurrent threads that are likely to
   // run the scheduler. If set to 1 certain optimisation are performed.
   ASIO_DECL scheduler(asio::execution_context& ctx,
-      int concurrency_hint = 0);
+      int concurrency_hint = 0, bool own_thread = true);
+
+  // Destructor.
+  ASIO_DECL ~scheduler();
 
   // Destroy all user-defined handler objects owned by the service.
   ASIO_DECL void shutdown();
@@ -156,6 +160,10 @@ private:
   ASIO_DECL void wake_one_thread_and_unlock(
       mutex::scoped_lock& lock);
 
+  // Helper class to run the scheduler in its own thread.
+  class thread_function;
+  friend class thread_function;
+
   // Helper class to perform task-related operations on block exit.
   struct task_cleanup;
   friend struct task_cleanup;
@@ -199,6 +207,9 @@ private:
 
   // The concurrency hint used to initialise the scheduler.
   const int concurrency_hint_;
+
+  // The thread that is running the scheduler.
+  asio::detail::thread* thread_;
 };
 
 } // namespace detail

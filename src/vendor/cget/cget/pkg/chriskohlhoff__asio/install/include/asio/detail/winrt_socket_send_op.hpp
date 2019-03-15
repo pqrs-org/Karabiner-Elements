@@ -2,7 +2,7 @@
 // detail/winrt_socket_send_op.hpp
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 //
-// Copyright (c) 2003-2018 Christopher M. Kohlhoff (chris at kohlhoff dot com)
+// Copyright (c) 2003-2019 Christopher M. Kohlhoff (chris at kohlhoff dot com)
 //
 // Distributed under the Boost Software License, Version 1.0. (See accompanying
 // file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
@@ -33,19 +33,21 @@
 namespace asio {
 namespace detail {
 
-template <typename ConstBufferSequence, typename Handler>
+template <typename ConstBufferSequence, typename Handler, typename IoExecutor>
 class winrt_socket_send_op :
   public winrt_async_op<unsigned int>
 {
 public:
   ASIO_DEFINE_HANDLER_PTR(winrt_socket_send_op);
 
-  winrt_socket_send_op(const ConstBufferSequence& buffers, Handler& handler)
+  winrt_socket_send_op(const ConstBufferSequence& buffers,
+      Handler& handler, const IoExecutor& io_ex)
     : winrt_async_op<unsigned int>(&winrt_socket_send_op::do_complete),
       buffers_(buffers),
-      handler_(ASIO_MOVE_CAST(Handler)(handler))
+      handler_(ASIO_MOVE_CAST(Handler)(handler)),
+      io_executor_(io_ex)
   {
-    handler_work<Handler>::start(handler_);
+    handler_work<Handler, IoExecutor>::start(handler_, io_executor_);
   }
 
   static void do_complete(void* owner, operation* base,
@@ -54,7 +56,7 @@ public:
     // Take ownership of the operation object.
     winrt_socket_send_op* o(static_cast<winrt_socket_send_op*>(base));
     ptr p = { asio::detail::addressof(o->handler_), o, o };
-    handler_work<Handler> w(o->handler_);
+    handler_work<Handler, IoExecutor> w(o->handler_, o->io_executor_);
 
     ASIO_HANDLER_COMPLETION((*o));
 
@@ -91,6 +93,7 @@ public:
 private:
   ConstBufferSequence buffers_;
   Handler handler_;
+  IoExecutor io_executor_;
 };
 
 } // namespace detail

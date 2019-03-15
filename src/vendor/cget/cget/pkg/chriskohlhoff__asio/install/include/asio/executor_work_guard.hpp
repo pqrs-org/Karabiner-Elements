@@ -2,7 +2,7 @@
 // executor_work_guard.hpp
 // ~~~~~~~~~~~~~~~~~
 //
-// Copyright (c) 2003-2018 Christopher M. Kohlhoff (chris at kohlhoff dot com)
+// Copyright (c) 2003-2019 Christopher M. Kohlhoff (chris at kohlhoff dot com)
 //
 // Distributed under the Boost Software License, Version 1.0. (See accompanying
 // file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
@@ -55,7 +55,7 @@ public:
 
 #if defined(ASIO_HAS_MOVE) || defined(GENERATING_DOCUMENTATION)
   /// Move constructor.
-  executor_work_guard(executor_work_guard&& other)
+  executor_work_guard(executor_work_guard&& other) ASIO_NOEXCEPT
     : executor_(ASIO_MOVE_CAST(Executor)(other.executor_)),
       owns_(other.owns_)
   {

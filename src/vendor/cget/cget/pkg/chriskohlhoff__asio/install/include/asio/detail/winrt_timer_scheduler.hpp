@@ -2,7 +2,7 @@
 // detail/winrt_timer_scheduler.hpp
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 //
-// Copyright (c) 2003-2018 Christopher M. Kohlhoff (chris at kohlhoff dot com)
+// Copyright (c) 2003-2019 Christopher M. Kohlhoff (chris at kohlhoff dot com)
 //
 // Distributed under the Boost Software License, Version 1.0. (See accompanying
 // file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
@@ -28,7 +28,13 @@
 #include "asio/detail/timer_queue_base.hpp"
 #include "asio/detail/timer_queue_set.hpp"
 #include "asio/detail/wait_op.hpp"
-#include "asio/io_context.hpp"
+#include "asio/execution_context.hpp"
+
+#if defined(ASIO_HAS_IOCP)
+# include "asio/detail/win_iocp_io_context.hpp"
+#else // defined(ASIO_HAS_IOCP)
+# include "asio/detail/scheduler.hpp"
+#endif // defined(ASIO_HAS_IOCP)
 
 #if defined(ASIO_HAS_IOCP)
 # include "asio/detail/thread.hpp"
@@ -40,11 +46,11 @@ namespace asio {
 namespace detail {
 
 class winrt_timer_scheduler
-  : public asio::detail::service_base<winrt_timer_scheduler>
+  : public execution_context_service_base<winrt_timer_scheduler>
 {
 public:
   // Constructor.
-  ASIO_DECL winrt_timer_scheduler(asio::io_context& io_context);
+  ASIO_DECL winrt_timer_scheduler(execution_context& context);
 
   // Destructor.
   ASIO_DECL ~winrt_timer_scheduler();
@@ -53,8 +59,7 @@ public:
   ASIO_DECL void shutdown();
 
   // Recreate internal descriptors following a fork.
-  ASIO_DECL void notify_fork(
-      asio::io_context::fork_event fork_ev);
+  ASIO_DECL void notify_fork(execution_context::fork_event fork_ev);
 
   // Initialise the task. No effect as this class uses its own thread.
   ASIO_DECL void init_task();
@@ -100,8 +105,13 @@ private:
   // Helper function to remove a timer queue.
   ASIO_DECL void do_remove_timer_queue(timer_queue_base& queue);
 
-  // The io_context implementation used to post completions.
-  io_context_impl& io_context_;
+  // The scheduler implementation used to post completions.
+#if defined(ASIO_HAS_IOCP)
+  typedef class win_iocp_io_context scheduler_impl;
+#else
+  typedef class scheduler scheduler_impl;
+#endif
+  scheduler_impl& scheduler_;
 
   // Mutex used to protect internal variables.
   asio::detail::mutex mutex_;

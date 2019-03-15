@@ -2,7 +2,7 @@
 // local/detail/endpoint.hpp
 // ~~~~~~~~~~~~~~~~~~~~~~~~~
 //
-// Copyright (c) 2003-2018 Christopher M. Kohlhoff (chris at kohlhoff dot com)
+// Copyright (c) 2003-2019 Christopher M. Kohlhoff (chris at kohlhoff dot com)
 // Derived from a public domain implementation written by Daniel Casimiro.
 //
 // Distributed under the Boost Software License, Version 1.0. (See accompanying
@@ -23,6 +23,7 @@
 #include <cstddef>
 #include <string>
 #include "asio/detail/socket_types.hpp"
+#include "asio/detail/string_view.hpp"
 
 #include "asio/detail/push_options.hpp"
 
@@ -42,6 +43,11 @@ public:
 
   // Construct an endpoint using the specified path name.
   ASIO_DECL endpoint(const std::string& path_name);
+
+  #if defined(ASIO_HAS_STRING_VIEW)
+  // Construct an endpoint using the specified path name.
+  ASIO_DECL endpoint(string_view path_name);
+  #endif // defined(ASIO_HAS_STRING_VIEW)
 
   // Copy constructor.
   endpoint(const endpoint& other)

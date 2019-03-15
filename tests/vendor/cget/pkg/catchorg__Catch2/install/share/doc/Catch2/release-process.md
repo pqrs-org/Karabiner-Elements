@@ -48,3 +48,25 @@ dependent on a specific version of the single-include header.
 
 Since 2.5.0, the release tag and the "binaries" (headers) should be PGP
 signed.
+
+#### Signing a tag
+
+To create a signed tag, use `git tag -s <VERSION>`, where `<VERSION>`
+is the version being released, e.g. `git tag -s v2.6.0`.
+
+Use the version name as the short message and the release notes as
+the body (long) message.
+
+#### Signing the headers
+
+This will create ASCII-armored signatures for the headers that are
+uploaded to the GitHub release:
+
+```
+$ gpg2 --armor --output catch.hpp.asc --detach-sig catch.hpp
+$ gpg2 --armor --output catch_reporter_automake.hpp.asc --detach-sig catch_reporter_automake.hpp
+$ gpg2 --armor --output catch_reporter_teamcity.hpp.asc --detach-sig catch_reporter_teamcity.hpp
+$ gpg2 --armor --output catch_reporter_tap.hpp.asc --detach-sig catch_reporter_tap.hpp
+```
+
+_GPG does not support signing multiple files in single invocation._

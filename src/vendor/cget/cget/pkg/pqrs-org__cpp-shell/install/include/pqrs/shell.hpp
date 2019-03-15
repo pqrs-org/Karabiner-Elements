@@ -1,6 +1,6 @@
 #pragma once
 
-// pqrs::shell v1.0
+// pqrs::shell v1.1
 
 // (C) Copyright Takayama Fumihiko 2018.
 // Distributed under the Boost Software License, Version 1.0.
@@ -12,7 +12,7 @@
 namespace pqrs {
 namespace shell {
 inline std::string make_background_command_string(const std::string& command) {
-  auto trimmed_command = pqrs::string::trim_copy(command);
+  auto trimmed_command = string::trim_copy(command);
   if (trimmed_command.empty()) {
     return "";
   }

@@ -42,9 +42,9 @@ namespace Catch {
         bool assertionEnded( AssertionStats const& _assertionStats ) override {
             ++counter;
 
+            stream << "# " << currentTestCaseInfo->name << std::endl;
             AssertionPrinter printer( stream, _assertionStats, counter );
             printer.print();
-            stream << " # " << currentTestCaseInfo->name ;
 
             stream << std::endl;
             return true;

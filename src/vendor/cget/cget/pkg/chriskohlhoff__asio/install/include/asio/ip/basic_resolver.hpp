@@ -2,7 +2,7 @@
 // ip/basic_resolver.hpp
 // ~~~~~~~~~~~~~~~~~~~~~
 //
-// Copyright (c) 2003-2018 Christopher M. Kohlhoff (chris at kohlhoff dot com)
+// Copyright (c) 2003-2019 Christopher M. Kohlhoff (chris at kohlhoff dot com)
 //
 // Distributed under the Boost Software License, Version 1.0. (See accompanying
 // file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
@@ -18,39 +18,41 @@
 #include "asio/detail/config.hpp"
 #include <string>
 #include "asio/async_result.hpp"
-#include "asio/basic_io_object.hpp"
 #include "asio/detail/handler_type_requirements.hpp"
+#include "asio/detail/io_object_impl.hpp"
+#include "asio/detail/non_const_lvalue.hpp"
 #include "asio/detail/string_view.hpp"
 #include "asio/detail/throw_error.hpp"
 #include "asio/error.hpp"
-#include "asio/io_context.hpp"
+#include "asio/execution_context.hpp"
+#include "asio/executor.hpp"
 #include "asio/ip/basic_resolver_iterator.hpp"
 #include "asio/ip/basic_resolver_query.hpp"
 #include "asio/ip/basic_resolver_results.hpp"
 #include "asio/ip/resolver_base.hpp"
+#if defined(ASIO_WINDOWS_RUNTIME)
+# include "asio/detail/winrt_resolver_service.hpp"
+#else
+# include "asio/detail/resolver_service.hpp"
+#endif
 
 #if defined(ASIO_HAS_MOVE)
 # include <utility>
 #endif // defined(ASIO_HAS_MOVE)
 
-#if defined(ASIO_ENABLE_OLD_SERVICES)
-# include "asio/ip/resolver_service.hpp"
-#else // defined(ASIO_ENABLE_OLD_SERVICES)
-# if defined(ASIO_WINDOWS_RUNTIME)
-#  include "asio/detail/winrt_resolver_service.hpp"
-#  define ASIO_SVC_T \
-    asio::detail::winrt_resolver_service<InternetProtocol>
-# else
-#  include "asio/detail/resolver_service.hpp"
-#  define ASIO_SVC_T \
-    asio::detail::resolver_service<InternetProtocol>
-# endif
-#endif // defined(ASIO_ENABLE_OLD_SERVICES)
-
 #include "asio/detail/push_options.hpp"
 
 namespace asio {
 namespace ip {
+
+#if !defined(ASIO_IP_BASIC_RESOLVER_FWD_DECL)
+#define ASIO_IP_BASIC_RESOLVER_FWD_DECL
+
+// Forward declaration with defaulted arguments.
+template <typename InternetProtocol, typename Executor = executor>
+class basic_resolver;
+
+#endif // !defined(ASIO_IP_BASIC_RESOLVER_FWD_DECL)
 
 /// Provides endpoint resolution functionality.
 /**
@@ -61,15 +63,13 @@ namespace ip {
  * @e Distinct @e objects: Safe.@n
  * @e Shared @e objects: Unsafe.
  */
-template <typename InternetProtocol
-    ASIO_SVC_TPARAM_DEF1(= resolver_service<InternetProtocol>)>
+template <typename InternetProtocol, typename Executor>
 class basic_resolver
-  : ASIO_SVC_ACCESS basic_io_object<ASIO_SVC_T>,
-    public resolver_base
+  : public resolver_base
 {
 public:
   /// The type of the executor associated with the object.
-  typedef io_context::executor_type executor_type;
+  typedef Executor executor_type;
 
   /// The protocol type.
   typedef InternetProtocol protocol_type;
@@ -88,16 +88,33 @@ public:
   /// The results type.
   typedef basic_resolver_results<InternetProtocol> results_type;
 
-  /// Constructor.
+  /// Construct with executor.
   /**
    * This constructor creates a basic_resolver.
    *
-   * @param io_context The io_context object that the resolver will use to
+   * @param ex The I/O executor that the resolver will use, by default, to
    * dispatch handlers for any asynchronous operations performed on the
    * resolver.
    */
-  explicit basic_resolver(asio::io_context& io_context)
-    : basic_io_object<ASIO_SVC_T>(io_context)
+  explicit basic_resolver(const executor_type& ex)
+    : impl_(ex)
+  {
+  }
+
+  /// Construct with execution context.
+  /**
+   * This constructor creates a basic_resolver.
+   *
+   * @param context An execution context which provides the I/O executor that
+   * the resolver will use, by default, to dispatch handlers for any
+   * asynchronous operations performed on the resolver.
+   */
+  template <typename ExecutionContext>
+  explicit basic_resolver(ExecutionContext& context,
+      typename enable_if<
+        is_convertible<ExecutionContext&, execution_context&>::value
+      >::type* = 0)
+    : impl_(context)
   {
   }
 
@@ -110,10 +127,10 @@ public:
    * occur.
    *
    * @note Following the move, the moved-from object is in the same state as if
-   * constructed using the @c basic_resolver(io_context&) constructor.
+   * constructed using the @c basic_resolver(const executor_type&) constructor.
    */
   basic_resolver(basic_resolver&& other)
-    : basic_io_object<ASIO_SVC_T>(std::move(other))
+    : impl_(std::move(other.impl_))
   {
   }
 
@@ -127,11 +144,11 @@ public:
    * occur.
    *
    * @note Following the move, the moved-from object is in the same state as if
-   * constructed using the @c basic_resolver(io_context&) constructor.
+   * constructed using the @c basic_resolver(const executor_type&) constructor.
    */
   basic_resolver& operator=(basic_resolver&& other)
   {
-    basic_io_object<ASIO_SVC_T>::operator=(std::move(other));
+    impl_ = std::move(other.impl_);
     return *this;
   }
 #endif // defined(ASIO_HAS_MOVE) || defined(GENERATING_DOCUMENTATION)
@@ -146,45 +163,11 @@ public:
   {
   }
 
-#if defined(ASIO_ENABLE_OLD_SERVICES)
-  // These functions are provided by basic_io_object<>.
-#else // defined(ASIO_ENABLE_OLD_SERVICES)
-#if !defined(ASIO_NO_DEPRECATED)
-  /// (Deprecated: Use get_executor().) Get the io_context associated with the
-  /// object.
-  /**
-   * This function may be used to obtain the io_context object that the I/O
-   * object uses to dispatch handlers for asynchronous operations.
-   *
-   * @return A reference to the io_context object that the I/O object will use
-   * to dispatch handlers. Ownership is not transferred to the caller.
-   */
-  asio::io_context& get_io_context()
-  {
-    return basic_io_object<ASIO_SVC_T>::get_io_context();
-  }
-
-  /// (Deprecated: Use get_executor().) Get the io_context associated with the
-  /// object.
-  /**
-   * This function may be used to obtain the io_context object that the I/O
-   * object uses to dispatch handlers for asynchronous operations.
-   *
-   * @return A reference to the io_context object that the I/O object will use
-   * to dispatch handlers. Ownership is not transferred to the caller.
-   */
-  asio::io_context& get_io_service()
-  {
-    return basic_io_object<ASIO_SVC_T>::get_io_service();
-  }
-#endif // !defined(ASIO_NO_DEPRECATED)
-
   /// Get the executor associated with the object.
   executor_type get_executor() ASIO_NOEXCEPT
   {
-    return basic_io_object<ASIO_SVC_T>::get_executor();
+    return impl_.get_executor();
   }
-#endif // defined(ASIO_ENABLE_OLD_SERVICES)
 
   /// Cancel any asynchronous operations that are waiting on the resolver.
   /**
@@ -194,7 +177,7 @@ public:
    */
   void cancel()
   {
-    return this->get_service().cancel(this->get_implementation());
+    return impl_.get_service().cancel(impl_.get_implementation());
   }
 
 #if !defined(ASIO_NO_DEPRECATED)
@@ -214,8 +197,8 @@ public:
   results_type resolve(const query& q)
   {
     asio::error_code ec;
-    results_type r = this->get_service().resolve(
-        this->get_implementation(), q, ec);
+    results_type r = impl_.get_service().resolve(
+        impl_.get_implementation(), q, ec);
     asio::detail::throw_error(ec, "resolve");
     return r;
   }
@@ -235,7 +218,7 @@ public:
    */
   results_type resolve(const query& q, asio::error_code& ec)
   {
-    return this->get_service().resolve(this->get_implementation(), q, ec);
+    return impl_.get_service().resolve(impl_.get_implementation(), q, ec);
   }
 #endif // !defined(ASIO_NO_DEPRECATED)
 
@@ -335,7 +318,8 @@ public:
    *
    * @param resolve_flags A set of flags that determine how name resolution
    * should be performed. The default flags are suitable for communication with
-   * remote hosts.
+   * remote hosts. See the @ref resolver_base documentation for the set of
+   * available flags.
    *
    * @returns A range object representing the list of endpoint entries. A
    * successful call to this function is guaranteed to return a non-empty
@@ -360,8 +344,8 @@ public:
     asio::error_code ec;
     basic_resolver_query<protocol_type> q(static_cast<std::string>(host),
         static_cast<std::string>(service), resolve_flags);
-    results_type r = this->get_service().resolve(
-        this->get_implementation(), q, ec);
+    results_type r = impl_.get_service().resolve(
+        impl_.get_implementation(), q, ec);
     asio::detail::throw_error(ec, "resolve");
     return r;
   }
@@ -384,7 +368,8 @@ public:
    *
    * @param resolve_flags A set of flags that determine how name resolution
    * should be performed. The default flags are suitable for communication with
-   * remote hosts.
+   * remote hosts. See the @ref resolver_base documentation for the set of
+   * available flags.
    *
    * @param ec Set to indicate what error occurred, if any.
    *
@@ -409,7 +394,7 @@ public:
   {
     basic_resolver_query<protocol_type> q(static_cast<std::string>(host),
         static_cast<std::string>(service), resolve_flags);
-    return this->get_service().resolve(this->get_implementation(), q, ec);
+    return impl_.get_service().resolve(impl_.get_implementation(), q, ec);
   }
 
   /// Perform forward resolution of a query to a list of entries.
@@ -518,7 +503,8 @@ public:
    *
    * @param resolve_flags A set of flags that determine how name resolution
    * should be performed. The default flags are suitable for communication with
-   * remote hosts.
+   * remote hosts. See the @ref resolver_base documentation for the set of
+   * available flags.
    *
    * @returns A range object representing the list of endpoint entries. A
    * successful call to this function is guaranteed to return a non-empty
@@ -545,8 +531,8 @@ public:
     basic_resolver_query<protocol_type> q(
         protocol, static_cast<std::string>(host),
         static_cast<std::string>(service), resolve_flags);
-    results_type r = this->get_service().resolve(
-        this->get_implementation(), q, ec);
+    results_type r = impl_.get_service().resolve(
+        impl_.get_implementation(), q, ec);
     asio::detail::throw_error(ec, "resolve");
     return r;
   }
@@ -572,7 +558,8 @@ public:
    *
    * @param resolve_flags A set of flags that determine how name resolution
    * should be performed. The default flags are suitable for communication with
-   * remote hosts.
+   * remote hosts. See the @ref resolver_base documentation for the set of
+   * available flags.
    *
    * @param ec Set to indicate what error occurred, if any.
    *
@@ -598,7 +585,7 @@ public:
     basic_resolver_query<protocol_type> q(
         protocol, static_cast<std::string>(host),
         static_cast<std::string>(service), resolve_flags);
-    return this->get_service().resolve(this->get_implementation(), q, ec);
+    return impl_.get_service().resolve(impl_.get_implementation(), q, ec);
   }
 
 #if !defined(ASIO_NO_DEPRECATED)
@@ -618,9 +605,9 @@ public:
    *   resolver::results_type results // Resolved endpoints as a range.
    * ); @endcode
    * Regardless of whether the asynchronous operation completes immediately or
-   * not, the handler will not be invoked from within this function. Invocation
-   * of the handler will be performed in a manner equivalent to using
-   * asio::io_context::post().
+   * not, the handler will not be invoked from within this function. On
+   * immediate completion, invocation of the handler will be performed in a
+   * manner equivalent to using asio::post().
    *
    * A successful resolve operation is guaranteed to pass a non-empty range to
    * the handler.
@@ -631,23 +618,9 @@ public:
   async_resolve(const query& q,
       ASIO_MOVE_ARG(ResolveHandler) handler)
   {
-    // If you get an error on the following line it means that your handler does
-    // not meet the documented type requirements for a ResolveHandler.
-    ASIO_RESOLVE_HANDLER_CHECK(
-        ResolveHandler, handler, results_type) type_check;
-
-#if defined(ASIO_ENABLE_OLD_SERVICES)
-    return this->get_service().async_resolve(this->get_implementation(), q,
-        ASIO_MOVE_CAST(ResolveHandler)(handler));
-#else // defined(ASIO_ENABLE_OLD_SERVICES)
-    asio::async_completion<ResolveHandler,
-      void (asio::error_code, results_type)> init(handler);
-
-    this->get_service().async_resolve(
-        this->get_implementation(), q, init.completion_handler);
-
-    return init.result.get();
-#endif // defined(ASIO_ENABLE_OLD_SERVICES)
+    return asio::async_initiate<ResolveHandler,
+      void (asio::error_code, results_type)>(
+        initiate_async_resolve(), handler, this, q);
   }
 #endif // !defined(ASIO_NO_DEPRECATED)
 
@@ -675,9 +648,9 @@ public:
    *   resolver::results_type results // Resolved endpoints as a range.
    * ); @endcode
    * Regardless of whether the asynchronous operation completes immediately or
-   * not, the handler will not be invoked from within this function. Invocation
-   * of the handler will be performed in a manner equivalent to using
-   * asio::io_context::post().
+   * not, the handler will not be invoked from within this function. On
+   * immediate completion, invocation of the handler will be performed in a
+   * manner equivalent to using asio::post().
    *
    * A successful resolve operation is guaranteed to pass a non-empty range to
    * the handler.
@@ -722,7 +695,8 @@ public:
    *
    * @param resolve_flags A set of flags that determine how name resolution
    * should be performed. The default flags are suitable for communication with
-   * remote hosts.
+   * remote hosts. See the @ref resolver_base documentation for the set of
+   * available flags.
    *
    * @param handler The handler to be called when the resolve operation
    * completes. Copies will be made of the handler as required. The function
@@ -732,9 +706,9 @@ public:
    *   resolver::results_type results // Resolved endpoints as a range.
    * ); @endcode
    * Regardless of whether the asynchronous operation completes immediately or
-   * not, the handler will not be invoked from within this function. Invocation
-   * of the handler will be performed in a manner equivalent to using
-   * asio::io_context::post().
+   * not, the handler will not be invoked from within this function. On
+   * immediate completion, invocation of the handler will be performed in a
+   * manner equivalent to using asio::post().
    *
    * A successful resolve operation is guaranteed to pass a non-empty range to
    * the handler.
@@ -758,26 +732,12 @@ public:
       resolver_base::flags resolve_flags,
       ASIO_MOVE_ARG(ResolveHandler) handler)
   {
-    // If you get an error on the following line it means that your handler does
-    // not meet the documented type requirements for a ResolveHandler.
-    ASIO_RESOLVE_HANDLER_CHECK(
-        ResolveHandler, handler, results_type) type_check;
-
     basic_resolver_query<protocol_type> q(static_cast<std::string>(host),
         static_cast<std::string>(service), resolve_flags);
 
-#if defined(ASIO_ENABLE_OLD_SERVICES)
-    return this->get_service().async_resolve(this->get_implementation(), q,
-        ASIO_MOVE_CAST(ResolveHandler)(handler));
-#else // defined(ASIO_ENABLE_OLD_SERVICES)
-    asio::async_completion<ResolveHandler,
-      void (asio::error_code, results_type)> init(handler);
-
-    this->get_service().async_resolve(
-        this->get_implementation(), q, init.completion_handler);
-
-    return init.result.get();
-#endif // defined(ASIO_ENABLE_OLD_SERVICES)
+    return asio::async_initiate<ResolveHandler,
+      void (asio::error_code, results_type)>(
+        initiate_async_resolve(), handler, this, q);
   }
 
   /// Asynchronously perform forward resolution of a query to a list of entries.
@@ -807,9 +767,9 @@ public:
    *   resolver::results_type results // Resolved endpoints as a range.
    * ); @endcode
    * Regardless of whether the asynchronous operation completes immediately or
-   * not, the handler will not be invoked from within this function. Invocation
-   * of the handler will be performed in a manner equivalent to using
-   * asio::io_context::post().
+   * not, the handler will not be invoked from within this function. On
+   * immediate completion, invocation of the handler will be performed in a
+   * manner equivalent to using asio::post().
    *
    * A successful resolve operation is guaranteed to pass a non-empty range to
    * the handler.
@@ -857,7 +817,8 @@ public:
    *
    * @param resolve_flags A set of flags that determine how name resolution
    * should be performed. The default flags are suitable for communication with
-   * remote hosts.
+   * remote hosts. See the @ref resolver_base documentation for the set of
+   * available flags.
    *
    * @param handler The handler to be called when the resolve operation
    * completes. Copies will be made of the handler as required. The function
@@ -867,9 +828,9 @@ public:
    *   resolver::results_type results // Resolved endpoints as a range.
    * ); @endcode
    * Regardless of whether the asynchronous operation completes immediately or
-   * not, the handler will not be invoked from within this function. Invocation
-   * of the handler will be performed in a manner equivalent to using
-   * asio::io_context::post().
+   * not, the handler will not be invoked from within this function. On
+   * immediate completion, invocation of the handler will be performed in a
+   * manner equivalent to using asio::post().
    *
    * A successful resolve operation is guaranteed to pass a non-empty range to
    * the handler.
@@ -893,27 +854,13 @@ public:
       resolver_base::flags resolve_flags,
       ASIO_MOVE_ARG(ResolveHandler) handler)
   {
-    // If you get an error on the following line it means that your handler does
-    // not meet the documented type requirements for a ResolveHandler.
-    ASIO_RESOLVE_HANDLER_CHECK(
-        ResolveHandler, handler, results_type) type_check;
-
     basic_resolver_query<protocol_type> q(
         protocol, static_cast<std::string>(host),
         static_cast<std::string>(service), resolve_flags);
 
-#if defined(ASIO_ENABLE_OLD_SERVICES)
-    return this->get_service().async_resolve(this->get_implementation(), q,
-        ASIO_MOVE_CAST(ResolveHandler)(handler));
-#else // defined(ASIO_ENABLE_OLD_SERVICES)
-    asio::async_completion<ResolveHandler,
-      void (asio::error_code, results_type)> init(handler);
-
-    this->get_service().async_resolve(
-        this->get_implementation(), q, init.completion_handler);
-
-    return init.result.get();
-#endif // defined(ASIO_ENABLE_OLD_SERVICES)
+    return asio::async_initiate<ResolveHandler,
+      void (asio::error_code, results_type)>(
+        initiate_async_resolve(), handler, this, q);
   }
 
   /// Perform reverse resolution of an endpoint to a list of entries.
@@ -933,8 +880,8 @@ public:
   results_type resolve(const endpoint_type& e)
   {
     asio::error_code ec;
-    results_type i = this->get_service().resolve(
-        this->get_implementation(), e, ec);
+    results_type i = impl_.get_service().resolve(
+        impl_.get_implementation(), e, ec);
     asio::detail::throw_error(ec, "resolve");
     return i;
   }
@@ -955,7 +902,7 @@ public:
    */
   results_type resolve(const endpoint_type& e, asio::error_code& ec)
   {
-    return this->get_service().resolve(this->get_implementation(), e, ec);
+    return impl_.get_service().resolve(impl_.get_implementation(), e, ec);
   }
 
   /// Asynchronously perform reverse resolution of an endpoint to a list of
@@ -975,9 +922,9 @@ public:
    *   resolver::results_type results // Resolved endpoints as a range.
    * ); @endcode
    * Regardless of whether the asynchronous operation completes immediately or
-   * not, the handler will not be invoked from within this function. Invocation
-   * of the handler will be performed in a manner equivalent to using
-   * asio::io_context::post().
+   * not, the handler will not be invoked from within this function. On
+   * immediate completion, invocation of the handler will be performed in a
+   * manner equivalent to using asio::post().
    *
    * A successful resolve operation is guaranteed to pass a non-empty range to
    * the handler.
@@ -988,33 +935,48 @@ public:
   async_resolve(const endpoint_type& e,
       ASIO_MOVE_ARG(ResolveHandler) handler)
   {
-    // If you get an error on the following line it means that your handler does
-    // not meet the documented type requirements for a ResolveHandler.
-    ASIO_RESOLVE_HANDLER_CHECK(
-        ResolveHandler, handler, results_type) type_check;
-
-#if defined(ASIO_ENABLE_OLD_SERVICES)
-    return this->get_service().async_resolve(this->get_implementation(), e,
-        ASIO_MOVE_CAST(ResolveHandler)(handler));
-#else // defined(ASIO_ENABLE_OLD_SERVICES)
-    asio::async_completion<ResolveHandler,
-      void (asio::error_code, results_type)> init(handler);
-
-    this->get_service().async_resolve(
-        this->get_implementation(), e, init.completion_handler);
-
-    return init.result.get();
-#endif // defined(ASIO_ENABLE_OLD_SERVICES)
+    return asio::async_initiate<ResolveHandler,
+      void (asio::error_code, results_type)>(
+        initiate_async_resolve(), handler, this, e);
   }
+
+private:
+  // Disallow copying and assignment.
+  basic_resolver(const basic_resolver&) ASIO_DELETED;
+  basic_resolver& operator=(const basic_resolver&) ASIO_DELETED;
+
+  struct initiate_async_resolve
+  {
+    template <typename ResolveHandler, typename Query>
+    void operator()(ASIO_MOVE_ARG(ResolveHandler) handler,
+        basic_resolver* self, const Query& q) const
+    {
+      // If you get an error on the following line it means that your handler
+      // does not meet the documented type requirements for a ResolveHandler.
+      ASIO_RESOLVE_HANDLER_CHECK(
+          ResolveHandler, handler, results_type) type_check;
+
+      asio::detail::non_const_lvalue<ResolveHandler> handler2(handler);
+      self->impl_.get_service().async_resolve(
+          self->impl_.get_implementation(), q, handler2.value,
+          self->impl_.get_implementation_executor());
+    }
+  };
+
+# if defined(ASIO_WINDOWS_RUNTIME)
+  asio::detail::io_object_impl<
+    asio::detail::winrt_resolver_service<InternetProtocol>,
+    Executor> impl_;
+# else
+  asio::detail::io_object_impl<
+    asio::detail::resolver_service<InternetProtocol>,
+    Executor> impl_;
+# endif
 };
 
 } // namespace ip
 } // namespace asio
 
 #include "asio/detail/pop_options.hpp"
-
-#if !defined(ASIO_ENABLE_OLD_SERVICES)
-# undef ASIO_SVC_T
-#endif // !defined(ASIO_ENABLE_OLD_SERVICES)
 
 #endif // ASIO_IP_BASIC_RESOLVER_HPP

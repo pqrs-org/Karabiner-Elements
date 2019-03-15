@@ -2,7 +2,7 @@
 // detail/resolver_service.hpp
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~
 //
-// Copyright (c) 2003-2018 Christopher M. Kohlhoff (chris at kohlhoff dot com)
+// Copyright (c) 2003-2019 Christopher M. Kohlhoff (chris at kohlhoff dot com)
 //
 // Distributed under the Boost Software License, Version 1.0. (See accompanying
 // file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
@@ -34,7 +34,7 @@ namespace detail {
 
 template <typename Protocol>
 class resolver_service :
-  public service_base<resolver_service<Protocol> >,
+  public execution_context_service_base<resolver_service<Protocol> >,
   public resolver_service_base
 {
 public:
@@ -52,9 +52,9 @@ public:
   typedef asio::ip::basic_resolver_results<Protocol> results_type;
 
   // Constructor.
-  resolver_service(asio::io_context& io_context)
-    : service_base<resolver_service<Protocol> >(io_context),
-      resolver_service_base(io_context)
+  resolver_service(execution_context& context)
+    : execution_context_service_base<resolver_service<Protocol> >(context),
+      resolver_service_base(context)
   {
   }
 
@@ -65,7 +65,7 @@ public:
   }
 
   // Perform any fork-related housekeeping.
-  void notify_fork(asio::io_context::fork_event fork_ev)
+  void notify_fork(execution_context::fork_event fork_ev)
   {
     this->base_notify_fork(fork_ev);
   }
@@ -85,17 +85,17 @@ public:
   }
 
   // Asynchronously resolve a query to a list of entries.
-  template <typename Handler>
-  void async_resolve(implementation_type& impl,
-      const query_type& query, Handler& handler)
+  template <typename Handler, typename IoExecutor>
+  void async_resolve(implementation_type& impl, const query_type& query,
+      Handler& handler, const IoExecutor& io_ex)
   {
     // Allocate and construct an operation to wrap the handler.
-    typedef resolve_query_op<Protocol, Handler> op;
+    typedef resolve_query_op<Protocol, Handler, IoExecutor> op;
     typename op::ptr p = { asio::detail::addressof(handler),
       op::ptr::allocate(handler), 0 };
-    p.p = new (p.v) op(impl, query, io_context_impl_, handler);
+    p.p = new (p.v) op(impl, query, scheduler_, handler, io_ex);
 
-    ASIO_HANDLER_CREATION((io_context_impl_.context(),
+    ASIO_HANDLER_CREATION((scheduler_.context(),
           *p.p, "resolver", &impl, 0, "async_resolve"));
 
     start_resolve_op(p.p);
@@ -117,17 +117,17 @@ public:
   }
 
   // Asynchronously resolve an endpoint to a list of entries.
-  template <typename Handler>
-  void async_resolve(implementation_type& impl,
-      const endpoint_type& endpoint, Handler& handler)
+  template <typename Handler, typename IoExecutor>
+  void async_resolve(implementation_type& impl, const endpoint_type& endpoint,
+      Handler& handler, const IoExecutor& io_ex)
   {
     // Allocate and construct an operation to wrap the handler.
-    typedef resolve_endpoint_op<Protocol, Handler> op;
+    typedef resolve_endpoint_op<Protocol, Handler, IoExecutor> op;
     typename op::ptr p = { asio::detail::addressof(handler),
       op::ptr::allocate(handler), 0 };
-    p.p = new (p.v) op(impl, endpoint, io_context_impl_, handler);
+    p.p = new (p.v) op(impl, endpoint, scheduler_, handler, io_ex);
 
-    ASIO_HANDLER_CREATION((io_context_impl_.context(),
+    ASIO_HANDLER_CREATION((scheduler_.context(),
           *p.p, "resolver", &impl, 0, "async_resolve"));
 
     start_resolve_op(p.p);

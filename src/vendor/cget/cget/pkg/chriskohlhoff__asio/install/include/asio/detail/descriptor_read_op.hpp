@@ -2,7 +2,7 @@
 // detail/descriptor_read_op.hpp
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 //
-// Copyright (c) 2003-2018 Christopher M. Kohlhoff (chris at kohlhoff dot com)
+// Copyright (c) 2003-2019 Christopher M. Kohlhoff (chris at kohlhoff dot com)
 //
 // Distributed under the Boost Software License, Version 1.0. (See accompanying
 // file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
@@ -66,20 +66,21 @@ private:
   MutableBufferSequence buffers_;
 };
 
-template <typename MutableBufferSequence, typename Handler>
+template <typename MutableBufferSequence, typename Handler, typename IoExecutor>
 class descriptor_read_op
   : public descriptor_read_op_base<MutableBufferSequence>
 {
 public:
   ASIO_DEFINE_HANDLER_PTR(descriptor_read_op);
 
-  descriptor_read_op(int descriptor,
-      const MutableBufferSequence& buffers, Handler& handler)
+  descriptor_read_op(int descriptor, const MutableBufferSequence& buffers,
+      Handler& handler, const IoExecutor& io_ex)
     : descriptor_read_op_base<MutableBufferSequence>(
         descriptor, buffers, &descriptor_read_op::do_complete),
-      handler_(ASIO_MOVE_CAST(Handler)(handler))
+      handler_(ASIO_MOVE_CAST(Handler)(handler)),
+      io_executor_(io_ex)
   {
-    handler_work<Handler>::start(handler_);
+    handler_work<Handler, IoExecutor>::start(handler_, io_executor_);
   }
 
   static void do_complete(void* owner, operation* base,
@@ -89,7 +90,7 @@ public:
     // Take ownership of the handler object.
     descriptor_read_op* o(static_cast<descriptor_read_op*>(base));
     ptr p = { asio::detail::addressof(o->handler_), o, o };
-    handler_work<Handler> w(o->handler_);
+    handler_work<Handler, IoExecutor> w(o->handler_, o->io_executor_);
 
     ASIO_HANDLER_COMPLETION((*o));
 
@@ -116,6 +117,7 @@ public:
 
 private:
   Handler handler_;
+  IoExecutor io_executor_;
 };
 
 } // namespace detail

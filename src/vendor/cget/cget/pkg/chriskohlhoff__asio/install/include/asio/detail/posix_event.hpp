@@ -2,7 +2,7 @@
 // detail/posix_event.hpp
 // ~~~~~~~~~~~~~~~~~~~~~~
 //
-// Copyright (c) 2003-2018 Christopher M. Kohlhoff (chris at kohlhoff dot com)
+// Copyright (c) 2003-2019 Christopher M. Kohlhoff (chris at kohlhoff dot com)
 //
 // Distributed under the Boost Software License, Version 1.0. (See accompanying
 // file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
@@ -129,7 +129,7 @@ public:
       if (::clock_gettime(CLOCK_MONOTONIC, &ts) == 0)
       {
         ts.tv_sec += usec / 1000000;
-        ts.tv_nsec = (usec % 1000000) * 1000;
+        ts.tv_nsec += (usec % 1000000) * 1000;
         ts.tv_sec += ts.tv_nsec / 1000000000;
         ts.tv_nsec = ts.tv_nsec % 1000000000;
         ::pthread_cond_timedwait(&cond_,

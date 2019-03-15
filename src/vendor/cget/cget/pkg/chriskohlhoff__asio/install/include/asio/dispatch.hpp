@@ -2,7 +2,7 @@
 // dispatch.hpp
 // ~~~~~~~~~~~~
 //
-// Copyright (c) 2003-2018 Christopher M. Kohlhoff (chris at kohlhoff dot com)
+// Copyright (c) 2003-2019 Christopher M. Kohlhoff (chris at kohlhoff dot com)
 //
 // Distributed under the Boost Software License, Version 1.0. (See accompanying
 // file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
@@ -28,8 +28,8 @@ namespace asio {
 /// Submits a completion token or function object for execution.
 /**
  * This function submits an object for execution using the object's associated
- * executor. The function object is queued for execution, and is never called
- * from the current thread prior to returning from <tt>dispatch()</tt>.
+ * executor. The function object may be called from the current thread prior to
+ * returning from <tt>dispatch()</tt>. Otherwise, it is queued for execution.
  *
  * This function has the following effects:
  *
@@ -56,8 +56,8 @@ ASIO_INITFN_RESULT_TYPE(CompletionToken, void()) dispatch(
 /// Submits a completion token or function object for execution.
 /**
  * This function submits an object for execution using the specified executor.
- * The function object is queued for execution, and is never called from the
- * current thread prior to returning from <tt>dispatch()</tt>.
+ * The function object may be called from the current thread prior to returning
+ * from <tt>dispatch()</tt>. Otherwise, it is queued for execution.
  *
  * This function has the following effects:
  *

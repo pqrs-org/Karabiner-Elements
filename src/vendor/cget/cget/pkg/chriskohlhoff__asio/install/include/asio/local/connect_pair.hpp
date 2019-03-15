@@ -2,7 +2,7 @@
 // local/connect_pair.hpp
 // ~~~~~~~~~~~~~~~~~~~~~~
 //
-// Copyright (c) 2003-2018 Christopher M. Kohlhoff (chris at kohlhoff dot com)
+// Copyright (c) 2003-2019 Christopher M. Kohlhoff (chris at kohlhoff dot com)
 //
 // Distributed under the Boost Software License, Version 1.0. (See accompanying
 // file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
@@ -32,33 +32,28 @@ namespace asio {
 namespace local {
 
 /// Create a pair of connected sockets.
-template <typename Protocol ASIO_SVC_TPARAM ASIO_SVC_TPARAM1>
-void connect_pair(
-    basic_socket<Protocol ASIO_SVC_TARG>& socket1,
-    basic_socket<Protocol ASIO_SVC_TARG1>& socket2);
+template <typename Protocol, typename Executor1, typename Executor2>
+void connect_pair(basic_socket<Protocol, Executor1>& socket1,
+    basic_socket<Protocol, Executor2>& socket2);
 
 /// Create a pair of connected sockets.
-template <typename Protocol ASIO_SVC_TPARAM ASIO_SVC_TPARAM1>
-ASIO_SYNC_OP_VOID connect_pair(
-    basic_socket<Protocol ASIO_SVC_TARG>& socket1,
-    basic_socket<Protocol ASIO_SVC_TARG1>& socket2,
-    asio::error_code& ec);
+template <typename Protocol, typename Executor1, typename Executor2>
+ASIO_SYNC_OP_VOID connect_pair(basic_socket<Protocol, Executor1>& socket1,
+    basic_socket<Protocol, Executor2>& socket2, asio::error_code& ec);
 
-template <typename Protocol ASIO_SVC_TPARAM ASIO_SVC_TPARAM1>
-inline void connect_pair(
-    basic_socket<Protocol ASIO_SVC_TARG>& socket1,
-    basic_socket<Protocol ASIO_SVC_TARG1>& socket2)
+template <typename Protocol, typename Executor1, typename Executor2>
+inline void connect_pair(basic_socket<Protocol, Executor1>& socket1,
+    basic_socket<Protocol, Executor2>& socket2)
 {
   asio::error_code ec;
   connect_pair(socket1, socket2, ec);
   asio::detail::throw_error(ec, "connect_pair");
 }
 
-template <typename Protocol ASIO_SVC_TPARAM ASIO_SVC_TPARAM1>
+template <typename Protocol, typename Executor1, typename Executor2>
 inline ASIO_SYNC_OP_VOID connect_pair(
-    basic_socket<Protocol ASIO_SVC_TARG>& socket1,
-    basic_socket<Protocol ASIO_SVC_TARG1>& socket2,
-    asio::error_code& ec)
+    basic_socket<Protocol, Executor1>& socket1,
+    basic_socket<Protocol, Executor2>& socket2, asio::error_code& ec)
 {
   // Check that this function is only being used with a UNIX domain socket.
   asio::local::basic_endpoint<Protocol>* tmp

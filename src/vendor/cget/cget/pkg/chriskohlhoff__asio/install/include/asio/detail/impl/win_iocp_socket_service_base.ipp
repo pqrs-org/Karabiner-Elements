@@ -2,7 +2,7 @@
 // detail/impl/win_iocp_socket_service_base.ipp
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 //
-// Copyright (c) 2003-2018 Christopher M. Kohlhoff (chris at kohlhoff dot com)
+// Copyright (c) 2003-2019 Christopher M. Kohlhoff (chris at kohlhoff dot com)
 //
 // Distributed under the Boost Software License, Version 1.0. (See accompanying
 // file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
@@ -27,9 +27,9 @@ namespace asio {
 namespace detail {
 
 win_iocp_socket_service_base::win_iocp_socket_service_base(
-    asio::io_context& io_context)
-  : io_context_(io_context),
-    iocp_service_(use_service<win_iocp_io_context>(io_context)),
+    execution_context& context)
+  : context_(context),
+    iocp_service_(use_service<win_iocp_io_context>(context)),
     reactor_(0),
     connect_ex_(0),
     nt_set_info_(0),
@@ -707,7 +707,7 @@ select_reactor& win_iocp_socket_service_base::get_reactor()
           reinterpret_cast<void**>(&reactor_), 0, 0));
   if (!r)
   {
-    r = &(use_service<select_reactor>(io_context_));
+    r = &(use_service<select_reactor>(context_));
     interlocked_exchange_pointer(reinterpret_cast<void**>(&reactor_), r);
   }
   return *r;

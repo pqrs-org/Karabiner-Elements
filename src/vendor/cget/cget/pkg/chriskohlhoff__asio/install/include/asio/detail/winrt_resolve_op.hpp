@@ -2,7 +2,7 @@
 // detail/winrt_resolve_op.hpp
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~
 //
-// Copyright (c) 2003-2018 Christopher M. Kohlhoff (chris at kohlhoff dot com)
+// Copyright (c) 2003-2019 Christopher M. Kohlhoff (chris at kohlhoff dot com)
 //
 // Distributed under the Boost Software License, Version 1.0. (See accompanying
 // file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
@@ -33,7 +33,7 @@
 namespace asio {
 namespace detail {
 
-template <typename Protocol, typename Handler>
+template <typename Protocol, typename Handler, typename IoExecutor>
 class winrt_resolve_op :
   public winrt_async_op<
     Windows::Foundation::Collections::IVectorView<
@@ -46,15 +46,17 @@ public:
   typedef asio::ip::basic_resolver_query<Protocol> query_type;
   typedef asio::ip::basic_resolver_results<Protocol> results_type;
 
-  winrt_resolve_op(const query_type& query, Handler& handler)
+  winrt_resolve_op(const query_type& query,
+      Handler& handler, const IoExecutor& io_ex)
     : winrt_async_op<
         Windows::Foundation::Collections::IVectorView<
           Windows::Networking::EndpointPair^>^>(
             &winrt_resolve_op::do_complete),
       query_(query),
-      handler_(ASIO_MOVE_CAST(Handler)(handler))
+      handler_(ASIO_MOVE_CAST(Handler)(handler)),
+      io_executor_(io_ex)
   {
-    handler_work<Handler>::start(handler_);
+    handler_work<Handler, IoExecutor>::start(handler_, io_executor_);
   }
 
   static void do_complete(void* owner, operation* base,
@@ -63,7 +65,7 @@ public:
     // Take ownership of the operation object.
     winrt_resolve_op* o(static_cast<winrt_resolve_op*>(base));
     ptr p = { asio::detail::addressof(o->handler_), o, o };
-    handler_work<Handler> w(o->handler_);
+    handler_work<Handler, IoExecutor> w(o->handler_, o->io_executor_);
 
     ASIO_HANDLER_COMPLETION((*o));
 
@@ -106,6 +108,7 @@ public:
 private:
   query_type query_;
   Handler handler_;
+  IoExecutor io_executor_;
 };
 
 } // namespace detail

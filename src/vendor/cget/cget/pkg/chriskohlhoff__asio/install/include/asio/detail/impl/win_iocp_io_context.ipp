@@ -2,7 +2,7 @@
 // detail/impl/win_iocp_io_context.ipp
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 //
-// Copyright (c) 2003-2018 Christopher M. Kohlhoff (chris at kohlhoff dot com)
+// Copyright (c) 2003-2019 Christopher M. Kohlhoff (chris at kohlhoff dot com)
 //
 // Distributed under the Boost Software License, Version 1.0. (See accompanying
 // file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
@@ -24,6 +24,7 @@
 #include "asio/detail/handler_alloc_helpers.hpp"
 #include "asio/detail/handler_invoke_helpers.hpp"
 #include "asio/detail/limits.hpp"
+#include "asio/detail/thread.hpp"
 #include "asio/detail/throw_error.hpp"
 #include "asio/detail/win_iocp_io_context.hpp"
 
@@ -31,6 +32,22 @@
 
 namespace asio {
 namespace detail {
+
+struct win_iocp_io_context::thread_function
+{
+  explicit thread_function(win_iocp_io_context* s)
+    : this_(s)
+  {
+  }
+
+  void operator()()
+  {
+    asio::error_code ec;
+    this_->run(ec);
+  }
+
+  win_iocp_io_context* this_;
+};
 
 struct win_iocp_io_context::work_finished_on_block_exit
 {
@@ -62,7 +79,7 @@ struct win_iocp_io_context::timer_thread_function
 };
 
 win_iocp_io_context::win_iocp_io_context(
-    asio::execution_context& ctx, int concurrency_hint)
+    asio::execution_context& ctx, int concurrency_hint, bool own_thread)
   : execution_context_service_base<win_iocp_io_context>(ctx),
     iocp_(),
     outstanding_work_(0),
@@ -84,6 +101,21 @@ win_iocp_io_context::win_iocp_io_context(
         asio::error::get_system_category());
     asio::detail::throw_error(ec, "iocp");
   }
+
+  if (own_thread)
+  {
+    ::InterlockedIncrement(&outstanding_work_);
+    thread_.reset(new asio::detail::thread(thread_function(this)));
+  }
+}
+
+win_iocp_io_context::~win_iocp_io_context()
+{
+  if (thread_.get())
+  {
+    thread_->join();
+    thread_.reset();
+  }
 }
 
 void win_iocp_io_context::shutdown()
@@ -95,6 +127,13 @@ void win_iocp_io_context::shutdown()
     LARGE_INTEGER timeout;
     timeout.QuadPart = 1;
     ::SetWaitableTimer(waitable_timer_.handle, &timeout, 1, 0, 0, FALSE);
+  }
+
+  if (thread_.get())
+  {
+    thread_->join();
+    thread_.reset();
+    ::InterlockedDecrement(&outstanding_work_);
   }
 
   while (::InterlockedExchangeAdd(&outstanding_work_, 0) > 0)

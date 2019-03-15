@@ -2,7 +2,7 @@
 // impl/io_context.hpp
 // ~~~~~~~~~~~~~~~~~~~
 //
-// Copyright (c) 2003-2018 Christopher M. Kohlhoff (chris at kohlhoff dot com)
+// Copyright (c) 2003-2019 Christopher M. Kohlhoff (chris at kohlhoff dot com)
 //
 // Distributed under the Boost Software License, Version 1.0. (See accompanying
 // file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
@@ -19,12 +19,15 @@
 #include "asio/detail/executor_op.hpp"
 #include "asio/detail/fenced_block.hpp"
 #include "asio/detail/handler_type_requirements.hpp"
+#include "asio/detail/non_const_lvalue.hpp"
 #include "asio/detail/recycling_allocator.hpp"
 #include "asio/detail/service_registry.hpp"
 #include "asio/detail/throw_error.hpp"
 #include "asio/detail/type_traits.hpp"
 
 #include "asio/detail/push_options.hpp"
+
+#if !defined(GENERATING_DOCUMENTATION)
 
 namespace asio {
 
@@ -46,6 +49,8 @@ inline detail::io_context_impl& use_service<detail::io_context_impl>(
 }
 
 } // namespace asio
+
+#endif // !defined(GENERATING_DOCUMENTATION)
 
 #include "asio/detail/pop_options.hpp"
 
@@ -127,70 +132,87 @@ inline void io_context::reset()
   restart();
 }
 
+struct io_context::initiate_dispatch
+{
+  template <typename LegacyCompletionHandler>
+  void operator()(ASIO_MOVE_ARG(LegacyCompletionHandler) handler,
+      io_context* self) const
+  {
+    // If you get an error on the following line it means that your handler does
+    // not meet the documented type requirements for a LegacyCompletionHandler.
+    ASIO_LEGACY_COMPLETION_HANDLER_CHECK(
+        LegacyCompletionHandler, handler) type_check;
+
+    detail::non_const_lvalue<LegacyCompletionHandler> handler2(handler);
+    if (self->impl_.can_dispatch())
+    {
+      detail::fenced_block b(detail::fenced_block::full);
+      asio_handler_invoke_helpers::invoke(
+          handler2.value, handler2.value);
+    }
+    else
+    {
+      // Allocate and construct an operation to wrap the handler.
+      typedef detail::completion_handler<
+        typename decay<LegacyCompletionHandler>::type> op;
+      typename op::ptr p = { detail::addressof(handler2.value),
+        op::ptr::allocate(handler2.value), 0 };
+      p.p = new (p.v) op(handler2.value);
+
+      ASIO_HANDLER_CREATION((*self, *p.p,
+            "io_context", self, 0, "dispatch"));
+
+      self->impl_.do_dispatch(p.p);
+      p.v = p.p = 0;
+    }
+  }
+};
+
 template <typename LegacyCompletionHandler>
 ASIO_INITFN_RESULT_TYPE(LegacyCompletionHandler, void ())
 io_context::dispatch(ASIO_MOVE_ARG(LegacyCompletionHandler) handler)
 {
-  // If you get an error on the following line it means that your handler does
-  // not meet the documented type requirements for a LegacyCompletionHandler.
-  ASIO_LEGACY_COMPLETION_HANDLER_CHECK(
-      LegacyCompletionHandler, handler) type_check;
+  return async_initiate<LegacyCompletionHandler, void ()>(
+      initiate_dispatch(), handler, this);
+}
 
-  async_completion<LegacyCompletionHandler, void ()> init(handler);
+struct io_context::initiate_post
+{
+  template <typename LegacyCompletionHandler>
+  void operator()(ASIO_MOVE_ARG(LegacyCompletionHandler) handler,
+      io_context* self) const
+  {
+    // If you get an error on the following line it means that your handler does
+    // not meet the documented type requirements for a LegacyCompletionHandler.
+    ASIO_LEGACY_COMPLETION_HANDLER_CHECK(
+        LegacyCompletionHandler, handler) type_check;
 
-  if (impl_.can_dispatch())
-  {
-    detail::fenced_block b(detail::fenced_block::full);
-    asio_handler_invoke_helpers::invoke(
-        init.completion_handler, init.completion_handler);
-  }
-  else
-  {
+    detail::non_const_lvalue<LegacyCompletionHandler> handler2(handler);
+
+    bool is_continuation =
+      asio_handler_cont_helpers::is_continuation(handler2.value);
+
     // Allocate and construct an operation to wrap the handler.
     typedef detail::completion_handler<
-      typename handler_type<LegacyCompletionHandler, void ()>::type> op;
-    typename op::ptr p = { detail::addressof(init.completion_handler),
-      op::ptr::allocate(init.completion_handler), 0 };
-    p.p = new (p.v) op(init.completion_handler);
+      typename decay<LegacyCompletionHandler>::type> op;
+    typename op::ptr p = { detail::addressof(handler2.value),
+        op::ptr::allocate(handler2.value), 0 };
+    p.p = new (p.v) op(handler2.value);
 
-    ASIO_HANDLER_CREATION((*this, *p.p,
-          "io_context", this, 0, "dispatch"));
+    ASIO_HANDLER_CREATION((*self, *p.p,
+          "io_context", self, 0, "post"));
 
-    impl_.do_dispatch(p.p);
+    self->impl_.post_immediate_completion(p.p, is_continuation);
     p.v = p.p = 0;
   }
-
-  return init.result.get();
-}
+};
 
 template <typename LegacyCompletionHandler>
 ASIO_INITFN_RESULT_TYPE(LegacyCompletionHandler, void ())
 io_context::post(ASIO_MOVE_ARG(LegacyCompletionHandler) handler)
 {
-  // If you get an error on the following line it means that your handler does
-  // not meet the documented type requirements for a LegacyCompletionHandler.
-  ASIO_LEGACY_COMPLETION_HANDLER_CHECK(
-      LegacyCompletionHandler, handler) type_check;
-
-  async_completion<LegacyCompletionHandler, void ()> init(handler);
-
-  bool is_continuation =
-    asio_handler_cont_helpers::is_continuation(init.completion_handler);
-
-  // Allocate and construct an operation to wrap the handler.
-  typedef detail::completion_handler<
-    typename handler_type<LegacyCompletionHandler, void ()>::type> op;
-  typename op::ptr p = { detail::addressof(init.completion_handler),
-      op::ptr::allocate(init.completion_handler), 0 };
-  p.p = new (p.v) op(init.completion_handler);
-
-  ASIO_HANDLER_CREATION((*this, *p.p,
-        "io_context", this, 0, "post"));
-
-  impl_.post_immediate_completion(p.p, is_continuation);
-  p.v = p.p = 0;
-
-  return init.result.get();
+  return async_initiate<LegacyCompletionHandler, void ()>(
+      initiate_post(), handler, this);
 }
 
 template <typename Handler>
@@ -317,24 +339,12 @@ inline asio::io_context& io_context::work::get_io_context()
 {
   return static_cast<asio::io_context&>(io_context_impl_.context());
 }
-
-inline asio::io_context& io_context::work::get_io_service()
-{
-  return static_cast<asio::io_context&>(io_context_impl_.context());
-}
 #endif // !defined(ASIO_NO_DEPRECATED)
 
 inline asio::io_context& io_context::service::get_io_context()
 {
   return static_cast<asio::io_context&>(context());
 }
-
-#if !defined(ASIO_NO_DEPRECATED)
-inline asio::io_context& io_context::service::get_io_service()
-{
-  return static_cast<asio::io_context&>(context());
-}
-#endif // !defined(ASIO_NO_DEPRECATED)
 
 } // namespace asio
 

@@ -2,6 +2,8 @@
 
 # Release notes
 **Contents**<br>
+[2.7.0](#270)<br>
+[2.6.1](#261)<br>
 [2.6.0](#260)<br>
 [2.5.0](#250)<br>
 [2.4.2](#242)<br>
@@ -18,6 +20,51 @@
 [2.0.1](#201)<br>
 [Older versions](#older-versions)<br>
 [Even Older versions](#even-older-versions)<br>
+
+## 2.7.0
+
+### Improvements
+* `TEMPLATE_PRODUCT_TEST_CASE` now uses the resulting type in the name, instead of the serial number (#1544)
+* Catch2's single header is now strictly ASCII (#1542)
+* Added generator for random integral/floating point types
+  * The types are inferred within the `random` helper
+* Added back RangeGenerator (#1526)
+  * RangeGenerator returns elements within a certain range
+* Added ChunkGenerator generic transform (#1538)
+  * A ChunkGenerator returns the elements from different generator in chunks of n elements
+* Added `UNSCOPED_INFO` (#415, #983, #1522)
+  * This is a variant of `INFO` that lives until next assertion/end of the test case.
+
+
+### Fixes
+* All calls to C stdlib functions are now `std::` qualified (#1541)
+  * Code brought in from Clara was also updated.
+* Running tests will no longer open the specified output file twice (#1545)
+  * This would cause trouble when the file was not a file, but rather a named pipe
+  * Fixes the CLion/Resharper integration with Catch
+* Fixed `-Wunreachable-code` occuring with (old) ccache+cmake+clang combination (#1540)
+* Fixed `-Wdefaulted-function-deleted` warning with Clang 8 (#1537)
+* Catch2's type traits and helpers are now properly namespaced inside `Catch::` (#1548)
+* Fixed std{out,err} redirection for failing test (#1514, #1525)
+  * Somehow, this bug has been present for well over a year before it was reported
+
+
+### Contrib
+* `ParseAndAddCatchTests` now properly escapes commas in the test name
+
+
+
+## 2.6.1
+
+### Improvements
+* The JUnit reporter now also reports random seed (#1520, #1521)
+
+### Fixes
+* The TAP reporter now formats comments with test name properly (#1529)
+* `CATCH_REQUIRE_THROWS`'s internals were unified with `REQUIRE_THROWS` (#1536)
+  * This fixes a potential `-Wunused-value` warning when used
+* Fixed a potential segfault when using any of the `--list-*` options (#1533, #1534)
+
 
 ## 2.6.0
 

@@ -2,7 +2,7 @@
 // detail/resolve_query_op.hpp
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~
 //
-// Copyright (c) 2003-2018 Christopher M. Kohlhoff (chris at kohlhoff dot com)
+// Copyright (c) 2003-2019 Christopher M. Kohlhoff (chris at kohlhoff dot com)
 //
 // Distributed under the Boost Software License, Version 1.0. (See accompanying
 // file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
@@ -17,7 +17,6 @@
 
 #include "asio/detail/config.hpp"
 #include "asio/error.hpp"
-#include "asio/io_context.hpp"
 #include "asio/ip/basic_resolver_query.hpp"
 #include "asio/ip/basic_resolver_results.hpp"
 #include "asio/detail/bind_handler.hpp"
@@ -28,12 +27,18 @@
 #include "asio/detail/resolve_op.hpp"
 #include "asio/detail/socket_ops.hpp"
 
+#if defined(ASIO_HAS_IOCP)
+# include "asio/detail/win_iocp_io_context.hpp"
+#else // defined(ASIO_HAS_IOCP)
+# include "asio/detail/scheduler.hpp"
+#endif // defined(ASIO_HAS_IOCP)
+
 #include "asio/detail/push_options.hpp"
 
 namespace asio {
 namespace detail {
 
-template <typename Protocol, typename Handler>
+template <typename Protocol, typename Handler, typename IoExecutor>
 class resolve_query_op : public resolve_op
 {
 public:
@@ -42,16 +47,24 @@ public:
   typedef asio::ip::basic_resolver_query<Protocol> query_type;
   typedef asio::ip::basic_resolver_results<Protocol> results_type;
 
+#if defined(ASIO_HAS_IOCP)
+  typedef class win_iocp_io_context scheduler_impl;
+#else
+  typedef class scheduler scheduler_impl;
+#endif
+
   resolve_query_op(socket_ops::weak_cancel_token_type cancel_token,
-      const query_type& query, io_context_impl& ioc, Handler& handler)
+      const query_type& query, scheduler_impl& sched,
+      Handler& handler, const IoExecutor& io_ex)
     : resolve_op(&resolve_query_op::do_complete),
       cancel_token_(cancel_token),
       query_(query),
-      io_context_impl_(ioc),
+      scheduler_(sched),
       handler_(ASIO_MOVE_CAST(Handler)(handler)),
+      io_executor_(io_ex),
       addrinfo_(0)
   {
-    handler_work<Handler>::start(handler_);
+    handler_work<Handler, IoExecutor>::start(handler_, io_executor_);
   }
 
   ~resolve_query_op()
@@ -68,7 +81,7 @@ public:
     resolve_query_op* o(static_cast<resolve_query_op*>(base));
     ptr p = { asio::detail::addressof(o->handler_), o, o };
 
-    if (owner && owner != &o->io_context_impl_)
+    if (owner && owner != &o->scheduler_)
     {
       // The operation is being run on the worker io_context. Time to perform
       // the resolver operation.
@@ -79,7 +92,7 @@ public:
           o->query_.hints(), &o->addrinfo_, o->ec_);
 
       // Pass operation back to main io_context for completion.
-      o->io_context_impl_.post_deferred_completion(o);
+      o->scheduler_.post_deferred_completion(o);
       p.v = p.p = 0;
     }
     else
@@ -88,7 +101,7 @@ public:
       // handler is ready to be delivered.
 
       // Take ownership of the operation's outstanding work.
-      handler_work<Handler> w(o->handler_);
+      handler_work<Handler, IoExecutor> w(o->handler_, o->io_executor_);
 
       ASIO_HANDLER_COMPLETION((*o));
 
@@ -121,8 +134,9 @@ public:
 private:
   socket_ops::weak_cancel_token_type cancel_token_;
   query_type query_;
-  io_context_impl& io_context_impl_;
+  scheduler_impl& scheduler_;
   Handler handler_;
+  IoExecutor io_executor_;
   asio::detail::addrinfo_type* addrinfo_;
 };
 

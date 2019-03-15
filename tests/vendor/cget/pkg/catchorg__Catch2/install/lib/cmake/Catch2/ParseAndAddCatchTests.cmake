@@ -172,6 +172,9 @@ function(ParseFile SourceFile TestTarget)
                 PrintDebugMessage("Setting labels to ${Labels}")
             endif()
 
+            # Escape commas in the test spec
+            string(REPLACE "," "\\," Name ${Name})
+
             # Add the test and set its properties
             add_test(NAME "\"${CTestName}\"" COMMAND ${OptionalCatchTestLauncher} ${TestTarget} ${Name} ${AdditionalCatchParameters})
             # Old CMake versions do not document VERSION_GREATER_EQUAL, so we use VERSION_GREATER with 3.8 instead

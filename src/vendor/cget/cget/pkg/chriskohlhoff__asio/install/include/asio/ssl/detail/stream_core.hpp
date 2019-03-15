@@ -2,7 +2,7 @@
 // ssl/detail/stream_core.hpp
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~
 //
-// Copyright (c) 2003-2018 Christopher M. Kohlhoff (chris at kohlhoff dot com)
+// Copyright (c) 2003-2019 Christopher M. Kohlhoff (chris at kohlhoff dot com)
 //
 // Distributed under the Boost Software License, Version 1.0. (See accompanying
 // file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
@@ -37,10 +37,11 @@ struct stream_core
   // sufficient to hold the largest possible TLS record.
   enum { max_tls_record_size = 17 * 1024 };
 
-  stream_core(SSL_CTX* context, asio::io_context& io_context)
+  template <typename Executor>
+  stream_core(SSL_CTX* context, const Executor& ex)
     : engine_(context),
-      pending_read_(io_context),
-      pending_write_(io_context),
+      pending_read_(ex),
+      pending_write_(ex),
       output_buffer_space_(max_tls_record_size),
       output_buffer_(asio::buffer(output_buffer_space_)),
       input_buffer_space_(max_tls_record_size),

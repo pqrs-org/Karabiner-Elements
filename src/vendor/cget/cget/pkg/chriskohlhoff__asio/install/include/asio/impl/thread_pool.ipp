@@ -2,7 +2,7 @@
 // impl/thread_pool.ipp
 // ~~~~~~~~~~~~~~~~~~~~
 //
-// Copyright (c) 2003-2018 Christopher M. Kohlhoff (chris at kohlhoff dot com)
+// Copyright (c) 2003-2019 Christopher M. Kohlhoff (chris at kohlhoff dot com)
 //
 // Distributed under the Boost Software License, Version 1.0. (See accompanying
 // file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
@@ -34,7 +34,7 @@ struct thread_pool::thread_function
 };
 
 thread_pool::thread_pool()
-  : scheduler_(use_service<detail::scheduler>(*this))
+  : scheduler_(add_scheduler(new detail::scheduler(*this, 0, false)))
 {
   scheduler_.work_started();
 
@@ -44,7 +44,8 @@ thread_pool::thread_pool()
 }
 
 thread_pool::thread_pool(std::size_t num_threads)
-  : scheduler_(use_service<detail::scheduler>(*this))
+  : scheduler_(add_scheduler(new detail::scheduler(
+          *this, num_threads == 1 ? 1 : 0, false)))
 {
   scheduler_.work_started();
 
@@ -65,8 +66,18 @@ void thread_pool::stop()
 
 void thread_pool::join()
 {
-  scheduler_.work_finished();
-  threads_.join();
+  if (!threads_.empty())
+  {
+    scheduler_.work_finished();
+    threads_.join();
+  }
+}
+
+detail::scheduler& thread_pool::add_scheduler(detail::scheduler* s)
+{
+  detail::scoped_ptr<detail::scheduler> scoped_impl(s);
+  asio::add_service<detail::scheduler>(*this, scoped_impl.get());
+  return *scoped_impl.release();
 }
 
 } // namespace asio

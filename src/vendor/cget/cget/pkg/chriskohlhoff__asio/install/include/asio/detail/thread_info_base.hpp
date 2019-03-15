@@ -2,7 +2,7 @@
 // detail/thread_info_base.hpp
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~
 //
-// Copyright (c) 2003-2018 Christopher M. Kohlhoff (chris at kohlhoff dot com)
+// Copyright (c) 2003-2019 Christopher M. Kohlhoff (chris at kohlhoff dot com)
 //
 // Distributed under the Boost Software License, Version 1.0. (See accompanying
 // file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
@@ -33,9 +33,14 @@ public:
     enum { mem_index = 0 };
   };
 
-  struct awaitee_tag
+  struct awaitable_frame_tag
   {
     enum { mem_index = 1 };
+  };
+
+  struct executor_function_tag
+  {
+    enum { mem_index = 2 };
   };
 
   thread_info_base()
@@ -109,7 +114,7 @@ public:
 
 private:
   enum { chunk_size = 4 };
-  enum { max_mem_index = 2 };
+  enum { max_mem_index = 3 };
   void* reusable_memory_[max_mem_index];
 };
 

@@ -2,7 +2,7 @@
 // ip/basic_endpoint.hpp
 // ~~~~~~~~~~~~~~~~~~~~~
 //
-// Copyright (c) 2003-2018 Christopher M. Kohlhoff (chris at kohlhoff dot com)
+// Copyright (c) 2003-2019 Christopher M. Kohlhoff (chris at kohlhoff dot com)
 //
 // Distributed under the Boost Software License, Version 1.0. (See accompanying
 // file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
@@ -56,7 +56,7 @@ public:
 #endif
 
   /// Default constructor.
-  basic_endpoint()
+  basic_endpoint() ASIO_NOEXCEPT
     : impl_()
   {
   }
@@ -78,7 +78,7 @@ public:
    * @endcode
    */
   basic_endpoint(const InternetProtocol& internet_protocol,
-      unsigned short port_num)
+      unsigned short port_num) ASIO_NOEXCEPT
     : impl_(internet_protocol.family(), port_num)
   {
   }
@@ -86,27 +86,28 @@ public:
   /// Construct an endpoint using a port number and an IP address. This
   /// constructor may be used for accepting connections on a specific interface
   /// or for making a connection to a remote endpoint.
-  basic_endpoint(const asio::ip::address& addr, unsigned short port_num)
+  basic_endpoint(const asio::ip::address& addr,
+      unsigned short port_num) ASIO_NOEXCEPT
     : impl_(addr, port_num)
   {
   }
 
   /// Copy constructor.
-  basic_endpoint(const basic_endpoint& other)
+  basic_endpoint(const basic_endpoint& other) ASIO_NOEXCEPT
     : impl_(other.impl_)
   {
   }
 
 #if defined(ASIO_HAS_MOVE) || defined(GENERATING_DOCUMENTATION)
   /// Move constructor.
-  basic_endpoint(basic_endpoint&& other)
+  basic_endpoint(basic_endpoint&& other) ASIO_NOEXCEPT
     : impl_(other.impl_)
   {
   }
 #endif // defined(ASIO_HAS_MOVE) || defined(GENERATING_DOCUMENTATION)
 
   /// Assign from another endpoint.
-  basic_endpoint& operator=(const basic_endpoint& other)
+  basic_endpoint& operator=(const basic_endpoint& other) ASIO_NOEXCEPT
   {
     impl_ = other.impl_;
     return *this;
@@ -114,7 +115,7 @@ public:
 
 #if defined(ASIO_HAS_MOVE) || defined(GENERATING_DOCUMENTATION)
   /// Move-assign from another endpoint.
-  basic_endpoint& operator=(basic_endpoint&& other)
+  basic_endpoint& operator=(basic_endpoint&& other) ASIO_NOEXCEPT
   {
     impl_ = other.impl_;
     return *this;
@@ -122,7 +123,7 @@ public:
 #endif // defined(ASIO_HAS_MOVE) || defined(GENERATING_DOCUMENTATION)
 
   /// The protocol associated with the endpoint.
-  protocol_type protocol() const
+  protocol_type protocol() const ASIO_NOEXCEPT
   {
     if (impl_.is_v4())
       return InternetProtocol::v4();
@@ -130,19 +131,19 @@ public:
   }
 
   /// Get the underlying endpoint in the native type.
-  data_type* data()
+  data_type* data() ASIO_NOEXCEPT
   {
     return impl_.data();
   }
 
   /// Get the underlying endpoint in the native type.
-  const data_type* data() const
+  const data_type* data() const ASIO_NOEXCEPT
   {
     return impl_.data();
   }
 
   /// Get the underlying size of the endpoint in the native type.
-  std::size_t size() const
+  std::size_t size() const ASIO_NOEXCEPT
   {
     return impl_.size();
   }
@@ -154,75 +155,75 @@ public:
   }
 
   /// Get the capacity of the endpoint in the native type.
-  std::size_t capacity() const
+  std::size_t capacity() const ASIO_NOEXCEPT
   {
     return impl_.capacity();
   }
 
   /// Get the port associated with the endpoint. The port number is always in
   /// the host's byte order.
-  unsigned short port() const
+  unsigned short port() const ASIO_NOEXCEPT
   {
     return impl_.port();
   }
 
   /// Set the port associated with the endpoint. The port number is always in
   /// the host's byte order.
-  void port(unsigned short port_num)
+  void port(unsigned short port_num) ASIO_NOEXCEPT
   {
     impl_.port(port_num);
   }
 
   /// Get the IP address associated with the endpoint.
-  asio::ip::address address() const
+  asio::ip::address address() const ASIO_NOEXCEPT
   {
     return impl_.address();
   }
 
   /// Set the IP address associated with the endpoint.
-  void address(const asio::ip::address& addr)
+  void address(const asio::ip::address& addr) ASIO_NOEXCEPT
   {
     impl_.address(addr);
   }
 
   /// Compare two endpoints for equality.
   friend bool operator==(const basic_endpoint<InternetProtocol>& e1,
-      const basic_endpoint<InternetProtocol>& e2)
+      const basic_endpoint<InternetProtocol>& e2) ASIO_NOEXCEPT
   {
     return e1.impl_ == e2.impl_;
   }
 
   /// Compare two endpoints for inequality.
   friend bool operator!=(const basic_endpoint<InternetProtocol>& e1,
-      const basic_endpoint<InternetProtocol>& e2)
+      const basic_endpoint<InternetProtocol>& e2) ASIO_NOEXCEPT
   {
     return !(e1 == e2);
   }
 
   /// Compare endpoints for ordering.
   friend bool operator<(const basic_endpoint<InternetProtocol>& e1,
-      const basic_endpoint<InternetProtocol>& e2)
+      const basic_endpoint<InternetProtocol>& e2) ASIO_NOEXCEPT
   {
     return e1.impl_ < e2.impl_;
   }
 
   /// Compare endpoints for ordering.
   friend bool operator>(const basic_endpoint<InternetProtocol>& e1,
-      const basic_endpoint<InternetProtocol>& e2)
+      const basic_endpoint<InternetProtocol>& e2) ASIO_NOEXCEPT
   {
     return e2.impl_ < e1.impl_;
   }
 
   /// Compare endpoints for ordering.
   friend bool operator<=(const basic_endpoint<InternetProtocol>& e1,
-      const basic_endpoint<InternetProtocol>& e2)
+      const basic_endpoint<InternetProtocol>& e2) ASIO_NOEXCEPT
   {
     return !(e2 < e1);
   }
 
   /// Compare endpoints for ordering.
   friend bool operator>=(const basic_endpoint<InternetProtocol>& e1,
-      const basic_endpoint<InternetProtocol>& e2)
+      const basic_endpoint<InternetProtocol>& e2) ASIO_NOEXCEPT
   {
     return !(e1 < e2);
   }

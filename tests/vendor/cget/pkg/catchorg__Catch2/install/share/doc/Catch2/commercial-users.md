@@ -16,3 +16,4 @@ fact then please let us know - either directly, via a PR or
  - [Bloomlife](https://bloomlife.com)
  - NASA
  - [Inscopix Inc.](https://www.inscopix.com/)
+ - [Makimo](https://makimo.pl/)

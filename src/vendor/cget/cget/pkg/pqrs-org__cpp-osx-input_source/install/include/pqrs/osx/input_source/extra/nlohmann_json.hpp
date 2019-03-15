@@ -38,37 +38,37 @@ inline void from_json(const nlohmann::json& j, properties& p) {
   using namespace std::string_literals;
 
   if (!j.is_object()) {
-    throw pqrs::json::unmarshal_error("json must be object, but is `"s + j.dump() + "`"s);
+    throw json::unmarshal_error("json must be object, but is `"s + j.dump() + "`"s);
   }
 
   for (const auto& [key, value] : j.items()) {
     if (key == "input_source_id") {
       if (!value.is_string()) {
-        throw pqrs::json::unmarshal_error("`"s + key + "` must be string, but is `"s + value.dump() + "`"s);
+        throw json::unmarshal_error("`"s + key + "` must be string, but is `"s + value.dump() + "`"s);
       }
       p.set_input_source_id(value.get<std::string>());
 
     } else if (key == "localized_name") {
       if (!value.is_string()) {
-        throw pqrs::json::unmarshal_error("`"s + key + "` must be string, but is `"s + value.dump() + "`"s);
+        throw json::unmarshal_error("`"s + key + "` must be string, but is `"s + value.dump() + "`"s);
       }
       p.set_localized_name(value.get<std::string>());
 
     } else if (key == "input_mode_id") {
       if (!value.is_string()) {
-        throw pqrs::json::unmarshal_error("`"s + key + "` must be string, but is `"s + value.dump() + "`"s);
+        throw json::unmarshal_error("`"s + key + "` must be string, but is `"s + value.dump() + "`"s);
       }
       p.set_input_mode_id(value.get<std::string>());
 
     } else if (key == "languages") {
       if (!value.is_array()) {
-        throw pqrs::json::unmarshal_error("`"s + key + "` must be array, but is `"s + value.dump() + "`"s);
+        throw json::unmarshal_error("`"s + key + "` must be array, but is `"s + value.dump() + "`"s);
       }
 
       std::vector<std::string> languages;
       for (const auto& v : value) {
         if (!v.is_string()) {
-          throw pqrs::json::unmarshal_error("`"s + key + "` must be array of strings, but is `"s + value.dump() + "`"s);
+          throw json::unmarshal_error("`"s + key + "` must be array of strings, but is `"s + value.dump() + "`"s);
         }
         languages.push_back(v.get<std::string>());
       }
@@ -76,12 +76,12 @@ inline void from_json(const nlohmann::json& j, properties& p) {
 
     } else if (key == "first_language") {
       if (!value.is_string()) {
-        throw pqrs::json::unmarshal_error("`"s + key + "` must be string, but is `"s + value.dump() + "`"s);
+        throw json::unmarshal_error("`"s + key + "` must be string, but is `"s + value.dump() + "`"s);
       }
       p.set_first_language(value.get<std::string>());
 
     } else {
-      throw pqrs::json::unmarshal_error("unknown key: `"s + key + "`"s);
+      throw json::unmarshal_error("unknown key: `"s + key + "`"s);
     }
   }
 }

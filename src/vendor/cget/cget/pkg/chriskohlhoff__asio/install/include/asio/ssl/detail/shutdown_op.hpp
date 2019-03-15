@@ -2,7 +2,7 @@
 // ssl/detail/shutdown_op.hpp
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~
 //
-// Copyright (c) 2003-2018 Christopher M. Kohlhoff (chris at kohlhoff dot com)
+// Copyright (c) 2003-2019 Christopher M. Kohlhoff (chris at kohlhoff dot com)
 //
 // Distributed under the Boost Software License, Version 1.0. (See accompanying
 // file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
@@ -41,7 +41,17 @@ public:
       const asio::error_code& ec,
       const std::size_t&) const
   {
-    handler(ec);
+    if (ec == asio::error::eof)
+    {
+      // The engine only generates an eof when the shutdown notification has
+      // been received from the peer. This indicates that the shutdown has
+      // completed successfully, and thus need not be passed on to the handler.
+      handler(asio::error_code());
+    }
+    else
+    {
+      handler(ec);
+    }
   }
 };
 

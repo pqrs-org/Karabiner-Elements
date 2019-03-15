@@ -2,7 +2,7 @@
 // strand.hpp
 // ~~~~~~~~~~
 //
-// Copyright (c) 2003-2018 Christopher M. Kohlhoff (chris at kohlhoff dot com)
+// Copyright (c) 2003-2019 Christopher M. Kohlhoff (chris at kohlhoff dot com)
 //
 // Distributed under the Boost Software License, Version 1.0. (See accompanying
 // file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
@@ -270,6 +270,33 @@ private:
     implementation_type;
   implementation_type impl_;
 };
+
+/** @defgroup make_strand asio::make_strand
+ *
+ * @brief The asio::make_strand function creates a @ref strand object for
+ * an executor or execution context.
+ */
+/*@{*/
+
+/// Create a @ref strand object for an executor.
+template <typename Executor>
+inline strand<Executor> make_strand(const Executor& ex,
+    typename enable_if<is_executor<Executor>::value>::type* = 0)
+{
+  return strand<Executor>(ex);
+}
+
+/// Create a @ref strand object for an execution context.
+template <typename ExecutionContext>
+inline strand<typename ExecutionContext::executor_type>
+make_strand(ExecutionContext& ctx,
+    typename enable_if<
+      is_convertible<ExecutionContext&, execution_context&>::value>::type* = 0)
+{
+  return strand<typename ExecutionContext::executor_type>(ctx.get_executor());
+}
+
+/*@}*/
 
 } // namespace asio
 

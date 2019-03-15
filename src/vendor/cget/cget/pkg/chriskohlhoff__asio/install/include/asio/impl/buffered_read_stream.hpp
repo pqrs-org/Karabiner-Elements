@@ -2,7 +2,7 @@
 // impl/buffered_read_stream.hpp
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 //
-// Copyright (c) 2003-2018 Christopher M. Kohlhoff (chris at kohlhoff dot com)
+// Copyright (c) 2003-2019 Christopher M. Kohlhoff (chris at kohlhoff dot com)
 //
 // Distributed under the Boost Software License, Version 1.0. (See accompanying
 // file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
@@ -21,6 +21,7 @@
 #include "asio/detail/handler_cont_helpers.hpp"
 #include "asio/detail/handler_invoke_helpers.hpp"
 #include "asio/detail/handler_type_requirements.hpp"
+#include "asio/detail/non_const_lvalue.hpp"
 
 #include "asio/detail/push_options.hpp"
 
@@ -137,6 +138,28 @@ namespace detail
     asio_handler_invoke_helpers::invoke(
         function, this_handler->handler_);
   }
+
+  struct initiate_async_buffered_fill
+  {
+    template <typename ReadHandler, typename Stream>
+    void operator()(ASIO_MOVE_ARG(ReadHandler) handler,
+        buffered_stream_storage* storage, Stream* next_layer) const
+    {
+      // If you get an error on the following line it means that your handler
+      // does not meet the documented type requirements for a ReadHandler.
+      ASIO_READ_HANDLER_CHECK(ReadHandler, handler) type_check;
+
+      non_const_lvalue<ReadHandler> handler2(handler);
+      std::size_t previous_size = storage->size();
+      storage->resize(storage->capacity());
+      next_layer->async_read_some(
+          buffer(
+            storage->data() + previous_size,
+            storage->size() - previous_size),
+          buffered_fill_handler<typename decay<ReadHandler>::type>(
+            *storage, previous_size, handler2.value));
+    }
+  };
 } // namespace detail
 
 #if !defined(GENERATING_DOCUMENTATION)
@@ -176,24 +199,9 @@ ASIO_INITFN_RESULT_TYPE(ReadHandler,
 buffered_read_stream<Stream>::async_fill(
     ASIO_MOVE_ARG(ReadHandler) handler)
 {
-  // If you get an error on the following line it means that your handler does
-  // not meet the documented type requirements for a ReadHandler.
-  ASIO_READ_HANDLER_CHECK(ReadHandler, handler) type_check;
-
-  async_completion<ReadHandler,
-    void (asio::error_code, std::size_t)> init(handler);
-
-  std::size_t previous_size = storage_.size();
-  storage_.resize(storage_.capacity());
-  next_layer_.async_read_some(
-      buffer(
-        storage_.data() + previous_size,
-        storage_.size() - previous_size),
-      detail::buffered_fill_handler<ASIO_HANDLER_TYPE(
-        ReadHandler, void (asio::error_code, std::size_t))>(
-        storage_, previous_size, init.completion_handler));
-
-  return init.result.get();
+  return async_initiate<ReadHandler,
+    void (asio::error_code, std::size_t)>(
+      detail::initiate_async_buffered_fill(), handler, &storage_, &next_layer_);
 }
 
 template <typename Stream>
@@ -326,6 +334,38 @@ namespace detail
     asio_handler_invoke_helpers::invoke(
         function, this_handler->handler_);
   }
+
+  struct initiate_async_buffered_read_some
+  {
+    template <typename ReadHandler, typename Stream,
+        typename MutableBufferSequence>
+    void operator()(ASIO_MOVE_ARG(ReadHandler) handler,
+        buffered_stream_storage* storage, Stream* next_layer,
+        const MutableBufferSequence& buffers) const
+    {
+      // If you get an error on the following line it means that your handler
+      // does not meet the documented type requirements for a ReadHandler.
+      ASIO_READ_HANDLER_CHECK(ReadHandler, handler) type_check;
+
+      using asio::buffer_size;
+      non_const_lvalue<ReadHandler> handler2(handler);
+      if (buffer_size(buffers) == 0 || !storage->empty())
+      {
+        next_layer->async_read_some(ASIO_MUTABLE_BUFFER(0, 0),
+            buffered_read_some_handler<MutableBufferSequence,
+              typename decay<ReadHandler>::type>(
+                *storage, buffers, handler2.value));
+      }
+      else
+      {
+        initiate_async_buffered_fill()(
+            buffered_read_some_handler<MutableBufferSequence,
+              typename decay<ReadHandler>::type>(
+                *storage, buffers, handler2.value),
+            storage, next_layer);
+      }
+    }
+  };
 } // namespace detail
 
 #if !defined(GENERATING_DOCUMENTATION)
@@ -374,31 +414,10 @@ buffered_read_stream<Stream>::async_read_some(
     const MutableBufferSequence& buffers,
     ASIO_MOVE_ARG(ReadHandler) handler)
 {
-  // If you get an error on the following line it means that your handler does
-  // not meet the documented type requirements for a ReadHandler.
-  ASIO_READ_HANDLER_CHECK(ReadHandler, handler) type_check;
-
-  async_completion<ReadHandler,
-    void (asio::error_code, std::size_t)> init(handler);
-
-  using asio::buffer_size;
-  if (buffer_size(buffers) == 0 || !storage_.empty())
-  {
-    next_layer_.async_read_some(ASIO_MUTABLE_BUFFER(0, 0),
-        detail::buffered_read_some_handler<
-          MutableBufferSequence, ASIO_HANDLER_TYPE(
-            ReadHandler, void (asio::error_code, std::size_t))>(
-            storage_, buffers, init.completion_handler));
-  }
-  else
-  {
-    this->async_fill(detail::buffered_read_some_handler<
-          MutableBufferSequence, ASIO_HANDLER_TYPE(
-            ReadHandler, void (asio::error_code, std::size_t))>(
-            storage_, buffers, init.completion_handler));
-  }
-
-  return init.result.get();
+  return async_initiate<ReadHandler,
+    void (asio::error_code, std::size_t)>(
+      detail::initiate_async_buffered_read_some(),
+      handler, &storage_, &next_layer_, buffers);
 }
 
 template <typename Stream>

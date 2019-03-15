@@ -2,7 +2,7 @@
 // detail/win_iocp_io_context.hpp
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 //
-// Copyright (c) 2003-2018 Christopher M. Kohlhoff (chris at kohlhoff dot com)
+// Copyright (c) 2003-2019 Christopher M. Kohlhoff (chris at kohlhoff dot com)
 //
 // Distributed under the Boost Software License, Version 1.0. (See accompanying
 // file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
@@ -48,7 +48,10 @@ public:
   // Constructor. Specifies a concurrency hint that is passed through to the
   // underlying I/O completion port.
   ASIO_DECL win_iocp_io_context(asio::execution_context& ctx,
-      int concurrency_hint = -1);
+      int concurrency_hint = -1, bool own_thread = true);
+
+  // Destructor.
+  ASIO_DECL ~win_iocp_io_context();
 
   // Destroy all user-defined handler objects owned by the service.
   ASIO_DECL void shutdown();
@@ -287,6 +290,10 @@ private:
   // Timeout to use with GetQueuedCompletionStatus.
   const DWORD gqcs_timeout_;
 
+  // Helper class to run the scheduler in its own thread.
+  struct thread_function;
+  friend struct thread_function;
+
   // Function object for processing timeouts in a background thread.
   struct timer_thread_function;
   friend struct timer_thread_function;
@@ -311,6 +318,9 @@ private:
 
   // The concurrency hint used to initialise the io_context.
   const int concurrency_hint_;
+
+  // The thread that is running the io_context.
+  scoped_ptr<thread> thread_;
 };
 
 } // namespace detail

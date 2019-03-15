@@ -2,7 +2,7 @@
 // detail/impl/winrt_timer_scheduler.hpp
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 //
-// Copyright (c) 2003-2018 Christopher M. Kohlhoff (chris at kohlhoff dot com)
+// Copyright (c) 2003-2019 Christopher M. Kohlhoff (chris at kohlhoff dot com)
 //
 // Distributed under the Boost Software License, Version 1.0. (See accompanying
 // file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
@@ -46,12 +46,12 @@ void winrt_timer_scheduler::schedule_timer(timer_queue<Time_Traits>& queue,
 
   if (shutdown_)
   {
-    io_context_.post_immediate_completion(op, false);
+    scheduler_.post_immediate_completion(op, false);
     return;
   }
 
   bool earliest = queue.enqueue_timer(time, timer, op);
-  io_context_.work_started();
+  scheduler_.work_started();
   if (earliest)
     event_.signal(lock);
 }
@@ -65,7 +65,7 @@ std::size_t winrt_timer_scheduler::cancel_timer(timer_queue<Time_Traits>& queue,
   op_queue<operation> ops;
   std::size_t n = queue.cancel_timer(timer, ops, max_cancelled);
   lock.unlock();
-  io_context_.post_deferred_completions(ops);
+  scheduler_.post_deferred_completions(ops);
   return n;
 }
 

@@ -2,7 +2,7 @@
 // bind_executor.hpp
 // ~~~~~~~~~~~~~~~~~
 //
-// Copyright (c) 2003-2018 Christopher M. Kohlhoff (chris at kohlhoff dot com)
+// Copyright (c) 2003-2019 Christopher M. Kohlhoff (chris at kohlhoff dot com)
 //
 // Distributed under the Boost Software License, Version 1.0. (See accompanying
 // file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
@@ -546,37 +546,6 @@ private:
 
   async_result<T, Signature> target_;
 };
-
-#if !defined(ASIO_NO_DEPRECATED)
-
-template <typename T, typename Executor, typename Signature>
-struct handler_type<executor_binder<T, Executor>, Signature>
-{
-  typedef executor_binder<
-    typename handler_type<T, Signature>::type, Executor> type;
-};
-
-template <typename T, typename Executor>
-class async_result<executor_binder<T, Executor> >
-{
-public:
-  typedef typename async_result<T>::type type;
-
-  explicit async_result(executor_binder<T, Executor>& b)
-    : target_(b.get())
-  {
-  }
-
-  type get()
-  {
-    return target_.get();
-  }
-
-private:
-  async_result<T> target_;
-};
-
-#endif // !defined(ASIO_NO_DEPRECATED)
 
 template <typename T, typename Executor, typename Allocator>
 struct associated_allocator<executor_binder<T, Executor>, Allocator>

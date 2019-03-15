@@ -2,7 +2,7 @@
 // ip/detail/impl/endpoint.ipp
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~
 //
-// Copyright (c) 2003-2018 Christopher M. Kohlhoff (chris at kohlhoff dot com)
+// Copyright (c) 2003-2019 Christopher M. Kohlhoff (chris at kohlhoff dot com)
 //
 // Distributed under the Boost Software License, Version 1.0. (See accompanying
 // file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
@@ -31,7 +31,7 @@ namespace asio {
 namespace ip {
 namespace detail {
 
-endpoint::endpoint()
+endpoint::endpoint() ASIO_NOEXCEPT
   : data_()
 {
   data_.v4.sin_family = ASIO_OS_DEF(AF_INET);
@@ -39,7 +39,7 @@ endpoint::endpoint()
   data_.v4.sin_addr.s_addr = ASIO_OS_DEF(INADDR_ANY);
 }
 
-endpoint::endpoint(int family, unsigned short port_num)
+endpoint::endpoint(int family, unsigned short port_num) ASIO_NOEXCEPT
   : data_()
 {
   using namespace std; // For memcpy.
@@ -69,7 +69,7 @@ endpoint::endpoint(int family, unsigned short port_num)
 }
 
 endpoint::endpoint(const asio::ip::address& addr,
-    unsigned short port_num)
+    unsigned short port_num) ASIO_NOEXCEPT
   : data_()
 {
   using namespace std; // For memcpy.
@@ -106,7 +106,7 @@ void endpoint::resize(std::size_t new_size)
   }
 }
 
-unsigned short endpoint::port() const
+unsigned short endpoint::port() const ASIO_NOEXCEPT
 {
   if (is_v4())
   {
@@ -120,7 +120,7 @@ unsigned short endpoint::port() const
   }
 }
 
-void endpoint::port(unsigned short port_num)
+void endpoint::port(unsigned short port_num) ASIO_NOEXCEPT
 {
   if (is_v4())
   {
@@ -134,7 +134,7 @@ void endpoint::port(unsigned short port_num)
   }
 }
 
-asio::ip::address endpoint::address() const
+asio::ip::address endpoint::address() const ASIO_NOEXCEPT
 {
   using namespace std; // For memcpy.
   if (is_v4())
@@ -155,18 +155,18 @@ asio::ip::address endpoint::address() const
   }
 }
 
-void endpoint::address(const asio::ip::address& addr)
+void endpoint::address(const asio::ip::address& addr) ASIO_NOEXCEPT
 {
   endpoint tmp_endpoint(addr, port());
   data_ = tmp_endpoint.data_;
 }
 
-bool operator==(const endpoint& e1, const endpoint& e2)
+bool operator==(const endpoint& e1, const endpoint& e2) ASIO_NOEXCEPT
 {
   return e1.address() == e2.address() && e1.port() == e2.port();
 }
 
-bool operator<(const endpoint& e1, const endpoint& e2)
+bool operator<(const endpoint& e1, const endpoint& e2) ASIO_NOEXCEPT
 {
   if (e1.address() < e2.address())
     return true;

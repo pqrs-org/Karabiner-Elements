@@ -1,0 +1,1 @@
+../../../../cget/pkg/pqrs-org__cpp-osx-system_preferences/install/include/pqrs/osx/system_preferences/system_preferences.hpp

@@ -2,7 +2,7 @@
 // detail/impl/signal_set_service.ipp
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 //
-// Copyright (c) 2003-2018 Christopher M. Kohlhoff (chris at kohlhoff dot com)
+// Copyright (c) 2003-2019 Christopher M. Kohlhoff (chris at kohlhoff dot com)
 //
 // Distributed under the Boost Software License, Version 1.0. (See accompanying
 // file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
@@ -118,14 +118,13 @@ public:
        //   && !defined(ASIO_WINDOWS_RUNTIME)
        //   && !defined(__CYGWIN__)
 
-signal_set_service::signal_set_service(
-    asio::io_context& io_context)
-  : service_base<signal_set_service>(io_context),
-    io_context_(asio::use_service<io_context_impl>(io_context)),
+signal_set_service::signal_set_service(execution_context& context)
+  : execution_context_service_base<signal_set_service>(context),
+    scheduler_(asio::use_service<scheduler_impl>(context)),
 #if !defined(ASIO_WINDOWS) \
   && !defined(ASIO_WINDOWS_RUNTIME) \
   && !defined(__CYGWIN__)
-    reactor_(asio::use_service<reactor>(io_context)),
+    reactor_(asio::use_service<reactor>(context)),
 #endif // !defined(ASIO_WINDOWS)
        //   && !defined(ASIO_WINDOWS_RUNTIME)
        //   && !defined(__CYGWIN__)
@@ -169,11 +168,10 @@ void signal_set_service::shutdown()
     }
   }
 
-  io_context_.abandon_operations(ops);
+  scheduler_.abandon_operations(ops);
 }
 
-void signal_set_service::notify_fork(
-    asio::io_context::fork_event fork_ev)
+void signal_set_service::notify_fork(execution_context::fork_event fork_ev)
 {
 #if !defined(ASIO_WINDOWS) \
   && !defined(ASIO_WINDOWS_RUNTIME) \
@@ -183,7 +181,7 @@ void signal_set_service::notify_fork(
 
   switch (fork_ev)
   {
-  case asio::io_context::fork_prepare:
+  case execution_context::fork_prepare:
     {
       int read_descriptor = state->read_descriptor_;
       state->fork_prepared_ = true;
@@ -192,7 +190,7 @@ void signal_set_service::notify_fork(
       reactor_.cleanup_descriptor_data(reactor_data_);
     }
     break;
-  case asio::io_context::fork_parent:
+  case execution_context::fork_parent:
     if (state->fork_prepared_)
     {
       int read_descriptor = state->read_descriptor_;
@@ -202,7 +200,7 @@ void signal_set_service::notify_fork(
           read_descriptor, reactor_data_, new pipe_read_op);
     }
     break;
-  case asio::io_context::fork_child:
+  case execution_context::fork_child:
     if (state->fork_prepared_)
     {
       asio::detail::signal_blocker blocker;
@@ -441,7 +439,7 @@ asio::error_code signal_set_service::cancel(
     signal_set_service::implementation_type& impl,
     asio::error_code& ec)
 {
-  ASIO_HANDLER_OPERATION((io_context_.context(),
+  ASIO_HANDLER_OPERATION((scheduler_.context(),
         "signal_set", &impl, 0, "cancel"));
 
   op_queue<operation> ops;
@@ -457,7 +455,7 @@ asio::error_code signal_set_service::cancel(
     }
   }
 
-  io_context_.post_deferred_completions(ops);
+  scheduler_.post_deferred_completions(ops);
 
   ec = asio::error_code();
   return ec;
@@ -493,7 +491,7 @@ void signal_set_service::deliver_signal(int signal_number)
       reg = reg->next_in_table_;
     }
 
-    service->io_context_.post_deferred_completions(ops);
+    service->scheduler_.post_deferred_completions(ops);
 
     service = service->next_;
   }
@@ -510,17 +508,17 @@ void signal_set_service::add_service(signal_set_service* service)
     open_descriptors();
 #endif // !defined(ASIO_WINDOWS) && !defined(__CYGWIN__)
 
-  // If an io_context object is thread-unsafe then it must be the only
-  // io_context used to create signal_set objects.
+  // If a scheduler_ object is thread-unsafe then it must be the only
+  // scheduler used to create signal_set objects.
   if (state->service_list_ != 0)
   {
     if (!ASIO_CONCURRENCY_HINT_IS_LOCKING(SCHEDULER,
-          service->io_context_.concurrency_hint())
+          service->scheduler_.concurrency_hint())
         || !ASIO_CONCURRENCY_HINT_IS_LOCKING(SCHEDULER,
-          state->service_list_->io_context_.concurrency_hint()))
+          state->service_list_->scheduler_.concurrency_hint()))
     {
       std::logic_error ex(
-          "Thread-unsafe io_context objects require "
+          "Thread-unsafe execution context objects require "
           "exclusive access to signal handling.");
       asio::detail::throw_exception(ex);
     }
@@ -639,7 +637,7 @@ void signal_set_service::close_descriptors()
 void signal_set_service::start_wait_op(
     signal_set_service::implementation_type& impl, signal_op* op)
 {
-  io_context_.work_started();
+  scheduler_.work_started();
 
   signal_state* state = get_signal_state();
   static_mutex::scoped_lock lock(state->mutex_);
@@ -651,7 +649,7 @@ void signal_set_service::start_wait_op(
     {
       --reg->undelivered_;
       op->signal_number_ = reg->signal_number_;
-      io_context_.post_deferred_completion(op);
+      scheduler_.post_deferred_completion(op);
       return;
     }
 

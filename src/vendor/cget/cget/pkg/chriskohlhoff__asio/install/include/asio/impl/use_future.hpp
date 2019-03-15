@@ -2,7 +2,7 @@
 // impl/use_future.hpp
 // ~~~~~~~~~~~~~~~~~~~
 //
-// Copyright (c) 2003-2018 Christopher M. Kohlhoff (chris at kohlhoff dot com)
+// Copyright (c) 2003-2019 Christopher M. Kohlhoff (chris at kohlhoff dot com)
 //
 // Distributed under the Boost Software License, Version 1.0. (See accompanying
 // file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
@@ -877,56 +877,6 @@ public:
 #undef ASIO_PRIVATE_ASYNC_RESULT_DEF
 
 #endif // defined(ASIO_HAS_VARIADIC_TEMPLATES)
-
-#if !defined(ASIO_NO_DEPRECATED)
-
-template <typename Allocator, typename Signature>
-struct handler_type<use_future_t<Allocator>, Signature>
-{
-  typedef typename async_result<use_future_t<Allocator>,
-    Signature>::completion_handler_type type;
-};
-
-template <typename Signature, typename Allocator>
-class async_result<detail::promise_handler<Signature, Allocator> >
-  : public detail::promise_async_result<Signature, Allocator>
-{
-public:
-  typedef typename detail::promise_async_result<
-    Signature, Allocator>::return_type type;
-
-  explicit async_result(
-    typename detail::promise_async_result<
-      Signature, Allocator>::completion_handler_type& h)
-    : detail::promise_async_result<Signature, Allocator>(h)
-  {
-  }
-};
-
-template <typename Function, typename Allocator, typename Signature>
-struct handler_type<detail::packaged_token<Function, Allocator>, Signature>
-{
-  typedef typename async_result<detail::packaged_token<Function, Allocator>,
-    Signature>::completion_handler_type type;
-};
-
-template <typename Function, typename Allocator, typename Result>
-class async_result<detail::packaged_handler<Function, Allocator, Result> >
-  : public detail::packaged_async_result<Function, Allocator, Result>
-{
-public:
-  typedef typename detail::packaged_async_result<
-    Function, Allocator, Result>::return_type type;
-
-  explicit async_result(
-    typename detail::packaged_async_result<
-      Function, Allocator, Result>::completion_handler_type& h)
-    : detail::packaged_async_result<Function, Allocator, Result>(h)
-  {
-  }
-};
-
-#endif // !defined(ASIO_NO_DEPRECATED)
 
 #endif // !defined(GENERATING_DOCUMENTATION)
 

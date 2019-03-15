@@ -2,7 +2,7 @@
 // detail/impl/reactive_descriptor_service.ipp
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 //
-// Copyright (c) 2003-2018 Christopher M. Kohlhoff (chris at kohlhoff dot com)
+// Copyright (c) 2003-2019 Christopher M. Kohlhoff (chris at kohlhoff dot com)
 //
 // Distributed under the Boost Software License, Version 1.0. (See accompanying
 // file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
@@ -30,9 +30,9 @@ namespace asio {
 namespace detail {
 
 reactive_descriptor_service::reactive_descriptor_service(
-    asio::io_context& io_context)
-  : service_base<reactive_descriptor_service>(io_context),
-    reactor_(asio::use_service<reactor>(io_context))
+    execution_context& context)
+  : execution_context_service_base<reactive_descriptor_service>(context),
+    reactor_(asio::use_service<reactor>(context))
 {
   reactor_.init_task();
 }

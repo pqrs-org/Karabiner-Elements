@@ -2,7 +2,7 @@
 // detail/impl/win_iocp_handle_service.ipp
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 //
-// Copyright (c) 2003-2018 Christopher M. Kohlhoff (chris at kohlhoff dot com)
+// Copyright (c) 2003-2019 Christopher M. Kohlhoff (chris at kohlhoff dot com)
 // Copyright (c) 2008 Rep Invariant Systems, Inc. (info@repinvariant.com)
 //
 // Distributed under the Boost Software License, Version 1.0. (See accompanying
@@ -65,10 +65,9 @@ public:
   }
 };
 
-win_iocp_handle_service::win_iocp_handle_service(
-    asio::io_context& io_context)
-  : service_base<win_iocp_handle_service>(io_context),
-    iocp_service_(asio::use_service<win_iocp_io_context>(io_context)),
+win_iocp_handle_service::win_iocp_handle_service(execution_context& context)
+  : execution_context_service_base<win_iocp_handle_service>(context),
+    iocp_service_(asio::use_service<win_iocp_io_context>(context)),
     mutex_(),
     impl_list_(0)
 {
