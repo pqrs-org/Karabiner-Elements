@@ -1,9 +1,8 @@
 #pragma once
 
 #include "libkrbn/libkrbn.h"
-#include "monitor/system_preferences_monitor.hpp"
+#include <pqrs/osx/system_preferences_monitor.hpp>
 
-namespace {
 class libkrbn_system_preferences_monitor final {
 public:
   libkrbn_system_preferences_monitor(const libkrbn_system_preferences_monitor&) = delete;
@@ -12,37 +11,24 @@ public:
                                      void* refcon) {
     krbn::logger::get_logger()->info(__func__);
 
-    // configuration_monitor_
+    monitor_ = std::make_unique<pqrs::osx::system_preferences_monitor>(
+        pqrs::dispatcher::extra::get_shared_dispatcher());
 
-    configuration_monitor_ = std::make_shared<krbn::configuration_monitor>(
-        krbn::constants::get_user_core_configuration_file_path());
-
-    configuration_monitor_->async_start();
-
-    // monitor_
-
-    monitor_ = std::make_unique<krbn::system_preferences_monitor>(configuration_monitor_);
-
-    monitor_->system_preferences_changed.connect([callback, refcon](auto&& system_preferences) {
-      if (callback) {
-        libkrbn_system_preferences v;
-        v.keyboard_fn_state = system_preferences.get_keyboard_fn_state();
-        callback(&v, refcon);
+    monitor_->system_preferences_changed.connect([callback, refcon](auto&& properties_ptr) {
+      if (callback && properties_ptr) {
+        libkrbn_system_preferences_properties p;
+        p.use_fkeys_as_standard_function_keys = properties_ptr->get_use_fkeys_as_standard_function_keys();
+        callback(&p, refcon);
       }
     });
 
-    monitor_->async_start();
+    monitor_->async_start(std::chrono::milliseconds(3000));
   }
 
   ~libkrbn_system_preferences_monitor(void) {
     krbn::logger::get_logger()->info(__func__);
-
-    monitor_ = nullptr;
-    configuration_monitor_ = nullptr;
   }
 
 private:
-  std::shared_ptr<krbn::configuration_monitor> configuration_monitor_;
-  std::unique_ptr<krbn::system_preferences_monitor> monitor_;
+  std::unique_ptr<pqrs::osx::system_preferences_monitor> monitor_;
 };
-} // namespace

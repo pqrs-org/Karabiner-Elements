@@ -2,11 +2,13 @@
 
 @implementation SystemPreferencesModel
 
-- (instancetype)initWithValues:(const struct libkrbn_system_preferences* _Nonnull)system_preferences {
+- (instancetype)initWithValues:(const struct libkrbn_system_preferences_properties*)properties {
   self = [super init];
 
   if (self) {
-    _keyboardFnState = system_preferences->keyboard_fn_state;
+    if (properties) {
+      _useFkeysAsStandardFunctionKeys = properties->use_fkeys_as_standard_function_keys;
+    }
   }
 
   return self;

@@ -109,7 +109,7 @@
                 <outlet property="devicesTableViewController" destination="n2S-Tf-7ZE" id="ZRe-xj-uKw"/>
                 <outlet property="fnFunctionKeysTableView" destination="OWP-Cf-tc8" id="ZoU-Fp-ywc"/>
                 <outlet property="fnFunctionKeysTableViewController" destination="KbW-oV-WOQ" id="cpt-wg-s0p"/>
-                <outlet property="keyboardFnStateButton" destination="tSp-iV-F6D" id="7ra-xV-6cv"/>
+                <outlet property="useFkeysAsStandardFunctionKeysButton" destination="tSp-iV-F6D" id="7ra-xV-6cv"/>
                 <outlet property="logFileTextViewController" destination="wKd-bU-aLe" id="432-Fh-vee"/>
                 <outlet property="profilesTableViewController" destination="lSQ-bm-e7S" id="63i-dL-nvU"/>
                 <outlet property="showInMenuBarButton" destination="AHk-df-Lmk" id="uF4-rt-rbe"/>

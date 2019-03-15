@@ -184,11 +184,11 @@ void libkrbn_disable_configuration_monitor(void);
 // ----------------------------------------
 // libkrbn_system_preferences_monitor
 
-struct libkrbn_system_preferences {
-  bool keyboard_fn_state;
+struct libkrbn_system_preferences_properties {
+  bool use_fkeys_as_standard_function_keys;
 };
 
-typedef void (*libkrbn_system_preferences_monitor_callback)(const struct libkrbn_system_preferences* system_preferences,
+typedef void (*libkrbn_system_preferences_monitor_callback)(const struct libkrbn_system_preferences_properties* properties,
                                                             void* refcon);
 void libkrbn_enable_system_preferences_monitor(libkrbn_system_preferences_monitor_callback callback,
                                                void* refcon);

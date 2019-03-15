@@ -5,8 +5,8 @@
 
 @interface SystemPreferencesModel : NSObject
 
-@property BOOL keyboardFnState;
+@property BOOL useFkeysAsStandardFunctionKeys;
 
-- (instancetype _Nonnull)initWithValues:(const struct libkrbn_system_preferences* _Nonnull)system_preferences;
+- (instancetype)initWithValues:(const struct libkrbn_system_preferences_properties*)system_preferences;
 
 @end

@@ -9,14 +9,14 @@
 
 @end
 
-static void system_preferences_updated_callback(const struct libkrbn_system_preferences* _Nonnull system_preferences,
-                                                void* _Nullable refcon) {
+static void system_preferences_updated_callback(const struct libkrbn_system_preferences_properties* properties,
+                                                void* refcon) {
   SystemPreferencesManager* manager = (__bridge SystemPreferencesManager*)(refcon);
   if (!manager) {
     return;
   }
 
-  SystemPreferencesModel* model = [[SystemPreferencesModel alloc] initWithValues:system_preferences];
+  SystemPreferencesModel* model = [[SystemPreferencesModel alloc] initWithValues:properties];
 
   @weakify(manager);
   dispatch_async(dispatch_get_main_queue(), ^{
@@ -47,7 +47,7 @@ static void system_preferences_updated_callback(const struct libkrbn_system_pref
   NSDictionary<NSString*, id>* dictionary = [userDefaults persistentDomainForName:NSGlobalDomain];
   NSMutableDictionary<NSString*, id>* mutableDictionary = [NSMutableDictionary dictionaryWithDictionary:dictionary];
 
-  mutableDictionary[@"com.apple.keyboard.fnState"] = @(model.keyboardFnState);
+  mutableDictionary[@"com.apple.keyboard.fnState"] = @(model.useFkeysAsStandardFunctionKeys);
 
   [userDefaults setPersistentDomain:mutableDictionary forName:NSGlobalDomain];
 }

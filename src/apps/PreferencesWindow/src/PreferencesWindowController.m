@@ -21,7 +21,7 @@
 @property(weak) IBOutlet DevicesTableViewController* devicesTableViewController;
 @property(weak) IBOutlet FnFunctionKeysTableViewController* fnFunctionKeysTableViewController;
 @property(weak) IBOutlet LogFileTextViewController* logFileTextViewController;
-@property(weak) IBOutlet NSButton* keyboardFnStateButton;
+@property(weak) IBOutlet NSButton* useFkeysAsStandardFunctionKeysButton;
 @property(weak) IBOutlet NSTableView* devicesTableView;
 @property(weak) IBOutlet NSTableView* devicesExternalKeyboardTableView;
 @property(weak) IBOutlet NSTableView* fnFunctionKeysTableView;
@@ -135,14 +135,14 @@
 }
 
 - (void)updateSystemPreferencesUIValues {
-  self.keyboardFnStateButton.state = self.systemPreferencesManager.systemPreferencesModel.keyboardFnState ? NSOnState : NSOffState;
+  self.useFkeysAsStandardFunctionKeysButton.state = self.systemPreferencesManager.systemPreferencesModel.useFkeysAsStandardFunctionKeys ? NSOnState : NSOffState;
 }
 
 - (IBAction)updateSystemPreferencesValues:(id)sender {
   SystemPreferencesModel* model = self.systemPreferencesManager.systemPreferencesModel;
 
-  if (sender == self.keyboardFnStateButton) {
-    model.keyboardFnState = (self.keyboardFnStateButton.state == NSOnState);
+  if (sender == self.useFkeysAsStandardFunctionKeysButton) {
+    model.useFkeysAsStandardFunctionKeys = (self.useFkeysAsStandardFunctionKeysButton.state == NSOnState);
   }
 
   [self updateSystemPreferencesUIValues];
