@@ -62,7 +62,7 @@ Karabiner-Elements uses some pre-built binaries in the source tree.
 - `src/vendor/Karabiner-VirtualHIDDevice/dist/*.kext`
 - `src/vendor/Sparkle/Sparkle.framework`
 
-Above `make package` command does not build these binaries.<br/>
+Above `make package` command does not rebuild these binaries.<br/>
 (These binaries will be copied in the distributed package.)
 
 If you want to rebuild these binaries, you have to build them manually.
