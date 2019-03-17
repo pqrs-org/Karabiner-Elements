@@ -10,6 +10,8 @@
 #include <pqrs/dispatcher.hpp>
 #include <pqrs/local_datagram.hpp>
 #include <pqrs/osx/session.hpp>
+#include <pqrs/osx/system_preferences.hpp>
+#include <pqrs/osx/system_preferences/extra/nlohmann_json.hpp>
 #include <vector>
 
 namespace krbn {
@@ -111,22 +113,25 @@ public:
             }
 
             case operation_type::system_preferences_updated:
-              system_preferences_ = json.at("system_preferences").get<system_preferences>();
+              system_preferences_properties_ = json.at("system_preferences_properties")
+                                                   .get<pqrs::osx::system_preferences::properties>();
               if (device_grabber_) {
-                device_grabber_->async_set_system_preferences(system_preferences_);
+                device_grabber_->async_set_system_preferences_properties(system_preferences_properties_);
               }
               logger::get_logger()->info("`system_preferences` is updated.");
               break;
 
             case operation_type::frontmost_application_changed:
-              frontmost_application_ = json.at("frontmost_application").get<pqrs::osx::frontmost_application_monitor::application>();
+              frontmost_application_ = json.at("frontmost_application")
+                                           .get<pqrs::osx::frontmost_application_monitor::application>();
               if (device_grabber_) {
                 device_grabber_->async_post_frontmost_application_changed_event(frontmost_application_);
               }
               break;
 
             case operation_type::input_source_changed:
-              input_source_properties_ = json.at("input_source_properties").get<pqrs::osx::input_source::properties>();
+              input_source_properties_ = json.at("input_source_properties")
+                                             .get<pqrs::osx::input_source::properties>();
               if (device_grabber_) {
                 device_grabber_->async_post_input_source_changed_event(input_source_properties_);
               }
@@ -176,7 +181,7 @@ private:
     device_grabber_ = std::make_unique<device_grabber>(weak_grabbable_state_queues_manager_,
                                                        console_user_server_client_);
 
-    device_grabber_->async_set_system_preferences(system_preferences_);
+    device_grabber_->async_set_system_preferences_properties(system_preferences_properties_);
     device_grabber_->async_post_frontmost_application_changed_event(frontmost_application_);
     device_grabber_->async_post_input_source_changed_event(input_source_properties_);
 
@@ -201,7 +206,7 @@ private:
   std::shared_ptr<console_user_server_client> console_user_server_client_;
   std::unique_ptr<device_grabber> device_grabber_;
 
-  system_preferences system_preferences_;
+  pqrs::osx::system_preferences::properties system_preferences_properties_;
   pqrs::osx::frontmost_application_monitor::application frontmost_application_;
   pqrs::osx::input_source::properties input_source_properties_;
 };

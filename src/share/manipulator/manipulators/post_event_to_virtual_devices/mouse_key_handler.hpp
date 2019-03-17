@@ -1,6 +1,7 @@
 #pragma once
 
 #include "queue.hpp"
+#include <pqrs/osx/system_preferences.hpp>
 
 namespace krbn {
 namespace manipulator {
@@ -41,15 +42,15 @@ public:
   };
 
   mouse_key_handler(queue& queue,
-                    const system_preferences& system_preferences) : dispatcher_client(),
-                                                                    queue_(queue),
-                                                                    system_preferences_(system_preferences),
-                                                                    active_(false),
-                                                                    x_count_converter_(128),
-                                                                    y_count_converter_(128),
-                                                                    vertical_wheel_count_converter_(128),
-                                                                    horizontal_wheel_count_converter_(128),
-                                                                    timer_(*this) {
+                    const pqrs::osx::system_preferences::properties& properties) : dispatcher_client(),
+                                                                                   queue_(queue),
+                                                                                   system_preferences_properties_(properties),
+                                                                                   active_(false),
+                                                                                   x_count_converter_(128),
+                                                                                   y_count_converter_(128),
+                                                                                   vertical_wheel_count_converter_(128),
+                                                                                   horizontal_wheel_count_converter_(128),
+                                                                                   timer_(*this) {
   }
 
   virtual ~mouse_key_handler(void) {
@@ -135,7 +136,7 @@ private:
         total += pair.second;
       }
 
-      if (!system_preferences_.get_swipe_scroll_direction()) {
+      if (!system_preferences_properties_.get_scroll_direction_is_natural()) {
         total.invert_wheel();
       }
 
@@ -172,7 +173,7 @@ private:
   }
 
   queue& queue_;
-  const system_preferences& system_preferences_;
+  const pqrs::osx::system_preferences::properties& system_preferences_properties_;
 
   std::vector<std::pair<device_id, mouse_key>> entries_;
   std::atomic<bool> active_;

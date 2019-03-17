@@ -1,4 +1,1 @@
-[
-    "errors/mouse_key_errors.jsonc",
-    "errors/system_preferences_keyboard_type_errors.jsonc"
-]
+["errors/mouse_key_errors.jsonc"]

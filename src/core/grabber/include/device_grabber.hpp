@@ -14,7 +14,6 @@
 #include "manipulator/manipulators/post_event_to_virtual_devices/post_event_to_virtual_devices.hpp"
 #include "monitor/configuration_monitor.hpp"
 #include "monitor/event_tap_monitor.hpp"
-#include "system_preferences_utility.hpp"
 #include "types.hpp"
 #include "virtual_hid_device_client.hpp"
 #include <deque>
@@ -22,6 +21,7 @@
 #include <nlohmann/json.hpp>
 #include <nod/nod.hpp>
 #include <pqrs/osx/iokit_hid_manager.hpp>
+#include <pqrs/osx/system_preferences.hpp>
 #include <pqrs/spdlog.hpp>
 #include <thread>
 #include <time.h>
@@ -79,7 +79,7 @@ public:
 
     post_event_to_virtual_devices_manipulator_ =
         std::make_shared<manipulator::manipulators::post_event_to_virtual_devices::post_event_to_virtual_devices>(
-            system_preferences_,
+            system_preferences_properties_,
             weak_console_user_server_client);
     post_event_to_virtual_devices_manipulator_manager_->push_back_manipulator(std::shared_ptr<manipulator::manipulators::base>(post_event_to_virtual_devices_manipulator_));
 
@@ -340,9 +340,9 @@ public:
     });
   }
 
-  void async_set_system_preferences(const system_preferences& value) {
+  void async_set_system_preferences_properties(const pqrs::osx::system_preferences::properties& value) {
     enqueue_to_dispatcher([this, value] {
-      system_preferences_ = value;
+      system_preferences_properties_ = value;
 
       update_fn_function_keys_manipulators();
       async_post_keyboard_type_changed_event();
@@ -381,17 +381,28 @@ public:
 
   void async_post_keyboard_type_changed_event(void) {
     enqueue_to_dispatcher([this] {
-      auto keyboard_type_string = system_preferences_utility::get_keyboard_type_string(system_preferences_.get_keyboard_type());
-      auto event = event_queue::event::make_keyboard_type_changed_event(keyboard_type_string);
-      event_queue::entry entry(device_id(0),
-                               event_queue::event_time_stamp(pqrs::osx::chrono::mach_absolute_time_point()),
-                               event,
-                               event_type::single,
-                               event);
+      pqrs::osx::system_preferences::keyboard_type_key keyboard_type_key(
+          vendor_id_karabiner_virtual_hid_device,
+          product_id_karabiner_virtual_hid_keyboard,
+          profile_.get_virtual_hid_keyboard().get_country_code());
 
-      merged_input_event_queue_->push_back_entry(entry);
+      auto& keyboard_types = system_preferences_properties_.get_keyboard_types();
 
-      krbn_notification_center::get_instance().enqueue_input_event_arrived(*this);
+      auto it = keyboard_types.find(keyboard_type_key);
+      if (it != std::end(keyboard_types)) {
+        auto keyboard_type_string = pqrs::osx::make_iokit_keyboard_type_string(it->second);
+
+        auto event = event_queue::event::make_keyboard_type_changed_event(keyboard_type_string);
+        event_queue::entry entry(device_id(0),
+                                 event_queue::event_time_stamp(pqrs::osx::chrono::mach_absolute_time_point()),
+                                 event,
+                                 event_type::single,
+                                 event);
+
+        merged_input_event_queue_->push_back_entry(entry);
+
+        krbn_notification_center::get_instance().enqueue_input_event_arrived(*this);
+      }
     });
   }
 
@@ -647,7 +658,8 @@ private:
   void update_virtual_hid_keyboard(void) {
     if (virtual_hid_device_client_->is_connected()) {
       pqrs::karabiner_virtual_hid_device::properties::keyboard_initialization properties;
-      properties.country_code = profile_.get_virtual_hid_keyboard().get_country_code();
+      properties.country_code = static_cast<uint8_t>(
+          type_safe::get(profile_.get_virtual_hid_keyboard().get_country_code()));
 
       virtual_hid_device_client_->async_initialize_virtual_hid_keyboard(properties);
     }
@@ -827,7 +839,7 @@ private:
 
     auto to_modifiers = nlohmann::json::array();
 
-    if (system_preferences_.get_keyboard_fn_state()) {
+    if (system_preferences_properties_.get_use_fkeys_as_standard_function_keys()) {
       // f1 -> f1
       // fn+f1 -> display_brightness_decrement
 
@@ -1001,7 +1013,7 @@ private:
   std::unordered_map<device_id, std::shared_ptr<device_grabber_details::entry>> entries_;
 
   core_configuration::details::profile profile_;
-  system_preferences system_preferences_;
+  pqrs::osx::system_preferences::properties system_preferences_properties_;
 
   manipulator::manipulator_managers_connector manipulator_managers_connector_;
 

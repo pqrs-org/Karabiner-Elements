@@ -5,10 +5,12 @@
 #include <thread>
 
 namespace {
-void system_preferences_monitor_callback(const struct libkrbn_system_preferences* system_preferences,
+void system_preferences_monitor_callback(const struct libkrbn_system_preferences_properties* properties,
                                          void* refcon) {
   std::cout << "system_preferences_monitor_callback" << std::endl;
-  std::cout << "  keyboard_fn_state: " << system_preferences->keyboard_fn_state << std::endl;
+  std::cout << "  use_fkeys_as_standard_function_keys: "
+            << properties->use_fkeys_as_standard_function_keys
+            << std::endl;
 }
 
 void hid_value_monitor_callback(libkrbn_hid_value_type type,

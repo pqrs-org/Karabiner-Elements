@@ -13,6 +13,7 @@
 #include "types/device_identifiers.hpp"
 #include "types/event_type.hpp"
 #include "types/grabbable_state.hpp"
+#include "types/hid_country_code.hpp"
 #include "types/hid_usage.hpp"
 #include "types/hid_usage_page.hpp"
 #include "types/hid_value.hpp"
@@ -25,8 +26,6 @@
 #include "types/pointing_button.hpp"
 #include "types/pointing_motion.hpp"
 #include "types/product_id.hpp"
-#include "types/system_preferences.hpp"
-#include "types/system_preferences_keyboard_type.hpp"
 #include "types/vendor_id.hpp"
 #include <CoreFoundation/CoreFoundation.h>
 #include <IOKit/IOKitLib.h>

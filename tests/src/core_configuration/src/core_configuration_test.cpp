@@ -78,7 +78,10 @@ TEST_CASE("valid") {
     REQUIRE(rules[2].get_description() == "");
   }
   {
-    REQUIRE(configuration.get_selected_profile().get_virtual_hid_keyboard().get_country_code() == 99);
+    REQUIRE(configuration
+                .get_selected_profile()
+                .get_virtual_hid_keyboard()
+                .get_country_code() == krbn::hid_country_code(99));
   }
   {
     auto& actual = configuration.get_selected_profile().get_devices();
@@ -750,7 +753,7 @@ TEST_CASE("profile.to_json") {
     profile.get_fn_function_keys().replace_second(nlohmann::json{{"key_code", "not found"}}.dump(),
                                                   nlohmann::json{{"key_code", "do nothing"}}.dump());
 
-    profile.get_virtual_hid_keyboard().set_country_code(20);
+    profile.get_virtual_hid_keyboard().set_country_code(krbn::hid_country_code(20));
 
     auto expected_fn_function_keys = get_default_fn_function_keys_json();
     expected_fn_function_keys[2]["to"]["key_code"] = "to f3";
@@ -1311,7 +1314,7 @@ TEST_CASE("virtual_hid_keyboard") {
   {
     nlohmann::json json;
     krbn::core_configuration::details::virtual_hid_keyboard virtual_hid_keyboard(json);
-    REQUIRE(virtual_hid_keyboard.get_country_code() == 0);
+    REQUIRE(virtual_hid_keyboard.get_country_code() == krbn::hid_country_code(0));
   }
 
   // load values from json
@@ -1320,7 +1323,7 @@ TEST_CASE("virtual_hid_keyboard") {
         {"country_code", 10},
     });
     krbn::core_configuration::details::virtual_hid_keyboard virtual_hid_keyboard(json);
-    REQUIRE(virtual_hid_keyboard.get_country_code() == 10);
+    REQUIRE(virtual_hid_keyboard.get_country_code() == krbn::hid_country_code(10));
   }
 
   // invalid values in json
@@ -1328,8 +1331,12 @@ TEST_CASE("virtual_hid_keyboard") {
     nlohmann::json json({
         {"country_code", nlohmann::json::object()},
     });
-    krbn::core_configuration::details::virtual_hid_keyboard virtual_hid_keyboard(json);
-    REQUIRE(virtual_hid_keyboard.get_country_code() == 0);
+    REQUIRE_THROWS_AS(
+        krbn::core_configuration::details::virtual_hid_keyboard(json),
+        pqrs::json::unmarshal_error);
+    REQUIRE_THROWS_WITH(
+        krbn::core_configuration::details::virtual_hid_keyboard(json),
+        "json must be number, but is `{}`");
   }
 }
 
@@ -1347,7 +1354,7 @@ TEST_CASE("virtual_hid_keyboard.to_json") {
         {"dummy", {{"keep_me", true}}},
     });
     krbn::core_configuration::details::virtual_hid_keyboard virtual_hid_keyboard(json);
-    virtual_hid_keyboard.set_country_code(10);
+    virtual_hid_keyboard.set_country_code(krbn::hid_country_code(10));
 
     nlohmann::json expected({
         {"country_code", 10},

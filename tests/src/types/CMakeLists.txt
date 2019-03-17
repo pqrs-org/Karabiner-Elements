@@ -12,8 +12,6 @@ add_executable(
   src/mouse_key_test.cpp
   src/operation_type_test.cpp
   src/pointing_motion_test.cpp
-  src/system_preferences_keyboard_type_test.cpp
-  src/system_preferences_test.cpp
   src/test.cpp
   src/types_test.cpp
 )

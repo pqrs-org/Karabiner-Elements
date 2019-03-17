@@ -303,14 +303,20 @@ void libkrbn_core_configuration_set_selected_profile_complex_modifications_param
 
 uint8_t libkrbn_core_configuration_get_selected_profile_virtual_hid_keyboard_country_code(libkrbn_core_configuration* p) {
   if (auto c = reinterpret_cast<libkrbn_core_configuration_class*>(p)) {
-    return c->get_core_configuration().get_selected_profile().get_virtual_hid_keyboard().get_country_code();
+    return static_cast<uint8_t>(type_safe::get(c->get_core_configuration()
+                                                   .get_selected_profile()
+                                                   .get_virtual_hid_keyboard()
+                                                   .get_country_code()));
   }
   return 0;
 }
 
 void libkrbn_core_configuration_set_selected_profile_virtual_hid_keyboard_country_code(libkrbn_core_configuration* p, uint8_t value) {
   if (auto c = reinterpret_cast<libkrbn_core_configuration_class*>(p)) {
-    c->get_core_configuration().get_selected_profile().get_virtual_hid_keyboard().set_country_code(value);
+    c->get_core_configuration()
+        .get_selected_profile()
+        .get_virtual_hid_keyboard()
+        .set_country_code(krbn::hid_country_code(value));
   }
 }
 
