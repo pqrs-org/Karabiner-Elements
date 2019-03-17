@@ -742,6 +742,7 @@ private:
 
     update_devices_disabled();
     async_grab_devices();
+    async_post_keyboard_type_changed_event();
   }
 
   void update_simple_modifications_manipulators(void) {
