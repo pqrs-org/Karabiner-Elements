@@ -96,7 +96,7 @@ inline void from_json(const nlohmann::json& j, properties& value) {
       }
 
       try {
-        value.set_keyboard_types(v.get<std::unordered_map<keyboard_type_key, iokit_keyboard_type>>());
+        value.set_keyboard_types(v.get<std::map<keyboard_type_key, iokit_keyboard_type>>());
       } catch (std::exception& e) {
         throw json::unmarshal_error("keyboard_types error: "s + e.what());
       }

@@ -59,6 +59,31 @@ public:
     return !(*this == other);
   }
 
+  bool operator<(const keyboard_type_key& other) const {
+    if (vendor_id_ != other.vendor_id_) {
+      return vendor_id_ < other.vendor_id_;
+    }
+    if (product_id_ != other.product_id_) {
+      return product_id_ < other.product_id_;
+    }
+    if (country_code_ != other.country_code_) {
+      return country_code_ < other.country_code_;
+    }
+    return false;
+  }
+
+  bool operator<=(const keyboard_type_key& other) const {
+    return *this < other || *this == other;
+  }
+
+  bool operator>(const keyboard_type_key& other) const {
+    return !(*this <= other);
+  }
+
+  bool operator>=(const keyboard_type_key& other) const {
+    return !(*this < other);
+  }
+
 private:
   iokit_hid_vendor_id vendor_id_;
   iokit_hid_product_id product_id_;

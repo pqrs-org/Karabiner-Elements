@@ -6,9 +6,9 @@
 
 #include "keyboard_type_key.hpp"
 #include "system_preferences.hpp"
+#include <map>
 #include <pqrs/cf/string.hpp>
 #include <pqrs/hash.hpp>
-#include <unordered_map>
 
 namespace pqrs {
 namespace osx {
@@ -35,11 +35,11 @@ public:
     scroll_direction_is_natural_ = value;
   }
 
-  const std::unordered_map<keyboard_type_key, iokit_keyboard_type> get_keyboard_types(void) const {
+  const std::map<keyboard_type_key, iokit_keyboard_type> get_keyboard_types(void) const {
     return keyboard_types_;
   }
 
-  void set_keyboard_types(const std::unordered_map<keyboard_type_key, iokit_keyboard_type>& value) {
+  void set_keyboard_types(const std::map<keyboard_type_key, iokit_keyboard_type>& value) {
     keyboard_types_ = value;
   }
 
@@ -115,8 +115,26 @@ public:
 private:
   bool use_fkeys_as_standard_function_keys_;
   bool scroll_direction_is_natural_;
-  std::unordered_map<keyboard_type_key, iokit_keyboard_type> keyboard_types_;
+  std::map<keyboard_type_key, iokit_keyboard_type> keyboard_types_;
 };
 } // namespace system_preferences
 } // namespace osx
 } // namespace pqrs
+
+namespace std {
+template <>
+struct hash<pqrs::osx::system_preferences::properties> final {
+  std::size_t operator()(const pqrs::osx::system_preferences::properties& value) const {
+    std::size_t h = 0;
+
+    pqrs::hash_combine(h, value.get_use_fkeys_as_standard_function_keys());
+    pqrs::hash_combine(h, value.get_scroll_direction_is_natural());
+    for (const auto& [k, v] : value.get_keyboard_types()) {
+      pqrs::hash_combine(h, k);
+      pqrs::hash_combine(h, v);
+    }
+
+    return h;
+  }
+};
+} // namespace std
