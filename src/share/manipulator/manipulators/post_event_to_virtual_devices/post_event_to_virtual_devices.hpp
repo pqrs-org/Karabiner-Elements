@@ -17,12 +17,10 @@ namespace manipulators {
 namespace post_event_to_virtual_devices {
 class post_event_to_virtual_devices final : public base, public pqrs::dispatcher::extra::dispatcher_client {
 public:
-  post_event_to_virtual_devices(const pqrs::osx::system_preferences::properties& system_preferences_properties,
-                                std::weak_ptr<console_user_server_client> weak_console_user_server_client) : base(),
+  post_event_to_virtual_devices(std::weak_ptr<console_user_server_client> weak_console_user_server_client) : base(),
                                                                                                              dispatcher_client(),
                                                                                                              weak_console_user_server_client_(weak_console_user_server_client) {
-    mouse_key_handler_ = std::make_unique<mouse_key_handler>(queue_,
-                                                             system_preferences_properties);
+    mouse_key_handler_ = std::make_unique<mouse_key_handler>(queue_);
   }
 
   virtual ~post_event_to_virtual_devices(void) {
@@ -221,6 +219,12 @@ public:
           }
           break;
 
+        case event_queue::event::type::system_preferences_properties_changed:
+          if (auto properties = front_input_event.get_event().find<pqrs::osx::system_preferences::properties>()) {
+            mouse_key_handler_->set_system_preferences_properties(*properties);
+          }
+          break;
+
         case event_queue::event::type::none:
         case event_queue::event::type::set_variable:
         case event_queue::event::type::device_keys_and_pointing_buttons_are_released:
@@ -230,7 +234,6 @@ public:
         case event_queue::event::type::pointing_device_event_from_event_tap:
         case event_queue::event::type::frontmost_application_changed:
         case event_queue::event::type::input_source_changed:
-        case event_queue::event::type::system_preferences_properties_changed:
         case event_queue::event::type::virtual_hid_keyboard_country_code_changed:
           // Do nothing
           break;

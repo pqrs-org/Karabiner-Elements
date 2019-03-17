@@ -41,22 +41,24 @@ public:
     int count_;
   };
 
-  mouse_key_handler(queue& queue,
-                    const pqrs::osx::system_preferences::properties& properties) : dispatcher_client(),
-                                                                                   queue_(queue),
-                                                                                   system_preferences_properties_(properties),
-                                                                                   active_(false),
-                                                                                   x_count_converter_(128),
-                                                                                   y_count_converter_(128),
-                                                                                   vertical_wheel_count_converter_(128),
-                                                                                   horizontal_wheel_count_converter_(128),
-                                                                                   timer_(*this) {
+  mouse_key_handler(queue& queue) : dispatcher_client(),
+                                    queue_(queue),
+                                    active_(false),
+                                    x_count_converter_(128),
+                                    y_count_converter_(128),
+                                    vertical_wheel_count_converter_(128),
+                                    horizontal_wheel_count_converter_(128),
+                                    timer_(*this) {
   }
 
   virtual ~mouse_key_handler(void) {
     detach_from_dispatcher([this] {
       timer_.stop();
     });
+  }
+
+  void set_system_preferences_properties(const pqrs::osx::system_preferences::properties& value) {
+    system_preferences_properties_ = value;
   }
 
   void push_back_mouse_key(device_id device_id,
@@ -173,8 +175,7 @@ private:
   }
 
   queue& queue_;
-  const pqrs::osx::system_preferences::properties& system_preferences_properties_;
-
+  pqrs::osx::system_preferences::properties system_preferences_properties_;
   std::vector<std::pair<device_id, mouse_key>> entries_;
   std::atomic<bool> active_;
   std::weak_ptr<event_queue::queue> weak_output_event_queue_;
