@@ -7,9 +7,24 @@
         "input_source_id": "com.apple.keylayout.US",
         "language": "en"
     },
-    "keyboard_type": "iso",
+    "system_preferences_properties": {
+        "keyboard_types": [
+            [
+                {
+                    "country_code": 0,
+                    "product_id": 10203,
+                    "vendor_id": 5824
+                },
+                41
+            ]
+        ],
+        "scroll_direction_is_natural": false,
+        "use_fkeys_as_standard_function_keys": true
+    },
     "variables": {
         "value1": 100,
         "value2": 200
-    }
+    },
+    "virtual_hid_keyboard_country_code": 0,
+    "virtual_hid_keyboard_keyboard_type": "iso"
 }

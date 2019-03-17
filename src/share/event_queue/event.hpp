@@ -10,6 +10,8 @@
 #include <mpark/variant.hpp>
 #include <optional>
 #include <pqrs/hash.hpp>
+#include <pqrs/osx/system_preferences.hpp>
+#include <pqrs/osx/system_preferences/extra/nlohmann_json.hpp>
 
 namespace krbn {
 namespace event_queue {
@@ -35,7 +37,8 @@ public:
     pointing_device_event_from_event_tap,
     frontmost_application_changed,
     input_source_changed,
-    keyboard_type_changed,
+    system_preferences_properties_changed,
+    virtual_hid_keyboard_country_code_changed,
   };
 
   using value_t = mpark::variant<key_code,                                                 // For type::key_code
@@ -43,13 +46,15 @@ public:
                                  pointing_button,                                          // For type::pointing_button
                                  pointing_motion,                                          // For type::pointing_motion
                                  int64_t,                                                  // For type::caps_lock_state_changed
-                                 std::string,                                              // For shell_command, keyboard_type_changed
+                                 std::string,                                              // For shell_command
                                  std::vector<pqrs::osx::input_source_selector::specifier>, // For select_input_source
                                  std::pair<std::string, int>,                              // For set_variable
                                  mouse_key,                                                // For mouse_key
                                  pqrs::osx::frontmost_application_monitor::application,    // For frontmost_application_changed
                                  pqrs::osx::input_source::properties,                      // For input_source_changed
                                  device_properties,                                        // For device_grabbed
+                                 pqrs::osx::system_preferences::properties,                // For system_preferences_properties_changed
+                                 hid_country_code,                                         // For virtual_hid_keyboard_country_code_changed
                                  mpark::monostate>;                                        // For virtual events
 
   event(void) : type_(type::none),
@@ -59,105 +64,47 @@ public:
   static event make_from_json(const nlohmann::json& json) {
     event result;
 
-    if (auto v = json_utility::find_optional<std::string>(json, "type")) {
-      result.type_ = to_type(*v);
-    }
-
-    switch (result.type_) {
-      case type::none:
-        break;
-
-      case type::key_code:
-        if (auto s = json_utility::find_optional<std::string>(json, "key_code")) {
-          if (auto v = types::make_key_code(*s)) {
-            result.value_ = *v;
+    try {
+      if (json.is_object()) {
+        for (const auto& [key, value] : json.items()) {
+          if (key == "type") {
+            result.type_ = to_type(value.get<std::string>());
+          } else if (key == "key_code") {
+            if (auto v = types::make_key_code(value.get<std::string>())) {
+              result.value_ = *v;
+            }
+          } else if (key == "consumer_key_code") {
+            if (auto v = types::make_consumer_key_code(value.get<std::string>())) {
+              result.value_ = *v;
+            }
+          } else if (key == "pointing_button") {
+            if (auto v = types::make_pointing_button(value.get<std::string>())) {
+              result.value_ = *v;
+            }
+          } else if (key == "pointing_motion") {
+            result.value_ = value.get<pointing_motion>();
+          } else if (key == "caps_lock_state_changed") {
+            result.value_ = value.get<int64_t>();
+          } else if (key == "shell_command") {
+            result.value_ = value.get<std::string>();
+          } else if (key == "input_source_specifiers") {
+            result.value_ = value.get<std::vector<pqrs::osx::input_source_selector::specifier>>();
+          } else if (key == "set_variable") {
+            result.value_ = value.get<std::pair<std::string, int>>();
+          } else if (key == "mouse_key") {
+            result.value_ = value.get<mouse_key>();
+          } else if (key == "frontmost_application") {
+            result.value_ = value.get<pqrs::osx::frontmost_application_monitor::application>();
+          } else if (key == "input_source_properties") {
+            result.value_ = value.get<pqrs::osx::input_source::properties>();
+          } else if (key == "system_preferences_properties") {
+            result.value_ = value.get<pqrs::osx::system_preferences::properties>();
+          } else if (key == "virtual_hid_keyboard_country_code") {
+            result.value_ = value.get<hid_country_code>();
           }
         }
-        break;
-
-      case type::consumer_key_code:
-        if (auto s = json_utility::find_optional<std::string>(json, "consumer_key_code")) {
-          if (auto v = types::make_consumer_key_code(*s)) {
-            result.value_ = *v;
-          }
-        }
-        break;
-
-      case type::pointing_button:
-        if (auto s = json_utility::find_optional<std::string>(json, "pointing_button")) {
-          if (auto v = types::make_pointing_button(*s)) {
-            result.value_ = *v;
-          }
-        }
-        break;
-
-      case type::pointing_motion:
-        if (auto v = json_utility::find_object(json, "pointing_motion")) {
-          result.value_ = pointing_motion(*v);
-        }
-        break;
-
-      case type::caps_lock_state_changed:
-        if (auto v = json_utility::find_optional<int>(json, "caps_lock_state_changed")) {
-          result.value_ = *v;
-        }
-        break;
-
-      case type::shell_command:
-        if (auto v = json_utility::find_optional<std::string>(json, "shell_command")) {
-          result.value_ = *v;
-        }
-        break;
-
-      case type::select_input_source:
-        if (auto v = json_utility::find_array(json, "input_source_specifiers")) {
-          result.value_ = v->get<std::vector<pqrs::osx::input_source_selector::specifier>>();
-        }
-        break;
-
-      case type::set_variable:
-        if (auto o = json_utility::find_object(json, "set_variable")) {
-          std::pair<std::string, int> pair;
-          if (auto v = json_utility::find_optional<std::string>(*o, "name")) {
-            pair.first = *v;
-          }
-          if (auto v = json_utility::find_optional<int>(*o, "value")) {
-            pair.second = *v;
-          }
-          result.value_ = pair;
-        }
-        break;
-
-      case type::mouse_key:
-        if (auto v = json_utility::find_json(json, "mouse_key")) {
-          result.value_ = v->get<mouse_key>();
-        }
-        break;
-
-      case type::frontmost_application_changed:
-        if (auto v = json_utility::find_json(json, "frontmost_application")) {
-          result.value_ = v->get<pqrs::osx::frontmost_application_monitor::application>();
-        }
-        break;
-
-      case type::input_source_changed:
-        if (auto v = json_utility::find_json(json, "input_source_properties")) {
-          result.value_ = v->get<pqrs::osx::input_source::properties>();
-        }
-        break;
-
-      case type::keyboard_type_changed:
-        if (auto v = json_utility::find_optional<std::string>(json, "keyboard_type")) {
-          result.value_ = *v;
-        }
-        break;
-
-      case type::stop_keyboard_repeat:
-      case type::device_keys_and_pointing_buttons_are_released:
-      case type::device_grabbed:
-      case type::device_ungrabbed:
-      case type::pointing_device_event_from_event_tap:
-        break;
+      }
+    } catch (...) {
     }
 
     return result;
@@ -221,8 +168,7 @@ public:
 
       case type::set_variable:
         if (auto v = get_set_variable()) {
-          json["set_variable"]["name"] = v->first;
-          json["set_variable"]["value"] = v->second;
+          json["set_variable"] = *v;
         }
         break;
 
@@ -244,9 +190,15 @@ public:
         }
         break;
 
-      case type::keyboard_type_changed:
-        if (auto v = get_keyboard_type()) {
-          json["keyboard_type"] = *v;
+      case type::system_preferences_properties_changed:
+        if (auto v = mpark::get_if<pqrs::osx::system_preferences::properties>(&value_)) {
+          json["system_preferences_properties"] = *v;
+        }
+        break;
+
+      case type::virtual_hid_keyboard_country_code_changed:
+        if (auto v = mpark::get_if<hid_country_code>(&value_)) {
+          json["virtual_hid_keyboard_country_code"] = *v;
         }
         break;
 
@@ -347,10 +299,17 @@ public:
     return e;
   }
 
-  static event make_keyboard_type_changed_event(const std::string& keyboard_type) {
+  static event make_system_preferences_properties_changed_event(const pqrs::osx::system_preferences::properties& properties) {
     event e;
-    e.type_ = type::keyboard_type_changed;
-    e.value_ = keyboard_type;
+    e.type_ = type::system_preferences_properties_changed;
+    e.value_ = properties;
+    return e;
+  }
+
+  static event make_virtual_hid_keyboard_country_code_changed_event(hid_country_code code) {
+    event e;
+    e.type_ = type::virtual_hid_keyboard_country_code_changed;
+    e.value_ = code;
     return e;
   }
 
@@ -477,16 +436,6 @@ public:
     return std::nullopt;
   }
 
-  std::optional<std::string> get_keyboard_type(void) const {
-    try {
-      if (type_ == type::keyboard_type_changed) {
-        return mpark::get<std::string>(value_);
-      }
-    } catch (mpark::bad_variant_access&) {
-    }
-    return std::nullopt;
-  }
-
   bool operator==(const event& other) const {
     return get_type() == other.get_type() &&
            value_ == other.value_;
@@ -523,7 +472,8 @@ private:
       TO_C_STRING(pointing_device_event_from_event_tap);
       TO_C_STRING(frontmost_application_changed);
       TO_C_STRING(input_source_changed);
-      TO_C_STRING(keyboard_type_changed);
+      TO_C_STRING(system_preferences_properties_changed);
+      TO_C_STRING(virtual_hid_keyboard_country_code_changed);
     }
 
 #undef TO_C_STRING
@@ -555,7 +505,8 @@ private:
     TO_TYPE(pointing_device_event_from_event_tap);
     TO_TYPE(frontmost_application_changed);
     TO_TYPE(input_source_changed);
-    TO_TYPE(keyboard_type_changed);
+    TO_TYPE(system_preferences_properties_changed);
+    TO_TYPE(virtual_hid_keyboard_country_code_changed);
 
 #undef TO_TYPE
 
@@ -565,32 +516,6 @@ private:
   type type_;
   value_t value_;
 };
-
-inline std::ostream& operator<<(std::ostream& stream, const event::type& value) {
-  return stream_utility::output_enum(stream, value);
-}
-
-inline std::ostream& operator<<(std::ostream& stream, const event& event) {
-  stream << "{"
-         << "\"type\":";
-  stream_utility::output_enum(stream, event.get_type());
-
-  if (auto key_code = event.get_key_code()) {
-    stream << ",\"key_code\":" << *key_code;
-  }
-
-  if (auto pointing_button = event.get_pointing_button()) {
-    stream << ",\"pointing_button\":" << *pointing_button;
-  }
-
-  if (auto pointing_motion = event.get_pointing_motion()) {
-    stream << ",\"pointing_motion\":" << pointing_motion->to_json();
-  }
-
-  stream << "}";
-
-  return stream;
-}
 
 inline void to_json(nlohmann::json& json, const event& value) {
   json = value.to_json();

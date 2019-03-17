@@ -136,7 +136,23 @@ TEST_CASE("manipulator_environment.save_to_file") {
 
   manipulator_environment.set_variable("value1", 100);
   manipulator_environment.set_variable("value2", 200);
-  manipulator_environment.set_keyboard_type("iso");
+
+  pqrs::osx::system_preferences::properties system_preferences_properties;
+  system_preferences_properties.set_use_fkeys_as_standard_function_keys(true);
+  system_preferences_properties.set_scroll_direction_is_natural(false);
+  system_preferences_properties.set_keyboard_types(
+      std::map<pqrs::osx::system_preferences::keyboard_type_key,
+               pqrs::osx::iokit_keyboard_type>({
+          {
+              pqrs::osx::system_preferences::keyboard_type_key(krbn::vendor_id_karabiner_virtual_hid_device,
+                                                               krbn::product_id_karabiner_virtual_hid_keyboard,
+                                                               krbn::hid_country_code(0)),
+              pqrs::osx::iokit_keyboard_type(41),
+          },
+      }));
+  manipulator_environment.set_system_preferences_properties(system_preferences_properties);
+
+  manipulator_environment.set_virtual_hid_keyboard_country_code(krbn::hid_country_code(0));
 
   krbn::async_file_writer::wait();
 
@@ -514,25 +530,50 @@ TEST_CASE("conditions.keyboard_type") {
                                  krbn::event_type::key_down,
                                  krbn::event_queue::event(krbn::key_code::a));
 
+  pqrs::osx::system_preferences::properties system_preferences_properties;
+  system_preferences_properties.set_use_fkeys_as_standard_function_keys(true);
+  system_preferences_properties.set_scroll_direction_is_natural(false);
+  system_preferences_properties.set_keyboard_types(
+      std::map<pqrs::osx::system_preferences::keyboard_type_key,
+               pqrs::osx::iokit_keyboard_type>({
+          {
+              pqrs::osx::system_preferences::keyboard_type_key(krbn::vendor_id_karabiner_virtual_hid_device,
+                                                               krbn::product_id_karabiner_virtual_hid_keyboard,
+                                                               krbn::hid_country_code(0)),
+              pqrs::osx::iokit_keyboard_type(40), // ansi
+          },
+          {
+              pqrs::osx::system_preferences::keyboard_type_key(krbn::vendor_id_karabiner_virtual_hid_device,
+                                                               krbn::product_id_karabiner_virtual_hid_keyboard,
+                                                               krbn::hid_country_code(1)),
+              pqrs::osx::iokit_keyboard_type(41), // iso
+          },
+      }));
+  manipulator_environment.set_system_preferences_properties(system_preferences_properties);
+
   {
     actual_examples_helper helper("keyboard_type_if.json");
 
-    manipulator_environment.set_keyboard_type("iso");
+    // iso
+    manipulator_environment.set_virtual_hid_keyboard_country_code(krbn::hid_country_code(1));
     REQUIRE(helper.get_condition_manager().is_fulfilled(entry,
                                                         manipulator_environment) == true);
 
-    manipulator_environment.set_keyboard_type("ansi");
+    // ansi
+    manipulator_environment.set_virtual_hid_keyboard_country_code(krbn::hid_country_code(0));
     REQUIRE(helper.get_condition_manager().is_fulfilled(entry,
                                                         manipulator_environment) == false);
   }
   {
     actual_examples_helper helper("keyboard_type_unless.json");
 
-    manipulator_environment.set_keyboard_type("iso");
+    // iso
+    manipulator_environment.set_virtual_hid_keyboard_country_code(krbn::hid_country_code(1));
     REQUIRE(helper.get_condition_manager().is_fulfilled(entry,
                                                         manipulator_environment) == false);
 
-    manipulator_environment.set_keyboard_type("ansi");
+    // ansi
+    manipulator_environment.set_virtual_hid_keyboard_country_code(krbn::hid_country_code(0));
     REQUIRE(helper.get_condition_manager().is_fulfilled(entry,
                                                         manipulator_environment) == true);
   }

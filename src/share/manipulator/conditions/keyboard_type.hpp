@@ -66,7 +66,7 @@ public:
   virtual bool is_fulfilled(const event_queue::entry& entry,
                             const manipulator_environment& manipulator_environment) const {
     for (const auto& t : keyboard_types_) {
-      if (t == manipulator_environment.get_keyboard_type()) {
+      if (t == manipulator_environment.get_virtual_hid_keyboard_keyboard_type()) {
         switch (type_) {
           case type::keyboard_type_if:
             return true;

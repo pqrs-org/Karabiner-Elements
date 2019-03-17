@@ -345,7 +345,7 @@ public:
       system_preferences_properties_ = value;
 
       update_fn_function_keys_manipulators();
-      async_post_keyboard_type_changed_event();
+      async_post_system_preferences_properties_changed_event();
     });
   }
 
@@ -379,30 +379,35 @@ public:
     });
   }
 
-  void async_post_keyboard_type_changed_event(void) {
+  void async_post_system_preferences_properties_changed_event(void) {
     enqueue_to_dispatcher([this] {
-      pqrs::osx::system_preferences::keyboard_type_key keyboard_type_key(
-          vendor_id_karabiner_virtual_hid_device,
-          product_id_karabiner_virtual_hid_keyboard,
+      auto event = event_queue::event::make_system_preferences_properties_changed_event(
+          system_preferences_properties_);
+      event_queue::entry entry(device_id(0),
+                               event_queue::event_time_stamp(pqrs::osx::chrono::mach_absolute_time_point()),
+                               event,
+                               event_type::single,
+                               event);
+
+      merged_input_event_queue_->push_back_entry(entry);
+
+      krbn_notification_center::get_instance().enqueue_input_event_arrived(*this);
+    });
+  }
+
+  void async_post_virtual_hid_keyboard_country_code_changed_event(void) {
+    enqueue_to_dispatcher([this] {
+      auto event = event_queue::event::make_virtual_hid_keyboard_country_code_changed_event(
           profile_.get_virtual_hid_keyboard().get_country_code());
+      event_queue::entry entry(device_id(0),
+                               event_queue::event_time_stamp(pqrs::osx::chrono::mach_absolute_time_point()),
+                               event,
+                               event_type::single,
+                               event);
 
-      auto& keyboard_types = system_preferences_properties_.get_keyboard_types();
+      merged_input_event_queue_->push_back_entry(entry);
 
-      auto it = keyboard_types.find(keyboard_type_key);
-      if (it != std::end(keyboard_types)) {
-        auto keyboard_type_string = pqrs::osx::make_iokit_keyboard_type_string(it->second);
-
-        auto event = event_queue::event::make_keyboard_type_changed_event(keyboard_type_string);
-        event_queue::entry entry(device_id(0),
-                                 event_queue::event_time_stamp(pqrs::osx::chrono::mach_absolute_time_point()),
-                                 event,
-                                 event_type::single,
-                                 event);
-
-        merged_input_event_queue_->push_back_entry(entry);
-
-        krbn_notification_center::get_instance().enqueue_input_event_arrived(*this);
-      }
+      krbn_notification_center::get_instance().enqueue_input_event_arrived(*this);
     });
   }
 
@@ -742,7 +747,8 @@ private:
 
     update_devices_disabled();
     async_grab_devices();
-    async_post_keyboard_type_changed_event();
+    async_post_system_preferences_properties_changed_event();
+    async_post_virtual_hid_keyboard_country_code_changed_event();
   }
 
   void update_simple_modifications_manipulators(void) {

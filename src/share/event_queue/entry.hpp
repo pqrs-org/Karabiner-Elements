@@ -179,20 +179,6 @@ private:
   mutable std::mutex mutex_;
 };
 
-inline std::ostream& operator<<(std::ostream& stream, const entry& value) {
-  stream << std::endl
-         << "{"
-         << "\"device_id\":" << value.get_device_id()
-         << ",\"event_time_stamp\":" << value.get_event_time_stamp()
-         << ",\"valid\":" << value.get_valid()
-         << ",\"lazy\":" << value.get_lazy()
-         << ",\"event\":" << value.get_event()
-         << ",\"event_type\":" << value.get_event_type()
-         << ",\"original_event\":" << value.get_original_event()
-         << "}";
-  return stream;
-}
-
 inline void to_json(nlohmann::json& json, const entry& value) {
   json = value.to_json();
 }

@@ -1,9 +1,8 @@
 #pragma once
 
-#include "stream_utility.hpp"
 #include <cstdint>
-#include <nlohmann/json.hpp>
 #include <pqrs/hash.hpp>
+#include <pqrs/json.hpp>
 
 namespace krbn {
 class pointing_motion final {
@@ -21,30 +20,6 @@ public:
                                           y_(y),
                                           vertical_wheel_(vertical_wheel),
                                           horizontal_wheel_(horizontal_wheel) {
-  }
-
-  pointing_motion(const nlohmann::json& json) : pointing_motion() {
-    if (auto v = json_utility::find_optional<int>(json, "x")) {
-      x_ = *v;
-    }
-    if (auto v = json_utility::find_optional<int>(json, "y")) {
-      y_ = *v;
-    }
-    if (auto v = json_utility::find_optional<int>(json, "vertical_wheel")) {
-      vertical_wheel_ = *v;
-    }
-    if (auto v = json_utility::find_optional<int>(json, "horizontal_wheel")) {
-      horizontal_wheel_ = *v;
-    }
-  }
-
-  nlohmann::json to_json(void) const {
-    nlohmann::json j;
-    j["x"] = x_;
-    j["y"] = y_;
-    j["vertical_wheel"] = vertical_wheel_;
-    j["horizontal_wheel"] = horizontal_wheel_;
-    return j;
   }
 
   int get_x(void) const {
@@ -107,13 +82,46 @@ private:
   int horizontal_wheel_;
 };
 
-inline std::ostream& operator<<(std::ostream& stream, const pointing_motion& value) {
-  stream << "pointing_motion:" << value.to_json();
-  return stream;
+inline void to_json(nlohmann::json& j, const pointing_motion& value) {
+  j["x"] = value.get_x();
+  j["y"] = value.get_y();
+  j["vertical_wheel"] = value.get_vertical_wheel();
+  j["horizontal_wheel"] = value.get_horizontal_wheel();
 }
 
-inline void to_json(nlohmann::json& json, const pointing_motion& pointing_motion) {
-  json = pointing_motion.to_json();
+inline void from_json(const nlohmann::json& j, pointing_motion& value) {
+  using namespace std::string_literals;
+
+  if (!j.is_object()) {
+    throw pqrs::json::unmarshal_error("json must be object, but is `"s + j.dump() + "`"s);
+  }
+
+  for (const auto& [k, v] : j.items()) {
+    if (k == "x") {
+      if (!v.is_number()) {
+        throw pqrs::json::unmarshal_error("`"s + k + "` must be number, but is `"s + v.dump() + "`"s);
+      }
+      value.set_x(v.get<int>());
+    }
+    if (k == "y") {
+      if (!v.is_number()) {
+        throw pqrs::json::unmarshal_error("`"s + k + "` must be number, but is `"s + v.dump() + "`"s);
+      }
+      value.set_y(v.get<int>());
+    }
+    if (k == "vertical_wheel") {
+      if (!v.is_number()) {
+        throw pqrs::json::unmarshal_error("`"s + k + "` must be number, but is `"s + v.dump() + "`"s);
+      }
+      value.set_vertical_wheel(v.get<int>());
+    }
+    if (k == "horizontal_wheel") {
+      if (!v.is_number()) {
+        throw pqrs::json::unmarshal_error("`"s + k + "` must be number, but is `"s + v.dump() + "`"s);
+      }
+      value.set_horizontal_wheel(v.get<int>());
+    }
+  }
 }
 } // namespace krbn
 

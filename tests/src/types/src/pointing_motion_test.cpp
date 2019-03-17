@@ -15,7 +15,7 @@ TEST_CASE("pointing_motion") {
     json["y"] = 0;
     json["vertical_wheel"] = 0;
     json["horizontal_wheel"] = 0;
-    REQUIRE(pointing_motion.to_json() == json);
+    REQUIRE(nlohmann::json(pointing_motion) == json);
   }
 
   {
@@ -46,7 +46,7 @@ TEST_CASE("pointing_motion::setter,getter") {
     json["y"] = -1;
     json["vertical_wheel"] = 2;
     json["horizontal_wheel"] = -2;
-    REQUIRE(pointing_motion.to_json() == json);
+    REQUIRE(nlohmann::json(pointing_motion) == json);
   }
 }
 

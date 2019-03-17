@@ -127,8 +127,7 @@ TEST_CASE("json") {
   {
     nlohmann::json expected;
     expected["type"] = "set_variable";
-    expected["set_variable"]["name"] = "example1";
-    expected["set_variable"]["value"] = 100;
+    expected["set_variable"] = nlohmann::json::array({"example1", 100});
     auto json = krbn::event_queue::event::make_set_variable_event(std::make_pair("example1", 100)).to_json();
     REQUIRE(json == expected);
     auto event_from_json = krbn::event_queue::event::make_from_json(json);
@@ -165,9 +164,28 @@ TEST_CASE("json") {
   }
   {
     nlohmann::json expected;
-    expected["type"] = "keyboard_type_changed";
-    expected["keyboard_type"] = "iso";
-    auto e = krbn::event_queue::event::make_keyboard_type_changed_event("iso");
+    expected["type"] = "system_preferences_properties_changed";
+    expected["system_preferences_properties"] = nlohmann::json::object({
+        {"use_fkeys_as_standard_function_keys", false},
+        {"scroll_direction_is_natural", true},
+        {"keyboard_types", nlohmann::json::array()},
+    });
+
+    pqrs::osx::system_preferences::properties properties;
+    properties.set_use_fkeys_as_standard_function_keys(false);
+    properties.set_scroll_direction_is_natural(true);
+    auto e = krbn::event_queue::event::make_system_preferences_properties_changed_event(properties);
+    auto json = e.to_json();
+    REQUIRE(json == expected);
+    auto event_from_json = krbn::event_queue::event::make_from_json(json);
+    REQUIRE(json == event_from_json.to_json());
+  }
+  {
+    nlohmann::json expected;
+    expected["type"] = "virtual_hid_keyboard_country_code_changed";
+    expected["virtual_hid_keyboard_country_code"] = 123;
+
+    auto e = krbn::event_queue::event::make_virtual_hid_keyboard_country_code_changed_event(krbn::hid_country_code(123));
     auto json = e.to_json();
     REQUIRE(json == expected);
     auto event_from_json = krbn::event_queue::event::make_from_json(json);

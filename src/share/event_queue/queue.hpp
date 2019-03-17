@@ -91,8 +91,11 @@ public:
                                               set_variable->second);
       }
     }
-    if (auto keyboard_type = event.get_keyboard_type()) {
-      manipulator_environment_.set_keyboard_type(*keyboard_type);
+    if (auto properties = event.find<pqrs::osx::system_preferences::properties>()) {
+      manipulator_environment_.set_system_preferences_properties(*properties);
+    }
+    if (auto code = event.find<hid_country_code>()) {
+      manipulator_environment_.set_virtual_hid_keyboard_country_code(*code);
     }
   }
 

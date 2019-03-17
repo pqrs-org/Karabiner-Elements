@@ -94,7 +94,8 @@ public:
             case event_queue::event::type::caps_lock_state_changed:
             case event_queue::event::type::frontmost_application_changed:
             case event_queue::event::type::input_source_changed:
-            case event_queue::event::type::keyboard_type_changed:
+            case event_queue::event::type::system_preferences_properties_changed:
+            case event_queue::event::type::virtual_hid_keyboard_country_code_changed:
             case event_queue::event::type::set_variable:
               // Do nothing
               break;
