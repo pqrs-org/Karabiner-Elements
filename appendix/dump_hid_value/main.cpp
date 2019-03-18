@@ -34,8 +34,8 @@ public:
       if (device_ptr) {
         auto device_id = krbn::make_device_id(registry_entry_id);
         krbn::logger::get_logger()->info("{0} is matched.",
-                                        krbn::iokit_utility::make_device_name_for_log(device_id,
-                                                                                      *device_ptr));
+                                         krbn::iokit_utility::make_device_name_for_log(device_id,
+                                                                                       *device_ptr));
 
         auto device_properties = std::make_shared<krbn::device_properties>(device_id,
                                                                            *device_ptr);
@@ -107,7 +107,7 @@ private:
 
       case krbn::event_queue::event::type::pointing_motion:
         if (auto pointing_motion = entry.get_event().get_pointing_motion()) {
-          std::cout << "pointing_motion: " << pointing_motion->to_json() << std::endl;
+          std::cout << "pointing_motion: " << nlohmann::json(*pointing_motion) << std::endl;
         }
         break;
 
