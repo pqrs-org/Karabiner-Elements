@@ -38,7 +38,6 @@ public:
 
       pseudo_time_source_->set_now(pqrs::dispatcher::time_point(std::chrono::milliseconds(0)));
 
-      pqrs::osx::system_preferences::properties system_preferences_properties;
       auto console_user_server_client = std::make_shared<krbn::console_user_server_client>();
       auto connector = std::make_shared<manipulator::manipulator_managers_connector>();
       auto manipulator_managers = std::make_shared<std::vector<std::shared_ptr<manipulator::manipulator_manager>>>();
@@ -84,7 +83,6 @@ public:
       if (json_utility::find_optional<std::string>(test, "expected_post_event_to_virtual_devices_queue")) {
         post_event_to_virtual_devices_manipulator =
             std::make_shared<krbn::manipulator::manipulators::post_event_to_virtual_devices::post_event_to_virtual_devices>(
-                system_preferences_properties,
                 console_user_server_client);
 
         manipulator_managers->push_back(std::make_unique<manipulator::manipulator_manager>());
