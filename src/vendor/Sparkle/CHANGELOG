@@ -1,3 +1,10 @@
+# 1.21.3
+
+ * Losslessly reduced the size of PNG (Barijaona Ramaholimihaso)
+ * Catch exceptions from subcommands (Julian Mayer)
+ * `generate_appcast` can sign any bundles instead of just apps (Nate Weaver)
+ * Check that effectiveAppearance is being observed before calling removeObserver (Pierluigi)
+
 # 1.21.2
 
  * Allow EdDSA for delta updates, too (Kornel)
