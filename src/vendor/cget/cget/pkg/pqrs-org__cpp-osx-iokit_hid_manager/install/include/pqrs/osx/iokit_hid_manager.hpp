@@ -1,6 +1,6 @@
 #pragma once
 
-// pqrs::iokit_hid_manager v2.3
+// pqrs::iokit_hid_manager v2.4
 
 // (C) Copyright Takayama Fumihiko 2018.
 // Distributed under the Boost Software License, Version 1.0.
@@ -29,8 +29,10 @@ public:
   iokit_hid_manager(const iokit_hid_manager&) = delete;
 
   iokit_hid_manager(std::weak_ptr<dispatcher::dispatcher> weak_dispatcher,
-                    const std::vector<cf::cf_ptr<CFDictionaryRef>>& matching_dictionaries) : dispatcher_client(weak_dispatcher),
-                                                                                             matching_dictionaries_(matching_dictionaries) {
+                    const std::vector<cf::cf_ptr<CFDictionaryRef>>& matching_dictionaries,
+                    pqrs::dispatcher::duration device_matched_delay = pqrs::dispatcher::duration(0)) : dispatcher_client(weak_dispatcher),
+                                                                                                       matching_dictionaries_(matching_dictionaries),
+                                                                                                       device_matched_delay_(device_matched_delay) {
   }
 
   virtual ~iokit_hid_manager(void) {
@@ -101,9 +103,21 @@ private:
               auto device_ptr = cf::cf_ptr<IOHIDDeviceRef>(device);
               devices_[registry_entry_id] = device_ptr;
 
-              enqueue_to_dispatcher([this, registry_entry_id, device_ptr] {
-                device_matched(registry_entry_id, device_ptr);
-              });
+              auto when = when_now() + device_matched_delay_;
+              enqueue_to_dispatcher(
+                  [this, registry_entry_id, device_ptr] {
+                    auto it = devices_.find(registry_entry_id);
+                    if (it == std::end(devices_)) {
+                      // device is already terminated.
+                      return;
+                    }
+
+                    enqueue_to_dispatcher([this, registry_entry_id, device_ptr] {
+                      device_matched(registry_entry_id, device_ptr);
+                    });
+                    device_matched_called_ids_.insert(registry_entry_id);
+                  },
+                  when);
 
               CFRelease(device);
             }
@@ -115,9 +129,17 @@ private:
           if (it != std::end(devices_)) {
             devices_.erase(registry_entry_id);
 
+            auto it = device_matched_called_ids_.find(registry_entry_id);
+            if (it == std::end(device_matched_called_ids_)) {
+              // `device_matched` is not called yet.
+              // (The device is disconnected before `deviec_matched` is called.)
+              return;
+            }
+
             enqueue_to_dispatcher([this, registry_entry_id] {
               device_terminated(registry_entry_id);
             });
+            device_matched_called_ids_.erase(registry_entry_id);
           }
         });
 
@@ -138,12 +160,15 @@ private:
   void stop(void) {
     service_monitors_.clear();
     devices_.clear();
+    device_matched_called_ids_.clear();
   }
 
   std::vector<cf::cf_ptr<CFDictionaryRef>> matching_dictionaries_;
+  pqrs::dispatcher::duration device_matched_delay_;
 
   std::vector<std::shared_ptr<iokit_service_monitor>> service_monitors_;
   std::unordered_map<iokit_registry_entry_id, cf::cf_ptr<IOHIDDeviceRef>> devices_;
+  std::unordered_set<iokit_registry_entry_id> device_matched_called_ids_;
 };
 } // namespace osx
 } // namespace pqrs
