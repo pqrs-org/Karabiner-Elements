@@ -35,7 +35,7 @@
   [self.devicesController setup];
 
   @weakify(self);
-  dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 3 * NSEC_PER_SEC), dispatch_get_main_queue(), ^{
+  dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 10 * NSEC_PER_SEC), dispatch_get_main_queue(), ^{
     @strongify(self);
     if (!self) {
       return;

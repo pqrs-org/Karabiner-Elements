@@ -21,7 +21,8 @@ public:
     };
 
     hid_manager_ = std::make_unique<pqrs::osx::iokit_hid_manager>(pqrs::dispatcher::extra::get_shared_dispatcher(),
-                                                                  matching_dictionaries);
+                                                                  matching_dictionaries,
+                                                                  std::chrono::milliseconds(1000));
 
     hid_manager_->device_matched.connect([this, callback, refcon](auto&& registry_entry_id, auto&& device_ptr) {
       if (device_ptr) {
