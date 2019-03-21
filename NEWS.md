@@ -3,7 +3,9 @@
 ## Beta
 
 - Set Karabiner-Elements.app and Karabiner-EventViewer.app immutable
-  in order to ensure unremovable them except uninstaller.
+  in order to ensure unremovable them except built-in uninstaller.
+  Please use the uninstaller when you want to remove Karabiner-Elements.
+  <https://pqrs.org/osx/karabiner/document.html#uninstall>
 - Added `--lint-complex-modifications` option into `karabiner_cli`.
   It allows you checks a complex-modifications json file.
 
