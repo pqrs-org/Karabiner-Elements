@@ -4,6 +4,12 @@ PATH=/bin:/sbin:/usr/bin:/usr/sbin
 export PATH
 
 # ------------------------------------------------------------
+# Set immutable flag
+
+chflags uchg,schg /Applications/Karabiner-Elements.app
+chflags uchg,schg /Applications/Karabiner-EventViewer.app
+
+# ------------------------------------------------------------
 # Relaunch karabiner_grabber
 
 killall karabiner_grabber
