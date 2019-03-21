@@ -2,6 +2,8 @@
 
 ## Beta
 
+- Set Karabiner-Elements.app and Karabiner-EventViewer.app immutable
+  in order to ensure unremovable them except uninstaller.
 - Added `--lint-complex-modifications` option into `karabiner_cli`.
   It allows you checks a complex-modifications json file.
 
