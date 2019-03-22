@@ -1,0 +1,36 @@
+[
+    {
+        "device_id": 1,
+        "event": {
+            "key_code": 20000,
+            "type": "key_code"
+        },
+        "event_type": "key_down",
+        "lazy": false,
+        "original_event": {
+            "key_code": 20000,
+            "type": "key_code"
+        },
+        "event_time_stamp": {
+            "time_stamp": 2
+        },
+        "valid": true
+    },
+    {
+        "device_id": 1,
+        "event": {
+            "key_code": 20000,
+            "type": "key_code"
+        },
+        "event_type": "key_up",
+        "lazy": false,
+        "original_event": {
+            "key_code": 20000,
+            "type": "key_code"
+        },
+        "event_time_stamp": {
+            "time_stamp": 4
+        },
+        "valid": true
+    }
+]

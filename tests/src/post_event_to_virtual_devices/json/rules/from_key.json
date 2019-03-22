@@ -51,8 +51,7 @@
         ]
     },
     {
-        "description":
-            "f4 -> left_command+left_option (key to modifier+modifier)",
+        "description": "f4 -> left_command+left_option (key to modifier+modifier)",
         "type": "basic",
         "from": {
             "key_code": "f4",
@@ -103,8 +102,7 @@
         ]
     },
     {
-        "description":
-            "right_option+f7 -> right_command+spacebar (modifier+key to modifier+key)",
+        "description": "right_option+f7 -> right_command+spacebar (modifier+key to modifier+key)",
         "type": "basic",
         "from": {
             "key_code": "f7",
@@ -121,8 +119,7 @@
         ]
     },
     {
-        "description":
-            "right_option+f8 -> right_command+right_control (modifier+key to modifier+modifier)",
+        "description": "right_option+f8 -> right_command+right_control (modifier+key to modifier+modifier)",
         "type": "basic",
         "from": {
             "key_code": "f8",
@@ -137,5 +134,15 @@
                 "modifiers": ["right_command"]
             }
         ]
+    },
+    {
+        "description": "key_code(20000) -> escape",
+        "type": "basic",
+        "from": {
+            "key_code": 20000
+        },
+        "to": {
+            "key_code": "escape"
+        }
     }
 ]
