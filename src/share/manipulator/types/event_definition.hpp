@@ -142,12 +142,8 @@ public:
         throw pqrs::json::unmarshal_error(fmt::format("`{0}` must be string, but is `{1}`", key, value.dump()));
       }
 
-      if (auto key_code = types::make_key_code(value.get<std::string>())) {
-        type_ = type::key_code;
-        value_ = *key_code;
-      } else {
-        throw pqrs::json::unmarshal_error(fmt::format("unknown `{0}`: `{1}`", key, value.dump()));
-      }
+      type_ = type::key_code;
+      value_ = value.get<key_code>();
 
       return true;
     }

@@ -70,9 +70,7 @@ public:
           if (key == "type") {
             result.type_ = to_type(value.get<std::string>());
           } else if (key == "key_code") {
-            if (auto v = types::make_key_code(value.get<std::string>())) {
-              result.value_ = *v;
-            }
+            result.value_ = value.get<key_code>();
           } else if (key == "consumer_key_code") {
             if (auto v = types::make_consumer_key_code(value.get<std::string>())) {
               result.value_ = *v;
