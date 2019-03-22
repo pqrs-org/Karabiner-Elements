@@ -47,17 +47,13 @@ public:
       }
 
       if (auto key_code = types::make_key_code(hid_usage_page, hid_usage(k))) {
-        if (auto key_code_name = types::make_key_code_name(*key_code)) {
-          json.push_back(*key_code_name);
-          continue;
-        }
+        json.push_back(types::make_key_code_name(*key_code));
+        continue;
       }
 
       if (auto consumer_key_code = types::make_consumer_key_code(hid_usage_page, hid_usage(k))) {
-        if (auto consumer_key_code_name = types::make_consumer_key_code_name(*consumer_key_code)) {
-          json.push_back(*consumer_key_code_name);
-          continue;
-        }
+        json.push_back(types::make_consumer_key_code_name(*consumer_key_code));
+        continue;
       }
 
       json.push_back(k);
@@ -71,9 +67,7 @@ public:
 
     for (int i = 1; i <= static_cast<int>(pointing_button::end_); ++i) {
       if (v.exists(i)) {
-        if (auto pointing_button_name = types::make_pointing_button_name(pointing_button(i))) {
-          json.push_back(*pointing_button_name);
-        }
+        json.push_back(types::make_pointing_button_name(pointing_button(i)));
       }
     }
 

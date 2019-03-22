@@ -138,12 +138,12 @@ public:
     if (key == "key_code") {
       check_type(json);
 
-      if (!value.is_string()) {
-        throw pqrs::json::unmarshal_error(fmt::format("`{0}` must be string, but is `{1}`", key, value.dump()));
+      try {
+        type_ = type::key_code;
+        value_ = value.get<key_code>();
+      } catch (const pqrs::json::unmarshal_error& e) {
+        throw pqrs::json::unmarshal_error(fmt::format("`{0}` error: {1}", key, e.what()));
       }
-
-      type_ = type::key_code;
-      value_ = value.get<key_code>();
 
       return true;
     }
@@ -154,15 +154,11 @@ public:
     if (key == "consumer_key_code") {
       check_type(json);
 
-      if (!value.is_string()) {
-        throw pqrs::json::unmarshal_error(fmt::format("`{0}` must be string, but is `{1}`", key, value.dump()));
-      }
-
-      if (auto consumer_key_code = types::make_consumer_key_code(value.get<std::string>())) {
+      try {
         type_ = type::consumer_key_code;
-        value_ = *consumer_key_code;
-      } else {
-        throw pqrs::json::unmarshal_error(fmt::format("unknown `{0}`: `{1}`", key, value.dump()));
+        value_ = value.get<consumer_key_code>();
+      } catch (const pqrs::json::unmarshal_error& e) {
+        throw pqrs::json::unmarshal_error(fmt::format("`{0}` error: {1}", key, e.what()));
       }
 
       return true;
@@ -174,15 +170,11 @@ public:
     if (key == "pointing_button") {
       check_type(json);
 
-      if (!value.is_string()) {
-        throw pqrs::json::unmarshal_error(fmt::format("`{0}` must be string, but is `{1}`", key, value.dump()));
-      }
-
-      if (auto pointing_button = types::make_pointing_button(value.get<std::string>())) {
+      try {
         type_ = type::pointing_button;
-        value_ = *pointing_button;
-      } else {
-        throw pqrs::json::unmarshal_error(fmt::format("unknown `{0}`: `{1}`", key, value.dump()));
+        value_ = value.get<pointing_button>();
+      } catch (const pqrs::json::unmarshal_error& e) {
+        throw pqrs::json::unmarshal_error(fmt::format("`{0}` error: {1}", key, e.what()));
       }
 
       return true;

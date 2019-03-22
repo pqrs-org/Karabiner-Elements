@@ -12,9 +12,9 @@
     {
         "class": "from_event_definition",
         "input": {
-            "key_code": 1234
+            "key_code": null
         },
-        "error": "`key_code` must be string, but is `1234`"
+        "error": "`key_code` error: json must be string or number, but is `null`"
     },
 
     // from_event_definition.simultaneous

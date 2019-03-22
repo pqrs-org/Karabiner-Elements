@@ -344,13 +344,13 @@ inline std::optional<key_code> make_key_code(const std::string& name) {
   return it->second;
 }
 
-inline std::optional<std::string> make_key_code_name(key_code key_code) {
+inline std::string make_key_code_name(key_code key_code) {
   for (const auto& pair : get_key_code_name_value_pairs()) {
     if (pair.second == key_code) {
       return pair.first;
     }
   }
-  return std::nullopt;
+  return fmt::format("(number:{0})", static_cast<uint32_t>(key_code));
 }
 
 inline std::optional<key_code> make_key_code(hid_usage_page usage_page, hid_usage usage) {
@@ -636,13 +636,13 @@ inline std::optional<consumer_key_code> make_consumer_key_code(const std::string
   return it->second;
 }
 
-inline std::optional<std::string> make_consumer_key_code_name(consumer_key_code consumer_key_code) {
+inline std::string make_consumer_key_code_name(consumer_key_code consumer_key_code) {
   for (const auto& pair : get_consumer_key_code_name_value_pairs()) {
     if (pair.second == consumer_key_code) {
       return pair.first;
     }
   }
-  return std::nullopt;
+  return fmt::format("(number:{0})", static_cast<uint32_t>(consumer_key_code));
 }
 
 inline std::optional<consumer_key_code> make_consumer_key_code(hid_usage_page usage_page, hid_usage usage) {
@@ -767,13 +767,13 @@ inline std::optional<pointing_button> make_pointing_button(const std::string& na
   return it->second;
 }
 
-inline std::optional<std::string> make_pointing_button_name(pointing_button pointing_button) {
+inline std::string make_pointing_button_name(pointing_button pointing_button) {
   for (const auto& pair : get_pointing_button_name_value_pairs()) {
     if (pair.second == pointing_button) {
       return pair.first;
     }
   }
-  return std::nullopt;
+  return fmt::format("(number:{0})", static_cast<uint32_t>(pointing_button));
 }
 
 inline std::optional<pointing_button> make_pointing_button(hid_usage_page usage_page, hid_usage usage) {
@@ -817,6 +817,20 @@ inline void from_json(const nlohmann::json& json, consumer_key_code& value) {
     }
   } else if (json.is_number()) {
     value = consumer_key_code(json.get<uint32_t>());
+  } else {
+    throw pqrs::json::unmarshal_error(fmt::format("json must be string or number, but is `{0}`", json.dump()));
+  }
+}
+
+inline void from_json(const nlohmann::json& json, pointing_button& value) {
+  if (json.is_string()) {
+    if (auto v = types::make_pointing_button(json.get<std::string>())) {
+      value = *v;
+    } else {
+      throw pqrs::json::unmarshal_error(fmt::format("unknown pointing_button: `{0}`", json.dump()));
+    }
+  } else if (json.is_number()) {
+    value = pointing_button(json.get<uint32_t>());
   } else {
     throw pqrs::json::unmarshal_error(fmt::format("json must be string or number, but is `{0}`", json.dump()));
   }

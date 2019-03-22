@@ -72,13 +72,9 @@ public:
           } else if (key == "key_code") {
             result.value_ = value.get<key_code>();
           } else if (key == "consumer_key_code") {
-            if (auto v = types::make_consumer_key_code(value.get<std::string>())) {
-              result.value_ = *v;
-            }
+            result.value_ = value.get<consumer_key_code>();
           } else if (key == "pointing_button") {
-            if (auto v = types::make_pointing_button(value.get<std::string>())) {
-              result.value_ = *v;
-            }
+            result.value_ = value.get<pointing_button>();
           } else if (key == "pointing_motion") {
             result.value_ = value.get<pointing_motion>();
           } else if (key == "caps_lock_state_changed") {
@@ -118,25 +114,19 @@ public:
 
       case type::key_code:
         if (auto v = get_key_code()) {
-          if (auto s = types::make_key_code_name(*v)) {
-            json["key_code"] = *s;
-          }
+          json["key_code"] = types::make_key_code_name(*v);
         }
         break;
 
       case type::consumer_key_code:
         if (auto v = get_consumer_key_code()) {
-          if (auto s = types::make_consumer_key_code_name(*v)) {
-            json["consumer_key_code"] = *s;
-          }
+          json["consumer_key_code"] = types::make_consumer_key_code_name(*v);
         }
         break;
 
       case type::pointing_button:
         if (auto v = get_pointing_button()) {
-          if (auto s = types::make_pointing_button_name(*v)) {
-            json["pointing_button"] = *s;
-          }
+          json["pointing_button"] = types::make_pointing_button_name(*v);
         }
         break;
 

@@ -15,14 +15,14 @@
         "input": {
             "key_code": null
         },
-        "error": "`key_code` must be string, but is `null`"
+        "error": "`key_code` error: json must be string or number, but is `null`"
     },
     {
         "class": "event_definition",
         "input": {
             "key_code": "unknown_key_code"
         },
-        "error": "unknown key_code: `\"unknown_key_code\"`"
+        "error": "`key_code` error: unknown key_code: `\"unknown_key_code\"`"
     },
 
     // consumer_key_code
@@ -32,14 +32,14 @@
         "input": {
             "consumer_key_code": null
         },
-        "error": "`consumer_key_code` must be string, but is `null`"
+        "error": "`consumer_key_code` error: json must be string or number, but is `null`"
     },
     {
         "class": "event_definition",
         "input": {
             "consumer_key_code": "unknown_consumer_key_code"
         },
-        "error": "unknown `consumer_key_code`: `\"unknown_consumer_key_code\"`"
+        "error": "`consumer_key_code` error: unknown consumer_key_code: `\"unknown_consumer_key_code\"`"
     },
 
     // pointing_button
@@ -49,14 +49,14 @@
         "input": {
             "pointing_button": null
         },
-        "error": "`pointing_button` must be string, but is `null`"
+        "error": "`pointing_button` error: json must be string or number, but is `null`"
     },
     {
         "class": "event_definition",
         "input": {
             "pointing_button": "unknown_pointing_button"
         },
-        "error": "unknown `pointing_button`: `\"unknown_pointing_button\"`"
+        "error": "`pointing_button` error: unknown pointing_button: `\"unknown_pointing_button\"`"
     },
 
     // any
