@@ -49,13 +49,13 @@ TEST_CASE("make_key_code") {
         "json must be string or number, but is `null`");
   }
   {
-    nlohmann::json json("unknown_key_code");
+    nlohmann::json json("unknown_value");
     REQUIRE_THROWS_AS(
         krbn::key_code(json),
         pqrs::json::unmarshal_error);
     REQUIRE_THROWS_WITH(
         krbn::key_code(json),
-        "unknown key_code: `\"unknown_key_code\"`");
+        "unknown key_code: `\"unknown_value\"`");
   }
 }
 
@@ -103,6 +103,35 @@ TEST_CASE("make_consumer_key_code") {
 
   REQUIRE(krbn::types::make_hid_usage_page(krbn::consumer_key_code::mute) == krbn::hid_usage_page::consumer);
   REQUIRE(krbn::types::make_hid_usage(krbn::consumer_key_code::mute) == krbn::hid_usage::csmr_mute);
+
+  // from_json
+
+  {
+    nlohmann::json json("mute");
+    REQUIRE(krbn::consumer_key_code(json) == krbn::consumer_key_code::mute);
+  }
+  {
+    nlohmann::json json(static_cast<uint32_t>(krbn::consumer_key_code::mute));
+    REQUIRE(krbn::consumer_key_code(json) == krbn::consumer_key_code::mute);
+  }
+  {
+    nlohmann::json json;
+    REQUIRE_THROWS_AS(
+        krbn::consumer_key_code(json),
+        pqrs::json::unmarshal_error);
+    REQUIRE_THROWS_WITH(
+        krbn::key_code(json),
+        "json must be string or number, but is `null`");
+  }
+  {
+    nlohmann::json json("unknown_value");
+    REQUIRE_THROWS_AS(
+        krbn::consumer_key_code(json),
+        pqrs::json::unmarshal_error);
+    REQUIRE_THROWS_WITH(
+        krbn::consumer_key_code(json),
+        "unknown consumer_key_code: `\"unknown_value\"`");
+  }
 }
 
 TEST_CASE("make_pointing_button") {

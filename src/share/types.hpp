@@ -807,4 +807,18 @@ inline void from_json(const nlohmann::json& json, key_code& value) {
     throw pqrs::json::unmarshal_error(fmt::format("json must be string or number, but is `{0}`", json.dump()));
   }
 }
+
+inline void from_json(const nlohmann::json& json, consumer_key_code& value) {
+  if (json.is_string()) {
+    if (auto v = types::make_consumer_key_code(json.get<std::string>())) {
+      value = *v;
+    } else {
+      throw pqrs::json::unmarshal_error(fmt::format("unknown consumer_key_code: `{0}`", json.dump()));
+    }
+  } else if (json.is_number()) {
+    value = consumer_key_code(json.get<uint32_t>());
+  } else {
+    throw pqrs::json::unmarshal_error(fmt::format("json must be string or number, but is `{0}`", json.dump()));
+  }
+}
 } // namespace krbn
