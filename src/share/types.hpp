@@ -793,4 +793,18 @@ inline std::optional<pointing_button> make_pointing_button(const hid_value& hid_
   return std::nullopt;
 }
 } // namespace types
+
+inline void from_json(const nlohmann::json& json, key_code& value) {
+  if (json.is_string()) {
+    if (auto v = types::make_key_code(json.get<std::string>())) {
+      value = *v;
+    } else {
+      throw pqrs::json::unmarshal_error(fmt::format("unknown key_code: `{0}`", json.dump()));
+    }
+  } else if (json.is_number()) {
+    value = key_code(json.get<uint32_t>());
+  } else {
+    throw pqrs::json::unmarshal_error(fmt::format("json must be string or number, but is `{0}`", json.dump()));
+  }
+}
 } // namespace krbn

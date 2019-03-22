@@ -28,6 +28,35 @@ TEST_CASE("make_key_code") {
                                              krbn::hid_usage(1));
     REQUIRE(actual == std::nullopt);
   }
+
+  // from_json
+
+  {
+    nlohmann::json json("escape");
+    REQUIRE(krbn::key_code(json) == krbn::key_code::escape);
+  }
+  {
+    nlohmann::json json(static_cast<uint32_t>(krbn::key_code::escape));
+    REQUIRE(krbn::key_code(json) == krbn::key_code::escape);
+  }
+  {
+    nlohmann::json json;
+    REQUIRE_THROWS_AS(
+        krbn::key_code(json),
+        pqrs::json::unmarshal_error);
+    REQUIRE_THROWS_WITH(
+        krbn::key_code(json),
+        "json must be string or number, but is `null`");
+  }
+  {
+    nlohmann::json json("unknown_key_code");
+    REQUIRE_THROWS_AS(
+        krbn::key_code(json),
+        pqrs::json::unmarshal_error);
+    REQUIRE_THROWS_WITH(
+        krbn::key_code(json),
+        "unknown key_code: `\"unknown_key_code\"`");
+  }
 }
 
 TEST_CASE("make_key_code (modifier_flag)") {
