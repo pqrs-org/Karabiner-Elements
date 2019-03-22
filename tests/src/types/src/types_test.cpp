@@ -9,6 +9,9 @@ TEST_CASE("make_key_code") {
   REQUIRE(krbn::types::make_key_code_name(krbn::key_code::left_option) == std::string("left_alt"));
   REQUIRE(krbn::types::make_key_code_name(krbn::key_code::extra_) == std::string("(number:65536)"));
 
+  REQUIRE(krbn::types::make_hid_usage_page(krbn::key_code(1234)) == krbn::hid_usage_page::keyboard_or_keypad);
+  REQUIRE(krbn::types::make_hid_usage(krbn::key_code(1234)) == krbn::hid_usage(1234));
+
   {
     auto actual = krbn::types::make_key_code(krbn::hid_usage_page(kHIDPage_KeyboardOrKeypad),
                                              krbn::hid_usage(kHIDUsage_KeyboardTab));
@@ -23,6 +26,11 @@ TEST_CASE("make_key_code") {
     auto actual = krbn::types::make_key_code(krbn::hid_usage_page(krbn::kHIDPage_AppleVendorKeyboard),
                                              krbn::hid_usage(krbn::kHIDUsage_AppleVendorKeyboard_Function));
     REQUIRE(*actual == krbn::key_code::fn);
+  }
+  {
+    auto actual = krbn::types::make_key_code(krbn::hid_usage_page::keyboard_or_keypad,
+                                             krbn::hid_usage(1234));
+    REQUIRE(*actual == krbn::key_code(1234));
   }
   {
     auto actual = krbn::types::make_key_code(krbn::hid_usage_page(kHIDPage_Button),
