@@ -8,7 +8,7 @@
 
 namespace krbn {
 namespace manipulator {
-class event_definition {
+class event_definition final {
 public:
   enum class type {
     none,
@@ -37,7 +37,7 @@ public:
                            value_(mpark::monostate()) {
   }
 
-  virtual ~event_definition(void) {
+  ~event_definition(void) {
   }
 
   type get_type(void) const {
@@ -332,13 +332,13 @@ public:
     return false;
   }
 
+private:
   void check_type(const nlohmann::json& json) const {
     if (type_ != type::none) {
       throw pqrs::json::unmarshal_error(fmt::format("multiple types are specified: `{0}`", json.dump()));
     }
   }
 
-protected:
   type type_;
   value_t value_;
 };
