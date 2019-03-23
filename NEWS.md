@@ -8,6 +8,10 @@
   <https://pqrs.org/osx/karabiner/document.html#uninstall>
 - Added `--lint-complex-modifications` option into `karabiner_cli`.
   It allows you checks a complex-modifications json file.
+- Changes for users who write their own json.
+  - `to` and `to_*` support single object, e.g., `"to": { "key_code": "spacebar" }`.
+  - New modifier aliases are added: `left_alt`, `left_gui`, `right_alt`, `right_gui`.
+  - `key_code`, `consumer_key_code` and `pointing_button` supports a number value, e.g., `"from": {"key_code": 175}`.
 
 ## Version 12.2.0
 
