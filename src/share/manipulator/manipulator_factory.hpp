@@ -10,6 +10,7 @@
 #include "json_utility.hpp"
 #include "manipulator/manipulators/base.hpp"
 #include "manipulator/manipulators/basic/basic.hpp"
+#include "manipulator/manipulators/mouse_motion_to_scroll.hpp"
 #include "manipulator/manipulators/nop.hpp"
 #include "manipulator/types.hpp"
 #include <memory>
@@ -29,6 +30,9 @@ inline std::shared_ptr<manipulators::base> make_manipulator(const nlohmann::json
   if (type == "basic") {
     return std::make_shared<manipulators::basic::basic>(json,
                                                         parameters);
+  } else if (type == "mouse_motion_to_scroll") {
+    return std::make_shared<manipulators::mouse_motion_to_scroll>(json,
+                                                                  parameters);
   } else {
     throw pqrs::json::unmarshal_error(fmt::format("unknown type `{0}`", type));
   }
