@@ -11,7 +11,9 @@ namespace manipulators {
 class mouse_motion_to_scroll final : public base, public pqrs::dispatcher::extra::dispatcher_client {
 public:
   mouse_motion_to_scroll(const nlohmann::json& json,
-                         const core_configuration::details::complex_modifications_parameters& parameters) : base() {
+                         const core_configuration::details::complex_modifications_parameters& parameters) : base(),
+                                                                                                            accumulated_x_(0),
+                                                                                                            accumulated_y_(0) {
     try {
       if (!json.is_object()) {
         throw pqrs::json::unmarshal_error(fmt::format("json must be object, but is `{0}`", json.dump()));
@@ -69,11 +71,37 @@ public:
       if (auto new_event = make_new_event(front_input_event, output_event_queue)) {
         front_input_event.set_valid(false);
 
-        output_event_queue->emplace_back_entry(front_input_event.get_device_id(),
-                                               front_input_event.get_event_time_stamp(),
-                                               *new_event,
-                                               event_type::single,
-                                               front_input_event.get_original_event());
+        auto& from_mandatory_modifiers = new_event->second;
+        absolute_time_duration time_stamp_delay;
+
+        // Post from_mandatory_modifiers key_up
+
+        post_lazy_modifier_key_events(front_input_event,
+                                      from_mandatory_modifiers,
+                                      event_type::key_up,
+                                      time_stamp_delay,
+                                      *output_event_queue);
+
+        // Post new event
+
+        {
+          auto t = front_input_event.get_event_time_stamp();
+          t.set_time_stamp(t.get_time_stamp() + time_stamp_delay++);
+
+          output_event_queue->emplace_back_entry(front_input_event.get_device_id(),
+                                                 t,
+                                                 new_event->first,
+                                                 event_type::single,
+                                                 front_input_event.get_original_event());
+        }
+
+        // Post from_mandatory_modifiers key_down
+
+        post_lazy_modifier_key_events(front_input_event,
+                                      from_mandatory_modifiers,
+                                      event_type::key_down,
+                                      time_stamp_delay,
+                                      *output_event_queue);
 
         return manipulate_result::manipulated;
       }
@@ -104,16 +132,20 @@ public:
   }
 
 private:
-  std::optional<event_queue::event> make_new_event(const event_queue::entry& front_input_event,
-                                                   const std::shared_ptr<event_queue::queue>& output_event_queue) const {
+  using new_event_t = std::pair<event_queue::event, std::unordered_set<modifier_flag>>;
+
+  std::optional<new_event_t> make_new_event(const event_queue::entry& front_input_event,
+                                            const std::shared_ptr<event_queue::queue>& output_event_queue) {
     if (output_event_queue) {
       if (auto m = front_input_event.get_event().find<pointing_motion>()) {
         if (m->get_x() != 0 ||
             m->get_y() != 0) {
+          std::unordered_set<modifier_flag> from_mandatory_modifiers;
+
           // Check mandatory_modifiers and conditions
 
           if (auto modifiers = from_modifiers_definition_.test_modifiers(output_event_queue->get_modifier_flag_manager())) {
-            // from_mandatory_modifiers = *modifiers;
+            from_mandatory_modifiers = *modifiers;
           } else {
             return std::nullopt;
           }
@@ -123,7 +155,18 @@ private:
             return std::nullopt;
           }
 
-          return event_queue::event(pointing_motion(0, 0, m->get_x(), m->get_y()));
+          accumulated_x_ += m->get_x();
+          accumulated_y_ += m->get_y();
+
+          int divisor = 16;
+          int vertical_wheel = accumulated_y_ / divisor;
+          int horizontal_wheel = accumulated_x_ / divisor;
+          accumulated_x_ -= horizontal_wheel * divisor;
+          accumulated_y_ -= vertical_wheel * divisor;
+
+          return std::make_pair(
+              event_queue::event(pointing_motion(0, 0, -vertical_wheel, horizontal_wheel)),
+              from_mandatory_modifiers);
         }
       }
     }
@@ -131,7 +174,30 @@ private:
     return std::nullopt;
   }
 
+  void post_lazy_modifier_key_events(const event_queue::entry& front_input_event,
+                                     const std::unordered_set<modifier_flag>& modifiers,
+                                     event_type event_type,
+                                     absolute_time_duration& time_stamp_delay,
+                                     event_queue::queue& output_event_queue) {
+    for (const auto& m : modifiers) {
+      if (auto key_code = types::make_key_code(m)) {
+        auto t = front_input_event.get_event_time_stamp();
+        t.set_time_stamp(t.get_time_stamp() + time_stamp_delay++);
+
+        event_queue::entry event(front_input_event.get_device_id(),
+                                 t,
+                                 event_queue::event(*key_code),
+                                 event_type,
+                                 front_input_event.get_original_event(),
+                                 true);
+        output_event_queue.push_back_entry(event);
+      }
+    }
+  }
+
   from_modifiers_definition from_modifiers_definition_;
+  int accumulated_x_;
+  int accumulated_y_;
 };
 } // namespace manipulators
 } // namespace manipulator
