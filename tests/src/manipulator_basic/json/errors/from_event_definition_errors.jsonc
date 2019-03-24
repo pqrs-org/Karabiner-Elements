@@ -71,51 +71,6 @@
         },
         "error": "`modifiers` must be object, but is `null`"
     },
-    {
-        "class": "from_event_definition",
-        "input": {
-            "modifiers": {
-                "mandatory": null
-            }
-        },
-        "error": "`modifiers.mandatory` error: json must be array or string, but is `null`"
-    },
-    {
-        "class": "from_event_definition",
-        "input": {
-            "modifiers": {
-                "mandatory": [null]
-            }
-        },
-        "error": "`modifiers.mandatory` error: `modifier` must be string, but is `null`"
-    },
-    {
-        "class": "from_event_definition",
-        "input": {
-            "modifiers": {
-                "optional": null
-            }
-        },
-        "error": "`modifiers.optional` error: json must be array or string, but is `null`"
-    },
-    {
-        "class": "from_event_definition",
-        "input": {
-            "modifiers": {
-                "optional": [null]
-            }
-        },
-        "error": "`modifiers.optional` error: `modifier` must be string, but is `null`"
-    },
-    {
-        "class": "from_event_definition",
-        "input": {
-            "modifiers": {
-                "Optional": [null]
-            }
-        },
-        "error": "`modifiers` error: unknown key `Optional` in `{\"Optional\":[null]}`"
-    },
 
     // unknown key
 

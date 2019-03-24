@@ -11,6 +11,11 @@ void handle_json(const nlohmann::json& json) {
     for (const auto& [key, value] : json.at("input").items()) {
       event_definition.handle_json(key, value, json.at("input"));
     }
+  } else if (c == "from_modifiers_definition") {
+    krbn::manipulator::from_modifiers_definition d;
+    for (const auto& [key, value] : json.at("input").items()) {
+      d.handle_json(key, value, json.at("input"));
+    }
   } else if (c == "modifier") {
     json.at("input").get<krbn::manipulator::modifier_definition::modifier>();
   } else if (c == "modifier_definition") {
