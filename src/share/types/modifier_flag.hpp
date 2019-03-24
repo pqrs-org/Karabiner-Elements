@@ -1,6 +1,5 @@
 #pragma once
 
-#include "stream_utility.hpp"
 #include <cstdint>
 
 namespace krbn {
@@ -19,39 +18,36 @@ enum class modifier_flag : uint32_t {
   end_,
 };
 
-inline std::ostream& operator<<(std::ostream& stream, const modifier_flag& value) {
-#define KRBN_MODIFIER_FLAG_STREAM_OUTPUT(NAME) \
-  case modifier_flag::NAME:                    \
-    stream << #NAME;                           \
-    break;
-
-  switch (value) {
-    KRBN_MODIFIER_FLAG_STREAM_OUTPUT(zero);
-    KRBN_MODIFIER_FLAG_STREAM_OUTPUT(caps_lock);
-    KRBN_MODIFIER_FLAG_STREAM_OUTPUT(left_control);
-    KRBN_MODIFIER_FLAG_STREAM_OUTPUT(left_shift);
-    KRBN_MODIFIER_FLAG_STREAM_OUTPUT(left_option);
-    KRBN_MODIFIER_FLAG_STREAM_OUTPUT(left_command);
-    KRBN_MODIFIER_FLAG_STREAM_OUTPUT(right_control);
-    KRBN_MODIFIER_FLAG_STREAM_OUTPUT(right_shift);
-    KRBN_MODIFIER_FLAG_STREAM_OUTPUT(right_option);
-    KRBN_MODIFIER_FLAG_STREAM_OUTPUT(right_command);
-    KRBN_MODIFIER_FLAG_STREAM_OUTPUT(fn);
-    KRBN_MODIFIER_FLAG_STREAM_OUTPUT(end_);
+inline void from_json(const nlohmann::json& json, modifier_flag& value) {
+  if (!json.is_string()) {
+    throw pqrs::json::unmarshal_error(fmt::format("json must be string, but is `{0}`", json.dump()));
   }
 
-#undef KRBN_MODIFIER_FLAG_STREAM_OUTPUT
-
-  return stream;
-}
-
-template <template <class T, class A> class container>
-inline std::ostream& operator<<(std::ostream& stream, const container<modifier_flag, std::allocator<modifier_flag>>& values) {
-  return stream_utility::output_enums(stream, values);
-}
-
-template <template <class T, class H, class K, class A> class container>
-inline std::ostream& operator<<(std::ostream& stream, const container<modifier_flag, std::hash<modifier_flag>, std::equal_to<modifier_flag>, std::allocator<modifier_flag>>& values) {
-  return stream_utility::output_enums(stream, values);
+  auto name = json.get<std::string>();
+  if (name == "zero") {
+    value = modifier_flag::zero;
+  } else if (name == "caps_lock") {
+    value = modifier_flag::caps_lock;
+  } else if (name == "left_control") {
+    value = modifier_flag::left_control;
+  } else if (name == "left_shift") {
+    value = modifier_flag::left_shift;
+  } else if (name == "left_option") {
+    value = modifier_flag::left_option;
+  } else if (name == "left_command") {
+    value = modifier_flag::left_command;
+  } else if (name == "right_control") {
+    value = modifier_flag::right_control;
+  } else if (name == "right_shift") {
+    value = modifier_flag::right_shift;
+  } else if (name == "right_option") {
+    value = modifier_flag::right_option;
+  } else if (name == "right_command") {
+    value = modifier_flag::right_command;
+  } else if (name == "fn") {
+    value = modifier_flag::fn;
+  } else {
+    throw pqrs::json::unmarshal_error(fmt::format("unknown modifier_flag: `{0}`", name));
+  }
 }
 } // namespace krbn
