@@ -1,54 +1,42 @@
 [
     {
         "class": "from_modifiers_definition",
-        "input": {
-            "modifiers": null
-        },
-        "error": "`modifiers` must be object, but is `null`"
+        "input": null,
+        "error": "json must be object, but is `null`"
     },
     {
         "class": "from_modifiers_definition",
         "input": {
-            "modifiers": {
-                "mandatory": null
-            }
+            "mandatory": null
         },
-        "error": "`modifiers.mandatory` error: json must be array or string, but is `null`"
+        "error": "`mandatory` error: json must be array or string, but is `null`"
     },
     {
         "class": "from_modifiers_definition",
         "input": {
-            "modifiers": {
-                "mandatory": [null]
-            }
+            "mandatory": [null]
         },
-        "error": "`modifiers.mandatory` error: `modifier` must be string, but is `null`"
+        "error": "`mandatory` error: `modifier` must be string, but is `null`"
     },
     {
         "class": "from_modifiers_definition",
         "input": {
-            "modifiers": {
-                "optional": null
-            }
+            "optional": null
         },
-        "error": "`modifiers.optional` error: json must be array or string, but is `null`"
+        "error": "`optional` error: json must be array or string, but is `null`"
     },
     {
         "class": "from_modifiers_definition",
         "input": {
-            "modifiers": {
-                "optional": [null]
-            }
+            "optional": [null]
         },
-        "error": "`modifiers.optional` error: `modifier` must be string, but is `null`"
+        "error": "`optional` error: `modifier` must be string, but is `null`"
     },
     {
         "class": "from_modifiers_definition",
         "input": {
-            "modifiers": {
-                "Optional": [null]
-            }
+            "Optional": [null]
         },
-        "error": "`modifiers` error: unknown key `Optional` in `{\"Optional\":[null]}`"
+        "error": "unknown key `Optional` in `{\"Optional\":[null]}`"
     }
 ]

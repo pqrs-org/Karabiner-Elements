@@ -2,9 +2,7 @@
     // empty
 
     {
-        "input": {
-            "modifiers": {}
-        },
+        "input": {},
         "tests": [
             {
                 "input": [],
@@ -21,9 +19,7 @@
 
     {
         "input": {
-            "modifiers": {
-                "mandatory": ["any"]
-            }
+            "mandatory": ["any"]
         },
         "tests": [
             {
@@ -45,7 +41,7 @@
 
     {
         "input": {
-            "modifiers": { "optional": ["any"] }
+            "optional": ["any"]
         },
         "tests": [
             {
@@ -67,10 +63,8 @@
 
     {
         "input": {
-            "modifiers": {
-                "mandatory": ["control"],
-                "optional": ["shift"]
-            }
+            "mandatory": ["control"],
+            "optional": ["shift"]
         },
         "tests": [
             {
@@ -94,10 +88,8 @@
 
     {
         "input": {
-            "modifiers": {
-                "mandatory": ["control"],
-                "optional": ["shift", "option"]
-            }
+            "mandatory": ["control"],
+            "optional": ["shift", "option"]
         },
         "tests": [
             {
@@ -127,9 +119,7 @@
 
     {
         "input": {
-            "modifiers": {
-                "mandatory": ["left_shift"]
-            }
+            "mandatory": ["left_shift"]
         },
         "tests": [
             {
@@ -155,10 +145,8 @@
 
     {
         "input": {
-            "modifiers": {
-                "mandatory": ["shift"],
-                "optional": ["any"]
-            }
+            "mandatory": ["shift"],
+            "optional": ["any"]
         },
         "tests": [
             {
@@ -193,9 +181,7 @@
 
     {
         "input": {
-            "modifiers": {
-                "mandatory": ["shift"]
-            }
+            "mandatory": ["shift"]
         },
         "tests": [
             {

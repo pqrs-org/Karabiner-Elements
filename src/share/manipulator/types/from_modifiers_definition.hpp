@@ -19,8 +19,16 @@ public:
     return mandatory_modifiers_;
   }
 
+  void set_mandatory_modifiers(const std::set<modifier_definition::modifier>& value) {
+    mandatory_modifiers_ = value;
+  }
+
   const std::set<modifier_definition::modifier>& get_optional_modifiers(void) const {
     return optional_modifiers_;
+  }
+
+  void set_optional_modifiers(const std::set<modifier_definition::modifier>& value) {
+    optional_modifiers_ = value;
   }
 
   std::optional<std::unordered_set<modifier_flag>> test_modifiers(const modifier_flag_manager& modifier_flag_manager) const {
@@ -101,48 +109,38 @@ public:
     return std::make_pair(false, modifier_flag::zero);
   }
 
-  bool handle_json(const std::string& key,
-                   const nlohmann::json& value,
-                   const nlohmann::json& json) {
-    if (key == "modifiers") {
-      if (!value.is_object()) {
-        throw pqrs::json::unmarshal_error(fmt::format("`{0}` must be object, but is `{1}`", key, value.dump()));
-      }
-
-      for (const auto& [k, v] : value.items()) {
-        // k is always std::string.
-
-        if (k == "mandatory") {
-          try {
-            mandatory_modifiers_ = modifier_definition::make_modifiers(v);
-          } catch (const pqrs::json::unmarshal_error& e) {
-            throw pqrs::json::unmarshal_error(fmt::format("`{0}.{1}` error: {2}", key, k, e.what()));
-          }
-
-        } else if (k == "optional") {
-          try {
-            optional_modifiers_ = modifier_definition::make_modifiers(v);
-          } catch (const pqrs::json::unmarshal_error& e) {
-            throw pqrs::json::unmarshal_error(fmt::format("`{0}.{1}` error: {2}", key, k, e.what()));
-          }
-
-        } else if (key == "description") {
-          // Do nothing
-
-        } else {
-          throw pqrs::json::unmarshal_error(fmt::format("`{0}` error: unknown key `{1}` in `{2}`", key, k, value.dump()));
-        }
-      }
-
-      return true;
-    }
-
-    return false;
-  }
-
 private:
   std::set<modifier_definition::modifier> mandatory_modifiers_;
   std::set<modifier_definition::modifier> optional_modifiers_;
 };
+
+inline void from_json(const nlohmann::json& json, from_modifiers_definition& value) {
+  if (!json.is_object()) {
+    throw pqrs::json::unmarshal_error(fmt::format("json must be object, but is `{0}`", json.dump()));
+  }
+
+  for (const auto& [k, v] : json.items()) {
+    if (k == "mandatory") {
+      try {
+        value.set_mandatory_modifiers(modifier_definition::make_modifiers(v));
+      } catch (const pqrs::json::unmarshal_error& e) {
+        throw pqrs::json::unmarshal_error(fmt::format("`{0}` error: {1}", k, e.what()));
+      }
+
+    } else if (k == "optional") {
+      try {
+        value.set_optional_modifiers(modifier_definition::make_modifiers(v));
+      } catch (const pqrs::json::unmarshal_error& e) {
+        throw pqrs::json::unmarshal_error(fmt::format("`{0}` error: {1}", k, e.what()));
+      }
+
+    } else if (k == "description") {
+      // Do nothing
+
+    } else {
+      throw pqrs::json::unmarshal_error(fmt::format("unknown key `{0}` in `{1}`", k, json.dump()));
+    }
+  }
+}
 } // namespace manipulator
 } // namespace krbn

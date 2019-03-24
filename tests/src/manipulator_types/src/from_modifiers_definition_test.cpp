@@ -21,15 +21,11 @@ TEST_CASE("from_event_definition") {
 
   {
     auto json = nlohmann::json::object({
-        {"modifiers", nlohmann::json::object({
-                          {"mandatory", nlohmann::json::array({"left_shift"})},
-                          {"optional", nlohmann::json::array({"any"})},
-                      })},
+        {"mandatory", nlohmann::json::array({"left_shift"})},
+        {"optional", nlohmann::json::array({"any"})},
     });
 
-    from_modifiers_definition d;
-    std::string key("modifiers");
-    REQUIRE(d.handle_json(key, json.at(key), json));
+    auto d = json.get<from_modifiers_definition>();
 
     REQUIRE(d.get_mandatory_modifiers() == std::set<modifier_definition::modifier>{
                                                modifier_definition::modifier::left_shift,
@@ -101,10 +97,7 @@ TEST_CASE("from_modifiers_definition::test_modifier") {
 TEST_CASE("from_event_definition.test_modifiers") {
   auto json = krbn::unit_testing::json_helper::load_jsonc("json/from_modifiers_definitions.jsonc");
   for (const auto& j : json) {
-    krbn::manipulator::from_modifiers_definition d;
-    for (const auto& [key, value] : j.at("input").items()) {
-      d.handle_json(key, value, j.at("input"));
-    }
+    auto d = j.at("input").get<krbn::manipulator::from_modifiers_definition>();
 
     for (const auto& t : j.at("tests")) {
       krbn::modifier_flag_manager modifier_flag_manager;

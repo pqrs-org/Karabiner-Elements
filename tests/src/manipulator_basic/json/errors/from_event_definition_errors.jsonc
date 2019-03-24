@@ -69,7 +69,7 @@
         "input": {
             "modifiers": null
         },
-        "error": "`modifiers` must be object, but is `null`"
+        "error": "`modifiers` error: json must be object, but is `null`"
     },
 
     // unknown key

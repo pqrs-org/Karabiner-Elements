@@ -126,7 +126,6 @@ inline void from_json(const nlohmann::json& json, from_event_definition& d) {
 
   std::vector<event_definition> event_definitions;
   event_definition default_event_definition;
-  from_modifiers_definition from_modifiers_definition;
 
   for (const auto& [key, value] : json.items()) {
     // key is always std::string.
@@ -134,8 +133,12 @@ inline void from_json(const nlohmann::json& json, from_event_definition& d) {
     if (default_event_definition.handle_json(key, value, json)) {
       // Do nothing
 
-    } else if (from_modifiers_definition.handle_json(key, value, json)) {
-      // Do nothing
+    } else if (key == "modifiers") {
+      try {
+        d.set_from_modifiers_definition(value.get<from_modifiers_definition>());
+      } catch (const pqrs::json::unmarshal_error& e) {
+        throw pqrs::json::unmarshal_error(fmt::format("`{0}` error: {1}", key, e.what()));
+      }
 
     } else if (key == "simultaneous") {
       if (!value.is_array()) {
@@ -207,7 +210,6 @@ inline void from_json(const nlohmann::json& json, from_event_definition& d) {
   }
 
   d.set_event_definitions(event_definitions);
-  d.set_from_modifiers_definition(from_modifiers_definition);
 }
 } // namespace basic
 } // namespace manipulators
