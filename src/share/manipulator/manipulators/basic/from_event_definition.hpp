@@ -26,20 +26,12 @@ public:
     event_definitions_ = value;
   }
 
-  const std::set<modifier_definition::modifier>& get_mandatory_modifiers(void) const {
-    return mandatory_modifiers_;
+  const from_modifiers_definition& get_from_modifiers_definition(void) const {
+    return from_modifiers_definition_;
   }
 
-  void set_mandatory_modifiers(const std::set<modifier_definition::modifier>& value) {
-    mandatory_modifiers_ = value;
-  }
-
-  const std::set<modifier_definition::modifier>& get_optional_modifiers(void) const {
-    return optional_modifiers_;
-  }
-
-  void set_optional_modifiers(const std::set<modifier_definition::modifier>& value) {
-    optional_modifiers_ = value;
+  void set_from_modifiers_definition(const from_modifiers_definition& value) {
+    from_modifiers_definition_ = value;
   }
 
   const simultaneous_options& get_simultaneous_options(void) const {
@@ -48,84 +40,6 @@ public:
 
   void set_simultaneous_options(const simultaneous_options& value) {
     simultaneous_options_ = value;
-  }
-
-  std::optional<std::unordered_set<modifier_flag>> test_modifiers(const modifier_flag_manager& modifier_flag_manager) const {
-    std::unordered_set<modifier_flag> modifier_flags;
-
-    // If mandatory_modifiers_ contains modifier::any, return all active modifier_flags.
-
-    if (mandatory_modifiers_.find(modifier_definition::modifier::any) != std::end(mandatory_modifiers_)) {
-      for (auto i = static_cast<uint32_t>(modifier_flag::zero) + 1; i != static_cast<uint32_t>(modifier_flag::end_); ++i) {
-        auto flag = modifier_flag(i);
-        if (modifier_flag_manager.is_pressed(flag)) {
-          modifier_flags.insert(flag);
-        }
-      }
-      return modifier_flags;
-    }
-
-    // Check modifier_flag state.
-
-    for (int i = 0; i < static_cast<int>(modifier_definition::modifier::end_); ++i) {
-      auto m = modifier_definition::modifier(i);
-
-      if (mandatory_modifiers_.find(m) != std::end(mandatory_modifiers_)) {
-        auto pair = test_modifier(modifier_flag_manager, m);
-        if (!pair.first) {
-          return std::nullopt;
-        }
-        if (pair.second != modifier_flag::zero) {
-          modifier_flags.insert(pair.second);
-        }
-      }
-    }
-
-    // If optional_modifiers_ does not contain modifier::any, we have to check modifier flags strictly.
-
-    if (optional_modifiers_.find(modifier_definition::modifier::any) == std::end(optional_modifiers_)) {
-      std::unordered_set<modifier_flag> extra_modifier_flags;
-      for (auto m = static_cast<uint32_t>(modifier_flag::zero) + 1; m != static_cast<uint32_t>(modifier_flag::end_); ++m) {
-        extra_modifier_flags.insert(modifier_flag(m));
-      }
-
-      for (int i = 0; i < static_cast<int>(modifier_definition::modifier::end_); ++i) {
-        auto m = modifier_definition::modifier(i);
-
-        if (mandatory_modifiers_.find(m) != std::end(mandatory_modifiers_) ||
-            optional_modifiers_.find(m) != std::end(optional_modifiers_)) {
-          for (const auto& flag : modifier_definition::get_modifier_flags(m)) {
-            extra_modifier_flags.erase(flag);
-          }
-        }
-      }
-
-      for (const auto& flag : extra_modifier_flags) {
-        if (modifier_flag_manager.is_pressed(flag)) {
-          return std::nullopt;
-        }
-      }
-    }
-
-    return modifier_flags;
-  }
-
-  static std::pair<bool, modifier_flag> test_modifier(const modifier_flag_manager& modifier_flag_manager,
-                                                      modifier_definition::modifier modifier) {
-    if (modifier == modifier_definition::modifier::any) {
-      return std::make_pair(true, modifier_flag::zero);
-    }
-
-    auto modifier_flags = modifier_definition::get_modifier_flags(modifier);
-    if (!modifier_flags.empty()) {
-      for (const auto& m : modifier_flags) {
-        if (modifier_flag_manager.is_pressed(m)) {
-          return std::make_pair(true, m);
-        }
-      }
-    }
-
-    return std::make_pair(false, modifier_flag::zero);
   }
 
   static bool test_event(const event_queue::event& event,
@@ -201,8 +115,7 @@ public:
 
 private:
   std::vector<event_definition> event_definitions_;
-  std::set<modifier_definition::modifier> mandatory_modifiers_;
-  std::set<modifier_definition::modifier> optional_modifiers_;
+  from_modifiers_definition from_modifiers_definition_;
   simultaneous_options simultaneous_options_;
 };
 
@@ -213,11 +126,15 @@ inline void from_json(const nlohmann::json& json, from_event_definition& d) {
 
   std::vector<event_definition> event_definitions;
   event_definition default_event_definition;
+  from_modifiers_definition from_modifiers_definition;
 
   for (const auto& [key, value] : json.items()) {
     // key is always std::string.
 
     if (default_event_definition.handle_json(key, value, json)) {
+      // Do nothing
+
+    } else if (from_modifiers_definition.handle_json(key, value, json)) {
       // Do nothing
 
     } else if (key == "simultaneous") {
@@ -256,36 +173,6 @@ inline void from_json(const nlohmann::json& json, from_event_definition& d) {
         throw pqrs::json::unmarshal_error(fmt::format("`{0}` error: {1}", key, e.what()));
       }
 
-    } else if (key == "modifiers") {
-      if (!value.is_object()) {
-        throw pqrs::json::unmarshal_error(fmt::format("`{0}` must be object, but is `{1}`", key, value.dump()));
-      }
-
-      for (const auto& [k, v] : value.items()) {
-        // k is always std::string.
-
-        if (k == "mandatory") {
-          try {
-            d.set_mandatory_modifiers(modifier_definition::make_modifiers(v));
-          } catch (const pqrs::json::unmarshal_error& e) {
-            throw pqrs::json::unmarshal_error(fmt::format("`{0}.{1}` error: {2}", key, k, e.what()));
-          }
-
-        } else if (k == "optional") {
-          try {
-            d.set_optional_modifiers(modifier_definition::make_modifiers(v));
-          } catch (const pqrs::json::unmarshal_error& e) {
-            throw pqrs::json::unmarshal_error(fmt::format("`{0}.{1}` error: {2}", key, k, e.what()));
-          }
-
-        } else if (key == "description") {
-          // Do nothing
-
-        } else {
-          throw pqrs::json::unmarshal_error(fmt::format("`{0}` error: unknown key `{1}` in `{2}`", key, k, value.dump()));
-        }
-      }
-
     } else {
       throw pqrs::json::unmarshal_error(fmt::format("`from` error: unknown key `{0}` in `{1}`", key, json.dump()));
     }
@@ -320,6 +207,7 @@ inline void from_json(const nlohmann::json& json, from_event_definition& d) {
   }
 
   d.set_event_definitions(event_definitions);
+  d.set_from_modifiers_definition(from_modifiers_definition);
 }
 } // namespace basic
 } // namespace manipulators

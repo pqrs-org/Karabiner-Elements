@@ -215,7 +215,7 @@ public:
               // Check mandatory_modifiers and conditions
 
               if (is_target) {
-                if (auto modifiers = from_.test_modifiers(output_event_queue->get_modifier_flag_manager())) {
+                if (auto modifiers = from_.get_from_modifiers_definition().test_modifiers(output_event_queue->get_modifier_flag_manager())) {
                   from_mandatory_modifiers = *modifiers;
                 } else {
                   is_target = false;
