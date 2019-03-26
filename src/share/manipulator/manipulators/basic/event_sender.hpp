@@ -26,27 +26,6 @@ inline bool is_last_to_event_modifier_key_event(const std::vector<to_event_defin
   return false;
 }
 
-inline void post_lazy_modifier_key_events(const event_queue::entry& front_input_event,
-                                          const std::unordered_set<modifier_flag>& modifiers,
-                                          event_type event_type,
-                                          absolute_time_duration& time_stamp_delay,
-                                          event_queue::queue& output_event_queue) {
-  for (const auto& m : modifiers) {
-    if (auto key_code = types::make_key_code(m)) {
-      auto t = front_input_event.get_event_time_stamp();
-      t.set_time_stamp(t.get_time_stamp() + time_stamp_delay++);
-
-      event_queue::entry event(front_input_event.get_device_id(),
-                               t,
-                               event_queue::event(*key_code),
-                               event_type,
-                               front_input_event.get_original_event(),
-                               true);
-      output_event_queue.push_back_entry(event);
-    }
-  }
-}
-
 inline void post_from_mandatory_modifiers_key_up(const event_queue::entry& front_input_event,
                                                  manipulated_original_event::manipulated_original_event& current_manipulated_original_event,
                                                  absolute_time_duration& time_stamp_delay,
@@ -91,11 +70,11 @@ inline void post_from_mandatory_modifiers_key_up(const event_queue::entry& front
 
   // ----------------------------------------
 
-  post_lazy_modifier_key_events(front_input_event,
-                                modifiers,
-                                event_type::key_up,
-                                time_stamp_delay,
-                                output_event_queue);
+  base::post_lazy_modifier_key_events(front_input_event,
+                                      modifiers,
+                                      event_type::key_up,
+                                      time_stamp_delay,
+                                      output_event_queue);
 }
 
 inline void post_from_mandatory_modifiers_key_down(const event_queue::entry& front_input_event,
@@ -120,11 +99,11 @@ inline void post_from_mandatory_modifiers_key_down(const event_queue::entry& fro
 
   // ----------------------------------------
 
-  post_lazy_modifier_key_events(front_input_event,
-                                modifiers,
-                                event_type::key_down,
-                                time_stamp_delay,
-                                output_event_queue);
+  base::post_lazy_modifier_key_events(front_input_event,
+                                      modifiers,
+                                      event_type::key_down,
+                                      time_stamp_delay,
+                                      output_event_queue);
 }
 
 inline void post_events_at_key_down(const event_queue::entry& front_input_event,

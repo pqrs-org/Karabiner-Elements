@@ -150,11 +150,11 @@ private:
 
           // Release from_mandatory_modifiers
 
-          event_sender::post_lazy_modifier_key_events(*front_input_event_,
-                                                      current_manipulated_original_event_->get_from_mandatory_modifiers(),
-                                                      event_type::key_up,
-                                                      time_stamp_delay,
-                                                      *oeq);
+          base::post_lazy_modifier_key_events(*front_input_event_,
+                                              current_manipulated_original_event_->get_from_mandatory_modifiers(),
+                                              event_type::key_up,
+                                              time_stamp_delay,
+                                              *oeq);
 
           // Post events
 
@@ -166,11 +166,11 @@ private:
 
           // Restore from_mandatory_modifiers
 
-          event_sender::post_lazy_modifier_key_events(*front_input_event_,
-                                                      current_manipulated_original_event_->get_from_mandatory_modifiers(),
-                                                      event_type::key_down,
-                                                      time_stamp_delay,
-                                                      *oeq);
+          base::post_lazy_modifier_key_events(*front_input_event_,
+                                              current_manipulated_original_event_->get_from_mandatory_modifiers(),
+                                              event_type::key_down,
+                                              time_stamp_delay,
+                                              *oeq);
 
           krbn_notification_center::get_instance().enqueue_input_event_arrived(*this);
         }
