@@ -71,46 +71,24 @@ public:
 
       // ----------------------------------------
 
-      if (auto new_event = make_new_event(front_input_event, output_event_queue)) {
-        front_input_event.set_valid(false);
+      auto from_mandatory_modifiers = test_conditions(front_input_event,
+                                                      output_event_queue);
+      if (!from_mandatory_modifiers) {
+        momentum_scroll_timer_.stop();
 
-        auto& from_mandatory_modifiers = new_event->second;
-        absolute_time_duration time_stamp_delay;
+      } else {
+        if (auto pointing_motion = make_pointing_motion(front_input_event)) {
+          front_input_event.set_valid(false);
 
-        // Post from_mandatory_modifiers key_up
+          post_events(*pointing_motion,
+                      *from_mandatory_modifiers,
+                      front_input_event.get_device_id(),
+                      front_input_event.get_event_time_stamp(),
+                      front_input_event.get_original_event(),
+                      output_event_queue);
 
-        base::post_lazy_modifier_key_events(from_mandatory_modifiers,
-                                            event_type::key_up,
-                                            front_input_event.get_device_id(),
-                                            front_input_event.get_event_time_stamp(),
-                                            time_stamp_delay,
-                                            front_input_event.get_original_event(),
-                                            *output_event_queue);
-
-        // Post new event
-
-        {
-          auto t = front_input_event.get_event_time_stamp();
-          t.set_time_stamp(t.get_time_stamp() + time_stamp_delay++);
-
-          output_event_queue->emplace_back_entry(front_input_event.get_device_id(),
-                                                 t,
-                                                 new_event->first,
-                                                 event_type::single,
-                                                 front_input_event.get_original_event());
+          return manipulate_result::manipulated;
         }
-
-        // Post from_mandatory_modifiers key_down
-
-        base::post_lazy_modifier_key_events(from_mandatory_modifiers,
-                                            event_type::key_down,
-                                            front_input_event.get_device_id(),
-                                            front_input_event.get_event_time_stamp(),
-                                            time_stamp_delay,
-                                            front_input_event.get_original_event(),
-                                            *output_event_queue);
-
-        return manipulate_result::manipulated;
       }
     }
 
@@ -139,46 +117,78 @@ public:
   }
 
 private:
-  using new_event_t = std::pair<event_queue::event, std::unordered_set<modifier_flag>>;
+  std::optional<std::unordered_set<modifier_flag>> test_conditions(const event_queue::entry& front_input_event,
+                                                                   const std::shared_ptr<event_queue::queue>& output_event_queue) {
+    if (!condition_manager_.is_fulfilled(front_input_event,
+                                         output_event_queue->get_manipulator_environment())) {
+      return std::nullopt;
+    }
 
-  std::optional<new_event_t> make_new_event(const event_queue::entry& front_input_event,
-                                            const std::shared_ptr<event_queue::queue>& output_event_queue) {
-    if (output_event_queue) {
-      if (auto m = front_input_event.get_event().find<pointing_motion>()) {
-        if (m->get_x() != 0 ||
-            m->get_y() != 0) {
-          std::unordered_set<modifier_flag> from_mandatory_modifiers;
+    return from_modifiers_definition_.test_modifiers(output_event_queue->get_modifier_flag_manager());
+  }
 
-          // Check mandatory_modifiers and conditions
+  std::optional<pointing_motion> make_pointing_motion(const event_queue::entry& front_input_event) {
+    if (auto m = front_input_event.get_event().find<pointing_motion>()) {
+      if (m->get_x() != 0 ||
+          m->get_y() != 0) {
+        accumulated_x_ += m->get_x();
+        accumulated_y_ += m->get_y();
 
-          if (auto modifiers = from_modifiers_definition_.test_modifiers(output_event_queue->get_modifier_flag_manager())) {
-            from_mandatory_modifiers = *modifiers;
-          } else {
-            return std::nullopt;
-          }
+        int divisor = 16;
+        int vertical_wheel = accumulated_y_ / divisor;
+        int horizontal_wheel = accumulated_x_ / divisor;
+        accumulated_x_ -= horizontal_wheel * divisor;
+        accumulated_y_ -= vertical_wheel * divisor;
 
-          if (!condition_manager_.is_fulfilled(front_input_event,
-                                               output_event_queue->get_manipulator_environment())) {
-            return std::nullopt;
-          }
-
-          accumulated_x_ += m->get_x();
-          accumulated_y_ += m->get_y();
-
-          int divisor = 16;
-          int vertical_wheel = accumulated_y_ / divisor;
-          int horizontal_wheel = accumulated_x_ / divisor;
-          accumulated_x_ -= horizontal_wheel * divisor;
-          accumulated_y_ -= vertical_wheel * divisor;
-
-          return std::make_pair(
-              event_queue::event(pointing_motion(0, 0, -vertical_wheel, horizontal_wheel)),
-              from_mandatory_modifiers);
-        }
+        return pointing_motion(0, 0, -vertical_wheel, horizontal_wheel);
       }
     }
 
     return std::nullopt;
+  }
+
+  void post_events(const pointing_motion& pointing_motion,
+                   const std::unordered_set<modifier_flag>& from_mandatory_modifiers,
+                   device_id device_id,
+                   const event_queue::event_time_stamp& event_time_stamp,
+                   const event_queue::event& original_event,
+                   std::shared_ptr<event_queue::queue> output_event_queue) {
+    if (output_event_queue) {
+      absolute_time_duration time_stamp_delay(0);
+
+      // Post from_mandatory_modifiers key_up
+
+      base::post_lazy_modifier_key_events(from_mandatory_modifiers,
+                                          event_type::key_up,
+                                          device_id,
+                                          event_time_stamp,
+                                          time_stamp_delay,
+                                          original_event,
+                                          *output_event_queue);
+
+      // Post new event
+
+      {
+        auto t = event_time_stamp;
+        t.set_time_stamp(t.get_time_stamp() + time_stamp_delay++);
+
+        output_event_queue->emplace_back_entry(device_id,
+                                               t,
+                                               event_queue::event(pointing_motion),
+                                               event_type::single,
+                                               original_event);
+      }
+
+      // Post from_mandatory_modifiers key_down
+
+      base::post_lazy_modifier_key_events(from_mandatory_modifiers,
+                                          event_type::key_down,
+                                          device_id,
+                                          event_time_stamp,
+                                          time_stamp_delay,
+                                          original_event,
+                                          *output_event_queue);
+    }
   }
 
   from_modifiers_definition from_modifiers_definition_;
