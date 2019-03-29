@@ -76,10 +76,12 @@ public:
 
         // Post from_mandatory_modifiers key_up
 
-        base::post_lazy_modifier_key_events(front_input_event,
-                                            from_mandatory_modifiers,
+        base::post_lazy_modifier_key_events(from_mandatory_modifiers,
                                             event_type::key_up,
+                                            front_input_event.get_device_id(),
+                                            front_input_event.get_event_time_stamp(),
                                             time_stamp_delay,
+                                            front_input_event.get_original_event(),
                                             *output_event_queue);
 
         // Post new event
@@ -97,10 +99,12 @@ public:
 
         // Post from_mandatory_modifiers key_down
 
-        base::post_lazy_modifier_key_events(front_input_event,
-                                            from_mandatory_modifiers,
+        base::post_lazy_modifier_key_events(from_mandatory_modifiers,
                                             event_type::key_down,
+                                            front_input_event.get_device_id(),
+                                            front_input_event.get_event_time_stamp(),
                                             time_stamp_delay,
+                                            front_input_event.get_original_event(),
                                             *output_event_queue);
 
         return manipulate_result::manipulated;

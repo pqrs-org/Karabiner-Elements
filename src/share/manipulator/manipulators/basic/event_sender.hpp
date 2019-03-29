@@ -70,10 +70,12 @@ inline void post_from_mandatory_modifiers_key_up(const event_queue::entry& front
 
   // ----------------------------------------
 
-  base::post_lazy_modifier_key_events(front_input_event,
-                                      modifiers,
+  base::post_lazy_modifier_key_events(modifiers,
                                       event_type::key_up,
+                                      front_input_event.get_device_id(),
+                                      front_input_event.get_event_time_stamp(),
                                       time_stamp_delay,
+                                      front_input_event.get_original_event(),
                                       output_event_queue);
 }
 
@@ -99,10 +101,12 @@ inline void post_from_mandatory_modifiers_key_down(const event_queue::entry& fro
 
   // ----------------------------------------
 
-  base::post_lazy_modifier_key_events(front_input_event,
-                                      modifiers,
+  base::post_lazy_modifier_key_events(modifiers,
                                       event_type::key_down,
+                                      front_input_event.get_device_id(),
+                                      front_input_event.get_event_time_stamp(),
                                       time_stamp_delay,
+                                      front_input_event.get_original_event(),
                                       output_event_queue);
 }
 

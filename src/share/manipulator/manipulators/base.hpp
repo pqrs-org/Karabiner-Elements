@@ -49,21 +49,23 @@ public:
     condition_manager_.push_back_condition(condition);
   }
 
-  static void post_lazy_modifier_key_events(const event_queue::entry& front_input_event,
-                                            const std::unordered_set<modifier_flag>& modifiers,
+  static void post_lazy_modifier_key_events(const std::unordered_set<modifier_flag>& modifiers,
                                             event_type event_type,
+                                            device_id device_id,
+                                            const event_queue::event_time_stamp& event_time_stamp,
                                             absolute_time_duration& time_stamp_delay,
+                                            const event_queue::event& original_event,
                                             event_queue::queue& output_event_queue) {
     for (const auto& m : modifiers) {
       if (auto key_code = types::make_key_code(m)) {
-        auto t = front_input_event.get_event_time_stamp();
+        auto t = event_time_stamp;
         t.set_time_stamp(t.get_time_stamp() + time_stamp_delay++);
 
-        event_queue::entry event(front_input_event.get_device_id(),
+        event_queue::entry event(device_id,
                                  t,
                                  event_queue::event(*key_code),
                                  event_type,
-                                 front_input_event.get_original_event(),
+                                 original_event,
                                  true);
         output_event_queue.push_back_entry(event);
       }

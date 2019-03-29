@@ -150,10 +150,12 @@ private:
 
           // Release from_mandatory_modifiers
 
-          base::post_lazy_modifier_key_events(*front_input_event_,
-                                              current_manipulated_original_event_->get_from_mandatory_modifiers(),
+          base::post_lazy_modifier_key_events(current_manipulated_original_event_->get_from_mandatory_modifiers(),
                                               event_type::key_up,
+                                              front_input_event_->get_device_id(),
+                                              front_input_event_->get_event_time_stamp(),
                                               time_stamp_delay,
+                                              front_input_event_->get_original_event(),
                                               *oeq);
 
           // Post events
@@ -166,10 +168,12 @@ private:
 
           // Restore from_mandatory_modifiers
 
-          base::post_lazy_modifier_key_events(*front_input_event_,
-                                              current_manipulated_original_event_->get_from_mandatory_modifiers(),
+          base::post_lazy_modifier_key_events(current_manipulated_original_event_->get_from_mandatory_modifiers(),
                                               event_type::key_down,
+                                              front_input_event_->get_device_id(),
+                                              front_input_event_->get_event_time_stamp(),
                                               time_stamp_delay,
+                                              front_input_event_->get_original_event(),
                                               *oeq);
 
           krbn_notification_center::get_instance().enqueue_input_event_arrived(*this);
