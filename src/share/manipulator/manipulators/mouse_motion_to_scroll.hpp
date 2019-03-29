@@ -13,7 +13,8 @@ public:
   mouse_motion_to_scroll(const nlohmann::json& json,
                          const core_configuration::details::complex_modifications_parameters& parameters) : base(),
                                                                                                             accumulated_x_(0),
-                                                                                                            accumulated_y_(0) {
+                                                                                                            accumulated_y_(0),
+                                                                                                            momentum_scroll_timer_(*this) {
     try {
       if (!json.is_object()) {
         throw pqrs::json::unmarshal_error(fmt::format("json must be object, but is `{0}`", json.dump()));
@@ -44,7 +45,9 @@ public:
   }
 
   virtual ~mouse_motion_to_scroll(void) {
-    detach_from_dispatcher();
+    detach_from_dispatcher([this] {
+      momentum_scroll_timer_.stop();
+    });
   }
 
   virtual bool already_manipulated(const event_queue::entry& front_input_event) {
@@ -181,6 +184,7 @@ private:
   from_modifiers_definition from_modifiers_definition_;
   int accumulated_x_;
   int accumulated_y_;
+  pqrs::dispatcher::extra::timer momentum_scroll_timer_;
 };
 } // namespace manipulators
 } // namespace manipulator
