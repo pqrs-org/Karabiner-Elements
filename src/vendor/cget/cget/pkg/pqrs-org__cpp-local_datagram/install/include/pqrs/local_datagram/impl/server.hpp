@@ -30,7 +30,7 @@ public:
   server(std::weak_ptr<dispatcher::dispatcher> weak_dispatcher) : dispatcher_client(weak_dispatcher),
                                                                   io_service_(),
                                                                   work_(std::make_unique<asio::io_service::work>(io_service_)),
-                                                                  socket_(io_service_),
+                                                                  socket_(std::make_unique<asio::local::datagram_protocol::socket>(io_service_)),
                                                                   bound_(false),
                                                                   server_check_timer_(*this) {
     io_service_thread_ = std::thread([this] {
@@ -63,8 +63,8 @@ public:
 
       {
         asio::error_code error_code;
-        socket_.open(asio::local::datagram_protocol::socket::protocol_type(),
-                     error_code);
+        socket_->open(asio::local::datagram_protocol::socket::protocol_type(),
+                      error_code);
         if (error_code) {
           enqueue_to_dispatcher([this, error_code] {
             bind_failed(error_code);
@@ -77,8 +77,8 @@ public:
 
       {
         asio::error_code error_code;
-        socket_.bind(asio::local::datagram_protocol::endpoint(path),
-                     error_code);
+        socket_->bind(asio::local::datagram_protocol::endpoint(path),
+                      error_code);
 
         if (error_code) {
           enqueue_to_dispatcher([this, error_code] {
@@ -122,8 +122,10 @@ private:
 
     asio::error_code error_code;
 
-    socket_.cancel(error_code);
-    socket_.close(error_code);
+    socket_->cancel(error_code);
+    socket_->close(error_code);
+
+    socket_ = std::make_unique<asio::local::datagram_protocol::socket>(io_service_);
 
     // Signal
 
@@ -138,24 +140,24 @@ private:
   }
 
   void async_receive(void) {
-    socket_.async_receive(asio::buffer(buffer_),
-                          [this](auto&& error_code, auto&& bytes_transferred) {
-                            if (!error_code) {
-                              auto v = std::make_shared<std::vector<uint8_t>>(bytes_transferred);
-                              std::copy(std::begin(buffer_),
-                                        std::begin(buffer_) + bytes_transferred,
-                                        std::begin(*v));
-                              enqueue_to_dispatcher([this, v] {
-                                received(v);
-                              });
-                            }
+    socket_->async_receive(asio::buffer(buffer_),
+                           [this](auto&& error_code, auto&& bytes_transferred) {
+                             if (!error_code) {
+                               auto v = std::make_shared<std::vector<uint8_t>>(bytes_transferred);
+                               std::copy(std::begin(buffer_),
+                                         std::begin(buffer_) + bytes_transferred,
+                                         std::begin(*v));
+                               enqueue_to_dispatcher([this, v] {
+                                 received(v);
+                               });
+                             }
 
-                            // receive once if not closed
+                             // receive once if not closed
 
-                            if (bound_) {
-                              async_receive();
-                            }
-                          });
+                             if (bound_) {
+                               async_receive();
+                             }
+                           });
   }
 
   // This method is executed in `io_service_thread_`.
@@ -201,7 +203,7 @@ private:
 
   asio::io_service io_service_;
   std::unique_ptr<asio::io_service::work> work_;
-  asio::local::datagram_protocol::socket socket_;
+  std::unique_ptr<asio::local::datagram_protocol::socket> socket_;
   std::thread io_service_thread_;
   bool bound_;
   std::string bound_path_;

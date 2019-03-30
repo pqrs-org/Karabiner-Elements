@@ -37,7 +37,7 @@ public:
   client(std::weak_ptr<dispatcher::dispatcher> weak_dispatcher) : dispatcher_client(weak_dispatcher),
                                                                   io_service_(),
                                                                   work_(std::make_unique<asio::io_service::work>(io_service_)),
-                                                                  socket_(io_service_),
+                                                                  socket_(std::make_unique<asio::local::datagram_protocol::socket>(io_service_)),
                                                                   connected_(false),
                                                                   server_check_timer_(*this) {
     io_service_thread_ = std::thread([this] {
@@ -67,8 +67,8 @@ public:
 
       {
         asio::error_code error_code;
-        socket_.open(asio::local::datagram_protocol::socket::protocol_type(),
-                     error_code);
+        socket_->open(asio::local::datagram_protocol::socket::protocol_type(),
+                      error_code);
         if (error_code) {
           enqueue_to_dispatcher([this, error_code] {
             connect_failed(error_code);
@@ -79,23 +79,23 @@ public:
 
       // Connect
 
-      socket_.async_connect(asio::local::datagram_protocol::endpoint(path),
-                            [this, server_check_interval](auto&& error_code) {
-                              if (error_code) {
-                                enqueue_to_dispatcher([this, error_code] {
-                                  connect_failed(error_code);
-                                });
-                              } else {
-                                connected_ = true;
+      socket_->async_connect(asio::local::datagram_protocol::endpoint(path),
+                             [this, server_check_interval](auto&& error_code) {
+                               if (error_code) {
+                                 enqueue_to_dispatcher([this, error_code] {
+                                   connect_failed(error_code);
+                                 });
+                               } else {
+                                 connected_ = true;
 
-                                stop_server_check();
-                                start_server_check(server_check_interval);
+                                 stop_server_check();
+                                 start_server_check(server_check_interval);
 
-                                enqueue_to_dispatcher([this] {
-                                  connected();
-                                });
-                              }
-                            });
+                                 enqueue_to_dispatcher([this] {
+                                   connected();
+                                 });
+                               }
+                             });
     });
   }
 
@@ -107,8 +107,10 @@ public:
 
       asio::error_code error_code;
 
-      socket_.cancel(error_code);
-      socket_.close(error_code);
+      socket_->cancel(error_code);
+      socket_->close(error_code);
+
+      socket_ = std::make_unique<asio::local::datagram_protocol::socket>(io_service_);
 
       // Signal
 
@@ -124,13 +126,13 @@ public:
 
   void async_send(std::shared_ptr<buffer> buffer) {
     io_service_.post([this, buffer] {
-      socket_.async_send(asio::buffer(buffer->get_vector()),
-                         [this, buffer](auto&& error_code,
-                                        auto&& bytes_transferred) {
-                           if (error_code) {
-                             async_close();
-                           }
-                         });
+      socket_->async_send(asio::buffer(buffer->get_vector()),
+                          [this, buffer](auto&& error_code,
+                                         auto&& bytes_transferred) {
+                            if (error_code) {
+                              async_close();
+                            }
+                          });
     });
   }
 
@@ -161,7 +163,7 @@ private:
 
   asio::io_service io_service_;
   std::unique_ptr<asio::io_service::work> work_;
-  asio::local::datagram_protocol::socket socket_;
+  std::unique_ptr<asio::local::datagram_protocol::socket> socket_;
   std::thread io_service_thread_;
   bool connected_;
 
