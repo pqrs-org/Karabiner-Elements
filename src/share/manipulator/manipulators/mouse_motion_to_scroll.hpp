@@ -77,15 +77,73 @@ public:
         momentum_scroll_timer_.stop();
 
       } else {
-        if (auto pointing_motion = make_pointing_motion(front_input_event)) {
+        if (auto new_pointing_motion = make_pointing_motion(front_input_event)) {
           front_input_event.set_valid(false);
 
-          post_events(*pointing_motion,
-                      *from_mandatory_modifiers,
-                      front_input_event.get_device_id(),
-                      front_input_event.get_event_time_stamp(),
-                      front_input_event.get_original_event(),
-                      output_event_queue);
+          if (!new_pointing_motion->is_zero()) {
+            auto&& device_id = front_input_event.get_device_id();
+            auto&& original_event = front_input_event.get_original_event();
+
+            post_events(*new_pointing_motion,
+                        *from_mandatory_modifiers,
+                        device_id,
+                        front_input_event.get_event_time_stamp(),
+                        original_event,
+                        output_event_queue);
+
+            std::weak_ptr<event_queue::queue> weak_output_event_queue(output_event_queue);
+
+            auto motion = std::make_shared<pointing_motion>(*new_pointing_motion);
+            auto counter = std::make_shared<int>(0);
+            momentum_scroll_timer_.start(
+                [this,
+                 motion,
+                 counter,
+                 from_mandatory_modifiers,
+                 device_id,
+                 original_event,
+                 weak_output_event_queue] {
+                  // Attenuate scroll magnitude
+                  ++(*counter);
+                  if (*counter > 100) {
+                    *counter = 0;
+
+                    auto v = motion->get_vertical_wheel();
+                    auto h = motion->get_horizontal_wheel();
+                    if (v > 0) {
+                      --v;
+                    } else if (v < 0) {
+                      ++v;
+                    }
+                    if (h > 0) {
+                      --h;
+                    } else if (h < 0) {
+                      ++h;
+                    }
+                    motion->set_vertical_wheel(v);
+                    motion->set_horizontal_wheel(v);
+                  }
+
+                  // Post events
+
+                  if (motion->is_zero()) {
+                    momentum_scroll_timer_.stop();
+
+                  } else {
+                    if (auto output_event_queue = weak_output_event_queue.lock()) {
+                      event_queue::event_time_stamp t(pqrs::osx::chrono::mach_absolute_time_point());
+
+                      post_events(*motion,
+                                  *from_mandatory_modifiers,
+                                  device_id,
+                                  t,
+                                  original_event,
+                                  output_event_queue);
+                    }
+                  }
+                },
+                std::chrono::milliseconds(200));
+          }
 
           return manipulate_result::manipulated;
         }
@@ -118,7 +176,7 @@ public:
 
 private:
   std::optional<std::unordered_set<modifier_flag>> test_conditions(const event_queue::entry& front_input_event,
-                                                                   const std::shared_ptr<event_queue::queue>& output_event_queue) {
+                                                                   const std::shared_ptr<event_queue::queue>& output_event_queue) const {
     if (!condition_manager_.is_fulfilled(front_input_event,
                                          output_event_queue->get_manipulator_environment())) {
       return std::nullopt;
@@ -134,7 +192,7 @@ private:
         accumulated_x_ += m->get_x();
         accumulated_y_ += m->get_y();
 
-        int divisor = 16;
+        int divisor = 32;
         int vertical_wheel = accumulated_y_ / divisor;
         int horizontal_wheel = accumulated_x_ / divisor;
         accumulated_x_ -= horizontal_wheel * divisor;
@@ -188,6 +246,8 @@ private:
                                           time_stamp_delay,
                                           original_event,
                                           *output_event_queue);
+
+      krbn_notification_center::get_instance().enqueue_input_event_arrived(*this);
     }
   }
 
