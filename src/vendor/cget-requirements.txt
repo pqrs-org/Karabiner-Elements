@@ -1,4 +1,5 @@
 jarro2783/cxxopts@v2.1.2 --cmake header -H sha256:95f524c6615a2067e935e02ef74b013b17efa339df0a3c9db3e91fc0afbaf269
+martinmoene/ring-span-lite@0.2.0 --cmake header -H sha256:ec1dfff0211138282a0b457fe39b2cdff652c97c0885fee3ccf25b78c27d0744
 mpark/variant@v1.4.0 --cmake header -H sha256:8f6b28ab3640b5d76d5b6664dda7257a4405ce59179220431b8fd196c79b2ecb
 pqrs-org/cpp-cf-dictionary
 pqrs-org/cpp-cf-number
