@@ -13,12 +13,37 @@ public:
                                    count_(0),
                                    recent_values_buffer_(8),
                                    recent_values_(std::begin(recent_values_buffer_),
-                                                  std::end(recent_values_buffer_)) {
+                                                  std::end(recent_values_buffer_)),
+                                   momentum_value_(0) {
   }
 
-  uint8_t update(int value) {
+  int update(int value) {
     recent_values_.push_back(value);
+    initialize_momentum_value();
 
+    return add(value);
+  }
+
+  int update_momentum(void) {
+    recent_values_.push_back(0);
+
+    momentum_value_ = static_cast<int>(momentum_value_ * 0.8);
+
+    return add(momentum_value_);
+  }
+
+  void reset(void) {
+    count_ = 0;
+
+    while (!recent_values_.empty()) {
+      recent_values_.pop_front();
+    }
+
+    momentum_value_ = 0;
+  }
+
+private:
+  int add(int value) {
     int result = 0;
 
     count_ += value;
@@ -32,32 +57,29 @@ public:
       count_ -= threshold_;
     }
 
-    return static_cast<uint8_t>(result);
+    return result;
   }
 
-  int make_momentum_value(void) {
+  void initialize_momentum_value(void) {
     if (recent_values_.empty()) {
-      return 0;
-    }
+      momentum_value_ = 0;
 
-    auto total = std::accumulate(std::begin(recent_values_),
-                                 std::end(recent_values_),
-                                 0);
-    return total / recent_values_.size() / 2;
-  }
-
-  void reset(void) {
-    count_ = 0;
-    while (!recent_values_.empty()) {
-      recent_values_.pop_front();
+    } else {
+      auto total = std::accumulate(std::begin(recent_values_),
+                                   std::end(recent_values_),
+                                   0);
+      momentum_value_ = total / recent_values_.size();
     }
   }
 
-private:
   int threshold_;
   int count_;
+
+  // `recent_values_` is used to calculate an initial momentum value.
   std::vector<int> recent_values_buffer_;
   nonstd::ring_span<int> recent_values_;
+
+  int momentum_value_;
 };
 } // namespace mouse_motion_to_scroll
 } // namespace manipulators

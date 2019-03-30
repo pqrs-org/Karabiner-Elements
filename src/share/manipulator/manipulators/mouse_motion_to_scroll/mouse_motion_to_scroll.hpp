@@ -2,6 +2,7 @@
 
 #include "../../types.hpp"
 #include "../base.hpp"
+#include "count_converter.hpp"
 #include <nlohmann/json.hpp>
 #include <pqrs/dispatcher.hpp>
 
@@ -13,8 +14,8 @@ class mouse_motion_to_scroll final : public base, public pqrs::dispatcher::extra
 public:
   mouse_motion_to_scroll(const nlohmann::json& json,
                          const core_configuration::details::complex_modifications_parameters& parameters) : base(),
-                                                                                                            accumulated_x_(0),
-                                                                                                            accumulated_y_(0),
+                                                                                                            x_count_converter_(32),
+                                                                                                            y_count_converter_(32),
                                                                                                             momentum_scroll_timer_(*this) {
     try {
       if (!json.is_object()) {
@@ -78,14 +79,14 @@ public:
         momentum_scroll_timer_.stop();
 
       } else {
-        if (auto new_pointing_motion = make_pointing_motion(front_input_event)) {
+        if (auto pointing_motion = make_pointing_motion(front_input_event)) {
           front_input_event.set_valid(false);
 
-          if (!new_pointing_motion->is_zero()) {
+          if (!pointing_motion->is_zero()) {
             auto&& device_id = front_input_event.get_device_id();
             auto&& original_event = front_input_event.get_original_event();
 
-            post_events(*new_pointing_motion,
+            post_events(*pointing_motion,
                         *from_mandatory_modifiers,
                         device_id,
                         front_input_event.get_event_time_stamp(),
@@ -94,47 +95,21 @@ public:
 
             std::weak_ptr<event_queue::queue> weak_output_event_queue(output_event_queue);
 
-            auto motion = std::make_shared<pointing_motion>(*new_pointing_motion);
-            auto counter = std::make_shared<int>(0);
             momentum_scroll_timer_.start(
                 [this,
-                 motion,
-                 counter,
                  from_mandatory_modifiers,
                  device_id,
                  original_event,
                  weak_output_event_queue] {
-                  // Attenuate scroll magnitude
-                  ++(*counter);
-                  if (*counter > 50) {
-                    *counter = 0;
-
-                    auto v = motion->get_vertical_wheel();
-                    auto h = motion->get_horizontal_wheel();
-                    if (v > 0) {
-                      --v;
-                    } else if (v < 0) {
-                      ++v;
-                    }
-                    if (h > 0) {
-                      --h;
-                    } else if (h < 0) {
-                      ++h;
-                    }
-                    motion->set_vertical_wheel(v);
-                    motion->set_horizontal_wheel(v);
-                  }
-
-                  // Post events
-
-                  if (motion->is_zero()) {
+                  auto pointing_motion = make_momentum_scroll_pointing_motion();
+                  if (pointing_motion.is_zero()) {
                     momentum_scroll_timer_.stop();
 
                   } else {
                     if (auto output_event_queue = weak_output_event_queue.lock()) {
                       event_queue::event_time_stamp t(pqrs::osx::chrono::mach_absolute_time_point());
 
-                      post_events(*motion,
+                      post_events(pointing_motion,
                                   *from_mandatory_modifiers,
                                   device_id,
                                   t,
@@ -143,7 +118,7 @@ public:
                     }
                   }
                 },
-                std::chrono::milliseconds(50));
+                std::chrono::milliseconds(20));
           }
 
           return manipulate_result::manipulated;
@@ -188,22 +163,19 @@ private:
 
   std::optional<pointing_motion> make_pointing_motion(const event_queue::entry& front_input_event) {
     if (auto m = front_input_event.get_event().find<pointing_motion>()) {
-      if (m->get_x() != 0 ||
-          m->get_y() != 0) {
-        accumulated_x_ += m->get_x();
-        accumulated_y_ += m->get_y();
+      auto x = x_count_converter_.update(m->get_x());
+      auto y = y_count_converter_.update(m->get_y());
 
-        int divisor = 32;
-        int vertical_wheel = accumulated_y_ / divisor;
-        int horizontal_wheel = accumulated_x_ / divisor;
-        accumulated_x_ -= horizontal_wheel * divisor;
-        accumulated_y_ -= vertical_wheel * divisor;
-
-        return pointing_motion(0, 0, -vertical_wheel, horizontal_wheel);
-      }
+      return pointing_motion(0, 0, -y, x);
     }
 
     return std::nullopt;
+  }
+
+  pointing_motion make_momentum_scroll_pointing_motion(void) {
+    auto x = x_count_converter_.update_momentum();
+    auto y = y_count_converter_.update_momentum();
+    return pointing_motion(0, 0, -y, x);
   }
 
   void post_events(const pointing_motion& pointing_motion,
@@ -253,8 +225,8 @@ private:
   }
 
   from_modifiers_definition from_modifiers_definition_;
-  int accumulated_x_;
-  int accumulated_y_;
+  count_converter x_count_converter_;
+  count_converter y_count_converter_;
   pqrs::dispatcher::extra::timer momentum_scroll_timer_;
 };
 } // namespace mouse_motion_to_scroll
