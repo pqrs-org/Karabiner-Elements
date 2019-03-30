@@ -220,7 +220,7 @@ private:
 
     } else {
       logger::get_logger()->error("virtual_hid_device_client::open_connection is failed: {0}",
-                                 r.to_string());
+                                  r.to_string());
       connect_ = IO_OBJECT_NULL;
     }
   }
@@ -231,7 +231,7 @@ private:
       pqrs::osx::iokit_return r = IOServiceClose(connect_);
       if (!r) {
         logger::get_logger()->error("virtual_hid_device_client::close_connection error: {0}",
-                                   r.to_string());
+                                    r.to_string());
       }
       connect_ = IO_OBJECT_NULL;
 
