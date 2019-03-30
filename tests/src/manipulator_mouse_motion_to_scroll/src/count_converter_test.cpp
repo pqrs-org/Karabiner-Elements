@@ -15,6 +15,18 @@ TEST_CASE("count_converter::update") {
     }
     REQUIRE(c.update(1) == 1);
   }
+
+  c.reset();
+
+  REQUIRE(c.update(-8) == -1);
+  REQUIRE(c.update(-16) == -2);
+
+  for (int i = 0; i < 10; ++i) {
+    for (int j = 0; j < 7; ++j) {
+      REQUIRE(c.update(-1) == 0);
+    }
+    REQUIRE(c.update(-1) == -1);
+  }
 }
 
 TEST_CASE("count_converter::make_momentum_value") {
