@@ -1,13 +1,14 @@
 #pragma once
 
-#include "../types.hpp"
-#include "base.hpp"
+#include "../../types.hpp"
+#include "../base.hpp"
 #include <nlohmann/json.hpp>
 #include <pqrs/dispatcher.hpp>
 
 namespace krbn {
 namespace manipulator {
 namespace manipulators {
+namespace mouse_motion_to_scroll {
 class mouse_motion_to_scroll final : public base, public pqrs::dispatcher::extra::dispatcher_client {
 public:
   mouse_motion_to_scroll(const nlohmann::json& json,
@@ -105,7 +106,7 @@ public:
                  weak_output_event_queue] {
                   // Attenuate scroll magnitude
                   ++(*counter);
-                  if (*counter > 100) {
+                  if (*counter > 50) {
                     *counter = 0;
 
                     auto v = motion->get_vertical_wheel();
@@ -142,7 +143,7 @@ public:
                     }
                   }
                 },
-                std::chrono::milliseconds(200));
+                std::chrono::milliseconds(50));
           }
 
           return manipulate_result::manipulated;
@@ -256,6 +257,7 @@ private:
   int accumulated_y_;
   pqrs::dispatcher::extra::timer momentum_scroll_timer_;
 };
+} // namespace mouse_motion_to_scroll
 } // namespace manipulators
 } // namespace manipulator
 } // namespace krbn
