@@ -59,6 +59,10 @@ public:
           });
         });
 
+        client_->error_occurred.connect([](auto&& error_code) {
+          logger::get_logger()->error("console_user_server_client error: {0}", error_code.message());
+        });
+
         client_->async_start();
       }
     });
