@@ -29,6 +29,7 @@ public:
   nod::signal<void(void)> connected;
   nod::signal<void(const asio::error_code&)> connect_failed;
   nod::signal<void(void)> closed;
+  nod::signal<void(const asio::error_code&)> error_occurred;
 
   // Methods
 
@@ -130,6 +131,10 @@ public:
                           [this, buffer](auto&& error_code,
                                          auto&& bytes_transferred) {
                             if (error_code) {
+                              enqueue_to_dispatcher([this, error_code] {
+                                error_occurred(error_code);
+                              });
+
                               async_close();
                             }
                           });

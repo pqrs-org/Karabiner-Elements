@@ -19,6 +19,7 @@ public:
   nod::signal<void(void)> connected;
   nod::signal<void(const asio::error_code&)> connect_failed;
   nod::signal<void(void)> closed;
+  nod::signal<void(const asio::error_code&)> error_occurred;
 
   // Methods
 
@@ -113,6 +114,12 @@ private:
 
       close();
       start_reconnect_timer();
+    });
+
+    impl_client_->error_occurred.connect([this](auto&& error_code) {
+      enqueue_to_dispatcher([this, error_code] {
+        error_occurred(error_code);
+      });
     });
 
     impl_client_->async_connect(path_,
