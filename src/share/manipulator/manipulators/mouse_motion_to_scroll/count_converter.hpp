@@ -1,7 +1,9 @@
 #pragma once
 
-#include <nonstd/ring_span.hpp>
+#include <algorithm>
 #include <numeric>
+#include <optional>
+#include <pqrs/sign.hpp>
 
 namespace krbn {
 namespace manipulator {
@@ -10,35 +12,66 @@ namespace mouse_motion_to_scroll {
 class count_converter final {
 public:
   count_converter(int threshold) : threshold_(threshold),
+                                   sign_(pqrs::sign::zero),
                                    count_(0),
-                                   recent_values_buffer_(8),
-                                   recent_values_(std::begin(recent_values_buffer_),
-                                                  std::end(recent_values_buffer_)),
-                                   momentum_value_(0) {
+                                   over_threshold_(false),
+                                   momentum_value_(0),
+                                   momentum_count_(0) {
+  }
+
+  int get_count(void) const {
+    return count_;
   }
 
   int update(int value) {
-    recent_values_.push_back(value);
-    initialize_momentum_value();
+    // Reset if sign is changed.
 
-    return add(value);
+    if (sign_ != pqrs::sign::zero) {
+      auto s = pqrs::make_sign(value);
+      if (sign_ != s) {
+        reset();
+      }
+    }
+
+    if (sign_ == pqrs::sign::zero) {
+      sign_ = pqrs::make_sign(value);
+    }
+
+    if (!over_threshold_) {
+      value *= threshold_ / 4;
+    }
+
+    auto result = add(value);
+
+    momentum_count_ = 0;
+    momentum_value_ += (result * threshold_ / 4);
+
+    return result;
   }
 
-  int update_momentum(void) {
-    recent_values_.push_back(0);
+  std::optional<int> update_momentum(void) {
+    if (momentum_value_ > 1) {
+      --momentum_value_;
+    } else if (momentum_value_ < -1) {
+      ++momentum_value_;
+    }
 
-    momentum_value_ = static_cast<int>(momentum_value_ * 0.8);
+    ++momentum_count_;
+    if (momentum_count_ > 10) {
+      momentum_value_ = 0;
+    }
+
+    if (momentum_value_ == 0) {
+      return std::nullopt;
+    }
 
     return add(momentum_value_);
   }
 
   void reset(void) {
+    sign_ = pqrs::sign::zero;
     count_ = 0;
-
-    while (!recent_values_.empty()) {
-      recent_values_.pop_front();
-    }
-
+    over_threshold_ = false;
     momentum_value_ = 0;
   }
 
@@ -51,35 +84,25 @@ private:
     while (count_ <= -threshold_) {
       --result;
       count_ += threshold_;
+      over_threshold_ = true;
     }
     while (count_ >= threshold_) {
       ++result;
       count_ -= threshold_;
+      over_threshold_ = true;
     }
 
     return result;
   }
 
-  void initialize_momentum_value(void) {
-    if (recent_values_.empty()) {
-      momentum_value_ = 0;
-
-    } else {
-      auto total = std::accumulate(std::begin(recent_values_),
-                                   std::end(recent_values_),
-                                   0);
-      momentum_value_ = total / recent_values_.size();
-    }
-  }
-
   int threshold_;
-  int count_;
 
-  // `recent_values_` is used to calculate an initial momentum value.
-  std::vector<int> recent_values_buffer_;
-  nonstd::ring_span<int> recent_values_;
+  pqrs::sign sign_;
+  int count_;
+  bool over_threshold_;
 
   int momentum_value_;
+  int momentum_count_;
 };
 } // namespace mouse_motion_to_scroll
 } // namespace manipulators

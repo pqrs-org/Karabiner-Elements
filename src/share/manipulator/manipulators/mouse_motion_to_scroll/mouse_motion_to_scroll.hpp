@@ -14,8 +14,9 @@ class mouse_motion_to_scroll final : public base, public pqrs::dispatcher::extra
 public:
   mouse_motion_to_scroll(const nlohmann::json& json,
                          const core_configuration::details::complex_modifications_parameters& parameters) : base(),
-                                                                                                            x_count_converter_(32),
-                                                                                                            y_count_converter_(32),
+                                                                                                            direction_(direction::none),
+                                                                                                            x_count_converter_(count_converter_threshold),
+                                                                                                            y_count_converter_(count_converter_threshold),
                                                                                                             momentum_scroll_timer_(*this) {
     try {
       if (!json.is_object()) {
@@ -76,50 +77,50 @@ public:
       auto from_mandatory_modifiers = test_conditions(front_input_event,
                                                       output_event_queue);
       if (!from_mandatory_modifiers) {
-        momentum_scroll_timer_.stop();
+        reset();
 
       } else {
         if (auto pointing_motion = make_pointing_motion(front_input_event)) {
           front_input_event.set_valid(false);
 
-          if (!pointing_motion->is_zero()) {
-            auto&& device_id = front_input_event.get_device_id();
-            auto&& original_event = front_input_event.get_original_event();
+          auto&& device_id = front_input_event.get_device_id();
+          auto&& original_event = front_input_event.get_original_event();
 
+          if (!pointing_motion->is_zero()) {
             post_events(*pointing_motion,
                         *from_mandatory_modifiers,
                         device_id,
                         front_input_event.get_event_time_stamp(),
                         original_event,
                         output_event_queue);
-
-            std::weak_ptr<event_queue::queue> weak_output_event_queue(output_event_queue);
-
-            momentum_scroll_timer_.start(
-                [this,
-                 from_mandatory_modifiers,
-                 device_id,
-                 original_event,
-                 weak_output_event_queue] {
-                  auto pointing_motion = make_momentum_scroll_pointing_motion();
-                  if (pointing_motion.is_zero()) {
-                    momentum_scroll_timer_.stop();
-
-                  } else {
-                    if (auto output_event_queue = weak_output_event_queue.lock()) {
-                      event_queue::event_time_stamp t(pqrs::osx::chrono::mach_absolute_time_point());
-
-                      post_events(pointing_motion,
-                                  *from_mandatory_modifiers,
-                                  device_id,
-                                  t,
-                                  original_event,
-                                  output_event_queue);
-                    }
-                  }
-                },
-                std::chrono::milliseconds(20));
           }
+
+          std::weak_ptr<event_queue::queue> weak_output_event_queue(output_event_queue);
+
+          momentum_scroll_timer_.start(
+              [this,
+               from_mandatory_modifiers,
+               device_id,
+               original_event,
+               weak_output_event_queue] {
+                auto pointing_motion = make_momentum_scroll_pointing_motion();
+                if (!pointing_motion) {
+                  reset();
+
+                } else if (!pointing_motion->is_zero()) {
+                  if (auto output_event_queue = weak_output_event_queue.lock()) {
+                    event_queue::event_time_stamp t(pqrs::osx::chrono::mach_absolute_time_point());
+
+                    post_events(*pointing_motion,
+                                *from_mandatory_modifiers,
+                                device_id,
+                                t,
+                                original_event,
+                                output_event_queue);
+                  }
+                }
+              },
+              std::chrono::milliseconds(100));
 
           return manipulate_result::manipulated;
         }
@@ -151,6 +152,21 @@ public:
   }
 
 private:
+  enum class direction {
+    none,
+    vertical,
+    horizontal,
+  };
+
+  const int count_converter_threshold = 128;
+
+  void reset(void) {
+    direction_ = direction::none;
+    x_count_converter_.reset();
+    y_count_converter_.reset();
+    momentum_scroll_timer_.stop();
+  }
+
   std::optional<std::unordered_set<modifier_flag>> test_conditions(const event_queue::entry& front_input_event,
                                                                    const std::shared_ptr<event_queue::queue>& output_event_queue) const {
     if (!condition_manager_.is_fulfilled(front_input_event,
@@ -166,16 +182,56 @@ private:
       auto x = x_count_converter_.update(m->get_x());
       auto y = y_count_converter_.update(m->get_y());
 
-      return pointing_motion(0, 0, -y, x);
+      // Set direction_
+
+      if (direction_ == direction::none) {
+        if (x != 0 && y != 0) {
+          if (std::abs(x) > std::abs(y)) {
+            direction_ = direction::horizontal;
+          } else {
+            direction_ = direction::vertical;
+          }
+        } else if (x != 0) {
+          direction_ = direction::horizontal;
+        } else if (y != 0) {
+          direction_ = direction::vertical;
+        }
+      }
+
+      pointing_motion motion(0, 0, -y, x);
+      apply_direction(motion);
+      return motion;
     }
 
     return std::nullopt;
   }
 
-  pointing_motion make_momentum_scroll_pointing_motion(void) {
+  std::optional<pointing_motion> make_momentum_scroll_pointing_motion(void) {
     auto x = x_count_converter_.update_momentum();
     auto y = y_count_converter_.update_momentum();
-    return pointing_motion(0, 0, -y, x);
+
+    if (x || y) {
+      if (!x) {
+        x = 0;
+      }
+      if (!y) {
+        y = 0;
+      }
+
+      pointing_motion motion(0, 0, -*y, *x);
+      apply_direction(motion);
+      return motion;
+    }
+
+    return std::nullopt;
+  }
+
+  void apply_direction(pointing_motion& m) const {
+    if (direction_ == direction::horizontal) {
+      m.set_y(0);
+    } else if (direction_ == direction::vertical) {
+      m.set_x(0);
+    }
   }
 
   void post_events(const pointing_motion& pointing_motion,
@@ -225,6 +281,7 @@ private:
   }
 
   from_modifiers_definition from_modifiers_definition_;
+  direction direction_;
   count_converter x_count_converter_;
   count_converter y_count_converter_;
   pqrs::dispatcher::extra::timer momentum_scroll_timer_;
