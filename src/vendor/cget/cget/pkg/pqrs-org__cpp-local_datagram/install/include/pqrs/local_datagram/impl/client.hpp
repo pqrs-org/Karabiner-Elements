@@ -127,17 +127,27 @@ public:
 
   void async_send(std::shared_ptr<buffer> buffer) {
     io_service_.post([this, buffer] {
-      socket_->async_send(asio::buffer(buffer->get_vector()),
-                          [this, buffer](auto&& error_code,
-                                         auto&& bytes_transferred) {
-                            if (error_code) {
-                              enqueue_to_dispatcher([this, error_code] {
-                                error_occurred(error_code);
-                              });
+      size_t sent = 0;
+      do {
+        asio::error_code error_code;
+        sent += socket_->send(asio::buffer(buffer->get_vector()),
+                              asio::socket_base::message_flags(0),
+                              error_code);
+        if (error_code) {
+          if (error_code == asio::error::no_buffer_space) {
+            // Wait until buffer is available.
+            std::this_thread::sleep_for(std::chrono::milliseconds(100));
 
-                              async_close();
-                            }
-                          });
+          } else {
+            enqueue_to_dispatcher([this, error_code] {
+              error_occurred(error_code);
+            });
+
+            async_close();
+            break;
+          }
+        }
+      } while (sent < buffer->get_vector().size());
     });
   }
 
