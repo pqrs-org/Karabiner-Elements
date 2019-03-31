@@ -115,6 +115,7 @@ public:
 
       logger::get_logger()->info("device_id:{0} is terminated.", type_safe::get(device_id));
 
+      grabbable_state_manager_->erase(device_id);
       hid_queue_value_monitors_.erase(device_id);
     });
 
