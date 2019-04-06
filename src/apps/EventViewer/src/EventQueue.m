@@ -77,7 +77,7 @@ static void hid_value_observer_callback(enum libkrbn_hid_value_type type,
 @implementation EventQueue
 
 enum {
-  MAXNUM = 50,
+  MAXNUM = 256,
 };
 
 - (instancetype)init {
