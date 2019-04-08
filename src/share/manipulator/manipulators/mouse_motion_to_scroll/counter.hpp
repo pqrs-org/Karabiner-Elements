@@ -1,0 +1,249 @@
+#pragma once
+
+#include "counter_direction.hpp"
+#include "counter_entry.hpp"
+#include "counter_parameters.hpp"
+#include "types/absolute_time_duration.hpp"
+#include "types/pointing_motion.hpp"
+#include <algorithm>
+#include <deque>
+#include <nod/nod.hpp>
+#include <numeric>
+#include <optional>
+#include <pqrs/dispatcher.hpp>
+#include <pqrs/osx/chrono.hpp>
+#include <pqrs/sign.hpp>
+
+namespace krbn {
+namespace manipulator {
+namespace manipulators {
+namespace mouse_motion_to_scroll {
+class counter final : pqrs::dispatcher::extra::dispatcher_client {
+public:
+  // Signals (invoked from the dispatcher thread)
+
+  nod::signal<void(const pointing_motion&)> scroll_event_arrived;
+
+  // Methods
+
+  counter(std::weak_ptr<pqrs::dispatcher::dispatcher> weak_dispatcher,
+          const counter_parameters& parameters) : dispatcher_client(weak_dispatcher),
+                                                  parameters_(parameters),
+                                                  counter_direction_(counter_direction::none),
+                                                  total_x_(0),
+                                                  total_y_(0),
+                                                  momentum_x_(0),
+                                                  momentum_y_(0),
+                                                  momentum_count_(0),
+                                                  momentum_timer_(*this) {
+  }
+
+  ~counter(void) {
+    detach_from_dispatcher([this] {
+      momentum_timer_.stop();
+    });
+  }
+
+  void update(const pointing_motion& motion, absolute_time_point time_stamp) {
+    enqueue_to_dispatcher([this, motion, time_stamp] {
+      entries_.emplace_back(motion.get_x(),
+                            motion.get_y(),
+                            time_stamp);
+    });
+
+    enqueue_to_dispatcher(
+        [this, time_stamp] {
+          if (entries_.empty()) {
+            return;
+          }
+          if (time_stamp < entries_.front().get_time_stamp()) {
+            return;
+          }
+
+          bool initial = false;
+          if (!last_time_stamp_ ||
+              time_stamp - *last_time_stamp_ > parameters_.recent_time_duration) {
+            initial = true;
+            reset();
+          }
+
+          // Calculate total_x, total_y
+
+          while (!entries_.empty()) {
+            auto t = entries_.front().get_time_stamp();
+            if (t < time_stamp + parameters_.recent_time_duration) {
+              auto x = entries_.front().get_x();
+              auto y = entries_.front().get_y();
+
+              // Apply direction
+
+              if (counter_direction_ == counter_direction::horizontal) {
+                y = 0;
+              } else if (counter_direction_ == counter_direction::vertical) {
+                x = 0;
+              }
+
+              // Reset if sign is changed.
+
+              if (x != 0 && pqrs::make_sign(total_x_) != pqrs::make_sign(x)) {
+                total_x_ = 0;
+                momentum_x_ = 0;
+                initial = true;
+              }
+              if (y != 0 && pqrs::make_sign(total_y_) != pqrs::make_sign(y)) {
+                total_y_ = 0;
+                momentum_y_ = 0;
+                initial = true;
+              }
+
+              // Modify total_*
+
+              total_x_ += x;
+              total_y_ += y;
+              last_time_stamp_ = t;
+              entries_.pop_front();
+            } else {
+              break;
+            }
+          }
+
+          if (total_x_ == 0 && total_y_ == 0) {
+            return;
+          }
+
+          // Lock direction
+
+          if (counter_direction_ == counter_direction::none) {
+            if (std::abs(total_x_) > std::abs(total_y_)) {
+              counter_direction_ = counter_direction::horizontal;
+              total_y_ = 0;
+            } else {
+              counter_direction_ = counter_direction::vertical;
+              total_x_ = 0;
+            }
+          }
+
+          // Enlarge total_x, total_y if initial event
+
+          if (initial) {
+            if (0 < total_x_ && total_x_ < parameters_.threshold) {
+              total_x_ = parameters_.threshold;
+            } else if (-parameters_.threshold < total_x_ && total_x_ < 0) {
+              total_x_ = -parameters_.threshold;
+            }
+
+            if (0 < total_y_ && total_y_ < parameters_.threshold) {
+              total_y_ = parameters_.threshold;
+            } else if (-parameters_.threshold < total_y_ && total_y_ < 0) {
+              total_y_ = -parameters_.threshold;
+            }
+          }
+
+          // Update momentum values
+
+          momentum_count_ = 0;
+
+          momentum_timer_.start(
+              [this] {
+                if (!momentum_scroll()) {
+                  momentum_timer_.stop();
+                }
+              },
+              std::chrono::milliseconds(20));
+        },
+        when_now() + std::chrono::milliseconds(200));
+  }
+
+  void async_reset(void) {
+    enqueue_to_dispatcher([this] {
+      entries_.empty();
+      last_time_stamp_ = std::nullopt;
+      counter_direction_ = counter_direction::none;
+      total_x_ = 0;
+      total_y_ = 0;
+      momentum_x_ = 0;
+      momentum_y_ = 0;
+      momentum_count_ = 0;
+    });
+  }
+
+private:
+  void reset(void) {
+    entries_.empty();
+    last_time_stamp_ = std::nullopt;
+    counter_direction_ = counter_direction::none;
+    total_x_ = 0;
+    total_y_ = 0;
+    momentum_x_ = 0;
+    momentum_y_ = 0;
+  }
+
+  bool momentum_scroll(void) {
+    ++momentum_count_;
+    if (momentum_count_ > parameters_.momentum_max_count) {
+      return false;
+    }
+
+    int dx = total_x_ * (1.0 / momentum_count_) * parameters_.value_scale;
+    int dy = total_y_ * (1.0 / momentum_count_) * parameters_.value_scale;
+
+    if (dx == 0 && dy == 0) {
+      return false;
+    }
+
+    momentum_x_ += dx;
+    momentum_y_ += dy;
+
+    int x = momentum_x_ / parameters_.threshold;
+    int y = momentum_y_ / parameters_.threshold;
+    if (x != 0 || y != 0) {
+      if (x != 0) {
+        momentum_x_ -= x * parameters_.threshold;
+      }
+      if (y != 0) {
+        momentum_y_ -= y * parameters_.threshold;
+      }
+
+      pointing_motion motion(0,
+                             0,
+                             -y,
+                             x);
+      enqueue_to_dispatcher([this, motion] {
+        scroll_event_arrived(motion);
+      });
+    }
+
+    reduce(total_x_, parameters_.momentum_minus);
+    reduce(total_y_, parameters_.momentum_minus);
+
+    return true;
+  }
+
+  void reduce(int& value, int amount) {
+    if (value > 0) {
+      value -= std::min(amount, value);
+    } else if (value < 0) {
+      value += std::min(amount, -value);
+    }
+  }
+
+  const counter_parameters parameters_;
+
+  std::deque<counter_entry> entries_;
+  std::optional<absolute_time_point> last_time_stamp_;
+
+  counter_direction counter_direction_;
+
+  int total_x_;
+  int total_y_;
+
+  int momentum_x_;
+  int momentum_y_;
+  int momentum_count_;
+
+  pqrs::dispatcher::extra::timer momentum_timer_;
+};
+} // namespace mouse_motion_to_scroll
+} // namespace manipulators
+} // namespace manipulator
+} // namespace krbn
