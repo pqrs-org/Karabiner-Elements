@@ -162,16 +162,7 @@ public:
 
   void async_reset(void) {
     enqueue_to_dispatcher([this] {
-      entries_.empty();
-      last_time_stamp_ = std::nullopt;
-      counter_direction_ = counter_direction::none;
-      total_abs_x_ = 0;
-      total_abs_y_ = 0;
-      total_x_ = 0;
-      total_y_ = 0;
-      momentum_x_ = 0;
-      momentum_y_ = 0;
-      momentum_count_ = 0;
+      reset();
     });
   }
 
@@ -180,10 +171,13 @@ private:
     entries_.empty();
     last_time_stamp_ = std::nullopt;
     counter_direction_ = counter_direction::none;
+    total_abs_x_ = 0;
+    total_abs_y_ = 0;
     total_x_ = 0;
     total_y_ = 0;
     momentum_x_ = 0;
     momentum_y_ = 0;
+    momentum_count_ = 0;
   }
 
   bool momentum_scroll(void) {
