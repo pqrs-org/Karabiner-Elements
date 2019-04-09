@@ -1,0 +1,1397 @@
+[
+    {
+        "time_stamp": 586270925991804,
+        "pointing_motion": {
+            "horizontal_wheel": 0,
+            "vertical_wheel": 0,
+            "x": -2,
+            "y": -1
+        }
+    },
+    {
+        "time_stamp": 586270941870400,
+        "pointing_motion": {
+            "horizontal_wheel": 0,
+            "vertical_wheel": 0,
+            "x": 0,
+            "y": -1
+        }
+    },
+    {
+        "time_stamp": 586270949846637,
+        "pointing_motion": {
+            "horizontal_wheel": 0,
+            "vertical_wheel": 0,
+            "x": -1,
+            "y": -1
+        }
+    },
+    {
+        "time_stamp": 586270957813176,
+        "pointing_motion": {
+            "horizontal_wheel": 0,
+            "vertical_wheel": 0,
+            "x": 0,
+            "y": -5
+        }
+    },
+    {
+        "time_stamp": 586270957813176,
+        "pointing_motion": {
+            "horizontal_wheel": 0,
+            "vertical_wheel": 0,
+            "x": 0,
+            "y": -6
+        }
+    },
+    {
+        "time_stamp": 586270957813176,
+        "pointing_motion": {
+            "horizontal_wheel": 0,
+            "vertical_wheel": 0,
+            "x": 0,
+            "y": -6
+        }
+    },
+    {
+        "time_stamp": 586270981797470,
+        "pointing_motion": {
+            "horizontal_wheel": 0,
+            "vertical_wheel": 0,
+            "x": 1,
+            "y": -4
+        }
+    },
+    {
+        "time_stamp": 586270989804246,
+        "pointing_motion": {
+            "horizontal_wheel": 0,
+            "vertical_wheel": 0,
+            "x": 1,
+            "y": -7
+        }
+    },
+    {
+        "time_stamp": 586270997830186,
+        "pointing_motion": {
+            "horizontal_wheel": 0,
+            "vertical_wheel": 0,
+            "x": 0,
+            "y": -4
+        }
+    },
+    {
+        "time_stamp": 586271005792424,
+        "pointing_motion": {
+            "horizontal_wheel": 0,
+            "vertical_wheel": 0,
+            "x": 1,
+            "y": -7
+        }
+    },
+    {
+        "time_stamp": 586271013921068,
+        "pointing_motion": {
+            "horizontal_wheel": 0,
+            "vertical_wheel": 0,
+            "x": 3,
+            "y": -4
+        }
+    },
+    {
+        "time_stamp": 586271021780533,
+        "pointing_motion": {
+            "horizontal_wheel": 0,
+            "vertical_wheel": 0,
+            "x": 1,
+            "y": -3
+        }
+    },
+    {
+        "time_stamp": 586271029914431,
+        "pointing_motion": {
+            "horizontal_wheel": 0,
+            "vertical_wheel": 0,
+            "x": 0,
+            "y": -1
+        }
+    },
+    {
+        "time_stamp": 586271053904307,
+        "pointing_motion": {
+            "horizontal_wheel": 0,
+            "vertical_wheel": 0,
+            "x": 1,
+            "y": 3
+        }
+    },
+    {
+        "time_stamp": 586271061836230,
+        "pointing_motion": {
+            "horizontal_wheel": 0,
+            "vertical_wheel": 0,
+            "x": 0,
+            "y": 4
+        }
+    },
+    {
+        "time_stamp": 586271069874482,
+        "pointing_motion": {
+            "horizontal_wheel": 0,
+            "vertical_wheel": 0,
+            "x": -2,
+            "y": 8
+        }
+    },
+    {
+        "time_stamp": 586271077809900,
+        "pointing_motion": {
+            "horizontal_wheel": 0,
+            "vertical_wheel": 0,
+            "x": -1,
+            "y": 6
+        }
+    },
+    {
+        "time_stamp": 586271085882852,
+        "pointing_motion": {
+            "horizontal_wheel": 0,
+            "vertical_wheel": 0,
+            "x": -2,
+            "y": 12
+        }
+    },
+    {
+        "time_stamp": 586271093809479,
+        "pointing_motion": {
+            "horizontal_wheel": 0,
+            "vertical_wheel": 0,
+            "x": 0,
+            "y": 12
+        }
+    },
+    {
+        "time_stamp": 586271093809479,
+        "pointing_motion": {
+            "horizontal_wheel": 0,
+            "vertical_wheel": 0,
+            "x": 0,
+            "y": 14
+        }
+    },
+    {
+        "time_stamp": 586271109916345,
+        "pointing_motion": {
+            "horizontal_wheel": 0,
+            "vertical_wheel": 0,
+            "x": -1,
+            "y": 13
+        }
+    },
+    {
+        "time_stamp": 586271117829292,
+        "pointing_motion": {
+            "horizontal_wheel": 0,
+            "vertical_wheel": 0,
+            "x": -2,
+            "y": 15
+        }
+    },
+    {
+        "time_stamp": 586271125837870,
+        "pointing_motion": {
+            "horizontal_wheel": 0,
+            "vertical_wheel": 0,
+            "x": -1,
+            "y": 9
+        }
+    },
+    {
+        "time_stamp": 586271133836180,
+        "pointing_motion": {
+            "horizontal_wheel": 0,
+            "vertical_wheel": 0,
+            "x": -2,
+            "y": 10
+        }
+    },
+    {
+        "time_stamp": 586271141896484,
+        "pointing_motion": {
+            "horizontal_wheel": 0,
+            "vertical_wheel": 0,
+            "x": 0,
+            "y": 5
+        }
+    },
+    {
+        "time_stamp": 586271149890015,
+        "pointing_motion": {
+            "horizontal_wheel": 0,
+            "vertical_wheel": 0,
+            "x": -1,
+            "y": 0
+        }
+    },
+    {
+        "time_stamp": 586271157979147,
+        "pointing_motion": {
+            "horizontal_wheel": 0,
+            "vertical_wheel": 0,
+            "x": -4,
+            "y": -1
+        }
+    },
+    {
+        "time_stamp": 586271165858682,
+        "pointing_motion": {
+            "horizontal_wheel": 0,
+            "vertical_wheel": 0,
+            "x": -1,
+            "y": -4
+        }
+    },
+    {
+        "time_stamp": 586271173760967,
+        "pointing_motion": {
+            "horizontal_wheel": 0,
+            "vertical_wheel": 0,
+            "x": -4,
+            "y": -7
+        }
+    },
+    {
+        "time_stamp": 586271181920096,
+        "pointing_motion": {
+            "horizontal_wheel": 0,
+            "vertical_wheel": 0,
+            "x": -1,
+            "y": -7
+        }
+    },
+    {
+        "time_stamp": 586271189849345,
+        "pointing_motion": {
+            "horizontal_wheel": 0,
+            "vertical_wheel": 0,
+            "x": -2,
+            "y": -6
+        }
+    },
+    {
+        "time_stamp": 586271197820065,
+        "pointing_motion": {
+            "horizontal_wheel": 0,
+            "vertical_wheel": 0,
+            "x": -2,
+            "y": -8
+        }
+    },
+    {
+        "time_stamp": 586271205799165,
+        "pointing_motion": {
+            "horizontal_wheel": 0,
+            "vertical_wheel": 0,
+            "x": 0,
+            "y": -7
+        }
+    },
+    {
+        "time_stamp": 586271205799165,
+        "pointing_motion": {
+            "horizontal_wheel": 0,
+            "vertical_wheel": 0,
+            "x": 0,
+            "y": -4
+        }
+    },
+    {
+        "time_stamp": 586271205799165,
+        "pointing_motion": {
+            "horizontal_wheel": 0,
+            "vertical_wheel": 0,
+            "x": 0,
+            "y": -7
+        }
+    },
+    {
+        "time_stamp": 586271205799165,
+        "pointing_motion": {
+            "horizontal_wheel": 0,
+            "vertical_wheel": 0,
+            "x": 0,
+            "y": -5
+        }
+    },
+    {
+        "time_stamp": 586271237838597,
+        "pointing_motion": {
+            "horizontal_wheel": 0,
+            "vertical_wheel": 0,
+            "x": 2,
+            "y": -5
+        }
+    },
+    {
+        "time_stamp": 586271245936636,
+        "pointing_motion": {
+            "horizontal_wheel": 0,
+            "vertical_wheel": 0,
+            "x": 3,
+            "y": -5
+        }
+    },
+    {
+        "time_stamp": 586271254215413,
+        "pointing_motion": {
+            "horizontal_wheel": 0,
+            "vertical_wheel": 0,
+            "x": 3,
+            "y": -4
+        }
+    },
+    {
+        "time_stamp": 586271261862916,
+        "pointing_motion": {
+            "horizontal_wheel": 0,
+            "vertical_wheel": 0,
+            "x": 3,
+            "y": -5
+        }
+    },
+    {
+        "time_stamp": 586271269863310,
+        "pointing_motion": {
+            "horizontal_wheel": 0,
+            "vertical_wheel": 0,
+            "x": 3,
+            "y": -7
+        }
+    },
+    {
+        "time_stamp": 586271277891048,
+        "pointing_motion": {
+            "horizontal_wheel": 0,
+            "vertical_wheel": 0,
+            "x": 4,
+            "y": -8
+        }
+    },
+    {
+        "time_stamp": 586271285858090,
+        "pointing_motion": {
+            "horizontal_wheel": 0,
+            "vertical_wheel": 0,
+            "x": 2,
+            "y": -8
+        }
+    },
+    {
+        "time_stamp": 586271294209164,
+        "pointing_motion": {
+            "horizontal_wheel": 0,
+            "vertical_wheel": 0,
+            "x": 3,
+            "y": -7
+        }
+    },
+    {
+        "time_stamp": 586271301807200,
+        "pointing_motion": {
+            "horizontal_wheel": 0,
+            "vertical_wheel": 0,
+            "x": 0,
+            "y": -2
+        }
+    },
+    {
+        "time_stamp": 586271309746688,
+        "pointing_motion": {
+            "horizontal_wheel": 0,
+            "vertical_wheel": 0,
+            "x": -2,
+            "y": -3
+        }
+    },
+    {
+        "time_stamp": 586271317839070,
+        "pointing_motion": {
+            "horizontal_wheel": 0,
+            "vertical_wheel": 0,
+            "x": -4,
+            "y": 0
+        }
+    },
+    {
+        "time_stamp": 586271325847586,
+        "pointing_motion": {
+            "horizontal_wheel": 0,
+            "vertical_wheel": 0,
+            "x": -8,
+            "y": 4
+        }
+    },
+    {
+        "time_stamp": 586271333904556,
+        "pointing_motion": {
+            "horizontal_wheel": 0,
+            "vertical_wheel": 0,
+            "x": -8,
+            "y": 5
+        }
+    },
+    {
+        "time_stamp": 586271341833761,
+        "pointing_motion": {
+            "horizontal_wheel": 0,
+            "vertical_wheel": 0,
+            "x": -7,
+            "y": 5
+        }
+    },
+    {
+        "time_stamp": 586271349870223,
+        "pointing_motion": {
+            "horizontal_wheel": 0,
+            "vertical_wheel": 0,
+            "x": -9,
+            "y": 8
+        }
+    },
+    {
+        "time_stamp": 586271357901727,
+        "pointing_motion": {
+            "horizontal_wheel": 0,
+            "vertical_wheel": 0,
+            "x": -8,
+            "y": 11
+        }
+    },
+    {
+        "time_stamp": 586271365879445,
+        "pointing_motion": {
+            "horizontal_wheel": 0,
+            "vertical_wheel": 0,
+            "x": -7,
+            "y": 8
+        }
+    },
+    {
+        "time_stamp": 586271373863483,
+        "pointing_motion": {
+            "horizontal_wheel": 0,
+            "vertical_wheel": 0,
+            "x": -6,
+            "y": 10
+        }
+    },
+    {
+        "time_stamp": 586271381899133,
+        "pointing_motion": {
+            "horizontal_wheel": 0,
+            "vertical_wheel": 0,
+            "x": -5,
+            "y": 8
+        }
+    },
+    {
+        "time_stamp": 586271389861798,
+        "pointing_motion": {
+            "horizontal_wheel": 0,
+            "vertical_wheel": 0,
+            "x": -9,
+            "y": 12
+        }
+    },
+    {
+        "time_stamp": 586271397922750,
+        "pointing_motion": {
+            "horizontal_wheel": 0,
+            "vertical_wheel": 0,
+            "x": -7,
+            "y": 10
+        }
+    },
+    {
+        "time_stamp": 586271405841576,
+        "pointing_motion": {
+            "horizontal_wheel": 0,
+            "vertical_wheel": 0,
+            "x": -5,
+            "y": 7
+        }
+    },
+    {
+        "time_stamp": 586271413965824,
+        "pointing_motion": {
+            "horizontal_wheel": 0,
+            "vertical_wheel": 0,
+            "x": -4,
+            "y": 6
+        }
+    },
+    {
+        "time_stamp": 586271421962496,
+        "pointing_motion": {
+            "horizontal_wheel": 0,
+            "vertical_wheel": 0,
+            "x": -3,
+            "y": 5
+        }
+    },
+    {
+        "time_stamp": 586271429840475,
+        "pointing_motion": {
+            "horizontal_wheel": 0,
+            "vertical_wheel": 0,
+            "x": -1,
+            "y": 1
+        }
+    },
+    {
+        "time_stamp": 586271437843992,
+        "pointing_motion": {
+            "horizontal_wheel": 0,
+            "vertical_wheel": 0,
+            "x": -1,
+            "y": 1
+        }
+    },
+    {
+        "time_stamp": 586271461895248,
+        "pointing_motion": {
+            "horizontal_wheel": 0,
+            "vertical_wheel": 0,
+            "x": 1,
+            "y": -1
+        }
+    },
+    {
+        "time_stamp": 586271469861765,
+        "pointing_motion": {
+            "horizontal_wheel": 0,
+            "vertical_wheel": 0,
+            "x": 3,
+            "y": -4
+        }
+    },
+    {
+        "time_stamp": 586271477832973,
+        "pointing_motion": {
+            "horizontal_wheel": 0,
+            "vertical_wheel": 0,
+            "x": 5,
+            "y": -5
+        }
+    },
+    {
+        "time_stamp": 586271485854596,
+        "pointing_motion": {
+            "horizontal_wheel": 0,
+            "vertical_wheel": 0,
+            "x": 7,
+            "y": -8
+        }
+    },
+    {
+        "time_stamp": 586271493815561,
+        "pointing_motion": {
+            "horizontal_wheel": 0,
+            "vertical_wheel": 0,
+            "x": 7,
+            "y": -10
+        }
+    },
+    {
+        "time_stamp": 586271501904538,
+        "pointing_motion": {
+            "horizontal_wheel": 0,
+            "vertical_wheel": 0,
+            "x": 7,
+            "y": -8
+        }
+    },
+    {
+        "time_stamp": 586271510040712,
+        "pointing_motion": {
+            "horizontal_wheel": 0,
+            "vertical_wheel": 0,
+            "x": 6,
+            "y": -8
+        }
+    },
+    {
+        "time_stamp": 586271517891811,
+        "pointing_motion": {
+            "horizontal_wheel": 0,
+            "vertical_wheel": 0,
+            "x": 5,
+            "y": -5
+        }
+    },
+    {
+        "time_stamp": 586271525889429,
+        "pointing_motion": {
+            "horizontal_wheel": 0,
+            "vertical_wheel": 0,
+            "x": 8,
+            "y": -9
+        }
+    },
+    {
+        "time_stamp": 586271534058310,
+        "pointing_motion": {
+            "horizontal_wheel": 0,
+            "vertical_wheel": 0,
+            "x": 5,
+            "y": -6
+        }
+    },
+    {
+        "time_stamp": 586271541940842,
+        "pointing_motion": {
+            "horizontal_wheel": 0,
+            "vertical_wheel": 0,
+            "x": 5,
+            "y": -7
+        }
+    },
+    {
+        "time_stamp": 586271549783765,
+        "pointing_motion": {
+            "horizontal_wheel": 0,
+            "vertical_wheel": 0,
+            "x": 2,
+            "y": -4
+        }
+    },
+    {
+        "time_stamp": 586271557752356,
+        "pointing_motion": {
+            "horizontal_wheel": 0,
+            "vertical_wheel": 0,
+            "x": 1,
+            "y": -4
+        }
+    },
+    {
+        "time_stamp": 586271565792222,
+        "pointing_motion": {
+            "horizontal_wheel": 0,
+            "vertical_wheel": 0,
+            "x": 0,
+            "y": -1
+        }
+    },
+    {
+        "time_stamp": 586271573798177,
+        "pointing_motion": {
+            "horizontal_wheel": 0,
+            "vertical_wheel": 0,
+            "x": -1,
+            "y": -1
+        }
+    },
+    {
+        "time_stamp": 586271581936205,
+        "pointing_motion": {
+            "horizontal_wheel": 0,
+            "vertical_wheel": 0,
+            "x": -1,
+            "y": 2
+        }
+    },
+    {
+        "time_stamp": 586271589909853,
+        "pointing_motion": {
+            "horizontal_wheel": 0,
+            "vertical_wheel": 0,
+            "x": -3,
+            "y": 3
+        }
+    },
+    {
+        "time_stamp": 586271598044067,
+        "pointing_motion": {
+            "horizontal_wheel": 0,
+            "vertical_wheel": 0,
+            "x": -5,
+            "y": 4
+        }
+    },
+    {
+        "time_stamp": 586271605833221,
+        "pointing_motion": {
+            "horizontal_wheel": 0,
+            "vertical_wheel": 0,
+            "x": -5,
+            "y": 5
+        }
+    },
+    {
+        "time_stamp": 586271613825399,
+        "pointing_motion": {
+            "horizontal_wheel": 0,
+            "vertical_wheel": 0,
+            "x": -10,
+            "y": 9
+        }
+    },
+    {
+        "time_stamp": 586271622187358,
+        "pointing_motion": {
+            "horizontal_wheel": 0,
+            "vertical_wheel": 0,
+            "x": -11,
+            "y": 9
+        }
+    },
+    {
+        "time_stamp": 586271630030273,
+        "pointing_motion": {
+            "horizontal_wheel": 0,
+            "vertical_wheel": 0,
+            "x": -10,
+            "y": 7
+        }
+    },
+    {
+        "time_stamp": 586271637815161,
+        "pointing_motion": {
+            "horizontal_wheel": 0,
+            "vertical_wheel": 0,
+            "x": -12,
+            "y": 6
+        }
+    },
+    {
+        "time_stamp": 586271645923269,
+        "pointing_motion": {
+            "horizontal_wheel": 0,
+            "vertical_wheel": 0,
+            "x": -9,
+            "y": 4
+        }
+    },
+    {
+        "time_stamp": 586271654051238,
+        "pointing_motion": {
+            "horizontal_wheel": 0,
+            "vertical_wheel": 0,
+            "x": -12,
+            "y": 5
+        }
+    },
+    {
+        "time_stamp": 586271661897976,
+        "pointing_motion": {
+            "horizontal_wheel": 0,
+            "vertical_wheel": 0,
+            "x": -13,
+            "y": 4
+        }
+    },
+    {
+        "time_stamp": 586271669769733,
+        "pointing_motion": {
+            "horizontal_wheel": 0,
+            "vertical_wheel": 0,
+            "x": -12,
+            "y": 2
+        }
+    },
+    {
+        "time_stamp": 586271677726483,
+        "pointing_motion": {
+            "horizontal_wheel": 0,
+            "vertical_wheel": 0,
+            "x": -7,
+            "y": 1
+        }
+    },
+    {
+        "time_stamp": 586271685831336,
+        "pointing_motion": {
+            "horizontal_wheel": 0,
+            "vertical_wheel": 0,
+            "x": -4,
+            "y": 1
+        }
+    },
+    {
+        "time_stamp": 586271693906866,
+        "pointing_motion": {
+            "horizontal_wheel": 0,
+            "vertical_wheel": 0,
+            "x": -2,
+            "y": 1
+        }
+    },
+    {
+        "time_stamp": 586271701817542,
+        "pointing_motion": {
+            "horizontal_wheel": 0,
+            "vertical_wheel": 0,
+            "x": -1,
+            "y": 0
+        }
+    },
+    {
+        "time_stamp": 586271717770017,
+        "pointing_motion": {
+            "horizontal_wheel": 0,
+            "vertical_wheel": 0,
+            "x": 0,
+            "y": -1
+        }
+    },
+    {
+        "time_stamp": 586271725804933,
+        "pointing_motion": {
+            "horizontal_wheel": 0,
+            "vertical_wheel": 0,
+            "x": 3,
+            "y": -2
+        }
+    },
+    {
+        "time_stamp": 586271733804628,
+        "pointing_motion": {
+            "horizontal_wheel": 0,
+            "vertical_wheel": 0,
+            "x": 8,
+            "y": -5
+        }
+    },
+    {
+        "time_stamp": 586271741722778,
+        "pointing_motion": {
+            "horizontal_wheel": 0,
+            "vertical_wheel": 0,
+            "x": 10,
+            "y": -5
+        }
+    },
+    {
+        "time_stamp": 586271749760754,
+        "pointing_motion": {
+            "horizontal_wheel": 0,
+            "vertical_wheel": 0,
+            "x": 13,
+            "y": -5
+        }
+    },
+    {
+        "time_stamp": 586271757725782,
+        "pointing_motion": {
+            "horizontal_wheel": 0,
+            "vertical_wheel": 0,
+            "x": 10,
+            "y": -5
+        }
+    },
+    {
+        "time_stamp": 586271765714499,
+        "pointing_motion": {
+            "horizontal_wheel": 0,
+            "vertical_wheel": 0,
+            "x": 13,
+            "y": -3
+        }
+    },
+    {
+        "time_stamp": 586271773726924,
+        "pointing_motion": {
+            "horizontal_wheel": 0,
+            "vertical_wheel": 0,
+            "x": 11,
+            "y": -2
+        }
+    },
+    {
+        "time_stamp": 586271781730227,
+        "pointing_motion": {
+            "horizontal_wheel": 0,
+            "vertical_wheel": 0,
+            "x": 7,
+            "y": -2
+        }
+    },
+    {
+        "time_stamp": 586271789720557,
+        "pointing_motion": {
+            "horizontal_wheel": 0,
+            "vertical_wheel": 0,
+            "x": 14,
+            "y": -1
+        }
+    },
+    {
+        "time_stamp": 586271797764826,
+        "pointing_motion": {
+            "horizontal_wheel": 0,
+            "vertical_wheel": 0,
+            "x": 9,
+            "y": -1
+        }
+    },
+    {
+        "time_stamp": 586271805889214,
+        "pointing_motion": {
+            "horizontal_wheel": 0,
+            "vertical_wheel": 0,
+            "x": 6,
+            "y": -1
+        }
+    },
+    {
+        "time_stamp": 586271813865466,
+        "pointing_motion": {
+            "horizontal_wheel": 0,
+            "vertical_wheel": 0,
+            "x": 3,
+            "y": -2
+        }
+    },
+    {
+        "time_stamp": 586271821818781,
+        "pointing_motion": {
+            "horizontal_wheel": 0,
+            "vertical_wheel": 0,
+            "x": 0,
+            "y": -2
+        }
+    },
+    {
+        "time_stamp": 586271829925384,
+        "pointing_motion": {
+            "horizontal_wheel": 0,
+            "vertical_wheel": 0,
+            "x": -3,
+            "y": -3
+        }
+    },
+    {
+        "time_stamp": 586271837941393,
+        "pointing_motion": {
+            "horizontal_wheel": 0,
+            "vertical_wheel": 0,
+            "x": -5,
+            "y": -5
+        }
+    },
+    {
+        "time_stamp": 586271845897592,
+        "pointing_motion": {
+            "horizontal_wheel": 0,
+            "vertical_wheel": 0,
+            "x": -7,
+            "y": -3
+        }
+    },
+    {
+        "time_stamp": 586271853916331,
+        "pointing_motion": {
+            "horizontal_wheel": 0,
+            "vertical_wheel": 0,
+            "x": -10,
+            "y": -1
+        }
+    },
+    {
+        "time_stamp": 586271861922285,
+        "pointing_motion": {
+            "horizontal_wheel": 0,
+            "vertical_wheel": 0,
+            "x": -12,
+            "y": 0
+        }
+    },
+    {
+        "time_stamp": 586271869926736,
+        "pointing_motion": {
+            "horizontal_wheel": 0,
+            "vertical_wheel": 0,
+            "x": -10,
+            "y": -1
+        }
+    },
+    {
+        "time_stamp": 586271878151513,
+        "pointing_motion": {
+            "horizontal_wheel": 0,
+            "vertical_wheel": 0,
+            "x": -14,
+            "y": 1
+        }
+    },
+    {
+        "time_stamp": 586271886141945,
+        "pointing_motion": {
+            "horizontal_wheel": 0,
+            "vertical_wheel": 0,
+            "x": -12,
+            "y": 1
+        }
+    },
+    {
+        "time_stamp": 586271893860812,
+        "pointing_motion": {
+            "horizontal_wheel": 0,
+            "vertical_wheel": 0,
+            "x": -10,
+            "y": 3
+        }
+    },
+    {
+        "time_stamp": 586271901736359,
+        "pointing_motion": {
+            "horizontal_wheel": 0,
+            "vertical_wheel": 0,
+            "x": -7,
+            "y": 2
+        }
+    },
+    {
+        "time_stamp": 586271909774598,
+        "pointing_motion": {
+            "horizontal_wheel": 0,
+            "vertical_wheel": 0,
+            "x": -5,
+            "y": 2
+        }
+    },
+    {
+        "time_stamp": 586271917947998,
+        "pointing_motion": {
+            "horizontal_wheel": 0,
+            "vertical_wheel": 0,
+            "x": -1,
+            "y": 1
+        }
+    },
+    {
+        "time_stamp": 586271925908256,
+        "pointing_motion": {
+            "horizontal_wheel": 0,
+            "vertical_wheel": 0,
+            "x": -1,
+            "y": 0
+        }
+    },
+    {
+        "time_stamp": 586271957994085,
+        "pointing_motion": {
+            "horizontal_wheel": 0,
+            "vertical_wheel": 0,
+            "x": 0,
+            "y": -1
+        }
+    },
+    {
+        "time_stamp": 586271965866334,
+        "pointing_motion": {
+            "horizontal_wheel": 0,
+            "vertical_wheel": 0,
+            "x": 3,
+            "y": -3
+        }
+    },
+    {
+        "time_stamp": 586271974022285,
+        "pointing_motion": {
+            "horizontal_wheel": 0,
+            "vertical_wheel": 0,
+            "x": 4,
+            "y": -3
+        }
+    },
+    {
+        "time_stamp": 586271981853905,
+        "pointing_motion": {
+            "horizontal_wheel": 0,
+            "vertical_wheel": 0,
+            "x": 5,
+            "y": -3
+        }
+    },
+    {
+        "time_stamp": 586271989836689,
+        "pointing_motion": {
+            "horizontal_wheel": 0,
+            "vertical_wheel": 0,
+            "x": 5,
+            "y": -4
+        }
+    },
+    {
+        "time_stamp": 586271997828840,
+        "pointing_motion": {
+            "horizontal_wheel": 0,
+            "vertical_wheel": 0,
+            "x": 7,
+            "y": -2
+        }
+    },
+    {
+        "time_stamp": 586272005800774,
+        "pointing_motion": {
+            "horizontal_wheel": 0,
+            "vertical_wheel": 0,
+            "x": 5,
+            "y": -2
+        }
+    },
+    {
+        "time_stamp": 586272013837642,
+        "pointing_motion": {
+            "horizontal_wheel": 0,
+            "vertical_wheel": 0,
+            "x": 9,
+            "y": -3
+        }
+    },
+    {
+        "time_stamp": 586272021869790,
+        "pointing_motion": {
+            "horizontal_wheel": 0,
+            "vertical_wheel": 0,
+            "x": 7,
+            "y": -2
+        }
+    },
+    {
+        "time_stamp": 586272029821620,
+        "pointing_motion": {
+            "horizontal_wheel": 0,
+            "vertical_wheel": 0,
+            "x": 7,
+            "y": 0
+        }
+    },
+    {
+        "time_stamp": 586272037894282,
+        "pointing_motion": {
+            "horizontal_wheel": 0,
+            "vertical_wheel": 0,
+            "x": 4,
+            "y": 1
+        }
+    },
+    {
+        "time_stamp": 586272045914817,
+        "pointing_motion": {
+            "horizontal_wheel": 0,
+            "vertical_wheel": 0,
+            "x": 2,
+            "y": 0
+        }
+    },
+    {
+        "time_stamp": 586272053943292,
+        "pointing_motion": {
+            "horizontal_wheel": 0,
+            "vertical_wheel": 0,
+            "x": 1,
+            "y": 0
+        }
+    },
+    {
+        "time_stamp": 586272069836978,
+        "pointing_motion": {
+            "horizontal_wheel": 0,
+            "vertical_wheel": 0,
+            "x": -2,
+            "y": 0
+        }
+    },
+    {
+        "time_stamp": 586272077848338,
+        "pointing_motion": {
+            "horizontal_wheel": 0,
+            "vertical_wheel": 0,
+            "x": -5,
+            "y": 1
+        }
+    },
+    {
+        "time_stamp": 586272085870606,
+        "pointing_motion": {
+            "horizontal_wheel": 0,
+            "vertical_wheel": 0,
+            "x": -10,
+            "y": 3
+        }
+    },
+    {
+        "time_stamp": 586272093889969,
+        "pointing_motion": {
+            "horizontal_wheel": 0,
+            "vertical_wheel": 0,
+            "x": -10,
+            "y": 6
+        }
+    },
+    {
+        "time_stamp": 586272101900944,
+        "pointing_motion": {
+            "horizontal_wheel": 0,
+            "vertical_wheel": 0,
+            "x": -14,
+            "y": 9
+        }
+    },
+    {
+        "time_stamp": 586272109853692,
+        "pointing_motion": {
+            "horizontal_wheel": 0,
+            "vertical_wheel": 0,
+            "x": -11,
+            "y": 6
+        }
+    },
+    {
+        "time_stamp": 586272117969766,
+        "pointing_motion": {
+            "horizontal_wheel": 0,
+            "vertical_wheel": 0,
+            "x": -11,
+            "y": 4
+        }
+    },
+    {
+        "time_stamp": 586272125921366,
+        "pointing_motion": {
+            "horizontal_wheel": 0,
+            "vertical_wheel": 0,
+            "x": -9,
+            "y": 2
+        }
+    },
+    {
+        "time_stamp": 586272133748359,
+        "pointing_motion": {
+            "horizontal_wheel": 0,
+            "vertical_wheel": 0,
+            "x": -7,
+            "y": 2
+        }
+    },
+    {
+        "time_stamp": 586272141736407,
+        "pointing_motion": {
+            "horizontal_wheel": 0,
+            "vertical_wheel": 0,
+            "x": -8,
+            "y": 3
+        }
+    },
+    {
+        "time_stamp": 586272149720324,
+        "pointing_motion": {
+            "horizontal_wheel": 0,
+            "vertical_wheel": 0,
+            "x": -5,
+            "y": 2
+        }
+    },
+    {
+        "time_stamp": 586272157789070,
+        "pointing_motion": {
+            "horizontal_wheel": 0,
+            "vertical_wheel": 0,
+            "x": -2,
+            "y": 1
+        }
+    },
+    {
+        "time_stamp": 586272181946374,
+        "pointing_motion": {
+            "horizontal_wheel": 0,
+            "vertical_wheel": 0,
+            "x": 5,
+            "y": -2
+        }
+    },
+    {
+        "time_stamp": 586272189941591,
+        "pointing_motion": {
+            "horizontal_wheel": 0,
+            "vertical_wheel": 0,
+            "x": 8,
+            "y": -2
+        }
+    },
+    {
+        "time_stamp": 586272198160903,
+        "pointing_motion": {
+            "horizontal_wheel": 0,
+            "vertical_wheel": 0,
+            "x": 6,
+            "y": -4
+        }
+    },
+    {
+        "time_stamp": 586272205863740,
+        "pointing_motion": {
+            "horizontal_wheel": 0,
+            "vertical_wheel": 0,
+            "x": 9,
+            "y": -2
+        }
+    },
+    {
+        "time_stamp": 586272213822058,
+        "pointing_motion": {
+            "horizontal_wheel": 0,
+            "vertical_wheel": 0,
+            "x": 6,
+            "y": -3
+        }
+    },
+    {
+        "time_stamp": 586272221900313,
+        "pointing_motion": {
+            "horizontal_wheel": 0,
+            "vertical_wheel": 0,
+            "x": 6,
+            "y": -1
+        }
+    },
+    {
+        "time_stamp": 586272229826119,
+        "pointing_motion": {
+            "horizontal_wheel": 0,
+            "vertical_wheel": 0,
+            "x": 5,
+            "y": -2
+        }
+    },
+    {
+        "time_stamp": 586272237791070,
+        "pointing_motion": {
+            "horizontal_wheel": 0,
+            "vertical_wheel": 0,
+            "x": 5,
+            "y": -2
+        }
+    },
+    {
+        "time_stamp": 586272245897519,
+        "pointing_motion": {
+            "horizontal_wheel": 0,
+            "vertical_wheel": 0,
+            "x": 2,
+            "y": 0
+        }
+    },
+    {
+        "time_stamp": 586272254086832,
+        "pointing_motion": {
+            "horizontal_wheel": 0,
+            "vertical_wheel": 0,
+            "x": 1,
+            "y": 0
+        }
+    }
+]
