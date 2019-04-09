@@ -1,0 +1,10 @@
+[
+    { "horizontal_wheel": 0, "vertical_wheel": 1, "x": 0, "y": 0 },
+    { "horizontal_wheel": 0, "vertical_wheel": 1, "x": 0, "y": 0 },
+    { "horizontal_wheel": 0, "vertical_wheel": -1, "x": 0, "y": 0 },
+    { "horizontal_wheel": 0, "vertical_wheel": -1, "x": 0, "y": 0 },
+    { "horizontal_wheel": 0, "vertical_wheel": -1, "x": 0, "y": 0 },
+    { "horizontal_wheel": 0, "vertical_wheel": -1, "x": 0, "y": 0 },
+    { "horizontal_wheel": 0, "vertical_wheel": 1, "x": 0, "y": 0 },
+    { "horizontal_wheel": 0, "vertical_wheel": 1, "x": 0, "y": 0 }
+]

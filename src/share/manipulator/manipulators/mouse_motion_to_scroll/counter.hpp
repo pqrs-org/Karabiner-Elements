@@ -30,6 +30,8 @@ public:
           const counter_parameters& parameters) : dispatcher_client(weak_dispatcher),
                                                   parameters_(parameters),
                                                   counter_direction_(counter_direction::none),
+                                                  total_abs_x_(0),
+                                                  total_abs_y_(0),
                                                   total_x_(0),
                                                   total_y_(0),
                                                   momentum_x_(0),
@@ -86,11 +88,13 @@ public:
               // Reset if sign is changed.
 
               if (x != 0 && pqrs::make_sign(total_x_) != pqrs::make_sign(x)) {
+                // Keep total_abs_x_
                 total_x_ = 0;
                 momentum_x_ = 0;
                 initial = true;
               }
               if (y != 0 && pqrs::make_sign(total_y_) != pqrs::make_sign(y)) {
+                // Keep total_abs_y_
                 total_y_ = 0;
                 momentum_y_ = 0;
                 initial = true;
@@ -98,6 +102,8 @@ public:
 
               // Modify total_*
 
+              total_abs_x_ += std::abs(x);
+              total_abs_y_ += std::abs(y);
               total_x_ += x;
               total_y_ += y;
               last_time_stamp_ = t;
@@ -114,7 +120,7 @@ public:
           // Lock direction
 
           if (counter_direction_ == counter_direction::none) {
-            if (std::abs(total_x_) > std::abs(total_y_)) {
+            if (total_abs_x_ > total_abs_y_) {
               counter_direction_ = counter_direction::horizontal;
               total_y_ = 0;
             } else {
@@ -159,6 +165,8 @@ public:
       entries_.empty();
       last_time_stamp_ = std::nullopt;
       counter_direction_ = counter_direction::none;
+      total_abs_x_ = 0;
+      total_abs_y_ = 0;
       total_x_ = 0;
       total_y_ = 0;
       momentum_x_ = 0;
@@ -233,6 +241,10 @@ private:
   std::optional<absolute_time_point> last_time_stamp_;
 
   counter_direction counter_direction_;
+
+  // For direction detection.
+  int total_abs_x_;
+  int total_abs_y_;
 
   int total_x_;
   int total_y_;

@@ -1,0 +1,6 @@
+[
+    {
+        "input": "input/counter_1.jsonc",
+        "expected": "expected/counter_1.jsonc"
+    }
+]
