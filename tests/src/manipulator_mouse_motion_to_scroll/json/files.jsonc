@@ -2,5 +2,9 @@
     {
         "input": "input/counter_1.jsonc",
         "expected": "expected/counter_1.jsonc"
+    },
+    {
+        "input": "input/counter_2.jsonc",
+        "expected": "expected/counter_2.jsonc"
     }
 ]
