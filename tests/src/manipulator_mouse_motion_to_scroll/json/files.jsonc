@@ -1,13 +1,16 @@
 [
     {
+        // slight movement
         "input": "input/counter_1.jsonc",
         "expected": "expected/counter_1.jsonc"
     },
     {
+        // scroll direction lock (with cancel)
         "input": "input/counter_2.jsonc",
         "expected": "expected/counter_2.jsonc"
     },
     {
+        // scroll direction lock
         "input": "input/counter_3.jsonc",
         "expected": "expected/counter_3.jsonc"
     }
