@@ -78,11 +78,10 @@ public:
 
 private:
   void output_value(const krbn::event_queue::entry& entry) const {
-    std::cout << entry.get_event_time_stamp().get_time_stamp() << " ";
-
     switch (entry.get_event().get_type()) {
       case krbn::event_queue::event::type::key_code:
         if (auto key_code = entry.get_event().get_key_code()) {
+          std::cout << entry.get_event_time_stamp().get_time_stamp() << " ";
           std::cout << "Key: " << std::dec << static_cast<uint32_t>(*key_code) << " "
                     << entry.get_event_type()
                     << std::endl;
@@ -91,6 +90,7 @@ private:
 
       case krbn::event_queue::event::type::consumer_key_code:
         if (auto consumer_key_code = entry.get_event().get_consumer_key_code()) {
+          std::cout << entry.get_event_time_stamp().get_time_stamp() << " ";
           std::cout << "ConsumerKey: " << std::dec << static_cast<uint32_t>(*consumer_key_code) << " "
                     << entry.get_event_type()
                     << std::endl;
@@ -99,6 +99,7 @@ private:
 
       case krbn::event_queue::event::type::pointing_button:
         if (auto pointing_button = entry.get_event().get_pointing_button()) {
+          std::cout << entry.get_event_time_stamp().get_time_stamp() << " ";
           std::cout << "Button: " << std::dec << static_cast<uint32_t>(*pointing_button) << " "
                     << entry.get_event_type()
                     << std::endl;
@@ -107,7 +108,11 @@ private:
 
       case krbn::event_queue::event::type::pointing_motion:
         if (auto pointing_motion = entry.get_event().get_pointing_motion()) {
-          std::cout << "pointing_motion: " << nlohmann::json(*pointing_motion) << std::endl;
+          auto json = nlohmann::json::object({
+              {"pointing_motion", *pointing_motion},
+              {"time_stamp", entry.get_event_time_stamp().get_time_stamp()},
+          });
+          std::cout << json << "," << std::endl;
         }
         break;
 
