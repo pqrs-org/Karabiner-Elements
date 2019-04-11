@@ -193,7 +193,7 @@ private:
 
   bool momentum_scroll(void) {
     ++momentum_count_;
-    if (momentum_count_ > parameters_.momentum_max_count) {
+    if (momentum_count_ == 0) {
       return false;
     }
 

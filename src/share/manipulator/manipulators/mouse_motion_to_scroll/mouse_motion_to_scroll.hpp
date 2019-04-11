@@ -46,8 +46,6 @@ public:
                       std::chrono::milliseconds(v.get<int>()));
             } else if (k == "value_scale") {
               counter_parameters_.value_scale = v.get<double>();
-            } else if (k == "momentum_max_count") {
-              counter_parameters_.momentum_max_count = v.get<int>();
             } else if (k == "momentum_minus") {
               counter_parameters_.momentum_minus = v.get<int>();
             }
