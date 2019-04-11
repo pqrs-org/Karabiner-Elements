@@ -143,16 +143,16 @@ public:
           // Enlarge total_x, total_y if initial event
 
           if (initial) {
-            if (0 < total_x_ && total_x_ < parameters_.threshold) {
-              total_x_ = parameters_.threshold;
-            } else if (-parameters_.threshold < total_x_ && total_x_ < 0) {
-              total_x_ = -parameters_.threshold;
+            if (0 < total_x_ && total_x_ < parameters_.get_threshold()) {
+              total_x_ = parameters_.get_threshold();
+            } else if (-parameters_.get_threshold() < total_x_ && total_x_ < 0) {
+              total_x_ = -parameters_.get_threshold();
             }
 
-            if (0 < total_y_ && total_y_ < parameters_.threshold) {
-              total_y_ = parameters_.threshold;
-            } else if (-parameters_.threshold < total_y_ && total_y_ < 0) {
-              total_y_ = -parameters_.threshold;
+            if (0 < total_y_ && total_y_ < parameters_.get_threshold()) {
+              total_y_ = parameters_.get_threshold();
+            } else if (-parameters_.get_threshold() < total_y_ && total_y_ < 0) {
+              total_y_ = -parameters_.get_threshold();
             }
           }
 
@@ -213,14 +213,14 @@ private:
     std::cout << "mx,my: " << momentum_x_ << "," << momentum_y_ << std::endl;
 #endif
 
-    int x = momentum_x_ / parameters_.threshold;
-    int y = momentum_y_ / parameters_.threshold;
+    int x = momentum_x_ / parameters_.get_threshold();
+    int y = momentum_y_ / parameters_.get_threshold();
     if (x != 0 || y != 0) {
       if (x != 0) {
-        momentum_x_ -= x * parameters_.threshold;
+        momentum_x_ -= x * parameters_.get_threshold();
       }
       if (y != 0) {
-        momentum_y_ -= y * parameters_.threshold;
+        momentum_y_ -= y * parameters_.get_threshold();
       }
 
       pointing_motion motion(0,

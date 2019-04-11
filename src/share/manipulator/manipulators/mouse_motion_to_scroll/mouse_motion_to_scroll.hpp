@@ -38,8 +38,8 @@ public:
 
         } else if (key == "options") {
           for (const auto& [k, v] : value.items()) {
-            if (k == "threshold") {
-              counter_parameters_.threshold = v.get<int>();
+            if (k == "threshold") { // (secret parameter)
+              counter_parameters_.set_threshold(v.get<int>());
             } else if (k == "recent_time_duration") {
               counter_parameters_.recent_time_duration =
                   pqrs::osx::chrono::make_absolute_time_duration(
@@ -50,6 +50,15 @@ public:
               counter_parameters_.momentum_minus = v.get<int>();
             }
           }
+
+        } else if (key == "description" ||
+                   key == "conditions" ||
+                   key == "parameters" ||
+                   key == "type") {
+          // Do nothing
+
+        } else {
+          throw pqrs::json::unmarshal_error(fmt::format("unknown key `{0}` in `{1}`", key, json.dump()));
         }
       }
 
