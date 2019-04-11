@@ -1,5 +1,6 @@
 #pragma once
 
+#include "counter_chunk_value.hpp"
 #include "counter_direction.hpp"
 #include "counter_entry.hpp"
 #include "counter_parameters.hpp"
@@ -69,7 +70,10 @@ public:
             reset();
           }
 
-          // Calculate total_x, total_y
+          // Accumulate chunk_x,chunk_y
+
+          counter_chunk_value chunk_x;
+          counter_chunk_value chunk_y;
 
           while (!entries_.empty()) {
             auto t = entries_.front().get_time_stamp();
@@ -77,41 +81,48 @@ public:
               auto x = entries_.front().get_x();
               auto y = entries_.front().get_y();
 
-              // Apply direction
+              chunk_x.add(x);
+              chunk_y.add(y);
 
-              if (counter_direction_ == counter_direction::horizontal) {
-                y = 0;
-              } else if (counter_direction_ == counter_direction::vertical) {
-                x = 0;
-              }
-
-              // Reset if sign is changed.
-
-              if (x != 0 && pqrs::make_sign(total_x_) != pqrs::make_sign(x)) {
-                // Keep total_abs_x_
-                total_x_ = 0;
-                momentum_x_ = 0;
-                initial = true;
-              }
-              if (y != 0 && pqrs::make_sign(total_y_) != pqrs::make_sign(y)) {
-                // Keep total_abs_y_
-                total_y_ = 0;
-                momentum_y_ = 0;
-                initial = true;
-              }
-
-              // Modify total_*
-
-              total_abs_x_ += std::abs(x);
-              total_abs_y_ += std::abs(y);
-              total_x_ += x;
-              total_y_ += y;
               last_time_stamp_ = t;
               entries_.pop_front();
             } else {
               break;
             }
           }
+
+          auto x = chunk_x.make_accumulated_value();
+          auto y = chunk_y.make_accumulated_value();
+
+          // Apply direction
+
+          if (counter_direction_ == counter_direction::horizontal) {
+            y = 0;
+          } else if (counter_direction_ == counter_direction::vertical) {
+            x = 0;
+          }
+
+          // Reset if sign is changed.
+
+          if (x != 0 && pqrs::make_sign(total_x_) != pqrs::make_sign(x)) {
+            // Keep total_abs_x_
+            total_x_ = 0;
+            momentum_x_ = 0;
+            initial = true;
+          }
+          if (y != 0 && pqrs::make_sign(total_y_) != pqrs::make_sign(y)) {
+            // Keep total_abs_y_
+            total_y_ = 0;
+            momentum_y_ = 0;
+            initial = true;
+          }
+
+          // Modify total_*
+
+          total_abs_x_ += std::abs(x);
+          total_abs_y_ += std::abs(y);
+          total_x_ += x;
+          total_y_ += y;
 
           if (total_x_ == 0 && total_y_ == 0) {
             return;
@@ -157,7 +168,7 @@ public:
               },
               std::chrono::milliseconds(20));
         },
-        when_now() + std::chrono::milliseconds(200));
+        when_now() + pqrs::osx::chrono::make_milliseconds(parameters_.recent_time_duration) * 2);
   }
 
   void async_reset(void) {
@@ -196,6 +207,12 @@ private:
     momentum_x_ += dx;
     momentum_y_ += dy;
 
+#if 0
+    std::cout << "tx,ty: " << total_x_ << "," << total_y_ << std::endl;
+    std::cout << "dx,dy: " << dx << "," << dy << std::endl;
+    std::cout << "mx,my: " << momentum_x_ << "," << momentum_y_ << std::endl;
+#endif
+
     int x = momentum_x_ / parameters_.threshold;
     int y = momentum_y_ / parameters_.threshold;
     if (x != 0 || y != 0) {
@@ -221,7 +238,7 @@ private:
     return true;
   }
 
-  void reduce(int& value, int amount) {
+  void reduce(int& value, int amount) const {
     if (value > 0) {
       value -= std::min(amount, value);
     } else if (value < 0) {

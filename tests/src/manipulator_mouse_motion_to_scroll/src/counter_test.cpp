@@ -159,6 +159,10 @@ TEST_CASE("json/input") {
           auto x = j.at("pointing_motion").at("x").get<int>();
           auto y = j.at("pointing_motion").at("y").get<int>();
 
+#if 0
+          std::cout << "x,y:" << x << "," << y << std::endl;
+#endif
+
           counter_test.set_now(time_stamp.count());
           counter_test.update(x, y, time_stamp);
         }

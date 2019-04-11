@@ -13,5 +13,10 @@
         // scroll direction lock
         "input": "input/counter_3.jsonc",
         "expected": "expected/counter_3.jsonc"
+    },
+    {
+        // continous slight movement
+        "input": "input/counter_4.jsonc",
+        "expected": "expected/counter_4.jsonc"
     }
 ]
