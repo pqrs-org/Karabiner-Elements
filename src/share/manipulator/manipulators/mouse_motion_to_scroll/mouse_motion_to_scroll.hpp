@@ -3,6 +3,7 @@
 #include "../../types.hpp"
 #include "../base.hpp"
 #include "counter.hpp"
+#include "krbn_notification_center.hpp"
 #include <nlohmann/json.hpp>
 #include <pqrs/dispatcher.hpp>
 
@@ -33,10 +34,20 @@ public:
               } catch (const pqrs::json::unmarshal_error& e) {
                 throw pqrs::json::unmarshal_error(fmt::format("`{0}.{1}` error: {2}", key, k, e.what()));
               }
+
+            } else {
+              throw pqrs::json::unmarshal_error(fmt::format("`{0}` error: unknown key `{1}` in `{2}`",
+                                                            key,
+                                                            k,
+                                                            value.dump()));
             }
           }
 
         } else if (key == "options") {
+          if (!value.is_object()) {
+            throw pqrs::json::unmarshal_error(fmt::format("`{0}` must be object, but is `{1}`", key, value.dump()));
+          }
+
           for (const auto& [k, v] : value.items()) {
             if (k == "threshold") { // (secret parameter)
               counter_parameters_.set_threshold(v.get<int>());
