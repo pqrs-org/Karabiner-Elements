@@ -9,12 +9,39 @@ namespace manipulators {
 namespace mouse_motion_to_scroll {
 struct counter_parameters final {
 public:
-  counter_parameters(void) : recent_time_duration(
-                                 pqrs::osx::chrono::make_absolute_time_duration(
-                                     std::chrono::milliseconds(100))),
-                             value_scale(1.0),
-                             momentum_minus(16),
-                             threshold_(32) {
+  const double speed_multiplier_default_value = 1.0;
+  const std::chrono::milliseconds recent_time_duration_milliseconds_default_value = std::chrono::milliseconds(100);
+  const int threshold_default_value = 32;
+  const int momentum_minus_default_value = 16;
+
+  counter_parameters(void) : speed_multiplier_(speed_multiplier_default_value),
+                             recent_time_duration_milliseconds_(recent_time_duration_milliseconds_default_value),
+                             threshold_(threshold_default_value),
+                             momentum_minus_(momentum_minus_default_value) {
+  }
+
+  double get_speed_multiplier(void) const {
+    return speed_multiplier_;
+  }
+
+  void set_speed_multiplier(double value) {
+    if (value <= 0.0) {
+      value = speed_multiplier_default_value;
+    }
+
+    speed_multiplier_ = value;
+  }
+
+  std::chrono::milliseconds get_recent_time_duration_milliseconds(void) const {
+    return recent_time_duration_milliseconds_;
+  }
+
+  void set_recent_time_duration_milliseconds(std::chrono::milliseconds value) {
+    if (value < std::chrono::milliseconds(1)) {
+      value = recent_time_duration_milliseconds_default_value;
+    }
+
+    recent_time_duration_milliseconds_ = value;
   }
 
   int get_threshold(void) const {
@@ -23,18 +50,29 @@ public:
 
   void set_threshold(int value) {
     if (value <= 0) {
-      threshold_ = 1;
-    } else {
-      threshold_ = value;
+      value = threshold_default_value;
     }
+
+    threshold_ = value;
   }
 
-  absolute_time_duration recent_time_duration;
-  double value_scale;
-  int momentum_minus;
+  int get_momentum_minus(void) const {
+    return momentum_minus_;
+  }
+
+  void set_momentum_minus(int value) {
+    if (value <= 0) {
+      value = momentum_minus_default_value;
+    }
+
+    momentum_minus_ = value;
+  }
 
 private:
+  double speed_multiplier_;
+  std::chrono::milliseconds recent_time_duration_milliseconds_;
   int threshold_;
+  int momentum_minus_;
 };
 } // namespace mouse_motion_to_scroll
 } // namespace manipulators

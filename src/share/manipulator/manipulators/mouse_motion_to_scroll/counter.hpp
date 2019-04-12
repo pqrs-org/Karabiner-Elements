@@ -64,10 +64,14 @@ public:
           }
 
           bool initial = false;
-          if (!last_time_stamp_ ||
-              time_stamp - *last_time_stamp_ > parameters_.recent_time_duration) {
-            initial = true;
-            reset();
+
+          {
+            auto duration_milliseconds = pqrs::osx::chrono::make_milliseconds(time_stamp - *last_time_stamp_);
+            if (!last_time_stamp_ ||
+                duration_milliseconds > parameters_.get_recent_time_duration_milliseconds()) {
+              initial = true;
+              reset();
+            }
           }
 
           // Accumulate chunk_x,chunk_y
@@ -77,7 +81,8 @@ public:
 
           while (!entries_.empty()) {
             auto t = entries_.front().get_time_stamp();
-            if (t < time_stamp + parameters_.recent_time_duration) {
+            auto duration_milliseconds = pqrs::osx::chrono::make_milliseconds(t - time_stamp);
+            if (duration_milliseconds < parameters_.get_recent_time_duration_milliseconds()) {
               auto x = entries_.front().get_x();
               auto y = entries_.front().get_y();
 
@@ -168,7 +173,7 @@ public:
               },
               std::chrono::milliseconds(20));
         },
-        when_now() + pqrs::osx::chrono::make_milliseconds(parameters_.recent_time_duration) * 2);
+        when_now() + parameters_.get_recent_time_duration_milliseconds() * 2);
   }
 
   void async_reset(void) {
@@ -197,8 +202,8 @@ private:
       return false;
     }
 
-    int dx = total_x_ * (1.0 / momentum_count_) * parameters_.value_scale;
-    int dy = total_y_ * (1.0 / momentum_count_) * parameters_.value_scale;
+    int dx = total_x_ * (1.0 / momentum_count_) * parameters_.get_speed_multiplier();
+    int dy = total_y_ * (1.0 / momentum_count_) * parameters_.get_speed_multiplier();
 
     if (dx == 0 && dy == 0) {
       return false;
@@ -232,8 +237,8 @@ private:
       });
     }
 
-    reduce(total_x_, parameters_.momentum_minus);
-    reduce(total_y_, parameters_.momentum_minus);
+    reduce(total_x_, parameters_.get_momentum_minus());
+    reduce(total_y_, parameters_.get_momentum_minus());
 
     return true;
   }

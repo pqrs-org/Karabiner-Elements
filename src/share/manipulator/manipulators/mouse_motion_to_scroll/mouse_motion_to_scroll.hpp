@@ -49,16 +49,14 @@ public:
           }
 
           for (const auto& [k, v] : value.items()) {
-            if (k == "threshold") { // (secret parameter)
+            if (k == "speed_multiplier") {
+              counter_parameters_.set_speed_multiplier(v.get<double>());
+            } else if (k == "threshold") { // (secret parameter)
               counter_parameters_.set_threshold(v.get<int>());
-            } else if (k == "recent_time_duration") {
-              counter_parameters_.recent_time_duration =
-                  pqrs::osx::chrono::make_absolute_time_duration(
-                      std::chrono::milliseconds(v.get<int>()));
-            } else if (k == "value_scale") {
-              counter_parameters_.value_scale = v.get<double>();
-            } else if (k == "momentum_minus") {
-              counter_parameters_.momentum_minus = v.get<int>();
+            } else if (k == "recent_time_duration_milliseconds") { // (secret parameter)
+              counter_parameters_.set_recent_time_duration_milliseconds(std::chrono::milliseconds(v.get<int>()));
+            } else if (k == "momentum_minus") { // (secret parameter)
+              counter_parameters_.set_momentum_minus(v.get<int>());
             }
           }
 
