@@ -6,6 +6,7 @@ project (karabiner_test)
 
 add_executable(
   karabiner_test
+  src/counter_parameters_test.cpp
   src/counter_test.cpp
   src/errors_test.cpp
   src/test.cpp
