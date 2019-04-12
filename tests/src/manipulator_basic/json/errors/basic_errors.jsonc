@@ -7,7 +7,7 @@
         "error": "json must be object, but is `null`"
     },
 
-    // basic.form
+    // basic.from
 
     {
         "class": "basic",
