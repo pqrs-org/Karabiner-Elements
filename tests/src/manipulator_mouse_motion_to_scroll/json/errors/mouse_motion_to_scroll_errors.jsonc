@@ -1,0 +1,59 @@
+[
+    // mouse_motion_to_scroll
+
+    {
+        "class": "mouse_motion_to_scroll",
+        "input": null,
+        "error": "json must be object, but is `null`"
+    },
+
+    // mouse_motion_to_scroll.from
+
+    {
+        "class": "mouse_motion_to_scroll",
+        "input": {
+            "from": null
+        },
+        "error": "`from` must be object, but is `null`"
+    },
+
+    {
+        "class": "mouse_motion_to_scroll",
+        "input": {
+            "from": {
+                "modifiers": null
+            }
+        },
+        "error": "`from.modifiers` error: json must be object, but is `null`"
+    },
+
+    {
+        "class": "mouse_motion_to_scroll",
+        "input": {
+            "from": {
+                "modifier": null
+            }
+        },
+        "error": "`from` error: unknown key `modifier` in `{\"modifier\":null}`"
+    },
+
+    // mouse_motion_to_scroll.options
+
+    {
+        "class": "mouse_motion_to_scroll",
+        "input": {
+            "options": null
+        },
+        "error": "`options` must be object, but is `null`"
+    },
+
+    // unknown key
+
+    {
+        "class": "mouse_motion_to_scroll",
+        "input": {
+            "option": {}
+        },
+        "error": "unknown key `option` in `{\"option\":{}}`"
+    }
+]
