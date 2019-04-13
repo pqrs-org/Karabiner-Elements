@@ -40,10 +40,10 @@ TEST_CASE("counter_parameters") {
     // threshold_
 
     counter_parameters.set_threshold(-100);
-    REQUIRE(counter_parameters.get_threshold() == 32);
+    REQUIRE(counter_parameters.get_threshold() == 64);
 
     counter_parameters.set_threshold(0);
-    REQUIRE(counter_parameters.get_threshold() == 32);
+    REQUIRE(counter_parameters.get_threshold() == 64);
 
     counter_parameters.set_threshold(1);
     REQUIRE(counter_parameters.get_threshold() == 1);

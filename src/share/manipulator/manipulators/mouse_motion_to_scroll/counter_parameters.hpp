@@ -11,7 +11,7 @@ struct counter_parameters final {
 public:
   const double speed_multiplier_default_value = 1.0;
   const std::chrono::milliseconds recent_time_duration_milliseconds_default_value = std::chrono::milliseconds(100);
-  const int threshold_default_value = 32;
+  const int threshold_default_value = 64;
   const int momentum_minus_default_value = 16;
 
   counter_parameters(void) : speed_multiplier_(speed_multiplier_default_value),

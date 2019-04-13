@@ -149,15 +149,15 @@ public:
 
           if (initial) {
             if (0 < total_x_ && total_x_ < parameters_.get_threshold()) {
-              total_x_ = parameters_.get_threshold();
+              total_x_ = parameters_.get_threshold() / parameters_.get_speed_multiplier();
             } else if (-parameters_.get_threshold() < total_x_ && total_x_ < 0) {
-              total_x_ = -parameters_.get_threshold();
+              total_x_ = -parameters_.get_threshold() / parameters_.get_speed_multiplier();
             }
 
             if (0 < total_y_ && total_y_ < parameters_.get_threshold()) {
-              total_y_ = parameters_.get_threshold();
+              total_y_ = parameters_.get_threshold() / parameters_.get_speed_multiplier();
             } else if (-parameters_.get_threshold() < total_y_ && total_y_ < 0) {
-              total_y_ = -parameters_.get_threshold();
+              total_y_ = -parameters_.get_threshold() / parameters_.get_speed_multiplier();
             }
           }
 
