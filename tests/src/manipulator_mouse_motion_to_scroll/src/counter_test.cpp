@@ -38,6 +38,8 @@ public:
   void set_now(int ms) {
     if (last_ms_ == 0) {
       last_ms_ = ms - 10;
+      auto now = pqrs::dispatcher::time_point(std::chrono::milliseconds(last_ms_));
+      time_source_->set_now(now);
     }
 
     while (last_ms_ < ms) {
