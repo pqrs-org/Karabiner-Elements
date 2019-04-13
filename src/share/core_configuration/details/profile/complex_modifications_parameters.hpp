@@ -14,7 +14,8 @@ public:
                                                                  basic_simultaneous_threshold_milliseconds_(50),
                                                                  basic_to_if_alone_timeout_milliseconds_(1000),
                                                                  basic_to_if_held_down_threshold_milliseconds_(500),
-                                                                 basic_to_delayed_action_delay_milliseconds_(500) {
+                                                                 basic_to_delayed_action_delay_milliseconds_(500),
+                                                                 mouse_motion_to_scroll_speed_(100) {
     update(json);
   }
 
@@ -40,6 +41,10 @@ public:
 
   int get_basic_to_delayed_action_delay_milliseconds(void) const {
     return basic_to_delayed_action_delay_milliseconds_;
+  }
+
+  int get_mouse_motion_to_scroll_speed(void) const {
+    return mouse_motion_to_scroll_speed_;
   }
 
   void update(const nlohmann::json& json) {
@@ -77,6 +82,7 @@ private:
     normalize(basic_to_if_alone_timeout_milliseconds_, 0, std::nullopt, "basic.to_if_alone_timeout_milliseconds");
     normalize(basic_to_if_held_down_threshold_milliseconds_, 0, std::nullopt, "basic.to_if_held_down_threshold_milliseconds");
     normalize(basic_to_delayed_action_delay_milliseconds_, 0, std::nullopt, "basic.to_delayed_action_delay_milliseconds");
+    normalize(mouse_motion_to_scroll_speed_, 1, 10000, "mouse_motion_to_scroll.speed");
   }
 
   void normalize(int& value, std::optional<int> min, std::optional<int> max, const std::string& name) {
@@ -101,6 +107,7 @@ private:
         {"basic.to_if_alone_timeout_milliseconds", basic_to_if_alone_timeout_milliseconds_},
         {"basic.to_if_held_down_threshold_milliseconds", basic_to_if_held_down_threshold_milliseconds_},
         {"basic.to_delayed_action_delay_milliseconds", basic_to_delayed_action_delay_milliseconds_},
+        {"mouse_motion_to_scroll.speed", mouse_motion_to_scroll_speed_},
     };
   }
 
@@ -109,6 +116,7 @@ private:
   int basic_to_if_alone_timeout_milliseconds_;
   int basic_to_if_held_down_threshold_milliseconds_;
   int basic_to_delayed_action_delay_milliseconds_;
+  int mouse_motion_to_scroll_speed_;
 };
 
 inline void to_json(nlohmann::json& json, const complex_modifications_parameters& parameters) {

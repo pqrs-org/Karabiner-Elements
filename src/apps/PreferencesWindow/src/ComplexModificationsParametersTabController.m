@@ -11,6 +11,8 @@
 @property(weak) IBOutlet NSTextField* basicToDelayedActionDelayMillisecondsText;
 @property(weak) IBOutlet NSStepper* basicSimultaneousThresholdMillisecondsStepper;
 @property(weak) IBOutlet NSTextField* basicSimultaneousThresholdMillisecondsText;
+@property(weak) IBOutlet NSStepper* mouseMotionToScrollSpeedStepper;
+@property(weak) IBOutlet NSTextField* mouseMotionToScrollSpeedText;
 @property id configurationLoadedObserver;
 
 @end
@@ -55,6 +57,11 @@
     self.basicSimultaneousThresholdMillisecondsStepper.integerValue = value;
     self.basicSimultaneousThresholdMillisecondsText.integerValue = value;
   }
+  {
+    int value = [coreConfigurationModel getSelectedProfileComplexModificationsParameter:@"mouse_motion_to_scroll.speed"];
+    self.mouseMotionToScrollSpeedStepper.integerValue = value;
+    self.mouseMotionToScrollSpeedText.integerValue = value;
+  }
 }
 
 - (IBAction)valueChanged:(id)sender {
@@ -98,6 +105,16 @@
       stepper.integerValue = text.integerValue;
     }
   }
+  {
+    NSStepper* stepper = self.mouseMotionToScrollSpeedStepper;
+    NSTextField* text = self.mouseMotionToScrollSpeedText;
+    if (sender == stepper) {
+      text.integerValue = stepper.integerValue;
+    }
+    if (sender == text) {
+      stepper.integerValue = text.integerValue;
+    }
+  }
 
   KarabinerKitCoreConfigurationModel* coreConfigurationModel = [KarabinerKitConfigurationManager sharedManager].coreConfigurationModel;
   [coreConfigurationModel setSelectedProfileComplexModificationsParameter:@"basic.to_if_alone_timeout_milliseconds"
@@ -108,6 +125,8 @@
                                                                     value:self.basicToDelayedActionDelayMillisecondsText.intValue];
   [coreConfigurationModel setSelectedProfileComplexModificationsParameter:@"basic.simultaneous_threshold_milliseconds"
                                                                     value:self.basicSimultaneousThresholdMillisecondsText.intValue];
+  [coreConfigurationModel setSelectedProfileComplexModificationsParameter:@"mouse_motion_to_scroll.speed"
+                                                                    value:self.mouseMotionToScrollSpeedText.intValue];
   [coreConfigurationModel save];
 }
 
