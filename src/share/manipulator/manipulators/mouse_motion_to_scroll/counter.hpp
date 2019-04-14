@@ -228,16 +228,9 @@ private:
     std::cout << "mx,my: " << momentum_x_ << "," << momentum_y_ << std::endl;
 #endif
 
-    int x = momentum_x_ / counter_parameters_.get_threshold();
-    int y = momentum_y_ / counter_parameters_.get_threshold();
+    auto x = convert(momentum_x_);
+    auto y = convert(momentum_y_);
     if (x != 0 || y != 0) {
-      if (x != 0) {
-        momentum_x_ -= x * counter_parameters_.get_threshold();
-      }
-      if (y != 0) {
-        momentum_y_ -= y * counter_parameters_.get_threshold();
-      }
-
       pointing_motion motion(0,
                              0,
                              -y,
@@ -251,6 +244,19 @@ private:
     reduce(total_y_, counter_parameters_.get_momentum_minus());
 
     return true;
+  }
+
+  int convert(int& value) const {
+    int threshold = counter_parameters_.get_threshold();
+    if (value > threshold) {
+      value -= threshold;
+      return 1;
+    }
+    if (value < -threshold) {
+      value += threshold;
+      return -1;
+    }
+    return 0;
   }
 
   void reduce(int& value, int amount) const {

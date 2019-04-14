@@ -1,7 +1,7 @@
 [
-    { "horizontal_wheel": -1, "vertical_wheel": 0, "x": 0, "y": 0 },
-    { "horizontal_wheel": -1, "vertical_wheel": 0, "x": 0, "y": 0 },
-    { "horizontal_wheel": -1, "vertical_wheel": 0, "x": 0, "y": 0 },
-    { "horizontal_wheel": 0, "vertical_wheel": 1, "x": 0, "y": 0 },
-    { "horizontal_wheel": 0, "vertical_wheel": 1, "x": 0, "y": 0 }
+    { "time": 220, "wh": -1, "wv": 0 },
+    { "time": 330, "wh": -1, "wv": 0 },
+    { "time": 3390, "wh": -1, "wv": 0 },
+    { "time": 4340, "wh": 0, "wv": 1 },
+    { "time": 4510, "wh": 0, "wv": 1 }
 ]

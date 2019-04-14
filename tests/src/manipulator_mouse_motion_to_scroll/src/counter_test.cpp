@@ -17,9 +17,17 @@ public:
                                                                                                 parameters,
                                                                                                 counter_parameters),
                                                                                        last_ms_(0) {
+    result_ = nlohmann::json::array();
+
     counter_.scroll_event_arrived.connect([this](auto&& pointing_motion) {
-      std::cout << nlohmann::json(pointing_motion) << std::endl;
-      pointing_motions_.push_back(pointing_motion);
+      auto t = time_source_->now() - pqrs::dispatcher::time_point(pqrs::dispatcher::duration(0));
+      auto json = nlohmann::json::object({
+          {"time", t.count() - first_ms_},
+          {"wh", pointing_motion.get_horizontal_wheel()},
+          {"wv", pointing_motion.get_vertical_wheel()},
+      });
+      std::cout << json << "," << std::endl;
+      result_.push_back(json);
     });
   }
 
@@ -27,8 +35,8 @@ public:
     detach_from_dispatcher();
   }
 
-  const std::vector<krbn::pointing_motion> get_pointing_motions(void) const {
-    return pointing_motions_;
+  const nlohmann::json get_result(void) const {
+    return result_;
   }
 
   void update(int x, int y, std::chrono::milliseconds duration) {
@@ -39,6 +47,7 @@ public:
 
   void set_now(int ms) {
     if (last_ms_ == 0) {
+      first_ms_ = ms;
       last_ms_ = ms - 10;
       auto now = pqrs::dispatcher::time_point(std::chrono::milliseconds(last_ms_));
       time_source_->set_now(now);
@@ -65,8 +74,9 @@ public:
 private:
   std::shared_ptr<pqrs::dispatcher::pseudo_time_source> time_source_;
   mouse_motion_to_scroll::counter counter_;
+  int first_ms_;
   int last_ms_;
-  std::vector<krbn::pointing_motion> pointing_motions_;
+  nlohmann::json result_;
 };
 
 TEST_CASE("json/input") {
@@ -112,8 +122,7 @@ TEST_CASE("json/input") {
 
         counter_test.set_now(last_time_stamp.count() + 1000);
 
-        auto expected = expected_json.get<std::vector<krbn::pointing_motion>>();
-        REQUIRE(counter_test.get_pointing_motions() == expected);
+        REQUIRE(counter_test.get_result() == expected_json);
       }
 
       dispatcher->terminate();
