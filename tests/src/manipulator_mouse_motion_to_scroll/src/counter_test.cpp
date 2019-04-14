@@ -101,19 +101,24 @@ TEST_CASE("json/input") {
                                   parameters,
                                   counter_parameters);
 
+        std::chrono::milliseconds first_time_stamp(0);
         std::chrono::milliseconds last_time_stamp(0);
 
         for (const auto& j : input_json) {
           auto time_stamp = std::chrono::duration_cast<std::chrono::milliseconds>(
               std::chrono::nanoseconds(j.at("time_stamp").get<uint64_t>()));
 
+          if (first_time_stamp == std::chrono::milliseconds(0)) {
+            first_time_stamp = time_stamp;
+          }
           last_time_stamp = time_stamp;
 
           auto x = j.at("pointing_motion").at("x").get<int>();
           auto y = j.at("pointing_motion").at("y").get<int>();
 
 #if 0
-          std::cout << "x,y:" << x << "," << y << std::endl;
+          std::cout << "t:" << (time_stamp - first_time_stamp).count()
+                    << " x,y:" << x << "," << y << std::endl;
 #endif
 
           counter_test.set_now(time_stamp.count());

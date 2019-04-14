@@ -34,8 +34,6 @@ public:
                                                           parameters_(parameters),
                                                           counter_parameters_(counter_parameters),
                                                           counter_direction_(counter_direction::none),
-                                                          total_abs_x_(0),
-                                                          total_abs_y_(0),
                                                           total_x_(0),
                                                           total_y_(0),
                                                           momentum_x_(0),
@@ -127,8 +125,6 @@ public:
 
           // Modify total_*
 
-          total_abs_x_ += std::abs(x);
-          total_abs_y_ += std::abs(y);
           total_x_ += x;
           total_y_ += y;
 
@@ -139,7 +135,7 @@ public:
           // Lock direction
 
           if (counter_direction_ == counter_direction::none) {
-            if (total_abs_x_ > total_abs_y_) {
+            if (chunk_x.get_abs_total() > chunk_y.get_abs_total()) {
               counter_direction_ = counter_direction::horizontal;
               total_y_ = 0;
             } else {
@@ -194,8 +190,6 @@ private:
     entries_.empty();
     last_time_stamp_ = std::nullopt;
     counter_direction_ = counter_direction::none;
-    total_abs_x_ = 0;
-    total_abs_y_ = 0;
     total_x_ = 0;
     total_y_ = 0;
     momentum_x_ = 0;
@@ -274,10 +268,6 @@ private:
   std::optional<absolute_time_point> last_time_stamp_;
 
   counter_direction counter_direction_;
-
-  // For direction detection.
-  int total_abs_x_;
-  int total_abs_y_;
 
   int total_x_;
   int total_y_;
