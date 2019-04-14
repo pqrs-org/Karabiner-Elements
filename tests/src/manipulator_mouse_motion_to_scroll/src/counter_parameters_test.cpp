@@ -54,10 +54,10 @@ TEST_CASE("counter_parameters") {
     // momentum_minus_
 
     counter_parameters.set_momentum_minus(-100);
-    REQUIRE(counter_parameters.get_momentum_minus() == 16);
+    REQUIRE(counter_parameters.get_momentum_minus() == 32);
 
     counter_parameters.set_momentum_minus(0);
-    REQUIRE(counter_parameters.get_momentum_minus() == 16);
+    REQUIRE(counter_parameters.get_momentum_minus() == 32);
 
     counter_parameters.set_momentum_minus(1);
     REQUIRE(counter_parameters.get_momentum_minus() == 1);

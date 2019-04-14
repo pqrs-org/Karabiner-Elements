@@ -1,5 +1,6 @@
 #pragma once
 
+#include "core_configuration/core_configuration.hpp"
 #include "counter_chunk_value.hpp"
 #include "counter_direction.hpp"
 #include "counter_entry.hpp"
@@ -28,17 +29,19 @@ public:
   // Methods
 
   counter(std::weak_ptr<pqrs::dispatcher::dispatcher> weak_dispatcher,
-          const counter_parameters& parameters) : dispatcher_client(weak_dispatcher),
-                                                  parameters_(parameters),
-                                                  counter_direction_(counter_direction::none),
-                                                  total_abs_x_(0),
-                                                  total_abs_y_(0),
-                                                  total_x_(0),
-                                                  total_y_(0),
-                                                  momentum_x_(0),
-                                                  momentum_y_(0),
-                                                  momentum_count_(0),
-                                                  momentum_timer_(*this) {
+          const core_configuration::details::complex_modifications_parameters& parameters,
+          const counter_parameters& counter_parameters) : dispatcher_client(weak_dispatcher),
+                                                          parameters_(parameters),
+                                                          counter_parameters_(counter_parameters),
+                                                          counter_direction_(counter_direction::none),
+                                                          total_abs_x_(0),
+                                                          total_abs_y_(0),
+                                                          total_x_(0),
+                                                          total_y_(0),
+                                                          momentum_x_(0),
+                                                          momentum_y_(0),
+                                                          momentum_count_(0),
+                                                          momentum_timer_(*this) {
   }
 
   ~counter(void) {
@@ -68,7 +71,7 @@ public:
           {
             auto duration_milliseconds = pqrs::osx::chrono::make_milliseconds(time_stamp - *last_time_stamp_);
             if (!last_time_stamp_ ||
-                duration_milliseconds > parameters_.get_recent_time_duration_milliseconds()) {
+                duration_milliseconds > counter_parameters_.get_recent_time_duration_milliseconds()) {
               initial = true;
               reset();
             }
@@ -82,7 +85,7 @@ public:
           while (!entries_.empty()) {
             auto t = entries_.front().get_time_stamp();
             auto duration_milliseconds = pqrs::osx::chrono::make_milliseconds(t - time_stamp);
-            if (duration_milliseconds < parameters_.get_recent_time_duration_milliseconds()) {
+            if (duration_milliseconds < counter_parameters_.get_recent_time_duration_milliseconds()) {
               auto x = entries_.front().get_x();
               auto y = entries_.front().get_y();
 
@@ -148,16 +151,20 @@ public:
           // Enlarge total_x, total_y if initial event
 
           if (initial) {
-            if (0 < total_x_ && total_x_ < parameters_.get_threshold()) {
-              total_x_ = parameters_.get_threshold() / parameters_.get_speed_multiplier();
-            } else if (-parameters_.get_threshold() < total_x_ && total_x_ < 0) {
-              total_x_ = -parameters_.get_threshold() / parameters_.get_speed_multiplier();
+            auto least_value = counter_parameters_.get_threshold() /
+                               parameters_.make_mouse_motion_to_scroll_speed_rate() /
+                               counter_parameters_.get_speed_multiplier();
+
+            if (0 < total_x_ && total_x_ < counter_parameters_.get_threshold()) {
+              total_x_ = least_value;
+            } else if (-counter_parameters_.get_threshold() < total_x_ && total_x_ < 0) {
+              total_x_ = -least_value;
             }
 
-            if (0 < total_y_ && total_y_ < parameters_.get_threshold()) {
-              total_y_ = parameters_.get_threshold() / parameters_.get_speed_multiplier();
-            } else if (-parameters_.get_threshold() < total_y_ && total_y_ < 0) {
-              total_y_ = -parameters_.get_threshold() / parameters_.get_speed_multiplier();
+            if (0 < total_y_ && total_y_ < counter_parameters_.get_threshold()) {
+              total_y_ = least_value;
+            } else if (-counter_parameters_.get_threshold() < total_y_ && total_y_ < 0) {
+              total_y_ = -least_value;
             }
           }
 
@@ -173,7 +180,7 @@ public:
               },
               std::chrono::milliseconds(20));
         },
-        when_now() + parameters_.get_recent_time_duration_milliseconds() * 2);
+        when_now() + counter_parameters_.get_recent_time_duration_milliseconds() * 2);
   }
 
   void async_reset(void) {
@@ -202,8 +209,11 @@ private:
       return false;
     }
 
-    int dx = total_x_ * (1.0 / momentum_count_) * parameters_.get_speed_multiplier();
-    int dy = total_y_ * (1.0 / momentum_count_) * parameters_.get_speed_multiplier();
+    double scale = (1.0 / momentum_count_) *
+                   parameters_.make_mouse_motion_to_scroll_speed_rate() *
+                   counter_parameters_.get_speed_multiplier();
+    int dx = total_x_ * scale;
+    int dy = total_y_ * scale;
 
     if (dx == 0 && dy == 0) {
       return false;
@@ -218,14 +228,14 @@ private:
     std::cout << "mx,my: " << momentum_x_ << "," << momentum_y_ << std::endl;
 #endif
 
-    int x = momentum_x_ / parameters_.get_threshold();
-    int y = momentum_y_ / parameters_.get_threshold();
+    int x = momentum_x_ / counter_parameters_.get_threshold();
+    int y = momentum_y_ / counter_parameters_.get_threshold();
     if (x != 0 || y != 0) {
       if (x != 0) {
-        momentum_x_ -= x * parameters_.get_threshold();
+        momentum_x_ -= x * counter_parameters_.get_threshold();
       }
       if (y != 0) {
-        momentum_y_ -= y * parameters_.get_threshold();
+        momentum_y_ -= y * counter_parameters_.get_threshold();
       }
 
       pointing_motion motion(0,
@@ -237,8 +247,8 @@ private:
       });
     }
 
-    reduce(total_x_, parameters_.get_momentum_minus());
-    reduce(total_y_, parameters_.get_momentum_minus());
+    reduce(total_x_, counter_parameters_.get_momentum_minus());
+    reduce(total_y_, counter_parameters_.get_momentum_minus());
 
     return true;
   }
@@ -251,7 +261,8 @@ private:
     }
   }
 
-  const counter_parameters parameters_;
+  const core_configuration::details::complex_modifications_parameters parameters_;
+  const counter_parameters counter_parameters_;
 
   std::deque<counter_entry> entries_;
   std::optional<absolute_time_point> last_time_stamp_;

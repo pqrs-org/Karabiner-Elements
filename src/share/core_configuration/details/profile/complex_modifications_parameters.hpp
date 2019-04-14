@@ -47,6 +47,10 @@ public:
     return mouse_motion_to_scroll_speed_;
   }
 
+  double make_mouse_motion_to_scroll_speed_rate(void) const {
+    return static_cast<double>(mouse_motion_to_scroll_speed_) / 100;
+  }
+
   void update(const nlohmann::json& json) {
     for (const auto& pair : make_map()) {
       if (auto v = json_utility::find_optional<int>(json, pair.first)) {

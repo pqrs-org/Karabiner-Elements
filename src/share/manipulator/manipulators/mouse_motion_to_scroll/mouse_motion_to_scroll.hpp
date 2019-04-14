@@ -72,6 +72,7 @@ public:
       }
 
       counter_ = std::make_unique<counter>(weak_dispatcher_,
+                                           parameters,
                                            counter_parameters_);
 
       counter_->scroll_event_arrived.connect([this](auto&& pointing_motion) {

@@ -12,7 +12,7 @@ public:
   const double speed_multiplier_default_value = 1.0;
   const std::chrono::milliseconds recent_time_duration_milliseconds_default_value = std::chrono::milliseconds(100);
   const int threshold_default_value = 64;
-  const int momentum_minus_default_value = 16;
+  const int momentum_minus_default_value = 32;
 
   counter_parameters(void) : speed_multiplier_(speed_multiplier_default_value),
                              recent_time_duration_milliseconds_(recent_time_duration_milliseconds_default_value),

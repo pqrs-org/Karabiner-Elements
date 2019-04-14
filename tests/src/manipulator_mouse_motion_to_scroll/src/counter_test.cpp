@@ -10,11 +10,13 @@ class counter_test final : pqrs::dispatcher::extra::dispatcher_client {
 public:
   counter_test(std::shared_ptr<pqrs::dispatcher::pseudo_time_source> time_source,
                std::weak_ptr<pqrs::dispatcher::dispatcher> weak_dispatcher,
-               const mouse_motion_to_scroll::counter_parameters& parameters) : dispatcher_client(weak_dispatcher),
-                                                                               time_source_(time_source),
-                                                                               counter_(weak_dispatcher,
-                                                                                        parameters),
-                                                                               last_ms_(0) {
+               const krbn::core_configuration::details::complex_modifications_parameters& parameters,
+               const mouse_motion_to_scroll::counter_parameters& counter_parameters) : dispatcher_client(weak_dispatcher),
+                                                                                       time_source_(time_source),
+                                                                                       counter_(weak_dispatcher,
+                                                                                                parameters,
+                                                                                                counter_parameters),
+                                                                                       last_ms_(0) {
     counter_.scroll_event_arrived.connect([this](auto&& pointing_motion) {
       std::cout << nlohmann::json(pointing_motion) << std::endl;
       pointing_motions_.push_back(pointing_motion);
@@ -82,10 +84,12 @@ TEST_CASE("json/input") {
       auto dispatcher = std::make_shared<pqrs::dispatcher::dispatcher>(time_source);
 
       {
-        mouse_motion_to_scroll::counter_parameters parameters;
+        krbn::core_configuration::details::complex_modifications_parameters parameters;
+        mouse_motion_to_scroll::counter_parameters counter_parameters;
         counter_test counter_test(time_source,
                                   dispatcher,
-                                  parameters);
+                                  parameters,
+                                  counter_parameters);
 
         std::chrono::milliseconds last_time_stamp(0);
 
