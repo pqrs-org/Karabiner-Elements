@@ -23,5 +23,10 @@
         // high speed movement
         "input": "input/counter_5.jsonc",
         "expected": "expected/counter_5.jsonc"
+    },
+    {
+        // one event
+        "input": "input/counter_6.jsonc",
+        "expected": "expected/counter_6.jsonc"
     }
 ]
