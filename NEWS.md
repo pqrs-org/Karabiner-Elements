@@ -4,6 +4,9 @@
 
 - Added `Change mouse motion to scroll` feature.
   <https://pqrs.org/osx/karabiner/complex_modifications/#mouse_motion_to_scroll>
+- complex modifications json will be checked strictly since this release.
+  Please check error messages if your complex modifications does not work after upgrade.
+  <https://pqrs.org/osx/karabiner/json.html#location>
 - Set Karabiner-Elements.app and Karabiner-EventViewer.app immutable
   in order to ensure unremovable them except built-in uninstaller.
   Please use the uninstaller when you want to remove Karabiner-Elements.
@@ -11,9 +14,6 @@
 - Added `--lint-complex-modifications` option into `karabiner_cli`.
   It allows you checks a complex-modifications json file.
 - Added a wait before grabbing device in order to avoid an macOS issue that device will be unusable after Karabiner-Elements is quit.
-- complex modifications json will be checked strictly since this release.
-  Please check error messages if your complex modifications does not work after upgrade.
-  <https://pqrs.org/osx/karabiner/json.html#location>
 - Changes for users who write their own json.
   - `to` and `to_*` support single object, e.g., `"to": { "key_code": "spacebar" }`.
   - New modifier aliases are added: `left_alt`, `left_gui`, `right_alt`, `right_gui`.
