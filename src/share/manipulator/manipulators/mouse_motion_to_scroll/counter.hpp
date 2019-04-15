@@ -39,6 +39,7 @@ public:
                                                           momentum_x_(0),
                                                           momentum_y_(0),
                                                           momentum_count_(0),
+                                                          momentum_wait_(0),
                                                           momentum_timer_(*this) {
   }
 
@@ -173,6 +174,7 @@ public:
           // Update momentum values
 
           momentum_count_ = 0;
+          momentum_wait_ = 0;
 
           momentum_timer_.start(
               [this] {
@@ -204,6 +206,11 @@ private:
   }
 
   bool momentum_scroll(void) {
+    if (momentum_wait_ > 0) {
+      --momentum_wait_;
+      return true;
+    }
+
     ++momentum_count_;
     if (momentum_count_ == 0) {
       return false;
@@ -245,6 +252,8 @@ private:
     if (total_x_ == 0 && total_y_ == 0) {
       return false;
     }
+
+    momentum_wait_ = momentum_count_;
 
     return true;
   }
@@ -293,6 +302,7 @@ private:
   int momentum_x_;
   int momentum_y_;
   int momentum_count_;
+  int momentum_wait_;
 
   pqrs::dispatcher::extra::timer momentum_timer_;
 };
