@@ -147,9 +147,12 @@ public:
           // Enlarge total_x, total_y if initial event
 
           if (initial) {
-            auto least_value = counter_parameters_.get_threshold() /
-                               parameters_.make_mouse_motion_to_scroll_speed_rate() /
-                               counter_parameters_.get_speed_multiplier();
+            int least_value = std::ceil(counter_parameters_.get_threshold() /
+                                        parameters_.make_mouse_motion_to_scroll_speed_rate() /
+                                        counter_parameters_.get_speed_multiplier());
+            if (least_value == 0) {
+              least_value = 1;
+            }
 
             if (0 < total_x_ && total_x_ < counter_parameters_.get_threshold()) {
               total_x_ = least_value;
@@ -209,14 +212,11 @@ private:
     int dx = total_x_ * scale;
     int dy = total_y_ * scale;
 
-    if (dx == 0 && dy == 0) {
-      return false;
-    }
-
     momentum_x_ += dx;
     momentum_y_ += dy;
 
 #if 0
+    std::cout << "scape: " << scale << std::endl;
     std::cout << "tx,ty: " << total_x_ << "," << total_y_ << std::endl;
     std::cout << "dx,dy: " << dx << "," << dy << std::endl;
     std::cout << "mx,my: " << momentum_x_ << "," << momentum_y_ << std::endl;
@@ -236,6 +236,10 @@ private:
 
     reduce(total_x_, counter_parameters_.get_momentum_minus());
     reduce(total_y_, counter_parameters_.get_momentum_minus());
+
+    if (total_x_ == 0 && total_y_ == 0) {
+      return false;
+    }
 
     return true;
   }

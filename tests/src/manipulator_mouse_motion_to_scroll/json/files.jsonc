@@ -28,5 +28,10 @@
         // one event
         "input": "input/counter_6.jsonc",
         "expected": "expected/counter_6.jsonc"
+    },
+    {
+        // one event (speed 1000%)
+        "input": "input/counter_7.jsonc",
+        "expected": "expected/counter_7.jsonc"
     }
 ]
