@@ -5,7 +5,7 @@
 - Added `Change mouse motion to scroll` feature.
   <https://pqrs.org/osx/karabiner/complex_modifications/#mouse_motion_to_scroll>
 - complex modifications json will be checked strictly since this release.
-  Please check error messages if your complex modifications does not work after upgrade.
+  Please check error messages if your complex modifications do not work after upgrade.
   <https://pqrs.org/osx/karabiner/json.html#location>
 - Set Karabiner-Elements.app and Karabiner-EventViewer.app immutable
   in order to ensure unremovable them except built-in uninstaller.
