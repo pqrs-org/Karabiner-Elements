@@ -94,7 +94,7 @@ TEST_CASE("json/input") {
       auto dispatcher = std::make_shared<pqrs::dispatcher::dispatcher>(time_source);
 
       {
-        krbn::core_configuration::details::complex_modifications_parameters parameters;
+        krbn::core_configuration::details::complex_modifications_parameters parameters(input_json.at("parameters"));
         mouse_motion_to_scroll::counter_parameters counter_parameters;
         counter_test counter_test(time_source,
                                   dispatcher,
@@ -104,7 +104,7 @@ TEST_CASE("json/input") {
         std::chrono::milliseconds first_time_stamp(0);
         std::chrono::milliseconds last_time_stamp(0);
 
-        for (const auto& j : input_json) {
+        for (const auto& j : input_json.at("input")) {
           auto time_stamp = std::chrono::duration_cast<std::chrono::milliseconds>(
               std::chrono::nanoseconds(j.at("time_stamp").get<uint64_t>()));
 
