@@ -147,23 +147,26 @@ public:
           // Enlarge total_x, total_y if initial event
 
           if (initial) {
-            int least_value = std::ceil(counter_parameters_.get_threshold() /
-                                        parameters_.make_mouse_motion_to_scroll_speed_rate() /
-                                        counter_parameters_.get_speed_multiplier());
+            int least_value = round_up(counter_parameters_.get_threshold() /
+                                       parameters_.make_mouse_motion_to_scroll_speed_rate() /
+                                       counter_parameters_.get_speed_multiplier());
+#if 0
+            std::cout << "least_value " << least_value << std::endl;
+#endif
             if (least_value == 0) {
               least_value = 1;
             }
 
-            if (0 < total_x_ && total_x_ < counter_parameters_.get_threshold()) {
-              total_x_ = least_value;
-            } else if (-counter_parameters_.get_threshold() < total_x_ && total_x_ < 0) {
-              total_x_ = -least_value;
+            if (0 < total_x_) {
+              total_x_ = std::max(total_x_, least_value);
+            } else if (total_x_ < 0) {
+              total_x_ = std::min(total_x_, -least_value);
             }
 
-            if (0 < total_y_ && total_y_ < counter_parameters_.get_threshold()) {
-              total_y_ = least_value;
-            } else if (-counter_parameters_.get_threshold() < total_y_ && total_y_ < 0) {
-              total_y_ = -least_value;
+            if (0 < total_y_) {
+              total_y_ = std::max(total_y_, least_value);
+            } else if (total_y_ < 0) {
+              total_y_ = std::min(total_y_, -least_value);
             }
           }
 
@@ -209,21 +212,23 @@ private:
     double scale = (1.0 / momentum_count_) *
                    parameters_.make_mouse_motion_to_scroll_speed_rate() *
                    counter_parameters_.get_speed_multiplier();
-    int dx = total_x_ * scale;
-    int dy = total_y_ * scale;
+    int dx = round_up(total_x_ * scale);
+    int dy = round_up(total_y_ * scale);
 
     momentum_x_ += dx;
     momentum_y_ += dy;
+
+    auto x = convert(momentum_x_);
+    auto y = convert(momentum_y_);
 
 #if 0
     std::cout << "scape: " << scale << std::endl;
     std::cout << "tx,ty: " << total_x_ << "," << total_y_ << std::endl;
     std::cout << "dx,dy: " << dx << "," << dy << std::endl;
     std::cout << "mx,my: " << momentum_x_ << "," << momentum_y_ << std::endl;
+    std::cout << "x,y: " << x << "," << y << std::endl;
 #endif
 
-    auto x = convert(momentum_x_);
-    auto y = convert(momentum_y_);
     if (x != 0 || y != 0) {
       pointing_motion motion(0,
                              0,
@@ -244,13 +249,22 @@ private:
     return true;
   }
 
+  int round_up(double value) const {
+    if (value > 0) {
+      return std::ceil(value);
+    } else if (value < 0) {
+      return std::ceil(value) - 1;
+    }
+    return 0;
+  }
+
   int convert(int& value) const {
     int threshold = counter_parameters_.get_threshold();
-    if (value > threshold) {
+    if (value >= threshold) {
       value -= threshold;
       return 1;
     }
-    if (value < -threshold) {
+    if (value <= -threshold) {
       value += threshold;
       return -1;
     }

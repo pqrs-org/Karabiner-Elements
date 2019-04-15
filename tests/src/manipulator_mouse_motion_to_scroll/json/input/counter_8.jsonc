@@ -1,0 +1,16 @@
+{
+    "parameters": {
+        "mouse_motion_to_scroll.speed": 1000
+    },
+    "input": [
+        {
+            "pointing_motion": {
+                "horizontal_wheel": 0,
+                "vertical_wheel": 0,
+                "x": 0,
+                "y": -1
+            },
+            "time_stamp": 749608555343959
+        }
+    ]
+}
