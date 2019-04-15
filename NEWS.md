@@ -2,10 +2,10 @@
 
 ## Beta
 
-- Added `Change mouse motion to scroll` feature.
-  <https://pqrs.org/osx/karabiner/complex_modifications/#mouse_motion_to_scroll>
-  Note:
-  You have to enable your mice on Devices tab when you want to use this feature.
+- Added `Change mouse motion to scroll` feature.<br/>
+  <https://pqrs.org/osx/karabiner/complex_modifications/#mouse_motion_to_scroll> <br/>
+  Note:<br/>
+  You have to enable your mice on Devices tab when you want to use this feature.<br/>
   <https://pqrs.org/osx/karabiner/document.html#configuration-devices>
 - complex modifications json will be checked strictly since this release.
   Please check error messages if your complex modifications do not work after upgrade.
