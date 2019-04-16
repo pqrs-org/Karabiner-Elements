@@ -216,9 +216,17 @@ private:
       return false;
     }
 
-    double scale = (1.0 / momentum_count_) *
-                   parameters_.make_mouse_motion_to_scroll_speed_rate() *
-                   counter_parameters_.get_speed_multiplier();
+    double multiplier = parameters_.make_mouse_motion_to_scroll_speed_rate() *
+                        counter_parameters_.get_speed_multiplier();
+    if (multiplier == 0.0) {
+      return false;
+    }
+
+    double scale = (1.0 / momentum_count_) * multiplier;
+    if (scale == 0.0) {
+      return false;
+    }
+
     int dx = round_up(total_x_ * scale);
     int dy = round_up(total_y_ * scale);
 
@@ -229,6 +237,7 @@ private:
     auto y = convert(momentum_y_);
 
 #if 0
+    std::cout << "multiplier: " << multiplier << std::endl;
     std::cout << "scape: " << scale << std::endl;
     std::cout << "tx,ty: " << total_x_ << "," << total_y_ << std::endl;
     std::cout << "dx,dy: " << dx << "," << dy << std::endl;
@@ -246,8 +255,8 @@ private:
       });
     }
 
-    reduce(total_x_, counter_parameters_.get_momentum_minus());
-    reduce(total_y_, counter_parameters_.get_momentum_minus());
+    reduce(total_x_, counter_parameters_.get_momentum_minus() / multiplier);
+    reduce(total_y_, counter_parameters_.get_momentum_minus() / multiplier);
 
     if (total_x_ == 0 && total_y_ == 0) {
       return false;
