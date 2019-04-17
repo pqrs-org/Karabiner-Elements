@@ -39,18 +39,14 @@ public:
     return result_;
   }
 
-  void update(int x, int y, std::chrono::milliseconds duration) {
-    counter_.update(krbn::pointing_motion(x, y, 0, 0),
-                    krbn::absolute_time_point(0) +
-                        pqrs::osx::chrono::make_absolute_time_duration(duration));
+  void update(int x, int y, pqrs::dispatcher::time_point time_point) {
+    counter_.update(krbn::pointing_motion(x, y, 0, 0), time_point);
   }
 
   void set_now(int ms) {
     if (last_ms_ == 0) {
       first_ms_ = ms;
       last_ms_ = ms - 10;
-      auto now = pqrs::dispatcher::time_point(std::chrono::milliseconds(last_ms_));
-      time_source_->set_now(now);
     }
 
     while (last_ms_ < ms) {
@@ -116,15 +112,17 @@ TEST_CASE("json/input") {
           auto x = j.at("pointing_motion").at("x").get<int>();
           auto y = j.at("pointing_motion").at("y").get<int>();
 
+          counter_test.update(x,
+                              y,
+                              pqrs::dispatcher::time_point(time_stamp));
+        }
+
 #if 0
           std::cout << "t:" << (time_stamp - first_time_stamp).count()
                     << " x,y:" << x << "," << y << std::endl;
 #endif
 
-          counter_test.set_now(time_stamp.count());
-          counter_test.update(x, y, time_stamp);
-        }
-
+        counter_test.set_now(first_time_stamp.count());
         counter_test.set_now(last_time_stamp.count() + 1000);
 
         REQUIRE(counter_test.get_result() == expected_json);

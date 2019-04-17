@@ -10,9 +10,9 @@ class counter_entry final {
 public:
   counter_entry(int x,
                 int y,
-                absolute_time_point time_stamp) : x_(x),
-                                                  y_(y),
-                                                  time_stamp_(time_stamp) {
+                pqrs::dispatcher::time_point time_point) : x_(x),
+                                                           y_(y),
+                                                           time_point_(time_point) {
   }
 
   int get_x(void) const {
@@ -23,14 +23,14 @@ public:
     return y_;
   }
 
-  absolute_time_point get_time_stamp(void) const {
-    return time_stamp_;
+  pqrs::dispatcher::time_point get_time_point(void) const {
+    return time_point_;
   }
 
 private:
   int x_;
   int y_;
-  absolute_time_point time_stamp_;
+  pqrs::dispatcher::time_point time_point_;
 };
 } // namespace mouse_motion_to_scroll
 } // namespace manipulators

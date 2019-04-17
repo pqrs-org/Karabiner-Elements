@@ -123,7 +123,7 @@ public:
         if (auto m = front_input_event.get_event().find<pointing_motion>()) {
           front_input_event.set_valid(false);
 
-          counter_->update(*m, front_input_event.get_event_time_stamp().get_time_stamp());
+          counter_->update(*m, when_now());
 
           from_mandatory_modifiers_ = *from_mandatory_modifiers;
           device_id_ = front_input_event.get_device_id();
