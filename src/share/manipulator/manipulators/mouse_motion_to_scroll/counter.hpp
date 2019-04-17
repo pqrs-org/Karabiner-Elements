@@ -133,6 +133,35 @@ private:
     auto x = chunk_x.make_accumulated_value();
     auto y = chunk_y.make_accumulated_value();
 
+    // Reset direction
+
+    if (counter_direction_ == counter_direction::horizontal) {
+      if (std::abs(y) > std::abs(x) * 4) {
+        counter_direction_ = counter_direction::none;
+      }
+    } else if (counter_direction_ == counter_direction::vertical) {
+      if (std::abs(x) > std::abs(y) * 4) {
+        counter_direction_ = counter_direction::none;
+      }
+    }
+
+    // Set direction
+
+    if (counter_direction_ == counter_direction::none) {
+      if (chunk_x.get_abs_total() > chunk_y.get_abs_total()) {
+        counter_direction_ = counter_direction::horizontal;
+      } else {
+        counter_direction_ = counter_direction::vertical;
+      }
+
+      if (counter_direction_ != counter_direction::none) {
+        total_x_ = 0;
+        total_y_ = 0;
+        momentum_x_ = 0;
+        momentum_y_ = 0;
+      }
+    }
+
     // Apply direction
 
     if (counter_direction_ == counter_direction::horizontal) {
@@ -163,18 +192,6 @@ private:
 
     if (total_x_ == 0 && total_y_ == 0) {
       return true;
-    }
-
-    // Lock direction
-
-    if (counter_direction_ == counter_direction::none) {
-      if (chunk_x.get_abs_total() > chunk_y.get_abs_total()) {
-        counter_direction_ = counter_direction::horizontal;
-        total_y_ = 0;
-      } else {
-        counter_direction_ = counter_direction::vertical;
-        total_x_ = 0;
-      }
     }
 
     // Enlarge total_x, total_y if initial event
