@@ -72,23 +72,19 @@ public:
 
   void async_reset(void) {
     enqueue_to_dispatcher([this] {
-      reset();
+      entries_.empty();
+      last_time_point_ = std::nullopt;
+      counter_direction_ = counter_direction::none;
+      total_x_ = 0;
+      total_y_ = 0;
+      momentum_x_ = 0;
+      momentum_y_ = 0;
+      momentum_count_ = 0;
+      momentum_wait_ = 0;
     });
   }
 
 private:
-  void reset(void) {
-    entries_.empty();
-    last_time_point_ = std::nullopt;
-    counter_direction_ = counter_direction::none;
-    total_x_ = 0;
-    total_y_ = 0;
-    momentum_x_ = 0;
-    momentum_y_ = 0;
-    momentum_count_ = 0;
-    momentum_wait_ = 0;
-  }
-
   bool process_entries(void) {
     if (entries_.empty()) {
       return false;
@@ -106,7 +102,7 @@ private:
     if (!last_time_point_ ||
         front_time_point - *last_time_point_ > recent_time_duration_milliseconds) {
       initial = true;
-      reset();
+      counter_direction_ = counter_direction::none;
     }
 
     // Accumulate chunk_x,chunk_y
@@ -154,12 +150,10 @@ private:
         counter_direction_ = counter_direction::vertical;
       }
 
-      if (counter_direction_ != counter_direction::none) {
-        total_x_ = 0;
-        total_y_ = 0;
-        momentum_x_ = 0;
-        momentum_y_ = 0;
-      }
+      total_x_ = 0;
+      total_y_ = 0;
+      momentum_x_ = 0;
+      momentum_y_ = 0;
     }
 
     // Apply direction
