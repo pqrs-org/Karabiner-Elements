@@ -26,7 +26,9 @@ public:
           {"wh", pointing_motion.get_horizontal_wheel()},
           {"wv", pointing_motion.get_vertical_wheel()},
       });
+#if 0
       std::cout << json << "," << std::endl;
+#endif
       result_.push_back(json);
     });
   }
@@ -51,7 +53,9 @@ public:
 
     while (last_ms_ < ms) {
       last_ms_ += 10;
-      // std::cout << "now:" << last_ms_ << std::endl;
+#if 0
+      std::cout << "now:" << last_ms_ << std::endl;
+#endif
       auto now = pqrs::dispatcher::time_point(std::chrono::milliseconds(last_ms_));
       auto wait = pqrs::make_thread_wait();
 

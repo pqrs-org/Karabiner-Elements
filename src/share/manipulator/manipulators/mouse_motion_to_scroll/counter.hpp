@@ -73,7 +73,8 @@ public:
   void async_reset(void) {
     enqueue_to_dispatcher([this] {
       entries_.empty();
-      last_time_point_ = std::nullopt;
+      last_entry_time_point_ = std::nullopt;
+      last_scroll_time_point_ = std::nullopt;
       counter_direction_ = counter_direction::none;
       total_x_ = 0;
       total_y_ = 0;
@@ -99,10 +100,11 @@ private:
 
     bool initial = false;
 
-    if (!last_time_point_ ||
-        front_time_point - *last_time_point_ > recent_time_duration_milliseconds) {
+    if (!last_entry_time_point_ ||
+        front_time_point - *last_entry_time_point_ > recent_time_duration_milliseconds) {
       initial = true;
       counter_direction_ = counter_direction::none;
+      momentum_minus_ = counter_parameters_.get_threshold();
     }
 
     // Accumulate chunk_x,chunk_y
@@ -119,7 +121,7 @@ private:
         chunk_x.add(x);
         chunk_y.add(y);
 
-        last_time_point_ = t;
+        last_entry_time_point_ = t;
         entries_.pop_front();
       } else {
         break;
@@ -154,6 +156,7 @@ private:
       total_y_ = 0;
       momentum_x_ = 0;
       momentum_y_ = 0;
+      momentum_minus_ = counter_parameters_.get_threshold();
     }
 
     // Apply direction
@@ -170,14 +173,23 @@ private:
       // Keep total_abs_x_
       total_x_ = 0;
       momentum_x_ = 0;
+      momentum_minus_ = counter_parameters_.get_threshold();
       initial = true;
     }
     if (y != 0 && pqrs::make_sign(total_y_) != pqrs::make_sign(y)) {
       // Keep total_abs_y_
       total_y_ = 0;
       momentum_y_ = 0;
+      momentum_minus_ = counter_parameters_.get_threshold();
       initial = true;
     }
+
+    // Multiply x,y
+
+    double multiplier = parameters_.make_mouse_motion_to_scroll_speed_rate() *
+                        counter_parameters_.get_speed_multiplier();
+    x *= multiplier;
+    y *= multiplier;
 
     // Modify total_*
 
@@ -191,9 +203,7 @@ private:
     // Enlarge total_x, total_y if initial event
 
     if (initial) {
-      int least_value = round_up(counter_parameters_.get_threshold() /
-                                 parameters_.make_mouse_motion_to_scroll_speed_rate() /
-                                 counter_parameters_.get_speed_multiplier());
+      int least_value = counter_parameters_.get_threshold();
 #if 0
             std::cout << "least_value " << least_value << std::endl;
 #endif
@@ -216,6 +226,33 @@ private:
 
     // Update momentum values
 
+    {
+      auto value = static_cast<double>(std::max(std::abs(total_x_), std::abs(total_y_)));
+      value /= counter_parameters_.get_threshold();
+
+      if (value > 10) {
+        value = 10;
+      }
+
+      auto minus = static_cast<int>(static_cast<double>(counter_parameters_.get_threshold()) / std::pow(value, 4));
+
+      if (minus <= 0) {
+        minus = 1;
+      }
+
+      momentum_minus_ = std::min(momentum_minus_, minus);
+
+#if 0
+      std::cout << "total_x_ " << total_x_ << std::endl;
+      std::cout << "total_y_ " << total_y_ << std::endl;
+      std::cout << "value " << value << std::endl;
+      std::cout << "pow " << std::pow(value, 4) << std::endl;
+      std::cout << "minus " << minus << std::endl;
+      std::cout << "momentum_minus_ " << momentum_minus_ << std::endl;
+#endif
+    }
+
+    last_scroll_time_point_ = std::nullopt;
     momentum_count_ = 0;
     momentum_wait_ = 0;
 
@@ -233,17 +270,14 @@ private:
       return false;
     }
 
-    double multiplier = parameters_.make_mouse_motion_to_scroll_speed_rate() *
-                        counter_parameters_.get_speed_multiplier();
-    if (multiplier == 0.0) {
+    auto now = when_now();
+
+    if (last_scroll_time_point_ &&
+        now - *last_scroll_time_point_ > std::chrono::milliseconds(300)) {
       return false;
     }
 
-    double scale = (1.0 / momentum_count_) * multiplier;
-    if (scale == 0.0) {
-      return false;
-    }
-
+    double scale = (1.0 / momentum_count_);
     int dx = round_up(total_x_ * scale);
     int dy = round_up(total_y_ * scale);
 
@@ -254,7 +288,6 @@ private:
     auto y = convert(momentum_y_);
 
 #if 0
-    std::cout << "multiplier: " << multiplier << std::endl;
     std::cout << "scape: " << scale << std::endl;
     std::cout << "tx,ty: " << total_x_ << "," << total_y_ << std::endl;
     std::cout << "dx,dy: " << dx << "," << dy << std::endl;
@@ -270,16 +303,18 @@ private:
       enqueue_to_dispatcher([this, motion] {
         scroll_event_arrived(motion);
       });
+
+      last_scroll_time_point_ = now;
     }
 
-    reduce(total_x_, counter_parameters_.get_momentum_minus() / multiplier);
-    reduce(total_y_, counter_parameters_.get_momentum_minus() / multiplier);
+    reduce(total_x_, momentum_minus_);
+    reduce(total_y_, momentum_minus_);
 
     if (total_x_ == 0 && total_y_ == 0) {
       return false;
     }
 
-    momentum_wait_ = momentum_count_;
+    momentum_wait_ = std::min(momentum_count_, 10);
 
     return true;
   }
@@ -318,7 +353,8 @@ private:
   const counter_parameters counter_parameters_;
 
   std::deque<counter_entry> entries_;
-  std::optional<pqrs::dispatcher::time_point> last_time_point_;
+  std::optional<pqrs::dispatcher::time_point> last_entry_time_point_;
+  std::optional<pqrs::dispatcher::time_point> last_scroll_time_point_;
 
   counter_direction counter_direction_;
 
@@ -327,6 +363,7 @@ private:
 
   int momentum_x_;
   int momentum_y_;
+  int momentum_minus_;
   int momentum_count_;
   int momentum_wait_;
 

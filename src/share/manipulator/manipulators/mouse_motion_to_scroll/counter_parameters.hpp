@@ -14,12 +14,14 @@ public:
   static constexpr int threshold_default_value = 128;
   static constexpr int momentum_minus_default_value = 32;
   static constexpr int direction_lock_threshold_default_value = 4;
+  static constexpr int scroll_event_interval_milliseconds_threshold_default_value = 300;
 
   counter_parameters(void) : speed_multiplier_(speed_multiplier_default_value),
                              recent_time_duration_milliseconds_(recent_time_duration_milliseconds_default_value),
                              threshold_(threshold_default_value),
                              momentum_minus_(momentum_minus_default_value),
-                             direction_lock_threshold_(direction_lock_threshold_default_value) {
+                             direction_lock_threshold_(direction_lock_threshold_default_value),
+                             scroll_event_interval_milliseconds_threshold_(scroll_event_interval_milliseconds_threshold_default_value) {
   }
 
   double get_speed_multiplier(void) const {
@@ -82,12 +84,25 @@ public:
     direction_lock_threshold_ = value;
   }
 
+  int get_scroll_event_interval_milliseconds_threshold(void) const {
+    return scroll_event_interval_milliseconds_threshold_;
+  }
+
+  void set_scroll_event_interval_milliseconds_threshold(int value) {
+    if (value <= 0) {
+      value = scroll_event_interval_milliseconds_threshold_default_value;
+    }
+
+    scroll_event_interval_milliseconds_threshold_ = value;
+  }
+
 private:
   double speed_multiplier_;
   std::chrono::milliseconds recent_time_duration_milliseconds_;
   int threshold_;
   int momentum_minus_;
   int direction_lock_threshold_;
+  int scroll_event_interval_milliseconds_threshold_;
 };
 } // namespace mouse_motion_to_scroll
 } // namespace manipulators

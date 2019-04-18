@@ -80,5 +80,19 @@ TEST_CASE("counter_parameters") {
 
     p.set_direction_lock_threshold(1000);
     REQUIRE(p.get_direction_lock_threshold() == 1000);
+
+    // scroll_event_interval_milliseconds_threshold_
+
+    p.set_scroll_event_interval_milliseconds_threshold(-100);
+    REQUIRE(p.get_scroll_event_interval_milliseconds_threshold() == counter_parameters::scroll_event_interval_milliseconds_threshold_default_value);
+
+    p.set_scroll_event_interval_milliseconds_threshold(0);
+    REQUIRE(p.get_scroll_event_interval_milliseconds_threshold() == counter_parameters::scroll_event_interval_milliseconds_threshold_default_value);
+
+    p.set_scroll_event_interval_milliseconds_threshold(1);
+    REQUIRE(p.get_scroll_event_interval_milliseconds_threshold() == 1);
+
+    p.set_scroll_event_interval_milliseconds_threshold(1000);
+    REQUIRE(p.get_scroll_event_interval_milliseconds_threshold() == 1000);
   }
 }
