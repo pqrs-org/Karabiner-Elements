@@ -9,15 +9,17 @@ namespace manipulators {
 namespace mouse_motion_to_scroll {
 struct counter_parameters final {
 public:
-  const double speed_multiplier_default_value = 1.0;
-  const std::chrono::milliseconds recent_time_duration_milliseconds_default_value = std::chrono::milliseconds(100);
-  const int threshold_default_value = 128;
-  const int momentum_minus_default_value = 32;
+  static constexpr double speed_multiplier_default_value = 1.0;
+  static constexpr std::chrono::milliseconds recent_time_duration_milliseconds_default_value = std::chrono::milliseconds(100);
+  static constexpr int threshold_default_value = 128;
+  static constexpr int momentum_minus_default_value = 32;
+  static constexpr int direction_lock_threshold_default_value = 4;
 
   counter_parameters(void) : speed_multiplier_(speed_multiplier_default_value),
                              recent_time_duration_milliseconds_(recent_time_duration_milliseconds_default_value),
                              threshold_(threshold_default_value),
-                             momentum_minus_(momentum_minus_default_value) {
+                             momentum_minus_(momentum_minus_default_value),
+                             direction_lock_threshold_(direction_lock_threshold_default_value) {
   }
 
   double get_speed_multiplier(void) const {
@@ -68,11 +70,24 @@ public:
     momentum_minus_ = value;
   }
 
+  int get_direction_lock_threshold(void) const {
+    return direction_lock_threshold_;
+  }
+
+  void set_direction_lock_threshold(int value) {
+    if (value <= 0) {
+      value = direction_lock_threshold_default_value;
+    }
+
+    direction_lock_threshold_ = value;
+  }
+
 private:
   double speed_multiplier_;
   std::chrono::milliseconds recent_time_duration_milliseconds_;
   int threshold_;
   int momentum_minus_;
+  int direction_lock_threshold_;
 };
 } // namespace mouse_motion_to_scroll
 } // namespace manipulators

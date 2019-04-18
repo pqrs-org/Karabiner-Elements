@@ -6,63 +6,79 @@
 namespace mouse_motion_to_scroll = krbn::manipulator::manipulators::mouse_motion_to_scroll;
 
 TEST_CASE("counter_parameters") {
+  using counter_parameters = mouse_motion_to_scroll::counter_parameters;
+
   {
-    mouse_motion_to_scroll::counter_parameters counter_parameters;
+    counter_parameters p;
 
     // speed_multiplier_
 
-    counter_parameters.set_speed_multiplier(-100);
-    REQUIRE(counter_parameters.get_speed_multiplier() == Approx(1.0));
+    p.set_speed_multiplier(-100);
+    REQUIRE(p.get_speed_multiplier() == Approx(counter_parameters::speed_multiplier_default_value));
 
-    counter_parameters.set_speed_multiplier(0);
-    REQUIRE(counter_parameters.get_speed_multiplier() == Approx(1.0));
+    p.set_speed_multiplier(0);
+    REQUIRE(p.get_speed_multiplier() == Approx(counter_parameters::speed_multiplier_default_value));
 
-    counter_parameters.set_speed_multiplier(0.5);
-    REQUIRE(counter_parameters.get_speed_multiplier() == Approx(0.5));
+    p.set_speed_multiplier(0.5);
+    REQUIRE(p.get_speed_multiplier() == Approx(0.5));
 
-    counter_parameters.set_speed_multiplier(1.5);
-    REQUIRE(counter_parameters.get_speed_multiplier() == Approx(1.5));
+    p.set_speed_multiplier(1.5);
+    REQUIRE(p.get_speed_multiplier() == Approx(1.5));
 
     // recent_time_duration_milliseconds_
 
-    counter_parameters.set_recent_time_duration_milliseconds(std::chrono::milliseconds(-100));
-    REQUIRE(counter_parameters.get_recent_time_duration_milliseconds() == std::chrono::milliseconds(100));
+    p.set_recent_time_duration_milliseconds(std::chrono::milliseconds(-100));
+    REQUIRE(p.get_recent_time_duration_milliseconds() == counter_parameters::recent_time_duration_milliseconds_default_value);
 
-    counter_parameters.set_recent_time_duration_milliseconds(std::chrono::milliseconds(0));
-    REQUIRE(counter_parameters.get_recent_time_duration_milliseconds() == std::chrono::milliseconds(100));
+    p.set_recent_time_duration_milliseconds(std::chrono::milliseconds(0));
+    REQUIRE(p.get_recent_time_duration_milliseconds() == counter_parameters::recent_time_duration_milliseconds_default_value);
 
-    counter_parameters.set_recent_time_duration_milliseconds(std::chrono::milliseconds(1));
-    REQUIRE(counter_parameters.get_recent_time_duration_milliseconds() == std::chrono::milliseconds(1));
+    p.set_recent_time_duration_milliseconds(std::chrono::milliseconds(1));
+    REQUIRE(p.get_recent_time_duration_milliseconds() == std::chrono::milliseconds(1));
 
-    counter_parameters.set_recent_time_duration_milliseconds(std::chrono::milliseconds(200));
-    REQUIRE(counter_parameters.get_recent_time_duration_milliseconds() == std::chrono::milliseconds(200));
+    p.set_recent_time_duration_milliseconds(std::chrono::milliseconds(200));
+    REQUIRE(p.get_recent_time_duration_milliseconds() == std::chrono::milliseconds(200));
 
     // threshold_
 
-    counter_parameters.set_threshold(-100);
-    REQUIRE(counter_parameters.get_threshold() == 128);
+    p.set_threshold(-100);
+    REQUIRE(p.get_threshold() == counter_parameters::threshold_default_value);
 
-    counter_parameters.set_threshold(0);
-    REQUIRE(counter_parameters.get_threshold() == 128);
+    p.set_threshold(0);
+    REQUIRE(p.get_threshold() == counter_parameters::threshold_default_value);
 
-    counter_parameters.set_threshold(1);
-    REQUIRE(counter_parameters.get_threshold() == 1);
+    p.set_threshold(1);
+    REQUIRE(p.get_threshold() == 1);
 
-    counter_parameters.set_threshold(1000);
-    REQUIRE(counter_parameters.get_threshold() == 1000);
+    p.set_threshold(1000);
+    REQUIRE(p.get_threshold() == 1000);
 
     // momentum_minus_
 
-    counter_parameters.set_momentum_minus(-100);
-    REQUIRE(counter_parameters.get_momentum_minus() == 32);
+    p.set_momentum_minus(-100);
+    REQUIRE(p.get_momentum_minus() == counter_parameters::momentum_minus_default_value);
 
-    counter_parameters.set_momentum_minus(0);
-    REQUIRE(counter_parameters.get_momentum_minus() == 32);
+    p.set_momentum_minus(0);
+    REQUIRE(p.get_momentum_minus() == counter_parameters::momentum_minus_default_value);
 
-    counter_parameters.set_momentum_minus(1);
-    REQUIRE(counter_parameters.get_momentum_minus() == 1);
+    p.set_momentum_minus(1);
+    REQUIRE(p.get_momentum_minus() == 1);
 
-    counter_parameters.set_momentum_minus(1000);
-    REQUIRE(counter_parameters.get_momentum_minus() == 1000);
+    p.set_momentum_minus(1000);
+    REQUIRE(p.get_momentum_minus() == 1000);
+
+    // direction_lock_threshold_
+
+    p.set_direction_lock_threshold(-100);
+    REQUIRE(p.get_direction_lock_threshold() == counter_parameters::direction_lock_threshold_default_value);
+
+    p.set_direction_lock_threshold(0);
+    REQUIRE(p.get_direction_lock_threshold() == counter_parameters::direction_lock_threshold_default_value);
+
+    p.set_direction_lock_threshold(1);
+    REQUIRE(p.get_direction_lock_threshold() == 1);
+
+    p.set_direction_lock_threshold(1000);
+    REQUIRE(p.get_direction_lock_threshold() == 1000);
   }
 }
