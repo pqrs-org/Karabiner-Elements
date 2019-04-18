@@ -132,11 +132,11 @@ private:
     // Reset direction
 
     if (counter_direction_ == counter_direction::horizontal) {
-      if (std::abs(y) > std::abs(x) * 4) {
+      if (std::abs(y) > std::abs(x) * counter_parameters_.get_direction_lock_threshold()) {
         counter_direction_ = counter_direction::none;
       }
     } else if (counter_direction_ == counter_direction::vertical) {
-      if (std::abs(x) > std::abs(y) * 4) {
+      if (std::abs(x) > std::abs(y) * counter_parameters_.get_direction_lock_threshold()) {
         counter_direction_ = counter_direction::none;
       }
     }
