@@ -31,8 +31,8 @@ public:
     optional_modifiers_ = value;
   }
 
-  std::optional<std::unordered_set<modifier_flag>> test_modifiers(const modifier_flag_manager& modifier_flag_manager) const {
-    std::unordered_set<modifier_flag> modifier_flags;
+  std::shared_ptr<std::unordered_set<modifier_flag>> test_modifiers(const modifier_flag_manager& modifier_flag_manager) const {
+    auto modifier_flags = std::make_shared<std::unordered_set<modifier_flag>>();
 
     // If mandatory_modifiers_ contains modifier::any, return all active modifier_flags.
 
@@ -40,7 +40,7 @@ public:
       for (auto i = static_cast<uint32_t>(modifier_flag::zero) + 1; i != static_cast<uint32_t>(modifier_flag::end_); ++i) {
         auto flag = modifier_flag(i);
         if (modifier_flag_manager.is_pressed(flag)) {
-          modifier_flags.insert(flag);
+          modifier_flags->insert(flag);
         }
       }
       return modifier_flags;
@@ -54,10 +54,10 @@ public:
       if (mandatory_modifiers_.find(m) != std::end(mandatory_modifiers_)) {
         auto pair = test_modifier(modifier_flag_manager, m);
         if (!pair.first) {
-          return std::nullopt;
+          return nullptr;
         }
         if (pair.second != modifier_flag::zero) {
-          modifier_flags.insert(pair.second);
+          modifier_flags->insert(pair.second);
         }
       }
     }
@@ -83,7 +83,7 @@ public:
 
       for (const auto& flag : extra_modifier_flags) {
         if (modifier_flag_manager.is_pressed(flag)) {
-          return std::nullopt;
+          return nullptr;
         }
       }
     }

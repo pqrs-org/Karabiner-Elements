@@ -202,8 +202,6 @@ public:
 
         switch (front_input_event.get_event_type()) {
           case event_type::key_down: {
-            std::unordered_set<modifier_flag> from_mandatory_modifiers;
-
             // ----------------------------------------
             // Check whether event is target.
 
@@ -212,11 +210,13 @@ public:
             }
 
             if (is_target) {
+              std::shared_ptr<std::unordered_set<modifier_flag>> from_mandatory_modifiers;
+
               // Check mandatory_modifiers and conditions
 
               if (is_target) {
                 if (auto modifiers = from_.get_from_modifiers_definition().test_modifiers(output_event_queue->get_modifier_flag_manager())) {
-                  from_mandatory_modifiers = *modifiers;
+                  from_mandatory_modifiers = modifiers;
                 } else {
                   is_target = false;
                 }
@@ -400,11 +400,11 @@ public:
               if (is_target) {
                 // Add manipulated_original_event if not manipulated.
 
-                if (!current_manipulated_original_event) {
+                if (!current_manipulated_original_event && from_mandatory_modifiers) {
                   current_manipulated_original_event =
                       std::make_shared<manipulated_original_event::manipulated_original_event>(
                           from_events,
-                          from_mandatory_modifiers,
+                          *from_mandatory_modifiers,
                           front_input_event.get_event_time_stamp().get_time_stamp());
                   manipulated_original_events_.push_back(current_manipulated_original_event);
                 }

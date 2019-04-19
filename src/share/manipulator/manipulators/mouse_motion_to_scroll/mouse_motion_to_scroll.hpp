@@ -131,7 +131,7 @@ public:
 
           counter_->update(*m, when_now());
 
-          from_mandatory_modifiers_ = *from_mandatory_modifiers;
+          from_mandatory_modifiers_ = from_mandatory_modifiers;
           device_id_ = front_input_event.get_device_id();
           original_event_ = front_input_event.get_original_event();
           weak_output_event_queue_ = output_event_queue;
@@ -166,11 +166,11 @@ public:
   }
 
 private:
-  std::optional<std::unordered_set<modifier_flag>> test_conditions(const event_queue::entry& front_input_event,
-                                                                   std::shared_ptr<event_queue::queue> output_event_queue) const {
+  std::shared_ptr<std::unordered_set<modifier_flag>> test_conditions(const event_queue::entry& front_input_event,
+                                                                     std::shared_ptr<event_queue::queue> output_event_queue) const {
     if (!condition_manager_.is_fulfilled(front_input_event,
                                          output_event_queue->get_manipulator_environment())) {
-      return std::nullopt;
+      return nullptr;
     }
 
     return from_modifiers_definition_.test_modifiers(output_event_queue->get_modifier_flag_manager());
@@ -183,13 +183,15 @@ private:
 
       // Post from_mandatory_modifiers key_up
 
-      base::post_lazy_modifier_key_events(from_mandatory_modifiers_,
-                                          event_type::key_up,
-                                          device_id_,
-                                          event_time_stamp,
-                                          time_stamp_delay,
-                                          original_event_,
-                                          *output_event_queue);
+      if (from_mandatory_modifiers_) {
+        base::post_lazy_modifier_key_events(*from_mandatory_modifiers_,
+                                            event_type::key_up,
+                                            device_id_,
+                                            event_time_stamp,
+                                            time_stamp_delay,
+                                            original_event_,
+                                            *output_event_queue);
+      }
 
       // Post new event
 
@@ -206,13 +208,15 @@ private:
 
       // Post from_mandatory_modifiers key_down
 
-      base::post_lazy_modifier_key_events(from_mandatory_modifiers_,
-                                          event_type::key_down,
-                                          device_id_,
-                                          event_time_stamp,
-                                          time_stamp_delay,
-                                          original_event_,
-                                          *output_event_queue);
+      if (from_mandatory_modifiers_) {
+        base::post_lazy_modifier_key_events(*from_mandatory_modifiers_,
+                                            event_type::key_down,
+                                            device_id_,
+                                            event_time_stamp,
+                                            time_stamp_delay,
+                                            original_event_,
+                                            *output_event_queue);
+      }
 
       krbn_notification_center::get_instance().enqueue_input_event_arrived(*this);
     }
@@ -222,7 +226,7 @@ private:
   counter_parameters counter_parameters_;
   std::unique_ptr<counter> counter_;
 
-  std::unordered_set<modifier_flag> from_mandatory_modifiers_;
+  std::shared_ptr<std::unordered_set<modifier_flag>> from_mandatory_modifiers_;
   device_id device_id_;
   event_queue::event original_event_;
   std::weak_ptr<event_queue::queue> weak_output_event_queue_;

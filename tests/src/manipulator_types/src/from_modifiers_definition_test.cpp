@@ -112,9 +112,9 @@ TEST_CASE("from_event_definition.test_modifiers") {
 
       auto actual = d.test_modifiers(modifier_flag_manager);
       if (t.at("expected").is_null()) {
-        REQUIRE(actual == std::nullopt);
+        REQUIRE(actual == nullptr);
       } else {
-        REQUIRE(actual == t.at("expected").get<std::unordered_set<krbn::modifier_flag>>());
+        REQUIRE(*actual == t.at("expected").get<std::unordered_set<krbn::modifier_flag>>());
       }
     }
   }
