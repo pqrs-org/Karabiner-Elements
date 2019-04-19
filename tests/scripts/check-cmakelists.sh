@@ -1,5 +1,7 @@
 #!/bin/bash
 
+# Check whether all cpp files exist in CMakeLists.txt.
+
 for cmakelists in $(dirname $0)/../src/*/CMakeLists.txt; do
     d=$(dirname $cmakelists)
     (
