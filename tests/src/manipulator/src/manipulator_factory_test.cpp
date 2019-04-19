@@ -1,5 +1,6 @@
 #include <catch2/catch.hpp>
 
+#include "../../share/manipulator_conditions_helper.hpp"
 #include "../../share/manipulator_helper.hpp"
 
 namespace modifier_definition = krbn::manipulator::modifier_definition;
@@ -68,6 +69,56 @@ TEST_CASE("manipulator.manipulator_factory") {
     REQUIRE(basic->get_to()[0].get_event_definition().get_key_code() == std::nullopt);
     REQUIRE(basic->get_to()[0].get_event_definition().get_pointing_button() == krbn::pointing_button::button1);
     REQUIRE(basic->get_to()[0].get_modifiers() == std::set<modifier_definition::modifier>());
+  }
+}
+
+TEST_CASE("manipulator_factory::make_device_if_condition") {
+  krbn::unit_testing::manipulator_conditions_helper manipulator_conditions_helper;
+
+  nlohmann::json json({
+      {"identifiers", {
+                          {
+                              "vendor_id",
+                              1234,
+                          },
+                          {
+                              "product_id",
+                              5678,
+                          },
+                          {
+                              "is_keyboard",
+                              true,
+                          },
+                          {
+                              "is_pointing_device",
+                              false,
+                          },
+                      }},
+  });
+  krbn::core_configuration::details::device device(json);
+
+  auto device_id_1234_5678_keyboard = manipulator_conditions_helper.prepare_device(
+      krbn::vendor_id(1234), krbn::product_id(5678), true, false);
+
+  auto device_id_1234_5678_mouse = manipulator_conditions_helper.prepare_device(
+      krbn::vendor_id(1234), krbn::product_id(5678), false, true);
+
+  auto device_id_1234_5000_keyboard = manipulator_conditions_helper.prepare_device(
+      krbn::vendor_id(1234), krbn::product_id(5000), true, false);
+
+  auto c = krbn::manipulator::manipulator_factory::make_device_if_condition(device);
+
+  {
+    auto e = manipulator_conditions_helper.make_event_queue_entry(device_id_1234_5678_keyboard);
+    REQUIRE(c->is_fulfilled(e, manipulator_conditions_helper.get_manipulator_environment()) == true);
+  }
+  {
+    auto e = manipulator_conditions_helper.make_event_queue_entry(device_id_1234_5678_mouse);
+    REQUIRE(c->is_fulfilled(e, manipulator_conditions_helper.get_manipulator_environment()) == false);
+  }
+  {
+    auto e = manipulator_conditions_helper.make_event_queue_entry(device_id_1234_5000_keyboard);
+    REQUIRE(c->is_fulfilled(e, manipulator_conditions_helper.get_manipulator_environment()) == false);
   }
 }
 

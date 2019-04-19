@@ -72,6 +72,20 @@ inline std::shared_ptr<conditions::base> make_condition(const nlohmann::json& js
         fmt::format("unknown condition type `{0}` in `{1}`", type, json.dump()));
   }
 }
+
+inline std::shared_ptr<conditions::base> make_device_if_condition(const core_configuration::details::device& device) {
+  nlohmann::json json;
+  json["type"] = "device_if";
+  json["identifiers"] = nlohmann::json::array({
+      nlohmann::json::object({
+          {"vendor_id", type_safe::get(device.get_identifiers().get_vendor_id())},
+          {"product_id", type_safe::get(device.get_identifiers().get_product_id())},
+          {"is_keyboard", device.get_identifiers().get_is_keyboard()},
+          {"is_pointing_device", device.get_identifiers().get_is_pointing_device()},
+      }),
+  });
+  return std::make_shared<conditions::device>(json);
+}
 } // namespace manipulator_factory
 } // namespace manipulator
 } // namespace krbn
