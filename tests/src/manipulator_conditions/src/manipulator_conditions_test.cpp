@@ -1,6 +1,7 @@
 #include <catch2/catch.hpp>
 
 #include "../../share/json_helper.hpp"
+#include "../../share/manipulator_conditions_helper.hpp"
 #include "manipulator/condition_manager.hpp"
 #include "manipulator/manipulator_factory.hpp"
 
@@ -297,74 +298,47 @@ TEST_CASE("conditions.input_source") {
 }
 
 TEST_CASE("conditions.device") {
-  krbn::manipulator::manipulator_environment manipulator_environment;
+  krbn::unit_testing::manipulator_conditions_helper manipulator_conditions_helper;
+  auto& environment = manipulator_conditions_helper.get_manipulator_environment();
 
-  auto device_id_8888_9999 = krbn::device_id(88889999);
-  auto device_properties_8888_9999 = krbn::device_properties()
-                                         .set(device_id_8888_9999)
-                                         .set(krbn::vendor_id(8888))
-                                         .set(krbn::product_id(9999))
-                                         .set_is_keyboard(true)
-                                         .set_is_pointing_device(false);
-  manipulator_environment.insert_device_properties(device_id_8888_9999,
-                                                   device_properties_8888_9999);
+  auto device_id_8888_9999 = manipulator_conditions_helper.prepare_device(
+      krbn::vendor_id(8888), krbn::product_id(9999), std::nullopt, true, false);
 
-  auto device_id_1000_2000 = krbn::device_id(10002000);
-  auto device_properties_1000_2000 = krbn::device_properties()
-                                         .set(device_id_1000_2000)
-                                         .set(krbn::vendor_id(1000))
-                                         .set(krbn::product_id(2000))
-                                         .set_is_keyboard(true)
-                                         .set_is_pointing_device(false);
-  manipulator_environment.insert_device_properties(device_id_1000_2000,
-                                                   device_properties_1000_2000);
+  auto device_id_1000_2000 = manipulator_conditions_helper.prepare_device(
+      krbn::vendor_id(1000), krbn::product_id(2000), std::nullopt, true, false);
 
-  auto device_id_1000_2001 = krbn::device_id(10002001);
-  auto device_properties_1000_2001 = krbn::device_properties()
-                                         .set(device_id_1000_2001)
-                                         .set(krbn::vendor_id(1000))
-                                         .set(krbn::product_id(2001))
-                                         .set_is_keyboard(true)
-                                         .set_is_pointing_device(false);
-  manipulator_environment.insert_device_properties(device_id_1000_2001,
-                                                   device_properties_1000_2001);
+  auto device_id_1000_2001 = manipulator_conditions_helper.prepare_device(
+      krbn::vendor_id(1000), krbn::product_id(2001), std::nullopt, true, false);
 
-  auto device_id_1001_2000 = krbn::device_id(10012000);
-  auto device_properties_1001_2000 = krbn::device_properties()
-                                         .set(device_id_1001_2000)
-                                         .set(krbn::vendor_id(1001))
-                                         .set(krbn::product_id(2000))
-                                         .set_is_keyboard(true)
-                                         .set_is_pointing_device(false);
-  manipulator_environment.insert_device_properties(device_id_1001_2000,
-                                                   device_properties_1001_2000);
+  auto device_id_1001_2000 = manipulator_conditions_helper.prepare_device(
+      krbn::vendor_id(1001), krbn::product_id(2000), std::nullopt, true, false);
 
-  auto device_id_1001_2001 = krbn::device_id(10012001);
-  auto device_properties_1001_2001 = krbn::device_properties()
-                                         .set(device_id_1001_2001)
-                                         .set(krbn::vendor_id(1001))
-                                         .set(krbn::product_id(2001))
-                                         .set_is_keyboard(true)
-                                         .set_is_pointing_device(false);
-  manipulator_environment.insert_device_properties(device_id_1001_2001,
-                                                   device_properties_1001_2001);
+  auto device_id_1001_2001 = manipulator_conditions_helper.prepare_device(
+      krbn::vendor_id(1001), krbn::product_id(2001), std::nullopt, true, false);
 
-  auto device_id_1099_9999 = krbn::device_id(10999999);
-  auto device_properties_1099_9999 = krbn::device_properties()
-                                         .set(device_id_1099_9999)
-                                         .set(krbn::vendor_id(1099))
-                                         .set(krbn::product_id(9999))
-                                         .set_is_keyboard(true)
-                                         .set_is_pointing_device(false);
-  manipulator_environment.insert_device_properties(device_id_1099_9999,
-                                                   device_properties_1099_9999);
+  auto device_id_1099_9999 = manipulator_conditions_helper.prepare_device(
+      krbn::vendor_id(1099), krbn::product_id(9999), std::nullopt, true, false);
 
-#define ENTRY(DEVICE_ID)                                                                      \
-  krbn::event_queue::entry(DEVICE_ID,                                                         \
-                           krbn::event_queue::event_time_stamp(krbn::absolute_time_point(0)), \
-                           krbn::event_queue::event(krbn::key_code::a),                       \
-                           krbn::event_type::key_down,                                        \
-                           krbn::event_queue::event(krbn::key_code::a))
+  auto device_id_1000_2000_tt = manipulator_conditions_helper.prepare_device(
+      krbn::vendor_id(1000), krbn::product_id(2000), std::nullopt, true, true);
+
+  auto device_id_1000_2000_tf = manipulator_conditions_helper.prepare_device(
+      krbn::vendor_id(1000), krbn::product_id(2000), std::nullopt, true, false);
+
+  auto device_id_1000_2000_ft = manipulator_conditions_helper.prepare_device(
+      krbn::vendor_id(1000), krbn::product_id(2000), std::nullopt, false, true);
+
+  auto device_id_1000_2000_ff = manipulator_conditions_helper.prepare_device(
+      krbn::vendor_id(1000), krbn::product_id(2000), std::nullopt, false, false);
+
+  auto device_id_1000_2000_3000 = manipulator_conditions_helper.prepare_device(
+      krbn::vendor_id(1000), krbn::product_id(2000), krbn::location_id(3000), std::nullopt, std::nullopt);
+
+  auto device_id_1000_2000_none = manipulator_conditions_helper.prepare_device(
+      krbn::vendor_id(1000), krbn::product_id(2000), std::nullopt, std::nullopt, std::nullopt);
+
+  auto device_id_1000_2000_4000 = manipulator_conditions_helper.prepare_device(
+      krbn::vendor_id(1000), krbn::product_id(2000), krbn::location_id(4000), std::nullopt, std::nullopt);
 
   {
     actual_examples_helper helper("device_if.json");
@@ -374,18 +348,30 @@ TEST_CASE("conditions.device") {
                 "`vendor_id` must be specified: `{\"description\":\"condition is ignored if error\"}`",
             }));
 
-    REQUIRE(helper.get_condition_manager().is_fulfilled(ENTRY(device_id_8888_9999),
-                                                        manipulator_environment) == false);
-    REQUIRE(helper.get_condition_manager().is_fulfilled(ENTRY(device_id_1000_2000),
-                                                        manipulator_environment) == true);
-    REQUIRE(helper.get_condition_manager().is_fulfilled(ENTRY(device_id_1000_2001),
-                                                        manipulator_environment) == false);
-    REQUIRE(helper.get_condition_manager().is_fulfilled(ENTRY(device_id_1001_2000),
-                                                        manipulator_environment) == false);
-    REQUIRE(helper.get_condition_manager().is_fulfilled(ENTRY(device_id_1001_2001),
-                                                        manipulator_environment) == true);
-    REQUIRE(helper.get_condition_manager().is_fulfilled(ENTRY(device_id_1099_9999),
-                                                        manipulator_environment) == true);
+    {
+      auto e = manipulator_conditions_helper.make_event_queue_entry(device_id_8888_9999);
+      REQUIRE(helper.get_condition_manager().is_fulfilled(e, environment) == false);
+    }
+    {
+      auto e = manipulator_conditions_helper.make_event_queue_entry(device_id_1000_2000);
+      REQUIRE(helper.get_condition_manager().is_fulfilled(e, environment) == true);
+    }
+    {
+      auto e = manipulator_conditions_helper.make_event_queue_entry(device_id_1000_2001);
+      REQUIRE(helper.get_condition_manager().is_fulfilled(e, environment) == false);
+    }
+    {
+      auto e = manipulator_conditions_helper.make_event_queue_entry(device_id_1001_2000);
+      REQUIRE(helper.get_condition_manager().is_fulfilled(e, environment) == false);
+    }
+    {
+      auto e = manipulator_conditions_helper.make_event_queue_entry(device_id_1001_2001);
+      REQUIRE(helper.get_condition_manager().is_fulfilled(e, environment) == true);
+    }
+    {
+      auto e = manipulator_conditions_helper.make_event_queue_entry(device_id_1099_9999);
+      REQUIRE(helper.get_condition_manager().is_fulfilled(e, environment) == true);
+    }
   }
   {
     actual_examples_helper helper("device_unless.json");
@@ -395,18 +381,30 @@ TEST_CASE("conditions.device") {
                 "`vendor_id` must be specified: `{\"description\":\"condition is ignored if error\"}`",
             }));
 
-    REQUIRE(helper.get_condition_manager().is_fulfilled(ENTRY(device_id_8888_9999),
-                                                        manipulator_environment) == true);
-    REQUIRE(helper.get_condition_manager().is_fulfilled(ENTRY(device_id_1000_2000),
-                                                        manipulator_environment) == false);
-    REQUIRE(helper.get_condition_manager().is_fulfilled(ENTRY(device_id_1000_2001),
-                                                        manipulator_environment) == true);
-    REQUIRE(helper.get_condition_manager().is_fulfilled(ENTRY(device_id_1001_2000),
-                                                        manipulator_environment) == true);
-    REQUIRE(helper.get_condition_manager().is_fulfilled(ENTRY(device_id_1001_2001),
-                                                        manipulator_environment) == false);
-    REQUIRE(helper.get_condition_manager().is_fulfilled(ENTRY(device_id_1099_9999),
-                                                        manipulator_environment) == false);
+    {
+      auto e = manipulator_conditions_helper.make_event_queue_entry(device_id_8888_9999);
+      REQUIRE(helper.get_condition_manager().is_fulfilled(e, environment) == true);
+    }
+    {
+      auto e = manipulator_conditions_helper.make_event_queue_entry(device_id_1000_2000);
+      REQUIRE(helper.get_condition_manager().is_fulfilled(e, environment) == false);
+    }
+    {
+      auto e = manipulator_conditions_helper.make_event_queue_entry(device_id_1000_2001);
+      REQUIRE(helper.get_condition_manager().is_fulfilled(e, environment) == true);
+    }
+    {
+      auto e = manipulator_conditions_helper.make_event_queue_entry(device_id_1001_2000);
+      REQUIRE(helper.get_condition_manager().is_fulfilled(e, environment) == true);
+    }
+    {
+      auto e = manipulator_conditions_helper.make_event_queue_entry(device_id_1001_2001);
+      REQUIRE(helper.get_condition_manager().is_fulfilled(e, environment) == false);
+    }
+    {
+      auto e = manipulator_conditions_helper.make_event_queue_entry(device_id_1099_9999);
+      REQUIRE(helper.get_condition_manager().is_fulfilled(e, environment) == false);
+    }
   }
 
   {
@@ -420,58 +418,30 @@ TEST_CASE("conditions.device") {
     json["identifiers"].back()["is_pointing_device"] = false;
     krbn::manipulator::conditions::device condition(json);
 
-    REQUIRE(condition.is_fulfilled(ENTRY(device_id_1000_2000),
-                                   manipulator_environment) == true);
-    REQUIRE(condition.is_fulfilled(ENTRY(device_id_1000_2001),
-                                   manipulator_environment) == false);
+    {
+      auto e = manipulator_conditions_helper.make_event_queue_entry(device_id_1000_2000);
+      REQUIRE(condition.is_fulfilled(e, environment) == true);
+    }
+    {
+      auto e = manipulator_conditions_helper.make_event_queue_entry(device_id_1000_2001);
+      REQUIRE(condition.is_fulfilled(e, environment) == false);
+    }
 
     {
-      auto dp = krbn::device_properties()
-                    .set(krbn::device_id(0))
-                    .set(krbn::vendor_id(1000))
-                    .set(krbn::product_id(2000))
-                    .set_is_keyboard(true)
-                    .set_is_pointing_device(false);
-      manipulator_environment.insert_device_properties(krbn::device_id(0),
-                                                       dp);
-      REQUIRE(condition.is_fulfilled(ENTRY(krbn::device_id(0)),
-                                     manipulator_environment) == true);
+      auto e = manipulator_conditions_helper.make_event_queue_entry(device_id_1000_2000_tf);
+      REQUIRE(condition.is_fulfilled(e, environment) == true);
     }
     {
-      auto dp = krbn::device_properties()
-                    .set(krbn::device_id(0))
-                    .set(krbn::vendor_id(1000))
-                    .set(krbn::product_id(2000))
-                    .set_is_keyboard(false)
-                    .set_is_pointing_device(false);
-      manipulator_environment.insert_device_properties(krbn::device_id(0),
-                                                       dp);
-      REQUIRE(condition.is_fulfilled(ENTRY(krbn::device_id(0)),
-                                     manipulator_environment) == false);
+      auto e = manipulator_conditions_helper.make_event_queue_entry(device_id_1000_2000_ff);
+      REQUIRE(condition.is_fulfilled(e, environment) == false);
     }
     {
-      auto dp = krbn::device_properties()
-                    .set(krbn::device_id(0))
-                    .set(krbn::vendor_id(1000))
-                    .set(krbn::product_id(2000))
-                    .set_is_keyboard(true)
-                    .set_is_pointing_device(true);
-      manipulator_environment.insert_device_properties(krbn::device_id(0),
-                                                       dp);
-      REQUIRE(condition.is_fulfilled(ENTRY(krbn::device_id(0)),
-                                     manipulator_environment) == false);
+      auto e = manipulator_conditions_helper.make_event_queue_entry(device_id_1000_2000_tt);
+      REQUIRE(condition.is_fulfilled(e, environment) == false);
     }
     {
-      auto dp = krbn::device_properties()
-                    .set(krbn::device_id(0))
-                    .set(krbn::vendor_id(1000))
-                    .set(krbn::product_id(2000))
-                    .set_is_keyboard(false)
-                    .set_is_pointing_device(true);
-      manipulator_environment.insert_device_properties(krbn::device_id(0),
-                                                       dp);
-      REQUIRE(condition.is_fulfilled(ENTRY(krbn::device_id(0)),
-                                     manipulator_environment) == false);
+      auto e = manipulator_conditions_helper.make_event_queue_entry(device_id_1000_2000_ft);
+      REQUIRE(condition.is_fulfilled(e, environment) == false);
     }
   }
 
@@ -486,40 +456,18 @@ TEST_CASE("conditions.device") {
     krbn::manipulator::conditions::device condition(json);
 
     {
-      auto dp = krbn::device_properties()
-                    .set(krbn::device_id(0))
-                    .set(krbn::vendor_id(1000))
-                    .set(krbn::product_id(2000))
-                    .set(krbn::location_id(3000));
-      manipulator_environment.insert_device_properties(krbn::device_id(0),
-                                                       dp);
-      REQUIRE(condition.is_fulfilled(ENTRY(krbn::device_id(0)),
-                                     manipulator_environment) == true);
+      auto e = manipulator_conditions_helper.make_event_queue_entry(device_id_1000_2000_3000);
+      REQUIRE(condition.is_fulfilled(e, environment) == true);
     }
     {
-      auto dp = krbn::device_properties()
-                    .set(krbn::device_id(0))
-                    .set(krbn::vendor_id(1000))
-                    .set(krbn::product_id(2000));
-      manipulator_environment.insert_device_properties(krbn::device_id(0),
-                                                       dp);
-      REQUIRE(condition.is_fulfilled(ENTRY(krbn::device_id(0)),
-                                     manipulator_environment) == false);
+      auto e = manipulator_conditions_helper.make_event_queue_entry(device_id_1000_2000_none);
+      REQUIRE(condition.is_fulfilled(e, environment) == false);
     }
     {
-      auto dp = krbn::device_properties()
-                    .set(krbn::device_id(0))
-                    .set(krbn::vendor_id(1000))
-                    .set(krbn::product_id(2000))
-                    .set(krbn::location_id(4000));
-      manipulator_environment.insert_device_properties(krbn::device_id(0),
-                                                       dp);
-      REQUIRE(condition.is_fulfilled(ENTRY(krbn::device_id(0)),
-                                     manipulator_environment) == false);
+      auto e = manipulator_conditions_helper.make_event_queue_entry(device_id_1000_2000_4000);
+      REQUIRE(condition.is_fulfilled(e, environment) == false);
     }
   }
-
-#undef ENTRY
 }
 
 TEST_CASE("conditions.keyboard_type") {

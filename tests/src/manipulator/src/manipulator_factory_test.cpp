@@ -98,13 +98,13 @@ TEST_CASE("manipulator_factory::make_device_if_condition") {
   krbn::core_configuration::details::device device(json);
 
   auto device_id_1234_5678_keyboard = manipulator_conditions_helper.prepare_device(
-      krbn::vendor_id(1234), krbn::product_id(5678), true, false);
+      krbn::vendor_id(1234), krbn::product_id(5678), std::nullopt, true, false);
 
   auto device_id_1234_5678_mouse = manipulator_conditions_helper.prepare_device(
-      krbn::vendor_id(1234), krbn::product_id(5678), false, true);
+      krbn::vendor_id(1234), krbn::product_id(5678), std::nullopt, false, true);
 
   auto device_id_1234_5000_keyboard = manipulator_conditions_helper.prepare_device(
-      krbn::vendor_id(1234), krbn::product_id(5000), true, false);
+      krbn::vendor_id(1234), krbn::product_id(5000), std::nullopt, true, false);
 
   auto c = krbn::manipulator::manipulator_factory::make_device_if_condition(device);
 

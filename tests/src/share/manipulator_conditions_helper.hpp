@@ -18,19 +18,31 @@ public:
     return manipulator_environment_;
   }
 
-  krbn::device_id prepare_device(krbn::vendor_id vendor_id,
-                                 krbn::product_id product_id,
-                                 bool is_keyboard,
-                                 bool is_pointing_device) {
+  krbn::device_id prepare_device(std::optional<krbn::vendor_id> vendor_id,
+                                 std::optional<krbn::product_id> product_id,
+                                 std::optional<krbn::location_id> location_id,
+                                 std::optional<bool> is_keyboard,
+                                 std::optional<bool> is_pointing_device) {
     ++last_device_id_;
     krbn::device_id device_id(last_device_id_);
 
-    auto properties = krbn::device_properties()
-                          .set(device_id)
-                          .set(vendor_id)
-                          .set(product_id)
-                          .set_is_keyboard(is_keyboard)
-                          .set_is_pointing_device(is_pointing_device);
+    auto properties = krbn::device_properties().set(device_id);
+    if (vendor_id) {
+      properties.set(*vendor_id);
+    }
+    if (product_id) {
+      properties.set(*product_id);
+    }
+    if (location_id) {
+      properties.set(*location_id);
+    }
+    if (is_keyboard) {
+      properties.set_is_keyboard(*is_keyboard);
+    }
+    if (is_pointing_device) {
+      properties.set_is_pointing_device(*is_pointing_device);
+    }
+
     manipulator_environment_.insert_device_properties(device_id,
                                                       properties);
 
