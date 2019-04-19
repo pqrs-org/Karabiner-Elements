@@ -1,4 +1,5 @@
 all:
+	bash scripts/check-cmakelists.sh
 	@for d in `find lib src -type d | sort`; do \
 		if [ -f "$$d/Makefile" ]; then \
 			echo "[Test] $$d"; \
