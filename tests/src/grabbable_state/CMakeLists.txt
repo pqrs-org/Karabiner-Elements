@@ -6,10 +6,10 @@ project (karabiner_test)
 
 add_executable(
   karabiner_test
-  grabbable_state_manager_test.cpp
-  grabbable_state_queue_test.cpp
-  grabbable_state_queues_manager_test.cpp
-  test.cpp
+  src/grabbable_state_manager_test.cpp
+  src/grabbable_state_queue_test.cpp
+  src/grabbable_state_queues_manager_test.cpp
+  src/test.cpp
 )
 
 target_link_libraries(

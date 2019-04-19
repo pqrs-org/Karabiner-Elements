@@ -1,6 +1,6 @@
 #include <catch2/catch.hpp>
 
-#include "../share/manipulator_helper.hpp"
+#include "../../share/manipulator_helper.hpp"
 
 namespace modifier_definition = krbn::manipulator::modifier_definition;
 using krbn::manipulator::event_definition;

@@ -1,6 +1,6 @@
 #include <catch2/catch.hpp>
 
-#include "../share/manipulator_helper.hpp"
+#include "../../share/manipulator_helper.hpp"
 #include "manipulator/manipulators/post_event_to_virtual_devices/post_event_to_virtual_devices.hpp"
 
 TEST_CASE("actual examples") {

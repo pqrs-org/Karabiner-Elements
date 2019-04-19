@@ -6,9 +6,9 @@ project (karabiner_test)
 
 add_executable(
   karabiner_test
-  complex_modifications_assets_file_test.cpp
-  complex_modifications_assets_manager_test.cpp
-  test.cpp
+  src/complex_modifications_assets_file_test.cpp
+  src/complex_modifications_assets_manager_test.cpp
+  src/test.cpp
 )
 
 target_link_libraries(

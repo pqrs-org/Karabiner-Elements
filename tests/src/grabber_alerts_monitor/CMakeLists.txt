@@ -6,8 +6,8 @@ project (karabiner_test)
 
 add_executable(
   karabiner_test
-  grabber_alerts_monitor_test.cpp
-  test.cpp
+  src/grabber_alerts_monitor_test.cpp
+  src/test.cpp
 )
 
 target_link_libraries(

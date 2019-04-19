@@ -6,8 +6,8 @@ project (karabiner_test)
 
 add_executable(
   karabiner_test
-  post_event_to_virtual_devices_test.cpp
-  test.cpp
+  src/post_event_to_virtual_devices_test.cpp
+  src/test.cpp
 )
 
 target_link_libraries(
@@ -18,7 +18,7 @@ target_link_libraries(
 
 add_executable(
   overwrite_expected_results
-  overwrite_expected_results.cpp
+  src/overwrite_expected_results.cpp
 )
 
 target_link_libraries(

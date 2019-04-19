@@ -6,10 +6,10 @@ project (karabiner_test)
 
 add_executable(
   karabiner_test
-  event_queue_test.cpp
-  event_queue_event_time_stamp_test.cpp
-  event_queue_utility_test.cpp
-  test.cpp
+  src/event_queue_test.cpp
+  src/event_queue_event_time_stamp_test.cpp
+  src/event_queue_utility_test.cpp
+  src/test.cpp
 )
 
 target_link_libraries(

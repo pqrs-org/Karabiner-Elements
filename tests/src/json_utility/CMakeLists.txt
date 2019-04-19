@@ -6,8 +6,8 @@ project (karabiner_test)
 
 add_executable(
   karabiner_test
-  json_test.cpp
-  test.cpp
+  src/json_test.cpp
+  src/test.cpp
 )
 
 target_link_libraries(

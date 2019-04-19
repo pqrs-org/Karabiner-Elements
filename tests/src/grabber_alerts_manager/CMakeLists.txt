@@ -8,8 +8,8 @@ include_directories(../../../src/core/grabber/include)
 
 add_executable(
   karabiner_test
-  grabber_alerts_manager_test.cpp
-  test.cpp
+  src/grabber_alerts_manager_test.cpp
+  src/test.cpp
 )
 
 target_link_libraries(

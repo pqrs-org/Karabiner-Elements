@@ -1,6 +1,6 @@
 #include <catch2/catch.hpp>
 
-#include "../share/manipulator_helper.hpp"
+#include "../../share/manipulator_helper.hpp"
 
 TEST_CASE("manipulator.manipulator_manager") {
   auto helper = std::make_unique<krbn::unit_testing::manipulator_helper>();

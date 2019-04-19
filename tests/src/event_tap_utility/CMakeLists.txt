@@ -6,8 +6,8 @@ project (karabiner_test)
 
 add_executable(
   karabiner_test
-  event_tap_utility_test.cpp
-  test.cpp
+  src/event_tap_utility_test.cpp
+  src/test.cpp
 )
 
 target_link_libraries(

@@ -6,8 +6,8 @@ project (karabiner_test)
 
 add_executable(
   karabiner_test
-  keyboard_repeat_detector_test.cpp
-  test.cpp
+  src/keyboard_repeat_detector_test.cpp
+  src/test.cpp
 )
 
 target_link_libraries(

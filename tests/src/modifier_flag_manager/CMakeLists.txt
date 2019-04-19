@@ -6,8 +6,8 @@ project (karabiner_test)
 
 add_executable(
   karabiner_test
-  modifier_flag_manager_test.cpp
-  test.cpp
+  src/modifier_flag_manager_test.cpp
+  src/test.cpp
 )
 
 target_link_libraries(

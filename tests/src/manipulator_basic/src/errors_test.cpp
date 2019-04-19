@@ -1,6 +1,6 @@
 #include <catch2/catch.hpp>
 
-#include "../share/json_helper.hpp"
+#include "../../share/json_helper.hpp"
 #include "manipulator/manipulators/basic/basic.hpp"
 #include "manipulator/types.hpp"
 

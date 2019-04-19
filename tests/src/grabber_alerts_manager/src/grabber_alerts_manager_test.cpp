@@ -1,6 +1,6 @@
 #include <catch2/catch.hpp>
 
-#include "../share/json_helper.hpp"
+#include "../../share/json_helper.hpp"
 #include "dispatcher_utility.hpp"
 #include "grabber_alerts_manager.hpp"
 #include <unistd.h>

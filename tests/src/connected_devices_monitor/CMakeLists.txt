@@ -6,8 +6,8 @@ project (karabiner_test)
 
 add_executable(
   karabiner_test
-  connected_devices_monitor_test.cpp
-  test.cpp
+  src/connected_devices_monitor_test.cpp
+  src/test.cpp
 )
 
 target_link_libraries(
