@@ -105,7 +105,7 @@ public:
 
   virtual manipulate_result manipulate(event_queue::entry& front_input_event,
                                        const event_queue::queue& input_event_queue,
-                                       const std::shared_ptr<event_queue::queue>& output_event_queue,
+                                       std::shared_ptr<event_queue::queue> output_event_queue,
                                        absolute_time_point now) {
     if (output_event_queue) {
       // ----------------------------------------
@@ -167,7 +167,7 @@ public:
 
 private:
   std::optional<std::unordered_set<modifier_flag>> test_conditions(const event_queue::entry& front_input_event,
-                                                                   const std::shared_ptr<event_queue::queue>& output_event_queue) const {
+                                                                   std::shared_ptr<event_queue::queue> output_event_queue) const {
     if (!condition_manager_.is_fulfilled(front_input_event,
                                          output_event_queue->get_manipulator_environment())) {
       return std::nullopt;

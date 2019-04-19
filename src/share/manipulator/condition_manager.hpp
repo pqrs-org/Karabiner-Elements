@@ -11,7 +11,7 @@ public:
   condition_manager(void) {
   }
 
-  void push_back_condition(const std::shared_ptr<manipulator::conditions::base>& condition) {
+  void push_back_condition(std::shared_ptr<manipulator::conditions::base> condition) {
     conditions_.push_back(condition);
   }
 

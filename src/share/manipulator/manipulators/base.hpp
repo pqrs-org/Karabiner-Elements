@@ -21,7 +21,7 @@ public:
 
   virtual manipulate_result manipulate(event_queue::entry& front_input_event,
                                        const event_queue::queue& input_event_queue,
-                                       const std::shared_ptr<event_queue::queue>& output_event_queue,
+                                       std::shared_ptr<event_queue::queue> output_event_queue,
                                        absolute_time_point now) = 0;
 
   virtual bool active(void) const = 0;
@@ -45,7 +45,7 @@ public:
     valid_ = value;
   }
 
-  void push_back_condition(const std::shared_ptr<manipulator::conditions::base>& condition) {
+  void push_back_condition(std::shared_ptr<manipulator::conditions::base> condition) {
     condition_manager_.push_back_condition(condition);
   }
 

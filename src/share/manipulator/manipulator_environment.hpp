@@ -54,7 +54,7 @@ public:
     output_json_file_path_.clear();
   }
 
-  const std::shared_ptr<device_properties> find_device_properties(device_id device_id) const {
+  std::shared_ptr<device_properties> find_device_properties(device_id device_id) const {
     return device_properties_manager_.find(device_id);
   }
 
