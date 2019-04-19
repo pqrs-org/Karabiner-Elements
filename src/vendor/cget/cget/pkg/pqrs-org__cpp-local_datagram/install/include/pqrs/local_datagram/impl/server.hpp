@@ -21,7 +21,7 @@ public:
   nod::signal<void(void)> bound;
   nod::signal<void(const asio::error_code&)> bind_failed;
   nod::signal<void(void)> closed;
-  nod::signal<void(const std::shared_ptr<std::vector<uint8_t>>)> received;
+  nod::signal<void(std::shared_ptr<std::vector<uint8_t>>)> received;
 
   // Methods
 
