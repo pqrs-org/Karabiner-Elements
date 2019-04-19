@@ -10,11 +10,13 @@ namespace mouse_motion_to_scroll {
 struct counter_parameters final {
 public:
   static constexpr double speed_multiplier_default_value = 1.0;
-  static constexpr std::chrono::milliseconds recent_time_duration_milliseconds_default_value = std::chrono::milliseconds(100);
+  static constexpr std::chrono::milliseconds recent_time_duration_milliseconds_default_value =
+      std::chrono::milliseconds(100);
   static constexpr int threshold_default_value = 128;
   static constexpr int momentum_minus_default_value = 32;
   static constexpr int direction_lock_threshold_default_value = 4;
-  static constexpr int scroll_event_interval_milliseconds_threshold_default_value = 300;
+  static constexpr std::chrono::milliseconds scroll_event_interval_milliseconds_threshold_default_value =
+      std::chrono::milliseconds(100);
 
   counter_parameters(void) : speed_multiplier_(speed_multiplier_default_value),
                              recent_time_duration_milliseconds_(recent_time_duration_milliseconds_default_value),
@@ -84,12 +86,12 @@ public:
     direction_lock_threshold_ = value;
   }
 
-  int get_scroll_event_interval_milliseconds_threshold(void) const {
+  std::chrono::milliseconds get_scroll_event_interval_milliseconds_threshold(void) const {
     return scroll_event_interval_milliseconds_threshold_;
   }
 
-  void set_scroll_event_interval_milliseconds_threshold(int value) {
-    if (value <= 0) {
+  void set_scroll_event_interval_milliseconds_threshold(std::chrono::milliseconds value) {
+    if (value < std::chrono::milliseconds(1)) {
       value = scroll_event_interval_milliseconds_threshold_default_value;
     }
 
@@ -102,7 +104,7 @@ private:
   int threshold_;
   int momentum_minus_;
   int direction_lock_threshold_;
-  int scroll_event_interval_milliseconds_threshold_;
+  std::chrono::milliseconds scroll_event_interval_milliseconds_threshold_;
 };
 } // namespace mouse_motion_to_scroll
 } // namespace manipulators

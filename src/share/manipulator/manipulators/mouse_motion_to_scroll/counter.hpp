@@ -273,7 +273,7 @@ private:
     auto now = when_now();
 
     if (last_scroll_time_point_ &&
-        now - *last_scroll_time_point_ > std::chrono::milliseconds(300)) {
+        now - *last_scroll_time_point_ > counter_parameters_.get_scroll_event_interval_milliseconds_threshold()) {
       return false;
     }
 

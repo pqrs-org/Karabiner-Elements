@@ -83,16 +83,16 @@ TEST_CASE("counter_parameters") {
 
     // scroll_event_interval_milliseconds_threshold_
 
-    p.set_scroll_event_interval_milliseconds_threshold(-100);
+    p.set_scroll_event_interval_milliseconds_threshold(std::chrono::milliseconds(-100));
     REQUIRE(p.get_scroll_event_interval_milliseconds_threshold() == counter_parameters::scroll_event_interval_milliseconds_threshold_default_value);
 
-    p.set_scroll_event_interval_milliseconds_threshold(0);
+    p.set_scroll_event_interval_milliseconds_threshold(std::chrono::milliseconds(0));
     REQUIRE(p.get_scroll_event_interval_milliseconds_threshold() == counter_parameters::scroll_event_interval_milliseconds_threshold_default_value);
 
-    p.set_scroll_event_interval_milliseconds_threshold(1);
-    REQUIRE(p.get_scroll_event_interval_milliseconds_threshold() == 1);
+    p.set_scroll_event_interval_milliseconds_threshold(std::chrono::milliseconds(1));
+    REQUIRE(p.get_scroll_event_interval_milliseconds_threshold() == std::chrono::milliseconds(1));
 
-    p.set_scroll_event_interval_milliseconds_threshold(1000);
-    REQUIRE(p.get_scroll_event_interval_milliseconds_threshold() == 1000);
+    p.set_scroll_event_interval_milliseconds_threshold(std::chrono::milliseconds(1000));
+    REQUIRE(p.get_scroll_event_interval_milliseconds_threshold() == std::chrono::milliseconds(1000));
   }
 }
