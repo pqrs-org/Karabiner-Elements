@@ -3,11 +3,11 @@
 // `krbn::grabber_alerts_monitor` can be used safely in a multi-threaded environment.
 
 #include "constants.hpp"
-#include "json_utility.hpp"
 #include "logger.hpp"
 #include <fstream>
 #include <nod/nod.hpp>
 #include <pqrs/filesystem.hpp>
+#include <pqrs/json.hpp>
 #include <pqrs/osx/file_monitor.hpp>
 
 namespace krbn {
@@ -43,12 +43,12 @@ public:
           //     ]
           // }
 
-          if (auto v = json_utility::find_array(json, "alerts")) {
-            auto s = v->dump();
+          if (auto v = pqrs::json::find_array(json, "alerts")) {
+            auto s = v->value().dump();
             if (last_json_string_ != s) {
               last_json_string_ = s;
 
-              auto alerts = std::make_shared<nlohmann::json>(*v);
+              auto alerts = std::make_shared<nlohmann::json>(v->value());
               enqueue_to_dispatcher([this, alerts] {
                 alerts_changed(alerts);
               });
