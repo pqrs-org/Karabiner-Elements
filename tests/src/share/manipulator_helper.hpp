@@ -1,11 +1,11 @@
 #pragma once
 
 #include "event_queue.hpp"
-#include "json_utility.hpp"
 #include "manipulator/manipulator_factory.hpp"
 #include "manipulator/manipulator_manager.hpp"
 #include "manipulator/manipulator_managers_connector.hpp"
 #include "manipulator/manipulators/post_event_to_virtual_devices/post_event_to_virtual_devices.hpp"
+#include <pqrs/json.hpp>
 #include <pqrs/thread_wait.hpp>
 
 namespace krbn {
@@ -57,8 +57,8 @@ public:
             auto m = manipulator::manipulator_factory::make_manipulator(j,
                                                                         parameters);
 
-            if (auto conditions = json_utility::find_array(j, "conditions")) {
-              for (const auto& c : *conditions) {
+            if (auto conditions = pqrs::json::find_array(j, "conditions")) {
+              for (const auto& c : conditions->value()) {
                 m->push_back_condition(krbn::manipulator::manipulator_factory::make_condition(c));
               }
             }
@@ -80,7 +80,7 @@ public:
         }
       }
 
-      if (json_utility::find_optional<std::string>(test, "expected_post_event_to_virtual_devices_queue")) {
+      if (pqrs::json::find<std::string>(test, "expected_post_event_to_virtual_devices_queue")) {
         post_event_to_virtual_devices_manipulator =
             std::make_shared<krbn::manipulator::manipulators::post_event_to_virtual_devices::post_event_to_virtual_devices>(
                 console_user_server_client);
@@ -108,16 +108,16 @@ public:
       REQUIRE(ifs);
       for (const auto& j : nlohmann::json::parse(ifs)) {
         enqueue_to_dispatcher([=, &pause_manipulation] {
-          if (auto s = json_utility::find_optional<std::string>(j, "action")) {
+          if (auto s = pqrs::json::find<std::string>(j, "action")) {
             if (*s == "invalidate_manipulators") {
               connector->invalidate_manipulators();
             } else if (*s == "invoke_dispatcher") {
-              if (auto t = json_utility::find_optional<uint64_t>(j, "time_stamp")) {
+              if (auto t = pqrs::json::find<uint64_t>(j, "time_stamp")) {
                 advance_now(std::chrono::milliseconds(*t));
               }
             } else if (*s == "manipulate") {
               absolute_time_point time_stamp(0);
-              if (auto t = json_utility::find_optional<uint64_t>(j, "time_stamp")) {
+              if (auto t = pqrs::json::find<uint64_t>(j, "time_stamp")) {
                 auto ms = std::chrono::milliseconds(*t);
                 time_stamp = absolute_time_point(0) +
                              pqrs::osx::chrono::make_absolute_time_duration(ms);
@@ -127,7 +127,7 @@ public:
               connector->manipulate(time_stamp);
             }
 
-          } else if (auto v = json_utility::find_optional<bool>(j, "pause_manipulation")) {
+          } else if (auto v = pqrs::json::find<bool>(j, "pause_manipulation")) {
             pause_manipulation = *v;
             if (!pause_manipulation) {
               connector->manipulate(now_);
@@ -156,9 +156,9 @@ public:
           wait->wait_notice();
         }
 
-        if (auto s = json_utility::find_optional<std::string>(j, "action")) {
+        if (auto s = pqrs::json::find<std::string>(j, "action")) {
           if (*s == "invoke_dispatcher") {
-            if (auto t = json_utility::find_optional<uint64_t>(j, "time_stamp")) {
+            if (auto t = pqrs::json::find<uint64_t>(j, "time_stamp")) {
               auto ms = std::chrono::milliseconds(*t);
 
               enqueue_to_dispatcher([this, ms] {
@@ -179,7 +179,7 @@ public:
 
       // Test the result
 
-      if (auto s = json_utility::find_optional<std::string>(test, "expected_event_queue")) {
+      if (auto s = pqrs::json::find<std::string>(test, "expected_event_queue")) {
         if (overwrite_expected_results) {
           std::ofstream ofs(*s);
           REQUIRE(ofs);
@@ -193,7 +193,7 @@ public:
         REQUIRE(event_queues->front()->get_entries().empty());
         REQUIRE(nlohmann::json(event_queues->back()->get_entries()).dump() == expected.dump());
 
-      } else if (auto s = json_utility::find_optional<std::string>(test, "expected_post_event_to_virtual_devices_queue")) {
+      } else if (auto s = pqrs::json::find<std::string>(test, "expected_post_event_to_virtual_devices_queue")) {
         if (overwrite_expected_results) {
           std::ofstream ofs(*s);
           REQUIRE(ofs);
