@@ -28,44 +28,43 @@ public:
 
     result.json_ = json;
 
-    if (json.is_object()) {
-      for (auto it = std::begin(json); it != std::end(json); std::advance(it, 1)) {
-        // it.key() is always std::string.
-        const auto& key = it.key();
-        const auto& value = it.value();
+    if (!json.is_object()) {
+      throw pqrs::json::unmarshal_error(fmt::format("json must be object, but is `{0}`", json.dump()));
+    }
 
-        if (key == "vendor_id") {
-          if (value.is_number()) {
-            result.vendor_id_ = vendor_id(static_cast<uint32_t>(value));
-          } else {
-            logger::get_logger()->error("Invalid form of {0}: {1}", key, value.dump());
-          }
-        }
-        if (key == "product_id") {
-          if (value.is_number()) {
-            result.product_id_ = product_id(static_cast<uint32_t>(value));
-          } else {
-            logger::get_logger()->error("Invalid form of {0}: {1}", key, value.dump());
-          }
-        }
-        if (key == "is_keyboard") {
-          if (value.is_boolean()) {
-            result.is_keyboard_ = value;
-          } else {
-            logger::get_logger()->error("Invalid form of {0}: {1}", key, value.dump());
-          }
-        }
-        if (key == "is_pointing_device") {
-          if (value.is_boolean()) {
-            result.is_pointing_device_ = value;
-          } else {
-            logger::get_logger()->error("Invalid form of {0}: {1}", key, value.dump());
-          }
+    for (auto it = std::begin(json); it != std::end(json); std::advance(it, 1)) {
+      // it.key() is always std::string.
+      const auto& key = it.key();
+      const auto& value = it.value();
+
+      if (key == "vendor_id") {
+        if (value.is_number()) {
+          result.vendor_id_ = vendor_id(static_cast<uint32_t>(value));
+        } else {
+          logger::get_logger()->error("Invalid form of {0}: {1}", key, value.dump());
         }
       }
-
-    } else {
-      logger::get_logger()->error("Invalid form of device_identifiers: {0}", json.dump());
+      if (key == "product_id") {
+        if (value.is_number()) {
+          result.product_id_ = product_id(static_cast<uint32_t>(value));
+        } else {
+          logger::get_logger()->error("Invalid form of {0}: {1}", key, value.dump());
+        }
+      }
+      if (key == "is_keyboard") {
+        if (value.is_boolean()) {
+          result.is_keyboard_ = value;
+        } else {
+          logger::get_logger()->error("Invalid form of {0}: {1}", key, value.dump());
+        }
+      }
+      if (key == "is_pointing_device") {
+        if (value.is_boolean()) {
+          result.is_pointing_device_ = value;
+        } else {
+          logger::get_logger()->error("Invalid form of {0}: {1}", key, value.dump());
+        }
+      }
     }
 
     return result;
