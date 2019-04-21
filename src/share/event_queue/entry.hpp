@@ -4,8 +4,8 @@
 
 #include "event.hpp"
 #include "event_time_stamp.hpp"
-#include "json_utility.hpp"
 #include "types.hpp"
+#include <pqrs/json.hpp>
 
 namespace krbn {
 namespace event_queue {
@@ -50,32 +50,32 @@ public:
                  event());
 
     if (json.is_object()) {
-      if (auto v = json_utility::find_optional<uint32_t>(json, "device_id")) {
+      if (auto v = pqrs::json::find<uint32_t>(json, "device_id")) {
         result.device_id_ = device_id(*v);
       }
 
-      if (auto v = json_utility::find_json(json, "event_time_stamp")) {
-        result.event_time_stamp_ = event_time_stamp::make_from_json(*v);
+      if (auto v = pqrs::json::find_json(json, "event_time_stamp")) {
+        result.event_time_stamp_ = event_time_stamp::make_from_json(v->value());
       }
 
-      if (auto v = json_utility::find_optional<bool>(json, "valid")) {
+      if (auto v = pqrs::json::find<bool>(json, "valid")) {
         result.valid_ = *v;
       }
 
-      if (auto v = json_utility::find_optional<bool>(json, "lazy")) {
+      if (auto v = pqrs::json::find<bool>(json, "lazy")) {
         result.lazy_ = *v;
       }
 
-      if (auto v = json_utility::find_json(json, "event")) {
-        result.event_ = event::make_from_json(*v);
+      if (auto v = pqrs::json::find_json(json, "event")) {
+        result.event_ = event::make_from_json(v->value());
       }
 
-      if (auto v = json_utility::find_json(json, "event_type")) {
-        result.event_type_ = *v;
+      if (auto v = pqrs::json::find_json(json, "event_type")) {
+        result.event_type_ = v->value().get<event_type>();
       }
 
-      if (auto v = json_utility::find_json(json, "original_event")) {
-        result.original_event_ = event::make_from_json(*v);
+      if (auto v = pqrs::json::find_json(json, "original_event")) {
+        result.original_event_ = event::make_from_json(v->value());
       }
     }
 

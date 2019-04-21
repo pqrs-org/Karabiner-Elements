@@ -3,9 +3,9 @@
 // `krbn::event_queue::event_time_stamp` can be used safely in a multi-threaded environment.
 
 #include "types.hpp"
-#include <nlohmann/json.hpp>
 #include <ostream>
 #include <pqrs/hash.hpp>
+#include <pqrs/json.hpp>
 
 namespace krbn {
 namespace event_queue {
@@ -39,11 +39,11 @@ public:
     event_time_stamp result(absolute_time_point(0),
                             absolute_time_duration(0));
 
-    if (auto v = json_utility::find_optional<uint64_t>(json, "time_stamp")) {
+    if (auto v = pqrs::json::find<uint64_t>(json, "time_stamp")) {
       result.time_stamp_ += pqrs::osx::chrono::make_absolute_time_duration(std::chrono::milliseconds(*v));
     }
 
-    if (auto v = json_utility::find_optional<uint64_t>(json, "input_delay_duration")) {
+    if (auto v = pqrs::json::find<uint64_t>(json, "input_delay_duration")) {
       result.input_delay_duration_ += pqrs::osx::chrono::make_absolute_time_duration(std::chrono::milliseconds(*v));
     }
 
