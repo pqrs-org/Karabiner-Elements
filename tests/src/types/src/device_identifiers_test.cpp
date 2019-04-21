@@ -18,19 +18,20 @@ TEST_CASE("device_identifiers") {
     REQUIRE(di.is_apple() == true);
   }
   {
-    auto di = krbn::device_identifiers::make_from_json(nlohmann::json());
+    auto di = krbn::device_identifiers::make_from_json(nlohmann::json::object());
     REQUIRE(di.get_vendor_id() == krbn::vendor_id(0));
     REQUIRE(di.get_product_id() == krbn::product_id(0));
     REQUIRE(di.get_is_keyboard() == false);
     REQUIRE(di.get_is_pointing_device() == false);
   }
   {
-    nlohmann::json json;
-    json["vendor_id"] = 1234;
-    json["product_id"] = 5678;
-    json["is_keyboard"] = true;
-    json["is_pointing_device"] = false;
-    json["dummy key"] = "dummy value";
+    auto json = nlohmann::json::object({
+        {"vendor_id", 1234},
+        {"product_id", 5678},
+        {"is_keyboard", true},
+        {"is_pointing_device", false},
+        {"dummy key", "dummy value"},
+    });
 
     auto di = krbn::device_identifiers::make_from_json(json);
     REQUIRE(di.get_vendor_id() == krbn::vendor_id(1234));
@@ -40,8 +41,9 @@ TEST_CASE("device_identifiers") {
     REQUIRE(di.to_json() == json);
   }
   {
-    nlohmann::json json;
-    json["is_pointing_device"] = true;
+    auto json = nlohmann::json::object({
+        {"is_pointing_device", true},
+    });
 
     auto di = krbn::device_identifiers::make_from_json(json);
     REQUIRE(di.get_is_pointing_device() == true);
