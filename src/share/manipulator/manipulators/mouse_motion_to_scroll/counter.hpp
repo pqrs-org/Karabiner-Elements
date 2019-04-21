@@ -22,6 +22,10 @@ namespace manipulators {
 namespace mouse_motion_to_scroll {
 class counter final : pqrs::dispatcher::extra::dispatcher_client {
 public:
+  using chunk_accumulated_values_entry_t = std::pair<pqrs::dispatcher::time_point, int>;
+  using chunk_accumulated_values_t = std::deque<std::pair<pqrs::dispatcher::time_point, int>>;
+  static constexpr int timer_interval = 20;
+
   // Signals (invoked from the dispatcher thread)
 
   nod::signal<void(const pointing_motion&)> scroll_event_arrived;
@@ -66,7 +70,7 @@ public:
               timer_.stop();
             }
           },
-          std::chrono::milliseconds(20));
+          std::chrono::milliseconds(timer_interval));
     });
   }
 
@@ -76,8 +80,8 @@ public:
       last_entry_time_point_ = std::nullopt;
       last_scroll_time_point_ = std::nullopt;
       counter_direction_ = counter_direction::none;
-      chunk_accumulated_values_abs_x_.clear();
-      chunk_accumulated_values_abs_y_.clear();
+      chunk_accumulated_values_x_.clear();
+      chunk_accumulated_values_y_.clear();
       total_x_ = 0;
       total_y_ = 0;
       momentum_x_ = 0;
@@ -100,15 +104,17 @@ private:
       return true;
     }
 
+    erase_chunk_accumulated_values(chunk_accumulated_values_x_,
+                                   front_time_point);
+    erase_chunk_accumulated_values(chunk_accumulated_values_y_,
+                                   front_time_point);
+
     bool initial = false;
 
-    if (!last_entry_time_point_ ||
-        front_time_point - *last_entry_time_point_ > recent_time_duration_milliseconds) {
+    if (chunk_accumulated_values_x_.empty() &&
+        chunk_accumulated_values_y_.empty()) {
       initial = true;
       counter_direction_ = counter_direction::none;
-      chunk_accumulated_values_abs_x_.clear();
-      chunk_accumulated_values_abs_y_.clear();
-      momentum_minus_ = counter_parameters_.get_threshold();
     }
 
     // Accumulate chunk_x,chunk_y
@@ -138,25 +144,14 @@ private:
 
     // Update chunk_accumulated_values_*
 
-    chunk_accumulated_values_abs_x_.push_back(std::abs(x));
-    while (chunk_accumulated_values_abs_x_.size() > counter_parameters_.get_direction_lock_threshold()) {
-      chunk_accumulated_values_abs_x_.pop_front();
-    }
-
-    chunk_accumulated_values_abs_y_.push_back(std::abs(y));
-    while (chunk_accumulated_values_abs_y_.size() > counter_parameters_.get_direction_lock_threshold()) {
-      chunk_accumulated_values_abs_y_.pop_front();
-    }
+    chunk_accumulated_values_x_.push_back(std::make_pair(front_time_point, x));
+    chunk_accumulated_values_y_.push_back(std::make_pair(front_time_point, y));
 
     // Reset direction
 
     {
-      auto recent_chunks_total_x = std::accumulate(std::begin(chunk_accumulated_values_abs_x_),
-                                                   std::end(chunk_accumulated_values_abs_x_),
-                                                   0);
-      auto recent_chunks_total_y = std::accumulate(std::begin(chunk_accumulated_values_abs_y_),
-                                                   std::end(chunk_accumulated_values_abs_y_),
-                                                   0);
+      auto recent_chunks_total_x = accumulate_abs_chunk_accumulated_values(chunk_accumulated_values_x_);
+      auto recent_chunks_total_y = accumulate_abs_chunk_accumulated_values(chunk_accumulated_values_y_);
 
       if (counter_direction_ == counter_direction::horizontal) {
         if (recent_chunks_total_y > recent_chunks_total_x) {
@@ -345,6 +340,28 @@ private:
     return true;
   }
 
+  void erase_chunk_accumulated_values(chunk_accumulated_values_t& chunk_accumulated_values,
+                                      pqrs::dispatcher::time_point time_point) const {
+    auto threshold = counter_parameters_.get_recent_time_duration_milliseconds() *
+                     counter_parameters_.get_direction_lock_threshold();
+
+    chunk_accumulated_values.erase(std::remove_if(std::begin(chunk_accumulated_values),
+                                                  std::end(chunk_accumulated_values),
+                                                  [time_point, threshold](auto&& p) {
+                                                    return (time_point - p.first) > threshold;
+                                                  }),
+                                   std::end(chunk_accumulated_values));
+  }
+
+  int accumulate_abs_chunk_accumulated_values(const chunk_accumulated_values_t& chunk_accumulated_values) const {
+    return std::accumulate(std::begin(chunk_accumulated_values),
+                           std::end(chunk_accumulated_values),
+                           0,
+                           [](auto&& a, auto&& b) {
+                             return a + std::abs(b.second);
+                           });
+  }
+
   int round_up(double value) const {
     if (value > 0) {
       return std::ceil(value);
@@ -383,8 +400,8 @@ private:
   std::optional<pqrs::dispatcher::time_point> last_scroll_time_point_;
 
   counter_direction counter_direction_;
-  std::deque<int> chunk_accumulated_values_abs_x_;
-  std::deque<int> chunk_accumulated_values_abs_y_;
+  chunk_accumulated_values_t chunk_accumulated_values_x_;
+  chunk_accumulated_values_t chunk_accumulated_values_y_;
 
   int total_x_;
   int total_y_;

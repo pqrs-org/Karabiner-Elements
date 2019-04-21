@@ -48,5 +48,10 @@
         // high speed movement (speed 5%)
         "input": "input/counter_10.jsonc",
         "expected": "expected/counter_10.jsonc"
+    },
+    {
+        // long slow movement
+        "input": "input/counter_11.jsonc",
+        "expected": "expected/counter_11.jsonc"
     }
 ]
