@@ -30,7 +30,7 @@ public:
   core_configuration(const core_configuration&) = delete;
 
   core_configuration(const std::string& file_path) : loaded_(false),
-                                                     global_configuration_(nlohmann::json()) {
+                                                     global_configuration_(nlohmann::json::object()) {
     bool valid_file_owner = false;
 
     // Load karabiner.json only when the owner is root or current session user.
@@ -68,7 +68,7 @@ public:
 
           } catch (std::exception& e) {
             logger::get_logger()->error("parse error in {0}: {1}", file_path, e.what());
-            json_ = nlohmann::json();
+            json_ = nlohmann::json::object();
           }
         } else {
           logger::get_logger()->error("failed to open {0}", file_path);

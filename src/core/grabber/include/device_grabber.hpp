@@ -36,7 +36,7 @@ public:
   device_grabber(std::weak_ptr<grabbable_state_queues_manager> weak_grabbable_state_queues_manager,
                  std::weak_ptr<console_user_server_client> weak_console_user_server_client) : dispatcher_client(),
                                                                                               weak_grabbable_state_queues_manager_(weak_grabbable_state_queues_manager),
-                                                                                              profile_(nlohmann::json()),
+                                                                                              profile_(nlohmann::json::object()),
                                                                                               logger_unique_filter_(logger::get_logger()) {
     simple_modifications_manipulator_manager_ = std::make_shared<device_grabber_details::simple_modifications_manipulator_manager>();
     complex_modifications_manipulator_manager_ = std::make_shared<manipulator::manipulator_manager>();
@@ -328,7 +328,7 @@ public:
 
   void async_unset_profile(void) {
     enqueue_to_dispatcher([this] {
-      profile_ = core_configuration::details::profile(nlohmann::json());
+      profile_ = core_configuration::details::profile(nlohmann::json::object());
 
       manipulator_managers_connector_.invalidate_manipulators();
     });
