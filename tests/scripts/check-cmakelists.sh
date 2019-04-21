@@ -15,6 +15,10 @@ for cmakelists in $(dirname $0)/../src/*/CMakeLists.txt; do
                 fi
             done
     )
+
+    if [ $? -ne 0 ]; then
+        exit 1
+    fi
 done
 
 echo
