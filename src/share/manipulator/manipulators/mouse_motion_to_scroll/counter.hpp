@@ -76,6 +76,8 @@ public:
       last_entry_time_point_ = std::nullopt;
       last_scroll_time_point_ = std::nullopt;
       counter_direction_ = counter_direction::none;
+      chunk_accumulated_values_abs_x_.clear();
+      chunk_accumulated_values_abs_y_.clear();
       total_x_ = 0;
       total_y_ = 0;
       momentum_x_ = 0;
@@ -104,6 +106,8 @@ private:
         front_time_point - *last_entry_time_point_ > recent_time_duration_milliseconds) {
       initial = true;
       counter_direction_ = counter_direction::none;
+      chunk_accumulated_values_abs_x_.clear();
+      chunk_accumulated_values_abs_y_.clear();
       momentum_minus_ = counter_parameters_.get_threshold();
     }
 
@@ -114,7 +118,8 @@ private:
 
     while (!entries_.empty()) {
       auto t = entries_.front().get_time_point();
-      if (t - front_time_point <= recent_time_duration_milliseconds) {
+      auto duration = t - front_time_point;
+      if (duration <= recent_time_duration_milliseconds) {
         auto x = entries_.front().get_x();
         auto y = entries_.front().get_y();
 
@@ -131,15 +136,36 @@ private:
     auto x = chunk_x.make_accumulated_value();
     auto y = chunk_y.make_accumulated_value();
 
+    // Update chunk_accumulated_values_*
+
+    chunk_accumulated_values_abs_x_.push_back(std::abs(x));
+    while (chunk_accumulated_values_abs_x_.size() > counter_parameters_.get_direction_lock_threshold()) {
+      chunk_accumulated_values_abs_x_.pop_front();
+    }
+
+    chunk_accumulated_values_abs_y_.push_back(std::abs(y));
+    while (chunk_accumulated_values_abs_y_.size() > counter_parameters_.get_direction_lock_threshold()) {
+      chunk_accumulated_values_abs_y_.pop_front();
+    }
+
     // Reset direction
 
-    if (counter_direction_ == counter_direction::horizontal) {
-      if (std::abs(y) > std::abs(x) * counter_parameters_.get_direction_lock_threshold()) {
-        counter_direction_ = counter_direction::none;
-      }
-    } else if (counter_direction_ == counter_direction::vertical) {
-      if (std::abs(x) > std::abs(y) * counter_parameters_.get_direction_lock_threshold()) {
-        counter_direction_ = counter_direction::none;
+    {
+      auto recent_chunks_total_x = std::accumulate(std::begin(chunk_accumulated_values_abs_x_),
+                                                   std::end(chunk_accumulated_values_abs_x_),
+                                                   0);
+      auto recent_chunks_total_y = std::accumulate(std::begin(chunk_accumulated_values_abs_y_),
+                                                   std::end(chunk_accumulated_values_abs_y_),
+                                                   0);
+
+      if (counter_direction_ == counter_direction::horizontal) {
+        if (recent_chunks_total_y > recent_chunks_total_x) {
+          counter_direction_ = counter_direction::none;
+        }
+      } else if (counter_direction_ == counter_direction::vertical) {
+        if (recent_chunks_total_x > recent_chunks_total_y) {
+          counter_direction_ = counter_direction::none;
+        }
       }
     }
 
@@ -357,6 +383,8 @@ private:
   std::optional<pqrs::dispatcher::time_point> last_scroll_time_point_;
 
   counter_direction counter_direction_;
+  std::deque<int> chunk_accumulated_values_abs_x_;
+  std::deque<int> chunk_accumulated_values_abs_y_;
 
   int total_x_;
   int total_y_;
