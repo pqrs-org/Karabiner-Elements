@@ -1,7 +1,7 @@
 #pragma once
 
 #include "complex_modifications_parameters.hpp"
-#include "json_utility.hpp"
+#include <pqrs/json.hpp>
 
 namespace krbn {
 namespace core_configuration {
@@ -26,14 +26,14 @@ public:
     manipulator(const nlohmann::json& json,
                 const complex_modifications_parameters& parameters) : json_(json),
                                                                       parameters_(parameters) {
-      if (auto v = json_utility::find_array(json, "conditions")) {
-        for (const auto& j : *v) {
+      if (auto v = pqrs::json::find_array(json, "conditions")) {
+        for (const auto& j : v->value()) {
           conditions_.emplace_back(j);
         }
       }
 
-      if (auto v = json_utility::find_object(json, "parameters")) {
-        parameters_.update(*v);
+      if (auto v = pqrs::json::find_object(json, "parameters")) {
+        parameters_.update(v->value());
       }
     }
 
@@ -57,8 +57,8 @@ public:
 
   complex_modifications_rule(const nlohmann::json& json,
                              const complex_modifications_parameters& parameters) : json_(json) {
-    if (auto v = json_utility::find_array(json, "manipulators")) {
-      for (const auto& j : *v) {
+    if (auto v = pqrs::json::find_array(json, "manipulators")) {
+      for (const auto& j : v->value()) {
         manipulators_.emplace_back(j, parameters);
       }
     }
@@ -82,7 +82,7 @@ public:
 
 private:
   std::optional<std::string> find_description(const nlohmann::json& json) const {
-    if (auto v = json_utility::find_optional<std::string>(json, "description")) {
+    if (auto v = pqrs::json::find<std::string>(json, "description")) {
       return *v;
     }
 

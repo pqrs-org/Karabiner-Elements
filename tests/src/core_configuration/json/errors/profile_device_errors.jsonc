@@ -1,0 +1,67 @@
+[
+    {
+        "class": "devices",
+        "input": null,
+        "error": "json must be object, but is `null`"
+    },
+
+    // identifiers
+
+    {
+        "class": "devices",
+        "input": {
+            "identifiers": null
+        },
+        "error": "`identifiers` error: json must be object, but is `null`"
+    },
+
+    // ignore
+
+    {
+        "class": "devices",
+        "input": {
+            "ignore": null
+        },
+        "error": "`ignore` must be boolean, but is `null`"
+    },
+
+    // manipulate_caps_lock_led
+
+    {
+        "class": "devices",
+        "input": {
+            "manipulate_caps_lock_led": null
+        },
+        "error": "`manipulate_caps_lock_led` must be boolean, but is `null`"
+    },
+
+    // disable_built_in_keyboard_if_exists
+
+    {
+        "class": "devices",
+        "input": {
+            "disable_built_in_keyboard_if_exists": null
+        },
+        "error": "`disable_built_in_keyboard_if_exists` must be boolean, but is `null`"
+    },
+
+    // simple_modifications
+
+    {
+        "class": "devices",
+        "input": {
+            "simple_modifications": null
+        },
+        "error": "`simple_modifications` error: json must be array or object, but is `null`"
+    },
+
+    // fn_function_keys
+
+    {
+        "class": "devices",
+        "input": {
+            "fn_function_keys": null
+        },
+        "error": "`fn_function_keys` error: json must be array or object, but is `null`"
+    }
+]

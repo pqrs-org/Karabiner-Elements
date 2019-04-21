@@ -2,17 +2,30 @@
 
 #include "complex_modifications_parameters.hpp"
 #include "complex_modifications_rule.hpp"
-#include "json_utility.hpp"
 
 namespace krbn {
 namespace core_configuration {
 namespace details {
 class complex_modifications final {
 public:
-  complex_modifications(const nlohmann::json& json) : json_(json),
-                                                      parameters_(json_utility::find_copy(json, "parameters", nlohmann::json())) {
-    if (auto v = json_utility::find_array(json, "rules")) {
-      for (const auto& j : *v) {
+  complex_modifications(void) : complex_modifications(nlohmann::json::object()) {
+  }
+
+  complex_modifications(const nlohmann::json& json) : json_(json) {
+    if (!json.is_object()) {
+      throw pqrs::json::unmarshal_error(fmt::format("json must be object, but is `{0}`", json.dump()));
+    }
+
+    // Load parameters_
+
+    if (auto v = pqrs::json::find_json(json, "parameters")) {
+      parameters_ = complex_modifications_parameters(v->value());
+    }
+
+    // Load rules_
+
+    if (auto v = pqrs::json::find_array(json, "rules")) {
+      for (const auto& j : v->value()) {
         rules_.emplace_back(j, parameters_);
       }
     }

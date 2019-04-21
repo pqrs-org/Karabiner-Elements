@@ -1,0 +1,7 @@
+[
+    {
+        "class": "complex_modifications",
+        "input": null,
+        "error": "json must be object, but is `null`"
+    }
+]

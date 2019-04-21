@@ -1,0 +1,7 @@
+[
+    {
+        "class": "simple_modifications",
+        "input": null,
+        "error": "json must be array or object, but is `null`"
+    }
+]

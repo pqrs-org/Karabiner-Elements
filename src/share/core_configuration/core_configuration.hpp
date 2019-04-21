@@ -8,7 +8,7 @@
 #include "details/profile/device.hpp"
 #include "details/profile/simple_modifications.hpp"
 #include "details/profile/virtual_hid_keyboard.hpp"
-#include "json_utility.hpp"
+#include "json_writer.hpp"
 #include "logger.hpp"
 #include "types.hpp"
 #include <fstream>
@@ -156,7 +156,7 @@ public:
     remove_old_backup_files();
 
     auto file_path = constants::get_user_core_configuration_file_path();
-    json_utility::sync_save_to_file(to_json(), file_path, 0700, 0600);
+    json_writer::sync_save_to_file(to_json(), file_path, 0700, 0600);
   }
 
 private:

@@ -7,8 +7,15 @@ namespace core_configuration {
 namespace details {
 class virtual_hid_keyboard final {
 public:
+  virtual_hid_keyboard(void) : virtual_hid_keyboard(nlohmann::json::object()) {
+  }
+
   virtual_hid_keyboard(const nlohmann::json& json) : json_(json),
                                                      country_code_(0) {
+    if (!json.is_object()) {
+      throw pqrs::json::unmarshal_error(fmt::format("json must be object, but is `{0}`", json.dump()));
+    }
+
     for (const auto& [key, value] : json.items()) {
       if (key == "country_code") {
         country_code_ = value.get<hid_country_code>();

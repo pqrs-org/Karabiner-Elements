@@ -1,6 +1,5 @@
 #pragma once
 
-#include "json_utility.hpp"
 #include "simple_modifications.hpp"
 
 namespace krbn {
@@ -9,55 +8,98 @@ namespace details {
 class device final {
 public:
   device(const nlohmann::json& json) : json_(json),
-                                       identifiers_(
-                                           device_identifiers::make_from_json(
-                                               json_utility::find_copy(json, "identifiers", nlohmann::json()))),
                                        ignore_(false),
                                        manipulate_caps_lock_led_(false),
-                                       disable_built_in_keyboard_if_exists_(false),
-                                       simple_modifications_(
-                                           json_utility::find_copy(json, "simple_modifications", nlohmann::json::array())),
-                                       fn_function_keys_(make_default_fn_function_keys_json()) {
+                                       disable_built_in_keyboard_if_exists_(false) {
+    auto ignore_configured = false;
+    auto manipulate_caps_lock_led_configured = false;
+
     // ----------------------------------------
     // Set default value
 
-    // ignore_
+    // fn_function_keys_
 
-    if (identifiers_.get_is_pointing_device()) {
-      ignore_ = true;
-    } else if (identifiers_.get_vendor_id() == vendor_id(0x05ac) &&
-               identifiers_.get_product_id() == product_id(0x8600)) {
-      // Touch Bar on MacBook Pro 2016
-      ignore_ = true;
-    } else if (identifiers_.get_vendor_id() == vendor_id(0x1050)) {
-      // YubiKey token
-      ignore_ = true;
-    }
-
-    // manipulate_caps_lock_led_
-
-    if (identifiers_.get_is_keyboard() &&
-        identifiers_.is_apple()) {
-      manipulate_caps_lock_led_ = true;
-    }
+    fn_function_keys_.update(make_default_fn_function_keys_json());
 
     // ----------------------------------------
     // Load from json
 
-    if (auto v = json_utility::find_optional<bool>(json, "ignore")) {
-      ignore_ = *v;
+    if (!json.is_object()) {
+      throw pqrs::json::unmarshal_error(fmt::format("json must be object, but is `{0}`", json.dump()));
     }
 
-    if (auto v = json_utility::find_optional<bool>(json, "manipulate_caps_lock_led")) {
-      manipulate_caps_lock_led_ = *v;
+    for (const auto& [key, value] : json.items()) {
+      if (key == "identifiers") {
+        try {
+          identifiers_ = device_identifiers::make_from_json(value);
+        } catch (const pqrs::json::unmarshal_error& e) {
+          throw pqrs::json::unmarshal_error(fmt::format("`{0}` error: {1}", key, e.what()));
+        }
+
+      } else if (key == "ignore") {
+        if (!value.is_boolean()) {
+          throw pqrs::json::unmarshal_error(fmt::format("`{0}` must be boolean, but is `{1}`", key, value.dump()));
+        }
+
+        ignore_ = value.get<bool>();
+        ignore_configured = true;
+
+      } else if (key == "manipulate_caps_lock_led") {
+        if (!value.is_boolean()) {
+          throw pqrs::json::unmarshal_error(fmt::format("`{0}` must be boolean, but is `{1}`", key, value.dump()));
+        }
+
+        manipulate_caps_lock_led_ = value.get<bool>();
+        manipulate_caps_lock_led_configured = true;
+
+      } else if (key == "disable_built_in_keyboard_if_exists") {
+        if (!value.is_boolean()) {
+          throw pqrs::json::unmarshal_error(fmt::format("`{0}` must be boolean, but is `{1}`", key, value.dump()));
+        }
+
+        disable_built_in_keyboard_if_exists_ = value.get<bool>();
+
+      } else if (key == "simple_modifications") {
+        try {
+          simple_modifications_.update(value);
+        } catch (const pqrs::json::unmarshal_error& e) {
+          throw pqrs::json::unmarshal_error(fmt::format("`{0}` error: {1}", key, e.what()));
+        }
+
+      } else if (key == "fn_function_keys") {
+        try {
+          fn_function_keys_.update(value);
+        } catch (const pqrs::json::unmarshal_error& e) {
+          throw pqrs::json::unmarshal_error(fmt::format("`{0}` error: {1}", key, e.what()));
+        }
+      }
     }
 
-    if (auto v = json_utility::find_optional<bool>(json, "disable_built_in_keyboard_if_exists")) {
-      disable_built_in_keyboard_if_exists_ = *v;
+    // ----------------------------------------
+    // Set special default value for specific devices.
+
+    // ignore_
+
+    if (!ignore_configured) {
+      if (identifiers_.get_is_pointing_device()) {
+        ignore_ = true;
+      } else if (identifiers_.get_vendor_id() == vendor_id(0x05ac) &&
+                 identifiers_.get_product_id() == product_id(0x8600)) {
+        // Touch Bar on MacBook Pro 2016
+        ignore_ = true;
+      } else if (identifiers_.get_vendor_id() == vendor_id(0x1050)) {
+        // YubiKey token
+        ignore_ = true;
+      }
     }
 
-    if (auto v = json_utility::find_json(json, "fn_function_keys")) {
-      fn_function_keys_.update(*v);
+    // manipulate_caps_lock_led_
+
+    if (!manipulate_caps_lock_led_configured) {
+      if (identifiers_.get_is_keyboard() &&
+          identifiers_.is_apple()) {
+        manipulate_caps_lock_led_ = true;
+      }
     }
   }
 

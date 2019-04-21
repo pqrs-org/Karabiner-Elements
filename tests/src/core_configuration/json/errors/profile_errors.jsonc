@@ -1,0 +1,95 @@
+[
+    {
+        "class": "profile",
+        "input": null,
+        "error": "json must be object, but is `null`"
+    },
+
+    // name
+
+    {
+        "class": "profile",
+        "input": {
+            "name": null
+        },
+        "error": "`name` must be string, but is `null`"
+    },
+
+    // selected
+
+    {
+        "class": "profile",
+        "input": {
+            "selected": null
+        },
+        "error": "`selected` must be boolean, but is `null`"
+    },
+
+    // simple_modifications
+
+    {
+        "class": "profile",
+        "input": {
+            "simple_modifications": null
+        },
+        "error": "`simple_modifications` error: json must be array or object, but is `null`"
+    },
+
+    // fn_function_keys
+
+    {
+        "class": "profile",
+        "input": {
+            "fn_function_keys": null
+        },
+        "error": "`fn_function_keys` error: json must be array or object, but is `null`"
+    },
+
+    // complex_modifications
+
+    {
+        "class": "profile",
+        "input": {
+            "complex_modifications": null
+        },
+        "error": "`complex_modifications` error: json must be object, but is `null`"
+    },
+
+    // virtual_hid_keyboard
+
+    {
+        "class": "profile",
+        "input": {
+            "virtual_hid_keyboard": null
+        },
+        "error": "`virtual_hid_keyboard` error: json must be object, but is `null`"
+    },
+
+    // devices
+
+    {
+        "class": "profile",
+        "input": {
+            "devices": null
+        },
+        "error": "`devices` must be array, but is `null`"
+    },
+
+    {
+        "class": "profile",
+        "input": {
+            "devices": [null]
+        },
+        "error": "`devices` entry error: json must be object, but is `null`"
+    },
+
+    // unknown key (no error)
+
+    {
+        "class": "profile",
+        "input": {
+            "unknown_key": null
+        },
+        "error": null
+    }
+]

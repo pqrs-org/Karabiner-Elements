@@ -9,7 +9,7 @@
 #include "grabbable_state_queues_manager.hpp"
 #include "hid_keyboard_caps_lock_led_state_manager.hpp"
 #include "iokit_utility.hpp"
-#include "json_utility.hpp"
+#include "json_writer.hpp"
 #include "krbn_notification_center.hpp"
 #include "logger.hpp"
 #include "manipulator/manipulator_managers_connector.hpp"
@@ -735,7 +735,7 @@ private:
               });
 
     auto file_path = constants::get_device_details_json_file_path();
-    json_utility::async_save_to_file(nlohmann::json(device_details), file_path, 0755, 0644);
+    json_writer::async_save_to_file(nlohmann::json(device_details), file_path, 0755, 0644);
   }
 
   void set_profile(const core_configuration::details::profile& profile) {

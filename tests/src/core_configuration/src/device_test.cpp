@@ -5,7 +5,7 @@
 TEST_CASE("device.identifiers") {
   // empty json
   {
-    nlohmann::json json;
+    auto json = nlohmann::json::object();
     auto identifiers = krbn::device_identifiers::make_from_json(json);
     REQUIRE(identifiers.get_vendor_id() == krbn::vendor_id(0));
     REQUIRE(identifiers.get_product_id() == krbn::product_id(0));
@@ -62,7 +62,7 @@ TEST_CASE("device.identifiers") {
 
 TEST_CASE("device.identifiers.to_json") {
   {
-    nlohmann::json json;
+    auto json = nlohmann::json::object();
     auto identifiers = krbn::device_identifiers::make_from_json(json);
     nlohmann::json expected({
         {"vendor_id", 0},
@@ -95,13 +95,14 @@ TEST_CASE("device.identifiers.to_json") {
 TEST_CASE("device") {
   // empty json
   {
-    nlohmann::json json;
+    auto json = nlohmann::json::object();
     krbn::core_configuration::details::device device(json);
     REQUIRE(device.get_identifiers().get_vendor_id() == krbn::vendor_id(0));
     REQUIRE(device.get_identifiers().get_product_id() == krbn::product_id(0));
     REQUIRE(device.get_identifiers().get_is_keyboard() == false);
     REQUIRE(device.get_identifiers().get_is_pointing_device() == false);
     REQUIRE(device.get_ignore() == false);
+    REQUIRE(device.get_manipulate_caps_lock_led() == false);
     REQUIRE(device.get_disable_built_in_keyboard_if_exists() == false);
   }
 
@@ -109,26 +110,14 @@ TEST_CASE("device") {
   {
     nlohmann::json json({
         {"identifiers", {
-                            {
-                                "vendor_id",
-                                1234,
-                            },
-                            {
-                                "product_id",
-                                5678,
-                            },
-                            {
-                                "is_keyboard",
-                                true,
-                            },
-                            {
-                                "is_pointing_device",
-                                true,
-                            },
+                            {"vendor_id", 1234},
+                            {"product_id", 5678},
+                            {"is_keyboard", true},
+                            {"is_pointing_device", true},
                         }},
         {"disable_built_in_keyboard_if_exists", true},
         {"ignore", true},
-        {"manipulate_caps_lock_led", false},
+        {"manipulate_caps_lock_led", true},
     });
     krbn::core_configuration::details::device device(json);
     REQUIRE(device.get_identifiers().get_vendor_id() == krbn::vendor_id(1234));
@@ -136,30 +125,100 @@ TEST_CASE("device") {
     REQUIRE(device.get_identifiers().get_is_keyboard() == true);
     REQUIRE(device.get_identifiers().get_is_pointing_device() == true);
     REQUIRE(device.get_ignore() == true);
+    REQUIRE(device.get_manipulate_caps_lock_led() == true);
     REQUIRE(device.get_disable_built_in_keyboard_if_exists() == true);
   }
 
-  // invalid values in json
+  // Special default value for specific devices
   {
+    // ignore_ == true if is_pointing_device
+
     nlohmann::json json({
-        {"disable_built_in_keyboard_if_exists", nlohmann::json::array()},
-        {"identifiers", nullptr},
-        {"ignore", 1},
-        {"manipulate_caps_lock_led", false},
+        {"identifiers", {
+                            {"vendor_id", 1234},
+                            {"product_id", 5678},
+                            {"is_keyboard", false},
+                            {"is_pointing_device", true},
+                        }},
     });
-    krbn::core_configuration::details::device device(json);
-    REQUIRE(device.get_identifiers().get_vendor_id() == krbn::vendor_id(0));
-    REQUIRE(device.get_identifiers().get_product_id() == krbn::product_id(0));
-    REQUIRE(device.get_identifiers().get_is_keyboard() == false);
-    REQUIRE(device.get_identifiers().get_is_pointing_device() == false);
-    REQUIRE(device.get_ignore() == false);
-    REQUIRE(device.get_disable_built_in_keyboard_if_exists() == false);
+    {
+      krbn::core_configuration::details::device device(json);
+      REQUIRE(device.get_ignore() == true);
+    }
+    {
+      json["ignore"] = false;
+      krbn::core_configuration::details::device device(json);
+      REQUIRE(device.get_ignore() == false);
+    }
+  }
+  {
+    // ignore_ == true for specific devices
+
+    nlohmann::json json({
+        {"identifiers", {
+                            {"vendor_id", 0x05ac},
+                            {"product_id", 0x8600},
+                            {"is_keyboard", true},
+                            {"is_pointing_device", false},
+                        }},
+    });
+    {
+      krbn::core_configuration::details::device device(json);
+      REQUIRE(device.get_ignore() == true);
+    }
+    {
+      json["ignore"] = false;
+      krbn::core_configuration::details::device device(json);
+      REQUIRE(device.get_ignore() == false);
+    }
+  }
+  {
+    // ignore_ == true for specific devices
+
+    nlohmann::json json({
+        {"identifiers", {
+                            {"vendor_id", 0x1050},
+                            {"product_id", 0x407},
+                            {"is_keyboard", true},
+                            {"is_pointing_device", false},
+                        }},
+    });
+    {
+      krbn::core_configuration::details::device device(json);
+      REQUIRE(device.get_ignore() == true);
+    }
+    {
+      json["ignore"] = false;
+      krbn::core_configuration::details::device device(json);
+      REQUIRE(device.get_ignore() == false);
+    }
+  }
+  {
+    // manipulate_caps_lock_led_ == true for specific devices
+
+    nlohmann::json json({
+        {"identifiers", {
+                            {"vendor_id", 0x5ac},
+                            {"product_id", 0x262},
+                            {"is_keyboard", true},
+                            {"is_pointing_device", false},
+                        }},
+    });
+    {
+      krbn::core_configuration::details::device device(json);
+      REQUIRE(device.get_manipulate_caps_lock_led() == true);
+    }
+    {
+      json["manipulate_caps_lock_led"] = false;
+      krbn::core_configuration::details::device device(json);
+      REQUIRE(device.get_manipulate_caps_lock_led() == false);
+    }
   }
 }
 
 TEST_CASE("device.to_json") {
   {
-    nlohmann::json json;
+    auto json = nlohmann::json::object();
     krbn::core_configuration::details::device device(json);
     nlohmann::json expected({
         {"disable_built_in_keyboard_if_exists", false},

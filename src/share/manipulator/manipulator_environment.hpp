@@ -1,7 +1,7 @@
 #pragma once
 
 #include "device_properties_manager.hpp"
-#include "json_utility.hpp"
+#include "json_writer.hpp"
 #include "logger.hpp"
 #include <fstream>
 #include <iostream>
@@ -126,7 +126,7 @@ public:
 private:
   void async_save_to_file(void) const {
     if (!output_json_file_path_.empty()) {
-      json_utility::async_save_to_file(to_json(), output_json_file_path_, 0755, 0644);
+      json_writer::async_save_to_file(to_json(), output_json_file_path_, 0755, 0644);
     }
   }
 

@@ -1,6 +1,5 @@
 #pragma once
 
-#include "json_utility.hpp"
 #include <natural_sort.hpp>
 
 namespace krbn {
@@ -10,8 +9,7 @@ using namespace std::string_literals;
 
 class simple_modifications final {
 public:
-  simple_modifications(const nlohmann::json& json) {
-    handle_json(json);
+  simple_modifications(void) {
   }
 
   nlohmann::json to_json(void) const {
@@ -157,7 +155,7 @@ private:
       }
 
     } else {
-      logger::get_logger()->error("json error: Invalid type: {0}", json.dump());
+      throw pqrs::json::unmarshal_error(fmt::format("json must be array or object, but is `{0}`", json.dump()));
     }
 
     std::sort(pairs_.begin(), pairs_.end(), [](auto& a, auto& b) {

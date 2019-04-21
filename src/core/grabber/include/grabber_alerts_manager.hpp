@@ -2,7 +2,7 @@
 
 // `krbn::grabber_alerts_manager` can be used safely in a multi-threaded environment.
 
-#include "json_utility.hpp"
+#include "json_writer.hpp"
 #include "logger.hpp"
 #include <nlohmann/json.hpp>
 #include <pqrs/filesystem.hpp>
@@ -51,7 +51,7 @@ public:
 
   void async_save_to_file(void) const {
     if (!output_json_file_path_.empty()) {
-      json_utility::async_save_to_file(to_json(), output_json_file_path_, 0755, 0644);
+      json_writer::async_save_to_file(to_json(), output_json_file_path_, 0755, 0644);
     }
   }
 

@@ -4,6 +4,7 @@
 #include "profile/device.hpp"
 #include "profile/simple_modifications.hpp"
 #include "profile/virtual_hid_keyboard.hpp"
+#include <pqrs/json.hpp>
 
 namespace krbn {
 namespace core_configuration {
@@ -11,26 +12,74 @@ namespace details {
 class profile final {
 public:
   profile(const nlohmann::json& json) : json_(json),
-                                        selected_(false),
-                                        simple_modifications_(json_utility::find_copy(json, "simple_modifications", nlohmann::json::array())),
-                                        fn_function_keys_(make_default_fn_function_keys_json()),
-                                        complex_modifications_(json_utility::find_copy(json, "complex_modifications", nlohmann::json::object())),
-                                        virtual_hid_keyboard_(json_utility::find_copy(json, "virtual_hid_keyboard", nlohmann::json::object())) {
-    if (auto v = json_utility::find_optional<std::string>(json, "name")) {
-      name_ = *v;
+                                        selected_(false) {
+    // ----------------------------------------
+    // Set default value
+
+    fn_function_keys_.update(make_default_fn_function_keys_json());
+
+    // ----------------------------------------
+    // Load from json
+
+    if (!json.is_object()) {
+      throw pqrs::json::unmarshal_error(fmt::format("json must be object, but is `{0}`", json.dump()));
     }
 
-    if (auto v = json_utility::find_optional<bool>(json, "selected")) {
-      selected_ = *v;
-    }
+    for (const auto& [key, value] : json.items()) {
+      if (key == "name") {
+        if (!value.is_string()) {
+          throw pqrs::json::unmarshal_error(fmt::format("`{0}` must be string, but is `{1}`", key, value.dump()));
+        }
 
-    if (auto v = json_utility::find_json(json, "fn_function_keys")) {
-      fn_function_keys_.update(*v);
-    }
+        name_ = value.get<std::string>();
 
-    if (auto v = json_utility::find_array(json, "devices")) {
-      for (const auto& device_json : *v) {
-        devices_.emplace_back(device_json);
+      } else if (key == "selected") {
+        if (!value.is_boolean()) {
+          throw pqrs::json::unmarshal_error(fmt::format("`{0}` must be boolean, but is `{1}`", key, value.dump()));
+        }
+
+        selected_ = value.get<bool>();
+
+      } else if (key == "simple_modifications") {
+        try {
+          simple_modifications_.update(value);
+        } catch (const pqrs::json::unmarshal_error& e) {
+          throw pqrs::json::unmarshal_error(fmt::format("`{0}` error: {1}", key, e.what()));
+        }
+
+      } else if (key == "fn_function_keys") {
+        try {
+          fn_function_keys_.update(value);
+        } catch (const pqrs::json::unmarshal_error& e) {
+          throw pqrs::json::unmarshal_error(fmt::format("`{0}` error: {1}", key, e.what()));
+        }
+
+      } else if (key == "complex_modifications") {
+        try {
+          complex_modifications_ = complex_modifications(value);
+        } catch (const pqrs::json::unmarshal_error& e) {
+          throw pqrs::json::unmarshal_error(fmt::format("`{0}` error: {1}", key, e.what()));
+        }
+
+      } else if (key == "virtual_hid_keyboard") {
+        try {
+          virtual_hid_keyboard_ = virtual_hid_keyboard(value);
+        } catch (const pqrs::json::unmarshal_error& e) {
+          throw pqrs::json::unmarshal_error(fmt::format("`{0}` error: {1}", key, e.what()));
+        }
+
+      } else if (key == "devices") {
+        if (!value.is_array()) {
+          throw pqrs::json::unmarshal_error(fmt::format("`{0}` must be array, but is `{1}`", key, value.dump()));
+        }
+
+        for (const auto& j : value) {
+          try {
+            devices_.emplace_back(j);
+          } catch (const pqrs::json::unmarshal_error& e) {
+            throw pqrs::json::unmarshal_error(fmt::format("`{0}` entry error: {1}", key, e.what()));
+          }
+        }
       }
     }
   }

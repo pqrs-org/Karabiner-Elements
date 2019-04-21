@@ -1,6 +1,6 @@
 #pragma once
 
-#include "json_utility.hpp"
+#include <pqrs/json.hpp>
 
 namespace krbn {
 namespace core_configuration {
@@ -53,7 +53,7 @@ public:
 
   void update(const nlohmann::json& json) {
     for (const auto& pair : make_map()) {
-      if (auto v = json_utility::find_optional<int>(json, pair.first)) {
+      if (auto v = pqrs::json::find<int>(json, pair.first)) {
         const_cast<int&>(pair.second) = *v;
       }
     }
