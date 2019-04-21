@@ -1,6 +1,6 @@
 #pragma once
 
-#include "json_utility.hpp"
+#include <pqrs/json.hpp>
 
 namespace krbn {
 namespace core_configuration {
@@ -11,15 +11,15 @@ public:
                                                      check_for_updates_on_startup_(true),
                                                      show_in_menu_bar_(true),
                                                      show_profile_name_in_menu_bar_(false) {
-    if (auto v = json_utility::find_optional<bool>(json, "check_for_updates_on_startup")) {
+    if (auto v = pqrs::json::find<bool>(json, "check_for_updates_on_startup")) {
       check_for_updates_on_startup_ = *v;
     }
 
-    if (auto v = json_utility::find_optional<bool>(json, "show_in_menu_bar")) {
+    if (auto v = pqrs::json::find<bool>(json, "show_in_menu_bar")) {
       show_in_menu_bar_ = *v;
     }
 
-    if (auto v = json_utility::find_optional<bool>(json, "show_profile_name_in_menu_bar")) {
+    if (auto v = pqrs::json::find<bool>(json, "show_profile_name_in_menu_bar")) {
       show_profile_name_in_menu_bar_ = *v;
     }
   }

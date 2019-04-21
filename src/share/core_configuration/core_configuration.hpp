@@ -54,12 +54,12 @@ public:
           try {
             json_ = nlohmann::json::parse(input);
 
-            if (auto v = json_utility::find_object(json_, "global")) {
-              global_configuration_ = details::global_configuration(*v);
+            if (auto v = pqrs::json::find_object(json_, "global")) {
+              global_configuration_ = details::global_configuration(v->value());
             }
 
-            if (auto v = json_utility::find_array(json_, "profiles")) {
-              for (const auto& profile_json : *v) {
+            if (auto v = pqrs::json::find_array(json_, "profiles")) {
+              for (const auto& profile_json : v->value()) {
                 profiles_.emplace_back(profile_json);
               }
             }

@@ -2,7 +2,6 @@
 
 #include "descriptions.hpp"
 #include "device_properties.hpp"
-#include "json_utility.hpp"
 #include "types.hpp"
 
 namespace krbn {
@@ -32,12 +31,20 @@ public:
   }
 
   static device make_from_json(const nlohmann::json& json) {
-    return device(descriptions::make_from_json(
-                      json_utility::find_copy(json, "descriptions", nlohmann::json())),
-                  device_identifiers::make_from_json(
-                      json_utility::find_copy(json, "identifiers", nlohmann::json())),
-                  json_utility::find_optional<bool>(json, "is_built_in_keyboard").value_or(false),
-                  json_utility::find_optional<bool>(json, "is_built_in_trackpad").value_or(false));
+    descriptions d;
+    device_identifiers i;
+
+    if (auto j = pqrs::json::find_json(json, "descriptions")) {
+      d = descriptions::make_from_json(j->value());
+    }
+    if (auto j = pqrs::json::find_json(json, "identifiers")) {
+      i = device_identifiers::make_from_json(j->value());
+    }
+
+    return device(d,
+                  i,
+                  pqrs::json::find<bool>(json, "is_built_in_keyboard").value_or(false),
+                  pqrs::json::find<bool>(json, "is_built_in_trackpad").value_or(false));
   }
 
   nlohmann::json to_json(void) const {

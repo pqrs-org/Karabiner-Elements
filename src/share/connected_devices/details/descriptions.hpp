@@ -1,7 +1,7 @@
 #pragma once
 
 #include "device_properties.hpp"
-#include "json_utility.hpp"
+#include <pqrs/json.hpp>
 
 namespace krbn {
 namespace connected_devices {
@@ -21,8 +21,8 @@ public:
   }
 
   static descriptions make_from_json(const nlohmann::json& json) {
-    return descriptions(json_utility::find_optional<std::string>(json, "manufacturer").value_or(""),
-                        json_utility::find_optional<std::string>(json, "product").value_or(""));
+    return descriptions(pqrs::json::find<std::string>(json, "manufacturer").value_or(""),
+                        pqrs::json::find<std::string>(json, "product").value_or(""));
   }
 
   nlohmann::json to_json(void) const {
