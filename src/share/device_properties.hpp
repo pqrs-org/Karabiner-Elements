@@ -1,7 +1,6 @@
 #pragma once
 
 #include "iokit_utility.hpp"
-#include "json_utility.hpp"
 #include "types.hpp"
 #include <optional>
 #include <pqrs/osx/iokit_hid_device.hpp>

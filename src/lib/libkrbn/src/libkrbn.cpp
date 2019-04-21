@@ -3,7 +3,6 @@
 #include "constants.hpp"
 #include "core_configuration/core_configuration.hpp"
 #include "dispatcher_utility.hpp"
-#include "json_utility.hpp"
 #include "launchctl_utility.hpp"
 #include "libkrbn/impl/libkrbn_components_manager.hpp"
 #include "libkrbn/impl/libkrbn_cpp.hpp"

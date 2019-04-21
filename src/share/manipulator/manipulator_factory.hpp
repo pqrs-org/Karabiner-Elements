@@ -7,7 +7,6 @@
 #include "conditions/nop.hpp"
 #include "conditions/variable.hpp"
 #include "core_configuration/core_configuration.hpp"
-#include "json_utility.hpp"
 #include "manipulator/manipulators/base.hpp"
 #include "manipulator/manipulators/basic/basic.hpp"
 #include "manipulator/manipulators/mouse_motion_to_scroll/mouse_motion_to_scroll.hpp"
