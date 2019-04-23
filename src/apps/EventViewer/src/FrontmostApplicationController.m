@@ -39,7 +39,7 @@ static void staticCallback(const char* bundle_identifier,
   if (![@"org.pqrs.Karabiner.EventViewer" isEqualToString:bundleIdentifier] &&
       ![@"org.pqrs.Karabiner-EventViewer" isEqualToString:bundleIdentifier]) {
     // Clear if text is huge.
-    if (self.text.length > 1024 * 1024) {
+    if (self.text.length > 4 * 1024) {
       [self.text setAttributedString:[[NSAttributedString alloc] initWithString:@""]];
     }
 
