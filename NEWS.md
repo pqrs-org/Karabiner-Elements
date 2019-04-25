@@ -2,6 +2,10 @@
 
 ## Beta
 
+- Changed event code format to decimal number from hex on EventViewer.
+
+## Version 12.3.0
+
 - Added `Change mouse motion to scroll` feature.<br/>
   <https://pqrs.org/osx/karabiner/complex_modifications/#mouse_motion_to_scroll> <br/>
   Note:<br/>
