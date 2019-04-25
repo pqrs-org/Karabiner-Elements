@@ -13,6 +13,10 @@
         ]
     },
     {
+        "input": "assets/maintainers_error.json",
+        "errors": ["`maintainers` must be array, but is `null`"]
+    },
+    {
         "input": "assets/manipulators_error.json",
         "errors": [
             "`rule 1` error: `type` must be specified: {\"from\":{\"key_code\":\"escape\",\"modifiers\":{\"mandatory\":[\"control\"],\"optional\":[\"any\"]}},\"to\":[{\"key_code\":\"mission_control\"}]}",
@@ -37,8 +41,7 @@
     },
     {
         "input": "assets/unknown_key.json",
-        "errors": [
-        ]
+        "errors": []
     },
     { "input": "assets/valid.json", "errors": [] }
 ]
