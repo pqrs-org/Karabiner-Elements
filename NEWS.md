@@ -2,7 +2,7 @@
 
 ## Beta
 
-- Changed event code format to decimal number from hex on EventViewer.
+- Event code format on EventViewer changed to decimal number from hex.
 
 ## Version 12.3.0
 
