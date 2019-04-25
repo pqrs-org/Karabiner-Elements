@@ -32,19 +32,22 @@ static void hid_value_observer_callback(enum libkrbn_hid_value_type type,
       return;
     }
 
-    NSString* code = [NSString stringWithFormat:@"0x%x", value];
+    NSString* code = [NSString stringWithFormat:@"%d", value];
+    NSString* keyType = @"";
     NSMutableDictionary* simpleModificationJson = [NSMutableDictionary new];
 
     char buffer[256];
     buffer[0] = '\0';
     switch (type) {
       case libkrbn_hid_value_type_key_code:
+        keyType = @"key";
         libkrbn_get_key_code_name(buffer, sizeof(buffer), value);
         simpleModificationJson[@"from"] = [NSMutableDictionary new];
         simpleModificationJson[@"from"][@"key_code"] = [NSString stringWithUTF8String:buffer];
         break;
 
       case libkrbn_hid_value_type_consumer_key_code:
+        keyType = @"consumer_key";
         libkrbn_get_consumer_key_code_name(buffer, sizeof(buffer), value);
         simpleModificationJson[@"from"] = [NSMutableDictionary new];
         simpleModificationJson[@"from"][@"consumer_key_code"] = [NSString stringWithUTF8String:buffer];
@@ -55,10 +58,10 @@ static void hid_value_observer_callback(enum libkrbn_hid_value_type type,
     NSString* eventType = @"";
     switch (event_type) {
       case libkrbn_hid_value_event_type_key_down:
-        eventType = @"key_down";
+        eventType = [NSString stringWithFormat:@"%@_down", keyType];
         break;
       case libkrbn_hid_value_event_type_key_up:
-        eventType = @"key_up";
+        eventType = [NSString stringWithFormat:@"%@_up", keyType];
         break;
       case libkrbn_hid_value_event_type_single:
         eventType = @"";
@@ -201,7 +204,7 @@ enum {
 - (void)pushMouseEvent:(NSEvent*)event eventType:(NSString*)eventType {
   NSString* flags = [self modifierFlagsToString:[event modifierFlags]];
   [self push:eventType
-        code:[NSString stringWithFormat:@"0x%x", (int)([event buttonNumber])]
+        code:[NSString stringWithFormat:@"%d", (int)([event buttonNumber])]
         name:[self buttonToString:event]
         misc:[NSString stringWithFormat:@"{x:%d,y:%d} click_count:%d %@",
                                         (int)([event locationInWindow].x), (int)([event locationInWindow].y),
@@ -221,23 +224,23 @@ enum {
     case NSEventTypeLeftMouseDown:
     case NSEventTypeRightMouseDown:
     case NSEventTypeOtherMouseDown:
-      [self pushMouseEvent:event eventType:@"MouseDown"];
+      [self pushMouseEvent:event eventType:@"button_down"];
       break;
 
     case NSEventTypeLeftMouseUp:
     case NSEventTypeRightMouseUp:
     case NSEventTypeOtherMouseUp:
-      [self pushMouseEvent:event eventType:@"MouseUp"];
+      [self pushMouseEvent:event eventType:@"button_up"];
       break;
 
     case NSEventTypeLeftMouseDragged:
     case NSEventTypeRightMouseDragged:
     case NSEventTypeOtherMouseDragged:
-      [self pushMouseEvent:event eventType:@"MouseDragged"];
+      [self pushMouseEvent:event eventType:@"mouse_dragged"];
       break;
 
     case NSEventTypeScrollWheel:
-      [self pushScrollWheelEvent:event eventType:@"ScrollWheel"];
+      [self pushScrollWheelEvent:event eventType:@"scroll_wheel"];
       break;
 
     default:

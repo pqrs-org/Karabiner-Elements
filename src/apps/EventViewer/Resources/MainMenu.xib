@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.Cocoa.XIB" version="3.0" toolsVersion="14313.18" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none" useAutolayout="YES">
+<document type="com.apple.InterfaceBuilder3.Cocoa.XIB" version="3.0" toolsVersion="14460.31" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none" useAutolayout="YES">
     <dependencies>
         <deployment identifier="macosx"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="14313.18"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="14460.31"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
     <objects>
@@ -307,7 +307,7 @@
                                                                     <tableViewGridLines key="gridStyleMask" vertical="YES" horizontal="YES"/>
                                                                     <color key="gridColor" name="gridColor" catalog="System" colorSpace="catalog"/>
                                                                     <tableColumns>
-                                                                        <tableColumn identifier="eventType" editable="NO" width="90" minWidth="40" maxWidth="1000" id="567">
+                                                                        <tableColumn identifier="eventType" editable="NO" width="120" minWidth="40" maxWidth="1000" id="567">
                                                                             <tableHeaderCell key="headerCell" lineBreakMode="truncatingTail" enabled="NO" borderStyle="border" alignment="left" title="eventType">
                                                                                 <font key="font" metaFont="smallSystem"/>
                                                                                 <color key="textColor" name="headerTextColor" catalog="System" colorSpace="catalog"/>
@@ -319,7 +319,7 @@
                                                                                 <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                                                                             </textFieldCell>
                                                                         </tableColumn>
-                                                                        <tableColumn identifier="code" editable="NO" width="40" minWidth="40" maxWidth="1000" id="566">
+                                                                        <tableColumn identifier="code" editable="NO" width="50" minWidth="40" maxWidth="1000" id="566">
                                                                             <tableHeaderCell key="headerCell" lineBreakMode="truncatingTail" enabled="NO" borderStyle="border" alignment="left" title="code">
                                                                                 <font key="font" metaFont="smallSystem"/>
                                                                                 <color key="textColor" name="headerTextColor" catalog="System" colorSpace="catalog"/>
@@ -343,7 +343,7 @@
                                                                                 <color key="backgroundColor" name="controlBackgroundColor" catalog="System" colorSpace="catalog"/>
                                                                             </textFieldCell>
                                                                         </tableColumn>
-                                                                        <tableColumn identifier="misc" editable="NO" width="407" minWidth="10" maxWidth="3.4028234663852886e+38" id="585">
+                                                                        <tableColumn identifier="misc" editable="NO" width="367" minWidth="10" maxWidth="3.4028234663852886e+38" id="585">
                                                                             <tableHeaderCell key="headerCell" lineBreakMode="truncatingTail" enabled="NO" borderStyle="border" alignment="left" title="misc">
                                                                                 <font key="font" metaFont="smallSystem"/>
                                                                                 <color key="textColor" name="headerTextColor" catalog="System" colorSpace="catalog"/>
