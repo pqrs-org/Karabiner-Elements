@@ -42,6 +42,12 @@
         ]
     },
     {
+        "input": "assets/manipulators_error_5.json",
+        "errors": [
+            "`rules` entry error: `available_since` must be string, but is `null`"
+        ]
+    },
+    {
         "input": "assets/not_found.json",
         "errors": ["failed to open json/lint/assets/not_found.json"]
     },
