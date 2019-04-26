@@ -25,18 +25,14 @@
                 },
                 "rules": [
                     {
+                        "description": "Emacs bindings, etc.",
                         "manipulators": [
                             {
-                                "description": "Change control+[ to escape.",
                                 "from": {
                                     "key_code": "open_bracket",
                                     "modifiers": {
-                                        "mandatory": [
-                                            "control"
-                                        ],
-                                        "optional": [
-                                            "caps_lock"
-                                        ]
+                                        "mandatory": ["control"],
+                                        "optional": ["caps_lock"]
                                     }
                                 },
                                 "to": [
@@ -50,12 +46,8 @@
                                 "from": {
                                     "key_code": "h",
                                     "modifiers": {
-                                        "mandatory": [
-                                            "control"
-                                        ],
-                                        "optional": [
-                                            "any"
-                                        ]
+                                        "mandatory": ["control"],
+                                        "optional": ["any"]
                                     }
                                 },
                                 "to": [
@@ -66,13 +58,10 @@
                                 "type": "basic"
                             },
                             {
-                                "description": "Change spacebar to left_shift. (Post spacebar if pressed alone)",
                                 "from": {
                                     "key_code": "spacebar",
                                     "modifiers": {
-                                        "optional": [
-                                            "any"
-                                        ]
+                                        "optional": ["any"]
                                     }
                                 },
                                 "parameters": {

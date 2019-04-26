@@ -73,7 +73,7 @@ TEST_CASE("valid") {
     REQUIRE(complex_modifications.get_parameters().get_basic_to_if_alone_timeout_milliseconds() == 800);
     REQUIRE(rules[0].get_manipulators()[0].get_parameters().get_basic_to_if_alone_timeout_milliseconds() == 800);
     REQUIRE(rules[0].get_manipulators()[2].get_parameters().get_basic_to_if_alone_timeout_milliseconds() == 400);
-    REQUIRE(rules[0].get_description() == "Change control+[ to escape.");
+    REQUIRE(rules[0].get_description() == "Emacs bindings, etc.");
     REQUIRE(rules[1].get_description() == "description test");
     REQUIRE(rules[2].get_description() == "");
   }

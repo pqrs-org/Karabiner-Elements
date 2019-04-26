@@ -38,19 +38,15 @@
             "complex_modifications": {
                 "rules": [
                     {
+                        "description": "Emacs bindings, etc.",
                         "manipulators": [
                             {
-                                "description": "Change control+[ to escape.",
                                 "type": "basic",
                                 "from": {
                                     "key_code": "open_bracket",
                                     "modifiers": {
-                                        "mandatory": [
-                                            "control"
-                                        ],
-                                        "optional": [
-                                            "caps_lock"
-                                        ]
+                                        "mandatory": ["control"],
+                                        "optional": ["caps_lock"]
                                     }
                                 },
                                 "to": [
@@ -64,12 +60,8 @@
                                 "from": {
                                     "key_code": "h",
                                     "modifiers": {
-                                        "mandatory": [
-                                            "control"
-                                        ],
-                                        "optional": [
-                                            "any"
-                                        ]
+                                        "mandatory": ["control"],
+                                        "optional": ["any"]
                                     }
                                 },
                                 "to": [
@@ -79,13 +71,10 @@
                                 ]
                             },
                             {
-                                "description": "Change spacebar to left_shift. (Post spacebar if pressed alone)",
                                 "from": {
                                     "key_code": "spacebar",
                                     "modifiers": {
-                                        "optional": [
-                                            "any"
-                                        ]
+                                        "optional": ["any"]
                                     }
                                 },
                                 "to": [
