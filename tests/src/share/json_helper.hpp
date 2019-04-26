@@ -41,6 +41,10 @@ public:
       std::stringstream ss;
 
       std::ifstream json_file(file_path);
+      if (!json_file) {
+        throw std::runtime_error(file_path + " is not found");
+      }
+
       for (std::string line; std::getline(json_file, line);) {
         if (pqrs::string::starts_with(pqrs::string::trim_copy(line), "//")) {
           continue;
@@ -53,6 +57,10 @@ public:
     }
 
     std::ifstream json_file(file_path);
+    if (!json_file) {
+      throw std::runtime_error(file_path + " is not found");
+    }
+
     return nlohmann::json::parse(json_file);
   }
 };
