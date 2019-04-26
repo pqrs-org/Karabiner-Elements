@@ -17,10 +17,28 @@
         "errors": ["`maintainers` must be array, but is `null`"]
     },
     {
-        "input": "assets/manipulators_error.json",
+        "input": "assets/manipulators_error_1.json",
         "errors": [
             "`rule 1` error: `type` must be specified: {\"from\":{\"key_code\":\"escape\",\"modifiers\":{\"mandatory\":[\"control\"],\"optional\":[\"any\"]}},\"to\":[{\"key_code\":\"mission_control\"}]}",
             "`rule 2` error: `from` error: `pointing_button` error: json must be string or number, but is `null`"
+        ]
+    },
+    {
+        "input": "assets/manipulators_error_2.json",
+        "errors": [
+            "`rules` entry error: `manipulators` must be array, but is `null`"
+        ]
+    },
+    {
+        "input": "assets/manipulators_error_3.json",
+        "errors": [
+            "`rules` entry error: `manipulators` entry error: json must be object, but is `null`"
+        ]
+    },
+    {
+        "input": "assets/manipulators_error_4.json",
+        "errors": [
+            "`rules` entry error: `description` must be string, but is `null`"
         ]
     },
     {

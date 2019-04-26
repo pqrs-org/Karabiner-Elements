@@ -6,7 +6,7 @@
 TEST_CASE("reload") {
   {
     krbn::complex_modifications_assets_manager complex_modifications_assets_manager;
-    complex_modifications_assets_manager.reload("assets/complex_modifications", false);
+    complex_modifications_assets_manager.reload("json/complex_modifications", false);
 
     auto& files = complex_modifications_assets_manager.get_files();
     REQUIRE(files.size() == 5);

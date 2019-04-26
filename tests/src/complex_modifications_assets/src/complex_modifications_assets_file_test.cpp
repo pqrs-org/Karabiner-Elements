@@ -1,11 +1,11 @@
 #include <catch2/catch.hpp>
 
+#include "../../share/json_helper.hpp"
 #include "complex_modifications_assets_file.hpp"
 #include <iostream>
 
 TEST_CASE("lint") {
-  std::ifstream assets_json_stream("json/lint/assets.json");
-  auto assets_json = nlohmann::json::parse(assets_json_stream);
+  auto assets_json = krbn::unit_testing::json_helper::load_jsonc("json/lint/assets.jsonc");
   for (const auto& assets_json_entry : assets_json) {
     std::vector<std::string> error_messages;
     try {

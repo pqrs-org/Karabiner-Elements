@@ -1,4 +1,11 @@
 {
     "title": "unknown key",
-    "author": "test"
+    "unknown_key": "unknown_key",
+    "rules": [
+        {
+            "description": "unknown key",
+            "manipulators": [],
+            "unknown_key": "unknown_value"
+        }
+    ]
 }
