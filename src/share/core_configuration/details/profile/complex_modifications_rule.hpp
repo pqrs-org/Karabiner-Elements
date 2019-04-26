@@ -26,14 +26,30 @@ public:
     manipulator(const nlohmann::json& json,
                 const complex_modifications_parameters& parameters) : json_(json),
                                                                       parameters_(parameters) {
-      if (auto v = pqrs::json::find_array(json, "conditions")) {
-        for (const auto& j : v->value()) {
-          conditions_.emplace_back(j);
-        }
+      if (!json.is_object()) {
+        throw pqrs::json::unmarshal_error(fmt::format("json must be object, but is `{0}`", json.dump()));
       }
 
-      if (auto v = pqrs::json::find_object(json, "parameters")) {
-        parameters_.update(v->value());
+      for (const auto& [key, value] : json.items()) {
+        if (key == "conditions") {
+          if (!value.is_array()) {
+            throw pqrs::json::unmarshal_error(fmt::format("`{0}` must be array, but is `{1}`", key, value.dump()));
+          }
+
+          for (const auto& j : value) {
+            conditions_.emplace_back(j);
+          }
+
+        } else if (key == "parameters") {
+          if (!value.is_object()) {
+            throw pqrs::json::unmarshal_error(fmt::format("`{0}` must be object, but is `{1}`", key, value.dump()));
+          }
+
+          parameters_.update(value);
+
+        } else {
+          // Allow unknown key
+        }
       }
     }
 
@@ -57,14 +73,34 @@ public:
 
   complex_modifications_rule(const nlohmann::json& json,
                              const complex_modifications_parameters& parameters) : json_(json) {
-    if (auto v = pqrs::json::find_array(json, "manipulators")) {
-      for (const auto& j : v->value()) {
-        manipulators_.emplace_back(j, parameters);
-      }
+    if (!json.is_object()) {
+      throw pqrs::json::unmarshal_error(fmt::format("json must be object, but is `{0}`", json.dump()));
     }
 
-    if (auto d = find_description(json)) {
-      description_ = *d;
+    for (const auto& [key, value] : json.items()) {
+      if (key == "manipulators") {
+        if (!value.is_array()) {
+          throw pqrs::json::unmarshal_error(fmt::format("`{0}` must be array, but is `{1}`", key, value.dump()));
+        }
+
+        for (const auto& j : value) {
+          try {
+            manipulators_.emplace_back(j, parameters);
+          } catch (const pqrs::json::unmarshal_error& e) {
+            throw pqrs::json::unmarshal_error(fmt::format("`{0}` entry error: {1}", key, e.what()));
+          }
+        }
+
+      } else if (key == "description") {
+        if (!value.is_string()) {
+          throw pqrs::json::unmarshal_error(fmt::format("`{0}` must be string, but is `{1}`", key, value.dump()));
+        }
+
+        description_ = value.get<std::string>();
+
+      } else {
+        // Allow unknown key
+      }
     }
   }
 
@@ -81,23 +117,6 @@ public:
   }
 
 private:
-  std::optional<std::string> find_description(const nlohmann::json& json) const {
-    if (auto v = pqrs::json::find<std::string>(json, "description")) {
-      return *v;
-    }
-
-    if (json.is_array() || json.is_object()) {
-      for (const auto& j : json) {
-        auto s = find_description(j);
-        if (s) {
-          return s;
-        }
-      }
-    }
-
-    return std::nullopt;
-  }
-
   nlohmann::json json_;
   std::vector<manipulator> manipulators_;
   std::string description_;

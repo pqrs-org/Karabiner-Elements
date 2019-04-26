@@ -40,7 +40,11 @@ public:
 
           core_configuration::details::complex_modifications_parameters parameters;
           for (const auto& j : value) {
-            rules_.emplace_back(j, parameters);
+            try {
+              rules_.emplace_back(j, parameters);
+            } catch (const pqrs::json::unmarshal_error& e) {
+              throw pqrs::json::unmarshal_error(fmt::format("`{0}` entry error: {1}", key, e.what()));
+            }
           }
 
         } else {
