@@ -1,0 +1,13 @@
+{
+    "title": "valid title",
+    "rules": [
+        {
+            "description": "rule 1",
+            "manipulators": [
+                {
+                    "description": null
+                }
+            ]
+        }
+    ]
+}

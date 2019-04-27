@@ -48,6 +48,12 @@
         ]
     },
     {
+        "input": "assets/manipulators_error_6.json",
+        "errors": [
+            "`rules` entry error: `manipulators` entry error: `description` must be string, but is `null`"
+        ]
+    },
+    {
         "input": "assets/not_found.json",
         "errors": ["failed to open json/lint/assets/not_found.json"]
     },

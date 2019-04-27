@@ -38,9 +38,9 @@
             "complex_modifications": {
                 "rules": [
                     {
-                        "description": "Emacs bindings, etc.",
                         "manipulators": [
                             {
+                                "description": "Emacs bindings, etc.",
                                 "type": "basic",
                                 "from": {
                                     "key_code": "open_bracket",
@@ -56,6 +56,7 @@
                                 ]
                             },
                             {
+                                "description": "Chagne control-h to delete_or_backspace",
                                 "type": "basic",
                                 "from": {
                                     "key_code": "h",

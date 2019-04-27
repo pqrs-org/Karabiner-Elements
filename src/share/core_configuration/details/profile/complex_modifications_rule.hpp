@@ -47,6 +47,13 @@ public:
 
           parameters_.update(value);
 
+        } else if (key == "description") {
+          if (!value.is_string()) {
+            throw pqrs::json::unmarshal_error(fmt::format("`{0}` must be string, but is `{1}`", key, value.dump()));
+          }
+
+          description_ = value.get<std::string>();
+
         } else {
           // Allow unknown key
         }
@@ -65,10 +72,15 @@ public:
       return parameters_;
     }
 
+    const std::string& get_description(void) const {
+      return description_;
+    }
+
   private:
     nlohmann::json json_;
     std::vector<condition> conditions_;
     complex_modifications_parameters parameters_;
+    std::string description_;
   };
 
   complex_modifications_rule(const nlohmann::json& json,
@@ -106,6 +118,16 @@ public:
 
       } else {
         // Allow unknown key
+      }
+    }
+
+    // Use manipulators_'s description if needed.
+    if (description_.empty()) {
+      for (const auto& m : manipulators_) {
+        if (!m.get_description().empty()) {
+          description_ = m.get_description();
+          break;
+        }
       }
     }
   }

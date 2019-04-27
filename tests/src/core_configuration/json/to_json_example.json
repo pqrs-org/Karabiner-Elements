@@ -25,9 +25,9 @@
                 },
                 "rules": [
                     {
-                        "description": "Emacs bindings, etc.",
                         "manipulators": [
                             {
+                                "description": "Emacs bindings, etc.",
                                 "from": {
                                     "key_code": "open_bracket",
                                     "modifiers": {
@@ -43,6 +43,7 @@
                                 "type": "basic"
                             },
                             {
+                                "description": "Chagne control-h to delete_or_backspace",
                                 "from": {
                                     "key_code": "h",
                                     "modifiers": {
