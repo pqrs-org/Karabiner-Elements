@@ -2,15 +2,13 @@
     "title": "Examples",
     "rules": [
         {
+            "description": "Change caps_lock to command+control+option+shift.",
             "manipulators": [
                 {
-                    "description": "Change caps_lock to command+control+option+shift.",
                     "from": {
                         "key_code": "caps_lock",
                         "modifiers": {
-                            "optional": [
-                                "any"
-                            ]
+                            "optional": ["any"]
                         }
                     },
                     "to": [
@@ -35,12 +33,8 @@
                     "from": {
                         "key_code": "h",
                         "modifiers": {
-                            "mandatory": [
-                                "right_command"
-                            ],
-                            "optional": [
-                                "any"
-                            ]
+                            "mandatory": ["right_command"],
+                            "optional": ["any"]
                         }
                     },
                     "to": [
@@ -54,12 +48,8 @@
                     "from": {
                         "key_code": "j",
                         "modifiers": {
-                            "mandatory": [
-                                "right_command"
-                            ],
-                            "optional": [
-                                "any"
-                            ]
+                            "mandatory": ["right_command"],
+                            "optional": ["any"]
                         }
                     },
                     "to": [
@@ -73,12 +63,8 @@
                     "from": {
                         "key_code": "k",
                         "modifiers": {
-                            "mandatory": [
-                                "right_command"
-                            ],
-                            "optional": [
-                                "any"
-                            ]
+                            "mandatory": ["right_command"],
+                            "optional": ["any"]
                         }
                     },
                     "to": [
@@ -92,12 +78,8 @@
                     "from": {
                         "key_code": "l",
                         "modifiers": {
-                            "mandatory": [
-                                "right_command"
-                            ],
-                            "optional": [
-                                "any"
-                            ]
+                            "mandatory": ["right_command"],
+                            "optional": ["any"]
                         }
                     },
                     "to": [
@@ -116,9 +98,7 @@
                     "from": {
                         "key_code": "spacebar",
                         "modifiers": {
-                            "optional": [
-                                "any"
-                            ]
+                            "optional": ["any"]
                         }
                     },
                     "to": [
