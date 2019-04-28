@@ -53,20 +53,6 @@ TEST_CASE("counter_parameters") {
     p.set_threshold(1000);
     REQUIRE(p.get_threshold() == 1000);
 
-    // momentum_minus_
-
-    p.set_momentum_minus(-100);
-    REQUIRE(p.get_momentum_minus() == counter_parameters::momentum_minus_default_value);
-
-    p.set_momentum_minus(0);
-    REQUIRE(p.get_momentum_minus() == counter_parameters::momentum_minus_default_value);
-
-    p.set_momentum_minus(1);
-    REQUIRE(p.get_momentum_minus() == 1);
-
-    p.set_momentum_minus(1000);
-    REQUIRE(p.get_momentum_minus() == 1000);
-
     // direction_lock_threshold_
 
     p.set_direction_lock_threshold(-100);

@@ -56,8 +56,6 @@ public:
             } else if (k == "recent_time_duration_milliseconds") { // (secret parameter)
               counter_parameters_.set_recent_time_duration_milliseconds(
                   std::chrono::milliseconds(v.get<int>()));
-            } else if (k == "momentum_minus") { // (secret parameter)
-              counter_parameters_.set_momentum_minus(v.get<int>());
             } else if (k == "direction_lock_threshold") { // (secret parameter)
               counter_parameters_.set_direction_lock_threshold(v.get<int>());
             } else if (k == "scroll_event_interval_milliseconds_threshold") { // (secret parameter)
