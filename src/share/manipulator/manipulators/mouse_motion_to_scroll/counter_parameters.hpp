@@ -17,11 +17,20 @@ public:
   static constexpr std::chrono::milliseconds scroll_event_interval_milliseconds_threshold_default_value =
       std::chrono::milliseconds(100);
 
-  counter_parameters(void) : speed_multiplier_(speed_multiplier_default_value),
+  counter_parameters(void) : momentum_scroll_enabled_(true),
+                             speed_multiplier_(speed_multiplier_default_value),
                              recent_time_duration_milliseconds_(recent_time_duration_milliseconds_default_value),
                              threshold_(threshold_default_value),
                              direction_lock_threshold_(direction_lock_threshold_default_value),
                              scroll_event_interval_milliseconds_threshold_(scroll_event_interval_milliseconds_threshold_default_value) {
+  }
+
+  bool get_momentum_scroll_enabled(void) const {
+    return momentum_scroll_enabled_;
+  }
+
+  void set_momentum_scroll_enabled(bool value) {
+    momentum_scroll_enabled_ = value;
   }
 
   double get_speed_multiplier(void) const {
@@ -85,6 +94,7 @@ public:
   }
 
 private:
+  bool momentum_scroll_enabled_;
   double speed_multiplier_;
   std::chrono::milliseconds recent_time_duration_milliseconds_;
   int threshold_;
