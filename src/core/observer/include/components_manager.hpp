@@ -25,6 +25,7 @@ public:
       }
 
       if (device_observer_) {
+        device_observer_->async_rescan();
         device_observer_->async_post_all_states_to_grabber();
       }
     });

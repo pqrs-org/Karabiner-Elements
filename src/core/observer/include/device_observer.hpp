@@ -108,6 +108,8 @@ public:
         hid_queue_value_monitor->async_start(kIOHIDOptionsTypeNone,
                                              std::chrono::milliseconds(3000));
       }
+
+      async_rescan();
     });
 
     hid_manager_->device_terminated.connect([this](auto&& registry_entry_id) {
@@ -117,6 +119,8 @@ public:
 
       grabbable_state_manager_->erase(device_id);
       hid_queue_value_monitors_.erase(device_id);
+
+      async_rescan();
     });
 
     hid_manager_->error_occurred.connect([](auto&& message, auto&& iokit_return) {
@@ -142,7 +146,15 @@ public:
     });
   }
 
-  void async_post_all_states_to_grabber(void) {
+  void async_rescan(void) const {
+    enqueue_to_dispatcher([this] {
+      hid_manager_->async_rescan();
+
+      logger::get_logger()->info("rescan devices...");
+    });
+  }
+
+  void async_post_all_states_to_grabber(void) const {
     enqueue_to_dispatcher([this] {
       if (auto client = grabber_client_.lock()) {
         if (grabbable_state_manager_) {
