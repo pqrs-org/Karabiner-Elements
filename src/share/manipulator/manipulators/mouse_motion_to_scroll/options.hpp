@@ -8,7 +8,7 @@ namespace krbn {
 namespace manipulator {
 namespace manipulators {
 namespace mouse_motion_to_scroll {
-struct counter_parameters final {
+struct options final {
 public:
   static constexpr double speed_multiplier_default_value = 1.0;
   static constexpr std::chrono::milliseconds recent_time_duration_milliseconds_default_value =
@@ -18,12 +18,12 @@ public:
   static constexpr std::chrono::milliseconds scroll_event_interval_milliseconds_threshold_default_value =
       std::chrono::milliseconds(100);
 
-  counter_parameters(void) : momentum_scroll_enabled_(true),
-                             speed_multiplier_(speed_multiplier_default_value),
-                             recent_time_duration_milliseconds_(recent_time_duration_milliseconds_default_value),
-                             threshold_(threshold_default_value),
-                             direction_lock_threshold_(direction_lock_threshold_default_value),
-                             scroll_event_interval_milliseconds_threshold_(scroll_event_interval_milliseconds_threshold_default_value) {
+  options(void) : momentum_scroll_enabled_(true),
+                  speed_multiplier_(speed_multiplier_default_value),
+                  recent_time_duration_milliseconds_(recent_time_duration_milliseconds_default_value),
+                  threshold_(threshold_default_value),
+                  direction_lock_threshold_(direction_lock_threshold_default_value),
+                  scroll_event_interval_milliseconds_threshold_(scroll_event_interval_milliseconds_threshold_default_value) {
   }
 
   bool get_momentum_scroll_enabled(void) const {

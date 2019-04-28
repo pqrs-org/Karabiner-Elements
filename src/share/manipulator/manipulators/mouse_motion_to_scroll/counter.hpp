@@ -4,7 +4,7 @@
 #include "counter_chunk_value.hpp"
 #include "counter_direction.hpp"
 #include "counter_entry.hpp"
-#include "counter_parameters.hpp"
+#include "options.hpp"
 #include "types/absolute_time_duration.hpp"
 #include "types/pointing_motion.hpp"
 #include <algorithm>
@@ -34,17 +34,17 @@ public:
 
   counter(std::weak_ptr<pqrs::dispatcher::dispatcher> weak_dispatcher,
           const core_configuration::details::complex_modifications_parameters& parameters,
-          const counter_parameters& counter_parameters) : dispatcher_client(weak_dispatcher),
-                                                          parameters_(parameters),
-                                                          counter_parameters_(counter_parameters),
-                                                          counter_direction_(counter_direction::none),
-                                                          total_x_(0),
-                                                          total_y_(0),
-                                                          momentum_x_(0),
-                                                          momentum_y_(0),
-                                                          momentum_count_(0),
-                                                          momentum_wait_(0),
-                                                          timer_(*this) {
+          const options& options) : dispatcher_client(weak_dispatcher),
+                                    parameters_(parameters),
+                                    options_(options),
+                                    counter_direction_(counter_direction::none),
+                                    total_x_(0),
+                                    total_y_(0),
+                                    momentum_x_(0),
+                                    momentum_y_(0),
+                                    momentum_count_(0),
+                                    momentum_wait_(0),
+                                    timer_(*this) {
   }
 
   ~counter(void) {
@@ -97,7 +97,7 @@ private:
       return false;
     }
 
-    auto recent_time_duration_milliseconds = counter_parameters_.get_recent_time_duration_milliseconds();
+    auto recent_time_duration_milliseconds = options_.get_recent_time_duration_milliseconds();
     auto front_time_point = entries_.front().get_time_point();
 
     if (when_now() - front_time_point <= recent_time_duration_milliseconds) {
@@ -177,7 +177,7 @@ private:
       total_y_ = 0;
       momentum_x_ = 0;
       momentum_y_ = 0;
-      momentum_minus_ = counter_parameters_.get_threshold();
+      momentum_minus_ = options_.get_threshold();
     }
 
     // Apply direction
@@ -194,21 +194,21 @@ private:
       // Keep total_abs_x_
       total_x_ = 0;
       momentum_x_ = 0;
-      momentum_minus_ = counter_parameters_.get_threshold();
+      momentum_minus_ = options_.get_threshold();
       initial = true;
     }
     if (y != 0 && pqrs::make_sign(total_y_) != pqrs::make_sign(y)) {
       // Keep total_abs_y_
       total_y_ = 0;
       momentum_y_ = 0;
-      momentum_minus_ = counter_parameters_.get_threshold();
+      momentum_minus_ = options_.get_threshold();
       initial = true;
     }
 
     // Multiply x,y
 
     double multiplier = parameters_.make_mouse_motion_to_scroll_speed_rate() *
-                        counter_parameters_.get_speed_multiplier();
+                        options_.get_speed_multiplier();
     x *= multiplier;
     y *= multiplier;
 
@@ -224,7 +224,7 @@ private:
     // Enlarge total_x, total_y if initial event
 
     if (initial) {
-      int least_value = counter_parameters_.get_threshold();
+      int least_value = options_.get_threshold();
 #if 0
             std::cout << "least_value " << least_value << std::endl;
 #endif
@@ -249,13 +249,13 @@ private:
 
     {
       auto value = static_cast<double>(std::max(std::abs(total_x_), std::abs(total_y_)));
-      value /= counter_parameters_.get_threshold();
+      value /= options_.get_threshold();
 
       if (value > 10) {
         value = 10;
       }
 
-      auto minus = static_cast<int>(static_cast<double>(counter_parameters_.get_threshold()) / std::pow(value, 4));
+      auto minus = static_cast<int>(static_cast<double>(options_.get_threshold()) / std::pow(value, 4));
 
       if (minus <= 0) {
         minus = 1;
@@ -294,12 +294,12 @@ private:
     auto now = when_now();
 
     if (last_scroll_time_point_ &&
-        now - *last_scroll_time_point_ > counter_parameters_.get_scroll_event_interval_milliseconds_threshold()) {
+        now - *last_scroll_time_point_ > options_.get_scroll_event_interval_milliseconds_threshold()) {
       return false;
     }
 
     double scale = (1.0 / momentum_count_);
-    if (!counter_parameters_.get_momentum_scroll_enabled() &&
+    if (!options_.get_momentum_scroll_enabled() &&
         momentum_count_ > 1) {
       scale = 0;
     }
@@ -340,7 +340,7 @@ private:
       return false;
     }
 
-    if (counter_parameters_.get_momentum_scroll_enabled()) {
+    if (options_.get_momentum_scroll_enabled()) {
       momentum_wait_ = std::min(momentum_count_, 10);
     }
 
@@ -349,8 +349,8 @@ private:
 
   void erase_chunk_accumulated_values(chunk_accumulated_values_t& chunk_accumulated_values,
                                       pqrs::dispatcher::time_point time_point) const {
-    auto threshold = counter_parameters_.get_recent_time_duration_milliseconds() *
-                     counter_parameters_.get_direction_lock_threshold();
+    auto threshold = options_.get_recent_time_duration_milliseconds() *
+                     options_.get_direction_lock_threshold();
 
     chunk_accumulated_values.erase(std::remove_if(std::begin(chunk_accumulated_values),
                                                   std::end(chunk_accumulated_values),
@@ -380,12 +380,12 @@ private:
 
   int convert(int& value) const {
     int result = 0;
-    int threshold = counter_parameters_.get_threshold();
+    int threshold = options_.get_threshold();
 
     while (value >= threshold) {
       value -= threshold;
       ++result;
-      if (counter_parameters_.get_momentum_scroll_enabled()) {
+      if (options_.get_momentum_scroll_enabled()) {
         break;
       }
     }
@@ -393,7 +393,7 @@ private:
     while (value <= -threshold) {
       value += threshold;
       --result;
-      if (counter_parameters_.get_momentum_scroll_enabled()) {
+      if (options_.get_momentum_scroll_enabled()) {
         break;
       }
     }
@@ -410,7 +410,7 @@ private:
   }
 
   const core_configuration::details::complex_modifications_parameters parameters_;
-  const counter_parameters counter_parameters_;
+  const options options_;
 
   std::deque<counter_entry> entries_;
   std::optional<pqrs::dispatcher::time_point> last_entry_time_point_;

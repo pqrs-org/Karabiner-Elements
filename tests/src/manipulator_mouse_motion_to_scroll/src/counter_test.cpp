@@ -11,12 +11,12 @@ public:
   counter_test(std::shared_ptr<pqrs::dispatcher::pseudo_time_source> time_source,
                std::weak_ptr<pqrs::dispatcher::dispatcher> weak_dispatcher,
                const krbn::core_configuration::details::complex_modifications_parameters& parameters,
-               const mouse_motion_to_scroll::counter_parameters& counter_parameters) : dispatcher_client(weak_dispatcher),
-                                                                                       time_source_(time_source),
-                                                                                       counter_(weak_dispatcher,
-                                                                                                parameters,
-                                                                                                counter_parameters),
-                                                                                       last_ms_(0) {
+               const mouse_motion_to_scroll::options& options) : dispatcher_client(weak_dispatcher),
+                                                                 time_source_(time_source),
+                                                                 counter_(weak_dispatcher,
+                                                                          parameters,
+                                                                          options),
+                                                                 last_ms_(0) {
     result_ = nlohmann::json::array();
 
     counter_.scroll_event_arrived.connect([this](auto&& pointing_motion) {
@@ -95,12 +95,12 @@ TEST_CASE("json/input") {
 
       {
         krbn::core_configuration::details::complex_modifications_parameters parameters(input_json.at("parameters"));
-        mouse_motion_to_scroll::counter_parameters counter_parameters;
-        counter_parameters.update(input_json.at("counter_parameters"));
+        mouse_motion_to_scroll::options options;
+        options.update(input_json.at("options"));
         counter_test counter_test(time_source,
                                   dispatcher,
                                   parameters,
-                                  counter_parameters);
+                                  options);
 
         std::chrono::milliseconds first_time_stamp(0);
         std::chrono::milliseconds last_time_stamp(0);

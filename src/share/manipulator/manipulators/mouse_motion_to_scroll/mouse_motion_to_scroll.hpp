@@ -45,7 +45,7 @@ public:
 
         } else if (key == "options") {
           try {
-            counter_parameters_.update(value);
+            options_.update(value);
           } catch (const pqrs::json::unmarshal_error& e) {
             throw pqrs::json::unmarshal_error(fmt::format("`{0}` error: {1}", key, e.what()));
           }
@@ -63,7 +63,7 @@ public:
 
       counter_ = std::make_unique<counter>(weak_dispatcher_,
                                            parameters,
-                                           counter_parameters_);
+                                           options_);
 
       counter_->scroll_event_arrived.connect([this](auto&& pointing_motion) {
         post_events(pointing_motion);
@@ -207,7 +207,7 @@ private:
   }
 
   from_modifiers_definition from_modifiers_definition_;
-  counter_parameters counter_parameters_;
+  options options_;
   std::unique_ptr<counter> counter_;
 
   std::shared_ptr<std::unordered_set<modifier_flag>> from_mandatory_modifiers_;
