@@ -47,6 +47,78 @@
         "error": "`options` must be object, but is `null`"
     },
 
+    // mouse_motion_to_scroll.options.momentum_scroll_enabled
+
+    {
+        "class": "mouse_motion_to_scroll",
+        "input": {
+            "options": {
+                "momentum_scroll_enabled": null
+            }
+        },
+        "error": "`options.momentum_scroll_enabled` must be boolean, but is `null`"
+    },
+
+    // mouse_motion_to_scroll.options.speed_multiplier
+
+    {
+        "class": "mouse_motion_to_scroll",
+        "input": {
+            "options": {
+                "speed_multiplier": null
+            }
+        },
+        "error": "`options.speed_multiplier` must be number, but is `null`"
+    },
+
+    // mouse_motion_to_scroll.options.threshold
+
+    {
+        "class": "mouse_motion_to_scroll",
+        "input": {
+            "options": {
+                "threshold": null
+            }
+        },
+        "error": "`options.threshold` must be number, but is `null`"
+    },
+
+    // mouse_motion_to_scroll.options.recent_time_duration_milliseconds
+
+    {
+        "class": "mouse_motion_to_scroll",
+        "input": {
+            "options": {
+                "recent_time_duration_milliseconds": null
+            }
+        },
+        "error": "`options.recent_time_duration_milliseconds` must be number, but is `null`"
+    },
+
+    // mouse_motion_to_scroll.options.direction_lock_threshold
+
+    {
+        "class": "mouse_motion_to_scroll",
+        "input": {
+            "options": {
+                "direction_lock_threshold": null
+            }
+        },
+        "error": "`options.direction_lock_threshold` must be number, but is `null`"
+    },
+
+    // mouse_motion_to_scroll.options.scroll_event_interval_milliseconds_threshold
+
+    {
+        "class": "mouse_motion_to_scroll",
+        "input": {
+            "options": {
+                "scroll_event_interval_milliseconds_threshold": null
+            }
+        },
+        "error": "`options.scroll_event_interval_milliseconds_threshold` must be number, but is `null`"
+    },
+
     // unknown key
 
     {
