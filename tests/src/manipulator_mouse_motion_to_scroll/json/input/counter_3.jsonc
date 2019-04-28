@@ -2,6 +2,7 @@
     "parameters": {
         "mouse_motion_to_scroll.speed": 100
     },
+    "counter_parameters": {},
     "input": [
         {
             "time_stamp": 586270925991804,

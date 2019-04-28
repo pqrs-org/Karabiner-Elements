@@ -53,5 +53,10 @@
         // long slow movement
         "input": "input/counter_11.jsonc",
         "expected": "expected/counter_11.jsonc"
+    },
+    {
+        // high speed movement (momentum_scroll_enabled_ == false)
+        "input": "input/counter_12.jsonc",
+        "expected": "expected/counter_12.jsonc"
     }
 ]

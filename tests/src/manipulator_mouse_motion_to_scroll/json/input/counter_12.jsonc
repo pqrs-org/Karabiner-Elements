@@ -2,7 +2,9 @@
     "parameters": {
         "mouse_motion_to_scroll.speed": 100
     },
-    "counter_parameters": {},
+    "counter_parameters": {
+        "momentum_scroll_enabled": false
+    },
     "input": [
         {
             "pointing_motion": {

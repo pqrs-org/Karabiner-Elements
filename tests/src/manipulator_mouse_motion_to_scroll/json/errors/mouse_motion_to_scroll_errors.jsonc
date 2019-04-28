@@ -44,7 +44,7 @@
         "input": {
             "options": null
         },
-        "error": "`options` must be object, but is `null`"
+        "error": "`options` error: json must be object, but is `null`"
     },
 
     // mouse_motion_to_scroll.options.momentum_scroll_enabled
@@ -56,7 +56,7 @@
                 "momentum_scroll_enabled": null
             }
         },
-        "error": "`options.momentum_scroll_enabled` must be boolean, but is `null`"
+        "error": "`options` error: `momentum_scroll_enabled` must be boolean, but is `null`"
     },
 
     // mouse_motion_to_scroll.options.speed_multiplier
@@ -68,7 +68,7 @@
                 "speed_multiplier": null
             }
         },
-        "error": "`options.speed_multiplier` must be number, but is `null`"
+        "error": "`options` error: `speed_multiplier` must be number, but is `null`"
     },
 
     // mouse_motion_to_scroll.options.threshold
@@ -80,7 +80,7 @@
                 "threshold": null
             }
         },
-        "error": "`options.threshold` must be number, but is `null`"
+        "error": "`options` error: `threshold` must be number, but is `null`"
     },
 
     // mouse_motion_to_scroll.options.recent_time_duration_milliseconds
@@ -92,7 +92,7 @@
                 "recent_time_duration_milliseconds": null
             }
         },
-        "error": "`options.recent_time_duration_milliseconds` must be number, but is `null`"
+        "error": "`options` error: `recent_time_duration_milliseconds` must be number, but is `null`"
     },
 
     // mouse_motion_to_scroll.options.direction_lock_threshold
@@ -104,7 +104,7 @@
                 "direction_lock_threshold": null
             }
         },
-        "error": "`options.direction_lock_threshold` must be number, but is `null`"
+        "error": "`options` error: `direction_lock_threshold` must be number, but is `null`"
     },
 
     // mouse_motion_to_scroll.options.scroll_event_interval_milliseconds_threshold
@@ -116,7 +116,7 @@
                 "scroll_event_interval_milliseconds_threshold": null
             }
         },
-        "error": "`options.scroll_event_interval_milliseconds_threshold` must be number, but is `null`"
+        "error": "`options` error: `scroll_event_interval_milliseconds_threshold` must be number, but is `null`"
     },
 
     // unknown key

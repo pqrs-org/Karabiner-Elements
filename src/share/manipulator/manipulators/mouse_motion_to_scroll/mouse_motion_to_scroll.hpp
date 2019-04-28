@@ -44,50 +44,10 @@ public:
           }
 
         } else if (key == "options") {
-          if (!value.is_object()) {
-            throw pqrs::json::unmarshal_error(fmt::format("`{0}` must be object, but is `{1}`", key, value.dump()));
-          }
-
-          for (const auto& [k, v] : value.items()) {
-            if (k == "momentum_scroll_enabled") {
-              if (!v.is_boolean()) {
-                throw pqrs::json::unmarshal_error(fmt::format("`{0}.{1}` must be boolean, but is `{2}`", key, k, v.dump()));
-              }
-
-              counter_parameters_.set_momentum_scroll_enabled(v.get<bool>());
-            } else if (k == "speed_multiplier") {
-              if (!v.is_number()) {
-                throw pqrs::json::unmarshal_error(fmt::format("`{0}.{1}` must be number, but is `{2}`", key, k, v.dump()));
-              }
-
-              counter_parameters_.set_speed_multiplier(v.get<double>());
-            } else if (k == "threshold") { // (secret parameter)
-              if (!v.is_number()) {
-                throw pqrs::json::unmarshal_error(fmt::format("`{0}.{1}` must be number, but is `{2}`", key, k, v.dump()));
-              }
-
-              counter_parameters_.set_threshold(v.get<int>());
-            } else if (k == "recent_time_duration_milliseconds") { // (secret parameter)
-              if (!v.is_number()) {
-                throw pqrs::json::unmarshal_error(fmt::format("`{0}.{1}` must be number, but is `{2}`", key, k, v.dump()));
-              }
-
-              counter_parameters_.set_recent_time_duration_milliseconds(
-                  std::chrono::milliseconds(v.get<int>()));
-            } else if (k == "direction_lock_threshold") { // (secret parameter)
-              if (!v.is_number()) {
-                throw pqrs::json::unmarshal_error(fmt::format("`{0}.{1}` must be number, but is `{2}`", key, k, v.dump()));
-              }
-
-              counter_parameters_.set_direction_lock_threshold(v.get<int>());
-            } else if (k == "scroll_event_interval_milliseconds_threshold") { // (secret parameter)
-              if (!v.is_number()) {
-                throw pqrs::json::unmarshal_error(fmt::format("`{0}.{1}` must be number, but is `{2}`", key, k, v.dump()));
-              }
-
-              counter_parameters_.set_scroll_event_interval_milliseconds_threshold(
-                  std::chrono::milliseconds(v.get<int>()));
-            }
+          try {
+            counter_parameters_.update(value);
+          } catch (const pqrs::json::unmarshal_error& e) {
+            throw pqrs::json::unmarshal_error(fmt::format("`{0}` error: {1}", key, e.what()));
           }
 
         } else if (key == "description" ||

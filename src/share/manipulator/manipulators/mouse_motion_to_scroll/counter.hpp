@@ -299,6 +299,11 @@ private:
     }
 
     double scale = (1.0 / momentum_count_);
+    if (!counter_parameters_.get_momentum_scroll_enabled() &&
+        momentum_count_ > 1) {
+      scale = 0;
+    }
+
     int dx = round_up(total_x_ * scale);
     int dy = round_up(total_y_ * scale);
 
@@ -309,7 +314,7 @@ private:
     auto y = convert(momentum_y_);
 
 #if 0
-    std::cout << "scape: " << scale << std::endl;
+    std::cout << "scale: " << scale << std::endl;
     std::cout << "tx,ty: " << total_x_ << "," << total_y_ << std::endl;
     std::cout << "dx,dy: " << dx << "," << dy << std::endl;
     std::cout << "mx,my: " << momentum_x_ << "," << momentum_y_ << std::endl;
@@ -335,7 +340,9 @@ private:
       return false;
     }
 
-    momentum_wait_ = std::min(momentum_count_, 10);
+    if (counter_parameters_.get_momentum_scroll_enabled()) {
+      momentum_wait_ = std::min(momentum_count_, 10);
+    }
 
     return true;
   }
@@ -372,16 +379,26 @@ private:
   }
 
   int convert(int& value) const {
+    int result = 0;
     int threshold = counter_parameters_.get_threshold();
-    if (value >= threshold) {
+
+    while (value >= threshold) {
       value -= threshold;
-      return 1;
+      ++result;
+      if (counter_parameters_.get_momentum_scroll_enabled()) {
+        break;
+      }
     }
-    if (value <= -threshold) {
+
+    while (value <= -threshold) {
       value += threshold;
-      return -1;
+      --result;
+      if (counter_parameters_.get_momentum_scroll_enabled()) {
+        break;
+      }
     }
-    return 0;
+
+    return result;
   }
 
   void reduce(int& value, int amount) const {

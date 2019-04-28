@@ -96,6 +96,7 @@ TEST_CASE("json/input") {
       {
         krbn::core_configuration::details::complex_modifications_parameters parameters(input_json.at("parameters"));
         mouse_motion_to_scroll::counter_parameters counter_parameters;
+        counter_parameters.update(input_json.at("counter_parameters"));
         counter_test counter_test(time_source,
                                   dispatcher,
                                   parameters,
