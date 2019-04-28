@@ -1,5 +1,28 @@
 # Development
 
+## How to replace binaries without reinstalling package
+
+### Replace `karabiner_grabber`
+
+```shell
+cd src/core/grabber
+make install
+```
+
+### Replace `karabiner_observer`
+
+```shell
+cd src/core/observer
+make install
+```
+
+### Replace `karabiner_console_user_server`
+
+```shell
+cd src/core/console_user_server
+make install
+```
+
 ## Core Processes
 
 - `karabiner_grabber`
