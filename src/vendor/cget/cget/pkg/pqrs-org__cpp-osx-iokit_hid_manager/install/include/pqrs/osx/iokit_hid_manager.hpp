@@ -1,6 +1,6 @@
 #pragma once
 
-// pqrs::iokit_hid_manager v2.4
+// pqrs::iokit_hid_manager v2.5
 
 // (C) Copyright Takayama Fumihiko 2018.
 // Distributed under the Boost Software License, Version 1.0.
@@ -44,6 +44,12 @@ public:
   void async_start(void) {
     enqueue_to_dispatcher([this] {
       start();
+    });
+  }
+
+  void async_rescan(void) {
+    enqueue_to_dispatcher([this] {
+      rescan();
     });
   }
 
@@ -99,6 +105,7 @@ private:
 
         monitor->service_matched.connect([this](auto&& registry_entry_id, auto&& service_ptr) {
           if (devices_.find(registry_entry_id) == std::end(devices_)) {
+
             if (auto device = IOHIDDeviceCreate(kCFAllocatorDefault, *service_ptr)) {
               auto device_ptr = cf::cf_ptr<IOHIDDeviceRef>(device);
               devices_[registry_entry_id] = device_ptr;
@@ -161,6 +168,12 @@ private:
     service_monitors_.clear();
     devices_.clear();
     device_matched_called_ids_.clear();
+  }
+
+  void rescan(void) {
+    for (const auto& m : service_monitors_) {
+      m->async_invoke_service_matched();
+    }
   }
 
   std::vector<cf::cf_ptr<CFDictionaryRef>> matching_dictionaries_;
