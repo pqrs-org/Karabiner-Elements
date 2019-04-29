@@ -1,0 +1,1 @@
+../../../../cget/pkg/pqrs-org__cpp-osx-session/install/include/pqrs/osx/session/cg_attributes.hpp
