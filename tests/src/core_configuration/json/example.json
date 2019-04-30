@@ -118,7 +118,8 @@
                 }
             },
             "virtual_hid_keyboard": {
-                "country_code": 99
+                "country_code": 99,
+                "mouse_key_xy_scale": 150
             },
             "devices": [
                 {

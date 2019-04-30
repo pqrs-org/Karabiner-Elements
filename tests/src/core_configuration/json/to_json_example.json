@@ -307,7 +307,8 @@
                 }
             ],
             "virtual_hid_keyboard": {
-                "country_code": 99
+                "country_code": 99,
+                "mouse_key_xy_scale": 150
             }
         },
         {
@@ -424,7 +425,8 @@
             "selected": false,
             "simple_modifications": [],
             "virtual_hid_keyboard": {
-                "country_code": 0
+                "country_code": 0,
+                "mouse_key_xy_scale": 100
             }
         },
         {
@@ -541,7 +543,8 @@
             "selected": false,
             "simple_modifications": [],
             "virtual_hid_keyboard": {
-                "country_code": 0
+                "country_code": 0,
+                "mouse_key_xy_scale": 100
             }
         }
     ]
