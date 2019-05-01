@@ -228,6 +228,28 @@ uint8_t extra_modifiers; // fn
 
 ---
 
+## Session
+
+### About console user detection
+
+There are several way to get the session information, however, the reliable way is limited.
+
+- The owner of `/dev/console`
+  - The owner of `/dev/console` becomes wrong value after remote user is logged in via Screen Sharing.<br />
+    How to reproduce the problem.
+    1.  Restart macOS.
+    2.  Log in from console as Guest user.
+    3.  Log in from Screen Sharing as another user.
+    4.  The owner of `/dev/console` is changed to another user even the console user is Guest.
+- `SCDynamicStoreCopyConsoleUser`
+  - `SCDynamicStoreCopyConsoleUser` has same problem of `/dev/console`.
+- `SessionGetInfo`
+  - `SessionGetInfo` cannot get uid of session.
+    Thus, `SessionGetInfo` cannot determine the console user.
+- `CGSessionCopyCurrentDictionary`
+
+---
+
 ## Kernel extensions location
 
 There is a macOS problem that macOS load old kext from cache after we update a kext file in /Library/Extensions.
