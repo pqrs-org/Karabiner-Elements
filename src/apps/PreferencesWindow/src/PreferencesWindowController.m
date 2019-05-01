@@ -30,6 +30,8 @@
 @property(weak) IBOutlet NSTabViewItem* virtualHIDKeyboardTabViewItem;
 @property(weak) IBOutlet NSTextField* virtualHIDKeyboardCountryCodeText;
 @property(weak) IBOutlet NSStepper* virtualHIDKeyboardCountryCodeStepper;
+@property(weak) IBOutlet NSTextField* virtualHIDKeyboardMouseKeyXYScaleText;
+@property(weak) IBOutlet NSStepper* virtualHIDKeyboardMouseKeyXYScaleStepper;
 @property(weak) IBOutlet NSButton* checkForUpdateOnStartupButton;
 @property(weak) IBOutlet NSButton* systemDefaultProfileCopyButton;
 @property(weak) IBOutlet NSTextField* systemDefaultProfileStateLabel;
@@ -57,7 +59,7 @@
   [self.complexModificationsRulesTableViewController setup];
   [self.complexModificationsParametersTabController setup];
   [self.devicesTableViewController setup];
-  [self setupVirtualHIDKeyboardCountryCode:nil];
+  [self setupVirtualHIDKeyboardConfiguration:nil];
   [self.profilesTableViewController setup];
   [self setupMiscTabControls];
   [self.logFileTextViewController monitor];
@@ -70,7 +72,7 @@
                                                                                      @strongify(self);
                                                                                      if (!self) return;
 
-                                                                                     [self setupVirtualHIDKeyboardCountryCode:nil];
+                                                                                     [self setupVirtualHIDKeyboardConfiguration:nil];
                                                                                      [self setupMiscTabControls];
                                                                                    }];
   self.preferencesUpdatedObserver = [[NSNotificationCenter defaultCenter] addObserverForName:kSystemPreferencesValuesAreUpdated
@@ -109,15 +111,34 @@
   [NSApp activateIgnoringOtherApps:YES];
 }
 
-- (void)setupVirtualHIDKeyboardCountryCode:(id)sender {
+- (void)setupVirtualHIDKeyboardConfiguration:(id)sender {
   KarabinerKitCoreConfigurationModel* coreConfigurationModel = [KarabinerKitConfigurationManager sharedManager].coreConfigurationModel;
   NSInteger countryCode = coreConfigurationModel.selectedProfileVirtualHIDKeyboardCountryCode;
+  NSInteger mouseKeyXYScale = coreConfigurationModel.selectedProfileVirtualHIDKeyboardMouseKeyXYScale;
 
-  if (sender != self.virtualHIDKeyboardCountryCodeText) {
-    self.virtualHIDKeyboardCountryCodeText.stringValue = @(countryCode).stringValue;
+  {
+    NSTextField* t = self.virtualHIDKeyboardCountryCodeText;
+    if (sender != t) {
+      t.stringValue = @(countryCode).stringValue;
+    }
   }
-  if (sender != self.virtualHIDKeyboardCountryCodeStepper) {
-    self.virtualHIDKeyboardCountryCodeStepper.integerValue = countryCode;
+  {
+    NSStepper* s = self.virtualHIDKeyboardCountryCodeStepper;
+    if (sender != s) {
+      s.integerValue = countryCode;
+    }
+  }
+  {
+    NSTextField* t = self.virtualHIDKeyboardMouseKeyXYScaleText;
+    if (sender != t) {
+      t.stringValue = @(mouseKeyXYScale).stringValue;
+    }
+  }
+  {
+    NSStepper* s = self.virtualHIDKeyboardMouseKeyXYScaleStepper;
+    if (sender != s) {
+      s.integerValue = mouseKeyXYScale;
+    }
   }
 }
 
@@ -131,7 +152,20 @@
   coreConfigurationModel.selectedProfileVirtualHIDKeyboardCountryCode = sender.integerValue;
   [coreConfigurationModel save];
 
-  [self setupVirtualHIDKeyboardCountryCode:sender];
+  [self setupVirtualHIDKeyboardConfiguration:sender];
+}
+
+- (IBAction)changeVirtualHIDKeyboardMouseKeyXYScale:(NSControl*)sender {
+  // If sender.stringValue is empty, set "0"
+  if (sender.integerValue == 0) {
+    sender.integerValue = 0;
+  }
+
+  KarabinerKitCoreConfigurationModel* coreConfigurationModel = [KarabinerKitConfigurationManager sharedManager].coreConfigurationModel;
+  coreConfigurationModel.selectedProfileVirtualHIDKeyboardMouseKeyXYScale = sender.integerValue;
+  [coreConfigurationModel save];
+
+  [self setupVirtualHIDKeyboardConfiguration:sender];
 }
 
 - (void)updateSystemPreferencesUIValues {

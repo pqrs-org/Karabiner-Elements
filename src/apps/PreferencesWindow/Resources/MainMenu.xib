@@ -126,6 +126,8 @@
                 <outlet property="versionLabel" destination="sau-jf-Dqb" id="maD-61-nBB"/>
                 <outlet property="virtualHIDKeyboardCountryCodeStepper" destination="8oq-XL-Uqg" id="mbQ-ht-gEN"/>
                 <outlet property="virtualHIDKeyboardCountryCodeText" destination="VxT-OA-zK5" id="4zP-NG-T4O"/>
+                <outlet property="virtualHIDKeyboardMouseKeyXYScaleStepper" destination="UbT-6B-k1l" id="ltp-jZ-Y3a"/>
+                <outlet property="virtualHIDKeyboardMouseKeyXYScaleText" destination="M6c-vI-sKs" id="Vz7-j1-ZvP"/>
                 <outlet property="virtualHIDKeyboardTabViewItem" destination="mRV-XM-rli" id="rf9-HB-aL5"/>
             </connections>
         </customObject>
@@ -1778,11 +1780,75 @@ In this case, you have to change the country code to avoid the conflict.
                                                 </constraints>
                                             </view>
                                         </box>
+                                        <box title="Mouse Key" translatesAutoresizingMaskIntoConstraints="NO" id="ThU-4T-Fc9">
+                                            <rect key="frame" x="14" y="214" width="926" height="51"/>
+                                            <view key="contentView" id="kIb-ba-GzI">
+                                                <rect key="frame" x="3" y="3" width="920" height="33"/>
+                                                <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                                                <subviews>
+                                                    <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" allowsCharacterPickerTouchBarItem="YES" translatesAutoresizingMaskIntoConstraints="NO" id="BYf-pc-b7A">
+                                                        <rect key="frame" x="15" y="8" width="66" height="17"/>
+                                                        <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" title="XY speed:" id="g95-BD-GPk">
+                                                            <font key="font" metaFont="system"/>
+                                                            <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
+                                                            <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
+                                                        </textFieldCell>
+                                                    </textField>
+                                                    <textField verticalHuggingPriority="750" allowsCharacterPickerTouchBarItem="YES" translatesAutoresizingMaskIntoConstraints="NO" id="M6c-vI-sKs">
+                                                        <rect key="frame" x="89" y="6" width="60" height="22"/>
+                                                        <constraints>
+                                                            <constraint firstAttribute="width" constant="60" id="jAf-Oa-Ayd"/>
+                                                        </constraints>
+                                                        <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" selectable="YES" editable="YES" sendsActionOnEndEditing="YES" state="on" borderStyle="bezel" drawsBackground="YES" id="yk3-JI-g1S">
+                                                            <numberFormatter key="formatter" formatterBehavior="default10_4" usesGroupingSeparator="NO" groupingSize="0" minimumIntegerDigits="0" maximumIntegerDigits="42" id="XbF-7R-jWO">
+                                                                <real key="minimum" value="0.0"/>
+                                                                <real key="maximum" value="1000"/>
+                                                            </numberFormatter>
+                                                            <font key="font" metaFont="system"/>
+                                                            <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
+                                                            <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
+                                                        </textFieldCell>
+                                                        <connections>
+                                                            <action selector="changeVirtualHIDKeyboardMouseKeyXYScale:" target="5ke-qB-Wr5" id="z1x-a3-cJZ"/>
+                                                        </connections>
+                                                    </textField>
+                                                    <stepper horizontalHuggingPriority="750" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="UbT-6B-k1l">
+                                                        <rect key="frame" x="146" y="3" width="19" height="27"/>
+                                                        <stepperCell key="cell" continuous="YES" alignment="left" increment="10" maxValue="1000" id="L20-JJ-GFw"/>
+                                                        <connections>
+                                                            <action selector="changeVirtualHIDKeyboardMouseKeyXYScale:" target="5ke-qB-Wr5" id="Fm1-TR-lUc"/>
+                                                        </connections>
+                                                    </stepper>
+                                                    <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" allowsCharacterPickerTouchBarItem="YES" translatesAutoresizingMaskIntoConstraints="NO" id="5pB-P1-R2a">
+                                                        <rect key="frame" x="165" y="8" width="15" height="17"/>
+                                                        <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" title="%" id="4Fh-Vl-zMY">
+                                                            <font key="font" metaFont="system"/>
+                                                            <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
+                                                            <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
+                                                        </textFieldCell>
+                                                    </textField>
+                                                </subviews>
+                                                <constraints>
+                                                    <constraint firstItem="M6c-vI-sKs" firstAttribute="centerY" secondItem="BYf-pc-b7A" secondAttribute="centerY" id="9Iw-8B-7ne"/>
+                                                    <constraint firstItem="UbT-6B-k1l" firstAttribute="leading" secondItem="M6c-vI-sKs" secondAttribute="trailing" id="IEn-EY-wMO"/>
+                                                    <constraint firstItem="M6c-vI-sKs" firstAttribute="leading" secondItem="BYf-pc-b7A" secondAttribute="trailing" constant="10" id="N58-ML-Xdt"/>
+                                                    <constraint firstItem="5pB-P1-R2a" firstAttribute="centerY" secondItem="UbT-6B-k1l" secondAttribute="centerY" id="P3y-HM-VWO"/>
+                                                    <constraint firstItem="5pB-P1-R2a" firstAttribute="leading" secondItem="UbT-6B-k1l" secondAttribute="trailing" constant="5" id="QN7-3P-4V3"/>
+                                                    <constraint firstItem="BYf-pc-b7A" firstAttribute="top" secondItem="kIb-ba-GzI" secondAttribute="top" constant="8" id="RMV-2s-6Dm"/>
+                                                    <constraint firstItem="UbT-6B-k1l" firstAttribute="centerY" secondItem="M6c-vI-sKs" secondAttribute="centerY" id="RhT-Kw-Ycz"/>
+                                                    <constraint firstAttribute="bottom" secondItem="BYf-pc-b7A" secondAttribute="bottom" constant="8" id="SFI-Ph-ufm"/>
+                                                    <constraint firstItem="BYf-pc-b7A" firstAttribute="leading" secondItem="kIb-ba-GzI" secondAttribute="leading" constant="17" id="lwI-Q9-kiC"/>
+                                                </constraints>
+                                            </view>
+                                        </box>
                                     </subviews>
                                     <constraints>
+                                        <constraint firstItem="ThU-4T-Fc9" firstAttribute="top" secondItem="LjF-ys-Tb3" secondAttribute="bottom" constant="20" id="5Pk-ZH-PtL"/>
+                                        <constraint firstItem="ThU-4T-Fc9" firstAttribute="leading" secondItem="LjF-ys-Tb3" secondAttribute="leading" id="DPf-Si-cof"/>
                                         <constraint firstItem="LjF-ys-Tb3" firstAttribute="leading" secondItem="z9H-0i-wnG" secondAttribute="leading" constant="17" id="Mq4-fS-49e"/>
                                         <constraint firstItem="LjF-ys-Tb3" firstAttribute="top" secondItem="z9H-0i-wnG" secondAttribute="top" constant="8" id="O48-CX-PJp"/>
                                         <constraint firstAttribute="trailing" secondItem="LjF-ys-Tb3" secondAttribute="trailing" constant="17" id="XuT-dW-HuC"/>
+                                        <constraint firstItem="ThU-4T-Fc9" firstAttribute="trailing" secondItem="LjF-ys-Tb3" secondAttribute="trailing" id="yrP-FO-98z"/>
                                     </constraints>
                                 </view>
                             </tabViewItem>

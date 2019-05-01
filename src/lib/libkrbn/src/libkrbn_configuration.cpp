@@ -320,6 +320,25 @@ void libkrbn_core_configuration_set_selected_profile_virtual_hid_keyboard_countr
   }
 }
 
+int libkrbn_core_configuration_get_selected_profile_virtual_hid_keyboard_mouse_key_xy_scale(libkrbn_core_configuration* p) {
+  if (auto c = reinterpret_cast<libkrbn_core_configuration_class*>(p)) {
+    return c->get_core_configuration()
+        .get_selected_profile()
+        .get_virtual_hid_keyboard()
+        .get_mouse_key_xy_scale();
+  }
+  return 0;
+}
+
+void libkrbn_core_configuration_set_selected_profile_virtual_hid_keyboard_mouse_key_xy_scale(libkrbn_core_configuration* p, int value) {
+  if (auto c = reinterpret_cast<libkrbn_core_configuration_class*>(p)) {
+    c->get_core_configuration()
+        .get_selected_profile()
+        .get_virtual_hid_keyboard()
+        .set_mouse_key_xy_scale(value);
+  }
+}
+
 bool libkrbn_core_configuration_get_selected_profile_device_ignore(libkrbn_core_configuration* p,
                                                                    const libkrbn_device_identifiers* device_identifiers) {
   if (auto c = reinterpret_cast<libkrbn_core_configuration_class*>(p)) {

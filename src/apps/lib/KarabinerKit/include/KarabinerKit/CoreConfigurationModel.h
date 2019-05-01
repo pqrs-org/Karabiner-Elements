@@ -61,5 +61,6 @@
                                                          value:(BOOL)value;
 
 @property NSInteger selectedProfileVirtualHIDKeyboardCountryCode;
+@property NSInteger selectedProfileVirtualHIDKeyboardMouseKeyXYScale;
 
 @end

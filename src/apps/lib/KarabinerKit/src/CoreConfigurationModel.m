@@ -278,4 +278,12 @@
   libkrbn_core_configuration_set_selected_profile_virtual_hid_keyboard_country_code(self.libkrbnCoreConfiguration, (uint8_t)(value));
 }
 
+- (NSInteger)selectedProfileVirtualHIDKeyboardMouseKeyXYScale {
+  return libkrbn_core_configuration_get_selected_profile_virtual_hid_keyboard_mouse_key_xy_scale(self.libkrbnCoreConfiguration);
+}
+
+- (void)setSelectedProfileVirtualHIDKeyboardMouseKeyXYScale:(NSInteger)value {
+  libkrbn_core_configuration_set_selected_profile_virtual_hid_keyboard_mouse_key_xy_scale(self.libkrbnCoreConfiguration, value);
+}
+
 @end
