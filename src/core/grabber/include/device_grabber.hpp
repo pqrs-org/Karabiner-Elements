@@ -398,10 +398,10 @@ public:
     });
   }
 
-  void async_post_virtual_hid_keyboard_country_code_changed_event(void) {
+  void async_post_virtual_hid_keyboard_configuration_changed_event(void) {
     enqueue_to_dispatcher([this] {
-      auto event = event_queue::event::make_virtual_hid_keyboard_country_code_changed_event(
-          profile_.get_virtual_hid_keyboard().get_country_code());
+      auto event = event_queue::event::make_virtual_hid_keyboard_configuration_changed_event(
+          profile_.get_virtual_hid_keyboard());
       event_queue::entry entry(device_id(0),
                                event_queue::event_time_stamp(pqrs::osx::chrono::mach_absolute_time_point()),
                                event,
@@ -752,7 +752,7 @@ private:
     update_devices_disabled();
     async_grab_devices();
     async_post_system_preferences_properties_changed_event();
-    async_post_virtual_hid_keyboard_country_code_changed_event();
+    async_post_virtual_hid_keyboard_configuration_changed_event();
   }
 
   void update_complex_modifications_manipulators(void) {

@@ -225,6 +225,12 @@ public:
           }
           break;
 
+        case event_queue::event::type::virtual_hid_keyboard_configuration_changed:
+          if (auto c = front_input_event.get_event().find<core_configuration::details::virtual_hid_keyboard>()) {
+            mouse_key_handler_->set_virtual_hid_keyboard_configuration(*c);
+          }
+          break;
+
         case event_queue::event::type::none:
         case event_queue::event::type::set_variable:
         case event_queue::event::type::device_keys_and_pointing_buttons_are_released:
@@ -234,7 +240,6 @@ public:
         case event_queue::event::type::pointing_device_event_from_event_tap:
         case event_queue::event::type::frontmost_application_changed:
         case event_queue::event::type::input_source_changed:
-        case event_queue::event::type::virtual_hid_keyboard_country_code_changed:
           // Do nothing
           break;
       }

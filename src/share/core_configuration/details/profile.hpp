@@ -145,7 +145,7 @@ public:
     j["simple_modifications"] = simple_modifications_.to_json();
     j["fn_function_keys"] = fn_function_keys_.to_json();
     j["complex_modifications"] = complex_modifications_.to_json();
-    j["virtual_hid_keyboard"] = virtual_hid_keyboard_.to_json();
+    j["virtual_hid_keyboard"] = virtual_hid_keyboard_;
     j["devices"] = devices_;
     return j;
   }

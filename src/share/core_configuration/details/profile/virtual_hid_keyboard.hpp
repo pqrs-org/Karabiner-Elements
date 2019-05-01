@@ -7,35 +7,17 @@ namespace core_configuration {
 namespace details {
 class virtual_hid_keyboard final {
 public:
-  virtual_hid_keyboard(void) : virtual_hid_keyboard(nlohmann::json::object()) {
+  virtual_hid_keyboard(void) : json_(nlohmann::json::object()),
+                               country_code_(0),
+                               mouse_key_xy_scale_(100) {
   }
 
-  virtual_hid_keyboard(const nlohmann::json& json) : json_(json),
-                                                     country_code_(0),
-                                                     mouse_key_xy_scale_(100) {
-    if (!json.is_object()) {
-      throw pqrs::json::unmarshal_error(fmt::format("json must be object, but is `{0}`", json.dump()));
-    }
-
-    for (const auto& [key, value] : json.items()) {
-      if (key == "country_code") {
-        country_code_ = value.get<hid_country_code>();
-
-      } else if (key == "mouse_key_xy_scale") {
-        mouse_key_xy_scale_ = value.get<int>();
-
-      } else {
-        // Allow unknown keys in order to be able to load
-        // newer version of karabiner.json with older Karabiner-Elements.
-      }
-    }
+  const nlohmann::json& get_json(void) const {
+    return json_;
   }
 
-  nlohmann::json to_json(void) const {
-    auto j = json_;
-    j["country_code"] = country_code_;
-    j["mouse_key_xy_scale"] = mouse_key_xy_scale_;
-    return j;
+  void set_json(const nlohmann::json& value) {
+    json_ = value;
   }
 
   hid_country_code get_country_code(void) const {
@@ -46,8 +28,8 @@ public:
     country_code_ = value;
   }
 
-  double get_mouse_key_xy_scale(void) const {
-    return static_cast<double>(mouse_key_xy_scale_) / 100.0;
+  int get_mouse_key_xy_scale(void) const {
+    return mouse_key_xy_scale_;
   }
 
   void set_mouse_key_xy_scale(int value) {
@@ -67,9 +49,50 @@ private:
   int mouse_key_xy_scale_;
 };
 
-inline void to_json(nlohmann::json& json, const virtual_hid_keyboard& virtual_hid_keyboard) {
-  json = virtual_hid_keyboard.to_json();
+inline void to_json(nlohmann::json& json, const virtual_hid_keyboard& value) {
+  json = value.get_json();
+  json["country_code"] = value.get_country_code();
+  json["mouse_key_xy_scale"] = value.get_mouse_key_xy_scale();
+}
+
+inline void from_json(const nlohmann::json& json, virtual_hid_keyboard& value) {
+  if (!json.is_object()) {
+    throw pqrs::json::unmarshal_error(fmt::format("json must be object, but is `{0}`", json.dump()));
+  }
+
+  for (const auto& [k, v] : json.items()) {
+    if (k == "country_code") {
+      value.set_country_code(v.get<hid_country_code>());
+
+    } else if (k == "mouse_key_xy_scale") {
+      if (!v.is_number()) {
+        throw pqrs::json::unmarshal_error(fmt::format("`{0}` must be number, but is `{1}`", k, v.dump()));
+      }
+
+      value.set_mouse_key_xy_scale(v.get<int>());
+
+    } else {
+      // Allow unknown keys in order to be able to load
+      // newer version of karabiner.json with older Karabiner-Elements.
+    }
+  }
+
+  value.set_json(json);
 }
 } // namespace details
 } // namespace core_configuration
 } // namespace krbn
+
+namespace std {
+template <>
+struct hash<krbn::core_configuration::details::virtual_hid_keyboard> final {
+  std::size_t operator()(const krbn::core_configuration::details::virtual_hid_keyboard& value) const {
+    std::size_t h = 0;
+
+    pqrs::hash_combine(h, value.get_country_code());
+    pqrs::hash_combine(h, value.get_mouse_key_xy_scale());
+
+    return h;
+  }
+};
+} // namespace std

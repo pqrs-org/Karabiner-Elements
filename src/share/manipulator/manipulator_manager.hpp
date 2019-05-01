@@ -94,7 +94,6 @@ public:
             case event_queue::event::type::caps_lock_state_changed:
             case event_queue::event::type::frontmost_application_changed:
             case event_queue::event::type::input_source_changed:
-            case event_queue::event::type::virtual_hid_keyboard_country_code_changed:
             case event_queue::event::type::set_variable:
               // Do nothing
               break;
@@ -107,7 +106,8 @@ public:
             case event_queue::event::type::select_input_source:
             case event_queue::event::type::mouse_key:
             case event_queue::event::type::stop_keyboard_repeat:
-            case event_queue::event::type::system_preferences_properties_changed: {
+            case event_queue::event::type::system_preferences_properties_changed:
+            case event_queue::event::type::virtual_hid_keyboard_configuration_changed: {
               bool skip = false;
 
               if (front_input_event.get_valid()) {

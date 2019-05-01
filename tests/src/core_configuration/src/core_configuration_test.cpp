@@ -1302,10 +1302,7 @@ TEST_CASE("virtual_hid_keyboard.to_json") {
   {
     auto json = nlohmann::json::object();
     krbn::core_configuration::details::virtual_hid_keyboard virtual_hid_keyboard(json);
-    REQUIRE(virtual_hid_keyboard.to_json() == get_default_virtual_hid_keyboard_json());
-
-    auto actual = virtual_hid_keyboard.to_json();
-    REQUIRE(actual == get_default_virtual_hid_keyboard_json());
+    REQUIRE(nlohmann::json(virtual_hid_keyboard) == get_default_virtual_hid_keyboard_json());
   }
   {
     nlohmann::json json({
@@ -1320,6 +1317,6 @@ TEST_CASE("virtual_hid_keyboard.to_json") {
         {"mouse_key_xy_scale", 50},
         {"dummy", {{"keep_me", true}}},
     });
-    REQUIRE(virtual_hid_keyboard.to_json() == expected);
+    REQUIRE(nlohmann::json(virtual_hid_keyboard) == expected);
   }
 }

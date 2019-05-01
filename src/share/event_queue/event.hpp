@@ -2,6 +2,7 @@
 
 // `krbn::event_queue::event` can be used safely in a multi-threaded environment.
 
+#include "core_configuration/core_configuration.hpp"
 #include "device_properties.hpp"
 #include "hash.hpp"
 #include "manipulator/manipulator_environment.hpp"
@@ -37,7 +38,7 @@ public:
     frontmost_application_changed,
     input_source_changed,
     system_preferences_properties_changed,
-    virtual_hid_keyboard_country_code_changed,
+    virtual_hid_keyboard_configuration_changed,
   };
 
   using value_t = mpark::variant<key_code,                                                 // For type::key_code
@@ -53,7 +54,7 @@ public:
                                  pqrs::osx::input_source::properties,                      // For input_source_changed
                                  device_properties,                                        // For device_grabbed
                                  pqrs::osx::system_preferences::properties,                // For system_preferences_properties_changed
-                                 hid_country_code,                                         // For virtual_hid_keyboard_country_code_changed
+                                 core_configuration::details::virtual_hid_keyboard,        // For virtual_hid_keyboard_configuration_changed
                                  mpark::monostate>;                                        // For virtual events
 
   event(void) : type_(type::none),
@@ -92,8 +93,8 @@ public:
             result.value_ = value.get<pqrs::osx::input_source::properties>();
           } else if (key == "system_preferences_properties") {
             result.value_ = value.get<pqrs::osx::system_preferences::properties>();
-          } else if (key == "virtual_hid_keyboard_country_code") {
-            result.value_ = value.get<hid_country_code>();
+          } else if (key == "virtual_hid_keyboard_configuration") {
+            result.value_ = value.get<core_configuration::details::virtual_hid_keyboard>();
           }
         }
       }
@@ -183,9 +184,9 @@ public:
         }
         break;
 
-      case type::virtual_hid_keyboard_country_code_changed:
-        if (auto v = mpark::get_if<hid_country_code>(&value_)) {
-          json["virtual_hid_keyboard_country_code"] = *v;
+      case type::virtual_hid_keyboard_configuration_changed:
+        if (auto v = mpark::get_if<core_configuration::details::virtual_hid_keyboard>(&value_)) {
+          json["virtual_hid_keyboard_configuration"] = *v;
         }
         break;
 
@@ -293,10 +294,10 @@ public:
     return e;
   }
 
-  static event make_virtual_hid_keyboard_country_code_changed_event(hid_country_code code) {
+  static event make_virtual_hid_keyboard_configuration_changed_event(const core_configuration::details::virtual_hid_keyboard& configuration) {
     event e;
-    e.type_ = type::virtual_hid_keyboard_country_code_changed;
-    e.value_ = code;
+    e.type_ = type::virtual_hid_keyboard_configuration_changed;
+    e.value_ = configuration;
     return e;
   }
 
@@ -460,7 +461,7 @@ private:
       TO_C_STRING(frontmost_application_changed);
       TO_C_STRING(input_source_changed);
       TO_C_STRING(system_preferences_properties_changed);
-      TO_C_STRING(virtual_hid_keyboard_country_code_changed);
+      TO_C_STRING(virtual_hid_keyboard_configuration_changed);
     }
 
 #undef TO_C_STRING
@@ -493,7 +494,7 @@ private:
     TO_TYPE(frontmost_application_changed);
     TO_TYPE(input_source_changed);
     TO_TYPE(system_preferences_properties_changed);
-    TO_TYPE(virtual_hid_keyboard_country_code_changed);
+    TO_TYPE(virtual_hid_keyboard_configuration_changed);
 
 #undef TO_TYPE
 
