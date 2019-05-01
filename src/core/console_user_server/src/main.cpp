@@ -53,7 +53,7 @@ int main(int argc, const char* argv[]) {
     });
   });
 
-  components_manager = std::make_unique<krbn::components_manager>(version_monitor);
+  components_manager = std::make_shared<krbn::components_manager>(version_monitor);
 
   version_monitor->async_start();
   components_manager->async_start();
