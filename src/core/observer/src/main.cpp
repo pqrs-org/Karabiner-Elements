@@ -10,15 +10,10 @@
 #include <unistd.h>
 
 int main(int argc, const char* argv[]) {
-  krbn::dispatcher_utility::initialize_dispatchers();
-
   if (getuid() != 0) {
     std::cerr << "fatal: karabiner_observer requires root privilege." << std::endl;
     exit(1);
   }
-
-  signal(SIGUSR1, SIG_IGN);
-  signal(SIGUSR2, SIG_IGN);
 
   // Setup logger
 
@@ -39,6 +34,13 @@ int main(int argc, const char* argv[]) {
       exit(1);
     }
   }
+
+  // Initialize
+
+  krbn::dispatcher_utility::initialize_dispatchers();
+
+  signal(SIGUSR1, SIG_IGN);
+  signal(SIGUSR2, SIG_IGN);
 
   // Run components_manager
 
