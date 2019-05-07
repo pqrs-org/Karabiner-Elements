@@ -16,7 +16,7 @@ namespace osx {
 namespace frontmost_application_monitor {
 class monitor final : public dispatcher::extra::dispatcher_client {
 public:
-  // Signals (invoked from the shared dispatcher thread)
+  // Signals (invoked from the dispatcher thread)
 
   nod::signal<void(std::shared_ptr<application>)> frontmost_application_changed;
 

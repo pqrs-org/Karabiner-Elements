@@ -14,7 +14,7 @@ namespace pqrs {
 namespace local_datagram {
 class server final : public dispatcher::extra::dispatcher_client {
 public:
-  // Signals (invoked from the shared dispatcher thread)
+  // Signals (invoked from the dispatcher thread)
 
   nod::signal<void(void)> bound;
   nod::signal<void(const asio::error_code&)> bind_failed;

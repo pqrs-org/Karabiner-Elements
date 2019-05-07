@@ -24,7 +24,7 @@ namespace local_datagram {
 namespace impl {
 class client final : public dispatcher::extra::dispatcher_client {
 public:
-  // Signals (invoked from the shared dispatcher thread)
+  // Signals (invoked from the dispatcher thread)
 
   nod::signal<void(void)> connected;
   nod::signal<void(const asio::error_code&)> connect_failed;
