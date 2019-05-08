@@ -29,6 +29,13 @@ public:
     return entries_.empty();
   }
 
+  template <typename T>
+  bool exists(T value) const {
+    std::lock_guard<std::mutex> lock(mutex_);
+
+    return entries_.find(value) != std::end(entries_);
+  }
+
 private:
   using entry_t = mpark::variant<key_code,
                                  consumer_key_code,
