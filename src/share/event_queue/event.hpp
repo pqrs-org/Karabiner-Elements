@@ -424,6 +424,20 @@ public:
     return std::nullopt;
   }
 
+  std::shared_ptr<key_down_up_valued_event> make_key_down_up_valued_event(void) const {
+    if (auto value = find<key_code>()) {
+      return std::make_shared<key_down_up_valued_event>(*value);
+
+    } else if (auto value = find<consumer_key_code>()) {
+      return std::make_shared<key_down_up_valued_event>(*value);
+
+    } else if (auto value = find<pointing_button>()) {
+      return std::make_shared<key_down_up_valued_event>(*value);
+    }
+
+    return nullptr;
+  }
+
   bool operator==(const event& other) const {
     return get_type() == other.get_type() &&
            value_ == other.value_;
