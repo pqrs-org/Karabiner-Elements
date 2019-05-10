@@ -2,7 +2,7 @@
 
 ## Beta
 
-- Fixed an key stuck issue when the key is pressed immediately after the keyboard is connected.
+- Fixed a key stuck issue when the key is pressed immediately after the keyboard is connected.
 - Add `Mouse Key XY speed` configuration into `Karabiner-Elements Preferences > Virtual Keyboard` tab.
 - Event code format on EventViewer changed to decimal number from hex.
 
