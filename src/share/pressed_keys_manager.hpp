@@ -13,14 +13,14 @@ public:
   void insert(T value) {
     std::lock_guard<std::mutex> lock(mutex_);
 
-    entries_.insert(key_like_event(value));
+    entries_.insert(key_down_up_valued_event(value));
   }
 
   template <typename T>
   void erase(T value) {
     std::lock_guard<std::mutex> lock(mutex_);
 
-    entries_.erase(key_like_event(value));
+    entries_.erase(key_down_up_valued_event(value));
   }
 
   bool empty(void) const {
@@ -33,11 +33,11 @@ public:
   bool exists(T value) const {
     std::lock_guard<std::mutex> lock(mutex_);
 
-    return entries_.find(key_like_event(value)) != std::end(entries_);
+    return entries_.find(key_down_up_valued_event(value)) != std::end(entries_);
   }
 
 private:
-  std::set<key_like_event> entries_;
+  std::set<key_down_up_valued_event> entries_;
   mutable std::mutex mutex_;
 };
 } // namespace krbn

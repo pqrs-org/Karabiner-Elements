@@ -17,7 +17,7 @@
 #include "types/hid_usage_page.hpp"
 #include "types/hid_value.hpp"
 #include "types/key_code.hpp"
-#include "types/key_like_event.hpp"
+#include "types/key_down_up_valued_event.hpp"
 #include "types/led_state.hpp"
 #include "types/location_id.hpp"
 #include "types/modifier_flag.hpp"

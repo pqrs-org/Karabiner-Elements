@@ -7,13 +7,13 @@
 #include <nlohmann/json.hpp>
 
 namespace krbn {
-class key_like_event final {
+class key_down_up_valued_event final {
 public:
-  key_like_event(void) : value_(mpark::monostate()) {
+  key_down_up_valued_event(void) : value_(mpark::monostate()) {
   }
 
   template <typename T>
-  explicit key_like_event(T value) : value_(value) {
+  explicit key_down_up_valued_event(T value) : value_(value) {
   }
 
   template <typename T>
@@ -26,11 +26,11 @@ public:
     return mpark::get_if<T>(&value_);
   }
 
-  bool operator==(const key_like_event& other) const {
+  bool operator==(const key_down_up_valued_event& other) const {
     return value_ == other.value_;
   }
 
-  bool operator<(const key_like_event& other) const {
+  bool operator<(const key_down_up_valued_event& other) const {
     return value_ < other.value_;
   }
 
@@ -42,7 +42,7 @@ private:
       value_;
 };
 
-inline void to_json(nlohmann::json& json, const key_like_event& value) {
+inline void to_json(nlohmann::json& json, const key_down_up_valued_event& value) {
   if (auto v = value.find<key_code>()) {
     json["key_code"] = *v;
 
@@ -54,7 +54,7 @@ inline void to_json(nlohmann::json& json, const key_like_event& value) {
   }
 }
 
-inline void from_json(const nlohmann::json& json, key_like_event& value) {
+inline void from_json(const nlohmann::json& json, key_down_up_valued_event& value) {
   if (!json.is_object()) {
     throw pqrs::json::unmarshal_error(fmt::format("json must be object, but is `{0}`", json.dump()));
   }
