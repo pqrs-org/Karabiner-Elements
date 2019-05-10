@@ -5,7 +5,6 @@
 #include "console_user_server_client.hpp"
 #include "constants.hpp"
 #include "device_grabber.hpp"
-#include "grabbable_state_queues_manager.hpp"
 #include "types.hpp"
 #include <pqrs/dispatcher.hpp>
 #include <pqrs/local_datagram.hpp>
@@ -27,8 +26,7 @@ public:
 
   receiver(const receiver&) = delete;
 
-  receiver(std::weak_ptr<grabbable_state_queues_manager> weak_grabbable_state_queues_manager) : dispatcher_client(),
-                                                                                                weak_grabbable_state_queues_manager_(weak_grabbable_state_queues_manager) {
+  receiver(void) : dispatcher_client() {
     std::string socket_file_path(constants::get_grabber_socket_file_path());
 
     unlink(socket_file_path.c_str());
@@ -40,15 +38,11 @@ public:
     server_->set_server_check_interval(std::chrono::milliseconds(3000));
     server_->set_reconnect_interval(std::chrono::milliseconds(1000));
 
-    server_->bound.connect([this, socket_file_path] {
+    server_->bound.connect([socket_file_path] {
       if (auto uid = pqrs::osx::session::find_console_user_id()) {
         chown(socket_file_path.c_str(), *uid, 0);
       }
       chmod(socket_file_path.c_str(), 0600);
-
-      if (auto m = weak_grabbable_state_queues_manager_.lock()) {
-        m->clear();
-      }
     });
 
     server_->bind_failed.connect([](auto&& error_code) {
@@ -64,10 +58,13 @@ public:
         try {
           nlohmann::json json = nlohmann::json::from_msgpack(*buffer);
           switch (json.at("operation_type").get<operation_type>()) {
-            case operation_type::grabbable_state_changed: {
-              auto state = json.at("grabbable_state").get<grabbable_state>();
-              if (auto m = weak_grabbable_state_queues_manager_.lock()) {
-                m->update_grabbable_state(state);
+            case operation_type::key_down_up_valued_event_arrived: {
+              if (device_grabber_) {
+                device_grabber_->async_update_orphan_key_up_keys(
+                    json.at("device_id").get<device_id>(),
+                    json.at("key_down_up_valued_event").get<key_down_up_valued_event>(),
+                    json.at("event_type").get<event_type>(),
+                    json.at("time_stamp").get<absolute_time_point>());
               }
               break;
             }
@@ -178,8 +175,7 @@ private:
       return;
     }
 
-    device_grabber_ = std::make_unique<device_grabber>(weak_grabbable_state_queues_manager_,
-                                                       console_user_server_client_);
+    device_grabber_ = std::make_unique<device_grabber>(console_user_server_client_);
 
     device_grabber_->async_set_system_preferences_properties(system_preferences_properties_);
     device_grabber_->async_post_frontmost_application_changed_event(frontmost_application_);
@@ -199,8 +195,6 @@ private:
 
     logger::get_logger()->info("device_grabber is stopped.");
   }
-
-  std::weak_ptr<grabbable_state_queues_manager> weak_grabbable_state_queues_manager_;
 
   std::unique_ptr<pqrs::local_datagram::server> server_;
   std::shared_ptr<console_user_server_client> console_user_server_client_;

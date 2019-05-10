@@ -36,6 +36,12 @@ public:
     return entries_.find(key_down_up_valued_event(value)) != std::end(entries_);
   }
 
+  void clear(void) {
+    std::lock_guard<std::mutex> lock(mutex_);
+
+    entries_.clear();
+  }
+
 private:
   std::set<key_down_up_valued_event> entries_;
   mutable std::mutex mutex_;

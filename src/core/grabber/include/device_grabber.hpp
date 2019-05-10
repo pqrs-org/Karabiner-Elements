@@ -6,7 +6,6 @@
 #include "device_grabber_details/fn_function_keys_manipulator_manager.hpp"
 #include "device_grabber_details/simple_modifications_manipulator_manager.hpp"
 #include "event_tap_utility.hpp"
-#include "grabbable_state_queues_manager.hpp"
 #include "hid_keyboard_caps_lock_led_state_manager.hpp"
 #include "iokit_utility.hpp"
 #include "json_writer.hpp"
@@ -33,9 +32,7 @@ class device_grabber final : public pqrs::dispatcher::extra::dispatcher_client {
 public:
   device_grabber(const device_grabber&) = delete;
 
-  device_grabber(std::weak_ptr<grabbable_state_queues_manager> weak_grabbable_state_queues_manager,
-                 std::weak_ptr<console_user_server_client> weak_console_user_server_client) : dispatcher_client(),
-                                                                                              weak_grabbable_state_queues_manager_(weak_grabbable_state_queues_manager),
+  device_grabber(std::weak_ptr<console_user_server_client> weak_console_user_server_client) : dispatcher_client(),
                                                                                               profile_(nlohmann::json::object()),
                                                                                               logger_unique_filter_(logger::get_logger()) {
     simple_modifications_manipulator_manager_ = std::make_shared<device_grabber_details::simple_modifications_manipulator_manager>();
@@ -71,13 +68,6 @@ public:
 
       stop();
     });
-
-    if (auto m = weak_grabbable_state_queues_manager_.lock()) {
-      external_signal_connections_.emplace_back(
-          m->grabbable_state_changed.connect([this](auto&& device_id, auto&& grabbable_state) {
-            async_grab_devices();
-          }));
-    }
 
     post_event_to_virtual_devices_manipulator_ =
         std::make_shared<manipulator::manipulators::post_event_to_virtual_devices::post_event_to_virtual_devices>(
@@ -144,7 +134,7 @@ public:
             event_queue = event_queue::utility::insert_device_keys_and_pointing_buttons_are_released_event(event_queue,
                                                                                                            device_id,
                                                                                                            it->second->get_pressed_keys_manager());
-            values_arrived(device_id, event_queue);
+            values_arrived(it->second, event_queue);
           }
         });
 
@@ -153,6 +143,7 @@ public:
           if (it != std::end(entries_)) {
             logger::get_logger()->info("{0} is grabbed.",
                                        it->second->get_device_name());
+            logger_unique_filter_.reset();
 
             post_device_grabbed_event(it->second->get_device_properties());
 
@@ -171,12 +162,9 @@ public:
           if (it != std::end(entries_)) {
             logger::get_logger()->info("{0} is ungrabbed.",
                                        it->second->get_device_name());
+            logger_unique_filter_.reset();
 
             it->second->set_grabbed(false);
-
-            if (auto m = weak_grabbable_state_queues_manager_.lock()) {
-              m->unset_first_grabbed_event_time_stamp(device_id);
-            }
 
             post_device_ungrabbed_event(device_id);
 
@@ -204,6 +192,7 @@ public:
       if (it != std::end(entries_)) {
         logger::get_logger()->info("{0} is terminated.",
                                    it->second->get_device_name());
+        logger_unique_filter_.reset();
 
         if (auto device_properties = it->second->get_device_properties()) {
           if (device_properties->get_is_keyboard().value_or(false) &&
@@ -216,10 +205,6 @@ public:
         }
 
         entries_.erase(it);
-      }
-
-      if (auto m = weak_grabbable_state_queues_manager_.lock()) {
-        m->erase_queue(device_id);
       }
 
       output_devices_json();
@@ -236,8 +221,9 @@ public:
       async_grab_devices();
     });
 
-    hid_manager_->error_occurred.connect([](auto&& message, auto&& iokit_return) {
+    hid_manager_->error_occurred.connect([this](auto&& message, auto&& iokit_return) {
       logger::get_logger()->error("{0}: {1}", message, iokit_return.to_string());
+      logger_unique_filter_.reset();
     });
 
     hid_manager_->async_start();
@@ -305,6 +291,22 @@ public:
   void async_stop(void) {
     enqueue_to_dispatcher([this] {
       stop();
+    });
+  }
+
+  void async_update_orphan_key_up_keys(device_id device_id,
+                                       const key_down_up_valued_event& event,
+                                       event_type event_type,
+                                       absolute_time_point time_stamp) {
+    enqueue_to_dispatcher([this, device_id, event, event_type, time_stamp] {
+      auto it = entries_.find(device_id);
+      if (it != std::end(entries_)) {
+        it->second->update_orphan_key_up_keys(event,
+                                              event_type,
+                                              time_stamp);
+
+        grab_device(it->second);
+      }
     });
   }
 
@@ -446,35 +448,44 @@ private:
     }
   }
 
-  void values_arrived(device_id device_id,
+  void values_arrived(std::shared_ptr<device_grabber_details::entry> entry,
                       std::shared_ptr<event_queue::queue> event_queue) {
-    auto it = entries_.find(device_id);
-    if (it != std::end(entries_)) {
-      // Update grabbable_state_queue
+    // Manipulate events
 
-      if (auto m = weak_grabbable_state_queues_manager_.lock()) {
-        m->update_first_grabbed_event_time_stamp(*event_queue);
-      }
-
-      // Manipulate events
-
-      if (it->second->get_disabled()) {
-        // Do nothing
-      } else {
-        for (const auto& entry : event_queue->get_entries()) {
-          event_queue::entry qe(entry.get_device_id(),
-                                entry.get_event_time_stamp(),
-                                entry.get_event(),
-                                entry.get_event_type(),
-                                entry.get_original_event());
-
-          merged_input_event_queue_->push_back_entry(qe);
-        }
-      }
-
-      krbn_notification_center::get_instance().enqueue_input_event_arrived(*this);
-      // manipulator_managers_connector_.log_events_sizes(logger::get_logger());
+    if (!entry->get_first_value_arrived()) {
+      entry->set_first_value_arrived(true);
+      entry->clear_orphan_key_up_keys();
     }
+
+    if (entry->get_disabled()) {
+      // Do nothing
+    } else {
+      bool needs_regrab = false;
+
+      for (const auto& e : event_queue->get_entries()) {
+        if (auto ev = e.get_event().make_key_down_up_valued_event()) {
+          entry->update_orphan_key_up_keys(*ev,
+                                           e.get_event_type(),
+                                           e.get_event_time_stamp().get_time_stamp());
+          needs_regrab = true;
+        }
+
+        event_queue::entry qe(e.get_device_id(),
+                              e.get_event_time_stamp(),
+                              e.get_event(),
+                              e.get_event_type(),
+                              e.get_original_event());
+
+        merged_input_event_queue_->push_back_entry(qe);
+      }
+
+      if (needs_regrab) {
+        grab_device(entry);
+      }
+    }
+
+    krbn_notification_center::get_instance().enqueue_input_event_arrived(*this);
+    // manipulator_managers_connector_.log_events_sizes(logger::get_logger());
   }
 
   void post_device_grabbed_event(std::shared_ptr<device_properties> device_properties) {
@@ -565,71 +576,13 @@ private:
     }
 
     // ----------------------------------------
-    // Check observer state
+    // Ungrabbable while orphan key_up event exists
 
-    if (auto m = weak_grabbable_state_queues_manager_.lock()) {
-      auto state = m->find_current_grabbable_state(entry->get_device_id());
-
-      if (!state) {
-        std::string message = fmt::format("{0} is not observed yet. Please wait for a while.",
-                                          entry->get_device_name());
-        logger_unique_filter_.warn(message);
-        return grabbable_state::state::ungrabbable_temporarily;
-      }
-
-      switch (state->get_state()) {
-        case grabbable_state::state::none:
-        case grabbable_state::state::end_:
-          return grabbable_state::state::ungrabbable_temporarily;
-
-        case grabbable_state::state::grabbable:
-          break;
-
-        case grabbable_state::state::ungrabbable_temporarily: {
-          std::string message;
-          switch (state->get_ungrabbable_temporarily_reason()) {
-            case grabbable_state::ungrabbable_temporarily_reason::none: {
-              message = fmt::format("{0} is ungrabbable temporarily",
-                                    entry->get_device_name());
-              break;
-            }
-            case grabbable_state::ungrabbable_temporarily_reason::key_repeating: {
-              message = fmt::format("{0} is ungrabbable temporarily while a key is repeating.",
-                                    entry->get_device_name());
-              break;
-            }
-            case grabbable_state::ungrabbable_temporarily_reason::modifier_key_pressed: {
-              message = fmt::format("{0} is ungrabbable temporarily while any modifier flags are pressed.",
-                                    entry->get_device_name());
-              break;
-            }
-            case grabbable_state::ungrabbable_temporarily_reason::pointing_button_pressed: {
-              message = fmt::format("{0} is ungrabbable temporarily while mouse buttons are pressed.",
-                                    entry->get_device_name());
-              break;
-            }
-            case grabbable_state::ungrabbable_temporarily_reason::end_:
-              break;
-          }
-          logger_unique_filter_.warn(message);
-
-          return grabbable_state::state::ungrabbable_temporarily;
-        }
-
-        case grabbable_state::state::ungrabbable_permanently: {
-          std::string message = fmt::format("{0} is ungrabbable permanently.",
-                                            entry->get_device_name());
-          logger_unique_filter_.warn(message);
-          return grabbable_state::state::ungrabbable_permanently;
-        }
-
-        case grabbable_state::state::device_error: {
-          std::string message = fmt::format("{0} is ungrabbable temporarily by a failure of accessing device.",
-                                            entry->get_device_name());
-          logger_unique_filter_.warn(message);
-          return grabbable_state::state::ungrabbable_temporarily;
-        }
-      }
+    if (!entry->get_orphan_key_up_keys_manager()->empty()) {
+      auto message = fmt::format("{0} is ungrabbable temporarily while orphan key_up events exists",
+                                 entry->get_device_name());
+      logger_unique_filter_.warn(message);
+      return grabbable_state::state::ungrabbable_temporarily;
     }
 
     // ----------------------------------------
@@ -777,8 +730,6 @@ private:
       }
     }
   }
-
-  std::weak_ptr<grabbable_state_queues_manager> weak_grabbable_state_queues_manager_;
 
   std::shared_ptr<virtual_hid_device_client> virtual_hid_device_client_;
 

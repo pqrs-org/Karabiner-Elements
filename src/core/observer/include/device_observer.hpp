@@ -3,7 +3,6 @@
 // `krbn::device_observer` can be used safely in a multi-threaded environment.
 
 #include "event_queue.hpp"
-#include "grabbable_state_manager/manager.hpp"
 #include "grabber_client.hpp"
 #include "iokit_utility.hpp"
 #include "logger.hpp"
@@ -20,16 +19,6 @@ public:
 
   device_observer(std::weak_ptr<grabber_client> grabber_client) : dispatcher_client(),
                                                                   grabber_client_(grabber_client) {
-    // grabbable_state_manager_
-
-    grabbable_state_manager_ = std::make_unique<grabbable_state_manager::manager>();
-
-    grabbable_state_manager_->grabbable_state_changed.connect([this](auto&& grabbable_state) {
-      if (auto client = grabber_client_.lock()) {
-        client->async_grabbable_state_changed(grabbable_state);
-      }
-    });
-
     // hid_manager_
 
     std::vector<pqrs::cf::cf_ptr<CFDictionaryRef>> matching_dictionaries{
@@ -58,11 +47,6 @@ public:
         auto device_name = iokit_utility::make_device_name_for_log(device_id,
                                                                    *device_ptr);
 
-        grabbable_state_manager_->update(grabbable_state(device_id,
-                                                         grabbable_state::state::device_error,
-                                                         grabbable_state::ungrabbable_temporarily_reason::none,
-                                                         pqrs::osx::chrono::mach_absolute_time_point()));
-
         auto hid_queue_value_monitor = std::make_shared<pqrs::osx::iokit_hid_queue_value_monitor>(weak_dispatcher_,
                                                                                                   *device_ptr);
         hid_queue_value_monitors_[device_id] = hid_queue_value_monitor;
@@ -87,22 +71,21 @@ public:
           hid_queue_value_monitor->values_arrived.connect([this, device_id](auto&& values_ptr) {
             auto event_queue = event_queue::utility::make_queue(device_id,
                                                                 iokit_utility::make_hid_values(values_ptr));
-            grabbable_state_manager_->update(*event_queue);
+            for (const auto& entry : event_queue->get_entries()) {
+              if (auto e = entry.get_event().make_key_down_up_valued_event()) {
+                if (auto client = grabber_client_.lock()) {
+                  client->async_key_down_up_valued_event_arrived(device_id,
+                                                                 *e,
+                                                                 entry.get_event_type(),
+                                                                 entry.get_event_time_stamp().get_time_stamp());
+                }
+              }
+            }
           });
         }
 
-        hid_queue_value_monitor->started.connect([this, device_id, device_name] {
+        hid_queue_value_monitor->started.connect([device_name] {
           logger::get_logger()->info("{0} is observed.", device_name);
-
-          if (auto state = grabbable_state_manager_->get_grabbable_state(device_id)) {
-            // Keep grabbable_state if the state is already changed by value_callback.
-            if (state->get_state() == grabbable_state::state::device_error) {
-              grabbable_state_manager_->update(grabbable_state(device_id,
-                                                               grabbable_state::state::grabbable,
-                                                               grabbable_state::ungrabbable_temporarily_reason::none,
-                                                               pqrs::osx::chrono::mach_absolute_time_point()));
-            }
-          }
         });
 
         hid_queue_value_monitor->async_start(kIOHIDOptionsTypeNone,
@@ -117,7 +100,6 @@ public:
 
       logger::get_logger()->info("device_id:{0} is terminated.", type_safe::get(device_id));
 
-      grabbable_state_manager_->erase(device_id);
       hid_queue_value_monitors_.erase(device_id);
 
       async_rescan();
@@ -132,7 +114,6 @@ public:
     detach_from_dispatcher([this] {
       hid_manager_ = nullptr;
       hid_queue_value_monitors_.clear();
-      grabbable_state_manager_ = nullptr;
     });
 
     logger::get_logger()->info("device_observer is stopped.");
@@ -154,23 +135,10 @@ public:
     });
   }
 
-  void async_post_all_states_to_grabber(void) const {
-    enqueue_to_dispatcher([this] {
-      if (auto client = grabber_client_.lock()) {
-        if (grabbable_state_manager_) {
-          for (const auto& s : grabbable_state_manager_->make_grabbable_states()) {
-            client->async_grabbable_state_changed(s);
-          }
-        }
-      }
-    });
-  }
-
 private:
   std::weak_ptr<grabber_client> grabber_client_;
 
   std::unique_ptr<pqrs::osx::iokit_hid_manager> hid_manager_;
   std::unordered_map<device_id, std::shared_ptr<pqrs::osx::iokit_hid_queue_value_monitor>> hid_queue_value_monitors_;
-  std::unique_ptr<grabbable_state_manager::manager> grabbable_state_manager_;
 };
 } // namespace krbn

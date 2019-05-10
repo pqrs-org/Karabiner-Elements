@@ -17,8 +17,6 @@ public:
 
   components_manager(std::weak_ptr<version_monitor> weak_version_monitor) : dispatcher_client(),
                                                                             weak_version_monitor_(weak_version_monitor) {
-    grabbable_state_queues_manager_ = std::make_shared<grabbable_state_queues_manager>();
-
     session_monitor_ = std::make_unique<pqrs::osx::session::monitor>(weak_dispatcher_);
 
     session_monitor_->console_user_id_changed.connect([this](auto&& uid) {
@@ -47,7 +45,7 @@ public:
 
       receiver_ = nullptr;
 
-      receiver_ = std::make_unique<receiver>(grabbable_state_queues_manager_);
+      receiver_ = std::make_unique<receiver>();
 
       receiver_->bound.connect([this] {
         if (auto m = weak_version_monitor_.lock()) {
@@ -73,7 +71,6 @@ public:
     detach_from_dispatcher([this] {
       session_monitor_ = nullptr;
       receiver_ = nullptr;
-      grabbable_state_queues_manager_ = nullptr;
     });
   }
 
@@ -85,7 +82,6 @@ public:
 
 private:
   std::weak_ptr<version_monitor> weak_version_monitor_;
-  std::shared_ptr<grabbable_state_queues_manager> grabbable_state_queues_manager_;
   std::unique_ptr<pqrs::osx::session::monitor> session_monitor_;
   std::unique_ptr<receiver> receiver_;
 };

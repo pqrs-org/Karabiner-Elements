@@ -89,11 +89,17 @@ public:
     });
   }
 
-  void async_grabbable_state_changed(const grabbable_state& grabbable_state) const {
-    enqueue_to_dispatcher([this, grabbable_state] {
+  void async_key_down_up_valued_event_arrived(device_id device_id,
+                                              const key_down_up_valued_event& event,
+                                              event_type event_type,
+                                              absolute_time_point time_stamp) const {
+    enqueue_to_dispatcher([this, device_id, event, event_type, time_stamp] {
       nlohmann::json json{
-          {"operation_type", operation_type::grabbable_state_changed},
-          {"grabbable_state", grabbable_state},
+          {"operation_type", operation_type::key_down_up_valued_event_arrived},
+          {"device_id", device_id},
+          {"key_down_up_valued_event", event},
+          {"event_type", event_type},
+          {"time_stamp", time_stamp},
       };
 
       if (client_) {

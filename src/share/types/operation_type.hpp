@@ -6,7 +6,7 @@ namespace krbn {
 enum class operation_type : uint8_t {
   none,
   // observer -> grabber
-  grabbable_state_changed,
+  key_down_up_valued_event_arrived,
   caps_lock_state_changed,
   // console_user_server -> grabber
   connect_console_user_server,
@@ -23,7 +23,7 @@ NLOHMANN_JSON_SERIALIZE_ENUM(
     operation_type,
     {
         {operation_type::none, nullptr},
-        {operation_type::grabbable_state_changed, "grabbable_state_changed"},
+        {operation_type::key_down_up_valued_event_arrived, "key_down_up_valued_event_arrived"},
         {operation_type::caps_lock_state_changed, "caps_lock_state_changed"},
         {operation_type::connect_console_user_server, "connect_console_user_server"},
         {operation_type::system_preferences_updated, "system_preferences_updated"},
