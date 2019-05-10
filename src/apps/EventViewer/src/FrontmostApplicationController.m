@@ -34,33 +34,33 @@ static void staticCallback(const char* bundle_identifier,
 }
 
 - (void)callback:(NSString*)bundleIdentifier filePath:(NSString*)filePath {
-  // Update self.text
-
-  if (![@"org.pqrs.Karabiner.EventViewer" isEqualToString:bundleIdentifier] &&
-      ![@"org.pqrs.Karabiner-EventViewer" isEqualToString:bundleIdentifier]) {
-    // Clear if text is huge.
-    if (self.text.length > 4 * 1024) {
-      [self.text setAttributedString:[[NSAttributedString alloc] initWithString:@""]];
-    }
-
-    NSString* bundleIdentifierLine = [NSString stringWithFormat:@"Bundle Identifier:  %@\n", bundleIdentifier];
-    NSString* filePathLine = [NSString stringWithFormat:@"File Path:          %@\n\n", filePath];
-    NSDictionary* attributes = @{NSFontAttributeName : [NSFont fontWithName:@"Menlo" size:11]};
-
-    [self.text appendAttributedString:[[NSAttributedString alloc] initWithString:bundleIdentifierLine
-                                                                      attributes:attributes]];
-    [self.text appendAttributedString:[[NSAttributedString alloc] initWithString:filePathLine
-                                                                      attributes:attributes]];
-  }
-
-  // Update self.textView
-
   @weakify(self);
   dispatch_async(dispatch_get_main_queue(), ^{
     @strongify(self);
     if (!self) {
       return;
     }
+
+    // Update self.text
+
+    if (![@"org.pqrs.Karabiner.EventViewer" isEqualToString:bundleIdentifier] &&
+        ![@"org.pqrs.Karabiner-EventViewer" isEqualToString:bundleIdentifier]) {
+      // Clear if text is huge.
+      if (self.text.length > 4 * 1024) {
+        [self.text setAttributedString:[[NSAttributedString alloc] initWithString:@""]];
+      }
+
+      NSString* bundleIdentifierLine = [NSString stringWithFormat:@"Bundle Identifier:  %@\n", bundleIdentifier];
+      NSString* filePathLine = [NSString stringWithFormat:@"File Path:          %@\n\n", filePath];
+      NSDictionary* attributes = @{NSFontAttributeName : [NSFont fontWithName:@"Menlo" size:11]};
+
+      [self.text appendAttributedString:[[NSAttributedString alloc] initWithString:bundleIdentifierLine
+                                                                        attributes:attributes]];
+      [self.text appendAttributedString:[[NSAttributedString alloc] initWithString:filePathLine
+                                                                        attributes:attributes]];
+    }
+
+    // Update self.textView
 
     NSTextStorage* textStorage = self.textView.textStorage;
     [textStorage beginEditing];
