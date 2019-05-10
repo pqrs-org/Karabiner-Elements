@@ -200,7 +200,7 @@ public:
     return device_identifiers_;
   }
 
-  bool compare(const device_properties& other) {
+  bool compare(const device_properties& other) const {
     // product
     {
       auto p1 = product_.value_or("");
