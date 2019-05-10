@@ -28,11 +28,15 @@ public:
     };
 
     hid_manager_ = std::make_unique<pqrs::osx::iokit_hid_manager>(weak_dispatcher_,
-                                                                  matching_dictionaries);
+                                                                  matching_dictionaries,
+                                                                  std::chrono::milliseconds(1000));
 
     hid_manager_->device_matched.connect([this](auto&& registry_entry_id, auto&& device_ptr) {
       if (device_ptr) {
         auto device_id = krbn::make_device_id(registry_entry_id);
+        auto device_name = krbn::iokit_utility::make_device_name_for_log(device_id,
+                                                                         *device_ptr);
+
         krbn::logger::get_logger()->info("{0} is matched.",
                                          krbn::iokit_utility::make_device_name_for_log(device_id,
                                                                                        *device_ptr));
@@ -51,6 +55,10 @@ public:
           for (const auto& entry : event_queue->get_entries()) {
             output_value(entry);
           }
+        });
+
+        hid_queue_value_monitor->started.connect([device_name] {
+          krbn::logger::get_logger()->info("{0} is observed.", device_name);
         });
 
         hid_queue_value_monitor->async_start(kIOHIDOptionsTypeNone,
