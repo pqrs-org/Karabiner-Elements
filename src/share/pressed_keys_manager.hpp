@@ -3,8 +3,7 @@
 // `krbn::pressed_keys_manager` can be used safely in a multi-threaded environment.
 
 #include "types.hpp"
-#include <mpark/variant.hpp>
-#include <set>
+#include <unordered_set>
 
 namespace krbn {
 class pressed_keys_manager {
@@ -29,21 +28,8 @@ public:
     return entries_.empty();
   }
 
-  template <typename T>
-  bool exists(T value) const {
-    std::lock_guard<std::mutex> lock(mutex_);
-
-    return entries_.find(key_down_up_valued_event(value)) != std::end(entries_);
-  }
-
-  void clear(void) {
-    std::lock_guard<std::mutex> lock(mutex_);
-
-    entries_.clear();
-  }
-
 private:
-  std::set<key_down_up_valued_event> entries_;
+  std::unordered_set<key_down_up_valued_event> entries_;
   mutable std::mutex mutex_;
 };
 } // namespace krbn

@@ -5,15 +5,25 @@
 #include "pointing_button.hpp"
 #include <mpark/variant.hpp>
 #include <nlohmann/json.hpp>
+#include <pqrs/hash.hpp>
 
 namespace krbn {
 class key_down_up_valued_event final {
 public:
+  using value_t = mpark::variant<key_code,
+                                 consumer_key_code,
+                                 pointing_button,
+                                 mpark::monostate>;
+
   key_down_up_valued_event(void) : value_(mpark::monostate()) {
   }
 
   template <typename T>
   explicit key_down_up_valued_event(T value) : value_(value) {
+  }
+
+  const value_t& get_value(void) const {
+    return value_;
   }
 
   template <typename T>
@@ -35,11 +45,7 @@ public:
   }
 
 private:
-  mpark::variant<key_code,
-                 consumer_key_code,
-                 pointing_button,
-                 mpark::monostate>
-      value_;
+  value_t value_;
 };
 
 inline void to_json(nlohmann::json& json, const key_down_up_valued_event& value) {
@@ -74,5 +80,17 @@ inline void from_json(const nlohmann::json& json, key_down_up_valued_event& valu
     }
   }
 }
-
 } // namespace krbn
+
+namespace std {
+template <>
+struct hash<krbn::key_down_up_valued_event> final {
+  std::size_t operator()(const krbn::key_down_up_valued_event& value) const {
+    std::size_t h = 0;
+
+    pqrs::hash_combine(h, value.get_value());
+
+    return h;
+  }
+};
+} // namespace std

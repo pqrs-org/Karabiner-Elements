@@ -5,6 +5,7 @@
 #include "event_queue.hpp"
 #include "hid_keyboard_caps_lock_led_state_manager.hpp"
 #include "iokit_utility.hpp"
+#include "orphan_key_up_events_manager.hpp"
 #include "pressed_keys_manager.hpp"
 #include "types.hpp"
 #include <pqrs/osx/iokit_hid_queue_value_monitor.hpp>
@@ -20,7 +21,6 @@ public:
                                                                                           core_configuration_(core_configuration),
                                                                                           hid_queue_value_monitor_async_start_called_(false),
                                                                                           first_value_arrived_(false),
-                                                                                          orphan_key_up_keys_last_time_stamp_(0),
                                                                                           grabbed_(false),
                                                                                           disabled_(false) {
     device_properties_ = std::make_shared<device_properties>(device_id,
@@ -33,8 +33,7 @@ public:
     device_name_ = iokit_utility::make_device_name_for_log(device_id,
                                                            device);
 
-    key_down_arrived_keys_manager_ = std::make_shared<pressed_keys_manager>();
-    orphan_key_up_keys_manager_ = std::make_shared<pressed_keys_manager>();
+    orphan_key_up_events_manager_ = std::make_shared<orphan_key_up_events_manager>();
 
     hid_queue_value_monitor_->started.connect([this] {
       grabbed_ = true;
@@ -92,8 +91,8 @@ public:
     return device_name_;
   }
 
-  std::shared_ptr<pressed_keys_manager> get_orphan_key_up_keys_manager(void) const {
-    return orphan_key_up_keys_manager_;
+  std::shared_ptr<orphan_key_up_events_manager> get_orphan_key_up_events_manager(void) const {
+    return orphan_key_up_events_manager_;
   }
 
   bool get_grabbed(void) const {
@@ -157,41 +156,6 @@ public:
     }
   }
 
-  void update_orphan_key_up_keys(const key_down_up_valued_event& e,
-                                 event_type t,
-                                 absolute_time_point time_stamp) {
-    // Skip old event.
-    if (time_stamp < orphan_key_up_keys_last_time_stamp_) {
-      return;
-    }
-
-    orphan_key_up_keys_last_time_stamp_ = time_stamp;
-
-    switch (t) {
-      case event_type::key_down:
-        key_down_arrived_keys_manager_->insert(e);
-        break;
-
-      case event_type::key_up:
-        if (!key_down_arrived_keys_manager_->exists(e)) {
-          orphan_key_up_keys_manager_->insert(e);
-        } else {
-          orphan_key_up_keys_manager_->erase(e);
-        }
-        break;
-
-      case event_type::single:
-        // Do nothing
-        break;
-    }
-  }
-
-  void clear_orphan_key_up_keys(void) {
-    orphan_key_up_keys_last_time_stamp_ = absolute_time_point(0);
-    key_down_arrived_keys_manager_->clear();
-    orphan_key_up_keys_manager_->clear();
-  }
-
 private:
   void control_caps_lock_led_state_manager(void) {
     if (caps_lock_led_state_manager_) {
@@ -224,9 +188,7 @@ private:
   std::shared_ptr<hid_keyboard_caps_lock_led_state_manager> caps_lock_led_state_manager_;
   std::string device_name_;
 
-  absolute_time_point orphan_key_up_keys_last_time_stamp_;
-  std::shared_ptr<pressed_keys_manager> key_down_arrived_keys_manager_;
-  std::shared_ptr<pressed_keys_manager> orphan_key_up_keys_manager_;
+  std::shared_ptr<orphan_key_up_events_manager> orphan_key_up_events_manager_;
 
   bool grabbed_;
   bool disabled_;

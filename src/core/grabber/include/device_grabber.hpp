@@ -294,16 +294,16 @@ public:
     });
   }
 
-  void async_update_orphan_key_up_keys(device_id device_id,
-                                       const key_down_up_valued_event& event,
-                                       event_type event_type,
-                                       absolute_time_point time_stamp) {
+  void async_update_orphan_key_up_events(device_id device_id,
+                                         const key_down_up_valued_event& event,
+                                         event_type event_type,
+                                         absolute_time_point time_stamp) {
     enqueue_to_dispatcher([this, device_id, event, event_type, time_stamp] {
       auto it = entries_.find(device_id);
       if (it != std::end(entries_)) {
-        it->second->update_orphan_key_up_keys(event,
-                                              event_type,
-                                              time_stamp);
+        it->second->get_orphan_key_up_events_manager()->update(event,
+                                                               event_type,
+                                                               time_stamp);
 
         grab_device(it->second);
       }
@@ -454,7 +454,7 @@ private:
 
     if (!entry->get_first_value_arrived()) {
       entry->set_first_value_arrived(true);
-      entry->clear_orphan_key_up_keys();
+      entry->get_orphan_key_up_events_manager()->clear();
     }
 
     if (entry->get_disabled()) {
@@ -464,9 +464,11 @@ private:
 
       for (const auto& e : event_queue->get_entries()) {
         if (auto ev = e.get_event().make_key_down_up_valued_event()) {
-          entry->update_orphan_key_up_keys(*ev,
-                                           e.get_event_type(),
-                                           e.get_event_time_stamp().get_time_stamp());
+          entry->get_orphan_key_up_events_manager()->update(
+              *ev,
+              e.get_event_type(),
+              e.get_event_time_stamp().get_time_stamp());
+
           needs_regrab = true;
         }
 
@@ -578,9 +580,10 @@ private:
     // ----------------------------------------
     // Ungrabbable while orphan key_up event exists
 
-    if (!entry->get_orphan_key_up_keys_manager()->empty()) {
-      auto message = fmt::format("{0} is ungrabbable temporarily while orphan key_up events exists",
-                                 entry->get_device_name());
+    if (auto event = entry->get_orphan_key_up_events_manager()->find_orphan_key_up_event()) {
+      auto message = fmt::format("{0} is ungrabbable temporarily until {1} is pressed again.",
+                                 entry->get_device_name(),
+                                 types::to_string(*event));
       logger_unique_filter_.warn(message);
       return grabbable_state::state::ungrabbable_temporarily;
     }
