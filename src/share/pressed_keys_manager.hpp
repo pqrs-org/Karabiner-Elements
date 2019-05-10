@@ -4,7 +4,7 @@
 
 #include "types.hpp"
 #include <mpark/variant.hpp>
-#include <unordered_set>
+#include <set>
 
 namespace krbn {
 class pressed_keys_manager {
@@ -13,14 +13,14 @@ public:
   void insert(T value) {
     std::lock_guard<std::mutex> lock(mutex_);
 
-    entries_.insert(value);
+    entries_.insert(key_like_event(value));
   }
 
   template <typename T>
   void erase(T value) {
     std::lock_guard<std::mutex> lock(mutex_);
 
-    entries_.erase(value);
+    entries_.erase(key_like_event(value));
   }
 
   bool empty(void) const {
@@ -33,15 +33,11 @@ public:
   bool exists(T value) const {
     std::lock_guard<std::mutex> lock(mutex_);
 
-    return entries_.find(value) != std::end(entries_);
+    return entries_.find(key_like_event(value)) != std::end(entries_);
   }
 
 private:
-  using entry_t = mpark::variant<key_code,
-                                 consumer_key_code,
-                                 pointing_button>;
-  std::unordered_set<entry_t, std::hash<entry_t>> entries_;
-
+  std::set<key_like_event> entries_;
   mutable std::mutex mutex_;
 };
 } // namespace krbn
