@@ -13,7 +13,7 @@ public:
   }
 
   template <typename T>
-  key_like_event(T value) : value_(value) {
+  explicit key_like_event(T value) : value_(value) {
   }
 
   template <typename T>
