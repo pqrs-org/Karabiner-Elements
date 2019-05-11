@@ -16,17 +16,11 @@ TEST_CASE("pressed_keys_manager") {
   {
     krbn::pressed_keys_manager manager;
 
-    REQUIRE(!manager.exists(krbn::key_code::a));
-
     manager.insert(krbn::key_code::a);
     REQUIRE(!manager.empty());
 
-    REQUIRE(manager.exists(krbn::key_code::a));
-
     manager.erase(krbn::key_code::a);
     REQUIRE(manager.empty());
-
-    REQUIRE(!manager.exists(krbn::key_code::a));
   }
 
   // Duplicated key_code
