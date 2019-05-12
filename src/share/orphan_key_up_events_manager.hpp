@@ -29,6 +29,22 @@ public:
         break;
 
       case event_type::key_up: {
+        // orphan_key_up_events_manager is used to detect keys which are pressed before grabbed.
+        //
+        // For example, we have to ungrab a device at (4) to be able to stop key repeat.
+        //
+        // 0. A keyboard is not grabbed yet.
+        // 1. `key_code::a` is pressed.
+        // 2. `a` is repeated by macOS.
+        // 3. The keyboard is grabbed.
+        // 4. `key_code::a` is released.
+        // 5. `a` is still repeated by macOS because `key_up` is send from another device (virtual keyboard).
+        //
+        // In this typical case, we have to remove orphan key at `key_up`.
+        // If orphan key is removed at `key_down`,
+        // the keyboard will be re-grabbed when key is still pressed.
+        // It causes the same key repeat issue again.
+
         if (key_down_arrived_events_.find(event) == std::end(key_down_arrived_events_)) {
           orphan_key_up_events_.insert(event);
         } else {
