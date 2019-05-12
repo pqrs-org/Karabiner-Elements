@@ -56,7 +56,6 @@ public:
           hid_queue_value_monitor->values_arrived.connect([this, device_id](auto&& values_ptr) {
             auto event_queue = event_queue::utility::make_queue(device_id,
                                                                 iokit_utility::make_hid_values(values_ptr));
-
             for (const auto& e : event_queue->get_entries()) {
               if (e.get_event().get_type() == event_queue::event::type::caps_lock_state_changed) {
                 if (auto client = grabber_client_.lock()) {
