@@ -1,6 +1,7 @@
 all:
 	$(MAKE) -C apps/EventViewer
 	$(MAKE) -C apps/Menu
+	$(MAKE) -C apps/NotificationWindow
 	$(MAKE) -C apps/PreferencesWindow
 	$(MAKE) -C apps/Updater
 	$(MAKE) -C apps/lib/KarabinerKit
@@ -13,6 +14,7 @@ all:
 clean:
 	$(MAKE) -C apps/EventViewer clean
 	$(MAKE) -C apps/Menu clean
+	$(MAKE) -C apps/NotificationWindow clean
 	$(MAKE) -C apps/PreferencesWindow clean
 	$(MAKE) -C apps/Updater clean
 	$(MAKE) -C apps/lib/KarabinerKit clean

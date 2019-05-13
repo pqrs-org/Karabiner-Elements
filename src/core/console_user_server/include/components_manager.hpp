@@ -61,6 +61,8 @@ public:
 
       receiver_->async_start();
     });
+
+    application_launcher::launch_notification_window();
   }
 
   virtual ~components_manager(void) {

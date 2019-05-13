@@ -24,6 +24,7 @@ cp src/scripts/uninstall.sh "$basedir"
 cp src/scripts/uninstall_core.sh "$basedir"
 cp files/complex_modifications_rules_example.json "$basedir"
 cp -R "src/apps/Menu/build_xcode/build/Release/Karabiner-Menu.app" "$basedir"
+cp -R "src/apps/NotificationWindow/build_xcode/build/Release/Karabiner-NotificationWindow.app" "$basedir"
 
 basedir="pkgroot/Library/Application Support/org.pqrs/Karabiner-Elements/scripts"
 mkdir -p "$basedir"
@@ -78,18 +79,18 @@ rm -rf $archiveName
 mkdir $archiveName
 
 pkgbuild \
-	--root pkgroot \
-	--component-plist pkginfo/pkgbuild.plist \
-	--scripts pkginfo/Scripts \
-	--identifier $pkgIdentifier \
-	--version $version \
-	--install-location "/" \
-	$archiveName/Installer.pkg
+    --root pkgroot \
+    --component-plist pkginfo/pkgbuild.plist \
+    --scripts pkginfo/Scripts \
+    --identifier $pkgIdentifier \
+    --version $version \
+    --install-location "/" \
+    $archiveName/Installer.pkg
 
 productbuild \
-	--distribution pkginfo/build/Distribution.xml \
-	--package-path $archiveName \
-	$archiveName/$pkgName
+    --distribution pkginfo/build/Distribution.xml \
+    --package-path $archiveName \
+    $archiveName/$pkgName
 
 rm -f $archiveName/Installer.pkg
 
