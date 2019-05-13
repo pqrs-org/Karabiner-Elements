@@ -301,6 +301,10 @@ public:
     enqueue_to_dispatcher([this, device_id, event, event_type, time_stamp] {
       auto it = entries_.find(device_id);
       if (it != std::end(entries_)) {
+        // `karabiner_observer` may catch input events
+        // while the device is grabbed due to macOS event handling issue.
+        // Thus, we have to ignore events manually while the device is grabbed.
+
         if (!it->second->is_grabbed(time_stamp)) {
           it->second->get_orphan_key_up_events_manager()->update(event,
                                                                  event_type,
