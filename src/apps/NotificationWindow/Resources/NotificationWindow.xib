@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<document type="com.apple.InterfaceBuilder3.Cocoa.XIB" version="3.0" toolsVersion="14460.31" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none" useAutolayout="YES" customObjectInstantitationMethod="direct">
+    <dependencies>
+        <deployment identifier="macosx"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="14460.31"/>
+        <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
+    </dependencies>
+    <objects>
+        <customObject id="-2" userLabel="File's Owner" customClass="NSWindowController">
+            <connections>
+                <outlet property="window" destination="K2N-S1-1hZ" id="G6n-fl-V4k"/>
+            </connections>
+        </customObject>
+        <customObject id="-1" userLabel="First Responder" customClass="FirstResponder"/>
+        <customObject id="-3" userLabel="Application" customClass="NSObject"/>
+        <window title="Notification" allowsToolTipsWhenApplicationIsInactive="NO" autorecalculatesKeyViewLoop="NO" hasShadow="NO" releasedWhenClosed="NO" visibleAtLaunch="NO" frameAutosaveName="" animationBehavior="default" id="K2N-S1-1hZ">
+            <windowPositionMask key="initialPositionMask" leftStrut="YES" rightStrut="YES" topStrut="YES" bottomStrut="YES"/>
+            <rect key="contentRect" x="196" y="240" width="400" height="88"/>
+            <rect key="screenRect" x="0.0" y="0.0" width="1920" height="1177"/>
+            <view key="contentView" id="D8E-iP-bAO" customClass="NotificationWindowView">
+                <rect key="frame" x="0.0" y="0.0" width="400" height="88"/>
+                <autoresizingMask key="autoresizingMask"/>
+                <subviews>
+                    <imageView horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="pT3-c6-Yay">
+                        <rect key="frame" x="12" y="12" width="64" height="64"/>
+                        <constraints>
+                            <constraint firstAttribute="width" constant="64" id="CH4-uZ-g3Q"/>
+                            <constraint firstAttribute="height" constant="64" id="Cc4-DQ-UA8"/>
+                        </constraints>
+                        <imageCell key="cell" refusesFirstResponder="YES" alignment="left" imageScaling="proportionallyDown" image="app" id="gjW-ha-L8E"/>
+                    </imageView>
+                    <textField verticalHuggingPriority="750" horizontalCompressionResistancePriority="250" translatesAutoresizingMaskIntoConstraints="NO" id="MNS-Om-o9U">
+                        <rect key="frame" x="86" y="12" width="304" height="64"/>
+                        <constraints>
+                            <constraint firstAttribute="width" constant="300" id="LhF-TV-CJY"/>
+                            <constraint firstAttribute="height" constant="64" id="rgZ-h3-Vqk"/>
+                        </constraints>
+                        <textFieldCell key="cell" selectable="YES" title="Multiline Label" id="Gqp-PV-2vn">
+                            <font key="font" metaFont="system"/>
+                            <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
+                            <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
+                        </textFieldCell>
+                    </textField>
+                </subviews>
+                <constraints>
+                    <constraint firstItem="pT3-c6-Yay" firstAttribute="leading" secondItem="D8E-iP-bAO" secondAttribute="leading" constant="12" id="1Ea-1U-rwr"/>
+                    <constraint firstAttribute="trailing" secondItem="MNS-Om-o9U" secondAttribute="trailing" constant="12" id="4ae-hy-d7d"/>
+                    <constraint firstItem="MNS-Om-o9U" firstAttribute="top" secondItem="D8E-iP-bAO" secondAttribute="top" constant="12" id="Kke-En-ptR"/>
+                    <constraint firstAttribute="bottom" secondItem="MNS-Om-o9U" secondAttribute="bottom" constant="12" id="RVY-9X-elf"/>
+                    <constraint firstItem="pT3-c6-Yay" firstAttribute="centerY" secondItem="D8E-iP-bAO" secondAttribute="centerY" id="W40-pX-JTi"/>
+                    <constraint firstItem="MNS-Om-o9U" firstAttribute="leading" secondItem="pT3-c6-Yay" secondAttribute="trailing" constant="12" id="pfY-eC-eiE"/>
+                </constraints>
+                <connections>
+                    <outlet property="text" destination="MNS-Om-o9U" id="r7r-9R-eNe"/>
+                </connections>
+            </view>
+        </window>
+    </objects>
+    <resources>
+        <image name="app" width="64" height="64"/>
+    </resources>
+</document>
