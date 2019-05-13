@@ -60,7 +60,7 @@ public:
           switch (json.at("operation_type").get<operation_type>()) {
             case operation_type::key_down_up_valued_event_arrived: {
               if (device_grabber_) {
-                device_grabber_->async_update_orphan_key_up_events(
+                device_grabber_->async_update_orphan_key_up_events_by_observer(
                     json.at("device_id").get<device_id>(),
                     json.at("key_down_up_valued_event").get<key_down_up_valued_event>(),
                     json.at("event_type").get<event_type>(),

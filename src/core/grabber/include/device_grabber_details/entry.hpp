@@ -22,7 +22,9 @@ public:
                                                                                           hid_queue_value_monitor_async_start_called_(false),
                                                                                           first_value_arrived_(false),
                                                                                           grabbed_(false),
-                                                                                          disabled_(false) {
+                                                                                          disabled_(false),
+                                                                                          grabbed_time_stamp_(0),
+                                                                                          ungrabbed_time_stamp_(0) {
     device_properties_ = std::make_shared<device_properties>(device_id,
                                                              device);
 
@@ -34,16 +36,6 @@ public:
                                                            device);
 
     orphan_key_up_events_manager_ = std::make_shared<orphan_key_up_events_manager>();
-
-    hid_queue_value_monitor_->started.connect([this] {
-      grabbed_ = true;
-      control_caps_lock_led_state_manager();
-    });
-
-    hid_queue_value_monitor_->stopped.connect([this] {
-      grabbed_ = false;
-      control_caps_lock_led_state_manager();
-    });
   }
 
   ~entry(void) {
@@ -101,6 +93,14 @@ public:
 
   void set_grabbed(bool value) {
     grabbed_ = value;
+
+    if (grabbed_) {
+      grabbed_time_stamp_ = pqrs::osx::chrono::mach_absolute_time_point();
+    } else {
+      ungrabbed_time_stamp_ = pqrs::osx::chrono::mach_absolute_time_point();
+    }
+
+    control_caps_lock_led_state_manager();
   }
 
   bool get_disabled(void) const {
@@ -156,6 +156,26 @@ public:
     }
   }
 
+  bool is_grabbed(absolute_time_point time_stamp) {
+    if (grabbed_time_stamp_ <= ungrabbed_time_stamp_) {
+      // The current state of device is `ungrabbed`.
+
+      if (grabbed_time_stamp_ <= time_stamp &&
+          time_stamp <= ungrabbed_time_stamp_) {
+        return true;
+      }
+
+    } else {
+      // The current state of device is `grabbed`.
+
+      if (grabbed_time_stamp_ <= time_stamp) {
+        return true;
+      }
+    }
+
+    return false;
+  }
+
 private:
   void control_caps_lock_led_state_manager(void) {
     if (caps_lock_led_state_manager_) {
@@ -192,6 +212,9 @@ private:
 
   bool grabbed_;
   bool disabled_;
+
+  absolute_time_point grabbed_time_stamp_;
+  absolute_time_point ungrabbed_time_stamp_;
 };
 } // namespace device_grabber_details
 } // namespace krbn

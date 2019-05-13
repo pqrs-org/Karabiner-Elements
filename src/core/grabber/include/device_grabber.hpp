@@ -294,18 +294,20 @@ public:
     });
   }
 
-  void async_update_orphan_key_up_events(device_id device_id,
-                                         const key_down_up_valued_event& event,
-                                         event_type event_type,
-                                         absolute_time_point time_stamp) {
+  void async_update_orphan_key_up_events_by_observer(device_id device_id,
+                                                     const key_down_up_valued_event& event,
+                                                     event_type event_type,
+                                                     absolute_time_point time_stamp) {
     enqueue_to_dispatcher([this, device_id, event, event_type, time_stamp] {
       auto it = entries_.find(device_id);
       if (it != std::end(entries_)) {
-        it->second->get_orphan_key_up_events_manager()->update(event,
-                                                               event_type,
-                                                               time_stamp);
+        if (!it->second->is_grabbed(time_stamp)) {
+          it->second->get_orphan_key_up_events_manager()->update(event,
+                                                                 event_type,
+                                                                 time_stamp);
 
-        grab_device(it->second);
+          grab_device(it->second);
+        }
       }
     });
   }
