@@ -306,11 +306,15 @@ public:
         // Thus, we have to ignore events manually while the device is grabbed.
 
         if (!it->second->is_grabbed(time_stamp)) {
-          it->second->get_orphan_key_up_events_manager()->update(event,
-                                                                 event_type,
-                                                                 time_stamp);
+          bool needs_regrab = false;
 
-          grab_device(it->second);
+          needs_regrab |= it->second->get_orphan_key_up_events_manager()->update(event,
+                                                                                 event_type,
+                                                                                 time_stamp);
+
+          if (needs_regrab) {
+            grab_device(it->second);
+          }
         }
       }
     });
@@ -470,12 +474,10 @@ private:
 
       for (const auto& e : event_queue->get_entries()) {
         if (auto ev = e.get_event().make_key_down_up_valued_event()) {
-          entry->get_orphan_key_up_events_manager()->update(
+          needs_regrab |= entry->get_orphan_key_up_events_manager()->update(
               *ev,
               e.get_event_type(),
               e.get_event_time_stamp().get_time_stamp());
-
-          needs_regrab = true;
         }
 
         event_queue::entry qe(e.get_device_id(),
