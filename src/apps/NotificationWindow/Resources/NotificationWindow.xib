@@ -35,8 +35,8 @@
                             <constraint firstAttribute="width" constant="300" id="LhF-TV-CJY"/>
                             <constraint firstAttribute="height" constant="64" id="rgZ-h3-Vqk"/>
                         </constraints>
-                        <textFieldCell key="cell" selectable="YES" title="Multiline Label" id="Gqp-PV-2vn">
-                            <font key="font" metaFont="system"/>
+                        <textFieldCell key="cell" controlSize="small" selectable="YES" title="Multiline Label" id="Gqp-PV-2vn">
+                            <font key="font" metaFont="smallSystem"/>
                             <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
                             <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
                         </textFieldCell>
