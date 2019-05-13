@@ -11,17 +11,19 @@ public:
   orphan_key_up_events_manager(void) : last_time_stamp_(0) {
   }
 
-  void update(const key_down_up_valued_event& event,
+  bool update(const key_down_up_valued_event& event,
               event_type t,
               absolute_time_point time_stamp) {
     std::lock_guard<std::mutex> lock(mutex_);
 
     // Skip old event.
     if (time_stamp < last_time_stamp_) {
-      return;
+      return false;
     }
 
     last_time_stamp_ = time_stamp;
+
+    auto previous_size = orphan_key_up_events_.size();
 
     switch (t) {
       case event_type::key_down:
@@ -57,6 +59,8 @@ public:
         // Do nothing
         break;
     }
+
+    return orphan_key_up_events_.size() != previous_size;
   }
 
   void clear(void) {
