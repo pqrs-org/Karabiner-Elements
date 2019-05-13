@@ -11,10 +11,6 @@ static void version_changed_callback(void* refcon) {
   static dispatch_once_t once;
 
   dispatch_once(&once, ^{
-    // initialize managers
-    [KarabinerKitConfigurationManager sharedManager];
-    [KarabinerKitDeviceManager sharedManager];
-
     libkrbn_enable_version_monitor(version_changed_callback, NULL);
   });
 }
