@@ -4,6 +4,7 @@
 #include "constants.hpp"
 #include "device_grabber_details/entry.hpp"
 #include "device_grabber_details/fn_function_keys_manipulator_manager.hpp"
+#include "device_grabber_details/notification_message_manager.hpp"
 #include "device_grabber_details/simple_modifications_manipulator_manager.hpp"
 #include "event_tap_utility.hpp"
 #include "hid_keyboard_caps_lock_led_state_manager.hpp"
@@ -207,6 +208,10 @@ public:
         entries_.erase(it);
       }
 
+      if (notification_message_manager_) {
+        notification_message_manager_->erase_device(device_id);
+      }
+
       output_devices_json();
       output_device_details_json();
 
@@ -227,11 +232,16 @@ public:
     });
 
     hid_manager_->async_start();
+
+    notification_message_manager_ = std::make_shared<device_grabber_details::notification_message_manager>(
+        weak_console_user_server_client);
   }
 
   virtual ~device_grabber(void) {
     detach_from_dispatcher([this] {
       stop();
+
+      notification_message_manager_ = nullptr;
 
       hid_manager_ = nullptr;
 
@@ -566,6 +576,7 @@ private:
         auto message = fmt::format("{0} is ignored.",
                                    entry->get_device_name());
         logger_unique_filter_.info(message);
+        unset_device_ungrabbable_temporarily_notification_message(entry->get_device_id());
         return grabbable_state::state::ungrabbable_permanently;
       }
     }
@@ -576,12 +587,14 @@ private:
     if (!virtual_hid_device_client_->is_connected()) {
       std::string message = "virtual_hid_device_client is not connected yet. Please wait for a while.";
       logger_unique_filter_.warn(message);
+      unset_device_ungrabbable_temporarily_notification_message(entry->get_device_id());
       return grabbable_state::state::ungrabbable_temporarily;
     }
 
     if (!virtual_hid_device_client_->is_virtual_hid_keyboard_ready()) {
       std::string message = "virtual_hid_keyboard is not ready. Please wait for a while.";
       logger_unique_filter_.warn(message);
+      unset_device_ungrabbable_temporarily_notification_message(entry->get_device_id());
       return grabbable_state::state::ungrabbable_temporarily;
     }
 
@@ -593,12 +606,27 @@ private:
                                  entry->get_device_name(),
                                  types::to_string(*event));
       logger_unique_filter_.warn(message);
+
+      if (notification_message_manager_) {
+        notification_message_manager_->set_device_ungrabbable_temporarily_message(
+            entry->get_device_id(),
+            message);
+      }
+
       return grabbable_state::state::ungrabbable_temporarily;
     }
 
     // ----------------------------------------
 
+    unset_device_ungrabbable_temporarily_notification_message(entry->get_device_id());
+
     return grabbable_state::state::grabbable;
+  }
+
+  void unset_device_ungrabbable_temporarily_notification_message(device_id id) const {
+    if (notification_message_manager_) {
+      notification_message_manager_->set_device_ungrabbable_temporarily_message(id, "");
+    }
   }
 
   void event_tap_pointing_device_event_callback(CGEventType type, CGEventRef event) {
@@ -773,6 +801,8 @@ private:
   std::shared_ptr<manipulator::manipulators::post_event_to_virtual_devices::post_event_to_virtual_devices> post_event_to_virtual_devices_manipulator_;
   std::shared_ptr<manipulator::manipulator_manager> post_event_to_virtual_devices_manipulator_manager_;
   std::shared_ptr<event_queue::queue> posted_event_queue_;
+
+  std::shared_ptr<device_grabber_details::notification_message_manager> notification_message_manager_;
 
   mutable pqrs::spdlog::unique_filter logger_unique_filter_;
 };

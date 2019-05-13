@@ -118,6 +118,19 @@ public:
     });
   }
 
+  void async_set_notification_message(const std::string& message) {
+    enqueue_to_dispatcher([this, message] {
+      nlohmann::json json{
+          {"operation_type", operation_type::set_notification_message},
+          {"notification_message", message},
+      };
+
+      if (client_) {
+        client_->async_send(nlohmann::json::to_msgpack(json));
+      }
+    });
+  }
+
   static std::string make_console_user_server_socket_directory(uid_t uid) {
     std::stringstream ss;
     ss << constants::get_console_user_server_socket_directory() << "/" << uid;

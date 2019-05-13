@@ -194,6 +194,24 @@ public:
     return directory;
   }
 
+  static const std::string& get_user_notification_message_file_path(void) {
+    static std::mutex mutex;
+    std::lock_guard<std::mutex> guard(mutex);
+
+    static bool once = false;
+    static std::string file_path;
+
+    if (!once) {
+      once = true;
+      auto d = get_user_data_directory();
+      if (!d.empty()) {
+        file_path = d + "/notification_message.json";
+      }
+    }
+
+    return file_path;
+  }
+
   static const char* get_distributed_notification_observed_object(void) {
     return "org.pqrs.karabiner";
   }

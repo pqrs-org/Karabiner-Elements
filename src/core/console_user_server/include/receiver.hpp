@@ -96,6 +96,18 @@ public:
                 break;
               }
 
+              case operation_type::set_notification_message: {
+                auto notification_message = json.at("notification_message").get<std::string>();
+                json_writer::async_save_to_file(
+                    nlohmann::json::object({
+                        {"body", notification_message},
+                    }),
+                    constants::get_user_notification_message_file_path(),
+                    0700,
+                    0600);
+                break;
+              }
+
               default:
                 break;
             }
