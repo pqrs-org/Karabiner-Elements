@@ -53,6 +53,11 @@ static void staticCallback(const char* filePath,
 - (void)updateWindows {
   NSArray* screens = NSScreen.screens;
 
+  // The old window sometimes does not deallocated properly when screen count is decreased.
+  // Thus, we hide the window before clear windowControllers.
+  for (NSWindowController* c in self.windowControllers) {
+    [c.window orderOut:self];
+  }
   [self.windowControllers removeAllObjects];
 
   for (NSScreen* screen in screens) {
