@@ -53,14 +53,12 @@ static void staticCallback(const char* filePath,
 - (void)updateWindows {
   NSArray* screens = NSScreen.screens;
 
-  if (self.windowControllers.count != screens.count) {
-    [self.windowControllers removeAllObjects];
+  [self.windowControllers removeAllObjects];
 
-    for (NSScreen* screen in screens) {
-      NSWindowController* controller = [[NSWindowController alloc] initWithWindowNibName:@"NotificationWindow"];
-      [self setupWindow:controller.window screen:screen];
-      [self.windowControllers addObject:controller];
-    }
+  for (NSScreen* screen in screens) {
+    NSWindowController* controller = [[NSWindowController alloc] initWithWindowNibName:@"NotificationWindow"];
+    [self setupWindow:controller.window screen:screen];
+    [self.windowControllers addObject:controller];
   }
 
   [self setNotificationText];
