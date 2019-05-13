@@ -51,8 +51,8 @@ public:
     return hid_values;
   }
 
-  static std::string make_device_name_for_log(device_id device_id,
-                                              IOHIDDeviceRef _Nonnull device) {
+  static std::string make_device_name(device_id device_id,
+                                      IOHIDDeviceRef _Nonnull device) {
     std::stringstream stream;
     pqrs::osx::iokit_hid_device hid_device(device);
 
@@ -70,8 +70,14 @@ public:
       }
     }
 
-    stream << " (device_id:" << type_safe::get(device_id) << ")";
     return stream.str();
+  }
+
+  static std::string make_device_name_for_log(device_id device_id,
+                                              IOHIDDeviceRef _Nonnull device) {
+    return fmt::format("{0} (device_id:{1})",
+                       make_device_name(device_id, device),
+                       type_safe::get(device_id));
   }
 
   static void log_matching_device(pqrs::osx::iokit_registry_entry_id registry_entry_id,

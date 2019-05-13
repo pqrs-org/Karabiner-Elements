@@ -600,7 +600,7 @@ private:
     // Ungrabbable while orphan key_up event exists
 
     if (auto event = entry->get_orphan_key_up_events_manager()->find_orphan_key_up_event()) {
-      auto message = fmt::format("{0} is ungrabbable temporarily until {1} is pressed again.",
+      auto message = fmt::format("{0} is ignored temporarily until {1} is pressed again.",
                                  entry->get_device_name(),
                                  types::to_string(*event));
       logger_unique_filter_.warn(message);
@@ -608,7 +608,9 @@ private:
       if (notification_message_manager_) {
         notification_message_manager_->set_device_ungrabbable_temporarily_message(
             entry->get_device_id(),
-            message);
+            fmt::format("{0} is ignored temporarily until {1} is pressed again.",
+                        entry->get_device_short_name(),
+                        types::to_string(*event)));
       }
 
       return grabbable_state::state::ungrabbable_temporarily;

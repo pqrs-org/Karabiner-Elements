@@ -34,6 +34,8 @@ public:
     caps_lock_led_state_manager_ = std::make_shared<krbn::hid_keyboard_caps_lock_led_state_manager>(device);
     device_name_ = iokit_utility::make_device_name_for_log(device_id,
                                                            device);
+    device_short_name_ = iokit_utility::make_device_name(device_id,
+                                                         device);
 
     orphan_key_up_events_manager_ = std::make_shared<orphan_key_up_events_manager>();
   }
@@ -81,6 +83,10 @@ public:
 
   const std::string& get_device_name(void) const {
     return device_name_;
+  }
+
+  const std::string& get_device_short_name(void) const {
+    return device_short_name_;
   }
 
   std::shared_ptr<orphan_key_up_events_manager> get_orphan_key_up_events_manager(void) const {
@@ -207,6 +213,7 @@ private:
 
   std::shared_ptr<hid_keyboard_caps_lock_led_state_manager> caps_lock_led_state_manager_;
   std::string device_name_;
+  std::string device_short_name_;
 
   std::shared_ptr<orphan_key_up_events_manager> orphan_key_up_events_manager_;
 
