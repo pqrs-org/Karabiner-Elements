@@ -477,19 +477,17 @@ private:
       entry->get_orphan_key_up_events_manager()->clear();
     }
 
-    if (entry->get_disabled()) {
-      // Do nothing
-    } else {
-      bool needs_regrab = false;
+    bool needs_regrab = false;
 
-      for (const auto& e : event_queue->get_entries()) {
-        if (auto ev = e.get_event().make_key_down_up_valued_event()) {
-          needs_regrab |= entry->get_orphan_key_up_events_manager()->update(
-              *ev,
-              e.get_event_type(),
-              e.get_event_time_stamp().get_time_stamp());
-        }
+    for (const auto& e : event_queue->get_entries()) {
+      if (auto ev = e.get_event().make_key_down_up_valued_event()) {
+        needs_regrab |= entry->get_orphan_key_up_events_manager()->update(
+            *ev,
+            e.get_event_type(),
+            e.get_event_time_stamp().get_time_stamp());
+      }
 
+      if (!entry->get_disabled()) {
         event_queue::entry qe(e.get_device_id(),
                               e.get_event_time_stamp(),
                               e.get_event(),
@@ -498,10 +496,10 @@ private:
 
         merged_input_event_queue_->push_back_entry(qe);
       }
+    }
 
-      if (needs_regrab) {
-        grab_device(entry);
-      }
+    if (needs_regrab) {
+      grab_device(entry);
     }
 
     krbn_notification_center::get_instance().enqueue_input_event_arrived(*this);
