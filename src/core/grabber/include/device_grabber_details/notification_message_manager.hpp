@@ -40,8 +40,10 @@ private:
   }
 
   std::string make_message(void) const {
-    if (!device_ungrabbable_temporarily_messages_.empty()) {
-      return std::begin(device_ungrabbable_temporarily_messages_)->second;
+    for (const auto& m : device_ungrabbable_temporarily_messages_) {
+      if (!m.second.empty()) {
+        return m.second;
+      }
     }
     return "";
   }
