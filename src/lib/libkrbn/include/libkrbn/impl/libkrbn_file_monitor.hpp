@@ -10,7 +10,7 @@ public:
   libkrbn_file_monitor(const std::string& file_path,
                        libkrbn_file_monitor_callback callback,
                        void* refcon) {
-    krbn::logger::get_logger()->info(__func__);
+    krbn::logger::get_logger()->info("{0} {1}", __func__, file_path);
 
     std::vector<std::string> targets = {
         file_path,

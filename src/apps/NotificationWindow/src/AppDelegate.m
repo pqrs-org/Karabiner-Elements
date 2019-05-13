@@ -14,11 +14,15 @@
   [KarabinerKit setup];
   [KarabinerKit exitIfAnotherProcessIsRunning:"notification_window.pid"];
   [KarabinerKit observeConsoleUserServerIsDisabledNotification];
+
+  self.notificationWindowManager = [NotificationWindowManager new];
 }
 
 // Note:
 // We have to set NSSupportsSuddenTermination `NO` to use `applicationWillTerminate`.
 - (void)applicationWillTerminate:(NSNotification*)notification {
+  self.notificationWindowManager = nil;
+
   libkrbn_terminate();
 }
 

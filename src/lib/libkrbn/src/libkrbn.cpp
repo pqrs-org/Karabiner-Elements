@@ -345,6 +345,24 @@ void libkrbn_disable_grabber_alerts_json_file_monitor(void) {
 }
 
 // ============================================================
+// notification_message_json_file_monitor
+// ============================================================
+
+void libkrbn_enable_notification_message_json_file_monitor(libkrbn_file_monitor_callback callback,
+                                                           void* refcon) {
+  if (libkrbn_components_manager_) {
+    libkrbn_components_manager_->enable_notification_message_json_file_monitor(callback,
+                                                                               refcon);
+  }
+}
+
+void libkrbn_disable_notification_message_json_file_monitor(void) {
+  if (libkrbn_components_manager_) {
+    libkrbn_components_manager_->disable_notification_message_json_file_monitor();
+  }
+}
+
+// ============================================================
 // frontmost_application_monitor
 // ============================================================
 

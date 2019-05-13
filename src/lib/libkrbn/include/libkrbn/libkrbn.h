@@ -255,6 +255,13 @@ void libkrbn_enable_grabber_alerts_json_file_monitor(libkrbn_file_monitor_callba
 void libkrbn_disable_grabber_alerts_json_file_monitor(void);
 
 // ----------------------------------------
+// libkrbn_notification_message_json_file_monitor
+
+void libkrbn_enable_notification_message_json_file_monitor(libkrbn_file_monitor_callback callback,
+                                                           void* refcon);
+void libkrbn_disable_notification_message_json_file_monitor(void);
+
+// ----------------------------------------
 // libkrbn_frontmost_application_monitor
 
 typedef void (*libkrbn_frontmost_application_monitor_callback)(const char* bundle_identifier,

@@ -1,11 +1,24 @@
 #import "NotificationWindowManager.h"
+#import "KarabinerKit/KarabinerKit.h"
 #import "NotificationWindowView.h"
+#import "libkrbn/libkrbn.h"
 #import <pqrs/weakify.h>
 
 @interface NotificationWindowManager ()
 
 @property(copy) NSMutableArray* windowControllers;
+
+- (void)callback:(NSString*)filePath;
+
 @end
+
+static void staticCallback(const char* filePath,
+                           void* context) {
+  NotificationWindowManager* p = (__bridge NotificationWindowManager*)(context);
+  if (p && filePath) {
+    [p callback:[NSString stringWithUTF8String:filePath]];
+  }
+}
 
 @implementation NotificationWindowManager
 
@@ -24,6 +37,9 @@
                                                   }];
 
     [self updateWindows];
+
+    libkrbn_enable_notification_message_json_file_monitor(staticCallback,
+                                                          (__bridge void*)(self));
   }
 
   return self;
@@ -31,6 +47,7 @@
 
 - (void)dealloc {
   [[NSNotificationCenter defaultCenter] removeObserver:self];
+  libkrbn_disable_notification_message_json_file_monitor();
 }
 
 - (void)updateWindows {
@@ -99,6 +116,19 @@
     }
 
     [self setNotificationText];
+  });
+}
+
+- (void)callback:(NSString*)filePath {
+  @weakify(self);
+  dispatch_async(dispatch_get_main_queue(), ^{
+    @strongify(self);
+    if (!self) {
+      return;
+    }
+
+    NSDictionary* json = [KarabinerKitJsonUtility loadFile:filePath];
+    [self setText:json[@"body"]];
   });
 }
 
