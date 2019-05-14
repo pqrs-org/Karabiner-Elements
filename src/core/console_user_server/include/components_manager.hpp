@@ -61,8 +61,6 @@ public:
 
       receiver_->async_start();
     });
-
-    application_launcher::launch_notification_window();
   }
 
   virtual ~components_manager(void) {
@@ -150,6 +148,10 @@ private:
     // menu_process_manager_
 
     menu_process_manager_ = std::make_unique<menu_process_manager>(configuration_monitor_);
+
+    // Run NotificationWindow
+
+    application_launcher::launch_notification_window();
 
     // updater_process_manager_
 
