@@ -131,7 +131,12 @@ static void staticCallback(const char* filePath,
     }
 
     NSDictionary* json = [KarabinerKitJsonUtility loadFile:filePath];
-    [self setText:json[@"body"]];
+    if (json) {
+      NSObject* body = json[@"body"];
+      if ([body isKindOfClass:NSString.class]) {
+        [self setText:(NSString*)body];
+      }
+    }
   });
 }
 
