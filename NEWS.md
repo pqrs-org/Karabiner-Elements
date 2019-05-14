@@ -2,7 +2,7 @@
 
 ## Version 12.4.0
 
-- Fixed a key stuck issue when the key is pressed immediately after the keyboard is connected.
+- Fixed a key stuck issue which occurs when the key is held down before Karabiner-Elements opens the device.
 - Add `Mouse Key XY speed` configuration into `Karabiner-Elements Preferences > Virtual Keyboard` tab.
 - Event code format on EventViewer changed to decimal number from hex.
 
