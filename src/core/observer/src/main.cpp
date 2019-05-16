@@ -5,9 +5,6 @@
 #include "logger.hpp"
 #include "process_utility.hpp"
 #include <iostream>
-#include <pqrs/filesystem.hpp>
-#include <sstream>
-#include <unistd.h>
 
 int main(int argc, const char* argv[]) {
   if (getuid() != 0) {
