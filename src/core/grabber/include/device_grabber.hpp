@@ -1,6 +1,7 @@
 #pragma once
 
 #include "apple_hid_usage_tables.hpp"
+#include "apple_notification_center.hpp"
 #include "constants.hpp"
 #include "device_grabber_details/entry.hpp"
 #include "device_grabber_details/fn_function_keys_manipulator_manager.hpp"

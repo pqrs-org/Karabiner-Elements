@@ -1,15 +1,11 @@
-#include "apple_notification_center.hpp"
 #include "components_manager.hpp"
-#include "console_user_server_client.hpp"
 #include "constants.hpp"
 #include "dispatcher_utility.hpp"
 #include "grabber_alerts_manager.hpp"
 #include "karabiner_version.h"
 #include "logger.hpp"
 #include "process_utility.hpp"
-#include <pqrs/filesystem.hpp>
-#include <spdlog/async.h>
-#include <spdlog/sinks/rotating_file_sink.h>
+#include <iostream>
 
 int main(int argc, const char* argv[]) {
   if (getuid() != 0) {
