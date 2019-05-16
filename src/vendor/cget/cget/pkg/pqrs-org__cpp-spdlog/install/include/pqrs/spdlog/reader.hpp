@@ -30,6 +30,13 @@ public:
     if (stream_) {
       if (std::getline(stream_, line_)) {
         sort_key_ = spdlog::make_sort_key(line_);
+
+        // skip if sort_key_ == std::nullopt (== broken line)
+        if (!sort_key_) {
+          line_.clear();
+          sort_key_ = 0;
+        }
+
         return;
       }
     }
@@ -77,7 +84,9 @@ inline std::shared_ptr<std::deque<std::string>> read_log_files(const std::vector
       break;
     }
 
-    result->push_back((*it)->get_line());
+    if (!(*it)->get_line().empty()) {
+      result->push_back((*it)->get_line());
+    }
 
     (*it)->read_next_line();
   }
