@@ -1,6 +1,6 @@
 #pragma once
 
-// pqrs::iokit_hid_queue_value_monitor v1.9
+// pqrs::iokit_hid_queue_value_monitor v1.10
 
 // (C) Copyright Takayama Fumihiko 2018.
 // Distributed under the Boost Software License, Version 1.0.
@@ -104,6 +104,9 @@ public:
 private:
   void start(IOOptionBits open_options) {
     if (hid_device_.get_device()) {
+      // Start queue before `IOHIDDeviceOpen` in order to avoid events drop.
+      start_queue();
+
       if (!open_options_) {
         iokit_return r = IOHIDDeviceOpen(*(hid_device_.get_device()),
                                          open_options);
@@ -120,8 +123,6 @@ private:
         }
 
         open_options_ = open_options;
-
-        start_queue();
 
         enqueue_to_dispatcher([this] {
           started();
