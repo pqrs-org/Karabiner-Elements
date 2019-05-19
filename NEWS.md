@@ -1,5 +1,10 @@
 # Changelog
 
+## Beta
+
+- Fixed a key stuck issue which occurs when the key is released,
+  and at the exact same moment Karabiner-Elements opens the device.
+
 ## Version 12.4.0
 
 - Fixed a key stuck issue which occurs when the key is held down before Karabiner-Elements opens the device.
