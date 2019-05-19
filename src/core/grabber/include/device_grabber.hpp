@@ -331,6 +331,14 @@ public:
     });
   }
 
+  void async_set_observed_devices(const std::unordered_set<device_id>& observed_devices) {
+    enqueue_to_dispatcher([this, observed_devices] {
+      observed_devices_ = observed_devices;
+
+      async_grab_devices();
+    });
+  }
+
   void async_grab_devices(void) {
     enqueue_to_dispatcher([this] {
       for (auto&& e : entries_) {
@@ -598,6 +606,17 @@ private:
     }
 
     // ----------------------------------------
+    // Ungrabbable before observed.
+
+    if (observed_devices_.find(entry->get_device_id()) == std::end(observed_devices_)) {
+      std::string message = fmt::format("{0} is not observed yet. Please wait for a while.",
+                                        entry->get_device_name());
+      logger_unique_filter_.warn(message);
+      unset_device_ungrabbable_temporarily_notification_message(entry->get_device_id());
+      return grabbable_state::state::ungrabbable_temporarily;
+    }
+
+    // ----------------------------------------
     // Ungrabbable while orphan key_up event exists
 
     if (auto event = entry->get_orphan_key_up_events_manager()->find_orphan_key_up_event()) {
@@ -781,6 +800,10 @@ private:
   std::unique_ptr<event_tap_monitor> event_tap_monitor_;
   std::optional<bool> last_caps_lock_state_;
   std::unique_ptr<pqrs::osx::iokit_hid_manager> hid_manager_;
+  // `operation_type::device_observed` might be received before
+  // `device_grabber_details::entry` is created.
+  // Thus, we manage observed state independently.
+  std::unordered_set<device_id> observed_devices_;
   std::unordered_map<device_id, std::shared_ptr<device_grabber_details::entry>> entries_;
 
   core_configuration::details::profile profile_;

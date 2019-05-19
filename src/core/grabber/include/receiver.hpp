@@ -69,6 +69,14 @@ public:
               break;
             }
 
+            case operation_type::observed_devices_updated: {
+              if (device_grabber_) {
+                device_grabber_->async_set_observed_devices(
+                    json.at("observed_devices").get<std::unordered_set<device_id>>());
+              }
+              break;
+            }
+
             case operation_type::caps_lock_state_changed: {
               auto caps_lock_state = json.at("caps_lock_state").get<bool>();
               if (device_grabber_) {
