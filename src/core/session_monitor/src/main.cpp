@@ -4,25 +4,34 @@
 #include "karabiner_version.h"
 #include "logger.hpp"
 #include "process_utility.hpp"
-#include <pqrs/dispatcher.hpp>
-#include <pqrs/filesystem.hpp>
+#include <iostream>
 
 int main(int argc, const char* argv[]) {
+  // - karabiner_session_monitor is invoked by user.
+  // - karabiner_session_monitor is executed as root by setuid.
+  if (geteuid() != 0) {
+    std::cerr << "fatal: karabiner_session_monitor requires root privilege." << std::endl;
+    exit(1);
+  }
+
   // Setup logger
 
-  if (!krbn::constants::get_user_log_directory().empty()) {
-    krbn::logger::set_async_rotating_logger("session_monitor",
-                                            krbn::constants::get_user_log_directory() + "/session_monitor.log",
-                                            0700);
-  }
+  krbn::logger::set_async_rotating_logger("session_monitor",
+                                          "/var/log/karabiner/session_monitor.log",
+                                          0755);
 
   krbn::logger::get_logger()->info("version {0}", karabiner_version);
 
   // Check another process
 
-  if (!krbn::process_utility::lock_single_application_with_user_pid_file("karabiner_session_monitor.pid")) {
-    krbn::logger::get_logger()->info("Exit since another process is running.");
-    exit(0);
+  {
+    std::string pid_file_path = krbn::constants::get_pid_directory() + "/karabiner_session_monitor.pid";
+    if (!krbn::process_utility::lock_single_application(pid_file_path)) {
+      auto message = "Exit since another process is running.";
+      krbn::logger::get_logger()->info(message);
+      std::cerr << message << std::endl;
+      exit(1);
+    }
   }
 
   // Initialize
