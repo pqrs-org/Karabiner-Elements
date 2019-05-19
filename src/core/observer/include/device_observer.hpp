@@ -83,8 +83,12 @@ public:
           });
         }
 
-        hid_queue_value_monitor->started.connect([device_name] {
+        hid_queue_value_monitor->started.connect([this, device_id, device_name] {
           logger::get_logger()->info("{0} is observed.", device_name);
+
+          observed_devices_.insert(device_id);
+
+          send_observed_devices();
         });
 
         hid_queue_value_monitor->async_start(kIOHIDOptionsTypeNone,
@@ -100,6 +104,9 @@ public:
       logger::get_logger()->info("device_id:{0} is terminated.", type_safe::get(device_id));
 
       hid_queue_value_monitors_.erase(device_id);
+      observed_devices_.erase(device_id);
+
+      send_observed_devices();
 
       async_rescan();
     });
@@ -134,10 +141,23 @@ public:
     });
   }
 
+  void async_send_observed_devices(void) const {
+    enqueue_to_dispatcher([this] {
+      send_observed_devices();
+    });
+  }
+
 private:
+  void send_observed_devices(void) const {
+    if (auto client = grabber_client_.lock()) {
+      client->async_observed_devices_updated(observed_devices_);
+    }
+  }
+
   std::weak_ptr<grabber_client> grabber_client_;
 
   std::unique_ptr<pqrs::osx::iokit_hid_manager> hid_manager_;
   std::unordered_map<device_id, std::shared_ptr<pqrs::osx::iokit_hid_queue_value_monitor>> hid_queue_value_monitors_;
+  std::unordered_set<device_id> observed_devices_;
 };
 } // namespace krbn
