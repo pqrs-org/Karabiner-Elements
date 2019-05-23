@@ -32,7 +32,12 @@ static void hid_value_observer_callback(enum libkrbn_hid_value_type type,
       return;
     }
 
-    NSString* code = [NSString stringWithFormat:@"%d", value];
+    NSString* code = nil;
+    if ([[NSUserDefaults standardUserDefaults] boolForKey:kShowHex]) {
+      code = [NSString stringWithFormat:@"0x%02x", value];
+    } else {
+      code = [NSString stringWithFormat:@"%d", value];
+    }
     NSString* keyType = @"";
     NSMutableDictionary* simpleModificationJson = [NSMutableDictionary new];
 

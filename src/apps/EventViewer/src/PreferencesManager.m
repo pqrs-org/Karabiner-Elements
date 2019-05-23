@@ -9,7 +9,7 @@
     NSDictionary* dict = @{
       kForceStayTop : @NO,
       kShowInAllSpaces : @NO,
-      kHideIgnorableEvents : @YES,
+      kShowHex : @NO,
     };
     [[NSUserDefaults standardUserDefaults] registerDefaults:dict];
   });
