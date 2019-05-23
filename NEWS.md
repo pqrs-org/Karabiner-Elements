@@ -4,6 +4,7 @@
 
 - Fixed a key stuck issue which occurs when the key is released,
   and at the exact same moment Karabiner-Elements opens the device.
+- Added `Show key code in hexadecimal format` option into EventViewer.
 
 ## Version 12.4.0
 
