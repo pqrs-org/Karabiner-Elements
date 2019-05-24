@@ -44,26 +44,7 @@ public:
       // receiver_
 
       receiver_ = nullptr;
-
       receiver_ = std::make_unique<receiver>();
-
-      receiver_->bound.connect([this] {
-        if (auto m = weak_version_monitor_.lock()) {
-          m->async_manual_check();
-        }
-      });
-
-      receiver_->bind_failed.connect([this](auto&& error_code) {
-        if (auto m = weak_version_monitor_.lock()) {
-          m->async_manual_check();
-        }
-      });
-
-      receiver_->closed.connect([this] {
-        if (auto m = weak_version_monitor_.lock()) {
-          m->async_manual_check();
-        }
-      });
     });
   }
 
