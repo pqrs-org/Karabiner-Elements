@@ -7,6 +7,7 @@
 #include "logger.hpp"
 #include "monitor/version_monitor.hpp"
 #include "receiver.hpp"
+#include "session_monitor_receiver.hpp"
 #include <pqrs/dispatcher.hpp>
 #include <pqrs/osx/session.hpp>
 
@@ -17,6 +18,22 @@ public:
 
   components_manager(std::weak_ptr<version_monitor> weak_version_monitor) : dispatcher_client(),
                                                                             weak_version_monitor_(weak_version_monitor) {
+    // session_monitor_receiver_
+
+    session_monitor_receiver_ = std::make_unique<session_monitor_receiver>();
+
+    session_monitor_receiver_->current_console_user_id_changed.connect([](auto&& uid) {
+      if (uid) {
+        logger::get_logger()->info("current_console_user_id: {0}", *uid);
+      } else {
+        logger::get_logger()->info("current_console_user_id: none");
+      }
+    });
+
+    session_monitor_receiver_->async_start();
+
+    // session_monitor_
+
     session_monitor_ = std::make_unique<pqrs::osx::session::monitor>(weak_dispatcher_);
 
     session_monitor_->console_user_id_changed.connect([this](auto&& uid) {
@@ -52,6 +69,7 @@ public:
     detach_from_dispatcher([this] {
       session_monitor_ = nullptr;
       receiver_ = nullptr;
+      session_monitor_receiver_ = nullptr;
     });
   }
 
@@ -63,6 +81,7 @@ public:
 
 private:
   std::weak_ptr<version_monitor> weak_version_monitor_;
+  std::unique_ptr<session_monitor_receiver> session_monitor_receiver_;
   std::unique_ptr<pqrs::osx::session::monitor> session_monitor_;
   std::unique_ptr<receiver> receiver_;
 };
