@@ -23,7 +23,7 @@ The full source for Catch2, including test projects, documentation, and other th
 
 ## Where to put it?
 
-Catch2 is header only. All you need to do is drop the file somewhere reachable from your project - either in some central location you can set your header search path to find, or directly into your project tree itself! This is a particularly good option for other Open-Source projects that want to use Catch for their test suite. See [this blog entry for more on that](http://www.levelofindirection.com/journal/2011/5/27/unit-testing-in-c-and-objective-c-just-got-ridiculously-easi.html).
+Catch2 is header only. All you need to do is drop the file somewhere reachable from your project - either in some central location you can set your header search path to find, or directly into your project tree itself! This is a particularly good option for other Open-Source projects that want to use Catch for their test suite. See [this blog entry for more on that](https://levelofindirection.com/blog/unit-testing-in-cpp-and-objective-c-just-got-ridiculously-easier-still.html).
 
 The rest of this tutorial will assume that the Catch2 single-include header (or the include folder) is available unqualified - but you may need to prefix it with a folder name if necessary.
 
@@ -103,7 +103,7 @@ Of course there are still more issues to deal with. For example we'll hit proble
 
 ### What did we do here?
 
-Although this was a simple test it's been enough to demonstrate a few things about how Catch is used. Let's take moment to consider those before we move on.
+Although this was a simple test it's been enough to demonstrate a few things about how Catch is used. Let's take a moment to consider those before we move on.
 
 1. All we did was ```#define``` one identifier and ```#include``` one header and we got everything - even an implementation of ```main()``` that will [respond to command line arguments](command-line.md#top). You can only use that ```#define``` in one implementation file, for (hopefully) obvious reasons. Once you have more than one file with unit tests in you'll just ```#include "catch.hpp"``` and go. Usually it's a good idea to have a dedicated implementation file that just has ```#define CATCH_CONFIG_MAIN``` and ```#include "catch.hpp"```. You can also provide your own implementation of main and drive Catch yourself (see [Supplying-your-own-main()](own-main.md#top)).
 2. We introduce test cases with the ```TEST_CASE``` macro. This macro takes one or two arguments - a free form test name and, optionally, one or more tags (for more see <a href="#test-cases-and-sections">Test cases and Sections</a>, ). The test name must be unique. You can run sets of tests by specifying a wildcarded test name or a tag expression. See the [command line docs](command-line.md#top) for more information on running tests.
@@ -159,7 +159,7 @@ This works because the ```SECTION``` macro contains an if statement that calls b
 
 So far so good - this is already an improvement on the setup/teardown approach because now we see our setup code inline and use the stack.
 
-The power of sections really shows, however, when we need to execute a sequence of, checked, operations. Continuing the vector example, we might want to verify that attempting to reserve a capacity smaller than the current capacity of the vector changes nothing. We can do that, naturally, like so:
+The power of sections really shows, however, when we need to execute a sequence of checked operations. Continuing the vector example, we might want to verify that attempting to reserve a capacity smaller than the current capacity of the vector changes nothing. We can do that, naturally, like so:
 
 ```c++
     SECTION( "reserving bigger changes capacity but not size" ) {

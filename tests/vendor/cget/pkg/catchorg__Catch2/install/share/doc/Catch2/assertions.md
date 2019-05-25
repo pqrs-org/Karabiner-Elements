@@ -10,7 +10,7 @@
 
 Most test frameworks have a large collection of assertion macros to capture all possible conditional forms (```_EQUALS```, ```_NOTEQUALS```, ```_GREATER_THAN``` etc).
 
-Catch is different. Because it decomposes natural C-style conditional expressions most of these forms are reduced to one or two that you will use all the time. That said there are a rich set of auxiliary macros as well. We'll describe all of these here.
+Catch is different. Because it decomposes natural C-style conditional expressions most of these forms are reduced to one or two that you will use all the time. That said there is a rich set of auxiliary macros as well. We'll describe all of these here.
 
 Most of these macros come in two forms:
 
@@ -61,7 +61,7 @@ Catch provides a way to perform tolerant comparisons of floating point values th
 REQUIRE( performComputation() == Approx( 2.1 ) );
 ```
 
-Catch also provides a UDL for `Approx`; `_a`. It resides in
+Catch also provides a user-defined literal for `Approx`; `_a`. It resides in
 the `Catch::literals` namespace and can be used like so:
 ```cpp
 using namespace Catch::literals;

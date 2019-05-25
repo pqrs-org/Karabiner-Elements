@@ -92,7 +92,7 @@ public:
     IntRange( int begin, int end ) : m_begin( begin ), m_end( end ) {}
 
     // Performs the test for this matcher
-    virtual bool match( int const& i ) const override {
+    bool match( int const& i ) const override {
         return i >= m_begin && i <= m_end;
     }
 
@@ -100,7 +100,7 @@ public:
     // include any provided data (the begin/ end in this case) and
     // be written as if it were stating a fact (in the output it will be
     // preceded by the value under test).
-    virtual std::string describe() const {
+    virtual std::string describe() const override {
         std::ostringstream ss;
         ss << "is between " << m_begin << " and " << m_end;
         return ss.str();

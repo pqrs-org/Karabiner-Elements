@@ -44,9 +44,19 @@
 #     set(OptionalCatchTestLauncher ${MPIEXEC} ${MPIEXEC_NUMPROC_FLAG} ${NUMPROC})                 #
 # just before calling this ParseAndAddCatchTests function                                          #
 #                                                                                                  #
+# The AdditionalCatchParameters optional variable can be used to pass extra argument to the test   #
+# command. For example, to include successful tests in the output, one can write                   #
+#     set(AdditionalCatchParameters --success)                                                     #
+#                                                                                                  #
+# After the script, the ParseAndAddCatchTests_TESTS property for the target, and for each source   #
+# file in the target is set, and contains the list of the tests extracted from that target, or     #
+# from that file. This is useful, for example to add further labels or properties to the tests.    #
+#                                                                                                  #
 #==================================================================================================#
 
-cmake_minimum_required(VERSION 2.8.8)
+if (CMAKE_MINIMUM_REQUIRED_VERSION VERSION_LESS 2.8.8)
+  message(FATAL_ERROR "ParseAndAddCatchTests requires CMake 2.8.8 or newer")
+endif()
 
 option(PARSE_CATCH_TESTS_VERBOSE "Print Catch to CTest parser debug messages" OFF)
 option(PARSE_CATCH_TESTS_NO_HIDDEN_TESTS "Exclude tests with [!hide], [.] or [.foo] tags" OFF)
@@ -54,7 +64,7 @@ option(PARSE_CATCH_TESTS_ADD_FIXTURE_IN_TEST_NAME "Add fixture class name to the
 option(PARSE_CATCH_TESTS_ADD_TARGET_IN_TEST_NAME "Add target name to the test name" ON)
 option(PARSE_CATCH_TESTS_ADD_TO_CONFIGURE_DEPENDS "Add test file to CMAKE_CONFIGURE_DEPENDS property" OFF)
 
-function(PrintDebugMessage)
+function(ParseAndAddCatchTests_PrintDebugMessage)
     if(PARSE_CATCH_TESTS_VERBOSE)
             message(STATUS "ParseAndAddCatchTests: ${ARGV}")
     endif()
@@ -65,7 +75,7 @@ endfunction()
 #  - full line comments (i.e. // ... )
 # contents have been read into '${CppCode}'.
 # !keep partial line comments
-function(RemoveComments CppCode)
+function(ParseAndAddCatchTests_RemoveComments CppCode)
   string(ASCII 2 CMakeBeginBlockComment)
   string(ASCII 3 CMakeEndBlockComment)
   string(REGEX REPLACE "/\\*" "${CMakeBeginBlockComment}" ${CppCode} "${${CppCode}}")
@@ -77,24 +87,29 @@ function(RemoveComments CppCode)
 endfunction()
 
 # Worker function
-function(ParseFile SourceFile TestTarget)
+function(ParseAndAddCatchTests_ParseFile SourceFile TestTarget)
+    # If SourceFile is an object library, do not scan it (as it is not a file). Exit without giving a warning about a missing file.
+    if(SourceFile MATCHES "\\\$<TARGET_OBJECTS:.+>")
+        ParseAndAddCatchTests_PrintDebugMessage("Detected OBJECT library: ${SourceFile} this will not be scanned for tests.")
+        return()
+    endif()
     # According to CMake docs EXISTS behavior is well-defined only for full paths.
     get_filename_component(SourceFile ${SourceFile} ABSOLUTE)
     if(NOT EXISTS ${SourceFile})
         message(WARNING "Cannot find source file: ${SourceFile}")
         return()
     endif()
-    PrintDebugMessage("parsing ${SourceFile}")
+    ParseAndAddCatchTests_PrintDebugMessage("parsing ${SourceFile}")
     file(STRINGS ${SourceFile} Contents NEWLINE_CONSUME)
 
     # Remove block and fullline comments
-    RemoveComments(Contents)
+    ParseAndAddCatchTests_RemoveComments(Contents)
 
     # Find definition of test names
     string(REGEX MATCHALL "[ \t]*(CATCH_)?(TEST_CASE_METHOD|SCENARIO|TEST_CASE)[ \t]*\\([^\)]+\\)+[ \t\n]*{+[ \t]*(//[^\n]*[Tt][Ii][Mm][Ee][Oo][Uu][Tt][ \t]*[0-9]+)*" Tests "${Contents}")
 
     if(PARSE_CATCH_TESTS_ADD_TO_CONFIGURE_DEPENDS AND Tests)
-      PrintDebugMessage("Adding ${SourceFile} to CMAKE_CONFIGURE_DEPENDS property")
+      ParseAndAddCatchTests_PrintDebugMessage("Adding ${SourceFile} to CMAKE_CONFIGURE_DEPENDS property")
       set_property(
         DIRECTORY
         APPEND
@@ -155,7 +170,6 @@ function(ParseFile SourceFile TestTarget)
 
         list(APPEND Labels ${Tags})
 
-        list(FIND Labels "!hide" IndexOfHideLabel)
         set(HiddenTagFound OFF)
         foreach(label ${Labels})
             string(REGEX MATCH "^!hide|^\\." result ${label})
@@ -165,26 +179,34 @@ function(ParseFile SourceFile TestTarget)
             endif(result)
         endforeach(label)
         if(PARSE_CATCH_TESTS_NO_HIDDEN_TESTS AND ${HiddenTagFound} AND ${CMAKE_VERSION} VERSION_LESS "3.9")
-            PrintDebugMessage("Skipping test \"${CTestName}\" as it has [!hide], [.] or [.foo] label")
+            ParseAndAddCatchTests_PrintDebugMessage("Skipping test \"${CTestName}\" as it has [!hide], [.] or [.foo] label")
         else()
-            PrintDebugMessage("Adding test \"${CTestName}\"")
+            ParseAndAddCatchTests_PrintDebugMessage("Adding test \"${CTestName}\"")
             if(Labels)
-                PrintDebugMessage("Setting labels to ${Labels}")
+                ParseAndAddCatchTests_PrintDebugMessage("Setting labels to ${Labels}")
             endif()
 
             # Escape commas in the test spec
             string(REPLACE "," "\\," Name ${Name})
 
             # Add the test and set its properties
-            add_test(NAME "\"${CTestName}\"" COMMAND ${OptionalCatchTestLauncher} ${TestTarget} ${Name} ${AdditionalCatchParameters})
+            add_test(NAME "\"${CTestName}\"" COMMAND ${OptionalCatchTestLauncher} $<TARGET_FILE:${TestTarget}> ${Name} ${AdditionalCatchParameters})
             # Old CMake versions do not document VERSION_GREATER_EQUAL, so we use VERSION_GREATER with 3.8 instead
             if(PARSE_CATCH_TESTS_NO_HIDDEN_TESTS AND ${HiddenTagFound} AND ${CMAKE_VERSION} VERSION_GREATER "3.8")
-                PrintDebugMessage("Setting DISABLED test property")
+                ParseAndAddCatchTests_PrintDebugMessage("Setting DISABLED test property")
                 set_tests_properties("\"${CTestName}\"" PROPERTIES DISABLED ON)
             else()
                 set_tests_properties("\"${CTestName}\"" PROPERTIES FAIL_REGULAR_EXPRESSION "No tests ran"
                                                         LABELS "${Labels}")
             endif()
+            set_property(
+              TARGET ${TestTarget}
+              APPEND
+              PROPERTY ParseAndAddCatchTests_TESTS "\"${CTestName}\"")
+            set_property(
+              SOURCE ${SourceFile}
+              APPEND
+              PROPERTY ParseAndAddCatchTests_TESTS "\"${CTestName}\"")
         endif()
 
 
@@ -193,11 +215,11 @@ endfunction()
 
 # entry point
 function(ParseAndAddCatchTests TestTarget)
-    PrintDebugMessage("Started parsing ${TestTarget}")
+    ParseAndAddCatchTests_PrintDebugMessage("Started parsing ${TestTarget}")
     get_target_property(SourceFiles ${TestTarget} SOURCES)
-    PrintDebugMessage("Found the following sources: ${SourceFiles}")
+    ParseAndAddCatchTests_PrintDebugMessage("Found the following sources: ${SourceFiles}")
     foreach(SourceFile ${SourceFiles})
-        ParseFile(${SourceFile} ${TestTarget})
+        ParseAndAddCatchTests_ParseFile(${SourceFile} ${TestTarget})
     endforeach()
-    PrintDebugMessage("Finished parsing ${TestTarget}")
+    ParseAndAddCatchTests_PrintDebugMessage("Finished parsing ${TestTarget}")
 endfunction()

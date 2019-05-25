@@ -17,6 +17,7 @@
 - Generators: [Create your own generator](../examples/300-Gen-OwnGenerator.cpp)
 - Generators: [Use map to convert types in GENERATE expression](../examples/301-Gen-MapTypeConversion.cpp)
 - Generators: [Use variables in generator expressions](../examples/310-Gen-VariablesInGenerators.cpp)
+- Generators: [Use custom variable capture in generator expressions](../examples/311-Gen-CustomCapture.cpp)
 
 
 ## Planned

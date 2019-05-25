@@ -85,7 +85,7 @@ Second unscoped info
 
 ## Streaming macros
 
-All these macros allow heterogenous sequences of values to be streaming using the insertion operator (```<<```) in the same way that std::ostream, std::cout, etc support it.
+All these macros allow heterogeneous sequences of values to be streaming using the insertion operator (```<<```) in the same way that std::ostream, std::cout, etc support it.
 
 E.g.:
 ```c++

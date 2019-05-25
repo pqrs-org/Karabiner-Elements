@@ -17,6 +17,9 @@ Listing a project here does not imply endorsement and the plan is to keep these 
 
 ## Libraries & Frameworks
 
+### [ApprovalTests.cpp](https://github.com/approvals/ApprovalTests.cpp)
+C++11 implementation of Approval Tests, for quick, convenient testing of legacy code.
+
 ### [Azmq](https://github.com/zeromq/azmq)
 Boost Asio style bindings for ZeroMQ.
 
@@ -99,6 +102,9 @@ MAME originally stood for Multiple Arcade Machine Emulator.
 
 ### [Newsbeuter](https://github.com/akrennmair/newsbeuter)
 Newsbeuter is an open-source RSS/Atom feed reader for text terminals.
+
+### [raspigcd](https://github.com/pantadeusz/raspigcd)
+Low level CLI app and library for execution of GCODE on Raspberry Pi without any additional microcontrolers (just RPi + Stepsticks).
 
 ### [SpECTRE](https://github.com/sxs-collaboration/spectre)
 SpECTRE is a code for multi-scale, multi-physics problems in astrophysics and gravitational physics.

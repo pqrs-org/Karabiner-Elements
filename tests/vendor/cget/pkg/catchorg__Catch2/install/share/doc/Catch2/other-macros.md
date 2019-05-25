@@ -30,7 +30,7 @@ CHECKED_IF( a == b ) {
 
 `CHECK_NOFAIL( expr )` is a variant of `CHECK` that does not fail the test
 case if _expr_ evaluates to `false`. This can be useful for checking some
-assumption, that might be violated without the test neccessarily failing.
+assumption, that might be violated without the test necessarily failing.
 
 Example output:
 ```
@@ -120,7 +120,7 @@ constructor, or before Catch2's session is created in user's own main._
 `ANON_TEST_CASE` is a `TEST_CASE` replacement that will autogenerate
 unique name. The advantage of this is that you do not have to think
 of a name for the test case,`the disadvantage is that the name doesn't
-neccessarily remain stable across different links, and thus it might be
+necessarily remain stable across different links, and thus it might be
 hard to run directly.
 
 Example:

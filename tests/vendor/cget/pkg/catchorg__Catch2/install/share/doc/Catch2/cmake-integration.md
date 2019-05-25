@@ -48,7 +48,7 @@ If Catch2 has been installed in system, both of these can be used after
 doing `find_package(Catch2 REQUIRED)`. Otherwise you need to add them
 to your CMake module path.
 
-### `Catch.cmake` and `AddCatchTests.cmake`
+### `Catch.cmake` and `CatchAddTests.cmake`
 
 `Catch.cmake` provides function `catch_discover_tests` to get tests from
 a target. This function works by running the resulting executable with

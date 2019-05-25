@@ -2,6 +2,8 @@
 
 # Release notes
 **Contents**<br>
+[2.7.2](#272)<br>
+[2.7.1](#271)<br>
 [2.7.0](#270)<br>
 [2.6.1](#261)<br>
 [2.6.0](#260)<br>
@@ -20,6 +22,41 @@
 [2.0.1](#201)<br>
 [Older versions](#older-versions)<br>
 [Even Older versions](#even-older-versions)<br>
+
+
+## 2.7.2
+
+### Improvements
+* Added an approximate vector matcher (#1499)
+
+### Fixes
+* Filters will no longer be shown if there were none
+* Fixed compilation error when using Homebrew GCC on OS X (#1588, #1589)
+* Fixed the console reporter not showing messages that start with a newline (#1455, #1470)
+* Modified JUnit reporter's output so that rng seed and filters are reported according to the JUnit schema (#1598)
+* Fixed some obscure warnings and static analysis passes
+
+### Miscellaneous
+* Various improvements to `ParseAndAddCatchTests` (#1559, #1601)
+  * When a target is parsed, it receives `ParseAndAddCatchTests_TESTS` property which summarizes found tests
+  * Fixed problem with tests not being found if the `OptionalCatchTestLauncher` variables is used
+  * Including the script will no longer forcefully modify `CMAKE_MINIMUM_REQUIRED_VERSION`
+  * CMake object libraries are ignored when parsing to avoid needless warnings
+* `CatchAddTests` now adds test's tags to their CTest labels (#1600)
+* Added basic CPack support to our build
+
+## 2.7.1
+
+### Improvements
+* Reporters now print out the filters applied to test cases (#1550, #1585)
+* Added `GENERATE_COPY` and `GENERATE_VAR` macros that can use variables inside the generator expression
+  * Because of the significant danger of lifetime issues, the default `GENERATE` macro still does not allow variables
+* The `map` generator helper now deduces the mapped return type (#1576)
+
+### Fixes
+* Fixed ObjC++ compilation (#1571)
+* Fixed test tag parsing so that `[.foo]` is now parsed as `[.][foo]`.
+* Suppressed warning caused by the Windows headers defining SE codes in different manners (#1575)
 
 ## 2.7.0
 
@@ -42,7 +79,7 @@
 * Running tests will no longer open the specified output file twice (#1545)
   * This would cause trouble when the file was not a file, but rather a named pipe
   * Fixes the CLion/Resharper integration with Catch
-* Fixed `-Wunreachable-code` occuring with (old) ccache+cmake+clang combination (#1540)
+* Fixed `-Wunreachable-code` occurring with (old) ccache+cmake+clang combination (#1540)
 * Fixed `-Wdefaulted-function-deleted` warning with Clang 8 (#1537)
 * Catch2's type traits and helpers are now properly namespaced inside `Catch::` (#1548)
 * Fixed std{out,err} redirection for failing test (#1514, #1525)
@@ -724,7 +761,7 @@ Cygwin issue with `gettimeofday` - `#define` was not early enough
   * Usage of `gettimeofday` inside Catch should no longer cause compilation errors.
 * Improved `-Wparentheses` suppression for gcc (#674)
   * When compiled with gcc 4.8 or newer, the suppression is localized to assertions only
-  * Otherwise it is supressed for the whole TU
+  * Otherwise it is suppressed for the whole TU
 * Fixed test spec parser issue (with escapes in multiple names)
 
 ##### Other
@@ -807,7 +844,7 @@ Other:
 
 ##### Other:
 * Types with overloaded `&&` operator are no longer evaluated twice when used in an assertion macro.
-* The use of `__COUNTER__` is supressed when Catch is parsed by CLion
+* The use of `__COUNTER__` is suppressed when Catch is parsed by CLion
   * This change is not active when compiling a binary
 * Approval tests can now be run on Windows
 * CMake will now warn if a file is present in the `include` folder but not is not enumerated as part of the project

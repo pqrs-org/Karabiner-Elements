@@ -89,7 +89,7 @@ them yourself, their signatures are:
 By default, when Catch's stringification machinery has to stringify
 a type that does not specialize `StringMaker`, does not overload `operator<<`,
 is not an enumeration and is not a range, it uses `"{?}"`. This can be
-overriden by defining `CATCH_CONFIG_FALLBACK_STRINGIFIER` to name of a
+overridden by defining `CATCH_CONFIG_FALLBACK_STRINGIFIER` to name of a
 function that should perform the stringification instead.
 
 All types that do not provide `StringMaker` specialization or `operator<<`

@@ -75,8 +75,34 @@ before you do so, you need to check that the introduced changes are indeed
 intentional.
 
 
+## Code constructs to watch out for
 
- *this document is still in-progress...*
+This section is a (sadly incomplete) listing of various constructs that
+are problematic and are not always caught by our CI infrastructure.
+
+### Naked exceptions and exceptions-related function
+
+If you are throwing an exception, it should be done via `CATCH_ERROR`
+or `CATCH_RUNTIME_ERROR` in `catch_enforce.h`. These macros will handle
+the differences between compilation with or without exceptions for you.
+However, some platforms (IAR) also have problems with exceptions-related
+functions, such as `std::current_exceptions`. We do not have IAR in our
+CI, but luckily there should not be too many reasons to use these.
+However, if you do, they should be kept behind a
+`CATCH_CONFIG_DISABLE_EXCEPTIONS` macro.
+
+### Unqualified usage of functions from C's stdlib
+
+If you are using a function from C's stdlib, please include the header
+as `<cfoo>` and call the function qualified. The common knowledge that
+there is no difference is wrong, QNX and VxWorks won't compile if you
+include the header as `<cfoo>` and call the function unqualified.
+
+
+----
+
+_This documentation will always be in-progress as new information comes
+up, but we are trying to keep it as up to date as possible._
 
 ---
 

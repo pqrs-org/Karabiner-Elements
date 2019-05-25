@@ -32,7 +32,7 @@ Once a release is ready, release notes need to be written. They should summarize
 
 ### Commit and push update to GitHub
 
-After version number is incremented, single-include header is regenerated and release notes are updated, changes should be commited and pushed to GitHub.
+After version number is incremented, single-include header is regenerated and release notes are updated, changes should be committed and pushed to GitHub.
 
 
 ### Release on GitHub
