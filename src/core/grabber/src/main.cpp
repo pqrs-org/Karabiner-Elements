@@ -1,6 +1,7 @@
 #include "components_manager.hpp"
 #include "constants.hpp"
 #include "dispatcher_utility.hpp"
+#include "filesystem_utility.hpp"
 #include "grabber_alerts_manager.hpp"
 #include "karabiner_version.h"
 #include "logger.hpp"
@@ -74,9 +75,7 @@ int main(int argc, const char* argv[]) {
 
   // Make socket directory.
 
-  mkdir(krbn::constants::get_tmp_directory(), 0755);
-  chown(krbn::constants::get_tmp_directory(), 0, 0);
-  chmod(krbn::constants::get_tmp_directory(), 0755);
+  krbn::filesystem_utility::mkdir_tmp_directory();
 
   unlink(krbn::constants::get_grabber_socket_file_path());
 
