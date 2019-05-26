@@ -9,6 +9,26 @@
 namespace krbn {
 class launchctl_utility final {
 public:
+  static void manage_session_monitor(void) {
+    uid_t uid = getuid();
+    auto domain_target = (std::stringstream() << "gui/" << uid).str();
+    auto service_target = (std::stringstream() << "gui/" << uid << "/org.pqrs.karabiner.karabiner_session_monitor").str();
+    auto service_path = "/Library/LaunchAgents/org.pqrs.karabiner.karabiner_session_monitor.plist";
+
+    {
+      auto command = std::string("/bin/launchctl enable ") + service_target;
+      system(command.c_str());
+    }
+    {
+      auto command = std::string("/bin/launchctl bootstrap ") + domain_target + " " + service_path;
+      system(command.c_str());
+    }
+    {
+      auto command = std::string("/bin/launchctl enable ") + service_target;
+      system(command.c_str());
+    }
+  }
+
   static void manage_console_user_server(bool load) {
     uid_t uid = getuid();
     auto domain_target = (std::stringstream() << "gui/" << uid).str();

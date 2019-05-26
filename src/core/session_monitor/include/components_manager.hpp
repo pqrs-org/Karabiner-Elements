@@ -3,7 +3,7 @@
 // `krbn::components_manager` can be used safely in a multi-threaded environment.
 
 #include "monitor/version_monitor.hpp"
-#include <pqrs/dispatcher.hpp>
+#include "session_monitor_receiver_client.hpp"
 #include <pqrs/osx/session.hpp>
 
 namespace krbn {
@@ -12,36 +12,51 @@ public:
   components_manager(const components_manager&) = delete;
 
   components_manager(std::weak_ptr<version_monitor> weak_version_monitor) : dispatcher_client(),
-                                                                            session_monitor_timer_(*this) {
+                                                                            on_console_(false) {
+    client_ = std::make_unique<session_monitor_receiver_client>();
+
+    client_->connected.connect([this] {
+      send_to_receiver();
+    });
+
+    session_monitor_ = std::make_unique<pqrs::osx::session::monitor>(weak_dispatcher_);
+
+    session_monitor_->on_console_changed.connect([this](auto&& on_console) {
+      logger::get_logger()->info("on_console_changed: {0}", on_console);
+
+      on_console_ = on_console;
+      send_to_receiver();
+    });
   }
 
   virtual ~components_manager(void) {
     detach_from_dispatcher([this] {
-      session_monitor_timer_.stop();
+      session_monitor_ = nullptr;
+      client_ = nullptr;
     });
   }
 
   void async_start(void) {
     enqueue_to_dispatcher([this] {
-      session_monitor_timer_.start(
-          [] {
-            if (auto attributes = pqrs::osx::session::find_cg_session_current_attributes()) {
-              logger::get_logger()->info("cg_session_current_attributes");
-              if (auto uid = attributes->get_user_id()) {
-                logger::get_logger()->info("uid: {0}", *uid);
-              }
-              if (auto on_console = attributes->get_on_console()) {
-                logger::get_logger()->info("on_console: {0}", *on_console);
-              }
-            } else {
-              logger::get_logger()->info("cg_session_current_attributes is std::nullopt");
-            }
-          },
-          std::chrono::milliseconds(3000));
+      if (client_) {
+        client_->async_start();
+      }
+
+      if (session_monitor_) {
+        session_monitor_->async_start(std::chrono::milliseconds(3000));
+      }
     });
   }
 
 private:
-  pqrs::dispatcher::extra::timer session_monitor_timer_;
+  void send_to_receiver(void) const {
+    if (client_) {
+      client_->async_console_user_id_changed(getuid(), on_console_);
+    }
+  }
+
+  bool on_console_;
+  std::unique_ptr<session_monitor_receiver_client> client_;
+  std::unique_ptr<pqrs::osx::session::monitor> session_monitor_;
 };
 } // namespace krbn

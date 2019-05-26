@@ -34,7 +34,7 @@ public:
     server_->set_reconnect_interval(std::chrono::milliseconds(1000));
 
     server_->bound.connect([] {
-      logger::get_logger()->error("session_monitor_receiver bound");
+      logger::get_logger()->info("session_monitor_receiver bound");
     });
 
     server_->bind_failed.connect([](auto&& error_code) {

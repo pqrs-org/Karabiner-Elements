@@ -17,7 +17,7 @@ int main(int argc, const char* argv[]) {
   // Setup logger
 
   krbn::logger::set_async_rotating_logger("session_monitor",
-                                          "/var/log/karabiner/session_monitor.log",
+                                          fmt::format("/var/log/karabiner/session_monitor.{0}.log", getuid()),
                                           0755);
 
   krbn::logger::get_logger()->info("version {0}", karabiner_version);
@@ -25,7 +25,8 @@ int main(int argc, const char* argv[]) {
   // Check another process
 
   {
-    std::string pid_file_path = krbn::constants::get_pid_directory() + "/karabiner_session_monitor.pid";
+    std::string pid_file_path = krbn::constants::get_pid_directory() +
+                                fmt::format("/karabiner_session_monitor.{0}.pid", getuid());
     if (!krbn::process_utility::lock_single_application(pid_file_path)) {
       auto message = "Exit since another process is running.";
       krbn::logger::get_logger()->info(message);

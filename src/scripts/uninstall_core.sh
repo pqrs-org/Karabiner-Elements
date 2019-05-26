@@ -27,6 +27,7 @@ bash '/Library/Application Support/org.pqrs/Karabiner-Elements/scripts/uninstall
 rm -f '/Library/LaunchDaemons/org.pqrs.karabiner.karabiner_grabber.plist'
 rm -f '/Library/LaunchDaemons/org.pqrs.karabiner.karabiner_observer.plist'
 rm -f '/Library/LaunchAgents/org.pqrs.karabiner.karabiner_console_user_server.plist'
+rm -f '/Library/LaunchAgents/org.pqrs.karabiner.karabiner_session_monitor.plist'
 rm -rf '/Applications/Karabiner-Elements.app'
 rm -rf '/Applications/Karabiner-EventViewer.app'
 rm -rf '/Library/Application Support/org.pqrs/Karabiner-Elements'

@@ -22,21 +22,7 @@ public:
 
     session_monitor_receiver_ = std::make_unique<session_monitor_receiver>();
 
-    session_monitor_receiver_->current_console_user_id_changed.connect([](auto&& uid) {
-      if (uid) {
-        logger::get_logger()->info("current_console_user_id: {0}", *uid);
-      } else {
-        logger::get_logger()->info("current_console_user_id: none");
-      }
-    });
-
-    session_monitor_receiver_->async_start();
-
-    // session_monitor_
-
-    session_monitor_ = std::make_unique<pqrs::osx::session::monitor>(weak_dispatcher_);
-
-    session_monitor_->console_user_id_changed.connect([this](auto&& uid) {
+    session_monitor_receiver_->current_console_user_id_changed.connect([this](auto&& uid) {
       uid_t console_user_server_socket_uid = 0;
 
       if (uid) {
@@ -61,13 +47,12 @@ public:
       // receiver_
 
       receiver_ = nullptr;
-      receiver_ = std::make_unique<receiver>();
+      receiver_ = std::make_unique<receiver>(console_user_server_socket_uid);
     });
   }
 
   virtual ~components_manager(void) {
     detach_from_dispatcher([this] {
-      session_monitor_ = nullptr;
       receiver_ = nullptr;
       session_monitor_receiver_ = nullptr;
     });
@@ -75,14 +60,13 @@ public:
 
   void async_start(void) const {
     enqueue_to_dispatcher([this] {
-      session_monitor_->async_start(std::chrono::milliseconds(1000));
+    session_monitor_receiver_->async_start();
     });
   }
 
 private:
   std::weak_ptr<version_monitor> weak_version_monitor_;
   std::unique_ptr<session_monitor_receiver> session_monitor_receiver_;
-  std::unique_ptr<pqrs::osx::session::monitor> session_monitor_;
   std::unique_ptr<receiver> receiver_;
 };
 } // namespace krbn

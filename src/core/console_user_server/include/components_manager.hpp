@@ -28,38 +28,40 @@ public:
                                                                             weak_version_monitor_(weak_version_monitor) {
     session_monitor_ = std::make_unique<pqrs::osx::session::monitor>(weak_dispatcher_);
 
-    session_monitor_->console_user_id_changed.connect([this](auto&& uid) {
-      if (auto m = weak_version_monitor_.lock()) {
-        m->async_manual_check();
+    session_monitor_->on_console_changed.connect([this](auto&& on_console) {
+      if (!on_console) {
+        receiver_ = nullptr;
+        stop_grabber_client();
+
+      } else {
+        if (auto m = weak_version_monitor_.lock()) {
+          m->async_manual_check();
+        }
+
+        pqrs::filesystem::create_directory_with_intermediate_directories(
+            constants::get_user_configuration_directory(),
+            0700);
+
+        receiver_ = nullptr;
+        stop_grabber_client();
+
+        receiver_ = std::make_unique<receiver>();
+
+        receiver_->bound.connect([this] {
+          stop_grabber_client();
+          start_grabber_client();
+        });
+
+        receiver_->bind_failed.connect([this](auto&& error_code) {
+          stop_grabber_client();
+        });
+
+        receiver_->closed.connect([this] {
+          stop_grabber_client();
+        });
+
+        receiver_->async_start();
       }
-
-      pqrs::filesystem::create_directory_with_intermediate_directories(
-          constants::get_user_configuration_directory(),
-          0700);
-
-      receiver_ = nullptr;
-      stop_grabber_client();
-
-      if (uid != getuid()) {
-        return;
-      }
-
-      receiver_ = std::make_unique<receiver>();
-
-      receiver_->bound.connect([this] {
-        stop_grabber_client();
-        start_grabber_client();
-      });
-
-      receiver_->bind_failed.connect([this](auto&& error_code) {
-        stop_grabber_client();
-      });
-
-      receiver_->closed.connect([this] {
-        stop_grabber_client();
-      });
-
-      receiver_->async_start();
     });
   }
 

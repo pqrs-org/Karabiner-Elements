@@ -18,7 +18,8 @@ class receiver final : public pqrs::dispatcher::extra::dispatcher_client {
 public:
   receiver(const receiver&) = delete;
 
-  receiver(void) : dispatcher_client() {
+  receiver(uid_t current_console_user_id) : dispatcher_client(),
+                                            current_console_user_id_(current_console_user_id) {
     std::string socket_file_path(constants::get_grabber_socket_file_path());
 
     unlink(socket_file_path.c_str());
@@ -105,7 +106,7 @@ public:
                 start_grabbing_if_system_core_configuration_file_exists();
               });
 
-              console_user_server_client_->async_start();
+              console_user_server_client_->async_start(current_console_user_id_);
               break;
             }
 
@@ -196,6 +197,7 @@ private:
     logger::get_logger()->info("device_grabber is stopped.");
   }
 
+  uid_t current_console_user_id_;
   std::unique_ptr<pqrs::local_datagram::server> server_;
   std::shared_ptr<console_user_server_client> console_user_server_client_;
   std::unique_ptr<device_grabber> device_grabber_;

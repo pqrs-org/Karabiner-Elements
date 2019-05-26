@@ -98,6 +98,7 @@
   [self updateSystemPreferencesUIValues];
 
   // ----------------------------------------
+  libkrbn_launchctl_manage_session_monitor();
   libkrbn_launchctl_manage_console_user_server(true);
 }
 

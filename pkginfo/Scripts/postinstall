@@ -4,6 +4,11 @@ PATH=/bin:/sbin:/usr/bin:/usr/sbin
 export PATH
 
 # ------------------------------------------------------------
+# Set suid
+
+chmod 4755 '/Library/Application Support/org.pqrs/Karabiner-Elements/bin/karabiner_session_monitor'
+
+# ------------------------------------------------------------
 # Set immutable flag
 
 chflags uchg,schg /Applications/Karabiner-Elements.app
@@ -14,6 +19,7 @@ chflags uchg,schg /Applications/Karabiner-EventViewer.app
 
 killall karabiner_grabber
 killall karabiner_observer
+killall karabiner_session_monitor
 killall karabiner_console_user_server
 
 # Update version file
