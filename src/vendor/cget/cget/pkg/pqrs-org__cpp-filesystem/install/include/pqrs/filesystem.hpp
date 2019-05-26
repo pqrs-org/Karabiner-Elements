@@ -1,6 +1,6 @@
 #pragma once
 
-// pqrs::filesystem v1.1
+// pqrs::filesystem v1.2
 
 // (C) Copyright Takayama Fumihiko 2018.
 // Distributed under the Boost Software License, Version 1.0.
@@ -19,6 +19,22 @@ namespace filesystem {
 inline bool exists(const std::string& path) {
   struct stat s;
   return (stat(path.c_str(), &s) == 0);
+}
+
+inline std::optional<uid_t> uid(const std::string& path) {
+  struct stat s;
+  if (stat(path.c_str(), &s) == 0) {
+    return s.st_uid;
+  }
+  return std::nullopt;
+}
+
+inline std::optional<gid_t> gid(const std::string& path) {
+  struct stat s;
+  if (stat(path.c_str(), &s) == 0) {
+    return s.st_gid;
+  }
+  return std::nullopt;
 }
 
 inline bool is_directory(const std::string& path) {

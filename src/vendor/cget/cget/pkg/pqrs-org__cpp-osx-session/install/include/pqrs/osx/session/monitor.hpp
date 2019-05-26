@@ -18,7 +18,7 @@ class monitor final : public dispatcher::extra::dispatcher_client {
 public:
   // Signals (invoked from the dispatcher thread)
 
-  nod::signal<void(std::optional<uid_t>)> console_user_id_changed;
+  nod::signal<void(bool)> on_console_changed;
 
   // Methods
 
@@ -35,14 +35,22 @@ public:
   void async_start(std::chrono::milliseconds check_interval) {
     timer_.start(
         [this] {
-          auto u = find_console_user_id();
-          if (!console_user_id_ || *console_user_id_ != u) {
-            console_user_id_ = std::make_unique<std::optional<uid_t>>(u);
+          auto old_value = on_console_;
 
-            enqueue_to_dispatcher([this, u] {
-              console_user_id_changed(u);
+          auto new_value = false;
+          if (auto attributes = pqrs::osx::session::find_cg_session_current_attributes()) {
+            if (auto v = attributes->get_on_console()) {
+              new_value = *v;
+            }
+          }
+
+          if (old_value != new_value) {
+            enqueue_to_dispatcher([this, new_value] {
+              on_console_changed(new_value);
             });
           }
+
+          on_console_ = new_value;
         },
         check_interval);
   }
@@ -53,7 +61,7 @@ public:
 
 private:
   dispatcher::extra::timer timer_;
-  std::unique_ptr<std::optional<uid_t>> console_user_id_;
+  std::optional<bool> on_console_;
 };
 } // namespace session
 } // namespace osx
