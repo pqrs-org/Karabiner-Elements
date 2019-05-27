@@ -2,6 +2,7 @@
 #include "constants.hpp"
 #include "dispatcher_utility.hpp"
 #include "karabiner_version.h"
+#include "launchctl_utility.hpp"
 #include "logger.hpp"
 #include "migration.hpp"
 #include "process_utility.hpp"
@@ -25,6 +26,11 @@ int main(int argc, const char* argv[]) {
     krbn::logger::get_logger()->info("Exit since another process is running.");
     exit(0);
   }
+
+  // Manage launchctl
+
+  krbn::launchctl_utility::manage_session_monitor();
+  krbn::launchctl_utility::manage_console_user_server(true);
 
   // Initialize
 
