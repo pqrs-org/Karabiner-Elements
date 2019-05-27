@@ -29,6 +29,7 @@ public:
     std::vector<std::string> targets = {
         "/var/log/karabiner/observer.log",
         "/var/log/karabiner/grabber.log",
+        fmt::format("/var/log/karabiner/session_monitor.{0}.log", getuid()),
     };
     auto log_directory = krbn::constants::get_user_log_directory();
     if (!log_directory.empty()) {
