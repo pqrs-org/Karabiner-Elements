@@ -16,6 +16,13 @@ cd src/core/observer
 make install
 ```
 
+### Replace `karabiner_session_monitor`
+
+```shell
+cd src/core/session_monitor
+make install
+```
+
 ### Replace `karabiner_console_user_server`
 
 ```shell
@@ -32,6 +39,11 @@ make install
   - Run with root privilege.
   - Observe input devices and manage the grabbable state.
   - Tell the grabbable state to `karabiner_grabber`.
+- `karabiner_session_monitor`
+  - Run with root privilege.
+  - (Opened by console user privilege in order to use CoreGraphics session API.
+    And then, effective uid is changed to root by SUID in order to communicate a secure Unix domain socket of `karabiner_grabber`.)
+  - Monitor a window server session state and notify it to `karabiner_grabber`.
 - `karabiner_console_user_server`
   - Run with console user privilege.
   - Monitor system preferences values (key repeat, etc) and notify them to `karabiner_grabber`.
@@ -47,19 +59,25 @@ make install
 `karabiner_grabber`
 
 1.  Run `karabiner_grabber`.
-2.  `karabiner_grabber` opens grabber server unix domain socket.
-3.  `karabiner_grabber` start polling the session state.
-4.  When session state is changed, `karabiner_grabber` changes the unix domain socket owner to console user.
+2.  `karabiner_grabber` opens session_monitor_receiver Unix domain socket which only root can access.
+3.  `karabiner_grabber` opens grabber server Unix domain socket.
+4.  When a window server session state is changed, `karabiner_grabber` changes the Unix domain socket owner to console user.
 
 `karabiner_observer`
 
 1.  Run `karabiner_observer`.
-2.  `karabiner_observer` observes devices and tell the state to `karabiner_grabber`.
+2.  `karabiner_observer` observes devices and send the input events to `karabiner_grabber`.
+
+`karabiner_session_monitor`
+
+1.  Run `karabiner_session_monitor`.
+2.  `karabiner_session_monitor` monitors a window server session state and notify it to `karabiner_grabber`.
+3.  `karabiner_grabber` changes the owner of Unix domain socket for `karabiner_console_user_server` when the console user is changed.
 
 #### device grabbing
 
 1.  Run `karabiner_console_user_server`.
-2.  Try to open console_user_server unix domain socket.
+2.  Try to open console_user_server Unix domain socket.
 3.  grabber seizes input devices.
 
 ### Other notes
@@ -247,6 +265,7 @@ There are several way to get the session information, however, the reliable way 
   - `SessionGetInfo` cannot get uid of session.
     Thus, `SessionGetInfo` cannot determine the console user.
 - `CGSessionCopyCurrentDictionary`
+  - `karabiner_session_monitor` uses it to avoid the above problems.
 
 ---
 
