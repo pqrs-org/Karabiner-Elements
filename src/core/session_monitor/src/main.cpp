@@ -1,9 +1,9 @@
-#include "components_manager.hpp"
 #include "constants.hpp"
 #include "dispatcher_utility.hpp"
 #include "karabiner_version.h"
 #include "logger.hpp"
 #include "process_utility.hpp"
+#include "session_monitor/components_manager.hpp"
 #include <iostream>
 
 int main(int argc, const char* argv[]) {
@@ -44,7 +44,7 @@ int main(int argc, const char* argv[]) {
 
   // Run components_manager
 
-  std::shared_ptr<krbn::components_manager> components_manager;
+  std::shared_ptr<krbn::session_monitor::components_manager> components_manager;
 
   auto version_monitor = std::make_shared<krbn::version_monitor>(krbn::constants::get_version_file_path());
 
@@ -55,7 +55,7 @@ int main(int argc, const char* argv[]) {
     });
   });
 
-  components_manager = std::make_shared<krbn::components_manager>(version_monitor);
+  components_manager = std::make_shared<krbn::session_monitor::components_manager>(version_monitor);
 
   version_monitor->async_start();
   components_manager->async_start();

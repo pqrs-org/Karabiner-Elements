@@ -1,12 +1,13 @@
 #pragma once
 
-// `krbn::components_manager` can be used safely in a multi-threaded environment.
+// `krbn::session_monitor::components_manager` can be used safely in a multi-threaded environment.
 
 #include "monitor/version_monitor.hpp"
 #include "session_monitor_receiver_client.hpp"
 #include <pqrs/osx/session.hpp>
 
 namespace krbn {
+namespace session_monitor {
 class components_manager final : public pqrs::dispatcher::extra::dispatcher_client {
 public:
   components_manager(const components_manager&) = delete;
@@ -59,4 +60,5 @@ private:
   std::unique_ptr<session_monitor_receiver_client> client_;
   std::unique_ptr<pqrs::osx::session::monitor> session_monitor_;
 };
+} // namespace session_monitor
 } // namespace krbn
