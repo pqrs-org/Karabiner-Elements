@@ -4,6 +4,8 @@
 
 - Fixed a key stuck issue which occurs when the key is released,
   and at the exact same moment Karabiner-Elements opens the device.
+- Fixed a issue which Karabiner-Elements mistakes a remote user for a current console user
+  if another user is logged in from Screen Sharing while console is used.
 - Added `Show key code in hexadecimal format` option into EventViewer.
 
 ## Version 12.4.0
