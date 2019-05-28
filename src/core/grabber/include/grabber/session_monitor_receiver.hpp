@@ -72,6 +72,10 @@ public:
                 });
               }
 
+              // manage session_monitor_client_
+
+              register_session_monitor_client(uid);
+
               break;
             }
 
@@ -90,6 +94,7 @@ public:
 
   virtual ~session_monitor_receiver(void) {
     detach_from_dispatcher([this] {
+      session_monitor_clients_.clear();
       server_ = nullptr;
     });
 
@@ -101,8 +106,38 @@ public:
   }
 
 private:
+  void register_session_monitor_client(uid_t uid) {
+    if (session_monitor_clients_.find(uid) == std::end(session_monitor_clients_)) {
+      auto socket_file_path = constants::get_session_monitor_receiver_socket_file_path(uid);
+      auto client = std::make_shared<pqrs::local_datagram::client>(weak_dispatcher_,
+                                                                   socket_file_path);
+      session_monitor_clients_[uid] = client;
+
+      client->set_server_check_interval(std::chrono::milliseconds(3000));
+
+      client->closed.connect([this, uid] {
+        logger::get_logger()->info("session_monitor_client is closed (uid:{0})", uid);
+
+        if (current_console_user_id_ == uid) {
+          current_console_user_id_ = std::nullopt;
+
+          enqueue_to_dispatcher([this] {
+            current_console_user_id_changed(current_console_user_id_);
+          });
+        }
+
+        enqueue_to_dispatcher([this, uid] {
+          session_monitor_clients_.erase(uid);
+        });
+      });
+
+      client->async_start();
+    }
+  }
+
   std::unique_ptr<pqrs::local_datagram::server> server_;
   std::optional<uid_t> current_console_user_id_;
+  std::unordered_map<uid_t, std::shared_ptr<pqrs::local_datagram::client>> session_monitor_clients_;
 };
 } // namespace grabber
 } // namespace krbn
