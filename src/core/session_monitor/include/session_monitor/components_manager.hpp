@@ -14,7 +14,8 @@ public:
   components_manager(const components_manager&) = delete;
 
   components_manager(std::weak_ptr<version_monitor> weak_version_monitor) : dispatcher_client(),
-                                                                            on_console_(false) {
+                                                                            on_console_(false),
+                                                                            send_timer_(*this) {
     // ----------------------------------------
     // client_
 
@@ -48,6 +49,8 @@ public:
 
   virtual ~components_manager(void) {
     detach_from_dispatcher([this] {
+      send_timer_.stop();
+
       session_monitor_ = nullptr;
       receiver_ = nullptr;
       client_ = nullptr;
@@ -67,6 +70,14 @@ public:
       if (session_monitor_) {
         session_monitor_->async_start(std::chrono::milliseconds(3000));
       }
+
+      // Call send_to_receiver periodically to ensure `grabber` receive the event.
+
+      send_timer_.start(
+          [this] {
+            send_to_receiver();
+          },
+          std::chrono::milliseconds(3000));
     });
   }
 
@@ -81,6 +92,7 @@ private:
   std::unique_ptr<session_monitor_receiver_client> client_;
   std::unique_ptr<receiver> receiver_;
   std::unique_ptr<pqrs::osx::session::monitor> session_monitor_;
+  pqrs::dispatcher::extra::timer send_timer_;
 };
 } // namespace session_monitor
 } // namespace krbn
