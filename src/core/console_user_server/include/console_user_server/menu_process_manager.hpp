@@ -1,12 +1,13 @@
 #pragma once
 
-// `krbn::menu_process_manager` can be used safely in a multi-threaded environment.
+// `krbn::console_user_server::menu_process_manager` can be used safely in a multi-threaded environment.
 
 #include "application_launcher.hpp"
 #include "monitor/configuration_monitor.hpp"
 #include <pqrs/dispatcher.hpp>
 
 namespace krbn {
+namespace console_user_server {
 class menu_process_manager final : public pqrs::dispatcher::extra::dispatcher_client {
 public:
   menu_process_manager(const menu_process_manager&) = delete;
@@ -38,4 +39,5 @@ private:
   std::weak_ptr<configuration_monitor> weak_configuration_monitor_;
   std::vector<nod::scoped_connection> external_signal_connections_;
 };
+} // namespace console_user_server
 } // namespace krbn

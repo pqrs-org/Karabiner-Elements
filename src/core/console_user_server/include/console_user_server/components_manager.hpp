@@ -1,6 +1,6 @@
 #pragma once
 
-// `krbn::components_manager` can be used safely in a multi-threaded environment.
+// `krbn::console_user_server::components_manager` can be used safely in a multi-threaded environment.
 
 #include "application_launcher.hpp"
 #include "constants.hpp"
@@ -20,6 +20,7 @@
 #include <thread>
 
 namespace krbn {
+namespace console_user_server {
 class components_manager final : public pqrs::dispatcher::extra::dispatcher_client {
 public:
   components_manager(const components_manager&) = delete;
@@ -239,4 +240,5 @@ private:
   std::unique_ptr<pqrs::osx::frontmost_application_monitor::monitor> frontmost_application_monitor_;
   std::unique_ptr<pqrs::osx::input_source_monitor> input_source_monitor_;
 };
+} // namespace console_user_server
 } // namespace krbn

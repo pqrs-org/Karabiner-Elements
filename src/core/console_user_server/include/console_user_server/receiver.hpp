@@ -12,6 +12,7 @@
 #include <vector>
 
 namespace krbn {
+namespace console_user_server {
 class receiver final : public pqrs::dispatcher::extra::dispatcher_client {
 public:
   // Signals (invoked from the shared dispatcher thread)
@@ -128,4 +129,5 @@ private:
   std::unique_ptr<pqrs::local_datagram::server> server_;
   std::unique_ptr<pqrs::osx::input_source_selector::selector> input_source_selector_;
 };
+} // namespace console_user_server
 } // namespace krbn

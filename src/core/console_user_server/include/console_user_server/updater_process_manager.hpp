@@ -5,6 +5,7 @@
 #include <pqrs/dispatcher.hpp>
 
 namespace krbn {
+namespace console_user_server {
 class updater_process_manager final : public pqrs::dispatcher::extra::dispatcher_client {
 public:
   updater_process_manager(const updater_process_manager&) = delete;
@@ -41,4 +42,5 @@ private:
   std::vector<nod::scoped_connection> external_signal_connections_;
   bool checked_;
 };
+} // namespace console_user_server
 } // namespace krbn

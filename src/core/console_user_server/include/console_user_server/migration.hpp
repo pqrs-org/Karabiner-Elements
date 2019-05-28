@@ -1,6 +1,7 @@
 #pragma once
 
 namespace krbn {
+namespace console_user_server {
 class migration final {
 public:
   static void migrate_v1(void) {
@@ -39,4 +40,5 @@ private:
     return file_path;
   }
 };
+} // namespace console_user_server
 } // namespace krbn
