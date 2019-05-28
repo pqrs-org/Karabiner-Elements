@@ -1,6 +1,6 @@
 #pragma once
 
-// `krbn::components_manager` can be used safely in a multi-threaded environment.
+// `krbn::grabber::components_manager` can be used safely in a multi-threaded environment.
 
 #include "console_user_server_client.hpp"
 #include "constants.hpp"
@@ -12,6 +12,7 @@
 #include <pqrs/osx/session.hpp>
 
 namespace krbn {
+namespace grabber {
 class components_manager final : public pqrs::dispatcher::extra::dispatcher_client {
 public:
   components_manager(const components_manager&) = delete;
@@ -60,7 +61,7 @@ public:
 
   void async_start(void) const {
     enqueue_to_dispatcher([this] {
-    session_monitor_receiver_->async_start();
+      session_monitor_receiver_->async_start();
     });
   }
 
@@ -69,4 +70,5 @@ private:
   std::unique_ptr<session_monitor_receiver> session_monitor_receiver_;
   std::unique_ptr<receiver> receiver_;
 };
+} // namespace grabber
 } // namespace krbn

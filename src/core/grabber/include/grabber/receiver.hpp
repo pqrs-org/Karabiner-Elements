@@ -14,6 +14,7 @@
 #include <vector>
 
 namespace krbn {
+namespace grabber {
 class receiver final : public pqrs::dispatcher::extra::dispatcher_client {
 public:
   receiver(const receiver&) = delete;
@@ -206,4 +207,5 @@ private:
   pqrs::osx::frontmost_application_monitor::application frontmost_application_;
   pqrs::osx::input_source::properties input_source_properties_;
 };
+} // namespace grabber
 } // namespace krbn

@@ -1,8 +1,8 @@
-#include "components_manager.hpp"
 #include "constants.hpp"
 #include "dispatcher_utility.hpp"
 #include "filesystem_utility.hpp"
-#include "grabber_alerts_manager.hpp"
+#include "grabber/components_manager.hpp"
+#include "grabber/grabber_alerts_manager.hpp"
 #include "karabiner_version.h"
 #include "logger.hpp"
 #include "process_utility.hpp"
@@ -43,7 +43,7 @@ int main(int argc, const char* argv[]) {
 
   // Load kexts
 
-  auto grabber_alerts_manager = std::make_unique<krbn::grabber_alerts_manager>(
+  auto grabber_alerts_manager = std::make_unique<krbn::grabber::grabber_alerts_manager>(
       krbn::constants::get_grabber_alerts_json_file_path());
 
   while (true) {
@@ -64,13 +64,17 @@ int main(int argc, const char* argv[]) {
     if (exit_status == 27) {
       // kextload is blocked by macOS.
       // https://developer.apple.com/library/content/technotes/tn2459/_index.html
-      grabber_alerts_manager->set_alert(krbn::grabber_alerts_manager::alert::system_policy_prevents_loading_kext, true);
+      grabber_alerts_manager->set_alert(
+          krbn::grabber::grabber_alerts_manager::alert::system_policy_prevents_loading_kext,
+          true);
     }
 
     std::this_thread::sleep_for(std::chrono::seconds(3));
   }
 
-  grabber_alerts_manager->set_alert(krbn::grabber_alerts_manager::alert::system_policy_prevents_loading_kext, false);
+  grabber_alerts_manager->set_alert(
+      krbn::grabber::grabber_alerts_manager::alert::system_policy_prevents_loading_kext,
+      false);
   grabber_alerts_manager = nullptr;
 
   // Make socket directory.
@@ -93,7 +97,7 @@ int main(int argc, const char* argv[]) {
 
   // Run components_manager
 
-  std::shared_ptr<krbn::components_manager> components_manager;
+  std::shared_ptr<krbn::grabber::components_manager> components_manager;
 
   auto version_monitor = std::make_shared<krbn::version_monitor>(krbn::constants::get_version_file_path());
 
@@ -104,7 +108,7 @@ int main(int argc, const char* argv[]) {
     });
   });
 
-  components_manager = std::make_shared<krbn::components_manager>(version_monitor);
+  components_manager = std::make_shared<krbn::grabber::components_manager>(version_monitor);
 
   version_monitor->async_start();
   components_manager->async_start();

@@ -11,6 +11,7 @@
 #include <pqrs/osx/iokit_hid_queue_value_monitor.hpp>
 
 namespace krbn {
+namespace grabber {
 namespace device_grabber_details {
 class entry final : public pqrs::dispatcher::extra::dispatcher_client {
 public:
@@ -224,4 +225,5 @@ private:
   absolute_time_point ungrabbed_time_stamp_;
 };
 } // namespace device_grabber_details
+} // namespace grabber
 } // namespace krbn

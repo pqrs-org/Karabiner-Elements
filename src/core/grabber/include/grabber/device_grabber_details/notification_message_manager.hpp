@@ -4,6 +4,7 @@
 #include <map>
 
 namespace krbn {
+namespace grabber {
 namespace device_grabber_details {
 class notification_message_manager final {
 public:
@@ -53,4 +54,5 @@ private:
   std::string previous_message_;
 };
 } // namespace device_grabber_details
+} // namespace grabber
 } // namespace krbn

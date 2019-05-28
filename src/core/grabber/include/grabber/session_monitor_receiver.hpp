@@ -10,6 +10,7 @@
 #include <vector>
 
 namespace krbn {
+namespace grabber {
 class session_monitor_receiver final : public pqrs::dispatcher::extra::dispatcher_client {
 public:
   // Signals (invoked from the shared dispatcher thread)
@@ -103,4 +104,5 @@ private:
   std::unique_ptr<pqrs::local_datagram::server> server_;
   std::optional<uid_t> current_console_user_id_;
 };
+} // namespace grabber
 } // namespace krbn

@@ -9,6 +9,7 @@
 #include <unordered_set>
 
 namespace krbn {
+namespace grabber {
 class grabber_alerts_manager final {
 public:
   enum alert {
@@ -73,4 +74,5 @@ private:
 inline void to_json(nlohmann::json& json, const grabber_alerts_manager::alert& alert) {
   json = grabber_alerts_manager::to_string(alert);
 }
+} // namespace grabber
 } // namespace krbn
