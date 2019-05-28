@@ -18,7 +18,7 @@ public:
 
   // Methods
 
-  session_monitor_receiver(const receiver&) = delete;
+  session_monitor_receiver(const session_monitor_receiver&) = delete;
 
   session_monitor_receiver(void) : dispatcher_client() {
     std::string socket_file_path(constants::get_grabber_session_monitor_receiver_socket_file_path());
