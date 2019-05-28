@@ -1,6 +1,6 @@
 #pragma once
 
-// `krbn::session_monitor_receiver` can be used safely in a multi-threaded environment.
+// `krbn::grabber::session_monitor_receiver` can be used safely in a multi-threaded environment.
 
 #include "constants.hpp"
 #include "filesystem_utility.hpp"

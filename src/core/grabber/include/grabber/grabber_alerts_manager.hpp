@@ -1,6 +1,6 @@
 #pragma once
 
-// `krbn::grabber_alerts_manager` can be used safely in a multi-threaded environment.
+// `krbn::grabber::grabber_alerts_manager` can be used safely in a multi-threaded environment.
 
 #include "json_writer.hpp"
 #include "logger.hpp"

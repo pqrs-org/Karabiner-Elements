@@ -1,6 +1,6 @@
 #pragma once
 
-// `krbn::receiver` can be used safely in a multi-threaded environment.
+// `krbn::grabber::receiver` can be used safely in a multi-threaded environment.
 
 #include "console_user_server_client.hpp"
 #include "constants.hpp"
