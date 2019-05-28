@@ -3,6 +3,7 @@
 // `krbn::session_monitor::components_manager` can be used safely in a multi-threaded environment.
 
 #include "monitor/version_monitor.hpp"
+#include "receiver.hpp"
 #include "session_monitor_receiver_client.hpp"
 #include <pqrs/osx/session.hpp>
 
@@ -14,11 +15,26 @@ public:
 
   components_manager(std::weak_ptr<version_monitor> weak_version_monitor) : dispatcher_client(),
                                                                             on_console_(false) {
+    // ----------------------------------------
+    // client_
+
     client_ = std::make_unique<session_monitor_receiver_client>();
 
     client_->connected.connect([this] {
       send_to_receiver();
     });
+
+    // ----------------------------------------
+    // receiver_
+
+    receiver_ = std::make_unique<receiver>();
+
+    receiver_->bound.connect([this] {
+      send_to_receiver();
+    });
+
+    // ----------------------------------------
+    // session_monitor_
 
     session_monitor_ = std::make_unique<pqrs::osx::session::monitor>(weak_dispatcher_);
 
@@ -33,6 +49,7 @@ public:
   virtual ~components_manager(void) {
     detach_from_dispatcher([this] {
       session_monitor_ = nullptr;
+      receiver_ = nullptr;
       client_ = nullptr;
     });
   }
@@ -41,6 +58,10 @@ public:
     enqueue_to_dispatcher([this] {
       if (client_) {
         client_->async_start();
+      }
+
+      if (receiver_) {
+        receiver_->async_start();
       }
 
       if (session_monitor_) {
@@ -58,6 +79,7 @@ private:
 
   bool on_console_;
   std::unique_ptr<session_monitor_receiver_client> client_;
+  std::unique_ptr<receiver> receiver_;
   std::unique_ptr<pqrs::osx::session::monitor> session_monitor_;
 };
 } // namespace session_monitor

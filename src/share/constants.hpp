@@ -2,6 +2,7 @@
 
 #include <CoreFoundation/CoreFoundation.h>
 #include <cstdlib>
+#include <spdlog/fmt/fmt.h>
 #include <string>
 #include <thread>
 
@@ -46,6 +47,10 @@ public:
 
   static const char* get_manipulator_environment_json_file_path(void) {
     return "/Library/Application Support/org.pqrs/tmp/karabiner_grabber_manipulator_environment.json";
+  }
+
+  static std::string get_session_monitor_receiver_socket_file_path(uid_t uid) {
+    return fmt::format("{0}/karabiner_session_monitor_receiver.{1}", get_rootonly_directory(), uid);
   }
 
   static const char* get_console_user_server_socket_directory(void) {
