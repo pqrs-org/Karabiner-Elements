@@ -1,6 +1,6 @@
 #pragma once
 
-// `krbn::components_manager` can be used safely in a multi-threaded environment.
+// `krbn::observer::components_manager` can be used safely in a multi-threaded environment.
 
 #include "constants.hpp"
 #include "device_observer.hpp"
@@ -9,6 +9,7 @@
 #include <pqrs/dispatcher.hpp>
 
 namespace krbn {
+namespace observer {
 class components_manager final : public pqrs::dispatcher::extra::dispatcher_client {
 public:
   components_manager(const components_manager&) = delete;
@@ -66,4 +67,5 @@ private:
   std::shared_ptr<grabber_client> grabber_client_;
   std::shared_ptr<device_observer> device_observer_;
 };
+} // namespace observer
 } // namespace krbn

@@ -1,6 +1,6 @@
 #pragma once
 
-// `krbn::device_observer` can be used safely in a multi-threaded environment.
+// `krbn::observer::device_observer` can be used safely in a multi-threaded environment.
 
 #include "event_queue.hpp"
 #include "grabber_client.hpp"
@@ -13,6 +13,7 @@
 #include <pqrs/osx/iokit_types.hpp>
 
 namespace krbn {
+namespace observer {
 class device_observer final : public pqrs::dispatcher::extra::dispatcher_client {
 public:
   device_observer(const device_observer&) = delete;
@@ -160,4 +161,5 @@ private:
   std::unordered_map<device_id, std::shared_ptr<pqrs::osx::iokit_hid_queue_value_monitor>> hid_queue_value_monitors_;
   std::unordered_set<device_id> observed_devices_;
 };
+} // namespace observer
 } // namespace krbn
