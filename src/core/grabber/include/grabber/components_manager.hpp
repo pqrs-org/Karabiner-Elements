@@ -33,22 +33,7 @@ public:
         logger::get_logger()->info("current_console_user_id: none");
       }
 
-      if (auto m = weak_version_monitor_.lock()) {
-        m->async_manual_check();
-      }
-
-      // Prepare console_user_server_socket_directory
-      {
-        auto socket_file_path = console_user_server_client::make_console_user_server_socket_directory(console_user_server_socket_uid);
-        mkdir(socket_file_path.c_str(), 0700);
-        chown(socket_file_path.c_str(), console_user_server_socket_uid, 0);
-        chmod(socket_file_path.c_str(), 0700);
-      }
-
-      // receiver_
-
-      receiver_ = nullptr;
-      receiver_ = std::make_unique<receiver>(console_user_server_socket_uid);
+      start_receiver(console_user_server_socket_uid);
     });
   }
 
@@ -59,13 +44,34 @@ public:
     });
   }
 
-  void async_start(void) const {
+  void async_start(void) {
     enqueue_to_dispatcher([this] {
+      start_receiver(0);
+
       session_monitor_receiver_->async_start();
     });
   }
 
 private:
+  void start_receiver(uid_t uid) {
+    if (auto m = weak_version_monitor_.lock()) {
+      m->async_manual_check();
+    }
+
+    // Prepare console_user_server_socket_directory
+    {
+      auto socket_file_path = console_user_server_client::make_console_user_server_socket_directory(uid);
+      mkdir(socket_file_path.c_str(), 0700);
+      chown(socket_file_path.c_str(), uid, 0);
+      chmod(socket_file_path.c_str(), 0700);
+    }
+
+    // receiver_
+
+    receiver_ = nullptr;
+    receiver_ = std::make_unique<receiver>(uid);
+  }
+
   std::weak_ptr<version_monitor> weak_version_monitor_;
   std::unique_ptr<session_monitor_receiver> session_monitor_receiver_;
   std::unique_ptr<receiver> receiver_;
