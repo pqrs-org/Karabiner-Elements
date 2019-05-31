@@ -10,6 +10,7 @@ public:
   device(const nlohmann::json& json) : json_(json),
                                        ignore_(false),
                                        manipulate_caps_lock_led_(false),
+                                       delay_milliseconds_before_open_device_(3000),
                                        disable_built_in_keyboard_if_exists_(false) {
     auto ignore_configured = false;
     auto manipulate_caps_lock_led_configured = false;
@@ -52,6 +53,13 @@ public:
         manipulate_caps_lock_led_ = value.get<bool>();
         manipulate_caps_lock_led_configured = true;
 
+      } else if (key == "delay_milliseconds_before_open_device") {
+        if (!value.is_number()) {
+          throw pqrs::json::unmarshal_error(fmt::format("`{0}` must be number, but is `{1}`", key, value.dump()));
+        }
+
+        delay_milliseconds_before_open_device_ = std::chrono::milliseconds(value.get<int>());
+
       } else if (key == "disable_built_in_keyboard_if_exists") {
         if (!value.is_boolean()) {
           throw pqrs::json::unmarshal_error(fmt::format("`{0}` must be boolean, but is `{1}`", key, value.dump()));
@@ -72,6 +80,9 @@ public:
         } catch (const pqrs::json::unmarshal_error& e) {
           throw pqrs::json::unmarshal_error(fmt::format("`{0}` error: {1}", key, e.what()));
         }
+
+      } else {
+        // Allow unknown key
       }
     }
 
@@ -121,6 +132,7 @@ public:
     j["identifiers"] = identifiers_;
     j["ignore"] = ignore_;
     j["manipulate_caps_lock_led"] = manipulate_caps_lock_led_;
+    j["delay_milliseconds_before_open_device"] = delay_milliseconds_before_open_device_.count();
     j["disable_built_in_keyboard_if_exists"] = disable_built_in_keyboard_if_exists_;
     j["simple_modifications"] = simple_modifications_.to_json();
     j["fn_function_keys"] = fn_function_keys_.to_json();
@@ -134,6 +146,7 @@ public:
   bool get_ignore(void) const {
     return ignore_;
   }
+
   void set_ignore(bool value) {
     ignore_ = value;
   }
@@ -141,13 +154,23 @@ public:
   bool get_manipulate_caps_lock_led(void) const {
     return manipulate_caps_lock_led_;
   }
+
   void set_manipulate_caps_lock_led(bool value) {
     manipulate_caps_lock_led_ = value;
+  }
+
+  std::chrono::milliseconds get_delay_milliseconds_before_open_device(void) const {
+    return delay_milliseconds_before_open_device_;
+  }
+
+  void set_delay_milliseconds_before_open_device(std::chrono::milliseconds value) {
+    delay_milliseconds_before_open_device_ = value;
   }
 
   bool get_disable_built_in_keyboard_if_exists(void) const {
     return disable_built_in_keyboard_if_exists_;
   }
+
   void set_disable_built_in_keyboard_if_exists(bool value) {
     disable_built_in_keyboard_if_exists_ = value;
   }
@@ -155,6 +178,7 @@ public:
   const simple_modifications& get_simple_modifications(void) const {
     return simple_modifications_;
   }
+
   simple_modifications& get_simple_modifications(void) {
     return simple_modifications_;
   }
@@ -162,6 +186,7 @@ public:
   const simple_modifications& get_fn_function_keys(void) const {
     return fn_function_keys_;
   }
+
   simple_modifications& get_fn_function_keys(void) {
     return fn_function_keys_;
   }
@@ -171,6 +196,7 @@ private:
   device_identifiers identifiers_;
   bool ignore_;
   bool manipulate_caps_lock_led_;
+  std::chrono::milliseconds delay_milliseconds_before_open_device_;
   bool disable_built_in_keyboard_if_exists_;
   simple_modifications simple_modifications_;
   simple_modifications fn_function_keys_;

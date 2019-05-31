@@ -130,6 +130,7 @@
                         "is_pointing_device": false
                     },
                     "ignore": false,
+                    "delay_milliseconds_before_open_device": 3000,
                     "simple_modifications": [
                         {
                             "from": {
@@ -167,6 +168,7 @@
                         "is_pointing_device": false
                     },
                     "ignore": true,
+                    "delay_milliseconds_before_open_device": 1500,
                     "disable_built_in_keyboard_if_exists": true
                 },
                 {
