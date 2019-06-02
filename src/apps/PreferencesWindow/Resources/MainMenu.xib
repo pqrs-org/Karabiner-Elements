@@ -870,7 +870,7 @@
                                                                 <rect key="frame" x="17" y="41" width="880" height="384"/>
                                                                 <clipView key="contentView" id="Z0i-ZA-lV3">
                                                                     <rect key="frame" x="1" y="0.0" width="878" height="383"/>
-                                                                    <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                                                                    <autoresizingMask key="autoresizingMask"/>
                                                                     <subviews>
                                                                         <tableView verticalHuggingPriority="750" allowsExpansionToolTips="YES" columnAutoresizingStyle="firstColumnOnly" alternatingRowBackgroundColors="YES" columnReordering="NO" columnResizing="NO" multipleSelection="NO" autosaveColumns="NO" rowHeight="26" rowSizeStyle="automatic" headerView="sIp-xu-x1n" viewBased="YES" id="v5W-RF-1fL">
                                                                             <rect key="frame" x="0.0" y="0.0" width="878" height="360"/>
@@ -1592,13 +1592,13 @@
                                                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                                         <subviews>
                                                             <box boxType="custom" cornerRadius="4" titlePosition="noTitle" translatesAutoresizingMaskIntoConstraints="NO" id="53v-8f-vy8">
-                                                                <rect key="frame" x="17" y="349" width="880" height="76"/>
+                                                                <rect key="frame" x="17" y="337" width="880" height="88"/>
                                                                 <view key="contentView" id="yau-Mr-759">
-                                                                    <rect key="frame" x="1" y="1" width="878" height="74"/>
+                                                                    <rect key="frame" x="1" y="1" width="878" height="86"/>
                                                                     <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                                                     <subviews>
                                                                         <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" allowsCharacterPickerTouchBarItem="YES" translatesAutoresizingMaskIntoConstraints="NO" id="pEI-d9-Xjk">
-                                                                            <rect key="frame" x="6" y="49" width="162" height="17"/>
+                                                                            <rect key="frame" x="6" y="61" width="162" height="17"/>
                                                                             <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" title="Delay before open device:" id="X8M-0s-edJ">
                                                                                 <font key="font" metaFont="system"/>
                                                                                 <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
@@ -1606,7 +1606,7 @@
                                                                             </textFieldCell>
                                                                         </textField>
                                                                         <textField verticalHuggingPriority="750" allowsCharacterPickerTouchBarItem="YES" translatesAutoresizingMaskIntoConstraints="NO" id="Inc-8a-8PS">
-                                                                            <rect key="frame" x="176" y="47" width="100" height="22"/>
+                                                                            <rect key="frame" x="176" y="59" width="100" height="22"/>
                                                                             <constraints>
                                                                                 <constraint firstAttribute="width" constant="100" id="tIP-3V-7xv"/>
                                                                             </constraints>
@@ -1624,25 +1624,33 @@
                                                                             </connections>
                                                                         </textField>
                                                                         <stepper horizontalHuggingPriority="750" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="sfI-ih-0de">
-                                                                            <rect key="frame" x="275" y="44" width="19" height="27"/>
+                                                                            <rect key="frame" x="275" y="56" width="19" height="27"/>
                                                                             <stepperCell key="cell" continuous="YES" alignment="left" increment="100" maxValue="10000" id="RDd-MG-x1B"/>
                                                                             <connections>
                                                                                 <action selector="changeDelayBeforeOpenDevice:" target="5ke-qB-Wr5" id="DTP-eX-CKF"/>
                                                                             </connections>
                                                                         </stepper>
                                                                         <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" allowsCharacterPickerTouchBarItem="YES" translatesAutoresizingMaskIntoConstraints="NO" id="MRv-VC-jZ7">
-                                                                            <rect key="frame" x="299" y="49" width="219" height="17"/>
+                                                                            <rect key="frame" x="299" y="61" width="219" height="17"/>
                                                                             <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" title="milliseconds (Default value is 1000)" id="f9h-oy-ovD">
                                                                                 <font key="font" metaFont="system"/>
                                                                                 <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
                                                                                 <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
                                                                             </textFieldCell>
                                                                         </textField>
+                                                                        <imageView horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="NJp-42-NB1">
+                                                                            <rect key="frame" x="8" y="8" width="32" height="32"/>
+                                                                            <constraints>
+                                                                                <constraint firstAttribute="height" constant="32" id="LZq-tX-jTj"/>
+                                                                                <constraint firstAttribute="width" constant="32" id="ynN-gz-kfD"/>
+                                                                            </constraints>
+                                                                            <imageCell key="cell" refusesFirstResponder="YES" alignment="left" imageScaling="proportionallyUpOrDown" image="ic_warning_18pt" id="ePT-HK-gd3"/>
+                                                                        </imageView>
                                                                         <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" allowsCharacterPickerTouchBarItem="YES" translatesAutoresizingMaskIntoConstraints="NO" id="qjj-nG-lKd">
-                                                                            <rect key="frame" x="26" y="7" width="787" height="34"/>
+                                                                            <rect key="frame" x="48" y="7" width="750" height="34"/>
                                                                             <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" id="pcV-zf-cXs">
                                                                                 <font key="font" metaFont="system"/>
-                                                                                <string key="title">Note: Setting insufficient delay causes a device will become unusable after Karabiner-Elements is quitted due to macOS problem.
+                                                                                <string key="title">Setting insufficient delay causes a device will become unusable after Karabiner-Elements is quitted due to macOS problem.
 (If you face the problem, you can solve it by unplugging the device and plugging it again.)</string>
                                                                                 <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
                                                                                 <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
@@ -1651,13 +1659,15 @@
                                                                     </subviews>
                                                                     <constraints>
                                                                         <constraint firstItem="MRv-VC-jZ7" firstAttribute="centerY" secondItem="pEI-d9-Xjk" secondAttribute="centerY" id="5dI-4z-jzW"/>
-                                                                        <constraint firstItem="qjj-nG-lKd" firstAttribute="leading" secondItem="pEI-d9-Xjk" secondAttribute="leading" constant="20" id="D0Z-of-Sap"/>
+                                                                        <constraint firstItem="NJp-42-NB1" firstAttribute="leading" secondItem="pEI-d9-Xjk" secondAttribute="leading" id="8qi-lI-2rU"/>
                                                                         <constraint firstItem="sfI-ih-0de" firstAttribute="leading" secondItem="Inc-8a-8PS" secondAttribute="trailing" constant="2" id="JZ6-Ow-TWA"/>
                                                                         <constraint firstItem="Inc-8a-8PS" firstAttribute="centerY" secondItem="pEI-d9-Xjk" secondAttribute="centerY" id="Kt4-6X-Efg"/>
                                                                         <constraint firstItem="MRv-VC-jZ7" firstAttribute="leading" secondItem="sfI-ih-0de" secondAttribute="trailing" constant="10" id="Q98-BC-huA"/>
                                                                         <constraint firstItem="Inc-8a-8PS" firstAttribute="leading" secondItem="pEI-d9-Xjk" secondAttribute="trailing" constant="10" id="Vh1-6D-D0N"/>
-                                                                        <constraint firstItem="qjj-nG-lKd" firstAttribute="top" secondItem="pEI-d9-Xjk" secondAttribute="bottom" constant="8" id="Y7R-mx-VJi"/>
+                                                                        <constraint firstItem="qjj-nG-lKd" firstAttribute="top" secondItem="pEI-d9-Xjk" secondAttribute="bottom" constant="20" id="Y7R-mx-VJi"/>
                                                                         <constraint firstItem="pEI-d9-Xjk" firstAttribute="leading" secondItem="yau-Mr-759" secondAttribute="leading" constant="8" id="jlf-FC-lS4"/>
+                                                                        <constraint firstItem="NJp-42-NB1" firstAttribute="centerY" secondItem="qjj-nG-lKd" secondAttribute="centerY" id="jvw-f9-t3h"/>
+                                                                        <constraint firstItem="qjj-nG-lKd" firstAttribute="leading" secondItem="NJp-42-NB1" secondAttribute="trailing" constant="10" id="uDJ-x6-SLv"/>
                                                                         <constraint firstItem="pEI-d9-Xjk" firstAttribute="top" secondItem="yau-Mr-759" secondAttribute="top" constant="8" id="vAk-Da-Oub"/>
                                                                         <constraint firstItem="sfI-ih-0de" firstAttribute="centerY" secondItem="Inc-8a-8PS" secondAttribute="centerY" id="ycw-hv-OwW"/>
                                                                     </constraints>
@@ -1667,7 +1677,7 @@
                                                                 </constraints>
                                                             </box>
                                                             <box boxType="custom" cornerRadius="4" translatesAutoresizingMaskIntoConstraints="NO" id="N5U-HN-G3n">
-                                                                <rect key="frame" x="17" y="139" width="880" height="180"/>
+                                                                <rect key="frame" x="17" y="127" width="880" height="180"/>
                                                                 <view key="contentView" id="3kA-x9-Ykk">
                                                                     <rect key="frame" x="1" y="1" width="878" height="178"/>
                                                                     <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
