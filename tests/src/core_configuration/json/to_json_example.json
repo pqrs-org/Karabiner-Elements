@@ -288,7 +288,7 @@
             ],
             "name": "Default profile",
             "parameters": {
-                "delay_milliseconds_before_open_device": 1000,
+                "delay_milliseconds_before_open_device": 500,
                 "dummy": true
             },
             "selected": true,
@@ -427,7 +427,7 @@
             ],
             "name": "Empty",
             "parameters": {
-                "delay_milliseconds_before_open_device": 3000
+                "delay_milliseconds_before_open_device": 1000
             },
             "selected": false,
             "simple_modifications": [],
@@ -548,7 +548,7 @@
             ],
             "name": "fn_function_keys v1",
             "parameters": {
-                "delay_milliseconds_before_open_device": 3000
+                "delay_milliseconds_before_open_device": 1000
             },
             "selected": false,
             "simple_modifications": [],

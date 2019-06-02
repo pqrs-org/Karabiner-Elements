@@ -586,7 +586,7 @@ TEST_CASE("profile.to_json") {
         {"name", ""},
         {"selected", false},
         {"parameters", nlohmann::json::object({
-                           {"delay_milliseconds_before_open_device", 3000},
+                           {"delay_milliseconds_before_open_device", 1000},
                        })},
         {"simple_modifications", nlohmann::json::array()},
         {"fn_function_keys", get_default_fn_function_keys_json()},

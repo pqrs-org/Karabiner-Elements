@@ -8,7 +8,7 @@ namespace details {
 class parameters final {
 public:
   parameters(void) : json_(nlohmann::json::object()),
-                     delay_milliseconds_before_open_device_(3000) {
+                     delay_milliseconds_before_open_device_(1000) {
   }
 
   const nlohmann::json& get_json(void) const {
