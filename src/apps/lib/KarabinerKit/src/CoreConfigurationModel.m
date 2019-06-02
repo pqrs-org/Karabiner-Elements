@@ -96,6 +96,16 @@
   libkrbn_core_configuration_erase_profile(self.libkrbnCoreConfiguration, index);
 }
 
+- (NSInteger)selectedProfileParametersDelayMillisecondsBeforeOpenDevice {
+  return libkrbn_core_configuration_get_selected_profile_parameters_delay_milliseconds_before_open_device(
+      self.libkrbnCoreConfiguration);
+}
+
+- (void)setSelectedProfileParametersDelayMillisecondsBeforeOpenDevice:(NSInteger)value {
+  libkrbn_core_configuration_set_selected_profile_parameters_delay_milliseconds_before_open_device(
+      self.libkrbnCoreConfiguration, (int)(value));
+}
+
 - (libkrbn_device_identifiers*)deviceIdentifiersByIndex:(NSInteger)connectedDeviceIndex
                                       deviceIdentifiers:(libkrbn_device_identifiers*)deviceIdentifiers {
   if (deviceIdentifiers) {

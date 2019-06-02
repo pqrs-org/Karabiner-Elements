@@ -22,6 +22,8 @@
 - (void)addProfile;
 - (void)removeProfileAtIndex:(NSUInteger)index;
 
+@property NSInteger selectedProfileParametersDelayMillisecondsBeforeOpenDevice;
+
 - (NSUInteger)selectedProfileSimpleModificationsCount:(NSInteger)connectedDeviceIndex;
 - (NSString*)selectedProfileSimpleModificationFromJsonStringAtIndex:(NSUInteger)index
                                                connectedDeviceIndex:(NSInteger)connectedDeviceIndex;
