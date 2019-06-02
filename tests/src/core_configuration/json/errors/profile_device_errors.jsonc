@@ -35,16 +35,6 @@
         "error": "`manipulate_caps_lock_led` must be boolean, but is `null`"
     },
 
-    // delay_milliseconds_before_open_device
-
-    {
-        "class": "devices",
-        "input": {
-            "delay_milliseconds_before_open_device": null
-        },
-        "error": "`delay_milliseconds_before_open_device` must be number, but is `null`"
-    },
-
     // disable_built_in_keyboard_if_exists
 
     {
