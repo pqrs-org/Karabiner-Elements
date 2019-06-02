@@ -233,8 +233,6 @@ public:
       logger_unique_filter_.reset();
     });
 
-    hid_manager_->async_start();
-
     notification_message_manager_ = std::make_shared<device_grabber_details::notification_message_manager>(
         weak_console_user_server_client);
   }
@@ -355,14 +353,6 @@ public:
       }
 
       logger::get_logger()->info("Connected devices are ungrabbed");
-    });
-  }
-
-  void async_unset_profile(void) {
-    enqueue_to_dispatcher([this] {
-      profile_ = core_configuration::details::profile(nlohmann::json::object());
-
-      manipulator_managers_connector_.invalidate_manipulators();
     });
   }
 
@@ -753,6 +743,12 @@ private:
 
   void set_profile(const core_configuration::details::profile& profile) {
     profile_ = profile;
+
+    if (hid_manager_) {
+      hid_manager_->async_set_device_matched_delay(
+          profile_.get_parameters().get_delay_milliseconds_before_open_device());
+      hid_manager_->async_start();
+    }
 
     simple_modifications_manipulator_manager_->update(profile_);
     update_complex_modifications_manipulators();
