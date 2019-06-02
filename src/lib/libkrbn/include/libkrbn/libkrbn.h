@@ -81,6 +81,11 @@ const char* libkrbn_core_configuration_get_selected_profile_name(libkrbn_core_co
 void libkrbn_core_configuration_push_back_profile(libkrbn_core_configuration* p);
 void libkrbn_core_configuration_erase_profile(libkrbn_core_configuration* p, size_t index);
 
+// profile::parameters
+
+int libkrbn_core_configuration_get_selected_profile_parameters_delay_milliseconds_before_open_device(libkrbn_core_configuration* p);
+void libkrbn_core_configuration_set_selected_profile_parameters_delay_milliseconds_before_open_device(libkrbn_core_configuration* p, int value);
+
 // profile::simple_modifications
 
 size_t libkrbn_core_configuration_get_selected_profile_simple_modifications_size(libkrbn_core_configuration* p,

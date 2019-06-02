@@ -139,6 +139,20 @@ void libkrbn_core_configuration_erase_profile(libkrbn_core_configuration* p, siz
   }
 }
 
+int libkrbn_core_configuration_get_selected_profile_parameters_delay_milliseconds_before_open_device(libkrbn_core_configuration* p) {
+  if (auto c = reinterpret_cast<libkrbn_core_configuration_class*>(p)) {
+    return c->get_core_configuration().get_selected_profile().get_parameters().get_delay_milliseconds_before_open_device().count();
+  }
+  return 0;
+}
+
+void libkrbn_core_configuration_set_selected_profile_parameters_delay_milliseconds_before_open_device(libkrbn_core_configuration* p, int value) {
+  if (auto c = reinterpret_cast<libkrbn_core_configuration_class*>(p)) {
+    c->get_core_configuration().get_selected_profile().get_parameters().set_delay_milliseconds_before_open_device(
+        std::chrono::milliseconds(value));
+  }
+}
+
 size_t libkrbn_core_configuration_get_selected_profile_simple_modifications_size(libkrbn_core_configuration* p,
                                                                                  const libkrbn_device_identifiers* device_identifiers) {
   if (auto m = find_simple_modifications(p, device_identifiers)) {
