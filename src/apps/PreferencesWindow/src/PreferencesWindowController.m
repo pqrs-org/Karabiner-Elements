@@ -23,6 +23,8 @@
 @property(weak) IBOutlet LogFileTextViewController* logFileTextViewController;
 @property(weak) IBOutlet NSButton* useFkeysAsStandardFunctionKeysButton;
 @property(weak) IBOutlet NSTableView* devicesTableView;
+@property(weak) IBOutlet NSTextField* delayBeforeOpenDeviceText;
+@property(weak) IBOutlet NSStepper* delayBeforeOpenDeviceStepper;
 @property(weak) IBOutlet NSTableView* devicesExternalKeyboardTableView;
 @property(weak) IBOutlet NSTableView* fnFunctionKeysTableView;
 @property(weak) IBOutlet NSTableView* simpleModificationsTableView;
@@ -59,6 +61,7 @@
   [self.complexModificationsRulesTableViewController setup];
   [self.complexModificationsParametersTabController setup];
   [self.devicesTableViewController setup];
+  [self setupDevicesParameters:nil];
   [self setupVirtualHIDKeyboardConfiguration:nil];
   [self.profilesTableViewController setup];
   [self setupMiscTabControls];
@@ -72,6 +75,7 @@
                                                                                      @strongify(self);
                                                                                      if (!self) return;
 
+                                                                                     [self setupDevicesParameters:nil];
                                                                                      [self setupVirtualHIDKeyboardConfiguration:nil];
                                                                                      [self setupMiscTabControls];
                                                                                    }];
@@ -110,6 +114,37 @@
 - (void)show {
   [self.window makeKeyAndOrderFront:self];
   [NSApp activateIgnoringOtherApps:YES];
+}
+
+- (void)setupDevicesParameters:(id)sender {
+  KarabinerKitCoreConfigurationModel* coreConfigurationModel = [KarabinerKitConfigurationManager sharedManager].coreConfigurationModel;
+  NSInteger delayBeforeOpenDevice = coreConfigurationModel.selectedProfileParametersDelayMillisecondsBeforeOpenDevice;
+
+  {
+    NSTextField* t = self.delayBeforeOpenDeviceText;
+    if (sender != t) {
+      t.stringValue = @(delayBeforeOpenDevice).stringValue;
+    }
+  }
+  {
+    NSStepper* s = self.delayBeforeOpenDeviceStepper;
+    if (sender != s) {
+      s.integerValue = delayBeforeOpenDevice;
+    }
+  }
+}
+
+- (IBAction)changeDelayBeforeOpenDevice:(NSControl*)sender {
+  // If sender.stringValue is empty, set "0"
+  if (sender.integerValue == 0) {
+    sender.integerValue = 0;
+  }
+
+  KarabinerKitCoreConfigurationModel* coreConfigurationModel = [KarabinerKitConfigurationManager sharedManager].coreConfigurationModel;
+  coreConfigurationModel.selectedProfileParametersDelayMillisecondsBeforeOpenDevice = sender.integerValue;
+  [coreConfigurationModel save];
+
+  [self setupDevicesParameters:sender];
 }
 
 - (void)setupVirtualHIDKeyboardConfiguration:(id)sender {
