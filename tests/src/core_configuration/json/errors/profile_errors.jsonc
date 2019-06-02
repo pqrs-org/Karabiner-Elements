@@ -25,6 +25,16 @@
         "error": "`selected` must be boolean, but is `null`"
     },
 
+    // parameters
+
+    {
+        "class": "profile",
+        "input": {
+            "parameters": null
+        },
+        "error": "`parameters` error: json must be object, but is `null`"
+    },
+
     // simple_modifications
 
     {

@@ -1,0 +1,17 @@
+[
+    {
+        "class": "parameters",
+        "input": null,
+        "error": "json must be object, but is `null`"
+    },
+
+    // delay_milliseconds_before_open_device
+
+    {
+        "class": "parameters",
+        "input": {
+            "delay_milliseconds_before_open_device": null
+        },
+        "error": "`delay_milliseconds_before_open_device` must be number, but is `null`"
+    }
+]

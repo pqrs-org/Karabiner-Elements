@@ -6,6 +6,10 @@
     "profiles": [
         {
             "name": "Default profile",
+            "parameters": {
+                "delay_milliseconds_before_open_device": 1000,
+                "dummy": true
+            },
             "selected": true,
             "simple_modifications": [
                 {

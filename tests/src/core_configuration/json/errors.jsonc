@@ -2,5 +2,6 @@
     "errors/profile_complex_modifications_errors.jsonc",
     "errors/profile_device_errors.jsonc",
     "errors/profile_errors.jsonc",
+    "errors/profile_parameters_errors.jsonc",
     "errors/profile_simple_modifications_errors.jsonc"
 ]

@@ -10,6 +10,8 @@ void handle_json(const nlohmann::json& json) {
     krbn::core_configuration::details::complex_modifications(json.at("input"));
   } else if (c == "devices") {
     krbn::core_configuration::details::device(json.at("input"));
+  } else if (c == "parameters") {
+    json.at("input").get<krbn::core_configuration::details::parameters>();
   } else if (c == "profile") {
     krbn::core_configuration::details::profile(json.at("input"));
   } else if (c == "simple_modifications") {
