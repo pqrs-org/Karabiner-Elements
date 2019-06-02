@@ -124,7 +124,6 @@
                     },
                     "ignore": false,
                     "manipulate_caps_lock_led": false,
-                    "delay_milliseconds_before_open_device": 3000,
                     "simple_modifications": [
                         {
                             "from": {
@@ -147,7 +146,6 @@
                     },
                     "ignore": true,
                     "manipulate_caps_lock_led": true,
-                    "delay_milliseconds_before_open_device": 1500,
                     "simple_modifications": []
                 },
                 {
@@ -178,7 +176,6 @@
                     },
                     "ignore": false,
                     "manipulate_caps_lock_led": false,
-                    "delay_milliseconds_before_open_device": 3000,
                     "simple_modifications": [
                         {
                             "from": {

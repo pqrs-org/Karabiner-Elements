@@ -103,7 +103,6 @@ TEST_CASE("device") {
     REQUIRE(device.get_identifiers().get_is_pointing_device() == false);
     REQUIRE(device.get_ignore() == false);
     REQUIRE(device.get_manipulate_caps_lock_led() == false);
-    REQUIRE(device.get_delay_milliseconds_before_open_device() == std::chrono::milliseconds(3000));
     REQUIRE(device.get_disable_built_in_keyboard_if_exists() == false);
   }
 
@@ -119,7 +118,6 @@ TEST_CASE("device") {
         {"disable_built_in_keyboard_if_exists", true},
         {"ignore", true},
         {"manipulate_caps_lock_led", true},
-        {"delay_milliseconds_before_open_device", 500},
     });
     krbn::core_configuration::details::device device(json);
     REQUIRE(device.get_identifiers().get_vendor_id() == krbn::vendor_id(1234));
@@ -128,7 +126,6 @@ TEST_CASE("device") {
     REQUIRE(device.get_identifiers().get_is_pointing_device() == true);
     REQUIRE(device.get_ignore() == true);
     REQUIRE(device.get_manipulate_caps_lock_led() == true);
-    REQUIRE(device.get_delay_milliseconds_before_open_device() == std::chrono::milliseconds(500));
     REQUIRE(device.get_disable_built_in_keyboard_if_exists() == true);
   }
 
@@ -246,7 +243,6 @@ TEST_CASE("device.to_json") {
         {"ignore", false},
         {"fn_function_keys", nlohmann::json::array()},
         {"manipulate_caps_lock_led", false},
-        {"delay_milliseconds_before_open_device", 3000},
         {"simple_modifications", nlohmann::json::array()},
     });
     REQUIRE(device.to_json() == expected);
@@ -269,7 +265,6 @@ TEST_CASE("device.to_json") {
                         }},
         {"ignore", true},
         {"manipulate_caps_lock_led", true},
-        {"delay_milliseconds_before_open_device", 1500},
     });
     krbn::core_configuration::details::device device(json);
     nlohmann::json expected({
@@ -300,7 +295,6 @@ TEST_CASE("device.to_json") {
                         }},
         {"ignore", true},
         {"manipulate_caps_lock_led", true},
-        {"delay_milliseconds_before_open_device", 1500},
         {"simple_modifications", nlohmann::json::array()},
     });
     REQUIRE(device.to_json() == expected);

@@ -336,7 +336,6 @@ TEST_CASE("profile") {
                             {"ignore", true},
                             {"disable_built_in_keyboard_if_exists", true},
                             {"manipulate_caps_lock_led", false},
-                            {"delay_milliseconds_before_open_device", 1500},
                         },
                         // duplicated identifiers
                         {
@@ -361,7 +360,6 @@ TEST_CASE("profile") {
                             {"ignore", true},
                             {"disable_built_in_keyboard_if_exists", true},
                             {"manipulate_caps_lock_led", false},
-                            {"delay_milliseconds_before_open_device", 2000},
                         },
                         {
                             {"identifiers", {
@@ -385,7 +383,6 @@ TEST_CASE("profile") {
                             {"ignore", false},
                             {"disable_built_in_keyboard_if_exists", true},
                             {"manipulate_caps_lock_led", false},
-                            {"delay_milliseconds_before_open_device", 2500},
                         },
                     }},
     });
@@ -620,7 +617,6 @@ TEST_CASE("profile.to_json") {
                             {"ignore", true},
                             {"disable_built_in_keyboard_if_exists", true},
                             {"manipulate_caps_lock_led", false},
-                            {"delay_milliseconds_before_open_device", 3000},
                         },
                     }},
     });
@@ -787,7 +783,6 @@ TEST_CASE("profile.to_json") {
                             {"disable_built_in_keyboard_if_exists", true},
                             {"fn_function_keys", nlohmann::json::array()},
                             {"manipulate_caps_lock_led", false},
-                            {"delay_milliseconds_before_open_device", 3000},
                             {"simple_modifications", nlohmann::json::array()},
                         },
                     }},
