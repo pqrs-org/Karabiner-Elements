@@ -2,6 +2,7 @@
 
 #include "profile/complex_modifications.hpp"
 #include "profile/device.hpp"
+#include "profile/parameters.hpp"
 #include "profile/simple_modifications.hpp"
 #include "profile/virtual_hid_keyboard.hpp"
 #include <pqrs/json.hpp>
@@ -40,6 +41,13 @@ public:
 
         selected_ = value.get<bool>();
 
+      } else if (key == "parameters") {
+        try {
+          parameters_ = value.get<parameters>();
+        } catch (const pqrs::json::unmarshal_error& e) {
+          throw pqrs::json::unmarshal_error(fmt::format("`{0}` error: {1}", key, e.what()));
+        }
+
       } else if (key == "simple_modifications") {
         try {
           simple_modifications_.update(value);
@@ -63,7 +71,7 @@ public:
 
       } else if (key == "virtual_hid_keyboard") {
         try {
-          virtual_hid_keyboard_ = virtual_hid_keyboard(value);
+          virtual_hid_keyboard_ = value.get<virtual_hid_keyboard>();
         } catch (const pqrs::json::unmarshal_error& e) {
           throw pqrs::json::unmarshal_error(fmt::format("`{0}` error: {1}", key, e.what()));
         }
@@ -142,6 +150,7 @@ public:
     auto j = json_;
     j["name"] = name_;
     j["selected"] = selected_;
+    j["parameters"] = parameters_;
     j["simple_modifications"] = simple_modifications_.to_json();
     j["fn_function_keys"] = fn_function_keys_.to_json();
     j["complex_modifications"] = complex_modifications_.to_json();
@@ -153,6 +162,7 @@ public:
   const std::string& get_name(void) const {
     return name_;
   }
+
   void set_name(const std::string& value) {
     name_ = value;
   }
@@ -160,13 +170,23 @@ public:
   bool get_selected(void) const {
     return selected_;
   }
+
   void set_selected(bool value) {
     selected_ = value;
+  }
+
+  const details::parameters& get_parameters(void) const {
+    return parameters_;
+  }
+
+  details::parameters& get_parameters(void) {
+    return const_cast<details::parameters&>(static_cast<const profile&>(*this).get_parameters());
   }
 
   const details::simple_modifications& get_simple_modifications(void) const {
     return simple_modifications_;
   }
+
   details::simple_modifications& get_simple_modifications(void) {
     return const_cast<details::simple_modifications&>(static_cast<const profile&>(*this).get_simple_modifications());
   }
@@ -179,6 +199,7 @@ public:
     }
     return nullptr;
   }
+
   details::simple_modifications* find_simple_modifications(const device_identifiers& identifiers) {
     add_device(identifiers);
 
@@ -188,6 +209,7 @@ public:
   const details::simple_modifications& get_fn_function_keys(void) const {
     return fn_function_keys_;
   }
+
   details::simple_modifications& get_fn_function_keys(void) {
     return const_cast<details::simple_modifications&>(static_cast<const profile&>(*this).get_fn_function_keys());
   }
@@ -200,6 +222,7 @@ public:
     }
     return nullptr;
   }
+
   details::simple_modifications* find_fn_function_keys(const device_identifiers& identifiers) {
     add_device(identifiers);
 
@@ -209,15 +232,19 @@ public:
   const details::complex_modifications& get_complex_modifications(void) const {
     return complex_modifications_;
   }
+
   void push_back_complex_modifications_rule(const details::complex_modifications_rule& rule) {
     complex_modifications_.push_back_rule(rule);
   }
+
   void erase_complex_modifications_rule(size_t index) {
     complex_modifications_.erase_rule(index);
   }
+
   void swap_complex_modifications_rules(size_t index1, size_t index2) {
     complex_modifications_.swap_rules(index1, index2);
   }
+
   void set_complex_modifications_parameter(const std::string& name, int value) {
     complex_modifications_.set_parameter_value(name, value);
   }
@@ -225,6 +252,7 @@ public:
   const details::virtual_hid_keyboard& get_virtual_hid_keyboard(void) const {
     return virtual_hid_keyboard_;
   }
+
   details::virtual_hid_keyboard& get_virtual_hid_keyboard(void) {
     return virtual_hid_keyboard_;
   }
@@ -245,6 +273,7 @@ public:
     }));
     return d.get_ignore();
   }
+
   void set_device_ignore(const device_identifiers& identifiers,
                          bool ignore) {
     add_device(identifiers);
@@ -269,6 +298,7 @@ public:
     }));
     return d.get_manipulate_caps_lock_led();
   }
+
   void set_device_manipulate_caps_lock_led(const device_identifiers& identifiers,
                                            bool manipulate_caps_lock_led) {
     add_device(identifiers);
@@ -289,6 +319,7 @@ public:
     }
     return false;
   }
+
   void set_device_disable_built_in_keyboard_if_exists(const device_identifiers& identifiers,
                                                       bool disable_built_in_keyboard_if_exists) {
     add_device(identifiers);
@@ -318,6 +349,7 @@ private:
   nlohmann::json json_;
   std::string name_;
   bool selected_;
+  details::parameters parameters_;
   details::simple_modifications simple_modifications_;
   details::simple_modifications fn_function_keys_;
   details::complex_modifications complex_modifications_;

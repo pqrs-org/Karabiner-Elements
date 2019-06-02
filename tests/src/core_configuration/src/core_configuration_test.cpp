@@ -585,6 +585,9 @@ TEST_CASE("profile.to_json") {
         {"devices", nlohmann::json::array()},
         {"name", ""},
         {"selected", false},
+        {"parameters", nlohmann::json::object({
+                           {"delay_milliseconds_before_open_device", 3000},
+                       })},
         {"simple_modifications", nlohmann::json::array()},
         {"fn_function_keys", get_default_fn_function_keys_json()},
         {"virtual_hid_keyboard", get_default_virtual_hid_keyboard_json()},
@@ -623,6 +626,8 @@ TEST_CASE("profile.to_json") {
     krbn::core_configuration::details::profile profile(json);
     profile.set_name("profile 1");
     profile.set_selected(true);
+
+    profile.get_parameters().set_delay_milliseconds_before_open_device(std::chrono::milliseconds(500));
 
     profile.get_simple_modifications().push_back_pair();
     // {
@@ -789,6 +794,9 @@ TEST_CASE("profile.to_json") {
         {"dummy", {{"keep_me", true}}},
         {"name", "profile 1"},
         {"selected", true},
+        {"parameters", nlohmann::json::object({
+                           {"delay_milliseconds_before_open_device", 500},
+                       })},
         {"simple_modifications", nlohmann::json::array()},
         {"fn_function_keys", expected_fn_function_keys},
         {"virtual_hid_keyboard", expected_virtual_hid_keyboard},
