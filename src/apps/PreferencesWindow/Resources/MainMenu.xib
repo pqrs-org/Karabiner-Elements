@@ -1647,10 +1647,10 @@
                                                                             <imageCell key="cell" refusesFirstResponder="YES" alignment="left" imageScaling="proportionallyUpOrDown" image="ic_warning_18pt" id="ePT-HK-gd3"/>
                                                                         </imageView>
                                                                         <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" allowsCharacterPickerTouchBarItem="YES" translatesAutoresizingMaskIntoConstraints="NO" id="qjj-nG-lKd">
-                                                                            <rect key="frame" x="48" y="7" width="750" height="34"/>
+                                                                            <rect key="frame" x="48" y="7" width="801" height="34"/>
                                                                             <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" id="pcV-zf-cXs">
                                                                                 <font key="font" metaFont="system"/>
-                                                                                <string key="title">Setting insufficient delay causes a device will become unusable after Karabiner-Elements is quitted due to macOS problem.
+                                                                                <string key="title">Setting insufficient delay (e.g., 0) causes a device will become unusable after Karabiner-Elements is quitted due to macOS problem.
 (If you face the problem, you can solve it by unplugging the device and plugging it again.)</string>
                                                                                 <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
                                                                                 <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
