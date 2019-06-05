@@ -6,14 +6,22 @@
 TEST_CASE("key_down_up_valued_event") {
   {
     krbn::key_down_up_valued_event e(krbn::key_code::a);
+    REQUIRE(e.modifier_flag() == false);
+    REQUIRE(nlohmann::json(e).get<krbn::key_down_up_valued_event>() == e);
+  }
+  {
+    krbn::key_down_up_valued_event e(krbn::key_code::left_shift);
+    REQUIRE(e.modifier_flag() == true);
     REQUIRE(nlohmann::json(e).get<krbn::key_down_up_valued_event>() == e);
   }
   {
     krbn::key_down_up_valued_event e(krbn::consumer_key_code::mute);
+    REQUIRE(e.modifier_flag() == false);
     REQUIRE(nlohmann::json(e).get<krbn::key_down_up_valued_event>() == e);
   }
   {
     krbn::key_down_up_valued_event e(krbn::pointing_button::button1);
+    REQUIRE(e.modifier_flag() == false);
     REQUIRE(nlohmann::json(e).get<krbn::key_down_up_valued_event>() == e);
   }
   {

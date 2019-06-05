@@ -36,6 +36,15 @@ public:
     return mpark::get_if<T>(&value_);
   }
 
+  bool modifier_flag(void) const {
+    if (auto&& v = find<key_code>()) {
+      if (auto&& m = make_modifier_flag(*v)) {
+        return true;
+      }
+    }
+    return false;
+  }
+
   bool operator==(const key_down_up_valued_event& other) const {
     return value_ == other.value_;
   }
