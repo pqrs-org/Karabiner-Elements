@@ -486,7 +486,7 @@ private:
             *ev,
             e.get_event_type(),
             e.get_event_time_stamp().get_time_stamp(),
-            device_state::ungrabbed);
+            device_state::grabbed);
       }
 
       if (!entry->get_disabled()) {
