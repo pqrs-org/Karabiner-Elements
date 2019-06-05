@@ -10,12 +10,14 @@ TEST_CASE("orphan_key_up_events_manager") {
 
   REQUIRE(m.update(krbn::key_down_up_valued_event(krbn::key_code::a),
                    krbn::event_type::key_down,
-                   krbn::absolute_time_point(1000)) == false);
+                   krbn::absolute_time_point(1000),
+                   krbn::device_state::grabbed) == false);
   REQUIRE(m.find_orphan_key_up_event() == std::nullopt);
 
   REQUIRE(m.update(krbn::key_down_up_valued_event(krbn::key_code::a),
                    krbn::event_type::key_up,
-                   krbn::absolute_time_point(1010)) == false);
+                   krbn::absolute_time_point(1010),
+                   krbn::device_state::grabbed) == false);
   REQUIRE(m.find_orphan_key_up_event() == std::nullopt);
 
   // ----------------------------------------
@@ -23,27 +25,32 @@ TEST_CASE("orphan_key_up_events_manager") {
 
   REQUIRE(m.update(krbn::key_down_up_valued_event(krbn::key_code::b),
                    krbn::event_type::key_up,
-                   krbn::absolute_time_point(1100)) == true);
+                   krbn::absolute_time_point(1100),
+                   krbn::device_state::grabbed) == true);
   REQUIRE(m.find_orphan_key_up_event() == krbn::key_down_up_valued_event(krbn::key_code::b));
 
   REQUIRE(m.update(krbn::key_down_up_valued_event(krbn::key_code::b),
                    krbn::event_type::key_down,
-                   krbn::absolute_time_point(1110)) == false);
+                   krbn::absolute_time_point(1110),
+                   krbn::device_state::grabbed) == false);
   REQUIRE(m.find_orphan_key_up_event() == krbn::key_down_up_valued_event(krbn::key_code::b));
 
   REQUIRE(m.update(krbn::key_down_up_valued_event(krbn::key_code::b),
                    krbn::event_type::key_up,
-                   krbn::absolute_time_point(1120)) == true);
+                   krbn::absolute_time_point(1120),
+                   krbn::device_state::grabbed) == true);
   REQUIRE(m.find_orphan_key_up_event() == std::nullopt);
 
   REQUIRE(m.update(krbn::key_down_up_valued_event(krbn::key_code::b),
                    krbn::event_type::key_down,
-                   krbn::absolute_time_point(1130)) == false);
+                   krbn::absolute_time_point(1130),
+                   krbn::device_state::grabbed) == false);
   REQUIRE(m.find_orphan_key_up_event() == std::nullopt);
 
   REQUIRE(m.update(krbn::key_down_up_valued_event(krbn::key_code::b),
                    krbn::event_type::key_up,
-                   krbn::absolute_time_point(1140)) == false);
+                   krbn::absolute_time_point(1140),
+                   krbn::device_state::grabbed) == false);
   REQUIRE(m.find_orphan_key_up_event() == std::nullopt);
 
   // ----------------------------------------
@@ -51,12 +58,14 @@ TEST_CASE("orphan_key_up_events_manager") {
 
   REQUIRE(m.update(krbn::key_down_up_valued_event(krbn::key_code::c),
                    krbn::event_type::key_up,
-                   krbn::absolute_time_point(900)) == false);
+                   krbn::absolute_time_point(900),
+                   krbn::device_state::grabbed) == false);
   REQUIRE(m.find_orphan_key_up_event() == std::nullopt);
 
   REQUIRE(m.update(krbn::key_down_up_valued_event(krbn::key_code::c),
                    krbn::event_type::key_up,
-                   krbn::absolute_time_point(1200)) == true);
+                   krbn::absolute_time_point(1200),
+                   krbn::device_state::grabbed) == true);
   REQUIRE(m.find_orphan_key_up_event() == krbn::key_down_up_valued_event(krbn::key_code::c));
 
   // ----------------------------------------
@@ -67,7 +76,8 @@ TEST_CASE("orphan_key_up_events_manager") {
 
   REQUIRE(m.update(krbn::key_down_up_valued_event(krbn::key_code::a),
                    krbn::event_type::key_up,
-                   krbn::absolute_time_point(500)) == true);
+                   krbn::absolute_time_point(500),
+                   krbn::device_state::grabbed) == true);
   REQUIRE(m.find_orphan_key_up_event() == krbn::key_down_up_valued_event(krbn::key_code::a));
 }
 
@@ -79,16 +89,19 @@ TEST_CASE("orphan_key_up_events_manager key_down is dropped") {
 
   REQUIRE(m.update(krbn::key_down_up_valued_event(krbn::key_code::a),
                    krbn::event_type::key_down,
-                   krbn::absolute_time_point(1000)) == false);
+                   krbn::absolute_time_point(1000),
+                   krbn::device_state::grabbed) == false);
   REQUIRE(m.find_orphan_key_up_event() == std::nullopt);
 
   REQUIRE(m.update(krbn::key_down_up_valued_event(krbn::key_code::a),
                    krbn::event_type::key_up,
-                   krbn::absolute_time_point(1010)) == false);
+                   krbn::absolute_time_point(1010),
+                   krbn::device_state::grabbed) == false);
   REQUIRE(m.find_orphan_key_up_event() == std::nullopt);
 
   REQUIRE(m.update(krbn::key_down_up_valued_event(krbn::key_code::a),
                    krbn::event_type::key_up,
-                   krbn::absolute_time_point(1020)) == false);
+                   krbn::absolute_time_point(1020),
+                   krbn::device_state::grabbed) == false);
   REQUIRE(m.find_orphan_key_up_event() == std::nullopt);
 }
