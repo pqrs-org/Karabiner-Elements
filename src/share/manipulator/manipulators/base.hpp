@@ -57,7 +57,7 @@ public:
                                             const event_queue::event& original_event,
                                             event_queue::queue& output_event_queue) {
     for (const auto& m : modifiers) {
-      if (auto key_code = types::make_key_code(m)) {
+      if (auto key_code = make_key_code(m)) {
         auto t = event_time_stamp;
         t.set_time_stamp(t.get_time_stamp() + time_stamp_delay++);
 

@@ -16,7 +16,7 @@ public:
            event_type event_type) {
     switch (event_type) {
       case event_type::key_down:
-        if (types::make_modifier_flag(hid_usage_page, hid_usage) == std::nullopt) {
+        if (make_modifier_flag(hid_usage_page, hid_usage) == std::nullopt) {
           repeating_key_ = std::make_pair(hid_usage_page, hid_usage);
         }
         break;

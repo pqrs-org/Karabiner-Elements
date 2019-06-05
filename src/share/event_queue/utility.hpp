@@ -46,7 +46,7 @@ static inline std::shared_ptr<queue> make_queue(device_id device_id,
   for (const auto& v : hid_values) {
     if (auto usage_page = v.get_hid_usage_page()) {
       if (auto usage = v.get_hid_usage()) {
-        if (auto key_code = types::make_key_code(*usage_page, *usage)) {
+        if (auto key_code = make_key_code(*usage_page, *usage)) {
           event_queue::event event(*key_code);
           result->emplace_back_entry(device_id,
                                      event_time_stamp(v.get_time_stamp()),

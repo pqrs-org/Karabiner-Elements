@@ -46,8 +46,8 @@ public:
         continue;
       }
 
-      if (auto key_code = types::make_key_code(hid_usage_page, hid_usage(k))) {
-        json.push_back(types::make_key_code_name(*key_code));
+      if (auto key_code = make_key_code(hid_usage_page, hid_usage(k))) {
+        json.push_back(make_key_code_name(*key_code));
         continue;
       }
 

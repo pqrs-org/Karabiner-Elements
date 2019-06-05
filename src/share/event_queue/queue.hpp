@@ -36,7 +36,7 @@ public:
     // Update modifier_flag_manager
 
     if (auto key_code = event.get_key_code()) {
-      if (auto modifier_flag = types::make_modifier_flag(*key_code)) {
+      if (auto modifier_flag = make_modifier_flag(*key_code)) {
         auto type = (event_type == event_type::key_down ? modifier_flag_manager::active_modifier_flag::type::increase
                                                         : modifier_flag_manager::active_modifier_flag::type::decrease);
         modifier_flag_manager::active_modifier_flag active_modifier_flag(type,
@@ -222,8 +222,8 @@ public:
       auto key_code2 = v2.get_event().get_key_code();
 
       if (key_code1 && key_code2) {
-        auto modifier_flag1 = types::make_modifier_flag(*key_code1);
-        auto modifier_flag2 = types::make_modifier_flag(*key_code2);
+        auto modifier_flag1 = make_modifier_flag(*key_code1);
+        auto modifier_flag2 = make_modifier_flag(*key_code2);
 
         // If either modifier_flag1 or modifier_flag2 is modifier, reorder it before.
 

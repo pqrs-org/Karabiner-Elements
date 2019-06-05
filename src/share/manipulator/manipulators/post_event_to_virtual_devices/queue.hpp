@@ -251,13 +251,13 @@ public:
                               absolute_time_point time_stamp) {
     adjust_time_stamp(time_stamp,
                       event_type,
-                      types::make_modifier_flag(hid_usage_page, hid_usage) != std::nullopt);
+                      make_modifier_flag(hid_usage_page, hid_usage) != std::nullopt);
 
     switch (hid_usage_page) {
       case hid_usage_page::keyboard_or_keypad: {
         bool modify_keys = true;
 
-        if (auto m = types::make_modifier_flag(hid_usage_page, hid_usage)) {
+        if (auto m = make_modifier_flag(hid_usage_page, hid_usage)) {
           if (auto modifier = types::make_hid_report_modifier(*m)) {
             switch (event_type) {
               case event_type::key_down:

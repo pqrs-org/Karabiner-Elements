@@ -17,7 +17,7 @@ inline bool is_last_to_event_modifier_key_event(const std::vector<to_event_defin
 
   if (auto event = to_events.back().get_event_definition().to_event()) {
     if (auto key_code = event->get_key_code()) {
-      if (types::make_modifier_flag(*key_code) != std::nullopt) {
+      if (make_modifier_flag(*key_code) != std::nullopt) {
         return true;
       }
     }
@@ -127,7 +127,7 @@ inline void post_events_at_key_down(const event_queue::entry& front_input_event,
 
       bool is_modifier_key_event = false;
       if (auto key_code = event->get_key_code()) {
-        if (types::make_modifier_flag(*key_code) != std::nullopt) {
+        if (make_modifier_flag(*key_code) != std::nullopt) {
           is_modifier_key_event = true;
         }
       }

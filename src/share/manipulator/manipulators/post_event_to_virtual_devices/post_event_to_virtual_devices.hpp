@@ -52,7 +52,7 @@ public:
       {
         std::optional<modifier_flag> m;
         if (auto key_code = front_input_event.get_event().get_key_code()) {
-          m = types::make_modifier_flag(*key_code);
+          m = make_modifier_flag(*key_code);
         }
 
         if (m) {
@@ -100,7 +100,7 @@ public:
           if (auto key_code = front_input_event.get_event().get_key_code()) {
             if (auto hid_usage_page = types::make_hid_usage_page(*key_code)) {
               if (auto hid_usage = types::make_hid_usage(*key_code)) {
-                if (types::make_modifier_flag(*key_code) == std::nullopt) {
+                if (make_modifier_flag(*key_code) == std::nullopt) {
                   switch (front_input_event.get_event_type()) {
                     case event_type::key_down:
                       key_event_dispatcher_.dispatch_key_down_event(front_input_event.get_device_id(),

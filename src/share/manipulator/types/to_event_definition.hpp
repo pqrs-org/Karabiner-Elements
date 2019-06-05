@@ -86,7 +86,7 @@ public:
       auto modifier_flags = modifier_definition::get_modifier_flags(modifier);
       if (!modifier_flags.empty()) {
         auto modifier_flag = modifier_flags.front();
-        if (auto key_code = types::make_key_code(modifier_flag)) {
+        if (auto key_code = make_key_code(modifier_flag)) {
           events.emplace_back(*key_code);
         }
       }

@@ -114,7 +114,7 @@ public:
 
       case type::key_code:
         if (auto v = get_key_code()) {
-          json["key_code"] = types::make_key_code_name(*v);
+          json["key_code"] = make_key_code_name(*v);
         }
         break;
 
