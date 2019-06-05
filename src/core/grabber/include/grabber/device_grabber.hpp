@@ -320,7 +320,8 @@ public:
 
           needs_regrab |= it->second->get_orphan_key_up_events_manager()->update(event,
                                                                                  event_type,
-                                                                                 time_stamp);
+                                                                                 time_stamp,
+                                                                                 device_state::ungrabbed);
 
           if (needs_regrab) {
             grab_device(it->second);
@@ -484,7 +485,8 @@ private:
         needs_regrab |= entry->get_orphan_key_up_events_manager()->update(
             *ev,
             e.get_event_type(),
-            e.get_event_time_stamp().get_time_stamp());
+            e.get_event_time_stamp().get_time_stamp(),
+            device_state::ungrabbed);
       }
 
       if (!entry->get_disabled()) {

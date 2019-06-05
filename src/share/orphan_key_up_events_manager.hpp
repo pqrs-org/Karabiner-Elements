@@ -13,7 +13,8 @@ public:
 
   bool update(const key_down_up_valued_event& event,
               event_type t,
-              absolute_time_point time_stamp) {
+              absolute_time_point time_stamp,
+              device_state state) {
     std::lock_guard<std::mutex> lock(mutex_);
 
     // Skip old event.
