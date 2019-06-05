@@ -29,6 +29,21 @@ public:
     switch (t) {
       case event_type::key_down:
         key_down_arrived_events_.insert(event);
+
+        if (state == device_state::ungrabbed) {
+          if (event.find<key_code>()) {
+            if (event.modifier_flag()) {
+              // Do nothing
+            } else {
+              erase_except_modifier_flags<key_code>();
+            }
+          } else if (event.find<consumer_key_code>()) {
+            erase_except_modifier_flags<consumer_key_code>();
+          }
+
+          orphan_key_up_events_.insert(event);
+        }
+
         break;
 
       case event_type::key_up: {
@@ -83,6 +98,18 @@ public:
   }
 
 private:
+  template <typename T>
+  void erase_except_modifier_flags(void) {
+    auto it = std::begin(orphan_key_up_events_);
+    while (it != std::end(orphan_key_up_events_)) {
+      if (it->find<T>() && !it->modifier_flag()) {
+        it = orphan_key_up_events_.erase(it);
+      } else {
+        std::advance(it, 1);
+      }
+    }
+  }
+
   std::set<key_down_up_valued_event> orphan_key_up_events_;
   std::set<key_down_up_valued_event> key_down_arrived_events_;
   absolute_time_point last_time_stamp_;
