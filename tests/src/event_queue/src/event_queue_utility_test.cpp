@@ -8,12 +8,12 @@ TEST_CASE("utility::make_queue") {
 
   hid_values.emplace_back(krbn::hid_value(krbn::absolute_time_point(1000),
                                           1,
-                                          *krbn::types::make_hid_usage_page(krbn::key_code::spacebar),
-                                          *krbn::types::make_hid_usage(krbn::key_code::spacebar)));
+                                          *krbn::make_hid_usage_page(krbn::key_code::spacebar),
+                                          *krbn::make_hid_usage(krbn::key_code::spacebar)));
   hid_values.emplace_back(krbn::hid_value(krbn::absolute_time_point(2000),
                                           0,
-                                          *krbn::types::make_hid_usage_page(krbn::key_code::spacebar),
-                                          *krbn::types::make_hid_usage(krbn::key_code::spacebar)));
+                                          *krbn::make_hid_usage_page(krbn::key_code::spacebar),
+                                          *krbn::make_hid_usage(krbn::key_code::spacebar)));
 
   hid_values.emplace_back(krbn::hid_value(krbn::absolute_time_point(3000),
                                           1,

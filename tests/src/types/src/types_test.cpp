@@ -9,8 +9,8 @@ TEST_CASE("make_key_code") {
   REQUIRE(krbn::make_key_code_name(krbn::key_code::left_option) == std::string("left_alt"));
   REQUIRE(krbn::make_key_code_name(krbn::key_code::extra_) == std::string("(number:65536)"));
 
-  REQUIRE(krbn::types::make_hid_usage_page(krbn::key_code(1234)) == krbn::hid_usage_page::keyboard_or_keypad);
-  REQUIRE(krbn::types::make_hid_usage(krbn::key_code(1234)) == krbn::hid_usage(1234));
+  REQUIRE(krbn::make_hid_usage_page(krbn::key_code(1234)) == krbn::hid_usage_page::keyboard_or_keypad);
+  REQUIRE(krbn::make_hid_usage(krbn::key_code(1234)) == krbn::hid_usage(1234));
 
   {
     auto actual = krbn::make_key_code(krbn::hid_usage_page(kHIDPage_KeyboardOrKeypad),

@@ -98,8 +98,8 @@ public:
       switch (front_input_event.get_event().get_type()) {
         case event_queue::event::type::key_code:
           if (auto key_code = front_input_event.get_event().get_key_code()) {
-            if (auto hid_usage_page = types::make_hid_usage_page(*key_code)) {
-              if (auto hid_usage = types::make_hid_usage(*key_code)) {
+            if (auto hid_usage_page = make_hid_usage_page(*key_code)) {
+              if (auto hid_usage = make_hid_usage(*key_code)) {
                 if (make_modifier_flag(*key_code) == std::nullopt) {
                   switch (front_input_event.get_event_type()) {
                     case event_type::key_down:

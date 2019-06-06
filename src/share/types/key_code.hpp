@@ -462,6 +462,108 @@ inline std::optional<key_code> make_key_code(const hid_value& hid_value) {
   return std::nullopt;
 }
 
+inline std::optional<hid_usage_page> make_hid_usage_page(key_code key_code) {
+  switch (key_code) {
+    case key_code::fn:
+    case key_code::illumination_decrement:
+    case key_code::illumination_increment:
+    case key_code::apple_top_case_display_brightness_decrement:
+    case key_code::apple_top_case_display_brightness_increment:
+      return hid_usage_page::apple_vendor_top_case;
+
+    case key_code::dashboard:
+    case key_code::launchpad:
+    case key_code::mission_control:
+    case key_code::apple_display_brightness_decrement:
+    case key_code::apple_display_brightness_increment:
+      return hid_usage_page::apple_vendor_keyboard;
+
+    case key_code::mute:
+    case key_code::volume_decrement:
+    case key_code::volume_increment:
+    case key_code::display_brightness_decrement:
+    case key_code::display_brightness_increment:
+    case key_code::rewind:
+    case key_code::play_or_pause:
+    case key_code::fastforward:
+    case key_code::eject:
+      return hid_usage_page::consumer;
+
+    case key_code::vk_none:
+      return std::nullopt;
+
+    default:
+      return hid_usage_page::keyboard_or_keypad;
+  }
+}
+
+inline std::optional<hid_usage> make_hid_usage(key_code key_code) {
+  switch (key_code) {
+    case key_code::fn:
+      return hid_usage::av_top_case_keyboard_fn;
+
+    case key_code::illumination_decrement:
+      return hid_usage::av_top_case_illumination_down;
+
+    case key_code::illumination_increment:
+      return hid_usage::av_top_case_illumination_up;
+
+    case key_code::apple_top_case_display_brightness_decrement:
+      return hid_usage::av_top_case_brightness_down;
+
+    case key_code::apple_top_case_display_brightness_increment:
+      return hid_usage::av_top_case_brightness_up;
+
+    case key_code::dashboard:
+      return hid_usage::apple_vendor_keyboard_dashboard;
+
+    case key_code::launchpad:
+      return hid_usage::apple_vendor_keyboard_launchpad;
+
+    case key_code::mission_control:
+      return hid_usage::apple_vendor_keyboard_expose_all;
+
+    case key_code::apple_display_brightness_decrement:
+      return hid_usage::apple_vendor_keyboard_brightness_down;
+
+    case key_code::apple_display_brightness_increment:
+      return hid_usage::apple_vendor_keyboard_brightness_up;
+
+    case key_code::mute:
+      return hid_usage::csmr_mute;
+
+    case key_code::volume_decrement:
+      return hid_usage::csmr_volume_decrement;
+
+    case key_code::volume_increment:
+      return hid_usage::csmr_volume_increment;
+
+    case key_code::display_brightness_decrement:
+      return hid_usage::csmr_display_brightness_decrement;
+
+    case key_code::display_brightness_increment:
+      return hid_usage::csmr_display_brightness_increment;
+
+    case key_code::rewind:
+      return hid_usage::csmr_rewind;
+
+    case key_code::play_or_pause:
+      return hid_usage::csmr_play_or_pause;
+
+    case key_code::fastforward:
+      return hid_usage::csmr_fastforward;
+
+    case key_code::eject:
+      return hid_usage::csmr_eject;
+
+    case key_code::vk_none:
+      return std::nullopt;
+
+    default:
+      return hid_usage(key_code);
+  }
+}
+
 inline std::optional<key_code> make_key_code(modifier_flag modifier_flag) {
   switch (modifier_flag) {
     case modifier_flag::zero:
