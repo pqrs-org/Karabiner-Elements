@@ -304,10 +304,10 @@ public:
     });
   }
 
-  void async_update_orphan_key_up_events_by_observer(device_id device_id,
-                                                     const key_down_up_valued_event& event,
-                                                     event_type event_type,
-                                                     absolute_time_point time_stamp) {
+  void async_update_probable_stuck_events_by_observer(device_id device_id,
+                                                      const key_down_up_valued_event& event,
+                                                      event_type event_type,
+                                                      absolute_time_point time_stamp) {
     enqueue_to_dispatcher([this, device_id, event, event_type, time_stamp] {
       auto it = entries_.find(device_id);
       if (it != std::end(entries_)) {
@@ -318,10 +318,10 @@ public:
         if (!it->second->is_grabbed(time_stamp)) {
           bool needs_regrab = false;
 
-          needs_regrab |= it->second->get_orphan_key_up_events_manager()->update(event,
-                                                                                 event_type,
-                                                                                 time_stamp,
-                                                                                 device_state::ungrabbed);
+          needs_regrab |= it->second->get_probable_stuck_events_manager()->update(event,
+                                                                                  event_type,
+                                                                                  time_stamp,
+                                                                                  device_state::ungrabbed);
 
           if (needs_regrab) {
             grab_device(it->second);
@@ -475,14 +475,14 @@ private:
 
     if (!entry->get_first_value_arrived()) {
       entry->set_first_value_arrived(true);
-      entry->get_orphan_key_up_events_manager()->clear();
+      entry->get_probable_stuck_events_manager()->clear();
     }
 
     bool needs_regrab = false;
 
     for (const auto& e : event_queue->get_entries()) {
       if (auto ev = e.get_event().make_key_down_up_valued_event()) {
-        needs_regrab |= entry->get_orphan_key_up_events_manager()->update(
+        needs_regrab |= entry->get_probable_stuck_events_manager()->update(
             *ev,
             e.get_event_type(),
             e.get_event_time_stamp().get_time_stamp(),
@@ -610,9 +610,9 @@ private:
     }
 
     // ----------------------------------------
-    // Ungrabbable while orphan key_up event exists
+    // Ungrabbable while probable stuck events exist
 
-    if (auto event = entry->get_orphan_key_up_events_manager()->find_orphan_key_up_event()) {
+    if (auto event = entry->get_probable_stuck_events_manager()->find_probable_stuck_event()) {
       auto message = fmt::format("{0} is ignored temporarily until {1} is pressed again.",
                                  entry->get_device_name(),
                                  event->to_string());

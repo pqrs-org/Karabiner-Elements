@@ -7,7 +7,7 @@ project (karabiner_test)
 add_executable(
   karabiner_test
   src/test.cpp
-  src/orphan_key_up_events_manager_test.cpp
+  src/probable_stuck_events_manager_test.cpp
 )
 
 target_link_libraries(

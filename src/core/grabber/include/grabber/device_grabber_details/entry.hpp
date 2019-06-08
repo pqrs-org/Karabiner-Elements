@@ -5,8 +5,8 @@
 #include "event_queue.hpp"
 #include "hid_keyboard_caps_lock_led_state_manager.hpp"
 #include "iokit_utility.hpp"
-#include "orphan_key_up_events_manager.hpp"
 #include "pressed_keys_manager.hpp"
+#include "probable_stuck_events_manager.hpp"
 #include "types.hpp"
 #include <pqrs/osx/iokit_hid_queue_value_monitor.hpp>
 
@@ -38,7 +38,7 @@ public:
     device_short_name_ = iokit_utility::make_device_name(device_id,
                                                          device);
 
-    orphan_key_up_events_manager_ = std::make_shared<orphan_key_up_events_manager>();
+    probable_stuck_events_manager_ = std::make_shared<probable_stuck_events_manager>();
   }
 
   ~entry(void) {
@@ -90,8 +90,8 @@ public:
     return device_short_name_;
   }
 
-  std::shared_ptr<orphan_key_up_events_manager> get_orphan_key_up_events_manager(void) const {
-    return orphan_key_up_events_manager_;
+  std::shared_ptr<probable_stuck_events_manager> get_probable_stuck_events_manager(void) const {
+    return probable_stuck_events_manager_;
   }
 
   bool get_grabbed(void) const {
@@ -216,7 +216,7 @@ private:
   std::string device_name_;
   std::string device_short_name_;
 
-  std::shared_ptr<orphan_key_up_events_manager> orphan_key_up_events_manager_;
+  std::shared_ptr<probable_stuck_events_manager> probable_stuck_events_manager_;
 
   bool grabbed_;
   bool disabled_;
