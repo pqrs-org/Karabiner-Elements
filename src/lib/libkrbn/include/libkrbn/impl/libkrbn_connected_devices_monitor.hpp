@@ -1,5 +1,6 @@
 #pragma once
 
+#include "constants.hpp"
 #include "libkrbn/libkrbn.h"
 #include "monitor/connected_devices_monitor.hpp"
 
