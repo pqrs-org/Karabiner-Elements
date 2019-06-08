@@ -1,6 +1,7 @@
 #pragma once
 
 #include "types.hpp"
+#include <array>
 #include <thread>
 #include <vector>
 
@@ -139,29 +140,22 @@ public:
   pqrs::karabiner_virtual_hid_device::hid_report::modifiers make_hid_report_modifiers(void) const {
     pqrs::karabiner_virtual_hid_device::hid_report::modifiers modifiers;
 
-    if (is_pressed(modifier_flag::left_control)) {
-      modifiers.insert(pqrs::karabiner_virtual_hid_device::hid_report::modifier::left_control);
-    }
-    if (is_pressed(modifier_flag::left_shift)) {
-      modifiers.insert(pqrs::karabiner_virtual_hid_device::hid_report::modifier::left_shift);
-    }
-    if (is_pressed(modifier_flag::left_option)) {
-      modifiers.insert(pqrs::karabiner_virtual_hid_device::hid_report::modifier::left_option);
-    }
-    if (is_pressed(modifier_flag::left_command)) {
-      modifiers.insert(pqrs::karabiner_virtual_hid_device::hid_report::modifier::left_command);
-    }
-    if (is_pressed(modifier_flag::right_control)) {
-      modifiers.insert(pqrs::karabiner_virtual_hid_device::hid_report::modifier::right_control);
-    }
-    if (is_pressed(modifier_flag::right_shift)) {
-      modifiers.insert(pqrs::karabiner_virtual_hid_device::hid_report::modifier::right_shift);
-    }
-    if (is_pressed(modifier_flag::right_option)) {
-      modifiers.insert(pqrs::karabiner_virtual_hid_device::hid_report::modifier::right_option);
-    }
-    if (is_pressed(modifier_flag::right_command)) {
-      modifiers.insert(pqrs::karabiner_virtual_hid_device::hid_report::modifier::right_command);
+    std::array<modifier_flag, 8> modifier_flags{
+        modifier_flag::left_control,
+        modifier_flag::left_shift,
+        modifier_flag::left_option,
+        modifier_flag::left_command,
+        modifier_flag::right_control,
+        modifier_flag::right_shift,
+        modifier_flag::right_option,
+        modifier_flag::right_command,
+    };
+    for (const auto& m : modifier_flags) {
+      if (is_pressed(m)) {
+        if (auto r = make_hid_report_modifier(m)) {
+          modifiers.insert(*r);
+        }
+      }
     }
 
     return modifiers;

@@ -258,7 +258,7 @@ public:
         bool modify_keys = true;
 
         if (auto m = make_modifier_flag(hid_usage_page, hid_usage)) {
-          if (auto modifier = types::make_hid_report_modifier(*m)) {
+          if (auto modifier = make_hid_report_modifier(*m)) {
             switch (event_type) {
               case event_type::key_down:
                 keyboard_input_.modifiers.insert(*modifier);

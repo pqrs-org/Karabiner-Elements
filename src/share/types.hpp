@@ -52,29 +52,6 @@
 
 namespace krbn {
 namespace types {
-inline std::optional<pqrs::karabiner_virtual_hid_device::hid_report::modifier> make_hid_report_modifier(modifier_flag modifier_flag) {
-  switch (modifier_flag) {
-    case modifier_flag::left_control:
-      return pqrs::karabiner_virtual_hid_device::hid_report::modifier::left_control;
-    case modifier_flag::left_shift:
-      return pqrs::karabiner_virtual_hid_device::hid_report::modifier::left_shift;
-    case modifier_flag::left_option:
-      return pqrs::karabiner_virtual_hid_device::hid_report::modifier::left_option;
-    case modifier_flag::left_command:
-      return pqrs::karabiner_virtual_hid_device::hid_report::modifier::left_command;
-    case modifier_flag::right_control:
-      return pqrs::karabiner_virtual_hid_device::hid_report::modifier::right_control;
-    case modifier_flag::right_shift:
-      return pqrs::karabiner_virtual_hid_device::hid_report::modifier::right_shift;
-    case modifier_flag::right_option:
-      return pqrs::karabiner_virtual_hid_device::hid_report::modifier::right_option;
-    case modifier_flag::right_command:
-      return pqrs::karabiner_virtual_hid_device::hid_report::modifier::right_command;
-    default:
-      return std::nullopt;
-  }
-}
-
 inline const std::vector<std::pair<std::string, consumer_key_code>>& get_consumer_key_code_name_value_pairs(void) {
   static std::mutex mutex;
   std::lock_guard<std::mutex> guard(mutex);
