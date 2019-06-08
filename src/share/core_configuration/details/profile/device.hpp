@@ -31,7 +31,7 @@ public:
     for (const auto& [key, value] : json.items()) {
       if (key == "identifiers") {
         try {
-          identifiers_ = device_identifiers::make_from_json(value);
+          identifiers_ = value.get<device_identifiers>();
         } catch (const pqrs::json::unmarshal_error& e) {
           throw pqrs::json::unmarshal_error(fmt::format("`{0}` error: {1}", key, e.what()));
         }

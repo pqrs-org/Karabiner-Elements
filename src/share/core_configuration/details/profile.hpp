@@ -269,7 +269,7 @@ public:
     }
 
     details::device d(nlohmann::json({
-        {"identifiers", identifiers.to_json()},
+        {"identifiers", identifiers},
     }));
     return d.get_ignore();
   }
@@ -294,7 +294,7 @@ public:
     }
 
     details::device d(nlohmann::json({
-        {"identifiers", identifiers.to_json()},
+        {"identifiers", identifiers},
     }));
     return d.get_manipulate_caps_lock_led();
   }
@@ -341,7 +341,7 @@ private:
     }
 
     auto json = nlohmann::json({
-        {"identifiers", identifiers.to_json()},
+        {"identifiers", identifiers},
     });
     devices_.emplace_back(json);
   }

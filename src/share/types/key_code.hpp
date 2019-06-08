@@ -372,7 +372,9 @@ inline const std::unordered_map<std::string, key_code>& get_key_code_name_value_
     for (const auto& pair : impl::get_key_code_name_value_pairs()) {
       auto it = map.find(pair.first);
       if (it != std::end(map)) {
-        logger::get_logger()->error("duplicate entry in get_key_code_name_value_pairs: {0}", pair.first);
+        throw std::logic_error(
+            fmt::format("duplicate entry in get_key_code_name_value_pairs: {0}",
+                        pair.first));
       } else {
         map.emplace(pair.first, pair.second);
       }
@@ -563,6 +565,20 @@ inline std::optional<hid_usage> make_hid_usage(key_code key_code) {
 
     default:
       return hid_usage(key_code);
+  }
+}
+
+inline void from_json(const nlohmann::json& json, key_code& value) {
+  if (json.is_string()) {
+    if (auto v = make_key_code(json.get<std::string>())) {
+      value = *v;
+    } else {
+      throw pqrs::json::unmarshal_error(fmt::format("unknown key_code: `{0}`", json.dump()));
+    }
+  } else if (json.is_number()) {
+    value = key_code(json.get<uint32_t>());
+  } else {
+    throw pqrs::json::unmarshal_error(fmt::format("json must be string or number, but is `{0}`", json.dump()));
   }
 }
 

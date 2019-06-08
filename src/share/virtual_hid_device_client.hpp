@@ -2,6 +2,8 @@
 
 #include "Karabiner-VirtualHIDDevice/dist/include/karabiner_virtual_hid_device_methods.hpp"
 #include "iokit_utility.hpp"
+#include <IOKit/IOKitLib.h>
+#include <IOKit/hidsystem/IOHIDShared.h>
 #include <nod/nod.hpp>
 #include <pqrs/osx/iokit_return.hpp>
 #include <pqrs/osx/iokit_service_monitor.hpp>

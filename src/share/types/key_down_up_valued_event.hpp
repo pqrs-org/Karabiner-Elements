@@ -45,6 +45,29 @@ public:
     return false;
   }
 
+  std::string to_string(void) const {
+    if (auto value = find<key_code>()) {
+      auto json = nlohmann::json::object({
+          {"key_code", make_key_code_name(*value)},
+      });
+      return json.dump();
+
+    } else if (auto value = find<consumer_key_code>()) {
+      auto json = nlohmann::json::object({
+          {"consumer_key_code", make_consumer_key_code_name(*value)},
+      });
+      return json.dump();
+
+    } else if (auto value = find<pointing_button>()) {
+      auto json = nlohmann::json::object({
+          {"pointing_button", make_pointing_button_name(*value)},
+      });
+      return json.dump();
+    }
+
+    return "";
+  }
+
   bool operator==(const key_down_up_valued_event& other) const {
     return value_ == other.value_;
   }

@@ -615,7 +615,7 @@ private:
     if (auto event = entry->get_orphan_key_up_events_manager()->find_orphan_key_up_event()) {
       auto message = fmt::format("{0} is ignored temporarily until {1} is pressed again.",
                                  entry->get_device_name(),
-                                 types::to_string(*event));
+                                 event->to_string());
       logger_unique_filter_.warn(message);
 
       if (notification_message_manager_) {
@@ -623,7 +623,7 @@ private:
             entry->get_device_id(),
             fmt::format("{0} is ignored temporarily until {1} is pressed again.",
                         entry->get_device_short_name(),
-                        types::to_string(*event)));
+                        event->to_string()));
       }
 
       return grabbable_state::state::ungrabbable_temporarily;

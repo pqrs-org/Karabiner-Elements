@@ -1,6 +1,8 @@
 #pragma once
 
+#include "apple_hid_usage_tables.hpp"
 #include "stream_utility.hpp"
+#include <IOKit/hid/IOHIDUsageTables.h>
 #include <cstdint>
 
 namespace krbn {

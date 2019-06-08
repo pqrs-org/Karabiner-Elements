@@ -432,25 +432,26 @@ TEST_CASE("profile") {
 
     // set_device (existing identifiers)
     {
-      auto identifiers = krbn::device_identifiers::make_from_json(
-          nlohmann::json({
-              {
-                  "vendor_id",
-                  1234,
-              },
-              {
-                  "product_id",
-                  5678,
-              },
-              {
-                  "is_keyboard",
-                  true,
-              },
-              {
-                  "is_pointing_device",
-                  true,
-              },
-          }));
+      auto identifiers = nlohmann::json::object(
+                             {
+                                 {
+                                     "vendor_id",
+                                     1234,
+                                 },
+                                 {
+                                     "product_id",
+                                     5678,
+                                 },
+                                 {
+                                     "is_keyboard",
+                                     true,
+                                 },
+                                 {
+                                     "is_pointing_device",
+                                     true,
+                                 },
+                             })
+                             .get<krbn::device_identifiers>();
       profile.set_device_ignore(identifiers, false);
       REQUIRE(profile.get_devices().size() == 3);
       // devices[0] is changed.
@@ -488,25 +489,26 @@ TEST_CASE("profile") {
     // set_device (new identifiers)
     {
       {
-        auto identifiers = krbn::device_identifiers::make_from_json(
-            nlohmann::json({
-                {
-                    "vendor_id",
-                    1111,
-                },
-                {
-                    "product_id",
-                    2222,
-                },
-                {
-                    "is_keyboard",
-                    false,
-                },
-                {
-                    "is_pointing_device",
-                    true,
-                },
-            }));
+        auto identifiers = nlohmann::json::object(
+                               {
+                                   {
+                                       "vendor_id",
+                                       1111,
+                                   },
+                                   {
+                                       "product_id",
+                                       2222,
+                                   },
+                                   {
+                                       "is_keyboard",
+                                       false,
+                                   },
+                                   {
+                                       "is_pointing_device",
+                                       true,
+                                   },
+                               })
+                               .get<krbn::device_identifiers>();
         profile.set_device_ignore(identifiers, true);
         REQUIRE(profile.get_devices().size() == 4);
         REQUIRE((profile.get_devices())[3].get_identifiers().get_vendor_id() == krbn::vendor_id(1111));

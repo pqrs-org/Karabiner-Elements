@@ -2,7 +2,9 @@
 
 #include "hid_value.hpp"
 #include "stream_utility.hpp"
+#include <IOKit/hid/IOHIDUsageTables.h>
 #include <cstdint>
+#include <spdlog/fmt/fmt.h>
 
 namespace krbn {
 enum class consumer_key_code : uint32_t {
@@ -53,7 +55,9 @@ inline const std::unordered_map<std::string, consumer_key_code>& get_consumer_ke
     for (const auto& pair : get_consumer_key_code_name_value_pairs()) {
       auto it = map.find(pair.first);
       if (it != std::end(map)) {
-        logger::get_logger()->error("duplicate entry in get_consumer_key_code_name_value_pairs: {0}", pair.first);
+        throw std::logic_error(
+            fmt::format("duplicate entry in get_consumer_key_code_name_value_pairs: {0}",
+                        pair.first));
       } else {
         map.emplace(pair.first, pair.second);
       }
@@ -126,6 +130,20 @@ inline std::optional<hid_usage_page> make_hid_usage_page(consumer_key_code consu
 
 inline std::optional<hid_usage> make_hid_usage(consumer_key_code consumer_key_code) {
   return hid_usage(static_cast<uint32_t>(consumer_key_code));
+}
+
+inline void from_json(const nlohmann::json& json, consumer_key_code& value) {
+  if (json.is_string()) {
+    if (auto v = make_consumer_key_code(json.get<std::string>())) {
+      value = *v;
+    } else {
+      throw pqrs::json::unmarshal_error(fmt::format("unknown consumer_key_code: `{0}`", json.dump()));
+    }
+  } else if (json.is_number()) {
+    value = consumer_key_code(json.get<uint32_t>());
+  } else {
+    throw pqrs::json::unmarshal_error(fmt::format("json must be string or number, but is `{0}`", json.dump()));
+  }
 }
 
 inline std::ostream& operator<<(std::ostream& stream, const consumer_key_code& value) {

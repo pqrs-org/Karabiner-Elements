@@ -38,7 +38,7 @@ public:
       d = descriptions::make_from_json(j->value());
     }
     if (auto j = pqrs::json::find_json(json, "identifiers")) {
-      i = device_identifiers::make_from_json(j->value());
+      i = j->value().get<device_identifiers>();
     }
 
     return device(d,

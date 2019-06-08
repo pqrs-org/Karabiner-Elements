@@ -6,7 +6,7 @@ TEST_CASE("device.identifiers") {
   // empty json
   {
     auto json = nlohmann::json::object();
-    auto identifiers = krbn::device_identifiers::make_from_json(json);
+    auto identifiers = json.get<krbn::device_identifiers>();
     REQUIRE(identifiers.get_vendor_id() == krbn::vendor_id(0));
     REQUIRE(identifiers.get_product_id() == krbn::product_id(0));
     REQUIRE(identifiers.get_is_keyboard() == false);
@@ -21,26 +21,11 @@ TEST_CASE("device.identifiers") {
         {"is_keyboard", true},
         {"is_pointing_device", true},
     });
-    auto identifiers = krbn::device_identifiers::make_from_json(json);
+    auto identifiers = json.get<krbn::device_identifiers>();
     REQUIRE(identifiers.get_vendor_id() == krbn::vendor_id(1234));
     REQUIRE(identifiers.get_product_id() == krbn::product_id(5678));
     REQUIRE(identifiers.get_is_keyboard() == true);
     REQUIRE(identifiers.get_is_pointing_device() == true);
-  }
-
-  // invalid values in json
-  {
-    nlohmann::json json({
-        {"vendor_id", nlohmann::json::array()},
-        {"product_id", true},
-        {"is_keyboard", 1},
-        {"is_pointing_device", nlohmann::json::array()},
-    });
-    auto identifiers = krbn::device_identifiers::make_from_json(json);
-    REQUIRE(identifiers.get_vendor_id() == krbn::vendor_id(0));
-    REQUIRE(identifiers.get_product_id() == krbn::product_id(0));
-    REQUIRE(identifiers.get_is_keyboard() == false);
-    REQUIRE(identifiers.get_is_pointing_device() == false);
   }
 
   // construct with vendor_id, product_id, ...
@@ -63,24 +48,21 @@ TEST_CASE("device.identifiers") {
 TEST_CASE("device.identifiers.to_json") {
   {
     auto json = nlohmann::json::object();
-    auto identifiers = krbn::device_identifiers::make_from_json(json);
+    auto identifiers = json.get<krbn::device_identifiers>();
     nlohmann::json expected({
         {"vendor_id", 0},
         {"product_id", 0},
         {"is_keyboard", false},
         {"is_pointing_device", false},
     });
-    REQUIRE(identifiers.to_json() == expected);
-
-    nlohmann::json actual = identifiers.to_json();
-    REQUIRE(actual == expected);
+    REQUIRE(nlohmann::json(identifiers) == expected);
   }
   {
     nlohmann::json json({
         {"is_pointing_device", true},
         {"dummy", {{"keep_me", true}}},
     });
-    auto identifiers = krbn::device_identifiers::make_from_json(json);
+    auto identifiers = json.get<krbn::device_identifiers>();
     nlohmann::json expected({
         {"dummy", {{"keep_me", true}}},
         {"vendor_id", 0},
@@ -88,7 +70,7 @@ TEST_CASE("device.identifiers.to_json") {
         {"is_keyboard", false},
         {"is_pointing_device", true},
     });
-    REQUIRE(identifiers.to_json() == expected);
+    REQUIRE(nlohmann::json(identifiers) == expected);
   }
 }
 

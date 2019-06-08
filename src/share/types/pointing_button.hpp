@@ -104,7 +104,9 @@ inline const std::unordered_map<std::string, pointing_button>& get_pointing_butt
     for (const auto& pair : impl::get_pointing_button_name_value_pairs()) {
       auto it = map.find(pair.first);
       if (it != std::end(map)) {
-        logger::get_logger()->error("duplicate entry in get_pointing_button_name_value_pairs: {0}", pair.first);
+        throw std::logic_error(
+            fmt::format("duplicate entry in get_pointing_button_name_value_pairs: {0}",
+                        pair.first));
       } else {
         map.emplace(pair.first, pair.second);
       }
@@ -148,6 +150,20 @@ inline std::optional<pointing_button> make_pointing_button(const hid_value& hid_
     }
   }
   return std::nullopt;
+}
+
+inline void from_json(const nlohmann::json& json, pointing_button& value) {
+  if (json.is_string()) {
+    if (auto v = make_pointing_button(json.get<std::string>())) {
+      value = *v;
+    } else {
+      throw pqrs::json::unmarshal_error(fmt::format("unknown pointing_button: `{0}`", json.dump()));
+    }
+  } else if (json.is_number()) {
+    value = pointing_button(json.get<uint32_t>());
+  } else {
+    throw pqrs::json::unmarshal_error(fmt::format("json must be string or number, but is `{0}`", json.dump()));
+  }
 }
 
 inline std::ostream& operator<<(std::ostream& stream, const pointing_button& value) {

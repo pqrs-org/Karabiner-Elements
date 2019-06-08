@@ -6,7 +6,9 @@
 namespace {
 void handle_json(const nlohmann::json& json) {
   auto c = json.at("class").get<std::string>();
-  if (c == "mouse_key") {
+  if (c == "device_identifiers") {
+    json.at("input").get<krbn::device_identifiers>();
+  } else if (c == "mouse_key") {
     json.at("input").get<krbn::mouse_key>();
   } else {
     REQUIRE(false);

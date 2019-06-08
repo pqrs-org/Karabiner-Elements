@@ -1,0 +1,35 @@
+[
+    {
+        "class": "device_identifiers",
+        "input": null,
+        "error": "json must be object, but is `null`"
+    },
+    {
+        "class": "device_identifiers",
+        "input": {
+            "vendor_id": null
+        },
+        "error": "`vendor_id` must be number, but is `null`"
+    },
+    {
+        "class": "device_identifiers",
+        "input": {
+            "product_id": null
+        },
+        "error": "`product_id` must be number, but is `null`"
+    },
+    {
+        "class": "device_identifiers",
+        "input": {
+            "is_keyboard": null
+        },
+        "error": "`is_keyboard` must be boolean, but is `null`"
+    },
+    {
+        "class": "device_identifiers",
+        "input": {
+            "is_pointing_device": null
+        },
+        "error": "`is_pointing_device` must be boolean, but is `null`"
+    }
+]
