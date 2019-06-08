@@ -51,8 +51,8 @@ public:
         continue;
       }
 
-      if (auto consumer_key_code = types::make_consumer_key_code(hid_usage_page, hid_usage(k))) {
-        json.push_back(types::make_consumer_key_code_name(*consumer_key_code));
+      if (auto consumer_key_code = make_consumer_key_code(hid_usage_page, hid_usage(k))) {
+        json.push_back(make_consumer_key_code_name(*consumer_key_code));
         continue;
       }
 

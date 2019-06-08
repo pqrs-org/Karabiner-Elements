@@ -120,7 +120,7 @@ public:
 
       case type::consumer_key_code:
         if (auto v = get_consumer_key_code()) {
-          json["consumer_key_code"] = types::make_consumer_key_code_name(*v);
+          json["consumer_key_code"] = make_consumer_key_code_name(*v);
         }
         break;
 

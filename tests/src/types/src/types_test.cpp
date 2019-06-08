@@ -102,17 +102,17 @@ TEST_CASE("make_modifier_flag") {
 }
 
 TEST_CASE("make_consumer_key_code") {
-  REQUIRE(krbn::types::make_consumer_key_code("mute") == krbn::consumer_key_code::mute);
-  REQUIRE(!krbn::types::make_consumer_key_code("unknown"));
+  REQUIRE(krbn::make_consumer_key_code("mute") == krbn::consumer_key_code::mute);
+  REQUIRE(!krbn::make_consumer_key_code("unknown"));
 
-  REQUIRE(krbn::types::make_consumer_key_code_name(krbn::consumer_key_code::mute) == std::string("mute"));
-  REQUIRE(krbn::types::make_consumer_key_code_name(krbn::consumer_key_code(12345)) == std::string("(number:12345)"));
+  REQUIRE(krbn::make_consumer_key_code_name(krbn::consumer_key_code::mute) == std::string("mute"));
+  REQUIRE(krbn::make_consumer_key_code_name(krbn::consumer_key_code(12345)) == std::string("(number:12345)"));
 
-  REQUIRE(krbn::types::make_consumer_key_code(krbn::hid_usage_page::consumer, krbn::hid_usage::csmr_mute) == krbn::consumer_key_code::mute);
-  REQUIRE(!krbn::types::make_consumer_key_code(krbn::hid_usage_page::keyboard_or_keypad, krbn::hid_usage(kHIDUsage_KeyboardA)));
+  REQUIRE(krbn::make_consumer_key_code(krbn::hid_usage_page::consumer, krbn::hid_usage::csmr_mute) == krbn::consumer_key_code::mute);
+  REQUIRE(!krbn::make_consumer_key_code(krbn::hid_usage_page::keyboard_or_keypad, krbn::hid_usage(kHIDUsage_KeyboardA)));
 
-  REQUIRE(krbn::types::make_hid_usage_page(krbn::consumer_key_code::mute) == krbn::hid_usage_page::consumer);
-  REQUIRE(krbn::types::make_hid_usage(krbn::consumer_key_code::mute) == krbn::hid_usage::csmr_mute);
+  REQUIRE(krbn::make_hid_usage_page(krbn::consumer_key_code::mute) == krbn::hid_usage_page::consumer);
+  REQUIRE(krbn::make_hid_usage(krbn::consumer_key_code::mute) == krbn::hid_usage::csmr_mute);
 
   // from_json
 

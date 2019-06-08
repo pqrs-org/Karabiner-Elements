@@ -120,7 +120,7 @@ void libkrbn_get_key_code_name(char* buffer, size_t length, uint32_t key_code) {
 }
 
 void libkrbn_get_consumer_key_code_name(char* buffer, size_t length, uint32_t consumer_key_code) {
-  auto name = krbn::types::make_consumer_key_code_name(krbn::consumer_key_code(consumer_key_code));
+  auto name = krbn::make_consumer_key_code_name(krbn::consumer_key_code(consumer_key_code));
   strlcpy(buffer, name.c_str(), length);
 }
 

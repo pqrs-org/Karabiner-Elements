@@ -54,7 +54,7 @@ static inline std::shared_ptr<queue> make_queue(device_id device_id,
                                      v.get_integer_value() ? event_type::key_down : event_type::key_up,
                                      event);
 
-        } else if (auto consumer_key_code = types::make_consumer_key_code(*usage_page, *usage)) {
+        } else if (auto consumer_key_code = make_consumer_key_code(*usage_page, *usage)) {
           event_queue::event event(*consumer_key_code);
           result->emplace_back_entry(device_id,
                                      event_time_stamp(v.get_time_stamp()),

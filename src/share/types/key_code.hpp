@@ -137,6 +137,7 @@ enum class key_code : uint32_t {
   apple_top_case_display_brightness_increment,
 };
 
+namespace impl {
 // string -> hid usage map
 inline const std::vector<std::pair<std::string, key_code>>& get_key_code_name_value_pairs(void) {
   static std::mutex mutex;
@@ -368,7 +369,7 @@ inline const std::unordered_map<std::string, key_code>& get_key_code_name_value_
   static std::unordered_map<std::string, key_code> map;
 
   if (map.empty()) {
-    for (const auto& pair : get_key_code_name_value_pairs()) {
+    for (const auto& pair : impl::get_key_code_name_value_pairs()) {
       auto it = map.find(pair.first);
       if (it != std::end(map)) {
         logger::get_logger()->error("duplicate entry in get_key_code_name_value_pairs: {0}", pair.first);
@@ -380,9 +381,10 @@ inline const std::unordered_map<std::string, key_code>& get_key_code_name_value_
 
   return map;
 }
+} // namespace impl
 
 inline std::string make_key_code_name(key_code key_code) {
-  for (const auto& pair : get_key_code_name_value_pairs()) {
+  for (const auto& pair : impl::get_key_code_name_value_pairs()) {
     if (pair.second == key_code) {
       return pair.first;
     }
@@ -391,7 +393,7 @@ inline std::string make_key_code_name(key_code key_code) {
 }
 
 inline std::optional<key_code> make_key_code(const std::string& name) {
-  auto& map = get_key_code_name_value_map();
+  auto& map = impl::get_key_code_name_value_map();
   auto it = map.find(name);
   if (it == map.end()) {
     return std::nullopt;

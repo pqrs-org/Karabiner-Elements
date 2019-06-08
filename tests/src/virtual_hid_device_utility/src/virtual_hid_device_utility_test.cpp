@@ -32,9 +32,9 @@ TEST_CASE("karabiner_virtual_hid_device::hid_report::keys") {
   }
   {
     pqrs::karabiner_virtual_hid_device::hid_report::keys keys;
-    keys.insert(static_cast<uint8_t>(*(krbn::types::make_hid_usage(krbn::consumer_key_code::rewind))));
-    keys.insert(static_cast<uint8_t>(*(krbn::types::make_hid_usage(krbn::consumer_key_code::eject))));
-    keys.insert(static_cast<uint8_t>(*(krbn::types::make_hid_usage(krbn::consumer_key_code::mute))));
+    keys.insert(static_cast<uint8_t>(*(krbn::make_hid_usage(krbn::consumer_key_code::rewind))));
+    keys.insert(static_cast<uint8_t>(*(krbn::make_hid_usage(krbn::consumer_key_code::eject))));
+    keys.insert(static_cast<uint8_t>(*(krbn::make_hid_usage(krbn::consumer_key_code::mute))));
 
     nlohmann::json expected = nlohmann::json::array();
     expected.push_back("rewind");
