@@ -67,7 +67,7 @@ public:
 
     for (int i = 1; i <= static_cast<int>(pointing_button::end_); ++i) {
       if (v.exists(i)) {
-        json.push_back(types::make_pointing_button_name(pointing_button(i)));
+        json.push_back(make_pointing_button_name(pointing_button(i)));
       }
     }
 

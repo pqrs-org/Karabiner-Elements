@@ -145,20 +145,20 @@ TEST_CASE("make_consumer_key_code") {
 }
 
 TEST_CASE("make_pointing_button") {
-  REQUIRE(krbn::types::make_pointing_button("button1") == krbn::pointing_button::button1);
-  REQUIRE(!krbn::types::make_pointing_button("unknown"));
+  REQUIRE(krbn::make_pointing_button("button1") == krbn::pointing_button::button1);
+  REQUIRE(!krbn::make_pointing_button("unknown"));
 
-  REQUIRE(krbn::types::make_pointing_button_name(krbn::pointing_button::button1) == std::string("button1"));
-  REQUIRE(krbn::types::make_pointing_button_name(krbn::pointing_button(12345)) == std::string("(number:12345)"));
+  REQUIRE(krbn::make_pointing_button_name(krbn::pointing_button::button1) == std::string("button1"));
+  REQUIRE(krbn::make_pointing_button_name(krbn::pointing_button(12345)) == std::string("(number:12345)"));
 
   {
-    auto actual = krbn::types::make_pointing_button(krbn::hid_usage_page(kHIDPage_Button),
-                                                    krbn::hid_usage(1));
+    auto actual = krbn::make_pointing_button(krbn::hid_usage_page(kHIDPage_Button),
+                                             krbn::hid_usage(1));
     REQUIRE(*actual == krbn::pointing_button::button1);
   }
   {
-    auto actual = krbn::types::make_pointing_button(krbn::hid_usage_page(kHIDPage_KeyboardOrKeypad),
-                                                    krbn::hid_usage(kHIDUsage_KeyboardTab));
+    auto actual = krbn::make_pointing_button(krbn::hid_usage_page(kHIDPage_KeyboardOrKeypad),
+                                             krbn::hid_usage(kHIDUsage_KeyboardTab));
     REQUIRE(actual == std::nullopt);
   }
 }

@@ -126,7 +126,7 @@ public:
 
       case type::pointing_button:
         if (auto v = get_pointing_button()) {
-          json["pointing_button"] = types::make_pointing_button_name(*v);
+          json["pointing_button"] = make_pointing_button_name(*v);
         }
         break;
 
