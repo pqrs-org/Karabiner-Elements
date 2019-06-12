@@ -43,7 +43,7 @@ set_target_properties(
   Karabiner-Elements
   PROPERTIES
   MACOSX_BUNDLE_INFO_PLIST
-  ${CMAKE_CURRENT_LIST_DIR}/Resources/plist.in
+  ${CMAKE_CURRENT_LIST_DIR}/Resources/Info.plist.in
 )
 
 set_target_properties(
