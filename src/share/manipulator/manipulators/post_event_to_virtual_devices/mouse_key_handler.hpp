@@ -59,7 +59,6 @@ public:
 
   void set_virtual_hid_keyboard_configuration(const core_configuration::details::virtual_hid_keyboard& value) {
     virtual_hid_keyboard_configuration_ = value;
-    logger::get_logger()->info("mouse_key_xy_scale: {0}", virtual_hid_keyboard_configuration_.get_mouse_key_xy_scale());
   }
 
   void set_system_preferences_properties(const pqrs::osx::system_preferences::properties& value) {
