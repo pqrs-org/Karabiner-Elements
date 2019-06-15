@@ -2,7 +2,7 @@
 
 ## Beta
 
-- Suppress unnecessary log messages.
+- Suppressed unnecessary log messages.
 
 ## Version 12.5.0
 
