@@ -1,5 +1,9 @@
 # Changelog
 
+## Beta
+
+- Suppress unnecessary log messages.
+
 ## Version 12.5.0
 
 - Fixed a key stuck issue which occurs when the key is released,
