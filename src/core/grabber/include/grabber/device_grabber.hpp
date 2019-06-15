@@ -622,9 +622,6 @@ private:
           need_to_disable_built_in_keyboard()) {
         // Do nothing
       } else {
-        auto message = fmt::format("{0} is ignored.",
-                                   entry->get_device_name());
-        logger_unique_filter_.info(message);
         unset_device_ungrabbable_temporarily_notification_message(entry->get_device_id());
         return grabbable_state::state::ungrabbable_permanently;
       }
