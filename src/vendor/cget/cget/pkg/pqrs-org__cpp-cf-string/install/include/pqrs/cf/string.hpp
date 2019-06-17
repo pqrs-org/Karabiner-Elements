@@ -1,6 +1,6 @@
 #pragma once
 
-// pqrs::cf::string v2.0
+// pqrs::cf::string v2.1
 
 // (C) Copyright Takayama Fumihiko 2018.
 // Distributed under the Boost Software License, Version 1.0.
@@ -13,22 +13,28 @@
 
 namespace pqrs {
 namespace cf {
+inline std::optional<std::string> make_string(CFStringRef value) {
+  if (value) {
+    if (auto p = CFStringGetCStringPtr(value, kCFStringEncodingUTF8)) {
+      return p;
+    } else {
+      // When cf_string contains unicode character such as `こんにちは`.
+      auto length = CFStringGetLength(value);
+      auto max_size = CFStringGetMaximumSizeForEncoding(length, kCFStringEncodingUTF8) + 1;
+      std::vector<char> buffer(max_size);
+      if (CFStringGetCString(value, &(buffer[0]), max_size, kCFStringEncodingUTF8)) {
+        return &(buffer[0]);
+      }
+    }
+  }
+
+  return std::nullopt;
+}
+
 inline std::optional<std::string> make_string(CFTypeRef value) {
   if (value) {
     if (CFGetTypeID(value) == CFStringGetTypeID()) {
-      auto cf_string = static_cast<CFStringRef>(value);
-
-      if (auto p = CFStringGetCStringPtr(cf_string, kCFStringEncodingUTF8)) {
-        return p;
-      } else {
-        // When cf_string contains unicode character such as `こんにちは`.
-        auto length = CFStringGetLength(cf_string);
-        auto max_size = CFStringGetMaximumSizeForEncoding(length, kCFStringEncodingUTF8) + 1;
-        std::vector<char> buffer(max_size);
-        if (CFStringGetCString(cf_string, &(buffer[0]), max_size, kCFStringEncodingUTF8)) {
-          return &(buffer[0]);
-        }
-      }
+      return make_string(static_cast<CFStringRef>(value));
     }
   }
 

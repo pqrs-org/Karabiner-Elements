@@ -2,6 +2,7 @@ jarro2783/cxxopts@v2.1.2 --cmake header -H sha256:95f524c6615a2067e935e02ef74b01
 mpark/variant@v1.4.0 --cmake header -H sha256:8f6b28ab3640b5d76d5b6664dda7257a4405ce59179220431b8fd196c79b2ecb
 pqrs-org/cpp-cf-dictionary
 pqrs-org/cpp-cf-number
+pqrs-org/cpp-cf-url
 pqrs-org/cpp-environment_variable
 pqrs-org/cpp-filesystem
 pqrs-org/cpp-json
