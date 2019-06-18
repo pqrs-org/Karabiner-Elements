@@ -6,7 +6,7 @@ project (karabiner_test)
 
 add_executable(
   karabiner_test
-  src/grabber_alerts_monitor_test.cpp
+  src/kextd_state_monitor_test.cpp
   src/test.cpp
 )
 
