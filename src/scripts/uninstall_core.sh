@@ -6,6 +6,10 @@ export PATH
 # ----------------------------------------
 # Unload before install
 
+if [ /Library/LaunchDaemons/org.pqrs.karabiner.karabiner_kextd.plist ]; then
+    launchctl bootout system /Library/LaunchDaemons/org.pqrs.karabiner.karabiner_kextd.plist
+fi
+
 if [ /Library/LaunchDaemons/org.pqrs.karabiner.karabiner_grabber.plist ]; then
     launchctl bootout system /Library/LaunchDaemons/org.pqrs.karabiner.karabiner_grabber.plist
 fi
@@ -24,6 +28,7 @@ chflags nouchg,noschg /Applications/Karabiner-EventViewer.app
 # Uninstall
 
 bash '/Library/Application Support/org.pqrs/Karabiner-Elements/scripts/uninstall-Karabiner-VirtualHIDDevice.sh'
+rm -f '/Library/LaunchDaemons/org.pqrs.karabiner.karabiner_kextd.plist'
 rm -f '/Library/LaunchDaemons/org.pqrs.karabiner.karabiner_grabber.plist'
 rm -f '/Library/LaunchDaemons/org.pqrs.karabiner.karabiner_observer.plist'
 rm -f '/Library/LaunchAgents/org.pqrs.karabiner.karabiner_console_user_server.plist'

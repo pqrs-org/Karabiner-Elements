@@ -30,6 +30,13 @@ cd src/core/console_user_server
 make install
 ```
 
+### Replace `karabiner_kextd`
+
+```shell
+cd src/core/kextd
+make install
+```
+
 ## Core Processes
 
 - `karabiner_grabber`
@@ -49,6 +56,8 @@ make install
   - Monitor system preferences values (key repeat, etc) and notify them to `karabiner_grabber`.
   - Execute shell commands which are specified by `shell_command` in `complex_modifications`.
   - `karabiner_grabber` seizes devices only when `karabiner_console_user_server` is running.
+- `karabiner_kextd`
+  - Load Karabiner-VirtualHIDDevice kext.
 
 ![processes](images/processes.svg)
 
