@@ -1,10 +1,11 @@
 {
     "files.exclude": {
-        "**/.git": true,
+        ".vscode/browse.*": true,
         "**/.DS_Store": true,
-        "**/build/": true,
+        "**/.git": true,
         "**/build_xcode/": true,
-        ".vscode/browse.*": true
+        "**/build/": true,
+        "pkgroot/": true
     },
     "search.exclude": {
         "**/node_modules": true,
