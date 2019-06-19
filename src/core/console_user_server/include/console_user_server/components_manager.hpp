@@ -8,7 +8,7 @@
 #include "logger.hpp"
 #include "menu_process_manager.hpp"
 #include "monitor/configuration_monitor.hpp"
-#include "monitor/grabber_alerts_monitor.hpp"
+#include "monitor/kextd_state_monitor.hpp"
 #include "monitor/version_monitor.hpp"
 #include "receiver.hpp"
 #include "updater_process_manager.hpp"
@@ -72,33 +72,33 @@ public:
 
       session_monitor_ = nullptr;
       receiver_ = nullptr;
-      grabber_alerts_monitor_ = nullptr;
+      kextd_state_monitor_ = nullptr;
     });
   }
 
   void async_start(void) {
     enqueue_to_dispatcher([this] {
-      start_grabber_alerts_monitor();
+      start_kextd_state_monitor();
       session_monitor_->async_start(std::chrono::milliseconds(1000));
     });
   }
 
 private:
-  void start_grabber_alerts_monitor(void) {
-    if (grabber_alerts_monitor_) {
+  void start_kextd_state_monitor(void) {
+    if (kextd_state_monitor_) {
       return;
     }
 
-    grabber_alerts_monitor_ = std::make_unique<grabber_alerts_monitor>(constants::get_grabber_alerts_json_file_path());
+    kextd_state_monitor_ = std::make_unique<kextd_state_monitor>(constants::get_kextd_state_json_file_path());
 
-    grabber_alerts_monitor_->alerts_changed.connect([](auto&& alerts) {
-      logger::get_logger()->info("karabiner_grabber_alerts.json is updated.");
-      if (!alerts->empty()) {
+    kextd_state_monitor_->kext_load_result_changed.connect([](auto&& result) {
+      logger::get_logger()->info("kext_load_result_changed: {0}", result);
+      if (result == kOSKextReturnSystemPolicy) {
         application_launcher::launch_preferences();
       }
     });
 
-    grabber_alerts_monitor_->async_start();
+    kextd_state_monitor_->async_start();
   }
 
   void start_grabber_client(void) {
@@ -223,7 +223,7 @@ private:
   // Core components
 
   std::weak_ptr<version_monitor> weak_version_monitor_;
-  std::unique_ptr<grabber_alerts_monitor> grabber_alerts_monitor_;
+  std::unique_ptr<kextd_state_monitor> kextd_state_monitor_;
 
   std::unique_ptr<pqrs::osx::session::monitor> session_monitor_;
   std::unique_ptr<receiver> receiver_;
