@@ -25,16 +25,16 @@ public:
     return "/Library/Application Support/org.pqrs/tmp/rootonly";
   }
 
+  static const char* get_kextd_state_json_file_path(void) {
+    return "/Library/Application Support/org.pqrs/tmp/karabiner_kextd_state.json";
+  }
+
   static const char* get_grabber_socket_file_path(void) {
     return "/Library/Application Support/org.pqrs/tmp/karabiner_grabber_receiver";
   }
 
   static std::string get_grabber_session_monitor_receiver_socket_file_path(void) {
     return get_rootonly_directory() + "/karabiner_grabber_session_monitor_receiver";
-  }
-
-  static const char* get_grabber_alerts_json_file_path(void) {
-    return "/Library/Application Support/org.pqrs/tmp/karabiner_grabber_alerts.json";
   }
 
   static const char* get_devices_json_file_path(void) {
