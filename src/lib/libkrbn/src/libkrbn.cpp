@@ -150,6 +150,25 @@ void libkrbn_disable_version_monitor(void) {
 }
 
 // ============================================================
+// kextd_state_monitor
+// ============================================================
+
+void libkrbn_enable_kext_state_monitor(
+    libkrbn_kextd_state_monitor_kext_load_result_changed_callback callback,
+    void* refcon) {
+  if (libkrbn_components_manager_) {
+    libkrbn_components_manager_->enable_kextd_state_monitor(callback,
+                                                            refcon);
+  }
+}
+
+void libkrbn_disable_kext_state_monitor(void) {
+  if (libkrbn_components_manager_) {
+    libkrbn_components_manager_->disable_kextd_state_monitor();
+  }
+}
+
+// ============================================================
 // configuration_monitor
 // ============================================================
 
@@ -327,24 +346,6 @@ void libkrbn_enable_manipulator_environment_json_file_monitor(libkrbn_file_monit
 void libkrbn_disable_manipulator_environment_json_file_monitor(void) {
   if (libkrbn_components_manager_) {
     libkrbn_components_manager_->disable_manipulator_environment_json_file_monitor();
-  }
-}
-
-// ============================================================
-// grabber_alerts_json_file_monitor
-// ============================================================
-
-void libkrbn_enable_grabber_alerts_json_file_monitor(libkrbn_file_monitor_callback callback,
-                                                     void* refcon) {
-  if (libkrbn_components_manager_) {
-    libkrbn_components_manager_->enable_grabber_alerts_json_file_monitor(callback,
-                                                                         refcon);
-  }
-}
-
-void libkrbn_disable_grabber_alerts_json_file_monitor(void) {
-  if (libkrbn_components_manager_) {
-    libkrbn_components_manager_->disable_grabber_alerts_json_file_monitor();
   }
 }
 

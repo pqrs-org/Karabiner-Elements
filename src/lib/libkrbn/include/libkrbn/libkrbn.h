@@ -1,5 +1,6 @@
 #pragma once
 
+#include <libkern/OSKextLib.h>
 #include <stdbool.h>
 #include <stddef.h>
 #include <stdint.h>
@@ -234,6 +235,17 @@ void libkrbn_enable_version_monitor(libkrbn_version_monitor_callback callback,
 void libkrbn_disable_version_monitor(void);
 
 // ----------------------------------------
+// libkrbn_kextd_state_monitor
+
+typedef void (*libkrbn_kextd_state_monitor_kext_load_result_changed_callback)(
+    kern_return_t kr,
+    void* refcon);
+void libkrbn_enable_kext_state_monitor(
+    libkrbn_kextd_state_monitor_kext_load_result_changed_callback callback,
+    void* refcon);
+void libkrbn_disable_kext_state_monitor(void);
+
+// ----------------------------------------
 // libkrbn_file_monitor
 
 typedef void (*libkrbn_file_monitor_callback)(const char* file_path,
@@ -252,13 +264,6 @@ void libkrbn_disable_device_details_json_file_monitor(void);
 void libkrbn_enable_manipulator_environment_json_file_monitor(libkrbn_file_monitor_callback callback,
                                                               void* refcon);
 void libkrbn_disable_manipulator_environment_json_file_monitor(void);
-
-// ----------------------------------------
-// libkrbn_grabber_alerts_json_file_monitor
-
-void libkrbn_enable_grabber_alerts_json_file_monitor(libkrbn_file_monitor_callback callback,
-                                                     void* refcon);
-void libkrbn_disable_grabber_alerts_json_file_monitor(void);
 
 // ----------------------------------------
 // libkrbn_notification_message_json_file_monitor
