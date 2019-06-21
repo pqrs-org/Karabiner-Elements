@@ -1,6 +1,7 @@
 #import "AlertWindowController.h"
 #import "KarabinerKit/KarabinerKit.h"
 #import "libkrbn/libkrbn.h"
+#import <libkern/OSKextLib.h>
 #import <pqrs/weakify.h>
 
 @interface AlertWindowController ()
@@ -8,38 +9,35 @@
 @property(weak) IBOutlet NSWindow* preferencesWindow;
 @property BOOL shown;
 
-- (void)callback:(NSString*)filePath;
+- (void)kextLoadResultChangedCallback:(kern_return_t)kr;
 
 @end
 
-static void staticCallback(const char* filePath,
-                           void* context) {
+static void staticKextLoadResultChangedCallback(kern_return_t kr,
+                                                void* context) {
   AlertWindowController* p = (__bridge AlertWindowController*)(context);
-  if (p && filePath) {
-    [p callback:[NSString stringWithUTF8String:filePath]];
+  if (p) {
+    [p kextLoadResultChangedCallback:kr];
   }
 }
 
 @implementation AlertWindowController
 
 - (void)setup {
-  libkrbn_enable_grabber_alerts_json_file_monitor(staticCallback,
-                                                  (__bridge void*)(self));
+  libkrbn_enable_kextd_state_monitor(staticKextLoadResultChangedCallback,
+                                     (__bridge void*)(self));
 }
 
 - (void)dealloc {
-  libkrbn_disable_grabber_alerts_json_file_monitor();
+  libkrbn_disable_kextd_state_monitor();
 }
 
-- (void)showIfNeeded:(NSString*)filePath {
-  NSDictionary* json = [KarabinerKitJsonUtility loadFile:filePath];
-  for (NSString* alert in json[@"alerts"]) {
-    if ([alert isEqualToString:@"system_policy_prevents_loading_kext"]) {
-      if (!self.shown) {
-        self.shown = YES;
-        [self.preferencesWindow beginSheet:self.window
-                         completionHandler:^(NSModalResponse returnCode){}];
-      }
+- (void)showIfNeeded:(kern_return_t)kr {
+  if (kr == kOSKextReturnSystemPolicy) {
+    if (!self.shown) {
+      self.shown = YES;
+      [self.preferencesWindow beginSheet:self.window
+                       completionHandler:^(NSModalResponse returnCode){}];
       return;
     }
   }
@@ -48,7 +46,7 @@ static void staticCallback(const char* filePath,
   self.shown = NO;
 }
 
-- (void)callback:(NSString*)filePath {
+- (void)kextLoadResultChangedCallback:(kern_return_t)kr {
   @weakify(self);
   dispatch_async(dispatch_get_main_queue(), ^{
     @strongify(self);
@@ -56,7 +54,7 @@ static void staticCallback(const char* filePath,
       return;
     }
 
-    [self showIfNeeded:filePath];
+    [self showIfNeeded:kr];
   });
 }
 
