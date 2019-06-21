@@ -84,6 +84,8 @@ public:
 private:
   void send_to_receiver(void) const {
     if (client_) {
+      // We have to use `getuid` (not `geteuid`) since `karabiner_session_monitor` is run as root by suid.
+      // (We have to send the real user ID to session_monitor_receiver.)
       client_->async_console_user_id_changed(getuid(), on_console_);
     }
   }

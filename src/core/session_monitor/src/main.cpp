@@ -14,17 +14,25 @@ int main(int argc, const char* argv[]) {
     exit(1);
   }
 
+  //
   // Setup logger
+  //
 
+  // We have to use `getuid` (not `geteuid`) since `karabiner_session_monitor` is run as root by suid.
+  // (We have to make a log file which includes the real user ID in the file path.)
   krbn::logger::set_async_rotating_logger("session_monitor",
                                           fmt::format("/var/log/karabiner/session_monitor.{0}.log", getuid()),
                                           0755);
 
   krbn::logger::get_logger()->info("version {0}", karabiner_version);
 
+  //
   // Check another process
+  //
 
   {
+    // We have to use `getuid` (not `geteuid`) since `karabiner_session_monitor` is run as root by suid.
+    // (We have to make pid file which includes the real user ID in the file path.)
     std::string pid_file_path = krbn::constants::get_pid_directory() +
                                 fmt::format("/karabiner_session_monitor.{0}.pid", getuid());
     if (!krbn::process_utility::lock_single_application(pid_file_path)) {
@@ -35,14 +43,18 @@ int main(int argc, const char* argv[]) {
     }
   }
 
+  //
   // Initialize
+  //
 
   krbn::dispatcher_utility::initialize_dispatchers();
 
   signal(SIGUSR1, SIG_IGN);
   signal(SIGUSR2, SIG_IGN);
 
+  //
   // Run components_manager
+  //
 
   std::shared_ptr<krbn::session_monitor::components_manager> components_manager;
 

@@ -24,6 +24,8 @@ public:
   receiver(const receiver&) = delete;
 
   receiver(void) : dispatcher_client() {
+    // We have to use `getuid` (not `geteuid`) since `karabiner_session_monitor` is run as root by suid.
+    // (We have to make a socket file which includes the real user ID in the file path.)
     std::string socket_file_path(constants::get_session_monitor_receiver_socket_file_path(getuid()));
 
     filesystem_utility::mkdir_rootonly_directory();
