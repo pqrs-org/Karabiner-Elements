@@ -62,9 +62,8 @@ static void staticKextLoadResultChangedCallback(kern_return_t kr,
   [[NSWorkspace sharedWorkspace] openURL:[NSURL URLWithString:@"x-apple.systempreferences:com.apple.preference.security?General"]];
 }
 
-- (IBAction)closePreferences:(id)sender {
+- (IBAction)closeAlert:(id)sender {
   [self.preferencesWindow endSheet:self.window];
-  [NSApp terminate:nil];
 }
 
 - (IBAction)openSystemPolicyPreventsLoadingKextHelpWebPage:(id)sender {

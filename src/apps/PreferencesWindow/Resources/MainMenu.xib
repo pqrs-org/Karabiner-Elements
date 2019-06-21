@@ -1353,7 +1353,7 @@
                                                                 <rect key="frame" x="17" y="17" width="880" height="408"/>
                                                                 <clipView key="contentView" id="FOg-OF-77U">
                                                                     <rect key="frame" x="1" y="0.0" width="878" height="407"/>
-                                                                    <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                                                                    <autoresizingMask key="autoresizingMask"/>
                                                                     <subviews>
                                                                         <tableView verticalHuggingPriority="750" allowsExpansionToolTips="YES" columnAutoresizingStyle="firstColumnOnly" alternatingRowBackgroundColors="YES" columnReordering="NO" columnSelection="YES" columnResizing="NO" multipleSelection="NO" autosaveColumns="NO" rowHeight="26" rowSizeStyle="automatic" headerView="PyG-O0-i8x" viewBased="YES" id="W1W-Xd-0KJ">
                                                                             <rect key="frame" x="0.0" y="0.0" width="878" height="384"/>
@@ -1694,7 +1694,7 @@
                                                                             <rect key="frame" x="8" y="8" width="862" height="137"/>
                                                                             <clipView key="contentView" id="tle-ie-uoi">
                                                                                 <rect key="frame" x="1" y="1" width="860" height="135"/>
-                                                                                <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                                                                                <autoresizingMask key="autoresizingMask"/>
                                                                                 <subviews>
                                                                                     <tableView verticalHuggingPriority="750" allowsExpansionToolTips="YES" columnAutoresizingStyle="lastColumnOnly" alternatingRowBackgroundColors="YES" columnReordering="NO" columnSelection="YES" columnResizing="NO" multipleSelection="NO" autosaveColumns="NO" rowHeight="26" rowSizeStyle="automatic" viewBased="YES" id="aIG-lD-1bK">
                                                                                         <rect key="frame" x="0.0" y="0.0" width="860" height="135"/>
@@ -2846,7 +2846,7 @@ You have to allow the system software from developer "Fumihiko Takayama" (the au
                                             </textFieldCell>
                                         </textField>
                                         <button verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="15b-2Z-hf1">
-                                            <rect key="frame" x="257" y="399" width="366" height="32"/>
+                                            <rect key="frame" x="266" y="399" width="348" height="32"/>
                                             <buttonCell key="cell" type="push" title="Open System Preferences &gt; Security &amp; Privacy" bezelStyle="rounded" image="ic_forward_18pt" imagePosition="left" alignment="left" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="Te8-FQ-SJa">
                                                 <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
                                                 <font key="font" metaFont="system"/>
@@ -2856,13 +2856,13 @@ You have to allow the system software from developer "Fumihiko Takayama" (the au
                                             </connections>
                                         </button>
                                         <button verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="9f7-D7-XzV">
-                                            <rect key="frame" x="282" y="357" width="316" height="32"/>
-                                            <buttonCell key="cell" type="push" title="Close Karabiner-Elements Preferences" bezelStyle="rounded" image="ic_cancel_18pt" imagePosition="left" alignment="left" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="qyW-jE-BlT">
+                                            <rect key="frame" x="363" y="357" width="155" height="32"/>
+                                            <buttonCell key="cell" type="push" title="Close this alert" bezelStyle="rounded" image="ic_cancel_18pt" imagePosition="left" alignment="left" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="qyW-jE-BlT">
                                                 <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
                                                 <font key="font" metaFont="system"/>
                                             </buttonCell>
                                             <connections>
-                                                <action selector="closePreferences:" target="fAe-OR-t9F" id="lap-n4-hjz"/>
+                                                <action selector="closeAlert:" target="fAe-OR-t9F" id="4ZI-OI-zOp"/>
                                             </connections>
                                         </button>
                                         <imageView horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="8N5-fM-hfp">
@@ -2885,7 +2885,7 @@ You have to allow the system software from developer "Fumihiko Takayama" (the au
                                             </textFieldCell>
                                         </textField>
                                         <button verticalHuggingPriority="750" imageHugsTitle="YES" translatesAutoresizingMaskIntoConstraints="NO" id="IL1-wh-XIV">
-                                            <rect key="frame" x="650" y="95" width="185" height="32"/>
+                                            <rect key="frame" x="659" y="95" width="167" height="32"/>
                                             <buttonCell key="cell" type="push" title="Open online help" bezelStyle="rounded" image="ic_open_in_browser_18pt" imagePosition="left" alignment="center" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="Y60-Nn-24R">
                                                 <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
                                                 <font key="font" metaFont="system"/>
