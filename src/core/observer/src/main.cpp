@@ -7,7 +7,7 @@
 #include <iostream>
 
 int main(int argc, const char* argv[]) {
-  if (getuid() != 0) {
+  if (geteuid() != 0) {
     std::cerr << "fatal: karabiner_observer requires root privilege." << std::endl;
     exit(1);
   }

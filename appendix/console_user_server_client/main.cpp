@@ -24,7 +24,7 @@ int main(int argc, const char* argv[]) {
     krbn::logger::get_logger()->error("Failed to connect");
   });
 
-  client->async_start(getuid());
+  client->async_start(geteuid());
 
   // ------------------------------------------------------------
 

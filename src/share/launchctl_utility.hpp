@@ -10,7 +10,7 @@ namespace krbn {
 class launchctl_utility final {
 public:
   static void manage_session_monitor(void) {
-    uid_t uid = getuid();
+    uid_t uid = geteuid();
     auto domain_target = (std::stringstream() << "gui/" << uid).str();
     auto service_target = (std::stringstream() << "gui/" << uid << "/org.pqrs.karabiner.karabiner_session_monitor").str();
     auto service_path = "/Library/LaunchAgents/org.pqrs.karabiner.karabiner_session_monitor.plist";
@@ -30,7 +30,7 @@ public:
   }
 
   static void manage_console_user_server(bool load) {
-    uid_t uid = getuid();
+    uid_t uid = geteuid();
     auto domain_target = (std::stringstream() << "gui/" << uid).str();
     auto service_target = (std::stringstream() << "gui/" << uid << "/org.pqrs.karabiner.karabiner_console_user_server").str();
     auto service_path = "/Library/LaunchAgents/org.pqrs.karabiner.karabiner_console_user_server.plist";
@@ -67,7 +67,7 @@ public:
   }
 
   static void restart_console_user_server(void) {
-    uid_t uid = getuid();
+    uid_t uid = geteuid();
     auto service_target = (std::stringstream() << "gui/" << uid << "/org.pqrs.karabiner.karabiner_console_user_server").str();
 
     auto command = std::string("/bin/launchctl kickstart -k ") + service_target;

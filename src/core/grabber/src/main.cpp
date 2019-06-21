@@ -8,7 +8,7 @@
 #include <iostream>
 
 int main(int argc, const char* argv[]) {
-  if (getuid() != 0) {
+  if (geteuid() != 0) {
     std::cerr << "fatal: karabiner_grabber requires root privilege." << std::endl;
     exit(1);
   }

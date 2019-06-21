@@ -44,7 +44,7 @@ public:
         return;
       }
 
-      auto uid = getuid();
+      auto uid = geteuid();
       auto socket_file_path = console_user_server_client::make_console_user_server_socket_file_path(uid);
 
       unlink(socket_file_path.c_str());

@@ -43,7 +43,7 @@ public:
 
     hid_manager_->device_terminated.connect([this](auto&& registry_entry_id) {
       krbn::logger::get_logger()->info("registry_entry_id:{0} is terminated.",
-                                      type_safe::get(registry_entry_id));
+                                       type_safe::get(registry_entry_id));
 
       caps_lock_led_state_managers_.erase(registry_entry_id);
     });
@@ -72,7 +72,7 @@ int main(int argc, const char* argv[]) {
     global_wait->notify();
   });
 
-  if (getuid() != 0) {
+  if (geteuid() != 0) {
     krbn::logger::get_logger()->error("control_led requires root privilege.");
   } else {
     if (argc == 1) {

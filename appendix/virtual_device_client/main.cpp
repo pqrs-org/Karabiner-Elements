@@ -10,7 +10,7 @@ int main(int argc, const char* argv[]) {
     CFRunLoopStop(CFRunLoopGetMain());
   });
 
-  if (getuid() != 0) {
+  if (geteuid() != 0) {
     krbn::logger::get_logger()->error("virtual_device_client requires root privilege.");
   }
 

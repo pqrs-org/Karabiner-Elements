@@ -30,7 +30,7 @@ CGEventRef callback(CGEventTapProxy proxy, CGEventType type, CGEventRef event, v
 } // namespace
 
 int main(int argc, const char* argv[]) {
-  if (getuid() != 0) {
+  if (geteuid() != 0) {
     krbn::logger::get_logger()->error("eventtap requires root privilege to use kCGHIDEventTap.");
     return 0;
   }

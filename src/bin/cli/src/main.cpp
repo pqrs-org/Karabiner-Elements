@@ -98,7 +98,7 @@ int main(int argc, char** argv) {
     {
       std::string key = "copy-current-profile-to-system-default-profile";
       if (parse_result.count(key)) {
-        if (getuid() != 0) {
+        if (geteuid() != 0) {
           krbn::logger::get_logger()->error("--{0} requires root privilege.", key);
           exit_code = 1;
           goto finish;
@@ -111,7 +111,7 @@ int main(int argc, char** argv) {
     {
       std::string key = "remove-system-default-profile";
       if (parse_result.count(key)) {
-        if (getuid() != 0) {
+        if (geteuid() != 0) {
           krbn::logger::get_logger()->error("--{0} requires root privilege.", key);
           exit_code = 1;
           goto finish;
