@@ -240,10 +240,10 @@ void libkrbn_disable_version_monitor(void);
 typedef void (*libkrbn_kextd_state_monitor_kext_load_result_changed_callback)(
     kern_return_t kr,
     void* refcon);
-void libkrbn_enable_kext_state_monitor(
+void libkrbn_enable_kextd_state_monitor(
     libkrbn_kextd_state_monitor_kext_load_result_changed_callback callback,
     void* refcon);
-void libkrbn_disable_kext_state_monitor(void);
+void libkrbn_disable_kextd_state_monitor(void);
 
 // ----------------------------------------
 // libkrbn_file_monitor

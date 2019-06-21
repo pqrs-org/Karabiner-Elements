@@ -153,7 +153,7 @@ void libkrbn_disable_version_monitor(void) {
 // kextd_state_monitor
 // ============================================================
 
-void libkrbn_enable_kext_state_monitor(
+void libkrbn_enable_kextd_state_monitor(
     libkrbn_kextd_state_monitor_kext_load_result_changed_callback callback,
     void* refcon) {
   if (libkrbn_components_manager_) {
@@ -162,7 +162,7 @@ void libkrbn_enable_kext_state_monitor(
   }
 }
 
-void libkrbn_disable_kext_state_monitor(void) {
+void libkrbn_disable_kextd_state_monitor(void) {
   if (libkrbn_components_manager_) {
     libkrbn_components_manager_->disable_kextd_state_monitor();
   }
