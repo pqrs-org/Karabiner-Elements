@@ -2,6 +2,8 @@
 
 ## Beta
 
+- Introduced karabiner_kextd.
+  (kext loading function was separated from karabiner_grabber.)
 - Suppressed unnecessary log messages.
 
 ## Version 12.5.0
