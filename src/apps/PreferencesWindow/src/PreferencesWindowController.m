@@ -103,6 +103,7 @@
 
   // ----------------------------------------
   libkrbn_launchctl_manage_session_monitor();
+  libkrbn_launchctl_manage_observer_agent();
   libkrbn_launchctl_manage_console_user_server(true);
 }
 

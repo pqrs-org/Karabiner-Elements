@@ -1,15 +1,28 @@
 #include "constants.hpp"
 #include "dispatcher_utility.hpp"
+#include "iokit_hid_device_open_checker_utility.hpp"
 #include "karabiner_version.h"
 #include "logger.hpp"
 #include "observer/components_manager.hpp"
 #include "process_utility.hpp"
 #include <iostream>
 
+namespace {
+void run_as_agent(void) {
+  // Open IOHIDDevices in order to gain input monitoring permission.
+
+  pqrs::dispatcher::extra::initialize_shared_dispatcher();
+
+  krbn::iokit_hid_device_open_checker_utility::run_checker();
+
+  pqrs::dispatcher::extra::terminate_shared_dispatcher();
+}
+} // namespace
+
 int main(int argc, const char* argv[]) {
   if (geteuid() != 0) {
-    std::cerr << "fatal: karabiner_observer requires root privilege." << std::endl;
-    exit(1);
+    run_as_agent();
+    return 0;
   }
 
   // Setup logger
