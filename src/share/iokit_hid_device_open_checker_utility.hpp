@@ -4,7 +4,9 @@
 
 namespace krbn {
 namespace iokit_hid_device_open_checker_utility {
-inline void run_checker(void) {
+inline bool run_checker(void) {
+  bool result = true;
+
   auto global_wait = pqrs::make_thread_wait();
 
   std::vector<pqrs::cf::cf_ptr<CFDictionaryRef>> matching_dictionaries{
@@ -25,16 +27,20 @@ inline void run_checker(void) {
                                                                             matching_dictionaries);
 
   checker->device_open_permitted.connect([&] {
+    result = true;
     global_wait->notify();
   });
 
   checker->device_open_forbidden.connect([&] {
+    result = false;
     global_wait->notify();
   });
 
   checker->async_start();
 
   global_wait->wait_notice();
+
+  return result;
 }
 } // namespace iokit_hid_device_open_checker_utility
 } // namespace krbn
