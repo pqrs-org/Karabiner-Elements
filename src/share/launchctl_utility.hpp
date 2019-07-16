@@ -65,6 +65,14 @@ inline void manage_observer_agent(void) {
   restart_agent(service_name);
 }
 
+inline void manage_grabber_agent(void) {
+  std::string service_name("org.pqrs.karabiner.agent.karabiner_grabber");
+  std::string service_path("/Library/LaunchAgents/org.pqrs.karabiner.agent.karabiner_grabber.plist");
+
+  enable_agent(service_name, service_path);
+  restart_agent(service_name);
+}
+
 inline void manage_session_monitor(void) {
   enable_agent("org.pqrs.karabiner.karabiner_session_monitor",
                "/Library/LaunchAgents/org.pqrs.karabiner.karabiner_session_monitor.plist");

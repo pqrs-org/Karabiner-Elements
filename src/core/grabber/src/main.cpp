@@ -2,10 +2,18 @@
 #include "dispatcher_utility.hpp"
 #include "filesystem_utility.hpp"
 #include "grabber/components_manager.hpp"
+#include "iokit_hid_device_open_checker_utility.hpp"
 #include "karabiner_version.h"
 #include "logger.hpp"
 #include "process_utility.hpp"
 #include <iostream>
+
+namespace {
+void run_as_agent(void) {
+  // Open IOHIDDevices in order to gain input monitoring permission.
+  krbn::iokit_hid_device_open_checker_utility::run_checker();
+}
+} // namespace
 
 int main(int argc, const char* argv[]) {
   //
@@ -22,8 +30,8 @@ int main(int argc, const char* argv[]) {
   //
 
   if (geteuid() != 0) {
-    std::cerr << "fatal: karabiner_grabber requires root privilege." << std::endl;
-    exit(1);
+    run_as_agent();
+    return 0;
   }
 
   // Setup logger

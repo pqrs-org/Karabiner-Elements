@@ -35,6 +35,7 @@ void libkrbn_unlock_single_application(void);
 void libkrbn_launchctl_manage_console_user_server(bool load);
 void libkrbn_launchctl_manage_session_monitor(void);
 void libkrbn_launchctl_manage_observer_agent(void);
+void libkrbn_launchctl_manage_grabber_agent(void);
 void libkrbn_launchctl_restart_console_user_server(void);
 
 void libkrbn_check_for_updates_in_background(void);
