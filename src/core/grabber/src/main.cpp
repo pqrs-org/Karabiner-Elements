@@ -8,13 +8,6 @@
 #include "process_utility.hpp"
 #include <iostream>
 
-namespace {
-void run_as_agent(void) {
-  // Open IOHIDDevices in order to gain input monitoring permission.
-  krbn::iokit_hid_device_open_checker_utility::run_checker();
-}
-} // namespace
-
 int main(int argc, const char* argv[]) {
   //
   // Initialize
@@ -26,11 +19,19 @@ int main(int argc, const char* argv[]) {
   signal(SIGUSR2, SIG_IGN);
 
   //
+  // Open IOHIDDevices in order to gain input monitoring permission.
+  // (Both from LaunchDaemons and LaunchAgents)
+  //
+
+  if (!krbn::iokit_hid_device_open_checker_utility::run_checker()) {
+    return 0;
+  }
+
+  //
   // Check euid
   //
 
   if (geteuid() != 0) {
-    run_as_agent();
     return 0;
   }
 
