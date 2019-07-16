@@ -61,9 +61,9 @@ int remove_system_default_profile(void) {
 } // namespace
 
 int main(int argc, char** argv) {
-  int exit_code = 0;
+  auto scoped_dispatcher_manager = krbn::dispatcher_utility::initialize_dispatchers();
 
-  krbn::dispatcher_utility::initialize_dispatchers();
+  int exit_code = 0;
 
   {
     auto l = spdlog::stdout_color_mt("karabiner_cli");
@@ -199,7 +199,5 @@ int main(int argc, char** argv) {
   exit_code = 1;
 
 finish:
-  krbn::dispatcher_utility::terminate_dispatchers();
-
   return exit_code;
 }

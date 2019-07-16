@@ -8,6 +8,19 @@
 #include <iostream>
 
 int main(int argc, const char* argv[]) {
+  //
+  // Initialize
+  //
+
+  auto scoped_dispatcher_manager = krbn::dispatcher_utility::initialize_dispatchers();
+
+  signal(SIGUSR1, SIG_IGN);
+  signal(SIGUSR2, SIG_IGN);
+
+  //
+  // Check euid
+  //
+
   if (geteuid() != 0) {
     std::cerr << "fatal: karabiner_kextd requires root privilege." << std::endl;
     exit(1);
@@ -38,15 +51,6 @@ int main(int argc, const char* argv[]) {
   }
 
   //
-  // Initialize
-  //
-
-  krbn::dispatcher_utility::initialize_dispatchers();
-
-  signal(SIGUSR1, SIG_IGN);
-  signal(SIGUSR2, SIG_IGN);
-
-  //
   // Run components_manager
   //
 
@@ -71,8 +75,6 @@ int main(int argc, const char* argv[]) {
   version_monitor = nullptr;
 
   krbn::logger::get_logger()->info("karabiner_kextd is terminated.");
-
-  krbn::dispatcher_utility::terminate_dispatchers();
 
   return 0;
 }

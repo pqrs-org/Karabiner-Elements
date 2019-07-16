@@ -7,6 +7,19 @@
 #include <iostream>
 
 int main(int argc, const char* argv[]) {
+  //
+  // Initialize
+  //
+
+  auto scoped_dispatcher_manager = krbn::dispatcher_utility::initialize_dispatchers();
+
+  signal(SIGUSR1, SIG_IGN);
+  signal(SIGUSR2, SIG_IGN);
+
+  //
+  // Check euid
+  //
+
   // - karabiner_session_monitor is invoked by user.
   // - karabiner_session_monitor is executed as root by setuid.
   if (geteuid() != 0) {
@@ -44,15 +57,6 @@ int main(int argc, const char* argv[]) {
   }
 
   //
-  // Initialize
-  //
-
-  krbn::dispatcher_utility::initialize_dispatchers();
-
-  signal(SIGUSR1, SIG_IGN);
-  signal(SIGUSR2, SIG_IGN);
-
-  //
   // Run components_manager
   //
 
@@ -77,8 +81,6 @@ int main(int argc, const char* argv[]) {
   version_monitor = nullptr;
 
   krbn::logger::get_logger()->info("karabiner_session_monitor is terminated.");
-
-  krbn::dispatcher_utility::terminate_dispatchers();
 
   return 0;
 }

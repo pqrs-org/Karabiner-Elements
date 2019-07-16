@@ -5,11 +5,9 @@
 #include "test_runner.hpp"
 
 int run_tests(int argc, char* argv[]) {
-  krbn::dispatcher_utility::initialize_dispatchers();
+  auto scoped_dispatcher_manager = krbn::dispatcher_utility::initialize_dispatchers();
 
   auto result = Catch::Session().run(argc, argv);
-
-  krbn::dispatcher_utility::terminate_dispatchers();
 
   return result;
 }

@@ -15,6 +15,7 @@
 #include <string>
 
 namespace {
+std::unique_ptr<krbn::dispatcher_utility::scoped_dispatcher_manager> scoped_dispatcher_manager_;
 std::unique_ptr<libkrbn_components_manager> libkrbn_components_manager_;
 } // namespace
 
@@ -29,7 +30,9 @@ void libkrbn_set_logging_level_info(void) {
 void libkrbn_initialize(void) {
   krbn::logger::get_logger()->info(__func__);
 
-  krbn::dispatcher_utility::initialize_dispatchers();
+  if (!scoped_dispatcher_manager_) {
+    scoped_dispatcher_manager_ = krbn::dispatcher_utility::initialize_dispatchers();
+  }
 
   if (!libkrbn_components_manager_) {
     libkrbn_components_manager_ = std::make_unique<libkrbn_components_manager>();
@@ -39,11 +42,9 @@ void libkrbn_initialize(void) {
 void libkrbn_terminate(void) {
   krbn::logger::get_logger()->info(__func__);
 
-  if (libkrbn_components_manager_) {
-    libkrbn_components_manager_ = nullptr;
-  }
+  libkrbn_components_manager_ = nullptr;
 
-  krbn::dispatcher_utility::terminate_dispatchers();
+  scoped_dispatcher_manager_ = nullptr;
 }
 
 const char* libkrbn_get_distributed_notification_observed_object(void) {

@@ -4,7 +4,7 @@
 #include "virtual_hid_device_client.hpp"
 
 int main(int argc, const char* argv[]) {
-  krbn::dispatcher_utility::initialize_dispatchers();
+  auto scoped_dispatcher_manager = krbn::dispatcher_utility::initialize_dispatchers();
 
   signal(SIGINT, [](int) {
     CFRunLoopStop(CFRunLoopGetMain());
@@ -34,7 +34,9 @@ int main(int argc, const char* argv[]) {
 
   client = nullptr;
 
-  krbn::dispatcher_utility::terminate_dispatchers();
+  scoped_dispatcher_manager = nullptr;
+
+  std::cout << "finished" << std::endl;
 
   return 0;
 }

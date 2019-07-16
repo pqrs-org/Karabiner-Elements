@@ -137,7 +137,7 @@ auto global_wait = pqrs::make_thread_wait();
 } // namespace
 
 int main(int argc, const char* argv[]) {
-  krbn::dispatcher_utility::initialize_dispatchers();
+  auto scoped_dispatcher_manager = krbn::dispatcher_utility::initialize_dispatchers();
 
   std::signal(SIGINT, [](int) {
     global_wait->notify();
@@ -153,7 +153,7 @@ int main(int argc, const char* argv[]) {
 
   d = nullptr;
 
-  krbn::dispatcher_utility::terminate_dispatchers();
+  scoped_dispatcher_manager = nullptr;
 
   std::cout << "finished" << std::endl;
 

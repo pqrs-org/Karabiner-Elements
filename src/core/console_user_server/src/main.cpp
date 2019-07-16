@@ -10,6 +10,13 @@
 #include <pqrs/filesystem.hpp>
 
 int main(int argc, const char* argv[]) {
+  // Initialize
+
+  auto scoped_dispatcher_manager = krbn::dispatcher_utility::initialize_dispatchers();
+
+  signal(SIGUSR1, SIG_IGN);
+  signal(SIGUSR2, SIG_IGN);
+
   // Setup logger
 
   if (!krbn::constants::get_user_log_directory().empty()) {
@@ -32,13 +39,6 @@ int main(int argc, const char* argv[]) {
   krbn::launchctl_utility::manage_session_monitor();
   krbn::launchctl_utility::manage_observer_agent();
   krbn::launchctl_utility::manage_console_user_server(true);
-
-  // Initialize
-
-  krbn::dispatcher_utility::initialize_dispatchers();
-
-  signal(SIGUSR1, SIG_IGN);
-  signal(SIGUSR2, SIG_IGN);
 
   // Migrate old configuration file
 
@@ -72,8 +72,6 @@ int main(int argc, const char* argv[]) {
   version_monitor = nullptr;
 
   krbn::logger::get_logger()->info("karabiner_console_user_server is terminated.");
-
-  krbn::dispatcher_utility::terminate_dispatchers();
 
   return 0;
 }

@@ -10,16 +10,24 @@
 namespace {
 void run_as_agent(void) {
   // Open IOHIDDevices in order to gain input monitoring permission.
-
-  pqrs::dispatcher::extra::initialize_shared_dispatcher();
-
   krbn::iokit_hid_device_open_checker_utility::run_checker();
-
-  pqrs::dispatcher::extra::terminate_shared_dispatcher();
 }
 } // namespace
 
 int main(int argc, const char* argv[]) {
+  //
+  // Initialize
+  //
+
+  auto scoped_dispatcher_manager = krbn::dispatcher_utility::initialize_dispatchers();
+
+  signal(SIGUSR1, SIG_IGN);
+  signal(SIGUSR2, SIG_IGN);
+
+  //
+  // Check euid
+  //
+
   if (geteuid() != 0) {
     run_as_agent();
     return 0;
@@ -45,13 +53,6 @@ int main(int argc, const char* argv[]) {
     }
   }
 
-  // Initialize
-
-  krbn::dispatcher_utility::initialize_dispatchers();
-
-  signal(SIGUSR1, SIG_IGN);
-  signal(SIGUSR2, SIG_IGN);
-
   // Run components_manager
 
   std::shared_ptr<krbn::observer::components_manager> components_manager;
@@ -75,8 +76,6 @@ int main(int argc, const char* argv[]) {
   version_monitor = nullptr;
 
   krbn::logger::get_logger()->info("karabiner_observer is terminated.");
-
-  krbn::dispatcher_utility::terminate_dispatchers();
 
   return 0;
 }

@@ -1,8 +1,9 @@
 #include "dispatcher_utility.hpp"
 #include "monitor/version_monitor.hpp"
+#include <iostream>
 
 int main(int argc, const char* argv[]) {
-  krbn::dispatcher_utility::initialize_dispatchers();
+  auto scoped_dispatcher_manager = krbn::dispatcher_utility::initialize_dispatchers();
 
   signal(SIGINT, [](int) {
     CFRunLoopStop(CFRunLoopGetMain());
@@ -20,7 +21,9 @@ int main(int argc, const char* argv[]) {
 
   monitor = nullptr;
 
-  krbn::dispatcher_utility::terminate_dispatchers();
+  scoped_dispatcher_manager = nullptr;
+
+  std::cout << "finished" << std::endl;
 
   return 0;
 }

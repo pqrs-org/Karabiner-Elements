@@ -7,26 +7,33 @@
 namespace krbn {
 class dispatcher_utility final {
 public:
-  static void initialize_dispatchers(void) {
-    pqrs::dispatcher::extra::initialize_shared_dispatcher();
+  class scoped_dispatcher_manager final {
+  public:
+    scoped_dispatcher_manager(void) {
+      pqrs::dispatcher::extra::initialize_shared_dispatcher();
 
-    {
-      std::lock_guard<std::mutex> lock(get_file_writer_mutex());
+      {
+        std::lock_guard<std::mutex> lock(get_file_writer_mutex());
 
-      if (!get_file_writer()) {
-        get_file_writer() = std::make_shared<file_writer>();
+        if (!get_file_writer()) {
+          get_file_writer() = std::make_shared<file_writer>();
+        }
       }
     }
-  }
 
-  static void terminate_dispatchers(void) {
-    pqrs::dispatcher::extra::terminate_shared_dispatcher();
+    ~scoped_dispatcher_manager(void) {
+      pqrs::dispatcher::extra::terminate_shared_dispatcher();
 
-    {
-      std::lock_guard<std::mutex> lock(get_file_writer_mutex());
+      {
+        std::lock_guard<std::mutex> lock(get_file_writer_mutex());
 
-      get_file_writer() = nullptr;
+        get_file_writer() = nullptr;
+      }
     }
+  };
+
+  static std::unique_ptr<scoped_dispatcher_manager> initialize_dispatchers(void) {
+    return std::make_unique<scoped_dispatcher_manager>();
   }
 
   static void enqueue_to_file_writer_dispatcher(const std::function<void(void)>& function) {
