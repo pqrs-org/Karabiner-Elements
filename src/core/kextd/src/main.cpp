@@ -22,7 +22,7 @@ int main(int argc, const char* argv[]) {
 
   if (geteuid() != 0) {
     std::cerr << "fatal: karabiner_kextd requires root privilege." << std::endl;
-    exit(1);
+    return 1;
   }
 
   //

@@ -31,7 +31,7 @@ int main(int argc, const char* argv[]) {
 
   if (!krbn::process_utility::lock_single_application_with_user_pid_file("karabiner_console_user_server.pid")) {
     krbn::logger::get_logger()->info("Exit since another process is running.");
-    exit(0);
+    return 1;
   }
 
   // Manage launchctl

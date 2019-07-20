@@ -24,7 +24,7 @@ int main(int argc, const char* argv[]) {
   // - karabiner_session_monitor is executed as root by setuid.
   if (geteuid() != 0) {
     std::cerr << "fatal: karabiner_session_monitor requires root privilege." << std::endl;
-    exit(1);
+    return 1;
   }
 
   //
@@ -52,7 +52,7 @@ int main(int argc, const char* argv[]) {
       auto message = "Exit since another process is running.";
       krbn::logger::get_logger()->info(message);
       std::cerr << message << std::endl;
-      exit(1);
+      return 1;
     }
   }
 
