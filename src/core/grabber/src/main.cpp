@@ -6,6 +6,7 @@
 #include "karabiner_version.h"
 #include "logger.hpp"
 #include "process_utility.hpp"
+#include "state_json_writer.hpp"
 #include <iostream>
 
 int main(int argc, const char* argv[]) {
@@ -18,12 +19,22 @@ int main(int argc, const char* argv[]) {
   signal(SIGUSR1, SIG_IGN);
   signal(SIGUSR2, SIG_IGN);
 
+  std::shared_ptr<krbn::state_json_writer> state_json_writer;
+  if (geteuid() == 0) {
+    state_json_writer = std::make_shared<krbn::state_json_writer>(
+        krbn::constants::get_grabber_state_json_file_path());
+  }
+
   //
   // Open IOHIDDevices in order to gain input monitoring permission.
   // (Both from LaunchDaemons and LaunchAgents)
   //
 
   if (!krbn::iokit_hid_device_open_checker_utility::run_checker()) {
+    if (state_json_writer) {
+      state_json_writer->set("error", "hid_device_open_not_permitted");
+    }
+
     return 0;
   }
 
@@ -51,7 +62,7 @@ int main(int argc, const char* argv[]) {
       std::string message("Exit since another process is running.");
       krbn::logger::get_logger()->info(message);
       std::cerr << message << std::endl;
-      return 0;
+      return 1;
     }
   }
 
@@ -94,6 +105,8 @@ int main(int argc, const char* argv[]) {
   CFRunLoopRun();
 
   version_monitor = nullptr;
+
+  state_json_writer = nullptr;
 
   krbn::logger::get_logger()->info("karabiner_grabber is terminated.");
 

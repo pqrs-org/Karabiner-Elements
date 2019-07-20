@@ -33,6 +33,10 @@ public:
     return "/Library/Application Support/org.pqrs/tmp/karabiner_observer_state.json";
   }
 
+  static const char* get_grabber_state_json_file_path(void) {
+    return "/Library/Application Support/org.pqrs/tmp/karabiner_grabber_state.json";
+  }
+
   static const char* get_grabber_socket_file_path(void) {
     return "/Library/Application Support/org.pqrs/tmp/karabiner_grabber_receiver";
   }
