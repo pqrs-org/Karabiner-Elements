@@ -1,6 +1,6 @@
 #pragma once
 
-// pqrs::osx::iokit_return v1.2
+// pqrs::osx::iokit_return v1.3
 
 // (C) Copyright Takayama Fumihiko 2018.
 // Distributed under the Boost Software License, Version 1.0.
@@ -85,6 +85,18 @@ public:
 #undef PQRS_OSX_IOKIT_RETURN_TO_STRING
 
     return std::string("Unknown IOReturn (") + std::to_string(return_) + ")";
+  }
+
+  bool success(void) const {
+    return return_ == kIOReturnSuccess;
+  }
+
+  bool exclusive_access(void) const {
+    return return_ == kIOReturnExclusiveAccess;
+  }
+
+  bool not_permitted(void) const {
+    return return_ == kIOReturnNotPermitted;
   }
 
   operator bool(void) const {

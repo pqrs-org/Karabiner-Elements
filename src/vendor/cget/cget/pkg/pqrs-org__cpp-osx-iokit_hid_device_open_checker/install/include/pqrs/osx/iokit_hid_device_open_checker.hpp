@@ -1,6 +1,6 @@
 #pragma once
 
-// pqrs::osx::iokit_hid_device_open_checker v1.0
+// pqrs::osx::iokit_hid_device_open_checker v1.1
 
 // (C) Copyright Takayama Fumihiko 2019.
 // Distributed under the Boost Software License, Version 1.0.
@@ -35,7 +35,8 @@ public:
         wait_ = 5;
 
         iokit_return r = IOHIDDeviceOpen(*device, kIOHIDOptionsTypeNone);
-        if (r || r.get() == kIOReturnExclusiveAccess) {
+
+        if (!r.not_permitted()) {
           if (!permitted_) {
             permitted_ = true;
             enqueue_to_dispatcher([this] {
