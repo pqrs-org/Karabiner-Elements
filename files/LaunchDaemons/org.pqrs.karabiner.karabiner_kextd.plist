@@ -7,7 +7,7 @@
     <key>Disabled</key>
     <false/>
     <key>KeepAlive</key>
-    <true/>
+    <false/>
     <key>ProgramArguments</key>
     <array>
       <string>/Library/Application Support/org.pqrs/Karabiner-Elements/bin/karabiner_kextd</string>

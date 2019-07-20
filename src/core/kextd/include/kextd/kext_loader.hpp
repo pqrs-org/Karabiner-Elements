@@ -6,6 +6,7 @@
 #include "constants.hpp"
 #include "json_writer.hpp"
 #include "logger.hpp"
+#include "monitor/version_monitor.hpp"
 #include <IOKit/kext/KextManager.h>
 #include <nlohmann/json.hpp>
 #include <pqrs/cf/url.hpp>
@@ -15,11 +16,18 @@ namespace krbn {
 namespace kextd {
 class kext_loader final : public pqrs::dispatcher::extra::dispatcher_client {
 public:
+  // Signals (invoked from the shared dispatcher thread)
+
+  nod::signal<void(void)> kext_loaded;
+
+  // Methods
+
   kext_loader(const kext_loader&) = delete;
 
-  kext_loader(void) : dispatcher_client(),
-                      timer_(*this),
-                      state_(nlohmann::json::object()) {
+  kext_loader(std::weak_ptr<version_monitor> weak_version_monitor) : dispatcher_client(),
+                                                                     weak_version_monitor_(weak_version_monitor),
+                                                                     timer_(*this),
+                                                                     state_(nlohmann::json::object()) {
   }
 
   virtual ~kext_loader(void) {
@@ -34,6 +42,10 @@ public:
 
       timer_.start(
           [this] {
+            if (auto m = weak_version_monitor_.lock()) {
+              m->async_manual_check();
+            }
+
             auto kext_file_path =
                 std::string("/Library/Application Support/org.pqrs/Karabiner-VirtualHIDDevice/Extensions/") +
                 pqrs::karabiner_virtual_hid_device::get_kernel_extension_name();
@@ -47,6 +59,10 @@ public:
 
               if (kr == kOSReturnSuccess) {
                 timer_.stop();
+
+                enqueue_to_dispatcher([this] {
+                  kext_loaded();
+                });
               }
             }
           },
@@ -62,6 +78,7 @@ private:
                                     0644);
   }
 
+  std::weak_ptr<version_monitor> weak_version_monitor_;
   pqrs::dispatcher::extra::timer timer_;
   nlohmann::json state_;
 };

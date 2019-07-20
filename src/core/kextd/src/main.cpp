@@ -1,9 +1,8 @@
 #include "constants.hpp"
 #include "dispatcher_utility.hpp"
 #include "karabiner_version.h"
-#include "kextd/components_manager.hpp"
+#include "kextd/kext_loader.hpp"
 #include "logger.hpp"
-#include "monitor/version_monitor.hpp"
 #include "process_utility.hpp"
 #include <iostream>
 
@@ -51,27 +50,39 @@ int main(int argc, const char* argv[]) {
   }
 
   //
-  // Run components_manager
+  // Run kext_loader
   //
 
-  std::shared_ptr<krbn::kextd::components_manager> components_manager;
+  std::shared_ptr<krbn::kextd::kext_loader> kext_loader;
+
+  // version_monitor
 
   auto version_monitor = std::make_shared<krbn::version_monitor>(krbn::constants::get_version_file_path());
 
   version_monitor->changed.connect([&](auto&& version) {
     dispatch_async(dispatch_get_main_queue(), ^{
-      components_manager = nullptr;
       CFRunLoopStop(CFRunLoopGetCurrent());
     });
   });
 
-  components_manager = std::make_shared<krbn::kextd::components_manager>();
+  // kext_loader
+
+  kext_loader = std::make_shared<krbn::kextd::kext_loader>(version_monitor);
+
+  kext_loader->kext_loaded.connect([] {
+    dispatch_async(dispatch_get_main_queue(), ^{
+      CFRunLoopStop(CFRunLoopGetCurrent());
+    });
+  });
+
+  // Start
 
   version_monitor->async_start();
-  components_manager->async_start();
+  kext_loader->async_start();
 
   CFRunLoopRun();
 
+  kext_loader = nullptr;
   version_monitor = nullptr;
 
   krbn::logger::get_logger()->info("karabiner_kextd is terminated.");
