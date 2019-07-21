@@ -1,10 +1,10 @@
-#import "AlertWindowController.h"
+#import "KextdAlertWindowController.h"
 #import "KarabinerKit/KarabinerKit.h"
 #import "libkrbn/libkrbn.h"
 #import <libkern/OSKextLib.h>
 #import <pqrs/weakify.h>
 
-@interface AlertWindowController ()
+@interface KextdAlertWindowController ()
 
 @property(weak) IBOutlet NSWindow* preferencesWindow;
 @property BOOL shown;
@@ -15,13 +15,13 @@
 
 static void staticKextdStateJsonFileChangedCallback(const char* filePath,
                                                     void* context) {
-  AlertWindowController* p = (__bridge AlertWindowController*)(context);
+  KextdAlertWindowController* p = (__bridge KextdAlertWindowController*)(context);
   if (p) {
     [p kextdStateJsonFileChangedCallback:[NSString stringWithUTF8String:filePath]];
   }
 }
 
-@implementation AlertWindowController
+@implementation KextdAlertWindowController
 
 - (void)setup {
   libkrbn_enable_kextd_state_json_file_monitor(staticKextdStateJsonFileChangedCallback,

@@ -2,7 +2,7 @@
 
 @import Cocoa;
 
-@interface AlertWindowController : NSWindowController
+@interface KextdAlertWindowController : NSWindowController
 
 - (void)setup;
 

@@ -18,7 +18,6 @@ link_directories(
 add_executable(
   Karabiner-Elements
   MACOSX_BUNDLE
-  src/AlertWindowController.m
   src/AppDelegate.m
   src/ComplexModificationsAssetsOutlineCellView.m
   src/ComplexModificationsAssetsOutlineViewDataSource.m
@@ -36,6 +35,7 @@ add_executable(
   src/FnFunctionKeysTableViewController.m
   src/FnFunctionKeysTableViewDataSource.m
   src/FnFunctionKeysTableViewDelegate.m
+  src/KextdAlertWindowController.m
   src/LogFileTextViewController.m
   src/main.m
   src/PreferencesWindowController.m
