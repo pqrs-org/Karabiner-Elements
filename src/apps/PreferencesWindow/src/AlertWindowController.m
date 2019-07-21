@@ -9,44 +9,30 @@
 @property(weak) IBOutlet NSWindow* preferencesWindow;
 @property BOOL shown;
 
-- (void)kextLoadResultChangedCallback:(kern_return_t)kr;
+- (void)kextdStateJsonFileChangedCallback:(NSString*)filePath;
 
 @end
 
-static void staticKextLoadResultChangedCallback(kern_return_t kr,
-                                                void* context) {
+static void staticKextdStateJsonFileChangedCallback(const char* filePath,
+                                                    void* context) {
   AlertWindowController* p = (__bridge AlertWindowController*)(context);
   if (p) {
-    [p kextLoadResultChangedCallback:kr];
+    [p kextdStateJsonFileChangedCallback:[NSString stringWithUTF8String:filePath]];
   }
 }
 
 @implementation AlertWindowController
 
 - (void)setup {
-  libkrbn_enable_kextd_state_monitor(staticKextLoadResultChangedCallback,
-                                     (__bridge void*)(self));
+  libkrbn_enable_kextd_state_json_file_monitor(staticKextdStateJsonFileChangedCallback,
+                                               (__bridge void*)(self));
 }
 
 - (void)dealloc {
-  libkrbn_disable_kextd_state_monitor();
+  libkrbn_disable_kextd_state_json_file_monitor();
 }
 
-- (void)showIfNeeded:(kern_return_t)kr {
-  if (kr == kOSKextReturnSystemPolicy) {
-    if (!self.shown) {
-      self.shown = YES;
-      [self.preferencesWindow beginSheet:self.window
-                       completionHandler:^(NSModalResponse returnCode){}];
-      return;
-    }
-  }
-
-  [self.preferencesWindow endSheet:self.window];
-  self.shown = NO;
-}
-
-- (void)kextLoadResultChangedCallback:(kern_return_t)kr {
+- (void)kextdStateJsonFileChangedCallback:(NSString*)filePath {
   @weakify(self);
   dispatch_async(dispatch_get_main_queue(), ^{
     @strongify(self);
@@ -54,7 +40,23 @@ static void staticKextLoadResultChangedCallback(kern_return_t kr,
       return;
     }
 
-    [self showIfNeeded:kr];
+    NSDictionary* jsonObject = [KarabinerKitJsonUtility loadFile:filePath];
+    if (jsonObject) {
+      NSString* result = jsonObject[@"kext_load_result"];
+      if ([result isKindOfClass:[NSString class]]) {
+        if ([result isEqualToString:@"kOSKextReturnSystemPolicy"]) {
+          if (!self.shown) {
+            self.shown = YES;
+            [self.preferencesWindow beginSheet:self.window
+                             completionHandler:^(NSModalResponse returnCode){}];
+            return;
+          }
+        }
+      }
+    }
+
+    [self.preferencesWindow endSheet:self.window];
+    self.shown = NO;
   });
 }
 
