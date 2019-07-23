@@ -2,6 +2,9 @@
 
 # Release notes
 **Contents**<br>
+[2.9.1](#291)<br>
+[2.9.0](#290)<br>
+[2.8.0](#280)<br>
 [2.7.2](#272)<br>
 [2.7.1](#271)<br>
 [2.7.0](#270)<br>
@@ -22,6 +25,42 @@
 [2.0.1](#201)<br>
 [Older versions](#older-versions)<br>
 [Even Older versions](#even-older-versions)<br>
+
+## 2.9.1
+
+### Fixes
+* Fix benchmarking compilation failure in files without `CATCH_CONFIG_EXTERNAL_INTERFACES` (or implementation)
+
+## 2.9.0
+
+### Improvements
+* The experimental benchmarking support has been replaced by integrating Nonius code (#1616)
+  * This provides a much more featurefull micro-benchmarking support.
+  * Due to the compilation cost, it is disabled by default. See the documentation for details.
+  * As far as backwards compatibility is concerned, this feature is still considered experimental in that we might change the interface based on user feedback.
+* `WithinULP` matcher now shows the acceptable range (#1581)
+* Template test cases now support type lists (#1627)
+
+
+## 2.8.0
+
+### Improvements
+* Templated test cases no longer check whether the provided types are unique (#1628)
+  * This allows you to e.g. test over `uint32_t`, `uint64_t`, and `size_t` without compilation failing
+* The precision of floating point stringification can be modified by user (#1612, #1614)
+* We now provide `REGISTER_ENUM` convenience macro for generating `StringMaker` specializations for enums
+  * See the "String conversion" documentation for details
+* Added new set of macros for template test cases that enables the use of NTTPs (#1531, #1609)
+  * See "Test cases and sections" documentation for details
+
+### Fixes
+* `UNSCOPED_INFO` macro now has a prefixed/disabled/prefixed+disabled versions (#1611)
+* Reporting errors at startup should no longer cause a segfault under certain circumstances (#1626)
+
+
+### Miscellaneous
+* CMake will now prevent you from attempting in-tree build (#1636, #1638)
+  * Previously it would break with an obscure error message during the build step
 
 
 ## 2.7.2

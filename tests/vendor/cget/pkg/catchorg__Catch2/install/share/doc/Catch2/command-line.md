@@ -20,7 +20,10 @@
 [Specify a seed for the Random Number Generator](#specify-a-seed-for-the-random-number-generator)<br>
 [Identify framework and version according to the libIdentify standard](#identify-framework-and-version-according-to-the-libidentify-standard)<br>
 [Wait for key before continuing](#wait-for-key-before-continuing)<br>
-[Specify multiples of clock resolution to run benchmarks for](#specify-multiples-of-clock-resolution-to-run-benchmarks-for)<br>
+[Specify the number of benchmark samples to collect](#specify-the-number-of-benchmark-samples-to-collect)<br>
+[Specify the number of benchmark resamples for bootstrapping](#specify-the-number-of-resamples-for-bootstrapping)<br>
+[Specify the confidence interval for bootstrapping](#specify-the-confidence-interval-for-bootstrapping)<br>
+[Disable statistical analysis of collected benchmark samples](#disable-statistical-analysis-of-collected-benchmark-samples)<br>
 [Usage](#usage)<br>
 [Specify the section to run](#specify-the-section-to-run)<br>
 [Filenames as tags](#filenames-as-tags)<br>
@@ -57,7 +60,10 @@ Click one of the following links to take you straight to that option - or scroll
 <a href="#rng-seed">                                    `    --rng-seed`</a><br />
 <a href="#libidentify">                                 `    --libidentify`</a><br />
 <a href="#wait-for-keypress">                           `    --wait-for-keypress`</a><br />
-<a href="#benchmark-resolution-multiple">               `    --benchmark-resolution-multiple`</a><br />
+<a href="#benchmark-samples">                           `    --benchmark-samples`</a><br />
+<a href="#benchmark-resamples">                         `    --benchmark-resamples`</a><br />
+<a href="#benchmark-confidence-interval">               `    --benchmark-confidence-interval`</a><br />
+<a href="#benchmark-no-analysis">                       `    --benchmark-no-analysis`</a><br />
 <a href="#use-colour">                                  `    --use-colour`</a><br />
 
 </br>
@@ -267,13 +273,40 @@ See [The LibIdentify repo for more information and examples](https://github.com/
 Will cause the executable to print a message and wait until the return/ enter key is pressed before continuing -
 either before running any tests, after running all tests - or both, depending on the argument.
 
-<a id="benchmark-resolution-multiple"></a>
-## Specify multiples of clock resolution to run benchmarks for
-<pre>--benchmark-resolution-multiple &lt;multiplier&gt;</pre>
+<a id="benchmark-samples"></a>
+## Specify the number of benchmark samples to collect
+<pre>--benchmark-samples &lt;# of samples&gt;</pre>
 
-When running benchmarks the clock resolution is estimated. Benchmarks are then run for exponentially increasing
-numbers of iterations until some multiple of the estimated resolution is exceed. By default that multiple is 100, but 
-it can be overridden here.
+When running benchmarks a number of "samples" is collected. This is the base data for later statistical analysis.
+Per sample a clock resolution dependent number of iterations of the user code is run, which is independent of the number of samples. Defaults to 100.
+
+<a id="benchmark-resamples"></a>
+## Specify the number of resamples for bootstrapping
+<pre>--benchmark-resamples &lt;# of resamples&gt;</pre>
+
+After the measurements are performed, statistical [bootstrapping] is performed
+on the samples. The number of resamples for that bootstrapping is configurable
+but defaults to 100000. Due to the bootstrapping it is possible to give
+estimates for the mean and standard deviation. The estimates come with a lower
+bound and an upper bound, and the confidence interval (which is configurable but
+defaults to 95%).
+
+ [bootstrapping]: http://en.wikipedia.org/wiki/Bootstrapping_%28statistics%29
+
+<a id="benchmark-confidence-interval"></a>
+## Specify the confidence-interval for bootstrapping
+<pre>--benchmark-confidence-interval &lt;confidence-interval&gt;</pre>
+
+The confidence-interval is used for statistical bootstrapping on the samples to
+calculate the upper and lower bounds of mean and standard deviation.
+Must be between 0 and 1 and defaults to 0.95.
+
+<a id="benchmark-no-analysis"></a>
+## Disable statistical analysis of collected benchmark samples
+<pre>--benchmark-no-analysis</pre>
+
+When this flag is specified no bootstrapping or any other statistical analysis is performed.
+Instead the user code is only measured and the plain mean from the samples is reported.
 
 <a id="usage"></a>
 ## Usage

@@ -149,6 +149,8 @@ by using `_NO_` in the macro, e.g. `CATCH_CONFIG_NO_CPP17_UNCAUGHT_EXCEPTIONS`.
     CATCH_CONFIG_DISABLE                    // Disables assertions and test case registration
     CATCH_CONFIG_WCHAR                      // Enables use of wchart_t
     CATCH_CONFIG_EXPERIMENTAL_REDIRECT      // Enables the new (experimental) way of capturing stdout/stderr
+    CATCH_CONFIG_ENABLE_BENCHMARKING        // Enables the integrated benchmarking features (has a significant effect on compilation speed)
+    CATCH_CONFIG_USE_ASYNC                  // Force parallel statistical processing of samples during benchmarking
 
 Currently Catch enables `CATCH_CONFIG_WINDOWS_SEH` only when compiled with MSVC, because some versions of MinGW do not have the necessary Win32 API support.
 

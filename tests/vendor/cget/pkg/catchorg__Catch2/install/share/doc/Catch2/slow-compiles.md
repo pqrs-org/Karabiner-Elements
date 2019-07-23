@@ -51,14 +51,15 @@ After compiling `tests-main.cpp` once, it is enough to link it with separately c
 
 ```
 $ g++ tests-main.cpp -c
-$ g++ tests-main.o tests-factorial.cpp -o tests && ./tests -r compact
+$ g++ factorial.cpp -c
+$ g++ tests-main.o factorial.o tests-factorial.cpp -o tests && ./tests -r compact
 Passed 1 test case with 4 assertions.
 ```
 
 Now, the next time we change the file `tests-factorial.cpp` (say we add `REQUIRE( Factorial(0) == 1)`), it is enough to recompile the tests instead of recompiling main as well:
 
 ```
-$ g++ tests-main.o tests-factorial.cpp -o tests && ./tests -r compact
+$ g++ tests-main.o factorial.o tests-factorial.cpp -o tests && ./tests -r compact
 tests-factorial.cpp:11: failed: Factorial(0) == 1 for: 0 == 1
 Failed 1 test case, failed 1 assertion.
 ```
