@@ -8,13 +8,13 @@
 #include "logger.hpp"
 #include "menu_process_manager.hpp"
 #include "monitor/configuration_monitor.hpp"
-#include "monitor/kextd_state_monitor.hpp"
 #include "monitor/version_monitor.hpp"
 #include "receiver.hpp"
 #include "updater_process_manager.hpp"
 #include <pqrs/dispatcher.hpp>
 #include <pqrs/osx/frontmost_application_monitor.hpp>
 #include <pqrs/osx/input_source_monitor.hpp>
+#include <pqrs/osx/json_file_monitor.hpp>
 #include <pqrs/osx/session.hpp>
 #include <pqrs/osx/system_preferences_monitor.hpp>
 #include <thread>
@@ -72,33 +72,39 @@ public:
 
       session_monitor_ = nullptr;
       receiver_ = nullptr;
-      kextd_state_monitor_ = nullptr;
+      kextd_state_json_file_monitor_ = nullptr;
     });
   }
 
   void async_start(void) {
     enqueue_to_dispatcher([this] {
-      start_kextd_state_monitor();
+      start_kextd_state_json_file_monitor();
       session_monitor_->async_start(std::chrono::milliseconds(1000));
     });
   }
 
 private:
-  void start_kextd_state_monitor(void) {
-    if (kextd_state_monitor_) {
+  void start_kextd_state_json_file_monitor(void) {
+    if (kextd_state_json_file_monitor_) {
       return;
     }
 
-    kextd_state_monitor_ = std::make_unique<kextd_state_monitor>(constants::get_kextd_state_json_file_path());
+    kextd_state_json_file_monitor_ = std::make_unique<pqrs::osx::json_file_monitor>(weak_dispatcher_,
+                                                                                    std::vector<std::string>({constants::get_kextd_state_json_file_path()}));
 
-    kextd_state_monitor_->kext_load_result_changed.connect([](auto&& result) {
-      logger::get_logger()->info("kext_load_result_changed: {0}", result);
-      if (result == kOSKextReturnSystemPolicy) {
-        application_launcher::launch_preferences();
+    kextd_state_json_file_monitor_->json_file_changed.connect([](auto&& changed_file_path, auto&& json) {
+      if (json) {
+        try {
+          if (json->at("kext_load_result").template get<std::string>() == "kOSKextReturnSystemPolicy") {
+            application_launcher::launch_preferences();
+          }
+        } catch (std::exception& e) {
+          logger::get_logger()->error("karabiner_kextd_state.json error: {0}", e.what());
+        }
       }
     });
 
-    kextd_state_monitor_->async_start();
+    kextd_state_json_file_monitor_->async_start();
   }
 
   void start_grabber_client(void) {
@@ -223,7 +229,7 @@ private:
   // Core components
 
   std::weak_ptr<version_monitor> weak_version_monitor_;
-  std::unique_ptr<kextd_state_monitor> kextd_state_monitor_;
+  std::unique_ptr<pqrs::osx::json_file_monitor> kextd_state_json_file_monitor_;
 
   std::unique_ptr<pqrs::osx::session::monitor> session_monitor_;
   std::unique_ptr<receiver> receiver_;
