@@ -2,6 +2,7 @@
 
 ## Beta
 
+- Support macOS Catalina.
 - Introduced karabiner_kextd.
   (kext loading function was separated from karabiner_grabber.)
 - Suppressed unnecessary log messages.
