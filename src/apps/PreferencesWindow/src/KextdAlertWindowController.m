@@ -1,7 +1,6 @@
 #import "KextdAlertWindowController.h"
 #import "KarabinerKit/KarabinerKit.h"
 #import "libkrbn/libkrbn.h"
-#import <libkern/OSKextLib.h>
 #import <pqrs/weakify.h>
 
 @interface KextdAlertWindowController ()

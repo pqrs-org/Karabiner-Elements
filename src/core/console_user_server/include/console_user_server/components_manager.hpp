@@ -72,39 +72,92 @@ public:
 
       session_monitor_ = nullptr;
       receiver_ = nullptr;
+      grabber_state_json_file_monitor_ = nullptr;
+      observer_state_json_file_monitor_ = nullptr;
       kextd_state_json_file_monitor_ = nullptr;
     });
   }
 
   void async_start(void) {
     enqueue_to_dispatcher([this] {
-      start_kextd_state_json_file_monitor();
+      start_state_json_file_monitors();
       session_monitor_->async_start(std::chrono::milliseconds(1000));
     });
   }
 
 private:
-  void start_kextd_state_json_file_monitor(void) {
-    if (kextd_state_json_file_monitor_) {
-      return;
+  void start_state_json_file_monitors(void) {
+    //
+    // kextd_state_json_file_monitor_
+    //
+
+    if (!kextd_state_json_file_monitor_) {
+      kextd_state_json_file_monitor_ = std::make_unique<pqrs::osx::json_file_monitor>(
+          weak_dispatcher_,
+          std::vector<std::string>({constants::get_kextd_state_json_file_path()}));
+
+      kextd_state_json_file_monitor_->json_file_changed.connect([](auto&& changed_file_path, auto&& json) {
+        if (json) {
+          try {
+            if (json->at("kext_load_result").template get<std::string>() == "kOSKextReturnSystemPolicy") {
+              application_launcher::launch_preferences();
+            }
+          } catch (std::exception& e) {
+            logger::get_logger()->error("karabiner_kextd_state.json error: {0}", e.what());
+          }
+        }
+      });
+
+      kextd_state_json_file_monitor_->async_start();
     }
 
-    kextd_state_json_file_monitor_ = std::make_unique<pqrs::osx::json_file_monitor>(weak_dispatcher_,
-                                                                                    std::vector<std::string>({constants::get_kextd_state_json_file_path()}));
+    //
+    // observer_state_json_file_monitor_
+    //
 
-    kextd_state_json_file_monitor_->json_file_changed.connect([](auto&& changed_file_path, auto&& json) {
-      if (json) {
-        try {
-          if (json->at("kext_load_result").template get<std::string>() == "kOSKextReturnSystemPolicy") {
-            application_launcher::launch_preferences();
+    if (!observer_state_json_file_monitor_) {
+      observer_state_json_file_monitor_ = std::make_unique<pqrs::osx::json_file_monitor>(
+          weak_dispatcher_,
+          std::vector<std::string>({constants::get_observer_state_json_file_path()}));
+
+      observer_state_json_file_monitor_->json_file_changed.connect([](auto&& changed_file_path, auto&& json) {
+        if (json) {
+          try {
+            if (json->at("error").template get<std::string>() == "hid_device_open_not_permitted") {
+              application_launcher::launch_preferences();
+            }
+          } catch (std::exception& e) {
+            logger::get_logger()->error("karabiner_observer_state.json error: {0}", e.what());
           }
-        } catch (std::exception& e) {
-          logger::get_logger()->error("karabiner_kextd_state.json error: {0}", e.what());
         }
-      }
-    });
+      });
 
-    kextd_state_json_file_monitor_->async_start();
+      observer_state_json_file_monitor_->async_start();
+    }
+
+    //
+    // grabber_state_json_file_monitor_
+    //
+
+    if (!grabber_state_json_file_monitor_) {
+      grabber_state_json_file_monitor_ = std::make_unique<pqrs::osx::json_file_monitor>(
+          weak_dispatcher_,
+          std::vector<std::string>({constants::get_grabber_state_json_file_path()}));
+
+      grabber_state_json_file_monitor_->json_file_changed.connect([](auto&& changed_file_path, auto&& json) {
+        if (json) {
+          try {
+            if (json->at("error").template get<std::string>() == "hid_device_open_not_permitted") {
+              application_launcher::launch_preferences();
+            }
+          } catch (std::exception& e) {
+            logger::get_logger()->error("karabiner_grabber_state.json error: {0}", e.what());
+          }
+        }
+      });
+
+      grabber_state_json_file_monitor_->async_start();
+    }
   }
 
   void start_grabber_client(void) {
@@ -230,6 +283,8 @@ private:
 
   std::weak_ptr<version_monitor> weak_version_monitor_;
   std::unique_ptr<pqrs::osx::json_file_monitor> kextd_state_json_file_monitor_;
+  std::unique_ptr<pqrs::osx::json_file_monitor> observer_state_json_file_monitor_;
+  std::unique_ptr<pqrs::osx::json_file_monitor> grabber_state_json_file_monitor_;
 
   std::unique_ptr<pqrs::osx::session::monitor> session_monitor_;
   std::unique_ptr<receiver> receiver_;
