@@ -7,7 +7,14 @@ class state_json_writer final {
 public:
   state_json_writer(const std::string& file_path) : file_path_(file_path),
                                                     state_(nlohmann::json::object()) {
-    sync_save();
+    std::ifstream input(file_path);
+    if (input) {
+      try {
+        state_ = nlohmann::json::parse(input);
+      } catch (std::exception& e) {
+        logger::get_logger()->error("parse error in {0}: {1}", file_path, e.what());
+      }
+    }
   }
 
   template <typename T>
