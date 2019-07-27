@@ -53,9 +53,9 @@ static void staticGrabberStateJsonFileChangedCallback(const char* filePath,
 - (void)observerStateJsonFileChangedCallback:(NSString*)filePath {
   NSDictionary* jsonObject = [KarabinerKitJsonUtility loadFile:filePath];
   if (jsonObject) {
-    NSString* result = jsonObject[@"error"];
-    if ([result isKindOfClass:[NSString class]]) {
-      if ([result isEqualToString:@"hid_device_open_not_permitted"]) {
+    NSString* result = jsonObject[@"hid_device_open_permitted"];
+    if ([result isKindOfClass:[NSNumber class]]) {
+      if (!result.boolValue) {
         self.observerPermitted = NO;
         [self manageAlert];
         return;
@@ -70,9 +70,9 @@ static void staticGrabberStateJsonFileChangedCallback(const char* filePath,
 - (void)grabberStateJsonFileChangedCallback:(NSString*)filePath {
   NSDictionary* jsonObject = [KarabinerKitJsonUtility loadFile:filePath];
   if (jsonObject) {
-    NSString* result = jsonObject[@"error"];
-    if ([result isKindOfClass:[NSString class]]) {
-      if ([result isEqualToString:@"hid_device_open_not_permitted"]) {
+    NSString* result = jsonObject[@"hid_device_open_permitted"];
+    if ([result isKindOfClass:[NSNumber class]]) {
+      if (!result.boolValue) {
         self.grabberPermitted = NO;
         [self manageAlert];
         return;

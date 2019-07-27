@@ -32,10 +32,14 @@ int main(int argc, const char* argv[]) {
 
   if (!krbn::iokit_hid_device_open_checker_utility::run_checker()) {
     if (state_json_writer) {
-      state_json_writer->set("error", "hid_device_open_not_permitted");
+      state_json_writer->set("hid_device_open_permitted", false);
     }
 
     return 0;
+  }
+
+  if (state_json_writer) {
+    state_json_writer->set("hid_device_open_permitted", true);
   }
 
   //

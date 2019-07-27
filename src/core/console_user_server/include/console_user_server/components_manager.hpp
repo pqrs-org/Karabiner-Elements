@@ -123,7 +123,7 @@ private:
       observer_state_json_file_monitor_->json_file_changed.connect([](auto&& changed_file_path, auto&& json) {
         if (json) {
           try {
-            if (json->at("error").template get<std::string>() == "hid_device_open_not_permitted") {
+            if (!json->at("hid_device_open_permitted").template get<bool>()) {
               application_launcher::launch_preferences();
             }
           } catch (std::exception& e) {
@@ -147,7 +147,7 @@ private:
       grabber_state_json_file_monitor_->json_file_changed.connect([](auto&& changed_file_path, auto&& json) {
         if (json) {
           try {
-            if (json->at("error").template get<std::string>() == "hid_device_open_not_permitted") {
+            if (!json->at("hid_device_open_permitted").template get<bool>()) {
               application_launcher::launch_preferences();
             }
           } catch (std::exception& e) {
