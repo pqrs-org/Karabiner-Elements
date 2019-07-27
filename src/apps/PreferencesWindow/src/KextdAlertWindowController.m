@@ -48,8 +48,8 @@ static void staticKextdStateJsonFileChangedCallback(const char* filePath,
             self.shown = YES;
             [self.preferencesWindow beginSheet:self.window
                              completionHandler:^(NSModalResponse returnCode){}];
-            return;
           }
+          return;
         }
       }
     }
