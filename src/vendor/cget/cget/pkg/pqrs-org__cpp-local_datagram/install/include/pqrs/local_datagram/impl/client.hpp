@@ -15,6 +15,7 @@
 #endif
 
 #include "buffer.hpp"
+#include <deque>
 #include <nod/nod.hpp>
 #include <optional>
 #include <pqrs/dispatcher.hpp>
@@ -38,7 +39,7 @@ public:
   client(std::weak_ptr<dispatcher::dispatcher> weak_dispatcher) : dispatcher_client(weak_dispatcher),
                                                                   io_service_(),
                                                                   work_(std::make_unique<asio::io_service::work>(io_service_)),
-                                                                  socket_(std::make_unique<asio::local::datagram_protocol::socket>(io_service_)),
+                                                                  socket_(nullptr),
                                                                   connected_(false),
                                                                   server_check_timer_(*this) {
     io_service_thread_ = std::thread([this] {
@@ -59,9 +60,13 @@ public:
 
   void async_connect(const std::string& path,
                      std::optional<std::chrono::milliseconds> server_check_interval) {
-    async_close();
-
     io_service_.post([this, path, server_check_interval] {
+      if (socket_) {
+        return;
+      }
+
+      socket_ = std::make_unique<asio::local::datagram_protocol::socket>(io_service_);
+
       connected_ = false;
 
       // Open
@@ -102,6 +107,10 @@ public:
 
   void async_close(void) {
     io_service_.post([this] {
+      if (!socket_) {
+        return;
+      }
+
       stop_server_check();
 
       // Close socket
@@ -111,7 +120,7 @@ public:
       socket_->cancel(error_code);
       socket_->close(error_code);
 
-      socket_ = std::make_unique<asio::local::datagram_protocol::socket>(io_service_);
+      socket_ = nullptr;
 
       // Signal
 
@@ -127,28 +136,10 @@ public:
 
   void async_send(std::shared_ptr<buffer> buffer) {
     io_service_.post([this, buffer] {
-      size_t sent = 0;
-      do {
-        asio::error_code error_code;
-        sent += socket_->send(asio::buffer(buffer->get_vector()),
-                              asio::socket_base::message_flags(0),
-                              error_code);
-        if (error_code) {
-          if (error_code == asio::error::no_buffer_space) {
-            // Wait until buffer is available.
-            std::this_thread::sleep_for(std::chrono::milliseconds(100));
-
-          } else {
-            enqueue_to_dispatcher([this, error_code] {
-              error_occurred(error_code);
-            });
-
-            async_close();
-            break;
-          }
-        }
-      } while (sent < buffer->get_vector().size());
+      send_buffers_.push_back(buffer);
     });
+
+    send();
   }
 
 private:
@@ -176,9 +167,60 @@ private:
     async_send(b);
   }
 
+  void send(void) {
+    io_service_.post([this] {
+      if (!socket_) {
+        return;
+      }
+
+      if (!connected_) {
+        // Retry until connected.
+        std::this_thread::sleep_for(std::chrono::milliseconds(100));
+        send();
+        return;
+      }
+
+      while (!send_buffers_.empty()) {
+        if (auto buffer = send_buffers_.front()) {
+          size_t sent = 0;
+          do {
+            asio::error_code error_code;
+            sent += socket_->send(asio::buffer(buffer->get_vector()),
+                                  asio::socket_base::message_flags(0),
+                                  error_code);
+            if (error_code) {
+              if (error_code == asio::error::no_buffer_space) {
+                // Wait until buffer is available.
+                std::this_thread::sleep_for(std::chrono::milliseconds(100));
+
+              } else if (error_code.value() == EDESTADDRREQ) {
+                // EDESTADDRREQ (Destination address required) happens when client tries to send data before server binds the socket.
+                // We have to retry after connected.
+                std::this_thread::sleep_for(std::chrono::milliseconds(100));
+                send();
+                return;
+
+              } else {
+                enqueue_to_dispatcher([this, error_code] {
+                  error_occurred(error_code);
+                });
+
+                async_close();
+                break;
+              }
+            }
+          } while (sent < buffer->get_vector().size());
+        }
+
+        send_buffers_.pop_front();
+      }
+    });
+  }
+
   asio::io_service io_service_;
   std::unique_ptr<asio::io_service::work> work_;
   std::unique_ptr<asio::local::datagram_protocol::socket> socket_;
+  std::deque<std::shared_ptr<buffer>> send_buffers_;
   std::thread io_service_thread_;
   bool connected_;
 

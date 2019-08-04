@@ -27,6 +27,39 @@ public:
          const std::string& path) : dispatcher_client(weak_dispatcher),
                                     path_(path),
                                     reconnect_timer_(*this) {
+    impl_client_ = std::make_shared<impl::client>(weak_dispatcher_);
+
+    impl_client_->connected.connect([this] {
+      enqueue_to_dispatcher([this] {
+        connected();
+      });
+    });
+
+    impl_client_->connect_failed.connect([this](auto&& error_code) {
+      enqueue_to_dispatcher([this, error_code] {
+        connect_failed(error_code);
+      });
+
+      if (impl_client_) {
+        impl_client_->async_close();
+      }
+
+      start_reconnect_timer();
+    });
+
+    impl_client_->closed.connect([this] {
+      enqueue_to_dispatcher([this] {
+        closed();
+      });
+
+      start_reconnect_timer();
+    });
+
+    impl_client_->error_occurred.connect([this](auto&& error_code) {
+      enqueue_to_dispatcher([this, error_code] {
+        error_occurred(error_code);
+      });
+    });
   }
 
   virtual ~client(void) {
@@ -87,51 +120,13 @@ private:
   // This method is executed in the dispatcher thread.
   void connect(void) {
     if (impl_client_) {
-      return;
+      impl_client_->async_connect(path_,
+                                  server_check_interval_);
     }
-
-    impl_client_ = std::make_shared<impl::client>(weak_dispatcher_);
-
-    impl_client_->connected.connect([this] {
-      enqueue_to_dispatcher([this] {
-        connected();
-      });
-    });
-
-    impl_client_->connect_failed.connect([this](auto&& error_code) {
-      enqueue_to_dispatcher([this, error_code] {
-        connect_failed(error_code);
-      });
-
-      close();
-      start_reconnect_timer();
-    });
-
-    impl_client_->closed.connect([this] {
-      enqueue_to_dispatcher([this] {
-        closed();
-      });
-
-      close();
-      start_reconnect_timer();
-    });
-
-    impl_client_->error_occurred.connect([this](auto&& error_code) {
-      enqueue_to_dispatcher([this, error_code] {
-        error_occurred(error_code);
-      });
-    });
-
-    impl_client_->async_connect(path_,
-                                server_check_interval_);
   }
 
   // This method is executed in the dispatcher thread.
   void close(void) {
-    if (!impl_client_) {
-      return;
-    }
-
     impl_client_ = nullptr;
   }
 
