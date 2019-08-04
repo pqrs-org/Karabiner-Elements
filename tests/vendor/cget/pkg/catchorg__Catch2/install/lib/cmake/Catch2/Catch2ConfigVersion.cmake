@@ -40,7 +40,7 @@ endif()
 
 # if the installed or the using project don't have CMAKE_SIZEOF_VOID_P set, ignore it:
 if("${CMAKE_SIZEOF_VOID_P}" STREQUAL "" OR "" STREQUAL "")
-   return()
+  return()
 endif()
 
 # check that the installed version has the same 32/64bit-ness as the one which is currently searching:
