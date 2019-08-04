@@ -3,6 +3,7 @@
 ## Beta
 
 - Support macOS Catalina.
+- Fixed a issue that Karabiner-Elements fails to grab a device in rare cases.
 - Introduced karabiner_kextd.
   (kext loading function was separated from karabiner_grabber.)
 - Suppressed unnecessary log messages.
