@@ -109,8 +109,10 @@ private:
   void register_session_monitor_client(uid_t uid) {
     if (session_monitor_clients_.find(uid) == std::end(session_monitor_clients_)) {
       auto socket_file_path = constants::get_session_monitor_receiver_socket_file_path(uid);
+      size_t buffer_size = 32 * 1024;
       auto client = std::make_shared<pqrs::local_datagram::client>(weak_dispatcher_,
-                                                                   socket_file_path);
+                                                                   socket_file_path,
+                                                                   buffer_size);
       session_monitor_clients_[uid] = client;
 
       client->set_server_check_interval(std::chrono::milliseconds(3000));

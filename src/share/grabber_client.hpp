@@ -45,9 +45,10 @@ public:
       }
 
       auto socket_file_path = constants::get_grabber_socket_file_path();
-
+      size_t buffer_size = 32 * 1024;
       client_ = std::make_unique<pqrs::local_datagram::client>(weak_dispatcher_,
-                                                               socket_file_path);
+                                                               socket_file_path,
+                                                               buffer_size);
       client_->set_server_check_interval(std::chrono::milliseconds(3000));
       client_->set_reconnect_interval(std::chrono::milliseconds(1000));
 
