@@ -59,8 +59,9 @@ public:
   }
 
   void async_connect(const std::string& path,
+                     size_t buffer_size,
                      std::optional<std::chrono::milliseconds> server_check_interval) {
-    io_service_.post([this, path, server_check_interval] {
+    io_service_.post([this, path, buffer_size, server_check_interval] {
       if (socket_) {
         return;
       }
@@ -82,6 +83,10 @@ public:
           return;
         }
       }
+
+      // Set options
+
+      socket_->set_option(asio::socket_base::send_buffer_size(buffer_size));
 
       // Connect
 
@@ -183,6 +188,7 @@ private:
       while (!send_buffers_.empty()) {
         if (auto buffer = send_buffers_.front()) {
           size_t sent = 0;
+          size_t no_buffer_space_error_count = 0;
           do {
             asio::error_code error_code;
             sent += socket_->send(asio::buffer(buffer->get_vector()),
@@ -190,6 +196,13 @@ private:
                                   error_code);
             if (error_code) {
               if (error_code == asio::error::no_buffer_space) {
+                // Retry if no_buffer_space error is continued too much times.
+                ++no_buffer_space_error_count;
+                if (no_buffer_space_error_count > 10) {
+                  send();
+                  return;
+                }
+
                 // Wait until buffer is available.
                 std::this_thread::sleep_for(std::chrono::milliseconds(100));
 
@@ -208,6 +221,8 @@ private:
                 async_close();
                 break;
               }
+            } else {
+              no_buffer_space_error_count = 0;
             }
           } while (sent < buffer->get_vector().size());
         }

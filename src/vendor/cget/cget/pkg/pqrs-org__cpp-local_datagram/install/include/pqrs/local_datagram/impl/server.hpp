@@ -73,6 +73,11 @@ public:
         }
       }
 
+      // Set options
+
+      // A margin (32 byte) is required to receive data which size == buffer_size.
+      socket_->set_option(asio::socket_base::receive_buffer_size(buffer_size + 32));
+
       // Bind
 
       {
@@ -197,7 +202,8 @@ private:
         });
       });
 
-      server_check_client_->async_connect(path, std::nullopt);
+      size_t buffer_size = 32;
+      server_check_client_->async_connect(path, buffer_size, std::nullopt);
     }
   }
 

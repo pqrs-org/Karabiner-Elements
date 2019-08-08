@@ -24,9 +24,11 @@ public:
   // Methods
 
   client(std::weak_ptr<dispatcher::dispatcher> weak_dispatcher,
-         const std::string& path) : dispatcher_client(weak_dispatcher),
-                                    path_(path),
-                                    reconnect_timer_(*this) {
+         const std::string& path,
+         size_t buffer_size) : dispatcher_client(weak_dispatcher),
+                               path_(path),
+                               buffer_size_(buffer_size),
+                               reconnect_timer_(*this) {
     impl_client_ = std::make_shared<impl::client>(weak_dispatcher_);
 
     impl_client_->connected.connect([this] {
@@ -121,6 +123,7 @@ private:
   void connect(void) {
     if (impl_client_) {
       impl_client_->async_connect(path_,
+                                  buffer_size_,
                                   server_check_interval_);
     }
   }
@@ -152,6 +155,7 @@ private:
   }
 
   std::string path_;
+  size_t buffer_size_;
   std::optional<std::chrono::milliseconds> server_check_interval_;
   std::optional<std::chrono::milliseconds> reconnect_interval_;
   std::shared_ptr<impl::client> impl_client_;
