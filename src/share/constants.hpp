@@ -244,5 +244,9 @@ public:
   static const char* get_distributed_notification_device_grabbing_state_is_changed(void) {
     return "device_grabbing_state_is_changed";
   }
+
+  static const size_t get_local_datagram_buffer_size(void) {
+    return 32 * 1024;
+  }
 };
 } // namespace krbn
