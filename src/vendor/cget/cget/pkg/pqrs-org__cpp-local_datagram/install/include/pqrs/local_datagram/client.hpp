@@ -101,13 +101,15 @@ public:
     });
   }
 
-  void async_send(const uint8_t* _Nonnull p, size_t length) {
-    auto ptr = std::make_shared<impl::buffer>(p, length);
-    enqueue_to_dispatcher([this, ptr] {
-      if (impl_client_) {
-        impl_client_->async_send(ptr);
-      }
-    });
+  void async_send(const uint8_t* p, size_t length) {
+    if (p) {
+      auto ptr = std::make_shared<impl::buffer>(p, length);
+      enqueue_to_dispatcher([this, ptr] {
+        if (impl_client_) {
+          impl_client_->async_send(ptr);
+        }
+      });
+    }
   }
 
 private:

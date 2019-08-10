@@ -20,9 +20,11 @@ public:
     v_ = v;
   }
 
-  buffer(const uint8_t* _Nonnull p, size_t length) {
-    v_.resize(length);
-    memcpy(&(v_[0]), p, length);
+  buffer(const uint8_t* p, size_t length) {
+    if (p && length > 0) {
+      v_.resize(length);
+      memcpy(&(v_[0]), p, length);
+    }
   }
 
   const std::vector<uint8_t>& get_vector(void) const { return v_; }

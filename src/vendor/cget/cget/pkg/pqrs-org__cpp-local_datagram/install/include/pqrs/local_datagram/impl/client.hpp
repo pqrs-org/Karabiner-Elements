@@ -199,8 +199,22 @@ private:
                 // Retry if no_buffer_space error is continued too much times.
                 ++no_buffer_space_error_count;
                 if (no_buffer_space_error_count > 10) {
-                  send();
-                  return;
+                  // `send` always returns no_buffer_space error on macOS when buffer.size() > server_buffer_size.
+                  // Thus, we have to cancel sending data in the such case.
+                  // (We consider we have to cancel when `sent` == 0.)
+
+                  if (sent == 0) {
+                    // Abort
+                    enqueue_to_dispatcher([this, error_code] {
+                      error_occurred(error_code);
+                    });
+                    break;
+
+                  } else {
+                    // Retry
+                    send();
+                    return;
+                  }
                 }
 
                 // Wait until buffer is available.
