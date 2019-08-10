@@ -1,0 +1,32 @@
+{
+  "title": "Add Command+` (generally 'cycle through app windows')",
+  "rules": [
+    {
+      "description": "Change Command+Tab to Control+Tab",
+      "manipulators": [
+        {
+          "from": {
+            "key_code": "`",
+            "modifiers": {
+              "mandatory": [
+                "command"
+              ],
+              "optional": [
+                "any"
+              ]
+            }
+          },
+          "to": [
+            {
+              "key_code": "§",
+              "modifiers": [
+                "command"
+              ]
+            }
+          ],
+          "type": "basic"
+        }
+      ]
+    },
+  ]
+}
