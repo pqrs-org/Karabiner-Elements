@@ -17,18 +17,19 @@ inline void enable_agent(const std::string& service_name,
   // If service_path is already bootstrapped and disabled, launchctl bootstrap will fail until it is enabled again.
   // So we should enable it first, and then bootstrap and enable it.
 
-  {
-    auto command = std::string("/bin/launchctl enable ") + service_target;
-    system(command.c_str());
-  }
-  {
-    auto command = std::string("/bin/launchctl bootstrap ") + domain_target + " " + service_path;
-    system(command.c_str());
-  }
-  {
-    auto command = std::string("/bin/launchctl enable ") + service_target;
-    system(command.c_str());
-  }
+  std::stringstream ss;
+  ss << "( "
+     << "/bin/launchctl enable " << service_target
+     << " && "
+     << "/bin/launchctl bootstrap " << domain_target << " " << service_path
+     << " && "
+     << "/bin/launchctl enable " << service_target
+     << " ) "
+     << " &"; // background
+  auto command = ss.str();
+
+  logger::get_logger()->info(command);
+  system(command.c_str());
 }
 
 inline void disable_agent(const std::string& service_name,
@@ -37,24 +38,32 @@ inline void disable_agent(const std::string& service_name,
   auto domain_target = (std::stringstream() << "gui/" << uid).str();
   auto service_target = (std::stringstream() << "gui/" << uid << "/" << service_name).str();
 
-  {
-    auto command = std::string("/bin/launchctl bootout ") + domain_target + " " + service_path;
-    system(command.c_str());
-  }
-  {
-    auto command = std::string("/bin/launchctl disable ") + service_target;
-    system(command.c_str());
-  }
+  std::stringstream ss;
+  ss << "( "
+     << "/bin/launchctl bootout " << domain_target << " " << service_path
+     << " && "
+     << "/bin/launchctl disable " << service_target
+     << " ) "
+     << " &"; // background
+  auto command = ss.str();
+
+  logger::get_logger()->info(command);
+  system(command.c_str());
 }
 
 inline void restart_agent(const std::string& service_name) {
   uid_t uid = geteuid();
   auto service_target = (std::stringstream() << "gui/" << uid << "/" << service_name).str();
 
-  {
-    auto command = std::string("/bin/launchctl kickstart -k ") + service_target;
-    system(command.c_str());
-  }
+  std::stringstream ss;
+  ss << "( "
+     << "/bin/launchctl kickstart -k " << service_target
+     << " ) "
+     << " &"; // background
+  auto command = ss.str();
+
+  logger::get_logger()->info(command);
+  system(command.c_str());
 }
 
 inline void manage_observer_agent(void) {
