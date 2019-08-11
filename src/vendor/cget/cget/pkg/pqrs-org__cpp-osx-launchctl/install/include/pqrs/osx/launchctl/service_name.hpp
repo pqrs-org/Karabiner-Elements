@@ -16,7 +16,7 @@ struct service_name : type_safe::strong_typedef<service_name, std::string>,
   using strong_typedef::strong_typedef;
 };
 
-std::ostream& operator<<(std::ostream& os, const service_name& value) {
+inline std::ostream& operator<<(std::ostream& os, const service_name& value) {
   return os << type_safe::get(value);
 }
 } // namespace launchctl

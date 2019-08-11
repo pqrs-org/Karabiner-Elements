@@ -15,7 +15,7 @@ struct service_target : type_safe::strong_typedef<service_target, std::string>,
   using strong_typedef::strong_typedef;
 };
 
-std::ostream& operator<<(std::ostream& os, const service_target& value) {
+inline std::ostream& operator<<(std::ostream& os, const service_target& value) {
   return os << type_safe::get(value);
 }
 
