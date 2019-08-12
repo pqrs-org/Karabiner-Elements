@@ -34,7 +34,7 @@ inline bool run_checker(void) {
   });
 
   checker->device_open_forbidden.connect([&] {
-    logger::get_logger()->info("device_open_forbidden");
+    logger::get_logger()->warn("device_open_forbidden");
     result = false;
     global_wait->notify();
   });
