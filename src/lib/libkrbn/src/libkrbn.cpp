@@ -15,7 +15,7 @@
 #include <string>
 
 namespace {
-std::unique_ptr<krbn::dispatcher_utility::scoped_dispatcher_manager> scoped_dispatcher_manager_;
+std::shared_ptr<krbn::dispatcher_utility::scoped_dispatcher_manager> scoped_dispatcher_manager_;
 std::unique_ptr<libkrbn_components_manager> libkrbn_components_manager_;
 } // namespace
 
