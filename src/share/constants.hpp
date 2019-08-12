@@ -2,6 +2,7 @@
 
 #include <CoreFoundation/CoreFoundation.h>
 #include <cstdlib>
+#include <pqrs/osx/launchctl.hpp>
 #include <spdlog/fmt/fmt.h>
 #include <string>
 #include <thread>
@@ -247,6 +248,38 @@ public:
 
   static const size_t get_local_datagram_buffer_size(void) {
     return 32 * 1024;
+  }
+
+  static pqrs::osx::launchctl::service_name get_observer_agent_launchctl_service_name(void) {
+    return pqrs::osx::launchctl::service_name("org.pqrs.karabiner.agent.karabiner_observer");
+  }
+
+  static pqrs::osx::launchctl::service_path get_observer_agent_launchctl_service_path(void) {
+    return pqrs::osx::launchctl::service_path("/Library/LaunchAgents/org.pqrs.karabiner.agent.karabiner_observer.plist");
+  }
+
+  static pqrs::osx::launchctl::service_name get_grabber_agent_launchctl_service_name(void) {
+    return pqrs::osx::launchctl::service_name("org.pqrs.karabiner.agent.karabiner_grabber");
+  }
+
+  static pqrs::osx::launchctl::service_path get_grabber_agent_launchctl_service_path(void) {
+    return pqrs::osx::launchctl::service_path("/Library/LaunchAgents/org.pqrs.karabiner.agent.karabiner_grabber.plist");
+  }
+
+  static pqrs::osx::launchctl::service_name get_session_monitor_launchctl_service_name(void) {
+    return pqrs::osx::launchctl::service_name("org.pqrs.karabiner.karabiner_session_monitor");
+  }
+
+  static pqrs::osx::launchctl::service_path get_session_monitor_launchctl_service_path(void) {
+    return pqrs::osx::launchctl::service_path("/Library/LaunchAgents/org.pqrs.karabiner.karabiner_session_monitor.plist");
+  }
+
+  static pqrs::osx::launchctl::service_name get_console_user_server_launchctl_service_name(void) {
+    return pqrs::osx::launchctl::service_name("org.pqrs.karabiner.karabiner_console_user_server");
+  }
+
+  static pqrs::osx::launchctl::service_path get_console_user_server_launchctl_service_path(void) {
+    return pqrs::osx::launchctl::service_path("/Library/LaunchAgents/org.pqrs.karabiner.karabiner_console_user_server.plist");
   }
 };
 } // namespace krbn
