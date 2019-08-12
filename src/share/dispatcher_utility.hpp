@@ -32,8 +32,8 @@ public:
     }
   };
 
-  static std::unique_ptr<scoped_dispatcher_manager> initialize_dispatchers(void) {
-    return std::make_unique<scoped_dispatcher_manager>();
+  static std::shared_ptr<scoped_dispatcher_manager> initialize_dispatchers(void) {
+    return std::make_shared<scoped_dispatcher_manager>();
   }
 
   static void enqueue_to_file_writer_dispatcher(const std::function<void(void)>& function) {
