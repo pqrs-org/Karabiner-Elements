@@ -60,18 +60,22 @@ int main(int argc, const char* argv[]) {
   // Run components_manager
   //
 
-  std::shared_ptr<krbn::session_monitor::components_manager> components_manager;
+  // We have to use raw pointer (not smart pointer) to delete it in `dispatch_async`.
+  krbn::session_monitor::components_manager* components_manager = nullptr;
 
   auto version_monitor = std::make_shared<krbn::version_monitor>(krbn::constants::get_version_file_path());
 
   version_monitor->changed.connect([&](auto&& version) {
     dispatch_async(dispatch_get_main_queue(), ^{
-      components_manager = nullptr;
+      pqrs::gcd::scoped_running_on_main_queue_marker marker;
+
+      delete components_manager;
+
       CFRunLoopStop(CFRunLoopGetCurrent());
     });
   });
 
-  components_manager = std::make_shared<krbn::session_monitor::components_manager>(version_monitor);
+  components_manager = new krbn::session_monitor::components_manager(version_monitor);
 
   version_monitor->async_start();
   components_manager->async_start();
