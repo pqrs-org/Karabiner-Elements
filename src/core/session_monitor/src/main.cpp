@@ -67,9 +67,12 @@ int main(int argc, const char* argv[]) {
 
   version_monitor->changed.connect([&](auto&& version) {
     dispatch_async(dispatch_get_main_queue(), ^{
-      pqrs::gcd::scoped_running_on_main_queue_marker marker;
+      {
+        // Mark as main queue to avoid a deadlock in `pqrs::gcd::dispatch_sync_on_main_queue` in destructor.
+        pqrs::gcd::scoped_running_on_main_queue_marker marker;
 
-      delete components_manager;
+        delete components_manager;
+      }
 
       CFRunLoopStop(CFRunLoopGetCurrent());
     });
