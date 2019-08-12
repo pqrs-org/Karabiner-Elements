@@ -1,5 +1,6 @@
 #pragma once
 
+#include "logger.hpp"
 #include <pqrs/osx/iokit_hid_device_open_checker.hpp>
 
 namespace krbn {
@@ -27,11 +28,13 @@ inline bool run_checker(void) {
                                                                             matching_dictionaries);
 
   checker->device_open_permitted.connect([&] {
+    logger::get_logger()->info("device_open_permitted");
     result = true;
     global_wait->notify();
   });
 
   checker->device_open_forbidden.connect([&] {
+    logger::get_logger()->info("device_open_forbidden");
     result = false;
     global_wait->notify();
   });
