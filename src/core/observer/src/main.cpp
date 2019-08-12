@@ -82,6 +82,12 @@ int main(int argc, const char* argv[]) {
     if (state_json_writer) {
       state_json_writer->set("hid_device_open_permitted", false);
     }
+
+    if (root) {
+      // We have to restart this process in order to reflect the input monitoring approval.
+      return 0;
+    }
+
   } else {
     if (state_json_writer) {
       state_json_writer->set("hid_device_open_permitted", true);
