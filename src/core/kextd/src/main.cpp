@@ -69,12 +69,6 @@ int main(int argc, const char* argv[]) {
 
   kext_loader = std::make_shared<krbn::kextd::kext_loader>(version_monitor);
 
-  kext_loader->kext_loaded.connect([] {
-    dispatch_async(dispatch_get_main_queue(), ^{
-      CFRunLoopStop(CFRunLoopGetCurrent());
-    });
-  });
-
   // Start
 
   version_monitor->async_start();

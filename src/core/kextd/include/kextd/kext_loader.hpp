@@ -17,12 +17,6 @@ namespace krbn {
 namespace kextd {
 class kext_loader final : public pqrs::dispatcher::extra::dispatcher_client {
 public:
-  // Signals (invoked from the shared dispatcher thread)
-
-  nod::signal<void(void)> kext_loaded;
-
-  // Methods
-
   kext_loader(const kext_loader&) = delete;
 
   kext_loader(std::weak_ptr<version_monitor> weak_version_monitor) : dispatcher_client(),
@@ -57,10 +51,6 @@ public:
 
               if (kr.success()) {
                 timer_.stop();
-
-                enqueue_to_dispatcher([this] {
-                  kext_loaded();
-                });
               }
             }
           },
