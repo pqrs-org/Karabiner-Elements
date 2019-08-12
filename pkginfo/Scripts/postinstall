@@ -15,7 +15,7 @@ chflags uchg,schg /Applications/Karabiner-Elements.app
 chflags uchg,schg /Applications/Karabiner-EventViewer.app
 
 # ------------------------------------------------------------
-# Relaunch karabiner_grabber
+# Relaunch karabiner processes
 
 killall karabiner_kextd
 killall karabiner_grabber
