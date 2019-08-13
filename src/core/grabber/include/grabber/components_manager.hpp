@@ -2,6 +2,7 @@
 
 // `krbn::grabber::components_manager` can be used safely in a multi-threaded environment.
 
+#include "components_manager_killer.hpp"
 #include "console_user_server_client.hpp"
 #include "constants.hpp"
 #include "logger.hpp"
@@ -17,9 +18,22 @@ class components_manager final : public pqrs::dispatcher::extra::dispatcher_clie
 public:
   components_manager(const components_manager&) = delete;
 
-  components_manager(std::weak_ptr<version_monitor> weak_version_monitor) : dispatcher_client(),
-                                                                            weak_version_monitor_(weak_version_monitor) {
+  components_manager(void) : dispatcher_client() {
+    //
+    // version_monitor_
+    //
+
+    version_monitor_ = std::make_unique<krbn::version_monitor>(krbn::constants::get_version_file_path());
+
+    version_monitor_->changed.connect([](auto&& version) {
+      if (auto killer = components_manager_killer::get_shared_components_manager_killer()) {
+        killer->async_kill();
+      }
+    });
+
+    //
     // session_monitor_receiver_
+    //
 
     session_monitor_receiver_ = std::make_unique<session_monitor_receiver>();
 
@@ -41,11 +55,14 @@ public:
     detach_from_dispatcher([this] {
       receiver_ = nullptr;
       session_monitor_receiver_ = nullptr;
+      version_monitor_ = nullptr;
     });
   }
 
   void async_start(void) {
     enqueue_to_dispatcher([this] {
+      version_monitor_->async_start();
+
       start_receiver(0);
 
       session_monitor_receiver_->async_start();
@@ -54,9 +71,7 @@ public:
 
 private:
   void start_receiver(uid_t uid) {
-    if (auto m = weak_version_monitor_.lock()) {
-      m->async_manual_check();
-    }
+    version_monitor_->async_manual_check();
 
     // Prepare console_user_server_socket_directory
     {
@@ -72,7 +87,7 @@ private:
     receiver_ = std::make_unique<receiver>(uid);
   }
 
-  std::weak_ptr<version_monitor> weak_version_monitor_;
+  std::unique_ptr<version_monitor> version_monitor_;
   std::unique_ptr<session_monitor_receiver> session_monitor_receiver_;
   std::unique_ptr<receiver> receiver_;
 };
