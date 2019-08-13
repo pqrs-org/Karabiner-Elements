@@ -51,7 +51,7 @@ int main(int argc, const char* argv[]) {
   }
 
   //
-  // Run kext_loader
+  // Run components_manager
   //
 
   krbn::components_manager_killer::initialize_shared_components_manager_killer();
