@@ -2,6 +2,7 @@
 
 // `krbn::session_monitor::components_manager` can be used safely in a multi-threaded environment.
 
+#include "components_manager_killer.hpp"
 #include "monitor/version_monitor.hpp"
 #include "receiver.hpp"
 #include "session_monitor_receiver_client.hpp"
@@ -13,11 +14,24 @@ class components_manager final : public pqrs::dispatcher::extra::dispatcher_clie
 public:
   components_manager(const components_manager&) = delete;
 
-  components_manager(std::weak_ptr<version_monitor> weak_version_monitor) : dispatcher_client(),
-                                                                            on_console_(false),
-                                                                            send_timer_(*this) {
-    // ----------------------------------------
+  components_manager(void) : dispatcher_client(),
+                             on_console_(false),
+                             send_timer_(*this) {
+    //
+    // version_monitor_
+    //
+
+    version_monitor_ = std::make_unique<krbn::version_monitor>(krbn::constants::get_version_file_path());
+
+    version_monitor_->changed.connect([](auto&& version) {
+      if (auto killer = components_manager_killer::get_shared_components_manager_killer()) {
+        killer->async_kill();
+      }
+    });
+
+    //
     // client_
+    //
 
     client_ = std::make_unique<session_monitor_receiver_client>();
 
@@ -25,8 +39,9 @@ public:
       send_to_receiver();
     });
 
-    // ----------------------------------------
+    //
     // receiver_
+    //
 
     receiver_ = std::make_unique<receiver>();
 
@@ -34,8 +49,9 @@ public:
       send_to_receiver();
     });
 
-    // ----------------------------------------
+    //
     // session_monitor_
+    //
 
     session_monitor_ = std::make_unique<pqrs::osx::session::monitor>(weak_dispatcher_);
 
@@ -54,11 +70,16 @@ public:
       session_monitor_ = nullptr;
       receiver_ = nullptr;
       client_ = nullptr;
+      version_monitor_ = nullptr;
     });
   }
 
   void async_start(void) {
     enqueue_to_dispatcher([this] {
+      if (version_monitor_) {
+        version_monitor_->async_start();
+      }
+
       if (client_) {
         client_->async_start();
       }
@@ -91,6 +112,7 @@ private:
   }
 
   bool on_console_;
+  std::unique_ptr<version_monitor> version_monitor_;
   std::unique_ptr<session_monitor_receiver_client> client_;
   std::unique_ptr<receiver> receiver_;
   std::unique_ptr<pqrs::osx::session::monitor> session_monitor_;
