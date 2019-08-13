@@ -1,10 +1,11 @@
 #include "constants.hpp"
 #include "dispatcher_utility.hpp"
 #include "karabiner_version.h"
-#include "kextd/kext_loader.hpp"
+#include "kextd/components_manager.hpp"
 #include "logger.hpp"
 #include "process_utility.hpp"
 #include <iostream>
+#include <pqrs/gcd.hpp>
 
 int main(int argc, const char* argv[]) {
   //
@@ -53,31 +54,32 @@ int main(int argc, const char* argv[]) {
   // Run kext_loader
   //
 
-  std::shared_ptr<krbn::kextd::kext_loader> kext_loader;
+  krbn::components_manager_killer::initialize_shared_components_manager_killer();
 
-  // version_monitor
+  // We have to use raw pointer (not smart pointer) to delete it in `dispatch_async`.
+  krbn::kextd::components_manager* components_manager = nullptr;
 
-  auto version_monitor = std::make_shared<krbn::version_monitor>(krbn::constants::get_version_file_path());
+  if (auto killer = krbn::components_manager_killer::get_shared_components_manager_killer()) {
+    killer->kill_called.connect([&components_manager] {
+      dispatch_async(dispatch_get_main_queue(), ^{
+        {
+          // Mark as main queue to avoid a deadlock in `pqrs::gcd::dispatch_sync_on_main_queue` in destructor.
+          pqrs::gcd::scoped_running_on_main_queue_marker marker;
 
-  version_monitor->changed.connect([&](auto&& version) {
-    dispatch_async(dispatch_get_main_queue(), ^{
-      CFRunLoopStop(CFRunLoopGetCurrent());
+          delete components_manager;
+        }
+
+        CFRunLoopStop(CFRunLoopGetCurrent());
+      });
     });
-  });
+  }
 
-  // kext_loader
-
-  kext_loader = std::make_shared<krbn::kextd::kext_loader>(version_monitor);
-
-  // Start
-
-  version_monitor->async_start();
-  kext_loader->async_start();
+  components_manager = new krbn::kextd::components_manager();
+  components_manager->async_start();
 
   CFRunLoopRun();
 
-  kext_loader = nullptr;
-  version_monitor = nullptr;
+  krbn::components_manager_killer::terminate_shared_components_manager_killer();
 
   krbn::logger::get_logger()->info("karabiner_kextd is terminated.");
 
