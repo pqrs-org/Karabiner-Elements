@@ -3,6 +3,7 @@
 // `krbn::console_user_server::components_manager` can be used safely in a multi-threaded environment.
 
 #include "application_launcher.hpp"
+#include "components_manager_killer.hpp"
 #include "constants.hpp"
 #include "grabber_client.hpp"
 #include "logger.hpp"
@@ -25,8 +26,23 @@ class components_manager final : public pqrs::dispatcher::extra::dispatcher_clie
 public:
   components_manager(const components_manager&) = delete;
 
-  components_manager(std::weak_ptr<version_monitor> weak_version_monitor) : dispatcher_client(),
-                                                                            weak_version_monitor_(weak_version_monitor) {
+  components_manager(void) : dispatcher_client() {
+    //
+    // version_monitor_
+    //
+
+    version_monitor_ = std::make_unique<krbn::version_monitor>(krbn::constants::get_version_file_path());
+
+    version_monitor_->changed.connect([](auto&& version) {
+      if (auto killer = components_manager_killer::get_shared_components_manager_killer()) {
+        killer->async_kill();
+      }
+    });
+
+    //
+    // session_monitor_
+    //
+
     session_monitor_ = std::make_unique<pqrs::osx::session::monitor>(weak_dispatcher_);
 
     session_monitor_->on_console_changed.connect([this](auto&& on_console) {
@@ -35,9 +51,7 @@ public:
         stop_grabber_client();
 
       } else {
-        if (auto m = weak_version_monitor_.lock()) {
-          m->async_manual_check();
-        }
+        version_monitor_->async_manual_check();
 
         pqrs::filesystem::create_directory_with_intermediate_directories(
             constants::get_user_configuration_directory(),
@@ -75,11 +89,13 @@ public:
       grabber_state_json_file_monitor_ = nullptr;
       observer_state_json_file_monitor_ = nullptr;
       kextd_state_json_file_monitor_ = nullptr;
+      version_monitor_ = nullptr;
     });
   }
 
   void async_start(void) {
     enqueue_to_dispatcher([this] {
+      version_monitor_->async_start();
       start_state_json_file_monitors();
       session_monitor_->async_start(std::chrono::milliseconds(1000));
     });
@@ -168,9 +184,7 @@ private:
     grabber_client_ = std::make_shared<grabber_client>();
 
     grabber_client_->connected.connect([this] {
-      if (auto m = weak_version_monitor_.lock()) {
-        m->async_manual_check();
-      }
+      version_monitor_->async_manual_check();
 
       if (grabber_client_) {
         grabber_client_->async_connect_console_user_server();
@@ -181,17 +195,13 @@ private:
     });
 
     grabber_client_->connect_failed.connect([this](auto&& error_code) {
-      if (auto m = weak_version_monitor_.lock()) {
-        m->async_manual_check();
-      }
+      version_monitor_->async_manual_check();
 
       stop_child_components();
     });
 
     grabber_client_->closed.connect([this] {
-      if (auto m = weak_version_monitor_.lock()) {
-        m->async_manual_check();
-      }
+      version_monitor_->async_manual_check();
 
       stop_child_components();
     });
@@ -281,7 +291,7 @@ private:
 
   // Core components
 
-  std::weak_ptr<version_monitor> weak_version_monitor_;
+  std::unique_ptr<version_monitor> version_monitor_;
   std::unique_ptr<pqrs::osx::json_file_monitor> kextd_state_json_file_monitor_;
   std::unique_ptr<pqrs::osx::json_file_monitor> observer_state_json_file_monitor_;
   std::unique_ptr<pqrs::osx::json_file_monitor> grabber_state_json_file_monitor_;

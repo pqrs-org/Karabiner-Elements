@@ -68,32 +68,32 @@ int main(int argc, const char* argv[]) {
   // Run components_manager
   //
 
+  krbn::components_manager_killer::initialize_shared_components_manager_killer();
+
   // We have to use raw pointer (not smart pointer) to delete it in `dispatch_async`.
   krbn::console_user_server::components_manager* components_manager = nullptr;
 
-  auto version_monitor = std::make_shared<krbn::version_monitor>(krbn::constants::get_version_file_path());
+  if (auto killer = krbn::components_manager_killer::get_shared_components_manager_killer()) {
+    killer->kill_called.connect([&components_manager] {
+      dispatch_async(dispatch_get_main_queue(), ^{
+        {
+          // Mark as main queue to avoid a deadlock in `pqrs::gcd::dispatch_sync_on_main_queue` in destructor.
+          pqrs::gcd::scoped_running_on_main_queue_marker marker;
 
-  version_monitor->changed.connect([&](auto&& version) {
-    dispatch_async(dispatch_get_main_queue(), ^{
-      {
-        // Mark as main queue to avoid a deadlock in `pqrs::gcd::dispatch_sync_on_main_queue` in destructor.
-        pqrs::gcd::scoped_running_on_main_queue_marker marker;
+          delete components_manager;
+        }
 
-        delete components_manager;
-      }
-
-      CFRunLoopStop(CFRunLoopGetCurrent());
+        CFRunLoopStop(CFRunLoopGetCurrent());
+      });
     });
-  });
+  }
 
-  components_manager = new krbn::console_user_server::components_manager(version_monitor);
-
-  version_monitor->async_start();
+  components_manager = new krbn::console_user_server::components_manager();
   components_manager->async_start();
 
   CFRunLoopRun();
 
-  version_monitor = nullptr;
+  krbn::components_manager_killer::terminate_shared_components_manager_killer();
 
   krbn::logger::get_logger()->info("karabiner_console_user_server is terminated.");
 
