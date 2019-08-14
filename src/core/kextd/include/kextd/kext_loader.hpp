@@ -11,7 +11,7 @@
 #include <nlohmann/json.hpp>
 #include <pqrs/cf/url.hpp>
 #include <pqrs/dispatcher.hpp>
-#include <pqrs/osx/iokit_return.hpp>
+#include <pqrs/osx/os_kext_return.hpp>
 
 namespace krbn {
 namespace kextd {
@@ -44,7 +44,7 @@ public:
                 pqrs::karabiner_virtual_hid_device::get_kernel_extension_name();
 
             if (auto url = pqrs::cf::make_file_path_url(kext_file_path, false)) {
-              pqrs::osx::iokit_return kr = KextManagerLoadKextWithURL(*url, nullptr);
+              pqrs::osx::os_kext_return kr = KextManagerLoadKextWithURL(*url, nullptr);
               krbn::logger::get_logger()->info("KextManagerLoadKextWithURL: {0}", kr.to_string());
 
               state_json_writer_.set("kext_load_result", kr.to_string());
