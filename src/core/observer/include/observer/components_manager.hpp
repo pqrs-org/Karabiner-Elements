@@ -2,6 +2,7 @@
 
 // `krbn::observer::components_manager` can be used safely in a multi-threaded environment.
 
+#include "components_manager_killer.hpp"
 #include "constants.hpp"
 #include "device_observer.hpp"
 #include "grabber_client.hpp"
@@ -14,16 +15,27 @@ class components_manager final : public pqrs::dispatcher::extra::dispatcher_clie
 public:
   components_manager(const components_manager&) = delete;
 
-  components_manager(std::weak_ptr<version_monitor> weak_version_monitor) : dispatcher_client(),
-                                                                            weak_version_monitor_(weak_version_monitor) {
+  components_manager(void) : dispatcher_client() {
+    //
+    // version_monitor_
+    //
+
+    version_monitor_ = std::make_unique<krbn::version_monitor>(krbn::constants::get_version_file_path());
+
+    version_monitor_->changed.connect([](auto&& version) {
+      if (auto killer = components_manager_killer::get_shared_components_manager_killer()) {
+        killer->async_kill();
+      }
+    });
+
+    //
     // grabber_client_
+    //
 
     grabber_client_ = std::make_shared<grabber_client>();
 
     grabber_client_->connected.connect([this] {
-      if (auto m = weak_version_monitor_.lock()) {
-        m->async_manual_check();
-      }
+      version_monitor_->async_start();
 
       if (device_observer_) {
         device_observer_->async_send_observed_devices();
@@ -32,15 +44,11 @@ public:
     });
 
     grabber_client_->connect_failed.connect([this](auto&& error_code) {
-      if (auto m = weak_version_monitor_.lock()) {
-        m->async_manual_check();
-      }
+      version_monitor_->async_start();
     });
 
     grabber_client_->closed.connect([this] {
-      if (auto m = weak_version_monitor_.lock()) {
-        m->async_manual_check();
-      }
+      version_monitor_->async_start();
     });
 
     // device_observer_
@@ -52,18 +60,20 @@ public:
     detach_from_dispatcher([this] {
       device_observer_ = nullptr;
       grabber_client_ = nullptr;
+      version_monitor_ = nullptr;
     });
   }
 
   void async_start(void) const {
     enqueue_to_dispatcher([this] {
+      version_monitor_->async_start();
       device_observer_->async_start();
       grabber_client_->async_start();
     });
   }
 
 private:
-  std::weak_ptr<version_monitor> weak_version_monitor_;
+  std::unique_ptr<version_monitor> version_monitor_;
   std::shared_ptr<grabber_client> grabber_client_;
   std::shared_ptr<device_observer> device_observer_;
 };
