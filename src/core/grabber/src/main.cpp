@@ -1,4 +1,3 @@
-#include "components_manager_killer.hpp"
 #include "constants.hpp"
 #include "dispatcher_utility.hpp"
 #include "filesystem_utility.hpp"
