@@ -2,6 +2,7 @@
 
 #include "apple_hid_usage_tables.hpp"
 #include "apple_notification_center.hpp"
+#include "components_manager_killer.hpp"
 #include "constants.hpp"
 #include "device_grabber_details/entry.hpp"
 #include "device_grabber_details/fn_function_keys_manipulator_manager.hpp"
@@ -183,6 +184,15 @@ public:
             update_virtual_hid_pointing();
 
             apple_notification_center::post_distributed_notification_to_all_sessions(constants::get_distributed_notification_device_grabbing_state_is_changed());
+          }
+        });
+
+        entry->get_hid_queue_value_monitor()->error_occurred.connect([](auto&& message, auto&& kr) {
+          if (kr.not_permitted()) {
+            logger::get_logger()->warn("hid_queue_value_monitor not_permitted error");
+            if (auto killer = components_manager_killer::get_shared_components_manager_killer()) {
+              killer->async_kill();
+            }
           }
         });
 

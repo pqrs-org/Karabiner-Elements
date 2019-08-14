@@ -2,6 +2,7 @@
 
 // `krbn::observer::device_observer` can be used safely in a multi-threaded environment.
 
+#include "components_manager_killer.hpp"
 #include "event_queue.hpp"
 #include "grabber_client.hpp"
 #include "iokit_utility.hpp"
@@ -90,6 +91,15 @@ public:
           observed_devices_.insert(device_id);
 
           send_observed_devices();
+        });
+
+        hid_queue_value_monitor->error_occurred.connect([](auto&& message, auto&& kr) {
+          if (kr.not_permitted()) {
+            logger::get_logger()->warn("hid_queue_value_monitor not_permitted error");
+            if (auto killer = components_manager_killer::get_shared_components_manager_killer()) {
+              killer->async_kill();
+            }
+          }
         });
 
         hid_queue_value_monitor->async_start(kIOHIDOptionsTypeNone,
