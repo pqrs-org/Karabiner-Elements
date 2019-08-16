@@ -51,6 +51,7 @@ bool libkrbn_system_core_configuration_file_path_exists(void);
 
 void libkrbn_get_key_code_name(char* buffer, size_t length, uint32_t key_code);
 void libkrbn_get_consumer_key_code_name(char* buffer, size_t length, uint32_t consumer_key_code);
+bool libkrbn_is_modifier_flag(uint32_t key_code);
 
 // device_identifiers
 
