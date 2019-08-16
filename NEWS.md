@@ -1,11 +1,13 @@
 # Changelog
 
-## Beta
+## Version 12.6.0
 
-- Support macOS Catalina.
+- Support macOS Catalina.<br/>
+  (You need [an extra configuration](https://pqrs.org/osx/karabiner/document.html#usage-catalina) on macOS Catalina.)
 - Fixed a issue that Karabiner-Elements fails to grab a device in rare cases.
 - Introduced karabiner_kextd.
   (kext loading function was separated from karabiner_grabber.)
+- Improved EventViewer to show modifier flags of key events.
 - Suppressed unnecessary log messages.
 
 ## Version 12.5.0
