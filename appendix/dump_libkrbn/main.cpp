@@ -13,7 +13,8 @@ void system_preferences_monitor_callback(const struct libkrbn_system_preferences
             << std::endl;
 }
 
-void hid_value_monitor_callback(libkrbn_hid_value_type type,
+void hid_value_monitor_callback(uint64_t device_id,
+                                libkrbn_hid_value_type type,
                                 uint32_t value,
                                 libkrbn_hid_value_event_type event_type,
                                 void* refcon) {
@@ -25,6 +26,7 @@ void hid_value_monitor_callback(libkrbn_hid_value_type type,
       std::cout << "hid_value_monitor_callback"
                 << " " << buffer
                 << " event_type:" << event_type
+                << " device_id:" << device_id
                 << std::endl;
       break;
 
@@ -33,6 +35,7 @@ void hid_value_monitor_callback(libkrbn_hid_value_type type,
       std::cout << "hid_value_monitor_callback"
                 << " " << buffer
                 << " event_type:" << event_type
+                << " device_id:" << device_id
                 << std::endl;
       break;
   }
