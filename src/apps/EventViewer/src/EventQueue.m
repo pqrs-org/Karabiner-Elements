@@ -7,16 +7,21 @@
 @interface EventQueue ()
 
 @property NSMutableArray* queue;
+@property NSMutableDictionary<NSNumber*, NSMutableSet<NSString*>*>* modifierFlags;
 @property(copy) NSString* simpleModificationJsonString;
 @property(weak) IBOutlet NSTableView* view;
 @property(weak) IBOutlet NSButton* addSimpleModificationButton;
 
-- (void)pushKeyEvent:(NSString*)code name:(NSString*)name eventType:(NSString*)eventType;
+- (void)pushKeyEvent:(NSString*)code
+                name:(NSString*)name
+           eventType:(NSString*)eventType
+                misc:(NSString*)misc;
 - (void)updateAddSimpleModificationButton:(NSString*)title;
 
 @end
 
-static void hid_value_observer_callback(enum libkrbn_hid_value_type type,
+static void hid_value_observer_callback(uint64_t device_id,
+                                        enum libkrbn_hid_value_type type,
                                         uint32_t value,
                                         enum libkrbn_hid_value_event_type event_type,
                                         void* refcon) {
@@ -32,6 +37,8 @@ static void hid_value_observer_callback(enum libkrbn_hid_value_type type,
       return;
     }
 
+    NSNumber* deviceId = @(device_id);
+
     NSString* code = nil;
     if ([[NSUserDefaults standardUserDefaults] boolForKey:kShowHex]) {
       code = [NSString stringWithFormat:@"0x%02x", value];
@@ -43,22 +50,41 @@ static void hid_value_observer_callback(enum libkrbn_hid_value_type type,
 
     char buffer[256];
     buffer[0] = '\0';
+    NSString* name = @"";
+
     switch (type) {
       case libkrbn_hid_value_type_key_code:
         keyType = @"key";
         libkrbn_get_key_code_name(buffer, sizeof(buffer), value);
+        name = [NSString stringWithUTF8String:buffer];
+
+        if (libkrbn_is_modifier_flag(value)) {
+          NSMutableSet* set = queue.modifierFlags[deviceId];
+          if (!set) {
+            set = [NSMutableSet new];
+            queue.modifierFlags[deviceId] = set;
+          }
+
+          if (event_type == libkrbn_hid_value_event_type_key_down) {
+            [set addObject:name];
+          } else {
+            [set removeObject:name];
+          }
+        }
+
         simpleModificationJson[@"from"] = [NSMutableDictionary new];
-        simpleModificationJson[@"from"][@"key_code"] = [NSString stringWithUTF8String:buffer];
+        simpleModificationJson[@"from"][@"key_code"] = name;
         break;
 
       case libkrbn_hid_value_type_consumer_key_code:
         keyType = @"consumer_key";
         libkrbn_get_consumer_key_code_name(buffer, sizeof(buffer), value);
+        name = [NSString stringWithUTF8String:buffer];
+
         simpleModificationJson[@"from"] = [NSMutableDictionary new];
-        simpleModificationJson[@"from"][@"consumer_key_code"] = [NSString stringWithUTF8String:buffer];
+        simpleModificationJson[@"from"][@"consumer_key_code"] = name;
         break;
     }
-    NSString* name = [NSString stringWithUTF8String:buffer];
 
     NSString* eventType = @"";
     switch (event_type) {
@@ -73,7 +99,16 @@ static void hid_value_observer_callback(enum libkrbn_hid_value_type type,
         break;
     }
 
-    [queue pushKeyEvent:code name:name eventType:eventType];
+    NSString* misc = @"";
+    {
+      NSMutableSet* set = queue.modifierFlags[deviceId];
+      if (set && set.count > 0) {
+        NSArray* flags = [[set allObjects] sortedArrayUsingSelector:@selector(compare:)];
+        misc = [misc stringByAppendingString:[NSString stringWithFormat:@"flags: %@ ", [flags componentsJoinedByString:@","]]];
+      }
+    }
+
+    [queue pushKeyEvent:code name:name eventType:eventType misc:misc];
 
     if (simpleModificationJson.count > 0) {
       queue.simpleModificationJsonString = [KarabinerKitJsonUtility createJsonString:simpleModificationJson];
@@ -93,6 +128,7 @@ enum {
 
   if (self) {
     _queue = [NSMutableArray new];
+    _modifierFlags = [NSMutableDictionary new];
   }
 
   return self;
@@ -199,11 +235,14 @@ enum {
   return [NSString stringWithFormat:@"button%d", (int)(number + 1)];
 }
 
-- (void)pushKeyEvent:(NSString*)code name:(NSString*)name eventType:(NSString*)eventType {
+- (void)pushKeyEvent:(NSString*)code
+                name:(NSString*)name
+           eventType:(NSString*)eventType
+                misc:(NSString*)misc {
   [self push:eventType
         code:code
         name:name
-        misc:@""];
+        misc:misc];
 }
 
 - (void)pushMouseEvent:(NSEvent*)event eventType:(NSString*)eventType {
