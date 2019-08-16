@@ -95,7 +95,8 @@ private:
         case krbn::event_queue::event::type::key_code:
           if (auto key_code = entry.get_event().get_key_code()) {
             if (callback) {
-              callback(libkrbn_hid_value_type_key_code,
+              callback(type_safe::get(entry.get_device_id()),
+                       libkrbn_hid_value_type_key_code,
                        static_cast<uint32_t>(*key_code),
                        event_type,
                        refcon);
@@ -106,7 +107,8 @@ private:
         case krbn::event_queue::event::type::consumer_key_code:
           if (auto consumer_key_code = entry.get_event().get_consumer_key_code()) {
             if (callback) {
-              callback(libkrbn_hid_value_type_consumer_key_code,
+              callback(type_safe::get(entry.get_device_id()),
+                       libkrbn_hid_value_type_consumer_key_code,
                        static_cast<uint32_t>(*consumer_key_code),
                        event_type,
                        refcon);

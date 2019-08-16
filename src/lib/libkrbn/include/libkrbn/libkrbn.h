@@ -326,7 +326,8 @@ enum libkrbn_hid_value_event_type {
   libkrbn_hid_value_event_type_single,
 };
 
-typedef void (*libkrbn_hid_value_monitor_callback)(enum libkrbn_hid_value_type type,
+typedef void (*libkrbn_hid_value_monitor_callback)(uint64_t device_id,
+                                                   enum libkrbn_hid_value_type type,
                                                    uint32_t value,
                                                    enum libkrbn_hid_value_event_type event_type,
                                                    void* refcon);
