@@ -38,21 +38,21 @@ public:
     server_->set_reconnect_interval(std::chrono::milliseconds(1000));
 
     server_->bound.connect([this] {
-      logger::get_logger()->info("receiver bound");
+      logger::get_logger()->info("receiver: bound");
       enqueue_to_dispatcher([this] {
         bound();
       });
     });
 
     server_->bind_failed.connect([this](auto&& error_code) {
-      logger::get_logger()->error("receiver bind_failed");
+      logger::get_logger()->error("receiver: bind_failed");
       enqueue_to_dispatcher([this, error_code] {
         bind_failed(error_code);
       });
     });
 
     server_->closed.connect([this] {
-      logger::get_logger()->info("receiver closed");
+      logger::get_logger()->info("receiver: closed");
       enqueue_to_dispatcher([this] {
         closed();
       });

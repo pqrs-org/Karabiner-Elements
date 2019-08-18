@@ -32,6 +32,8 @@ public:
     server_->set_reconnect_interval(std::chrono::milliseconds(1000));
 
     server_->bound.connect([socket_file_path] {
+      logger::get_logger()->info("receiver: bound");
+
       if (auto uid = pqrs::osx::session::find_console_user_id()) {
         chown(socket_file_path.c_str(), *uid, 0);
       }
@@ -39,7 +41,11 @@ public:
     });
 
     server_->bind_failed.connect([](auto&& error_code) {
-      logger::get_logger()->error("receiver bind_failed");
+      logger::get_logger()->error("receiver: bind_failed");
+    });
+
+    server_->closed.connect([] {
+      logger::get_logger()->info("receiver: closed");
     });
 
     server_->received.connect([this](auto&& buffer) {
