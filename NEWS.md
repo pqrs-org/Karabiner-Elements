@@ -1,10 +1,14 @@
 # Changelog
 
+## Beta
+
+- Fixed an issue that Karabiner-Elements might stop working after sleep on macOS Catalina.
+
 ## Version 12.6.0
 
 - Support macOS Catalina.<br/>
   (You need [an extra configuration](https://pqrs.org/osx/karabiner/document.html#usage-catalina) on macOS Catalina.)
-- Fixed a issue that Karabiner-Elements fails to grab a device in rare cases.
+- Fixed an issue that Karabiner-Elements fails to grab a device in rare cases.
 - Introduced karabiner_kextd.
   (kext loading function was separated from karabiner_grabber.)
 - Improved EventViewer to show modifier flags of key events.
@@ -14,7 +18,7 @@
 
 - Fixed a key stuck issue which occurs when the key is released,
   and at the exact same moment Karabiner-Elements opens the device.
-- Fixed a issue which Karabiner-Elements mistakes a remote user for a current console user
+- Fixed an issue which Karabiner-Elements mistakes a remote user for a current console user
   if another user is logged in from Screen Sharing while console is used.
 - Improved `XXX is ignored temporarily until YYY is pressed again` behavior.
 - Add `Delay before open device` configuration into `Karabiner-Elements Preferences > Devices > Advanced` tab.
