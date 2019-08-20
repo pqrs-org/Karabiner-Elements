@@ -13,17 +13,36 @@ namespace local_datagram {
 namespace impl {
 class buffer final {
 public:
-  buffer(void) {
+  // Sending empty data causes `No buffer space available` error after wake up on macOS.
+  // We append `type` into the beginning of data in order to avoid this issue.
+
+  enum class type : uint8_t {
+    server_check,
+    user_data,
+  };
+
+  buffer(type t) {
+    v_.push_back(static_cast<uint8_t>(t));
   }
 
-  buffer(const std::vector<uint8_t>& v) {
-    v_ = v;
+  buffer(type t,
+         const std::vector<uint8_t>& v) {
+    v_.push_back(static_cast<uint8_t>(t));
+
+    std::copy(std::begin(v),
+              std::end(v),
+              std::back_inserter(v_));
   }
 
-  buffer(const uint8_t* p, size_t length) {
+  buffer(type t,
+         const uint8_t* p,
+         size_t length) {
+    v_.push_back(static_cast<uint8_t>(t));
+
     if (p && length > 0) {
-      v_.resize(length);
-      memcpy(&(v_[0]), p, length);
+      std::copy(p,
+                p + length,
+                std::back_inserter(v_));
     }
   }
 

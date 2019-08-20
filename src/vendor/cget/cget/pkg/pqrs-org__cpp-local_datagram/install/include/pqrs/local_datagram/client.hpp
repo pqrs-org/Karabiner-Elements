@@ -93,7 +93,7 @@ public:
   }
 
   void async_send(const std::vector<uint8_t>& v) {
-    auto ptr = std::make_shared<impl::buffer>(v);
+    auto ptr = std::make_shared<impl::buffer>(impl::buffer::type::user_data, v);
     enqueue_to_dispatcher([this, ptr] {
       if (impl_client_) {
         impl_client_->async_send(ptr);
@@ -103,7 +103,7 @@ public:
 
   void async_send(const uint8_t* p, size_t length) {
     if (p) {
-      auto ptr = std::make_shared<impl::buffer>(p, length);
+      auto ptr = std::make_shared<impl::buffer>(impl::buffer::type::user_data, p, length);
       enqueue_to_dispatcher([this, ptr] {
         if (impl_client_) {
           impl_client_->async_send(ptr);

@@ -76,7 +76,8 @@ public:
       // Set options
 
       // A margin (32 byte) is required to receive data which size == buffer_size.
-      socket_->set_option(asio::socket_base::receive_buffer_size(buffer_size + 32));
+      size_t buffer_margin = 32;
+      socket_->set_option(asio::socket_base::receive_buffer_size(buffer_size + buffer_margin));
 
       // Bind
 
@@ -107,7 +108,7 @@ public:
 
       // Receive
 
-      buffer_.resize(buffer_size);
+      buffer_.resize(buffer_size + buffer_margin);
       async_receive();
     });
   }
@@ -148,13 +149,19 @@ private:
     socket_->async_receive(asio::buffer(buffer_),
                            [this](auto&& error_code, auto&& bytes_transferred) {
                              if (!error_code) {
-                               auto v = std::make_shared<std::vector<uint8_t>>(bytes_transferred);
-                               std::copy(std::begin(buffer_),
-                                         std::begin(buffer_) + bytes_transferred,
-                                         std::begin(*v));
-                               enqueue_to_dispatcher([this, v] {
-                                 received(v);
-                               });
+                               if (bytes_transferred > 0) {
+                                 auto t = buffer::type(buffer_[0]);
+                                 if (t == buffer::type::user_data) {
+                                   auto v = std::make_shared<std::vector<uint8_t>>(bytes_transferred - 1);
+                                   std::copy(std::begin(buffer_) + 1,
+                                             std::begin(buffer_) + bytes_transferred,
+                                             std::begin(*v));
+
+                                   enqueue_to_dispatcher([this, v] {
+                                     received(v);
+                                   });
+                                 }
+                               }
                              }
 
                              // receive once if not closed

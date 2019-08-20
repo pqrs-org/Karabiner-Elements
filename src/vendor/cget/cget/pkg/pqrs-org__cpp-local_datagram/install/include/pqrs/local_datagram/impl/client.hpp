@@ -86,7 +86,8 @@ public:
 
       // Set options
 
-      socket_->set_option(asio::socket_base::send_buffer_size(buffer_size));
+      // A margin (1 byte) is required to append buffer::type.
+      socket_->set_option(asio::socket_base::send_buffer_size(buffer_size + 1));
 
       // Connect
 
@@ -168,7 +169,7 @@ private:
 
   // This method is executed in `io_service_thread_`.
   void check_server(void) {
-    auto b = std::make_shared<buffer>();
+    auto b = std::make_shared<buffer>(buffer::type::server_check);
     async_send(b);
   }
 
