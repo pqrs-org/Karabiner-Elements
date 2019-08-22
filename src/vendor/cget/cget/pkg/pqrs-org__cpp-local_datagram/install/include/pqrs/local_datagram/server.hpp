@@ -23,6 +23,8 @@ public:
 
   // Methods
 
+  server(const server&) = delete;
+
   server(std::weak_ptr<dispatcher::dispatcher> weak_dispatcher,
          const std::string& path,
          size_t buffer_size) : dispatcher_client(weak_dispatcher),

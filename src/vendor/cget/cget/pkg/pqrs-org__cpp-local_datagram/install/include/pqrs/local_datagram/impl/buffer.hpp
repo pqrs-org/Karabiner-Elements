@@ -6,6 +6,8 @@
 
 // `pqrs::local_datagram::impl::buffer` can be used safely in a multi-threaded environment.
 
+#include "../request_id.hpp"
+#include <optional>
 #include <vector>
 
 namespace pqrs {
@@ -21,12 +23,14 @@ public:
     user_data,
   };
 
-  buffer(type t) {
+  buffer(type t,
+         std::optional<request_id> request_id) : request_id_(request_id) {
     v_.push_back(static_cast<uint8_t>(t));
   }
 
   buffer(type t,
-         const std::vector<uint8_t>& v) {
+         std::optional<request_id> request_id,
+         const std::vector<uint8_t>& v) : request_id_(request_id) {
     v_.push_back(static_cast<uint8_t>(t));
 
     std::copy(std::begin(v),
@@ -35,8 +39,9 @@ public:
   }
 
   buffer(type t,
+         std::optional<request_id> request_id,
          const uint8_t* p,
-         size_t length) {
+         size_t length) : request_id_(request_id) {
     v_.push_back(static_cast<uint8_t>(t));
 
     if (p && length > 0) {
@@ -46,9 +51,16 @@ public:
     }
   }
 
-  const std::vector<uint8_t>& get_vector(void) const { return v_; }
+  const std::optional<request_id>& get_request_id(void) const {
+    return request_id_;
+  }
+
+  const std::vector<uint8_t>& get_vector(void) const {
+    return v_;
+  }
 
 private:
+  std::optional<request_id> request_id_;
   std::vector<uint8_t> v_;
 };
 } // namespace impl

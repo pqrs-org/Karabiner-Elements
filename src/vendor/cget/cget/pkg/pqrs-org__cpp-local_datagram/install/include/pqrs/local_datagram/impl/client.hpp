@@ -14,6 +14,7 @@
 #undef ASIO_STANDALONE
 #endif
 
+#include "../request_id.hpp"
 #include "buffer.hpp"
 #include <deque>
 #include <nod/nod.hpp>
@@ -31,6 +32,7 @@ public:
   nod::signal<void(const asio::error_code&)> connect_failed;
   nod::signal<void(void)> closed;
   nod::signal<void(const asio::error_code&)> error_occurred;
+  nod::signal<void(request_id)> processed;
 
   // Methods
 
@@ -169,7 +171,8 @@ private:
 
   // This method is executed in `io_service_thread_`.
   void check_server(void) {
-    auto b = std::make_shared<buffer>(buffer::type::server_check);
+    auto b = std::make_shared<buffer>(buffer::type::server_check,
+                                      std::nullopt);
     async_send(b);
   }
 
@@ -197,6 +200,13 @@ private:
                                   error_code);
             if (error_code) {
               if (error_code == asio::error::no_buffer_space) {
+                //
+                // Retrying the sending data or abort the buffer is required.
+                //
+                // - Keep the connection.
+                // - Keep or drop the buffer.
+                //
+
                 // Retry if no_buffer_space error is continued too much times.
                 ++no_buffer_space_error_count;
                 if (no_buffer_space_error_count > 10) {
@@ -206,6 +216,7 @@ private:
 
                   if (sent == 0) {
                     // Abort
+
                     enqueue_to_dispatcher([this, error_code] {
                       error_occurred(error_code);
                     });
@@ -221,25 +232,44 @@ private:
                 // Wait until buffer is available.
                 std::this_thread::sleep_for(std::chrono::milliseconds(100));
 
-              } else if (error_code.value() == EDESTADDRREQ) {
-                // EDESTADDRREQ (Destination address required) happens when client tries to send data before server binds the socket.
-                // We have to retry after connected.
-                std::this_thread::sleep_for(std::chrono::milliseconds(100));
-                send();
-                return;
+              } else if (error_code == asio::error::message_size) {
+                //
+                // Problem of the sending data.
+                //
+                // - Keep the connection.
+                // - Drop the buffer.
+                //
+
+                enqueue_to_dispatcher([this, error_code] {
+                  error_occurred(error_code);
+                });
+                break;
 
               } else {
+                //
+                // Other errors (e.g., connection error)
+                //
+                // - Close the connection.
+                // - Keep the buffer.
+                //
+
                 enqueue_to_dispatcher([this, error_code] {
                   error_occurred(error_code);
                 });
 
                 async_close();
-                break;
+                return;
               }
             } else {
               no_buffer_space_error_count = 0;
             }
           } while (sent < buffer->get_vector().size());
+
+          if (auto request_id = buffer->get_request_id()) {
+            enqueue_to_dispatcher([this, request_id] {
+              processed(*request_id);
+            });
+          }
         }
 
         send_buffers_.pop_front();
