@@ -150,8 +150,8 @@ private:
                            [this](auto&& error_code, auto&& bytes_transferred) {
                              if (!error_code) {
                                if (bytes_transferred > 0) {
-                                 auto t = buffer::type(buffer_[0]);
-                                 if (t == buffer::type::user_data) {
+                                 auto t = client_send_entry::type(buffer_[0]);
+                                 if (t == client_send_entry::type::user_data) {
                                    auto v = std::make_shared<std::vector<uint8_t>>(bytes_transferred - 1);
                                    std::copy(std::begin(buffer_) + 1,
                                              std::begin(buffer_) + bytes_transferred,

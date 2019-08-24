@@ -7,9 +7,9 @@
 // `pqrs::local_datagram::client` can be used safely in a multi-threaded environment.
 
 #include "impl/client.hpp"
-#include "request_id.hpp"
 #include <nod/nod.hpp>
 #include <pqrs/dispatcher.hpp>
+#include <unordered_map>
 
 namespace pqrs {
 namespace local_datagram {
@@ -21,7 +21,6 @@ public:
   nod::signal<void(const asio::error_code&)> connect_failed;
   nod::signal<void(void)> closed;
   nod::signal<void(const asio::error_code&)> error_occurred;
-  nod::signal<void(request_id)> processed;
 
   // Methods
 
@@ -32,7 +31,6 @@ public:
          size_t buffer_size) : dispatcher_client(weak_dispatcher),
                                path_(path),
                                buffer_size_(buffer_size),
-                               last_request_id_(0),
                                reconnect_timer_(*this) {
     impl_client_ = std::make_shared<impl::client>(weak_dispatcher_);
 
@@ -67,12 +65,6 @@ public:
         error_occurred(error_code);
       });
     });
-
-    impl_client_->processed.connect([this](auto&& request_id) {
-      enqueue_to_dispatcher([this, request_id] {
-        processed(request_id);
-      });
-    });
   }
 
   virtual ~client(void) {
@@ -103,39 +95,22 @@ public:
     });
   }
 
-  request_id async_send(const std::vector<uint8_t>& v) {
-    auto request_id = make_request_id();
-    auto ptr = std::make_shared<impl::buffer>(impl::buffer::type::user_data,
-                                              request_id,
-                                              v);
-
-    enqueue_to_dispatcher([this, request_id, ptr] {
-      if (impl_client_) {
-        impl_client_->async_send(ptr);
-      } else {
-        processed(request_id);
-      }
-    });
-
-    return request_id;
+  void async_send(const std::vector<uint8_t>& v,
+                  const std::function<void(void)>& processed = nullptr) {
+    auto entry = std::make_shared<impl::client_send_entry>(impl::client_send_entry::type::user_data,
+                                                           v,
+                                                           processed);
+    async_send(entry);
   }
 
-  request_id async_send(const uint8_t* p, size_t length) {
-    auto request_id = make_request_id();
-    auto ptr = std::make_shared<impl::buffer>(impl::buffer::type::user_data,
-                                              request_id,
-                                              p,
-                                              length);
-
-    enqueue_to_dispatcher([this, request_id, ptr] {
-      if (impl_client_) {
-        impl_client_->async_send(ptr);
-      } else {
-        processed(request_id);
-      }
-    });
-
-    return request_id;
+  void async_send(const uint8_t* p,
+                  size_t length,
+                  const std::function<void(void)>& processed = nullptr) {
+    auto entry = std::make_shared<impl::client_send_entry>(impl::client_send_entry::type::user_data,
+                                                           p,
+                                                           length,
+                                                           processed);
+    async_send(entry);
   }
 
 private:
@@ -182,16 +157,27 @@ private:
     }
   }
 
-  request_id make_request_id(void) {
-    std::lock_guard<std::mutex> lock(last_request_id_mutex_);
+  void async_send(std::shared_ptr<impl::client_send_entry> entry) {
+    enqueue_to_dispatcher([this, entry] {
+      if (impl_client_) {
+        impl_client_->async_send(entry);
+      } else {
+        //
+        // Call `processed`
+        //
 
-    return ++last_request_id_;
+        auto&& processed = entry->get_processed();
+        if (processed) {
+          enqueue_to_dispatcher([processed] {
+            processed();
+          });
+        }
+      }
+    });
   }
 
   std::string path_;
   size_t buffer_size_;
-  request_id last_request_id_;
-  std::mutex last_request_id_mutex_;
   std::optional<std::chrono::milliseconds> server_check_interval_;
   std::optional<std::chrono::milliseconds> reconnect_interval_;
   std::shared_ptr<impl::client> impl_client_;
