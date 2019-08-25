@@ -1,3 +1,5 @@
+// -*- mode: objective-c -*-
+
 @import Cocoa;
 
 @interface NotificationWindowView : NSView
