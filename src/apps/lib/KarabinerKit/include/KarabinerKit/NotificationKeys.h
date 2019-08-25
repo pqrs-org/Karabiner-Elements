@@ -1,4 +1,4 @@
-// -*- Mode: objc -*-
+// -*- mode: objective-c -*-
 
 #define kKarabinerKitConfigurationIsLoaded @"kKarabinerKitConfigurationIsLoaded"
 #define kKarabinerKitDevicesAreUpdated @"kKarabinerKitDevicesAreUpdated"

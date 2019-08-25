@@ -1,4 +1,4 @@
-// -*- Mode: objc -*-
+// -*- mode: objective-c -*-
 
 @import Foundation;
 #import "KarabinerKit/ComplexModificationsAssetsFileModel.h"
