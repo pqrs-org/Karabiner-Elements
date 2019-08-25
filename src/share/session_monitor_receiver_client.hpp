@@ -105,12 +105,6 @@ private:
     logger::get_logger()->info("session_monitor_receiver_client is stopped.");
   }
 
-  void call_async_send(const uint8_t* _Nonnull p, size_t length) const {
-    if (client_) {
-      client_->async_send(p, length);
-    }
-  }
-
   std::unique_ptr<pqrs::local_datagram::client> client_;
 };
 } // namespace krbn

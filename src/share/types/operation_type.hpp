@@ -16,6 +16,8 @@ enum class operation_type : uint8_t {
   system_preferences_updated,
   frontmost_application_changed,
   input_source_changed,
+  // any -> grabber
+  set_variables,
   // grabber -> console_user_server
   shell_command_execution,
   select_input_source,
@@ -35,6 +37,7 @@ NLOHMANN_JSON_SERIALIZE_ENUM(
         {operation_type::system_preferences_updated, "system_preferences_updated"},
         {operation_type::frontmost_application_changed, "frontmost_application_changed"},
         {operation_type::input_source_changed, "input_source_changed"},
+        {operation_type::set_variables, "set_variables"},
         {operation_type::shell_command_execution, "shell_command_execution"},
         {operation_type::select_input_source, "select_input_source"},
         {operation_type::set_notification_message, "set_notification_message"},

@@ -192,6 +192,28 @@ public:
     });
   }
 
+  /**
+   * @brief Set variables
+   *
+   * @param variables nlohmann::json::object which type is {[key: string]: number}.
+   * @param processed A callback which is called when the request is processed.
+   *                  (When data is sent to grabber or error occurred)
+   */
+  void async_set_variables(const nlohmann::json& variables,
+                           const std::function<void(void)>& processed = nullptr) const {
+    enqueue_to_dispatcher([this, variables, processed] {
+      nlohmann::json json{
+          {"operation_type", operation_type::set_variables},
+          {"variables", variables},
+      };
+
+      if (client_) {
+        client_->async_send(nlohmann::json::to_msgpack(json),
+                            processed);
+      }
+    });
+  }
+
 private:
   void stop(void) {
     if (!client_) {
@@ -201,12 +223,6 @@ private:
     client_ = nullptr;
 
     logger::get_logger()->info("grabber_client is stopped.");
-  }
-
-  void call_async_send(const uint8_t* _Nonnull p, size_t length) const {
-    if (client_) {
-      client_->async_send(p, length);
-    }
   }
 
   std::unique_ptr<pqrs::local_datagram::client> client_;

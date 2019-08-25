@@ -6,10 +6,12 @@
 #include "complex_modifications_assets_file.hpp"
 #include "constants.hpp"
 #include "dispatcher_utility.hpp"
+#include "grabber_client.hpp"
 #include "karabiner_version.h"
 #include "logger.hpp"
 #include "monitor/configuration_monitor.hpp"
 #include <iostream>
+#include <nlohmann/json.hpp>
 #include <pqrs/thread_wait.hpp>
 #include <spdlog/sinks/stdout_color_sinks.h>
 
@@ -38,6 +40,25 @@ void select_profile(const std::string& name) {
   monitor.async_start();
 
   wait->wait_notice();
+}
+
+void set_variables(const std::string& variables) {
+  try {
+    auto json = nlohmann::json::parse(variables);
+
+    auto wait = pqrs::make_thread_wait();
+
+    krbn::grabber_client client;
+    client.async_start();
+    client.async_set_variables(json, [&wait] {
+      wait->notify();
+    });
+
+    wait->wait_notice();
+  } catch (std::exception& e) {
+    std::cerr << "set-variables error:" << std::endl
+              << e.what() << std::endl;
+  }
 }
 
 int copy_current_profile_to_system_default_profile(void) {
@@ -75,6 +96,7 @@ int main(int argc, char** argv) {
   cxxopts::Options options("karabiner_cli", "A command line utility of Karabiner-Elements.");
 
   options.add_options()("select-profile", "Select a profile by name.", cxxopts::value<std::string>());
+  options.add_options()("set-variables", "Json string: {[key: string]: number}", cxxopts::value<std::string>());
   options.add_options()("copy-current-profile-to-system-default-profile", "Copy the current profile to system default profile.");
   options.add_options()("remove-system-default-profile", "Remove the system default profile.");
   options.add_options()("lint-complex-modifications", "Check complex_modifications.json",
@@ -91,6 +113,14 @@ int main(int argc, char** argv) {
       std::string key = "select-profile";
       if (parse_result.count(key)) {
         select_profile(parse_result[key].as<std::string>());
+        goto finish;
+      }
+    }
+
+    {
+      std::string key = "set-variables";
+      if (parse_result.count(key)) {
+        set_variables(parse_result[key].as<std::string>());
         goto finish;
       }
     }
@@ -194,6 +224,7 @@ int main(int argc, char** argv) {
   std::cout << options.help() << std::endl;
   std::cout << "Examples:" << std::endl;
   std::cout << "  karabiner_cli --select-profile 'Default profile'" << std::endl;
+  std::cout << "  karabiner_cli --set-variables '{\"cli_flag1\":1, \"cli_flag2\":2}'" << std::endl;
   std::cout << std::endl;
 
   exit_code = 1;

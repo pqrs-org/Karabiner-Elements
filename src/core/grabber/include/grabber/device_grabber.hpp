@@ -404,6 +404,23 @@ public:
     });
   }
 
+  void async_post_set_variable_event(const std::string& name, int value) {
+    enqueue_to_dispatcher([this, name, value] {
+      auto event = event_queue::event::make_set_variable_event(std::make_pair(name, value));
+
+      for (const auto& t : {event_type::key_down, event_type::key_up}) {
+        event_queue::entry entry(device_id(0),
+                                 event_queue::event_time_stamp(pqrs::osx::chrono::mach_absolute_time_point()),
+                                 event,
+                                 t,
+                                 event);
+        merged_input_event_queue_->push_back_entry(entry);
+      }
+
+      krbn_notification_center::get_instance().enqueue_input_event_arrived(*this);
+    });
+  }
+
   void async_post_frontmost_application_changed_event(const pqrs::osx::frontmost_application_monitor::application& application) {
     enqueue_to_dispatcher([this, application] {
       auto event = event_queue::event::make_frontmost_application_changed_event(application);
