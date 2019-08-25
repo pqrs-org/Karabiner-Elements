@@ -3,6 +3,7 @@
 ## Beta
 
 - Fixed an issue that Karabiner-Elements might stop working after sleep on macOS Catalina.
+- Added `--set-variables` option into `karabiner_cli`.
 
 ## Version 12.6.0
 
