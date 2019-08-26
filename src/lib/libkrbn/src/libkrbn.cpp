@@ -475,3 +475,27 @@ bool libkrbn_hid_value_monitor_observed(void) {
   }
   return false;
 }
+
+//
+// grabber_client
+//
+
+void libkrbn_enable_grabber_client(void) {
+  if (libkrbn_components_manager_) {
+    libkrbn_components_manager_->enable_grabber_client();
+  }
+}
+
+void libkrbn_disable_grabber_client(void) {
+  if (libkrbn_components_manager_) {
+    libkrbn_components_manager_->disable_grabber_client();
+  }
+}
+
+void libkrbn_grabber_client_async_set_variable(const char* name, int value) {
+  if (libkrbn_components_manager_) {
+    if (name) {
+      libkrbn_components_manager_->grabber_client_async_set_variable(name, value);
+    }
+  }
+}

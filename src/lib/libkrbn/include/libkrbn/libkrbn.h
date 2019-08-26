@@ -336,6 +336,14 @@ void libkrbn_enable_hid_value_monitor(libkrbn_hid_value_monitor_callback callbac
 void libkrbn_disable_hid_value_monitor(void);
 bool libkrbn_hid_value_monitor_observed(void);
 
+//
+// libkrbn_grabber_client
+//
+
+void libkrbn_enable_grabber_client(void);
+void libkrbn_disable_grabber_client(void);
+void libkrbn_grabber_client_async_set_variable(const char* name, int value);
+
 #ifdef __cplusplus
 }
 #endif

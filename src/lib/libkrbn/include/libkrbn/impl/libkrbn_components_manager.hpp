@@ -5,6 +5,7 @@
 #include "libkrbn/impl/libkrbn_connected_devices_monitor.hpp"
 #include "libkrbn/impl/libkrbn_file_monitor.hpp"
 #include "libkrbn/impl/libkrbn_frontmost_application_monitor.hpp"
+#include "libkrbn/impl/libkrbn_grabber_client.hpp"
 #include "libkrbn/impl/libkrbn_hid_value_monitor.hpp"
 #include "libkrbn/impl/libkrbn_log_monitor.hpp"
 #include "libkrbn/impl/libkrbn_system_preferences_monitor.hpp"
@@ -223,6 +224,22 @@ public:
     return false;
   }
 
+  //
+  // grabber_client_
+  //
+
+  void enable_grabber_client(void) {
+    grabber_client_ = std::make_unique<libkrbn_grabber_client>();
+  }
+
+  void disable_grabber_client(void) {
+    grabber_client_ = nullptr;
+  }
+
+  void grabber_client_async_set_variable(const std::string& name, int value) {
+    grabber_client_->async_set_variable(name, value);
+  }
+
 private:
   std::unique_ptr<libkrbn_version_monitor> version_monitor_;
   std::unique_ptr<libkrbn_configuration_monitor> configuration_monitor_;
@@ -238,4 +255,5 @@ private:
   std::unique_ptr<libkrbn_frontmost_application_monitor> frontmost_application_monitor_;
   std::unique_ptr<libkrbn_log_monitor> log_monitor_;
   std::unique_ptr<libkrbn_hid_value_monitor> hid_value_monitor_;
+  std::unique_ptr<libkrbn_grabber_client> grabber_client_;
 };
