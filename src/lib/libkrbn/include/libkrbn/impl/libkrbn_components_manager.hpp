@@ -228,8 +228,12 @@ public:
   // grabber_client_
   //
 
-  void enable_grabber_client(void) {
-    grabber_client_ = std::make_unique<libkrbn_grabber_client>();
+  void enable_grabber_client(libkrbn_grabber_client_connected_callback connected_callback,
+                             libkrbn_grabber_client_connect_failed_callback connect_failed_callback,
+                             libkrbn_grabber_client_closed_callback closed_callback) {
+    grabber_client_ = std::make_unique<libkrbn_grabber_client>(connected_callback,
+                                                               connect_failed_callback,
+                                                               closed_callback);
   }
 
   void disable_grabber_client(void) {

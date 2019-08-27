@@ -480,9 +480,13 @@ bool libkrbn_hid_value_monitor_observed(void) {
 // grabber_client
 //
 
-void libkrbn_enable_grabber_client(void) {
+void libkrbn_enable_grabber_client(libkrbn_grabber_client_connected_callback connected_callback,
+                                   libkrbn_grabber_client_connect_failed_callback connect_failed_callback,
+                                   libkrbn_grabber_client_closed_callback closed_callback) {
   if (libkrbn_components_manager_) {
-    libkrbn_components_manager_->enable_grabber_client();
+    libkrbn_components_manager_->enable_grabber_client(connected_callback,
+                                                       connect_failed_callback,
+                                                       closed_callback);
   }
 }
 
