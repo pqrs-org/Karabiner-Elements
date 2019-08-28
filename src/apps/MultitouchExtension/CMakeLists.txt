@@ -20,21 +20,24 @@ add_executable(
   MACOSX_BUNDLE
   src/AppDelegate.h
   src/AppDelegate.m
+  src/EventHandler.h
+  src/EventHandler.m
   src/FingerStatus.h
   src/FingerStatus.m
   src/IgnoredAreaView.h
   src/IgnoredAreaView.m
+  src/main.m
+  src/MultitouchPrivate.h
   src/PreferencesController.h
   src/PreferencesController.m
   src/PreferencesKeys.h
-  src/main.m
   Resources/MainMenu.xib
-  ../share/Resources/app.icns
+  Resources/app.icns
 )
 
 set_source_files_properties(
   Resources/MainMenu.xib
-  ../share/Resources/app.icns
+  Resources/app.icns
   PROPERTIES
   MACOSX_PACKAGE_LOCATION
   Resources
