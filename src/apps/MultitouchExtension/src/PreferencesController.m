@@ -4,7 +4,6 @@
 @interface PreferencesController ()
 
 @property NSMutableArray* oldSettings;
-@property(weak) IBOutlet NSButton* startAtLoginCheckbox;
 @property(weak) IBOutlet NSWindow* preferencesWindow;
 
 @end
@@ -15,6 +14,7 @@
   static dispatch_once_t once;
   dispatch_once(&once, ^{
     NSDictionary* dict = @{
+      @"startAtLogin" : @NO,
       @"hideIconInDock" : @NO,
       @"relaunchAfterWakeUpFromSleep" : @YES,
       @"relaunchWait" : @"3",
@@ -47,17 +47,8 @@
   return self;
 }
 
-- (void)load {
-  [self.startAtLoginCheckbox setState:NSOnState];
-//  [self.startAtLoginCheckbox setState:NSOffState];
-}
-
 - (void)show {
   [self.preferencesWindow makeKeyAndOrderFront:nil];
-}
-
-- (IBAction)setStartAtLogin:(id)sender {
-  // startAtLogin
 }
 
 + (BOOL)isSettingEnabled:(NSInteger)fingers {

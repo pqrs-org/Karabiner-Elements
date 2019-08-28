@@ -469,8 +469,6 @@ static void observer_IONotification(void* refcon, io_iterator_t iterator) {
   [[NSApplication sharedApplication] disableRelaunchOnLogin];
 
   // ----------------------------------------
-  [self.preferences load];
-
   if (![[NSUserDefaults standardUserDefaults] boolForKey:@"hideIconInDock"]) {
     ProcessSerialNumber psn = {0, kCurrentProcess};
     TransformProcessType(&psn, kProcessTransformToForegroundApplication);

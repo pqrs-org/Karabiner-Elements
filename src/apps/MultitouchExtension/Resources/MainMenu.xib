@@ -131,7 +131,7 @@
                                                             <font key="font" metaFont="system"/>
                                                         </buttonCell>
                                                         <connections>
-                                                            <action selector="setStartAtLogin:" target="533" id="568"/>
+                                                            <binding destination="687" name="value" keyPath="values.startAtLogin" id="AHP-Iz-fr0"/>
                                                         </connections>
                                                     </button>
                                                     <button translatesAutoresizingMaskIntoConstraints="NO" id="585">
@@ -790,7 +790,6 @@ when you touch fingers to trackpad.
         <customObject id="533" customClass="PreferencesController">
             <connections>
                 <outlet property="preferencesWindow" destination="371" id="yAG-OS-Pk9"/>
-                <outlet property="startAtLoginCheckbox" destination="537" id="ykL-VB-wsX"/>
             </connections>
         </customObject>
         <userDefaultsController representsSharedInstance="YES" id="687"/>
