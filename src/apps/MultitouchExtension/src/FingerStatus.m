@@ -12,7 +12,7 @@
 
 @interface FingerStatus ()
 
-@property NSMutableArray* items;
+@property NSMutableArray<FingerStatusItem*>* items;
 
 @end
 
