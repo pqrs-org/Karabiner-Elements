@@ -20,8 +20,6 @@ add_executable(
   MACOSX_BUNDLE
   src/AppDelegate.h
   src/AppDelegate.m
-  src/EventHandler.h
-  src/EventHandler.m
   src/FingerStatus.h
   src/FingerStatus.m
   src/IgnoredAreaView.h

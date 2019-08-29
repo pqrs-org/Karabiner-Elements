@@ -12,7 +12,7 @@ enum { MAX_FINGERS = 4 };
 static int current_status_[MAX_FINGERS];
 static FingerStatus* lastFingerStatus_ = nil;
 static BOOL has_last_device = NO;
-static int last_device = 0;
+static MTDeviceRef last_device = nil;
 static time_t last_timestamp_ = 0;
 static NSTimer* global_timer_[MAX_FINGERS];
 static NSTimer* reset_timer_;
@@ -133,7 +133,7 @@ static void setPreference(int fingers, int newvalue) {
 
 // ------------------------------------------------------------
 // Multitouch callback
-static int callback(int device, Finger* data, int fingers, double timestamp, int frame) {
+static int callback(MTDeviceRef device, Finger* data, int fingers, double timestamp, int frame) {
   if (!data) {
     fingers = 0;
   }
@@ -424,6 +424,22 @@ static void observer_IONotification(void* refcon, io_iterator_t iterator) {
                                                               object:nil];
 }
 
+void enable(void) {
+  [global_self_ registerIONotification];
+  [global_self_ registerWakeNotification];
+
+  // sleep until devices are settled.
+  [NSThread sleepForTimeInterval:1.0];
+
+  [global_self_ setcallback:YES];
+}
+
+void disable(void) {
+  [global_self_ unregisterIONotification];
+  [global_self_ unregisterWakeNotification];
+  [global_self_ setcallback:NO];
+}
+
 // ------------------------------------------------------------
 - (void)applicationDidFinishLaunching:(NSNotification*)aNotification {
   [KarabinerKit setup];
@@ -441,33 +457,9 @@ static void observer_IONotification(void* refcon, io_iterator_t iterator) {
   global_self_ = self;
   global_ignoredAreaView_ = self.ignoredAreaView;
 
-#if 0
-  self.sessionObserver = [[SessionObserver alloc] init:1
-      active:^{
-        [self registerIONotification];
-        [self registerWakeNotification];
-
-        // sleep until devices are settled.
-        [NSThread sleepForTimeInterval:1.0];
-
-        [self setcallback:YES];
-      }
-      inactive:^{
-        [self unregisterIONotification];
-        [self unregisterWakeNotification];
-        [self setcallback:NO];
-      }];
-#else
-  [self registerIONotification];
-  [self registerWakeNotification];
-
-  // sleep until devices are settled.
-  [NSThread sleepForTimeInterval:1.0];
-
-  [self setcallback:YES];
-#endif
-
-  [self setcallback:YES];
+  libkrbn_enable_grabber_client(enable,
+                                disable,
+                                disable);
 }
 
 - (void)dealloc {
