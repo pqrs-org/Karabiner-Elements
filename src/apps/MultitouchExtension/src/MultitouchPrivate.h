@@ -29,7 +29,7 @@ typedef struct {
 } Finger;
 
 typedef void* MTDeviceRef;
-typedef int (*MTContactCallbackFunction)(int, Finger*, int, double, int);
+typedef int (*MTContactCallbackFunction)(MTDeviceRef, Finger*, int, double, int);
 
 CFMutableArrayRef MTDeviceCreateList(void);
 void MTRegisterContactFrameCallback(MTDeviceRef, MTContactCallbackFunction);
