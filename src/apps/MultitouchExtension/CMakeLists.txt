@@ -22,6 +22,8 @@ add_executable(
   src/AppDelegate.m
   src/FingerStatus.h
   src/FingerStatus.m
+  src/FingerStatusManager.h
+  src/FingerStatusManager.m
   src/IgnoredAreaView.h
   src/IgnoredAreaView.m
   src/main.m

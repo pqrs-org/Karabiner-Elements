@@ -1,9 +1,11 @@
 @import IOKit;
 #import "AppDelegate.h"
 #import "FingerStatus.h"
+#import "FingerStatusManager.h"
 #import "IgnoredAreaView.h"
 #import "KarabinerKit/KarabinerKit.h"
 #import "MultitouchPrivate.h"
+#import "NotificationKeys.h"
 #import "PreferencesController.h"
 #import "PreferencesKeys.h"
 #import <pqrs/weakify.h>
@@ -22,6 +24,7 @@ static NSTimer* reset_timer_;
 @property(weak) IBOutlet IgnoredAreaView* ignoredAreaView;
 @property(weak) IBOutlet PreferencesController* preferences;
 @property(copy) NSArray* mtdevices;
+@property FingerStatusManager* fingerStatusManager;
 @property IONotificationPortRef notifyport;
 @property CFRunLoopSourceRef loopsource;
 
@@ -34,6 +37,7 @@ static NSTimer* reset_timer_;
 
   if (self) {
     lastFingerStatus_ = [FingerStatus new];
+    _fingerStatusManager = [FingerStatusManager new];
 
     for (int i = 0; i < MAX_FINGERS; ++i) {
       current_status_[i] = 0;
@@ -137,6 +141,12 @@ static int callback(MTDeviceRef device, Finger* data, int fingers, double timest
   if (!data) {
     fingers = 0;
   }
+
+  [global_self_.fingerStatusManager update:device
+                                      data:data
+                                   fingers:fingers
+                                 timestamp:timestamp
+                                     frame:frame];
 
   __block Finger* dataCopy = NULL;
   if (fingers > 0) {
@@ -453,6 +463,20 @@ void disable(void) {
     ProcessSerialNumber psn = {0, kCurrentProcess};
     TransformProcessType(&psn, kProcessTransformToForegroundApplication);
   }
+
+  [[NSNotificationCenter defaultCenter] addObserverForName:kPhysicalFingerStateChanged
+                                                    object:nil
+                                                     queue:[NSOperationQueue mainQueue]
+                                                usingBlock:^(NSNotification* note) {
+                                                  printf("kPhysicalFingerStateChanged\n");
+                                                }];
+
+  [[NSNotificationCenter defaultCenter] addObserverForName:kFixedFingerStateChanged
+                                                    object:nil
+                                                     queue:[NSOperationQueue mainQueue]
+                                                usingBlock:^(NSNotification* note) {
+                                                  printf("kFixedFingerStateChanged\n");
+                                                }];
 
   global_self_ = self;
   global_ignoredAreaView_ = self.ignoredAreaView;
