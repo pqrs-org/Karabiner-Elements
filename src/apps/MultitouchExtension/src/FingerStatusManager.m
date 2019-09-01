@@ -1,49 +1,8 @@
 #import "FingerStatusManager.h"
 #import "NotificationKeys.h"
+#import "PreferencesController.h"
 #import "PreferencesKeys.h"
 #import <pqrs/weakify.h>
-
-@interface FingerStatusEntry : NSObject
-
-//
-// unique keys
-//
-
-@property MTDeviceRef device;
-@property int identifier;
-
-//
-// variables
-//
-
-@property int frame;
-@property NSPoint point;
-@property BOOL touchedPhysically;
-@property BOOL touchedFixed;
-@property NSTimer* delayTimer;
-
-@end
-
-@implementation FingerStatusEntry
-
-- (instancetype)init:(MTDeviceRef)device
-          identifier:(int)identifier {
-  self = [super init];
-
-  if (self) {
-    _device = device;
-    _identifier = identifier;
-    _frame = 0;
-    _point = NSMakePoint(0, 0);
-    _touchedPhysically = NO;
-    _touchedFixed = NO;
-    _delayTimer = nil;
-  }
-
-  return self;
-}
-
-@end
 
 @interface FingerStatusManager ()
 
@@ -79,20 +38,26 @@
        fingers:(int)fingers
      timestamp:(double)timestamp
          frame:(int)frame {
-  BOOL physicalFingerStateChanged = NO;
-
   @synchronized(self) {
+    NSRect targetArea = [PreferencesController makeTargetArea];
+
     for (int i = 0; i < fingers; ++i) {
       int identifier = data[i].identifier;
 
       FingerStatusEntry* e = [self findEntry:device identifier:identifier];
       if (!e) {
-        e = [[FingerStatusEntry alloc] init:device identifier:identifier];
+        e = [[FingerStatusEntry alloc] initWithDevice:device identifier:identifier];
         [self.entries addObject:e];
       }
 
       e.frame = frame;
       e.point = NSMakePoint(data[i].normalized.position.x, data[i].normalized.position.y);
+
+      // Note:
+      // Once the point in targetArea, keep `ignored == NO`.
+      if (NSPointInRect(e.point, targetArea)) {
+        e.ignored = NO;
+      }
 
       // state values:
       //   4: touched
@@ -106,16 +71,17 @@
 
       if (e.touchedPhysically != touched) {
         e.touchedPhysically = touched;
-        physicalFingerStateChanged = YES;
 
         if (e.touchedFixed == touched) {
           [e.delayTimer invalidate];
         } else {
+          NSUserDefaults* defaults = [NSUserDefaults standardUserDefaults];
           NSInteger delay = 0;
+
           if (e.touchedPhysically) {
-            delay = [[NSUserDefaults standardUserDefaults] integerForKey:kDelayBeforeTurnOn];
+            delay = [defaults integerForKey:kDelayBeforeTurnOn];
           } else {
-            delay = [[NSUserDefaults standardUserDefaults] integerForKey:kDelayBeforeTurnOff];
+            delay = [defaults integerForKey:kDelayBeforeTurnOff];
           }
 
           @weakify(self);
@@ -165,10 +131,8 @@
     printf("update %d\n", (int)(self.entries.count));
   }
 
-  if (physicalFingerStateChanged) {
-    [[NSNotificationCenter defaultCenter] postNotificationName:kPhysicalFingerStateChanged
-                                                        object:self];
-  }
+  [[NSNotificationCenter defaultCenter] postNotificationName:kPhysicalFingerStateChanged
+                                                      object:self];
 }
 
 - (void)debugDump {
@@ -182,6 +146,10 @@
              (int)(e.point.y));
     }
   }
+}
+
+- (NSArray<FingerStatusEntry*>*)copyEntries {
+  return [[NSArray alloc] initWithArray:self.entries copyItems:YES];
 }
 
 @end

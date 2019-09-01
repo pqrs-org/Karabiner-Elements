@@ -1,6 +1,7 @@
 // -*- mode: objective-c -*-
 
 @import Cocoa;
+#import "FingerStatusEntry.h"
 #import "MultitouchPrivate.h"
 
 @interface FingerStatusManager : NSObject
@@ -12,5 +13,6 @@
          frame:(int)frame;
 
 - (void)debugDump;
+- (NSArray<FingerStatusEntry*>*)copyEntries;
 
 @end

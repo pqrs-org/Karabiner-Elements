@@ -176,8 +176,6 @@ static int callback(MTDeviceRef device, Finger* data, int fingers, double timest
     // ------------------------------------------------------------
     time(&last_timestamp_);
 
-    [global_ignoredAreaView_ clearFingers];
-
     {
       int valid_fingers = 0;
       FingerStatus* fingerStatus = [FingerStatus new];
@@ -191,27 +189,12 @@ static int callback(MTDeviceRef device, Finger* data, int fingers, double timest
         }
 
         int identifier = dataCopy[i].identifier;
-        NSPoint point = NSMakePoint(dataCopy[i].normalized.position.x, dataCopy[i].normalized.position.y);
-
         BOOL ignored = NO;
-        if ([IgnoredAreaView isIgnoredArea:point]) {
-          ignored = YES;
-
-          // Finding FingerStatus by identifier.
-          if ([lastFingerStatus_ isActive:identifier]) {
-            // If a finger is already active, we should not ignore this finger.
-            // (This finger has been moved into ignored area from active area.)
-            ignored = NO;
-          }
-        }
-
         [fingerStatus add:identifier active:(!ignored)];
 
         if (!ignored) {
           ++valid_fingers;
         }
-
-        [global_ignoredAreaView_ addFinger:point ignored:ignored];
       }
 
       lastFingerStatus_ = fingerStatus;

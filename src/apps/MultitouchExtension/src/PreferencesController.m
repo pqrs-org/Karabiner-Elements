@@ -59,6 +59,20 @@
   return [[NSUserDefaults standardUserDefaults] stringForKey:[NSString stringWithFormat:@"targetSetting%d", (int)(fingers)]];
 }
 
++ (NSRect)makeTargetArea {
+  NSUserDefaults* defaults = [NSUserDefaults standardUserDefaults];
+
+  double top = [[defaults stringForKey:@"ignoredAreaTop"] doubleValue] / 100;
+  double bottom = [[defaults stringForKey:@"ignoredAreaBottom"] doubleValue] / 100;
+  double left = [[defaults stringForKey:@"ignoredAreaLeft"] doubleValue] / 100;
+  double right = [[defaults stringForKey:@"ignoredAreaRight"] doubleValue] / 100;
+
+  return NSMakeRect(left,
+                    bottom,
+                    (1.0 - left - right),
+                    (1.0 - top - bottom));
+}
+
 - (IBAction)set:(id)sender {
   // ------------------------------------------------------------
   // disable old settings
