@@ -21,25 +21,17 @@
   return self;
 }
 
-- (FingerStatusEntry*)findEntry:(MTDeviceRef)device
-                     identifier:(int)identifier {
-  for (FingerStatusEntry* e in self.entries) {
-    if (e.device == device &&
-        e.identifier == identifier) {
-      return e;
-    }
-  }
-
-  return nil;
-}
-
 - (void)update:(MTDeviceRef)device
           data:(Finger*)data
        fingers:(int)fingers
      timestamp:(double)timestamp
          frame:(int)frame {
+  BOOL callFixedFingerStateChanged = NO;
+
   @synchronized(self) {
-    NSRect targetArea = [PreferencesController makeTargetArea];
+    //
+    // Update physical touched fingers
+    //
 
     for (int i = 0; i < fingers; ++i) {
       int identifier = data[i].identifier;
@@ -55,8 +47,12 @@
 
       // Note:
       // Once the point in targetArea, keep `ignored == NO`.
-      if (NSPointInRect(e.point, targetArea)) {
-        e.ignored = NO;
+      if (e.ignored) {
+        NSRect targetArea = [PreferencesController makeTargetArea];
+        if (NSPointInRect(e.point, targetArea)) {
+          e.ignored = NO;
+          callFixedFingerStateChanged = YES;
+        }
       }
 
       // state values:
@@ -72,34 +68,22 @@
       if (e.touchedPhysically != touched) {
         e.touchedPhysically = touched;
 
-        if (e.touchedFixed == touched) {
-          [e.delayTimer invalidate];
-        } else {
-          NSUserDefaults* defaults = [NSUserDefaults standardUserDefaults];
-          NSInteger delay = 0;
+        [self setFingerStatusEntryDelayTimer:e touched:touched];
+      }
+    }
 
-          if (e.touchedPhysically) {
-            delay = [defaults integerForKey:kDelayBeforeTurnOn];
-          } else {
-            delay = [defaults integerForKey:kDelayBeforeTurnOff];
-          }
+    //
+    // Update physical untouched fingers
+    //
 
-          @weakify(self);
-          e.delayTimer = [NSTimer scheduledTimerWithTimeInterval:(1.0 * delay / 1000.0)
-                                                         repeats:NO
-                                                           block:^(NSTimer* timer) {
-                                                             @strongify(self);
-                                                             if (!self) {
-                                                               return;
-                                                             }
+    for (FingerStatusEntry* e in self.entries) {
+      if (e.device == device &&
+          e.frame != frame &&
+          e.touchedPhysically) {
+        e.touchedPhysically = NO;
 
-                                                             @synchronized(self) {
-                                                               e.touchedFixed = touched;
-                                                             }
-
-                                                             [[NSNotificationCenter defaultCenter] postNotificationName:kFixedFingerStateChanged
-                                                                                                                 object:self];
-                                                           }];
+        if (e.touchedFixed) {
+          [self setFingerStatusEntryDelayTimer:e touched:NO];
         }
       }
     }
@@ -113,43 +97,104 @@
                     }
 
                     // Discard old entries
-                    if (e.frame != frame &&
-                        !e.touchedFixed) {
-                      return NO;
-                    }
-
-                    // Discard untouched entries
-                    if (!e.touchedPhysically &&
-                        !e.touchedFixed) {
-                      return NO;
+                    if (e.frame != frame) {
+                      if (!e.delayTimer ||
+                          !e.delayTimer.valid) {
+                        return NO;
+                      }
                     }
 
                     // Keep entries
                     return YES;
                   }]];
-
-    printf("update %d\n", (int)(self.entries.count));
   }
 
   [[NSNotificationCenter defaultCenter] postNotificationName:kPhysicalFingerStateChanged
                                                       object:self];
+
+  if (callFixedFingerStateChanged) {
+    [[NSNotificationCenter defaultCenter] postNotificationName:kFixedFingerStateChanged
+                                                        object:self];
+  }
 }
 
-- (void)debugDump {
-  @synchronized(self) {
-    for (FingerStatusEntry* e in self.entries) {
-      printf("%d %d %d %dx%d\n",
-             e.identifier,
-             e.touchedPhysically,
-             e.touchedFixed,
-             (int)(e.point.x),
-             (int)(e.point.y));
+// Note: This method is called in @synchronized(self)
+- (FingerStatusEntry*)findEntry:(MTDeviceRef)device
+                     identifier:(int)identifier {
+  for (FingerStatusEntry* e in self.entries) {
+    if (e.device == device &&
+        e.identifier == identifier) {
+      return e;
     }
+  }
+
+  return nil;
+}
+
+// Note: This method is called in @synchronized(self)
+- (void)setFingerStatusEntryDelayTimer:(FingerStatusEntry*)entry
+                               touched:(BOOL)touched {
+  if (touched == entry.touchedFixed) {
+    [entry.delayTimer invalidate];
+  } else {
+    NSUserDefaults* defaults = [NSUserDefaults standardUserDefaults];
+
+    NSInteger delay = 0;
+    if (touched) {
+      delay = [defaults integerForKey:kDelayBeforeTurnOn];
+    } else {
+      delay = [defaults integerForKey:kDelayBeforeTurnOff];
+    }
+
+    @weakify(self);
+    @weakify(entry);
+    entry.delayTimer = [NSTimer scheduledTimerWithTimeInterval:(1.0 * delay / 1000.0)
+                                                       repeats:NO
+                                                         block:^(NSTimer* timer) {
+                                                           @strongify(self);
+                                                           if (!self) {
+                                                             return;
+                                                           }
+
+                                                           @strongify(entry);
+                                                           if (!entry) {
+                                                             return;
+                                                           }
+
+                                                           @synchronized(self) {
+                                                             entry.touchedFixed = touched;
+                                                           }
+
+                                                           [[NSNotificationCenter defaultCenter] postNotificationName:kFixedFingerStateChanged
+                                                                                                               object:self];
+                                                         }];
   }
 }
 
 - (NSArray<FingerStatusEntry*>*)copyEntries {
-  return [[NSArray alloc] initWithArray:self.entries copyItems:YES];
+  @synchronized(self) {
+    return [[NSArray alloc] initWithArray:self.entries copyItems:YES];
+  }
+}
+
+- (NSUInteger)getTouchedFixedFingerCount {
+  @synchronized(self) {
+    NSUInteger count = 0;
+
+    for (FingerStatusEntry* e in self.entries) {
+      if (e.ignored) {
+        continue;
+      }
+
+      if (!e.touchedFixed) {
+        continue;
+      }
+
+      ++count;
+    }
+
+    return count;
+  }
 }
 
 @end

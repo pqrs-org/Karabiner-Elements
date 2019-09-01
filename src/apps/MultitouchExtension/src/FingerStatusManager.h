@@ -12,7 +12,8 @@
      timestamp:(double)timestamp
          frame:(int)frame;
 
-- (void)debugDump;
 - (NSArray<FingerStatusEntry*>*)copyEntries;
+
+- (NSUInteger)getTouchedFixedFingerCount;
 
 @end

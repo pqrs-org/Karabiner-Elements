@@ -21,8 +21,6 @@
 }
 
 - (instancetype)copyWithZone:(NSZone*)zone {
-  printf("make copy\n");
-
   FingerStatusEntry* e = [[FingerStatusEntry alloc] initWithDevice:self.device identifier:self.identifier];
 
   e.frame = self.frame;

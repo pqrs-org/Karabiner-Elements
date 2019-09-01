@@ -60,9 +60,11 @@
 
     // Draw fingers
     for (FingerStatusEntry* e in self.fingerStatusEntries) {
-      enum {
-        DIAMETER = 10,
-      };
+      if (!e.touchedPhysically) {
+        continue;
+      }
+
+      const int DIAMETER = 10;
 
       if (e.ignored) {
         [[NSColor blueColor] set];

@@ -1,6 +1,5 @@
 @import IOKit;
 #import "AppDelegate.h"
-#import "FingerStatus.h"
 #import "FingerStatusManager.h"
 #import "IgnoredAreaView.h"
 #import "KarabinerKit/KarabinerKit.h"
@@ -10,14 +9,7 @@
 #import "PreferencesKeys.h"
 #import <pqrs/weakify.h>
 
-enum { MAX_FINGERS = 4 };
-static int current_status_[MAX_FINGERS];
-static FingerStatus* lastFingerStatus_ = nil;
-static BOOL has_last_device = NO;
-static MTDeviceRef last_device = nil;
-static time_t last_timestamp_ = 0;
-static NSTimer* global_timer_[MAX_FINGERS];
-static NSTimer* reset_timer_;
+static AppDelegate* global_self_ = nil;
 
 @interface AppDelegate ()
 
@@ -36,103 +28,10 @@ static NSTimer* reset_timer_;
   self = [super init];
 
   if (self) {
-    lastFingerStatus_ = [FingerStatus new];
     _fingerStatusManager = [FingerStatusManager new];
-
-    for (int i = 0; i < MAX_FINGERS; ++i) {
-      current_status_[i] = 0;
-      global_timer_[i] = nil;
-    }
-
-    reset_timer_ = [NSTimer scheduledTimerWithTimeInterval:1.0
-                                                    target:self
-                                                  selector:@selector(resetTimerFireMethod:)
-                                                  userInfo:nil
-                                                   repeats:YES];
   }
 
   return self;
-}
-
-// ------------------------------------------------------------
-static AppDelegate* global_self_ = nil;
-static IgnoredAreaView* global_ignoredAreaView_ = nil;
-
-- (void)setValueFromTimer:(NSTimer*)timer {
-  NSDictionary* dict = [timer userInfo];
-  NSLog(@"set-variable %@", dict);
-}
-
-static void setPreference(int fingers, int newvalue) {
-  NSString* identifier = [PreferencesController getSettingIdentifier:fingers];
-  if ([identifier length] > 0) {
-    @try {
-      if (global_timer_[fingers - 1]) {
-        [global_timer_[fingers - 1] invalidate];
-        global_timer_[fingers - 1] = nil;
-      }
-
-      NSInteger delay = 0;
-      if (newvalue == 0) {
-        delay = [[NSUserDefaults standardUserDefaults] integerForKey:kDelayBeforeTurnOff];
-      } else {
-        delay = [[NSUserDefaults standardUserDefaults] integerForKey:kDelayBeforeTurnOn];
-      }
-
-      if (delay == 0) {
-        NSLog(@"set-variable %@ = %d", identifier, newvalue);
-      } else {
-        global_timer_[fingers - 1] = [NSTimer scheduledTimerWithTimeInterval:(1.0 * delay / 1000.0)
-                                                                      target:global_self_
-                                                                    selector:@selector(setValueFromTimer:)
-                                                                    userInfo:@{
-                                                                      @"identifier" : identifier,
-                                                                      @"value" : @(newvalue),
-                                                                    }
-                                                                     repeats:NO];
-      }
-    }
-    @catch (NSException* exception) {
-      NSLog(@"%@", exception);
-    }
-  }
-}
-
-- (void)resetPreferences {
-  for (int i = 0; i < MAX_FINGERS; ++i) {
-    setPreference(i + 1, 0);
-  }
-}
-
-- (void)resetTimerFireMethod:(NSTimer*)timer {
-  @weakify(self);
-
-  dispatch_async(dispatch_get_main_queue(), ^{
-    @strongify(self);
-    if (!self) return;
-
-    // ------------------------------------------------------------
-    // If multi touch devices are touched at launch,
-    // the first multi touch callback is called with invalid `device` arg.
-    //
-    // It causes an issue that all following events are ignored by has_last_device flag.
-    //
-    // To avoid this issue, if recent multi touch callback is too old, we reset has_last_device.
-    // The callback must be called by each 100ms when a device is touched.
-    // So, if the callback is not called in 2 seconds, we can reset has_last_device.
-
-    time_t now;
-    time(&now);
-
-    if (now - last_timestamp_ > 2) {
-      if (has_last_device) {
-        NSLog(@"resetting the internal state by timer");
-
-        has_last_device = NO;
-        [self resetPreferences];
-      }
-    }
-  });
 }
 
 // ------------------------------------------------------------
@@ -142,98 +41,13 @@ static int callback(MTDeviceRef device, Finger* data, int fingers, double timest
     fingers = 0;
   }
 
-  [global_self_.fingerStatusManager update:device
-                                      data:data
-                                   fingers:fingers
-                                 timestamp:timestamp
-                                     frame:frame];
-
-  __block Finger* dataCopy = NULL;
-  if (fingers > 0) {
-    size_t size = sizeof(Finger) * fingers;
-    dataCopy = (Finger*)(malloc(size));
-    memcpy(dataCopy, data, size);
+  if (device) {
+    [global_self_.fingerStatusManager update:device
+                                        data:data
+                                     fingers:fingers
+                                   timestamp:timestamp
+                                       frame:frame];
   }
-
-  dispatch_async(dispatch_get_main_queue(), ^{
-    // ------------------------------------------------------------
-    // If there are multiple devices (For example, Trackpad and Magic Mouse),
-    // we handle only one device at the same time.
-    if (has_last_device) {
-      // ignore other devices.
-      if (device != last_device) {
-        goto finish;
-      }
-    }
-
-    if (fingers == 0) {
-      has_last_device = NO;
-    } else {
-      has_last_device = YES;
-      last_device = device;
-    }
-
-    // ------------------------------------------------------------
-    time(&last_timestamp_);
-
-    {
-      int valid_fingers = 0;
-      FingerStatus* fingerStatus = [FingerStatus new];
-
-      for (int i = 0; i < fingers; ++i) {
-        // state values:
-        //   4: touched
-        //   1-3,5-7: near
-        if (dataCopy[i].state != 4) {
-          continue;
-        }
-
-        int identifier = dataCopy[i].identifier;
-        BOOL ignored = NO;
-        [fingerStatus add:identifier active:(!ignored)];
-
-        if (!ignored) {
-          ++valid_fingers;
-        }
-      }
-
-      lastFingerStatus_ = fingerStatus;
-
-      // ----------------------------------------
-      // deactivating settings first.
-      for (int i = 0; i < MAX_FINGERS; ++i) {
-        if (current_status_[i] && valid_fingers != i + 1) {
-          current_status_[i] = 0;
-          setPreference(i + 1, 0);
-        }
-      }
-
-      // activating setting.
-      //
-      // Note: Set current_status_ only if the targeted setting is enabled.
-      // If not, unintentional deactivation is called in above.
-      //
-      // - one finger: disabled
-      // - two fingers: enabled
-      //
-      // In this case,
-      // we must not call "setPreference" if only one finger is touched/released on multi-touch device.
-      // If we don't check [PreferencesController isSettingEnabled],
-      // setPreference is called in above when we release one finger from device.
-      //
-      if (valid_fingers > 0 && current_status_[valid_fingers - 1] == 0 &&
-          [PreferencesController isSettingEnabled:valid_fingers]) {
-        current_status_[valid_fingers - 1] = 1;
-        setPreference(valid_fingers, 1);
-      }
-    }
-
-  finish:
-    if (dataCopy) {
-      free(dataCopy);
-      dataCopy = NULL;
-    }
-  });
 
   return 0;
 }
@@ -267,8 +81,6 @@ static int callback(MTDeviceRef device, Finger* data, int fingers, double timest
         }
       }
     }
-
-    [self resetPreferences];
   }
 }
 
@@ -398,8 +210,6 @@ static void observer_IONotification(void* refcon, io_iterator_t iterator) {
       [NSApp terminate:self];
     }
 
-    has_last_device = NO;
-
     [self setcallback:YES];
   });
 }
@@ -433,6 +243,10 @@ void disable(void) {
   [global_self_ setcallback:NO];
 }
 
+- (void)setVariables {
+  printf("touchedFingerCount: %d\n", (int)([self.fingerStatusManager getTouchedFixedFingerCount]));
+}
+
 // ------------------------------------------------------------
 - (void)applicationDidFinishLaunching:(NSNotification*)aNotification {
   [KarabinerKit setup];
@@ -447,22 +261,20 @@ void disable(void) {
     TransformProcessType(&psn, kProcessTransformToForegroundApplication);
   }
 
-  [[NSNotificationCenter defaultCenter] addObserverForName:kPhysicalFingerStateChanged
-                                                    object:nil
-                                                     queue:[NSOperationQueue mainQueue]
-                                                usingBlock:^(NSNotification* note) {
-                                                  printf("kPhysicalFingerStateChanged\n");
-                                                }];
-
+  @weakify(self);
   [[NSNotificationCenter defaultCenter] addObserverForName:kFixedFingerStateChanged
                                                     object:nil
                                                      queue:[NSOperationQueue mainQueue]
                                                 usingBlock:^(NSNotification* note) {
-                                                  printf("kFixedFingerStateChanged\n");
+                                                  @strongify(self);
+                                                  if (!self) {
+                                                    return;
+                                                  }
+
+                                                  [self setVariables];
                                                 }];
 
   global_self_ = self;
-  global_ignoredAreaView_ = self.ignoredAreaView;
 
   libkrbn_enable_grabber_client(enable,
                                 disable,
