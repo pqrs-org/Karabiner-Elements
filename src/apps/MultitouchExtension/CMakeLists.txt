@@ -27,6 +27,8 @@ add_executable(
   src/IgnoredAreaView.h
   src/IgnoredAreaView.m
   src/main.m
+  src/MultitouchDeviceManager.h
+  src/MultitouchDeviceManager.m
   src/MultitouchPrivate.h
   src/PreferencesController.h
   src/PreferencesController.m

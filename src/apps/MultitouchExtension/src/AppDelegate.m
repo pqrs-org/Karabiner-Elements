@@ -1,8 +1,8 @@
 @import IOKit;
 #import "AppDelegate.h"
 #import "FingerStatusManager.h"
-#import "IgnoredAreaView.h"
 #import "KarabinerKit/KarabinerKit.h"
+#import "MultitouchDeviceManager.h"
 #import "MultitouchPrivate.h"
 #import "NotificationKeys.h"
 #import "PreferencesController.h"
@@ -13,68 +13,13 @@ static AppDelegate* global_self_ = nil;
 
 @interface AppDelegate ()
 
-@property(weak) IBOutlet IgnoredAreaView* ignoredAreaView;
 @property(weak) IBOutlet PreferencesController* preferences;
-@property(copy) NSArray* mtdevices;
 @property IONotificationPortRef notifyport;
 @property CFRunLoopSourceRef loopsource;
 
 @end
 
 @implementation AppDelegate
-
-//
-// Multitouch callback
-//
-
-static int callback(MTDeviceRef device, Finger* data, int fingers, double timestamp, int frame) {
-  if (!data) {
-    fingers = 0;
-  }
-
-  if (device) {
-    FingerStatusManager* manager = [FingerStatusManager sharedFingerStatusManager];
-    [manager update:device
-               data:data
-            fingers:fingers
-          timestamp:timestamp
-              frame:frame];
-  }
-
-  return 0;
-}
-
-- (void)setcallback:(BOOL)isset {
-  @synchronized(self) {
-    // ------------------------------------------------------------
-    // unset callback (even if isset is YES.)
-    if (self.mtdevices) {
-      for (NSUInteger i = 0; i < [self.mtdevices count]; ++i) {
-        MTDeviceRef device = (__bridge MTDeviceRef)(self.mtdevices[i]);
-        if (!device) continue;
-
-        MTDeviceStop(device, 0);
-        MTUnregisterContactFrameCallback(device, callback);
-      }
-      self.mtdevices = nil;
-    }
-
-    // ------------------------------------------------------------
-    // set callback if needed
-    if (isset) {
-      self.mtdevices = (NSArray*)CFBridgingRelease(MTDeviceCreateList());
-      if (self.mtdevices) {
-        for (NSUInteger i = 0; i < [self.mtdevices count]; ++i) {
-          MTDeviceRef device = (__bridge MTDeviceRef)(self.mtdevices[i]);
-          if (!device) continue;
-
-          MTRegisterContactFrameCallback(device, callback);
-          MTDeviceStart(device, 0);
-        }
-      }
-    }
-  }
-}
 
 // ------------------------------------------------------------
 // IONotification
@@ -202,7 +147,7 @@ static void observer_IONotification(void* refcon, io_iterator_t iterator) {
       [NSApp terminate:self];
     }
 
-    [self setcallback:YES];
+    [[MultitouchDeviceManager sharedMultitouchDeviceManager] setCallback:YES];
   });
 }
 
@@ -226,13 +171,14 @@ void enable(void) {
   // sleep until devices are settled.
   [NSThread sleepForTimeInterval:1.0];
 
-  [global_self_ setcallback:YES];
+  [[MultitouchDeviceManager sharedMultitouchDeviceManager] setCallback:YES];
 }
 
 void disable(void) {
   [global_self_ unregisterIONotification];
   [global_self_ unregisterWakeNotification];
-  [global_self_ setcallback:NO];
+
+  [[MultitouchDeviceManager sharedMultitouchDeviceManager] setCallback:NO];
 }
 
 - (void)setVariables {
@@ -326,7 +272,7 @@ void disable(void) {
 // Note:
 // We have to set NSSupportsSuddenTermination `NO` to use `applicationWillTerminate`.
 - (void)applicationWillTerminate:(NSNotification*)aNotification {
-  [self setcallback:NO];
+  [[MultitouchDeviceManager sharedMultitouchDeviceManager] setCallback:NO];
 
   libkrbn_terminate();
 }
