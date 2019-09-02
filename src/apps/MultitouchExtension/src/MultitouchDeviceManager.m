@@ -1,6 +1,7 @@
 #import "MultitouchDeviceManager.h"
 #import "FingerStatusManager.h"
 #import "KarabinerKit/KarabinerKit.h"
+#import <pqrs/weakify.h>
 
 //
 // Multitouch callback
@@ -32,6 +33,7 @@ static int callback(MTDeviceRef device,
 @property(copy) NSArray* devices;
 @property IONotificationPortRef notificationPort;
 @property CFRunLoopSourceRef loopSource;
+@property KarabinerKitSmartObserverContainer* observers;
 
 @end
 
@@ -42,6 +44,7 @@ static int callback(MTDeviceRef device,
 
   if (self) {
     _devices = [NSMutableArray new];
+    _observers = [KarabinerKitSmartObserverContainer new];
   }
 
   return self;
@@ -194,6 +197,47 @@ static void relaunch(void* refcon, io_iterator_t iterator) {
       self.notificationPort = nil;
     }
   }
+}
+
+//
+// WakeNotification
+//
+
+- (void)registerWakeNotification {
+  @weakify(self);
+
+  NSNotificationCenter* center = [[NSWorkspace sharedWorkspace] notificationCenter];
+  id o = [center addObserverForName:NSWorkspaceDidWakeNotification
+                             object:nil
+                              queue:[NSOperationQueue mainQueue]
+                         usingBlock:^(NSNotification* note) {
+                           @strongify(self);
+                           if (!self) {
+                             return;
+                           }
+
+                           NSLog(@"NSWorkspaceDidWakeNotification");
+
+                           // sleep until devices are settled.
+                           [NSThread sleepForTimeInterval:1.0];
+
+                           if ([[NSUserDefaults standardUserDefaults] boolForKey:@"relaunchAfterWakeUpFromSleep"]) {
+                             double wait = [[[NSUserDefaults standardUserDefaults] stringForKey:@"relaunchWait"] doubleValue];
+                             if (wait > 0) {
+                               [NSThread sleepForTimeInterval:wait];
+                             }
+
+                             [KarabinerKit relaunch];
+                           }
+
+                           [self setCallback:YES];
+                         }];
+
+  [self.observers addObserver:o notificationCenter:center];
+}
+
+- (void)unregisterWakeNotification {
+  self.observers = [KarabinerKitSmartObserverContainer new];
 }
 
 @end

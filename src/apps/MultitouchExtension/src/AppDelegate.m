@@ -9,72 +9,34 @@
 #import "PreferencesKeys.h"
 #import <pqrs/weakify.h>
 
-static AppDelegate* global_self_ = nil;
-
 @interface AppDelegate ()
 
 @property(weak) IBOutlet PreferencesController* preferences;
+@property KarabinerKitSmartObserverContainer* observers;
 
 @end
 
 @implementation AppDelegate
 
-// ------------------------------------------------------------
-- (void)observer_NSWorkspaceDidWakeNotification:(NSNotification*)notification {
-  @weakify(self);
-
-  dispatch_async(dispatch_get_main_queue(), ^{
-    @strongify(self);
-    if (!self) {
-      return;
-    }
-
-    NSLog(@"observer_NSWorkspaceDidWakeNotification");
-
-    // sleep until devices are settled.
-    [NSThread sleepForTimeInterval:1.0];
-
-    if ([[NSUserDefaults standardUserDefaults] boolForKey:@"relaunchAfterWakeUpFromSleep"]) {
-      double wait = [[[NSUserDefaults standardUserDefaults] stringForKey:@"relaunchWait"] doubleValue];
-      if (wait > 0) {
-        [NSThread sleepForTimeInterval:wait];
-      }
-
-      [KarabinerKit relaunch];
-    }
-
-    [[MultitouchDeviceManager sharedMultitouchDeviceManager] setCallback:YES];
-  });
-}
-
-- (void)registerWakeNotification {
-  [[[NSWorkspace sharedWorkspace] notificationCenter] addObserver:self
-                                                         selector:@selector(observer_NSWorkspaceDidWakeNotification:)
-                                                             name:NSWorkspaceDidWakeNotification
-                                                           object:nil];
-}
-
-- (void)unregisterWakeNotification {
-  [[[NSWorkspace sharedWorkspace] notificationCenter] removeObserver:self
-                                                                name:NSWorkspaceDidWakeNotification
-                                                              object:nil];
-}
-
 void enable(void) {
-  [[MultitouchDeviceManager sharedMultitouchDeviceManager] registerIONotification];
-  [global_self_ registerWakeNotification];
+  MultitouchDeviceManager* manager = [MultitouchDeviceManager sharedMultitouchDeviceManager];
+
+  [manager registerIONotification];
+  [manager registerWakeNotification];
 
   // sleep until devices are settled.
   [NSThread sleepForTimeInterval:1.0];
 
-  [[MultitouchDeviceManager sharedMultitouchDeviceManager] setCallback:YES];
+  [manager setCallback:YES];
 }
 
 void disable(void) {
-  [[MultitouchDeviceManager sharedMultitouchDeviceManager] unregisterIONotification];
-  [global_self_ unregisterWakeNotification];
+  MultitouchDeviceManager* manager = [MultitouchDeviceManager sharedMultitouchDeviceManager];
 
-  [[MultitouchDeviceManager sharedMultitouchDeviceManager] setCallback:NO];
+  [manager unregisterIONotification];
+  [manager unregisterWakeNotification];
+
+  [manager setCallback:NO];
 }
 
 - (void)setVariables {
@@ -134,26 +96,41 @@ void disable(void) {
 
   [[NSApplication sharedApplication] disableRelaunchOnLogin];
 
-  // ----------------------------------------
+  //
+  // hideIconInDock
+  //
+
   if (![[NSUserDefaults standardUserDefaults] boolForKey:@"hideIconInDock"]) {
     ProcessSerialNumber psn = {0, kCurrentProcess};
     TransformProcessType(&psn, kProcessTransformToForegroundApplication);
   }
 
+  //
+  // Prepare observers
+  //
+
+  self.observers = [KarabinerKitSmartObserverContainer new];
   @weakify(self);
-  [[NSNotificationCenter defaultCenter] addObserverForName:kFixedFingerStateChanged
-                                                    object:nil
-                                                     queue:[NSOperationQueue mainQueue]
-                                                usingBlock:^(NSNotification* note) {
-                                                  @strongify(self);
-                                                  if (!self) {
-                                                    return;
-                                                  }
 
-                                                  [self setVariables];
-                                                }];
+  {
+    NSNotificationCenter* center = [NSNotificationCenter defaultCenter];
+    id o = [center addObserverForName:kFixedFingerStateChanged
+                               object:nil
+                                queue:[NSOperationQueue mainQueue]
+                           usingBlock:^(NSNotification* note) {
+                             @strongify(self);
+                             if (!self) {
+                               return;
+                             }
 
-  global_self_ = self;
+                             [self setVariables];
+                           }];
+    [self.observers addObserver:o notificationCenter:center];
+  }
+
+  //
+  // Enable grabber_client
+  //
 
   libkrbn_enable_grabber_client(enable,
                                 disable,
