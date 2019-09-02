@@ -21,6 +21,17 @@
   return self;
 }
 
++ (instancetype)sharedFingerStatusManager {
+  static dispatch_once_t once;
+  static FingerStatusManager* manager;
+
+  dispatch_once(&once, ^{
+    manager = [FingerStatusManager new];
+  });
+
+  return manager;
+}
+
 - (void)update:(MTDeviceRef)device
           data:(Finger*)data
        fingers:(int)fingers

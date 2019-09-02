@@ -6,6 +6,8 @@
 
 @interface FingerStatusManager : NSObject
 
++ (instancetype)sharedFingerStatusManager;
+
 - (void)update:(MTDeviceRef)device
           data:(Finger*)data
        fingers:(int)fingers

@@ -16,7 +16,6 @@ static AppDelegate* global_self_ = nil;
 @property(weak) IBOutlet IgnoredAreaView* ignoredAreaView;
 @property(weak) IBOutlet PreferencesController* preferences;
 @property(copy) NSArray* mtdevices;
-@property FingerStatusManager* fingerStatusManager;
 @property IONotificationPortRef notifyport;
 @property CFRunLoopSourceRef loopsource;
 
@@ -24,29 +23,22 @@ static AppDelegate* global_self_ = nil;
 
 @implementation AppDelegate
 
-- (instancetype)init {
-  self = [super init];
-
-  if (self) {
-    _fingerStatusManager = [FingerStatusManager new];
-  }
-
-  return self;
-}
-
-// ------------------------------------------------------------
+//
 // Multitouch callback
+//
+
 static int callback(MTDeviceRef device, Finger* data, int fingers, double timestamp, int frame) {
   if (!data) {
     fingers = 0;
   }
 
   if (device) {
-    [global_self_.fingerStatusManager update:device
-                                        data:data
-                                     fingers:fingers
-                                   timestamp:timestamp
-                                       frame:frame];
+    FingerStatusManager* manager = [FingerStatusManager sharedFingerStatusManager];
+    [manager update:device
+               data:data
+            fingers:fingers
+          timestamp:timestamp
+              frame:frame];
   }
 
   return 0;
@@ -244,7 +236,8 @@ void disable(void) {
 }
 
 - (void)setVariables {
-  printf("touchedFingerCount: %d\n", (int)([self.fingerStatusManager getTouchedFixedFingerCount]));
+  FingerStatusManager* manager = [FingerStatusManager sharedFingerStatusManager];
+  printf("touchedFingerCount: %d\n", (int)([manager getTouchedFixedFingerCount]));
 }
 
 // ------------------------------------------------------------
