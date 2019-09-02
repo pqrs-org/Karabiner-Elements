@@ -7,6 +7,7 @@
 @interface NotificationWindowManager ()
 
 @property(copy) NSMutableArray* windowControllers;
+@property KarabinerKitSmartObserverContainer* observers;
 
 - (void)callback:(NSString*)filePath;
 
@@ -28,13 +29,24 @@ static void staticCallback(const char* filePath,
   if (self) {
     _text = @"";
     _windowControllers = [NSMutableArray new];
+    _observers = [KarabinerKitSmartObserverContainer new];
 
-    [[NSNotificationCenter defaultCenter] addObserverForName:NSApplicationDidChangeScreenParametersNotification
-                                                      object:nil
-                                                       queue:[NSOperationQueue mainQueue]
-                                                  usingBlock:^(NSNotification* note) {
-                                                    [self updateWindows];
-                                                  }];
+    @weakify(self);
+
+    {
+      id o = [[NSNotificationCenter defaultCenter] addObserverForName:NSApplicationDidChangeScreenParametersNotification
+                                                               object:nil
+                                                                queue:[NSOperationQueue mainQueue]
+                                                           usingBlock:^(NSNotification* note) {
+                                                             @strongify(self);
+                                                             if (!self) {
+                                                               return;
+                                                             }
+
+                                                             [self updateWindows];
+                                                           }];
+      [_observers addNotificationCenterObserver:o];
+    }
 
     [self updateWindows];
 
@@ -46,7 +58,6 @@ static void staticCallback(const char* filePath,
 }
 
 - (void)dealloc {
-  [[NSNotificationCenter defaultCenter] removeObserver:self];
   libkrbn_disable_notification_message_json_file_monitor();
 }
 

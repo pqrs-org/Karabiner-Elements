@@ -1,5 +1,6 @@
 #import "ComplexModificationsParametersTabController.h"
 #import "KarabinerKit/KarabinerKit.h"
+#import <pqrs/weakify.h>
 
 @interface ComplexModificationsParametersTabController ()
 
@@ -13,25 +14,32 @@
 @property(weak) IBOutlet NSTextField* basicSimultaneousThresholdMillisecondsText;
 @property(weak) IBOutlet NSStepper* mouseMotionToScrollSpeedStepper;
 @property(weak) IBOutlet NSTextField* mouseMotionToScrollSpeedText;
-@property id configurationLoadedObserver;
+@property KarabinerKitSmartObserverContainer* observers;
 
 @end
 
 @implementation ComplexModificationsParametersTabController
 
 - (void)setup {
-  self.configurationLoadedObserver = [[NSNotificationCenter defaultCenter] addObserverForName:kKarabinerKitConfigurationIsLoaded
-                                                                                       object:nil
-                                                                                        queue:[NSOperationQueue mainQueue]
-                                                                                   usingBlock:^(NSNotification* note) {
-                                                                                     [self updateValues];
-                                                                                   }];
+  self.observers = [KarabinerKitSmartObserverContainer new];
+  @weakify(self);
+
+  {
+    id o = [[NSNotificationCenter defaultCenter] addObserverForName:kKarabinerKitConfigurationIsLoaded
+                                                             object:nil
+                                                              queue:[NSOperationQueue mainQueue]
+                                                         usingBlock:^(NSNotification* note) {
+                                                           @strongify(self);
+                                                           if (!self) {
+                                                             return;
+                                                           }
+
+                                                           [self updateValues];
+                                                         }];
+    [self.observers addNotificationCenterObserver:o];
+  }
 
   [self updateValues];
-}
-
-- (void)dealloc {
-  [[NSNotificationCenter defaultCenter] removeObserver:self.configurationLoadedObserver];
 }
 
 - (void)updateValues {

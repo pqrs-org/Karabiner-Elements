@@ -10,35 +10,48 @@
 
 @property(weak) IBOutlet NSTableView* tableView;
 @property(weak) IBOutlet NSPopUpButton* connectedDevicesPopupButton;
-@property id configurationLoadedObserver;
-@property id devicesUpdatedObserver;
+@property KarabinerKitSmartObserverContainer* observers;
 
 @end
 
 @implementation FnFunctionKeysTableViewController
 
 - (void)setup {
-  self.configurationLoadedObserver = [[NSNotificationCenter defaultCenter] addObserverForName:kKarabinerKitConfigurationIsLoaded
-                                                                                       object:nil
-                                                                                        queue:[NSOperationQueue mainQueue]
-                                                                                   usingBlock:^(NSNotification* note) {
-                                                                                     [self.tableView reloadData];
-                                                                                     [self updateConnectedDevicesMenu];
-                                                                                   }];
+  self.observers = [KarabinerKitSmartObserverContainer new];
+  @weakify(self);
 
-  self.devicesUpdatedObserver = [[NSNotificationCenter defaultCenter] addObserverForName:kKarabinerKitDevicesAreUpdated
-                                                                                  object:nil
-                                                                                   queue:[NSOperationQueue mainQueue]
-                                                                              usingBlock:^(NSNotification* note) {
-                                                                                [self updateConnectedDevicesMenu];
-                                                                              }];
+  {
+    id o = [[NSNotificationCenter defaultCenter] addObserverForName:kKarabinerKitConfigurationIsLoaded
+                                                             object:nil
+                                                              queue:[NSOperationQueue mainQueue]
+                                                         usingBlock:^(NSNotification* note) {
+                                                           @strongify(self);
+                                                           if (!self) {
+                                                             return;
+                                                           }
+
+                                                           [self.tableView reloadData];
+                                                           [self updateConnectedDevicesMenu];
+                                                         }];
+    [self.observers addNotificationCenterObserver:o];
+  }
+
+  {
+    id o = [[NSNotificationCenter defaultCenter] addObserverForName:kKarabinerKitDevicesAreUpdated
+                                                             object:nil
+                                                              queue:[NSOperationQueue mainQueue]
+                                                         usingBlock:^(NSNotification* note) {
+                                                           @strongify(self);
+                                                           if (!self) {
+                                                             return;
+                                                           }
+
+                                                           [self updateConnectedDevicesMenu];
+                                                         }];
+    [self.observers addNotificationCenterObserver:o];
+  }
 
   [self updateConnectedDevicesMenu];
-}
-
-- (void)dealloc {
-  [[NSNotificationCenter defaultCenter] removeObserver:self.configurationLoadedObserver];
-  [[NSNotificationCenter defaultCenter] removeObserver:self.devicesUpdatedObserver];
 }
 
 - (void)valueChanged:(id)sender {

@@ -4,6 +4,7 @@
 #import "KarabinerKit/KarabinerKit.h"
 #import "NotificationKeys.h"
 #import "SimpleModificationsTableViewController.h"
+#import <pqrs/weakify.h>
 
 @interface DevicesTableViewController ()
 
@@ -13,34 +14,47 @@
 @property(weak) IBOutlet FnFunctionKeysTableViewController* fnFunctionKeysTableViewController;
 @property(weak) IBOutlet NSPanel* hasCapsLockLedConfirmationPanel;
 @property(weak) IBOutlet NSWindow* window;
-@property id configurationLoadedObserver;
-@property id devicesUpdatedObserver;
+@property KarabinerKitSmartObserverContainer* observers;
 
 @end
 
 @implementation DevicesTableViewController
 
 - (void)setup {
-  self.configurationLoadedObserver = [[NSNotificationCenter defaultCenter] addObserverForName:kKarabinerKitConfigurationIsLoaded
-                                                                                       object:nil
-                                                                                        queue:[NSOperationQueue mainQueue]
-                                                                                   usingBlock:^(NSNotification* note) {
-                                                                                     [self.tableView reloadData];
-                                                                                     [self.externalKeyboardTableView reloadData];
-                                                                                   }];
+  self.observers = [KarabinerKitSmartObserverContainer new];
+  @weakify(self);
 
-  self.devicesUpdatedObserver = [[NSNotificationCenter defaultCenter] addObserverForName:kKarabinerKitDevicesAreUpdated
-                                                                                  object:nil
-                                                                                   queue:[NSOperationQueue mainQueue]
-                                                                              usingBlock:^(NSNotification* note) {
-                                                                                [self.tableView reloadData];
-                                                                                [self.externalKeyboardTableView reloadData];
-                                                                              }];
-}
+  {
+    id o = [[NSNotificationCenter defaultCenter] addObserverForName:kKarabinerKitConfigurationIsLoaded
+                                                             object:nil
+                                                              queue:[NSOperationQueue mainQueue]
+                                                         usingBlock:^(NSNotification* note) {
+                                                           @strongify(self);
+                                                           if (!self) {
+                                                             return;
+                                                           }
 
-- (void)dealloc {
-  [[NSNotificationCenter defaultCenter] removeObserver:self.configurationLoadedObserver];
-  [[NSNotificationCenter defaultCenter] removeObserver:self.devicesUpdatedObserver];
+                                                           [self.tableView reloadData];
+                                                           [self.externalKeyboardTableView reloadData];
+                                                         }];
+    [self.observers addNotificationCenterObserver:o];
+  }
+
+  {
+    id o = [[NSNotificationCenter defaultCenter] addObserverForName:kKarabinerKitDevicesAreUpdated
+                                                             object:nil
+                                                              queue:[NSOperationQueue mainQueue]
+                                                         usingBlock:^(NSNotification* note) {
+                                                           @strongify(self);
+                                                           if (!self) {
+                                                             return;
+                                                           }
+
+                                                           [self.tableView reloadData];
+                                                           [self.externalKeyboardTableView reloadData];
+                                                         }];
+    [self.observers addNotificationCenterObserver:o];
+  }
 }
 
 - (void)valueChanged:(id)sender {
