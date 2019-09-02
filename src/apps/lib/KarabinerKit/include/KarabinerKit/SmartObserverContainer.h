@@ -4,6 +4,7 @@
 
 @interface KarabinerKitSmartObserverContainer : NSObject
 
-- (void)addNotificationCenterObserver:(id)observer;
+- (void)addObserver:(id)observer
+    notificationCenter:(NSNotificationCenter*)notificationCenter;
 
 @end

@@ -55,34 +55,36 @@
   @weakify(self);
 
   {
-    id o = [[NSNotificationCenter defaultCenter] addObserverForName:kKarabinerKitConfigurationIsLoaded
-                                                             object:nil
-                                                              queue:[NSOperationQueue mainQueue]
-                                                         usingBlock:^(NSNotification* note) {
-                                                           @strongify(self);
-                                                           if (!self) {
-                                                             return;
-                                                           }
+    NSNotificationCenter* center = [NSNotificationCenter defaultCenter];
+    id o = [center addObserverForName:kKarabinerKitConfigurationIsLoaded
+                               object:nil
+                                queue:[NSOperationQueue mainQueue]
+                           usingBlock:^(NSNotification* note) {
+                             @strongify(self);
+                             if (!self) {
+                               return;
+                             }
 
-                                                           [self.tableView reloadData];
-                                                           [self updateConnectedDevicesMenu];
-                                                         }];
-    [self.observers addNotificationCenterObserver:o];
+                             [self.tableView reloadData];
+                             [self updateConnectedDevicesMenu];
+                           }];
+    [self.observers addObserver:o notificationCenter:center];
   }
 
   {
-    id o = [[NSNotificationCenter defaultCenter] addObserverForName:kKarabinerKitDevicesAreUpdated
-                                                             object:nil
-                                                              queue:[NSOperationQueue mainQueue]
-                                                         usingBlock:^(NSNotification* note) {
-                                                           @strongify(self);
-                                                           if (!self) {
-                                                             return;
-                                                           }
+    NSNotificationCenter* center = [NSNotificationCenter defaultCenter];
+    id o = [center addObserverForName:kKarabinerKitDevicesAreUpdated
+                               object:nil
+                                queue:[NSOperationQueue mainQueue]
+                           usingBlock:^(NSNotification* note) {
+                             @strongify(self);
+                             if (!self) {
+                               return;
+                             }
 
-                                                           [self updateConnectedDevicesMenu];
-                                                         }];
-    [self.observers addNotificationCenterObserver:o];
+                             [self updateConnectedDevicesMenu];
+                           }];
+    [self.observers addObserver:o notificationCenter:center];
   }
 
   [self updateConnectedDevicesMenu];

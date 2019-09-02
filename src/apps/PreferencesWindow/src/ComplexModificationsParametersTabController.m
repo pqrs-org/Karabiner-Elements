@@ -25,18 +25,19 @@
   @weakify(self);
 
   {
-    id o = [[NSNotificationCenter defaultCenter] addObserverForName:kKarabinerKitConfigurationIsLoaded
-                                                             object:nil
-                                                              queue:[NSOperationQueue mainQueue]
-                                                         usingBlock:^(NSNotification* note) {
-                                                           @strongify(self);
-                                                           if (!self) {
-                                                             return;
-                                                           }
+    NSNotificationCenter* center = [NSNotificationCenter defaultCenter];
+    id o = [center addObserverForName:kKarabinerKitConfigurationIsLoaded
+                               object:nil
+                                queue:[NSOperationQueue mainQueue]
+                           usingBlock:^(NSNotification* note) {
+                             @strongify(self);
+                             if (!self) {
+                               return;
+                             }
 
-                                                           [self updateValues];
-                                                         }];
-    [self.observers addNotificationCenterObserver:o];
+                             [self updateValues];
+                           }];
+    [self.observers addObserver:o notificationCenter:center];
   }
 
   [self updateValues];

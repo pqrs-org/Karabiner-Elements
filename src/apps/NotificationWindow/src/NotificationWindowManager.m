@@ -34,18 +34,19 @@ static void staticCallback(const char* filePath,
     @weakify(self);
 
     {
-      id o = [[NSNotificationCenter defaultCenter] addObserverForName:NSApplicationDidChangeScreenParametersNotification
-                                                               object:nil
-                                                                queue:[NSOperationQueue mainQueue]
-                                                           usingBlock:^(NSNotification* note) {
-                                                             @strongify(self);
-                                                             if (!self) {
-                                                               return;
-                                                             }
+      NSNotificationCenter* center = [NSNotificationCenter defaultCenter];
+      id o = [center addObserverForName:NSApplicationDidChangeScreenParametersNotification
+                                 object:nil
+                                  queue:[NSOperationQueue mainQueue]
+                             usingBlock:^(NSNotification* note) {
+                               @strongify(self);
+                               if (!self) {
+                                 return;
+                               }
 
-                                                             [self updateWindows];
-                                                           }];
-      [_observers addNotificationCenterObserver:o];
+                               [self updateWindows];
+                             }];
+      [_observers addObserver:o notificationCenter:center];
     }
 
     [self updateWindows];

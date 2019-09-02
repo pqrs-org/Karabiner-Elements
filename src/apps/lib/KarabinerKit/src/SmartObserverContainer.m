@@ -1,8 +1,39 @@
 #import "KarabinerKit/SmartObserverContainer.h"
 
+//
+// KarabinerKitSmartObserverContainerEntry
+//
+
+@interface KarabinerKitSmartObserverContainerEntry : NSObject
+
+@property id observer;
+@property NSNotificationCenter* notificationCenter;
+
+@end
+
+@implementation KarabinerKitSmartObserverContainerEntry
+
+- (instancetype)initWithObserver:(id)observer
+              notificationCenter:(NSNotificationCenter*)notificationCenter {
+  self = [super init];
+
+  if (self) {
+    _observer = observer;
+    _notificationCenter = notificationCenter;
+  }
+
+  return self;
+}
+
+@end
+
+//
+// KarabinerKitSmartObserverContainer
+//
+
 @interface KarabinerKitSmartObserverContainer ()
 
-@property NSMutableArray* notificationCenterObservers;
+@property NSMutableArray<KarabinerKitSmartObserverContainerEntry*>* entries;
 
 @end
 
@@ -12,20 +43,25 @@
   self = [super init];
 
   if (self) {
-    _notificationCenterObservers = [NSMutableArray new];
+    _entries = [NSMutableArray new];
   }
 
   return self;
 }
 
 - (void)dealloc {
-  for (id observer in self.notificationCenterObservers) {
-    [[NSNotificationCenter defaultCenter] removeObserver:observer];
+  for (KarabinerKitSmartObserverContainerEntry* e in self.entries) {
+    [e.notificationCenter removeObserver:e.observer];
   }
 }
 
-- (void)addNotificationCenterObserver:(id)observer {
-  [self.notificationCenterObservers addObject:observer];
+- (void)addObserver:(id)observer
+    notificationCenter:(NSNotificationCenter*)notificationCenter {
+  KarabinerKitSmartObserverContainerEntry* e =
+      [[KarabinerKitSmartObserverContainerEntry alloc] initWithObserver:observer
+                                                     notificationCenter:notificationCenter];
+
+  [self.entries addObject:e];
 }
 
 @end

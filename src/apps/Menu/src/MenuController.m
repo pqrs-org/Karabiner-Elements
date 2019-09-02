@@ -37,24 +37,25 @@
   @weakify(self);
 
   {
-    id o = [[NSNotificationCenter defaultCenter] addObserverForName:kKarabinerKitConfigurationIsLoaded
-                                                             object:nil
-                                                              queue:[NSOperationQueue mainQueue]
-                                                         usingBlock:^(NSNotification* note) {
-                                                           @strongify(self);
-                                                           if (!self) {
-                                                             return;
-                                                           }
+    NSNotificationCenter* center = [NSNotificationCenter defaultCenter];
+    id o = [center addObserverForName:kKarabinerKitConfigurationIsLoaded
+                               object:nil
+                                queue:[NSOperationQueue mainQueue]
+                           usingBlock:^(NSNotification* note) {
+                             @strongify(self);
+                             if (!self) {
+                               return;
+                             }
 
-                                                           KarabinerKitCoreConfigurationModel* coreConfigurationModel = [KarabinerKitConfigurationManager sharedManager].coreConfigurationModel;
-                                                           if (!coreConfigurationModel.globalConfigurationShowInMenuBar &&
-                                                               !coreConfigurationModel.globalConfigurationShowProfileNameInMenuBar) {
-                                                             [NSApp terminate:nil];
-                                                           }
-                                                           [self setStatusItemImage];
-                                                           [self setStatusItemTitle];
-                                                         }];
-    [self.observers addNotificationCenterObserver:o];
+                             KarabinerKitCoreConfigurationModel* coreConfigurationModel = [KarabinerKitConfigurationManager sharedManager].coreConfigurationModel;
+                             if (!coreConfigurationModel.globalConfigurationShowInMenuBar &&
+                                 !coreConfigurationModel.globalConfigurationShowProfileNameInMenuBar) {
+                               [NSApp terminate:nil];
+                             }
+                             [self setStatusItemImage];
+                             [self setStatusItemTitle];
+                           }];
+    [self.observers addObserver:o notificationCenter:center];
   }
 }
 

@@ -70,34 +70,36 @@
   @weakify(self);
 
   {
-    id o = [[NSNotificationCenter defaultCenter] addObserverForName:kKarabinerKitConfigurationIsLoaded
-                                                             object:nil
-                                                              queue:[NSOperationQueue mainQueue]
-                                                         usingBlock:^(NSNotification* note) {
-                                                           @strongify(self);
-                                                           if (!self) {
-                                                             return;
-                                                           }
+    NSNotificationCenter* center = [NSNotificationCenter defaultCenter];
+    id o = [center addObserverForName:kKarabinerKitConfigurationIsLoaded
+                               object:nil
+                                queue:[NSOperationQueue mainQueue]
+                           usingBlock:^(NSNotification* note) {
+                             @strongify(self);
+                             if (!self) {
+                               return;
+                             }
 
-                                                           [self setupDevicesParameters:nil];
-                                                           [self setupVirtualHIDKeyboardConfiguration:nil];
-                                                           [self setupMiscTabControls];
-                                                         }];
-    [self.observers addNotificationCenterObserver:o];
+                             [self setupDevicesParameters:nil];
+                             [self setupVirtualHIDKeyboardConfiguration:nil];
+                             [self setupMiscTabControls];
+                           }];
+    [self.observers addObserver:o notificationCenter:center];
   }
   {
-    id o = [[NSNotificationCenter defaultCenter] addObserverForName:kSystemPreferencesValuesAreUpdated
-                                                             object:nil
-                                                              queue:[NSOperationQueue mainQueue]
-                                                         usingBlock:^(NSNotification* note) {
-                                                           @strongify(self);
-                                                           if (!self) {
-                                                             return;
-                                                           }
+    NSNotificationCenter* center = [NSNotificationCenter defaultCenter];
+    id o = [center addObserverForName:kSystemPreferencesValuesAreUpdated
+                               object:nil
+                                queue:[NSOperationQueue mainQueue]
+                           usingBlock:^(NSNotification* note) {
+                             @strongify(self);
+                             if (!self) {
+                               return;
+                             }
 
-                                                           [self updateSystemPreferencesUIValues];
-                                                         }];
-    [self.observers addNotificationCenterObserver:o];
+                             [self updateSystemPreferencesUIValues];
+                           }];
+    [self.observers addObserver:o notificationCenter:center];
   }
 
   // ----------------------------------------
