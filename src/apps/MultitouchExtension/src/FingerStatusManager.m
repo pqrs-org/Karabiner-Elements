@@ -82,31 +82,9 @@
           e.touchedPhysically) {
         e.touchedPhysically = NO;
 
-        if (e.touchedFixed) {
-          [self setFingerStatusEntryDelayTimer:e touched:NO];
-        }
+        [self setFingerStatusEntryDelayTimer:e touched:NO];
       }
     }
-
-    [self.entries filterUsingPredicate:[NSPredicate predicateWithBlock:^BOOL(id evaluatedObject, NSDictionary* bindings) {
-                    FingerStatusEntry* e = (FingerStatusEntry*)(evaluatedObject);
-
-                    // Keep other devices entries
-                    if (e.device != device) {
-                      return YES;
-                    }
-
-                    // Discard old entries
-                    if (e.frame != frame) {
-                      if (!e.delayTimer ||
-                          !e.delayTimer.valid) {
-                        return NO;
-                      }
-                    }
-
-                    // Keep entries
-                    return YES;
-                  }]];
   }
 
   [[NSNotificationCenter defaultCenter] postNotificationName:kPhysicalFingerStateChanged
@@ -139,7 +117,7 @@
   } else {
     NSUserDefaults* defaults = [NSUserDefaults standardUserDefaults];
 
-    NSInteger delay = 0;
+    double delay = 0;
     if (touched) {
       delay = [defaults integerForKey:kDelayBeforeTurnOn];
     } else {
@@ -148,26 +126,31 @@
 
     @weakify(self);
     @weakify(entry);
-    entry.delayTimer = [NSTimer scheduledTimerWithTimeInterval:(1.0 * delay / 1000.0)
-                                                       repeats:NO
-                                                         block:^(NSTimer* timer) {
-                                                           @strongify(self);
-                                                           if (!self) {
-                                                             return;
-                                                           }
+    entry.delayTimer = [NSTimer timerWithTimeInterval:delay / 1000.0
+                                              repeats:NO
+                                                block:^(NSTimer* timer) {
+                                                  @strongify(self);
+                                                  if (!self) {
+                                                    return;
+                                                  }
 
-                                                           @strongify(entry);
-                                                           if (!entry) {
-                                                             return;
-                                                           }
+                                                  @strongify(entry);
+                                                  if (!entry) {
+                                                    return;
+                                                  }
 
-                                                           @synchronized(self) {
-                                                             entry.touchedFixed = touched;
-                                                           }
+                                                  @synchronized(self) {
+                                                    entry.touchedFixed = touched;
 
-                                                           [[NSNotificationCenter defaultCenter] postNotificationName:kFixedFingerStateChanged
-                                                                                                               object:self];
-                                                         }];
+                                                    if (!touched) {
+                                                      [self.entries removeObject:entry];
+                                                    }
+                                                  }
+
+                                                  [[NSNotificationCenter defaultCenter] postNotificationName:kFixedFingerStateChanged
+                                                                                                      object:self];
+                                                }];
+    [[NSRunLoop mainRunLoop] addTimer:entry.delayTimer forMode:NSRunLoopCommonModes];
   }
 }
 

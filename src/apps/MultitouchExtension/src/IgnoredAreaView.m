@@ -28,14 +28,30 @@
                                                       return;
                                                     }
 
-                                                    FingerStatusManager* m = note.object;
-                                                    self.fingerStatusEntries = [m copyEntries];
+                                                    [self updateFingerStatusEntries:note.object];
+                                                  }];
+    [[NSNotificationCenter defaultCenter] addObserverForName:kFixedFingerStateChanged
+                                                      object:nil
+                                                       queue:[NSOperationQueue mainQueue]
+                                                  usingBlock:^(NSNotification* note) {
+                                                    @strongify(self);
+                                                    if (!self) {
+                                                      return;
+                                                    }
 
-                                                    [self setNeedsDisplay:YES];
+                                                    [self updateFingerStatusEntries:note.object];
                                                   }];
   }
 
   return self;
+}
+
+- (void)updateFingerStatusEntries:(FingerStatusManager*)manager {
+  if (manager) {
+    self.fingerStatusEntries = [manager copyEntries];
+
+    [self setNeedsDisplay:YES];
+  }
 }
 
 - (void)drawRect:(NSRect)dirtyRect {
@@ -60,24 +76,37 @@
 
     // Draw fingers
     for (FingerStatusEntry* e in self.fingerStatusEntries) {
-      if (!e.touchedPhysically) {
-        continue;
-      }
+      const CGFloat DIAMETER = 10.0f;
 
-      const int DIAMETER = 10;
-
-      if (e.ignored) {
-        [[NSColor blueColor] set];
+      if (!e.touchedPhysically && !e.touchedFixed) {
+        [[NSColor blackColor] set];
       } else {
-        [[NSColor redColor] set];
+        if (e.ignored) {
+          [[NSColor blueColor] set];
+        } else {
+          [[NSColor redColor] set];
+        }
       }
-      NSRect rect = NSMakeRect(bounds.size.width * e.point.x - DIAMETER / 2,
-                               bounds.size.height * e.point.y - DIAMETER / 2,
-                               DIAMETER,
-                               DIAMETER);
-      NSBezierPath* path = [NSBezierPath bezierPathWithOvalInRect:rect];
-      [path setLineWidth:2];
-      [path stroke];
+
+      if (e.touchedPhysically) {
+        NSRect rect = NSMakeRect(bounds.size.width * e.point.x - DIAMETER / 2,
+                                 bounds.size.height * e.point.y - DIAMETER / 2,
+                                 DIAMETER,
+                                 DIAMETER);
+        NSBezierPath* path = [NSBezierPath bezierPathWithOvalInRect:rect];
+        [path setLineWidth:2];
+        [path stroke];
+      }
+
+      if (e.touchedFixed) {
+        NSRect rect = NSMakeRect(bounds.size.width * e.point.x - DIAMETER / 4,
+                                 bounds.size.height * e.point.y - DIAMETER / 4,
+                                 DIAMETER / 2,
+                                 DIAMETER / 2);
+        NSBezierPath* path = [NSBezierPath bezierPathWithOvalInRect:rect];
+        [path setLineWidth:1];
+        [path stroke];
+      }
     }
   }
   [NSGraphicsContext restoreGraphicsState];
