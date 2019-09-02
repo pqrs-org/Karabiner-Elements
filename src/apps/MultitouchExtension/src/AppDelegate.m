@@ -236,8 +236,52 @@ void disable(void) {
 }
 
 - (void)setVariables {
+  //
+  // Prepare variable names
+  //
+
+  NSMutableSet<NSString*>* enableVariableNames = [NSMutableSet new];
+  NSMutableSet<NSString*>* discardVariableNames = [NSMutableSet new];
+
   FingerStatusManager* manager = [FingerStatusManager sharedFingerStatusManager];
-  printf("touchedFingerCount: %d\n", (int)([manager getTouchedFixedFingerCount]));
+  NSUInteger fingerCount = [manager getTouchedFixedFingerCount];
+
+  for (NSUInteger i = 1; i <= MAX_FINGER_COUNT; ++i) {
+    if (![PreferencesController isSettingEnabled:i]) {
+      continue;
+    }
+
+    NSString* name = [PreferencesController getSettingIdentifier:i];
+    if (!name) {
+      continue;
+    }
+
+    if (i == fingerCount) {
+      [enableVariableNames addObject:name];
+    } else {
+      [discardVariableNames addObject:name];
+    }
+  }
+
+  //
+  // Unset variables
+  //
+
+  for (NSString* name in discardVariableNames) {
+    if ([enableVariableNames containsObject:name]) {
+      continue;
+    }
+
+    libkrbn_grabber_client_async_set_variable([name UTF8String], 0);
+  }
+
+  //
+  // Set variables
+  //
+
+  for (NSString* name in enableVariableNames) {
+    libkrbn_grabber_client_async_set_variable([name UTF8String], 1);
+  }
 }
 
 // ------------------------------------------------------------

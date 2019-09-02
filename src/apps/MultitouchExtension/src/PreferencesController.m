@@ -3,7 +3,7 @@
 
 @interface PreferencesController ()
 
-@property NSMutableArray* oldSettings;
+@property NSMutableArray<NSString*>* oldSettings;
 @property(weak) IBOutlet NSWindow* preferencesWindow;
 
 @end
@@ -82,7 +82,7 @@
   }
 
   [self.oldSettings removeAllObjects];
-  for (int i = 1; i <= 4; ++i) {
+  for (int i = 1; i <= MAX_FINGER_COUNT; ++i) {
     if ([PreferencesController isSettingEnabled:i]) {
       [self.oldSettings addObject:[PreferencesController getSettingIdentifier:i]];
     }

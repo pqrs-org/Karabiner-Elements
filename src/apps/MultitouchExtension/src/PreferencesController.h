@@ -2,6 +2,10 @@
 
 @import Cocoa;
 
+enum {
+  MAX_FINGER_COUNT = 4,
+};
+
 @interface PreferencesController : NSObject
 
 - (void)show;
