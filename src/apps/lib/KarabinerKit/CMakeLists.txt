@@ -21,6 +21,7 @@ add_library(
   include/KarabinerKit/JsonUtility.h
   include/KarabinerKit/KarabinerKit.h
   include/KarabinerKit/NotificationKeys.h
+  include/KarabinerKit/SmartObserverContainer.h
   src/ComplexModificationsAssetsFileModel.m
   src/ComplexModificationsAssetsManager.m
   src/ComplexModificationsAssetsRuleModel.m
@@ -30,4 +31,5 @@ add_library(
   src/DeviceManager.m
   src/JsonUtility.m
   src/KarabinerKit.m
+  src/SmartObserverContainer.m
 )

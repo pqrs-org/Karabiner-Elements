@@ -10,6 +10,7 @@
 #import "KarabinerKit/DeviceManager.h"
 #import "KarabinerKit/JsonUtility.h"
 #import "KarabinerKit/NotificationKeys.h"
+#import "KarabinerKit/SmartObserverContainer.h"
 
 @interface KarabinerKit : NSObject
 
