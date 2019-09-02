@@ -7,5 +7,7 @@
 + (instancetype)sharedMultitouchDeviceManager;
 
 - (void)setCallback:(BOOL)set;
+- (void)registerIONotification;
+- (void)unregisterIONotification;
 
 @end

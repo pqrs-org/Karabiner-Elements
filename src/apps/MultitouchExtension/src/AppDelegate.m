@@ -14,115 +14,10 @@ static AppDelegate* global_self_ = nil;
 @interface AppDelegate ()
 
 @property(weak) IBOutlet PreferencesController* preferences;
-@property IONotificationPortRef notifyport;
-@property CFRunLoopSourceRef loopsource;
 
 @end
 
 @implementation AppDelegate
-
-// ------------------------------------------------------------
-// IONotification
-- (void)release_iterator:(io_iterator_t)iterator {
-  for (;;) {
-    io_object_t obj = IOIteratorNext(iterator);
-    if (!obj) break;
-
-    IOObjectRelease(obj);
-  }
-}
-
-static void observer_IONotification(void* refcon, io_iterator_t iterator) {
-  dispatch_async(dispatch_get_main_queue(), ^{
-    // Relaunch when devices are plugged/unplugged.
-    NSLog(@"observer_IONotification");
-    [NSTask launchedTaskWithLaunchPath:[[NSBundle mainBundle] executablePath] arguments:@[]];
-    [NSApp terminate:nil];
-  });
-}
-
-- (void)unregisterIONotification {
-  NSLog(@"unregisterIONotification");
-
-  @synchronized(self) {
-    if (self.notifyport) {
-      if (self.loopsource) {
-        CFRunLoopSourceInvalidate(self.loopsource);
-        self.loopsource = nil;
-      }
-      IONotificationPortDestroy(self.notifyport);
-      self.notifyport = nil;
-    }
-  }
-}
-
-- (void)registerIONotification {
-  NSLog(@"registerIONotification");
-
-  @synchronized(self) {
-    if (self.notifyport) {
-      [self unregisterIONotification];
-    }
-
-    self.notifyport = IONotificationPortCreate(kIOMasterPortDefault);
-    if (!self.notifyport) {
-      NSLog(@"[ERROR] IONotificationPortCreate");
-      return;
-    }
-
-    {
-      // ------------------------------------------------------------
-      NSMutableDictionary* match = (__bridge NSMutableDictionary*)(IOServiceMatching("AppleMultitouchDevice"));
-
-      // ----------------------------------------------------------------------
-      io_iterator_t it;
-      kern_return_t kr;
-
-      // for kIOTerminatedNotification
-      kr = IOServiceAddMatchingNotification(self.notifyport,
-                                            kIOTerminatedNotification,
-                                            (__bridge CFMutableDictionaryRef)(match),
-                                            &observer_IONotification,
-                                            (__bridge void*)(self),
-                                            &it);
-      if (kr != kIOReturnSuccess) {
-        NSLog(@"[ERROR] IOServiceAddMatchingNotification");
-        return;
-      }
-      [self release_iterator:it];
-    }
-
-    {
-      // ------------------------------------------------------------
-      NSMutableDictionary* match = (__bridge NSMutableDictionary*)(IOServiceMatching("AppleMultitouchDevice"));
-
-      // ----------------------------------------------------------------------
-      io_iterator_t it;
-      kern_return_t kr;
-
-      // for kIOMatchedNotification
-      kr = IOServiceAddMatchingNotification(self.notifyport,
-                                            kIOMatchedNotification,
-                                            (__bridge CFMutableDictionaryRef)(match),
-                                            &observer_IONotification,
-                                            (__bridge void*)(self),
-                                            &it);
-      if (kr != kIOReturnSuccess) {
-        NSLog(@"[ERROR] IOServiceAddMatchingNotification");
-        return;
-      }
-      [self release_iterator:it];
-    }
-
-    // ----------------------------------------------------------------------
-    self.loopsource = IONotificationPortGetRunLoopSource(self.notifyport);
-    if (!self.loopsource) {
-      NSLog(@"[ERROR] IONotificationPortGetRunLoopSource");
-      return;
-    }
-    CFRunLoopAddSource(CFRunLoopGetCurrent(), self.loopsource, kCFRunLoopDefaultMode);
-  }
-}
 
 // ------------------------------------------------------------
 - (void)observer_NSWorkspaceDidWakeNotification:(NSNotification*)notification {
@@ -130,7 +25,9 @@ static void observer_IONotification(void* refcon, io_iterator_t iterator) {
 
   dispatch_async(dispatch_get_main_queue(), ^{
     @strongify(self);
-    if (!self) return;
+    if (!self) {
+      return;
+    }
 
     NSLog(@"observer_NSWorkspaceDidWakeNotification");
 
@@ -143,8 +40,7 @@ static void observer_IONotification(void* refcon, io_iterator_t iterator) {
         [NSThread sleepForTimeInterval:wait];
       }
 
-      [NSTask launchedTaskWithLaunchPath:[[NSBundle mainBundle] executablePath] arguments:@[]];
-      [NSApp terminate:self];
+      [KarabinerKit relaunch];
     }
 
     [[MultitouchDeviceManager sharedMultitouchDeviceManager] setCallback:YES];
@@ -165,7 +61,7 @@ static void observer_IONotification(void* refcon, io_iterator_t iterator) {
 }
 
 void enable(void) {
-  [global_self_ registerIONotification];
+  [[MultitouchDeviceManager sharedMultitouchDeviceManager] registerIONotification];
   [global_self_ registerWakeNotification];
 
   // sleep until devices are settled.
@@ -175,7 +71,7 @@ void enable(void) {
 }
 
 void disable(void) {
-  [global_self_ unregisterIONotification];
+  [[MultitouchDeviceManager sharedMultitouchDeviceManager] unregisterIONotification];
   [global_self_ unregisterWakeNotification];
 
   [[MultitouchDeviceManager sharedMultitouchDeviceManager] setCallback:NO];
