@@ -1,5 +1,6 @@
 #import "IgnoredAreaView.h"
 #import "FingerStatusManager.h"
+#import "KarabinerKit/KarabinerKit.h"
 #import "NotificationKeys.h"
 #import "PreferencesController.h"
 #import <pqrs/weakify.h>
@@ -7,6 +8,7 @@
 @interface IgnoredAreaView ()
 
 @property NSArray<FingerStatusEntry*>* fingerStatusEntries;
+@property KarabinerKitSmartObserverContainer* observers;
 
 @end
 
@@ -17,30 +19,37 @@
 
   if (self) {
     _fingerStatusEntries = [NSArray new];
+    _observers = [KarabinerKitSmartObserverContainer new];
 
     @weakify(self);
-    [[NSNotificationCenter defaultCenter] addObserverForName:kPhysicalFingerStateChanged
-                                                      object:nil
-                                                       queue:[NSOperationQueue mainQueue]
-                                                  usingBlock:^(NSNotification* note) {
-                                                    @strongify(self);
-                                                    if (!self) {
-                                                      return;
-                                                    }
+    {
+      id o = [[NSNotificationCenter defaultCenter] addObserverForName:kPhysicalFingerStateChanged
+                                                               object:nil
+                                                                queue:[NSOperationQueue mainQueue]
+                                                           usingBlock:^(NSNotification* note) {
+                                                             @strongify(self);
+                                                             if (!self) {
+                                                               return;
+                                                             }
 
-                                                    [self updateFingerStatusEntries:note.object];
-                                                  }];
-    [[NSNotificationCenter defaultCenter] addObserverForName:kFixedFingerStateChanged
-                                                      object:nil
-                                                       queue:[NSOperationQueue mainQueue]
-                                                  usingBlock:^(NSNotification* note) {
-                                                    @strongify(self);
-                                                    if (!self) {
-                                                      return;
-                                                    }
+                                                             [self updateFingerStatusEntries:note.object];
+                                                           }];
+      [_observers addNotificationCenterObserver:o];
+    }
+    {
+      id o = [[NSNotificationCenter defaultCenter] addObserverForName:kFixedFingerStateChanged
+                                                               object:nil
+                                                                queue:[NSOperationQueue mainQueue]
+                                                           usingBlock:^(NSNotification* note) {
+                                                             @strongify(self);
+                                                             if (!self) {
+                                                               return;
+                                                             }
 
-                                                    [self updateFingerStatusEntries:note.object];
-                                                  }];
+                                                             [self updateFingerStatusEntries:note.object];
+                                                           }];
+      [_observers addNotificationCenterObserver:o];
+    }
   }
 
   return self;
