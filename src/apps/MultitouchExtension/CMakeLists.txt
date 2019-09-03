@@ -35,11 +35,13 @@ add_executable(
   src/PreferencesKeys.h
   Resources/MainMenu.xib
   Resources/app.icns
+  Resources/Assets.xcassets
 )
 
 set_source_files_properties(
   Resources/MainMenu.xib
   Resources/app.icns
+  Resources/Assets.xcassets
   PROPERTIES
   MACOSX_PACKAGE_LOCATION
   Resources

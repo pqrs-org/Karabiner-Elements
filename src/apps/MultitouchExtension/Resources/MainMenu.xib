@@ -135,11 +135,11 @@
                                                         </connections>
                                                     </button>
                                                     <button translatesAutoresizingMaskIntoConstraints="NO" id="585">
-                                                        <rect key="frame" x="8" y="8" width="365" height="34"/>
+                                                        <rect key="frame" x="8" y="8" width="353" height="34"/>
                                                         <buttonCell key="cell" type="check" bezelStyle="regularSquare" imagePosition="left" alignment="left" state="on" inset="2" id="586">
                                                             <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
                                                             <string key="title">Hide icon in Dock
-(You need to relaunch app to enable/disable this option.)</string>
+(You need to restart app to enable/disable this option.)</string>
                                                             <font key="font" metaFont="system"/>
                                                         </buttonCell>
                                                         <connections>
@@ -662,6 +662,16 @@ when you touch fingers to trackpad.
                             </tabViewItem>
                         </tabViewItems>
                     </tabView>
+                    <button verticalHuggingPriority="750" imageHugsTitle="YES" translatesAutoresizingMaskIntoConstraints="NO" id="FEU-e4-BNd">
+                        <rect key="frame" x="401" y="525" width="135" height="32"/>
+                        <buttonCell key="cell" type="push" title="Restart app" bezelStyle="rounded" image="ic_refresh_18pt" imagePosition="left" alignment="center" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="3O2-BD-OA6">
+                            <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
+                            <font key="font" metaFont="system"/>
+                        </buttonCell>
+                        <connections>
+                            <action selector="relaunch:" target="533" id="sPe-GC-Z4A"/>
+                        </connections>
+                    </button>
                 </subviews>
                 <constraints>
                     <constraint firstItem="576" firstAttribute="top" secondItem="372" secondAttribute="top" constant="5" id="1gf-jL-HP7"/>
@@ -670,7 +680,9 @@ when you touch fingers to trackpad.
                     <constraint firstItem="590" firstAttribute="top" secondItem="576" secondAttribute="bottom" constant="10" id="Hxu-b6-VFo"/>
                     <constraint firstItem="581" firstAttribute="leading" secondItem="576" secondAttribute="trailing" constant="10" id="K6R-Iz-wa0"/>
                     <constraint firstAttribute="trailing" secondItem="590" secondAttribute="trailing" constant="10" id="jKY-Pm-twx"/>
+                    <constraint firstItem="FEU-e4-BNd" firstAttribute="centerY" secondItem="581" secondAttribute="centerY" id="lf6-nJ-qcD"/>
                     <constraint firstAttribute="bottom" secondItem="590" secondAttribute="bottom" constant="10" id="p00-7D-fvC"/>
+                    <constraint firstAttribute="trailing" secondItem="FEU-e4-BNd" secondAttribute="trailing" constant="10" id="rLI-cT-cIw"/>
                     <constraint firstItem="581" firstAttribute="centerY" secondItem="576" secondAttribute="centerY" id="rh9-jT-TlT"/>
                 </constraints>
             </view>
@@ -695,5 +707,6 @@ when you touch fingers to trackpad.
     </objects>
     <resources>
         <image name="app" width="512" height="512"/>
+        <image name="ic_refresh_18pt" width="18" height="18"/>
     </resources>
 </document>

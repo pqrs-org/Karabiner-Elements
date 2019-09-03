@@ -1,9 +1,9 @@
 #import "PreferencesController.h"
+#import "KarabinerKit/KarabinerKit.h"
 #import "PreferencesKeys.h"
 
 @interface PreferencesController ()
 
-@property NSMutableArray<NSString*>* oldSettings;
 @property(weak) IBOutlet NSWindow* preferencesWindow;
 
 @end
@@ -29,20 +29,6 @@
   });
 }
 
-- (instancetype)init {
-  self = [super init];
-
-  if (self) {
-    _oldSettings = [NSMutableArray new];
-  }
-
-  return self;
-}
-
-- (void)show {
-  [self.preferencesWindow makeKeyAndOrderFront:nil];
-}
-
 + (NSRect)makeTargetArea {
   NSUserDefaults* defaults = [NSUserDefaults standardUserDefaults];
 
@@ -57,8 +43,12 @@
                     (1.0 - top - bottom));
 }
 
-- (void)windowWillClose:(NSNotification*)notification {
-  [self set:nil];
+- (void)show {
+  [self.preferencesWindow makeKeyAndOrderFront:nil];
+}
+
+- (IBAction)relaunch:(id)sender {
+  [KarabinerKit relaunch];
 }
 
 @end

@@ -75,6 +75,14 @@ static void disable(void) {
   }
 
   //
+  // Show Preferences if needed
+  //
+
+  if ([[[NSProcessInfo processInfo] arguments] indexOfObject:@"--hide-ui"] == NSNotFound) {
+    [self.preferences show];
+  }
+
+  //
   // Prepare observers
   //
 
