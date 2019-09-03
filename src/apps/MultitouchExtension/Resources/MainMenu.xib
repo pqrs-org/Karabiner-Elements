@@ -538,13 +538,13 @@
                                             </view>
                                         </box>
                                         <box borderType="line" title="Delay" translatesAutoresizingMaskIntoConstraints="NO" id="803">
-                                            <rect key="frame" x="14" y="211" width="486" height="166"/>
+                                            <rect key="frame" x="14" y="231" width="486" height="146"/>
                                             <view key="contentView" id="gwU-bY-aIb">
-                                                <rect key="frame" x="3" y="3" width="480" height="148"/>
+                                                <rect key="frame" x="3" y="3" width="480" height="128"/>
                                                 <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                                 <subviews>
                                                     <textField verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="807">
-                                                        <rect key="frame" x="15" y="121" width="194" height="17"/>
+                                                        <rect key="frame" x="15" y="101" width="194" height="17"/>
                                                         <constraints>
                                                             <constraint firstAttribute="width" constant="190" id="JdL-pS-6vm"/>
                                                         </constraints>
@@ -555,7 +555,7 @@
                                                         </textFieldCell>
                                                     </textField>
                                                     <textField verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="805">
-                                                        <rect key="frame" x="212" y="119" width="60" height="22"/>
+                                                        <rect key="frame" x="212" y="99" width="60" height="22"/>
                                                         <constraints>
                                                             <constraint firstAttribute="width" constant="60" id="1Om-mr-bZ1"/>
                                                         </constraints>
@@ -572,14 +572,14 @@
                                                         </connections>
                                                     </textField>
                                                     <stepper horizontalHuggingPriority="750" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="806">
-                                                        <rect key="frame" x="269" y="116" width="19" height="27"/>
+                                                        <rect key="frame" x="269" y="96" width="19" height="27"/>
                                                         <stepperCell key="cell" continuous="YES" alignment="left" increment="100" maxValue="99999" id="811"/>
                                                         <connections>
                                                             <binding destination="687" name="value" keyPath="values.kDelayBeforeTurnOn" id="O4Z-mo-A2o"/>
                                                         </connections>
                                                     </stepper>
                                                     <textField verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="hNF-BI-yOb">
-                                                        <rect key="frame" x="288" y="121" width="152" height="17"/>
+                                                        <rect key="frame" x="288" y="101" width="152" height="17"/>
                                                         <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" title="milliseconds (Default: 0)" id="N7h-F4-Ing">
                                                             <font key="font" metaFont="system"/>
                                                             <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
@@ -587,7 +587,7 @@
                                                         </textFieldCell>
                                                     </textField>
                                                     <textField verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="808">
-                                                        <rect key="frame" x="25" y="94" width="376" height="17"/>
+                                                        <rect key="frame" x="25" y="79" width="376" height="17"/>
                                                         <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" title="(Increasing this value allows you to ignore unintended touch.)" id="809">
                                                             <font key="font" metaFont="system"/>
                                                             <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
@@ -595,7 +595,7 @@
                                                         </textFieldCell>
                                                     </textField>
                                                     <textField verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="822">
-                                                        <rect key="frame" x="15" y="37" width="191" height="17"/>
+                                                        <rect key="frame" x="15" y="32" width="191" height="17"/>
                                                         <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" title="Finger release detection delay:" id="825">
                                                             <font key="font" metaFont="system"/>
                                                             <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
@@ -603,7 +603,7 @@
                                                         </textFieldCell>
                                                     </textField>
                                                     <textField verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="820">
-                                                        <rect key="frame" x="212" y="35" width="60" height="22"/>
+                                                        <rect key="frame" x="212" y="30" width="60" height="22"/>
                                                         <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" selectable="YES" editable="YES" sendsActionOnEndEditing="YES" state="on" borderStyle="bezel" drawsBackground="YES" id="827">
                                                             <numberFormatter key="formatter" formatterBehavior="default10_4" numberStyle="decimal" minimumIntegerDigits="1" maximumIntegerDigits="309" maximumFractionDigits="3" id="828">
                                                                 <integer key="minimum" value="0"/>
@@ -617,14 +617,14 @@
                                                         </connections>
                                                     </textField>
                                                     <stepper horizontalHuggingPriority="750" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="821">
-                                                        <rect key="frame" x="269" y="32" width="19" height="27"/>
+                                                        <rect key="frame" x="269" y="27" width="19" height="27"/>
                                                         <stepperCell key="cell" continuous="YES" alignment="left" increment="100" maxValue="99999" id="826"/>
                                                         <connections>
                                                             <binding destination="687" name="value" keyPath="values.kDelayBeforeTurnOff" id="5cL-l0-yse"/>
                                                         </connections>
                                                     </stepper>
                                                     <textField verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="XU3-SC-qfl">
-                                                        <rect key="frame" x="288" y="37" width="152" height="17"/>
+                                                        <rect key="frame" x="288" y="32" width="152" height="17"/>
                                                         <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" title="milliseconds (Default: 0)" id="Z6c-aB-GLH">
                                                             <font key="font" metaFont="system"/>
                                                             <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
@@ -642,7 +642,7 @@
                                                 </subviews>
                                                 <constraints>
                                                     <constraint firstItem="807" firstAttribute="top" secondItem="gwU-bY-aIb" secondAttribute="top" constant="10" id="13D-rL-33x"/>
-                                                    <constraint firstItem="822" firstAttribute="top" secondItem="808" secondAttribute="bottom" constant="40" id="5ak-ZZ-OMf"/>
+                                                    <constraint firstItem="822" firstAttribute="top" secondItem="808" secondAttribute="bottom" constant="30" id="5ak-ZZ-OMf"/>
                                                     <constraint firstItem="820" firstAttribute="leading" secondItem="805" secondAttribute="leading" id="7Xh-ho-qsj"/>
                                                     <constraint firstItem="807" firstAttribute="leading" secondItem="gwU-bY-aIb" secondAttribute="leading" constant="17" id="91J-3t-VRs"/>
                                                     <constraint firstItem="805" firstAttribute="leading" secondItem="807" secondAttribute="trailing" constant="5" id="973-Q2-L70"/>
@@ -652,7 +652,7 @@
                                                     <constraint firstItem="822" firstAttribute="leading" secondItem="807" secondAttribute="leading" id="Jgb-Aq-gvV"/>
                                                     <constraint firstItem="XU3-SC-qfl" firstAttribute="centerY" secondItem="821" secondAttribute="centerY" id="Msu-bS-jdJ"/>
                                                     <constraint firstItem="821" firstAttribute="leading" secondItem="806" secondAttribute="leading" id="PCU-v4-Nt4"/>
-                                                    <constraint firstItem="808" firstAttribute="top" secondItem="807" secondAttribute="bottom" constant="10" id="SEW-FQ-VbZ"/>
+                                                    <constraint firstItem="808" firstAttribute="top" secondItem="807" secondAttribute="bottom" constant="5" id="SEW-FQ-VbZ"/>
                                                     <constraint firstItem="806" firstAttribute="leading" secondItem="805" secondAttribute="trailing" id="Wgk-s4-kQm"/>
                                                     <constraint firstItem="820" firstAttribute="centerY" secondItem="822" secondAttribute="centerY" id="Xjb-h9-XaW"/>
                                                     <constraint firstItem="821" firstAttribute="centerY" secondItem="820" secondAttribute="centerY" id="htN-Tc-gfP"/>
@@ -661,7 +661,7 @@
                                                     <constraint firstItem="820" firstAttribute="width" secondItem="805" secondAttribute="width" id="pcP-fj-zur"/>
                                                     <constraint firstItem="hNF-BI-yOb" firstAttribute="centerY" secondItem="806" secondAttribute="centerY" id="sB4-Jf-PQG"/>
                                                     <constraint firstItem="XU3-SC-qfl" firstAttribute="leading" secondItem="hNF-BI-yOb" secondAttribute="leading" id="uSU-WC-Yk5"/>
-                                                    <constraint firstItem="823" firstAttribute="top" secondItem="822" secondAttribute="bottom" constant="10" id="wsW-AJ-qsy"/>
+                                                    <constraint firstItem="823" firstAttribute="top" secondItem="822" secondAttribute="bottom" constant="5" id="wsW-AJ-qsy"/>
                                                     <constraint firstItem="823" firstAttribute="leading" secondItem="808" secondAttribute="leading" id="yzv-uz-Scn"/>
                                                 </constraints>
                                             </view>
