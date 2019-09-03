@@ -9,16 +9,20 @@
 #import "PreferencesKeys.h"
 #import <pqrs/weakify.h>
 
-@interface AppDelegate ()
+//
+// C methods
+//
 
-@property(weak) IBOutlet PreferencesController* preferences;
-@property KarabinerKitSmartObserverContainer* observers;
+static void setGrabberVariable(int fingerCount, bool sync) {
+  const char* name = "multitouch_extension_finger_count";
+  if (sync) {
+    libkrbn_grabber_client_sync_set_variable(name, fingerCount);
+  } else {
+    libkrbn_grabber_client_async_set_variable(name, fingerCount);
+  }
+}
 
-@end
-
-@implementation AppDelegate
-
-void enable(void) {
+static void enable(void) {
   MultitouchDeviceManager* manager = [MultitouchDeviceManager sharedMultitouchDeviceManager];
 
   [manager registerIONotification];
@@ -28,9 +32,11 @@ void enable(void) {
   [NSThread sleepForTimeInterval:1.0];
 
   [manager setCallback:YES];
+
+  setGrabberVariable(0, false);
 }
 
-void disable(void) {
+static void disable(void) {
   MultitouchDeviceManager* manager = [MultitouchDeviceManager sharedMultitouchDeviceManager];
 
   [manager unregisterIONotification];
@@ -39,56 +45,19 @@ void disable(void) {
   [manager setCallback:NO];
 }
 
-- (void)setVariables {
-  //
-  // Prepare variable names
-  //
+//
+// AppDelegate
+//
 
-  NSMutableSet<NSString*>* enableVariableNames = [NSMutableSet new];
-  NSMutableSet<NSString*>* discardVariableNames = [NSMutableSet new];
+@interface AppDelegate ()
 
-  FingerStatusManager* manager = [FingerStatusManager sharedFingerStatusManager];
-  NSUInteger fingerCount = [manager getTouchedFixedFingerCount];
+@property(weak) IBOutlet PreferencesController* preferences;
+@property KarabinerKitSmartObserverContainer* observers;
 
-  for (NSUInteger i = 1; i <= MAX_FINGER_COUNT; ++i) {
-    if (![PreferencesController isSettingEnabled:i]) {
-      continue;
-    }
+@end
 
-    NSString* name = [PreferencesController getSettingIdentifier:i];
-    if (!name) {
-      continue;
-    }
+@implementation AppDelegate
 
-    if (i == fingerCount) {
-      [enableVariableNames addObject:name];
-    } else {
-      [discardVariableNames addObject:name];
-    }
-  }
-
-  //
-  // Unset variables
-  //
-
-  for (NSString* name in discardVariableNames) {
-    if ([enableVariableNames containsObject:name]) {
-      continue;
-    }
-
-    libkrbn_grabber_client_async_set_variable([name UTF8String], 0);
-  }
-
-  //
-  // Set variables
-  //
-
-  for (NSString* name in enableVariableNames) {
-    libkrbn_grabber_client_async_set_variable([name UTF8String], 1);
-  }
-}
-
-// ------------------------------------------------------------
 - (void)applicationDidFinishLaunching:(NSNotification*)aNotification {
   [KarabinerKit setup];
   [KarabinerKit exitIfAnotherProcessIsRunning:"multitouch_extension.pid"];
@@ -123,7 +92,9 @@ void disable(void) {
                                return;
                              }
 
-                             [self setVariables];
+                             FingerStatusManager* manager = [FingerStatusManager sharedFingerStatusManager];
+                             NSUInteger fingerCount = [manager getTouchedFixedFingerCount];
+                             setGrabberVariable(fingerCount, false);
                            }];
     [self.observers addObserver:o notificationCenter:center];
   }
@@ -137,15 +108,12 @@ void disable(void) {
                                 disable);
 }
 
-- (void)dealloc {
-  [[[NSWorkspace sharedWorkspace] notificationCenter] removeObserver:self];
-  [[NSDistributedNotificationCenter defaultCenter] removeObserver:self];
-}
-
 // Note:
 // We have to set NSSupportsSuddenTermination `NO` to use `applicationWillTerminate`.
 - (void)applicationWillTerminate:(NSNotification*)aNotification {
   [[MultitouchDeviceManager sharedMultitouchDeviceManager] setCallback:NO];
+
+  setGrabberVariable(0, true);
 
   libkrbn_terminate();
 }

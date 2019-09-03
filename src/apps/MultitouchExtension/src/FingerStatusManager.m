@@ -98,13 +98,30 @@
     }
   }
 
-  [[NSNotificationCenter defaultCenter] postNotificationName:kPhysicalFingerStateChanged
-                                                      object:self];
+  //
+  // Post notifications
+  //
+  // Note:
+  // This method might be called on a background thread.
+  // We use dispatch_async to ensure the notification is post on the main thread
+  // in order to avoid a deadlock at quitting app.
+  //
 
-  if (callFixedFingerStateChanged) {
-    [[NSNotificationCenter defaultCenter] postNotificationName:kFixedFingerStateChanged
+  @weakify(self);
+  dispatch_async(dispatch_get_main_queue(), ^{
+    @strongify(self);
+    if (!self) {
+      return;
+    }
+
+    [[NSNotificationCenter defaultCenter] postNotificationName:kPhysicalFingerStateChanged
                                                         object:self];
-  }
+
+    if (callFixedFingerStateChanged) {
+      [[NSNotificationCenter defaultCenter] postNotificationName:kFixedFingerStateChanged
+                                                          object:self];
+    }
+  });
 }
 
 // Note: This method is called in @synchronized(self)

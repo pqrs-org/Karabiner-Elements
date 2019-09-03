@@ -43,7 +43,7 @@ static int callback(MTDeviceRef device,
   self = [super init];
 
   if (self) {
-    _devices = [NSMutableArray new];
+    _devices = nil;
     _observers = [KarabinerKitSmartObserverContainer new];
   }
 
@@ -68,7 +68,7 @@ static int callback(MTDeviceRef device,
     //
 
     if (self.devices) {
-      for (NSUInteger i = 0; i < [self.devices count]; ++i) {
+      for (NSUInteger i = 0; i < self.devices.count; ++i) {
         MTDeviceRef device = (__bridge MTDeviceRef)(self.devices[i]);
         if (!device) continue;
 
@@ -76,7 +76,7 @@ static int callback(MTDeviceRef device,
         MTUnregisterContactFrameCallback(device, callback);
       }
 
-      self.devices = [NSArray new];
+      self.devices = nil;
     }
 
     //
@@ -86,7 +86,7 @@ static int callback(MTDeviceRef device,
     if (set) {
       self.devices = (NSArray*)CFBridgingRelease(MTDeviceCreateList());
       if (self.devices) {
-        for (NSUInteger i = 0; i < [self.devices count]; ++i) {
+        for (NSUInteger i = 0; i < self.devices.count; ++i) {
           MTDeviceRef device = (__bridge MTDeviceRef)(self.devices[i]);
           if (!device) continue;
 
