@@ -18,14 +18,6 @@
       @"hideIconInDock" : @NO,
       @"relaunchAfterWakeUpFromSleep" : @YES,
       @"relaunchWait" : @"3",
-      @"targetSettingIsEnabled1" : @NO,
-      @"targetSettingIsEnabled2" : @NO,
-      @"targetSettingIsEnabled3" : @NO,
-      @"targetSettingIsEnabled4" : @NO,
-      @"targetSetting1" : @"notsave.thumbsense",
-      @"targetSetting2" : @"notsave.enhanced_copyandpaste",
-      @"targetSetting3" : @"notsave.pointing_relative_to_scroll",
-      @"targetSetting4" : @"notsave.pointing_relative_to_scroll",
       @"ignoredAreaTop" : @"0",
       @"ignoredAreaBottom" : @"0",
       @"ignoredAreaLeft" : @"0",
@@ -51,14 +43,6 @@
   [self.preferencesWindow makeKeyAndOrderFront:nil];
 }
 
-+ (BOOL)isSettingEnabled:(NSInteger)fingers {
-  return [[NSUserDefaults standardUserDefaults] boolForKey:[NSString stringWithFormat:@"targetSettingIsEnabled%d", (int)(fingers)]];
-}
-
-+ (NSString*)getSettingIdentifier:(NSInteger)fingers {
-  return [[NSUserDefaults standardUserDefaults] stringForKey:[NSString stringWithFormat:@"targetSetting%d", (int)(fingers)]];
-}
-
 + (NSRect)makeTargetArea {
   NSUserDefaults* defaults = [NSUserDefaults standardUserDefaults];
 
@@ -71,22 +55,6 @@
                     bottom,
                     (1.0 - left - right),
                     (1.0 - top - bottom));
-}
-
-- (IBAction)set:(id)sender {
-  // ------------------------------------------------------------
-  // disable old settings
-
-  for (NSString* identifier in self.oldSettings) {
-    NSLog(@"set-variables %@ = 0", identifier);
-  }
-
-  [self.oldSettings removeAllObjects];
-  for (int i = 1; i <= MAX_FINGER_COUNT; ++i) {
-    if ([PreferencesController isSettingEnabled:i]) {
-      [self.oldSettings addObject:[PreferencesController getSettingIdentifier:i]];
-    }
-  }
 }
 
 - (void)windowWillClose:(NSNotification*)notification {
