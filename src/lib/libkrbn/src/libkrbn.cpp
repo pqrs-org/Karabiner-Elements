@@ -503,3 +503,11 @@ void libkrbn_grabber_client_async_set_variable(const char* name, int value) {
     }
   }
 }
+
+void libkrbn_grabber_client_sync_set_variable(const char* name, int value) {
+  if (libkrbn_components_manager_) {
+    if (name) {
+      libkrbn_components_manager_->grabber_client_sync_set_variable(name, value);
+    }
+  }
+}

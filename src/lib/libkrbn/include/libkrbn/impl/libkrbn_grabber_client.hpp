@@ -48,6 +48,19 @@ public:
     grabber_client_->async_set_variables(json);
   }
 
+  void sync_set_variable(const std::string& name, int value) {
+    auto wait = pqrs::make_thread_wait();
+
+    auto json = nlohmann::json::object({
+        {name, value},
+    });
+    grabber_client_->async_set_variables(json, [wait] {
+      wait->notify();
+    });
+
+    wait->wait_notice();
+  }
+
 private:
   std::unique_ptr<krbn::grabber_client> grabber_client_;
   libkrbn_grabber_client_connected_callback connected_callback_;
