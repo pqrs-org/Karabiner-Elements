@@ -125,8 +125,8 @@
                                                 <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                                 <subviews>
                                                     <button translatesAutoresizingMaskIntoConstraints="NO" id="537">
-                                                        <rect key="frame" x="8" y="48" width="106" height="18"/>
-                                                        <buttonCell key="cell" type="check" title="Start At Login" bezelStyle="regularSquare" imagePosition="left" alignment="left" state="on" inset="2" id="538">
+                                                        <rect key="frame" x="8" y="48" width="189" height="18"/>
+                                                        <buttonCell key="cell" type="check" title="Start At Login (Default: Off)" bezelStyle="regularSquare" imagePosition="left" alignment="left" state="on" inset="2" id="538">
                                                             <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
                                                             <font key="font" metaFont="system"/>
                                                         </buttonCell>
@@ -138,7 +138,7 @@
                                                         <rect key="frame" x="8" y="8" width="353" height="34"/>
                                                         <buttonCell key="cell" type="check" bezelStyle="regularSquare" imagePosition="left" alignment="left" state="on" inset="2" id="586">
                                                             <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
-                                                            <string key="title">Hide icon in Dock
+                                                            <string key="title">Hide icon in Dock (Default: Off)
 (You need to restart app to enable/disable this option.)</string>
                                                             <font key="font" metaFont="system"/>
                                                         </buttonCell>
@@ -462,11 +462,11 @@
                             </tabViewItem>
                             <tabViewItem label="Advanced" identifier="" id="772">
                                 <view key="view" id="773">
-                                    <rect key="frame" x="10" y="33" width="514" height="432"/>
+                                    <rect key="frame" x="10" y="33" width="514" height="472"/>
                                     <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                     <subviews>
                                         <box borderType="line" title="Increase stability by relaunching at wake up" translatesAutoresizingMaskIntoConstraints="NO" id="774">
-                                            <rect key="frame" x="14" y="343" width="486" height="79"/>
+                                            <rect key="frame" x="14" y="383" width="486" height="79"/>
                                             <view key="contentView" id="wCM-Of-Yhy">
                                                 <rect key="frame" x="3" y="3" width="480" height="61"/>
                                                 <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
@@ -538,21 +538,24 @@
                                             </view>
                                         </box>
                                         <box borderType="line" title="Delay" translatesAutoresizingMaskIntoConstraints="NO" id="803">
-                                            <rect key="frame" x="14" y="177" width="486" height="160"/>
+                                            <rect key="frame" x="14" y="211" width="486" height="166"/>
                                             <view key="contentView" id="gwU-bY-aIb">
-                                                <rect key="frame" x="3" y="3" width="480" height="142"/>
+                                                <rect key="frame" x="3" y="3" width="480" height="148"/>
                                                 <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                                 <subviews>
                                                     <textField verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="807">
-                                                        <rect key="frame" x="15" y="115" width="35" height="17"/>
-                                                        <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" title="Wait " id="810">
+                                                        <rect key="frame" x="15" y="121" width="194" height="17"/>
+                                                        <constraints>
+                                                            <constraint firstAttribute="width" constant="190" id="JdL-pS-6vm"/>
+                                                        </constraints>
+                                                        <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" title="Finger touch detection delay:" id="810">
                                                             <font key="font" metaFont="system"/>
                                                             <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
                                                             <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
                                                         </textFieldCell>
                                                     </textField>
                                                     <textField verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="805">
-                                                        <rect key="frame" x="53" y="113" width="60" height="22"/>
+                                                        <rect key="frame" x="212" y="119" width="60" height="22"/>
                                                         <constraints>
                                                             <constraint firstAttribute="width" constant="60" id="1Om-mr-bZ1"/>
                                                         </constraints>
@@ -565,37 +568,42 @@
                                                             <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
                                                         </textFieldCell>
                                                         <connections>
-                                                            <binding destination="687" name="value" keyPath="values.kDelayBeforeTurnOff" id="818"/>
+                                                            <binding destination="687" name="value" keyPath="values.kDelayBeforeTurnOn" id="w4v-lt-JwV"/>
                                                         </connections>
                                                     </textField>
                                                     <stepper horizontalHuggingPriority="750" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="806">
-                                                        <rect key="frame" x="110" y="110" width="19" height="27"/>
+                                                        <rect key="frame" x="269" y="116" width="19" height="27"/>
                                                         <stepperCell key="cell" continuous="YES" alignment="left" increment="100" maxValue="99999" id="811"/>
                                                         <connections>
-                                                            <binding destination="687" name="value" keyPath="values.kDelayBeforeTurnOff" id="819"/>
+                                                            <binding destination="687" name="value" keyPath="values.kDelayBeforeTurnOn" id="O4Z-mo-A2o"/>
                                                         </connections>
                                                     </stepper>
-                                                    <textField verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="808">
-                                                        <rect key="frame" x="129" y="81" width="248" height="51"/>
-                                                        <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" id="809">
+                                                    <textField verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="hNF-BI-yOb">
+                                                        <rect key="frame" x="288" y="121" width="152" height="17"/>
+                                                        <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" title="milliseconds (Default: 0)" id="N7h-F4-Ing">
                                                             <font key="font" metaFont="system"/>
-                                                            <string key="title">milli seconds before turn off a setting
-when you release fingers from trackpad.
-(Default: 0 milli seconds)</string>
+                                                            <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
+                                                            <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
+                                                        </textFieldCell>
+                                                    </textField>
+                                                    <textField verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="808">
+                                                        <rect key="frame" x="25" y="94" width="376" height="17"/>
+                                                        <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" title="(Increasing this value allows you to ignore unintended touch.)" id="809">
+                                                            <font key="font" metaFont="system"/>
                                                             <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
                                                             <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
                                                         </textFieldCell>
                                                     </textField>
                                                     <textField verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="822">
-                                                        <rect key="frame" x="15" y="44" width="35" height="17"/>
-                                                        <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" title="Wait " id="825">
+                                                        <rect key="frame" x="15" y="37" width="191" height="17"/>
+                                                        <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" title="Finger release detection delay:" id="825">
                                                             <font key="font" metaFont="system"/>
                                                             <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
                                                             <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
                                                         </textFieldCell>
                                                     </textField>
                                                     <textField verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="820">
-                                                        <rect key="frame" x="53" y="42" width="60" height="22"/>
+                                                        <rect key="frame" x="212" y="35" width="60" height="22"/>
                                                         <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" selectable="YES" editable="YES" sendsActionOnEndEditing="YES" state="on" borderStyle="bezel" drawsBackground="YES" id="827">
                                                             <numberFormatter key="formatter" formatterBehavior="default10_4" numberStyle="decimal" minimumIntegerDigits="1" maximumIntegerDigits="309" maximumFractionDigits="3" id="828">
                                                                 <integer key="minimum" value="0"/>
@@ -605,23 +613,28 @@ when you release fingers from trackpad.
                                                             <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
                                                         </textFieldCell>
                                                         <connections>
-                                                            <binding destination="687" name="value" keyPath="values.kDelayBeforeTurnOn" id="831"/>
+                                                            <binding destination="687" name="value" keyPath="values.kDelayBeforeTurnOff" id="aj0-PX-w62"/>
                                                         </connections>
                                                     </textField>
                                                     <stepper horizontalHuggingPriority="750" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="821">
-                                                        <rect key="frame" x="110" y="39" width="19" height="27"/>
+                                                        <rect key="frame" x="269" y="32" width="19" height="27"/>
                                                         <stepperCell key="cell" continuous="YES" alignment="left" increment="100" maxValue="99999" id="826"/>
                                                         <connections>
-                                                            <binding destination="687" name="value" keyPath="values.kDelayBeforeTurnOn" id="832"/>
+                                                            <binding destination="687" name="value" keyPath="values.kDelayBeforeTurnOff" id="5cL-l0-yse"/>
                                                         </connections>
                                                     </stepper>
-                                                    <textField verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="823">
-                                                        <rect key="frame" x="129" y="10" width="229" height="51"/>
-                                                        <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" id="824">
+                                                    <textField verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="XU3-SC-qfl">
+                                                        <rect key="frame" x="288" y="37" width="152" height="17"/>
+                                                        <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" title="milliseconds (Default: 0)" id="Z6c-aB-GLH">
                                                             <font key="font" metaFont="system"/>
-                                                            <string key="title">milli seconds before turn on a setting
-when you touch fingers to trackpad.
-(Default: 0 milli seconds)</string>
+                                                            <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
+                                                            <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
+                                                        </textFieldCell>
+                                                    </textField>
+                                                    <textField verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="823">
+                                                        <rect key="frame" x="25" y="10" width="385" height="17"/>
+                                                        <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" title="(Increasing this value allows you to ignore unintended release.)" id="824">
+                                                            <font key="font" metaFont="system"/>
                                                             <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
                                                             <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
                                                         </textFieldCell>
@@ -629,23 +642,27 @@ when you touch fingers to trackpad.
                                                 </subviews>
                                                 <constraints>
                                                     <constraint firstItem="807" firstAttribute="top" secondItem="gwU-bY-aIb" secondAttribute="top" constant="10" id="13D-rL-33x"/>
+                                                    <constraint firstItem="822" firstAttribute="top" secondItem="808" secondAttribute="bottom" constant="40" id="5ak-ZZ-OMf"/>
                                                     <constraint firstItem="820" firstAttribute="leading" secondItem="805" secondAttribute="leading" id="7Xh-ho-qsj"/>
                                                     <constraint firstItem="807" firstAttribute="leading" secondItem="gwU-bY-aIb" secondAttribute="leading" constant="17" id="91J-3t-VRs"/>
                                                     <constraint firstItem="805" firstAttribute="leading" secondItem="807" secondAttribute="trailing" constant="5" id="973-Q2-L70"/>
                                                     <constraint firstItem="806" firstAttribute="centerY" secondItem="805" secondAttribute="centerY" id="BwY-PL-SAi"/>
+                                                    <constraint firstItem="hNF-BI-yOb" firstAttribute="leading" secondItem="806" secondAttribute="trailing" constant="5" id="Dyy-7F-4WW"/>
                                                     <constraint firstItem="805" firstAttribute="centerY" secondItem="807" secondAttribute="centerY" id="HCL-oM-GX7"/>
                                                     <constraint firstItem="822" firstAttribute="leading" secondItem="807" secondAttribute="leading" id="Jgb-Aq-gvV"/>
+                                                    <constraint firstItem="XU3-SC-qfl" firstAttribute="centerY" secondItem="821" secondAttribute="centerY" id="Msu-bS-jdJ"/>
                                                     <constraint firstItem="821" firstAttribute="leading" secondItem="806" secondAttribute="leading" id="PCU-v4-Nt4"/>
+                                                    <constraint firstItem="808" firstAttribute="top" secondItem="807" secondAttribute="bottom" constant="10" id="SEW-FQ-VbZ"/>
                                                     <constraint firstItem="806" firstAttribute="leading" secondItem="805" secondAttribute="trailing" id="Wgk-s4-kQm"/>
-                                                    <constraint firstItem="822" firstAttribute="top" secondItem="808" secondAttribute="bottom" constant="20" id="Whh-3H-whb"/>
-                                                    <constraint firstItem="808" firstAttribute="leading" secondItem="806" secondAttribute="trailing" constant="5" id="X3K-AS-6U4"/>
                                                     <constraint firstItem="820" firstAttribute="centerY" secondItem="822" secondAttribute="centerY" id="Xjb-h9-XaW"/>
                                                     <constraint firstItem="821" firstAttribute="centerY" secondItem="820" secondAttribute="centerY" id="htN-Tc-gfP"/>
-                                                    <constraint firstItem="823" firstAttribute="top" secondItem="822" secondAttribute="top" id="m0T-b0-O1W"/>
-                                                    <constraint firstItem="808" firstAttribute="top" secondItem="807" secondAttribute="top" id="mVb-P7-cTT"/>
+                                                    <constraint firstItem="808" firstAttribute="leading" secondItem="807" secondAttribute="leading" constant="10" id="jFK-2Z-lid"/>
                                                     <constraint firstAttribute="bottom" secondItem="823" secondAttribute="bottom" constant="10" id="mui-K2-pHB"/>
                                                     <constraint firstItem="820" firstAttribute="width" secondItem="805" secondAttribute="width" id="pcP-fj-zur"/>
-                                                    <constraint firstItem="823" firstAttribute="leading" secondItem="808" secondAttribute="leading" id="qu0-Tc-C69"/>
+                                                    <constraint firstItem="hNF-BI-yOb" firstAttribute="centerY" secondItem="806" secondAttribute="centerY" id="sB4-Jf-PQG"/>
+                                                    <constraint firstItem="XU3-SC-qfl" firstAttribute="leading" secondItem="hNF-BI-yOb" secondAttribute="leading" id="uSU-WC-Yk5"/>
+                                                    <constraint firstItem="823" firstAttribute="top" secondItem="822" secondAttribute="bottom" constant="10" id="wsW-AJ-qsy"/>
+                                                    <constraint firstItem="823" firstAttribute="leading" secondItem="808" secondAttribute="leading" id="yzv-uz-Scn"/>
                                                 </constraints>
                                             </view>
                                         </box>
@@ -663,10 +680,10 @@ when you touch fingers to trackpad.
                         </tabViewItems>
                     </tabView>
                     <button verticalHuggingPriority="750" imageHugsTitle="YES" translatesAutoresizingMaskIntoConstraints="NO" id="FEU-e4-BNd">
-                        <rect key="frame" x="401" y="525" width="135" height="32"/>
-                        <buttonCell key="cell" type="push" title="Restart app" bezelStyle="rounded" image="ic_refresh_18pt" imagePosition="left" alignment="center" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="3O2-BD-OA6">
+                        <rect key="frame" x="424" y="527" width="111" height="27"/>
+                        <buttonCell key="cell" type="push" title="Restart app" bezelStyle="rounded" image="ic_refresh_18pt" imagePosition="left" alignment="center" controlSize="small" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="3O2-BD-OA6">
                             <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
-                            <font key="font" metaFont="system"/>
+                            <font key="font" metaFont="smallSystem"/>
                         </buttonCell>
                         <connections>
                             <action selector="relaunch:" target="533" id="sPe-GC-Z4A"/>
