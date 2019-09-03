@@ -681,7 +681,7 @@
                     </tabView>
                     <button verticalHuggingPriority="750" imageHugsTitle="YES" translatesAutoresizingMaskIntoConstraints="NO" id="FEU-e4-BNd">
                         <rect key="frame" x="424" y="527" width="111" height="27"/>
-                        <buttonCell key="cell" type="push" title="Restart app" bezelStyle="rounded" image="ic_refresh_18pt" imagePosition="left" alignment="center" controlSize="small" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="3O2-BD-OA6">
+                        <buttonCell key="cell" type="push" title="Restart app" bezelStyle="rounded" image="ic_refresh_18pt" imagePosition="left" alignment="center" controlSize="small" refusesFirstResponder="YES" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="3O2-BD-OA6">
                             <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
                             <font key="font" metaFont="smallSystem"/>
                         </buttonCell>
