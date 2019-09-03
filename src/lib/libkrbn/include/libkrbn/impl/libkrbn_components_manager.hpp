@@ -241,11 +241,15 @@ public:
   }
 
   void grabber_client_async_set_variable(const std::string& name, int value) {
-    grabber_client_->async_set_variable(name, value);
+    if (grabber_client_) {
+      grabber_client_->async_set_variable(name, value);
+    }
   }
 
   void grabber_client_sync_set_variable(const std::string& name, int value) {
-    grabber_client_->sync_set_variable(name, value);
+    if (grabber_client_) {
+      grabber_client_->sync_set_variable(name, value);
+    }
   }
 
 private:
