@@ -78,7 +78,7 @@ static void disable(void) {
   // Handle --start-at-login
   //
 
-  if ([[[NSProcessInfo processInfo] arguments] indexOfObject:@"--start-at-login"] != NSNotFound) {
+  if (self.startAtLogin) {
     if (![[NSUserDefaults standardUserDefaults] boolForKey:kStartAtLogin]) {
       [NSApp terminate:nil];
     }
@@ -133,6 +133,10 @@ static void disable(void) {
 - (BOOL)applicationShouldHandleReopen:(NSApplication*)theApplication hasVisibleWindows:(BOOL)flag {
   [self.preferences show];
   return YES;
+}
+
+- (BOOL)startAtLogin {
+  return [[[NSProcessInfo processInfo] arguments] indexOfObject:@"--start-at-login"] != NSNotFound;
 }
 
 @end
