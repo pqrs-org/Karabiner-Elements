@@ -710,7 +710,6 @@
         </window>
         <customObject id="494" customClass="AppDelegate">
             <connections>
-                <outlet property="ignoredAreaView" destination="595" id="785-Yu-v7w"/>
                 <outlet property="preferences" destination="533" id="ZRM-zd-u7p"/>
             </connections>
         </customObject>
