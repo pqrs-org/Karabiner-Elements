@@ -131,7 +131,7 @@
                                                             <font key="font" metaFont="system"/>
                                                         </buttonCell>
                                                         <connections>
-                                                            <binding destination="687" name="value" keyPath="values.startAtLogin" id="AHP-Iz-fr0"/>
+                                                            <binding destination="687" name="value" keyPath="values.kStartAtLogin" id="AHP-Iz-fr0"/>
                                                         </connections>
                                                     </button>
                                                     <button translatesAutoresizingMaskIntoConstraints="NO" id="585">
@@ -143,7 +143,7 @@
                                                             <font key="font" metaFont="system"/>
                                                         </buttonCell>
                                                         <connections>
-                                                            <binding destination="687" name="value" keyPath="values.hideIconInDock" id="747"/>
+                                                            <binding destination="687" name="value" keyPath="values.kHideIconInDock" id="747"/>
                                                         </connections>
                                                     </button>
                                                 </subviews>
@@ -204,7 +204,7 @@
                                                                         </textFieldCell>
                                                                         <connections>
                                                                             <action selector="draw:" target="595" id="713"/>
-                                                                            <binding destination="687" name="value" keyPath="values.ignoredAreaTop" id="711"/>
+                                                                            <binding destination="687" name="value" keyPath="values.kIgnoredAreaTop" id="711"/>
                                                                         </connections>
                                                                     </textField>
                                                                     <stepper horizontalHuggingPriority="750" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="611">
@@ -212,7 +212,7 @@
                                                                         <stepperCell key="cell" continuous="YES" alignment="left" maxValue="100" id="612"/>
                                                                         <connections>
                                                                             <action selector="draw:" target="595" id="717"/>
-                                                                            <binding destination="687" name="value" keyPath="values.ignoredAreaTop" id="696"/>
+                                                                            <binding destination="687" name="value" keyPath="values.kIgnoredAreaTop" id="696"/>
                                                                         </connections>
                                                                     </stepper>
                                                                 </subviews>
@@ -271,7 +271,7 @@
                                                                         </textFieldCell>
                                                                         <connections>
                                                                             <action selector="draw:" target="595" id="716"/>
-                                                                            <binding destination="687" name="value" keyPath="values.ignoredAreaLeft" id="707"/>
+                                                                            <binding destination="687" name="value" keyPath="values.kIgnoredAreaLeft" id="707"/>
                                                                         </connections>
                                                                     </textField>
                                                                     <stepper horizontalHuggingPriority="750" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="628">
@@ -279,7 +279,7 @@
                                                                         <stepperCell key="cell" continuous="YES" alignment="left" maxValue="100" id="629"/>
                                                                         <connections>
                                                                             <action selector="draw:" target="595" id="718"/>
-                                                                            <binding destination="687" name="value" keyPath="values.ignoredAreaLeft" id="709"/>
+                                                                            <binding destination="687" name="value" keyPath="values.kIgnoredAreaLeft" id="709"/>
                                                                         </connections>
                                                                     </stepper>
                                                                 </subviews>
@@ -338,7 +338,7 @@
                                                                         </textFieldCell>
                                                                         <connections>
                                                                             <action selector="draw:" target="595" id="714"/>
-                                                                            <binding destination="687" name="value" keyPath="values.ignoredAreaRight" id="703"/>
+                                                                            <binding destination="687" name="value" keyPath="values.kIgnoredAreaRight" id="703"/>
                                                                         </connections>
                                                                     </textField>
                                                                     <stepper horizontalHuggingPriority="750" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="630">
@@ -346,7 +346,7 @@
                                                                         <stepperCell key="cell" continuous="YES" alignment="left" maxValue="100" id="631"/>
                                                                         <connections>
                                                                             <action selector="draw:" target="595" id="719"/>
-                                                                            <binding destination="687" name="value" keyPath="values.ignoredAreaRight" id="705"/>
+                                                                            <binding destination="687" name="value" keyPath="values.kIgnoredAreaRight" id="705"/>
                                                                         </connections>
                                                                     </stepper>
                                                                 </subviews>
@@ -402,7 +402,7 @@
                                                                         </textFieldCell>
                                                                         <connections>
                                                                             <action selector="draw:" target="595" id="715"/>
-                                                                            <binding destination="687" name="value" keyPath="values.ignoredAreaBottom" id="698"/>
+                                                                            <binding destination="687" name="value" keyPath="values.kIgnoredAreaBottom" id="698"/>
                                                                         </connections>
                                                                     </textField>
                                                                     <stepper horizontalHuggingPriority="750" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="632">
@@ -410,7 +410,7 @@
                                                                         <stepperCell key="cell" continuous="YES" alignment="left" maxValue="100" id="633"/>
                                                                         <connections>
                                                                             <action selector="draw:" target="595" id="720"/>
-                                                                            <binding destination="687" name="value" keyPath="values.ignoredAreaBottom" id="700"/>
+                                                                            <binding destination="687" name="value" keyPath="values.kIgnoredAreaBottom" id="700"/>
                                                                         </connections>
                                                                     </stepper>
                                                                 </subviews>
@@ -478,7 +478,7 @@
                                                             <font key="font" metaFont="system"/>
                                                         </buttonCell>
                                                         <connections>
-                                                            <binding destination="687" name="value" keyPath="values.relaunchAfterWakeUpFromSleep" id="802"/>
+                                                            <binding destination="687" name="value" keyPath="values.kRelaunchAfterWakeUpFromSleep" id="802"/>
                                                         </connections>
                                                     </button>
                                                     <textField verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="792">
@@ -503,14 +503,14 @@
                                                             <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
                                                         </textFieldCell>
                                                         <connections>
-                                                            <binding destination="687" name="value" keyPath="values.relaunchWait" id="801"/>
+                                                            <binding destination="687" name="value" keyPath="values.kRelaunchWait" id="801"/>
                                                         </connections>
                                                     </textField>
                                                     <stepper horizontalHuggingPriority="750" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="791">
                                                         <rect key="frame" x="220" y="5" width="19" height="27"/>
                                                         <stepperCell key="cell" continuous="YES" alignment="left" maxValue="100" id="796"/>
                                                         <connections>
-                                                            <binding destination="687" name="value" keyPath="values.relaunchWait" id="800"/>
+                                                            <binding destination="687" name="value" keyPath="values.kRelaunchWait" id="800"/>
                                                         </connections>
                                                     </stepper>
                                                     <textField verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="793">

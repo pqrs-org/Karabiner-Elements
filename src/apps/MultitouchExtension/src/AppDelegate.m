@@ -66,19 +66,23 @@ static void disable(void) {
   [[NSApplication sharedApplication] disableRelaunchOnLogin];
 
   //
-  // hideIconInDock
+  // Handle kHideIconInDock
   //
 
-  if (![[NSUserDefaults standardUserDefaults] boolForKey:@"hideIconInDock"]) {
+  if (![[NSUserDefaults standardUserDefaults] boolForKey:kHideIconInDock]) {
     ProcessSerialNumber psn = {0, kCurrentProcess};
     TransformProcessType(&psn, kProcessTransformToForegroundApplication);
   }
 
   //
-  // Show Preferences if needed
+  // Handle --start-at-login
   //
 
-  if ([[[NSProcessInfo processInfo] arguments] indexOfObject:@"--hide-ui"] == NSNotFound) {
+  if ([[[NSProcessInfo processInfo] arguments] indexOfObject:@"--start-at-login"] != NSNotFound) {
+    if (![[NSUserDefaults standardUserDefaults] boolForKey:kStartAtLogin]) {
+      [NSApp terminate:nil];
+    }
+  } else {
     [self.preferences show];
   }
 

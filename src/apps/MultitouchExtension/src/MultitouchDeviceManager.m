@@ -1,6 +1,7 @@
 #import "MultitouchDeviceManager.h"
 #import "FingerStatusManager.h"
 #import "KarabinerKit/KarabinerKit.h"
+#import "PreferencesKeys.h"
 #import <pqrs/weakify.h>
 
 //
@@ -221,8 +222,8 @@ static void relaunch(void* refcon, io_iterator_t iterator) {
                            // sleep until devices are settled.
                            [NSThread sleepForTimeInterval:1.0];
 
-                           if ([[NSUserDefaults standardUserDefaults] boolForKey:@"relaunchAfterWakeUpFromSleep"]) {
-                             double wait = [[[NSUserDefaults standardUserDefaults] stringForKey:@"relaunchWait"] doubleValue];
+                           if ([[NSUserDefaults standardUserDefaults] boolForKey:kRelaunchAfterWakeUpFromSleep]) {
+                             double wait = [[[NSUserDefaults standardUserDefaults] stringForKey:kRelaunchWait] doubleValue];
                              if (wait > 0) {
                                [NSThread sleepForTimeInterval:wait];
                              }
