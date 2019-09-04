@@ -27,6 +27,10 @@
   [textStorage setAttributedString:[[NSAttributedString alloc] initWithString:@""]];
   [textStorage endEditing];
 
+  NSDictionary* attributes = @{
+    NSForegroundColorAttributeName : NSColor.textColor,
+  };
+
   NSURLSession* session = [NSURLSession sharedSession];
   NSURLSessionDataTask* task = [session dataTaskWithURL:[NSURL URLWithString:url]
                                       completionHandler:^(NSData* data, NSURLResponse* response, NSError* error) {
@@ -39,7 +43,8 @@
                                           [textStorage beginEditing];
 
                                           if (error) {
-                                            [textStorage setAttributedString:[[NSAttributedString alloc] initWithString:[error localizedDescription]]];
+                                            [textStorage setAttributedString:[[NSAttributedString alloc] initWithString:[error localizedDescription]
+                                                                                                             attributes:attributes]];
 
                                           } else {
                                             NSError* e;
@@ -47,19 +52,22 @@
                                                                                                        options:0
                                                                                                          error:&e];
                                             if (e) {
-                                              [textStorage setAttributedString:[[NSAttributedString alloc] initWithString:[e localizedDescription]]];
+                                              [textStorage setAttributedString:[[NSAttributedString alloc] initWithString:[e localizedDescription]
+                                                                                                               attributes:attributes]];
 
                                             } else {
                                               self.importButton.enabled = YES;
 
-                                              [textStorage setAttributedString:[[NSAttributedString alloc] initWithString:@""]];
+                                              [textStorage setAttributedString:[[NSAttributedString alloc] initWithString:@""
+                                                                                                               attributes:attributes]];
 
                                               // Title
                                               {
                                                 NSString* title = jsonObject[@"title"];
                                                 if (title) {
                                                   NSString* s = [NSString stringWithFormat:@"%@\n", title];
-                                                  [textStorage appendAttributedString:[[NSAttributedString alloc] initWithString:s]];
+                                                  [textStorage appendAttributedString:[[NSAttributedString alloc] initWithString:s
+                                                                                                                      attributes:attributes]];
                                                 }
                                               }
 
@@ -69,7 +77,8 @@
                                                   NSString* description = rule[@"description"];
                                                   if (description) {
                                                     NSString* s = [NSString stringWithFormat:@"- %@\n", description];
-                                                    [textStorage appendAttributedString:[[NSAttributedString alloc] initWithString:s]];
+                                                    [textStorage appendAttributedString:[[NSAttributedString alloc] initWithString:s
+                                                                                                                        attributes:attributes]];
                                                   }
                                                 }
                                               }

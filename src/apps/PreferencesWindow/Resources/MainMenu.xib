@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.Cocoa.XIB" version="3.0" toolsVersion="14460.31" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none" useAutolayout="YES" customObjectInstantitationMethod="direct">
+<document type="com.apple.InterfaceBuilder3.Cocoa.XIB" version="3.0" toolsVersion="14490.70" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none" useAutolayout="YES" customObjectInstantitationMethod="direct">
     <dependencies>
         <deployment identifier="macosx"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="14460.31"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="14490.70"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
     <objects>
@@ -454,7 +454,7 @@
                 </menuItem>
             </items>
         </menu>
-        <window title="Karabiner-Elements Preferences" allowsToolTipsWhenApplicationIsInactive="NO" autorecalculatesKeyViewLoop="NO" releasedWhenClosed="NO" appearanceType="aqua" animationBehavior="default" id="QvC-M9-y7g">
+        <window title="Karabiner-Elements Preferences" allowsToolTipsWhenApplicationIsInactive="NO" autorecalculatesKeyViewLoop="NO" releasedWhenClosed="NO" animationBehavior="default" id="QvC-M9-y7g">
             <windowStyleMask key="styleMask" titled="YES" closable="YES" miniaturizable="YES" resizable="YES"/>
             <rect key="contentRect" x="335" y="390" width="1000" height="550"/>
             <rect key="screenRect" x="0.0" y="0.0" width="1920" height="1177"/>
@@ -511,7 +511,7 @@
                                             <rect key="frame" x="17" y="43" width="920" height="394"/>
                                             <clipView key="contentView" id="fPj-Ru-opD">
                                                 <rect key="frame" x="1" y="0.0" width="918" height="393"/>
-                                                <autoresizingMask key="autoresizingMask"/>
+                                                <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                                 <subviews>
                                                     <tableView verticalHuggingPriority="750" allowsExpansionToolTips="YES" columnAutoresizingStyle="firstColumnOnly" alternatingRowBackgroundColors="YES" columnReordering="NO" columnSelection="YES" columnResizing="NO" multipleSelection="NO" autosaveColumns="NO" rowHeight="26" rowSizeStyle="automatic" headerView="bin-92-FO9" viewBased="YES" id="qEO-TG-yM2">
                                                         <rect key="frame" x="0.0" y="0.0" width="918" height="370"/>
@@ -613,7 +613,7 @@
                                                                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                                                         <subviews>
                                                                             <button verticalHuggingPriority="750" imageHugsTitle="YES" translatesAutoresizingMaskIntoConstraints="NO" id="zfo-6t-308">
-                                                                                <rect key="frame" x="-10" y="-4" width="131" height="32"/>
+                                                                                <rect key="frame" x="-1" y="-4" width="113" height="32"/>
                                                                                 <buttonCell key="cell" type="push" title="Remove" bezelStyle="rounded" image="ic_remove_circle_18pt" imagePosition="left" alignment="center" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="Bdt-L4-6qN">
                                                                                     <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
                                                                                     <font key="font" metaFont="system"/>
@@ -652,7 +652,7 @@
                                             </tableHeaderView>
                                         </scrollView>
                                         <button verticalHuggingPriority="750" imageHugsTitle="YES" translatesAutoresizingMaskIntoConstraints="NO" id="nmp-2M-4Aq">
-                                            <rect key="frame" x="11" y="10" width="136" height="32"/>
+                                            <rect key="frame" x="11" y="10" width="118" height="32"/>
                                             <buttonCell key="cell" type="push" title="Add item" bezelStyle="rounded" image="ic_add_circle_18pt" imagePosition="left" alignment="center" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="HFn-CP-POu">
                                                 <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
                                                 <font key="font" metaFont="system"/>
@@ -942,7 +942,7 @@
                                                                                             <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                                                                             <subviews>
                                                                                                 <button verticalHuggingPriority="750" imageHugsTitle="YES" translatesAutoresizingMaskIntoConstraints="NO" id="8XE-Lt-YUH">
-                                                                                                    <rect key="frame" x="-10" y="-4" width="131" height="32"/>
+                                                                                                    <rect key="frame" x="-1" y="-4" width="113" height="32"/>
                                                                                                     <buttonCell key="cell" type="push" title="Remove" bezelStyle="rounded" image="ic_remove_circle_18pt" imagePosition="left" alignment="center" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="f3x-fQ-s40">
                                                                                                         <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
                                                                                                         <font key="font" metaFont="system"/>
@@ -981,7 +981,7 @@
                                                                 </tableHeaderView>
                                                             </scrollView>
                                                             <button verticalHuggingPriority="750" imageHugsTitle="YES" translatesAutoresizingMaskIntoConstraints="NO" id="6JB-lK-sd2">
-                                                                <rect key="frame" x="11" y="3" width="133" height="32"/>
+                                                                <rect key="frame" x="11" y="3" width="115" height="32"/>
                                                                 <buttonCell key="cell" type="push" title="Add rule" bezelStyle="rounded" image="ic_add_circle_18pt" imagePosition="left" alignment="center" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="DwC-rX-DDN">
                                                                     <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
                                                                     <font key="font" metaFont="system"/>
@@ -991,7 +991,7 @@
                                                                 </connections>
                                                             </button>
                                                             <button verticalHuggingPriority="750" imageHugsTitle="YES" translatesAutoresizingMaskIntoConstraints="NO" id="QXl-xa-ZAD">
-                                                                <rect key="frame" x="629" y="8" width="100" height="32"/>
+                                                                <rect key="frame" x="629" y="8" width="82" height="32"/>
                                                                 <buttonCell key="cell" type="push" title="Up" bezelStyle="rounded" image="ic_arrow_upward_18pt" imagePosition="left" alignment="center" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="Hwz-PV-JXe">
                                                                     <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
                                                                     <font key="font" metaFont="system"/>
@@ -1001,7 +1001,7 @@
                                                                 </connections>
                                                             </button>
                                                             <button verticalHuggingPriority="750" imageHugsTitle="YES" translatesAutoresizingMaskIntoConstraints="NO" id="Lix-R1-azx">
-                                                                <rect key="frame" x="786" y="8" width="117" height="32"/>
+                                                                <rect key="frame" x="804" y="8" width="99" height="32"/>
                                                                 <buttonCell key="cell" type="push" title="Down" bezelStyle="rounded" image="ic_arrow_downward_18pt" imagePosition="left" alignment="center" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="CrG-r0-gke">
                                                                     <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
                                                                     <font key="font" metaFont="system"/>
@@ -2016,7 +2016,7 @@ In this case, you have to change the country code to avoid the conflict.
                                                                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                                                         <subviews>
                                                                             <textField verticalHuggingPriority="750" allowsCharacterPickerTouchBarItem="YES" translatesAutoresizingMaskIntoConstraints="NO" id="3fl-PC-xYQ">
-                                                                                <rect key="frame" x="4" y="2" width="595" height="22"/>
+                                                                                <rect key="frame" x="4" y="2" width="613" height="22"/>
                                                                                 <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" selectable="YES" editable="YES" sendsActionOnEndEditing="YES" state="on" borderStyle="bezel" title="Name" drawsBackground="YES" id="q4k-Om-bR0">
                                                                                     <font key="font" metaFont="system"/>
                                                                                     <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
@@ -2024,14 +2024,14 @@ In this case, you have to change the country code to avoid the conflict.
                                                                                 </textFieldCell>
                                                                             </textField>
                                                                             <button verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="7dB-iC-Z4u">
-                                                                                <rect key="frame" x="693" y="-4" width="79" height="32"/>
+                                                                                <rect key="frame" x="711" y="-4" width="79" height="32"/>
                                                                                 <buttonCell key="cell" type="push" title="Select" bezelStyle="rounded" alignment="center" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="uwD-3g-0lE">
                                                                                     <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
                                                                                     <font key="font" metaFont="system"/>
                                                                                 </buttonCell>
                                                                             </button>
                                                                             <imageView horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="wSk-3w-9nX">
-                                                                                <rect key="frame" x="699" y="4" width="18" height="18"/>
+                                                                                <rect key="frame" x="717" y="4" width="18" height="18"/>
                                                                                 <constraints>
                                                                                     <constraint firstAttribute="width" constant="18" id="XUU-Xf-mQs"/>
                                                                                     <constraint firstAttribute="height" constant="18" id="aHO-Vg-1Ya"/>
@@ -2039,7 +2039,7 @@ In this case, you have to change the country code to avoid the conflict.
                                                                                 <imageCell key="cell" refusesFirstResponder="YES" alignment="left" imageScaling="proportionallyDown" image="ic_check_18pt" id="aFs-KH-qdi"/>
                                                                             </imageView>
                                                                             <textField verticalHuggingPriority="750" horizontalCompressionResistancePriority="250" allowsCharacterPickerTouchBarItem="YES" translatesAutoresizingMaskIntoConstraints="NO" id="Vxo-a6-SRu">
-                                                                                <rect key="frame" x="717" y="5" width="58" height="17"/>
+                                                                                <rect key="frame" x="735" y="5" width="58" height="17"/>
                                                                                 <textFieldCell key="cell" lineBreakMode="truncatingTail" sendsActionOnEndEditing="YES" title="Selected" id="a8h-ts-iv1">
                                                                                     <font key="font" metaFont="system"/>
                                                                                     <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
@@ -2047,7 +2047,7 @@ In this case, you have to change the country code to avoid the conflict.
                                                                                 </textFieldCell>
                                                                             </textField>
                                                                             <button verticalHuggingPriority="750" imageHugsTitle="YES" translatesAutoresizingMaskIntoConstraints="NO" id="fqK-Cb-Nrr">
-                                                                                <rect key="frame" x="780" y="-4" width="131" height="32"/>
+                                                                                <rect key="frame" x="798" y="-4" width="113" height="32"/>
                                                                                 <buttonCell key="cell" type="push" title="Remove" bezelStyle="rounded" image="ic_remove_circle_18pt" imagePosition="left" alignment="center" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="n3c-fM-uj6">
                                                                                     <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
                                                                                     <font key="font" metaFont="system"/>
@@ -2100,7 +2100,7 @@ In this case, you have to change the country code to avoid the conflict.
                                             </tableHeaderView>
                                         </scrollView>
                                         <button verticalHuggingPriority="750" imageHugsTitle="YES" translatesAutoresizingMaskIntoConstraints="NO" id="w9R-y0-ZHf">
-                                            <rect key="frame" x="11" y="1" width="149" height="32"/>
+                                            <rect key="frame" x="11" y="1" width="131" height="32"/>
                                             <buttonCell key="cell" type="push" title="Add profile" bezelStyle="rounded" image="ic_add_circle_18pt" imagePosition="left" alignment="center" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="ZZS-ry-ePh">
                                                 <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
                                                 <font key="font" metaFont="system"/>
@@ -2143,7 +2143,7 @@ In this case, you have to change the country code to avoid the conflict.
                                             </textFieldCell>
                                         </textField>
                                         <button verticalHuggingPriority="750" imageHugsTitle="YES" translatesAutoresizingMaskIntoConstraints="NO" id="9Ub-kd-yPy">
-                                            <rect key="frame" x="745" y="457" width="197" height="27"/>
+                                            <rect key="frame" x="763" y="457" width="179" height="27"/>
                                             <buttonCell key="cell" type="push" title="Quit Karabiner-Elements" bezelStyle="rounded" image="ic_cancel_18pt" imagePosition="left" alignment="center" controlSize="small" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="DMD-gs-Fc2">
                                                 <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
                                                 <font key="font" metaFont="smallSystem"/>
@@ -2153,7 +2153,7 @@ In this case, you have to change the country code to avoid the conflict.
                                             </connections>
                                         </button>
                                         <button verticalHuggingPriority="750" imageHugsTitle="YES" translatesAutoresizingMaskIntoConstraints="NO" id="VG0-yy-2JZ" userLabel="Restart Karabiner-Elements">
-                                            <rect key="frame" x="532" y="457" width="213" height="27"/>
+                                            <rect key="frame" x="568" y="457" width="195" height="27"/>
                                             <buttonCell key="cell" type="push" title="Restart Karabiner-Elements" bezelStyle="rounded" image="ic_refresh_18pt" imagePosition="left" alignment="center" controlSize="small" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="PvM-2w-cA8">
                                                 <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
                                                 <font key="font" metaFont="smallSystem"/>
@@ -2179,7 +2179,7 @@ In this case, you have to change the country code to avoid the conflict.
                                                         </connections>
                                                     </button>
                                                     <button verticalHuggingPriority="750" imageHugsTitle="YES" translatesAutoresizingMaskIntoConstraints="NO" id="hA8-fr-71n">
-                                                        <rect key="frame" x="11" y="1" width="194" height="32"/>
+                                                        <rect key="frame" x="11" y="1" width="176" height="32"/>
                                                         <buttonCell key="cell" type="push" title="Check for updates" bezelStyle="rounded" image="ic_refresh_18pt" imagePosition="left" alignment="center" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="iDW-FG-uaL">
                                                             <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
                                                             <font key="font" metaFont="system"/>
@@ -2189,7 +2189,7 @@ In this case, you have to change the country code to avoid the conflict.
                                                         </connections>
                                                     </button>
                                                     <button verticalHuggingPriority="750" imageHugsTitle="YES" translatesAutoresizingMaskIntoConstraints="NO" id="lRS-BL-uVJ">
-                                                        <rect key="frame" x="684" y="1" width="225" height="32"/>
+                                                        <rect key="frame" x="702" y="1" width="207" height="32"/>
                                                         <buttonCell key="cell" type="push" title="Check for beta updates" bezelStyle="rounded" image="ic_refresh_18pt" imagePosition="left" alignment="center" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="mbv-qj-mvU">
                                                             <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
                                                             <font key="font" metaFont="system"/>
@@ -2220,7 +2220,7 @@ In this case, you have to change the country code to avoid the conflict.
                                                 <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                                 <subviews>
                                                     <button verticalHuggingPriority="750" imageHugsTitle="YES" translatesAutoresizingMaskIntoConstraints="NO" id="CzP-aW-AzB">
-                                                        <rect key="frame" x="11" y="1" width="258" height="32"/>
+                                                        <rect key="frame" x="11" y="1" width="240" height="32"/>
                                                         <buttonCell key="cell" type="push" title="Uninstall Karabiner-Elements" bezelStyle="rounded" image="ic_delete_forever_18pt" imagePosition="left" alignment="center" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="Sr0-va-jSj">
                                                             <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
                                                             <font key="font" metaFont="system"/>
@@ -2245,7 +2245,7 @@ In this case, you have to change the country code to avoid the conflict.
                                                 <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                                 <subviews>
                                                     <button verticalHuggingPriority="750" imageHugsTitle="YES" translatesAutoresizingMaskIntoConstraints="NO" id="i87-Pa-TZD">
-                                                        <rect key="frame" x="11" y="1" width="362" height="32"/>
+                                                        <rect key="frame" x="11" y="1" width="344" height="32"/>
                                                         <buttonCell key="cell" type="push" title="https://github.com/tekezo/Karabiner-Elements" bezelStyle="rounded" image="ic_open_in_browser_18pt" imagePosition="left" alignment="center" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="PWa-pr-xeD">
                                                             <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
                                                             <font key="font" metaFont="system"/>
@@ -2255,7 +2255,7 @@ In this case, you have to change the country code to avoid the conflict.
                                                         </connections>
                                                     </button>
                                                     <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" allowsCharacterPickerTouchBarItem="YES" translatesAutoresizingMaskIntoConstraints="NO" id="c8u-qB-WbK">
-                                                        <rect key="frame" x="375" y="10" width="89" height="17"/>
+                                                        <rect key="frame" x="357" y="10" width="89" height="17"/>
                                                         <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" title="(source code)" id="pmQ-71-PVZ">
                                                             <font key="font" metaFont="system"/>
                                                             <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
@@ -2290,7 +2290,7 @@ In this case, you have to change the country code to avoid the conflict.
                                                         </textFieldCell>
                                                     </textField>
                                                     <button verticalHuggingPriority="750" imageHugsTitle="YES" translatesAutoresizingMaskIntoConstraints="NO" id="sAi-Da-rG4">
-                                                        <rect key="frame" x="12" y="2" width="417" height="27"/>
+                                                        <rect key="frame" x="12" y="2" width="399" height="27"/>
                                                         <buttonCell key="cell" type="push" title="Copy the current configuration to the system default configuration" bezelStyle="rounded" image="ic_star_rate_18pt" imagePosition="left" alignment="center" controlSize="small" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="B2t-va-0wM">
                                                             <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
                                                             <font key="font" metaFont="smallSystem"/>
@@ -2300,7 +2300,7 @@ In this case, you have to change the country code to avoid the conflict.
                                                         </connections>
                                                     </button>
                                                     <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" allowsCharacterPickerTouchBarItem="YES" translatesAutoresizingMaskIntoConstraints="NO" id="V32-la-sHU">
-                                                        <rect key="frame" x="442" y="10" width="210" height="14"/>
+                                                        <rect key="frame" x="424" y="10" width="210" height="14"/>
                                                         <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" title="System default configuration is not set." id="Zh6-bD-UwV">
                                                             <font key="font" metaFont="smallSystem"/>
                                                             <color key="textColor" white="0.5" alpha="1" colorSpace="custom" customColorSpace="calibratedWhite"/>
@@ -2308,7 +2308,7 @@ In this case, you have to change the country code to avoid the conflict.
                                                         </textFieldCell>
                                                     </textField>
                                                     <button verticalHuggingPriority="750" imageHugsTitle="YES" translatesAutoresizingMaskIntoConstraints="NO" id="RVr-L2-a5V">
-                                                        <rect key="frame" x="449" y="2" width="283" height="27"/>
+                                                        <rect key="frame" x="431" y="2" width="265" height="27"/>
                                                         <buttonCell key="cell" type="push" title="Remove the system default configuration" bezelStyle="rounded" image="ic_cancel_18pt" imagePosition="left" alignment="center" controlSize="small" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="jwQ-69-bk6">
                                                             <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
                                                             <font key="font" metaFont="smallSystem"/>
@@ -2479,7 +2479,7 @@ In this case, you have to change the country code to avoid the conflict.
             </view>
             <point key="canvasLocation" x="117" y="245"/>
         </window>
-        <window title="Add rule" allowsToolTipsWhenApplicationIsInactive="NO" autorecalculatesKeyViewLoop="NO" hidesOnDeactivate="YES" releasedWhenClosed="NO" visibleAtLaunch="NO" appearanceType="aqua" frameAutosaveName="" animationBehavior="default" id="FqN-OP-TO2" customClass="NSPanel">
+        <window title="Add rule" allowsToolTipsWhenApplicationIsInactive="NO" autorecalculatesKeyViewLoop="NO" hidesOnDeactivate="YES" releasedWhenClosed="NO" visibleAtLaunch="NO" frameAutosaveName="" animationBehavior="default" id="FqN-OP-TO2" customClass="NSPanel">
             <windowStyleMask key="styleMask" titled="YES" closable="YES" miniaturizable="YES" resizable="YES" utility="YES"/>
             <windowPositionMask key="initialPositionMask" leftStrut="YES" rightStrut="YES" topStrut="YES" bottomStrut="YES"/>
             <rect key="contentRect" x="196" y="132" width="900" height="400"/>
@@ -2491,7 +2491,7 @@ In this case, you have to change the country code to avoid the conflict.
                 <autoresizingMask key="autoresizingMask"/>
                 <subviews>
                     <button verticalHuggingPriority="750" imageHugsTitle="YES" translatesAutoresizingMaskIntoConstraints="NO" id="Jox-CI-bt9">
-                        <rect key="frame" x="235" y="357" width="431" height="32"/>
+                        <rect key="frame" x="244" y="357" width="413" height="32"/>
                         <buttonCell key="cell" type="push" title="Import more rules from the Internet (open a web browser)" bezelStyle="rounded" image="ic_cloud_download_18pt" imagePosition="left" alignment="center" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="02O-a2-wtg">
                             <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
                             <font key="font" metaFont="system"/>
@@ -2504,7 +2504,7 @@ In this case, you have to change the country code to avoid the conflict.
                         <rect key="frame" x="17" y="61" width="866" height="288"/>
                         <clipView key="contentView" id="F9L-6l-7CJ">
                             <rect key="frame" x="1" y="1" width="864" height="286"/>
-                            <autoresizingMask key="autoresizingMask"/>
+                            <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                             <subviews>
                                 <outlineView verticalHuggingPriority="750" allowsExpansionToolTips="YES" columnAutoresizingStyle="firstColumnOnly" alternatingRowBackgroundColors="YES" columnReordering="NO" columnResizing="NO" multipleSelection="NO" autosaveColumns="NO" rowHeight="26" rowSizeStyle="automatic" viewBased="YES" indentationPerLevel="16" outlineTableColumn="nlS-o3-ZB6" id="eIx-lp-xHQ">
                                     <rect key="frame" x="0.0" y="0.0" width="864" height="286"/>
@@ -2579,7 +2579,7 @@ In this case, you have to change the country code to avoid the conflict.
                                                             </buttonCell>
                                                         </button>
                                                         <button hidden="YES" verticalHuggingPriority="750" imageHugsTitle="YES" translatesAutoresizingMaskIntoConstraints="NO" id="aoS-Bs-ODT">
-                                                            <rect key="frame" x="21" y="-4" width="123" height="32"/>
+                                                            <rect key="frame" x="39" y="-4" width="105" height="32"/>
                                                             <buttonCell key="cell" type="push" title="Enable" bezelStyle="rounded" image="ic_add_circle_18pt" imagePosition="left" alignment="center" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="6TO-Hp-Ppt">
                                                                 <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
                                                                 <font key="font" metaFont="system"/>
@@ -2629,7 +2629,7 @@ In this case, you have to change the country code to avoid the conflict.
                         </scroller>
                     </scrollView>
                     <button verticalHuggingPriority="750" imageHugsTitle="YES" translatesAutoresizingMaskIntoConstraints="NO" id="lWl-Op-37M">
-                        <rect key="frame" x="12" y="32" width="131" height="27"/>
+                        <rect key="frame" x="12" y="32" width="113" height="27"/>
                         <buttonCell key="cell" type="push" title="Expand tree" bezelStyle="rounded" image="ic_expand_more_18pt" imagePosition="left" alignment="center" controlSize="small" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="pWt-V1-3zc">
                             <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
                             <font key="font" metaFont="smallSystem"/>
@@ -2639,7 +2639,7 @@ In this case, you have to change the country code to avoid the conflict.
                         </connections>
                     </button>
                     <button verticalHuggingPriority="750" imageHugsTitle="YES" translatesAutoresizingMaskIntoConstraints="NO" id="Tqb-fK-IZi">
-                        <rect key="frame" x="143" y="32" width="138" height="27"/>
+                        <rect key="frame" x="125" y="32" width="120" height="27"/>
                         <buttonCell key="cell" type="push" title="Collapse tree" bezelStyle="rounded" image="ic_chevron_right_18pt" imagePosition="left" alignment="center" controlSize="small" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="pvE-NN-dNd">
                             <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
                             <font key="font" metaFont="smallSystem"/>
@@ -2649,7 +2649,7 @@ In this case, you have to change the country code to avoid the conflict.
                         </connections>
                     </button>
                     <button verticalHuggingPriority="750" imageHugsTitle="YES" translatesAutoresizingMaskIntoConstraints="NO" id="iWA-ft-hGI">
-                        <rect key="frame" x="388" y="13" width="124" height="32"/>
+                        <rect key="frame" x="397" y="13" width="106" height="32"/>
                         <buttonCell key="cell" type="push" title="Cancel" bezelStyle="rounded" image="ic_cancel_18pt" imagePosition="left" alignment="center" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="Fd0-PH-WES">
                             <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
                             <font key="font" metaFont="system"/>
@@ -2680,7 +2680,7 @@ Gw
             </view>
             <point key="canvasLocation" x="-20" y="-264"/>
         </window>
-        <window title="Import complex modifications file" allowsToolTipsWhenApplicationIsInactive="NO" autorecalculatesKeyViewLoop="NO" hidesOnDeactivate="YES" releasedWhenClosed="NO" visibleAtLaunch="NO" appearanceType="aqua" frameAutosaveName="" animationBehavior="default" id="ZY4-nd-9zB" userLabel="Import Complex Modifications File Panel" customClass="NSPanel">
+        <window title="Import complex modifications file" allowsToolTipsWhenApplicationIsInactive="NO" autorecalculatesKeyViewLoop="NO" hidesOnDeactivate="YES" releasedWhenClosed="NO" visibleAtLaunch="NO" frameAutosaveName="" animationBehavior="default" id="ZY4-nd-9zB" userLabel="Import Complex Modifications File Panel" customClass="NSPanel">
             <windowStyleMask key="styleMask" titled="YES" closable="YES" miniaturizable="YES" resizable="YES" utility="YES"/>
             <windowPositionMask key="initialPositionMask" leftStrut="YES" rightStrut="YES" topStrut="YES" bottomStrut="YES"/>
             <rect key="contentRect" x="196" y="132" width="900" height="200"/>
@@ -2717,7 +2717,7 @@ Gw
                         <rect key="frame" x="80" y="58" width="740" height="85"/>
                         <clipView key="contentView" drawsBackground="NO" id="uNg-oR-13T">
                             <rect key="frame" x="1" y="1" width="723" height="83"/>
-                            <autoresizingMask key="autoresizingMask"/>
+                            <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                             <subviews>
                                 <textView editable="NO" importsGraphics="NO" verticallyResizable="YES" usesFontPanel="YES" findStyle="panel" allowsUndo="YES" usesRuler="YES" allowsNonContiguousLayout="YES" id="iV7-bm-Yxd">
                                     <rect key="frame" x="0.0" y="0.0" width="723" height="83"/>
@@ -2740,10 +2740,10 @@ Gw
                         </scroller>
                     </scrollView>
                     <customView translatesAutoresizingMaskIntoConstraints="NO" id="Cnb-iG-cen">
-                        <rect key="frame" x="324" y="17" width="252" height="31"/>
+                        <rect key="frame" x="342" y="17" width="216" height="31"/>
                         <subviews>
                             <button verticalHuggingPriority="750" imageHugsTitle="YES" translatesAutoresizingMaskIntoConstraints="NO" id="RCh-62-Dln">
-                                <rect key="frame" x="-1" y="-2" width="124" height="32"/>
+                                <rect key="frame" x="-1" y="-2" width="106" height="32"/>
                                 <buttonCell key="cell" type="push" title="Cancel" bezelStyle="rounded" image="ic_cancel_18pt" imagePosition="left" alignment="center" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="WIz-od-AHq">
                                     <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
                                     <font key="font" metaFont="system"/>
@@ -2756,7 +2756,7 @@ Gw
                                 </connections>
                             </button>
                             <button verticalHuggingPriority="750" imageHugsTitle="YES" translatesAutoresizingMaskIntoConstraints="NO" id="qHV-O1-rJe">
-                                <rect key="frame" x="131" y="-2" width="122" height="32"/>
+                                <rect key="frame" x="113" y="-2" width="104" height="32"/>
                                 <buttonCell key="cell" type="push" title="Import" bezelStyle="rounded" image="ic_file_download_18pt" imagePosition="left" alignment="center" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="2lw-6W-9IN">
                                     <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
                                     <font key="font" metaFont="system"/>
@@ -2793,7 +2793,7 @@ Gw
             </view>
             <point key="canvasLocation" x="46" y="640"/>
         </window>
-        <window title="Window" allowsToolTipsWhenApplicationIsInactive="NO" autorecalculatesKeyViewLoop="NO" hidesOnDeactivate="YES" releasedWhenClosed="NO" visibleAtLaunch="NO" appearanceType="aqua" frameAutosaveName="" animationBehavior="default" id="WRr-7z-BZH" userLabel="Kextd Alert Panel" customClass="NSPanel">
+        <window title="Window" allowsToolTipsWhenApplicationIsInactive="NO" autorecalculatesKeyViewLoop="NO" hidesOnDeactivate="YES" releasedWhenClosed="NO" visibleAtLaunch="NO" frameAutosaveName="" animationBehavior="default" id="WRr-7z-BZH" userLabel="Kextd Alert Panel" customClass="NSPanel">
             <windowStyleMask key="styleMask" titled="YES" closable="YES" miniaturizable="YES" resizable="YES" utility="YES"/>
             <windowPositionMask key="initialPositionMask" leftStrut="YES" rightStrut="YES" topStrut="YES" bottomStrut="YES"/>
             <rect key="contentRect" x="196" y="132" width="900" height="600"/>
@@ -2934,7 +2934,7 @@ System Preferences &gt; Security &amp; Privacy.</string>
             </view>
             <point key="canvasLocation" x="65" y="1057"/>
         </window>
-        <window title="Window" allowsToolTipsWhenApplicationIsInactive="NO" autorecalculatesKeyViewLoop="NO" hidesOnDeactivate="YES" releasedWhenClosed="NO" visibleAtLaunch="NO" appearanceType="aqua" frameAutosaveName="" animationBehavior="default" id="qSM-7c-jvU" userLabel="Input Monitoring Alert Panel" customClass="NSPanel">
+        <window title="Window" allowsToolTipsWhenApplicationIsInactive="NO" autorecalculatesKeyViewLoop="NO" hidesOnDeactivate="YES" releasedWhenClosed="NO" visibleAtLaunch="NO" frameAutosaveName="" animationBehavior="default" id="qSM-7c-jvU" userLabel="Input Monitoring Alert Panel" customClass="NSPanel">
             <windowStyleMask key="styleMask" titled="YES" closable="YES" miniaturizable="YES" resizable="YES" utility="YES"/>
             <windowPositionMask key="initialPositionMask" leftStrut="YES" rightStrut="YES" topStrut="YES" bottomStrut="YES"/>
             <rect key="contentRect" x="196" y="132" width="900" height="600"/>
@@ -3049,7 +3049,7 @@ You have to allow them on System Preferences &gt; Security &amp; Privacy &gt; Pr
             </view>
             <point key="canvasLocation" x="88" y="740"/>
         </window>
-        <window title="ManipulateCapsLockLED Confirmation Panel" allowsToolTipsWhenApplicationIsInactive="NO" autorecalculatesKeyViewLoop="NO" hidesOnDeactivate="YES" releasedWhenClosed="NO" visibleAtLaunch="NO" appearanceType="aqua" frameAutosaveName="" animationBehavior="default" id="Q4d-fj-0zt" customClass="NSPanel">
+        <window title="ManipulateCapsLockLED Confirmation Panel" allowsToolTipsWhenApplicationIsInactive="NO" autorecalculatesKeyViewLoop="NO" hidesOnDeactivate="YES" releasedWhenClosed="NO" visibleAtLaunch="NO" frameAutosaveName="" animationBehavior="default" id="Q4d-fj-0zt" customClass="NSPanel">
             <windowStyleMask key="styleMask" titled="YES" closable="YES" miniaturizable="YES" resizable="YES" utility="YES"/>
             <windowPositionMask key="initialPositionMask" leftStrut="YES" rightStrut="YES" topStrut="YES" bottomStrut="YES"/>
             <rect key="contentRect" x="196" y="132" width="600" height="300"/>
@@ -3101,7 +3101,7 @@ Please keep the checkbox off if the device does not have a caps lock LED.</strin
                         <string key="userLabel">Karabiner-Elements tries to manipulate the caps lock LED. However, the LED manipulation might cause a problem if the device does not have a caps lock LED. Please keep the checkbox off if the device does not have a caps lock LED.</string>
                     </textField>
                     <customView translatesAutoresizingMaskIntoConstraints="NO" id="uTI-aw-tOw">
-                        <rect key="frame" x="76" y="20" width="448" height="31"/>
+                        <rect key="frame" x="85" y="20" width="430" height="31"/>
                         <subviews>
                             <button verticalHuggingPriority="750" imageHugsTitle="YES" translatesAutoresizingMaskIntoConstraints="NO" id="rN3-uz-e7c">
                                 <rect key="frame" x="-1" y="-2" width="212" height="32"/>
@@ -3120,7 +3120,7 @@ Gw
                                 </connections>
                             </button>
                             <button verticalHuggingPriority="750" imageHugsTitle="YES" translatesAutoresizingMaskIntoConstraints="NO" id="kmG-ha-BRe">
-                                <rect key="frame" x="250" y="1" width="198" height="27"/>
+                                <rect key="frame" x="250" y="1" width="180" height="27"/>
                                 <buttonCell key="cell" type="push" title="Enable LED manipulation" bezelStyle="rounded" image="ic_check_18pt" imagePosition="left" alignment="center" controlSize="small" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="CzH-uV-HZ1">
                                     <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
                                     <font key="font" metaFont="smallSystem"/>
@@ -3152,24 +3152,24 @@ Gw
     </objects>
     <resources>
         <image name="NSCaution" width="32" height="32"/>
-        <image name="ic_add_circle_18pt" width="36" height="36"/>
-        <image name="ic_arrow_downward_18pt" width="36" height="36"/>
-        <image name="ic_arrow_upward_18pt" width="36" height="36"/>
-        <image name="ic_cancel_18pt" width="36" height="36"/>
-        <image name="ic_check_18pt" width="36" height="36"/>
-        <image name="ic_chevron_right_18pt" width="36" height="36"/>
-        <image name="ic_cloud_download_18pt" width="36" height="36"/>
-        <image name="ic_delete_forever_18pt" width="36" height="36"/>
-        <image name="ic_expand_more_18pt" width="36" height="36"/>
-        <image name="ic_file_download_18pt" width="36" height="36"/>
-        <image name="ic_forward_18pt" width="36" height="36"/>
-        <image name="ic_keyboard_18pt" width="36" height="36"/>
-        <image name="ic_mouse_18pt" width="36" height="36"/>
-        <image name="ic_open_in_browser_18pt" width="36" height="36"/>
-        <image name="ic_refresh_18pt" width="36" height="36"/>
-        <image name="ic_remove_circle_18pt" width="36" height="36"/>
-        <image name="ic_star_rate_18pt" width="36" height="36"/>
-        <image name="ic_warning_18pt" width="36" height="36"/>
+        <image name="ic_add_circle_18pt" width="18" height="18"/>
+        <image name="ic_arrow_downward_18pt" width="18" height="18"/>
+        <image name="ic_arrow_upward_18pt" width="18" height="18"/>
+        <image name="ic_cancel_18pt" width="18" height="18"/>
+        <image name="ic_check_18pt" width="18" height="18"/>
+        <image name="ic_chevron_right_18pt" width="18" height="18"/>
+        <image name="ic_cloud_download_18pt" width="18" height="18"/>
+        <image name="ic_delete_forever_18pt" width="18" height="18"/>
+        <image name="ic_expand_more_18pt" width="18" height="18"/>
+        <image name="ic_file_download_18pt" width="18" height="18"/>
+        <image name="ic_forward_18pt" width="18" height="18"/>
+        <image name="ic_keyboard_18pt" width="18" height="18"/>
+        <image name="ic_mouse_18pt" width="18" height="18"/>
+        <image name="ic_open_in_browser_18pt" width="18" height="18"/>
+        <image name="ic_refresh_18pt" width="18" height="18"/>
+        <image name="ic_remove_circle_18pt" width="18" height="18"/>
+        <image name="ic_star_rate_18pt" width="18" height="18"/>
+        <image name="ic_warning_18pt" width="18" height="18"/>
         <image name="input_monitoring" width="668" height="573"/>
         <image name="kext_policy" width="1336" height="1146"/>
     </resources>
