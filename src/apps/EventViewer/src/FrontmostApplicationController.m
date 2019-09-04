@@ -52,7 +52,10 @@ static void staticCallback(const char* bundle_identifier,
 
       NSString* bundleIdentifierLine = [NSString stringWithFormat:@"Bundle Identifier:  %@\n", bundleIdentifier];
       NSString* filePathLine = [NSString stringWithFormat:@"File Path:          %@\n\n", filePath];
-      NSDictionary* attributes = @{NSFontAttributeName : [NSFont fontWithName:@"Menlo" size:11]};
+      NSDictionary* attributes = @{
+        NSForegroundColorAttributeName : NSColor.textColor,
+        NSFontAttributeName : [NSFont fontWithName:@"Menlo" size:11],
+      };
 
       [self.text appendAttributedString:[[NSAttributedString alloc] initWithString:bundleIdentifierLine
                                                                         attributes:attributes]];

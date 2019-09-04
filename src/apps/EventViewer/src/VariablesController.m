@@ -47,7 +47,10 @@ static void staticCallback(const char* filePath,
 
       [textStorage beginEditing];
       [textStorage setAttributedString:[[NSAttributedString alloc] initWithString:string
-                                                                       attributes:@{NSFontAttributeName : font}]];
+                                                                       attributes:@{
+                                                                         NSForegroundColorAttributeName : NSColor.textColor,
+                                                                         NSFontAttributeName : font,
+                                                                       }]];
       [textStorage endEditing];
     }
   });
