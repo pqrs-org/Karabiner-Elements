@@ -325,7 +325,7 @@ enum {
     NSString* misc = [NSString stringWithFormat:@"misc:%@", dict[@"misc"]];
 
     [string appendFormat:@"%@ %@ %@ %@\n",
-                         [eventType stringByPaddingToLength:25
+                         [eventType stringByPaddingToLength:20
                                                  withString:@" "
                                             startingAtIndex:0],
                          [code stringByPaddingToLength:15
