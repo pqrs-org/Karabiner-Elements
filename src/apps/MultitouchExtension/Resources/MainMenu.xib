@@ -125,8 +125,8 @@
                                                 <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                                 <subviews>
                                                     <button translatesAutoresizingMaskIntoConstraints="NO" id="537">
-                                                        <rect key="frame" x="8" y="48" width="189" height="18"/>
-                                                        <buttonCell key="cell" type="check" title="Start At Login (Default: Off)" bezelStyle="regularSquare" imagePosition="left" alignment="left" state="on" inset="2" id="538">
+                                                        <rect key="frame" x="8" y="48" width="182" height="18"/>
+                                                        <buttonCell key="cell" type="check" title="Start at login (Default: off)" bezelStyle="regularSquare" imagePosition="left" alignment="left" state="on" inset="2" id="538">
                                                             <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
                                                             <font key="font" metaFont="system"/>
                                                         </buttonCell>
@@ -138,7 +138,7 @@
                                                         <rect key="frame" x="8" y="8" width="353" height="34"/>
                                                         <buttonCell key="cell" type="check" bezelStyle="regularSquare" imagePosition="left" alignment="left" state="on" inset="2" id="586">
                                                             <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
-                                                            <string key="title">Hide icon in Dock (Default: Off)
+                                                            <string key="title">Hide icon in Dock (Default: off)
 (You need to restart app to enable/disable this option.)</string>
                                                             <font key="font" metaFont="system"/>
                                                         </buttonCell>
@@ -472,8 +472,8 @@
                                                 <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                                 <subviews>
                                                     <button translatesAutoresizingMaskIntoConstraints="NO" id="789">
-                                                        <rect key="frame" x="15" y="35" width="298" height="18"/>
-                                                        <buttonCell key="cell" type="check" title="Relaunch after wake from sleep. (Default: On)" bezelStyle="regularSquare" imagePosition="left" alignment="left" state="on" inset="2" id="799">
+                                                        <rect key="frame" x="15" y="35" width="292" height="18"/>
+                                                        <buttonCell key="cell" type="check" title="Relaunch after wake from sleep (Default: on)" bezelStyle="regularSquare" imagePosition="left" alignment="left" state="on" inset="2" id="799">
                                                             <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
                                                             <font key="font" metaFont="system"/>
                                                         </buttonCell>
@@ -514,8 +514,8 @@
                                                         </connections>
                                                     </stepper>
                                                     <textField verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="793">
-                                                        <rect key="frame" x="239" y="10" width="186" height="17"/>
-                                                        <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" title="seconds. (Default: 3 seconds)" id="794">
+                                                        <rect key="frame" x="239" y="10" width="183" height="17"/>
+                                                        <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" title="seconds (Default: 3 seconds)" id="794">
                                                             <font key="font" metaFont="system"/>
                                                             <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
                                                             <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
