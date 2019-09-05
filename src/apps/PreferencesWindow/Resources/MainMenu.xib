@@ -719,7 +719,7 @@
                                             <rect key="frame" x="17" y="60" width="920" height="377"/>
                                             <clipView key="contentView" id="LCo-MQ-oMD">
                                                 <rect key="frame" x="1" y="0.0" width="918" height="376"/>
-                                                <autoresizingMask key="autoresizingMask"/>
+                                                <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                                 <subviews>
                                                     <tableView verticalHuggingPriority="750" allowsExpansionToolTips="YES" columnAutoresizingStyle="lastColumnOnly" alternatingRowBackgroundColors="YES" columnReordering="NO" columnSelection="YES" columnResizing="NO" multipleSelection="NO" autosaveColumns="NO" rowHeight="26" rowSizeStyle="automatic" headerView="RPX-X6-Et1" viewBased="YES" id="OWP-Cf-tc8">
                                                         <rect key="frame" x="0.0" y="0.0" width="918" height="353"/>
@@ -877,7 +877,7 @@
                                                                 <rect key="frame" x="17" y="41" width="880" height="384"/>
                                                                 <clipView key="contentView" id="Z0i-ZA-lV3">
                                                                     <rect key="frame" x="1" y="0.0" width="878" height="383"/>
-                                                                    <autoresizingMask key="autoresizingMask"/>
+                                                                    <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                                                     <subviews>
                                                                         <tableView verticalHuggingPriority="750" allowsExpansionToolTips="YES" columnAutoresizingStyle="firstColumnOnly" alternatingRowBackgroundColors="YES" columnReordering="NO" columnResizing="NO" multipleSelection="NO" autosaveColumns="NO" rowHeight="26" rowSizeStyle="automatic" headerView="sIp-xu-x1n" viewBased="YES" id="v5W-RF-1fL">
                                                                             <rect key="frame" x="0.0" y="0.0" width="878" height="360"/>
@@ -2169,8 +2169,8 @@ In this case, you have to change the country code to avoid the conflict.
                                                 <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                                 <subviews>
                                                     <button translatesAutoresizingMaskIntoConstraints="NO" id="xCD-vQ-a37">
-                                                        <rect key="frame" x="15" y="37" width="282" height="18"/>
-                                                        <buttonCell key="cell" type="check" title="Check for updates on startup (Default: On)" bezelStyle="regularSquare" imagePosition="left" state="on" inset="2" id="Wug-gg-zmP">
+                                                        <rect key="frame" x="15" y="37" width="279" height="18"/>
+                                                        <buttonCell key="cell" type="check" title="Check for updates on startup (Default: on)" bezelStyle="regularSquare" imagePosition="left" state="on" inset="2" id="Wug-gg-zmP">
                                                             <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
                                                             <font key="font" metaFont="system"/>
                                                         </buttonCell>
@@ -2306,8 +2306,8 @@ In this case, you have to change the country code to avoid the conflict.
                                                 <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                                 <subviews>
                                                     <button translatesAutoresizingMaskIntoConstraints="NO" id="AHk-df-Lmk">
-                                                        <rect key="frame" x="15" y="30" width="241" height="18"/>
-                                                        <buttonCell key="cell" type="check" title="Show icon in menu bar (Default: On)" bezelStyle="regularSquare" imagePosition="left" state="on" inset="2" id="Cel-5I-zrQ">
+                                                        <rect key="frame" x="15" y="30" width="239" height="18"/>
+                                                        <buttonCell key="cell" type="check" title="Show icon in menu bar (Default: on)" bezelStyle="regularSquare" imagePosition="left" state="on" inset="2" id="Cel-5I-zrQ">
                                                             <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
                                                             <font key="font" metaFont="system"/>
                                                         </buttonCell>
@@ -2316,8 +2316,8 @@ In this case, you have to change the country code to avoid the conflict.
                                                         </connections>
                                                     </button>
                                                     <button translatesAutoresizingMaskIntoConstraints="NO" id="TNd-jk-kpr">
-                                                        <rect key="frame" x="15" y="6" width="293" height="18"/>
-                                                        <buttonCell key="cell" type="check" title="Show profile name in menu bar (Default: Off)" bezelStyle="regularSquare" imagePosition="left" state="on" inset="2" id="dqN-LK-Qdn">
+                                                        <rect key="frame" x="15" y="6" width="291" height="18"/>
+                                                        <buttonCell key="cell" type="check" title="Show profile name in menu bar (Default: off)" bezelStyle="regularSquare" imagePosition="left" state="on" inset="2" id="dqN-LK-Qdn">
                                                             <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
                                                             <font key="font" metaFont="system"/>
                                                         </buttonCell>
