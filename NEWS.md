@@ -4,6 +4,7 @@
 
 - Fixed an issue that Karabiner-Elements might stop working after sleep on macOS Catalina.
 - Added `--set-variables` option into `karabiner_cli`.
+- MultitouchExtension app has been added.
 - Dark Mode has been supported.
 
 ## Version 12.6.0
