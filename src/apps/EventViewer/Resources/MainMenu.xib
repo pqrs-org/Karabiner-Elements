@@ -516,7 +516,7 @@
                                             <rect key="frame" x="17" y="17" width="800" height="439"/>
                                             <clipView key="contentView" drawsBackground="NO" id="Oc9-TS-hYQ">
                                                 <rect key="frame" x="1" y="1" width="783" height="437"/>
-                                                <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                                                <autoresizingMask key="autoresizingMask"/>
                                                 <subviews>
                                                     <textView editable="NO" importsGraphics="NO" verticallyResizable="YES" usesFontPanel="YES" findStyle="panel" continuousSpellChecking="YES" allowsUndo="YES" usesRuler="YES" allowsNonContiguousLayout="YES" quoteSubstitution="YES" dashSubstitution="YES" smartInsertDelete="YES" id="KEZ-Np-coZ">
                                                         <rect key="frame" x="0.0" y="0.0" width="783" height="437"/>
@@ -567,7 +567,7 @@
                                             <rect key="frame" x="17" y="17" width="800" height="439"/>
                                             <clipView key="contentView" drawsBackground="NO" id="jio-Mp-Rne">
                                                 <rect key="frame" x="1" y="1" width="783" height="437"/>
-                                                <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                                                <autoresizingMask key="autoresizingMask"/>
                                                 <subviews>
                                                     <textView editable="NO" importsGraphics="NO" verticallyResizable="YES" usesFontPanel="YES" findStyle="panel" continuousSpellChecking="YES" allowsUndo="YES" usesRuler="YES" allowsNonContiguousLayout="YES" quoteSubstitution="YES" dashSubstitution="YES" smartInsertDelete="YES" id="Glx-oy-lpN">
                                                         <rect key="frame" x="0.0" y="0.0" width="783" height="437"/>
@@ -618,7 +618,7 @@
                                             <rect key="frame" x="17" y="10" width="800" height="446"/>
                                             <clipView key="contentView" drawsBackground="NO" id="QSl-Tw-YGc">
                                                 <rect key="frame" x="1" y="1" width="783" height="444"/>
-                                                <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                                                <autoresizingMask key="autoresizingMask"/>
                                                 <subviews>
                                                     <textView editable="NO" importsGraphics="NO" verticallyResizable="YES" usesFontPanel="YES" findStyle="panel" continuousSpellChecking="YES" allowsUndo="YES" usesRuler="YES" allowsNonContiguousLayout="YES" quoteSubstitution="YES" dashSubstitution="YES" smartInsertDelete="YES" id="pzX-J3-r2O">
                                                         <rect key="frame" x="0.0" y="0.0" width="783" height="444"/>
@@ -664,8 +664,8 @@
                                                 <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                                 <subviews>
                                                     <button translatesAutoresizingMaskIntoConstraints="NO" id="qpH-oY-yl0">
-                                                        <rect key="frame" x="15" y="32" width="414" height="18"/>
-                                                        <buttonCell key="cell" type="check" title="Force EventViewer to stay on top of other windows. (Default: off)" bezelStyle="regularSquare" imagePosition="left" state="on" inset="2" id="WCA-8e-MOA">
+                                                        <rect key="frame" x="15" y="32" width="411" height="18"/>
+                                                        <buttonCell key="cell" type="check" title="Force EventViewer to stay on top of other windows (Default: off)" bezelStyle="regularSquare" imagePosition="left" state="on" inset="2" id="WCA-8e-MOA">
                                                             <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
                                                             <font key="font" metaFont="system"/>
                                                         </buttonCell>
@@ -675,8 +675,8 @@
                                                         </connections>
                                                     </button>
                                                     <button translatesAutoresizingMaskIntoConstraints="NO" id="hsb-w2-bkZ">
-                                                        <rect key="frame" x="15" y="8" width="297" height="18"/>
-                                                        <buttonCell key="cell" type="check" title="Show EventViewer in all spaces. (Default: off)" bezelStyle="regularSquare" imagePosition="left" state="on" inset="2" id="Be8-wB-67e">
+                                                        <rect key="frame" x="15" y="8" width="293" height="18"/>
+                                                        <buttonCell key="cell" type="check" title="Show EventViewer in all spaces (Default: off)" bezelStyle="regularSquare" imagePosition="left" state="on" inset="2" id="Be8-wB-67e">
                                                             <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
                                                             <font key="font" metaFont="system"/>
                                                         </buttonCell>
@@ -704,8 +704,8 @@
                                                 <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                                 <subviews>
                                                     <button translatesAutoresizingMaskIntoConstraints="NO" id="cCs-zq-ovo">
-                                                        <rect key="frame" x="15" y="8" width="336" height="18"/>
-                                                        <buttonCell key="cell" type="check" title="Show key code in hexadecimal format. (Default: off)" bezelStyle="regularSquare" imagePosition="left" state="on" inset="2" id="xfY-PO-icV">
+                                                        <rect key="frame" x="15" y="8" width="332" height="18"/>
+                                                        <buttonCell key="cell" type="check" title="Show key code in hexadecimal format (Default: off)" bezelStyle="regularSquare" imagePosition="left" state="on" inset="2" id="xfY-PO-icV">
                                                             <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
                                                             <font key="font" metaFont="system"/>
                                                         </buttonCell>
