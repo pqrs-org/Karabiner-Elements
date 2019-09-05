@@ -267,7 +267,7 @@
                                     <rect key="frame" x="10" y="33" width="834" height="493"/>
                                     <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                     <subviews>
-                                        <box borderType="line" title="Keyboard &amp; Pointing events" translatesAutoresizingMaskIntoConstraints="NO" id="614">
+                                        <box borderType="line" title="Keyboard &amp; pointing events" translatesAutoresizingMaskIntoConstraints="NO" id="614">
                                             <rect key="frame" x="14" y="198" width="806" height="285"/>
                                             <view key="contentView" id="pJS-41-sBt">
                                                 <rect key="frame" x="3" y="3" width="800" height="267"/>
@@ -308,7 +308,7 @@
                                                                     <color key="gridColor" name="gridColor" catalog="System" colorSpace="catalog"/>
                                                                     <tableColumns>
                                                                         <tableColumn identifier="eventType" editable="NO" width="120" minWidth="40" maxWidth="1000" id="567">
-                                                                            <tableHeaderCell key="headerCell" lineBreakMode="truncatingTail" enabled="NO" borderStyle="border" alignment="left" title="eventType">
+                                                                            <tableHeaderCell key="headerCell" lineBreakMode="truncatingTail" enabled="NO" borderStyle="border" alignment="left" title="Event type">
                                                                                 <font key="font" metaFont="smallSystem"/>
                                                                                 <color key="textColor" name="headerTextColor" catalog="System" colorSpace="catalog"/>
                                                                                 <color key="backgroundColor" name="headerColor" catalog="System" colorSpace="catalog"/>
@@ -320,7 +320,7 @@
                                                                             </textFieldCell>
                                                                         </tableColumn>
                                                                         <tableColumn identifier="code" editable="NO" width="50" minWidth="40" maxWidth="1000" id="566">
-                                                                            <tableHeaderCell key="headerCell" lineBreakMode="truncatingTail" enabled="NO" borderStyle="border" alignment="left" title="code">
+                                                                            <tableHeaderCell key="headerCell" lineBreakMode="truncatingTail" enabled="NO" borderStyle="border" alignment="left" title="Code">
                                                                                 <font key="font" metaFont="smallSystem"/>
                                                                                 <color key="textColor" name="headerTextColor" catalog="System" colorSpace="catalog"/>
                                                                                 <color key="backgroundColor" name="headerColor" catalog="System" colorSpace="catalog"/>
@@ -332,7 +332,7 @@
                                                                             </textFieldCell>
                                                                         </tableColumn>
                                                                         <tableColumn identifier="name" editable="NO" width="200" minWidth="10" maxWidth="3.4028234663852886e+38" id="581">
-                                                                            <tableHeaderCell key="headerCell" lineBreakMode="truncatingTail" enabled="NO" borderStyle="border" alignment="left" title="name">
+                                                                            <tableHeaderCell key="headerCell" lineBreakMode="truncatingTail" enabled="NO" borderStyle="border" alignment="left" title="Name">
                                                                                 <font key="font" metaFont="smallSystem"/>
                                                                                 <color key="textColor" name="headerTextColor" catalog="System" colorSpace="catalog"/>
                                                                                 <color key="backgroundColor" name="headerColor" catalog="System" colorSpace="catalog"/>
@@ -344,7 +344,7 @@
                                                                             </textFieldCell>
                                                                         </tableColumn>
                                                                         <tableColumn identifier="misc" editable="NO" width="367" minWidth="10" maxWidth="3.4028234663852886e+38" id="585">
-                                                                            <tableHeaderCell key="headerCell" lineBreakMode="truncatingTail" enabled="NO" borderStyle="border" alignment="left" title="misc">
+                                                                            <tableHeaderCell key="headerCell" lineBreakMode="truncatingTail" enabled="NO" borderStyle="border" alignment="left" title="Misc">
                                                                                 <font key="font" metaFont="smallSystem"/>
                                                                                 <color key="textColor" name="headerTextColor" catalog="System" colorSpace="catalog"/>
                                                                                 <color key="backgroundColor" name="headerColor" catalog="System" colorSpace="catalog"/>
@@ -404,7 +404,7 @@
                                                 </constraints>
                                             </view>
                                         </box>
-                                        <box title="Input Area" translatesAutoresizingMaskIntoConstraints="NO" id="HuX-nl-e5r">
+                                        <box title="Input area" translatesAutoresizingMaskIntoConstraints="NO" id="HuX-nl-e5r">
                                             <rect key="frame" x="14" y="6" width="806" height="166"/>
                                             <view key="contentView" id="dbf-S3-bPS">
                                                 <rect key="frame" x="3" y="3" width="800" height="148"/>
@@ -499,7 +499,7 @@
                                     <outlet property="initialFirstResponder" destination="925" id="930"/>
                                 </connections>
                             </tabViewItem>
-                            <tabViewItem label="Frontmost Application" identifier="" id="JP7-qs-Qlf">
+                            <tabViewItem label="Frontmost application" identifier="" id="JP7-qs-Qlf">
                                 <view key="view" id="OUd-40-tIR">
                                     <rect key="frame" x="10" y="33" width="834" height="493"/>
                                     <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
@@ -567,7 +567,7 @@
                                             <rect key="frame" x="17" y="17" width="800" height="439"/>
                                             <clipView key="contentView" drawsBackground="NO" id="jio-Mp-Rne">
                                                 <rect key="frame" x="1" y="1" width="783" height="437"/>
-                                                <autoresizingMask key="autoresizingMask"/>
+                                                <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                                 <subviews>
                                                     <textView editable="NO" importsGraphics="NO" verticallyResizable="YES" usesFontPanel="YES" findStyle="panel" continuousSpellChecking="YES" allowsUndo="YES" usesRuler="YES" allowsNonContiguousLayout="YES" quoteSubstitution="YES" dashSubstitution="YES" smartInsertDelete="YES" id="Glx-oy-lpN">
                                                         <rect key="frame" x="0.0" y="0.0" width="783" height="437"/>
@@ -618,7 +618,7 @@
                                             <rect key="frame" x="17" y="10" width="800" height="446"/>
                                             <clipView key="contentView" drawsBackground="NO" id="QSl-Tw-YGc">
                                                 <rect key="frame" x="1" y="1" width="783" height="444"/>
-                                                <autoresizingMask key="autoresizingMask"/>
+                                                <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                                 <subviews>
                                                     <textView editable="NO" importsGraphics="NO" verticallyResizable="YES" usesFontPanel="YES" findStyle="panel" continuousSpellChecking="YES" allowsUndo="YES" usesRuler="YES" allowsNonContiguousLayout="YES" quoteSubstitution="YES" dashSubstitution="YES" smartInsertDelete="YES" id="pzX-J3-r2O">
                                                         <rect key="frame" x="0.0" y="0.0" width="783" height="444"/>
@@ -652,7 +652,7 @@
                                     </constraints>
                                 </view>
                             </tabViewItem>
-                            <tabViewItem label="EventViewer-Preferences" identifier="" id="xC1-NR-t4e">
+                            <tabViewItem label="Preferences" identifier="" id="xC1-NR-t4e">
                                 <view key="view" id="FqR-MI-IIO">
                                     <rect key="frame" x="10" y="33" width="834" height="493"/>
                                     <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>

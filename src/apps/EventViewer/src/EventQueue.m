@@ -319,7 +319,7 @@ enum {
   for (NSUInteger i = 0; i < [self.queue count]; ++i) {
     NSDictionary* dict = self.queue[([self.queue count] - 1 - i)];
 
-    NSString* eventType = [NSString stringWithFormat:@"eventType:%@", dict[@"eventType"]];
+    NSString* eventType = [NSString stringWithFormat:@"type:%@", dict[@"eventType"]];
     NSString* code = [NSString stringWithFormat:@"code:%@", dict[@"code"]];
     NSString* name = [NSString stringWithFormat:@"name:%@", dict[@"name"]];
     NSString* misc = [NSString stringWithFormat:@"misc:%@", dict[@"misc"]];
