@@ -44,6 +44,7 @@ void libkrbn_check_for_updates_with_beta_version(void);
 void libkrbn_launch_event_viewer(void);
 void libkrbn_launch_menu(void);
 void libkrbn_launch_preferences(void);
+void libkrbn_launch_multitouch_extension(void);
 
 bool libkrbn_system_core_configuration_file_path_exists(void);
 

@@ -119,6 +119,10 @@ void libkrbn_launch_preferences(void) {
   krbn::application_launcher::launch_preferences();
 }
 
+void libkrbn_launch_multitouch_extension(void) {
+  krbn::application_launcher::launch_multitouch_extension(false);
+}
+
 bool libkrbn_system_core_configuration_file_path_exists(void) {
   return pqrs::filesystem::exists(krbn::constants::get_system_core_configuration_file_path());
 }
