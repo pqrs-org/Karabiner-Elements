@@ -526,3 +526,96 @@ TEST_CASE("conditions.keyboard_type") {
                                                         manipulator_environment) == true);
   }
 }
+
+TEST_CASE("conditions.variable") {
+  krbn::manipulator::manipulator_environment manipulator_environment;
+  krbn::event_queue::entry entry(krbn::device_id(1),
+                                 krbn::event_queue::event_time_stamp(krbn::absolute_time_point(0)),
+                                 krbn::event_queue::event(krbn::key_code::a),
+                                 krbn::event_type::key_down,
+                                 krbn::event_queue::event(krbn::key_code::a));
+
+  manipulator_environment.set_variable("variable_name", 123);
+
+  //
+  // variable_if
+  //
+
+  {
+    nlohmann::json json;
+    json["type"] = "variable_if";
+    json["name"] = "variable_name";
+    json["value"] = 123;
+    krbn::manipulator::conditions::variable condition(json);
+
+    REQUIRE(condition.is_fulfilled(entry, manipulator_environment));
+  }
+  {
+    nlohmann::json json;
+    json["type"] = "variable_if";
+    json["name"] = "variable_name";
+    json["value"] = 1234;
+    krbn::manipulator::conditions::variable condition(json);
+
+    REQUIRE(!condition.is_fulfilled(entry, manipulator_environment));
+  }
+  {
+    nlohmann::json json;
+    json["type"] = "variable_if";
+    json["name"] = "unknown";
+    json["value"] = 0;
+    krbn::manipulator::conditions::variable condition(json);
+
+    REQUIRE(condition.is_fulfilled(entry, manipulator_environment));
+  }
+  {
+    nlohmann::json json;
+    json["type"] = "variable_if";
+    json["name"] = "unknown";
+    json["value"] = 1;
+    krbn::manipulator::conditions::variable condition(json);
+
+    REQUIRE(!condition.is_fulfilled(entry, manipulator_environment));
+  }
+
+  //
+  // variable_unless
+  //
+
+  {
+    nlohmann::json json;
+    json["type"] = "variable_unless";
+    json["name"] = "variable_name";
+    json["value"] = 123;
+    krbn::manipulator::conditions::variable condition(json);
+
+    REQUIRE(!condition.is_fulfilled(entry, manipulator_environment));
+  }
+  {
+    nlohmann::json json;
+    json["type"] = "variable_unless";
+    json["name"] = "variable_name";
+    json["value"] = 1234;
+    krbn::manipulator::conditions::variable condition(json);
+
+    REQUIRE(condition.is_fulfilled(entry, manipulator_environment));
+  }
+  {
+    nlohmann::json json;
+    json["type"] = "variable_unless";
+    json["name"] = "unknown";
+    json["value"] = 0;
+    krbn::manipulator::conditions::variable condition(json);
+
+    REQUIRE(!condition.is_fulfilled(entry, manipulator_environment));
+  }
+  {
+    nlohmann::json json;
+    json["type"] = "variable_unless";
+    json["name"] = "unknown";
+    json["value"] = 1;
+    krbn::manipulator::conditions::variable condition(json);
+
+    REQUIRE(condition.is_fulfilled(entry, manipulator_environment));
+  }
+}
