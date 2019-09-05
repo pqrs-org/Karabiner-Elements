@@ -467,16 +467,16 @@
                         <rect key="frame" x="13" y="10" width="974" height="534"/>
                         <font key="font" metaFont="system"/>
                         <tabViewItems>
-                            <tabViewItem label="Simple Modifications" identifier="1" id="SOT-pf-9fT">
+                            <tabViewItem label="Simple modifications" identifier="1" id="SOT-pf-9fT">
                                 <view key="view" id="aYZ-Ew-w2F">
                                     <rect key="frame" x="10" y="33" width="954" height="488"/>
                                     <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                     <subviews>
                                         <customView translatesAutoresizingMaskIntoConstraints="NO" id="Cqw-ll-1Rg">
-                                            <rect key="frame" x="221" y="447" width="513" height="31"/>
+                                            <rect key="frame" x="222" y="447" width="511" height="31"/>
                                             <subviews>
                                                 <popUpButton verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="oB5-NY-D3P">
-                                                    <rect key="frame" x="101" y="2" width="405" height="25"/>
+                                                    <rect key="frame" x="99" y="2" width="405" height="25"/>
                                                     <constraints>
                                                         <constraint firstAttribute="width" relation="greaterThanOrEqual" constant="400" id="bbc-gt-Qjj"/>
                                                     </constraints>
@@ -490,8 +490,8 @@
                                                     </connections>
                                                 </popUpButton>
                                                 <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="lqN-yh-z4B">
-                                                    <rect key="frame" x="8" y="7" width="92" height="17"/>
-                                                    <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" title="Target Device:" id="Bvh-CN-r6V">
+                                                    <rect key="frame" x="8" y="7" width="90" height="17"/>
+                                                    <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" title="Target device:" id="Bvh-CN-r6V">
                                                         <font key="font" metaFont="system"/>
                                                         <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
                                                         <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
@@ -675,16 +675,16 @@
                                     </constraints>
                                 </view>
                             </tabViewItem>
-                            <tabViewItem label="Function Keys" identifier="2" id="zrY-nU-kFs">
+                            <tabViewItem label="Function keys" identifier="2" id="zrY-nU-kFs">
                                 <view key="view" id="Wmh-Ot-meK">
                                     <rect key="frame" x="10" y="33" width="954" height="488"/>
                                     <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                     <subviews>
                                         <customView translatesAutoresizingMaskIntoConstraints="NO" id="FZM-iI-Bcg">
-                                            <rect key="frame" x="221" y="447" width="513" height="31"/>
+                                            <rect key="frame" x="222" y="447" width="511" height="31"/>
                                             <subviews>
                                                 <popUpButton verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="grf-jw-eCn">
-                                                    <rect key="frame" x="101" y="2" width="405" height="25"/>
+                                                    <rect key="frame" x="99" y="2" width="405" height="25"/>
                                                     <constraints>
                                                         <constraint firstAttribute="width" relation="greaterThanOrEqual" constant="400" id="oUU-f3-pe7"/>
                                                     </constraints>
@@ -698,8 +698,8 @@
                                                     </connections>
                                                 </popUpButton>
                                                 <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="Tes-Sp-vUH">
-                                                    <rect key="frame" x="8" y="7" width="92" height="17"/>
-                                                    <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" title="Target Device:" id="7GS-fM-TSE">
+                                                    <rect key="frame" x="8" y="7" width="90" height="17"/>
+                                                    <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" title="Target device:" id="7GS-fM-TSE">
                                                         <font key="font" metaFont="system"/>
                                                         <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
                                                         <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
@@ -859,7 +859,7 @@
                                     </constraints>
                                 </view>
                             </tabViewItem>
-                            <tabViewItem label="Complex Modifications" identifier="" id="zkg-mg-aXH" userLabel="Complex Modifications">
+                            <tabViewItem label="Complex modifications" identifier="" id="zkg-mg-aXH" userLabel="Complex Modifications">
                                 <view key="view" id="QKn-8U-Fy4">
                                     <rect key="frame" x="10" y="33" width="954" height="488"/>
                                     <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
@@ -1351,7 +1351,7 @@
                                             <rect key="frame" x="10" y="7" width="934" height="479"/>
                                             <font key="font" metaFont="system"/>
                                             <tabViewItems>
-                                                <tabViewItem label="Basic Configuration" identifier="" id="mc1-99-374">
+                                                <tabViewItem label="Basic configuration" identifier="" id="mc1-99-374">
                                                     <view key="view" id="xe3-Dx-hgu">
                                                         <rect key="frame" x="10" y="33" width="914" height="433"/>
                                                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
@@ -1823,27 +1823,27 @@
                                     </constraints>
                                 </view>
                             </tabViewItem>
-                            <tabViewItem label="Virtual Keyboard" identifier="" id="mRV-XM-rli" userLabel="Virtual Keyboard">
+                            <tabViewItem label="Virtual keyboard" identifier="" id="mRV-XM-rli" userLabel="Virtual Keyboard">
                                 <view key="view" id="z9H-0i-wnG">
                                     <rect key="frame" x="10" y="33" width="954" height="488"/>
                                     <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                     <subviews>
-                                        <box title="Country Code" translatesAutoresizingMaskIntoConstraints="NO" id="LjF-ys-Tb3">
+                                        <box title="Country code" translatesAutoresizingMaskIntoConstraints="NO" id="LjF-ys-Tb3">
                                             <rect key="frame" x="14" y="281" width="926" height="199"/>
                                             <view key="contentView" id="WWS-oi-B4G">
                                                 <rect key="frame" x="3" y="3" width="920" height="181"/>
                                                 <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                                 <subviews>
                                                     <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" allowsCharacterPickerTouchBarItem="YES" translatesAutoresizingMaskIntoConstraints="NO" id="wfH-C6-3Zk">
-                                                        <rect key="frame" x="15" y="156" width="92" height="17"/>
-                                                        <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" title="Country Code:" id="DTe-J0-hEy">
+                                                        <rect key="frame" x="15" y="156" width="90" height="17"/>
+                                                        <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" title="Country code:" id="DTe-J0-hEy">
                                                             <font key="font" metaFont="system"/>
                                                             <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
                                                             <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
                                                         </textFieldCell>
                                                     </textField>
                                                     <textField verticalHuggingPriority="750" allowsCharacterPickerTouchBarItem="YES" translatesAutoresizingMaskIntoConstraints="NO" id="VxT-OA-zK5">
-                                                        <rect key="frame" x="115" y="154" width="60" height="22"/>
+                                                        <rect key="frame" x="113" y="154" width="60" height="22"/>
                                                         <constraints>
                                                             <constraint firstAttribute="width" constant="60" id="0DD-Gt-nPt"/>
                                                         </constraints>
@@ -1861,7 +1861,7 @@
                                                         </connections>
                                                     </textField>
                                                     <stepper horizontalHuggingPriority="750" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="8oq-XL-Uqg">
-                                                        <rect key="frame" x="172" y="151" width="19" height="27"/>
+                                                        <rect key="frame" x="170" y="151" width="19" height="27"/>
                                                         <stepperCell key="cell" continuous="YES" alignment="left" maxValue="255" id="Op4-4d-caF"/>
                                                         <connections>
                                                             <action selector="changeVirtualHIDKeyboardCountryCode:" target="5ke-qB-Wr5" id="sre-rz-azz"/>
@@ -1907,7 +1907,7 @@ In this case, you have to change the country code to avoid the conflict.
                                                 </constraints>
                                             </view>
                                         </box>
-                                        <box title="Mouse Key" translatesAutoresizingMaskIntoConstraints="NO" id="ThU-4T-Fc9">
+                                        <box title="Mouse key" translatesAutoresizingMaskIntoConstraints="NO" id="ThU-4T-Fc9">
                                             <rect key="frame" x="14" y="214" width="926" height="51"/>
                                             <view key="contentView" id="kIb-ba-GzI">
                                                 <rect key="frame" x="3" y="3" width="920" height="33"/>
@@ -2238,7 +2238,7 @@ In this case, you have to change the country code to avoid the conflict.
                                                 </constraints>
                                             </view>
                                         </box>
-                                        <box borderType="line" title="System Default Configuration" translatesAutoresizingMaskIntoConstraints="NO" id="gUV-If-Nhn">
+                                        <box borderType="line" title="System default configuration" translatesAutoresizingMaskIntoConstraints="NO" id="gUV-If-Nhn">
                                             <rect key="frame" x="14" y="181" width="926" height="96"/>
                                             <view key="contentView" id="TF9-1O-zm8">
                                                 <rect key="frame" x="3" y="3" width="920" height="78"/>
@@ -2299,10 +2299,10 @@ In this case, you have to change the country code to avoid the conflict.
                                                 </constraints>
                                             </view>
                                         </box>
-                                        <box title="Miscellaneous" translatesAutoresizingMaskIntoConstraints="NO" id="BAq-6J-75B">
-                                            <rect key="frame" x="14" y="93" width="926" height="72"/>
+                                        <box title="Menu bar" translatesAutoresizingMaskIntoConstraints="NO" id="BAq-6J-75B">
+                                            <rect key="frame" x="14" y="93" width="406" height="72"/>
                                             <view key="contentView" id="9XA-gC-pTe">
-                                                <rect key="frame" x="3" y="3" width="920" height="54"/>
+                                                <rect key="frame" x="3" y="3" width="400" height="54"/>
                                                 <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                                 <subviews>
                                                     <button translatesAutoresizingMaskIntoConstraints="NO" id="AHk-df-Lmk">
@@ -2336,39 +2336,66 @@ In this case, you have to change the country code to avoid the conflict.
                                                     <constraint firstItem="AHk-df-Lmk" firstAttribute="top" secondItem="9XA-gC-pTe" secondAttribute="top" constant="8" id="tBi-fH-cEd"/>
                                                 </constraints>
                                             </view>
+                                            <constraints>
+                                                <constraint firstAttribute="width" constant="400" id="dI0-j6-TP5"/>
+                                            </constraints>
                                         </box>
-                                        <box borderType="line" title="Web Sites" translatesAutoresizingMaskIntoConstraints="NO" id="ZAS-Lc-pSo">
+                                        <box title="Extra tool" translatesAutoresizingMaskIntoConstraints="NO" id="KYF-JP-6qa">
+                                            <rect key="frame" x="450" y="93" width="490" height="72"/>
+                                            <view key="contentView" id="onT-Zi-pME">
+                                                <rect key="frame" x="3" y="3" width="484" height="54"/>
+                                                <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                                                <subviews>
+                                                    <button verticalHuggingPriority="750" imageHugsTitle="YES" translatesAutoresizingMaskIntoConstraints="NO" id="KR9-9j-1sy">
+                                                        <rect key="frame" x="11" y="18" width="254" height="32"/>
+                                                        <buttonCell key="cell" type="push" title="Open Multitouch Extension app" bezelStyle="rounded" image="ic_launch_18pt" imagePosition="left" alignment="center" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="M3v-oD-yER">
+                                                            <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
+                                                            <font key="font" metaFont="system"/>
+                                                        </buttonCell>
+                                                        <connections>
+                                                            <action selector="launchMultitouchExtension:" target="5ke-qB-Wr5" id="bk1-Ko-bS4"/>
+                                                        </connections>
+                                                    </button>
+                                                </subviews>
+                                                <constraints>
+                                                    <constraint firstItem="KR9-9j-1sy" firstAttribute="leading" secondItem="onT-Zi-pME" secondAttribute="leading" constant="17" id="w4J-Zj-uF3"/>
+                                                    <constraint firstItem="KR9-9j-1sy" firstAttribute="top" secondItem="onT-Zi-pME" secondAttribute="top" constant="8" id="wcb-Od-3Fy"/>
+                                                </constraints>
+                                            </view>
+                                        </box>
+                                        <box borderType="line" title="Web sites" translatesAutoresizingMaskIntoConstraints="NO" id="ZAS-Lc-pSo">
                                             <rect key="frame" x="14" y="22" width="926" height="55"/>
                                             <view key="contentView" id="ibU-6J-Zdv">
                                                 <rect key="frame" x="3" y="3" width="920" height="37"/>
                                                 <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                                 <subviews>
-                                                    <button verticalHuggingPriority="750" imageHugsTitle="YES" translatesAutoresizingMaskIntoConstraints="NO" id="i87-Pa-TZD">
-                                                        <rect key="frame" x="11" y="1" width="344" height="32"/>
-                                                        <buttonCell key="cell" type="push" title="https://github.com/tekezo/Karabiner-Elements" bezelStyle="rounded" image="ic_open_in_browser_18pt" imagePosition="left" alignment="center" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="PWa-pr-xeD">
+                                                    <button verticalHuggingPriority="750" imageHugsTitle="YES" translatesAutoresizingMaskIntoConstraints="NO" id="etE-eJ-NP2">
+                                                        <rect key="frame" x="14" y="1" width="192" height="32"/>
+                                                        <buttonCell key="cell" type="push" title="Open official website" bezelStyle="rounded" image="ic_home_18pt" imagePosition="left" alignment="center" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="I13-Po-Cgb">
                                                             <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
                                                             <font key="font" metaFont="system"/>
                                                         </buttonCell>
                                                         <connections>
-                                                            <action selector="openURL:" target="5ke-qB-Wr5" id="uc3-fc-YLl"/>
+                                                            <action selector="openOfficialWebsite:" target="5ke-qB-Wr5" id="eS0-n7-3Ct"/>
                                                         </connections>
                                                     </button>
-                                                    <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" allowsCharacterPickerTouchBarItem="YES" translatesAutoresizingMaskIntoConstraints="NO" id="c8u-qB-WbK">
-                                                        <rect key="frame" x="357" y="10" width="89" height="17"/>
-                                                        <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" title="(source code)" id="pmQ-71-PVZ">
+                                                    <button verticalHuggingPriority="750" imageHugsTitle="YES" translatesAutoresizingMaskIntoConstraints="NO" id="i87-Pa-TZD">
+                                                        <rect key="frame" x="224" y="1" width="231" height="32"/>
+                                                        <buttonCell key="cell" type="push" title="Open GitHub (source code)" bezelStyle="rounded" image="ic_code_18pt" imagePosition="left" alignment="center" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="PWa-pr-xeD">
+                                                            <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
                                                             <font key="font" metaFont="system"/>
-                                                            <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
-                                                            <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
-                                                        </textFieldCell>
-                                                    </textField>
+                                                        </buttonCell>
+                                                        <connections>
+                                                            <action selector="openGitHub:" target="5ke-qB-Wr5" id="AcV-aa-B0y"/>
+                                                        </connections>
+                                                    </button>
                                                 </subviews>
                                                 <constraints>
-                                                    <constraint firstItem="c8u-qB-WbK" firstAttribute="leading" secondItem="i87-Pa-TZD" secondAttribute="trailing" constant="10" id="9Za-AM-3cr"/>
-                                                    <constraint firstItem="c8u-qB-WbK" firstAttribute="centerY" secondItem="i87-Pa-TZD" secondAttribute="centerY" id="DMo-op-9v5"/>
-                                                    <constraint firstAttribute="trailing" relation="greaterThanOrEqual" secondItem="c8u-qB-WbK" secondAttribute="trailing" constant="20" symbolic="YES" id="Glv-uh-8or"/>
-                                                    <constraint firstItem="i87-Pa-TZD" firstAttribute="top" secondItem="ibU-6J-Zdv" secondAttribute="top" constant="8" id="kuW-cn-ejw"/>
-                                                    <constraint firstAttribute="bottom" secondItem="i87-Pa-TZD" secondAttribute="bottom" constant="8" id="slT-g9-UVV"/>
-                                                    <constraint firstItem="i87-Pa-TZD" firstAttribute="leading" secondItem="ibU-6J-Zdv" secondAttribute="leading" constant="17" id="v22-0C-Bcp"/>
+                                                    <constraint firstItem="i87-Pa-TZD" firstAttribute="centerY" secondItem="etE-eJ-NP2" secondAttribute="centerY" id="2so-2r-52e"/>
+                                                    <constraint firstItem="etE-eJ-NP2" firstAttribute="top" secondItem="ibU-6J-Zdv" secondAttribute="top" constant="8" id="67S-Dr-eIS"/>
+                                                    <constraint firstItem="i87-Pa-TZD" firstAttribute="leading" secondItem="etE-eJ-NP2" secondAttribute="trailing" constant="30" id="Apf-6h-XUT"/>
+                                                    <constraint firstAttribute="bottom" secondItem="etE-eJ-NP2" secondAttribute="bottom" constant="8" id="u5w-Zw-ePN"/>
+                                                    <constraint firstItem="etE-eJ-NP2" firstAttribute="leading" secondItem="ibU-6J-Zdv" secondAttribute="leading" constant="20" id="x6m-gI-5Yy"/>
                                                 </constraints>
                                             </view>
                                         </box>
@@ -2377,27 +2404,30 @@ In this case, you have to change the country code to avoid the conflict.
                                         <constraint firstAttribute="trailing" secondItem="3j8-8U-bBH" secondAttribute="trailing" constant="17" id="0eo-bc-F4Z"/>
                                         <constraint firstAttribute="trailing" secondItem="9Ub-kd-yPy" secondAttribute="trailing" constant="17" id="4Mp-Vt-6au"/>
                                         <constraint firstItem="ZAS-Lc-pSo" firstAttribute="top" secondItem="BAq-6J-75B" secondAttribute="bottom" constant="20" id="8Gx-Bv-BgB"/>
-                                        <constraint firstItem="ZAS-Lc-pSo" firstAttribute="leading" secondItem="BAq-6J-75B" secondAttribute="leading" id="ASB-vY-iqL"/>
+                                        <constraint firstItem="ZAS-Lc-pSo" firstAttribute="trailing" secondItem="3j8-8U-bBH" secondAttribute="trailing" id="AZE-gx-1bg"/>
                                         <constraint firstItem="BAq-6J-75B" firstAttribute="top" secondItem="gUV-If-Nhn" secondAttribute="bottom" constant="20" id="DFT-q3-UWe"/>
+                                        <constraint firstItem="KYF-JP-6qa" firstAttribute="top" secondItem="BAq-6J-75B" secondAttribute="top" id="Etf-c5-6nj"/>
                                         <constraint firstItem="sau-jf-Dqb" firstAttribute="leading" secondItem="DOX-q0-HoN" secondAttribute="trailing" constant="5" id="Fyg-bc-bgi"/>
                                         <constraint firstItem="3j8-8U-bBH" firstAttribute="leading" secondItem="oZ9-PG-xey" secondAttribute="leading" constant="17" id="G3Y-Zf-g9c"/>
-                                        <constraint firstItem="ZAS-Lc-pSo" firstAttribute="trailing" secondItem="BAq-6J-75B" secondAttribute="trailing" id="Gfl-bg-6i3"/>
                                         <constraint firstItem="gUV-If-Nhn" firstAttribute="trailing" secondItem="3j8-8U-bBH" secondAttribute="trailing" id="Gwc-SB-KPh"/>
                                         <constraint firstItem="sau-jf-Dqb" firstAttribute="centerY" secondItem="DOX-q0-HoN" secondAttribute="centerY" id="KYg-f5-u1g"/>
                                         <constraint firstItem="DOX-q0-HoN" firstAttribute="leading" secondItem="oZ9-PG-xey" secondAttribute="leading" constant="17" id="Okn-qw-iEx"/>
                                         <constraint firstItem="DOX-q0-HoN" firstAttribute="top" secondItem="oZ9-PG-xey" secondAttribute="top" constant="8" id="Qji-lS-jHg"/>
+                                        <constraint firstItem="KYF-JP-6qa" firstAttribute="leading" secondItem="BAq-6J-75B" secondAttribute="trailing" constant="36" id="Sya-Bm-He6"/>
                                         <constraint firstItem="BAq-6J-75B" firstAttribute="leading" secondItem="3j8-8U-bBH" secondAttribute="leading" id="UEh-kf-9oL"/>
+                                        <constraint firstItem="KYF-JP-6qa" firstAttribute="bottom" secondItem="BAq-6J-75B" secondAttribute="bottom" id="Urt-AZ-i1K"/>
                                         <constraint firstItem="9Ub-kd-yPy" firstAttribute="leading" secondItem="VG0-yy-2JZ" secondAttribute="trailing" constant="10" id="V53-hn-Jte"/>
+                                        <constraint firstItem="KYF-JP-6qa" firstAttribute="trailing" secondItem="3j8-8U-bBH" secondAttribute="trailing" id="ZDt-vy-ohb"/>
                                         <constraint firstItem="bRw-jJ-vdo" firstAttribute="leading" secondItem="3j8-8U-bBH" secondAttribute="leading" id="cu0-mY-LNc"/>
                                         <constraint firstItem="gUV-If-Nhn" firstAttribute="top" secondItem="bRw-jJ-vdo" secondAttribute="bottom" constant="20" id="dn0-n6-HxS"/>
                                         <constraint firstItem="bRw-jJ-vdo" firstAttribute="trailing" secondItem="3j8-8U-bBH" secondAttribute="trailing" id="fV2-yM-QGE"/>
                                         <constraint firstItem="gUV-If-Nhn" firstAttribute="leading" secondItem="3j8-8U-bBH" secondAttribute="leading" id="ggg-s5-6ID"/>
+                                        <constraint firstItem="ZAS-Lc-pSo" firstAttribute="leading" secondItem="3j8-8U-bBH" secondAttribute="leading" id="jYY-W5-gfE"/>
                                         <constraint firstItem="9Ub-kd-yPy" firstAttribute="centerY" secondItem="sau-jf-Dqb" secondAttribute="centerY" id="nZ0-68-dZu"/>
                                         <constraint firstItem="bRw-jJ-vdo" firstAttribute="top" secondItem="3j8-8U-bBH" secondAttribute="bottom" constant="20" id="otG-Wg-M9X"/>
                                         <constraint firstAttribute="trailing" relation="greaterThanOrEqual" secondItem="sau-jf-Dqb" secondAttribute="trailing" constant="20" symbolic="YES" id="rge-vm-TG9"/>
                                         <constraint firstItem="VG0-yy-2JZ" firstAttribute="centerY" secondItem="9Ub-kd-yPy" secondAttribute="centerY" id="rz2-JV-k6d"/>
                                         <constraint firstItem="VG0-yy-2JZ" firstAttribute="leading" relation="greaterThanOrEqual" secondItem="oZ9-PG-xey" secondAttribute="leading" constant="20" symbolic="YES" id="uyO-dq-CIb"/>
-                                        <constraint firstItem="BAq-6J-75B" firstAttribute="trailing" secondItem="3j8-8U-bBH" secondAttribute="trailing" id="yhU-hH-Shb"/>
                                         <constraint firstItem="3j8-8U-bBH" firstAttribute="top" secondItem="DOX-q0-HoN" secondAttribute="bottom" constant="20" id="zkN-OQ-f0K"/>
                                     </constraints>
                                 </view>
@@ -2411,7 +2441,7 @@ In this case, you have to change the country code to avoid the conflict.
                                             <rect key="frame" x="17" y="48" width="920" height="432"/>
                                             <clipView key="contentView" drawsBackground="NO" id="h3K-SC-sFn">
                                                 <rect key="frame" x="1" y="1" width="903" height="430"/>
-                                                <autoresizingMask key="autoresizingMask"/>
+                                                <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                                 <subviews>
                                                     <textView editable="NO" importsGraphics="NO" richText="NO" verticallyResizable="YES" findStyle="panel" id="vyq-xs-cqF">
                                                         <rect key="frame" x="0.0" y="0.0" width="903" height="430"/>
@@ -2442,8 +2472,8 @@ In this case, you have to change the country code to avoid the conflict.
                                             </textFieldCell>
                                         </textField>
                                         <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" allowsCharacterPickerTouchBarItem="YES" translatesAutoresizingMaskIntoConstraints="NO" id="KcB-Mj-XJC">
-                                            <rect key="frame" x="15" y="27" width="68" height="11"/>
-                                            <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" title="Current Time: " id="Vyq-qv-rb5">
+                                            <rect key="frame" x="15" y="27" width="65" height="11"/>
+                                            <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" title="Current time: " id="Vyq-qv-rb5">
                                                 <font key="font" metaFont="miniSystem"/>
                                                 <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
                                                 <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
@@ -3149,6 +3179,14 @@ Gw
             </view>
             <point key="canvasLocation" x="168" y="1433"/>
         </window>
+        <button verticalHuggingPriority="750" id="235-dO-fTB">
+            <rect key="frame" x="0.0" y="0.0" width="82" height="32"/>
+            <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+            <buttonCell key="cell" type="push" title="Button" bezelStyle="rounded" alignment="center" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="puf-wu-Axn">
+                <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
+                <font key="font" metaFont="system"/>
+            </buttonCell>
+        </button>
     </objects>
     <resources>
         <image name="NSCaution" width="32" height="32"/>
@@ -3159,11 +3197,14 @@ Gw
         <image name="ic_check_18pt" width="18" height="18"/>
         <image name="ic_chevron_right_18pt" width="18" height="18"/>
         <image name="ic_cloud_download_18pt" width="18" height="18"/>
+        <image name="ic_code_18pt" width="18" height="18"/>
         <image name="ic_delete_forever_18pt" width="18" height="18"/>
         <image name="ic_expand_more_18pt" width="18" height="18"/>
         <image name="ic_file_download_18pt" width="18" height="18"/>
         <image name="ic_forward_18pt" width="18" height="18"/>
+        <image name="ic_home_18pt" width="18" height="18"/>
         <image name="ic_keyboard_18pt" width="18" height="18"/>
+        <image name="ic_launch_18pt" width="18" height="18"/>
         <image name="ic_mouse_18pt" width="18" height="18"/>
         <image name="ic_open_in_browser_18pt" width="18" height="18"/>
         <image name="ic_refresh_18pt" width="18" height="18"/>

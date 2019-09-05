@@ -300,8 +300,16 @@
   [[[NSAppleScript alloc] initWithContentsOfURL:[NSURL fileURLWithPath:path] error:nil] executeAndReturnError:nil];
 }
 
-- (IBAction)openURL:(id)sender {
-  [[NSWorkspace sharedWorkspace] openURL:[NSURL URLWithString:[sender title]]];
+- (IBAction)launchMultitouchExtension:(id)sender {
+  libkrbn_launch_multitouch_extension();
+}
+
+- (IBAction)openOfficialWebsite:(id)sender {
+  [[NSWorkspace sharedWorkspace] openURL:[NSURL URLWithString:@"https://pqrs.org/osx/karabiner/"]];
+}
+
+- (IBAction)openGitHub:(id)sender {
+  [[NSWorkspace sharedWorkspace] openURL:[NSURL URLWithString:@"https://github.com/tekezo/Karabiner-Elements"]];
 }
 
 - (IBAction)restart:(id)sender {
