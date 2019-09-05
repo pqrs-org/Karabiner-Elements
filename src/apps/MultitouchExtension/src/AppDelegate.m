@@ -60,7 +60,6 @@ static void disable(void) {
 
 - (void)applicationDidFinishLaunching:(NSNotification*)aNotification {
   [KarabinerKit setup];
-  [KarabinerKit exitIfAnotherProcessIsRunning:"multitouch_extension.pid"];
   [KarabinerKit observeConsoleUserServerIsDisabledNotification];
 
   [[NSApplication sharedApplication] disableRelaunchOnLogin];
@@ -82,7 +81,13 @@ static void disable(void) {
     if (![[NSUserDefaults standardUserDefaults] boolForKey:kStartAtLogin]) {
       [NSApp terminate:nil];
     }
-  } else {
+  }
+
+  //
+  // Handle --show-ui
+  //
+
+  if (self.showUI) {
     [self.preferences show];
   }
 
@@ -137,6 +142,10 @@ static void disable(void) {
 
 - (BOOL)startAtLogin {
   return [[[NSProcessInfo processInfo] arguments] indexOfObject:@"--start-at-login"] != NSNotFound;
+}
+
+- (BOOL)showUI {
+  return [[[NSProcessInfo processInfo] arguments] indexOfObject:@"--show-ui"] != NSNotFound;
 }
 
 @end

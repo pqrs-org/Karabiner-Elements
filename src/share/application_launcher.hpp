@@ -1,7 +1,7 @@
 #pragma once
 
 #include <cstdlib>
-#include <string>
+#include <sstream>
 
 namespace krbn {
 class application_launcher final {
@@ -27,17 +27,34 @@ public:
   }
 
   static void launch_multitouch_extension(bool as_start_at_login) {
-    std::string command("open '/Library/Application Support/org.pqrs/Karabiner-Elements/Karabiner-MultitouchExtension.app'");
+    //
+    // Kill an existing process
+    //
 
     if (as_start_at_login) {
-      command += " --args --start-at-login";
+      system("killall Karabiner-MultitouchExtension");
     }
 
-    system(command.c_str());
-  }
+    //
+    // Launch process
+    //
 
-  static void kill_multitouch_extension(void) {
-    system("killall Karabiner-MultitouchExtension");
+    std::stringstream command;
+    command << "open ";
+
+    if (as_start_at_login) {
+      command << " -n ";
+    }
+
+    command << "'/Library/Application Support/org.pqrs/Karabiner-Elements/Karabiner-MultitouchExtension.app'";
+
+    if (as_start_at_login) {
+      command << " --args --start-at-login";
+    } else {
+      command << " --args --show-ui";
+    }
+
+    system(command.str().c_str());
   }
 };
 } // namespace krbn

@@ -227,7 +227,6 @@ private:
 
     // Run MultitouchExtension
 
-    application_launcher::kill_multitouch_extension();
     application_launcher::launch_multitouch_extension(true);
 
     // updater_process_manager_
