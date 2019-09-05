@@ -33,7 +33,6 @@
   [[NSApplication sharedApplication] disableRelaunchOnLogin];
 
   [KarabinerKit setup];
-  [KarabinerKit exitIfAnotherProcessIsRunning:"preferences_window.pid"];
   [KarabinerKit observeConsoleUserServerIsDisabledNotification];
 
   [self.systemPreferencesManager setup];

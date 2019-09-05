@@ -25,7 +25,6 @@
 
 - (void)applicationDidFinishLaunching:(NSNotification*)aNotification {
   [KarabinerKit setup];
-  [KarabinerKit exitIfAnotherProcessIsRunning:"eventviewer.pid"];
 
   [self setKeyResponder];
   [self setWindowProperty:self];
