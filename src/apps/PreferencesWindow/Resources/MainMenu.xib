@@ -2347,8 +2347,8 @@ In this case, you have to change the country code to avoid the conflict.
                                                 <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                                 <subviews>
                                                     <button verticalHuggingPriority="750" imageHugsTitle="YES" translatesAutoresizingMaskIntoConstraints="NO" id="KR9-9j-1sy">
-                                                        <rect key="frame" x="11" y="18" width="254" height="32"/>
-                                                        <buttonCell key="cell" type="push" title="Open Multitouch Extension app" bezelStyle="rounded" image="ic_launch_18pt" imagePosition="left" alignment="center" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="M3v-oD-yER">
+                                                        <rect key="frame" x="11" y="18" width="314" height="32"/>
+                                                        <buttonCell key="cell" type="push" title="Open Karabiner-MultitouchExtension app" bezelStyle="rounded" image="ic_launch_18pt" imagePosition="left" alignment="center" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="M3v-oD-yER">
                                                             <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
                                                             <font key="font" metaFont="system"/>
                                                         </buttonCell>
@@ -2441,7 +2441,7 @@ In this case, you have to change the country code to avoid the conflict.
                                             <rect key="frame" x="17" y="48" width="920" height="432"/>
                                             <clipView key="contentView" drawsBackground="NO" id="h3K-SC-sFn">
                                                 <rect key="frame" x="1" y="1" width="903" height="430"/>
-                                                <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                                                <autoresizingMask key="autoresizingMask"/>
                                                 <subviews>
                                                     <textView editable="NO" importsGraphics="NO" richText="NO" verticallyResizable="YES" findStyle="panel" id="vyq-xs-cqF">
                                                         <rect key="frame" x="0.0" y="0.0" width="903" height="430"/>
