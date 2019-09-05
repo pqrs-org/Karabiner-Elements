@@ -664,8 +664,8 @@
                                                 <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                                 <subviews>
                                                     <button translatesAutoresizingMaskIntoConstraints="NO" id="qpH-oY-yl0">
-                                                        <rect key="frame" x="15" y="32" width="417" height="18"/>
-                                                        <buttonCell key="cell" type="check" title="Force EventViewer to stay on top of other windows. (Default: Off)" bezelStyle="regularSquare" imagePosition="left" state="on" inset="2" id="WCA-8e-MOA">
+                                                        <rect key="frame" x="15" y="32" width="414" height="18"/>
+                                                        <buttonCell key="cell" type="check" title="Force EventViewer to stay on top of other windows. (Default: off)" bezelStyle="regularSquare" imagePosition="left" state="on" inset="2" id="WCA-8e-MOA">
                                                             <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
                                                             <font key="font" metaFont="system"/>
                                                         </buttonCell>
@@ -675,8 +675,8 @@
                                                         </connections>
                                                     </button>
                                                     <button translatesAutoresizingMaskIntoConstraints="NO" id="hsb-w2-bkZ">
-                                                        <rect key="frame" x="15" y="8" width="299" height="18"/>
-                                                        <buttonCell key="cell" type="check" title="Show EventViewer in all spaces. (Default: Off)" bezelStyle="regularSquare" imagePosition="left" state="on" inset="2" id="Be8-wB-67e">
+                                                        <rect key="frame" x="15" y="8" width="297" height="18"/>
+                                                        <buttonCell key="cell" type="check" title="Show EventViewer in all spaces. (Default: off)" bezelStyle="regularSquare" imagePosition="left" state="on" inset="2" id="Be8-wB-67e">
                                                             <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
                                                             <font key="font" metaFont="system"/>
                                                         </buttonCell>
@@ -704,8 +704,8 @@
                                                 <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                                 <subviews>
                                                     <button translatesAutoresizingMaskIntoConstraints="NO" id="cCs-zq-ovo">
-                                                        <rect key="frame" x="15" y="8" width="338" height="18"/>
-                                                        <buttonCell key="cell" type="check" title="Show key code in hexadecimal format. (Default: Off)" bezelStyle="regularSquare" imagePosition="left" state="on" inset="2" id="xfY-PO-icV">
+                                                        <rect key="frame" x="15" y="8" width="336" height="18"/>
+                                                        <buttonCell key="cell" type="check" title="Show key code in hexadecimal format. (Default: off)" bezelStyle="regularSquare" imagePosition="left" state="on" inset="2" id="xfY-PO-icV">
                                                             <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
                                                             <font key="font" metaFont="system"/>
                                                         </buttonCell>
