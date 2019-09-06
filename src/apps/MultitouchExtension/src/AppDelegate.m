@@ -53,6 +53,7 @@ static void disable(void) {
 
 @property(weak) IBOutlet PreferencesController* preferences;
 @property KarabinerKitSmartObserverContainer* observers;
+@property id activity;
 
 @end
 
@@ -123,11 +124,24 @@ static void disable(void) {
   libkrbn_enable_grabber_client(enable,
                                 disable,
                                 disable);
+
+  //
+  // Disable App Nap
+  //
+
+  NSActivityOptions options = NSActivityUserInitiatedAllowingIdleSystemSleep;
+  NSString* reason = @"Disable App Nap in order to receive multitouch events even if this app is background";
+  self.activity = [[NSProcessInfo processInfo] beginActivityWithOptions:options reason:reason];
 }
 
 // Note:
 // We have to set NSSupportsSuddenTermination `NO` to use `applicationWillTerminate`.
 - (void)applicationWillTerminate:(NSNotification*)aNotification {
+  if (self.activity) {
+    [[NSProcessInfo processInfo] endActivity:self.activity];
+    self.activity = nil;
+  }
+
   [[MultitouchDeviceManager sharedMultitouchDeviceManager] setCallback:NO];
 
   setGrabberVariable(0, true);
