@@ -23,26 +23,30 @@ static void setGrabberVariable(int fingerCount, bool sync) {
 }
 
 static void enable(void) {
-  MultitouchDeviceManager* manager = [MultitouchDeviceManager sharedMultitouchDeviceManager];
+  dispatch_async(dispatch_get_main_queue(), ^{
+    MultitouchDeviceManager* manager = [MultitouchDeviceManager sharedMultitouchDeviceManager];
 
-  [manager registerIONotification];
-  [manager registerWakeNotification];
+    [manager registerIONotification];
+    [manager registerWakeNotification];
 
-  // sleep until devices are settled.
-  [NSThread sleepForTimeInterval:1.0];
+    // sleep until devices are settled.
+    [NSThread sleepForTimeInterval:1.0];
 
-  [manager setCallback:YES];
+    [manager setCallback:YES];
 
-  setGrabberVariable(0, false);
+    setGrabberVariable(0, false);
+  });
 }
 
 static void disable(void) {
-  MultitouchDeviceManager* manager = [MultitouchDeviceManager sharedMultitouchDeviceManager];
+  dispatch_async(dispatch_get_main_queue(), ^{
+    MultitouchDeviceManager* manager = [MultitouchDeviceManager sharedMultitouchDeviceManager];
 
-  [manager unregisterIONotification];
-  [manager unregisterWakeNotification];
+    [manager unregisterIONotification];
+    [manager unregisterWakeNotification];
 
-  [manager setCallback:NO];
+    [manager setCallback:NO];
+  });
 }
 
 //
