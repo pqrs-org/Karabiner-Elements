@@ -41,21 +41,23 @@ static void staticCallback(const char* bundle_identifier,
       return;
     }
 
+    NSDictionary* attributes = @{
+      NSForegroundColorAttributeName : NSColor.textColor,
+      NSFontAttributeName : [NSFont fontWithName:@"Menlo" size:11],
+    };
+
     // Update self.text
 
     if (![@"org.pqrs.Karabiner.EventViewer" isEqualToString:bundleIdentifier] &&
         ![@"org.pqrs.Karabiner-EventViewer" isEqualToString:bundleIdentifier]) {
       // Clear if text is huge.
       if (self.text.length > 4 * 1024) {
-        [self.text setAttributedString:[[NSAttributedString alloc] initWithString:@""]];
+        [self.text setAttributedString:[[NSAttributedString alloc] initWithString:@""
+                                                                       attributes:attributes]];
       }
 
       NSString* bundleIdentifierLine = [NSString stringWithFormat:@"Bundle Identifier:  %@\n", bundleIdentifier];
       NSString* filePathLine = [NSString stringWithFormat:@"File Path:          %@\n\n", filePath];
-      NSDictionary* attributes = @{
-        NSForegroundColorAttributeName : NSColor.textColor,
-        NSFontAttributeName : [NSFont fontWithName:@"Menlo" size:11],
-      };
 
       [self.text appendAttributedString:[[NSAttributedString alloc] initWithString:bundleIdentifierLine
                                                                         attributes:attributes]];
@@ -69,7 +71,8 @@ static void staticCallback(const char* bundle_identifier,
     [textStorage beginEditing];
     if (self.text.length == 0) {
       NSString* placeholder = @"Please switch to apps which you want to know Bundle Identifier.";
-      [textStorage setAttributedString:[[NSAttributedString alloc] initWithString:placeholder]];
+      [textStorage setAttributedString:[[NSAttributedString alloc] initWithString:placeholder
+                                                                       attributes:attributes]];
     } else {
       [textStorage setAttributedString:self.text];
     }
