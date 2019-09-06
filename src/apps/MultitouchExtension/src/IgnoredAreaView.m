@@ -33,7 +33,9 @@
                                  return;
                                }
 
-                               [self updateFingerStatusEntries:note.object];
+                               if (self.window.visible) {
+                                 [self updateFingerStatusEntries:note.object];
+                               }
                              }];
       [_observers addObserver:o notificationCenter:center];
     }
@@ -48,7 +50,9 @@
                                  return;
                                }
 
-                               [self updateFingerStatusEntries:note.object];
+                               if (self.window.visible) {
+                                 [self updateFingerStatusEntries:note.object];
+                               }
                              }];
       [_observers addObserver:o notificationCenter:center];
     }
