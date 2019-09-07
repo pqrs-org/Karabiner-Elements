@@ -20,6 +20,8 @@ add_executable(
   MACOSX_BUNDLE
   src/AppDelegate.h
   src/AppDelegate.m
+  src/FingerCount.h
+  src/FingerCount.m
   src/FingerStatusEntry.h
   src/FingerStatusEntry.m
   src/FingerStatusManager.h

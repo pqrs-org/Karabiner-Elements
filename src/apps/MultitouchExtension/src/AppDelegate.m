@@ -1,5 +1,6 @@
 @import IOKit;
 #import "AppDelegate.h"
+#import "FingerCount.h"
 #import "FingerStatusManager.h"
 #import "KarabinerKit/KarabinerKit.h"
 #import "MultitouchDeviceManager.h"
@@ -13,12 +14,24 @@
 // C methods
 //
 
-static void setGrabberVariable(int fingerCount, bool sync) {
-  const char* name = "multitouch_extension_finger_count";
-  if (sync) {
-    libkrbn_grabber_client_sync_set_variable(name, fingerCount);
-  } else {
-    libkrbn_grabber_client_async_set_variable(name, fingerCount);
+static void setGrabberVariable(FingerCount* count, bool sync) {
+  struct {
+    int count;
+    const char* name;
+  } entries[] = {
+      {count.upperHalfAreaCount, "multitouch_extension_finger_count_upper_half_area"},
+      {count.lowerHalfAreaCount, "multitouch_extension_finger_count_lower_half_area"},
+      {count.leftHalfAreaCount, "multitouch_extension_finger_count_left_half_area"},
+      {count.rightHalfAreaCount, "multitouch_extension_finger_count_right_half_area"},
+      {count.totalCount, "multitouch_extension_finger_count_total"},
+  };
+
+  for (int i = 0; i < sizeof(entries) / sizeof(entries[0]); ++i) {
+    if (sync) {
+      libkrbn_grabber_client_sync_set_variable(entries[i].name, entries[i].count);
+    } else {
+      libkrbn_grabber_client_async_set_variable(entries[i].name, entries[i].count);
+    }
   }
 }
 
@@ -34,7 +47,7 @@ static void enable(void) {
 
     [manager setCallback:YES];
 
-    setGrabberVariable(0, false);
+    setGrabberVariable([FingerCount new], false);
   });
 }
 
@@ -115,8 +128,7 @@ static void disable(void) {
                              }
 
                              FingerStatusManager* manager = [FingerStatusManager sharedFingerStatusManager];
-                             NSUInteger fingerCount = [manager getTouchedFixedFingerCount];
-                             setGrabberVariable(fingerCount, false);
+                             setGrabberVariable([manager createFingerCount], false);
                            }];
     [self.observers addObserver:o notificationCenter:center];
   }
@@ -148,7 +160,7 @@ static void disable(void) {
 
   [[MultitouchDeviceManager sharedMultitouchDeviceManager] setCallback:NO];
 
-  setGrabberVariable(0, true);
+  setGrabberVariable([FingerCount new], true);
 
   libkrbn_terminate();
 }

@@ -188,9 +188,9 @@
   }
 }
 
-- (NSUInteger)getTouchedFixedFingerCount {
+- (FingerCount*)createFingerCount {
   @synchronized(self) {
-    NSUInteger count = 0;
+    FingerCount* fingerCount = [FingerCount new];
 
     for (FingerStatusEntry* e in self.entries) {
       if (e.ignored) {
@@ -201,10 +201,22 @@
         continue;
       }
 
-      ++count;
+      if (e.point.x < 0.5) {
+        ++fingerCount.leftHalfAreaCount;
+      } else {
+        ++fingerCount.rightHalfAreaCount;
+      }
+
+      if (e.point.y < 0.5) {
+        ++fingerCount.lowerHalfAreaCount;
+      } else {
+        ++fingerCount.upperHalfAreaCount;
+      }
+
+      ++fingerCount.totalCount;
     }
 
-    return count;
+    return fingerCount;
   }
 }
 

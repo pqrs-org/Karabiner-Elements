@@ -1,6 +1,7 @@
 // -*- mode: objective-c -*-
 
 @import Cocoa;
+#import "FingerCount.h"
 #import "FingerStatusEntry.h"
 #import "MultitouchPrivate.h"
 
@@ -16,6 +17,6 @@
 
 - (NSArray<FingerStatusEntry*>*)copyEntries;
 
-- (NSUInteger)getTouchedFixedFingerCount;
+- (FingerCount*)createFingerCount;
 
 @end
