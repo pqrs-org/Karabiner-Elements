@@ -1,6 +1,6 @@
 #pragma once
 
-// pqrs::osx::iokit_hid_queue_value_monitor v1.11
+// pqrs::osx::iokit_hid_queue_value_monitor v1.12
 
 // (C) Copyright Takayama Fumihiko 2018.
 // Distributed under the Boost Software License, Version 1.0.
@@ -235,6 +235,15 @@ private:
         values->emplace_back(v);
 
         CFRelease(v);
+      }
+
+      // macOS Catalina (10.15) call the `ValueAvailableCallback`
+      // even if `IOHIDDeviceOpen` is failed. (A bug of macOS)
+      // Thus, we should ignore the events when `IOHIDDeviceOpen` is failed.
+      // (== open_options_ == std::nullopt)
+
+      if (!open_options_) {
+        return;
       }
 
       enqueue_to_dispatcher([this, values] {
