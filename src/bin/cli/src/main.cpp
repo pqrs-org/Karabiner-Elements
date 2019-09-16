@@ -16,30 +16,48 @@
 #include <spdlog/sinks/stdout_color_sinks.h>
 
 namespace {
-void select_profile(const std::string& name) {
+void apply_core_configuration_function(const std::function<void(std::shared_ptr<krbn::core_configuration::core_configuration>)>& function) {
   auto wait = pqrs::make_thread_wait();
   krbn::configuration_monitor monitor(krbn::constants::get_user_core_configuration_file_path());
 
-  monitor.core_configuration_updated.connect([name, wait](auto&& weak_core_configuration) {
+  monitor.core_configuration_updated.connect([wait, function](auto&& weak_core_configuration) {
     if (auto core_configuration = weak_core_configuration.lock()) {
-      auto& profiles = core_configuration->get_profiles();
-      for (size_t i = 0; i < profiles.size(); ++i) {
-        if (profiles[i].get_name() == name) {
-          core_configuration->select_profile(i);
-          core_configuration->sync_save_to_file();
-          goto finish;
-        }
-      }
-      krbn::logger::get_logger()->error("`{0}` is not found.", name);
+      function(core_configuration);
     }
-
-  finish:
     wait->notify();
   });
 
   monitor.async_start();
 
   wait->wait_notice();
+}
+
+void select_profile(const std::string& name) {
+  apply_core_configuration_function([name](auto core_configuration) {
+    auto& profiles = core_configuration->get_profiles();
+    for (size_t i = 0; i < profiles.size(); ++i) {
+      if (profiles[i].get_name() == name) {
+        core_configuration->select_profile(i);
+        core_configuration->sync_save_to_file();
+        return;
+      }
+    }
+    krbn::logger::get_logger()->error("`{0}` is not found.", name);
+  });
+}
+
+void show_current_profile_name(void) {
+  apply_core_configuration_function([](auto core_configuration) {
+    std::cout << core_configuration->get_selected_profile().get_name() << std::endl;
+  });
+}
+
+void list_profile_names(void) {
+  apply_core_configuration_function([](auto core_configuration) {
+    for (const auto& profile : core_configuration->get_profiles()) {
+      std::cout << profile.get_name() << std::endl;
+    }
+  });
 }
 
 void set_variables(const std::string& variables) {
@@ -96,6 +114,8 @@ int main(int argc, char** argv) {
   cxxopts::Options options("karabiner_cli", "A command line utility of Karabiner-Elements.");
 
   options.add_options()("select-profile", "Select a profile by name.", cxxopts::value<std::string>());
+  options.add_options()("show-current-profile-name", "Show current profile name");
+  options.add_options()("list-profile-names", "Show all profile names");
   options.add_options()("set-variables", "Json string: {[key: string]: number}", cxxopts::value<std::string>());
   options.add_options()("copy-current-profile-to-system-default-profile", "Copy the current profile to system default profile.");
   options.add_options()("remove-system-default-profile", "Remove the system default profile.");
@@ -113,6 +133,22 @@ int main(int argc, char** argv) {
       std::string key = "select-profile";
       if (parse_result.count(key)) {
         select_profile(parse_result[key].as<std::string>());
+        goto finish;
+      }
+    }
+
+    {
+      std::string key = "show-current-profile-name";
+      if (parse_result.count(key)) {
+        show_current_profile_name();
+        goto finish;
+      }
+    }
+
+    {
+      std::string key = "list-profile-names";
+      if (parse_result.count(key)) {
+        list_profile_names();
         goto finish;
       }
     }
@@ -224,6 +260,8 @@ int main(int argc, char** argv) {
   std::cout << options.help() << std::endl;
   std::cout << "Examples:" << std::endl;
   std::cout << "  karabiner_cli --select-profile 'Default profile'" << std::endl;
+  std::cout << "  karabiner_cli --show-current-profile-name" << std::endl;
+  std::cout << "  karabiner_cli --list-profile-names" << std::endl;
   std::cout << "  karabiner_cli --set-variables '{\"cli_flag1\":1, \"cli_flag2\":2}'" << std::endl;
   std::cout << std::endl;
 
