@@ -2,8 +2,9 @@
 
 ## Beta
 
-- Add `--show-current-profile-name` option into `karabiner_cli`.
-- Add `--list-profile-names` option into `karabiner_cli`.
+- ✨ New Features
+  - Add `--show-current-profile-name` option into `karabiner_cli`.
+  - Add `--list-profile-names` option into `karabiner_cli`.
 
 ## Version 12.7.0
 
