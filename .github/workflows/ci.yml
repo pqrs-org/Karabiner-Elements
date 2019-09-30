@@ -10,7 +10,5 @@ jobs:
       - uses: actions/checkout@v1
       - name: package
         run: make package
-      - name: appendix
-        run: ruby scripts/reduce-logs.rb 'make -C appendix
-      - name: tests
-        run: make -C tests
+      - name: extra
+        run: ruby scripts/reduce-logs.rb 'make -C appendix && make -C tests'
