@@ -1,17 +1,16 @@
-name: C/C++ CI
+name: Karabiner-Elements CI
 
 on: [push]
 
 jobs:
   build:
+    runs-on: macOS-latest
 
-    runs-on: ubuntu-latest
-    
     steps:
-    - uses: actions/checkout@v1
-    - name: package
-      run: make package
-    - name: appendix
-      run: ruby scripts/reduce-logs.rb 'make -C appendix
-    - name: tests
-      run: make -C tests
+      - uses: actions/checkout@v1
+      - name: package
+        run: make package
+      - name: appendix
+        run: ruby scripts/reduce-logs.rb 'make -C appendix
+      - name: tests
+        run: make -C tests
