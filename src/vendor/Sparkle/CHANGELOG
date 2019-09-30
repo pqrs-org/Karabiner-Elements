@@ -1,3 +1,27 @@
+# 1.22.0
+
+ * Enabled "Hardened Runtime" build option for Apple's notarization requirement
+ * Add delegate methods to suppress update alerts (George Nachman)
+ * Improved error when running from translocated location (Michael Buckley)
+ * Add phased rollout feature (#1381) (Fabian Jäger)
+ * Ignore non-standard permissions in delta updates instead of failing the build (Kornel Lesiński)
+ * Notify user when installed version is newer than the latest in the appcast (CoreCode)
+ * Reset timers after computer sleep (CoreCode)
+ * Block-based alternatives to `NSInvocation`-based delegate methods (Fabian Jäger)
+ * add delegate userDidSkipThisVersion (BobZombie, Leo Natan)
+ * Pass item to updaterShouldShowUpdateAlertForScheduledUpdate delegate method (George Nachman)
+ * Support providing private key as argument (Yakuhzi)
+ * Separate the ed25519 sources into a new static library (Tony Arnold)
+ * Disambiguate signing error messages (Nate Weaver)
+ * Use `XMLNode.Options.nodePrettyPrint` in `generate_appcast` instead of trying to add whitespace manually (fumoboy007)
+ * Annotate SUHost for nullability (Michael Buckley)
+ * Use SUAVAILABLE macro (Christiaan Hofman)
+ * Fix warnings when using modules (nivekkagicom)
+ * Correction of Czech localization inconsistency (#1403) (vojtakonarik)
+ * BR locale fix (BR Lingo)
+ * Update Japanese localization (fujisoft)
+ * French Sparkle.strings (Jean-Baptiste)
+
 # 1.21.3
 
  * Losslessly reduced the size of PNG (Barijaona Ramaholimihaso)

@@ -17,7 +17,7 @@
           ]]>
         </description>
         <pubDate>Sat, 26 Jul 2014 15:20:11 +0000</pubDate>
-        <enclosure url="http://localhost:1337/Sparkle_Test_App.zip" sparkle:version="2.0" length="$INSERT_ARCHIVE_LENGTH" type="application/octet-stream" sparkle:edSignature="$INSERT_EDDSA_SIGNATURE" />
+        <enclosure url="http://localhost:1337/Sparkle_Test_App.zip" sparkle:version="2.0" length="$INSERT_ARCHIVE_LENGTH" type="application/octet-stream" sparkle:edSignature="$INSERT_EDDSA_SIGNATURE" sparkle:phasedRolloutInterval="25200" />
       </item>
   </channel>
 </rss>
