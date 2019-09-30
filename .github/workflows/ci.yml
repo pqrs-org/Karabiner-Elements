@@ -1,0 +1,17 @@
+name: C/C++ CI
+
+on: [push]
+
+jobs:
+  build:
+
+    runs-on: ubuntu-latest
+    
+    steps:
+    - uses: actions/checkout@v1
+    - name: package
+      run: make package
+    - name: appendix
+      run: ruby scripts/reduce-logs.rb 'make -C appendix
+    - name: tests
+      run: make -C tests
