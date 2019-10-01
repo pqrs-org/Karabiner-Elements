@@ -1,13 +1,7 @@
-//
-// Copyright(c) 2015 Gabi Melman.
+// Copyright(c) 2015-present, Gabi Melman & spdlog contributors.
 // Distributed under the MIT License (http://opensource.org/licenses/MIT)
-//
 
 #pragma once
-
-#ifndef SPDLOG_H
-#include "spdlog/spdlog.h"
-#endif
 
 #include "spdlog/details/null_mutex.h"
 #include "spdlog/sinks/base_sink.h"
@@ -24,16 +18,15 @@ public:
     explicit ostream_sink(std::ostream &os, bool force_flush = false)
         : ostream_(os)
         , force_flush_(force_flush)
-    {
-    }
+    {}
     ostream_sink(const ostream_sink &) = delete;
     ostream_sink &operator=(const ostream_sink &) = delete;
 
 protected:
     void sink_it_(const details::log_msg &msg) override
     {
-        fmt::memory_buffer formatted;
-        sink::formatter_->format(msg, formatted);
+        memory_buf_t formatted;
+        base_sink<Mutex>::formatter_->format(msg, formatted);
         ostream_.write(formatted.data(), static_cast<std::streamsize>(formatted.size()));
         if (force_flush_)
         {

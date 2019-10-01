@@ -262,9 +262,9 @@ public:
     // to ensure that any owning sub-object remains valid until after we have
     // deallocated the memory here.
     detail::move_binder2<Handler,
-      asio::error_code, typename Protocol::socket>
+      asio::error_code, peer_socket_type>
         handler(0, ASIO_MOVE_CAST(Handler)(o->handler_), ec,
-          ASIO_MOVE_CAST(typename Protocol::socket)(o->peer_));
+          ASIO_MOVE_CAST(peer_socket_type)(o->peer_));
     p.h = asio::detail::addressof(handler.handler_);
     p.reset();
 
@@ -279,10 +279,13 @@ public:
   }
 
 private:
+  typedef typename Protocol::socket::template
+    rebind_executor<PeerIoExecutor>::other peer_socket_type;
+
   win_iocp_socket_service_base& socket_service_;
   socket_type socket_;
   socket_holder new_socket_;
-  typename Protocol::socket peer_;
+  peer_socket_type peer_;
   Protocol protocol_;
   typename Protocol::endpoint* peer_endpoint_;
   unsigned char output_buffer_[(sizeof(sockaddr_storage_type) + 16) * 2];

@@ -31,8 +31,7 @@ public:
     bytes_range(It range_begin, It range_end)
         : begin_(range_begin)
         , end_(range_end)
-    {
-    }
+    {}
 
     It begin() const
     {
@@ -117,7 +116,11 @@ struct formatter<spdlog::details::bytes_range<T>>
 
         std::size_t pos = 0;
         std::size_t column = line_size;
+#if FMT_VERSION < 60000
         auto inserter = ctx.begin();
+#else
+        auto inserter = ctx.out();
+#endif
 
         for (auto &item : the_range)
         {

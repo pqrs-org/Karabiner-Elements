@@ -35,7 +35,7 @@ struct win_global_impl
 
   static win_global_impl instance_;
   static static_mutex mutex_;
-  static T* ptr_;
+  T* ptr_;
   static tss_ptr<T> tss_ptr_;
 };
 
@@ -44,9 +44,6 @@ win_global_impl<T> win_global_impl<T>::instance_ = { 0 };
 
 template <typename T>
 static_mutex win_global_impl<T>::mutex_ = ASIO_STATIC_MUTEX_INIT;
-
-template <typename T>
-T* win_global_impl<T>::ptr_ = 0;
 
 template <typename T>
 tss_ptr<T> win_global_impl<T>::tss_ptr_;
@@ -58,9 +55,9 @@ T& win_global()
   {
     win_global_impl<T>::mutex_.init();
     static_mutex::scoped_lock lock(win_global_impl<T>::mutex_);
-    if (win_global_impl<T>::ptr_ == 0)
-      win_global_impl<T>::ptr_ = new T;
-    win_global_impl<T>::tss_ptr_ = win_global_impl<T>::ptr_;
+    if (win_global_impl<T>::instance_.ptr_ == 0)
+      win_global_impl<T>::instance_.ptr_ = new T;
+    win_global_impl<T>::tss_ptr_ = win_global_impl<T>::instance_.ptr_;
   }
 
   return *win_global_impl<T>::tss_ptr_;

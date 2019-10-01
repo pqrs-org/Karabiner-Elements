@@ -24,7 +24,33 @@
 #include "asio/detail/push_options.hpp"
 
 namespace asio {
+
+class executor;
+
 namespace detail {
+
+inline bool is_native_io_executor(const io_context::executor_type&)
+{
+  return true;
+}
+
+template <typename Executor>
+inline bool is_native_io_executor(const Executor&,
+    typename enable_if<!is_same<Executor, executor>::value>::type* = 0)
+{
+  return false;
+}
+
+template <typename Executor>
+inline bool is_native_io_executor(const Executor& ex,
+    typename enable_if<is_same<Executor, executor>::value>::type* = 0)
+{
+#if !defined (ASIO_NO_TYPEID)
+  return ex.target_type() == typeid(io_context::executor_type);
+#else // !defined (ASIO_NO_TYPEID)
+  return false;
+#endif // !defined (ASIO_NO_TYPEID)
+}
 
 template <typename IoObjectService,
     typename Executor = io_context::executor_type>
@@ -46,8 +72,7 @@ public:
   // Construct an I/O object using an executor.
   explicit io_object_impl(const executor_type& ex)
     : service_(&asio::use_service<IoObjectService>(ex.context())),
-      implementation_executor_(ex,
-        is_same<Executor, io_context::executor_type>::value)
+      implementation_executor_(ex, (is_native_io_executor)(ex))
   {
     service_->construct(implementation_);
   }
@@ -68,9 +93,7 @@ public:
   // Move-construct an I/O object.
   io_object_impl(io_object_impl&& other)
     : service_(&other.get_service()),
-      implementation_executor_(
-        ASIO_MOVE_CAST(implementation_executor_type)(
-          other.implementation_executor_))
+      implementation_executor_(other.get_implementation_executor())
   {
     service_->move_construct(implementation_, other.implementation_);
   }

@@ -1,9 +1,7 @@
-#pragma once
-
-//
-// Copyright(c) 2018 Gabi Melman.
+// Copyright(c) 2015-present, Gabi Melman & spdlog contributors.
 // Distributed under the MIT License (http://opensource.org/licenses/MIT)
-//
+
+#pragma once
 
 // multi producer-multi consumer blocking queue.
 // enqueue(..) - will block until room found to put the new message.
@@ -27,8 +25,7 @@ public:
     using item_type = T;
     explicit mpmc_blocking_queue(size_t max_items)
         : q_(max_items)
-    {
-    }
+    {}
 
 #ifndef __MINGW32__
     // try to enqueue and block if no room left
@@ -62,7 +59,8 @@ public:
             {
                 return false;
             }
-            q_.pop_front(popped_item);
+            popped_item = std::move(q_.front());
+            q_.pop_front();
         }
         pop_cv_.notify_one();
         return true;
@@ -98,7 +96,8 @@ public:
         {
             return false;
         }
-        q_.pop_front(popped_item);
+        popped_item = std::move(q_.front());
+        q_.pop_front();
         pop_cv_.notify_one();
         return true;
     }
