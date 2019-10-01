@@ -14,6 +14,8 @@ add_compile_options(-O2)
 add_compile_options(-fobjc-arc)
 add_compile_options(-fmodules)
 
+add_definitions(-DFMT_HEADER_ONLY)
+
 # Version
 
 file(READ ${CMAKE_CURRENT_LIST_DIR}/../version KARABINER_VERSION)
