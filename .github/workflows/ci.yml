@@ -8,7 +8,11 @@ jobs:
 
     steps:
       - uses: actions/checkout@v1
+        with:
+          fetch-depth: 1
       - name: package
         run: make package
-      - name: extra
-        run: ruby scripts/reduce-logs.rb 'make -C appendix && make -C tests'
+      - name: appendix
+        run: ruby scripts/reduce-logs.rb 'make -C appendix'
+      - name: tests
+        run: ruby scripts/reduce-logs.rb 'make -C tests'
