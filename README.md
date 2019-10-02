@@ -1,4 +1,4 @@
-[![Build Status](https://travis-ci.com/tekezo/Karabiner-Elements.svg?branch=master)](https://travis-ci.com/tekezo/Karabiner-Elements)
+[![Build Status](https://github.com/tekezo/Karabiner-Elements/workflows/Karabiner-Elements%20CI/badge.svg)](https://github.com/tekezo/Karabiner-Elements/actions)
 [![License](https://img.shields.io/badge/license-Public%20Domain-blue.svg)](https://github.com/tekezo/Karabiner-Elements/blob/master/LICENSE.md)
 
 # Karabiner-Elements
