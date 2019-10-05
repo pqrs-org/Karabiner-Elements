@@ -16,24 +16,40 @@ main() {
         exit 1
     fi
 
+    #
     # Sign with codesign
+    #
+
     cd "$1"
     find * -name '*.app' -or -path '*/bin/*' | sort -r | while read f; do
+        #
+        # output message
+        #
+
         echo -ne '\033[33;40m'
         echo "code sign $f"
         echo -ne '\033[0m'
 
+        #
+        # codesign
+        #
+
         echo -ne '\033[31;40m'
+
         codesign \
             --force \
             --deep \
             --options runtime \
             --sign "$CODESIGN_IDENTITY" \
             "$f"
+
         echo -ne '\033[0m'
     done
 
+    #
     # Verify codesign
+    #
+
     find * -name '*.app' -or -path '*/bin/*' | sort -r | while read f; do
         echo -ne '\033[31;40m'
         codesign --verify --deep "$f"
@@ -41,4 +57,4 @@ main() {
     done
 }
 
-main "$1"
+main "$1" 2>&1 | grep -v ': replacing existing signature'
