@@ -1,6 +1,7 @@
 #!/usr/bin/env bash
 
-set -e
+set -u # forbid undefined variables
+set -e # forbid command failure
 
 readonly CODESIGN_IDENTITY='8D660191481C98F5C56630847A6C39D95C166F22'
 readonly PATH=/bin:/sbin:/usr/bin:/usr/sbin
@@ -36,12 +37,17 @@ main() {
 
         echo -ne '\033[31;40m'
 
+        set +e # allow command failure
+
         codesign \
             --force \
             --deep \
             --options runtime \
             --sign "$CODESIGN_IDENTITY" \
-            "$f"
+            "$f" 2>&1 |
+            grep -v ': replacing existing signature'
+
+        set -e # forbid command failure
 
         echo -ne '\033[0m'
     done
@@ -57,4 +63,4 @@ main() {
     done
 }
 
-main "$1" 2>&1 | grep -v ': replacing existing signature'
+main "$1"
