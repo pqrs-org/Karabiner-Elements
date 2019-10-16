@@ -24,6 +24,7 @@ You can download previous versions of Karabiner-Elements from here:
 - macOS Sierra (10.12)
 - macOS High Sierra (10.13)
 - macOS Mojave (10.14)
+- macOS Catalina (10.15)
 
 # Usage
 
