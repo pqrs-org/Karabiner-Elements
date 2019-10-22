@@ -11,5 +11,10 @@
         "**/node_modules": true,
         "**/bower_components": true,
         "**/vendor": true
+    },
+    "files.watcherExclude": {
+        "**/build_xcode/**": true,
+        "**/build/**": true,
+        "**/pkgroot/**": true
     }
 }
