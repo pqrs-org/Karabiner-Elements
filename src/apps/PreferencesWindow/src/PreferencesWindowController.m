@@ -309,7 +309,7 @@
 }
 
 - (IBAction)openGitHub:(id)sender {
-  [[NSWorkspace sharedWorkspace] openURL:[NSURL URLWithString:@"https://github.com/tekezo/Karabiner-Elements"]];
+  [[NSWorkspace sharedWorkspace] openURL:[NSURL URLWithString:@"https://github.com/pqrs-org/Karabiner-Elements"]];
 }
 
 - (IBAction)restart:(id)sender {

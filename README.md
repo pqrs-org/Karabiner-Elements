@@ -1,5 +1,5 @@
-[![Build Status](https://github.com/tekezo/Karabiner-Elements/workflows/Karabiner-Elements%20CI/badge.svg)](https://github.com/tekezo/Karabiner-Elements/actions)
-[![License](https://img.shields.io/badge/license-Public%20Domain-blue.svg)](https://github.com/tekezo/Karabiner-Elements/blob/master/LICENSE.md)
+[![Build Status](https://github.com/pqrs-org/Karabiner-Elements/workflows/Karabiner-Elements%20CI/badge.svg)](https://github.com/pqrs-org/Karabiner-Elements/actions)
+[![License](https://img.shields.io/badge/license-Public%20Domain-blue.svg)](https://github.com/pqrs-org/Karabiner-Elements/blob/master/LICENSE.md)
 
 # Karabiner-Elements
 
@@ -17,7 +17,7 @@ You can download the latest Karabiner-Elements from <https://pqrs.org/osx/karabi
 ### Old releases
 
 You can download previous versions of Karabiner-Elements from here:
-<https://github.com/tekezo/pqrs.org/tree/master/webroot/osx/karabiner/files>
+<https://github.com/pqrs-org/pqrs.org/tree/master/sites/karabiner-elements/public/files>
 
 ## System requirements
 
@@ -44,7 +44,7 @@ System requirements to build Karabiner-Elements:
 Clone the source from github.
 
 ```shell
-git clone --depth 1 https://github.com/tekezo/Karabiner-Elements.git
+git clone --depth 1 https://github.com/pqrs-org/Karabiner-Elements.git
 ```
 
 ### Step 2: Building a package

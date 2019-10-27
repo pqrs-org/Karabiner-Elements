@@ -169,7 +169,7 @@
 - `input_source_if` and `input_source_unless` has been added to `conditions`.
   - Examples
     - <https://github.com/pqrs-org/KE-complex_modifications/blob/master/docs/json/example_input_source.json>
-    - <https://github.com/tekezo/Karabiner-Elements/blob/master/tests/src/manipulator_conditions/json/input_source.json>
+    - <https://github.com/pqrs-org/Karabiner-Elements/blob/master/tests/src/manipulator_conditions/json/input_source.json>
 - `select_input_source` has been added.
   - Example
     - <https://github.com/pqrs-org/KE-complex_modifications/blob/master/docs/json/example_select_input_source.json>
@@ -240,7 +240,7 @@
 
 ## Version 0.91.5
 
-- GUI for complex_modifications has been added. <https://github.com/tekezo/Karabiner-Elements/tree/master/usage#how-to-use-complex-modifications>
+- GUI for complex_modifications has been added. <https://github.com/pqrs-org/Karabiner-Elements/tree/master/usage#how-to-use-complex-modifications>
 - Syntax of `complex_modifications > parameters` has been changed.
 
 ## Version 0.91.4
