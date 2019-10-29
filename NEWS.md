@@ -8,35 +8,49 @@
 
 ## Karabiner-Elements 12.7.0
 
--   Fixed an issue that Karabiner-Elements might stop working after sleep on macOS Catalina.
--   MultitouchExtension app has been added.
-    -   Documentation:
-        -   Usage: <https://pqrs.org/osx/karabiner/document.html#multitouch-extension>
-        -   json: <https://pqrs.org/osx/karabiner/json.html#multitouch-extension>
--   Dark Mode has been supported.
--   Added `--set-variables` option into `karabiner_cli`.
+-   📅 Release date
+    -   Sep 12, 2019
+-   🐛 Bug Fixes
+    -   Fixed an issue that Karabiner-Elements might stop working after sleep on macOS Catalina.
+-   ✨ New Features
+    -   MultitouchExtension app has been added.
+        -   Documentation:
+            -   Usage: <https://pqrs.org/osx/karabiner/document.html#multitouch-extension>
+            -   json: <https://pqrs.org/osx/karabiner/json.html#multitouch-extension>
+    -   Dark Mode has been supported.
+    -   Added `--set-variables` option into `karabiner_cli`.
 
 ## Karabiner-Elements 12.6.0
 
--   Support macOS Catalina.<br/>
-    (You need [an extra configuration](https://pqrs.org/osx/karabiner/document.html#usage-catalina) on macOS Catalina.)
--   Fixed an issue that Karabiner-Elements fails to grab a device in rare cases.
--   Introduced karabiner_kextd.
-    (kext loading function was separated from karabiner_grabber.)
--   Improved EventViewer to show modifier flags of key events.
--   Suppressed unnecessary log messages.
+-   📅 Release date
+    -   Aug 16, 2019
+-   ✨ New Features
+    -   Support macOS Catalina.<br/>
+        (You need [an extra configuration](https://pqrs.org/osx/karabiner/document.html#usage-catalina) on macOS Catalina.)
+-   🐛 Bug Fixes
+    -   Fixed an issue that Karabiner-Elements fails to grab a device in rare cases.
+-   ⚡️ Improvements
+    -   Introduced karabiner_kextd.
+        (kext loading function was separated from karabiner_grabber.)
+    -   Improved EventViewer to show modifier flags of key events.
+    -   Suppressed unnecessary log messages.
 
 ## Karabiner-Elements 12.5.0
 
--   Fixed a key stuck issue which occurs when the key is released,
-    and at the exact same moment Karabiner-Elements opens the device.
--   Fixed an issue which Karabiner-Elements mistakes a remote user for a current console user
-    if another user is logged in from Screen Sharing while console is used.
--   Improved `XXX is ignored temporarily until YYY is pressed again` behavior.
--   Add `Delay before open device` configuration into `Karabiner-Elements Preferences > Devices > Advanced` tab.
--   Move `Disable the built-in keyboard while one of the following selected devices is connected` configuration
-    into `Karabiner-Elements Preferences > Devices > Advanced` tab.
--   Added `Show key code in hexadecimal format` option into EventViewer.
+-   📅 Release date
+    -   Jun 10, 2019
+-   ✨ New Features
+    -   Add `Delay before open device` configuration into `Karabiner-Elements Preferences > Devices > Advanced` tab.
+    -   Added `Show key code in hexadecimal format` option into EventViewer.
+-   🐛 Bug Fixes
+    -   Fixed a key stuck issue which occurs when the key is released,
+        and at the exact same moment Karabiner-Elements opens the device.
+    -   Fixed an issue which Karabiner-Elements mistakes a remote user for a current console user
+        if another user is logged in from Screen Sharing while console is used.
+-   ⚡️ Improvements
+    -   Improved `XXX is ignored temporarily until YYY is pressed again` behavior.
+    -   Move `Disable the built-in keyboard while one of the following selected devices is connected` configuration
+        into `Karabiner-Elements Preferences > Devices > Advanced` tab.
 
 ## Karabiner-Elements 12.4.0
 
