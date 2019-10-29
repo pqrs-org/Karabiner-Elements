@@ -39,25 +39,25 @@ make install
 
 ## Core Processes
 
-- `karabiner_grabber`
-  - Run with root privilege.
-  - Seize the input devices and modify events then post events using `Karabiner-VirtualHIDDevice`.
-- `karabiner_observer`
-  - Run with root privilege.
-  - Observe input devices and manage the grabbable state.
-  - Tell the grabbable state to `karabiner_grabber`.
-- `karabiner_session_monitor`
-  - Run with root privilege.
-  - (Opened by console user privilege in order to use CoreGraphics session API.
-    And then, effective uid is changed to root by SUID in order to communicate a secure Unix domain socket of `karabiner_grabber`.)
-  - Monitor a window server session state and notify it to `karabiner_grabber`.
-- `karabiner_console_user_server`
-  - Run with console user privilege.
-  - Monitor system preferences values (key repeat, etc) and notify them to `karabiner_grabber`.
-  - Execute shell commands which are specified by `shell_command` in `complex_modifications`.
-  - `karabiner_grabber` seizes devices only when `karabiner_console_user_server` is running.
-- `karabiner_kextd`
-  - Load Karabiner-VirtualHIDDevice kext.
+-   `karabiner_grabber`
+    -   Run with root privilege.
+    -   Seize the input devices and modify events then post events using `Karabiner-VirtualHIDDevice`.
+-   `karabiner_observer`
+    -   Run with root privilege.
+    -   Observe input devices and manage the grabbable state.
+    -   Tell the grabbable state to `karabiner_grabber`.
+-   `karabiner_session_monitor`
+    -   Run with root privilege.
+    -   (Opened by console user privilege in order to use CoreGraphics session API.
+        And then, effective uid is changed to root by SUID in order to communicate a secure Unix domain socket of `karabiner_grabber`.)
+    -   Monitor a window server session state and notify it to `karabiner_grabber`.
+-   `karabiner_console_user_server`
+    -   Run with console user privilege.
+    -   Monitor system preferences values (key repeat, etc) and notify them to `karabiner_grabber`.
+    -   Execute shell commands which are specified by `shell_command` in `complex_modifications`.
+    -   `karabiner_grabber` seizes devices only when `karabiner_console_user_server` is running.
+-   `karabiner_kextd`
+    -   Load Karabiner-VirtualHIDDevice kext.
 
 ![processes](images/processes.svg)
 
@@ -180,9 +180,9 @@ It requires posting coregraphics events.<br />
 
 `CGEventPost` does not support some key events in OS X 10.12.
 
-- Mission Control key
-- Launchpad key
-- Option-Command-Escape
+-   Mission Control key
+-   Launchpad key
+-   Option-Command-Escape
 
 Thus, `karabiner_grabber` does not use `CGEventPost`.
 
@@ -261,20 +261,20 @@ uint8_t extra_modifiers; // fn
 
 There are several way to get the session information, however, the reliable way is limited.
 
-- The owner of `/dev/console`
-  - The owner of `/dev/console` becomes wrong value after remote user is logged in via Screen Sharing.<br />
-    How to reproduce the problem.
-    1.  Restart macOS.
-    2.  Log in from console as Guest user.
-    3.  Log in from Screen Sharing as another user.
-    4.  The owner of `/dev/console` is changed to another user even the console user is Guest.
-- `SCDynamicStoreCopyConsoleUser`
-  - `SCDynamicStoreCopyConsoleUser` has same problem of `/dev/console`.
-- `SessionGetInfo`
-  - `SessionGetInfo` cannot get uid of session.
-    Thus, `SessionGetInfo` cannot determine the console user.
-- `CGSessionCopyCurrentDictionary`
-  - `karabiner_session_monitor` uses it to avoid the above problems.
+-   The owner of `/dev/console`
+    -   The owner of `/dev/console` becomes wrong value after remote user is logged in via Screen Sharing.<br />
+        How to reproduce the problem.
+        1.  Restart macOS.
+        2.  Log in from console as Guest user.
+        3.  Log in from Screen Sharing as another user.
+        4.  The owner of `/dev/console` is changed to another user even the console user is Guest.
+-   `SCDynamicStoreCopyConsoleUser`
+    -   `SCDynamicStoreCopyConsoleUser` has same problem of `/dev/console`.
+-   `SessionGetInfo`
+    -   `SessionGetInfo` cannot get uid of session.
+        Thus, `SessionGetInfo` cannot determine the console user.
+-   `CGSessionCopyCurrentDictionary`
+    -   `karabiner_session_monitor` uses it to avoid the above problems.
 
 ---
 
