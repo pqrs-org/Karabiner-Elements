@@ -15,8 +15,8 @@
 -   ✨ New Features
     -   MultitouchExtension app has been added.
         -   Documentation:
-            -   Usage: <https://pqrs.org/osx/karabiner/document.html#multitouch-extension>
-            -   json: <https://pqrs.org/osx/karabiner/json.html#multitouch-extension>
+            -   [Usage](https://pqrs.org/osx/karabiner/document.html#multitouch-extension)
+            -   [How to integrate MultitouchExtension to your complex modifications](https://pqrs.org/osx/karabiner/json.html#multitouch-extension)
     -   Dark Mode has been supported.
     -   Added `--set-variables` option into `karabiner_cli`.
 
@@ -54,31 +54,40 @@
 
 ## Karabiner-Elements 12.4.0
 
--   Fixed a key stuck issue which occurs when the key is held down before Karabiner-Elements opens the device.
--   Add `Mouse Key XY speed` configuration into `Karabiner-Elements Preferences > Virtual Keyboard` tab.
--   Event code format on EventViewer changed to decimal number from hex.
+-   📅 Release date
+    -   May 14, 2019
+-   ✨ New Features
+    -   Add `Mouse Key XY speed` configuration into `Karabiner-Elements Preferences > Virtual Keyboard` tab.
+    -   `Device is ignored temporarily` alert has been introduced.<br/>
+        This alert will be shown if you hold keys or buttons down before Karabiner-Elements opens the device.<br/>
+        Please press the described key or button again to dismiss the alert.<br/>
+        <img src="https://pqrs.org/osx/karabiner/img/news/v12.4.0_0.png" alt="alert" style="max-width: 420px" />
+-   🐛 Bug Fixes
+    -   Fixed a key stuck issue which occurs when the key is held down before Karabiner-Elements opens the device.
+-   ⚡️ Improvements
+    -   Event code format on EventViewer changed to decimal number from hex.
 
 ## Karabiner-Elements 12.3.0
 
--   Added `Change mouse motion to scroll` feature.<br/>
-    <https://pqrs.org/osx/karabiner/complex_modifications/#mouse_motion_to_scroll> <br/>
-    Note:<br/>
-    You have to enable your mice on Devices tab when you want to use this feature.<br/>
-    <https://pqrs.org/osx/karabiner/document.html#configuration-devices>
--   complex modifications json will be checked strictly since this release.
-    Please check error messages if your complex modifications do not work after upgrade.
-    <https://pqrs.org/osx/karabiner/json.html#location>
--   Set Karabiner-Elements.app and Karabiner-EventViewer.app immutable
-    in order to ensure unremovable them except built-in uninstaller.
-    Please use the uninstaller when you want to remove Karabiner-Elements.
-    <https://pqrs.org/osx/karabiner/document.html#uninstall>
--   Added `--lint-complex-modifications` option into `karabiner_cli`.
-    It allows you checks a complex-modifications json file.
--   Added a wait before grabbing device in order to avoid an macOS issue that device will be unusable after Karabiner-Elements is quit.
--   Changes for users who write their own json.
-    -   `to` and `to_*` support single object, e.g., `"to": { "key_code": "spacebar" }`.
-    -   New modifier aliases are added: `left_alt`, `left_gui`, `right_alt`, `right_gui`.
-    -   `key_code`, `consumer_key_code` and `pointing_button` supports a number value, e.g., `"from": {"key_code": 175}`.
+-   📅 Release date
+    -   Apr 24, 2019
+-   💥 Breaking changes
+    -   complex modifications json will be checked strictly since this release.<br/>
+        Please check [error messages](https://pqrs.org/osx/karabiner/json.html#location) if your complex modifications do not work after upgrade.
+-   ✨ New Features
+    -   Added [Change mouse motion to scroll](https://pqrs.org/osx/karabiner/complex_modifications/#mouse_motion_to_scroll) feature.<br/>
+        -   Note: You have to enable your mice on [Devices tab](https://pqrs.org/osx/karabiner/document.html#configuration-devices) when you want to use this feature.
+    -   Added `--lint-complex-modifications` option into `karabiner_cli`.
+        It allows you checks a complex-modifications json file.
+-   ⚡️ Improvements
+    -   Set Karabiner-Elements.app and Karabiner-EventViewer.app immutable
+        in order to ensure unremovable them except built-in uninstaller.
+        Please use the [uninstaller](https://pqrs.org/osx/karabiner/document.html#uninstall) when you want to remove Karabiner-Elements.
+    -   Added a wait before grabbing device in order to avoid an macOS issue that device will be unusable after Karabiner-Elements is quit.
+    -   Changes for users who write their own json.
+        -   `to` and `to_*` support single object, e.g., `"to": { "key_code": "spacebar" }`.
+        -   New modifier aliases are added: `left_alt`, `left_gui`, `right_alt`, `right_gui`.
+        -   `key_code`, `consumer_key_code` and `pointing_button` supports a number value, e.g., `"from": {"key_code": 175}`.
 
 ## Karabiner-Elements 12.2.0
 
