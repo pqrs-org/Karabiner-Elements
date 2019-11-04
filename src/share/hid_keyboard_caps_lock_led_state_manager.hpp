@@ -11,7 +11,8 @@ class hid_keyboard_caps_lock_led_state_manager final : public pqrs::dispatcher::
 public:
   hid_keyboard_caps_lock_led_state_manager(IOHIDDeviceRef device) : dispatcher_client(),
                                                                     device_(device),
-                                                                    timer_(*this) {
+                                                                    timer_(*this),
+                                                                    started_(false) {
     if (device_) {
       pqrs::osx::iokit_hid_device hid_device(*device_);
       for (const auto& e : hid_device.make_elements()) {
@@ -43,19 +44,31 @@ public:
   }
 
   void async_start(void) {
-    timer_.start(
-        [this] {
-          update_caps_lock_led();
-        },
-        std::chrono::milliseconds(3000));
+    enqueue_to_dispatcher([this] {
+      started_ = true;
+
+      timer_.start(
+          [this] {
+            update_caps_lock_led();
+          },
+          std::chrono::milliseconds(3000));
+    });
   }
 
   void async_stop(void) {
-    timer_.stop();
+    enqueue_to_dispatcher([this] {
+      started_ = false;
+
+      timer_.stop();
+    });
   }
 
 private:
   void update_caps_lock_led(void) const {
+    if (!started_) {
+      return;
+    }
+
     // macOS 10.12 sometimes synchronize caps lock LED to internal keyboard caps lock state.
     // The behavior causes LED state mismatch because
     // the caps lock state of karabiner_grabber is independent from the hardware caps lock state.
@@ -94,5 +107,6 @@ private:
   std::optional<led_state> state_;
   mutable std::mutex state_mutex_;
   pqrs::dispatcher::extra::timer timer_;
+  bool started_;
 };
 } // namespace krbn
