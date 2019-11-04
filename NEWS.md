@@ -5,13 +5,13 @@
 -   ✨ New Features
     -   Add `--show-current-profile-name` option into `karabiner_cli`.
     -   Add `--list-profile-names` option into `karabiner_cli`.
+-   🐛 Bug Fixes
+    -   Fixed an issue that Caps Lock LED is always manipulated even `Manipulate LED` setting is off.
 
 ## Karabiner-Elements 12.7.0
 
 -   📅 Release date
     -   Sep 12, 2019
--   🐛 Bug Fixes
-    -   Fixed an issue that Karabiner-Elements might stop working after sleep on macOS Catalina.
 -   ✨ New Features
     -   MultitouchExtension app has been added.
         -   Documentation:
@@ -19,6 +19,8 @@
             -   [How to integrate MultitouchExtension to your complex modifications](https://pqrs.org/osx/karabiner/json.html#multitouch-extension)
     -   Dark Mode has been supported.
     -   Added `--set-variables` option into `karabiner_cli`.
+-   🐛 Bug Fixes
+    -   Fixed an issue that Karabiner-Elements might stop working after sleep on macOS Catalina.
 
 ## Karabiner-Elements 12.6.0
 
