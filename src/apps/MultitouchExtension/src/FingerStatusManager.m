@@ -47,10 +47,24 @@
     for (int i = 0; i < fingers; ++i) {
       int identifier = data[i].identifier;
 
+      // state values:
+      //   4: touched
+      //   1-3,5-7: near
+      BOOL touched = NO;
+      if (data[i].state == 4) {
+        touched = YES;
+      } else {
+        touched = NO;
+      }
+
       FingerStatusEntry* e = [self findEntry:device identifier:identifier];
       if (!e) {
-        e = [[FingerStatusEntry alloc] initWithDevice:device identifier:identifier];
-        [self.entries addObject:e];
+        if (!touched) {
+          continue;
+        } else {
+          e = [[FingerStatusEntry alloc] initWithDevice:device identifier:identifier];
+          [self.entries addObject:e];
+        }
       }
 
       e.frame = frame;
@@ -64,16 +78,6 @@
           e.ignored = NO;
           callFixedFingerStateChanged = YES;
         }
-      }
-
-      // state values:
-      //   4: touched
-      //   1-3,5-7: near
-      BOOL touched = NO;
-      if (data[i].state == 4) {
-        touched = YES;
-      } else {
-        touched = NO;
       }
 
       if (e.touchedPhysically != touched) {
@@ -140,9 +144,16 @@
 // Note: This method is called in @synchronized(self)
 - (void)setFingerStatusEntryDelayTimer:(FingerStatusEntry*)entry
                                touched:(BOOL)touched {
-  if (touched == entry.touchedFixed) {
-    [entry.delayTimer invalidate];
+  enum FingerStatusEntryTimerMode timerMode = FingerStatusEntryTimerModeNone;
+  if (touched) {
+    timerMode = FingerStatusEntryTimerModeTouched;
   } else {
+    timerMode = FingerStatusEntryTimerModeUntouched;
+  }
+
+  if (entry.timerMode != timerMode) {
+    entry.timerMode = timerMode;
+
     NSUserDefaults* defaults = [NSUserDefaults standardUserDefaults];
 
     double delay = 0;
@@ -152,8 +163,9 @@
       delay = [defaults integerForKey:kDelayBeforeTurnOff];
     }
 
+    [entry.delayTimer invalidate];
+
     @weakify(self);
-    @weakify(entry);
     entry.delayTimer = [NSTimer timerWithTimeInterval:delay / 1000.0
                                               repeats:NO
                                                 block:^(NSTimer* timer) {
@@ -162,16 +174,11 @@
                                                     return;
                                                   }
 
-                                                  @strongify(entry);
-                                                  if (!entry) {
-                                                    return;
-                                                  }
-
                                                   @synchronized(self) {
                                                     entry.touchedFixed = touched;
 
                                                     if (!touched) {
-                                                      [self.entries removeObject:entry];
+                                                      [self.entries removeObjectIdenticalTo:entry];
                                                     }
                                                   }
 
