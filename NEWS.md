@@ -7,6 +7,7 @@
     -   Add `--list-profile-names` option into `karabiner_cli`.
 -   🐛 Bug Fixes
     -   Fixed an issue that Caps Lock LED is always manipulated even `Manipulate LED` setting is off.
+    -   Fixed an issue that MultitouchExtension does not handle ignored area properly when a finger is touched ignored area repeatedly.
 
 ## Karabiner-Elements 12.7.0
 
