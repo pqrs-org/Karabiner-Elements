@@ -3,6 +3,12 @@
 @import Cocoa;
 #import "MultitouchPrivate.h"
 
+enum FingerStatusEntryTimerMode {
+  FingerStatusEntryTimerModeNone,
+  FingerStatusEntryTimerModeTouched,
+  FingerStatusEntryTimerModeUntouched,
+};
+
 @interface FingerStatusEntry : NSObject <NSCopying>
 
 //
@@ -22,6 +28,7 @@
 @property BOOL touchedFixed;
 @property BOOL ignored;
 @property NSTimer* delayTimer;
+@property enum FingerStatusEntryTimerMode timerMode;
 
 //
 // Methods

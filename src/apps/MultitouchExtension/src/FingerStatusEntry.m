@@ -15,6 +15,7 @@
     _touchedFixed = NO;
     _ignored = YES;
     _delayTimer = nil;
+    _timerMode = FingerStatusEntryTimerModeNone;
   }
 
   return self;
@@ -29,6 +30,7 @@
   e.touchedFixed = self.touchedFixed;
   e.ignored = self.ignored;
   // e.delayTimer is nil
+  e.timerMode = FingerStatusEntryTimerModeNone;
 
   return e;
 }
