@@ -1,7 +1,16 @@
 {
-  "MD013": false,
-  "MD033": {
-    "allowed_elements": ["br"]
-  },
-  "MD041": false
+    "MD007": {
+        "indent": 4
+    },
+    "MD013": false,
+    "MD030": {
+        "ul_single": 3,
+        "ul_multi": 3,
+        "ol_single": 2,
+        "ol_multi": 2
+    },
+    "MD033": {
+        "allowed_elements": ["br"]
+    },
+    "MD041": false
 }
