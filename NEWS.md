@@ -1,6 +1,6 @@
 # Changelog
 
-## Beta
+## Karabiner-Elements 12.8.0
 
 -   ✨ New Features
     -   Add `--show-current-profile-name` option into `karabiner_cli`.
