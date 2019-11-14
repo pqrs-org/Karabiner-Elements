@@ -30,6 +30,8 @@ When the last `CHECK` fails in the "Bar" test case, then only one message will b
 
 ## Logging without local scope
 
+> [Introduced](https://github.com/catchorg/Catch2/issues/1522) in Catch 2.7.0.
+
 `UNSCOPED_INFO` is similar to `INFO` with two key differences:
 
 - Lifetime of an unscoped message is not tied to its own scope.
@@ -103,6 +105,8 @@ _Note that in Catch2 2.x.x `INFO` can be used without a trailing semicolon as th
 This semicolon will be removed with next major version. It is highly advised to use a trailing semicolon after `INFO` macro._
 
 **UNSCOPED_INFO(** _message expression_ **)**
+
+> [Introduced](https://github.com/catchorg/Catch2/issues/1522) in Catch 2.7.0.
 
 Similar to `INFO`, but messages are not limited to their own scope: They are removed from the buffer after each assertion, section or test case, whichever comes first.
 

@@ -1,6 +1,12 @@
 <a id="top"></a>
 # Authoring benchmarks
 
+> [Introduced](https://github.com/catchorg/Catch2/issues/1616) in Catch 2.9.0.
+
+_Note that benchmarking support is disabled by default and to enable it,
+you need to define `CATCH_CONFIG_ENABLE_BENCHMARKING`. For more details,
+see the [compile-time configuration documentation](configuration.md#top)._
+
 Writing benchmarks is not easy. Catch simplifies certain aspects but you'll
 always need to take care about various aspects. Understanding a few things about
 the way Catch runs your code will be very helpful when writing your benchmarks.

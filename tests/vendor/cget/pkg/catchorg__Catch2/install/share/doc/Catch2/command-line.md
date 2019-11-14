@@ -21,8 +21,8 @@
 [Identify framework and version according to the libIdentify standard](#identify-framework-and-version-according-to-the-libidentify-standard)<br>
 [Wait for key before continuing](#wait-for-key-before-continuing)<br>
 [Specify the number of benchmark samples to collect](#specify-the-number-of-benchmark-samples-to-collect)<br>
-[Specify the number of benchmark resamples for bootstrapping](#specify-the-number-of-resamples-for-bootstrapping)<br>
-[Specify the confidence interval for bootstrapping](#specify-the-confidence-interval-for-bootstrapping)<br>
+[Specify the number of resamples for bootstrapping](#specify-the-number-of-resamples-for-bootstrapping)<br>
+[Specify the confidence-interval for bootstrapping](#specify-the-confidence-interval-for-bootstrapping)<br>
 [Disable statistical analysis of collected benchmark samples](#disable-statistical-analysis-of-collected-benchmark-samples)<br>
 [Usage](#usage)<br>
 [Specify the section to run](#specify-the-section-to-run)<br>
@@ -242,7 +242,7 @@ Test cases are ordered one of three ways:
 
 
 ### decl
-Declaration order. The order the tests were originally declared in. Note that ordering between files is not guaranteed and is implementation dependent.
+Declaration order (this is the default order if no --order argument is provided). The order the tests were originally declared in. Note that ordering between files is not guaranteed and is implementation dependent.
 
 ### lex
 Lexicographically sorted. Tests are sorted, alpha-numerically, by name.
@@ -256,7 +256,7 @@ Randomly sorted. Test names are sorted using ```std::random_shuffle()```. By def
 
 Sets a seed for the random number generator using ```std::srand()```. 
 If a number is provided this is used directly as the seed so the random pattern is repeatable.
-Alternatively if the keyword ```time``` is provided then the result of calling ```std::time(0)``` is used and so the pattern becomes unpredictable.
+Alternatively if the keyword ```time``` is provided then the result of calling ```std::time(0)``` is used and so the pattern becomes unpredictable. In some cases, you might need to pass the keyword ```time``` in double quotes instead of single quotes.
 
 In either case the actual value for the seed is printed as part of Catch's output so if an issue is discovered that is sensitive to test ordering the ordering can be reproduced - even if it was originally seeded from ```std::time(0)```.
 
@@ -277,12 +277,16 @@ either before running any tests, after running all tests - or both, depending on
 ## Specify the number of benchmark samples to collect
 <pre>--benchmark-samples &lt;# of samples&gt;</pre>
 
+> [Introduced](https://github.com/catchorg/Catch2/issues/1616) in Catch 2.9.0.
+
 When running benchmarks a number of "samples" is collected. This is the base data for later statistical analysis.
 Per sample a clock resolution dependent number of iterations of the user code is run, which is independent of the number of samples. Defaults to 100.
 
 <a id="benchmark-resamples"></a>
 ## Specify the number of resamples for bootstrapping
 <pre>--benchmark-resamples &lt;# of resamples&gt;</pre>
+
+> [Introduced](https://github.com/catchorg/Catch2/issues/1616) in Catch 2.9.0.
 
 After the measurements are performed, statistical [bootstrapping] is performed
 on the samples. The number of resamples for that bootstrapping is configurable
@@ -297,6 +301,8 @@ defaults to 95%).
 ## Specify the confidence-interval for bootstrapping
 <pre>--benchmark-confidence-interval &lt;confidence-interval&gt;</pre>
 
+> [Introduced](https://github.com/catchorg/Catch2/issues/1616) in Catch 2.9.0.
+
 The confidence-interval is used for statistical bootstrapping on the samples to
 calculate the upper and lower bounds of mean and standard deviation.
 Must be between 0 and 1 and defaults to 0.95.
@@ -304,6 +310,8 @@ Must be between 0 and 1 and defaults to 0.95.
 <a id="benchmark-no-analysis"></a>
 ## Disable statistical analysis of collected benchmark samples
 <pre>--benchmark-no-analysis</pre>
+
+> [Introduced](https://github.com/catchorg/Catch2/issues/1616) in Catch 2.9.0.
 
 When this flag is specified no bootstrapping or any other statistical analysis is performed.
 Instead the user code is only measured and the plain mean from the samples is reported.

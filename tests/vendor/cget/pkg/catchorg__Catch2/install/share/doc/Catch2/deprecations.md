@@ -39,6 +39,11 @@ apart from writing it out for `--list-tests -v high`.
 Because it isn't actually used nor documented, and brings complications
 to Catch2's internals, description support will be removed.
 
+### SourceLineInfo::empty()
+
+There should be no reason to ever have an empty `SourceLineInfo`, so the
+method will be removed.
+
 
 ## Planned changes
 

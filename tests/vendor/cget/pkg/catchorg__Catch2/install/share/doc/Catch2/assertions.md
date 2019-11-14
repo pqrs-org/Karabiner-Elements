@@ -136,7 +136,7 @@ REQUIRE_THROWS_WITH( dismantleHal(), "My mind is going" );
 * **REQUIRE_THROWS_MATCHES(** _expression_, _exception type_, _matcher for given exception type_ **)** and
 * **CHECK_THROWS_MATCHES(** _expression_, _exception type_, _matcher for given exception type_ **)**
 
-Expects that exception of _exception type_ is thrown and it matches provided matcher (see next section for Matchers).
+Expects that exception of _exception type_ is thrown and it matches provided matcher (see the [documentation for Matchers](matchers.md#top)).
 
 
 _Please note that the `THROW` family of assertions expects to be passed a single expression, not a statement or series of statements. If you want to check a more complicated sequence of operations, you can use a C++11 lambda function._

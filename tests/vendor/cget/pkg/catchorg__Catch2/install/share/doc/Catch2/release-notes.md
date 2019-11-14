@@ -2,6 +2,9 @@
 
 # Release notes
 **Contents**<br>
+[2.10.1](#2101)<br>
+[2.10.0](#2100)<br>
+[2.9.2](#292)<br>
 [2.9.1](#291)<br>
 [2.9.0](#290)<br>
 [2.8.0](#280)<br>
@@ -25,6 +28,107 @@
 [2.0.1](#201)<br>
 [Older versions](#older-versions)<br>
 [Even Older versions](#even-older-versions)<br>
+
+
+## 2.10.1
+
+### Improvements
+* Catch2 now guards itself against `min` and `max` macros from `windows.h` (#1772)
+* Templated tests will now compile with ICC (#1748)
+* `WithinULP` matcher now uses scientific notation for stringification (#1760)
+
+
+### Fixes
+* Templated tests no longer trigger `-Wunused-templates` (#1762)
+* Suppressed clang-analyzer false positive in context getter (#1230, #1735)
+
+
+### Miscellaneous
+* CMake no longer prohibits in-tree build when Catch2 is used as a subproject (#1773, #1774)
+
+
+
+## 2.10.0
+
+### Fixes
+* `TEMPLATE_LIST_TEST_CASE` now properly handles non-copyable and non-movable types (#1729)
+* Fixed compilation error on Solaris caused by a system header defining macro `TT` (#1722, #1723)
+* `REGISTER_ENUM` will now fail at compilation time if the registered enum is too large
+* Removed use of `std::is_same_v` in C++17 mode (#1757)
+* Fixed parsing of escaped special characters when reading test specs from a file (#1767, #1769)
+
+
+### Improvements
+* Trailing and leading whitespace in test/section specs are now ignored.
+* Writing to Android debug log now uses `__android_log_write` instead of `__android_log_print`
+* Android logging support can now be turned on/off at compile time (#1743)
+  * The toggle is `CATCH_CONFIG_ANDROID_LOGWRITE`
+* Added a generator that returns elements of a range
+  * Use via `from_range(from, to)` or `from_range(container)`
+* Added support for CRTs that do not provide `std::nextafter` (#1739)
+  * They must still provide global `nextafter{f,l,}`
+  * Enabled via `CATCH_CONFIG_GLOBAL_NEXTAFTER`
+* Special cased `Approx(inf)` not to match non-infinite values
+  * Very strictly speaking this might be a breaking change, but it should match user expectations better
+* The output of benchmarking through the Console reporter when `--benchmark-no-analysis` is set is now much simpler (#1768)
+* Added a matcher that can be used for checking an exceptions message (#1649, #1728)
+  * The matcher helper function is called `Message`
+  * The exception must publicly derive from `std::exception`
+  * The matching is done exactly, including case and whitespace
+* Added a matcher that can be used for checking relative equality of floating point numbers (#1746)
+  * Unlike `Approx`, it considers both sides when determining the allowed margin
+  * Special cases `NaN` and `INFINITY` to match user expectations
+  * The matcher helper function is called `WithinRel`
+* The ULP matcher now allows for any possible distance between the two numbers
+* The random number generators now use Catch-global instance of RNG (#1734, #1736)
+  * This means that nested random number generators actually generate different numbers
+
+
+### Miscellaneous
+* In-repo PNGs have been optimized to lower overhead of using Catch2 via git clone
+* Catch2 now uses its own implementation of the URBG concept
+  * In the future we also plan to use our own implementation of the distributions from `<random>` to provide cross-platform repeatability of random results
+
+
+
+## 2.9.2
+
+### Fixes
+* `ChunkGenerator` can now be used with chunks of size 0 (#1671)
+* Nested subsections are now run properly when specific section is run via the `-c` argument (#1670, #1673)
+* Catch2 now consistently uses `_WIN32` to detect Windows platform (#1676)
+* `TEMPLATE_LIST_TEST_CASE` now support non-default constructible type lists (#1697)
+* Fixed a crash in the XMLReporter when a benchmark throws exception during warmup (#1706)
+* Fixed a possible infinite loop in CompactReporter (#1715)
+* Fixed `-w NoTests` returning 0 even when no tests were matched (#1449, #1683, #1684)
+* Fixed matcher compilation under Obj-C++ (#1661)
+
+### Improvements
+* `RepeatGenerator` and `FixedValuesGenerator` now fail to compile when used with `bool` (#1692)
+  * Previously they would fail at runtime.
+* Catch2 now supports Android's debug logging for its debug output (#1710)
+* Catch2 now detects and configures itself for the RTX platform (#1693)
+  * You still need to pass `--benchmark-no-analysis` if you are using benchmarking under RTX
+* Removed a "storage class is not first" warning when compiling Catch2 with PGI compiler (#1717)
+
+### Miscellaneous
+* Documentation now contains indication when a specific feature was introduced (#1695)
+  * These start with Catch2 v2.3.0, (a bit over a year ago).
+  * `docs/contributing.md` has been updated to provide contributors guidance on how to add these to newly written documentation
+* Various other documentation improvements
+  * ToC fixes
+  * Documented `--order` and `--rng-seed` command line options
+  * Benchmarking documentation now clearly states that it requires opt-in
+  * Documented `CATCH_CONFIG_CPP17_OPTIONAL` and `CATCH_CONFIG_CPP17_BYTE` macros
+  * Properly documented built-in vector matchers
+  * Improved `*_THROWS_MATCHES` documentation a bit
+* CMake config file is now arch-independent even if `CMAKE_SIZEOF_VOID_P` is in CMake cache (#1660)
+* `CatchAddTests` now properly escapes `[` and `]` in test names (#1634, #1698)
+* Reverted `CatchAddTests` adding tags as CTest labels (#1658)
+  * The script broke when test names were too long
+  * Overwriting `LABELS` caused trouble for users who set them manually
+  * CMake does not let users append to `LABELS` if the test name has spaces
+
 
 ## 2.9.1
 
@@ -88,7 +192,7 @@
 
 ### Improvements
 * Reporters now print out the filters applied to test cases (#1550, #1585)
-* Added `GENERATE_COPY` and `GENERATE_VAR` macros that can use variables inside the generator expression
+* Added `GENERATE_COPY` and `GENERATE_REF` macros that can use variables inside the generator expression
   * Because of the significant danger of lifetime issues, the default `GENERATE` macro still does not allow variables
 * The `map` generator helper now deduces the mapped return type (#1576)
 
