@@ -29,8 +29,9 @@ class core_configuration final {
 public:
   core_configuration(const core_configuration&) = delete;
 
-  core_configuration(const std::string& file_path) : loaded_(false),
-                                                     global_configuration_(nlohmann::json::object()) {
+  core_configuration(const std::string& file_path,
+                     uid_t expected_file_owner) : loaded_(false),
+                                                  global_configuration_(nlohmann::json::object()) {
     bool valid_file_owner = false;
 
     // Load karabiner.json only when the owner is root or current session user.
@@ -38,10 +39,8 @@ public:
       if (pqrs::filesystem::is_owned(file_path, 0)) {
         valid_file_owner = true;
       } else {
-        if (auto console_user_id = pqrs::osx::session::find_console_user_id()) {
-          if (pqrs::filesystem::is_owned(file_path, *console_user_id)) {
-            valid_file_owner = true;
-          }
+        if (pqrs::filesystem::is_owned(file_path, expected_file_owner)) {
+          valid_file_owner = true;
         }
       }
 

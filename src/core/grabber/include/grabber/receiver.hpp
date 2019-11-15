@@ -31,12 +31,12 @@ public:
     server_->set_server_check_interval(std::chrono::milliseconds(3000));
     server_->set_reconnect_interval(std::chrono::milliseconds(1000));
 
-    server_->bound.connect([socket_file_path] {
+    server_->bound.connect([this, socket_file_path] {
       logger::get_logger()->info("receiver: bound");
 
-      if (auto uid = pqrs::osx::session::find_console_user_id()) {
-        chown(socket_file_path.c_str(), *uid, 0);
-      }
+      logger::get_logger()->info("receiver: chown socket: {0}", current_console_user_id_);
+      chown(socket_file_path.c_str(), current_console_user_id_, 0);
+
       chmod(socket_file_path.c_str(), 0600);
     });
 
@@ -196,7 +196,8 @@ private:
     device_grabber_->async_post_frontmost_application_changed_event(frontmost_application_);
     device_grabber_->async_post_input_source_changed_event(input_source_properties_);
 
-    device_grabber_->async_start(configuration_file_path);
+    device_grabber_->async_start(configuration_file_path,
+                                 current_console_user_id_);
 
     logger::get_logger()->info("device_grabber is started.");
   }

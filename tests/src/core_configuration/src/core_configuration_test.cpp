@@ -8,7 +8,7 @@
 using simple_modifications = krbn::core_configuration::details::simple_modifications;
 
 TEST_CASE("valid") {
-  krbn::core_configuration::core_configuration configuration("json/example.json");
+  krbn::core_configuration::core_configuration configuration("json/example.json", geteuid());
 
   {
     std::vector<std::pair<std::string, std::string>> expected;
@@ -116,7 +116,7 @@ TEST_CASE("valid") {
 
 TEST_CASE("not found") {
   {
-    krbn::core_configuration::core_configuration configuration("json/not_found.json");
+    krbn::core_configuration::core_configuration configuration("json/not_found.json", geteuid());
     REQUIRE(configuration.get_selected_profile().get_name() == "Default profile");
     REQUIRE(configuration.is_loaded() == false);
   }
@@ -124,7 +124,7 @@ TEST_CASE("not found") {
 
 TEST_CASE("broken.json") {
   {
-    krbn::core_configuration::core_configuration configuration("json/broken.json");
+    krbn::core_configuration::core_configuration configuration("json/broken.json", geteuid());
 
     REQUIRE(configuration.get_selected_profile().get_simple_modifications().get_pairs().empty());
     REQUIRE(configuration.is_loaded() == false);
@@ -145,7 +145,7 @@ TEST_CASE("broken.json") {
     }
   }
   {
-    krbn::core_configuration::core_configuration configuration("/bin/ls");
+    krbn::core_configuration::core_configuration configuration("/bin/ls", geteuid());
 
     REQUIRE(configuration.get_selected_profile().get_simple_modifications().get_pairs().empty());
     REQUIRE(configuration.is_loaded() == false);
@@ -153,7 +153,7 @@ TEST_CASE("broken.json") {
 }
 
 TEST_CASE("invalid_key_code_name.json") {
-  krbn::core_configuration::core_configuration configuration("json/invalid_key_code_name.json");
+  krbn::core_configuration::core_configuration configuration("json/invalid_key_code_name.json", geteuid());
 
   std::vector<std::pair<std::string, std::string>> expected;
 
@@ -1253,26 +1253,26 @@ TEST_CASE("complex_modifications.parameters") {
 
 TEST_CASE("complex_modifications.minmax_parameter_value") {
   {
-    krbn::core_configuration::core_configuration configuration("json/minmax_parameter_value_test1.json");
+    krbn::core_configuration::core_configuration configuration("json/minmax_parameter_value_test1.json", geteuid());
     auto actual = configuration.get_selected_profile().get_complex_modifications().minmax_parameter_value("basic.simultaneous_threshold_milliseconds");
     REQUIRE(actual->first == 101);
     REQUIRE(actual->second == 401);
   }
   {
-    krbn::core_configuration::core_configuration configuration("json/minmax_parameter_value_test2.json");
+    krbn::core_configuration::core_configuration configuration("json/minmax_parameter_value_test2.json", geteuid());
     auto actual = configuration.get_selected_profile().get_complex_modifications().minmax_parameter_value("basic.simultaneous_threshold_milliseconds");
     REQUIRE(actual->first == 102);
     REQUIRE(actual->second == 402);
   }
   {
-    krbn::core_configuration::core_configuration configuration("json/minmax_parameter_value_test3.json");
+    krbn::core_configuration::core_configuration configuration("json/minmax_parameter_value_test3.json", geteuid());
     auto actual = configuration.get_selected_profile().get_complex_modifications().minmax_parameter_value("basic.simultaneous_threshold_milliseconds");
     REQUIRE(actual->first == 103);
     REQUIRE(actual->second == 403);
   }
 
   {
-    krbn::core_configuration::core_configuration configuration("json/minmax_parameter_value_test1.json");
+    krbn::core_configuration::core_configuration configuration("json/minmax_parameter_value_test1.json", geteuid());
     REQUIRE(!configuration.get_selected_profile().get_complex_modifications().minmax_parameter_value("unknown"));
   }
 }

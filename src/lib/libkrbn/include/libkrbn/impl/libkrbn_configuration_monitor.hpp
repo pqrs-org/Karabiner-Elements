@@ -22,7 +22,8 @@ public:
 
   libkrbn_configuration_monitor(libkrbn_configuration_monitor_callback callback, void* refcon) {
     monitor_ = std::make_unique<krbn::configuration_monitor>(
-        krbn::constants::get_user_core_configuration_file_path());
+        krbn::constants::get_user_core_configuration_file_path(),
+        geteuid());
 
     auto wait = pqrs::make_thread_wait();
 

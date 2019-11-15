@@ -7,6 +7,7 @@ class test_configuration_monitor final {
 public:
   test_configuration_monitor(void) : count_(0) {
     configuration_monitor_ = std::make_unique<krbn::configuration_monitor>("target/user.json",
+                                                                           geteuid(),
                                                                            "target/system.json");
 
     configuration_monitor_->core_configuration_updated.connect([this](auto&& weak_core_configuration) {

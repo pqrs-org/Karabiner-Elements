@@ -18,6 +18,7 @@ public:
   // Methods
 
   configuration_monitor(const std::string& user_core_configuration_file_path,
+                        uid_t expected_user_core_configuration_file_owner,
                         const std::string& system_core_configuration_file_path = constants::get_system_core_configuration_file_path()) : dispatcher_client() {
     std::vector<std::string> targets = {
         user_core_configuration_file_path,
@@ -27,8 +28,11 @@ public:
     file_monitor_ = std::make_unique<pqrs::osx::file_monitor>(weak_dispatcher_,
                                                               targets);
 
-    file_monitor_->file_changed.connect([this, user_core_configuration_file_path, system_core_configuration_file_path](auto&& changed_file_path,
-                                                                                                                       auto&& changed_file_body) {
+    file_monitor_->file_changed.connect([this,
+                                         user_core_configuration_file_path,
+                                         expected_user_core_configuration_file_owner,
+                                         system_core_configuration_file_path](auto&& changed_file_path,
+                                                                              auto&& changed_file_body) {
       auto file_path = changed_file_path;
 
       if (pqrs::filesystem::exists(user_core_configuration_file_path)) {
@@ -56,7 +60,8 @@ public:
         logger::get_logger()->info("Load {0}...", file_path);
       }
 
-      auto c = std::make_shared<core_configuration::core_configuration>(file_path);
+      auto c = std::make_shared<core_configuration::core_configuration>(file_path,
+                                                                        expected_user_core_configuration_file_owner);
 
       if (core_configuration_ && !c->is_loaded()) {
         return;

@@ -290,8 +290,11 @@ public:
     });
   }
 
-  void async_start(const std::string& user_core_configuration_file_path) {
-    enqueue_to_dispatcher([this, user_core_configuration_file_path] {
+  void async_start(const std::string& user_core_configuration_file_path,
+                   uid_t expected_user_core_configuration_file_owner) {
+    enqueue_to_dispatcher([this,
+                           user_core_configuration_file_path,
+                           expected_user_core_configuration_file_owner] {
       // We should call CGEventTapCreate after user is logged in.
       // So, we create event_tap_monitor here.
       event_tap_monitor_ = std::make_unique<event_tap_monitor>();
@@ -311,7 +314,8 @@ public:
 
       event_tap_monitor_->async_start();
 
-      configuration_monitor_ = std::make_unique<configuration_monitor>(user_core_configuration_file_path);
+      configuration_monitor_ = std::make_unique<configuration_monitor>(user_core_configuration_file_path,
+                                                                       expected_user_core_configuration_file_owner);
 
       configuration_monitor_->core_configuration_updated.connect([this](auto&& weak_core_configuration) {
         if (auto core_configuration = weak_core_configuration.lock()) {

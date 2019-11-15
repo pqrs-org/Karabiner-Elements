@@ -215,7 +215,8 @@ private:
   }
 
   void start_child_components(void) {
-    configuration_monitor_ = std::make_shared<configuration_monitor>(constants::get_user_core_configuration_file_path());
+    configuration_monitor_ = std::make_shared<configuration_monitor>(constants::get_user_core_configuration_file_path(),
+                                                                     geteuid());
 
     // menu_process_manager_
 
