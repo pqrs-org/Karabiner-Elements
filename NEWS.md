@@ -1,5 +1,11 @@
 # Changelog
 
+## Beta
+
+-   ⚡️ Improvements
+    -   Added a workaround for non-dismissible `Device is ignored temporarily` alert
+        which is caused by some devices that sends abnormal input events.
+
 ## Karabiner-Elements 12.8.0
 
 -   ✨ New Features
