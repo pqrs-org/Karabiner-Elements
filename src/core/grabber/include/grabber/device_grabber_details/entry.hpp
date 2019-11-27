@@ -157,19 +157,31 @@ public:
   }
 
   bool is_grabbed(absolute_time_point time_stamp) {
-    if (grabbed_time_stamp_ <= ungrabbed_time_stamp_) {
-      // The current state of device is `ungrabbed`.
+    // Note:
+    // Some devices send event with time_stamp == 0.
+    // (For example, Swiftpoint ProPoint sends pointing events with normal time_stamp,
+    // but consumer_key_code key_up events with time_stamp == 0.)
+    //
+    // Thus, we do not check time_stamp if time_stamp == 0.
 
-      if (grabbed_time_stamp_ <= time_stamp &&
-          time_stamp <= ungrabbed_time_stamp_) {
-        return true;
-      }
+    if (time_stamp == absolute_time_point(0)) {
+      return grabbed_;
 
     } else {
-      // The current state of device is `grabbed`.
+      if (grabbed_time_stamp_ <= ungrabbed_time_stamp_) {
+        // The current state of device is `ungrabbed`.
 
-      if (grabbed_time_stamp_ <= time_stamp) {
-        return true;
+        if (grabbed_time_stamp_ <= time_stamp &&
+            time_stamp <= ungrabbed_time_stamp_) {
+          return true;
+        }
+
+      } else {
+        // The current state of device is `grabbed`.
+
+        if (grabbed_time_stamp_ <= time_stamp) {
+          return true;
+        }
       }
     }
 
