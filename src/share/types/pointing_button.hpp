@@ -2,6 +2,7 @@
 
 #include "stream_utility.hpp"
 #include <cstdint>
+#include <pqrs/osx/iokit_hid_value.hpp>
 
 namespace krbn {
 enum class pointing_button : uint32_t {
@@ -135,18 +136,19 @@ inline std::string make_pointing_button_name(pointing_button pointing_button) {
   return fmt::format("(number:{0})", static_cast<uint32_t>(pointing_button));
 }
 
-inline std::optional<pointing_button> make_pointing_button(hid_usage_page usage_page, hid_usage usage) {
-  if (usage_page == hid_usage_page::button) {
-    return pointing_button(usage);
+inline std::optional<pointing_button> make_pointing_button(pqrs::osx::iokit_hid_usage_page usage_page,
+                                                           pqrs::osx::iokit_hid_usage usage) {
+  if (usage_page == pqrs::osx::iokit_hid_usage_page_button) {
+    return pointing_button(type_safe::get(usage));
   }
   return std::nullopt;
 }
 
-inline std::optional<pointing_button> make_pointing_button(const hid_value& hid_value) {
-  if (auto hid_usage_page = hid_value.get_hid_usage_page()) {
-    if (auto hid_usage = hid_value.get_hid_usage()) {
-      return make_pointing_button(*hid_usage_page,
-                                  *hid_usage);
+inline std::optional<pointing_button> make_pointing_button(const pqrs::osx::iokit_hid_value& hid_value) {
+  if (auto usage_page = hid_value.get_usage_page()) {
+    if (auto usage = hid_value.get_usage()) {
+      return make_pointing_button(*usage_page,
+                                  *usage);
     }
   }
   return std::nullopt;

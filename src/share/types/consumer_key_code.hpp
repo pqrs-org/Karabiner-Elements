@@ -1,9 +1,9 @@
 #pragma once
 
-#include "hid_value.hpp"
 #include "stream_utility.hpp"
 #include <IOKit/hid/IOHIDUsageTables.h>
 #include <cstdint>
+#include <pqrs/osx/iokit_hid_value.hpp>
 #include <spdlog/fmt/fmt.h>
 
 namespace krbn {
@@ -86,50 +86,47 @@ inline std::string make_consumer_key_code_name(consumer_key_code consumer_key_co
   return fmt::format("(number:{0})", static_cast<uint32_t>(consumer_key_code));
 }
 
-inline std::optional<consumer_key_code> make_consumer_key_code(hid_usage_page usage_page, hid_usage usage) {
-  auto u = static_cast<uint32_t>(usage);
+inline std::optional<consumer_key_code> make_consumer_key_code(pqrs::osx::iokit_hid_usage_page usage_page,
+                                                               pqrs::osx::iokit_hid_usage usage) {
+  if (usage_page == pqrs::osx::iokit_hid_usage_page_consumer) {
+    auto u = type_safe::get(usage);
 
-  switch (usage_page) {
-    case hid_usage_page::consumer:
-      switch (consumer_key_code(u)) {
-        case consumer_key_code::power:
-        case consumer_key_code::display_brightness_increment:
-        case consumer_key_code::display_brightness_decrement:
-        case consumer_key_code::fastforward:
-        case consumer_key_code::rewind:
-        case consumer_key_code::scan_next_track:
-        case consumer_key_code::scan_previous_track:
-        case consumer_key_code::eject:
-        case consumer_key_code::play_or_pause:
-        case consumer_key_code::mute:
-        case consumer_key_code::volume_increment:
-        case consumer_key_code::volume_decrement:
-          return consumer_key_code(u);
-      }
-
-    default:
-      break;
+    switch (consumer_key_code(u)) {
+      case consumer_key_code::power:
+      case consumer_key_code::display_brightness_increment:
+      case consumer_key_code::display_brightness_decrement:
+      case consumer_key_code::fastforward:
+      case consumer_key_code::rewind:
+      case consumer_key_code::scan_next_track:
+      case consumer_key_code::scan_previous_track:
+      case consumer_key_code::eject:
+      case consumer_key_code::play_or_pause:
+      case consumer_key_code::mute:
+      case consumer_key_code::volume_increment:
+      case consumer_key_code::volume_decrement:
+        return consumer_key_code(u);
+    }
   }
 
   return std::nullopt;
 }
 
-inline std::optional<consumer_key_code> make_consumer_key_code(const hid_value& hid_value) {
-  if (auto hid_usage_page = hid_value.get_hid_usage_page()) {
-    if (auto hid_usage = hid_value.get_hid_usage()) {
-      return make_consumer_key_code(*hid_usage_page,
-                                    *hid_usage);
+inline std::optional<consumer_key_code> make_consumer_key_code(const pqrs::osx::iokit_hid_value& hid_value) {
+  if (auto usage_page = hid_value.get_usage_page()) {
+    if (auto usage = hid_value.get_usage()) {
+      return make_consumer_key_code(*usage_page,
+                                    *usage);
     }
   }
   return std::nullopt;
 }
 
-inline std::optional<hid_usage_page> make_hid_usage_page(consumer_key_code consumer_key_code) {
-  return hid_usage_page::consumer;
+inline std::optional<pqrs::osx::iokit_hid_usage_page> make_hid_usage_page(consumer_key_code consumer_key_code) {
+  return pqrs::osx::iokit_hid_usage_page_consumer;
 }
 
-inline std::optional<hid_usage> make_hid_usage(consumer_key_code consumer_key_code) {
-  return hid_usage(static_cast<uint32_t>(consumer_key_code));
+inline std::optional<pqrs::osx::iokit_hid_usage> make_hid_usage(consumer_key_code consumer_key_code) {
+  return pqrs::osx::iokit_hid_usage(static_cast<uint32_t>(consumer_key_code));
 }
 
 inline void from_json(const nlohmann::json& json, consumer_key_code& value) {

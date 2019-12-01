@@ -1,8 +1,8 @@
 #pragma once
 
-#include "hid_value.hpp"
 #include "modifier_flag.hpp"
 #include "stream_utility.hpp"
+#include <pqrs/osx/iokit_hid_value.hpp>
 
 namespace krbn {
 enum class key_code : uint32_t {
@@ -403,84 +403,71 @@ inline std::optional<key_code> make_key_code(const std::string& name) {
   return it->second;
 }
 
-inline std::optional<key_code> make_key_code(hid_usage_page usage_page, hid_usage usage) {
-  auto u = static_cast<uint32_t>(usage);
+inline std::optional<key_code> make_key_code(pqrs::osx::iokit_hid_usage_page usage_page,
+                                             pqrs::osx::iokit_hid_usage usage) {
+  if (usage_page == pqrs::osx::iokit_hid_usage_page_keyboard_or_keypad) {
+    auto u = type_safe::get(usage);
+    if (kHIDUsage_KeyboardErrorUndefined < u && u < kHIDUsage_Keyboard_Reserved) {
+      return key_code(u);
+    }
 
-  switch (usage_page) {
-    case hid_usage_page::keyboard_or_keypad:
-      if (kHIDUsage_KeyboardErrorUndefined < u && u < kHIDUsage_Keyboard_Reserved) {
-        return key_code(u);
-      }
-      break;
+  } else if (usage_page == pqrs::osx::iokit_hid_usage_page_apple_vendor_top_case) {
+    if (usage == pqrs::osx::iokit_hid_usage_apple_vendor_top_case_keyboard_fn) {
+      return key_code::fn;
+    } else if (usage == pqrs::osx::iokit_hid_usage_apple_vendor_top_case_brightness_up) {
+      return key_code::apple_top_case_display_brightness_increment;
+    } else if (usage == pqrs::osx::iokit_hid_usage_apple_vendor_top_case_brightness_down) {
+      return key_code::apple_top_case_display_brightness_decrement;
+    } else if (usage == pqrs::osx::iokit_hid_usage_apple_vendor_top_case_illumination_up) {
+      return key_code::illumination_increment;
+    } else if (usage == pqrs::osx::iokit_hid_usage_apple_vendor_top_case_illumination_down) {
+      return key_code::illumination_decrement;
+    }
 
-    case hid_usage_page::apple_vendor_top_case:
-      switch (usage) {
-        case hid_usage::av_top_case_keyboard_fn:
-          return key_code::fn;
-        case hid_usage::av_top_case_brightness_up:
-          return key_code::apple_top_case_display_brightness_increment;
-        case hid_usage::av_top_case_brightness_down:
-          return key_code::apple_top_case_display_brightness_decrement;
-        case hid_usage::av_top_case_illumination_up:
-          return key_code::illumination_increment;
-        case hid_usage::av_top_case_illumination_down:
-          return key_code::illumination_decrement;
-        default:
-          break;
-      }
-      break;
-
-    case hid_usage_page::apple_vendor_keyboard:
-      switch (usage) {
-        case hid_usage::apple_vendor_keyboard_dashboard:
-          return key_code::dashboard;
-        case hid_usage::apple_vendor_keyboard_function:
-          return key_code::fn;
-        case hid_usage::apple_vendor_keyboard_launchpad:
-          return key_code::launchpad;
-        case hid_usage::apple_vendor_keyboard_expose_all:
-          return key_code::mission_control;
-        case hid_usage::apple_vendor_keyboard_brightness_up:
-          return key_code::apple_display_brightness_increment;
-        case hid_usage::apple_vendor_keyboard_brightness_down:
-          return key_code::apple_display_brightness_decrement;
-        default:
-          break;
-      }
-      break;
-
-    default:
-      break;
+  } else if (usage_page == pqrs::osx::iokit_hid_usage_page_apple_vendor_keyboard) {
+    if (usage == pqrs::osx::iokit_hid_usage_apple_vendor_keyboard_dashboard) {
+      return key_code::dashboard;
+    } else if (usage == pqrs::osx::iokit_hid_usage_apple_vendor_keyboard_function) {
+      return key_code::fn;
+    } else if (usage == pqrs::osx::iokit_hid_usage_apple_vendor_keyboard_launchpad) {
+      return key_code::launchpad;
+    } else if (usage == pqrs::osx::iokit_hid_usage_apple_vendor_keyboard_expose_all) {
+      return key_code::mission_control;
+    } else if (usage == pqrs::osx::iokit_hid_usage_apple_vendor_keyboard_brightness_up) {
+      return key_code::apple_display_brightness_increment;
+    } else if (usage == pqrs::osx::iokit_hid_usage_apple_vendor_keyboard_brightness_down) {
+      return key_code::apple_display_brightness_decrement;
+    }
   }
 
   return std::nullopt;
 }
 
-inline std::optional<key_code> make_key_code(const hid_value& hid_value) {
-  if (auto hid_usage_page = hid_value.get_hid_usage_page()) {
-    if (auto hid_usage = hid_value.get_hid_usage()) {
-      return make_key_code(*hid_usage_page,
-                           *hid_usage);
+inline std::optional<key_code> make_key_code(const pqrs::osx::iokit_hid_value& hid_value) {
+  if (auto usage_page = hid_value.get_usage_page()) {
+    if (auto usage = hid_value.get_usage()) {
+      return make_key_code(*usage_page,
+                           *usage);
     }
   }
   return std::nullopt;
 }
 
-inline std::optional<hid_usage_page> make_hid_usage_page(key_code key_code) {
+inline std::optional<pqrs::osx::iokit_hid_usage_page> make_hid_usage_page(key_code key_code) {
   switch (key_code) {
     case key_code::fn:
     case key_code::illumination_decrement:
     case key_code::illumination_increment:
     case key_code::apple_top_case_display_brightness_decrement:
     case key_code::apple_top_case_display_brightness_increment:
-      return hid_usage_page::apple_vendor_top_case;
+      return pqrs::osx::iokit_hid_usage_page_apple_vendor_top_case;
 
     case key_code::dashboard:
     case key_code::launchpad:
     case key_code::mission_control:
     case key_code::apple_display_brightness_decrement:
     case key_code::apple_display_brightness_increment:
-      return hid_usage_page::apple_vendor_keyboard;
+      return pqrs::osx::iokit_hid_usage_page_apple_vendor_keyboard;
 
     case key_code::mute:
     case key_code::volume_decrement:
@@ -491,80 +478,92 @@ inline std::optional<hid_usage_page> make_hid_usage_page(key_code key_code) {
     case key_code::play_or_pause:
     case key_code::fastforward:
     case key_code::eject:
-      return hid_usage_page::consumer;
+      return pqrs::osx::iokit_hid_usage_page_consumer;
 
     case key_code::vk_none:
       return std::nullopt;
 
     default:
-      return hid_usage_page::keyboard_or_keypad;
+      return pqrs::osx::iokit_hid_usage_page_keyboard_or_keypad;
   }
 }
 
-inline std::optional<hid_usage> make_hid_usage(key_code key_code) {
+inline std::optional<pqrs::osx::iokit_hid_usage> make_hid_usage(key_code key_code) {
   switch (key_code) {
+      //
+      // pqrs::osx::iokit_hid_usage_apple_vendor_top_case_*
+      //
+
     case key_code::fn:
-      return hid_usage::av_top_case_keyboard_fn;
+      return pqrs::osx::iokit_hid_usage_apple_vendor_top_case_keyboard_fn;
 
     case key_code::illumination_decrement:
-      return hid_usage::av_top_case_illumination_down;
+      return pqrs::osx::iokit_hid_usage_apple_vendor_top_case_illumination_down;
 
     case key_code::illumination_increment:
-      return hid_usage::av_top_case_illumination_up;
+      return pqrs::osx::iokit_hid_usage_apple_vendor_top_case_illumination_up;
 
     case key_code::apple_top_case_display_brightness_decrement:
-      return hid_usage::av_top_case_brightness_down;
+      return pqrs::osx::iokit_hid_usage_apple_vendor_top_case_brightness_down;
 
     case key_code::apple_top_case_display_brightness_increment:
-      return hid_usage::av_top_case_brightness_up;
+      return pqrs::osx::iokit_hid_usage_apple_vendor_top_case_brightness_up;
+
+      //
+      // pqrs::osx::iokit_hid_usage_apple_vendor_keyboard_*
+      //
 
     case key_code::dashboard:
-      return hid_usage::apple_vendor_keyboard_dashboard;
+      return pqrs::osx::iokit_hid_usage_apple_vendor_keyboard_dashboard;
 
     case key_code::launchpad:
-      return hid_usage::apple_vendor_keyboard_launchpad;
+      return pqrs::osx::iokit_hid_usage_apple_vendor_keyboard_launchpad;
 
     case key_code::mission_control:
-      return hid_usage::apple_vendor_keyboard_expose_all;
+      return pqrs::osx::iokit_hid_usage_apple_vendor_keyboard_expose_all;
 
     case key_code::apple_display_brightness_decrement:
-      return hid_usage::apple_vendor_keyboard_brightness_down;
+      return pqrs::osx::iokit_hid_usage_apple_vendor_keyboard_brightness_down;
 
     case key_code::apple_display_brightness_increment:
-      return hid_usage::apple_vendor_keyboard_brightness_up;
+      return pqrs::osx::iokit_hid_usage_apple_vendor_keyboard_brightness_up;
+
+      //
+      // iokit_hid_usage_consumer_*
+      //
 
     case key_code::mute:
-      return hid_usage::csmr_mute;
+      return pqrs::osx::iokit_hid_usage_consumer_mute;
 
     case key_code::volume_decrement:
-      return hid_usage::csmr_volume_decrement;
+      return pqrs::osx::iokit_hid_usage_consumer_volume_decrement;
 
     case key_code::volume_increment:
-      return hid_usage::csmr_volume_increment;
+      return pqrs::osx::iokit_hid_usage_consumer_volume_increment;
 
     case key_code::display_brightness_decrement:
-      return hid_usage::csmr_display_brightness_decrement;
+      return pqrs::osx::iokit_hid_usage_consumer_display_brightness_decrement;
 
     case key_code::display_brightness_increment:
-      return hid_usage::csmr_display_brightness_increment;
+      return pqrs::osx::iokit_hid_usage_consumer_display_brightness_increment;
 
     case key_code::rewind:
-      return hid_usage::csmr_rewind;
+      return pqrs::osx::iokit_hid_usage_consumer_rewind;
 
     case key_code::play_or_pause:
-      return hid_usage::csmr_play_or_pause;
+      return pqrs::osx::iokit_hid_usage_consumer_play_or_pause;
 
     case key_code::fastforward:
-      return hid_usage::csmr_fastforward;
+      return pqrs::osx::iokit_hid_usage_consumer_fast_forward;
 
     case key_code::eject:
-      return hid_usage::csmr_eject;
+      return pqrs::osx::iokit_hid_usage_consumer_eject;
 
     case key_code::vk_none:
       return std::nullopt;
 
     default:
-      return hid_usage(key_code);
+      return pqrs::osx::iokit_hid_usage(static_cast<uint32_t>(key_code));
   }
 }
 
@@ -649,18 +648,19 @@ inline std::optional<modifier_flag> make_modifier_flag(key_code key_code) {
   }
 }
 
-inline std::optional<modifier_flag> make_modifier_flag(hid_usage_page usage_page, hid_usage usage) {
+inline std::optional<modifier_flag> make_modifier_flag(pqrs::osx::iokit_hid_usage_page usage_page,
+                                                       pqrs::osx::iokit_hid_usage usage) {
   if (auto key_code = make_key_code(usage_page, usage)) {
     return make_modifier_flag(*key_code);
   }
   return std::nullopt;
 }
 
-inline std::optional<modifier_flag> make_modifier_flag(const hid_value& hid_value) {
-  if (auto hid_usage_page = hid_value.get_hid_usage_page()) {
-    if (auto hid_usage = hid_value.get_hid_usage()) {
-      return make_modifier_flag(*hid_usage_page,
-                                *hid_usage);
+inline std::optional<modifier_flag> make_modifier_flag(const pqrs::osx::iokit_hid_value& hid_value) {
+  if (auto usage_page = hid_value.get_usage_page()) {
+    if (auto usage = hid_value.get_usage()) {
+      return make_modifier_flag(*usage_page,
+                                *usage);
     }
   }
   return std::nullopt;

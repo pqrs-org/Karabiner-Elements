@@ -7,7 +7,7 @@ namespace krbn {
 namespace event_queue {
 namespace utility {
 static inline std::shared_ptr<queue> make_queue(device_id device_id,
-                                                const std::vector<hid_value>& hid_values) {
+                                                const std::vector<pqrs::osx::iokit_hid_value>& hid_values) {
   auto result = std::make_shared<queue>();
 
   // The pointing motion usage (hid_usage::gd_x, hid_usage::gd_y, etc.) are splitted from one HID report.
@@ -44,8 +44,8 @@ static inline std::shared_ptr<queue> make_queue(device_id device_id,
   };
 
   for (const auto& v : hid_values) {
-    if (auto usage_page = v.get_hid_usage_page()) {
-      if (auto usage = v.get_hid_usage()) {
+    if (auto usage_page = v.get_usage_page()) {
+      if (auto usage = v.get_usage()) {
         if (auto key_code = make_key_code(*usage_page, *usage)) {
           event_queue::event event(*key_code);
           result->emplace_back_entry(device_id,
@@ -70,39 +70,40 @@ static inline std::shared_ptr<queue> make_queue(device_id device_id,
                                      v.get_integer_value() ? event_type::key_down : event_type::key_up,
                                      event);
 
-        } else if (*usage_page == hid_usage_page::generic_desktop &&
-                   *usage == hid_usage::gd_x) {
+        } else if (v.conforms_to(pqrs::osx::iokit_hid_usage_page_generic_desktop,
+                                 pqrs::osx::iokit_hid_usage_generic_desktop_x)) {
           if (pointing_motion_x) {
             emplace_back_pointing_motion_event();
           }
           pointing_motion_time_stamp = v.get_time_stamp();
           pointing_motion_x = static_cast<int>(v.get_integer_value());
 
-        } else if (*usage_page == hid_usage_page::generic_desktop &&
-                   *usage == hid_usage::gd_y) {
+        } else if (v.conforms_to(pqrs::osx::iokit_hid_usage_page_generic_desktop,
+                                 pqrs::osx::iokit_hid_usage_generic_desktop_y)) {
           if (pointing_motion_y) {
             emplace_back_pointing_motion_event();
           }
           pointing_motion_time_stamp = v.get_time_stamp();
           pointing_motion_y = static_cast<int>(v.get_integer_value());
 
-        } else if (*usage_page == hid_usage_page::generic_desktop &&
-                   *usage == hid_usage::gd_wheel) {
+        } else if (v.conforms_to(pqrs::osx::iokit_hid_usage_page_generic_desktop,
+                                 pqrs::osx::iokit_hid_usage_generic_desktop_wheel)) {
           if (pointing_motion_vertical_wheel) {
             emplace_back_pointing_motion_event();
           }
           pointing_motion_time_stamp = v.get_time_stamp();
           pointing_motion_vertical_wheel = static_cast<int>(v.get_integer_value());
 
-        } else if (*usage_page == hid_usage_page::consumer &&
-                   *usage == hid_usage::csmr_acpan) {
+        } else if (v.conforms_to(pqrs::osx::iokit_hid_usage_page_consumer,
+                                 pqrs::osx::iokit_hid_usage_consumer_ac_pan)) {
           if (pointing_motion_horizontal_wheel) {
             emplace_back_pointing_motion_event();
           }
           pointing_motion_time_stamp = v.get_time_stamp();
           pointing_motion_horizontal_wheel = static_cast<int>(v.get_integer_value());
-        } else if (*usage_page == hid_usage_page::leds &&
-                   *usage == hid_usage::led_caps_lock) {
+
+        } else if (v.conforms_to(pqrs::osx::iokit_hid_usage_page_leds,
+                                 pqrs::osx::iokit_hid_usage_led_caps_lock)) {
           event_queue::event event(event_queue::event::type::caps_lock_state_changed,
                                    v.get_integer_value());
           result->emplace_back_entry(device_id,

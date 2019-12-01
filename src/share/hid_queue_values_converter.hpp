@@ -6,9 +6,9 @@
 namespace krbn {
 class hid_queue_values_converter final {
 public:
-  std::vector<hid_value> make_hid_values(device_id device_id,
-                                         std::shared_ptr<std::vector<pqrs::cf::cf_ptr<IOHIDValueRef>>> values) {
-    std::vector<hid_value> hid_values;
+  std::vector<pqrs::osx::iokit_hid_value> make_hid_values(device_id device_id,
+                                                          std::shared_ptr<std::vector<pqrs::cf::cf_ptr<IOHIDValueRef>>> values) {
+    std::vector<pqrs::osx::iokit_hid_value> hid_values;
 
     std::optional<absolute_time_point> last_time_stamp;
     {
