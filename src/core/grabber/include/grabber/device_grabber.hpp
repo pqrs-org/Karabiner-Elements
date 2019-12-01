@@ -1,6 +1,5 @@
 #pragma once
 
-#include "apple_hid_usage_tables.hpp"
 #include "apple_notification_center.hpp"
 #include "components_manager_killer.hpp"
 #include "constants.hpp"

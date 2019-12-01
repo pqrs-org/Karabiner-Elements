@@ -9,33 +9,33 @@ namespace post_event_to_virtual_devices {
 class key_event_dispatcher final {
 public:
   void dispatch_key_down_event(device_id device_id,
-                               hid_usage_page hid_usage_page,
-                               hid_usage hid_usage,
+                               pqrs::osx::iokit_hid_usage_page usage_page,
+                               pqrs::osx::iokit_hid_usage usage,
                                queue& queue,
                                absolute_time_point time_stamp) {
     // Enqueue key_down event if it is not sent yet.
 
-    if (!key_event_exists(hid_usage_page, hid_usage)) {
-      pressed_keys_.emplace_back(device_id, std::make_pair(hid_usage_page, hid_usage));
-      enqueue_key_event(hid_usage_page, hid_usage, event_type::key_down, queue, time_stamp);
+    if (!key_event_exists(usage_page, usage)) {
+      pressed_keys_.emplace_back(device_id, std::make_pair(usage_page, usage));
+      enqueue_key_event(usage_page, usage, event_type::key_down, queue, time_stamp);
     }
   }
 
-  void dispatch_key_up_event(hid_usage_page hid_usage_page,
-                             hid_usage hid_usage,
+  void dispatch_key_up_event(pqrs::osx::iokit_hid_usage_page usage_page,
+                             pqrs::osx::iokit_hid_usage usage,
                              queue& queue,
                              absolute_time_point time_stamp) {
     // Enqueue key_up event if it is already sent.
 
-    if (key_event_exists(hid_usage_page, hid_usage)) {
+    if (key_event_exists(usage_page, usage)) {
       pressed_keys_.erase(std::remove_if(std::begin(pressed_keys_),
                                          std::end(pressed_keys_),
                                          [&](auto& k) {
-                                           return k.second.first == hid_usage_page &&
-                                                  k.second.second == hid_usage;
+                                           return k.second.first == usage_page &&
+                                                  k.second.second == usage;
                                          }),
                           std::end(pressed_keys_));
-      enqueue_key_event(hid_usage_page, hid_usage, event_type::key_up, queue, time_stamp);
+      enqueue_key_event(usage_page, usage, event_type::key_up, queue, time_stamp);
     }
   }
 
@@ -104,13 +104,13 @@ public:
     }
   }
 
-  const std::vector<std::pair<device_id, std::pair<hid_usage_page, hid_usage>>>& get_pressed_keys(void) const {
+  const std::vector<std::pair<device_id, std::pair<pqrs::osx::iokit_hid_usage_page, pqrs::osx::iokit_hid_usage>>>& get_pressed_keys(void) const {
     return pressed_keys_;
   }
 
 private:
-  bool key_event_exists(hid_usage_page usage_page,
-                        hid_usage usage) {
+  bool key_event_exists(pqrs::osx::iokit_hid_usage_page usage_page,
+                        pqrs::osx::iokit_hid_usage usage) {
     auto it = std::find_if(std::begin(pressed_keys_),
                            std::end(pressed_keys_),
                            [&](auto& k) {
@@ -120,15 +120,15 @@ private:
     return (it != std::end(pressed_keys_));
   }
 
-  void enqueue_key_event(hid_usage_page usage_page,
-                         hid_usage usage,
+  void enqueue_key_event(pqrs::osx::iokit_hid_usage_page usage_page,
+                         pqrs::osx::iokit_hid_usage usage,
                          event_type event_type,
                          queue& queue,
                          absolute_time_point time_stamp) {
     queue.emplace_back_key_event(usage_page, usage, event_type, time_stamp);
   }
 
-  std::vector<std::pair<device_id, std::pair<hid_usage_page, hid_usage>>> pressed_keys_;
+  std::vector<std::pair<device_id, std::pair<pqrs::osx::iokit_hid_usage_page, pqrs::osx::iokit_hid_usage>>> pressed_keys_;
   std::unordered_set<modifier_flag> pressed_modifier_flags_;
 };
 } // namespace post_event_to_virtual_devices

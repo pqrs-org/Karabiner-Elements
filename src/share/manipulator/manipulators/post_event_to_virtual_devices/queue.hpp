@@ -82,25 +82,29 @@ public:
         case type::keyboard_input:
           if (auto v = get_keyboard_input()) {
             json["keyboard_input"]["modifiers"] = v->modifiers;
-            json["keyboard_input"]["keys"] = virtual_hid_device_utility::to_json(v->keys, hid_usage_page::keyboard_or_keypad);
+            json["keyboard_input"]["keys"] = virtual_hid_device_utility::to_json(v->keys,
+                                                                                 pqrs::osx::iokit_hid_usage_page_keyboard_or_keypad);
           }
           break;
 
         case type::consumer_input:
           if (auto v = get_consumer_input()) {
-            json["consumer_input"]["keys"] = virtual_hid_device_utility::to_json(v->keys, hid_usage_page::consumer);
+            json["consumer_input"]["keys"] = virtual_hid_device_utility::to_json(v->keys,
+                                                                                 pqrs::osx::iokit_hid_usage_page_consumer);
           }
           break;
 
         case type::apple_vendor_top_case_input:
           if (auto v = get_apple_vendor_top_case_input()) {
-            json["apple_vendor_top_case_input"]["keys"] = virtual_hid_device_utility::to_json(v->keys, hid_usage_page::apple_vendor_top_case);
+            json["apple_vendor_top_case_input"]["keys"] = virtual_hid_device_utility::to_json(v->keys,
+                                                                                              pqrs::osx::iokit_hid_usage_page_apple_vendor_top_case);
           }
           break;
 
         case type::apple_vendor_keyboard_input:
           if (auto v = get_apple_vendor_keyboard_input()) {
-            json["apple_vendor_keyboard_input"]["keys"] = virtual_hid_device_utility::to_json(v->keys, hid_usage_page::apple_vendor_keyboard);
+            json["apple_vendor_keyboard_input"]["keys"] = virtual_hid_device_utility::to_json(v->keys,
+                                                                                              pqrs::osx::iokit_hid_usage_page_apple_vendor_keyboard);
           }
           break;
 
@@ -245,46 +249,28 @@ public:
     return keyboard_repeat_detector_;
   }
 
-  void emplace_back_key_event(hid_usage_page hid_usage_page,
-                              hid_usage hid_usage,
+  void emplace_back_key_event(pqrs::osx::iokit_hid_usage_page usage_page,
+                              pqrs::osx::iokit_hid_usage usage,
                               event_type event_type,
                               absolute_time_point time_stamp) {
     adjust_time_stamp(time_stamp,
                       event_type,
-                      make_modifier_flag(hid_usage_page, hid_usage) != std::nullopt);
+                      make_modifier_flag(usage_page, usage) != std::nullopt);
 
-    switch (hid_usage_page) {
-      case hid_usage_page::keyboard_or_keypad: {
-        bool modify_keys = true;
+    if (usage_page == pqrs::osx::iokit_hid_usage_page_keyboard_or_keypad) {
+      bool modify_keys = true;
 
-        if (auto m = make_modifier_flag(hid_usage_page, hid_usage)) {
-          if (auto modifier = make_hid_report_modifier(*m)) {
-            switch (event_type) {
-              case event_type::key_down:
-                keyboard_input_.modifiers.insert(*modifier);
-                modify_keys = false;
-                break;
-
-              case event_type::key_up:
-                keyboard_input_.modifiers.erase(*modifier);
-                modify_keys = false;
-                break;
-
-              case event_type::single:
-                // Do nothing
-                break;
-            }
-          }
-        }
-
-        if (modify_keys) {
+      if (auto m = make_modifier_flag(usage_page, usage)) {
+        if (auto modifier = make_hid_report_modifier(*m)) {
           switch (event_type) {
             case event_type::key_down:
-              keyboard_input_.keys.insert(static_cast<uint8_t>(hid_usage));
+              keyboard_input_.modifiers.insert(*modifier);
+              modify_keys = false;
               break;
 
             case event_type::key_up:
-              keyboard_input_.keys.erase(static_cast<uint8_t>(hid_usage));
+              keyboard_input_.modifiers.erase(*modifier);
+              modify_keys = false;
               break;
 
             case event_type::single:
@@ -292,74 +278,79 @@ public:
               break;
           }
         }
-
-        events_.emplace_back(keyboard_input_, time_stamp);
-        break;
       }
 
-      case hid_usage_page::consumer:
+      if (modify_keys) {
         switch (event_type) {
           case event_type::key_down:
-            consumer_input_.keys.insert(static_cast<uint8_t>(hid_usage));
+            keyboard_input_.keys.insert(type_safe::get(usage));
             break;
 
           case event_type::key_up:
-            consumer_input_.keys.erase(static_cast<uint8_t>(hid_usage));
+            keyboard_input_.keys.erase(type_safe::get(usage));
             break;
 
           case event_type::single:
             // Do nothing
             break;
         }
+      }
 
-        events_.emplace_back(consumer_input_, time_stamp);
-        break;
+      events_.emplace_back(keyboard_input_, time_stamp);
 
-      case hid_usage_page::apple_vendor_top_case:
-        switch (event_type) {
-          case event_type::key_down:
-            apple_vendor_top_case_input_.keys.insert(static_cast<uint8_t>(hid_usage));
-            break;
+    } else if (usage_page == pqrs::osx::iokit_hid_usage_page_consumer) {
+      switch (event_type) {
+        case event_type::key_down:
+          consumer_input_.keys.insert(type_safe::get(usage));
+          break;
 
-          case event_type::key_up:
-            apple_vendor_top_case_input_.keys.erase(static_cast<uint8_t>(hid_usage));
-            break;
+        case event_type::key_up:
+          consumer_input_.keys.erase(type_safe::get(usage));
+          break;
 
-          case event_type::single:
-            // Do nothing
-            break;
-        }
+        case event_type::single:
+          // Do nothing
+          break;
+      }
 
-        events_.emplace_back(apple_vendor_top_case_input_, time_stamp);
-        break;
+      events_.emplace_back(consumer_input_, time_stamp);
 
-      case hid_usage_page::apple_vendor_keyboard:
-        switch (event_type) {
-          case event_type::key_down:
-            apple_vendor_keyboard_input_.keys.insert(static_cast<uint8_t>(hid_usage));
-            break;
+    } else if (usage_page == pqrs::osx::iokit_hid_usage_page_apple_vendor_top_case) {
+      switch (event_type) {
+        case event_type::key_down:
+          apple_vendor_top_case_input_.keys.insert(type_safe::get(usage));
+          break;
 
-          case event_type::key_up:
-            apple_vendor_keyboard_input_.keys.erase(static_cast<uint8_t>(hid_usage));
-            break;
+        case event_type::key_up:
+          apple_vendor_top_case_input_.keys.erase(type_safe::get(usage));
+          break;
 
-          case event_type::single:
-            // Do nothing
-            break;
-        }
+        case event_type::single:
+          // Do nothing
+          break;
+      }
 
-        events_.emplace_back(apple_vendor_keyboard_input_, time_stamp);
-        break;
+      events_.emplace_back(apple_vendor_top_case_input_, time_stamp);
 
-      case hid_usage_page::zero:
-      case hid_usage_page::generic_desktop:
-      case hid_usage_page::leds:
-      case hid_usage_page::button:
-        // Do nothing
-        break;
+    } else if (usage_page == pqrs::osx::iokit_hid_usage_page_apple_vendor_keyboard) {
+      switch (event_type) {
+        case event_type::key_down:
+          apple_vendor_keyboard_input_.keys.insert(type_safe::get(usage));
+          break;
+
+        case event_type::key_up:
+          apple_vendor_keyboard_input_.keys.erase(type_safe::get(usage));
+          break;
+
+        case event_type::single:
+          // Do nothing
+          break;
+      }
+
+      events_.emplace_back(apple_vendor_keyboard_input_, time_stamp);
     }
 
-    keyboard_repeat_detector_.set(hid_usage_page, hid_usage, event_type);
+    keyboard_repeat_detector_.set(usage_page, usage, event_type);
   }
 
   void emplace_back_pointing_input(const pqrs::karabiner_virtual_hid_device::hid_report::pointing_input& pointing_input,

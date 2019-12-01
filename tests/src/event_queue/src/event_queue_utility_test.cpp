@@ -4,69 +4,69 @@
 #include "test.hpp"
 
 TEST_CASE("utility::make_queue") {
-  std::vector<krbn::hid_value> hid_values;
+  std::vector<pqrs::osx::iokit_hid_value> hid_values;
 
-  hid_values.emplace_back(krbn::hid_value(krbn::absolute_time_point(1000),
-                                          1,
-                                          *krbn::make_hid_usage_page(krbn::key_code::spacebar),
-                                          *krbn::make_hid_usage(krbn::key_code::spacebar)));
-  hid_values.emplace_back(krbn::hid_value(krbn::absolute_time_point(2000),
-                                          0,
-                                          *krbn::make_hid_usage_page(krbn::key_code::spacebar),
-                                          *krbn::make_hid_usage(krbn::key_code::spacebar)));
+  hid_values.emplace_back(pqrs::osx::iokit_hid_value(krbn::absolute_time_point(1000),
+                                                     1,
+                                                     *krbn::make_hid_usage_page(krbn::key_code::spacebar),
+                                                     *krbn::make_hid_usage(krbn::key_code::spacebar)));
+  hid_values.emplace_back(pqrs::osx::iokit_hid_value(krbn::absolute_time_point(2000),
+                                                     0,
+                                                     *krbn::make_hid_usage_page(krbn::key_code::spacebar),
+                                                     *krbn::make_hid_usage(krbn::key_code::spacebar)));
 
-  hid_values.emplace_back(krbn::hid_value(krbn::absolute_time_point(3000),
-                                          1,
-                                          *krbn::make_hid_usage_page(krbn::consumer_key_code::mute),
-                                          *krbn::make_hid_usage(krbn::consumer_key_code::mute)));
-  hid_values.emplace_back(krbn::hid_value(krbn::absolute_time_point(4000),
-                                          0,
-                                          *krbn::make_hid_usage_page(krbn::consumer_key_code::mute),
-                                          *krbn::make_hid_usage(krbn::consumer_key_code::mute)));
+  hid_values.emplace_back(pqrs::osx::iokit_hid_value(krbn::absolute_time_point(3000),
+                                                     1,
+                                                     *krbn::make_hid_usage_page(krbn::consumer_key_code::mute),
+                                                     *krbn::make_hid_usage(krbn::consumer_key_code::mute)));
+  hid_values.emplace_back(pqrs::osx::iokit_hid_value(krbn::absolute_time_point(4000),
+                                                     0,
+                                                     *krbn::make_hid_usage_page(krbn::consumer_key_code::mute),
+                                                     *krbn::make_hid_usage(krbn::consumer_key_code::mute)));
 
-  hid_values.emplace_back(krbn::hid_value(krbn::absolute_time_point(5000),
-                                          10,
-                                          krbn::hid_usage_page::generic_desktop,
-                                          krbn::hid_usage::gd_x));
-  hid_values.emplace_back(krbn::hid_value(krbn::absolute_time_point(5000),
-                                          20,
-                                          krbn::hid_usage_page::generic_desktop,
-                                          krbn::hid_usage::gd_y));
-  hid_values.emplace_back(krbn::hid_value(krbn::absolute_time_point(5000),
-                                          30,
-                                          krbn::hid_usage_page::generic_desktop,
-                                          krbn::hid_usage::gd_wheel));
-  hid_values.emplace_back(krbn::hid_value(krbn::absolute_time_point(5000),
-                                          40,
-                                          krbn::hid_usage_page::consumer,
-                                          krbn::hid_usage::csmr_acpan));
+  hid_values.emplace_back(pqrs::osx::iokit_hid_value(krbn::absolute_time_point(5000),
+                                                     10,
+                                                     pqrs::osx::iokit_hid_usage_page_generic_desktop,
+                                                     pqrs::osx::iokit_hid_usage_generic_desktop_x));
+  hid_values.emplace_back(pqrs::osx::iokit_hid_value(krbn::absolute_time_point(5000),
+                                                     20,
+                                                     pqrs::osx::iokit_hid_usage_page_generic_desktop,
+                                                     pqrs::osx::iokit_hid_usage_generic_desktop_y));
+  hid_values.emplace_back(pqrs::osx::iokit_hid_value(krbn::absolute_time_point(5000),
+                                                     30,
+                                                     pqrs::osx::iokit_hid_usage_page_generic_desktop,
+                                                     pqrs::osx::iokit_hid_usage_generic_desktop_wheel));
+  hid_values.emplace_back(pqrs::osx::iokit_hid_value(krbn::absolute_time_point(5000),
+                                                     40,
+                                                     pqrs::osx::iokit_hid_usage_page_consumer,
+                                                     pqrs::osx::iokit_hid_usage_consumer_ac_pan));
 
-  hid_values.emplace_back(krbn::hid_value(krbn::absolute_time_point(6000),
-                                          -10,
-                                          krbn::hid_usage_page::generic_desktop,
-                                          krbn::hid_usage::gd_x));
-  hid_values.emplace_back(krbn::hid_value(krbn::absolute_time_point(6000),
-                                          -20,
-                                          krbn::hid_usage_page::generic_desktop,
-                                          krbn::hid_usage::gd_y));
-  hid_values.emplace_back(krbn::hid_value(krbn::absolute_time_point(6000),
-                                          -30,
-                                          krbn::hid_usage_page::generic_desktop,
-                                          krbn::hid_usage::gd_wheel));
-  hid_values.emplace_back(krbn::hid_value(krbn::absolute_time_point(6000),
-                                          -40,
-                                          krbn::hid_usage_page::consumer,
-                                          krbn::hid_usage::csmr_acpan));
+  hid_values.emplace_back(pqrs::osx::iokit_hid_value(krbn::absolute_time_point(6000),
+                                                     -10,
+                                                     pqrs::osx::iokit_hid_usage_page_generic_desktop,
+                                                     pqrs::osx::iokit_hid_usage_generic_desktop_x));
+  hid_values.emplace_back(pqrs::osx::iokit_hid_value(krbn::absolute_time_point(6000),
+                                                     -20,
+                                                     pqrs::osx::iokit_hid_usage_page_generic_desktop,
+                                                     pqrs::osx::iokit_hid_usage_generic_desktop_y));
+  hid_values.emplace_back(pqrs::osx::iokit_hid_value(krbn::absolute_time_point(6000),
+                                                     -30,
+                                                     pqrs::osx::iokit_hid_usage_page_generic_desktop,
+                                                     pqrs::osx::iokit_hid_usage_generic_desktop_wheel));
+  hid_values.emplace_back(pqrs::osx::iokit_hid_value(krbn::absolute_time_point(6000),
+                                                     -40,
+                                                     pqrs::osx::iokit_hid_usage_page_consumer,
+                                                     pqrs::osx::iokit_hid_usage_consumer_ac_pan));
 
-  hid_values.emplace_back(krbn::hid_value(krbn::absolute_time_point(7000),
-                                          10,
-                                          krbn::hid_usage_page::generic_desktop,
-                                          krbn::hid_usage::gd_x));
+  hid_values.emplace_back(pqrs::osx::iokit_hid_value(krbn::absolute_time_point(7000),
+                                                     10,
+                                                     pqrs::osx::iokit_hid_usage_page_generic_desktop,
+                                                     pqrs::osx::iokit_hid_usage_generic_desktop_x));
 
-  hid_values.emplace_back(krbn::hid_value(krbn::absolute_time_point(8000),
-                                          0,
-                                          krbn::hid_usage_page::generic_desktop,
-                                          krbn::hid_usage::gd_x));
+  hid_values.emplace_back(pqrs::osx::iokit_hid_value(krbn::absolute_time_point(8000),
+                                                     0,
+                                                     pqrs::osx::iokit_hid_usage_page_generic_desktop,
+                                                     pqrs::osx::iokit_hid_usage_generic_desktop_x));
 
   auto queue = krbn::event_queue::utility::make_queue(krbn::device_id(1),
                                                       hid_values);

@@ -19,53 +19,53 @@ TEST_CASE("karabiner_virtual_hid_device::hid_report::modifiers") {
 TEST_CASE("karabiner_virtual_hid_device::hid_report::keys") {
   {
     pqrs::karabiner_virtual_hid_device::hid_report::keys keys;
-    keys.insert(static_cast<uint8_t>(*(krbn::make_hid_usage(krbn::key_code::a))));
-    keys.insert(static_cast<uint8_t>(*(krbn::make_hid_usage(krbn::key_code::b))));
-    keys.insert(static_cast<uint8_t>(*(krbn::make_hid_usage(krbn::key_code::c))));
-    keys.erase(static_cast<uint8_t>(*(krbn::make_hid_usage(krbn::key_code::a))));
+    keys.insert(type_safe::get(*(krbn::make_hid_usage(krbn::key_code::a))));
+    keys.insert(type_safe::get(*(krbn::make_hid_usage(krbn::key_code::b))));
+    keys.insert(type_safe::get(*(krbn::make_hid_usage(krbn::key_code::c))));
+    keys.erase(type_safe::get(*(krbn::make_hid_usage(krbn::key_code::a))));
 
     nlohmann::json expected = nlohmann::json::array();
     expected.push_back("b");
     expected.push_back("c");
 
-    REQUIRE(krbn::virtual_hid_device_utility::to_json(keys, krbn::hid_usage_page::keyboard_or_keypad).dump() == expected.dump());
+    REQUIRE(krbn::virtual_hid_device_utility::to_json(keys, pqrs::osx::iokit_hid_usage_page_keyboard_or_keypad).dump() == expected.dump());
   }
   {
     pqrs::karabiner_virtual_hid_device::hid_report::keys keys;
-    keys.insert(static_cast<uint8_t>(*(krbn::make_hid_usage(krbn::consumer_key_code::rewind))));
-    keys.insert(static_cast<uint8_t>(*(krbn::make_hid_usage(krbn::consumer_key_code::eject))));
-    keys.insert(static_cast<uint8_t>(*(krbn::make_hid_usage(krbn::consumer_key_code::mute))));
+    keys.insert(type_safe::get(*(krbn::make_hid_usage(krbn::consumer_key_code::rewind))));
+    keys.insert(type_safe::get(*(krbn::make_hid_usage(krbn::consumer_key_code::eject))));
+    keys.insert(type_safe::get(*(krbn::make_hid_usage(krbn::consumer_key_code::mute))));
 
     nlohmann::json expected = nlohmann::json::array();
     expected.push_back("rewind");
     expected.push_back("eject");
     expected.push_back("mute");
 
-    REQUIRE(krbn::virtual_hid_device_utility::to_json(keys, krbn::hid_usage_page::consumer).dump() == expected.dump());
+    REQUIRE(krbn::virtual_hid_device_utility::to_json(keys, pqrs::osx::iokit_hid_usage_page_consumer).dump() == expected.dump());
   }
   {
     pqrs::karabiner_virtual_hid_device::hid_report::keys keys;
-    keys.insert(static_cast<uint8_t>(krbn::hid_usage::av_top_case_keyboard_fn));
-    keys.insert(static_cast<uint8_t>(krbn::hid_usage::av_top_case_brightness_up));
-    keys.insert(static_cast<uint8_t>(krbn::hid_usage::av_top_case_illumination_up));
+    keys.insert(type_safe::get(pqrs::osx::iokit_hid_usage_apple_vendor_top_case_keyboard_fn));
+    keys.insert(type_safe::get(pqrs::osx::iokit_hid_usage_apple_vendor_top_case_brightness_up));
+    keys.insert(type_safe::get(pqrs::osx::iokit_hid_usage_apple_vendor_top_case_illumination_up));
 
     nlohmann::json expected = nlohmann::json::array();
     expected.push_back("fn");
     expected.push_back("apple_top_case_display_brightness_increment");
     expected.push_back("illumination_increment");
 
-    REQUIRE(krbn::virtual_hid_device_utility::to_json(keys, krbn::hid_usage_page::apple_vendor_top_case).dump() == expected.dump());
+    REQUIRE(krbn::virtual_hid_device_utility::to_json(keys, pqrs::osx::iokit_hid_usage_page_apple_vendor_top_case).dump() == expected.dump());
   }
   {
     pqrs::karabiner_virtual_hid_device::hid_report::keys keys;
-    keys.insert(static_cast<uint8_t>(krbn::hid_usage::apple_vendor_keyboard_expose_all));
-    keys.insert(static_cast<uint8_t>(krbn::hid_usage::apple_vendor_keyboard_launchpad));
+    keys.insert(type_safe::get(pqrs::osx::iokit_hid_usage_apple_vendor_keyboard_expose_all));
+    keys.insert(type_safe::get(pqrs::osx::iokit_hid_usage_apple_vendor_keyboard_launchpad));
 
     nlohmann::json expected = nlohmann::json::array();
     expected.push_back("mission_control");
     expected.push_back("launchpad");
 
-    REQUIRE(krbn::virtual_hid_device_utility::to_json(keys, krbn::hid_usage_page::apple_vendor_keyboard).dump() == expected.dump());
+    REQUIRE(krbn::virtual_hid_device_utility::to_json(keys, pqrs::osx::iokit_hid_usage_page_apple_vendor_keyboard).dump() == expected.dump());
   }
 }
 

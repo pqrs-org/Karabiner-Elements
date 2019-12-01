@@ -19,12 +19,12 @@ TEST_CASE("make_key_code") {
   }
   {
     auto actual = krbn::make_key_code(pqrs::osx::iokit_hid_usage_page_apple_vendor_top_case,
-                                      pqrs::osx::iokit_hid_usage(krbn::kHIDUsage_AV_TopCase_KeyboardFn));
+                                      pqrs::osx::iokit_hid_usage_apple_vendor_top_case_keyboard_fn);
     REQUIRE(*actual == krbn::key_code::fn);
   }
   {
     auto actual = krbn::make_key_code(pqrs::osx::iokit_hid_usage_page_apple_vendor_keyboard,
-                                      pqrs::osx::iokit_hid_usage(krbn::kHIDUsage_AppleVendorKeyboard_Function));
+                                      pqrs::osx::iokit_hid_usage_apple_vendor_keyboard_function);
     REQUIRE(*actual == krbn::key_code::fn);
   }
   {

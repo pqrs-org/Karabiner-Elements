@@ -38,7 +38,8 @@ public:
     return json;
   }
 
-  static nlohmann::json to_json(const pqrs::karabiner_virtual_hid_device::hid_report::keys& v, hid_usage_page hid_usage_page) {
+  static nlohmann::json to_json(const pqrs::karabiner_virtual_hid_device::hid_report::keys& v,
+                                pqrs::osx::iokit_hid_usage_page usage_page) {
     auto json = nlohmann::json::array();
 
     for (const auto& k : v.get_raw_value()) {
@@ -46,12 +47,12 @@ public:
         continue;
       }
 
-      if (auto key_code = make_key_code(hid_usage_page, hid_usage(k))) {
+      if (auto key_code = make_key_code(usage_page, pqrs::osx::iokit_hid_usage(k))) {
         json.push_back(make_key_code_name(*key_code));
         continue;
       }
 
-      if (auto consumer_key_code = make_consumer_key_code(hid_usage_page, hid_usage(k))) {
+      if (auto consumer_key_code = make_consumer_key_code(usage_page, pqrs::osx::iokit_hid_usage(k))) {
         json.push_back(make_consumer_key_code_name(*consumer_key_code));
         continue;
       }
