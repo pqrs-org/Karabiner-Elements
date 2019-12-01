@@ -1,6 +1,7 @@
 #pragma once
 
 #include "event_queue.hpp"
+#include "hid_queue_values_converter.hpp"
 #include "libkrbn/libkrbn.h"
 #include <atomic>
 #include <pqrs/osx/iokit_hid_manager.hpp>
@@ -40,7 +41,8 @@ public:
 
         hid_queue_value_monitor->values_arrived.connect([this, callback, refcon, device_id](auto&& values_ptr) {
           auto event_queue = krbn::event_queue::utility::make_queue(device_id,
-                                                                    krbn::iokit_utility::make_hid_values(values_ptr));
+                                                                    hid_queue_values_converter_.make_hid_values(device_id,
+                                                                                                                values_ptr));
           values_arrived(callback, refcon, event_queue);
         });
 
@@ -53,6 +55,7 @@ public:
       auto device_id = krbn::make_device_id(registry_entry_id);
 
       hid_queue_value_monitors_.erase(device_id);
+      hid_queue_values_converter_.erase_device(device_id);
     });
 
     hid_manager_->error_occurred.connect([](auto&& message, auto&& iokit_return) {
@@ -124,5 +127,6 @@ private:
 
   std::unique_ptr<pqrs::osx::iokit_hid_manager> hid_manager_;
   std::unordered_map<krbn::device_id, std::shared_ptr<pqrs::osx::iokit_hid_queue_value_monitor>> hid_queue_value_monitors_;
+  krbn::hid_queue_values_converter hid_queue_values_converter_;
   std::atomic<bool> observed_;
 };

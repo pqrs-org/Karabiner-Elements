@@ -5,6 +5,7 @@
 #include "components_manager_killer.hpp"
 #include "event_queue.hpp"
 #include "grabber_client.hpp"
+#include "hid_queue_values_converter.hpp"
 #include "iokit_utility.hpp"
 #include "logger.hpp"
 #include "types.hpp"
@@ -57,7 +58,8 @@ public:
           // Handle caps_lock_state_changed event only if the hid is Karabiner-VirtualHIDDevice.
           hid_queue_value_monitor->values_arrived.connect([this, device_id](auto&& values_ptr) {
             auto event_queue = event_queue::utility::make_queue(device_id,
-                                                                iokit_utility::make_hid_values(values_ptr));
+                                                                hid_queue_values_converter_.make_hid_values(device_id,
+                                                                                                            values_ptr));
             for (const auto& e : event_queue->get_entries()) {
               if (e.get_event().get_type() == event_queue::event::type::caps_lock_state_changed) {
                 if (auto client = grabber_client_.lock()) {
@@ -71,7 +73,8 @@ public:
         } else {
           hid_queue_value_monitor->values_arrived.connect([this, device_id](auto&& values_ptr) {
             auto event_queue = event_queue::utility::make_queue(device_id,
-                                                                iokit_utility::make_hid_values(values_ptr));
+                                                                hid_queue_values_converter_.make_hid_values(device_id,
+                                                                                                            values_ptr));
             for (const auto& entry : event_queue->get_entries()) {
               if (auto e = entry.get_event().make_key_down_up_valued_event()) {
                 if (auto client = grabber_client_.lock()) {
@@ -115,6 +118,7 @@ public:
       logger::get_logger()->info("device_id:{0} is terminated.", type_safe::get(device_id));
 
       hid_queue_value_monitors_.erase(device_id);
+      hid_queue_values_converter_.erase_device(device_id);
       observed_devices_.erase(device_id);
 
       send_observed_devices();
@@ -169,6 +173,7 @@ private:
 
   std::unique_ptr<pqrs::osx::iokit_hid_manager> hid_manager_;
   std::unordered_map<device_id, std::shared_ptr<pqrs::osx::iokit_hid_queue_value_monitor>> hid_queue_value_monitors_;
+  hid_queue_values_converter hid_queue_values_converter_;
   std::unordered_set<device_id> observed_devices_;
 };
 } // namespace observer

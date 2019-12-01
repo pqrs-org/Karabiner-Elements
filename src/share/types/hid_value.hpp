@@ -46,6 +46,11 @@ public:
     return time_stamp_;
   }
 
+  hid_value& set_time_stamp(absolute_time_point value) {
+    time_stamp_ = value;
+    return *this;
+  }
+
   CFIndex get_integer_value(void) const {
     return integer_value_;
   }

@@ -31,20 +31,11 @@ public:
     // Skip old event
     //
 
-    // Note:
-    // Some devices send event with time_stamp == 0.
-    // (For example, Swiftpoint ProPoint sends pointing events with normal time_stamp,
-    // but consumer_key_code key_up events with time_stamp == 0.)
-    //
-    // Thus, we do not check time_stamp if time_stamp == 0.
-
-    if (time_stamp > absolute_time_point(0)) {
-      if (time_stamp < last_time_stamp_) {
-        return false;
-      }
-
-      last_time_stamp_ = time_stamp;
+    if (time_stamp < last_time_stamp_) {
+      return false;
     }
+
+    last_time_stamp_ = time_stamp;
 
     //
     // Handle event

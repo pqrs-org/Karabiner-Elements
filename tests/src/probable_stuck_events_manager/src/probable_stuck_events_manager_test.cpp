@@ -194,36 +194,4 @@ TEST_CASE("probable_stuck_events_manager key_up only") {
                      krbn::device_state::grabbed) == false);
     REQUIRE(m.find_probable_stuck_event() == std::nullopt);
   }
-
-  //
-  // key_up, key_up, key_up (time_stamp == 0)
-  //
-
-  {
-    krbn::probable_stuck_events_manager m;
-
-    REQUIRE(m.update(krbn::key_down_up_valued_event(krbn::key_code::b),
-                     krbn::event_type::key_down,
-                     krbn::absolute_time_point(1000),
-                     krbn::device_state::grabbed) == false);
-    REQUIRE(m.find_probable_stuck_event() == std::nullopt);
-
-    REQUIRE(m.update(krbn::key_down_up_valued_event(krbn::key_code::a),
-                     krbn::event_type::key_up,
-                     krbn::absolute_time_point(0),
-                     krbn::device_state::grabbed) == true);
-    REQUIRE(m.find_probable_stuck_event() == krbn::key_down_up_valued_event(krbn::key_code::a));
-
-    REQUIRE(m.update(krbn::key_down_up_valued_event(krbn::key_code::a),
-                     krbn::event_type::key_up,
-                     krbn::absolute_time_point(0),
-                     krbn::device_state::grabbed) == true);
-    REQUIRE(m.find_probable_stuck_event() == std::nullopt);
-
-    REQUIRE(m.update(krbn::key_down_up_valued_event(krbn::key_code::a),
-                     krbn::event_type::key_up,
-                     krbn::absolute_time_point(0),
-                     krbn::device_state::grabbed) == false);
-    REQUIRE(m.find_probable_stuck_event() == std::nullopt);
-  }
 }
