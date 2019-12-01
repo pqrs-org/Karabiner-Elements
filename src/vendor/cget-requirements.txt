@@ -16,6 +16,7 @@ pqrs-org/cpp-osx-input_source_selector
 pqrs-org/cpp-osx-iokit_hid_device_open_checker
 pqrs-org/cpp-osx-iokit_hid_manager
 pqrs-org/cpp-osx-iokit_hid_queue_value_monitor
+pqrs-org/cpp-osx-iokit_hid_value
 pqrs-org/cpp-osx-json_file_monitor
 pqrs-org/cpp-osx-launchctl
 pqrs-org/cpp-osx-os_kext_return
