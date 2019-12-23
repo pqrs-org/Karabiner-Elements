@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <document type="com.apple.InterfaceBuilder3.Cocoa.XIB" version="3.0" toolsVersion="15505" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none" useAutolayout="YES" customObjectInstantitationMethod="direct">
     <dependencies>
-        <deployment identifier="macosx"/>
         <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="15505"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
@@ -466,15 +465,15 @@
                 <subviews>
                     <tabView initialItem="SOT-pf-9fT" translatesAutoresizingMaskIntoConstraints="NO" id="W8s-8N-CIx">
                         <rect key="frame" x="13" y="10" width="974" height="534"/>
-                        <font key="font" metaFont="system"/>
+                        <font key="font" metaFont="menu"/>
                         <tabViewItems>
                             <tabViewItem label="Simple modifications" identifier="1" id="SOT-pf-9fT">
                                 <view key="view" misplaced="YES" id="aYZ-Ew-w2F">
-                                    <rect key="frame" x="10" y="33" width="954" height="224"/>
+                                    <rect key="frame" x="10" y="33" width="954" height="488"/>
                                     <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                     <subviews>
                                         <customView translatesAutoresizingMaskIntoConstraints="NO" id="Cqw-ll-1Rg">
-                                            <rect key="frame" x="222" y="87" width="511" height="31"/>
+                                            <rect key="frame" x="222" y="351" width="511" height="31"/>
                                             <subviews>
                                                 <popUpButton verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="oB5-NY-D3P">
                                                     <rect key="frame" x="99" y="2" width="405" height="25"/>
@@ -483,7 +482,7 @@
                                                     </constraints>
                                                     <popUpButtonCell key="cell" type="push" bezelStyle="rounded" alignment="left" lineBreakMode="truncatingTail" borderStyle="borderAndBezel" imageScaling="proportionallyDown" inset="2" id="HF1-Hm-m77">
                                                         <behavior key="behavior" lightByBackground="YES" lightByGray="YES"/>
-                                                        <font key="font" metaFont="system"/>
+                                                        <font key="font" metaFont="menu"/>
                                                         <menu key="menu" id="JFJ-Vg-OFl"/>
                                                     </popUpButtonCell>
                                                     <connections>
@@ -493,7 +492,7 @@
                                                 <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="lqN-yh-z4B">
                                                     <rect key="frame" x="8" y="8" width="90" height="16"/>
                                                     <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" title="Target device:" id="Bvh-CN-r6V">
-                                                        <font key="font" metaFont="system"/>
+                                                        <font key="font" metaFont="menu"/>
                                                         <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
                                                         <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
                                                     </textFieldCell>
@@ -509,10 +508,10 @@
                                             </constraints>
                                         </customView>
                                         <scrollView autohidesScrollers="YES" horizontalLineScroll="28" horizontalPageScroll="10" verticalLineScroll="28" verticalPageScroll="10" usesPredominantAxisScrolling="NO" translatesAutoresizingMaskIntoConstraints="NO" id="7r4-lM-Seb">
-                                            <rect key="frame" x="17" y="43" width="920" height="34"/>
+                                            <rect key="frame" x="17" y="307" width="920" height="34"/>
                                             <clipView key="contentView" id="fPj-Ru-opD">
                                                 <rect key="frame" x="1" y="0.0" width="918" height="33"/>
-                                                <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                                                <autoresizingMask key="autoresizingMask"/>
                                                 <subviews>
                                                     <tableView verticalHuggingPriority="750" allowsExpansionToolTips="YES" columnAutoresizingStyle="firstColumnOnly" alternatingRowBackgroundColors="YES" columnReordering="NO" columnSelection="YES" columnResizing="NO" multipleSelection="NO" autosaveColumns="NO" rowHeight="26" rowSizeStyle="automatic" headerView="bin-92-FO9" viewBased="YES" id="qEO-TG-yM2">
                                                         <rect key="frame" x="0.0" y="0.0" width="918" height="10"/>
@@ -524,12 +523,12 @@
                                                         <tableColumns>
                                                             <tableColumn identifier="SimpleModificationsFromColumn" width="399" minWidth="40" maxWidth="10000" id="zOn-42-oxZ">
                                                                 <tableHeaderCell key="headerCell" lineBreakMode="truncatingTail" borderStyle="border" title="From key">
-                                                                    <font key="font" metaFont="menu" size="11"/>
+                                                                    <font key="font" metaFont="message" size="11"/>
                                                                     <color key="textColor" name="headerTextColor" catalog="System" colorSpace="catalog"/>
                                                                     <color key="backgroundColor" name="headerColor" catalog="System" colorSpace="catalog"/>
                                                                 </tableHeaderCell>
                                                                 <textFieldCell key="dataCell" lineBreakMode="truncatingTail" selectable="YES" editable="YES" title="Text Cell" id="rKQ-vn-hZb">
-                                                                    <font key="font" metaFont="system"/>
+                                                                    <font key="font" metaFont="menu"/>
                                                                     <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
                                                                     <color key="backgroundColor" name="controlBackgroundColor" catalog="System" colorSpace="catalog"/>
                                                                 </textFieldCell>
@@ -543,7 +542,7 @@
                                                                                 <rect key="frame" x="8" y="0.0" width="384" height="25"/>
                                                                                 <popUpButtonCell key="cell" type="push" bezelStyle="rounded" alignment="left" lineBreakMode="truncatingTail" borderStyle="borderAndBezel" imageScaling="proportionallyDown" inset="2" id="32z-u1-2FH">
                                                                                     <behavior key="behavior" lightByBackground="YES" lightByGray="YES"/>
-                                                                                    <font key="font" metaFont="system"/>
+                                                                                    <font key="font" metaFont="menu"/>
                                                                                     <menu key="menu" id="IUg-P0-Z6a"/>
                                                                                 </popUpButtonCell>
                                                                             </popUpButton>
@@ -561,12 +560,12 @@
                                                             </tableColumn>
                                                             <tableColumn identifier="SimpleModificationsToColumn" width="400" minWidth="40" maxWidth="1000" id="Cvf-cr-EpW">
                                                                 <tableHeaderCell key="headerCell" lineBreakMode="truncatingTail" borderStyle="border" title="To key">
-                                                                    <font key="font" metaFont="menu" size="11"/>
+                                                                    <font key="font" metaFont="message" size="11"/>
                                                                     <color key="textColor" name="headerTextColor" catalog="System" colorSpace="catalog"/>
                                                                     <color key="backgroundColor" name="headerColor" catalog="System" colorSpace="catalog"/>
                                                                 </tableHeaderCell>
                                                                 <textFieldCell key="dataCell" lineBreakMode="truncatingTail" selectable="YES" editable="YES" title="Text Cell" id="Ypk-uQ-C3O">
-                                                                    <font key="font" metaFont="system"/>
+                                                                    <font key="font" metaFont="menu"/>
                                                                     <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
                                                                     <color key="backgroundColor" name="controlBackgroundColor" catalog="System" colorSpace="catalog"/>
                                                                 </textFieldCell>
@@ -580,7 +579,7 @@
                                                                                 <rect key="frame" x="8" y="0.0" width="385" height="25"/>
                                                                                 <popUpButtonCell key="cell" type="push" bezelStyle="rounded" alignment="left" lineBreakMode="truncatingTail" borderStyle="borderAndBezel" imageScaling="proportionallyDown" inset="2" id="nkp-Ia-q39">
                                                                                     <behavior key="behavior" lightByBackground="YES" lightByGray="YES"/>
-                                                                                    <font key="font" metaFont="system"/>
+                                                                                    <font key="font" metaFont="menu"/>
                                                                                     <menu key="menu" id="WBu-UH-o5F"/>
                                                                                 </popUpButtonCell>
                                                                             </popUpButton>
@@ -598,12 +597,12 @@
                                                             </tableColumn>
                                                             <tableColumn identifier="SimpleModificationsDeleteColumn" width="110" minWidth="10" maxWidth="3.4028234663852886e+38" id="9uY-pP-ozU">
                                                                 <tableHeaderCell key="headerCell" lineBreakMode="truncatingTail" borderStyle="border" alignment="left">
-                                                                    <font key="font" metaFont="menu" size="11"/>
+                                                                    <font key="font" metaFont="message" size="11"/>
                                                                     <color key="textColor" name="headerTextColor" catalog="System" colorSpace="catalog"/>
                                                                     <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
                                                                 </tableHeaderCell>
                                                                 <textFieldCell key="dataCell" lineBreakMode="truncatingTail" selectable="YES" editable="YES" alignment="left" title="Text Cell" id="l0p-oF-sIT">
-                                                                    <font key="font" metaFont="system"/>
+                                                                    <font key="font" metaFont="menu"/>
                                                                     <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
                                                                     <color key="backgroundColor" name="controlBackgroundColor" catalog="System" colorSpace="catalog"/>
                                                                 </textFieldCell>
@@ -617,7 +616,7 @@
                                                                                 <rect key="frame" x="0.0" y="-4" width="111" height="32"/>
                                                                                 <buttonCell key="cell" type="push" title="Remove" bezelStyle="rounded" image="ic_remove_circle_18pt" imagePosition="left" alignment="center" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="Bdt-L4-6qN">
                                                                                     <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
-                                                                                    <font key="font" metaFont="system"/>
+                                                                                    <font key="font" metaFont="menu"/>
                                                                                 </buttonCell>
                                                                             </button>
                                                                         </subviews>
@@ -639,11 +638,11 @@
                                                     </tableView>
                                                 </subviews>
                                             </clipView>
-                                            <scroller key="horizontalScroller" hidden="YES" verticalHuggingPriority="750" horizontal="YES" id="mak-Qn-6Ze">
+                                            <scroller key="horizontalScroller" hidden="YES" wantsLayer="YES" verticalHuggingPriority="750" horizontal="YES" id="mak-Qn-6Ze">
                                                 <rect key="frame" x="1" y="289" width="718" height="15"/>
                                                 <autoresizingMask key="autoresizingMask"/>
                                             </scroller>
-                                            <scroller key="verticalScroller" hidden="YES" verticalHuggingPriority="750" horizontal="NO" id="PC1-Xv-Ppm">
+                                            <scroller key="verticalScroller" hidden="YES" wantsLayer="YES" verticalHuggingPriority="750" horizontal="NO" id="PC1-Xv-Ppm">
                                                 <rect key="frame" x="224" y="17" width="15" height="102"/>
                                                 <autoresizingMask key="autoresizingMask"/>
                                             </scroller>
@@ -653,10 +652,10 @@
                                             </tableHeaderView>
                                         </scrollView>
                                         <button verticalHuggingPriority="750" imageHugsTitle="YES" translatesAutoresizingMaskIntoConstraints="NO" id="nmp-2M-4Aq">
-                                            <rect key="frame" x="11" y="10" width="116" height="32"/>
+                                            <rect key="frame" x="11" y="274" width="116" height="32"/>
                                             <buttonCell key="cell" type="push" title="Add item" bezelStyle="rounded" image="ic_add_circle_18pt" imagePosition="left" alignment="center" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="HFn-CP-POu">
                                                 <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
-                                                <font key="font" metaFont="system"/>
+                                                <font key="font" metaFont="menu"/>
                                             </buttonCell>
                                             <connections>
                                                 <action selector="addItem:" target="4f7-Hm-cOy" id="O9t-bd-QMl"/>
@@ -691,7 +690,7 @@
                                                     </constraints>
                                                     <popUpButtonCell key="cell" type="push" bezelStyle="rounded" alignment="left" lineBreakMode="truncatingTail" borderStyle="borderAndBezel" imageScaling="proportionallyDown" inset="2" id="fqa-jk-Z7r">
                                                         <behavior key="behavior" lightByBackground="YES" lightByGray="YES"/>
-                                                        <font key="font" metaFont="system"/>
+                                                        <font key="font" metaFont="menu"/>
                                                         <menu key="menu" id="KV2-LW-dgg"/>
                                                     </popUpButtonCell>
                                                     <connections>
@@ -701,7 +700,7 @@
                                                 <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="Tes-Sp-vUH">
                                                     <rect key="frame" x="8" y="8" width="90" height="16"/>
                                                     <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" title="Target device:" id="7GS-fM-TSE">
-                                                        <font key="font" metaFont="system"/>
+                                                        <font key="font" metaFont="menu"/>
                                                         <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
                                                         <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
                                                     </textFieldCell>
@@ -720,7 +719,7 @@
                                             <rect key="frame" x="17" y="60" width="920" height="100"/>
                                             <clipView key="contentView" id="LCo-MQ-oMD">
                                                 <rect key="frame" x="1" y="0.0" width="918" height="99"/>
-                                                <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                                                <autoresizingMask key="autoresizingMask"/>
                                                 <subviews>
                                                     <tableView verticalHuggingPriority="750" allowsExpansionToolTips="YES" columnAutoresizingStyle="lastColumnOnly" alternatingRowBackgroundColors="YES" columnReordering="NO" columnSelection="YES" columnResizing="NO" multipleSelection="NO" autosaveColumns="NO" rowHeight="26" rowSizeStyle="automatic" headerView="RPX-X6-Et1" viewBased="YES" id="OWP-Cf-tc8">
                                                         <rect key="frame" x="0.0" y="0.0" width="918" height="76"/>
@@ -732,12 +731,12 @@
                                                         <tableColumns>
                                                             <tableColumn identifier="FnFunctionKeysFromColumn" width="100" minWidth="40" maxWidth="1000" id="9ma-aF-gww">
                                                                 <tableHeaderCell key="headerCell" lineBreakMode="truncatingTail" borderStyle="border" title="Physical key">
-                                                                    <font key="font" metaFont="menu" size="11"/>
+                                                                    <font key="font" metaFont="message" size="11"/>
                                                                     <color key="textColor" name="headerTextColor" catalog="System" colorSpace="catalog"/>
                                                                     <color key="backgroundColor" name="headerColor" catalog="System" colorSpace="catalog"/>
                                                                 </tableHeaderCell>
                                                                 <textFieldCell key="dataCell" lineBreakMode="truncatingTail" selectable="YES" editable="YES" title="Text Cell" id="4Vn-D6-oSe">
-                                                                    <font key="font" metaFont="system"/>
+                                                                    <font key="font" metaFont="menu"/>
                                                                     <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
                                                                     <color key="backgroundColor" name="controlBackgroundColor" catalog="System" colorSpace="catalog"/>
                                                                 </textFieldCell>
@@ -750,7 +749,7 @@
                                                                             <textField verticalHuggingPriority="750" horizontalCompressionResistancePriority="250" allowsCharacterPickerTouchBarItem="YES" translatesAutoresizingMaskIntoConstraints="NO" id="FMC-Is-5SJ">
                                                                                 <rect key="frame" x="8" y="5" width="84" height="16"/>
                                                                                 <textFieldCell key="cell" lineBreakMode="truncatingTail" sendsActionOnEndEditing="YES" title="f1" id="n23-p1-Etc">
-                                                                                    <font key="font" metaFont="system"/>
+                                                                                    <font key="font" metaFont="menu"/>
                                                                                     <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
                                                                                     <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
                                                                                 </textFieldCell>
@@ -769,12 +768,12 @@
                                                             </tableColumn>
                                                             <tableColumn identifier="FnFunctionKeysToColumn" width="812" minWidth="40" maxWidth="10000" id="ZHK-yh-2iU">
                                                                 <tableHeaderCell key="headerCell" lineBreakMode="truncatingTail" borderStyle="border" title="To key">
-                                                                    <font key="font" metaFont="menu" size="11"/>
+                                                                    <font key="font" metaFont="message" size="11"/>
                                                                     <color key="textColor" name="headerTextColor" catalog="System" colorSpace="catalog"/>
                                                                     <color key="backgroundColor" name="headerColor" catalog="System" colorSpace="catalog"/>
                                                                 </tableHeaderCell>
                                                                 <textFieldCell key="dataCell" lineBreakMode="truncatingTail" selectable="YES" editable="YES" title="Text Cell" id="0Y7-fU-5mv">
-                                                                    <font key="font" metaFont="system"/>
+                                                                    <font key="font" metaFont="menu"/>
                                                                     <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
                                                                     <color key="backgroundColor" name="controlBackgroundColor" catalog="System" colorSpace="catalog"/>
                                                                 </textFieldCell>
@@ -788,7 +787,7 @@
                                                                                 <rect key="frame" x="8" y="0.0" width="797" height="25"/>
                                                                                 <popUpButtonCell key="cell" type="push" bezelStyle="rounded" alignment="left" lineBreakMode="truncatingTail" borderStyle="borderAndBezel" imageScaling="proportionallyDown" inset="2" id="JXH-j9-ngj">
                                                                                     <behavior key="behavior" lightByBackground="YES" lightByGray="YES"/>
-                                                                                    <font key="font" metaFont="system"/>
+                                                                                    <font key="font" metaFont="menu"/>
                                                                                     <menu key="menu" id="Tx3-o2-ne5"/>
                                                                                 </popUpButtonCell>
                                                                             </popUpButton>
@@ -812,11 +811,11 @@
                                                     </tableView>
                                                 </subviews>
                                             </clipView>
-                                            <scroller key="horizontalScroller" hidden="YES" verticalHuggingPriority="750" horizontal="YES" id="Dn1-bM-I4s">
+                                            <scroller key="horizontalScroller" hidden="YES" wantsLayer="YES" verticalHuggingPriority="750" horizontal="YES" id="Dn1-bM-I4s">
                                                 <rect key="frame" x="1" y="119" width="223" height="15"/>
                                                 <autoresizingMask key="autoresizingMask"/>
                                             </scroller>
-                                            <scroller key="verticalScroller" hidden="YES" verticalHuggingPriority="750" horizontal="NO" id="PL4-bb-fsB">
+                                            <scroller key="verticalScroller" hidden="YES" wantsLayer="YES" verticalHuggingPriority="750" horizontal="NO" id="PL4-bb-fsB">
                                                 <rect key="frame" x="224" y="17" width="15" height="102"/>
                                                 <autoresizingMask key="autoresizingMask"/>
                                             </scroller>
@@ -829,7 +828,7 @@
                                             <rect key="frame" x="15" y="32" width="322" height="18"/>
                                             <buttonCell key="cell" type="check" title="Use all F1, F2, etc. keys as standard function keys" bezelStyle="regularSquare" imagePosition="left" state="on" inset="2" id="bqL-qm-5RA">
                                                 <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
-                                                <font key="font" metaFont="system"/>
+                                                <font key="font" metaFont="menu"/>
                                             </buttonCell>
                                             <connections>
                                                 <action selector="updateSystemPreferencesValues:" target="5ke-qB-Wr5" id="Lnp-yZ-h3X"/>
@@ -838,7 +837,7 @@
                                         <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" allowsCharacterPickerTouchBarItem="YES" translatesAutoresizingMaskIntoConstraints="NO" id="ELQ-Wd-O9E">
                                             <rect key="frame" x="33" y="15" width="391" height="14"/>
                                             <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" title="When this option is selected, press the Fn key to use the special features." id="JXB-ZV-gOf">
-                                                <font key="font" metaFont="menu" size="11"/>
+                                                <font key="font" metaFont="message" size="11"/>
                                                 <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
                                                 <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
                                             </textFieldCell>
@@ -867,7 +866,7 @@
                                     <subviews>
                                         <tabView translatesAutoresizingMaskIntoConstraints="NO" id="1c1-vs-xhU">
                                             <rect key="frame" x="10" y="7" width="974" height="179"/>
-                                            <font key="font" metaFont="system"/>
+                                            <font key="font" metaFont="menu"/>
                                             <tabViewItems>
                                                 <tabViewItem label="Rules" identifier="1" id="UOy-mW-Ddj">
                                                     <view key="view" id="cFJ-9E-eEA">
@@ -878,7 +877,7 @@
                                                                 <rect key="frame" x="17" y="41" width="920" height="84"/>
                                                                 <clipView key="contentView" id="Z0i-ZA-lV3">
                                                                     <rect key="frame" x="1" y="0.0" width="918" height="83"/>
-                                                                    <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                                                                    <autoresizingMask key="autoresizingMask"/>
                                                                     <subviews>
                                                                         <tableView verticalHuggingPriority="750" allowsExpansionToolTips="YES" columnAutoresizingStyle="firstColumnOnly" alternatingRowBackgroundColors="YES" columnReordering="NO" columnResizing="NO" multipleSelection="NO" autosaveColumns="NO" rowHeight="26" rowSizeStyle="automatic" headerView="sIp-xu-x1n" viewBased="YES" id="v5W-RF-1fL">
                                                                             <rect key="frame" x="0.0" y="0.0" width="918" height="60"/>
@@ -890,12 +889,12 @@
                                                                             <tableColumns>
                                                                                 <tableColumn identifier="ComplexModificationsRulesDescriptionColumn" width="802" minWidth="40" maxWidth="10000" id="Ctr-us-5oS">
                                                                                     <tableHeaderCell key="headerCell" lineBreakMode="truncatingTail" borderStyle="border" title="Enabled rules">
-                                                                                        <font key="font" metaFont="menu" size="11"/>
+                                                                                        <font key="font" metaFont="message" size="11"/>
                                                                                         <color key="textColor" name="headerTextColor" catalog="System" colorSpace="catalog"/>
                                                                                         <color key="backgroundColor" name="headerColor" catalog="System" colorSpace="catalog"/>
                                                                                     </tableHeaderCell>
                                                                                     <textFieldCell key="dataCell" lineBreakMode="truncatingTail" selectable="YES" editable="YES" title="Text Cell" id="k2j-kG-wgX">
-                                                                                        <font key="font" metaFont="system"/>
+                                                                                        <font key="font" metaFont="menu"/>
                                                                                         <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
                                                                                         <color key="backgroundColor" name="controlBackgroundColor" catalog="System" colorSpace="catalog"/>
                                                                                     </textFieldCell>
@@ -908,7 +907,7 @@
                                                                                                 <textField verticalHuggingPriority="750" horizontalCompressionResistancePriority="250" allowsCharacterPickerTouchBarItem="YES" translatesAutoresizingMaskIntoConstraints="NO" id="wAy-4z-0CI">
                                                                                                     <rect key="frame" x="8" y="5" width="96" height="16"/>
                                                                                                     <textFieldCell key="cell" lineBreakMode="truncatingTail" sendsActionOnEndEditing="YES" title="Table View Cell" id="cfi-CT-NxM">
-                                                                                                        <font key="font" metaFont="system"/>
+                                                                                                        <font key="font" metaFont="menu"/>
                                                                                                         <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
                                                                                                         <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
                                                                                                     </textFieldCell>
@@ -927,12 +926,12 @@
                                                                                 </tableColumn>
                                                                                 <tableColumn identifier="ComplexModificationsRulesRemoveColumn" width="110" minWidth="40" maxWidth="1000" id="9Qk-Iq-qx4">
                                                                                     <tableHeaderCell key="headerCell" lineBreakMode="truncatingTail" borderStyle="border">
-                                                                                        <font key="font" metaFont="menu" size="11"/>
+                                                                                        <font key="font" metaFont="message" size="11"/>
                                                                                         <color key="textColor" name="headerTextColor" catalog="System" colorSpace="catalog"/>
                                                                                         <color key="backgroundColor" name="headerColor" catalog="System" colorSpace="catalog"/>
                                                                                     </tableHeaderCell>
                                                                                     <textFieldCell key="dataCell" lineBreakMode="truncatingTail" selectable="YES" editable="YES" title="Text Cell" id="DjX-EL-1mG">
-                                                                                        <font key="font" metaFont="system"/>
+                                                                                        <font key="font" metaFont="menu"/>
                                                                                         <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
                                                                                         <color key="backgroundColor" name="controlBackgroundColor" catalog="System" colorSpace="catalog"/>
                                                                                     </textFieldCell>
@@ -946,7 +945,7 @@
                                                                                                     <rect key="frame" x="0.0" y="-4" width="111" height="32"/>
                                                                                                     <buttonCell key="cell" type="push" title="Remove" bezelStyle="rounded" image="ic_remove_circle_18pt" imagePosition="left" alignment="center" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="f3x-fQ-s40">
                                                                                                         <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
-                                                                                                        <font key="font" metaFont="system"/>
+                                                                                                        <font key="font" metaFont="menu"/>
                                                                                                     </buttonCell>
                                                                                                 </button>
                                                                                             </subviews>
@@ -968,11 +967,11 @@
                                                                         </tableView>
                                                                     </subviews>
                                                                 </clipView>
-                                                                <scroller key="horizontalScroller" hidden="YES" verticalHuggingPriority="750" horizontal="YES" id="19K-pI-vfT">
+                                                                <scroller key="horizontalScroller" hidden="YES" wantsLayer="YES" verticalHuggingPriority="750" horizontal="YES" id="19K-pI-vfT">
                                                                     <rect key="frame" x="1" y="119" width="223" height="15"/>
                                                                     <autoresizingMask key="autoresizingMask"/>
                                                                 </scroller>
-                                                                <scroller key="verticalScroller" hidden="YES" verticalHuggingPriority="750" horizontal="NO" id="4Md-dE-2bd">
+                                                                <scroller key="verticalScroller" hidden="YES" wantsLayer="YES" verticalHuggingPriority="750" horizontal="NO" id="4Md-dE-2bd">
                                                                     <rect key="frame" x="224" y="17" width="15" height="102"/>
                                                                     <autoresizingMask key="autoresizingMask"/>
                                                                 </scroller>
@@ -985,7 +984,7 @@
                                                                 <rect key="frame" x="11" y="3" width="113" height="32"/>
                                                                 <buttonCell key="cell" type="push" title="Add rule" bezelStyle="rounded" image="ic_add_circle_18pt" imagePosition="left" alignment="center" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="DwC-rX-DDN">
                                                                     <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
-                                                                    <font key="font" metaFont="system"/>
+                                                                    <font key="font" metaFont="menu"/>
                                                                 </buttonCell>
                                                                 <connections>
                                                                     <action selector="openAddRulePanel:" target="kWQ-dQ-cFu" id="zzr-JY-LWh"/>
@@ -995,7 +994,7 @@
                                                                 <rect key="frame" x="629" y="8" width="80" height="32"/>
                                                                 <buttonCell key="cell" type="push" title="Up" bezelStyle="rounded" image="ic_arrow_upward_18pt" imagePosition="left" alignment="center" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="Hwz-PV-JXe">
                                                                     <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
-                                                                    <font key="font" metaFont="system"/>
+                                                                    <font key="font" metaFont="menu"/>
                                                                 </buttonCell>
                                                                 <connections>
                                                                     <action selector="moveRuleUp:" target="kWQ-dQ-cFu" id="R6l-K2-7dw"/>
@@ -1005,7 +1004,7 @@
                                                                 <rect key="frame" x="846" y="8" width="97" height="32"/>
                                                                 <buttonCell key="cell" type="push" title="Down" bezelStyle="rounded" image="ic_arrow_downward_18pt" imagePosition="left" alignment="center" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="CrG-r0-gke">
                                                                     <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
-                                                                    <font key="font" metaFont="system"/>
+                                                                    <font key="font" metaFont="menu"/>
                                                                 </buttonCell>
                                                                 <connections>
                                                                     <action selector="moveRuleDown:" target="kWQ-dQ-cFu" id="NcT-Sw-Qt1"/>
@@ -1042,7 +1041,7 @@
                                                                         <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" allowsCharacterPickerTouchBarItem="YES" translatesAutoresizingMaskIntoConstraints="NO" id="otc-Wi-CC9">
                                                                             <rect key="frame" x="15" y="106" width="200" height="16"/>
                                                                             <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" title="to_if_alone_timeout_milliseconds" id="D7X-7J-krC">
-                                                                                <font key="font" metaFont="system"/>
+                                                                                <font key="font" metaFont="menu"/>
                                                                                 <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
                                                                                 <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
                                                                             </textFieldCell>
@@ -1057,7 +1056,7 @@
                                                                                     <real key="minimum" value="0.0"/>
                                                                                     <real key="maximum" value="10000"/>
                                                                                 </numberFormatter>
-                                                                                <font key="font" metaFont="system"/>
+                                                                                <font key="font" metaFont="menu"/>
                                                                                 <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
                                                                                 <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
                                                                             </textFieldCell>
@@ -1075,7 +1074,7 @@
                                                                         <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" allowsCharacterPickerTouchBarItem="YES" translatesAutoresizingMaskIntoConstraints="NO" id="B6h-dy-l1f">
                                                                             <rect key="frame" x="436" y="106" width="141" height="16"/>
                                                                             <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" title="(Default value is 1000)" id="Fo2-yn-bIz">
-                                                                                <font key="font" metaFont="system"/>
+                                                                                <font key="font" metaFont="menu"/>
                                                                                 <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
                                                                                 <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
                                                                             </textFieldCell>
@@ -1083,7 +1082,7 @@
                                                                         <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" allowsCharacterPickerTouchBarItem="YES" translatesAutoresizingMaskIntoConstraints="NO" id="XKD-Tw-O9I" userLabel="to_if_held_down_threshold_milliseconds">
                                                                             <rect key="frame" x="15" y="75" width="244" height="16"/>
                                                                             <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" title="to_if_held_down_threshold_milliseconds" id="fzo-Pm-DRt">
-                                                                                <font key="font" metaFont="system"/>
+                                                                                <font key="font" metaFont="menu"/>
                                                                                 <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
                                                                                 <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
                                                                             </textFieldCell>
@@ -1098,7 +1097,7 @@
                                                                                     <real key="minimum" value="0.0"/>
                                                                                     <real key="maximum" value="10000"/>
                                                                                 </numberFormatter>
-                                                                                <font key="font" metaFont="system"/>
+                                                                                <font key="font" metaFont="menu"/>
                                                                                 <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
                                                                                 <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
                                                                             </textFieldCell>
@@ -1116,7 +1115,7 @@
                                                                         <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" allowsCharacterPickerTouchBarItem="YES" translatesAutoresizingMaskIntoConstraints="NO" id="J7z-El-zvD">
                                                                             <rect key="frame" x="436" y="75" width="135" height="16"/>
                                                                             <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" title="(Default value is 500)" id="KMT-ou-xXl">
-                                                                                <font key="font" metaFont="system"/>
+                                                                                <font key="font" metaFont="menu"/>
                                                                                 <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
                                                                                 <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
                                                                             </textFieldCell>
@@ -1124,7 +1123,7 @@
                                                                         <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" allowsCharacterPickerTouchBarItem="YES" translatesAutoresizingMaskIntoConstraints="NO" id="Sf6-Wc-6Rh">
                                                                             <rect key="frame" x="15" y="44" width="230" height="16"/>
                                                                             <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" title="to_delayed_action_delay_milliseconds" id="Daz-54-9VZ">
-                                                                                <font key="font" metaFont="system"/>
+                                                                                <font key="font" metaFont="menu"/>
                                                                                 <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
                                                                                 <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
                                                                             </textFieldCell>
@@ -1139,7 +1138,7 @@
                                                                                     <real key="minimum" value="0.0"/>
                                                                                     <real key="maximum" value="10000"/>
                                                                                 </numberFormatter>
-                                                                                <font key="font" metaFont="system"/>
+                                                                                <font key="font" metaFont="menu"/>
                                                                                 <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
                                                                                 <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
                                                                             </textFieldCell>
@@ -1157,7 +1156,7 @@
                                                                         <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" allowsCharacterPickerTouchBarItem="YES" translatesAutoresizingMaskIntoConstraints="NO" id="00L-qW-CRt">
                                                                             <rect key="frame" x="436" y="44" width="135" height="16"/>
                                                                             <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" title="(Default value is 500)" id="5Le-Ae-euU">
-                                                                                <font key="font" metaFont="system"/>
+                                                                                <font key="font" metaFont="menu"/>
                                                                                 <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
                                                                                 <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
                                                                             </textFieldCell>
@@ -1165,7 +1164,7 @@
                                                                         <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" allowsCharacterPickerTouchBarItem="YES" translatesAutoresizingMaskIntoConstraints="NO" id="xmv-LY-lFx">
                                                                             <rect key="frame" x="15" y="13" width="228" height="16"/>
                                                                             <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" title="simultaneous_threshold_milliseconds" id="unP-nG-ONK">
-                                                                                <font key="font" metaFont="system"/>
+                                                                                <font key="font" metaFont="menu"/>
                                                                                 <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
                                                                                 <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
                                                                             </textFieldCell>
@@ -1180,7 +1179,7 @@
                                                                                     <real key="minimum" value="0.0"/>
                                                                                     <real key="maximum" value="10000"/>
                                                                                 </numberFormatter>
-                                                                                <font key="font" metaFont="system"/>
+                                                                                <font key="font" metaFont="menu"/>
                                                                                 <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
                                                                                 <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
                                                                             </textFieldCell>
@@ -1198,7 +1197,7 @@
                                                                         <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" allowsCharacterPickerTouchBarItem="YES" translatesAutoresizingMaskIntoConstraints="NO" id="SM5-Av-YNg">
                                                                             <rect key="frame" x="436" y="13" width="126" height="16"/>
                                                                             <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" title="(Default value is 50)" id="Xyd-lc-DzX">
-                                                                                <font key="font" metaFont="system"/>
+                                                                                <font key="font" metaFont="menu"/>
                                                                                 <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
                                                                                 <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
                                                                             </textFieldCell>
@@ -1258,7 +1257,7 @@
                                                                         <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" allowsCharacterPickerTouchBarItem="YES" translatesAutoresizingMaskIntoConstraints="NO" id="H4P-ic-hry" userLabel="speed">
                                                                             <rect key="frame" x="15" y="13" width="42" height="16"/>
                                                                             <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" title="speed" id="xji-wa-upG">
-                                                                                <font key="font" metaFont="system"/>
+                                                                                <font key="font" metaFont="menu"/>
                                                                                 <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
                                                                                 <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
                                                                             </textFieldCell>
@@ -1273,7 +1272,7 @@
                                                                                     <real key="minimum" value="0.0"/>
                                                                                     <real key="maximum" value="10000"/>
                                                                                 </numberFormatter>
-                                                                                <font key="font" metaFont="system"/>
+                                                                                <font key="font" metaFont="menu"/>
                                                                                 <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
                                                                                 <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
                                                                             </textFieldCell>
@@ -1291,7 +1290,7 @@
                                                                         <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" allowsCharacterPickerTouchBarItem="YES" translatesAutoresizingMaskIntoConstraints="NO" id="VhW-mB-cyw" userLabel="speed">
                                                                             <rect key="frame" x="401" y="13" width="15" height="16"/>
                                                                             <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" title="%" id="cVI-N2-kqA">
-                                                                                <font key="font" metaFont="system"/>
+                                                                                <font key="font" metaFont="menu"/>
                                                                                 <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
                                                                                 <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
                                                                             </textFieldCell>
@@ -1299,7 +1298,7 @@
                                                                         <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" allowsCharacterPickerTouchBarItem="YES" translatesAutoresizingMaskIntoConstraints="NO" id="JZj-OI-zS2">
                                                                             <rect key="frame" x="436" y="13" width="133" height="16"/>
                                                                             <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" title="(Default value is 100)" id="my9-KM-xYb">
-                                                                                <font key="font" metaFont="system"/>
+                                                                                <font key="font" metaFont="menu"/>
                                                                                 <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
                                                                                 <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
                                                                             </textFieldCell>
@@ -1350,7 +1349,7 @@
                                     <subviews>
                                         <tabView initialItem="mc1-99-374" translatesAutoresizingMaskIntoConstraints="NO" id="o2y-Hm-vdj">
                                             <rect key="frame" x="10" y="7" width="934" height="341"/>
-                                            <font key="font" metaFont="system"/>
+                                            <font key="font" metaFont="menu"/>
                                             <tabViewItems>
                                                 <tabViewItem label="Basic configuration" identifier="" id="mc1-99-374">
                                                     <view key="view" id="xe3-Dx-hgu">
@@ -1361,7 +1360,7 @@
                                                                 <rect key="frame" x="17" y="17" width="880" height="270"/>
                                                                 <clipView key="contentView" id="FOg-OF-77U">
                                                                     <rect key="frame" x="1" y="0.0" width="878" height="269"/>
-                                                                    <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                                                                    <autoresizingMask key="autoresizingMask"/>
                                                                     <subviews>
                                                                         <tableView verticalHuggingPriority="750" allowsExpansionToolTips="YES" columnAutoresizingStyle="firstColumnOnly" alternatingRowBackgroundColors="YES" columnReordering="NO" columnSelection="YES" columnResizing="NO" multipleSelection="NO" autosaveColumns="NO" rowHeight="26" rowSizeStyle="automatic" headerView="PyG-O0-i8x" viewBased="YES" id="W1W-Xd-0KJ">
                                                                             <rect key="frame" x="0.0" y="0.0" width="878" height="246"/>
@@ -1378,7 +1377,7 @@
                                                                                         <color key="backgroundColor" name="headerColor" catalog="System" colorSpace="catalog"/>
                                                                                     </tableHeaderCell>
                                                                                     <textFieldCell key="dataCell" lineBreakMode="truncatingTail" selectable="YES" editable="YES" title="Text Cell" id="uMv-5Q-c1m">
-                                                                                        <font key="font" metaFont="system"/>
+                                                                                        <font key="font" metaFont="menu"/>
                                                                                         <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
                                                                                         <color key="backgroundColor" name="controlBackgroundColor" catalog="System" colorSpace="catalog"/>
                                                                                     </textFieldCell>
@@ -1392,7 +1391,7 @@
                                                                                                     <rect key="frame" x="6" y="4" width="61" height="18"/>
                                                                                                     <buttonCell key="cell" type="check" title="Check" bezelStyle="regularSquare" imagePosition="left" scrollable="YES" lineBreakMode="clipping" state="on" inset="2" id="R7Y-oT-Fv8">
                                                                                                         <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
-                                                                                                        <font key="font" metaFont="system"/>
+                                                                                                        <font key="font" metaFont="menu"/>
                                                                                                     </buttonCell>
                                                                                                 </button>
                                                                                             </subviews>
@@ -1414,7 +1413,7 @@
                                                                                         <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                                                                     </tableHeaderCell>
                                                                                     <textFieldCell key="dataCell" lineBreakMode="truncatingTail" selectable="YES" editable="YES" alignment="left" title="Text Cell" id="dI5-Bt-aP9">
-                                                                                        <font key="font" metaFont="system"/>
+                                                                                        <font key="font" metaFont="menu"/>
                                                                                         <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
                                                                                         <color key="backgroundColor" name="controlBackgroundColor" catalog="System" colorSpace="catalog"/>
                                                                                     </textFieldCell>
@@ -1428,7 +1427,7 @@
                                                                                                     <rect key="frame" x="6" y="4" width="117" height="18"/>
                                                                                                     <buttonCell key="cell" type="check" title="Manipulate LED" bezelStyle="regularSquare" imagePosition="left" state="on" inset="2" id="ytU-CV-2U5">
                                                                                                         <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
-                                                                                                        <font key="font" metaFont="system"/>
+                                                                                                        <font key="font" metaFont="menu"/>
                                                                                                     </buttonCell>
                                                                                                 </button>
                                                                                             </subviews>
@@ -1450,7 +1449,7 @@
                                                                                         <color key="backgroundColor" name="headerColor" catalog="System" colorSpace="catalog"/>
                                                                                     </tableHeaderCell>
                                                                                     <textFieldCell key="dataCell" lineBreakMode="truncatingTail" selectable="YES" editable="YES" title="Text Cell" id="Cvs-rx-Wme">
-                                                                                        <font key="font" metaFont="system"/>
+                                                                                        <font key="font" metaFont="menu"/>
                                                                                         <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
                                                                                         <color key="backgroundColor" name="controlBackgroundColor" catalog="System" colorSpace="catalog"/>
                                                                                     </textFieldCell>
@@ -1487,7 +1486,7 @@
                                                                                         <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
                                                                                     </tableHeaderCell>
                                                                                     <textFieldCell key="dataCell" lineBreakMode="truncatingTail" selectable="YES" editable="YES" alignment="left" title="Text Cell" id="7m4-Jb-HZU">
-                                                                                        <font key="font" metaFont="system"/>
+                                                                                        <font key="font" metaFont="menu"/>
                                                                                         <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
                                                                                         <color key="backgroundColor" name="controlBackgroundColor" catalog="System" colorSpace="catalog"/>
                                                                                     </textFieldCell>
@@ -1524,7 +1523,7 @@
                                                                                         <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
                                                                                     </tableHeaderCell>
                                                                                     <textFieldCell key="dataCell" lineBreakMode="truncatingTail" selectable="YES" editable="YES" alignment="left" title="Text Cell" id="1F8-us-YMc">
-                                                                                        <font key="font" metaFont="system"/>
+                                                                                        <font key="font" metaFont="menu"/>
                                                                                         <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
                                                                                         <color key="backgroundColor" name="controlBackgroundColor" catalog="System" colorSpace="catalog"/>
                                                                                     </textFieldCell>
@@ -1572,11 +1571,11 @@
                                                                         </tableView>
                                                                     </subviews>
                                                                 </clipView>
-                                                                <scroller key="horizontalScroller" hidden="YES" verticalHuggingPriority="750" horizontal="YES" id="WAQ-P3-E7u">
+                                                                <scroller key="horizontalScroller" hidden="YES" wantsLayer="YES" verticalHuggingPriority="750" horizontal="YES" id="WAQ-P3-E7u">
                                                                     <rect key="frame" x="1" y="406" width="718" height="15"/>
                                                                     <autoresizingMask key="autoresizingMask"/>
                                                                 </scroller>
-                                                                <scroller key="verticalScroller" hidden="YES" verticalHuggingPriority="750" horizontal="NO" id="D9Y-Xk-rU2">
+                                                                <scroller key="verticalScroller" hidden="YES" wantsLayer="YES" verticalHuggingPriority="750" horizontal="NO" id="D9Y-Xk-rU2">
                                                                     <rect key="frame" x="224" y="17" width="15" height="102"/>
                                                                     <autoresizingMask key="autoresizingMask"/>
                                                                 </scroller>
@@ -1608,7 +1607,7 @@
                                                                         <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" allowsCharacterPickerTouchBarItem="YES" translatesAutoresizingMaskIntoConstraints="NO" id="pEI-d9-Xjk">
                                                                             <rect key="frame" x="6" y="59" width="162" height="16"/>
                                                                             <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" title="Delay before open device:" id="X8M-0s-edJ">
-                                                                                <font key="font" metaFont="system"/>
+                                                                                <font key="font" metaFont="menu"/>
                                                                                 <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
                                                                                 <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
                                                                             </textFieldCell>
@@ -1623,7 +1622,7 @@
                                                                                     <real key="minimum" value="0.0"/>
                                                                                     <real key="maximum" value="10000"/>
                                                                                 </numberFormatter>
-                                                                                <font key="font" metaFont="system"/>
+                                                                                <font key="font" metaFont="menu"/>
                                                                                 <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
                                                                                 <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
                                                                             </textFieldCell>
@@ -1641,7 +1640,7 @@
                                                                         <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" allowsCharacterPickerTouchBarItem="YES" translatesAutoresizingMaskIntoConstraints="NO" id="MRv-VC-jZ7">
                                                                             <rect key="frame" x="299" y="59" width="219" height="16"/>
                                                                             <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" title="milliseconds (Default value is 1000)" id="f9h-oy-ovD">
-                                                                                <font key="font" metaFont="system"/>
+                                                                                <font key="font" metaFont="menu"/>
                                                                                 <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
                                                                                 <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
                                                                             </textFieldCell>
@@ -1657,7 +1656,7 @@
                                                                         <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" allowsCharacterPickerTouchBarItem="YES" translatesAutoresizingMaskIntoConstraints="NO" id="qjj-nG-lKd">
                                                                             <rect key="frame" x="48" y="7" width="801" height="32"/>
                                                                             <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" id="pcV-zf-cXs">
-                                                                                <font key="font" metaFont="system"/>
+                                                                                <font key="font" metaFont="menu"/>
                                                                                 <string key="title">Setting insufficient delay (e.g., 0) causes a device will become unusable after Karabiner-Elements is quitted due to macOS problem.
 (If you face the problem, you can solve it by unplugging the device and plugging it again.)</string>
                                                                                 <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
@@ -1693,7 +1692,7 @@
                                                                         <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" allowsCharacterPickerTouchBarItem="YES" translatesAutoresizingMaskIntoConstraints="NO" id="kmV-TD-bJA">
                                                                             <rect key="frame" x="6" y="153" width="527" height="17"/>
                                                                             <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" title="Disable the built-in keyboard while one of the following selected devices is connected." id="4fM-wh-3Tq">
-                                                                                <font key="font" metaFont="system"/>
+                                                                                <font key="font" metaFont="menu"/>
                                                                                 <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
                                                                                 <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
                                                                             </textFieldCell>
@@ -1719,7 +1718,7 @@
                                                                                                     <color key="backgroundColor" name="headerColor" catalog="System" colorSpace="catalog"/>
                                                                                                 </tableHeaderCell>
                                                                                                 <textFieldCell key="dataCell" lineBreakMode="truncatingTail" selectable="YES" editable="YES" title="Text Cell" id="b1H-j6-jS1">
-                                                                                                    <font key="font" metaFont="system"/>
+                                                                                                    <font key="font" metaFont="menu"/>
                                                                                                     <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
                                                                                                     <color key="backgroundColor" name="controlBackgroundColor" catalog="System" colorSpace="catalog"/>
                                                                                                 </textFieldCell>
@@ -1733,7 +1732,7 @@
                                                                                                                 <rect key="frame" x="6" y="4" width="61" height="18"/>
                                                                                                                 <buttonCell key="cell" type="check" title="Check" bezelStyle="regularSquare" imagePosition="left" state="on" inset="2" id="cXo-tU-jOh">
                                                                                                                     <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
-                                                                                                                    <font key="font" metaFont="system"/>
+                                                                                                                    <font key="font" metaFont="menu"/>
                                                                                                                 </buttonCell>
                                                                                                             </button>
                                                                                                             <imageView translatesAutoresizingMaskIntoConstraints="NO" id="q8d-sH-t2E">
@@ -1778,11 +1777,11 @@
                                                                                     </tableView>
                                                                                 </subviews>
                                                                             </clipView>
-                                                                            <scroller key="horizontalScroller" hidden="YES" verticalHuggingPriority="750" horizontal="YES" id="S9k-bc-vxH">
+                                                                            <scroller key="horizontalScroller" hidden="YES" wantsLayer="YES" verticalHuggingPriority="750" horizontal="YES" id="S9k-bc-vxH">
                                                                                 <rect key="frame" x="1" y="-14" width="0.0" height="15"/>
                                                                                 <autoresizingMask key="autoresizingMask"/>
                                                                             </scroller>
-                                                                            <scroller key="verticalScroller" hidden="YES" verticalHuggingPriority="750" horizontal="NO" id="Tfs-nh-cD2">
+                                                                            <scroller key="verticalScroller" hidden="YES" wantsLayer="YES" verticalHuggingPriority="750" horizontal="NO" id="Tfs-nh-cD2">
                                                                                 <rect key="frame" x="224" y="17" width="15" height="102"/>
                                                                                 <autoresizingMask key="autoresizingMask"/>
                                                                             </scroller>
@@ -1838,7 +1837,7 @@
                                                     <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" allowsCharacterPickerTouchBarItem="YES" translatesAutoresizingMaskIntoConstraints="NO" id="wfH-C6-3Zk">
                                                         <rect key="frame" x="15" y="148" width="90" height="16"/>
                                                         <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" title="Country code:" id="DTe-J0-hEy">
-                                                            <font key="font" metaFont="system"/>
+                                                            <font key="font" metaFont="menu"/>
                                                             <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
                                                             <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
                                                         </textFieldCell>
@@ -1853,7 +1852,7 @@
                                                                 <real key="minimum" value="0.0"/>
                                                                 <real key="maximum" value="255"/>
                                                             </numberFormatter>
-                                                            <font key="font" metaFont="system"/>
+                                                            <font key="font" metaFont="menu"/>
                                                             <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
                                                             <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
                                                         </textFieldCell>
@@ -1879,7 +1878,7 @@
                                                     <textField verticalHuggingPriority="750" horizontalCompressionResistancePriority="250" translatesAutoresizingMaskIntoConstraints="NO" id="MMW-NV-Mwq">
                                                         <rect key="frame" x="77" y="10" width="828" height="128"/>
                                                         <textFieldCell key="cell" sendsActionOnEndEditing="YES" id="pVM-zu-tB2">
-                                                            <font key="font" metaFont="system"/>
+                                                            <font key="font" metaFont="menu"/>
                                                             <string key="title">You usually don't need to change the Country Code value.
 
 This value is related to the keyboard layout (ANSI, ISO and JIS) on macOS.
@@ -1917,7 +1916,7 @@ In this case, you have to change the country code to avoid the conflict.
                                                     <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" allowsCharacterPickerTouchBarItem="YES" translatesAutoresizingMaskIntoConstraints="NO" id="BYf-pc-b7A">
                                                         <rect key="frame" x="15" y="8" width="66" height="16"/>
                                                         <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" title="XY speed:" id="g95-BD-GPk">
-                                                            <font key="font" metaFont="system"/>
+                                                            <font key="font" metaFont="menu"/>
                                                             <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
                                                             <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
                                                         </textFieldCell>
@@ -1932,7 +1931,7 @@ In this case, you have to change the country code to avoid the conflict.
                                                                 <real key="minimum" value="0.0"/>
                                                                 <real key="maximum" value="1000"/>
                                                             </numberFormatter>
-                                                            <font key="font" metaFont="system"/>
+                                                            <font key="font" metaFont="menu"/>
                                                             <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
                                                             <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
                                                         </textFieldCell>
@@ -1950,7 +1949,7 @@ In this case, you have to change the country code to avoid the conflict.
                                                     <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" allowsCharacterPickerTouchBarItem="YES" translatesAutoresizingMaskIntoConstraints="NO" id="5pB-P1-R2a">
                                                         <rect key="frame" x="165" y="8" width="15" height="16"/>
                                                         <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" title="%" id="4Fh-Vl-zMY">
-                                                            <font key="font" metaFont="system"/>
+                                                            <font key="font" metaFont="menu"/>
                                                             <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
                                                             <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
                                                         </textFieldCell>
@@ -1989,7 +1988,7 @@ In this case, you have to change the country code to avoid the conflict.
                                             <rect key="frame" x="17" y="34" width="920" height="63"/>
                                             <clipView key="contentView" id="KqJ-JT-0VB">
                                                 <rect key="frame" x="1" y="0.0" width="918" height="62"/>
-                                                <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                                                <autoresizingMask key="autoresizingMask"/>
                                                 <subviews>
                                                     <tableView verticalHuggingPriority="750" allowsExpansionToolTips="YES" columnAutoresizingStyle="firstColumnOnly" alternatingRowBackgroundColors="YES" columnReordering="NO" columnSelection="YES" columnResizing="NO" multipleSelection="NO" autosaveColumns="NO" rowHeight="26" rowSizeStyle="automatic" headerView="4rB-73-cgf" viewBased="YES" id="Y8t-wV-kQb" customClass="ProfilesTableView">
                                                         <rect key="frame" x="0.0" y="0.0" width="918" height="39"/>
@@ -2006,7 +2005,7 @@ In this case, you have to change the country code to avoid the conflict.
                                                                     <color key="backgroundColor" name="headerColor" catalog="System" colorSpace="catalog"/>
                                                                 </tableHeaderCell>
                                                                 <textFieldCell key="dataCell" lineBreakMode="truncatingTail" selectable="YES" editable="YES" title="Text Cell" id="8jU-qW-ZhH">
-                                                                    <font key="font" metaFont="system"/>
+                                                                    <font key="font" metaFont="menu"/>
                                                                     <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
                                                                     <color key="backgroundColor" name="controlBackgroundColor" catalog="System" colorSpace="catalog"/>
                                                                 </textFieldCell>
@@ -2019,7 +2018,7 @@ In this case, you have to change the country code to avoid the conflict.
                                                                             <textField verticalHuggingPriority="750" allowsCharacterPickerTouchBarItem="YES" translatesAutoresizingMaskIntoConstraints="NO" id="3fl-PC-xYQ">
                                                                                 <rect key="frame" x="4" y="3" width="615" height="21"/>
                                                                                 <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" selectable="YES" editable="YES" sendsActionOnEndEditing="YES" state="on" borderStyle="bezel" title="Name" drawsBackground="YES" id="q4k-Om-bR0">
-                                                                                    <font key="font" metaFont="system"/>
+                                                                                    <font key="font" metaFont="menu"/>
                                                                                     <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
                                                                                     <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
                                                                                 </textFieldCell>
@@ -2028,7 +2027,7 @@ In this case, you have to change the country code to avoid the conflict.
                                                                                 <rect key="frame" x="713" y="-4" width="79" height="32"/>
                                                                                 <buttonCell key="cell" type="push" title="Select" bezelStyle="rounded" alignment="center" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="uwD-3g-0lE">
                                                                                     <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
-                                                                                    <font key="font" metaFont="system"/>
+                                                                                    <font key="font" metaFont="menu"/>
                                                                                 </buttonCell>
                                                                             </button>
                                                                             <imageView horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="wSk-3w-9nX">
@@ -2042,7 +2041,7 @@ In this case, you have to change the country code to avoid the conflict.
                                                                             <textField verticalHuggingPriority="750" horizontalCompressionResistancePriority="250" allowsCharacterPickerTouchBarItem="YES" translatesAutoresizingMaskIntoConstraints="NO" id="Vxo-a6-SRu">
                                                                                 <rect key="frame" x="737" y="5" width="58" height="16"/>
                                                                                 <textFieldCell key="cell" lineBreakMode="truncatingTail" sendsActionOnEndEditing="YES" title="Selected" id="a8h-ts-iv1">
-                                                                                    <font key="font" metaFont="system"/>
+                                                                                    <font key="font" metaFont="menu"/>
                                                                                     <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
                                                                                     <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
                                                                                 </textFieldCell>
@@ -2051,7 +2050,7 @@ In this case, you have to change the country code to avoid the conflict.
                                                                                 <rect key="frame" x="800" y="-4" width="111" height="32"/>
                                                                                 <buttonCell key="cell" type="push" title="Remove" bezelStyle="rounded" image="ic_remove_circle_18pt" imagePosition="left" alignment="center" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="n3c-fM-uj6">
                                                                                     <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
-                                                                                    <font key="font" metaFont="system"/>
+                                                                                    <font key="font" metaFont="menu"/>
                                                                                 </buttonCell>
                                                                             </button>
                                                                         </subviews>
@@ -2087,11 +2086,11 @@ In this case, you have to change the country code to avoid the conflict.
                                                     </tableView>
                                                 </subviews>
                                             </clipView>
-                                            <scroller key="horizontalScroller" hidden="YES" verticalHuggingPriority="750" horizontal="YES" id="MG2-dy-Ieh">
+                                            <scroller key="horizontalScroller" hidden="YES" wantsLayer="YES" verticalHuggingPriority="750" horizontal="YES" id="MG2-dy-Ieh">
                                                 <rect key="frame" x="1" y="119" width="223" height="15"/>
                                                 <autoresizingMask key="autoresizingMask"/>
                                             </scroller>
-                                            <scroller key="verticalScroller" hidden="YES" verticalHuggingPriority="750" horizontal="NO" id="Ooi-Vf-k8R">
+                                            <scroller key="verticalScroller" hidden="YES" wantsLayer="YES" verticalHuggingPriority="750" horizontal="NO" id="Ooi-Vf-k8R">
                                                 <rect key="frame" x="224" y="17" width="15" height="102"/>
                                                 <autoresizingMask key="autoresizingMask"/>
                                             </scroller>
@@ -2104,7 +2103,7 @@ In this case, you have to change the country code to avoid the conflict.
                                             <rect key="frame" x="11" y="1" width="129" height="32"/>
                                             <buttonCell key="cell" type="push" title="Add profile" bezelStyle="rounded" image="ic_add_circle_18pt" imagePosition="left" alignment="center" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="ZZS-ry-ePh">
                                                 <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
-                                                <font key="font" metaFont="system"/>
+                                                <font key="font" metaFont="menu"/>
                                             </buttonCell>
                                             <connections>
                                                 <action selector="addProfile:" target="lSQ-bm-e7S" id="idt-HD-A3g"/>
@@ -2130,7 +2129,7 @@ In this case, you have to change the country code to avoid the conflict.
                                         <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" allowsCharacterPickerTouchBarItem="YES" translatesAutoresizingMaskIntoConstraints="NO" id="DOX-q0-HoN">
                                             <rect key="frame" x="15" y="464" width="175" height="16"/>
                                             <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" title="Karabiner-Elements version:" id="Xg6-y2-MuI">
-                                                <font key="font" metaFont="system"/>
+                                                <font key="font" metaFont="menu"/>
                                                 <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
                                                 <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
                                             </textFieldCell>
@@ -2138,7 +2137,7 @@ In this case, you have to change the country code to avoid the conflict.
                                         <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" allowsCharacterPickerTouchBarItem="YES" translatesAutoresizingMaskIntoConstraints="NO" id="sau-jf-Dqb">
                                             <rect key="frame" x="191" y="464" width="37" height="16"/>
                                             <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" title="Label" id="XEU-p8-QQc">
-                                                <font key="font" metaFont="system"/>
+                                                <font key="font" metaFont="menu"/>
                                                 <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
                                                 <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
                                             </textFieldCell>
@@ -2173,7 +2172,7 @@ In this case, you have to change the country code to avoid the conflict.
                                                         <rect key="frame" x="15" y="37" width="279" height="18"/>
                                                         <buttonCell key="cell" type="check" title="Check for updates on startup (Default: on)" bezelStyle="regularSquare" imagePosition="left" state="on" inset="2" id="Wug-gg-zmP">
                                                             <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
-                                                            <font key="font" metaFont="system"/>
+                                                            <font key="font" metaFont="menu"/>
                                                         </buttonCell>
                                                         <connections>
                                                             <action selector="changeMiscTabControls:" target="5ke-qB-Wr5" id="D1a-c2-dCp"/>
@@ -2183,7 +2182,7 @@ In this case, you have to change the country code to avoid the conflict.
                                                         <rect key="frame" x="11" y="1" width="174" height="32"/>
                                                         <buttonCell key="cell" type="push" title="Check for updates" bezelStyle="rounded" image="ic_refresh_18pt" imagePosition="left" alignment="center" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="iDW-FG-uaL">
                                                             <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
-                                                            <font key="font" metaFont="system"/>
+                                                            <font key="font" metaFont="menu"/>
                                                         </buttonCell>
                                                         <connections>
                                                             <action selector="checkForUpdatesStableOnly:" target="5ke-qB-Wr5" id="dlN-aA-8f7"/>
@@ -2193,7 +2192,7 @@ In this case, you have to change the country code to avoid the conflict.
                                                         <rect key="frame" x="704" y="1" width="205" height="32"/>
                                                         <buttonCell key="cell" type="push" title="Check for beta updates" bezelStyle="rounded" image="ic_refresh_18pt" imagePosition="left" alignment="center" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="mbv-qj-mvU">
                                                             <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
-                                                            <font key="font" metaFont="system"/>
+                                                            <font key="font" metaFont="menu"/>
                                                         </buttonCell>
                                                         <connections>
                                                             <action selector="checkForUpdatesWithBetaVersion:" target="5ke-qB-Wr5" id="ed9-jh-unc"/>
@@ -2224,7 +2223,7 @@ In this case, you have to change the country code to avoid the conflict.
                                                         <rect key="frame" x="11" y="1" width="238" height="32"/>
                                                         <buttonCell key="cell" type="push" title="Uninstall Karabiner-Elements" bezelStyle="rounded" image="ic_delete_forever_18pt" imagePosition="left" alignment="center" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="Sr0-va-jSj">
                                                             <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
-                                                            <font key="font" metaFont="system"/>
+                                                            <font key="font" metaFont="menu"/>
                                                         </buttonCell>
                                                         <connections>
                                                             <action selector="launchUninstaller:" target="5ke-qB-Wr5" id="9JG-jF-1nr"/>
@@ -2248,7 +2247,7 @@ In this case, you have to change the country code to avoid the conflict.
                                                     <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" allowsCharacterPickerTouchBarItem="YES" translatesAutoresizingMaskIntoConstraints="NO" id="5oB-kz-f5x">
                                                         <rect key="frame" x="15" y="36" width="890" height="32"/>
                                                         <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" id="gSI-ND-aKs">
-                                                            <font key="font" metaFont="system"/>
+                                                            <font key="font" metaFont="menu"/>
                                                             <string key="title">You can use Karabiner-Elements even before login by setting the system default configuration.
 (These operations require the administrator privilege.)</string>
                                                             <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
@@ -2310,7 +2309,7 @@ In this case, you have to change the country code to avoid the conflict.
                                                         <rect key="frame" x="15" y="30" width="239" height="18"/>
                                                         <buttonCell key="cell" type="check" title="Show icon in menu bar (Default: on)" bezelStyle="regularSquare" imagePosition="left" state="on" inset="2" id="Cel-5I-zrQ">
                                                             <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
-                                                            <font key="font" metaFont="system"/>
+                                                            <font key="font" metaFont="menu"/>
                                                         </buttonCell>
                                                         <connections>
                                                             <action selector="changeMiscTabControls:" target="5ke-qB-Wr5" id="CHt-rF-YUB"/>
@@ -2320,7 +2319,7 @@ In this case, you have to change the country code to avoid the conflict.
                                                         <rect key="frame" x="15" y="6" width="291" height="18"/>
                                                         <buttonCell key="cell" type="check" title="Show profile name in menu bar (Default: off)" bezelStyle="regularSquare" imagePosition="left" state="on" inset="2" id="dqN-LK-Qdn">
                                                             <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
-                                                            <font key="font" metaFont="system"/>
+                                                            <font key="font" metaFont="menu"/>
                                                         </buttonCell>
                                                         <connections>
                                                             <action selector="changeMiscTabControls:" target="5ke-qB-Wr5" id="fGd-h5-gMY"/>
@@ -2351,7 +2350,7 @@ In this case, you have to change the country code to avoid the conflict.
                                                         <rect key="frame" x="11" y="18" width="312" height="32"/>
                                                         <buttonCell key="cell" type="push" title="Open Karabiner-MultitouchExtension app" bezelStyle="rounded" image="ic_launch_18pt" imagePosition="left" alignment="center" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="M3v-oD-yER">
                                                             <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
-                                                            <font key="font" metaFont="system"/>
+                                                            <font key="font" metaFont="menu"/>
                                                         </buttonCell>
                                                         <connections>
                                                             <action selector="launchMultitouchExtension:" target="5ke-qB-Wr5" id="bk1-Ko-bS4"/>
@@ -2374,7 +2373,7 @@ In this case, you have to change the country code to avoid the conflict.
                                                         <rect key="frame" x="14" y="1" width="190" height="32"/>
                                                         <buttonCell key="cell" type="push" title="Open official website" bezelStyle="rounded" image="ic_home_18pt" imagePosition="left" alignment="center" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="I13-Po-Cgb">
                                                             <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
-                                                            <font key="font" metaFont="system"/>
+                                                            <font key="font" metaFont="menu"/>
                                                         </buttonCell>
                                                         <connections>
                                                             <action selector="openOfficialWebsite:" target="5ke-qB-Wr5" id="eS0-n7-3Ct"/>
@@ -2384,7 +2383,7 @@ In this case, you have to change the country code to avoid the conflict.
                                                         <rect key="frame" x="222" y="1" width="229" height="32"/>
                                                         <buttonCell key="cell" type="push" title="Open GitHub (source code)" bezelStyle="rounded" image="ic_code_18pt" imagePosition="left" alignment="center" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="PWa-pr-xeD">
                                                             <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
-                                                            <font key="font" metaFont="system"/>
+                                                            <font key="font" metaFont="menu"/>
                                                         </buttonCell>
                                                         <connections>
                                                             <action selector="openGitHub:" target="5ke-qB-Wr5" id="AcV-aa-B0y"/>
@@ -2411,7 +2410,7 @@ In this case, you have to change the country code to avoid the conflict.
                                                         <rect key="frame" x="14" y="1" width="281" height="32"/>
                                                         <buttonCell key="cell" type="push" title="Open config folder (~/.config/karabiner)" bezelStyle="rounded" alignment="center" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="6mh-Ca-pPg">
                                                             <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
-                                                            <font key="font" metaFont="system"/>
+                                                            <font key="font" metaFont="menu"/>
                                                         </buttonCell>
                                                         <connections>
                                                             <action selector="openConfigDirectory:" target="5ke-qB-Wr5" id="26s-rP-cSp"/>
@@ -2468,15 +2467,15 @@ In this case, you have to change the country code to avoid the conflict.
                                         <scrollView horizontalLineScroll="10" horizontalPageScroll="10" verticalLineScroll="10" verticalPageScroll="10" hasHorizontalScroller="NO" usesPredominantAxisScrolling="NO" translatesAutoresizingMaskIntoConstraints="NO" id="T7K-bf-5ph">
                                             <rect key="frame" x="17" y="48" width="920" height="432"/>
                                             <clipView key="contentView" drawsBackground="NO" id="h3K-SC-sFn">
-                                                <rect key="frame" x="1" y="1" width="903" height="430"/>
+                                                <rect key="frame" x="1" y="1" width="918" height="430"/>
                                                 <autoresizingMask key="autoresizingMask"/>
                                                 <subviews>
                                                     <textView editable="NO" importsGraphics="NO" richText="NO" verticallyResizable="YES" findStyle="panel" id="vyq-xs-cqF">
-                                                        <rect key="frame" x="0.0" y="0.0" width="903" height="430"/>
+                                                        <rect key="frame" x="0.0" y="0.0" width="918" height="430"/>
                                                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                                         <color key="textColor" name="textColor" catalog="System" colorSpace="catalog"/>
                                                         <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
-                                                        <size key="minSize" width="903" height="430"/>
+                                                        <size key="minSize" width="918" height="430"/>
                                                         <size key="maxSize" width="920" height="10000000"/>
                                                         <color key="insertionPointColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
                                                     </textView>
@@ -2486,7 +2485,7 @@ In this case, you have to change the country code to avoid the conflict.
                                                 <rect key="frame" x="-100" y="-100" width="87" height="18"/>
                                                 <autoresizingMask key="autoresizingMask"/>
                                             </scroller>
-                                            <scroller key="verticalScroller" verticalHuggingPriority="750" horizontal="NO" id="wFw-Pp-emO">
+                                            <scroller key="verticalScroller" wantsLayer="YES" verticalHuggingPriority="750" horizontal="NO" id="wFw-Pp-emO">
                                                 <rect key="frame" x="904" y="1" width="15" height="430"/>
                                                 <autoresizingMask key="autoresizingMask"/>
                                             </scroller>
@@ -2552,7 +2551,7 @@ In this case, you have to change the country code to avoid the conflict.
                         <rect key="frame" x="245" y="356" width="411" height="32"/>
                         <buttonCell key="cell" type="push" title="Import more rules from the Internet (open a web browser)" bezelStyle="rounded" image="ic_cloud_download_18pt" imagePosition="left" alignment="center" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="02O-a2-wtg">
                             <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
-                            <font key="font" metaFont="system"/>
+                            <font key="font" metaFont="menu"/>
                         </buttonCell>
                         <connections>
                             <action selector="openRulesSite:" target="kWQ-dQ-cFu" id="Hpq-8a-7iW"/>
@@ -2562,7 +2561,7 @@ In this case, you have to change the country code to avoid the conflict.
                         <rect key="frame" x="17" y="61" width="866" height="287"/>
                         <clipView key="contentView" id="F9L-6l-7CJ">
                             <rect key="frame" x="1" y="1" width="864" height="285"/>
-                            <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                            <autoresizingMask key="autoresizingMask"/>
                             <subviews>
                                 <outlineView verticalHuggingPriority="750" allowsExpansionToolTips="YES" columnAutoresizingStyle="firstColumnOnly" alternatingRowBackgroundColors="YES" columnReordering="NO" columnResizing="NO" multipleSelection="NO" autosaveColumns="NO" rowHeight="26" rowSizeStyle="automatic" viewBased="YES" indentationPerLevel="16" outlineTableColumn="nlS-o3-ZB6" id="eIx-lp-xHQ">
                                     <rect key="frame" x="0.0" y="0.0" width="864" height="285"/>
@@ -2579,7 +2578,7 @@ In this case, you have to change the country code to avoid the conflict.
                                                 <color key="backgroundColor" name="headerColor" catalog="System" colorSpace="catalog"/>
                                             </tableHeaderCell>
                                             <textFieldCell key="dataCell" lineBreakMode="truncatingTail" selectable="YES" editable="YES" title="Text Cell" id="DDw-hF-Izv">
-                                                <font key="font" metaFont="system"/>
+                                                <font key="font" metaFont="menu"/>
                                                 <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
                                                 <color key="backgroundColor" name="controlBackgroundColor" catalog="System" colorSpace="catalog"/>
                                             </textFieldCell>
@@ -2592,7 +2591,7 @@ In this case, you have to change the country code to avoid the conflict.
                                                         <textField verticalHuggingPriority="750" horizontalCompressionResistancePriority="250" allowsCharacterPickerTouchBarItem="YES" translatesAutoresizingMaskIntoConstraints="NO" id="0Nl-EE-cbX">
                                                             <rect key="frame" x="0.0" y="5" width="96" height="16"/>
                                                             <textFieldCell key="cell" lineBreakMode="truncatingTail" sendsActionOnEndEditing="YES" title="Table View Cell" id="F9E-xT-Pxc">
-                                                                <font key="font" metaFont="system"/>
+                                                                <font key="font" metaFont="menu"/>
                                                                 <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
                                                                 <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
                                                             </textFieldCell>
@@ -2616,7 +2615,7 @@ In this case, you have to change the country code to avoid the conflict.
                                                 <color key="backgroundColor" name="headerColor" catalog="System" colorSpace="catalog"/>
                                             </tableHeaderCell>
                                             <textFieldCell key="dataCell" lineBreakMode="truncatingTail" selectable="YES" editable="YES" title="Text Cell" id="jii-hE-Ugn">
-                                                <font key="font" metaFont="system"/>
+                                                <font key="font" metaFont="menu"/>
                                                 <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
                                                 <color key="backgroundColor" name="controlBackgroundColor" catalog="System" colorSpace="catalog"/>
                                             </textFieldCell>
@@ -2633,14 +2632,14 @@ In this case, you have to change the country code to avoid the conflict.
                                                             </constraints>
                                                             <buttonCell key="cell" type="push" alternateTitle="Erase imported file" bezelStyle="rounded" image="ic_delete_forever_18pt" imagePosition="only" alignment="center" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="QMI-8g-K8d">
                                                                 <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
-                                                                <font key="font" metaFont="system"/>
+                                                                <font key="font" metaFont="menu"/>
                                                             </buttonCell>
                                                         </button>
                                                         <button hidden="YES" verticalHuggingPriority="750" imageHugsTitle="YES" translatesAutoresizingMaskIntoConstraints="NO" id="aoS-Bs-ODT">
                                                             <rect key="frame" x="41" y="-4" width="103" height="32"/>
                                                             <buttonCell key="cell" type="push" title="Enable" bezelStyle="rounded" image="ic_add_circle_18pt" imagePosition="left" alignment="center" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="6TO-Hp-Ppt">
                                                                 <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
-                                                                <font key="font" metaFont="system"/>
+                                                                <font key="font" metaFont="menu"/>
                                                             </buttonCell>
                                                         </button>
                                                         <button hidden="YES" verticalHuggingPriority="750" imageHugsTitle="YES" translatesAutoresizingMaskIntoConstraints="NO" id="lKf-rC-tnd" userLabel="Enable All Button">
@@ -2677,11 +2676,11 @@ In this case, you have to change the country code to avoid the conflict.
                                 </outlineView>
                             </subviews>
                         </clipView>
-                        <scroller key="horizontalScroller" hidden="YES" verticalHuggingPriority="750" horizontal="YES" id="IIZ-rZ-wNb">
+                        <scroller key="horizontalScroller" hidden="YES" wantsLayer="YES" verticalHuggingPriority="750" horizontal="YES" id="IIZ-rZ-wNb">
                             <rect key="frame" x="1" y="119" width="223" height="15"/>
                             <autoresizingMask key="autoresizingMask"/>
                         </scroller>
-                        <scroller key="verticalScroller" hidden="YES" verticalHuggingPriority="750" horizontal="NO" id="XQL-vZ-dav">
+                        <scroller key="verticalScroller" hidden="YES" wantsLayer="YES" verticalHuggingPriority="750" horizontal="NO" id="XQL-vZ-dav">
                             <rect key="frame" x="224" y="17" width="15" height="102"/>
                             <autoresizingMask key="autoresizingMask"/>
                         </scroller>
@@ -2710,7 +2709,7 @@ In this case, you have to change the country code to avoid the conflict.
                         <rect key="frame" x="398" y="13" width="104" height="32"/>
                         <buttonCell key="cell" type="push" title="Cancel" bezelStyle="rounded" image="ic_cancel_18pt" imagePosition="left" alignment="center" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="Fd0-PH-WES">
                             <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
-                            <font key="font" metaFont="system"/>
+                            <font key="font" metaFont="menu"/>
                             <string key="keyEquivalent" base64-UTF8="YES">
 Gw
 </string>
@@ -2752,7 +2751,7 @@ Gw
                     <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" allowsCharacterPickerTouchBarItem="YES" translatesAutoresizingMaskIntoConstraints="NO" id="X3k-uL-arh">
                         <rect key="frame" x="15" y="164" width="98" height="16"/>
                         <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" title="Import file from" id="YZo-5z-FvX">
-                            <font key="font" metaFont="system"/>
+                            <font key="font" metaFont="menu"/>
                             <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
                             <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
                         </textFieldCell>
@@ -2763,7 +2762,7 @@ Gw
                             <constraint firstAttribute="width" relation="greaterThanOrEqual" constant="600" id="SHe-uE-Vaq"/>
                         </constraints>
                         <textFieldCell key="cell" lineBreakMode="truncatingTail" sendsActionOnEndEditing="YES" title="https://example.com" id="vyx-b8-V2L">
-                            <font key="font" metaFont="system"/>
+                            <font key="font" metaFont="menu"/>
                             <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
                             <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
                         </textFieldCell>
@@ -2774,15 +2773,15 @@ Gw
                     <scrollView wantsLayer="YES" horizontalLineScroll="10" horizontalPageScroll="10" verticalLineScroll="10" verticalPageScroll="10" hasHorizontalScroller="NO" usesPredominantAxisScrolling="NO" translatesAutoresizingMaskIntoConstraints="NO" id="A3J-XY-x60">
                         <rect key="frame" x="80" y="58" width="740" height="86"/>
                         <clipView key="contentView" drawsBackground="NO" id="uNg-oR-13T">
-                            <rect key="frame" x="1" y="1" width="723" height="84"/>
-                            <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                            <rect key="frame" x="1" y="1" width="738" height="84"/>
+                            <autoresizingMask key="autoresizingMask"/>
                             <subviews>
                                 <textView editable="NO" importsGraphics="NO" verticallyResizable="YES" usesFontPanel="YES" findStyle="panel" allowsUndo="YES" usesRuler="YES" allowsNonContiguousLayout="YES" id="iV7-bm-Yxd">
-                                    <rect key="frame" x="0.0" y="0.0" width="723" height="84"/>
+                                    <rect key="frame" x="0.0" y="0.0" width="738" height="84"/>
                                     <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                     <color key="textColor" name="textColor" catalog="System" colorSpace="catalog"/>
                                     <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
-                                    <size key="minSize" width="723" height="84"/>
+                                    <size key="minSize" width="738" height="84"/>
                                     <size key="maxSize" width="740" height="10000000"/>
                                     <color key="insertionPointColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
                                 </textView>
@@ -2792,7 +2791,7 @@ Gw
                             <rect key="frame" x="-100" y="-100" width="87" height="18"/>
                             <autoresizingMask key="autoresizingMask"/>
                         </scroller>
-                        <scroller key="verticalScroller" verticalHuggingPriority="750" doubleValue="1" horizontal="NO" id="eOh-hu-RTZ">
+                        <scroller key="verticalScroller" wantsLayer="YES" verticalHuggingPriority="750" doubleValue="1" horizontal="NO" id="eOh-hu-RTZ">
                             <rect key="frame" x="724" y="1" width="15" height="84"/>
                             <autoresizingMask key="autoresizingMask"/>
                         </scroller>
@@ -2804,7 +2803,7 @@ Gw
                                 <rect key="frame" x="-1" y="-2" width="104" height="32"/>
                                 <buttonCell key="cell" type="push" title="Cancel" bezelStyle="rounded" image="ic_cancel_18pt" imagePosition="left" alignment="center" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="WIz-od-AHq">
                                     <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
-                                    <font key="font" metaFont="system"/>
+                                    <font key="font" metaFont="menu"/>
                                     <string key="keyEquivalent" base64-UTF8="YES">
 Gw
 </string>
@@ -2817,7 +2816,7 @@ Gw
                                 <rect key="frame" x="111" y="-2" width="102" height="32"/>
                                 <buttonCell key="cell" type="push" title="Import" bezelStyle="rounded" image="ic_file_download_18pt" imagePosition="left" alignment="center" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="2lw-6W-9IN">
                                     <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
-                                    <font key="font" metaFont="system"/>
+                                    <font key="font" metaFont="menu"/>
                                 </buttonCell>
                                 <connections>
                                     <action selector="importFile:" target="1ch-Te-EDv" id="X5G-Ac-qSE"/>
@@ -2893,7 +2892,7 @@ Gw
                     </customView>
                     <tabView type="noTabsNoBorder" translatesAutoresizingMaskIntoConstraints="NO" id="kqu-77-2mK">
                         <rect key="frame" x="10" y="10" width="880" height="518"/>
-                        <font key="font" metaFont="system"/>
+                        <font key="font" metaFont="menu"/>
                         <tabViewItems>
                             <tabViewItem label="Tab" identifier="1" id="eIG-Ss-b2j">
                                 <view key="view" id="G93-5A-Bfp">
@@ -2903,7 +2902,7 @@ Gw
                                         <textField verticalHuggingPriority="750" horizontalCompressionResistancePriority="250" translatesAutoresizingMaskIntoConstraints="NO" id="hVs-29-H8P">
                                             <rect key="frame" x="18" y="450" width="844" height="48"/>
                                             <textFieldCell key="cell" sendsActionOnEndEditing="YES" alignment="center" id="c0m-Ay-Y4e">
-                                                <font key="font" metaFont="system"/>
+                                                <font key="font" metaFont="menu"/>
                                                 <string key="title">System policy prevents loading the kernel extension that is used by Karabiner-Elements.
 You have to allow the system software from developer "Fumihiko Takayama" (the author of Karabiner-Elements) on
 System Preferences &gt; Security &amp; Privacy.</string>
@@ -2915,7 +2914,7 @@ System Preferences &gt; Security &amp; Privacy.</string>
                                             <rect key="frame" x="267" y="402" width="346" height="32"/>
                                             <buttonCell key="cell" type="push" title="Open System Preferences &gt; Security &amp; Privacy" bezelStyle="rounded" image="ic_forward_18pt" imagePosition="left" alignment="left" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="Te8-FQ-SJa">
                                                 <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
-                                                <font key="font" metaFont="system"/>
+                                                <font key="font" metaFont="menu"/>
                                             </buttonCell>
                                             <connections>
                                                 <action selector="openSystemPreferencesSecurity:" target="fAe-OR-t9F" id="tgB-x4-4Mm"/>
@@ -2925,7 +2924,7 @@ System Preferences &gt; Security &amp; Privacy.</string>
                                             <rect key="frame" x="364" y="360" width="153" height="32"/>
                                             <buttonCell key="cell" type="push" title="Close this alert" bezelStyle="rounded" image="ic_cancel_18pt" imagePosition="left" alignment="left" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="qyW-jE-BlT">
                                                 <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
-                                                <font key="font" metaFont="system"/>
+                                                <font key="font" metaFont="menu"/>
                                             </buttonCell>
                                             <connections>
                                                 <action selector="closeAlert:" target="fAe-OR-t9F" id="4ZI-OI-zOp"/>
@@ -2945,7 +2944,7 @@ System Preferences &gt; Security &amp; Privacy.</string>
                                                 <constraint firstAttribute="width" relation="lessThanOrEqual" constant="245" id="FDy-3o-WnD"/>
                                             </constraints>
                                             <textFieldCell key="cell" sendsActionOnEndEditing="YES" title="Note: You cannot press the button if you are using an app which intercepts mouse events." id="yzJ-hm-PWh">
-                                                <font key="font" metaFont="system"/>
+                                                <font key="font" metaFont="menu"/>
                                                 <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
                                                 <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
                                             </textFieldCell>
@@ -2954,7 +2953,7 @@ System Preferences &gt; Security &amp; Privacy.</string>
                                             <rect key="frame" x="660" y="101" width="165" height="32"/>
                                             <buttonCell key="cell" type="push" title="Open online help" bezelStyle="rounded" image="ic_open_in_browser_18pt" imagePosition="left" alignment="center" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="Y60-Nn-24R">
                                                 <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
-                                                <font key="font" metaFont="system"/>
+                                                <font key="font" metaFont="menu"/>
                                             </buttonCell>
                                             <connections>
                                                 <action selector="openSystemPolicyPreventsLoadingKextHelpWebPage:" target="fAe-OR-t9F" id="daa-dP-1XO"/>
@@ -3034,7 +3033,7 @@ System Preferences &gt; Security &amp; Privacy.</string>
                     </customView>
                     <tabView type="noTabsNoBorder" translatesAutoresizingMaskIntoConstraints="NO" id="DT3-Yx-Kqq">
                         <rect key="frame" x="10" y="10" width="880" height="518"/>
-                        <font key="font" metaFont="system"/>
+                        <font key="font" metaFont="menu"/>
                         <tabViewItems>
                             <tabViewItem label="Tab" identifier="1" id="fGa-Js-Hpe">
                                 <view key="view" id="8Od-DQ-jck">
@@ -3044,7 +3043,7 @@ System Preferences &gt; Security &amp; Privacy.</string>
                                         <textField verticalHuggingPriority="750" horizontalCompressionResistancePriority="250" translatesAutoresizingMaskIntoConstraints="NO" id="azl-WS-TKw">
                                             <rect key="frame" x="18" y="466" width="844" height="32"/>
                                             <textFieldCell key="cell" sendsActionOnEndEditing="YES" alignment="center" id="72V-sZ-yMF">
-                                                <font key="font" metaFont="system"/>
+                                                <font key="font" metaFont="menu"/>
                                                 <string key="title">karabiner_grabber and karabiner_observer require Input Monitoring permission.
 You have to allow them on System Preferences &gt; Security &amp; Privacy &gt; Privacy &gt; Input Monitoring.</string>
                                                 <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
@@ -3055,7 +3054,7 @@ You have to allow them on System Preferences &gt; Security &amp; Privacy &gt; Pr
                                             <rect key="frame" x="267" y="418" width="346" height="32"/>
                                             <buttonCell key="cell" type="push" title="Open System Preferences &gt; Security &amp; Privacy" bezelStyle="rounded" image="ic_forward_18pt" imagePosition="left" alignment="left" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="FJU-Jt-koc">
                                                 <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
-                                                <font key="font" metaFont="system"/>
+                                                <font key="font" metaFont="menu"/>
                                             </buttonCell>
                                             <connections>
                                                 <action selector="openSystemPreferencesSecurity:" target="DhI-vl-MTs" id="j3Q-gu-q0U"/>
@@ -3065,7 +3064,7 @@ You have to allow them on System Preferences &gt; Security &amp; Privacy &gt; Pr
                                             <rect key="frame" x="364" y="376" width="153" height="32"/>
                                             <buttonCell key="cell" type="push" title="Close this alert" bezelStyle="rounded" image="ic_cancel_18pt" imagePosition="left" alignment="left" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="4Lr-1Z-9Ap">
                                                 <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
-                                                <font key="font" metaFont="system"/>
+                                                <font key="font" metaFont="menu"/>
                                             </buttonCell>
                                             <connections>
                                                 <action selector="closeAlert:" target="DhI-vl-MTs" id="7XV-EY-11A"/>
@@ -3149,7 +3148,7 @@ You have to allow them on System Preferences &gt; Security &amp; Privacy &gt; Pr
                         <rect key="frame" x="95" y="94" width="410" height="114"/>
                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                         <textFieldCell key="cell" sendsActionOnEndEditing="YES" id="wA7-WV-iav">
-                            <font key="font" metaFont="system"/>
+                            <font key="font" metaFont="menu"/>
                             <string key="title">Karabiner-Elements tries to manipulate the caps lock LED.
 However, the LED manipulation might cause a problem if the device does not have a caps lock LED.
 Please keep the checkbox off if the device does not have a caps lock LED.</string>
@@ -3168,7 +3167,7 @@ Please keep the checkbox off if the device does not have a caps lock LED.</strin
                                 </constraints>
                                 <buttonCell key="cell" type="push" title="Cancel" bezelStyle="rounded" image="ic_cancel_18pt" imagePosition="left" alignment="center" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="25x-JO-VcX">
                                     <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
-                                    <font key="font" metaFont="system"/>
+                                    <font key="font" metaFont="menu"/>
                                     <string key="keyEquivalent" base64-UTF8="YES">
 Gw
 </string>
