@@ -312,6 +312,13 @@
   [[NSWorkspace sharedWorkspace] openURL:[NSURL URLWithString:@"https://github.com/pqrs-org/Karabiner-Elements"]];
 }
 
+- (IBAction)openConfigDirectory:(id)sender {
+  NSURL* url = [NSURL fileURLWithPath:[NSString stringWithUTF8String:libkrbn_get_user_configuration_directory()]
+                          isDirectory:YES];
+  NSLog(@"%@", url);
+  [[NSWorkspace sharedWorkspace] openURL:url];
+}
+
 - (IBAction)restart:(id)sender {
   libkrbn_launchctl_restart_console_user_server();
   [KarabinerKit relaunch];
