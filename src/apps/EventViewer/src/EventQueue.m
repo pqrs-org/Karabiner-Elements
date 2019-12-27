@@ -20,6 +20,21 @@
 
 @end
 
+static NSNumber* findNumberFromName(NSString* string) {
+  NSError* error = nil;
+  NSRegularExpression* regex = [NSRegularExpression regularExpressionWithPattern:@"^\\(number:(\\d+)\\)"
+                                                                         options:0
+                                                                           error:&error];
+  NSTextCheckingResult* match = [regex firstMatchInString:string
+                                                  options:0
+                                                    range:NSMakeRange(0, [string length])];
+  if (match) {
+    return @([[string substringWithRange:[match rangeAtIndex:1]] integerValue]);
+  }
+
+  return nil;
+}
+
 static void hid_value_observer_callback(uint64_t device_id,
                                         enum libkrbn_hid_value_type type,
                                         uint32_t value,
@@ -53,10 +68,11 @@ static void hid_value_observer_callback(uint64_t device_id,
     NSString* name = @"";
 
     switch (type) {
-      case libkrbn_hid_value_type_key_code:
+      case libkrbn_hid_value_type_key_code: {
         keyType = @"key";
         libkrbn_get_key_code_name(buffer, sizeof(buffer), value);
         name = [NSString stringWithUTF8String:buffer];
+        NSNumber* number = findNumberFromName(name);
 
         if (libkrbn_is_modifier_flag(value)) {
           NSMutableSet* set = queue.modifierFlags[deviceId];
@@ -73,17 +89,20 @@ static void hid_value_observer_callback(uint64_t device_id,
         }
 
         simpleModificationJson[@"from"] = [NSMutableDictionary new];
-        simpleModificationJson[@"from"][@"key_code"] = name;
+        simpleModificationJson[@"from"][@"key_code"] = number ? number : name;
         break;
+      }
 
-      case libkrbn_hid_value_type_consumer_key_code:
+      case libkrbn_hid_value_type_consumer_key_code: {
         keyType = @"consumer_key";
         libkrbn_get_consumer_key_code_name(buffer, sizeof(buffer), value);
         name = [NSString stringWithUTF8String:buffer];
+        NSNumber* number = findNumberFromName(name);
 
         simpleModificationJson[@"from"] = [NSMutableDictionary new];
-        simpleModificationJson[@"from"][@"consumer_key_code"] = name;
+        simpleModificationJson[@"from"][@"consumer_key_code"] = number ? number : name;
         break;
+      }
     }
 
     NSString* eventType = @"";
