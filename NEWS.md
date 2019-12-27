@@ -5,6 +5,8 @@
 -   ⚡️ Improvements
     -   Added a workaround for non-dismissible `Device is ignored temporarily` alert
         which is caused by some devices that sends abnormal input events.
+-   🐛 Bug Fixes
+    -   Fixed `Add {key_code} to Karabiner-Elements` button on EventViewer for unnamed keys (raw number key codes).
 
 ## Karabiner-Elements 12.8.0
 
