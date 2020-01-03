@@ -1,6 +1,6 @@
 #pragma once
 
-// pqrs::osx::iokit_service_monitor v3.5
+// pqrs::osx::iokit_service_monitor v3.6
 
 // (C) Copyright Takayama Fumihiko 2018.
 // Distributed under the Boost Software License, Version 1.0.
@@ -13,8 +13,8 @@
 #include <pqrs/cf/run_loop_thread.hpp>
 #include <pqrs/dispatcher.hpp>
 #include <pqrs/osx/iokit_object_ptr.hpp>
-#include <pqrs/osx/iokit_return.hpp>
 #include <pqrs/osx/iokit_types.hpp>
+#include <pqrs/osx/kern_return.hpp>
 
 namespace pqrs {
 namespace osx {
@@ -24,7 +24,7 @@ public:
 
   nod::signal<void(iokit_registry_entry_id, iokit_object_ptr)> service_matched;
   nod::signal<void(iokit_registry_entry_id)> service_terminated;
-  nod::signal<void(const std::string&, iokit_return)> error_occurred;
+  nod::signal<void(const std::string&, kern_return)> error_occurred;
 
   // Methods
 
@@ -69,9 +69,9 @@ public:
       if (*matching_dictionary_) {
         io_iterator_t it = IO_OBJECT_NULL;
         CFRetain(*matching_dictionary_);
-        iokit_return r = IOServiceGetMatchingServices(kIOMasterPortDefault,
-                                                      *matching_dictionary_,
-                                                      &it);
+        kern_return r = IOServiceGetMatchingServices(kIOMasterPortDefault,
+                                                     *matching_dictionary_,
+                                                     &it);
         if (!r) {
           enqueue_to_dispatcher([this, r] {
             error_occurred("IOServiceGetMatchingServices is failed.", r);
@@ -114,12 +114,12 @@ private:
       if (*matching_dictionary_) {
         io_iterator_t it = IO_OBJECT_NULL;
         CFRetain(*matching_dictionary_);
-        iokit_return r = IOServiceAddMatchingNotification(notification_port_,
-                                                          kIOFirstMatchNotification,
-                                                          *matching_dictionary_,
-                                                          &static_matched_callback,
-                                                          static_cast<void*>(this),
-                                                          &it);
+        kern_return r = IOServiceAddMatchingNotification(notification_port_,
+                                                         kIOFirstMatchNotification,
+                                                         *matching_dictionary_,
+                                                         &static_matched_callback,
+                                                         static_cast<void*>(this),
+                                                         &it);
         if (!r) {
           enqueue_to_dispatcher([this, r] {
             error_occurred("IOServiceAddMatchingNotification is failed.", r);
@@ -138,12 +138,12 @@ private:
       if (*matching_dictionary_) {
         io_iterator_t it = IO_OBJECT_NULL;
         CFRetain(*matching_dictionary_);
-        iokit_return r = IOServiceAddMatchingNotification(notification_port_,
-                                                          kIOTerminatedNotification,
-                                                          *matching_dictionary_,
-                                                          &static_terminated_callback,
-                                                          static_cast<void*>(this),
-                                                          &it);
+        kern_return r = IOServiceAddMatchingNotification(notification_port_,
+                                                         kIOTerminatedNotification,
+                                                         *matching_dictionary_,
+                                                         &static_terminated_callback,
+                                                         static_cast<void*>(this),
+                                                         &it);
         if (!r) {
           enqueue_to_dispatcher([this, r] {
             error_occurred("IOServiceAddMatchingNotification is failed.", r);
@@ -239,7 +239,7 @@ private:
   static std::optional<iokit_registry_entry_id> find_registry_entry_id(iokit_object_ptr service) {
     if (service) {
       uint64_t value;
-      iokit_return r = IORegistryEntryGetRegistryEntryID(*service, &value);
+      kern_return r = IORegistryEntryGetRegistryEntryID(*service, &value);
       if (r) {
         return iokit_registry_entry_id(value);
       }

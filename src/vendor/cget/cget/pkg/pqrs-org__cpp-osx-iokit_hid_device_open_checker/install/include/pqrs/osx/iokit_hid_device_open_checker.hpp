@@ -1,12 +1,13 @@
 #pragma once
 
-// pqrs::osx::iokit_hid_device_open_checker v1.1
+// pqrs::osx::iokit_hid_device_open_checker v1.2
 
 // (C) Copyright Takayama Fumihiko 2019.
 // Distributed under the Boost Software License, Version 1.0.
 // (See http://www.boost.org/LICENSE_1_0.txt)
 
 #include <pqrs/osx/iokit_hid_manager.hpp>
+#include <pqrs/osx/iokit_return.hpp>
 
 namespace pqrs {
 namespace osx {

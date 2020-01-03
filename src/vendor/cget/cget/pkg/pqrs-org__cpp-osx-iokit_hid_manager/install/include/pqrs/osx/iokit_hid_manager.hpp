@@ -1,6 +1,6 @@
 #pragma once
 
-// pqrs::osx::iokit_hid_manager v2.8
+// pqrs::osx::iokit_hid_manager v2.9
 
 // (C) Copyright Takayama Fumihiko 2018.
 // Distributed under the Boost Software License, Version 1.0.
@@ -22,7 +22,7 @@ public:
 
   nod::signal<void(iokit_registry_entry_id, cf::cf_ptr<IOHIDDeviceRef>)> device_matched;
   nod::signal<void(iokit_registry_entry_id)> device_terminated;
-  nod::signal<void(const std::string&, iokit_return)> error_occurred;
+  nod::signal<void(const std::string&, kern_return)> error_occurred;
 
   // Methods
 
