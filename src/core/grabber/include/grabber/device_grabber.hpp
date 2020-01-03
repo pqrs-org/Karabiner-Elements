@@ -267,8 +267,8 @@ public:
       async_grab_devices();
     });
 
-    hid_manager_->error_occurred.connect([this](auto&& message, auto&& iokit_return) {
-      logger::get_logger()->error("{0}: {1}", message, iokit_return.to_string());
+    hid_manager_->error_occurred.connect([this](auto&& message, auto&& kern_return) {
+      logger::get_logger()->error("{0}: {1}", message, kern_return.to_string());
       logger_unique_filter_.reset();
     });
 

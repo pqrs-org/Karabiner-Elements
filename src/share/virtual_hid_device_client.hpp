@@ -5,8 +5,8 @@
 #include <IOKit/IOKitLib.h>
 #include <IOKit/hidsystem/IOHIDShared.h>
 #include <nod/nod.hpp>
-#include <pqrs/osx/iokit_return.hpp>
 #include <pqrs/osx/iokit_service_monitor.hpp>
+#include <pqrs/osx/kern_return.hpp>
 
 namespace krbn {
 class virtual_hid_device_client final : public pqrs::dispatcher::extra::dispatcher_client {
@@ -210,7 +210,7 @@ private:
     service_ = s;
     IOObjectRetain(service_);
 
-    pqrs::osx::iokit_return r = IOServiceOpen(service_, mach_task_self(), kIOHIDServerConnectType, &connect_);
+    pqrs::osx::kern_return r = IOServiceOpen(service_, mach_task_self(), kIOHIDServerConnectType, &connect_);
     if (r) {
       logger::get_logger()->info("virtual_hid_device_client is opened.");
 
@@ -230,7 +230,7 @@ private:
   // This method is executed in the dispatcher thread.
   void close_connection(void) {
     if (connect_) {
-      pqrs::osx::iokit_return r = IOServiceClose(connect_);
+      pqrs::osx::kern_return r = IOServiceClose(connect_);
       if (!r) {
         logger::get_logger()->error("virtual_hid_device_client::close_connection error: {0}",
                                     r.to_string());

@@ -58,8 +58,8 @@ public:
       hid_queue_values_converter_.erase_device(device_id);
     });
 
-    hid_manager_->error_occurred.connect([](auto&& message, auto&& iokit_return) {
-      krbn::logger::get_logger()->error("{0}: {1}", message, iokit_return.to_string());
+    hid_manager_->error_occurred.connect([](auto&& message, auto&& kern_return) {
+      krbn::logger::get_logger()->error("{0}: {1}", message, kern_return.to_string());
     });
 
     hid_manager_->async_start();
