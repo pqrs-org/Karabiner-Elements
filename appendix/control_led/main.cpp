@@ -3,6 +3,7 @@
 #include "iokit_utility.hpp"
 #include <csignal>
 #include <pqrs/osx/iokit_hid_manager.hpp>
+#include <pqrs/osx/iokit_return.hpp>
 
 namespace {
 class control_led final : public pqrs::dispatcher::extra::dispatcher_client {
