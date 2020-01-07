@@ -1,6 +1,6 @@
 #pragma once
 
-// pqrs::osx::iokit_object_ptr v2.5
+// pqrs::osx::iokit_object_ptr v3.1
 
 // (C) Copyright Takayama Fumihiko 2018.
 // Distributed under the Boost Software License, Version 1.0.
@@ -22,7 +22,7 @@ public:
   iokit_object_ptr(void) : iokit_object_ptr(IO_OBJECT_NULL) {
   }
 
-  iokit_object_ptr(io_object_t p) : p_(p) {
+  explicit iokit_object_ptr(io_object_t p) : p_(p) {
     if (p_) {
       IOObjectRetain(p_);
     }

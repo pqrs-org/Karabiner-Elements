@@ -1,6 +1,6 @@
 #pragma once
 
-// pqrs::osx::iokit_hid_device v2.6
+// pqrs::osx::iokit_hid_device v2.7
 
 // (C) Copyright Takayama Fumihiko 2018.
 // Distributed under the Boost Software License, Version 1.0.
@@ -25,6 +25,18 @@ public:
 
   cf::cf_ptr<IOHIDDeviceRef> get_device(void) const {
     return device_;
+  }
+
+  // Note:
+  // Input Monitoring permission user approval is required since macOS Catalina (10.15).
+  bool conforms_to(iokit_hid_usage_page usage_page, iokit_hid_usage usage) const {
+    if (device_) {
+      return IOHIDDeviceConformsTo(*device_,
+                                   type_safe::get(usage_page),
+                                   type_safe::get(usage));
+    }
+
+    return false;
   }
 
   std::optional<int64_t> find_int64_property(CFStringRef key) const {
@@ -100,6 +112,8 @@ public:
     return find_string_property(CFSTR(kIOHIDTransportKey));
   }
 
+  // Note:
+  // Input Monitoring permission user approval is required since macOS Catalina (10.15).
   std::vector<cf::cf_ptr<IOHIDElementRef>> make_elements(void) {
     std::vector<cf::cf_ptr<IOHIDElementRef>> result;
 
