@@ -1,5 +1,5 @@
-jarro2783/cxxopts@v2.2.0 --cmake header -H sha256:447dbfc2361fce9742c5d1c9cfb25731c977b405f9085a738fbd608626da8a4d
-mpark/variant@v1.4.0 --cmake header -H sha256:8f6b28ab3640b5d76d5b6664dda7257a4405ce59179220431b8fd196c79b2ecb
+jarro2783/cxxopts
+mpark/variant
 pqrs-org/cpp-cf-dictionary
 pqrs-org/cpp-cf-number
 pqrs-org/cpp-cf-url
@@ -27,4 +27,4 @@ pqrs-org/cpp-sign
 pqrs-org/cpp-spdlog
 pqrs-org/cpp-string
 pqrs-org/objc-weakify
-scopeInfinity/NaturalSort@12f74beb58d9b18a41b25339d994da0e222fe80f --cmake header -H sha256:d284b2c55704bf58cddabfc07e71e5e39b4bc2f747cd9cf72b5b14975fe02a7c
+scopeInfinity/NaturalSort
