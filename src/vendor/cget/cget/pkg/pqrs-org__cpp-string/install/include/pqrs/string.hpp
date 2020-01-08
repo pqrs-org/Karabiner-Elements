@@ -1,6 +1,6 @@
 #pragma once
 
-// pqrs::string v1.2
+// pqrs::string v1.3
 
 // (C) Copyright Takayama Fumihiko 2018.
 // Distributed under the Boost Software License, Version 1.0.
@@ -8,3 +8,4 @@
 
 #include "string/predicate.hpp"
 #include "string/trim.hpp"
+#include "string/truncate.hpp"
