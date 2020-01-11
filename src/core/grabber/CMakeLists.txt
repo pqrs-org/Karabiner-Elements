@@ -13,6 +13,14 @@ add_executable(
   src/main.cpp
 )
 
+set_target_properties(
+  karabiner_grabber
+  PROPERTIES
+
+  XCODE_ATTRIBUTE_ENABLE_HARDENED_RUNTIME
+  YES
+)
+
 target_link_libraries(
   karabiner_grabber
   "-framework CoreFoundation"

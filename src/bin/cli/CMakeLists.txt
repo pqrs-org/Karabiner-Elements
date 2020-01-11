@@ -9,6 +9,14 @@ add_executable(
   src/main.cpp
 )
 
+set_target_properties(
+  karabiner_cli
+  PROPERTIES
+
+  XCODE_ATTRIBUTE_ENABLE_HARDENED_RUNTIME
+  YES
+)
+
 target_link_libraries(
   karabiner_cli
   "-framework CoreFoundation"
