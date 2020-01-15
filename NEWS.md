@@ -4,7 +4,7 @@
 
 -   ✨ New Features
     -   `Open config folder` button has been added.<br>
-        The feature provides a easy way exporting configuration.
+        The feature provides [a easy way exporting configuration](https://pqrs.org/osx/karabiner/document.html#export).
 -   ⚡️ Improvements
     -   Added a workaround for non-dismissible `Device is ignored temporarily` alert
         which is caused by some devices that sends abnormal input events.
