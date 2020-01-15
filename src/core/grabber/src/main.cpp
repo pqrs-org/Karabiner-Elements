@@ -8,6 +8,7 @@
 #include "process_utility.hpp"
 #include "state_json_writer.hpp"
 #include <iostream>
+#include <mach/mach.h>
 
 int main(int argc, const char* argv[]) {
   //
@@ -92,6 +93,27 @@ int main(int argc, const char* argv[]) {
   } else {
     if (state_json_writer) {
       state_json_writer->set("hid_device_open_permitted", true);
+    }
+  }
+
+  //
+  // Set task_qos_policy
+  //
+
+  if (root) {
+    task_qos_policy qosinfo;
+
+    memset(&qosinfo, 0, sizeof(qosinfo));
+    qosinfo.task_latency_qos_tier = LATENCY_QOS_TIER_0;
+    qosinfo.task_throughput_qos_tier = THROUGHPUT_QOS_TIER_0;
+    pqrs::osx::kern_return kr = task_policy_set(mach_task_self(),
+                                                TASK_BASE_QOS_POLICY,
+                                                reinterpret_cast<task_policy_t>(&qosinfo),
+                                                TASK_QOS_POLICY_COUNT);
+    if (kr) {
+      krbn::logger::get_logger()->info("task_policy_set is called.");
+    } else {
+      krbn::logger::get_logger()->warn("task_policy_set error: {0}", kr);
     }
   }
 
