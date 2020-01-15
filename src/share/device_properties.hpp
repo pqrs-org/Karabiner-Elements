@@ -26,8 +26,8 @@ public:
     product_ = hid_device.find_product();
     serial_number_ = hid_device.find_serial_number();
     transport_ = hid_device.find_transport();
-    is_keyboard_ = iokit_utility::is_keyboard(device);
-    is_pointing_device_ = iokit_utility::is_pointing_device(device);
+    is_keyboard_ = iokit_utility::is_keyboard(hid_device);
+    is_pointing_device_ = iokit_utility::is_pointing_device(hid_device);
 
     if (product_ && is_keyboard_ && is_pointing_device_) {
       if ((*product_).find("Apple Internal ") != std::string::npos) {
