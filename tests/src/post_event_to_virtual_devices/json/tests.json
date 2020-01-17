@@ -228,6 +228,12 @@
         "expected_post_event_to_virtual_devices_queue": "json/expected_post_event_to_virtual_devices_queue/modifier_pointing_button_to_pointing_button_2.json"
     },
     {
+        "description": "left_control+button12 -> button13 (a key event between pointing_button events)",
+        "rules": ["json/rules/from_pointing_button.json"],
+        "input_event_queue": "json/input_event_queue/modifier_pointing_button_to_pointing_button_3.json",
+        "expected_post_event_to_virtual_devices_queue": "json/expected_post_event_to_virtual_devices_queue/modifier_pointing_button_to_pointing_button_3.json"
+    },
+    {
         "description": "right_control+button13 -> left_option+button14 (modifier+button to modifier+button)",
         "rules": ["json/rules/from_pointing_button.json"],
         "input_event_queue": "json/input_event_queue/modifier_pointing_button_to_modifier_pointing_button_1.json",

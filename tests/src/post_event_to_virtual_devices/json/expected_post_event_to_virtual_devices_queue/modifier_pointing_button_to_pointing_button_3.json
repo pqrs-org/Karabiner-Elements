@@ -1,0 +1,48 @@
+[
+    {
+        "keyboard_input": {
+            "keys": [],
+            "modifiers": ["left_control"]
+        },
+        "time_stamp": 5,
+        "type": "keyboard_input"
+    },
+    {
+        "keyboard_input": {
+            "keys": ["p"],
+            "modifiers": ["left_control"]
+        },
+        "time_stamp": 10,
+        "type": "keyboard_input"
+    },
+    {
+        "keyboard_input": {
+            "keys": ["p"],
+            "modifiers": []
+        },
+        "time_stamp": 15,
+        "type": "keyboard_input"
+    },
+    {
+        "pointing_input": {
+            "buttons": ["button13"],
+            "horizontal_wheel": 0,
+            "vertical_wheel": 0,
+            "x": 0,
+            "y": 0
+        },
+        "time_stamp": 20,
+        "type": "pointing_input"
+    },
+    {
+        "pointing_input": {
+            "buttons": ["button13"],
+            "horizontal_wheel": 0,
+            "vertical_wheel": 0,
+            "x": 246,
+            "y": 0
+        },
+        "time_stamp": 8,
+        "type": "pointing_input"
+    }
+]

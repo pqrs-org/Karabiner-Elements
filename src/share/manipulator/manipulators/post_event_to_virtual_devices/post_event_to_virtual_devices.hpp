@@ -64,20 +64,12 @@ public:
 
         } else {
           if (front_input_event.get_event_type() == event_type::key_down) {
-            if (front_input_event.get_event().get_type() == event_queue::event::type::pointing_button) {
-              if (!queue_.get_keyboard_repeat_detector().is_repeating() &&
-                  pressed_buttons_.empty() &&
-                  !mouse_key_handler_->active()) {
-                dispatch_modifier_key_event = true;
-                dispatch_modifier_key_event_before = true;
-              }
-            } else {
-              // key_code, consumer_key_code
-              dispatch_modifier_key_event = true;
-              dispatch_modifier_key_event_before = true;
-            }
+            dispatch_modifier_key_event = true;
+            dispatch_modifier_key_event_before = true;
 
           } else if (front_input_event.get_event().get_type() == event_queue::event::type::pointing_motion) {
+            // We should not dispatch modifier key events while key repeating.
+            // (See comments in `handle_pointing_device_event_from_event_tap` for details.)
             if (!queue_.get_keyboard_repeat_detector().is_repeating() &&
                 pressed_buttons_.empty() &&
                 !mouse_key_handler_->active()) {
