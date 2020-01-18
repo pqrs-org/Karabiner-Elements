@@ -1,6 +1,6 @@
 # Changelog
 
-## Beta
+## Karabiner-Elements 12.9.0
 
 -   ✨ New Features
     -   `Open config folder` button has been added into Preferences.<br>
