@@ -171,7 +171,16 @@ public:
 private:
   device_id device_id_;
   event_time_stamp event_time_stamp_;
+
+  // event will be marked invalid if it is changed by a manipulator.
+  // the valid_ flag will be reset each following manipulation stage.
+  //
+  // - simple modifiactions
+  // - complex modifications
+  // - fn function keys
+  // - post event to virtual devices
   bool valid_;
+
   bool lazy_;
   event event_;
   event_type event_type_;
