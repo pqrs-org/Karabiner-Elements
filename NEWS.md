@@ -2,6 +2,8 @@
 
 ## Karabiner-Elements 12.9.0
 
+-   📅 Release date
+    -   Jan 18, 2020
 -   ✨ New Features
     -   `Open config folder` button has been added into Preferences.<br>
         The feature provides [an easy way exporting configuration](https://pqrs.org/osx/karabiner/document.html#export).
@@ -15,6 +17,8 @@
 
 ## Karabiner-Elements 12.8.0
 
+-   📅 Release date
+    -   Nov 17, 2019
 -   ✨ New Features
     -   Add `--show-current-profile-name` option into `karabiner_cli`.
     -   Add `--list-profile-names` option into `karabiner_cli`.
