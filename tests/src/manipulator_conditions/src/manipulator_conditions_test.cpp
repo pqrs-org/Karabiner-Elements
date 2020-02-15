@@ -168,7 +168,8 @@ TEST_CASE("conditions.frontmost_application") {
                                  krbn::event_queue::event_time_stamp(krbn::absolute_time_point(0)),
                                  krbn::event_queue::event(krbn::key_code::a),
                                  krbn::event_type::key_down,
-                                 krbn::event_queue::event(krbn::key_code::a));
+                                 krbn::event_queue::event(krbn::key_code::a),
+                                 krbn::event_queue::state::original);
 
   // bundle_identifiers matching
   {
@@ -237,7 +238,8 @@ TEST_CASE("conditions.input_source") {
                                  krbn::event_queue::event_time_stamp(krbn::absolute_time_point(0)),
                                  krbn::event_queue::event(krbn::key_code::a),
                                  krbn::event_type::key_down,
-                                 krbn::event_queue::event(krbn::key_code::a));
+                                 krbn::event_queue::event(krbn::key_code::a),
+                                 krbn::event_queue::state::original);
 
   // language matching
   {
@@ -476,7 +478,8 @@ TEST_CASE("conditions.keyboard_type") {
                                  krbn::event_queue::event_time_stamp(krbn::absolute_time_point(0)),
                                  krbn::event_queue::event(krbn::key_code::a),
                                  krbn::event_type::key_down,
-                                 krbn::event_queue::event(krbn::key_code::a));
+                                 krbn::event_queue::event(krbn::key_code::a),
+                                 krbn::event_queue::state::original);
 
   pqrs::osx::system_preferences::properties system_preferences_properties;
   system_preferences_properties.set_use_fkeys_as_standard_function_keys(true);
@@ -533,7 +536,8 @@ TEST_CASE("conditions.variable") {
                                  krbn::event_queue::event_time_stamp(krbn::absolute_time_point(0)),
                                  krbn::event_queue::event(krbn::key_code::a),
                                  krbn::event_type::key_down,
-                                 krbn::event_queue::event(krbn::key_code::a));
+                                 krbn::event_queue::event(krbn::key_code::a),
+                                 krbn::event_queue::state::original);
 
   manipulator_environment.set_variable("variable_name", 123);
 
