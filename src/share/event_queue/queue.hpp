@@ -20,6 +20,7 @@ public:
                           const class event& event,
                           event_type event_type,
                           const class event& original_event,
+                          state state,
                           bool lazy = false) {
     auto t = event_time_stamp;
     t.set_time_stamp(t.get_time_stamp() + time_stamp_delay_);
@@ -29,11 +30,14 @@ public:
                          event,
                          event_type,
                          original_event,
+                         state,
                          lazy);
 
     sort_events();
 
+    //
     // Update modifier_flag_manager
+    //
 
     if (auto key_code = event.get_key_code()) {
       if (auto modifier_flag = make_modifier_flag(*key_code)) {
@@ -57,7 +61,9 @@ public:
       }
     }
 
+    //
     // Update pointing_button_manager
+    //
 
     if (auto pointing_button = event.get_pointing_button()) {
       if (*pointing_button != pointing_button::zero) {
@@ -70,7 +76,10 @@ public:
       }
     }
 
+    //
     // Update manipulator_environment
+    //
+
     if (event.get_type() == event::type::device_grabbed) {
       if (auto v = event.find<device_properties>()) {
         manipulator_environment_.insert_device_properties(device_id, *v);
@@ -105,6 +114,7 @@ public:
                        entry.get_event(),
                        entry.get_event_type(),
                        entry.get_original_event(),
+                       entry.get_state(),
                        entry.get_lazy());
     events_.back().set_valid(entry.get_valid());
   }

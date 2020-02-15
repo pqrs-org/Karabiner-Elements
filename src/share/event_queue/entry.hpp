@@ -4,6 +4,7 @@
 
 #include "event.hpp"
 #include "event_time_stamp.hpp"
+#include "state.hpp"
 #include "types.hpp"
 #include <pqrs/json.hpp>
 
@@ -18,9 +19,11 @@ public:
         const class event& event,
         event_type event_type,
         const class event& original_event,
+        state state,
         bool lazy = false) : device_id_(device_id),
                              event_time_stamp_(event_time_stamp),
                              valid_(true),
+                             state_(state),
                              lazy_(lazy),
                              event_(event),
                              event_type_(event_type),
@@ -31,6 +34,7 @@ public:
     device_id_ = other.device_id_;
     event_time_stamp_ = other.event_time_stamp_;
     valid_ = other.valid_;
+    state_ = other.state_;
     lazy_ = other.lazy_;
     event_ = other.event_;
     event_type_ = other.event_type_;
@@ -47,7 +51,8 @@ public:
                  event_time_stamp(absolute_time_point(0)),
                  event(),
                  event_type::key_down,
-                 event());
+                 event(),
+                 state::original);
 
     if (json.is_object()) {
       if (auto v = pqrs::json::find<uint32_t>(json, "device_id")) {
@@ -61,6 +66,10 @@ public:
       if (auto v = pqrs::json::find<bool>(json, "valid")) {
         result.valid_ = *v;
       }
+
+     if (auto v = pqrs::json::find<state>(json, "state")) {
+       result.state_ = *v;
+     }
 
       if (auto v = pqrs::json::find<bool>(json, "lazy")) {
         result.lazy_ = *v;
@@ -112,6 +121,18 @@ public:
     valid_ = value;
   }
 
+  state get_state(void) const {
+    std::lock_guard<std::mutex> lock(mutex_);
+
+    return state_;
+  }
+
+  void set_state(state value) {
+    std::lock_guard<std::mutex> lock(mutex_);
+
+    state_ = value;
+  }
+
   bool get_lazy(void) const {
     std::lock_guard<std::mutex> lock(mutex_);
 
@@ -147,6 +168,7 @@ public:
         {"device_id", type_safe::get(get_device_id())},
         {"event_time_stamp", get_event_time_stamp()},
         {"valid", get_valid()},
+        {"state", get_state()},
         {"lazy", get_lazy()},
         {"event", get_event()},
         {"event_type", get_event_type()},
@@ -158,6 +180,7 @@ public:
     return get_device_id() == other.get_device_id() &&
            get_event_time_stamp() == other.get_event_time_stamp() &&
            get_valid() == other.get_valid() &&
+           get_state() == other.get_state() &&
            get_lazy() == other.get_lazy() &&
            get_event() == other.get_event() &&
            get_event_type() == other.get_event_type() &&
@@ -172,14 +195,19 @@ private:
   device_id device_id_;
   event_time_stamp event_time_stamp_;
 
-  // event will be marked invalid if it is changed by a manipulator.
-  // the valid_ flag will be reset each following manipulation stage.
+  // Event will be marked invalid if it is changed by a manipulator.
+  // The valid_ flag will be reset each following manipulation stage.
   //
   // - simple modifiactions
   // - complex modifications
   // - fn function keys
   // - post event to virtual devices
+  //
   bool valid_;
+
+  // Event will be marked as state::manipulated if the event is posted by manipulator at least once.
+  // The state will be kept each above manipulation state.
+  state state_;
 
   bool lazy_;
   event event_;

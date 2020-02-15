@@ -310,7 +310,8 @@ public:
                                  event_queue::event_time_stamp(pqrs::osx::chrono::mach_absolute_time_point()),
                                  e,
                                  event_type,
-                                 event);
+                                 event,
+                                 event_queue::state::virtual_event);
 
         merged_input_event_queue_->push_back_entry(entry);
 
@@ -422,7 +423,8 @@ public:
                                  event_queue::event_time_stamp(pqrs::osx::chrono::mach_absolute_time_point()),
                                  event,
                                  t,
-                                 event);
+                                 event,
+                                 event_queue::state::virtual_event);
         merged_input_event_queue_->push_back_entry(entry);
       }
 
@@ -437,7 +439,8 @@ public:
                                event_queue::event_time_stamp(pqrs::osx::chrono::mach_absolute_time_point()),
                                event,
                                event_type::single,
-                               event);
+                               event,
+                               event_queue::state::virtual_event);
 
       merged_input_event_queue_->push_back_entry(entry);
 
@@ -452,7 +455,8 @@ public:
                                event_queue::event_time_stamp(pqrs::osx::chrono::mach_absolute_time_point()),
                                event,
                                event_type::single,
-                               event);
+                               event,
+                               event_queue::state::virtual_event);
 
       merged_input_event_queue_->push_back_entry(entry);
 
@@ -468,7 +472,8 @@ public:
                                event_queue::event_time_stamp(pqrs::osx::chrono::mach_absolute_time_point()),
                                event,
                                event_type::single,
-                               event);
+                               event,
+                               event_queue::state::virtual_event);
 
       merged_input_event_queue_->push_back_entry(entry);
 
@@ -484,7 +489,8 @@ public:
                                event_queue::event_time_stamp(pqrs::osx::chrono::mach_absolute_time_point()),
                                event,
                                event_type::single,
-                               event);
+                               event,
+                               event_queue::state::virtual_event);
 
       merged_input_event_queue_->push_back_entry(entry);
 
@@ -552,7 +558,8 @@ private:
                                 e.get_event_time_stamp(),
                                 e.get_event(),
                                 e.get_event_type(),
-                                e.get_original_event());
+                                e.get_original_event(),
+                                e.get_state());
 
           merged_input_event_queue_->push_back_entry(qe);
         }
@@ -575,7 +582,8 @@ private:
                                  event_queue::event_time_stamp(pqrs::osx::chrono::mach_absolute_time_point()),
                                  event,
                                  event_type::single,
-                                 event);
+                                 event,
+                                 event_queue::state::virtual_event);
 
         merged_input_event_queue_->push_back_entry(entry);
 
@@ -590,7 +598,8 @@ private:
                              event_queue::event_time_stamp(pqrs::osx::chrono::mach_absolute_time_point()),
                              event,
                              event_type::single,
-                             event);
+                             event,
+                             event_queue::state::virtual_event);
 
     merged_input_event_queue_->push_back_entry(entry);
 
@@ -603,7 +612,8 @@ private:
                              event_queue::event_time_stamp(pqrs::osx::chrono::mach_absolute_time_point()),
                              event,
                              event_type::single,
-                             event);
+                             event,
+                             event_queue::state::virtual_event);
 
     merged_input_event_queue_->push_back_entry(entry);
 

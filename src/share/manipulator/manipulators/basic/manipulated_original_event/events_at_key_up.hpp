@@ -28,6 +28,7 @@ public:
                                 event_,
                                 event_type_,
                                 original_event_,
+                                event_queue::state::manipulated,
                                 lazy_);
     }
 

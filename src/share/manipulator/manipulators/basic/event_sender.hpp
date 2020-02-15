@@ -145,6 +145,7 @@ inline void post_events_at_key_down(const event_queue::entry& front_input_event,
                                                 e,
                                                 event_type::key_down,
                                                 front_input_event.get_original_event(),
+                                                event_queue::state::manipulated,
                                                 lazy);
         }
       }
@@ -160,6 +161,7 @@ inline void post_events_at_key_down(const event_queue::entry& front_input_event,
                                               *event,
                                               event_type::key_down,
                                               front_input_event.get_original_event(),
+                                              event_queue::state::manipulated,
                                               it->get_lazy());
 
         if (it->get_halt()) {
@@ -180,6 +182,7 @@ inline void post_events_at_key_down(const event_queue::entry& front_input_event,
                                               *event,
                                               event_type::key_up,
                                               front_input_event.get_original_event(),
+                                              event_queue::state::manipulated,
                                               it->get_lazy());
       } else {
         current_manipulated_original_event.get_events_at_key_up().emplace_back_event(front_input_event.get_device_id(),
@@ -206,6 +209,7 @@ inline void post_events_at_key_down(const event_queue::entry& front_input_event,
                                                   e,
                                                   event_type::key_up,
                                                   front_input_event.get_original_event(),
+                                                  event_queue::state::manipulated,
                                                   true);
           }
         }
@@ -251,6 +255,7 @@ inline void post_extra_to_events(const event_queue::entry& front_input_event,
                                               e,
                                               event_type::key_down,
                                               front_input_event.get_original_event(),
+                                              event_queue::state::manipulated,
                                               true);
       }
 
@@ -265,6 +270,7 @@ inline void post_extra_to_events(const event_queue::entry& front_input_event,
                                               *event,
                                               event_type::key_down,
                                               front_input_event.get_original_event(),
+                                              event_queue::state::manipulated,
                                               it->get_lazy());
 
         if (it->get_halt()) {
@@ -285,6 +291,7 @@ inline void post_extra_to_events(const event_queue::entry& front_input_event,
                                               *event,
                                               event_type::key_up,
                                               front_input_event.get_original_event(),
+                                              event_queue::state::manipulated,
                                               it->get_lazy());
       }
 
@@ -299,6 +306,7 @@ inline void post_extra_to_events(const event_queue::entry& front_input_event,
                                               e,
                                               event_type::key_up,
                                               front_input_event.get_original_event(),
+                                              event_queue::state::manipulated,
                                               true);
       }
     }

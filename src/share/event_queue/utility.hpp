@@ -33,7 +33,8 @@ static inline std::shared_ptr<queue> make_queue(device_id device_id,
                                  event_time_stamp(*pointing_motion_time_stamp),
                                  event,
                                  event_type::single,
-                                 event);
+                                 event,
+                                 state::original);
 
       pointing_motion_time_stamp = std::nullopt;
       pointing_motion_x = std::nullopt;
@@ -52,7 +53,8 @@ static inline std::shared_ptr<queue> make_queue(device_id device_id,
                                      event_time_stamp(v.get_time_stamp()),
                                      event,
                                      v.get_integer_value() ? event_type::key_down : event_type::key_up,
-                                     event);
+                                     event,
+                                     state::original);
 
         } else if (auto consumer_key_code = make_consumer_key_code(*usage_page, *usage)) {
           event_queue::event event(*consumer_key_code);
@@ -60,7 +62,8 @@ static inline std::shared_ptr<queue> make_queue(device_id device_id,
                                      event_time_stamp(v.get_time_stamp()),
                                      event,
                                      v.get_integer_value() ? event_type::key_down : event_type::key_up,
-                                     event);
+                                     event,
+                                     state::original);
 
         } else if (auto pointing_button = make_pointing_button(*usage_page, *usage)) {
           event_queue::event event(*pointing_button);
@@ -68,7 +71,8 @@ static inline std::shared_ptr<queue> make_queue(device_id device_id,
                                      event_time_stamp(v.get_time_stamp()),
                                      event,
                                      v.get_integer_value() ? event_type::key_down : event_type::key_up,
-                                     event);
+                                     event,
+                                     state::original);
 
         } else if (v.conforms_to(pqrs::osx::iokit_hid_usage_page_generic_desktop,
                                  pqrs::osx::iokit_hid_usage_generic_desktop_x)) {
@@ -110,7 +114,8 @@ static inline std::shared_ptr<queue> make_queue(device_id device_id,
                                      event_time_stamp(v.get_time_stamp()),
                                      event,
                                      event_type::single,
-                                     event);
+                                     event,
+                                     state::virtual_event);
         }
       }
     }
@@ -157,7 +162,8 @@ static inline std::shared_ptr<queue> insert_device_keys_and_pointing_buttons_are
                                          entry.get_event_time_stamp(),
                                          event,
                                          event_type::single,
-                                         event);
+                                         event,
+                                         state::virtual_event);
             }
           }
         }

@@ -8,6 +8,7 @@ namespace event_queue {
 enum class state {
   original,
   manipulated,
+  virtual_event,
 };
 
 inline void to_json(nlohmann::json& json, const state& value) {
@@ -18,6 +19,8 @@ inline void to_json(nlohmann::json& json, const state& value) {
     case state::manipulated:
       json = "manipulated";
       break;
+    case state::virtual_event:
+      json = "virtual_event";
   }
 }
 
@@ -28,6 +31,8 @@ inline void from_json(const nlohmann::json& json, state& value) {
     value = state::original;
   } else if (json == "manipulated") {
     value = state::manipulated;
+  } else if (json == "virtual_event") {
+    value = state::virtual_event;
   } else {
     throw pqrs::json::unmarshal_error(fmt::format("unknown state: `{0}`", json.get<std::string>()));
   }

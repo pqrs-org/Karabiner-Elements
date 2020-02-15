@@ -66,6 +66,7 @@ public:
                                  event_queue::event(*key_code),
                                  event_type,
                                  original_event,
+                                 event_queue::state::manipulated,
                                  true);
         output_event_queue.push_back_entry(event);
       }

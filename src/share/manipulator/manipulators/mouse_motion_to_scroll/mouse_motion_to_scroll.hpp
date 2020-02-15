@@ -187,7 +187,8 @@ private:
                                                t,
                                                event_queue::event(pointing_motion),
                                                event_type::single,
-                                               original_event_);
+                                               original_event_,
+                                               event_queue::state::manipulated);
       }
 
       // Post from_mandatory_modifiers key_down
