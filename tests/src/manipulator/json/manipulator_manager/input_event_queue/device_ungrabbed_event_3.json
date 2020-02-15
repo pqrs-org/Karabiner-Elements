@@ -63,6 +63,7 @@
         "event_time_stamp": {
             "time_stamp": 400
         },
+        "state": "virtual_event",
         "valid": true
     },
     {
@@ -95,6 +96,7 @@
         "event_time_stamp": {
             "time_stamp": 700
         },
+        "state": "virtual_event",
         "valid": true
     }
 ]

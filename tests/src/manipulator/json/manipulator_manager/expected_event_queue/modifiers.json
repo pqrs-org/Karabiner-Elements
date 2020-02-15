@@ -15,6 +15,7 @@
             "key_code": "spacebar",
             "type": "key_code"
         },
+        "state": "original",
         "valid": true
     },
     {
@@ -33,6 +34,7 @@
             "key_code": "spacebar",
             "type": "key_code"
         },
+        "state": "original",
         "valid": true
     },
     {
@@ -51,6 +53,7 @@
             "key_code": "fn",
             "type": "key_code"
         },
+        "state": "original",
         "valid": true
     },
     {
@@ -69,6 +72,7 @@
             "key_code": "spacebar",
             "type": "key_code"
         },
+        "state": "manipulated",
         "valid": true
     },
     {
@@ -87,6 +91,7 @@
             "key_code": "spacebar",
             "type": "key_code"
         },
+        "state": "manipulated",
         "valid": true
     },
     {
@@ -105,6 +110,7 @@
             "key_code": "spacebar",
             "type": "key_code"
         },
+        "state": "manipulated",
         "valid": true
     },
     {
@@ -123,6 +129,7 @@
             "key_code": "spacebar",
             "type": "key_code"
         },
+        "state": "manipulated",
         "valid": true
     },
     {
@@ -141,6 +148,7 @@
             "key_code": "spacebar",
             "type": "key_code"
         },
+        "state": "manipulated",
         "valid": true
     },
     {
@@ -159,6 +167,7 @@
             "key_code": "fn",
             "type": "key_code"
         },
+        "state": "original",
         "valid": true
     },
     {
@@ -177,6 +186,7 @@
             "key_code": "spacebar",
             "type": "key_code"
         },
+        "state": "manipulated",
         "valid": true
     }
 ]

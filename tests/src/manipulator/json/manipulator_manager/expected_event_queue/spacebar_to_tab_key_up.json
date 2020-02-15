@@ -15,6 +15,7 @@
             "key_code": "spacebar",
             "type": "key_code"
         },
+        "state": "original",
         "valid": true
     }
 ]

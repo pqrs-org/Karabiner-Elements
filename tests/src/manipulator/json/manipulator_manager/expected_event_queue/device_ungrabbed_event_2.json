@@ -15,6 +15,7 @@
             "key_code": "spacebar",
             "type": "key_code"
         },
+        "state": "manipulated",
         "valid": true
     },
     {
@@ -33,6 +34,7 @@
             "key_code": "spacebar",
             "type": "key_code"
         },
+        "state": "manipulated",
         "valid": true
     },
     {
@@ -51,6 +53,7 @@
             "key_code": "spacebar",
             "type": "key_code"
         },
+        "state": "manipulated",
         "valid": true
     },
     {
@@ -67,6 +70,7 @@
         "original_event": {
             "type": "device_ungrabbed"
         },
+        "state": "virtual_event",
         "valid": true
     },
     {
@@ -85,6 +89,7 @@
             "key_code": "spacebar",
             "type": "key_code"
         },
+        "state": "manipulated",
         "valid": true
     }
 ]

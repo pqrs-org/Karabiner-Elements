@@ -54,7 +54,8 @@ public:
                                     krbn::event_queue::event_time_stamp(krbn::absolute_time_point(0)),
                                     krbn::event_queue::event(krbn::key_code::a),
                                     krbn::event_type::key_down,
-                                    krbn::event_queue::event(krbn::key_code::a));
+                                    krbn::event_queue::event(krbn::key_code::a),
+                                    krbn::event_queue::state::original);
   };
 
 private:
