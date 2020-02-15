@@ -18,17 +18,13 @@ public:
 
   device(const nlohmann::json& json) : base(),
                                        type_(type::device_if) {
-    if (!json.is_object()) {
-      throw pqrs::json::unmarshal_error(fmt::format("json must be object, but is `{0}`", json.dump()));
-    }
+    pqrs::json::requires_object(json, "json");
 
     for (const auto& [key, value] : json.items()) {
       // key is always std::string.
 
       if (key == "type") {
-        if (!value.is_string()) {
-          throw pqrs::json::unmarshal_error(fmt::format("{0} must be string, but is `{1}`", key, value.dump()));
-        }
+        pqrs::json::requires_string(value, key);
 
         auto t = value.get<std::string>();
 
@@ -41,9 +37,7 @@ public:
         }
 
       } else if (key == "identifiers") {
-        if (!value.is_array()) {
-          throw pqrs::json::unmarshal_error(fmt::format("`{0}` must be array, but is `{1}`", key, value.dump()));
-        }
+        pqrs::json::requires_array(value, "`identifiers`");
 
         handle_identifiers_json(value);
 
@@ -115,10 +109,7 @@ private:
 
   void handle_identifiers_json(const nlohmann::json& json) {
     for (const auto& j : json) {
-      if (!j.is_object()) {
-        throw pqrs::json::unmarshal_error(
-            fmt::format("identifiers entry must be object, but is `{0}`", j.dump()));
-      }
+      pqrs::json::requires_object(j, "identifiers entry");
 
       definition d;
 
@@ -126,42 +117,27 @@ private:
         // key is always std::string.
 
         if (key == "vendor_id") {
-          if (!value.is_number()) {
-            throw pqrs::json::unmarshal_error(
-                fmt::format("identifiers entry `{0}` must be number, but is `{1}`", key, value.dump()));
-          }
+          pqrs::json::requires_number(value, "identifiers entry `vendor_id`");
 
           d.vendor_id = vendor_id(value.get<int>());
 
         } else if (key == "product_id") {
-          if (!value.is_number()) {
-            throw pqrs::json::unmarshal_error(
-                fmt::format("identifiers entry `{0}` must be number, but is `{1}`", key, value.dump()));
-          }
+          pqrs::json::requires_number(value, "identifiers entry `product_id`");
 
           d.product_id = product_id(value.get<int>());
 
         } else if (key == "location_id") {
-          if (!value.is_number()) {
-            throw pqrs::json::unmarshal_error(
-                fmt::format("identifiers entry `{0}` must be number, but is `{1}`", key, value.dump()));
-          }
+          pqrs::json::requires_number(value, "identifiers entry `location_id`");
 
           d.location_id = location_id(value.get<int>());
 
         } else if (key == "is_keyboard") {
-          if (!value.is_boolean()) {
-            throw pqrs::json::unmarshal_error(
-                fmt::format("identifiers entry `{0}` must be boolean, but is `{1}`", key, value.dump()));
-          }
+          pqrs::json::requires_boolean(value, "identifiers entry `is_keyboard`");
 
           d.is_keyboard = value.get<bool>();
 
         } else if (key == "is_pointing_device") {
-          if (!value.is_boolean()) {
-            throw pqrs::json::unmarshal_error(
-                fmt::format("identifiers entry `{0}` must be boolean, but is `{1}`", key, value.dump()));
-          }
+          pqrs::json::requires_boolean(value, "identifiers entry `is_pointing_device`");
 
           d.is_pointing_device = value.get<bool>();
 
