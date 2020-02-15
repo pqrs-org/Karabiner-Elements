@@ -16,17 +16,13 @@ public:
 
   input_source(const nlohmann::json& json) : base(),
                                              type_(type::input_source_if) {
-    if (!json.is_object()) {
-      throw pqrs::json::unmarshal_error(fmt::format("json must be object, but is `{0}`", json.dump()));
-    }
+    pqrs::json::requires_object(json, "json");
 
     for (const auto& [key, value] : json.items()) {
       // key is always std::string.
 
       if (key == "type") {
-        if (!value.is_string()) {
-          throw pqrs::json::unmarshal_error(fmt::format("{0} must be string, but is `{1}`", key, value.dump()));
-        }
+        pqrs::json::requires_string(value, key);
 
         auto t = value.get<std::string>();
 
@@ -39,9 +35,7 @@ public:
         }
 
       } else if (key == "input_sources") {
-        if (!value.is_array()) {
-          throw pqrs::json::unmarshal_error(fmt::format("`{0}` must be array, but is `{1}`", key, value.dump()));
-        }
+        pqrs::json::requires_array(value, "`input_sources`");
 
         for (const auto& j : value) {
           try {

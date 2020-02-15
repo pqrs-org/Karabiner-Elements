@@ -16,17 +16,13 @@ public:
 
   keyboard_type(const nlohmann::json& json) : base(),
                                               type_(type::keyboard_type_if) {
-    if (!json.is_object()) {
-      throw pqrs::json::unmarshal_error(fmt::format("json must be object, but is `{0}`", json.dump()));
-    }
+    pqrs::json::requires_object(json, "json");
 
     for (const auto& [key, value] : json.items()) {
       // key is always std::string.
 
       if (key == "type") {
-        if (!value.is_string()) {
-          throw pqrs::json::unmarshal_error(fmt::format("{0} must be string, but is `{1}`", key, value.dump()));
-        }
+        pqrs::json::requires_string(value, key);
 
         auto t = value.get<std::string>();
 
@@ -39,14 +35,10 @@ public:
         }
 
       } else if (key == "keyboard_types") {
-        if (!value.is_array()) {
-          throw pqrs::json::unmarshal_error(fmt::format("`{0}` must be array, but is `{1}`", key, value.dump()));
-        }
+        pqrs::json::requires_array(value, "`keyboard_types`");
 
         for (const auto& j : value) {
-          if (!j.is_string()) {
-            throw pqrs::json::unmarshal_error(fmt::format("keyboard_types entry must be string, but is `{0}`", j.dump()));
-          }
+          pqrs::json::requires_string(j, "keyboard_types entry");
 
           keyboard_types_.push_back(j.get<std::string>());
         }
