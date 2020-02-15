@@ -1,5 +1,6 @@
 [
     "errors/device_errors.jsonc",
+    "errors/event_changed_errors.jsonc",
     "errors/frontmost_application_errors.jsonc",
     "errors/input_source_errors.jsonc",
     "errors/keyboard_type_errors.jsonc",

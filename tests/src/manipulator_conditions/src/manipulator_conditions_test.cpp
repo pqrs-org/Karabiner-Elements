@@ -472,6 +472,41 @@ TEST_CASE("conditions.device") {
   }
 }
 
+TEST_CASE("conditions.event_changed") {
+  krbn::manipulator::manipulator_environment manipulator_environment;
+  krbn::event_queue::entry original_entry(krbn::device_id(1),
+                                          krbn::event_queue::event_time_stamp(krbn::absolute_time_point(0)),
+                                          krbn::event_queue::event(krbn::key_code::a),
+                                          krbn::event_type::key_down,
+                                          krbn::event_queue::event(krbn::key_code::a),
+                                          krbn::event_queue::state::original);
+  krbn::event_queue::entry manipulated_entry(krbn::device_id(1),
+                                             krbn::event_queue::event_time_stamp(krbn::absolute_time_point(0)),
+                                             krbn::event_queue::event(krbn::key_code::a),
+                                             krbn::event_type::key_down,
+                                             krbn::event_queue::event(krbn::key_code::a),
+                                             krbn::event_queue::state::manipulated);
+
+  {
+    actual_examples_helper helper("event_changed_if.json");
+
+    REQUIRE(helper.get_condition_manager().is_fulfilled(original_entry,
+                                                        manipulator_environment) == false);
+
+    REQUIRE(helper.get_condition_manager().is_fulfilled(manipulated_entry,
+                                                        manipulator_environment) == true);
+  }
+  {
+    actual_examples_helper helper("event_changed_unless.json");
+
+    REQUIRE(helper.get_condition_manager().is_fulfilled(original_entry,
+                                                        manipulator_environment) == true);
+
+    REQUIRE(helper.get_condition_manager().is_fulfilled(manipulated_entry,
+                                                        manipulator_environment) == false);
+  }
+}
+
 TEST_CASE("conditions.keyboard_type") {
   krbn::manipulator::manipulator_environment manipulator_environment;
   krbn::event_queue::entry entry(krbn::device_id(1),

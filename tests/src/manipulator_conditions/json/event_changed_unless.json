@@ -1,0 +1,6 @@
+[
+    {
+        "type": "event_changed_unless",
+        "value": true
+    }
+]

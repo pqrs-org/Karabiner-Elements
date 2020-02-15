@@ -1,6 +1,7 @@
 #pragma once
 
 #include "conditions/device.hpp"
+#include "conditions/event_changed.hpp"
 #include "conditions/frontmost_application.hpp"
 #include "conditions/input_source.hpp"
 #include "conditions/keyboard_type.hpp"
@@ -54,6 +55,9 @@ inline std::shared_ptr<conditions::base> make_condition(const nlohmann::json& js
   if (type == "device_if" ||
       type == "device_unless") {
     return std::make_shared<conditions::device>(json);
+  } else if (type == "event_changed_if" ||
+             type == "event_changed_unless") {
+    return std::make_shared<conditions::event_changed>(json);
   } else if (type == "frontmost_application_if" ||
              type == "frontmost_application_unless") {
     return std::make_shared<conditions::frontmost_application>(json);

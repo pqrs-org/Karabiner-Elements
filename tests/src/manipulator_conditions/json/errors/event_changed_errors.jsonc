@@ -1,0 +1,53 @@
+[
+    {
+        "class": "event_changed",
+        "input": null,
+        "error": "json must be object, but is `null`"
+    },
+
+    // type
+
+    {
+        "class": "event_changed",
+        "input": {
+            "type": null
+        },
+        "error": "type must be string, but is `null`"
+    },
+    {
+        "class": "event_changed",
+        "input": {
+            "type": "event-changed-if"
+        },
+        "error": "unknown type `event-changed-if`"
+    },
+
+    // value
+
+    {
+        "class": "event_changed",
+        "input": {
+            "type": "event_changed_if",
+            "value": null
+        },
+        "error": "`value` must be boolean, but is `null`"
+    },
+    {
+        "class": "event_changed",
+        "input": {
+            "type": "event_changed_if"
+        },
+        "error": "`value` is not found in `{\"type\":\"event_changed_if\"}`"
+    },
+
+    // unknown key
+
+    {
+        "class": "event_changed",
+        "input": {
+            "type": "event_changed_if",
+            "event-changed-if": []
+        },
+        "error": "unknown key `event-changed-if` in `{\"event-changed-if\":[],\"type\":\"event_changed_if\"}`"
+    }
+]
