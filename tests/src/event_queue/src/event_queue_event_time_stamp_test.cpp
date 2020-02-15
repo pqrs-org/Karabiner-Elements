@@ -1,6 +1,5 @@
 #include <catch2/catch.hpp>
 
-#include "event_queue.hpp"
 #include "test.hpp"
 
 TEST_CASE("event_time_stamp") {

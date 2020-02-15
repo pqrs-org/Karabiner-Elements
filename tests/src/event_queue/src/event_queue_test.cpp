@@ -1,6 +1,5 @@
 #include <catch2/catch.hpp>
 
-#include "event_queue.hpp"
 #include "test.hpp"
 
 namespace {
@@ -32,6 +31,7 @@ TEST_CASE("entry") {
                                   krbn::event_queue::event(krbn::key_code::a),
                                   krbn::event_type::key_down,
                                   krbn::event_queue::event(krbn::key_code::a),
+                                  krbn::event_queue::state::original,
                                   false);
   auto entry2 = entry1;
   REQUIRE(entry1 == entry2);
@@ -388,31 +388,36 @@ TEST_CASE("needs_swap") {
                                              krbn::absolute_time_point(100)),
                                          spacebar_event,
                                          krbn::event_type::key_down,
-                                         spacebar_event);
+                                         spacebar_event,
+                                         krbn::event_queue::state::original);
   krbn::event_queue::entry right_shift_down(krbn::device_id(1),
                                             krbn::event_queue::event_time_stamp(
                                                 krbn::absolute_time_point(100)),
                                             right_shift_event,
                                             krbn::event_type::key_down,
-                                            right_shift_event);
+                                            right_shift_event,
+                                            krbn::event_queue::state::original);
   krbn::event_queue::entry escape_down(krbn::device_id(1),
                                        krbn::event_queue::event_time_stamp(
                                            krbn::absolute_time_point(200)),
                                        escape_event,
                                        krbn::event_type::key_down,
-                                       escape_event);
+                                       escape_event,
+                                       krbn::event_queue::state::original);
   krbn::event_queue::entry spacebar_up(krbn::device_id(1),
                                        krbn::event_queue::event_time_stamp(
                                            krbn::absolute_time_point(300)),
                                        spacebar_event,
                                        krbn::event_type::key_up,
-                                       spacebar_event);
+                                       spacebar_event,
+                                       krbn::event_queue::state::original);
   krbn::event_queue::entry right_shift_up(krbn::device_id(1),
                                           krbn::event_queue::event_time_stamp(
                                               krbn::absolute_time_point(300)),
                                           right_shift_event,
                                           krbn::event_type::key_up,
-                                          right_shift_event);
+                                          right_shift_event,
+                                          krbn::event_queue::state::original);
 
   REQUIRE(krbn::event_queue::queue::needs_swap(spacebar_down, spacebar_down) == false);
   REQUIRE(krbn::event_queue::queue::needs_swap(spacebar_down, escape_down) == false);
