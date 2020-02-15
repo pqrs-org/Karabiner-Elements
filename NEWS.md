@@ -1,5 +1,10 @@
 # Changelog
 
+## Beta
+
+-   ✨ New Features
+    -   `event_changed_if` and `event_changed_unless` has been added to `conditions`.
+
 ## Karabiner-Elements 12.9.0
 
 -   📅 Release date
