@@ -21,6 +21,7 @@ inline void to_json(nlohmann::json& json, const state& value) {
       break;
     case state::virtual_event:
       json = "virtual_event";
+      break;
   }
 }
 
