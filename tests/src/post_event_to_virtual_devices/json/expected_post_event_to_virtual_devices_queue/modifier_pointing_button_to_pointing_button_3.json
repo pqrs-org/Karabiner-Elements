@@ -2,22 +2,30 @@
     {
         "keyboard_input": {
             "keys": [],
-            "modifiers": ["left_control"]
+            "modifiers": [
+                "left_control"
+            ]
         },
         "time_stamp": 5,
         "type": "keyboard_input"
     },
     {
         "keyboard_input": {
-            "keys": ["p"],
-            "modifiers": ["left_control"]
+            "keys": [
+                "p"
+            ],
+            "modifiers": [
+                "left_control"
+            ]
         },
         "time_stamp": 10,
         "type": "keyboard_input"
     },
     {
         "keyboard_input": {
-            "keys": ["p"],
+            "keys": [
+                "p"
+            ],
             "modifiers": []
         },
         "time_stamp": 15,
@@ -25,7 +33,9 @@
     },
     {
         "pointing_input": {
-            "buttons": ["button13"],
+            "buttons": [
+                "button13"
+            ],
             "horizontal_wheel": 0,
             "vertical_wheel": 0,
             "x": 0,
@@ -36,7 +46,9 @@
     },
     {
         "pointing_input": {
-            "buttons": ["button13"],
+            "buttons": [
+                "button13"
+            ],
             "horizontal_wheel": 0,
             "vertical_wheel": 0,
             "x": 246,
