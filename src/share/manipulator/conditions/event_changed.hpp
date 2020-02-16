@@ -57,19 +57,21 @@ public:
 
   virtual bool is_fulfilled(const event_queue::entry& entry,
                             const manipulator_environment& manipulator_environment) const {
-    switch (type_) {
-      case type::event_changed_if:
-        if (value_) {
-          return entry.get_state() == event_queue::state::manipulated;
-        } else {
-          return entry.get_state() != event_queue::state::manipulated;
-        }
-      case type::event_changed_unless:
-        if (value_) {
-          return entry.get_state() == event_queue::state::original;
-        } else {
-          return entry.get_state() != event_queue::state::original;
-        }
+    if (value_) {
+      switch (type_) {
+        case type::event_changed_if:
+          if (*value_) {
+            return entry.get_state() == event_queue::state::manipulated;
+          } else {
+            return entry.get_state() != event_queue::state::manipulated;
+          }
+        case type::event_changed_unless:
+          if (*value_) {
+            return entry.get_state() == event_queue::state::original;
+          } else {
+            return entry.get_state() != event_queue::state::original;
+          }
+      }
     }
 
     return false;
