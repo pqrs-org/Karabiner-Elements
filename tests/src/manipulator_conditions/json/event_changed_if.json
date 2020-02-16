@@ -1,6 +1,6 @@
 [
     {
         "type": "event_changed_if",
-        "value": true
+        "value": false
     }
 ]

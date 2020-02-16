@@ -491,10 +491,10 @@ TEST_CASE("conditions.event_changed") {
     actual_examples_helper helper("event_changed_if.json");
 
     REQUIRE(helper.get_condition_manager().is_fulfilled(original_entry,
-                                                        manipulator_environment) == false);
+                                                        manipulator_environment) == true);
 
     REQUIRE(helper.get_condition_manager().is_fulfilled(manipulated_entry,
-                                                        manipulator_environment) == true);
+                                                        manipulator_environment) == false);
   }
   {
     actual_examples_helper helper("event_changed_unless.json");
