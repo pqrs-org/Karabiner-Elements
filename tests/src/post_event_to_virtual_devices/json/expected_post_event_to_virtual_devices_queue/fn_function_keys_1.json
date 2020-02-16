@@ -1,0 +1,36 @@
+[
+    {
+        "consumer_input": {
+            "keys": [
+                "mute"
+            ]
+        },
+        "time_stamp": 5,
+        "type": "consumer_input"
+    },
+    {
+        "consumer_input": {
+            "keys": []
+        },
+        "time_stamp": 10,
+        "type": "consumer_input"
+    },
+    {
+        "keyboard_input": {
+            "keys": [
+                "f10"
+            ],
+            "modifiers": []
+        },
+        "time_stamp": 15,
+        "type": "keyboard_input"
+    },
+    {
+        "keyboard_input": {
+            "keys": [],
+            "modifiers": []
+        },
+        "time_stamp": 20,
+        "type": "keyboard_input"
+    }
+]

@@ -80,6 +80,47 @@ public:
         }
       }
 
+      //
+      // fn function keys
+      //
+
+      {
+        manipulator_managers->push_back(std::make_unique<manipulator::manipulator_manager>());
+
+        //
+        // f10 -> mute
+        //
+
+        auto from_json = nlohmann::json::object({
+            {"key_code", "f10"},
+            {"modifiers", nlohmann::json::object({
+                              {"optional", nlohmann::json::array({"any"})},
+                          })},
+        });
+
+        auto to_json = nlohmann::json::object({
+            {"consumer_key_code", "mute"},
+        });
+
+        auto m = std::make_shared<manipulator::manipulators::basic::basic>(manipulator::manipulators::basic::from_event_definition(from_json),
+                                                                           manipulator::to_event_definition(to_json));
+        m->push_back_condition(manipulator::manipulator_factory::make_event_changed_if_condition(false));
+
+        manipulator_managers->back()->push_back_manipulator(m);
+
+        if (event_queues->empty()) {
+          event_queues->push_back(std::make_shared<event_queue::queue>());
+          event_queues->push_back(std::make_shared<event_queue::queue>());
+          connector->emplace_back_connection(manipulator_managers->back(),
+                                             (*event_queues)[0],
+                                             (*event_queues)[1]);
+        } else {
+          event_queues->push_back(std::make_shared<event_queue::queue>());
+          connector->emplace_back_connection(manipulator_managers->back(),
+                                             event_queues->back());
+        }
+      }
+
       if (pqrs::json::find<std::string>(test, "expected_post_event_to_virtual_devices_queue")) {
         post_event_to_virtual_devices_manipulator =
             std::make_shared<krbn::manipulator::manipulators::post_event_to_virtual_devices::post_event_to_virtual_devices>(
@@ -93,7 +134,6 @@ public:
                                            event_queues->back());
       }
 
-      REQUIRE(!manipulator_managers->empty());
       REQUIRE(!event_queues->empty());
 
       // Run manipulators

@@ -1,0 +1,19 @@
+[
+    {
+        "description": "0 -> f10",
+        "type": "basic",
+        "from": {
+            "key_code": "0",
+            "modifiers": {
+                "mandatory": [],
+                "optional": ["any"]
+            }
+        },
+        "to": [
+            {
+                "key_code": "f10",
+                "modifiers": []
+            }
+        ]
+    }
+]
