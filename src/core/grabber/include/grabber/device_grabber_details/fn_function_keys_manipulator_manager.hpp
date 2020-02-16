@@ -79,8 +79,11 @@ public:
                                         from_mandatory_modifiers,
                                         from_optional_modifiers,
                                         to_modifiers)) {
+            m->push_back_condition(manipulator::manipulator_factory::make_event_changed_if_condition(false));
+
             auto c = manipulator::manipulator_factory::make_device_if_condition(device);
             m->push_back_condition(c);
+
             manipulator_manager_->push_back_manipulator(m);
           }
 
@@ -98,6 +101,8 @@ public:
                                     from_mandatory_modifiers,
                                     from_optional_modifiers,
                                     to_modifiers)) {
+        m->push_back_condition(manipulator::manipulator_factory::make_event_changed_if_condition(false));
+
         manipulator_manager_->push_back_manipulator(m);
       }
     }
