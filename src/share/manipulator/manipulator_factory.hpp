@@ -89,6 +89,13 @@ inline std::shared_ptr<conditions::base> make_device_if_condition(const core_con
   });
   return std::make_shared<conditions::device>(json);
 }
+
+inline std::shared_ptr<conditions::base> make_event_changed_if_condition(bool value) {
+  nlohmann::json json;
+  json["type"] = "event_changed_if";
+  json["value"] = value;
+  return std::make_shared<conditions::event_changed>(json);
+}
 } // namespace manipulator_factory
 } // namespace manipulator
 } // namespace krbn
