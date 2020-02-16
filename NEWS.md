@@ -4,6 +4,8 @@
 
 -   ✨ New Features
     -   `event_changed_if` and `event_changed_unless` has been added to `conditions`.
+-   ⚡️ Improvements
+    -   Preserve f1-f12 keys if the key is changed by complex modifications (e.g., "change command+e to f2") instead of changing these keys to media keys such as brightness control, volume control, etc.
 
 ## Karabiner-Elements 12.9.0
 
