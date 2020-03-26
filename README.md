@@ -26,7 +26,7 @@ You can download previous versions of Karabiner-Elements from [here](https://pqr
 
 ## Donations
 
-If you would like to contribute financially to the development of Karabiner Elements, donations can be made via <https://pqrs.org/osx/karabiner/pricing.html>
+If you would like to contribute financially to the development of Karabiner Elements, donations can be made via <https://karabiner-elements.pqrs.org/docs/pricing/>
 
 ---
 
