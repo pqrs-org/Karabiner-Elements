@@ -32,6 +32,23 @@ inline cf::cf_ptr<TISInputSourceRef> make_current_keyboard_input_source(void) {
   return result;
 }
 
+inline cf::cf_ptr<TISInputSourceRef> make_input_method_keyboard_layout_override(void) {
+  cf::cf_ptr<TISInputSourceRef> result;
+
+  __block TISInputSourceRef input_source = nullptr;
+
+  gcd::dispatch_sync_on_main_queue(^{
+    input_source = TISCopyInputMethodKeyboardLayoutOverride();
+  });
+
+  if (input_source) {
+    result = input_source;
+    CFRelease(input_source);
+  }
+
+  return result;
+}
+
 inline std::vector<cf::cf_ptr<TISInputSourceRef>> make_selectable_keyboard_input_sources(void) {
   std::vector<cf::cf_ptr<TISInputSourceRef>> result;
 
@@ -64,6 +81,14 @@ inline void select(TISInputSourceRef input_source) {
   if (input_source) {
     gcd::dispatch_sync_on_main_queue(^{
       TISSelectInputSource(input_source);
+    });
+  }
+}
+
+inline void set_input_method_keyboard_layout_override(TISInputSourceRef input_source) {
+  if (input_source) {
+    gcd::dispatch_sync_on_main_queue(^{
+      TISSetInputMethodKeyboardLayoutOverride(input_source);
     });
   }
 }
