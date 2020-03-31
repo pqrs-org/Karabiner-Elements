@@ -28,6 +28,7 @@ public:
           title_ = value.get<std::string>();
 
         } else if (key == "maintainers") {
+          // (TODO) broken link, can not find this key in any documentation
           // `maintainers` is used in <https://pqrs.org/osx/karabiner/complex_modifications/>.
           if (!value.is_array()) {
             throw pqrs::json::unmarshal_error(fmt::format("`{0}` must be array, but is `{1}`", key, value.dump()));

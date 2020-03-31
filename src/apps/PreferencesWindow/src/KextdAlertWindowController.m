@@ -68,7 +68,7 @@ static void staticKextdStateJsonFileChangedCallback(const char* filePath,
 }
 
 - (IBAction)openSystemPolicyPreventsLoadingKextHelpWebPage:(id)sender {
-  [[NSWorkspace sharedWorkspace] openURL:[NSURL URLWithString:@"https://pqrs.org/osx/karabiner/help.html#kext-allow-button-does-not-work"]];
+  [[NSWorkspace sharedWorkspace] openURL:[NSURL URLWithString:@"https://karabiner-elements.pqrs.org/docs/help/troubleshooting/kext-allow-button-does-not-work/"]];
 }
 
 @end

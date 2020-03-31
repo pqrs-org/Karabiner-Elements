@@ -31,7 +31,7 @@
     <key>LSUIElement</key>
     <string>1</string>
     <key>SUFeedURL</key>
-    <string>https://pqrs.org/osx/karabiner/files/karabiner-elements-appcast.xml</string>
+    <string>https://appcast.pqrs.org/karabiner-elements-appcast.xml</string>
     <key>SUEnableAutomaticChecks</key>
     <false/>
     <key>SUEnableSystemProfiling</key>

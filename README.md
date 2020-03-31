@@ -7,11 +7,11 @@ Karabiner-Elements is a powerful utility for keyboard customization on macOS Sie
 
 ## Download
 
-You can download Karabiner-Elements from [official site](https://pqrs.org/osx/karabiner/).
+You can download Karabiner-Elements from [official site](https://karabiner-elements.pqrs.org/).
 
 ### Old releases
 
-You can download previous versions of Karabiner-Elements from [here](https://pqrs.org/osx/karabiner/history.html).
+You can download previous versions of Karabiner-Elements from [here](https://karabiner-elements.pqrs.org/docs/releasenotes/).
 
 ## Supported systems
 
@@ -22,7 +22,7 @@ You can download previous versions of Karabiner-Elements from [here](https://pqr
 
 ## Usage
 
-<https://pqrs.org/osx/karabiner/document.html>
+<https://karabiner-elements.pqrs.org/docs/>
 
 ## Donations
 
