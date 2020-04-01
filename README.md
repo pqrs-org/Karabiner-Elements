@@ -22,7 +22,7 @@ You can download previous versions of Karabiner-Elements from [here](https://pqr
 
 ## Usage
 
-<https://pqrs.org/osx/karabiner/document.html>
+<https://karabiner-elements.pqrs.org/docs/>
 
 ## Donations
 
