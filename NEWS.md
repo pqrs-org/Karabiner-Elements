@@ -14,7 +14,7 @@
     -   Jan 18, 2020
 -   ✨ New Features
     -   `Open config folder` button has been added into Preferences.<br>
-        The feature provides [an easy way exporting configuration](https://pqrs.org/osx/karabiner/document.html#export).
+        The feature provides [an easy way exporting configuration](https://karabiner-elements.pqrs.org/docs/manual/operation/export/#export).
 -   ⚡️ Improvements
     -   Added a workaround for non-dismissible `Device is ignored temporarily` alert
         which is caused by some devices that sends abnormal input events.
@@ -42,8 +42,8 @@
 -   ✨ New Features
     -   MultitouchExtension app has been added.
         -   Documentation:
-            -   [Usage](https://pqrs.org/osx/karabiner/document.html#multitouch-extension)
-            -   [How to integrate MultitouchExtension to your complex modifications](https://pqrs.org/osx/karabiner/json.html#multitouch-extension)
+            -   [Usage](https://karabiner-elements.pqrs.org/docs/manual/misc/multitouch-extension/)
+            -   [How to integrate MultitouchExtension to your complex modifications](https://karabiner-elements.pqrs.org/docs/manual/misc/multitouch-extension/)
     -   Dark Mode has been supported.
     -   Added `--set-variables` option into `karabiner_cli`.
 -   🐛 Bug Fixes

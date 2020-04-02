@@ -111,6 +111,7 @@ public:
         description_ = value.get<std::string>();
 
       } else if (key == "available_since") {
+        // (TODO) broken link, can not find this key in any documentation
         // `available_since` is used in <https://pqrs.org/osx/karabiner/complex_modifications/>.
         if (!value.is_string()) {
           throw pqrs::json::unmarshal_error(fmt::format("`{0}` must be string, but is `{1}`", key, value.dump()));

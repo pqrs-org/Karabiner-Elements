@@ -305,7 +305,7 @@
 }
 
 - (IBAction)openOfficialWebsite:(id)sender {
-  [[NSWorkspace sharedWorkspace] openURL:[NSURL URLWithString:@"https://pqrs.org/osx/karabiner/"]];
+  [[NSWorkspace sharedWorkspace] openURL:[NSURL URLWithString:@"https://karabiner-elements.pqrs.org/"]];
 }
 
 - (IBAction)openGitHub:(id)sender {
