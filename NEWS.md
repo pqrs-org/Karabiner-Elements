@@ -43,7 +43,7 @@
     -   MultitouchExtension app has been added.
         -   Documentation:
             -   [Usage](https://karabiner-elements.pqrs.org/docs/manual/misc/multitouch-extension/)
-            -   [How to integrate MultitouchExtension to your complex modifications](https://karabiner-elements.pqrs.org/docs/manual/misc/multitouch-extension/)
+            -   [How to integrate MultitouchExtension to your complex modifications](https://karabiner-elements.pqrs.org/docs/json/extra/multitouch-extension/)
     -   Dark Mode has been supported.
     -   Added `--set-variables` option into `karabiner_cli`.
 -   🐛 Bug Fixes
