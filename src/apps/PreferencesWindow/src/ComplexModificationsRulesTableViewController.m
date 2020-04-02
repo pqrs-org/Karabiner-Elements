@@ -44,7 +44,7 @@
 }
 
 - (IBAction)openRulesSite:(id)sender {
-  [[NSWorkspace sharedWorkspace] openURL:[NSURL URLWithString:@"https://pqrs.org/osx/karabiner/complex_modifications/"]];
+  [[NSWorkspace sharedWorkspace] openURL:[NSURL URLWithString:@"https://ke-complex-modifications.pqrs.org/"]];
 }
 
 - (void)removeRule:(id)sender {
