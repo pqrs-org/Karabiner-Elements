@@ -1,6 +1,6 @@
 #pragma once
 
-// pqrs::osx::iokit_service_monitor v3.8
+// pqrs::osx::iokit_service_monitor v4.0
 
 // (C) Copyright Takayama Fumihiko 2018.
 // Distributed under the Boost Software License, Version 1.0.
@@ -24,8 +24,8 @@ class iokit_service_monitor final : dispatcher::extra::dispatcher_client {
 public:
   // Signals (invoked from the dispatcher thread)
 
-  nod::signal<void(iokit_registry_entry_id, iokit_object_ptr)> service_matched;
-  nod::signal<void(iokit_registry_entry_id)> service_terminated;
+  nod::signal<void(iokit_registry_entry_id::value_t, iokit_object_ptr)> service_matched;
+  nod::signal<void(iokit_registry_entry_id::value_t)> service_terminated;
   nod::signal<void(const std::string&, kern_return)> error_occurred;
 
   // Methods

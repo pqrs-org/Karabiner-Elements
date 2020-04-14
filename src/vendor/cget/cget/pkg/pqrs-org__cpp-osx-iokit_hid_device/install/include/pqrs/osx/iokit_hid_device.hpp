@@ -1,6 +1,6 @@
 #pragma once
 
-// pqrs::osx::iokit_hid_device v2.7
+// pqrs::osx::iokit_hid_device v3.0
 
 // (C) Copyright Takayama Fumihiko 2018.
 // Distributed under the Boost Software License, Version 1.0.
@@ -29,7 +29,7 @@ public:
 
   // Note:
   // Input Monitoring permission user approval is required since macOS Catalina (10.15).
-  bool conforms_to(iokit_hid_usage_page usage_page, iokit_hid_usage usage) const {
+  bool conforms_to(iokit_hid_usage_page::value_t usage_page, iokit_hid_usage::value_t usage) const {
     if (device_) {
       return IOHIDDeviceConformsTo(*device_,
                                    type_safe::get(usage_page),
@@ -68,30 +68,30 @@ public:
     return find_int64_property(CFSTR(kIOHIDMaxInputReportSizeKey));
   }
 
-  std::optional<iokit_hid_vendor_id> find_vendor_id(void) const {
+  std::optional<iokit_hid_vendor_id::value_t> find_vendor_id(void) const {
     if (auto value = find_int64_property(CFSTR(kIOHIDVendorIDKey))) {
-      return iokit_hid_vendor_id(*value);
+      return iokit_hid_vendor_id::value_t(*value);
     }
     return std::nullopt;
   }
 
-  std::optional<iokit_hid_product_id> find_product_id(void) const {
+  std::optional<iokit_hid_product_id::value_t> find_product_id(void) const {
     if (auto value = find_int64_property(CFSTR(kIOHIDProductIDKey))) {
-      return iokit_hid_product_id(*value);
+      return iokit_hid_product_id::value_t(*value);
     }
     return std::nullopt;
   }
 
-  std::optional<iokit_hid_location_id> find_location_id(void) const {
+  std::optional<iokit_hid_location_id::value_t> find_location_id(void) const {
     if (auto value = find_int64_property(CFSTR(kIOHIDLocationIDKey))) {
-      return iokit_hid_location_id(*value);
+      return iokit_hid_location_id::value_t(*value);
     }
     return std::nullopt;
   }
 
-  std::optional<iokit_hid_country_code> find_country_code(void) const {
+  std::optional<iokit_hid_country_code::value_t> find_country_code(void) const {
     if (auto value = find_int64_property(CFSTR(kIOHIDCountryCodeKey))) {
-      return iokit_hid_country_code(*value);
+      return iokit_hid_country_code::value_t(*value);
     }
     return std::nullopt;
   }

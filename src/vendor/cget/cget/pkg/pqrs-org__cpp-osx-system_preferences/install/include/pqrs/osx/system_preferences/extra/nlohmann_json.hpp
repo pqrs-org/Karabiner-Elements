@@ -33,21 +33,21 @@ inline void from_json(const nlohmann::json& j, keyboard_type_key& value) {
   for (const auto& [k, v] : j.items()) {
     if (k == "vendor_id") {
       try {
-        value.set_vendor_id(v.get<osx::iokit_hid_vendor_id>());
+        value.set_vendor_id(v.get<osx::iokit_hid_vendor_id::value_t>());
       } catch (json::unmarshal_error& e) {
         throw json::unmarshal_error(k + " error: "s + e.what());
       }
 
     } else if (k == "product_id") {
       try {
-        value.set_product_id(v.get<osx::iokit_hid_product_id>());
+        value.set_product_id(v.get<osx::iokit_hid_product_id::value_t>());
       } catch (json::unmarshal_error& e) {
         throw json::unmarshal_error(k + " error: "s + e.what());
       }
 
     } else if (k == "country_code") {
       try {
-        value.set_country_code(v.get<osx::iokit_hid_country_code>());
+        value.set_country_code(v.get<osx::iokit_hid_country_code::value_t>());
       } catch (json::unmarshal_error& e) {
         throw json::unmarshal_error(k + " error: "s + e.what());
       }
@@ -96,7 +96,7 @@ inline void from_json(const nlohmann::json& j, properties& value) {
       }
 
       try {
-        value.set_keyboard_types(v.get<std::map<keyboard_type_key, iokit_keyboard_type>>());
+        value.set_keyboard_types(v.get<std::map<keyboard_type_key, iokit_keyboard_type::value_t>>());
       } catch (std::exception& e) {
         throw json::unmarshal_error("keyboard_types error: "s + e.what());
       }

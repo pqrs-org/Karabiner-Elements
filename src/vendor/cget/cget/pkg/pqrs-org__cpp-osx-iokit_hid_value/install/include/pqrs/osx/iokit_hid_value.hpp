@@ -1,6 +1,6 @@
 #pragma once
 
-// pqrs::osx::iokit_hid_value v1.1
+// pqrs::osx::iokit_hid_value v2.0
 
 // (C) Copyright Takayama Fumihiko 2019.
 // Distributed under the Boost Software License, Version 1.0.
@@ -22,11 +22,11 @@ public:
 
   iokit_hid_value(chrono::absolute_time_point time_stamp,
                   CFIndex integer_value,
-                  std::optional<iokit_hid_usage_page> usage_page,
-                  std::optional<iokit_hid_usage> usage) : time_stamp_(time_stamp),
-                                                          integer_value_(integer_value),
-                                                          usage_page_(usage_page),
-                                                          usage_(usage) {
+                  std::optional<iokit_hid_usage_page::value_t> usage_page,
+                  std::optional<iokit_hid_usage::value_t> usage) : time_stamp_(time_stamp),
+                                                                   integer_value_(integer_value),
+                                                                   usage_page_(usage_page),
+                                                                   usage_(usage) {
   }
 
   iokit_hid_value(IOHIDValueRef value) : iokit_hid_value() {
@@ -34,8 +34,8 @@ public:
       time_stamp_ = chrono::absolute_time_point(IOHIDValueGetTimeStamp(value));
       integer_value_ = IOHIDValueGetIntegerValue(value);
       if (auto element = IOHIDValueGetElement(value)) {
-        usage_page_ = iokit_hid_usage_page(IOHIDElementGetUsagePage(element));
-        usage_ = iokit_hid_usage(IOHIDElementGetUsage(element));
+        usage_page_ = iokit_hid_usage_page::value_t(IOHIDElementGetUsagePage(element));
+        usage_ = iokit_hid_usage::value_t(IOHIDElementGetUsage(element));
       }
     }
   }
@@ -58,26 +58,26 @@ public:
     return *this;
   }
 
-  std::optional<iokit_hid_usage_page> get_usage_page(void) const {
+  std::optional<iokit_hid_usage_page::value_t> get_usage_page(void) const {
     return usage_page_;
   }
 
-  iokit_hid_value& set_usage_page(const std::optional<iokit_hid_usage_page>& value) {
+  iokit_hid_value& set_usage_page(const std::optional<iokit_hid_usage_page::value_t>& value) {
     usage_page_ = value;
     return *this;
   }
 
-  std::optional<iokit_hid_usage> get_usage(void) const {
+  std::optional<iokit_hid_usage::value_t> get_usage(void) const {
     return usage_;
   }
 
-  iokit_hid_value& set_usage(const std::optional<iokit_hid_usage>& value) {
+  iokit_hid_value& set_usage(const std::optional<iokit_hid_usage::value_t>& value) {
     usage_ = value;
     return *this;
   }
 
-  bool conforms_to(iokit_hid_usage_page usage_page,
-                   iokit_hid_usage usage) const {
+  bool conforms_to(iokit_hid_usage_page::value_t usage_page,
+                   iokit_hid_usage::value_t usage) const {
     return usage_page_ == usage_page &&
            usage_ == usage;
   }
@@ -96,8 +96,8 @@ public:
 private:
   chrono::absolute_time_point time_stamp_;
   CFIndex integer_value_;
-  std::optional<iokit_hid_usage_page> usage_page_;
-  std::optional<iokit_hid_usage> usage_;
+  std::optional<iokit_hid_usage_page::value_t> usage_page_;
+  std::optional<iokit_hid_usage::value_t> usage_;
 };
 } // namespace osx
 } // namespace pqrs

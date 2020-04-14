@@ -16,124 +16,124 @@
 
 namespace pqrs {
 namespace osx {
-// iokit_hid_country_code
-
-inline void to_json(nlohmann::json& j, const iokit_hid_country_code& value) {
+namespace iokit_hid_country_code {
+inline void to_json(nlohmann::json& j, const value_t& value) {
   j = type_safe::get(value);
 }
 
-inline void from_json(const nlohmann::json& j, iokit_hid_country_code& value) {
+inline void from_json(const nlohmann::json& j, value_t& value) {
   if (!j.is_number()) {
     using namespace std::string_literals;
     throw json::unmarshal_error("json must be number, but is `"s + j.dump() + "`"s);
   }
 
-  value = iokit_hid_country_code(j.get<uint64_t>());
+  value = value_t(j.get<uint64_t>());
 }
+} // namespace iokit_hid_country_code
 
-// iokit_hid_location_id
-
-inline void to_json(nlohmann::json& j, const iokit_hid_location_id& value) {
+namespace iokit_hid_location_id {
+inline void to_json(nlohmann::json& j, const value_t& value) {
   j = type_safe::get(value);
 }
 
-inline void from_json(const nlohmann::json& j, iokit_hid_location_id& value) {
+inline void from_json(const nlohmann::json& j, value_t& value) {
   if (!j.is_number()) {
     using namespace std::string_literals;
     throw json::unmarshal_error("json must be number, but is `"s + j.dump() + "`"s);
   }
 
-  value = iokit_hid_location_id(j.get<uint64_t>());
+  value = value_t(j.get<uint64_t>());
 }
+} // namespace iokit_hid_location_id
 
-// iokit_hid_product_id
-
-inline void to_json(nlohmann::json& j, const iokit_hid_product_id& value) {
+namespace iokit_hid_product_id {
+inline void to_json(nlohmann::json& j, const value_t& value) {
   j = type_safe::get(value);
 }
 
-inline void from_json(const nlohmann::json& j, iokit_hid_product_id& value) {
+inline void from_json(const nlohmann::json& j, value_t& value) {
   if (!j.is_number()) {
     using namespace std::string_literals;
     throw json::unmarshal_error("json must be number, but is `"s + j.dump() + "`"s);
   }
 
-  value = iokit_hid_product_id(j.get<uint64_t>());
+  value = value_t(j.get<uint64_t>());
 }
+} // namespace iokit_hid_product_id
 
-// iokit_hid_usage
-
-inline void to_json(nlohmann::json& j, const iokit_hid_usage& value) {
+namespace iokit_hid_usage {
+inline void to_json(nlohmann::json& j, const value_t& value) {
   j = type_safe::get(value);
 }
 
-inline void from_json(const nlohmann::json& j, iokit_hid_usage& value) {
+inline void from_json(const nlohmann::json& j, value_t& value) {
   if (!j.is_number()) {
     using namespace std::string_literals;
     throw json::unmarshal_error("json must be number, but is `"s + j.dump() + "`"s);
   }
 
-  value = iokit_hid_usage(j.get<int32_t>());
+  value = value_t(j.get<int32_t>());
 }
+} // namespace iokit_hid_usage
 
-// iokit_hid_usage_page
-
-inline void to_json(nlohmann::json& j, const iokit_hid_usage_page& value) {
+namespace iokit_hid_usage_page {
+inline void to_json(nlohmann::json& j, const value_t& value) {
   j = type_safe::get(value);
 }
 
-inline void from_json(const nlohmann::json& j, iokit_hid_usage_page& value) {
+inline void from_json(const nlohmann::json& j, value_t& value) {
   if (!j.is_number()) {
     using namespace std::string_literals;
     throw json::unmarshal_error("json must be number, but is `"s + j.dump() + "`"s);
   }
 
-  value = iokit_hid_usage_page(j.get<int32_t>());
+  value = value_t(j.get<int32_t>());
 }
+} // namespace iokit_hid_usage_page
 
-// iokit_hid_vendor_id
-
-inline void to_json(nlohmann::json& j, const iokit_hid_vendor_id& value) {
+namespace iokit_hid_vendor_id {
+inline void to_json(nlohmann::json& j, const value_t& value) {
   j = type_safe::get(value);
 }
 
-inline void from_json(const nlohmann::json& j, iokit_hid_vendor_id& value) {
+inline void from_json(const nlohmann::json& j, value_t& value) {
   if (!j.is_number()) {
     using namespace std::string_literals;
     throw json::unmarshal_error("json must be number, but is `"s + j.dump() + "`"s);
   }
 
-  value = iokit_hid_vendor_id(j.get<uint64_t>());
+  value = value_t(j.get<uint64_t>());
 }
+} // namespace iokit_hid_vendor_id
 
-// iokit_keyboard_type
-
-inline void to_json(nlohmann::json& j, const iokit_keyboard_type& value) {
+namespace iokit_keyboard_type {
+inline void to_json(nlohmann::json& j, const value_t& value) {
   j = type_safe::get(value);
 }
 
-inline void from_json(const nlohmann::json& j, iokit_keyboard_type& value) {
+inline void from_json(const nlohmann::json& j, value_t& value) {
   if (!j.is_number()) {
     using namespace std::string_literals;
     throw json::unmarshal_error("json must be number, but is `"s + j.dump() + "`"s);
   }
 
-  value = iokit_keyboard_type(j.get<uint64_t>());
+  value = value_t(j.get<uint64_t>());
 }
+} // namespace iokit_keyboard_type
 
-// iokit_registry_entry_id
-
-inline void to_json(nlohmann::json& j, const iokit_registry_entry_id& value) {
+namespace iokit_registry_entry_id {
+inline void to_json(nlohmann::json& j, const value_t& value) {
   j = type_safe::get(value);
 }
 
-inline void from_json(const nlohmann::json& j, iokit_registry_entry_id& value) {
+inline void from_json(const nlohmann::json& j, value_t& value) {
   if (!j.is_number()) {
     using namespace std::string_literals;
     throw json::unmarshal_error("json must be number, but is `"s + j.dump() + "`"s);
   }
 
-  value = iokit_registry_entry_id(j.get<uint64_t>());
+  value = value_t(j.get<uint64_t>());
 }
+} // namespace iokit_registry_entry_id
 } // namespace osx
 } // namespace pqrs

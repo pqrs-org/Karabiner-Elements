@@ -35,11 +35,11 @@ public:
     scroll_direction_is_natural_ = value;
   }
 
-  const std::map<keyboard_type_key, iokit_keyboard_type> get_keyboard_types(void) const {
+  const std::map<keyboard_type_key, iokit_keyboard_type::value_t> get_keyboard_types(void) const {
     return keyboard_types_;
   }
 
-  void set_keyboard_types(const std::map<keyboard_type_key, iokit_keyboard_type>& value) {
+  void set_keyboard_types(const std::map<keyboard_type_key, iokit_keyboard_type::value_t>& value) {
     keyboard_types_ = value;
   }
 
@@ -84,15 +84,15 @@ public:
                 auto vendor_id_string = key_string->substr(separator1 + 1, separator2 - separator1 - 1);
                 auto country_code_string = key_string->substr(separator2 + 1);
 
-                auto product_id = iokit_hid_product_id(std::stoll(product_id_string));
-                auto vendor_id = iokit_hid_vendor_id(std::stoll(vendor_id_string));
-                auto country_code = iokit_hid_country_code(std::stoll(country_code_string));
+                auto product_id = iokit_hid_product_id::value_t(std::stoll(product_id_string));
+                auto vendor_id = iokit_hid_vendor_id::value_t(std::stoll(vendor_id_string));
+                auto country_code = iokit_hid_country_code::value_t(std::stoll(country_code_string));
 
                 if (auto value_number = pqrs::cf::make_number<int8_t>(value)) {
                   auto k = keyboard_type_key(vendor_id,
                                              product_id,
                                              country_code);
-                  self->keyboard_types_[k] = iokit_keyboard_type(*value_number);
+                  self->keyboard_types_[k] = iokit_keyboard_type::value_t(*value_number);
                 }
               } catch (...) {
               }
@@ -115,7 +115,7 @@ public:
 private:
   bool use_fkeys_as_standard_function_keys_;
   bool scroll_direction_is_natural_;
-  std::map<keyboard_type_key, iokit_keyboard_type> keyboard_types_;
+  std::map<keyboard_type_key, iokit_keyboard_type::value_t> keyboard_types_;
 };
 } // namespace system_preferences
 } // namespace osx

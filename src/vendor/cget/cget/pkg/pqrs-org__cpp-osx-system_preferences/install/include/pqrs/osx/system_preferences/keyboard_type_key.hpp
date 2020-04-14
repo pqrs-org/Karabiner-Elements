@@ -18,34 +18,34 @@ public:
                             country_code_(0) {
   }
 
-  keyboard_type_key(iokit_hid_vendor_id vendor_id,
-                    iokit_hid_product_id product_id,
-                    iokit_hid_country_code country_code) : vendor_id_(vendor_id),
-                                                           product_id_(product_id),
-                                                           country_code_(country_code) {
+  keyboard_type_key(iokit_hid_vendor_id::value_t vendor_id,
+                    iokit_hid_product_id::value_t product_id,
+                    iokit_hid_country_code::value_t country_code) : vendor_id_(vendor_id),
+                                                                    product_id_(product_id),
+                                                                    country_code_(country_code) {
   }
 
-  iokit_hid_vendor_id get_vendor_id(void) const {
+  iokit_hid_vendor_id::value_t get_vendor_id(void) const {
     return vendor_id_;
   }
 
-  void set_vendor_id(iokit_hid_vendor_id value) {
+  void set_vendor_id(iokit_hid_vendor_id::value_t value) {
     vendor_id_ = value;
   }
 
-  iokit_hid_product_id get_product_id(void) const {
+  iokit_hid_product_id::value_t get_product_id(void) const {
     return product_id_;
   }
 
-  void set_product_id(iokit_hid_product_id value) {
+  void set_product_id(iokit_hid_product_id::value_t value) {
     product_id_ = value;
   }
 
-  iokit_hid_country_code get_country_code(void) const {
+  iokit_hid_country_code::value_t get_country_code(void) const {
     return country_code_;
   }
 
-  void set_country_code(iokit_hid_country_code value) {
+  void set_country_code(iokit_hid_country_code::value_t value) {
     country_code_ = value;
   }
 
@@ -85,9 +85,9 @@ public:
   }
 
 private:
-  iokit_hid_vendor_id vendor_id_;
-  iokit_hid_product_id product_id_;
-  iokit_hid_country_code country_code_;
+  iokit_hid_vendor_id::value_t vendor_id_;
+  iokit_hid_product_id::value_t product_id_;
+  iokit_hid_country_code::value_t country_code_;
 };
 } // namespace system_preferences
 } // namespace osx

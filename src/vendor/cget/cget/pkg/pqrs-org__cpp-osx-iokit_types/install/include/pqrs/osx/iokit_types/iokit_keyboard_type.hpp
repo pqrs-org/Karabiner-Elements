@@ -10,29 +10,43 @@
 
 namespace pqrs {
 namespace osx {
-struct iokit_keyboard_type : type_safe::strong_typedef<iokit_keyboard_type, uint64_t>,
-                             type_safe::strong_typedef_op::equality_comparison<iokit_keyboard_type>,
-                             type_safe::strong_typedef_op::relational_comparison<iokit_keyboard_type> {
+namespace iokit_keyboard_type {
+struct value_t : type_safe::strong_typedef<value_t, uint64_t>,
+                 type_safe::strong_typedef_op::equality_comparison<value_t>,
+                 type_safe::strong_typedef_op::relational_comparison<value_t> {
   using strong_typedef::strong_typedef;
 };
 
-inline std::string make_iokit_keyboard_type_string(iokit_keyboard_type t) {
-  if (t == iokit_keyboard_type(41)) {
+inline std::ostream& operator<<(std::ostream& stream, const value_t& value) {
+  return stream << type_safe::get(value);
+}
+
+//
+// values
+//
+
+constexpr value_t ansi(40);
+constexpr value_t iso(41);
+constexpr value_t jis(42);
+
+//
+// methods
+//
+
+inline std::string make_string(value_t t) {
+  if (t == iso) {
     return "iso";
-  } else if (t == iokit_keyboard_type(42)) {
+  } else if (t == jis) {
     return "jis";
   }
   return "ansi";
 }
-
-inline std::ostream& operator<<(std::ostream& stream, const iokit_keyboard_type& value) {
-  return stream << type_safe::get(value);
-}
+} // namespace iokit_keyboard_type
 } // namespace osx
 } // namespace pqrs
 
 namespace std {
 template <>
-struct hash<pqrs::osx::iokit_keyboard_type> : type_safe::hashable<pqrs::osx::iokit_keyboard_type> {
+struct hash<pqrs::osx::iokit_keyboard_type::value_t> : type_safe::hashable<pqrs::osx::iokit_keyboard_type::value_t> {
 };
 } // namespace std

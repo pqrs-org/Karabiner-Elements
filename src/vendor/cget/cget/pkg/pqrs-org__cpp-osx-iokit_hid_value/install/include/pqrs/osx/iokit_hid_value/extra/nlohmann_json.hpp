@@ -52,13 +52,13 @@ inline void from_json(const nlohmann::json& j, iokit_hid_value& hid_value) {
       if (!value.is_number()) {
         throw json::unmarshal_error("`"s + key + "` must be number, but is `"s + value.dump() + "`"s);
       }
-      hid_value.set_usage_page(value.get<iokit_hid_usage_page>());
+      hid_value.set_usage_page(value.get<iokit_hid_usage_page::value_t>());
 
     } else if (key == "usage") {
       if (!value.is_number()) {
         throw json::unmarshal_error("`"s + key + "` must be number, but is `"s + value.dump() + "`"s);
       }
-      hid_value.set_usage(value.get<iokit_hid_usage>());
+      hid_value.set_usage(value.get<iokit_hid_usage::value_t>());
 
     } else {
       throw json::unmarshal_error("unknown key: `"s + key + "`"s);

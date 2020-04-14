@@ -1,6 +1,6 @@
 #pragma once
 
-// pqrs::osx::iokit_hid_manager v2.9
+// pqrs::osx::iokit_hid_manager v3.0
 
 // (C) Copyright Takayama Fumihiko 2018.
 // Distributed under the Boost Software License, Version 1.0.
@@ -20,8 +20,8 @@ class iokit_hid_manager final : public dispatcher::extra::dispatcher_client {
 public:
   // Signals (invoked from the dispatcher thread)
 
-  nod::signal<void(iokit_registry_entry_id, cf::cf_ptr<IOHIDDeviceRef>)> device_matched;
-  nod::signal<void(iokit_registry_entry_id)> device_terminated;
+  nod::signal<void(iokit_registry_entry_id::value_t, cf::cf_ptr<IOHIDDeviceRef>)> device_matched;
+  nod::signal<void(iokit_registry_entry_id::value_t)> device_terminated;
   nod::signal<void(const std::string&, kern_return)> error_occurred;
 
   // Methods
@@ -65,8 +65,8 @@ public:
     });
   }
 
-  static cf::cf_ptr<CFDictionaryRef> make_matching_dictionary(iokit_hid_usage_page hid_usage_page,
-                                                              iokit_hid_usage hid_usage) {
+  static cf::cf_ptr<CFDictionaryRef> make_matching_dictionary(iokit_hid_usage_page::value_t hid_usage_page,
+                                                              iokit_hid_usage::value_t hid_usage) {
     cf::cf_ptr<CFDictionaryRef> result;
 
     if (auto matching_dictionary = IOServiceMatching(kIOHIDDeviceKey)) {
@@ -89,7 +89,7 @@ public:
     return result;
   }
 
-  static cf::cf_ptr<CFDictionaryRef> make_matching_dictionary(iokit_hid_usage_page hid_usage_page) {
+  static cf::cf_ptr<CFDictionaryRef> make_matching_dictionary(iokit_hid_usage_page::value_t hid_usage_page) {
     cf::cf_ptr<CFDictionaryRef> result;
 
     if (auto matching_dictionary = IOServiceMatching(kIOHIDDeviceKey)) {
@@ -195,8 +195,8 @@ private:
   std::vector<cf::cf_ptr<CFDictionaryRef>> matching_dictionaries_;
   pqrs::dispatcher::duration device_matched_delay_;
   std::vector<std::shared_ptr<iokit_service_monitor>> service_monitors_;
-  std::unordered_map<iokit_registry_entry_id, cf::cf_ptr<IOHIDDeviceRef>> devices_;
-  std::unordered_set<iokit_registry_entry_id> device_matched_called_ids_;
+  std::unordered_map<iokit_registry_entry_id::value_t, cf::cf_ptr<IOHIDDeviceRef>> devices_;
+  std::unordered_set<iokit_registry_entry_id::value_t> device_matched_called_ids_;
 };
 } // namespace osx
 } // namespace pqrs
