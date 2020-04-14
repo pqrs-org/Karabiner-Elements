@@ -10,11 +10,11 @@
 		</data>
 		<key>Resources/Assets.car</key>
 		<data>
-		fdE9+wCTLmY1igpxo46Yu+cucIU=
+		ms5JD3xSQBUxyDf5h8YnEAcAf9Q=
 		</data>
 		<key>Resources/SUUpdateSettingsWindowController.nib</key>
 		<data>
-		y0JAD9Pn+L5qNr9mCRCrEvETUlg=
+		hAy/X9xjCChUrme8n6COHZkgfG4=
 		</data>
 		<key>Resources/ar.lproj/InfoPlist.strings</key>
 		<dict>
@@ -360,10 +360,10 @@
 		<dict>
 			<key>cdhash</key>
 			<data>
-			VOwjOQzh+ELjBZC4Dy+i94L7RsU=
+			ITb3KbiGiTcrBVOaN422A7ujFWc=
 			</data>
 			<key>requirement</key>
-			<string>cdhash H"2e874d72a8425c658c403843c1cf295c173ec771" or cdhash H"54ec23390ce1f842e30590b80f2fa2f782fb46c5"</string>
+			<string>cdhash H"536e3eaf2037ad1a2dbe6edc342bf5582c401ad0" or cdhash H"2136f729b88689372b05539a378db603bba31567"</string>
 		</dict>
 		<key>Resources/AppIcon.icns</key>
 		<dict>
@@ -380,22 +380,22 @@
 		<dict>
 			<key>hash</key>
 			<data>
-			fdE9+wCTLmY1igpxo46Yu+cucIU=
+			ms5JD3xSQBUxyDf5h8YnEAcAf9Q=
 			</data>
 			<key>hash2</key>
 			<data>
-			kBq20DdNhVOBMoMF1lGCou0HmU3MhaDs7IacrvZdWr8=
+			lVIPQau/nCQUl2xaN9XcUCWthLzvtcLu49Xgi7KiA3g=
 			</data>
 		</dict>
 		<key>Resources/SUUpdateSettingsWindowController.nib</key>
 		<dict>
 			<key>hash</key>
 			<data>
-			y0JAD9Pn+L5qNr9mCRCrEvETUlg=
+			hAy/X9xjCChUrme8n6COHZkgfG4=
 			</data>
 			<key>hash2</key>
 			<data>
-			PhmIc9k0AlJxSsCmeuYPpavzNuCqlO2cYpm1dM6hiBw=
+			A0382SyjJLI5SdoRtKnvYA44ancci0F9NPmPtDgloOw=
 			</data>
 		</dict>
 		<key>Resources/ar.lproj/InfoPlist.strings</key>

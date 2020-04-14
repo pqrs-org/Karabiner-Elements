@@ -1,3 +1,16 @@
+# 1.23.0
+
+ * Support generating appcast with localizations (#1499) (Alik Vovkotrub)
+ * Support versions with git commit SHA (#1504) (Alec Larson)
+ * Hide "Skip..." and "Remind..." buttons when they're not relevant (#1480) (Kenneth Johnsen)
+ * Preserve Finder tags while updating apps (#1512) (CoreCode)
+ * Read-only update alert dialog formatting improvements (#1515) (Quinn Taylor)
+ * Check if `SUBundleName` is set before normalizing (Jake Fenton)
+ * `NSInteger` cast warning on Xcode 11 (Marga Keuvelaar)
+ * Correct appcast file extension (Tom Vos)
+ * Update Sparkle.strings (Emir Sarı)
+ * Fix spelling (#1508) (Frank Chiarulli Jr)
+
 # 1.22.0
 
  * Enabled "Hardened Runtime" build option for Apple's notarization requirement
@@ -8,9 +21,9 @@
  * Notify user when installed version is newer than the latest in the appcast (CoreCode)
  * Reset timers after computer sleep (CoreCode)
  * Block-based alternatives to `NSInvocation`-based delegate methods (Fabian Jäger)
- * add delegate userDidSkipThisVersion (BobZombie, Leo Natan)
+ * Add delegate `userDidSkipThisVersion` (BobZombie, Leo Natan, bono yusuke)
  * Pass item to updaterShouldShowUpdateAlertForScheduledUpdate delegate method (George Nachman)
- * Support providing private key as argument (Yakuhzi)
+ * Support providing private key as argument in `generate_appcast` (Yakuhzi, marchyang)
  * Separate the ed25519 sources into a new static library (Tony Arnold)
  * Disambiguate signing error messages (Nate Weaver)
  * Use `XMLNode.Options.nodePrettyPrint` in `generate_appcast` instead of trying to add whitespace manually (fumoboy007)
