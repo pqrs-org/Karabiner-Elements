@@ -102,16 +102,16 @@ public:
 
     std::vector<pqrs::cf::cf_ptr<CFDictionaryRef>> matching_dictionaries{
         pqrs::osx::iokit_hid_manager::make_matching_dictionary(
-            pqrs::osx::iokit_hid_usage_page_generic_desktop,
-            pqrs::osx::iokit_hid_usage_generic_desktop_keyboard),
+            pqrs::osx::iokit_hid_usage_page::generic_desktop,
+            pqrs::osx::iokit_hid_usage::generic_desktop::keyboard),
 
         pqrs::osx::iokit_hid_manager::make_matching_dictionary(
-            pqrs::osx::iokit_hid_usage_page_generic_desktop,
-            pqrs::osx::iokit_hid_usage_generic_desktop_mouse),
+            pqrs::osx::iokit_hid_usage_page::generic_desktop,
+            pqrs::osx::iokit_hid_usage::generic_desktop::mouse),
 
         pqrs::osx::iokit_hid_manager::make_matching_dictionary(
-            pqrs::osx::iokit_hid_usage_page_generic_desktop,
-            pqrs::osx::iokit_hid_usage_generic_desktop_pointer),
+            pqrs::osx::iokit_hid_usage_page::generic_desktop,
+            pqrs::osx::iokit_hid_usage::generic_desktop::pointer),
     };
 
     hid_manager_ = std::make_unique<pqrs::osx::iokit_hid_manager>(weak_dispatcher_,

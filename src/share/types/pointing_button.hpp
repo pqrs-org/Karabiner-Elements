@@ -136,9 +136,9 @@ inline std::string make_pointing_button_name(pointing_button pointing_button) {
   return fmt::format("(number:{0})", static_cast<uint32_t>(pointing_button));
 }
 
-inline std::optional<pointing_button> make_pointing_button(pqrs::osx::iokit_hid_usage_page usage_page,
-                                                           pqrs::osx::iokit_hid_usage usage) {
-  if (usage_page == pqrs::osx::iokit_hid_usage_page_button) {
+inline std::optional<pointing_button> make_pointing_button(pqrs::osx::iokit_hid_usage_page::value_t usage_page,
+                                                           pqrs::osx::iokit_hid_usage::value_t usage) {
+  if (usage_page == pqrs::osx::iokit_hid_usage_page::button) {
     return pointing_button(type_safe::get(usage));
   }
   return std::nullopt;

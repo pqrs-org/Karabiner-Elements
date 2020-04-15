@@ -83,28 +83,28 @@ public:
           if (auto v = get_keyboard_input()) {
             json["keyboard_input"]["modifiers"] = v->modifiers;
             json["keyboard_input"]["keys"] = virtual_hid_device_utility::to_json(v->keys,
-                                                                                 pqrs::osx::iokit_hid_usage_page_keyboard_or_keypad);
+                                                                                 pqrs::osx::iokit_hid_usage_page::keyboard_or_keypad);
           }
           break;
 
         case type::consumer_input:
           if (auto v = get_consumer_input()) {
             json["consumer_input"]["keys"] = virtual_hid_device_utility::to_json(v->keys,
-                                                                                 pqrs::osx::iokit_hid_usage_page_consumer);
+                                                                                 pqrs::osx::iokit_hid_usage_page::consumer);
           }
           break;
 
         case type::apple_vendor_top_case_input:
           if (auto v = get_apple_vendor_top_case_input()) {
             json["apple_vendor_top_case_input"]["keys"] = virtual_hid_device_utility::to_json(v->keys,
-                                                                                              pqrs::osx::iokit_hid_usage_page_apple_vendor_top_case);
+                                                                                              pqrs::osx::iokit_hid_usage_page::apple_vendor_top_case);
           }
           break;
 
         case type::apple_vendor_keyboard_input:
           if (auto v = get_apple_vendor_keyboard_input()) {
             json["apple_vendor_keyboard_input"]["keys"] = virtual_hid_device_utility::to_json(v->keys,
-                                                                                              pqrs::osx::iokit_hid_usage_page_apple_vendor_keyboard);
+                                                                                              pqrs::osx::iokit_hid_usage_page::apple_vendor_keyboard);
           }
           break;
 
@@ -249,15 +249,15 @@ public:
     return keyboard_repeat_detector_;
   }
 
-  void emplace_back_key_event(pqrs::osx::iokit_hid_usage_page usage_page,
-                              pqrs::osx::iokit_hid_usage usage,
+  void emplace_back_key_event(pqrs::osx::iokit_hid_usage_page::value_t usage_page,
+                              pqrs::osx::iokit_hid_usage::value_t usage,
                               event_type event_type,
                               absolute_time_point time_stamp) {
     adjust_time_stamp(time_stamp,
                       event_type,
                       make_modifier_flag(usage_page, usage) != std::nullopt);
 
-    if (usage_page == pqrs::osx::iokit_hid_usage_page_keyboard_or_keypad) {
+    if (usage_page == pqrs::osx::iokit_hid_usage_page::keyboard_or_keypad) {
       bool modify_keys = true;
 
       if (auto m = make_modifier_flag(usage_page, usage)) {
@@ -298,7 +298,7 @@ public:
 
       events_.emplace_back(keyboard_input_, time_stamp);
 
-    } else if (usage_page == pqrs::osx::iokit_hid_usage_page_consumer) {
+    } else if (usage_page == pqrs::osx::iokit_hid_usage_page::consumer) {
       switch (event_type) {
         case event_type::key_down:
           consumer_input_.keys.insert(type_safe::get(usage));
@@ -315,7 +315,7 @@ public:
 
       events_.emplace_back(consumer_input_, time_stamp);
 
-    } else if (usage_page == pqrs::osx::iokit_hid_usage_page_apple_vendor_top_case) {
+    } else if (usage_page == pqrs::osx::iokit_hid_usage_page::apple_vendor_top_case) {
       switch (event_type) {
         case event_type::key_down:
           apple_vendor_top_case_input_.keys.insert(type_safe::get(usage));
@@ -332,7 +332,7 @@ public:
 
       events_.emplace_back(apple_vendor_top_case_input_, time_stamp);
 
-    } else if (usage_page == pqrs::osx::iokit_hid_usage_page_apple_vendor_keyboard) {
+    } else if (usage_page == pqrs::osx::iokit_hid_usage_page::apple_vendor_keyboard) {
       switch (event_type) {
         case event_type::key_down:
           apple_vendor_keyboard_input_.keys.insert(type_safe::get(usage));

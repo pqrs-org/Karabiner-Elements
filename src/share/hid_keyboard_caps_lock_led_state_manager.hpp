@@ -16,11 +16,11 @@ public:
     if (device_) {
       pqrs::osx::iokit_hid_device hid_device(*device_);
       for (const auto& e : hid_device.make_elements()) {
-        auto usage_page = pqrs::osx::iokit_hid_usage_page(IOHIDElementGetUsagePage(*e));
-        auto usage = pqrs::osx::iokit_hid_usage(IOHIDElementGetUsage(*e));
+        auto usage_page = pqrs::osx::iokit_hid_usage_page::value_t(IOHIDElementGetUsagePage(*e));
+        auto usage = pqrs::osx::iokit_hid_usage::value_t(IOHIDElementGetUsage(*e));
 
-        if (usage_page == pqrs::osx::iokit_hid_usage_page_leds &&
-            usage == pqrs::osx::iokit_hid_usage_led_caps_lock) {
+        if (usage_page == pqrs::osx::iokit_hid_usage_page::leds &&
+            usage == pqrs::osx::iokit_hid_usage::leds::caps_lock) {
           element_ = e;
         }
       }

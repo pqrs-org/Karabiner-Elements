@@ -15,8 +15,8 @@ namespace krbn {
 class iokit_utility final {
 public:
   static bool is_keyboard(const pqrs::osx::iokit_hid_device& device) {
-    if (device.conforms_to(pqrs::osx::iokit_hid_usage_page_generic_desktop,
-                           pqrs::osx::iokit_hid_usage_generic_desktop_keyboard)) {
+    if (device.conforms_to(pqrs::osx::iokit_hid_usage_page::generic_desktop,
+                           pqrs::osx::iokit_hid_usage::generic_desktop::keyboard)) {
       return true;
     }
 
@@ -24,8 +24,8 @@ public:
   }
 
   static bool is_pointing_device(const pqrs::osx::iokit_hid_device& device) {
-    if (device.conforms_to(pqrs::osx::iokit_hid_usage_page_generic_desktop, pqrs::osx::iokit_hid_usage_generic_desktop_pointer) ||
-        device.conforms_to(pqrs::osx::iokit_hid_usage_page_generic_desktop, pqrs::osx::iokit_hid_usage_generic_desktop_mouse)) {
+    if (device.conforms_to(pqrs::osx::iokit_hid_usage_page::generic_desktop, pqrs::osx::iokit_hid_usage::generic_desktop::pointer) ||
+        device.conforms_to(pqrs::osx::iokit_hid_usage_page::generic_desktop, pqrs::osx::iokit_hid_usage::generic_desktop::mouse)) {
       return true;
     }
 
@@ -73,7 +73,7 @@ public:
                        type_safe::get(device_id));
   }
 
-  static void log_matching_device(pqrs::osx::iokit_registry_entry_id registry_entry_id,
+  static void log_matching_device(pqrs::osx::iokit_registry_entry_id::value_t registry_entry_id,
                                   IOHIDDeviceRef _Nonnull device) {
     pqrs::osx::iokit_hid_device hid_device(device);
 

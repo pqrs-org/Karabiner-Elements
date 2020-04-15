@@ -74,40 +74,40 @@ static inline std::shared_ptr<queue> make_queue(device_id device_id,
                                      event,
                                      state::original);
 
-        } else if (v.conforms_to(pqrs::osx::iokit_hid_usage_page_generic_desktop,
-                                 pqrs::osx::iokit_hid_usage_generic_desktop_x)) {
+        } else if (v.conforms_to(pqrs::osx::iokit_hid_usage_page::generic_desktop,
+                                 pqrs::osx::iokit_hid_usage::generic_desktop::x)) {
           if (pointing_motion_x) {
             emplace_back_pointing_motion_event();
           }
           pointing_motion_time_stamp = v.get_time_stamp();
           pointing_motion_x = static_cast<int>(v.get_integer_value());
 
-        } else if (v.conforms_to(pqrs::osx::iokit_hid_usage_page_generic_desktop,
-                                 pqrs::osx::iokit_hid_usage_generic_desktop_y)) {
+        } else if (v.conforms_to(pqrs::osx::iokit_hid_usage_page::generic_desktop,
+                                 pqrs::osx::iokit_hid_usage::generic_desktop::y)) {
           if (pointing_motion_y) {
             emplace_back_pointing_motion_event();
           }
           pointing_motion_time_stamp = v.get_time_stamp();
           pointing_motion_y = static_cast<int>(v.get_integer_value());
 
-        } else if (v.conforms_to(pqrs::osx::iokit_hid_usage_page_generic_desktop,
-                                 pqrs::osx::iokit_hid_usage_generic_desktop_wheel)) {
+        } else if (v.conforms_to(pqrs::osx::iokit_hid_usage_page::generic_desktop,
+                                 pqrs::osx::iokit_hid_usage::generic_desktop::wheel)) {
           if (pointing_motion_vertical_wheel) {
             emplace_back_pointing_motion_event();
           }
           pointing_motion_time_stamp = v.get_time_stamp();
           pointing_motion_vertical_wheel = static_cast<int>(v.get_integer_value());
 
-        } else if (v.conforms_to(pqrs::osx::iokit_hid_usage_page_consumer,
-                                 pqrs::osx::iokit_hid_usage_consumer_ac_pan)) {
+        } else if (v.conforms_to(pqrs::osx::iokit_hid_usage_page::consumer,
+                                 pqrs::osx::iokit_hid_usage::consumer::ac_pan)) {
           if (pointing_motion_horizontal_wheel) {
             emplace_back_pointing_motion_event();
           }
           pointing_motion_time_stamp = v.get_time_stamp();
           pointing_motion_horizontal_wheel = static_cast<int>(v.get_integer_value());
 
-        } else if (v.conforms_to(pqrs::osx::iokit_hid_usage_page_leds,
-                                 pqrs::osx::iokit_hid_usage_led_caps_lock)) {
+        } else if (v.conforms_to(pqrs::osx::iokit_hid_usage_page::leds,
+                                 pqrs::osx::iokit_hid_usage::leds::caps_lock)) {
           event_queue::event event(event_queue::event::type::caps_lock_state_changed,
                                    v.get_integer_value());
           result->emplace_back_entry(device_id,

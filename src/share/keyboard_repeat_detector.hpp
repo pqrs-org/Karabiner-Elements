@@ -7,12 +7,12 @@
 namespace krbn {
 class keyboard_repeat_detector final {
 public:
-  std::optional<std::pair<pqrs::osx::iokit_hid_usage_page, pqrs::osx::iokit_hid_usage>> get_repeating_key(void) const {
+  std::optional<std::pair<pqrs::osx::iokit_hid_usage_page::value_t, pqrs::osx::iokit_hid_usage::value_t>> get_repeating_key(void) const {
     return repeating_key_;
   }
 
-  void set(pqrs::osx::iokit_hid_usage_page usage_page,
-           pqrs::osx::iokit_hid_usage usage,
+  void set(pqrs::osx::iokit_hid_usage_page::value_t usage_page,
+           pqrs::osx::iokit_hid_usage::value_t usage,
            event_type event_type) {
     switch (event_type) {
       case event_type::key_down:
@@ -54,6 +54,6 @@ public:
   }
 
 private:
-  std::optional<std::pair<pqrs::osx::iokit_hid_usage_page, pqrs::osx::iokit_hid_usage>> repeating_key_;
+  std::optional<std::pair<pqrs::osx::iokit_hid_usage_page::value_t, pqrs::osx::iokit_hid_usage::value_t>> repeating_key_;
 };
 } // namespace krbn

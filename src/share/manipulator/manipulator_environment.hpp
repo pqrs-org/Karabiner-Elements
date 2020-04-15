@@ -138,7 +138,7 @@ private:
     auto& keyboard_types = system_preferences_properties_.get_keyboard_types();
     auto it = keyboard_types.find(key);
     if (it != std::end(keyboard_types)) {
-      virtual_hid_keyboard_keyboard_type_ = pqrs::osx::make_iokit_keyboard_type_string(it->second);
+      virtual_hid_keyboard_keyboard_type_ = pqrs::osx::iokit_keyboard_type::make_string(it->second);
     } else {
       virtual_hid_keyboard_keyboard_type_.clear();
     }
