@@ -60,7 +60,7 @@ public:
 
 private:
   std::unique_ptr<pqrs::osx::iokit_hid_manager> hid_manager_;
-  std::unordered_map<pqrs::osx::iokit_registry_entry_id, std::shared_ptr<krbn::hid_keyboard_caps_lock_led_state_manager>> caps_lock_led_state_managers_;
+  std::unordered_map<pqrs::osx::iokit_registry_entry_id::value_t, std::shared_ptr<krbn::hid_keyboard_caps_lock_led_state_manager>> caps_lock_led_state_managers_;
 };
 
 auto global_wait = pqrs::make_thread_wait();

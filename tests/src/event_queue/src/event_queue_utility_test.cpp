@@ -37,8 +37,8 @@ TEST_CASE("utility::make_queue") {
                                                      pqrs::osx::iokit_hid_usage::generic_desktop::wheel));
   hid_values.emplace_back(pqrs::osx::iokit_hid_value(krbn::absolute_time_point(5000),
                                                      40,
-                                                     pqrs::osx::iokit_hid_usage_page_consumer,
-                                                     pqrs::osx::iokit_hid_usage_consumer_ac_pan));
+                                                     pqrs::osx::iokit_hid_usage_page::consumer,
+                                                     pqrs::osx::iokit_hid_usage::consumer::ac_pan));
 
   hid_values.emplace_back(pqrs::osx::iokit_hid_value(krbn::absolute_time_point(6000),
                                                      -10,

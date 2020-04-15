@@ -9,32 +9,32 @@ TEST_CASE("make_key_code") {
   REQUIRE(krbn::make_key_code_name(krbn::key_code::left_option) == std::string("left_alt"));
   REQUIRE(krbn::make_key_code_name(krbn::key_code::extra_) == std::string("(number:65536)"));
 
-  REQUIRE(krbn::make_hid_usage_page(krbn::key_code(1234)) == pqrs::osx::iokit_hid_usage_page_keyboard_or_keypad);
-  REQUIRE(krbn::make_hid_usage(krbn::key_code(1234)) == pqrs::osx::iokit_hid_usage(1234));
+  REQUIRE(krbn::make_hid_usage_page(krbn::key_code(1234)) == pqrs::osx::iokit_hid_usage_page::keyboard_or_keypad);
+  REQUIRE(krbn::make_hid_usage(krbn::key_code(1234)) == pqrs::osx::iokit_hid_usage::value_t(1234));
 
   {
-    auto actual = krbn::make_key_code(pqrs::osx::iokit_hid_usage_page_keyboard_or_keypad,
-                                      pqrs::osx::iokit_hid_usage(kHIDUsage_KeyboardTab));
+    auto actual = krbn::make_key_code(pqrs::osx::iokit_hid_usage_page::keyboard_or_keypad,
+                                      pqrs::osx::iokit_hid_usage::keyboard_or_keypad::keyboard_tab);
     REQUIRE(*actual == krbn::key_code(kHIDUsage_KeyboardTab));
   }
   {
-    auto actual = krbn::make_key_code(pqrs::osx::iokit_hid_usage_page_apple_vendor_top_case,
-                                      pqrs::osx::iokit_hid_usage_apple_vendor_top_case_keyboard_fn);
+    auto actual = krbn::make_key_code(pqrs::osx::iokit_hid_usage_page::apple_vendor_top_case,
+                                      pqrs::osx::iokit_hid_usage::apple_vendor_top_case::keyboard_fn);
     REQUIRE(*actual == krbn::key_code::fn);
   }
   {
-    auto actual = krbn::make_key_code(pqrs::osx::iokit_hid_usage_page_apple_vendor_keyboard,
-                                      pqrs::osx::iokit_hid_usage_apple_vendor_keyboard_function);
+    auto actual = krbn::make_key_code(pqrs::osx::iokit_hid_usage_page::apple_vendor_keyboard,
+                                      pqrs::osx::iokit_hid_usage::apple_vendor_keyboard::function);
     REQUIRE(*actual == krbn::key_code::fn);
   }
   {
-    auto actual = krbn::make_key_code(pqrs::osx::iokit_hid_usage_page_keyboard_or_keypad,
-                                      pqrs::osx::iokit_hid_usage(1234));
+    auto actual = krbn::make_key_code(pqrs::osx::iokit_hid_usage_page::keyboard_or_keypad,
+                                      pqrs::osx::iokit_hid_usage::value_t(1234));
     REQUIRE(*actual == krbn::key_code(1234));
   }
   {
-    auto actual = krbn::make_key_code(pqrs::osx::iokit_hid_usage_page_button,
-                                      pqrs::osx::iokit_hid_usage(1));
+    auto actual = krbn::make_key_code(pqrs::osx::iokit_hid_usage_page::button,
+                                      pqrs::osx::iokit_hid_usage::button::button_1);
     REQUIRE(actual == std::nullopt);
   }
 
@@ -95,14 +95,14 @@ TEST_CASE("make_modifier_flag") {
   REQUIRE(krbn::make_modifier_flag(krbn::key_code::right_command) == krbn::modifier_flag::right_command);
   REQUIRE(krbn::make_modifier_flag(krbn::key_code::fn) == krbn::modifier_flag::fn);
 
-  REQUIRE(krbn::make_modifier_flag(pqrs::osx::iokit_hid_usage_page_keyboard_or_keypad,
-                                   pqrs::osx::iokit_hid_usage(kHIDUsage_KeyboardA)) == std::nullopt);
-  REQUIRE(krbn::make_modifier_flag(pqrs::osx::iokit_hid_usage_page_keyboard_or_keypad,
-                                   pqrs::osx::iokit_hid_usage(kHIDUsage_KeyboardErrorRollOver)) == std::nullopt);
-  REQUIRE(krbn::make_modifier_flag(pqrs::osx::iokit_hid_usage_page_keyboard_or_keypad,
-                                   pqrs::osx::iokit_hid_usage(kHIDUsage_KeyboardLeftShift)) == krbn::modifier_flag::left_shift);
-  REQUIRE(krbn::make_modifier_flag(pqrs::osx::iokit_hid_usage_page_button,
-                                   pqrs::osx::iokit_hid_usage(1)) == std::nullopt);
+  REQUIRE(krbn::make_modifier_flag(pqrs::osx::iokit_hid_usage_page::keyboard_or_keypad,
+                                   pqrs::osx::iokit_hid_usage::keyboard_or_keypad::keyboard_a) == std::nullopt);
+  REQUIRE(krbn::make_modifier_flag(pqrs::osx::iokit_hid_usage_page::keyboard_or_keypad,
+                                   pqrs::osx::iokit_hid_usage::keyboard_or_keypad::error_rollover) == std::nullopt);
+  REQUIRE(krbn::make_modifier_flag(pqrs::osx::iokit_hid_usage_page::keyboard_or_keypad,
+                                   pqrs::osx::iokit_hid_usage::keyboard_or_keypad::keyboard_left_shift) == krbn::modifier_flag::left_shift);
+  REQUIRE(krbn::make_modifier_flag(pqrs::osx::iokit_hid_usage_page::button,
+                                   pqrs::osx::iokit_hid_usage::button::button_1) == std::nullopt);
 }
 
 TEST_CASE("make_consumer_key_code") {
@@ -112,13 +112,13 @@ TEST_CASE("make_consumer_key_code") {
   REQUIRE(krbn::make_consumer_key_code_name(krbn::consumer_key_code::mute) == std::string("mute"));
   REQUIRE(krbn::make_consumer_key_code_name(krbn::consumer_key_code(12345)) == std::string("(number:12345)"));
 
-  REQUIRE(krbn::make_consumer_key_code(pqrs::osx::iokit_hid_usage_page_consumer,
-                                       pqrs::osx::iokit_hid_usage_consumer_mute) == krbn::consumer_key_code::mute);
-  REQUIRE(!krbn::make_consumer_key_code(pqrs::osx::iokit_hid_usage_page_keyboard_or_keypad,
-                                        pqrs::osx::iokit_hid_usage(kHIDUsage_KeyboardA)));
+  REQUIRE(krbn::make_consumer_key_code(pqrs::osx::iokit_hid_usage_page::consumer,
+                                       pqrs::osx::iokit_hid_usage::consumer::mute) == krbn::consumer_key_code::mute);
+  REQUIRE(!krbn::make_consumer_key_code(pqrs::osx::iokit_hid_usage_page::keyboard_or_keypad,
+                                        pqrs::osx::iokit_hid_usage::keyboard_or_keypad::keyboard_a));
 
-  REQUIRE(krbn::make_hid_usage_page(krbn::consumer_key_code::mute) == pqrs::osx::iokit_hid_usage_page_consumer);
-  REQUIRE(krbn::make_hid_usage(krbn::consumer_key_code::mute) == pqrs::osx::iokit_hid_usage_consumer_mute);
+  REQUIRE(krbn::make_hid_usage_page(krbn::consumer_key_code::mute) == pqrs::osx::iokit_hid_usage_page::consumer);
+  REQUIRE(krbn::make_hid_usage(krbn::consumer_key_code::mute) == pqrs::osx::iokit_hid_usage::consumer::mute);
 
   // from_json
 
@@ -158,13 +158,13 @@ TEST_CASE("make_pointing_button") {
   REQUIRE(krbn::make_pointing_button_name(krbn::pointing_button(12345)) == std::string("(number:12345)"));
 
   {
-    auto actual = krbn::make_pointing_button(pqrs::osx::iokit_hid_usage_page_button,
-                                             pqrs::osx::iokit_hid_usage(1));
+    auto actual = krbn::make_pointing_button(pqrs::osx::iokit_hid_usage_page::button,
+                                             pqrs::osx::iokit_hid_usage::button::button_1);
     REQUIRE(*actual == krbn::pointing_button::button1);
   }
   {
-    auto actual = krbn::make_pointing_button(pqrs::osx::iokit_hid_usage_page_keyboard_or_keypad,
-                                             pqrs::osx::iokit_hid_usage(kHIDUsage_KeyboardTab));
+    auto actual = krbn::make_pointing_button(pqrs::osx::iokit_hid_usage_page::keyboard_or_keypad,
+                                             pqrs::osx::iokit_hid_usage::keyboard_or_keypad::keyboard_tab);
     REQUIRE(actual == std::nullopt);
   }
 }

@@ -143,12 +143,12 @@ TEST_CASE("manipulator_environment.save_to_file") {
   system_preferences_properties.set_scroll_direction_is_natural(false);
   system_preferences_properties.set_keyboard_types(
       std::map<pqrs::osx::system_preferences::keyboard_type_key,
-               pqrs::osx::iokit_keyboard_type>({
+               pqrs::osx::iokit_keyboard_type::value_t>({
           {
               pqrs::osx::system_preferences::keyboard_type_key(krbn::vendor_id_karabiner_virtual_hid_device,
                                                                krbn::product_id_karabiner_virtual_hid_keyboard,
                                                                krbn::hid_country_code(0)),
-              pqrs::osx::iokit_keyboard_type(41),
+              pqrs::osx::iokit_keyboard_type::iso,
           },
       }));
   manipulator_environment.set_system_preferences_properties(system_preferences_properties);
@@ -521,18 +521,18 @@ TEST_CASE("conditions.keyboard_type") {
   system_preferences_properties.set_scroll_direction_is_natural(false);
   system_preferences_properties.set_keyboard_types(
       std::map<pqrs::osx::system_preferences::keyboard_type_key,
-               pqrs::osx::iokit_keyboard_type>({
+               pqrs::osx::iokit_keyboard_type::value_t>({
           {
               pqrs::osx::system_preferences::keyboard_type_key(krbn::vendor_id_karabiner_virtual_hid_device,
                                                                krbn::product_id_karabiner_virtual_hid_keyboard,
                                                                krbn::hid_country_code(0)),
-              pqrs::osx::iokit_keyboard_type(40), // ansi
+              pqrs::osx::iokit_keyboard_type::ansi,
           },
           {
               pqrs::osx::system_preferences::keyboard_type_key(krbn::vendor_id_karabiner_virtual_hid_device,
                                                                krbn::product_id_karabiner_virtual_hid_keyboard,
                                                                krbn::hid_country_code(1)),
-              pqrs::osx::iokit_keyboard_type(41), // iso
+              pqrs::osx::iokit_keyboard_type::iso,
           },
       }));
   manipulator_environment.set_system_preferences_properties(system_preferences_properties);
