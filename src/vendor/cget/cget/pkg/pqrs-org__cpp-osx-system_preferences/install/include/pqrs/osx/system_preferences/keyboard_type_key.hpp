@@ -6,6 +6,7 @@
 
 #include <cstdint>
 #include <pqrs/hash.hpp>
+#include <pqrs/hid.hpp>
 #include <pqrs/osx/iokit_types.hpp>
 
 namespace pqrs {
@@ -18,34 +19,34 @@ public:
                             country_code_(0) {
   }
 
-  keyboard_type_key(iokit_hid_vendor_id::value_t vendor_id,
-                    iokit_hid_product_id::value_t product_id,
-                    iokit_hid_country_code::value_t country_code) : vendor_id_(vendor_id),
-                                                                    product_id_(product_id),
-                                                                    country_code_(country_code) {
+  keyboard_type_key(hid::vendor_id::value_t vendor_id,
+                    hid::product_id::value_t product_id,
+                    hid::country_code::value_t country_code) : vendor_id_(vendor_id),
+                                                               product_id_(product_id),
+                                                               country_code_(country_code) {
   }
 
-  iokit_hid_vendor_id::value_t get_vendor_id(void) const {
+  hid::vendor_id::value_t get_vendor_id(void) const {
     return vendor_id_;
   }
 
-  void set_vendor_id(iokit_hid_vendor_id::value_t value) {
+  void set_vendor_id(hid::vendor_id::value_t value) {
     vendor_id_ = value;
   }
 
-  iokit_hid_product_id::value_t get_product_id(void) const {
+  hid::product_id::value_t get_product_id(void) const {
     return product_id_;
   }
 
-  void set_product_id(iokit_hid_product_id::value_t value) {
+  void set_product_id(hid::product_id::value_t value) {
     product_id_ = value;
   }
 
-  iokit_hid_country_code::value_t get_country_code(void) const {
+  hid::country_code::value_t get_country_code(void) const {
     return country_code_;
   }
 
-  void set_country_code(iokit_hid_country_code::value_t value) {
+  void set_country_code(hid::country_code::value_t value) {
     country_code_ = value;
   }
 
@@ -85,9 +86,9 @@ public:
   }
 
 private:
-  iokit_hid_vendor_id::value_t vendor_id_;
-  iokit_hid_product_id::value_t product_id_;
-  iokit_hid_country_code::value_t country_code_;
+  hid::vendor_id::value_t vendor_id_;
+  hid::product_id::value_t product_id_;
+  hid::country_code::value_t country_code_;
 };
 } // namespace system_preferences
 } // namespace osx

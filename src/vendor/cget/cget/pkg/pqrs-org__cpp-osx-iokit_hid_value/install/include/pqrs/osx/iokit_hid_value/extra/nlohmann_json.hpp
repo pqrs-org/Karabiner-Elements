@@ -4,9 +4,9 @@
 // Distributed under the Boost Software License, Version 1.0.
 // (See http://www.boost.org/LICENSE_1_0.txt)
 
+#include <pqrs/hid/extra/nlohmann_json.hpp>
 #include <pqrs/json.hpp>
 #include <pqrs/osx/iokit_hid_value.hpp>
-#include <pqrs/osx/iokit_types/extra/nlohmann_json.hpp>
 
 namespace pqrs {
 namespace osx {
@@ -52,13 +52,13 @@ inline void from_json(const nlohmann::json& j, iokit_hid_value& hid_value) {
       if (!value.is_number()) {
         throw json::unmarshal_error("`"s + key + "` must be number, but is `"s + value.dump() + "`"s);
       }
-      hid_value.set_usage_page(value.get<iokit_hid_usage_page::value_t>());
+      hid_value.set_usage_page(value.get<hid::usage_page::value_t>());
 
     } else if (key == "usage") {
       if (!value.is_number()) {
         throw json::unmarshal_error("`"s + key + "` must be number, but is `"s + value.dump() + "`"s);
       }
-      hid_value.set_usage(value.get<iokit_hid_usage::value_t>());
+      hid_value.set_usage(value.get<hid::usage::value_t>());
 
     } else {
       throw json::unmarshal_error("unknown key: `"s + key + "`"s);

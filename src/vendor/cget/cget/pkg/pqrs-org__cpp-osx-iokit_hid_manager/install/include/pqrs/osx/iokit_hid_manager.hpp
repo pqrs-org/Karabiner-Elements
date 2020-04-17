@@ -1,6 +1,6 @@
 #pragma once
 
-// pqrs::osx::iokit_hid_manager v3.0
+// pqrs::osx::iokit_hid_manager v4.0
 
 // (C) Copyright Takayama Fumihiko 2018.
 // Distributed under the Boost Software License, Version 1.0.
@@ -10,6 +10,7 @@
 
 #include <IOKit/hid/IOHIDDevice.h>
 #include <pqrs/cf/number.hpp>
+#include <pqrs/hid.hpp>
 #include <pqrs/osx/iokit_service_monitor.hpp>
 #include <unordered_map>
 #include <vector>
@@ -65,8 +66,8 @@ public:
     });
   }
 
-  static cf::cf_ptr<CFDictionaryRef> make_matching_dictionary(iokit_hid_usage_page::value_t hid_usage_page,
-                                                              iokit_hid_usage::value_t hid_usage) {
+  static cf::cf_ptr<CFDictionaryRef> make_matching_dictionary(hid::usage_page::value_t hid_usage_page,
+                                                              hid::usage::value_t hid_usage) {
     cf::cf_ptr<CFDictionaryRef> result;
 
     if (auto matching_dictionary = IOServiceMatching(kIOHIDDeviceKey)) {
@@ -89,7 +90,7 @@ public:
     return result;
   }
 
-  static cf::cf_ptr<CFDictionaryRef> make_matching_dictionary(iokit_hid_usage_page::value_t hid_usage_page) {
+  static cf::cf_ptr<CFDictionaryRef> make_matching_dictionary(hid::usage_page::value_t hid_usage_page) {
     cf::cf_ptr<CFDictionaryRef> result;
 
     if (auto matching_dictionary = IOServiceMatching(kIOHIDDeviceKey)) {

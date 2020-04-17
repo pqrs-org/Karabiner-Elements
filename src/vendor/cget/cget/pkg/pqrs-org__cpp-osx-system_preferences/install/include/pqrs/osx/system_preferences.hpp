@@ -1,6 +1,6 @@
 #pragma once
 
-// pqrs::osx::system_preferences v3.0
+// pqrs::osx::system_preferences v4.0
 
 // (C) Copyright Takayama Fumihiko 2019.
 // Distributed under the Boost Software License, Version 1.0.

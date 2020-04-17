@@ -9,6 +9,7 @@
 #include <map>
 #include <pqrs/cf/string.hpp>
 #include <pqrs/hash.hpp>
+#include <pqrs/hid.hpp>
 
 namespace pqrs {
 namespace osx {
@@ -84,9 +85,9 @@ public:
                 auto vendor_id_string = key_string->substr(separator1 + 1, separator2 - separator1 - 1);
                 auto country_code_string = key_string->substr(separator2 + 1);
 
-                auto product_id = iokit_hid_product_id::value_t(std::stoll(product_id_string));
-                auto vendor_id = iokit_hid_vendor_id::value_t(std::stoll(vendor_id_string));
-                auto country_code = iokit_hid_country_code::value_t(std::stoll(country_code_string));
+                auto product_id = hid::product_id::value_t(std::stoll(product_id_string));
+                auto vendor_id = hid::vendor_id::value_t(std::stoll(vendor_id_string));
+                auto country_code = hid::country_code::value_t(std::stoll(country_code_string));
 
                 if (auto value_number = pqrs::cf::make_number<int8_t>(value)) {
                   auto k = keyboard_type_key(vendor_id,

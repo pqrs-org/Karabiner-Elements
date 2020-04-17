@@ -4,6 +4,7 @@
 // Distributed under the Boost Software License, Version 1.0.
 // (See http://www.boost.org/LICENSE_1_0.txt)
 
+#include <pqrs/hid/extra/nlohmann_json.hpp>
 #include <pqrs/json.hpp>
 #include <pqrs/osx/iokit_types/extra/nlohmann_json.hpp>
 #include <pqrs/osx/system_preferences/keyboard_type_key.hpp>
@@ -33,21 +34,21 @@ inline void from_json(const nlohmann::json& j, keyboard_type_key& value) {
   for (const auto& [k, v] : j.items()) {
     if (k == "vendor_id") {
       try {
-        value.set_vendor_id(v.get<osx::iokit_hid_vendor_id::value_t>());
+        value.set_vendor_id(v.get<hid::vendor_id::value_t>());
       } catch (json::unmarshal_error& e) {
         throw json::unmarshal_error(k + " error: "s + e.what());
       }
 
     } else if (k == "product_id") {
       try {
-        value.set_product_id(v.get<osx::iokit_hid_product_id::value_t>());
+        value.set_product_id(v.get<hid::product_id::value_t>());
       } catch (json::unmarshal_error& e) {
         throw json::unmarshal_error(k + " error: "s + e.what());
       }
 
     } else if (k == "country_code") {
       try {
-        value.set_country_code(v.get<osx::iokit_hid_country_code::value_t>());
+        value.set_country_code(v.get<hid::country_code::value_t>());
       } catch (json::unmarshal_error& e) {
         throw json::unmarshal_error(k + " error: "s + e.what());
       }

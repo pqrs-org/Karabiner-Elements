@@ -1,6 +1,6 @@
 #pragma once
 
-// (C) Copyright Takayama Fumihiko 2018.
+// (C) Copyright Takayama Fumihiko 2020.
 // Distributed under the Boost Software License, Version 1.0.
 // (See http://www.boost.org/LICENSE_1_0.txt)
 
@@ -9,8 +9,8 @@
 #include <type_safe/strong_typedef.hpp>
 
 namespace pqrs {
-namespace osx {
-namespace iokit_hid_vendor_id {
+namespace hid {
+namespace product_id {
 struct value_t : type_safe::strong_typedef<value_t, uint64_t>,
                  type_safe::strong_typedef_op::equality_comparison<value_t>,
                  type_safe::strong_typedef_op::relational_comparison<value_t> {
@@ -20,12 +20,12 @@ struct value_t : type_safe::strong_typedef<value_t, uint64_t>,
 inline std::ostream& operator<<(std::ostream& stream, const value_t& value) {
   return stream << type_safe::get(value);
 }
-} // namespace iokit_hid_vendor_id
-} // namespace osx
+} // namespace product_id
+} // namespace hid
 } // namespace pqrs
 
 namespace std {
 template <>
-struct hash<pqrs::osx::iokit_hid_vendor_id::value_t> : type_safe::hashable<pqrs::osx::iokit_hid_vendor_id::value_t> {
+struct hash<pqrs::hid::product_id::value_t> : type_safe::hashable<pqrs::hid::product_id::value_t> {
 };
 } // namespace std

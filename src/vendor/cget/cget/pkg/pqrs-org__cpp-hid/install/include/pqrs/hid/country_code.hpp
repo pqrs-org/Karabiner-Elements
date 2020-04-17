@@ -1,6 +1,6 @@
 #pragma once
 
-// (C) Copyright Takayama Fumihiko 2019.
+// (C) Copyright Takayama Fumihiko 2020.
 // Distributed under the Boost Software License, Version 1.0.
 // (See http://www.boost.org/LICENSE_1_0.txt)
 
@@ -9,8 +9,8 @@
 #include <type_safe/strong_typedef.hpp>
 
 namespace pqrs {
-namespace osx {
-namespace iokit_hid_country_code {
+namespace hid {
+namespace country_code {
 struct value_t : type_safe::strong_typedef<value_t, uint64_t>,
                  type_safe::strong_typedef_op::equality_comparison<value_t>,
                  type_safe::strong_typedef_op::relational_comparison<value_t> {
@@ -22,7 +22,8 @@ inline std::ostream& operator<<(std::ostream& stream, const value_t& value) {
 }
 
 //
-// values
+// Values from Device Class Definition for Human Interface Devices (HID) Version 1.11.
+// https://www.usb.org/sites/default/files/documents/hid1_11.pdf
 //
 
 constexpr value_t not_supported(0);
@@ -61,12 +62,12 @@ constexpr value_t uk(32);
 constexpr value_t us(33);
 constexpr value_t yugoslavia(34);
 constexpr value_t turkish_f(35);
-} // namespace iokit_hid_country_code
-} // namespace osx
+} // namespace country_code
+} // namespace hid
 } // namespace pqrs
 
 namespace std {
 template <>
-struct hash<pqrs::osx::iokit_hid_country_code::value_t> : type_safe::hashable<pqrs::osx::iokit_hid_country_code::value_t> {
+struct hash<pqrs::hid::country_code::value_t> : type_safe::hashable<pqrs::hid::country_code::value_t> {
 };
 } // namespace std
