@@ -25,47 +25,47 @@ TEST_CASE("utility::make_queue") {
 
   hid_values.emplace_back(pqrs::osx::iokit_hid_value(krbn::absolute_time_point(5000),
                                                      10,
-                                                     pqrs::osx::iokit_hid_usage_page::generic_desktop,
-                                                     pqrs::osx::iokit_hid_usage::generic_desktop::x));
+                                                     pqrs::hid::usage_page::generic_desktop,
+                                                     pqrs::hid::usage::generic_desktop::x));
   hid_values.emplace_back(pqrs::osx::iokit_hid_value(krbn::absolute_time_point(5000),
                                                      20,
-                                                     pqrs::osx::iokit_hid_usage_page::generic_desktop,
-                                                     pqrs::osx::iokit_hid_usage::generic_desktop::y));
+                                                     pqrs::hid::usage_page::generic_desktop,
+                                                     pqrs::hid::usage::generic_desktop::y));
   hid_values.emplace_back(pqrs::osx::iokit_hid_value(krbn::absolute_time_point(5000),
                                                      30,
-                                                     pqrs::osx::iokit_hid_usage_page::generic_desktop,
-                                                     pqrs::osx::iokit_hid_usage::generic_desktop::wheel));
+                                                     pqrs::hid::usage_page::generic_desktop,
+                                                     pqrs::hid::usage::generic_desktop::wheel));
   hid_values.emplace_back(pqrs::osx::iokit_hid_value(krbn::absolute_time_point(5000),
                                                      40,
-                                                     pqrs::osx::iokit_hid_usage_page::consumer,
-                                                     pqrs::osx::iokit_hid_usage::consumer::ac_pan));
+                                                     pqrs::hid::usage_page::consumer,
+                                                     pqrs::hid::usage::consumer::ac_pan));
 
   hid_values.emplace_back(pqrs::osx::iokit_hid_value(krbn::absolute_time_point(6000),
                                                      -10,
-                                                     pqrs::osx::iokit_hid_usage_page::generic_desktop,
-                                                     pqrs::osx::iokit_hid_usage::generic_desktop::x));
+                                                     pqrs::hid::usage_page::generic_desktop,
+                                                     pqrs::hid::usage::generic_desktop::x));
   hid_values.emplace_back(pqrs::osx::iokit_hid_value(krbn::absolute_time_point(6000),
                                                      -20,
-                                                     pqrs::osx::iokit_hid_usage_page::generic_desktop,
-                                                     pqrs::osx::iokit_hid_usage::generic_desktop::y));
+                                                     pqrs::hid::usage_page::generic_desktop,
+                                                     pqrs::hid::usage::generic_desktop::y));
   hid_values.emplace_back(pqrs::osx::iokit_hid_value(krbn::absolute_time_point(6000),
                                                      -30,
-                                                     pqrs::osx::iokit_hid_usage_page::generic_desktop,
-                                                     pqrs::osx::iokit_hid_usage::generic_desktop::wheel));
+                                                     pqrs::hid::usage_page::generic_desktop,
+                                                     pqrs::hid::usage::generic_desktop::wheel));
   hid_values.emplace_back(pqrs::osx::iokit_hid_value(krbn::absolute_time_point(6000),
                                                      -40,
-                                                     pqrs::osx::iokit_hid_usage_page::consumer,
-                                                     pqrs::osx::iokit_hid_usage::consumer::ac_pan));
+                                                     pqrs::hid::usage_page::consumer,
+                                                     pqrs::hid::usage::consumer::ac_pan));
 
   hid_values.emplace_back(pqrs::osx::iokit_hid_value(krbn::absolute_time_point(7000),
                                                      10,
-                                                     pqrs::osx::iokit_hid_usage_page::generic_desktop,
-                                                     pqrs::osx::iokit_hid_usage::generic_desktop::x));
+                                                     pqrs::hid::usage_page::generic_desktop,
+                                                     pqrs::hid::usage::generic_desktop::x));
 
   hid_values.emplace_back(pqrs::osx::iokit_hid_value(krbn::absolute_time_point(8000),
                                                      0,
-                                                     pqrs::osx::iokit_hid_usage_page::generic_desktop,
-                                                     pqrs::osx::iokit_hid_usage::generic_desktop::x));
+                                                     pqrs::hid::usage_page::generic_desktop,
+                                                     pqrs::hid::usage::generic_desktop::x));
 
   auto queue = krbn::event_queue::utility::make_queue(krbn::device_id(1),
                                                       hid_values);

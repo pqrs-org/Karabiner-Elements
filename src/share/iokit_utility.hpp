@@ -15,8 +15,8 @@ namespace krbn {
 class iokit_utility final {
 public:
   static bool is_keyboard(const pqrs::osx::iokit_hid_device& device) {
-    if (device.conforms_to(pqrs::osx::iokit_hid_usage_page::generic_desktop,
-                           pqrs::osx::iokit_hid_usage::generic_desktop::keyboard)) {
+    if (device.conforms_to(pqrs::hid::usage_page::generic_desktop,
+                           pqrs::hid::usage::generic_desktop::keyboard)) {
       return true;
     }
 
@@ -24,8 +24,8 @@ public:
   }
 
   static bool is_pointing_device(const pqrs::osx::iokit_hid_device& device) {
-    if (device.conforms_to(pqrs::osx::iokit_hid_usage_page::generic_desktop, pqrs::osx::iokit_hid_usage::generic_desktop::pointer) ||
-        device.conforms_to(pqrs::osx::iokit_hid_usage_page::generic_desktop, pqrs::osx::iokit_hid_usage::generic_desktop::mouse)) {
+    if (device.conforms_to(pqrs::hid::usage_page::generic_desktop, pqrs::hid::usage::generic_desktop::pointer) ||
+        device.conforms_to(pqrs::hid::usage_page::generic_desktop, pqrs::hid::usage::generic_desktop::mouse)) {
       return true;
     }
 

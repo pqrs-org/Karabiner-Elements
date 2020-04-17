@@ -31,8 +31,8 @@ int main(int argc, const char* argv[]) {
 
     {
       auto time_stamp = pqrs::osx::chrono::mach_absolute_time_point();
-      queue.emplace_back_key_event(pqrs::osx::iokit_hid_usage_page::keyboard_or_keypad,
-                                   pqrs::osx::iokit_hid_usage::keyboard_or_keypad::keyboard_spacebar,
+      queue.emplace_back_key_event(pqrs::hid::usage_page::keyboard_or_keypad,
+                                   pqrs::hid::usage::keyboard_or_keypad::keyboard_spacebar,
                                    krbn::event_type::key_down,
                                    time_stamp);
       queue.async_post_events(virtual_hid_device_client,
@@ -40,8 +40,8 @@ int main(int argc, const char* argv[]) {
     }
     {
       auto time_stamp = pqrs::osx::chrono::mach_absolute_time_point();
-      queue.emplace_back_key_event(pqrs::osx::iokit_hid_usage_page::keyboard_or_keypad,
-                                   pqrs::osx::iokit_hid_usage::keyboard_or_keypad::keyboard_spacebar,
+      queue.emplace_back_key_event(pqrs::hid::usage_page::keyboard_or_keypad,
+                                   pqrs::hid::usage::keyboard_or_keypad::keyboard_spacebar,
                                    krbn::event_type::key_up,
                                    time_stamp);
       queue.async_post_events(virtual_hid_device_client,
@@ -53,57 +53,57 @@ int main(int argc, const char* argv[]) {
 
       // Put `Bc`.
 
-      queue.emplace_back_key_event(pqrs::osx::iokit_hid_usage_page::keyboard_or_keypad,
-                                   pqrs::osx::iokit_hid_usage::keyboard_or_keypad::keyboard_left_shift,
+      queue.emplace_back_key_event(pqrs::hid::usage_page::keyboard_or_keypad,
+                                   pqrs::hid::usage::keyboard_or_keypad::keyboard_left_shift,
                                    krbn::event_type::key_down,
                                    time_stamp);
       queue.async_post_events(virtual_hid_device_client,
                               console_user_server_client);
 
-      queue.emplace_back_key_event(pqrs::osx::iokit_hid_usage_page::keyboard_or_keypad,
-                                   pqrs::osx::iokit_hid_usage::keyboard_or_keypad::keyboard_b,
+      queue.emplace_back_key_event(pqrs::hid::usage_page::keyboard_or_keypad,
+                                   pqrs::hid::usage::keyboard_or_keypad::keyboard_b,
                                    krbn::event_type::key_down,
                                    time_stamp);
       queue.async_post_events(virtual_hid_device_client,
                               console_user_server_client);
 
-      queue.emplace_back_key_event(pqrs::osx::iokit_hid_usage_page::keyboard_or_keypad,
-                                   pqrs::osx::iokit_hid_usage::keyboard_or_keypad::keyboard_b,
+      queue.emplace_back_key_event(pqrs::hid::usage_page::keyboard_or_keypad,
+                                   pqrs::hid::usage::keyboard_or_keypad::keyboard_b,
                                    krbn::event_type::key_up,
                                    time_stamp);
       queue.async_post_events(virtual_hid_device_client,
                               console_user_server_client);
 
-      queue.emplace_back_key_event(pqrs::osx::iokit_hid_usage_page::keyboard_or_keypad,
-                                   pqrs::osx::iokit_hid_usage::keyboard_or_keypad::keyboard_left_shift,
+      queue.emplace_back_key_event(pqrs::hid::usage_page::keyboard_or_keypad,
+                                   pqrs::hid::usage::keyboard_or_keypad::keyboard_left_shift,
                                    krbn::event_type::key_up,
                                    time_stamp);
       queue.async_post_events(virtual_hid_device_client,
                               console_user_server_client);
 
-      queue.emplace_back_key_event(pqrs::osx::iokit_hid_usage_page::keyboard_or_keypad,
-                                   pqrs::osx::iokit_hid_usage::keyboard_or_keypad::keyboard_c,
+      queue.emplace_back_key_event(pqrs::hid::usage_page::keyboard_or_keypad,
+                                   pqrs::hid::usage::keyboard_or_keypad::keyboard_c,
                                    krbn::event_type::key_down,
                                    time_stamp);
       queue.async_post_events(virtual_hid_device_client,
                               console_user_server_client);
 
-      queue.emplace_back_key_event(pqrs::osx::iokit_hid_usage_page::keyboard_or_keypad,
-                                   pqrs::osx::iokit_hid_usage::keyboard_or_keypad::keyboard_left_shift,
+      queue.emplace_back_key_event(pqrs::hid::usage_page::keyboard_or_keypad,
+                                   pqrs::hid::usage::keyboard_or_keypad::keyboard_left_shift,
                                    krbn::event_type::key_down,
                                    time_stamp);
       queue.async_post_events(virtual_hid_device_client,
                               console_user_server_client);
 
-      queue.emplace_back_key_event(pqrs::osx::iokit_hid_usage_page::keyboard_or_keypad,
-                                   pqrs::osx::iokit_hid_usage::keyboard_or_keypad::keyboard_c,
+      queue.emplace_back_key_event(pqrs::hid::usage_page::keyboard_or_keypad,
+                                   pqrs::hid::usage::keyboard_or_keypad::keyboard_c,
                                    krbn::event_type::key_up,
                                    time_stamp);
       queue.async_post_events(virtual_hid_device_client,
                               console_user_server_client);
 
-      queue.emplace_back_key_event(pqrs::osx::iokit_hid_usage_page::keyboard_or_keypad,
-                                   pqrs::osx::iokit_hid_usage::keyboard_or_keypad::keyboard_left_shift,
+      queue.emplace_back_key_event(pqrs::hid::usage_page::keyboard_or_keypad,
+                                   pqrs::hid::usage::keyboard_or_keypad::keyboard_left_shift,
                                    krbn::event_type::key_up,
                                    time_stamp);
       queue.async_post_events(virtual_hid_device_client,
@@ -113,8 +113,8 @@ int main(int argc, const char* argv[]) {
     {
       auto time_stamp = pqrs::osx::chrono::mach_absolute_time_point() +
                         pqrs::osx::chrono::make_absolute_time_duration(std::chrono::milliseconds(1000));
-      queue.emplace_back_key_event(pqrs::osx::iokit_hid_usage_page::keyboard_or_keypad,
-                                   pqrs::osx::iokit_hid_usage::keyboard_or_keypad::keyboard_a,
+      queue.emplace_back_key_event(pqrs::hid::usage_page::keyboard_or_keypad,
+                                   pqrs::hid::usage::keyboard_or_keypad::keyboard_a,
                                    krbn::event_type::key_down,
                                    time_stamp);
       queue.async_post_events(virtual_hid_device_client,
@@ -123,8 +123,8 @@ int main(int argc, const char* argv[]) {
     {
       auto time_stamp = pqrs::osx::chrono::mach_absolute_time_point() +
                         pqrs::osx::chrono::make_absolute_time_duration(std::chrono::milliseconds(2000));
-      queue.emplace_back_key_event(pqrs::osx::iokit_hid_usage_page::keyboard_or_keypad,
-                                   pqrs::osx::iokit_hid_usage::keyboard_or_keypad::keyboard_a,
+      queue.emplace_back_key_event(pqrs::hid::usage_page::keyboard_or_keypad,
+                                   pqrs::hid::usage::keyboard_or_keypad::keyboard_a,
                                    krbn::event_type::key_up,
                                    time_stamp);
       queue.async_post_events(virtual_hid_device_client,
@@ -133,8 +133,8 @@ int main(int argc, const char* argv[]) {
 
     {
       auto time_stamp = pqrs::osx::chrono::mach_absolute_time_point();
-      queue.emplace_back_key_event(pqrs::osx::iokit_hid_usage_page::keyboard_or_keypad,
-                                   pqrs::osx::iokit_hid_usage::keyboard_or_keypad::keyboard_b,
+      queue.emplace_back_key_event(pqrs::hid::usage_page::keyboard_or_keypad,
+                                   pqrs::hid::usage::keyboard_or_keypad::keyboard_b,
                                    krbn::event_type::key_down,
                                    time_stamp);
       queue.async_post_events(virtual_hid_device_client,
@@ -142,8 +142,8 @@ int main(int argc, const char* argv[]) {
     }
     {
       auto time_stamp = pqrs::osx::chrono::mach_absolute_time_point();
-      queue.emplace_back_key_event(pqrs::osx::iokit_hid_usage_page::keyboard_or_keypad,
-                                   pqrs::osx::iokit_hid_usage::keyboard_or_keypad::keyboard_b,
+      queue.emplace_back_key_event(pqrs::hid::usage_page::keyboard_or_keypad,
+                                   pqrs::hid::usage::keyboard_or_keypad::keyboard_b,
                                    krbn::event_type::key_up,
                                    time_stamp);
       queue.async_post_events(virtual_hid_device_client,

@@ -86,9 +86,9 @@ inline std::string make_consumer_key_code_name(consumer_key_code consumer_key_co
   return fmt::format("(number:{0})", static_cast<uint32_t>(consumer_key_code));
 }
 
-inline std::optional<consumer_key_code> make_consumer_key_code(pqrs::osx::iokit_hid_usage_page::value_t usage_page,
-                                                               pqrs::osx::iokit_hid_usage::value_t usage) {
-  if (usage_page == pqrs::osx::iokit_hid_usage_page::consumer) {
+inline std::optional<consumer_key_code> make_consumer_key_code(pqrs::hid::usage_page::value_t usage_page,
+                                                               pqrs::hid::usage::value_t usage) {
+  if (usage_page == pqrs::hid::usage_page::consumer) {
     auto u = type_safe::get(usage);
 
     switch (consumer_key_code(u)) {
@@ -121,12 +121,12 @@ inline std::optional<consumer_key_code> make_consumer_key_code(const pqrs::osx::
   return std::nullopt;
 }
 
-inline std::optional<pqrs::osx::iokit_hid_usage_page::value_t> make_hid_usage_page(consumer_key_code consumer_key_code) {
-  return pqrs::osx::iokit_hid_usage_page::consumer;
+inline std::optional<pqrs::hid::usage_page::value_t> make_hid_usage_page(consumer_key_code consumer_key_code) {
+  return pqrs::hid::usage_page::consumer;
 }
 
-inline std::optional<pqrs::osx::iokit_hid_usage::value_t> make_hid_usage(consumer_key_code consumer_key_code) {
-  return pqrs::osx::iokit_hid_usage::value_t(static_cast<uint32_t>(consumer_key_code));
+inline std::optional<pqrs::hid::usage::value_t> make_hid_usage(consumer_key_code consumer_key_code) {
+  return pqrs::hid::usage::value_t(static_cast<uint32_t>(consumer_key_code));
 }
 
 inline void from_json(const nlohmann::json& json, consumer_key_code& value) {
