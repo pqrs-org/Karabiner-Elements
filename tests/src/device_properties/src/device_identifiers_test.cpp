@@ -8,18 +8,18 @@ TEST_CASE("device_identifiers") {
 
     auto di = device_properties.get_device_identifiers();
     REQUIRE(di);
-    REQUIRE(di->get_vendor_id() == krbn::vendor_id(0));
-    REQUIRE(di->get_product_id() == krbn::product_id(0));
+    REQUIRE(di->get_vendor_id() == pqrs::hid::vendor_id::value_t(0));
+    REQUIRE(di->get_product_id() == pqrs::hid::product_id::value_t(0));
     REQUIRE(di->get_is_keyboard() == false);
     REQUIRE(di->get_is_pointing_device() == false);
 
-    device_properties.set(krbn::vendor_id(1234));
+    device_properties.set(pqrs::hid::vendor_id::value_t(1234));
     di = device_properties.get_device_identifiers();
-    REQUIRE(di->get_vendor_id() == krbn::vendor_id(1234));
+    REQUIRE(di->get_vendor_id() == pqrs::hid::vendor_id::value_t(1234));
 
-    device_properties.set(krbn::product_id(5678));
+    device_properties.set(pqrs::hid::product_id::value_t(5678));
     di = device_properties.get_device_identifiers();
-    REQUIRE(di->get_product_id() == krbn::product_id(5678));
+    REQUIRE(di->get_product_id() == pqrs::hid::product_id::value_t(5678));
 
     device_properties.set_is_keyboard(true);
     di = device_properties.get_device_identifiers();

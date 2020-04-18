@@ -132,8 +132,8 @@ private:
 
   void update_virtual_hid_keyboard_keyboard_type(void) {
     pqrs::osx::system_preferences::keyboard_type_key key(
-        vendor_id_karabiner_virtual_hid_device,
-        product_id_karabiner_virtual_hid_keyboard,
+        hid::vendor_id::karabiner_virtual_hid_device,
+        hid::product_id::karabiner_virtual_hid_keyboard,
         virtual_hid_keyboard_country_code_);
     auto& keyboard_types = system_preferences_properties_.get_keyboard_types();
     auto it = keyboard_types.find(key);

@@ -6,8 +6,8 @@ TEST_CASE("connected_devices::details::device") {
   {
     krbn::connected_devices::details::descriptions descriptions("manufacturer1",
                                                                 "product1");
-    krbn::device_identifiers identifiers(krbn::vendor_id(1234),
-                                         krbn::product_id(5678),
+    krbn::device_identifiers identifiers(pqrs::hid::vendor_id::value_t(1234),
+                                         pqrs::hid::product_id::value_t(5678),
                                          true,
                                          false);
     krbn::connected_devices::details::device device(descriptions,
@@ -112,8 +112,8 @@ TEST_CASE("connected_devices::details::device") {
 
     REQUIRE(device1.get_descriptions().get_manufacturer() == "");
     REQUIRE(device1.get_descriptions().get_product() == "");
-    REQUIRE(device1.get_identifiers().get_vendor_id() == krbn::vendor_id(0));
-    REQUIRE(device1.get_identifiers().get_product_id() == krbn::product_id(0));
+    REQUIRE(device1.get_identifiers().get_vendor_id() == pqrs::hid::vendor_id::value_t(0));
+    REQUIRE(device1.get_identifiers().get_product_id() == pqrs::hid::product_id::value_t(0));
     REQUIRE(device1.get_identifiers().get_is_keyboard() == false);
     REQUIRE(device1.get_identifiers().get_is_pointing_device() == false);
     REQUIRE(device1.get_is_built_in_keyboard() == false);
@@ -121,8 +121,8 @@ TEST_CASE("connected_devices::details::device") {
 
     REQUIRE(device2.get_descriptions().get_manufacturer() == "manufacturer2");
     REQUIRE(device2.get_descriptions().get_product() == "product2");
-    REQUIRE(device2.get_identifiers().get_vendor_id() == krbn::vendor_id(1234));
-    REQUIRE(device2.get_identifiers().get_product_id() == krbn::product_id(5678));
+    REQUIRE(device2.get_identifiers().get_vendor_id() == pqrs::hid::vendor_id::value_t(1234));
+    REQUIRE(device2.get_identifiers().get_product_id() == pqrs::hid::product_id::value_t(5678));
     REQUIRE(device2.get_identifiers().get_is_keyboard() == true);
     REQUIRE(device2.get_identifiers().get_is_pointing_device() == false);
     REQUIRE(device2.get_is_built_in_keyboard() == true);
@@ -137,8 +137,8 @@ TEST_CASE("connected_devices::details::device") {
 
     REQUIRE(device.get_descriptions().get_manufacturer() == "");
     REQUIRE(device.get_descriptions().get_product() == "");
-    REQUIRE(device.get_identifiers().get_vendor_id() == krbn::vendor_id(0));
-    REQUIRE(device.get_identifiers().get_product_id() == krbn::product_id(0));
+    REQUIRE(device.get_identifiers().get_vendor_id() == pqrs::hid::vendor_id::value_t(0));
+    REQUIRE(device.get_identifiers().get_product_id() == pqrs::hid::product_id::value_t(0));
     REQUIRE(device.get_identifiers().get_is_keyboard() == false);
     REQUIRE(device.get_identifiers().get_is_pointing_device() == false);
     REQUIRE(device.get_is_built_in_keyboard() == false);
@@ -149,8 +149,8 @@ TEST_CASE("connected_devices::details::device") {
     device_properties
         .set_manufacturer("manufacturer")
         .set_product("product")
-        .set(krbn::vendor_id(1234))
-        .set(krbn::product_id(5678))
+        .set(pqrs::hid::vendor_id::value_t(1234))
+        .set(pqrs::hid::product_id::value_t(5678))
         .set_is_keyboard(true);
 
     {
@@ -158,8 +158,8 @@ TEST_CASE("connected_devices::details::device") {
 
       REQUIRE(device.get_descriptions().get_manufacturer() == "manufacturer");
       REQUIRE(device.get_descriptions().get_product() == "product");
-      REQUIRE(device.get_identifiers().get_vendor_id() == krbn::vendor_id(1234));
-      REQUIRE(device.get_identifiers().get_product_id() == krbn::product_id(5678));
+      REQUIRE(device.get_identifiers().get_vendor_id() == pqrs::hid::vendor_id::value_t(1234));
+      REQUIRE(device.get_identifiers().get_product_id() == pqrs::hid::product_id::value_t(5678));
       REQUIRE(device.get_identifiers().get_is_keyboard() == true);
       REQUIRE(device.get_identifiers().get_is_pointing_device() == false);
       REQUIRE(device.get_is_built_in_keyboard() == false);

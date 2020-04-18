@@ -1,11 +1,12 @@
 #pragma once
 
-#include <pqrs/osx/iokit_types.hpp>
-#include <pqrs/osx/iokit_types/extra/nlohmann_json.hpp>
+#include <pqrs/hid.hpp>
 
 namespace krbn {
-using product_id = pqrs::hid::product_id::value_t;
-
-constexpr product_id product_id_karabiner_virtual_hid_keyboard(0x27db);
-constexpr product_id product_id_karabiner_virtual_hid_pointing(0x27da);
+namespace hid {
+namespace product_id {
+constexpr pqrs::hid::product_id::value_t karabiner_virtual_hid_keyboard(0x27db);
+constexpr pqrs::hid::product_id::value_t karabiner_virtual_hid_pointing(0x27da);
+} // namespace product_id
+} // namespace hid
 } // namespace krbn

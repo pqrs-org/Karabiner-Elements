@@ -13,8 +13,8 @@ TEST_CASE("compare") {
 
   auto device_properties1 = krbn::device_properties()
                                 .set(krbn::device_id(98765))
-                                .set(krbn::vendor_id(123))
-                                .set(krbn::product_id(234))
+                                .set(pqrs::hid::vendor_id::value_t(123))
+                                .set(pqrs::hid::product_id::value_t(234))
                                 .set(krbn::location_id(345))
                                 .set_manufacturer("m1"s)
                                 .set_product("p1"s)
@@ -25,8 +25,8 @@ TEST_CASE("compare") {
 
   auto device_properties2 = krbn::device_properties()
                                 .set(krbn::device_id(98765))
-                                .set(krbn::vendor_id(123))
-                                .set(krbn::product_id(234))
+                                .set(pqrs::hid::vendor_id::value_t(123))
+                                .set(pqrs::hid::product_id::value_t(234))
                                 .set(krbn::location_id(345))
                                 .set_manufacturer("m2"s)
                                 .set_product("p1"s)
@@ -37,8 +37,8 @@ TEST_CASE("compare") {
 
   auto device_properties3 = krbn::device_properties()
                                 .set(krbn::device_id(98765))
-                                .set(krbn::vendor_id(123))
-                                .set(krbn::product_id(234))
+                                .set(pqrs::hid::vendor_id::value_t(123))
+                                .set(pqrs::hid::product_id::value_t(234))
                                 .set(krbn::location_id(345))
                                 .set_manufacturer("m1"s)
                                 .set_product("p2"s)
@@ -49,8 +49,8 @@ TEST_CASE("compare") {
 
   auto device_properties4 = krbn::device_properties()
                                 .set(krbn::device_id(98765))
-                                .set(krbn::vendor_id(123))
-                                .set(krbn::product_id(234))
+                                .set(pqrs::hid::vendor_id::value_t(123))
+                                .set(pqrs::hid::product_id::value_t(234))
                                 .set(krbn::location_id(345))
                                 .set_manufacturer("m2"s)
                                 .set_product("p2"s)

@@ -145,8 +145,8 @@ TEST_CASE("manipulator_environment.save_to_file") {
       std::map<pqrs::osx::system_preferences::keyboard_type_key,
                pqrs::osx::iokit_keyboard_type::value_t>({
           {
-              pqrs::osx::system_preferences::keyboard_type_key(krbn::vendor_id_karabiner_virtual_hid_device,
-                                                               krbn::product_id_karabiner_virtual_hid_keyboard,
+              pqrs::osx::system_preferences::keyboard_type_key(krbn::hid::vendor_id::karabiner_virtual_hid_device,
+                                                               krbn::hid::product_id::karabiner_virtual_hid_keyboard,
                                                                krbn::hid_country_code(0)),
               pqrs::osx::iokit_keyboard_type::iso,
           },
@@ -304,43 +304,43 @@ TEST_CASE("conditions.device") {
   auto& environment = manipulator_conditions_helper.get_manipulator_environment();
 
   auto device_id_8888_9999 = manipulator_conditions_helper.prepare_device(
-      krbn::vendor_id(8888), krbn::product_id(9999), std::nullopt, true, false);
+      pqrs::hid::vendor_id::value_t(8888), pqrs::hid::product_id::value_t(9999), std::nullopt, true, false);
 
   auto device_id_1000_2000 = manipulator_conditions_helper.prepare_device(
-      krbn::vendor_id(1000), krbn::product_id(2000), std::nullopt, true, false);
+      pqrs::hid::vendor_id::value_t(1000), pqrs::hid::product_id::value_t(2000), std::nullopt, true, false);
 
   auto device_id_1000_2001 = manipulator_conditions_helper.prepare_device(
-      krbn::vendor_id(1000), krbn::product_id(2001), std::nullopt, true, false);
+      pqrs::hid::vendor_id::value_t(1000), pqrs::hid::product_id::value_t(2001), std::nullopt, true, false);
 
   auto device_id_1001_2000 = manipulator_conditions_helper.prepare_device(
-      krbn::vendor_id(1001), krbn::product_id(2000), std::nullopt, true, false);
+      pqrs::hid::vendor_id::value_t(1001), pqrs::hid::product_id::value_t(2000), std::nullopt, true, false);
 
   auto device_id_1001_2001 = manipulator_conditions_helper.prepare_device(
-      krbn::vendor_id(1001), krbn::product_id(2001), std::nullopt, true, false);
+      pqrs::hid::vendor_id::value_t(1001), pqrs::hid::product_id::value_t(2001), std::nullopt, true, false);
 
   auto device_id_1099_9999 = manipulator_conditions_helper.prepare_device(
-      krbn::vendor_id(1099), krbn::product_id(9999), std::nullopt, true, false);
+      pqrs::hid::vendor_id::value_t(1099), pqrs::hid::product_id::value_t(9999), std::nullopt, true, false);
 
   auto device_id_1000_2000_tt = manipulator_conditions_helper.prepare_device(
-      krbn::vendor_id(1000), krbn::product_id(2000), std::nullopt, true, true);
+      pqrs::hid::vendor_id::value_t(1000), pqrs::hid::product_id::value_t(2000), std::nullopt, true, true);
 
   auto device_id_1000_2000_tf = manipulator_conditions_helper.prepare_device(
-      krbn::vendor_id(1000), krbn::product_id(2000), std::nullopt, true, false);
+      pqrs::hid::vendor_id::value_t(1000), pqrs::hid::product_id::value_t(2000), std::nullopt, true, false);
 
   auto device_id_1000_2000_ft = manipulator_conditions_helper.prepare_device(
-      krbn::vendor_id(1000), krbn::product_id(2000), std::nullopt, false, true);
+      pqrs::hid::vendor_id::value_t(1000), pqrs::hid::product_id::value_t(2000), std::nullopt, false, true);
 
   auto device_id_1000_2000_ff = manipulator_conditions_helper.prepare_device(
-      krbn::vendor_id(1000), krbn::product_id(2000), std::nullopt, false, false);
+      pqrs::hid::vendor_id::value_t(1000), pqrs::hid::product_id::value_t(2000), std::nullopt, false, false);
 
   auto device_id_1000_2000_3000 = manipulator_conditions_helper.prepare_device(
-      krbn::vendor_id(1000), krbn::product_id(2000), krbn::location_id(3000), std::nullopt, std::nullopt);
+      pqrs::hid::vendor_id::value_t(1000), pqrs::hid::product_id::value_t(2000), krbn::location_id(3000), std::nullopt, std::nullopt);
 
   auto device_id_1000_2000_none = manipulator_conditions_helper.prepare_device(
-      krbn::vendor_id(1000), krbn::product_id(2000), std::nullopt, std::nullopt, std::nullopt);
+      pqrs::hid::vendor_id::value_t(1000), pqrs::hid::product_id::value_t(2000), std::nullopt, std::nullopt, std::nullopt);
 
   auto device_id_1000_2000_4000 = manipulator_conditions_helper.prepare_device(
-      krbn::vendor_id(1000), krbn::product_id(2000), krbn::location_id(4000), std::nullopt, std::nullopt);
+      pqrs::hid::vendor_id::value_t(1000), pqrs::hid::product_id::value_t(2000), krbn::location_id(4000), std::nullopt, std::nullopt);
 
   {
     actual_examples_helper helper("device_if.json");
@@ -523,14 +523,14 @@ TEST_CASE("conditions.keyboard_type") {
       std::map<pqrs::osx::system_preferences::keyboard_type_key,
                pqrs::osx::iokit_keyboard_type::value_t>({
           {
-              pqrs::osx::system_preferences::keyboard_type_key(krbn::vendor_id_karabiner_virtual_hid_device,
-                                                               krbn::product_id_karabiner_virtual_hid_keyboard,
+              pqrs::osx::system_preferences::keyboard_type_key(krbn::hid::vendor_id::karabiner_virtual_hid_device,
+                                                               krbn::hid::product_id::karabiner_virtual_hid_keyboard,
                                                                krbn::hid_country_code(0)),
               pqrs::osx::iokit_keyboard_type::ansi,
           },
           {
-              pqrs::osx::system_preferences::keyboard_type_key(krbn::vendor_id_karabiner_virtual_hid_device,
-                                                               krbn::product_id_karabiner_virtual_hid_keyboard,
+              pqrs::osx::system_preferences::keyboard_type_key(krbn::hid::vendor_id::karabiner_virtual_hid_device,
+                                                               krbn::hid::product_id::karabiner_virtual_hid_keyboard,
                                                                krbn::hid_country_code(1)),
               pqrs::osx::iokit_keyboard_type::iso,
           },

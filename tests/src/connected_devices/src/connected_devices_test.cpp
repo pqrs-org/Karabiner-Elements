@@ -13,8 +13,8 @@ TEST_CASE("connected_devices") {
     {
       krbn::connected_devices::details::descriptions descriptions("manufacturer1",
                                                                   "product1");
-      krbn::device_identifiers identifiers(krbn::vendor_id(1234),
-                                           krbn::product_id(5678),
+      krbn::device_identifiers identifiers(pqrs::hid::vendor_id::value_t(1234),
+                                           pqrs::hid::product_id::value_t(5678),
                                            true,
                                            false);
       krbn::connected_devices::details::device device(descriptions,
@@ -26,8 +26,8 @@ TEST_CASE("connected_devices") {
     {
       krbn::connected_devices::details::descriptions descriptions("manufacturer1 (ignored)",
                                                                   "product1 (ignored)");
-      krbn::device_identifiers identifiers(krbn::vendor_id(1234),
-                                           krbn::product_id(5678),
+      krbn::device_identifiers identifiers(pqrs::hid::vendor_id::value_t(1234),
+                                           pqrs::hid::product_id::value_t(5678),
                                            true,
                                            false);
       krbn::connected_devices::details::device device(descriptions,
@@ -39,8 +39,8 @@ TEST_CASE("connected_devices") {
     {
       krbn::connected_devices::details::descriptions descriptions("manufacturer3",
                                                                   "product3");
-      krbn::device_identifiers identifiers(krbn::vendor_id(2345),
-                                           krbn::product_id(6789),
+      krbn::device_identifiers identifiers(pqrs::hid::vendor_id::value_t(2345),
+                                           pqrs::hid::product_id::value_t(6789),
                                            false,
                                            true);
       krbn::connected_devices::details::device device(descriptions,
@@ -52,8 +52,8 @@ TEST_CASE("connected_devices") {
     {
       krbn::connected_devices::details::descriptions descriptions("manufacturer2",
                                                                   "product2");
-      krbn::device_identifiers identifiers(krbn::vendor_id(1234),
-                                           krbn::product_id(5679),
+      krbn::device_identifiers identifiers(pqrs::hid::vendor_id::value_t(1234),
+                                           pqrs::hid::product_id::value_t(5679),
                                            false,
                                            true);
       krbn::connected_devices::details::device device(descriptions,
@@ -65,8 +65,8 @@ TEST_CASE("connected_devices") {
     {
       krbn::connected_devices::details::descriptions descriptions("manufacturer1",
                                                                   "product4");
-      krbn::device_identifiers identifiers(krbn::vendor_id(123),
-                                           krbn::product_id(678),
+      krbn::device_identifiers identifiers(pqrs::hid::vendor_id::value_t(123),
+                                           pqrs::hid::product_id::value_t(678),
                                            false,
                                            true);
       krbn::connected_devices::details::device device(descriptions,
@@ -78,8 +78,8 @@ TEST_CASE("connected_devices") {
     {
       krbn::connected_devices::details::descriptions descriptions("manufacturer1",
                                                                   "product4");
-      krbn::device_identifiers identifiers(krbn::vendor_id(123),
-                                           krbn::product_id(678),
+      krbn::device_identifiers identifiers(pqrs::hid::vendor_id::value_t(123),
+                                           pqrs::hid::product_id::value_t(678),
                                            true,
                                            false);
       krbn::connected_devices::details::device device(descriptions,
@@ -91,12 +91,12 @@ TEST_CASE("connected_devices") {
 
     REQUIRE(connected_devices.is_loaded() == false);
     REQUIRE(connected_devices.get_devices().size() == 5);
-    REQUIRE(connected_devices.get_devices()[0].get_identifiers().get_vendor_id() == krbn::vendor_id(1234));
-    REQUIRE(connected_devices.get_devices()[0].get_identifiers().get_product_id() == krbn::product_id(5678));
-    REQUIRE(connected_devices.get_devices()[1].get_identifiers().get_vendor_id() == krbn::vendor_id(1234));
-    REQUIRE(connected_devices.get_devices()[1].get_identifiers().get_product_id() == krbn::product_id(5679));
-    REQUIRE(connected_devices.get_devices()[2].get_identifiers().get_vendor_id() == krbn::vendor_id(2345));
-    REQUIRE(connected_devices.get_devices()[2].get_identifiers().get_product_id() == krbn::product_id(6789));
+    REQUIRE(connected_devices.get_devices()[0].get_identifiers().get_vendor_id() == pqrs::hid::vendor_id::value_t(1234));
+    REQUIRE(connected_devices.get_devices()[0].get_identifiers().get_product_id() == pqrs::hid::product_id::value_t(5678));
+    REQUIRE(connected_devices.get_devices()[1].get_identifiers().get_vendor_id() == pqrs::hid::vendor_id::value_t(1234));
+    REQUIRE(connected_devices.get_devices()[1].get_identifiers().get_product_id() == pqrs::hid::product_id::value_t(5679));
+    REQUIRE(connected_devices.get_devices()[2].get_identifiers().get_vendor_id() == pqrs::hid::vendor_id::value_t(2345));
+    REQUIRE(connected_devices.get_devices()[2].get_identifiers().get_product_id() == pqrs::hid::product_id::value_t(6789));
 
     std::ifstream ifs("json/connected_devices.json");
 

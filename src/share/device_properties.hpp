@@ -90,21 +90,21 @@ public:
     return json;
   }
 
-  std::optional<vendor_id> get_vendor_id(void) const {
+  std::optional<pqrs::hid::vendor_id::value_t> get_vendor_id(void) const {
     return vendor_id_;
   }
 
-  device_properties& set(vendor_id value) {
+  device_properties& set(pqrs::hid::vendor_id::value_t value) {
     vendor_id_ = value;
     update_device_identifiers();
     return *this;
   }
 
-  std::optional<product_id> get_product_id(void) const {
+  std::optional<pqrs::hid::product_id::value_t> get_product_id(void) const {
     return product_id_;
   }
 
-  device_properties& set(product_id value) {
+  device_properties& set(pqrs::hid::product_id::value_t value) {
     product_id_ = value;
     update_device_identifiers();
     return *this;
@@ -265,15 +265,15 @@ public:
 private:
   void update_device_identifiers(void) {
     device_identifiers_ = std::make_shared<device_identifiers>(
-        vendor_id_.value_or(vendor_id(0)),
-        product_id_.value_or(product_id(0)),
+        vendor_id_.value_or(pqrs::hid::vendor_id::value_t(0)),
+        product_id_.value_or(pqrs::hid::product_id::value_t(0)),
         is_keyboard_.value_or(false),
         is_pointing_device_.value_or(false));
   }
 
   device_id device_id_;
-  std::optional<vendor_id> vendor_id_;
-  std::optional<product_id> product_id_;
+  std::optional<pqrs::hid::vendor_id::value_t> vendor_id_;
+  std::optional<pqrs::hid::product_id::value_t> product_id_;
   std::optional<location_id> location_id_;
   std::optional<std::string> manufacturer_;
   std::optional<std::string> product_;

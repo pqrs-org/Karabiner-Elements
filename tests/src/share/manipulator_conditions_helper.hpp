@@ -18,8 +18,8 @@ public:
     return manipulator_environment_;
   }
 
-  krbn::device_id prepare_device(std::optional<krbn::vendor_id> vendor_id,
-                                 std::optional<krbn::product_id> product_id,
+  krbn::device_id prepare_device(std::optional<pqrs::hid::vendor_id::value_t> vendor_id,
+                                 std::optional<pqrs::hid::product_id::value_t> product_id,
                                  std::optional<krbn::location_id> location_id,
                                  std::optional<bool> is_keyboard,
                                  std::optional<bool> is_pointing_device) {

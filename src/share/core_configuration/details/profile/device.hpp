@@ -83,11 +83,11 @@ public:
     if (!ignore_configured) {
       if (identifiers_.get_is_pointing_device()) {
         ignore_ = true;
-      } else if (identifiers_.get_vendor_id() == vendor_id(0x05ac) &&
-                 identifiers_.get_product_id() == product_id(0x8600)) {
+      } else if (identifiers_.get_vendor_id() == pqrs::hid::vendor_id::value_t(0x05ac) &&
+                 identifiers_.get_product_id() == pqrs::hid::product_id::value_t(0x8600)) {
         // Touch Bar on MacBook Pro 2016
         ignore_ = true;
-      } else if (identifiers_.get_vendor_id() == vendor_id(0x1050)) {
+      } else if (identifiers_.get_vendor_id() == pqrs::hid::vendor_id::value_t(0x1050)) {
         // YubiKey token
         ignore_ = true;
       }

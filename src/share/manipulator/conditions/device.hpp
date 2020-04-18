@@ -3,6 +3,8 @@
 #include "base.hpp"
 #include "device_properties_manager.hpp"
 #include <optional>
+#include <pqrs/hid.hpp>
+#include <pqrs/hid/extra/nlohmann_json.hpp>
 #include <string>
 #include <vector>
 
@@ -100,8 +102,8 @@ public:
 
 private:
   struct definition final {
-    std::optional<vendor_id> vendor_id;
-    std::optional<product_id> product_id;
+    std::optional<pqrs::hid::vendor_id::value_t> vendor_id;
+    std::optional<pqrs::hid::product_id::value_t> product_id;
     std::optional<location_id> location_id;
     std::optional<bool> is_keyboard;
     std::optional<bool> is_pointing_device;
@@ -119,12 +121,12 @@ private:
         if (key == "vendor_id") {
           pqrs::json::requires_number(value, "identifiers entry `vendor_id`");
 
-          d.vendor_id = vendor_id(value.get<int>());
+          d.vendor_id = value.get<pqrs::hid::vendor_id::value_t>();
 
         } else if (key == "product_id") {
           pqrs::json::requires_number(value, "identifiers entry `product_id`");
 
-          d.product_id = product_id(value.get<int>());
+          d.product_id = value.get<pqrs::hid::product_id::value_t>();
 
         } else if (key == "location_id") {
           pqrs::json::requires_number(value, "identifiers entry `location_id`");

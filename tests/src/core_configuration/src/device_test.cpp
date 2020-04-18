@@ -7,8 +7,8 @@ TEST_CASE("device.identifiers") {
   {
     auto json = nlohmann::json::object();
     auto identifiers = json.get<krbn::device_identifiers>();
-    REQUIRE(identifiers.get_vendor_id() == krbn::vendor_id(0));
-    REQUIRE(identifiers.get_product_id() == krbn::product_id(0));
+    REQUIRE(identifiers.get_vendor_id() == pqrs::hid::vendor_id::value_t(0));
+    REQUIRE(identifiers.get_product_id() == pqrs::hid::product_id::value_t(0));
     REQUIRE(identifiers.get_is_keyboard() == false);
     REQUIRE(identifiers.get_is_pointing_device() == false);
   }
@@ -22,24 +22,24 @@ TEST_CASE("device.identifiers") {
         {"is_pointing_device", true},
     });
     auto identifiers = json.get<krbn::device_identifiers>();
-    REQUIRE(identifiers.get_vendor_id() == krbn::vendor_id(1234));
-    REQUIRE(identifiers.get_product_id() == krbn::product_id(5678));
+    REQUIRE(identifiers.get_vendor_id() == pqrs::hid::vendor_id::value_t(1234));
+    REQUIRE(identifiers.get_product_id() == pqrs::hid::product_id::value_t(5678));
     REQUIRE(identifiers.get_is_keyboard() == true);
     REQUIRE(identifiers.get_is_pointing_device() == true);
   }
 
   // construct with vendor_id, product_id, ...
   {
-    krbn::device_identifiers identifiers(krbn::vendor_id(1234), krbn::product_id(5678), true, false);
-    REQUIRE(identifiers.get_vendor_id() == krbn::vendor_id(1234));
-    REQUIRE(identifiers.get_product_id() == krbn::product_id(5678));
+    krbn::device_identifiers identifiers(pqrs::hid::vendor_id::value_t(1234), pqrs::hid::product_id::value_t(5678), true, false);
+    REQUIRE(identifiers.get_vendor_id() == pqrs::hid::vendor_id::value_t(1234));
+    REQUIRE(identifiers.get_product_id() == pqrs::hid::product_id::value_t(5678));
     REQUIRE(identifiers.get_is_keyboard() == true);
     REQUIRE(identifiers.get_is_pointing_device() == false);
   }
   {
-    krbn::device_identifiers identifiers(krbn::vendor_id(4321), krbn::product_id(8765), false, true);
-    REQUIRE(identifiers.get_vendor_id() == krbn::vendor_id(4321));
-    REQUIRE(identifiers.get_product_id() == krbn::product_id(8765));
+    krbn::device_identifiers identifiers(pqrs::hid::vendor_id::value_t(4321), pqrs::hid::product_id::value_t(8765), false, true);
+    REQUIRE(identifiers.get_vendor_id() == pqrs::hid::vendor_id::value_t(4321));
+    REQUIRE(identifiers.get_product_id() == pqrs::hid::product_id::value_t(8765));
     REQUIRE(identifiers.get_is_keyboard() == false);
     REQUIRE(identifiers.get_is_pointing_device() == true);
   }
@@ -79,8 +79,8 @@ TEST_CASE("device") {
   {
     auto json = nlohmann::json::object();
     krbn::core_configuration::details::device device(json);
-    REQUIRE(device.get_identifiers().get_vendor_id() == krbn::vendor_id(0));
-    REQUIRE(device.get_identifiers().get_product_id() == krbn::product_id(0));
+    REQUIRE(device.get_identifiers().get_vendor_id() == pqrs::hid::vendor_id::value_t(0));
+    REQUIRE(device.get_identifiers().get_product_id() == pqrs::hid::product_id::value_t(0));
     REQUIRE(device.get_identifiers().get_is_keyboard() == false);
     REQUIRE(device.get_identifiers().get_is_pointing_device() == false);
     REQUIRE(device.get_ignore() == false);
@@ -102,8 +102,8 @@ TEST_CASE("device") {
         {"manipulate_caps_lock_led", true},
     });
     krbn::core_configuration::details::device device(json);
-    REQUIRE(device.get_identifiers().get_vendor_id() == krbn::vendor_id(1234));
-    REQUIRE(device.get_identifiers().get_product_id() == krbn::product_id(5678));
+    REQUIRE(device.get_identifiers().get_vendor_id() == pqrs::hid::vendor_id::value_t(1234));
+    REQUIRE(device.get_identifiers().get_product_id() == pqrs::hid::product_id::value_t(5678));
     REQUIRE(device.get_identifiers().get_is_keyboard() == true);
     REQUIRE(device.get_identifiers().get_is_pointing_device() == true);
     REQUIRE(device.get_ignore() == true);
