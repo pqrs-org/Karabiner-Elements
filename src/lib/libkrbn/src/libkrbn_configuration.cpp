@@ -330,7 +330,7 @@ void libkrbn_core_configuration_set_selected_profile_virtual_hid_keyboard_countr
     c->get_core_configuration()
         .get_selected_profile()
         .get_virtual_hid_keyboard()
-        .set_country_code(krbn::hid_country_code(value));
+        .set_country_code(pqrs::hid::country_code::value_t(value));
   }
 }
 

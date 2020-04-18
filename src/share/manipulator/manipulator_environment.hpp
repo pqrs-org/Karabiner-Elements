@@ -109,11 +109,11 @@ public:
     async_save_to_file();
   }
 
-  hid_country_code get_virtual_hid_keyboard_country_code(void) const {
+  pqrs::hid::country_code::value_t get_virtual_hid_keyboard_country_code(void) const {
     return virtual_hid_keyboard_country_code_;
   }
 
-  void set_virtual_hid_keyboard_country_code(hid_country_code value) {
+  void set_virtual_hid_keyboard_country_code(pqrs::hid::country_code::value_t value) {
     virtual_hid_keyboard_country_code_ = value;
     update_virtual_hid_keyboard_keyboard_type();
     async_save_to_file();
@@ -150,7 +150,7 @@ private:
   pqrs::osx::input_source::properties input_source_properties_;
   std::unordered_map<std::string, int> variables_;
   pqrs::osx::system_preferences::properties system_preferences_properties_;
-  hid_country_code virtual_hid_keyboard_country_code_;
+  pqrs::hid::country_code::value_t virtual_hid_keyboard_country_code_;
   std::string virtual_hid_keyboard_keyboard_type_; // cache value
 };
 } // namespace manipulator

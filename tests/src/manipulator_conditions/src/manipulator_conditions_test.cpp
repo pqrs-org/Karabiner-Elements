@@ -147,13 +147,13 @@ TEST_CASE("manipulator_environment.save_to_file") {
           {
               pqrs::osx::system_preferences::keyboard_type_key(krbn::hid::vendor_id::karabiner_virtual_hid_device,
                                                                krbn::hid::product_id::karabiner_virtual_hid_keyboard,
-                                                               krbn::hid_country_code(0)),
+                                                               pqrs::hid::country_code::value_t(0)),
               pqrs::osx::iokit_keyboard_type::iso,
           },
       }));
   manipulator_environment.set_system_preferences_properties(system_preferences_properties);
 
-  manipulator_environment.set_virtual_hid_keyboard_country_code(krbn::hid_country_code(0));
+  manipulator_environment.set_virtual_hid_keyboard_country_code(pqrs::hid::country_code::value_t(0));
 
   krbn::async_file_writer::wait();
 
@@ -525,13 +525,13 @@ TEST_CASE("conditions.keyboard_type") {
           {
               pqrs::osx::system_preferences::keyboard_type_key(krbn::hid::vendor_id::karabiner_virtual_hid_device,
                                                                krbn::hid::product_id::karabiner_virtual_hid_keyboard,
-                                                               krbn::hid_country_code(0)),
+                                                               pqrs::hid::country_code::value_t(0)),
               pqrs::osx::iokit_keyboard_type::ansi,
           },
           {
               pqrs::osx::system_preferences::keyboard_type_key(krbn::hid::vendor_id::karabiner_virtual_hid_device,
                                                                krbn::hid::product_id::karabiner_virtual_hid_keyboard,
-                                                               krbn::hid_country_code(1)),
+                                                               pqrs::hid::country_code::value_t(1)),
               pqrs::osx::iokit_keyboard_type::iso,
           },
       }));
@@ -541,12 +541,12 @@ TEST_CASE("conditions.keyboard_type") {
     actual_examples_helper helper("keyboard_type_if.json");
 
     // iso
-    manipulator_environment.set_virtual_hid_keyboard_country_code(krbn::hid_country_code(1));
+    manipulator_environment.set_virtual_hid_keyboard_country_code(pqrs::hid::country_code::value_t(1));
     REQUIRE(helper.get_condition_manager().is_fulfilled(entry,
                                                         manipulator_environment) == true);
 
     // ansi
-    manipulator_environment.set_virtual_hid_keyboard_country_code(krbn::hid_country_code(0));
+    manipulator_environment.set_virtual_hid_keyboard_country_code(pqrs::hid::country_code::value_t(0));
     REQUIRE(helper.get_condition_manager().is_fulfilled(entry,
                                                         manipulator_environment) == false);
   }
@@ -554,12 +554,12 @@ TEST_CASE("conditions.keyboard_type") {
     actual_examples_helper helper("keyboard_type_unless.json");
 
     // iso
-    manipulator_environment.set_virtual_hid_keyboard_country_code(krbn::hid_country_code(1));
+    manipulator_environment.set_virtual_hid_keyboard_country_code(pqrs::hid::country_code::value_t(1));
     REQUIRE(helper.get_condition_manager().is_fulfilled(entry,
                                                         manipulator_environment) == false);
 
     // ansi
-    manipulator_environment.set_virtual_hid_keyboard_country_code(krbn::hid_country_code(0));
+    manipulator_environment.set_virtual_hid_keyboard_country_code(pqrs::hid::country_code::value_t(0));
     REQUIRE(helper.get_condition_manager().is_fulfilled(entry,
                                                         manipulator_environment) == true);
   }

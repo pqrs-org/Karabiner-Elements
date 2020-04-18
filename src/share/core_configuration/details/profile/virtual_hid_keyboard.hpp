@@ -1,6 +1,7 @@
 #pragma once
 
 #include "types.hpp"
+#include <pqrs/hid.hpp>
 
 namespace krbn {
 namespace core_configuration {
@@ -20,11 +21,11 @@ public:
     json_ = value;
   }
 
-  hid_country_code get_country_code(void) const {
+  pqrs::hid::country_code::value_t get_country_code(void) const {
     return country_code_;
   }
 
-  void set_country_code(hid_country_code value) {
+  void set_country_code(pqrs::hid::country_code::value_t value) {
     country_code_ = value;
   }
 
@@ -45,7 +46,7 @@ public:
 
 private:
   nlohmann::json json_;
-  hid_country_code country_code_;
+  pqrs::hid::country_code::value_t country_code_;
   int mouse_key_xy_scale_;
 };
 
@@ -62,7 +63,7 @@ inline void from_json(const nlohmann::json& json, virtual_hid_keyboard& value) {
 
   for (const auto& [k, v] : json.items()) {
     if (k == "country_code") {
-      value.set_country_code(v.get<hid_country_code>());
+      value.set_country_code(v.get<pqrs::hid::country_code::value_t>());
 
     } else if (k == "mouse_key_xy_scale") {
       if (!v.is_number()) {

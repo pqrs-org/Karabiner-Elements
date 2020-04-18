@@ -81,7 +81,7 @@ TEST_CASE("valid") {
     REQUIRE(configuration
                 .get_selected_profile()
                 .get_virtual_hid_keyboard()
-                .get_country_code() == krbn::hid_country_code(99));
+                .get_country_code() == pqrs::hid::country_code::value_t(99));
   }
   {
     auto& actual = configuration.get_selected_profile().get_devices();
@@ -747,7 +747,7 @@ TEST_CASE("profile.to_json") {
     profile.get_fn_function_keys().replace_second(nlohmann::json{{"key_code", "not found"}}.dump(),
                                                   nlohmann::json{{"key_code", "do nothing"}}.dump());
 
-    profile.get_virtual_hid_keyboard().set_country_code(krbn::hid_country_code(20));
+    profile.get_virtual_hid_keyboard().set_country_code(pqrs::hid::country_code::value_t(20));
     profile.get_virtual_hid_keyboard().set_mouse_key_xy_scale(250);
 
     auto expected_fn_function_keys = get_default_fn_function_keys_json();
@@ -1282,7 +1282,7 @@ TEST_CASE("virtual_hid_keyboard") {
   {
     auto json = nlohmann::json::object();
     krbn::core_configuration::details::virtual_hid_keyboard virtual_hid_keyboard(json);
-    REQUIRE(virtual_hid_keyboard.get_country_code() == krbn::hid_country_code(0));
+    REQUIRE(virtual_hid_keyboard.get_country_code() == pqrs::hid::country_code::value_t(0));
   }
 
   // load values from json
@@ -1291,7 +1291,7 @@ TEST_CASE("virtual_hid_keyboard") {
         {"country_code", 10},
     });
     krbn::core_configuration::details::virtual_hid_keyboard virtual_hid_keyboard(json);
-    REQUIRE(virtual_hid_keyboard.get_country_code() == krbn::hid_country_code(10));
+    REQUIRE(virtual_hid_keyboard.get_country_code() == pqrs::hid::country_code::value_t(10));
   }
 
   // invalid values in json
@@ -1319,7 +1319,7 @@ TEST_CASE("virtual_hid_keyboard.to_json") {
         {"dummy", {{"keep_me", true}}},
     });
     krbn::core_configuration::details::virtual_hid_keyboard virtual_hid_keyboard(json);
-    virtual_hid_keyboard.set_country_code(krbn::hid_country_code(10));
+    virtual_hid_keyboard.set_country_code(pqrs::hid::country_code::value_t(10));
     virtual_hid_keyboard.set_mouse_key_xy_scale(50);
 
     nlohmann::json expected({

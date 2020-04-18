@@ -189,7 +189,7 @@ TEST_CASE("json") {
     });
 
     krbn::core_configuration::details::virtual_hid_keyboard virtual_hid_keyboard;
-    virtual_hid_keyboard.set_country_code(krbn::hid_country_code(123));
+    virtual_hid_keyboard.set_country_code(pqrs::hid::country_code::value_t(123));
     virtual_hid_keyboard.set_mouse_key_xy_scale(150);
 
     auto e = krbn::event_queue::event::make_virtual_hid_keyboard_configuration_changed_event(virtual_hid_keyboard);
