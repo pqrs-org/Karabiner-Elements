@@ -4,7 +4,7 @@
 // Distributed under the Boost Software License, Version 1.0.
 // (See http://www.boost.org/LICENSE_1_0.txt)
 
-#include <frozen/unordered_map.h>
+#include <mapbox/eternal.hpp>
 #include <optional>
 #include <pqrs/osx/iokit_types.hpp>
 
@@ -207,9 +207,9 @@ constexpr value_t apple_vendor_top_case_keyboard_fn(0x3f); // apple_vendor_top_c
 
 namespace impl {
 #define PQRS_OSX_IOKIT_HID_SYSTEM_KEY_CODE_PAIR(name) \
-  { type_safe::get(hid::usage::keyboard_or_keypad::name), name }
+  { hid::usage::keyboard_or_keypad::name, name }
 
-constexpr std::pair<type_safe::underlying_type<hid::usage::value_t>, value_t> usage_page_keyboard_or_keypad_pairs[] = {
+constexpr auto usage_page_keyboard_or_keypad_map = mapbox::eternal::map<hid::usage::value_t, value_t>({
     PQRS_OSX_IOKIT_HID_SYSTEM_KEY_CODE_PAIR(keyboard_a),
     PQRS_OSX_IOKIT_HID_SYSTEM_KEY_CODE_PAIR(keyboard_b),
     PQRS_OSX_IOKIT_HID_SYSTEM_KEY_CODE_PAIR(keyboard_c),
@@ -380,38 +380,34 @@ constexpr std::pair<type_safe::underlying_type<hid::usage::value_t>, value_t> us
     PQRS_OSX_IOKIT_HID_SYSTEM_KEY_CODE_PAIR(keyboard_right_shift),
     PQRS_OSX_IOKIT_HID_SYSTEM_KEY_CODE_PAIR(keyboard_right_alt),
     PQRS_OSX_IOKIT_HID_SYSTEM_KEY_CODE_PAIR(keyboard_right_gui),
-};
+});
 
 #undef PQRS_OSX_IOKIT_HID_SYSTEM_KEY_CODE_PAIR
 
 #define PQRS_OSX_IOKIT_HID_SYSTEM_KEY_CODE_PAIR(name) \
-  { type_safe::get(hid::usage::apple_vendor_keyboard::name), apple_vendor_keyboard_##name }
+  { hid::usage::apple_vendor_keyboard::name, apple_vendor_keyboard_##name }
 
-constexpr std::pair<type_safe::underlying_type<hid::usage::value_t>, value_t> usage_page_apple_vendor_keyboard_pairs[] = {
+constexpr auto usage_page_apple_vendor_keyboard_map = mapbox::eternal::map<hid::usage::value_t, value_t>({
     PQRS_OSX_IOKIT_HID_SYSTEM_KEY_CODE_PAIR(dashboard),
     PQRS_OSX_IOKIT_HID_SYSTEM_KEY_CODE_PAIR(function),
     PQRS_OSX_IOKIT_HID_SYSTEM_KEY_CODE_PAIR(launchpad),
     PQRS_OSX_IOKIT_HID_SYSTEM_KEY_CODE_PAIR(expose_all),
-};
+});
 
 #undef PQRS_OSX_IOKIT_HID_SYSTEM_KEY_CODE_PAIR
 
 #define PQRS_OSX_IOKIT_HID_SYSTEM_KEY_CODE_PAIR(name) \
-  { type_safe::get(hid::usage::apple_vendor_top_case::name), apple_vendor_top_case_##name }
+  { hid::usage::apple_vendor_top_case::name, apple_vendor_top_case_##name }
 
-constexpr std::pair<type_safe::underlying_type<hid::usage::value_t>, value_t> usage_page_apple_vendor_top_case_pairs[] = {
+constexpr auto usage_page_apple_vendor_top_case_map = mapbox::eternal::map<hid::usage::value_t, value_t>({
     PQRS_OSX_IOKIT_HID_SYSTEM_KEY_CODE_PAIR(keyboard_fn),
-};
+});
 
 #undef PQRS_OSX_IOKIT_HID_SYSTEM_KEY_CODE_PAIR
 
-constexpr auto usage_page_keyboard_or_keypad_map = frozen::make_unordered_map(usage_page_keyboard_or_keypad_pairs);
-constexpr auto usage_page_apple_vendor_keyboard_map = frozen::make_unordered_map(usage_page_apple_vendor_keyboard_pairs);
-constexpr auto usage_page_apple_vendor_top_case_map = frozen::make_unordered_map(usage_page_apple_vendor_top_case_pairs);
-
 template <typename T>
 inline std::optional<key_code::value_t> find(T& map, hid::usage::value_t usage) {
-  auto it = map.find(type_safe::get(usage));
+  auto it = map.find(usage);
   if (it != std::end(map)) {
     return it->second;
   }

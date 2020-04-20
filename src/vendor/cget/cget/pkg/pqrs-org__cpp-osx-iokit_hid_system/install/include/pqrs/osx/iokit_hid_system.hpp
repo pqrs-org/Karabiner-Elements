@@ -1,6 +1,6 @@
 #pragma once
 
-// pqrs::osx::iokit_hid_system v2.0
+// pqrs::osx::iokit_hid_system v2.1
 
 // (C) Copyright Takayama Fumihiko 2020.
 // Distributed under the Boost Software License, Version 1.0.

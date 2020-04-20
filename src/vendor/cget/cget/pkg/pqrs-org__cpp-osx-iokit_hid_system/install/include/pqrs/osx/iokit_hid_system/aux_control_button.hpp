@@ -5,7 +5,7 @@
 // (See http://www.boost.org/LICENSE_1_0.txt)
 
 #include <IOKit/hidsystem/ev_keymap.h>
-#include <frozen/unordered_map.h>
+#include <mapbox/eternal.hpp>
 #include <optional>
 #include <pqrs/hid.hpp>
 #include <pqrs/osx/iokit_types.hpp>
@@ -49,52 +49,47 @@ constexpr value_t illumination_toggle(NX_KEYTYPE_ILLUMINATION_TOGGLE);
 //
 
 namespace impl {
-constexpr std::pair<type_safe::underlying_type<hid::usage::value_t>, value_t> usage_page_keyboard_or_keypad_pairs[] = {
-    {type_safe::get(hid::usage::keyboard_or_keypad::keyboard_power), power},
-    {type_safe::get(hid::usage::keyboard_or_keypad::keyboard_mute), mute},
-    {type_safe::get(hid::usage::keyboard_or_keypad::keyboard_volume_up), sound_up},
-    {type_safe::get(hid::usage::keyboard_or_keypad::keyboard_volume_down), sound_down},
-};
+constexpr auto usage_page_keyboard_or_keypad_map = mapbox::eternal::map<hid::usage::value_t, value_t>({
+    {hid::usage::keyboard_or_keypad::keyboard_power, power},
+    {hid::usage::keyboard_or_keypad::keyboard_mute, mute},
+    {hid::usage::keyboard_or_keypad::keyboard_volume_up, sound_up},
+    {hid::usage::keyboard_or_keypad::keyboard_volume_down, sound_down},
+});
 
-constexpr std::pair<type_safe::underlying_type<hid::usage::value_t>, value_t> usage_page_consumer_pairs[] = {
+constexpr auto usage_page_consumer_map = mapbox::eternal::map<hid::usage::value_t, value_t>({
     // hid::usage_page::consumer::consumer_control
-    {type_safe::get(hid::usage::consumer::power), power},
-    {type_safe::get(hid::usage::consumer::display_brightness_increment), brightness_up},
-    {type_safe::get(hid::usage::consumer::display_brightness_decrement), brightness_down},
-    {type_safe::get(hid::usage::consumer::fast_forward), fast},
-    {type_safe::get(hid::usage::consumer::rewind), rewind},
-    {type_safe::get(hid::usage::consumer::scan_next_track), next},
-    {type_safe::get(hid::usage::consumer::scan_previous_track), previous},
-    {type_safe::get(hid::usage::consumer::eject), eject},
-    {type_safe::get(hid::usage::consumer::play_or_pause), play},
-    {type_safe::get(hid::usage::consumer::mute), mute},
-    {type_safe::get(hid::usage::consumer::volume_increment), sound_up},
-    {type_safe::get(hid::usage::consumer::volume_decrement), sound_down},
+    {hid::usage::consumer::power, power},
+    {hid::usage::consumer::display_brightness_increment, brightness_up},
+    {hid::usage::consumer::display_brightness_decrement, brightness_down},
+    {hid::usage::consumer::fast_forward, fast},
+    {hid::usage::consumer::rewind, rewind},
+    {hid::usage::consumer::scan_next_track, next},
+    {hid::usage::consumer::scan_previous_track, previous},
+    {hid::usage::consumer::eject, eject},
+    {hid::usage::consumer::play_or_pause, play},
+    {hid::usage::consumer::mute, mute},
+    {hid::usage::consumer::volume_increment, sound_up},
+    {hid::usage::consumer::volume_decrement, sound_down},
     // hid::usage_page::consumer::ac_pan
-};
+});
 
-constexpr std::pair<type_safe::underlying_type<hid::usage::value_t>, value_t> usage_page_apple_vendor_keyboard_pairs[] = {
-    {type_safe::get(hid::usage::apple_vendor_keyboard::brightness_up), brightness_up},
-    {type_safe::get(hid::usage::apple_vendor_keyboard::brightness_down), brightness_down},
-};
+constexpr auto usage_page_apple_vendor_keyboard_map = mapbox::eternal::map<hid::usage::value_t, value_t>({
+    {hid::usage::apple_vendor_keyboard::brightness_up, brightness_up},
+    {hid::usage::apple_vendor_keyboard::brightness_down, brightness_down},
+});
 
-constexpr std::pair<type_safe::underlying_type<hid::usage::value_t>, value_t> usage_page_apple_vendor_top_case_pairs[] = {
-    {type_safe::get(hid::usage::apple_vendor_top_case::brightness_up), brightness_up},
-    {type_safe::get(hid::usage::apple_vendor_top_case::brightness_down), brightness_down},
-    {type_safe::get(hid::usage::apple_vendor_top_case::video_mirror), vidmirror},
-    {type_safe::get(hid::usage::apple_vendor_top_case::illumination_toggle), illumination_toggle},
-    {type_safe::get(hid::usage::apple_vendor_top_case::illumination_up), illumination_up},
-    {type_safe::get(hid::usage::apple_vendor_top_case::illumination_down), illumination_down},
-};
-
-constexpr auto usage_page_keyboard_or_keypad_map = frozen::make_unordered_map(usage_page_keyboard_or_keypad_pairs);
-constexpr auto usage_page_consumer_map = frozen::make_unordered_map(usage_page_consumer_pairs);
-constexpr auto usage_page_apple_vendor_keyboard_map = frozen::make_unordered_map(usage_page_apple_vendor_keyboard_pairs);
-constexpr auto usage_page_apple_vendor_top_case_map = frozen::make_unordered_map(usage_page_apple_vendor_top_case_pairs);
+constexpr auto usage_page_apple_vendor_top_case_map = mapbox::eternal::map<hid::usage::value_t, value_t>({
+    {hid::usage::apple_vendor_top_case::brightness_up, brightness_up},
+    {hid::usage::apple_vendor_top_case::brightness_down, brightness_down},
+    {hid::usage::apple_vendor_top_case::video_mirror, vidmirror},
+    {hid::usage::apple_vendor_top_case::illumination_toggle, illumination_toggle},
+    {hid::usage::apple_vendor_top_case::illumination_up, illumination_up},
+    {hid::usage::apple_vendor_top_case::illumination_down, illumination_down},
+});
 
 template <typename T>
 inline std::optional<value_t> find(T& map, hid::usage::value_t usage) {
-  auto it = map.find(type_safe::get(usage));
+  auto it = map.find(usage);
   if (it != std::end(map)) {
     return it->second;
   }
