@@ -2,6 +2,7 @@
 
 #include "stream_utility.hpp"
 #include <cstdint>
+#include <mapbox/eternal.hpp>
 #include <pqrs/osx/iokit_hid_value.hpp>
 
 namespace krbn {
@@ -48,79 +49,50 @@ enum class pointing_button : uint32_t {
 };
 
 namespace impl {
-inline const std::vector<std::pair<std::string, pointing_button>>& get_pointing_button_name_value_pairs(void) {
-  static std::mutex mutex;
-  std::lock_guard<std::mutex> guard(mutex);
+constexpr std::pair<const mapbox::eternal::string, const pointing_button> pointing_button_name_value_pairs[] = {
+    {"button1", pointing_button::button1},
+    {"button2", pointing_button::button2},
+    {"button3", pointing_button::button3},
+    {"button4", pointing_button::button4},
+    {"button5", pointing_button::button5},
+    {"button6", pointing_button::button6},
+    {"button7", pointing_button::button7},
+    {"button8", pointing_button::button8},
 
-  static std::vector<std::pair<std::string, pointing_button>> pairs({
-      // From IOHIDUsageTables.h
+    {"button9", pointing_button::button9},
+    {"button10", pointing_button::button10},
+    {"button11", pointing_button::button11},
+    {"button12", pointing_button::button12},
+    {"button13", pointing_button::button13},
+    {"button14", pointing_button::button14},
+    {"button15", pointing_button::button15},
+    {"button16", pointing_button::button16},
 
-      {"button1", pointing_button::button1},
-      {"button2", pointing_button::button2},
-      {"button3", pointing_button::button3},
-      {"button4", pointing_button::button4},
-      {"button5", pointing_button::button5},
-      {"button6", pointing_button::button6},
-      {"button7", pointing_button::button7},
-      {"button8", pointing_button::button8},
+    {"button17", pointing_button::button17},
+    {"button18", pointing_button::button18},
+    {"button19", pointing_button::button19},
+    {"button20", pointing_button::button20},
+    {"button21", pointing_button::button21},
+    {"button22", pointing_button::button22},
+    {"button23", pointing_button::button23},
+    {"button24", pointing_button::button24},
 
-      {"button9", pointing_button::button9},
-      {"button10", pointing_button::button10},
-      {"button11", pointing_button::button11},
-      {"button12", pointing_button::button12},
-      {"button13", pointing_button::button13},
-      {"button14", pointing_button::button14},
-      {"button15", pointing_button::button15},
-      {"button16", pointing_button::button16},
+    {"button25", pointing_button::button25},
+    {"button26", pointing_button::button26},
+    {"button27", pointing_button::button27},
+    {"button28", pointing_button::button28},
+    {"button29", pointing_button::button29},
+    {"button30", pointing_button::button30},
+    {"button31", pointing_button::button31},
+    {"button32", pointing_button::button32},
+};
 
-      {"button17", pointing_button::button17},
-      {"button18", pointing_button::button18},
-      {"button19", pointing_button::button19},
-      {"button20", pointing_button::button20},
-      {"button21", pointing_button::button21},
-      {"button22", pointing_button::button22},
-      {"button23", pointing_button::button23},
-      {"button24", pointing_button::button24},
-
-      {"button25", pointing_button::button25},
-      {"button26", pointing_button::button26},
-      {"button27", pointing_button::button27},
-      {"button28", pointing_button::button28},
-      {"button29", pointing_button::button29},
-      {"button30", pointing_button::button30},
-      {"button31", pointing_button::button31},
-      {"button32", pointing_button::button32},
-  });
-
-  return pairs;
-}
-
-inline const std::unordered_map<std::string, pointing_button>& get_pointing_button_name_value_map(void) {
-  static std::mutex mutex;
-  std::lock_guard<std::mutex> guard(mutex);
-
-  static std::unordered_map<std::string, pointing_button> map;
-
-  if (map.empty()) {
-    for (const auto& pair : impl::get_pointing_button_name_value_pairs()) {
-      auto it = map.find(pair.first);
-      if (it != std::end(map)) {
-        throw std::logic_error(
-            fmt::format("duplicate entry in get_pointing_button_name_value_pairs: {0}",
-                        pair.first));
-      } else {
-        map.emplace(pair.first, pair.second);
-      }
-    }
-  }
-
-  return map;
-}
+constexpr auto pointing_button_name_value_map = mapbox::eternal::hash_map<mapbox::eternal::string, pointing_button>(pointing_button_name_value_pairs);
 } // namespace impl
 
 inline std::optional<pointing_button> make_pointing_button(const std::string& name) {
-  auto& map = impl::get_pointing_button_name_value_map();
-  auto it = map.find(name);
+  auto& map = impl::pointing_button_name_value_map;
+  auto it = map.find(name.c_str());
   if (it == map.end()) {
     return std::nullopt;
   }
@@ -128,9 +100,9 @@ inline std::optional<pointing_button> make_pointing_button(const std::string& na
 }
 
 inline std::string make_pointing_button_name(pointing_button pointing_button) {
-  for (const auto& pair : impl::get_pointing_button_name_value_pairs()) {
+  for (const auto& pair : impl::pointing_button_name_value_pairs) {
     if (pair.second == pointing_button) {
-      return pair.first;
+      return pair.first.c_str();
     }
   }
   return fmt::format("(number:{0})", static_cast<uint32_t>(pointing_button));
