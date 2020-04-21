@@ -3,6 +3,7 @@
 #include "stream_utility.hpp"
 #include <IOKit/hid/IOHIDUsageTables.h>
 #include <cstdint>
+#include <mapbox/eternal.hpp>
 #include <pqrs/osx/iokit_hid_value.hpp>
 #include <spdlog/fmt/fmt.h>
 
@@ -23,54 +24,27 @@ enum class consumer_key_code : uint32_t {
 };
 
 namespace impl {
-inline const std::vector<std::pair<std::string, consumer_key_code>>& get_consumer_key_code_name_value_pairs(void) {
-  static std::mutex mutex;
-  std::lock_guard<std::mutex> guard(mutex);
+constexpr std::pair<const mapbox::eternal::string, const consumer_key_code> consumer_key_code_name_value_pairs[] = {
+    {"power", consumer_key_code::power},
+    {"display_brightness_increment", consumer_key_code::display_brightness_increment},
+    {"display_brightness_decrement", consumer_key_code::display_brightness_decrement},
+    {"fastforward", consumer_key_code::fastforward},
+    {"rewind", consumer_key_code::rewind},
+    {"scan_next_track", consumer_key_code::scan_next_track},
+    {"scan_previous_track", consumer_key_code::scan_previous_track},
+    {"eject", consumer_key_code::eject},
+    {"play_or_pause", consumer_key_code::play_or_pause},
+    {"mute", consumer_key_code::mute},
+    {"volume_increment", consumer_key_code::volume_increment},
+    {"volume_decrement", consumer_key_code::volume_decrement},
+};
 
-  static std::vector<std::pair<std::string, consumer_key_code>> pairs({
-      {"power", consumer_key_code::power},
-      {"display_brightness_increment", consumer_key_code::display_brightness_increment},
-      {"display_brightness_decrement", consumer_key_code::display_brightness_decrement},
-      {"fastforward", consumer_key_code::fastforward},
-      {"rewind", consumer_key_code::rewind},
-      {"scan_next_track", consumer_key_code::scan_next_track},
-      {"scan_previous_track", consumer_key_code::scan_previous_track},
-      {"eject", consumer_key_code::eject},
-      {"play_or_pause", consumer_key_code::play_or_pause},
-      {"mute", consumer_key_code::mute},
-      {"volume_increment", consumer_key_code::volume_increment},
-      {"volume_decrement", consumer_key_code::volume_decrement},
-  });
-
-  return pairs;
-}
-
-inline const std::unordered_map<std::string, consumer_key_code>& get_consumer_key_code_name_value_map(void) {
-  static std::mutex mutex;
-  std::lock_guard<std::mutex> guard(mutex);
-
-  static std::unordered_map<std::string, consumer_key_code> map;
-
-  if (map.empty()) {
-    for (const auto& pair : get_consumer_key_code_name_value_pairs()) {
-      auto it = map.find(pair.first);
-      if (it != std::end(map)) {
-        throw std::logic_error(
-            fmt::format("duplicate entry in get_consumer_key_code_name_value_pairs: {0}",
-                        pair.first));
-      } else {
-        map.emplace(pair.first, pair.second);
-      }
-    }
-  }
-
-  return map;
-}
+constexpr auto consumer_key_code_name_value_map = mapbox::eternal::hash_map<mapbox::eternal::string, consumer_key_code>(consumer_key_code_name_value_pairs);
 } // namespace impl
 
 inline std::optional<consumer_key_code> make_consumer_key_code(const std::string& name) {
-  auto& map = impl::get_consumer_key_code_name_value_map();
-  auto it = map.find(name);
+  auto& map = impl::consumer_key_code_name_value_map;
+  auto it = map.find(name.c_str());
   if (it == map.end()) {
     return std::nullopt;
   }
@@ -78,9 +52,9 @@ inline std::optional<consumer_key_code> make_consumer_key_code(const std::string
 }
 
 inline std::string make_consumer_key_code_name(consumer_key_code consumer_key_code) {
-  for (const auto& pair : impl::get_consumer_key_code_name_value_pairs()) {
+  for (const auto& pair : impl::consumer_key_code_name_value_pairs) {
     if (pair.second == consumer_key_code) {
-      return pair.first;
+      return pair.first.c_str();
     }
   }
   return fmt::format("(number:{0})", static_cast<uint32_t>(consumer_key_code));
