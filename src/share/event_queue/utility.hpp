@@ -143,7 +143,7 @@ static inline std::shared_ptr<queue> insert_device_keys_and_pointing_buttons_are
             pressed_keys_manager->insert(*v);
           } else if (auto v = e.find<consumer_key_code>()) {
             pressed_keys_manager->insert(*v);
-          } else if (auto v = e.find<pointing_button>()) {
+          } else if (auto v = e.find<pointing_button::value_t>()) {
             pressed_keys_manager->insert(*v);
           }
         } else if (entry.get_event_type() == event_type::key_up) {
@@ -152,7 +152,7 @@ static inline std::shared_ptr<queue> insert_device_keys_and_pointing_buttons_are
               pressed_keys_manager->erase(*v);
             } else if (auto v = e.find<consumer_key_code>()) {
               pressed_keys_manager->erase(*v);
-            } else if (auto v = e.find<pointing_button>()) {
+            } else if (auto v = e.find<pointing_button::value_t>()) {
               pressed_keys_manager->erase(*v);
             }
 

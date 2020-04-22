@@ -12,7 +12,7 @@ class key_down_up_valued_event final {
 public:
   using value_t = mpark::variant<key_code,
                                  consumer_key_code,
-                                 pointing_button,
+                                 pointing_button::value_t,
                                  mpark::monostate>;
 
   key_down_up_valued_event(void) : value_(mpark::monostate()) {
@@ -58,7 +58,7 @@ public:
       });
       return json.dump();
 
-    } else if (auto value = find<pointing_button>()) {
+    } else if (auto value = find<pointing_button::value_t>()) {
       auto json = nlohmann::json::object({
           {"pointing_button", make_pointing_button_name(*value)},
       });
@@ -87,8 +87,8 @@ inline void to_json(nlohmann::json& json, const key_down_up_valued_event& value)
   } else if (auto v = value.find<consumer_key_code>()) {
     json["consumer_key_code"] = *v;
 
-  } else if (auto v = value.find<pointing_button>()) {
-    json["pointing_button"] = *v;
+  } else if (auto v = value.find<pointing_button::value_t>()) {
+    json["pointing_button"] = type_safe::get(*v);
   }
 }
 
@@ -105,7 +105,7 @@ inline void from_json(const nlohmann::json& json, key_down_up_valued_event& valu
       value.set_value(v.get<consumer_key_code>());
 
     } else if (k == "pointing_button") {
-      value.set_value(v.get<pointing_button>());
+      value.set_value(v.get<pointing_button::value_t>());
 
     } else {
       throw pqrs::json::unmarshal_error(fmt::format("unknown key: `{0}`", k));

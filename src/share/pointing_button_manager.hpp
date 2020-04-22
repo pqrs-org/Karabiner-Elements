@@ -16,7 +16,7 @@ public:
     };
 
     active_pointing_button(type type,
-                           pointing_button pointing_button,
+                           pointing_button::value_t pointing_button,
                            device_id device_id) : type_(type),
                                                   pointing_button_(pointing_button),
                                                   device_id_(device_id) {
@@ -26,7 +26,7 @@ public:
       return type_;
     }
 
-    pointing_button get_pointing_button(void) const {
+    pointing_button::value_t get_pointing_button(void) const {
       return pointing_button_;
     }
 
@@ -65,7 +65,7 @@ public:
 
   private:
     type type_;
-    pointing_button pointing_button_;
+    pointing_button::value_t pointing_button_;
     device_id device_id_;
   };
 
@@ -104,7 +104,7 @@ public:
     active_pointing_buttons_.clear();
   }
 
-  bool is_pressed(pointing_button pointing_button) const {
+  bool is_pressed(pointing_button::value_t pointing_button) const {
     int count = 0;
 
     for (const auto& f : active_pointing_buttons_) {
@@ -119,12 +119,9 @@ public:
   pqrs::karabiner_virtual_hid_device::hid_report::buttons make_hid_report_buttons(void) const {
     pqrs::karabiner_virtual_hid_device::hid_report::buttons buttons;
 
-    auto button1 = static_cast<uint32_t>(pointing_button::button1);
-    auto button32 = static_cast<uint32_t>(pointing_button::button32);
-
-    for (size_t i = button1; i < button32; ++i) {
-      if (is_pressed(pointing_button(i))) {
-        buttons.insert(i - button1 + 1);
+    for (auto b = pointing_button::button1; b <= pointing_button::button32; ++b) {
+      if (is_pressed(b)) {
+        buttons.insert(type_safe::get(b));
       }
     }
 

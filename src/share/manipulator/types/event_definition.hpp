@@ -25,7 +25,7 @@ public:
   using value_t = mpark::variant<mpark::monostate,
                                  key_code,
                                  consumer_key_code,
-                                 pointing_button,
+                                 pointing_button::value_t,
                                  type,                                                     // For any
                                  std::string,                                              // For shell_command
                                  std::vector<pqrs::osx::input_source_selector::specifier>, // For select_input_source
@@ -62,9 +62,9 @@ public:
     return std::nullopt;
   }
 
-  std::optional<pointing_button> get_pointing_button(void) const {
+  std::optional<pointing_button::value_t> get_pointing_button(void) const {
     if (type_ == type::pointing_button) {
-      return mpark::get<pointing_button>(value_);
+      return mpark::get<pointing_button::value_t>(value_);
     }
     return std::nullopt;
   }
@@ -113,7 +113,7 @@ public:
       case type::consumer_key_code:
         return event_queue::event(mpark::get<consumer_key_code>(value_));
       case type::pointing_button:
-        return event_queue::event(mpark::get<pointing_button>(value_));
+        return event_queue::event(mpark::get<pointing_button::value_t>(value_));
       case type::any:
         return std::nullopt;
       case type::shell_command:
@@ -172,7 +172,7 @@ public:
 
       try {
         type_ = type::pointing_button;
-        value_ = value.get<pointing_button>();
+        value_ = value.get<pointing_button::value_t>();
       } catch (const pqrs::json::unmarshal_error& e) {
         throw pqrs::json::unmarshal_error(fmt::format("`{0}` error: {1}", key, e.what()));
       }

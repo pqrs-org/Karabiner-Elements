@@ -43,7 +43,7 @@ public:
 
   using value_t = mpark::variant<key_code,                                                 // For type::key_code
                                  consumer_key_code,                                        // For type::consumer_key_code
-                                 pointing_button,                                          // For type::pointing_button
+                                 pointing_button::value_t,                                 // For type::pointing_button
                                  pointing_motion,                                          // For type::pointing_motion
                                  int64_t,                                                  // For type::caps_lock_state_changed
                                  std::string,                                              // For shell_command
@@ -74,7 +74,7 @@ public:
           } else if (key == "consumer_key_code") {
             result.value_ = value.get<consumer_key_code>();
           } else if (key == "pointing_button") {
-            result.value_ = value.get<pointing_button>();
+            result.value_ = value.get<pointing_button::value_t>();
           } else if (key == "pointing_motion") {
             result.value_ = value.get<pointing_motion>();
           } else if (key == "caps_lock_state_changed") {
@@ -209,8 +209,8 @@ public:
                                                         value_(consumer_key_code) {
   }
 
-  explicit event(pointing_button pointing_button) : type_(type::pointing_button),
-                                                    value_(pointing_button) {
+  explicit event(pointing_button::value_t pointing_button) : type_(type::pointing_button),
+                                                             value_(pointing_button) {
   }
 
   explicit event(const pointing_motion& pointing_motion) : type_(type::pointing_motion),
@@ -334,10 +334,10 @@ public:
     return std::nullopt;
   }
 
-  std::optional<pointing_button> get_pointing_button(void) const {
+  std::optional<pointing_button::value_t> get_pointing_button(void) const {
     try {
       if (type_ == type::pointing_button) {
-        return mpark::get<pointing_button>(value_);
+        return mpark::get<pointing_button::value_t>(value_);
       }
     } catch (mpark::bad_variant_access&) {
     }
@@ -431,7 +431,7 @@ public:
     } else if (auto value = find<consumer_key_code>()) {
       return std::make_shared<key_down_up_valued_event>(*value);
 
-    } else if (auto value = find<pointing_button>()) {
+    } else if (auto value = find<pointing_button::value_t>()) {
       return std::make_shared<key_down_up_valued_event>(*value);
     }
 

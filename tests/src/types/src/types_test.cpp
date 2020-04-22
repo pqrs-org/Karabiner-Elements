@@ -157,7 +157,7 @@ TEST_CASE("make_pointing_button") {
   REQUIRE(!krbn::make_pointing_button("unknown"));
 
   REQUIRE(krbn::make_pointing_button_name(krbn::pointing_button::button1) == std::string("button1"));
-  REQUIRE(krbn::make_pointing_button_name(krbn::pointing_button(12345)) == std::string("(number:12345)"));
+  REQUIRE(krbn::make_pointing_button_name(krbn::pointing_button::value_t(12345)) == std::string("(number:12345)"));
 
   {
     auto actual = krbn::make_pointing_button(pqrs::hid::usage_page::button,
