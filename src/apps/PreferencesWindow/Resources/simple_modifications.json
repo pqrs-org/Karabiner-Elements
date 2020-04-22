@@ -668,9 +668,9 @@
         }
     },
     {
-        "label": "fastforward",
+        "label": "fast_forward",
         "data": {
-            "consumer_key_code": "fastforward"
+            "consumer_key_code": "fast_forward"
         }
     },
     {
@@ -1776,7 +1776,7 @@
         }
     },
     {
-        "label": "vk_consumer_next (equal to `fastforward`)",
+        "label": "vk_consumer_next (equal to `fast_forward`)",
         "not_from": true,
         "data": {
             "key_code": "vk_consumer_next"
@@ -1827,6 +1827,12 @@
         "not_from": true,
         "data": {
             "key_code": "fastforward"
+        }
+    },
+    {
+        "label": "consumer_key_code::fastforward",
+        "data": {
+            "consumer_key_code": "fastforward"
         }
     },
     {

@@ -258,7 +258,7 @@
                         "key_code": "f9"
                     },
                     "to": {
-                        "consumer_key_code": "fastforward"
+                        "consumer_key_code": "fast_forward"
                     }
                 },
                 {
@@ -397,7 +397,7 @@
                         "key_code": "f9"
                     },
                     "to": {
-                        "consumer_key_code": "fastforward"
+                        "consumer_key_code": "fast_forward"
                     }
                 },
                 {
@@ -518,7 +518,7 @@
                         "key_code": "f9"
                     },
                     "to": {
-                        "consumer_key_code": "fastforward"
+                        "consumer_key_code": "fast_forward"
                     }
                 },
                 {

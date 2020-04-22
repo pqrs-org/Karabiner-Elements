@@ -54,7 +54,7 @@ TEST_CASE("valid") {
                           nlohmann::json{{"consumer_key_code", "play_or_pause"}}.dump());
 
     expected.emplace_back(nlohmann::json{{"key_code", "f9"}}.dump(),
-                          nlohmann::json{{"consumer_key_code", "fastforward"}}.dump());
+                          nlohmann::json{{"consumer_key_code", "fast_forward"}}.dump());
 
     expected.emplace_back(nlohmann::json{{"key_code", "f10"}}.dump(),
                           nlohmann::json{{"consumer_key_code", "mute"}}.dump());
@@ -240,7 +240,7 @@ std::vector<std::pair<std::string, std::string>> make_default_fn_function_keys_p
                      nlohmann::json{{"consumer_key_code", "play_or_pause"}}.dump());
 
   pairs.emplace_back(nlohmann::json{{"key_code", "f9"}}.dump(),
-                     nlohmann::json{{"consumer_key_code", "fastforward"}}.dump());
+                     nlohmann::json{{"consumer_key_code", "fast_forward"}}.dump());
 
   pairs.emplace_back(nlohmann::json{{"key_code", "f10"}}.dump(),
                      nlohmann::json{{"consumer_key_code", "mute"}}.dump());

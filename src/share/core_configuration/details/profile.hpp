@@ -129,7 +129,7 @@ public:
 
     json.push_back(nlohmann::json::object());
     json.back()["from"]["key_code"] = "f9";
-    json.back()["to"]["consumer_key_code"] = "fastforward";
+    json.back()["to"]["consumer_key_code"] = "fast_forward";
 
     json.push_back(nlohmann::json::object());
     json.back()["from"]["key_code"] = "f10";

@@ -1,6 +1,5 @@
 #pragma once
 
-#include "stream_utility.hpp"
 #include <cstdint>
 #include <iostream>
 #include <mapbox/eternal.hpp>
@@ -113,7 +112,7 @@ inline std::string make_pointing_button_name(pointing_button::value_t pointing_b
       return pair.first.c_str();
     }
   }
-  return fmt::format("(number:{0})", static_cast<uint32_t>(pointing_button));
+  return fmt::format("(number:{0})", type_safe::get(pointing_button));
 }
 
 inline std::optional<pointing_button::value_t> make_pointing_button(pqrs::hid::usage_page::value_t usage_page,

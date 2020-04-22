@@ -16,7 +16,7 @@
                 "f6":  "illumination_increment",
                 "f7":  "rewind",
                 "f8":  "play_or_pause",
-                "f9":  "fastforward",
+                "f9":  "fast_forward",
                 "f10": "mute",
                 "f11": "volume_decrement",
                 "f12": "volume_increment"

@@ -42,7 +42,7 @@ public:
   };
 
   using value_t = mpark::variant<key_code,                                                 // For type::key_code
-                                 consumer_key_code,                                        // For type::consumer_key_code
+                                 consumer_key_code::value_t,                               // For type::consumer_key_code
                                  pointing_button::value_t,                                 // For type::pointing_button
                                  pointing_motion,                                          // For type::pointing_motion
                                  int64_t,                                                  // For type::caps_lock_state_changed
@@ -72,7 +72,7 @@ public:
           } else if (key == "key_code") {
             result.value_ = value.get<key_code>();
           } else if (key == "consumer_key_code") {
-            result.value_ = value.get<consumer_key_code>();
+            result.value_ = value.get<consumer_key_code::value_t>();
           } else if (key == "pointing_button") {
             result.value_ = value.get<pointing_button::value_t>();
           } else if (key == "pointing_motion") {
@@ -205,8 +205,8 @@ public:
                                       value_(key_code) {
   }
 
-  explicit event(consumer_key_code consumer_key_code) : type_(type::consumer_key_code),
-                                                        value_(consumer_key_code) {
+  explicit event(consumer_key_code::value_t consumer_key_code) : type_(type::consumer_key_code),
+                                                                 value_(consumer_key_code) {
   }
 
   explicit event(pointing_button::value_t pointing_button) : type_(type::pointing_button),
@@ -324,10 +324,10 @@ public:
     return std::nullopt;
   }
 
-  std::optional<consumer_key_code> get_consumer_key_code(void) const {
+  std::optional<consumer_key_code::value_t> get_consumer_key_code(void) const {
     try {
       if (type_ == type::consumer_key_code) {
-        return mpark::get<consumer_key_code>(value_);
+        return mpark::get<consumer_key_code::value_t>(value_);
       }
     } catch (mpark::bad_variant_access&) {
     }
@@ -428,7 +428,7 @@ public:
     if (auto value = find<key_code>()) {
       return std::make_shared<key_down_up_valued_event>(*value);
 
-    } else if (auto value = find<consumer_key_code>()) {
+    } else if (auto value = find<consumer_key_code::value_t>()) {
       return std::make_shared<key_down_up_valued_event>(*value);
 
     } else if (auto value = find<pointing_button::value_t>()) {

@@ -11,7 +11,7 @@ namespace krbn {
 class key_down_up_valued_event final {
 public:
   using value_t = mpark::variant<key_code,
-                                 consumer_key_code,
+                                 consumer_key_code::value_t,
                                  pointing_button::value_t,
                                  mpark::monostate>;
 
@@ -52,7 +52,7 @@ public:
       });
       return json.dump();
 
-    } else if (auto value = find<consumer_key_code>()) {
+    } else if (auto value = find<consumer_key_code::value_t>()) {
       auto json = nlohmann::json::object({
           {"consumer_key_code", make_consumer_key_code_name(*value)},
       });
@@ -84,8 +84,8 @@ inline void to_json(nlohmann::json& json, const key_down_up_valued_event& value)
   if (auto v = value.find<key_code>()) {
     json["key_code"] = *v;
 
-  } else if (auto v = value.find<consumer_key_code>()) {
-    json["consumer_key_code"] = *v;
+  } else if (auto v = value.find<consumer_key_code::value_t>()) {
+    json["consumer_key_code"] = type_safe::get(*v);
 
   } else if (auto v = value.find<pointing_button::value_t>()) {
     json["pointing_button"] = type_safe::get(*v);
@@ -102,7 +102,7 @@ inline void from_json(const nlohmann::json& json, key_down_up_valued_event& valu
       value.set_value(v.get<key_code>());
 
     } else if (k == "consumer_key_code") {
-      value.set_value(v.get<consumer_key_code>());
+      value.set_value(v.get<consumer_key_code::value_t>());
 
     } else if (k == "pointing_button") {
       value.set_value(v.get<pointing_button::value_t>());

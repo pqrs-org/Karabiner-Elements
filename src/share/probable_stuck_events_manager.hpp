@@ -64,10 +64,10 @@ public:
 
               erase_except_modifier_flags<key_code>();
             }
-          } else if (event.find<consumer_key_code>()) {
+          } else if (event.find<consumer_key_code::value_t>()) {
             // Erase other keys. (same as `key_code`.)
 
-            erase_except_modifier_flags<consumer_key_code>();
+            erase_except_modifier_flags<consumer_key_code::value_t>();
           }
           // Do nothing with pointing_button.
 

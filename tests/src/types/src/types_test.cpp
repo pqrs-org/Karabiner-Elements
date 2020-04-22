@@ -112,7 +112,7 @@ TEST_CASE("make_consumer_key_code") {
   REQUIRE(!krbn::make_consumer_key_code("unknown"));
 
   REQUIRE(krbn::make_consumer_key_code_name(krbn::consumer_key_code::mute) == std::string("mute"));
-  REQUIRE(krbn::make_consumer_key_code_name(krbn::consumer_key_code(12345)) == std::string("(number:12345)"));
+  REQUIRE(krbn::make_consumer_key_code_name(krbn::consumer_key_code::value_t(12345)) == std::string("(number:12345)"));
 
   REQUIRE(krbn::make_consumer_key_code(pqrs::hid::usage_page::consumer,
                                        pqrs::hid::usage::consumer::mute) == krbn::consumer_key_code::mute);
@@ -126,16 +126,16 @@ TEST_CASE("make_consumer_key_code") {
 
   {
     nlohmann::json json("mute");
-    REQUIRE(krbn::consumer_key_code(json) == krbn::consumer_key_code::mute);
+    REQUIRE(krbn::consumer_key_code::value_t(json) == krbn::consumer_key_code::mute);
   }
   {
     nlohmann::json json(static_cast<uint32_t>(krbn::consumer_key_code::mute));
-    REQUIRE(krbn::consumer_key_code(json) == krbn::consumer_key_code::mute);
+    REQUIRE(krbn::consumer_key_code::value_t(json) == krbn::consumer_key_code::mute);
   }
   {
     nlohmann::json json;
     REQUIRE_THROWS_AS(
-        krbn::consumer_key_code(json),
+        krbn::consumer_key_code::value_t(json),
         pqrs::json::unmarshal_error);
     REQUIRE_THROWS_WITH(
         krbn::key_code(json),
@@ -144,10 +144,10 @@ TEST_CASE("make_consumer_key_code") {
   {
     nlohmann::json json("unknown_value");
     REQUIRE_THROWS_AS(
-        krbn::consumer_key_code(json),
+        krbn::consumer_key_code::value_t(json),
         pqrs::json::unmarshal_error);
     REQUIRE_THROWS_WITH(
-        krbn::consumer_key_code(json),
+        krbn::consumer_key_code::value_t(json),
         "unknown consumer_key_code: `\"unknown_value\"`");
   }
 }
