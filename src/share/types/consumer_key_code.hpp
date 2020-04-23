@@ -1,6 +1,5 @@
 #pragma once
 
-#include <IOKit/hid/IOHIDUsageTables.h>
 #include <cstdint>
 #include <mapbox/eternal.hpp>
 #include <pqrs/osx/iokit_hid_value.hpp>
@@ -38,21 +37,21 @@ constexpr value_t volume_decrement(type_safe::get(pqrs::hid::usage::consumer::vo
 
 namespace impl {
 constexpr std::pair<const mapbox::eternal::string, const value_t> name_value_pairs[] = {
-    {"power", consumer_key_code::power},
-    {"display_brightness_increment", consumer_key_code::display_brightness_increment},
-    {"display_brightness_decrement", consumer_key_code::display_brightness_decrement},
-    {"fast_forward", consumer_key_code::fast_forward},
-    {"rewind", consumer_key_code::rewind},
-    {"scan_next_track", consumer_key_code::scan_next_track},
-    {"scan_previous_track", consumer_key_code::scan_previous_track},
-    {"eject", consumer_key_code::eject},
-    {"play_or_pause", consumer_key_code::play_or_pause},
-    {"mute", consumer_key_code::mute},
-    {"volume_increment", consumer_key_code::volume_increment},
-    {"volume_decrement", consumer_key_code::volume_decrement},
+    {"power", power},
+    {"display_brightness_increment", display_brightness_increment},
+    {"display_brightness_decrement", display_brightness_decrement},
+    {"fast_forward", fast_forward},
+    {"rewind", rewind},
+    {"scan_next_track", scan_next_track},
+    {"scan_previous_track", scan_previous_track},
+    {"eject", eject},
+    {"play_or_pause", play_or_pause},
+    {"mute", mute},
+    {"volume_increment", volume_increment},
+    {"volume_decrement", volume_decrement},
 
     // Aliases
-    {"fastforward", consumer_key_code::fast_forward},
+    {"fastforward", fast_forward},
 };
 
 constexpr auto name_value_map = mapbox::eternal::hash_map<mapbox::eternal::string, value_t>(name_value_pairs);

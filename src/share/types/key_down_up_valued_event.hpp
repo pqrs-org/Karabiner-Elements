@@ -10,7 +10,7 @@
 namespace krbn {
 class key_down_up_valued_event final {
 public:
-  using value_t = mpark::variant<key_code,
+  using value_t = mpark::variant<key_code::value_t,
                                  consumer_key_code::value_t,
                                  pointing_button::value_t,
                                  mpark::monostate>;
@@ -37,7 +37,7 @@ public:
   }
 
   bool modifier_flag(void) const {
-    if (auto&& v = find<key_code>()) {
+    if (auto&& v = find<key_code::value_t>()) {
       if (auto&& m = make_modifier_flag(*v)) {
         return true;
       }
@@ -46,7 +46,7 @@ public:
   }
 
   std::string to_string(void) const {
-    if (auto value = find<key_code>()) {
+    if (auto value = find<key_code::value_t>()) {
       auto json = nlohmann::json::object({
           {"key_code", make_key_code_name(*value)},
       });
@@ -81,8 +81,8 @@ private:
 };
 
 inline void to_json(nlohmann::json& json, const key_down_up_valued_event& value) {
-  if (auto v = value.find<key_code>()) {
-    json["key_code"] = *v;
+  if (auto v = value.find<key_code::value_t>()) {
+    json["key_code"] = type_safe::get(*v);
 
   } else if (auto v = value.find<consumer_key_code::value_t>()) {
     json["consumer_key_code"] = type_safe::get(*v);
@@ -99,7 +99,7 @@ inline void from_json(const nlohmann::json& json, key_down_up_valued_event& valu
 
   for (const auto& [k, v] : json.items()) {
     if (k == "key_code") {
-      value.set_value(v.get<key_code>());
+      value.set_value(v.get<key_code::value_t>());
 
     } else if (k == "consumer_key_code") {
       value.set_value(v.get<consumer_key_code::value_t>());

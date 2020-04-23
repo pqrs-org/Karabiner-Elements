@@ -3,16 +3,16 @@
 #include "test.hpp"
 
 namespace {
-krbn::event_queue::event a_event(krbn::key_code::a);
-krbn::event_queue::event b_event(krbn::key_code::b);
-krbn::event_queue::event caps_lock_event(krbn::key_code::caps_lock);
-krbn::event_queue::event escape_event(krbn::key_code::escape);
-krbn::event_queue::event left_control_event(krbn::key_code::left_control);
-krbn::event_queue::event left_shift_event(krbn::key_code::left_shift);
-krbn::event_queue::event right_control_event(krbn::key_code::right_control);
-krbn::event_queue::event right_shift_event(krbn::key_code::right_shift);
-krbn::event_queue::event spacebar_event(krbn::key_code::spacebar);
-krbn::event_queue::event tab_event(krbn::key_code::tab);
+krbn::event_queue::event a_event(krbn::key_code::keyboard_a);
+krbn::event_queue::event b_event(krbn::key_code::keyboard_b);
+krbn::event_queue::event caps_lock_event(krbn::key_code::keyboard_caps_lock);
+krbn::event_queue::event escape_event(krbn::key_code::keyboard_escape);
+krbn::event_queue::event left_control_event(krbn::key_code::keyboard_left_control);
+krbn::event_queue::event left_shift_event(krbn::key_code::keyboard_left_shift);
+krbn::event_queue::event right_control_event(krbn::key_code::keyboard_right_control);
+krbn::event_queue::event right_shift_event(krbn::key_code::keyboard_right_shift);
+krbn::event_queue::event spacebar_event(krbn::key_code::keyboard_spacebar);
+krbn::event_queue::event tab_event(krbn::key_code::keyboard_tab);
 
 krbn::event_queue::event mute_event(krbn::consumer_key_code::mute);
 
@@ -28,9 +28,9 @@ TEST_CASE("entry") {
   krbn::event_queue::entry entry1(krbn::device_id(1),
                                   krbn::event_queue::event_time_stamp(krbn::absolute_time_point(100),
                                                                       krbn::absolute_time_duration(10)),
-                                  krbn::event_queue::event(krbn::key_code::a),
+                                  krbn::event_queue::event(krbn::key_code::keyboard_a),
                                   krbn::event_type::key_down,
-                                  krbn::event_queue::event(krbn::key_code::a),
+                                  krbn::event_queue::event(krbn::key_code::keyboard_a),
                                   krbn::event_queue::state::original,
                                   false);
   auto entry2 = entry1;
@@ -209,7 +209,7 @@ TEST_CASE("json") {
 }
 
 TEST_CASE("get_key_code") {
-  REQUIRE(spacebar_event.get_key_code() == krbn::key_code::spacebar);
+  REQUIRE(spacebar_event.get_key_code() == krbn::key_code::keyboard_spacebar);
   REQUIRE(button2_event.get_key_code() == std::nullopt);
   REQUIRE(caps_lock_state_changed_1_event.get_key_code() == std::nullopt);
   REQUIRE(caps_lock_state_changed_0_event.get_key_code() == std::nullopt);
@@ -495,6 +495,6 @@ TEST_CASE("caps_lock_state_changed") {
 
 TEST_CASE("hash") {
   using event = krbn::event_queue::event;
-  REQUIRE(std::hash<event>{}(event(krbn::key_code::a)) !=
-          std::hash<event>{}(event(krbn::key_code::b)));
+  REQUIRE(std::hash<event>{}(event(krbn::key_code::keyboard_a)) !=
+          std::hash<event>{}(event(krbn::key_code::keyboard_b)));
 }

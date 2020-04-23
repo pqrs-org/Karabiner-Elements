@@ -41,7 +41,7 @@ public:
     virtual_hid_keyboard_configuration_changed,
   };
 
-  using value_t = mpark::variant<key_code,                                                 // For type::key_code
+  using value_t = mpark::variant<key_code::value_t,                                        // For type::key_code
                                  consumer_key_code::value_t,                               // For type::consumer_key_code
                                  pointing_button::value_t,                                 // For type::pointing_button
                                  pointing_motion,                                          // For type::pointing_motion
@@ -70,7 +70,7 @@ public:
           if (key == "type") {
             result.type_ = to_type(value.get<std::string>());
           } else if (key == "key_code") {
-            result.value_ = value.get<key_code>();
+            result.value_ = value.get<key_code::value_t>();
           } else if (key == "consumer_key_code") {
             result.value_ = value.get<consumer_key_code::value_t>();
           } else if (key == "pointing_button") {
@@ -201,8 +201,8 @@ public:
     return json;
   }
 
-  explicit event(key_code key_code) : type_(type::key_code),
-                                      value_(key_code) {
+  explicit event(key_code::value_t key_code) : type_(type::key_code),
+                                               value_(key_code) {
   }
 
   explicit event(consumer_key_code::value_t consumer_key_code) : type_(type::consumer_key_code),
@@ -314,10 +314,10 @@ public:
     return mpark::get_if<T>(&value_);
   }
 
-  std::optional<key_code> get_key_code(void) const {
+  std::optional<key_code::value_t> get_key_code(void) const {
     try {
       if (type_ == type::key_code) {
-        return mpark::get<key_code>(value_);
+        return mpark::get<key_code::value_t>(value_);
       }
     } catch (mpark::bad_variant_access&) {
     }
@@ -425,7 +425,7 @@ public:
   }
 
   std::shared_ptr<key_down_up_valued_event> make_key_down_up_valued_event(void) const {
-    if (auto value = find<key_code>()) {
+    if (auto value = find<key_code::value_t>()) {
       return std::make_shared<key_down_up_valued_event>(*value);
 
     } else if (auto value = find<consumer_key_code::value_t>()) {

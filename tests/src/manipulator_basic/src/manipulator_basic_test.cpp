@@ -41,7 +41,7 @@ TEST_CASE("manipulator.details.basic::from_event_definition") {
     basic::from_event_definition event_definition(json);
     REQUIRE(event_definition.get_event_definitions().size() == 1);
     REQUIRE(event_definition.get_event_definitions().front().get_type() == krbn::manipulator::event_definition::type::key_code);
-    REQUIRE(event_definition.get_event_definitions().front().get_key_code() == krbn::key_code::spacebar);
+    REQUIRE(event_definition.get_event_definitions().front().get_key_code() == krbn::key_code::keyboard_spacebar);
     REQUIRE(event_definition.get_event_definitions().front().get_pointing_button() == std::nullopt);
     REQUIRE(event_definition.get_from_modifiers_definition().get_mandatory_modifiers() == std::set<krbn::manipulator::modifier_definition::modifier>({
                                                                                               krbn::manipulator::modifier_definition::modifier::shift,
@@ -50,7 +50,7 @@ TEST_CASE("manipulator.details.basic::from_event_definition") {
     REQUIRE(event_definition.get_from_modifiers_definition().get_optional_modifiers() == std::set<krbn::manipulator::modifier_definition::modifier>({
                                                                                              krbn::manipulator::modifier_definition::modifier::any,
                                                                                          }));
-    REQUIRE(event_definition.get_event_definitions().front().to_event() == krbn::event_queue::event(krbn::key_code::spacebar));
+    REQUIRE(event_definition.get_event_definitions().front().to_event() == krbn::event_queue::event(krbn::key_code::keyboard_spacebar));
   }
   {
     nlohmann::json json({
@@ -73,7 +73,7 @@ TEST_CASE("manipulator.details.basic::from_event_definition") {
     basic::from_event_definition event_definition(json);
     REQUIRE(event_definition.get_event_definitions().size() == 1);
     REQUIRE(event_definition.get_event_definitions().front().get_type() == krbn::manipulator::event_definition::type::key_code);
-    REQUIRE(event_definition.get_event_definitions().front().get_key_code() == krbn::key_code::right_option);
+    REQUIRE(event_definition.get_event_definitions().front().get_key_code() == krbn::key_code::keyboard_right_option);
     REQUIRE(event_definition.get_event_definitions().front().get_pointing_button() == std::nullopt);
     REQUIRE(event_definition.get_from_modifiers_definition().get_mandatory_modifiers() == std::set<krbn::manipulator::modifier_definition::modifier>({
                                                                                               krbn::manipulator::modifier_definition::modifier::shift,
@@ -99,8 +99,8 @@ TEST_CASE("manipulator.details.basic::from_event_definition") {
     });
     basic::from_event_definition event_definition(json);
     REQUIRE(event_definition.get_event_definitions().size() == 2);
-    REQUIRE(event_definition.get_event_definitions()[0].get_key_code() == krbn::key_code::left_shift);
-    REQUIRE(event_definition.get_event_definitions()[1].get_key_code() == krbn::key_code::right_shift);
+    REQUIRE(event_definition.get_event_definitions()[0].get_key_code() == krbn::key_code::keyboard_left_shift);
+    REQUIRE(event_definition.get_event_definitions()[1].get_key_code() == krbn::key_code::keyboard_right_shift);
   }
 }
 
@@ -114,9 +114,9 @@ TEST_CASE("basic::from_event_definition.test_event") {
         {"key_code", "spacebar"},
     }));
 
-    REQUIRE(basic::from_event_definition::test_event(krbn::event_queue::event(krbn::key_code::spacebar), d));
+    REQUIRE(basic::from_event_definition::test_event(krbn::event_queue::event(krbn::key_code::keyboard_spacebar), d));
 
-    REQUIRE(!basic::from_event_definition::test_event(krbn::event_queue::event(krbn::key_code::a), d));
+    REQUIRE(!basic::from_event_definition::test_event(krbn::event_queue::event(krbn::key_code::keyboard_a), d));
     REQUIRE(!basic::from_event_definition::test_event(krbn::event_queue::event(krbn::consumer_key_code::mute), d));
     REQUIRE(!basic::from_event_definition::test_event(krbn::event_queue::event(krbn::pointing_button::button1), d));
   }
@@ -128,7 +128,7 @@ TEST_CASE("basic::from_event_definition.test_event") {
 
     REQUIRE(basic::from_event_definition::test_event(krbn::event_queue::event(krbn::consumer_key_code::rewind), d));
 
-    REQUIRE(!basic::from_event_definition::test_event(krbn::event_queue::event(krbn::key_code::a), d));
+    REQUIRE(!basic::from_event_definition::test_event(krbn::event_queue::event(krbn::key_code::keyboard_a), d));
     REQUIRE(!basic::from_event_definition::test_event(krbn::event_queue::event(krbn::consumer_key_code::mute), d));
     REQUIRE(!basic::from_event_definition::test_event(krbn::event_queue::event(krbn::pointing_button::button1), d));
   }
@@ -140,7 +140,7 @@ TEST_CASE("basic::from_event_definition.test_event") {
 
     REQUIRE(basic::from_event_definition::test_event(krbn::event_queue::event(krbn::pointing_button::button2), d));
 
-    REQUIRE(!basic::from_event_definition::test_event(krbn::event_queue::event(krbn::key_code::a), d));
+    REQUIRE(!basic::from_event_definition::test_event(krbn::event_queue::event(krbn::key_code::keyboard_a), d));
     REQUIRE(!basic::from_event_definition::test_event(krbn::event_queue::event(krbn::consumer_key_code::mute), d));
     REQUIRE(!basic::from_event_definition::test_event(krbn::event_queue::event(krbn::pointing_button::button1), d));
   }
@@ -150,7 +150,7 @@ TEST_CASE("basic::from_event_definition.test_event") {
         {"any", "key_code"},
     }));
 
-    REQUIRE(basic::from_event_definition::test_event(krbn::event_queue::event(krbn::key_code::a), d));
+    REQUIRE(basic::from_event_definition::test_event(krbn::event_queue::event(krbn::key_code::keyboard_a), d));
     REQUIRE(!basic::from_event_definition::test_event(krbn::event_queue::event(krbn::consumer_key_code::mute), d));
     REQUIRE(!basic::from_event_definition::test_event(krbn::event_queue::event(krbn::pointing_button::button1), d));
   }
@@ -160,7 +160,7 @@ TEST_CASE("basic::from_event_definition.test_event") {
         {"any", "consumer_key_code"},
     }));
 
-    REQUIRE(!basic::from_event_definition::test_event(krbn::event_queue::event(krbn::key_code::a), d));
+    REQUIRE(!basic::from_event_definition::test_event(krbn::event_queue::event(krbn::key_code::keyboard_a), d));
     REQUIRE(basic::from_event_definition::test_event(krbn::event_queue::event(krbn::consumer_key_code::mute), d));
     REQUIRE(!basic::from_event_definition::test_event(krbn::event_queue::event(krbn::pointing_button::button1), d));
   }
@@ -170,7 +170,7 @@ TEST_CASE("basic::from_event_definition.test_event") {
         {"any", "pointing_button"},
     }));
 
-    REQUIRE(!basic::from_event_definition::test_event(krbn::event_queue::event(krbn::key_code::a), d));
+    REQUIRE(!basic::from_event_definition::test_event(krbn::event_queue::event(krbn::key_code::keyboard_a), d));
     REQUIRE(!basic::from_event_definition::test_event(krbn::event_queue::event(krbn::consumer_key_code::mute), d));
     REQUIRE(basic::from_event_definition::test_event(krbn::event_queue::event(krbn::pointing_button::button1), d));
   }
@@ -194,7 +194,7 @@ TEST_CASE("to") {
     {
       auto& d = b.get_to()[0].get_event_definition();
       REQUIRE(d.get_type() == event_definition::type::key_code);
-      REQUIRE(mpark::get<krbn::key_code>(d.get_value()) == krbn::key_code::tab);
+      REQUIRE(mpark::get<krbn::key_code::value_t>(d.get_value()) == krbn::key_code::keyboard_tab);
     }
   }
 
@@ -213,12 +213,12 @@ TEST_CASE("to") {
     {
       auto& d = b.get_to()[0].get_event_definition();
       REQUIRE(d.get_type() == event_definition::type::key_code);
-      REQUIRE(mpark::get<krbn::key_code>(d.get_value()) == krbn::key_code::tab);
+      REQUIRE(mpark::get<krbn::key_code::value_t>(d.get_value()) == krbn::key_code::keyboard_tab);
     }
     {
       auto& d = b.get_to()[1].get_event_definition();
       REQUIRE(d.get_type() == event_definition::type::key_code);
-      REQUIRE(mpark::get<krbn::key_code>(d.get_value()) == krbn::key_code::spacebar);
+      REQUIRE(mpark::get<krbn::key_code::value_t>(d.get_value()) == krbn::key_code::keyboard_spacebar);
     }
   }
 }

@@ -132,7 +132,7 @@ bool libkrbn_system_core_configuration_file_path_exists(void) {
 }
 
 void libkrbn_get_key_code_name(char* buffer, size_t length, uint32_t key_code) {
-  auto name = krbn::make_key_code_name(krbn::key_code(key_code));
+  auto name = krbn::make_key_code_name(krbn::key_code::value_t(key_code));
   strlcpy(buffer, name.c_str(), length);
 }
 
@@ -142,7 +142,7 @@ void libkrbn_get_consumer_key_code_name(char* buffer, size_t length, uint32_t co
 }
 
 bool libkrbn_is_modifier_flag(uint32_t key_code) {
-  return krbn::make_modifier_flag(krbn::key_code(key_code)) != std::nullopt;
+  return krbn::make_modifier_flag(krbn::key_code::value_t(key_code)) != std::nullopt;
 }
 
 bool libkrbn_device_identifiers_is_apple(const libkrbn_device_identifiers* p) {

@@ -54,7 +54,7 @@ public:
         // (The key may be repeating.)
 
         if (state == device_state::ungrabbed) {
-          if (event.find<key_code>()) {
+          if (event.find<key_code::value_t>()) {
             if (event.modifier_flag()) {
               // Do nothing (Do not erase existing keys.)
 
@@ -62,7 +62,7 @@ public:
               // Erase normal keys from probable_stuck_events_
               // because the new key cancels existing keys repeat.
 
-              erase_except_modifier_flags<key_code>();
+              erase_except_modifier_flags<key_code::value_t>();
             }
           } else if (event.find<consumer_key_code::value_t>()) {
             // Erase other keys. (same as `key_code`.)

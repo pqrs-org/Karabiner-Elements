@@ -23,7 +23,7 @@ public:
   };
 
   using value_t = mpark::variant<mpark::monostate,
-                                 key_code,
+                                 key_code::value_t,
                                  consumer_key_code::value_t,
                                  pointing_button::value_t,
                                  type,                                                     // For any
@@ -48,9 +48,9 @@ public:
     return value_;
   }
 
-  std::optional<key_code> get_key_code(void) const {
+  std::optional<key_code::value_t> get_key_code(void) const {
     if (type_ == type::key_code) {
-      return mpark::get<key_code>(value_);
+      return mpark::get<key_code::value_t>(value_);
     }
     return std::nullopt;
   }
@@ -109,7 +109,7 @@ public:
       case type::none:
         return std::nullopt;
       case type::key_code:
-        return event_queue::event(mpark::get<key_code>(value_));
+        return event_queue::event(mpark::get<key_code::value_t>(value_));
       case type::consumer_key_code:
         return event_queue::event(mpark::get<consumer_key_code::value_t>(value_));
       case type::pointing_button:
@@ -140,7 +140,7 @@ public:
 
       try {
         type_ = type::key_code;
-        value_ = value.get<key_code>();
+        value_ = value.get<key_code::value_t>();
       } catch (const pqrs::json::unmarshal_error& e) {
         throw pqrs::json::unmarshal_error(fmt::format("`{0}` error: {1}", key, e.what()));
       }

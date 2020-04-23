@@ -139,7 +139,7 @@ static inline std::shared_ptr<queue> insert_device_keys_and_pointing_buttons_are
         auto& e = entry.get_event();
 
         if (entry.get_event_type() == event_type::key_down) {
-          if (auto v = e.find<key_code>()) {
+          if (auto v = e.find<key_code::value_t>()) {
             pressed_keys_manager->insert(*v);
           } else if (auto v = e.find<consumer_key_code::value_t>()) {
             pressed_keys_manager->insert(*v);
@@ -148,7 +148,7 @@ static inline std::shared_ptr<queue> insert_device_keys_and_pointing_buttons_are
           }
         } else if (entry.get_event_type() == event_type::key_up) {
           if (!pressed_keys_manager->empty()) {
-            if (auto v = e.find<key_code>()) {
+            if (auto v = e.find<key_code::value_t>()) {
               pressed_keys_manager->erase(*v);
             } else if (auto v = e.find<consumer_key_code::value_t>()) {
               pressed_keys_manager->erase(*v);

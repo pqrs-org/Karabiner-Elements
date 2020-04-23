@@ -5,12 +5,12 @@
 
 TEST_CASE("key_down_up_valued_event") {
   {
-    krbn::key_down_up_valued_event e(krbn::key_code::a);
+    krbn::key_down_up_valued_event e(krbn::key_code::keyboard_a);
     REQUIRE(e.modifier_flag() == false);
     REQUIRE(nlohmann::json(e).get<krbn::key_down_up_valued_event>() == e);
   }
   {
-    krbn::key_down_up_valued_event e(krbn::key_code::left_shift);
+    krbn::key_down_up_valued_event e(krbn::key_code::keyboard_left_shift);
     REQUIRE(e.modifier_flag() == true);
     REQUIRE(nlohmann::json(e).get<krbn::key_down_up_valued_event>() == e);
   }
@@ -27,9 +27,9 @@ TEST_CASE("key_down_up_valued_event") {
   {
     std::set<krbn::key_down_up_valued_event> map;
     map.insert(krbn::key_down_up_valued_event(krbn::consumer_key_code::mute));
-    map.insert(krbn::key_down_up_valued_event(krbn::key_code::b));
-    map.insert(krbn::key_down_up_valued_event(krbn::key_code::a));
-    map.insert(krbn::key_down_up_valued_event(krbn::key_code::c));
+    map.insert(krbn::key_down_up_valued_event(krbn::key_code::keyboard_b));
+    map.insert(krbn::key_down_up_valued_event(krbn::key_code::keyboard_a));
+    map.insert(krbn::key_down_up_valued_event(krbn::key_code::keyboard_c));
     map.insert(krbn::key_down_up_valued_event(krbn::pointing_button::button2));
     map.insert(krbn::key_down_up_valued_event(krbn::pointing_button::button1));
 
@@ -37,13 +37,13 @@ TEST_CASE("key_down_up_valued_event") {
     for (const auto& m : map) {
       switch (i++) {
         case 0:
-          REQUIRE(m == krbn::key_down_up_valued_event(krbn::key_code::a));
+          REQUIRE(m == krbn::key_down_up_valued_event(krbn::key_code::keyboard_a));
           break;
         case 1:
-          REQUIRE(m == krbn::key_down_up_valued_event(krbn::key_code::b));
+          REQUIRE(m == krbn::key_down_up_valued_event(krbn::key_code::keyboard_b));
           break;
         case 2:
-          REQUIRE(m == krbn::key_down_up_valued_event(krbn::key_code::c));
+          REQUIRE(m == krbn::key_down_up_valued_event(krbn::key_code::keyboard_c));
           break;
         case 3:
           REQUIRE(m == krbn::key_down_up_valued_event(krbn::consumer_key_code::mute));

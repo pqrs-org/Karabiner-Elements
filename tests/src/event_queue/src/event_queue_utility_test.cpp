@@ -7,12 +7,12 @@ TEST_CASE("utility::make_queue") {
 
   hid_values.emplace_back(pqrs::osx::iokit_hid_value(krbn::absolute_time_point(1000),
                                                      1,
-                                                     *krbn::make_hid_usage_page(krbn::key_code::spacebar),
-                                                     *krbn::make_hid_usage(krbn::key_code::spacebar)));
+                                                     *krbn::make_hid_usage_page(krbn::key_code::keyboard_spacebar),
+                                                     *krbn::make_hid_usage(krbn::key_code::keyboard_spacebar)));
   hid_values.emplace_back(pqrs::osx::iokit_hid_value(krbn::absolute_time_point(2000),
                                                      0,
-                                                     *krbn::make_hid_usage_page(krbn::key_code::spacebar),
-                                                     *krbn::make_hid_usage(krbn::key_code::spacebar)));
+                                                     *krbn::make_hid_usage_page(krbn::key_code::keyboard_spacebar),
+                                                     *krbn::make_hid_usage(krbn::key_code::keyboard_spacebar)));
 
   hid_values.emplace_back(pqrs::osx::iokit_hid_value(krbn::absolute_time_point(3000),
                                                      1,
@@ -75,14 +75,14 @@ TEST_CASE("utility::make_queue") {
     auto& e = queue->get_entries()[0];
     REQUIRE(e.get_device_id() == krbn::device_id(1));
     REQUIRE(e.get_event_time_stamp().get_time_stamp() == krbn::absolute_time_point(1000));
-    REQUIRE(e.get_event().get_key_code() == krbn::key_code::spacebar);
+    REQUIRE(e.get_event().get_key_code() == krbn::key_code::keyboard_spacebar);
     REQUIRE(e.get_event_type() == krbn::event_type::key_down);
   }
   {
     auto& e = queue->get_entries()[1];
     REQUIRE(e.get_device_id() == krbn::device_id(1));
     REQUIRE(e.get_event_time_stamp().get_time_stamp() == krbn::absolute_time_point(2000));
-    REQUIRE(e.get_event().get_key_code() == krbn::key_code::spacebar);
+    REQUIRE(e.get_event().get_key_code() == krbn::key_code::keyboard_spacebar);
     REQUIRE(e.get_event_type() == krbn::event_type::key_up);
   }
   {
@@ -130,8 +130,8 @@ TEST_CASE("utility::make_queue") {
 }
 
 TEST_CASE("utility::insert_device_keys_and_pointing_buttons_are_released_event") {
-  krbn::event_queue::event a_event(krbn::key_code::a);
-  krbn::event_queue::event b_event(krbn::key_code::b);
+  krbn::event_queue::event a_event(krbn::key_code::keyboard_a);
+  krbn::event_queue::event b_event(krbn::key_code::keyboard_b);
   krbn::event_queue::event mute_event(krbn::consumer_key_code::mute);
   krbn::event_queue::event button2_event(krbn::pointing_button::button2);
 

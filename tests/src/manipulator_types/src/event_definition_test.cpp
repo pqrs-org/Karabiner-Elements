@@ -13,16 +13,16 @@ TEST_CASE("to_event_definition") {
     });
     krbn::manipulator::to_event_definition event_definition(json);
     REQUIRE(event_definition.get_event_definition().get_type() == krbn::manipulator::event_definition::type::key_code);
-    REQUIRE(event_definition.get_event_definition().get_key_code() == krbn::key_code::spacebar);
+    REQUIRE(event_definition.get_event_definition().get_key_code() == krbn::key_code::keyboard_spacebar);
     REQUIRE(event_definition.get_event_definition().get_pointing_button() == std::nullopt);
     REQUIRE(event_definition.get_modifiers() == std::set<krbn::manipulator::modifier_definition::modifier>({
                                                     krbn::manipulator::modifier_definition::modifier::shift,
                                                     krbn::manipulator::modifier_definition::modifier::left_command,
                                                 }));
-    REQUIRE(event_definition.get_event_definition().to_event() == krbn::event_queue::event(krbn::key_code::spacebar));
+    REQUIRE(event_definition.get_event_definition().to_event() == krbn::event_queue::event(krbn::key_code::keyboard_spacebar));
     REQUIRE(event_definition.make_modifier_events() == std::vector<krbn::event_queue::event>({
-                                                           krbn::event_queue::event(krbn::key_code::left_command),
-                                                           krbn::event_queue::event(krbn::key_code::left_shift),
+                                                           krbn::event_queue::event(krbn::key_code::keyboard_left_command),
+                                                           krbn::event_queue::event(krbn::key_code::keyboard_left_shift),
                                                        }));
   }
   {
@@ -38,15 +38,15 @@ TEST_CASE("to_event_definition") {
     });
     krbn::manipulator::to_event_definition event_definition(json);
     REQUIRE(event_definition.get_event_definition().get_type() == krbn::manipulator::event_definition::type::key_code);
-    REQUIRE(event_definition.get_event_definition().get_key_code() == krbn::key_code::right_option);
+    REQUIRE(event_definition.get_event_definition().get_key_code() == krbn::key_code::keyboard_right_option);
     REQUIRE(event_definition.get_event_definition().get_pointing_button() == std::nullopt);
     REQUIRE(event_definition.get_modifiers() == std::set<krbn::manipulator::modifier_definition::modifier>({
                                                     krbn::manipulator::modifier_definition::modifier::shift,
                                                     krbn::manipulator::modifier_definition::modifier::left_command,
                                                 }));
     REQUIRE(event_definition.make_modifier_events() == std::vector<krbn::event_queue::event>({
-                                                           krbn::event_queue::event(krbn::key_code::left_command),
-                                                           krbn::event_queue::event(krbn::key_code::left_shift),
+                                                           krbn::event_queue::event(krbn::key_code::keyboard_left_command),
+                                                           krbn::event_queue::event(krbn::key_code::keyboard_left_shift),
                                                        }));
   }
 
