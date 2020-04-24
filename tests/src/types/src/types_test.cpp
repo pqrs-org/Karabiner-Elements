@@ -9,7 +9,7 @@ TEST_CASE("make_key_code") {
   REQUIRE(krbn::make_key_code("unknown") == std::nullopt);
   REQUIRE(krbn::make_key_code_name(krbn::key_code::keyboard_spacebar) == std::string("spacebar"));
   REQUIRE(krbn::make_key_code_name(krbn::key_code::keyboard_left_option) == std::string("left_option"));
-  REQUIRE(krbn::make_key_code_name(krbn::key_code::extra_) == std::string("(number:65536)"));
+  REQUIRE(krbn::make_key_code_name(krbn::key_code::keyboard_or_keypad_reserved) == std::string("(number:65535)"));
 
   REQUIRE(krbn::make_hid_usage_page(krbn::key_code::value_t(1234)) == pqrs::hid::usage_page::keyboard_or_keypad);
   REQUIRE(krbn::make_hid_usage(krbn::key_code::value_t(1234)) == pqrs::hid::usage::value_t(1234));
@@ -22,12 +22,12 @@ TEST_CASE("make_key_code") {
   {
     auto actual = krbn::make_key_code(pqrs::hid::usage_page::apple_vendor_top_case,
                                       pqrs::hid::usage::apple_vendor_top_case::keyboard_fn);
-    REQUIRE(*actual == krbn::key_code::fn);
+    REQUIRE(*actual == krbn::key_code::apple_vendor_top_case_keyboard_fn);
   }
   {
     auto actual = krbn::make_key_code(pqrs::hid::usage_page::apple_vendor_keyboard,
                                       pqrs::hid::usage::apple_vendor_keyboard::function);
-    REQUIRE(*actual == krbn::key_code::fn);
+    REQUIRE(*actual == krbn::key_code::apple_vendor_top_case_keyboard_fn);
   }
   {
     auto actual = krbn::make_key_code(pqrs::hid::usage_page::keyboard_or_keypad,
@@ -81,7 +81,7 @@ TEST_CASE("make_key_code (modifier_flag)") {
   REQUIRE(krbn::make_key_code(krbn::modifier_flag::right_shift) == krbn::key_code::keyboard_right_shift);
   REQUIRE(krbn::make_key_code(krbn::modifier_flag::right_option) == krbn::key_code::keyboard_right_option);
   REQUIRE(krbn::make_key_code(krbn::modifier_flag::right_command) == krbn::key_code::keyboard_right_command);
-  REQUIRE(krbn::make_key_code(krbn::modifier_flag::fn) == krbn::key_code::fn);
+  REQUIRE(krbn::make_key_code(krbn::modifier_flag::fn) == krbn::key_code::apple_vendor_top_case_keyboard_fn);
   REQUIRE(krbn::make_key_code(krbn::modifier_flag::end_) == std::nullopt);
 }
 
@@ -95,7 +95,7 @@ TEST_CASE("make_modifier_flag") {
   REQUIRE(krbn::make_modifier_flag(krbn::key_code::keyboard_right_shift) == krbn::modifier_flag::right_shift);
   REQUIRE(krbn::make_modifier_flag(krbn::key_code::keyboard_right_option) == krbn::modifier_flag::right_option);
   REQUIRE(krbn::make_modifier_flag(krbn::key_code::keyboard_right_command) == krbn::modifier_flag::right_command);
-  REQUIRE(krbn::make_modifier_flag(krbn::key_code::fn) == krbn::modifier_flag::fn);
+  REQUIRE(krbn::make_modifier_flag(krbn::key_code::apple_vendor_top_case_keyboard_fn) == krbn::modifier_flag::fn);
 
   REQUIRE(krbn::make_modifier_flag(pqrs::hid::usage_page::keyboard_or_keypad,
                                    pqrs::hid::usage::keyboard_or_keypad::keyboard_a) == std::nullopt);

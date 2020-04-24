@@ -193,20 +193,21 @@ constexpr value_t keyboard_right_shift(type_safe::get(pqrs::hid::usage::keyboard
 constexpr value_t keyboard_right_option(type_safe::get(pqrs::hid::usage::keyboard_or_keypad::keyboard_right_alt));
 constexpr value_t keyboard_right_command(type_safe::get(pqrs::hid::usage::keyboard_or_keypad::keyboard_right_gui));
 
+// keyboard_or_keypad_reserved == 0xffff
+constexpr value_t keyboard_or_keypad_reserved(type_safe::get(pqrs::hid::usage::keyboard_or_keypad::reserved));
+
 // usage in keyboard_or_keypad usage page is reserved until 0xffff.
 
-// 0x10000 - are karabiner own virtual key codes or keys not in keyboard_or_keypad usage page.
-constexpr value_t extra_(0x10000);
 // A pseudo key that does not send any event.
 constexpr value_t vk_none(0x10001);
 
 // Keys that are not in generic keyboard_or_keypad usage_page.
-constexpr value_t fn(0x10002);
-constexpr value_t display_brightness_decrement(0x10003);
-constexpr value_t display_brightness_increment(0x10004);
-constexpr value_t dashboard(0x10005);
-constexpr value_t launchpad(0x10006);
-constexpr value_t mission_control(0x10007);
+constexpr value_t apple_vendor_top_case_keyboard_fn(0x10002);
+constexpr value_t consumer_display_brightness_decrement(0x10003);
+constexpr value_t consumer_display_brightness_increment(0x10004);
+constexpr value_t apple_vendor_keyboard_dashboard(0x10005);
+constexpr value_t apple_vendor_keyboard_launchpad(0x10006);
+constexpr value_t apple_vendor_keyboard_mission_control(0x10007);
 constexpr value_t illumination_decrement(0x10008);
 constexpr value_t illumination_increment(0x10009);
 constexpr value_t rewind(0x1000a);
@@ -404,12 +405,12 @@ constexpr std::pair<const mapbox::eternal::string, const value_t> name_value_pai
     // Extra
     {"vk_none", vk_none},
 
-    {"fn", fn},
-    {"display_brightness_decrement", display_brightness_decrement},
-    {"display_brightness_increment", display_brightness_increment},
-    {"mission_control", mission_control},
-    {"launchpad", launchpad},
-    {"dashboard", dashboard},
+    {"fn", apple_vendor_top_case_keyboard_fn},
+    {"display_brightness_decrement", consumer_display_brightness_decrement},
+    {"display_brightness_increment", consumer_display_brightness_increment},
+    {"mission_control", apple_vendor_keyboard_mission_control},
+    {"launchpad", apple_vendor_keyboard_launchpad},
+    {"dashboard", apple_vendor_keyboard_dashboard},
     {"illumination_decrement", illumination_decrement},
     {"illumination_increment", illumination_increment},
     {"rewind", rewind},
@@ -422,11 +423,11 @@ constexpr std::pair<const mapbox::eternal::string, const value_t> name_value_pai
     {"apple_top_case_display_brightness_increment", apple_top_case_display_brightness_increment},
 
     // Aliases
-    {"vk_consumer_brightness_down", display_brightness_decrement},
-    {"vk_consumer_brightness_up", display_brightness_increment},
-    {"vk_mission_control", mission_control},
-    {"vk_launchpad", launchpad},
-    {"vk_dashboard", dashboard},
+    {"vk_consumer_brightness_down", consumer_display_brightness_decrement},
+    {"vk_consumer_brightness_up", consumer_display_brightness_increment},
+    {"vk_mission_control", apple_vendor_keyboard_mission_control},
+    {"vk_launchpad", apple_vendor_keyboard_launchpad},
+    {"vk_dashboard", apple_vendor_keyboard_dashboard},
     {"vk_consumer_illumination_down", illumination_decrement},
     {"vk_consumer_illumination_up", illumination_increment},
     {"vk_consumer_previous", rewind},
@@ -440,16 +441,16 @@ constexpr auto name_value_map = mapbox::eternal::hash_map<mapbox::eternal::strin
 
 constexpr auto value_usage_page_map = mapbox::eternal::map<value_t, pqrs::hid::usage_page::value_t>({
     // pqrs::hid::usage_page::apple_vendor_top_case
-    {fn, pqrs::hid::usage_page::apple_vendor_top_case},
+    {apple_vendor_top_case_keyboard_fn, pqrs::hid::usage_page::apple_vendor_top_case},
     {illumination_decrement, pqrs::hid::usage_page::apple_vendor_top_case},
     {illumination_increment, pqrs::hid::usage_page::apple_vendor_top_case},
     {apple_top_case_display_brightness_decrement, pqrs::hid::usage_page::apple_vendor_top_case},
     {apple_top_case_display_brightness_increment, pqrs::hid::usage_page::apple_vendor_top_case},
 
     // pqrs::hid::usage_page::apple_vendor_keyboard
-    {dashboard, pqrs::hid::usage_page::apple_vendor_keyboard},
-    {launchpad, pqrs::hid::usage_page::apple_vendor_keyboard},
-    {mission_control, pqrs::hid::usage_page::apple_vendor_keyboard},
+    {apple_vendor_keyboard_dashboard, pqrs::hid::usage_page::apple_vendor_keyboard},
+    {apple_vendor_keyboard_launchpad, pqrs::hid::usage_page::apple_vendor_keyboard},
+    {apple_vendor_keyboard_mission_control, pqrs::hid::usage_page::apple_vendor_keyboard},
     {apple_display_brightness_decrement, pqrs::hid::usage_page::apple_vendor_keyboard},
     {apple_display_brightness_increment, pqrs::hid::usage_page::apple_vendor_keyboard},
 
@@ -457,8 +458,8 @@ constexpr auto value_usage_page_map = mapbox::eternal::map<value_t, pqrs::hid::u
     {keyboard_mute, pqrs::hid::usage_page::consumer},
     {keyboard_volume_down, pqrs::hid::usage_page::consumer},
     {keyboard_volume_up, pqrs::hid::usage_page::consumer},
-    {display_brightness_decrement, pqrs::hid::usage_page::consumer},
-    {display_brightness_increment, pqrs::hid::usage_page::consumer},
+    {consumer_display_brightness_decrement, pqrs::hid::usage_page::consumer},
+    {consumer_display_brightness_increment, pqrs::hid::usage_page::consumer},
     {rewind, pqrs::hid::usage_page::consumer},
     {play_or_pause, pqrs::hid::usage_page::consumer},
     {fastforward, pqrs::hid::usage_page::consumer},
@@ -467,16 +468,16 @@ constexpr auto value_usage_page_map = mapbox::eternal::map<value_t, pqrs::hid::u
 
 constexpr auto value_usage_map = mapbox::eternal::map<value_t, pqrs::hid::usage::value_t>({
     // pqrs::hid::usage::apple_vendor_top_case
-    {fn, pqrs::hid::usage::apple_vendor_top_case::keyboard_fn},
+    {apple_vendor_top_case_keyboard_fn, pqrs::hid::usage::apple_vendor_top_case::keyboard_fn},
     {illumination_decrement, pqrs::hid::usage::apple_vendor_top_case::illumination_down},
     {illumination_increment, pqrs::hid::usage::apple_vendor_top_case::illumination_up},
     {apple_top_case_display_brightness_decrement, pqrs::hid::usage::apple_vendor_top_case::brightness_down},
     {apple_top_case_display_brightness_increment, pqrs::hid::usage::apple_vendor_top_case::brightness_up},
 
     // pqrs::hid::usage::apple_vendor_keyboard
-    {dashboard, pqrs::hid::usage::apple_vendor_keyboard::dashboard},
-    {launchpad, pqrs::hid::usage::apple_vendor_keyboard::launchpad},
-    {mission_control, pqrs::hid::usage::apple_vendor_keyboard::expose_all},
+    {apple_vendor_keyboard_dashboard, pqrs::hid::usage::apple_vendor_keyboard::dashboard},
+    {apple_vendor_keyboard_launchpad, pqrs::hid::usage::apple_vendor_keyboard::launchpad},
+    {apple_vendor_keyboard_mission_control, pqrs::hid::usage::apple_vendor_keyboard::expose_all},
     {apple_display_brightness_decrement, pqrs::hid::usage::apple_vendor_keyboard::brightness_down},
     {apple_display_brightness_increment, pqrs::hid::usage::apple_vendor_keyboard::brightness_up},
 
@@ -485,8 +486,8 @@ constexpr auto value_usage_map = mapbox::eternal::map<value_t, pqrs::hid::usage:
     {keyboard_mute, pqrs::hid::usage::consumer::mute},
     {keyboard_volume_down, pqrs::hid::usage::consumer::volume_decrement},
     {keyboard_volume_up, pqrs::hid::usage::consumer::volume_increment},
-    {display_brightness_decrement, pqrs::hid::usage::consumer::display_brightness_decrement},
-    {display_brightness_increment, pqrs::hid::usage::consumer::display_brightness_increment},
+    {consumer_display_brightness_decrement, pqrs::hid::usage::consumer::display_brightness_decrement},
+    {consumer_display_brightness_increment, pqrs::hid::usage::consumer::display_brightness_increment},
     {rewind, pqrs::hid::usage::consumer::rewind},
     {play_or_pause, pqrs::hid::usage::consumer::play_or_pause},
     {fastforward, pqrs::hid::usage::consumer::fast_forward},
@@ -503,7 +504,7 @@ constexpr auto value_modifier_flag_map = mapbox::eternal::map<value_t, modifier_
     {keyboard_right_shift, modifier_flag::right_shift},
     {keyboard_right_option, modifier_flag::right_option},
     {keyboard_right_command, modifier_flag::right_command},
-    {fn, modifier_flag::fn},
+    {apple_vendor_top_case_keyboard_fn, modifier_flag::fn},
 });
 } // namespace impl
 } // namespace key_code
@@ -535,7 +536,7 @@ inline std::optional<key_code::value_t> make_key_code(pqrs::hid::usage_page::val
 
   } else if (usage_page == pqrs::hid::usage_page::apple_vendor_top_case) {
     if (usage == pqrs::hid::usage::apple_vendor_top_case::keyboard_fn) {
-      return key_code::fn;
+      return key_code::apple_vendor_top_case_keyboard_fn;
     } else if (usage == pqrs::hid::usage::apple_vendor_top_case::brightness_up) {
       return key_code::apple_top_case_display_brightness_increment;
     } else if (usage == pqrs::hid::usage::apple_vendor_top_case::brightness_down) {
@@ -548,13 +549,13 @@ inline std::optional<key_code::value_t> make_key_code(pqrs::hid::usage_page::val
 
   } else if (usage_page == pqrs::hid::usage_page::apple_vendor_keyboard) {
     if (usage == pqrs::hid::usage::apple_vendor_keyboard::dashboard) {
-      return key_code::dashboard;
+      return key_code::apple_vendor_keyboard_dashboard;
     } else if (usage == pqrs::hid::usage::apple_vendor_keyboard::function) {
-      return key_code::fn;
+      return key_code::apple_vendor_top_case_keyboard_fn;
     } else if (usage == pqrs::hid::usage::apple_vendor_keyboard::launchpad) {
-      return key_code::launchpad;
+      return key_code::apple_vendor_keyboard_launchpad;
     } else if (usage == pqrs::hid::usage::apple_vendor_keyboard::expose_all) {
-      return key_code::mission_control;
+      return key_code::apple_vendor_keyboard_mission_control;
     } else if (usage == pqrs::hid::usage::apple_vendor_keyboard::brightness_up) {
       return key_code::apple_display_brightness_increment;
     } else if (usage == pqrs::hid::usage::apple_vendor_keyboard::brightness_down) {
@@ -576,7 +577,7 @@ inline std::optional<key_code::value_t> make_key_code(const pqrs::osx::iokit_hid
 }
 
 inline std::optional<pqrs::hid::usage_page::value_t> make_hid_usage_page(key_code::value_t key_code) {
-  if (key_code < key_code::extra_) {
+  if (key_code < key_code::keyboard_or_keypad_reserved) {
     return pqrs::hid::usage_page::keyboard_or_keypad;
   }
 
@@ -590,7 +591,7 @@ inline std::optional<pqrs::hid::usage_page::value_t> make_hid_usage_page(key_cod
 }
 
 inline std::optional<pqrs::hid::usage::value_t> make_hid_usage(key_code::value_t key_code) {
-  if (key_code < key_code::extra_) {
+  if (key_code < key_code::keyboard_or_keypad_reserved) {
     return pqrs::hid::usage::value_t(type_safe::get(key_code));
   }
 
@@ -636,7 +637,7 @@ inline std::optional<key_code::value_t> make_key_code(modifier_flag modifier_fla
       return key_code::keyboard_right_command;
 
     case modifier_flag::fn:
-      return key_code::fn;
+      return key_code::apple_vendor_top_case_keyboard_fn;
 
     case modifier_flag::end_:
       return std::nullopt;
