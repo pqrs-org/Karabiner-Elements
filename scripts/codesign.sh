@@ -1,18 +1,32 @@
-#!/usr/bin/env bash
+#!/bin/bash
 
 set -u # forbid undefined variables
 set -e # forbid command failure
 
-readonly CODESIGN_IDENTITY='8D660191481C98F5C56630847A6C39D95C166F22'
 readonly PATH=/bin:/sbin:/usr/bin:/usr/sbin
 export PATH
+
+readonly CODE_SIGN_IDENTITY=$(bash $(dirname $0)/get-codesign-identity.sh)
+
+if [[ -z $CODE_SIGN_IDENTITY ]]; then
+    echo "Skip codesign"
+    exit 0
+fi
+
+#
+# Define err()
+#
 
 err() {
     echo "[$(date +'%Y-%m-%dT%H:%M:%S%z')]: $@" >&2
 }
 
+#
+# Define main()
+#
+
 main() {
-    if [ ! -e "$1" ]; then
+    if [[ ! -e "$1" ]]; then
         err "Invalid argument: '$1'"
         exit 1
     fi
@@ -43,7 +57,7 @@ main() {
             --force \
             --deep \
             --options runtime \
-            --sign "$CODESIGN_IDENTITY" \
+            --sign "$CODE_SIGN_IDENTITY" \
             "$f" 2>&1 |
             grep -v ': replacing existing signature'
 
@@ -62,5 +76,9 @@ main() {
         echo -ne '\033[0m'
     done
 }
+
+#
+# Run
+#
 
 main "$1"
