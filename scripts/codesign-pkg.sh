@@ -1,10 +1,12 @@
 #!/usr/bin/env bash
 
-set -e
+set -u # forbid undefined variables
+set -e # forbid command failure
 
-readonly CODESIGN_IDENTITY='C86BB5F7830071C7B0B07D168A9A9375CC2D02C5'
 readonly PATH=/bin:/sbin:/usr/bin:/usr/sbin
 export PATH
+
+readonly CODE_SIGN_IDENTITY=$(bash $(dirname $0)/get-installer-codesign-identity.sh)
 readonly LOGFILE="$(dirname $0)/productsign.log"
 
 err() {
@@ -21,7 +23,7 @@ main() {
     # Sign with codesign
     #
 
-    if productsign 1>"$LOGFILE" 2>&1 --sign "$CODESIGN_IDENTITY" "$1" "$1".signed; then
+    if productsign 1>"$LOGFILE" 2>&1 --sign "$CODE_SIGN_IDENTITY" "$1" "$1".signed; then
         cat $LOGFILE
         mv "$1".signed "$1"
     else
