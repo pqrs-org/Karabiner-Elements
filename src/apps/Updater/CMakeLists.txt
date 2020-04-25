@@ -18,14 +18,12 @@ add_executable(
   src/AppDelegate.m
   src/main.m
   Resources/MainMenu.xib
-  Resources/karabiner_elements_pub.pem
   ../share/Resources/app.icns
   ../../vendor/Sparkle/Sparkle.framework
 )
 
 set_source_files_properties(
   Resources/MainMenu.xib
-  Resources/karabiner_elements_pub.pem
   ../share/Resources/app.icns
   PROPERTIES
   MACOSX_PACKAGE_LOCATION

@@ -38,8 +38,8 @@
     <false/>
     <key>SUShowReleaseNotes</key>
     <true/>
-    <key>SUPublicDSAKeyFile</key>
-    <string>karabiner_elements_pub.pem</string>
+    <key>SUPublicEDKey</key>
+    <string>WdJ29ySfnKxiloyN7d2q/Q9NRijT1kC7q1b87fRcW8c=</string>
     <key>SUAllowsAutomaticUpdates</key>
     <false/>
     <key>NSSupportsSuddenTermination</key>
