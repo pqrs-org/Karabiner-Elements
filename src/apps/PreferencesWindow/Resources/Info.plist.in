@@ -29,7 +29,7 @@
     <key>NSPrincipalClass</key>
     <string>NSApplication</string>
     <key>NSSupportsSuddenTermination</key>
-    <string>NO</string>
+    <false/>
     <key>CFBundleURLTypes</key>
     <array>
       <dict>

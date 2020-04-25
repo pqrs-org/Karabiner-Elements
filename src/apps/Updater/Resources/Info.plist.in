@@ -29,7 +29,7 @@
     <key>NSPrincipalClass</key>
     <string>NSApplication</string>
     <key>LSUIElement</key>
-    <string>1</string>
+    <true/>
     <key>SUFeedURL</key>
     <string>https://appcast.pqrs.org/karabiner-elements-appcast.xml</string>
     <key>SUEnableAutomaticChecks</key>
@@ -43,6 +43,6 @@
     <key>SUAllowsAutomaticUpdates</key>
     <false/>
     <key>NSSupportsSuddenTermination</key>
-    <string>YES</string>
+    <true/>
   </dict>
 </plist>

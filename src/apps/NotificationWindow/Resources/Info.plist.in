@@ -27,8 +27,8 @@
     <key>NSPrincipalClass</key>
     <string>NSApplication</string>
     <key>LSUIElement</key>
-    <string>1</string>
+    <true/>
     <key>NSSupportsSuddenTermination</key>
-    <string>NO</string>
+    <false/>
   </dict>
 </plist>
