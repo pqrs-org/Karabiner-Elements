@@ -26,31 +26,23 @@ public:
     manipulator(const nlohmann::json& json,
                 const complex_modifications_parameters& parameters) : json_(json),
                                                                       parameters_(parameters) {
-      if (!json.is_object()) {
-        throw pqrs::json::unmarshal_error(fmt::format("json must be object, but is `{0}`", json.dump()));
-      }
+      pqrs::json::requires_object(json, "json");
 
       for (const auto& [key, value] : json.items()) {
         if (key == "conditions") {
-          if (!value.is_array()) {
-            throw pqrs::json::unmarshal_error(fmt::format("`{0}` must be array, but is `{1}`", key, value.dump()));
-          }
+          pqrs::json::requires_array(value, "`" + key + "`");
 
           for (const auto& j : value) {
             conditions_.emplace_back(j);
           }
 
         } else if (key == "parameters") {
-          if (!value.is_object()) {
-            throw pqrs::json::unmarshal_error(fmt::format("`{0}` must be object, but is `{1}`", key, value.dump()));
-          }
+          pqrs::json::requires_object(value, "`" + key + "`");
 
           parameters_.update(value);
 
         } else if (key == "description") {
-          if (!value.is_string()) {
-            throw pqrs::json::unmarshal_error(fmt::format("`{0}` must be string, but is `{1}`", key, value.dump()));
-          }
+          pqrs::json::requires_string(value, "`" + key + "`");
 
           description_ = value.get<std::string>();
 
@@ -85,15 +77,11 @@ public:
 
   complex_modifications_rule(const nlohmann::json& json,
                              const complex_modifications_parameters& parameters) : json_(json) {
-    if (!json.is_object()) {
-      throw pqrs::json::unmarshal_error(fmt::format("json must be object, but is `{0}`", json.dump()));
-    }
+    pqrs::json::requires_object(json, "json");
 
     for (const auto& [key, value] : json.items()) {
       if (key == "manipulators") {
-        if (!value.is_array()) {
-          throw pqrs::json::unmarshal_error(fmt::format("`{0}` must be array, but is `{1}`", key, value.dump()));
-        }
+        pqrs::json::requires_array(value, "`" + key + "`");
 
         for (const auto& j : value) {
           try {
@@ -104,17 +92,13 @@ public:
         }
 
       } else if (key == "description") {
-        if (!value.is_string()) {
-          throw pqrs::json::unmarshal_error(fmt::format("`{0}` must be string, but is `{1}`", key, value.dump()));
-        }
+        pqrs::json::requires_string(value, "`" + key + "`");
 
         description_ = value.get<std::string>();
 
       } else if (key == "available_since") {
         // `available_since` is used in <https://ke-complex-modifications.pqrs.org/>.
-        if (!value.is_string()) {
-          throw pqrs::json::unmarshal_error(fmt::format("`{0}` must be string, but is `{1}`", key, value.dump()));
-        }
+        pqrs::json::requires_string(value, "`" + key + "`");
 
       } else {
         // Allow unknown key
