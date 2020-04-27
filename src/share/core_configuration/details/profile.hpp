@@ -22,22 +22,16 @@ public:
     // ----------------------------------------
     // Load from json
 
-    if (!json.is_object()) {
-      throw pqrs::json::unmarshal_error(fmt::format("json must be object, but is `{0}`", json.dump()));
-    }
+    pqrs::json::requires_object(json, "json");
 
     for (const auto& [key, value] : json.items()) {
       if (key == "name") {
-        if (!value.is_string()) {
-          throw pqrs::json::unmarshal_error(fmt::format("`{0}` must be string, but is `{1}`", key, value.dump()));
-        }
+        pqrs::json::requires_string(value, "`" + key + "`");
 
         name_ = value.get<std::string>();
 
       } else if (key == "selected") {
-        if (!value.is_boolean()) {
-          throw pqrs::json::unmarshal_error(fmt::format("`{0}` must be boolean, but is `{1}`", key, value.dump()));
-        }
+        pqrs::json::requires_boolean(value, "`" + key + "`");
 
         selected_ = value.get<bool>();
 
@@ -77,9 +71,7 @@ public:
         }
 
       } else if (key == "devices") {
-        if (!value.is_array()) {
-          throw pqrs::json::unmarshal_error(fmt::format("`{0}` must be array, but is `{1}`", key, value.dump()));
-        }
+        pqrs::json::requires_array(value, "`" + key + "`");
 
         for (const auto& j : value) {
           try {
