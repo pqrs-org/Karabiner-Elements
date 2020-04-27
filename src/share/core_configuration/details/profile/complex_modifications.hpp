@@ -12,9 +12,7 @@ public:
   }
 
   complex_modifications(const nlohmann::json& json) : json_(json) {
-    if (!json.is_object()) {
-      throw pqrs::json::unmarshal_error(fmt::format("json must be object, but is `{0}`", json.dump()));
-    }
+    pqrs::json::requires_object(json, "json");
 
     // Load parameters_
 
