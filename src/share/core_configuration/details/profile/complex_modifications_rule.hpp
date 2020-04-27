@@ -121,6 +121,10 @@ public:
       }
     }
 
+    if (manipulators_.empty()) {
+      throw pqrs::json::unmarshal_error(fmt::format("`manipulators` is missing or empty in {0}", pqrs::json::dump_for_error_message(json)));
+    }
+
     // Use manipulators_'s description if needed.
     if (description_.empty()) {
       for (const auto& m : manipulators_) {

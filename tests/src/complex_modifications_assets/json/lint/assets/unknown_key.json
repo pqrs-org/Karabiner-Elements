@@ -4,7 +4,14 @@
     "rules": [
         {
             "description": "unknown key",
-            "manipulators": [],
+            "manipulators": [
+                {
+                    "from": {
+                        "key_code": "spacebar"
+                    },
+                    "type": "basic"
+                }
+            ],
             "unknown_key": "unknown_value"
         }
     ]

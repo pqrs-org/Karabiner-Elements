@@ -1043,18 +1043,28 @@ TEST_CASE("complex_modifications") {
 
   // load values from json
   {
+    auto manipulators = nlohmann::json::array({
+        nlohmann::json::object({
+            {"from", nlohmann::json::object({{"key_code", "spacebar"}})},
+            {"type", "basic"},
+        }),
+    });
+
     nlohmann::json json({
         {
             "rules",
             {
                 {
                     {"description", "rule 1"},
+                    {"manipulators", manipulators},
                 },
                 {
                     {"description", "rule 2"},
+                    {"manipulators", manipulators},
                 },
                 {
                     {"description", "rule 3"},
+                    {"manipulators", manipulators},
                 },
             },
         },
@@ -1066,18 +1076,28 @@ TEST_CASE("complex_modifications") {
 
 TEST_CASE("complex_modifications.push_back_rule") {
   {
+    auto manipulators = nlohmann::json::array({
+        nlohmann::json::object({
+            {"from", nlohmann::json::object({{"key_code", "spacebar"}})},
+            {"type", "basic"},
+        }),
+    });
+
     nlohmann::json json({
         {
             "rules",
             {
                 {
                     {"description", "rule 1"},
+                    {"manipulators", manipulators},
                 },
                 {
                     {"description", "rule 2"},
+                    {"manipulators", manipulators},
                 },
                 {
                     {"description", "rule 3"},
+                    {"manipulators", manipulators},
                 },
             },
         },
@@ -1092,6 +1112,7 @@ TEST_CASE("complex_modifications.push_back_rule") {
     krbn::core_configuration::details::complex_modifications_parameters parameters;
     nlohmann::json rule_json;
     rule_json["description"] = "rule 4";
+    rule_json["manipulators"] = manipulators;
     krbn::core_configuration::details::complex_modifications_rule rule(rule_json, parameters);
 
     complex_modifications.push_back_rule(rule);
@@ -1105,18 +1126,28 @@ TEST_CASE("complex_modifications.push_back_rule") {
 
 TEST_CASE("complex_modifications.erase_rule") {
   {
+    auto manipulators = nlohmann::json::array({
+        nlohmann::json::object({
+            {"from", nlohmann::json::object({{"key_code", "spacebar"}})},
+            {"type", "basic"},
+        }),
+    });
+
     nlohmann::json json({
         {
             "rules",
             {
                 {
                     {"description", "rule 1"},
+                    {"manipulators", manipulators},
                 },
                 {
                     {"description", "rule 2"},
+                    {"manipulators", manipulators},
                 },
                 {
                     {"description", "rule 3"},
+                    {"manipulators", manipulators},
                 },
             },
         },
@@ -1144,18 +1175,28 @@ TEST_CASE("complex_modifications.erase_rule") {
 
 TEST_CASE("complex_modifications.swap_rules") {
   {
+    auto manipulators = nlohmann::json::array({
+        nlohmann::json::object({
+            {"from", nlohmann::json::object({{"key_code", "spacebar"}})},
+            {"type", "basic"},
+        }),
+    });
+
     nlohmann::json json({
         {
             "rules",
             {
                 {
                     {"description", "rule 1"},
+                    {"manipulators", manipulators},
                 },
                 {
                     {"description", "rule 2"},
+                    {"manipulators", manipulators},
                 },
                 {
                     {"description", "rule 3"},
+                    {"manipulators", manipulators},
                 },
             },
         },

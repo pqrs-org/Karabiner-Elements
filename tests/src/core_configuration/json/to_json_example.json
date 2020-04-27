@@ -91,7 +91,14 @@
                         ]
                     },
                     {
-                        "manipulators": []
+                        "manipulators": [
+                            {
+                                "from": {
+                                    "key_code": "spacebar"
+                                },
+                                "type": "basic"
+                            }
+                        ]
                     }
                 ]
             },

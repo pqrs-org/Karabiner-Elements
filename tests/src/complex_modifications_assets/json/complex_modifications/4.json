@@ -3,11 +3,25 @@
     "rules": [
         {
             "description": "EEE1",
-            "manipulators": []
+            "manipulators": [
+                {
+                    "from": {
+                        "key_code": "spacebar"
+                    },
+                    "type": "basic"
+                }
+            ]
         },
         {
             "description": "EEE2",
-            "manipulators": []
+            "manipulators": [
+                {
+                    "from": {
+                        "key_code": "spacebar"
+                    },
+                    "type": "basic"
+                }
+            ]
         }
     ]
 }

@@ -3,11 +3,25 @@
     "rules": [
         {
             "description": "FFF1",
-            "manipulators": []
+            "manipulators": [
+                {
+                    "from": {
+                        "key_code": "spacebar"
+                    },
+                    "type": "basic"
+                }
+            ]
         },
         {
             "description": "FFF2",
-            "manipulators": []
+            "manipulators": [
+                {
+                    "from": {
+                        "key_code": "spacebar"
+                    },
+                    "type": "basic"
+                }
+            ]
         }
     ]
 }

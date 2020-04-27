@@ -65,6 +65,20 @@
         "error": "`complex_modifications` error: json must be object, but is `null`"
     },
 
+    {
+        "class": "profile",
+        "input": {
+            "complex_modifications": {
+                "rules": [
+                    {
+                        "description": "no manipulators"
+                    }
+                ]
+            }
+        },
+        "error": "`complex_modifications` error: `manipulators` is missing or empty in {\"description\":\"no manipulators\"}"
+    },
+
     // virtual_hid_keyboard
 
     {
