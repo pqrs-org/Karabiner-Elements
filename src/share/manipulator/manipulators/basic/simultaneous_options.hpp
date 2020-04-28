@@ -76,9 +76,7 @@ private:
 };
 
 inline void from_json(const nlohmann::json& json, simultaneous_options::key_order& value) {
-  if (!json.is_string()) {
-    throw pqrs::json::unmarshal_error(fmt::format("json must be string, but is `{0}`", json.dump()));
-  }
+  pqrs::json::requires_string(json, "json");
 
   auto s = json.get<std::string>();
 
@@ -94,9 +92,7 @@ inline void from_json(const nlohmann::json& json, simultaneous_options::key_orde
 }
 
 inline void from_json(const nlohmann::json& json, simultaneous_options::key_up_when& value) {
-  if (!json.is_string()) {
-    throw pqrs::json::unmarshal_error(fmt::format("json must be string, but is `{0}`", json.dump()));
-  }
+  pqrs::json::requires_string(json, "json");
 
   auto s = json.get<std::string>();
 
@@ -110,17 +106,13 @@ inline void from_json(const nlohmann::json& json, simultaneous_options::key_up_w
 }
 
 inline void from_json(const nlohmann::json& json, simultaneous_options& o) {
-  if (!json.is_object()) {
-    throw pqrs::json::unmarshal_error(fmt::format("json must be object, but is `{0}`", json.dump()));
-  }
+  pqrs::json::requires_object(json, "json");
 
   for (const auto& [key, value] : json.items()) {
     // key is always std::string.
 
     if (key == "detect_key_down_uninterruptedly") {
-      if (!value.is_boolean()) {
-        throw pqrs::json::unmarshal_error(fmt::format("`{0}` must be boolean, but is `{1}`", key, value.dump()));
-      }
+      pqrs::json::requires_boolean(value, "`" + key + "`");
 
       o.set_detect_key_down_uninterruptedly(value.get<bool>());
 
@@ -163,14 +155,14 @@ inline void from_json(const nlohmann::json& json, simultaneous_options& o) {
         }
 
       } else {
-        throw pqrs::json::unmarshal_error(fmt::format("`{0}` must be object or array, but is `{1}`", key, value.dump()));
+        throw pqrs::json::unmarshal_error(fmt::format("`{0}` must be object or array, but is `{1}`", key, pqrs::json::dump_for_error_message(value)));
       }
 
     } else if (key == "description") {
       // Do nothing
 
     } else {
-      throw pqrs::json::unmarshal_error(fmt::format("unknown key `{0}` in `{1}`", key, json.dump()));
+      throw pqrs::json::unmarshal_error(fmt::format("unknown key `{0}` in `{1}`", key, pqrs::json::dump_for_error_message(json)));
     }
   }
 }

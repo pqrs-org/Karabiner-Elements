@@ -92,36 +92,26 @@ inline void to_json(nlohmann::json& json, const device_identifiers& value) {
 }
 
 inline void from_json(const nlohmann::json& json, device_identifiers& value) {
-  if (!json.is_object()) {
-    throw pqrs::json::unmarshal_error(fmt::format("json must be object, but is `{0}`", json.dump()));
-  }
+  pqrs::json::requires_object(json, "json");
 
   for (const auto& [k, v] : json.items()) {
     if (k == "vendor_id") {
-      if (!v.is_number()) {
-        throw pqrs::json::unmarshal_error(fmt::format("`{0}` must be number, but is `{1}`", k, v.dump()));
-      }
+      pqrs::json::requires_number(v, "`" + k + "`");
 
       value.set_vendor_id(v.get<pqrs::hid::vendor_id::value_t>());
 
     } else if (k == "product_id") {
-      if (!v.is_number()) {
-        throw pqrs::json::unmarshal_error(fmt::format("`{0}` must be number, but is `{1}`", k, v.dump()));
-      }
+      pqrs::json::requires_number(v, "`" + k + "`");
 
       value.set_product_id(v.get<pqrs::hid::product_id::value_t>());
 
     } else if (k == "is_keyboard") {
-      if (!v.is_boolean()) {
-        throw pqrs::json::unmarshal_error(fmt::format("`{0}` must be boolean, but is `{1}`", k, v.dump()));
-      }
+      pqrs::json::requires_boolean(v, "`" + k + "`");
 
       value.set_is_keyboard(v.get<bool>());
 
     } else if (k == "is_pointing_device") {
-      if (!v.is_boolean()) {
-        throw pqrs::json::unmarshal_error(fmt::format("`{0}` must be boolean, but is `{1}`", k, v.dump()));
-      }
+      pqrs::json::requires_boolean(v, "`" + k + "`");
 
       value.set_is_pointing_device(v.get<bool>());
 

@@ -17,15 +17,11 @@ public:
                          const core_configuration::details::complex_modifications_parameters& parameters) : base(),
                                                                                                             dispatcher_client() {
     try {
-      if (!json.is_object()) {
-        throw pqrs::json::unmarshal_error(fmt::format("json must be object, but is `{0}`", json.dump()));
-      }
+      pqrs::json::requires_object(json, "json");
 
       for (const auto& [key, value] : json.items()) {
         if (key == "from") {
-          if (!value.is_object()) {
-            throw pqrs::json::unmarshal_error(fmt::format("`{0}` must be object, but is `{1}`", key, value.dump()));
-          }
+          pqrs::json::requires_object(value, "`" + key + "`");
 
           for (const auto& [k, v] : value.items()) {
             if (k == "modifiers") {
@@ -39,7 +35,7 @@ public:
               throw pqrs::json::unmarshal_error(fmt::format("`{0}` error: unknown key `{1}` in `{2}`",
                                                             key,
                                                             k,
-                                                            value.dump()));
+                                                            pqrs::json::dump_for_error_message(value)));
             }
           }
 
@@ -57,7 +53,7 @@ public:
           // Do nothing
 
         } else {
-          throw pqrs::json::unmarshal_error(fmt::format("unknown key `{0}` in `{1}`", key, json.dump()));
+          throw pqrs::json::unmarshal_error(fmt::format("unknown key `{0}` in `{1}`", key, pqrs::json::dump_for_error_message(json)));
         }
       }
 

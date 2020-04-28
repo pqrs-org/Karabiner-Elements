@@ -128,43 +128,31 @@ inline void to_json(nlohmann::json& json, const mouse_key& m) {
 }
 
 inline void from_json(const nlohmann::json& json, mouse_key& m) {
-  if (!json.is_object()) {
-    throw pqrs::json::unmarshal_error(fmt::format("json must be object, but is `{0}`", json.dump()));
-  }
+  pqrs::json::requires_object(json, "json");
 
   for (const auto& [key, value] : json.items()) {
     if (key == "x") {
-      if (!value.is_number()) {
-        throw pqrs::json::unmarshal_error(fmt::format("`{0}` must be number, but is `{1}`", key, value.dump()));
-      }
+      pqrs::json::requires_number(value, "`" + key + "`");
 
       m.set_x(value.get<int>());
 
     } else if (key == "y") {
-      if (!value.is_number()) {
-        throw pqrs::json::unmarshal_error(fmt::format("`{0}` must be number, but is `{1}`", key, value.dump()));
-      }
+      pqrs::json::requires_number(value, "`" + key + "`");
 
       m.set_y(value.get<int>());
 
     } else if (key == "vertical_wheel") {
-      if (!value.is_number()) {
-        throw pqrs::json::unmarshal_error(fmt::format("`{0}` must be number, but is `{1}`", key, value.dump()));
-      }
+      pqrs::json::requires_number(value, "`" + key + "`");
 
       m.set_vertical_wheel(value.get<int>());
 
     } else if (key == "horizontal_wheel") {
-      if (!value.is_number()) {
-        throw pqrs::json::unmarshal_error(fmt::format("`{0}` must be number, but is `{1}`", key, value.dump()));
-      }
+      pqrs::json::requires_number(value, "`" + key + "`");
 
       m.set_horizontal_wheel(value.get<int>());
 
     } else if (key == "speed_multiplier") {
-      if (!value.is_number()) {
-        throw pqrs::json::unmarshal_error(fmt::format("`{0}` must be number, but is `{1}`", key, value.dump()));
-      }
+      pqrs::json::requires_number(value, "`" + key + "`");
 
       m.set_speed_multiplier(value.get<double>());
 

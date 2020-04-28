@@ -43,9 +43,7 @@ inline std::optional<pqrs::karabiner_virtual_hid_device::hid_report::modifier> m
 }
 
 inline void from_json(const nlohmann::json& json, modifier_flag& value) {
-  if (!json.is_string()) {
-    throw pqrs::json::unmarshal_error(fmt::format("json must be string, but is `{0}`", json.dump()));
-  }
+  pqrs::json::requires_string(json, "json");
 
   auto name = json.get<std::string>();
   if (name == "zero") {

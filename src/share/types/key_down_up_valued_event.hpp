@@ -93,9 +93,7 @@ inline void to_json(nlohmann::json& json, const key_down_up_valued_event& value)
 }
 
 inline void from_json(const nlohmann::json& json, key_down_up_valued_event& value) {
-  if (!json.is_object()) {
-    throw pqrs::json::unmarshal_error(fmt::format("json must be object, but is `{0}`", json.dump()));
-  }
+  pqrs::json::requires_object(json, "json");
 
   for (const auto& [k, v] : json.items()) {
     if (k == "key_code") {

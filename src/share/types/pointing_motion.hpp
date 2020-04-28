@@ -90,35 +90,27 @@ inline void to_json(nlohmann::json& j, const pointing_motion& value) {
 }
 
 inline void from_json(const nlohmann::json& j, pointing_motion& value) {
-  using namespace std::string_literals;
-
-  if (!j.is_object()) {
-    throw pqrs::json::unmarshal_error("json must be object, but is `"s + j.dump() + "`"s);
-  }
+  pqrs::json::requires_object(j, "json");
 
   for (const auto& [k, v] : j.items()) {
     if (k == "x") {
-      if (!v.is_number()) {
-        throw pqrs::json::unmarshal_error("`"s + k + "` must be number, but is `"s + v.dump() + "`"s);
-      }
+      pqrs::json::requires_number(v, "`" + k + "`");
+
       value.set_x(v.get<int>());
     }
     if (k == "y") {
-      if (!v.is_number()) {
-        throw pqrs::json::unmarshal_error("`"s + k + "` must be number, but is `"s + v.dump() + "`"s);
-      }
+      pqrs::json::requires_number(v, "`" + k + "`");
+
       value.set_y(v.get<int>());
     }
     if (k == "vertical_wheel") {
-      if (!v.is_number()) {
-        throw pqrs::json::unmarshal_error("`"s + k + "` must be number, but is `"s + v.dump() + "`"s);
-      }
+      pqrs::json::requires_number(v, "`" + k + "`");
+
       value.set_vertical_wheel(v.get<int>());
     }
     if (k == "horizontal_wheel") {
-      if (!v.is_number()) {
-        throw pqrs::json::unmarshal_error("`"s + k + "` must be number, but is `"s + v.dump() + "`"s);
-      }
+      pqrs::json::requires_number(v, "`" + k + "`");
+
       value.set_horizontal_wheel(v.get<int>());
     }
   }

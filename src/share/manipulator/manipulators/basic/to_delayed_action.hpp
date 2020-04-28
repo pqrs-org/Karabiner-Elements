@@ -14,9 +14,7 @@ public:
   to_delayed_action(const nlohmann::json& json) : dispatcher_client(),
                                                   current_delayed_action_id_(0) {
     try {
-      if (!json.is_object()) {
-        throw pqrs::json::unmarshal_error(fmt::format("json must be object, but is `{0}`", json.dump()));
-      }
+      pqrs::json::requires_object(json, "json");
 
       for (const auto& [key, value] : json.items()) {
         if (key == "to_if_invoked") {
@@ -37,7 +35,7 @@ public:
             }
 
           } else {
-            throw pqrs::json::unmarshal_error(fmt::format("`{0}` must be object or array, but is `{1}`", key, value.dump()));
+            throw pqrs::json::unmarshal_error(fmt::format("`{0}` must be object or array, but is `{1}`", key, pqrs::json::dump_for_error_message(value)));
           }
 
         } else if (key == "to_if_canceled") {
@@ -58,11 +56,11 @@ public:
             }
 
           } else {
-            throw pqrs::json::unmarshal_error(fmt::format("`{0}` must be object or array, but is `{1}`", key, value.dump()));
+            throw pqrs::json::unmarshal_error(fmt::format("`{0}` must be object or array, but is `{1}`", key, pqrs::json::dump_for_error_message(value)));
           }
 
         } else {
-          throw pqrs::json::unmarshal_error(fmt::format("unknown key `{0}` in `{1}`", key, json.dump()));
+          throw pqrs::json::unmarshal_error(fmt::format("unknown key `{0}` in `{1}`", key, pqrs::json::dump_for_error_message(json)));
         }
       }
 

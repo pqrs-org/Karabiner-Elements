@@ -115,7 +115,7 @@ private:
               to_json.erase("");
               to_json_string = to_json.dump();
             } else {
-              logger::get_logger()->error("json error: Unknown key: {0} in {1}", key, j.dump());
+              logger::get_logger()->error("json error: Unknown key: {0} in {1}", key, pqrs::json::dump_for_error_message(j));
             }
           }
 
@@ -155,7 +155,7 @@ private:
       }
 
     } else {
-      throw pqrs::json::unmarshal_error(fmt::format("json must be array or object, but is `{0}`", json.dump()));
+      throw pqrs::json::unmarshal_error(fmt::format("json must be array or object, but is `{0}`", pqrs::json::dump_for_error_message(json)));
     }
 
     std::sort(pairs_.begin(), pairs_.end(), [](auto& a, auto& b) {

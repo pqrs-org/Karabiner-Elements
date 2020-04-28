@@ -120,9 +120,7 @@ private:
 };
 
 inline void from_json(const nlohmann::json& json, from_event_definition& d) {
-  if (!json.is_object()) {
-    throw pqrs::json::unmarshal_error(fmt::format("json must be object, but is `{0}`", json.dump()));
-  }
+  pqrs::json::requires_object(json, "json");
 
   std::vector<event_definition> event_definitions;
   event_definition default_event_definition;
@@ -141,14 +139,10 @@ inline void from_json(const nlohmann::json& json, from_event_definition& d) {
       }
 
     } else if (key == "simultaneous") {
-      if (!value.is_array()) {
-        throw pqrs::json::unmarshal_error(fmt::format("`{0}` must be array, but is `{1}`", key, value.dump()));
-      }
+      pqrs::json::requires_array(value, "`" + key + "`");
 
       for (const auto& j : value) {
-        if (!j.is_object()) {
-          throw pqrs::json::unmarshal_error(fmt::format("`{0}` entry must be object, but is `{1}`", key, j.dump()));
-        }
+        pqrs::json::requires_object(j, "`" + key + "` entry");
 
         event_definition d;
 
@@ -158,12 +152,12 @@ inline void from_json(const nlohmann::json& json, from_event_definition& d) {
           if (d.handle_json(k, v, j)) {
             // Do nothing
           } else {
-            throw pqrs::json::unmarshal_error(fmt::format("unknown key: `{0}` in `{1}", k, j.dump()));
+            throw pqrs::json::unmarshal_error(fmt::format("unknown key: `{0}` in `{1}", k, pqrs::json::dump_for_error_message(j)));
           }
         }
 
         if (d.get_type() == event_definition::type::none) {
-          throw pqrs::json::unmarshal_error(fmt::format("event type is invalid: `{0}`", json.dump()));
+          throw pqrs::json::unmarshal_error(fmt::format("event type is invalid: `{0}`", pqrs::json::dump_for_error_message(json)));
         }
 
         event_definitions.push_back(d);
@@ -177,7 +171,7 @@ inline void from_json(const nlohmann::json& json, from_event_definition& d) {
       }
 
     } else {
-      throw pqrs::json::unmarshal_error(fmt::format("`from` error: unknown key `{0}` in `{1}`", key, json.dump()));
+      throw pqrs::json::unmarshal_error(fmt::format("`from` error: unknown key `{0}` in `{1}`", key, pqrs::json::dump_for_error_message(json)));
     }
   }
 
@@ -189,7 +183,7 @@ inline void from_json(const nlohmann::json& json, from_event_definition& d) {
   // ----------------------------------------
 
   if (event_definitions.empty()) {
-    throw pqrs::json::unmarshal_error(fmt::format("event is not specified: `{0}`", json.dump()));
+    throw pqrs::json::unmarshal_error(fmt::format("event is not specified: `{0}`", pqrs::json::dump_for_error_message(json)));
   }
 
   for (const auto& d : event_definitions) {
@@ -205,7 +199,7 @@ inline void from_json(const nlohmann::json& json, from_event_definition& d) {
       case event_definition::type::select_input_source:
       case event_definition::type::set_variable:
       case event_definition::type::mouse_key:
-        throw pqrs::json::unmarshal_error(fmt::format("event type is invalid: `{0}`", json.dump()));
+        throw pqrs::json::unmarshal_error(fmt::format("event type is invalid: `{0}`", pqrs::json::dump_for_error_message(json)));
     }
   }
 

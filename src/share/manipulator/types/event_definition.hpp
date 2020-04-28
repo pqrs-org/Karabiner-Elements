@@ -186,9 +186,7 @@ public:
     if (key == "any") {
       check_type(json);
 
-      if (!value.is_string()) {
-        throw pqrs::json::unmarshal_error(fmt::format("`{0}` must be string, but is `{1}`", key, value.dump()));
-      }
+      pqrs::json::requires_string(value, "`" + key + "`");
 
       if (value == "key_code") {
         type_ = type::any;
@@ -200,7 +198,7 @@ public:
         type_ = type::any;
         value_ = type::pointing_button;
       } else {
-        throw pqrs::json::unmarshal_error(fmt::format("unknown `{0}`: `{1}`", key, value.dump()));
+        throw pqrs::json::unmarshal_error(fmt::format("unknown `{0}`: `{1}`", key, pqrs::json::dump_for_error_message(value)));
       }
 
       return true;
@@ -212,9 +210,7 @@ public:
     if (key == "shell_command") {
       check_type(json);
 
-      if (!value.is_string()) {
-        throw pqrs::json::unmarshal_error(fmt::format("`{0}` must be string, but is `{1}`", key, value.dump()));
-      }
+      pqrs::json::requires_string(value, "`" + key + "`");
 
       type_ = type::shell_command;
       value_ = value.get<std::string>();
@@ -243,7 +239,7 @@ public:
           throw pqrs::json::unmarshal_error(fmt::format("`{0}` error: {1}", key, e.what()));
         }
       } else {
-        throw pqrs::json::unmarshal_error(fmt::format("`{0}` must be object or array of objects, but is `{1}`", key, value.dump()));
+        throw pqrs::json::unmarshal_error(fmt::format("`{0}` must be object or array of objects, but is `{1}`", key, pqrs::json::dump_for_error_message(value)));
       }
 
       type_ = type::select_input_source;
@@ -258,9 +254,7 @@ public:
     if (key == "set_variable") {
       check_type(json);
 
-      if (!value.is_object()) {
-        throw pqrs::json::unmarshal_error(fmt::format("`{0}` must be object, but is `{1}`", key, value.dump()));
-      }
+      pqrs::json::requires_object(value, "`" + key + "`");
 
       std::optional<std::string> variable_name;
       std::optional<int> variable_value;
@@ -269,31 +263,29 @@ public:
         // k is always std::string.
 
         if (k == "name") {
-          if (!v.is_string()) {
-            throw pqrs::json::unmarshal_error(fmt::format("`{0}.name` must be string, but is `{1}`", key, v.dump()));
-          }
+          pqrs::json::requires_string(v, "`" + key + ".name`");
+
           variable_name = v.get<std::string>();
 
         } else if (k == "value") {
-          if (!v.is_number()) {
-            throw pqrs::json::unmarshal_error(fmt::format("`{0}.value` must be number, but is `{1}`", key, v.dump()));
-          }
+          pqrs::json::requires_number(v, "`" + key + ".value`");
+
           variable_value = v.get<int>();
 
         } else if (k == "description") {
           // Do nothing
 
         } else {
-          throw pqrs::json::unmarshal_error(fmt::format("unknown key `{0}` in `{1}`", k, value.dump()));
+          throw pqrs::json::unmarshal_error(fmt::format("unknown key `{0}` in `{1}`", k, pqrs::json::dump_for_error_message(value)));
         }
       }
 
       if (!variable_name) {
-        throw pqrs::json::unmarshal_error(fmt::format("`{0}.name` is not found in `{1}`", key, value.dump()));
+        throw pqrs::json::unmarshal_error(fmt::format("`{0}.name` is not found in `{1}`", key, pqrs::json::dump_for_error_message(value)));
       }
 
       if (!variable_value) {
-        throw pqrs::json::unmarshal_error(fmt::format("`{0}.value` is not found in `{1}`", key, value.dump()));
+        throw pqrs::json::unmarshal_error(fmt::format("`{0}.value` is not found in `{1}`", key, pqrs::json::dump_for_error_message(value)));
       }
 
       type_ = type::set_variable;
@@ -308,9 +300,7 @@ public:
     if (key == "mouse_key") {
       check_type(json);
 
-      if (!value.is_object()) {
-        throw pqrs::json::unmarshal_error(fmt::format("`{0}` must be object, but is `{1}`", key, value.dump()));
-      }
+      pqrs::json::requires_object(value, "`" + key + "`");
 
       type_ = type::mouse_key;
 
@@ -335,7 +325,7 @@ public:
 private:
   void check_type(const nlohmann::json& json) const {
     if (type_ != type::none) {
-      throw pqrs::json::unmarshal_error(fmt::format("multiple types are specified: `{0}`", json.dump()));
+      throw pqrs::json::unmarshal_error(fmt::format("multiple types are specified: `{0}`", pqrs::json::dump_for_error_message(json)));
     }
   }
 

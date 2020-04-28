@@ -139,12 +139,12 @@ inline void from_json(const nlohmann::json& json, value_t& value) {
     if (auto v = make_pointing_button(json.get<std::string>())) {
       value = *v;
     } else {
-      throw pqrs::json::unmarshal_error(fmt::format("unknown pointing_button: `{0}`", json.dump()));
+      throw pqrs::json::unmarshal_error(fmt::format("unknown pointing_button: `{0}`", pqrs::json::dump_for_error_message(json)));
     }
   } else if (json.is_number()) {
     value = pointing_button::value_t(json.get<type_safe::underlying_type<value_t>>());
   } else {
-    throw pqrs::json::unmarshal_error(fmt::format("json must be string or number, but is `{0}`", json.dump()));
+    throw pqrs::json::unmarshal_error(fmt::format("json must be string or number, but is `{0}`", pqrs::json::dump_for_error_message(json)));
   }
 }
 } // namespace pointing_button

@@ -82,9 +82,7 @@ inline void to_json(nlohmann::json& json, const modifier& value) {
 }
 
 inline void from_json(const nlohmann::json& json, modifier& value) {
-  if (!json.is_string()) {
-    throw pqrs::json::unmarshal_error(fmt::format("`modifier` must be string, but is `{0}`", json.dump()));
-  }
+  pqrs::json::requires_string(json, "`modifier`");
 
   auto name = json.get<std::string>();
   if (name == "any") {

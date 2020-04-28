@@ -24,7 +24,7 @@ public:
         to_ = json.get<std::vector<to_event_definition>>();
 
       } else {
-        throw pqrs::json::unmarshal_error(fmt::format("json must be object or array, but is `{0}`", json.dump()));
+        throw pqrs::json::unmarshal_error(fmt::format("json must be object or array, but is `{0}`", pqrs::json::dump_for_error_message(json)));
       }
 
     } catch (...) {

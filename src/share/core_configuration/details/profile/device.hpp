@@ -24,9 +24,7 @@ public:
     // ----------------------------------------
     // Load from json
 
-    if (!json.is_object()) {
-      throw pqrs::json::unmarshal_error(fmt::format("json must be object, but is `{0}`", json.dump()));
-    }
+    pqrs::json::requires_object(json, "json");
 
     for (const auto& [key, value] : json.items()) {
       if (key == "identifiers") {
@@ -37,25 +35,19 @@ public:
         }
 
       } else if (key == "ignore") {
-        if (!value.is_boolean()) {
-          throw pqrs::json::unmarshal_error(fmt::format("`{0}` must be boolean, but is `{1}`", key, value.dump()));
-        }
+        pqrs::json::requires_boolean(value, "`" + key + "`");
 
         ignore_ = value.get<bool>();
         ignore_configured = true;
 
       } else if (key == "manipulate_caps_lock_led") {
-        if (!value.is_boolean()) {
-          throw pqrs::json::unmarshal_error(fmt::format("`{0}` must be boolean, but is `{1}`", key, value.dump()));
-        }
+        pqrs::json::requires_boolean(value, "`" + key + "`");
 
         manipulate_caps_lock_led_ = value.get<bool>();
         manipulate_caps_lock_led_configured = true;
 
       } else if (key == "disable_built_in_keyboard_if_exists") {
-        if (!value.is_boolean()) {
-          throw pqrs::json::unmarshal_error(fmt::format("`{0}` must be boolean, but is `{1}`", key, value.dump()));
-        }
+        pqrs::json::requires_boolean(value, "`" + key + "`");
 
         disable_built_in_keyboard_if_exists_ = value.get<bool>();
 

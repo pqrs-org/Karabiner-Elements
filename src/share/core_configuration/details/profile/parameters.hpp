@@ -42,15 +42,11 @@ inline void to_json(nlohmann::json& json, const parameters& value) {
 }
 
 inline void from_json(const nlohmann::json& json, parameters& value) {
-  if (!json.is_object()) {
-    throw pqrs::json::unmarshal_error(fmt::format("json must be object, but is `{0}`", json.dump()));
-  }
+  pqrs::json::requires_object(json, "json");
 
   for (const auto& [k, v] : json.items()) {
     if (k == "delay_milliseconds_before_open_device") {
-      if (!v.is_number()) {
-        throw pqrs::json::unmarshal_error(fmt::format("`{0}` must be number, but is `{1}`", k, v.dump()));
-      }
+      pqrs::json::requires_number(v, "`" + k + "`");
 
       value.set_delay_milliseconds_before_open_device(std::chrono::milliseconds(v.get<int>()));
 

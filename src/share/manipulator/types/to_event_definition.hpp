@@ -105,9 +105,7 @@ private:
 };
 
 inline void from_json(const nlohmann::json& json, to_event_definition& d) {
-  if (!json.is_object()) {
-    throw pqrs::json::unmarshal_error(fmt::format("json must be object, but is `{0}`", json.dump()));
-  }
+  pqrs::json::requires_object(json, "json");
 
   for (const auto& [key, value] : json.items()) {
     if (d.get_event_definition().handle_json(key, value, json)) {
@@ -121,36 +119,28 @@ inline void from_json(const nlohmann::json& json, to_event_definition& d) {
       }
 
     } else if (key == "lazy") {
-      if (!value.is_boolean()) {
-        throw pqrs::json::unmarshal_error(fmt::format("`{0}` must be boolean, but is `{1}`", key, value.dump()));
-      }
+      pqrs::json::requires_boolean(value, "`" + key + "`");
 
       d.set_lazy(value.get<bool>());
 
     } else if (key == "repeat") {
-      if (!value.is_boolean()) {
-        throw pqrs::json::unmarshal_error(fmt::format("`{0}` must be boolean, but is `{1}`", key, value.dump()));
-      }
+      pqrs::json::requires_boolean(value, "`" + key + "`");
 
       d.set_repeat(value.get<bool>());
 
     } else if (key == "halt") {
-      if (!value.is_boolean()) {
-        throw pqrs::json::unmarshal_error(fmt::format("`{0}` must be boolean, but is `{1}`", key, value.dump()));
-      }
+      pqrs::json::requires_boolean(value, "`" + key + "`");
 
       d.set_halt(value.get<bool>());
 
     } else if (key == "hold_down_milliseconds" ||
                key == "held_down_milliseconds") {
-      if (!value.is_number()) {
-        throw pqrs::json::unmarshal_error(fmt::format("`{0}` must be number, but is `{1}`", key, value.dump()));
-      }
+      pqrs::json::requires_number(value, "`" + key + "`");
 
       d.set_hold_down_milliseconds(std::chrono::milliseconds(value.get<int>()));
 
     } else {
-      throw pqrs::json::unmarshal_error(fmt::format("unknown key `{0}` in `{1}`", key, json.dump()));
+      throw pqrs::json::unmarshal_error(fmt::format("unknown key `{0}` in `{1}`", key, pqrs::json::dump_for_error_message(json)));
     }
   }
 
@@ -168,7 +158,7 @@ inline void from_json(const nlohmann::json& json, to_event_definition& d) {
 
     case event_definition::type::none:
     case event_definition::type::any:
-      throw pqrs::json::unmarshal_error(fmt::format("event type is invalid: `{0}`", json.dump()));
+      throw pqrs::json::unmarshal_error(fmt::format("event type is invalid: `{0}`", pqrs::json::dump_for_error_message(json)));
   }
 }
 } // namespace manipulator

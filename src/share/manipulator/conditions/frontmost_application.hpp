@@ -47,7 +47,7 @@ public:
             std::regex r(s);
             bundle_identifiers_.push_back(r);
           } catch (std::exception& e) {
-            throw pqrs::json::unmarshal_error(fmt::format("{0}: `{1}:{2}`", e.what(), key, value.dump()));
+            throw pqrs::json::unmarshal_error(fmt::format("{0}: `{1}:{2}`", e.what(), key, pqrs::json::dump_for_error_message(value)));
           }
         }
 
@@ -63,7 +63,7 @@ public:
             std::regex r(s);
             file_paths_.push_back(r);
           } catch (std::exception& e) {
-            throw pqrs::json::unmarshal_error(fmt::format("{0}: `{1}:{2}`", e.what(), key, value.dump()));
+            throw pqrs::json::unmarshal_error(fmt::format("{0}: `{1}:{2}`", e.what(), key, pqrs::json::dump_for_error_message(value)));
           }
         }
 
@@ -71,7 +71,7 @@ public:
         // Do nothing
 
       } else {
-        throw pqrs::json::unmarshal_error(fmt::format("unknown key `{0}` in `{1}`", key, json.dump()));
+        throw pqrs::json::unmarshal_error(fmt::format("unknown key `{0}` in `{1}`", key, pqrs::json::dump_for_error_message(json)));
       }
     }
   }

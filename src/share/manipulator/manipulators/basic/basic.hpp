@@ -25,9 +25,7 @@ public:
                                                                                            dispatcher_client(),
                                                                                            parameters_(parameters) {
     try {
-      if (!json.is_object()) {
-        throw pqrs::json::unmarshal_error(fmt::format("json must be object, but is `{0}`", json.dump()));
-      }
+      pqrs::json::requires_object(json, "json");
 
       for (const auto& [key, value] : json.items()) {
         if (key == "from") {
@@ -55,7 +53,7 @@ public:
             }
 
           } else {
-            throw pqrs::json::unmarshal_error(fmt::format("`{0}` must be object or array, but is `{1}`", key, value.dump()));
+            throw pqrs::json::unmarshal_error(fmt::format("`{0}` must be object or array, but is `{1}`", key, pqrs::json::dump_for_error_message(value)));
           }
 
         } else if (key == "to_after_key_up") {
@@ -76,7 +74,7 @@ public:
             }
 
           } else {
-            throw pqrs::json::unmarshal_error(fmt::format("`{0}` must be object or array, but is `{1}`", key, value.dump()));
+            throw pqrs::json::unmarshal_error(fmt::format("`{0}` must be object or array, but is `{1}`", key, pqrs::json::dump_for_error_message(value)));
           }
 
         } else if (key == "to_if_alone") {
@@ -97,7 +95,7 @@ public:
             }
 
           } else {
-            throw pqrs::json::unmarshal_error(fmt::format("`{0}` must be object or array, but is `{1}`", key, value.dump()));
+            throw pqrs::json::unmarshal_error(fmt::format("`{0}` must be object or array, but is `{1}`", key, pqrs::json::dump_for_error_message(value)));
           }
 
         } else if (key == "to_if_held_down") {
@@ -121,7 +119,7 @@ public:
           // Do nothing
 
         } else {
-          throw pqrs::json::unmarshal_error(fmt::format("unknown key `{0}` in `{1}`", key, json.dump()));
+          throw pqrs::json::unmarshal_error(fmt::format("unknown key `{0}` in `{1}`", key, pqrs::json::dump_for_error_message(json)));
         }
       }
 

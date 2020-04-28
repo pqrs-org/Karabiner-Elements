@@ -22,7 +22,7 @@ inline std::shared_ptr<manipulators::base> make_manipulator(const nlohmann::json
                                                             const core_configuration::details::complex_modifications_parameters& parameters) {
   auto it = json.find("type");
   if (it == std::end(json)) {
-    throw pqrs::json::unmarshal_error(fmt::format("`type` must be specified: {0}", json.dump()));
+    throw pqrs::json::unmarshal_error(fmt::format("`type` must be specified: {0}", pqrs::json::dump_for_error_message(json)));
   }
 
   auto type = it->get<std::string>();
@@ -42,13 +42,10 @@ inline std::shared_ptr<conditions::base> make_condition(const nlohmann::json& js
   auto it = json.find("type");
   if (it == std::end(json)) {
     throw pqrs::json::unmarshal_error(
-        fmt::format("condition type is not specified in `{0}`", json.dump()));
+        fmt::format("condition type is not specified in `{0}`", pqrs::json::dump_for_error_message(json)));
   }
 
-  if (!it->is_string()) {
-    throw pqrs::json::unmarshal_error(
-        fmt::format("condition type must be string, but is `{0}`", it->dump()));
-  }
+  pqrs::json::requires_string(*it, "condition type");
 
   auto type = it->get<std::string>();
 
@@ -72,7 +69,7 @@ inline std::shared_ptr<conditions::base> make_condition(const nlohmann::json& js
     return std::make_shared<conditions::keyboard_type>(json);
   } else {
     throw pqrs::json::unmarshal_error(
-        fmt::format("unknown condition type `{0}` in `{1}`", type, json.dump()));
+        fmt::format("unknown condition type `{0}` in `{1}`", type, pqrs::json::dump_for_error_message(json)));
   }
 }
 

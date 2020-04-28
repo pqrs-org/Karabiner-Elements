@@ -115,9 +115,7 @@ private:
 };
 
 inline void from_json(const nlohmann::json& json, from_modifiers_definition& value) {
-  if (!json.is_object()) {
-    throw pqrs::json::unmarshal_error(fmt::format("json must be object, but is `{0}`", json.dump()));
-  }
+  pqrs::json::requires_object(json, "json");
 
   for (const auto& [k, v] : json.items()) {
     if (k == "mandatory") {
@@ -138,7 +136,7 @@ inline void from_json(const nlohmann::json& json, from_modifiers_definition& val
       // Do nothing
 
     } else {
-      throw pqrs::json::unmarshal_error(fmt::format("unknown key `{0}` in `{1}`", k, json.dump()));
+      throw pqrs::json::unmarshal_error(fmt::format("unknown key `{0}` in `{1}`", k, pqrs::json::dump_for_error_message(json)));
     }
   }
 }

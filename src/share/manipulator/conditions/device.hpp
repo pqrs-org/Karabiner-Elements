@@ -47,7 +47,7 @@ public:
         // Do nothing
 
       } else {
-        throw pqrs::json::unmarshal_error(fmt::format("unknown key `{0}` in `{1}`", key, json.dump()));
+        throw pqrs::json::unmarshal_error(fmt::format("unknown key `{0}` in `{1}`", key, pqrs::json::dump_for_error_message(json)));
       }
     }
   }
@@ -148,13 +148,13 @@ private:
 
         } else {
           throw pqrs::json::unmarshal_error(
-              fmt::format("unknown key `{0}` in `{1}`", key, j.dump()));
+              fmt::format("unknown key `{0}` in `{1}`", key, pqrs::json::dump_for_error_message(j)));
         }
       }
 
       if (!d.vendor_id) {
         throw pqrs::json::unmarshal_error(
-            fmt::format("`vendor_id` must be specified: `{0}`", j.dump()));
+            fmt::format("`vendor_id` must be specified: `{0}`", pqrs::json::dump_for_error_message(j)));
       }
 
       definitions_.push_back(d);

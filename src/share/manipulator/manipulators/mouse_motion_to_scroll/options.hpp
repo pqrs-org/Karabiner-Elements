@@ -95,50 +95,36 @@ public:
   }
 
   void update(const nlohmann::json& json) {
-    if (!json.is_object()) {
-      throw pqrs::json::unmarshal_error(fmt::format("json must be object, but is `{0}`", json.dump()));
-    }
+    pqrs::json::requires_object(json, "json");
 
     for (const auto& [key, value] : json.items()) {
       if (key == "momentum_scroll_enabled") {
-        if (!value.is_boolean()) {
-          throw pqrs::json::unmarshal_error(fmt::format("`{0}` must be boolean, but is `{1}`", key, value.dump()));
-        }
+        pqrs::json::requires_boolean(value, "`" + key + "`");
 
         set_momentum_scroll_enabled(value.get<bool>());
 
       } else if (key == "speed_multiplier") {
-        if (!value.is_number()) {
-          throw pqrs::json::unmarshal_error(fmt::format("`{0}` must be number, but is `{1}`", key, value.dump()));
-        }
+        pqrs::json::requires_number(value, "`" + key + "`");
 
         set_speed_multiplier(value.get<double>());
 
       } else if (key == "threshold") { // (secret parameter)
-        if (!value.is_number()) {
-          throw pqrs::json::unmarshal_error(fmt::format("`{0}` must be number, but is `{1}`", key, value.dump()));
-        }
+        pqrs::json::requires_number(value, "`" + key + "`");
 
         set_threshold(value.get<int>());
 
       } else if (key == "recent_time_duration_milliseconds") { // (secret parameter)
-        if (!value.is_number()) {
-          throw pqrs::json::unmarshal_error(fmt::format("`{0}` must be number, but is `{1}`", key, value.dump()));
-        }
+        pqrs::json::requires_number(value, "`" + key + "`");
 
         set_recent_time_duration_milliseconds(std::chrono::milliseconds(value.get<int>()));
 
       } else if (key == "direction_lock_threshold") { // (secret parameter)
-        if (!value.is_number()) {
-          throw pqrs::json::unmarshal_error(fmt::format("`{0}` must be number, but is `{1}`", key, value.dump()));
-        }
+        pqrs::json::requires_number(value, "`" + key + "`");
 
         set_direction_lock_threshold(value.get<int>());
 
       } else if (key == "scroll_event_interval_milliseconds_threshold") { // (secret parameter)
-        if (!value.is_number()) {
-          throw pqrs::json::unmarshal_error(fmt::format("`{0}` must be number, but is `{1}`", key, value.dump()));
-        }
+        pqrs::json::requires_number(value, "`" + key + "`");
 
         set_scroll_event_interval_milliseconds_threshold(std::chrono::milliseconds(value.get<int>()));
       }

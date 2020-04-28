@@ -678,12 +678,12 @@ inline void from_json(const nlohmann::json& json, key_code::value_t& value) {
     if (auto v = make_key_code(json.get<std::string>())) {
       value = *v;
     } else {
-      throw pqrs::json::unmarshal_error(fmt::format("unknown key_code: `{0}`", json.dump()));
+      throw pqrs::json::unmarshal_error(fmt::format("unknown key_code: `{0}`", pqrs::json::dump_for_error_message(json)));
     }
   } else if (json.is_number()) {
     value = key_code::value_t(json.get<type_safe::underlying_type<value_t>>());
   } else {
-    throw pqrs::json::unmarshal_error(fmt::format("json must be string or number, but is `{0}`", json.dump()));
+    throw pqrs::json::unmarshal_error(fmt::format("json must be string or number, but is `{0}`", pqrs::json::dump_for_error_message(json)));
   }
 }
 } // namespace key_code

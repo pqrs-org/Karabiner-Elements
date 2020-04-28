@@ -21,7 +21,7 @@ inline std::set<modifier> make_modifiers(const nlohmann::json& json) {
     return json.get<std::set<modifier>>();
   }
 
-  throw pqrs::json::unmarshal_error(fmt::format("json must be array or string, but is `{0}`", json.dump()));
+  throw pqrs::json::unmarshal_error(fmt::format("json must be array or string, but is `{0}`", pqrs::json::dump_for_error_message(json)));
 }
 
 inline std::vector<modifier_flag> get_modifier_flags(modifier modifier) {
