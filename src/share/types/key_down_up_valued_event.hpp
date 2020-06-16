@@ -118,7 +118,7 @@ struct hash<krbn::key_down_up_valued_event> final {
   std::size_t operator()(const krbn::key_down_up_valued_event& value) const {
     std::size_t h = 0;
 
-    pqrs::hash_combine(h, value.get_value());
+    pqrs::hash::combine(h, value.get_value());
 
     return h;
   }

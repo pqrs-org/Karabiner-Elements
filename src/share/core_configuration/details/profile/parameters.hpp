@@ -68,7 +68,7 @@ struct hash<krbn::core_configuration::details::parameters> final {
   std::size_t operator()(const krbn::core_configuration::details::parameters& value) const {
     std::size_t h = 0;
 
-    pqrs::hash_combine(h, value.get_delay_milliseconds_before_open_device().count());
+    pqrs::hash::combine(h, value.get_delay_milliseconds_before_open_device().count());
 
     return h;
   }

@@ -300,7 +300,7 @@ struct hash<krbn::device_properties> final {
 
     // We can treat device_id_ as the unique value of device_properties.
     if (auto device_id = value.get_device_id()) {
-      pqrs::hash_combine(h, *device_id);
+      pqrs::hash::combine(h, *device_id);
     }
 
     return h;

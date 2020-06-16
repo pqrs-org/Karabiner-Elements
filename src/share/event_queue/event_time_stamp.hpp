@@ -125,8 +125,8 @@ struct hash<krbn::event_queue::event_time_stamp> final {
   std::size_t operator()(const krbn::event_queue::event_time_stamp& value) const {
     std::size_t h = 0;
 
-    pqrs::hash_combine(h, type_safe::get(value.get_time_stamp()));
-    pqrs::hash_combine(h, type_safe::get(value.get_input_delay_duration()));
+    pqrs::hash::combine(h, type_safe::get(value.get_time_stamp()));
+    pqrs::hash::combine(h, type_safe::get(value.get_input_delay_duration()));
 
     return h;
   }

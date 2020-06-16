@@ -531,8 +531,8 @@ struct hash<krbn::event_queue::event> final {
   std::size_t operator()(const krbn::event_queue::event& value) const {
     std::size_t h = 0;
 
-    pqrs::hash_combine(h, value.get_type());
-    pqrs::hash_combine(h, value.get_value());
+    pqrs::hash::combine(h, value.get_type());
+    pqrs::hash::combine(h, value.get_value());
 
     return h;
   }

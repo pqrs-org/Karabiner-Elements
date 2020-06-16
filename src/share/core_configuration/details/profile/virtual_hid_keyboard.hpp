@@ -86,8 +86,8 @@ struct hash<krbn::core_configuration::details::virtual_hid_keyboard> final {
   std::size_t operator()(const krbn::core_configuration::details::virtual_hid_keyboard& value) const {
     std::size_t h = 0;
 
-    pqrs::hash_combine(h, value.get_country_code());
-    pqrs::hash_combine(h, value.get_mouse_key_xy_scale());
+    pqrs::hash::combine(h, value.get_country_code());
+    pqrs::hash::combine(h, value.get_mouse_key_xy_scale());
 
     return h;
   }

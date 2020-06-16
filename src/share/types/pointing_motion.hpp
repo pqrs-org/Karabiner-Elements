@@ -123,10 +123,10 @@ struct hash<krbn::pointing_motion> final {
   std::size_t operator()(const krbn::pointing_motion& value) const {
     std::size_t h = 0;
 
-    pqrs::hash_combine(h, value.get_x());
-    pqrs::hash_combine(h, value.get_y());
-    pqrs::hash_combine(h, value.get_vertical_wheel());
-    pqrs::hash_combine(h, value.get_horizontal_wheel());
+    pqrs::hash::combine(h, value.get_x());
+    pqrs::hash::combine(h, value.get_y());
+    pqrs::hash::combine(h, value.get_vertical_wheel());
+    pqrs::hash::combine(h, value.get_horizontal_wheel());
 
     return h;
   }

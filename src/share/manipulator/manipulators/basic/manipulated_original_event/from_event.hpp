@@ -57,9 +57,9 @@ struct hash<from_event> final {
   std::size_t operator()(const from_event& value) const {
     std::size_t h = 0;
 
-    pqrs::hash_combine(h, value.get_device_id());
-    pqrs::hash_combine(h, value.get_event());
-    pqrs::hash_combine(h, value.get_original_event());
+    pqrs::hash::combine(h, value.get_device_id());
+    pqrs::hash::combine(h, value.get_event());
+    pqrs::hash::combine(h, value.get_original_event());
 
     return h;
   }

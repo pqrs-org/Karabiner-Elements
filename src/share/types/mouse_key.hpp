@@ -169,11 +169,11 @@ struct hash<krbn::mouse_key> final {
   std::size_t operator()(const krbn::mouse_key& value) const {
     std::size_t h = 0;
 
-    pqrs::hash_combine(h, value.get_x());
-    pqrs::hash_combine(h, value.get_y());
-    pqrs::hash_combine(h, value.get_vertical_wheel());
-    pqrs::hash_combine(h, value.get_horizontal_wheel());
-    pqrs::hash_combine(h, value.get_speed_multiplier());
+    pqrs::hash::combine(h, value.get_x());
+    pqrs::hash::combine(h, value.get_y());
+    pqrs::hash::combine(h, value.get_vertical_wheel());
+    pqrs::hash::combine(h, value.get_horizontal_wheel());
+    pqrs::hash::combine(h, value.get_speed_multiplier());
 
     return h;
   }
