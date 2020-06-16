@@ -16,6 +16,7 @@
 [Windows header clutter](#windows-header-clutter)<br>
 [Enabling stringification](#enabling-stringification)<br>
 [Disabling exceptions](#disabling-exceptions)<br>
+[Overriding Catch's debug break (`-b`)](#overriding-catchs-debug-break--b)<br>
 
 Catch is designed to "just work" as much as possible. For most people the only configuration needed is telling Catch which source file should host all the implementation code (```CATCH_CONFIG_MAIN```).
 
@@ -256,6 +257,18 @@ namespace Catch {
     void throw_exception(std::exception const&);
 }
 ```
+
+## Overriding Catch's debug break (`-b`)
+
+> [Introduced](https://github.com/catchorg/Catch2/pull/1846) in Catch 2.11.2.
+
+You can override Catch2's break-into-debugger code by defining the
+`CATCH_BREAK_INTO_DEBUGGER()` macro. This can be used if e.g. Catch2 does
+not know your platform, or your platform is misdetected.
+
+The macro will be used as is, that is, `CATCH_BREAK_INTO_DEBUGGER();`
+must compile and must break into debugger.
+
 
 ---
 

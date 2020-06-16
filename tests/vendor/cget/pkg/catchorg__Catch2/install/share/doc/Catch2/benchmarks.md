@@ -168,7 +168,7 @@ Note that it is not possible to simply use the same instance for different runs
 and resetting it between each run since that would pollute the measurements with
 the resetting code.
 
-It is also possible to just provide an argument name to the simple `BENCHMARK` macro to get 
+It is also possible to just provide an argument name to the simple `BENCHMARK` macro to get
 the same semantics as providing a callable to `meter.measure` with `int` argument:
 
 ```c++
@@ -189,19 +189,17 @@ construct and destroy objects without dynamic allocation and in a way that lets
 you measure construction and destruction separately.
 
 ```c++
-BENCHMARK_ADVANCED("construct")(Catch::Benchmark::Chronometer meter)
-{
+BENCHMARK_ADVANCED("construct")(Catch::Benchmark::Chronometer meter) {
     std::vector<Catch::Benchmark::storage_for<std::string>> storage(meter.runs());
     meter.measure([&](int i) { storage[i].construct("thing"); });
-})
+};
 
-BENCHMARK_ADVANCED("destroy", [](Catch::Benchmark::Chronometer meter)
-{
+BENCHMARK_ADVANCED("destroy")(Catch::Benchmark::Chronometer meter) {
     std::vector<Catch::Benchmark::destructable_object<std::string>> storage(meter.runs());
     for(auto&& o : storage)
         o.construct("thing");
     meter.measure([&](int i) { storage[i].destruct(); });
-})
+};
 ```
 
 `Catch::Benchmark::storage_for<T>` objects are just pieces of raw storage suitable for `T`

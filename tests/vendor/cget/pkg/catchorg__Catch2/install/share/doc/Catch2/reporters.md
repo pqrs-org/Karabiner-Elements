@@ -29,6 +29,7 @@ Do this in one source file - the same one you have `CATCH_CONFIG_MAIN` or `CATCH
 Use this when building as part of a TeamCity build to see results as they happen ([code example](../examples/207-Rpt-TeamCityReporter.cpp)).
 * `tap` writes in the TAP ([Test Anything Protocol](https://en.wikipedia.org/wiki/Test_Anything_Protocol)) format.
 * `automake` writes in a format that correspond to [automake  .trs](https://www.gnu.org/software/automake/manual/html_node/Log-files-generation-and-test-results-recording.html) files
+* `sonarqube` writes the [SonarQube Generic Test Data](https://docs.sonarqube.org/latest/analysis/generic-test/) XML format.
 
 You see what reporters are available from the command line by running with `--list-reporters`.
 

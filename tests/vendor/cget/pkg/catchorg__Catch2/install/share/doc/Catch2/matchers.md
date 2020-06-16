@@ -17,7 +17,7 @@ For example, to assert that a string ends with a certain substring:
 using Catch::Matchers::EndsWith; // or Catch::EndsWith
 std::string str = getStringFromSomewhere();
 REQUIRE_THAT( str, EndsWith( "as a service" ) );
- ```
+```
 
 The matcher objects can take multiple arguments, allowing more fine tuning.
 The built-in string matchers, for example, take a second argument specifying whether the comparison is
@@ -34,6 +34,22 @@ REQUIRE_THAT( str,
     EndsWith( "as a service" ) ||
     (StartsWith( "Big data" ) && !Contains( "web scale" ) ) );
 ```
+
+_The combining operators do not take ownership of the matcher objects.
+This means that if you store the combined object, you have to ensure that
+the matcher objects outlive its last use. What this means is that code
+like this leads to a use-after-free and (hopefully) a crash:_
+
+```cpp
+TEST_CASE("Bugs, bugs, bugs", "[Bug]"){
+    std::string str = "Bugs as a service";
+
+    auto match_expression = Catch::EndsWith( "as a service" ) ||
+        (Catch::StartsWith( "Big data" ) && !Catch::Contains( "web scale" ) );
+    REQUIRE_THAT(str, match_expression);
+}
+```
+
 
 ## Built in matchers
 Catch2 provides some matchers by default. They can be found in the

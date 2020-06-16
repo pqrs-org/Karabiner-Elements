@@ -42,8 +42,8 @@ Tag version and release title should be same as the new version,
 description should contain the release notes for the current release.
 Single header version of `catch.hpp` *needs* to be attached as a binary,
 as that is where the official download link links to. Preferably
-it should use linux line endings. All non-bundled reporters (Automake,
-TAP, TeamCity) should also be attached as binaries, as they might be
+it should use linux line endings. All non-bundled reporters (Automake, TAP,
+TeamCity, SonarQube) should also be attached as binaries, as they might be
 dependent on a specific version of the single-include header.
 
 Since 2.5.0, the release tag and the "binaries" (headers) should be PGP
@@ -67,6 +67,7 @@ $ gpg2 --armor --output catch.hpp.asc --detach-sig catch.hpp
 $ gpg2 --armor --output catch_reporter_automake.hpp.asc --detach-sig catch_reporter_automake.hpp
 $ gpg2 --armor --output catch_reporter_teamcity.hpp.asc --detach-sig catch_reporter_teamcity.hpp
 $ gpg2 --armor --output catch_reporter_tap.hpp.asc --detach-sig catch_reporter_tap.hpp
+$ gpg2 --armor --output catch_reporter_sonarqube.hpp.asc --detach-sig catch_reporter_sonarqube.hpp
 ```
 
 _GPG does not support signing multiple files in single invocation._

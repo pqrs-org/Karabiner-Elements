@@ -17,4 +17,6 @@ fact then please let us know - either directly, via a PR or
  - NASA
  - [Inscopix Inc.](https://www.inscopix.com/)
  - [Makimo](https://makimo.pl/)
- - [UX3D] (https://ux3d.io)
+ - [UX3D](https://ux3d.io)
+ - [King](https://king.com)
+ 

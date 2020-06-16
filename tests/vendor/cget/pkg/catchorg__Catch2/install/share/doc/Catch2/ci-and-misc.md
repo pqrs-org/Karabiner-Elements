@@ -12,7 +12,7 @@ Build Systems may refer to low-level tools, like CMake, or larger systems that r
 
 ## Continuous Integration systems
 
-Probably the most important aspect to using Catch with a build server is the use of different reporters. Catch comes bundled with three reporters that should cover the majority of build servers out there - although adding more for better integration with some is always a possibility (currently we also offer TeamCity, TAP and Automake reporters).
+Probably the most important aspect to using Catch with a build server is the use of different reporters. Catch comes bundled with three reporters that should cover the majority of build servers out there - although adding more for better integration with some is always a possibility (currently we also offer TeamCity, TAP, Automake and SonarQube reporters).
 
 Two of these reporters are built in (XML and JUnit) and the third (TeamCity) is included as a separate header. It's possible that the other two may be split out in the future too - as that would make the core of Catch smaller for those that don't need them.
 
@@ -64,6 +64,10 @@ The Automake Reporter writes out the [meta tags](https://www.gnu.org/software/au
 ```-r tap```
 
 Because of the incremental nature of Catch's test suites and ability to run specific tests, our implementation of TAP reporter writes out the number of tests in a suite last.
+
+### SonarQube Reporter
+```-r sonarqube```
+[SonarQube Generic Test Data](https://docs.sonarqube.org/latest/analysis/generic-test/) XML format for tests metrics.
 
 ## Low-level tools
 

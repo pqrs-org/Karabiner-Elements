@@ -24,6 +24,7 @@
 [Specify the number of resamples for bootstrapping](#specify-the-number-of-resamples-for-bootstrapping)<br>
 [Specify the confidence-interval for bootstrapping](#specify-the-confidence-interval-for-bootstrapping)<br>
 [Disable statistical analysis of collected benchmark samples](#disable-statistical-analysis-of-collected-benchmark-samples)<br>
+[Specify the amount of time in milliseconds spent on warming up each test](#specify-the-amount-of-time-in-milliseconds-spent-on-warming-up-each-test)<br>
 [Usage](#usage)<br>
 [Specify the section to run](#specify-the-section-to-run)<br>
 [Filenames as tags](#filenames-as-tags)<br>
@@ -64,6 +65,7 @@ Click one of the following links to take you straight to that option - or scroll
 <a href="#benchmark-resamples">                         `    --benchmark-resamples`</a><br />
 <a href="#benchmark-confidence-interval">               `    --benchmark-confidence-interval`</a><br />
 <a href="#benchmark-no-analysis">                       `    --benchmark-no-analysis`</a><br />
+<a href="#benchmark-warmup-time">                       `    --benchmark-warmup-time`</a><br />
 <a href="#use-colour">                                  `    --use-colour`</a><br />
 
 </br>
@@ -99,6 +101,7 @@ exclude:notThis         Matches all tests except, 'notThis'
 ~*private*              Matches all tests except those that contain 'private'
 a* ~ab* abc             Matches all tests that start with 'a', except those that
                         start with 'ab', except 'abc', which is included
+-# [#somefile]          Matches all tests from the file 'somefile.cpp'
 </pre>
 
 Names within square brackets are interpreted as tags.
@@ -240,15 +243,25 @@ This option lists all available tests in a non-indented form, one on each line. 
 
 Test cases are ordered one of three ways:
 
-
 ### decl
-Declaration order (this is the default order if no --order argument is provided). The order the tests were originally declared in. Note that ordering between files is not guaranteed and is implementation dependent.
+Declaration order (this is the default order if no --order argument is provided).
+Tests in the same TU are sorted using their declaration orders, different
+TUs are in an implementation (linking) dependent order.
+
 
 ### lex
-Lexicographically sorted. Tests are sorted, alpha-numerically, by name.
+Lexicographic order. Tests are sorted by their name, their tags are ignored.
+
 
 ### rand
-Randomly sorted. Test names are sorted using ```std::random_shuffle()```. By default the random number generator is seeded with 0 - and so the order is repeatable. To control the random seed see <a href="#rng-seed">rng-seed</a>.
+
+Randomly sorted. The order is dependent on Catch2's random seed (see
+[`--rng-seed`](#rng-seed)), and is subset invariant. What this means
+is that as long as the random seed is fixed, running only some tests
+(e.g. via tag) does not change their relative order.
+
+> The subset stability was introduced in Catch2 v2.12.0
+
 
 <a id="rng-seed"></a>
 ## Specify a seed for the Random Number Generator
@@ -268,7 +281,7 @@ See [The LibIdentify repo for more information and examples](https://github.com/
 
 <a id="wait-for-keypress"></a>
 ## Wait for key before continuing
-<pre>--wait-for-keypress &lt;start|exit|both&gt;</pre>
+<pre>--wait-for-keypress &lt;never|start|exit|both&gt;</pre>
 
 Will cause the executable to print a message and wait until the return/ enter key is pressed before continuing -
 either before running any tests, after running all tests - or both, depending on the argument.
@@ -315,6 +328,14 @@ Must be between 0 and 1 and defaults to 0.95.
 
 When this flag is specified no bootstrapping or any other statistical analysis is performed.
 Instead the user code is only measured and the plain mean from the samples is reported.
+
+<a id="benchmark-warmup-time"></a>
+## Specify the amount of time in milliseconds spent on warming up each test
+<pre>--benchmark-warmup-time</pre>
+
+> [Introduced](https://github.com/catchorg/Catch2/pull/1844) in Catch 2.11.2.
+
+Configure the amount of time spent warming up each test.
 
 <a id="usage"></a>
 ## Usage

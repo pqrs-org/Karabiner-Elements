@@ -2,6 +2,14 @@
 
 # Release notes
 **Contents**<br>
+[2.12.2](#2122)<br>
+[2.12.1](#2121)<br>
+[2.12.0](#2120)<br>
+[2.11.3](#2113)<br>
+[2.11.2](#2112)<br>
+[2.11.1](#2111)<br>
+[2.11.0](#2110)<br>
+[2.10.2](#2102)<br>
 [2.10.1](#2101)<br>
 [2.10.0](#2100)<br>
 [2.9.2](#292)<br>
@@ -28,6 +36,122 @@
 [2.0.1](#201)<br>
 [Older versions](#older-versions)<br>
 [Even Older versions](#even-older-versions)<br>
+
+
+## 2.12.2
+
+### Fixes
+* Fixed compilation failure if `is_range` ADL found deleted function (#1929)
+* Fixed potential UB in `CAPTURE` if the expression contained non-ASCII characters (#1925)
+
+### Improvements
+* `std::result_of` is not used if `std::invoke_result` is available (#1934)
+* JUnit reporter writes out `status` attribute for tests (#1899)
+* Suppresed clang-tidy's `hicpp-vararg` warning (#1921)
+  * Catch2 was already suppressing the `cppcoreguidelines-pro-type-vararg` alias of the warning
+
+
+## 2.12.1
+
+### Fixes
+* Vector matchers now support initializer list literals better
+
+### Improvements
+* Added support for `^` (bitwise xor) to `CHECK` and `REQUIRE`
+
+
+## 2.12.0
+
+### Improvements
+* Running tests in random order (`--order rand`) has been reworked significantly (#1908)
+  * Given same seed, all platforms now produce the same order
+  * Given same seed, the relative order of tests does not change if you select only a subset of them
+* Vector matchers support custom allocators (#1909)
+* `|` and `&` (bitwise or and bitwise and) are now supported in `CHECK` and `REQUIRE`
+  * The resulting type must be convertible to `bool`
+
+### Fixes
+* Fixed computation of benchmarking column widths in ConsoleReporter (#1885, #1886)
+* Suppressed clang-tidy's `cppcoreguidelines-pro-type-vararg` in assertions (#1901)
+  * It was a false positive trigered by the new warning support workaround
+* Fixed bug in test specification parser handling of OR'd patterns using escaping (#1905)
+
+### Miscellaneous
+* Worked around IBM XL's codegen bug (#1907)
+  * It would emit code for _destructors_ of temporaries in an unevaluated context
+* Improved detection of stdlib's support for `std::uncaught_exceptions` (#1911)
+
+
+## 2.11.3
+
+### Fixes
+* Fixed compilation error caused by lambdas in assertions under MSVC
+
+
+## 2.11.2
+
+### Improvements
+* GCC and Clang now issue warnings for suspicious code in assertions (#1880)
+  * E.g. `REQUIRE( int != unsigned int )` will now issue mixed signedness comparison warning
+  * This has always worked on MSVC, but it now also works for GCC and current Clang versions
+* Colorization of "Test filters" output should be more robust now
+* `--wait-for-keypress` now also accepts `never` as an option (#1866)
+* Reporters no longer round-off nanoseconds when reporting benchmarking results (#1876)
+* Catch2's debug break now supports iOS while using Thumb instruction set (#1862)
+* It is now possible to customize benchmark's warm-up time when running the test binary (#1844)
+  * `--benchmark-warmup-time {ms}`
+* User can now specify how Catch2 should break into debugger (#1846)
+
+### Fixes
+* Fixes missing `<random>` include in benchmarking (#1831)
+* Fixed missing `<iterator>` include in benchmarking (#1874)
+* Hidden test cases are now also tagged with `[!hide]` as per documentation (#1847)
+* Detection of whether libc provides `std::nextafter` has been improved (#1854)
+* Detection of `wmain` no longer incorrectly looks for `WIN32` macro (#1849)
+  * Now it just detects Windows platform
+* Composing already-composed matchers no longer modifies the partially-composed matcher expression
+  * This bug has been present for the last ~2 years and nobody reported it
+
+
+## 2.11.1
+
+### Improvements
+* Breaking into debugger is supported on iOS (#1817)
+* `google-build-using-namespace` clang-tidy warning is suppressed (#1799)
+
+### Fixes
+* Clang on Windows is no longer assumed to implement MSVC's traditional preprocessor (#1806)
+* `ObjectStorage` now behaves properly in `const` contexts (#1820)
+* `GENERATE_COPY(a, b)` now compiles properly (#1809, #1815)
+* Some more cleanups in the benchmarking support
+
+
+## 2.11.0
+
+### Improvements
+* JUnit reporter output now contains more details in case of failure (#1347, #1719)
+* Added SonarQube Test Data reporter (#1738)
+  * It is in a separate header, just like the TAP, Automake, and TeamCity reporters
+* `range` generator now allows floating point numbers (#1776)
+* Reworked part of internals to increase throughput
+
+
+### Fixes
+* The single header version should contain full benchmarking support (#1800)
+* `[.foo]` is now properly parsed as `[.][foo]` when used on the command line (#1798)
+* Fixed compilation of benchmarking on platforms where `steady_clock::period` is not `std::nano` (#1794)
+
+
+
+## 2.10.2
+
+### Improvements
+* Catch2 will now compile on platform where `INFINITY` is double (#1782)
+
+
+### Fixes
+* Warning suppressed during listener registration will no longer leak
+
 
 
 ## 2.10.1

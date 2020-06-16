@@ -11,9 +11,9 @@ The easiest way to use Catch is to let it supply ```main()``` for you and handle
 
 This is achieved by writing ```#define CATCH_CONFIG_MAIN``` before the ```#include "catch.hpp"``` in *exactly one* source file.
 
-Sometimes, though, you need to write your own version of main(). You can do this by writing ```#define CATCH_CONFIG_RUNNER``` instead. Now you are free to write ```main()``` as normal and call into Catch yourself manually.
+Sometimes, though, you need to write your own version of main(). You can do this by writing ```#define CATCH_CONFIG_RUNNER``` instead. Now you are free to write ```main()``` as normal and call into Catch yourself manually. You now have a lot of flexibility - but here are three recipes to get your started:
 
-You now have a lot of flexibility - but here are three recipes to get your started:
+**Important note: you can only provide `main` in the same file you defined `CATCH_CONFIG_RUNNER`.**
 
 ## Let Catch take full control of args and config
 
