@@ -4,11 +4,11 @@
 #pragma once
 
 #ifndef SPDLOG_HEADER_ONLY
-#include "spdlog/async_logger.h"
+#include <spdlog/async_logger.h>
 #endif
 
-#include "spdlog/sinks/sink.h"
-#include "spdlog/details/thread_pool.h"
+#include <spdlog/sinks/sink.h>
+#include <spdlog/details/thread_pool.h>
 
 #include <memory>
 #include <string>
@@ -32,7 +32,7 @@ SPDLOG_INLINE void spdlog::async_logger::sink_it_(const details::log_msg &msg)
     }
     else
     {
-        SPDLOG_THROW(spdlog_ex("async log: thread pool doesn't exist anymore"));
+        throw_spdlog_ex("async log: thread pool doesn't exist anymore");
     }
 }
 
@@ -45,7 +45,7 @@ SPDLOG_INLINE void spdlog::async_logger::flush_()
     }
     else
     {
-        SPDLOG_THROW(spdlog_ex("async flush: thread pool doesn't exist anymore"));
+        throw_spdlog_ex("async flush: thread pool doesn't exist anymore");
     }
 }
 

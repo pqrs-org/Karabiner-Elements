@@ -2,7 +2,7 @@
 // ip/icmp.hpp
 // ~~~~~~~~~~~
 //
-// Copyright (c) 2003-2019 Christopher M. Kohlhoff (chris at kohlhoff dot com)
+// Copyright (c) 2003-2020 Christopher M. Kohlhoff (chris at kohlhoff dot com)
 //
 // Distributed under the Boost Software License, Version 1.0. (See accompanying
 // file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
@@ -46,33 +46,33 @@ public:
   typedef basic_endpoint<icmp> endpoint;
 
   /// Construct to represent the IPv4 ICMP protocol.
-  static icmp v4()
+  static icmp v4() ASIO_NOEXCEPT
   {
     return icmp(ASIO_OS_DEF(IPPROTO_ICMP),
         ASIO_OS_DEF(AF_INET));
   }
 
   /// Construct to represent the IPv6 ICMP protocol.
-  static icmp v6()
+  static icmp v6() ASIO_NOEXCEPT
   {
     return icmp(ASIO_OS_DEF(IPPROTO_ICMPV6),
         ASIO_OS_DEF(AF_INET6));
   }
 
   /// Obtain an identifier for the type of the protocol.
-  int type() const
+  int type() const ASIO_NOEXCEPT
   {
     return ASIO_OS_DEF(SOCK_RAW);
   }
 
   /// Obtain an identifier for the protocol.
-  int protocol() const
+  int protocol() const ASIO_NOEXCEPT
   {
     return protocol_;
   }
 
   /// Obtain an identifier for the protocol family.
-  int family() const
+  int family() const ASIO_NOEXCEPT
   {
     return family_;
   }
@@ -97,7 +97,7 @@ public:
 
 private:
   // Construct with a specific family.
-  explicit icmp(int protocol_id, int protocol_family)
+  explicit icmp(int protocol_id, int protocol_family) ASIO_NOEXCEPT
     : protocol_(protocol_id),
       family_(protocol_family)
   {

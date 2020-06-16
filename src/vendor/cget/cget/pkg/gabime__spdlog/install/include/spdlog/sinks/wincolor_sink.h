@@ -3,15 +3,17 @@
 
 #pragma once
 
-#include "spdlog/common.h"
-#include "spdlog/details/console_globals.h"
-#include "spdlog/details/null_mutex.h"
-#include "spdlog/sinks/sink.h"
+#include <spdlog/common.h>
+#include <spdlog/details/console_globals.h>
+#include <spdlog/details/null_mutex.h>
+#include <spdlog/sinks/sink.h>
 
 #include <memory>
 #include <mutex>
 #include <string>
-#include <unordered_map>
+#include <array>
+
+#include <spdlog/details/windows_include.h>
 #include <wincon.h>
 
 namespace spdlog {
@@ -52,7 +54,7 @@ protected:
     bool in_console_;
     bool should_do_colors_;
     std::unique_ptr<spdlog::formatter> formatter_;
-    std::unordered_map<level::level_enum, WORD, level::level_hasher> colors_;
+    std::array<WORD, level::n_levels> colors_;
 
     // set foreground color and return the orig console attributes (for resetting later)
     WORD set_foreground_color_(WORD attribs);

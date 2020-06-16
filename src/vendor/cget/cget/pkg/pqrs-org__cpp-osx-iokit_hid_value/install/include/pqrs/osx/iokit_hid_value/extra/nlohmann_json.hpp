@@ -32,32 +32,28 @@ inline void from_json(const nlohmann::json& j, iokit_hid_value& hid_value) {
   using namespace std::string_literals;
 
   if (!j.is_object()) {
-    throw json::unmarshal_error("json must be object, but is `"s + j.dump() + "`"s);
+    json::requires_object(j, "json");
   }
 
   for (const auto& [key, value] : j.items()) {
     if (key == "time_stamp") {
-      if (!value.is_number()) {
-        throw json::unmarshal_error("`"s + key + "` must be number, but is `"s + value.dump() + "`"s);
-      }
+      json::requires_number(value, "`"s + key + "`");
+
       hid_value.set_time_stamp(chrono::absolute_time_point(value.get<uint64_t>()));
 
     } else if (key == "integer_value") {
-      if (!value.is_number()) {
-        throw json::unmarshal_error("`"s + key + "` must be number, but is `"s + value.dump() + "`"s);
-      }
+      json::requires_number(value, "`"s + key + "`");
+
       hid_value.set_integer_value(value.get<CFIndex>());
 
     } else if (key == "usage_page") {
-      if (!value.is_number()) {
-        throw json::unmarshal_error("`"s + key + "` must be number, but is `"s + value.dump() + "`"s);
-      }
+      json::requires_number(value, "`"s + key + "`");
+
       hid_value.set_usage_page(value.get<hid::usage_page::value_t>());
 
     } else if (key == "usage") {
-      if (!value.is_number()) {
-        throw json::unmarshal_error("`"s + key + "` must be number, but is `"s + value.dump() + "`"s);
-      }
+      json::requires_number(value, "`"s + key + "`");
+
       hid_value.set_usage(value.get<hid::usage::value_t>());
 
     } else {

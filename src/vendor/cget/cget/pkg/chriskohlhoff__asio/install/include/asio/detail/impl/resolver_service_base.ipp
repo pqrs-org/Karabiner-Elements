@@ -2,7 +2,7 @@
 // detail/impl/resolver_service_base.ipp
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 //
-// Copyright (c) 2003-2019 Christopher M. Kohlhoff (chris at kohlhoff dot com)
+// Copyright (c) 2003-2020 Christopher M. Kohlhoff (chris at kohlhoff dot com)
 //
 // Distributed under the Boost Software License, Version 1.0. (See accompanying
 // file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
@@ -80,12 +80,10 @@ void resolver_service_base::base_notify_fork(
       work_thread_->join();
       work_thread_.reset();
     }
-    else
-    {
-      work_scheduler_->restart();
-      work_thread_.reset(new asio::detail::thread(
-            work_scheduler_runner(*work_scheduler_)));
-    }
+  }
+  else if (fork_ev != execution_context::fork_prepare)
+  {
+    work_scheduler_->restart();
   }
 }
 

@@ -2,7 +2,7 @@
 // compose.hpp
 // ~~~~~~~~~~~
 //
-// Copyright (c) 2003-2019 Christopher M. Kohlhoff (chris at kohlhoff dot com)
+// Copyright (c) 2003-2020 Christopher M. Kohlhoff (chris at kohlhoff dot com)
 //
 // Distributed under the Boost Software License, Version 1.0. (See accompanying
 // file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
@@ -100,7 +100,7 @@ namespace asio {
  */
 template <typename CompletionToken, typename Signature,
     typename Implementation, typename... IoObjectsOrExecutors>
-ASIO_INITFN_RESULT_TYPE(CompletionToken, Signature)
+ASIO_INITFN_AUTO_RESULT_TYPE(CompletionToken, Signature)
 async_compose(ASIO_MOVE_ARG(Implementation) implementation,
     ASIO_NONDEDUCED_MOVE_ARG(CompletionToken) token,
     ASIO_MOVE_ARG(IoObjectsOrExecutors)... io_objects_or_executors);
@@ -109,14 +109,14 @@ async_compose(ASIO_MOVE_ARG(Implementation) implementation,
       //   || defined(GENERATING_DOCUMENTATION)
 
 template <typename CompletionToken, typename Signature, typename Implementation>
-ASIO_INITFN_RESULT_TYPE(CompletionToken, Signature)
+ASIO_INITFN_AUTO_RESULT_TYPE(CompletionToken, Signature)
 async_compose(ASIO_MOVE_ARG(Implementation) implementation,
     ASIO_NONDEDUCED_MOVE_ARG(CompletionToken) token);
 
 #define ASIO_PRIVATE_ASYNC_COMPOSE_DEF(n) \
   template <typename CompletionToken, typename Signature, \
       typename Implementation, ASIO_VARIADIC_TPARAMS(n)> \
-  ASIO_INITFN_RESULT_TYPE(CompletionToken, Signature) \
+  ASIO_INITFN_AUTO_RESULT_TYPE(CompletionToken, Signature) \
   async_compose(ASIO_MOVE_ARG(Implementation) implementation, \
       ASIO_NONDEDUCED_MOVE_ARG(CompletionToken) token, \
       ASIO_VARIADIC_MOVE_PARAMS(n));

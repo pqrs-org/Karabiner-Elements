@@ -100,9 +100,9 @@ struct hash<pqrs::osx::system_preferences::keyboard_type_key> final {
   std::size_t operator()(const pqrs::osx::system_preferences::keyboard_type_key& value) const {
     std::size_t h = 0;
 
-    pqrs::hash_combine(h, value.get_vendor_id());
-    pqrs::hash_combine(h, value.get_product_id());
-    pqrs::hash_combine(h, value.get_country_code());
+    pqrs::hash::combine(h, value.get_vendor_id());
+    pqrs::hash::combine(h, value.get_product_id());
+    pqrs::hash::combine(h, value.get_country_code());
 
     return h;
   }

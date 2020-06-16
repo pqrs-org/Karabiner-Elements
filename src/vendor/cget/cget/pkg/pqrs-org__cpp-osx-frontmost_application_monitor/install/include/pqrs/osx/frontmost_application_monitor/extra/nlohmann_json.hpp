@@ -25,21 +25,17 @@ inline void to_json(nlohmann::json& j, const application& s) {
 inline void from_json(const nlohmann::json& j, application& s) {
   using namespace std::string_literals;
 
-  if (!j.is_object()) {
-    throw json::unmarshal_error("json must be object, but is `"s + j.dump() + "`"s);
-  }
+  json::requires_object(j, "json");
 
   for (const auto& [key, value] : j.items()) {
     if (key == "bundle_identifier") {
-      if (!value.is_string()) {
-        throw json::unmarshal_error("`"s + key + "` must be string, but is `"s + value.dump() + "`"s);
-      }
+      json::requires_string(value, "`"s + key + "`");
+
       s.set_bundle_identifier(value.get<std::string>());
 
     } else if (key == "file_path") {
-      if (!value.is_string()) {
-        throw json::unmarshal_error("`"s + key + "` must be string, but is `"s + value.dump() + "`"s);
-      }
+      json::requires_string(value, "`"s + key + "`");
+
       s.set_file_path(value.get<std::string>());
 
     } else {

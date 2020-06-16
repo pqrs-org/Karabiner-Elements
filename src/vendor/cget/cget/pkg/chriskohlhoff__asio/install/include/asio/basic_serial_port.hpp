@@ -2,7 +2,7 @@
 // basic_serial_port.hpp
 // ~~~~~~~~~~~~~~~~~~~~~
 //
-// Copyright (c) 2003-2019 Christopher M. Kohlhoff (chris at kohlhoff dot com)
+// Copyright (c) 2003-2020 Christopher M. Kohlhoff (chris at kohlhoff dot com)
 // Copyright (c) 2008 Rep Invariant Systems, Inc. (info@repinvariant.com)
 //
 // Distributed under the Boost Software License, Version 1.0. (See accompanying
@@ -62,6 +62,14 @@ class basic_serial_port
 public:
   /// The type of the executor associated with the object.
   typedef Executor executor_type;
+
+  /// Rebinds the serial port type to another executor.
+  template <typename Executor1>
+  struct rebind_executor
+  {
+    /// The serial port type when rebound to the specified executor.
+    typedef basic_serial_port<Executor1> other;
+  };
 
   /// The native representation of a serial port.
 #if defined(GENERATING_DOCUMENTATION)
@@ -553,7 +561,7 @@ public:
    * asio::serial_port_base::character_size
    */
   template <typename GettableSerialPortOption>
-  void get_option(GettableSerialPortOption& option)
+  void get_option(GettableSerialPortOption& option) const
   {
     asio::error_code ec;
     impl_.get_service().get_option(impl_.get_implementation(), option, ec);
@@ -578,7 +586,7 @@ public:
    */
   template <typename GettableSerialPortOption>
   ASIO_SYNC_OP_VOID get_option(GettableSerialPortOption& option,
-      asio::error_code& ec)
+      asio::error_code& ec) const
   {
     impl_.get_service().get_option(impl_.get_implementation(), option, ec);
     ASIO_SYNC_OP_VOID_RETURN(ec);
@@ -681,15 +689,19 @@ public:
    * buffers in one go, and how to use it with arrays, boost::array or
    * std::vector.
    */
-  template <typename ConstBufferSequence, typename WriteHandler>
-  ASIO_INITFN_RESULT_TYPE(WriteHandler,
+  template <typename ConstBufferSequence,
+      ASIO_COMPLETION_TOKEN_FOR(void (asio::error_code,
+        std::size_t)) WriteHandler
+          ASIO_DEFAULT_COMPLETION_TOKEN_TYPE(executor_type)>
+  ASIO_INITFN_AUTO_RESULT_TYPE(WriteHandler,
       void (asio::error_code, std::size_t))
   async_write_some(const ConstBufferSequence& buffers,
-      ASIO_MOVE_ARG(WriteHandler) handler)
+      ASIO_MOVE_ARG(WriteHandler) handler
+        ASIO_DEFAULT_COMPLETION_TOKEN(executor_type))
   {
     return async_initiate<WriteHandler,
       void (asio::error_code, std::size_t)>(
-        initiate_async_write_some(), handler, this, buffers);
+        initiate_async_write_some(this), handler, buffers);
   }
 
   /// Read some data from the serial port.
@@ -792,15 +804,19 @@ public:
    * buffers in one go, and how to use it with arrays, boost::array or
    * std::vector.
    */
-  template <typename MutableBufferSequence, typename ReadHandler>
-  ASIO_INITFN_RESULT_TYPE(ReadHandler,
+  template <typename MutableBufferSequence,
+      ASIO_COMPLETION_TOKEN_FOR(void (asio::error_code,
+        std::size_t)) ReadHandler
+          ASIO_DEFAULT_COMPLETION_TOKEN_TYPE(executor_type)>
+  ASIO_INITFN_AUTO_RESULT_TYPE(ReadHandler,
       void (asio::error_code, std::size_t))
   async_read_some(const MutableBufferSequence& buffers,
-      ASIO_MOVE_ARG(ReadHandler) handler)
+      ASIO_MOVE_ARG(ReadHandler) handler
+        ASIO_DEFAULT_COMPLETION_TOKEN(executor_type))
   {
     return async_initiate<ReadHandler,
       void (asio::error_code, std::size_t)>(
-        initiate_async_read_some(), handler, this, buffers);
+        initiate_async_read_some(this), handler, buffers);
   }
 
 private:
@@ -808,38 +824,70 @@ private:
   basic_serial_port(const basic_serial_port&) ASIO_DELETED;
   basic_serial_port& operator=(const basic_serial_port&) ASIO_DELETED;
 
-  struct initiate_async_write_some
+  class initiate_async_write_some
   {
+  public:
+    typedef Executor executor_type;
+
+    explicit initiate_async_write_some(basic_serial_port* self)
+      : self_(self)
+    {
+    }
+
+    executor_type get_executor() const ASIO_NOEXCEPT
+    {
+      return self_->get_executor();
+    }
+
     template <typename WriteHandler, typename ConstBufferSequence>
     void operator()(ASIO_MOVE_ARG(WriteHandler) handler,
-        basic_serial_port* self, const ConstBufferSequence& buffers) const
+        const ConstBufferSequence& buffers) const
     {
       // If you get an error on the following line it means that your handler
       // does not meet the documented type requirements for a WriteHandler.
       ASIO_WRITE_HANDLER_CHECK(WriteHandler, handler) type_check;
 
       detail::non_const_lvalue<WriteHandler> handler2(handler);
-      self->impl_.get_service().async_write_some(
-          self->impl_.get_implementation(), buffers, handler2.value,
-          self->impl_.get_implementation_executor());
+      self_->impl_.get_service().async_write_some(
+          self_->impl_.get_implementation(), buffers, handler2.value,
+          self_->impl_.get_implementation_executor());
     }
+
+  private:
+    basic_serial_port* self_;
   };
 
-  struct initiate_async_read_some
+  class initiate_async_read_some
   {
+  public:
+    typedef Executor executor_type;
+
+    explicit initiate_async_read_some(basic_serial_port* self)
+      : self_(self)
+    {
+    }
+
+    executor_type get_executor() const ASIO_NOEXCEPT
+    {
+      return self_->get_executor();
+    }
+
     template <typename ReadHandler, typename MutableBufferSequence>
     void operator()(ASIO_MOVE_ARG(ReadHandler) handler,
-        basic_serial_port* self, const MutableBufferSequence& buffers) const
+        const MutableBufferSequence& buffers) const
     {
       // If you get an error on the following line it means that your handler
       // does not meet the documented type requirements for a ReadHandler.
       ASIO_READ_HANDLER_CHECK(ReadHandler, handler) type_check;
 
       detail::non_const_lvalue<ReadHandler> handler2(handler);
-      self->impl_.get_service().async_read_some(
-          self->impl_.get_implementation(), buffers, handler2.value,
-          self->impl_.get_implementation_executor());
+      self_->impl_.get_service().async_read_some(
+          self_->impl_.get_implementation(), buffers, handler2.value,
+          self_->impl_.get_implementation_executor());
     }
+
+  private:
+    basic_serial_port* self_;
   };
 
 #if defined(ASIO_HAS_IOCP)

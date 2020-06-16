@@ -29,15 +29,11 @@ inline void to_json(nlohmann::json& j, const specifier& s) {
 inline void from_json(const nlohmann::json& j, specifier& s) {
   using namespace std::string_literals;
 
-  if (!j.is_object()) {
-    throw json::unmarshal_error("json must be object, but is `"s + j.dump() + "`"s);
-  }
+  json::requires_object(j, "json");
 
   for (const auto& [key, value] : j.items()) {
     if (key == "language") {
-      if (!value.is_string()) {
-        throw json::unmarshal_error("`"s + key + "` must be string, but is `"s + value.dump() + "`"s);
-      }
+      json::requires_string(value, "`"s + key + "`");
 
       try {
         s.set_language(value.get<std::string>());
@@ -46,9 +42,7 @@ inline void from_json(const nlohmann::json& j, specifier& s) {
       }
 
     } else if (key == "input_source_id") {
-      if (!value.is_string()) {
-        throw json::unmarshal_error("`"s + key + "` must be string, but is `"s + value.dump() + "`"s);
-      }
+      json::requires_string(value, "`"s + key + "`");
 
       try {
         s.set_input_source_id(value.get<std::string>());
@@ -57,9 +51,7 @@ inline void from_json(const nlohmann::json& j, specifier& s) {
       }
 
     } else if (key == "input_mode_id") {
-      if (!value.is_string()) {
-        throw json::unmarshal_error("`"s + key + "` must be string, but is `"s + value.dump() + "`"s);
-      }
+      json::requires_string(value, "`"s + key + "`");
 
       try {
         s.set_input_mode_id(value.get<std::string>());

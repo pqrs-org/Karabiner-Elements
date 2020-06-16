@@ -2,7 +2,7 @@
 // strand.hpp
 // ~~~~~~~~~~
 //
-// Copyright (c) 2003-2019 Christopher M. Kohlhoff (chris at kohlhoff dot com)
+// Copyright (c) 2003-2020 Christopher M. Kohlhoff (chris at kohlhoff dot com)
 //
 // Distributed under the Boost Software License, Version 1.0. (See accompanying
 // file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
@@ -108,7 +108,7 @@ public:
    */
   template <class OtherExecutor>
   strand(strand<OtherExecutor>&& other) ASIO_NOEXCEPT
-    : executor_(ASIO_MOVE_CAST(OtherExecutor)(other)),
+    : executor_(ASIO_MOVE_CAST(OtherExecutor)(other.executor_)),
       impl_(ASIO_MOVE_CAST(implementation_type)(other.impl_))
   {
   }
@@ -116,7 +116,7 @@ public:
   /// Move assignment operator.
   strand& operator=(strand&& other) ASIO_NOEXCEPT
   {
-    executor_ = ASIO_MOVE_CAST(Executor)(other);
+    executor_ = ASIO_MOVE_CAST(Executor)(other.executor_);
     impl_ = ASIO_MOVE_CAST(implementation_type)(other.impl_);
     return *this;
   }
@@ -127,10 +127,9 @@ public:
    * convertible to @c Executor.
    */
   template <class OtherExecutor>
-  strand& operator=(
-      const strand<OtherExecutor>&& other) ASIO_NOEXCEPT
+  strand& operator=(strand<OtherExecutor>&& other) ASIO_NOEXCEPT
   {
-    executor_ = ASIO_MOVE_CAST(OtherExecutor)(other);
+    executor_ = ASIO_MOVE_CAST(OtherExecutor)(other.executor_);
     impl_ = ASIO_MOVE_CAST(implementation_type)(other.impl_);
     return *this;
   }
@@ -264,7 +263,9 @@ public:
     return a.impl_ != b.impl_;
   }
 
+#if defined(GENERATING_DOCUMENTATION)
 private:
+#endif // defined(GENERATING_DOCUMENTATION)
   Executor executor_;
   typedef detail::strand_executor_service::implementation_type
     implementation_type;

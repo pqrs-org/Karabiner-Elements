@@ -27,9 +27,7 @@ inline void to_json(nlohmann::json& j, const keyboard_type_key& value) {
 inline void from_json(const nlohmann::json& j, keyboard_type_key& value) {
   using namespace std::string_literals;
 
-  if (!j.is_object()) {
-    throw json::unmarshal_error("json must be object, but is `"s + j.dump() + "`"s);
-  }
+  json::requires_object(j, "json");
 
   for (const auto& [k, v] : j.items()) {
     if (k == "vendor_id") {
@@ -72,29 +70,21 @@ inline void to_json(nlohmann::json& j, const properties& value) {
 inline void from_json(const nlohmann::json& j, properties& value) {
   using namespace std::string_literals;
 
-  if (!j.is_object()) {
-    throw json::unmarshal_error("json must be object, but is `"s + j.dump() + "`"s);
-  }
+  json::requires_object(j, "json");
 
   for (const auto& [k, v] : j.items()) {
     if (k == "use_fkeys_as_standard_function_keys") {
-      if (!v.is_boolean()) {
-        throw json::unmarshal_error("`"s + k + "` must be boolean, but is `"s + v.dump() + "`"s);
-      }
+      json::requires_boolean(v, "`"s + k + "`");
 
       value.set_use_fkeys_as_standard_function_keys(v.get<bool>());
 
     } else if (k == "scroll_direction_is_natural") {
-      if (!v.is_boolean()) {
-        throw json::unmarshal_error("`"s + k + "` must be boolean, but is `"s + v.dump() + "`"s);
-      }
+      json::requires_boolean(v, "`"s + k + "`");
 
       value.set_scroll_direction_is_natural(v.get<bool>());
 
     } else if (k == "keyboard_types") {
-      if (!v.is_array()) {
-        throw json::unmarshal_error("`"s + k + "` must be array, but is `"s + v.dump() + "`"s);
-      }
+      json::requires_array(v, "`"s + k + "`");
 
       try {
         value.set_keyboard_types(v.get<std::map<keyboard_type_key, iokit_keyboard_type::value_t>>());

@@ -2,7 +2,7 @@
 // use_awaitable.hpp
 // ~~~~~~~~~~~~~~~~~
 //
-// Copyright (c) 2003-2019 Christopher M. Kohlhoff (chris at kohlhoff dot com)
+// Copyright (c) 2003-2020 Christopher M. Kohlhoff (chris at kohlhoff dot com)
 //
 // Distributed under the Boost Software License, Version 1.0. (See accompanying
 // file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
@@ -45,8 +45,47 @@ namespace asio {
 template <typename Executor = executor>
 struct use_awaitable_t
 {
+  /// Default constructor.
   ASIO_CONSTEXPR use_awaitable_t()
   {
+  }
+
+  /// Adapts an executor to add the @c use_awaitable_t completion token as the
+  /// default.
+  template <typename InnerExecutor>
+  struct executor_with_default : InnerExecutor
+  {
+    /// Specify @c use_awaitable_t as the default completion token type.
+    typedef use_awaitable_t default_completion_token_type;
+
+    /// Construct the adapted executor from the inner executor type.
+    executor_with_default(const InnerExecutor& ex) ASIO_NOEXCEPT
+      : InnerExecutor(ex)
+    {
+    }
+  };
+
+  /// Type alias to adapt an I/O object to use @c use_awaitable_t as its
+  /// default completion token type.
+#if defined(ASIO_HAS_ALIAS_TEMPLATES) \
+  || defined(GENERATING_DOCUMENTATION)
+  template <typename T>
+  using as_default_on_t = typename T::template rebind_executor<
+      executor_with_default<typename T::executor_type> >::other;
+#endif // defined(ASIO_HAS_ALIAS_TEMPLATES)
+       //   || defined(GENERATING_DOCUMENTATION)
+
+  /// Function helper to adapt an I/O object to use @c use_awaitable_t as its
+  /// default completion token type.
+  template <typename T>
+  static typename decay<T>::type::template rebind_executor<
+      executor_with_default<typename decay<T>::type::executor_type>
+    >::other
+  as_default_on(ASIO_MOVE_ARG(T) object)
+  {
+    return typename decay<T>::type::template rebind_executor<
+        executor_with_default<typename decay<T>::type::executor_type>
+      >::other(ASIO_MOVE_CAST(T)(object));
   }
 };
 

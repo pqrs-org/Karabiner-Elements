@@ -2,7 +2,7 @@
 // ssl/rfc2818_verification.hpp
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 //
-// Copyright (c) 2003-2019 Christopher M. Kohlhoff (chris at kohlhoff dot com)
+// Copyright (c) 2003-2020 Christopher M. Kohlhoff (chris at kohlhoff dot com)
 //
 // Distributed under the Boost Software License, Version 1.0. (See accompanying
 // file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
@@ -17,6 +17,8 @@
 
 #include "asio/detail/config.hpp"
 
+#if !defined(ASIO_NO_DEPRECATED)
+
 #include <string>
 #include "asio/ssl/detail/openssl_types.hpp"
 #include "asio/ssl/verify_context.hpp"
@@ -26,8 +28,8 @@
 namespace asio {
 namespace ssl {
 
-/// Verifies a certificate against a hostname according to the rules described
-/// in RFC 2818.
+/// (Deprecated. Use ssl::host_name_verification.) Verifies a certificate
+/// against a hostname according to the rules described in RFC 2818.
 /**
  * @par Example
  * The following example shows how to synchronously open a secure connection to
@@ -90,5 +92,7 @@ private:
 #if defined(ASIO_HEADER_ONLY)
 # include "asio/ssl/impl/rfc2818_verification.ipp"
 #endif // defined(ASIO_HEADER_ONLY)
+
+#endif // !defined(ASIO_NO_DEPRECATED)
 
 #endif // ASIO_SSL_RFC2818_VERIFICATION_HPP

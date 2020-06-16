@@ -2,7 +2,7 @@
 // detail/win_iocp_socket_accept_op.hpp
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 //
-// Copyright (c) 2003-2019 Christopher M. Kohlhoff (chris at kohlhoff dot com)
+// Copyright (c) 2003-2020 Christopher M. Kohlhoff (chris at kohlhoff dot com)
 //
 // Distributed under the Boost Software License, Version 1.0. (See accompanying
 // file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
@@ -99,6 +99,7 @@ public:
       if (ec == asio::error::connection_aborted
           && !o->enable_connection_aborted_)
       {
+        handler_work<Handler, IoExecutor>::start(o->handler_, o->io_executor_);
         o->reset();
         o->socket_service_.restart_accept_op(o->socket_,
             o->new_socket_, o->protocol_.family(),
@@ -228,6 +229,7 @@ public:
       if (ec == asio::error::connection_aborted
           && !o->enable_connection_aborted_)
       {
+        handler_work<Handler, IoExecutor>::start(o->handler_, o->io_executor_);
         o->reset();
         o->socket_service_.restart_accept_op(o->socket_,
             o->new_socket_, o->protocol_.family(),

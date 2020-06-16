@@ -11,17 +11,15 @@
 //
 
 #if !defined(SPDLOG_FMT_EXTERNAL)
-#ifdef SPDLOG_HEADER_ONLY
-#ifndef FMT_HEADER_ONLY
+#if !defined(SPDLOG_COMPILED_LIB) && !defined(FMT_HEADER_ONLY)
 #define FMT_HEADER_ONLY
-#endif
 #endif
 #ifndef FMT_USE_WINDOWS_H
 #define FMT_USE_WINDOWS_H 0
 #endif
-#include "bundled/core.h"
-#include "bundled/format.h"
+#include <spdlog/fmt/bundled/core.h>
+#include <spdlog/fmt/bundled/format.h>
 #else // SPDLOG_FMT_EXTERNAL is defined - use external fmtlib
-#include "fmt/core.h"
-#include "fmt/format.h"
+#include <fmt/core.h>
+#include <fmt/format.h>
 #endif

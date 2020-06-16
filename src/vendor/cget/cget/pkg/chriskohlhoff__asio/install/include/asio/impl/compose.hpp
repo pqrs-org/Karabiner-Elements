@@ -2,7 +2,7 @@
 // impl/compose.hpp
 // ~~~~~~~~~~~~~~~~
 //
-// Copyright (c) 2003-2019 Christopher M. Kohlhoff (chris at kohlhoff dot com)
+// Copyright (c) 2003-2020 Christopher M. Kohlhoff (chris at kohlhoff dot com)
 //
 // Distributed under the Boost Software License, Version 1.0. (See accompanying
 // file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
@@ -32,12 +32,122 @@ namespace asio {
 namespace detail
 {
   template <typename>
+  struct composed_io_executors;
+
+  template <>
+  struct composed_io_executors<void()>
+  {
+    composed_io_executors() ASIO_NOEXCEPT
+      : head_(system_executor())
+    {
+    }
+
+    typedef system_executor head_type;
+    system_executor head_;
+  };
+
+  inline composed_io_executors<void()> make_composed_io_executors()
+  {
+    return composed_io_executors<void()>();
+  }
+
+  template <typename Head>
+  struct composed_io_executors<void(Head)>
+  {
+    explicit composed_io_executors(const Head& ex) ASIO_NOEXCEPT
+      : head_(ex)
+    {
+    }
+
+    typedef Head head_type;
+    Head head_;
+  };
+
+  template <typename Head>
+  inline composed_io_executors<void(Head)>
+  make_composed_io_executors(const Head& head)
+  {
+    return composed_io_executors<void(Head)>(head);
+  }
+
+#if defined(ASIO_HAS_VARIADIC_TEMPLATES)
+
+  template <typename Head, typename... Tail>
+  struct composed_io_executors<void(Head, Tail...)>
+  {
+    explicit composed_io_executors(const Head& head,
+        const Tail&... tail) ASIO_NOEXCEPT
+      : head_(head),
+        tail_(tail...)
+    {
+    }
+
+    void reset()
+    {
+      head_.reset();
+      tail_.reset();
+    }
+
+    typedef Head head_type;
+    Head head_;
+    composed_io_executors<void(Tail...)> tail_;
+  };
+
+  template <typename Head, typename... Tail>
+  inline composed_io_executors<void(Head, Tail...)>
+  make_composed_io_executors(const Head& head, const Tail&... tail)
+  {
+    return composed_io_executors<void(Head, Tail...)>(head, tail...);
+  }
+
+#else // defined(ASIO_HAS_VARIADIC_TEMPLATES)
+
+#define ASIO_PRIVATE_COMPOSED_IO_EXECUTORS_DEF(n) \
+  template <typename Head, ASIO_VARIADIC_TPARAMS(n)> \
+  struct composed_io_executors<void(Head, ASIO_VARIADIC_TARGS(n))> \
+  { \
+    explicit composed_io_executors(const Head& head, \
+        ASIO_VARIADIC_CONSTREF_PARAMS(n)) ASIO_NOEXCEPT \
+      : head_(head), \
+        tail_(ASIO_VARIADIC_BYVAL_ARGS(n)) \
+    { \
+    } \
+  \
+    void reset() \
+    { \
+      head_.reset(); \
+      tail_.reset(); \
+    } \
+  \
+    typedef Head head_type; \
+    Head head_; \
+    composed_io_executors<void(ASIO_VARIADIC_TARGS(n))> tail_; \
+  }; \
+  \
+  template <typename Head, ASIO_VARIADIC_TPARAMS(n)> \
+  inline composed_io_executors<void(Head, ASIO_VARIADIC_TARGS(n))> \
+  make_composed_io_executors(const Head& head, \
+      ASIO_VARIADIC_CONSTREF_PARAMS(n)) \
+  { \
+    return composed_io_executors< \
+      void(Head, ASIO_VARIADIC_TARGS(n))>( \
+        head, ASIO_VARIADIC_BYVAL_ARGS(n)); \
+  } \
+  /**/
+  ASIO_VARIADIC_GENERATE(ASIO_PRIVATE_COMPOSED_IO_EXECUTORS_DEF)
+#undef ASIO_PRIVATE_COMPOSED_IO_EXECUTORS_DEF
+
+#endif // defined(ASIO_HAS_VARIADIC_TEMPLATES)
+
+  template <typename>
   struct composed_work;
 
   template <>
   struct composed_work<void()>
   {
-    composed_work() ASIO_NOEXCEPT
+    typedef composed_io_executors<void()> executors_type;
+
+    composed_work(const executors_type&) ASIO_NOEXCEPT
       : head_(system_executor())
     {
     }
@@ -51,16 +161,13 @@ namespace detail
     executor_work_guard<system_executor> head_;
   };
 
-  inline composed_work<void()> make_composed_work()
-  {
-    return composed_work<void()>();
-  }
-
   template <typename Head>
   struct composed_work<void(Head)>
   {
-    explicit composed_work(const Head& ex) ASIO_NOEXCEPT
-      : head_(ex)
+    typedef composed_io_executors<void(Head)> executors_type;
+
+    explicit composed_work(const executors_type& ex) ASIO_NOEXCEPT
+      : head_(ex.head_)
     {
     }
 
@@ -73,21 +180,16 @@ namespace detail
     executor_work_guard<Head> head_;
   };
 
-  template <typename Head>
-  inline composed_work<void(Head)> make_composed_work(const Head& head)
-  {
-    return composed_work<void(Head)>(head);
-  }
-
 #if defined(ASIO_HAS_VARIADIC_TEMPLATES)
 
   template <typename Head, typename... Tail>
   struct composed_work<void(Head, Tail...)>
   {
-    explicit composed_work(const Head& head,
-        const Tail&... tail) ASIO_NOEXCEPT
-      : head_(head),
-        tail_(tail...)
+    typedef composed_io_executors<void(Head, Tail...)> executors_type;
+
+    explicit composed_work(const executors_type& ex) ASIO_NOEXCEPT
+      : head_(ex.head_),
+        tail_(ex.tail_)
     {
     }
 
@@ -102,23 +204,18 @@ namespace detail
     composed_work<void(Tail...)> tail_;
   };
 
-  template <typename Head, typename... Tail>
-  inline composed_work<void(Head, Tail...)>
-  make_composed_work(const Head& head, const Tail&... tail)
-  {
-    return composed_work<void(Head, Tail...)>(head, tail...);
-  }
-
 #else // defined(ASIO_HAS_VARIADIC_TEMPLATES)
 
 #define ASIO_PRIVATE_COMPOSED_WORK_DEF(n) \
   template <typename Head, ASIO_VARIADIC_TPARAMS(n)> \
   struct composed_work<void(Head, ASIO_VARIADIC_TARGS(n))> \
   { \
-    explicit composed_work(const Head& head, \
-        ASIO_VARIADIC_CONSTREF_PARAMS(n)) ASIO_NOEXCEPT \
-      : head_(head), \
-        tail_(ASIO_VARIADIC_BYVAL_ARGS(n)) \
+    typedef composed_io_executors<void(Head, \
+      ASIO_VARIADIC_TARGS(n))> executors_type; \
+  \
+    explicit composed_work(const executors_type& ex) ASIO_NOEXCEPT \
+      : head_(ex.head_), \
+        tail_(ex.tail_) \
     { \
     } \
   \
@@ -132,15 +229,6 @@ namespace detail
     executor_work_guard<Head> head_; \
     composed_work<void(ASIO_VARIADIC_TARGS(n))> tail_; \
   }; \
-  \
-  template <typename Head, ASIO_VARIADIC_TPARAMS(n)> \
-  inline composed_work<void(Head, ASIO_VARIADIC_TARGS(n))> \
-  make_composed_work(const Head& head, ASIO_VARIADIC_CONSTREF_PARAMS(n)) \
-  { \
-    return composed_work< \
-      void(Head, ASIO_VARIADIC_TARGS(n))>( \
-        head, ASIO_VARIADIC_BYVAL_ARGS(n)); \
-  } \
   /**/
   ASIO_VARIADIC_GENERATE(ASIO_PRIVATE_COMPOSED_WORK_DEF)
 #undef ASIO_PRIVATE_COMPOSED_WORK_DEF
@@ -298,24 +386,50 @@ namespace detail
         function, this_handler->handler_);
   }
 
-  template <typename Signature>
-  struct initiate_composed_op
+  template <typename Signature, typename Executors>
+  class initiate_composed_op
   {
-    template <typename Handler, typename Impl, typename Work>
-    void operator()(ASIO_MOVE_ARG(Handler) handler,
-        ASIO_MOVE_ARG(Impl) impl,
-        ASIO_MOVE_ARG(Work) work) const
+  public:
+    typedef typename composed_io_executors<Executors>::head_type executor_type;
+
+    template <typename T>
+    explicit initiate_composed_op(ASIO_MOVE_ARG(T) executors)
+      : executors_(ASIO_MOVE_CAST(T)(executors))
     {
-      composed_op<typename decay<Impl>::type, typename decay<Work>::type,
+    }
+
+    executor_type get_executor() const ASIO_NOEXCEPT
+    {
+      return executors_.head_;
+    }
+
+    template <typename Handler, typename Impl>
+    void operator()(ASIO_MOVE_ARG(Handler) handler,
+        ASIO_MOVE_ARG(Impl) impl) const
+    {
+      composed_op<typename decay<Impl>::type, composed_work<Executors>,
         typename decay<Handler>::type, Signature>(
-          ASIO_MOVE_CAST(Impl)(impl), ASIO_MOVE_CAST(Work)(work),
+          ASIO_MOVE_CAST(Impl)(impl),
+          composed_work<Executors>(executors_),
           ASIO_MOVE_CAST(Handler)(handler))();
     }
+
+  private:
+    composed_io_executors<Executors> executors_;
   };
+
+  template <typename Signature, typename Executors>
+  inline initiate_composed_op<Signature, Executors> make_initiate_composed_op(
+      ASIO_MOVE_ARG(composed_io_executors<Executors>) executors)
+  {
+    return initiate_composed_op<Signature, Executors>(
+        ASIO_MOVE_CAST(composed_io_executors<Executors>)(executors));
+  }
 
   template <typename IoObject>
   inline typename IoObject::executor_type
-  get_composed_io_executor(IoObject& io_object)
+  get_composed_io_executor(IoObject& io_object,
+      typename enable_if<!is_executor<IoObject>::value>::type* = 0)
   {
     return io_object.get_executor();
   }
@@ -333,31 +447,31 @@ namespace detail
 
 template <typename CompletionToken, typename Signature,
     typename Implementation, typename... IoObjectsOrExecutors>
-ASIO_INITFN_RESULT_TYPE(CompletionToken, Signature)
+ASIO_INITFN_AUTO_RESULT_TYPE(CompletionToken, Signature)
 async_compose(ASIO_MOVE_ARG(Implementation) implementation,
     ASIO_NONDEDUCED_MOVE_ARG(CompletionToken) token,
     ASIO_MOVE_ARG(IoObjectsOrExecutors)... io_objects_or_executors)
 {
   return async_initiate<CompletionToken, Signature>(
-      detail::initiate_composed_op<Signature>(), token,
-      ASIO_MOVE_CAST(Implementation)(implementation),
-      detail::make_composed_work(
-        detail::get_composed_io_executor(
-          ASIO_MOVE_CAST(IoObjectsOrExecutors)(
-            io_objects_or_executors))...));
+      detail::make_initiate_composed_op<Signature>(
+        detail::make_composed_io_executors(
+          detail::get_composed_io_executor(
+            ASIO_MOVE_CAST(IoObjectsOrExecutors)(
+              io_objects_or_executors))...)),
+      token, ASIO_MOVE_CAST(Implementation)(implementation));
 }
 
 #else // defined(ASIO_HAS_VARIADIC_TEMPLATES)
 
 template <typename CompletionToken, typename Signature, typename Implementation>
-ASIO_INITFN_RESULT_TYPE(CompletionToken, Signature)
+ASIO_INITFN_AUTO_RESULT_TYPE(CompletionToken, Signature)
 async_compose(ASIO_MOVE_ARG(Implementation) implementation,
     ASIO_NONDEDUCED_MOVE_ARG(CompletionToken) token)
 {
   return async_initiate<CompletionToken, Signature>(
-      detail::initiate_composed_op<Signature>(), token,
-      ASIO_MOVE_CAST(Implementation)(implementation),
-      detail::make_composed_work());
+      detail::make_initiate_composed_op<Signature>(
+        detail::make_composed_io_executors()),
+      token, ASIO_MOVE_CAST(Implementation)(implementation));
 }
 
 # define ASIO_PRIVATE_GET_COMPOSED_IO_EXECUTOR(n) \
@@ -387,16 +501,16 @@ async_compose(ASIO_MOVE_ARG(Implementation) implementation,
 #define ASIO_PRIVATE_ASYNC_COMPOSE_DEF(n) \
   template <typename CompletionToken, typename Signature, \
       typename Implementation, ASIO_VARIADIC_TPARAMS(n)> \
-  ASIO_INITFN_RESULT_TYPE(CompletionToken, Signature) \
+  ASIO_INITFN_AUTO_RESULT_TYPE(CompletionToken, Signature) \
   async_compose(ASIO_MOVE_ARG(Implementation) implementation, \
       ASIO_NONDEDUCED_MOVE_ARG(CompletionToken) token, \
       ASIO_VARIADIC_MOVE_PARAMS(n)) \
   { \
     return async_initiate<CompletionToken, Signature>( \
-        detail::initiate_composed_op<Signature>(), token, \
-        ASIO_MOVE_CAST(Implementation)(implementation), \
-        detail::make_composed_work( \
-          ASIO_PRIVATE_GET_COMPOSED_IO_EXECUTOR(n))); \
+        detail::make_initiate_composed_op<Signature>( \
+          detail::make_composed_io_executors( \
+            ASIO_PRIVATE_GET_COMPOSED_IO_EXECUTOR(n))), \
+        token, ASIO_MOVE_CAST(Implementation)(implementation)); \
   } \
   /**/
   ASIO_VARIADIC_GENERATE(ASIO_PRIVATE_ASYNC_COMPOSE_DEF)

@@ -2,7 +2,7 @@
 // detail/impl/socket_select_interrupter.ipp
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 //
-// Copyright (c) 2003-2019 Christopher M. Kohlhoff (chris at kohlhoff dot com)
+// Copyright (c) 2003-2020 Christopher M. Kohlhoff (chris at kohlhoff dot com)
 //
 // Distributed under the Boost Software License, Version 1.0. (See accompanying
 // file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
@@ -155,11 +155,20 @@ bool socket_select_interrupter::reset()
   socket_ops::buf b;
   socket_ops::init_buf(b, data, sizeof(data));
   asio::error_code ec;
-  int bytes_read = socket_ops::recv(read_descriptor_, &b, 1, 0, ec);
-  bool was_interrupted = (bytes_read > 0);
-  while (bytes_read == sizeof(data))
-    bytes_read = socket_ops::recv(read_descriptor_, &b, 1, 0, ec);
-  return was_interrupted;
+  for (;;)
+  {
+    int bytes_read = socket_ops::recv(read_descriptor_, &b, 1, 0, ec);
+    if (bytes_read == sizeof(data))
+      continue;
+    if (bytes_read > 0)
+      return true;
+    if (bytes_read == 0)
+      return false;
+    if (ec == asio::error::would_block
+        || ec == asio::error::try_again)
+      return true;
+    return false;
+  }
 }
 
 } // namespace detail

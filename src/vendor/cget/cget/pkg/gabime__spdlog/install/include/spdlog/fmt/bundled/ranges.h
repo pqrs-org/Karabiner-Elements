@@ -12,7 +12,9 @@
 #ifndef FMT_RANGES_H_
 #define FMT_RANGES_H_
 
+#include <initializer_list>
 #include <type_traits>
+
 #include "format.h"
 
 // output only up to N items from the range.
@@ -104,10 +106,7 @@ struct is_range_<
 /// tuple_size and tuple_element check.
 template <typename T> class is_tuple_like_ {
   template <typename U>
-  static auto check(U* p)
-      -> decltype(std::tuple_size<U>::value,
-                  (void)std::declval<typename std::tuple_element<0, U>::type>(),
-                  int());
+  static auto check(U* p) -> decltype(std::tuple_size<U>::value, int());
   template <typename> static void check(...);
 
  public:
@@ -246,7 +245,8 @@ template <typename T, typename Char> struct is_range {
   static FMT_CONSTEXPR_DECL const bool value =
       internal::is_range_<T>::value &&
       !internal::is_like_std_string<T>::value &&
-      !std::is_convertible<T, std::basic_string<Char>>::value;
+      !std::is_convertible<T, std::basic_string<Char>>::value &&
+      !std::is_constructible<internal::std_string_view<Char>, T>::value;
 };
 
 template <typename RangeT, typename Char>
@@ -282,6 +282,105 @@ struct formatter<RangeT, Char,
     return internal::copy(formatting.postfix, out);
   }
 };
+
+template <typename Char, typename... T> struct tuple_arg_join : internal::view {
+  const std::tuple<T...>& tuple;
+  basic_string_view<Char> sep;
+
+  tuple_arg_join(const std::tuple<T...>& t, basic_string_view<Char> s)
+      : tuple{t}, sep{s} {}
+};
+
+template <typename Char, typename... T>
+struct formatter<tuple_arg_join<Char, T...>, Char> {
+  template <typename ParseContext>
+  FMT_CONSTEXPR auto parse(ParseContext& ctx) -> decltype(ctx.begin()) {
+    return ctx.begin();
+  }
+
+  template <typename FormatContext>
+  typename FormatContext::iterator format(
+      const tuple_arg_join<Char, T...>& value, FormatContext& ctx) {
+    return format(value, ctx, internal::make_index_sequence<sizeof...(T)>{});
+  }
+
+ private:
+  template <typename FormatContext, size_t... N>
+  typename FormatContext::iterator format(
+      const tuple_arg_join<Char, T...>& value, FormatContext& ctx,
+      internal::index_sequence<N...>) {
+    return format_args(value, ctx, std::get<N>(value.tuple)...);
+  }
+
+  template <typename FormatContext>
+  typename FormatContext::iterator format_args(
+      const tuple_arg_join<Char, T...>&, FormatContext& ctx) {
+    // NOTE: for compilers that support C++17, this empty function instantiation
+    // can be replaced with a constexpr branch in the variadic overload.
+    return ctx.out();
+  }
+
+  template <typename FormatContext, typename Arg, typename... Args>
+  typename FormatContext::iterator format_args(
+      const tuple_arg_join<Char, T...>& value, FormatContext& ctx,
+      const Arg& arg, const Args&... args) {
+    using base = formatter<typename std::decay<Arg>::type, Char>;
+    auto out = ctx.out();
+    out = base{}.format(arg, ctx);
+    if (sizeof...(Args) > 0) {
+      out = std::copy(value.sep.begin(), value.sep.end(), out);
+      ctx.advance_to(out);
+      return format_args(value, ctx, args...);
+    }
+    return out;
+  }
+};
+
+/**
+  \rst
+  Returns an object that formats `tuple` with elements separated by `sep`.
+
+  **Example**::
+
+    std::tuple<int, char> t = {1, 'a'};
+    fmt::print("{}", fmt::join(t, ", "));
+    // Output: "1, a"
+  \endrst
+ */
+template <typename... T>
+FMT_CONSTEXPR tuple_arg_join<char, T...> join(const std::tuple<T...>& tuple,
+                                              string_view sep) {
+  return {tuple, sep};
+}
+
+template <typename... T>
+FMT_CONSTEXPR tuple_arg_join<wchar_t, T...> join(const std::tuple<T...>& tuple,
+                                                 wstring_view sep) {
+  return {tuple, sep};
+}
+
+/**
+  \rst
+  Returns an object that formats `initializer_list` with elements separated by
+  `sep`.
+
+  **Example**::
+
+    fmt::print("{}", fmt::join({1, 2, 3}, ", "));
+    // Output: "1, 2, 3"
+  \endrst
+ */
+template <typename T>
+arg_join<internal::iterator_t<const std::initializer_list<T>>, char> join(
+    std::initializer_list<T> list, string_view sep) {
+  return join(std::begin(list), std::end(list), sep);
+}
+
+template <typename T>
+arg_join<internal::iterator_t<const std::initializer_list<T>>, wchar_t> join(
+    std::initializer_list<T> list, wstring_view sep) {
+  return join(std::begin(list), std::end(list), sep);
+}
 
 FMT_END_NAMESPACE
 

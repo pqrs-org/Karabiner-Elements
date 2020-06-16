@@ -2,7 +2,7 @@
 // impl/buffered_write_stream.hpp
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 //
-// Copyright (c) 2003-2019 Christopher M. Kohlhoff (chris at kohlhoff dot com)
+// Copyright (c) 2003-2020 Christopher M. Kohlhoff (chris at kohlhoff dot com)
 //
 // Distributed under the Boost Software License, Version 1.0. (See accompanying
 // file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
@@ -125,21 +125,40 @@ namespace detail
         function, this_handler->handler_);
   }
 
-  struct initiate_async_buffered_flush
+  template <typename Stream>
+  class initiate_async_buffered_flush
   {
-    template <typename WriteHandler, typename Stream>
+  public:
+    typedef typename remove_reference<
+      Stream>::type::lowest_layer_type::executor_type executor_type;
+
+    explicit initiate_async_buffered_flush(
+        typename remove_reference<Stream>::type& next_layer)
+      : next_layer_(next_layer)
+    {
+    }
+
+    executor_type get_executor() const ASIO_NOEXCEPT
+    {
+      return next_layer_.lowest_layer().get_executor();
+    }
+
+    template <typename WriteHandler>
     void operator()(ASIO_MOVE_ARG(WriteHandler) handler,
-        buffered_stream_storage* storage, Stream* next_layer) const
+        buffered_stream_storage* storage) const
     {
       // If you get an error on the following line it means that your handler
       // does not meet the documented type requirements for a WriteHandler.
       ASIO_WRITE_HANDLER_CHECK(WriteHandler, handler) type_check;
 
       non_const_lvalue<WriteHandler> handler2(handler);
-      async_write(*next_layer, buffer(storage->data(), storage->size()),
+      async_write(next_layer_, buffer(storage->data(), storage->size()),
           buffered_flush_handler<typename decay<WriteHandler>::type>(
             *storage, handler2.value));
     }
+
+  private:
+    typename remove_reference<Stream>::type& next_layer_;
   };
 } // namespace detail
 
@@ -174,16 +193,18 @@ struct associated_executor<
 #endif // !defined(GENERATING_DOCUMENTATION)
 
 template <typename Stream>
-template <typename WriteHandler>
-ASIO_INITFN_RESULT_TYPE(WriteHandler,
+template <
+    ASIO_COMPLETION_TOKEN_FOR(void (asio::error_code,
+      std::size_t)) WriteHandler>
+ASIO_INITFN_AUTO_RESULT_TYPE(WriteHandler,
     void (asio::error_code, std::size_t))
 buffered_write_stream<Stream>::async_flush(
     ASIO_MOVE_ARG(WriteHandler) handler)
 {
   return async_initiate<WriteHandler,
     void (asio::error_code, std::size_t)>(
-      detail::initiate_async_buffered_flush(),
-      handler, &storage_, &next_layer_);
+      detail::initiate_async_buffered_flush<Stream>(next_layer_),
+      handler, &storage_);
 }
 
 template <typename Stream>
@@ -323,12 +344,27 @@ namespace detail
         function, this_handler->handler_);
   }
 
-  struct initiate_async_buffered_write_some
+  template <typename Stream>
+  class initiate_async_buffered_write_some
   {
-    template <typename WriteHandler, typename Stream,
-        typename ConstBufferSequence>
+  public:
+    typedef typename remove_reference<
+      Stream>::type::lowest_layer_type::executor_type executor_type;
+
+    explicit initiate_async_buffered_write_some(
+        typename remove_reference<Stream>::type& next_layer)
+      : next_layer_(next_layer)
+    {
+    }
+
+    executor_type get_executor() const ASIO_NOEXCEPT
+    {
+      return next_layer_.lowest_layer().get_executor();
+    }
+
+    template <typename WriteHandler, typename ConstBufferSequence>
     void operator()(ASIO_MOVE_ARG(WriteHandler) handler,
-        buffered_stream_storage* storage, Stream* next_layer,
+        buffered_stream_storage* storage,
         const ConstBufferSequence& buffers) const
     {
       // If you get an error on the following line it means that your handler
@@ -339,20 +375,23 @@ namespace detail
       non_const_lvalue<WriteHandler> handler2(handler);
       if (buffer_size(buffers) == 0 || storage->size() < storage->capacity())
       {
-        next_layer->async_write_some(ASIO_CONST_BUFFER(0, 0),
+        next_layer_.async_write_some(ASIO_CONST_BUFFER(0, 0),
             buffered_write_some_handler<ConstBufferSequence,
               typename decay<WriteHandler>::type>(
                 *storage, buffers, handler2.value));
       }
       else
       {
-        initiate_async_buffered_flush()(
+        initiate_async_buffered_flush<Stream>(this->next_layer_)(
             buffered_write_some_handler<ConstBufferSequence,
               typename decay<WriteHandler>::type>(
                 *storage, buffers, handler2.value),
-            storage, next_layer);
+            storage);
       }
     }
+
+  private:
+    typename remove_reference<Stream>::type& next_layer_;
   };
 } // namespace detail
 
@@ -395,8 +434,10 @@ struct associated_executor<
 #endif // !defined(GENERATING_DOCUMENTATION)
 
 template <typename Stream>
-template <typename ConstBufferSequence, typename WriteHandler>
-ASIO_INITFN_RESULT_TYPE(WriteHandler,
+template <typename ConstBufferSequence,
+    ASIO_COMPLETION_TOKEN_FOR(void (asio::error_code,
+      std::size_t)) WriteHandler>
+ASIO_INITFN_AUTO_RESULT_TYPE(WriteHandler,
     void (asio::error_code, std::size_t))
 buffered_write_stream<Stream>::async_write_some(
     const ConstBufferSequence& buffers,
@@ -404,8 +445,8 @@ buffered_write_stream<Stream>::async_write_some(
 {
   return async_initiate<WriteHandler,
     void (asio::error_code, std::size_t)>(
-      detail::initiate_async_buffered_write_some(),
-      handler, &storage_, &next_layer_, buffers);
+      detail::initiate_async_buffered_write_some<Stream>(next_layer_),
+      handler, &storage_, buffers);
 }
 
 template <typename Stream>

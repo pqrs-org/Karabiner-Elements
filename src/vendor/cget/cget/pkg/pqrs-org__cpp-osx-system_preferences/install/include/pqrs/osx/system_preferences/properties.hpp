@@ -128,11 +128,11 @@ struct hash<pqrs::osx::system_preferences::properties> final {
   std::size_t operator()(const pqrs::osx::system_preferences::properties& value) const {
     std::size_t h = 0;
 
-    pqrs::hash_combine(h, value.get_use_fkeys_as_standard_function_keys());
-    pqrs::hash_combine(h, value.get_scroll_direction_is_natural());
+    pqrs::hash::combine(h, value.get_use_fkeys_as_standard_function_keys());
+    pqrs::hash::combine(h, value.get_scroll_direction_is_natural());
     for (const auto& [k, v] : value.get_keyboard_types()) {
-      pqrs::hash_combine(h, k);
-      pqrs::hash_combine(h, v);
+      pqrs::hash::combine(h, k);
+      pqrs::hash::combine(h, v);
     }
 
     return h;

@@ -3,7 +3,7 @@
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 //
 // Copyright (c) 2005 Voipster / Indrek dot Juhani at voipster dot com
-// Copyright (c) 2005-2019 Christopher M. Kohlhoff (chris at kohlhoff dot com)
+// Copyright (c) 2005-2020 Christopher M. Kohlhoff (chris at kohlhoff dot com)
 //
 // Distributed under the Boost Software License, Version 1.0. (See accompanying
 // file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
@@ -85,9 +85,9 @@ public:
 #endif // (OPENSSL_VERSION_NUMBER >= 0x10002000L)
        // && (OPENSSL_VERSION_NUMBER < 0x10100000L)
        // && !defined(SSL_OP_NO_COMPRESSION)
-#if !defined(OPENSSL_IS_BORINGSSL)
+#if !defined(OPENSSL_IS_BORINGSSL) && !defined(ASIO_USE_WOLFSSL)
     ::CONF_modules_unload(1);
-#endif // !defined(OPENSSL_IS_BORINGSSL)
+#endif // !defined(OPENSSL_IS_BORINGSSL) && !defined(ASIO_USE_WOLFSSL)
 #if !defined(OPENSSL_NO_ENGINE) \
   && (OPENSSL_VERSION_NUMBER < 0x10100000L)
     ::ENGINE_cleanup();

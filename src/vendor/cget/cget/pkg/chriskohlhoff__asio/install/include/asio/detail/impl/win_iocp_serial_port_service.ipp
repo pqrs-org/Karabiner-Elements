@@ -2,7 +2,7 @@
 // detail/impl/win_iocp_serial_port_service.ipp
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 //
-// Copyright (c) 2003-2019 Christopher M. Kohlhoff (chris at kohlhoff dot com)
+// Copyright (c) 2003-2020 Christopher M. Kohlhoff (chris at kohlhoff dot com)
 // Copyright (c) 2008 Rep Invariant Systems, Inc. (info@repinvariant.com)
 //
 // Distributed under the Boost Software License, Version 1.0. (See accompanying
@@ -79,11 +79,22 @@ asio::error_code win_iocp_serial_port_service::open(
   }
 
   // Set some default serial port parameters. This implementation does not
-  // support changing these, so they might as well be in a known state.
+  // support changing all of these, so they might as well be in a known state.
   dcb.fBinary = TRUE; // Win32 only supports binary mode.
-  dcb.fDsrSensitivity = FALSE;
   dcb.fNull = FALSE; // Do not ignore NULL characters.
   dcb.fAbortOnError = FALSE; // Ignore serial framing errors.
+  dcb.BaudRate = CBR_9600; // 9600 baud by default
+  dcb.ByteSize = 8; // 8 bit bytes
+  dcb.fOutxCtsFlow = FALSE; // No flow control
+  dcb.fOutxDsrFlow = FALSE;
+  dcb.fDtrControl = DTR_CONTROL_DISABLE;
+  dcb.fDsrSensitivity = FALSE;
+  dcb.fOutX = FALSE;
+  dcb.fInX = FALSE;
+  dcb.fRtsControl = RTS_CONTROL_DISABLE;
+  dcb.fParity = FALSE; // No parity
+  dcb.Parity = NOPARITY;
+  dcb.StopBits = ONESTOPBIT; // One stop bit
   if (!::SetCommState(handle, &dcb))
   {
     DWORD last_error = ::GetLastError();

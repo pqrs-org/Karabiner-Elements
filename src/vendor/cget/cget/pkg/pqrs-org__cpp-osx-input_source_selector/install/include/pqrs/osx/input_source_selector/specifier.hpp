@@ -133,15 +133,21 @@ struct hash<pqrs::osx::input_source_selector::specifier> final {
     size_t h = 0;
 
     if (auto& s = value.get_language_string()) {
-      pqrs::hash_combine(h, *s);
+      pqrs::hash::combine(h, *s);
+    } else {
+      pqrs::hash::combine(h, 0);
     }
 
     if (auto& s = value.get_input_source_id_string()) {
-      pqrs::hash_combine(h, *s);
+      pqrs::hash::combine(h, *s);
+    } else {
+      pqrs::hash::combine(h, 0);
     }
 
     if (auto& s = value.get_input_mode_id_string()) {
-      pqrs::hash_combine(h, *s);
+      pqrs::hash::combine(h, *s);
+    } else {
+      pqrs::hash::combine(h, 0);
     }
 
     return h;

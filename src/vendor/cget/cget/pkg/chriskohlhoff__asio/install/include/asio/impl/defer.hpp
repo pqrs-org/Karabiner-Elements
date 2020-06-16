@@ -2,7 +2,7 @@
 // impl/defer.hpp
 // ~~~~~~~~~~~~~~
 //
-// Copyright (c) 2003-2019 Christopher M. Kohlhoff (chris at kohlhoff dot com)
+// Copyright (c) 2003-2020 Christopher M. Kohlhoff (chris at kohlhoff dot com)
 //
 // Distributed under the Boost Software License, Version 1.0. (See accompanying
 // file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
@@ -25,8 +25,9 @@
 namespace asio {
 namespace detail {
 
-struct initiate_defer
+class initiate_defer
 {
+public:
   template <typename CompletionHandler>
   void operator()(ASIO_MOVE_ARG(CompletionHandler) handler) const
   {
@@ -40,42 +41,63 @@ struct initiate_defer
 
     ex.defer(ASIO_MOVE_CAST(CompletionHandler)(handler), alloc);
   }
+};
 
-  template <typename CompletionHandler, typename Executor>
-  void operator()(ASIO_MOVE_ARG(CompletionHandler) handler,
-      ASIO_MOVE_ARG(Executor) ex) const
+template <typename Executor>
+class initiate_defer_with_executor
+{
+public:
+  typedef Executor executor_type;
+
+  explicit initiate_defer_with_executor(const Executor& ex)
+    : ex_(ex)
+  {
+  }
+
+  executor_type get_executor() const ASIO_NOEXCEPT
+  {
+    return ex_;
+  }
+
+  template <typename CompletionHandler>
+  void operator()(ASIO_MOVE_ARG(CompletionHandler) handler) const
   {
     typedef typename decay<CompletionHandler>::type DecayedHandler;
 
     typename associated_allocator<DecayedHandler>::type alloc(
         (get_associated_allocator)(handler));
 
-    ex.defer(detail::work_dispatcher<DecayedHandler>(
+    ex_.defer(detail::work_dispatcher<DecayedHandler>(
           ASIO_MOVE_CAST(CompletionHandler)(handler)), alloc);
   }
+
+private:
+  Executor ex_;
 };
 
 } // namespace detail
 
-template <typename CompletionToken>
-ASIO_INITFN_RESULT_TYPE(CompletionToken, void()) defer(
+template <ASIO_COMPLETION_TOKEN_FOR(void()) CompletionToken>
+ASIO_INITFN_AUTO_RESULT_TYPE(CompletionToken, void()) defer(
     ASIO_MOVE_ARG(CompletionToken) token)
 {
   return async_initiate<CompletionToken, void()>(
       detail::initiate_defer(), token);
 }
 
-template <typename Executor, typename CompletionToken>
-ASIO_INITFN_RESULT_TYPE(CompletionToken, void()) defer(
+template <typename Executor,
+    ASIO_COMPLETION_TOKEN_FOR(void()) CompletionToken>
+ASIO_INITFN_AUTO_RESULT_TYPE(CompletionToken, void()) defer(
     const Executor& ex, ASIO_MOVE_ARG(CompletionToken) token,
     typename enable_if<is_executor<Executor>::value>::type*)
 {
   return async_initiate<CompletionToken, void()>(
-      detail::initiate_defer(), token, ex);
+      detail::initiate_defer_with_executor<Executor>(ex), token);
 }
 
-template <typename ExecutionContext, typename CompletionToken>
-inline ASIO_INITFN_RESULT_TYPE(CompletionToken, void()) defer(
+template <typename ExecutionContext,
+    ASIO_COMPLETION_TOKEN_FOR(void()) CompletionToken>
+inline ASIO_INITFN_AUTO_RESULT_TYPE(CompletionToken, void()) defer(
     ExecutionContext& ctx, ASIO_MOVE_ARG(CompletionToken) token,
     typename enable_if<is_convertible<
       ExecutionContext&, execution_context&>::value>::type*)

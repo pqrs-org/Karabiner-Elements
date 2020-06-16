@@ -2,7 +2,7 @@
 // detail/thread_info_base.hpp
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~
 //
-// Copyright (c) 2003-2019 Christopher M. Kohlhoff (chris at kohlhoff dot com)
+// Copyright (c) 2003-2020 Christopher M. Kohlhoff (chris at kohlhoff dot com)
 //
 // Distributed under the Boost Software License, Version 1.0. (See accompanying
 // file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
@@ -52,8 +52,7 @@ public:
   ~thread_info_base()
   {
     for (int i = 0; i < max_mem_index; ++i)
-      if (reusable_memory_[i])
-        ::operator delete(reusable_memory_[i]);
+      ::operator delete(reusable_memory_[i]);
   }
 
   static void* allocate(thread_info_base* this_thread, std::size_t size)

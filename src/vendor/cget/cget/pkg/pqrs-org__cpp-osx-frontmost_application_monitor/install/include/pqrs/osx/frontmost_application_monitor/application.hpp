@@ -58,11 +58,15 @@ struct hash<pqrs::osx::frontmost_application_monitor::application> final {
     size_t h = 0;
 
     if (auto& bundle_identifier = value.get_bundle_identifier()) {
-      pqrs::hash_combine(h, *bundle_identifier);
+      pqrs::hash::combine(h, *bundle_identifier);
+    } else {
+      pqrs::hash::combine(h, 0);
     }
 
     if (auto& file_path = value.get_file_path()) {
-      pqrs::hash_combine(h, *file_path);
+      pqrs::hash::combine(h, *file_path);
+    } else {
+      pqrs::hash::combine(h, 0);
     }
 
     return h;

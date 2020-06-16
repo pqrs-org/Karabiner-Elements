@@ -2,7 +2,7 @@
 // detail/winrt_ssocket_service_base.hpp
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 //
-// Copyright (c) 2003-2019 Christopher M. Kohlhoff (chris at kohlhoff dot com)
+// Copyright (c) 2003-2020 Christopher M. Kohlhoff (chris at kohlhoff dot com)
 //
 // Distributed under the Boost Software License, Version 1.0. (See accompanying
 // file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
@@ -77,7 +77,7 @@ public:
 
   // Move-construct a new socket implementation.
   ASIO_DECL void base_move_construct(base_implementation_type& impl,
-      base_implementation_type& other_impl);
+      base_implementation_type& other_impl) ASIO_NOEXCEPT;
 
   // Move-assign from another socket implementation.
   ASIO_DECL void base_move_assign(base_implementation_type& impl,
@@ -163,14 +163,6 @@ public:
   // Sets the non-blocking mode of the native socket implementation.
   asio::error_code native_non_blocking(base_implementation_type&,
       bool, asio::error_code& ec)
-  {
-    ec = asio::error::operation_not_supported;
-    return ec;
-  }
-
-  // Disable sends or receives on the socket.
-  asio::error_code shutdown(base_implementation_type&,
-      socket_base::shutdown_type, asio::error_code& ec)
   {
     ec = asio::error::operation_not_supported;
     return ec;

@@ -2,7 +2,7 @@
 // detail/winrt_ssocket_service.hpp
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 //
-// Copyright (c) 2003-2019 Christopher M. Kohlhoff (chris at kohlhoff dot com)
+// Copyright (c) 2003-2020 Christopher M. Kohlhoff (chris at kohlhoff dot com)
 //
 // Distributed under the Boost Software License, Version 1.0. (See accompanying
 // file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
@@ -75,7 +75,7 @@ public:
 
   // Move-construct a new socket implementation.
   void move_construct(implementation_type& impl,
-      implementation_type& other_impl)
+      implementation_type& other_impl) ASIO_NOEXCEPT
   {
     this->base_move_construct(impl, other_impl);
 
@@ -176,6 +176,14 @@ public:
     endpoint.resize(do_get_endpoint(impl, false,
           endpoint.data(), endpoint.size(), ec));
     return endpoint;
+  }
+
+  // Disable sends or receives on the socket.
+  asio::error_code shutdown(implementation_type&,
+      socket_base::shutdown_type, asio::error_code& ec)
+  {
+    ec = asio::error::operation_not_supported;
+    return ec;
   }
 
   // Set a socket option.

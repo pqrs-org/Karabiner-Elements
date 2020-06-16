@@ -1,1 +1,0 @@
-../../../cget/pkg/gabime__spdlog/install/include/spdlog/details/pattern_formatter-inl.h

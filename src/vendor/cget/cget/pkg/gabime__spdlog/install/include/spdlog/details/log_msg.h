@@ -3,14 +3,15 @@
 
 #pragma once
 
-#include "spdlog/common.h"
+#include <spdlog/common.h>
 #include <string>
 
 namespace spdlog {
 namespace details {
-struct log_msg
+struct SPDLOG_API log_msg
 {
     log_msg() = default;
+    log_msg(log_clock::time_point log_time, source_loc loc, string_view_t logger_name, level::level_enum lvl, string_view_t msg);
     log_msg(source_loc loc, string_view_t logger_name, level::level_enum lvl, string_view_t msg);
     log_msg(string_view_t logger_name, level::level_enum lvl, string_view_t msg);
     log_msg(const log_msg &other) = default;

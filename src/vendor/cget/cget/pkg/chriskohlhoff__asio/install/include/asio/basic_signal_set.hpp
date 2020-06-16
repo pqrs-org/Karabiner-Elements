@@ -2,7 +2,7 @@
 // basic_signal_set.hpp
 // ~~~~~~~~~~~~~~~~~~~~
 //
-// Copyright (c) 2003-2019 Christopher M. Kohlhoff (chris at kohlhoff dot com)
+// Copyright (c) 2003-2020 Christopher M. Kohlhoff (chris at kohlhoff dot com)
 //
 // Distributed under the Boost Software License, Version 1.0. (See accompanying
 // file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
@@ -96,6 +96,14 @@ class basic_signal_set
 public:
   /// The type of the executor associated with the object.
   typedef Executor executor_type;
+
+  /// Rebinds the signal set type to another executor.
+  template <typename Executor1>
+  struct rebind_executor
+  {
+    /// The signal set type when rebound to the specified executor.
+    typedef basic_signal_set<Executor1> other;
+  };
 
   /// Construct a signal set without adding any signals.
   /**
@@ -502,13 +510,17 @@ public:
    * immediate completion, invocation of the handler will be performed in a
    * manner equivalent to using asio::post().
    */
-  template <typename SignalHandler>
-  ASIO_INITFN_RESULT_TYPE(SignalHandler,
+  template <
+    ASIO_COMPLETION_TOKEN_FOR(void (asio::error_code, int))
+      SignalHandler ASIO_DEFAULT_COMPLETION_TOKEN_TYPE(executor_type)>
+  ASIO_INITFN_AUTO_RESULT_TYPE(SignalHandler,
       void (asio::error_code, int))
-  async_wait(ASIO_MOVE_ARG(SignalHandler) handler)
+  async_wait(
+      ASIO_MOVE_ARG(SignalHandler) handler
+        ASIO_DEFAULT_COMPLETION_TOKEN(executor_type))
   {
     return async_initiate<SignalHandler, void (asio::error_code, int)>(
-        initiate_async_wait(), handler, this);
+        initiate_async_wait(this), handler);
   }
 
 private:
@@ -516,21 +528,36 @@ private:
   basic_signal_set(const basic_signal_set&) ASIO_DELETED;
   basic_signal_set& operator=(const basic_signal_set&) ASIO_DELETED;
 
-  struct initiate_async_wait
+  class initiate_async_wait
   {
+  public:
+    typedef Executor executor_type;
+
+    explicit initiate_async_wait(basic_signal_set* self)
+      : self_(self)
+    {
+    }
+
+    executor_type get_executor() const ASIO_NOEXCEPT
+    {
+      return self_->get_executor();
+    }
+
     template <typename SignalHandler>
-    void operator()(ASIO_MOVE_ARG(SignalHandler) handler,
-        basic_signal_set* self) const
+    void operator()(ASIO_MOVE_ARG(SignalHandler) handler) const
     {
       // If you get an error on the following line it means that your handler
       // does not meet the documented type requirements for a SignalHandler.
       ASIO_SIGNAL_HANDLER_CHECK(SignalHandler, handler) type_check;
 
       detail::non_const_lvalue<SignalHandler> handler2(handler);
-      self->impl_.get_service().async_wait(
-          self->impl_.get_implementation(), handler2.value,
-          self->impl_.get_implementation_executor());
+      self_->impl_.get_service().async_wait(
+          self_->impl_.get_implementation(), handler2.value,
+          self_->impl_.get_implementation_executor());
     }
+
+  private:
+    basic_signal_set* self_;
   };
 
   detail::io_object_impl<detail::signal_set_service, Executor> impl_;

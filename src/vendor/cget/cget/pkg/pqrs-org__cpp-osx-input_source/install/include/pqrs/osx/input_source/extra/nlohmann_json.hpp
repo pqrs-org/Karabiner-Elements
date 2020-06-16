@@ -37,47 +37,38 @@ inline void to_json(nlohmann::json& j, const properties& p) {
 inline void from_json(const nlohmann::json& j, properties& p) {
   using namespace std::string_literals;
 
-  if (!j.is_object()) {
-    throw json::unmarshal_error("json must be object, but is `"s + j.dump() + "`"s);
-  }
+  json::requires_object(j, "json");
 
   for (const auto& [key, value] : j.items()) {
     if (key == "input_source_id") {
-      if (!value.is_string()) {
-        throw json::unmarshal_error("`"s + key + "` must be string, but is `"s + value.dump() + "`"s);
-      }
+      json::requires_string(value, "`"s + key + "`");
+
       p.set_input_source_id(value.get<std::string>());
 
     } else if (key == "localized_name") {
-      if (!value.is_string()) {
-        throw json::unmarshal_error("`"s + key + "` must be string, but is `"s + value.dump() + "`"s);
-      }
+      json::requires_string(value, "`"s + key + "`");
+
       p.set_localized_name(value.get<std::string>());
 
     } else if (key == "input_mode_id") {
-      if (!value.is_string()) {
-        throw json::unmarshal_error("`"s + key + "` must be string, but is `"s + value.dump() + "`"s);
-      }
+      json::requires_string(value, "`"s + key + "`");
+
       p.set_input_mode_id(value.get<std::string>());
 
     } else if (key == "languages") {
-      if (!value.is_array()) {
-        throw json::unmarshal_error("`"s + key + "` must be array, but is `"s + value.dump() + "`"s);
-      }
+      json::requires_array(value, "`"s + key + "`");
 
       std::vector<std::string> languages;
       for (const auto& v : value) {
-        if (!v.is_string()) {
-          throw json::unmarshal_error("`"s + key + "` must be array of strings, but is `"s + value.dump() + "`"s);
-        }
+        json::requires_string(v, "`"s + key + "` entry");
+
         languages.push_back(v.get<std::string>());
       }
       p.set_languages(languages);
 
     } else if (key == "first_language") {
-      if (!value.is_string()) {
-        throw json::unmarshal_error("`"s + key + "` must be string, but is `"s + value.dump() + "`"s);
-      }
+      json::requires_string(value, "`"s + key + "`");
+
       p.set_first_language(value.get<std::string>());
 
     } else {

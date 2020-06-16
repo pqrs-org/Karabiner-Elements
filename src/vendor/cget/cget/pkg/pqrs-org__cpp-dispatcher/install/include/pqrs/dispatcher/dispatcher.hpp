@@ -343,7 +343,7 @@ public:
       if (when == when_internal_detached()) {
         queue_.push_front(new_entry);
       } else {
-        // qnene_ must be sorted by when_.
+        // queue_ must be sorted by when_.
 
         auto it = std::find_if(std::rbegin(queue_),
                                std::rend(queue_),

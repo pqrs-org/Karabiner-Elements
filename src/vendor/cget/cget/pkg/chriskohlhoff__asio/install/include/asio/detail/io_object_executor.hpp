@@ -2,7 +2,7 @@
 // io_object_executor.hpp
 // ~~~~~~~~~~~~~~~~~~~~~~
 //
-// Copyright (c) 2003-2019 Christopher M. Kohlhoff (chris at kohlhoff dot com)
+// Copyright (c) 2003-2020 Christopher M. Kohlhoff (chris at kohlhoff dot com)
 //
 // Distributed under the Boost Software License, Version 1.0. (See accompanying
 // file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
@@ -112,6 +112,13 @@ public:
       // When using a native implementation, I/O completion handlers are
       // already dispatched according to the execution context's executor's
       // rules. We can call the function directly.
+#if defined(ASIO_HAS_MOVE)
+      if (is_same<F, typename decay<F>::type>::value)
+      {
+        asio_handler_invoke_helpers::invoke(f, f);
+        return;
+      }
+#endif // defined(ASIO_HAS_MOVE)
       typename decay<F>::type function(ASIO_MOVE_CAST(F)(f));
       asio_handler_invoke_helpers::invoke(function, function);
     }

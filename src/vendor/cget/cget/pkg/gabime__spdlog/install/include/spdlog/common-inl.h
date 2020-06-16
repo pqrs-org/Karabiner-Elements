@@ -4,7 +4,7 @@
 #pragma once
 
 #ifndef SPDLOG_HEADER_ONLY
-#include "spdlog/common.h"
+#include <spdlog/common.h>
 #endif
 
 namespace spdlog {
@@ -34,6 +34,15 @@ SPDLOG_INLINE spdlog::level::level_enum from_str(const std::string &name) SPDLOG
         }
         level++;
     }
+    // check also for "warn" and "err" before giving up..
+    if (name == "warn")
+    {
+        return level::warn;
+    }
+    if (name == "err")
+    {
+        return level::err;
+    }
     return level::off;
 }
 } // namespace level
@@ -52,6 +61,16 @@ SPDLOG_INLINE spdlog_ex::spdlog_ex(const std::string &msg, int last_errno)
 SPDLOG_INLINE const char *spdlog_ex::what() const SPDLOG_NOEXCEPT
 {
     return msg_.c_str();
+}
+
+SPDLOG_INLINE void throw_spdlog_ex(const std::string &msg, int last_errno)
+{
+    SPDLOG_THROW(spdlog_ex(msg, last_errno));
+}
+
+SPDLOG_INLINE void throw_spdlog_ex(std::string msg)
+{
+    SPDLOG_THROW(spdlog_ex(std::move(msg)));
 }
 
 } // namespace spdlog

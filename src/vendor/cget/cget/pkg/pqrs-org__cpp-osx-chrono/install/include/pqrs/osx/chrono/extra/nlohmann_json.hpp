@@ -15,10 +15,7 @@ inline void to_json(nlohmann::json& j, const absolute_time_duration& p) {
 }
 
 inline void from_json(const nlohmann::json& j, absolute_time_duration& p) {
-  if (!j.is_number()) {
-    using namespace std::string_literals;
-    throw json::unmarshal_error("json must be number, but is `"s + j.dump() + "`"s);
-  }
+  json::requires_number(j, "json");
 
   p = absolute_time_duration(j.get<int64_t>());
 }
@@ -28,10 +25,7 @@ inline void to_json(nlohmann::json& j, const absolute_time_point& p) {
 }
 
 inline void from_json(const nlohmann::json& j, absolute_time_point& p) {
-  if (!j.is_number()) {
-    using namespace std::string_literals;
-    throw json::unmarshal_error("json must be number, but is `"s + j.dump() + "`"s);
-  }
+  json::requires_number(j, "json");
 
   p = absolute_time_point(j.get<uint64_t>());
 }

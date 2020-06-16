@@ -4,8 +4,8 @@
 
 #include <chrono>
 #include <type_traits>
-#include "spdlog/fmt/fmt.h"
-#include "spdlog/common.h"
+#include <spdlog/fmt/fmt.h>
+#include <spdlog/common.h>
 
 // Some fmt helpers to efficiently format and pad ints and strings
 namespace spdlog {
@@ -20,10 +20,7 @@ inline spdlog::string_view_t to_string_view(const memory_buf_t &buf) SPDLOG_NOEX
 inline void append_string_view(spdlog::string_view_t view, memory_buf_t &dest)
 {
     auto *buf_ptr = view.data();
-    if (buf_ptr != nullptr)
-    {
-        dest.append(buf_ptr, buf_ptr + view.size());
-    }
+    dest.append(buf_ptr, buf_ptr + view.size());
 }
 
 template<typename T>
@@ -34,29 +31,20 @@ inline void append_int(T n, memory_buf_t &dest)
 }
 
 template<typename T>
-inline unsigned count_digits(T n)
+inline unsigned int count_digits(T n)
 {
     using count_type = typename std::conditional<(sizeof(T) > sizeof(uint32_t)), uint64_t, uint32_t>::type;
-    return static_cast<unsigned>(fmt::internal::count_digits(static_cast<count_type>(n)));
+    return static_cast<unsigned int>(fmt::internal::count_digits(static_cast<count_type>(n)));
 }
 
 inline void pad2(int n, memory_buf_t &dest)
 {
-    if (n > 99)
-    {
-        append_int(n, dest);
-    }
-    else if (n > 9) // 10-99
+    if (n >= 0 && n < 100) // 0-99
     {
         dest.push_back(static_cast<char>('0' + n / 10));
         dest.push_back(static_cast<char>('0' + n % 10));
     }
-    else if (n >= 0) // 0-9
-    {
-        dest.push_back('0');
-        dest.push_back(static_cast<char>('0' + n));
-    }
-    else // negatives (unlikely, but just in case, let fmt deal with it)
+    else // unlikely, but just in case, let fmt deal with it
     {
         fmt::format_to(dest, "{:02}", n);
     }
@@ -66,11 +54,9 @@ template<typename T>
 inline void pad_uint(T n, unsigned int width, memory_buf_t &dest)
 {
     static_assert(std::is_unsigned<T>::value, "pad_uint must get unsigned T");
-    auto digits = count_digits(n);
-    if (width > digits)
+    for (auto digits = count_digits(n); digits < width; digits++)
     {
-        const char *zeroes = "0000000000000000000";
-        dest.append(zeroes, zeroes + width - digits);
+        dest.push_back('0');
     }
     append_int(n, dest);
 }
@@ -78,7 +64,18 @@ inline void pad_uint(T n, unsigned int width, memory_buf_t &dest)
 template<typename T>
 inline void pad3(T n, memory_buf_t &dest)
 {
-    pad_uint(n, 3, dest);
+    static_assert(std::is_unsigned<T>::value, "pad3 must get unsigned T");
+    if (n < 1000)
+    {
+        dest.push_back(static_cast<char>(n / 100 + '0'));
+        n = n % 100;
+        dest.push_back(static_cast<char>((n / 10) + '0'));
+        dest.push_back(static_cast<char>((n % 10) + '0'));
+    }
+    else
+    {
+        append_int(n, dest);
+    }
 }
 
 template<typename T>

@@ -15,12 +15,9 @@ inline void to_json(nlohmann::json& j, const value_t& value) {
 }
 
 inline void from_json(const nlohmann::json& j, value_t& value) {
-  if (!j.is_number()) {
-    using namespace std::string_literals;
-    throw json::unmarshal_error("json must be number, but is `"s + j.dump() + "`"s);
-  }
+  json::requires_number(j, "json");
 
-  value = value_t(j.get<uint64_t>());
+  value = value_t(j.get<type_safe::underlying_type<value_t>>());
 }
 } // namespace country_code
 
@@ -30,12 +27,9 @@ inline void to_json(nlohmann::json& j, const value_t& value) {
 }
 
 inline void from_json(const nlohmann::json& j, value_t& value) {
-  if (!j.is_number()) {
-    using namespace std::string_literals;
-    throw json::unmarshal_error("json must be number, but is `"s + j.dump() + "`"s);
-  }
+  json::requires_number(j, "json");
 
-  value = value_t(j.get<uint64_t>());
+  value = value_t(j.get<type_safe::underlying_type<value_t>>());
 }
 } // namespace product_id
 
@@ -45,12 +39,9 @@ inline void to_json(nlohmann::json& j, const value_t& value) {
 }
 
 inline void from_json(const nlohmann::json& j, value_t& value) {
-  if (!j.is_number()) {
-    using namespace std::string_literals;
-    throw json::unmarshal_error("json must be number, but is `"s + j.dump() + "`"s);
-  }
+  json::requires_number(j, "json");
 
-  value = value_t(j.get<int32_t>());
+  value = value_t(j.get<type_safe::underlying_type<value_t>>());
 }
 } // namespace usage_page
 
@@ -60,12 +51,9 @@ inline void to_json(nlohmann::json& j, const value_t& value) {
 }
 
 inline void from_json(const nlohmann::json& j, value_t& value) {
-  if (!j.is_number()) {
-    using namespace std::string_literals;
-    throw json::unmarshal_error("json must be number, but is `"s + j.dump() + "`"s);
-  }
+  json::requires_number(j, "json");
 
-  value = value_t(j.get<int32_t>());
+  value = value_t(j.get<type_safe::underlying_type<value_t>>());
 }
 } // namespace usage
 
@@ -75,12 +63,9 @@ inline void to_json(nlohmann::json& j, const value_t& value) {
 }
 
 inline void from_json(const nlohmann::json& j, value_t& value) {
-  if (!j.is_number()) {
-    using namespace std::string_literals;
-    throw json::unmarshal_error("json must be number, but is `"s + j.dump() + "`"s);
-  }
+  json::requires_number(j, "json");
 
-  value = value_t(j.get<uint64_t>());
+  value = value_t(j.get<type_safe::underlying_type<value_t>>());
 }
 } // namespace vendor_id
 } // namespace hid
