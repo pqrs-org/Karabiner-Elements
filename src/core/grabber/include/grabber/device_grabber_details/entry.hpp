@@ -34,8 +34,7 @@ public:
     caps_lock_led_state_manager_ = std::make_shared<krbn::hid_keyboard_caps_lock_led_state_manager>(device);
     device_name_ = iokit_utility::make_device_name_for_log(device_id,
                                                            device);
-    device_short_name_ = iokit_utility::make_device_name(device_id,
-                                                         device);
+    device_short_name_ = iokit_utility::make_device_name(device);
   }
 
   ~entry(void) {

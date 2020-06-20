@@ -44,8 +44,7 @@ public:
     return false;
   }
 
-  static std::string make_device_name(device_id device_id,
-                                      IOHIDDeviceRef _Nonnull device) {
+  static std::string make_device_name(IOHIDDeviceRef _Nonnull device) {
     std::stringstream stream;
     pqrs::osx::iokit_hid_device hid_device(device);
 
@@ -69,7 +68,7 @@ public:
   static std::string make_device_name_for_log(device_id device_id,
                                               IOHIDDeviceRef _Nonnull device) {
     return fmt::format("{0} (device_id:{1})",
-                       make_device_name(device_id, device),
+                       make_device_name(device),
                        type_safe::get(device_id));
   }
 
