@@ -1,10 +1,13 @@
 #pragma once
 
+#include "iokit_utility.hpp"
+#include "logger.hpp"
 #include "types.hpp"
 #include <mach/mach_time.h>
 #include <optional>
 #include <pqrs/dispatcher.hpp>
 #include <pqrs/osx/iokit_hid_device.hpp>
+#include <pqrs/osx/iokit_hid_element.hpp>
 
 namespace krbn {
 class hid_keyboard_caps_lock_led_state_manager final : public pqrs::dispatcher::extra::dispatcher_client {
@@ -15,12 +18,16 @@ public:
                                                                     started_(false) {
     if (device_) {
       pqrs::osx::iokit_hid_device hid_device(*device_);
-      for (const auto& e : hid_device.make_elements()) {
-        auto usage_page = pqrs::hid::usage_page::value_t(IOHIDElementGetUsagePage(*e));
-        auto usage = pqrs::hid::usage::value_t(IOHIDElementGetUsage(*e));
+      for (const auto& element : hid_device.make_elements()) {
+        pqrs::osx::iokit_hid_element e(*element);
 
-        if (usage_page == pqrs::hid::usage_page::leds &&
-            usage == pqrs::hid::usage::led::caps_lock) {
+        if (e.get_usage_page() == pqrs::hid::usage_page::leds &&
+            e.get_usage() == pqrs::hid::usage::led::caps_lock &&
+            e.get_type() == pqrs::osx::iokit_hid_element_type::output) {
+          logger::get_logger()->info(
+              "caps lock is found on {0}",
+              iokit_utility::make_device_name(*device_));
+
           element_ = e;
         }
       }
@@ -77,10 +84,10 @@ private:
     if (auto integer_value = make_integer_value()) {
       if (device_ && element_) {
         if (auto value = IOHIDValueCreateWithIntegerValue(kCFAllocatorDefault,
-                                                          *element_,
+                                                          element_.get_raw_ptr(),
                                                           mach_absolute_time(),
                                                           *integer_value)) {
-          IOHIDDeviceSetValue(*device_, *element_, value);
+          IOHIDDeviceSetValue(*device_, element_.get_raw_ptr(), value);
 
           CFRelease(value);
         }
@@ -93,9 +100,9 @@ private:
 
     if (state_ && element_) {
       if (*state_ == led_state::on) {
-        return IOHIDElementGetLogicalMax(*element_);
+        return element_.get_logical_max();
       } else {
-        return IOHIDElementGetLogicalMin(*element_);
+        return element_.get_logical_min();
       }
     }
 
@@ -103,7 +110,7 @@ private:
   }
 
   pqrs::cf::cf_ptr<IOHIDDeviceRef> device_;
-  pqrs::cf::cf_ptr<IOHIDElementRef> element_;
+  pqrs::osx::iokit_hid_element element_;
   std::optional<led_state> state_;
   mutable std::mutex state_mutex_;
   pqrs::dispatcher::extra::timer timer_;
