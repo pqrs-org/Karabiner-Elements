@@ -1,16 +1,16 @@
 #pragma once
 
-// pqrs::osx::iokit_hid_value v3.1
+// pqrs::osx::iokit_hid_value v3.3
 
 // (C) Copyright Takayama Fumihiko 2019.
 // Distributed under the Boost Software License, Version 1.0.
 // (See http://www.boost.org/LICENSE_1_0.txt)
 
-#include <IOKit/hid/IOHIDElement.h>
 #include <IOKit/hid/IOHIDValue.h>
 #include <optional>
 #include <pqrs/hid.hpp>
 #include <pqrs/osx/chrono.hpp>
+#include <pqrs/osx/iokit_hid_element.hpp>
 
 namespace pqrs {
 namespace osx {
@@ -24,19 +24,19 @@ public:
                   CFIndex integer_value,
                   std::optional<hid::usage_page::value_t> usage_page,
                   std::optional<hid::usage::value_t> usage) : time_stamp_(time_stamp),
-                                                                   integer_value_(integer_value),
-                                                                   usage_page_(usage_page),
-                                                                   usage_(usage) {
+                                                              integer_value_(integer_value),
+                                                              usage_page_(usage_page),
+                                                              usage_(usage) {
   }
 
   iokit_hid_value(IOHIDValueRef value) : iokit_hid_value() {
     if (value) {
       time_stamp_ = chrono::absolute_time_point(IOHIDValueGetTimeStamp(value));
       integer_value_ = IOHIDValueGetIntegerValue(value);
-      if (auto element = IOHIDValueGetElement(value)) {
-        usage_page_ = hid::usage_page::value_t(IOHIDElementGetUsagePage(element));
-        usage_ = hid::usage::value_t(IOHIDElementGetUsage(element));
-      }
+
+      auto e = iokit_hid_element(IOHIDValueGetElement(value));
+      usage_page_ = e.get_usage_page();
+      usage_ = e.get_usage();
     }
   }
 
