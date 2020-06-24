@@ -8,6 +8,7 @@
 #include <pqrs/dispatcher.hpp>
 #include <pqrs/osx/iokit_hid_device.hpp>
 #include <pqrs/osx/iokit_hid_element.hpp>
+#include <pqrs/osx/iokit_return.hpp>
 
 namespace krbn {
 class hid_keyboard_caps_lock_led_state_manager final : public pqrs::dispatcher::extra::dispatcher_client {
@@ -92,7 +93,19 @@ private:
                                                           element_.get_raw_ptr(),
                                                           mach_absolute_time(),
                                                           *integer_value)) {
-          IOHIDDeviceSetValue(*device_, element_.get_raw_ptr(), value);
+          // We have to use asynchronous method in order to prevent deadlock.
+          IOHIDDeviceSetValueWithCallback(
+              *device_,
+              element_.get_raw_ptr(),
+              value,
+              0.1,
+              [](void* context, IOReturn result, void* sender, IOHIDValueRef value) {
+                pqrs::osx::iokit_return r(result);
+                if (!r) {
+                  logger::get_logger()->warn("update_caps_lock_led is failed: {0}", r);
+                }
+              },
+              nullptr);
 
           CFRelease(value);
         }
