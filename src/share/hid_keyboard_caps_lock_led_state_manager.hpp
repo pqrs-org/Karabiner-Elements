@@ -43,6 +43,11 @@ public:
   void set_state(std::optional<led_state> value) {
     std::lock_guard<std::mutex> lock(state_mutex_);
 
+    // Skip if new state is same as the last state in order to avoid a possibility of infinite calling of set_state.
+    if (state_ == value) {
+      return;
+    }
+
     state_ = value;
 
     enqueue_to_dispatcher([this] {
