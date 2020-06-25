@@ -93,7 +93,7 @@ private:
                                                           element_.get_raw_ptr(),
                                                           mach_absolute_time(),
                                                           *integer_value)) {
-          // We have to use asynchronous method in order to prevent deadlock.
+          // We have to use asynchronous method in order to prevent deadlock due to macOS issue.
           IOHIDDeviceSetValueWithCallback(
               *device_,
               element_.get_raw_ptr(),
