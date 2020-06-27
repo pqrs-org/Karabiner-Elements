@@ -102,7 +102,7 @@ private:
               [](void* context, IOReturn result, void* sender, IOHIDValueRef value) {
                 pqrs::osx::iokit_return r(result);
                 if (!r) {
-                  logger::get_logger()->warn("update_caps_lock_led is failed: {0}", r.get());
+                  logger::get_logger()->warn("update_caps_lock_led is failed: {0}", r.to_string());
                 }
               },
               nullptr);
