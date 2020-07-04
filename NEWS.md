@@ -1,5 +1,10 @@
 # Changelog
 
+## Beta
+
+-   ⚡️ Improvements
+    -   Improved preferences window messages.
+
 ## Karabiner-Elements 12.10.0
 
 -   ✨ New Features
