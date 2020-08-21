@@ -45,7 +45,7 @@ public:
       logger::get_logger()->info("session_monitor_receiver: closed");
     });
 
-    server_->received.connect([this](auto&& buffer) {
+    server_->received.connect([this](auto&& buffer, auto&& sender_endpoint) {
       if (buffer) {
         if (buffer->empty()) {
           return;
@@ -114,6 +114,7 @@ private:
       auto socket_file_path = constants::get_session_monitor_receiver_socket_file_path(uid);
       auto client = std::make_shared<pqrs::local_datagram::client>(weak_dispatcher_,
                                                                    socket_file_path,
+                                                                   std::nullopt,
                                                                    constants::get_local_datagram_buffer_size());
       session_monitor_clients_[uid] = client;
 

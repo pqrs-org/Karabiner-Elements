@@ -40,6 +40,7 @@ public:
       auto socket_file_path = make_console_user_server_socket_file_path(uid);
       client_ = std::make_unique<pqrs::local_datagram::client>(weak_dispatcher_,
                                                                socket_file_path,
+                                                               std::nullopt,
                                                                constants::get_local_datagram_buffer_size());
       client_->set_server_check_interval(std::chrono::milliseconds(3000));
       client_->set_reconnect_interval(std::chrono::milliseconds(1000));

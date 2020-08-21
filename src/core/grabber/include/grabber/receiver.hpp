@@ -48,7 +48,7 @@ public:
       logger::get_logger()->info("receiver: closed");
     });
 
-    server_->received.connect([this](auto&& buffer) {
+    server_->received.connect([this](auto&& buffer, auto&& sender_endpoint) {
       if (buffer) {
         if (buffer->empty()) {
           return;

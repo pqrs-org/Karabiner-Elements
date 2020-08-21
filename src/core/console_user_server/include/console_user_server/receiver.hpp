@@ -79,7 +79,7 @@ public:
         });
       });
 
-      server_->received.connect([this](auto&& buffer) {
+      server_->received.connect([this](auto&& buffer, auto&& sender_endpoint) {
         if (buffer) {
           if (buffer->empty()) {
             return;
