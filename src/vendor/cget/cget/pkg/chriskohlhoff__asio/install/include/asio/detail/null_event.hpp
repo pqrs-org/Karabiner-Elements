@@ -55,6 +55,12 @@ public:
   {
   }
 
+  // Unlock the mutex and signal one waiter who may destroy us.
+  template <typename Lock>
+  void unlock_and_signal_one_for_destruction(Lock&)
+  {
+  }
+
   // If there's a waiter, unlock the mutex and signal it.
   template <typename Lock>
   bool maybe_unlock_and_signal_one(Lock&)

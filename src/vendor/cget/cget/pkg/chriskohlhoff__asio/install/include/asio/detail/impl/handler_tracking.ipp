@@ -73,11 +73,12 @@ struct handler_tracking::tracking_state
   static_mutex mutex_;
   uint64_t next_id_;
   tss_ptr<completion>* current_completion_;
+  tss_ptr<location>* current_location_;
 };
 
 handler_tracking::tracking_state* handler_tracking::get_state()
 {
-  static tracking_state state = { ASIO_STATIC_MUTEX_INIT, 1, 0 };
+  static tracking_state state = { ASIO_STATIC_MUTEX_INIT, 1, 0, 0 };
   return &state;
 }
 
@@ -90,6 +91,25 @@ void handler_tracking::init()
   static_mutex::scoped_lock lock(state->mutex_);
   if (state->current_completion_ == 0)
     state->current_completion_ = new tss_ptr<completion>;
+  if (state->current_location_ == 0)
+    state->current_location_ = new tss_ptr<location>;
+}
+
+handler_tracking::location::location(
+    const char* file, int line, const char* func)
+  : file_(file),
+    line_(line),
+    func_(func),
+    next_(*get_state()->current_location_)
+{
+  if (file_)
+    *get_state()->current_location_ = this;
+}
+
+handler_tracking::location::~location()
+{
+  if (file_)
+    *get_state()->current_location_ = next_;
 }
 
 void handler_tracking::creation(execution_context&,
@@ -108,6 +128,24 @@ void handler_tracking::creation(execution_context&,
   uint64_t current_id = 0;
   if (completion* current_completion = *state->current_completion_)
     current_id = current_completion->id_;
+
+  for (location* current_location = *state->current_location_;
+      current_location; current_location = current_location->next_)
+  {
+    write_line(
+#if defined(ASIO_WINDOWS)
+        "@asio|%I64u.%06I64u|%I64u^%I64u|%s%s%.80s%s(%.80s:%d)\n",
+#else // defined(ASIO_WINDOWS)
+        "@asio|%llu.%06llu|%llu^%llu|%s%s%.80s%s(%.80s:%d)\n",
+#endif // defined(ASIO_WINDOWS)
+        timestamp.seconds, timestamp.microseconds,
+        current_id, h.id_,
+        current_location == *state->current_location_ ? "in " : "called from ",
+        current_location->func_ ? "'" : "",
+        current_location->func_ ? current_location->func_ : "",
+        current_location->func_ ? "' " : "",
+        current_location->file_, current_location->line_);
+  }
 
   write_line(
 #if defined(ASIO_WINDOWS)

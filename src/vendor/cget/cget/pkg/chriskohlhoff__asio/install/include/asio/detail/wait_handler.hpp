@@ -16,9 +16,9 @@
 #endif // defined(_MSC_VER) && (_MSC_VER >= 1200)
 
 #include "asio/detail/config.hpp"
+#include "asio/detail/bind_handler.hpp"
 #include "asio/detail/fenced_block.hpp"
 #include "asio/detail/handler_alloc_helpers.hpp"
-#include "asio/detail/handler_invoke_helpers.hpp"
 #include "asio/detail/handler_work.hpp"
 #include "asio/detail/memory.hpp"
 #include "asio/detail/wait_op.hpp"
@@ -34,12 +34,11 @@ class wait_handler : public wait_op
 public:
   ASIO_DEFINE_HANDLER_PTR(wait_handler);
 
-  wait_handler(Handler& h, const IoExecutor& ex)
+  wait_handler(Handler& h, const IoExecutor& io_ex)
     : wait_op(&wait_handler::do_complete),
       handler_(ASIO_MOVE_CAST(Handler)(h)),
-      io_executor_(ex)
+      work_(handler_, io_ex)
   {
-    handler_work<Handler, IoExecutor>::start(handler_, io_executor_);
   }
 
   static void do_complete(void* owner, operation* base,
@@ -49,9 +48,13 @@ public:
     // Take ownership of the handler object.
     wait_handler* h(static_cast<wait_handler*>(base));
     ptr p = { asio::detail::addressof(h->handler_), h, h };
-    handler_work<Handler, IoExecutor> w(h->handler_, h->io_executor_);
 
     ASIO_HANDLER_COMPLETION((*h));
+
+    // Take ownership of the operation's outstanding work.
+    handler_work<Handler, IoExecutor> w(
+        ASIO_MOVE_CAST2(handler_work<Handler, IoExecutor>)(
+          h->work_));
 
     // Make a copy of the handler so that the memory can be deallocated before
     // the upcall is made. Even if we're not about to make an upcall, a
@@ -76,7 +79,7 @@ public:
 
 private:
   Handler handler_;
-  IoExecutor io_executor_;
+  handler_work<Handler, IoExecutor> work_;
 };
 
 } // namespace detail

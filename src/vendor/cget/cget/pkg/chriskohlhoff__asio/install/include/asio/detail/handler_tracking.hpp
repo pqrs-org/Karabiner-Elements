@@ -87,6 +87,28 @@ public:
   // Initialise the tracking system.
   ASIO_DECL static void init();
 
+  class location
+  {
+  public:
+    // Constructor adds a location to the stack.
+    ASIO_DECL explicit location(const char* file,
+        int line, const char* func);
+
+    // Destructor removes a location from the stack.
+    ASIO_DECL ~location();
+
+  private:
+    // Disallow copying and assignment.
+    location(const location&) ASIO_DELETED;
+    location& operator=(const location&) ASIO_DELETED;
+
+    friend class handler_tracking;
+    const char* file_;
+    int line_;
+    const char* func_;
+    location* next_;
+  };
+
   // Record the creation of a tracked handler.
   ASIO_DECL static void creation(
       execution_context& context, tracked_handler& h,
@@ -175,6 +197,9 @@ private:
 # define ASIO_HANDLER_TRACKING_INIT \
   asio::detail::handler_tracking::init()
 
+# define ASIO_HANDLER_LOCATION(args) \
+  asio::detail::handler_tracking::location tracked_location args
+
 # define ASIO_HANDLER_CREATION(args) \
   asio::detail::handler_tracking::creation args
 
@@ -211,6 +236,7 @@ private:
 # define ASIO_INHERIT_TRACKED_HANDLER
 # define ASIO_ALSO_INHERIT_TRACKED_HANDLER
 # define ASIO_HANDLER_TRACKING_INIT (void)0
+# define ASIO_HANDLER_LOCATION(loc) (void)0
 # define ASIO_HANDLER_CREATION(args) (void)0
 # define ASIO_HANDLER_COMPLETION(args) (void)0
 # define ASIO_HANDLER_INVOCATION_BEGIN(args) (void)0

@@ -114,6 +114,9 @@ public:
     return thread_call_stack::contains(this) != 0;
   }
 
+  /// Capture the current exception so it can be rethrown from a run function.
+  ASIO_DECL void capture_current_exception();
+
   // Request invocation of the given operation and return immediately. Assumes
   // that work_started() has not yet been called for the operation.
   void post_immediate_completion(win_iocp_operation* op, bool)
@@ -221,7 +224,8 @@ private:
   // Dequeues at most one operation from the I/O completion port, and then
   // executes it. Returns the number of operations that were dequeued (i.e.
   // either 0 or 1).
-  ASIO_DECL size_t do_one(DWORD msec, asio::error_code& ec);
+  ASIO_DECL size_t do_one(DWORD msec,
+      win_iocp_thread_info& this_thread, asio::error_code& ec);
 
   // Helper to calculate the GetQueuedCompletionStatus timeout.
   ASIO_DECL static DWORD get_gqcs_timeout();

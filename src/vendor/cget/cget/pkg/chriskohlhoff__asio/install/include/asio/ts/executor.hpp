@@ -24,6 +24,7 @@
 #include "asio/executor_work_guard.hpp"
 #include "asio/system_executor.hpp"
 #include "asio/executor.hpp"
+#include "asio/any_io_executor.hpp"
 #include "asio/dispatch.hpp"
 #include "asio/post.hpp"
 #include "asio/defer.hpp"

@@ -19,6 +19,7 @@
 #include "asio/async_result.hpp"
 #include "asio/detail/type_traits.hpp"
 #include "asio/execution_context.hpp"
+#include "asio/execution/executor.hpp"
 #include "asio/is_executor.hpp"
 
 #include "asio/detail/push_options.hpp"
@@ -100,7 +101,9 @@ ASIO_INITFN_AUTO_RESULT_TYPE(CompletionToken, void()) defer(
     const Executor& ex,
     ASIO_MOVE_ARG(CompletionToken) token
       ASIO_DEFAULT_COMPLETION_TOKEN(Executor),
-    typename enable_if<is_executor<Executor>::value>::type* = 0);
+    typename enable_if<
+      execution::is_executor<Executor>::value || is_executor<Executor>::value
+    >::type* = 0);
 
 /// Submits a completion token or function object for execution.
 /**

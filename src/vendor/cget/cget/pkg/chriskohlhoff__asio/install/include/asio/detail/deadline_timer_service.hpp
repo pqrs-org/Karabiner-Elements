@@ -97,7 +97,7 @@ public:
     cancel(impl, ec);
   }
 
-  // Move-construct a new serial port implementation.
+  // Move-construct a new timer implementation.
   void move_construct(implementation_type& impl,
       implementation_type& other_impl)
   {
@@ -110,7 +110,7 @@ public:
     other_impl.might_have_pending_waits = false;
   }
 
-  // Move-assign from another serial port implementation.
+  // Move-assign from another timer implementation.
   void move_assign(implementation_type& impl,
       deadline_timer_service& other_service,
       implementation_type& other_impl)
@@ -127,6 +127,21 @@ public:
 
     impl.might_have_pending_waits = other_impl.might_have_pending_waits;
     other_impl.might_have_pending_waits = false;
+  }
+
+  // Move-construct a new timer implementation.
+  void converting_move_construct(implementation_type& impl,
+      deadline_timer_service&, implementation_type& other_impl)
+  {
+    move_construct(impl, other_impl);
+  }
+
+  // Move-assign from another timer implementation.
+  void converting_move_assign(implementation_type& impl,
+      deadline_timer_service& other_service,
+      implementation_type& other_impl)
+  {
+    move_assign(impl, other_service, other_impl);
   }
 
   // Cancel any asynchronous wait operations associated with the timer.

@@ -24,12 +24,6 @@
 namespace asio {
 namespace detail {
 
-template <typename>
-struct associated_allocator_check
-{
-  typedef void type;
-};
-
 template <typename T, typename E, typename = void>
 struct associated_allocator_impl
 {
@@ -43,7 +37,7 @@ struct associated_allocator_impl
 
 template <typename T, typename E>
 struct associated_allocator_impl<T, E,
-  typename associated_allocator_check<typename T::allocator_type>::type>
+  typename void_type<typename T::allocator_type>::type>
 {
   typedef typename T::allocator_type type;
 

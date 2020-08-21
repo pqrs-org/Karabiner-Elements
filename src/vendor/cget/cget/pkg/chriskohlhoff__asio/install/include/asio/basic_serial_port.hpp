@@ -22,6 +22,7 @@
   || defined(GENERATING_DOCUMENTATION)
 
 #include <string>
+#include "asio/any_io_executor.hpp"
 #include "asio/async_result.hpp"
 #include "asio/detail/handler_type_requirements.hpp"
 #include "asio/detail/io_object_impl.hpp"
@@ -30,7 +31,6 @@
 #include "asio/detail/type_traits.hpp"
 #include "asio/error.hpp"
 #include "asio/execution_context.hpp"
-#include "asio/executor.hpp"
 #include "asio/serial_port_base.hpp"
 #if defined(ASIO_HAS_IOCP)
 # include "asio/detail/win_iocp_serial_port_service.hpp"
@@ -55,7 +55,7 @@ namespace asio {
  * @e Distinct @e objects: Safe.@n
  * @e Shared @e objects: Unsafe.
  */
-template <typename Executor = executor>
+template <typename Executor = any_io_executor>
 class basic_serial_port
   : public serial_port_base
 {
@@ -849,8 +849,8 @@ private:
 
       detail::non_const_lvalue<WriteHandler> handler2(handler);
       self_->impl_.get_service().async_write_some(
-          self_->impl_.get_implementation(), buffers, handler2.value,
-          self_->impl_.get_implementation_executor());
+          self_->impl_.get_implementation(), buffers,
+          handler2.value, self_->impl_.get_executor());
     }
 
   private:
@@ -882,8 +882,8 @@ private:
 
       detail::non_const_lvalue<ReadHandler> handler2(handler);
       self_->impl_.get_service().async_read_some(
-          self_->impl_.get_implementation(), buffers, handler2.value,
-          self_->impl_.get_implementation_executor());
+          self_->impl_.get_implementation(), buffers,
+          handler2.value, self_->impl_.get_executor());
     }
 
   private:

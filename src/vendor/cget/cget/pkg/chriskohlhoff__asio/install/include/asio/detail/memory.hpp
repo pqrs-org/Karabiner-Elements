@@ -19,6 +19,7 @@
 #include <memory>
 
 #if !defined(ASIO_HAS_STD_SHARED_PTR)
+# include <boost/make_shared.hpp>
 # include <boost/shared_ptr.hpp>
 # include <boost/weak_ptr.hpp>
 #endif // !defined(ASIO_HAS_STD_SHARED_PTR)
@@ -31,9 +32,11 @@ namespace asio {
 namespace detail {
 
 #if defined(ASIO_HAS_STD_SHARED_PTR)
+using std::make_shared;
 using std::shared_ptr;
 using std::weak_ptr;
 #else // defined(ASIO_HAS_STD_SHARED_PTR)
+using boost::make_shared;
 using boost::shared_ptr;
 using boost::weak_ptr;
 #endif // defined(ASIO_HAS_STD_SHARED_PTR)

@@ -20,6 +20,7 @@
 #if defined(ASIO_HAS_POSIX_STREAM_DESCRIPTOR) \
   || defined(GENERATING_DOCUMENTATION)
 
+#include "asio/any_io_executor.hpp"
 #include "asio/async_result.hpp"
 #include "asio/detail/handler_type_requirements.hpp"
 #include "asio/detail/io_object_impl.hpp"
@@ -28,7 +29,6 @@
 #include "asio/detail/throw_error.hpp"
 #include "asio/error.hpp"
 #include "asio/execution_context.hpp"
-#include "asio/executor.hpp"
 #include "asio/posix/descriptor_base.hpp"
 
 #if defined(ASIO_HAS_MOVE)
@@ -49,7 +49,7 @@ namespace posix {
  * @e Distinct @e objects: Safe.@n
  * @e Shared @e objects: Unsafe.
  */
-template <typename Executor = executor>
+template <typename Executor = any_io_executor>
 class basic_descriptor
   : public descriptor_base
 {
@@ -677,8 +677,8 @@ private:
 
       detail::non_const_lvalue<WaitHandler> handler2(handler);
       self_->impl_.get_service().async_wait(
-          self_->impl_.get_implementation(), w, handler2.value,
-          self_->impl_.get_implementation_executor());
+          self_->impl_.get_implementation(), w,
+          handler2.value, self_->impl_.get_executor());
     }
 
   private:

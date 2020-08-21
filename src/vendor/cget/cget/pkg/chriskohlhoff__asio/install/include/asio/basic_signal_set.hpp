@@ -17,6 +17,7 @@
 
 #include "asio/detail/config.hpp"
 
+#include "asio/any_io_executor.hpp"
 #include "asio/async_result.hpp"
 #include "asio/detail/handler_type_requirements.hpp"
 #include "asio/detail/io_object_impl.hpp"
@@ -26,7 +27,6 @@
 #include "asio/detail/type_traits.hpp"
 #include "asio/error.hpp"
 #include "asio/execution_context.hpp"
-#include "asio/executor.hpp"
 
 namespace asio {
 
@@ -90,7 +90,7 @@ namespace asio {
  * that any signals registered using signal_set objects are unblocked in at
  * least one thread.
  */
-template <typename Executor = executor>
+template <typename Executor = any_io_executor>
 class basic_signal_set
 {
 public:
@@ -552,8 +552,8 @@ private:
 
       detail::non_const_lvalue<SignalHandler> handler2(handler);
       self_->impl_.get_service().async_wait(
-          self_->impl_.get_implementation(), handler2.value,
-          self_->impl_.get_implementation_executor());
+          self_->impl_.get_implementation(),
+          handler2.value, self_->impl_.get_executor());
     }
 
   private:

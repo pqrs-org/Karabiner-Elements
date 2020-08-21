@@ -16,9 +16,11 @@
 #endif // defined(_MSC_VER) && (_MSC_VER >= 1200)
 
 #include "asio/detail/config.hpp"
+#include "asio/detail/bind_handler.hpp"
 #include "asio/detail/fenced_block.hpp"
 #include "asio/detail/handler_alloc_helpers.hpp"
 #include "asio/detail/handler_invoke_helpers.hpp"
+#include "asio/detail/handler_work.hpp"
 #include "asio/detail/memory.hpp"
 #include "asio/detail/reactor_op.hpp"
 
@@ -33,13 +35,13 @@ class reactive_wait_op : public reactor_op
 public:
   ASIO_DEFINE_HANDLER_PTR(reactive_wait_op);
 
-  reactive_wait_op(Handler& handler, const IoExecutor& io_ex)
-    : reactor_op(&reactive_wait_op::do_perform,
+  reactive_wait_op(const asio::error_code& success_ec,
+      Handler& handler, const IoExecutor& io_ex)
+    : reactor_op(success_ec, &reactive_wait_op::do_perform,
         &reactive_wait_op::do_complete),
       handler_(ASIO_MOVE_CAST(Handler)(handler)),
-      io_executor_(io_ex)
+      work_(handler_, io_ex)
   {
-    handler_work<Handler, IoExecutor>::start(handler_, io_executor_);
   }
 
   static status do_perform(reactor_op*)
@@ -54,9 +56,13 @@ public:
     // Take ownership of the handler object.
     reactive_wait_op* o(static_cast<reactive_wait_op*>(base));
     ptr p = { asio::detail::addressof(o->handler_), o, o };
-    handler_work<Handler, IoExecutor> w(o->handler_, o->io_executor_);
 
     ASIO_HANDLER_COMPLETION((*o));
+
+    // Take ownership of the operation's outstanding work.
+    handler_work<Handler, IoExecutor> w(
+        ASIO_MOVE_CAST2(handler_work<Handler, IoExecutor>)(
+          o->work_));
 
     // Make a copy of the handler so that the memory can be deallocated before
     // the upcall is made. Even if we're not about to make an upcall, a
@@ -81,7 +87,7 @@ public:
 
 private:
   Handler handler_;
-  IoExecutor io_executor_;
+  handler_work<Handler, IoExecutor> work_;
 };
 
 } // namespace detail

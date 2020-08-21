@@ -32,7 +32,7 @@ namespace asio {
 #define ASIO_BASIC_RAW_SOCKET_FWD_DECL
 
 // Forward declaration with defaulted arguments.
-template <typename Protocol, typename Executor = executor>
+template <typename Protocol, typename Executor = any_io_executor>
 class basic_raw_socket;
 
 #endif // !defined(ASIO_BASIC_RAW_SOCKET_FWD_DECL)
@@ -1058,6 +1058,10 @@ public:
   }
 
 private:
+  // Disallow copying and assignment.
+  basic_raw_socket(const basic_raw_socket&) ASIO_DELETED;
+  basic_raw_socket& operator=(const basic_raw_socket&) ASIO_DELETED;
+
   class initiate_async_send
   {
   public:
@@ -1085,7 +1089,7 @@ private:
       detail::non_const_lvalue<WriteHandler> handler2(handler);
       self_->impl_.get_service().async_send(
           self_->impl_.get_implementation(), buffers, flags,
-          handler2.value, self_->impl_.get_implementation_executor());
+          handler2.value, self_->impl_.get_executor());
     }
 
   private:
@@ -1118,8 +1122,8 @@ private:
 
       detail::non_const_lvalue<WriteHandler> handler2(handler);
       self_->impl_.get_service().async_send_to(
-          self_->impl_.get_implementation(), buffers, destination, flags,
-          handler2.value, self_->impl_.get_implementation_executor());
+          self_->impl_.get_implementation(), buffers, destination,
+          flags, handler2.value, self_->impl_.get_executor());
     }
 
   private:
@@ -1153,7 +1157,7 @@ private:
       detail::non_const_lvalue<ReadHandler> handler2(handler);
       self_->impl_.get_service().async_receive(
           self_->impl_.get_implementation(), buffers, flags,
-          handler2.value, self_->impl_.get_implementation_executor());
+          handler2.value, self_->impl_.get_executor());
     }
 
   private:
@@ -1186,8 +1190,8 @@ private:
 
       detail::non_const_lvalue<ReadHandler> handler2(handler);
       self_->impl_.get_service().async_receive_from(
-          self_->impl_.get_implementation(), buffers, *sender_endpoint, flags,
-          handler2.value, self_->impl_.get_implementation_executor());
+          self_->impl_.get_implementation(), buffers, *sender_endpoint,
+          flags, handler2.value, self_->impl_.get_executor());
     }
 
   private:

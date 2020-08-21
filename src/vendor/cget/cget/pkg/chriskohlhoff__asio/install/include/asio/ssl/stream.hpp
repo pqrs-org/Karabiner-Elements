@@ -109,6 +109,21 @@ public:
   }
 #endif // defined(ASIO_HAS_MOVE) || defined(GENERATING_DOCUMENTATION)
 
+#if defined(ASIO_HAS_MOVE) || defined(GENERATING_DOCUMENTATION)
+  /// Move-construct a stream from another.
+  /**
+   * @param other The other stream object from which the move will occur. Must
+   * have no outstanding asynchronous operations associated with it. Following
+   * the move, @c other has a valid but unspecified state where the only safe
+   * operation is destruction.
+   */
+  stream(stream&& other)
+    : next_layer_(ASIO_MOVE_CAST(Stream)(other.next_layer_)),
+      core_(ASIO_MOVE_CAST(detail::stream_core)(other.core_))
+  {
+  }
+#endif // defined(ASIO_HAS_MOVE) || defined(GENERATING_DOCUMENTATION)
+
   /// Destructor.
   /**
    * @note A @c stream object must not be destroyed while there are pending

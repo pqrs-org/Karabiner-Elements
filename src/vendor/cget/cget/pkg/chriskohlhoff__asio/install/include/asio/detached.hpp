@@ -17,6 +17,7 @@
 
 #include "asio/detail/config.hpp"
 #include <memory>
+#include "asio/detail/type_traits.hpp"
 
 #include "asio/detail/push_options.hpp"
 
@@ -40,6 +41,55 @@ public:
   /// Constructor. 
   ASIO_CONSTEXPR detached_t()
   {
+  }
+
+  /// Adapts an executor to add the @c detached_t completion token as the
+  /// default.
+  template <typename InnerExecutor>
+  struct executor_with_default : InnerExecutor
+  {
+    /// Specify @c detached_t as the default completion token type.
+    typedef detached_t default_completion_token_type;
+
+    /// Construct the adapted executor from the inner executor type.
+    executor_with_default(const InnerExecutor& ex) ASIO_NOEXCEPT
+      : InnerExecutor(ex)
+    {
+    }
+
+    /// Convert the specified executor to the inner executor type, then use
+    /// that to construct the adapted executor.
+    template <typename OtherExecutor>
+    executor_with_default(const OtherExecutor& ex,
+        typename enable_if<
+          is_convertible<OtherExecutor, InnerExecutor>::value
+        >::type* = 0) ASIO_NOEXCEPT
+      : InnerExecutor(ex)
+    {
+    }
+  };
+
+  /// Type alias to adapt an I/O object to use @c detached_t as its
+  /// default completion token type.
+#if defined(ASIO_HAS_ALIAS_TEMPLATES) \
+  || defined(GENERATING_DOCUMENTATION)
+  template <typename T>
+  using as_default_on_t = typename T::template rebind_executor<
+      executor_with_default<typename T::executor_type> >::other;
+#endif // defined(ASIO_HAS_ALIAS_TEMPLATES)
+       //   || defined(GENERATING_DOCUMENTATION)
+
+  /// Function helper to adapt an I/O object to use @c detached_t as its
+  /// default completion token type.
+  template <typename T>
+  static typename decay<T>::type::template rebind_executor<
+      executor_with_default<typename decay<T>::type::executor_type>
+    >::other
+  as_default_on(ASIO_MOVE_ARG(T) object)
+  {
+    return typename decay<T>::type::template rebind_executor<
+        executor_with_default<typename decay<T>::type::executor_type>
+      >::other(ASIO_MOVE_CAST(T)(object));
   }
 };
 

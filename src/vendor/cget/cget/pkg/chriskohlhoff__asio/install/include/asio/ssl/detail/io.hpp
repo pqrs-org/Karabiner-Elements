@@ -17,6 +17,7 @@
 
 #include "asio/detail/config.hpp"
 
+#include "asio/detail/handler_tracking.hpp"
 #include "asio/ssl/detail/engine.hpp"
 #include "asio/ssl/detail/stream_core.hpp"
 #include "asio/write.hpp"
@@ -162,6 +163,9 @@ public:
             // Prevent other read operations from being started.
             core_.pending_read_.expires_at(core_.pos_infin());
 
+            ASIO_HANDLER_LOCATION((
+                  __FILE__, __LINE__, Operation::tracking_name()));
+
             // Start reading some data from the underlying transport.
             next_layer_.async_read_some(
                 asio::buffer(core_.input_buffer_),
@@ -169,6 +173,9 @@ public:
           }
           else
           {
+            ASIO_HANDLER_LOCATION((
+                  __FILE__, __LINE__, Operation::tracking_name()));
+
             // Wait until the current read operation completes.
             core_.pending_read_.async_wait(ASIO_MOVE_CAST(io_op)(*this));
           }
@@ -189,6 +196,9 @@ public:
             // Prevent other write operations from being started.
             core_.pending_write_.expires_at(core_.pos_infin());
 
+            ASIO_HANDLER_LOCATION((
+                  __FILE__, __LINE__, Operation::tracking_name()));
+
             // Start writing all the data to the underlying transport.
             asio::async_write(next_layer_,
                 core_.engine_.get_output(core_.output_buffer_),
@@ -196,6 +206,9 @@ public:
           }
           else
           {
+            ASIO_HANDLER_LOCATION((
+                  __FILE__, __LINE__, Operation::tracking_name()));
+
             // Wait until the current write operation completes.
             core_.pending_write_.async_wait(ASIO_MOVE_CAST(io_op)(*this));
           }
@@ -213,6 +226,9 @@ public:
           // read so the handler runs "as-if" posted using io_context::post().
           if (start)
           {
+            ASIO_HANDLER_LOCATION((
+                  __FILE__, __LINE__, Operation::tracking_name()));
+
             next_layer_.async_read_some(
                 asio::buffer(core_.input_buffer_, 0),
                 ASIO_MOVE_CAST(io_op)(*this));
@@ -293,19 +309,29 @@ public:
 };
 
 template <typename Stream, typename Operation, typename Handler>
-inline void* asio_handler_allocate(std::size_t size,
+inline asio_handler_allocate_is_deprecated
+asio_handler_allocate(std::size_t size,
     io_op<Stream, Operation, Handler>* this_handler)
 {
+#if defined(ASIO_NO_DEPRECATED)
+  asio_handler_alloc_helpers::allocate(size, this_handler->handler_);
+  return asio_handler_allocate_is_no_longer_used();
+#else // defined(ASIO_NO_DEPRECATED)
   return asio_handler_alloc_helpers::allocate(
       size, this_handler->handler_);
+#endif // defined(ASIO_NO_DEPRECATED)
 }
 
 template <typename Stream, typename Operation, typename Handler>
-inline void asio_handler_deallocate(void* pointer, std::size_t size,
+inline asio_handler_deallocate_is_deprecated
+asio_handler_deallocate(void* pointer, std::size_t size,
     io_op<Stream, Operation, Handler>* this_handler)
 {
   asio_handler_alloc_helpers::deallocate(
       pointer, size, this_handler->handler_);
+#if defined(ASIO_NO_DEPRECATED)
+  return asio_handler_deallocate_is_no_longer_used();
+#endif // defined(ASIO_NO_DEPRECATED)
 }
 
 template <typename Stream, typename Operation, typename Handler>
@@ -318,20 +344,28 @@ inline bool asio_handler_is_continuation(
 
 template <typename Function, typename Stream,
     typename Operation, typename Handler>
-inline void asio_handler_invoke(Function& function,
+inline asio_handler_invoke_is_deprecated
+asio_handler_invoke(Function& function,
     io_op<Stream, Operation, Handler>* this_handler)
 {
   asio_handler_invoke_helpers::invoke(
       function, this_handler->handler_);
+#if defined(ASIO_NO_DEPRECATED)
+  return asio_handler_invoke_is_no_longer_used();
+#endif // defined(ASIO_NO_DEPRECATED)
 }
 
 template <typename Function, typename Stream,
     typename Operation, typename Handler>
-inline void asio_handler_invoke(const Function& function,
+inline asio_handler_invoke_is_deprecated
+asio_handler_invoke(const Function& function,
     io_op<Stream, Operation, Handler>* this_handler)
 {
   asio_handler_invoke_helpers::invoke(
       function, this_handler->handler_);
+#if defined(ASIO_NO_DEPRECATED)
+  return asio_handler_invoke_is_no_longer_used();
+#endif // defined(ASIO_NO_DEPRECATED)
 }
 
 template <typename Stream, typename Operation, typename Handler>

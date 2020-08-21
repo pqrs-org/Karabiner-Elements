@@ -6,7 +6,7 @@
 
 // `pqrs::local_datagram::server` can be used safely in a multi-threaded environment.
 
-#include "impl/server.hpp"
+#include "impl/server_impl.hpp"
 #include <nod/nod.hpp>
 #include <pqrs/dispatcher.hpp>
 
@@ -19,17 +19,18 @@ public:
   nod::signal<void(void)> bound;
   nod::signal<void(const asio::error_code&)> bind_failed;
   nod::signal<void(void)> closed;
-  nod::signal<void(std::shared_ptr<std::vector<uint8_t>>)> received;
+  nod::signal<void(std::shared_ptr<std::vector<uint8_t>>, std::shared_ptr<asio::local::datagram_protocol::endpoint>)> received;
 
   // Methods
 
   server(const server&) = delete;
 
   server(std::weak_ptr<dispatcher::dispatcher> weak_dispatcher,
-         const std::string& path,
+         const std::string& server_socket_file_path,
          size_t buffer_size) : dispatcher_client(weak_dispatcher),
-                               path_(path),
+                               server_socket_file_path_(server_socket_file_path),
                                buffer_size_(buffer_size),
+                               server_send_entries_(std::make_shared<std::deque<std::shared_ptr<impl::send_entry>>>()),
                                reconnect_timer_(*this) {
   }
 
@@ -61,6 +62,28 @@ public:
     });
   }
 
+  void async_send(const std::vector<uint8_t>& v,
+                  std::shared_ptr<asio::local::datagram_protocol::endpoint> destination_endpoint,
+                  const std::function<void(void)>& processed = nullptr) {
+    auto entry = std::make_shared<impl::send_entry>(impl::send_entry::type::user_data,
+                                                    v,
+                                                    destination_endpoint,
+                                                    processed);
+    async_send(entry);
+  }
+
+  void async_send(const uint8_t* p,
+                  size_t length,
+                  std::shared_ptr<asio::local::datagram_protocol::endpoint> destination_endpoint,
+                  const std::function<void(void)>& processed = nullptr) {
+    auto entry = std::make_shared<impl::send_entry>(impl::send_entry::type::user_data,
+                                                    p,
+                                                    length,
+                                                    destination_endpoint,
+                                                    processed);
+    async_send(entry);
+  }
+
 private:
   // This method is executed in the dispatcher thread.
   void stop(void) {
@@ -72,19 +95,20 @@ private:
 
   // This method is executed in the dispatcher thread.
   void bind(void) {
-    if (impl_server_) {
+    if (server_impl_) {
       return;
     }
 
-    impl_server_ = std::make_unique<impl::server>(weak_dispatcher_);
+    server_impl_ = std::make_unique<impl::server_impl>(weak_dispatcher_,
+                                                       server_send_entries_);
 
-    impl_server_->bound.connect([this] {
+    server_impl_->bound.connect([this] {
       enqueue_to_dispatcher([this] {
         bound();
       });
     });
 
-    impl_server_->bind_failed.connect([this](auto&& error_code) {
+    server_impl_->bind_failed.connect([this](auto&& error_code) {
       enqueue_to_dispatcher([this, error_code] {
         bind_failed(error_code);
       });
@@ -93,7 +117,7 @@ private:
       start_reconnect_timer();
     });
 
-    impl_server_->closed.connect([this] {
+    server_impl_->closed.connect([this] {
       enqueue_to_dispatcher([this] {
         closed();
       });
@@ -102,24 +126,24 @@ private:
       start_reconnect_timer();
     });
 
-    impl_server_->received.connect([this](auto&& buffer) {
-      enqueue_to_dispatcher([this, buffer] {
-        received(buffer);
+    server_impl_->received.connect([this](auto&& buffer, auto&& sender_endpoint) {
+      enqueue_to_dispatcher([this, buffer, sender_endpoint] {
+        received(buffer, sender_endpoint);
       });
     });
 
-    impl_server_->async_bind(path_,
+    server_impl_->async_bind(server_socket_file_path_,
                              buffer_size_,
                              server_check_interval_);
   }
 
   // This method is executed in the dispatcher thread.
   void close(void) {
-    if (!impl_server_) {
+    if (!server_impl_) {
       return;
     }
 
-    impl_server_ = nullptr;
+    server_impl_ = nullptr;
   }
 
   // This method is executed in the dispatcher thread.
@@ -143,11 +167,31 @@ private:
     }
   }
 
-  std::string path_;
+  void async_send(std::shared_ptr<impl::send_entry> entry) {
+    enqueue_to_dispatcher([this, entry] {
+      if (server_impl_) {
+        server_impl_->async_send(entry);
+      } else {
+        //
+        // Call `processed`
+        //
+
+        auto&& processed = entry->get_processed();
+        if (processed) {
+          enqueue_to_dispatcher([processed] {
+            processed();
+          });
+        }
+      }
+    });
+  }
+
+  std::string server_socket_file_path_;
   size_t buffer_size_;
   std::optional<std::chrono::milliseconds> server_check_interval_;
   std::optional<std::chrono::milliseconds> reconnect_interval_;
-  std::unique_ptr<impl::server> impl_server_;
+  std::shared_ptr<std::deque<std::shared_ptr<impl::send_entry>>> server_send_entries_;
+  std::unique_ptr<impl::server_impl> server_impl_;
   dispatcher::extra::timer reconnect_timer_;
 };
 } // namespace local_datagram

@@ -19,16 +19,26 @@
 
 #if defined(ASIO_HAS_CO_AWAIT) || defined(GENERATING_DOCUMENTATION)
 
-#include <experimental/coroutine>
-#include "asio/executor.hpp"
+#if defined(ASIO_HAS_STD_COROUTINE)
+# include <coroutine>
+#else // defined(ASIO_HAS_STD_COROUTINE)
+# include <experimental/coroutine>
+#endif // defined(ASIO_HAS_STD_COROUTINE)
+
+#include "asio/any_io_executor.hpp"
 
 #include "asio/detail/push_options.hpp"
 
 namespace asio {
 namespace detail {
 
+#if defined(ASIO_HAS_STD_COROUTINE)
+using std::coroutine_handle;
+using std::suspend_always;
+#else // defined(ASIO_HAS_STD_COROUTINE)
 using std::experimental::coroutine_handle;
 using std::experimental::suspend_always;
+#endif // defined(ASIO_HAS_STD_COROUTINE)
 
 template <typename> class awaitable_thread;
 template <typename, typename> class awaitable_frame;
@@ -36,7 +46,7 @@ template <typename, typename> class awaitable_frame;
 } // namespace detail
 
 /// The return type of a coroutine or asynchronous operation.
-template <typename T, typename Executor = executor>
+template <typename T, typename Executor = any_io_executor>
 class awaitable
 {
 public:
@@ -90,7 +100,7 @@ public:
   // Support for co_await keyword.
   T await_resume()
   {
-    return frame_->get();
+    return awaitable(static_cast<awaitable&&>(*this)).frame_->get();
   }
 
 #endif // !defined(GENERATING_DOCUMENTATION)

@@ -28,6 +28,11 @@ namespace detail {
 class shutdown_op
 {
 public:
+  static ASIO_CONSTEXPR const char* tracking_name()
+  {
+    return "ssl::stream<>::async_shutdown";
+  }
+
   engine::want operator()(engine& eng,
       asio::error_code& ec,
       std::size_t& bytes_transferred) const

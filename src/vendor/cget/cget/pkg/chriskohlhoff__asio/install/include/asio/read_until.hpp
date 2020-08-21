@@ -114,7 +114,7 @@ struct is_match_condition
  * @par Example
  * To read data into a @c std::string until a newline is encountered:
  * @code std::string data;
- * std::string n = asio::read_until(s,
+ * std::size_t n = asio::read_until(s,
  *     asio::dynamic_buffer(data), '\n');
  * std::string line = data.substr(0, n);
  * data.erase(0, n); @endcode
@@ -216,7 +216,7 @@ std::size_t read_until(SyncReadStream& s,
  * @par Example
  * To read data into a @c std::string until a CR-LF sequence is encountered:
  * @code std::string data;
- * std::string n = asio::read_until(s,
+ * std::size_t n = asio::read_until(s,
  *     asio::dynamic_buffer(data), "\r\n");
  * std::string line = data.substr(0, n);
  * data.erase(0, n); @endcode
@@ -327,7 +327,7 @@ std::size_t read_until(SyncReadStream& s,
  * @par Example
  * To read data into a @c std::string until a CR-LF sequence is encountered:
  * @code std::string data;
- * std::string n = asio::read_until(s,
+ * std::size_t n = asio::read_until(s,
  *     asio::dynamic_buffer(data), boost::regex("\r\n"));
  * std::string line = data.substr(0, n);
  * data.erase(0, n); @endcode
@@ -1055,7 +1055,7 @@ std::size_t read_until(SyncReadStream& s,
  * @par Example
  * To read data into a @c std::string until a newline is encountered:
  * @code std::string data;
- * std::string n = asio::read_until(s,
+ * std::size_t n = asio::read_until(s,
  *     asio::dynamic_buffer(data), '\n');
  * std::string line = data.substr(0, n);
  * data.erase(0, n); @endcode
@@ -1153,7 +1153,7 @@ std::size_t read_until(SyncReadStream& s, DynamicBuffer_v2 buffers,
  * @par Example
  * To read data into a @c std::string until a CR-LF sequence is encountered:
  * @code std::string data;
- * std::string n = asio::read_until(s,
+ * std::size_t n = asio::read_until(s,
  *     asio::dynamic_buffer(data), "\r\n");
  * std::string line = data.substr(0, n);
  * data.erase(0, n); @endcode
@@ -1259,7 +1259,7 @@ std::size_t read_until(SyncReadStream& s, DynamicBuffer_v2 buffers,
  * @par Example
  * To read data into a @c std::string until a CR-LF sequence is encountered:
  * @code std::string data;
- * std::string n = asio::read_until(s,
+ * std::size_t n = asio::read_until(s,
  *     asio::dynamic_buffer(data), boost::regex("\r\n"));
  * std::string line = data.substr(0, n);
  * data.erase(0, n); @endcode

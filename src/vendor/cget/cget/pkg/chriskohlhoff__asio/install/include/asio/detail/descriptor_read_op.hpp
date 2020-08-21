@@ -36,9 +36,11 @@ template <typename MutableBufferSequence>
 class descriptor_read_op_base : public reactor_op
 {
 public:
-  descriptor_read_op_base(int descriptor,
-      const MutableBufferSequence& buffers, func_type complete_func)
-    : reactor_op(&descriptor_read_op_base::do_perform, complete_func),
+  descriptor_read_op_base(const asio::error_code& success_ec,
+      int descriptor, const MutableBufferSequence& buffers,
+      func_type complete_func)
+    : reactor_op(success_ec,
+        &descriptor_read_op_base::do_perform, complete_func),
       descriptor_(descriptor),
       buffers_(buffers)
   {
@@ -48,12 +50,24 @@ public:
   {
     descriptor_read_op_base* o(static_cast<descriptor_read_op_base*>(base));
 
-    buffer_sequence_adapter<asio::mutable_buffer,
-        MutableBufferSequence> bufs(o->buffers_);
+    typedef buffer_sequence_adapter<asio::mutable_buffer,
+        MutableBufferSequence> bufs_type;
 
-    status result = descriptor_ops::non_blocking_read(o->descriptor_,
-        bufs.buffers(), bufs.count(), o->ec_, o->bytes_transferred_)
-      ? done : not_done;
+    status result;
+    if (bufs_type::is_single_buffer)
+    {
+      result = descriptor_ops::non_blocking_read1(o->descriptor_,
+          bufs_type::first(o->buffers_).data(),
+          bufs_type::first(o->buffers_).size(),
+          o->ec_, o->bytes_transferred_) ? done : not_done;
+    }
+    else
+    {
+      bufs_type bufs(o->buffers_);
+      result = descriptor_ops::non_blocking_read(o->descriptor_,
+          bufs.buffers(), bufs.count(), o->ec_, o->bytes_transferred_)
+        ? done : not_done;
+    }
 
     ASIO_HANDLER_REACTOR_OPERATION((*o, "non_blocking_read",
           o->ec_, o->bytes_transferred_));
@@ -73,14 +87,14 @@ class descriptor_read_op
 public:
   ASIO_DEFINE_HANDLER_PTR(descriptor_read_op);
 
-  descriptor_read_op(int descriptor, const MutableBufferSequence& buffers,
+  descriptor_read_op(const asio::error_code& success_ec,
+      int descriptor, const MutableBufferSequence& buffers,
       Handler& handler, const IoExecutor& io_ex)
-    : descriptor_read_op_base<MutableBufferSequence>(
+    : descriptor_read_op_base<MutableBufferSequence>(success_ec,
         descriptor, buffers, &descriptor_read_op::do_complete),
       handler_(ASIO_MOVE_CAST(Handler)(handler)),
-      io_executor_(io_ex)
+      work_(handler_, io_ex)
   {
-    handler_work<Handler, IoExecutor>::start(handler_, io_executor_);
   }
 
   static void do_complete(void* owner, operation* base,
@@ -90,9 +104,13 @@ public:
     // Take ownership of the handler object.
     descriptor_read_op* o(static_cast<descriptor_read_op*>(base));
     ptr p = { asio::detail::addressof(o->handler_), o, o };
-    handler_work<Handler, IoExecutor> w(o->handler_, o->io_executor_);
 
     ASIO_HANDLER_COMPLETION((*o));
+
+    // Take ownership of the operation's outstanding work.
+    handler_work<Handler, IoExecutor> w(
+        ASIO_MOVE_CAST2(handler_work<Handler, IoExecutor>)(
+          o->work_));
 
     // Make a copy of the handler so that the memory can be deallocated before
     // the upcall is made. Even if we're not about to make an upcall, a
@@ -117,7 +135,7 @@ public:
 
 private:
   Handler handler_;
-  IoExecutor io_executor_;
+  handler_work<Handler, IoExecutor> work_;
 };
 
 } // namespace detail

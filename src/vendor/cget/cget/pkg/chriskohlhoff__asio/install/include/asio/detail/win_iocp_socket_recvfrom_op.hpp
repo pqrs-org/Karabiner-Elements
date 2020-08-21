@@ -24,6 +24,7 @@
 #include "asio/detail/fenced_block.hpp"
 #include "asio/detail/handler_alloc_helpers.hpp"
 #include "asio/detail/handler_invoke_helpers.hpp"
+#include "asio/detail/handler_work.hpp"
 #include "asio/detail/memory.hpp"
 #include "asio/detail/operation.hpp"
 #include "asio/detail/socket_ops.hpp"
@@ -51,9 +52,8 @@ public:
       cancel_token_(cancel_token),
       buffers_(buffers),
       handler_(ASIO_MOVE_CAST(Handler)(handler)),
-      io_executor_(io_ex)
+      work_(handler_, io_ex)
   {
-    handler_work<Handler, IoExecutor>::start(handler_, io_executor_);
   }
 
   int& endpoint_size()
@@ -71,9 +71,13 @@ public:
     win_iocp_socket_recvfrom_op* o(
         static_cast<win_iocp_socket_recvfrom_op*>(base));
     ptr p = { asio::detail::addressof(o->handler_), o, o };
-    handler_work<Handler, IoExecutor> w(o->handler_, o->io_executor_);
 
     ASIO_HANDLER_COMPLETION((*o));
+
+    // Take ownership of the operation's outstanding work.
+    handler_work<Handler, IoExecutor> w(
+        ASIO_MOVE_CAST2(handler_work<Handler, IoExecutor>)(
+          o->work_));
 
 #if defined(ASIO_ENABLE_BUFFER_DEBUGGING)
     // Check whether buffers are still valid.
@@ -116,7 +120,7 @@ private:
   socket_ops::weak_cancel_token_type cancel_token_;
   MutableBufferSequence buffers_;
   Handler handler_;
-  IoExecutor io_executor_;
+  handler_work<Handler, IoExecutor> work_;
 };
 
 } // namespace detail

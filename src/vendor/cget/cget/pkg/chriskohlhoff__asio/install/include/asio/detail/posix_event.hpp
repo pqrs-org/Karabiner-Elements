@@ -19,6 +19,7 @@
 
 #if defined(ASIO_HAS_PTHREADS)
 
+#include <cstddef>
 #include <pthread.h>
 #include "asio/detail/assert.hpp"
 #include "asio/detail/noncopyable.hpp"
@@ -68,6 +69,18 @@ public:
     lock.unlock();
     if (have_waiters)
       ::pthread_cond_signal(&cond_); // Ignore EINVAL.
+  }
+
+  // Unlock the mutex and signal one waiter who may destroy us.
+  template <typename Lock>
+  void unlock_and_signal_one_for_destruction(Lock& lock)
+  {
+    ASIO_ASSERT(lock.locked());
+    state_ |= 1;
+    bool have_waiters = (state_ > 1);
+    if (have_waiters)
+      ::pthread_cond_signal(&cond_); // Ignore EINVAL.
+    lock.unlock();
   }
 
   // If there's a waiter, unlock the mutex and signal it.

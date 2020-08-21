@@ -17,6 +17,7 @@
 
 #include "asio/detail/config.hpp"
 #include "asio/detail/type_traits.hpp"
+#include "asio/execution/executor.hpp"
 #include "asio/is_executor.hpp"
 #include "asio/system_executor.hpp"
 
@@ -25,18 +26,14 @@
 namespace asio {
 namespace detail {
 
-template <typename>
-struct associated_executor_check
-{
-  typedef void type;
-};
-
 template <typename T, typename E, typename = void>
 struct associated_executor_impl
 {
+  typedef void asio_associated_executor_is_unspecialised;
+
   typedef E type;
 
-  static type get(const T&, const E& e) ASIO_NOEXCEPT
+  static type get(const T&, const E& e = E()) ASIO_NOEXCEPT
   {
     return e;
   }
@@ -44,11 +41,11 @@ struct associated_executor_impl
 
 template <typename T, typename E>
 struct associated_executor_impl<T, E,
-  typename associated_executor_check<typename T::executor_type>::type>
+  typename void_type<typename T::executor_type>::type>
 {
   typedef typename T::executor_type type;
 
-  static type get(const T& t, const E&) ASIO_NOEXCEPT
+  static type get(const T& t, const E& = E()) ASIO_NOEXCEPT
   {
     return t.get_executor();
   }
@@ -77,22 +74,20 @@ struct associated_executor_impl<T, E,
  */
 template <typename T, typename Executor = system_executor>
 struct associated_executor
+#if !defined(GENERATING_DOCUMENTATION)
+  : detail::associated_executor_impl<T, Executor>
+#endif // !defined(GENERATING_DOCUMENTATION)
 {
+#if defined(GENERATING_DOCUMENTATION)
   /// If @c T has a nested type @c executor_type, <tt>T::executor_type</tt>.
   /// Otherwise @c Executor.
-#if defined(GENERATING_DOCUMENTATION)
   typedef see_below type;
-#else // defined(GENERATING_DOCUMENTATION)
-  typedef typename detail::associated_executor_impl<T, Executor>::type type;
-#endif // defined(GENERATING_DOCUMENTATION)
 
   /// If @c T has a nested type @c executor_type, returns
   /// <tt>t.get_executor()</tt>. Otherwise returns @c ex.
   static type get(const T& t,
-      const Executor& ex = Executor()) ASIO_NOEXCEPT
-  {
-    return detail::associated_executor_impl<T, Executor>::get(t, ex);
-  }
+      const Executor& ex = Executor()) ASIO_NOEXCEPT;
+#endif // defined(GENERATING_DOCUMENTATION)
 };
 
 /// Helper function to obtain an object's associated executor.
@@ -113,8 +108,9 @@ get_associated_executor(const T& t) ASIO_NOEXCEPT
 template <typename T, typename Executor>
 inline typename associated_executor<T, Executor>::type
 get_associated_executor(const T& t, const Executor& ex,
-    typename enable_if<is_executor<
-      Executor>::value>::type* = 0) ASIO_NOEXCEPT
+    typename enable_if<
+      is_executor<Executor>::value || execution::is_executor<Executor>::value
+    >::type* = 0) ASIO_NOEXCEPT
 {
   return associated_executor<T, Executor>::get(t, ex);
 }
@@ -142,6 +138,27 @@ using associated_executor_t = typename associated_executor<T, Executor>::type;
 
 #endif // defined(ASIO_HAS_ALIAS_TEMPLATES)
 
+namespace detail {
+
+template <typename T, typename E, typename = void>
+struct associated_executor_forwarding_base
+{
+};
+
+template <typename T, typename E>
+struct associated_executor_forwarding_base<T, E,
+    typename enable_if<
+      is_same<
+        typename associated_executor<T,
+          E>::asio_associated_executor_is_unspecialised,
+        void
+      >::value
+    >::type>
+{
+  typedef void asio_associated_executor_is_unspecialised;
+};
+
+} // namespace detail
 } // namespace asio
 
 #include "asio/detail/pop_options.hpp"

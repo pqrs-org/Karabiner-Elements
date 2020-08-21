@@ -512,12 +512,6 @@ ASIO_CONCEPT completion_token_for =
 
 namespace detail {
 
-template <typename>
-struct default_completion_token_check
-{
-  typedef void type;
-};
-
 template <typename T, typename = void>
 struct default_completion_token_impl
 {
@@ -526,8 +520,7 @@ struct default_completion_token_impl
 
 template <typename T>
 struct default_completion_token_impl<T,
-  typename default_completion_token_check<
-    typename T::default_completion_token_type>::type>
+  typename void_type<typename T::default_completion_token_type>::type>
 {
   typedef typename T::default_completion_token_type type;
 };

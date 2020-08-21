@@ -17,63 +17,87 @@
 
 #include "asio/detail/config.hpp"
 #include "asio/detail/handler_alloc_helpers.hpp"
+#include "asio/detail/memory.hpp"
 
 #include "asio/detail/push_options.hpp"
 
 namespace asio {
 namespace detail {
 
-class executor_function_base
+#if defined(ASIO_HAS_MOVE)
+
+// Lightweight, move-only function object wrapper.
+class executor_function
 {
 public:
-  void complete()
+  template <typename F, typename Alloc>
+  explicit executor_function(F f, const Alloc& a)
   {
-    func_(this, true);
+    // Allocate and construct an object to wrap the function.
+    typedef impl<F, Alloc> impl_type;
+    typename impl_type::ptr p = {
+      detail::addressof(a), impl_type::ptr::allocate(a), 0 };
+    impl_ = new (p.v) impl_type(ASIO_MOVE_CAST(F)(f), a);
+    p.v = 0;
   }
 
-  void destroy()
+  executor_function(executor_function&& other) ASIO_NOEXCEPT
+    : impl_(other.impl_)
   {
-    func_(this, false);
+    other.impl_ = 0;
   }
 
-protected:
-  typedef void (*func_type)(executor_function_base*, bool);
-
-  executor_function_base(func_type func)
-    : func_(func)
+  ~executor_function()
   {
+    if (impl_)
+      impl_->complete_(impl_, false);
   }
 
-  // Prevents deletion through this type.
-  ~executor_function_base()
+  void operator()()
   {
+    if (impl_)
+    {
+      impl_base* i = impl_;
+      impl_ = 0;
+      i->complete_(i, true);
+    }
   }
 
 private:
-  func_type func_;
-};
-
-template <typename Function, typename Alloc>
-class executor_function : public executor_function_base
-{
-public:
-  ASIO_DEFINE_TAGGED_HANDLER_ALLOCATOR_PTR(
-      thread_info_base::executor_function_tag, executor_function);
-
-  template <typename F>
-  executor_function(ASIO_MOVE_ARG(F) f, const Alloc& allocator)
-    : executor_function_base(&executor_function::do_complete),
-      function_(ASIO_MOVE_CAST(F)(f)),
-      allocator_(allocator)
+  // Base class for polymorphic function implementations.
+  struct impl_base
   {
-  }
+    void (*complete_)(impl_base*, bool);
+  };
 
-  static void do_complete(executor_function_base* base, bool call)
+  // Polymorphic function implementation.
+  template <typename Function, typename Alloc>
+  struct impl : impl_base
+  {
+    ASIO_DEFINE_TAGGED_HANDLER_ALLOCATOR_PTR(
+        thread_info_base::executor_function_tag, impl);
+
+    template <typename F>
+    impl(ASIO_MOVE_ARG(F) f, const Alloc& a)
+      : function_(ASIO_MOVE_CAST(F)(f)),
+        allocator_(a)
+    {
+      complete_ = &executor_function::complete<Function, Alloc>;
+    }
+
+    Function function_;
+    Alloc allocator_;
+  };
+
+  // Helper to complete function invocation.
+  template <typename Function, typename Alloc>
+  static void complete(impl_base* base, bool call)
   {
     // Take ownership of the function object.
-    executor_function* o(static_cast<executor_function*>(base));
-    Alloc allocator(o->allocator_);
-    ptr p = { detail::addressof(allocator), o, o };
+    impl<Function, Alloc>* i(static_cast<impl<Function, Alloc>*>(base));
+    Alloc allocator(i->allocator_);
+    typename impl<Function, Alloc>::ptr p = {
+      detail::addressof(allocator), i, i };
 
     // Make a copy of the function so that the memory can be deallocated before
     // the upcall is made. Even if we're not about to make an upcall, a
@@ -81,7 +105,7 @@ public:
     // associated with the function. Consequently, a local copy of the function
     // is required to ensure that any owning sub-object remains valid until
     // after we have deallocated the memory here.
-    Function function(ASIO_MOVE_CAST(Function)(o->function_));
+    Function function(ASIO_MOVE_CAST(Function)(i->function_));
     p.reset();
 
     // Make the upcall if required.
@@ -91,9 +115,84 @@ public:
     }
   }
 
+  impl_base* impl_;
+};
+
+#else // defined(ASIO_HAS_MOVE)
+
+// Not so lightweight, copyable function object wrapper.
+class executor_function
+{
+public:
+  template <typename F, typename Alloc>
+  explicit executor_function(const F& f, const Alloc&)
+    : impl_(new impl<typename decay<F>::type>(f))
+  {
+  }
+
+  void operator()()
+  {
+    impl_->complete_(impl_.get());
+  }
+
 private:
-  Function function_;
-  Alloc allocator_;
+  // Base class for polymorphic function implementations.
+  struct impl_base
+  {
+    void (*complete_)(impl_base*);
+  };
+
+  // Polymorphic function implementation.
+  template <typename F>
+  struct impl : impl_base
+  {
+    impl(const F& f)
+      : function_(f)
+    {
+      complete_ = &executor_function::complete<F>;
+    }
+
+    F function_;
+  };
+
+  // Helper to complete function invocation.
+  template <typename F>
+  static void complete(impl_base* i)
+  {
+    static_cast<impl<F>*>(i)->function_();
+  }
+
+  shared_ptr<impl_base> impl_;
+};
+
+#endif // defined(ASIO_HAS_MOVE)
+
+// Lightweight, non-owning, copyable function object wrapper.
+class executor_function_view
+{
+public:
+  template <typename F>
+  explicit executor_function_view(F& f) ASIO_NOEXCEPT
+    : complete_(&executor_function_view::complete<F>),
+      function_(&f)
+  {
+  }
+
+  void operator()()
+  {
+    complete_(function_);
+  }
+
+private:
+  // Helper to complete function invocation.
+  template <typename F>
+  static void complete(void* f)
+  {
+    (*static_cast<F*>(f))();
+  }
+
+  void (*complete_)(void*);
+  void* function_;
 };
 
 } // namespace detail

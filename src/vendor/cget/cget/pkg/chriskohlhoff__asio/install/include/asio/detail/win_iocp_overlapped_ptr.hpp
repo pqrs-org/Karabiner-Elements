@@ -20,8 +20,8 @@
 #if defined(ASIO_HAS_IOCP)
 
 #include "asio/io_context.hpp"
+#include "asio/query.hpp"
 #include "asio/detail/handler_alloc_helpers.hpp"
-#include "asio/detail/io_object_executor.hpp"
 #include "asio/detail/memory.hpp"
 #include "asio/detail/noncopyable.hpp"
 #include "asio/detail/win_iocp_overlapped_op.hpp"
@@ -77,13 +77,12 @@ public:
   template <typename Executor, typename Handler>
   void reset(const Executor& ex, Handler handler)
   {
-    const bool native = is_same<Executor, io_context::executor_type>::value;
     win_iocp_io_context* iocp_service = this->get_iocp_service(ex);
 
-    typedef win_iocp_overlapped_op<Handler, io_object_executor<Executor> > op;
+    typedef win_iocp_overlapped_op<Handler, Executor> op;
     typename op::ptr p = { asio::detail::addressof(handler),
       op::ptr::allocate(handler), 0 };
-    p.p = new (p.v) op(handler, io_object_executor<Executor>(ex, native));
+    p.p = new (p.v) op(handler, ex);
 
     ASIO_HANDLER_CREATION((ex.context(), *p.p,
           "iocp_service", iocp_service, 0, "overlapped"));
@@ -134,7 +133,20 @@ public:
 
 private:
   template <typename Executor>
-  static win_iocp_io_context* get_iocp_service(const Executor& ex)
+  static win_iocp_io_context* get_iocp_service(const Executor& ex,
+      typename enable_if<
+        can_query<const Executor&, execution::context_t>::value
+      >::type* = 0)
+  {
+    return &use_service<win_iocp_io_context>(
+        asio::query(ex, execution::context));
+  }
+
+  template <typename Executor>
+  static win_iocp_io_context* get_iocp_service(const Executor& ex,
+      typename enable_if<
+        !can_query<const Executor&, execution::context_t>::value
+      >::type* = 0)
   {
     return &use_service<win_iocp_io_context>(ex.context());
   }
@@ -142,7 +154,7 @@ private:
   static win_iocp_io_context* get_iocp_service(
       const io_context::executor_type& ex)
   {
-    return &ex.context().impl_;
+    return &asio::query(ex, execution::context).impl_;
   }
 
   win_iocp_operation* ptr_;

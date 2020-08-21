@@ -24,6 +24,7 @@
 #include "asio/detail/fenced_block.hpp"
 #include "asio/detail/handler_alloc_helpers.hpp"
 #include "asio/detail/handler_invoke_helpers.hpp"
+#include "asio/detail/handler_work.hpp"
 #include "asio/detail/memory.hpp"
 #include "asio/detail/winrt_async_op.hpp"
 #include "asio/error.hpp"
@@ -46,9 +47,8 @@ public:
           &winrt_socket_recv_op::do_complete),
       buffers_(buffers),
       handler_(ASIO_MOVE_CAST(Handler)(handler)),
-      io_executor_(io_ex)
+      work_(handler_, io_ex)
   {
-    handler_work<Handler, IoExecutor>::start(handler_, io_executor_);
   }
 
   static void do_complete(void* owner, operation* base,
@@ -57,9 +57,13 @@ public:
     // Take ownership of the operation object.
     winrt_socket_recv_op* o(static_cast<winrt_socket_recv_op*>(base));
     ptr p = { asio::detail::addressof(o->handler_), o, o };
-    handler_work<Handler, IoExecutor> w(o->handler_, o->io_executor_);
 
     ASIO_HANDLER_COMPLETION((*o));
+
+    // Take ownership of the operation's outstanding work.
+    handler_work<Handler, IoExecutor> w(
+        ASIO_MOVE_CAST2(handler_work<Handler, IoExecutor>)(
+          o->work_));
 
 #if defined(ASIO_ENABLE_BUFFER_DEBUGGING)
     // Check whether buffers are still valid.
@@ -102,7 +106,7 @@ public:
 private:
   MutableBufferSequence buffers_;
   Handler handler_;
-  IoExecutor io_executor_;
+  handler_work<Handler, IoExecutor> executor_;
 };
 
 } // namespace detail

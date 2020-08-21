@@ -20,6 +20,7 @@
 #if defined(ASIO_HAS_CO_AWAIT) || defined(GENERATING_DOCUMENTATION)
 
 #include "asio/awaitable.hpp"
+#include "asio/execution/executor.hpp"
 #include "asio/execution_context.hpp"
 #include "asio/is_executor.hpp"
 
@@ -45,13 +46,321 @@ struct awaitable_signature<awaitable<void, Executor>>
 
 } // namespace detail
 
-/// Spawn a new thread of execution.
+/// Spawn a new coroutined-based thread of execution.
 /**
- * The entry point function object @c f must have the signature:
+ * @param ex The executor that will be used to schedule the new thread of
+ * execution.
  *
- * @code awaitable<void, E> f(); @endcode
+ * @param a The asio::awaitable object that is the result of calling the
+ * coroutine's entry point function.
  *
- * where @c E is convertible from @c Executor.
+ * @param token The completion token that will handle the notification that
+ * the thread of execution has completed. The function signature of the
+ * completion handler must be:
+ * @code void handler(std::exception_ptr, T); @endcode
+ *
+ * @par Example
+ * @code
+ * asio::awaitable<std::size_t> echo(tcp::socket socket)
+ * {
+ *   std::size_t bytes_transferred = 0;
+ *
+ *   try
+ *   {
+ *     char data[1024];
+ *     for (;;)
+ *     {
+ *       std::size_t n = co_await socket.async_read_some(
+ *           asio::buffer(data), asio::use_awaitable);
+ *
+ *       co_await asio::async_write(socket,
+ *           asio::buffer(data, n), asio::use_awaitable);
+ *
+ *       bytes_transferred += n;
+ *     }
+ *   }
+ *   catch (const std::exception&)
+ *   {
+ *   }
+ *
+ *   co_return bytes_transferred;
+ * }
+ *
+ * // ...
+ *
+ * asio::co_spawn(my_executor,
+ *   echo(std::move(my_tcp_socket)),
+ *   [](std::exception_ptr e, std::size_t n)
+ *   {
+ *     std::cout << "transferred " << n << "\n";
+ *   });
+ * @endcode
+ */
+template <typename Executor, typename T, typename AwaitableExecutor,
+    ASIO_COMPLETION_TOKEN_FOR(
+      void(std::exception_ptr, T)) CompletionToken
+        ASIO_DEFAULT_COMPLETION_TOKEN_TYPE(Executor)>
+inline ASIO_INITFN_AUTO_RESULT_TYPE(
+    CompletionToken, void(std::exception_ptr, T))
+co_spawn(const Executor& ex, awaitable<T, AwaitableExecutor> a,
+    CompletionToken&& token
+      ASIO_DEFAULT_COMPLETION_TOKEN(Executor),
+    typename enable_if<
+      (is_executor<Executor>::value || execution::is_executor<Executor>::value)
+        && is_convertible<Executor, AwaitableExecutor>::value
+    >::type* = 0);
+
+/// Spawn a new coroutined-based thread of execution.
+/**
+ * @param ex The executor that will be used to schedule the new thread of
+ * execution.
+ *
+ * @param a The asio::awaitable object that is the result of calling the
+ * coroutine's entry point function.
+ *
+ * @param token The completion token that will handle the notification that
+ * the thread of execution has completed. The function signature of the
+ * completion handler must be:
+ * @code void handler(std::exception_ptr); @endcode
+ *
+ * @par Example
+ * @code
+ * asio::awaitable<void> echo(tcp::socket socket)
+ * {
+ *   try
+ *   {
+ *     char data[1024];
+ *     for (;;)
+ *     {
+ *       std::size_t n = co_await socket.async_read_some(
+ *           asio::buffer(data), asio::use_awaitable);
+ *
+ *       co_await asio::async_write(socket,
+ *           asio::buffer(data, n), asio::use_awaitable);
+ *     }
+ *   }
+ *   catch (const std::exception& e)
+ *   {
+ *     std::cerr << "Exception: " << e.what() << "\n";
+ *   }
+ * }
+ *
+ * // ...
+ *
+ * asio::co_spawn(my_executor,
+ *   echo(std::move(my_tcp_socket)),
+ *   asio::detached);
+ * @endcode
+ */
+template <typename Executor, typename AwaitableExecutor,
+    ASIO_COMPLETION_TOKEN_FOR(
+      void(std::exception_ptr)) CompletionToken
+        ASIO_DEFAULT_COMPLETION_TOKEN_TYPE(Executor)>
+inline ASIO_INITFN_AUTO_RESULT_TYPE(
+    CompletionToken, void(std::exception_ptr))
+co_spawn(const Executor& ex, awaitable<void, AwaitableExecutor> a,
+    CompletionToken&& token
+      ASIO_DEFAULT_COMPLETION_TOKEN(Executor),
+    typename enable_if<
+      (is_executor<Executor>::value || execution::is_executor<Executor>::value)
+        && is_convertible<Executor, AwaitableExecutor>::value
+    >::type* = 0);
+
+/// Spawn a new coroutined-based thread of execution.
+/**
+ * @param ctx An execution context that will provide the executor to be used to
+ * schedule the new thread of execution.
+ *
+ * @param a The asio::awaitable object that is the result of calling the
+ * coroutine's entry point function.
+ *
+ * @param token The completion token that will handle the notification that
+ * the thread of execution has completed. The function signature of the
+ * completion handler must be:
+ * @code void handler(std::exception_ptr); @endcode
+ *
+ * @par Example
+ * @code
+ * asio::awaitable<std::size_t> echo(tcp::socket socket)
+ * {
+ *   std::size_t bytes_transferred = 0;
+ *
+ *   try
+ *   {
+ *     char data[1024];
+ *     for (;;)
+ *     {
+ *       std::size_t n = co_await socket.async_read_some(
+ *           asio::buffer(data), asio::use_awaitable);
+ *
+ *       co_await asio::async_write(socket,
+ *           asio::buffer(data, n), asio::use_awaitable);
+ *
+ *       bytes_transferred += n;
+ *     }
+ *   }
+ *   catch (const std::exception&)
+ *   {
+ *   }
+ *
+ *   co_return bytes_transferred;
+ * }
+ *
+ * // ...
+ *
+ * asio::co_spawn(my_io_context,
+ *   echo(std::move(my_tcp_socket)),
+ *   [](std::exception_ptr e, std::size_t n)
+ *   {
+ *     std::cout << "transferred " << n << "\n";
+ *   });
+ * @endcode
+ */
+template <typename ExecutionContext, typename T, typename AwaitableExecutor,
+    ASIO_COMPLETION_TOKEN_FOR(
+      void(std::exception_ptr, T)) CompletionToken
+        ASIO_DEFAULT_COMPLETION_TOKEN_TYPE(
+          typename ExecutionContext::executor_type)>
+inline ASIO_INITFN_AUTO_RESULT_TYPE(
+    CompletionToken, void(std::exception_ptr, T))
+co_spawn(ExecutionContext& ctx, awaitable<T, AwaitableExecutor> a,
+    CompletionToken&& token
+      ASIO_DEFAULT_COMPLETION_TOKEN(
+        typename ExecutionContext::executor_type),
+    typename enable_if<
+      is_convertible<ExecutionContext&, execution_context&>::value
+        && is_convertible<typename ExecutionContext::executor_type,
+          AwaitableExecutor>::value
+    >::type* = 0);
+
+/// Spawn a new coroutined-based thread of execution.
+/**
+ * @param ctx An execution context that will provide the executor to be used to
+ * schedule the new thread of execution.
+ *
+ * @param a The asio::awaitable object that is the result of calling the
+ * coroutine's entry point function.
+ *
+ * @param token The completion token that will handle the notification that
+ * the thread of execution has completed. The function signature of the
+ * completion handler must be:
+ * @code void handler(std::exception_ptr); @endcode
+ *
+ * @par Example
+ * @code
+ * asio::awaitable<void> echo(tcp::socket socket)
+ * {
+ *   try
+ *   {
+ *     char data[1024];
+ *     for (;;)
+ *     {
+ *       std::size_t n = co_await socket.async_read_some(
+ *           asio::buffer(data), asio::use_awaitable);
+ *
+ *       co_await asio::async_write(socket,
+ *           asio::buffer(data, n), asio::use_awaitable);
+ *     }
+ *   }
+ *   catch (const std::exception& e)
+ *   {
+ *     std::cerr << "Exception: " << e.what() << "\n";
+ *   }
+ * }
+ *
+ * // ...
+ *
+ * asio::co_spawn(my_io_context,
+ *   echo(std::move(my_tcp_socket)),
+ *   asio::detached);
+ * @endcode
+ */
+template <typename ExecutionContext, typename AwaitableExecutor,
+    ASIO_COMPLETION_TOKEN_FOR(
+      void(std::exception_ptr)) CompletionToken
+        ASIO_DEFAULT_COMPLETION_TOKEN_TYPE(
+          typename ExecutionContext::executor_type)>
+inline ASIO_INITFN_AUTO_RESULT_TYPE(
+    CompletionToken, void(std::exception_ptr))
+co_spawn(ExecutionContext& ctx, awaitable<void, AwaitableExecutor> a,
+    CompletionToken&& token
+      ASIO_DEFAULT_COMPLETION_TOKEN(
+        typename ExecutionContext::executor_type),
+    typename enable_if<
+      is_convertible<ExecutionContext&, execution_context&>::value
+        && is_convertible<typename ExecutionContext::executor_type,
+          AwaitableExecutor>::value
+    >::type* = 0);
+
+/// Spawn a new coroutined-based thread of execution.
+/**
+ * @param ex The executor that will be used to schedule the new thread of
+ * execution.
+ *
+ * @param f A nullary function object with a return type of the form
+ * @c asio::awaitable<R,E> that will be used as the coroutine's entry
+ * point.
+ *
+ * @param token The completion token that will handle the notification that the
+ * thread of execution has completed. If @c R is @c void, the function
+ * signature of the completion handler must be:
+ *
+ * @code void handler(std::exception_ptr); @endcode
+ * Otherwise, the function signature of the completion handler must be:
+ * @code void handler(std::exception_ptr, R); @endcode
+ *
+ *
+ * @par Example
+ * @code
+ * asio::awaitable<std::size_t> echo(tcp::socket socket)
+ * {
+ *   std::size_t bytes_transferred = 0;
+ *
+ *   try
+ *   {
+ *     char data[1024];
+ *     for (;;)
+ *     {
+ *       std::size_t n = co_await socket.async_read_some(
+ *           asio::buffer(data), asio::use_awaitable);
+ *
+ *       co_await asio::async_write(socket,
+ *           asio::buffer(data, n), asio::use_awaitable);
+ *
+ *       bytes_transferred += n;
+ *     }
+ *   }
+ *   catch (const std::exception&)
+ *   {
+ *   }
+ *
+ *   co_return bytes_transferred;
+ * }
+ *
+ * // ...
+ *
+ * asio::co_spawn(my_executor,
+ *   [socket = std::move(my_tcp_socket)]() mutable
+ *     -> asio::awaitable<void>
+ *   {
+ *     try
+ *     {
+ *       char data[1024];
+ *       for (;;)
+ *       {
+ *         std::size_t n = co_await socket.async_read_some(
+ *             asio::buffer(data), asio::use_awaitable);
+ *
+ *         co_await asio::async_write(socket,
+ *             asio::buffer(data, n), asio::use_awaitable);
+ *       }
+ *     }
+ *     catch (const std::exception& e)
+ *     {
+ *       std::cerr << "Exception: " << e.what() << "\n";
+ *     }
+ *   }, asio::detached);
+ * @endcode
  */
 template <typename Executor, typename F,
     ASIO_COMPLETION_TOKEN_FOR(typename detail::awaitable_signature<
@@ -63,16 +372,78 @@ co_spawn(const Executor& ex, F&& f,
     CompletionToken&& token
       ASIO_DEFAULT_COMPLETION_TOKEN(Executor),
     typename enable_if<
-      is_executor<Executor>::value
+      is_executor<Executor>::value || execution::is_executor<Executor>::value
     >::type* = 0);
 
-/// Spawn a new thread of execution.
+/// Spawn a new coroutined-based thread of execution.
 /**
- * The entry point function object @c f must have the signature:
+ * @param ctx An execution context that will provide the executor to be used to
+ * schedule the new thread of execution.
  *
- * @code awaitable<void, E> f(); @endcode
+ * @param f A nullary function object with a return type of the form
+ * @c asio::awaitable<R,E> that will be used as the coroutine's entry
+ * point.
  *
- * where @c E is convertible from @c ExecutionContext::executor_type.
+ * @param token The completion token that will handle the notification that the
+ * thread of execution has completed. If @c R is @c void, the function
+ * signature of the completion handler must be:
+ *
+ * @code void handler(std::exception_ptr); @endcode
+ * Otherwise, the function signature of the completion handler must be:
+ * @code void handler(std::exception_ptr, R); @endcode
+ *
+ *
+ * @par Example
+ * @code
+ * asio::awaitable<std::size_t> echo(tcp::socket socket)
+ * {
+ *   std::size_t bytes_transferred = 0;
+ *
+ *   try
+ *   {
+ *     char data[1024];
+ *     for (;;)
+ *     {
+ *       std::size_t n = co_await socket.async_read_some(
+ *           asio::buffer(data), asio::use_awaitable);
+ *
+ *       co_await asio::async_write(socket,
+ *           asio::buffer(data, n), asio::use_awaitable);
+ *
+ *       bytes_transferred += n;
+ *     }
+ *   }
+ *   catch (const std::exception&)
+ *   {
+ *   }
+ *
+ *   co_return bytes_transferred;
+ * }
+ *
+ * // ...
+ *
+ * asio::co_spawn(my_io_context,
+ *   [socket = std::move(my_tcp_socket)]() mutable
+ *     -> asio::awaitable<void>
+ *   {
+ *     try
+ *     {
+ *       char data[1024];
+ *       for (;;)
+ *       {
+ *         std::size_t n = co_await socket.async_read_some(
+ *             asio::buffer(data), asio::use_awaitable);
+ *
+ *         co_await asio::async_write(socket,
+ *             asio::buffer(data, n), asio::use_awaitable);
+ *       }
+ *     }
+ *     catch (const std::exception& e)
+ *     {
+ *       std::cerr << "Exception: " << e.what() << "\n";
+ *     }
+ *   }, asio::detached);
+ * @endcode
  */
 template <typename ExecutionContext, typename F,
     ASIO_COMPLETION_TOKEN_FOR(typename detail::awaitable_signature<

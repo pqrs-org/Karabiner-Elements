@@ -28,6 +28,11 @@ namespace detail {
 class handshake_op
 {
 public:
+  static ASIO_CONSTEXPR const char* tracking_name()
+  {
+    return "ssl::stream<>::async_handshake";
+  }
+
   handshake_op(stream_base::handshake_type type)
     : type_(type)
   {

@@ -64,6 +64,14 @@ public:
       event_.unlock_and_signal_one(lock);
   }
 
+  // Unlock the mutex and signal one waiter who may destroy us.
+  void unlock_and_signal_one_for_destruction(
+      conditionally_enabled_mutex::scoped_lock& lock)
+  {
+    if (lock.mutex_.enabled_)
+      event_.unlock_and_signal_one(lock);
+  }
+
   // If there's a waiter, unlock the mutex and signal it.
   bool maybe_unlock_and_signal_one(
       conditionally_enabled_mutex::scoped_lock& lock)

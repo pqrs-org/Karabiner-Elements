@@ -17,11 +17,11 @@
 
 #include "asio/detail/config.hpp"
 #include <boost/coroutine/all.hpp>
+#include "asio/any_io_executor.hpp"
 #include "asio/bind_executor.hpp"
 #include "asio/detail/memory.hpp"
 #include "asio/detail/type_traits.hpp"
 #include "asio/detail/wrapped_handler.hpp"
-#include "asio/executor.hpp"
 #include "asio/io_context.hpp"
 #include "asio/is_executor.hpp"
 #include "asio/strand.hpp"
@@ -151,7 +151,7 @@ private:
 typedef basic_yield_context<unspecified> yield_context;
 #else // defined(GENERATING_DOCUMENTATION)
 typedef basic_yield_context<
-  executor_binder<void(*)(), executor> > yield_context;
+  executor_binder<void(*)(), any_io_executor> > yield_context;
 #endif // defined(GENERATING_DOCUMENTATION)
 
 /**
@@ -225,7 +225,9 @@ void spawn(ASIO_MOVE_ARG(Handler) handler,
     ASIO_MOVE_ARG(Function) function,
     const boost::coroutines::attributes& attributes
       = boost::coroutines::attributes(),
-    typename enable_if<!is_executor<typename decay<Handler>::type>::value &&
+    typename enable_if<
+      !is_executor<typename decay<Handler>::type>::value &&
+      !execution::is_executor<typename decay<Handler>::type>::value &&
       !is_convertible<Handler&, execution_context&>::value>::type* = 0);
 
 /// Start a new stackful coroutine, inheriting the execution context of another.
@@ -266,7 +268,9 @@ void spawn(const Executor& ex,
     ASIO_MOVE_ARG(Function) function,
     const boost::coroutines::attributes& attributes
       = boost::coroutines::attributes(),
-    typename enable_if<is_executor<Executor>::value>::type* = 0);
+    typename enable_if<
+      is_executor<Executor>::value || execution::is_executor<Executor>::value
+    >::type* = 0);
 
 /// Start a new stackful coroutine that executes on a given strand.
 /**
@@ -284,6 +288,8 @@ void spawn(const strand<Executor>& ex,
     ASIO_MOVE_ARG(Function) function,
     const boost::coroutines::attributes& attributes
       = boost::coroutines::attributes());
+
+#if !defined(ASIO_NO_TS_EXECUTORS)
 
 /// Start a new stackful coroutine that executes in the context of a strand.
 /**
@@ -303,6 +309,8 @@ void spawn(const asio::io_context::strand& s,
     ASIO_MOVE_ARG(Function) function,
     const boost::coroutines::attributes& attributes
       = boost::coroutines::attributes());
+
+#endif // !defined(ASIO_NO_TS_EXECUTORS)
 
 /// Start a new stackful coroutine that executes on a given execution context.
 /**

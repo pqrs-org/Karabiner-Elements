@@ -20,6 +20,13 @@
 #if defined(ASIO_HAS_CO_AWAIT) || defined(GENERATING_DOCUMENTATION)
 
 #include "asio/awaitable.hpp"
+#include "asio/detail/handler_tracking.hpp"
+
+#if defined(ASIO_ENABLE_HANDLER_TRACKING)
+# if defined(ASIO_HAS_SOURCE_LOCATION)
+#  include "asio/detail/source_location.hpp"
+# endif // defined(ASIO_HAS_SOURCE_LOCATION)
+#endif // defined(ASIO_ENABLE_HANDLER_TRACKING)
 
 #include "asio/detail/push_options.hpp"
 
@@ -42,12 +49,45 @@ namespace asio {
  * the asynchronous operation completes, and the result of the operation is
  * returned.
  */
-template <typename Executor = executor>
+template <typename Executor = any_io_executor>
 struct use_awaitable_t
 {
   /// Default constructor.
-  ASIO_CONSTEXPR use_awaitable_t()
+  ASIO_CONSTEXPR use_awaitable_t(
+#if defined(ASIO_ENABLE_HANDLER_TRACKING)
+# if defined(ASIO_HAS_SOURCE_LOCATION)
+      detail::source_location location = detail::source_location::current()
+# endif // defined(ASIO_HAS_SOURCE_LOCATION)
+#endif // defined(ASIO_ENABLE_HANDLER_TRACKING)
+    )
+#if defined(ASIO_ENABLE_HANDLER_TRACKING)
+# if defined(ASIO_HAS_SOURCE_LOCATION)
+    : file_name_(location.file_name()),
+      line_(location.line()),
+      function_name_(location.function_name())
+# else // defined(ASIO_HAS_SOURCE_LOCATION)
+    : file_name_(0),
+      line_(0),
+      function_name_(0)
+# endif // defined(ASIO_HAS_SOURCE_LOCATION)
+#endif // defined(ASIO_ENABLE_HANDLER_TRACKING)
   {
+  }
+
+  /// Constructor used to specify file name, line, and function name.
+  ASIO_CONSTEXPR use_awaitable_t(const char* file_name,
+      int line, const char* function_name)
+#if defined(ASIO_ENABLE_HANDLER_TRACKING)
+    : file_name_(file_name),
+      line_(line),
+      function_name_(function_name)
+#endif // defined(ASIO_ENABLE_HANDLER_TRACKING)
+  {
+#if !defined(ASIO_ENABLE_HANDLER_TRACKING)
+    (void)file_name;
+    (void)line;
+    (void)function_name;
+#endif // !defined(ASIO_ENABLE_HANDLER_TRACKING)
   }
 
   /// Adapts an executor to add the @c use_awaitable_t completion token as the
@@ -60,6 +100,17 @@ struct use_awaitable_t
 
     /// Construct the adapted executor from the inner executor type.
     executor_with_default(const InnerExecutor& ex) ASIO_NOEXCEPT
+      : InnerExecutor(ex)
+    {
+    }
+
+    /// Convert the specified executor to the inner executor type, then use
+    /// that to construct the adapted executor.
+    template <typename OtherExecutor>
+    executor_with_default(const OtherExecutor& ex,
+        typename enable_if<
+          is_convertible<OtherExecutor, InnerExecutor>::value
+        >::type* = 0) ASIO_NOEXCEPT
       : InnerExecutor(ex)
     {
     }
@@ -87,16 +138,24 @@ struct use_awaitable_t
         executor_with_default<typename decay<T>::type::executor_type>
       >::other(ASIO_MOVE_CAST(T)(object));
   }
+
+#if defined(ASIO_ENABLE_HANDLER_TRACKING)
+  const char* file_name_;
+  int line_;
+  const char* function_name_;
+#endif // defined(ASIO_ENABLE_HANDLER_TRACKING)
 };
 
 /// A completion token object that represents the currently executing coroutine.
 /**
  * See the documentation for asio::use_awaitable_t for a usage example.
  */
-#if defined(ASIO_HAS_CONSTEXPR) || defined(GENERATING_DOCUMENTATION)
+#if defined(GENERATING_DOCUMENTATION)
 constexpr use_awaitable_t<> use_awaitable;
+#elif defined(ASIO_HAS_CONSTEXPR)
+constexpr use_awaitable_t<> use_awaitable(0, 0, 0);
 #elif defined(ASIO_MSVC)
-__declspec(selectany) use_awaitable_t<> use_awaitable;
+__declspec(selectany) use_awaitable_t<> use_awaitable(0, 0, 0);
 #endif
 
 } // namespace asio

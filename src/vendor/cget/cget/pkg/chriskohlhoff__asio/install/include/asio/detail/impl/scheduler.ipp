@@ -135,6 +135,10 @@ scheduler::~scheduler()
 {
   if (thread_)
   {
+    mutex::scoped_lock lock(mutex_);
+    shutdown_ = true;
+    stop_all_threads(lock);
+    lock.unlock();
     thread_->join();
     delete thread_;
   }
@@ -320,6 +324,12 @@ void scheduler::compensating_work_started()
   ++static_cast<thread_info*>(this_thread)->private_outstanding_work;
 }
 
+void scheduler::capture_current_exception()
+{
+  if (thread_info_base* this_thread = thread_call_stack::contains(this))
+    this_thread->capture_current_exception();
+}
+
 void scheduler::post_immediate_completion(
     scheduler::operation* op, bool is_continuation)
 {
@@ -340,6 +350,30 @@ void scheduler::post_immediate_completion(
   work_started();
   mutex::scoped_lock lock(mutex_);
   op_queue_.push(op);
+  wake_one_thread_and_unlock(lock);
+}
+
+void scheduler::post_immediate_completions(std::size_t n,
+    op_queue<scheduler::operation>& ops, bool is_continuation)
+{
+#if defined(ASIO_HAS_THREADS)
+  if (one_thread_ || is_continuation)
+  {
+    if (thread_info_base* this_thread = thread_call_stack::contains(this))
+    {
+      static_cast<thread_info*>(this_thread)->private_outstanding_work
+        += static_cast<long>(n);
+      static_cast<thread_info*>(this_thread)->private_op_queue.push(ops);
+      return;
+    }
+  }
+#else // defined(ASIO_HAS_THREADS)
+  (void)is_continuation;
+#endif // defined(ASIO_HAS_THREADS)
+
+  increment(outstanding_work_, static_cast<long>(n));
+  mutex::scoped_lock lock(mutex_);
+  op_queue_.push(ops);
   wake_one_thread_and_unlock(lock);
 }
 
@@ -444,6 +478,7 @@ std::size_t scheduler::do_run_one(mutex::scoped_lock& lock,
 
         // Complete the operation. May throw an exception. Deletes the object.
         o->complete(this, ec, task_result);
+        this_thread.rethrow_pending_exception();
 
         return 1;
       }
@@ -524,6 +559,7 @@ std::size_t scheduler::do_wait_one(mutex::scoped_lock& lock,
 
   // Complete the operation. May throw an exception. Deletes the object.
   o->complete(this, ec, task_result);
+  this_thread.rethrow_pending_exception();
 
   return 1;
 }
@@ -578,6 +614,7 @@ std::size_t scheduler::do_poll_one(mutex::scoped_lock& lock,
 
   // Complete the operation. May throw an exception. Deletes the object.
   o->complete(this, ec, task_result);
+  this_thread.rethrow_pending_exception();
 
   return 1;
 }

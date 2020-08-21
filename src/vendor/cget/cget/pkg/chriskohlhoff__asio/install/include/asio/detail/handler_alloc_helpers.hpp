@@ -19,6 +19,7 @@
 #include "asio/detail/memory.hpp"
 #include "asio/detail/noncopyable.hpp"
 #include "asio/detail/recycling_allocator.hpp"
+#include "asio/detail/thread_info_base.hpp"
 #include "asio/associated_allocator.hpp"
 #include "asio/handler_alloc_hook.hpp"
 
@@ -29,11 +30,41 @@
 // asio_handler_alloc_helpers namespace is defined here for that purpose.
 namespace asio_handler_alloc_helpers {
 
+#if defined(ASIO_NO_DEPRECATED)
+template <typename Handler>
+inline void error_if_hooks_are_defined(Handler& h)
+{
+  using asio::asio_handler_allocate;
+  // If you get an error here it is because some of your handlers still
+  // overload asio_handler_allocate, but this hook is no longer used.
+  (void)static_cast<asio::asio_handler_allocate_is_no_longer_used>(
+    asio_handler_allocate(static_cast<std::size_t>(0),
+      asio::detail::addressof(h)));
+
+  using asio::asio_handler_deallocate;
+  // If you get an error here it is because some of your handlers still
+  // overload asio_handler_deallocate, but this hook is no longer used.
+  (void)static_cast<asio::asio_handler_deallocate_is_no_longer_used>(
+    asio_handler_deallocate(static_cast<void*>(0),
+      static_cast<std::size_t>(0), asio::detail::addressof(h)));
+}
+#endif // defined(ASIO_NO_DEPRECATED)
+
 template <typename Handler>
 inline void* allocate(std::size_t s, Handler& h)
 {
 #if !defined(ASIO_HAS_HANDLER_HOOKS)
   return ::operator new(s);
+#elif defined(ASIO_NO_DEPRECATED)
+  // The asio_handler_allocate hook is no longer used to obtain memory.
+  (void)&error_if_hooks_are_defined<Handler>;
+  (void)h;
+#if !defined(ASIO_DISABLE_SMALL_BLOCK_RECYCLING)
+  return asio::detail::thread_info_base::allocate(
+      asio::detail::thread_context::thread_call_stack::top(), s);
+#else // !defined(ASIO_DISABLE_SMALL_BLOCK_RECYCLING)
+  return ::operator new(size);
+#endif // !defined(ASIO_DISABLE_SMALL_BLOCK_RECYCLING)
 #else
   using asio::asio_handler_allocate;
   return asio_handler_allocate(s, asio::detail::addressof(h));
@@ -45,6 +76,17 @@ inline void deallocate(void* p, std::size_t s, Handler& h)
 {
 #if !defined(ASIO_HAS_HANDLER_HOOKS)
   ::operator delete(p);
+#elif defined(ASIO_NO_DEPRECATED)
+  // The asio_handler_allocate hook is no longer used to obtain memory.
+  (void)&error_if_hooks_are_defined<Handler>;
+  (void)h;
+#if !defined(ASIO_DISABLE_SMALL_BLOCK_RECYCLING)
+  asio::detail::thread_info_base::deallocate(
+      asio::detail::thread_context::thread_call_stack::top(), p, s);
+#else // !defined(ASIO_DISABLE_SMALL_BLOCK_RECYCLING)
+  (void)s;
+  ::operator delete(p);
+#endif // !defined(ASIO_DISABLE_SMALL_BLOCK_RECYCLING)
 #else
   using asio::asio_handler_deallocate;
   asio_handler_deallocate(p, s, asio::detail::addressof(h));

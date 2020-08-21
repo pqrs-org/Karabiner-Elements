@@ -108,8 +108,11 @@ private:
       operation* base, const asio::error_code& ec,
       std::size_t bytes_transferred);
 
+  // The io_context used to obtain an I/O executor.
+  io_context& io_context_;
+
   // The io_context implementation used to post completions.
-  io_context_impl& io_context_;
+  io_context_impl& io_context_impl_;
 
   // Mutex to protect access to the array of implementations.
   asio::detail::mutex mutex_;

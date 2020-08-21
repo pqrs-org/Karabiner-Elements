@@ -15,6 +15,7 @@
 # pragma once
 #endif // defined(_MSC_VER) && (_MSC_VER >= 1200)
 
+#include "asio/any_io_executor.hpp"
 #include "asio/detail/config.hpp"
 #include "asio/async_result.hpp"
 #include "asio/detail/handler_type_requirements.hpp"
@@ -24,7 +25,6 @@
 #include "asio/detail/type_traits.hpp"
 #include "asio/error.hpp"
 #include "asio/execution_context.hpp"
-#include "asio/executor.hpp"
 #include "asio/post.hpp"
 #include "asio/socket_base.hpp"
 
@@ -48,7 +48,7 @@ namespace asio {
 #define ASIO_BASIC_SOCKET_FWD_DECL
 
 // Forward declaration with defaulted arguments.
-template <typename Protocol, typename Executor = executor>
+template <typename Protocol, typename Executor = any_io_executor>
 class basic_socket;
 
 #endif // !defined(ASIO_BASIC_SOCKET_FWD_DECL)
@@ -1846,7 +1846,7 @@ private:
         detail::non_const_lvalue<ConnectHandler> handler2(handler);
         self_->impl_.get_service().async_connect(
             self_->impl_.get_implementation(), peer_endpoint,
-            handler2.value, self_->impl_.get_implementation_executor());
+            handler2.value, self_->impl_.get_executor());
       }
     }
 
@@ -1878,8 +1878,8 @@ private:
 
       detail::non_const_lvalue<WaitHandler> handler2(handler);
       self_->impl_.get_service().async_wait(
-          self_->impl_.get_implementation(), w, handler2.value,
-          self_->impl_.get_implementation_executor());
+          self_->impl_.get_implementation(), w,
+          handler2.value, self_->impl_.get_executor());
     }
 
   private:

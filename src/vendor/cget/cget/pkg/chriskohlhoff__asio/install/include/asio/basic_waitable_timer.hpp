@@ -17,6 +17,7 @@
 
 #include "asio/detail/config.hpp"
 #include <cstddef>
+#include "asio/any_io_executor.hpp"
 #include "asio/detail/chrono_time_traits.hpp"
 #include "asio/detail/deadline_timer_service.hpp"
 #include "asio/detail/handler_type_requirements.hpp"
@@ -24,7 +25,6 @@
 #include "asio/detail/non_const_lvalue.hpp"
 #include "asio/detail/throw_error.hpp"
 #include "asio/error.hpp"
-#include "asio/executor.hpp"
 #include "asio/wait_traits.hpp"
 
 #if defined(ASIO_HAS_MOVE)
@@ -41,7 +41,7 @@ namespace asio {
 // Forward declaration with defaulted arguments.
 template <typename Clock,
     typename WaitTraits = asio::wait_traits<Clock>,
-    typename Executor = executor>
+    typename Executor = any_io_executor>
 class basic_waitable_timer;
 
 #endif // !defined(ASIO_BASIC_WAITABLE_TIMER_FWD_DECL)
@@ -316,6 +316,54 @@ public:
   basic_waitable_timer& operator=(basic_waitable_timer&& other)
   {
     impl_ = std::move(other.impl_);
+    return *this;
+  }
+
+  // All timers have access to each other's implementations.
+  template <typename Clock1, typename WaitTraits1, typename Executor1>
+  friend class basic_waitable_timer;
+
+  /// Move-construct a basic_waitable_timer from another.
+  /**
+   * This constructor moves a timer from one object to another.
+   *
+   * @param other The other basic_waitable_timer object from which the move will
+   * occur.
+   *
+   * @note Following the move, the moved-from object is in the same state as if
+   * constructed using the @c basic_waitable_timer(const executor_type&)
+   * constructor.
+   */
+  template <typename Executor1>
+  basic_waitable_timer(
+      basic_waitable_timer<Clock, WaitTraits, Executor1>&& other,
+      typename enable_if<
+          is_convertible<Executor1, Executor>::value
+      >::type* = 0)
+    : impl_(std::move(other.impl_))
+  {
+  }
+
+  /// Move-assign a basic_waitable_timer from another.
+  /**
+   * This assignment operator moves a timer from one object to another. Cancels
+   * any outstanding asynchronous operations associated with the target object.
+   *
+   * @param other The other basic_waitable_timer object from which the move will
+   * occur.
+   *
+   * @note Following the move, the moved-from object is in the same state as if
+   * constructed using the @c basic_waitable_timer(const executor_type&)
+   * constructor.
+   */
+  template <typename Executor1>
+  typename enable_if<
+    is_convertible<Executor1, Executor>::value,
+    basic_waitable_timer&
+  >::type operator=(basic_waitable_timer<Clock, WaitTraits, Executor1>&& other)
+  {
+    basic_waitable_timer tmp(std::move(other));
+    impl_ = std::move(tmp.impl_);
     return *this;
   }
 #endif // defined(ASIO_HAS_MOVE) || defined(GENERATING_DOCUMENTATION)
@@ -742,8 +790,8 @@ private:
 
       detail::non_const_lvalue<WaitHandler> handler2(handler);
       self_->impl_.get_service().async_wait(
-          self_->impl_.get_implementation(), handler2.value,
-          self_->impl_.get_implementation_executor());
+          self_->impl_.get_implementation(),
+          handler2.value, self_->impl_.get_executor());
     }
 
   private:

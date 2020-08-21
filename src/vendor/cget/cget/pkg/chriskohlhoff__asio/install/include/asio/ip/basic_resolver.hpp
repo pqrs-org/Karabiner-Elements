@@ -17,6 +17,7 @@
 
 #include "asio/detail/config.hpp"
 #include <string>
+#include "asio/any_io_executor.hpp"
 #include "asio/async_result.hpp"
 #include "asio/detail/handler_type_requirements.hpp"
 #include "asio/detail/io_object_impl.hpp"
@@ -25,7 +26,6 @@
 #include "asio/detail/throw_error.hpp"
 #include "asio/error.hpp"
 #include "asio/execution_context.hpp"
-#include "asio/executor.hpp"
 #include "asio/ip/basic_resolver_iterator.hpp"
 #include "asio/ip/basic_resolver_query.hpp"
 #include "asio/ip/basic_resolver_results.hpp"
@@ -49,7 +49,7 @@ namespace ip {
 #define ASIO_IP_BASIC_RESOLVER_FWD_DECL
 
 // Forward declaration with defaulted arguments.
-template <typename InternetProtocol, typename Executor = executor>
+template <typename InternetProtocol, typename Executor = any_io_executor>
 class basic_resolver;
 
 #endif // !defined(ASIO_IP_BASIC_RESOLVER_FWD_DECL)
@@ -1003,8 +1003,8 @@ private:
 
       asio::detail::non_const_lvalue<ResolveHandler> handler2(handler);
       self_->impl_.get_service().async_resolve(
-          self_->impl_.get_implementation(), q, handler2.value,
-          self_->impl_.get_implementation_executor());
+          self_->impl_.get_implementation(), q,
+          handler2.value, self_->impl_.get_executor());
     }
 
   private:
