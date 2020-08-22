@@ -4,6 +4,9 @@
 
 -   ⚡️ Improvements
     -   Improved preferences window messages.
+    -   Partial support for comments in karabiner.json configuration file.
+        -   Supported reading json file with comments.
+        -   Limitation: The json comments will be removed if you change the json from Preferences GUI or command line interface.
 
 ## Karabiner-Elements 12.10.0
 
