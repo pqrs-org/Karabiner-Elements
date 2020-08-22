@@ -1,5 +1,6 @@
 #pragma once
 
+#include "json_utility.hpp"
 #include <fstream>
 #include <iostream>
 #include <nlohmann/json.hpp>
@@ -37,31 +38,12 @@ public:
   // `[1,2,3], // Not supported this comment`
   // `/* Not supported this comment */`
   static nlohmann::json load_jsonc(const std::string& file_path) {
-    if (pqrs::string::ends_with(file_path, ".jsonc")) {
-      std::stringstream ss;
-
-      std::ifstream json_file(file_path);
-      if (!json_file) {
-        throw std::runtime_error(file_path + " is not found");
-      }
-
-      for (std::string line; std::getline(json_file, line);) {
-        if (pqrs::string::starts_with(pqrs::string::trim_copy(line), "//")) {
-          continue;
-        }
-
-        ss << line;
-      }
-
-      return nlohmann::json::parse(ss);
-    }
-
     std::ifstream json_file(file_path);
     if (!json_file) {
       throw std::runtime_error(file_path + " is not found");
     }
 
-    return nlohmann::json::parse(json_file);
+    return json_utility::parse_jsonc(json_file);
   }
 };
 } // namespace unit_testing

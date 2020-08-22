@@ -2,6 +2,7 @@
 
 #include "constants.hpp"
 #include "core_configuration/core_configuration.hpp"
+#include "json_utility.hpp"
 #include "manipulator/manipulator_factory.hpp"
 #include <pqrs/string.hpp>
 
@@ -13,7 +14,7 @@ public:
     if (!stream) {
       throw std::runtime_error(std::string("failed to open ") + file_path);
     } else {
-      auto json = nlohmann::json::parse(stream);
+      auto json = json_utility::parse_jsonc(stream);
 
       pqrs::json::requires_object(json, "json");
 

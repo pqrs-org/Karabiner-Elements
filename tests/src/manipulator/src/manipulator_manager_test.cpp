@@ -1,10 +1,11 @@
 #include <catch2/catch.hpp>
 
+#include "../../share/json_helper.hpp"
 #include "../../share/manipulator_helper.hpp"
 
 TEST_CASE("manipulator.manipulator_manager") {
   auto helper = std::make_unique<krbn::unit_testing::manipulator_helper>();
-  helper->run_tests(nlohmann::json::parse(std::ifstream("json/manipulator_manager/tests.json")));
+  helper->run_tests(krbn::unit_testing::json_helper::load_jsonc("json/manipulator_manager/tests.json"));
 
   helper = nullptr;
 }
@@ -84,8 +85,7 @@ TEST_CASE("needs_virtual_hid_pointing") {
            std::string("json/needs_virtual_hid_pointing_test4.json"),
            std::string("json/needs_virtual_hid_pointing_test5.json"),
        }) {
-    std::ifstream json_file(file_name);
-    auto json = nlohmann::json::parse(json_file);
+    auto json = krbn::unit_testing::json_helper::load_jsonc(file_name);
     auto manager = std::make_shared<krbn::manipulator::manipulator_manager>();
     for (const auto& j : json) {
       krbn::core_configuration::details::complex_modifications_parameters parameters;

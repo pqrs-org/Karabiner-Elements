@@ -1,5 +1,6 @@
 #pragma once
 
+#include "json_utility.hpp"
 #include "json_writer.hpp"
 
 namespace krbn {
@@ -10,7 +11,7 @@ public:
     std::ifstream input(file_path);
     if (input) {
       try {
-        state_ = nlohmann::json::parse(input);
+        state_ = json_utility::parse_jsonc(input);
       } catch (std::exception& e) {
         logger::get_logger()->error("parse error in {0}: {1}", file_path, e.what());
       }

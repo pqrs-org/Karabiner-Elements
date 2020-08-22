@@ -1,6 +1,7 @@
 #pragma once
 
 #include "details/device.hpp"
+#include "json_utility.hpp"
 #include "json_writer.hpp"
 #include "logger.hpp"
 #include "types.hpp"
@@ -53,7 +54,7 @@ public:
     std::ifstream input(file_path);
     if (input) {
       try {
-        auto json = nlohmann::json::parse(input);
+        auto json = json_utility::parse_jsonc(input);
 
         if (json.is_array()) {
           for (const auto& j : json) {

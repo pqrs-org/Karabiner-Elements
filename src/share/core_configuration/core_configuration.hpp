@@ -8,12 +8,12 @@
 #include "details/profile/device.hpp"
 #include "details/profile/simple_modifications.hpp"
 #include "details/profile/virtual_hid_keyboard.hpp"
+#include "json_utility.hpp"
 #include "json_writer.hpp"
 #include "logger.hpp"
 #include "types.hpp"
 #include <fstream>
 #include <glob.h>
-#include <nlohmann/json.hpp>
 #include <pqrs/filesystem.hpp>
 #include <pqrs/osx/session.hpp>
 #include <string>
@@ -51,7 +51,7 @@ public:
         std::ifstream input(file_path);
         if (input) {
           try {
-            json_ = nlohmann::json::parse(input);
+            json_ = json_utility::parse_jsonc(input);
 
             if (auto v = pqrs::json::find_object(json_, "global")) {
               global_configuration_ = details::global_configuration(v->value());

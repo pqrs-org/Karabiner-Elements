@@ -1,6 +1,7 @@
 #pragma once
 
 #include "core_configuration/core_configuration.hpp"
+#include "json_utility.hpp"
 #include "manipulator/manipulator_factory.hpp"
 #include "manipulator/manipulator_manager.hpp"
 #include "manipulator/manipulators/basic/basic.hpp"
@@ -50,11 +51,11 @@ private:
   std::shared_ptr<manipulator::manipulators::base> make_manipulator(const std::pair<std::string, std::string>& pair) const {
     if (!pair.first.empty() && !pair.second.empty()) {
       try {
-        auto from_json = nlohmann::json::parse(pair.first);
+        auto from_json = json_utility::parse_jsonc(pair.first);
         from_json["modifiers"]["optional"] = nlohmann::json::array();
         from_json["modifiers"]["optional"].push_back("any");
 
-        auto to_json = nlohmann::json::parse(pair.second);
+        auto to_json = json_utility::parse_jsonc(pair.second);
 
         return std::make_shared<manipulator::manipulators::basic::basic>(manipulator::manipulators::basic::from_event_definition(from_json),
                                                                          manipulator::to_event_definition(to_json));

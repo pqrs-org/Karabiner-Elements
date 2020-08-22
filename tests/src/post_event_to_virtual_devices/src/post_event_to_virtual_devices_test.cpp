@@ -1,12 +1,13 @@
 #include <catch2/catch.hpp>
 
 #include "../../share/manipulator_helper.hpp"
+#include "../../share/json_helper.hpp"
 #include "manipulator/manipulators/post_event_to_virtual_devices/post_event_to_virtual_devices.hpp"
 
 TEST_CASE("actual examples") {
   auto helper = std::make_unique<krbn::unit_testing::manipulator_helper>();
 
-  helper->run_tests(nlohmann::json::parse(std::ifstream("json/tests.json")));
+  helper->run_tests(krbn::unit_testing::json_helper::load_jsonc("json/tests.json"));
 
   helper = nullptr;
 }

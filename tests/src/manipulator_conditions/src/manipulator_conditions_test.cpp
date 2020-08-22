@@ -94,8 +94,7 @@ namespace {
 class actual_examples_helper final {
 public:
   actual_examples_helper(const std::string& file_name) {
-    std::ifstream input(std::string("json/") + file_name);
-    auto json = nlohmann::json::parse(input);
+    auto json = krbn::unit_testing::json_helper::load_jsonc(std::string("json/") + file_name);
     for (const auto& j : json) {
       try {
         condition_manager_.push_back_condition(krbn::manipulator::manipulator_factory::make_condition(j));

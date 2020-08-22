@@ -1,5 +1,6 @@
 #pragma once
 
+#include "json_utility.hpp"
 #include <natural_sort.hpp>
 
 namespace krbn {
@@ -18,8 +19,8 @@ public:
     auto json = nlohmann::json::array();
     for (const auto& it : pairs_) {
       try {
-        auto from_json = nlohmann::json::parse(it.first);
-        auto to_json = nlohmann::json::parse(it.second);
+        auto from_json = json_utility::parse_jsonc(it.first);
+        auto to_json = json_utility::parse_jsonc(it.second);
 
         if (from_json.is_object() &&
             to_json.is_object()) {
@@ -62,8 +63,8 @@ public:
                     const std::string& from,
                     const std::string& to) {
     try {
-      auto from_json_string = nlohmann::json::parse(from).dump();
-      auto to_json_string = nlohmann::json::parse(to).dump();
+      auto from_json_string = json_utility::parse_jsonc(from).dump();
+      auto to_json_string = json_utility::parse_jsonc(to).dump();
 
       if (index < pairs_.size()) {
         pairs_[index].first = from_json_string;
@@ -76,8 +77,8 @@ public:
   void replace_second(const std::string& from,
                       const std::string& to) {
     try {
-      auto from_json_string = nlohmann::json::parse(from).dump();
-      auto to_json_string = nlohmann::json::parse(to).dump();
+      auto from_json_string = json_utility::parse_jsonc(from).dump();
+      auto to_json_string = json_utility::parse_jsonc(to).dump();
 
       for (auto&& it : pairs_) {
         if (it.first == from_json_string) {
@@ -165,7 +166,7 @@ private:
 
   void erase_by_from_json_string(const std::string& from) {
     try {
-      auto from_json_string = nlohmann::json::parse(from).dump();
+      auto from_json_string = json_utility::parse_jsonc(from).dump();
 
       pairs_.erase(std::remove_if(std::begin(pairs_),
                                   std::end(pairs_),

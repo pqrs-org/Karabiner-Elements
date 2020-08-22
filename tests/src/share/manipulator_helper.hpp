@@ -1,6 +1,7 @@
 #pragma once
 
 #include "event_queue.hpp"
+#include "json_utility.hpp"
 #include "manipulator/manipulator_factory.hpp"
 #include "manipulator/manipulator_manager.hpp"
 #include "manipulator/manipulator_managers_connector.hpp"
@@ -52,7 +53,7 @@ public:
         {
           std::ifstream ifs(rule.get<std::string>());
           REQUIRE(ifs);
-          for (const auto& j : nlohmann::json::parse(ifs)) {
+          for (const auto& j : json_utility::parse_jsonc(ifs)) {
             core_configuration::details::complex_modifications_parameters parameters;
             auto m = manipulator::manipulator_factory::make_manipulator(j,
                                                                         parameters);
@@ -146,7 +147,7 @@ public:
 
       std::ifstream ifs(test["input_event_queue"].get<std::string>());
       REQUIRE(ifs);
-      for (const auto& j : nlohmann::json::parse(ifs)) {
+      for (const auto& j : json_utility::parse_jsonc(ifs)) {
         enqueue_to_dispatcher([=, &pause_manipulation] {
           if (auto s = pqrs::json::find<std::string>(j, "action")) {
             if (*s == "invalidate_manipulators") {
@@ -228,7 +229,7 @@ public:
 
         std::ifstream ifs(*s);
         REQUIRE(ifs);
-        auto expected = nlohmann::json::parse(ifs);
+        auto expected = json_utility::parse_jsonc(ifs);
 
         REQUIRE(event_queues->front()->get_entries().empty());
         REQUIRE(nlohmann::json(event_queues->back()->get_entries()).dump() == expected.dump());
@@ -242,7 +243,7 @@ public:
 
         std::ifstream ifs(*s);
         REQUIRE(ifs);
-        auto expected = nlohmann::json::parse(ifs);
+        auto expected = json_utility::parse_jsonc(ifs);
 
         REQUIRE(post_event_to_virtual_devices_manipulator);
         REQUIRE(nlohmann::json(post_event_to_virtual_devices_manipulator->get_queue().get_events()).dump() == expected.dump());

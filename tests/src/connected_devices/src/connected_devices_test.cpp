@@ -1,6 +1,7 @@
 #include <catch2/catch.hpp>
 
 #include "connected_devices/connected_devices.hpp"
+#include "json_utility.hpp"
 
 TEST_CASE("connected_devices") {
   {
@@ -100,7 +101,7 @@ TEST_CASE("connected_devices") {
 
     std::ifstream ifs("json/connected_devices.json");
 
-    REQUIRE(connected_devices.to_json() == nlohmann::json::parse(ifs));
+    REQUIRE(connected_devices.to_json() == krbn::json_utility::parse_jsonc(ifs));
   }
 
   {

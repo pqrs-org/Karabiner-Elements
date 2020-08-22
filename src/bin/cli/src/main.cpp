@@ -7,6 +7,7 @@
 #include "constants.hpp"
 #include "dispatcher_utility.hpp"
 #include "grabber_client.hpp"
+#include "json_utility.hpp"
 #include "karabiner_version.h"
 #include "logger.hpp"
 #include "monitor/configuration_monitor.hpp"
@@ -63,7 +64,7 @@ void list_profile_names(void) {
 
 void set_variables(const std::string& variables) {
   try {
-    auto json = nlohmann::json::parse(variables);
+    auto json = krbn::json_utility::parse_jsonc(variables);
 
     auto wait = pqrs::make_thread_wait();
 

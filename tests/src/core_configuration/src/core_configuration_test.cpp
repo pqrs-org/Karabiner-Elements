@@ -1,6 +1,7 @@
 #include <catch2/catch.hpp>
 
 #include "core_configuration/core_configuration.hpp"
+#include "json_utility.hpp"
 #include "manipulator/manipulators/basic/basic.hpp"
 #include "manipulator/types.hpp"
 #include <iostream>
@@ -109,7 +110,7 @@ TEST_CASE("valid") {
 
   {
     std::ifstream input("json/to_json_example.json");
-    auto expected = nlohmann::json::parse(input);
+    auto expected = krbn::json_utility::parse_jsonc(input);
     REQUIRE(configuration.to_json() == expected);
   }
 }
@@ -140,7 +141,7 @@ TEST_CASE("broken.json") {
     {
       // to_json result is default json if is_loaded == false
       std::ifstream input("json/to_json_default.json");
-      auto expected = nlohmann::json::parse(input);
+      auto expected = krbn::json_utility::parse_jsonc(input);
       REQUIRE(configuration.to_json() == expected);
     }
   }
@@ -202,7 +203,7 @@ TEST_CASE("global_configuration.to_json") {
 namespace {
 nlohmann::json get_default_fn_function_keys_json(void) {
   std::ifstream input("json/default_fn_function_keys.json");
-  return nlohmann::json::parse(input);
+  return krbn::json_utility::parse_jsonc(input);
 }
 
 nlohmann::json get_default_virtual_hid_keyboard_json(void) {
@@ -1012,21 +1013,21 @@ TEST_CASE("simple_modifications.to_json") {
     krbn::core_configuration::details::simple_modifications simple_modifications;
     simple_modifications.update(json);
     {
-      krbn::manipulator::manipulators::basic::from_event_definition from_event_definition(nlohmann::json::parse(simple_modifications.get_pairs()[0].first));
+      krbn::manipulator::manipulators::basic::from_event_definition from_event_definition(krbn::json_utility::parse_jsonc(simple_modifications.get_pairs()[0].first));
       REQUIRE(from_event_definition.get_event_definitions().size() == 1);
       REQUIRE(from_event_definition.get_event_definitions().front().get_consumer_key_code() == krbn::consumer_key_code::mute);
     }
     {
-      krbn::manipulator::to_event_definition to_event_definition(nlohmann::json::parse(simple_modifications.get_pairs()[0].second));
+      krbn::manipulator::to_event_definition to_event_definition(krbn::json_utility::parse_jsonc(simple_modifications.get_pairs()[0].second));
       REQUIRE(to_event_definition.get_event_definition().get_pointing_button() == krbn::pointing_button::button3);
     }
     {
-      krbn::manipulator::manipulators::basic::from_event_definition from_event_definition(nlohmann::json::parse(simple_modifications.get_pairs()[1].first));
+      krbn::manipulator::manipulators::basic::from_event_definition from_event_definition(krbn::json_utility::parse_jsonc(simple_modifications.get_pairs()[1].first));
       REQUIRE(from_event_definition.get_event_definitions().size() == 1);
       REQUIRE(from_event_definition.get_event_definitions().front().get_key_code() == krbn::key_code::keyboard_a);
     }
     {
-      krbn::manipulator::to_event_definition to_event_definition(nlohmann::json::parse(simple_modifications.get_pairs()[1].second));
+      krbn::manipulator::to_event_definition to_event_definition(krbn::json_utility::parse_jsonc(simple_modifications.get_pairs()[1].second));
       REQUIRE(to_event_definition.get_event_definition().get_key_code() == krbn::key_code::keyboard_f1);
     }
   }

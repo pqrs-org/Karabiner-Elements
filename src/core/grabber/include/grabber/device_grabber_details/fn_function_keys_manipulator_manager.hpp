@@ -1,6 +1,7 @@
 #pragma once
 
 #include "core_configuration/core_configuration.hpp"
+#include "json_utility.hpp"
 #include "manipulator/manipulator_factory.hpp"
 #include "manipulator/manipulator_manager.hpp"
 #include "manipulator/manipulators/basic/basic.hpp"
@@ -170,14 +171,14 @@ private:
                                                                     const nlohmann::json& from_optional_modifiers,
                                                                     const nlohmann::json& to_modifiers) const {
     try {
-      auto from_json = nlohmann::json::parse(pair.first);
+      auto from_json = json_utility::parse_jsonc(pair.first);
       if (from_json.empty()) {
         return nullptr;
       }
       from_json["modifiers"]["mandatory"] = from_mandatory_modifiers;
       from_json["modifiers"]["optional"] = from_optional_modifiers;
 
-      auto to_json = nlohmann::json::parse(pair.second);
+      auto to_json = json_utility::parse_jsonc(pair.second);
       if (to_json.empty()) {
         return nullptr;
       }
