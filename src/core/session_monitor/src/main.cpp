@@ -33,12 +33,9 @@ int main(int argc, const char* argv[]) {
 
   // We have to use `getuid` (not `geteuid`) since `karabiner_session_monitor` is run as root by suid.
   // (We have to make a log file which includes the real user ID in the file path.)
-  auto log_directory_perms = std::filesystem::perms::owner_all |
-                             std::filesystem::perms::group_read | std::filesystem::perms::group_exec |
-                             std::filesystem::perms::others_read | std::filesystem::perms::others_exec;
   krbn::logger::set_async_rotating_logger("session_monitor",
                                           fmt::format("/var/log/karabiner/session_monitor.{0}.log", getuid()),
-                                          log_directory_perms);
+                                          pqrs::spdlog::filesystem::log_directory_perms_0755);
 
   krbn::logger::get_logger()->info("version {0}", karabiner_version);
 

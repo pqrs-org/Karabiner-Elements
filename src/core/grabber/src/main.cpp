@@ -32,16 +32,13 @@ int main(int argc, const char* argv[]) {
   //
 
   if (root) {
-    auto log_directory_perms = std::filesystem::perms::owner_all |
-                               std::filesystem::perms::group_read | std::filesystem::perms::group_exec |
-                               std::filesystem::perms::others_read | std::filesystem::perms::others_exec;
     krbn::logger::set_async_rotating_logger("grabber",
                                             "/var/log/karabiner/grabber.log",
-                                            log_directory_perms);
+                                            pqrs::spdlog::filesystem::log_directory_perms_0755);
   } else {
     krbn::logger::set_async_rotating_logger("grabber_agent",
                                             krbn::constants::get_user_log_directory() + "/grabber_agent.log",
-                                            std::filesystem::perms::owner_all);
+                                            pqrs::spdlog::filesystem::log_directory_perms_0700);
   }
 
   krbn::logger::get_logger()->info("version {0}", karabiner_version);

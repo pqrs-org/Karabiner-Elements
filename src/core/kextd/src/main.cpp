@@ -30,12 +30,9 @@ int main(int argc, const char* argv[]) {
   // Setup logger
   //
 
-  auto log_directory_perms = std::filesystem::perms::owner_all |
-                             std::filesystem::perms::group_read | std::filesystem::perms::group_exec |
-                             std::filesystem::perms::others_read | std::filesystem::perms::others_exec;
   krbn::logger::set_async_rotating_logger("kextd",
                                           "/var/log/karabiner/kextd.log",
-                                          log_directory_perms);
+                                          pqrs::spdlog::filesystem::log_directory_perms_0755);
 
   krbn::logger::get_logger()->info("version {0}", karabiner_version);
 
