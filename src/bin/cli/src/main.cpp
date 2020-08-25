@@ -106,12 +106,8 @@ int main(int argc, char** argv) {
 
   int exit_code = 0;
 
-  {
-    auto l = spdlog::stdout_color_mt("karabiner_cli");
-    l->set_pattern("[%l] %v");
-    l->set_level(spdlog::level::err);
-    krbn::logger::set_logger(l);
-  }
+  krbn::logger::set_stdout_color_logger("karabiner_cli",
+                                        "[%l] %v");
 
   cxxopts::Options options("karabiner_cli", "A command line utility of Karabiner-Elements.");
 

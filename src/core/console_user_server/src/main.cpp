@@ -26,7 +26,7 @@ int main(int argc, const char* argv[]) {
   if (!krbn::constants::get_user_log_directory().empty()) {
     krbn::logger::set_async_rotating_logger("console_user_server",
                                             krbn::constants::get_user_log_directory() + "/console_user_server.log",
-                                            0700);
+                                            std::filesystem::perms::owner_all);
   }
 
   krbn::logger::get_logger()->info("version {0}", karabiner_version);
