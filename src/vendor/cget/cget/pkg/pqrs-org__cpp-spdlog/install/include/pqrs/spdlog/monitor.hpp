@@ -8,9 +8,9 @@
 
 #include "reader.hpp"
 #include "spdlog.hpp"
+#include <filesystem>
 #include <nod/nod.hpp>
 #include <pqrs/dispatcher.hpp>
-#include <pqrs/filesystem.hpp>
 
 namespace pqrs {
 namespace spdlog {
@@ -45,11 +45,13 @@ public:
             bool updated = false;
 
             for (const auto& file_path : target_file_paths_) {
-              if (auto size = filesystem::file_size(file_path)) {
+              std::error_code error_code;
+              auto file_size = std::filesystem::file_size(file_path, error_code);
+              if (!error_code) {
                 auto it = file_sizes_.find(file_path);
                 if (it == std::end(file_sizes_) ||
-                    it->second != *size) {
-                  file_sizes_[file_path] = *size;
+                    it->second != file_size) {
+                  file_sizes_[file_path] = file_size;
                   updated = true;
                 }
               }
@@ -69,7 +71,7 @@ private:
   std::vector<::spdlog::filename_t> target_file_paths_;
   size_t max_line_count_;
   dispatcher::extra::timer timer_;
-  std::unordered_map<std::string, off_t> file_sizes_;
+  std::unordered_map<std::string, std::uintmax_t> file_sizes_;
 };
 } // namespace spdlog
 } // namespace pqrs
