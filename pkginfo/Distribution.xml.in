@@ -3,7 +3,7 @@
   <title>Karabiner-Elements @KARABINER_VERSION@</title>
   <volume-check>
     <allowed-os-versions>
-      <os-version min="10.12" />
+      <os-version min="10.15" />
     </allowed-os-versions>
   </volume-check>
   <!--
