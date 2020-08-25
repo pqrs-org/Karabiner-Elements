@@ -28,9 +28,9 @@
 
     KarabinerKitCoreConfigurationModel* coreConfigurationModel = [KarabinerKitConfigurationManager sharedManager].coreConfigurationModel;
     if ([coreConfigurationModel selectedProfileDeviceIgnore:(&deviceIdentifiers)]) {
-      result.checkbox.state = NSOffState;
+      result.checkbox.state = NSControlStateValueOff;
     } else {
-      result.checkbox.state = NSOnState;
+      result.checkbox.state = NSControlStateValueOn;
     }
 
     result.checkbox.enabled = YES;
@@ -54,9 +54,9 @@
 
     KarabinerKitCoreConfigurationModel* coreConfigurationModel = [KarabinerKitConfigurationManager sharedManager].coreConfigurationModel;
     if ([coreConfigurationModel selectedProfileDeviceManipulateCapsLockLed:(&deviceIdentifiers)]) {
-      result.checkbox.state = NSOnState;
+      result.checkbox.state = NSControlStateValueOn;
     } else {
-      result.checkbox.state = NSOffState;
+      result.checkbox.state = NSControlStateValueOff;
     }
 
     result.checkbox.enabled = YES;
@@ -103,7 +103,7 @@
                                                        [connectedDevices manufacturerAtIndex:row],
                                                        deviceIdentifiers.vendor_id,
                                                        deviceIdentifiers.product_id];
-    result.checkbox.state = NSOffState;
+    result.checkbox.state = NSControlStateValueOff;
 
     if ([connectedDevices isBuiltInKeyboardAtIndex:row] ||
         [connectedDevices isBuiltInTrackpadAtIndex:row]) {
@@ -117,9 +117,9 @@
 
       KarabinerKitCoreConfigurationModel* coreConfigurationModel = [KarabinerKitConfigurationManager sharedManager].coreConfigurationModel;
       if ([coreConfigurationModel selectedProfileDeviceDisableBuiltInKeyboardIfExists:(&deviceIdentifiers)]) {
-        result.checkbox.state = NSOnState;
+        result.checkbox.state = NSControlStateValueOn;
       } else {
-        result.checkbox.state = NSOffState;
+        result.checkbox.state = NSControlStateValueOff;
       }
     }
 

@@ -67,7 +67,7 @@
     DevicesTableCellView* cellView = [self.tableView viewAtColumn:0 row:row makeIfNecessary:NO];
     libkrbn_device_identifiers deviceIdentifiers = cellView.deviceIdentifiers;
     [coreConfigurationModel setSelectedProfileDeviceIgnore:&(deviceIdentifiers)
-                                                     value:(cellView.checkbox.state == NSOffState)];
+                                                     value:(cellView.checkbox.state == NSControlStateValueOff)];
     [coreConfigurationModel save];
     goto finish;
   }
@@ -77,7 +77,7 @@
     DevicesTableCellView* cellView = [self.externalKeyboardTableView viewAtColumn:0 row:row makeIfNecessary:NO];
     libkrbn_device_identifiers deviceIdentifiers = cellView.deviceIdentifiers;
     [coreConfigurationModel setSelectedProfileDeviceDisableBuiltInKeyboardIfExists:&(deviceIdentifiers)
-                                                                             value:(cellView.checkbox.state == NSOnState)];
+                                                                             value:(cellView.checkbox.state == NSControlStateValueOn)];
     [coreConfigurationModel save];
     goto finish;
   }
@@ -94,7 +94,7 @@ finish:
     DevicesTableCellView* cellView = [self.tableView viewAtColumn:1 row:row makeIfNecessary:NO];
     libkrbn_device_identifiers deviceIdentifiers = cellView.deviceIdentifiers;
 
-    if (cellView.checkbox.state == NSOffState) {
+    if (cellView.checkbox.state == NSControlStateValueOff) {
       [coreConfigurationModel setSelectedProfileDeviceManipulateCapsLockLed:&(deviceIdentifiers)
                                                                       value:NO];
       [coreConfigurationModel save];
@@ -114,7 +114,7 @@ finish:
                   [coreConfigurationModel save];
 
                 } else {
-                  cellView.checkbox.state = NSOffState;
+                  cellView.checkbox.state = NSControlStateValueOff;
                 }
               }];
       }

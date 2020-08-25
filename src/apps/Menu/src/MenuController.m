@@ -103,9 +103,9 @@
     [newItem setRepresentedObject:@(i)];
 
     if ([coreConfigurationModel profileSelectedAtIndex:i]) {
-      [newItem setState:NSOnState];
+      [newItem setState:NSControlStateValueOn];
     } else {
-      [newItem setState:NSOffState];
+      [newItem setState:NSControlStateValueOff];
     }
     [menu insertItem:newItem atIndex:i];
   }
