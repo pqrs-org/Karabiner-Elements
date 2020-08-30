@@ -6,6 +6,7 @@ set(CMAKE_CXX_STANDARD 17)
 
 include_directories(SYSTEM ${CMAKE_CURRENT_LIST_DIR}/vendor)
 include_directories(SYSTEM ${CMAKE_CURRENT_LIST_DIR}/vendor/cget/include)
+include_directories(SYSTEM ${CMAKE_CURRENT_LIST_DIR}/vendor/Karabiner-DriverKit-VirtualHIDDevice/include)
 include_directories(${CMAKE_CURRENT_LIST_DIR}/share)
 
 add_compile_options(-Wall)
