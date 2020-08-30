@@ -1,0 +1,3 @@
+[submodule "src/vendor/Karabiner-DriverKit-VirtualHIDDevice"]
+	path = src/vendor/Karabiner-DriverKit-VirtualHIDDevice
+	url = https://github.com/pqrs-org/Karabiner-DriverKit-VirtualHIDDevice.git

@@ -47,6 +47,8 @@ System requirements to build Karabiner-Elements:
 
     ```shell
     git clone --depth 1 https://github.com/pqrs-org/Karabiner-Elements.git
+    cd Karabiner-Elements
+    git submodule update --init --recursive --depth 1
     ```
 
 2.  Find your codesign identity if you have one.<br />
@@ -96,7 +98,6 @@ System requirements to build Karabiner-Elements:
 6.  Build a package by executing a following command in Terminal.app.
 
     ```shell
-    cd Karabiner-Elements
     make package
     ```
 
