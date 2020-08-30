@@ -148,17 +148,19 @@ TEST_CASE("modifier_flag_manager") {
 
 TEST_CASE("modifier_flag_manager::make_hid_report_modifiers") {
   {
+    namespace hid_report = pqrs::karabiner::driverkit::virtual_hid_device_driver::hid_report;
+
     krbn::modifier_flag_manager modifier_flag_manager;
-    pqrs::karabiner_virtual_hid_device::hid_report::modifiers expected;
+    hid_report::modifiers expected;
 
     REQUIRE(modifier_flag_manager.make_hid_report_modifiers() == expected);
 
     modifier_flag_manager.push_back_active_modifier_flag(left_shift_1);
     modifier_flag_manager.push_back_active_modifier_flag(right_shift_1);
     modifier_flag_manager.push_back_active_modifier_flag(right_command_1);
-    expected.insert(pqrs::karabiner_virtual_hid_device::hid_report::modifier::left_shift);
-    expected.insert(pqrs::karabiner_virtual_hid_device::hid_report::modifier::right_shift);
-    expected.insert(pqrs::karabiner_virtual_hid_device::hid_report::modifier::right_command);
+    expected.insert(hid_report::modifier::left_shift);
+    expected.insert(hid_report::modifier::right_shift);
+    expected.insert(hid_report::modifier::right_command);
     REQUIRE(modifier_flag_manager.make_hid_report_modifiers() == expected);
   }
 }
