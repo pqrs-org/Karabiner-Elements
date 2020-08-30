@@ -26,10 +26,6 @@ public:
     return "/Library/Application Support/org.pqrs/tmp/rootonly";
   }
 
-  static const char* get_kextd_state_json_file_path(void) {
-    return "/Library/Application Support/org.pqrs/tmp/karabiner_kextd_state.json";
-  }
-
   static const char* get_observer_state_json_file_path(void) {
     return "/Library/Application Support/org.pqrs/tmp/karabiner_observer_state.json";
   }

@@ -1,7 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.Cocoa.XIB" version="3.0" toolsVersion="15505" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none" useAutolayout="YES" customObjectInstantitationMethod="direct">
+<document type="com.apple.InterfaceBuilder3.Cocoa.XIB" version="3.0" toolsVersion="17154" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none" useAutolayout="YES" customObjectInstantitationMethod="direct">
     <dependencies>
-        <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="15505"/>
+        <deployment identifier="macosx"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="17154"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
     <objects>
@@ -65,7 +66,6 @@
             <connections>
                 <outlet property="complexModificationsFileImportWindowController" destination="1ch-Te-EDv" id="TJS-aK-9xm"/>
                 <outlet property="inputMonitoringAlertWindowController" destination="DhI-vl-MTs" id="bjV-p4-H7Y"/>
-                <outlet property="kextdAlertWindowController" destination="fAe-OR-t9F" id="hAd-Cf-K2x"/>
                 <outlet property="preferencesWindow" destination="QvC-M9-y7g" id="91M-TG-qdJ"/>
                 <outlet property="preferencesWindowController" destination="5ke-qB-Wr5" id="Iam-4e-IHj"/>
                 <outlet property="simpleModificationsTableViewController" destination="4f7-Hm-cOy" id="9Ly-1w-WDk"/>
@@ -92,12 +92,6 @@
             <connections>
                 <outlet property="preferencesWindow" destination="QvC-M9-y7g" id="KBl-7u-fK6"/>
                 <outlet property="window" destination="qSM-7c-jvU" id="Sq9-m4-WI9"/>
-            </connections>
-        </customObject>
-        <customObject id="fAe-OR-t9F" customClass="KextdAlertWindowController">
-            <connections>
-                <outlet property="preferencesWindow" destination="QvC-M9-y7g" id="7XS-PX-dIM"/>
-                <outlet property="window" destination="WRr-7z-BZH" id="X4P-Ac-Jtz"/>
             </connections>
         </customObject>
         <customObject id="wKd-bU-aLe" customClass="LogFileTextViewController">
@@ -457,23 +451,23 @@
         <window title="Karabiner-Elements Preferences" allowsToolTipsWhenApplicationIsInactive="NO" autorecalculatesKeyViewLoop="NO" releasedWhenClosed="NO" animationBehavior="default" id="QvC-M9-y7g">
             <windowStyleMask key="styleMask" titled="YES" closable="YES" miniaturizable="YES" resizable="YES"/>
             <rect key="contentRect" x="335" y="390" width="1000" height="550"/>
-            <rect key="screenRect" x="0.0" y="0.0" width="2048" height="1280"/>
+            <rect key="screenRect" x="0.0" y="0.0" width="2048" height="1257"/>
             <value key="minSize" type="size" width="1000" height="550"/>
             <view key="contentView" misplaced="YES" id="EiT-Mj-1SZ">
-                <rect key="frame" x="0.0" y="0.0" width="1000" height="310"/>
+                <rect key="frame" x="0.0" y="24" width="1000" height="526"/>
                 <autoresizingMask key="autoresizingMask"/>
                 <subviews>
                     <tabView initialItem="SOT-pf-9fT" translatesAutoresizingMaskIntoConstraints="NO" id="W8s-8N-CIx">
-                        <rect key="frame" x="13" y="10" width="974" height="534"/>
+                        <rect key="frame" x="13" y="10" width="974" height="510"/>
                         <font key="font" metaFont="menu"/>
                         <tabViewItems>
                             <tabViewItem label="Simple modifications" identifier="1" id="SOT-pf-9fT">
-                                <view key="view" misplaced="YES" id="aYZ-Ew-w2F">
-                                    <rect key="frame" x="10" y="33" width="954" height="488"/>
+                                <view key="view" id="aYZ-Ew-w2F">
+                                    <rect key="frame" x="10" y="33" width="954" height="464"/>
                                     <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                     <subviews>
                                         <customView translatesAutoresizingMaskIntoConstraints="NO" id="Cqw-ll-1Rg">
-                                            <rect key="frame" x="222" y="351" width="511" height="31"/>
+                                            <rect key="frame" x="222" y="423" width="511" height="31"/>
                                             <subviews>
                                                 <popUpButton verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="oB5-NY-D3P">
                                                     <rect key="frame" x="99" y="2" width="405" height="25"/>
@@ -508,13 +502,13 @@
                                             </constraints>
                                         </customView>
                                         <scrollView autohidesScrollers="YES" horizontalLineScroll="28" horizontalPageScroll="10" verticalLineScroll="28" verticalPageScroll="10" usesPredominantAxisScrolling="NO" translatesAutoresizingMaskIntoConstraints="NO" id="7r4-lM-Seb">
-                                            <rect key="frame" x="17" y="307" width="920" height="34"/>
+                                            <rect key="frame" x="17" y="43" width="920" height="370"/>
                                             <clipView key="contentView" id="fPj-Ru-opD">
-                                                <rect key="frame" x="1" y="0.0" width="918" height="33"/>
+                                                <rect key="frame" x="1" y="0.0" width="918" height="369"/>
                                                 <autoresizingMask key="autoresizingMask"/>
                                                 <subviews>
                                                     <tableView verticalHuggingPriority="750" allowsExpansionToolTips="YES" columnAutoresizingStyle="firstColumnOnly" alternatingRowBackgroundColors="YES" columnReordering="NO" columnSelection="YES" columnResizing="NO" multipleSelection="NO" autosaveColumns="NO" rowHeight="26" rowSizeStyle="automatic" headerView="bin-92-FO9" viewBased="YES" id="qEO-TG-yM2">
-                                                        <rect key="frame" x="0.0" y="0.0" width="918" height="10"/>
+                                                        <rect key="frame" x="0.0" y="0.0" width="918" height="346"/>
                                                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                                         <size key="intercellSpacing" width="3" height="2"/>
                                                         <color key="backgroundColor" name="controlBackgroundColor" catalog="System" colorSpace="catalog"/>
@@ -523,7 +517,6 @@
                                                         <tableColumns>
                                                             <tableColumn identifier="SimpleModificationsFromColumn" width="399" minWidth="40" maxWidth="10000" id="zOn-42-oxZ">
                                                                 <tableHeaderCell key="headerCell" lineBreakMode="truncatingTail" borderStyle="border" title="From key">
-                                                                    <font key="font" metaFont="message" size="11"/>
                                                                     <color key="textColor" name="headerTextColor" catalog="System" colorSpace="catalog"/>
                                                                     <color key="backgroundColor" name="headerColor" catalog="System" colorSpace="catalog"/>
                                                                 </tableHeaderCell>
@@ -560,7 +553,6 @@
                                                             </tableColumn>
                                                             <tableColumn identifier="SimpleModificationsToColumn" width="400" minWidth="40" maxWidth="1000" id="Cvf-cr-EpW">
                                                                 <tableHeaderCell key="headerCell" lineBreakMode="truncatingTail" borderStyle="border" title="To key">
-                                                                    <font key="font" metaFont="message" size="11"/>
                                                                     <color key="textColor" name="headerTextColor" catalog="System" colorSpace="catalog"/>
                                                                     <color key="backgroundColor" name="headerColor" catalog="System" colorSpace="catalog"/>
                                                                 </tableHeaderCell>
@@ -597,7 +589,6 @@
                                                             </tableColumn>
                                                             <tableColumn identifier="SimpleModificationsDeleteColumn" width="110" minWidth="10" maxWidth="3.4028234663852886e+38" id="9uY-pP-ozU">
                                                                 <tableHeaderCell key="headerCell" lineBreakMode="truncatingTail" borderStyle="border" alignment="left">
-                                                                    <font key="font" metaFont="message" size="11"/>
                                                                     <color key="textColor" name="headerTextColor" catalog="System" colorSpace="catalog"/>
                                                                     <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
                                                                 </tableHeaderCell>
@@ -616,7 +607,7 @@
                                                                                 <rect key="frame" x="0.0" y="-4" width="111" height="32"/>
                                                                                 <buttonCell key="cell" type="push" title="Remove" bezelStyle="rounded" image="ic_remove_circle_18pt" imagePosition="left" alignment="center" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="Bdt-L4-6qN">
                                                                                     <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
-                                                                                    <font key="font" metaFont="menu"/>
+                                                                                    <font key="font" metaFont="system"/>
                                                                                 </buttonCell>
                                                                             </button>
                                                                         </subviews>
@@ -652,10 +643,10 @@
                                             </tableHeaderView>
                                         </scrollView>
                                         <button verticalHuggingPriority="750" imageHugsTitle="YES" translatesAutoresizingMaskIntoConstraints="NO" id="nmp-2M-4Aq">
-                                            <rect key="frame" x="11" y="274" width="116" height="32"/>
+                                            <rect key="frame" x="11" y="10" width="116" height="32"/>
                                             <buttonCell key="cell" type="push" title="Add item" bezelStyle="rounded" image="ic_add_circle_18pt" imagePosition="left" alignment="center" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="HFn-CP-POu">
                                                 <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
-                                                <font key="font" metaFont="menu"/>
+                                                <font key="font" metaFont="system"/>
                                             </buttonCell>
                                             <connections>
                                                 <action selector="addItem:" target="4f7-Hm-cOy" id="O9t-bd-QMl"/>
@@ -731,7 +722,6 @@
                                                         <tableColumns>
                                                             <tableColumn identifier="FnFunctionKeysFromColumn" width="100" minWidth="40" maxWidth="1000" id="9ma-aF-gww">
                                                                 <tableHeaderCell key="headerCell" lineBreakMode="truncatingTail" borderStyle="border" title="Physical key">
-                                                                    <font key="font" metaFont="message" size="11"/>
                                                                     <color key="textColor" name="headerTextColor" catalog="System" colorSpace="catalog"/>
                                                                     <color key="backgroundColor" name="headerColor" catalog="System" colorSpace="catalog"/>
                                                                 </tableHeaderCell>
@@ -768,7 +758,6 @@
                                                             </tableColumn>
                                                             <tableColumn identifier="FnFunctionKeysToColumn" width="812" minWidth="40" maxWidth="10000" id="ZHK-yh-2iU">
                                                                 <tableHeaderCell key="headerCell" lineBreakMode="truncatingTail" borderStyle="border" title="To key">
-                                                                    <font key="font" metaFont="message" size="11"/>
                                                                     <color key="textColor" name="headerTextColor" catalog="System" colorSpace="catalog"/>
                                                                     <color key="backgroundColor" name="headerColor" catalog="System" colorSpace="catalog"/>
                                                                 </tableHeaderCell>
@@ -828,7 +817,7 @@
                                             <rect key="frame" x="15" y="32" width="322" height="18"/>
                                             <buttonCell key="cell" type="check" title="Use all F1, F2, etc. keys as standard function keys" bezelStyle="regularSquare" imagePosition="left" state="on" inset="2" id="bqL-qm-5RA">
                                                 <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
-                                                <font key="font" metaFont="menu"/>
+                                                <font key="font" metaFont="system"/>
                                             </buttonCell>
                                             <connections>
                                                 <action selector="updateSystemPreferencesValues:" target="5ke-qB-Wr5" id="Lnp-yZ-h3X"/>
@@ -889,7 +878,6 @@
                                                                             <tableColumns>
                                                                                 <tableColumn identifier="ComplexModificationsRulesDescriptionColumn" width="802" minWidth="40" maxWidth="10000" id="Ctr-us-5oS">
                                                                                     <tableHeaderCell key="headerCell" lineBreakMode="truncatingTail" borderStyle="border" title="Enabled rules">
-                                                                                        <font key="font" metaFont="message" size="11"/>
                                                                                         <color key="textColor" name="headerTextColor" catalog="System" colorSpace="catalog"/>
                                                                                         <color key="backgroundColor" name="headerColor" catalog="System" colorSpace="catalog"/>
                                                                                     </tableHeaderCell>
@@ -926,7 +914,6 @@
                                                                                 </tableColumn>
                                                                                 <tableColumn identifier="ComplexModificationsRulesRemoveColumn" width="110" minWidth="40" maxWidth="1000" id="9Qk-Iq-qx4">
                                                                                     <tableHeaderCell key="headerCell" lineBreakMode="truncatingTail" borderStyle="border">
-                                                                                        <font key="font" metaFont="message" size="11"/>
                                                                                         <color key="textColor" name="headerTextColor" catalog="System" colorSpace="catalog"/>
                                                                                         <color key="backgroundColor" name="headerColor" catalog="System" colorSpace="catalog"/>
                                                                                     </tableHeaderCell>
@@ -945,7 +932,7 @@
                                                                                                     <rect key="frame" x="0.0" y="-4" width="111" height="32"/>
                                                                                                     <buttonCell key="cell" type="push" title="Remove" bezelStyle="rounded" image="ic_remove_circle_18pt" imagePosition="left" alignment="center" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="f3x-fQ-s40">
                                                                                                         <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
-                                                                                                        <font key="font" metaFont="menu"/>
+                                                                                                        <font key="font" metaFont="system"/>
                                                                                                     </buttonCell>
                                                                                                 </button>
                                                                                             </subviews>
@@ -984,7 +971,7 @@
                                                                 <rect key="frame" x="11" y="3" width="113" height="32"/>
                                                                 <buttonCell key="cell" type="push" title="Add rule" bezelStyle="rounded" image="ic_add_circle_18pt" imagePosition="left" alignment="center" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="DwC-rX-DDN">
                                                                     <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
-                                                                    <font key="font" metaFont="menu"/>
+                                                                    <font key="font" metaFont="system"/>
                                                                 </buttonCell>
                                                                 <connections>
                                                                     <action selector="openAddRulePanel:" target="kWQ-dQ-cFu" id="zzr-JY-LWh"/>
@@ -994,7 +981,7 @@
                                                                 <rect key="frame" x="629" y="8" width="80" height="32"/>
                                                                 <buttonCell key="cell" type="push" title="Up" bezelStyle="rounded" image="ic_arrow_upward_18pt" imagePosition="left" alignment="center" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="Hwz-PV-JXe">
                                                                     <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
-                                                                    <font key="font" metaFont="menu"/>
+                                                                    <font key="font" metaFont="system"/>
                                                                 </buttonCell>
                                                                 <connections>
                                                                     <action selector="moveRuleUp:" target="kWQ-dQ-cFu" id="R6l-K2-7dw"/>
@@ -1004,7 +991,7 @@
                                                                 <rect key="frame" x="846" y="8" width="97" height="32"/>
                                                                 <buttonCell key="cell" type="push" title="Down" bezelStyle="rounded" image="ic_arrow_downward_18pt" imagePosition="left" alignment="center" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="CrG-r0-gke">
                                                                     <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
-                                                                    <font key="font" metaFont="menu"/>
+                                                                    <font key="font" metaFont="system"/>
                                                                 </buttonCell>
                                                                 <connections>
                                                                     <action selector="moveRuleDown:" target="kWQ-dQ-cFu" id="NcT-Sw-Qt1"/>
@@ -1372,7 +1359,6 @@
                                                                             <tableColumns>
                                                                                 <tableColumn identifier="DevicesCheckboxColumn" width="543" minWidth="40" maxWidth="10000" id="zRy-dI-ooE">
                                                                                     <tableHeaderCell key="headerCell" lineBreakMode="truncatingTail" borderStyle="border" title="Modify events from this device">
-                                                                                        <font key="font" metaFont="message" size="11"/>
                                                                                         <color key="textColor" name="headerTextColor" catalog="System" colorSpace="catalog"/>
                                                                                         <color key="backgroundColor" name="headerColor" catalog="System" colorSpace="catalog"/>
                                                                                     </tableHeaderCell>
@@ -1391,7 +1377,7 @@
                                                                                                     <rect key="frame" x="6" y="4" width="61" height="18"/>
                                                                                                     <buttonCell key="cell" type="check" title="Check" bezelStyle="regularSquare" imagePosition="left" scrollable="YES" lineBreakMode="clipping" state="on" inset="2" id="R7Y-oT-Fv8">
                                                                                                         <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
-                                                                                                        <font key="font" metaFont="menu"/>
+                                                                                                        <font key="font" metaFont="system"/>
                                                                                                     </buttonCell>
                                                                                                 </button>
                                                                                             </subviews>
@@ -1408,7 +1394,6 @@
                                                                                 </tableColumn>
                                                                                 <tableColumn identifier="DevicesManipulateCapsLockLEDColumn" width="140" minWidth="10" maxWidth="3.4028234663852886e+38" id="ME1-bQ-Q3U">
                                                                                     <tableHeaderCell key="headerCell" lineBreakMode="truncatingTail" borderStyle="border" alignment="left" title="Caps Lock LED">
-                                                                                        <font key="font" metaFont="message" size="11"/>
                                                                                         <color key="textColor" name="headerTextColor" catalog="System" colorSpace="catalog"/>
                                                                                         <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                                                                     </tableHeaderCell>
@@ -1427,7 +1412,7 @@
                                                                                                     <rect key="frame" x="6" y="4" width="117" height="18"/>
                                                                                                     <buttonCell key="cell" type="check" title="Manipulate LED" bezelStyle="regularSquare" imagePosition="left" state="on" inset="2" id="ytU-CV-2U5">
                                                                                                         <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
-                                                                                                        <font key="font" metaFont="menu"/>
+                                                                                                        <font key="font" metaFont="system"/>
                                                                                                     </buttonCell>
                                                                                                 </button>
                                                                                             </subviews>
@@ -1444,7 +1429,6 @@
                                                                                 </tableColumn>
                                                                                 <tableColumn identifier="DevicesVendorIdColumn" width="65" minWidth="40" maxWidth="1000" id="ErT-Oq-jVJ">
                                                                                     <tableHeaderCell key="headerCell" lineBreakMode="truncatingTail" borderStyle="border" title="Vendor ID">
-                                                                                        <font key="font" metaFont="message" size="11"/>
                                                                                         <color key="textColor" name="headerTextColor" catalog="System" colorSpace="catalog"/>
                                                                                         <color key="backgroundColor" name="headerColor" catalog="System" colorSpace="catalog"/>
                                                                                     </tableHeaderCell>
@@ -1481,7 +1465,6 @@
                                                                                 </tableColumn>
                                                                                 <tableColumn identifier="DevicesProductIdColumn" width="65" minWidth="10" maxWidth="3.4028234663852886e+38" id="4GC-DQ-55y">
                                                                                     <tableHeaderCell key="headerCell" lineBreakMode="truncatingTail" borderStyle="border" alignment="left" title="Product ID">
-                                                                                        <font key="font" metaFont="message" size="11"/>
                                                                                         <color key="textColor" name="headerTextColor" catalog="System" colorSpace="catalog"/>
                                                                                         <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
                                                                                     </tableHeaderCell>
@@ -1518,7 +1501,6 @@
                                                                                 </tableColumn>
                                                                                 <tableColumn identifier="DevicesIconsColumn" width="50" minWidth="10" maxWidth="3.4028234663852886e+38" id="Y6D-t4-Dz6">
                                                                                     <tableHeaderCell key="headerCell" lineBreakMode="truncatingTail" borderStyle="border" alignment="left" title="Type">
-                                                                                        <font key="font" metaFont="message" size="11"/>
                                                                                         <color key="textColor" name="headerTextColor" catalog="System" colorSpace="catalog"/>
                                                                                         <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
                                                                                     </tableHeaderCell>
@@ -1713,7 +1695,6 @@
                                                                                         <tableColumns>
                                                                                             <tableColumn identifier="DevicesExternalKeyboardColumn" width="857" minWidth="40" maxWidth="100000" id="8BP-8K-Oca">
                                                                                                 <tableHeaderCell key="headerCell" lineBreakMode="truncatingTail" borderStyle="border">
-                                                                                                    <font key="font" metaFont="message" size="11"/>
                                                                                                     <color key="textColor" name="headerTextColor" catalog="System" colorSpace="catalog"/>
                                                                                                     <color key="backgroundColor" name="headerColor" catalog="System" colorSpace="catalog"/>
                                                                                                 </tableHeaderCell>
@@ -1732,7 +1713,7 @@
                                                                                                                 <rect key="frame" x="6" y="4" width="61" height="18"/>
                                                                                                                 <buttonCell key="cell" type="check" title="Check" bezelStyle="regularSquare" imagePosition="left" state="on" inset="2" id="cXo-tU-jOh">
                                                                                                                     <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
-                                                                                                                    <font key="font" metaFont="menu"/>
+                                                                                                                    <font key="font" metaFont="system"/>
                                                                                                                 </buttonCell>
                                                                                                             </button>
                                                                                                             <imageView translatesAutoresizingMaskIntoConstraints="NO" id="q8d-sH-t2E">
@@ -2000,7 +1981,6 @@ In this case, you have to change the country code to avoid the conflict.
                                                         <tableColumns>
                                                             <tableColumn width="915" minWidth="40" maxWidth="10000" id="hdQ-pY-WkB">
                                                                 <tableHeaderCell key="headerCell" lineBreakMode="truncatingTail" borderStyle="border" title="Profile name">
-                                                                    <font key="font" metaFont="message" size="11"/>
                                                                     <color key="textColor" name="headerTextColor" catalog="System" colorSpace="catalog"/>
                                                                     <color key="backgroundColor" name="headerColor" catalog="System" colorSpace="catalog"/>
                                                                 </tableHeaderCell>
@@ -2027,7 +2007,7 @@ In this case, you have to change the country code to avoid the conflict.
                                                                                 <rect key="frame" x="713" y="-4" width="79" height="32"/>
                                                                                 <buttonCell key="cell" type="push" title="Select" bezelStyle="rounded" alignment="center" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="uwD-3g-0lE">
                                                                                     <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
-                                                                                    <font key="font" metaFont="menu"/>
+                                                                                    <font key="font" metaFont="system"/>
                                                                                 </buttonCell>
                                                                             </button>
                                                                             <imageView horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="wSk-3w-9nX">
@@ -2050,7 +2030,7 @@ In this case, you have to change the country code to avoid the conflict.
                                                                                 <rect key="frame" x="800" y="-4" width="111" height="32"/>
                                                                                 <buttonCell key="cell" type="push" title="Remove" bezelStyle="rounded" image="ic_remove_circle_18pt" imagePosition="left" alignment="center" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="n3c-fM-uj6">
                                                                                     <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
-                                                                                    <font key="font" metaFont="menu"/>
+                                                                                    <font key="font" metaFont="system"/>
                                                                                 </buttonCell>
                                                                             </button>
                                                                         </subviews>
@@ -2103,7 +2083,7 @@ In this case, you have to change the country code to avoid the conflict.
                                             <rect key="frame" x="11" y="1" width="129" height="32"/>
                                             <buttonCell key="cell" type="push" title="Add profile" bezelStyle="rounded" image="ic_add_circle_18pt" imagePosition="left" alignment="center" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="ZZS-ry-ePh">
                                                 <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
-                                                <font key="font" metaFont="menu"/>
+                                                <font key="font" metaFont="system"/>
                                             </buttonCell>
                                             <connections>
                                                 <action selector="addProfile:" target="lSQ-bm-e7S" id="idt-HD-A3g"/>
@@ -2172,7 +2152,7 @@ In this case, you have to change the country code to avoid the conflict.
                                                         <rect key="frame" x="15" y="37" width="279" height="18"/>
                                                         <buttonCell key="cell" type="check" title="Check for updates on startup (Default: on)" bezelStyle="regularSquare" imagePosition="left" state="on" inset="2" id="Wug-gg-zmP">
                                                             <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
-                                                            <font key="font" metaFont="menu"/>
+                                                            <font key="font" metaFont="system"/>
                                                         </buttonCell>
                                                         <connections>
                                                             <action selector="changeMiscTabControls:" target="5ke-qB-Wr5" id="D1a-c2-dCp"/>
@@ -2182,7 +2162,7 @@ In this case, you have to change the country code to avoid the conflict.
                                                         <rect key="frame" x="11" y="1" width="174" height="32"/>
                                                         <buttonCell key="cell" type="push" title="Check for updates" bezelStyle="rounded" image="ic_refresh_18pt" imagePosition="left" alignment="center" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="iDW-FG-uaL">
                                                             <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
-                                                            <font key="font" metaFont="menu"/>
+                                                            <font key="font" metaFont="system"/>
                                                         </buttonCell>
                                                         <connections>
                                                             <action selector="checkForUpdatesStableOnly:" target="5ke-qB-Wr5" id="dlN-aA-8f7"/>
@@ -2192,7 +2172,7 @@ In this case, you have to change the country code to avoid the conflict.
                                                         <rect key="frame" x="704" y="1" width="205" height="32"/>
                                                         <buttonCell key="cell" type="push" title="Check for beta updates" bezelStyle="rounded" image="ic_refresh_18pt" imagePosition="left" alignment="center" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="mbv-qj-mvU">
                                                             <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
-                                                            <font key="font" metaFont="menu"/>
+                                                            <font key="font" metaFont="system"/>
                                                         </buttonCell>
                                                         <connections>
                                                             <action selector="checkForUpdatesWithBetaVersion:" target="5ke-qB-Wr5" id="ed9-jh-unc"/>
@@ -2223,7 +2203,7 @@ In this case, you have to change the country code to avoid the conflict.
                                                         <rect key="frame" x="11" y="1" width="238" height="32"/>
                                                         <buttonCell key="cell" type="push" title="Uninstall Karabiner-Elements" bezelStyle="rounded" image="ic_delete_forever_18pt" imagePosition="left" alignment="center" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="Sr0-va-jSj">
                                                             <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
-                                                            <font key="font" metaFont="menu"/>
+                                                            <font key="font" metaFont="system"/>
                                                         </buttonCell>
                                                         <connections>
                                                             <action selector="launchUninstaller:" target="5ke-qB-Wr5" id="9JG-jF-1nr"/>
@@ -2309,7 +2289,7 @@ In this case, you have to change the country code to avoid the conflict.
                                                         <rect key="frame" x="15" y="30" width="239" height="18"/>
                                                         <buttonCell key="cell" type="check" title="Show icon in menu bar (Default: on)" bezelStyle="regularSquare" imagePosition="left" state="on" inset="2" id="Cel-5I-zrQ">
                                                             <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
-                                                            <font key="font" metaFont="menu"/>
+                                                            <font key="font" metaFont="system"/>
                                                         </buttonCell>
                                                         <connections>
                                                             <action selector="changeMiscTabControls:" target="5ke-qB-Wr5" id="CHt-rF-YUB"/>
@@ -2319,7 +2299,7 @@ In this case, you have to change the country code to avoid the conflict.
                                                         <rect key="frame" x="15" y="6" width="291" height="18"/>
                                                         <buttonCell key="cell" type="check" title="Show profile name in menu bar (Default: off)" bezelStyle="regularSquare" imagePosition="left" state="on" inset="2" id="dqN-LK-Qdn">
                                                             <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
-                                                            <font key="font" metaFont="menu"/>
+                                                            <font key="font" metaFont="system"/>
                                                         </buttonCell>
                                                         <connections>
                                                             <action selector="changeMiscTabControls:" target="5ke-qB-Wr5" id="fGd-h5-gMY"/>
@@ -2350,7 +2330,7 @@ In this case, you have to change the country code to avoid the conflict.
                                                         <rect key="frame" x="11" y="18" width="312" height="32"/>
                                                         <buttonCell key="cell" type="push" title="Open Karabiner-MultitouchExtension app" bezelStyle="rounded" image="ic_launch_18pt" imagePosition="left" alignment="center" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="M3v-oD-yER">
                                                             <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
-                                                            <font key="font" metaFont="menu"/>
+                                                            <font key="font" metaFont="system"/>
                                                         </buttonCell>
                                                         <connections>
                                                             <action selector="launchMultitouchExtension:" target="5ke-qB-Wr5" id="bk1-Ko-bS4"/>
@@ -2373,7 +2353,7 @@ In this case, you have to change the country code to avoid the conflict.
                                                         <rect key="frame" x="14" y="1" width="190" height="32"/>
                                                         <buttonCell key="cell" type="push" title="Open official website" bezelStyle="rounded" image="ic_home_18pt" imagePosition="left" alignment="center" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="I13-Po-Cgb">
                                                             <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
-                                                            <font key="font" metaFont="menu"/>
+                                                            <font key="font" metaFont="system"/>
                                                         </buttonCell>
                                                         <connections>
                                                             <action selector="openOfficialWebsite:" target="5ke-qB-Wr5" id="eS0-n7-3Ct"/>
@@ -2383,7 +2363,7 @@ In this case, you have to change the country code to avoid the conflict.
                                                         <rect key="frame" x="222" y="1" width="229" height="32"/>
                                                         <buttonCell key="cell" type="push" title="Open GitHub (source code)" bezelStyle="rounded" image="ic_code_18pt" imagePosition="left" alignment="center" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="PWa-pr-xeD">
                                                             <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
-                                                            <font key="font" metaFont="menu"/>
+                                                            <font key="font" metaFont="system"/>
                                                         </buttonCell>
                                                         <connections>
                                                             <action selector="openGitHub:" target="5ke-qB-Wr5" id="AcV-aa-B0y"/>
@@ -2410,7 +2390,7 @@ In this case, you have to change the country code to avoid the conflict.
                                                         <rect key="frame" x="14" y="1" width="281" height="32"/>
                                                         <buttonCell key="cell" type="push" title="Open config folder (~/.config/karabiner)" bezelStyle="rounded" alignment="center" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="6mh-Ca-pPg">
                                                             <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
-                                                            <font key="font" metaFont="menu"/>
+                                                            <font key="font" metaFont="system"/>
                                                         </buttonCell>
                                                         <connections>
                                                             <action selector="openConfigDirectory:" target="5ke-qB-Wr5" id="26s-rP-cSp"/>
@@ -2467,15 +2447,15 @@ In this case, you have to change the country code to avoid the conflict.
                                         <scrollView horizontalLineScroll="10" horizontalPageScroll="10" verticalLineScroll="10" verticalPageScroll="10" hasHorizontalScroller="NO" usesPredominantAxisScrolling="NO" translatesAutoresizingMaskIntoConstraints="NO" id="T7K-bf-5ph">
                                             <rect key="frame" x="17" y="48" width="920" height="432"/>
                                             <clipView key="contentView" drawsBackground="NO" id="h3K-SC-sFn">
-                                                <rect key="frame" x="1" y="1" width="918" height="430"/>
+                                                <rect key="frame" x="1" y="1" width="903" height="430"/>
                                                 <autoresizingMask key="autoresizingMask"/>
                                                 <subviews>
                                                     <textView editable="NO" importsGraphics="NO" richText="NO" verticallyResizable="YES" findStyle="panel" id="vyq-xs-cqF">
-                                                        <rect key="frame" x="0.0" y="0.0" width="918" height="430"/>
+                                                        <rect key="frame" x="0.0" y="0.0" width="903" height="430"/>
                                                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                                         <color key="textColor" name="textColor" catalog="System" colorSpace="catalog"/>
                                                         <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
-                                                        <size key="minSize" width="918" height="430"/>
+                                                        <size key="minSize" width="903" height="430"/>
                                                         <size key="maxSize" width="920" height="10000000"/>
                                                         <color key="insertionPointColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
                                                     </textView>
@@ -2540,18 +2520,18 @@ In this case, you have to change the country code to avoid the conflict.
             <windowStyleMask key="styleMask" titled="YES" closable="YES" miniaturizable="YES" resizable="YES" utility="YES"/>
             <windowPositionMask key="initialPositionMask" leftStrut="YES" rightStrut="YES" topStrut="YES" bottomStrut="YES"/>
             <rect key="contentRect" x="196" y="132" width="900" height="400"/>
-            <rect key="screenRect" x="0.0" y="0.0" width="2048" height="1280"/>
+            <rect key="screenRect" x="0.0" y="0.0" width="2048" height="1257"/>
             <value key="minSize" type="size" width="900" height="400"/>
             <value key="maxSize" type="size" width="900" height="400"/>
-            <view key="contentView" id="uOP-Fc-vEW">
-                <rect key="frame" x="0.0" y="0.0" width="900" height="399"/>
+            <view key="contentView" misplaced="YES" id="uOP-Fc-vEW">
+                <rect key="frame" x="0.0" y="0.0" width="900" height="400"/>
                 <autoresizingMask key="autoresizingMask"/>
                 <subviews>
                     <button verticalHuggingPriority="750" imageHugsTitle="YES" translatesAutoresizingMaskIntoConstraints="NO" id="Jox-CI-bt9">
                         <rect key="frame" x="245" y="356" width="411" height="32"/>
                         <buttonCell key="cell" type="push" title="Import more rules from the Internet (open a web browser)" bezelStyle="rounded" image="ic_cloud_download_18pt" imagePosition="left" alignment="center" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="02O-a2-wtg">
                             <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
-                            <font key="font" metaFont="menu"/>
+                            <font key="font" metaFont="system"/>
                         </buttonCell>
                         <connections>
                             <action selector="openRulesSite:" target="kWQ-dQ-cFu" id="Hpq-8a-7iW"/>
@@ -2573,7 +2553,6 @@ In this case, you have to change the country code to avoid the conflict.
                                     <tableColumns>
                                         <tableColumn identifier="ComplexModificationsAssetsNameColumn" width="715" minWidth="40" maxWidth="100000" id="nlS-o3-ZB6">
                                             <tableHeaderCell key="headerCell" lineBreakMode="truncatingTail" borderStyle="border">
-                                                <font key="font" metaFont="message" size="11"/>
                                                 <color key="textColor" name="headerTextColor" catalog="System" colorSpace="catalog"/>
                                                 <color key="backgroundColor" name="headerColor" catalog="System" colorSpace="catalog"/>
                                             </tableHeaderCell>
@@ -2610,7 +2589,6 @@ In this case, you have to change the country code to avoid the conflict.
                                         </tableColumn>
                                         <tableColumn identifier="ComplexModificationsAssetsButtonsColumn" width="143" minWidth="40" maxWidth="1000" id="3W8-oi-dL7">
                                             <tableHeaderCell key="headerCell" lineBreakMode="truncatingTail" borderStyle="border">
-                                                <font key="font" metaFont="message" size="11"/>
                                                 <color key="textColor" name="headerTextColor" catalog="System" colorSpace="catalog"/>
                                                 <color key="backgroundColor" name="headerColor" catalog="System" colorSpace="catalog"/>
                                             </tableHeaderCell>
@@ -2632,14 +2610,14 @@ In this case, you have to change the country code to avoid the conflict.
                                                             </constraints>
                                                             <buttonCell key="cell" type="push" alternateTitle="Erase imported file" bezelStyle="rounded" image="ic_delete_forever_18pt" imagePosition="only" alignment="center" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="QMI-8g-K8d">
                                                                 <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
-                                                                <font key="font" metaFont="menu"/>
+                                                                <font key="font" metaFont="system"/>
                                                             </buttonCell>
                                                         </button>
                                                         <button hidden="YES" verticalHuggingPriority="750" imageHugsTitle="YES" translatesAutoresizingMaskIntoConstraints="NO" id="aoS-Bs-ODT">
                                                             <rect key="frame" x="41" y="-4" width="103" height="32"/>
                                                             <buttonCell key="cell" type="push" title="Enable" bezelStyle="rounded" image="ic_add_circle_18pt" imagePosition="left" alignment="center" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="6TO-Hp-Ppt">
                                                                 <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
-                                                                <font key="font" metaFont="menu"/>
+                                                                <font key="font" metaFont="system"/>
                                                             </buttonCell>
                                                         </button>
                                                         <button hidden="YES" verticalHuggingPriority="750" imageHugsTitle="YES" translatesAutoresizingMaskIntoConstraints="NO" id="lKf-rC-tnd" userLabel="Enable All Button">
@@ -2709,7 +2687,7 @@ In this case, you have to change the country code to avoid the conflict.
                         <rect key="frame" x="398" y="13" width="104" height="32"/>
                         <buttonCell key="cell" type="push" title="Cancel" bezelStyle="rounded" image="ic_cancel_18pt" imagePosition="left" alignment="center" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="Fd0-PH-WES">
                             <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
-                            <font key="font" metaFont="menu"/>
+                            <font key="font" metaFont="system"/>
                             <string key="keyEquivalent" base64-UTF8="YES">
 Gw
 </string>
@@ -2741,7 +2719,7 @@ Gw
             <windowStyleMask key="styleMask" titled="YES" closable="YES" miniaturizable="YES" resizable="YES" utility="YES"/>
             <windowPositionMask key="initialPositionMask" leftStrut="YES" rightStrut="YES" topStrut="YES" bottomStrut="YES"/>
             <rect key="contentRect" x="196" y="132" width="900" height="200"/>
-            <rect key="screenRect" x="0.0" y="0.0" width="2048" height="1280"/>
+            <rect key="screenRect" x="0.0" y="0.0" width="2048" height="1257"/>
             <value key="minSize" type="size" width="900" height="200"/>
             <value key="maxSize" type="size" width="900" height="200"/>
             <view key="contentView" id="YVO-Df-Mre">
@@ -2773,15 +2751,15 @@ Gw
                     <scrollView wantsLayer="YES" horizontalLineScroll="10" horizontalPageScroll="10" verticalLineScroll="10" verticalPageScroll="10" hasHorizontalScroller="NO" usesPredominantAxisScrolling="NO" translatesAutoresizingMaskIntoConstraints="NO" id="A3J-XY-x60">
                         <rect key="frame" x="80" y="58" width="740" height="86"/>
                         <clipView key="contentView" drawsBackground="NO" id="uNg-oR-13T">
-                            <rect key="frame" x="1" y="1" width="738" height="84"/>
+                            <rect key="frame" x="1" y="1" width="723" height="84"/>
                             <autoresizingMask key="autoresizingMask"/>
                             <subviews>
                                 <textView editable="NO" importsGraphics="NO" verticallyResizable="YES" usesFontPanel="YES" findStyle="panel" allowsUndo="YES" usesRuler="YES" allowsNonContiguousLayout="YES" id="iV7-bm-Yxd">
-                                    <rect key="frame" x="0.0" y="0.0" width="738" height="84"/>
+                                    <rect key="frame" x="0.0" y="0.0" width="723" height="84"/>
                                     <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                     <color key="textColor" name="textColor" catalog="System" colorSpace="catalog"/>
                                     <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
-                                    <size key="minSize" width="738" height="84"/>
+                                    <size key="minSize" width="723" height="84"/>
                                     <size key="maxSize" width="740" height="10000000"/>
                                     <color key="insertionPointColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
                                 </textView>
@@ -2803,7 +2781,7 @@ Gw
                                 <rect key="frame" x="-1" y="-2" width="104" height="32"/>
                                 <buttonCell key="cell" type="push" title="Cancel" bezelStyle="rounded" image="ic_cancel_18pt" imagePosition="left" alignment="center" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="WIz-od-AHq">
                                     <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
-                                    <font key="font" metaFont="menu"/>
+                                    <font key="font" metaFont="system"/>
                                     <string key="keyEquivalent" base64-UTF8="YES">
 Gw
 </string>
@@ -2816,7 +2794,7 @@ Gw
                                 <rect key="frame" x="111" y="-2" width="102" height="32"/>
                                 <buttonCell key="cell" type="push" title="Import" bezelStyle="rounded" image="ic_file_download_18pt" imagePosition="left" alignment="center" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="2lw-6W-9IN">
                                     <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
-                                    <font key="font" metaFont="menu"/>
+                                    <font key="font" metaFont="system"/>
                                 </buttonCell>
                                 <connections>
                                     <action selector="importFile:" target="1ch-Te-EDv" id="X5G-Ac-qSE"/>
@@ -2850,152 +2828,11 @@ Gw
             </view>
             <point key="canvasLocation" x="46" y="640"/>
         </window>
-        <window title="Window" allowsToolTipsWhenApplicationIsInactive="NO" autorecalculatesKeyViewLoop="NO" hidesOnDeactivate="YES" releasedWhenClosed="NO" visibleAtLaunch="NO" frameAutosaveName="" animationBehavior="default" id="WRr-7z-BZH" userLabel="Kextd Alert Panel" customClass="NSPanel">
-            <windowStyleMask key="styleMask" titled="YES" closable="YES" miniaturizable="YES" resizable="YES" utility="YES"/>
-            <windowPositionMask key="initialPositionMask" leftStrut="YES" rightStrut="YES" topStrut="YES" bottomStrut="YES"/>
-            <rect key="contentRect" x="196" y="132" width="900" height="600"/>
-            <rect key="screenRect" x="0.0" y="0.0" width="2048" height="1280"/>
-            <value key="minSize" type="size" width="900" height="600"/>
-            <value key="maxSize" type="size" width="900" height="600"/>
-            <view key="contentView" id="t6Q-r2-1Lh">
-                <rect key="frame" x="0.0" y="0.0" width="900" height="600"/>
-                <autoresizingMask key="autoresizingMask"/>
-                <subviews>
-                    <customView translatesAutoresizingMaskIntoConstraints="NO" id="GkP-Rg-Yqv">
-                        <rect key="frame" x="347" y="548" width="206" height="32"/>
-                        <subviews>
-                            <imageView translatesAutoresizingMaskIntoConstraints="NO" id="jJb-z0-5Vi">
-                                <rect key="frame" x="0.0" y="0.0" width="32" height="32"/>
-                                <constraints>
-                                    <constraint firstAttribute="width" constant="32" id="byX-E8-HF9"/>
-                                    <constraint firstAttribute="height" constant="32" id="oec-nH-JhW"/>
-                                </constraints>
-                                <imageCell key="cell" refusesFirstResponder="YES" alignment="left" animates="YES" imageScaling="proportionallyDown" image="NSCaution" id="0fG-GA-VAA"/>
-                            </imageView>
-                            <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="mgq-Hw-0PW">
-                                <rect key="frame" x="40" y="8" width="168" height="16"/>
-                                <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" title="Karabiner-Elements Alert" id="F4L-Fr-v4d">
-                                    <font key="font" metaFont="systemBold"/>
-                                    <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
-                                    <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
-                                </textFieldCell>
-                            </textField>
-                        </subviews>
-                        <constraints>
-                            <constraint firstItem="jJb-z0-5Vi" firstAttribute="leading" secondItem="GkP-Rg-Yqv" secondAttribute="leading" id="0w9-gd-w1X"/>
-                            <constraint firstAttribute="bottom" secondItem="jJb-z0-5Vi" secondAttribute="bottom" id="Cfl-Co-fgS"/>
-                            <constraint firstItem="mgq-Hw-0PW" firstAttribute="centerY" secondItem="jJb-z0-5Vi" secondAttribute="centerY" id="Dh4-LY-Md2"/>
-                            <constraint firstItem="mgq-Hw-0PW" firstAttribute="leading" secondItem="jJb-z0-5Vi" secondAttribute="trailing" constant="10" id="FsM-OS-fNo"/>
-                            <constraint firstAttribute="trailing" secondItem="mgq-Hw-0PW" secondAttribute="trailing" id="VZV-yX-O2i"/>
-                            <constraint firstItem="jJb-z0-5Vi" firstAttribute="top" secondItem="GkP-Rg-Yqv" secondAttribute="top" id="pUH-vZ-MFH"/>
-                        </constraints>
-                    </customView>
-                    <tabView type="noTabsNoBorder" translatesAutoresizingMaskIntoConstraints="NO" id="kqu-77-2mK">
-                        <rect key="frame" x="10" y="10" width="880" height="518"/>
-                        <font key="font" metaFont="menu"/>
-                        <tabViewItems>
-                            <tabViewItem label="Tab" identifier="1" id="eIG-Ss-b2j">
-                                <view key="view" id="G93-5A-Bfp">
-                                    <rect key="frame" x="0.0" y="0.0" width="880" height="518"/>
-                                    <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
-                                    <subviews>
-                                        <textField verticalHuggingPriority="750" horizontalCompressionResistancePriority="250" translatesAutoresizingMaskIntoConstraints="NO" id="hVs-29-H8P">
-                                            <rect key="frame" x="18" y="450" width="844" height="48"/>
-                                            <textFieldCell key="cell" sendsActionOnEndEditing="YES" alignment="center" id="c0m-Ay-Y4e">
-                                                <font key="font" metaFont="menu"/>
-                                                <string key="title">System policy prevents loading the kernel extension that is used by Karabiner-Elements.
-You have to allow the system software from developer "Fumihiko Takayama" (the author of Karabiner-Elements) on
-System Preferences &gt; Security &amp; Privacy.</string>
-                                                <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
-                                                <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
-                                            </textFieldCell>
-                                        </textField>
-                                        <button verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="15b-2Z-hf1">
-                                            <rect key="frame" x="267" y="402" width="346" height="32"/>
-                                            <buttonCell key="cell" type="push" title="Open System Preferences &gt; Security &amp; Privacy" bezelStyle="rounded" image="ic_forward_18pt" imagePosition="left" alignment="left" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="Te8-FQ-SJa">
-                                                <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
-                                                <font key="font" metaFont="menu"/>
-                                            </buttonCell>
-                                            <connections>
-                                                <action selector="openSystemPreferencesSecurity:" target="fAe-OR-t9F" id="tgB-x4-4Mm"/>
-                                            </connections>
-                                        </button>
-                                        <button verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="9f7-D7-XzV">
-                                            <rect key="frame" x="364" y="360" width="153" height="32"/>
-                                            <buttonCell key="cell" type="push" title="Close this alert" bezelStyle="rounded" image="ic_cancel_18pt" imagePosition="left" alignment="left" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="qyW-jE-BlT">
-                                                <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
-                                                <font key="font" metaFont="menu"/>
-                                            </buttonCell>
-                                            <connections>
-                                                <action selector="closeAlert:" target="fAe-OR-t9F" id="4ZI-OI-zOp"/>
-                                            </connections>
-                                        </button>
-                                        <imageView horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="8N5-fM-hfp">
-                                            <rect key="frame" x="260" y="47" width="360" height="290"/>
-                                            <constraints>
-                                                <constraint firstAttribute="width" constant="360" id="1ai-Wu-8tQ"/>
-                                                <constraint firstAttribute="height" constant="290" id="5o6-Bd-EEQ"/>
-                                            </constraints>
-                                            <imageCell key="cell" refusesFirstResponder="YES" alignment="left" imageScaling="proportionallyUpOrDown" image="kext_policy" id="e5V-85-L27"/>
-                                        </imageView>
-                                        <textField verticalHuggingPriority="750" horizontalCompressionResistancePriority="250" translatesAutoresizingMaskIntoConstraints="NO" id="VIt-Rw-dSa">
-                                            <rect key="frame" x="618" y="139" width="249" height="48"/>
-                                            <constraints>
-                                                <constraint firstAttribute="width" relation="lessThanOrEqual" constant="245" id="FDy-3o-WnD"/>
-                                            </constraints>
-                                            <textFieldCell key="cell" sendsActionOnEndEditing="YES" title="Note: You cannot press the button if you are using an app which intercepts mouse events." id="yzJ-hm-PWh">
-                                                <font key="font" metaFont="menu"/>
-                                                <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
-                                                <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
-                                            </textFieldCell>
-                                        </textField>
-                                        <button verticalHuggingPriority="750" imageHugsTitle="YES" translatesAutoresizingMaskIntoConstraints="NO" id="IL1-wh-XIV">
-                                            <rect key="frame" x="660" y="101" width="165" height="32"/>
-                                            <buttonCell key="cell" type="push" title="Open online help" bezelStyle="rounded" image="ic_open_in_browser_18pt" imagePosition="left" alignment="center" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="Y60-Nn-24R">
-                                                <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
-                                                <font key="font" metaFont="menu"/>
-                                            </buttonCell>
-                                            <connections>
-                                                <action selector="openSystemPolicyPreventsLoadingKextHelpWebPage:" target="fAe-OR-t9F" id="daa-dP-1XO"/>
-                                            </connections>
-                                        </button>
-                                    </subviews>
-                                    <constraints>
-                                        <constraint firstItem="9f7-D7-XzV" firstAttribute="top" secondItem="15b-2Z-hf1" secondAttribute="bottom" constant="21" id="1fY-ZB-Kby"/>
-                                        <constraint firstAttribute="trailing" secondItem="hVs-29-H8P" secondAttribute="trailing" constant="20" id="CUf-zA-yJF"/>
-                                        <constraint firstItem="15b-2Z-hf1" firstAttribute="top" secondItem="hVs-29-H8P" secondAttribute="bottom" constant="20" id="Ji9-Mc-ham"/>
-                                        <constraint firstItem="8N5-fM-hfp" firstAttribute="centerX" secondItem="G93-5A-Bfp" secondAttribute="centerX" id="N5A-Qc-YpE"/>
-                                        <constraint firstItem="VIt-Rw-dSa" firstAttribute="top" secondItem="8N5-fM-hfp" secondAttribute="top" constant="150" id="OJ4-Zd-5JZ"/>
-                                        <constraint firstItem="IL1-wh-XIV" firstAttribute="centerX" secondItem="VIt-Rw-dSa" secondAttribute="centerX" id="XH7-gd-3ez"/>
-                                        <constraint firstItem="hVs-29-H8P" firstAttribute="top" secondItem="G93-5A-Bfp" secondAttribute="top" constant="20" id="dgJ-Xa-HQh"/>
-                                        <constraint firstItem="15b-2Z-hf1" firstAttribute="centerX" secondItem="G93-5A-Bfp" secondAttribute="centerX" id="gOk-R0-Jei"/>
-                                        <constraint firstItem="hVs-29-H8P" firstAttribute="leading" secondItem="G93-5A-Bfp" secondAttribute="leading" constant="20" id="gZV-fc-c1K"/>
-                                        <constraint firstItem="8N5-fM-hfp" firstAttribute="top" secondItem="9f7-D7-XzV" secondAttribute="bottom" constant="30" id="h2g-VL-f5B"/>
-                                        <constraint firstItem="9f7-D7-XzV" firstAttribute="centerX" secondItem="G93-5A-Bfp" secondAttribute="centerX" id="ik2-5W-suO"/>
-                                        <constraint firstItem="VIt-Rw-dSa" firstAttribute="leading" secondItem="8N5-fM-hfp" secondAttribute="trailing" id="v86-wd-Fds"/>
-                                        <constraint firstItem="IL1-wh-XIV" firstAttribute="top" secondItem="VIt-Rw-dSa" secondAttribute="bottom" constant="10" id="yWH-3j-GP3"/>
-                                    </constraints>
-                                </view>
-                            </tabViewItem>
-                        </tabViewItems>
-                    </tabView>
-                </subviews>
-                <constraints>
-                    <constraint firstItem="GkP-Rg-Yqv" firstAttribute="centerX" secondItem="t6Q-r2-1Lh" secondAttribute="centerX" id="5Ld-Ia-rIW"/>
-                    <constraint firstItem="GkP-Rg-Yqv" firstAttribute="top" secondItem="t6Q-r2-1Lh" secondAttribute="top" constant="20" id="Buo-zP-aYu"/>
-                    <constraint firstAttribute="bottom" secondItem="kqu-77-2mK" secondAttribute="bottom" constant="10" id="dQK-OC-Fba"/>
-                    <constraint firstAttribute="trailing" secondItem="kqu-77-2mK" secondAttribute="trailing" constant="10" id="shG-AX-xk4"/>
-                    <constraint firstItem="kqu-77-2mK" firstAttribute="leading" secondItem="t6Q-r2-1Lh" secondAttribute="leading" constant="10" id="w6d-oX-YsM"/>
-                    <constraint firstItem="kqu-77-2mK" firstAttribute="top" secondItem="GkP-Rg-Yqv" secondAttribute="bottom" constant="20" id="xPW-tP-BeS"/>
-                </constraints>
-            </view>
-            <point key="canvasLocation" x="65" y="1057"/>
-        </window>
         <window title="Window" allowsToolTipsWhenApplicationIsInactive="NO" autorecalculatesKeyViewLoop="NO" hidesOnDeactivate="YES" releasedWhenClosed="NO" visibleAtLaunch="NO" frameAutosaveName="" animationBehavior="default" id="qSM-7c-jvU" userLabel="Input Monitoring Alert Panel" customClass="NSPanel">
             <windowStyleMask key="styleMask" titled="YES" closable="YES" miniaturizable="YES" resizable="YES" utility="YES"/>
             <windowPositionMask key="initialPositionMask" leftStrut="YES" rightStrut="YES" topStrut="YES" bottomStrut="YES"/>
             <rect key="contentRect" x="196" y="132" width="900" height="600"/>
-            <rect key="screenRect" x="0.0" y="0.0" width="2048" height="1280"/>
+            <rect key="screenRect" x="0.0" y="0.0" width="2048" height="1257"/>
             <value key="minSize" type="size" width="900" height="600"/>
             <value key="maxSize" type="size" width="900" height="600"/>
             <view key="contentView" id="YeD-U0-ZCw">
@@ -3054,7 +2891,7 @@ You have to allow them on System Preferences &gt; Security &amp; Privacy &gt; Pr
                                             <rect key="frame" x="267" y="418" width="346" height="32"/>
                                             <buttonCell key="cell" type="push" title="Open System Preferences &gt; Security &amp; Privacy" bezelStyle="rounded" image="ic_forward_18pt" imagePosition="left" alignment="left" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="FJU-Jt-koc">
                                                 <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
-                                                <font key="font" metaFont="menu"/>
+                                                <font key="font" metaFont="system"/>
                                             </buttonCell>
                                             <connections>
                                                 <action selector="openSystemPreferencesSecurity:" target="DhI-vl-MTs" id="j3Q-gu-q0U"/>
@@ -3064,7 +2901,7 @@ You have to allow them on System Preferences &gt; Security &amp; Privacy &gt; Pr
                                             <rect key="frame" x="364" y="376" width="153" height="32"/>
                                             <buttonCell key="cell" type="push" title="Close this alert" bezelStyle="rounded" image="ic_cancel_18pt" imagePosition="left" alignment="left" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="4Lr-1Z-9Ap">
                                                 <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
-                                                <font key="font" metaFont="menu"/>
+                                                <font key="font" metaFont="system"/>
                                             </buttonCell>
                                             <connections>
                                                 <action selector="closeAlert:" target="DhI-vl-MTs" id="7XV-EY-11A"/>
@@ -3110,7 +2947,7 @@ You have to allow them on System Preferences &gt; Security &amp; Privacy &gt; Pr
             <windowStyleMask key="styleMask" titled="YES" closable="YES" miniaturizable="YES" resizable="YES" utility="YES"/>
             <windowPositionMask key="initialPositionMask" leftStrut="YES" rightStrut="YES" topStrut="YES" bottomStrut="YES"/>
             <rect key="contentRect" x="196" y="132" width="600" height="300"/>
-            <rect key="screenRect" x="0.0" y="0.0" width="2048" height="1280"/>
+            <rect key="screenRect" x="0.0" y="0.0" width="2048" height="1257"/>
             <view key="contentView" id="Sw1-0x-oK2">
                 <rect key="frame" x="0.0" y="0.0" width="600" height="300"/>
                 <autoresizingMask key="autoresizingMask"/>
@@ -3167,7 +3004,7 @@ Please keep the checkbox off if the device does not have a caps lock LED.</strin
                                 </constraints>
                                 <buttonCell key="cell" type="push" title="Cancel" bezelStyle="rounded" image="ic_cancel_18pt" imagePosition="left" alignment="center" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="25x-JO-VcX">
                                     <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
-                                    <font key="font" metaFont="menu"/>
+                                    <font key="font" metaFont="system"/>
                                     <string key="keyEquivalent" base64-UTF8="YES">
 Gw
 </string>
@@ -3225,12 +3062,10 @@ Gw
         <image name="ic_keyboard_18pt" width="18" height="18"/>
         <image name="ic_launch_18pt" width="18" height="18"/>
         <image name="ic_mouse_18pt" width="18" height="18"/>
-        <image name="ic_open_in_browser_18pt" width="18" height="18"/>
         <image name="ic_refresh_18pt" width="18" height="18"/>
         <image name="ic_remove_circle_18pt" width="18" height="18"/>
         <image name="ic_star_rate_18pt" width="18" height="18"/>
         <image name="ic_warning_18pt" width="18" height="18"/>
         <image name="input_monitoring" width="668" height="573"/>
-        <image name="kext_policy" width="1336" height="1146"/>
     </resources>
 </document>

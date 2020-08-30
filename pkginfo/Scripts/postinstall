@@ -31,9 +31,6 @@ cp \
 
 # If plistFilePath is already bootstrapped and disabled, launchctl bootstrap will fail until it is enabled again.
 # So we should enable it first, and then bootstrap and enable it.
-launchctl enable system/org.pqrs.karabiner.karabiner_kextd
-launchctl bootstrap system /Library/LaunchDaemons/org.pqrs.karabiner.karabiner_kextd.plist
-launchctl enable system/org.pqrs.karabiner.karabiner_kextd
 
 launchctl enable system/org.pqrs.karabiner.karabiner_grabber
 launchctl bootstrap system /Library/LaunchDaemons/org.pqrs.karabiner.karabiner_grabber.plist

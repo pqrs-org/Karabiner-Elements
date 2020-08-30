@@ -30,13 +30,6 @@ cd src/core/console_user_server
 make install
 ```
 
-### Replace `karabiner_kextd`
-
-```shell
-cd src/core/kextd
-make install
-```
-
 ## Core Processes
 
 -   `karabiner_grabber`
@@ -56,8 +49,6 @@ make install
     -   Monitor system preferences values (key repeat, etc) and notify them to `karabiner_grabber`.
     -   Execute shell commands which are specified by `shell_command` in `complex_modifications`.
     -   `karabiner_grabber` seizes devices only when `karabiner_console_user_server` is running.
--   `karabiner_kextd`
-    -   Load Karabiner-VirtualHIDDevice kext.
 
 ![processes](images/processes.svg)
 
@@ -152,7 +143,7 @@ There is another problem with `CGEventTapCreate`.<br />
 
 ## The difference of event posting methods
 
-### IOKit device report in kext
+### IOKit device report in dext
 
 It requires posting HID events.<br />
 The IOHIKeyboard processes the reports by passing reports to `handleReport`.
@@ -160,12 +151,6 @@ The IOHIKeyboard processes the reports by passing reports to `handleReport`.
 `karabiner_grabber` uses this method by using `Karabiner-VirtualHIDDevice`.
 
 Note: `handleReport` fails to treat events which usage page are `kHIDPage_AppleVendorKeyboard` or `kHIDPage_AppleVendorTopCase` on macOS 10.11 or earlier.
-
-### IOKit call IOHIKeyboard::dispatchKeyboardEvent in kext
-
-It requires posting HID usage page and usage.
-
-Caution: IOHIDValue observers cannot receive events that are posted via `dispatchKeyboardEvent`.
 
 ### IOHIDPostEvent
 
@@ -185,11 +170,6 @@ It requires posting coregraphics events.<br />
 -   Option-Command-Escape
 
 Thus, `karabiner_grabber` does not use `CGEventPost`.
-
-### IOKit device value in kext
-
-It requires posting HID events.<br />
-We have to make a complete set of virtual devices to post the IOHIDValue.
 
 ---
 
@@ -275,13 +255,3 @@ There are several way to get the session information, however, the reliable way 
         Thus, `SessionGetInfo` cannot determine the console user.
 -   `CGSessionCopyCurrentDictionary`
     -   `karabiner_session_monitor` uses it to avoid the above problems.
-
----
-
-## Kernel extensions location
-
-There is a macOS problem that macOS load old kext from cache after we update a kext file in /Library/Extensions.
-(It seems macOS failed to update kext cache.)
-
-Thus, Karabiner-VirtualHIDDevice adds the version number to the kext directory name and put kext file into `/Library/Application Support` where is described TN2459.
-<https://developer.apple.com/library/content/technotes/tn2459/_index.html>

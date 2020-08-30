@@ -2,7 +2,6 @@
 #import "ComplexModificationsFileImportWindowController.h"
 #import "InputMonitoringAlertWindowController.h"
 #import "KarabinerKit/KarabinerKit.h"
-#import "KextdAlertWindowController.h"
 #import "PreferencesWindowController.h"
 #import "SimpleModificationsTableViewController.h"
 #import "SystemPreferencesManager.h"
@@ -12,7 +11,6 @@
 
 @property(weak) IBOutlet SimpleModificationsTableViewController* simpleModificationsTableViewController;
 @property(weak) IBOutlet ComplexModificationsFileImportWindowController* complexModificationsFileImportWindowController;
-@property(weak) IBOutlet KextdAlertWindowController* kextdAlertWindowController;
 @property(weak) IBOutlet InputMonitoringAlertWindowController* inputMonitoringAlertWindowController;
 @property(weak) IBOutlet NSWindow* preferencesWindow;
 @property(weak) IBOutlet PreferencesWindowController* preferencesWindowController;
@@ -39,7 +37,6 @@
 
   [self.preferencesWindowController setup];
 
-  [self.kextdAlertWindowController setup];
   [self.inputMonitoringAlertWindowController setup];
 }
 

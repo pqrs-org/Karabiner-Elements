@@ -316,24 +316,6 @@ void libkrbn_disable_connected_devices_monitor(void) {
 }
 
 //
-// kextd_state_json_file_monitor
-//
-
-void libkrbn_enable_kextd_state_json_file_monitor(libkrbn_file_monitor_callback callback,
-                                                  void* refcon) {
-  if (libkrbn_components_manager_) {
-    libkrbn_components_manager_->enable_kextd_state_json_file_monitor(callback,
-                                                                      refcon);
-  }
-}
-
-void libkrbn_disable_kextd_state_json_file_monitor(void) {
-  if (libkrbn_components_manager_) {
-    libkrbn_components_manager_->disable_kextd_state_json_file_monitor();
-  }
-}
-
-//
 // observer_state_json_file_monitor
 //
 

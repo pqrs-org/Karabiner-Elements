@@ -39,7 +39,6 @@ mkdir -p "$basedir"
 cp src/bin/cli/build_xcode/build/Release/karabiner_cli "$basedir"
 cp src/core/console_user_server/build_xcode/build/Release/karabiner_console_user_server "$basedir"
 cp src/core/grabber/build_xcode/build/Release/karabiner_grabber "$basedir"
-cp src/core/kextd/build_xcode/build/Release/karabiner_kextd "$basedir"
 cp src/core/observer/build_xcode/build/Release/karabiner_observer "$basedir"
 cp src/core/session_monitor/build_xcode/build/Release/karabiner_session_monitor "$basedir"
 
@@ -50,10 +49,6 @@ cp -R "src/apps/Updater/build_xcode/build/Release/Karabiner-Elements.app" "$base
 mkdir -p "pkgroot/Library"
 cp -R files/LaunchDaemons "pkgroot/Library"
 cp -R files/LaunchAgents "pkgroot/Library"
-
-basedir="pkgroot/Library/Application Support/org.pqrs/Karabiner-VirtualHIDDevice/Extensions"
-mkdir -p "$basedir"
-cp -R src/vendor/Karabiner-VirtualHIDDevice/dist/org.pqrs.driver.Karabiner.VirtualHIDDevice.*.kext "$basedir"
 
 basedir="pkgroot/Applications"
 mkdir -p "$basedir"

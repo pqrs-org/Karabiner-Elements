@@ -88,7 +88,6 @@ public:
       receiver_ = nullptr;
       grabber_state_json_file_monitor_ = nullptr;
       observer_state_json_file_monitor_ = nullptr;
-      kextd_state_json_file_monitor_ = nullptr;
       version_monitor_ = nullptr;
     });
   }
@@ -103,30 +102,6 @@ public:
 
 private:
   void start_state_json_file_monitors(void) {
-    //
-    // kextd_state_json_file_monitor_
-    //
-
-    if (!kextd_state_json_file_monitor_) {
-      kextd_state_json_file_monitor_ = std::make_unique<pqrs::osx::json_file_monitor>(
-          weak_dispatcher_,
-          std::vector<std::string>({constants::get_kextd_state_json_file_path()}));
-
-      kextd_state_json_file_monitor_->json_file_changed.connect([](auto&& changed_file_path, auto&& json) {
-        if (json) {
-          try {
-            if (json->at("kext_load_result").template get<std::string>() == "kOSKextReturnSystemPolicy") {
-              application_launcher::launch_preferences();
-            }
-          } catch (std::exception& e) {
-            logger::get_logger()->error("karabiner_kextd_state.json error: {0}", e.what());
-          }
-        }
-      });
-
-      kextd_state_json_file_monitor_->async_start();
-    }
-
     //
     // observer_state_json_file_monitor_
     //
@@ -297,7 +272,6 @@ private:
   // Core components
 
   std::unique_ptr<version_monitor> version_monitor_;
-  std::unique_ptr<pqrs::osx::json_file_monitor> kextd_state_json_file_monitor_;
   std::unique_ptr<pqrs::osx::json_file_monitor> observer_state_json_file_monitor_;
   std::unique_ptr<pqrs::osx::json_file_monitor> grabber_state_json_file_monitor_;
 

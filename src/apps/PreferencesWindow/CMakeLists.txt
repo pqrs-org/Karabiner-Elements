@@ -54,8 +54,6 @@ add_executable(
   src/FnFunctionKeysTableViewDelegate.h
   src/InputMonitoringAlertWindowController.m
   src/InputMonitoringAlertWindowController.h
-  src/KextdAlertWindowController.m
-  src/KextdAlertWindowController.h
   src/LogFileTextViewController.m
   src/LogFileTextViewController.h
   src/main.m
@@ -91,7 +89,6 @@ add_executable(
   src/VirtualHIDKeyboardTypeBackgroundView.h
   Resources/Assets.xcassets
   Resources/input_monitoring.png
-  Resources/kext_policy.png
   Resources/MainMenu.xib
   Resources/simple_modifications.json
   ../share/Resources/app.icns
@@ -100,7 +97,6 @@ add_executable(
 set_source_files_properties(
   Resources/Assets.xcassets
   Resources/input_monitoring.png
-  Resources/kext_policy.png
   Resources/MainMenu.xib
   Resources/simple_modifications.json
   ../share/Resources/app.icns

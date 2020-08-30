@@ -251,12 +251,6 @@ void libkrbn_disable_version_monitor(void);
 typedef void (*libkrbn_file_monitor_callback)(const char* file_path,
                                               void* refcon);
 
-// libkrbn_kextd_state_json_file_monitor
-
-void libkrbn_enable_kextd_state_json_file_monitor(libkrbn_file_monitor_callback callback,
-                                                  void* refcon);
-void libkrbn_disable_kextd_state_json_file_monitor(void);
-
 // libkrbn_observer_state_json_file_monitor
 
 void libkrbn_enable_observer_state_json_file_monitor(libkrbn_file_monitor_callback callback,

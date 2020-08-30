@@ -1,4 +1,4 @@
-#!/usr/bin/env bash
+#!/bin/bash
 
 set -e
 
@@ -11,11 +11,6 @@ err() {
 test_mach_o() {
     if `file -b "$1" | grep 'executable ' | grep -sq 'Mach-O '`; then
         # This is Mach-O file.
-        # Except kext bundle
-        if `file -b "$1" | grep -sq 'kext bundle'`; then
-            exit 1
-        fi
-
         exit 0
     fi
 
@@ -27,7 +22,7 @@ main() {
         err "Invalid argument: '$1'"
         exit 1
     fi
-    
+
     find "$1" -print0 | while read -d $'\0' filepath; do
         if [ -d "$filepath" ]; then
             chmod -h 755 "$filepath"
@@ -46,4 +41,3 @@ main() {
 }
 
 main "$1"
-
