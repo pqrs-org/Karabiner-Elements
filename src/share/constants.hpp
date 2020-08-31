@@ -38,6 +38,10 @@ public:
     return "/Library/Application Support/org.pqrs/tmp/karabiner_grabber_receiver";
   }
 
+  static const char* get_virtual_hid_device_service_client_socket_file_path(void) {
+    return "/Library/Application Support/org.pqrs/tmp/rootonly/virtual_hid_device_service_client.sock";
+  }
+
   static std::string get_grabber_session_monitor_receiver_socket_file_path(void) {
     return get_rootonly_directory() + "/karabiner_grabber_session_monitor_receiver";
   }
