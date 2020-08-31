@@ -32,7 +32,6 @@ mkdir -p "$basedir"
 cp src/scripts/copy_current_profile_to_system_default_profile.applescript "$basedir"
 cp src/scripts/remove_system_default_profile.applescript "$basedir"
 cp src/scripts/uninstaller.applescript "$basedir"
-cp -R "src/vendor/Karabiner-VirtualHIDDevice/dist/uninstall.sh" "$basedir/uninstall-Karabiner-VirtualHIDDevice.sh"
 
 basedir="pkgroot/Library/Application Support/org.pqrs/Karabiner-Elements/bin"
 mkdir -p "$basedir"
