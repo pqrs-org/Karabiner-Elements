@@ -1,6 +1,0 @@
-language: cpp
-os: osx
-osx_image: xcode8
-compiler: clang
-install: true
-script: make
