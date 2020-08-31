@@ -38,6 +38,8 @@ public:
   device_grabber(const device_grabber&) = delete;
 
   device_grabber(std::weak_ptr<console_user_server_client> weak_console_user_server_client) : dispatcher_client(),
+                                                                                              is_virtual_hid_keyboard_ready_(false),
+                                                                                              is_virtual_hid_pointing_ready_(false),
                                                                                               profile_(nlohmann::json::object()),
                                                                                               logger_unique_filter_(logger::get_logger()) {
     simple_modifications_manipulator_manager_ = std::make_shared<device_grabber_details::simple_modifications_manipulator_manager>();
