@@ -29,9 +29,11 @@ krbn::pointing_button_manager::active_pointing_button button20_1(krbn::pointing_
 } // namespace
 
 TEST_CASE("pointing_button_manager") {
+  namespace hid_report = pqrs::karabiner::driverkit::virtual_hid_device_driver::hid_report;
+
   {
     krbn::pointing_button_manager pointing_button_manager;
-    pqrs::karabiner_virtual_hid_device::hid_report::buttons expected;
+    hid_report::buttons expected;
 
     pointing_button_manager.push_back_active_pointing_button(button1_1);
     expected.insert(1);
@@ -48,12 +50,12 @@ TEST_CASE("pointing_button_manager") {
     pointing_button_manager.push_back_active_pointing_button(button20_1);
     expected.insert(20);
     REQUIRE(pointing_button_manager.make_hid_report_buttons() == expected);
-  }
+  } // namespace pqrs::karabiner::driverkit::virtual_hid_device_driver::hid_report;
 
   // decrease first
   {
     krbn::pointing_button_manager pointing_button_manager;
-    pqrs::karabiner_virtual_hid_device::hid_report::buttons expected;
+    hid_report::buttons expected;
 
     pointing_button_manager.push_back_active_pointing_button(button1_decrease_1);
     REQUIRE(pointing_button_manager.make_hid_report_buttons() == expected);
@@ -66,7 +68,7 @@ TEST_CASE("pointing_button_manager") {
   // push twice
   {
     krbn::pointing_button_manager pointing_button_manager;
-    pqrs::karabiner_virtual_hid_device::hid_report::buttons expected;
+    hid_report::buttons expected;
 
     pointing_button_manager.push_back_active_pointing_button(button1_1);
     expected.insert(1);
@@ -85,7 +87,7 @@ TEST_CASE("pointing_button_manager") {
   // multiple devices
   {
     krbn::pointing_button_manager pointing_button_manager;
-    pqrs::karabiner_virtual_hid_device::hid_report::buttons expected;
+    hid_report::buttons expected;
 
     pointing_button_manager.push_back_active_pointing_button(button1_1);
     pointing_button_manager.push_back_active_pointing_button(button1_2);
