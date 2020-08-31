@@ -9,7 +9,7 @@
 #include "mouse_key_handler.hpp"
 #include "queue.hpp"
 #include "types.hpp"
-#include "virtual_hid_device_client.hpp"
+#include <pqrs/karabiner/driverkit/virtual_hid_device_service.hpp>
 
 namespace krbn {
 namespace manipulator {
@@ -358,10 +358,10 @@ public:
     // This manipulator is always valid.
   }
 
-  void async_post_events(std::weak_ptr<virtual_hid_device_client> weak_virtual_hid_device_client) {
+  void async_post_events(std::weak_ptr<pqrs::karabiner::driverkit::virtual_hid_device_service::client> weak_virtual_hid_device_service_client) {
     enqueue_to_dispatcher(
-        [this, weak_virtual_hid_device_client] {
-          queue_.async_post_events(weak_virtual_hid_device_client,
+        [this, weak_virtual_hid_device_service_client] {
+          queue_.async_post_events(weak_virtual_hid_device_service_client,
                                    weak_console_user_server_client_);
         });
   }

@@ -2,10 +2,10 @@
 
 #include "keyboard_repeat_detector.hpp"
 #include "types.hpp"
-#include "virtual_hid_device_client.hpp"
 #include "virtual_hid_device_utility.hpp"
 #include <mpark/variant.hpp>
 #include <pqrs/dispatcher.hpp>
+#include <pqrs/karabiner/driverkit/virtual_hid_device_service.hpp>
 
 namespace krbn {
 namespace manipulator {
@@ -384,10 +384,10 @@ public:
     return events_.empty();
   }
 
-  void async_post_events(std::weak_ptr<virtual_hid_device_client> weak_virtual_hid_device_client,
+  void async_post_events(std::weak_ptr<pqrs::karabiner::driverkit::virtual_hid_device_service::client> weak_virtual_hid_device_service_client,
                          std::weak_ptr<console_user_server_client> weak_console_user_server_client) {
     enqueue_to_dispatcher(
-        [this, weak_virtual_hid_device_client, weak_console_user_server_client] {
+        [this, weak_virtual_hid_device_service_client, weak_console_user_server_client] {
           auto now = pqrs::osx::chrono::mach_absolute_time_point();
 
           while (!events_.empty()) {
@@ -402,8 +402,8 @@ public:
               }
 
               enqueue_to_dispatcher(
-                  [this, weak_virtual_hid_device_client, weak_console_user_server_client] {
-                    async_post_events(weak_virtual_hid_device_client,
+                  [this, weak_virtual_hid_device_service_client, weak_console_user_server_client] {
+                    async_post_events(weak_virtual_hid_device_service_client,
                                       weak_console_user_server_client);
                   },
                   when_now() + pqrs::osx::chrono::make_milliseconds(duration));
@@ -412,28 +412,28 @@ public:
             }
 
             if (auto input = e.get_keyboard_input()) {
-              if (auto client = weak_virtual_hid_device_client.lock()) {
-                client->async_post_keyboard_input_report(*input);
+              if (auto client = weak_virtual_hid_device_service_client.lock()) {
+                client->async_post_report(*input);
               }
             }
             if (auto input = e.get_consumer_input()) {
-              if (auto client = weak_virtual_hid_device_client.lock()) {
-                client->async_post_keyboard_input_report(*input);
+              if (auto client = weak_virtual_hid_device_service_client.lock()) {
+                client->async_post_report(*input);
               }
             }
             if (auto input = e.get_apple_vendor_top_case_input()) {
-              if (auto client = weak_virtual_hid_device_client.lock()) {
-                client->async_post_keyboard_input_report(*input);
+              if (auto client = weak_virtual_hid_device_service_client.lock()) {
+                client->async_post_report(*input);
               }
             }
             if (auto input = e.get_apple_vendor_keyboard_input()) {
-              if (auto client = weak_virtual_hid_device_client.lock()) {
-                client->async_post_keyboard_input_report(*input);
+              if (auto client = weak_virtual_hid_device_service_client.lock()) {
+                client->async_post_report(*input);
               }
             }
             if (auto pointing_input = e.get_pointing_input()) {
-              if (auto client = weak_virtual_hid_device_client.lock()) {
-                client->async_post_pointing_input_report(*pointing_input);
+              if (auto client = weak_virtual_hid_device_service_client.lock()) {
+                client->async_post_report(*pointing_input);
               }
             }
             if (auto shell_command = e.get_shell_command()) {
