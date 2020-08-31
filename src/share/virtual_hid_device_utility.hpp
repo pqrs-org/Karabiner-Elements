@@ -1,44 +1,46 @@
 #pragma once
 
-#include "Karabiner-VirtualHIDDevice/dist/include/karabiner_virtual_hid_device_methods.hpp"
 #include "types.hpp"
 #include <nlohmann/json.hpp>
+#include <pqrs/karabiner/driverkit/virtual_hid_device_driver.hpp>
 
 namespace krbn {
 class virtual_hid_device_utility final {
 public:
-  static nlohmann::json to_json(const pqrs::karabiner_virtual_hid_device::hid_report::modifiers& v) {
+  static nlohmann::json to_json(const pqrs::karabiner::driverkit::virtual_hid_device_driver::hid_report::modifiers& v) {
+    namespace hid_report = pqrs::karabiner::driverkit::virtual_hid_device_driver::hid_report;
+
     auto json = nlohmann::json::array();
 
-    if (v.exists(pqrs::karabiner_virtual_hid_device::hid_report::modifier::left_control)) {
+    if (v.exists(hid_report::modifier::left_control)) {
       json.push_back("left_control");
     }
-    if (v.exists(pqrs::karabiner_virtual_hid_device::hid_report::modifier::left_shift)) {
+    if (v.exists(hid_report::modifier::left_shift)) {
       json.push_back("left_shift");
     }
-    if (v.exists(pqrs::karabiner_virtual_hid_device::hid_report::modifier::left_option)) {
+    if (v.exists(hid_report::modifier::left_option)) {
       json.push_back("left_option");
     }
-    if (v.exists(pqrs::karabiner_virtual_hid_device::hid_report::modifier::left_command)) {
+    if (v.exists(hid_report::modifier::left_command)) {
       json.push_back("left_command");
     }
-    if (v.exists(pqrs::karabiner_virtual_hid_device::hid_report::modifier::right_control)) {
+    if (v.exists(hid_report::modifier::right_control)) {
       json.push_back("right_control");
     }
-    if (v.exists(pqrs::karabiner_virtual_hid_device::hid_report::modifier::right_shift)) {
+    if (v.exists(hid_report::modifier::right_shift)) {
       json.push_back("right_shift");
     }
-    if (v.exists(pqrs::karabiner_virtual_hid_device::hid_report::modifier::right_option)) {
+    if (v.exists(hid_report::modifier::right_option)) {
       json.push_back("right_option");
     }
-    if (v.exists(pqrs::karabiner_virtual_hid_device::hid_report::modifier::right_command)) {
+    if (v.exists(hid_report::modifier::right_command)) {
       json.push_back("right_command");
     }
 
     return json;
   }
 
-  static nlohmann::json to_json(const pqrs::karabiner_virtual_hid_device::hid_report::keys& v,
+  static nlohmann::json to_json(const pqrs::karabiner::driverkit::virtual_hid_device_driver::hid_report::keys& v,
                                 pqrs::hid::usage_page::value_t usage_page) {
     auto json = nlohmann::json::array();
 
@@ -63,7 +65,7 @@ public:
     return json;
   }
 
-  static nlohmann::json to_json(const pqrs::karabiner_virtual_hid_device::hid_report::buttons& v) {
+  static nlohmann::json to_json(const pqrs::karabiner::driverkit::virtual_hid_device_driver::hid_report::buttons& v) {
     auto json = nlohmann::json::array();
 
     for (auto b = pointing_button::button1; b <= pointing_button::button32; ++b) {
@@ -78,11 +80,19 @@ public:
 } // namespace krbn
 
 namespace pqrs {
-inline void to_json(nlohmann::json& json, const karabiner_virtual_hid_device::hid_report::modifiers& v) {
+namespace karabiner {
+namespace driverkit {
+namespace virtual_hid_device_driver {
+namespace hid_report {
+inline void to_json(nlohmann::json& json, const modifiers& v) {
   json = krbn::virtual_hid_device_utility::to_json(v);
 }
 
-inline void to_json(nlohmann::json& json, const karabiner_virtual_hid_device::hid_report::buttons& v) {
+inline void to_json(nlohmann::json& json, const buttons& v) {
   json = krbn::virtual_hid_device_utility::to_json(v);
 }
+} // namespace hid_report
+} // namespace virtual_hid_device_driver
+} // namespace driverkit
+} // namespace karabiner
 } // namespace pqrs

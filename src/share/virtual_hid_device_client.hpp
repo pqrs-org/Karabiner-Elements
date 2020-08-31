@@ -132,7 +132,7 @@ public:
     });
   }
 
-  void async_post_keyboard_input_report(const pqrs::karabiner_virtual_hid_device::hid_report::keyboard_input& report) {
+  void async_post_keyboard_input_report(const pqrs::karabiner::driverkit::virtual_hid_device_driver::hid_report::keyboard_input& report) {
     enqueue_to_dispatcher([this, report] {
       if (connect_) {
         pqrs::karabiner_virtual_hid_device_methods::post_keyboard_input_report(connect_, report);
@@ -140,7 +140,7 @@ public:
     });
   }
 
-  void async_post_keyboard_input_report(const pqrs::karabiner_virtual_hid_device::hid_report::consumer_input& report) {
+  void async_post_keyboard_input_report(const pqrs::karabiner::driverkit::virtual_hid_device_driver::hid_report::consumer_input& report) {
     enqueue_to_dispatcher([this, report] {
       if (connect_) {
         pqrs::karabiner_virtual_hid_device_methods::post_keyboard_input_report(connect_, report);
@@ -148,7 +148,7 @@ public:
     });
   }
 
-  void async_post_keyboard_input_report(const pqrs::karabiner_virtual_hid_device::hid_report::apple_vendor_top_case_input& report) {
+  void async_post_keyboard_input_report(const pqrs::karabiner::driverkit::virtual_hid_device_driver::hid_report::apple_vendor_top_case_input& report) {
     enqueue_to_dispatcher([this, report] {
       if (connect_) {
         pqrs::karabiner_virtual_hid_device_methods::post_keyboard_input_report(connect_, report);
@@ -156,7 +156,7 @@ public:
     });
   }
 
-  void async_post_keyboard_input_report(const pqrs::karabiner_virtual_hid_device::hid_report::apple_vendor_keyboard_input& report) {
+  void async_post_keyboard_input_report(const pqrs::karabiner::driverkit::virtual_hid_device_driver::hid_report::apple_vendor_keyboard_input& report) {
     enqueue_to_dispatcher([this, report] {
       if (connect_) {
         pqrs::karabiner_virtual_hid_device_methods::post_keyboard_input_report(connect_, report);
@@ -188,7 +188,7 @@ public:
     });
   }
 
-  void async_post_pointing_input_report(const pqrs::karabiner_virtual_hid_device::hid_report::pointing_input& report) {
+  void async_post_pointing_input_report(const pqrs::karabiner::driverkit::virtual_hid_device_driver::hid_report::pointing_input& report) {
     enqueue_to_dispatcher([this, report] {
       if (connect_) {
         pqrs::karabiner_virtual_hid_device_methods::post_pointing_input_report(connect_, report);

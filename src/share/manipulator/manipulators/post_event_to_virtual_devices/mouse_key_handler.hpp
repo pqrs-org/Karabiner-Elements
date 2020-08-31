@@ -162,7 +162,7 @@ private:
 
         double xy_scale = static_cast<double>(virtual_hid_keyboard_configuration_.get_mouse_key_xy_scale()) / 100.0;
 
-        pqrs::karabiner_virtual_hid_device::hid_report::pointing_input report;
+        pqrs::karabiner::driverkit::virtual_hid_device_driver::hid_report::pointing_input report;
         report.buttons = oeq->get_pointing_button_manager().make_hid_report_buttons();
         report.x = x_count_converter_.update(static_cast<int>(total.get_x() * total.get_speed_multiplier() * xy_scale));
         report.y = y_count_converter_.update(static_cast<int>(total.get_y() * total.get_speed_multiplier() * xy_scale));

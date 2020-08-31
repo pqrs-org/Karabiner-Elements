@@ -25,31 +25,31 @@ public:
       select_input_source,
     };
 
-    event(const pqrs::karabiner_virtual_hid_device::hid_report::keyboard_input& value,
+    event(const pqrs::karabiner::driverkit::virtual_hid_device_driver::hid_report::keyboard_input& value,
           absolute_time_point time_stamp) : type_(type::keyboard_input),
                                             value_(value),
                                             time_stamp_(time_stamp) {
     }
 
-    event(const pqrs::karabiner_virtual_hid_device::hid_report::consumer_input& value,
+    event(const pqrs::karabiner::driverkit::virtual_hid_device_driver::hid_report::consumer_input& value,
           absolute_time_point time_stamp) : type_(type::consumer_input),
                                             value_(value),
                                             time_stamp_(time_stamp) {
     }
 
-    event(const pqrs::karabiner_virtual_hid_device::hid_report::apple_vendor_top_case_input& value,
+    event(const pqrs::karabiner::driverkit::virtual_hid_device_driver::hid_report::apple_vendor_top_case_input& value,
           absolute_time_point time_stamp) : type_(type::apple_vendor_top_case_input),
                                             value_(value),
                                             time_stamp_(time_stamp) {
     }
 
-    event(const pqrs::karabiner_virtual_hid_device::hid_report::apple_vendor_keyboard_input& value,
+    event(const pqrs::karabiner::driverkit::virtual_hid_device_driver::hid_report::apple_vendor_keyboard_input& value,
           absolute_time_point time_stamp) : type_(type::apple_vendor_keyboard_input),
                                             value_(value),
                                             time_stamp_(time_stamp) {
     }
 
-    event(const pqrs::karabiner_virtual_hid_device::hid_report::pointing_input& value,
+    event(const pqrs::karabiner::driverkit::virtual_hid_device_driver::hid_report::pointing_input& value,
           absolute_time_point time_stamp) : type_(type::pointing_input),
                                             value_(value),
                                             time_stamp_(time_stamp) {
@@ -138,37 +138,37 @@ public:
       return type_;
     }
 
-    std::optional<pqrs::karabiner_virtual_hid_device::hid_report::keyboard_input> get_keyboard_input(void) const {
+    std::optional<pqrs::karabiner::driverkit::virtual_hid_device_driver::hid_report::keyboard_input> get_keyboard_input(void) const {
       if (type_ == type::keyboard_input) {
-        return mpark::get<pqrs::karabiner_virtual_hid_device::hid_report::keyboard_input>(value_);
+        return mpark::get<pqrs::karabiner::driverkit::virtual_hid_device_driver::hid_report::keyboard_input>(value_);
       }
       return std::nullopt;
     }
 
-    std::optional<pqrs::karabiner_virtual_hid_device::hid_report::consumer_input> get_consumer_input(void) const {
+    std::optional<pqrs::karabiner::driverkit::virtual_hid_device_driver::hid_report::consumer_input> get_consumer_input(void) const {
       if (type_ == type::consumer_input) {
-        return mpark::get<pqrs::karabiner_virtual_hid_device::hid_report::consumer_input>(value_);
+        return mpark::get<pqrs::karabiner::driverkit::virtual_hid_device_driver::hid_report::consumer_input>(value_);
       }
       return std::nullopt;
     }
 
-    std::optional<pqrs::karabiner_virtual_hid_device::hid_report::apple_vendor_top_case_input> get_apple_vendor_top_case_input(void) const {
+    std::optional<pqrs::karabiner::driverkit::virtual_hid_device_driver::hid_report::apple_vendor_top_case_input> get_apple_vendor_top_case_input(void) const {
       if (type_ == type::apple_vendor_top_case_input) {
-        return mpark::get<pqrs::karabiner_virtual_hid_device::hid_report::apple_vendor_top_case_input>(value_);
+        return mpark::get<pqrs::karabiner::driverkit::virtual_hid_device_driver::hid_report::apple_vendor_top_case_input>(value_);
       }
       return std::nullopt;
     }
 
-    std::optional<pqrs::karabiner_virtual_hid_device::hid_report::apple_vendor_keyboard_input> get_apple_vendor_keyboard_input(void) const {
+    std::optional<pqrs::karabiner::driverkit::virtual_hid_device_driver::hid_report::apple_vendor_keyboard_input> get_apple_vendor_keyboard_input(void) const {
       if (type_ == type::apple_vendor_keyboard_input) {
-        return mpark::get<pqrs::karabiner_virtual_hid_device::hid_report::apple_vendor_keyboard_input>(value_);
+        return mpark::get<pqrs::karabiner::driverkit::virtual_hid_device_driver::hid_report::apple_vendor_keyboard_input>(value_);
       }
       return std::nullopt;
     }
 
-    std::optional<pqrs::karabiner_virtual_hid_device::hid_report::pointing_input> get_pointing_input(void) const {
+    std::optional<pqrs::karabiner::driverkit::virtual_hid_device_driver::hid_report::pointing_input> get_pointing_input(void) const {
       if (type_ == type::pointing_input) {
-        return mpark::get<pqrs::karabiner_virtual_hid_device::hid_report::pointing_input>(value_);
+        return mpark::get<pqrs::karabiner::driverkit::virtual_hid_device_driver::hid_report::pointing_input>(value_);
       }
       return std::nullopt;
     }
@@ -220,11 +220,11 @@ public:
     }
 
     type type_;
-    mpark::variant<pqrs::karabiner_virtual_hid_device::hid_report::keyboard_input,
-                   pqrs::karabiner_virtual_hid_device::hid_report::consumer_input,
-                   pqrs::karabiner_virtual_hid_device::hid_report::apple_vendor_top_case_input,
-                   pqrs::karabiner_virtual_hid_device::hid_report::apple_vendor_keyboard_input,
-                   pqrs::karabiner_virtual_hid_device::hid_report::pointing_input,
+    mpark::variant<pqrs::karabiner::driverkit::virtual_hid_device_driver::hid_report::keyboard_input,
+                   pqrs::karabiner::driverkit::virtual_hid_device_driver::hid_report::consumer_input,
+                   pqrs::karabiner::driverkit::virtual_hid_device_driver::hid_report::apple_vendor_top_case_input,
+                   pqrs::karabiner::driverkit::virtual_hid_device_driver::hid_report::apple_vendor_keyboard_input,
+                   pqrs::karabiner::driverkit::virtual_hid_device_driver::hid_report::pointing_input,
                    std::string,                                             // For shell_command
                    std::vector<pqrs::osx::input_source_selector::specifier> // For select_input_source
                    >
@@ -353,7 +353,7 @@ public:
     keyboard_repeat_detector_.set(usage_page, usage, event_type);
   }
 
-  void emplace_back_pointing_input(const pqrs::karabiner_virtual_hid_device::hid_report::pointing_input& pointing_input,
+  void emplace_back_pointing_input(const pqrs::karabiner::driverkit::virtual_hid_device_driver::hid_report::pointing_input& pointing_input,
                                    event_type event_type,
                                    absolute_time_point time_stamp) {
     adjust_time_stamp(time_stamp, event_type);
@@ -565,10 +565,10 @@ private:
   event_type last_event_type_;
   absolute_time_point last_event_time_stamp_;
 
-  pqrs::karabiner_virtual_hid_device::hid_report::keyboard_input keyboard_input_;
-  pqrs::karabiner_virtual_hid_device::hid_report::consumer_input consumer_input_;
-  pqrs::karabiner_virtual_hid_device::hid_report::apple_vendor_top_case_input apple_vendor_top_case_input_;
-  pqrs::karabiner_virtual_hid_device::hid_report::apple_vendor_keyboard_input apple_vendor_keyboard_input_;
+  pqrs::karabiner::driverkit::virtual_hid_device_driver::hid_report::keyboard_input keyboard_input_;
+  pqrs::karabiner::driverkit::virtual_hid_device_driver::hid_report::consumer_input consumer_input_;
+  pqrs::karabiner::driverkit::virtual_hid_device_driver::hid_report::apple_vendor_top_case_input apple_vendor_top_case_input_;
+  pqrs::karabiner::driverkit::virtual_hid_device_driver::hid_report::apple_vendor_keyboard_input apple_vendor_keyboard_input_;
 };
 
 inline std::ostream& operator<<(std::ostream& stream, const queue::event& event) {
