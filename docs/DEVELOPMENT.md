@@ -34,7 +34,7 @@ make install
 
 -   `karabiner_grabber`
     -   Run with root privilege.
-    -   Seize the input devices and modify events then post events using `Karabiner-VirtualHIDDevice`.
+    -   Seize the input devices and modify events then post events using `Karabiner-DriverKit-VirtualHIDDevice`.
 -   `karabiner_observer`
     -   Run with root privilege.
     -   Observe input devices and manage the grabbable state.
@@ -148,7 +148,7 @@ There is another problem with `CGEventTapCreate`.<br />
 It requires posting HID events.<br />
 The IOHIKeyboard processes the reports by passing reports to `handleReport`.
 
-`karabiner_grabber` uses this method by using `Karabiner-VirtualHIDDevice`.
+`karabiner_grabber` uses this method by using `Karabiner-DriverKit-VirtualHIDDevice`.
 
 Note: `handleReport` fails to treat events which usage page are `kHIDPage_AppleVendorKeyboard` or `kHIDPage_AppleVendorTopCase` on macOS 10.11 or earlier.
 

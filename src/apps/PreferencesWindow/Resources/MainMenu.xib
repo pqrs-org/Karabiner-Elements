@@ -1864,7 +1864,7 @@
 
 This value is related to the keyboard layout (ANSI, ISO and JIS) on macOS.
 macOS remembers the chosen keyboard layout with vendor id, product id and country code of the device.
-If you are using other devices that has the same vendor id (0x16c0) and product id (0x27db), the keyboard layout is shared by the device and Karabiner-VirtualHIDKeyboard.
+If you are using other devices that has the same vendor id (0x16c0) and product id (0x27db), the keyboard layout is shared by the device and Karabiner-DriverKit-VirtualHIDKeyboard.
 In this case, you have to change the country code to avoid the conflict.
 </string>
                                                             <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
