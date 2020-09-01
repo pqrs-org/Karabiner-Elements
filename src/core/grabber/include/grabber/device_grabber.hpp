@@ -700,7 +700,7 @@ private:
     // ----------------------------------------
     // Ungrabbable while virtual_hid_device_service_client_ is not ready.
 
-    if (is_virtual_hid_keyboard_ready_) {
+    if (!is_virtual_hid_keyboard_ready_) {
       std::string message = "virtual_hid_keyboard is not ready. Please wait for a while.";
       logger_unique_filter_.warn(message);
       unset_device_ungrabbable_temporarily_notification_message(entry->get_device_id());
