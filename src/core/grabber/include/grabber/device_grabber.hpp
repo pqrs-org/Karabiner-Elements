@@ -38,6 +38,7 @@ public:
   device_grabber(const device_grabber&) = delete;
 
   device_grabber(std::weak_ptr<console_user_server_client> weak_console_user_server_client) : dispatcher_client(),
+                                                                                              virtual_hid_device_ready_check_timer_(*this),
                                                                                               is_virtual_hid_keyboard_ready_(false),
                                                                                               is_virtual_hid_pointing_ready_(false),
                                                                                               profile_(nlohmann::json::object()),
@@ -81,18 +82,33 @@ public:
     });
 
     virtual_hid_device_service_client_->virtual_hid_keyboard_ready_callback.connect([this](auto&& ready) {
-      is_virtual_hid_keyboard_ready_ = ready;
+      if (is_virtual_hid_keyboard_ready_ != ready) {
+        logger::get_logger()->info("virtual_hid_device_service_client_ virtual_hid_keyboard_ready_callback: {0}", ready);
 
-      update_devices_disabled();
-      async_grab_devices();
+        is_virtual_hid_keyboard_ready_ = ready;
+
+        update_devices_disabled();
+        async_grab_devices();
+      }
     });
 
     virtual_hid_device_service_client_->virtual_hid_pointing_ready_callback.connect([this](auto&& ready) {
-      is_virtual_hid_pointing_ready_ = ready;
+      if (is_virtual_hid_pointing_ready_ != ready) {
+        logger::get_logger()->info("virtual_hid_device_service_client_ virtual_hid_pointing_ready_callback: {0}", ready);
 
-      update_devices_disabled();
-      async_grab_devices();
+        is_virtual_hid_pointing_ready_ = ready;
+
+        update_devices_disabled();
+        async_grab_devices();
+      }
     });
+
+    virtual_hid_device_ready_check_timer_.start(
+        [this] {
+          virtual_hid_device_service_client_->async_virtual_hid_keyboard_ready();
+          virtual_hid_device_service_client_->async_virtual_hid_pointing_ready();
+        },
+        std::chrono::milliseconds(1000));
 
     post_event_to_virtual_devices_manipulator_ =
         std::make_shared<manipulator::manipulators::post_event_to_virtual_devices::post_event_to_virtual_devices>(
@@ -526,6 +542,7 @@ private:
 
     event_tap_monitor_ = nullptr;
 
+    virtual_hid_device_ready_check_timer_.stop();
     virtual_hid_device_service_client_->async_stop();
   }
 
@@ -904,6 +921,7 @@ private:
 
   std::shared_ptr<pqrs::karabiner::driverkit::virtual_hid_device_service::client> virtual_hid_device_service_client_;
 
+  pqrs::dispatcher::extra::timer virtual_hid_device_ready_check_timer_;
   bool is_virtual_hid_keyboard_ready_;
   bool is_virtual_hid_pointing_ready_;
 
