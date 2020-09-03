@@ -87,6 +87,12 @@ public:
 
         is_virtual_hid_keyboard_ready_ = ready;
 
+        // The virtual_hid_keyboard might be terminated due to virtual_hid_device_service_client_ error.
+        // We try to reinitialize the device.
+        if (!ready) {
+          update_virtual_hid_keyboard();
+        }
+
         update_devices_disabled();
         async_grab_devices();
       }
@@ -97,6 +103,12 @@ public:
         logger::get_logger()->info("virtual_hid_device_service_client_ virtual_hid_pointing_ready_callback: {0}", ready);
 
         is_virtual_hid_pointing_ready_ = ready;
+
+        // The virtual_hid_keyboard might be terminated due to virtual_hid_device_service_client_ error.
+        // We try to reinitialize the device.
+        if (!ready) {
+          update_virtual_hid_pointing();
+        }
 
         update_devices_disabled();
         async_grab_devices();
