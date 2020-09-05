@@ -90,6 +90,7 @@ public:
         // The virtual_hid_keyboard might be terminated due to virtual_hid_device_service_client_ error.
         // We try to reinitialize the device.
         if (!ready) {
+          virtual_hid_device_service_client_->async_virtual_hid_keyboard_terminate();
           update_virtual_hid_keyboard();
         }
 
@@ -107,6 +108,7 @@ public:
         // The virtual_hid_keyboard might be terminated due to virtual_hid_device_service_client_ error.
         // We try to reinitialize the device.
         if (!ready) {
+          virtual_hid_device_service_client_->async_virtual_hid_pointing_terminate();
           update_virtual_hid_pointing();
         }
 
@@ -340,6 +342,7 @@ public:
       complex_modifications_manipulator_manager_ = nullptr;
       fn_function_keys_manipulator_manager_ = nullptr;
       post_event_to_virtual_devices_manipulator_manager_ = nullptr;
+      virtual_hid_device_service_client_ = nullptr;
     });
   }
 
