@@ -1,3 +1,7 @@
 [submodule "src/vendor/Karabiner-DriverKit-VirtualHIDDevice"]
 	path = src/vendor/Karabiner-DriverKit-VirtualHIDDevice
 	url = https://github.com/pqrs-org/Karabiner-DriverKit-VirtualHIDDevice.git
+[submodule "src/vendor/Sparkle"]
+	path = src/vendor/Sparkle
+	url = https://github.com/sparkle-project/Sparkle
+	ignore = dirty

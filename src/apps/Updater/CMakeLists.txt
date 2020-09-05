@@ -5,7 +5,7 @@ include (../../common.cmake)
 project (Karabiner-Elements)
 
 add_compile_options(
-  -F${CMAKE_CURRENT_LIST_DIR}/../../vendor/Sparkle
+  -F${CMAKE_CURRENT_LIST_DIR}/../../vendor/Sparkle/build/Build/Products/Release
 )
 
 include_directories(
@@ -19,7 +19,7 @@ add_executable(
   src/main.m
   Resources/MainMenu.xib
   ../share/Resources/app.icns
-  ../../vendor/Sparkle/Sparkle.framework
+  ../../vendor/Sparkle/build/Build/Products/Release/Sparkle.framework
 )
 
 set_source_files_properties(
@@ -31,7 +31,7 @@ set_source_files_properties(
 )
 
 set_source_files_properties(
-  ../../vendor/Sparkle/Sparkle.framework
+  ../../vendor/Sparkle/build/Build/Products/Release/Sparkle.framework
   PROPERTIES
   MACOSX_PACKAGE_LOCATION
   Frameworks
@@ -54,7 +54,7 @@ set_target_properties(
 target_link_libraries(
   Karabiner-Elements
   "-framework SystemConfiguration"
-  -F${CMAKE_CURRENT_LIST_DIR}/../../vendor/Sparkle
+  -F${CMAKE_CURRENT_LIST_DIR}/../../vendor/Sparkle/build/Build/Products/Release
   "-framework Sparkle"
   c++
 )
