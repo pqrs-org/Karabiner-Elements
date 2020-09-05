@@ -68,7 +68,7 @@ chmod 755 pkginfo/Scripts/preinstall
 # --------------------------------------------------
 echo "Create pkg"
 
-pkgName="Karabiner-Elements.sparkle_guided.pkg"
+pkgName="Karabiner-Elements.pkg"
 pkgIdentifier="org.pqrs.Karabiner-Elements"
 archiveName="Karabiner-Elements-${version}"
 
@@ -84,12 +84,24 @@ pkgbuild \
     --install-location "/" \
     $archiveName/Installer.pkg
 
+#
+# Copy Karabiner-DriverKit-VirtualHIDDevice.pkg.
+#
+
+virtualHIDDeviceDmg=$(ls src/vendor/Karabiner-DriverKit-VirtualHIDDevice/dist/Karabiner-DriverKit-VirtualHIDDevice-*.pkg | sort --version-sort | tail -n 1)
+cp $virtualHIDDeviceDmg $archiveName/Karabiner-DriverKit-VirtualHIDDevice.pkg
+
+#
+# productbuild
+#
+
 productbuild \
     --distribution pkginfo/build/Distribution.xml \
     --package-path $archiveName \
     $archiveName/$pkgName
 
 rm -f $archiveName/Installer.pkg
+rm -f $archiveName/Karabiner-DriverKit-VirtualHIDDevice.pkg
 
 # --------------------------------------------------
 echo "Sign with Developer ID"

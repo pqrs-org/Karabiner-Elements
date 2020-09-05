@@ -11,15 +11,22 @@
       Installer does not show "OS X version X.Y.Z or later is required" message when <domains> exists.
       <domains enable_anywhere="false" enable_currentUserHome="false" enable_localSystem="true" />
   -->
-  <pkg-ref id="org.pqrs.Karabiner-Elements" />
+
   <options customize="never" require-scripts="false" />
+
   <choices-outline>
-    <line choice="default">
-      <line choice="org.pqrs.Karabiner-Elements" /></line>
+    <line choice="default" />
   </choices-outline>
-  <choice id="default"/>
-  <choice id="org.pqrs.Karabiner-Elements" visible="false">
+
+  <choice id="default" visible="false">
     <pkg-ref id="org.pqrs.Karabiner-Elements" />
+    <pkg-ref id="org.pqrs.Karabiner-DriverKit-VirtualHIDDevice" />
   </choice>
-  <pkg-ref id="org.pqrs.Karabiner-Elements" version="@KARABINER_VERSION@">Installer.pkg</pkg-ref>
+
+  <pkg-ref id="org.pqrs.Karabiner-Elements">
+    Installer.pkg
+  </pkg-ref>
+  <pkg-ref id="org.pqrs.Karabiner-DriverKit-VirtualHIDDevice">
+    Karabiner-DriverKit-VirtualHIDDevice.pkg
+  </pkg-ref>
 </installer-gui-script>
