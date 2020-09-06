@@ -43,6 +43,13 @@ public:
     io_service_.post([this, server_socket_file_path, buffer_size, server_check_interval] {
       socket_ready_ = false;
 
+      // Remove existing file before `bind`.
+
+      {
+        std::error_code error_code;
+        std::filesystem::remove(server_socket_file_path, error_code);
+      }
+
       // Open
 
       socket_ = std::make_unique<asio::local::datagram_protocol::socket>(io_service_);
@@ -74,12 +81,13 @@ public:
           });
           return;
         }
+
+        bound_path_ = server_socket_file_path;
       }
 
       // Signal
 
       socket_ready_ = true;
-      bound_path_ = server_socket_file_path;
 
       start_server_check(server_socket_file_path,
                          server_check_interval);

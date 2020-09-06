@@ -9,6 +9,7 @@
 #include "asio_helper.hpp"
 #include "send_entry.hpp"
 #include <deque>
+#include <filesystem>
 #include <nod/nod.hpp>
 #include <optional>
 #include <pqrs/dispatcher.hpp>
@@ -140,7 +141,9 @@ public:
         socket_ready_ = false;
 
         if (!bound_path_.empty()) {
-          unlink(bound_path_.c_str());
+          std::error_code error_code;
+          std::filesystem::remove(bound_path_, error_code);
+
           bound_path_.clear();
         }
 

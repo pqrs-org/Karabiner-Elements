@@ -54,6 +54,13 @@ public:
       socket_ = std::make_unique<asio::local::datagram_protocol::socket>(io_service_);
       socket_ready_ = false;
 
+      // Remove existing file before `bind`.
+
+      if (client_socket_file_path) {
+        std::error_code error_code;
+        std::filesystem::remove(*client_socket_file_path, error_code);
+      }
+
       // Open
 
       {
@@ -83,6 +90,8 @@ public:
           });
           return;
         }
+
+        bound_path_ = *client_socket_file_path;
       }
 
       // Connect
