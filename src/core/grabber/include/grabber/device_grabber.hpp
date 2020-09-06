@@ -71,10 +71,15 @@ public:
       logger::get_logger()->info("virtual_hid_device_service_client_ connect_failed: {0}", error_code.message());
     });
 
-    virtual_hid_device_service_client_->closed.connect([this] {
+    virtual_hid_device_service_client_->closed.connect([] {
       logger::get_logger()->info("virtual_hid_device_service_client_ closed");
 
-      stop();
+      // Wait automatic reconnection.
+      //
+      // Note:
+      // The following callback will be signaled by virtual_hid_device_service::client.
+      // - `virtual_hid_keyboard_ready_callback(false)`
+      // - `virtual_hid_pointing_ready_callback(false)`
     });
 
     virtual_hid_device_service_client_->error_occurred.connect([](auto&& error_code) {
