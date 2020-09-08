@@ -33,6 +33,8 @@ chflags nouchg,noschg /Applications/Karabiner-EventViewer.app
 rm -f '/Library/LaunchDaemons/org.pqrs.karabiner.karabiner_kextd.plist'
 rm -f '/Library/LaunchDaemons/org.pqrs.karabiner.karabiner_grabber.plist'
 rm -f '/Library/LaunchDaemons/org.pqrs.karabiner.karabiner_observer.plist'
+rm -f '/Library/LaunchAgents/org.pqrs.karabiner.agent.karabiner_grabber.plist'
+rm -f '/Library/LaunchAgents/org.pqrs.karabiner.agent.karabiner_observer.plist'
 rm -f '/Library/LaunchAgents/org.pqrs.karabiner.karabiner_console_user_server.plist'
 rm -f '/Library/LaunchAgents/org.pqrs.karabiner.karabiner_session_monitor.plist'
 rm -rf '/Applications/Karabiner-Elements.app'
