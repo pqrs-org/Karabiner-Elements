@@ -23,14 +23,15 @@ namespace Catch {
 
         using StreamingReporterBase::StreamingReporterBase;
 
+        TAPReporter( ReporterConfig const& config ):
+            StreamingReporterBase( config ) {
+            m_reporterPrefs.shouldReportAllAssertions = true;
+        }
+
         ~TAPReporter() override;
 
         static std::string getDescription() {
             return "Reports test results in TAP format, suitable for test harnesses";
-        }
-
-        ReporterPreferences getPreferences() const override {
-            return m_reporterPrefs;
         }
 
         void noMatchingTestCases( std::string const& spec ) override {
@@ -203,16 +204,15 @@ namespace Catch {
                     return;
                 }
 
-                // using messages.end() directly (or auto) yields compilation error:
-                std::vector<MessageInfo>::const_iterator itEnd = messages.end();
-                const std::size_t N = static_cast<std::size_t>( std::distance( itMessage, itEnd ) );
+                const auto itEnd = messages.cend();
+                const auto N = static_cast<std::size_t>( std::distance( itMessage, itEnd ) );
 
                 {
                     Colour colourGuard( colour );
                     stream << " with " << pluralise( N, "message" ) << ":";
                 }
 
-                for(; itMessage != itEnd; ) {
+                while( itMessage != itEnd ) {
                     // If this assertion is a warning ignore any INFO messages
                     if( printInfoMessages || itMessage->type != ResultWas::Info ) {
                         stream << " '" << itMessage->message << "'";
@@ -220,7 +220,9 @@ namespace Catch {
                             Colour colourGuard( dimColour() );
                             stream << " and";
                         }
+                        continue;
                     }
+                    ++itMessage;
                 }
             }
 
@@ -234,10 +236,9 @@ namespace Catch {
         };
 
         void printTotals( const Totals& totals ) const {
+            stream << "1.." << totals.assertions.total();
             if( totals.testCases.total() == 0 ) {
-                stream << "1..0 # Skipped: No tests ran.";
-            } else {
-                stream << "1.." << counter;
+                stream << " # Skipped: No tests ran.";
             }
         }
     };

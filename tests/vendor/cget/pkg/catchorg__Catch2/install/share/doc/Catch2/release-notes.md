@@ -2,6 +2,9 @@
 
 # Release notes
 **Contents**<br>
+[2.13.0](#2130)<br>
+[2.12.4](#2124)<br>
+[2.12.3](#2123)<br>
 [2.12.2](#2122)<br>
 [2.12.1](#2121)<br>
 [2.12.0](#2120)<br>
@@ -36,6 +39,44 @@
 [2.0.1](#201)<br>
 [Older versions](#older-versions)<br>
 [Even Older versions](#even-older-versions)<br>
+
+## 2.13.0
+
+### Improvements
+* `GENERATE` can now follow a `SECTION` at the same level of nesting (#1938)
+  * The `SECTION`(s) before the `GENERATE` will not be run multiple times, the following ones will.
+* Added `-D`/`--min-duration` command line flag (#1910)
+  * If a test takes longer to finish than the provided value, its name and duration will be printed.
+  * This flag is overriden by setting `-d`/`--duration`.
+
+### Fixes
+* `TAPReporter` no longer skips successful assertions (#1983)
+
+
+## 2.12.4
+
+### Improvements
+* Added support for MacOS on ARM (#1971)
+
+
+## 2.12.3
+
+### Fixes
+* `GENERATE` nested in a for loop no longer creates multiple generators (#1913)
+* Fixed copy paste error breaking `TEMPLATE_TEST_CASE_SIG` for 6 or more arguments (#1954)
+* Fixed potential UB when handling non-ASCII characters in CLI args (#1943)
+
+### Improvements
+* There can be multiple calls to `GENERATE` on a single line
+* Improved `fno-except` support for platforms that do not provide shims for exception-related std functions (#1950)
+  * E.g. the Green Hills C++ compiler
+* XmlReporter now also reports test-case-level statistics (#1958)
+  * This is done via a new element, `OverallResultsCases`
+
+### Miscellaneous
+* Added `.clang-format` file to the repo (#1182, #1920)
+* Rewrote contributing docs
+  * They should explain the different levels of testing and so on much better
 
 
 ## 2.12.2
