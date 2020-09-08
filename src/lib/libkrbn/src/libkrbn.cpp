@@ -12,6 +12,7 @@
 #include <fstream>
 #include <iostream>
 #include <nlohmann/json.hpp>
+#include <pqrs/karabiner/driverkit/virtual_hid_device_service.hpp>
 #include <string>
 
 namespace {
@@ -125,6 +126,10 @@ void libkrbn_launch_preferences(void) {
 
 void libkrbn_launch_multitouch_extension(void) {
   krbn::application_launcher::launch_multitouch_extension(false);
+}
+
+bool libkrbn_driver_running(void) {
+  return pqrs::karabiner::driverkit::virtual_hid_device_service::utility::driver_running();
 }
 
 bool libkrbn_system_core_configuration_file_path_exists(void) {
