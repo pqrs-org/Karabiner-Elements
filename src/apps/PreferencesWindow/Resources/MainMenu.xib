@@ -512,7 +512,7 @@
                                             <rect key="frame" x="17" y="43" width="920" height="274"/>
                                             <clipView key="contentView" id="fPj-Ru-opD">
                                                 <rect key="frame" x="1" y="0.0" width="918" height="273"/>
-                                                <autoresizingMask key="autoresizingMask"/>
+                                                <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                                 <subviews>
                                                     <tableView verticalHuggingPriority="750" allowsExpansionToolTips="YES" columnAutoresizingStyle="firstColumnOnly" alternatingRowBackgroundColors="YES" columnReordering="NO" columnSelection="YES" columnResizing="NO" multipleSelection="NO" autosaveColumns="NO" rowHeight="26" rowSizeStyle="automatic" headerView="bin-92-FO9" viewBased="YES" id="qEO-TG-yM2">
                                                         <rect key="frame" x="0.0" y="0.0" width="918" height="250"/>
@@ -2838,16 +2838,16 @@ Gw
         <window title="Window" allowsToolTipsWhenApplicationIsInactive="NO" autorecalculatesKeyViewLoop="NO" hidesOnDeactivate="YES" releasedWhenClosed="NO" visibleAtLaunch="NO" frameAutosaveName="" animationBehavior="default" id="qSM-7c-jvU" userLabel="Input Monitoring Alert Panel" customClass="NSPanel">
             <windowStyleMask key="styleMask" titled="YES" closable="YES" miniaturizable="YES" resizable="YES" utility="YES"/>
             <windowPositionMask key="initialPositionMask" leftStrut="YES" rightStrut="YES" topStrut="YES" bottomStrut="YES"/>
-            <rect key="contentRect" x="196" y="132" width="900" height="600"/>
+            <rect key="contentRect" x="196" y="132" width="600" height="600"/>
             <rect key="screenRect" x="0.0" y="0.0" width="2048" height="1257"/>
-            <value key="minSize" type="size" width="900" height="600"/>
-            <value key="maxSize" type="size" width="900" height="600"/>
+            <value key="minSize" type="size" width="600" height="600"/>
+            <value key="maxSize" type="size" width="600" height="600"/>
             <view key="contentView" id="YeD-U0-ZCw">
-                <rect key="frame" x="0.0" y="0.0" width="900" height="600"/>
+                <rect key="frame" x="0.0" y="0.0" width="600" height="535"/>
                 <autoresizingMask key="autoresizingMask"/>
                 <subviews>
                     <customView translatesAutoresizingMaskIntoConstraints="NO" id="lVG-Mq-hYo">
-                        <rect key="frame" x="347" y="548" width="206" height="32"/>
+                        <rect key="frame" x="197" y="483" width="206" height="32"/>
                         <subviews>
                             <imageView translatesAutoresizingMaskIntoConstraints="NO" id="3LJ-ZD-nlp">
                                 <rect key="frame" x="0.0" y="0.0" width="32" height="32"/>
@@ -2876,27 +2876,27 @@ Gw
                         </constraints>
                     </customView>
                     <tabView type="noTabsNoBorder" translatesAutoresizingMaskIntoConstraints="NO" id="DT3-Yx-Kqq">
-                        <rect key="frame" x="10" y="10" width="880" height="518"/>
+                        <rect key="frame" x="10" y="10" width="580" height="453"/>
                         <font key="font" metaFont="menu"/>
                         <tabViewItems>
                             <tabViewItem label="Tab" identifier="1" id="fGa-Js-Hpe">
                                 <view key="view" id="8Od-DQ-jck">
-                                    <rect key="frame" x="0.0" y="0.0" width="880" height="518"/>
+                                    <rect key="frame" x="0.0" y="0.0" width="580" height="453"/>
                                     <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                     <subviews>
                                         <textField verticalHuggingPriority="750" horizontalCompressionResistancePriority="250" translatesAutoresizingMaskIntoConstraints="NO" id="azl-WS-TKw">
-                                            <rect key="frame" x="18" y="466" width="844" height="32"/>
+                                            <rect key="frame" x="18" y="401" width="544" height="32"/>
                                             <textFieldCell key="cell" sendsActionOnEndEditing="YES" alignment="center" id="72V-sZ-yMF">
                                                 <font key="font" metaFont="menu"/>
                                                 <string key="title">karabiner_grabber and karabiner_observer require Input Monitoring permission.
-You have to allow them on System Preferences &gt; Security &amp; Privacy &gt; Privacy &gt; Input Monitoring.</string>
+You have to allow them on Security &amp; Privacy System Preferences.</string>
                                                 <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
                                                 <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
                                             </textFieldCell>
                                         </textField>
                                         <button verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="97c-2x-cuy">
-                                            <rect key="frame" x="267" y="418" width="346" height="32"/>
-                                            <buttonCell key="cell" type="push" title="Open System Preferences &gt; Security &amp; Privacy" bezelStyle="rounded" image="ic_forward_18pt" imagePosition="left" alignment="left" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="FJU-Jt-koc">
+                                            <rect key="frame" x="123" y="353" width="334" height="32"/>
+                                            <buttonCell key="cell" type="push" title="Open Security &amp; Privacy System Preferences" bezelStyle="rounded" image="ic_forward_18pt" imagePosition="left" alignment="left" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="FJU-Jt-koc">
                                                 <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
                                                 <font key="font" metaFont="system"/>
                                             </buttonCell>
@@ -2904,18 +2904,8 @@ You have to allow them on System Preferences &gt; Security &amp; Privacy &gt; Pr
                                                 <action selector="openSystemPreferencesSecurity:" target="DhI-vl-MTs" id="j3Q-gu-q0U"/>
                                             </connections>
                                         </button>
-                                        <button verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="2Jd-7k-nyN">
-                                            <rect key="frame" x="364" y="376" width="153" height="32"/>
-                                            <buttonCell key="cell" type="push" title="Close this alert" bezelStyle="rounded" image="ic_cancel_18pt" imagePosition="left" alignment="left" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="4Lr-1Z-9Ap">
-                                                <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
-                                                <font key="font" metaFont="system"/>
-                                            </buttonCell>
-                                            <connections>
-                                                <action selector="closeAlert:" target="DhI-vl-MTs" id="7XV-EY-11A"/>
-                                            </connections>
-                                        </button>
                                         <imageView horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="jCs-Yv-ALS">
-                                            <rect key="frame" x="260" y="63" width="360" height="290"/>
+                                            <rect key="frame" x="110" y="20" width="360" height="290"/>
                                             <constraints>
                                                 <constraint firstAttribute="width" constant="360" id="3dr-Yr-rka"/>
                                                 <constraint firstAttribute="height" constant="290" id="Nvm-1Z-IkR"/>
@@ -2924,13 +2914,12 @@ You have to allow them on System Preferences &gt; Security &amp; Privacy &gt; Pr
                                         </imageView>
                                     </subviews>
                                     <constraints>
-                                        <constraint firstItem="jCs-Yv-ALS" firstAttribute="top" secondItem="2Jd-7k-nyN" secondAttribute="bottom" constant="30" id="2Rm-1Z-nLZ"/>
+                                        <constraint firstAttribute="bottom" secondItem="jCs-Yv-ALS" secondAttribute="bottom" constant="20" id="0LP-1J-GQE"/>
                                         <constraint firstAttribute="trailing" secondItem="azl-WS-TKw" secondAttribute="trailing" constant="20" id="Xs5-mp-eoq"/>
                                         <constraint firstItem="azl-WS-TKw" firstAttribute="leading" secondItem="8Od-DQ-jck" secondAttribute="leading" constant="20" id="cCN-b9-xac"/>
+                                        <constraint firstItem="jCs-Yv-ALS" firstAttribute="top" secondItem="97c-2x-cuy" secondAttribute="bottom" constant="50" id="fqO-Cc-2j3"/>
                                         <constraint firstItem="97c-2x-cuy" firstAttribute="top" secondItem="azl-WS-TKw" secondAttribute="bottom" constant="20" id="gIF-zd-ZlW"/>
                                         <constraint firstItem="jCs-Yv-ALS" firstAttribute="centerX" secondItem="8Od-DQ-jck" secondAttribute="centerX" id="gWi-zO-zrk"/>
-                                        <constraint firstItem="2Jd-7k-nyN" firstAttribute="centerX" secondItem="8Od-DQ-jck" secondAttribute="centerX" id="pA8-pU-a7Z"/>
-                                        <constraint firstItem="2Jd-7k-nyN" firstAttribute="top" secondItem="97c-2x-cuy" secondAttribute="bottom" constant="21" id="uB3-Ke-KWy"/>
                                         <constraint firstItem="97c-2x-cuy" firstAttribute="centerX" secondItem="8Od-DQ-jck" secondAttribute="centerX" id="uUG-Fn-Y57"/>
                                         <constraint firstItem="azl-WS-TKw" firstAttribute="top" secondItem="8Od-DQ-jck" secondAttribute="top" constant="20" id="v9f-vq-Ozr"/>
                                     </constraints>
@@ -3058,11 +3047,11 @@ Gw
             <value key="minSize" type="size" width="500" height="378"/>
             <value key="maxSize" type="size" width="500" height="378"/>
             <view key="contentView" id="NbX-OE-pGo">
-                <rect key="frame" x="0.0" y="0.0" width="500" height="435"/>
+                <rect key="frame" x="0.0" y="0.0" width="500" height="381"/>
                 <autoresizingMask key="autoresizingMask"/>
                 <subviews>
                     <customView translatesAutoresizingMaskIntoConstraints="NO" id="LbR-D6-fV3">
-                        <rect key="frame" x="20" y="383" width="206" height="32"/>
+                        <rect key="frame" x="20" y="329" width="206" height="32"/>
                         <subviews>
                             <imageView translatesAutoresizingMaskIntoConstraints="NO" id="JIy-ho-TaU">
                                 <rect key="frame" x="0.0" y="0.0" width="32" height="32"/>
@@ -3091,7 +3080,7 @@ Gw
                         </constraints>
                     </customView>
                     <textField verticalHuggingPriority="750" horizontalCompressionResistancePriority="250" translatesAutoresizingMaskIntoConstraints="NO" id="EX6-xv-9EW">
-                        <rect key="frame" x="18" y="305" width="464" height="48"/>
+                        <rect key="frame" x="18" y="251" width="464" height="48"/>
                         <textFieldCell key="cell" selectable="YES" id="x0e-wm-5EF">
                             <font key="font" usesAppearanceFont="YES"/>
                             <string key="title">The virtual keyboard and mouse driver is not loaded.
@@ -3101,8 +3090,8 @@ Please allow system software from ".Karabiner-VirtualHIDDevice-Manager" on Secur
                         </textFieldCell>
                     </textField>
                     <button verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="iyX-Ft-g9y">
-                        <rect key="frame" x="77" y="247" width="346" height="32"/>
-                        <buttonCell key="cell" type="push" title="Open System Preferences &gt; Security &amp; Privacy" bezelStyle="rounded" image="ic_forward_18pt" imagePosition="left" alignment="left" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="Ol6-mz-xml">
+                        <rect key="frame" x="34" y="213" width="334" height="32"/>
+                        <buttonCell key="cell" type="push" title="Open Security &amp; Privacy System Preferences" bezelStyle="rounded" image="ic_forward_18pt" imagePosition="left" alignment="left" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="Ol6-mz-xml">
                             <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
                             <font key="font" metaFont="system"/>
                         </buttonCell>
@@ -3111,13 +3100,13 @@ Please allow system software from ".Karabiner-VirtualHIDDevice-Manager" on Secur
                         </connections>
                     </button>
                     <box title="For macOS Big Sur Beta users" translatesAutoresizingMaskIntoConstraints="NO" id="tJu-nx-y3K">
-                        <rect key="frame" x="17" y="34" width="466" height="170"/>
+                        <rect key="frame" x="17" y="16" width="466" height="154"/>
                         <view key="contentView" id="3Dw-ag-F6c">
-                            <rect key="frame" x="3" y="3" width="460" height="152"/>
+                            <rect key="frame" x="3" y="3" width="460" height="136"/>
                             <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                             <subviews>
                                 <button verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="RMz-Qq-k1Y">
-                                    <rect key="frame" x="134" y="29" width="192" height="32"/>
+                                    <rect key="frame" x="34" y="29" width="192" height="32"/>
                                     <buttonCell key="cell" type="push" title="Step 1: Deactivate driver" bezelStyle="rounded" imagePosition="left" alignment="left" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="DuA-Fw-0q0">
                                         <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
                                         <font key="font" metaFont="system"/>
@@ -3127,7 +3116,7 @@ Please allow system software from ".Karabiner-VirtualHIDDevice-Manager" on Secur
                                     </connections>
                                 </button>
                                 <button verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="sOQ-6Y-Bx9">
-                                    <rect key="frame" x="141" y="-2" width="179" height="32"/>
+                                    <rect key="frame" x="34" y="-2" width="179" height="32"/>
                                     <buttonCell key="cell" type="push" title="Step 2: Activate driver" bezelStyle="rounded" imagePosition="left" alignment="left" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="3Sl-24-mKo">
                                         <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
                                         <font key="font" metaFont="system"/>
@@ -3137,26 +3126,25 @@ Please allow system software from ".Karabiner-VirtualHIDDevice-Manager" on Secur
                                     </connections>
                                 </button>
                                 <textField verticalHuggingPriority="750" horizontalCompressionResistancePriority="250" translatesAutoresizingMaskIntoConstraints="NO" id="2lY-95-iSs">
-                                    <rect key="frame" x="3" y="67" width="454" height="80"/>
+                                    <rect key="frame" x="3" y="67" width="454" height="64"/>
                                     <textFieldCell key="cell" selectable="YES" id="4Wd-eB-W5u">
                                         <font key="font" usesAppearanceFont="YES"/>
                                         <string key="title">macOS Big Sur Beta 6 has an issue with driver loading and we have to reinstall driver each time macOS is restarted.
-Please deactive the driver and activate it again to reinstall the driver when macOS is restarted.
-</string>
+Please deactive the driver and activate it again to reinstall the driver when macOS is restarted.</string>
                                         <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
                                         <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
                                     </textFieldCell>
                                 </textField>
                             </subviews>
                             <constraints>
+                                <constraint firstItem="RMz-Qq-k1Y" firstAttribute="leading" secondItem="3Dw-ag-F6c" secondAttribute="leading" constant="40" id="HAs-Hh-z3h"/>
                                 <constraint firstAttribute="trailing" secondItem="2lY-95-iSs" secondAttribute="trailing" constant="5" id="HLx-rM-0e7"/>
+                                <constraint firstItem="sOQ-6Y-Bx9" firstAttribute="leading" secondItem="RMz-Qq-k1Y" secondAttribute="leading" id="WDR-6N-8Qe"/>
                                 <constraint firstItem="sOQ-6Y-Bx9" firstAttribute="top" secondItem="RMz-Qq-k1Y" secondAttribute="bottom" constant="10" id="XFH-yJ-pR3"/>
                                 <constraint firstItem="2lY-95-iSs" firstAttribute="leading" secondItem="3Dw-ag-F6c" secondAttribute="leading" constant="5" id="b9t-hH-zoA"/>
                                 <constraint firstAttribute="bottom" secondItem="sOQ-6Y-Bx9" secondAttribute="bottom" constant="5" id="fBf-JX-i7v"/>
                                 <constraint firstItem="RMz-Qq-k1Y" firstAttribute="top" secondItem="2lY-95-iSs" secondAttribute="bottom" constant="10" id="hof-Ao-T88"/>
                                 <constraint firstItem="2lY-95-iSs" firstAttribute="top" secondItem="3Dw-ag-F6c" secondAttribute="top" constant="5" id="sdh-SX-ehY"/>
-                                <constraint firstItem="sOQ-6Y-Bx9" firstAttribute="centerX" secondItem="3Dw-ag-F6c" secondAttribute="centerX" id="uiC-uy-irM"/>
-                                <constraint firstItem="RMz-Qq-k1Y" firstAttribute="centerX" secondItem="3Dw-ag-F6c" secondAttribute="centerX" id="xXB-Mm-uSB"/>
                             </constraints>
                         </view>
                     </box>
@@ -3167,10 +3155,11 @@ Please deactive the driver and activate it again to reinstall the driver when ma
                     <constraint firstItem="LbR-D6-fV3" firstAttribute="leading" secondItem="NbX-OE-pGo" secondAttribute="leading" constant="20" id="Lfz-0b-J83"/>
                     <constraint firstItem="EX6-xv-9EW" firstAttribute="top" secondItem="LbR-D6-fV3" secondAttribute="bottom" constant="30" id="fdp-lT-OvB"/>
                     <constraint firstItem="tJu-nx-y3K" firstAttribute="top" secondItem="iyX-Ft-g9y" secondAttribute="bottom" constant="50" id="ijm-Gp-2Xo"/>
+                    <constraint firstAttribute="bottom" secondItem="tJu-nx-y3K" secondAttribute="bottom" constant="20" id="jED-qv-kXD"/>
                     <constraint firstItem="LbR-D6-fV3" firstAttribute="top" secondItem="NbX-OE-pGo" secondAttribute="top" constant="20" id="mXq-kh-AO0"/>
-                    <constraint firstItem="iyX-Ft-g9y" firstAttribute="top" secondItem="EX6-xv-9EW" secondAttribute="bottom" constant="30" id="p1K-iO-5C8"/>
-                    <constraint firstItem="iyX-Ft-g9y" firstAttribute="centerX" secondItem="NbX-OE-pGo" secondAttribute="centerX" id="p5B-LR-zTj"/>
+                    <constraint firstItem="iyX-Ft-g9y" firstAttribute="top" secondItem="EX6-xv-9EW" secondAttribute="bottom" constant="10" id="p1K-iO-5C8"/>
                     <constraint firstAttribute="trailing" secondItem="EX6-xv-9EW" secondAttribute="trailing" constant="20" id="qL9-Of-ghp"/>
+                    <constraint firstItem="iyX-Ft-g9y" firstAttribute="leading" secondItem="NbX-OE-pGo" secondAttribute="leading" constant="40" id="vVF-qP-hHM"/>
                     <constraint firstAttribute="trailing" secondItem="tJu-nx-y3K" secondAttribute="trailing" constant="20" id="zgq-56-xbr"/>
                 </constraints>
             </view>
