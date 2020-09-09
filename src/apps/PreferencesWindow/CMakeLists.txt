@@ -46,6 +46,8 @@ add_executable(
   src/DevicesTableViewDataSource.h
   src/DevicesTableViewDelegate.m
   src/DevicesTableViewDelegate.h
+  src/DextAlertWindowController.m
+  src/DextAlertWindowController.h
   src/FnFunctionKeysTableViewController.m
   src/FnFunctionKeysTableViewController.h
   src/FnFunctionKeysTableViewDataSource.m
