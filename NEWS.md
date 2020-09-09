@@ -6,6 +6,7 @@
     -   macOS 10.12 - 10.14 support has been dropped.
 -   ✨ New Features
     -   Supported macOS Big Sur (11.0)
+    -   Supported both Intel-based Macs and Apple Silicon Macs.
     -   Changed the virtual keyboard and mouse implementation to DriverKit from deprecated kernel extension.
 -   ⚡️ Improvements
     -   Improved preferences window messages.
