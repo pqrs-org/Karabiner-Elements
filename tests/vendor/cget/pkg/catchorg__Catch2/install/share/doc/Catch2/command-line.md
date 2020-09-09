@@ -222,6 +222,16 @@ available warnings
 
 When set to ```yes``` Catch will report the duration of each test case, in milliseconds. Note that it does this regardless of whether a test case passes or fails. Note, also, the certain reporters (e.g. Junit) always report test case durations regardless of this option being set or not.
 
+<pre>-D, --min-duration &lt;value></pre>
+
+> `--min-duration` was [introduced](https://github.com/catchorg/Catch2/pull/1910) in Catch 2.13.0
+
+When set, Catch will report the duration of each test case that took more
+than &lt;value> seconds, in milliseconds. This option is overriden by both
+`-d yes` and `-d no`, so that either all durations are reported, or none
+are.
+
+
 <a id="input-file"></a>
 ## Load test names to run from a file
 <pre>-f, --input-file &lt;filename></pre>

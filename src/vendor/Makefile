@@ -1,5 +1,8 @@
 all:
-	@echo 'Type "make update_cget"'
+	bash build-sparkle.sh
+
+clean:
+	cd Sparkle && git clean -d -f -x
 
 update_cget:
 	rm -rf cget

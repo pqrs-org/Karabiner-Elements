@@ -96,23 +96,29 @@ static void staticGrabberStateJsonFileChangedCallback(const char* filePath,
         !self.grabberPermitted) {
       if (!self.shown) {
         self.shown = YES;
-        [self.preferencesWindow beginSheet:self.window
-                         completionHandler:^(NSModalResponse returnCode){}];
+
+        NSRect frame = NSMakeRect(
+            self.preferencesWindow.frame.origin.x + (self.preferencesWindow.frame.size.width / 2) - (self.window.frame.size.width / 2),
+            self.preferencesWindow.frame.origin.y + (self.preferencesWindow.frame.size.height / 2) - (self.window.frame.size.height / 2),
+            self.window.frame.size.width,
+            self.window.frame.size.height);
+
+        [self.window setFrame:frame display:NO];
+        [self.preferencesWindow addChildWindow:self.window
+                                       ordered:NSWindowAbove];
       }
       return;
     }
 
-    [self.preferencesWindow endSheet:self.window];
-    self.shown = NO;
+    if (self.shown) {
+      [self.preferencesWindow removeChildWindow:self.window];
+      [self.window close];
+    }
   });
 }
 
 - (IBAction)openSystemPreferencesSecurity:(id)sender {
   [[NSWorkspace sharedWorkspace] openURL:[NSURL URLWithString:@"x-apple.systempreferences:com.apple.preference.security?Privacy"]];
-}
-
-- (IBAction)closeAlert:(id)sender {
-  [self.preferencesWindow endSheet:self.window];
 }
 
 @end

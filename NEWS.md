@@ -4,6 +4,9 @@
 
 -   💥 Breaking changes
     -   macOS 10.12 - 10.14 support has been dropped.
+-   ✨ New Features
+    -   Supported macOS Big Sur (11.0)
+    -   Changed the virtual keyboard and mouse implementation to DriverKit from deprecated kernel extension.
 -   ⚡️ Improvements
     -   Improved preferences window messages.
     -   Partial support for comments in karabiner.json configuration file.

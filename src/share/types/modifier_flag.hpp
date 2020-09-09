@@ -1,7 +1,7 @@
 #pragma once
 
-#include "Karabiner-VirtualHIDDevice/dist/include/karabiner_virtual_hid_device_methods.hpp"
 #include <cstdint>
+#include <pqrs/karabiner/driverkit/virtual_hid_device_driver.hpp>
 
 namespace krbn {
 enum class modifier_flag : uint32_t {
@@ -19,24 +19,26 @@ enum class modifier_flag : uint32_t {
   end_,
 };
 
-inline std::optional<pqrs::karabiner_virtual_hid_device::hid_report::modifier> make_hid_report_modifier(modifier_flag modifier_flag) {
+inline std::optional<pqrs::karabiner::driverkit::virtual_hid_device_driver::hid_report::modifier> make_hid_report_modifier(modifier_flag modifier_flag) {
+  namespace hid_report = pqrs::karabiner::driverkit::virtual_hid_device_driver::hid_report;
+
   switch (modifier_flag) {
     case modifier_flag::left_control:
-      return pqrs::karabiner_virtual_hid_device::hid_report::modifier::left_control;
+      return hid_report::modifier::left_control;
     case modifier_flag::left_shift:
-      return pqrs::karabiner_virtual_hid_device::hid_report::modifier::left_shift;
+      return hid_report::modifier::left_shift;
     case modifier_flag::left_option:
-      return pqrs::karabiner_virtual_hid_device::hid_report::modifier::left_option;
+      return hid_report::modifier::left_option;
     case modifier_flag::left_command:
-      return pqrs::karabiner_virtual_hid_device::hid_report::modifier::left_command;
+      return hid_report::modifier::left_command;
     case modifier_flag::right_control:
-      return pqrs::karabiner_virtual_hid_device::hid_report::modifier::right_control;
+      return hid_report::modifier::right_control;
     case modifier_flag::right_shift:
-      return pqrs::karabiner_virtual_hid_device::hid_report::modifier::right_shift;
+      return hid_report::modifier::right_shift;
     case modifier_flag::right_option:
-      return pqrs::karabiner_virtual_hid_device::hid_report::modifier::right_option;
+      return hid_report::modifier::right_option;
     case modifier_flag::right_command:
-      return pqrs::karabiner_virtual_hid_device::hid_report::modifier::right_command;
+      return hid_report::modifier::right_command;
     default:
       return std::nullopt;
   }

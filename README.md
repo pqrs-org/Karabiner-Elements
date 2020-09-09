@@ -37,7 +37,7 @@ If you would like to contribute financially to the development of Karabiner Elem
 System requirements to build Karabiner-Elements:
 
 -   macOS 10.15+
--   Xcode 11+
+-   Xcode 12+
 -   Command Line Tools for Xcode
 -   CMake (`brew install cmake`)
 
@@ -107,19 +107,10 @@ System requirements to build Karabiner-Elements:
 
 Karabiner-Elements uses some pre-built binaries in the source tree.
 
--   `src/vendor/Karabiner-VirtualHIDDevice/dist/*.kext`
--   `src/vendor/Sparkle/Sparkle.framework`
+-   `src/vendor/Karabiner-DriverKit-VirtualHIDDevice/dist/Karabiner-DriverKit-VirtualHIDDevice-*.dmg`
 
 Above `make package` command does not rebuild these binaries.<br/>
 (These binaries will be copied in the distributed package.)
 
 If you want to rebuild these binaries, you have to build them manually.<br/>
 Please follow the instruction of these projects.
-
-##### About rebuilding kext in Karabiner-VirtualHIDDevice
-
-If you want to build kext in Karabiner-VirtualHIDDevice, macOS requires a valid certificate which be able to sign the built kext.<br/>
-Unless such certificate, macOS refuses to load the built kext.<br/>
-Please read a documentation about [System Integrity Protection Guide](https://developer.apple.com/library/archive/documentation/Security/Conceptual/System_Integrity_Protection_Guide/KernelExtensions/KernelExtensions.html) for more details.
-
-(We are including the pre-built kext binary to avoid the restriction that macOS requires a uncommon certificate.)

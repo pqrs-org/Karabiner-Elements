@@ -26,10 +26,6 @@ public:
     return "/Library/Application Support/org.pqrs/tmp/rootonly";
   }
 
-  static const char* get_kextd_state_json_file_path(void) {
-    return "/Library/Application Support/org.pqrs/tmp/karabiner_kextd_state.json";
-  }
-
   static const char* get_observer_state_json_file_path(void) {
     return "/Library/Application Support/org.pqrs/tmp/karabiner_observer_state.json";
   }
@@ -40,6 +36,10 @@ public:
 
   static const char* get_grabber_socket_file_path(void) {
     return "/Library/Application Support/org.pqrs/tmp/karabiner_grabber_receiver";
+  }
+
+  static const char* get_virtual_hid_device_service_client_socket_file_path(void) {
+    return "/Library/Application Support/org.pqrs/tmp/rootonly/virtual_hid_device_service_client.sock";
   }
 
   static std::string get_grabber_session_monitor_receiver_socket_file_path(void) {

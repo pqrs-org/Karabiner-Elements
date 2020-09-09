@@ -9,7 +9,7 @@
 #include "mouse_key_handler.hpp"
 #include "queue.hpp"
 #include "types.hpp"
-#include "virtual_hid_device_client.hpp"
+#include <pqrs/karabiner/driverkit/virtual_hid_device_service.hpp>
 
 namespace krbn {
 namespace manipulator {
@@ -148,7 +148,7 @@ public:
 
         case event_queue::event::type::pointing_button:
         case event_queue::event::type::pointing_motion: {
-          pqrs::karabiner_virtual_hid_device::hid_report::pointing_input report;
+          pqrs::karabiner::driverkit::virtual_hid_device_driver::hid_report::pointing_input report;
           report.buttons = output_event_queue->get_pointing_button_manager().make_hid_report_buttons();
 
           if (auto pointing_motion = front_input_event.get_event().get_pointing_motion()) {
@@ -268,7 +268,7 @@ public:
     {
       auto buttons = output_event_queue.get_pointing_button_manager().make_hid_report_buttons();
       if (pressed_buttons_ != buttons) {
-        pqrs::karabiner_virtual_hid_device::hid_report::pointing_input report;
+        pqrs::karabiner::driverkit::virtual_hid_device_driver::hid_report::pointing_input report;
         report.buttons = buttons;
         queue_.emplace_back_pointing_input(report,
                                            event_type::key_up,
@@ -298,7 +298,7 @@ public:
     {
       auto buttons = output_event_queue.get_pointing_button_manager().make_hid_report_buttons();
       if (pressed_buttons_ != buttons) {
-        pqrs::karabiner_virtual_hid_device::hid_report::pointing_input report;
+        pqrs::karabiner::driverkit::virtual_hid_device_driver::hid_report::pointing_input report;
         report.buttons = buttons;
         queue_.emplace_back_pointing_input(report,
                                            event_type::key_up,
@@ -358,10 +358,10 @@ public:
     // This manipulator is always valid.
   }
 
-  void async_post_events(std::weak_ptr<virtual_hid_device_client> weak_virtual_hid_device_client) {
+  void async_post_events(std::weak_ptr<pqrs::karabiner::driverkit::virtual_hid_device_service::client> weak_virtual_hid_device_service_client) {
     enqueue_to_dispatcher(
-        [this, weak_virtual_hid_device_client] {
-          queue_.async_post_events(weak_virtual_hid_device_client,
+        [this, weak_virtual_hid_device_service_client] {
+          queue_.async_post_events(weak_virtual_hid_device_service_client,
                                    weak_console_user_server_client_);
         });
   }
@@ -385,7 +385,7 @@ private:
   key_event_dispatcher key_event_dispatcher_;
   std::unique_ptr<mouse_key_handler> mouse_key_handler_;
   std::unordered_set<modifier_flag> pressed_modifier_flags_;
-  pqrs::karabiner_virtual_hid_device::hid_report::buttons pressed_buttons_;
+  pqrs::karabiner::driverkit::virtual_hid_device_driver::hid_report::buttons pressed_buttons_;
 };
 } // namespace post_event_to_virtual_devices
 } // namespace manipulators

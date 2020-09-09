@@ -137,8 +137,8 @@ public:
     return count > 0;
   }
 
-  pqrs::karabiner_virtual_hid_device::hid_report::modifiers make_hid_report_modifiers(void) const {
-    pqrs::karabiner_virtual_hid_device::hid_report::modifiers modifiers;
+  pqrs::karabiner::driverkit::virtual_hid_device_driver::hid_report::modifiers make_hid_report_modifiers(void) const {
+    pqrs::karabiner::driverkit::virtual_hid_device_driver::hid_report::modifiers modifiers;
 
     std::array<modifier_flag, 8> modifier_flags{
         modifier_flag::left_control,

@@ -1,7 +1,7 @@
 #pragma once
 
-#include "Karabiner-VirtualHIDDevice/dist/include/karabiner_virtual_hid_device_methods.hpp"
 #include "types.hpp"
+#include <pqrs/karabiner/driverkit/virtual_hid_device_driver.hpp>
 #include <thread>
 #include <vector>
 
@@ -116,8 +116,8 @@ public:
     return count > 0;
   }
 
-  pqrs::karabiner_virtual_hid_device::hid_report::buttons make_hid_report_buttons(void) const {
-    pqrs::karabiner_virtual_hid_device::hid_report::buttons buttons;
+  pqrs::karabiner::driverkit::virtual_hid_device_driver::hid_report::buttons make_hid_report_buttons(void) const {
+    pqrs::karabiner::driverkit::virtual_hid_device_driver::hid_report::buttons buttons;
 
     for (auto b = pointing_button::button1; b <= pointing_button::button32; ++b) {
       if (is_pressed(b)) {

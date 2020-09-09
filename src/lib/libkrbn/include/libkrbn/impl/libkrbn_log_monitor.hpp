@@ -27,7 +27,6 @@ public:
     krbn::logger::get_logger()->info(__func__);
 
     std::vector<std::string> targets = {
-        "/var/log/karabiner/kextd.log",
         "/var/log/karabiner/grabber.log",
         "/var/log/karabiner/observer.log",
         fmt::format("/var/log/karabiner/session_monitor.{0}.log", geteuid()),

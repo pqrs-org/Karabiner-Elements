@@ -86,21 +86,6 @@ public:
   }
 
   //
-  // kextd_state_json_file_monitor
-  //
-
-  void enable_kextd_state_json_file_monitor(libkrbn_file_monitor_callback callback,
-                                            void* refcon) {
-    kextd_state_json_file_monitor_ = std::make_unique<libkrbn_file_monitor>(krbn::constants::get_kextd_state_json_file_path(),
-                                                                            callback,
-                                                                            refcon);
-  }
-
-  void disable_kextd_state_json_file_monitor(void) {
-    kextd_state_json_file_monitor_ = nullptr;
-  }
-
-  //
   // observer_state_json_file_monitor
   //
 
@@ -258,7 +243,6 @@ private:
   std::shared_ptr<libkrbn_complex_modifications_assets_manager> complex_modifications_assets_manager_;
   std::unique_ptr<libkrbn_system_preferences_monitor> system_preferences_monitor_;
   std::unique_ptr<libkrbn_connected_devices_monitor> connected_devices_monitor_;
-  std::unique_ptr<libkrbn_file_monitor> kextd_state_json_file_monitor_;
   std::unique_ptr<libkrbn_file_monitor> observer_state_json_file_monitor_;
   std::unique_ptr<libkrbn_file_monitor> grabber_state_json_file_monitor_;
   std::unique_ptr<libkrbn_file_monitor> device_details_json_file_monitor_;

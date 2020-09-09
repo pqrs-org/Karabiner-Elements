@@ -69,9 +69,9 @@ public:
             }
 
             case operation_type::observed_devices_updated: {
+              observed_devices_ = json.at("observed_devices").get<std::unordered_set<device_id>>();
               if (device_grabber_) {
-                device_grabber_->async_set_observed_devices(
-                    json.at("observed_devices").get<std::unordered_set<device_id>>());
+                device_grabber_->async_set_observed_devices(observed_devices_);
               }
               break;
             }
@@ -192,6 +192,7 @@ private:
 
     device_grabber_ = std::make_unique<device_grabber>(console_user_server_client_);
 
+    device_grabber_->async_set_observed_devices(observed_devices_);
     device_grabber_->async_set_system_preferences_properties(system_preferences_properties_);
     device_grabber_->async_post_frontmost_application_changed_event(frontmost_application_);
     device_grabber_->async_post_input_source_changed_event(input_source_properties_);
@@ -217,6 +218,7 @@ private:
   std::shared_ptr<console_user_server_client> console_user_server_client_;
   std::unique_ptr<device_grabber> device_grabber_;
 
+  std::unordered_set<device_id> observed_devices_;
   pqrs::osx::system_preferences::properties system_preferences_properties_;
   pqrs::osx::frontmost_application_monitor::application frontmost_application_;
   pqrs::osx::input_source::properties input_source_properties_;

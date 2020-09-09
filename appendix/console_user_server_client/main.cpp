@@ -1,7 +1,6 @@
 #include "console_user_server_client.hpp"
 #include "dispatcher_utility.hpp"
 #include "logger.hpp"
-#include "virtual_hid_device_client.hpp"
 
 int main(int argc, const char* argv[]) {
   auto scoped_dispatcher_manager = krbn::dispatcher_utility::initialize_dispatchers();

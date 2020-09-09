@@ -20,11 +20,11 @@
 #include "monitor/event_tap_monitor.hpp"
 #include "probable_stuck_events_manager.hpp"
 #include "types.hpp"
-#include "virtual_hid_device_client.hpp"
 #include <deque>
 #include <fstream>
 #include <nlohmann/json.hpp>
 #include <nod/nod.hpp>
+#include <pqrs/karabiner/driverkit/virtual_hid_device_driver.hpp>
 #include <pqrs/osx/iokit_hid_manager.hpp>
 #include <pqrs/osx/system_preferences.hpp>
 #include <pqrs/spdlog.hpp>
@@ -38,6 +38,9 @@ public:
   device_grabber(const device_grabber&) = delete;
 
   device_grabber(std::weak_ptr<console_user_server_client> weak_console_user_server_client) : dispatcher_client(),
+                                                                                              virtual_hid_device_ready_check_timer_(*this),
+                                                                                              is_virtual_hid_keyboard_ready_(false),
+                                                                                              is_virtual_hid_pointing_ready_(false),
                                                                                               profile_(nlohmann::json::object()),
                                                                                               logger_unique_filter_(logger::get_logger()) {
     simple_modifications_manipulator_manager_ = std::make_shared<device_grabber_details::simple_modifications_manipulator_manager>();
@@ -51,10 +54,11 @@ public:
     fn_function_keys_applied_event_queue_ = std::make_shared<event_queue::queue>();
     posted_event_queue_ = std::make_shared<event_queue::queue>();
 
-    virtual_hid_device_client_ = std::make_shared<virtual_hid_device_client>();
+    virtual_hid_device_service_client_ = std::make_shared<pqrs::karabiner::driverkit::virtual_hid_device_service::client>(
+        constants::get_virtual_hid_device_service_client_socket_file_path());
 
-    virtual_hid_device_client_->client_connected.connect([this] {
-      logger::get_logger()->info("virtual_hid_device_client_ is connected");
+    virtual_hid_device_service_client_->connected.connect([this] {
+      logger::get_logger()->info("virtual_hid_device_service_client_ connected");
 
       update_virtual_hid_keyboard();
       update_virtual_hid_pointing();
@@ -63,16 +67,67 @@ public:
       async_grab_devices();
     });
 
-    virtual_hid_device_client_->virtual_hid_keyboard_ready.connect([this] {
-      update_devices_disabled();
-      async_grab_devices();
+    virtual_hid_device_service_client_->connect_failed.connect([](auto&& error_code) {
+      logger::get_logger()->info("virtual_hid_device_service_client_ connect_failed: {0}", error_code.message());
     });
 
-    virtual_hid_device_client_->client_disconnected.connect([this] {
-      logger::get_logger()->info("virtual_hid_device_client_ is disconnected");
+    virtual_hid_device_service_client_->closed.connect([] {
+      logger::get_logger()->info("virtual_hid_device_service_client_ closed");
 
-      stop();
+      // Wait automatic reconnection.
+      //
+      // Note:
+      // The following callback will be signaled by virtual_hid_device_service::client.
+      // - `virtual_hid_keyboard_ready_callback(false)`
+      // - `virtual_hid_pointing_ready_callback(false)`
     });
+
+    virtual_hid_device_service_client_->error_occurred.connect([](auto&& error_code) {
+      logger::get_logger()->info("virtual_hid_device_service_client_ error_occurred: {0}", error_code.message());
+    });
+
+    virtual_hid_device_service_client_->virtual_hid_keyboard_ready_callback.connect([this](auto&& ready) {
+      if (is_virtual_hid_keyboard_ready_ != ready) {
+        logger::get_logger()->info("virtual_hid_device_service_client_ virtual_hid_keyboard_ready_callback: {0}", ready);
+
+        is_virtual_hid_keyboard_ready_ = ready;
+
+        // The virtual_hid_keyboard might be terminated due to virtual_hid_device_service_client_ error.
+        // We try to reinitialize the device.
+        if (!ready) {
+          virtual_hid_device_service_client_->async_virtual_hid_keyboard_terminate();
+          update_virtual_hid_keyboard();
+        }
+
+        update_devices_disabled();
+        async_grab_devices();
+      }
+    });
+
+    virtual_hid_device_service_client_->virtual_hid_pointing_ready_callback.connect([this](auto&& ready) {
+      if (is_virtual_hid_pointing_ready_ != ready) {
+        logger::get_logger()->info("virtual_hid_device_service_client_ virtual_hid_pointing_ready_callback: {0}", ready);
+
+        is_virtual_hid_pointing_ready_ = ready;
+
+        // The virtual_hid_keyboard might be terminated due to virtual_hid_device_service_client_ error.
+        // We try to reinitialize the device.
+        if (!ready) {
+          virtual_hid_device_service_client_->async_virtual_hid_pointing_terminate();
+          update_virtual_hid_pointing();
+        }
+
+        update_devices_disabled();
+        async_grab_devices();
+      }
+    });
+
+    virtual_hid_device_ready_check_timer_.start(
+        [this] {
+          virtual_hid_device_service_client_->async_virtual_hid_keyboard_ready();
+          virtual_hid_device_service_client_->async_virtual_hid_pointing_ready();
+        },
+        std::chrono::milliseconds(1000));
 
     post_event_to_virtual_devices_manipulator_ =
         std::make_shared<manipulator::manipulators::post_event_to_virtual_devices::post_event_to_virtual_devices>(
@@ -226,10 +281,10 @@ public:
           if (auto device_properties = it->second->get_device_properties()) {
             if (device_properties->get_is_keyboard().value_or(false) &&
                 device_properties->get_is_karabiner_virtual_hid_device().value_or(false)) {
-              virtual_hid_device_client_->async_close();
+              virtual_hid_device_service_client_->async_stop();
               async_ungrab_devices();
 
-              virtual_hid_device_client_->async_connect();
+              virtual_hid_device_service_client_->async_start();
             }
           }
 
@@ -292,6 +347,7 @@ public:
       complex_modifications_manipulator_manager_ = nullptr;
       fn_function_keys_manipulator_manager_ = nullptr;
       post_event_to_virtual_devices_manipulator_manager_ = nullptr;
+      virtual_hid_device_service_client_ = nullptr;
     });
   }
 
@@ -338,7 +394,7 @@ public:
 
       configuration_monitor_->async_start();
 
-      virtual_hid_device_client_->async_connect();
+      virtual_hid_device_service_client_->async_start();
     });
   }
 
@@ -506,7 +562,8 @@ private:
 
     event_tap_monitor_ = nullptr;
 
-    virtual_hid_device_client_->async_close();
+    virtual_hid_device_ready_check_timer_.stop();
+    virtual_hid_device_service_client_->async_stop();
   }
 
   // This method is executed in the shared dispatcher thread.
@@ -514,7 +571,7 @@ private:
     manipulator_managers_connector_.manipulate(now);
 
     posted_event_queue_->clear_events();
-    post_event_to_virtual_devices_manipulator_->async_post_events(virtual_hid_device_client_);
+    post_event_to_virtual_devices_manipulator_->async_post_events(virtual_hid_device_service_client_);
 
     if (auto min = manipulator_managers_connector_.min_input_event_time_stamp()) {
       auto when = when_now();
@@ -530,6 +587,7 @@ private:
     }
   }
 
+  // This method is executed in the shared dispatcher thread.
   void values_arrived(std::shared_ptr<device_grabber_details::entry> entry,
                       std::shared_ptr<event_queue::queue> event_queue) {
     // Manipulate events
@@ -639,6 +697,7 @@ private:
     return nullptr;
   }
 
+  // This method is executed in the shared dispatcher thread.
   void grab_device(std::shared_ptr<device_grabber_details::entry> entry) const {
     if (make_grabbable_state(entry) == grabbable_state::state::grabbable) {
       entry->async_start_queue_value_monitor();
@@ -647,6 +706,7 @@ private:
     }
   }
 
+  // This method is executed in the shared dispatcher thread.
   void grab_device(device_id device_id) const {
     auto it = entries_.find(device_id);
     if (it != std::end(entries_)) {
@@ -654,6 +714,7 @@ private:
     }
   }
 
+  // This method is executed in the shared dispatcher thread.
   grabbable_state::state make_grabbable_state(std::shared_ptr<device_grabber_details::entry> entry) const {
     if (!entry) {
       return grabbable_state::state::ungrabbable_permanently;
@@ -674,16 +735,9 @@ private:
     }
 
     // ----------------------------------------
-    // Ungrabbable while virtual_hid_device_client_ is not ready.
+    // Ungrabbable while virtual_hid_device_service_client_ is not ready.
 
-    if (!virtual_hid_device_client_->is_connected()) {
-      std::string message = "virtual_hid_device_client is not connected yet. Please wait for a while.";
-      logger_unique_filter_.warn(message);
-      unset_device_ungrabbable_temporarily_notification_message(entry->get_device_id());
-      return grabbable_state::state::ungrabbable_temporarily;
-    }
-
-    if (!virtual_hid_device_client_->is_virtual_hid_keyboard_ready()) {
+    if (!is_virtual_hid_keyboard_ready_) {
       std::string message = "virtual_hid_keyboard is not ready. Please wait for a while.";
       logger_unique_filter_.warn(message);
       unset_device_ungrabbable_temporarily_notification_message(entry->get_device_id());
@@ -772,25 +826,18 @@ private:
   }
 
   void update_virtual_hid_keyboard(void) {
-    if (virtual_hid_device_client_->is_connected()) {
-      pqrs::karabiner_virtual_hid_device::properties::keyboard_initialization properties;
-      properties.country_code = static_cast<uint8_t>(
-          type_safe::get(profile_.get_virtual_hid_keyboard().get_country_code()));
-
-      virtual_hid_device_client_->async_initialize_virtual_hid_keyboard(properties);
-    }
+    virtual_hid_device_service_client_->async_virtual_hid_keyboard_initialize(
+        profile_.get_virtual_hid_keyboard().get_country_code());
   }
 
   void update_virtual_hid_pointing(void) {
-    if (virtual_hid_device_client_->is_connected()) {
-      if (is_pointing_device_grabbed() ||
-          manipulator_managers_connector_.needs_virtual_hid_pointing()) {
-        virtual_hid_device_client_->async_initialize_virtual_hid_pointing();
-        return;
-      }
-
-      virtual_hid_device_client_->async_terminate_virtual_hid_pointing();
+    if (is_pointing_device_grabbed() ||
+        manipulator_managers_connector_.needs_virtual_hid_pointing()) {
+      virtual_hid_device_service_client_->async_virtual_hid_pointing_initialize();
+      return;
     }
+
+    virtual_hid_device_service_client_->async_virtual_hid_pointing_terminate();
   }
 
   bool need_to_disable_built_in_keyboard(void) const {
@@ -892,7 +939,11 @@ private:
     }
   }
 
-  std::shared_ptr<virtual_hid_device_client> virtual_hid_device_client_;
+  std::shared_ptr<pqrs::karabiner::driverkit::virtual_hid_device_service::client> virtual_hid_device_service_client_;
+
+  pqrs::dispatcher::extra::timer virtual_hid_device_ready_check_timer_;
+  bool is_virtual_hid_keyboard_ready_;
+  bool is_virtual_hid_pointing_ready_;
 
   std::vector<nod::scoped_connection> external_signal_connections_;
 

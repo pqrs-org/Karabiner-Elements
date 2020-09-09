@@ -58,6 +58,12 @@ int main(int argc, const char* argv[]) {
   krbn::console_user_server::migration::migrate_v1();
 
   //
+  // Activate driver
+  //
+
+  system("Applications/.Karabiner-VirtualHIDDevice-Manager.app/Contents/MacOS/Karabiner-VirtualHIDDevice-Manager activate &");
+
+  //
   // Create directories
   //
 

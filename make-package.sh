@@ -32,14 +32,12 @@ mkdir -p "$basedir"
 cp src/scripts/copy_current_profile_to_system_default_profile.applescript "$basedir"
 cp src/scripts/remove_system_default_profile.applescript "$basedir"
 cp src/scripts/uninstaller.applescript "$basedir"
-cp -R "src/vendor/Karabiner-VirtualHIDDevice/dist/uninstall.sh" "$basedir/uninstall-Karabiner-VirtualHIDDevice.sh"
 
 basedir="pkgroot/Library/Application Support/org.pqrs/Karabiner-Elements/bin"
 mkdir -p "$basedir"
 cp src/bin/cli/build_xcode/build/Release/karabiner_cli "$basedir"
 cp src/core/console_user_server/build_xcode/build/Release/karabiner_console_user_server "$basedir"
 cp src/core/grabber/build_xcode/build/Release/karabiner_grabber "$basedir"
-cp src/core/kextd/build_xcode/build/Release/karabiner_kextd "$basedir"
 cp src/core/observer/build_xcode/build/Release/karabiner_observer "$basedir"
 cp src/core/session_monitor/build_xcode/build/Release/karabiner_session_monitor "$basedir"
 
@@ -50,10 +48,6 @@ cp -R "src/apps/Updater/build_xcode/build/Release/Karabiner-Elements.app" "$base
 mkdir -p "pkgroot/Library"
 cp -R files/LaunchDaemons "pkgroot/Library"
 cp -R files/LaunchAgents "pkgroot/Library"
-
-basedir="pkgroot/Library/Application Support/org.pqrs/Karabiner-VirtualHIDDevice/Extensions"
-mkdir -p "$basedir"
-cp -R src/vendor/Karabiner-VirtualHIDDevice/dist/org.pqrs.driver.Karabiner.VirtualHIDDevice.*.kext "$basedir"
 
 basedir="pkgroot/Applications"
 mkdir -p "$basedir"
@@ -74,7 +68,7 @@ chmod 755 pkginfo/Scripts/preinstall
 # --------------------------------------------------
 echo "Create pkg"
 
-pkgName="Karabiner-Elements.sparkle_guided.pkg"
+pkgName="Karabiner-Elements.pkg"
 pkgIdentifier="org.pqrs.Karabiner-Elements"
 archiveName="Karabiner-Elements-${version}"
 
@@ -90,12 +84,24 @@ pkgbuild \
     --install-location "/" \
     $archiveName/Installer.pkg
 
+#
+# Copy Karabiner-DriverKit-VirtualHIDDevice.pkg.
+#
+
+virtualHIDDeviceDmg=$(ls src/vendor/Karabiner-DriverKit-VirtualHIDDevice/dist/Karabiner-DriverKit-VirtualHIDDevice-*.pkg | sort --version-sort | tail -n 1)
+cp $virtualHIDDeviceDmg $archiveName/Karabiner-DriverKit-VirtualHIDDevice.pkg
+
+#
+# productbuild
+#
+
 productbuild \
     --distribution pkginfo/build/Distribution.xml \
     --package-path $archiveName \
     $archiveName/$pkgName
 
 rm -f $archiveName/Installer.pkg
+rm -f $archiveName/Karabiner-DriverKit-VirtualHIDDevice.pkg
 
 # --------------------------------------------------
 echo "Sign with Developer ID"
