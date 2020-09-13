@@ -1,10 +1,10 @@
 #pragma once
 
 #include "event_queue.hpp"
-#include <mpark/variant.hpp>
 #include <nlohmann/json.hpp>
 #include <optional>
 #include <pqrs/json.hpp>
+#include <variant>
 
 namespace krbn {
 namespace manipulator {
@@ -22,19 +22,19 @@ public:
     mouse_key,
   };
 
-  using value_t = mpark::variant<mpark::monostate,
-                                 key_code::value_t,
-                                 consumer_key_code::value_t,
-                                 pointing_button::value_t,
-                                 type,                                                     // For any
-                                 std::string,                                              // For shell_command
-                                 std::vector<pqrs::osx::input_source_selector::specifier>, // For select_input_source
-                                 std::pair<std::string, int>,                              // For set_variable
-                                 mouse_key                                                 // For mouse_key
-                                 >;
+  using value_t = std::variant<std::monostate,
+                               key_code::value_t,
+                               consumer_key_code::value_t,
+                               pointing_button::value_t,
+                               type,                                                     // For any
+                               std::string,                                              // For shell_command
+                               std::vector<pqrs::osx::input_source_selector::specifier>, // For select_input_source
+                               std::pair<std::string, int>,                              // For set_variable
+                               mouse_key                                                 // For mouse_key
+                               >;
 
   event_definition(void) : type_(type::none),
-                           value_(mpark::monostate()) {
+                           value_(std::monostate()) {
   }
 
   ~event_definition(void) {
@@ -50,56 +50,56 @@ public:
 
   std::optional<key_code::value_t> get_key_code(void) const {
     if (type_ == type::key_code) {
-      return mpark::get<key_code::value_t>(value_);
+      return std::get<key_code::value_t>(value_);
     }
     return std::nullopt;
   }
 
   std::optional<consumer_key_code::value_t> get_consumer_key_code(void) const {
     if (type_ == type::consumer_key_code) {
-      return mpark::get<consumer_key_code::value_t>(value_);
+      return std::get<consumer_key_code::value_t>(value_);
     }
     return std::nullopt;
   }
 
   std::optional<pointing_button::value_t> get_pointing_button(void) const {
     if (type_ == type::pointing_button) {
-      return mpark::get<pointing_button::value_t>(value_);
+      return std::get<pointing_button::value_t>(value_);
     }
     return std::nullopt;
   }
 
   std::optional<type> get_any_type(void) const {
     if (type_ == type::any) {
-      return mpark::get<type>(value_);
+      return std::get<type>(value_);
     }
     return std::nullopt;
   }
 
   std::optional<std::string> get_shell_command(void) const {
     if (type_ == type::shell_command) {
-      return mpark::get<std::string>(value_);
+      return std::get<std::string>(value_);
     }
     return std::nullopt;
   }
 
   std::optional<std::vector<pqrs::osx::input_source_selector::specifier>> get_input_source_specifiers(void) const {
     if (type_ == type::select_input_source) {
-      return mpark::get<std::vector<pqrs::osx::input_source_selector::specifier>>(value_);
+      return std::get<std::vector<pqrs::osx::input_source_selector::specifier>>(value_);
     }
     return std::nullopt;
   }
 
   std::optional<std::pair<std::string, int>> get_set_variable(void) const {
     if (type_ == type::set_variable) {
-      return mpark::get<std::pair<std::string, int>>(value_);
+      return std::get<std::pair<std::string, int>>(value_);
     }
     return std::nullopt;
   }
 
   std::optional<mouse_key> get_mouse_key(void) const {
     if (type_ == type::mouse_key) {
-      return mpark::get<mouse_key>(value_);
+      return std::get<mouse_key>(value_);
     }
     return std::nullopt;
   }
@@ -109,21 +109,21 @@ public:
       case type::none:
         return std::nullopt;
       case type::key_code:
-        return event_queue::event(mpark::get<key_code::value_t>(value_));
+        return event_queue::event(std::get<key_code::value_t>(value_));
       case type::consumer_key_code:
-        return event_queue::event(mpark::get<consumer_key_code::value_t>(value_));
+        return event_queue::event(std::get<consumer_key_code::value_t>(value_));
       case type::pointing_button:
-        return event_queue::event(mpark::get<pointing_button::value_t>(value_));
+        return event_queue::event(std::get<pointing_button::value_t>(value_));
       case type::any:
         return std::nullopt;
       case type::shell_command:
-        return event_queue::event::make_shell_command_event(mpark::get<std::string>(value_));
+        return event_queue::event::make_shell_command_event(std::get<std::string>(value_));
       case type::select_input_source:
-        return event_queue::event::make_select_input_source_event(mpark::get<std::vector<pqrs::osx::input_source_selector::specifier>>(value_));
+        return event_queue::event::make_select_input_source_event(std::get<std::vector<pqrs::osx::input_source_selector::specifier>>(value_));
       case type::set_variable:
-        return event_queue::event::make_set_variable_event(mpark::get<std::pair<std::string, int>>(value_));
+        return event_queue::event::make_set_variable_event(std::get<std::pair<std::string, int>>(value_));
       case type::mouse_key:
-        return event_queue::event::make_mouse_key_event(mpark::get<mouse_key>(value_));
+        return event_queue::event::make_mouse_key_event(std::get<mouse_key>(value_));
     }
   }
 

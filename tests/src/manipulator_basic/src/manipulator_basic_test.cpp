@@ -194,7 +194,7 @@ TEST_CASE("to") {
     {
       auto& d = b.get_to()[0].get_event_definition();
       REQUIRE(d.get_type() == event_definition::type::key_code);
-      REQUIRE(mpark::get<krbn::key_code::value_t>(d.get_value()) == krbn::key_code::keyboard_tab);
+      REQUIRE(std::get<krbn::key_code::value_t>(d.get_value()) == krbn::key_code::keyboard_tab);
     }
   }
 
@@ -213,12 +213,12 @@ TEST_CASE("to") {
     {
       auto& d = b.get_to()[0].get_event_definition();
       REQUIRE(d.get_type() == event_definition::type::key_code);
-      REQUIRE(mpark::get<krbn::key_code::value_t>(d.get_value()) == krbn::key_code::keyboard_tab);
+      REQUIRE(std::get<krbn::key_code::value_t>(d.get_value()) == krbn::key_code::keyboard_tab);
     }
     {
       auto& d = b.get_to()[1].get_event_definition();
       REQUIRE(d.get_type() == event_definition::type::key_code);
-      REQUIRE(mpark::get<krbn::key_code::value_t>(d.get_value()) == krbn::key_code::keyboard_spacebar);
+      REQUIRE(std::get<krbn::key_code::value_t>(d.get_value()) == krbn::key_code::keyboard_spacebar);
     }
   }
 }

@@ -3,19 +3,19 @@
 #include "consumer_key_code.hpp"
 #include "key_code.hpp"
 #include "pointing_button.hpp"
-#include <mpark/variant.hpp>
 #include <nlohmann/json.hpp>
 #include <pqrs/hash.hpp>
+#include <variant>
 
 namespace krbn {
 class key_down_up_valued_event final {
 public:
-  using value_t = mpark::variant<key_code::value_t,
-                                 consumer_key_code::value_t,
-                                 pointing_button::value_t,
-                                 mpark::monostate>;
+  using value_t = std::variant<key_code::value_t,
+                               consumer_key_code::value_t,
+                               pointing_button::value_t,
+                               std::monostate>;
 
-  key_down_up_valued_event(void) : value_(mpark::monostate()) {
+  key_down_up_valued_event(void) : value_(std::monostate()) {
   }
 
   template <typename T>
@@ -33,7 +33,7 @@ public:
 
   template <typename T>
   const T* find(void) const {
-    return mpark::get_if<T>(&value_);
+    return std::get_if<T>(&value_);
   }
 
   bool modifier_flag(void) const {

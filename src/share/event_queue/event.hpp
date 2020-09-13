@@ -7,11 +7,11 @@
 #include "hash.hpp"
 #include "manipulator/manipulator_environment.hpp"
 #include "types.hpp"
-#include <mpark/variant.hpp>
 #include <optional>
 #include <pqrs/hash.hpp>
 #include <pqrs/osx/system_preferences.hpp>
 #include <pqrs/osx/system_preferences/extra/nlohmann_json.hpp>
+#include <variant>
 
 namespace krbn {
 namespace event_queue {
@@ -41,24 +41,24 @@ public:
     virtual_hid_keyboard_configuration_changed,
   };
 
-  using value_t = mpark::variant<key_code::value_t,                                        // For type::key_code
-                                 consumer_key_code::value_t,                               // For type::consumer_key_code
-                                 pointing_button::value_t,                                 // For type::pointing_button
-                                 pointing_motion,                                          // For type::pointing_motion
-                                 int64_t,                                                  // For type::caps_lock_state_changed
-                                 std::string,                                              // For shell_command
-                                 std::vector<pqrs::osx::input_source_selector::specifier>, // For select_input_source
-                                 std::pair<std::string, int>,                              // For set_variable
-                                 mouse_key,                                                // For mouse_key
-                                 pqrs::osx::frontmost_application_monitor::application,    // For frontmost_application_changed
-                                 pqrs::osx::input_source::properties,                      // For input_source_changed
-                                 device_properties,                                        // For device_grabbed
-                                 pqrs::osx::system_preferences::properties,                // For system_preferences_properties_changed
-                                 core_configuration::details::virtual_hid_keyboard,        // For virtual_hid_keyboard_configuration_changed
-                                 mpark::monostate>;                                        // For virtual events
+  using value_t = std::variant<key_code::value_t,                                        // For type::key_code
+                               consumer_key_code::value_t,                               // For type::consumer_key_code
+                               pointing_button::value_t,                                 // For type::pointing_button
+                               pointing_motion,                                          // For type::pointing_motion
+                               int64_t,                                                  // For type::caps_lock_state_changed
+                               std::string,                                              // For shell_command
+                               std::vector<pqrs::osx::input_source_selector::specifier>, // For select_input_source
+                               std::pair<std::string, int>,                              // For set_variable
+                               mouse_key,                                                // For mouse_key
+                               pqrs::osx::frontmost_application_monitor::application,    // For frontmost_application_changed
+                               pqrs::osx::input_source::properties,                      // For input_source_changed
+                               device_properties,                                        // For device_grabbed
+                               pqrs::osx::system_preferences::properties,                // For system_preferences_properties_changed
+                               core_configuration::details::virtual_hid_keyboard,        // For virtual_hid_keyboard_configuration_changed
+                               std::monostate>;                                          // For virtual events
 
   event(void) : type_(type::none),
-                value_(mpark::monostate()) {
+                value_(std::monostate()) {
   }
 
   static event make_from_json(const nlohmann::json& json) {
@@ -179,13 +179,13 @@ public:
         break;
 
       case type::system_preferences_properties_changed:
-        if (auto v = mpark::get_if<pqrs::osx::system_preferences::properties>(&value_)) {
+        if (auto v = std::get_if<pqrs::osx::system_preferences::properties>(&value_)) {
           json["system_preferences_properties"] = *v;
         }
         break;
 
       case type::virtual_hid_keyboard_configuration_changed:
-        if (auto v = mpark::get_if<core_configuration::details::virtual_hid_keyboard>(&value_)) {
+        if (auto v = std::get_if<core_configuration::details::virtual_hid_keyboard>(&value_)) {
           json["virtual_hid_keyboard_configuration"] = *v;
         }
         break;
@@ -311,15 +311,15 @@ public:
 
   template <typename T>
   const T* find(void) const {
-    return mpark::get_if<T>(&value_);
+    return std::get_if<T>(&value_);
   }
 
   std::optional<key_code::value_t> get_key_code(void) const {
     try {
       if (type_ == type::key_code) {
-        return mpark::get<key_code::value_t>(value_);
+        return std::get<key_code::value_t>(value_);
       }
-    } catch (mpark::bad_variant_access&) {
+    } catch (std::bad_variant_access&) {
     }
     return std::nullopt;
   }
@@ -327,9 +327,9 @@ public:
   std::optional<consumer_key_code::value_t> get_consumer_key_code(void) const {
     try {
       if (type_ == type::consumer_key_code) {
-        return mpark::get<consumer_key_code::value_t>(value_);
+        return std::get<consumer_key_code::value_t>(value_);
       }
-    } catch (mpark::bad_variant_access&) {
+    } catch (std::bad_variant_access&) {
     }
     return std::nullopt;
   }
@@ -337,9 +337,9 @@ public:
   std::optional<pointing_button::value_t> get_pointing_button(void) const {
     try {
       if (type_ == type::pointing_button) {
-        return mpark::get<pointing_button::value_t>(value_);
+        return std::get<pointing_button::value_t>(value_);
       }
-    } catch (mpark::bad_variant_access&) {
+    } catch (std::bad_variant_access&) {
     }
     return std::nullopt;
   }
@@ -347,9 +347,9 @@ public:
   std::optional<pointing_motion> get_pointing_motion(void) const {
     try {
       if (type_ == type::pointing_motion) {
-        return mpark::get<pointing_motion>(value_);
+        return std::get<pointing_motion>(value_);
       }
-    } catch (mpark::bad_variant_access&) {
+    } catch (std::bad_variant_access&) {
     }
     return std::nullopt;
   }
@@ -357,9 +357,9 @@ public:
   std::optional<int64_t> get_integer_value(void) const {
     try {
       if (type_ == type::caps_lock_state_changed) {
-        return mpark::get<int64_t>(value_);
+        return std::get<int64_t>(value_);
       }
-    } catch (mpark::bad_variant_access&) {
+    } catch (std::bad_variant_access&) {
     }
     return std::nullopt;
   }
@@ -367,9 +367,9 @@ public:
   std::optional<std::string> get_shell_command(void) const {
     try {
       if (type_ == type::shell_command) {
-        return mpark::get<std::string>(value_);
+        return std::get<std::string>(value_);
       }
-    } catch (mpark::bad_variant_access&) {
+    } catch (std::bad_variant_access&) {
     }
     return std::nullopt;
   }
@@ -377,9 +377,9 @@ public:
   std::optional<std::vector<pqrs::osx::input_source_selector::specifier>> get_input_source_specifiers(void) const {
     try {
       if (type_ == type::select_input_source) {
-        return mpark::get<std::vector<pqrs::osx::input_source_selector::specifier>>(value_);
+        return std::get<std::vector<pqrs::osx::input_source_selector::specifier>>(value_);
       }
-    } catch (mpark::bad_variant_access&) {
+    } catch (std::bad_variant_access&) {
     }
     return std::nullopt;
   }
@@ -387,9 +387,9 @@ public:
   std::optional<std::pair<std::string, int>> get_set_variable(void) const {
     try {
       if (type_ == type::set_variable) {
-        return mpark::get<std::pair<std::string, int>>(value_);
+        return std::get<std::pair<std::string, int>>(value_);
       }
-    } catch (mpark::bad_variant_access&) {
+    } catch (std::bad_variant_access&) {
     }
     return std::nullopt;
   }
@@ -397,9 +397,9 @@ public:
   std::optional<mouse_key> get_mouse_key(void) const {
     try {
       if (type_ == type::mouse_key) {
-        return mpark::get<mouse_key>(value_);
+        return std::get<mouse_key>(value_);
       }
-    } catch (mpark::bad_variant_access&) {
+    } catch (std::bad_variant_access&) {
     }
     return std::nullopt;
   }
@@ -407,9 +407,9 @@ public:
   std::optional<pqrs::osx::frontmost_application_monitor::application> get_frontmost_application(void) const {
     try {
       if (type_ == type::frontmost_application_changed) {
-        return mpark::get<pqrs::osx::frontmost_application_monitor::application>(value_);
+        return std::get<pqrs::osx::frontmost_application_monitor::application>(value_);
       }
-    } catch (mpark::bad_variant_access&) {
+    } catch (std::bad_variant_access&) {
     }
     return std::nullopt;
   }
@@ -417,9 +417,9 @@ public:
   std::optional<pqrs::osx::input_source::properties> get_input_source_properties(void) const {
     try {
       if (type_ == type::input_source_changed) {
-        return mpark::get<pqrs::osx::input_source::properties>(value_);
+        return std::get<pqrs::osx::input_source::properties>(value_);
       }
-    } catch (mpark::bad_variant_access&) {
+    } catch (std::bad_variant_access&) {
     }
     return std::nullopt;
   }
@@ -447,7 +447,7 @@ private:
   static event make_virtual_event(type type) {
     event e;
     e.type_ = type;
-    e.value_ = mpark::monostate();
+    e.value_ = std::monostate();
     return e;
   }
 
