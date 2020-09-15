@@ -43,7 +43,7 @@ cp src/core/session_monitor/build_xcode/build/Release/karabiner_session_monitor 
 
 basedir="pkgroot/Library/Application Support/org.pqrs/Karabiner-Elements/updater"
 mkdir -p "$basedir"
-cp -R "src/apps/Updater/build_xcode/build/Release/Karabiner-Elements.app" "$basedir"
+cp -R "src/apps/Updater/build/Release/Karabiner-Elements.app" "$basedir"
 
 mkdir -p "pkgroot/Library"
 cp -R files/LaunchDaemons "pkgroot/Library"

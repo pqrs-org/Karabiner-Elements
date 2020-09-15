@@ -1,7 +1,9 @@
 all:
+	python3 ../../../scripts/update-version.py
 	make -C ../lib/KarabinerKit
 	make -C ../../vendor
-	make build_xcode
+	xcodegen generate
+	xcodebuild -configuration Release -alltargets SYMROOT="$(CURDIR)/build"
 
 clean: clean_builds
 
