@@ -37,6 +37,7 @@ System requirements to build Karabiner-Elements:
 -   macOS 10.15+
 -   Xcode 12+
 -   Command Line Tools for Xcode
+-   xz (`brew install xz`)
 -   CMake (`brew install cmake`)
 
 #### Steps
