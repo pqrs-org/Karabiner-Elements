@@ -13,6 +13,8 @@ jobs:
           submodules: recursive
       - name: xcode-select
         run: sudo xcode-select -s /Applications/Xcode_12.app
+      - name: brew install
+        run: brew install xcodegen
       - name: package
         run: make package
       - name: appendix
