@@ -26,6 +26,10 @@
     <string>MainMenu</string>
     <key>NSPrincipalClass</key>
     <string>NSApplication</string>
+    <key>NSSupportsAutomaticTermination</key>
+    <false/>
+    <key>NSSupportsSuddenTermination</key>
+    <true/>
     <key>LSUIElement</key>
     <true/>
     <key>SUFeedURL</key>
@@ -40,7 +44,5 @@
     <string>WdJ29ySfnKxiloyN7d2q/Q9NRijT1kC7q1b87fRcW8c=</string>
     <key>SUAllowsAutomaticUpdates</key>
     <false/>
-    <key>NSSupportsSuddenTermination</key>
-    <true/>
   </dict>
 </plist>
