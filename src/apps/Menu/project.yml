@@ -1,0 +1,33 @@
+name: Karabiner-Menu
+
+targets:
+  Karabiner-Menu:
+    settings:
+      PRODUCT_BUNDLE_IDENTIFIER: org.pqrs.Karabiner-Menu
+      CODE_SIGN_ENTITLEMENTS: ''
+      CODE_SIGN_IDENTITY: '-'
+      CODE_SIGN_STYLE: Manual
+      SYSTEM_HEADER_SEARCH_PATHS:
+        - ../../vendor/cget/include
+      HEADER_SEARCH_PATHS:
+        - ../lib/KarabinerKit/include
+        - ../../lib/libkrbn/include
+      OTHER_LDFLAGS:
+        - -L../lib/KarabinerKit/build_xcode/build/Release
+        - -L../../lib/libkrbn/build_xcode/build/Release
+        - -lKarabinerKit
+        - -lkrbn
+    type: application
+    platform: macOS
+    deploymentTarget: 10.15
+    sources:
+      - path: src
+        compilerFlags:
+          - -Wall
+          - -Werror
+      - path: Resources
+        excludes:
+          - Info.plist.in
+      - path: ../share/Resources/app.icns
+    dependencies:
+      - sdk: libc++.tbd
