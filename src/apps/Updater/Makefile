@@ -5,7 +5,9 @@ all:
 	xcodegen generate
 	xcodebuild -configuration Release -alltargets SYMROOT="$(CURDIR)/build"
 
-clean: clean_builds
+clean:
+	rm -fr *.xcodeproj
+	rm -fr build
 
 run:
 	./build/Release/Karabiner-Elements.app/Contents/MacOS/Karabiner-Elements
