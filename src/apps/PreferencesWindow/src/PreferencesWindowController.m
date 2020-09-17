@@ -296,8 +296,8 @@
 }
 
 - (IBAction)launchUninstaller:(id)sender {
-  NSString* path = @"/Library/Application Support/org.pqrs/Karabiner-Elements/scripts/uninstaller.applescript";
-  [[[NSAppleScript alloc] initWithContentsOfURL:[NSURL fileURLWithPath:path] error:nil] executeAndReturnError:nil];
+  // Use nohup because uninstaller kill the Preferences Window.
+  system("/usr/bin/nohup osascript '/Library/Application Support/org.pqrs/Karabiner-Elements/scripts/uninstaller.applescript' >/dev/null 2>&1 &");
 }
 
 - (IBAction)launchMultitouchExtension:(id)sender {
