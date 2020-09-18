@@ -5,7 +5,7 @@ include (../../src/common.cmake)
 project (a.out)
 
 link_directories(
-  ../../src/lib/libkrbn/build_xcode/build/Release
+  ../../src/lib/libkrbn/build/Release
 )
 
 add_executable(

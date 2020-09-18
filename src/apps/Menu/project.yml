@@ -14,7 +14,7 @@ targets:
         - ../../lib/libkrbn/include
       OTHER_LDFLAGS:
         - -L../lib/KarabinerKit/build/Release
-        - -L../../lib/libkrbn/build_xcode/build/Release
+        - -L../../lib/libkrbn/build/Release
         - -lKarabinerKit
         - -lkrbn
     type: application

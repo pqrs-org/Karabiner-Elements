@@ -1,0 +1,27 @@
+name: krbn
+
+targets:
+  krbn:
+    settings:
+      CODE_SIGN_ENTITLEMENTS: ''
+      CODE_SIGN_IDENTITY: '-'
+      CODE_SIGN_STYLE: Manual
+      SYSTEM_HEADER_SEARCH_PATHS:
+        - ../../vendor/cget/include
+        - ../../vendor/Karabiner-DriverKit-VirtualHIDDevice/include
+      HEADER_SEARCH_PATHS:
+        - include
+        - ../../share
+    type: library.static
+    platform: macOS
+    deploymentTarget: 10.15
+    sources:
+      - path: src
+        compilerFlags:
+          - -Wall
+          - -Werror
+          - '-std=gnu++17'
+      - path: ../../vendor/cget/src/pqrs/osx/frontmost_application_monitor/impl/objc.m
+        compilerFlags:
+          - -Wall
+          - -Werror

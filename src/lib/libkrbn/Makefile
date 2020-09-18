@@ -1,5 +1,9 @@
-all: build_xcode
+all:
+	xcodegen generate
+	xcodebuild -configuration Release -alltargets SYMROOT="$(CURDIR)/build"
 
-clean: clean_builds
+clean:
+	rm -fr *.xcodeproj
+	rm -fr build
 
 include ../../Makefile.rules
