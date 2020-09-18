@@ -293,7 +293,7 @@
 }
 
 - (void)setSelectedProfileVirtualHIDKeyboardMouseKeyXYScale:(NSInteger)value {
-  libkrbn_core_configuration_set_selected_profile_virtual_hid_keyboard_mouse_key_xy_scale(self.libkrbnCoreConfiguration, value);
+  libkrbn_core_configuration_set_selected_profile_virtual_hid_keyboard_mouse_key_xy_scale(self.libkrbnCoreConfiguration, (int)(value));
 }
 
 @end
