@@ -141,7 +141,8 @@ void libkrbn_core_configuration_erase_profile(libkrbn_core_configuration* p, siz
 
 int libkrbn_core_configuration_get_selected_profile_parameters_delay_milliseconds_before_open_device(libkrbn_core_configuration* p) {
   if (auto c = reinterpret_cast<libkrbn_core_configuration_class*>(p)) {
-    return c->get_core_configuration().get_selected_profile().get_parameters().get_delay_milliseconds_before_open_device().count();
+    auto count = c->get_core_configuration().get_selected_profile().get_parameters().get_delay_milliseconds_before_open_device().count();
+    return static_cast<int>(count);
   }
   return 0;
 }
