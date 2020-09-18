@@ -3,29 +3,31 @@
 <plist version="1.0">
   <dict>
     <key>CFBundleDevelopmentRegion</key>
-    <string>English</string>
+    <string>$(DEVELOPMENT_LANGUAGE)</string>
     <key>CFBundleExecutable</key>
-    <string>@PLIST_EXECUTABLE_NAME@</string>
+    <string>$(EXECUTABLE_NAME)</string>
     <key>CFBundleIconFile</key>
     <string>app.icns</string>
     <key>CFBundleIdentifier</key>
-    <string>org.pqrs.Karabiner-MultitouchExtension</string>
+    <string>$(PRODUCT_BUNDLE_IDENTIFIER)</string>
     <key>CFBundleInfoDictionaryVersion</key>
     <string>6.0</string>
     <key>CFBundleName</key>
-    <string>@PLIST_PRODUCT_NAME@</string>
+    <string>$(PRODUCT_NAME)</string>
     <key>CFBundlePackageType</key>
-    <string>APPL</string>
+    <string>$(PRODUCT_BUNDLE_PACKAGE_TYPE)</string>
     <key>CFBundleShortVersionString</key>
-    <string>@KARABINER_VERSION@</string>
+    <string>@VERSION@</string>
     <key>CFBundleVersion</key>
-    <string>@KARABINER_VERSION@</string>
+    <string>@VERSION@</string>
     <key>LSMinimumSystemVersion</key>
-    <string>@PLIST_MACOSX_DEPLOYMENT_TARGET@</string>
+    <string>$(MACOSX_DEPLOYMENT_TARGET)</string>
     <key>NSMainNibFile</key>
     <string>MainMenu</string>
     <key>NSPrincipalClass</key>
     <string>NSApplication</string>
+    <key>NSSupportsAutomaticTermination</key>
+    <false/>
     <key>NSSupportsSuddenTermination</key>
     <false/>
     <key>LSUIElement</key>

@@ -1,10 +1,14 @@
 all:
+	python3 ../../../scripts/update-version.py
 	make -C ../lib/KarabinerKit
-	make build_xcode
+	xcodegen generate
+	xcodebuild -configuration Release -alltargets SYMROOT="$(CURDIR)/build"
 
-clean: clean_builds
+clean:
+	rm -fr *.xcodeproj
+	rm -fr build
 
 run:
-	./build_xcode/build/Release/Karabiner-MultitouchExtension.app/Contents/MacOS/Karabiner-MultitouchExtension --show-ui
+	./build/Release/Karabiner-MultitouchExtension.app/Contents/MacOS/Karabiner-MultitouchExtension --show-ui
 
 include ../../Makefile.rules
