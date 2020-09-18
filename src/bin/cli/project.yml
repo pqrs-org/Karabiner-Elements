@@ -1,0 +1,23 @@
+name: karabiner_cli
+
+targets:
+  karabiner_cli:
+    settings:
+      CODE_SIGN_ENTITLEMENTS: ''
+      CODE_SIGN_IDENTITY: '-'
+      CODE_SIGN_STYLE: Manual
+      SYSTEM_HEADER_SEARCH_PATHS:
+        - ../../share
+        - ../../vendor/cget/include
+        - ../../vendor/Karabiner-DriverKit-VirtualHIDDevice/include/
+    type: tool
+    platform: macOS
+    deploymentTarget: 10.15
+    sources:
+      - path: src
+        compilerFlags:
+          - -Wall
+          - -Werror
+          - '-std=gnu++17'
+    dependencies:
+      - framework: CoreServices.framework
