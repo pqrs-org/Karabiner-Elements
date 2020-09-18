@@ -7,9 +7,10 @@ targets:
       CODE_SIGN_IDENTITY: '-'
       CODE_SIGN_STYLE: Manual
       SYSTEM_HEADER_SEARCH_PATHS:
-        - ../../share
         - ../../vendor/cget/include
-        - ../../vendor/Karabiner-DriverKit-VirtualHIDDevice/include/
+        - ../../vendor/Karabiner-DriverKit-VirtualHIDDevice/include
+      HEADER_SEARCH_PATHS:
+        - ../../share
     type: tool
     platform: macOS
     deploymentTarget: 10.15
