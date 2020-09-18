@@ -25,7 +25,7 @@ cp src/scripts/uninstall_core.sh "$basedir"
 cp files/complex_modifications_rules_example.json "$basedir"
 cp -R "src/apps/Menu/build/Release/Karabiner-Menu.app" "$basedir"
 cp -R "src/apps/MultitouchExtension/build_xcode/build/Release/Karabiner-MultitouchExtension.app" "$basedir"
-cp -R "src/apps/NotificationWindow/build_xcode/build/Release/Karabiner-NotificationWindow.app" "$basedir"
+cp -R "src/apps/NotificationWindow/build/Release/Karabiner-NotificationWindow.app" "$basedir"
 
 basedir="pkgroot/Library/Application Support/org.pqrs/Karabiner-Elements/scripts"
 mkdir -p "$basedir"
