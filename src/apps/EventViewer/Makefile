@@ -1,13 +1,17 @@
 all:
+	python3 ../../../scripts/update-version.py
 	make -C ../lib/KarabinerKit
-	make build_xcode
+	xcodegen generate
+	xcodebuild -configuration Release -alltargets SYMROOT="$(CURDIR)/build"
 
-clean: clean_builds
+clean:
+	rm -fr *.xcodeproj
+	rm -fr build
 
 run:
-	bash ../../../scripts/codesign.sh build_xcode
+	bash ../../../scripts/codesign.sh build/Release
 	# Do not execute Karabiner-EventViewer.app/Contents/MacOS/Karabiner-EventViewer directly.
 	# We have to run as app in order to apply the user approval for Input Monitoring.
-	open ./build_xcode/build/Release/Karabiner-EventViewer.app
+	open build/Release/Karabiner-EventViewer.app
 
 include ../../Makefile.rules

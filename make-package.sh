@@ -52,7 +52,7 @@ cp -R files/LaunchAgents "pkgroot/Library"
 basedir="pkgroot/Applications"
 mkdir -p "$basedir"
 cp -R "src/apps/PreferencesWindow/build_xcode/build/Release/Karabiner-Elements.app" "$basedir"
-cp -R "src/apps/EventViewer/build_xcode/build/Release/Karabiner-EventViewer.app" "$basedir"
+cp -R "src/apps/EventViewer/build/Release/Karabiner-EventViewer.app" "$basedir"
 
 set +e
 
