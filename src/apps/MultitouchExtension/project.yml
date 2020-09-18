@@ -13,7 +13,7 @@ targets:
         - ../lib/KarabinerKit/include
         - ../../lib/libkrbn/include
       OTHER_LDFLAGS:
-        - -L../lib/KarabinerKit/build_xcode/build/Release
+        - -L../lib/KarabinerKit/build/Release
         - -L../../lib/libkrbn/build_xcode/build/Release
         - -lKarabinerKit
         - -lkrbn
