@@ -96,7 +96,7 @@ cp $virtualHIDDeviceDmg $archiveName/Karabiner-DriverKit-VirtualHIDDevice.pkg
 #
 
 productbuild \
-    --distribution pkginfo/build/Distribution.xml \
+    --distribution pkginfo/Distribution.xml \
     --package-path $archiveName \
     $archiveName/$pkgName
 

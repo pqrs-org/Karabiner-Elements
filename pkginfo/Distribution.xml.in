@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8" standalone="no"?>
 <installer-gui-script minSpecVersion="1">
-  <title>Karabiner-Elements @KARABINER_VERSION@</title>
+  <title>Karabiner-Elements @VERSION@</title>
   <volume-check>
     <allowed-os-versions>
       <os-version min="10.15" />
