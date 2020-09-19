@@ -1,19 +1,20 @@
-all: build_xcode
+all:
+	xcodegen generate
+	xcodebuild -configuration Release -alltargets SYMROOT="$(CURDIR)/build"
 
-clean: clean_builds
+clean:
+	rm -fr *.xcodeproj
+	rm -fr build
 
-prepare_signed_binary: all
+install:
 	# Input Monitoring approval is required since macOS Catalina.
 	# The approval state is not taken over to new binary from old one if the certificate is changed.
 	# Thus, we sign the binary if we can do it.
-	mkdir -p build_xcode/signed_bin/tmp/bin
-	cp build_xcode/build/Release/karabiner_observer build_xcode/signed_bin/tmp/bin
-	bash ../../../scripts/codesign.sh build_xcode/signed_bin
+	bash ../../../scripts/codesign.sh build/Release/karabiner_observer
 
-install: prepare_signed_binary
 	sudo install \
 		-m 755 \
-		build_xcode/signed_bin/tmp/bin/karabiner_observer \
+		build/Release/karabiner_observer \
 		'/Library/Application Support/org.pqrs/Karabiner-Elements/bin/karabiner_observer'
 	sudo killall karabiner_observer
 
