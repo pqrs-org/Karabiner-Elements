@@ -22,6 +22,28 @@ err() {
 }
 
 #
+# Define do_codesign
+#
+
+do_codesign() {
+    echo -ne '\033[31;40m'
+
+    set +e # allow command failure
+
+    codesign \
+        --force \
+        --deep \
+        --options runtime \
+        --sign "$CODE_SIGN_IDENTITY" \
+        "$1" 2>&1 |
+        grep -v ': replacing existing signature'
+
+    set -e # forbid command failure
+
+    echo -ne '\033[0m'
+}
+
+#
 # Define main()
 #
 
@@ -31,50 +53,44 @@ main() {
         exit 1
     fi
 
-    #
-    # Sign with codesign
-    #
-
-    cd "$1"
-    find * -name '*.app' -or -path '*/bin/*' | sort -r | while read f; do
+    if [[ -d "$1" ]]; then
         #
-        # output message
+        # Sign with codesign
         #
 
-        echo -ne '\033[33;40m'
-        echo "code sign $f"
-        echo -ne '\033[0m'
+        cd "$1"
+        find * -name '*.app' -or -path '*/bin/*' | sort -r | while read f; do
+            #
+            # output message
+            #
+
+            echo -ne '\033[33;40m'
+            echo "code sign $f"
+            echo -ne '\033[0m'
+
+            #
+            # codesign
+            #
+
+            do_codesign "$f"
+        done
 
         #
-        # codesign
+        # Verify nested codesign (--deep)
         #
 
-        echo -ne '\033[31;40m'
+        find * -name '*.app' -or -path '*/bin/*' | sort -r | while read f; do
+            echo -ne '\033[31;40m'
+            codesign --verify --deep "$f"
+            echo -ne '\033[0m'
+        done
+    else
+        #
+        # Sign a file
+        #
 
-        set +e # allow command failure
-
-        codesign \
-            --force \
-            --deep \
-            --options runtime \
-            --sign "$CODE_SIGN_IDENTITY" \
-            "$f" 2>&1 |
-            grep -v ': replacing existing signature'
-
-        set -e # forbid command failure
-
-        echo -ne '\033[0m'
-    done
-
-    #
-    # Verify codesign
-    #
-
-    find * -name '*.app' -or -path '*/bin/*' | sort -r | while read f; do
-        echo -ne '\033[31;40m'
-        codesign --verify --deep "$f"
-        echo -ne '\033[0m'
-    done
+        do_codesign "$1"
+    fi
 }
 
 #
