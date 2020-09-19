@@ -1,0 +1,27 @@
+name: karabiner_grabber
+
+targets:
+  karabiner_grabber:
+    settings:
+      CODE_SIGN_ENTITLEMENTS: ''
+      CODE_SIGN_IDENTITY: '-'
+      CODE_SIGN_STYLE: Manual
+      SYSTEM_HEADER_SEARCH_PATHS:
+        - ../../vendor/cget/include
+        - ../../vendor/Karabiner-DriverKit-VirtualHIDDevice/include
+      HEADER_SEARCH_PATHS:
+        - include
+        - ../../share
+    type: tool
+    platform: macOS
+    deploymentTarget: 10.15
+    sources:
+      - path: src
+        compilerFlags:
+          - -Wall
+          - -Werror
+          - '-std=gnu++17'
+    dependencies:
+      - framework: CoreGraphics.framework
+      - framework: CoreServices.framework
+      - framework: IOKit.framework
