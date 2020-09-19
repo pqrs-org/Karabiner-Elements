@@ -465,16 +465,16 @@
                 <autoresizingMask key="autoresizingMask"/>
                 <subviews>
                     <tabView initialItem="SOT-pf-9fT" translatesAutoresizingMaskIntoConstraints="NO" id="W8s-8N-CIx">
-                        <rect key="frame" x="13" y="10" width="974" height="270"/>
+                        <rect key="frame" x="13" y="10" width="974" height="222"/>
                         <font key="font" metaFont="menu"/>
                         <tabViewItems>
                             <tabViewItem label="Simple modifications" identifier="1" id="SOT-pf-9fT">
                                 <view key="view" id="aYZ-Ew-w2F">
-                                    <rect key="frame" x="10" y="33" width="954" height="224"/>
+                                    <rect key="frame" x="10" y="33" width="954" height="176"/>
                                     <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                     <subviews>
                                         <customView translatesAutoresizingMaskIntoConstraints="NO" id="Cqw-ll-1Rg">
-                                            <rect key="frame" x="222" y="183" width="511" height="31"/>
+                                            <rect key="frame" x="222" y="135" width="511" height="31"/>
                                             <subviews>
                                                 <popUpButton verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="oB5-NY-D3P">
                                                     <rect key="frame" x="99" y="2" width="405" height="25"/>
@@ -509,13 +509,13 @@
                                             </constraints>
                                         </customView>
                                         <scrollView autohidesScrollers="YES" horizontalLineScroll="28" horizontalPageScroll="10" verticalLineScroll="28" verticalPageScroll="10" usesPredominantAxisScrolling="NO" translatesAutoresizingMaskIntoConstraints="NO" id="7r4-lM-Seb">
-                                            <rect key="frame" x="17" y="43" width="920" height="130"/>
+                                            <rect key="frame" x="17" y="43" width="920" height="82"/>
                                             <clipView key="contentView" id="fPj-Ru-opD">
-                                                <rect key="frame" x="1" y="0.0" width="918" height="129"/>
+                                                <rect key="frame" x="1" y="0.0" width="918" height="81"/>
                                                 <autoresizingMask key="autoresizingMask"/>
                                                 <subviews>
                                                     <tableView verticalHuggingPriority="750" allowsExpansionToolTips="YES" columnAutoresizingStyle="firstColumnOnly" alternatingRowBackgroundColors="YES" columnReordering="NO" columnSelection="YES" columnResizing="NO" multipleSelection="NO" autosaveColumns="NO" rowHeight="26" rowSizeStyle="automatic" headerView="bin-92-FO9" viewBased="YES" id="qEO-TG-yM2">
-                                                        <rect key="frame" x="0.0" y="0.0" width="918" height="106"/>
+                                                        <rect key="frame" x="0.0" y="0.0" width="918" height="58"/>
                                                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                                         <size key="intercellSpacing" width="3" height="2"/>
                                                         <color key="backgroundColor" name="controlBackgroundColor" catalog="System" colorSpace="catalog"/>
@@ -3047,11 +3047,11 @@ Gw
             <value key="minSize" type="size" width="600" height="378"/>
             <value key="maxSize" type="size" width="600" height="378"/>
             <view key="contentView" misplaced="YES" id="NbX-OE-pGo">
-                <rect key="frame" x="0.0" y="0.0" width="600" height="511"/>
+                <rect key="frame" x="0.0" y="0.0" width="600" height="701"/>
                 <autoresizingMask key="autoresizingMask"/>
                 <subviews>
                     <customView translatesAutoresizingMaskIntoConstraints="NO" id="LbR-D6-fV3">
-                        <rect key="frame" x="20" y="459" width="206" height="32"/>
+                        <rect key="frame" x="20" y="465" width="206" height="32"/>
                         <subviews>
                             <imageView translatesAutoresizingMaskIntoConstraints="NO" id="JIy-ho-TaU">
                                 <rect key="frame" x="0.0" y="0.0" width="32" height="32"/>
@@ -3080,7 +3080,7 @@ Gw
                         </constraints>
                     </customView>
                     <textField verticalHuggingPriority="750" horizontalCompressionResistancePriority="250" translatesAutoresizingMaskIntoConstraints="NO" id="EX6-xv-9EW">
-                        <rect key="frame" x="18" y="381" width="564" height="48"/>
+                        <rect key="frame" x="18" y="387" width="564" height="48"/>
                         <textFieldCell key="cell" selectable="YES" id="x0e-wm-5EF">
                             <font key="font" usesAppearanceFont="YES"/>
                             <string key="title">The virtual keyboard and mouse driver is not loaded.
@@ -3090,7 +3090,7 @@ Please allow system software from ".Karabiner-VirtualHIDDevice-Manager" on Secur
                         </textFieldCell>
                     </textField>
                     <button verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="iyX-Ft-g9y">
-                        <rect key="frame" x="34" y="343" width="334" height="32"/>
+                        <rect key="frame" x="34" y="349" width="334" height="32"/>
                         <buttonCell key="cell" type="push" title="Open Security &amp; Privacy System Preferences" bezelStyle="rounded" image="ic_forward_18pt" imagePosition="left" alignment="left" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="Ol6-mz-xml">
                             <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
                             <font key="font" metaFont="system"/>
@@ -3100,16 +3100,16 @@ Please allow system software from ".Karabiner-VirtualHIDDevice-Manager" on Secur
                         </connections>
                     </button>
                     <box title="Advanced" translatesAutoresizingMaskIntoConstraints="NO" id="tJu-nx-y3K">
-                        <rect key="frame" x="17" y="16" width="566" height="284"/>
+                        <rect key="frame" x="17" y="16" width="566" height="290"/>
                         <view key="contentView" id="3Dw-ag-F6c">
-                            <rect key="frame" x="3" y="3" width="560" height="266"/>
+                            <rect key="frame" x="3" y="3" width="560" height="272"/>
                             <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                             <subviews>
                                 <textField verticalHuggingPriority="750" horizontalCompressionResistancePriority="250" translatesAutoresizingMaskIntoConstraints="NO" id="2lY-95-iSs">
-                                    <rect key="frame" x="8" y="144" width="544" height="112"/>
+                                    <rect key="frame" x="8" y="150" width="544" height="112"/>
                                     <textFieldCell key="cell" selectable="YES" id="4Wd-eB-W5u">
                                         <font key="font" usesAppearanceFont="YES"/>
-                                        <string key="title">If macOS failed to load the driver, the allow button might be not shown on Security &amp; Privacy System Preferences.
+                                        <string key="title">If macOS failed to load the driver in the early stage, the allow button might be not shown on Security &amp; Privacy System Preferences.
 In this case, you need to reinstall the driver in order for the button to appear.
 
 How to reinstall driver:
@@ -3120,17 +3120,17 @@ How to reinstall driver:
                                     </textFieldCell>
                                 </textField>
                                 <button verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="RMz-Qq-k1Y">
-                                    <rect key="frame" x="39" y="118" width="136" height="16"/>
-                                    <buttonCell key="cell" type="push" title="Step 1: Deactivate driver" bezelStyle="rounded" imagePosition="left" alignment="left" controlSize="mini" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="DuA-Fw-0q0">
+                                    <rect key="frame" x="35" y="116" width="120" height="27"/>
+                                    <buttonCell key="cell" type="push" title="Deactivate driver" bezelStyle="rounded" imagePosition="left" alignment="left" controlSize="small" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="DuA-Fw-0q0">
                                         <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
-                                        <font key="font" metaFont="miniSystem"/>
+                                        <font key="font" metaFont="smallSystem"/>
                                     </buttonCell>
                                     <connections>
                                         <action selector="deactivateDriver:" target="8fZ-Js-cqD" id="BYT-bk-cpS"/>
                                     </connections>
                                 </button>
                                 <textField verticalHuggingPriority="750" horizontalCompressionResistancePriority="250" translatesAutoresizingMaskIntoConstraints="NO" id="uRA-VQ-uWA">
-                                    <rect key="frame" x="8" y="77" width="544" height="32"/>
+                                    <rect key="frame" x="8" y="80" width="544" height="32"/>
                                     <textFieldCell key="cell" selectable="YES" id="EVU-4Z-aJw">
                                         <font key="font" usesAppearanceFont="YES"/>
                                         <string key="title">2. Enter the administrator password to complete.
@@ -3140,10 +3140,10 @@ How to reinstall driver:
                                     </textFieldCell>
                                 </textField>
                                 <button verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="sOQ-6Y-Bx9">
-                                    <rect key="frame" x="39" y="51" width="126" height="16"/>
-                                    <buttonCell key="cell" type="push" title="Step 2: Activate driver" bezelStyle="rounded" imagePosition="left" alignment="left" controlSize="mini" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="3Sl-24-mKo">
+                                    <rect key="frame" x="35" y="46" width="107" height="27"/>
+                                    <buttonCell key="cell" type="push" title="Activate driver" bezelStyle="rounded" imagePosition="left" alignment="left" controlSize="small" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="3Sl-24-mKo">
                                         <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
-                                        <font key="font" metaFont="miniSystem"/>
+                                        <font key="font" metaFont="smallSystem"/>
                                     </buttonCell>
                                     <connections>
                                         <action selector="activateDriver:" target="8fZ-Js-cqD" id="cjr-0p-Uob"/>
