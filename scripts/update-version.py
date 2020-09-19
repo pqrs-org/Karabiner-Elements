@@ -11,7 +11,8 @@ topDirectory = Path(__file__).resolve(True).parents[1]
 with topDirectory.joinpath('version').open() as versionFile:
     version = versionFile.readline().strip()
 
-    for templateFilePath in chain(topDirectory.rglob('*.hpp.in'),
+    for templateFilePath in chain(topDirectory.rglob('*.h.in'),
+                                  topDirectory.rglob('*.hpp.in'),
                                   topDirectory.rglob('*.plist.in'),
                                   topDirectory.rglob('*.xml.in')):
         # Skip vendor directory
