@@ -9,6 +9,6 @@ clean:
 	rm -fr build
 
 run:
-	./build_xcode/build/Release/Karabiner-Menu.app/Contents/MacOS/Karabiner-Menu
+	./build/Release/Karabiner-Menu.app/Contents/MacOS/Karabiner-Menu
 
 include ../../Makefile.rules
