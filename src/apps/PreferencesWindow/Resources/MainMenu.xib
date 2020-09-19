@@ -465,16 +465,16 @@
                 <autoresizingMask key="autoresizingMask"/>
                 <subviews>
                     <tabView initialItem="SOT-pf-9fT" translatesAutoresizingMaskIntoConstraints="NO" id="W8s-8N-CIx">
-                        <rect key="frame" x="13" y="10" width="974" height="318"/>
+                        <rect key="frame" x="13" y="10" width="974" height="270"/>
                         <font key="font" metaFont="menu"/>
                         <tabViewItems>
                             <tabViewItem label="Simple modifications" identifier="1" id="SOT-pf-9fT">
                                 <view key="view" id="aYZ-Ew-w2F">
-                                    <rect key="frame" x="10" y="33" width="954" height="272"/>
+                                    <rect key="frame" x="10" y="33" width="954" height="224"/>
                                     <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                     <subviews>
                                         <customView translatesAutoresizingMaskIntoConstraints="NO" id="Cqw-ll-1Rg">
-                                            <rect key="frame" x="222" y="231" width="511" height="31"/>
+                                            <rect key="frame" x="222" y="183" width="511" height="31"/>
                                             <subviews>
                                                 <popUpButton verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="oB5-NY-D3P">
                                                     <rect key="frame" x="99" y="2" width="405" height="25"/>
@@ -509,13 +509,13 @@
                                             </constraints>
                                         </customView>
                                         <scrollView autohidesScrollers="YES" horizontalLineScroll="28" horizontalPageScroll="10" verticalLineScroll="28" verticalPageScroll="10" usesPredominantAxisScrolling="NO" translatesAutoresizingMaskIntoConstraints="NO" id="7r4-lM-Seb">
-                                            <rect key="frame" x="17" y="43" width="920" height="178"/>
+                                            <rect key="frame" x="17" y="43" width="920" height="130"/>
                                             <clipView key="contentView" id="fPj-Ru-opD">
-                                                <rect key="frame" x="1" y="0.0" width="918" height="177"/>
-                                                <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                                                <rect key="frame" x="1" y="0.0" width="918" height="129"/>
+                                                <autoresizingMask key="autoresizingMask"/>
                                                 <subviews>
                                                     <tableView verticalHuggingPriority="750" allowsExpansionToolTips="YES" columnAutoresizingStyle="firstColumnOnly" alternatingRowBackgroundColors="YES" columnReordering="NO" columnSelection="YES" columnResizing="NO" multipleSelection="NO" autosaveColumns="NO" rowHeight="26" rowSizeStyle="automatic" headerView="bin-92-FO9" viewBased="YES" id="qEO-TG-yM2">
-                                                        <rect key="frame" x="0.0" y="0.0" width="918" height="154"/>
+                                                        <rect key="frame" x="0.0" y="0.0" width="918" height="106"/>
                                                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                                         <size key="intercellSpacing" width="3" height="2"/>
                                                         <color key="backgroundColor" name="controlBackgroundColor" catalog="System" colorSpace="catalog"/>
@@ -2548,7 +2548,7 @@ In this case, you have to change the country code to avoid the conflict.
                         <rect key="frame" x="17" y="61" width="866" height="287"/>
                         <clipView key="contentView" id="F9L-6l-7CJ">
                             <rect key="frame" x="1" y="1" width="864" height="285"/>
-                            <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                            <autoresizingMask key="autoresizingMask"/>
                             <subviews>
                                 <outlineView verticalHuggingPriority="750" allowsExpansionToolTips="YES" columnAutoresizingStyle="firstColumnOnly" alternatingRowBackgroundColors="YES" columnReordering="NO" columnResizing="NO" multipleSelection="NO" autosaveColumns="NO" rowHeight="26" rowSizeStyle="automatic" viewBased="YES" indentationPerLevel="16" outlineTableColumn="nlS-o3-ZB6" id="eIx-lp-xHQ">
                                     <rect key="frame" x="0.0" y="0.0" width="864" height="285"/>
@@ -2759,7 +2759,7 @@ Gw
                         <rect key="frame" x="80" y="58" width="740" height="86"/>
                         <clipView key="contentView" drawsBackground="NO" id="uNg-oR-13T">
                             <rect key="frame" x="1" y="1" width="723" height="84"/>
-                            <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                            <autoresizingMask key="autoresizingMask"/>
                             <subviews>
                                 <textView editable="NO" importsGraphics="NO" verticallyResizable="YES" usesFontPanel="YES" findStyle="panel" allowsUndo="YES" usesRuler="YES" allowsNonContiguousLayout="YES" id="iV7-bm-Yxd">
                                     <rect key="frame" x="0.0" y="0.0" width="723" height="84"/>
@@ -3042,16 +3042,16 @@ Gw
         <window title="Driver Alert" allowsToolTipsWhenApplicationIsInactive="NO" autorecalculatesKeyViewLoop="NO" hidesOnDeactivate="YES" releasedWhenClosed="NO" visibleAtLaunch="NO" frameAutosaveName="" animationBehavior="default" id="rjc-er-t5Q" customClass="NSPanel">
             <windowStyleMask key="styleMask" titled="YES" closable="YES" miniaturizable="YES" resizable="YES" utility="YES"/>
             <windowPositionMask key="initialPositionMask" leftStrut="YES" rightStrut="YES" topStrut="YES" bottomStrut="YES"/>
-            <rect key="contentRect" x="211" y="145" width="500" height="701"/>
+            <rect key="contentRect" x="211" y="145" width="600" height="701"/>
             <rect key="screenRect" x="0.0" y="0.0" width="2048" height="1257"/>
-            <value key="minSize" type="size" width="500" height="378"/>
-            <value key="maxSize" type="size" width="500" height="378"/>
-            <view key="contentView" id="NbX-OE-pGo">
-                <rect key="frame" x="0.0" y="0.0" width="500" height="522"/>
+            <value key="minSize" type="size" width="600" height="378"/>
+            <value key="maxSize" type="size" width="600" height="378"/>
+            <view key="contentView" misplaced="YES" id="NbX-OE-pGo">
+                <rect key="frame" x="0.0" y="0.0" width="600" height="511"/>
                 <autoresizingMask key="autoresizingMask"/>
                 <subviews>
                     <customView translatesAutoresizingMaskIntoConstraints="NO" id="LbR-D6-fV3">
-                        <rect key="frame" x="20" y="470" width="206" height="32"/>
+                        <rect key="frame" x="20" y="459" width="206" height="32"/>
                         <subviews>
                             <imageView translatesAutoresizingMaskIntoConstraints="NO" id="JIy-ho-TaU">
                                 <rect key="frame" x="0.0" y="0.0" width="32" height="32"/>
@@ -3080,7 +3080,7 @@ Gw
                         </constraints>
                     </customView>
                     <textField verticalHuggingPriority="750" horizontalCompressionResistancePriority="250" translatesAutoresizingMaskIntoConstraints="NO" id="EX6-xv-9EW">
-                        <rect key="frame" x="18" y="392" width="464" height="48"/>
+                        <rect key="frame" x="18" y="381" width="564" height="48"/>
                         <textFieldCell key="cell" selectable="YES" id="x0e-wm-5EF">
                             <font key="font" usesAppearanceFont="YES"/>
                             <string key="title">The virtual keyboard and mouse driver is not loaded.
@@ -3090,7 +3090,7 @@ Please allow system software from ".Karabiner-VirtualHIDDevice-Manager" on Secur
                         </textFieldCell>
                     </textField>
                     <button verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="iyX-Ft-g9y">
-                        <rect key="frame" x="34" y="354" width="334" height="32"/>
+                        <rect key="frame" x="34" y="343" width="334" height="32"/>
                         <buttonCell key="cell" type="push" title="Open Security &amp; Privacy System Preferences" bezelStyle="rounded" image="ic_forward_18pt" imagePosition="left" alignment="left" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="Ol6-mz-xml">
                             <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
                             <font key="font" metaFont="system"/>
@@ -3100,13 +3100,13 @@ Please allow system software from ".Karabiner-VirtualHIDDevice-Manager" on Secur
                         </connections>
                     </button>
                     <box title="Advanced" translatesAutoresizingMaskIntoConstraints="NO" id="tJu-nx-y3K">
-                        <rect key="frame" x="17" y="16" width="466" height="295"/>
+                        <rect key="frame" x="17" y="16" width="566" height="284"/>
                         <view key="contentView" id="3Dw-ag-F6c">
-                            <rect key="frame" x="3" y="3" width="460" height="277"/>
+                            <rect key="frame" x="3" y="3" width="560" height="266"/>
                             <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                             <subviews>
                                 <textField verticalHuggingPriority="750" horizontalCompressionResistancePriority="250" translatesAutoresizingMaskIntoConstraints="NO" id="2lY-95-iSs">
-                                    <rect key="frame" x="3" y="144" width="454" height="128"/>
+                                    <rect key="frame" x="8" y="144" width="544" height="112"/>
                                     <textFieldCell key="cell" selectable="YES" id="4Wd-eB-W5u">
                                         <font key="font" usesAppearanceFont="YES"/>
                                         <string key="title">If macOS failed to load the driver, the allow button might be not shown on Security &amp; Privacy System Preferences.
@@ -3130,7 +3130,7 @@ How to reinstall driver:
                                     </connections>
                                 </button>
                                 <textField verticalHuggingPriority="750" horizontalCompressionResistancePriority="250" translatesAutoresizingMaskIntoConstraints="NO" id="uRA-VQ-uWA">
-                                    <rect key="frame" x="3" y="77" width="300" height="32"/>
+                                    <rect key="frame" x="8" y="77" width="544" height="32"/>
                                     <textFieldCell key="cell" selectable="YES" id="EVU-4Z-aJw">
                                         <font key="font" usesAppearanceFont="YES"/>
                                         <string key="title">2. Enter the administrator password to complete.
@@ -3150,7 +3150,7 @@ How to reinstall driver:
                                     </connections>
                                 </button>
                                 <textField verticalHuggingPriority="750" horizontalCompressionResistancePriority="250" translatesAutoresizingMaskIntoConstraints="NO" id="lay-Fh-Jkp">
-                                    <rect key="frame" x="3" y="10" width="350" height="32"/>
+                                    <rect key="frame" x="8" y="10" width="544" height="32"/>
                                     <textFieldCell key="cell" selectable="YES" id="DlV-6Y-9kA">
                                         <font key="font" usesAppearanceFont="YES"/>
                                         <string key="title">4. "System Extension Blocked" alert is shown.
@@ -3163,16 +3163,18 @@ How to reinstall driver:
                             <constraints>
                                 <constraint firstItem="sOQ-6Y-Bx9" firstAttribute="top" secondItem="uRA-VQ-uWA" secondAttribute="bottom" constant="10" id="0az-4J-IE0"/>
                                 <constraint firstAttribute="bottom" secondItem="lay-Fh-Jkp" secondAttribute="bottom" constant="10" id="1Jl-q7-lsE"/>
+                                <constraint firstItem="lay-Fh-Jkp" firstAttribute="trailing" secondItem="2lY-95-iSs" secondAttribute="trailing" id="6Ft-P8-Anh"/>
                                 <constraint firstItem="uRA-VQ-uWA" firstAttribute="top" secondItem="RMz-Qq-k1Y" secondAttribute="bottom" constant="10" id="7a0-lo-DpF"/>
                                 <constraint firstItem="RMz-Qq-k1Y" firstAttribute="leading" secondItem="3Dw-ag-F6c" secondAttribute="leading" constant="40" id="HAs-Hh-z3h"/>
-                                <constraint firstAttribute="trailing" secondItem="2lY-95-iSs" secondAttribute="trailing" constant="5" id="HLx-rM-0e7"/>
+                                <constraint firstAttribute="trailing" secondItem="2lY-95-iSs" secondAttribute="trailing" constant="10" id="HLx-rM-0e7"/>
                                 <constraint firstItem="uRA-VQ-uWA" firstAttribute="leading" secondItem="2lY-95-iSs" secondAttribute="leading" id="OyZ-2g-8nP"/>
                                 <constraint firstItem="sOQ-6Y-Bx9" firstAttribute="leading" secondItem="RMz-Qq-k1Y" secondAttribute="leading" id="WDR-6N-8Qe"/>
                                 <constraint firstItem="lay-Fh-Jkp" firstAttribute="top" secondItem="sOQ-6Y-Bx9" secondAttribute="bottom" constant="10" id="a0R-kd-4w5"/>
                                 <constraint firstItem="lay-Fh-Jkp" firstAttribute="leading" secondItem="2lY-95-iSs" secondAttribute="leading" id="aT2-qI-0hN"/>
-                                <constraint firstItem="2lY-95-iSs" firstAttribute="leading" secondItem="3Dw-ag-F6c" secondAttribute="leading" constant="5" id="b9t-hH-zoA"/>
+                                <constraint firstItem="2lY-95-iSs" firstAttribute="leading" secondItem="3Dw-ag-F6c" secondAttribute="leading" constant="10" id="b9t-hH-zoA"/>
                                 <constraint firstItem="RMz-Qq-k1Y" firstAttribute="top" secondItem="2lY-95-iSs" secondAttribute="bottom" constant="10" id="hof-Ao-T88"/>
-                                <constraint firstItem="2lY-95-iSs" firstAttribute="top" secondItem="3Dw-ag-F6c" secondAttribute="top" constant="5" id="sdh-SX-ehY"/>
+                                <constraint firstItem="uRA-VQ-uWA" firstAttribute="trailing" secondItem="2lY-95-iSs" secondAttribute="trailing" id="sZ0-BU-ZYM"/>
+                                <constraint firstItem="2lY-95-iSs" firstAttribute="top" secondItem="3Dw-ag-F6c" secondAttribute="top" constant="10" id="sdh-SX-ehY"/>
                             </constraints>
                         </view>
                     </box>
