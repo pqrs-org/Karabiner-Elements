@@ -6,10 +6,6 @@ include_directories(SYSTEM ${CMAKE_CURRENT_LIST_DIR}/../src/vendor)
 include_directories(SYSTEM ${CMAKE_CURRENT_LIST_DIR}/../src/vendor/cget/include)
 include_directories(SYSTEM ${CMAKE_CURRENT_LIST_DIR}/../src/vendor/Karabiner-DriverKit-VirtualHIDDevice/include)
 include_directories(${CMAKE_CURRENT_LIST_DIR}/../src/share)
-include_directories(${CMAKE_CURRENT_LIST_DIR}/vendor/include)
-include_directories(${CMAKE_CURRENT_LIST_DIR}/lib/test_runner/include)
-
-link_directories(${CMAKE_CURRENT_LIST_DIR}/lib/test_runner/build)
 
 add_compile_options(-Wall)
 add_compile_options(-Werror)
