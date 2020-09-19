@@ -1,10 +1,17 @@
-all: build_xcode
+all:
+	xcodegen generate
+	xcodebuild -configuration Release -alltargets SYMROOT="$(CURDIR)/build"
 
-clean: clean_builds
+clean:
+	rm -fr *.xcodeproj
+	rm -fr build
 
 install: all
 	# setuid
-	sudo install -m 4755 build_xcode/build/Release/karabiner_session_monitor '/Library/Application Support/org.pqrs/Karabiner-Elements/bin/karabiner_session_monitor'
+	sudo install \
+		-m 4755 \
+		build/Release/karabiner_session_monitor \
+		'/Library/Application Support/org.pqrs/Karabiner-Elements/bin/karabiner_session_monitor'
 	sudo killall karabiner_session_monitor
 
 include ../../Makefile.rules
