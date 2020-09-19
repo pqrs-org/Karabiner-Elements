@@ -23,11 +23,6 @@ add_definitions(-DFMT_HEADER_ONLY)
 file(READ ${CMAKE_CURRENT_LIST_DIR}/../version KARABINER_VERSION)
 string(STRIP ${KARABINER_VERSION} KARABINER_VERSION)
 
-configure_file (
-  ${CMAKE_CURRENT_LIST_DIR}/share/karabiner_version.h.in
-  ${CMAKE_CURRENT_LIST_DIR}/share/karabiner_version.h
-)
-
 # Variables to avoid string replacement in Info.plist
 
 set(PLIST_EXECUTABLE_NAME "$\{EXECUTABLE_NAME\}")
