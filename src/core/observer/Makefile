@@ -17,5 +17,3 @@ install:
 		build/Release/karabiner_observer \
 		'/Library/Application Support/org.pqrs/Karabiner-Elements/bin/karabiner_observer'
 	sudo killall karabiner_observer
-
-include ../../Makefile.rules

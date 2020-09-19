@@ -10,5 +10,3 @@ clean:
 
 run:
 	./build/Release/Karabiner-MultitouchExtension.app/Contents/MacOS/Karabiner-MultitouchExtension --show-ui
-
-include ../../Makefile.rules

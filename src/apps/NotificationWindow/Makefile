@@ -16,5 +16,3 @@ install:
 	sudo rsync -a --delete \
 		build/Release/Karabiner-NotificationWindow.app/ \
 		'/Library/Application Support/org.pqrs/Karabiner-Elements/Karabiner-NotificationWindow.app'
-
-include ../../Makefile.rules

@@ -13,5 +13,3 @@ install: all
 		build/Release/karabiner_session_monitor \
 		'/Library/Application Support/org.pqrs/Karabiner-Elements/bin/karabiner_session_monitor'
 	sudo killall karabiner_session_monitor
-
-include ../../Makefile.rules

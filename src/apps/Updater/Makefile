@@ -14,5 +14,3 @@ run:
 
 run_stable:
 	./build/Release/Karabiner-Elements.app/Contents/MacOS/Karabiner-Elements checkForUpdatesStableOnly
-
-include ../../Makefile.rules

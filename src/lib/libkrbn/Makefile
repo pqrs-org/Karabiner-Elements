@@ -5,5 +5,3 @@ all:
 clean:
 	rm -fr *.xcodeproj
 	rm -fr build
-
-include ../../Makefile.rules

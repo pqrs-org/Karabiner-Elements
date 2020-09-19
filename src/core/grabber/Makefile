@@ -17,5 +17,3 @@ install:
 		build/Release/karabiner_grabber \
 		'/Library/Application Support/org.pqrs/Karabiner-Elements/bin/karabiner_grabber'
 	sudo killall karabiner_grabber
-
-include ../../Makefile.rules

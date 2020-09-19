@@ -13,5 +13,3 @@ run:
 
 xcode:
 	open *.xcodeproj
-
-include ../../Makefile.rules

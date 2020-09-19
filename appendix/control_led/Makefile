@@ -8,4 +8,4 @@ run:
 run_off:
 	sudo ./build/a.out off
 
-include ../../src/Makefile.rules
+include ../Makefile.rules

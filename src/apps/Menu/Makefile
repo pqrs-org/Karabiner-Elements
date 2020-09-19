@@ -10,5 +10,3 @@ clean:
 
 run:
 	./build/Release/Karabiner-Menu.app/Contents/MacOS/Karabiner-Menu
-
-include ../../Makefile.rules
