@@ -3,7 +3,6 @@
         ".vscode/browse.*": true,
         "**/.DS_Store": true,
         "**/.git": true,
-        "**/build_xcode/": true,
         "**/build/": true,
         "pkgroot/": true
     },
@@ -13,7 +12,6 @@
         "**/vendor": true
     },
     "files.watcherExclude": {
-        "**/build_xcode/**": true,
         "**/build/**": true,
         "**/pkgroot/**": true
     }
