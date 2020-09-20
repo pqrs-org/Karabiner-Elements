@@ -1,6 +1,5 @@
 @import Carbon;
 #import "AppDelegate.h"
-#import "DevicesController.h"
 #import "EventQueue.h"
 #import "FrontmostApplicationController.h"
 #import "KarabinerKit/KarabinerKit.h"
