@@ -1,7 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.Cocoa.XIB" version="3.0" toolsVersion="15505" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none" useAutolayout="YES">
+<document type="com.apple.InterfaceBuilder3.Cocoa.XIB" version="3.0" toolsVersion="17503.1" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none" useAutolayout="YES">
     <dependencies>
-        <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="15505"/>
+        <deployment identifier="macosx"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="17503.1"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
     <objects>
@@ -246,12 +247,13 @@
                     </menu>
                 </menuItem>
             </items>
+            <point key="canvasLocation" x="-17" y="154"/>
         </menu>
         <window title="EventViewer" allowsToolTipsWhenApplicationIsInactive="NO" autorecalculatesKeyViewLoop="NO" releasedWhenClosed="NO" animationBehavior="default" id="371">
             <windowStyleMask key="styleMask" titled="YES" closable="YES" resizable="YES"/>
             <windowPositionMask key="initialPositionMask" leftStrut="YES" rightStrut="YES" topStrut="YES" bottomStrut="YES"/>
             <rect key="contentRect" x="335" y="122" width="874" height="550"/>
-            <rect key="screenRect" x="0.0" y="0.0" width="1920" height="1177"/>
+            <rect key="screenRect" x="0.0" y="0.0" width="2048" height="1257"/>
             <value key="minSize" type="size" width="874" height="550"/>
             <view key="contentView" wantsLayer="YES" id="372">
                 <rect key="frame" x="0.0" y="0.0" width="874" height="550"/>
@@ -276,7 +278,7 @@
                                                         <rect key="frame" x="11" y="229" width="158" height="32"/>
                                                         <buttonCell key="cell" type="push" title="copy to pasteboard" bezelStyle="rounded" alignment="center" refusesFirstResponder="YES" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="542">
                                                             <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
-                                                            <font key="font" metaFont="menu"/>
+                                                            <font key="font" metaFont="system"/>
                                                         </buttonCell>
                                                         <connections>
                                                             <action selector="copy:" target="571" id="590"/>
@@ -286,7 +288,7 @@
                                                         <rect key="frame" x="167" y="229" width="131" height="32"/>
                                                         <buttonCell key="cell" type="push" title="clear the result" bezelStyle="rounded" alignment="center" refusesFirstResponder="YES" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="540">
                                                             <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
-                                                            <font key="font" metaFont="menu"/>
+                                                            <font key="font" metaFont="system"/>
                                                         </buttonCell>
                                                         <connections>
                                                             <action selector="clear:" target="571" id="580"/>
@@ -296,7 +298,7 @@
                                                         <rect key="frame" x="17" y="10" width="766" height="216"/>
                                                         <clipView key="contentView" drawsBackground="NO" id="OS0-60-iDz">
                                                             <rect key="frame" x="1" y="0.0" width="749" height="215"/>
-                                                            <autoresizingMask key="autoresizingMask"/>
+                                                            <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                                             <subviews>
                                                                 <tableView focusRingType="none" verticalHuggingPriority="750" allowsExpansionToolTips="YES" columnAutoresizingStyle="lastColumnOnly" alternatingRowBackgroundColors="YES" columnReordering="NO" columnResizing="NO" multipleSelection="NO" autosaveColumns="NO" typeSelect="NO" enabled="NO" rowHeight="14" headerView="565" id="564">
                                                                     <rect key="frame" x="0.0" y="0.0" width="749" height="192"/>
@@ -308,7 +310,6 @@
                                                                     <tableColumns>
                                                                         <tableColumn identifier="eventType" editable="NO" width="120" minWidth="40" maxWidth="1000" id="567">
                                                                             <tableHeaderCell key="headerCell" lineBreakMode="truncatingTail" enabled="NO" borderStyle="border" alignment="left" title="Event type">
-                                                                                <font key="font" metaFont="message" size="11"/>
                                                                                 <color key="textColor" name="headerTextColor" catalog="System" colorSpace="catalog"/>
                                                                                 <color key="backgroundColor" name="headerColor" catalog="System" colorSpace="catalog"/>
                                                                             </tableHeaderCell>
@@ -320,7 +321,6 @@
                                                                         </tableColumn>
                                                                         <tableColumn identifier="code" editable="NO" width="50" minWidth="40" maxWidth="1000" id="566">
                                                                             <tableHeaderCell key="headerCell" lineBreakMode="truncatingTail" enabled="NO" borderStyle="border" alignment="left" title="Code">
-                                                                                <font key="font" metaFont="message" size="11"/>
                                                                                 <color key="textColor" name="headerTextColor" catalog="System" colorSpace="catalog"/>
                                                                                 <color key="backgroundColor" name="headerColor" catalog="System" colorSpace="catalog"/>
                                                                             </tableHeaderCell>
@@ -332,7 +332,6 @@
                                                                         </tableColumn>
                                                                         <tableColumn identifier="name" editable="NO" width="200" minWidth="10" maxWidth="3.4028234663852886e+38" id="581">
                                                                             <tableHeaderCell key="headerCell" lineBreakMode="truncatingTail" enabled="NO" borderStyle="border" alignment="left" title="Name">
-                                                                                <font key="font" metaFont="message" size="11"/>
                                                                                 <color key="textColor" name="headerTextColor" catalog="System" colorSpace="catalog"/>
                                                                                 <color key="backgroundColor" name="headerColor" catalog="System" colorSpace="catalog"/>
                                                                             </tableHeaderCell>
@@ -344,7 +343,6 @@
                                                                         </tableColumn>
                                                                         <tableColumn identifier="misc" editable="NO" width="367" minWidth="10" maxWidth="3.4028234663852886e+38" id="585">
                                                                             <tableHeaderCell key="headerCell" lineBreakMode="truncatingTail" enabled="NO" borderStyle="border" alignment="left" title="Misc">
-                                                                                <font key="font" metaFont="message" size="11"/>
                                                                                 <color key="textColor" name="headerTextColor" catalog="System" colorSpace="catalog"/>
                                                                                 <color key="backgroundColor" name="headerColor" catalog="System" colorSpace="catalog"/>
                                                                             </tableHeaderCell>
@@ -380,7 +378,7 @@
                                                         <rect key="frame" x="708" y="229" width="81" height="32"/>
                                                         <buttonCell key="cell" type="push" title="Button" bezelStyle="rounded" alignment="center" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="ShI-z6-Eh3">
                                                             <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
-                                                            <font key="font" metaFont="menu"/>
+                                                            <font key="font" metaFont="system"/>
                                                         </buttonCell>
                                                         <connections>
                                                             <action selector="addSimpleModification:" target="571" id="ZGo-zy-0fr"/>
@@ -410,7 +408,7 @@
                                                 <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                                 <subviews>
                                                     <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="ITd-Nj-Y8H">
-                                                        <rect key="frame" x="8" y="121" width="125" height="17"/>
+                                                        <rect key="frame" x="8" y="122" width="125" height="16"/>
                                                         <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" title="Text input test field:" id="Rse-px-eu0">
                                                             <font key="font" metaFont="menu"/>
                                                             <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
@@ -418,17 +416,17 @@
                                                         </textFieldCell>
                                                     </textField>
                                                     <scrollView horizontalLineScroll="10" horizontalPageScroll="10" verticalLineScroll="10" verticalPageScroll="10" hasHorizontalScroller="NO" usesPredominantAxisScrolling="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Ko0-IW-1A7">
-                                                        <rect key="frame" x="10" y="10" width="642" height="111"/>
+                                                        <rect key="frame" x="10" y="10" width="642" height="112"/>
                                                         <clipView key="contentView" drawsBackground="NO" id="Hx6-3h-z4E">
-                                                            <rect key="frame" x="1" y="1" width="625" height="109"/>
-                                                            <autoresizingMask key="autoresizingMask"/>
+                                                            <rect key="frame" x="1" y="1" width="625" height="110"/>
+                                                            <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                                             <subviews>
                                                                 <textView importsGraphics="NO" verticallyResizable="YES" baseWritingDirection="leftToRight" usesFontPanel="YES" findStyle="panel" allowsUndo="YES" usesRuler="YES" allowsNonContiguousLayout="YES" smartInsertDelete="YES" id="A4A-YB-ifF">
-                                                                    <rect key="frame" x="0.0" y="0.0" width="625" height="109"/>
+                                                                    <rect key="frame" x="0.0" y="0.0" width="625" height="110"/>
                                                                     <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                                                     <color key="textColor" name="textColor" catalog="System" colorSpace="catalog"/>
                                                                     <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
-                                                                    <size key="minSize" width="625" height="109"/>
+                                                                    <size key="minSize" width="625" height="110"/>
                                                                     <size key="maxSize" width="881" height="10000000"/>
                                                                     <attributedString key="textStorage">
                                                                         <fragment>
@@ -454,7 +452,7 @@
                                                             <autoresizingMask key="autoresizingMask"/>
                                                         </scroller>
                                                         <scroller key="verticalScroller" verticalHuggingPriority="750" doubleValue="1" horizontal="NO" id="fRi-UI-8x2">
-                                                            <rect key="frame" x="626" y="1" width="15" height="109"/>
+                                                            <rect key="frame" x="626" y="1" width="15" height="110"/>
                                                             <autoresizingMask key="autoresizingMask"/>
                                                         </scroller>
                                                     </scrollView>
@@ -666,7 +664,7 @@
                                                         <rect key="frame" x="15" y="32" width="411" height="18"/>
                                                         <buttonCell key="cell" type="check" title="Force EventViewer to stay on top of other windows (Default: off)" bezelStyle="regularSquare" imagePosition="left" state="on" inset="2" id="WCA-8e-MOA">
                                                             <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
-                                                            <font key="font" metaFont="menu"/>
+                                                            <font key="font" metaFont="system"/>
                                                         </buttonCell>
                                                         <connections>
                                                             <action selector="setWindowProperty:" target="494" id="g7Q-Pu-z0x"/>
@@ -677,7 +675,7 @@
                                                         <rect key="frame" x="15" y="8" width="293" height="18"/>
                                                         <buttonCell key="cell" type="check" title="Show EventViewer in all spaces (Default: off)" bezelStyle="regularSquare" imagePosition="left" state="on" inset="2" id="Be8-wB-67e">
                                                             <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
-                                                            <font key="font" metaFont="menu"/>
+                                                            <font key="font" metaFont="system"/>
                                                         </buttonCell>
                                                         <connections>
                                                             <action selector="setWindowProperty:" target="494" id="Ozo-zS-xj7"/>
@@ -706,7 +704,7 @@
                                                         <rect key="frame" x="15" y="8" width="332" height="18"/>
                                                         <buttonCell key="cell" type="check" title="Show key code in hexadecimal format (Default: off)" bezelStyle="regularSquare" imagePosition="left" state="on" inset="2" id="xfY-PO-icV">
                                                             <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
-                                                            <font key="font" metaFont="menu"/>
+                                                            <font key="font" metaFont="system"/>
                                                         </buttonCell>
                                                         <connections>
                                                             <binding destination="W9q-2J-Sz1" name="value" keyPath="values.kShowHex" id="KMz-RT-duH"/>
@@ -750,11 +748,116 @@
             </connections>
             <point key="canvasLocation" x="305" y="465"/>
         </window>
+        <window title="Input Monitoring Permissions Alert" allowsToolTipsWhenApplicationIsInactive="NO" autorecalculatesKeyViewLoop="NO" hidesOnDeactivate="YES" releasedWhenClosed="NO" visibleAtLaunch="NO" frameAutosaveName="" animationBehavior="default" id="QgS-eX-mPZ" userLabel="Input Monitoring Alert Panel" customClass="NSPanel">
+            <windowStyleMask key="styleMask" titled="YES" closable="YES" miniaturizable="YES" resizable="YES" utility="YES"/>
+            <windowPositionMask key="initialPositionMask" leftStrut="YES" rightStrut="YES" topStrut="YES" bottomStrut="YES"/>
+            <rect key="contentRect" x="196" y="132" width="600" height="600"/>
+            <rect key="screenRect" x="0.0" y="0.0" width="2048" height="1257"/>
+            <value key="minSize" type="size" width="600" height="600"/>
+            <value key="maxSize" type="size" width="600" height="600"/>
+            <view key="contentView" id="VKp-a4-sNA">
+                <rect key="frame" x="0.0" y="0.0" width="600" height="535"/>
+                <autoresizingMask key="autoresizingMask"/>
+                <subviews>
+                    <customView translatesAutoresizingMaskIntoConstraints="NO" id="GYH-Wd-P85">
+                        <rect key="frame" x="221" y="483" width="158" height="32"/>
+                        <subviews>
+                            <imageView translatesAutoresizingMaskIntoConstraints="NO" id="wpq-RR-jee">
+                                <rect key="frame" x="0.0" y="0.0" width="32" height="32"/>
+                                <constraints>
+                                    <constraint firstAttribute="width" constant="32" id="UgI-7A-LRV"/>
+                                    <constraint firstAttribute="height" constant="32" id="rsx-TO-PzR"/>
+                                </constraints>
+                                <imageCell key="cell" refusesFirstResponder="YES" alignment="left" animates="YES" imageScaling="proportionallyDown" image="NSCaution" id="EY8-ri-34K"/>
+                            </imageView>
+                            <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="nqn-32-8Wv">
+                                <rect key="frame" x="40" y="8" width="120" height="16"/>
+                                <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" title="EventViewer Alert" id="OqB-le-WlL">
+                                    <font key="font" metaFont="systemBold"/>
+                                    <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
+                                    <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
+                                </textFieldCell>
+                            </textField>
+                        </subviews>
+                        <constraints>
+                            <constraint firstItem="wpq-RR-jee" firstAttribute="leading" secondItem="GYH-Wd-P85" secondAttribute="leading" id="37V-eV-ALg"/>
+                            <constraint firstAttribute="bottom" secondItem="wpq-RR-jee" secondAttribute="bottom" id="TqW-OT-pZr"/>
+                            <constraint firstItem="nqn-32-8Wv" firstAttribute="centerY" secondItem="wpq-RR-jee" secondAttribute="centerY" id="XFg-QB-5Op"/>
+                            <constraint firstAttribute="trailing" secondItem="nqn-32-8Wv" secondAttribute="trailing" id="m6Q-aA-31V"/>
+                            <constraint firstItem="wpq-RR-jee" firstAttribute="top" secondItem="GYH-Wd-P85" secondAttribute="top" id="tAh-gR-fwq"/>
+                            <constraint firstItem="nqn-32-8Wv" firstAttribute="leading" secondItem="wpq-RR-jee" secondAttribute="trailing" constant="10" id="wJj-H8-nF1"/>
+                        </constraints>
+                    </customView>
+                    <tabView type="noTabsNoBorder" translatesAutoresizingMaskIntoConstraints="NO" id="yGV-Vs-aOB">
+                        <rect key="frame" x="10" y="10" width="580" height="453"/>
+                        <font key="font" metaFont="menu"/>
+                        <tabViewItems>
+                            <tabViewItem label="Tab" identifier="1" id="tyX-M5-Hyz">
+                                <view key="view" id="Pba-g4-16i">
+                                    <rect key="frame" x="0.0" y="0.0" width="580" height="453"/>
+                                    <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                                    <subviews>
+                                        <textField verticalHuggingPriority="750" horizontalCompressionResistancePriority="250" translatesAutoresizingMaskIntoConstraints="NO" id="hti-nE-dtR">
+                                            <rect key="frame" x="18" y="401" width="544" height="32"/>
+                                            <textFieldCell key="cell" sendsActionOnEndEditing="YES" alignment="center" id="SQo-gH-Z59">
+                                                <font key="font" metaFont="menu"/>
+                                                <string key="title">EventViewer requires Input Monitoring permission.
+You have to allow Karabiner-EventViewer on Security &amp; Privacy System Preferences.</string>
+                                                <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
+                                                <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
+                                            </textFieldCell>
+                                        </textField>
+                                        <button verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="539-dW-H61">
+                                            <rect key="frame" x="123" y="353" width="334" height="32"/>
+                                            <buttonCell key="cell" type="push" title="Open Security &amp; Privacy System Preferences" bezelStyle="rounded" image="ic_forward_18pt" imagePosition="left" alignment="left" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="O1z-0g-1BU">
+                                                <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
+                                                <font key="font" metaFont="system"/>
+                                            </buttonCell>
+                                            <connections>
+                                                <action selector="openSystemPreferencesSecurity:" target="Ewd-Ox-BrH" id="btb-Kh-Xbz"/>
+                                            </connections>
+                                        </button>
+                                        <imageView horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="Ns2-C4-vty">
+                                            <rect key="frame" x="110" y="20" width="360" height="290"/>
+                                            <constraints>
+                                                <constraint firstAttribute="width" constant="360" id="Hos-MA-4S6"/>
+                                                <constraint firstAttribute="height" constant="290" id="PMd-bh-Xnv"/>
+                                            </constraints>
+                                            <imageCell key="cell" refusesFirstResponder="YES" alignment="left" imageScaling="proportionallyUpOrDown" image="input_monitoring" id="FPw-ZR-2Lp"/>
+                                        </imageView>
+                                    </subviews>
+                                    <constraints>
+                                        <constraint firstAttribute="bottom" secondItem="Ns2-C4-vty" secondAttribute="bottom" constant="20" id="0E8-9w-dts"/>
+                                        <constraint firstItem="hti-nE-dtR" firstAttribute="leading" secondItem="Pba-g4-16i" secondAttribute="leading" constant="20" id="2PW-YU-A6N"/>
+                                        <constraint firstItem="Ns2-C4-vty" firstAttribute="top" secondItem="539-dW-H61" secondAttribute="bottom" constant="50" id="CXj-5h-eLN"/>
+                                        <constraint firstItem="539-dW-H61" firstAttribute="top" secondItem="hti-nE-dtR" secondAttribute="bottom" constant="20" id="MTe-p0-iG0"/>
+                                        <constraint firstItem="hti-nE-dtR" firstAttribute="top" secondItem="Pba-g4-16i" secondAttribute="top" constant="20" id="Zvi-35-flm"/>
+                                        <constraint firstAttribute="trailing" secondItem="hti-nE-dtR" secondAttribute="trailing" constant="20" id="k71-03-vdI"/>
+                                        <constraint firstItem="539-dW-H61" firstAttribute="centerX" secondItem="Pba-g4-16i" secondAttribute="centerX" id="lLh-AT-2Vm"/>
+                                        <constraint firstItem="Ns2-C4-vty" firstAttribute="centerX" secondItem="Pba-g4-16i" secondAttribute="centerX" id="yOQ-Mp-9h4"/>
+                                    </constraints>
+                                </view>
+                            </tabViewItem>
+                        </tabViewItems>
+                    </tabView>
+                </subviews>
+                <constraints>
+                    <constraint firstItem="GYH-Wd-P85" firstAttribute="centerX" secondItem="VKp-a4-sNA" secondAttribute="centerX" id="Rqa-Rj-i3x"/>
+                    <constraint firstItem="yGV-Vs-aOB" firstAttribute="top" secondItem="GYH-Wd-P85" secondAttribute="bottom" constant="20" id="dJY-0W-hNH"/>
+                    <constraint firstItem="GYH-Wd-P85" firstAttribute="top" secondItem="VKp-a4-sNA" secondAttribute="top" constant="20" id="h1C-yc-zUQ"/>
+                    <constraint firstItem="yGV-Vs-aOB" firstAttribute="leading" secondItem="VKp-a4-sNA" secondAttribute="leading" constant="10" id="jFT-zD-NWS"/>
+                    <constraint firstAttribute="trailing" secondItem="yGV-Vs-aOB" secondAttribute="trailing" constant="10" id="pKG-Fk-rmo"/>
+                    <constraint firstAttribute="bottom" secondItem="yGV-Vs-aOB" secondAttribute="bottom" constant="10" id="rP2-p6-3NV"/>
+                </constraints>
+            </view>
+            <point key="canvasLocation" x="168" y="1095"/>
+        </window>
         <customObject id="494" userLabel="App Delegate" customClass="AppDelegate">
             <connections>
                 <outlet property="devicesController" destination="ggU-FE-hiD" id="UKi-IL-yhy"/>
                 <outlet property="eventQueue" destination="571" id="hYY-uI-Yex"/>
                 <outlet property="frontmostApplicationController" destination="5Ro-l9-Pmw" id="kJT-Hv-RJh"/>
+                <outlet property="inputMonitoringAlertWindowController" destination="Ewd-Ox-BrH" id="hJE-tu-4Ja"/>
                 <outlet property="keyResponder" destination="925" id="evx-2k-LwC"/>
                 <outlet property="variablesController" destination="Hua-x6-m2N" id="bcq-GU-wQo"/>
                 <outlet property="window" destination="371" id="532"/>
@@ -776,6 +879,12 @@
                 <outlet property="textView" destination="KEZ-Np-coZ" id="jkh-1Q-dq0"/>
             </connections>
         </customObject>
+        <customObject id="Ewd-Ox-BrH" customClass="InputMonitoringAlertWindowController">
+            <connections>
+                <outlet property="parentWindow" destination="371" id="6JZ-4v-8XN"/>
+                <outlet property="window" destination="QgS-eX-mPZ" id="mO8-WR-SGn"/>
+            </connections>
+        </customObject>
         <userDefaultsController representsSharedInstance="YES" id="W9q-2J-Sz1"/>
         <customObject id="rei-LJ-AZr" customClass="PreferencesManager"/>
         <customObject id="Hua-x6-m2N" customClass="VariablesController">
@@ -784,4 +893,9 @@
             </connections>
         </customObject>
     </objects>
+    <resources>
+        <image name="NSCaution" width="32" height="32"/>
+        <image name="ic_forward_18pt" width="18" height="18"/>
+        <image name="input_monitoring" width="668" height="573"/>
+    </resources>
 </document>

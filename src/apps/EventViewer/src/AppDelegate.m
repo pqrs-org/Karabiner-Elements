@@ -3,6 +3,7 @@
 #import "DevicesController.h"
 #import "EventQueue.h"
 #import "FrontmostApplicationController.h"
+#import "InputMonitoringAlertWindowController.h"
 #import "KarabinerKit/KarabinerKit.h"
 #import "KeyResponder.h"
 #import "PreferencesKeys.h"
@@ -18,6 +19,7 @@
 @property(weak) IBOutlet FrontmostApplicationController* frontmostApplicationController;
 @property(weak) IBOutlet VariablesController* variablesController;
 @property(weak) IBOutlet DevicesController* devicesController;
+@property(weak) IBOutlet InputMonitoringAlertWindowController* inputMonitoringAlertWindowController;
 
 @end
 
@@ -34,7 +36,7 @@
   [self.devicesController setup];
 
   @weakify(self);
-  dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 10 * NSEC_PER_SEC), dispatch_get_main_queue(), ^{
+  dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 3 * NSEC_PER_SEC), dispatch_get_main_queue(), ^{
     @strongify(self);
     if (!self) {
       return;
@@ -44,14 +46,7 @@
     NSLog(@"observed = %d", observed);
 
     if (!observed) {
-      NSAlert* alert = [NSAlert new];
-      alert.messageText = @"Warning";
-      alert.informativeText = @"EventViewer failed to observe keyboard devices.\n"
-                              @"If you are using another keyboard customizer, stop it temporarily before run EventViewer.";
-      [alert addButtonWithTitle:@"OK"];
-
-      [alert beginSheetModalForWindow:self.window
-                    completionHandler:^(NSModalResponse returnCode){}];
+      [self.inputMonitoringAlertWindowController show];
     }
   });
 }
