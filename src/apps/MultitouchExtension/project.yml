@@ -27,7 +27,8 @@ targets:
           - -Werror
       - path: Resources
         excludes:
-          - Info.plist.in
+          - .gitignore
+          - '*.plist.in'
     dependencies:
       - sdk: libc++.tbd
       - framework: /System/Library/PrivateFrameworks/MultitouchSupport.framework

@@ -27,7 +27,9 @@ targets:
           - -Werror
       - path: Resources
         excludes:
-          - Info.plist.in
+          - .gitignore
+          - '*.orig.png'
+          - '*.plist.in'
       - path: ../share/Resources/app.icns
     dependencies:
       - sdk: libc++.tbd
