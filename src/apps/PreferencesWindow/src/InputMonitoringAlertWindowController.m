@@ -118,7 +118,8 @@ static void staticGrabberStateJsonFileChangedCallback(const char* filePath,
 }
 
 - (IBAction)openSystemPreferencesSecurity:(id)sender {
-  [[NSWorkspace sharedWorkspace] openURL:[NSURL URLWithString:@"x-apple.systempreferences:com.apple.preference.security?Privacy"]];
+  [NSApplication.sharedApplication miniaturizeAll:self];
+  [NSWorkspace.sharedWorkspace openURL:[NSURL URLWithString:@"x-apple.systempreferences:com.apple.preference.security?Privacy"]];
 }
 
 @end

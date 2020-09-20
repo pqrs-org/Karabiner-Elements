@@ -49,7 +49,8 @@
 }
 
 - (IBAction)openSystemPreferencesSecurity:(id)sender {
-  [[NSWorkspace sharedWorkspace] openURL:[NSURL URLWithString:@"x-apple.systempreferences:com.apple.preference.security?General"]];
+  [NSApplication.sharedApplication miniaturizeAll:self];
+  [NSWorkspace.sharedWorkspace openURL:[NSURL URLWithString:@"x-apple.systempreferences:com.apple.preference.security?General"]];
 }
 
 - (IBAction)deactivateDriver:(id)sender {
