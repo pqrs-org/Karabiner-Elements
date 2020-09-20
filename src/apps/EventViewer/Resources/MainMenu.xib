@@ -857,7 +857,7 @@ You have to allow Karabiner-EventViewer on Security &amp; Privacy System Prefere
                 <outlet property="devicesController" destination="ggU-FE-hiD" id="UKi-IL-yhy"/>
                 <outlet property="eventQueue" destination="571" id="hYY-uI-Yex"/>
                 <outlet property="frontmostApplicationController" destination="5Ro-l9-Pmw" id="kJT-Hv-RJh"/>
-                <outlet property="inputMonitoringAlertWindowController" destination="Ewd-Ox-BrH" id="hJE-tu-4Ja"/>
+                <outlet property="inputMonitoringAlertWindowController" destination="Ewd-Ox-BrH" id="3oG-DJ-p1j"/>
                 <outlet property="keyResponder" destination="925" id="evx-2k-LwC"/>
                 <outlet property="variablesController" destination="Hua-x6-m2N" id="bcq-GU-wQo"/>
                 <outlet property="window" destination="371" id="532"/>
@@ -879,7 +879,7 @@ You have to allow Karabiner-EventViewer on Security &amp; Privacy System Prefere
                 <outlet property="textView" destination="KEZ-Np-coZ" id="jkh-1Q-dq0"/>
             </connections>
         </customObject>
-        <customObject id="Ewd-Ox-BrH" customClass="InputMonitoringAlertWindowController">
+        <customObject id="Ewd-Ox-BrH" customClass="InputMonitoringAlertWindowController" customModule="Karabiner_EventViewer">
             <connections>
                 <outlet property="parentWindow" destination="371" id="6JZ-4v-8XN"/>
                 <outlet property="window" destination="QgS-eX-mPZ" id="mO8-WR-SGn"/>
