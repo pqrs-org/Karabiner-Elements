@@ -887,7 +887,7 @@ You have to allow Karabiner-EventViewer on Security &amp; Privacy System Prefere
         </customObject>
         <userDefaultsController representsSharedInstance="YES" id="W9q-2J-Sz1"/>
         <customObject id="rei-LJ-AZr" customClass="PreferencesManager"/>
-        <customObject id="Hua-x6-m2N" customClass="VariablesController">
+        <customObject id="Hua-x6-m2N" customClass="VariablesController" customModule="Karabiner_EventViewer">
             <connections>
                 <outlet property="textView" destination="Glx-oy-lpN" id="uU6-go-3zQ"/>
             </connections>

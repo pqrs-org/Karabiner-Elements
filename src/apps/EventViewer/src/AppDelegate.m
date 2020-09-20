@@ -6,7 +6,6 @@
 #import "Karabiner_EventViewer-Swift.h"
 #import "KeyResponder.h"
 #import "PreferencesKeys.h"
-#import "VariablesController.h"
 #import "libkrbn/libkrbn.h"
 #import <pqrs/weakify.h>
 
