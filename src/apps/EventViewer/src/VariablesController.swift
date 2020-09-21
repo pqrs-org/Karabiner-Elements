@@ -1,9 +1,7 @@
 import Cocoa
 
 private func callback(_ filePath: UnsafePointer<Int8>?, _ context: UnsafeMutableRawPointer?) {
-  if filePath == nil {
-    return
-  }
+  if filePath == nil { return }
 
   let path = String(cString: filePath!)
   let obj: VariablesController? = unsafeBitCast(context, to: VariablesController.self)
