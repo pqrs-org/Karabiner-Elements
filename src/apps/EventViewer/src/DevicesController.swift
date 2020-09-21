@@ -4,14 +4,14 @@ private func callback(_ filePath: UnsafePointer<Int8>?, _ context: UnsafeMutable
   if filePath == nil { return }
 
   let path = String(cString: filePath!)
-  let obj: DevicesController? = unsafeBitCast(context, to: DevicesController.self)
+  let obj: DevicesController! = unsafeBitCast(context, to: DevicesController.self)
 
   guard let message = try? String(contentsOfFile: path, encoding: .utf8) else { return }
 
   DispatchQueue.main.async { [weak obj] in
     guard let obj = obj else { return }
 
-    guard let textStorage = obj.textView!.textStorage else { return }
+    guard let textStorage = obj.textView.textStorage else { return }
     guard let font = NSFont(name: "Menlo", size: 11) else { return }
     let attributedString = NSAttributedString(string: message, attributes: [
       NSAttributedString.Key.font: font,
@@ -26,7 +26,7 @@ private func callback(_ filePath: UnsafePointer<Int8>?, _ context: UnsafeMutable
 
 @objc
 public class DevicesController: NSObject {
-  @IBOutlet var textView: NSTextView?
+  @IBOutlet var textView: NSTextView!
 
   deinit {
     libkrbn_disable_device_details_json_file_monitor()

@@ -11,7 +11,7 @@ private func callback(_ filePath: UnsafePointer<Int8>?, _ context: UnsafeMutable
   DispatchQueue.main.async { [weak obj] in
     guard let obj = obj else { return }
 
-    guard let textStorage = obj.textView!.textStorage else { return }
+    guard let textStorage = obj.textView.textStorage else { return }
     guard let font = NSFont(name: "Menlo", size: 11) else { return }
     let attributedString = NSAttributedString(string: message, attributes: [
       NSAttributedString.Key.font: font,
@@ -26,7 +26,7 @@ private func callback(_ filePath: UnsafePointer<Int8>?, _ context: UnsafeMutable
 
 @objc
 public class VariablesController: NSObject {
-  @IBOutlet var textView: NSTextView?
+  @IBOutlet var textView: NSTextView!
 
   deinit {
     libkrbn_disable_manipulator_environment_json_file_monitor()
