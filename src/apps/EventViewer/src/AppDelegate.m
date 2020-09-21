@@ -1,7 +1,6 @@
 @import Carbon;
 #import "AppDelegate.h"
 #import "EventQueue.h"
-#import "FrontmostApplicationController.h"
 #import "KarabinerKit/KarabinerKit.h"
 #import "Karabiner_EventViewer-Swift.h"
 #import "KeyResponder.h"

@@ -874,7 +874,7 @@ You have to allow Karabiner-EventViewer on Security &amp; Privacy System Prefere
                 <outlet property="view" destination="564" id="qxL-30-rPh"/>
             </connections>
         </customObject>
-        <customObject id="5Ro-l9-Pmw" customClass="FrontmostApplicationController">
+        <customObject id="5Ro-l9-Pmw" customClass="FrontmostApplicationController" customModule="Karabiner_EventViewer">
             <connections>
                 <outlet property="textView" destination="KEZ-Np-coZ" id="jkh-1Q-dq0"/>
             </connections>
