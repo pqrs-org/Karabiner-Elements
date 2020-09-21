@@ -54,18 +54,19 @@ private func callback(_ bundleIdentifier: UnsafePointer<Int8>?,
 @objc
 public class FrontmostApplicationController: NSObject {
   @IBOutlet var textView: NSTextView?
-  var text: NSMutableAttributedString
-  var attributes: [NSAttributedString.Key: Any]
+  let text: NSMutableAttributedString
+  let attributes: [NSAttributedString.Key: Any]
 
   override init() {
     text = NSMutableAttributedString()
 
-    attributes = [
+    var attributes: [NSAttributedString.Key: Any] = [
       NSAttributedString.Key.foregroundColor: NSColor.textColor,
     ]
     if let font = NSFont(name: "Menlo", size: 11) {
       attributes[NSAttributedString.Key.font] = font
     }
+    self.attributes = attributes
 
     super.init()
   }
