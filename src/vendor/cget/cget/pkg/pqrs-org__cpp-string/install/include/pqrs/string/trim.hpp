@@ -6,6 +6,7 @@
 
 #include <algorithm>
 #include <cctype>
+#include <string_view>
 
 namespace pqrs {
 namespace string {
@@ -33,19 +34,22 @@ inline void trim(std::string& s) {
   trim_right(s);
 }
 
-inline std::string trim_left_copy(std::string s) {
-  trim_left(s);
-  return s;
+inline std::string trim_left_copy(const std::string_view& s) {
+  std::string result(s);
+  trim_left(result);
+  return result;
 }
 
-inline std::string trim_right_copy(std::string s) {
-  trim_right(s);
-  return s;
+inline std::string trim_right_copy(const std::string_view& s) {
+  std::string result(s);
+  trim_right(result);
+  return result;
 }
 
-static inline std::string trim_copy(std::string s) {
-  trim(s);
-  return s;
+static inline std::string trim_copy(const std::string_view& s) {
+  std::string result(s);
+  trim(result);
+  return result;
 }
 } // namespace string
 } // namespace pqrs

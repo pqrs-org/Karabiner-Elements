@@ -4,15 +4,17 @@
 // Distributed under the Boost Software License, Version 1.0.
 // (See http://www.boost.org/LICENSE_1_0.txt)
 
-#include <string>
+#include <string_view>
 
 namespace pqrs {
 namespace string {
-inline bool starts_with(const std::string& s, const std::string& prefix) {
+// Polyfill of std::string_view::starts_with (C++20)
+inline bool starts_with(const std::string_view& s, const std::string_view& prefix) {
   return s.compare(0, prefix.size(), prefix) == 0;
 }
 
-inline bool ends_with(const std::string& s, const std::string& suffix) {
+// Polyfill of std::string_view::ends_with (C++20)
+inline bool ends_with(const std::string_view& s, const std::string_view& suffix) {
   if (s.size() < suffix.size()) {
     return false;
   }
