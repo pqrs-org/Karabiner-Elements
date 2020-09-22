@@ -70,6 +70,18 @@ TEST_CASE("make_key_code") {
   }
 }
 
+TEST_CASE("find_unnamed_key_code_number") {
+  REQUIRE(krbn::find_unnamed_key_code_number("(number:123)") == krbn::key_code::value_t(123));
+  REQUIRE(krbn::find_unnamed_key_code_number("(number:123456789)") == krbn::key_code::value_t(123456789));
+  REQUIRE(krbn::find_unnamed_key_code_number("(number:abc)") == std::nullopt);
+  REQUIRE(krbn::find_unnamed_key_code_number("space") == std::nullopt);
+  // `1` is key_code_name (!= key_code_number)
+  REQUIRE(krbn::find_unnamed_key_code_number("1") == std::nullopt);
+
+  REQUIRE(krbn::find_unnamed_key_code_number("") == std::nullopt);
+  REQUIRE(krbn::find_unnamed_key_code_number("(number:") == std::nullopt);
+}
+
 TEST_CASE("make_key_code (modifier_flag)") {
   REQUIRE(krbn::make_key_code(krbn::modifier_flag::zero) == std::nullopt);
   REQUIRE(krbn::make_key_code(krbn::modifier_flag::caps_lock) == krbn::key_code::keyboard_caps_lock);
@@ -152,6 +164,16 @@ TEST_CASE("make_consumer_key_code") {
   }
 }
 
+TEST_CASE("find_unnamed_consumer_key_code_number") {
+  REQUIRE(krbn::find_unnamed_consumer_key_code_number("(number:123)") == krbn::consumer_key_code::value_t(123));
+  REQUIRE(krbn::find_unnamed_consumer_key_code_number("(number:123456789)") == krbn::consumer_key_code::value_t(123456789));
+  REQUIRE(krbn::find_unnamed_consumer_key_code_number("(number:abc)") == std::nullopt);
+  REQUIRE(krbn::find_unnamed_consumer_key_code_number("mute") == std::nullopt);
+
+  REQUIRE(krbn::find_unnamed_consumer_key_code_number("") == std::nullopt);
+  REQUIRE(krbn::find_unnamed_consumer_key_code_number("(number:") == std::nullopt);
+}
+
 TEST_CASE("make_pointing_button") {
   REQUIRE(krbn::make_pointing_button("button1") == krbn::pointing_button::button1);
   REQUIRE(!krbn::make_pointing_button("unknown"));
@@ -169,4 +191,14 @@ TEST_CASE("make_pointing_button") {
                                              pqrs::hid::usage::keyboard_or_keypad::keyboard_tab);
     REQUIRE(actual == std::nullopt);
   }
+}
+
+TEST_CASE("find_unnamed_pointing_button_number") {
+  REQUIRE(krbn::find_unnamed_pointing_button_number("(number:123)") == krbn::pointing_button::value_t(123));
+  REQUIRE(krbn::find_unnamed_pointing_button_number("(number:123456789)") == krbn::pointing_button::value_t(123456789));
+  REQUIRE(krbn::find_unnamed_pointing_button_number("(number:abc)") == std::nullopt);
+  REQUIRE(krbn::find_unnamed_pointing_button_number("button1") == std::nullopt);
+
+  REQUIRE(krbn::find_unnamed_pointing_button_number("") == std::nullopt);
+  REQUIRE(krbn::find_unnamed_pointing_button_number("(number:") == std::nullopt);
 }

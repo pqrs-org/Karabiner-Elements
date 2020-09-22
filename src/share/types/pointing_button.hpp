@@ -115,6 +115,19 @@ inline std::string make_pointing_button_name(pointing_button::value_t pointing_b
   return fmt::format("(number:{0})", type_safe::get(pointing_button));
 }
 
+inline std::optional<pointing_button::value_t> find_unnamed_pointing_button_number(const std::string& name) {
+  std::string_view prefix("(number:");
+
+  if (pqrs::string::starts_with(name, prefix)) {
+    try {
+      return pointing_button::value_t(std::stoi(name.substr(prefix.size())));
+    } catch (const std::exception& e) {
+    }
+  }
+
+  return std::nullopt;
+}
+
 inline std::optional<pointing_button::value_t> make_pointing_button(pqrs::hid::usage_page::value_t usage_page,
                                                                     pqrs::hid::usage::value_t usage) {
   if (usage_page == pqrs::hid::usage_page::button) {

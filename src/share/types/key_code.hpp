@@ -518,6 +518,19 @@ inline std::string make_key_code_name(key_code::value_t key_code) {
   return fmt::format("(number:{0})", type_safe::get(key_code));
 }
 
+inline std::optional<key_code::value_t> find_unnamed_key_code_number(const std::string& name) {
+  std::string_view prefix("(number:");
+
+  if (pqrs::string::starts_with(name, prefix)) {
+    try {
+      return key_code::value_t(std::stoi(name.substr(prefix.size())));
+    } catch (const std::exception& e) {
+    }
+  }
+
+  return std::nullopt;
+}
+
 inline std::optional<key_code::value_t> make_key_code(const std::string& name) {
   auto& map = key_code::impl::name_value_map;
   auto it = map.find(name.c_str());

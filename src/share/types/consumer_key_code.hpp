@@ -96,6 +96,19 @@ inline std::string make_consumer_key_code_name(consumer_key_code::value_t consum
   return fmt::format("(number:{0})", type_safe::get(consumer_key_code));
 }
 
+inline std::optional<consumer_key_code::value_t> find_unnamed_consumer_key_code_number(const std::string& name) {
+  std::string_view prefix("(number:");
+
+  if (pqrs::string::starts_with(name, prefix)) {
+    try {
+      return consumer_key_code::value_t(std::stoi(name.substr(prefix.size())));
+    } catch (const std::exception& e) {
+    }
+  }
+
+  return std::nullopt;
+}
+
 inline std::optional<consumer_key_code::value_t> make_consumer_key_code(pqrs::hid::usage_page::value_t usage_page,
                                                                         pqrs::hid::usage::value_t usage) {
   if (usage_page == pqrs::hid::usage_page::consumer) {
