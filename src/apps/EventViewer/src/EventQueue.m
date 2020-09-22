@@ -20,21 +20,6 @@
 
 @end
 
-static NSNumber* findNumberFromName(NSString* string) {
-  NSError* error = nil;
-  NSRegularExpression* regex = [NSRegularExpression regularExpressionWithPattern:@"^\\(number:(\\d+)\\)"
-                                                                         options:0
-                                                                           error:&error];
-  NSTextCheckingResult* match = [regex firstMatchInString:string
-                                                  options:0
-                                                    range:NSMakeRange(0, [string length])];
-  if (match) {
-    return @([[string substringWithRange:[match rangeAtIndex:1]] integerValue]);
-  }
-
-  return nil;
-}
-
 static void hid_value_observer_callback(uint64_t device_id,
                                         enum libkrbn_hid_value_type type,
                                         uint32_t value,
@@ -72,7 +57,14 @@ static void hid_value_observer_callback(uint64_t device_id,
         keyType = @"key";
         libkrbn_get_key_code_name(buffer, sizeof(buffer), value);
         name = [NSString stringWithUTF8String:buffer];
-        NSNumber* number = findNumberFromName(name);
+
+        NSNumber* unnamedNumber = nil;
+        {
+          uint32_t unnamedKeyCodeNumber = 0;
+          if (libkrbn_find_unnamed_key_code_number(buffer, &unnamedKeyCodeNumber)) {
+            unnamedNumber = [NSNumber numberWithInteger:unnamedKeyCodeNumber];
+          }
+        }
 
         if (libkrbn_is_modifier_flag(value)) {
           NSMutableSet* set = queue.modifierFlags[deviceId];
@@ -89,7 +81,7 @@ static void hid_value_observer_callback(uint64_t device_id,
         }
 
         simpleModificationJson[@"from"] = [NSMutableDictionary new];
-        simpleModificationJson[@"from"][@"key_code"] = number ? number : name;
+        simpleModificationJson[@"from"][@"key_code"] = unnamedNumber ? unnamedNumber : name;
         break;
       }
 
@@ -97,10 +89,17 @@ static void hid_value_observer_callback(uint64_t device_id,
         keyType = @"consumer_key";
         libkrbn_get_consumer_key_code_name(buffer, sizeof(buffer), value);
         name = [NSString stringWithUTF8String:buffer];
-        NSNumber* number = findNumberFromName(name);
+
+        NSNumber* unnamedNumber = nil;
+        {
+          uint32_t unnamedConsumerKeyCodeNumber = 0;
+          if (libkrbn_find_unnamed_consumer_key_code_number(buffer, &unnamedConsumerKeyCodeNumber)) {
+            unnamedNumber = [NSNumber numberWithInteger:unnamedConsumerKeyCodeNumber];
+          }
+        }
 
         simpleModificationJson[@"from"] = [NSMutableDictionary new];
-        simpleModificationJson[@"from"][@"consumer_key_code"] = number ? number : name;
+        simpleModificationJson[@"from"][@"consumer_key_code"] = unnamedNumber ? unnamedNumber : name;
         break;
       }
     }

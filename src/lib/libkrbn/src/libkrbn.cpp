@@ -141,9 +141,35 @@ void libkrbn_get_key_code_name(char* buffer, size_t length, uint32_t key_code) {
   strlcpy(buffer, name.c_str(), length);
 }
 
+bool libkrbn_find_unnamed_key_code_number(const char* name, uint32_t* output) {
+  if (!output) {
+    return false;
+  }
+
+  if (auto number = krbn::find_unnamed_key_code_number(name)) {
+    *output = type_safe::get(*number);
+    return true;
+  }
+
+  return false;
+}
+
 void libkrbn_get_consumer_key_code_name(char* buffer, size_t length, uint32_t consumer_key_code) {
   auto name = krbn::make_consumer_key_code_name(krbn::consumer_key_code::value_t(consumer_key_code));
   strlcpy(buffer, name.c_str(), length);
+}
+
+bool libkrbn_find_unnamed_consumer_key_code_number(const char* name, uint32_t* output) {
+  if (!output) {
+    return false;
+  }
+
+  if (auto number = krbn::find_unnamed_consumer_key_code_number(name)) {
+    *output = type_safe::get(*number);
+    return true;
+  }
+
+  return false;
 }
 
 bool libkrbn_is_modifier_flag(uint32_t key_code) {
