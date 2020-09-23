@@ -141,7 +141,7 @@ void libkrbn_get_key_code_name(char* buffer, size_t length, uint32_t key_code) {
   strlcpy(buffer, name.c_str(), length);
 }
 
-bool libkrbn_find_unnamed_key_code_number(const char* name, uint32_t* output) {
+bool libkrbn_find_unnamed_key_code_number(uint32_t* output, const char* name) {
   if (!output) {
     return false;
   }
@@ -159,7 +159,7 @@ void libkrbn_get_consumer_key_code_name(char* buffer, size_t length, uint32_t co
   strlcpy(buffer, name.c_str(), length);
 }
 
-bool libkrbn_find_unnamed_consumer_key_code_number(const char* name, uint32_t* output) {
+bool libkrbn_find_unnamed_consumer_key_code_number(uint32_t* output, const char* name) {
   if (!output) {
     return false;
   }

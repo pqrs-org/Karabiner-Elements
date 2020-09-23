@@ -61,7 +61,7 @@ static void hid_value_observer_callback(uint64_t device_id,
         NSNumber* unnamedNumber = nil;
         {
           uint32_t unnamedKeyCodeNumber = 0;
-          if (libkrbn_find_unnamed_key_code_number(buffer, &unnamedKeyCodeNumber)) {
+          if (libkrbn_find_unnamed_key_code_number(&unnamedKeyCodeNumber, buffer)) {
             unnamedNumber = [NSNumber numberWithInteger:unnamedKeyCodeNumber];
           }
         }
@@ -93,7 +93,7 @@ static void hid_value_observer_callback(uint64_t device_id,
         NSNumber* unnamedNumber = nil;
         {
           uint32_t unnamedConsumerKeyCodeNumber = 0;
-          if (libkrbn_find_unnamed_consumer_key_code_number(buffer, &unnamedConsumerKeyCodeNumber)) {
+          if (libkrbn_find_unnamed_consumer_key_code_number(&unnamedConsumerKeyCodeNumber, buffer)) {
             unnamedNumber = [NSNumber numberWithInteger:unnamedConsumerKeyCodeNumber];
           }
         }
