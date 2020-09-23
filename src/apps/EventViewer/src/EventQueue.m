@@ -21,9 +21,9 @@
 @end
 
 static void hid_value_observer_callback(uint64_t device_id,
-                                        enum libkrbn_hid_value_type type,
+                                        libkrbn_hid_value_type type,
                                         uint32_t value,
-                                        enum libkrbn_hid_value_event_type event_type,
+                                        libkrbn_hid_value_event_type event_type,
                                         void* refcon) {
   EventQueue* queue = (__bridge EventQueue*)(refcon);
   if (!queue) {

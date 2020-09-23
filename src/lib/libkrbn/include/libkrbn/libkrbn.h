@@ -314,21 +314,21 @@ bool libkrbn_log_lines_is_error_line(const char* line);
 // libkrbn_hid_value_monitor
 //
 
-enum libkrbn_hid_value_type {
+typedef enum {
   libkrbn_hid_value_type_key_code,
   libkrbn_hid_value_type_consumer_key_code,
-};
+} libkrbn_hid_value_type;
 
-enum libkrbn_hid_value_event_type {
+typedef enum {
   libkrbn_hid_value_event_type_key_down,
   libkrbn_hid_value_event_type_key_up,
   libkrbn_hid_value_event_type_single,
-};
+} libkrbn_hid_value_event_type;
 
 typedef void (*libkrbn_hid_value_monitor_callback)(uint64_t device_id,
-                                                   enum libkrbn_hid_value_type type,
+                                                   libkrbn_hid_value_type type,
                                                    uint32_t value,
-                                                   enum libkrbn_hid_value_event_type event_type,
+                                                   libkrbn_hid_value_event_type event_type,
                                                    void* refcon);
 void libkrbn_enable_hid_value_monitor(libkrbn_hid_value_monitor_callback callback,
                                       void* refcon);
