@@ -1,4 +1,8 @@
 name: Karabiner-EventViewer
+packages:
+  AnyCodable:
+    url: https://github.com/Flight-School/AnyCodable
+    majorVersion: 0.3.0
 
 targets:
   Karabiner-EventViewer:
@@ -32,4 +36,5 @@ targets:
           - '*.orig.png'
           - '*.plist.in'
     dependencies:
+      - package: AnyCodable
       - sdk: libc++.tbd
