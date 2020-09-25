@@ -1,5 +1,5 @@
 #import "KeyResponder.h"
-#import "EventQueue.h"
+#import "Karabiner_EventViewer-Swift.h"
 
 @interface KeyResponder ()
 

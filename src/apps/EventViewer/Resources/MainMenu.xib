@@ -298,7 +298,7 @@
                                                         <rect key="frame" x="17" y="10" width="766" height="216"/>
                                                         <clipView key="contentView" drawsBackground="NO" id="OS0-60-iDz">
                                                             <rect key="frame" x="1" y="0.0" width="749" height="215"/>
-                                                            <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                                                            <autoresizingMask key="autoresizingMask"/>
                                                             <subviews>
                                                                 <tableView focusRingType="none" verticalHuggingPriority="750" allowsExpansionToolTips="YES" columnAutoresizingStyle="lastColumnOnly" alternatingRowBackgroundColors="YES" columnReordering="NO" columnResizing="NO" multipleSelection="NO" autosaveColumns="NO" typeSelect="NO" enabled="NO" rowHeight="14" headerView="565" id="564">
                                                                     <rect key="frame" x="0.0" y="0.0" width="749" height="192"/>
@@ -419,7 +419,7 @@
                                                         <rect key="frame" x="10" y="10" width="642" height="112"/>
                                                         <clipView key="contentView" drawsBackground="NO" id="Hx6-3h-z4E">
                                                             <rect key="frame" x="1" y="1" width="625" height="110"/>
-                                                            <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                                                            <autoresizingMask key="autoresizingMask"/>
                                                             <subviews>
                                                                 <textView importsGraphics="NO" verticallyResizable="YES" baseWritingDirection="leftToRight" usesFontPanel="YES" findStyle="panel" allowsUndo="YES" usesRuler="YES" allowsNonContiguousLayout="YES" smartInsertDelete="YES" id="A4A-YB-ifF">
                                                                     <rect key="frame" x="0.0" y="0.0" width="625" height="110"/>
@@ -868,7 +868,7 @@ You have to allow Karabiner-EventViewer on Security &amp; Privacy System Prefere
                 <outlet property="textView" destination="pzX-J3-r2O" id="lLT-uo-5zn"/>
             </connections>
         </customObject>
-        <customObject id="571" customClass="EventQueue">
+        <customObject id="571" customClass="EventQueue" customModule="Karabiner_EventViewer">
             <connections>
                 <outlet property="addSimpleModificationButton" destination="e5W-WO-Kah" id="eWW-tb-Yab"/>
                 <outlet property="view" destination="564" id="qxL-30-rPh"/>
