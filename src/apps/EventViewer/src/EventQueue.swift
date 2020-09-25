@@ -165,17 +165,6 @@ public class EventQueue: NSObject, NSTableViewDataSource {
 
     let obj = unsafeBitCast(self, to: UnsafeMutableRawPointer.self)
     libkrbn_enable_hid_value_monitor(callback, obj)
-
-//    {
-//      NSString* name = [NSString stringWithUTF8String:libkrbn_get_distributed_notification_device_grabbing_state_is_changed()];
-//      NSString* object = [NSString stringWithUTF8String:libkrbn_get_distributed_notification_observed_object()];
-//
-//      [[NSDistributedNotificationCenter defaultCenter] addObserver:self
-//                                                          selector:@selector(deviceGrabbingStateIsChangedCallback)
-//                                                              name:name
-//                                                            object:object
-//                                                suspensionBehavior:NSNotificationSuspensionBehaviorDeliverImmediately];
-//    }
   }
 
   @objc

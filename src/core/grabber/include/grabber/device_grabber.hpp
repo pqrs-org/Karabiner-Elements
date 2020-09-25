@@ -221,8 +221,6 @@ public:
             update_caps_lock_led();
 
             update_virtual_hid_pointing();
-
-            apple_notification_center::post_distributed_notification_to_all_sessions(constants::get_distributed_notification_device_grabbing_state_is_changed());
           }
         });
 
@@ -238,8 +236,6 @@ public:
             post_device_ungrabbed_event(device_id);
 
             update_virtual_hid_pointing();
-
-            apple_notification_center::post_distributed_notification_to_all_sessions(constants::get_distributed_notification_device_grabbing_state_is_changed());
           }
         });
 
