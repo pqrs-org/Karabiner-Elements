@@ -2,7 +2,6 @@
 #import "AppDelegate.h"
 #import "KarabinerKit/KarabinerKit.h"
 #import "Karabiner_EventViewer-Swift.h"
-#import "KeyResponder.h"
 #import "PreferencesKeys.h"
 #import "libkrbn/libkrbn.h"
 #import <pqrs/weakify.h>
