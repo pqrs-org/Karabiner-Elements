@@ -51,7 +51,6 @@ private func callback(_ bundleIdentifier: UnsafePointer<Int8>?,
   }
 }
 
-@objc
 public class FrontmostApplicationController: NSObject {
   @IBOutlet var textView: NSTextView!
   let text: NSMutableAttributedString!
@@ -75,7 +74,6 @@ public class FrontmostApplicationController: NSObject {
     libkrbn_disable_frontmost_application_monitor()
   }
 
-  @objc
   public func setup() {
     let obj = unsafeBitCast(self, to: UnsafeMutableRawPointer.self)
     libkrbn_enable_frontmost_application_monitor(callback, obj)

@@ -1,10 +1,8 @@
 import Cocoa
 
-@objc
 public class InputMonitoringAlertWindowController: NSWindowController {
   @IBOutlet var parentWindow: NSWindow!
 
-  @objc
   public func show() {
     guard let window = window else { return }
 

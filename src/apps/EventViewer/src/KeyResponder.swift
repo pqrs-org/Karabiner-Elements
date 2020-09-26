@@ -1,6 +1,5 @@
 import Cocoa
 
-@objc
 public class KeyResponder: NSView {
   @IBOutlet var eventQueue: EventQueue!
 

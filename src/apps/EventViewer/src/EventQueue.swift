@@ -145,7 +145,6 @@ public class EventQueueEntry: NSObject {
   var misc: String = ""
 }
 
-@objc
 public class EventQueue: NSObject, NSTableViewDataSource {
   var queue: [EventQueueEntry] = []
   let maxQueueCount = 256
@@ -159,7 +158,6 @@ public class EventQueue: NSObject, NSTableViewDataSource {
     libkrbn_disable_hid_value_monitor()
   }
 
-  @objc
   public func setup() {
     updateAddSimpleModificationButton(nil)
 
@@ -167,7 +165,6 @@ public class EventQueue: NSObject, NSTableViewDataSource {
     libkrbn_enable_hid_value_monitor(callback, obj)
   }
 
-  @objc
   public func observed() -> Bool {
     return libkrbn_hid_value_monitor_observed()
   }
@@ -269,7 +266,7 @@ public class EventQueue: NSObject, NSTableViewDataSource {
                         Int(event.locationInWindow.x),
                         Int(event.locationInWindow.y),
                         Int(event.clickCount))
-    var flags = modifierFlagsString(event.modifierFlags)
+    let flags = modifierFlagsString(event.modifierFlags)
     if !flags.isEmpty {
       entry.misc.append(" flags:\(flags)")
     }
@@ -288,7 +285,6 @@ public class EventQueue: NSObject, NSTableViewDataSource {
     append(entry)
   }
 
-  @objc
   func pushMouseEvent(_ event: NSEvent) {
     switch event.type {
     case .leftMouseDown,

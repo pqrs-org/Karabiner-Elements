@@ -24,7 +24,6 @@ private func callback(_ filePath: UnsafePointer<Int8>?, _ context: UnsafeMutable
   }
 }
 
-@objc
 public class DevicesController: NSObject {
   @IBOutlet var textView: NSTextView!
 
@@ -32,7 +31,6 @@ public class DevicesController: NSObject {
     libkrbn_disable_device_details_json_file_monitor()
   }
 
-  @objc
   public func setup() {
     let obj = unsafeBitCast(self, to: UnsafeMutableRawPointer.self)
     libkrbn_enable_device_details_json_file_monitor(callback, obj)
