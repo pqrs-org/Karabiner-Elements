@@ -23,7 +23,7 @@ private func callback(_ deviceId: UInt64,
     // entry.code
     //
 
-    if UserDefaults.standard.bool(forKey: "kShowHex") {
+    if UserSettings.shared.showHex {
       entry.code = String(format: "0x%02x", value)
     } else {
       entry.code = String(value)

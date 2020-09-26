@@ -51,14 +51,14 @@ public class AppDelegate: NSObject, NSApplicationDelegate, NSTabViewDelegate {
 
   @IBAction func setWindowProperty(_: Any) {
     // ----------------------------------------
-    if UserDefaults.standard.bool(forKey: "kForceStayTop") {
+    if UserSettings.shared.forceStayTop {
       window.level = .floating
     } else {
       window.level = .normal
     }
 
     // ----------------------------------------
-    if UserDefaults.standard.bool(forKey: "kShowInAllSpaces") {
+    if UserSettings.shared.showInAllSpaces {
       window.collectionBehavior.insert(.canJoinAllSpaces)
     } else {
       window.collectionBehavior.remove(.canJoinAllSpaces)
