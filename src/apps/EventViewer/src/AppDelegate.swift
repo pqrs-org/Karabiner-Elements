@@ -1,6 +1,6 @@
 import Cocoa
 
-@objc
+@NSApplicationMain
 public class AppDelegate: NSObject, NSApplicationDelegate, NSTabViewDelegate {
   @IBOutlet var window: NSWindow!
   @IBOutlet var eventQueue: EventQueue!
@@ -11,6 +11,8 @@ public class AppDelegate: NSObject, NSApplicationDelegate, NSTabViewDelegate {
   @IBOutlet var inputMonitoringAlertWindowController: InputMonitoringAlertWindowController!
 
   public func applicationDidFinishLaunching(_: Notification) {
+    libkrbn_initialize()
+
     setKeyResponder()
     setWindowProperty(self)
     eventQueue.setup()
