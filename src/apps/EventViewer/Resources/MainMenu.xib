@@ -852,7 +852,7 @@ You have to allow Karabiner-EventViewer on Security &amp; Privacy System Prefere
             </view>
             <point key="canvasLocation" x="168" y="1095"/>
         </window>
-        <customObject id="494" userLabel="App Delegate" customClass="AppDelegate">
+        <customObject id="494" userLabel="App Delegate" customClass="AppDelegate" customModule="Karabiner_EventViewer">
             <connections>
                 <outlet property="devicesController" destination="ggU-FE-hiD" id="UKi-IL-yhy"/>
                 <outlet property="eventQueue" destination="571" id="hYY-uI-Yex"/>
