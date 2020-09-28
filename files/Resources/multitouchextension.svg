@@ -1,0 +1,183 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<svg
+   xmlns:osb="http://www.openswatchbook.org/uri/2009/osb"
+   xmlns:dc="http://purl.org/dc/elements/1.1/"
+   xmlns:cc="http://creativecommons.org/ns#"
+   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+   xmlns:svg="http://www.w3.org/2000/svg"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:xlink="http://www.w3.org/1999/xlink"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   width="1024"
+   height="1024"
+   viewBox="0 0 270.93333 270.93334"
+   version="1.1"
+   id="svg8"
+   inkscape:export-filename="multitouchextension.png"
+   inkscape:export-xdpi="96"
+   inkscape:export-ydpi="96"
+   inkscape:version="1.0.1 (c497b03c, 2020-09-10)"
+   sodipodi:docname="multitouchextension.svg">
+  <defs
+     id="defs2">
+    <linearGradient
+       id="linearGradient2843"
+       osb:paint="solid">
+      <stop
+         style="stop-color:#d01a1a;stop-opacity:1;"
+         offset="0"
+         id="stop2841" />
+    </linearGradient>
+    <linearGradient
+       id="linearGradient2809"
+       osb:paint="solid">
+      <stop
+         style="stop-color:#ffffff;stop-opacity:1;"
+         offset="0"
+         id="stop2807" />
+    </linearGradient>
+    <linearGradient
+       inkscape:collect="always"
+       id="linearGradient933">
+      <stop
+         style="stop-color:#575069;stop-opacity:1"
+         offset="0"
+         id="stop929" />
+      <stop
+         style="stop-color:#291e34;stop-opacity:1"
+         offset="1"
+         id="stop931" />
+    </linearGradient>
+    <linearGradient
+       inkscape:collect="always"
+       xlink:href="#linearGradient933"
+       id="linearGradient20"
+       x1="75.097618"
+       y1="42.783653"
+       x2="75.097618"
+       y2="128.27588"
+       gradientUnits="userSpaceOnUse"
+       gradientTransform="matrix(2.2163289,0,0,2.3768245,-30.974354,-67.822569)" />
+    <pattern
+       patternUnits="userSpaceOnUse"
+       width="697.0338"
+       height="697.03369"
+       patternTransform="translate(163.4831,163.48316)"
+       id="pattern865">
+      <ellipse
+         style="fill:none;fill-opacity:1;fill-rule:nonzero;stroke:#ffffff;stroke-width:80.0001;stroke-linecap:square;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+         id="ellipse857"
+         cx="255.73059"
+         cy="255.73062"
+         inkscape:label="circle"
+         rx="215.73053"
+         ry="215.73055" />
+      <path
+         style="fill:none;stroke:#ffffff;stroke-width:99.9999;stroke-linecap:round;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+         d="M 492.91021,492.91021 C 647.03386,647.03375 647.03386,647.03375 647.03386,647.03375"
+         id="path859"
+         inkscape:label="line wide" />
+      <path
+         style="fill:none;stroke:#ffffff;stroke-width:60;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+         d="M 421.149,421.149 C 598.79492,598.79481 598.79492,598.79481 598.79492,598.79481"
+         id="path861"
+         inkscape:label="line thin"
+         sodipodi:insensitive="true" />
+    </pattern>
+  </defs>
+  <sodipodi:namedview
+     inkscape:guide-bbox="true"
+     showguides="true"
+     id="base"
+     pagecolor="#ffffff"
+     bordercolor="#666666"
+     borderopacity="1.0"
+     inkscape:pageopacity="0.0"
+     inkscape:pageshadow="2"
+     inkscape:zoom="1"
+     inkscape:cx="511.99999"
+     inkscape:cy="352"
+     inkscape:document-units="px"
+     inkscape:current-layer="layer1"
+     inkscape:document-rotation="0"
+     showgrid="true"
+     inkscape:window-width="1967"
+     inkscape:window-height="1235"
+     inkscape:window-x="81"
+     inkscape:window-y="23"
+     inkscape:window-maximized="1"
+     units="px">
+    <inkscape:grid
+       dotted="false"
+       empspacing="128"
+       id="grid917"
+       type="xygrid" />
+  </sodipodi:namedview>
+  <metadata
+     id="metadata5">
+    <rdf:RDF>
+      <cc:Work
+         rdf:about="">
+        <dc:format>image/svg+xml</dc:format>
+        <dc:type
+           rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
+        <dc:title />
+        <cc:license
+           rdf:resource="http://creativecommons.org/publicdomain/zero/1.0/" />
+      </cc:Work>
+      <cc:License
+         rdf:about="http://creativecommons.org/publicdomain/zero/1.0/">
+        <cc:permits
+           rdf:resource="http://creativecommons.org/ns#Reproduction" />
+        <cc:permits
+           rdf:resource="http://creativecommons.org/ns#Distribution" />
+        <cc:permits
+           rdf:resource="http://creativecommons.org/ns#DerivativeWorks" />
+      </cc:License>
+    </rdf:RDF>
+  </metadata>
+  <g
+     style="display:inline"
+     inkscape:label="bg"
+     id="layer2"
+     inkscape:groupmode="layer"
+     sodipodi:insensitive="true">
+    <rect
+       inkscape:label="#bg"
+       style="opacity:1;fill:url(#linearGradient20);fill-opacity:1;fill-rule:evenodd;stroke:#3e3a49;stroke-width:4.23333;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+       id="bg"
+       width="223.30833"
+       height="223.30833"
+       x="23.8125"
+       y="23.8125"
+       ry="52.916668"
+       sodipodi:insensitive="true" />
+  </g>
+  <g
+     inkscape:groupmode="layer"
+     id="layer1"
+     inkscape:label="fg">
+    <g
+       id="g864"
+       transform="translate(-3.4899903e-6,29.633332)"
+       style="display:inline">
+      <rect
+         style="display:inline;fill:#ffffff;fill-rule:evenodd;stroke:#ffffff;stroke-width:3.62105;stroke-linecap:square;stroke-miterlimit:4;stroke-dasharray:none"
+         id="rect855"
+         height="6.9622746"
+         x="63.193867"
+         y="62.135525"
+         width="144.54561" />
+      <rect
+         style="display:inline;fill:none;fill-rule:evenodd;stroke:#ffffff;stroke-width:9.76798;stroke-linecap:round"
+         id="rect857"
+         width="148.98203"
+         height="96.065353"
+         x="60.975658"
+         y="57.800659"
+         ry="10.583333"
+         rx="10.583333" />
+    </g>
+  </g>
+</svg>
