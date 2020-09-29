@@ -31,3 +31,6 @@ indent_size = 4
 
 [*.jsonc]
 indent_size = 4
+
+[*.swift]
+indent_size = 4

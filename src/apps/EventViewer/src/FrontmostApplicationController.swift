@@ -4,87 +4,87 @@ private func callback(_ bundleIdentifier: UnsafePointer<Int8>?,
                       _ filePath: UnsafePointer<Int8>?,
                       _ context: UnsafeMutableRawPointer?)
 {
-  if bundleIdentifier == nil { return }
-  if filePath == nil { return }
+    if bundleIdentifier == nil { return }
+    if filePath == nil { return }
 
-  let identifier = String(cString: bundleIdentifier!)
-  let path = String(cString: filePath!)
-  let obj: FrontmostApplicationController! = unsafeBitCast(context, to: FrontmostApplicationController.self)
+    let identifier = String(cString: bundleIdentifier!)
+    let path = String(cString: filePath!)
+    let obj: FrontmostApplicationController! = unsafeBitCast(context, to: FrontmostApplicationController.self)
 
-  if identifier == "org.pqrs.Karabiner-EventViewer" { return }
+    if identifier == "org.pqrs.Karabiner-EventViewer" { return }
 
-  DispatchQueue.main.async { [weak obj] in
-    guard let obj = obj else { return }
+    DispatchQueue.main.async { [weak obj] in
+        guard let obj = obj else { return }
 
-    // Update obj.text
+        // Update obj.text
 
-    guard let font = NSFont(name: "Menlo", size: 11) else { return }
-    let attributes = [
-      NSAttributedString.Key.font: font,
-      NSAttributedString.Key.foregroundColor: NSColor.textColor,
-    ]
+        guard let font = NSFont(name: "Menlo", size: 11) else { return }
+        let attributes = [
+            NSAttributedString.Key.font: font,
+            NSAttributedString.Key.foregroundColor: NSColor.textColor,
+        ]
 
-    if obj.text.length > 4 * 1024 {
-      obj.text.setAttributedString(NSAttributedString(
-        string: "", attributes: attributes
-      ))
+        if obj.text.length > 4 * 1024 {
+            obj.text.setAttributedString(NSAttributedString(
+                string: "", attributes: attributes
+            ))
+        }
+
+        obj.text.append(NSAttributedString(
+            string: "Bundle Identifier:  \(identifier)\n",
+            attributes: attributes
+        ))
+        obj.text.append(NSAttributedString(
+            string: "File Path:          \(path)\n\n",
+            attributes: attributes
+        ))
+
+        // Update obj.textView
+
+        guard let textStorage = obj.textView.textStorage else { return }
+
+        textStorage.beginEditing()
+        textStorage.setAttributedString(obj.text)
+        textStorage.endEditing()
+
+        obj.textView.scrollRangeToVisible(NSMakeRange(obj.text.length, 0))
     }
-
-    obj.text.append(NSAttributedString(
-      string: "Bundle Identifier:  \(identifier)\n",
-      attributes: attributes
-    ))
-    obj.text.append(NSAttributedString(
-      string: "File Path:          \(path)\n\n",
-      attributes: attributes
-    ))
-
-    // Update obj.textView
-
-    guard let textStorage = obj.textView.textStorage else { return }
-
-    textStorage.beginEditing()
-    textStorage.setAttributedString(obj.text)
-    textStorage.endEditing()
-
-    obj.textView.scrollRangeToVisible(NSMakeRange(obj.text.length, 0))
-  }
 }
 
 public class FrontmostApplicationController: NSObject {
-  @IBOutlet var textView: NSTextView!
-  let text: NSMutableAttributedString!
-  let attributes: [NSAttributedString.Key: Any]!
+    @IBOutlet var textView: NSTextView!
+    let text: NSMutableAttributedString!
+    let attributes: [NSAttributedString.Key: Any]!
 
-  override init() {
-    text = NSMutableAttributedString()
+    override init() {
+        text = NSMutableAttributedString()
 
-    var attributes: [NSAttributedString.Key: Any] = [
-      NSAttributedString.Key.foregroundColor: NSColor.textColor,
-    ]
-    if let font = NSFont(name: "Menlo", size: 11) {
-      attributes[NSAttributedString.Key.font] = font
+        var attributes: [NSAttributedString.Key: Any] = [
+            NSAttributedString.Key.foregroundColor: NSColor.textColor,
+        ]
+        if let font = NSFont(name: "Menlo", size: 11) {
+            attributes[NSAttributedString.Key.font] = font
+        }
+        self.attributes = attributes
+
+        super.init()
     }
-    self.attributes = attributes
 
-    super.init()
-  }
-
-  deinit {
-    libkrbn_disable_frontmost_application_monitor()
-  }
-
-  public func setup() {
-    let obj = unsafeBitCast(self, to: UnsafeMutableRawPointer.self)
-    libkrbn_enable_frontmost_application_monitor(callback, obj)
-
-    if let textStorage = textView.textStorage {
-      textStorage.beginEditing()
-      textStorage.setAttributedString(NSAttributedString(
-        string: "Please switch to apps which you want to know Bundle Identifier.",
-        attributes: attributes
-      ))
-      textStorage.endEditing()
+    deinit {
+        libkrbn_disable_frontmost_application_monitor()
     }
-  }
+
+    public func setup() {
+        let obj = unsafeBitCast(self, to: UnsafeMutableRawPointer.self)
+        libkrbn_enable_frontmost_application_monitor(callback, obj)
+
+        if let textStorage = textView.textStorage {
+            textStorage.beginEditing()
+            textStorage.setAttributedString(NSAttributedString(
+                string: "Please switch to apps which you want to know Bundle Identifier.",
+                attributes: attributes
+            ))
+            textStorage.endEditing()
+        }
+    }
 }
