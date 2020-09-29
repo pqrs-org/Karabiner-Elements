@@ -29,6 +29,25 @@ public:
     is_keyboard_ = iokit_utility::is_keyboard(hid_device);
     is_pointing_device_ = iokit_utility::is_pointing_device(hid_device);
 
+    //
+    // Override manufacturer_ and product_
+    //
+
+    // Touch Bar
+    if (vendor_id_ == pqrs::hid::vendor_id::value_t(1452) &&
+        product_id_ == pqrs::hid::product_id::value_t(34304)) {
+      if (!manufacturer_) {
+        manufacturer_ = "Apple Inc.";
+      }
+      if (!product_) {
+        product_ = "Apple Internal Touch Bar";
+      }
+    }
+
+    //
+    // Set is_built_in_keyboard_, is_built_in_pointing_device_
+    //
+
     if (product_ && is_keyboard_ && is_pointing_device_) {
       if ((*product_).find("Apple Internal ") != std::string::npos) {
         if (*is_keyboard_ == true && *is_pointing_device_ == false) {
