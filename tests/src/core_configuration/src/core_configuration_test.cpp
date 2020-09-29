@@ -267,8 +267,8 @@ TEST_CASE("profile") {
     REQUIRE(profile.get_fn_function_keys().get_pairs() == make_default_fn_function_keys_pairs());
     REQUIRE(profile.get_devices().size() == 0);
 
-    REQUIRE(profile.get_device_ignore(krbn::device_identifiers(pqrs::hid::vendor_id::value_t(0x05ac),
-                                                               pqrs::hid::product_id::value_t(0x8600),
+    REQUIRE(profile.get_device_ignore(krbn::device_identifiers(pqrs::hid::vendor_id::value_t(4176),
+                                                               pqrs::hid::product_id::value_t(1031),
                                                                true,
                                                                false)) == true);
     REQUIRE(profile.get_device_ignore(krbn::device_identifiers(pqrs::hid::vendor_id::value_t(0x05ac),

@@ -138,27 +138,6 @@ TEST_CASE("device") {
 
     nlohmann::json json({
         {"identifiers", {
-                            {"vendor_id", 0x05ac},
-                            {"product_id", 0x8600},
-                            {"is_keyboard", true},
-                            {"is_pointing_device", false},
-                        }},
-    });
-    {
-      krbn::core_configuration::details::device device(json);
-      REQUIRE(device.get_ignore() == true);
-    }
-    {
-      json["ignore"] = false;
-      krbn::core_configuration::details::device device(json);
-      REQUIRE(device.get_ignore() == false);
-    }
-  }
-  {
-    // ignore_ == true for specific devices
-
-    nlohmann::json json({
-        {"identifiers", {
                             {"vendor_id", 0x1050},
                             {"product_id", 0x407},
                             {"is_keyboard", true},
