@@ -13,12 +13,14 @@ TEST_CASE("connected_devices::details::device") {
     krbn::connected_devices::details::device device(descriptions,
                                                     identifiers,
                                                     true,
+                                                    true,
                                                     true);
 
     REQUIRE(device.get_descriptions() == descriptions);
     REQUIRE(device.get_identifiers() == identifiers);
     REQUIRE(device.get_is_built_in_keyboard() == true);
     REQUIRE(device.get_is_built_in_trackpad() == true);
+    REQUIRE(device.get_is_built_in_touch_bar() == true);
 
     REQUIRE(device.to_json() == nlohmann::json(
                                     {{
@@ -61,6 +63,10 @@ TEST_CASE("connected_devices::details::device") {
                                      },
                                      {
                                          "is_built_in_trackpad",
+                                         true,
+                                     },
+                                     {
+                                         "is_built_in_touch_bar",
                                          true,
                                      }}));
   }
@@ -108,6 +114,10 @@ TEST_CASE("connected_devices::details::device") {
          {
              "is_built_in_trackpad",
              true,
+         },
+         {
+             "is_built_in_touch_bar",
+             true,
          }}));
 
     REQUIRE(device1.get_descriptions().get_manufacturer() == "");
@@ -118,6 +128,7 @@ TEST_CASE("connected_devices::details::device") {
     REQUIRE(device1.get_identifiers().get_is_pointing_device() == false);
     REQUIRE(device1.get_is_built_in_keyboard() == false);
     REQUIRE(device1.get_is_built_in_trackpad() == false);
+    REQUIRE(device1.get_is_built_in_touch_bar() == false);
 
     REQUIRE(device2.get_descriptions().get_manufacturer() == "manufacturer2");
     REQUIRE(device2.get_descriptions().get_product() == "product2");
@@ -127,6 +138,7 @@ TEST_CASE("connected_devices::details::device") {
     REQUIRE(device2.get_identifiers().get_is_pointing_device() == false);
     REQUIRE(device2.get_is_built_in_keyboard() == true);
     REQUIRE(device2.get_is_built_in_trackpad() == true);
+    REQUIRE(device2.get_is_built_in_touch_bar() == true);
   }
 
   // from device_properties
@@ -143,6 +155,7 @@ TEST_CASE("connected_devices::details::device") {
     REQUIRE(device.get_identifiers().get_is_pointing_device() == false);
     REQUIRE(device.get_is_built_in_keyboard() == false);
     REQUIRE(device.get_is_built_in_trackpad() == false);
+    REQUIRE(device.get_is_built_in_touch_bar() == false);
   }
   {
     krbn::device_properties device_properties;
@@ -164,6 +177,7 @@ TEST_CASE("connected_devices::details::device") {
       REQUIRE(device.get_identifiers().get_is_pointing_device() == false);
       REQUIRE(device.get_is_built_in_keyboard() == false);
       REQUIRE(device.get_is_built_in_trackpad() == false);
+      REQUIRE(device.get_is_built_in_touch_bar() == false);
     }
   }
 }

@@ -13,5 +13,6 @@
 - (libkrbn_device_identifiers)deviceIdentifiersAtIndex:(NSUInteger)index;
 - (BOOL)isBuiltInKeyboardAtIndex:(NSUInteger)index;
 - (BOOL)isBuiltInTrackpadAtIndex:(NSUInteger)index;
+- (BOOL)isBuiltInTouchBarAtIndex:(NSUInteger)index;
 
 @end

@@ -75,4 +75,8 @@
   return libkrbn_connected_devices_get_is_built_in_trackpad(self.libkrbnConnectedDevices, index);
 }
 
+- (BOOL)isBuiltInTouchBarAtIndex:(NSUInteger)index {
+  return libkrbn_connected_devices_get_is_built_in_touch_bar(self.libkrbnConnectedDevices, index);
+}
+
 @end

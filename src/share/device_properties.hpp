@@ -45,16 +45,20 @@ public:
     }
 
     //
-    // Set is_built_in_keyboard_, is_built_in_pointing_device_
+    // Set is_built_in_keyboard_, is_built_in_pointing_device_, is_built_in_touch_bar_
     //
 
     if (product_ && is_keyboard_ && is_pointing_device_) {
-      if ((*product_).find("Apple Internal ") != std::string::npos) {
-        if (*is_keyboard_ == true && *is_pointing_device_ == false) {
-          is_built_in_keyboard_ = true;
-        }
-        if (*is_keyboard_ == false && *is_pointing_device_ == true) {
-          is_built_in_pointing_device_ = true;
+      if (*product_ == "Apple Internal Touch Bar") {
+        is_built_in_touch_bar_ = true;
+      } else {
+        if ((*product_).find("Apple Internal ") != std::string::npos) {
+          if (*is_keyboard_ == true && *is_pointing_device_ == false) {
+            is_built_in_keyboard_ = true;
+          }
+          if (*is_keyboard_ == false && *is_pointing_device_ == true) {
+            is_built_in_pointing_device_ = true;
+          }
         }
       }
     }
@@ -101,6 +105,9 @@ public:
     }
     if (is_built_in_pointing_device_) {
       json["is_built_in_pointing_device"] = *is_built_in_pointing_device_;
+    }
+    if (is_built_in_touch_bar_) {
+      json["is_built_in_touch_bar"] = *is_built_in_touch_bar_;
     }
     if (is_karabiner_virtual_hid_device_) {
       json["is_karabiner_virtual_hid_device"] = *is_karabiner_virtual_hid_device_;
@@ -211,6 +218,10 @@ public:
     return is_built_in_pointing_device_;
   }
 
+  std::optional<bool> get_is_built_in_touch_bar(void) const {
+    return is_built_in_touch_bar_;
+  }
+
   std::optional<bool> get_is_karabiner_virtual_hid_device(void) const {
     return is_karabiner_virtual_hid_device_;
   }
@@ -302,6 +313,7 @@ private:
   std::optional<bool> is_pointing_device_;
   std::optional<bool> is_built_in_keyboard_;
   std::optional<bool> is_built_in_pointing_device_;
+  std::optional<bool> is_built_in_touch_bar_;
   std::optional<bool> is_karabiner_virtual_hid_device_;
   std::shared_ptr<device_identifiers> device_identifiers_;
 };

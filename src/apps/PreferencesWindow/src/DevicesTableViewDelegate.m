@@ -106,7 +106,8 @@
     result.checkbox.state = NSControlStateValueOff;
 
     if ([connectedDevices isBuiltInKeyboardAtIndex:row] ||
-        [connectedDevices isBuiltInTrackpadAtIndex:row]) {
+        [connectedDevices isBuiltInTrackpadAtIndex:row] ||
+        [connectedDevices isBuiltInTouchBarAtIndex:row]) {
       result.checkbox.enabled = NO;
     } else {
       result.checkbox.enabled = YES;

@@ -126,7 +126,8 @@ public:
   bool is_disable_built_in_keyboard_if_exists(void) const {
     if (device_properties_) {
       if (device_properties_->get_is_built_in_keyboard() ||
-          device_properties_->get_is_built_in_pointing_device()) {
+          device_properties_->get_is_built_in_pointing_device() ||
+          device_properties_->get_is_built_in_touch_bar()) {
         return false;
       }
 

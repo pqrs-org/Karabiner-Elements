@@ -12,10 +12,12 @@ public:
   device(const descriptions& descriptions,
          const device_identifiers& identifiers,
          bool is_built_in_keyboard,
-         bool is_built_in_trackpad) : descriptions_(descriptions),
-                                      identifiers_(identifiers),
-                                      is_built_in_keyboard_(is_built_in_keyboard),
-                                      is_built_in_trackpad_(is_built_in_trackpad) {
+         bool is_built_in_trackpad,
+         bool is_built_in_touch_bar) : descriptions_(descriptions),
+                                       identifiers_(identifiers),
+                                       is_built_in_keyboard_(is_built_in_keyboard),
+                                       is_built_in_trackpad_(is_built_in_trackpad),
+                                       is_built_in_touch_bar_(is_built_in_touch_bar) {
   }
 
   device(const device_properties& device_properties) {
@@ -28,6 +30,8 @@ public:
     is_built_in_keyboard_ = device_properties.get_is_built_in_keyboard().value_or(false);
 
     is_built_in_trackpad_ = device_properties.get_is_built_in_pointing_device().value_or(false);
+
+    is_built_in_touch_bar_ = device_properties.get_is_built_in_touch_bar().value_or(false);
   }
 
   static device make_from_json(const nlohmann::json& json) {
@@ -44,7 +48,8 @@ public:
     return device(d,
                   i,
                   pqrs::json::find<bool>(json, "is_built_in_keyboard").value_or(false),
-                  pqrs::json::find<bool>(json, "is_built_in_trackpad").value_or(false));
+                  pqrs::json::find<bool>(json, "is_built_in_trackpad").value_or(false),
+                  pqrs::json::find<bool>(json, "is_built_in_touch_bar").value_or(false));
   }
 
   nlohmann::json to_json(void) const {
@@ -53,6 +58,7 @@ public:
         {"identifiers", identifiers_},
         {"is_built_in_keyboard", is_built_in_keyboard_},
         {"is_built_in_trackpad", is_built_in_trackpad_},
+        {"is_built_in_touch_bar", is_built_in_touch_bar_},
     });
   }
 
@@ -72,6 +78,10 @@ public:
     return is_built_in_trackpad_;
   }
 
+  bool get_is_built_in_touch_bar(void) const {
+    return is_built_in_touch_bar_;
+  }
+
   bool operator==(const device& other) const {
     return identifiers_ == other.identifiers_;
   }
@@ -81,6 +91,7 @@ private:
   device_identifiers identifiers_;
   bool is_built_in_keyboard_;
   bool is_built_in_trackpad_;
+  bool is_built_in_touch_bar_;
 };
 
 inline void to_json(nlohmann::json& json, const device& device) {

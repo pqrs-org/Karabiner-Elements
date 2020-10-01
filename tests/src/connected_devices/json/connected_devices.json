@@ -11,6 +11,7 @@
             "vendor_id": 1234
         },
         "is_built_in_keyboard": true,
+        "is_built_in_touch_bar": false,
         "is_built_in_trackpad": false
     },
     {
@@ -25,6 +26,7 @@
             "vendor_id": 1234
         },
         "is_built_in_keyboard": false,
+        "is_built_in_touch_bar": false,
         "is_built_in_trackpad": true
     },
     {
@@ -39,6 +41,7 @@
             "vendor_id": 2345
         },
         "is_built_in_keyboard": false,
+        "is_built_in_touch_bar": false,
         "is_built_in_trackpad": false
     },
     {
@@ -53,6 +56,7 @@
             "vendor_id": 123
         },
         "is_built_in_keyboard": true,
+        "is_built_in_touch_bar": false,
         "is_built_in_trackpad": false
     },
     {
@@ -67,6 +71,22 @@
             "vendor_id": 123
         },
         "is_built_in_keyboard": false,
+        "is_built_in_touch_bar": false,
         "is_built_in_trackpad": true
+    },
+    {
+        "descriptions": {
+            "manufacturer": "manufacturer1",
+            "product": "product5"
+        },
+        "identifiers": {
+            "is_keyboard": true,
+            "is_pointing_device": false,
+            "product_id": 678,
+            "vendor_id": 1234
+        },
+        "is_built_in_keyboard": false,
+        "is_built_in_touch_bar": true,
+        "is_built_in_trackpad": false
     }
 ]
