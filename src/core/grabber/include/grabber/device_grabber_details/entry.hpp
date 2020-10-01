@@ -125,6 +125,11 @@ public:
 
   bool is_disable_built_in_keyboard_if_exists(void) const {
     if (device_properties_) {
+      if (device_properties_->get_is_built_in_keyboard() ||
+          device_properties_->get_is_built_in_pointing_device()) {
+        return false;
+      }
+
       if (auto c = core_configuration_.lock()) {
         if (auto device_identifiers = device_properties_->get_device_identifiers()) {
           return c->get_selected_profile().get_device_disable_built_in_keyboard_if_exists(
