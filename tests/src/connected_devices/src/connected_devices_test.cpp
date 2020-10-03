@@ -150,3 +150,41 @@ TEST_CASE("connected_devices") {
     REQUIRE(connected_devices.get_devices().size() == 0);
   }
 }
+
+TEST_CASE("connected_devices ill-formed name") {
+  const char ill_formed_name[] = {
+      't',
+      'e',
+      's',
+      't',
+      ' ',
+      static_cast<char>(0x80),
+      '!',
+      0,
+  };
+
+  krbn::connected_devices::connected_devices connected_devices;
+
+  {
+    krbn::connected_devices::details::descriptions descriptions(ill_formed_name,
+                                                                ill_formed_name);
+    krbn::device_identifiers identifiers(pqrs::hid::vendor_id::value_t(1234),
+                                         pqrs::hid::product_id::value_t(5678),
+                                         true,
+                                         false);
+    krbn::connected_devices::details::device device(descriptions,
+                                                    identifiers,
+                                                    true,
+                                                    false,
+                                                    false);
+    connected_devices.push_back_device(device);
+
+    // Check throw with `dump`
+    REQUIRE_THROWS_AS(connected_devices.to_json().dump(), nlohmann::detail::type_error);
+
+    std::ifstream ifs("json/ill_formed_name_expected.json");
+    auto expected = krbn::json_utility::parse_jsonc(ifs);
+
+    REQUIRE(krbn::json_utility::dump(connected_devices.to_json()) == krbn::json_utility::dump(expected));
+  }
+}

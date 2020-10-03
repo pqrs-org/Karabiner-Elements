@@ -1,0 +1,17 @@
+[
+    {
+        "descriptions": {
+            "manufacturer": "test !",
+            "product": "test !"
+        },
+        "identifiers": {
+            "is_keyboard": true,
+            "is_pointing_device": false,
+            "product_id": 5678,
+            "vendor_id": 1234
+        },
+        "is_built_in_keyboard": true,
+        "is_built_in_touch_bar": false,
+        "is_built_in_trackpad": false
+    }
+]

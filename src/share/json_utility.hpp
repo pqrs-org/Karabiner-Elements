@@ -24,5 +24,12 @@ inline nlohmann::json parse_jsonc(T first, T last) {
                                allow_exceptions,
                                ignore_comments);
 }
+
+inline std::string dump(const nlohmann::json& json) {
+  return json.dump(4,
+                   ' ',
+                   false,
+                   nlohmann::json::error_handler_t::ignore);
+}
 }; // namespace json_utility
 } // namespace krbn
