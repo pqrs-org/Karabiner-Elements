@@ -37,6 +37,7 @@
   const char* p = libkrbn_connected_devices_get_descriptions_manufacturer(self.libkrbnConnectedDevices, index);
   if (p) {
     result = [NSString stringWithUTF8String:p];
+    result = [[result componentsSeparatedByCharactersInSet:NSCharacterSet.newlineCharacterSet] componentsJoinedByString:@" "];
   }
 
   if (result.length == 0) {
@@ -52,6 +53,7 @@
   const char* p = libkrbn_connected_devices_get_descriptions_product(self.libkrbnConnectedDevices, index);
   if (p) {
     result = [NSString stringWithUTF8String:p];
+    result = [[result componentsSeparatedByCharactersInSet:NSCharacterSet.newlineCharacterSet] componentsJoinedByString:@" "];
   }
 
   if (result.length == 0) {
