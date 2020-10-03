@@ -14,21 +14,18 @@ struct InputMonitoringAlertView: View {
                 .multilineTextAlignment(.center)
                 .fixedSize()
 
-            Spacer(minLength: 20.0)
-
             Button(action: { openSystemPreferencesSecurity() }) {
                 Image(decorative: "ic_forward_18pt")
                 Text("Open Security & Privacy System Preferences")
             }
-
-            Spacer(minLength: 40.0)
+            .padding(.top, 20)
 
             Image(decorative: "input_monitoring")
                 .resizable()
                 .aspectRatio(contentMode: .fill)
                 .frame(width: 250.0, height: 210.0)
-
-            Spacer()
+                .border(Color.gray, width: /*@START_MENU_TOKEN@*/1/*@END_MENU_TOKEN@*/)
+                .padding(.top, 40)
         }
         .padding()
     }

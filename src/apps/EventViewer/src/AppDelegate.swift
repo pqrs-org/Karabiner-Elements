@@ -28,8 +28,8 @@ public class AppDelegate: NSObject, NSApplicationDelegate, NSWindowDelegate, NST
 
             if !self.eventQueue.observed() {
                 self.inputMonitoringAlertView = InputMonitoringAlertView()
-                self.inputMonitoringAlertWindow = NSWindow(
-                    contentRect: NSRect(x: 0, y: 0, width: 550, height: 420),
+                self.inputMonitoringAlertWindow = NSPanel(
+                    contentRect: .zero,
                     styleMask: [
                         .titled,
                         .closable,
@@ -40,15 +40,10 @@ public class AppDelegate: NSObject, NSApplicationDelegate, NSWindowDelegate, NST
                 )
                 self.inputMonitoringAlertWindow!.title = "Input Monitoring Permissions Alert"
                 self.inputMonitoringAlertWindow!.contentView = NSHostingView(rootView: self.inputMonitoringAlertView)
-
-                self.inputMonitoringAlertWindow!.setFrame(NSMakeRect(
-                    self.window.frame.origin.x + (self.window.frame.size.width / 2) - (self.inputMonitoringAlertWindow!.frame.size.width / 2),
-                    self.window.frame.origin.y + (self.window.frame.size.height / 2) - (self.inputMonitoringAlertWindow!.frame.size.height / 2),
-                    self.inputMonitoringAlertWindow!.frame.size.width,
-                    self.inputMonitoringAlertWindow!.frame.size.height
-                ), display: false)
+                self.inputMonitoringAlertWindow!.centerToOtherWindow(self.window)
 
                 self.window.addChildWindow(self.inputMonitoringAlertWindow!, ordered: .above)
+                self.inputMonitoringAlertWindow!.makeKeyAndOrderFront(nil)
             }
         }
     }
