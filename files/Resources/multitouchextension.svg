@@ -58,7 +58,7 @@
        x2="75.097618"
        y2="128.27588"
        gradientUnits="userSpaceOnUse"
-       gradientTransform="matrix(2.2163289,0,0,2.3768245,-30.974354,-67.822569)" />
+       gradientTransform="matrix(2.0798427,0,0,2.2304546,-20.724554,-55.303575)" />
     <pattern
        patternUnits="userSpaceOnUse"
        width="697.0338"
@@ -95,16 +95,16 @@
      borderopacity="1.0"
      inkscape:pageopacity="0.0"
      inkscape:pageshadow="2"
-     inkscape:zoom="1"
-     inkscape:cx="511.99999"
-     inkscape:cy="352"
+     inkscape:zoom="0.5"
+     inkscape:cx="512"
+     inkscape:cy="512"
      inkscape:document-units="px"
-     inkscape:current-layer="layer1"
+     inkscape:current-layer="layer2"
      inkscape:document-rotation="0"
      showgrid="true"
-     inkscape:window-width="1967"
+     inkscape:window-width="1979"
      inkscape:window-height="1235"
-     inkscape:window-x="81"
+     inkscape:window-x="69"
      inkscape:window-y="23"
      inkscape:window-maximized="1"
      units="px">
@@ -145,30 +145,34 @@
      sodipodi:insensitive="true">
     <rect
        inkscape:label="#bg"
-       style="opacity:1;fill:url(#linearGradient20);fill-opacity:1;fill-rule:evenodd;stroke:#3e3a49;stroke-width:4.23333;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+       style="opacity:1;fill:url(#linearGradient20);fill-opacity:1;fill-rule:evenodd;stroke:#3e3a49;stroke-width:8.46015;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
        id="bg"
-       width="223.30833"
-       height="223.30833"
-       x="23.8125"
-       y="23.8125"
-       ry="52.916668"
+       width="209.55652"
+       height="209.55652"
+       x="30.688408"
+       y="30.688408"
+       ry="59.266666"
+       rx="59.266666"
        sodipodi:insensitive="true" />
   </g>
   <g
      inkscape:groupmode="layer"
      id="layer1"
-     inkscape:label="fg">
+     inkscape:label="fg"
+     sodipodi:insensitive="true">
     <g
        id="g864"
        transform="translate(-3.4899903e-6,29.633332)"
-       style="display:inline">
+       style="display:inline"
+       sodipodi:insensitive="true">
       <rect
          style="display:inline;fill:#ffffff;fill-rule:evenodd;stroke:#ffffff;stroke-width:3.62105;stroke-linecap:square;stroke-miterlimit:4;stroke-dasharray:none"
          id="rect855"
          height="6.9622746"
          x="63.193867"
          y="62.135525"
-         width="144.54561" />
+         width="144.54561"
+         sodipodi:insensitive="true" />
       <rect
          style="display:inline;fill:none;fill-rule:evenodd;stroke:#ffffff;stroke-width:9.76798;stroke-linecap:round"
          id="rect857"
@@ -177,7 +181,8 @@
          x="60.975658"
          y="57.800659"
          ry="10.583333"
-         rx="10.583333" />
+         rx="10.583333"
+         sodipodi:insensitive="true" />
     </g>
   </g>
 </svg>
