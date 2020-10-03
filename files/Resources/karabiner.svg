@@ -58,7 +58,7 @@
        x2="75.097618"
        y2="128.27588"
        gradientUnits="userSpaceOnUse"
-       gradientTransform="matrix(2.2163289,0,0,2.3768245,-30.974354,-67.822569)" />
+       gradientTransform="matrix(2.0692922,0,0,2.2191403,-19.932256,-54.33587)" />
     <pattern
        patternUnits="userSpaceOnUse"
        width="697.0338"
@@ -102,9 +102,9 @@
      inkscape:current-layer="layer1"
      inkscape:document-rotation="0"
      showgrid="true"
-     inkscape:window-width="1973"
+     inkscape:window-width="1981"
      inkscape:window-height="1235"
-     inkscape:window-x="75"
+     inkscape:window-x="67"
      inkscape:window-y="23"
      inkscape:window-maximized="1"
      units="px">
@@ -145,30 +145,33 @@
      sodipodi:insensitive="true">
     <rect
        inkscape:label="#bg"
-       style="opacity:1;fill:url(#linearGradient20);fill-opacity:1;fill-rule:evenodd;stroke:#3e3a49;stroke-width:4.23333;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+       style="opacity:1;fill:url(#linearGradient20);fill-opacity:1;fill-rule:evenodd;stroke:#3e3a49;stroke-width:8.46481;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
        id="bg"
-       width="223.30833"
-       height="223.30833"
-       x="23.8125"
-       y="23.8125"
-       ry="52.916668"
+       width="208.49353"
+       height="208.49352"
+       x="31.219902"
+       y="31.21991"
+       ry="59.266666"
+       rx="59.266666"
        sodipodi:insensitive="true" />
   </g>
   <g
      inkscape:groupmode="layer"
      id="layer1"
-     inkscape:label="fg">
+     inkscape:label="fg"
+     sodipodi:insensitive="true">
     <text
        xml:space="preserve"
-       style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-size:98.7778px;line-height:1.25;font-family:'Noto Sans Gothic';-inkscape-font-specification:'Noto Sans Gothic Bold';text-align:center;letter-spacing:-6.61458px;text-anchor:middle;stroke-width:0.264583"
-       x="131.07762"
-       y="171.37491"
+       style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-size:91.7222px;line-height:1.25;font-family:'Noto Sans Gothic';-inkscape-font-specification:'Noto Sans Gothic Bold';text-align:center;letter-spacing:-7.9375px;text-anchor:middle;stroke-width:0.264583"
+       x="131.39111"
+       y="168.81001"
        id="text861"
-       inkscape:label="text"><tspan
+       inkscape:label="text"
+       sodipodi:insensitive="true"><tspan
          sodipodi:role="line"
          id="tspan859"
-         x="127.77032"
-         y="171.37491"
-         style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-size:98.7778px;font-family:'Noto Sans Gothic';-inkscape-font-specification:'Noto Sans Gothic Bold';text-align:center;text-anchor:middle;fill:#ffffff;stroke-width:0.264583">KEY</tspan></text>
+         x="127.42237"
+         y="168.81001"
+         style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-size:91.7222px;font-family:'Noto Sans Gothic';-inkscape-font-specification:'Noto Sans Gothic Bold';text-align:center;text-anchor:middle;fill:#ffffff;stroke-width:0.264583">KEY</tspan></text>
   </g>
 </svg>
