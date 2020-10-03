@@ -2,7 +2,7 @@ import Cocoa
 import SwiftUI
 
 @NSApplicationMain
-public class AppDelegate: NSObject, NSApplicationDelegate, NSWindowDelegate, NSTabViewDelegate {
+public class AppDelegate: NSObject, NSApplicationDelegate {
     @IBOutlet var window: NSWindow!
     @IBOutlet var eventQueue: EventQueue!
     @IBOutlet var keyResponder: KeyResponder!
@@ -10,7 +10,6 @@ public class AppDelegate: NSObject, NSApplicationDelegate, NSWindowDelegate, NST
     @IBOutlet var variablesController: VariablesController!
     @IBOutlet var devicesController: DevicesController!
 
-    var inputMonitoringAlertView: InputMonitoringAlertView?
     var inputMonitoringAlertWindow: NSWindow?
 
     public func applicationDidFinishLaunching(_: Notification) {
@@ -27,7 +26,6 @@ public class AppDelegate: NSObject, NSApplicationDelegate, NSWindowDelegate, NST
             guard let self = self else { return }
 
             if !self.eventQueue.observed() {
-                self.inputMonitoringAlertView = InputMonitoringAlertView()
                 self.inputMonitoringAlertWindow = NSPanel(
                     contentRect: .zero,
                     styleMask: [
@@ -39,7 +37,7 @@ public class AppDelegate: NSObject, NSApplicationDelegate, NSWindowDelegate, NST
                     defer: false
                 )
                 self.inputMonitoringAlertWindow!.title = "Input Monitoring Permissions Alert"
-                self.inputMonitoringAlertWindow!.contentView = NSHostingView(rootView: self.inputMonitoringAlertView)
+                self.inputMonitoringAlertWindow!.contentView = NSHostingView(rootView: InputMonitoringAlertView())
                 self.inputMonitoringAlertWindow!.centerToOtherWindow(self.window)
 
                 self.window.addChildWindow(self.inputMonitoringAlertWindow!, ordered: .above)
@@ -56,16 +54,6 @@ public class AppDelegate: NSObject, NSApplicationDelegate, NSWindowDelegate, NST
 
     public func applicationShouldTerminateAfterLastWindowClosed(_: NSApplication) -> Bool {
         return true
-    }
-
-    public func windowWillClose(_: Notification) {
-        inputMonitoringAlertWindow?.close()
-    }
-
-    public func tabView(_ tabView: NSTabView, didSelect _: NSTabViewItem?) {
-        if tabView.identifier?.rawValue == "Main" {
-            setKeyResponder()
-        }
     }
 
     func setKeyResponder() {
@@ -90,5 +78,19 @@ public class AppDelegate: NSObject, NSApplicationDelegate, NSWindowDelegate, NST
         window.collectionBehavior.insert(.managed)
         window.collectionBehavior.remove(.moveToActiveSpace)
         window.collectionBehavior.remove(.transient)
+    }
+}
+
+extension AppDelegate: NSWindowDelegate {
+    public func windowWillClose(_: Notification) {
+        NSApplication.shared.terminate(self)
+    }
+}
+
+extension AppDelegate: NSTabViewDelegate {
+    public func tabView(_ tabView: NSTabView, didSelect _: NSTabViewItem?) {
+        if tabView.identifier?.rawValue == "Main" {
+            setKeyResponder()
+        }
     }
 }
