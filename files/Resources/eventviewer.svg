@@ -58,7 +58,7 @@
        x2="75.097618"
        y2="128.27588"
        gradientUnits="userSpaceOnUse"
-       gradientTransform="matrix(2.0799712,0,0,2.2305924,-20.734206,-55.315368)" />
+       gradientTransform="matrix(2.0902819,0,0,2.2416497,-21.508513,-56.261098)" />
     <pattern
        patternUnits="userSpaceOnUse"
        width="697.0338"
@@ -102,9 +102,9 @@
      inkscape:current-layer="layer2"
      inkscape:document-rotation="0"
      showgrid="true"
-     inkscape:window-width="1981"
+     inkscape:window-width="1973"
      inkscape:window-height="1235"
-     inkscape:window-x="67"
+     inkscape:window-x="75"
      inkscape:window-y="23"
      inkscape:window-maximized="1"
      units="px">
@@ -145,14 +145,14 @@
      sodipodi:insensitive="true">
     <rect
        inkscape:label="#bg"
-       style="opacity:1;fill:url(#linearGradient20);fill-opacity:1;fill-rule:evenodd;stroke:#3e3a49;stroke-width:8.44719;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+       style="opacity:1;fill:url(#linearGradient20);fill-opacity:1;fill-rule:evenodd;stroke:#3e3a49;stroke-width:8.46667;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
        id="bg"
-       width="209.56947"
-       height="209.56947"
-       x="30.681931"
-       y="30.681931"
-       ry="59.266666"
-       rx="59.266666"
+       width="210.60834"
+       height="210.60834"
+       x="30.162498"
+       y="30.162498"
+       ry="47.625"
+       rx="47.625"
        sodipodi:insensitive="true" />
   </g>
   <g
