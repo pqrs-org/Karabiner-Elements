@@ -1,7 +1,10 @@
 # Changelog
 
-## Beta
+## Karabiner-Elements 13.0.0
 
+-   [📦 Download](https://github.com/pqrs-org/Karabiner-Elements/releases/download/v13.0.0/Karabiner-Elements-13.0.0.dmg)
+-   📅 Release date
+    -   Oct 4, 2020
 -   💥 Breaking changes
     -   macOS 10.12 - 10.14 support has been dropped.
 -   ✨ New Features
@@ -16,6 +19,9 @@
 
 ## Karabiner-Elements 12.10.0
 
+-   [📦 Download](https://github.com/pqrs-org/Karabiner-Elements/releases/download/v12.10.0/Karabiner-Elements-12.10.0.dmg)
+-   📅 Release date
+    -   Jun 27, 2020
 -   ✨ New Features
     -   `event_changed_if` and `event_changed_unless` has been added to `conditions`.
 -   ⚡️ Improvements
