@@ -1,5 +1,12 @@
 # Changelog
 
+## Beta
+
+-   🔔 Important Notes
+    -   Restarting macOS is required after upgrading from v13.0.0.
+-   🐛 Bug Fixes
+    -   Fixed an issue that Karabiner-DriverKit-VirtualHIDDevice might crash when caps lock key is pressed in some environments.
+
 ## Karabiner-Elements 13.0.0
 
 -   [📦 Download](https://github.com/pqrs-org/Karabiner-Elements/releases/download/v13.0.0/Karabiner-Elements-13.0.0.dmg)
