@@ -78,17 +78,17 @@ public:
       //
       // Note:
       // The following callback will be signaled by virtual_hid_device_service::client.
-      // - `virtual_hid_keyboard_ready_callback(false)`
-      // - `virtual_hid_pointing_ready_callback(false)`
+      // - `virtual_hid_keyboard_ready_response(false)`
+      // - `virtual_hid_pointing_ready_response(false)`
     });
 
     virtual_hid_device_service_client_->error_occurred.connect([](auto&& error_code) {
       logger::get_logger()->info("virtual_hid_device_service_client_ error_occurred: {0}", error_code.message());
     });
 
-    virtual_hid_device_service_client_->virtual_hid_keyboard_ready_callback.connect([this](auto&& ready) {
+    virtual_hid_device_service_client_->virtual_hid_keyboard_ready_response.connect([this](auto&& ready) {
       if (is_virtual_hid_keyboard_ready_ != ready) {
-        logger::get_logger()->info("virtual_hid_device_service_client_ virtual_hid_keyboard_ready_callback: {0}", ready);
+        logger::get_logger()->info("virtual_hid_device_service_client_ virtual_hid_keyboard_ready_response: {0}", ready);
 
         is_virtual_hid_keyboard_ready_ = ready;
 
@@ -104,9 +104,9 @@ public:
       }
     });
 
-    virtual_hid_device_service_client_->virtual_hid_pointing_ready_callback.connect([this](auto&& ready) {
+    virtual_hid_device_service_client_->virtual_hid_pointing_ready_response.connect([this](auto&& ready) {
       if (is_virtual_hid_pointing_ready_ != ready) {
-        logger::get_logger()->info("virtual_hid_device_service_client_ virtual_hid_pointing_ready_callback: {0}", ready);
+        logger::get_logger()->info("virtual_hid_device_service_client_ virtual_hid_pointing_ready_response: {0}", ready);
 
         is_virtual_hid_pointing_ready_ = ready;
 
