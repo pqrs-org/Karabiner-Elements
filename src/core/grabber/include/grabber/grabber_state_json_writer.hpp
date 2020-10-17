@@ -1,5 +1,7 @@
 #pragma once
 
+// `grabber_state_json_writer` can be used safely in a multi-threaded environment.
+
 #include "constants.hpp"
 #include "state_json_writer.hpp"
 
