@@ -1,7 +1,10 @@
 #pragma once
 
+// `krbn::state_json_writer` can be used safely in a multi-threaded environment.
+
 #include "json_utility.hpp"
 #include "json_writer.hpp"
+#include <thread>
 
 namespace krbn {
 class state_json_writer final {
@@ -21,6 +24,8 @@ public:
   template <typename T>
   void set(const std::string& key,
            const T& value) {
+    std::lock_guard<std::mutex> guard(mutex_);
+
     state_[key] = value;
 
     sync_save();
@@ -35,6 +40,7 @@ private:
   }
 
   std::string file_path_;
+  std::mutex mutex_;
   nlohmann::json state_;
 };
 } // namespace krbn
