@@ -3,6 +3,7 @@
 #import "DextAlertWindowController.h"
 #import "InputMonitoringAlertWindowController.h"
 #import "KarabinerKit/KarabinerKit.h"
+#import "Karabiner_Elements-Swift.h"
 #import "PreferencesWindowController.h"
 #import "SimpleModificationsTableViewController.h"
 #import "SystemPreferencesManager.h"
@@ -17,6 +18,7 @@
 @property(weak) IBOutlet NSWindow* preferencesWindow;
 @property(weak) IBOutlet PreferencesWindowController* preferencesWindowController;
 @property(weak) IBOutlet SystemPreferencesManager* systemPreferencesManager;
+@property(weak) IBOutlet AlertWindowsManager* alertWindowsManager;
 
 @end
 
