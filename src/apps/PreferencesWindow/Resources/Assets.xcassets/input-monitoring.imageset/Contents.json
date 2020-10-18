@@ -1,17 +1,17 @@
 {
   "images" : [
     {
-      "filename" : "input_monitoring.png",
+      "filename" : "input-monitoring.png",
       "idiom" : "universal",
       "scale" : "1x"
     },
     {
-      "filename" : "input_monitoring-1.png",
+      "filename" : "input-monitoring-1.png",
       "idiom" : "universal",
       "scale" : "2x"
     },
     {
-      "filename" : "input_monitoring-2.png",
+      "filename" : "input-monitoring-2.png",
       "idiom" : "universal",
       "scale" : "3x"
     }
