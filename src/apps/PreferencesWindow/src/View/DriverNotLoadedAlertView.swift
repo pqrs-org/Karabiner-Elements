@@ -39,32 +39,32 @@ struct DriverNotLoadedAlertView: View {
                         Text("How to reinstall driver:")
 
                         VStack(alignment: .leading, spacing: 10.0) {
-                        Text("1. Press the following button to deactivate driver.")
+                            Text("1. Press the following button to deactivate driver.")
 
-                        Button(action: { VirtualHIDDeviceManager.shared.deactivateDriver() }) {
-                            Image(decorative: "ic_star_rate_18pt")
-                                .resizable()
-                                .frame(width: GUISize.buttonIconWidth, height: GUISize.buttonIconHeight)
-                            Text("Deactivate driver")
-                        }
+                            Button(action: { VirtualHIDDeviceManager.shared.deactivateDriver() }) {
+                                Image(decorative: "ic_star_rate_18pt")
+                                    .resizable()
+                                    .frame(width: GUISize.buttonIconWidth, height: GUISize.buttonIconHeight)
+                                Text("Deactivate driver")
+                            }
 
-                        Text("2. Enter the administrator password to complete.")
+                            Text("2. Enter the administrator password to complete.")
 
-                        Text("3. Restart macOS.")
-                            .fontWeight(.bold)
+                            Text("3. Restart macOS.")
+                                .fontWeight(.bold)
 
-                        Text("4. Press the following button to activate driver.")
+                            Text("4. Press the following button to activate driver.")
 
-                        Button(action: { VirtualHIDDeviceManager.shared.activateDriver() }) {
-                            Image(decorative: "ic_star_rate_18pt")
-                                .resizable()
-                                .frame(width: GUISize.buttonIconWidth, height: GUISize.buttonIconHeight)
-                            Text("Activate driver")
-                        }
+                            Button(action: { VirtualHIDDeviceManager.shared.activateDriver() }) {
+                                Image(decorative: "ic_star_rate_18pt")
+                                    .resizable()
+                                    .frame(width: GUISize.buttonIconWidth, height: GUISize.buttonIconHeight)
+                                Text("Activate driver")
+                            }
 
-                        Text("5. \"System Extension Blocked\" alert is shown.")
+                            Text("5. \"System Extension Blocked\" alert is shown.")
 
-                        Text("6. Open Security Preferences and press the allow button.")
+                            Text("6. Open Security Preferences and press the allow button.")
                         }
                     }.padding()
                 }.frame(width: 400)
