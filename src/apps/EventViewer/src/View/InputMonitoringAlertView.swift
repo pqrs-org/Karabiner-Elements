@@ -22,8 +22,8 @@ struct InputMonitoringAlertView: View {
 
             Image(decorative: "input_monitoring")
                 .resizable()
-                .aspectRatio(contentMode: .fill)
-                .frame(width: 250.0, height: 210.0)
+                .aspectRatio(contentMode: .fit)
+                .frame(height: 200.0)
                 .border(Color.gray, width: /*@START_MENU_TOKEN@*/1/*@END_MENU_TOKEN@*/)
                 .padding(.top, 40)
         }
