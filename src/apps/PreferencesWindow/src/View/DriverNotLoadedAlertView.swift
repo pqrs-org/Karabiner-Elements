@@ -1,13 +1,15 @@
 import SwiftUI
 
 struct DriverNotLoadedAlertView: View {
+    public static let title = "Driver Alert"
+
     var body: some View {
         VStack(alignment: .leading) {
             HStack {
                 Image(decorative: "baseline_warning_black_48pt")
                     .resizable()
                     .frame(width: 48.0, height: 48.0)
-                Text("Driver Alert")
+                Text(DriverNotLoadedAlertView.title)
             }
 
             HStack(alignment: .top) {
@@ -26,7 +28,7 @@ struct DriverNotLoadedAlertView: View {
                         Image(decorative: "dext-allow")
                             .resizable()
                             .aspectRatio(contentMode: .fit)
-                            .frame(width: 200)
+                            .frame(height: 200)
                             .border(Color.gray, width: 1)
                     }.padding()
                 }.frame(width: 400)
