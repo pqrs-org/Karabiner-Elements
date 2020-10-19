@@ -9,6 +9,7 @@
 #include "logger.hpp"
 #include "process_utility.hpp"
 #include <iostream>
+#include <mach/mach.h>
 
 namespace krbn {
 namespace grabber {
