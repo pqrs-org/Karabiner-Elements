@@ -12,11 +12,12 @@ struct InputMonitoringAlertView: View {
 
             Text("EventViewer requires Input Monitoring permission.\nYou have to allow Karabiner-EventViewer on Security & Privacy System Preferences.")
                 .multilineTextAlignment(.center)
-                .fixedSize()
+                .fixedSize(horizontal: false, vertical: true)
 
             Button(action: { openSystemPreferencesSecurity() }) {
                 Image(decorative: "ic_forward_18pt")
                 Text("Open Security & Privacy System Preferences")
+                    .fixedSize(horizontal: false, vertical: true)
             }
             .padding(.top, 20)
 
@@ -27,6 +28,7 @@ struct InputMonitoringAlertView: View {
                 .border(Color.gray, width: /*@START_MENU_TOKEN@*/1/*@END_MENU_TOKEN@*/)
                 .padding(.top, 40)
         }
+        .frame(width: 600)
         .padding()
     }
 
