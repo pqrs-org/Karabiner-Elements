@@ -6,6 +6,7 @@ import SwiftUI
 public class AlertWindowsManager: NSObject {
     @IBOutlet var parentWindow: NSWindow!
     var driverNotLoadedAlertWindow: NSWindow?
+    var driverVersionNotMatchedAlertWindow: NSWindow?
     var inputMonitoringPermissionsAlertWindow: NSWindow?
 
     @objc
@@ -28,6 +29,28 @@ public class AlertWindowsManager: NSObject {
         }
 
         driverNotLoadedAlertWindow!.makeKeyAndOrderFront(nil)
+    }
+
+    @objc
+    public func showDriverVersionNotMatchedAlertWindow() {
+        if driverVersionNotMatchedAlertWindow == nil {
+            driverVersionNotMatchedAlertWindow = NSPanel(
+                contentRect: .zero,
+                styleMask: [
+                    .titled,
+                    .closable,
+                    .fullSizeContentView,
+                ],
+                backing: .buffered,
+                defer: false
+            )
+            driverVersionNotMatchedAlertWindow!.title = DriverVersionNotMatchedAlertView.title
+            driverVersionNotMatchedAlertWindow!.contentView = NSHostingView(rootView: DriverVersionNotMatchedAlertView())
+            driverVersionNotMatchedAlertWindow!.centerToOtherWindow(parentWindow)
+            parentWindow.addChildWindow(driverVersionNotMatchedAlertWindow!, ordered: .above)
+        }
+
+        driverVersionNotMatchedAlertWindow!.makeKeyAndOrderFront(nil)
     }
 
     @objc
