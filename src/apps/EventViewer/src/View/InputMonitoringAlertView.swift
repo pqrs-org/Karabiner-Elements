@@ -35,7 +35,7 @@ struct InputMonitoringAlertView: View {
     func openSystemPreferencesSecurity() {
         NSApplication.shared.miniaturizeAll(self)
 
-        let url = URL(string: "x-apple.systempreferences:com.apple.preference.security?Privacy")!
+        let url = URL(string: "x-apple.systempreferences:com.apple.preference.security?Privacy_ListenEvent")!
         NSWorkspace.shared.open(url)
     }
 }
