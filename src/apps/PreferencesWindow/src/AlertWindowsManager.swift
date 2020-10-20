@@ -9,9 +9,14 @@ public class AlertWindowsManager: NSObject {
     var driverVersionNotMatchedAlertWindow: NSWindow?
     var inputMonitoringPermissionsAlertWindow: NSWindow?
 
+    //
+    // driverNotLoadedAlertWindow
+    //
+
     @objc
     public func showDriverNotLoadedAlertWindow() {
         if driverNotLoadedAlertWindow == nil {
+            print("new driverNotLoadedAlertWindow")
             driverNotLoadedAlertWindow = NSPanel(
                 contentRect: .zero,
                 styleMask: [
@@ -30,6 +35,19 @@ public class AlertWindowsManager: NSObject {
 
         driverNotLoadedAlertWindow!.makeKeyAndOrderFront(nil)
     }
+
+    @objc
+    public func hideDriverNotLoadedAlertWindow() {
+        if driverNotLoadedAlertWindow != nil {
+            parentWindow.removeChildWindow(driverNotLoadedAlertWindow!)
+            driverNotLoadedAlertWindow!.close()
+            driverNotLoadedAlertWindow = nil
+        }
+    }
+
+    //
+    // driverVersionNotMatchedAlertWindow
+    //
 
     @objc
     public func showDriverVersionNotMatchedAlertWindow() {
@@ -54,6 +72,19 @@ public class AlertWindowsManager: NSObject {
     }
 
     @objc
+    public func hideDriverVersionNotMatchedAlertWindow() {
+        if driverVersionNotMatchedAlertWindow != nil {
+            parentWindow.removeChildWindow(driverVersionNotMatchedAlertWindow!)
+            driverVersionNotMatchedAlertWindow!.close()
+            driverVersionNotMatchedAlertWindow = nil
+        }
+    }
+
+    //
+    // inputMonitoringPermissionsAlertWindow
+    //
+
+    @objc
     public func showInputMonitoringPermissionsAlertWindow() {
         if inputMonitoringPermissionsAlertWindow == nil {
             inputMonitoringPermissionsAlertWindow = NSPanel(
@@ -73,5 +104,14 @@ public class AlertWindowsManager: NSObject {
         }
 
         inputMonitoringPermissionsAlertWindow!.makeKeyAndOrderFront(nil)
+    }
+
+    @objc
+    public func hideInputMonitoringPermissionsAlertWindow() {
+        if inputMonitoringPermissionsAlertWindow != nil {
+            parentWindow.removeChildWindow(inputMonitoringPermissionsAlertWindow!)
+            inputMonitoringPermissionsAlertWindow!.close()
+            inputMonitoringPermissionsAlertWindow = nil
+        }
     }
 }
