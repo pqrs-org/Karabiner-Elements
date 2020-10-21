@@ -1,6 +1,5 @@
 #import "AppDelegate.h"
 #import "ComplexModificationsFileImportWindowController.h"
-#import "InputMonitoringAlertWindowController.h"
 #import "KarabinerKit/KarabinerKit.h"
 #import "Karabiner_Elements-Swift.h"
 #import "PreferencesWindowController.h"
@@ -12,7 +11,6 @@
 
 @property(weak) IBOutlet SimpleModificationsTableViewController* simpleModificationsTableViewController;
 @property(weak) IBOutlet ComplexModificationsFileImportWindowController* complexModificationsFileImportWindowController;
-@property(weak) IBOutlet InputMonitoringAlertWindowController* inputMonitoringAlertWindowController;
 @property(weak) IBOutlet NSWindow* preferencesWindow;
 @property(weak) IBOutlet PreferencesWindowController* preferencesWindowController;
 @property(weak) IBOutlet SystemPreferencesManager* systemPreferencesManager;
@@ -40,7 +38,6 @@
 
   [self.preferencesWindowController setup];
 
-  [self.inputMonitoringAlertWindowController setup];
   [self.stateJsonMonitor start];
 }
 

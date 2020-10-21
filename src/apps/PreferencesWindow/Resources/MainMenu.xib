@@ -71,7 +71,6 @@
             <connections>
                 <outlet property="alertWindowsManager" destination="C1e-TA-U5L" id="ecT-Qz-Kk9"/>
                 <outlet property="complexModificationsFileImportWindowController" destination="1ch-Te-EDv" id="TJS-aK-9xm"/>
-                <outlet property="inputMonitoringAlertWindowController" destination="DhI-vl-MTs" id="bjV-p4-H7Y"/>
                 <outlet property="preferencesWindow" destination="QvC-M9-y7g" id="91M-TG-qdJ"/>
                 <outlet property="preferencesWindowController" destination="5ke-qB-Wr5" id="Iam-4e-IHj"/>
                 <outlet property="simpleModificationsTableViewController" destination="4f7-Hm-cOy" id="9Ly-1w-WDk"/>
@@ -93,12 +92,6 @@
         <customObject id="2br-4Z-pCK" customClass="DevicesTableViewDelegate">
             <connections>
                 <outlet property="devicesTableViewController" destination="n2S-Tf-7ZE" id="iH3-hs-eSU"/>
-            </connections>
-        </customObject>
-        <customObject id="DhI-vl-MTs" customClass="InputMonitoringAlertWindowController">
-            <connections>
-                <outlet property="preferencesWindow" destination="QvC-M9-y7g" id="KBl-7u-fK6"/>
-                <outlet property="window" destination="qSM-7c-jvU" id="Sq9-m4-WI9"/>
             </connections>
         </customObject>
         <customObject id="wKd-bU-aLe" customClass="LogFileTextViewController">
@@ -2840,110 +2833,6 @@ Gw
             </view>
             <point key="canvasLocation" x="46" y="640"/>
         </window>
-        <window title="Input Monitoring Permissions Alert" allowsToolTipsWhenApplicationIsInactive="NO" autorecalculatesKeyViewLoop="NO" hidesOnDeactivate="YES" releasedWhenClosed="NO" visibleAtLaunch="NO" frameAutosaveName="" animationBehavior="default" id="qSM-7c-jvU" userLabel="Input Monitoring Alert Panel" customClass="NSPanel">
-            <windowStyleMask key="styleMask" titled="YES" closable="YES" miniaturizable="YES" resizable="YES" utility="YES"/>
-            <windowPositionMask key="initialPositionMask" leftStrut="YES" rightStrut="YES" topStrut="YES" bottomStrut="YES"/>
-            <rect key="contentRect" x="196" y="132" width="600" height="600"/>
-            <rect key="screenRect" x="0.0" y="0.0" width="2048" height="1257"/>
-            <value key="minSize" type="size" width="600" height="600"/>
-            <value key="maxSize" type="size" width="600" height="600"/>
-            <view key="contentView" misplaced="YES" id="YeD-U0-ZCw">
-                <rect key="frame" x="0.0" y="0.0" width="600" height="600"/>
-                <autoresizingMask key="autoresizingMask"/>
-                <subviews>
-                    <customView translatesAutoresizingMaskIntoConstraints="NO" id="lVG-Mq-hYo">
-                        <rect key="frame" x="197" y="483" width="206" height="32"/>
-                        <subviews>
-                            <imageView translatesAutoresizingMaskIntoConstraints="NO" id="3LJ-ZD-nlp">
-                                <rect key="frame" x="0.0" y="0.0" width="32" height="32"/>
-                                <constraints>
-                                    <constraint firstAttribute="width" constant="32" id="DJ8-xH-pOg"/>
-                                    <constraint firstAttribute="height" constant="32" id="G9L-sa-ifE"/>
-                                </constraints>
-                                <imageCell key="cell" refusesFirstResponder="YES" alignment="left" animates="YES" imageScaling="proportionallyDown" image="NSCaution" id="Gvb-t7-YeK"/>
-                            </imageView>
-                            <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="ImB-1n-oNG">
-                                <rect key="frame" x="40" y="8" width="168" height="16"/>
-                                <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" title="Karabiner-Elements Alert" id="poP-Ug-HM7">
-                                    <font key="font" metaFont="systemBold"/>
-                                    <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
-                                    <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
-                                </textFieldCell>
-                            </textField>
-                        </subviews>
-                        <constraints>
-                            <constraint firstAttribute="trailing" secondItem="ImB-1n-oNG" secondAttribute="trailing" id="1dq-w7-c4u"/>
-                            <constraint firstItem="ImB-1n-oNG" firstAttribute="leading" secondItem="3LJ-ZD-nlp" secondAttribute="trailing" constant="10" id="K7o-9G-mp0"/>
-                            <constraint firstItem="3LJ-ZD-nlp" firstAttribute="top" secondItem="lVG-Mq-hYo" secondAttribute="top" id="gG2-vZ-Ypf"/>
-                            <constraint firstAttribute="bottom" secondItem="3LJ-ZD-nlp" secondAttribute="bottom" id="jRl-Xm-GZv"/>
-                            <constraint firstItem="3LJ-ZD-nlp" firstAttribute="leading" secondItem="lVG-Mq-hYo" secondAttribute="leading" id="lxy-UZ-CpO"/>
-                            <constraint firstItem="ImB-1n-oNG" firstAttribute="centerY" secondItem="3LJ-ZD-nlp" secondAttribute="centerY" id="y1N-YA-Tyf"/>
-                        </constraints>
-                    </customView>
-                    <tabView type="noTabsNoBorder" translatesAutoresizingMaskIntoConstraints="NO" id="DT3-Yx-Kqq">
-                        <rect key="frame" x="10" y="10" width="580" height="453"/>
-                        <font key="font" metaFont="menu"/>
-                        <tabViewItems>
-                            <tabViewItem label="Tab" identifier="1" id="fGa-Js-Hpe">
-                                <view key="view" id="8Od-DQ-jck">
-                                    <rect key="frame" x="0.0" y="0.0" width="580" height="453"/>
-                                    <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
-                                    <subviews>
-                                        <textField verticalHuggingPriority="750" horizontalCompressionResistancePriority="250" translatesAutoresizingMaskIntoConstraints="NO" id="azl-WS-TKw">
-                                            <rect key="frame" x="18" y="401" width="544" height="32"/>
-                                            <textFieldCell key="cell" sendsActionOnEndEditing="YES" alignment="center" id="72V-sZ-yMF">
-                                                <font key="font" metaFont="menu"/>
-                                                <string key="title">karabiner_grabber and karabiner_observer require Input Monitoring permission.
-You have to allow them on Security &amp; Privacy System Preferences.</string>
-                                                <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
-                                                <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
-                                            </textFieldCell>
-                                        </textField>
-                                        <button verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="97c-2x-cuy">
-                                            <rect key="frame" x="123" y="353" width="334" height="32"/>
-                                            <buttonCell key="cell" type="push" title="Open Security &amp; Privacy System Preferences" bezelStyle="rounded" image="ic_forward_18pt" imagePosition="left" alignment="left" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="FJU-Jt-koc">
-                                                <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
-                                                <font key="font" metaFont="system"/>
-                                            </buttonCell>
-                                            <connections>
-                                                <action selector="openSystemPreferencesSecurity:" target="DhI-vl-MTs" id="j3Q-gu-q0U"/>
-                                            </connections>
-                                        </button>
-                                        <imageView horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="jCs-Yv-ALS">
-                                            <rect key="frame" x="110" y="20" width="360" height="290"/>
-                                            <constraints>
-                                                <constraint firstAttribute="width" constant="360" id="3dr-Yr-rka"/>
-                                                <constraint firstAttribute="height" constant="290" id="Nvm-1Z-IkR"/>
-                                            </constraints>
-                                            <imageCell key="cell" refusesFirstResponder="YES" alignment="left" imageScaling="proportionallyUpOrDown" image="input_monitoring" id="0hF-BI-A6j"/>
-                                        </imageView>
-                                    </subviews>
-                                    <constraints>
-                                        <constraint firstAttribute="bottom" secondItem="jCs-Yv-ALS" secondAttribute="bottom" constant="20" id="0LP-1J-GQE"/>
-                                        <constraint firstAttribute="trailing" secondItem="azl-WS-TKw" secondAttribute="trailing" constant="20" id="Xs5-mp-eoq"/>
-                                        <constraint firstItem="azl-WS-TKw" firstAttribute="leading" secondItem="8Od-DQ-jck" secondAttribute="leading" constant="20" id="cCN-b9-xac"/>
-                                        <constraint firstItem="jCs-Yv-ALS" firstAttribute="top" secondItem="97c-2x-cuy" secondAttribute="bottom" constant="50" id="fqO-Cc-2j3"/>
-                                        <constraint firstItem="97c-2x-cuy" firstAttribute="top" secondItem="azl-WS-TKw" secondAttribute="bottom" constant="20" id="gIF-zd-ZlW"/>
-                                        <constraint firstItem="jCs-Yv-ALS" firstAttribute="centerX" secondItem="8Od-DQ-jck" secondAttribute="centerX" id="gWi-zO-zrk"/>
-                                        <constraint firstItem="97c-2x-cuy" firstAttribute="centerX" secondItem="8Od-DQ-jck" secondAttribute="centerX" id="uUG-Fn-Y57"/>
-                                        <constraint firstItem="azl-WS-TKw" firstAttribute="top" secondItem="8Od-DQ-jck" secondAttribute="top" constant="20" id="v9f-vq-Ozr"/>
-                                    </constraints>
-                                </view>
-                            </tabViewItem>
-                        </tabViewItems>
-                    </tabView>
-                </subviews>
-                <constraints>
-                    <constraint firstItem="lVG-Mq-hYo" firstAttribute="centerX" secondItem="YeD-U0-ZCw" secondAttribute="centerX" id="0pj-WY-WbU"/>
-                    <constraint firstAttribute="trailing" secondItem="DT3-Yx-Kqq" secondAttribute="trailing" constant="10" id="2eE-WP-YPh"/>
-                    <constraint firstItem="lVG-Mq-hYo" firstAttribute="top" secondItem="YeD-U0-ZCw" secondAttribute="top" constant="20" id="A0h-2U-UX4"/>
-                    <constraint firstItem="DT3-Yx-Kqq" firstAttribute="top" secondItem="lVG-Mq-hYo" secondAttribute="bottom" constant="20" id="FWC-eg-5uS"/>
-                    <constraint firstItem="DT3-Yx-Kqq" firstAttribute="leading" secondItem="YeD-U0-ZCw" secondAttribute="leading" constant="10" id="VeZ-4P-Bgb"/>
-                    <constraint firstAttribute="bottom" secondItem="DT3-Yx-Kqq" secondAttribute="bottom" constant="10" id="lnO-tl-dNq"/>
-                </constraints>
-            </view>
-            <point key="canvasLocation" x="88" y="740"/>
-        </window>
         <window title="ManipulateCapsLockLED Confirmation Panel" allowsToolTipsWhenApplicationIsInactive="NO" autorecalculatesKeyViewLoop="NO" hidesOnDeactivate="YES" releasedWhenClosed="NO" visibleAtLaunch="NO" frameAutosaveName="" animationBehavior="default" id="Q4d-fj-0zt" customClass="NSPanel">
             <windowStyleMask key="styleMask" titled="YES" closable="YES" miniaturizable="YES" resizable="YES" utility="YES"/>
             <windowPositionMask key="initialPositionMask" leftStrut="YES" rightStrut="YES" topStrut="YES" bottomStrut="YES"/>
@@ -3058,7 +2947,6 @@ Gw
         <image name="ic_delete_forever_18pt" width="18" height="18"/>
         <image name="ic_expand_more_18pt" width="18" height="18"/>
         <image name="ic_file_download_18pt" width="18" height="18"/>
-        <image name="ic_forward_18pt" width="18" height="18"/>
         <image name="ic_home_18pt" width="18" height="18"/>
         <image name="ic_keyboard_18pt" width="18" height="18"/>
         <image name="ic_launch_18pt" width="18" height="18"/>
@@ -3067,6 +2955,5 @@ Gw
         <image name="ic_remove_circle_18pt" width="18" height="18"/>
         <image name="ic_star_rate_18pt" width="18" height="18"/>
         <image name="ic_warning_18pt" width="18" height="18"/>
-        <image name="input_monitoring" width="668" height="573"/>
     </resources>
 </document>
