@@ -71,7 +71,6 @@
             <connections>
                 <outlet property="alertWindowsManager" destination="C1e-TA-U5L" id="ecT-Qz-Kk9"/>
                 <outlet property="complexModificationsFileImportWindowController" destination="1ch-Te-EDv" id="TJS-aK-9xm"/>
-                <outlet property="dextAlertWindowController" destination="8fZ-Js-cqD" id="gFX-Gt-Ejq"/>
                 <outlet property="inputMonitoringAlertWindowController" destination="DhI-vl-MTs" id="bjV-p4-H7Y"/>
                 <outlet property="preferencesWindow" destination="QvC-M9-y7g" id="91M-TG-qdJ"/>
                 <outlet property="preferencesWindowController" destination="5ke-qB-Wr5" id="Iam-4e-IHj"/>
@@ -94,12 +93,6 @@
         <customObject id="2br-4Z-pCK" customClass="DevicesTableViewDelegate">
             <connections>
                 <outlet property="devicesTableViewController" destination="n2S-Tf-7ZE" id="iH3-hs-eSU"/>
-            </connections>
-        </customObject>
-        <customObject id="8fZ-Js-cqD" customClass="DextAlertWindowController">
-            <connections>
-                <outlet property="preferencesWindow" destination="QvC-M9-y7g" id="JDx-Is-viW"/>
-                <outlet property="window" destination="rjc-er-t5Q" id="cBB-NA-5vH"/>
             </connections>
         </customObject>
         <customObject id="DhI-vl-MTs" customClass="InputMonitoringAlertWindowController">
@@ -477,16 +470,16 @@
                 <autoresizingMask key="autoresizingMask"/>
                 <subviews>
                     <tabView initialItem="SOT-pf-9fT" translatesAutoresizingMaskIntoConstraints="NO" id="W8s-8N-CIx">
-                        <rect key="frame" x="13" y="10" width="874" height="300"/>
+                        <rect key="frame" x="13" y="10" width="874" height="252"/>
                         <font key="font" metaFont="menu"/>
                         <tabViewItems>
                             <tabViewItem label="Simple modifications" identifier="1" id="SOT-pf-9fT">
                                 <view key="view" id="aYZ-Ew-w2F">
-                                    <rect key="frame" x="10" y="33" width="854" height="254"/>
+                                    <rect key="frame" x="10" y="33" width="854" height="206"/>
                                     <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                     <subviews>
                                         <customView translatesAutoresizingMaskIntoConstraints="NO" id="Cqw-ll-1Rg">
-                                            <rect key="frame" x="172" y="213" width="511" height="31"/>
+                                            <rect key="frame" x="172" y="165" width="511" height="31"/>
                                             <subviews>
                                                 <popUpButton verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="oB5-NY-D3P">
                                                     <rect key="frame" x="99" y="2" width="405" height="25"/>
@@ -521,13 +514,13 @@
                                             </constraints>
                                         </customView>
                                         <scrollView autohidesScrollers="YES" horizontalLineScroll="28" horizontalPageScroll="10" verticalLineScroll="28" verticalPageScroll="10" usesPredominantAxisScrolling="NO" translatesAutoresizingMaskIntoConstraints="NO" id="7r4-lM-Seb">
-                                            <rect key="frame" x="17" y="43" width="820" height="160"/>
+                                            <rect key="frame" x="17" y="43" width="820" height="112"/>
                                             <clipView key="contentView" id="fPj-Ru-opD">
-                                                <rect key="frame" x="1" y="0.0" width="818" height="159"/>
+                                                <rect key="frame" x="1" y="0.0" width="818" height="111"/>
                                                 <autoresizingMask key="autoresizingMask"/>
                                                 <subviews>
                                                     <tableView verticalHuggingPriority="750" allowsExpansionToolTips="YES" columnAutoresizingStyle="firstColumnOnly" alternatingRowBackgroundColors="YES" columnReordering="NO" columnSelection="YES" columnResizing="NO" multipleSelection="NO" autosaveColumns="NO" rowHeight="26" rowSizeStyle="automatic" headerView="bin-92-FO9" viewBased="YES" id="qEO-TG-yM2">
-                                                        <rect key="frame" x="0.0" y="0.0" width="818" height="136"/>
+                                                        <rect key="frame" x="0.0" y="0.0" width="818" height="88"/>
                                                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                                         <size key="intercellSpacing" width="3" height="2"/>
                                                         <color key="backgroundColor" name="controlBackgroundColor" catalog="System" colorSpace="catalog"/>
@@ -3051,196 +3044,9 @@ Gw
             </view>
             <point key="canvasLocation" x="168" y="1433"/>
         </window>
-        <window title="Driver Alert" allowsToolTipsWhenApplicationIsInactive="NO" autorecalculatesKeyViewLoop="NO" hidesOnDeactivate="YES" releasedWhenClosed="NO" visibleAtLaunch="NO" frameAutosaveName="" animationBehavior="default" id="rjc-er-t5Q" customClass="NSPanel">
-            <windowStyleMask key="styleMask" titled="YES" closable="YES" miniaturizable="YES" resizable="YES" utility="YES"/>
-            <windowPositionMask key="initialPositionMask" leftStrut="YES" rightStrut="YES" topStrut="YES" bottomStrut="YES"/>
-            <rect key="contentRect" x="211" y="145" width="1189" height="517"/>
-            <rect key="screenRect" x="0.0" y="0.0" width="2048" height="1257"/>
-            <value key="minSize" type="size" width="600" height="378"/>
-            <value key="maxSize" type="size" width="600" height="378"/>
-            <view key="contentView" misplaced="YES" id="NbX-OE-pGo">
-                <rect key="frame" x="0.0" y="0.0" width="1189" height="517"/>
-                <autoresizingMask key="autoresizingMask"/>
-                <subviews>
-                    <customView translatesAutoresizingMaskIntoConstraints="NO" id="LbR-D6-fV3">
-                        <rect key="frame" x="20" y="349" width="206" height="32"/>
-                        <subviews>
-                            <imageView translatesAutoresizingMaskIntoConstraints="NO" id="JIy-ho-TaU">
-                                <rect key="frame" x="0.0" y="0.0" width="32" height="32"/>
-                                <constraints>
-                                    <constraint firstAttribute="height" constant="32" id="FEZ-Bn-APg"/>
-                                    <constraint firstAttribute="width" constant="32" id="VEZ-ul-Pmn"/>
-                                </constraints>
-                                <imageCell key="cell" refusesFirstResponder="YES" alignment="left" animates="YES" imageScaling="proportionallyDown" image="NSCaution" id="11O-Ly-fEU"/>
-                            </imageView>
-                            <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="ZXo-R5-l8g">
-                                <rect key="frame" x="40" y="8" width="168" height="16"/>
-                                <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" title="Karabiner-Elements Alert" id="S4k-BP-5Kg">
-                                    <font key="font" metaFont="systemBold"/>
-                                    <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
-                                    <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
-                                </textFieldCell>
-                            </textField>
-                        </subviews>
-                        <constraints>
-                            <constraint firstItem="JIy-ho-TaU" firstAttribute="leading" secondItem="LbR-D6-fV3" secondAttribute="leading" id="3Ea-Mc-BNP"/>
-                            <constraint firstAttribute="bottom" secondItem="JIy-ho-TaU" secondAttribute="bottom" id="VxL-Ve-tng"/>
-                            <constraint firstItem="ZXo-R5-l8g" firstAttribute="leading" secondItem="JIy-ho-TaU" secondAttribute="trailing" constant="10" id="haV-cY-RR1"/>
-                            <constraint firstItem="ZXo-R5-l8g" firstAttribute="centerY" secondItem="JIy-ho-TaU" secondAttribute="centerY" id="pxr-do-y4T"/>
-                            <constraint firstAttribute="trailing" secondItem="ZXo-R5-l8g" secondAttribute="trailing" id="qm2-LA-cSP"/>
-                            <constraint firstItem="JIy-ho-TaU" firstAttribute="top" secondItem="LbR-D6-fV3" secondAttribute="top" id="waU-Mf-8Lq"/>
-                        </constraints>
-                    </customView>
-                    <box title="Alert" titlePosition="noTitle" translatesAutoresizingMaskIntoConstraints="NO" id="0b8-U7-i7p">
-                        <rect key="frame" x="17" y="16" width="456" height="325"/>
-                        <view key="contentView" id="BiG-Q5-Gfe">
-                            <rect key="frame" x="3" y="3" width="450" height="319"/>
-                            <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
-                            <subviews>
-                                <textField verticalHuggingPriority="750" horizontalCompressionResistancePriority="250" translatesAutoresizingMaskIntoConstraints="NO" id="EX6-xv-9EW">
-                                    <rect key="frame" x="8" y="261" width="434" height="48"/>
-                                    <textFieldCell key="cell" selectable="YES" id="x0e-wm-5EF">
-                                        <font key="font" usesAppearanceFont="YES"/>
-                                        <string key="title">The virtual keyboard and mouse driver is not loaded.
-Please allow system software from ".Karabiner-VirtualHIDDevice-Manager" on Security &amp; Privacy System Preferences.</string>
-                                        <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
-                                        <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
-                                    </textFieldCell>
-                                </textField>
-                                <button verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="iyX-Ft-g9y">
-                                    <rect key="frame" x="58" y="213" width="334" height="32"/>
-                                    <buttonCell key="cell" type="push" title="Open Security &amp; Privacy System Preferences" bezelStyle="rounded" image="ic_forward_18pt" imagePosition="left" alignment="left" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="Ol6-mz-xml">
-                                        <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
-                                        <font key="font" metaFont="system"/>
-                                    </buttonCell>
-                                    <connections>
-                                        <action selector="openSystemPreferencesSecurity:" target="8fZ-Js-cqD" id="WOU-X0-dPk"/>
-                                    </connections>
-                                </button>
-                                <imageView horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="Fhh-yQ-7jG">
-                                    <rect key="frame" x="125" y="10" width="200" height="180"/>
-                                    <constraints>
-                                        <constraint firstAttribute="width" constant="200" id="Ry8-5F-CfK"/>
-                                        <constraint firstAttribute="height" constant="180" id="zhp-Sc-27u"/>
-                                    </constraints>
-                                    <imageCell key="cell" refusesFirstResponder="YES" alignment="left" imageScaling="proportionallyDown" image="dext-allow" id="PzL-kX-HAk"/>
-                                </imageView>
-                            </subviews>
-                            <constraints>
-                                <constraint firstAttribute="trailing" secondItem="EX6-xv-9EW" secondAttribute="trailing" constant="10" id="6QY-Qe-waO"/>
-                                <constraint firstItem="iyX-Ft-g9y" firstAttribute="centerX" secondItem="BiG-Q5-Gfe" secondAttribute="centerX" id="8Sg-GI-UGp"/>
-                                <constraint firstItem="EX6-xv-9EW" firstAttribute="leading" secondItem="BiG-Q5-Gfe" secondAttribute="leading" constant="10" id="DiD-aO-Fn5"/>
-                                <constraint firstItem="EX6-xv-9EW" firstAttribute="top" secondItem="BiG-Q5-Gfe" secondAttribute="top" constant="10" id="EHz-ww-8jN"/>
-                                <constraint firstAttribute="bottom" secondItem="Fhh-yQ-7jG" secondAttribute="bottom" constant="10" id="LF5-Hq-Tr2"/>
-                                <constraint firstItem="iyX-Ft-g9y" firstAttribute="top" secondItem="EX6-xv-9EW" secondAttribute="bottom" constant="20" id="Q97-6E-vFT"/>
-                                <constraint firstItem="Fhh-yQ-7jG" firstAttribute="centerX" secondItem="BiG-Q5-Gfe" secondAttribute="centerX" id="bjG-zw-csO"/>
-                                <constraint firstItem="Fhh-yQ-7jG" firstAttribute="top" secondItem="iyX-Ft-g9y" secondAttribute="bottom" constant="30" id="glp-t3-Zfd"/>
-                            </constraints>
-                        </view>
-                        <constraints>
-                            <constraint firstAttribute="width" constant="450" id="lqA-JE-o8W"/>
-                        </constraints>
-                    </box>
-                    <box title="Advanced" translatesAutoresizingMaskIntoConstraints="NO" id="tJu-nx-y3K">
-                        <rect key="frame" x="507" y="16" width="456" height="306"/>
-                        <view key="contentView" id="3Dw-ag-F6c">
-                            <rect key="frame" x="3" y="3" width="450" height="288"/>
-                            <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
-                            <subviews>
-                                <textField verticalHuggingPriority="750" horizontalCompressionResistancePriority="250" translatesAutoresizingMaskIntoConstraints="NO" id="2lY-95-iSs">
-                                    <rect key="frame" x="8" y="150" width="434" height="128"/>
-                                    <textFieldCell key="cell" selectable="YES" id="4Wd-eB-W5u">
-                                        <font key="font" usesAppearanceFont="YES"/>
-                                        <string key="title">If macOS failed to load the driver in the early stage, the allow button might be not shown on Security &amp; Privacy System Preferences.
-In this case, you need to reinstall the driver in order for the button to appear.
-
-How to reinstall driver:
-
-1. Press the following button to deactivate driver.</string>
-                                        <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
-                                        <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
-                                    </textFieldCell>
-                                </textField>
-                                <button verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="RMz-Qq-k1Y">
-                                    <rect key="frame" x="35" y="116" width="134" height="27"/>
-                                    <buttonCell key="cell" type="push" title="Deactivate driver" bezelStyle="rounded" image="ic_star_rate_18pt" imagePosition="left" alignment="left" controlSize="small" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="DuA-Fw-0q0">
-                                        <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
-                                        <font key="font" metaFont="smallSystem"/>
-                                    </buttonCell>
-                                    <connections>
-                                        <action selector="deactivateDriver:" target="8fZ-Js-cqD" id="BYT-bk-cpS"/>
-                                    </connections>
-                                </button>
-                                <textField verticalHuggingPriority="750" horizontalCompressionResistancePriority="250" translatesAutoresizingMaskIntoConstraints="NO" id="uRA-VQ-uWA">
-                                    <rect key="frame" x="8" y="80" width="434" height="32"/>
-                                    <textFieldCell key="cell" selectable="YES" id="EVU-4Z-aJw">
-                                        <font key="font" usesAppearanceFont="YES"/>
-                                        <string key="title">2. Enter the administrator password to complete.
-3. Press the following button to activate driver.</string>
-                                        <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
-                                        <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
-                                    </textFieldCell>
-                                </textField>
-                                <button verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="sOQ-6Y-Bx9">
-                                    <rect key="frame" x="35" y="46" width="121" height="27"/>
-                                    <buttonCell key="cell" type="push" title="Activate driver" bezelStyle="rounded" image="ic_star_rate_18pt" imagePosition="left" alignment="left" controlSize="small" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="3Sl-24-mKo">
-                                        <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
-                                        <font key="font" metaFont="smallSystem"/>
-                                    </buttonCell>
-                                    <connections>
-                                        <action selector="activateDriver:" target="8fZ-Js-cqD" id="cjr-0p-Uob"/>
-                                    </connections>
-                                </button>
-                                <textField verticalHuggingPriority="750" horizontalCompressionResistancePriority="250" translatesAutoresizingMaskIntoConstraints="NO" id="lay-Fh-Jkp">
-                                    <rect key="frame" x="8" y="10" width="434" height="32"/>
-                                    <textFieldCell key="cell" selectable="YES" id="DlV-6Y-9kA">
-                                        <font key="font" usesAppearanceFont="YES"/>
-                                        <string key="title">4. "System Extension Blocked" alert is shown.
-5. Open Security Preferences and press the allow button.</string>
-                                        <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
-                                        <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
-                                    </textFieldCell>
-                                </textField>
-                            </subviews>
-                            <constraints>
-                                <constraint firstItem="sOQ-6Y-Bx9" firstAttribute="top" secondItem="uRA-VQ-uWA" secondAttribute="bottom" constant="10" id="0az-4J-IE0"/>
-                                <constraint firstAttribute="bottom" secondItem="lay-Fh-Jkp" secondAttribute="bottom" constant="10" id="1Jl-q7-lsE"/>
-                                <constraint firstItem="lay-Fh-Jkp" firstAttribute="trailing" secondItem="2lY-95-iSs" secondAttribute="trailing" id="6Ft-P8-Anh"/>
-                                <constraint firstItem="uRA-VQ-uWA" firstAttribute="top" secondItem="RMz-Qq-k1Y" secondAttribute="bottom" constant="10" id="7a0-lo-DpF"/>
-                                <constraint firstItem="RMz-Qq-k1Y" firstAttribute="leading" secondItem="3Dw-ag-F6c" secondAttribute="leading" constant="40" id="HAs-Hh-z3h"/>
-                                <constraint firstAttribute="trailing" secondItem="2lY-95-iSs" secondAttribute="trailing" constant="10" id="HLx-rM-0e7"/>
-                                <constraint firstItem="uRA-VQ-uWA" firstAttribute="leading" secondItem="2lY-95-iSs" secondAttribute="leading" id="OyZ-2g-8nP"/>
-                                <constraint firstItem="sOQ-6Y-Bx9" firstAttribute="leading" secondItem="RMz-Qq-k1Y" secondAttribute="leading" id="WDR-6N-8Qe"/>
-                                <constraint firstItem="lay-Fh-Jkp" firstAttribute="top" secondItem="sOQ-6Y-Bx9" secondAttribute="bottom" constant="10" id="a0R-kd-4w5"/>
-                                <constraint firstItem="lay-Fh-Jkp" firstAttribute="leading" secondItem="2lY-95-iSs" secondAttribute="leading" id="aT2-qI-0hN"/>
-                                <constraint firstItem="2lY-95-iSs" firstAttribute="leading" secondItem="3Dw-ag-F6c" secondAttribute="leading" constant="10" id="b9t-hH-zoA"/>
-                                <constraint firstItem="RMz-Qq-k1Y" firstAttribute="top" secondItem="2lY-95-iSs" secondAttribute="bottom" constant="10" id="hof-Ao-T88"/>
-                                <constraint firstItem="uRA-VQ-uWA" firstAttribute="trailing" secondItem="2lY-95-iSs" secondAttribute="trailing" id="sZ0-BU-ZYM"/>
-                                <constraint firstItem="2lY-95-iSs" firstAttribute="top" secondItem="3Dw-ag-F6c" secondAttribute="top" constant="10" id="sdh-SX-ehY"/>
-                            </constraints>
-                        </view>
-                        <constraints>
-                            <constraint firstAttribute="width" constant="450" id="O2o-py-Mxj"/>
-                        </constraints>
-                    </box>
-                </subviews>
-                <constraints>
-                    <constraint firstItem="0b8-U7-i7p" firstAttribute="leading" secondItem="LbR-D6-fV3" secondAttribute="leading" id="6fd-vU-fCA"/>
-                    <constraint firstItem="tJu-nx-y3K" firstAttribute="leading" secondItem="0b8-U7-i7p" secondAttribute="trailing" constant="40" id="Cm3-a1-1m9"/>
-                    <constraint firstItem="LbR-D6-fV3" firstAttribute="leading" secondItem="NbX-OE-pGo" secondAttribute="leading" constant="20" id="Lfz-0b-J83"/>
-                    <constraint firstAttribute="trailing" secondItem="tJu-nx-y3K" secondAttribute="trailing" constant="20" id="WQI-Na-DRE"/>
-                    <constraint firstAttribute="bottom" secondItem="tJu-nx-y3K" secondAttribute="bottom" constant="20" id="jED-qv-kXD"/>
-                    <constraint firstItem="LbR-D6-fV3" firstAttribute="top" secondItem="NbX-OE-pGo" secondAttribute="top" constant="20" id="mXq-kh-AO0"/>
-                    <constraint firstItem="0b8-U7-i7p" firstAttribute="top" secondItem="LbR-D6-fV3" secondAttribute="bottom" constant="10" id="mph-lA-Xbg"/>
-                    <constraint firstItem="tJu-nx-y3K" firstAttribute="bottom" secondItem="0b8-U7-i7p" secondAttribute="bottom" id="yH1-IB-FUh"/>
-                </constraints>
-            </view>
-            <point key="canvasLocation" x="-479.5" y="955.5"/>
-        </window>
     </objects>
     <resources>
         <image name="NSCaution" width="32" height="32"/>
-        <image name="dext-allow" width="668" height="587"/>
         <image name="ic_add_circle_18pt" width="18" height="18"/>
         <image name="ic_arrow_downward_18pt" width="18" height="18"/>
         <image name="ic_arrow_upward_18pt" width="18" height="18"/>
