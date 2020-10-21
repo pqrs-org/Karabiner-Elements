@@ -19,6 +19,7 @@
 @property(weak) IBOutlet PreferencesWindowController* preferencesWindowController;
 @property(weak) IBOutlet SystemPreferencesManager* systemPreferencesManager;
 @property(weak) IBOutlet AlertWindowsManager* alertWindowsManager;
+@property(weak) IBOutlet StateJsonMonitor* stateJsonMonitor;
 
 @end
 
@@ -43,6 +44,7 @@
 
   [self.dextAlertWindowController setup];
   [self.inputMonitoringAlertWindowController setup];
+  [self.stateJsonMonitor start];
 }
 
 // Note:

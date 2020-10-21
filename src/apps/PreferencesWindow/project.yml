@@ -17,6 +17,7 @@ targets:
         - -L../../lib/libkrbn/build/Release
         - -lKarabinerKit
         - -lkrbn
+      SWIFT_OBJC_BRIDGING_HEADER: src/Bridging-Header.h
     type: application
     platform: macOS
     deploymentTarget: 10.15

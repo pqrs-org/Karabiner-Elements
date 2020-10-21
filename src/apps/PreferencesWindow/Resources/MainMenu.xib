@@ -76,6 +76,7 @@
                 <outlet property="preferencesWindow" destination="QvC-M9-y7g" id="91M-TG-qdJ"/>
                 <outlet property="preferencesWindowController" destination="5ke-qB-Wr5" id="Iam-4e-IHj"/>
                 <outlet property="simpleModificationsTableViewController" destination="4f7-Hm-cOy" id="9Ly-1w-WDk"/>
+                <outlet property="stateJsonMonitor" destination="Aie-gC-FHB" id="pe2-xz-8Tg"/>
                 <outlet property="systemPreferencesManager" destination="gwA-uV-a9x" id="LEs-Qx-33f"/>
             </connections>
         </customObject>
@@ -174,6 +175,11 @@
             <connections>
                 <outlet property="simpleModificationsMenuManager" destination="BTc-Hs-TSF" id="ofP-iD-C1k"/>
                 <outlet property="simpleModificationsTableViewController" destination="4f7-Hm-cOy" id="5bn-W1-NB6"/>
+            </connections>
+        </customObject>
+        <customObject id="Aie-gC-FHB" customClass="StateJsonMonitor" customModule="Karabiner_Elements">
+            <connections>
+                <outlet property="alertWindowsManager" destination="C1e-TA-U5L" id="gkv-pb-9Vq"/>
             </connections>
         </customObject>
         <customObject id="gwA-uV-a9x" customClass="SystemPreferencesManager"/>
@@ -471,16 +477,16 @@
                 <autoresizingMask key="autoresizingMask"/>
                 <subviews>
                     <tabView initialItem="SOT-pf-9fT" translatesAutoresizingMaskIntoConstraints="NO" id="W8s-8N-CIx">
-                        <rect key="frame" x="13" y="10" width="874" height="348"/>
+                        <rect key="frame" x="13" y="10" width="874" height="300"/>
                         <font key="font" metaFont="menu"/>
                         <tabViewItems>
                             <tabViewItem label="Simple modifications" identifier="1" id="SOT-pf-9fT">
                                 <view key="view" id="aYZ-Ew-w2F">
-                                    <rect key="frame" x="10" y="33" width="854" height="302"/>
+                                    <rect key="frame" x="10" y="33" width="854" height="254"/>
                                     <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                     <subviews>
                                         <customView translatesAutoresizingMaskIntoConstraints="NO" id="Cqw-ll-1Rg">
-                                            <rect key="frame" x="172" y="261" width="511" height="31"/>
+                                            <rect key="frame" x="172" y="213" width="511" height="31"/>
                                             <subviews>
                                                 <popUpButton verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="oB5-NY-D3P">
                                                     <rect key="frame" x="99" y="2" width="405" height="25"/>
@@ -515,13 +521,13 @@
                                             </constraints>
                                         </customView>
                                         <scrollView autohidesScrollers="YES" horizontalLineScroll="28" horizontalPageScroll="10" verticalLineScroll="28" verticalPageScroll="10" usesPredominantAxisScrolling="NO" translatesAutoresizingMaskIntoConstraints="NO" id="7r4-lM-Seb">
-                                            <rect key="frame" x="17" y="43" width="820" height="208"/>
+                                            <rect key="frame" x="17" y="43" width="820" height="160"/>
                                             <clipView key="contentView" id="fPj-Ru-opD">
-                                                <rect key="frame" x="1" y="0.0" width="818" height="207"/>
+                                                <rect key="frame" x="1" y="0.0" width="818" height="159"/>
                                                 <autoresizingMask key="autoresizingMask"/>
                                                 <subviews>
                                                     <tableView verticalHuggingPriority="750" allowsExpansionToolTips="YES" columnAutoresizingStyle="firstColumnOnly" alternatingRowBackgroundColors="YES" columnReordering="NO" columnSelection="YES" columnResizing="NO" multipleSelection="NO" autosaveColumns="NO" rowHeight="26" rowSizeStyle="automatic" headerView="bin-92-FO9" viewBased="YES" id="qEO-TG-yM2">
-                                                        <rect key="frame" x="0.0" y="0.0" width="818" height="184"/>
+                                                        <rect key="frame" x="0.0" y="0.0" width="818" height="136"/>
                                                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                                         <size key="intercellSpacing" width="3" height="2"/>
                                                         <color key="backgroundColor" name="controlBackgroundColor" catalog="System" colorSpace="catalog"/>
