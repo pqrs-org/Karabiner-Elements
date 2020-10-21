@@ -4,6 +4,7 @@
 
 #include "json_utility.hpp"
 #include "json_writer.hpp"
+#include <optional>
 #include <thread>
 
 namespace krbn {
@@ -18,6 +19,8 @@ public:
       } catch (std::exception& e) {
         logger::get_logger()->error("parse error in {0}: {1}", file_path, e.what());
       }
+    } else {
+      sync_save();
     }
   }
 
@@ -27,6 +30,29 @@ public:
     std::lock_guard<std::mutex> guard(mutex_);
 
     state_[key] = value;
+
+    sync_save();
+  }
+
+  template <typename T>
+  void set(const std::string& key,
+           const std::optional<T>& value) {
+    std::lock_guard<std::mutex> guard(mutex_);
+
+    if (value) {
+      state_[key] = *value;
+    } else {
+      state_.erase(key);
+    }
+
+    sync_save();
+  }
+
+  void set(const std::string& key,
+           const std::nullopt_t value) {
+    std::lock_guard<std::mutex> guard(mutex_);
+
+    state_.erase(key);
 
     sync_save();
   }

@@ -11,8 +11,6 @@ TEST_CASE("state_json_writer") {
   {
     krbn::state_json_writer writer("tmp/state.json");
 
-    REQUIRE(!pqrs::filesystem::exists("tmp/state.json"));
-
     writer.set("key1", 123);
 
     REQUIRE(krbn::unit_testing::json_helper::compare_files("tmp/state.json", "data/key1_1.json"));
@@ -40,6 +38,35 @@ TEST_CASE("state_json_writer") {
     krbn::state_json_writer writer("tmp/state.json");
 
     writer.set("key1", 123);
+
+    REQUIRE(krbn::unit_testing::json_helper::compare_files("tmp/state.json", "data/key1_1.json"));
+  }
+
+  //
+  // Optional
+  //
+
+  {
+    std::error_code error_code;
+    std::filesystem::remove("tmp/state.json", error_code);
+
+    krbn::state_json_writer writer("tmp/state.json");
+
+    REQUIRE(krbn::unit_testing::json_helper::compare_files("tmp/state.json", "data/empty_object.json"));
+
+    writer.set("key1", std::nullopt);
+
+    REQUIRE(krbn::unit_testing::json_helper::compare_files("tmp/state.json", "data/empty_object.json"));
+
+    writer.set("key1", 123);
+
+    REQUIRE(krbn::unit_testing::json_helper::compare_files("tmp/state.json", "data/key1_1.json"));
+
+    writer.set("key1", std::nullopt);
+
+    REQUIRE(krbn::unit_testing::json_helper::compare_files("tmp/state.json", "data/empty_object.json"));
+
+    writer.set("key1", std::optional<int>(123));
 
     REQUIRE(krbn::unit_testing::json_helper::compare_files("tmp/state.json", "data/key1_1.json"));
   }
