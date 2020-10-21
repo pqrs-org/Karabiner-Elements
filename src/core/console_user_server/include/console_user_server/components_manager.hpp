@@ -86,8 +86,6 @@ public:
 
       session_monitor_ = nullptr;
       receiver_ = nullptr;
-      grabber_state_json_file_monitor_ = nullptr;
-      observer_state_json_file_monitor_ = nullptr;
       version_monitor_ = nullptr;
     });
   }
@@ -95,62 +93,11 @@ public:
   void async_start(void) {
     enqueue_to_dispatcher([this] {
       version_monitor_->async_start();
-      start_state_json_file_monitors();
       session_monitor_->async_start(std::chrono::milliseconds(1000));
     });
   }
 
 private:
-  void start_state_json_file_monitors(void) {
-    //
-    // observer_state_json_file_monitor_
-    //
-
-    if (!observer_state_json_file_monitor_) {
-      observer_state_json_file_monitor_ = std::make_unique<pqrs::osx::json_file_monitor>(
-          weak_dispatcher_,
-          std::vector<std::string>({constants::get_observer_state_json_file_path()}));
-
-      observer_state_json_file_monitor_->json_file_changed.connect([](auto&& changed_file_path, auto&& json) {
-        if (json) {
-          try {
-            if (!json->at("hid_device_open_permitted").template get<bool>()) {
-              application_launcher::launch_preferences();
-            }
-          } catch (std::exception& e) {
-            logger::get_logger()->error("karabiner_observer_state.json error: {0}", e.what());
-          }
-        }
-      });
-
-      observer_state_json_file_monitor_->async_start();
-    }
-
-    //
-    // grabber_state_json_file_monitor_
-    //
-
-    if (!grabber_state_json_file_monitor_) {
-      grabber_state_json_file_monitor_ = std::make_unique<pqrs::osx::json_file_monitor>(
-          weak_dispatcher_,
-          std::vector<std::string>({constants::get_grabber_state_json_file_path()}));
-
-      grabber_state_json_file_monitor_->json_file_changed.connect([](auto&& changed_file_path, auto&& json) {
-        if (json) {
-          try {
-            if (!json->at("hid_device_open_permitted").template get<bool>()) {
-              application_launcher::launch_preferences();
-            }
-          } catch (std::exception& e) {
-            logger::get_logger()->error("karabiner_grabber_state.json error: {0}", e.what());
-          }
-        }
-      });
-
-      grabber_state_json_file_monitor_->async_start();
-    }
-  }
-
   void start_grabber_client(void) {
     if (grabber_client_) {
       return;
@@ -272,8 +219,6 @@ private:
   // Core components
 
   std::unique_ptr<version_monitor> version_monitor_;
-  std::unique_ptr<pqrs::osx::json_file_monitor> observer_state_json_file_monitor_;
-  std::unique_ptr<pqrs::osx::json_file_monitor> grabber_state_json_file_monitor_;
 
   std::unique_ptr<pqrs::osx::session::monitor> session_monitor_;
   std::unique_ptr<receiver> receiver_;
