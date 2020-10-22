@@ -5,6 +5,7 @@
 #include "console_user_server_client.hpp"
 #include "constants.hpp"
 #include "device_grabber.hpp"
+#include "grabber/grabber_state_json_writer.hpp"
 #include "types.hpp"
 #include <pqrs/dispatcher.hpp>
 #include <pqrs/local_datagram.hpp>
@@ -19,8 +20,10 @@ class receiver final : public pqrs::dispatcher::extra::dispatcher_client {
 public:
   receiver(const receiver&) = delete;
 
-  receiver(uid_t current_console_user_id) : dispatcher_client(),
-                                            current_console_user_id_(current_console_user_id) {
+  receiver(uid_t current_console_user_id,
+           std::weak_ptr<grabber_state_json_writer> weak_grabber_state_json_writer) : dispatcher_client(),
+                                                                                      current_console_user_id_(current_console_user_id),
+                                                                                      weak_grabber_state_json_writer_(weak_grabber_state_json_writer) {
     std::string socket_file_path(constants::get_grabber_socket_file_path());
 
     unlink(socket_file_path.c_str());
@@ -190,7 +193,8 @@ private:
       return;
     }
 
-    device_grabber_ = std::make_unique<device_grabber>(console_user_server_client_);
+    device_grabber_ = std::make_unique<device_grabber>(console_user_server_client_,
+                                                       weak_grabber_state_json_writer_);
 
     device_grabber_->async_set_observed_devices(observed_devices_);
     device_grabber_->async_set_system_preferences_properties(system_preferences_properties_);
@@ -214,6 +218,8 @@ private:
   }
 
   uid_t current_console_user_id_;
+  std::weak_ptr<grabber_state_json_writer> weak_grabber_state_json_writer_;
+
   std::unique_ptr<pqrs::local_datagram::server> server_;
   std::shared_ptr<console_user_server_client> console_user_server_client_;
   std::unique_ptr<device_grabber> device_grabber_;

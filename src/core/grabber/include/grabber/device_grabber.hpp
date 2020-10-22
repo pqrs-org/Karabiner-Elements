@@ -8,6 +8,7 @@
 #include "device_grabber_details/notification_message_manager.hpp"
 #include "device_grabber_details/simple_modifications_manipulator_manager.hpp"
 #include "event_tap_utility.hpp"
+#include "grabber/grabber_state_json_writer.hpp"
 #include "hid_keyboard_caps_lock_led_state_manager.hpp"
 #include "hid_queue_values_converter.hpp"
 #include "iokit_utility.hpp"
@@ -37,12 +38,13 @@ class device_grabber final : public pqrs::dispatcher::extra::dispatcher_client {
 public:
   device_grabber(const device_grabber&) = delete;
 
-  device_grabber(std::weak_ptr<console_user_server_client> weak_console_user_server_client) : dispatcher_client(),
-                                                                                              virtual_hid_device_ready_check_timer_(*this),
-                                                                                              is_virtual_hid_keyboard_ready_(false),
-                                                                                              is_virtual_hid_pointing_ready_(false),
-                                                                                              profile_(nlohmann::json::object()),
-                                                                                              logger_unique_filter_(logger::get_logger()) {
+  device_grabber(std::weak_ptr<console_user_server_client> weak_console_user_server_client,
+                 std::weak_ptr<grabber_state_json_writer> weak_grabber_state_json_writer) : dispatcher_client(),
+                                                                                            virtual_hid_device_service_check_timer_(*this),
+                                                                                            is_virtual_hid_keyboard_ready_(false),
+                                                                                            is_virtual_hid_pointing_ready_(false),
+                                                                                            profile_(nlohmann::json::object()),
+                                                                                            logger_unique_filter_(logger::get_logger()) {
     simple_modifications_manipulator_manager_ = std::make_shared<device_grabber_details::simple_modifications_manipulator_manager>();
     complex_modifications_manipulator_manager_ = std::make_shared<manipulator::manipulator_manager>();
     fn_function_keys_manipulator_manager_ = std::make_shared<device_grabber_details::fn_function_keys_manipulator_manager>();
@@ -86,6 +88,18 @@ public:
       logger::get_logger()->info("virtual_hid_device_service_client_ error_occurred: {0}", error_code.message());
     });
 
+    virtual_hid_device_service_client_->driver_loaded_response.connect([weak_grabber_state_json_writer](auto&& driver_loaded) {
+      if (auto writer = weak_grabber_state_json_writer.lock()) {
+        writer->set_driver_loaded(driver_loaded);
+      }
+    });
+
+    virtual_hid_device_service_client_->driver_version_matched_response.connect([weak_grabber_state_json_writer](auto&& driver_version_matched) {
+      if (auto writer = weak_grabber_state_json_writer.lock()) {
+        writer->set_driver_version_matched(driver_version_matched);
+      }
+    });
+
     virtual_hid_device_service_client_->virtual_hid_keyboard_ready_response.connect([this](auto&& ready) {
       if (is_virtual_hid_keyboard_ready_ != ready) {
         logger::get_logger()->info("virtual_hid_device_service_client_ virtual_hid_keyboard_ready_response: {0}", ready);
@@ -122,8 +136,10 @@ public:
       }
     });
 
-    virtual_hid_device_ready_check_timer_.start(
+    virtual_hid_device_service_check_timer_.start(
         [this] {
+          virtual_hid_device_service_client_->async_driver_loaded();
+          virtual_hid_device_service_client_->async_driver_version_matched();
           virtual_hid_device_service_client_->async_virtual_hid_keyboard_ready();
           virtual_hid_device_service_client_->async_virtual_hid_pointing_ready();
         },
@@ -558,7 +574,7 @@ private:
 
     event_tap_monitor_ = nullptr;
 
-    virtual_hid_device_ready_check_timer_.stop();
+    virtual_hid_device_service_check_timer_.stop();
     virtual_hid_device_service_client_->async_stop();
   }
 
@@ -937,7 +953,7 @@ private:
 
   std::shared_ptr<pqrs::karabiner::driverkit::virtual_hid_device_service::client> virtual_hid_device_service_client_;
 
-  pqrs::dispatcher::extra::timer virtual_hid_device_ready_check_timer_;
+  pqrs::dispatcher::extra::timer virtual_hid_device_service_check_timer_;
   bool is_virtual_hid_keyboard_ready_;
   bool is_virtual_hid_pointing_ready_;
 

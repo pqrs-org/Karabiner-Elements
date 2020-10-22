@@ -127,7 +127,7 @@ int daemon(void) {
     });
   }
 
-  components_manager = new grabber::components_manager();
+  components_manager = new grabber::components_manager(grabber_state_json_writer);
   components_manager->async_start();
 
   CFRunLoopRun();
