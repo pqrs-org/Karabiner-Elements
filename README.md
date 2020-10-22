@@ -15,7 +15,7 @@ You can download previous versions of Karabiner-Elements from [here](https://kar
 
 ## Supported systems
 
--   macOS Catalina (10.15)
+-   macOS Catalina (10.15.6 or later)
 -   macOS Big Sur (11.0)
 
 ## Usage
