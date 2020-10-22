@@ -29,21 +29,11 @@ public:
            const T& value) {
     std::lock_guard<std::mutex> guard(mutex_);
 
-    state_[key] = value;
-
-    sync_save();
-  }
-
-  template <typename T>
-  void set(const std::string& key,
-           const std::optional<T>& value) {
-    std::lock_guard<std::mutex> guard(mutex_);
-
-    if (value) {
-      state_[key] = *value;
-    } else {
-      state_.erase(key);
+    if (state_[key] == value) {
+      return;
     }
+
+    state_[key] = value;
 
     sync_save();
   }
@@ -52,9 +42,23 @@ public:
            const std::nullopt_t value) {
     std::lock_guard<std::mutex> guard(mutex_);
 
+    if (!state_.contains(key)) {
+      return;
+    }
+
     state_.erase(key);
 
     sync_save();
+  }
+
+  template <typename T>
+  void set(const std::string& key,
+           const std::optional<T>& value) {
+    if (value) {
+      set(key, *value);
+    } else {
+      set(key, std::nullopt);
+    }
   }
 
 private:
