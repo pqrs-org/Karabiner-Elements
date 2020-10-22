@@ -16,7 +16,6 @@ public class AlertWindowsManager: NSObject {
     @objc
     public func showDriverNotLoadedAlertWindow() {
         if driverNotLoadedAlertWindow == nil {
-            print("new driverNotLoadedAlertWindow")
             driverNotLoadedAlertWindow = NSPanel(
                 contentRect: .zero,
                 styleMask: [
