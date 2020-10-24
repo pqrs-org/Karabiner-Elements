@@ -46,6 +46,8 @@ struct DriverNotLoadedAlertView: View {
                                 .fixedSize(horizontal: false, vertical: true)
 
                             DeactivateDriverButton()
+                                .padding(.vertical, 10)
+                                .padding(.leading, 20)
 
                             Text("2. Restart macOS.")
                                 .fontWeight(.bold)
@@ -55,6 +57,8 @@ struct DriverNotLoadedAlertView: View {
                                 .fixedSize(horizontal: false, vertical: true)
 
                             ActivateDriverButton()
+                                .padding(.vertical, 10)
+                                .padding(.leading, 20)
 
                             Text("4. \"System Extension Blocked\" alert is shown.")
                                 .fixedSize(horizontal: false, vertical: true)

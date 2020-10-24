@@ -22,6 +22,8 @@ struct DriverVersionNotMatchedAlertView: View {
                     .fixedSize(horizontal: false, vertical: true)
 
                 DeactivateDriverButton()
+                    .padding(.vertical, 10)
+                    .padding(.leading, 20)
 
                 Text("2. Restart macOS.")
                     .fontWeight(.bold)
