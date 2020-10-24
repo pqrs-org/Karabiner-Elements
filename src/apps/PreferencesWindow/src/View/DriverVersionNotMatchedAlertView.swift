@@ -25,6 +25,8 @@ struct DriverVersionNotMatchedAlertView: View {
 
                 Text("2. Restart macOS.")
                     .fontWeight(.bold)
+
+                Text("3. Activate the driver after restarting macOS.")
             }
         }
         .padding()
