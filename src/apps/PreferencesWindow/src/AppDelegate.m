@@ -14,7 +14,6 @@
 @property(weak) IBOutlet NSWindow* preferencesWindow;
 @property(weak) IBOutlet PreferencesWindowController* preferencesWindowController;
 @property(weak) IBOutlet SystemPreferencesManager* systemPreferencesManager;
-@property(weak) IBOutlet AlertWindowsManager* alertWindowsManager;
 @property(weak) IBOutlet StateJsonMonitor* stateJsonMonitor;
 
 @end

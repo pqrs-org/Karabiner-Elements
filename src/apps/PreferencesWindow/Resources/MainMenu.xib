@@ -69,7 +69,6 @@
         </customObject>
         <customObject id="Voe-Tx-rLC" customClass="AppDelegate">
             <connections>
-                <outlet property="alertWindowsManager" destination="C1e-TA-U5L" id="ecT-Qz-Kk9"/>
                 <outlet property="complexModificationsFileImportWindowController" destination="1ch-Te-EDv" id="TJS-aK-9xm"/>
                 <outlet property="preferencesWindow" destination="QvC-M9-y7g" id="91M-TG-qdJ"/>
                 <outlet property="preferencesWindowController" destination="5ke-qB-Wr5" id="Iam-4e-IHj"/>
@@ -463,16 +462,16 @@
                 <autoresizingMask key="autoresizingMask"/>
                 <subviews>
                     <tabView initialItem="SOT-pf-9fT" translatesAutoresizingMaskIntoConstraints="NO" id="W8s-8N-CIx">
-                        <rect key="frame" x="13" y="10" width="874" height="252"/>
+                        <rect key="frame" x="13" y="10" width="874" height="204"/>
                         <font key="font" metaFont="menu"/>
                         <tabViewItems>
                             <tabViewItem label="Simple modifications" identifier="1" id="SOT-pf-9fT">
                                 <view key="view" id="aYZ-Ew-w2F">
-                                    <rect key="frame" x="10" y="33" width="854" height="206"/>
+                                    <rect key="frame" x="10" y="33" width="854" height="158"/>
                                     <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                     <subviews>
                                         <customView translatesAutoresizingMaskIntoConstraints="NO" id="Cqw-ll-1Rg">
-                                            <rect key="frame" x="172" y="165" width="511" height="31"/>
+                                            <rect key="frame" x="172" y="117" width="511" height="31"/>
                                             <subviews>
                                                 <popUpButton verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="oB5-NY-D3P">
                                                     <rect key="frame" x="99" y="2" width="405" height="25"/>
@@ -507,13 +506,13 @@
                                             </constraints>
                                         </customView>
                                         <scrollView autohidesScrollers="YES" horizontalLineScroll="28" horizontalPageScroll="10" verticalLineScroll="28" verticalPageScroll="10" usesPredominantAxisScrolling="NO" translatesAutoresizingMaskIntoConstraints="NO" id="7r4-lM-Seb">
-                                            <rect key="frame" x="17" y="43" width="820" height="112"/>
+                                            <rect key="frame" x="17" y="43" width="820" height="64"/>
                                             <clipView key="contentView" id="fPj-Ru-opD">
-                                                <rect key="frame" x="1" y="0.0" width="818" height="111"/>
+                                                <rect key="frame" x="1" y="0.0" width="818" height="63"/>
                                                 <autoresizingMask key="autoresizingMask"/>
                                                 <subviews>
                                                     <tableView verticalHuggingPriority="750" allowsExpansionToolTips="YES" columnAutoresizingStyle="firstColumnOnly" alternatingRowBackgroundColors="YES" columnReordering="NO" columnSelection="YES" columnResizing="NO" multipleSelection="NO" autosaveColumns="NO" rowHeight="26" rowSizeStyle="automatic" headerView="bin-92-FO9" viewBased="YES" id="qEO-TG-yM2">
-                                                        <rect key="frame" x="0.0" y="0.0" width="818" height="88"/>
+                                                        <rect key="frame" x="0.0" y="0.0" width="818" height="40"/>
                                                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                                         <size key="intercellSpacing" width="3" height="2"/>
                                                         <color key="backgroundColor" name="controlBackgroundColor" catalog="System" colorSpace="catalog"/>
@@ -2933,6 +2932,16 @@ Gw
             </view>
             <point key="canvasLocation" x="168" y="1433"/>
         </window>
+        <customObject id="zwm-D1-Lb2" customClass="AppDelegate">
+            <connections>
+                <outlet property="complexModificationsFileImportWindowController" destination="1ch-Te-EDv" id="yAC-Gv-EpW"/>
+                <outlet property="preferencesWindow" destination="QvC-M9-y7g" id="Z1v-uu-Cda"/>
+                <outlet property="preferencesWindowController" destination="5ke-qB-Wr5" id="lHO-mv-I2V"/>
+                <outlet property="simpleModificationsTableViewController" destination="4f7-Hm-cOy" id="Qdh-gE-IQP"/>
+                <outlet property="stateJsonMonitor" destination="Aie-gC-FHB" id="O2n-kt-ffY"/>
+                <outlet property="systemPreferencesManager" destination="gwA-uV-a9x" id="7Dc-ew-8op"/>
+            </connections>
+        </customObject>
     </objects>
     <resources>
         <image name="NSCaution" width="32" height="32"/>
