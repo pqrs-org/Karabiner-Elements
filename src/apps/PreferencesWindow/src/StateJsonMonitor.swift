@@ -13,7 +13,7 @@ private func callback(_ filePath: UnsafePointer<Int8>?,
     }
 }
 
-struct State: Codable {
+private struct State: Codable {
     var driver_loaded: Bool?
     var driver_version_matched: Bool?
     var hid_device_open_permitted: Bool?
@@ -21,8 +21,8 @@ struct State: Codable {
 
 @objc
 public class StateJsonMonitor: NSObject {
-    @IBOutlet var alertWindowsManager: AlertWindowsManager!
-    var states: [String: State] = [:]
+    @IBOutlet private var alertWindowsManager: AlertWindowsManager!
+    private var states: [String: State] = [:]
 
     @objc
     public func start() {
