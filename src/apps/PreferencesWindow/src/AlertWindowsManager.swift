@@ -26,6 +26,7 @@ public class AlertWindowsManager: NSObject {
                 backing: .buffered,
                 defer: false
             )
+            driverNotLoadedAlertWindow!.hidesOnDeactivate = false
             driverNotLoadedAlertWindow!.title = DriverNotLoadedAlertView.title
             driverNotLoadedAlertWindow!.contentView = NSHostingView(rootView: DriverNotLoadedAlertView())
             driverNotLoadedAlertWindow!.centerToOtherWindow(parentWindow)
@@ -61,6 +62,7 @@ public class AlertWindowsManager: NSObject {
                 backing: .buffered,
                 defer: false
             )
+            driverVersionNotMatchedAlertWindow!.hidesOnDeactivate = false
             driverVersionNotMatchedAlertWindow!.title = DriverVersionNotMatchedAlertView.title
             driverVersionNotMatchedAlertWindow!.contentView = NSHostingView(rootView: DriverVersionNotMatchedAlertView())
             driverVersionNotMatchedAlertWindow!.centerToOtherWindow(parentWindow)
@@ -96,6 +98,7 @@ public class AlertWindowsManager: NSObject {
                 backing: .buffered,
                 defer: false
             )
+            inputMonitoringPermissionsAlertWindow!.hidesOnDeactivate = false
             inputMonitoringPermissionsAlertWindow!.title = InputMonitoringPermissionsAlertView.title
             inputMonitoringPermissionsAlertWindow!.contentView = NSHostingView(rootView: InputMonitoringPermissionsAlertView())
             inputMonitoringPermissionsAlertWindow!.centerToOtherWindow(parentWindow)

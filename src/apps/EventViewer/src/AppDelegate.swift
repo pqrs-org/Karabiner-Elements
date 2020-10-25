@@ -36,6 +36,7 @@ public class AppDelegate: NSObject, NSApplicationDelegate {
                     backing: .buffered,
                     defer: false
                 )
+                self.inputMonitoringAlertWindow!.hidesOnDeactivate = false
                 self.inputMonitoringAlertWindow!.title = "Input Monitoring Permissions Alert"
                 self.inputMonitoringAlertWindow!.contentView = NSHostingView(rootView: InputMonitoringAlertView())
                 self.inputMonitoringAlertWindow!.centerToOtherWindow(self.window)
