@@ -47,9 +47,9 @@ int main(int argc, const char* argv[]) {
   //
 
   krbn::launchctl_utility::manage_session_monitor();
+  krbn::launchctl_utility::manage_console_user_server(true);
   krbn::launchctl_utility::manage_observer_agent();
   krbn::launchctl_utility::manage_grabber_agent();
-  krbn::launchctl_utility::manage_console_user_server(true);
 
   //
   // Migrate old configuration file

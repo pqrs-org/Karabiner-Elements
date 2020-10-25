@@ -84,14 +84,6 @@ void libkrbn_launchctl_manage_session_monitor(void) {
   krbn::launchctl_utility::manage_session_monitor();
 }
 
-void libkrbn_launchctl_manage_observer_agent(void) {
-  krbn::launchctl_utility::manage_observer_agent();
-}
-
-void libkrbn_launchctl_manage_grabber_agent(void) {
-  krbn::launchctl_utility::manage_grabber_agent();
-}
-
 void libkrbn_launchctl_restart_console_user_server(void) {
   krbn::launchctl_utility::restart_console_user_server();
 }

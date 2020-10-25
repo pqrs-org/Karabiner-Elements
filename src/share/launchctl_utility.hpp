@@ -16,8 +16,9 @@ inline void manage_observer_agent(void) {
   pqrs::osx::launchctl::enable(domain_target,
                                service_name,
                                service_path);
-
-  // We should not kickstart observer agent here because observer agent is designed to run only once.
+  pqrs::osx::launchctl::kickstart(domain_target,
+                                  service_name,
+                                  false);
 }
 
 inline void manage_grabber_agent(void) {
@@ -28,7 +29,9 @@ inline void manage_grabber_agent(void) {
   pqrs::osx::launchctl::enable(domain_target,
                                service_name,
                                service_path);
-  // We should not kickstart observer agent here because observer agent is designed to run only once.
+  pqrs::osx::launchctl::kickstart(domain_target,
+                                  service_name,
+                                  false);
 }
 
 inline void manage_session_monitor(void) {

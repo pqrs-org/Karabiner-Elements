@@ -116,9 +116,8 @@
 
   // ----------------------------------------
   libkrbn_launchctl_manage_session_monitor();
-  libkrbn_launchctl_manage_observer_agent();
-  libkrbn_launchctl_manage_grabber_agent();
   libkrbn_launchctl_manage_console_user_server(true);
+  // Do not manage grabber_agent and observer_agent because they are designed to run only once.
 }
 
 - (void)show {
