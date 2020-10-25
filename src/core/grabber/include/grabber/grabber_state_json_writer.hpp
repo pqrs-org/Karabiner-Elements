@@ -11,7 +11,7 @@ namespace grabber {
 class grabber_state_json_writer final {
 public:
   grabber_state_json_writer(void) : state_json_writer_(constants::get_grabber_state_json_file_path()) {
-    set_hid_device_open_permitted(std::nullopt);
+    set_hid_device_open_permitted(false);
     set_driver_loaded(std::nullopt);
     set_driver_version_matched(std::nullopt);
   }
