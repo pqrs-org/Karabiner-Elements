@@ -1,6 +1,6 @@
 # Changelog
 
-## Beta
+## Karabiner-Elements 13.1.0
 
 -   🔔 Important Notes
     -   **Restarting macOS is required** after upgrading from v13.0.0.<br />
