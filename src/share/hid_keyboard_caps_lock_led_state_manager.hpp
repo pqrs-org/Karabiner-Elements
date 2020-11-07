@@ -58,21 +58,33 @@ public:
 
   void async_start(void) {
     enqueue_to_dispatcher([this] {
-      started_ = true;
+      if (!started_) {
+        started_ = true;
 
-      timer_.start(
-          [this] {
-            update_caps_lock_led();
-          },
-          std::chrono::milliseconds(3000));
+        timer_.start(
+            [this] {
+              update_caps_lock_led();
+            },
+            std::chrono::milliseconds(3000));
+
+        logger::get_logger()->info(
+            "caps_lock_led_state_manager is started: {0}",
+            iokit_utility::make_device_name(*device_));
+      }
     });
   }
 
   void async_stop(void) {
     enqueue_to_dispatcher([this] {
-      started_ = false;
+      if (started_) {
+        started_ = false;
 
-      timer_.stop();
+        timer_.stop();
+
+        logger::get_logger()->info(
+            "caps_lock_led_state_manager is stopped: {0}",
+            iokit_utility::make_device_name(*device_));
+      }
     });
   }
 
