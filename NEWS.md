@@ -2,6 +2,9 @@
 
 ## Karabiner-Elements 13.1.0
 
+-   [📦 Download](https://github.com/pqrs-org/Karabiner-Elements/releases/download/v13.1.0/Karabiner-Elements-13.1.0.dmg)
+-   📅 Release date
+    -   Oct 30, 2020
 -   🔔 Important Notes
     -   **Restarting macOS is required** after upgrading from v13.0.0.<br />
         The following alert will be shown after upgrade. Please follow the instructions.<br />
