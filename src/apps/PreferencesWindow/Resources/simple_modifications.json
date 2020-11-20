@@ -636,6 +636,13 @@
     },
     {
         "not_from": true,
+        "label": "spotlight",
+        "data": {
+            "key_code": "spotlight"
+        }
+    },
+    {
+        "not_from": true,
         "label": "dashboard",
         "data": {
             "key_code": "dashboard"

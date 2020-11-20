@@ -201,23 +201,32 @@ constexpr value_t keyboard_or_keypad_reserved(type_safe::get(pqrs::hid::usage::k
 // A pseudo key that does not send any event.
 constexpr value_t vk_none(0x10001);
 
+//
 // Keys that are not in generic keyboard_or_keypad usage_page.
-constexpr value_t apple_vendor_top_case_keyboard_fn(0x10002);
-constexpr value_t consumer_display_brightness_decrement(0x10003);
-constexpr value_t consumer_display_brightness_increment(0x10004);
-constexpr value_t apple_vendor_keyboard_dashboard(0x10005);
-constexpr value_t apple_vendor_keyboard_launchpad(0x10006);
-constexpr value_t apple_vendor_keyboard_mission_control(0x10007);
-constexpr value_t apple_vendor_top_case_illumination_decrement(0x10008);
-constexpr value_t apple_vendor_top_case_illumination_increment(0x10009);
-constexpr value_t consumer_rewind(0x1000a);
-constexpr value_t consumer_play_or_pause(0x1000b);
-constexpr value_t consumer_fast_forward(0x1000c);
-constexpr value_t consumer_eject(0x1000d);
-constexpr value_t apple_vendor_keyboard_display_brightness_decrement(0x1000e);
-constexpr value_t apple_vendor_keyboard_display_brightness_increment(0x1000f);
-constexpr value_t apple_vendor_top_case_display_brightness_decrement(0x10010);
-constexpr value_t apple_vendor_top_case_display_brightness_increment(0x10011);
+//
+
+constexpr type_safe::underlying_type<value_t> apple_vendor_keyboard_base(0x11000);
+constexpr value_t apple_vendor_keyboard_spotlight(apple_vendor_keyboard_base + 0x01);
+constexpr value_t apple_vendor_keyboard_dashboard(apple_vendor_keyboard_base + 0x02);
+constexpr value_t apple_vendor_keyboard_launchpad(apple_vendor_keyboard_base + 0x04);
+constexpr value_t apple_vendor_keyboard_mission_control(apple_vendor_keyboard_base + 0x10);
+constexpr value_t apple_vendor_keyboard_display_brightness_increment(apple_vendor_keyboard_base + 0x20);
+constexpr value_t apple_vendor_keyboard_display_brightness_decrement(apple_vendor_keyboard_base + 0x21);
+
+constexpr type_safe::underlying_type<value_t> apple_vendor_top_case_base(0x12000);
+constexpr value_t apple_vendor_top_case_keyboard_fn(apple_vendor_top_case_base + 0x03);
+constexpr value_t apple_vendor_top_case_display_brightness_increment(apple_vendor_top_case_base + 0x04);
+constexpr value_t apple_vendor_top_case_display_brightness_decrement(apple_vendor_top_case_base + 0x05);
+constexpr value_t apple_vendor_top_case_illumination_increment(apple_vendor_top_case_base + 0x08);
+constexpr value_t apple_vendor_top_case_illumination_decrement(apple_vendor_top_case_base + 0x09);
+
+constexpr type_safe::underlying_type<value_t> consumer_base(0x13000);
+constexpr value_t consumer_display_brightness_increment(consumer_base + 0x6f);
+constexpr value_t consumer_display_brightness_decrement(consumer_base + 0x70);
+constexpr value_t consumer_fast_forward(consumer_base + 0xb3);
+constexpr value_t consumer_rewind(consumer_base + 0xb4);
+constexpr value_t consumer_eject(consumer_base + 0xb8);
+constexpr value_t consumer_play_or_pause(consumer_base + 0xcd);
 
 namespace impl {
 constexpr std::pair<const mapbox::eternal::string, const value_t> name_value_pairs[] = {
@@ -410,6 +419,7 @@ constexpr std::pair<const mapbox::eternal::string, const value_t> name_value_pai
     {"display_brightness_increment", consumer_display_brightness_increment},
     {"mission_control", apple_vendor_keyboard_mission_control},
     {"launchpad", apple_vendor_keyboard_launchpad},
+    {"spotlight", apple_vendor_keyboard_spotlight},
     {"dashboard", apple_vendor_keyboard_dashboard},
     {"illumination_decrement", apple_vendor_top_case_illumination_decrement},
     {"illumination_increment", apple_vendor_top_case_illumination_increment},
@@ -448,6 +458,7 @@ constexpr auto value_usage_page_map = mapbox::eternal::map<value_t, pqrs::hid::u
     {apple_vendor_top_case_display_brightness_increment, pqrs::hid::usage_page::apple_vendor_top_case},
 
     // pqrs::hid::usage_page::apple_vendor_keyboard
+    {apple_vendor_keyboard_spotlight, pqrs::hid::usage_page::apple_vendor_keyboard},
     {apple_vendor_keyboard_dashboard, pqrs::hid::usage_page::apple_vendor_keyboard},
     {apple_vendor_keyboard_launchpad, pqrs::hid::usage_page::apple_vendor_keyboard},
     {apple_vendor_keyboard_mission_control, pqrs::hid::usage_page::apple_vendor_keyboard},
@@ -475,6 +486,7 @@ constexpr auto value_usage_map = mapbox::eternal::map<value_t, pqrs::hid::usage:
     {apple_vendor_top_case_display_brightness_increment, pqrs::hid::usage::apple_vendor_top_case::brightness_up},
 
     // pqrs::hid::usage::apple_vendor_keyboard
+    {apple_vendor_keyboard_spotlight, pqrs::hid::usage::apple_vendor_keyboard::spotlight},
     {apple_vendor_keyboard_dashboard, pqrs::hid::usage::apple_vendor_keyboard::dashboard},
     {apple_vendor_keyboard_launchpad, pqrs::hid::usage::apple_vendor_keyboard::launchpad},
     {apple_vendor_keyboard_mission_control, pqrs::hid::usage::apple_vendor_keyboard::expose_all},
@@ -561,7 +573,9 @@ inline std::optional<key_code::value_t> make_key_code(pqrs::hid::usage_page::val
     }
 
   } else if (usage_page == pqrs::hid::usage_page::apple_vendor_keyboard) {
-    if (usage == pqrs::hid::usage::apple_vendor_keyboard::dashboard) {
+    if (usage == pqrs::hid::usage::apple_vendor_keyboard::spotlight) {
+      return key_code::apple_vendor_keyboard_spotlight;
+    } else if (usage == pqrs::hid::usage::apple_vendor_keyboard::dashboard) {
       return key_code::apple_vendor_keyboard_dashboard;
     } else if (usage == pqrs::hid::usage::apple_vendor_keyboard::function) {
       return key_code::apple_vendor_top_case_keyboard_fn;
