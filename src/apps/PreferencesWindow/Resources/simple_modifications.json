@@ -638,7 +638,7 @@
         "not_from": true,
         "label": "spotlight",
         "data": {
-            "key_code": "spotlight"
+            "apple_vendor_keyboard_key_code": "spotlight"
         }
     },
     {
