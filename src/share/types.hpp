@@ -2,6 +2,7 @@
 
 #include "types/absolute_time_duration.hpp"
 #include "types/absolute_time_point.hpp"
+#include "types/apple_vendor_keyboard_key_code.hpp"
 #include "types/consumer_key_code.hpp"
 #include "types/device_id.hpp"
 #include "types/device_identifiers.hpp"
