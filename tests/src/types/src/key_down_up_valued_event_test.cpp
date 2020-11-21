@@ -20,6 +20,26 @@ TEST_CASE("key_down_up_valued_event") {
     REQUIRE(nlohmann::json(e).get<krbn::key_down_up_valued_event>() == e);
   }
   {
+    krbn::key_down_up_valued_event e(krbn::apple_vendor_keyboard_key_code::expose_all);
+    REQUIRE(e.modifier_flag() == false);
+    REQUIRE(nlohmann::json(e).get<krbn::key_down_up_valued_event>() == e);
+  }
+  {
+    krbn::key_down_up_valued_event e(krbn::apple_vendor_keyboard_key_code::function);
+    REQUIRE(e.modifier_flag() == true);
+    REQUIRE(nlohmann::json(e).get<krbn::key_down_up_valued_event>() == e);
+  }
+  {
+    krbn::key_down_up_valued_event e(krbn::apple_vendor_top_case_key_code::brightness_down);
+    REQUIRE(e.modifier_flag() == false);
+    REQUIRE(nlohmann::json(e).get<krbn::key_down_up_valued_event>() == e);
+  }
+  {
+    krbn::key_down_up_valued_event e(krbn::apple_vendor_top_case_key_code::keyboard_fn);
+    REQUIRE(e.modifier_flag() == true);
+    REQUIRE(nlohmann::json(e).get<krbn::key_down_up_valued_event>() == e);
+  }
+  {
     krbn::key_down_up_valued_event e(krbn::pointing_button::button1);
     REQUIRE(e.modifier_flag() == false);
     REQUIRE(nlohmann::json(e).get<krbn::key_down_up_valued_event>() == e);

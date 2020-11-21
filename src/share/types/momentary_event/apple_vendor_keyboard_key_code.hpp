@@ -4,6 +4,7 @@
 #include <mapbox/eternal.hpp>
 #include <pqrs/osx/iokit_hid_value.hpp>
 #include <spdlog/fmt/fmt.h>
+#include "../modifier_flag.hpp"
 
 namespace krbn {
 namespace apple_vendor_keyboard_key_code {
@@ -139,6 +140,14 @@ inline std::optional<pqrs::hid::usage_page::value_t> make_hid_usage_page(apple_v
 
 inline std::optional<pqrs::hid::usage::value_t> make_hid_usage(apple_vendor_keyboard_key_code::value_t apple_vendor_keyboard_key_code) {
   return pqrs::hid::usage::value_t(type_safe::get(apple_vendor_keyboard_key_code));
+}
+
+inline std::optional<modifier_flag> make_modifier_flag(apple_vendor_keyboard_key_code::value_t apple_vendor_keyboard_key_code) {
+  if (apple_vendor_keyboard_key_code == apple_vendor_keyboard_key_code::function) {
+    return modifier_flag::fn;
+  }
+
+  return std::nullopt;
 }
 
 namespace apple_vendor_keyboard_key_code {

@@ -1,10 +1,10 @@
 #pragma once
 
-#include "apple_vendor_keyboard_key_code.hpp"
-#include "apple_vendor_top_case_key_code.hpp"
-#include "consumer_key_code.hpp"
-#include "key_code.hpp"
-#include "pointing_button.hpp"
+#include "momentary_event/apple_vendor_keyboard_key_code.hpp"
+#include "momentary_event/apple_vendor_top_case_key_code.hpp"
+#include "momentary_event/consumer_key_code.hpp"
+#include "momentary_event/key_code.hpp"
+#include "momentary_event/pointing_button.hpp"
 #include <nlohmann/json.hpp>
 #include <pqrs/hash.hpp>
 #include <variant>
@@ -45,8 +45,45 @@ public:
       if (auto&& m = make_modifier_flag(*v)) {
         return true;
       }
+    } else if (auto&& v = find<apple_vendor_keyboard_key_code::value_t>()) {
+      if (auto&& m = make_modifier_flag(*v)) {
+        return true;
+      }
+    } else if (auto&& v = find<apple_vendor_top_case_key_code::value_t>()) {
+      if (auto&& m = make_modifier_flag(*v)) {
+        return true;
+      }
     }
+
     return false;
+  }
+
+  std::optional<std::pair<pqrs::hid::usage_page::value_t, pqrs::hid::usage::value_t>> make_usage_page_usage(void) {
+    std::optional<pqrs::hid::usage_page::value_t> usage_page;
+    std::optional<pqrs::hid::usage::value_t> usage;
+
+    if (auto value = find<key_code::value_t>()) {
+      usage_page = make_hid_usage_page(*value);
+      usage = make_hid_usage(*value);
+    } else if (auto value = find<consumer_key_code::value_t>()) {
+      usage_page = make_hid_usage_page(*value);
+      usage = make_hid_usage(*value);
+    } else if (auto value = find<apple_vendor_keyboard_key_code::value_t>()) {
+      usage_page = make_hid_usage_page(*value);
+      usage = make_hid_usage(*value);
+    } else if (auto value = find<apple_vendor_top_case_key_code::value_t>()) {
+      usage_page = make_hid_usage_page(*value);
+      usage = make_hid_usage(*value);
+    } else if (auto value = find<pointing_button::value_t>()) {
+      usage_page = make_hid_usage_page(*value);
+      usage = make_hid_usage(*value);
+    }
+
+    if (usage_page && usage) {
+      return std::make_pair(*usage_page, *usage);
+    }
+
+    return std::nullopt;
   }
 
   std::string to_string(void) const {

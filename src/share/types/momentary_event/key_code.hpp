@@ -1,6 +1,6 @@
 #pragma once
 
-#include "modifier_flag.hpp"
+#include "../modifier_flag.hpp"
 #include <pqrs/osx/iokit_hid_value.hpp>
 
 namespace krbn {

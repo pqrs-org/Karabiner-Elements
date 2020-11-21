@@ -89,51 +89,27 @@ public:
 
       switch (front_input_event.get_event().get_type()) {
         case event_queue::event::type::key_code:
-          if (auto key_code = front_input_event.get_event().get_key_code()) {
-            if (auto hid_usage_page = make_hid_usage_page(*key_code)) {
-              if (auto hid_usage = make_hid_usage(*key_code)) {
-                if (make_modifier_flag(*key_code) == std::nullopt) {
-                  switch (front_input_event.get_event_type()) {
-                    case event_type::key_down:
-                      key_event_dispatcher_.dispatch_key_down_event(front_input_event.get_device_id(),
-                                                                    *hid_usage_page,
-                                                                    *hid_usage,
-                                                                    queue_,
-                                                                    front_input_event.get_event_time_stamp().get_time_stamp());
-                      break;
-
-                    case event_type::key_up:
-                      key_event_dispatcher_.dispatch_key_up_event(*hid_usage_page,
-                                                                  *hid_usage,
-                                                                  queue_,
-                                                                  front_input_event.get_event_time_stamp().get_time_stamp());
-                      break;
-
-                    case event_type::single:
-                      break;
-                  }
-                }
-              }
-            }
-          }
-          break;
-
         case event_queue::event::type::consumer_key_code:
-          if (auto consumer_key_code = front_input_event.get_event().get_consumer_key_code()) {
-            if (auto hid_usage_page = make_hid_usage_page(*consumer_key_code)) {
-              if (auto hid_usage = make_hid_usage(*consumer_key_code)) {
+        case event_queue::event::type::apple_vendor_keyboard_key_code:
+        case event_queue::event::type::apple_vendor_top_case_key_code:
+          if (auto e = front_input_event.get_event().make_key_down_up_valued_event()) {
+            if (!e->modifier_flag()) {
+              if (auto pair = e->make_usage_page_usage()) {
+                auto hid_usage_page = pair->first;
+                auto hid_usage = pair->second;
+
                 switch (front_input_event.get_event_type()) {
                   case event_type::key_down:
                     key_event_dispatcher_.dispatch_key_down_event(front_input_event.get_device_id(),
-                                                                  *hid_usage_page,
-                                                                  *hid_usage,
+                                                                  hid_usage_page,
+                                                                  hid_usage,
                                                                   queue_,
                                                                   front_input_event.get_event_time_stamp().get_time_stamp());
                     break;
 
                   case event_type::key_up:
-                    key_event_dispatcher_.dispatch_key_up_event(*hid_usage_page,
-                                                                *hid_usage,
+                    key_event_dispatcher_.dispatch_key_up_event(hid_usage_page,
+                                                                hid_usage,
                                                                 queue_,
                                                                 front_input_event.get_event_time_stamp().get_time_stamp());
                     break;

@@ -132,6 +132,14 @@ inline std::optional<pqrs::hid::usage::value_t> make_hid_usage(apple_vendor_top_
   return pqrs::hid::usage::value_t(type_safe::get(apple_vendor_top_case_key_code));
 }
 
+inline std::optional<modifier_flag> make_modifier_flag(apple_vendor_top_case_key_code::value_t apple_vendor_top_case_key_code) {
+  if (apple_vendor_top_case_key_code == apple_vendor_top_case_key_code::keyboard_fn) {
+    return modifier_flag::fn;
+  }
+
+  return std::nullopt;
+}
+
 namespace apple_vendor_top_case_key_code {
 inline void from_json(const nlohmann::json& json, apple_vendor_top_case_key_code::value_t& value) {
   if (json.is_string()) {

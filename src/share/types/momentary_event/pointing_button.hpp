@@ -146,6 +146,14 @@ inline std::optional<pointing_button::value_t> make_pointing_button(const pqrs::
   return std::nullopt;
 }
 
+inline std::optional<pqrs::hid::usage_page::value_t> make_hid_usage_page(pointing_button::value_t pointing_button) {
+  return pqrs::hid::usage_page::button;
+}
+
+inline std::optional<pqrs::hid::usage::value_t> make_hid_usage(pointing_button::value_t pointing_button) {
+  return pqrs::hid::usage::value_t(type_safe::get(pointing_button));
+}
+
 namespace pointing_button {
 inline void from_json(const nlohmann::json& json, value_t& value) {
   if (json.is_string()) {
