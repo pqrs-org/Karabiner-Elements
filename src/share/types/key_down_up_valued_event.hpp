@@ -1,5 +1,7 @@
 #pragma once
 
+#include "apple_vendor_keyboard_key_code.hpp"
+#include "apple_vendor_top_case_key_code.hpp"
 #include "consumer_key_code.hpp"
 #include "key_code.hpp"
 #include "pointing_button.hpp"
@@ -12,6 +14,8 @@ class key_down_up_valued_event final {
 public:
   using value_t = std::variant<key_code::value_t,
                                consumer_key_code::value_t,
+                               apple_vendor_keyboard_key_code::value_t,
+                               apple_vendor_top_case_key_code::value_t,
                                pointing_button::value_t,
                                std::monostate>;
 
@@ -58,6 +62,18 @@ public:
       });
       return json.dump();
 
+    } else if (auto value = find<apple_vendor_keyboard_key_code::value_t>()) {
+      auto json = nlohmann::json::object({
+          {"apple_vendor_keyboard_key_code", make_apple_vendor_keyboard_key_code_name(*value)},
+      });
+      return json.dump();
+
+    } else if (auto value = find<apple_vendor_top_case_key_code::value_t>()) {
+      auto json = nlohmann::json::object({
+          {"apple_vendor_top_case_key_code", make_apple_vendor_top_case_key_code_name(*value)},
+      });
+      return json.dump();
+
     } else if (auto value = find<pointing_button::value_t>()) {
       auto json = nlohmann::json::object({
           {"pointing_button", make_pointing_button_name(*value)},
@@ -87,6 +103,12 @@ inline void to_json(nlohmann::json& json, const key_down_up_valued_event& value)
   } else if (auto v = value.find<consumer_key_code::value_t>()) {
     json["consumer_key_code"] = type_safe::get(*v);
 
+  } else if (auto v = value.find<apple_vendor_keyboard_key_code::value_t>()) {
+    json["apple_vendor_keyboard_key_code"] = type_safe::get(*v);
+
+  } else if (auto v = value.find<apple_vendor_top_case_key_code::value_t>()) {
+    json["apple_vendor_top_case_key_code"] = type_safe::get(*v);
+
   } else if (auto v = value.find<pointing_button::value_t>()) {
     json["pointing_button"] = type_safe::get(*v);
   }
@@ -101,6 +123,12 @@ inline void from_json(const nlohmann::json& json, key_down_up_valued_event& valu
 
     } else if (k == "consumer_key_code") {
       value.set_value(v.get<consumer_key_code::value_t>());
+
+    } else if (k == "apple_vendor_keyboard_key_code") {
+      value.set_value(v.get<apple_vendor_keyboard_key_code::value_t>());
+
+    } else if (k == "apple_vendor_top_case_key_code") {
+      value.set_value(v.get<apple_vendor_top_case_key_code::value_t>());
 
     } else if (k == "pointing_button") {
       value.set_value(v.get<pointing_button::value_t>());
