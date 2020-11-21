@@ -21,6 +21,8 @@ public:
     none,
     key_code,
     consumer_key_code,
+    apple_vendor_keyboard_key_code,
+    apple_vendor_top_case_key_code,
     pointing_button,
     pointing_motion,
     // virtual events
@@ -43,6 +45,8 @@ public:
 
   using value_t = std::variant<key_code::value_t,                                        // For type::key_code
                                consumer_key_code::value_t,                               // For type::consumer_key_code
+                               apple_vendor_keyboard_key_code::value_t,                  // For type::apple_vendor_keyboard_key_code
+                               apple_vendor_top_case_key_code::value_t,                  // For type::apple_vendor_top_case_key_code
                                pointing_button::value_t,                                 // For type::pointing_button
                                pointing_motion,                                          // For type::pointing_motion
                                int64_t,                                                  // For type::caps_lock_state_changed
@@ -73,6 +77,10 @@ public:
             result.value_ = value.get<key_code::value_t>();
           } else if (key == "consumer_key_code") {
             result.value_ = value.get<consumer_key_code::value_t>();
+          } else if (key == "apple_vendor_keyboard_key_code") {
+            result.value_ = value.get<apple_vendor_keyboard_key_code::value_t>();
+          } else if (key == "apple_vendor_top_case_key_code") {
+            result.value_ = value.get<apple_vendor_top_case_key_code::value_t>();
           } else if (key == "pointing_button") {
             result.value_ = value.get<pointing_button::value_t>();
           } else if (key == "pointing_motion") {
@@ -121,6 +129,18 @@ public:
       case type::consumer_key_code:
         if (auto v = get_consumer_key_code()) {
           json["consumer_key_code"] = make_consumer_key_code_name(*v);
+        }
+        break;
+
+      case type::apple_vendor_keyboard_key_code:
+        if (auto v = get_apple_vendor_keyboard_key_code()) {
+          json["apple_vendor_keyboard_key_code"] = make_apple_vendor_keyboard_key_code_name(*v);
+        }
+        break;
+
+      case type::apple_vendor_top_case_key_code:
+        if (auto v = get_apple_vendor_top_case_key_code()) {
+          json["apple_vendor_top_case_key_code"] = make_apple_vendor_top_case_key_code_name(*v);
         }
         break;
 
@@ -207,6 +227,14 @@ public:
 
   explicit event(consumer_key_code::value_t consumer_key_code) : type_(type::consumer_key_code),
                                                                  value_(consumer_key_code) {
+  }
+
+  explicit event(apple_vendor_keyboard_key_code::value_t apple_vendor_keyboard_key_code) : type_(type::apple_vendor_keyboard_key_code),
+                                                                                           value_(apple_vendor_keyboard_key_code) {
+  }
+
+  explicit event(apple_vendor_top_case_key_code::value_t apple_vendor_top_case_key_code) : type_(type::apple_vendor_top_case_key_code),
+                                                                                           value_(apple_vendor_top_case_key_code) {
   }
 
   explicit event(pointing_button::value_t pointing_button) : type_(type::pointing_button),
@@ -334,6 +362,26 @@ public:
     return std::nullopt;
   }
 
+  std::optional<apple_vendor_keyboard_key_code::value_t> get_apple_vendor_keyboard_key_code(void) const {
+    try {
+      if (type_ == type::apple_vendor_keyboard_key_code) {
+        return std::get<apple_vendor_keyboard_key_code::value_t>(value_);
+      }
+    } catch (std::bad_variant_access&) {
+    }
+    return std::nullopt;
+  }
+
+  std::optional<apple_vendor_top_case_key_code::value_t> get_apple_vendor_top_case_key_code(void) const {
+    try {
+      if (type_ == type::apple_vendor_top_case_key_code) {
+        return std::get<apple_vendor_top_case_key_code::value_t>(value_);
+      }
+    } catch (std::bad_variant_access&) {
+    }
+    return std::nullopt;
+  }
+
   std::optional<pointing_button::value_t> get_pointing_button(void) const {
     try {
       if (type_ == type::pointing_button) {
@@ -431,6 +479,12 @@ public:
     } else if (auto value = find<consumer_key_code::value_t>()) {
       return std::make_shared<key_down_up_valued_event>(*value);
 
+    } else if (auto value = find<apple_vendor_keyboard_key_code::value_t>()) {
+      return std::make_shared<key_down_up_valued_event>(*value);
+
+    } else if (auto value = find<apple_vendor_top_case_key_code::value_t>()) {
+      return std::make_shared<key_down_up_valued_event>(*value);
+
     } else if (auto value = find<pointing_button::value_t>()) {
       return std::make_shared<key_down_up_valued_event>(*value);
     }
@@ -460,6 +514,8 @@ private:
       TO_C_STRING(none);
       TO_C_STRING(key_code);
       TO_C_STRING(consumer_key_code);
+      TO_C_STRING(apple_vendor_keyboard_key_code);
+      TO_C_STRING(apple_vendor_top_case_key_code);
       TO_C_STRING(pointing_button);
       TO_C_STRING(pointing_motion);
       TO_C_STRING(shell_command);
@@ -493,6 +549,8 @@ private:
 
     TO_TYPE(key_code);
     TO_TYPE(consumer_key_code);
+    TO_TYPE(apple_vendor_keyboard_key_code);
+    TO_TYPE(apple_vendor_top_case_key_code);
     TO_TYPE(pointing_button);
     TO_TYPE(pointing_motion);
     TO_TYPE(shell_command);
