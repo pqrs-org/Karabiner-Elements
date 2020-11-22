@@ -38,6 +38,10 @@ inline std::size_t hash_value(const value_t& value) {
 }
 } // namespace vendor_id
 
+inline std::size_t hash_value(const usage_pair& value) {
+  return std::hash<usage_pair>{}(value);
+}
+
 inline std::size_t hash_value(const std::pair<usage_page::value_t, usage::value_t>& value) {
   return std::hash<std::pair<usage_page::value_t, usage::value_t>>{}(value);
 }
