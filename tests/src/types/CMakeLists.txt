@@ -9,7 +9,7 @@ add_executable(
   src/device_identifiers_test.cpp
   src/errors_test.cpp
   src/grabbable_state_test.cpp
-  src/key_down_up_valued_event_test.cpp
+  src/momentary_switch_event_test.cpp
   src/mouse_key_test.cpp
   src/operation_type_test.cpp
   src/pointing_motion_test.cpp

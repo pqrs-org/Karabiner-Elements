@@ -10,7 +10,7 @@
 #include <variant>
 
 namespace krbn {
-class key_down_up_valued_event final {
+class momentary_switch_event final {
 public:
   using value_t = std::variant<key_code::value_t,
                                consumer_key_code::value_t,
@@ -19,11 +19,11 @@ public:
                                pointing_button::value_t,
                                std::monostate>;
 
-  key_down_up_valued_event(void) : value_(std::monostate()) {
+  momentary_switch_event(void) : value_(std::monostate()) {
   }
 
   template <typename T>
-  explicit key_down_up_valued_event(T value) : value_(value) {
+  explicit momentary_switch_event(T value) : value_(value) {
   }
 
   const value_t& get_value(void) const {
@@ -121,11 +121,11 @@ public:
     return "";
   }
 
-  bool operator==(const key_down_up_valued_event& other) const {
+  bool operator==(const momentary_switch_event& other) const {
     return value_ == other.value_;
   }
 
-  bool operator<(const key_down_up_valued_event& other) const {
+  bool operator<(const momentary_switch_event& other) const {
     return value_ < other.value_;
   }
 
@@ -133,7 +133,7 @@ private:
   value_t value_;
 };
 
-inline void to_json(nlohmann::json& json, const key_down_up_valued_event& value) {
+inline void to_json(nlohmann::json& json, const momentary_switch_event& value) {
   if (auto v = value.find<key_code::value_t>()) {
     json["key_code"] = type_safe::get(*v);
 
@@ -151,7 +151,7 @@ inline void to_json(nlohmann::json& json, const key_down_up_valued_event& value)
   }
 }
 
-inline void from_json(const nlohmann::json& json, key_down_up_valued_event& value) {
+inline void from_json(const nlohmann::json& json, momentary_switch_event& value) {
   pqrs::json::requires_object(json, "json");
 
   for (const auto& [k, v] : json.items()) {
@@ -179,8 +179,8 @@ inline void from_json(const nlohmann::json& json, key_down_up_valued_event& valu
 
 namespace std {
 template <>
-struct hash<krbn::key_down_up_valued_event> final {
-  std::size_t operator()(const krbn::key_down_up_valued_event& value) const {
+struct hash<krbn::momentary_switch_event> final {
+  std::size_t operator()(const krbn::momentary_switch_event& value) const {
     std::size_t h = 0;
 
     pqrs::hash::combine(h, value.get_value());

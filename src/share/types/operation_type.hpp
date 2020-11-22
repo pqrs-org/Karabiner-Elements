@@ -6,7 +6,7 @@ namespace krbn {
 enum class operation_type : uint8_t {
   none,
   // observer -> grabber
-  key_down_up_valued_event_arrived,
+  momentary_switch_event_arrived,
   observed_devices_updated,
   caps_lock_state_changed,
   // session_monitor -> grabber
@@ -29,7 +29,7 @@ NLOHMANN_JSON_SERIALIZE_ENUM(
     operation_type,
     {
         {operation_type::none, nullptr},
-        {operation_type::key_down_up_valued_event_arrived, "key_down_up_valued_event_arrived"},
+        {operation_type::momentary_switch_event_arrived, "momentary_switch_event_arrived"},
         {operation_type::observed_devices_updated, "observed_devices_updated"},
         {operation_type::caps_lock_state_changed, "caps_lock_state_changed"},
         {operation_type::console_user_id_changed, "console_user_id_changed"},

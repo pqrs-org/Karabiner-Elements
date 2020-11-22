@@ -12,14 +12,14 @@ public:
   void insert(T value) {
     std::lock_guard<std::mutex> lock(mutex_);
 
-    entries_.insert(key_down_up_valued_event(value));
+    entries_.insert(momentary_switch_event(value));
   }
 
   template <typename T>
   void erase(T value) {
     std::lock_guard<std::mutex> lock(mutex_);
 
-    entries_.erase(key_down_up_valued_event(value));
+    entries_.erase(momentary_switch_event(value));
   }
 
   bool empty(void) const {
@@ -29,7 +29,7 @@ public:
   }
 
 private:
-  std::unordered_set<key_down_up_valued_event> entries_;
+  std::unordered_set<momentary_switch_event> entries_;
   mutable std::mutex mutex_;
 };
 } // namespace krbn

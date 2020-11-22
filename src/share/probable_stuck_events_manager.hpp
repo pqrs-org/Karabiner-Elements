@@ -21,7 +21,7 @@ public:
   probable_stuck_events_manager(void) : last_time_stamp_(0) {
   }
 
-  bool update(const key_down_up_valued_event& event,
+  bool update(const momentary_switch_event& event,
               event_type t,
               absolute_time_point time_stamp,
               device_state state) {
@@ -124,7 +124,7 @@ public:
     last_time_stamp_ = absolute_time_point(0);
   }
 
-  std::optional<key_down_up_valued_event> find_probable_stuck_event(void) const {
+  std::optional<momentary_switch_event> find_probable_stuck_event(void) const {
     std::lock_guard<std::mutex> lock(mutex_);
 
     if (!probable_stuck_events_.empty()) {
@@ -147,12 +147,12 @@ private:
     }
   }
 
-  std::set<key_down_up_valued_event> probable_stuck_events_;
-  std::set<key_down_up_valued_event> key_down_arrived_events_;
-  std::set<key_down_up_valued_event> key_up_events_;
+  std::set<momentary_switch_event> probable_stuck_events_;
+  std::set<momentary_switch_event> key_down_arrived_events_;
+  std::set<momentary_switch_event> key_up_events_;
   // Some devices sends key_up events continuously and never sends paired key_down events.
   // Store them into `exceptional_key_up_events_`.
-  std::set<key_down_up_valued_event> exceptional_key_up_events_;
+  std::set<momentary_switch_event> exceptional_key_up_events_;
   absolute_time_point last_time_stamp_;
   mutable std::mutex mutex_;
 };

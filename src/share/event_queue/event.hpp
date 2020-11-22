@@ -472,21 +472,21 @@ public:
     return std::nullopt;
   }
 
-  std::shared_ptr<key_down_up_valued_event> make_key_down_up_valued_event(void) const {
+  std::shared_ptr<momentary_switch_event> make_momentary_switch_event(void) const {
     if (auto value = find<key_code::value_t>()) {
-      return std::make_shared<key_down_up_valued_event>(*value);
+      return std::make_shared<momentary_switch_event>(*value);
 
     } else if (auto value = find<consumer_key_code::value_t>()) {
-      return std::make_shared<key_down_up_valued_event>(*value);
+      return std::make_shared<momentary_switch_event>(*value);
 
     } else if (auto value = find<apple_vendor_keyboard_key_code::value_t>()) {
-      return std::make_shared<key_down_up_valued_event>(*value);
+      return std::make_shared<momentary_switch_event>(*value);
 
     } else if (auto value = find<apple_vendor_top_case_key_code::value_t>()) {
-      return std::make_shared<key_down_up_valued_event>(*value);
+      return std::make_shared<momentary_switch_event>(*value);
 
     } else if (auto value = find<pointing_button::value_t>()) {
-      return std::make_shared<key_down_up_valued_event>(*value);
+      return std::make_shared<momentary_switch_event>(*value);
     }
 
     return nullptr;

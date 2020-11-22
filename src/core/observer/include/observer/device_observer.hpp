@@ -76,12 +76,12 @@ public:
                                                                 hid_queue_values_converter_.make_hid_values(device_id,
                                                                                                             values_ptr));
             for (const auto& entry : event_queue->get_entries()) {
-              if (auto e = entry.get_event().make_key_down_up_valued_event()) {
+              if (auto e = entry.get_event().make_momentary_switch_event()) {
                 if (auto client = grabber_client_.lock()) {
-                  client->async_key_down_up_valued_event_arrived(device_id,
-                                                                 *e,
-                                                                 entry.get_event_type(),
-                                                                 entry.get_event_time_stamp().get_time_stamp());
+                  client->async_momentary_switch_event_arrived(device_id,
+                                                               *e,
+                                                               entry.get_event_type(),
+                                                               entry.get_event_time_stamp().get_time_stamp());
                 }
               }
             }

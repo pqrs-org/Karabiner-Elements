@@ -92,7 +92,7 @@ public:
         case event_queue::event::type::consumer_key_code:
         case event_queue::event::type::apple_vendor_keyboard_key_code:
         case event_queue::event::type::apple_vendor_top_case_key_code:
-          if (auto e = front_input_event.get_event().make_key_down_up_valued_event()) {
+          if (auto e = front_input_event.get_event().make_momentary_switch_event()) {
             if (!e->modifier_flag()) {
               if (auto pair = e->make_usage_page_usage()) {
                 auto hid_usage_page = pair->first;

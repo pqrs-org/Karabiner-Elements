@@ -8,13 +8,13 @@ TEST_CASE("probable_stuck_events_manager") {
   // ----------------------------------------
   // key_down, key_up
 
-  REQUIRE(m.update(krbn::key_down_up_valued_event(krbn::key_code::keyboard_a),
+  REQUIRE(m.update(krbn::momentary_switch_event(krbn::key_code::keyboard_a),
                    krbn::event_type::key_down,
                    krbn::absolute_time_point(1000),
                    krbn::device_state::grabbed) == false);
   REQUIRE(m.find_probable_stuck_event() == std::nullopt);
 
-  REQUIRE(m.update(krbn::key_down_up_valued_event(krbn::key_code::keyboard_a),
+  REQUIRE(m.update(krbn::momentary_switch_event(krbn::key_code::keyboard_a),
                    krbn::event_type::key_up,
                    krbn::absolute_time_point(1010),
                    krbn::device_state::grabbed) == false);
@@ -23,31 +23,31 @@ TEST_CASE("probable_stuck_events_manager") {
   // ----------------------------------------
   // key_up, key_down, key_up, key_down, key_up
 
-  REQUIRE(m.update(krbn::key_down_up_valued_event(krbn::key_code::keyboard_b),
+  REQUIRE(m.update(krbn::momentary_switch_event(krbn::key_code::keyboard_b),
                    krbn::event_type::key_up,
                    krbn::absolute_time_point(1100),
                    krbn::device_state::grabbed) == true);
-  REQUIRE(m.find_probable_stuck_event() == krbn::key_down_up_valued_event(krbn::key_code::keyboard_b));
+  REQUIRE(m.find_probable_stuck_event() == krbn::momentary_switch_event(krbn::key_code::keyboard_b));
 
-  REQUIRE(m.update(krbn::key_down_up_valued_event(krbn::key_code::keyboard_b),
+  REQUIRE(m.update(krbn::momentary_switch_event(krbn::key_code::keyboard_b),
                    krbn::event_type::key_down,
                    krbn::absolute_time_point(1110),
                    krbn::device_state::grabbed) == false);
-  REQUIRE(m.find_probable_stuck_event() == krbn::key_down_up_valued_event(krbn::key_code::keyboard_b));
+  REQUIRE(m.find_probable_stuck_event() == krbn::momentary_switch_event(krbn::key_code::keyboard_b));
 
-  REQUIRE(m.update(krbn::key_down_up_valued_event(krbn::key_code::keyboard_b),
+  REQUIRE(m.update(krbn::momentary_switch_event(krbn::key_code::keyboard_b),
                    krbn::event_type::key_up,
                    krbn::absolute_time_point(1120),
                    krbn::device_state::grabbed) == true);
   REQUIRE(m.find_probable_stuck_event() == std::nullopt);
 
-  REQUIRE(m.update(krbn::key_down_up_valued_event(krbn::key_code::keyboard_b),
+  REQUIRE(m.update(krbn::momentary_switch_event(krbn::key_code::keyboard_b),
                    krbn::event_type::key_down,
                    krbn::absolute_time_point(1130),
                    krbn::device_state::grabbed) == false);
   REQUIRE(m.find_probable_stuck_event() == std::nullopt);
 
-  REQUIRE(m.update(krbn::key_down_up_valued_event(krbn::key_code::keyboard_b),
+  REQUIRE(m.update(krbn::momentary_switch_event(krbn::key_code::keyboard_b),
                    krbn::event_type::key_up,
                    krbn::absolute_time_point(1140),
                    krbn::device_state::grabbed) == false);
@@ -56,17 +56,17 @@ TEST_CASE("probable_stuck_events_manager") {
   // ----------------------------------------
   // ignore old event
 
-  REQUIRE(m.update(krbn::key_down_up_valued_event(krbn::key_code::keyboard_c),
+  REQUIRE(m.update(krbn::momentary_switch_event(krbn::key_code::keyboard_c),
                    krbn::event_type::key_up,
                    krbn::absolute_time_point(900),
                    krbn::device_state::grabbed) == false);
   REQUIRE(m.find_probable_stuck_event() == std::nullopt);
 
-  REQUIRE(m.update(krbn::key_down_up_valued_event(krbn::key_code::keyboard_c),
+  REQUIRE(m.update(krbn::momentary_switch_event(krbn::key_code::keyboard_c),
                    krbn::event_type::key_up,
                    krbn::absolute_time_point(1200),
                    krbn::device_state::grabbed) == true);
-  REQUIRE(m.find_probable_stuck_event() == krbn::key_down_up_valued_event(krbn::key_code::keyboard_c));
+  REQUIRE(m.find_probable_stuck_event() == krbn::momentary_switch_event(krbn::key_code::keyboard_c));
 
   // ----------------------------------------
   // clear
@@ -74,11 +74,11 @@ TEST_CASE("probable_stuck_events_manager") {
   m.clear();
   REQUIRE(m.find_probable_stuck_event() == std::nullopt);
 
-  REQUIRE(m.update(krbn::key_down_up_valued_event(krbn::key_code::keyboard_a),
+  REQUIRE(m.update(krbn::momentary_switch_event(krbn::key_code::keyboard_a),
                    krbn::event_type::key_up,
                    krbn::absolute_time_point(500),
                    krbn::device_state::grabbed) == true);
-  REQUIRE(m.find_probable_stuck_event() == krbn::key_down_up_valued_event(krbn::key_code::keyboard_a));
+  REQUIRE(m.find_probable_stuck_event() == krbn::momentary_switch_event(krbn::key_code::keyboard_a));
 }
 
 TEST_CASE("probable_stuck_events_manager key_down is dropped") {
@@ -87,19 +87,19 @@ TEST_CASE("probable_stuck_events_manager key_down is dropped") {
   // ----------------------------------------
   // key_down, key_up, key_up
 
-  REQUIRE(m.update(krbn::key_down_up_valued_event(krbn::key_code::keyboard_a),
+  REQUIRE(m.update(krbn::momentary_switch_event(krbn::key_code::keyboard_a),
                    krbn::event_type::key_down,
                    krbn::absolute_time_point(1000),
                    krbn::device_state::grabbed) == false);
   REQUIRE(m.find_probable_stuck_event() == std::nullopt);
 
-  REQUIRE(m.update(krbn::key_down_up_valued_event(krbn::key_code::keyboard_a),
+  REQUIRE(m.update(krbn::momentary_switch_event(krbn::key_code::keyboard_a),
                    krbn::event_type::key_up,
                    krbn::absolute_time_point(1010),
                    krbn::device_state::grabbed) == false);
   REQUIRE(m.find_probable_stuck_event() == std::nullopt);
 
-  REQUIRE(m.update(krbn::key_down_up_valued_event(krbn::key_code::keyboard_a),
+  REQUIRE(m.update(krbn::momentary_switch_event(krbn::key_code::keyboard_a),
                    krbn::event_type::key_up,
                    krbn::absolute_time_point(1020),
                    krbn::device_state::grabbed) == false);
@@ -114,23 +114,23 @@ TEST_CASE("probable_stuck_events_manager time_stamp rewind") {
   {
     krbn::probable_stuck_events_manager m;
 
-    REQUIRE(m.update(krbn::key_down_up_valued_event(krbn::key_code::keyboard_a),
+    REQUIRE(m.update(krbn::momentary_switch_event(krbn::key_code::keyboard_a),
                      krbn::event_type::key_down,
                      krbn::absolute_time_point(1000),
                      krbn::device_state::grabbed) == false);
     REQUIRE(m.find_probable_stuck_event() == std::nullopt);
 
-    REQUIRE(m.update(krbn::key_down_up_valued_event(krbn::key_code::keyboard_b),
+    REQUIRE(m.update(krbn::momentary_switch_event(krbn::key_code::keyboard_b),
                      krbn::event_type::key_up,
                      krbn::absolute_time_point(1010),
                      krbn::device_state::grabbed) == true);
-    REQUIRE(m.find_probable_stuck_event() == krbn::key_down_up_valued_event(krbn::key_code::keyboard_b));
+    REQUIRE(m.find_probable_stuck_event() == krbn::momentary_switch_event(krbn::key_code::keyboard_b));
 
-    REQUIRE(m.update(krbn::key_down_up_valued_event(krbn::key_code::keyboard_c),
+    REQUIRE(m.update(krbn::momentary_switch_event(krbn::key_code::keyboard_c),
                      krbn::event_type::key_up,
                      krbn::absolute_time_point(1020),
                      krbn::device_state::grabbed) == true);
-    REQUIRE(m.find_probable_stuck_event() == krbn::key_down_up_valued_event(krbn::key_code::keyboard_b));
+    REQUIRE(m.find_probable_stuck_event() == krbn::momentary_switch_event(krbn::key_code::keyboard_b));
   }
 
   //
@@ -140,19 +140,19 @@ TEST_CASE("probable_stuck_events_manager time_stamp rewind") {
   {
     krbn::probable_stuck_events_manager m;
 
-    REQUIRE(m.update(krbn::key_down_up_valued_event(krbn::key_code::keyboard_a),
+    REQUIRE(m.update(krbn::momentary_switch_event(krbn::key_code::keyboard_a),
                      krbn::event_type::key_down,
                      krbn::absolute_time_point(1000),
                      krbn::device_state::grabbed) == false);
     REQUIRE(m.find_probable_stuck_event() == std::nullopt);
 
-    REQUIRE(m.update(krbn::key_down_up_valued_event(krbn::key_code::keyboard_b),
+    REQUIRE(m.update(krbn::momentary_switch_event(krbn::key_code::keyboard_b),
                      krbn::event_type::key_up,
                      krbn::absolute_time_point(910),
                      krbn::device_state::grabbed) == false);
     REQUIRE(m.find_probable_stuck_event() == std::nullopt);
 
-    REQUIRE(m.update(krbn::key_down_up_valued_event(krbn::key_code::keyboard_c),
+    REQUIRE(m.update(krbn::momentary_switch_event(krbn::key_code::keyboard_c),
                      krbn::event_type::key_up,
                      krbn::absolute_time_point(920),
                      krbn::device_state::grabbed) == false);
@@ -168,19 +168,19 @@ TEST_CASE("probable_stuck_events_manager key_up only") {
   {
     krbn::probable_stuck_events_manager m;
 
-    REQUIRE(m.update(krbn::key_down_up_valued_event(krbn::key_code::keyboard_a),
+    REQUIRE(m.update(krbn::momentary_switch_event(krbn::key_code::keyboard_a),
                      krbn::event_type::key_up,
                      krbn::absolute_time_point(1000),
                      krbn::device_state::grabbed) == true);
-    REQUIRE(m.find_probable_stuck_event() == krbn::key_down_up_valued_event(krbn::key_code::keyboard_a));
+    REQUIRE(m.find_probable_stuck_event() == krbn::momentary_switch_event(krbn::key_code::keyboard_a));
 
-    REQUIRE(m.update(krbn::key_down_up_valued_event(krbn::key_code::keyboard_a),
+    REQUIRE(m.update(krbn::momentary_switch_event(krbn::key_code::keyboard_a),
                      krbn::event_type::key_up,
                      krbn::absolute_time_point(1010),
                      krbn::device_state::grabbed) == true);
     REQUIRE(m.find_probable_stuck_event() == std::nullopt);
 
-    REQUIRE(m.update(krbn::key_down_up_valued_event(krbn::key_code::keyboard_a),
+    REQUIRE(m.update(krbn::momentary_switch_event(krbn::key_code::keyboard_a),
                      krbn::event_type::key_up,
                      krbn::absolute_time_point(1020),
                      krbn::device_state::grabbed) == false);
@@ -188,7 +188,7 @@ TEST_CASE("probable_stuck_events_manager key_up only") {
 
     m.clear();
 
-    REQUIRE(m.update(krbn::key_down_up_valued_event(krbn::key_code::keyboard_a),
+    REQUIRE(m.update(krbn::momentary_switch_event(krbn::key_code::keyboard_a),
                      krbn::event_type::key_up,
                      krbn::absolute_time_point(1030),
                      krbn::device_state::grabbed) == false);

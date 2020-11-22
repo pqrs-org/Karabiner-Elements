@@ -60,11 +60,11 @@ public:
         try {
           nlohmann::json json = nlohmann::json::from_msgpack(*buffer);
           switch (json.at("operation_type").get<operation_type>()) {
-            case operation_type::key_down_up_valued_event_arrived: {
+            case operation_type::momentary_switch_event_arrived: {
               if (device_grabber_) {
                 device_grabber_->async_update_probable_stuck_events_by_observer(
                     json.at("device_id").get<device_id>(),
-                    json.at("key_down_up_valued_event").get<key_down_up_valued_event>(),
+                    json.at("momentary_switch_event").get<momentary_switch_event>(),
                     json.at("event_type").get<event_type>(),
                     json.at("time_stamp").get<absolute_time_point>());
               }

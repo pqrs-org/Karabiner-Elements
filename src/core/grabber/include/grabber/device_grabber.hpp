@@ -417,7 +417,7 @@ public:
   }
 
   void async_update_probable_stuck_events_by_observer(device_id device_id,
-                                                      const key_down_up_valued_event& event,
+                                                      const momentary_switch_event& event,
                                                       event_type event_type,
                                                       absolute_time_point time_stamp) {
     enqueue_to_dispatcher([this, device_id, event, event_type, time_stamp] {
@@ -615,7 +615,7 @@ private:
       bool needs_regrab = false;
 
       for (const auto& e : event_queue->get_entries()) {
-        if (auto ev = e.get_event().make_key_down_up_valued_event()) {
+        if (auto ev = e.get_event().make_momentary_switch_event()) {
           needs_regrab |= probable_stuck_events_manager->update(
               *ev,
               e.get_event_type(),
