@@ -76,7 +76,7 @@ public:
 
   void async_reset(void) {
     enqueue_to_dispatcher([this] {
-      entries_.empty();
+      entries_.clear();
       last_entry_time_point_ = std::nullopt;
       last_scroll_time_point_ = std::nullopt;
       counter_direction_ = counter_direction::none;
