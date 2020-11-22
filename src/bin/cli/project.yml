@@ -19,6 +19,6 @@ targets:
         compilerFlags:
           - -Wall
           - -Werror
-          - '-std=gnu++17'
+          - '-std=gnu++2a'
     dependencies:
       - framework: CoreServices.framework
