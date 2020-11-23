@@ -16,9 +16,9 @@ public:
     };
 
     active_pointing_button(type type,
-                           pointing_button::value_t pointing_button,
+                           pqrs::hid::usage_pair usage_pair,
                            device_id device_id) : type_(type),
-                                                  pointing_button_(pointing_button),
+                                                  usage_pair_(usage_pair),
                                                   device_id_(device_id) {
     }
 
@@ -26,8 +26,8 @@ public:
       return type_;
     }
 
-    pointing_button::value_t get_pointing_button(void) const {
-      return pointing_button_;
+    const pqrs::hid::usage_pair& get_usage_pair(void) const {
+      return usage_pair_;
     }
 
     device_id get_device_id(void) const {
@@ -54,22 +54,22 @@ public:
     bool is_paired(const active_pointing_button& other) const {
       // ignore device_id_
       return get_type() == other.get_inverse_type() &&
-             get_pointing_button() == other.get_pointing_button();
+             usage_pair_ == other.usage_pair_;
     }
 
-    bool operator==(const active_pointing_button& other) const {
-      return get_type() == other.get_type() &&
-             get_pointing_button() == other.get_pointing_button() &&
-             get_device_id() == other.get_device_id();
-    }
+    constexpr auto operator<=>(const active_pointing_button&) const = default;
 
   private:
     type type_;
-    pointing_button::value_t pointing_button_;
+    pqrs::hid::usage_pair usage_pair_;
     device_id device_id_;
   };
 
   void push_back_active_pointing_button(const active_pointing_button& button) {
+    if (button.get_usage_pair().get_usage() == pqrs::hid::usage::undefined) {
+      return;
+    }
+
     switch (button.get_type()) {
       case active_pointing_button::type::increase:
         active_pointing_buttons_.push_back(button);
@@ -104,11 +104,11 @@ public:
     active_pointing_buttons_.clear();
   }
 
-  bool is_pressed(pointing_button::value_t pointing_button) const {
+  bool is_pressed(const pqrs::hid::usage_pair& usage_pair) const {
     int count = 0;
 
     for (const auto& f : active_pointing_buttons_) {
-      if (f.get_pointing_button() == pointing_button) {
+      if (f.get_usage_pair() == usage_pair) {
         count += f.get_count();
       }
     }
@@ -119,10 +119,15 @@ public:
   pqrs::karabiner::driverkit::virtual_hid_device_driver::hid_report::buttons make_hid_report_buttons(void) const {
     pqrs::karabiner::driverkit::virtual_hid_device_driver::hid_report::buttons buttons;
 
-    for (auto b = pointing_button::button1; b <= pointing_button::button32; ++b) {
-      if (is_pressed(b)) {
-        buttons.insert(type_safe::get(b));
+    pqrs::hid::usage_pair usage_pair(pqrs::hid::usage_page::button,
+                                     pqrs::hid::usage::button::button_1);
+    while (usage_pair.get_usage() <= pqrs::hid::usage::button::button_32) {
+      if (is_pressed(usage_pair)) {
+        buttons.insert(type_safe::get(usage_pair.get_usage()));
       }
+
+      usage_pair.set_usage(
+          pqrs::hid::usage::value_t(type_safe::get(usage_pair.get_usage()) + 1));
     }
 
     return buttons;

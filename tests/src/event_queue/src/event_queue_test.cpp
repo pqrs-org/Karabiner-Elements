@@ -252,7 +252,10 @@ TEST_CASE("emplace_back_entry") {
 
     ENQUEUE_EVENT(event_queue, 1, 300, button2_event, key_down, button2_event);
 
-    REQUIRE(event_queue.get_pointing_button_manager().is_pressed(krbn::pointing_button::button2) == true);
+    REQUIRE(event_queue.get_pointing_button_manager().is_pressed(
+                pqrs::hid::usage_pair(
+                    pqrs::hid::usage_page::button,
+                    pqrs::hid::usage::button::button_2)) == true);
 
     ENQUEUE_EVENT(event_queue, 1, 400, left_shift_event, key_up, left_shift_event);
 
@@ -264,7 +267,10 @@ TEST_CASE("emplace_back_entry") {
 
     ENQUEUE_EVENT(event_queue, 1, 600, button2_event, key_up, button2_event);
 
-    REQUIRE(event_queue.get_pointing_button_manager().is_pressed(krbn::pointing_button::button2) == false);
+    REQUIRE(event_queue.get_pointing_button_manager().is_pressed(
+                pqrs::hid::usage_pair(
+                    pqrs::hid::usage_page::button,
+                    pqrs::hid::usage::button::button_2)) == false);
 
     std::vector<krbn::event_queue::entry> expected;
     PUSH_BACK_ENTRY(expected, 1, 100, a_event, key_down, a_event);
