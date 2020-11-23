@@ -86,41 +86,6 @@ public:
     return std::nullopt;
   }
 
-  std::string to_string(void) const {
-    if (auto value = find<key_code::value_t>()) {
-      auto json = nlohmann::json::object({
-          {"key_code", make_key_code_name(*value)},
-      });
-      return json.dump();
-
-    } else if (auto value = find<consumer_key_code::value_t>()) {
-      auto json = nlohmann::json::object({
-          {"consumer_key_code", make_consumer_key_code_name(*value)},
-      });
-      return json.dump();
-
-    } else if (auto value = find<apple_vendor_keyboard_key_code::value_t>()) {
-      auto json = nlohmann::json::object({
-          {"apple_vendor_keyboard_key_code", make_apple_vendor_keyboard_key_code_name(*value)},
-      });
-      return json.dump();
-
-    } else if (auto value = find<apple_vendor_top_case_key_code::value_t>()) {
-      auto json = nlohmann::json::object({
-          {"apple_vendor_top_case_key_code", make_apple_vendor_top_case_key_code_name(*value)},
-      });
-      return json.dump();
-
-    } else if (auto value = find<pointing_button::value_t>()) {
-      auto json = nlohmann::json::object({
-          {"pointing_button", make_pointing_button_name(*value)},
-      });
-      return json.dump();
-    }
-
-    return "";
-  }
-
   bool operator==(const momentary_switch_event& other) const {
     return value_ == other.value_;
   }
@@ -135,19 +100,19 @@ private:
 
 inline void to_json(nlohmann::json& json, const momentary_switch_event& value) {
   if (auto v = value.find<key_code::value_t>()) {
-    json["key_code"] = type_safe::get(*v);
+    json["key_code"] = make_key_code_name(*v);
 
   } else if (auto v = value.find<consumer_key_code::value_t>()) {
-    json["consumer_key_code"] = type_safe::get(*v);
+    json["consumer_key_code"] = make_consumer_key_code_name(*v);
 
   } else if (auto v = value.find<apple_vendor_keyboard_key_code::value_t>()) {
-    json["apple_vendor_keyboard_key_code"] = type_safe::get(*v);
+    json["apple_vendor_keyboard_key_code"] = make_apple_vendor_keyboard_key_code_name(*v);
 
   } else if (auto v = value.find<apple_vendor_top_case_key_code::value_t>()) {
-    json["apple_vendor_top_case_key_code"] = type_safe::get(*v);
+    json["apple_vendor_top_case_key_code"] = make_apple_vendor_top_case_key_code_name(*v);
 
   } else if (auto v = value.find<pointing_button::value_t>()) {
-    json["pointing_button"] = type_safe::get(*v);
+    json["pointing_button"] = make_pointing_button_name(*v);
   }
 }
 
