@@ -10,6 +10,7 @@
 #include <variant>
 
 namespace krbn {
+/// Events from momentary switch hardwares such as key, consumer, pointing_button.
 class momentary_switch_event final {
 public:
   using value_t = std::variant<key_code::value_t,
@@ -23,7 +24,7 @@ public:
   }
 
   template <typename T>
-  explicit momentary_switch_event(T value) : value_(value) {
+  explicit momentary_switch_event(const T& value) : value_(value) {
   }
 
   const value_t& get_value(void) const {
@@ -58,7 +59,7 @@ public:
     return false;
   }
 
-  std::optional<std::pair<pqrs::hid::usage_page::value_t, pqrs::hid::usage::value_t>> make_usage_page_usage(void) {
+  std::optional<pqrs::hid::usage_pair> make_usage_pair(void) const {
     std::optional<pqrs::hid::usage_page::value_t> usage_page;
     std::optional<pqrs::hid::usage::value_t> usage;
 
@@ -80,7 +81,7 @@ public:
     }
 
     if (usage_page && usage) {
-      return std::make_pair(*usage_page, *usage);
+      return pqrs::hid::usage_pair(*usage_page, *usage);
     }
 
     return std::nullopt;

@@ -94,22 +94,19 @@ public:
         case event_queue::event::type::apple_vendor_top_case_key_code:
           if (auto e = front_input_event.get_event().make_momentary_switch_event()) {
             if (!e->modifier_flag()) {
-              if (auto pair = e->make_usage_page_usage()) {
-                auto hid_usage_page = pair->first;
-                auto hid_usage = pair->second;
-
+              if (auto usage_pair = e->make_usage_pair()) {
                 switch (front_input_event.get_event_type()) {
                   case event_type::key_down:
                     key_event_dispatcher_.dispatch_key_down_event(front_input_event.get_device_id(),
-                                                                  hid_usage_page,
-                                                                  hid_usage,
+                                                                  usage_pair->get_usage_page(),
+                                                                  usage_pair->get_usage(),
                                                                   queue_,
                                                                   front_input_event.get_event_time_stamp().get_time_stamp());
                     break;
 
                   case event_type::key_up:
-                    key_event_dispatcher_.dispatch_key_up_event(hid_usage_page,
-                                                                hid_usage,
+                    key_event_dispatcher_.dispatch_key_up_event(usage_pair->get_usage_page(),
+                                                                usage_pair->get_usage(),
                                                                 queue_,
                                                                 front_input_event.get_event_time_stamp().get_time_stamp());
                     break;
