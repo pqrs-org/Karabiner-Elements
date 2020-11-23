@@ -45,6 +45,8 @@ inline std::optional<pqrs::karabiner::driverkit::virtual_hid_device_driver::hid_
 }
 
 inline void from_json(const nlohmann::json& json, modifier_flag& value) {
+  using namespace std::string_literals;
+
   pqrs::json::requires_string(json, "json");
 
   auto name = json.get<std::string>();
@@ -71,7 +73,7 @@ inline void from_json(const nlohmann::json& json, modifier_flag& value) {
   } else if (name == "fn") {
     value = modifier_flag::fn;
   } else {
-    throw pqrs::json::unmarshal_error(fmt::format("unknown modifier_flag: `{0}`", name));
+    throw pqrs::json::unmarshal_error("unknown modifier_flag: `" + name + "`");
   }
 }
 } // namespace krbn
