@@ -774,7 +774,7 @@ private:
       if (auto event = m->find_probable_stuck_event()) {
         auto message = fmt::format("{0} is ignored temporarily until {1} is pressed again.",
                                    entry->get_device_name(),
-                                   event->to_string());
+                                   nlohmann::json(*event).dump());
         logger_unique_filter_.warn(message);
 
         if (notification_message_manager_) {
@@ -782,7 +782,7 @@ private:
               entry->get_device_id(),
               fmt::format("{0} is ignored temporarily until {1} is pressed again.",
                           entry->get_device_short_name(),
-                          event->to_string()));
+                          nlohmann::json(*event).dump()));
         }
 
         return grabbable_state::state::ungrabbable_temporarily;
