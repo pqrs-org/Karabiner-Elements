@@ -8,18 +8,16 @@
 namespace krbn {
 class pressed_keys_manager {
 public:
-  template <typename T>
-  void insert(T value) {
+  void insert(const momentary_switch_event& value) {
     std::lock_guard<std::mutex> lock(mutex_);
 
-    entries_.insert(momentary_switch_event(value));
+    entries_.insert(value);
   }
 
-  template <typename T>
-  void erase(T value) {
+  void erase(const momentary_switch_event& value) {
     std::lock_guard<std::mutex> lock(mutex_);
 
-    entries_.erase(momentary_switch_event(value));
+    entries_.erase(value);
   }
 
   bool empty(void) const {
