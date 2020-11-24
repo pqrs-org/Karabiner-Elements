@@ -16,10 +16,14 @@ TEST_CASE("pressed_keys_manager") {
   {
     krbn::pressed_keys_manager manager;
 
-    manager.insert(krbn::momentary_switch_event(krbn::key_code::keyboard_a));
+    manager.insert(krbn::momentary_switch_event(pqrs::hid::usage_pair(
+        pqrs::hid::usage_page::keyboard_or_keypad,
+        pqrs::hid::usage::keyboard_or_keypad::keyboard_a)));
     REQUIRE(!manager.empty());
 
-    manager.erase(krbn::momentary_switch_event(krbn::key_code::keyboard_a));
+    manager.erase(krbn::momentary_switch_event(pqrs::hid::usage_pair(
+        pqrs::hid::usage_page::keyboard_or_keypad,
+        pqrs::hid::usage::keyboard_or_keypad::keyboard_a)));
     REQUIRE(manager.empty());
   }
 
@@ -28,11 +32,17 @@ TEST_CASE("pressed_keys_manager") {
   {
     krbn::pressed_keys_manager manager;
 
-    manager.insert(krbn::momentary_switch_event(krbn::key_code::keyboard_a));
-    manager.insert(krbn::momentary_switch_event(krbn::key_code::keyboard_a));
+    manager.insert(krbn::momentary_switch_event(pqrs::hid::usage_pair(
+        pqrs::hid::usage_page::keyboard_or_keypad,
+        pqrs::hid::usage::keyboard_or_keypad::keyboard_a)));
+    manager.insert(krbn::momentary_switch_event(pqrs::hid::usage_pair(
+        pqrs::hid::usage_page::keyboard_or_keypad,
+        pqrs::hid::usage::keyboard_or_keypad::keyboard_a)));
     REQUIRE(!manager.empty());
 
-    manager.erase(krbn::momentary_switch_event(krbn::key_code::keyboard_a));
+    manager.erase(krbn::momentary_switch_event(pqrs::hid::usage_pair(
+        pqrs::hid::usage_page::keyboard_or_keypad,
+        pqrs::hid::usage::keyboard_or_keypad::keyboard_a)));
     REQUIRE(manager.empty());
   }
 
@@ -41,10 +51,14 @@ TEST_CASE("pressed_keys_manager") {
   {
     krbn::pressed_keys_manager manager;
 
-    manager.insert(krbn::momentary_switch_event(krbn::consumer_key_code::mute));
+    manager.insert(krbn::momentary_switch_event(pqrs::hid::usage_pair(
+        pqrs::hid::usage_page::consumer,
+        pqrs::hid::usage::consumer::mute)));
     REQUIRE(!manager.empty());
 
-    manager.erase(krbn::momentary_switch_event(krbn::consumer_key_code::mute));
+    manager.erase(krbn::momentary_switch_event(pqrs::hid::usage_pair(
+        pqrs::hid::usage_page::consumer,
+        pqrs::hid::usage::consumer::mute)));
     REQUIRE(manager.empty());
   }
 
@@ -53,10 +67,14 @@ TEST_CASE("pressed_keys_manager") {
   {
     krbn::pressed_keys_manager manager;
 
-    manager.insert(krbn::momentary_switch_event(krbn::pointing_button::button1));
+    manager.insert(krbn::momentary_switch_event(pqrs::hid::usage_pair(
+        pqrs::hid::usage_page::button,
+        pqrs::hid::usage::button::button_1)));
     REQUIRE(!manager.empty());
 
-    manager.erase(krbn::momentary_switch_event(krbn::pointing_button::button1));
+    manager.erase(krbn::momentary_switch_event(pqrs::hid::usage_pair(
+        pqrs::hid::usage_page::button,
+        pqrs::hid::usage::button::button_1)));
     REQUIRE(manager.empty());
   }
 
@@ -65,28 +83,44 @@ TEST_CASE("pressed_keys_manager") {
   {
     krbn::pressed_keys_manager manager;
 
-    manager.insert(krbn::momentary_switch_event(krbn::key_code::keyboard_a));
+    manager.insert(krbn::momentary_switch_event(pqrs::hid::usage_pair(
+        pqrs::hid::usage_page::keyboard_or_keypad,
+        pqrs::hid::usage::keyboard_or_keypad::keyboard_a)));
     REQUIRE(!manager.empty());
 
-    manager.insert(krbn::momentary_switch_event(krbn::key_code::keyboard_a));
+    manager.insert(krbn::momentary_switch_event(pqrs::hid::usage_pair(
+        pqrs::hid::usage_page::keyboard_or_keypad,
+        pqrs::hid::usage::keyboard_or_keypad::keyboard_a)));
     REQUIRE(!manager.empty());
 
-    manager.insert(krbn::momentary_switch_event(krbn::consumer_key_code::mute));
+    manager.insert(krbn::momentary_switch_event(pqrs::hid::usage_pair(
+        pqrs::hid::usage_page::consumer,
+        pqrs::hid::usage::consumer::mute)));
     REQUIRE(!manager.empty());
 
-    manager.insert(krbn::momentary_switch_event(krbn::pointing_button::button1));
+    manager.insert(krbn::momentary_switch_event(pqrs::hid::usage_pair(
+        pqrs::hid::usage_page::button,
+        pqrs::hid::usage::button::button_1)));
     REQUIRE(!manager.empty());
 
-    manager.erase(krbn::momentary_switch_event(krbn::key_code::keyboard_a));
+    manager.erase(krbn::momentary_switch_event(pqrs::hid::usage_pair(
+        pqrs::hid::usage_page::keyboard_or_keypad,
+        pqrs::hid::usage::keyboard_or_keypad::keyboard_a)));
     REQUIRE(!manager.empty());
 
-    manager.erase(krbn::momentary_switch_event(krbn::consumer_key_code::mute));
+    manager.erase(krbn::momentary_switch_event(pqrs::hid::usage_pair(
+        pqrs::hid::usage_page::consumer,
+        pqrs::hid::usage::consumer::mute)));
     REQUIRE(!manager.empty());
 
-    manager.erase(krbn::momentary_switch_event(krbn::pointing_button::button10));
+    manager.erase(krbn::momentary_switch_event(pqrs::hid::usage_pair(
+        pqrs::hid::usage_page::button,
+        pqrs::hid::usage::button::button_10)));
     REQUIRE(!manager.empty());
 
-    manager.erase(krbn::momentary_switch_event(krbn::pointing_button::button1));
+    manager.erase(krbn::momentary_switch_event(pqrs::hid::usage_pair(
+        pqrs::hid::usage_page::button,
+        pqrs::hid::usage::button::button_1)));
     REQUIRE(manager.empty());
   }
 }
