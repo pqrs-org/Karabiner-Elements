@@ -54,22 +54,17 @@ public:
         // (The key may be repeating.)
 
         if (state == device_state::ungrabbed) {
-          if (event.find<key_code::value_t>()) {
-            if (event.modifier_flag()) {
-              // Do nothing (Do not erase existing keys.)
-
-            } else {
-              // Erase normal keys from probable_stuck_events_
-              // because the new key cancels existing keys repeat.
-
-              erase_except_modifier_flags<key_code::value_t>();
+          if (event.modifier_flag()) {
+            // Do nothing (Do not erase existing keys.)
+          } else {
+            if (auto usage_pair = event.make_usage_pair()) {
+              if (usage_pair->get_usage_page() == pqrs::hid::usage_page::button) {
+                // Do nothing with pointing_button.
+              } else {
+                erase_except_modifier_flags(usage_pair->get_usage_page());
+              }
             }
-          } else if (event.find<consumer_key_code::value_t>()) {
-            // Erase other keys. (same as `key_code`.)
-
-            erase_except_modifier_flags<consumer_key_code::value_t>();
           }
-          // Do nothing with pointing_button.
 
           probable_stuck_events_.insert(event);
         }
@@ -135,15 +130,16 @@ public:
   }
 
 private:
-  template <typename T>
-  void erase_except_modifier_flags(void) {
+  void erase_except_modifier_flags(pqrs::hid::usage_page::value_t usage_page) {
     auto it = std::begin(probable_stuck_events_);
     while (it != std::end(probable_stuck_events_)) {
-      if (it->find<T>() && !it->modifier_flag()) {
-        it = probable_stuck_events_.erase(it);
-      } else {
-        std::advance(it, 1);
+      if (auto usage_pair = it->make_usage_pair()) {
+        if (usage_pair->get_usage_page() == usage_page && !it->modifier_flag()) {
+          it = probable_stuck_events_.erase(it);
+          continue;
+        }
       }
+      std::advance(it, 1);
     }
   }
 
