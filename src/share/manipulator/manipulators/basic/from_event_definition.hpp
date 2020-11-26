@@ -45,23 +45,58 @@ public:
   static bool test_event(const event_queue::event& event,
                          const event_definition& event_definition) {
     if (auto key_code = event.get_key_code()) {
-      if (event_definition.get_key_code() == key_code ||
-          event_definition.get_any_type() == event_definition::type::key_code) {
+      if (event_definition.get_key_code() == key_code) {
         return true;
       }
     }
 
     if (auto consumer_key_code = event.get_consumer_key_code()) {
-      if (event_definition.get_consumer_key_code() == consumer_key_code ||
-          event_definition.get_any_type() == event_definition::type::consumer_key_code) {
+      if (event_definition.get_consumer_key_code() == consumer_key_code) {
         return true;
       }
     }
 
     if (auto pointing_button = event.get_pointing_button()) {
-      if (event_definition.get_pointing_button() == pointing_button ||
-          event_definition.get_any_type() == event_definition::type::pointing_button) {
+      if (event_definition.get_pointing_button() == pointing_button) {
         return true;
+      }
+    }
+
+    if (auto any_type = event_definition.get_any_type()) {
+      if (auto momentary_switch_event = event.make_momentary_switch_event()) {
+        if (auto usage_pair = momentary_switch_event->make_usage_pair()) {
+          switch (*any_type) {
+            case event_definition::any_type::key_code:
+              if (usage_pair->get_usage_page() == pqrs::hid::usage_page::keyboard_or_keypad) {
+                return true;
+              }
+              break;
+
+            case event_definition::any_type::consumer_key_code:
+              if (usage_pair->get_usage_page() == pqrs::hid::usage_page::consumer) {
+                return true;
+              }
+              break;
+
+            case event_definition::any_type::apple_vendor_keyboard_key_code:
+              if (usage_pair->get_usage_page() == pqrs::hid::usage_page::apple_vendor_keyboard) {
+                return true;
+              }
+              break;
+
+            case event_definition::any_type::apple_vendor_top_case_key_code:
+              if (usage_pair->get_usage_page() == pqrs::hid::usage_page::apple_vendor_top_case) {
+                return true;
+              }
+              break;
+
+            case event_definition::any_type::pointing_button:
+              if (usage_pair->get_usage_page() == pqrs::hid::usage_page::button) {
+                return true;
+              }
+              break;
+          }
+        }
       }
     }
 

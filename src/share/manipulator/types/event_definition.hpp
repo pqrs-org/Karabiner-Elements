@@ -22,11 +22,19 @@ public:
     mouse_key,
   };
 
+  enum class any_type {
+    key_code,
+    consumer_key_code,
+    apple_vendor_keyboard_key_code,
+    apple_vendor_top_case_key_code,
+    pointing_button,
+  };
+
   using value_t = std::variant<std::monostate,
                                key_code::value_t,
                                consumer_key_code::value_t,
                                pointing_button::value_t,
-                               type,                                                     // For any
+                               any_type,                                                 // For any
                                std::string,                                              // For shell_command
                                std::vector<pqrs::osx::input_source_selector::specifier>, // For select_input_source
                                std::pair<std::string, int>,                              // For set_variable
@@ -69,9 +77,9 @@ public:
     return std::nullopt;
   }
 
-  std::optional<type> get_any_type(void) const {
+  std::optional<any_type> get_any_type(void) const {
     if (type_ == type::any) {
-      return std::get<type>(value_);
+      return std::get<any_type>(value_);
     }
     return std::nullopt;
   }
@@ -190,13 +198,19 @@ public:
 
       if (value == "key_code") {
         type_ = type::any;
-        value_ = type::key_code;
+        value_ = any_type::key_code;
       } else if (value == "consumer_key_code") {
         type_ = type::any;
-        value_ = type::consumer_key_code;
+        value_ = any_type::consumer_key_code;
+      } else if (value == "apple_vendor_keyboard_key_code") {
+        type_ = type::any;
+        value_ = any_type::apple_vendor_keyboard_key_code;
+      } else if (value == "apple_vendor_top_case_key_code") {
+        type_ = type::any;
+        value_ = any_type::apple_vendor_top_case_key_code;
       } else if (value == "pointing_button") {
         type_ = type::any;
-        value_ = type::pointing_button;
+        value_ = any_type::pointing_button;
       } else {
         throw pqrs::json::unmarshal_error(fmt::format("unknown `{0}`: `{1}`", key, pqrs::json::dump_for_error_message(value)));
       }
