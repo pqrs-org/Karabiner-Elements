@@ -120,26 +120,10 @@ public:
           break;
 
         case event_queue::event::type::pointing_button:
-        case event_queue::event::type::pointing_motion: {
-          pqrs::karabiner::driverkit::virtual_hid_device_driver::hid_report::pointing_input report;
-          report.buttons = output_event_queue->get_pointing_button_manager().make_hid_report_buttons();
-
-          if (auto pointing_motion = front_input_event.get_event().get_pointing_motion()) {
-            report.x = pointing_motion->get_x();
-            report.y = pointing_motion->get_y();
-            report.vertical_wheel = pointing_motion->get_vertical_wheel();
-            report.horizontal_wheel = pointing_motion->get_horizontal_wheel();
-          }
-
-          queue_.emplace_back_pointing_input(report,
-                                             front_input_event.get_event_type(),
-                                             front_input_event.get_event_time_stamp().get_time_stamp());
-
-          // Save buttons for `handle_device_ungrabbed_event`.
-          pressed_buttons_ = report.buttons;
-
+        case event_queue::event::type::pointing_motion:
+          post_pointing_input_report(front_input_event,
+                                     output_event_queue);
           break;
-        }
 
         case event_queue::event::type::shell_command:
           if (auto shell_command = front_input_event.get_event().get_shell_command()) {
@@ -352,6 +336,26 @@ public:
   }
 
 private:
+  void post_pointing_input_report(event_queue::entry& front_input_event,
+                                  std::shared_ptr<event_queue::queue> output_event_queue) {
+    pqrs::karabiner::driverkit::virtual_hid_device_driver::hid_report::pointing_input report;
+    report.buttons = output_event_queue->get_pointing_button_manager().make_hid_report_buttons();
+
+    if (auto pointing_motion = front_input_event.get_event().get_pointing_motion()) {
+      report.x = pointing_motion->get_x();
+      report.y = pointing_motion->get_y();
+      report.vertical_wheel = pointing_motion->get_vertical_wheel();
+      report.horizontal_wheel = pointing_motion->get_horizontal_wheel();
+    }
+
+    queue_.emplace_back_pointing_input(report,
+                                       front_input_event.get_event_type(),
+                                       front_input_event.get_event_time_stamp().get_time_stamp());
+
+    // Save buttons for `handle_device_ungrabbed_event`.
+    pressed_buttons_ = report.buttons;
+  }
+
   std::weak_ptr<console_user_server_client> weak_console_user_server_client_;
 
   queue queue_;
