@@ -27,18 +27,22 @@ public:
   explicit momentary_switch_event(const T& value) : value_(value) {
   }
 
-  explicit momentary_switch_event(const pqrs::hid::usage_pair& usage_pair) : value_(std::monostate()) {
-    if (auto key_code = make_key_code(usage_pair.get_usage_page(), usage_pair.get_usage())) {
+  explicit momentary_switch_event(pqrs::hid::usage_page::value_t usage_page,
+                                  pqrs::hid::usage::value_t usage) : value_(std::monostate()) {
+    if (auto key_code = make_key_code(usage_page, usage)) {
       value_ = *key_code;
-    } else if (auto consumer_key_code = make_consumer_key_code(usage_pair.get_usage_page(), usage_pair.get_usage())) {
+    } else if (auto consumer_key_code = make_consumer_key_code(usage_page, usage)) {
       value_ = *consumer_key_code;
-    } else if (auto apple_vendor_keyboard_key_code = make_apple_vendor_keyboard_key_code(usage_pair.get_usage_page(), usage_pair.get_usage())) {
+    } else if (auto apple_vendor_keyboard_key_code = make_apple_vendor_keyboard_key_code(usage_page, usage)) {
       value_ = *apple_vendor_keyboard_key_code;
-    } else if (auto apple_vendor_top_case_key_code = make_apple_vendor_top_case_key_code(usage_pair.get_usage_page(), usage_pair.get_usage())) {
+    } else if (auto apple_vendor_top_case_key_code = make_apple_vendor_top_case_key_code(usage_page, usage)) {
       value_ = *apple_vendor_top_case_key_code;
-    } else if (auto pointing_button = make_pointing_button(usage_pair.get_usage_page(), usage_pair.get_usage())) {
+    } else if (auto pointing_button = make_pointing_button(usage_page, usage)) {
       value_ = *pointing_button;
     }
+  }
+
+  explicit momentary_switch_event(const pqrs::hid::usage_pair& usage_pair) : momentary_switch_event(usage_pair.get_usage_page(), usage_pair.get_usage()) {
   }
 
   const value_t& get_value(void) const {
