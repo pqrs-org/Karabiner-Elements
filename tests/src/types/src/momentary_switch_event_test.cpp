@@ -94,3 +94,16 @@ TEST_CASE("momentary_switch_event") {
     }
   }
 }
+
+TEST_CASE("momentary_switch_event json") {
+  {
+    std::string expected("{\"pointing_button\":\"button1\"}");
+    nlohmann::json actual = krbn::momentary_switch_event(pqrs::hid::usage_page::button, pqrs::hid::usage::button::button_1);
+    REQUIRE(actual.dump() == expected);
+  }
+  {
+    std::string expected("{\"pointing_button\":\"(number:1234)\"}");
+    nlohmann::json actual = krbn::momentary_switch_event(pqrs::hid::usage_page::button, pqrs::hid::usage::value_t(1234));
+    REQUIRE(actual.dump() == expected);
+  }
+}
