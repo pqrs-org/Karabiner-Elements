@@ -169,13 +169,13 @@ public:
           break;
 
         case event_queue::event::type::system_preferences_properties_changed:
-          if (auto properties = front_input_event.get_event().find<pqrs::osx::system_preferences::properties>()) {
+          if (auto properties = front_input_event.get_event().get_if<pqrs::osx::system_preferences::properties>()) {
             mouse_key_handler_->set_system_preferences_properties(*properties);
           }
           break;
 
         case event_queue::event::type::virtual_hid_keyboard_configuration_changed:
-          if (auto c = front_input_event.get_event().find<core_configuration::details::virtual_hid_keyboard>()) {
+          if (auto c = front_input_event.get_event().get_if<core_configuration::details::virtual_hid_keyboard>()) {
             mouse_key_handler_->set_virtual_hid_keyboard_configuration(*c);
           }
           break;

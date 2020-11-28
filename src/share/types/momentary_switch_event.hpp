@@ -55,7 +55,7 @@ public:
   }
 
   template <typename T>
-  const T* find(void) const {
+  const T* get_if(void) const {
     return std::get_if<T>(&value_);
   }
 
@@ -63,19 +63,19 @@ public:
     std::optional<pqrs::hid::usage_page::value_t> usage_page;
     std::optional<pqrs::hid::usage::value_t> usage;
 
-    if (auto value = find<key_code::value_t>()) {
+    if (auto value = get_if<key_code::value_t>()) {
       usage_page = make_hid_usage_page(*value);
       usage = make_hid_usage(*value);
-    } else if (auto value = find<consumer_key_code::value_t>()) {
+    } else if (auto value = get_if<consumer_key_code::value_t>()) {
       usage_page = make_hid_usage_page(*value);
       usage = make_hid_usage(*value);
-    } else if (auto value = find<apple_vendor_keyboard_key_code::value_t>()) {
+    } else if (auto value = get_if<apple_vendor_keyboard_key_code::value_t>()) {
       usage_page = make_hid_usage_page(*value);
       usage = make_hid_usage(*value);
-    } else if (auto value = find<apple_vendor_top_case_key_code::value_t>()) {
+    } else if (auto value = get_if<apple_vendor_top_case_key_code::value_t>()) {
       usage_page = make_hid_usage_page(*value);
       usage = make_hid_usage(*value);
-    } else if (auto value = find<pointing_button::value_t>()) {
+    } else if (auto value = get_if<pointing_button::value_t>()) {
       usage_page = make_hid_usage_page(*value);
       usage = make_hid_usage(*value);
     }
@@ -145,19 +145,19 @@ private:
 };
 
 inline void to_json(nlohmann::json& json, const momentary_switch_event& value) {
-  if (auto v = value.find<key_code::value_t>()) {
+  if (auto v = value.get_if<key_code::value_t>()) {
     json["key_code"] = make_key_code_name(*v);
 
-  } else if (auto v = value.find<consumer_key_code::value_t>()) {
+  } else if (auto v = value.get_if<consumer_key_code::value_t>()) {
     json["consumer_key_code"] = make_consumer_key_code_name(*v);
 
-  } else if (auto v = value.find<apple_vendor_keyboard_key_code::value_t>()) {
+  } else if (auto v = value.get_if<apple_vendor_keyboard_key_code::value_t>()) {
     json["apple_vendor_keyboard_key_code"] = make_apple_vendor_keyboard_key_code_name(*v);
 
-  } else if (auto v = value.find<apple_vendor_top_case_key_code::value_t>()) {
+  } else if (auto v = value.get_if<apple_vendor_top_case_key_code::value_t>()) {
     json["apple_vendor_top_case_key_code"] = make_apple_vendor_top_case_key_code_name(*v);
 
-  } else if (auto v = value.find<pointing_button::value_t>()) {
+  } else if (auto v = value.get_if<pointing_button::value_t>()) {
     json["pointing_button"] = make_pointing_button_name(*v);
   }
 }

@@ -83,7 +83,7 @@ public:
     //
 
     if (event.get_type() == event::type::device_grabbed) {
-      if (auto v = event.find<device_properties>()) {
+      if (auto v = event.get_if<device_properties>()) {
         manipulator_environment_.insert_device_properties(device_id, *v);
       }
     }
@@ -102,10 +102,10 @@ public:
                                               set_variable->second);
       }
     }
-    if (auto properties = event.find<pqrs::osx::system_preferences::properties>()) {
+    if (auto properties = event.get_if<pqrs::osx::system_preferences::properties>()) {
       manipulator_environment_.set_system_preferences_properties(*properties);
     }
-    if (auto configuration = event.find<core_configuration::details::virtual_hid_keyboard>()) {
+    if (auto configuration = event.get_if<core_configuration::details::virtual_hid_keyboard>()) {
       manipulator_environment_.set_virtual_hid_keyboard_country_code(configuration->get_country_code());
     }
   }

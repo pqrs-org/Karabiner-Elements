@@ -338,7 +338,7 @@ public:
   }
 
   template <typename T>
-  const T* find(void) const {
+  const T* get_if(void) const {
     return std::get_if<T>(&value_);
   }
 
@@ -473,19 +473,19 @@ public:
   }
 
   std::shared_ptr<momentary_switch_event> make_momentary_switch_event(void) const {
-    if (auto value = find<key_code::value_t>()) {
+    if (auto value = get_if<key_code::value_t>()) {
       return std::make_shared<momentary_switch_event>(*value);
 
-    } else if (auto value = find<consumer_key_code::value_t>()) {
+    } else if (auto value = get_if<consumer_key_code::value_t>()) {
       return std::make_shared<momentary_switch_event>(*value);
 
-    } else if (auto value = find<apple_vendor_keyboard_key_code::value_t>()) {
+    } else if (auto value = get_if<apple_vendor_keyboard_key_code::value_t>()) {
       return std::make_shared<momentary_switch_event>(*value);
 
-    } else if (auto value = find<apple_vendor_top_case_key_code::value_t>()) {
+    } else if (auto value = get_if<apple_vendor_top_case_key_code::value_t>()) {
       return std::make_shared<momentary_switch_event>(*value);
 
-    } else if (auto value = find<pointing_button::value_t>()) {
+    } else if (auto value = get_if<pointing_button::value_t>()) {
       return std::make_shared<momentary_switch_event>(*value);
     }
 

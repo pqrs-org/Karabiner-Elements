@@ -106,7 +106,7 @@ public:
         counter_->async_reset();
 
       } else {
-        if (auto m = front_input_event.get_event().find<pointing_motion>()) {
+        if (auto m = front_input_event.get_event().get_if<pointing_motion>()) {
           front_input_event.set_valid(false);
 
           counter_->update(*m, when_now());
