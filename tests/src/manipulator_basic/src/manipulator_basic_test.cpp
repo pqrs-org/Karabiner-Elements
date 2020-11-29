@@ -152,6 +152,14 @@ TEST_CASE("basic::from_event_definition.test_event") {
 
     REQUIRE(basic::from_event_definition::test_event(krbn::event_queue::event(krbn::key_code::keyboard_a), d));
     REQUIRE(!basic::from_event_definition::test_event(krbn::event_queue::event(krbn::consumer_key_code::mute), d));
+    REQUIRE(!basic::from_event_definition::test_event(krbn::event_queue::event(
+                                                          krbn::momentary_switch_event(pqrs::hid::usage_page::apple_vendor_keyboard,
+                                                                                       pqrs::hid::usage::apple_vendor_keyboard::expose_all)),
+                                                      d));
+    REQUIRE(!basic::from_event_definition::test_event(krbn::event_queue::event(
+                                                          krbn::momentary_switch_event(pqrs::hid::usage_page::apple_vendor_top_case,
+                                                                                       pqrs::hid::usage::apple_vendor_top_case::keyboard_fn)),
+                                                      d));
     REQUIRE(!basic::from_event_definition::test_event(krbn::event_queue::event(krbn::pointing_button::button1), d));
   }
 
@@ -162,6 +170,10 @@ TEST_CASE("basic::from_event_definition.test_event") {
 
     REQUIRE(!basic::from_event_definition::test_event(krbn::event_queue::event(krbn::key_code::keyboard_a), d));
     REQUIRE(basic::from_event_definition::test_event(krbn::event_queue::event(krbn::consumer_key_code::mute), d));
+    REQUIRE(!basic::from_event_definition::test_event(krbn::event_queue::event(
+                                                          krbn::momentary_switch_event(pqrs::hid::usage_page::apple_vendor_keyboard,
+                                                                                       pqrs::hid::usage::apple_vendor_keyboard::expose_all)),
+                                                      d));
     REQUIRE(!basic::from_event_definition::test_event(krbn::event_queue::event(krbn::pointing_button::button1), d));
   }
 
@@ -172,6 +184,10 @@ TEST_CASE("basic::from_event_definition.test_event") {
 
     REQUIRE(!basic::from_event_definition::test_event(krbn::event_queue::event(krbn::key_code::keyboard_a), d));
     REQUIRE(!basic::from_event_definition::test_event(krbn::event_queue::event(krbn::consumer_key_code::mute), d));
+    REQUIRE(!basic::from_event_definition::test_event(krbn::event_queue::event(
+                                                          krbn::momentary_switch_event(pqrs::hid::usage_page::apple_vendor_keyboard,
+                                                                                       pqrs::hid::usage::apple_vendor_keyboard::expose_all)),
+                                                      d));
     REQUIRE(basic::from_event_definition::test_event(krbn::event_queue::event(krbn::pointing_button::button1), d));
   }
 }

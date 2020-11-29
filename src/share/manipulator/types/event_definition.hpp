@@ -15,6 +15,7 @@ public:
     key_code,
     consumer_key_code,
     pointing_button,
+    momentary_switch_event,
     any,
     shell_command,
     select_input_source,
@@ -34,6 +35,7 @@ public:
                                key_code::value_t,
                                consumer_key_code::value_t,
                                pointing_button::value_t,
+                               momentary_switch_event,
                                any_type,                                                 // For any
                                std::string,                                              // For shell_command
                                std::vector<pqrs::osx::input_source_selector::specifier>, // For select_input_source
@@ -113,6 +115,8 @@ public:
         return event_queue::event(std::get<consumer_key_code::value_t>(value_));
       case type::pointing_button:
         return event_queue::event(std::get<pointing_button::value_t>(value_));
+      case type::momentary_switch_event:
+        return event_queue::event(std::get<momentary_switch_event>(value_));
       case type::any:
         return std::nullopt;
       case type::shell_command:
@@ -179,8 +183,26 @@ public:
       return true;
     }
 
-    // ----------------------------------------
+    //
+    // momentary_switch_event
+    //
+
+    if (key == "momentary_switch_event") {
+      check_type(json);
+
+      try {
+        type_ = type::momentary_switch_event;
+        value_ = value.get<momentary_switch_event>();
+      } catch (const pqrs::json::unmarshal_error& e) {
+        throw pqrs::json::unmarshal_error(fmt::format("`{0}` error: {1}", key, e.what()));
+      }
+
+      return true;
+    }
+
+    //
     // any
+    //
 
     if (key == "any") {
       check_type(json);
@@ -209,8 +231,9 @@ public:
       return true;
     }
 
-    // ----------------------------------------
+    //
     // shell_command
+    //
 
     if (key == "shell_command") {
       check_type(json);
@@ -223,8 +246,9 @@ public:
       return true;
     }
 
-    // ----------------------------------------
+    //
     // select_input_source
+    //
 
     if (key == "select_input_source") {
       check_type(json);
@@ -253,8 +277,9 @@ public:
       return true;
     }
 
-    // ----------------------------------------
+    //
     // set_variable
+    //
 
     if (key == "set_variable") {
       check_type(json);
@@ -299,8 +324,9 @@ public:
       return true;
     }
 
-    // ----------------------------------------
+    //
     // mouse_key
+    //
 
     if (key == "mouse_key") {
       check_type(json);
