@@ -68,10 +68,16 @@ public:
   }
 
   bool needs_virtual_hid_pointing(void) const {
-    if (event_definition_.get_type() == event_definition::type::pointing_button ||
-        event_definition_.get_type() == event_definition::type::mouse_key) {
+    if (auto e = event_definition_.get_if<momentary_switch_event>()) {
+      if (e->pointing_button()) {
+        return true;
+      }
+    }
+
+    if (event_definition_.get_type() == event_definition::type::mouse_key) {
       return true;
     }
+
     return false;
   }
 
@@ -149,7 +155,6 @@ inline void from_json(const nlohmann::json& json, to_event_definition& d) {
   switch (d.get_event_definition().get_type()) {
     case event_definition::type::key_code:
     case event_definition::type::consumer_key_code:
-    case event_definition::type::pointing_button:
     case event_definition::type::momentary_switch_event:
     case event_definition::type::shell_command:
     case event_definition::type::select_input_source:

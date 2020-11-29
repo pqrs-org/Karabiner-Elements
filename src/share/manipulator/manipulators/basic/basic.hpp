@@ -703,12 +703,18 @@ private:
   void unset_alone_if_needed(const event_queue::event& event,
                              event_type event_type) {
     if (event.get_type() == event_queue::event::type::key_code ||
-        event.get_type() == event_queue::event::type::consumer_key_code ||
-        event.get_type() == event_queue::event::type::pointing_button) {
+        event.get_type() == event_queue::event::type::consumer_key_code) {
       if (event_type == event_type::key_down) {
         goto run;
       }
     }
+
+    if (auto e = event.get_if<momentary_switch_event>()) {
+      if (event_type == event_type::key_down) {
+        goto run;
+      }
+    }
+
     if (auto pointing_motion = event.get_pointing_motion()) {
       if (pointing_motion->get_vertical_wheel() != 0 ||
           pointing_motion->get_horizontal_wheel() != 0) {

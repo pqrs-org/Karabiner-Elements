@@ -56,9 +56,11 @@ public:
       }
     }
 
-    if (auto pointing_button = event.get_pointing_button()) {
-      if (event_definition.get_pointing_button() == pointing_button) {
-        return true;
+    if (auto event_momentary_switch_event = event.get_if<momentary_switch_event>()) {
+      if (auto event_definition_momentary_switch_event = event_definition.get_if<momentary_switch_event>()) {
+        if (*event_momentary_switch_event == *event_definition_momentary_switch_event) {
+          return true;
+        }
       }
     }
 
@@ -225,7 +227,6 @@ inline void from_json(const nlohmann::json& json, from_event_definition& d) {
     switch (d.get_type()) {
       case event_definition::type::key_code:
       case event_definition::type::consumer_key_code:
-      case event_definition::type::pointing_button:
       case event_definition::type::momentary_switch_event:
       case event_definition::type::any:
         break;

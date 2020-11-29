@@ -14,27 +14,33 @@ public:
     switch (type) {
       case kCGEventLeftMouseDown:
         return std::make_pair(event_type::key_down,
-                              event_queue::event(pointing_button::button1));
+                              event_queue::event(momentary_switch_event(pqrs::hid::usage_page::button,
+                                                                        pqrs::hid::usage::button::button_1)));
 
       case kCGEventLeftMouseUp:
         return std::make_pair(event_type::key_up,
-                              event_queue::event(pointing_button::button1));
+                              event_queue::event(momentary_switch_event(pqrs::hid::usage_page::button,
+                                                                        pqrs::hid::usage::button::button_1)));
 
       case kCGEventRightMouseDown:
         return std::make_pair(event_type::key_down,
-                              event_queue::event(pointing_button::button2));
+                              event_queue::event(momentary_switch_event(pqrs::hid::usage_page::button,
+                                                                        pqrs::hid::usage::button::button_2)));
 
       case kCGEventRightMouseUp:
         return std::make_pair(event_type::key_up,
-                              event_queue::event(pointing_button::button2));
+                              event_queue::event(momentary_switch_event(pqrs::hid::usage_page::button,
+                                                                        pqrs::hid::usage::button::button_2)));
 
       case kCGEventOtherMouseDown:
         return std::make_pair(event_type::key_down,
-                              event_queue::event(pointing_button::button3));
+                              event_queue::event(momentary_switch_event(pqrs::hid::usage_page::button,
+                                                                        pqrs::hid::usage::button::button_3)));
 
       case kCGEventOtherMouseUp:
         return std::make_pair(event_type::key_up,
-                              event_queue::event(pointing_button::button3));
+                              event_queue::event(momentary_switch_event(pqrs::hid::usage_page::button,
+                                                                        pqrs::hid::usage::button::button_3)));
 
       case kCGEventMouseMoved:
       case kCGEventLeftMouseDragged:

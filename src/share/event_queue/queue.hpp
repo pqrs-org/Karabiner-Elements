@@ -65,9 +65,9 @@ public:
     // Update pointing_button_manager
     //
 
-    if (auto momentary_switch_event = event.make_momentary_switch_event()) {
-      if (momentary_switch_event->pointing_button()) {
-        if (auto usage_pair = momentary_switch_event->make_usage_pair()) {
+    if (auto e = event.get_if<momentary_switch_event>()) {
+      if (e->pointing_button()) {
+        if (auto usage_pair = e->make_usage_pair()) {
           auto type = (event_type == event_type::key_down ? pointing_button_manager::active_pointing_button::type::increase
                                                           : pointing_button_manager::active_pointing_button::type::decrease);
           pointing_button_manager::active_pointing_button active_pointing_button(type,

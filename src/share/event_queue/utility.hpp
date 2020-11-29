@@ -66,7 +66,7 @@ static inline std::shared_ptr<queue> make_queue(device_id device_id,
                                      state::original);
 
         } else if (auto pointing_button = make_pointing_button(*usage_page, *usage)) {
-          event_queue::event event(*pointing_button);
+          event_queue::event event(momentary_switch_event(*usage_page, *usage));
           result->emplace_back_entry(device_id,
                                      event_time_stamp(v.get_time_stamp()),
                                      event,

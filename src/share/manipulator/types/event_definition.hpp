@@ -14,7 +14,6 @@ public:
     none,
     key_code,
     consumer_key_code,
-    pointing_button,
     momentary_switch_event,
     any,
     shell_command,
@@ -34,7 +33,6 @@ public:
   using value_t = std::variant<std::monostate,
                                key_code::value_t,
                                consumer_key_code::value_t,
-                               pointing_button::value_t,
                                momentary_switch_event,
                                any_type,                                                 // For any
                                std::string,                                              // For shell_command
@@ -77,13 +75,6 @@ public:
     return std::nullopt;
   }
 
-  std::optional<pointing_button::value_t> get_pointing_button(void) const {
-    if (type_ == type::pointing_button) {
-      return std::get<pointing_button::value_t>(value_);
-    }
-    return std::nullopt;
-  }
-
   std::optional<std::string> get_shell_command(void) const {
     if (type_ == type::shell_command) {
       return std::get<std::string>(value_);
@@ -113,8 +104,6 @@ public:
         return event_queue::event(std::get<key_code::value_t>(value_));
       case type::consumer_key_code:
         return event_queue::event(std::get<consumer_key_code::value_t>(value_));
-      case type::pointing_button:
-        return event_queue::event(std::get<pointing_button::value_t>(value_));
       case type::momentary_switch_event:
         return event_queue::event(std::get<momentary_switch_event>(value_));
       case type::any:
@@ -167,32 +156,17 @@ public:
       return true;
     }
 
-    // ----------------------------------------
+    //
     // pointing_button
+    //
 
     if (key == "pointing_button") {
       check_type(json);
 
       try {
-        type_ = type::pointing_button;
-        value_ = value.get<pointing_button::value_t>();
-      } catch (const pqrs::json::unmarshal_error& e) {
-        throw pqrs::json::unmarshal_error(fmt::format("`{0}` error: {1}", key, e.what()));
-      }
-
-      return true;
-    }
-
-    //
-    // momentary_switch_event
-    //
-
-    if (key == "momentary_switch_event") {
-      check_type(json);
-
-      try {
         type_ = type::momentary_switch_event;
-        value_ = value.get<momentary_switch_event>();
+        value_ = momentary_switch_event(pqrs::hid::usage_page::button,
+                                        *(make_hid_usage(value.get<pointing_button::value_t>())));
       } catch (const pqrs::json::unmarshal_error& e) {
         throw pqrs::json::unmarshal_error(fmt::format("`{0}` error: {1}", key, e.what()));
       }
