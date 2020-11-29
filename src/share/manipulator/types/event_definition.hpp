@@ -56,6 +56,11 @@ public:
     return value_;
   }
 
+  template <typename T>
+  const T* get_if(void) const {
+    return std::get_if<T>(&value_);
+  }
+
   std::optional<key_code::value_t> get_key_code(void) const {
     if (type_ == type::key_code) {
       return std::get<key_code::value_t>(value_);
