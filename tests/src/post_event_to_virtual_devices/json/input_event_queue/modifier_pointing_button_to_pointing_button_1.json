@@ -19,14 +19,18 @@
     {
         "device_id": 1,
         "event": {
-            "pointing_button": "button12",
-            "type": "pointing_button"
+            "type": "momentary_switch_event",
+            "momentary_switch_event": {
+                "pointing_button": "button12"
+            }
         },
         "event_type": "key_down",
         "lazy": false,
         "original_event": {
-            "pointing_button": "button12",
-            "type": "pointing_button"
+            "type": "momentary_switch_event",
+            "momentary_switch_event": {
+                "pointing_button": "button12"
+            }
         },
         "event_time_stamp": {
             "time_stamp": 4
@@ -41,8 +45,10 @@
         "event_type": "key_down",
         "lazy": false,
         "original_event": {
-            "pointing_button": "button3",
-            "type": "pointing_button"
+            "type": "momentary_switch_event",
+            "momentary_switch_event": {
+                "pointing_button": "button3"
+            }
         },
         "event_time_stamp": {
             "time_stamp": 6
@@ -91,14 +97,18 @@
     {
         "device_id": 1,
         "event": {
-            "pointing_button": "button12",
-            "type": "pointing_button"
+            "type": "momentary_switch_event",
+            "momentary_switch_event": {
+                "pointing_button": "button12"
+            }
         },
         "event_type": "key_up",
         "lazy": false,
         "original_event": {
-            "pointing_button": "button12",
-            "type": "pointing_button"
+            "type": "momentary_switch_event",
+            "momentary_switch_event": {
+                "pointing_button": "button12"
+            }
         },
         "event_time_stamp": {
             "time_stamp": 12
@@ -113,8 +123,10 @@
         "event_type": "key_up",
         "lazy": false,
         "original_event": {
-            "pointing_button": "button3",
-            "type": "pointing_button"
+            "type": "momentary_switch_event",
+            "momentary_switch_event": {
+                "pointing_button": "button3"
+            }
         },
         "event_time_stamp": {
             "time_stamp": 14

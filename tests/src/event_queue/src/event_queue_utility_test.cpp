@@ -133,7 +133,8 @@ TEST_CASE("utility::insert_device_keys_and_pointing_buttons_are_released_event")
   krbn::event_queue::event a_event(krbn::key_code::keyboard_a);
   krbn::event_queue::event b_event(krbn::key_code::keyboard_b);
   krbn::event_queue::event mute_event(krbn::consumer_key_code::mute);
-  krbn::event_queue::event button2_event(krbn::pointing_button::button2);
+  krbn::event_queue::event button2_event(krbn::momentary_switch_event(pqrs::hid::usage_page::button,
+                                                                      pqrs::hid::usage::button::button_2));
 
   {
     // Normal

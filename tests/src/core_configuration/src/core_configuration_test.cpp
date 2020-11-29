@@ -1019,7 +1019,8 @@ TEST_CASE("simple_modifications.to_json") {
     }
     {
       krbn::manipulator::to_event_definition to_event_definition(krbn::json_utility::parse_jsonc(simple_modifications.get_pairs()[0].second));
-      REQUIRE(to_event_definition.get_event_definition().get_pointing_button() == krbn::pointing_button::button3);
+      REQUIRE(to_event_definition.get_event_definition().get_if<krbn::momentary_switch_event>()->make_usage_pair()->get_usage_page() == pqrs::hid::usage_page::button);
+      REQUIRE(to_event_definition.get_event_definition().get_if<krbn::momentary_switch_event>()->make_usage_pair()->get_usage() == pqrs::hid::usage::button::button_3);
     }
     {
       krbn::manipulator::manipulators::basic::from_event_definition from_event_definition(krbn::json_utility::parse_jsonc(simple_modifications.get_pairs()[1].first));

@@ -56,7 +56,6 @@ TEST_CASE("manipulator.manipulator_factory") {
     REQUIRE(basic->get_from().get_event_definitions().size() == 1);
     REQUIRE(basic->get_from().get_event_definitions().front().get_type() == event_definition::type::key_code);
     REQUIRE(basic->get_from().get_event_definitions().front().get_key_code() == krbn::key_code::keyboard_escape);
-    REQUIRE(basic->get_from().get_event_definitions().front().get_pointing_button() == std::nullopt);
     REQUIRE(basic->get_from().get_from_modifiers_definition().get_mandatory_modifiers() == std::set<modifier_definition::modifier>({
                                                                                                modifier_definition::modifier::left_shift,
                                                                                                modifier_definition::modifier::left_option,
@@ -65,9 +64,10 @@ TEST_CASE("manipulator.manipulator_factory") {
                                                                                               modifier_definition::modifier::any,
                                                                                           }));
     REQUIRE(basic->get_to().size() == 1);
-    REQUIRE(basic->get_to()[0].get_event_definition().get_type() == event_definition::type::pointing_button);
+    REQUIRE(basic->get_to()[0].get_event_definition().get_type() == event_definition::type::momentary_switch_event);
     REQUIRE(basic->get_to()[0].get_event_definition().get_key_code() == std::nullopt);
-    REQUIRE(basic->get_to()[0].get_event_definition().get_pointing_button() == krbn::pointing_button::button1);
+    REQUIRE(basic->get_to()[0].get_event_definition().get_if<krbn::momentary_switch_event>()->make_usage_pair()->get_usage_page() == pqrs::hid::usage_page::button);
+    REQUIRE(basic->get_to()[0].get_event_definition().get_if<krbn::momentary_switch_event>()->make_usage_pair()->get_usage() == pqrs::hid::usage::button::button_1);
     REQUIRE(basic->get_to()[0].get_modifiers() == std::set<modifier_definition::modifier>());
   }
 }

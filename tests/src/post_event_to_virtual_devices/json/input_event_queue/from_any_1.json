@@ -87,14 +87,18 @@
     {
         "device_id": 1,
         "event": {
-            "pointing_button": "button1",
-            "type": "pointing_button"
+            "type": "momentary_switch_event",
+            "momentary_switch_event": {
+                "pointing_button": "button1"
+            }
         },
         "event_type": "key_down",
         "lazy": false,
         "original_event": {
-            "pointing_button": "button1",
-            "type": "pointing_button"
+            "type": "momentary_switch_event",
+            "momentary_switch_event": {
+                "pointing_button": "button1"
+            }
         },
         "event_time_stamp": {
             "time_stamp": 14
@@ -104,14 +108,18 @@
     {
         "device_id": 1,
         "event": {
-            "pointing_button": "button1",
-            "type": "pointing_button"
+            "type": "momentary_switch_event",
+            "momentary_switch_event": {
+                "pointing_button": "button1"
+            }
         },
         "event_type": "key_up",
         "lazy": false,
         "original_event": {
-            "pointing_button": "button1",
-            "type": "pointing_button"
+            "type": "momentary_switch_event",
+            "momentary_switch_event": {
+                "pointing_button": "button1"
+            }
         },
         "event_time_stamp": {
             "time_stamp": 16
@@ -223,14 +231,18 @@
     {
         "device_id": 1,
         "event": {
-            "pointing_button": "button1",
-            "type": "pointing_button"
+            "type": "momentary_switch_event",
+            "momentary_switch_event": {
+                "pointing_button": "button1"
+            }
         },
         "event_type": "key_down",
         "lazy": false,
         "original_event": {
-            "pointing_button": "button1",
-            "type": "pointing_button"
+            "type": "momentary_switch_event",
+            "momentary_switch_event": {
+                "pointing_button": "button1"
+            }
         },
         "event_time_stamp": {
             "time_stamp": 30
@@ -240,14 +252,18 @@
     {
         "device_id": 1,
         "event": {
-            "pointing_button": "button1",
-            "type": "pointing_button"
+            "type": "momentary_switch_event",
+            "momentary_switch_event": {
+                "pointing_button": "button1"
+            }
         },
         "event_type": "key_up",
         "lazy": false,
         "original_event": {
-            "pointing_button": "button1",
-            "type": "pointing_button"
+            "type": "momentary_switch_event",
+            "momentary_switch_event": {
+                "pointing_button": "button1"
+            }
         },
         "event_time_stamp": {
             "time_stamp": 32
@@ -359,14 +375,18 @@
     {
         "device_id": 1,
         "event": {
-            "pointing_button": "button1",
-            "type": "pointing_button"
+            "type": "momentary_switch_event",
+            "momentary_switch_event": {
+                "pointing_button": "button1"
+            }
         },
         "event_type": "key_down",
         "lazy": false,
         "original_event": {
-            "pointing_button": "button1",
-            "type": "pointing_button"
+            "type": "momentary_switch_event",
+            "momentary_switch_event": {
+                "pointing_button": "button1"
+            }
         },
         "event_time_stamp": {
             "time_stamp": 30
@@ -376,14 +396,18 @@
     {
         "device_id": 1,
         "event": {
-            "pointing_button": "button1",
-            "type": "pointing_button"
+            "type": "momentary_switch_event",
+            "momentary_switch_event": {
+                "pointing_button": "button1"
+            }
         },
         "event_type": "key_up",
         "lazy": false,
         "original_event": {
-            "pointing_button": "button1",
-            "type": "pointing_button"
+            "type": "momentary_switch_event",
+            "momentary_switch_event": {
+                "pointing_button": "button1"
+            }
         },
         "event_time_stamp": {
             "time_stamp": 32

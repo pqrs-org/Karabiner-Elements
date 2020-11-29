@@ -16,7 +16,8 @@ krbn::event_queue::event tab_event(krbn::key_code::keyboard_tab);
 
 krbn::event_queue::event mute_event(krbn::consumer_key_code::mute);
 
-krbn::event_queue::event button2_event(krbn::pointing_button::button2);
+krbn::event_queue::event button2_event(krbn::momentary_switch_event(pqrs::hid::usage_page::button,
+                                                                    pqrs::hid::usage::button::button_2));
 
 krbn::event_queue::event caps_lock_state_changed_1_event(krbn::event_queue::event::type::caps_lock_state_changed, 1);
 krbn::event_queue::event caps_lock_state_changed_0_event(krbn::event_queue::event::type::caps_lock_state_changed, 0);
@@ -60,9 +61,12 @@ TEST_CASE("json") {
     REQUIRE(json == event_from_json.to_json());
   }
   {
-    nlohmann::json expected;
-    expected["type"] = "pointing_button";
-    expected["pointing_button"] = "button2";
+    auto expected = nlohmann::json::object({
+        {"type", "momentary_switch_event"},
+        {"momentary_switch_event", nlohmann::json::object({
+                                       {"pointing_button", "button2"},
+                                   })},
+    });
     auto json = button2_event.to_json();
     REQUIRE(json == expected);
     auto event_from_json = krbn::event_queue::event::make_from_json(json);
