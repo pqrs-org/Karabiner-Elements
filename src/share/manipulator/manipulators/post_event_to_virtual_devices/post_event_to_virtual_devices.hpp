@@ -92,8 +92,13 @@ public:
         case event_queue::event::type::consumer_key_code:
         case event_queue::event::type::apple_vendor_keyboard_key_code:
         case event_queue::event::type::apple_vendor_top_case_key_code:
+        case event_queue::event::type::pointing_button:
           if (auto e = front_input_event.get_event().make_momentary_switch_event()) {
-            if (!e->modifier_flag()) {
+            if (e->pointing_button()) {
+              post_pointing_input_report(front_input_event,
+                                         output_event_queue);
+
+            } else if (!e->modifier_flag()) {
               if (auto usage_pair = e->make_usage_pair()) {
                 switch (front_input_event.get_event_type()) {
                   case event_type::key_down:
@@ -119,7 +124,6 @@ public:
           }
           break;
 
-        case event_queue::event::type::pointing_button:
         case event_queue::event::type::pointing_motion:
           post_pointing_input_report(front_input_event,
                                      output_event_queue);
