@@ -24,6 +24,7 @@ public:
     apple_vendor_keyboard_key_code,
     apple_vendor_top_case_key_code,
     pointing_button,
+    momentary_switch_event,
     pointing_motion,
     // virtual events
     shell_command,
@@ -48,6 +49,7 @@ public:
                                apple_vendor_keyboard_key_code::value_t,                  // For type::apple_vendor_keyboard_key_code
                                apple_vendor_top_case_key_code::value_t,                  // For type::apple_vendor_top_case_key_code
                                pointing_button::value_t,                                 // For type::pointing_button
+                               momentary_switch_event,                                   // For type::momentary_switch_event
                                pointing_motion,                                          // For type::pointing_motion
                                int64_t,                                                  // For type::caps_lock_state_changed
                                std::string,                                              // For shell_command
@@ -83,6 +85,8 @@ public:
             result.value_ = value.get<apple_vendor_top_case_key_code::value_t>();
           } else if (key == "pointing_button") {
             result.value_ = value.get<pointing_button::value_t>();
+          } else if (key == "momentary_switch_event") {
+            result.value_ = value.get<momentary_switch_event>();
           } else if (key == "pointing_motion") {
             result.value_ = value.get<pointing_motion>();
           } else if (key == "caps_lock_state_changed") {
@@ -147,6 +151,12 @@ public:
       case type::pointing_button:
         if (auto v = get_pointing_button()) {
           json["pointing_button"] = make_pointing_button_name(*v);
+        }
+        break;
+
+      case type::momentary_switch_event:
+        if (auto v = get_if<momentary_switch_event>()) {
+          json["momentary_switch_event"] = *v;
         }
         break;
 
@@ -239,6 +249,10 @@ public:
 
   explicit event(pointing_button::value_t pointing_button) : type_(type::pointing_button),
                                                              value_(pointing_button) {
+  }
+
+  explicit event(momentary_switch_event momentary_switch_event) : type_(type::momentary_switch_event),
+                                                                  value_(momentary_switch_event) {
   }
 
   explicit event(const pointing_motion& pointing_motion) : type_(type::pointing_motion),
@@ -517,6 +531,7 @@ private:
       TO_C_STRING(apple_vendor_keyboard_key_code);
       TO_C_STRING(apple_vendor_top_case_key_code);
       TO_C_STRING(pointing_button);
+      TO_C_STRING(momentary_switch_event);
       TO_C_STRING(pointing_motion);
       TO_C_STRING(shell_command);
       TO_C_STRING(select_input_source);
@@ -552,6 +567,7 @@ private:
     TO_TYPE(apple_vendor_keyboard_key_code);
     TO_TYPE(apple_vendor_top_case_key_code);
     TO_TYPE(pointing_button);
+    TO_TYPE(momentary_switch_event);
     TO_TYPE(pointing_motion);
     TO_TYPE(shell_command);
     TO_TYPE(select_input_source);

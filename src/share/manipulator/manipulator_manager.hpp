@@ -103,6 +103,7 @@ public:
             case event_queue::event::type::apple_vendor_keyboard_key_code:
             case event_queue::event::type::apple_vendor_top_case_key_code:
             case event_queue::event::type::pointing_button:
+            case event_queue::event::type::momentary_switch_event:
             case event_queue::event::type::pointing_motion:
             case event_queue::event::type::shell_command:
             case event_queue::event::type::select_input_source:
