@@ -94,33 +94,40 @@ private:
           break;
       }
 
-      switch (entry.get_event().get_type()) {
-        case krbn::event_queue::event::type::key_code:
-          if (auto key_code = entry.get_event().get_key_code()) {
+      if (auto v = entry.get_event().get_if<krbn::key_code::value_t>()) {
+        if (auto usage_page = krbn::make_hid_usage_page(*v)) {
+          if (auto usage = krbn::make_hid_usage(*v)) {
             if (callback) {
               callback(type_safe::get(entry.get_device_id()),
-                       libkrbn_hid_value_type_key_code,
-                       static_cast<uint32_t>(*key_code),
+                       type_safe::get(*usage_page),
+                       type_safe::get(*usage),
                        event_type,
                        refcon);
             }
           }
-          break;
-
-        case krbn::event_queue::event::type::consumer_key_code:
-          if (auto consumer_key_code = entry.get_event().get_consumer_key_code()) {
+        }
+      } else if (auto v = entry.get_event().get_if<krbn::consumer_key_code::value_t>()) {
+        if (auto usage_page = krbn::make_hid_usage_page(*v)) {
+          if (auto usage = krbn::make_hid_usage(*v)) {
             if (callback) {
               callback(type_safe::get(entry.get_device_id()),
-                       libkrbn_hid_value_type_consumer_key_code,
-                       static_cast<uint32_t>(*consumer_key_code),
+                       type_safe::get(*usage_page),
+                       type_safe::get(*usage),
                        event_type,
                        refcon);
             }
           }
-          break;
-
-        default:
-          break;
+        }
+      } else if (auto e = entry.get_event().get_if<krbn::momentary_switch_event>()) {
+        if (auto usage_pair = e->make_usage_pair()) {
+          if (callback) {
+            callback(type_safe::get(entry.get_device_id()),
+                     type_safe::get(usage_pair->get_usage_page()),
+                     type_safe::get(usage_pair->get_usage()),
+                     event_type,
+                     refcon);
+          }
+        }
       }
     }
   }

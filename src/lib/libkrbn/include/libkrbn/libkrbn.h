@@ -49,11 +49,11 @@ bool libkrbn_system_core_configuration_file_path_exists(void);
 
 // types
 
-void libkrbn_get_key_code_name(char* buffer, size_t length, uint32_t key_code);
+void libkrbn_get_key_code_name(char* buffer, size_t length, int32_t key_code);
 bool libkrbn_find_unnamed_key_code_number(uint32_t* output, const char* name);
-void libkrbn_get_consumer_key_code_name(char* buffer, size_t length, uint32_t consumer_key_code);
+void libkrbn_get_consumer_key_code_name(char* buffer, size_t length, int32_t consumer_key_code);
 bool libkrbn_find_unnamed_consumer_key_code_number(uint32_t* output, const char* name);
-bool libkrbn_is_modifier_flag(uint32_t key_code);
+bool libkrbn_is_modifier_flag(int32_t usage_page, int32_t usage);
 
 // device_identifiers
 
@@ -313,19 +313,14 @@ bool libkrbn_log_lines_is_error_line(const char* line);
 //
 
 typedef enum {
-  libkrbn_hid_value_type_key_code,
-  libkrbn_hid_value_type_consumer_key_code,
-} libkrbn_hid_value_type;
-
-typedef enum {
   libkrbn_hid_value_event_type_key_down,
   libkrbn_hid_value_event_type_key_up,
   libkrbn_hid_value_event_type_single,
 } libkrbn_hid_value_event_type;
 
 typedef void (*libkrbn_hid_value_monitor_callback)(uint64_t device_id,
-                                                   libkrbn_hid_value_type type,
-                                                   uint32_t value,
+                                                   int32_t usage_page,
+                                                   int32_t usage,
                                                    libkrbn_hid_value_event_type event_type,
                                                    void* refcon);
 void libkrbn_enable_hid_value_monitor(libkrbn_hid_value_monitor_callback callback,

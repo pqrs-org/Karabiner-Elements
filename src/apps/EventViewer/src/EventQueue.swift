@@ -6,8 +6,8 @@ private class SimpleModificationJson: Codable {
 }
 
 private func callback(_ deviceId: UInt64,
-                      _ type: libkrbn_hid_value_type,
-                      _ value: UInt32,
+                      _ usagePage: Int32,
+                      _ usage: Int32,
                       _ eventType: libkrbn_hid_value_event_type,
                       _ context: UnsafeMutableRawPointer?)
 {
@@ -24,29 +24,31 @@ private func callback(_ deviceId: UInt64,
         //
 
         if UserSettings.shared.showHex {
-            entry.code = String(format: "0x%02x", value)
+            entry.code = String(format: "0x%02x", usage)
         } else {
-            entry.code = String(value)
+            entry.code = String(usage)
         }
+
+        print("usagePage \(usagePage), \(usage)")
 
         //
         // entry.name
         //
 
-        var keyType = ""
         var buffer = [Int8](repeating: 0, count: 256)
 
-        switch type {
-        case libkrbn_hid_value_type_key_code:
-            keyType = "key"
-            libkrbn_get_key_code_name(&buffer, buffer.count, value)
+        switch usagePage {
+        case 0x07, // keyboard_or_keypad
+             0xFF01, // apple_vendor_keyboard
+             0x00FF: // apple_vendor_top_case
+            libkrbn_get_key_code_name(&buffer, buffer.count, usage)
             entry.name = String(cString: buffer)
 
             //
             // modifierFlags
             //
 
-            if libkrbn_is_modifier_flag(value) {
+            if libkrbn_is_modifier_flag(usagePage, usage) {
                 if obj.modifierFlags[deviceId] == nil {
                     obj.modifierFlags[deviceId] = Set()
                 }
@@ -71,9 +73,8 @@ private func callback(_ deviceId: UInt64,
                 }
             }
 
-        case libkrbn_hid_value_type_consumer_key_code:
-            keyType = "consumer_key"
-            libkrbn_get_consumer_key_code_name(&buffer, buffer.count, value)
+        case 0x0C: // consumer
+            libkrbn_get_consumer_key_code_name(&buffer, buffer.count, usage)
             entry.name = String(cString: buffer)
 
             //
@@ -99,9 +100,9 @@ private func callback(_ deviceId: UInt64,
 
         switch eventType {
         case libkrbn_hid_value_event_type_key_down:
-            entry.eventType = "\(keyType)_down"
+            entry.eventType = "down"
         case libkrbn_hid_value_event_type_key_up:
-            entry.eventType = "\(keyType)_up"
+            entry.eventType = "up"
         case libkrbn_hid_value_event_type_single:
             break
         default:

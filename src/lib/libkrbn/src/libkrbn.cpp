@@ -124,7 +124,7 @@ bool libkrbn_system_core_configuration_file_path_exists(void) {
   return pqrs::filesystem::exists(krbn::constants::get_system_core_configuration_file_path());
 }
 
-void libkrbn_get_key_code_name(char* buffer, size_t length, uint32_t key_code) {
+void libkrbn_get_key_code_name(char* buffer, size_t length, int32_t key_code) {
   auto name = krbn::make_key_code_name(krbn::key_code::value_t(key_code));
   strlcpy(buffer, name.c_str(), length);
 }
@@ -142,7 +142,7 @@ bool libkrbn_find_unnamed_key_code_number(uint32_t* output, const char* name) {
   return false;
 }
 
-void libkrbn_get_consumer_key_code_name(char* buffer, size_t length, uint32_t consumer_key_code) {
+void libkrbn_get_consumer_key_code_name(char* buffer, size_t length, int32_t consumer_key_code) {
   auto name = krbn::make_consumer_key_code_name(krbn::consumer_key_code::value_t(consumer_key_code));
   strlcpy(buffer, name.c_str(), length);
 }
@@ -160,8 +160,12 @@ bool libkrbn_find_unnamed_consumer_key_code_number(uint32_t* output, const char*
   return false;
 }
 
-bool libkrbn_is_modifier_flag(uint32_t key_code) {
-  return krbn::make_modifier_flag(krbn::key_code::value_t(key_code)) != std::nullopt;
+bool libkrbn_is_modifier_flag(int32_t usage_page, int32_t usage) {
+  auto momentary_switch_event = krbn::momentary_switch_event(
+      pqrs::hid::usage_page::value_t(usage_page),
+      pqrs::hid::usage::value_t(usage));
+
+  return momentary_switch_event.modifier_flag();
 }
 
 bool libkrbn_device_identifiers_is_apple(const libkrbn_device_identifiers* p) {
