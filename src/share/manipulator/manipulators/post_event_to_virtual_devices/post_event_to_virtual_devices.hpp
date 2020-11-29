@@ -91,7 +91,6 @@ public:
         case event_queue::event::type::key_code:
         case event_queue::event::type::consumer_key_code:
         case event_queue::event::type::apple_vendor_keyboard_key_code:
-        case event_queue::event::type::apple_vendor_top_case_key_code:
         case event_queue::event::type::momentary_switch_event:
           if (auto e = front_input_event.get_event().make_momentary_switch_event()) {
             if (e->pointing_button()) {
