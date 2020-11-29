@@ -82,13 +82,6 @@ public:
     return std::nullopt;
   }
 
-  std::optional<any_type> get_any_type(void) const {
-    if (type_ == type::any) {
-      return std::get<any_type>(value_);
-    }
-    return std::nullopt;
-  }
-
   std::optional<std::string> get_shell_command(void) const {
     if (type_ == type::shell_command) {
       return std::get<std::string>(value_);
@@ -106,13 +99,6 @@ public:
   std::optional<std::pair<std::string, int>> get_set_variable(void) const {
     if (type_ == type::set_variable) {
       return std::get<std::pair<std::string, int>>(value_);
-    }
-    return std::nullopt;
-  }
-
-  std::optional<mouse_key> get_mouse_key(void) const {
-    if (type_ == type::mouse_key) {
-      return std::get<mouse_key>(value_);
     }
     return std::nullopt;
   }

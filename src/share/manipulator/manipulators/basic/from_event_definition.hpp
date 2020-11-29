@@ -62,7 +62,7 @@ public:
       }
     }
 
-    if (auto any_type = event_definition.get_any_type()) {
+    if (auto any_type = event_definition.get_if<event_definition::any_type>()) {
       if (auto momentary_switch_event = event.make_momentary_switch_event()) {
         if (auto usage_pair = momentary_switch_event->make_usage_pair()) {
           switch (*any_type) {
