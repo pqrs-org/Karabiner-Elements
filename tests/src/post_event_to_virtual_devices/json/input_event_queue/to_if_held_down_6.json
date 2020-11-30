@@ -1,57 +1,69 @@
 [
-    {
-        "device_id": 1,
-        "event": {
-            "key_code": "left_shift",
-            "type": "key_code"
-        },
-        "event_type": "key_down",
-        "lazy": false,
-        "original_event": {
-            "key_code": "left_shift",
-            "type": "key_code"
-        },
-        "event_time_stamp": {
-            "time_stamp": 2
-        },
-        "valid": true
+  {
+    "device_id": 1,
+    "event": {
+      "type": "momentary_switch_event",
+      "momentary_switch_event": {
+        "key_code": "left_shift"
+      }
     },
-    {
-        "device_id": 1,
-        "event": {
-            "key_code": "f3",
-            "type": "key_code"
-        },
-        "event_type": "key_down",
-        "lazy": false,
-        "original_event": {
-            "key_code": "f3",
-            "type": "key_code"
-        },
-        "event_time_stamp": {
-            "time_stamp": 4
-        },
-        "valid": true
+    "event_type": "key_down",
+    "lazy": false,
+    "original_event": {
+      "type": "momentary_switch_event",
+      "momentary_switch_event": {
+        "key_code": "left_shift"
+      }
     },
-    {
-        "action": "invoke_dispatcher",
-        "time_stamp": 10000
+    "event_time_stamp": {
+      "time_stamp": 2
     },
-    {
-        "device_id": 1,
-        "event": {
-            "key_code": "tab",
-            "type": "key_code"
-        },
-        "event_type": "key_down",
-        "lazy": false,
-        "original_event": {
-            "key_code": "tab",
-            "type": "key_code"
-        },
-        "event_time_stamp": {
-            "time_stamp": 10002
-        },
-        "valid": true
-    }
+    "valid": true
+  },
+  {
+    "device_id": 1,
+    "event": {
+      "type": "momentary_switch_event",
+      "momentary_switch_event": {
+        "key_code": "f3"
+      }
+    },
+    "event_type": "key_down",
+    "lazy": false,
+    "original_event": {
+      "type": "momentary_switch_event",
+      "momentary_switch_event": {
+        "key_code": "f3"
+      }
+    },
+    "event_time_stamp": {
+      "time_stamp": 4
+    },
+    "valid": true
+  },
+  {
+    "action": "invoke_dispatcher",
+    "time_stamp": 10000
+  },
+  {
+    "device_id": 1,
+    "event": {
+      "type": "momentary_switch_event",
+      "momentary_switch_event": {
+        "key_code": "tab"
+      }
+    },
+    "event_type": "key_down",
+    "lazy": false,
+    "original_event": {
+      "type": "momentary_switch_event",
+      "momentary_switch_event": {
+        "key_code": "tab"
+      }
+    },
+    "event_time_stamp": {
+      "time_stamp": 10002
+    },
+    "valid": true
+  }
 ]

@@ -1,172 +1,212 @@
 [
-    {
-        "device_id": 1,
-        "event": {
-            "key_code": "left_gui",
-            "type": "key_code"
-        },
-        "event_type": "key_down",
-        "lazy": false,
-        "original_event": {
-            "key_code": "left_gui",
-            "type": "key_code"
-        },
-        "event_time_stamp": {
-            "time_stamp": 2
-        },
-        "valid": true
+  {
+    "device_id": 1,
+    "event": {
+      "type": "momentary_switch_event",
+      "momentary_switch_event": {
+        "key_code": "left_gui"
+      }
     },
-    {
-        "device_id": 1,
-        "event": {
-            "key_code": "f6",
-            "type": "key_code"
-        },
-        "event_type": "key_down",
-        "lazy": false,
-        "original_event": {
-            "key_code": "f6",
-            "type": "key_code"
-        },
-        "event_time_stamp": {
-            "time_stamp": 4
-        },
-        "valid": true
+    "event_type": "key_down",
+    "lazy": false,
+    "original_event": {
+      "type": "momentary_switch_event",
+      "momentary_switch_event": {
+        "key_code": "left_gui"
+      }
     },
-    {
-        "device_id": 1,
-        "event": {
-            "key_code": "f6",
-            "type": "key_code"
-        },
-        "event_type": "key_up",
-        "lazy": false,
-        "original_event": {
-            "key_code": "f6",
-            "type": "key_code"
-        },
-        "event_time_stamp": {
-            "time_stamp": 6
-        },
-        "valid": true
+    "event_time_stamp": {
+      "time_stamp": 2
     },
-    {
-        "device_id": 1,
-        "event": {
-            "key_code": "f6",
-            "type": "key_code"
-        },
-        "event_type": "key_down",
-        "lazy": false,
-        "original_event": {
-            "key_code": "f6",
-            "type": "key_code"
-        },
-        "event_time_stamp": {
-            "time_stamp": 8
-        },
-        "valid": true
+    "valid": true
+  },
+  {
+    "device_id": 1,
+    "event": {
+      "type": "momentary_switch_event",
+      "momentary_switch_event": {
+        "key_code": "f6"
+      }
     },
-    {
-        "device_id": 1,
-        "event": {
-            "key_code": "tab",
-            "type": "key_code"
-        },
-        "event_type": "key_down",
-        "lazy": false,
-        "original_event": {
-            "key_code": "tab",
-            "type": "key_code"
-        },
-        "event_time_stamp": {
-            "time_stamp": 10
-        },
-        "valid": true
+    "event_type": "key_down",
+    "lazy": false,
+    "original_event": {
+      "type": "momentary_switch_event",
+      "momentary_switch_event": {
+        "key_code": "f6"
+      }
     },
-    {
-        "device_id": 1,
-        "event": {
-            "key_code": "tab",
-            "type": "key_code"
-        },
-        "event_type": "key_up",
-        "lazy": false,
-        "original_event": {
-            "key_code": "tab",
-            "type": "key_code"
-        },
-        "event_time_stamp": {
-            "time_stamp": 12
-        },
-        "valid": true
+    "event_time_stamp": {
+      "time_stamp": 4
     },
-    {
-        "device_id": 1,
-        "event": {
-            "key_code": "f6",
-            "type": "key_code"
-        },
-        "event_type": "key_up",
-        "lazy": false,
-        "original_event": {
-            "key_code": "f6",
-            "type": "key_code"
-        },
-        "event_time_stamp": {
-            "time_stamp": 14
-        },
-        "valid": true
+    "valid": true
+  },
+  {
+    "device_id": 1,
+    "event": {
+      "type": "momentary_switch_event",
+      "momentary_switch_event": {
+        "key_code": "f6"
+      }
     },
-    {
-        "device_id": 1,
-        "event": {
-            "key_code": "tab",
-            "type": "key_code"
-        },
-        "event_type": "key_down",
-        "lazy": false,
-        "original_event": {
-            "key_code": "tab",
-            "type": "key_code"
-        },
-        "event_time_stamp": {
-            "time_stamp": 16
-        },
-        "valid": true
+    "event_type": "key_up",
+    "lazy": false,
+    "original_event": {
+      "type": "momentary_switch_event",
+      "momentary_switch_event": {
+        "key_code": "f6"
+      }
     },
-    {
-        "device_id": 1,
-        "event": {
-            "key_code": "tab",
-            "type": "key_code"
-        },
-        "event_type": "key_up",
-        "lazy": false,
-        "original_event": {
-            "key_code": "tab",
-            "type": "key_code"
-        },
-        "event_time_stamp": {
-            "time_stamp": 18
-        },
-        "valid": true
+    "event_time_stamp": {
+      "time_stamp": 6
     },
-    {
-        "device_id": 1,
-        "event": {
-            "key_code": "left_gui",
-            "type": "key_code"
-        },
-        "event_type": "key_up",
-        "lazy": false,
-        "original_event": {
-            "key_code": "left_gui",
-            "type": "key_code"
-        },
-        "event_time_stamp": {
-            "time_stamp": 20
-        },
-        "valid": true
-    }
+    "valid": true
+  },
+  {
+    "device_id": 1,
+    "event": {
+      "type": "momentary_switch_event",
+      "momentary_switch_event": {
+        "key_code": "f6"
+      }
+    },
+    "event_type": "key_down",
+    "lazy": false,
+    "original_event": {
+      "type": "momentary_switch_event",
+      "momentary_switch_event": {
+        "key_code": "f6"
+      }
+    },
+    "event_time_stamp": {
+      "time_stamp": 8
+    },
+    "valid": true
+  },
+  {
+    "device_id": 1,
+    "event": {
+      "type": "momentary_switch_event",
+      "momentary_switch_event": {
+        "key_code": "tab"
+      }
+    },
+    "event_type": "key_down",
+    "lazy": false,
+    "original_event": {
+      "type": "momentary_switch_event",
+      "momentary_switch_event": {
+        "key_code": "tab"
+      }
+    },
+    "event_time_stamp": {
+      "time_stamp": 10
+    },
+    "valid": true
+  },
+  {
+    "device_id": 1,
+    "event": {
+      "type": "momentary_switch_event",
+      "momentary_switch_event": {
+        "key_code": "tab"
+      }
+    },
+    "event_type": "key_up",
+    "lazy": false,
+    "original_event": {
+      "type": "momentary_switch_event",
+      "momentary_switch_event": {
+        "key_code": "tab"
+      }
+    },
+    "event_time_stamp": {
+      "time_stamp": 12
+    },
+    "valid": true
+  },
+  {
+    "device_id": 1,
+    "event": {
+      "type": "momentary_switch_event",
+      "momentary_switch_event": {
+        "key_code": "f6"
+      }
+    },
+    "event_type": "key_up",
+    "lazy": false,
+    "original_event": {
+      "type": "momentary_switch_event",
+      "momentary_switch_event": {
+        "key_code": "f6"
+      }
+    },
+    "event_time_stamp": {
+      "time_stamp": 14
+    },
+    "valid": true
+  },
+  {
+    "device_id": 1,
+    "event": {
+      "type": "momentary_switch_event",
+      "momentary_switch_event": {
+        "key_code": "tab"
+      }
+    },
+    "event_type": "key_down",
+    "lazy": false,
+    "original_event": {
+      "type": "momentary_switch_event",
+      "momentary_switch_event": {
+        "key_code": "tab"
+      }
+    },
+    "event_time_stamp": {
+      "time_stamp": 16
+    },
+    "valid": true
+  },
+  {
+    "device_id": 1,
+    "event": {
+      "type": "momentary_switch_event",
+      "momentary_switch_event": {
+        "key_code": "tab"
+      }
+    },
+    "event_type": "key_up",
+    "lazy": false,
+    "original_event": {
+      "type": "momentary_switch_event",
+      "momentary_switch_event": {
+        "key_code": "tab"
+      }
+    },
+    "event_time_stamp": {
+      "time_stamp": 18
+    },
+    "valid": true
+  },
+  {
+    "device_id": 1,
+    "event": {
+      "type": "momentary_switch_event",
+      "momentary_switch_event": {
+        "key_code": "left_gui"
+      }
+    },
+    "event_type": "key_up",
+    "lazy": false,
+    "original_event": {
+      "type": "momentary_switch_event",
+      "momentary_switch_event": {
+        "key_code": "left_gui"
+      }
+    },
+    "event_time_stamp": {
+      "time_stamp": 20
+    },
+    "valid": true
+  }
 ]

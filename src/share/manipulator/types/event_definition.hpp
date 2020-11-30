@@ -12,7 +12,6 @@ class event_definition final {
 public:
   enum class type {
     none,
-    key_code,
     momentary_switch_event,
     any,
     shell_command,
@@ -30,7 +29,6 @@ public:
   };
 
   using value_t = std::variant<std::monostate,
-                               key_code::value_t,
                                momentary_switch_event,
                                any_type,                                                 // For any
                                std::string,                                              // For shell_command
@@ -59,13 +57,6 @@ public:
     return std::get_if<T>(&value_);
   }
 
-  std::optional<key_code::value_t> get_key_code(void) const {
-    if (type_ == type::key_code) {
-      return std::get<key_code::value_t>(value_);
-    }
-    return std::nullopt;
-  }
-
   std::optional<std::string> get_shell_command(void) const {
     if (type_ == type::shell_command) {
       return std::get<std::string>(value_);
@@ -91,8 +82,6 @@ public:
     switch (type_) {
       case type::none:
         return std::nullopt;
-      case type::key_code:
-        return event_queue::event(std::get<key_code::value_t>(value_));
       case type::momentary_switch_event:
         return event_queue::event(std::get<momentary_switch_event>(value_));
       case type::any:
@@ -113,15 +102,16 @@ public:
                    const nlohmann::json& json) {
     // Set type_ and values.
 
-    // ----------------------------------------
+    //
     // key_code
+    //
 
     if (key == "key_code") {
       check_type(json);
 
       try {
-        type_ = type::key_code;
-        value_ = value.get<key_code::value_t>();
+        type_ = type::momentary_switch_event;
+        value_ = momentary_switch_event(value.get<key_code::value_t>());
       } catch (const pqrs::json::unmarshal_error& e) {
         throw pqrs::json::unmarshal_error(fmt::format("`{0}` error: {1}", key, e.what()));
       }

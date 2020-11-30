@@ -1,19 +1,23 @@
 [
-    {
-        "device_id": 1,
-        "event": {
-            "key_code": "spacebar",
-            "type": "key_code"
-        },
-        "event_type": "key_up",
-        "lazy": false,
-        "original_event": {
-            "key_code": "spacebar",
-            "type": "key_code"
-        },
-        "event_time_stamp": {
-            "time_stamp": 100
-        },
-        "valid": true
-    }
+  {
+    "device_id": 1,
+    "event": {
+      "type": "momentary_switch_event",
+      "momentary_switch_event": {
+        "key_code": "spacebar"
+      }
+    },
+    "event_type": "key_up",
+    "lazy": false,
+    "original_event": {
+      "type": "momentary_switch_event",
+      "momentary_switch_event": {
+        "key_code": "spacebar"
+      }
+    },
+    "event_time_stamp": {
+      "time_stamp": 100
+    },
+    "valid": true
+  }
 ]

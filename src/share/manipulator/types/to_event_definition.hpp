@@ -93,7 +93,7 @@ public:
       if (!modifier_flags.empty()) {
         auto modifier_flag = modifier_flags.front();
         if (auto key_code = make_key_code(modifier_flag)) {
-          events.emplace_back(*key_code);
+          events.emplace_back(momentary_switch_event{*key_code});
         }
       }
     }
@@ -153,7 +153,6 @@ inline void from_json(const nlohmann::json& json, to_event_definition& d) {
   // ----------------------------------------
 
   switch (d.get_event_definition().get_type()) {
-    case event_definition::type::key_code:
     case event_definition::type::momentary_switch_event:
     case event_definition::type::shell_command:
     case event_definition::type::select_input_source:

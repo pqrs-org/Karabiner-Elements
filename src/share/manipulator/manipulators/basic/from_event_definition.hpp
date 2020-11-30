@@ -44,12 +44,6 @@ public:
 
   static bool test_event(const event_queue::event& event,
                          const event_definition& event_definition) {
-    if (auto key_code = event.get_key_code()) {
-      if (event_definition.get_key_code() == key_code) {
-        return true;
-      }
-    }
-
     if (auto event_momentary_switch_event = event.get_if<momentary_switch_event>()) {
       if (auto event_definition_momentary_switch_event = event_definition.get_if<momentary_switch_event>()) {
         if (*event_momentary_switch_event == *event_definition_momentary_switch_event) {
@@ -59,8 +53,8 @@ public:
     }
 
     if (auto any_type = event_definition.get_if<event_definition::any_type>()) {
-      if (auto momentary_switch_event = event.make_momentary_switch_event()) {
-        if (auto usage_pair = momentary_switch_event->make_usage_pair()) {
+      if (auto e = event.get_if<momentary_switch_event>()) {
+        if (auto usage_pair = e->make_usage_pair()) {
           switch (*any_type) {
             case event_definition::any_type::key_code:
               if (usage_pair->get_usage_page() == pqrs::hid::usage_page::keyboard_or_keypad) {
@@ -219,7 +213,6 @@ inline void from_json(const nlohmann::json& json, from_event_definition& d) {
 
   for (const auto& d : event_definitions) {
     switch (d.get_type()) {
-      case event_definition::type::key_code:
       case event_definition::type::momentary_switch_event:
       case event_definition::type::any:
         break;

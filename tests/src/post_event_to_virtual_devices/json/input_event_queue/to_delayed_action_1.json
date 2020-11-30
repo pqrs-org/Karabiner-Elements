@@ -1,53 +1,65 @@
 [
-    {
-        "device_id": 1,
-        "event": {
-            "key_code": "left_command",
-            "type": "key_code"
-        },
-        "event_type": "key_down",
-        "lazy": false,
-        "original_event": {
-            "key_code": "left_command",
-            "type": "key_code"
-        },
-        "event_time_stamp": {
-            "time_stamp": 2
-        },
-        "valid": true
+  {
+    "device_id": 1,
+    "event": {
+      "type": "momentary_switch_event",
+      "momentary_switch_event": {
+        "key_code": "left_command"
+      }
     },
-    {
-        "device_id": 1,
-        "event": {
-            "key_code": "f12",
-            "type": "key_code"
-        },
-        "event_type": "key_down",
-        "lazy": false,
-        "original_event": {
-            "key_code": "f12",
-            "type": "key_code"
-        },
-        "event_time_stamp": {
-            "time_stamp": 4
-        },
-        "valid": true
+    "event_type": "key_down",
+    "lazy": false,
+    "original_event": {
+      "type": "momentary_switch_event",
+      "momentary_switch_event": {
+        "key_code": "left_command"
+      }
     },
-    {
-        "device_id": 1,
-        "event": {
-            "key_code": "f12",
-            "type": "key_code"
-        },
-        "event_type": "key_up",
-        "lazy": false,
-        "original_event": {
-            "key_code": "f12",
-            "type": "key_code"
-        },
-        "event_time_stamp": {
-            "time_stamp": 6
-        },
-        "valid": true
-    }
+    "event_time_stamp": {
+      "time_stamp": 2
+    },
+    "valid": true
+  },
+  {
+    "device_id": 1,
+    "event": {
+      "type": "momentary_switch_event",
+      "momentary_switch_event": {
+        "key_code": "f12"
+      }
+    },
+    "event_type": "key_down",
+    "lazy": false,
+    "original_event": {
+      "type": "momentary_switch_event",
+      "momentary_switch_event": {
+        "key_code": "f12"
+      }
+    },
+    "event_time_stamp": {
+      "time_stamp": 4
+    },
+    "valid": true
+  },
+  {
+    "device_id": 1,
+    "event": {
+      "type": "momentary_switch_event",
+      "momentary_switch_event": {
+        "key_code": "f12"
+      }
+    },
+    "event_type": "key_up",
+    "lazy": false,
+    "original_event": {
+      "type": "momentary_switch_event",
+      "momentary_switch_event": {
+        "key_code": "f12"
+      }
+    },
+    "event_time_stamp": {
+      "time_stamp": 6
+    },
+    "valid": true
+  }
 ]

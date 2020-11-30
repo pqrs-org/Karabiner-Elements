@@ -19,7 +19,6 @@ class event {
 public:
   enum class type {
     none,
-    key_code,
     momentary_switch_event,
     pointing_motion,
     // virtual events
@@ -40,8 +39,7 @@ public:
     virtual_hid_keyboard_configuration_changed,
   };
 
-  using value_t = std::variant<key_code::value_t,                                        // For type::key_code
-                               momentary_switch_event,                                   // For type::momentary_switch_event
+  using value_t = std::variant<momentary_switch_event,                                   // For type::momentary_switch_event
                                pointing_motion,                                          // For type::pointing_motion
                                int64_t,                                                  // For type::caps_lock_state_changed
                                std::string,                                              // For shell_command
@@ -67,8 +65,6 @@ public:
         for (const auto& [key, value] : json.items()) {
           if (key == "type") {
             result.type_ = to_type(value.get<std::string>());
-          } else if (key == "key_code") {
-            result.value_ = value.get<key_code::value_t>();
           } else if (key == "momentary_switch_event") {
             result.value_ = value.get<momentary_switch_event>();
           } else if (key == "pointing_motion") {
@@ -106,12 +102,6 @@ public:
 
     switch (type_) {
       case type::none:
-        break;
-
-      case type::key_code:
-        if (auto v = get_key_code()) {
-          json["key_code"] = make_key_code_name(*v);
-        }
         break;
 
       case type::momentary_switch_event:
@@ -189,10 +179,6 @@ public:
     }
 
     return json;
-  }
-
-  explicit event(key_code::value_t key_code) : type_(type::key_code),
-                                               value_(key_code) {
   }
 
   explicit event(momentary_switch_event momentary_switch_event) : type_(type::momentary_switch_event),
@@ -300,16 +286,6 @@ public:
     return std::get_if<T>(&value_);
   }
 
-  std::optional<key_code::value_t> get_key_code(void) const {
-    try {
-      if (type_ == type::key_code) {
-        return std::get<key_code::value_t>(value_);
-      }
-    } catch (std::bad_variant_access&) {
-    }
-    return std::nullopt;
-  }
-
   std::optional<pointing_motion> get_pointing_motion(void) const {
     try {
       if (type_ == type::pointing_motion) {
@@ -390,17 +366,6 @@ public:
     return std::nullopt;
   }
 
-  std::shared_ptr<momentary_switch_event> make_momentary_switch_event(void) const {
-    if (auto value = get_if<key_code::value_t>()) {
-      return std::make_shared<momentary_switch_event>(*value);
-
-    } else if (auto value = get_if<momentary_switch_event>()) {
-      return std::make_shared<momentary_switch_event>(*value);
-    }
-
-    return nullptr;
-  }
-
   bool operator==(const event& other) const {
     return get_type() == other.get_type() &&
            value_ == other.value_;
@@ -421,7 +386,6 @@ private:
 
     switch (t) {
       TO_C_STRING(none);
-      TO_C_STRING(key_code);
       TO_C_STRING(momentary_switch_event);
       TO_C_STRING(pointing_motion);
       TO_C_STRING(shell_command);
@@ -453,7 +417,6 @@ private:
     }                    \
   }
 
-    TO_TYPE(key_code);
     TO_TYPE(momentary_switch_event);
     TO_TYPE(pointing_motion);
     TO_TYPE(shell_command);

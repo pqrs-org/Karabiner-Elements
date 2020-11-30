@@ -3,22 +3,44 @@
 #include "test.hpp"
 
 namespace {
-krbn::event_queue::event a_event(krbn::key_code::keyboard_a);
-krbn::event_queue::event b_event(krbn::key_code::keyboard_b);
-krbn::event_queue::event caps_lock_event(krbn::key_code::keyboard_caps_lock);
-krbn::event_queue::event escape_event(krbn::key_code::keyboard_escape);
-krbn::event_queue::event left_control_event(krbn::key_code::keyboard_left_control);
-krbn::event_queue::event left_shift_event(krbn::key_code::keyboard_left_shift);
-krbn::event_queue::event right_control_event(krbn::key_code::keyboard_right_control);
-krbn::event_queue::event right_shift_event(krbn::key_code::keyboard_right_shift);
-krbn::event_queue::event spacebar_event(krbn::key_code::keyboard_spacebar);
-krbn::event_queue::event tab_event(krbn::key_code::keyboard_tab);
+krbn::event_queue::event a_event(
+    krbn::momentary_switch_event(pqrs::hid::usage_page::keyboard_or_keypad,
+                                 pqrs::hid::usage::keyboard_or_keypad::keyboard_a));
+krbn::event_queue::event b_event(
+    krbn::momentary_switch_event(pqrs::hid::usage_page::keyboard_or_keypad,
+                                 pqrs::hid::usage::keyboard_or_keypad::keyboard_b));
+krbn::event_queue::event caps_lock_event(
+    krbn::momentary_switch_event(pqrs::hid::usage_page::keyboard_or_keypad,
+                                 pqrs::hid::usage::keyboard_or_keypad::keyboard_caps_lock));
+krbn::event_queue::event escape_event(
+    krbn::momentary_switch_event(pqrs::hid::usage_page::keyboard_or_keypad,
+                                 pqrs::hid::usage::keyboard_or_keypad::keyboard_escape));
+krbn::event_queue::event left_control_event(
+    krbn::momentary_switch_event(pqrs::hid::usage_page::keyboard_or_keypad,
+                                 pqrs::hid::usage::keyboard_or_keypad::keyboard_left_control));
+krbn::event_queue::event left_shift_event(
+    krbn::momentary_switch_event(pqrs::hid::usage_page::keyboard_or_keypad,
+                                 pqrs::hid::usage::keyboard_or_keypad::keyboard_left_shift));
+krbn::event_queue::event right_control_event(
+    krbn::momentary_switch_event(pqrs::hid::usage_page::keyboard_or_keypad,
+                                 pqrs::hid::usage::keyboard_or_keypad::keyboard_right_control));
+krbn::event_queue::event right_shift_event(
+    krbn::momentary_switch_event(pqrs::hid::usage_page::keyboard_or_keypad,
+                                 pqrs::hid::usage::keyboard_or_keypad::keyboard_right_shift));
+krbn::event_queue::event spacebar_event(
+    krbn::momentary_switch_event(pqrs::hid::usage_page::keyboard_or_keypad,
+                                 pqrs::hid::usage::keyboard_or_keypad::keyboard_spacebar));
+krbn::event_queue::event tab_event(
+    krbn::momentary_switch_event(pqrs::hid::usage_page::keyboard_or_keypad,
+                                 pqrs::hid::usage::keyboard_or_keypad::keyboard_tab));
 
-krbn::event_queue::event mute_event(krbn::momentary_switch_event(pqrs::hid::usage_page::consumer,
-                                                                 pqrs::hid::usage::consumer::mute));
+krbn::event_queue::event mute_event(
+    krbn::momentary_switch_event(pqrs::hid::usage_page::consumer,
+                                 pqrs::hid::usage::consumer::mute));
 
-krbn::event_queue::event button2_event(krbn::momentary_switch_event(pqrs::hid::usage_page::button,
-                                                                    pqrs::hid::usage::button::button_2));
+krbn::event_queue::event button2_event(
+    krbn::momentary_switch_event(pqrs::hid::usage_page::button,
+                                 pqrs::hid::usage::button::button_2));
 
 krbn::event_queue::event caps_lock_state_changed_1_event(krbn::event_queue::event::type::caps_lock_state_changed, 1);
 krbn::event_queue::event caps_lock_state_changed_0_event(krbn::event_queue::event::type::caps_lock_state_changed, 0);
@@ -30,9 +52,9 @@ TEST_CASE("entry") {
   krbn::event_queue::entry entry1(krbn::device_id(1),
                                   krbn::event_queue::event_time_stamp(krbn::absolute_time_point(100),
                                                                       krbn::absolute_time_duration(10)),
-                                  krbn::event_queue::event(krbn::key_code::keyboard_a),
+                                  a_event,
                                   krbn::event_type::key_down,
-                                  krbn::event_queue::event(krbn::key_code::keyboard_a),
+                                  a_event,
                                   krbn::event_queue::state::original,
                                   false);
   auto entry2 = entry1;
@@ -44,9 +66,12 @@ TEST_CASE("entry") {
 
 TEST_CASE("json") {
   {
-    nlohmann::json expected;
-    expected["type"] = "key_code";
-    expected["key_code"] = "a";
+    auto expected = nlohmann::json::object({
+        {"type", "momentary_switch_event"},
+        {"momentary_switch_event", nlohmann::json::object({
+                                       {"key_code", "a"},
+                                   })},
+    });
     auto json = a_event.to_json();
     REQUIRE(json == expected);
     auto event_from_json = krbn::event_queue::event::make_from_json(json);
@@ -216,18 +241,22 @@ TEST_CASE("json") {
   }
 }
 
-TEST_CASE("get_key_code") {
-  REQUIRE(spacebar_event.get_key_code() == krbn::key_code::keyboard_spacebar);
-  REQUIRE(button2_event.get_key_code() == std::nullopt);
-  REQUIRE(caps_lock_state_changed_1_event.get_key_code() == std::nullopt);
-  REQUIRE(caps_lock_state_changed_0_event.get_key_code() == std::nullopt);
-  REQUIRE(device_keys_and_pointing_buttons_are_released_event.get_key_code() == std::nullopt);
-}
+TEST_CASE("momentary_switch_event") {
+  REQUIRE(spacebar_event.get_if<krbn::momentary_switch_event>()->make_usage_pair() ==
+          pqrs::hid::usage_pair(pqrs::hid::usage_page::keyboard_or_keypad,
+                                pqrs::hid::usage::keyboard_or_keypad::keyboard_spacebar));
 
-TEST_CASE("get_consumer_key_code") {
   REQUIRE(mute_event.get_if<krbn::momentary_switch_event>()->make_usage_pair() ==
           pqrs::hid::usage_pair(pqrs::hid::usage_page::consumer,
                                 pqrs::hid::usage::consumer::mute));
+
+  REQUIRE(button2_event.get_if<krbn::momentary_switch_event>()->make_usage_pair() ==
+          pqrs::hid::usage_pair(pqrs::hid::usage_page::button,
+                                pqrs::hid::usage::button::button_2));
+
+  REQUIRE(caps_lock_state_changed_1_event.get_if<krbn::momentary_switch_event>() == nullptr);
+  REQUIRE(caps_lock_state_changed_0_event.get_if<krbn::momentary_switch_event>() == nullptr);
+  REQUIRE(device_keys_and_pointing_buttons_are_released_event.get_if<krbn::momentary_switch_event>() == nullptr);
 }
 
 TEST_CASE("get_frontmost_application_bundle_identifier") {
@@ -510,6 +539,6 @@ TEST_CASE("caps_lock_state_changed") {
 
 TEST_CASE("hash") {
   using event = krbn::event_queue::event;
-  REQUIRE(std::hash<event>{}(event(krbn::key_code::keyboard_a)) !=
-          std::hash<event>{}(event(krbn::key_code::keyboard_b)));
+  REQUIRE(std::hash<event>{}(a_event) !=
+          std::hash<event>{}(b_event));
 }

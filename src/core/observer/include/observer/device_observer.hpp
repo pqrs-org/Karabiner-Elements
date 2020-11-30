@@ -76,7 +76,7 @@ public:
                                                                 hid_queue_values_converter_.make_hid_values(device_id,
                                                                                                             values_ptr));
             for (const auto& entry : event_queue->get_entries()) {
-              if (auto e = entry.get_event().make_momentary_switch_event()) {
+              if (auto e = entry.get_event().template get_if<momentary_switch_event>()) {
                 if (auto client = grabber_client_.lock()) {
                   client->async_momentary_switch_event_arrived(device_id,
                                                                *e,

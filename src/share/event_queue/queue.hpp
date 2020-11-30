@@ -36,17 +36,28 @@ public:
     sort_events();
 
     //
-    // Update modifier_flag_manager
+    // Update modifier_flag_manager, pointing_button_manager
     //
 
-    if (auto key_code = event.get_key_code()) {
-      if (auto modifier_flag = make_modifier_flag(*key_code)) {
+    if (auto e = event.get_if<momentary_switch_event>()) {
+      if (auto modifier_flag = e->make_modifier_flag()) {
         auto type = (event_type == event_type::key_down ? modifier_flag_manager::active_modifier_flag::type::increase
                                                         : modifier_flag_manager::active_modifier_flag::type::decrease);
         modifier_flag_manager::active_modifier_flag active_modifier_flag(type,
                                                                          *modifier_flag,
                                                                          device_id);
         modifier_flag_manager_.push_back_active_modifier_flag(active_modifier_flag);
+      }
+
+      if (e->pointing_button()) {
+        if (auto usage_pair = e->make_usage_pair()) {
+          auto type = (event_type == event_type::key_down ? pointing_button_manager::active_pointing_button::type::increase
+                                                          : pointing_button_manager::active_pointing_button::type::decrease);
+          pointing_button_manager::active_pointing_button active_pointing_button(type,
+                                                                                 *usage_pair,
+                                                                                 device_id);
+          pointing_button_manager_.push_back_active_pointing_button(active_pointing_button);
+        }
       }
     }
 
@@ -58,23 +69,6 @@ public:
                                                                          modifier_flag::caps_lock,
                                                                          device_id);
         modifier_flag_manager_.push_back_active_modifier_flag(active_modifier_flag);
-      }
-    }
-
-    //
-    // Update pointing_button_manager
-    //
-
-    if (auto e = event.get_if<momentary_switch_event>()) {
-      if (e->pointing_button()) {
-        if (auto usage_pair = e->make_usage_pair()) {
-          auto type = (event_type == event_type::key_down ? pointing_button_manager::active_pointing_button::type::increase
-                                                          : pointing_button_manager::active_pointing_button::type::decrease);
-          pointing_button_manager::active_pointing_button active_pointing_button(type,
-                                                                                 *usage_pair,
-                                                                                 device_id);
-          pointing_button_manager_.push_back_active_pointing_button(active_pointing_button);
-        }
       }
     }
 
@@ -230,12 +224,12 @@ public:
     // Thus, we have to reorder the events.
 
     if (v1.get_event_time_stamp().get_time_stamp() == v2.get_event_time_stamp().get_time_stamp()) {
-      auto key_code1 = v1.get_event().get_key_code();
-      auto key_code2 = v2.get_event().get_key_code();
+      auto e1 = v1.get_event().get_if<momentary_switch_event>();
+      auto e2 = v2.get_event().get_if<momentary_switch_event>();
 
-      if (key_code1 && key_code2) {
-        auto modifier_flag1 = make_modifier_flag(*key_code1);
-        auto modifier_flag2 = make_modifier_flag(*key_code2);
+      if (e1 && e2) {
+        auto modifier_flag1 = e1->make_modifier_flag();
+        auto modifier_flag2 = e2->make_modifier_flag();
 
         // If either modifier_flag1 or modifier_flag2 is modifier, reorder it before.
 

@@ -1,87 +1,107 @@
 [
-    {
-        "device_id": 1,
-        "event": {
-            "key_code": "left_shift",
-            "type": "key_code"
-        },
-        "event_type": "key_down",
-        "lazy": false,
-        "original_event": {
-            "key_code": "left_shift",
-            "type": "key_code"
-        },
-        "event_time_stamp": {
-            "time_stamp": 2
-        },
-        "valid": true
+  {
+    "device_id": 1,
+    "event": {
+      "type": "momentary_switch_event",
+      "momentary_switch_event": {
+        "key_code": "left_shift"
+      }
     },
-    {
-        "device_id": 1,
-        "event": {
-            "key_code": "f1",
-            "type": "key_code"
-        },
-        "event_type": "key_down",
-        "lazy": false,
-        "original_event": {
-            "key_code": "f1",
-            "type": "key_code"
-        },
-        "event_time_stamp": {
-            "time_stamp": 4
-        },
-        "valid": true
+    "event_type": "key_down",
+    "lazy": false,
+    "original_event": {
+      "type": "momentary_switch_event",
+      "momentary_switch_event": {
+        "key_code": "left_shift"
+      }
     },
-    {
-        "device_id": 1,
-        "event": {
-            "key_code": "tab",
-            "type": "key_code"
-        },
-        "event_type": "key_down",
-        "lazy": false,
-        "original_event": {
-            "key_code": "tab",
-            "type": "key_code"
-        },
-        "event_time_stamp": {
-            "time_stamp": 6
-        },
-        "valid": true
+    "event_time_stamp": {
+      "time_stamp": 2
     },
-    {
-        "device_id": 1,
-        "event": {
-            "key_code": "tab",
-            "type": "key_code"
-        },
-        "event_type": "key_up",
-        "lazy": false,
-        "original_event": {
-            "key_code": "tab",
-            "type": "key_code"
-        },
-        "event_time_stamp": {
-            "time_stamp": 8
-        },
-        "valid": true
+    "valid": true
+  },
+  {
+    "device_id": 1,
+    "event": {
+      "type": "momentary_switch_event",
+      "momentary_switch_event": {
+        "key_code": "f1"
+      }
     },
-    {
-        "device_id": 1,
-        "event": {
-            "key_code": "f1",
-            "type": "key_code"
-        },
-        "event_type": "key_up",
-        "lazy": false,
-        "original_event": {
-            "key_code": "f1",
-            "type": "key_code"
-        },
-        "event_time_stamp": {
-            "time_stamp": 10
-        },
-        "valid": true
-    }
+    "event_type": "key_down",
+    "lazy": false,
+    "original_event": {
+      "type": "momentary_switch_event",
+      "momentary_switch_event": {
+        "key_code": "f1"
+      }
+    },
+    "event_time_stamp": {
+      "time_stamp": 4
+    },
+    "valid": true
+  },
+  {
+    "device_id": 1,
+    "event": {
+      "type": "momentary_switch_event",
+      "momentary_switch_event": {
+        "key_code": "tab"
+      }
+    },
+    "event_type": "key_down",
+    "lazy": false,
+    "original_event": {
+      "type": "momentary_switch_event",
+      "momentary_switch_event": {
+        "key_code": "tab"
+      }
+    },
+    "event_time_stamp": {
+      "time_stamp": 6
+    },
+    "valid": true
+  },
+  {
+    "device_id": 1,
+    "event": {
+      "type": "momentary_switch_event",
+      "momentary_switch_event": {
+        "key_code": "tab"
+      }
+    },
+    "event_type": "key_up",
+    "lazy": false,
+    "original_event": {
+      "type": "momentary_switch_event",
+      "momentary_switch_event": {
+        "key_code": "tab"
+      }
+    },
+    "event_time_stamp": {
+      "time_stamp": 8
+    },
+    "valid": true
+  },
+  {
+    "device_id": 1,
+    "event": {
+      "type": "momentary_switch_event",
+      "momentary_switch_event": {
+        "key_code": "f1"
+      }
+    },
+    "event_type": "key_up",
+    "lazy": false,
+    "original_event": {
+      "type": "momentary_switch_event",
+      "momentary_switch_event": {
+        "key_code": "f1"
+      }
+    },
+    "event_time_stamp": {
+      "time_stamp": 10
+    },
+    "valid": true
+  }
 ]

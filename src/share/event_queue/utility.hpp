@@ -48,7 +48,7 @@ static inline std::shared_ptr<queue> make_queue(device_id device_id,
     if (auto usage_page = v.get_usage_page()) {
       if (auto usage = v.get_usage()) {
         if (auto key_code = make_key_code(*usage_page, *usage)) {
-          event_queue::event event(*key_code);
+          event_queue::event event(momentary_switch_event(*usage_page, *usage));
           result->emplace_back_entry(device_id,
                                      event_time_stamp(v.get_time_stamp()),
                                      event,
@@ -136,16 +136,14 @@ static inline std::shared_ptr<queue> insert_device_keys_and_pointing_buttons_are
       result->push_back_entry(entry);
 
       if (entry.get_device_id() == device_id) {
-        auto& e = entry.get_event();
-
         if (entry.get_event_type() == event_type::key_down) {
-          if (auto momentary_switch_event = e.make_momentary_switch_event()) {
-            pressed_keys_manager->insert(*momentary_switch_event);
+          if (auto e = entry.get_event().get_if<momentary_switch_event>()) {
+            pressed_keys_manager->insert(*e);
           }
         } else if (entry.get_event_type() == event_type::key_up) {
           if (!pressed_keys_manager->empty()) {
-            if (auto momentary_switch_event = e.make_momentary_switch_event()) {
-              pressed_keys_manager->erase(*momentary_switch_event);
+            if (auto e = entry.get_event().get_if<momentary_switch_event>()) {
+              pressed_keys_manager->erase(*e);
             }
 
             if (pressed_keys_manager->empty()) {

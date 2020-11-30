@@ -30,8 +30,9 @@ TEST_CASE("to_delayed_action") {
     REQUIRE(b.get_to_delayed_action()->get_to_if_invoked().size() == 1);
     {
       auto& d = b.get_to_delayed_action()->get_to_if_invoked()[0].get_event_definition();
-      REQUIRE(d.get_type() == event_definition::type::key_code);
-      REQUIRE(std::get<krbn::key_code::value_t>(d.get_value()) == krbn::key_code::keyboard_tab);
+      REQUIRE(d.get_if<krbn::momentary_switch_event>()->make_usage_pair() ==
+              pqrs::hid::usage_pair(pqrs::hid::usage_page::keyboard_or_keypad,
+                                    pqrs::hid::usage::keyboard_or_keypad::keyboard_tab));
     }
 
     // to_if_canceled
@@ -39,8 +40,9 @@ TEST_CASE("to_delayed_action") {
     REQUIRE(b.get_to_delayed_action()->get_to_if_canceled().size() == 1);
     {
       auto& d = b.get_to_delayed_action()->get_to_if_canceled()[0].get_event_definition();
-      REQUIRE(d.get_type() == event_definition::type::key_code);
-      REQUIRE(std::get<krbn::key_code::value_t>(d.get_value()) == krbn::key_code::keyboard_a);
+      REQUIRE(d.get_if<krbn::momentary_switch_event>()->make_usage_pair() ==
+              pqrs::hid::usage_pair(pqrs::hid::usage_page::keyboard_or_keypad,
+                                    pqrs::hid::usage::keyboard_or_keypad::keyboard_a));
     }
   }
 
@@ -69,13 +71,15 @@ TEST_CASE("to_delayed_action") {
     REQUIRE(b.get_to_delayed_action()->get_to_if_invoked().size() == 2);
     {
       auto& d = b.get_to_delayed_action()->get_to_if_invoked()[0].get_event_definition();
-      REQUIRE(d.get_type() == event_definition::type::key_code);
-      REQUIRE(std::get<krbn::key_code::value_t>(d.get_value()) == krbn::key_code::keyboard_tab);
+      REQUIRE(d.get_if<krbn::momentary_switch_event>()->make_usage_pair() ==
+              pqrs::hid::usage_pair(pqrs::hid::usage_page::keyboard_or_keypad,
+                                    pqrs::hid::usage::keyboard_or_keypad::keyboard_tab));
     }
     {
       auto& d = b.get_to_delayed_action()->get_to_if_invoked()[1].get_event_definition();
-      REQUIRE(d.get_type() == event_definition::type::key_code);
-      REQUIRE(std::get<krbn::key_code::value_t>(d.get_value()) == krbn::key_code::keyboard_spacebar);
+      REQUIRE(d.get_if<krbn::momentary_switch_event>()->make_usage_pair() ==
+              pqrs::hid::usage_pair(pqrs::hid::usage_page::keyboard_or_keypad,
+                                    pqrs::hid::usage::keyboard_or_keypad::keyboard_spacebar));
     }
 
     // to_if_canceled
@@ -83,13 +87,15 @@ TEST_CASE("to_delayed_action") {
     REQUIRE(b.get_to_delayed_action()->get_to_if_canceled().size() == 2);
     {
       auto& d = b.get_to_delayed_action()->get_to_if_canceled()[0].get_event_definition();
-      REQUIRE(d.get_type() == event_definition::type::key_code);
-      REQUIRE(std::get<krbn::key_code::value_t>(d.get_value()) == krbn::key_code::keyboard_a);
+      REQUIRE(d.get_if<krbn::momentary_switch_event>()->make_usage_pair() ==
+              pqrs::hid::usage_pair(pqrs::hid::usage_page::keyboard_or_keypad,
+                                    pqrs::hid::usage::keyboard_or_keypad::keyboard_a));
     }
     {
       auto& d = b.get_to_delayed_action()->get_to_if_canceled()[1].get_event_definition();
-      REQUIRE(d.get_type() == event_definition::type::key_code);
-      REQUIRE(std::get<krbn::key_code::value_t>(d.get_value()) == krbn::key_code::keyboard_b);
+      REQUIRE(d.get_if<krbn::momentary_switch_event>()->make_usage_pair() ==
+              pqrs::hid::usage_pair(pqrs::hid::usage_page::keyboard_or_keypad,
+                                    pqrs::hid::usage::keyboard_or_keypad::keyboard_b));
     }
   }
 }

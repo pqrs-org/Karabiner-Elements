@@ -12,17 +12,29 @@ TEST_CASE("to_event_definition") {
                       })},
     });
     krbn::manipulator::to_event_definition event_definition(json);
-    REQUIRE(event_definition.get_event_definition().get_type() == krbn::manipulator::event_definition::type::key_code);
-    REQUIRE(event_definition.get_event_definition().get_key_code() == krbn::key_code::keyboard_spacebar);
+    REQUIRE(event_definition.get_event_definition().get_if<krbn::momentary_switch_event>()->make_usage_pair() ==
+            pqrs::hid::usage_pair(pqrs::hid::usage_page::keyboard_or_keypad,
+                                  pqrs::hid::usage::keyboard_or_keypad::keyboard_spacebar));
     REQUIRE(event_definition.get_modifiers() == std::set<krbn::manipulator::modifier_definition::modifier>({
                                                     krbn::manipulator::modifier_definition::modifier::shift,
                                                     krbn::manipulator::modifier_definition::modifier::left_command,
                                                 }));
-    REQUIRE(event_definition.get_event_definition().to_event() == krbn::event_queue::event(krbn::key_code::keyboard_spacebar));
-    REQUIRE(event_definition.make_modifier_events() == std::vector<krbn::event_queue::event>({
-                                                           krbn::event_queue::event(krbn::key_code::keyboard_left_command),
-                                                           krbn::event_queue::event(krbn::key_code::keyboard_left_shift),
-                                                       }));
+    REQUIRE(event_definition.get_event_definition().to_event() ==
+            krbn::event_queue::event(
+                krbn::momentary_switch_event(
+                    pqrs::hid::usage_page::keyboard_or_keypad,
+                    pqrs::hid::usage::keyboard_or_keypad::keyboard_spacebar)));
+    REQUIRE(event_definition.make_modifier_events() ==
+            std::vector<krbn::event_queue::event>({
+                krbn::event_queue::event(
+                    krbn::momentary_switch_event(
+                        pqrs::hid::usage_page::keyboard_or_keypad,
+                        pqrs::hid::usage::keyboard_or_keypad::keyboard_left_gui)),
+                krbn::event_queue::event(
+                    krbn::momentary_switch_event(
+                        pqrs::hid::usage_page::keyboard_or_keypad,
+                        pqrs::hid::usage::keyboard_or_keypad::keyboard_left_shift)),
+            }));
   }
   {
     nlohmann::json json({
@@ -36,16 +48,24 @@ TEST_CASE("to_event_definition") {
                       }},
     });
     krbn::manipulator::to_event_definition event_definition(json);
-    REQUIRE(event_definition.get_event_definition().get_type() == krbn::manipulator::event_definition::type::key_code);
-    REQUIRE(event_definition.get_event_definition().get_key_code() == krbn::key_code::keyboard_right_option);
+    REQUIRE(event_definition.get_event_definition().get_if<krbn::momentary_switch_event>()->make_usage_pair() ==
+            pqrs::hid::usage_pair(pqrs::hid::usage_page::keyboard_or_keypad,
+                                  pqrs::hid::usage::keyboard_or_keypad::keyboard_right_alt));
     REQUIRE(event_definition.get_modifiers() == std::set<krbn::manipulator::modifier_definition::modifier>({
                                                     krbn::manipulator::modifier_definition::modifier::shift,
                                                     krbn::manipulator::modifier_definition::modifier::left_command,
                                                 }));
-    REQUIRE(event_definition.make_modifier_events() == std::vector<krbn::event_queue::event>({
-                                                           krbn::event_queue::event(krbn::key_code::keyboard_left_command),
-                                                           krbn::event_queue::event(krbn::key_code::keyboard_left_shift),
-                                                       }));
+    REQUIRE(event_definition.make_modifier_events() ==
+            std::vector<krbn::event_queue::event>({
+                krbn::event_queue::event(
+                    krbn::momentary_switch_event(
+                        pqrs::hid::usage_page::keyboard_or_keypad,
+                        pqrs::hid::usage::keyboard_or_keypad::keyboard_left_gui)),
+                krbn::event_queue::event(
+                    krbn::momentary_switch_event(
+                        pqrs::hid::usage_page::keyboard_or_keypad,
+                        pqrs::hid::usage::keyboard_or_keypad::keyboard_left_shift)),
+            }));
   }
 
   {
@@ -55,7 +75,7 @@ TEST_CASE("to_event_definition") {
     });
     krbn::manipulator::to_event_definition event_definition(json);
     REQUIRE(event_definition.get_event_definition().get_type() == krbn::manipulator::event_definition::type::shell_command);
-    REQUIRE(event_definition.get_event_definition().get_key_code() == std::nullopt);
+    REQUIRE(event_definition.get_event_definition().get_if<krbn::momentary_switch_event>() == nullptr);
     REQUIRE(event_definition.get_event_definition().get_shell_command() == shell_command);
     REQUIRE(event_definition.get_event_definition().get_input_source_specifiers() == std::nullopt);
   }
@@ -69,7 +89,7 @@ TEST_CASE("to_event_definition") {
 
     krbn::manipulator::to_event_definition event_definition(json);
     REQUIRE(event_definition.get_event_definition().get_type() == krbn::manipulator::event_definition::type::select_input_source);
-    REQUIRE(event_definition.get_event_definition().get_key_code() == std::nullopt);
+    REQUIRE(event_definition.get_event_definition().get_if<krbn::momentary_switch_event>() == nullptr);
     REQUIRE(event_definition.get_event_definition().get_shell_command() == std::nullopt);
     REQUIRE(event_definition.get_event_definition().get_input_source_specifiers() == std::vector<pqrs::osx::input_source_selector::specifier>({s}));
   }
@@ -90,7 +110,7 @@ TEST_CASE("to_event_definition") {
 
     krbn::manipulator::to_event_definition event_definition(json);
     REQUIRE(event_definition.get_event_definition().get_type() == krbn::manipulator::event_definition::type::select_input_source);
-    REQUIRE(event_definition.get_event_definition().get_key_code() == std::nullopt);
+    REQUIRE(event_definition.get_event_definition().get_if<krbn::momentary_switch_event>() == nullptr);
     REQUIRE(event_definition.get_event_definition().get_shell_command() == std::nullopt);
     REQUIRE(event_definition.get_event_definition().get_input_source_specifiers() == specifiers);
   }

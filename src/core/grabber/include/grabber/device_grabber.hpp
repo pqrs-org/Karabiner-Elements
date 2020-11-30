@@ -615,7 +615,7 @@ private:
       bool needs_regrab = false;
 
       for (const auto& e : event_queue->get_entries()) {
-        if (auto ev = e.get_event().make_momentary_switch_event()) {
+        if (auto ev = e.get_event().get_if<momentary_switch_event>()) {
           needs_regrab |= probable_stuck_events_manager->update(
               *ev,
               e.get_event_type(),

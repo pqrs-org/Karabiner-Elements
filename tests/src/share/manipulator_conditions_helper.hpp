@@ -52,9 +52,11 @@ public:
   krbn::event_queue::entry make_event_queue_entry(krbn::device_id device_id) const {
     return krbn::event_queue::entry(device_id,
                                     krbn::event_queue::event_time_stamp(krbn::absolute_time_point(0)),
-                                    krbn::event_queue::event(krbn::key_code::keyboard_a),
+                                    krbn::event_queue::event(krbn::momentary_switch_event(pqrs::hid::usage_page::keyboard_or_keypad,
+                                                                                          pqrs::hid::usage::keyboard_or_keypad::keyboard_a)),
                                     krbn::event_type::key_down,
-                                    krbn::event_queue::event(krbn::key_code::keyboard_a),
+                                    krbn::event_queue::event(krbn::momentary_switch_event(pqrs::hid::usage_page::keyboard_or_keypad,
+                                                                                          pqrs::hid::usage::keyboard_or_keypad::keyboard_a)),
                                     krbn::event_queue::state::original);
   };
 

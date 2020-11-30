@@ -1,102 +1,118 @@
 [
-    {
-        "device_id": 1,
-        "event": {
-            "key_code": "spacebar",
-            "type": "key_code"
-        },
-        "event_type": "key_down",
-        "lazy": false,
-        "original_event": {
-            "key_code": "spacebar",
-            "type": "key_code"
-        },
-        "event_time_stamp": {
-            "time_stamp": 100
-        },
-        "valid": true
+  {
+    "device_id": 1,
+    "event": {
+      "type": "momentary_switch_event",
+      "momentary_switch_event": {
+        "key_code": "spacebar"
+      }
     },
-    {
-        "device_id": 2,
-        "event": {
-            "key_code": "spacebar",
-            "type": "key_code"
-        },
-        "event_type": "key_down",
-        "lazy": false,
-        "original_event": {
-            "key_code": "spacebar",
-            "type": "key_code"
-        },
-        "event_time_stamp": {
-            "time_stamp": 200
-        },
-        "valid": true
+    "event_type": "key_down",
+    "lazy": false,
+    "original_event": {
+      "type": "momentary_switch_event",
+      "momentary_switch_event": {
+        "key_code": "spacebar"
+      }
     },
-    {
-        "device_id": 1,
-        "event": {
-            "key_code": "spacebar",
-            "type": "key_code"
-        },
-        "event_type": "key_up",
-        "lazy": false,
-        "original_event": {
-            "key_code": "spacebar",
-            "type": "key_code"
-        },
-        "event_time_stamp": {
-            "time_stamp": 300
-        },
-        "valid": true
+    "event_time_stamp": {
+      "time_stamp": 100
     },
-    {
-        "device_id": 1,
-        "event": {
-            "type": "device_ungrabbed"
-        },
-        "event_type": "single",
-        "lazy": false,
-        "original_event": {
-            "type": "device_ungrabbed"
-        },
-        "event_time_stamp": {
-            "time_stamp": 400
-        },
-        "state": "virtual_event",
-        "valid": true
+    "valid": true
+  },
+  {
+    "device_id": 2,
+    "event": {
+      "type": "momentary_switch_event",
+      "momentary_switch_event": {
+        "key_code": "spacebar"
+      }
     },
-    {
-        "device_id": 2,
-        "event": {
-            "key_code": "spacebar",
-            "type": "key_code"
-        },
-        "event_type": "key_up",
-        "lazy": false,
-        "original_event": {
-            "key_code": "spacebar",
-            "type": "key_code"
-        },
-        "event_time_stamp": {
-            "time_stamp": 600
-        },
-        "valid": true
+    "event_type": "key_down",
+    "lazy": false,
+    "original_event": {
+      "type": "momentary_switch_event",
+      "momentary_switch_event": {
+        "key_code": "spacebar"
+      }
     },
-    {
-        "device_id": 3,
-        "event": {
-            "type": "device_ungrabbed"
-        },
-        "event_type": "single",
-        "lazy": false,
-        "original_event": {
-            "type": "device_ungrabbed"
-        },
-        "event_time_stamp": {
-            "time_stamp": 700
-        },
-        "state": "virtual_event",
-        "valid": true
-    }
+    "event_time_stamp": {
+      "time_stamp": 200
+    },
+    "valid": true
+  },
+  {
+    "device_id": 1,
+    "event": {
+      "type": "momentary_switch_event",
+      "momentary_switch_event": {
+        "key_code": "spacebar"
+      }
+    },
+    "event_type": "key_up",
+    "lazy": false,
+    "original_event": {
+      "type": "momentary_switch_event",
+      "momentary_switch_event": {
+        "key_code": "spacebar"
+      }
+    },
+    "event_time_stamp": {
+      "time_stamp": 300
+    },
+    "valid": true
+  },
+  {
+    "device_id": 1,
+    "event": {
+      "type": "device_ungrabbed"
+    },
+    "event_type": "single",
+    "lazy": false,
+    "original_event": {
+      "type": "device_ungrabbed"
+    },
+    "event_time_stamp": {
+      "time_stamp": 400
+    },
+    "state": "virtual_event",
+    "valid": true
+  },
+  {
+    "device_id": 2,
+    "event": {
+      "type": "momentary_switch_event",
+      "momentary_switch_event": {
+        "key_code": "spacebar"
+      }
+    },
+    "event_type": "key_up",
+    "lazy": false,
+    "original_event": {
+      "type": "momentary_switch_event",
+      "momentary_switch_event": {
+        "key_code": "spacebar"
+      }
+    },
+    "event_time_stamp": {
+      "time_stamp": 600
+    },
+    "valid": true
+  },
+  {
+    "device_id": 3,
+    "event": {
+      "type": "device_ungrabbed"
+    },
+    "event_type": "single",
+    "lazy": false,
+    "original_event": {
+      "type": "device_ungrabbed"
+    },
+    "event_time_stamp": {
+      "time_stamp": 700
+    },
+    "state": "virtual_event",
+    "valid": true
+  }
 ]

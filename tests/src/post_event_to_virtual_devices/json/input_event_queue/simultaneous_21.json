@@ -1,93 +1,113 @@
 [
-    {
-        "pause_manipulation": true
+  {
+    "pause_manipulation": true
+  },
+  {
+    "device_id": 1,
+    "event": {
+      "type": "momentary_switch_event",
+      "momentary_switch_event": {
+        "key_code": "u"
+      }
     },
-    {
-        "device_id": 1,
-        "event": {
-            "key_code": "u",
-            "type": "key_code"
-        },
-        "event_type": "key_down",
-        "lazy": false,
-        "original_event": {
-            "key_code": "u",
-            "type": "key_code"
-        },
-        "event_time_stamp": {
-            "time_stamp": 2
-        },
-        "valid": true
+    "event_type": "key_down",
+    "lazy": false,
+    "original_event": {
+      "type": "momentary_switch_event",
+      "momentary_switch_event": {
+        "key_code": "u"
+      }
     },
-    {
-        "device_id": 1,
-        "event": {
-            "key_code": "i",
-            "type": "key_code"
-        },
-        "event_type": "key_down",
-        "lazy": false,
-        "original_event": {
-            "key_code": "i",
-            "type": "key_code"
-        },
-        "event_time_stamp": {
-            "time_stamp": 4
-        },
-        "valid": true
+    "event_time_stamp": {
+      "time_stamp": 2
     },
-    {
-        "device_id": 1,
-        "event": {
-            "key_code": "u",
-            "type": "key_code"
-        },
-        "event_type": "key_up",
-        "lazy": false,
-        "original_event": {
-            "key_code": "u",
-            "type": "key_code"
-        },
-        "event_time_stamp": {
-            "time_stamp": 6
-        },
-        "valid": true
+    "valid": true
+  },
+  {
+    "device_id": 1,
+    "event": {
+      "type": "momentary_switch_event",
+      "momentary_switch_event": {
+        "key_code": "i"
+      }
     },
-    {
-        "device_id": 1,
-        "event": {
-            "key_code": "spacebar",
-            "type": "key_code"
-        },
-        "event_type": "key_down",
-        "lazy": false,
-        "original_event": {
-            "key_code": "spacebar",
-            "type": "key_code"
-        },
-        "event_time_stamp": {
-            "time_stamp": 8
-        },
-        "valid": true
+    "event_type": "key_down",
+    "lazy": false,
+    "original_event": {
+      "type": "momentary_switch_event",
+      "momentary_switch_event": {
+        "key_code": "i"
+      }
     },
-    {
-        "device_id": 1,
-        "event": {
-            "key_code": "i",
-            "type": "key_code"
-        },
-        "event_type": "key_up",
-        "lazy": false,
-        "original_event": {
-            "key_code": "i",
-            "type": "key_code"
-        },
-        "event_time_stamp": {
-            "time_stamp": 10
-        },
-        "valid": true
+    "event_time_stamp": {
+      "time_stamp": 4
     },
-    {
-        "pause_manipulation": false
-    }
+    "valid": true
+  },
+  {
+    "device_id": 1,
+    "event": {
+      "type": "momentary_switch_event",
+      "momentary_switch_event": {
+        "key_code": "u"
+      }
+    },
+    "event_type": "key_up",
+    "lazy": false,
+    "original_event": {
+      "type": "momentary_switch_event",
+      "momentary_switch_event": {
+        "key_code": "u"
+      }
+    },
+    "event_time_stamp": {
+      "time_stamp": 6
+    },
+    "valid": true
+  },
+  {
+    "device_id": 1,
+    "event": {
+      "type": "momentary_switch_event",
+      "momentary_switch_event": {
+        "key_code": "spacebar"
+      }
+    },
+    "event_type": "key_down",
+    "lazy": false,
+    "original_event": {
+      "type": "momentary_switch_event",
+      "momentary_switch_event": {
+        "key_code": "spacebar"
+      }
+    },
+    "event_time_stamp": {
+      "time_stamp": 8
+    },
+    "valid": true
+  },
+  {
+    "device_id": 1,
+    "event": {
+      "type": "momentary_switch_event",
+      "momentary_switch_event": {
+        "key_code": "i"
+      }
+    },
+    "event_type": "key_up",
+    "lazy": false,
+    "original_event": {
+      "type": "momentary_switch_event",
+      "momentary_switch_event": {
+        "key_code": "i"
+      }
+    },
+    "event_time_stamp": {
+      "time_stamp": 10
+    },
+    "valid": true
+  },
+  {
+    "pause_manipulation": false
+  }
 ]

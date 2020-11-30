@@ -50,12 +50,14 @@ public:
       bool dispatch_modifier_key_event = false;
       bool dispatch_modifier_key_event_before = false;
       {
-        std::optional<modifier_flag> m;
-        if (auto key_code = front_input_event.get_event().get_key_code()) {
-          m = make_modifier_flag(*key_code);
+        bool modifier_flag = false;
+        if (auto e = front_input_event.get_event().get_if<momentary_switch_event>()) {
+          if (e->modifier_flag()) {
+            modifier_flag = true;
+          }
         }
 
-        if (m) {
+        if (modifier_flag) {
           // front_input_event is modifier key event.
           if (!front_input_event.get_lazy()) {
             dispatch_modifier_key_event = true;
@@ -88,9 +90,8 @@ public:
       }
 
       switch (front_input_event.get_event().get_type()) {
-        case event_queue::event::type::key_code:
         case event_queue::event::type::momentary_switch_event:
-          if (auto e = front_input_event.get_event().make_momentary_switch_event()) {
+          if (auto e = front_input_event.get_event().get_if<momentary_switch_event>()) {
             if (e->pointing_button()) {
               post_pointing_input_report(front_input_event,
                                          output_event_queue);

@@ -63,7 +63,7 @@ public:
 
         event_queue::entry event(device_id,
                                  t,
-                                 event_queue::event(*key_code),
+                                 event_queue::event(momentary_switch_event(*key_code)),
                                  event_type,
                                  original_event,
                                  event_queue::state::manipulated,
