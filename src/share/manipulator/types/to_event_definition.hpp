@@ -154,7 +154,6 @@ inline void from_json(const nlohmann::json& json, to_event_definition& d) {
 
   switch (d.get_event_definition().get_type()) {
     case event_definition::type::key_code:
-    case event_definition::type::consumer_key_code:
     case event_definition::type::momentary_switch_event:
     case event_definition::type::shell_command:
     case event_definition::type::select_input_source:

@@ -14,7 +14,8 @@ krbn::event_queue::event right_shift_event(krbn::key_code::keyboard_right_shift)
 krbn::event_queue::event spacebar_event(krbn::key_code::keyboard_spacebar);
 krbn::event_queue::event tab_event(krbn::key_code::keyboard_tab);
 
-krbn::event_queue::event mute_event(krbn::consumer_key_code::mute);
+krbn::event_queue::event mute_event(krbn::momentary_switch_event(pqrs::hid::usage_page::consumer,
+                                                                 pqrs::hid::usage::consumer::mute));
 
 krbn::event_queue::event button2_event(krbn::momentary_switch_event(pqrs::hid::usage_page::button,
                                                                     pqrs::hid::usage::button::button_2));
@@ -52,9 +53,12 @@ TEST_CASE("json") {
     REQUIRE(json == event_from_json.to_json());
   }
   {
-    nlohmann::json expected;
-    expected["type"] = "consumer_key_code";
-    expected["consumer_key_code"] = "mute";
+    auto expected = nlohmann::json::object({
+        {"type", "momentary_switch_event"},
+        {"momentary_switch_event", nlohmann::json::object({
+                                       {"consumer_key_code", "mute"},
+                                   })},
+    });
     auto json = mute_event.to_json();
     REQUIRE(json == expected);
     auto event_from_json = krbn::event_queue::event::make_from_json(json);
@@ -221,8 +225,9 @@ TEST_CASE("get_key_code") {
 }
 
 TEST_CASE("get_consumer_key_code") {
-  REQUIRE(spacebar_event.get_consumer_key_code() == std::nullopt);
-  REQUIRE(mute_event.get_consumer_key_code() == krbn::consumer_key_code::mute);
+  REQUIRE(mute_event.get_if<krbn::momentary_switch_event>()->make_usage_pair() ==
+          pqrs::hid::usage_pair(pqrs::hid::usage_page::consumer,
+                                pqrs::hid::usage::consumer::mute));
 }
 
 TEST_CASE("get_frontmost_application_bundle_identifier") {

@@ -702,8 +702,7 @@ private:
 
   void unset_alone_if_needed(const event_queue::event& event,
                              event_type event_type) {
-    if (event.get_type() == event_queue::event::type::key_code ||
-        event.get_type() == event_queue::event::type::consumer_key_code) {
+    if (event.get_type() == event_queue::event::type::key_code) {
       if (event_type == event_type::key_down) {
         goto run;
       }

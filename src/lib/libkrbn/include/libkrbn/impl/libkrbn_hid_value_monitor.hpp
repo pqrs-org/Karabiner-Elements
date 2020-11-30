@@ -106,18 +106,6 @@ private:
             }
           }
         }
-      } else if (auto v = entry.get_event().get_if<krbn::consumer_key_code::value_t>()) {
-        if (auto usage_page = krbn::make_hid_usage_page(*v)) {
-          if (auto usage = krbn::make_hid_usage(*v)) {
-            if (callback) {
-              callback(type_safe::get(entry.get_device_id()),
-                       type_safe::get(*usage_page),
-                       type_safe::get(*usage),
-                       event_type,
-                       refcon);
-            }
-          }
-        }
       } else if (auto e = entry.get_event().get_if<krbn::momentary_switch_event>()) {
         if (auto usage_pair = e->make_usage_pair()) {
           if (callback) {

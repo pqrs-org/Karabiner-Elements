@@ -54,7 +54,10 @@
         "device_id": 1,
         "event": {
             "consumer_key_code": "mute",
-            "type": "consumer_key_code"
+            "type": "momentary_switch_event",
+            "momentary_switch_event": {
+                "consumer_key_code": "mute"
+            }
         },
         "event_type": "key_down",
         "lazy": false,
@@ -71,7 +74,10 @@
         "device_id": 1,
         "event": {
             "consumer_key_code": "mute",
-            "type": "consumer_key_code"
+            "type": "momentary_switch_event",
+            "momentary_switch_event": {
+                "consumer_key_code": "mute"
+            }
         },
         "event_type": "key_up",
         "lazy": false,
@@ -198,7 +204,10 @@
         "device_id": 1,
         "event": {
             "consumer_key_code": "mute",
-            "type": "consumer_key_code"
+            "type": "momentary_switch_event",
+            "momentary_switch_event": {
+                "consumer_key_code": "mute"
+            }
         },
         "event_type": "key_down",
         "lazy": false,
@@ -215,7 +224,10 @@
         "device_id": 1,
         "event": {
             "consumer_key_code": "mute",
-            "type": "consumer_key_code"
+            "type": "momentary_switch_event",
+            "momentary_switch_event": {
+                "consumer_key_code": "mute"
+            }
         },
         "event_type": "key_up",
         "lazy": false,
@@ -342,7 +354,10 @@
         "device_id": 1,
         "event": {
             "consumer_key_code": "mute",
-            "type": "consumer_key_code"
+            "type": "momentary_switch_event",
+            "momentary_switch_event": {
+                "consumer_key_code": "mute"
+            }
         },
         "event_type": "key_down",
         "lazy": false,
@@ -359,7 +374,10 @@
         "device_id": 1,
         "event": {
             "consumer_key_code": "mute",
-            "type": "consumer_key_code"
+            "type": "momentary_switch_event",
+            "momentary_switch_event": {
+                "consumer_key_code": "mute"
+            }
         },
         "event_type": "key_up",
         "lazy": false,

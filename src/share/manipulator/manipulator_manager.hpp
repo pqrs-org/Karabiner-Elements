@@ -99,7 +99,6 @@ public:
               break;
 
             case event_queue::event::type::key_code:
-            case event_queue::event::type::consumer_key_code:
             case event_queue::event::type::momentary_switch_event:
             case event_queue::event::type::pointing_motion:
             case event_queue::event::type::shell_command:

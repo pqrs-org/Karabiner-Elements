@@ -50,12 +50,6 @@ public:
       }
     }
 
-    if (auto consumer_key_code = event.get_consumer_key_code()) {
-      if (event_definition.get_consumer_key_code() == consumer_key_code) {
-        return true;
-      }
-    }
-
     if (auto event_momentary_switch_event = event.get_if<momentary_switch_event>()) {
       if (auto event_definition_momentary_switch_event = event_definition.get_if<momentary_switch_event>()) {
         if (*event_momentary_switch_event == *event_definition_momentary_switch_event) {
@@ -226,7 +220,6 @@ inline void from_json(const nlohmann::json& json, from_event_definition& d) {
   for (const auto& d : event_definitions) {
     switch (d.get_type()) {
       case event_definition::type::key_code:
-      case event_definition::type::consumer_key_code:
       case event_definition::type::momentary_switch_event:
       case event_definition::type::any:
         break;

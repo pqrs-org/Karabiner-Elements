@@ -1015,7 +1015,8 @@ TEST_CASE("simple_modifications.to_json") {
     {
       krbn::manipulator::manipulators::basic::from_event_definition from_event_definition(krbn::json_utility::parse_jsonc(simple_modifications.get_pairs()[0].first));
       REQUIRE(from_event_definition.get_event_definitions().size() == 1);
-      REQUIRE(from_event_definition.get_event_definitions().front().get_consumer_key_code() == krbn::consumer_key_code::mute);
+      REQUIRE(from_event_definition.get_event_definitions().front().get_if<krbn::momentary_switch_event>()->make_usage_pair()->get_usage_page() == pqrs::hid::usage_page::consumer);
+      REQUIRE(from_event_definition.get_event_definitions().front().get_if<krbn::momentary_switch_event>()->make_usage_pair()->get_usage() == pqrs::hid::usage::consumer::mute);
     }
     {
       krbn::manipulator::to_event_definition to_event_definition(krbn::json_utility::parse_jsonc(simple_modifications.get_pairs()[0].second));

@@ -89,14 +89,16 @@ TEST_CASE("utility::make_queue") {
     auto& e = queue->get_entries()[2];
     REQUIRE(e.get_device_id() == krbn::device_id(1));
     REQUIRE(e.get_event_time_stamp().get_time_stamp() == krbn::absolute_time_point(3000));
-    REQUIRE(e.get_event().get_consumer_key_code() == krbn::consumer_key_code::mute);
+    REQUIRE(e.get_event().get_if<krbn::momentary_switch_event>()->make_usage_pair() ==
+            pqrs::hid::usage_pair(pqrs::hid::usage_page::consumer, pqrs::hid::usage::consumer::mute));
     REQUIRE(e.get_event_type() == krbn::event_type::key_down);
   }
   {
     auto& e = queue->get_entries()[3];
     REQUIRE(e.get_device_id() == krbn::device_id(1));
     REQUIRE(e.get_event_time_stamp().get_time_stamp() == krbn::absolute_time_point(4000));
-    REQUIRE(e.get_event().get_consumer_key_code() == krbn::consumer_key_code::mute);
+    REQUIRE(e.get_event().get_if<krbn::momentary_switch_event>()->make_usage_pair() ==
+            pqrs::hid::usage_pair(pqrs::hid::usage_page::consumer, pqrs::hid::usage::consumer::mute));
     REQUIRE(e.get_event_type() == krbn::event_type::key_up);
   }
   {
@@ -132,7 +134,8 @@ TEST_CASE("utility::make_queue") {
 TEST_CASE("utility::insert_device_keys_and_pointing_buttons_are_released_event") {
   krbn::event_queue::event a_event(krbn::key_code::keyboard_a);
   krbn::event_queue::event b_event(krbn::key_code::keyboard_b);
-  krbn::event_queue::event mute_event(krbn::consumer_key_code::mute);
+  krbn::event_queue::event mute_event(krbn::momentary_switch_event(pqrs::hid::usage_page::consumer,
+                                                                   pqrs::hid::usage::consumer::mute));
   krbn::event_queue::event button2_event(krbn::momentary_switch_event(pqrs::hid::usage_page::button,
                                                                       pqrs::hid::usage::button::button_2));
 

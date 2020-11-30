@@ -13,7 +13,6 @@ public:
   enum class type {
     none,
     key_code,
-    consumer_key_code,
     momentary_switch_event,
     any,
     shell_command,
@@ -32,7 +31,6 @@ public:
 
   using value_t = std::variant<std::monostate,
                                key_code::value_t,
-                               consumer_key_code::value_t,
                                momentary_switch_event,
                                any_type,                                                 // For any
                                std::string,                                              // For shell_command
@@ -68,13 +66,6 @@ public:
     return std::nullopt;
   }
 
-  std::optional<consumer_key_code::value_t> get_consumer_key_code(void) const {
-    if (type_ == type::consumer_key_code) {
-      return std::get<consumer_key_code::value_t>(value_);
-    }
-    return std::nullopt;
-  }
-
   std::optional<std::string> get_shell_command(void) const {
     if (type_ == type::shell_command) {
       return std::get<std::string>(value_);
@@ -102,8 +93,6 @@ public:
         return std::nullopt;
       case type::key_code:
         return event_queue::event(std::get<key_code::value_t>(value_));
-      case type::consumer_key_code:
-        return event_queue::event(std::get<consumer_key_code::value_t>(value_));
       case type::momentary_switch_event:
         return event_queue::event(std::get<momentary_switch_event>(value_));
       case type::any:
@@ -140,15 +129,17 @@ public:
       return true;
     }
 
-    // ----------------------------------------
+    //
     // consumer_key_code
+    //
 
     if (key == "consumer_key_code") {
       check_type(json);
 
       try {
-        type_ = type::consumer_key_code;
-        value_ = value.get<consumer_key_code::value_t>();
+        type_ = type::momentary_switch_event;
+        value_ = momentary_switch_event(pqrs::hid::usage_page::consumer,
+                                        *(make_hid_usage(value.get<consumer_key_code::value_t>())));
       } catch (const pqrs::json::unmarshal_error& e) {
         throw pqrs::json::unmarshal_error(fmt::format("`{0}` error: {1}", key, e.what()));
       }

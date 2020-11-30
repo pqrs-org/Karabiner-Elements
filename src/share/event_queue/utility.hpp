@@ -57,7 +57,7 @@ static inline std::shared_ptr<queue> make_queue(device_id device_id,
                                      state::original);
 
         } else if (auto consumer_key_code = make_consumer_key_code(*usage_page, *usage)) {
-          event_queue::event event(*consumer_key_code);
+          event_queue::event event(momentary_switch_event(*usage_page, *usage));
           result->emplace_back_entry(device_id,
                                      event_time_stamp(v.get_time_stamp()),
                                      event,
