@@ -24,10 +24,10 @@ TEST_CASE("karabiner_virtual_hid_device::hid_report::keys") {
   // keyboard_or_keypad
   {
     hid_report::keys keys;
-    keys.insert(type_safe::get(*(krbn::make_hid_usage(krbn::key_code::keyboard_a))));
-    keys.insert(type_safe::get(*(krbn::make_hid_usage(krbn::key_code::keyboard_b))));
-    keys.insert(type_safe::get(*(krbn::make_hid_usage(krbn::key_code::keyboard_c))));
-    keys.erase(type_safe::get(*(krbn::make_hid_usage(krbn::key_code::keyboard_a))));
+    keys.insert(type_safe::get(pqrs::hid::usage::keyboard_or_keypad::keyboard_a));
+    keys.insert(type_safe::get(pqrs::hid::usage::keyboard_or_keypad::keyboard_b));
+    keys.insert(type_safe::get(pqrs::hid::usage::keyboard_or_keypad::keyboard_c));
+    keys.erase(type_safe::get(pqrs::hid::usage::keyboard_or_keypad::keyboard_a));
 
     nlohmann::json expected = nlohmann::json::array();
     expected.push_back("b");
@@ -38,9 +38,9 @@ TEST_CASE("karabiner_virtual_hid_device::hid_report::keys") {
   // consumer
   {
     hid_report::keys keys;
-    keys.insert(type_safe::get(*(krbn::make_hid_usage(krbn::consumer_key_code::rewind))));
-    keys.insert(type_safe::get(*(krbn::make_hid_usage(krbn::consumer_key_code::eject))));
-    keys.insert(type_safe::get(*(krbn::make_hid_usage(krbn::consumer_key_code::mute))));
+    keys.insert(type_safe::get(pqrs::hid::usage::consumer::rewind));
+    keys.insert(type_safe::get(pqrs::hid::usage::consumer::eject));
+    keys.insert(type_safe::get(pqrs::hid::usage::consumer::mute));
 
     nlohmann::json expected = nlohmann::json::array();
     expected.push_back("rewind");
