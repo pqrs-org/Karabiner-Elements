@@ -14,7 +14,9 @@ namespace hid {
 namespace usage {
 struct value_t : type_safe::strong_typedef<value_t, int32_t>,
                  type_safe::strong_typedef_op::equality_comparison<value_t>,
-                 type_safe::strong_typedef_op::relational_comparison<value_t> {
+                 type_safe::strong_typedef_op::relational_comparison<value_t>,
+                 type_safe::strong_typedef_op::increment<value_t>,
+                 type_safe::strong_typedef_op::decrement<value_t> {
   using strong_typedef::strong_typedef;
 
   constexpr auto operator<=>(const value_t& other) const {
