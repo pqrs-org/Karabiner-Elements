@@ -36,7 +36,9 @@ public:
       value_ = *apple_vendor_keyboard_key_code;
     } else if (auto apple_vendor_top_case_key_code = make_apple_vendor_top_case_key_code(usage_page, usage)) {
       value_ = *apple_vendor_top_case_key_code;
-    } else if (usage_page == pqrs::hid::usage_page::button) {
+
+    } else if (usage_page == pqrs::hid::usage_page::button &&
+               momentary_switch_event_details::pointing_button::target(usage)) {
       usage_pair_ = pqrs::hid::usage_pair(usage_page, usage);
     }
   }

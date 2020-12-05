@@ -43,11 +43,22 @@ constexpr std::pair<const mapbox::eternal::string, const pqrs::hid::usage::value
 
 constexpr auto name_value_map = mapbox::eternal::hash_map<mapbox::eternal::string, pqrs::hid::usage::value_t>(name_value_pairs);
 
+inline auto find_pair(pqrs::hid::usage::value_t usage) {
+  return std::find_if(std::begin(name_value_pairs),
+                      std::end(name_value_pairs),
+                      [&](const auto& pair) {
+                        return pair.second == usage;
+                      });
+}
+
+inline bool target(pqrs::hid::usage::value_t usage) {
+  return true;
+}
+
 inline std::string make_name(pqrs::hid::usage::value_t usage) {
-  for (const auto& pair : name_value_pairs) {
-    if (pair.second == usage) {
-      return pair.first.c_str();
-    }
+  auto it = find_pair(usage);
+  if (it != std::end(name_value_pairs)) {
+    return it->first.c_str();
   }
 
   // fallback
