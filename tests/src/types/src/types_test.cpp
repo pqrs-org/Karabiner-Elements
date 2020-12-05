@@ -184,11 +184,11 @@ TEST_CASE("find_pointing_button_usage") {
 }
 
 TEST_CASE("unnamed") {
-  REQUIRE(krbn::momentary_switch_event_details::unnamed::find_usage("(number:123)") == pqrs::hid::usage::value_t(123));
-  REQUIRE(krbn::momentary_switch_event_details::unnamed::find_usage("(number:123456789)") == pqrs::hid::usage::value_t(123456789));
-  REQUIRE(krbn::momentary_switch_event_details::unnamed::find_usage("(number:abc)") == std::nullopt);
-  REQUIRE(krbn::momentary_switch_event_details::unnamed::find_usage("button1") == std::nullopt);
+  REQUIRE(krbn::momentary_switch_event_details::impl::find_unnamed_usage("(number:123)") == pqrs::hid::usage::value_t(123));
+  REQUIRE(krbn::momentary_switch_event_details::impl::find_unnamed_usage("(number:123456789)") == pqrs::hid::usage::value_t(123456789));
+  REQUIRE(krbn::momentary_switch_event_details::impl::find_unnamed_usage("(number:abc)") == std::nullopt);
+  REQUIRE(krbn::momentary_switch_event_details::impl::find_unnamed_usage("button1") == std::nullopt);
 
-  REQUIRE(krbn::momentary_switch_event_details::unnamed::find_usage("") == std::nullopt);
-  REQUIRE(krbn::momentary_switch_event_details::unnamed::find_usage("(number:") == std::nullopt);
+  REQUIRE(krbn::momentary_switch_event_details::impl::find_unnamed_usage("") == std::nullopt);
+  REQUIRE(krbn::momentary_switch_event_details::impl::find_unnamed_usage("(number:") == std::nullopt);
 }

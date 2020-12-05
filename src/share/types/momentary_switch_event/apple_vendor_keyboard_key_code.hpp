@@ -1,6 +1,6 @@
 #pragma once
 
-#include "unnamed.hpp"
+#include "impl.hpp"
 #include <mapbox/eternal.hpp>
 
 namespace krbn {
@@ -23,36 +23,16 @@ constexpr std::pair<const mapbox::eternal::string, const pqrs::hid::usage::value
 
 constexpr auto name_value_map = mapbox::eternal::hash_map<mapbox::eternal::string, pqrs::hid::usage::value_t>(name_value_pairs);
 
-inline auto find_pair(pqrs::hid::usage::value_t usage) {
-  return std::find_if(std::begin(name_value_pairs),
-                      std::end(name_value_pairs),
-                      [&](const auto& pair) {
-                        return pair.second == usage;
-                      });
-}
-
 inline bool target(pqrs::hid::usage::value_t usage) {
-  return find_pair(usage) != std::end(name_value_pairs);
+  return impl::find_pair(name_value_pairs, usage) != std::end(name_value_pairs);
 }
 
 inline std::string make_name(pqrs::hid::usage::value_t usage) {
-  auto it = find_pair(usage);
-  if (it != std::end(name_value_pairs)) {
-    return it->first.c_str();
-  }
-
-  // fallback
-  return unnamed::make_name(usage);
+  return impl::make_name(name_value_pairs, usage);
 }
 
 inline std::optional<pqrs::hid::usage::value_t> find_usage(const std::string& name) {
-  auto it = name_value_map.find(name.c_str());
-  if (it != name_value_map.end()) {
-    return it->second;
-  }
-
-  // fallback
-  return unnamed::find_usage(name);
+  return impl::find_usage(name_value_map, name);
 }
 } // namespace apple_vendor_keyboard_key_code
 } // namespace momentary_switch_event_details
