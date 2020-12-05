@@ -68,9 +68,9 @@ public:
   static nlohmann::json to_json(const pqrs::karabiner::driverkit::virtual_hid_device_driver::hid_report::buttons& v) {
     auto json = nlohmann::json::array();
 
-    for (auto b = pointing_button::button1; b <= pointing_button::button32; ++b) {
+    for (auto b = pqrs::hid::usage::button::button_1; b <= pqrs::hid::usage::button::button_32; ++b) {
       if (v.exists(type_safe::get(b))) {
-        json.push_back(make_pointing_button_name(b));
+        json.push_back(momentary_switch_event_details::pointing_button::make_name(b));
       }
     }
 

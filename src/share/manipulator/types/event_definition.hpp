@@ -146,8 +146,7 @@ public:
 
       try {
         type_ = type::momentary_switch_event;
-        value_ = momentary_switch_event(pqrs::hid::usage_page::button,
-                                        *(make_hid_usage(value.get<pointing_button::value_t>())));
+        value_ = nlohmann::json::object({{key, value}}).get<momentary_switch_event>();
       } catch (const pqrs::json::unmarshal_error& e) {
         throw pqrs::json::unmarshal_error(fmt::format("`{0}` error: {1}", key, e.what()));
       }

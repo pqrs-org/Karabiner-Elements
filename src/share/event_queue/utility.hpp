@@ -47,6 +47,8 @@ static inline std::shared_ptr<queue> make_queue(device_id device_id,
   for (const auto& v : hid_values) {
     if (auto usage_page = v.get_usage_page()) {
       if (auto usage = v.get_usage()) {
+        momentary_switch_event mse(*usage_page, *usage);
+
         if (auto key_code = make_key_code(*usage_page, *usage)) {
           event_queue::event event(momentary_switch_event(*usage_page, *usage));
           result->emplace_back_entry(device_id,
@@ -65,8 +67,9 @@ static inline std::shared_ptr<queue> make_queue(device_id device_id,
                                      event,
                                      state::original);
 
-        } else if (auto pointing_button = make_pointing_button(*usage_page, *usage)) {
-          event_queue::event event(momentary_switch_event(*usage_page, *usage));
+        } else if (mse.get_usage_pair().get_usage_page() != pqrs::hid::usage_page::undefined &&
+                   mse.get_usage_pair().get_usage() != pqrs::hid::usage::undefined) {
+          event_queue::event event(mse);
           result->emplace_back_entry(device_id,
                                      event_time_stamp(v.get_time_stamp()),
                                      event,

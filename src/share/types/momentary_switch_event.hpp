@@ -17,7 +17,6 @@ public:
                                consumer_key_code::value_t,
                                apple_vendor_keyboard_key_code::value_t,
                                apple_vendor_top_case_key_code::value_t,
-                               pointing_button::value_t,
                                std::monostate>;
 
   momentary_switch_event(void) : value_(std::monostate()) {
@@ -37,8 +36,8 @@ public:
       value_ = *apple_vendor_keyboard_key_code;
     } else if (auto apple_vendor_top_case_key_code = make_apple_vendor_top_case_key_code(usage_page, usage)) {
       value_ = *apple_vendor_top_case_key_code;
-    } else if (auto pointing_button = make_pointing_button(usage_page, usage)) {
-      value_ = *pointing_button;
+    } else if (usage_page == pqrs::hid::usage_page::button) {
+      usage_pair_ = pqrs::hid::usage_pair(usage_page, usage);
     }
   }
 
@@ -52,6 +51,16 @@ public:
   template <typename T>
   void set_value(T value) {
     value_ = value;
+  }
+
+  const pqrs::hid::usage_pair& get_usage_pair(void) const {
+    return usage_pair_;
+  }
+
+  momentary_switch_event& set_usage_pair(const pqrs::hid::usage_pair& usage_pair) {
+    usage_pair_ = usage_pair;
+
+    return *this;
   }
 
   template <typename T>
@@ -75,16 +84,18 @@ public:
     } else if (auto value = get_if<apple_vendor_top_case_key_code::value_t>()) {
       usage_page = make_hid_usage_page(*value);
       usage = make_hid_usage(*value);
-    } else if (auto value = get_if<pointing_button::value_t>()) {
-      usage_page = make_hid_usage_page(*value);
-      usage = make_hid_usage(*value);
     }
 
     if (usage_page && usage) {
       return pqrs::hid::usage_pair(*usage_page, *usage);
     }
 
-    return std::nullopt;
+    if (usage_pair_.get_usage_page() == pqrs::hid::usage_page::undefined ||
+        usage_pair_.get_usage() == pqrs::hid::usage::undefined) {
+      return std::nullopt;
+    }
+
+    return usage_pair_;
   }
 
   std::optional<krbn::modifier_flag> make_modifier_flag(void) const {
@@ -129,22 +140,29 @@ public:
   }
 
   bool pointing_button(void) const {
-    return std::holds_alternative<pointing_button::value_t>(value_);
+    return usage_pair_.get_usage_page() == pqrs::hid::usage_page::button;
   }
 
   bool operator==(const momentary_switch_event& other) const {
-    return value_ == other.value_;
+    return value_ == other.value_ && usage_pair_ == other.usage_pair_;
   }
 
   bool operator<(const momentary_switch_event& other) const {
-    return value_ < other.value_;
+    if (value_ != other.value_) {
+      return value_ < other.value_;
+    }
+    return usage_pair_ < other.usage_pair_;
   }
 
 private:
   value_t value_;
+  pqrs::hid::usage_pair usage_pair_;
 };
 
 inline void to_json(nlohmann::json& json, const momentary_switch_event& value) {
+  auto usage_page = value.get_usage_pair().get_usage_page();
+  auto usage = value.get_usage_pair().get_usage();
+
   if (auto v = value.get_if<key_code::value_t>()) {
     json["key_code"] = make_key_code_name(*v);
 
@@ -157,8 +175,8 @@ inline void to_json(nlohmann::json& json, const momentary_switch_event& value) {
   } else if (auto v = value.get_if<apple_vendor_top_case_key_code::value_t>()) {
     json["apple_vendor_top_case_key_code"] = make_apple_vendor_top_case_key_code_name(*v);
 
-  } else if (auto v = value.get_if<pointing_button::value_t>()) {
-    json["pointing_button"] = make_pointing_button_name(*v);
+  } else if (usage_page == pqrs::hid::usage_page::button) {
+    json["pointing_button"] = momentary_switch_event_details::pointing_button::make_name(usage);
   }
 }
 
@@ -179,7 +197,21 @@ inline void from_json(const nlohmann::json& json, momentary_switch_event& value)
       value.set_value(v.get<apple_vendor_top_case_key_code::value_t>());
 
     } else if (k == "pointing_button") {
-      value.set_value(v.get<pointing_button::value_t>());
+      if (v.is_string()) {
+        if (auto usage = momentary_switch_event_details::pointing_button::find_usage(v.get<std::string>())) {
+          value.set_usage_pair(pqrs::hid::usage_pair(pqrs::hid::usage_page::button,
+                                                     *usage));
+        } else {
+          throw pqrs::json::unmarshal_error(fmt::format("unknown pointing_button: `{0}`", pqrs::json::dump_for_error_message(v)));
+        }
+
+      } else if (v.is_number()) {
+        value.set_usage_pair(pqrs::hid::usage_pair(pqrs::hid::usage_page::button,
+                                                   v.get<pqrs::hid::usage::value_t>()));
+
+      } else {
+        throw pqrs::json::unmarshal_error(fmt::format("json must be string or number, but is `{0}`", pqrs::json::dump_for_error_message(v)));
+      }
 
     } else {
       throw pqrs::json::unmarshal_error(fmt::format("unknown key: `{0}`", k));
@@ -195,6 +227,7 @@ struct hash<krbn::momentary_switch_event> final {
     std::size_t h = 0;
 
     pqrs::hash::combine(h, value.get_value());
+    pqrs::hash::combine(h, value.get_usage_pair());
 
     return h;
   }
