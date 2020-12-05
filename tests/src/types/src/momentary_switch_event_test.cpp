@@ -149,6 +149,25 @@ TEST_CASE("momentary_switch_event json") {
                                                          pqrs::hid::usage::apple_vendor_keyboard::spotlight);
     REQUIRE(actual.dump() == expected);
   }
+  {
+    std::string expected("null");
+    nlohmann::json actual = krbn::momentary_switch_event(pqrs::hid::usage_page::apple_vendor_keyboard,
+                                                         pqrs::hid::usage::apple_vendor_keyboard::caps_lock_delay_enable);
+    REQUIRE(actual.dump() == expected);
+  }
+
+#if 0
+  //
+  // apple_vendor_top_case_key_code
+  //
+
+  {
+    std::string expected("{\"apple_vendor_top_case_key_code\":\"brightness_down\"}");
+    nlohmann::json actual = krbn::momentary_switch_event(pqrs::hid::usage_page::apple_vendor_top_case,
+                                                         pqrs::hid::usage::apple_vendor_top_case::brightness_down);
+    REQUIRE(actual.dump() == expected);
+  }
+#endif
 
   //
   // pointing_button
