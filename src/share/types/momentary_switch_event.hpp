@@ -15,7 +15,6 @@ class momentary_switch_event final {
 public:
   using value_t = std::variant<key_code::value_t,
                                consumer_key_code::value_t,
-                               apple_vendor_keyboard_key_code::value_t,
                                apple_vendor_top_case_key_code::value_t,
                                std::monostate>;
 
@@ -32,8 +31,11 @@ public:
       value_ = *key_code;
     } else if (auto consumer_key_code = make_consumer_key_code(usage_page, usage)) {
       value_ = *consumer_key_code;
-    } else if (auto apple_vendor_keyboard_key_code = make_apple_vendor_keyboard_key_code(usage_page, usage)) {
-      value_ = *apple_vendor_keyboard_key_code;
+
+    } else if (usage_page == pqrs::hid::usage_page::apple_vendor_keyboard &&
+               momentary_switch_event_details::apple_vendor_keyboard_key_code::target(usage)) {
+      usage_pair_ = pqrs::hid::usage_pair(usage_page, usage);
+
     } else if (auto apple_vendor_top_case_key_code = make_apple_vendor_top_case_key_code(usage_page, usage)) {
       value_ = *apple_vendor_top_case_key_code;
 
@@ -78,9 +80,6 @@ public:
       usage_page = make_hid_usage_page(*value);
       usage = make_hid_usage(*value);
     } else if (auto value = get_if<consumer_key_code::value_t>()) {
-      usage_page = make_hid_usage_page(*value);
-      usage = make_hid_usage(*value);
-    } else if (auto value = get_if<apple_vendor_keyboard_key_code::value_t>()) {
       usage_page = make_hid_usage_page(*value);
       usage = make_hid_usage(*value);
     } else if (auto value = get_if<apple_vendor_top_case_key_code::value_t>()) {
@@ -171,8 +170,8 @@ inline void to_json(nlohmann::json& json, const momentary_switch_event& value) {
   } else if (auto v = value.get_if<consumer_key_code::value_t>()) {
     json["consumer_key_code"] = make_consumer_key_code_name(*v);
 
-  } else if (auto v = value.get_if<apple_vendor_keyboard_key_code::value_t>()) {
-    json["apple_vendor_keyboard_key_code"] = make_apple_vendor_keyboard_key_code_name(*v);
+  } else if (usage_page == pqrs::hid::usage_page::apple_vendor_keyboard) {
+    json["apple_vendor_keyboard_key_code"] = momentary_switch_event_details::apple_vendor_keyboard_key_code::make_name(usage);
 
   } else if (auto v = value.get_if<apple_vendor_top_case_key_code::value_t>()) {
     json["apple_vendor_top_case_key_code"] = make_apple_vendor_top_case_key_code_name(*v);
@@ -193,7 +192,20 @@ inline void from_json(const nlohmann::json& json, momentary_switch_event& value)
       value.set_value(v.get<consumer_key_code::value_t>());
 
     } else if (k == "apple_vendor_keyboard_key_code") {
-      value.set_value(v.get<apple_vendor_keyboard_key_code::value_t>());
+      if (v.is_string()) {
+        if (auto usage = momentary_switch_event_details::apple_vendor_keyboard_key_code::find_usage(v.get<std::string>())) {
+          value.set_usage_pair(pqrs::hid::usage_pair(pqrs::hid::usage_page::apple_vendor_keyboard,
+                                                     *usage));
+        } else {
+          throw pqrs::json::unmarshal_error(fmt::format("unknown apple_vendor_keyboard_key_code: `{0}`", pqrs::json::dump_for_error_message(v)));
+        }
+      } else if (v.is_number()) {
+        value.set_usage_pair(pqrs::hid::usage_pair(pqrs::hid::usage_page::apple_vendor_keyboard,
+                                                   v.get<pqrs::hid::usage::value_t>()));
+
+      } else {
+        throw pqrs::json::unmarshal_error(fmt::format("json must be string or number, but is `{0}`", pqrs::json::dump_for_error_message(v)));
+      }
 
     } else if (k == "apple_vendor_top_case_key_code") {
       value.set_value(v.get<apple_vendor_top_case_key_code::value_t>());

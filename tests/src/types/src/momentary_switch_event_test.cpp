@@ -28,6 +28,11 @@ TEST_CASE("momentary_switch_event") {
     REQUIRE(e.pointing_button() == false);
     REQUIRE(nlohmann::json(e).get<krbn::momentary_switch_event>() == e);
   }
+
+  //
+  // usage_page::apple_vendor_keyboard
+  //
+
   {
     krbn::momentary_switch_event e(pqrs::hid::usage_page::apple_vendor_keyboard,
                                    pqrs::hid::usage::apple_vendor_keyboard::expose_all);
@@ -45,6 +50,14 @@ TEST_CASE("momentary_switch_event") {
     REQUIRE(nlohmann::json(e).get<krbn::momentary_switch_event>() == e);
   }
   {
+    // Not target usage
+
+    krbn::momentary_switch_event e(pqrs::hid::usage_page::apple_vendor_keyboard,
+                                   pqrs::hid::usage::apple_vendor_keyboard::caps_lock_delay_enable);
+    REQUIRE(e.make_usage_pair() == std::nullopt);
+  }
+
+  {
     krbn::momentary_switch_event e(pqrs::hid::usage_page::apple_vendor_top_case,
                                    pqrs::hid::usage::apple_vendor_top_case::brightness_down);
     REQUIRE(e.make_modifier_flag() == std::nullopt);
@@ -60,6 +73,11 @@ TEST_CASE("momentary_switch_event") {
     REQUIRE(e.pointing_button() == false);
     REQUIRE(nlohmann::json(e).get<krbn::momentary_switch_event>() == e);
   }
+
+  //
+  // usage_page::button
+  //
+
   {
     krbn::momentary_switch_event e(pqrs::hid::usage_page::button,
                                    pqrs::hid::usage::button::button_1);
@@ -68,6 +86,11 @@ TEST_CASE("momentary_switch_event") {
     REQUIRE(e.pointing_button() == true);
     REQUIRE(nlohmann::json(e).get<krbn::momentary_switch_event>() == e);
   }
+
+  //
+  // map
+  //
+
   {
     std::set<krbn::momentary_switch_event> map;
     map.insert(krbn::momentary_switch_event(pqrs::hid::usage_page::consumer,
@@ -116,6 +139,21 @@ TEST_CASE("momentary_switch_event") {
 }
 
 TEST_CASE("momentary_switch_event json") {
+  //
+  // apple_vendor_keyboard_key_code
+  //
+
+  {
+    std::string expected("{\"apple_vendor_keyboard_key_code\":\"spotlight\"}");
+    nlohmann::json actual = krbn::momentary_switch_event(pqrs::hid::usage_page::apple_vendor_keyboard,
+                                                         pqrs::hid::usage::apple_vendor_keyboard::spotlight);
+    REQUIRE(actual.dump() == expected);
+  }
+
+  //
+  // pointing_button
+  //
+
   {
     std::string expected("{\"pointing_button\":\"button1\"}");
     nlohmann::json actual = krbn::momentary_switch_event(pqrs::hid::usage_page::button,
