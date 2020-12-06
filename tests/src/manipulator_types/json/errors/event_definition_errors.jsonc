@@ -32,7 +32,7 @@
         "input": {
             "consumer_key_code": null
         },
-        "error": "`consumer_key_code` error: json must be string or number, but is `null`"
+        "error": "`consumer_key_code` error: `consumer_key_code` must be string or number, but is `null`"
     },
     {
         "class": "event_definition",

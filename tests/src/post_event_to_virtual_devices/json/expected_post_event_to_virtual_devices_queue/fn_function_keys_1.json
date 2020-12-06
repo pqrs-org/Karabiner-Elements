@@ -2,7 +2,9 @@
     {
         "consumer_input": {
             "keys": [
-                "mute"
+                {
+                    "consumer_key_code": "mute"
+                }
             ]
         },
         "time_stamp": 5,

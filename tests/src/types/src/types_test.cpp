@@ -119,71 +119,25 @@ TEST_CASE("make_modifier_flag") {
                                    pqrs::hid::usage::button::button_1) == std::nullopt);
 }
 
-TEST_CASE("make_consumer_key_code") {
-  REQUIRE(krbn::make_consumer_key_code("mute") == krbn::consumer_key_code::mute);
-  REQUIRE(!krbn::make_consumer_key_code("unknown"));
+TEST_CASE("momentary_switch_event_details::consumer_key_code") {
+  REQUIRE(krbn::momentary_switch_event_details::consumer_key_code::find_usage("mute") == pqrs::hid::usage::consumer::mute);
+  REQUIRE(krbn::momentary_switch_event_details::consumer_key_code::find_usage("(number:12345)") == pqrs::hid::usage::value_t(12345));
+  REQUIRE(krbn::momentary_switch_event_details::consumer_key_code::find_usage("unknown") == std::nullopt);
 
-  REQUIRE(krbn::make_consumer_key_code_name(krbn::consumer_key_code::mute) == std::string("mute"));
-  REQUIRE(krbn::make_consumer_key_code_name(krbn::consumer_key_code::value_t(12345)) == std::string("(number:12345)"));
-
-  REQUIRE(krbn::make_consumer_key_code(pqrs::hid::usage_page::consumer,
-                                       pqrs::hid::usage::consumer::mute) == krbn::consumer_key_code::mute);
-  REQUIRE(!krbn::make_consumer_key_code(pqrs::hid::usage_page::keyboard_or_keypad,
-                                        pqrs::hid::usage::keyboard_or_keypad::keyboard_a));
-
-  REQUIRE(krbn::make_hid_usage_page(krbn::consumer_key_code::mute) == pqrs::hid::usage_page::consumer);
-  REQUIRE(krbn::make_hid_usage(krbn::consumer_key_code::mute) == pqrs::hid::usage::consumer::mute);
-
-  // from_json
-
-  {
-    nlohmann::json json("mute");
-    REQUIRE(krbn::consumer_key_code::value_t(json) == krbn::consumer_key_code::mute);
-  }
-  {
-    nlohmann::json json(static_cast<uint32_t>(krbn::consumer_key_code::mute));
-    REQUIRE(krbn::consumer_key_code::value_t(json) == krbn::consumer_key_code::mute);
-  }
-  {
-    nlohmann::json json;
-    REQUIRE_THROWS_AS(
-        krbn::consumer_key_code::value_t(json),
-        pqrs::json::unmarshal_error);
-    REQUIRE_THROWS_WITH(
-        krbn::key_code::value_t(json),
-        "json must be string or number, but is `null`");
-  }
-  {
-    nlohmann::json json("unknown_value");
-    REQUIRE_THROWS_AS(
-        krbn::consumer_key_code::value_t(json),
-        pqrs::json::unmarshal_error);
-    REQUIRE_THROWS_WITH(
-        krbn::consumer_key_code::value_t(json),
-        "unknown consumer_key_code: `\"unknown_value\"`");
-  }
+  REQUIRE(krbn::momentary_switch_event_details::consumer_key_code::make_name(pqrs::hid::usage::consumer::mute) == std::string("mute"));
+  REQUIRE(krbn::momentary_switch_event_details::consumer_key_code::make_name(pqrs::hid::usage::value_t(12345)) == std::string("(number:12345)"));
 }
 
-TEST_CASE("find_unnamed_consumer_key_code_number") {
-  REQUIRE(krbn::find_unnamed_consumer_key_code_number("(number:123)") == krbn::consumer_key_code::value_t(123));
-  REQUIRE(krbn::find_unnamed_consumer_key_code_number("(number:123456789)") == krbn::consumer_key_code::value_t(123456789));
-  REQUIRE(krbn::find_unnamed_consumer_key_code_number("(number:abc)") == std::nullopt);
-  REQUIRE(krbn::find_unnamed_consumer_key_code_number("mute") == std::nullopt);
-
-  REQUIRE(krbn::find_unnamed_consumer_key_code_number("") == std::nullopt);
-  REQUIRE(krbn::find_unnamed_consumer_key_code_number("(number:") == std::nullopt);
-}
-
-TEST_CASE("find_pointing_button_usage") {
+TEST_CASE("momentary_switch_event_details::pointing_button") {
   REQUIRE(krbn::momentary_switch_event_details::pointing_button::find_usage("button1") == pqrs::hid::usage::button::button_1);
   REQUIRE(krbn::momentary_switch_event_details::pointing_button::find_usage("(number:12345)") == pqrs::hid::usage::value_t(12345));
-  REQUIRE(!krbn::momentary_switch_event_details::pointing_button::find_usage("unknown"));
+  REQUIRE(krbn::momentary_switch_event_details::pointing_button::find_usage("unknown") == std::nullopt);
 
   REQUIRE(krbn::momentary_switch_event_details::pointing_button::make_name(pqrs::hid::usage::button::button_1) == std::string("button1"));
   REQUIRE(krbn::momentary_switch_event_details::pointing_button::make_name(pqrs::hid::usage::value_t(12345)) == std::string("(number:12345)"));
 }
 
-TEST_CASE("unnamed") {
+TEST_CASE("momentary_switch_event_details::impl") {
   REQUIRE(krbn::momentary_switch_event_details::impl::find_unnamed_usage("(number:123)") == pqrs::hid::usage::value_t(123));
   REQUIRE(krbn::momentary_switch_event_details::impl::find_unnamed_usage("(number:123456789)") == pqrs::hid::usage::value_t(123456789));
   REQUIRE(krbn::momentary_switch_event_details::impl::find_unnamed_usage("(number:abc)") == std::nullopt);

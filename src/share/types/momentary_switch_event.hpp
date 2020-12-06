@@ -14,7 +14,6 @@ namespace krbn {
 class momentary_switch_event final {
 public:
   using value_t = std::variant<key_code::value_t,
-                               consumer_key_code::value_t,
                                std::monostate>;
 
   momentary_switch_event(void) : value_(std::monostate()) {
@@ -28,8 +27,10 @@ public:
                                   pqrs::hid::usage::value_t usage) : value_(std::monostate()) {
     if (auto key_code = make_key_code(usage_page, usage)) {
       value_ = *key_code;
-    } else if (auto consumer_key_code = make_consumer_key_code(usage_page, usage)) {
-      value_ = *consumer_key_code;
+
+    } else if (usage_page == pqrs::hid::usage_page::consumer &&
+               momentary_switch_event_details::consumer_key_code::target(usage)) {
+      usage_pair_ = pqrs::hid::usage_pair(usage_page, usage);
 
     } else if (usage_page == pqrs::hid::usage_page::apple_vendor_keyboard &&
                momentary_switch_event_details::apple_vendor_keyboard_key_code::target(usage)) {
@@ -77,9 +78,6 @@ public:
     std::optional<pqrs::hid::usage::value_t> usage;
 
     if (auto value = get_if<key_code::value_t>()) {
-      usage_page = make_hid_usage_page(*value);
-      usage = make_hid_usage(*value);
-    } else if (auto value = get_if<consumer_key_code::value_t>()) {
       usage_page = make_hid_usage_page(*value);
       usage = make_hid_usage(*value);
     }
@@ -164,8 +162,8 @@ inline void to_json(nlohmann::json& json, const momentary_switch_event& value) {
   if (auto v = value.get_if<key_code::value_t>()) {
     json["key_code"] = make_key_code_name(*v);
 
-  } else if (auto v = value.get_if<consumer_key_code::value_t>()) {
-    json["consumer_key_code"] = make_consumer_key_code_name(*v);
+  } else if (usage_page == pqrs::hid::usage_page::consumer) {
+    json["consumer_key_code"] = momentary_switch_event_details::consumer_key_code::make_name(usage);
 
   } else if (usage_page == pqrs::hid::usage_page::apple_vendor_keyboard) {
     json["apple_vendor_keyboard_key_code"] = momentary_switch_event_details::apple_vendor_keyboard_key_code::make_name(usage);
@@ -186,7 +184,7 @@ inline void from_json(const nlohmann::json& json, momentary_switch_event& value)
       value.set_value(v.get<key_code::value_t>());
 
     } else if (k == "consumer_key_code") {
-      value.set_value(v.get<consumer_key_code::value_t>());
+      value.set_usage_pair(momentary_switch_event_details::consumer_key_code::make_usage_pair(k, v));
 
     } else if (k == "apple_vendor_keyboard_key_code") {
       value.set_usage_pair(momentary_switch_event_details::apple_vendor_keyboard_key_code::make_usage_pair(k, v));

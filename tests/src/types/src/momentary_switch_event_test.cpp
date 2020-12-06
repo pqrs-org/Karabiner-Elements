@@ -108,6 +108,8 @@ TEST_CASE("momentary_switch_event") {
 
     int i = 0;
     for (const auto& m : map) {
+      std::cout << nlohmann::json(m).dump() << std::endl;
+
       switch (i++) {
         case 0:
           REQUIRE(m == krbn::momentary_switch_event(pqrs::hid::usage_page::keyboard_or_keypad,
@@ -122,16 +124,16 @@ TEST_CASE("momentary_switch_event") {
                                                     pqrs::hid::usage::keyboard_or_keypad::keyboard_c));
           break;
         case 3:
-          REQUIRE(m == krbn::momentary_switch_event(pqrs::hid::usage_page::consumer,
-                                                    pqrs::hid::usage::consumer::mute));
-          break;
-        case 4:
           REQUIRE(m == krbn::momentary_switch_event(pqrs::hid::usage_page::button,
                                                     pqrs::hid::usage::button::button_1));
           break;
-        case 5:
+        case 4:
           REQUIRE(m == krbn::momentary_switch_event(pqrs::hid::usage_page::button,
                                                     pqrs::hid::usage::button::button_2));
+          break;
+        case 5:
+          REQUIRE(m == krbn::momentary_switch_event(pqrs::hid::usage_page::consumer,
+                                                    pqrs::hid::usage::consumer::mute));
           break;
       }
     }
@@ -140,19 +142,46 @@ TEST_CASE("momentary_switch_event") {
 
 TEST_CASE("momentary_switch_event json") {
   //
+  // consumer_key_code
+  //
+
+  {
+    std::string expected("{\"consumer_key_code\":\"mute\"}");
+    krbn::momentary_switch_event e(pqrs::hid::usage_page::consumer,
+                                   pqrs::hid::usage::consumer::mute);
+    nlohmann::json actual = e;
+    REQUIRE(actual.dump() == expected);
+    REQUIRE(actual.get<krbn::momentary_switch_event>() == e);
+  }
+  {
+    // Not target
+
+    std::string expected("null");
+    krbn::momentary_switch_event e(pqrs::hid::usage_page::consumer,
+                                   pqrs::hid::usage::consumer::ac_pan);
+    nlohmann::json actual = e;
+    REQUIRE(actual.dump() == expected);
+  }
+
+  //
   // apple_vendor_keyboard_key_code
   //
 
   {
     std::string expected("{\"apple_vendor_keyboard_key_code\":\"spotlight\"}");
-    nlohmann::json actual = krbn::momentary_switch_event(pqrs::hid::usage_page::apple_vendor_keyboard,
-                                                         pqrs::hid::usage::apple_vendor_keyboard::spotlight);
+    krbn::momentary_switch_event e(pqrs::hid::usage_page::apple_vendor_keyboard,
+                                   pqrs::hid::usage::apple_vendor_keyboard::spotlight);
+    nlohmann::json actual = e;
     REQUIRE(actual.dump() == expected);
+    REQUIRE(actual.get<krbn::momentary_switch_event>() == e);
   }
   {
+    // Not target
+
     std::string expected("null");
-    nlohmann::json actual = krbn::momentary_switch_event(pqrs::hid::usage_page::apple_vendor_keyboard,
-                                                         pqrs::hid::usage::apple_vendor_keyboard::caps_lock_delay_enable);
+    krbn::momentary_switch_event e(pqrs::hid::usage_page::apple_vendor_keyboard,
+                                   pqrs::hid::usage::apple_vendor_keyboard::caps_lock_delay_enable);
+    nlohmann::json actual = e;
     REQUIRE(actual.dump() == expected);
   }
 
@@ -163,9 +192,11 @@ TEST_CASE("momentary_switch_event json") {
 
   {
     std::string expected("{\"apple_vendor_top_case_key_code\":\"brightness_down\"}");
-    nlohmann::json actual = krbn::momentary_switch_event(pqrs::hid::usage_page::apple_vendor_top_case,
-                                                         pqrs::hid::usage::apple_vendor_top_case::brightness_down);
+    krbn::momentary_switch_event e(pqrs::hid::usage_page::apple_vendor_top_case,
+                                   pqrs::hid::usage::apple_vendor_top_case::brightness_down);
+    nlohmann::json actual = e;
     REQUIRE(actual.dump() == expected);
+    REQUIRE(actual.get<krbn::momentary_switch_event>() == e);
   }
 #endif
 
@@ -175,14 +206,18 @@ TEST_CASE("momentary_switch_event json") {
 
   {
     std::string expected("{\"pointing_button\":\"button1\"}");
-    nlohmann::json actual = krbn::momentary_switch_event(pqrs::hid::usage_page::button,
-                                                         pqrs::hid::usage::button::button_1);
+    krbn::momentary_switch_event e(pqrs::hid::usage_page::button,
+                                   pqrs::hid::usage::button::button_1);
+    nlohmann::json actual = e;
     REQUIRE(actual.dump() == expected);
+    REQUIRE(actual.get<krbn::momentary_switch_event>() == e);
   }
   {
     std::string expected("{\"pointing_button\":\"(number:1234)\"}");
-    nlohmann::json actual = krbn::momentary_switch_event(pqrs::hid::usage_page::button,
-                                                         pqrs::hid::usage::value_t(1234));
+    krbn::momentary_switch_event e(pqrs::hid::usage_page::button,
+                                   pqrs::hid::usage::value_t(1234));
+    nlohmann::json actual = e;
     REQUIRE(actual.dump() == expected);
+    REQUIRE(actual.get<krbn::momentary_switch_event>() == e);
   }
 }

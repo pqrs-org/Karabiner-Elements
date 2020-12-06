@@ -58,15 +58,6 @@ static inline std::shared_ptr<queue> make_queue(device_id device_id,
                                      event,
                                      state::original);
 
-        } else if (auto consumer_key_code = make_consumer_key_code(*usage_page, *usage)) {
-          event_queue::event event(momentary_switch_event(*usage_page, *usage));
-          result->emplace_back_entry(device_id,
-                                     event_time_stamp(v.get_time_stamp()),
-                                     event,
-                                     v.get_integer_value() ? event_type::key_down : event_type::key_up,
-                                     event,
-                                     state::original);
-
         } else if (mse.get_usage_pair().get_usage_page() != pqrs::hid::usage_page::undefined &&
                    mse.get_usage_pair().get_usage() != pqrs::hid::usage::undefined) {
           event_queue::event event(mse);

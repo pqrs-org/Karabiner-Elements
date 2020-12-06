@@ -54,12 +54,7 @@ public:
         continue;
       }
 
-      if (auto consumer_key_code = make_consumer_key_code(usage_page, pqrs::hid::usage::value_t(k))) {
-        json.push_back(make_consumer_key_code_name(*consumer_key_code));
-        continue;
-      }
-
-      json.push_back(k);
+      json.push_back(momentary_switch_event(usage_page, pqrs::hid::usage::value_t(k)));
     }
 
     return json;

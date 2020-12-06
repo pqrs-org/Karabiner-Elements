@@ -16,12 +16,12 @@ TEST_CASE("utility::make_queue") {
 
   hid_values.emplace_back(pqrs::osx::iokit_hid_value(krbn::absolute_time_point(3000),
                                                      1,
-                                                     *krbn::make_hid_usage_page(krbn::consumer_key_code::mute),
-                                                     *krbn::make_hid_usage(krbn::consumer_key_code::mute)));
+                                                     pqrs::hid::usage_page::consumer,
+                                                     pqrs::hid::usage::consumer::mute));
   hid_values.emplace_back(pqrs::osx::iokit_hid_value(krbn::absolute_time_point(4000),
                                                      0,
-                                                     *krbn::make_hid_usage_page(krbn::consumer_key_code::mute),
-                                                     *krbn::make_hid_usage(krbn::consumer_key_code::mute)));
+                                                     pqrs::hid::usage_page::consumer,
+                                                     pqrs::hid::usage::consumer::mute));
 
   hid_values.emplace_back(pqrs::osx::iokit_hid_value(krbn::absolute_time_point(5000),
                                                      10,

@@ -43,9 +43,9 @@ TEST_CASE("karabiner_virtual_hid_device::hid_report::keys") {
     keys.insert(type_safe::get(pqrs::hid::usage::consumer::mute));
 
     nlohmann::json expected = nlohmann::json::array();
-    expected.push_back("rewind");
-    expected.push_back("eject");
-    expected.push_back("mute");
+    expected.push_back(nlohmann::json::object({{"consumer_key_code", "rewind"}}));
+    expected.push_back(nlohmann::json::object({{"consumer_key_code", "eject"}}));
+    expected.push_back(nlohmann::json::object({{"consumer_key_code", "mute"}}));
 
     REQUIRE(krbn::virtual_hid_device_utility::to_json(keys, pqrs::hid::usage_page::consumer).dump() == expected.dump());
   }
