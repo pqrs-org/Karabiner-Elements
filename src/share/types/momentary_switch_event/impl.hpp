@@ -82,7 +82,7 @@ inline pqrs::hid::usage_pair make_usage_pair(const T& name_value_map,
       return pqrs::hid::usage_pair(usage_page, *usage);
     } else {
       std::stringstream ss;
-      ss << "unknown " << key << "`" << pqrs::json::dump_for_error_message(json) << "`";
+      ss << "unknown " << key << ": `" << pqrs::json::dump_for_error_message(json) << "`";
       throw pqrs::json::unmarshal_error(ss.str());
     }
 
@@ -91,7 +91,7 @@ inline pqrs::hid::usage_pair make_usage_pair(const T& name_value_map,
 
   } else {
     std::stringstream ss;
-    ss << key << " must be string or number, but is `" << pqrs::json::dump_for_error_message(json) << "`";
+    ss << "`" << key << "` must be string or number, but is `" << pqrs::json::dump_for_error_message(json) << "`";
     throw pqrs::json::unmarshal_error(ss.str());
   }
 }

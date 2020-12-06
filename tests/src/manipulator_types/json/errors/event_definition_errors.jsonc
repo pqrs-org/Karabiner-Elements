@@ -49,7 +49,7 @@
         "input": {
             "pointing_button": null
         },
-        "error": "`pointing_button` error: json must be string or number, but is `null`"
+        "error": "`pointing_button` error: `pointing_button` must be string or number, but is `null`"
     },
     {
         "class": "event_definition",

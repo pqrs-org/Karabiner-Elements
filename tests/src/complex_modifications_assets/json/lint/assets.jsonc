@@ -20,7 +20,7 @@
         "input": "assets/manipulators_error_1.json",
         "errors": [
             "`rule 1` error: `type` must be specified: {\"from\":{\"key_code\":\"escape\",\"modifiers\":{\"mandatory\":[\"control\"],\"optional\":[\"any\"]}},\"to\":[{\"key_code\":\"mission_control\"}]}",
-            "`rule 2` error: `from` error: `pointing_button` error: json must be string or number, but is `null`"
+            "`rule 2` error: `from` error: `pointing_button` error: `pointing_button` must be string or number, but is `null`"
         ]
     },
     {
