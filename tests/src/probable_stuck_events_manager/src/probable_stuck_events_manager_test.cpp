@@ -34,7 +34,8 @@ TEST_CASE("probable_stuck_events_manager") {
           krbn::momentary_switch_event(pqrs::hid::usage_page::keyboard_or_keypad,
                                        pqrs::hid::usage::keyboard_or_keypad::keyboard_b));
 
-  REQUIRE(m.update(krbn::momentary_switch_event(krbn::key_code::keyboard_b),
+  REQUIRE(m.update(krbn::momentary_switch_event(pqrs::hid::usage_page::keyboard_or_keypad,
+                                                pqrs::hid::usage::keyboard_or_keypad::keyboard_b),
                    krbn::event_type::key_down,
                    krbn::absolute_time_point(1110),
                    krbn::device_state::grabbed) == false);
@@ -141,7 +142,8 @@ TEST_CASE("probable_stuck_events_manager time_stamp rewind") {
                      krbn::device_state::grabbed) == false);
     REQUIRE(m.find_probable_stuck_event() == std::nullopt);
 
-    REQUIRE(m.update(krbn::momentary_switch_event(krbn::key_code::keyboard_b),
+    REQUIRE(m.update(krbn::momentary_switch_event(pqrs::hid::usage_page::keyboard_or_keypad,
+                                                  pqrs::hid::usage::keyboard_or_keypad::keyboard_b),
                      krbn::event_type::key_up,
                      krbn::absolute_time_point(1010),
                      krbn::device_state::grabbed) == true);

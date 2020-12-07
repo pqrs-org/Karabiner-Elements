@@ -7,12 +7,12 @@ TEST_CASE("utility::make_queue") {
 
   hid_values.emplace_back(pqrs::osx::iokit_hid_value(krbn::absolute_time_point(1000),
                                                      1,
-                                                     *krbn::make_hid_usage_page(krbn::key_code::keyboard_spacebar),
-                                                     *krbn::make_hid_usage(krbn::key_code::keyboard_spacebar)));
+                                                     pqrs::hid::usage_page::keyboard_or_keypad,
+                                                     pqrs::hid::usage::keyboard_or_keypad::keyboard_spacebar));
   hid_values.emplace_back(pqrs::osx::iokit_hid_value(krbn::absolute_time_point(2000),
                                                      0,
-                                                     *krbn::make_hid_usage_page(krbn::key_code::keyboard_spacebar),
-                                                     *krbn::make_hid_usage(krbn::key_code::keyboard_spacebar)));
+                                                     pqrs::hid::usage_page::keyboard_or_keypad,
+                                                     pqrs::hid::usage::keyboard_or_keypad::keyboard_spacebar));
 
   hid_values.emplace_back(pqrs::osx::iokit_hid_value(krbn::absolute_time_point(3000),
                                                      1,
