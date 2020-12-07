@@ -73,7 +73,7 @@ public:
 
       case event_type::key_up: {
         // Some devices send key_up event periodically without paired `key_down`.
-        // For example, Swiftpoint ProPoint sends consumer_key_code::play_or_pause key_up after each button1 click.
+        // For example, Swiftpoint ProPoint sends pqrs::hid::usage::consumer::play_or_pause key_up after each button1 click.
         // So, we ignore such key_up event if key_up event sent twice without key_down event.
 
         auto already_key_up = (key_up_events_.find(event) != std::end(key_up_events_));
