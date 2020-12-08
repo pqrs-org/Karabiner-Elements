@@ -11,13 +11,13 @@ namespace pqrs {
 namespace hid {
 class usage_pair final {
 public:
-  usage_pair(void)
+  constexpr usage_pair(void)
       : usage_page_(usage_page::undefined),
         usage_(usage::undefined) {
   }
 
-  usage_pair(usage_page::value_t usage_page,
-             usage::value_t usage)
+  constexpr usage_pair(usage_page::value_t usage_page,
+                       usage::value_t usage)
       : usage_page_(usage_page),
         usage_(usage) {
   }
