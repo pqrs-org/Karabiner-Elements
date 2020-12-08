@@ -57,13 +57,14 @@ public:
                                             const event_queue::event& original_event,
                                             event_queue::queue& output_event_queue) {
     for (const auto& m : modifiers) {
-      if (auto key_code = make_key_code(m)) {
+      momentary_switch_event e(m);
+      if (e.valid()) {
         auto t = event_time_stamp;
         t.set_time_stamp(t.get_time_stamp() + time_stamp_delay++);
 
         event_queue::entry event(device_id,
                                  t,
-                                 event_queue::event(momentary_switch_event(*key_code)),
+                                 event_queue::event(e),
                                  event_type,
                                  original_event,
                                  event_queue::state::manipulated,

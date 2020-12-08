@@ -31,10 +31,6 @@ inline std::string make_name(pqrs::hid::usage::value_t usage) {
   return impl::make_name(name_value_pairs, usage);
 }
 
-inline std::optional<pqrs::hid::usage::value_t> find_usage(const std::string& name) {
-  return impl::find_usage(name_value_map, name);
-}
-
 inline pqrs::hid::usage_pair make_usage_pair(const std::string& key,
                                              const nlohmann::json& json) {
   return impl::make_usage_pair(name_value_map,

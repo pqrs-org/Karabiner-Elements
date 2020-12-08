@@ -15,7 +15,7 @@
         "input": {
             "key_code": null
         },
-        "error": "`key_code` error: json must be string or number, but is `null`"
+        "error": "`key_code` error: `key_code` must be string or number, but is `null`"
     },
     {
         "class": "event_definition",

@@ -92,8 +92,9 @@ public:
       auto modifier_flags = modifier_definition::get_modifier_flags(modifier);
       if (!modifier_flags.empty()) {
         auto modifier_flag = modifier_flags.front();
-        if (auto key_code = make_key_code(modifier_flag)) {
-          events.emplace_back(momentary_switch_event{*key_code});
+        momentary_switch_event e(modifier_flag);
+        if (e.valid()) {
+          events.emplace_back(e);
         }
       }
     }

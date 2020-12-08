@@ -4,6 +4,10 @@
 #include <set>
 
 TEST_CASE("momentary_switch_event") {
+  //
+  // usage_page::keyboard_or_keypad
+  //
+
   {
     krbn::momentary_switch_event e(pqrs::hid::usage_page::keyboard_or_keypad,
                                    pqrs::hid::usage::keyboard_or_keypad::keyboard_a);
@@ -20,6 +24,11 @@ TEST_CASE("momentary_switch_event") {
     REQUIRE(e.pointing_button() == false);
     REQUIRE(nlohmann::json(e).get<krbn::momentary_switch_event>() == e);
   }
+
+  //
+  // usage_page::consumer
+  //
+
   {
     krbn::momentary_switch_event e(pqrs::hid::usage_page::consumer,
                                    pqrs::hid::usage::consumer::mute);
@@ -56,6 +65,10 @@ TEST_CASE("momentary_switch_event") {
                                    pqrs::hid::usage::apple_vendor_keyboard::caps_lock_delay_enable);
     REQUIRE(e.make_usage_pair() == std::nullopt);
   }
+
+  //
+  // usage_page::apple_vendor_top_case
+  //
 
   {
     krbn::momentary_switch_event e(pqrs::hid::usage_page::apple_vendor_top_case,
@@ -142,6 +155,35 @@ TEST_CASE("momentary_switch_event") {
 
 TEST_CASE("momentary_switch_event json") {
   //
+  // key_code
+  //
+
+  {
+    std::string expected("{\"key_code\":\"escape\"}");
+    krbn::momentary_switch_event e(pqrs::hid::usage_page::keyboard_or_keypad,
+                                   pqrs::hid::usage::keyboard_or_keypad::keyboard_escape);
+    nlohmann::json actual = e;
+    REQUIRE(actual.dump() == expected);
+    REQUIRE(actual.get<krbn::momentary_switch_event>() == e);
+  }
+  {
+    // Alias
+    std::string expected("{\"key_code\":\"left_option\"}");
+    krbn::momentary_switch_event e(pqrs::hid::usage_page::keyboard_or_keypad,
+                                   pqrs::hid::usage::keyboard_or_keypad::keyboard_left_alt);
+    nlohmann::json actual = e;
+    REQUIRE(actual.dump() == expected);
+    REQUIRE(actual.get<krbn::momentary_switch_event>() == e);
+  }
+  {
+    // Other usage_page
+    krbn::momentary_switch_event expected(pqrs::hid::usage_page::apple_vendor_keyboard,
+                                          pqrs::hid::usage::apple_vendor_keyboard::expose_all);
+    auto json = nlohmann::json::object({{"key_code", "mission_control"}});
+    REQUIRE(json.get<krbn::momentary_switch_event>() == expected);
+  }
+
+  //
   // consumer_key_code
   //
 
@@ -152,15 +194,6 @@ TEST_CASE("momentary_switch_event json") {
     nlohmann::json actual = e;
     REQUIRE(actual.dump() == expected);
     REQUIRE(actual.get<krbn::momentary_switch_event>() == e);
-  }
-  {
-    // Not target
-
-    std::string expected("null");
-    krbn::momentary_switch_event e(pqrs::hid::usage_page::consumer,
-                                   pqrs::hid::usage::consumer::ac_pan);
-    nlohmann::json actual = e;
-    REQUIRE(actual.dump() == expected);
   }
 
   //
@@ -175,17 +208,7 @@ TEST_CASE("momentary_switch_event json") {
     REQUIRE(actual.dump() == expected);
     REQUIRE(actual.get<krbn::momentary_switch_event>() == e);
   }
-  {
-    // Not target
 
-    std::string expected("null");
-    krbn::momentary_switch_event e(pqrs::hid::usage_page::apple_vendor_keyboard,
-                                   pqrs::hid::usage::apple_vendor_keyboard::caps_lock_delay_enable);
-    nlohmann::json actual = e;
-    REQUIRE(actual.dump() == expected);
-  }
-
-#if 0
   //
   // apple_vendor_top_case_key_code
   //
@@ -198,7 +221,6 @@ TEST_CASE("momentary_switch_event json") {
     REQUIRE(actual.dump() == expected);
     REQUIRE(actual.get<krbn::momentary_switch_event>() == e);
   }
-#endif
 
   //
   // pointing_button
@@ -212,6 +234,11 @@ TEST_CASE("momentary_switch_event json") {
     REQUIRE(actual.dump() == expected);
     REQUIRE(actual.get<krbn::momentary_switch_event>() == e);
   }
+
+  //
+  // Unnamed
+  //
+
   {
     std::string expected("{\"pointing_button\":\"(number:1234)\"}");
     krbn::momentary_switch_event e(pqrs::hid::usage_page::button,
@@ -220,4 +247,147 @@ TEST_CASE("momentary_switch_event json") {
     REQUIRE(actual.dump() == expected);
     REQUIRE(actual.get<krbn::momentary_switch_event>() == e);
   }
+
+  //
+  // Number
+  //
+
+  {
+    krbn::momentary_switch_event expected(pqrs::hid::usage_page::keyboard_or_keypad,
+                                          pqrs::hid::usage::value_t(1234));
+    auto json = nlohmann::json::object({{"key_code", 1234}});
+    REQUIRE(json.get<krbn::momentary_switch_event>() == expected);
+  }
+
+  //
+  // Not target
+  //
+
+  {
+
+    std::string expected("null");
+    krbn::momentary_switch_event e(pqrs::hid::usage_page::consumer,
+                                   pqrs::hid::usage::consumer::ac_pan);
+    nlohmann::json actual = e;
+    REQUIRE(actual.dump() == expected);
+  }
+
+  //
+  // Errors
+  //
+
+  {
+    nlohmann::json json;
+    REQUIRE_THROWS_AS(
+        krbn::momentary_switch_event(json),
+        pqrs::json::unmarshal_error);
+    REQUIRE_THROWS_WITH(
+        krbn::momentary_switch_event(json),
+        "json must be object, but is `null`");
+  }
+  {
+    auto json = nlohmann::json::object({{"key_code", "unknown_value"}});
+    REQUIRE_THROWS_AS(
+        krbn::momentary_switch_event(json),
+        pqrs::json::unmarshal_error);
+    REQUIRE_THROWS_WITH(
+        krbn::momentary_switch_event(json),
+        "unknown key_code: `\"unknown_value\"`");
+  }
+}
+
+TEST_CASE("momentary_switch_event(modifier_flag)") {
+  REQUIRE(krbn::momentary_switch_event(krbn::modifier_flag::zero).make_usage_pair() == std::nullopt);
+
+  REQUIRE(krbn::momentary_switch_event(krbn::modifier_flag::caps_lock).make_usage_pair() ==
+          pqrs::hid::usage_pair(pqrs::hid::usage_page::keyboard_or_keypad,
+                                pqrs::hid::usage::keyboard_or_keypad::keyboard_caps_lock));
+
+  REQUIRE(krbn::momentary_switch_event(krbn::modifier_flag::left_control).make_usage_pair() ==
+          pqrs::hid::usage_pair(pqrs::hid::usage_page::keyboard_or_keypad,
+                                pqrs::hid::usage::keyboard_or_keypad::keyboard_left_control));
+
+  REQUIRE(krbn::momentary_switch_event(krbn::modifier_flag::left_shift).make_usage_pair() ==
+          pqrs::hid::usage_pair(pqrs::hid::usage_page::keyboard_or_keypad,
+                                pqrs::hid::usage::keyboard_or_keypad::keyboard_left_shift));
+
+  REQUIRE(krbn::momentary_switch_event(krbn::modifier_flag::left_option).make_usage_pair() ==
+          pqrs::hid::usage_pair(pqrs::hid::usage_page::keyboard_or_keypad,
+                                pqrs::hid::usage::keyboard_or_keypad::keyboard_left_alt));
+
+  REQUIRE(krbn::momentary_switch_event(krbn::modifier_flag::left_command).make_usage_pair() ==
+          pqrs::hid::usage_pair(pqrs::hid::usage_page::keyboard_or_keypad,
+                                pqrs::hid::usage::keyboard_or_keypad::keyboard_left_gui));
+
+  REQUIRE(krbn::momentary_switch_event(krbn::modifier_flag::right_control).make_usage_pair() ==
+          pqrs::hid::usage_pair(pqrs::hid::usage_page::keyboard_or_keypad,
+                                pqrs::hid::usage::keyboard_or_keypad::keyboard_right_control));
+
+  REQUIRE(krbn::momentary_switch_event(krbn::modifier_flag::right_shift).make_usage_pair() ==
+          pqrs::hid::usage_pair(pqrs::hid::usage_page::keyboard_or_keypad,
+                                pqrs::hid::usage::keyboard_or_keypad::keyboard_right_shift));
+
+  REQUIRE(krbn::momentary_switch_event(krbn::modifier_flag::right_option).make_usage_pair() ==
+          pqrs::hid::usage_pair(pqrs::hid::usage_page::keyboard_or_keypad,
+                                pqrs::hid::usage::keyboard_or_keypad::keyboard_right_alt));
+
+  REQUIRE(krbn::momentary_switch_event(krbn::modifier_flag::right_command).make_usage_pair() ==
+          pqrs::hid::usage_pair(pqrs::hid::usage_page::keyboard_or_keypad,
+                                pqrs::hid::usage::keyboard_or_keypad::keyboard_right_gui));
+
+  REQUIRE(krbn::momentary_switch_event(krbn::modifier_flag::fn).make_usage_pair() ==
+          pqrs::hid::usage_pair(pqrs::hid::usage_page::apple_vendor_top_case,
+                                pqrs::hid::usage::apple_vendor_top_case::keyboard_fn));
+
+  REQUIRE(krbn::momentary_switch_event(krbn::modifier_flag::end_).make_usage_pair() == std::nullopt);
+}
+
+TEST_CASE("momentary_switch_event::make_modifier_flag") {
+  REQUIRE(krbn::momentary_switch_event(pqrs::hid::usage_page::keyboard_or_keypad,
+                                       pqrs::hid::usage::keyboard_or_keypad::keyboard_a)
+              .make_modifier_flag() == std::nullopt);
+
+  REQUIRE(krbn::momentary_switch_event(pqrs::hid::usage_page::keyboard_or_keypad,
+                                       pqrs::hid::usage::keyboard_or_keypad::keyboard_caps_lock)
+              .make_modifier_flag() == std::nullopt);
+
+  REQUIRE(krbn::momentary_switch_event(pqrs::hid::usage_page::keyboard_or_keypad,
+                                       pqrs::hid::usage::keyboard_or_keypad::keyboard_left_control)
+              .make_modifier_flag() == krbn::modifier_flag::left_control);
+
+  REQUIRE(krbn::momentary_switch_event(pqrs::hid::usage_page::keyboard_or_keypad,
+                                       pqrs::hid::usage::keyboard_or_keypad::keyboard_left_shift)
+              .make_modifier_flag() == krbn::modifier_flag::left_shift);
+
+  REQUIRE(krbn::momentary_switch_event(pqrs::hid::usage_page::keyboard_or_keypad,
+                                       pqrs::hid::usage::keyboard_or_keypad::keyboard_left_alt)
+              .make_modifier_flag() == krbn::modifier_flag::left_option);
+
+  REQUIRE(krbn::momentary_switch_event(pqrs::hid::usage_page::keyboard_or_keypad,
+                                       pqrs::hid::usage::keyboard_or_keypad::keyboard_left_gui)
+              .make_modifier_flag() == krbn::modifier_flag::left_command);
+
+  REQUIRE(krbn::momentary_switch_event(pqrs::hid::usage_page::keyboard_or_keypad,
+                                       pqrs::hid::usage::keyboard_or_keypad::keyboard_right_control)
+              .make_modifier_flag() == krbn::modifier_flag::right_control);
+
+  REQUIRE(krbn::momentary_switch_event(pqrs::hid::usage_page::keyboard_or_keypad,
+                                       pqrs::hid::usage::keyboard_or_keypad::keyboard_right_shift)
+              .make_modifier_flag() == krbn::modifier_flag::right_shift);
+
+  REQUIRE(krbn::momentary_switch_event(pqrs::hid::usage_page::keyboard_or_keypad,
+                                       pqrs::hid::usage::keyboard_or_keypad::keyboard_right_alt)
+              .make_modifier_flag() == krbn::modifier_flag::right_option);
+
+  REQUIRE(krbn::momentary_switch_event(pqrs::hid::usage_page::keyboard_or_keypad,
+                                       pqrs::hid::usage::keyboard_or_keypad::keyboard_right_gui)
+              .make_modifier_flag() == krbn::modifier_flag::right_command);
+
+  REQUIRE(krbn::momentary_switch_event(pqrs::hid::usage_page::apple_vendor_keyboard,
+                                       pqrs::hid::usage::apple_vendor_keyboard::function)
+              .make_modifier_flag() == krbn::modifier_flag::fn);
+
+  REQUIRE(krbn::momentary_switch_event(pqrs::hid::usage_page::apple_vendor_top_case,
+                                       pqrs::hid::usage::apple_vendor_top_case::keyboard_fn)
+              .make_modifier_flag() == krbn::modifier_flag::fn);
 }

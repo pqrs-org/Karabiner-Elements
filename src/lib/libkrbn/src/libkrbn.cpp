@@ -125,7 +125,7 @@ bool libkrbn_system_core_configuration_file_path_exists(void) {
 }
 
 void libkrbn_get_key_code_name(char* buffer, size_t length, int32_t key_code) {
-  auto name = krbn::make_key_code_name(krbn::key_code::value_t(key_code));
+  auto name = krbn::momentary_switch_event_details::key_code::make_name(pqrs::hid::usage::value_t(key_code));
   strlcpy(buffer, name.c_str(), length);
 }
 
@@ -134,8 +134,8 @@ bool libkrbn_find_unnamed_key_code_number(uint32_t* output, const char* name) {
     return false;
   }
 
-  if (auto number = krbn::find_unnamed_key_code_number(name)) {
-    *output = type_safe::get(*number);
+  if (auto usage = krbn::momentary_switch_event_details::impl::find_unnamed_usage(name)) {
+    *output = type_safe::get(*usage);
     return true;
   }
 

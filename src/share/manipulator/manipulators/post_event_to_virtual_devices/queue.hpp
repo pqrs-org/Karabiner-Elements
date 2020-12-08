@@ -253,14 +253,16 @@ public:
                               pqrs::hid::usage::value_t usage,
                               event_type event_type,
                               absolute_time_point time_stamp) {
+    momentary_switch_event mse(usage_page, usage);
+
     adjust_time_stamp(time_stamp,
                       event_type,
-                      make_modifier_flag(usage_page, usage) != std::nullopt);
+                      mse.modifier_flag());
 
     if (usage_page == pqrs::hid::usage_page::keyboard_or_keypad) {
       bool modify_keys = true;
 
-      if (auto m = make_modifier_flag(usage_page, usage)) {
+      if (auto m = mse.make_modifier_flag()) {
         if (auto modifier = make_hid_report_modifier(*m)) {
           switch (event_type) {
             case event_type::key_down:

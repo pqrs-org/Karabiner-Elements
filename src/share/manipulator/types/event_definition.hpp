@@ -103,27 +103,11 @@ public:
     // Set type_ and values.
 
     //
-    // key_code
-    //
-
-    if (key == "key_code") {
-      check_type(json);
-
-      try {
-        type_ = type::momentary_switch_event;
-        value_ = momentary_switch_event(value.get<key_code::value_t>());
-      } catch (const pqrs::json::unmarshal_error& e) {
-        throw pqrs::json::unmarshal_error(fmt::format("`{0}` error: {1}", key, e.what()));
-      }
-
-      return true;
-    }
-
-    //
     // momentary_switch_event
     //
 
-    if (key == "consumer_key_code" ||
+    if (key == "key_code" ||
+        key == "consumer_key_code" ||
         key == "apple_vendor_keyboard_key_code" ||
         key == "apple_vendor_top_case_key_code" ||
         key == "pointing_button") {

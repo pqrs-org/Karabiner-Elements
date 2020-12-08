@@ -15,11 +15,13 @@ public:
            pqrs::hid::usage::value_t usage,
            event_type event_type) {
     switch (event_type) {
-      case event_type::key_down:
-        if (make_modifier_flag(usage_page, usage) == std::nullopt) {
+      case event_type::key_down: {
+        momentary_switch_event e(usage_page, usage);
+        if (!e.modifier_flag()) {
           repeating_key_ = std::make_pair(usage_page, usage);
         }
         break;
+      }
 
       case event_type::key_up:
         if (repeating_key_ &&

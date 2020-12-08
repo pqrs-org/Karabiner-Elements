@@ -13,35 +13,16 @@ namespace krbn {
 /// Events from momentary switch hardwares such as key, consumer, pointing_button.
 class momentary_switch_event final {
 public:
-  using value_t = std::variant<key_code::value_t,
-                               std::monostate>;
-
-  momentary_switch_event(void) : value_(std::monostate()) {
+  momentary_switch_event(void) {
   }
 
-  template <typename T>
-  explicit momentary_switch_event(const T& value) : value_(value) {
-  }
-
-  explicit momentary_switch_event(pqrs::hid::usage_page::value_t usage_page,
-                                  pqrs::hid::usage::value_t usage) : value_(std::monostate()) {
-    if (auto key_code = make_key_code(usage_page, usage)) {
-      value_ = *key_code;
-
-    } else if (usage_page == pqrs::hid::usage_page::consumer &&
-               momentary_switch_event_details::consumer_key_code::target(usage)) {
-      usage_pair_ = pqrs::hid::usage_pair(usage_page, usage);
-
-    } else if (usage_page == pqrs::hid::usage_page::apple_vendor_keyboard &&
-               momentary_switch_event_details::apple_vendor_keyboard_key_code::target(usage)) {
-      usage_pair_ = pqrs::hid::usage_pair(usage_page, usage);
-
-    } else if (usage_page == pqrs::hid::usage_page::apple_vendor_top_case &&
-               momentary_switch_event_details::apple_vendor_top_case_key_code::target(usage)) {
-      usage_pair_ = pqrs::hid::usage_pair(usage_page, usage);
-
-    } else if (usage_page == pqrs::hid::usage_page::button &&
-               momentary_switch_event_details::pointing_button::target(usage)) {
+  momentary_switch_event(pqrs::hid::usage_page::value_t usage_page,
+                         pqrs::hid::usage::value_t usage) {
+    if ((usage_page == pqrs::hid::usage_page::keyboard_or_keypad && momentary_switch_event_details::key_code::target(usage)) ||
+        (usage_page == pqrs::hid::usage_page::consumer && momentary_switch_event_details::consumer_key_code::target(usage)) ||
+        (usage_page == pqrs::hid::usage_page::apple_vendor_keyboard && momentary_switch_event_details::apple_vendor_keyboard_key_code::target(usage)) ||
+        (usage_page == pqrs::hid::usage_page::apple_vendor_top_case && momentary_switch_event_details::apple_vendor_top_case_key_code::target(usage)) ||
+        (usage_page == pqrs::hid::usage_page::button && momentary_switch_event_details::pointing_button::target(usage))) {
       usage_pair_ = pqrs::hid::usage_pair(usage_page, usage);
     }
   }
@@ -49,13 +30,53 @@ public:
   explicit momentary_switch_event(const pqrs::hid::usage_pair& usage_pair) : momentary_switch_event(usage_pair.get_usage_page(), usage_pair.get_usage()) {
   }
 
-  const value_t& get_value(void) const {
-    return value_;
-  }
-
-  template <typename T>
-  void set_value(T value) {
-    value_ = value;
+  explicit momentary_switch_event(const krbn::modifier_flag& modifier_flag) {
+    switch (modifier_flag) {
+      case modifier_flag::zero:
+        break;
+      case modifier_flag::caps_lock:
+        usage_pair_ = pqrs::hid::usage_pair(pqrs::hid::usage_page::keyboard_or_keypad,
+                                            pqrs::hid::usage::keyboard_or_keypad::keyboard_caps_lock);
+        break;
+      case modifier_flag::left_control:
+        usage_pair_ = pqrs::hid::usage_pair(pqrs::hid::usage_page::keyboard_or_keypad,
+                                            pqrs::hid::usage::keyboard_or_keypad::keyboard_left_control);
+        break;
+      case modifier_flag::left_shift:
+        usage_pair_ = pqrs::hid::usage_pair(pqrs::hid::usage_page::keyboard_or_keypad,
+                                            pqrs::hid::usage::keyboard_or_keypad::keyboard_left_shift);
+        break;
+      case modifier_flag::left_option:
+        usage_pair_ = pqrs::hid::usage_pair(pqrs::hid::usage_page::keyboard_or_keypad,
+                                            pqrs::hid::usage::keyboard_or_keypad::keyboard_left_alt);
+        break;
+      case modifier_flag::left_command:
+        usage_pair_ = pqrs::hid::usage_pair(pqrs::hid::usage_page::keyboard_or_keypad,
+                                            pqrs::hid::usage::keyboard_or_keypad::keyboard_left_gui);
+        break;
+      case modifier_flag::right_control:
+        usage_pair_ = pqrs::hid::usage_pair(pqrs::hid::usage_page::keyboard_or_keypad,
+                                            pqrs::hid::usage::keyboard_or_keypad::keyboard_right_control);
+        break;
+      case modifier_flag::right_shift:
+        usage_pair_ = pqrs::hid::usage_pair(pqrs::hid::usage_page::keyboard_or_keypad,
+                                            pqrs::hid::usage::keyboard_or_keypad::keyboard_right_shift);
+        break;
+      case modifier_flag::right_option:
+        usage_pair_ = pqrs::hid::usage_pair(pqrs::hid::usage_page::keyboard_or_keypad,
+                                            pqrs::hid::usage::keyboard_or_keypad::keyboard_right_alt);
+        break;
+      case modifier_flag::right_command:
+        usage_pair_ = pqrs::hid::usage_pair(pqrs::hid::usage_page::keyboard_or_keypad,
+                                            pqrs::hid::usage::keyboard_or_keypad::keyboard_right_gui);
+        break;
+      case modifier_flag::fn:
+        usage_pair_ = pqrs::hid::usage_pair(pqrs::hid::usage_page::apple_vendor_top_case,
+                                            pqrs::hid::usage::apple_vendor_top_case::keyboard_fn);
+        break;
+      case modifier_flag::end_:
+        break;
+    }
   }
 
   const pqrs::hid::usage_pair& get_usage_pair(void) const {
@@ -68,24 +89,7 @@ public:
     return *this;
   }
 
-  template <typename T>
-  const T* get_if(void) const {
-    return std::get_if<T>(&value_);
-  }
-
   std::optional<pqrs::hid::usage_pair> make_usage_pair(void) const {
-    std::optional<pqrs::hid::usage_page::value_t> usage_page;
-    std::optional<pqrs::hid::usage::value_t> usage;
-
-    if (auto value = get_if<key_code::value_t>()) {
-      usage_page = make_hid_usage_page(*value);
-      usage = make_hid_usage(*value);
-    }
-
-    if (usage_page && usage) {
-      return pqrs::hid::usage_pair(*usage_page, *usage);
-    }
-
     if (usage_pair_.get_usage_page() == pqrs::hid::usage_page::undefined ||
         usage_pair_.get_usage() == pqrs::hid::usage::undefined) {
       return std::nullopt;
@@ -131,6 +135,11 @@ public:
     return std::nullopt;
   }
 
+  bool valid(void) const {
+    return usage_pair_.get_usage_page() != pqrs::hid::usage_page::undefined &&
+           usage_pair_.get_usage() != pqrs::hid::usage::undefined;
+  }
+
   bool modifier_flag(void) const {
     return make_modifier_flag() != std::nullopt;
   }
@@ -139,19 +148,9 @@ public:
     return usage_pair_.get_usage_page() == pqrs::hid::usage_page::button;
   }
 
-  bool operator==(const momentary_switch_event& other) const {
-    return value_ == other.value_ && usage_pair_ == other.usage_pair_;
-  }
-
-  bool operator<(const momentary_switch_event& other) const {
-    if (value_ != other.value_) {
-      return value_ < other.value_;
-    }
-    return usage_pair_ < other.usage_pair_;
-  }
+  auto operator<=>(const momentary_switch_event&) const = default;
 
 private:
-  value_t value_;
   pqrs::hid::usage_pair usage_pair_;
 };
 
@@ -159,8 +158,8 @@ inline void to_json(nlohmann::json& json, const momentary_switch_event& value) {
   auto usage_page = value.get_usage_pair().get_usage_page();
   auto usage = value.get_usage_pair().get_usage();
 
-  if (auto v = value.get_if<key_code::value_t>()) {
-    json["key_code"] = make_key_code_name(*v);
+  if (usage_page == pqrs::hid::usage_page::keyboard_or_keypad) {
+    json["key_code"] = momentary_switch_event_details::key_code::make_name(usage);
 
   } else if (usage_page == pqrs::hid::usage_page::consumer) {
     json["consumer_key_code"] = momentary_switch_event_details::consumer_key_code::make_name(usage);
@@ -181,7 +180,7 @@ inline void from_json(const nlohmann::json& json, momentary_switch_event& value)
 
   for (const auto& [k, v] : json.items()) {
     if (k == "key_code") {
-      value.set_value(v.get<key_code::value_t>());
+      value.set_usage_pair(momentary_switch_event_details::key_code::make_usage_pair(k, v));
 
     } else if (k == "consumer_key_code") {
       value.set_usage_pair(momentary_switch_event_details::consumer_key_code::make_usage_pair(k, v));
@@ -208,7 +207,6 @@ struct hash<krbn::momentary_switch_event> final {
   std::size_t operator()(const krbn::momentary_switch_event& value) const {
     std::size_t h = 0;
 
-    pqrs::hash::combine(h, value.get_value());
     pqrs::hash::combine(h, value.get_usage_pair());
 
     return h;

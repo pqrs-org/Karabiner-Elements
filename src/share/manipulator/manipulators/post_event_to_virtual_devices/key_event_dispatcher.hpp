@@ -58,24 +58,26 @@ public:
 
       if (modifier_flag_manager.is_pressed(m)) {
         if (!pressed) {
-          if (auto key_code = make_key_code(m)) {
-            if (auto hid_usage_page = make_hid_usage_page(*key_code)) {
-              if (auto hid_usage = make_hid_usage(*key_code)) {
-                enqueue_key_event(*hid_usage_page, *hid_usage, event_type::key_down, queue, time_stamp);
-              }
-            }
+          momentary_switch_event e(m);
+          if (e.valid()) {
+            enqueue_key_event(e.get_usage_pair().get_usage_page(),
+                              e.get_usage_pair().get_usage(),
+                              event_type::key_down,
+                              queue,
+                              time_stamp);
           }
           pressed_modifier_flags_.insert(m);
         }
 
       } else {
         if (pressed) {
-          if (auto key_code = make_key_code(m)) {
-            if (auto hid_usage_page = make_hid_usage_page(*key_code)) {
-              if (auto hid_usage = make_hid_usage(*key_code)) {
-                enqueue_key_event(*hid_usage_page, *hid_usage, event_type::key_up, queue, time_stamp);
-              }
-            }
+          momentary_switch_event e(m);
+          if (e.valid()) {
+            enqueue_key_event(e.get_usage_pair().get_usage_page(),
+                              e.get_usage_pair().get_usage(),
+                              event_type::key_up,
+                              queue,
+                              time_stamp);
           }
           pressed_modifier_flags_.erase(m);
         }

@@ -49,11 +49,6 @@ public:
         continue;
       }
 
-      if (auto key_code = make_key_code(usage_page, pqrs::hid::usage::value_t(k))) {
-        json.push_back(make_key_code_name(*key_code));
-        continue;
-      }
-
       json.push_back(momentary_switch_event(usage_page, pqrs::hid::usage::value_t(k)));
     }
 

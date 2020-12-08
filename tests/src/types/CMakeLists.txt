@@ -14,7 +14,6 @@ add_executable(
   src/operation_type_test.cpp
   src/pointing_motion_test.cpp
   src/test.cpp
-  src/types_test.cpp
 )
 
 target_link_libraries(

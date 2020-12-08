@@ -49,17 +49,7 @@ static inline std::shared_ptr<queue> make_queue(device_id device_id,
       if (auto usage = v.get_usage()) {
         momentary_switch_event mse(*usage_page, *usage);
 
-        if (auto key_code = make_key_code(*usage_page, *usage)) {
-          event_queue::event event(momentary_switch_event(*usage_page, *usage));
-          result->emplace_back_entry(device_id,
-                                     event_time_stamp(v.get_time_stamp()),
-                                     event,
-                                     v.get_integer_value() ? event_type::key_down : event_type::key_up,
-                                     event,
-                                     state::original);
-
-        } else if (mse.get_usage_pair().get_usage_page() != pqrs::hid::usage_page::undefined &&
-                   mse.get_usage_pair().get_usage() != pqrs::hid::usage::undefined) {
+        if (mse.valid()) {
           event_queue::event event(mse);
           result->emplace_back_entry(device_id,
                                      event_time_stamp(v.get_time_stamp()),

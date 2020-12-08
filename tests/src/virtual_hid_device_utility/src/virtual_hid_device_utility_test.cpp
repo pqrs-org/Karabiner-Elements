@@ -30,8 +30,8 @@ TEST_CASE("karabiner_virtual_hid_device::hid_report::keys") {
     keys.erase(type_safe::get(pqrs::hid::usage::keyboard_or_keypad::keyboard_a));
 
     nlohmann::json expected = nlohmann::json::array();
-    expected.push_back("b");
-    expected.push_back("c");
+    expected.push_back(nlohmann::json({{"key_code", "b"}}));
+    expected.push_back(nlohmann::json({{"key_code", "c"}}));
 
     REQUIRE(krbn::virtual_hid_device_utility::to_json(keys, pqrs::hid::usage_page::keyboard_or_keypad).dump() == expected.dump());
   }
@@ -57,9 +57,9 @@ TEST_CASE("karabiner_virtual_hid_device::hid_report::keys") {
     keys.insert(type_safe::get(pqrs::hid::usage::apple_vendor_top_case::illumination_up));
 
     nlohmann::json expected = nlohmann::json::array();
-    expected.push_back("fn");
-    expected.push_back("apple_top_case_display_brightness_increment");
-    expected.push_back("illumination_increment");
+    expected.push_back(nlohmann::json::object({{"apple_vendor_top_case_key_code", "keyboard_fn"}}));
+    expected.push_back(nlohmann::json::object({{"apple_vendor_top_case_key_code", "brightness_up"}}));
+    expected.push_back(nlohmann::json::object({{"apple_vendor_top_case_key_code", "illumination_up"}}));
 
     REQUIRE(krbn::virtual_hid_device_utility::to_json(keys, pqrs::hid::usage_page::apple_vendor_top_case).dump() == expected.dump());
   }
@@ -70,8 +70,8 @@ TEST_CASE("karabiner_virtual_hid_device::hid_report::keys") {
     keys.insert(type_safe::get(pqrs::hid::usage::apple_vendor_keyboard::launchpad));
 
     nlohmann::json expected = nlohmann::json::array();
-    expected.push_back("mission_control");
-    expected.push_back("launchpad");
+    expected.push_back(nlohmann::json::object({{"apple_vendor_keyboard_key_code", "expose_all"}}));
+    expected.push_back(nlohmann::json::object({{"apple_vendor_keyboard_key_code", "launchpad"}}));
 
     REQUIRE(krbn::virtual_hid_device_utility::to_json(keys, pqrs::hid::usage_page::apple_vendor_keyboard).dump() == expected.dump());
   }
