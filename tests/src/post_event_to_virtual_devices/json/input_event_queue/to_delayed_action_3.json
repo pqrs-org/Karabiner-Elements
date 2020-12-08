@@ -1,90 +1,90 @@
 [
-  {
-    "device_id": 1,
-    "event": {
-      "type": "momentary_switch_event",
-      "momentary_switch_event": {
-        "key_code": "left_command"
-      }
+    {
+        "device_id": 1,
+        "event": {
+            "type": "momentary_switch_event",
+            "momentary_switch_event": {
+                "key_code": "left_command"
+            }
+        },
+        "event_type": "key_down",
+        "lazy": false,
+        "original_event": {
+            "type": "momentary_switch_event",
+            "momentary_switch_event": {
+                "key_code": "left_command"
+            }
+        },
+        "event_time_stamp": {
+            "time_stamp": 2
+        },
+        "valid": true
     },
-    "event_type": "key_down",
-    "lazy": false,
-    "original_event": {
-      "type": "momentary_switch_event",
-      "momentary_switch_event": {
-        "key_code": "left_command"
-      }
+    {
+        "device_id": 1,
+        "event": {
+            "type": "momentary_switch_event",
+            "momentary_switch_event": {
+                "key_code": "f12"
+            }
+        },
+        "event_type": "key_down",
+        "lazy": false,
+        "original_event": {
+            "type": "momentary_switch_event",
+            "momentary_switch_event": {
+                "key_code": "f12"
+            }
+        },
+        "event_time_stamp": {
+            "time_stamp": 4
+        },
+        "valid": true
     },
-    "event_time_stamp": {
-      "time_stamp": 2
+    {
+        "device_id": 1,
+        "event": {
+            "type": "momentary_switch_event",
+            "momentary_switch_event": {
+                "key_code": "f12"
+            }
+        },
+        "event_type": "key_up",
+        "lazy": false,
+        "original_event": {
+            "type": "momentary_switch_event",
+            "momentary_switch_event": {
+                "key_code": "f12"
+            }
+        },
+        "event_time_stamp": {
+            "time_stamp": 6
+        },
+        "valid": true
     },
-    "valid": true
-  },
-  {
-    "device_id": 1,
-    "event": {
-      "type": "momentary_switch_event",
-      "momentary_switch_event": {
-        "key_code": "f12"
-      }
+    {
+        "device_id": 1,
+        "event": {
+            "type": "momentary_switch_event",
+            "momentary_switch_event": {
+                "key_code": "f13"
+            }
+        },
+        "event_type": "key_down",
+        "lazy": false,
+        "original_event": {
+            "type": "momentary_switch_event",
+            "momentary_switch_event": {
+                "key_code": "f13"
+            }
+        },
+        "event_time_stamp": {
+            "time_stamp": 8
+        },
+        "valid": true
     },
-    "event_type": "key_down",
-    "lazy": false,
-    "original_event": {
-      "type": "momentary_switch_event",
-      "momentary_switch_event": {
-        "key_code": "f12"
-      }
-    },
-    "event_time_stamp": {
-      "time_stamp": 4
-    },
-    "valid": true
-  },
-  {
-    "device_id": 1,
-    "event": {
-      "type": "momentary_switch_event",
-      "momentary_switch_event": {
-        "key_code": "f12"
-      }
-    },
-    "event_type": "key_up",
-    "lazy": false,
-    "original_event": {
-      "type": "momentary_switch_event",
-      "momentary_switch_event": {
-        "key_code": "f12"
-      }
-    },
-    "event_time_stamp": {
-      "time_stamp": 6
-    },
-    "valid": true
-  },
-  {
-    "device_id": 1,
-    "event": {
-      "type": "momentary_switch_event",
-      "momentary_switch_event": {
-        "key_code": "f13"
-      }
-    },
-    "event_type": "key_down",
-    "lazy": false,
-    "original_event": {
-      "type": "momentary_switch_event",
-      "momentary_switch_event": {
-        "key_code": "f13"
-      }
-    },
-    "event_time_stamp": {
-      "time_stamp": 8
-    },
-    "valid": true
-  },
-  {
-    "action": "invoke_dispatcher",
-    "time_stamp": 1006
-  }
+    {
+        "action": "invoke_dispatcher",
+        "time_stamp": 1006
+    }
 ]

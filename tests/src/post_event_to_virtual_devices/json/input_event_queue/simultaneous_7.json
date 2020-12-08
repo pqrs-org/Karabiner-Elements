@@ -1,134 +1,134 @@
 [
-  {
-    "pause_manipulation": true
-  },
-  {
-    "device_id": 1,
-    "event": {
-      "type": "momentary_switch_event",
-      "momentary_switch_event": {
-        "key_code": "q"
-      }
+    {
+        "pause_manipulation": true
     },
-    "event_type": "key_down",
-    "lazy": false,
-    "original_event": {
-      "type": "momentary_switch_event",
-      "momentary_switch_event": {
-        "key_code": "q"
-      }
+    {
+        "device_id": 1,
+        "event": {
+            "type": "momentary_switch_event",
+            "momentary_switch_event": {
+                "key_code": "q"
+            }
+        },
+        "event_type": "key_down",
+        "lazy": false,
+        "original_event": {
+            "type": "momentary_switch_event",
+            "momentary_switch_event": {
+                "key_code": "q"
+            }
+        },
+        "event_time_stamp": {
+            "time_stamp": 2
+        },
+        "valid": true
     },
-    "event_time_stamp": {
-      "time_stamp": 2
+    {
+        "device_id": 1,
+        "event": {
+            "type": "momentary_switch_event",
+            "momentary_switch_event": {
+                "key_code": "left_shift"
+            }
+        },
+        "event_type": "key_down",
+        "lazy": false,
+        "original_event": {
+            "type": "momentary_switch_event",
+            "momentary_switch_event": {
+                "key_code": "left_shift"
+            }
+        },
+        "event_time_stamp": {
+            "time_stamp": 4
+        },
+        "valid": true
     },
-    "valid": true
-  },
-  {
-    "device_id": 1,
-    "event": {
-      "type": "momentary_switch_event",
-      "momentary_switch_event": {
-        "key_code": "left_shift"
-      }
+    {
+        "device_id": 1,
+        "event": {
+            "type": "momentary_switch_event",
+            "momentary_switch_event": {
+                "key_code": "w"
+            }
+        },
+        "event_type": "key_down",
+        "lazy": false,
+        "original_event": {
+            "type": "momentary_switch_event",
+            "momentary_switch_event": {
+                "key_code": "w"
+            }
+        },
+        "event_time_stamp": {
+            "time_stamp": 6
+        },
+        "valid": true
     },
-    "event_type": "key_down",
-    "lazy": false,
-    "original_event": {
-      "type": "momentary_switch_event",
-      "momentary_switch_event": {
-        "key_code": "left_shift"
-      }
+    {
+        "device_id": 1,
+        "event": {
+            "type": "momentary_switch_event",
+            "momentary_switch_event": {
+                "key_code": "q"
+            }
+        },
+        "event_type": "key_up",
+        "lazy": false,
+        "original_event": {
+            "type": "momentary_switch_event",
+            "momentary_switch_event": {
+                "key_code": "q"
+            }
+        },
+        "event_time_stamp": {
+            "time_stamp": 8
+        },
+        "valid": true
     },
-    "event_time_stamp": {
-      "time_stamp": 4
+    {
+        "device_id": 1,
+        "event": {
+            "type": "momentary_switch_event",
+            "momentary_switch_event": {
+                "key_code": "spacebar"
+            }
+        },
+        "event_type": "key_down",
+        "lazy": false,
+        "original_event": {
+            "type": "momentary_switch_event",
+            "momentary_switch_event": {
+                "key_code": "spacebar"
+            }
+        },
+        "event_time_stamp": {
+            "time_stamp": 10
+        },
+        "valid": true
     },
-    "valid": true
-  },
-  {
-    "device_id": 1,
-    "event": {
-      "type": "momentary_switch_event",
-      "momentary_switch_event": {
-        "key_code": "w"
-      }
+    {
+        "device_id": 1,
+        "event": {
+            "type": "momentary_switch_event",
+            "momentary_switch_event": {
+                "key_code": "w"
+            }
+        },
+        "event_type": "key_up",
+        "lazy": false,
+        "original_event": {
+            "type": "momentary_switch_event",
+            "momentary_switch_event": {
+                "key_code": "w"
+            }
+        },
+        "event_time_stamp": {
+            "time_stamp": 12
+        },
+        "valid": true
     },
-    "event_type": "key_down",
-    "lazy": false,
-    "original_event": {
-      "type": "momentary_switch_event",
-      "momentary_switch_event": {
-        "key_code": "w"
-      }
-    },
-    "event_time_stamp": {
-      "time_stamp": 6
-    },
-    "valid": true
-  },
-  {
-    "device_id": 1,
-    "event": {
-      "type": "momentary_switch_event",
-      "momentary_switch_event": {
-        "key_code": "q"
-      }
-    },
-    "event_type": "key_up",
-    "lazy": false,
-    "original_event": {
-      "type": "momentary_switch_event",
-      "momentary_switch_event": {
-        "key_code": "q"
-      }
-    },
-    "event_time_stamp": {
-      "time_stamp": 8
-    },
-    "valid": true
-  },
-  {
-    "device_id": 1,
-    "event": {
-      "type": "momentary_switch_event",
-      "momentary_switch_event": {
-        "key_code": "spacebar"
-      }
-    },
-    "event_type": "key_down",
-    "lazy": false,
-    "original_event": {
-      "type": "momentary_switch_event",
-      "momentary_switch_event": {
-        "key_code": "spacebar"
-      }
-    },
-    "event_time_stamp": {
-      "time_stamp": 10
-    },
-    "valid": true
-  },
-  {
-    "device_id": 1,
-    "event": {
-      "type": "momentary_switch_event",
-      "momentary_switch_event": {
-        "key_code": "w"
-      }
-    },
-    "event_type": "key_up",
-    "lazy": false,
-    "original_event": {
-      "type": "momentary_switch_event",
-      "momentary_switch_event": {
-        "key_code": "w"
-      }
-    },
-    "event_time_stamp": {
-      "time_stamp": 12
-    },
-    "valid": true
-  },
-  {
-    "pause_manipulation": false
-  }
+    {
+        "pause_manipulation": false
+    }
 ]

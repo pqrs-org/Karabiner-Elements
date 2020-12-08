@@ -1,38 +1,38 @@
 [
-  {
-    "device_id": 1,
-    "event": {
-      "type": "momentary_switch_event",
-      "momentary_switch_event": {
-        "pointing_button": "button1"
-      }
+    {
+        "device_id": 1,
+        "event": {
+            "type": "momentary_switch_event",
+            "momentary_switch_event": {
+                "pointing_button": "button1"
+            }
+        },
+        "event_type": "key_down",
+        "lazy": false,
+        "original_event": {
+            "type": "momentary_switch_event",
+            "momentary_switch_event": {
+                "pointing_button": "button1"
+            }
+        },
+        "event_time_stamp": {
+            "time_stamp": 2
+        },
+        "valid": true
     },
-    "event_type": "key_down",
-    "lazy": false,
-    "original_event": {
-      "type": "momentary_switch_event",
-      "momentary_switch_event": {
-        "pointing_button": "button1"
-      }
-    },
-    "event_time_stamp": {
-      "time_stamp": 2
-    },
-    "valid": true
-  },
-  {
-    "device_id": 1,
-    "event": {
-      "type": "device_keys_and_pointing_buttons_are_released"
-    },
-    "event_type": "single",
-    "lazy": false,
-    "original_event": {
-      "type": "device_keys_and_pointing_buttons_are_released"
-    },
-    "event_time_stamp": {
-      "time_stamp": 4
-    },
-    "valid": true
-  }
+    {
+        "device_id": 1,
+        "event": {
+            "type": "device_keys_and_pointing_buttons_are_released"
+        },
+        "event_type": "single",
+        "lazy": false,
+        "original_event": {
+            "type": "device_keys_and_pointing_buttons_are_released"
+        },
+        "event_time_stamp": {
+            "time_stamp": 4
+        },
+        "valid": true
+    }
 ]

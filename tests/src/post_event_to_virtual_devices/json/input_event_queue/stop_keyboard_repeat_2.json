@@ -1,74 +1,74 @@
 [
-  {
-    "device_id": 1,
-    "event": {
-      "type": "momentary_switch_event",
-      "momentary_switch_event": {
-        "key_code": "a"
-      }
+    {
+        "device_id": 1,
+        "event": {
+            "type": "momentary_switch_event",
+            "momentary_switch_event": {
+                "key_code": "a"
+            }
+        },
+        "event_type": "key_down",
+        "lazy": false,
+        "original_event": {
+            "type": "momentary_switch_event",
+            "momentary_switch_event": {
+                "key_code": "a"
+            }
+        },
+        "event_time_stamp": {
+            "time_stamp": 2
+        },
+        "valid": true
     },
-    "event_type": "key_down",
-    "lazy": false,
-    "original_event": {
-      "type": "momentary_switch_event",
-      "momentary_switch_event": {
-        "key_code": "a"
-      }
+    {
+        "device_id": 1,
+        "event": {
+            "type": "stop_keyboard_repeat"
+        },
+        "event_type": "single",
+        "lazy": false,
+        "original_event": {
+            "type": "stop_keyboard_repeat"
+        },
+        "event_time_stamp": {
+            "time_stamp": 4
+        },
+        "valid": true
     },
-    "event_time_stamp": {
-      "time_stamp": 2
+    {
+        "device_id": 1,
+        "event": {
+            "type": "stop_keyboard_repeat"
+        },
+        "event_type": "single",
+        "lazy": false,
+        "original_event": {
+            "type": "stop_keyboard_repeat"
+        },
+        "event_time_stamp": {
+            "time_stamp": 8
+        },
+        "valid": true
     },
-    "valid": true
-  },
-  {
-    "device_id": 1,
-    "event": {
-      "type": "stop_keyboard_repeat"
-    },
-    "event_type": "single",
-    "lazy": false,
-    "original_event": {
-      "type": "stop_keyboard_repeat"
-    },
-    "event_time_stamp": {
-      "time_stamp": 4
-    },
-    "valid": true
-  },
-  {
-    "device_id": 1,
-    "event": {
-      "type": "stop_keyboard_repeat"
-    },
-    "event_type": "single",
-    "lazy": false,
-    "original_event": {
-      "type": "stop_keyboard_repeat"
-    },
-    "event_time_stamp": {
-      "time_stamp": 8
-    },
-    "valid": true
-  },
-  {
-    "device_id": 1,
-    "event": {
-      "type": "momentary_switch_event",
-      "momentary_switch_event": {
-        "key_code": "a"
-      }
-    },
-    "event_type": "key_up",
-    "lazy": false,
-    "original_event": {
-      "type": "momentary_switch_event",
-      "momentary_switch_event": {
-        "key_code": "a"
-      }
-    },
-    "event_time_stamp": {
-      "time_stamp": 10
-    },
-    "valid": true
-  }
+    {
+        "device_id": 1,
+        "event": {
+            "type": "momentary_switch_event",
+            "momentary_switch_event": {
+                "key_code": "a"
+            }
+        },
+        "event_type": "key_up",
+        "lazy": false,
+        "original_event": {
+            "type": "momentary_switch_event",
+            "momentary_switch_event": {
+                "key_code": "a"
+            }
+        },
+        "event_time_stamp": {
+            "time_stamp": 10
+        },
+        "valid": true
+    }
 ]

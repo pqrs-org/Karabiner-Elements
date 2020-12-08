@@ -1,119 +1,119 @@
 [
-  {
-    "device_id": 1,
-    "event": {
-      "type": "momentary_switch_event",
-      "momentary_switch_event": {
-        "pointing_button": "button10"
-      }
+    {
+        "device_id": 1,
+        "event": {
+            "type": "momentary_switch_event",
+            "momentary_switch_event": {
+                "pointing_button": "button10"
+            }
+        },
+        "event_type": "key_down",
+        "lazy": false,
+        "original_event": {
+            "type": "momentary_switch_event",
+            "momentary_switch_event": {
+                "pointing_button": "button10"
+            }
+        },
+        "event_time_stamp": {
+            "time_stamp": 2
+        },
+        "valid": true
     },
-    "event_type": "key_down",
-    "lazy": false,
-    "original_event": {
-      "type": "momentary_switch_event",
-      "momentary_switch_event": {
-        "pointing_button": "button10"
-      }
+    {
+        "device_id": 0,
+        "event": {
+            "type": "pointing_device_event_from_event_tap"
+        },
+        "event_type": "key_down",
+        "lazy": false,
+        "original_event": {
+            "type": "momentary_switch_event",
+            "momentary_switch_event": {
+                "pointing_button": "button3"
+            }
+        },
+        "event_time_stamp": {
+            "time_stamp": 4
+        },
+        "valid": true
     },
-    "event_time_stamp": {
-      "time_stamp": 2
+    {
+        "device_id": 1,
+        "event": {
+            "pointing_motion": {
+                "x": -10
+            },
+            "type": "pointing_motion"
+        },
+        "event_type": "single",
+        "lazy": false,
+        "original_event": {
+            "pointing_motion": {
+                "x": -10
+            },
+            "type": "pointing_motion"
+        },
+        "event_time_stamp": {
+            "time_stamp": 6
+        },
+        "valid": true
     },
-    "valid": true
-  },
-  {
-    "device_id": 0,
-    "event": {
-      "type": "pointing_device_event_from_event_tap"
+    {
+        "device_id": 0,
+        "event": {
+            "type": "pointing_device_event_from_event_tap"
+        },
+        "event_type": "single",
+        "lazy": false,
+        "original_event": {
+            "pointing_motion": {
+                "x": -10
+            },
+            "type": "pointing_motion"
+        },
+        "event_time_stamp": {
+            "time_stamp": 8
+        },
+        "valid": true
     },
-    "event_type": "key_down",
-    "lazy": false,
-    "original_event": {
-      "type": "momentary_switch_event",
-      "momentary_switch_event": {
-        "pointing_button": "button3"
-      }
+    {
+        "device_id": 1,
+        "event": {
+            "type": "momentary_switch_event",
+            "momentary_switch_event": {
+                "pointing_button": "button10"
+            }
+        },
+        "event_type": "key_up",
+        "lazy": false,
+        "original_event": {
+            "type": "momentary_switch_event",
+            "momentary_switch_event": {
+                "pointing_button": "button10"
+            }
+        },
+        "event_time_stamp": {
+            "time_stamp": 10
+        },
+        "valid": true
     },
-    "event_time_stamp": {
-      "time_stamp": 4
-    },
-    "valid": true
-  },
-  {
-    "device_id": 1,
-    "event": {
-      "pointing_motion": {
-        "x": -10
-      },
-      "type": "pointing_motion"
-    },
-    "event_type": "single",
-    "lazy": false,
-    "original_event": {
-      "pointing_motion": {
-        "x": -10
-      },
-      "type": "pointing_motion"
-    },
-    "event_time_stamp": {
-      "time_stamp": 6
-    },
-    "valid": true
-  },
-  {
-    "device_id": 0,
-    "event": {
-      "type": "pointing_device_event_from_event_tap"
-    },
-    "event_type": "single",
-    "lazy": false,
-    "original_event": {
-      "pointing_motion": {
-        "x": -10
-      },
-      "type": "pointing_motion"
-    },
-    "event_time_stamp": {
-      "time_stamp": 8
-    },
-    "valid": true
-  },
-  {
-    "device_id": 1,
-    "event": {
-      "type": "momentary_switch_event",
-      "momentary_switch_event": {
-        "pointing_button": "button10"
-      }
-    },
-    "event_type": "key_up",
-    "lazy": false,
-    "original_event": {
-      "type": "momentary_switch_event",
-      "momentary_switch_event": {
-        "pointing_button": "button10"
-      }
-    },
-    "event_time_stamp": {
-      "time_stamp": 10
-    },
-    "valid": true
-  },
-  {
-    "device_id": 0,
-    "event": {
-      "type": "pointing_device_event_from_event_tap"
-    },
-    "event_type": "key_up",
-    "lazy": false,
-    "original_event": {
-      "type": "momentary_switch_event",
-      "momentary_switch_event": {
-        "pointing_button": "button3"
-      }
-    },
-    "event_time_stamp": {
-      "time_stamp": 12
-    },
-    "valid": true
-  }
+    {
+        "device_id": 0,
+        "event": {
+            "type": "pointing_device_event_from_event_tap"
+        },
+        "event_type": "key_up",
+        "lazy": false,
+        "original_event": {
+            "type": "momentary_switch_event",
+            "momentary_switch_event": {
+                "pointing_button": "button3"
+            }
+        },
+        "event_time_stamp": {
+            "time_stamp": 12
+        },
+        "valid": true
+    }
 ]

@@ -1,50 +1,50 @@
 [
-  {
-    "pause_manipulation": true
-  },
-  {
-    "device_id": 1,
-    "event": {
-      "type": "momentary_switch_event",
-      "momentary_switch_event": {
-        "key_code": "f1"
-      }
+    {
+        "pause_manipulation": true
     },
-    "event_type": "key_down",
-    "lazy": false,
-    "original_event": {
-      "type": "momentary_switch_event",
-      "momentary_switch_event": {
-        "key_code": "f1"
-      }
+    {
+        "device_id": 1,
+        "event": {
+            "type": "momentary_switch_event",
+            "momentary_switch_event": {
+                "key_code": "f1"
+            }
+        },
+        "event_type": "key_down",
+        "lazy": false,
+        "original_event": {
+            "type": "momentary_switch_event",
+            "momentary_switch_event": {
+                "key_code": "f1"
+            }
+        },
+        "event_time_stamp": {
+            "time_stamp": 1000
+        },
+        "valid": true
     },
-    "event_time_stamp": {
-      "time_stamp": 1000
+    {
+        "device_id": 1,
+        "event": {
+            "type": "momentary_switch_event",
+            "momentary_switch_event": {
+                "key_code": "f2"
+            }
+        },
+        "event_type": "key_down",
+        "lazy": false,
+        "original_event": {
+            "type": "momentary_switch_event",
+            "momentary_switch_event": {
+                "key_code": "f2"
+            }
+        },
+        "event_time_stamp": {
+            "time_stamp": 1000
+        },
+        "valid": true
     },
-    "valid": true
-  },
-  {
-    "device_id": 1,
-    "event": {
-      "type": "momentary_switch_event",
-      "momentary_switch_event": {
-        "key_code": "f2"
-      }
-    },
-    "event_type": "key_down",
-    "lazy": false,
-    "original_event": {
-      "type": "momentary_switch_event",
-      "momentary_switch_event": {
-        "key_code": "f2"
-      }
-    },
-    "event_time_stamp": {
-      "time_stamp": 1000
-    },
-    "valid": true
-  },
-  {
-    "pause_manipulation": false
-  }
+    {
+        "pause_manipulation": false
+    }
 ]

@@ -1,138 +1,138 @@
 [
-  {
-    "description": "*** f1 key_down, key_up ***",
-    "device_id": 1,
-    "event": {
-      "type": "momentary_switch_event",
-      "momentary_switch_event": {
-        "key_code": "f1"
-      }
+    {
+        "description": "*** f1 key_down, key_up ***",
+        "device_id": 1,
+        "event": {
+            "type": "momentary_switch_event",
+            "momentary_switch_event": {
+                "key_code": "f1"
+            }
+        },
+        "event_type": "key_down",
+        "lazy": false,
+        "original_event": {
+            "type": "momentary_switch_event",
+            "momentary_switch_event": {
+                "key_code": "f1"
+            }
+        },
+        "event_time_stamp": {
+            "time_stamp": 2
+        },
+        "valid": true
     },
-    "event_type": "key_down",
-    "lazy": false,
-    "original_event": {
-      "type": "momentary_switch_event",
-      "momentary_switch_event": {
-        "key_code": "f1"
-      }
+    {
+        "action": "invoke_dispatcher",
+        "time_stamp": 10000
     },
-    "event_time_stamp": {
-      "time_stamp": 2
+    {
+        "device_id": 1,
+        "event": {
+            "type": "momentary_switch_event",
+            "momentary_switch_event": {
+                "key_code": "f1"
+            }
+        },
+        "event_type": "key_up",
+        "lazy": false,
+        "original_event": {
+            "type": "momentary_switch_event",
+            "momentary_switch_event": {
+                "key_code": "f1"
+            }
+        },
+        "event_time_stamp": {
+            "time_stamp": 10002
+        },
+        "valid": true
     },
-    "valid": true
-  },
-  {
-    "action": "invoke_dispatcher",
-    "time_stamp": 10000
-  },
-  {
-    "device_id": 1,
-    "event": {
-      "type": "momentary_switch_event",
-      "momentary_switch_event": {
-        "key_code": "f1"
-      }
+    {
+        "description": "*** tab key_down, f1 key_down, tab key_up, f1 key_up (f1 is not canceled by tab key_up) ***",
+        "device_id": 1,
+        "event": {
+            "type": "momentary_switch_event",
+            "momentary_switch_event": {
+                "key_code": "tab"
+            }
+        },
+        "event_type": "key_down",
+        "lazy": false,
+        "original_event": {
+            "type": "momentary_switch_event",
+            "momentary_switch_event": {
+                "key_code": "tab"
+            }
+        },
+        "event_time_stamp": {
+            "time_stamp": 10004
+        },
+        "valid": true
     },
-    "event_type": "key_up",
-    "lazy": false,
-    "original_event": {
-      "type": "momentary_switch_event",
-      "momentary_switch_event": {
-        "key_code": "f1"
-      }
+    {
+        "device_id": 1,
+        "event": {
+            "type": "momentary_switch_event",
+            "momentary_switch_event": {
+                "key_code": "f1"
+            }
+        },
+        "event_type": "key_down",
+        "lazy": false,
+        "original_event": {
+            "type": "momentary_switch_event",
+            "momentary_switch_event": {
+                "key_code": "f1"
+            }
+        },
+        "event_time_stamp": {
+            "time_stamp": 10006
+        },
+        "valid": true
     },
-    "event_time_stamp": {
-      "time_stamp": 10002
+    {
+        "device_id": 1,
+        "event": {
+            "type": "momentary_switch_event",
+            "momentary_switch_event": {
+                "key_code": "tab"
+            }
+        },
+        "event_type": "key_up",
+        "lazy": false,
+        "original_event": {
+            "type": "momentary_switch_event",
+            "momentary_switch_event": {
+                "key_code": "tab"
+            }
+        },
+        "event_time_stamp": {
+            "time_stamp": 10008
+        },
+        "valid": true
     },
-    "valid": true
-  },
-  {
-    "description": "*** tab key_down, f1 key_down, tab key_up, f1 key_up (f1 is not canceled by tab key_up) ***",
-    "device_id": 1,
-    "event": {
-      "type": "momentary_switch_event",
-      "momentary_switch_event": {
-        "key_code": "tab"
-      }
+    {
+        "action": "invoke_dispatcher",
+        "time_stamp": 20000
     },
-    "event_type": "key_down",
-    "lazy": false,
-    "original_event": {
-      "type": "momentary_switch_event",
-      "momentary_switch_event": {
-        "key_code": "tab"
-      }
-    },
-    "event_time_stamp": {
-      "time_stamp": 10004
-    },
-    "valid": true
-  },
-  {
-    "device_id": 1,
-    "event": {
-      "type": "momentary_switch_event",
-      "momentary_switch_event": {
-        "key_code": "f1"
-      }
-    },
-    "event_type": "key_down",
-    "lazy": false,
-    "original_event": {
-      "type": "momentary_switch_event",
-      "momentary_switch_event": {
-        "key_code": "f1"
-      }
-    },
-    "event_time_stamp": {
-      "time_stamp": 10006
-    },
-    "valid": true
-  },
-  {
-    "device_id": 1,
-    "event": {
-      "type": "momentary_switch_event",
-      "momentary_switch_event": {
-        "key_code": "tab"
-      }
-    },
-    "event_type": "key_up",
-    "lazy": false,
-    "original_event": {
-      "type": "momentary_switch_event",
-      "momentary_switch_event": {
-        "key_code": "tab"
-      }
-    },
-    "event_time_stamp": {
-      "time_stamp": 10008
-    },
-    "valid": true
-  },
-  {
-    "action": "invoke_dispatcher",
-    "time_stamp": 20000
-  },
-  {
-    "device_id": 1,
-    "event": {
-      "type": "momentary_switch_event",
-      "momentary_switch_event": {
-        "key_code": "f1"
-      }
-    },
-    "event_type": "key_up",
-    "lazy": false,
-    "original_event": {
-      "type": "momentary_switch_event",
-      "momentary_switch_event": {
-        "key_code": "f1"
-      }
-    },
-    "event_time_stamp": {
-      "time_stamp": 20002
-    },
-    "valid": true
-  }
+    {
+        "device_id": 1,
+        "event": {
+            "type": "momentary_switch_event",
+            "momentary_switch_event": {
+                "key_code": "f1"
+            }
+        },
+        "event_type": "key_up",
+        "lazy": false,
+        "original_event": {
+            "type": "momentary_switch_event",
+            "momentary_switch_event": {
+                "key_code": "f1"
+            }
+        },
+        "event_time_stamp": {
+            "time_stamp": 20002
+        },
+        "valid": true
+    }
 ]
