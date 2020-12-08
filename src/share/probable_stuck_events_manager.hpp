@@ -57,11 +57,11 @@ public:
           if (event.modifier_flag()) {
             // Do nothing (Do not erase existing keys.)
           } else {
-            if (auto usage_pair = event.make_usage_pair()) {
-              if (usage_pair->get_usage_page() == pqrs::hid::usage_page::button) {
+            if (event.valid()) {
+              if (event.pointing_button()) {
                 // Do nothing with pointing_button.
               } else {
-                erase_except_modifier_flags(usage_pair->get_usage_page());
+                erase_except_modifier_flags(event.get_usage_pair().get_usage_page());
               }
             }
           }
@@ -133,8 +133,8 @@ private:
   void erase_except_modifier_flags(pqrs::hid::usage_page::value_t usage_page) {
     auto it = std::begin(probable_stuck_events_);
     while (it != std::end(probable_stuck_events_)) {
-      if (auto usage_pair = it->make_usage_pair()) {
-        if (usage_pair->get_usage_page() == usage_page && !it->modifier_flag()) {
+      if (it->valid()) {
+        if (it->get_usage_pair().get_usage_page() == usage_page && !it->modifier_flag()) {
           it = probable_stuck_events_.erase(it);
           continue;
         }
