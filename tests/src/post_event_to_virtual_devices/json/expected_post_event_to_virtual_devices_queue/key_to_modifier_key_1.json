@@ -12,7 +12,9 @@
     {
         "keyboard_input": {
             "keys": [
-                "spacebar"
+                {
+                    "key_code": "spacebar"
+                }
             ],
             "modifiers": [
                 "left_command"
@@ -34,7 +36,9 @@
     {
         "keyboard_input": {
             "keys": [
-                "spacebar"
+                {
+                    "key_code": "spacebar"
+                }
             ],
             "modifiers": [
                 "left_command"
@@ -46,7 +50,9 @@
     {
         "keyboard_input": {
             "keys": [
-                "spacebar"
+                {
+                    "key_code": "spacebar"
+                }
             ],
             "modifiers": []
         },
@@ -56,8 +62,12 @@
     {
         "keyboard_input": {
             "keys": [
-                "spacebar",
-                "tab"
+                {
+                    "key_code": "spacebar"
+                },
+                {
+                    "key_code": "tab"
+                }
             ],
             "modifiers": []
         },
@@ -67,7 +77,9 @@
     {
         "keyboard_input": {
             "keys": [
-                "tab"
+                {
+                    "key_code": "tab"
+                }
             ],
             "modifiers": []
         },

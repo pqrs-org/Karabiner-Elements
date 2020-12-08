@@ -44,7 +44,9 @@
     {
         "keyboard_input": {
             "keys": [
-                "tab"
+                {
+                    "key_code": "tab"
+                }
             ],
             "modifiers": [
                 "left_option",
@@ -68,7 +70,9 @@
     {
         "keyboard_input": {
             "keys": [
-                "tab"
+                {
+                    "key_code": "tab"
+                }
             ],
             "modifiers": [
                 "left_option",

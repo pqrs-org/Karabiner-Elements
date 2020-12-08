@@ -2,7 +2,9 @@
     {
         "keyboard_input": {
             "keys": [
-                "tab"
+                {
+                    "key_code": "tab"
+                }
             ],
             "modifiers": []
         },
@@ -12,8 +14,12 @@
     {
         "keyboard_input": {
             "keys": [
-                "tab",
-                "escape"
+                {
+                    "key_code": "tab"
+                },
+                {
+                    "key_code": "escape"
+                }
             ],
             "modifiers": []
         },
@@ -23,9 +29,15 @@
     {
         "keyboard_input": {
             "keys": [
-                "tab",
-                "escape",
-                "spacebar"
+                {
+                    "key_code": "tab"
+                },
+                {
+                    "key_code": "escape"
+                },
+                {
+                    "key_code": "spacebar"
+                }
             ],
             "modifiers": []
         },
@@ -35,8 +47,12 @@
     {
         "keyboard_input": {
             "keys": [
-                "escape",
-                "spacebar"
+                {
+                    "key_code": "escape"
+                },
+                {
+                    "key_code": "spacebar"
+                }
             ],
             "modifiers": []
         },
@@ -46,8 +62,12 @@
     {
         "keyboard_input": {
             "keys": [
-                "escape",
-                "spacebar"
+                {
+                    "key_code": "escape"
+                },
+                {
+                    "key_code": "spacebar"
+                }
             ],
             "modifiers": [
                 "left_shift"
@@ -59,9 +79,15 @@
     {
         "keyboard_input": {
             "keys": [
-                "return_or_enter",
-                "escape",
-                "spacebar"
+                {
+                    "key_code": "return_or_enter"
+                },
+                {
+                    "key_code": "escape"
+                },
+                {
+                    "key_code": "spacebar"
+                }
             ],
             "modifiers": [
                 "left_shift"
@@ -73,10 +99,18 @@
     {
         "keyboard_input": {
             "keys": [
-                "return_or_enter",
-                "escape",
-                "spacebar",
-                "a"
+                {
+                    "key_code": "return_or_enter"
+                },
+                {
+                    "key_code": "escape"
+                },
+                {
+                    "key_code": "spacebar"
+                },
+                {
+                    "key_code": "a"
+                }
             ],
             "modifiers": [
                 "left_shift"
@@ -88,9 +122,15 @@
     {
         "keyboard_input": {
             "keys": [
-                "return_or_enter",
-                "escape",
-                "a"
+                {
+                    "key_code": "return_or_enter"
+                },
+                {
+                    "key_code": "escape"
+                },
+                {
+                    "key_code": "a"
+                }
             ],
             "modifiers": [
                 "left_shift"
@@ -102,8 +142,12 @@
     {
         "keyboard_input": {
             "keys": [
-                "escape",
-                "a"
+                {
+                    "key_code": "escape"
+                },
+                {
+                    "key_code": "a"
+                }
             ],
             "modifiers": [
                 "left_shift"
@@ -115,8 +159,12 @@
     {
         "keyboard_input": {
             "keys": [
-                "escape",
-                "a"
+                {
+                    "key_code": "escape"
+                },
+                {
+                    "key_code": "a"
+                }
             ],
             "modifiers": []
         },
@@ -126,7 +174,9 @@
     {
         "keyboard_input": {
             "keys": [
-                "a"
+                {
+                    "key_code": "a"
+                }
             ],
             "modifiers": []
         },

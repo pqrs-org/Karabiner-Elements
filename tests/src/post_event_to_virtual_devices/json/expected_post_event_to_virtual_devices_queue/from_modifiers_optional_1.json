@@ -20,7 +20,9 @@
     {
         "keyboard_input": {
             "keys": [
-                "up_arrow"
+                {
+                    "key_code": "up_arrow"
+                }
             ],
             "modifiers": []
         },
@@ -38,7 +40,9 @@
     {
         "keyboard_input": {
             "keys": [
-                "up_arrow"
+                {
+                    "key_code": "up_arrow"
+                }
             ],
             "modifiers": []
         },
@@ -66,7 +70,9 @@
     {
         "keyboard_input": {
             "keys": [
-                "tab"
+                {
+                    "key_code": "tab"
+                }
             ],
             "modifiers": [
                 "left_control"
@@ -96,7 +102,9 @@
     {
         "keyboard_input": {
             "keys": [
-                "p"
+                {
+                    "key_code": "p"
+                }
             ],
             "modifiers": []
         },

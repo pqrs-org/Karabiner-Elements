@@ -20,7 +20,9 @@
     {
         "keyboard_input": {
             "keys": [
-                "f2"
+                {
+                    "key_code": "f2"
+                }
             ],
             "modifiers": []
         },
@@ -30,7 +32,9 @@
     {
         "keyboard_input": {
             "keys": [
-                "f2"
+                {
+                    "key_code": "f2"
+                }
             ],
             "modifiers": [
                 "left_shift"
@@ -42,8 +46,12 @@
     {
         "keyboard_input": {
             "keys": [
-                "f2",
-                "tab"
+                {
+                    "key_code": "f2"
+                },
+                {
+                    "key_code": "tab"
+                }
             ],
             "modifiers": [
                 "left_shift"
@@ -55,7 +63,9 @@
     {
         "keyboard_input": {
             "keys": [
-                "f2"
+                {
+                    "key_code": "f2"
+                }
             ],
             "modifiers": [
                 "left_shift"
@@ -85,7 +95,9 @@
     {
         "keyboard_input": {
             "keys": [
-                "escape"
+                {
+                    "key_code": "escape"
+                }
             ],
             "modifiers": []
         },

@@ -20,7 +20,9 @@
     {
         "keyboard_input": {
             "keys": [
-                "a"
+                {
+                    "key_code": "a"
+                }
             ],
             "modifiers": []
         },
@@ -38,7 +40,9 @@
     {
         "keyboard_input": {
             "keys": [
-                "d"
+                {
+                    "key_code": "d"
+                }
             ],
             "modifiers": []
         },
@@ -66,7 +70,9 @@
     {
         "keyboard_input": {
             "keys": [
-                "e"
+                {
+                    "key_code": "e"
+                }
             ],
             "modifiers": [
                 "left_shift"
@@ -106,7 +112,9 @@
     {
         "keyboard_input": {
             "keys": [
-                "f13"
+                {
+                    "key_code": "f13"
+                }
             ],
             "modifiers": [
                 "left_command"

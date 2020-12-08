@@ -12,7 +12,9 @@
     {
         "keyboard_input": {
             "keys": [
-                "tab"
+                {
+                    "key_code": "tab"
+                }
             ],
             "modifiers": [
                 "left_command"
@@ -60,7 +62,9 @@
     {
         "keyboard_input": {
             "keys": [
-                "escape"
+                {
+                    "key_code": "escape"
+                }
             ],
             "modifiers": []
         },
@@ -96,7 +100,9 @@
     {
         "keyboard_input": {
             "keys": [
-                "escape"
+                {
+                    "key_code": "escape"
+                }
             ],
             "modifiers": []
         },

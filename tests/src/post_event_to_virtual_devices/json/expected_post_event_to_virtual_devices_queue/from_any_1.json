@@ -72,7 +72,9 @@
     {
         "keyboard_input": {
             "keys": [
-                "a"
+                {
+                    "key_code": "a"
+                }
             ],
             "modifiers": [
                 "left_control"
@@ -136,7 +138,9 @@
     {
         "keyboard_input": {
             "keys": [
-                "a"
+                {
+                    "key_code": "a"
+                }
             ],
             "modifiers": [
                 "left_command"

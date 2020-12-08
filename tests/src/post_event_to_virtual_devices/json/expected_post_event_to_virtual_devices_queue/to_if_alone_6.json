@@ -20,7 +20,9 @@
     {
         "keyboard_input": {
             "keys": [
-                "return_or_enter"
+                {
+                    "key_code": "return_or_enter"
+                }
             ],
             "modifiers": []
         },
@@ -38,7 +40,9 @@
     {
         "keyboard_input": {
             "keys": [
-                "spacebar"
+                {
+                    "key_code": "spacebar"
+                }
             ],
             "modifiers": []
         },

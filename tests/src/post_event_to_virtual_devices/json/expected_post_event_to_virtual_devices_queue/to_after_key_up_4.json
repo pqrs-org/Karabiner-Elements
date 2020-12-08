@@ -12,7 +12,9 @@
     {
         "keyboard_input": {
             "keys": [
-                "f3"
+                {
+                    "key_code": "f3"
+                }
             ],
             "modifiers": [
                 "left_shift"
@@ -34,7 +36,9 @@
     {
         "keyboard_input": {
             "keys": [
-                "tab"
+                {
+                    "key_code": "tab"
+                }
             ],
             "modifiers": [
                 "left_shift"

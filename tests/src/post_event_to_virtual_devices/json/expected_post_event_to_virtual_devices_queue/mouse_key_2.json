@@ -41,7 +41,9 @@
     {
         "keyboard_input": {
             "keys": [
-                "spacebar"
+                {
+                    "key_code": "spacebar"
+                }
             ],
             "modifiers": [
                 "right_shift"

@@ -2,7 +2,9 @@
     {
         "keyboard_input": {
             "keys": [
-                "1"
+                {
+                    "key_code": "1"
+                }
             ],
             "modifiers": []
         },

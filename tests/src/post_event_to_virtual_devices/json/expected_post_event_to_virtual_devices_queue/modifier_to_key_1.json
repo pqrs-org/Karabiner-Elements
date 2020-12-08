@@ -2,7 +2,9 @@
     {
         "keyboard_input": {
             "keys": [
-                "f1"
+                {
+                    "key_code": "f1"
+                }
             ],
             "modifiers": []
         },
@@ -12,8 +14,12 @@
     {
         "keyboard_input": {
             "keys": [
-                "f1",
-                "tab"
+                {
+                    "key_code": "f1"
+                },
+                {
+                    "key_code": "tab"
+                }
             ],
             "modifiers": []
         },
@@ -23,7 +29,9 @@
     {
         "keyboard_input": {
             "keys": [
-                "f1"
+                {
+                    "key_code": "f1"
+                }
             ],
             "modifiers": []
         },

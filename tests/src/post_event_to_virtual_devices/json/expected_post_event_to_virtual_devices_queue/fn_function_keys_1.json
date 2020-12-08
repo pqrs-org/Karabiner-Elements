@@ -20,7 +20,9 @@
     {
         "keyboard_input": {
             "keys": [
-                "f10"
+                {
+                    "key_code": "f10"
+                }
             ],
             "modifiers": []
         },

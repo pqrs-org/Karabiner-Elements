@@ -2,7 +2,9 @@
     {
         "apple_vendor_top_case_input": {
             "keys": [
-                "fn"
+                {
+                    "apple_vendor_top_case_key_code": "keyboard_fn"
+                }
             ]
         },
         "time_stamp": 5,
@@ -11,7 +13,9 @@
     {
         "keyboard_input": {
             "keys": [
-                "f3"
+                {
+                    "key_code": "f3"
+                }
             ],
             "modifiers": []
         },
@@ -29,7 +33,9 @@
     {
         "keyboard_input": {
             "keys": [
-                "f3"
+                {
+                    "key_code": "f3"
+                }
             ],
             "modifiers": []
         },
@@ -46,8 +52,12 @@
     {
         "keyboard_input": {
             "keys": [
-                "f3",
-                "tab"
+                {
+                    "key_code": "f3"
+                },
+                {
+                    "key_code": "tab"
+                }
             ],
             "modifiers": []
         },
@@ -57,7 +67,9 @@
     {
         "keyboard_input": {
             "keys": [
-                "f3"
+                {
+                    "key_code": "f3"
+                }
             ],
             "modifiers": []
         },

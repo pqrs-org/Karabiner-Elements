@@ -20,7 +20,9 @@
     {
         "keyboard_input": {
             "keys": [
-                "caps_lock"
+                {
+                    "key_code": "caps_lock"
+                }
             ],
             "modifiers": []
         },

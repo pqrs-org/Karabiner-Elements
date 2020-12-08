@@ -2,7 +2,9 @@
     {
         "keyboard_input": {
             "keys": [
-                "tab"
+                {
+                    "key_code": "tab"
+                }
             ],
             "modifiers": []
         },
@@ -12,7 +14,9 @@
     {
         "keyboard_input": {
             "keys": [
-                "tab"
+                {
+                    "key_code": "tab"
+                }
             ],
             "modifiers": [
                 "left_shift"
@@ -24,8 +28,12 @@
     {
         "keyboard_input": {
             "keys": [
-                "tab",
-                "escape"
+                {
+                    "key_code": "tab"
+                },
+                {
+                    "key_code": "escape"
+                }
             ],
             "modifiers": [
                 "left_shift"
@@ -37,7 +45,9 @@
     {
         "keyboard_input": {
             "keys": [
-                "tab"
+                {
+                    "key_code": "tab"
+                }
             ],
             "modifiers": [
                 "left_shift"
@@ -49,7 +59,9 @@
     {
         "keyboard_input": {
             "keys": [
-                "tab"
+                {
+                    "key_code": "tab"
+                }
             ],
             "modifiers": []
         },
@@ -59,8 +71,12 @@
     {
         "keyboard_input": {
             "keys": [
-                "tab",
-                "escape"
+                {
+                    "key_code": "tab"
+                },
+                {
+                    "key_code": "escape"
+                }
             ],
             "modifiers": []
         },
@@ -70,8 +86,12 @@
     {
         "keyboard_input": {
             "keys": [
-                "tab",
-                "escape"
+                {
+                    "key_code": "tab"
+                },
+                {
+                    "key_code": "escape"
+                }
             ],
             "modifiers": [
                 "left_shift"
@@ -83,8 +103,12 @@
     {
         "keyboard_input": {
             "keys": [
-                "tab",
-                "escape"
+                {
+                    "key_code": "tab"
+                },
+                {
+                    "key_code": "escape"
+                }
             ],
             "modifiers": []
         },
@@ -94,7 +118,9 @@
     {
         "keyboard_input": {
             "keys": [
-                "tab"
+                {
+                    "key_code": "tab"
+                }
             ],
             "modifiers": []
         },

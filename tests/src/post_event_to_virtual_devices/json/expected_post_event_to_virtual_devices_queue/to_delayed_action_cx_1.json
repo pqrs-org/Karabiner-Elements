@@ -30,7 +30,9 @@
     {
         "keyboard_input": {
             "keys": [
-                "o"
+                {
+                    "key_code": "o"
+                }
             ],
             "modifiers": [
                 "left_command"
@@ -73,7 +75,9 @@
     {
         "keyboard_input": {
             "keys": [
-                "f"
+                {
+                    "key_code": "f"
+                }
             ],
             "modifiers": [
                 "left_control"

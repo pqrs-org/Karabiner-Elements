@@ -2,7 +2,9 @@
     {
         "keyboard_input": {
             "keys": [
-                "f3"
+                {
+                    "key_code": "f3"
+                }
             ],
             "modifiers": []
         },

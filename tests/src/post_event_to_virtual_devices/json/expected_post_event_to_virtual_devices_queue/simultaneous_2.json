@@ -2,7 +2,9 @@
     {
         "keyboard_input": {
             "keys": [
-                "d"
+                {
+                    "key_code": "d"
+                }
             ],
             "modifiers": []
         },
@@ -20,7 +22,9 @@
     {
         "keyboard_input": {
             "keys": [
-                "f"
+                {
+                    "key_code": "f"
+                }
             ],
             "modifiers": []
         },
@@ -38,7 +42,9 @@
     {
         "keyboard_input": {
             "keys": [
-                "spacebar"
+                {
+                    "key_code": "spacebar"
+                }
             ],
             "modifiers": []
         },

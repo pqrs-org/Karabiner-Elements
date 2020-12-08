@@ -2,7 +2,9 @@
     {
         "keyboard_input": {
             "keys": [
-                "f4"
+                {
+                    "key_code": "f4"
+                }
             ],
             "modifiers": []
         },
@@ -30,7 +32,9 @@
     {
         "keyboard_input": {
             "keys": [
-                "f5"
+                {
+                    "key_code": "f5"
+                }
             ],
             "modifiers": [
                 "left_shift"
@@ -42,7 +46,9 @@
     {
         "keyboard_input": {
             "keys": [
-                "f5"
+                {
+                    "key_code": "f5"
+                }
             ],
             "modifiers": []
         },
@@ -52,8 +58,12 @@
     {
         "keyboard_input": {
             "keys": [
-                "f5",
-                "f4"
+                {
+                    "key_code": "f5"
+                },
+                {
+                    "key_code": "f4"
+                }
             ],
             "modifiers": []
         },

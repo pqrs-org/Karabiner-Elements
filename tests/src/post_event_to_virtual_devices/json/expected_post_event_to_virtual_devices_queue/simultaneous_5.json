@@ -2,7 +2,9 @@
     {
         "keyboard_input": {
             "keys": [
-                "d"
+                {
+                    "key_code": "d"
+                }
             ],
             "modifiers": []
         },
@@ -20,7 +22,9 @@
     {
         "keyboard_input": {
             "keys": [
-                "f"
+                {
+                    "key_code": "f"
+                }
             ],
             "modifiers": []
         },
@@ -38,7 +42,9 @@
     {
         "keyboard_input": {
             "keys": [
-                "s"
+                {
+                    "key_code": "s"
+                }
             ],
             "modifiers": []
         },
@@ -48,8 +54,12 @@
     {
         "keyboard_input": {
             "keys": [
-                "s",
-                "spacebar"
+                {
+                    "key_code": "s"
+                },
+                {
+                    "key_code": "spacebar"
+                }
             ],
             "modifiers": []
         },
@@ -59,7 +69,9 @@
     {
         "keyboard_input": {
             "keys": [
-                "spacebar"
+                {
+                    "key_code": "spacebar"
+                }
             ],
             "modifiers": []
         },

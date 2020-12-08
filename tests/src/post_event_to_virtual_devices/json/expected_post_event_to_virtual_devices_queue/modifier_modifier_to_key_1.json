@@ -20,7 +20,9 @@
     {
         "keyboard_input": {
             "keys": [
-                "f5"
+                {
+                    "key_code": "f5"
+                }
             ],
             "modifiers": []
         },
@@ -38,7 +40,9 @@
     {
         "keyboard_input": {
             "keys": [
-                "f5"
+                {
+                    "key_code": "f5"
+                }
             ],
             "modifiers": []
         },
@@ -48,7 +52,9 @@
     {
         "keyboard_input": {
             "keys": [
-                "f5"
+                {
+                    "key_code": "f5"
+                }
             ],
             "modifiers": [
                 "right_command"
@@ -60,8 +66,12 @@
     {
         "keyboard_input": {
             "keys": [
-                "f5",
-                "tab"
+                {
+                    "key_code": "f5"
+                },
+                {
+                    "key_code": "tab"
+                }
             ],
             "modifiers": [
                 "right_command"
@@ -73,7 +83,9 @@
     {
         "keyboard_input": {
             "keys": [
-                "f5"
+                {
+                    "key_code": "f5"
+                }
             ],
             "modifiers": [
                 "right_command"
@@ -95,7 +107,9 @@
     {
         "keyboard_input": {
             "keys": [
-                "tab"
+                {
+                    "key_code": "tab"
+                }
             ],
             "modifiers": [
                 "right_command"

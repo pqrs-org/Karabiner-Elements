@@ -2,7 +2,9 @@
     {
         "keyboard_input": {
             "keys": [
-                "escape"
+                {
+                    "key_code": "escape"
+                }
             ],
             "modifiers": []
         },

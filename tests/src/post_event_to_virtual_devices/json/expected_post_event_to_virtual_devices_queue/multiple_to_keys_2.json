@@ -23,7 +23,9 @@
     {
         "keyboard_input": {
             "keys": [
-                "a"
+                {
+                    "key_code": "a"
+                }
             ],
             "modifiers": [
                 "left_control",
@@ -65,7 +67,9 @@
     {
         "keyboard_input": {
             "keys": [
-                "delete_or_backspace"
+                {
+                    "key_code": "delete_or_backspace"
+                }
             ],
             "modifiers": []
         },
@@ -93,7 +97,9 @@
     {
         "keyboard_input": {
             "keys": [
-                "tab"
+                {
+                    "key_code": "tab"
+                }
             ],
             "modifiers": [
                 "left_control"

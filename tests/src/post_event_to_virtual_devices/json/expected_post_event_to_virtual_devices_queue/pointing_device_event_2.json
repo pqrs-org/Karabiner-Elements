@@ -20,7 +20,9 @@
     {
         "keyboard_input": {
             "keys": [
-                "up_arrow"
+                {
+                    "key_code": "up_arrow"
+                }
             ],
             "modifiers": []
         },

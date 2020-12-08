@@ -23,7 +23,9 @@
     {
         "keyboard_input": {
             "keys": [
-                "p"
+                {
+                    "key_code": "p"
+                }
             ],
             "modifiers": [
                 "left_control",

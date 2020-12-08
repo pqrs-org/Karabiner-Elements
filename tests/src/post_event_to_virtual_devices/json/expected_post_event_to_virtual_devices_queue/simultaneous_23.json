@@ -2,7 +2,9 @@
     {
         "keyboard_input": {
             "keys": [
-                "u"
+                {
+                    "key_code": "u"
+                }
             ],
             "modifiers": []
         },
@@ -12,8 +14,12 @@
     {
         "keyboard_input": {
             "keys": [
-                "u",
-                "i"
+                {
+                    "key_code": "u"
+                },
+                {
+                    "key_code": "i"
+                }
             ],
             "modifiers": []
         },
@@ -23,7 +29,9 @@
     {
         "keyboard_input": {
             "keys": [
-                "u"
+                {
+                    "key_code": "u"
+                }
             ],
             "modifiers": []
         },
@@ -33,8 +41,12 @@
     {
         "keyboard_input": {
             "keys": [
-                "u",
-                "spacebar"
+                {
+                    "key_code": "u"
+                },
+                {
+                    "key_code": "spacebar"
+                }
             ],
             "modifiers": []
         },
@@ -44,7 +56,9 @@
     {
         "keyboard_input": {
             "keys": [
-                "spacebar"
+                {
+                    "key_code": "spacebar"
+                }
             ],
             "modifiers": []
         },

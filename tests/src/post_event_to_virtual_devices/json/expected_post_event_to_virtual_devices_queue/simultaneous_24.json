@@ -2,7 +2,9 @@
     {
         "keyboard_input": {
             "keys": [
-                "down_arrow"
+                {
+                    "key_code": "down_arrow"
+                }
             ],
             "modifiers": []
         },
@@ -20,7 +22,9 @@
     {
         "keyboard_input": {
             "keys": [
-                "down_arrow"
+                {
+                    "key_code": "down_arrow"
+                }
             ],
             "modifiers": []
         },
@@ -38,7 +42,9 @@
     {
         "keyboard_input": {
             "keys": [
-                "j"
+                {
+                    "key_code": "j"
+                }
             ],
             "modifiers": []
         },

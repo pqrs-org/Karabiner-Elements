@@ -20,7 +20,9 @@
     {
         "keyboard_input": {
             "keys": [
-                "a"
+                {
+                    "key_code": "a"
+                }
             ],
             "modifiers": []
         },
@@ -56,7 +58,9 @@
     {
         "keyboard_input": {
             "keys": [
-                "b"
+                {
+                    "key_code": "b"
+                }
             ],
             "modifiers": []
         },
@@ -84,7 +88,9 @@
     {
         "keyboard_input": {
             "keys": [
-                "c"
+                {
+                    "key_code": "c"
+                }
             ],
             "modifiers": [
                 "left_shift"

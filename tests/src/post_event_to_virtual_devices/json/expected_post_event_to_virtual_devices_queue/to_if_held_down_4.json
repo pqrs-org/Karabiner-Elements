@@ -2,7 +2,9 @@
     {
         "keyboard_input": {
             "keys": [
-                "f2"
+                {
+                    "key_code": "f2"
+                }
             ],
             "modifiers": []
         },
@@ -20,7 +22,9 @@
     {
         "keyboard_input": {
             "keys": [
-                "tab"
+                {
+                    "key_code": "tab"
+                }
             ],
             "modifiers": []
         },
@@ -38,7 +42,9 @@
     {
         "keyboard_input": {
             "keys": [
-                "f2"
+                {
+                    "key_code": "f2"
+                }
             ],
             "modifiers": []
         },

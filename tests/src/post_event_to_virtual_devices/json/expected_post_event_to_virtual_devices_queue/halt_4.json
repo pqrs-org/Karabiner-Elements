@@ -2,7 +2,9 @@
     {
         "keyboard_input": {
             "keys": [
-                "spacebar"
+                {
+                    "key_code": "spacebar"
+                }
             ],
             "modifiers": []
         },
@@ -12,8 +14,12 @@
     {
         "keyboard_input": {
             "keys": [
-                "spacebar",
-                "f6"
+                {
+                    "key_code": "spacebar"
+                },
+                {
+                    "key_code": "f6"
+                }
             ],
             "modifiers": []
         },
@@ -23,7 +29,9 @@
     {
         "keyboard_input": {
             "keys": [
-                "spacebar"
+                {
+                    "key_code": "spacebar"
+                }
             ],
             "modifiers": []
         },

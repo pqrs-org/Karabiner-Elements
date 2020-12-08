@@ -2,7 +2,9 @@
     {
         "keyboard_input": {
             "keys": [
-                "a"
+                {
+                    "key_code": "a"
+                }
             ],
             "modifiers": []
         },
@@ -12,8 +14,12 @@
     {
         "keyboard_input": {
             "keys": [
-                "a",
-                "b"
+                {
+                    "key_code": "a"
+                },
+                {
+                    "key_code": "b"
+                }
             ],
             "modifiers": []
         },
@@ -23,9 +29,15 @@
     {
         "keyboard_input": {
             "keys": [
-                "a",
-                "b",
-                "c"
+                {
+                    "key_code": "a"
+                },
+                {
+                    "key_code": "b"
+                },
+                {
+                    "key_code": "c"
+                }
             ],
             "modifiers": []
         },
@@ -35,8 +47,12 @@
     {
         "keyboard_input": {
             "keys": [
-                "b",
-                "c"
+                {
+                    "key_code": "b"
+                },
+                {
+                    "key_code": "c"
+                }
             ],
             "modifiers": []
         },
@@ -46,7 +62,9 @@
     {
         "keyboard_input": {
             "keys": [
-                "c"
+                {
+                    "key_code": "c"
+                }
             ],
             "modifiers": []
         },

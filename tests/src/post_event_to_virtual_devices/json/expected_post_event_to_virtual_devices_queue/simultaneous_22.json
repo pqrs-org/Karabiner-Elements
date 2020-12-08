@@ -2,7 +2,9 @@
     {
         "keyboard_input": {
             "keys": [
-                "u"
+                {
+                    "key_code": "u"
+                }
             ],
             "modifiers": []
         },
@@ -12,8 +14,12 @@
     {
         "keyboard_input": {
             "keys": [
-                "u",
-                "i"
+                {
+                    "key_code": "u"
+                },
+                {
+                    "key_code": "i"
+                }
             ],
             "modifiers": []
         },

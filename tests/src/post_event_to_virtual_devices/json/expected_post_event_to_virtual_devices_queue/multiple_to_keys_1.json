@@ -23,7 +23,9 @@
     {
         "keyboard_input": {
             "keys": [
-                "a"
+                {
+                    "key_code": "a"
+                }
             ],
             "modifiers": [
                 "left_control",
@@ -65,7 +67,9 @@
     {
         "keyboard_input": {
             "keys": [
-                "delete_or_backspace"
+                {
+                    "key_code": "delete_or_backspace"
+                }
             ],
             "modifiers": []
         },
@@ -104,7 +108,9 @@
     {
         "keyboard_input": {
             "keys": [
-                "a"
+                {
+                    "key_code": "a"
+                }
             ],
             "modifiers": [
                 "left_control",
@@ -146,7 +152,9 @@
     {
         "keyboard_input": {
             "keys": [
-                "delete_or_backspace"
+                {
+                    "key_code": "delete_or_backspace"
+                }
             ],
             "modifiers": []
         },
@@ -156,7 +164,9 @@
     {
         "keyboard_input": {
             "keys": [
-                "delete_or_backspace"
+                {
+                    "key_code": "delete_or_backspace"
+                }
             ],
             "modifiers": [
                 "left_control"
@@ -168,8 +178,12 @@
     {
         "keyboard_input": {
             "keys": [
-                "delete_or_backspace",
-                "tab"
+                {
+                    "key_code": "delete_or_backspace"
+                },
+                {
+                    "key_code": "tab"
+                }
             ],
             "modifiers": [
                 "left_control"
@@ -181,7 +195,9 @@
     {
         "keyboard_input": {
             "keys": [
-                "delete_or_backspace"
+                {
+                    "key_code": "delete_or_backspace"
+                }
             ],
             "modifiers": [
                 "left_control"
@@ -193,7 +209,9 @@
     {
         "keyboard_input": {
             "keys": [
-                "delete_or_backspace"
+                {
+                    "key_code": "delete_or_backspace"
+                }
             ],
             "modifiers": []
         },

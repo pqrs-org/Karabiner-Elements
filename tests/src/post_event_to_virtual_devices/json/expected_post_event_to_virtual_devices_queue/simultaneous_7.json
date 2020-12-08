@@ -2,7 +2,9 @@
     {
         "keyboard_input": {
             "keys": [
-                "q"
+                {
+                    "key_code": "q"
+                }
             ],
             "modifiers": []
         },
@@ -12,7 +14,9 @@
     {
         "keyboard_input": {
             "keys": [
-                "q"
+                {
+                    "key_code": "q"
+                }
             ],
             "modifiers": [
                 "left_shift"
@@ -24,8 +28,12 @@
     {
         "keyboard_input": {
             "keys": [
-                "q",
-                "w"
+                {
+                    "key_code": "q"
+                },
+                {
+                    "key_code": "w"
+                }
             ],
             "modifiers": [
                 "left_shift"
@@ -37,7 +45,9 @@
     {
         "keyboard_input": {
             "keys": [
-                "w"
+                {
+                    "key_code": "w"
+                }
             ],
             "modifiers": [
                 "left_shift"
@@ -49,8 +59,12 @@
     {
         "keyboard_input": {
             "keys": [
-                "spacebar",
-                "w"
+                {
+                    "key_code": "spacebar"
+                },
+                {
+                    "key_code": "w"
+                }
             ],
             "modifiers": [
                 "left_shift"
@@ -62,7 +76,9 @@
     {
         "keyboard_input": {
             "keys": [
-                "spacebar"
+                {
+                    "key_code": "spacebar"
+                }
             ],
             "modifiers": [
                 "left_shift"

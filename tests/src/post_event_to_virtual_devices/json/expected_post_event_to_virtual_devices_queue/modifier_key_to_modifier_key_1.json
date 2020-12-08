@@ -30,7 +30,9 @@
     {
         "keyboard_input": {
             "keys": [
-                "spacebar"
+                {
+                    "key_code": "spacebar"
+                }
             ],
             "modifiers": [
                 "right_command"
@@ -52,7 +54,9 @@
     {
         "keyboard_input": {
             "keys": [
-                "spacebar"
+                {
+                    "key_code": "spacebar"
+                }
             ],
             "modifiers": [
                 "right_command"
@@ -64,7 +68,9 @@
     {
         "keyboard_input": {
             "keys": [
-                "spacebar"
+                {
+                    "key_code": "spacebar"
+                }
             ],
             "modifiers": [
                 "right_option",
@@ -77,7 +83,9 @@
     {
         "keyboard_input": {
             "keys": [
-                "spacebar"
+                {
+                    "key_code": "spacebar"
+                }
             ],
             "modifiers": [
                 "right_option"
@@ -89,8 +97,12 @@
     {
         "keyboard_input": {
             "keys": [
-                "spacebar",
-                "tab"
+                {
+                    "key_code": "spacebar"
+                },
+                {
+                    "key_code": "tab"
+                }
             ],
             "modifiers": [
                 "right_option"
@@ -102,7 +114,9 @@
     {
         "keyboard_input": {
             "keys": [
-                "spacebar"
+                {
+                    "key_code": "spacebar"
+                }
             ],
             "modifiers": [
                 "right_option"
@@ -124,7 +138,9 @@
     {
         "keyboard_input": {
             "keys": [
-                "tab"
+                {
+                    "key_code": "tab"
+                }
             ],
             "modifiers": [
                 "right_option"

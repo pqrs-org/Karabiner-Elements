@@ -20,7 +20,9 @@
     {
         "keyboard_input": {
             "keys": [
-                "e"
+                {
+                    "key_code": "e"
+                }
             ],
             "modifiers": []
         },
@@ -38,7 +40,9 @@
     {
         "keyboard_input": {
             "keys": [
-                "r"
+                {
+                    "key_code": "r"
+                }
             ],
             "modifiers": []
         },
@@ -66,7 +70,9 @@
     {
         "keyboard_input": {
             "keys": [
-                "spacebar"
+                {
+                    "key_code": "spacebar"
+                }
             ],
             "modifiers": [
                 "left_shift"
