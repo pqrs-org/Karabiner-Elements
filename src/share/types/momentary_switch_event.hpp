@@ -89,46 +89,35 @@ public:
     return *this;
   }
 
-  std::optional<pqrs::hid::usage_pair> make_usage_pair(void) const {
-    if (usage_pair_.get_usage_page() == pqrs::hid::usage_page::undefined ||
-        usage_pair_.get_usage() == pqrs::hid::usage::undefined) {
-      return std::nullopt;
-    }
-
-    return usage_pair_;
-  }
-
   std::optional<krbn::modifier_flag> make_modifier_flag(void) const {
-    if (auto usage_pair = make_usage_pair()) {
-      auto usage_page = usage_pair->get_usage_page();
-      auto usage = usage_pair->get_usage();
+    auto usage_page = usage_pair_.get_usage_page();
+    auto usage = usage_pair_.get_usage();
 
-      if (usage_page == pqrs::hid::usage_page::keyboard_or_keypad) {
-        if (usage == pqrs::hid::usage::keyboard_or_keypad::keyboard_left_control) {
-          return krbn::modifier_flag::left_control;
-        } else if (usage == pqrs::hid::usage::keyboard_or_keypad::keyboard_left_shift) {
-          return krbn::modifier_flag::left_shift;
-        } else if (usage == pqrs::hid::usage::keyboard_or_keypad::keyboard_left_alt) {
-          return krbn::modifier_flag::left_option;
-        } else if (usage == pqrs::hid::usage::keyboard_or_keypad::keyboard_left_gui) {
-          return krbn::modifier_flag::left_command;
-        } else if (usage == pqrs::hid::usage::keyboard_or_keypad::keyboard_right_control) {
-          return krbn::modifier_flag::right_control;
-        } else if (usage == pqrs::hid::usage::keyboard_or_keypad::keyboard_right_shift) {
-          return krbn::modifier_flag::right_shift;
-        } else if (usage == pqrs::hid::usage::keyboard_or_keypad::keyboard_right_alt) {
-          return krbn::modifier_flag::right_option;
-        } else if (usage == pqrs::hid::usage::keyboard_or_keypad::keyboard_right_gui) {
-          return krbn::modifier_flag::right_command;
-        }
-      } else if (usage_page == pqrs::hid::usage_page::apple_vendor_keyboard) {
-        if (usage == pqrs::hid::usage::apple_vendor_keyboard::function) {
-          return krbn::modifier_flag::fn;
-        }
-      } else if (usage_page == pqrs::hid::usage_page::apple_vendor_top_case) {
-        if (usage == pqrs::hid::usage::apple_vendor_top_case::keyboard_fn) {
-          return krbn::modifier_flag::fn;
-        }
+    if (usage_page == pqrs::hid::usage_page::keyboard_or_keypad) {
+      if (usage == pqrs::hid::usage::keyboard_or_keypad::keyboard_left_control) {
+        return krbn::modifier_flag::left_control;
+      } else if (usage == pqrs::hid::usage::keyboard_or_keypad::keyboard_left_shift) {
+        return krbn::modifier_flag::left_shift;
+      } else if (usage == pqrs::hid::usage::keyboard_or_keypad::keyboard_left_alt) {
+        return krbn::modifier_flag::left_option;
+      } else if (usage == pqrs::hid::usage::keyboard_or_keypad::keyboard_left_gui) {
+        return krbn::modifier_flag::left_command;
+      } else if (usage == pqrs::hid::usage::keyboard_or_keypad::keyboard_right_control) {
+        return krbn::modifier_flag::right_control;
+      } else if (usage == pqrs::hid::usage::keyboard_or_keypad::keyboard_right_shift) {
+        return krbn::modifier_flag::right_shift;
+      } else if (usage == pqrs::hid::usage::keyboard_or_keypad::keyboard_right_alt) {
+        return krbn::modifier_flag::right_option;
+      } else if (usage == pqrs::hid::usage::keyboard_or_keypad::keyboard_right_gui) {
+        return krbn::modifier_flag::right_command;
+      }
+    } else if (usage_page == pqrs::hid::usage_page::apple_vendor_keyboard) {
+      if (usage == pqrs::hid::usage::apple_vendor_keyboard::function) {
+        return krbn::modifier_flag::fn;
+      }
+    } else if (usage_page == pqrs::hid::usage_page::apple_vendor_top_case) {
+      if (usage == pqrs::hid::usage::apple_vendor_top_case::keyboard_fn) {
+        return krbn::modifier_flag::fn;
       }
     }
 

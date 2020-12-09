@@ -95,11 +95,11 @@ private:
       }
 
       if (auto e = entry.get_event().get_if<krbn::momentary_switch_event>()) {
-        if (auto usage_pair = e->make_usage_pair()) {
+        if (e->valid()) {
           if (callback) {
             callback(type_safe::get(entry.get_device_id()),
-                     type_safe::get(usage_pair->get_usage_page()),
-                     type_safe::get(usage_pair->get_usage()),
+                     type_safe::get(e->get_usage_pair().get_usage_page()),
+                     type_safe::get(e->get_usage_pair().get_usage()),
                      event_type,
                      refcon);
           }

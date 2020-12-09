@@ -92,24 +92,24 @@ public:
       switch (front_input_event.get_event().get_type()) {
         case event_queue::event::type::momentary_switch_event:
           if (auto e = front_input_event.get_event().get_if<momentary_switch_event>()) {
-            if (e->pointing_button()) {
-              post_pointing_input_report(front_input_event,
-                                         output_event_queue);
+            if (e->valid()) {
+              if (e->pointing_button()) {
+                post_pointing_input_report(front_input_event,
+                                           output_event_queue);
 
-            } else if (!e->modifier_flag()) {
-              if (auto usage_pair = e->make_usage_pair()) {
+              } else if (!e->modifier_flag()) {
                 switch (front_input_event.get_event_type()) {
                   case event_type::key_down:
                     key_event_dispatcher_.dispatch_key_down_event(front_input_event.get_device_id(),
-                                                                  usage_pair->get_usage_page(),
-                                                                  usage_pair->get_usage(),
+                                                                  e->get_usage_pair().get_usage_page(),
+                                                                  e->get_usage_pair().get_usage(),
                                                                   queue_,
                                                                   front_input_event.get_event_time_stamp().get_time_stamp());
                     break;
 
                   case event_type::key_up:
-                    key_event_dispatcher_.dispatch_key_up_event(usage_pair->get_usage_page(),
-                                                                usage_pair->get_usage(),
+                    key_event_dispatcher_.dispatch_key_up_event(e->get_usage_pair().get_usage_page(),
+                                                                e->get_usage_pair().get_usage(),
                                                                 queue_,
                                                                 front_input_event.get_event_time_stamp().get_time_stamp());
                     break;

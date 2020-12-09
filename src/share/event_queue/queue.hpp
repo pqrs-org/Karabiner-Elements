@@ -50,14 +50,12 @@ public:
       }
 
       if (e->pointing_button()) {
-        if (auto usage_pair = e->make_usage_pair()) {
-          auto type = (event_type == event_type::key_down ? pointing_button_manager::active_pointing_button::type::increase
-                                                          : pointing_button_manager::active_pointing_button::type::decrease);
-          pointing_button_manager::active_pointing_button active_pointing_button(type,
-                                                                                 *usage_pair,
-                                                                                 device_id);
-          pointing_button_manager_.push_back_active_pointing_button(active_pointing_button);
-        }
+        auto type = (event_type == event_type::key_down ? pointing_button_manager::active_pointing_button::type::increase
+                                                        : pointing_button_manager::active_pointing_button::type::decrease);
+        pointing_button_manager::active_pointing_button active_pointing_button(type,
+                                                                               e->get_usage_pair(),
+                                                                               device_id);
+        pointing_button_manager_.push_back_active_pointing_button(active_pointing_button);
       }
     }
 
