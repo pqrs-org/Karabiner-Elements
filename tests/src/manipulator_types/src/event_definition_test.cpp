@@ -12,7 +12,7 @@ TEST_CASE("to_event_definition") {
                       })},
     });
     krbn::manipulator::to_event_definition event_definition(json);
-    REQUIRE(event_definition.get_event_definition().get_if<krbn::momentary_switch_event>()->make_usage_pair() ==
+    REQUIRE(event_definition.get_event_definition().get_if<krbn::momentary_switch_event>()->get_usage_pair() ==
             pqrs::hid::usage_pair(pqrs::hid::usage_page::keyboard_or_keypad,
                                   pqrs::hid::usage::keyboard_or_keypad::keyboard_spacebar));
     REQUIRE(event_definition.get_modifiers() == std::set<krbn::manipulator::modifier_definition::modifier>({
@@ -48,7 +48,7 @@ TEST_CASE("to_event_definition") {
                       }},
     });
     krbn::manipulator::to_event_definition event_definition(json);
-    REQUIRE(event_definition.get_event_definition().get_if<krbn::momentary_switch_event>()->make_usage_pair() ==
+    REQUIRE(event_definition.get_event_definition().get_if<krbn::momentary_switch_event>()->get_usage_pair() ==
             pqrs::hid::usage_pair(pqrs::hid::usage_page::keyboard_or_keypad,
                                   pqrs::hid::usage::keyboard_or_keypad::keyboard_right_alt));
     REQUIRE(event_definition.get_modifiers() == std::set<krbn::manipulator::modifier_definition::modifier>({

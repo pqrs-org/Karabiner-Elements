@@ -75,7 +75,7 @@ TEST_CASE("utility::make_queue") {
     auto& e = queue->get_entries()[0];
     REQUIRE(e.get_device_id() == krbn::device_id(1));
     REQUIRE(e.get_event_time_stamp().get_time_stamp() == krbn::absolute_time_point(1000));
-    REQUIRE(e.get_event().get_if<krbn::momentary_switch_event>()->make_usage_pair() ==
+    REQUIRE(e.get_event().get_if<krbn::momentary_switch_event>()->get_usage_pair() ==
             pqrs::hid::usage_pair(pqrs::hid::usage_page::keyboard_or_keypad,
                                   pqrs::hid::usage::keyboard_or_keypad::keyboard_spacebar));
     REQUIRE(e.get_event_type() == krbn::event_type::key_down);
@@ -84,7 +84,7 @@ TEST_CASE("utility::make_queue") {
     auto& e = queue->get_entries()[1];
     REQUIRE(e.get_device_id() == krbn::device_id(1));
     REQUIRE(e.get_event_time_stamp().get_time_stamp() == krbn::absolute_time_point(2000));
-    REQUIRE(e.get_event().get_if<krbn::momentary_switch_event>()->make_usage_pair() ==
+    REQUIRE(e.get_event().get_if<krbn::momentary_switch_event>()->get_usage_pair() ==
             pqrs::hid::usage_pair(pqrs::hid::usage_page::keyboard_or_keypad,
                                   pqrs::hid::usage::keyboard_or_keypad::keyboard_spacebar));
     REQUIRE(e.get_event_type() == krbn::event_type::key_up);
@@ -93,7 +93,7 @@ TEST_CASE("utility::make_queue") {
     auto& e = queue->get_entries()[2];
     REQUIRE(e.get_device_id() == krbn::device_id(1));
     REQUIRE(e.get_event_time_stamp().get_time_stamp() == krbn::absolute_time_point(3000));
-    REQUIRE(e.get_event().get_if<krbn::momentary_switch_event>()->make_usage_pair() ==
+    REQUIRE(e.get_event().get_if<krbn::momentary_switch_event>()->get_usage_pair() ==
             pqrs::hid::usage_pair(pqrs::hid::usage_page::consumer,
                                   pqrs::hid::usage::consumer::mute));
     REQUIRE(e.get_event_type() == krbn::event_type::key_down);
@@ -102,7 +102,7 @@ TEST_CASE("utility::make_queue") {
     auto& e = queue->get_entries()[3];
     REQUIRE(e.get_device_id() == krbn::device_id(1));
     REQUIRE(e.get_event_time_stamp().get_time_stamp() == krbn::absolute_time_point(4000));
-    REQUIRE(e.get_event().get_if<krbn::momentary_switch_event>()->make_usage_pair() ==
+    REQUIRE(e.get_event().get_if<krbn::momentary_switch_event>()->get_usage_pair() ==
             pqrs::hid::usage_pair(pqrs::hid::usage_page::consumer,
                                   pqrs::hid::usage::consumer::mute));
     REQUIRE(e.get_event_type() == krbn::event_type::key_up);
@@ -174,7 +174,7 @@ TEST_CASE("utility::insert_device_keys_and_pointing_buttons_are_released_event")
 
     {
       auto& e = event_queue->get_entries()[0];
-      REQUIRE(e.get_event().get_if<krbn::momentary_switch_event>()->make_usage_pair() ==
+      REQUIRE(e.get_event().get_if<krbn::momentary_switch_event>()->get_usage_pair() ==
               pqrs::hid::usage_pair(pqrs::hid::usage_page::keyboard_or_keypad,
                                     pqrs::hid::usage::keyboard_or_keypad::keyboard_a));
       REQUIRE(e.get_event_type() == krbn::event_type::key_down);
@@ -182,7 +182,7 @@ TEST_CASE("utility::insert_device_keys_and_pointing_buttons_are_released_event")
     }
     {
       auto& e = event_queue->get_entries()[1];
-      REQUIRE(e.get_event().get_if<krbn::momentary_switch_event>()->make_usage_pair() ==
+      REQUIRE(e.get_event().get_if<krbn::momentary_switch_event>()->get_usage_pair() ==
               pqrs::hid::usage_pair(pqrs::hid::usage_page::keyboard_or_keypad,
                                     pqrs::hid::usage::keyboard_or_keypad::keyboard_a));
       REQUIRE(e.get_event_type() == krbn::event_type::key_up);
@@ -195,7 +195,7 @@ TEST_CASE("utility::insert_device_keys_and_pointing_buttons_are_released_event")
     }
     {
       auto& e = event_queue->get_entries()[3];
-      REQUIRE(e.get_event().get_if<krbn::momentary_switch_event>()->make_usage_pair() ==
+      REQUIRE(e.get_event().get_if<krbn::momentary_switch_event>()->get_usage_pair() ==
               pqrs::hid::usage_pair(pqrs::hid::usage_page::keyboard_or_keypad,
                                     pqrs::hid::usage::keyboard_or_keypad::keyboard_b));
       REQUIRE(e.get_event_type() == krbn::event_type::key_down);

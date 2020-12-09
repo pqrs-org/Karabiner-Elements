@@ -242,15 +242,15 @@ TEST_CASE("json") {
 }
 
 TEST_CASE("momentary_switch_event") {
-  REQUIRE(spacebar_event.get_if<krbn::momentary_switch_event>()->make_usage_pair() ==
+  REQUIRE(spacebar_event.get_if<krbn::momentary_switch_event>()->get_usage_pair() ==
           pqrs::hid::usage_pair(pqrs::hid::usage_page::keyboard_or_keypad,
                                 pqrs::hid::usage::keyboard_or_keypad::keyboard_spacebar));
 
-  REQUIRE(mute_event.get_if<krbn::momentary_switch_event>()->make_usage_pair() ==
+  REQUIRE(mute_event.get_if<krbn::momentary_switch_event>()->get_usage_pair() ==
           pqrs::hid::usage_pair(pqrs::hid::usage_page::consumer,
                                 pqrs::hid::usage::consumer::mute));
 
-  REQUIRE(button2_event.get_if<krbn::momentary_switch_event>()->make_usage_pair() ==
+  REQUIRE(button2_event.get_if<krbn::momentary_switch_event>()->get_usage_pair() ==
           pqrs::hid::usage_pair(pqrs::hid::usage_page::button,
                                 pqrs::hid::usage::button::button_2));
 

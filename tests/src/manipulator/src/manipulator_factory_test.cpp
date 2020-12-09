@@ -54,7 +54,7 @@ TEST_CASE("manipulator.manipulator_factory") {
 
     auto basic = dynamic_cast<krbn::manipulator::manipulators::basic::basic*>(manipulator.get());
     REQUIRE(basic->get_from().get_event_definitions().size() == 1);
-    REQUIRE(basic->get_from().get_event_definitions().front().get_if<krbn::momentary_switch_event>()->make_usage_pair() ==
+    REQUIRE(basic->get_from().get_event_definitions().front().get_if<krbn::momentary_switch_event>()->get_usage_pair() ==
             pqrs::hid::usage_pair(pqrs::hid::usage_page::keyboard_or_keypad,
                                   pqrs::hid::usage::keyboard_or_keypad::keyboard_escape));
     REQUIRE(basic->get_from().get_from_modifiers_definition().get_mandatory_modifiers() == std::set<modifier_definition::modifier>({
@@ -66,7 +66,7 @@ TEST_CASE("manipulator.manipulator_factory") {
                                                                                           }));
     REQUIRE(basic->get_to().size() == 1);
     REQUIRE(basic->get_to()[0].get_event_definition().get_type() == event_definition::type::momentary_switch_event);
-    REQUIRE(basic->get_to()[0].get_event_definition().get_if<krbn::momentary_switch_event>()->make_usage_pair() ==
+    REQUIRE(basic->get_to()[0].get_event_definition().get_if<krbn::momentary_switch_event>()->get_usage_pair() ==
             pqrs::hid::usage_pair(pqrs::hid::usage_page::button,
                                   pqrs::hid::usage::button::button_1));
     REQUIRE(basic->get_to()[0].get_modifiers() == std::set<modifier_definition::modifier>());
