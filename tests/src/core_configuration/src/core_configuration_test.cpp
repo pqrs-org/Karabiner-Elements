@@ -1015,26 +1015,26 @@ TEST_CASE("simple_modifications.to_json") {
     {
       krbn::manipulator::manipulators::basic::from_event_definition from_event_definition(krbn::json_utility::parse_jsonc(simple_modifications.get_pairs()[0].first));
       REQUIRE(from_event_definition.get_event_definitions().size() == 1);
-      REQUIRE(from_event_definition.get_event_definitions().front().get_if<krbn::momentary_switch_event>()->make_usage_pair() ==
+      REQUIRE(from_event_definition.get_event_definitions().front().get_if<krbn::momentary_switch_event>()->get_usage_pair() ==
               pqrs::hid::usage_pair(pqrs::hid::usage_page::consumer,
                                     pqrs::hid::usage::consumer::mute));
     }
     {
       krbn::manipulator::to_event_definition to_event_definition(krbn::json_utility::parse_jsonc(simple_modifications.get_pairs()[0].second));
-      REQUIRE(to_event_definition.get_event_definition().get_if<krbn::momentary_switch_event>()->make_usage_pair() ==
+      REQUIRE(to_event_definition.get_event_definition().get_if<krbn::momentary_switch_event>()->get_usage_pair() ==
               pqrs::hid::usage_pair(pqrs::hid::usage_page::button,
                                     pqrs::hid::usage::button::button_3));
     }
     {
       krbn::manipulator::manipulators::basic::from_event_definition from_event_definition(krbn::json_utility::parse_jsonc(simple_modifications.get_pairs()[1].first));
       REQUIRE(from_event_definition.get_event_definitions().size() == 1);
-      REQUIRE(from_event_definition.get_event_definitions().front().get_if<krbn::momentary_switch_event>()->make_usage_pair() ==
+      REQUIRE(from_event_definition.get_event_definitions().front().get_if<krbn::momentary_switch_event>()->get_usage_pair() ==
               pqrs::hid::usage_pair(pqrs::hid::usage_page::keyboard_or_keypad,
                                     pqrs::hid::usage::keyboard_or_keypad::keyboard_a));
     }
     {
       krbn::manipulator::to_event_definition to_event_definition(krbn::json_utility::parse_jsonc(simple_modifications.get_pairs()[1].second));
-      REQUIRE(to_event_definition.get_event_definition().get_if<krbn::momentary_switch_event>()->make_usage_pair() ==
+      REQUIRE(to_event_definition.get_event_definition().get_if<krbn::momentary_switch_event>()->get_usage_pair() ==
               pqrs::hid::usage_pair(pqrs::hid::usage_page::keyboard_or_keypad,
                                     pqrs::hid::usage::keyboard_or_keypad::keyboard_f1));
     }
