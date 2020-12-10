@@ -61,9 +61,8 @@ TEST_CASE("momentary_switch_event") {
   {
     // Not target usage
 
-    krbn::momentary_switch_event e(pqrs::hid::usage_page::apple_vendor_keyboard,
-                                   pqrs::hid::usage::apple_vendor_keyboard::caps_lock_delay_enable);
-    REQUIRE(!e.valid());
+    REQUIRE(!krbn::momentary_switch_event::target(pqrs::hid::usage_page::apple_vendor_keyboard,
+                                                  pqrs::hid::usage::apple_vendor_keyboard::caps_lock_delay_enable));
   }
 
   //
@@ -265,7 +264,7 @@ TEST_CASE("momentary_switch_event json") {
 
   {
 
-    std::string expected("null");
+    std::string expected("{\"consumer_key_code\":\"(number:568)\"}");
     krbn::momentary_switch_event e(pqrs::hid::usage_page::consumer,
                                    pqrs::hid::usage::consumer::ac_pan);
     nlohmann::json actual = e;
