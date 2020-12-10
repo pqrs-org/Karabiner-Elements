@@ -47,10 +47,9 @@ static inline std::shared_ptr<queue> make_queue(device_id device_id,
   for (const auto& v : hid_values) {
     if (auto usage_page = v.get_usage_page()) {
       if (auto usage = v.get_usage()) {
-        momentary_switch_event mse(*usage_page, *usage);
 
-        if (mse.valid()) {
-          event_queue::event event(mse);
+        if (momentary_switch_event::target(*usage_page, *usage)) {
+          event_queue::event event(momentary_switch_event(*usage_page, *usage));
           result->emplace_back_entry(device_id,
                                      event_time_stamp(v.get_time_stamp()),
                                      event,
