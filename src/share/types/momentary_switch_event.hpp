@@ -1,10 +1,10 @@
 #pragma once
 
-#include "momentary_switch_event/apple_vendor_keyboard_key_code.hpp"
-#include "momentary_switch_event/apple_vendor_top_case_key_code.hpp"
-#include "momentary_switch_event/consumer_key_code.hpp"
-#include "momentary_switch_event/key_code.hpp"
-#include "momentary_switch_event/pointing_button.hpp"
+#include "momentary_switch_event_details/apple_vendor_keyboard_key_code.hpp"
+#include "momentary_switch_event_details/apple_vendor_top_case_key_code.hpp"
+#include "momentary_switch_event_details/consumer_key_code.hpp"
+#include "momentary_switch_event_details/key_code.hpp"
+#include "momentary_switch_event_details/pointing_button.hpp"
 #include <nlohmann/json.hpp>
 #include <pqrs/hash.hpp>
 #include <variant>
