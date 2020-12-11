@@ -162,9 +162,9 @@ public:
           break;
 
         case event_queue::event::type::stop_keyboard_repeat:
-          if (auto key = queue_.get_keyboard_repeat_detector().get_repeating_key()) {
-            key_event_dispatcher_.dispatch_key_up_event(key->first,
-                                                        key->second,
+          if (auto e = queue_.get_keyboard_repeat_detector().get_repeating_key()) {
+            key_event_dispatcher_.dispatch_key_up_event(e->get_usage_pair().get_usage_page(),
+                                                        e->get_usage_pair().get_usage(),
                                                         queue_,
                                                         front_input_event.get_event_time_stamp().get_time_stamp());
           }

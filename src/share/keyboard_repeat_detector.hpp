@@ -7,26 +7,26 @@
 namespace krbn {
 class keyboard_repeat_detector final {
 public:
-  std::optional<std::pair<pqrs::hid::usage_page::value_t, pqrs::hid::usage::value_t>> get_repeating_key(void) const {
+  std::optional<momentary_switch_event> get_repeating_key(void) const {
     return repeating_key_;
   }
 
-  void set(pqrs::hid::usage_page::value_t usage_page,
-           pqrs::hid::usage::value_t usage,
+  void set(const momentary_switch_event& momentary_switch_event,
            event_type event_type) {
+    if (!momentary_switch_event.valid()) {
+      return;
+    }
+
     switch (event_type) {
       case event_type::key_down: {
-        momentary_switch_event e(usage_page, usage);
-        if (!e.modifier_flag()) {
-          repeating_key_ = std::make_pair(usage_page, usage);
+        if (!momentary_switch_event.modifier_flag()) {
+          repeating_key_ = momentary_switch_event;
         }
         break;
       }
 
       case event_type::key_up:
-        if (repeating_key_ &&
-            repeating_key_->first == usage_page &&
-            repeating_key_->second == usage) {
+        if (repeating_key_ == momentary_switch_event) {
           repeating_key_ = std::nullopt;
         }
         break;
@@ -34,16 +34,6 @@ public:
       case event_type::single:
         // Do nothing
         break;
-    }
-  }
-
-  void set(const pqrs::osx::iokit_hid_value& hid_value) {
-    if (auto usage_page = hid_value.get_usage_page()) {
-      if (auto usage = hid_value.get_usage()) {
-        set(*usage_page,
-            *usage,
-            hid_value.get_integer_value() ? event_type::key_down : event_type::key_up);
-      }
     }
   }
 
@@ -56,6 +46,6 @@ public:
   }
 
 private:
-  std::optional<std::pair<pqrs::hid::usage_page::value_t, pqrs::hid::usage::value_t>> repeating_key_;
+  std::optional<momentary_switch_event> repeating_key_;
 };
 } // namespace krbn

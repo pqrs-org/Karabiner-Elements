@@ -352,7 +352,7 @@ public:
       events_.emplace_back(apple_vendor_keyboard_input_, time_stamp);
     }
 
-    keyboard_repeat_detector_.set(usage_page, usage, event_type);
+    keyboard_repeat_detector_.set(mse, event_type);
   }
 
   void emplace_back_pointing_input(const pqrs::karabiner::driverkit::virtual_hid_device_driver::hid_report::pointing_input& pointing_input,
