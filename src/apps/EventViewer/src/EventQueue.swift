@@ -29,8 +29,6 @@ private func callback(_ deviceId: UInt64,
             entry.code = String(usage)
         }
 
-        print("usagePage \(usagePage), \(usage)")
-
         //
         // entry.name
         //
