@@ -12,7 +12,7 @@
       <domains enable_anywhere="false" enable_currentUserHome="false" enable_localSystem="true" />
   -->
 
-  <options customize="never" require-scripts="false" />
+  <options customize="never" hostArchitectures="x86_64,arm64" require-scripts="false" />
 
   <choices-outline>
     <line choice="default" />

@@ -2,6 +2,8 @@
 
 ## Beta
 
+-   🐛 Bug Fixes
+    - Fixed an issue that installer requires Rosetta 2 on Apple Silicon Macs.
 -   ⚡️ Improvements
     -   Updated in-app screenshots to Big Sur.
 
