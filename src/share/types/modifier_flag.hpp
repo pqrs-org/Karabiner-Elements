@@ -44,6 +44,46 @@ inline std::optional<pqrs::karabiner::driverkit::virtual_hid_device_driver::hid_
   }
 }
 
+inline void to_json(nlohmann::json& json, const modifier_flag& value) {
+  switch (value) {
+    case modifier_flag::zero:
+      json = "zero";
+      break;
+    case modifier_flag::caps_lock:
+      json = "caps_lock";
+      break;
+    case modifier_flag::left_control:
+      json = "left_control";
+      break;
+    case modifier_flag::left_shift:
+      json = "left_shift";
+      break;
+    case modifier_flag::left_option:
+      json = "left_option";
+      break;
+    case modifier_flag::left_command:
+      json = "left_command";
+      break;
+    case modifier_flag::right_control:
+      json = "right_control";
+      break;
+    case modifier_flag::right_shift:
+      json = "right_shift";
+      break;
+    case modifier_flag::right_option:
+      json = "right_option";
+      break;
+    case modifier_flag::right_command:
+      json = "right_command";
+      break;
+    case modifier_flag::fn:
+      json = "fn";
+      break;
+    case modifier_flag::end_:
+      break;
+  }
+}
+
 inline void from_json(const nlohmann::json& json, modifier_flag& value) {
   using namespace std::string_literals;
 
