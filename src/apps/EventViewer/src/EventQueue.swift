@@ -168,7 +168,7 @@ public class EventQueue: NSObject, NSTableViewDataSource {
         queue.forEach { entry in
             let eventType = "type:\(entry.eventType)".padding(toLength: 20, withPad: " ", startingAt: 0)
             let code = "code:\(entry.code)".padding(toLength: 15, withPad: " ", startingAt: 0)
-            let name = "name:\(entry.name)".padding(toLength: 20, withPad: " ", startingAt: 0)
+            let name = "name:\(entry.name)".padding(toLength: 60, withPad: " ", startingAt: 0)
             let misc = "misc:\(entry.misc)"
 
             string.append("\(eventType) \(code) \(name) \(misc)\n")
