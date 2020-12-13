@@ -19,6 +19,14 @@ public:
         pqrs::osx::iokit_hid_manager::make_matching_dictionary(
             pqrs::hid::usage_page::generic_desktop,
             pqrs::hid::usage::generic_desktop::keyboard),
+
+        pqrs::osx::iokit_hid_manager::make_matching_dictionary(
+            pqrs::hid::usage_page::generic_desktop,
+            pqrs::hid::usage::generic_desktop::mouse),
+
+        pqrs::osx::iokit_hid_manager::make_matching_dictionary(
+            pqrs::hid::usage_page::generic_desktop,
+            pqrs::hid::usage::generic_desktop::pointer),
     };
 
     hid_manager_ = std::make_unique<pqrs::osx::iokit_hid_manager>(pqrs::dispatcher::extra::get_shared_dispatcher(),
