@@ -49,11 +49,11 @@ bool libkrbn_system_core_configuration_file_path_exists(void);
 
 // types
 
-void libkrbn_get_key_code_name(char* buffer, size_t length, int32_t key_code);
-bool libkrbn_find_unnamed_key_code_number(uint32_t* output, const char* name);
-void libkrbn_get_consumer_key_code_name(char* buffer, size_t length, int32_t consumer_key_code);
-bool libkrbn_find_unnamed_consumer_key_code_number(uint32_t* output, const char* name);
+bool libkrbn_is_momentary_switch_event(int32_t usage_page, int32_t usage);
 bool libkrbn_is_modifier_flag(int32_t usage_page, int32_t usage);
+void libkrbn_get_momentary_switch_event_json_string(char* buffer, size_t length, int32_t usage_page, int32_t usage);
+void libkrbn_get_modifier_flag_name(char* buffer, size_t length, int32_t usage_page, int32_t usage);
+void libkrbn_get_simple_modification_json_string(char* buffer, size_t length, int32_t usage_page, int32_t usage);
 
 // device_identifiers
 

@@ -124,48 +124,70 @@ bool libkrbn_system_core_configuration_file_path_exists(void) {
   return pqrs::filesystem::exists(krbn::constants::get_system_core_configuration_file_path());
 }
 
-void libkrbn_get_key_code_name(char* buffer, size_t length, int32_t key_code) {
-  auto name = krbn::momentary_switch_event_details::key_code::make_name(pqrs::hid::usage::value_t(key_code));
-  strlcpy(buffer, name.c_str(), length);
-}
-
-bool libkrbn_find_unnamed_key_code_number(uint32_t* output, const char* name) {
-  if (!output) {
-    return false;
-  }
-
-  if (auto usage = krbn::momentary_switch_event_details::impl::find_unnamed_usage(name)) {
-    *output = type_safe::get(*usage);
-    return true;
-  }
-
-  return false;
-}
-
-void libkrbn_get_consumer_key_code_name(char* buffer, size_t length, int32_t consumer_key_code) {
-  auto name = krbn::momentary_switch_event_details::consumer_key_code::make_name(pqrs::hid::usage::value_t(consumer_key_code));
-  strlcpy(buffer, name.c_str(), length);
-}
-
-bool libkrbn_find_unnamed_consumer_key_code_number(uint32_t* output, const char* name) {
-  if (!output) {
-    return false;
-  }
-
-  if (auto usage = krbn::momentary_switch_event_details::impl::find_unnamed_usage(name)) {
-    *output = type_safe::get(*usage);
-    return true;
-  }
-
-  return false;
+bool libkrbn_is_momentary_switch_event(int32_t usage_page, int32_t usage) {
+  return krbn::momentary_switch_event(
+             pqrs::hid::usage_page::value_t(usage_page),
+             pqrs::hid::usage::value_t(usage))
+      .valid();
 }
 
 bool libkrbn_is_modifier_flag(int32_t usage_page, int32_t usage) {
-  auto momentary_switch_event = krbn::momentary_switch_event(
-      pqrs::hid::usage_page::value_t(usage_page),
-      pqrs::hid::usage::value_t(usage));
+  return krbn::momentary_switch_event(
+             pqrs::hid::usage_page::value_t(usage_page),
+             pqrs::hid::usage::value_t(usage))
+      .modifier_flag();
+}
 
-  return momentary_switch_event.modifier_flag();
+void libkrbn_get_momentary_switch_event_json_string(char* buffer, size_t length, int32_t usage_page, int32_t usage) {
+  auto json = nlohmann::json(krbn::momentary_switch_event(pqrs::hid::usage_page::value_t(usage_page),
+                                                          pqrs::hid::usage::value_t(usage)));
+  if (json.is_null()) {
+    json = nlohmann::json::object({
+        {"usage_page", usage_page},
+        {"usage", usage},
+    });
+  }
+
+  strlcpy(buffer, json.dump().c_str(), length);
+}
+
+void libkrbn_get_modifier_flag_name(char* buffer, size_t length, int32_t usage_page, int32_t usage) {
+  if (auto modifier_flag = krbn::momentary_switch_event(
+                               pqrs::hid::usage_page::value_t(usage_page),
+                               pqrs::hid::usage::value_t(usage))
+                               .make_modifier_flag()) {
+    strlcpy(buffer, nlohmann::json(*modifier_flag).dump().c_str(), length);
+  } else {
+    strlcpy(buffer, "", length);
+  }
+}
+
+void libkrbn_get_simple_modification_json_string(char* buffer, size_t length, int32_t usage_page, int32_t usage) {
+  //
+  // Skip pqrs::hid::usage::button::button_1 to avoid disabling left click
+  //
+
+  if (pqrs::hid::usage_page::value_t(usage_page) == pqrs::hid::usage_page::button &&
+      pqrs::hid::usage::value_t(usage) == pqrs::hid::usage::button::button_1) {
+    strlcpy(buffer, "", length);
+    return;
+  }
+
+  //
+  // Create json
+  //
+
+  auto json = nlohmann::json(krbn::momentary_switch_event(pqrs::hid::usage_page::value_t(usage_page),
+                                                          pqrs::hid::usage::value_t(usage)));
+  if (json.is_null()) {
+    strlcpy(buffer, "", length);
+
+  } else {
+    json = nlohmann::json::object({
+        {"from", json},
+    });
+    strlcpy(buffer, json.dump().c_str(), length);
+  }
 }
 
 bool libkrbn_device_identifiers_is_apple(const libkrbn_device_identifiers* p) {
