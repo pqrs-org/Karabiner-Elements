@@ -319,8 +319,8 @@
                                                                                 <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
                                                                             </textFieldCell>
                                                                         </tableColumn>
-                                                                        <tableColumn identifier="code" editable="NO" width="50" minWidth="40" maxWidth="1000" id="566">
-                                                                            <tableHeaderCell key="headerCell" lineBreakMode="truncatingTail" enabled="NO" borderStyle="border" alignment="left" title="Code">
+                                                                        <tableColumn identifier="code" editable="NO" width="70" minWidth="40" maxWidth="1000" id="566">
+                                                                            <tableHeaderCell key="headerCell" lineBreakMode="truncatingTail" enabled="NO" borderStyle="border" alignment="left" title="HID usage">
                                                                                 <color key="textColor" name="headerTextColor" catalog="System" colorSpace="catalog"/>
                                                                                 <color key="backgroundColor" name="headerColor" catalog="System" colorSpace="catalog"/>
                                                                             </tableHeaderCell>
@@ -341,7 +341,7 @@
                                                                                 <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
                                                                             </textFieldCell>
                                                                         </tableColumn>
-                                                                        <tableColumn identifier="misc" editable="NO" width="230" minWidth="10" maxWidth="3.4028234663852886e+38" id="585">
+                                                                        <tableColumn identifier="misc" editable="NO" width="191" minWidth="10" maxWidth="3.4028234663852886e+38" id="585">
                                                                             <tableHeaderCell key="headerCell" lineBreakMode="truncatingTail" enabled="NO" borderStyle="border" alignment="left" title="Misc">
                                                                                 <color key="textColor" name="headerTextColor" catalog="System" colorSpace="catalog"/>
                                                                                 <color key="backgroundColor" name="headerColor" catalog="System" colorSpace="catalog"/>
@@ -655,13 +655,13 @@
                                     <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                     <subviews>
                                         <box borderType="line" title="Window behavior" translatesAutoresizingMaskIntoConstraints="NO" id="Qpe-gM-a7s">
-                                            <rect key="frame" x="14" y="407" width="806" height="76"/>
+                                            <rect key="frame" x="14" y="403" width="806" height="80"/>
                                             <view key="contentView" id="sxi-Co-MLe">
-                                                <rect key="frame" x="3" y="3" width="800" height="58"/>
+                                                <rect key="frame" x="3" y="3" width="800" height="62"/>
                                                 <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                                 <subviews>
                                                     <button translatesAutoresizingMaskIntoConstraints="NO" id="qpH-oY-yl0">
-                                                        <rect key="frame" x="15" y="32" width="411" height="18"/>
+                                                        <rect key="frame" x="15" y="35" width="415" height="18"/>
                                                         <buttonCell key="cell" type="check" title="Force EventViewer to stay on top of other windows (Default: off)" bezelStyle="regularSquare" imagePosition="left" state="on" inset="2" id="WCA-8e-MOA">
                                                             <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
                                                             <font key="font" metaFont="system"/>
@@ -672,7 +672,7 @@
                                                         </connections>
                                                     </button>
                                                     <button translatesAutoresizingMaskIntoConstraints="NO" id="hsb-w2-bkZ">
-                                                        <rect key="frame" x="15" y="8" width="293" height="18"/>
+                                                        <rect key="frame" x="15" y="9" width="297" height="18"/>
                                                         <buttonCell key="cell" type="check" title="Show EventViewer in all spaces (Default: off)" bezelStyle="regularSquare" imagePosition="left" state="on" inset="2" id="Be8-wB-67e">
                                                             <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
                                                             <font key="font" metaFont="system"/>
@@ -695,14 +695,14 @@
                                             </view>
                                         </box>
                                         <box borderType="line" title="Others" translatesAutoresizingMaskIntoConstraints="NO" id="lH0-6O-BWP">
-                                            <rect key="frame" x="14" y="349" width="806" height="52"/>
+                                            <rect key="frame" x="14" y="343" width="806" height="54"/>
                                             <view key="contentView" id="xoA-9x-cwN">
-                                                <rect key="frame" x="3" y="3" width="800" height="34"/>
+                                                <rect key="frame" x="3" y="3" width="800" height="36"/>
                                                 <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                                 <subviews>
                                                     <button translatesAutoresizingMaskIntoConstraints="NO" id="cCs-zq-ovo">
-                                                        <rect key="frame" x="15" y="8" width="332" height="18"/>
-                                                        <buttonCell key="cell" type="check" title="Show key code in hexadecimal format (Default: off)" bezelStyle="regularSquare" imagePosition="left" state="on" inset="2" id="xfY-PO-icV">
+                                                        <rect key="frame" x="15" y="9" width="344" height="18"/>
+                                                        <buttonCell key="cell" type="check" title="Show HID usage in hexadecimal format (Default: off)" bezelStyle="regularSquare" imagePosition="left" state="on" inset="2" id="xfY-PO-icV">
                                                             <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
                                                             <font key="font" metaFont="system"/>
                                                         </buttonCell>

@@ -23,9 +23,9 @@ private func callback(_ deviceId: UInt64,
         //
 
         if UserSettings.shared.showHex {
-            entry.code = String(format: "0x%02x", usage)
+            entry.code = String(format: "0x%02x,0x%02x", usagePage, usage)
         } else {
-            entry.code = String(usage)
+            entry.code = String(format: "%d,%d", usagePage, usage)
         }
 
         //
@@ -170,7 +170,7 @@ public class EventQueue: NSObject, NSTableViewDataSource {
 
         queue.forEach { entry in
             let eventType = "type:\(entry.eventType)".padding(toLength: 20, withPad: " ", startingAt: 0)
-            let code = "code:\(entry.code)".padding(toLength: 15, withPad: " ", startingAt: 0)
+            let code = "HID usage:\(entry.code)".padding(toLength: 20, withPad: " ", startingAt: 0)
             let name = "name:\(entry.name)".padding(toLength: 60, withPad: " ", startingAt: 0)
             let misc = "misc:\(entry.misc)"
 
