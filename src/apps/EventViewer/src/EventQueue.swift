@@ -96,8 +96,11 @@ private func callback(_ deviceId: UInt64,
         let simpleModificationJsonString = String(cString: buffer)
 
         if simpleModificationJsonString != "" {
+            libkrbn_get_momentary_switch_event_usage_name(&buffer, buffer.count, usagePage, usage)
+            let usageName = String(cString: buffer)
+
             obj.simpleModificationJsonString = simpleModificationJsonString
-            obj.updateAddSimpleModificationButton("Add \(jsonString) to Karabiner-Elements")
+            obj.updateAddSimpleModificationButton("Add \(usageName) to Karabiner-Elements")
         }
     }
 }

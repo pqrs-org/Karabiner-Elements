@@ -151,6 +151,22 @@ void libkrbn_get_momentary_switch_event_json_string(char* buffer, size_t length,
   strlcpy(buffer, json.dump().c_str(), length);
 }
 
+void libkrbn_get_momentary_switch_event_usage_name(char* buffer, size_t length, int32_t usage_page, int32_t usage) {
+  strlcpy(buffer, "", length);
+
+  auto json = nlohmann::json(krbn::momentary_switch_event(pqrs::hid::usage_page::value_t(usage_page),
+                                                          pqrs::hid::usage::value_t(usage)));
+  if (json.is_null()) {
+    json = nlohmann::json::object({
+        {"usage", usage},
+    });
+  }
+
+  for (const auto& [key, value] : json.items()) {
+    strlcpy(buffer, value.dump().c_str(), length);
+  }
+}
+
 void libkrbn_get_modifier_flag_name(char* buffer, size_t length, int32_t usage_page, int32_t usage) {
   if (auto modifier_flag = krbn::momentary_switch_event(
                                pqrs::hid::usage_page::value_t(usage_page),
