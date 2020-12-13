@@ -1,9 +1,4 @@
-import AnyCodable
 import Cocoa
-
-private class SimpleModificationJson: Codable {
-    var from: [String: AnyCodable] = [:]
-}
 
 private func callback(_ deviceId: UInt64,
                       _ usagePage: Int32,
@@ -16,8 +11,12 @@ private func callback(_ deviceId: UInt64,
     DispatchQueue.main.async { [weak obj] in
         guard let obj = obj else { return }
 
+        if !libkrbn_is_momentary_switch_event(usagePage, usage) {
+            return
+        }
+
+        var buffer = [Int8](repeating: 0, count: 256)
         let entry = EventQueueEntry()
-        let simpleModificationJson = SimpleModificationJson()
 
         //
         // entry.code
@@ -33,63 +32,28 @@ private func callback(_ deviceId: UInt64,
         // entry.name
         //
 
-        var buffer = [Int8](repeating: 0, count: 256)
+        libkrbn_get_momentary_switch_event_json_string(&buffer, buffer.count, usagePage, usage)
+        let jsonString = String(cString: buffer)
 
-        switch usagePage {
-        case 0x07, // keyboard_or_keypad
-             0xFF01, // apple_vendor_keyboard
-             0x00FF: // apple_vendor_top_case
-            libkrbn_get_key_code_name(&buffer, buffer.count, usage)
-            entry.name = String(cString: buffer)
+        entry.name = jsonString
 
-            //
-            // modifierFlags
-            //
+        //
+        // modifierFlags
+        //
 
-            if libkrbn_is_modifier_flag(usagePage, usage) {
-                if obj.modifierFlags[deviceId] == nil {
-                    obj.modifierFlags[deviceId] = Set()
-                }
+        if libkrbn_is_modifier_flag(usagePage, usage) {
+            libkrbn_get_modifier_flag_name(&buffer, buffer.count, usagePage, usage)
+            let modifierFlagName = String(cString: buffer)
 
-                if eventType == libkrbn_hid_value_event_type_key_down {
-                    obj.modifierFlags[deviceId]!.insert(entry.name)
-                } else {
-                    obj.modifierFlags[deviceId]!.remove(entry.name)
-                }
+            if obj.modifierFlags[deviceId] == nil {
+                obj.modifierFlags[deviceId] = Set()
             }
 
-            //
-            // simpleModificationJson
-            //
-
-            do {
-                var unnamedNumber: UInt32 = 0
-                if libkrbn_find_unnamed_key_code_number(&unnamedNumber, &buffer) {
-                    simpleModificationJson.from["key_code"] = AnyCodable(unnamedNumber)
-                } else {
-                    simpleModificationJson.from["key_code"] = AnyCodable(entry.name)
-                }
+            if eventType == libkrbn_hid_value_event_type_key_down {
+                obj.modifierFlags[deviceId]!.insert(modifierFlagName)
+            } else {
+                obj.modifierFlags[deviceId]!.remove(modifierFlagName)
             }
-
-        case 0x0C: // consumer
-            libkrbn_get_consumer_key_code_name(&buffer, buffer.count, usage)
-            entry.name = String(cString: buffer)
-
-            //
-            // simpleModificationJson
-            //
-
-            do {
-                var unnamedNumber: UInt32 = 0
-                if libkrbn_find_unnamed_consumer_key_code_number(&unnamedNumber, &buffer) {
-                    simpleModificationJson.from["consumer_key_code"] = AnyCodable(unnamedNumber)
-                } else {
-                    simpleModificationJson.from["consumer_key_code"] = AnyCodable(entry.name)
-                }
-            }
-
-        default:
-            break
         }
 
         //
@@ -124,14 +88,16 @@ private func callback(_ deviceId: UInt64,
 
         obj.append(entry)
 
-        if simpleModificationJson.from.count > 0 {
-            let jsonEncoder = JSONEncoder()
-            if let data = try? jsonEncoder.encode(simpleModificationJson) {
-                if let jsonString = String(data: data, encoding: .utf8) {
-                    obj.simpleModificationJsonString = jsonString
-                    obj.updateAddSimpleModificationButton("Add `\(entry.name)` to Karabiner-Elements")
-                }
-            }
+        //
+        // simpleModificationJsonString
+        //
+
+        libkrbn_get_simple_modification_json_string(&buffer, buffer.count, usagePage, usage)
+        let simpleModificationJsonString = String(cString: buffer)
+
+        if simpleModificationJsonString != "" {
+            obj.simpleModificationJsonString = simpleModificationJsonString
+            obj.updateAddSimpleModificationButton("Add \(jsonString) to Karabiner-Elements")
         }
     }
 }
