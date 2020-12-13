@@ -254,13 +254,12 @@ public class EventQueue: NSObject, NSTableViewDataSource {
         switch event.type {
         case .leftMouseDown,
              .rightMouseDown,
-             .otherMouseDown:
-            pushMouseEvent(event: event, eventType: "button_down")
-
-        case .leftMouseUp,
+             .otherMouseDown,
+             .leftMouseUp,
              .rightMouseUp,
              .otherMouseUp:
-            pushMouseEvent(event: event, eventType: "button_up")
+            // Do nothing
+            break
 
         case .leftMouseDragged,
              .rightMouseDragged,
