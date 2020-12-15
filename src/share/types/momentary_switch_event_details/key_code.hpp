@@ -18,8 +18,6 @@ constexpr std::pair<const mapbox::eternal::string, const pqrs::hid::usage::value
     {"japanese_pc_nfer", pqrs::hid::usage::keyboard_or_keypad::keyboard_international5},
     {"japanese_pc_xfer", pqrs::hid::usage::keyboard_or_keypad::keyboard_international4},
     {"japanese_pc_katakana", pqrs::hid::usage::keyboard_or_keypad::keyboard_international2},
-    {"volume_down", pqrs::hid::usage::keyboard_or_keypad::keyboard_volume_down},
-    {"volume_up", pqrs::hid::usage::keyboard_or_keypad::keyboard_volume_up},
 
     // Extras
 
@@ -150,9 +148,9 @@ constexpr std::pair<const mapbox::eternal::string, const pqrs::hid::usage::value
     {"copy", pqrs::hid::usage::keyboard_or_keypad::keyboard_copy},
     {"paste", pqrs::hid::usage::keyboard_or_keypad::keyboard_paste},
     {"find", pqrs::hid::usage::keyboard_or_keypad::keyboard_find},
-    // keyboard_mute
-    // keyboard_volume_down
-    // keyboard_volume_up
+    {"mute", pqrs::hid::usage::keyboard_or_keypad::keyboard_mute},
+    {"volume_down", pqrs::hid::usage::keyboard_or_keypad::keyboard_volume_down},
+    {"volume_up", pqrs::hid::usage::keyboard_or_keypad::keyboard_volume_up},
     {"locking_caps_lock", pqrs::hid::usage::keyboard_or_keypad::keyboard_locking_caps_lock},
     {"locking_num_lock", pqrs::hid::usage::keyboard_or_keypad::keyboard_locking_num_lock},
     {"locking_scroll_lock", pqrs::hid::usage::keyboard_or_keypad::keyboard_locking_scroll_lock},
