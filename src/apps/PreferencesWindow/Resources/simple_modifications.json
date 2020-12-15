@@ -59,7 +59,7 @@
     {
         "label": "fn",
         "data": {
-            "key_code": "fn"
+            "apple_vendor_top_case_key_code": "keyboard_fn"
         }
     },
     {
@@ -650,16 +650,16 @@
     },
     {
         "not_from": true,
-        "label": "illumination_decrement",
+        "label": "illumination_down",
         "data": {
-            "key_code": "illumination_decrement"
+            "apple_vendor_top_case_key_code": "illumination_down"
         }
     },
     {
         "not_from": true,
-        "label": "illumination_increment",
+        "label": "illumination_up",
         "data": {
-            "key_code": "illumination_increment"
+            "apple_vendor_top_case_key_code": "illumination_up"
         }
     },
     {
@@ -720,16 +720,16 @@
     },
     {
         "not_from": true,
-        "label": "apple_top_case_display_brightness_decrement",
+        "label": "brightness_down (2)",
         "data": {
-            "key_code": "apple_top_case_display_brightness_decrement"
+            "apple_vendor_top_case_key_code": "brightness_down"
         }
     },
     {
         "not_from": true,
-        "label": "apple_top_case_display_brightness_increment",
+        "label": "brightness_up (2)",
         "data": {
-            "key_code": "apple_top_case_display_brightness_increment"
+            "apple_vendor_top_case_key_code": "brightness_up"
         }
     },
     {
@@ -1914,6 +1914,54 @@
         "label": "apple_vendor_keyboard_key_code language",
         "data": {
             "apple_vendor_keyboard_key_code": "language"
+        }
+    },
+    {
+        "label": "fn",
+        "data": {
+            "key_code": "fn"
+        }
+    },
+    {
+        "not_from": true,
+        "label": "apple_top_case_display_brightness_decrement",
+        "data": {
+            "key_code": "apple_top_case_display_brightness_decrement"
+        }
+    },
+    {
+        "not_from": true,
+        "label": "apple_top_case_display_brightness_increment",
+        "data": {
+            "key_code": "apple_top_case_display_brightness_increment"
+        }
+    },
+    {
+        "not_from": true,
+        "label": "apple_vendor_top_case video_mirror",
+        "data": {
+            "apple_vendor_top_case_key_code": "video_mirror"
+        }
+    },
+    {
+        "not_from": true,
+        "label": "illumination_toggle",
+        "data": {
+            "apple_vendor_top_case_key_code": "illumination_toggle"
+        }
+    },
+    {
+        "not_from": true,
+        "label": "illumination_decrement",
+        "data": {
+            "key_code": "illumination_decrement"
+        }
+    },
+    {
+        "not_from": true,
+        "label": "illumination_increment",
+        "data": {
+            "key_code": "illumination_increment"
         }
     }
 ]
