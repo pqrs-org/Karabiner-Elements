@@ -624,14 +624,14 @@
         "not_from": true,
         "label": "mission_control",
         "data": {
-            "key_code": "mission_control"
+            "apple_vendor_keyboard_key_code": "expose_all"
         }
     },
     {
         "not_from": true,
         "label": "launchpad",
         "data": {
-            "key_code": "launchpad"
+            "apple_vendor_keyboard_key_code": "launchpad"
         }
     },
     {
@@ -645,7 +645,7 @@
         "not_from": true,
         "label": "dashboard",
         "data": {
-            "key_code": "dashboard"
+            "apple_vendor_keyboard_key_code": "dashboard"
         }
     },
     {
@@ -706,16 +706,16 @@
     },
     {
         "not_from": true,
-        "label": "apple_display_brightness_decrement",
+        "label": "brightness_down",
         "data": {
-            "key_code": "apple_display_brightness_decrement"
+            "apple_vendor_keyboard_key_code": "brightness_down"
         }
     },
     {
         "not_from": true,
-        "label": "apple_display_brightness_increment",
+        "label": "brightness_up",
         "data": {
-            "key_code": "apple_display_brightness_increment"
+            "apple_vendor_keyboard_key_code": "brightness_up"
         }
     },
     {
@@ -1858,6 +1858,62 @@
         "label": "key_code::volume_increment",
         "data": {
             "key_code": "volume_increment"
+        }
+    },
+    {
+        "not_from": true,
+        "label": "apple_display_brightness_decrement",
+        "data": {
+            "key_code": "apple_display_brightness_decrement"
+        }
+    },
+    {
+        "not_from": true,
+        "label": "apple_display_brightness",
+        "data": {
+            "key_code": "apple_display_brightness_increment"
+        }
+    },
+    {
+        "not_from": true,
+        "label": "dashboard",
+        "data": {
+            "key_code": "dashboard"
+        }
+    },
+    {
+        "not_from": true,
+        "label": "apple_vendor_keyboard_key_code function",
+        "data": {
+            "apple_vendor_keyboard_key_code": "function"
+        }
+    },
+    {
+        "not_from": true,
+        "label": "launchpad",
+        "data": {
+            "key_code": "launchpad"
+        }
+    },
+    {
+        "not_from": true,
+        "label": "mission_control",
+        "data": {
+            "key_code": "mission_control"
+        }
+    },
+    {
+        "not_from": true,
+        "label": "apple_vendor_keyboard_key_code expose_desktop",
+        "data": {
+            "apple_vendor_keyboard_key_code": "expose_desktop"
+        }
+    },
+    {
+        "not_from": true,
+        "label": "apple_vendor_keyboard_key_code language",
+        "data": {
+            "apple_vendor_keyboard_key_code": "language"
         }
     }
 ]
