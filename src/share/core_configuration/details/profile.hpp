@@ -97,19 +97,19 @@ public:
 
     json.push_back(nlohmann::json::object());
     json.back()["from"]["key_code"] = "f3";
-    json.back()["to"]["key_code"] = "mission_control";
+    json.back()["to"]["apple_vendor_keyboard_key_code"] = "expose_all";
 
     json.push_back(nlohmann::json::object());
     json.back()["from"]["key_code"] = "f4";
-    json.back()["to"]["key_code"] = "launchpad";
+    json.back()["to"]["apple_vendor_keyboard_key_code"] = "spotlight";
 
     json.push_back(nlohmann::json::object());
     json.back()["from"]["key_code"] = "f5";
-    json.back()["to"]["key_code"] = "illumination_decrement";
+    json.back()["to"]["apple_vendor_top_case_key_code"] = "illumination_down";
 
     json.push_back(nlohmann::json::object());
     json.back()["from"]["key_code"] = "f6";
-    json.back()["to"]["key_code"] = "illumination_increment";
+    json.back()["to"]["apple_vendor_top_case_key_code"] = "illumination_up";
 
     json.push_back(nlohmann::json::object());
     json.back()["from"]["key_code"] = "f7";

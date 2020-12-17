@@ -4,6 +4,12 @@
 
 -   🐛 Bug Fixes
     -   Fixed an issue that installer requires Rosetta 2 on Apple Silicon Macs.
+-   💥 Breaking changes
+    -   Changed the default function of f4 key to `spotlight`.
+-   ✨ New Features
+    -   Added `apple_vendor_keyboard_key_code` and `apple_vendor_top_case_key_code` to event definitions.
+        -   [apple_vendor_keyboard_key_code](https://github.com/pqrs-org/Karabiner-Elements/blob/master/src/share/types/momentary_switch_event_details/apple_vendor_keyboard_key_code.hpp)
+        -   [apple_vendor_top_case_key_code](https://github.com/pqrs-org/Karabiner-Elements/blob/master/src/share/types/momentary_switch_event_details/apple_vendor_top_case_key_code.hpp)
 -   ⚡️ Improvements
     -   Updated in-app screenshots to Big Sur.
 

@@ -37,16 +37,16 @@ TEST_CASE("valid") {
                           nlohmann::json{{"consumer_key_code", "display_brightness_increment"}}.dump());
 
     expected.emplace_back(nlohmann::json{{"key_code", "f3"}}.dump(),
-                          nlohmann::json{{"key_code", "mission_control"}}.dump());
+                          nlohmann::json{{"apple_vendor_keyboard_key_code", "expose_all"}}.dump());
 
     expected.emplace_back(nlohmann::json{{"key_code", "f4"}}.dump(),
-                          nlohmann::json{{"key_code", "launchpad"}}.dump());
+                          nlohmann::json{{"apple_vendor_keyboard_key_code", "spotlight"}}.dump());
 
     expected.emplace_back(nlohmann::json{{"key_code", "f5"}}.dump(),
-                          nlohmann::json{{"key_code", "illumination_decrement"}}.dump());
+                          nlohmann::json{{"apple_vendor_top_case_key_code", "illumination_down"}}.dump());
 
     expected.emplace_back(nlohmann::json{{"key_code", "f6"}}.dump(),
-                          nlohmann::json{{"key_code", "illumination_increment"}}.dump());
+                          nlohmann::json{{"apple_vendor_top_case_key_code", "illumination_up"}}.dump());
 
     expected.emplace_back(nlohmann::json{{"key_code", "f7"}}.dump(),
                           nlohmann::json{{"consumer_key_code", "rewind"}}.dump());
@@ -223,16 +223,16 @@ std::vector<std::pair<std::string, std::string>> make_default_fn_function_keys_p
                      nlohmann::json{{"consumer_key_code", "display_brightness_increment"}}.dump());
 
   pairs.emplace_back(nlohmann::json{{"key_code", "f3"}}.dump(),
-                     nlohmann::json{{"key_code", "mission_control"}}.dump());
+                     nlohmann::json{{"apple_vendor_keyboard_key_code", "expose_all"}}.dump());
 
   pairs.emplace_back(nlohmann::json{{"key_code", "f4"}}.dump(),
-                     nlohmann::json{{"key_code", "launchpad"}}.dump());
+                     nlohmann::json{{"apple_vendor_keyboard_key_code", "spotlight"}}.dump());
 
   pairs.emplace_back(nlohmann::json{{"key_code", "f5"}}.dump(),
-                     nlohmann::json{{"key_code", "illumination_decrement"}}.dump());
+                     nlohmann::json{{"apple_vendor_top_case_key_code", "illumination_down"}}.dump());
 
   pairs.emplace_back(nlohmann::json{{"key_code", "f6"}}.dump(),
-                     nlohmann::json{{"key_code", "illumination_increment"}}.dump());
+                     nlohmann::json{{"apple_vendor_top_case_key_code", "illumination_up"}}.dump());
 
   pairs.emplace_back(nlohmann::json{{"key_code", "f7"}}.dump(),
                      nlohmann::json{{"consumer_key_code", "rewind"}}.dump());
@@ -753,6 +753,7 @@ TEST_CASE("profile.to_json") {
 
     auto expected_fn_function_keys = get_default_fn_function_keys_json();
     expected_fn_function_keys[2]["to"]["key_code"] = "to f3";
+    expected_fn_function_keys[2]["to"].erase("apple_vendor_keyboard_key_code"); // Remove expose_all
     auto expected_virtual_hid_keyboard = get_default_virtual_hid_keyboard_json();
     expected_virtual_hid_keyboard["country_code"] = 20;
     expected_virtual_hid_keyboard["mouse_key_xy_scale"] = 250;

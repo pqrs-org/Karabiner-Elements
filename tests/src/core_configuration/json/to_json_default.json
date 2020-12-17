@@ -39,7 +39,7 @@
                         "key_code": "f3"
                     },
                     "to": {
-                        "key_code": "mission_control"
+                        "apple_vendor_keyboard_key_code": "expose_all"
                     }
                 },
                 {
@@ -47,7 +47,7 @@
                         "key_code": "f4"
                     },
                     "to": {
-                        "key_code": "launchpad"
+                        "apple_vendor_keyboard_key_code": "spotlight"
                     }
                 },
                 {
@@ -55,7 +55,7 @@
                         "key_code": "f5"
                     },
                     "to": {
-                        "key_code": "illumination_decrement"
+                        "apple_vendor_top_case_key_code": "illumination_down"
                     }
                 },
                 {
@@ -63,7 +63,7 @@
                         "key_code": "f6"
                     },
                     "to": {
-                        "key_code": "illumination_increment"
+                        "apple_vendor_top_case_key_code": "illumination_up"
                     }
                 },
                 {
