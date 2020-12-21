@@ -308,6 +308,7 @@ constexpr value_t scan_next_track(0x00b5);
 constexpr value_t scan_previous_track(0x00b6);
 constexpr value_t eject(0x00b8);
 constexpr value_t play_or_pause(0x00cd);
+constexpr value_t voice_command(0x00cf);
 constexpr value_t mute(0x00e2);
 constexpr value_t volume_increment(0x00e9);
 constexpr value_t volume_decrement(0x00ea);
