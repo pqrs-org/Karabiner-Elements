@@ -70,7 +70,7 @@ TEST_CASE("karabiner_virtual_hid_device::hid_report::keys") {
     keys.insert(type_safe::get(pqrs::hid::usage::apple_vendor_keyboard::launchpad));
 
     nlohmann::json expected = nlohmann::json::array();
-    expected.push_back(nlohmann::json::object({{"apple_vendor_keyboard_key_code", "expose_all"}}));
+    expected.push_back(nlohmann::json::object({{"apple_vendor_keyboard_key_code", "mission_control"}}));
     expected.push_back(nlohmann::json::object({{"apple_vendor_keyboard_key_code", "launchpad"}}));
 
     REQUIRE(krbn::virtual_hid_device_utility::to_json(keys, pqrs::hid::usage_page::apple_vendor_keyboard).dump() == expected.dump());

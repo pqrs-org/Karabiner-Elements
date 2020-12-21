@@ -7,6 +7,9 @@ namespace krbn {
 namespace momentary_switch_event_details {
 namespace apple_vendor_keyboard_key_code {
 constexpr std::pair<const mapbox::eternal::string, const pqrs::hid::usage::value_t> name_value_pairs[] = {
+    // Aliases
+    {"mission_control", pqrs::hid::usage::apple_vendor_keyboard::expose_all},
+
     {"spotlight", pqrs::hid::usage::apple_vendor_keyboard::spotlight},
     {"dashboard", pqrs::hid::usage::apple_vendor_keyboard::dashboard},
     {"function", pqrs::hid::usage::apple_vendor_keyboard::function},

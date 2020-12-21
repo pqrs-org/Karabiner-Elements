@@ -37,16 +37,16 @@ TEST_CASE("valid") {
                           nlohmann::json{{"consumer_key_code", "display_brightness_increment"}}.dump());
 
     expected.emplace_back(nlohmann::json{{"key_code", "f3"}}.dump(),
-                          nlohmann::json{{"apple_vendor_keyboard_key_code", "expose_all"}}.dump());
+                          nlohmann::json{{"apple_vendor_keyboard_key_code", "mission_control"}}.dump());
 
     expected.emplace_back(nlohmann::json{{"key_code", "f4"}}.dump(),
                           nlohmann::json{{"apple_vendor_keyboard_key_code", "spotlight"}}.dump());
 
     expected.emplace_back(nlohmann::json{{"key_code", "f5"}}.dump(),
-                          nlohmann::json{{"apple_vendor_top_case_key_code", "illumination_down"}}.dump());
+                          nlohmann::json{{"consumer_key_code", "dictation"}}.dump());
 
     expected.emplace_back(nlohmann::json{{"key_code", "f6"}}.dump(),
-                          nlohmann::json{{"apple_vendor_top_case_key_code", "illumination_up"}}.dump());
+                          nlohmann::json{{"key_code", "f6"}}.dump());
 
     expected.emplace_back(nlohmann::json{{"key_code", "f7"}}.dump(),
                           nlohmann::json{{"consumer_key_code", "rewind"}}.dump());
@@ -223,16 +223,16 @@ std::vector<std::pair<std::string, std::string>> make_default_fn_function_keys_p
                      nlohmann::json{{"consumer_key_code", "display_brightness_increment"}}.dump());
 
   pairs.emplace_back(nlohmann::json{{"key_code", "f3"}}.dump(),
-                     nlohmann::json{{"apple_vendor_keyboard_key_code", "expose_all"}}.dump());
+                     nlohmann::json{{"apple_vendor_keyboard_key_code", "mission_control"}}.dump());
 
   pairs.emplace_back(nlohmann::json{{"key_code", "f4"}}.dump(),
                      nlohmann::json{{"apple_vendor_keyboard_key_code", "spotlight"}}.dump());
 
   pairs.emplace_back(nlohmann::json{{"key_code", "f5"}}.dump(),
-                     nlohmann::json{{"apple_vendor_top_case_key_code", "illumination_down"}}.dump());
+                     nlohmann::json{{"consumer_key_code", "dictation"}}.dump());
 
   pairs.emplace_back(nlohmann::json{{"key_code", "f6"}}.dump(),
-                     nlohmann::json{{"apple_vendor_top_case_key_code", "illumination_up"}}.dump());
+                     nlohmann::json{{"key_code", "f6"}}.dump());
 
   pairs.emplace_back(nlohmann::json{{"key_code", "f7"}}.dump(),
                      nlohmann::json{{"consumer_key_code", "rewind"}}.dump());

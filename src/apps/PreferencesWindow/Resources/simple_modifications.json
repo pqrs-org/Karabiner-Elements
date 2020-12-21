@@ -624,14 +624,7 @@
         "not_from": true,
         "label": "mission_control",
         "data": {
-            "apple_vendor_keyboard_key_code": "expose_all"
-        }
-    },
-    {
-        "not_from": true,
-        "label": "launchpad",
-        "data": {
-            "apple_vendor_keyboard_key_code": "launchpad"
+            "apple_vendor_keyboard_key_code": "mission_control"
         }
     },
     {
@@ -639,6 +632,20 @@
         "label": "spotlight",
         "data": {
             "apple_vendor_keyboard_key_code": "spotlight"
+        }
+    },
+    {
+        "not_from": true,
+        "label": "dictation",
+        "data": {
+            "consumer_key_code": "dictation"
+        }
+    },
+    {
+        "not_from": true,
+        "label": "launchpad",
+        "data": {
+            "apple_vendor_keyboard_key_code": "launchpad"
         }
     },
     {

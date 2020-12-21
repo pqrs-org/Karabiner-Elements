@@ -5,7 +5,7 @@
 -   🐛 Bug Fixes
     -   Fixed an issue that installer requires Rosetta 2 on Apple Silicon Macs.
 -   💥 Breaking changes
-    -   Changed the default function of f4 key to `spotlight`.
+    -   Changed the default function of f4 key to `spotlight`, f5 key to `dictation`, f6 key to `f6`.
         -   Note: This change will be applied when you create a new profile.
 -   ✨ New Features
     -   Added `apple_vendor_keyboard_key_code` and `apple_vendor_top_case_key_code` to event definitions.

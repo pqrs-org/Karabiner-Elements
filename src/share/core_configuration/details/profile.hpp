@@ -97,7 +97,7 @@ public:
 
     json.push_back(nlohmann::json::object());
     json.back()["from"]["key_code"] = "f3";
-    json.back()["to"]["apple_vendor_keyboard_key_code"] = "expose_all";
+    json.back()["to"]["apple_vendor_keyboard_key_code"] = "mission_control";
 
     json.push_back(nlohmann::json::object());
     json.back()["from"]["key_code"] = "f4";
@@ -105,11 +105,11 @@ public:
 
     json.push_back(nlohmann::json::object());
     json.back()["from"]["key_code"] = "f5";
-    json.back()["to"]["apple_vendor_top_case_key_code"] = "illumination_down";
+    json.back()["to"]["consumer_key_code"] = "dictation";
 
     json.push_back(nlohmann::json::object());
     json.back()["from"]["key_code"] = "f6";
-    json.back()["to"]["apple_vendor_top_case_key_code"] = "illumination_up";
+    json.back()["to"]["key_code"] = "f6";
 
     json.push_back(nlohmann::json::object());
     json.back()["from"]["key_code"] = "f7";

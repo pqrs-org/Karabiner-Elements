@@ -7,6 +7,9 @@ namespace krbn {
 namespace momentary_switch_event_details {
 namespace consumer_key_code {
 constexpr std::pair<const mapbox::eternal::string, const pqrs::hid::usage::value_t> name_value_pairs[] = {
+    // Aliases
+    {"dictation", pqrs::hid::usage::consumer::voice_command},
+
     {"power", pqrs::hid::usage::consumer::power},
     {"display_brightness_increment", pqrs::hid::usage::consumer::display_brightness_increment},
     {"display_brightness_decrement", pqrs::hid::usage::consumer::display_brightness_decrement},
@@ -16,6 +19,7 @@ constexpr std::pair<const mapbox::eternal::string, const pqrs::hid::usage::value
     {"scan_previous_track", pqrs::hid::usage::consumer::scan_previous_track},
     {"eject", pqrs::hid::usage::consumer::eject},
     {"play_or_pause", pqrs::hid::usage::consumer::play_or_pause},
+    {"voice_command", pqrs::hid::usage::consumer::voice_command},
     {"mute", pqrs::hid::usage::consumer::mute},
     {"volume_increment", pqrs::hid::usage::consumer::volume_increment},
     {"volume_decrement", pqrs::hid::usage::consumer::volume_decrement},

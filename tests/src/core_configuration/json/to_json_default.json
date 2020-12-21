@@ -39,7 +39,7 @@
                         "key_code": "f3"
                     },
                     "to": {
-                        "apple_vendor_keyboard_key_code": "expose_all"
+                        "apple_vendor_keyboard_key_code": "mission_control"
                     }
                 },
                 {
@@ -55,7 +55,7 @@
                         "key_code": "f5"
                     },
                     "to": {
-                        "apple_vendor_top_case_key_code": "illumination_down"
+                        "consumer_key_code": "dictation"
                     }
                 },
                 {
@@ -63,7 +63,7 @@
                         "key_code": "f6"
                     },
                     "to": {
-                        "apple_vendor_top_case_key_code": "illumination_up"
+                        "key_code": "f6"
                     }
                 },
                 {
