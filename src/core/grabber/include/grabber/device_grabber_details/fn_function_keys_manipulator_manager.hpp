@@ -35,7 +35,10 @@ public:
       // fn+f1 -> display_brightness_decrement
 
       from_mandatory_modifiers.push_back("fn");
-      to_modifiers.push_back("fn");
+
+      // consumer_key_code::dictation does not work with modifier_flag::fn.
+      // So, we send the plain media keys.
+      // (e.g., display_brightness_decrement, not fn+display_brightness_decrement)
 
     } else {
       // f1 -> display_brightness_decrement
