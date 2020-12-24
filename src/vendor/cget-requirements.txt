@@ -20,6 +20,7 @@ pqrs-org/cpp-osx-iokit_hid_value
 pqrs-org/cpp-osx-json_file_monitor
 pqrs-org/cpp-osx-launchctl
 pqrs-org/cpp-osx-os_kext_return
+pqrs-org/cpp-osx-process_info
 pqrs-org/cpp-osx-session
 pqrs-org/cpp-osx-system_preferences_monitor
 pqrs-org/cpp-shell
