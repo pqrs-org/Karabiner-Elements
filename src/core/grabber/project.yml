@@ -21,6 +21,7 @@ targets:
           - -Wall
           - -Werror
           - '-std=gnu++2a'
+      - path: ../../vendor/cget/src/pqrs/osx/process_info
     dependencies:
       - framework: CoreGraphics.framework
       - framework: CoreServices.framework

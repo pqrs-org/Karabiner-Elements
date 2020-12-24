@@ -1,6 +1,7 @@
 #include "dispatcher_utility.hpp"
 #include "grabber/main/agent.hpp"
 #include "grabber/main/daemon.hpp"
+#include <pqrs/osx/process_info.hpp>
 
 int main(int argc, const char* argv[]) {
   //
@@ -11,6 +12,8 @@ int main(int argc, const char* argv[]) {
 
   signal(SIGUSR1, SIG_IGN);
   signal(SIGUSR2, SIG_IGN);
+
+  pqrs::osx::process_info::enable_sudden_termination();
 
   //
   // Check euid
