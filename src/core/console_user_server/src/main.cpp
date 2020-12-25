@@ -8,6 +8,7 @@
 #include "process_utility.hpp"
 #include <pqrs/dispatcher.hpp>
 #include <pqrs/filesystem.hpp>
+#include <pqrs/osx/process_info.hpp>
 
 int main(int argc, const char* argv[]) {
   //
@@ -18,6 +19,8 @@ int main(int argc, const char* argv[]) {
 
   signal(SIGUSR1, SIG_IGN);
   signal(SIGUSR2, SIG_IGN);
+
+  pqrs::osx::process_info::enable_sudden_termination();
 
   //
   // Setup logger
@@ -55,7 +58,11 @@ int main(int argc, const char* argv[]) {
   // Migrate old configuration file
   //
 
-  krbn::console_user_server::migration::migrate_v1();
+  {
+    pqrs::osx::process_info::scoped_sudden_termination_blocker sudden_termination_blocker;
+
+    krbn::console_user_server::migration::migrate_v1();
+  }
 
   //
   // Activate driver
