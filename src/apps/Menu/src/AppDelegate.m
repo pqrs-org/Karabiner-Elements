@@ -11,6 +11,8 @@
 @implementation AppDelegate
 
 - (void)applicationDidFinishLaunching:(NSNotification*)notification {
+  [NSProcessInfo.processInfo enableSuddenTermination];
+
   [KarabinerKit setup];
   [KarabinerKit exitIfAnotherProcessIsRunning:"menu.pid"];
   [KarabinerKit observeConsoleUserServerIsDisabledNotification];
@@ -18,8 +20,6 @@
   [self.menuController setup];
 }
 
-// Note:
-// We have to set NSSupportsSuddenTermination `NO` to use `applicationWillTerminate`.
 - (void)applicationWillTerminate:(NSNotification*)notification {
   libkrbn_terminate();
 }
