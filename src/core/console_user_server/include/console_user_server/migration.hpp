@@ -1,10 +1,14 @@
 #pragma once
 
+#include <pqrs/osx/process_info.hpp>
+
 namespace krbn {
 namespace console_user_server {
 class migration final {
 public:
   static void migrate_v1(void) {
+    pqrs::osx::process_info::scoped_sudden_termination_blocker sudden_termination_blocker;
+
     // Move karabiner.json.
     // ~/.karabiner.d/configuration/karabiner.json -> ~/.config/karabiner/karabiner.json
 
