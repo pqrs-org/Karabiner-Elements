@@ -30,6 +30,7 @@ targets:
         compilerFlags:
           - -Wall
           - -Werror
+      - path: ../../vendor/cget/src/pqrs/osx/process_info
       - path: Resources
         excludes:
           - .gitignore

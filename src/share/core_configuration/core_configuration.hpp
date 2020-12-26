@@ -15,6 +15,7 @@
 #include <fstream>
 #include <glob.h>
 #include <pqrs/filesystem.hpp>
+#include <pqrs/osx/process_info.hpp>
 #include <pqrs/osx/session.hpp>
 #include <string>
 #include <unordered_map>
@@ -151,6 +152,8 @@ public:
   // Thus, we should call the `save` method only when it is neccessary.
 
   void sync_save_to_file(void) {
+    pqrs::osx::process_info::scoped_sudden_termination_blocker sudden_termination_blocker;
+
     make_backup_file();
     remove_old_backup_files();
 
