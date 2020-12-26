@@ -1,6 +1,6 @@
 #pragma once
 
-// pqrs::osx::process_info v1.2
+// pqrs::osx::process_info v1.3
 
 // (C) Copyright Takayama Fumihiko 2020.
 // Distributed under the Boost Software License, Version 1.0.
@@ -26,11 +26,11 @@ inline int process_identifier(void) {
   return pqrs_osx_process_info_process_identifier();
 }
 
-void disable_sudden_termination(void) {
+inline void disable_sudden_termination(void) {
   pqrs_osx_process_info_disable_sudden_termination();
 }
 
-void enable_sudden_termination(void) {
+inline void enable_sudden_termination(void) {
   pqrs_osx_process_info_enable_sudden_termination();
 }
 
