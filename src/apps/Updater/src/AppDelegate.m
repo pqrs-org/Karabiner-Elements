@@ -12,6 +12,8 @@
 @implementation AppDelegate
 
 - (void)applicationDidFinishLaunching:(NSNotification*)aNotification {
+  [NSProcessInfo.processInfo enableSuddenTermination];
+
   self.suUpdater = [SUUpdater new];
 
   NSString* mode = @"checkForUpdatesInBackground";
