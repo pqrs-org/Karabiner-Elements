@@ -77,6 +77,8 @@ static void disable(void) {
 @implementation AppDelegate
 
 - (void)applicationDidFinishLaunching:(NSNotification*)aNotification {
+  [NSProcessInfo.processInfo enableSuddenTermination];
+
   [KarabinerKit setup];
   [KarabinerKit observeConsoleUserServerIsDisabledNotification];
 
@@ -145,13 +147,14 @@ static void disable(void) {
   // Disable App Nap
   //
 
-  NSActivityOptions options = NSActivityUserInitiatedAllowingIdleSystemSleep;
+  NSActivityOptions options = NSActivityUserInitiated &
+                              ~NSActivityIdleSystemSleepDisabled &
+                              ~NSActivityIdleDisplaySleepDisabled &
+                              ~NSActivitySuddenTerminationDisabled;
   NSString* reason = @"Disable App Nap in order to receive multitouch events even if this app is background";
   self.activity = [[NSProcessInfo processInfo] beginActivityWithOptions:options reason:reason];
 }
 
-// Note:
-// We have to set NSSupportsSuddenTermination `NO` to use `applicationWillTerminate`.
 - (void)applicationWillTerminate:(NSNotification*)aNotification {
   if (self.activity) {
     [[NSProcessInfo processInfo] endActivity:self.activity];
