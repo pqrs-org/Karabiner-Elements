@@ -30,6 +30,8 @@
 - (void)applicationDidFinishLaunching:(NSNotification*)aNotification {
   [[NSApplication sharedApplication] disableRelaunchOnLogin];
 
+  [NSProcessInfo.processInfo enableSuddenTermination];
+
   [KarabinerKit setup];
   [KarabinerKit observeConsoleUserServerIsDisabledNotification];
 
@@ -40,8 +42,6 @@
   [self.stateJsonMonitor start];
 }
 
-// Note:
-// We have to set NSSupportsSuddenTermination `NO` to use `applicationWillTerminate`.
 - (void)applicationWillTerminate:(NSNotification*)notification {
   libkrbn_terminate();
 }
