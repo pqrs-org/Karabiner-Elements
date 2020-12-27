@@ -49,37 +49,25 @@ public class KeyResponder: NSView {
 
     override public func flagsChanged(with _: NSEvent) {}
 
-    override public func mouseDown(with event: NSEvent) {
-        eventQueue.pushMouseEvent(event)
-    }
+    override public func mouseDown(with _: NSEvent) {}
 
-    override public func mouseUp(with event: NSEvent) {
-        eventQueue.pushMouseEvent(event)
-    }
+    override public func mouseUp(with _: NSEvent) {}
 
     override public func mouseDragged(with event: NSEvent) {
         eventQueue.pushMouseEvent(event)
     }
 
-    override public func rightMouseDown(with event: NSEvent) {
-        eventQueue.pushMouseEvent(event)
-    }
+    override public func rightMouseDown(with _: NSEvent) {}
 
-    override public func rightMouseUp(with event: NSEvent) {
-        eventQueue.pushMouseEvent(event)
-    }
+    override public func rightMouseUp(with _: NSEvent) {}
 
     override public func rightMouseDragged(with event: NSEvent) {
         eventQueue.pushMouseEvent(event)
     }
 
-    override public func otherMouseDown(with event: NSEvent) {
-        eventQueue.pushMouseEvent(event)
-    }
+    override public func otherMouseDown(with _: NSEvent) {}
 
-    override public func otherMouseUp(with event: NSEvent) {
-        eventQueue.pushMouseEvent(event)
-    }
+    override public func otherMouseUp(with _: NSEvent) {}
 
     override public func otherMouseDragged(with event: NSEvent) {
         eventQueue.pushMouseEvent(event)
