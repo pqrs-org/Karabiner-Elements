@@ -5,7 +5,6 @@ import SwiftUI
 public class AppDelegate: NSObject, NSApplicationDelegate {
     @IBOutlet var window: NSWindow!
     @IBOutlet var eventQueue: EventQueue!
-    @IBOutlet var keyResponder: KeyResponder!
     @IBOutlet var frontmostApplicationController: FrontmostApplicationController!
     @IBOutlet var variablesController: VariablesController!
     @IBOutlet var devicesController: DevicesController!
@@ -17,7 +16,6 @@ public class AppDelegate: NSObject, NSApplicationDelegate {
 
         libkrbn_initialize()
 
-        setKeyResponder()
         setWindowProperty(self)
         eventQueue.setup()
         frontmostApplicationController.setup()
@@ -57,10 +55,6 @@ public class AppDelegate: NSObject, NSApplicationDelegate {
         return true
     }
 
-    func setKeyResponder() {
-        window.makeFirstResponder(keyResponder)
-    }
-
     @IBAction func setWindowProperty(_: Any) {
         // ----------------------------------------
         if UserSettings.shared.forceStayTop {
@@ -85,13 +79,5 @@ public class AppDelegate: NSObject, NSApplicationDelegate {
 extension AppDelegate: NSWindowDelegate {
     public func windowWillClose(_: Notification) {
         NSApplication.shared.terminate(self)
-    }
-}
-
-extension AppDelegate: NSTabViewDelegate {
-    public func tabView(_ tabView: NSTabView, didSelect _: NSTabViewItem?) {
-        if tabView.identifier?.rawValue == "Main" {
-            setKeyResponder()
-        }
     }
 }

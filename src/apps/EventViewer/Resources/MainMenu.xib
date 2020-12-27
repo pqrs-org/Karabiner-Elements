@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.Cocoa.XIB" version="3.0" toolsVersion="17506" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none" useAutolayout="YES">
+<document type="com.apple.InterfaceBuilder3.Cocoa.XIB" version="3.0" toolsVersion="17701" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none" useAutolayout="YES">
     <dependencies>
         <deployment identifier="macosx"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="17506"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="17701"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
     <objects>
@@ -492,9 +492,6 @@
                                         <constraint firstItem="614" firstAttribute="top" secondItem="659" secondAttribute="top" constant="10" id="pWc-bN-8xF"/>
                                     </constraints>
                                 </view>
-                                <connections>
-                                    <outlet property="initialFirstResponder" destination="925" id="930"/>
-                                </connections>
                             </tabViewItem>
                             <tabViewItem label="Frontmost application" identifier="" id="JP7-qs-Qlf">
                                 <view key="view" id="OUd-40-tIR">
@@ -745,7 +742,6 @@
             </view>
             <connections>
                 <outlet property="delegate" destination="494" id="0sp-lY-hVx"/>
-                <outlet property="initialFirstResponder" destination="925" id="929"/>
             </connections>
             <point key="canvasLocation" x="305" y="465"/>
         </window>
@@ -754,7 +750,6 @@
                 <outlet property="devicesController" destination="ggU-FE-hiD" id="UKi-IL-yhy"/>
                 <outlet property="eventQueue" destination="571" id="hYY-uI-Yex"/>
                 <outlet property="frontmostApplicationController" destination="5Ro-l9-Pmw" id="kJT-Hv-RJh"/>
-                <outlet property="keyResponder" destination="925" id="evx-2k-LwC"/>
                 <outlet property="variablesController" destination="Hua-x6-m2N" id="bcq-GU-wQo"/>
                 <outlet property="window" destination="371" id="532"/>
             </connections>
