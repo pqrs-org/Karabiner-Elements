@@ -26,9 +26,5 @@
     <string>MainMenu</string>
     <key>NSPrincipalClass</key>
     <string>NSApplication</string>
-    <key>NSSupportsAutomaticTermination</key>
-    <false/>
-    <key>NSSupportsSuddenTermination</key>
-    <false/>
   </dict>
 </plist>

@@ -13,6 +13,8 @@ public class AppDelegate: NSObject, NSApplicationDelegate {
     var inputMonitoringAlertWindow: NSWindow?
 
     public func applicationDidFinishLaunching(_: Notification) {
+        ProcessInfo.processInfo.enableSuddenTermination()
+
         libkrbn_initialize()
 
         setKeyResponder()
@@ -47,8 +49,6 @@ public class AppDelegate: NSObject, NSApplicationDelegate {
         }
     }
 
-    // Note:
-    // We have to set NSSupportsSuddenTermination `NO` to use `applicationWillTerminate`.
     public func applicationWillTerminate(_: Notification) {
         libkrbn_terminate()
     }
