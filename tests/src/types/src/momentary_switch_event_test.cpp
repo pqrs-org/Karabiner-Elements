@@ -13,6 +13,7 @@ TEST_CASE("momentary_switch_event") {
                                    pqrs::hid::usage::keyboard_or_keypad::keyboard_a);
     REQUIRE(e.make_modifier_flag() == std::nullopt);
     REQUIRE(e.modifier_flag() == false);
+    REQUIRE(e.caps_lock() == false);
     REQUIRE(e.pointing_button() == false);
     REQUIRE(nlohmann::json(e).get<krbn::momentary_switch_event>() == e);
   }
@@ -21,6 +22,17 @@ TEST_CASE("momentary_switch_event") {
                                    pqrs::hid::usage::keyboard_or_keypad::keyboard_left_shift);
     REQUIRE(e.make_modifier_flag() == krbn::modifier_flag::left_shift);
     REQUIRE(e.modifier_flag() == true);
+    REQUIRE(e.caps_lock() == false);
+    REQUIRE(e.pointing_button() == false);
+    REQUIRE(nlohmann::json(e).get<krbn::momentary_switch_event>() == e);
+  }
+  {
+    krbn::momentary_switch_event e(pqrs::hid::usage_page::keyboard_or_keypad,
+                                   pqrs::hid::usage::keyboard_or_keypad::keyboard_caps_lock);
+    // Note: make_modifier_flag returns nullopt for caps_lock.
+    REQUIRE(e.make_modifier_flag() == std::nullopt);
+    REQUIRE(e.modifier_flag() == false);
+    REQUIRE(e.caps_lock() == true);
     REQUIRE(e.pointing_button() == false);
     REQUIRE(nlohmann::json(e).get<krbn::momentary_switch_event>() == e);
   }
@@ -34,6 +46,7 @@ TEST_CASE("momentary_switch_event") {
                                    pqrs::hid::usage::consumer::mute);
     REQUIRE(e.make_modifier_flag() == std::nullopt);
     REQUIRE(e.modifier_flag() == false);
+    REQUIRE(e.caps_lock() == false);
     REQUIRE(e.pointing_button() == false);
     REQUIRE(nlohmann::json(e).get<krbn::momentary_switch_event>() == e);
   }
@@ -47,6 +60,7 @@ TEST_CASE("momentary_switch_event") {
                                    pqrs::hid::usage::apple_vendor_keyboard::expose_all);
     REQUIRE(e.make_modifier_flag() == std::nullopt);
     REQUIRE(e.modifier_flag() == false);
+    REQUIRE(e.caps_lock() == false);
     REQUIRE(e.pointing_button() == false);
     REQUIRE(nlohmann::json(e).get<krbn::momentary_switch_event>() == e);
   }
@@ -55,6 +69,7 @@ TEST_CASE("momentary_switch_event") {
                                    pqrs::hid::usage::apple_vendor_keyboard::function);
     REQUIRE(e.make_modifier_flag() == krbn::modifier_flag::fn);
     REQUIRE(e.modifier_flag() == true);
+    REQUIRE(e.caps_lock() == false);
     REQUIRE(e.pointing_button() == false);
     REQUIRE(nlohmann::json(e).get<krbn::momentary_switch_event>() == e);
   }
@@ -74,6 +89,7 @@ TEST_CASE("momentary_switch_event") {
                                    pqrs::hid::usage::apple_vendor_top_case::brightness_down);
     REQUIRE(e.make_modifier_flag() == std::nullopt);
     REQUIRE(e.modifier_flag() == false);
+    REQUIRE(e.caps_lock() == false);
     REQUIRE(e.pointing_button() == false);
     REQUIRE(nlohmann::json(e).get<krbn::momentary_switch_event>() == e);
   }
@@ -82,6 +98,7 @@ TEST_CASE("momentary_switch_event") {
                                    pqrs::hid::usage::apple_vendor_top_case::keyboard_fn);
     REQUIRE(e.make_modifier_flag() == krbn::modifier_flag::fn);
     REQUIRE(e.modifier_flag() == true);
+    REQUIRE(e.caps_lock() == false);
     REQUIRE(e.pointing_button() == false);
     REQUIRE(nlohmann::json(e).get<krbn::momentary_switch_event>() == e);
   }
@@ -95,6 +112,7 @@ TEST_CASE("momentary_switch_event") {
                                    pqrs::hid::usage::button::button_1);
     REQUIRE(e.make_modifier_flag() == std::nullopt);
     REQUIRE(e.modifier_flag() == false);
+    REQUIRE(e.caps_lock() == false);
     REQUIRE(e.pointing_button() == true);
     REQUIRE(nlohmann::json(e).get<krbn::momentary_switch_event>() == e);
   }

@@ -137,6 +137,11 @@ public:
     return make_modifier_flag() != std::nullopt;
   }
 
+  bool caps_lock(void) const {
+    return usage_pair_.get_usage_page() == pqrs::hid::usage_page::keyboard_or_keypad &&
+           usage_pair_.get_usage() == pqrs::hid::usage::keyboard_or_keypad::keyboard_caps_lock;
+  }
+
   bool pointing_button(void) const {
     return usage_pair_.get_usage_page() == pqrs::hid::usage_page::button;
   }
