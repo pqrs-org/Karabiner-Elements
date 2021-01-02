@@ -677,7 +677,7 @@ private:
   }
 
   void post_caps_lock_state_changed_event(bool caps_lock_state) {
-    event_queue::event event(event_queue::event::type::caps_lock_state_changed, caps_lock_state);
+    auto event = event_queue::event::make_caps_lock_state_changed_event(caps_lock_state);
     event_queue::entry entry(device_id(0),
                              event_queue::event_time_stamp(pqrs::osx::chrono::mach_absolute_time_point()),
                              event,

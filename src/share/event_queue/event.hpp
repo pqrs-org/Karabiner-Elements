@@ -189,11 +189,6 @@ public:
                                                            value_(pointing_motion) {
   }
 
-  explicit event(type type,
-                 int64_t integer_value) : type_(type),
-                                          value_(integer_value) {
-  }
-
   static event make_shell_command_event(const std::string& shell_command) {
     event e;
     e.type_ = type::shell_command;
@@ -239,6 +234,13 @@ public:
 
   static event make_device_ungrabbed_event(void) {
     return make_virtual_event(type::device_ungrabbed);
+  }
+
+  static event make_caps_lock_state_changed_event(int64_t state) {
+    event e;
+    e.type_ = type::caps_lock_state_changed;
+    e.value_ = state;
+    return e;
   }
 
   static event make_pointing_device_event_from_event_tap_event(void) {

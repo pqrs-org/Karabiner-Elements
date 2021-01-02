@@ -91,8 +91,7 @@ static inline std::shared_ptr<queue> make_queue(device_id device_id,
 
         } else if (v.conforms_to(pqrs::hid::usage_page::leds,
                                  pqrs::hid::usage::led::caps_lock)) {
-          event_queue::event event(event_queue::event::type::caps_lock_state_changed,
-                                   v.get_integer_value());
+          auto event = event_queue::event::make_caps_lock_state_changed_event(v.get_integer_value());
           result->emplace_back_entry(device_id,
                                      event_time_stamp(v.get_time_stamp()),
                                      event,
