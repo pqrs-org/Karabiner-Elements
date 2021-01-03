@@ -1,0 +1,122 @@
+[
+    {
+        "keyboard_input": {
+            "keys": [
+                {
+                    "key_code": "f9"
+                }
+            ],
+            "modifiers": []
+        },
+        "time_stamp": 5,
+        "type": "keyboard_input"
+    },
+    {
+        "keyboard_input": {
+            "keys": [],
+            "modifiers": []
+        },
+        "time_stamp": 10,
+        "type": "keyboard_input"
+    },
+    {
+        "keyboard_input": {
+            "keys": [
+                {
+                    "key_code": "caps_lock"
+                }
+            ],
+            "modifiers": []
+        },
+        "time_stamp": 15,
+        "type": "keyboard_input"
+    },
+    {
+        "keyboard_input": {
+            "keys": [],
+            "modifiers": []
+        },
+        "time_stamp": 20,
+        "type": "keyboard_input"
+    },
+    {
+        "keyboard_input": {
+            "keys": [
+                {
+                    "key_code": "caps_lock"
+                }
+            ],
+            "modifiers": []
+        },
+        "time_stamp": 25,
+        "type": "keyboard_input"
+    },
+    {
+        "keyboard_input": {
+            "keys": [],
+            "modifiers": []
+        },
+        "time_stamp": 30,
+        "type": "keyboard_input"
+    },
+    {
+        "keyboard_input": {
+            "keys": [
+                {
+                    "key_code": "f10"
+                }
+            ],
+            "modifiers": []
+        },
+        "time_stamp": 35,
+        "type": "keyboard_input"
+    },
+    {
+        "keyboard_input": {
+            "keys": [],
+            "modifiers": []
+        },
+        "time_stamp": 40,
+        "type": "keyboard_input"
+    },
+    {
+        "keyboard_input": {
+            "keys": [
+                {
+                    "key_code": "caps_lock"
+                }
+            ],
+            "modifiers": []
+        },
+        "time_stamp": 45,
+        "type": "keyboard_input"
+    },
+    {
+        "keyboard_input": {
+            "keys": [],
+            "modifiers": []
+        },
+        "time_stamp": 50,
+        "type": "keyboard_input"
+    },
+    {
+        "keyboard_input": {
+            "keys": [
+                {
+                    "key_code": "tab"
+                }
+            ],
+            "modifiers": []
+        },
+        "time_stamp": 55,
+        "type": "keyboard_input"
+    },
+    {
+        "keyboard_input": {
+            "keys": [],
+            "modifiers": []
+        },
+        "time_stamp": 60,
+        "type": "keyboard_input"
+    }
+]

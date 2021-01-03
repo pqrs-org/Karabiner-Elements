@@ -136,6 +136,39 @@
         ]
     },
     {
+        "description": "caps_lock+f9 -> f10 (modifier+key (caps_lock) to key)",
+        "type": "basic",
+        "from": {
+            "key_code": "f9",
+            "modifiers": {
+                "mandatory": ["caps_lock"],
+                "optional": ["any"]
+            }
+        },
+        "to": [
+            {
+                "key_code": "f10"
+            }
+        ]
+    },
+    {
+        "description": "caps_lock+f11 -> caps_lock+left_option+f12 (modifier+key (caps_lock) to modifier+key (keep caps_lock))",
+        "type": "basic",
+        "from": {
+            "key_code": "f11",
+            "modifiers": {
+                "mandatory": ["caps_lock"],
+                "optional": ["any"]
+            }
+        },
+        "to": [
+            {
+                "key_code": "f12",
+                "modifiers": ["caps_lock", "left_option"]
+            }
+        ]
+    },
+    {
         "description": "key_code(20000) -> escape",
         "type": "basic",
         "from": {
