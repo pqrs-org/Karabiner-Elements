@@ -42,8 +42,8 @@ krbn::event_queue::event button2_event(
     krbn::momentary_switch_event(pqrs::hid::usage_page::button,
                                  pqrs::hid::usage::button::button_2));
 
-krbn::event_queue::event caps_lock_state_changed_1_event(krbn::event_queue::event::type::caps_lock_state_changed, 1);
-krbn::event_queue::event caps_lock_state_changed_0_event(krbn::event_queue::event::type::caps_lock_state_changed, 0);
+auto caps_lock_state_changed_1_event = krbn::event_queue::event::make_caps_lock_state_changed_event(1);
+auto caps_lock_state_changed_0_event = krbn::event_queue::event::make_caps_lock_state_changed_event(0);
 
 auto device_keys_and_pointing_buttons_are_released_event = krbn::event_queue::event::make_device_keys_and_pointing_buttons_are_released_event();
 } // namespace
