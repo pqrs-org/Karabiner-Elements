@@ -81,8 +81,8 @@ public:
     return false;
   }
 
-  std::vector<event_queue::event> make_modifier_events(void) const {
-    std::vector<event_queue::event> events;
+  std::vector<momentary_switch_event> make_modifier_events(void) const {
+    std::vector<momentary_switch_event> events;
 
     for (const auto& modifier : modifiers_) {
       // `event_definition::get_modifiers` might return two modifier_flags.
@@ -94,7 +94,7 @@ public:
         auto modifier_flag = modifier_flags.front();
         momentary_switch_event e(modifier_flag);
         if (e.valid()) {
-          events.emplace_back(e);
+          events.push_back(e);
         }
       }
     }

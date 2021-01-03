@@ -73,7 +73,8 @@ public:
                                            const event_queue::event_time_stamp& event_time_stamp,
                                            absolute_time_duration& time_stamp_delay,
                                            const event_queue::event& original_event,
-                                           event_queue::queue& output_event_queue) {
+                                           event_queue::queue& output_event_queue,
+                                           bool lazy = true) {
     if (momentary_switch_event.valid()) {
       auto t = event_time_stamp;
       t.set_time_stamp(t.get_time_stamp() + time_stamp_delay++);
@@ -82,6 +83,7 @@ public:
       if (momentary_switch_event.caps_lock()) {
         // Send caps_lock_state_changed event for caps_lock.
         event = event_queue::event::make_caps_lock_state_changed_event(event_type == event_type::key_down);
+        event_type = event_type::single;
       }
 
       event_queue::entry entry(device_id,
@@ -90,7 +92,7 @@ public:
                                event_type,
                                original_event,
                                event_queue::state::manipulated,
-                               true);
+                               lazy);
       output_event_queue.push_back_entry(entry);
     }
   }

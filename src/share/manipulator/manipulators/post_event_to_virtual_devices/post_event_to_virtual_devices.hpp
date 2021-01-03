@@ -49,35 +49,39 @@ public:
 
       bool dispatch_modifier_key_event = false;
       bool dispatch_modifier_key_event_before = false;
-      {
-        bool modifier_flag = false;
-        if (auto e = front_input_event.get_event().get_if<momentary_switch_event>()) {
-          if (e->modifier_flag()) {
-            modifier_flag = true;
+      bool front_input_event_modifier_key_event = false;
+
+      if (auto e = front_input_event.get_event().get_if<momentary_switch_event>()) {
+        if (e->modifier_flag()) {
+          front_input_event_modifier_key_event = true;
+        } else if (e->caps_lock()) {
+          // Treat caps_lock as modifier key event when lazy is true (e.g., caps_lock is sent by from_mandatory_modifiers)
+          if (front_input_event.get_lazy()) {
+            front_input_event_modifier_key_event = true;
           }
         }
+      }
 
-        if (modifier_flag) {
-          // front_input_event is modifier key event.
-          if (!front_input_event.get_lazy()) {
-            dispatch_modifier_key_event = true;
-            dispatch_modifier_key_event_before = false;
-          }
+      if (front_input_event_modifier_key_event) {
+        // front_input_event is modifier key event.
+        if (!front_input_event.get_lazy()) {
+          dispatch_modifier_key_event = true;
+          dispatch_modifier_key_event_before = false;
+        }
 
-        } else {
-          if (front_input_event.get_event_type() == event_type::key_down) {
+      } else {
+        if (front_input_event.get_event_type() == event_type::key_down) {
+          dispatch_modifier_key_event = true;
+          dispatch_modifier_key_event_before = true;
+
+        } else if (front_input_event.get_event().get_type() == event_queue::event::type::pointing_motion) {
+          // We should not dispatch modifier key events while key repeating.
+          // (See comments in `handle_pointing_device_event_from_event_tap` for details.)
+          if (!queue_.get_keyboard_repeat_detector().is_repeating() &&
+              pressed_buttons_.empty() &&
+              !mouse_key_handler_->active()) {
             dispatch_modifier_key_event = true;
             dispatch_modifier_key_event_before = true;
-
-          } else if (front_input_event.get_event().get_type() == event_queue::event::type::pointing_motion) {
-            // We should not dispatch modifier key events while key repeating.
-            // (See comments in `handle_pointing_device_event_from_event_tap` for details.)
-            if (!queue_.get_keyboard_repeat_detector().is_repeating() &&
-                pressed_buttons_.empty() &&
-                !mouse_key_handler_->active()) {
-              dispatch_modifier_key_event = true;
-              dispatch_modifier_key_event_before = true;
-            }
           }
         }
       }
@@ -97,7 +101,7 @@ public:
                 post_pointing_input_report(front_input_event,
                                            output_event_queue);
 
-              } else if (!e->modifier_flag()) {
+              } else if (!front_input_event_modifier_key_event) {
                 switch (front_input_event.get_event_type()) {
                   case event_type::key_down:
                     key_event_dispatcher_.dispatch_key_down_event(front_input_event.get_device_id(),
@@ -170,6 +174,41 @@ public:
           }
           break;
 
+        case event_queue::event::type::caps_lock_state_changed:
+          // The caps_lock_state_changed event sender is as follows:
+          // - Hardware (LED state change) if lazy == false.
+          // - The manipulator (e.g. modifiers.mandatory) if lazy == true.
+          //
+          // We should synchronize the key_event_dispatcher_ state
+          // in order to send caps_lock key event properly when caps_lock is used as modifiers.mandatory.
+          //
+          // Example: caps_lock+f9 -> f10
+          //
+          // 1. caps_lock key_down
+          // 2. caps_lock key_up
+          // 3. caps_lock_state_changed(on) (lazy == false)
+          // 4. f9 key_down
+          // 5. caps_lock_state_changed(off) (lazy == true)
+          //    (from modifiers.mandatory)
+          //
+          // Without synchronization, the caps_lock event will not be sent at (5)
+          // because the caps lock state of key_event_dispatcher_ is off.
+          // We have to set the state on at (3).
+          //
+          // Also, we should not update the key_event_dispatcher_ when lazy == true
+          // in order to sending caps_lock event from modifiers.mandatory.
+
+          if (!front_input_event.get_lazy()) {
+            if (auto state = front_input_event.get_event().get_integer_value()) {
+              if (*state) {
+                key_event_dispatcher_.insert_pressed_modifier_flag(modifier_flag::caps_lock);
+              } else {
+                key_event_dispatcher_.erase_pressed_modifier_flag(modifier_flag::caps_lock);
+              }
+            }
+          }
+          break;
+
         case event_queue::event::type::system_preferences_properties_changed:
           if (auto properties = front_input_event.get_event().get_if<pqrs::osx::system_preferences::properties>()) {
             mouse_key_handler_->set_system_preferences_properties(*properties);
@@ -187,7 +226,6 @@ public:
         case event_queue::event::type::device_keys_and_pointing_buttons_are_released:
         case event_queue::event::type::device_grabbed:
         case event_queue::event::type::device_ungrabbed:
-        case event_queue::event::type::caps_lock_state_changed:
         case event_queue::event::type::pointing_device_event_from_event_tap:
         case event_queue::event::type::frontmost_application_changed:
         case event_queue::event::type::input_source_changed:

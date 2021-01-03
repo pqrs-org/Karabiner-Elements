@@ -135,16 +135,14 @@ inline void post_events_at_key_down(const event_queue::entry& front_input_event,
 
         bool lazy = !is_modifier_key_event || it->get_lazy();
         for (const auto& e : to_modifier_events) {
-          auto t = front_input_event.get_event_time_stamp();
-          t.set_time_stamp(t.get_time_stamp() + time_stamp_delay++);
-
-          output_event_queue.emplace_back_entry(front_input_event.get_device_id(),
-                                                t,
-                                                e,
-                                                event_type::key_down,
-                                                front_input_event.get_original_event(),
-                                                event_queue::state::manipulated,
-                                                lazy);
+          base::post_lazy_modifier_key_event(e,
+                                             event_type::key_down,
+                                             front_input_event.get_device_id(),
+                                             front_input_event.get_event_time_stamp(),
+                                             time_stamp_delay,
+                                             front_input_event.get_original_event(),
+                                             output_event_queue,
+                                             lazy);
         }
       }
 
@@ -194,21 +192,18 @@ inline void post_events_at_key_down(const event_queue::entry& front_input_event,
         for (const auto& e : to_modifier_events) {
           if (it == std::end(to_events) - 1 && is_modifier_key_event) {
             current_manipulated_original_event.get_events_at_key_up().emplace_back_event(front_input_event.get_device_id(),
-                                                                                         e,
+                                                                                         event_queue::event(e),
                                                                                          event_type::key_up,
                                                                                          front_input_event.get_original_event(),
                                                                                          true);
           } else {
-            auto t = front_input_event.get_event_time_stamp();
-            t.set_time_stamp(t.get_time_stamp() + time_stamp_delay++);
-
-            output_event_queue.emplace_back_entry(front_input_event.get_device_id(),
-                                                  t,
-                                                  e,
-                                                  event_type::key_up,
-                                                  front_input_event.get_original_event(),
-                                                  event_queue::state::manipulated,
-                                                  true);
+            base::post_lazy_modifier_key_event(e,
+                                               event_type::key_up,
+                                               front_input_event.get_device_id(),
+                                               front_input_event.get_event_time_stamp(),
+                                               time_stamp_delay,
+                                               front_input_event.get_original_event(),
+                                               output_event_queue);
           }
         }
       }
@@ -245,16 +240,13 @@ inline void post_extra_to_events(const event_queue::entry& front_input_event,
       // Post modifier events
 
       for (const auto& e : to_modifier_events) {
-        auto t = front_input_event.get_event_time_stamp();
-        t.set_time_stamp(t.get_time_stamp() + time_stamp_delay++);
-
-        output_event_queue.emplace_back_entry(front_input_event.get_device_id(),
-                                              t,
-                                              e,
-                                              event_type::key_down,
-                                              front_input_event.get_original_event(),
-                                              event_queue::state::manipulated,
-                                              true);
+        base::post_lazy_modifier_key_event(e,
+                                           event_type::key_down,
+                                           front_input_event.get_device_id(),
+                                           front_input_event.get_event_time_stamp(),
+                                           time_stamp_delay,
+                                           front_input_event.get_original_event(),
+                                           output_event_queue);
       }
 
       // Post key_down event
@@ -296,16 +288,13 @@ inline void post_extra_to_events(const event_queue::entry& front_input_event,
       // Post modifier events
 
       for (const auto& e : to_modifier_events) {
-        auto t = front_input_event.get_event_time_stamp();
-        t.set_time_stamp(t.get_time_stamp() + time_stamp_delay++);
-
-        output_event_queue.emplace_back_entry(front_input_event.get_device_id(),
-                                              t,
-                                              e,
-                                              event_type::key_up,
-                                              front_input_event.get_original_event(),
-                                              event_queue::state::manipulated,
-                                              true);
+        base::post_lazy_modifier_key_event(e,
+                                           event_type::key_up,
+                                           front_input_event.get_device_id(),
+                                           front_input_event.get_event_time_stamp(),
+                                           time_stamp_delay,
+                                           front_input_event.get_original_event(),
+                                           output_event_queue);
       }
     }
   }

@@ -91,7 +91,6 @@ public:
 
             case event_queue::event::type::none:
             case event_queue::event::type::device_grabbed:
-            case event_queue::event::type::caps_lock_state_changed:
             case event_queue::event::type::frontmost_application_changed:
             case event_queue::event::type::input_source_changed:
             case event_queue::event::type::set_variable:
@@ -104,6 +103,7 @@ public:
             case event_queue::event::type::select_input_source:
             case event_queue::event::type::mouse_key:
             case event_queue::event::type::stop_keyboard_repeat:
+            case event_queue::event::type::caps_lock_state_changed:
             case event_queue::event::type::system_preferences_properties_changed:
             case event_queue::event::type::virtual_hid_keyboard_configuration_changed: {
               bool skip = false;

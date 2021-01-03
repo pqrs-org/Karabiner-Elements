@@ -43,6 +43,7 @@ public:
                                    queue& queue,
                                    absolute_time_point time_stamp) {
     auto modifier_flags = {
+        // General modifier keys
         modifier_flag::left_control,
         modifier_flag::left_shift,
         modifier_flag::left_option,
@@ -52,6 +53,8 @@ public:
         modifier_flag::right_option,
         modifier_flag::right_command,
         modifier_flag::fn,
+        // Lock keys
+        modifier_flag::caps_lock,
     };
     for (const auto& m : modifier_flags) {
       bool pressed = pressed_modifier_flags_.find(m) != std::end(pressed_modifier_flags_);
@@ -65,6 +68,14 @@ public:
                               event_type::key_down,
                               queue,
                               time_stamp);
+
+            if (m == modifier_flag::caps_lock) {
+              enqueue_key_event(e.get_usage_pair().get_usage_page(),
+                                e.get_usage_pair().get_usage(),
+                                event_type::key_up,
+                                queue,
+                                time_stamp);
+            }
           }
           pressed_modifier_flags_.insert(m);
         }
@@ -73,6 +84,14 @@ public:
         if (pressed) {
           momentary_switch_event e(m);
           if (e.valid()) {
+            if (m == modifier_flag::caps_lock) {
+              enqueue_key_event(e.get_usage_pair().get_usage_page(),
+                                e.get_usage_pair().get_usage(),
+                                event_type::key_down,
+                                queue,
+                                time_stamp);
+            }
+
             enqueue_key_event(e.get_usage_pair().get_usage_page(),
                               e.get_usage_pair().get_usage(),
                               event_type::key_up,
@@ -108,6 +127,14 @@ public:
 
   const std::vector<std::pair<device_id, std::pair<pqrs::hid::usage_page::value_t, pqrs::hid::usage::value_t>>>& get_pressed_keys(void) const {
     return pressed_keys_;
+  }
+
+  void insert_pressed_modifier_flag(modifier_flag modifier_flag) {
+    pressed_modifier_flags_.insert(modifier_flag);
+  }
+
+  void erase_pressed_modifier_flag(modifier_flag modifier_flag) {
+    pressed_modifier_flags_.erase(modifier_flag);
   }
 
 private:
