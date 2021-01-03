@@ -57,7 +57,7 @@ public:
                                             const event_queue::event& original_event,
                                             event_queue::queue& output_event_queue) {
     for (const auto& m : modifiers) {
-      post_lazy_modifier_key_event(m,
+      post_lazy_modifier_key_event(momentary_switch_event(m),
                                    event_type,
                                    device_id,
                                    event_time_stamp,
@@ -67,26 +67,31 @@ public:
     }
   }
 
-  static void post_lazy_modifier_key_event(modifier_flag modifier_flag,
+  static void post_lazy_modifier_key_event(const momentary_switch_event& momentary_switch_event,
                                            event_type event_type,
                                            device_id device_id,
                                            const event_queue::event_time_stamp& event_time_stamp,
                                            absolute_time_duration& time_stamp_delay,
                                            const event_queue::event& original_event,
                                            event_queue::queue& output_event_queue) {
-    momentary_switch_event e(modifier_flag);
-    if (e.valid()) {
+    if (momentary_switch_event.valid()) {
       auto t = event_time_stamp;
       t.set_time_stamp(t.get_time_stamp() + time_stamp_delay++);
 
-      event_queue::entry event(device_id,
+      auto event = event_queue::event(momentary_switch_event);
+      if (momentary_switch_event.caps_lock()) {
+        // Send caps_lock_state_changed event for caps_lock.
+        event = event_queue::event::make_caps_lock_state_changed_event(event_type == event_type::key_down);
+      }
+
+      event_queue::entry entry(device_id,
                                t,
-                               event_queue::event(e),
+                               event,
                                event_type,
                                original_event,
                                event_queue::state::manipulated,
                                true);
-      output_event_queue.push_back_entry(event);
+      output_event_queue.push_back_entry(entry);
     }
   }
 
