@@ -327,3 +327,12 @@ Example:
 -   `hid::usage::keyboard_or_keypad::keyboard_caps_lock` is sent via virtual hid keyboard.
 -   macOS update the caps lock LED state (on).
 -   `event::type::caps_lock_state_changed (on)` is sent via `karabiner_observer`.
+
+### modifier state holders
+
+-   `modifier_flag_manager`
+    -   Keep ideal modifiers state for event modification.
+-   `key_event_dispatcher`
+    -   Keep actually sent modifiers.
+
+For example, `modifier_flag_manager` contains the lazy modifiers, but `key_event_dispatcher` does not.
