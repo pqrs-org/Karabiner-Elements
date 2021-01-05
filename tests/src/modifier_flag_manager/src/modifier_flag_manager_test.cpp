@@ -144,6 +144,21 @@ TEST_CASE("modifier_flag_manager") {
     modifier_flag_manager.push_back_active_modifier_flag(decrease_lock_left_shift_1);
     REQUIRE(modifier_flag_manager.is_pressed(krbn::modifier_flag::left_shift) == false);
   }
+
+  //
+  // lock twice
+  //
+
+  {
+    krbn::modifier_flag_manager modifier_flag_manager;
+
+    modifier_flag_manager.push_back_active_modifier_flag(lock_left_shift_1);
+    modifier_flag_manager.push_back_active_modifier_flag(lock_left_shift_1);
+    REQUIRE(modifier_flag_manager.is_pressed(krbn::modifier_flag::left_shift) == true);
+
+    modifier_flag_manager.push_back_active_modifier_flag(decrease_lock_left_shift_1);
+    REQUIRE(modifier_flag_manager.is_pressed(krbn::modifier_flag::left_shift) == false);
+  }
 }
 
 TEST_CASE("modifier_flag_manager::make_hid_report_modifiers") {
