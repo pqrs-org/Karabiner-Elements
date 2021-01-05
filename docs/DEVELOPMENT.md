@@ -272,17 +272,58 @@ The caps lock is quite different from the normal modifier.
 -   `hid::usage::keyboard_or_keypad::keyboard_caps_lock`
     -   The event is sent when the physical caps lock key is pressed.
     -   The event does not change the state of `modifier_flag_manager` because the event might be used another purpose.
+    -   `event::type::caps_lock_state_changed` might be sent due to the LED state change.
 -   `event::type::caps_lock_state_changed`
     -   This event happens when the caps lock LED is changed.
     -   The event changes the state of `modifier_flag_manager`.
+        -   `hid::usage::keyboard_or_keypad::keyboard_caps_lock` might be sent due to the `modifier_flag_manager` state change.
     -   `basic > from.modifiers.mandatory` and `basic > to.modifiers` also send this event in order to change the state of `modifier_flag_manager`,
 
 ### The flow of updating `modifier_flag_manager`
 
-1.  karabiner_grabber receives `hid::usage::keyboard_or_keypad::keyboard_caps_lock`.
-2.  Send the event via virtual hid keyboard.
-3.  macOS update the caps lock LED of virtual hid keyboard.
-4.  Virtual hid keyboard sends the LED updated event.
-5.  karabiner_observer receives the LED updated event and tells it karabiner_grabber.
-6.  karabiner_grabber makes `event::type::caps_lock_state_changed` event and processes it.
-7.  The state of `modifier_flag_manager` is changed by `event::type::caps_lock_state_changed`.
+-   karabiner_grabber receives `hid::usage::keyboard_or_keypad::keyboard_caps_lock`.
+-   Send the event via virtual hid keyboard.
+-   macOS update the caps lock LED of virtual hid keyboard.
+-   Virtual hid keyboard sends the LED updated event.
+-   karabiner_observer receives the LED updated event and tells it karabiner_grabber.
+-   karabiner_grabber makes `event::type::caps_lock_state_changed` event and processes it.
+-   The state of `modifier_flag_manager` is changed by `event::type::caps_lock_state_changed`.
+
+### The flow of handling caps lock as modifier
+
+Example:
+
+```json
+{
+    "from": {
+        "key_code": "down_arrow",
+        "modifiers": {
+            "mandatory": ["caps_lock"],
+            "optional": ["any"]
+        }
+    },
+    "to": [
+        {
+            "key_code": "d"
+        }
+    ],
+    "type": "basic"
+}
+```
+
+-   Press the physical caps_lock key (`hid::usage::keyboard_or_keypad::keyboard_caps_lock`)
+-   macOS update the caps lock LED state (on).
+-   `event::type::caps_lock_state_changed (on)` is sent via `karabiner_observer` and `modifier_flag_manager` is updated.
+-   Press `down_arrow` key.
+-   `event::type::caps_lock_state_changed (off) lazy` is sent by `modifiers.mandatory`.
+-   `hid::usage::keyboard_or_keypad::keyboard_caps_lock` is sent via virtual hid keyboard.
+-   macOS update the caps lock LED state (off).
+-   The following events happen in parallel.
+    -   `event::type::caps_lock_state_changed (off)` is sent via `karabiner_observer`.
+    -   `d` is sent via virtual hid keyboard.
+-   Release `down_arrow` key.
+-   `d` is sent via virtual hid keyboard.
+-   `event::type::caps_lock_state_changed (on) lazy` is sent by `modifiers.mandatory` and `modifier_flag_manager is updated`
+-   `hid::usage::keyboard_or_keypad::keyboard_caps_lock` is sent via virtual hid keyboard.
+-   macOS update the caps lock LED state (on).
+-   `event::type::caps_lock_state_changed (on)` is sent via `karabiner_observer`.
