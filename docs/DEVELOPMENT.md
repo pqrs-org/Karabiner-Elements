@@ -255,3 +255,34 @@ There are several way to get the session information, however, the reliable way 
         Thus, `SessionGetInfo` cannot determine the console user.
 -   `CGSessionCopyCurrentDictionary`
     -   `karabiner_session_monitor` uses it to avoid the above problems.
+
+---
+
+## Caps lock handling
+
+The caps lock is quite different from the normal modifier.
+
+-   The caps lock might be used another purpose. (e.g., switch input source)
+    -   We should refer the caps lock LED to determine caps lock is on/off.
+-   The caps lock modifier is not synchronized with the physical state of key down/up.
+    -   We should send key_down and key_up event to change the caps lock state.
+
+### Events related with caps lock in Karabiner-Elements
+
+-   `hid::usage::keyboard_or_keypad::keyboard_caps_lock`
+    -   The event is sent when the physical caps lock key is pressed.
+    -   The event does not change the state of `modifier_flag_manager` because the event might be used another purpose.
+-   `event::type::caps_lock_state_changed`
+    -   This event happens when the caps lock LED is changed.
+    -   The event changes the state of `modifier_flag_manager`.
+    -   `basic > from.modifiers.mandatory` and `basic > to.modifiers` also send this event in order to change the state of `modifier_flag_manager`,
+
+### The flow of updating `modifier_flag_manager`
+
+1.  karabiner_grabber receives `hid::usage::keyboard_or_keypad::keyboard_caps_lock`.
+2.  Send the event via virtual hid keyboard.
+3.  macOS update the caps lock LED of virtual hid keyboard.
+4.  Virtual hid keyboard sends the LED updated event.
+5.  karabiner_observer receives the LED updated event and tells it karabiner_grabber.
+6.  karabiner_grabber makes `event::type::caps_lock_state_changed` event and processes it.
+7.  The state of `modifier_flag_manager` is changed by `event::type::caps_lock_state_changed`.
