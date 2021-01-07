@@ -57,9 +57,16 @@ public:
                                                                                device_id);
         pointing_button_manager_.push_back_active_pointing_button(active_pointing_button);
       }
-    }
-
-    if (event.get_type() == event::type::caps_lock_state_changed) {
+    } else if (event.get_type() == event::type::set_modifier_flag_lock_state) {
+      if (auto pair = event.get_if<std::pair<modifier_flag, bool>>()) {
+        auto type = pair->second ? modifier_flag_manager::active_modifier_flag::type::increase_lock
+                                 : modifier_flag_manager::active_modifier_flag::type::decrease_lock;
+        modifier_flag_manager::active_modifier_flag active_modifier_flag(type,
+                                                                         pair->first,
+                                                                         device_id);
+        modifier_flag_manager_.push_back_active_modifier_flag(active_modifier_flag);
+      }
+    } else if (event.get_type() == event::type::caps_lock_state_changed) {
       if (auto integer_value = event.get_integer_value()) {
         auto type = (*integer_value ? modifier_flag_manager::active_modifier_flag::type::increase_lock
                                     : modifier_flag_manager::active_modifier_flag::type::decrease_lock);

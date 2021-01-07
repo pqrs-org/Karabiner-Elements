@@ -27,6 +27,7 @@ public:
     set_variable,
     mouse_key,
     stop_keyboard_repeat,
+    set_modifier_flag_lock_state,
     // virtual events (passive)
     device_keys_and_pointing_buttons_are_released,
     device_grabbed,
@@ -42,6 +43,7 @@ public:
   using value_t = std::variant<momentary_switch_event,                                   // For type::momentary_switch_event
                                pointing_motion,                                          // For type::pointing_motion
                                int64_t,                                                  // For type::caps_lock_state_changed
+                               std::pair<modifier_flag, bool>,                           // For type::set_modifier_flag_lock_state
                                std::string,                                              // For shell_command
                                std::vector<pqrs::osx::input_source_selector::specifier>, // For select_input_source
                                std::pair<std::string, int>,                              // For set_variable
@@ -171,6 +173,7 @@ public:
         break;
 
       case type::stop_keyboard_repeat:
+      case type::set_modifier_flag_lock_state:
       case type::device_keys_and_pointing_buttons_are_released:
       case type::device_grabbed:
       case type::device_ungrabbed:
@@ -219,6 +222,13 @@ public:
 
   static event make_stop_keyboard_repeat_event(void) {
     return make_virtual_event(type::stop_keyboard_repeat);
+  }
+
+  static event make_set_modifier_flag_lock_state_event(modifier_flag modifier_flag, bool state) {
+    event e;
+    e.type_ = type::set_modifier_flag_lock_state;
+    e.value_ = std::make_pair(modifier_flag, state);
+    return e;
   }
 
   static event make_device_keys_and_pointing_buttons_are_released_event(void) {
@@ -395,6 +405,7 @@ private:
       TO_C_STRING(set_variable);
       TO_C_STRING(mouse_key);
       TO_C_STRING(stop_keyboard_repeat);
+      TO_C_STRING(set_modifier_flag_lock_state);
       TO_C_STRING(device_keys_and_pointing_buttons_are_released);
       TO_C_STRING(device_grabbed);
       TO_C_STRING(device_ungrabbed);
@@ -426,6 +437,7 @@ private:
     TO_TYPE(set_variable);
     TO_TYPE(mouse_key);
     TO_TYPE(stop_keyboard_repeat);
+    TO_TYPE(set_modifier_flag_lock_state);
     TO_TYPE(device_keys_and_pointing_buttons_are_released);
     TO_TYPE(device_grabbed);
     TO_TYPE(device_ungrabbed);
