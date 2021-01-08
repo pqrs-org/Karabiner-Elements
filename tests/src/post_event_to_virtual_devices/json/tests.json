@@ -72,6 +72,12 @@
         "expected_post_event_to_virtual_devices_queue": "json/expected_post_event_to_virtual_devices_queue/collapse_lazy_events_1.json"
     },
     {
+        "description": "caps_lock_1",
+        "rules": ["json/rules/empty.json"],
+        "input_event_queue": "json/input_event_queue/caps_lock_1.jsonc",
+        "expected_post_event_to_virtual_devices_queue": "json/expected_post_event_to_virtual_devices_queue/caps_lock_1.json"
+    },
+    {
         "description": "not_changed_1",
         "rules": ["json/rules/from_key.json"],
         "input_event_queue": "json/input_event_queue/not_changed_1.json",

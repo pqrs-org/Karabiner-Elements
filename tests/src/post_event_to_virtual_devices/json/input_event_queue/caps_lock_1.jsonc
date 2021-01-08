@@ -1,0 +1,131 @@
+[
+    // caps_lock key_down
+    {
+        "device_id": 1,
+        "event": {
+            "type": "momentary_switch_event",
+            "momentary_switch_event": {
+                "key_code": "caps_lock"
+            }
+        },
+        "event_type": "key_down",
+        "lazy": false,
+        "original_event": {
+            "type": "momentary_switch_event",
+            "momentary_switch_event": {
+                "key_code": "caps_lock"
+            }
+        },
+        "event_time_stamp": {
+            "time_stamp": 2
+        },
+        "valid": true
+    },
+
+    // caps_lock key_up
+    {
+        "device_id": 1,
+        "event": {
+            "type": "momentary_switch_event",
+            "momentary_switch_event": {
+                "key_code": "caps_lock"
+            }
+        },
+        "event_type": "key_up",
+        "lazy": false,
+        "original_event": {
+            "type": "momentary_switch_event",
+            "momentary_switch_event": {
+                "key_code": "caps_lock"
+            }
+        },
+        "event_time_stamp": {
+            "time_stamp": 4
+        },
+        "valid": true
+    },
+
+    // We have to use caps_lock_state_changed to modify caps_lock state after sending caps_lock key.
+    {
+        "device_id": 1,
+        "event": {
+            "type": "caps_lock_state_changed",
+            "caps_lock_state_changed": 1
+        },
+        "event_type": "single",
+        "lazy": false,
+        "original_event": {
+            "type": "caps_lock_state_changed",
+            "caps_lock_state_changed": 1
+        },
+        "event_time_stamp": {
+            "time_stamp": 6
+        },
+        "valid": true
+    },
+
+    // caps_lock key_down
+    {
+        "device_id": 1,
+        "event": {
+            "type": "momentary_switch_event",
+            "momentary_switch_event": {
+                "key_code": "caps_lock"
+            }
+        },
+        "event_type": "key_down",
+        "lazy": false,
+        "original_event": {
+            "type": "momentary_switch_event",
+            "momentary_switch_event": {
+                "key_code": "caps_lock"
+            }
+        },
+        "event_time_stamp": {
+            "time_stamp": 8
+        },
+        "valid": true
+    },
+
+    // caps_lock key_up
+    {
+        "device_id": 1,
+        "event": {
+            "type": "momentary_switch_event",
+            "momentary_switch_event": {
+                "key_code": "caps_lock"
+            }
+        },
+        "event_type": "key_up",
+        "lazy": false,
+        "original_event": {
+            "type": "momentary_switch_event",
+            "momentary_switch_event": {
+                "key_code": "caps_lock"
+            }
+        },
+        "event_time_stamp": {
+            "time_stamp": 10
+        },
+        "valid": true
+    },
+
+    // We have to use caps_lock_state_changed to modify caps_lock state after sending caps_lock key.
+    {
+        "device_id": 1,
+        "event": {
+            "type": "caps_lock_state_changed",
+            "caps_lock_state_changed": 1
+        },
+        "event_type": "single",
+        "lazy": false,
+        "original_event": {
+            "type": "caps_lock_state_changed",
+            "caps_lock_state_changed": 1
+        },
+        "event_time_stamp": {
+            "time_stamp": 12
+        },
+        "valid": true
+    }
+]
