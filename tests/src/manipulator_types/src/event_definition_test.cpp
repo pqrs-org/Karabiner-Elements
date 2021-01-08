@@ -25,15 +25,13 @@ TEST_CASE("to_event_definition") {
                     pqrs::hid::usage_page::keyboard_or_keypad,
                     pqrs::hid::usage::keyboard_or_keypad::keyboard_spacebar)));
     REQUIRE(event_definition.make_modifier_events() ==
-            std::vector<krbn::event_queue::event>({
-                krbn::event_queue::event(
-                    krbn::momentary_switch_event(
-                        pqrs::hid::usage_page::keyboard_or_keypad,
-                        pqrs::hid::usage::keyboard_or_keypad::keyboard_left_gui)),
-                krbn::event_queue::event(
-                    krbn::momentary_switch_event(
-                        pqrs::hid::usage_page::keyboard_or_keypad,
-                        pqrs::hid::usage::keyboard_or_keypad::keyboard_left_shift)),
+            std::vector<krbn::momentary_switch_event>({
+                krbn::momentary_switch_event(
+                    pqrs::hid::usage_page::keyboard_or_keypad,
+                    pqrs::hid::usage::keyboard_or_keypad::keyboard_left_gui),
+                krbn::momentary_switch_event(
+                    pqrs::hid::usage_page::keyboard_or_keypad,
+                    pqrs::hid::usage::keyboard_or_keypad::keyboard_left_shift),
             }));
   }
   {
@@ -56,15 +54,13 @@ TEST_CASE("to_event_definition") {
                                                     krbn::manipulator::modifier_definition::modifier::left_command,
                                                 }));
     REQUIRE(event_definition.make_modifier_events() ==
-            std::vector<krbn::event_queue::event>({
-                krbn::event_queue::event(
-                    krbn::momentary_switch_event(
-                        pqrs::hid::usage_page::keyboard_or_keypad,
-                        pqrs::hid::usage::keyboard_or_keypad::keyboard_left_gui)),
-                krbn::event_queue::event(
-                    krbn::momentary_switch_event(
-                        pqrs::hid::usage_page::keyboard_or_keypad,
-                        pqrs::hid::usage::keyboard_or_keypad::keyboard_left_shift)),
+            std::vector<krbn::momentary_switch_event>({
+                krbn::momentary_switch_event(
+                    pqrs::hid::usage_page::keyboard_or_keypad,
+                    pqrs::hid::usage::keyboard_or_keypad::keyboard_left_gui),
+                krbn::momentary_switch_event(
+                    pqrs::hid::usage_page::keyboard_or_keypad,
+                    pqrs::hid::usage::keyboard_or_keypad::keyboard_left_shift),
             }));
   }
 
