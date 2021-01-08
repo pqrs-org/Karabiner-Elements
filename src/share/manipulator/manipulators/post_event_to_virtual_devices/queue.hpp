@@ -249,15 +249,17 @@ public:
     return keyboard_repeat_detector_;
   }
 
-  void emplace_back_key_event(pqrs::hid::usage_page::value_t usage_page,
-                              pqrs::hid::usage::value_t usage,
+  void emplace_back_key_event(const pqrs::hid::usage_pair& usage_pair,
                               event_type event_type,
                               absolute_time_point time_stamp) {
-    momentary_switch_event mse(usage_page, usage);
+    momentary_switch_event mse(usage_pair);
 
     adjust_time_stamp(time_stamp,
                       event_type,
                       mse.modifier_flag());
+
+    auto usage_page = usage_pair.get_usage_page();
+    auto usage = usage_pair.get_usage();
 
     if (usage_page == pqrs::hid::usage_page::keyboard_or_keypad) {
       bool modify_keys = true;

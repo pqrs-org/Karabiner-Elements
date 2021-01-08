@@ -105,15 +105,13 @@ public:
                 switch (front_input_event.get_event_type()) {
                   case event_type::key_down:
                     key_event_dispatcher_.dispatch_key_down_event(front_input_event.get_device_id(),
-                                                                  e->get_usage_pair().get_usage_page(),
-                                                                  e->get_usage_pair().get_usage(),
+                                                                  e->get_usage_pair(),
                                                                   queue_,
                                                                   front_input_event.get_event_time_stamp().get_time_stamp());
                     break;
 
                   case event_type::key_up:
-                    key_event_dispatcher_.dispatch_key_up_event(e->get_usage_pair().get_usage_page(),
-                                                                e->get_usage_pair().get_usage(),
+                    key_event_dispatcher_.dispatch_key_up_event(e->get_usage_pair(),
                                                                 queue_,
                                                                 front_input_event.get_event_time_stamp().get_time_stamp());
                     break;
@@ -167,8 +165,7 @@ public:
 
         case event_queue::event::type::stop_keyboard_repeat:
           if (auto e = queue_.get_keyboard_repeat_detector().get_repeating_key()) {
-            key_event_dispatcher_.dispatch_key_up_event(e->get_usage_pair().get_usage_page(),
-                                                        e->get_usage_pair().get_usage(),
+            key_event_dispatcher_.dispatch_key_up_event(e->get_usage_pair(),
                                                         queue_,
                                                         front_input_event.get_event_time_stamp().get_time_stamp());
           }

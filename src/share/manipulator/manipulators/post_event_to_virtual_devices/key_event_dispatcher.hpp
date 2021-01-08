@@ -9,33 +9,30 @@ namespace post_event_to_virtual_devices {
 class key_event_dispatcher final {
 public:
   void dispatch_key_down_event(device_id device_id,
-                               pqrs::hid::usage_page::value_t usage_page,
-                               pqrs::hid::usage::value_t usage,
+                               const pqrs::hid::usage_pair usage_pair,
                                queue& queue,
                                absolute_time_point time_stamp) {
     // Enqueue key_down event if it is not sent yet.
 
-    if (!key_event_exists(usage_page, usage)) {
-      pressed_keys_.emplace_back(device_id, std::make_pair(usage_page, usage));
-      enqueue_key_event(usage_page, usage, event_type::key_down, queue, time_stamp);
+    if (!key_event_exists(usage_pair)) {
+      pressed_keys_.emplace_back(device_id, usage_pair);
+      enqueue_key_event(usage_pair, event_type::key_down, queue, time_stamp);
     }
   }
 
-  void dispatch_key_up_event(pqrs::hid::usage_page::value_t usage_page,
-                             pqrs::hid::usage::value_t usage,
+  void dispatch_key_up_event(const pqrs::hid::usage_pair usage_pair,
                              queue& queue,
                              absolute_time_point time_stamp) {
     // Enqueue key_up event if it is already sent.
 
-    if (key_event_exists(usage_page, usage)) {
+    if (key_event_exists(usage_pair)) {
       pressed_keys_.erase(std::remove_if(std::begin(pressed_keys_),
                                          std::end(pressed_keys_),
                                          [&](auto& k) {
-                                           return k.second.first == usage_page &&
-                                                  k.second.second == usage;
+                                           return k.second == usage_pair;
                                          }),
                           std::end(pressed_keys_));
-      enqueue_key_event(usage_page, usage, event_type::key_up, queue, time_stamp);
+      enqueue_key_event(usage_pair, event_type::key_up, queue, time_stamp);
     }
   }
 
@@ -63,15 +60,13 @@ public:
         if (!pressed) {
           momentary_switch_event e(m);
           if (e.valid()) {
-            enqueue_key_event(e.get_usage_pair().get_usage_page(),
-                              e.get_usage_pair().get_usage(),
+            enqueue_key_event(e.get_usage_pair(),
                               event_type::key_down,
                               queue,
                               time_stamp);
 
             if (m == modifier_flag::caps_lock) {
-              enqueue_key_event(e.get_usage_pair().get_usage_page(),
-                                e.get_usage_pair().get_usage(),
+              enqueue_key_event(e.get_usage_pair(),
                                 event_type::key_up,
                                 queue,
                                 time_stamp);
@@ -85,15 +80,13 @@ public:
           momentary_switch_event e(m);
           if (e.valid()) {
             if (m == modifier_flag::caps_lock) {
-              enqueue_key_event(e.get_usage_pair().get_usage_page(),
-                                e.get_usage_pair().get_usage(),
+              enqueue_key_event(e.get_usage_pair(),
                                 event_type::key_down,
                                 queue,
                                 time_stamp);
             }
 
-            enqueue_key_event(e.get_usage_pair().get_usage_page(),
-                              e.get_usage_pair().get_usage(),
+            enqueue_key_event(e.get_usage_pair(),
                               event_type::key_up,
                               queue,
                               time_stamp);
@@ -112,8 +105,7 @@ public:
       for (const auto& k : pressed_keys_) {
         if (k.first == device_id) {
           found = true;
-          dispatch_key_up_event(k.second.first,
-                                k.second.second,
+          dispatch_key_up_event(k.second,
                                 queue,
                                 time_stamp);
           break;
@@ -125,10 +117,6 @@ public:
     }
   }
 
-  const std::vector<std::pair<device_id, std::pair<pqrs::hid::usage_page::value_t, pqrs::hid::usage::value_t>>>& get_pressed_keys(void) const {
-    return pressed_keys_;
-  }
-
   void insert_pressed_modifier_flag(modifier_flag modifier_flag) {
     pressed_modifier_flags_.insert(modifier_flag);
   }
@@ -138,26 +126,23 @@ public:
   }
 
 private:
-  bool key_event_exists(pqrs::hid::usage_page::value_t usage_page,
-                        pqrs::hid::usage::value_t usage) {
+  bool key_event_exists(const pqrs::hid::usage_pair& usage_pair) {
     auto it = std::find_if(std::begin(pressed_keys_),
                            std::end(pressed_keys_),
                            [&](auto& k) {
-                             return k.second.first == usage_page &&
-                                    k.second.second == usage;
+                             return k.second == usage_pair;
                            });
     return (it != std::end(pressed_keys_));
   }
 
-  void enqueue_key_event(pqrs::hid::usage_page::value_t usage_page,
-                         pqrs::hid::usage::value_t usage,
+  void enqueue_key_event(const pqrs::hid::usage_pair& usage_pair,
                          event_type event_type,
                          queue& queue,
                          absolute_time_point time_stamp) {
-    queue.emplace_back_key_event(usage_page, usage, event_type, time_stamp);
+    queue.emplace_back_key_event(usage_pair, event_type, time_stamp);
   }
 
-  std::vector<std::pair<device_id, std::pair<pqrs::hid::usage_page::value_t, pqrs::hid::usage::value_t>>> pressed_keys_;
+  std::vector<std::pair<device_id, pqrs::hid::usage_pair>> pressed_keys_;
   std::unordered_set<modifier_flag> pressed_modifier_flags_;
 };
 } // namespace post_event_to_virtual_devices
