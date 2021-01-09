@@ -47,7 +47,7 @@
 
     // We have to use caps_lock_state_changed to modify caps_lock state after sending caps_lock key.
     {
-        "device_id": 1,
+        "device_id": 0,
         "event": {
             "type": "caps_lock_state_changed",
             "caps_lock_state_changed": 1
@@ -112,7 +112,7 @@
 
     // We have to use caps_lock_state_changed to modify caps_lock state after sending caps_lock key.
     {
-        "device_id": 1,
+        "device_id": 0,
         "event": {
             "type": "caps_lock_state_changed",
             "caps_lock_state_changed": 1
