@@ -127,6 +127,8 @@ inline void post_events_at_key_down(const event_queue::entry& front_input_event,
       if (auto e = event->get_if<momentary_switch_event>()) {
         if (e->modifier_flag()) {
           is_modifier_key_event = true;
+        } else if (e->caps_lock()) {
+          is_modifier_key_event = true;
         }
       }
 
@@ -191,9 +193,11 @@ inline void post_events_at_key_down(const event_queue::entry& front_input_event,
       {
         for (const auto& e : to_modifier_events) {
           if (it == std::end(to_events) - 1 && is_modifier_key_event) {
+            auto pair = base::make_lazy_modifier_key_event(e, event_type::key_up);
+
             current_manipulated_original_event.get_events_at_key_up().emplace_back_event(front_input_event.get_device_id(),
-                                                                                         event_queue::event(e),
-                                                                                         event_type::key_up,
+                                                                                         pair.first,
+                                                                                         pair.second,
                                                                                          front_input_event.get_original_event(),
                                                                                          true);
           } else {

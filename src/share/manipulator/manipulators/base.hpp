@@ -79,23 +79,30 @@ public:
       auto t = event_time_stamp;
       t.set_time_stamp(t.get_time_stamp() + time_stamp_delay++);
 
-      auto event = event_queue::event(momentary_switch_event);
-      if (momentary_switch_event.caps_lock()) {
-        // Send set_modifier_flag_lock_state event for caps_lock.
-        event = event_queue::event::make_set_modifier_flag_lock_state_event(modifier_flag::caps_lock,
-                                                                            event_type == event_type::key_down);
-        event_type = event_type::single;
-      }
+      auto pair = make_lazy_modifier_key_event(momentary_switch_event, event_type);
 
       event_queue::entry entry(device_id,
                                t,
-                               event,
-                               event_type,
+                               pair.first,
+                               pair.second,
                                original_event,
                                event_queue::state::manipulated,
                                lazy);
       output_event_queue.push_back_entry(entry);
     }
+  }
+
+  static std::pair<event_queue::event, event_type> make_lazy_modifier_key_event(const momentary_switch_event& momentary_switch_event,
+                                                                                event_type event_type) {
+    auto event = event_queue::event(momentary_switch_event);
+    if (momentary_switch_event.caps_lock()) {
+      // Send set_modifier_flag_lock_state event for caps_lock.
+      event = event_queue::event::make_set_modifier_flag_lock_state_event(modifier_flag::caps_lock,
+                                                                          event_type == event_type::key_down);
+      event_type = event_type::single;
+    }
+
+    return std::make_pair(event, event_type);
   }
 
 protected:
