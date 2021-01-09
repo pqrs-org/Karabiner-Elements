@@ -22,6 +22,22 @@ public:
                          device_id device_id) : type_(type),
                                                 modifier_flag_(modifier_flag),
                                                 device_id_(device_id) {
+      switch (type) {
+        case type::increase:
+        case type::decrease:
+          break;
+        case type::increase_lock:
+        case type::decrease_lock:
+          // The lock is shared by all devices because it is not related the hardware state.
+          //
+          // Note:
+          // The caps lock state refers the virtual keyboard LED state and
+          // it is not related with the caps lock key_down and key_up events.
+          // (The behavior is described in docs/DEVELOPMENT.md.)
+
+          device_id_ = krbn::device_id(0);
+          break;
+      }
     }
 
     type get_type(void) const {

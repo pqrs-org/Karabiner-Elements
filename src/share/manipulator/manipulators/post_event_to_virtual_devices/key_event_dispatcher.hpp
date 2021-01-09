@@ -59,11 +59,11 @@ public:
 
       if (modifier_flag_manager.is_pressed(m)) {
         if (!pressed) {
-          momentary_switch_event e(m);
-          if (e.valid()) {
-            if (m == modifier_flag::caps_lock) {
-              send_caps_lock = true;
-            } else {
+          if (m == modifier_flag::caps_lock) {
+            send_caps_lock = true;
+          } else {
+            momentary_switch_event e(m);
+            if (e.valid()) {
               enqueue_key_event(e.get_usage_pair(),
                                 event_type::key_down,
                                 queue,
@@ -75,11 +75,11 @@ public:
 
       } else {
         if (pressed) {
-          momentary_switch_event e(m);
-          if (e.valid()) {
-            if (m == modifier_flag::caps_lock) {
-              send_caps_lock = true;
-            } else {
+          if (m == modifier_flag::caps_lock) {
+            send_caps_lock = true;
+          } else {
+            momentary_switch_event e(m);
+            if (e.valid()) {
               enqueue_key_event(e.get_usage_pair(),
                                 event_type::key_up,
                                 queue,

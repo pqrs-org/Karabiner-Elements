@@ -63,8 +63,7 @@ public:
                                  : modifier_flag_manager::active_modifier_flag::type::decrease_lock;
         modifier_flag_manager::active_modifier_flag active_modifier_flag(type,
                                                                          pair->first,
-                                                                         // Use device_id(0) for virtual events.
-                                                                         krbn::device_id(0));
+                                                                         device_id);
         modifier_flag_manager_.push_back_active_modifier_flag(active_modifier_flag);
       }
     } else if (event.get_type() == event::type::caps_lock_state_changed) {
@@ -73,8 +72,7 @@ public:
                                     : modifier_flag_manager::active_modifier_flag::type::decrease_lock);
         modifier_flag_manager::active_modifier_flag active_modifier_flag(type,
                                                                          modifier_flag::caps_lock,
-                                                                         // Use device_id(0) for virtual events.
-                                                                         krbn::device_id(0));
+                                                                         device_id);
         modifier_flag_manager_.push_back_active_modifier_flag(active_modifier_flag);
       }
     }
