@@ -55,19 +55,17 @@ public:
     };
     for (const auto& m : modifier_flags) {
       bool pressed = pressed_modifier_flags_.find(m) != std::end(pressed_modifier_flags_);
+      bool send_caps_lock = false;
 
       if (modifier_flag_manager.is_pressed(m)) {
         if (!pressed) {
           momentary_switch_event e(m);
           if (e.valid()) {
-            enqueue_key_event(e.get_usage_pair(),
-                              event_type::key_down,
-                              queue,
-                              time_stamp);
-
             if (m == modifier_flag::caps_lock) {
+              send_caps_lock = true;
+            } else {
               enqueue_key_event(e.get_usage_pair(),
-                                event_type::key_up,
+                                event_type::key_down,
                                 queue,
                                 time_stamp);
             }
@@ -80,18 +78,34 @@ public:
           momentary_switch_event e(m);
           if (e.valid()) {
             if (m == modifier_flag::caps_lock) {
+              send_caps_lock = true;
+            } else {
               enqueue_key_event(e.get_usage_pair(),
-                                event_type::key_down,
+                                event_type::key_up,
                                 queue,
                                 time_stamp);
             }
-
-            enqueue_key_event(e.get_usage_pair(),
-                              event_type::key_up,
-                              queue,
-                              time_stamp);
           }
           pressed_modifier_flags_.erase(m);
+        }
+      }
+
+      //
+      // caps_lock handling
+      //
+
+      if (send_caps_lock) {
+        momentary_switch_event e(modifier_flag::caps_lock);
+
+        if (!key_event_exists(e.get_usage_pair())) {
+          enqueue_key_event(e.get_usage_pair(),
+                            event_type::key_down,
+                            queue,
+                            time_stamp);
+          enqueue_key_event(e.get_usage_pair(),
+                            event_type::key_up,
+                            queue,
+                            time_stamp);
         }
       }
     }

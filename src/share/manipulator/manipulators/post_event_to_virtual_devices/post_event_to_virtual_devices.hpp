@@ -42,8 +42,38 @@ public:
         return manipulate_result::passed;
       }
 
+      // Note: output_event_queue::modifier_flag_manager_ will be changed by push_back_entry.
       output_event_queue->push_back_entry(front_input_event);
       front_input_event.set_valid(false);
+
+      // We have to synchronize the caps_lock state in the following variables when caps lock state is changed.
+      // - output_event_queue::modifier_flag_manager_
+      // - key_event_dispatcher_.pressed_modifier_flags_
+      if (front_input_event.get_event().get_type() == event_queue::event::type::caps_lock_state_changed) {
+        // We should synchronize the key_event_dispatcher_ state
+        // in order to send caps_lock key event properly when caps_lock is used as modifiers.mandatory.
+        //
+        // Example: caps_lock+f9 -> f10
+        //
+        // 1. caps_lock key_down
+        // 2. caps_lock key_up
+        // 3. caps_lock_state_changed(on)
+        // 4. f9 key_down
+        // 5. set_modifier_flag_lock_state (caps_lock off)
+        //    (from modifiers.mandatory)
+        //
+        // Without synchronization, the caps_lock event will not be sent at (5)
+        // because the caps lock state of key_event_dispatcher_ is off.
+        // We have to set the state on at (3).
+
+        if (auto state = front_input_event.get_event().get_integer_value()) {
+          if (*state) {
+            key_event_dispatcher_.insert_pressed_modifier_flag(modifier_flag::caps_lock);
+          } else {
+            key_event_dispatcher_.erase_pressed_modifier_flag(modifier_flag::caps_lock);
+          }
+        }
+      }
 
       // Dispatch modifier key event only when front_input_event is key_down or modifier key.
 
@@ -54,11 +84,6 @@ public:
       if (auto e = front_input_event.get_event().get_if<momentary_switch_event>()) {
         if (e->modifier_flag()) {
           front_input_event_modifier_key_event = true;
-        } else if (e->caps_lock()) {
-          // Treat caps_lock as modifier key event when lazy is true (e.g., caps_lock is sent by from_mandatory_modifiers)
-          if (front_input_event.get_lazy()) {
-            front_input_event_modifier_key_event = true;
-          }
         }
       }
 
@@ -171,32 +196,6 @@ public:
           }
           break;
 
-        case event_queue::event::type::caps_lock_state_changed:
-          // We should synchronize the key_event_dispatcher_ state
-          // in order to send caps_lock key event properly when caps_lock is used as modifiers.mandatory.
-          //
-          // Example: caps_lock+f9 -> f10
-          //
-          // 1. caps_lock key_down
-          // 2. caps_lock key_up
-          // 3. caps_lock_state_changed(on)
-          // 4. f9 key_down
-          // 5. set_modifier_flag_lock_state (caps_lock off)
-          //    (from modifiers.mandatory)
-          //
-          // Without synchronization, the caps_lock event will not be sent at (5)
-          // because the caps lock state of key_event_dispatcher_ is off.
-          // We have to set the state on at (3).
-
-          if (auto state = front_input_event.get_event().get_integer_value()) {
-            if (*state) {
-              key_event_dispatcher_.insert_pressed_modifier_flag(modifier_flag::caps_lock);
-            } else {
-              key_event_dispatcher_.erase_pressed_modifier_flag(modifier_flag::caps_lock);
-            }
-          }
-          break;
-
         case event_queue::event::type::system_preferences_properties_changed:
           if (auto properties = front_input_event.get_event().get_if<pqrs::osx::system_preferences::properties>()) {
             mouse_key_handler_->set_system_preferences_properties(*properties);
@@ -215,6 +214,7 @@ public:
         case event_queue::event::type::device_keys_and_pointing_buttons_are_released:
         case event_queue::event::type::device_grabbed:
         case event_queue::event::type::device_ungrabbed:
+        case event_queue::event::type::caps_lock_state_changed:
         case event_queue::event::type::pointing_device_event_from_event_tap:
         case event_queue::event::type::frontmost_application_changed:
         case event_queue::event::type::input_source_changed:
