@@ -83,7 +83,7 @@
         "keyboard_input": {
             "keys": [
                 {
-                    "key_code": "caps_lock"
+                    "key_code": "tab"
                 }
             ],
             "modifiers": []
@@ -97,26 +97,6 @@
             "modifiers": []
         },
         "time_stamp": 50,
-        "type": "keyboard_input"
-    },
-    {
-        "keyboard_input": {
-            "keys": [
-                {
-                    "key_code": "tab"
-                }
-            ],
-            "modifiers": []
-        },
-        "time_stamp": 55,
-        "type": "keyboard_input"
-    },
-    {
-        "keyboard_input": {
-            "keys": [],
-            "modifiers": []
-        },
-        "time_stamp": 60,
         "type": "keyboard_input"
     }
 ]
