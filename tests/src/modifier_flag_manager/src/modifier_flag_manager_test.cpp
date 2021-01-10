@@ -11,11 +11,27 @@ krbn::modifier_flag_manager::active_modifier_flag decrease_left_shift_1(krbn::mo
                                                                         krbn::modifier_flag::left_shift,
                                                                         krbn::device_id(1));
 
-krbn::modifier_flag_manager::active_modifier_flag lock_left_shift_1(krbn::modifier_flag_manager::active_modifier_flag::type::increase_lock,
+krbn::modifier_flag_manager::active_modifier_flag lock_left_shift(krbn::modifier_flag_manager::active_modifier_flag::type::increase_lock,
+                                                                  krbn::modifier_flag::left_shift,
+                                                                  krbn::device_id(1));
+
+krbn::modifier_flag_manager::active_modifier_flag decrease_lock_left_shift(krbn::modifier_flag_manager::active_modifier_flag::type::decrease_lock,
+                                                                           krbn::modifier_flag::left_shift,
+                                                                           krbn::device_id(1));
+
+krbn::modifier_flag_manager::active_modifier_flag led_lock_caps_lock(krbn::modifier_flag_manager::active_modifier_flag::type::increase_led_lock,
+                                                                     krbn::modifier_flag::caps_lock,
+                                                                     krbn::device_id(1));
+
+krbn::modifier_flag_manager::active_modifier_flag decrease_led_lock_caps_lock(krbn::modifier_flag_manager::active_modifier_flag::type::decrease_led_lock,
+                                                                              krbn::modifier_flag::caps_lock,
+                                                                              krbn::device_id(1));
+
+krbn::modifier_flag_manager::active_modifier_flag sticky_left_shift(krbn::modifier_flag_manager::active_modifier_flag::type::increase_sticky,
                                                                     krbn::modifier_flag::left_shift,
                                                                     krbn::device_id(1));
 
-krbn::modifier_flag_manager::active_modifier_flag decrease_lock_left_shift_1(krbn::modifier_flag_manager::active_modifier_flag::type::decrease_lock,
+krbn::modifier_flag_manager::active_modifier_flag decrease_sticky_left_shift(krbn::modifier_flag_manager::active_modifier_flag::type::decrease_sticky,
                                                                              krbn::modifier_flag::left_shift,
                                                                              krbn::device_id(1));
 
@@ -134,14 +150,47 @@ TEST_CASE("modifier_flag_manager") {
   {
     krbn::modifier_flag_manager modifier_flag_manager;
 
-    modifier_flag_manager.push_back_active_modifier_flag(lock_left_shift_1);
+    modifier_flag_manager.push_back_active_modifier_flag(lock_left_shift);
     modifier_flag_manager.push_back_active_modifier_flag(left_shift_1);
     REQUIRE(modifier_flag_manager.is_pressed(krbn::modifier_flag::left_shift) == true);
 
     modifier_flag_manager.erase_all_active_modifier_flags_except_lock(krbn::device_id(1));
     REQUIRE(modifier_flag_manager.is_pressed(krbn::modifier_flag::left_shift) == true);
 
-    modifier_flag_manager.push_back_active_modifier_flag(decrease_lock_left_shift_1);
+    modifier_flag_manager.push_back_active_modifier_flag(decrease_lock_left_shift);
+    REQUIRE(modifier_flag_manager.is_pressed(krbn::modifier_flag::left_shift) == false);
+  }
+
+  //
+  // type::decrease_lock
+  //
+
+  {
+    krbn::modifier_flag_manager modifier_flag_manager;
+
+    modifier_flag_manager.push_back_active_modifier_flag(decrease_lock_left_shift);
+    modifier_flag_manager.push_back_active_modifier_flag(left_shift_1);
+    // lock_left_shift(-1), left_shift(+1)
+    REQUIRE(modifier_flag_manager.is_pressed(krbn::modifier_flag::left_shift) == false);
+
+    modifier_flag_manager.push_back_active_modifier_flag(left_shift_1);
+    // lock_left_shift(-1), left_shift(+2)
+    REQUIRE(modifier_flag_manager.is_pressed(krbn::modifier_flag::left_shift) == true);
+
+    modifier_flag_manager.push_back_active_modifier_flag(decrease_left_shift_1);
+    // lock_left_shift(-1), left_shift(+1)
+    REQUIRE(modifier_flag_manager.is_pressed(krbn::modifier_flag::left_shift) == false);
+
+    modifier_flag_manager.push_back_active_modifier_flag(decrease_lock_left_shift);
+    // lock_left_shift(-1), left_shift(+1)
+    REQUIRE(modifier_flag_manager.is_pressed(krbn::modifier_flag::left_shift) == false);
+
+    modifier_flag_manager.push_back_active_modifier_flag(lock_left_shift);
+    // lock_left_shift(0), left_shift(+1)
+    REQUIRE(modifier_flag_manager.is_pressed(krbn::modifier_flag::left_shift) == true);
+
+    modifier_flag_manager.push_back_active_modifier_flag(decrease_left_shift_1);
+    // lock_left_shift(0), left_shift(0)
     REQUIRE(modifier_flag_manager.is_pressed(krbn::modifier_flag::left_shift) == false);
   }
 
@@ -152,12 +201,76 @@ TEST_CASE("modifier_flag_manager") {
   {
     krbn::modifier_flag_manager modifier_flag_manager;
 
-    modifier_flag_manager.push_back_active_modifier_flag(lock_left_shift_1);
-    modifier_flag_manager.push_back_active_modifier_flag(lock_left_shift_1);
+    modifier_flag_manager.push_back_active_modifier_flag(lock_left_shift);
+    modifier_flag_manager.push_back_active_modifier_flag(lock_left_shift);
     REQUIRE(modifier_flag_manager.is_pressed(krbn::modifier_flag::left_shift) == true);
 
-    modifier_flag_manager.push_back_active_modifier_flag(decrease_lock_left_shift_1);
+    modifier_flag_manager.push_back_active_modifier_flag(decrease_lock_left_shift);
     REQUIRE(modifier_flag_manager.is_pressed(krbn::modifier_flag::left_shift) == false);
+  }
+
+  //
+  // led_lock
+  //
+
+  {
+    krbn::modifier_flag_manager modifier_flag_manager;
+
+    modifier_flag_manager.push_back_active_modifier_flag(led_lock_caps_lock);
+    // led_lock_caps_lock(1)
+    REQUIRE(modifier_flag_manager.is_pressed(krbn::modifier_flag::caps_lock) == true);
+
+    modifier_flag_manager.push_back_active_modifier_flag(led_lock_caps_lock);
+    // led_lock_caps_lock(1)
+    REQUIRE(modifier_flag_manager.is_pressed(krbn::modifier_flag::caps_lock) == true);
+
+    modifier_flag_manager.push_back_active_modifier_flag(decrease_led_lock_caps_lock);
+    // led_lock_caps_lock(0)
+    REQUIRE(modifier_flag_manager.is_pressed(krbn::modifier_flag::caps_lock) == false);
+
+    modifier_flag_manager.push_back_active_modifier_flag(decrease_led_lock_caps_lock);
+    // led_lock_caps_lock(0)
+    REQUIRE(modifier_flag_manager.is_pressed(krbn::modifier_flag::caps_lock) == false);
+
+    modifier_flag_manager.push_back_active_modifier_flag(led_lock_caps_lock);
+    // led_lock_caps_lock(1)
+    REQUIRE(modifier_flag_manager.is_pressed(krbn::modifier_flag::caps_lock) == true);
+  }
+
+  //
+  // sticky
+  //
+
+  {
+    krbn::modifier_flag_manager modifier_flag_manager;
+
+    modifier_flag_manager.push_back_active_modifier_flag(sticky_left_shift);
+    // sticky_left_shift(1)
+    REQUIRE(modifier_flag_manager.is_pressed(krbn::modifier_flag::left_shift) == true);
+
+    modifier_flag_manager.push_back_active_modifier_flag(sticky_left_shift);
+    // sticky_left_shift(2)
+    REQUIRE(modifier_flag_manager.is_pressed(krbn::modifier_flag::left_shift) == true);
+
+    modifier_flag_manager.push_back_active_modifier_flag(decrease_sticky_left_shift);
+    // sticky_left_shift(1)
+    REQUIRE(modifier_flag_manager.is_pressed(krbn::modifier_flag::left_shift) == true);
+
+    modifier_flag_manager.push_back_active_modifier_flag(decrease_sticky_left_shift);
+    // sticky_left_shift(0)
+    REQUIRE(modifier_flag_manager.is_pressed(krbn::modifier_flag::left_shift) == false);
+
+    modifier_flag_manager.push_back_active_modifier_flag(decrease_sticky_left_shift);
+    // sticky_left_shift(-1)
+    REQUIRE(modifier_flag_manager.is_pressed(krbn::modifier_flag::left_shift) == false);
+
+    modifier_flag_manager.push_back_active_modifier_flag(left_shift_1);
+    // sticky_left_shift(-1), left_shift(+1)
+    REQUIRE(modifier_flag_manager.is_pressed(krbn::modifier_flag::left_shift) == false);
+
+    modifier_flag_manager.erase_all_sticky_modifier_flags();
+    // sticky_left_shift(0), left_shift(+1)
+    REQUIRE(modifier_flag_manager.is_pressed(krbn::modifier_flag::left_shift) == true);
   }
 }
 

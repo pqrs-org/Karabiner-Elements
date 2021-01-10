@@ -15,6 +15,10 @@ public:
       decrease,
       increase_lock,
       decrease_lock,
+      increase_led_lock, // Synchronized with LED state such as caps lock.
+      decrease_led_lock, // Synchronized with LED state such as caps lock.
+      increase_sticky,
+      decrease_sticky,
     };
 
     active_modifier_flag(type type,
@@ -28,7 +32,11 @@ public:
           break;
         case type::increase_lock:
         case type::decrease_lock:
-          // The lock is shared by all devices because it is not related the hardware state.
+        case type::increase_led_lock:
+        case type::decrease_led_lock:
+        case type::increase_sticky:
+        case type::decrease_sticky:
+          // These lock and sticky are shared by all devices because it is not related the hardware state.
           //
           // Note:
           // The caps lock state refers the virtual keyboard LED state and
@@ -58,19 +66,84 @@ public:
           return type::decrease;
         case type::decrease:
           return type::increase;
+
         case type::increase_lock:
           return type::decrease_lock;
         case type::decrease_lock:
           return type::increase_lock;
+
+        case type::increase_led_lock:
+          return type::decrease_led_lock;
+        case type::decrease_led_lock:
+          return type::increase_led_lock;
+
+        case type::increase_sticky:
+          return type::decrease_sticky;
+        case type::decrease_sticky:
+          return type::increase_sticky;
       }
     }
 
     int get_count(void) const {
-      if (type_ == type::increase ||
-          type_ == type::increase_lock) {
-        return 1;
-      } else {
-        return -1;
+      switch (type_) {
+        case type::increase:
+        case type::increase_lock:
+        case type::increase_led_lock:
+        case type::increase_sticky:
+          return 1;
+        case type::decrease:
+        case type::decrease_lock:
+        case type::decrease_led_lock:
+        case type::decrease_sticky:
+          return -1;
+      }
+    }
+
+    bool any_lock(void) const {
+      switch (type_) {
+        case type::increase_lock:
+        case type::decrease_lock:
+        case type::increase_led_lock:
+        case type::decrease_led_lock:
+          return true;
+
+        case type::increase:
+        case type::decrease:
+        case type::increase_sticky:
+        case type::decrease_sticky:
+          return false;
+      }
+    }
+
+    bool led_lock(void) const {
+      switch (type_) {
+        case type::increase_led_lock:
+        case type::decrease_led_lock:
+          return true;
+
+        case type::increase:
+        case type::decrease:
+        case type::increase_lock:
+        case type::decrease_lock:
+        case type::increase_sticky:
+        case type::decrease_sticky:
+          return false;
+      }
+    }
+
+    bool sticky(void) const {
+      switch (type_) {
+        case type::increase_sticky:
+        case type::decrease_sticky:
+          return true;
+
+        case type::increase:
+        case type::decrease:
+        case type::increase_lock:
+        case type::decrease_lock:
+        case type::increase_led_lock:
+        case type::decrease_led_lock:
+          return false;
       }
     }
 
@@ -100,13 +173,29 @@ public:
     switch (flag.get_type()) {
       case active_modifier_flag::type::increase:
       case active_modifier_flag::type::decrease:
-      case active_modifier_flag::type::increase_lock:
+      case active_modifier_flag::type::increase_sticky:
+      case active_modifier_flag::type::decrease_sticky:
         active_modifier_flags_.push_back(flag);
         erase_pairs();
         break;
 
+      case active_modifier_flag::type::increase_lock:
       case active_modifier_flag::type::decrease_lock:
-        // Remove all type::increase_lock
+      case active_modifier_flag::type::increase_led_lock:
+        // Remove same type entries.
+        active_modifier_flags_.erase(std::remove_if(std::begin(active_modifier_flags_),
+                                                    std::end(active_modifier_flags_),
+                                                    [&](auto& f) {
+                                                      return f == flag;
+                                                    }),
+                                     std::end(active_modifier_flags_));
+
+        active_modifier_flags_.push_back(flag);
+        erase_pairs();
+        break;
+
+      case active_modifier_flag::type::decrease_led_lock:
+        // Remove all type::increase_led_lock.
         active_modifier_flags_.erase(std::remove_if(std::begin(active_modifier_flags_),
                                                     std::end(active_modifier_flags_),
                                                     [&](auto& f) {
@@ -130,9 +219,16 @@ public:
     active_modifier_flags_.erase(std::remove_if(std::begin(active_modifier_flags_),
                                                 std::end(active_modifier_flags_),
                                                 [&](const active_modifier_flag& f) {
-                                                  return f.get_device_id() == device_id &&
-                                                         (f.get_type() != active_modifier_flag::type::increase_lock &&
-                                                          f.get_type() != active_modifier_flag::type::decrease_lock);
+                                                  return f.get_device_id() == device_id && !f.any_lock();
+                                                }),
+                                 std::end(active_modifier_flags_));
+  }
+
+  void erase_all_sticky_modifier_flags(void) {
+    active_modifier_flags_.erase(std::remove_if(std::begin(active_modifier_flags_),
+                                                std::end(active_modifier_flags_),
+                                                [&](const active_modifier_flag& f) {
+                                                  return f.sticky();
                                                 }),
                                  std::end(active_modifier_flags_));
   }
