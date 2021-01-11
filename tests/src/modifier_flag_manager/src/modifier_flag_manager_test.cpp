@@ -235,22 +235,27 @@ TEST_CASE("modifier_flag_manager") {
     modifier_flag_manager.push_back_active_modifier_flag(led_lock_caps_lock);
     // led_lock_caps_lock(1)
     REQUIRE(modifier_flag_manager.is_pressed(krbn::modifier_flag::caps_lock) == true);
+    REQUIRE(modifier_flag_manager.led_lock_count() == 1);
 
     modifier_flag_manager.push_back_active_modifier_flag(led_lock_caps_lock);
     // led_lock_caps_lock(1)
     REQUIRE(modifier_flag_manager.is_pressed(krbn::modifier_flag::caps_lock) == true);
+    REQUIRE(modifier_flag_manager.led_lock_count() == 1);
 
     modifier_flag_manager.push_back_active_modifier_flag(decrease_led_lock_caps_lock);
     // led_lock_caps_lock(0)
     REQUIRE(modifier_flag_manager.is_pressed(krbn::modifier_flag::caps_lock) == false);
+    REQUIRE(modifier_flag_manager.led_lock_count() == 0);
 
     modifier_flag_manager.push_back_active_modifier_flag(decrease_led_lock_caps_lock);
     // led_lock_caps_lock(0)
     REQUIRE(modifier_flag_manager.is_pressed(krbn::modifier_flag::caps_lock) == false);
+    REQUIRE(modifier_flag_manager.led_lock_count() == 0);
 
     modifier_flag_manager.push_back_active_modifier_flag(led_lock_caps_lock);
     // led_lock_caps_lock(1)
     REQUIRE(modifier_flag_manager.is_pressed(krbn::modifier_flag::caps_lock) == true);
+    REQUIRE(modifier_flag_manager.led_lock_count() == 1);
   }
 
   //

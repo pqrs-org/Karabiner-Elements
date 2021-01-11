@@ -265,6 +265,14 @@ public:
     return active_modifier_flags_.size();
   }
 
+  size_t led_lock_count(void) const {
+    return std::count_if(std::begin(active_modifier_flags_),
+                         std::end(active_modifier_flags_),
+                         [](const active_modifier_flag& f) {
+                           return f.led_lock();
+                         });
+  }
+
   pqrs::karabiner::driverkit::virtual_hid_device_driver::hid_report::modifiers make_hid_report_modifiers(void) const {
     pqrs::karabiner::driverkit::virtual_hid_device_driver::hid_report::modifiers modifiers;
 
