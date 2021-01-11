@@ -165,10 +165,6 @@ public:
     device_id device_id_;
   };
 
-  const std::vector<active_modifier_flag>& get_active_modifier_flags(void) const {
-    return active_modifier_flags_;
-  }
-
   void push_back_active_modifier_flag(const active_modifier_flag& flag) {
     switch (flag.get_type()) {
       case active_modifier_flag::type::increase:
@@ -247,6 +243,10 @@ public:
     }
 
     return count > 0;
+  }
+
+  size_t active_modifier_flags_size(void) const {
+    return active_modifier_flags_.size();
   }
 
   pqrs::karabiner::driverkit::virtual_hid_device_driver::hid_report::modifiers make_hid_report_modifiers(void) const {
