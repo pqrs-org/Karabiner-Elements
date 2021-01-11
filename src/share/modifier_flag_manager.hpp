@@ -235,14 +235,30 @@ public:
 
   bool is_pressed(modifier_flag modifier_flag) const {
     int count = 0;
+    size_t size = 0;
+
+    int led_count = 0;
+    size_t led_size = 0;
 
     for (const auto& f : active_modifier_flags_) {
       if (f.get_modifier_flag() == modifier_flag) {
-        count += f.get_count();
+        if (f.led_lock()) {
+          led_count += f.get_count();
+          ++led_size;
+        } else {
+          count += f.get_count();
+          ++size;
+        }
       }
     }
 
-    return count > 0;
+    if (size == 0) {
+      // Use led lock if other flags do not exist.
+      return led_count > 0;
+    } else {
+      // Ignore led lock if other flags exist.
+      return count > 0;
+    }
   }
 
   size_t active_modifier_flags_size(void) const {
