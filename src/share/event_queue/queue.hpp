@@ -57,19 +57,19 @@ public:
                                                                                device_id);
         pointing_button_manager_.push_back_active_pointing_button(active_pointing_button);
       }
-    } else if (event.get_type() == event::type::set_modifier_flag_lock_state) {
-      if (auto pair = event.get_if<std::pair<modifier_flag, bool>>()) {
-        auto type = pair->second ? modifier_flag_manager::active_modifier_flag::type::increase_lock
-                                 : modifier_flag_manager::active_modifier_flag::type::decrease_lock;
+    } else if (event.get_type() == event::type::sticky_modifier) {
+      if (auto sticky_modifier = event.get_sticky_modifier()) {
+        auto type = sticky_modifier->second ? modifier_flag_manager::active_modifier_flag::type::increase_sticky
+                                            : modifier_flag_manager::active_modifier_flag::type::decrease_sticky;
         modifier_flag_manager::active_modifier_flag active_modifier_flag(type,
-                                                                         pair->first,
+                                                                         sticky_modifier->first,
                                                                          device_id);
         modifier_flag_manager_.push_back_active_modifier_flag(active_modifier_flag);
       }
     } else if (event.get_type() == event::type::caps_lock_state_changed) {
       if (auto integer_value = event.get_integer_value()) {
-        auto type = (*integer_value ? modifier_flag_manager::active_modifier_flag::type::increase_lock
-                                    : modifier_flag_manager::active_modifier_flag::type::decrease_lock);
+        auto type = (*integer_value ? modifier_flag_manager::active_modifier_flag::type::increase_led_lock
+                                    : modifier_flag_manager::active_modifier_flag::type::decrease_led_lock);
         modifier_flag_manager::active_modifier_flag active_modifier_flag(type,
                                                                          modifier_flag::caps_lock,
                                                                          device_id);
@@ -146,6 +146,10 @@ public:
 
   const modifier_flag_manager& get_modifier_flag_manager(void) const {
     return modifier_flag_manager_;
+  }
+
+  modifier_flag_manager& get_modifier_flag_manager(void) {
+    return const_cast<modifier_flag_manager&>(static_cast<const queue&>(*this).get_modifier_flag_manager());
   }
 
   void erase_all_active_modifier_flags_except_lock(device_id device_id) {

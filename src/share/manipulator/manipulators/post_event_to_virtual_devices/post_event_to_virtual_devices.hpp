@@ -65,12 +65,22 @@ public:
         // Without synchronization, the caps_lock event will not be sent at (5)
         // because the caps lock state of key_event_dispatcher_ is off.
         // We have to set the state on at (3).
+        //
+        // Note:
+        // We should not change the key_event_dispatcher_ state while modifier_flag_manager contains flags except led_lock.
+        // The modifiers.mandatory pushes sticky_modifier to modifier_flag_manager.
+        // While modifiers.mandatory controls modifier_flag_manager, key_event_dispatcher_ should not be updated by LED state.
+        // (The behavior is described in docs/DEVELOPMENT.md.)
 
-        if (auto state = front_input_event.get_event().get_integer_value()) {
-          if (*state) {
-            key_event_dispatcher_.insert_pressed_modifier_flag(modifier_flag::caps_lock);
-          } else {
-            key_event_dispatcher_.erase_pressed_modifier_flag(modifier_flag::caps_lock);
+        auto& modifier_flag_manager = output_event_queue->get_modifier_flag_manager();
+
+        if (modifier_flag_manager.active_modifier_flags_size() == modifier_flag_manager.led_lock_count()) {
+          if (auto state = front_input_event.get_event().get_integer_value()) {
+            if (*state) {
+              key_event_dispatcher_.insert_pressed_modifier_flag(modifier_flag::caps_lock);
+            } else {
+              key_event_dispatcher_.erase_pressed_modifier_flag(modifier_flag::caps_lock);
+            }
           }
         }
       }
@@ -116,6 +126,7 @@ public:
         key_event_dispatcher_.dispatch_modifier_key_event(output_event_queue->get_modifier_flag_manager(),
                                                           queue_,
                                                           front_input_event.get_event_time_stamp().get_time_stamp());
+        output_event_queue->get_modifier_flag_manager().erase_all_sticky_modifier_flags();
       }
 
       switch (front_input_event.get_event().get_type()) {
@@ -188,6 +199,12 @@ public:
           }
           break;
 
+        case event_queue::event::type::sticky_modifier:
+          //         if (!front_input_event.get_lazy()) {
+          //           dispatch_modifier_key_event = true;
+          //         }
+          break;
+
         case event_queue::event::type::stop_keyboard_repeat:
           if (auto e = queue_.get_keyboard_repeat_detector().get_repeating_key()) {
             key_event_dispatcher_.dispatch_key_up_event(e->get_usage_pair(),
@@ -210,7 +227,6 @@ public:
 
         case event_queue::event::type::none:
         case event_queue::event::type::set_variable:
-        case event_queue::event::type::set_modifier_flag_lock_state:
         case event_queue::event::type::device_keys_and_pointing_buttons_are_released:
         case event_queue::event::type::device_grabbed:
         case event_queue::event::type::device_ungrabbed:
@@ -227,6 +243,7 @@ public:
         key_event_dispatcher_.dispatch_modifier_key_event(output_event_queue->get_modifier_flag_manager(),
                                                           queue_,
                                                           front_input_event.get_event_time_stamp().get_time_stamp());
+        output_event_queue->get_modifier_flag_manager().erase_all_sticky_modifier_flags();
       }
     }
 

@@ -26,8 +26,8 @@ public:
     select_input_source,
     set_variable,
     mouse_key,
+    sticky_modifier,
     stop_keyboard_repeat,
-    set_modifier_flag_lock_state,
     // virtual events (passive)
     device_keys_and_pointing_buttons_are_released,
     device_grabbed,
@@ -43,11 +43,11 @@ public:
   using value_t = std::variant<momentary_switch_event,                                   // For type::momentary_switch_event
                                pointing_motion,                                          // For type::pointing_motion
                                int64_t,                                                  // For type::caps_lock_state_changed
-                               std::pair<modifier_flag, bool>,                           // For type::set_modifier_flag_lock_state
                                std::string,                                              // For shell_command
                                std::vector<pqrs::osx::input_source_selector::specifier>, // For select_input_source
                                std::pair<std::string, int>,                              // For set_variable
                                mouse_key,                                                // For mouse_key
+                               std::pair<modifier_flag, bool>,                           // For sticky_modifier
                                pqrs::osx::frontmost_application_monitor::application,    // For frontmost_application_changed
                                pqrs::osx::input_source::properties,                      // For input_source_changed
                                device_properties,                                        // For device_grabbed
@@ -81,6 +81,8 @@ public:
             result.value_ = value.get<std::pair<std::string, int>>();
           } else if (key == "mouse_key") {
             result.value_ = value.get<mouse_key>();
+          } else if (key == "sticky_modifier") {
+            result.value_ = value.get<std::pair<modifier_flag, bool>>();
           } else if (key == "frontmost_application") {
             result.value_ = value.get<pqrs::osx::frontmost_application_monitor::application>();
           } else if (key == "input_source_properties") {
@@ -148,6 +150,12 @@ public:
         }
         break;
 
+      case type::sticky_modifier:
+        if (auto v = get_sticky_modifier()) {
+          json["sticky_modifier"] = *v;
+        }
+        break;
+
       case type::frontmost_application_changed:
         if (auto v = get_frontmost_application()) {
           json["frontmost_application"] = *v;
@@ -173,7 +181,6 @@ public:
         break;
 
       case type::stop_keyboard_repeat:
-      case type::set_modifier_flag_lock_state:
       case type::device_keys_and_pointing_buttons_are_released:
       case type::device_grabbed:
       case type::device_ungrabbed:
@@ -220,15 +227,15 @@ public:
     return e;
   }
 
-  static event make_stop_keyboard_repeat_event(void) {
-    return make_virtual_event(type::stop_keyboard_repeat);
+  static event make_sticky_modifier_event(modifier_flag modifier_flag, bool value) {
+    event e;
+    e.type_ = type::sticky_modifier;
+    e.value_ = std::make_pair(modifier_flag, value);
+    return e;
   }
 
-  static event make_set_modifier_flag_lock_state_event(modifier_flag modifier_flag, bool state) {
-    event e;
-    e.type_ = type::set_modifier_flag_lock_state;
-    e.value_ = std::make_pair(modifier_flag, state);
-    return e;
+  static event make_stop_keyboard_repeat_event(void) {
+    return make_virtual_event(type::stop_keyboard_repeat);
   }
 
   static event make_device_keys_and_pointing_buttons_are_released_event(void) {
@@ -358,6 +365,16 @@ public:
     return std::nullopt;
   }
 
+  std::optional<std::pair<modifier_flag, bool>> get_sticky_modifier(void) const {
+    try {
+      if (type_ == type::sticky_modifier) {
+        return std::get<std::pair<modifier_flag, bool>>(value_);
+      }
+    } catch (std::bad_variant_access&) {
+    }
+    return std::nullopt;
+  }
+
   std::optional<pqrs::osx::frontmost_application_monitor::application> get_frontmost_application(void) const {
     try {
       if (type_ == type::frontmost_application_changed) {
@@ -404,8 +421,8 @@ private:
       TO_C_STRING(select_input_source);
       TO_C_STRING(set_variable);
       TO_C_STRING(mouse_key);
+      TO_C_STRING(sticky_modifier);
       TO_C_STRING(stop_keyboard_repeat);
-      TO_C_STRING(set_modifier_flag_lock_state);
       TO_C_STRING(device_keys_and_pointing_buttons_are_released);
       TO_C_STRING(device_grabbed);
       TO_C_STRING(device_ungrabbed);
@@ -436,8 +453,8 @@ private:
     TO_TYPE(select_input_source);
     TO_TYPE(set_variable);
     TO_TYPE(mouse_key);
+    TO_TYPE(sticky_modifier);
     TO_TYPE(stop_keyboard_repeat);
-    TO_TYPE(set_modifier_flag_lock_state);
     TO_TYPE(device_keys_and_pointing_buttons_are_released);
     TO_TYPE(device_grabbed);
     TO_TYPE(device_ungrabbed);

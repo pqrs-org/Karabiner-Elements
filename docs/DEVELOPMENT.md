@@ -282,7 +282,7 @@ The caps lock is quite different from the normal modifier.
     -   This event happens when the caps lock LED is changed.
     -   The event changes the state of `modifier_flag_manager`.
         -   `hid::usage::keyboard_or_keypad::keyboard_caps_lock` might be sent due to the `modifier_flag_manager` state change.
--   `event::type::set_modifier_flag_lock_state`
+-   `event::type::sticky_modifier`
     -   `basic > from.modifiers.mandatory` and `basic > to.modifiers` also send this event in order to change the state of `modifier_flag_manager`,
     -   The event changes the state of `modifier_flag_manager`.
         -   `hid::usage::keyboard_or_keypad::keyboard_caps_lock` might be sent due to the `modifier_flag_manager` state change.
