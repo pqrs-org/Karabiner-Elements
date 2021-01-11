@@ -152,8 +152,8 @@ public:
     return const_cast<modifier_flag_manager&>(static_cast<const queue&>(*this).get_modifier_flag_manager());
   }
 
-  void erase_all_active_modifier_flags_except_lock(device_id device_id) {
-    modifier_flag_manager_.erase_all_active_modifier_flags_except_lock(device_id);
+  void erase_all_active_modifier_flags_except_lock_and_sticky(device_id device_id) {
+    modifier_flag_manager_.erase_all_active_modifier_flags_except_lock_and_sticky(device_id);
   }
 
   void erase_all_active_modifier_flags(device_id device_id) {

@@ -170,7 +170,7 @@ TEST_CASE("modifier_flag_manager") {
     modifier_flag_manager.push_back_active_modifier_flag(left_shift_1);
     REQUIRE(modifier_flag_manager.is_pressed(krbn::modifier_flag::left_shift) == true);
 
-    modifier_flag_manager.erase_all_active_modifier_flags_except_lock(krbn::device_id(1));
+    modifier_flag_manager.erase_all_active_modifier_flags_except_lock_and_sticky(krbn::device_id(1));
     REQUIRE(modifier_flag_manager.is_pressed(krbn::modifier_flag::left_shift) == true);
 
     modifier_flag_manager.push_back_active_modifier_flag(decrease_lock_left_shift);

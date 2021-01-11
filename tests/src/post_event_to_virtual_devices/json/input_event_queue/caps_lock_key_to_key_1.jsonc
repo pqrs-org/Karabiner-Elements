@@ -175,6 +175,22 @@
         "valid": true
     },
 
+    {
+        "device_id": 1,
+        "event": {
+            "type": "device_keys_and_pointing_buttons_are_released"
+        },
+        "event_type": "single",
+        "lazy": false,
+        "original_event": {
+            "type": "device_keys_and_pointing_buttons_are_released"
+        },
+        "event_time_stamp": {
+            "time_stamp": 18
+        },
+        "valid": true
+    },
+
     // caps_lock_state_changed is sent by caps_lock+f9 => f10.
     {
         "device_id": 0,
@@ -189,7 +205,72 @@
             "caps_lock_state_changed": 1
         },
         "event_time_stamp": {
-            "time_stamp": 14
+            "time_stamp": 20
+        },
+        "valid": true
+    },
+
+    // f9 key_down
+    {
+        "device_id": 1,
+        "event": {
+            "type": "momentary_switch_event",
+            "momentary_switch_event": {
+                "key_code": "f9"
+            }
+        },
+        "event_type": "key_down",
+        "lazy": false,
+        "original_event": {
+            "type": "momentary_switch_event",
+            "momentary_switch_event": {
+                "key_code": "f9"
+            }
+        },
+        "event_time_stamp": {
+            "time_stamp": 22
+        },
+        "valid": true
+    },
+
+    // caps_lock_state_changed is sent by caps_lock+f9 => f10.
+    {
+        "device_id": 0,
+        "event": {
+            "type": "caps_lock_state_changed",
+            "caps_lock_state_changed": 0
+        },
+        "event_type": "single",
+        "lazy": false,
+        "original_event": {
+            "type": "caps_lock_state_changed",
+            "caps_lock_state_changed": 0
+        },
+        "event_time_stamp": {
+            "time_stamp": 24
+        },
+        "valid": true
+    },
+
+    // f9 key_up
+    {
+        "device_id": 1,
+        "event": {
+            "type": "momentary_switch_event",
+            "momentary_switch_event": {
+                "key_code": "f9"
+            }
+        },
+        "event_type": "key_up",
+        "lazy": false,
+        "original_event": {
+            "type": "momentary_switch_event",
+            "momentary_switch_event": {
+                "key_code": "f9"
+            }
+        },
+        "event_time_stamp": {
+            "time_stamp": 26
         },
         "valid": true
     },
@@ -212,7 +293,7 @@
             }
         },
         "event_time_stamp": {
-            "time_stamp": 18
+            "time_stamp": 28
         },
         "valid": true
     },
@@ -235,7 +316,7 @@
             }
         },
         "event_time_stamp": {
-            "time_stamp": 20
+            "time_stamp": 30
         },
         "valid": true
     }

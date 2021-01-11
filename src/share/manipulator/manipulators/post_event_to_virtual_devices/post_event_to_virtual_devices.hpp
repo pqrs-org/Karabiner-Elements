@@ -265,6 +265,7 @@ public:
     key_event_dispatcher_.dispatch_modifier_key_event(output_event_queue.get_modifier_flag_manager(),
                                                       queue_,
                                                       front_input_event.get_event_time_stamp().get_time_stamp());
+    output_event_queue.get_modifier_flag_manager().erase_caps_lock_sticky_modifier_flags();
 
     // pointing buttons
 

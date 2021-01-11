@@ -29,14 +29,15 @@ public:
       switch (type) {
         case type::increase:
         case type::decrease:
-          break;
         case type::increase_lock:
         case type::decrease_lock:
-        case type::increase_led_lock:
-        case type::decrease_led_lock:
         case type::increase_sticky:
         case type::decrease_sticky:
-          // These lock and sticky are shared by all devices because it is not related the hardware state.
+          break;
+
+        case type::increase_led_lock:
+        case type::decrease_led_lock:
+          // The led_lock is shared by all devices because it is not sent from hardware.
           //
           // Note:
           // The caps lock state refers the virtual keyboard LED state and
@@ -211,11 +212,20 @@ public:
                                  std::end(active_modifier_flags_));
   }
 
-  void erase_all_active_modifier_flags_except_lock(device_id device_id) {
+  void erase_all_active_modifier_flags_except_lock_and_sticky(device_id device_id) {
     active_modifier_flags_.erase(std::remove_if(std::begin(active_modifier_flags_),
                                                 std::end(active_modifier_flags_),
                                                 [&](const active_modifier_flag& f) {
-                                                  return f.get_device_id() == device_id && !f.any_lock();
+                                                  return f.get_device_id() == device_id && !f.any_lock() && !f.sticky();
+                                                }),
+                                 std::end(active_modifier_flags_));
+  }
+
+  void erase_caps_lock_sticky_modifier_flags(void) {
+    active_modifier_flags_.erase(std::remove_if(std::begin(active_modifier_flags_),
+                                                std::end(active_modifier_flags_),
+                                                [&](const active_modifier_flag& f) {
+                                                  return f.get_modifier_flag() == modifier_flag::caps_lock && f.sticky();
                                                 }),
                                  std::end(active_modifier_flags_));
   }
