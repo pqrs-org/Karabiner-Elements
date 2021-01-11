@@ -97,16 +97,20 @@ public:
       if (send_caps_lock) {
         momentary_switch_event e(modifier_flag::caps_lock);
 
-        if (!key_event_exists(e.get_usage_pair())) {
-          enqueue_key_event(e.get_usage_pair(),
-                            event_type::key_down,
-                            queue,
-                            time_stamp);
-          enqueue_key_event(e.get_usage_pair(),
-                            event_type::key_up,
-                            queue,
-                            time_stamp);
+        if (key_event_exists(e.get_usage_pair())) {
+          dispatch_key_up_event(e.get_usage_pair(),
+                                queue,
+                                time_stamp);
         }
+
+        enqueue_key_event(e.get_usage_pair(),
+                          event_type::key_down,
+                          queue,
+                          time_stamp);
+        enqueue_key_event(e.get_usage_pair(),
+                          event_type::key_up,
+                          queue,
+                          time_stamp);
       }
     }
   }
