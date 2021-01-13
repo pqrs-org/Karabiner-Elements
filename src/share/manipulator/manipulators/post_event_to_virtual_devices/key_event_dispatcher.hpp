@@ -144,7 +144,7 @@ public:
   }
 
 private:
-  bool key_event_exists(const pqrs::hid::usage_pair& usage_pair) {
+  bool key_event_exists(const pqrs::hid::usage_pair& usage_pair) const {
     auto it = std::find_if(std::begin(pressed_keys_),
                            std::end(pressed_keys_),
                            [&](auto& k) {
@@ -156,7 +156,7 @@ private:
   void enqueue_key_event(const pqrs::hid::usage_pair& usage_pair,
                          event_type event_type,
                          queue& queue,
-                         absolute_time_point time_stamp) {
+                         absolute_time_point time_stamp) const {
     queue.emplace_back_key_event(usage_pair, event_type, time_stamp);
   }
 
