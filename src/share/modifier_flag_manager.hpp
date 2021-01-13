@@ -154,17 +154,18 @@ public:
              get_device_id() == other.get_device_id();
     }
 
-    bool operator==(const active_modifier_flag& other) const {
-      return get_type() == other.get_type() &&
-             get_modifier_flag() == other.get_modifier_flag() &&
-             get_device_id() == other.get_device_id();
-    }
+    constexpr auto operator<=>(const active_modifier_flag&) const = default;
 
   private:
     type type_;
     modifier_flag modifier_flag_;
     device_id device_id_;
   };
+
+  modifier_flag_manager(const modifier_flag_manager&) = delete;
+
+  modifier_flag_manager(void) {
+  }
 
   void push_back_active_modifier_flag(const active_modifier_flag& flag) {
     switch (flag.get_type()) {
@@ -275,11 +276,19 @@ public:
     return active_modifier_flags_.size();
   }
 
-  size_t led_lock_count(void) const {
+  size_t led_lock_size(modifier_flag modifier_flag) const {
     return std::count_if(std::begin(active_modifier_flags_),
                          std::end(active_modifier_flags_),
-                         [](const active_modifier_flag& f) {
-                           return f.led_lock();
+                         [&](const active_modifier_flag& f) {
+                           return f.get_modifier_flag() == modifier_flag && f.led_lock();
+                         });
+  }
+
+  size_t sticky_size(modifier_flag modifier_flag) const {
+    return std::count_if(std::begin(active_modifier_flags_),
+                         std::end(active_modifier_flags_),
+                         [&](const active_modifier_flag& f) {
+                           return f.get_modifier_flag() == modifier_flag && f.sticky();
                          });
   }
 
