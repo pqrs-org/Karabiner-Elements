@@ -156,6 +156,12 @@
         "expected_post_event_to_virtual_devices_queue": "json/expected_post_event_to_virtual_devices_queue/caps_lock_key_to_key_1.json"
     },
     {
+        "description": "caps_lock+f9 -> f10 (modifier+key (caps_lock) to key) holding caps_lock down",
+        "rules": ["json/rules/from_key.json"],
+        "input_event_queue": "json/input_event_queue/caps_lock_key_to_key_2.jsonc",
+        "expected_post_event_to_virtual_devices_queue": "json/expected_post_event_to_virtual_devices_queue/caps_lock_key_to_key_2.json"
+    },
+    {
         "description": "caps_lock+f11 -> caps_lock+left_option+f12 (modifier+key (caps_lock) to modifier+key (keep caps_lock))",
         "rules": ["json/rules/from_key.json"],
         "input_event_queue": "json/input_event_queue/caps_lock_key_to_key_3.jsonc",
