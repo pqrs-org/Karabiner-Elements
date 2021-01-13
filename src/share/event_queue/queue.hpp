@@ -5,6 +5,7 @@
 #include "event_queue/event_time_stamp.hpp"
 #include "modifier_flag_manager.hpp"
 #include "pointing_button_manager.hpp"
+#include <string_view>
 
 namespace krbn {
 namespace event_queue {
@@ -13,6 +14,14 @@ public:
   queue(const queue&) = delete;
 
   queue(void) : time_stamp_delay_(0) {
+  }
+
+  queue(const std::string_view& name)
+      : name_(name) {
+  }
+
+  const std::string& get_name(void) const {
+    return name_;
   }
 
   void emplace_back_entry(device_id device_id,
@@ -281,6 +290,7 @@ private:
     }
   }
 
+  std::string name_;
   std::vector<entry> events_;
   modifier_flag_manager modifier_flag_manager_;
   pointing_button_manager pointing_button_manager_;
