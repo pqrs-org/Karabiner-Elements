@@ -22,7 +22,7 @@ public:
         state state,
         bool lazy = false) : device_id_(device_id),
                              event_time_stamp_(event_time_stamp),
-                             valid_(true),
+                             validity_(validity::valid),
                              state_(state),
                              lazy_(lazy),
                              event_(event),
@@ -33,7 +33,7 @@ public:
   entry& operator=(const entry& other) {
     device_id_ = other.device_id_;
     event_time_stamp_ = other.event_time_stamp_;
-    valid_ = other.valid_;
+    validity_ = other.validity_;
     state_ = other.state_;
     lazy_ = other.lazy_;
     event_ = other.event_;
@@ -63,13 +63,13 @@ public:
         result.event_time_stamp_ = event_time_stamp::make_from_json(v->value());
       }
 
-      if (auto v = pqrs::json::find<bool>(json, "valid")) {
-        result.valid_ = *v;
+      if (auto v = pqrs::json::find<int>(json, "validity")) {
+        result.validity_ = static_cast<validity>(*v);
       }
 
-     if (auto v = pqrs::json::find<state>(json, "state")) {
-       result.state_ = *v;
-     }
+      if (auto v = pqrs::json::find<state>(json, "state")) {
+        result.state_ = *v;
+      }
 
       if (auto v = pqrs::json::find<bool>(json, "lazy")) {
         result.lazy_ = *v;
@@ -109,16 +109,16 @@ public:
     return const_cast<event_time_stamp&>(static_cast<const entry&>(*this).get_event_time_stamp());
   }
 
-  bool get_valid(void) const {
+  validity get_validity(void) const {
     std::lock_guard<std::mutex> lock(mutex_);
 
-    return valid_;
+    return validity_;
   }
 
-  void set_valid(bool value) {
+  void set_validity(validity value) {
     std::lock_guard<std::mutex> lock(mutex_);
 
-    valid_ = value;
+    validity_ = value;
   }
 
   state get_state(void) const {
@@ -167,7 +167,7 @@ public:
     return nlohmann::json({
         {"device_id", type_safe::get(get_device_id())},
         {"event_time_stamp", get_event_time_stamp()},
-        {"valid", get_valid()},
+        {"validity", static_cast<int>(get_validity())},
         {"state", get_state()},
         {"lazy", get_lazy()},
         {"event", get_event()},
@@ -179,7 +179,7 @@ public:
   bool operator==(const entry& other) const {
     return get_device_id() == other.get_device_id() &&
            get_event_time_stamp() == other.get_event_time_stamp() &&
-           get_valid() == other.get_valid() &&
+           get_validity() == other.get_validity() &&
            get_state() == other.get_state() &&
            get_lazy() == other.get_lazy() &&
            get_event() == other.get_event() &&
@@ -196,14 +196,14 @@ private:
   event_time_stamp event_time_stamp_;
 
   // Event will be marked invalid if it is changed by a manipulator.
-  // The valid_ flag will be reset each following manipulation stage.
+  // The validity flag will be reset each following manipulation stage.
   //
   // - simple modifiactions
   // - complex modifications
   // - fn function keys
   // - post event to virtual devices
   //
-  bool valid_;
+  validity validity_;
 
   // Event will be marked as state::manipulated if the event is posted by manipulator at least once.
   // The state will be kept each above manipulation state.

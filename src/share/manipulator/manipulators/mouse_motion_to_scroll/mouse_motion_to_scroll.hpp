@@ -90,11 +90,11 @@ public:
     if (output_event_queue) {
       // ----------------------------------------
 
-      if (!front_input_event.get_valid()) {
+      if (front_input_event.get_validity() == validity::invalid) {
         return manipulate_result::passed;
       }
 
-      if (!valid_) {
+      if (validity_ == validity::invalid) {
         return manipulate_result::passed;
       }
 
@@ -107,7 +107,7 @@ public:
 
       } else {
         if (auto m = front_input_event.get_event().get_if<pointing_motion>()) {
-          front_input_event.set_valid(false);
+          front_input_event.set_validity(validity::invalid);
 
           counter_->update(*m, when_now());
 

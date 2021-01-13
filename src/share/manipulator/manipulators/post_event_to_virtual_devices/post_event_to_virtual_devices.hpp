@@ -38,13 +38,13 @@ public:
                                        std::shared_ptr<event_queue::queue> output_event_queue,
                                        absolute_time_point now) {
     if (output_event_queue) {
-      if (!front_input_event.get_valid()) {
+      if (front_input_event.get_validity() == validity::invalid) {
         return manipulate_result::passed;
       }
 
       // Note: output_event_queue::modifier_flag_manager_ will be changed by push_back_entry.
       output_event_queue->push_back_entry(front_input_event);
-      front_input_event.set_valid(false);
+      front_input_event.set_validity(validity::invalid);
 
       // We have to synchronize the caps_lock state in the following variables when caps lock state is changed.
       // - output_event_queue::modifier_flag_manager_
@@ -351,7 +351,7 @@ public:
     }
   }
 
-  virtual void set_valid(bool value) {
+  virtual void set_validity(validity value) {
     // This manipulator is always valid.
   }
 

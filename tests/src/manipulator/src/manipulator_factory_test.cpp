@@ -49,7 +49,7 @@ TEST_CASE("manipulator.manipulator_factory") {
                                                                                 parameters);
     REQUIRE(dynamic_cast<krbn::manipulator::manipulators::basic::basic*>(manipulator.get()) != nullptr);
     REQUIRE(dynamic_cast<krbn::manipulator::manipulators::nop*>(manipulator.get()) == nullptr);
-    REQUIRE(manipulator->get_valid() == true);
+    REQUIRE(manipulator->get_validity() == krbn::validity::valid);
     REQUIRE(manipulator->active() == false);
 
     auto basic = dynamic_cast<krbn::manipulator::manipulators::basic::basic*>(manipulator.get());

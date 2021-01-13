@@ -319,7 +319,7 @@ TEST_CASE("emplace_back_entry") {
     PUSH_BACK_ENTRY(expected, 1, 600, button2_event, key_up, button2_event);
     REQUIRE(event_queue.get_entries() == expected);
 
-    REQUIRE(event_queue.get_entries()[0].get_valid() == true);
+    REQUIRE(event_queue.get_entries()[0].get_validity() == krbn::validity::valid);
     REQUIRE(event_queue.get_entries()[0].get_lazy() == false);
   }
 

@@ -19,7 +19,7 @@
         "event_time_stamp": {
             "time_stamp": 2
         },
-        "valid": true
+        "validity": true
     },
 
     // f9 key_up
@@ -42,7 +42,7 @@
         "event_time_stamp": {
             "time_stamp": 4
         },
-        "valid": true
+        "validity": true
     },
 
     // caps_lock key_down
@@ -65,7 +65,7 @@
         "event_time_stamp": {
             "time_stamp": 6
         },
-        "valid": true
+        "validity": true
     },
 
     // caps_lock key_up
@@ -88,7 +88,7 @@
         "event_time_stamp": {
             "time_stamp": 8
         },
-        "valid": true
+        "validity": true
     },
 
     // We have to use caps_lock_state_changed to modify caps_lock state after sending caps_lock key.
@@ -107,7 +107,7 @@
         "event_time_stamp": {
             "time_stamp": 10
         },
-        "valid": true
+        "validity": true
     },
 
     // f9 key_down
@@ -130,7 +130,7 @@
         "event_time_stamp": {
             "time_stamp": 12
         },
-        "valid": true
+        "validity": true
     },
 
     // caps_lock_state_changed is sent by caps_lock+f9 => f10.
@@ -149,7 +149,7 @@
         "event_time_stamp": {
             "time_stamp": 14
         },
-        "valid": true
+        "validity": true
     },
 
     // f9 key_up
@@ -172,7 +172,7 @@
         "event_time_stamp": {
             "time_stamp": 16
         },
-        "valid": true
+        "validity": true
     },
 
     {
@@ -188,7 +188,7 @@
         "event_time_stamp": {
             "time_stamp": 18
         },
-        "valid": true
+        "validity": true
     },
 
     // caps_lock_state_changed is sent by caps_lock+f9 => f10.
@@ -207,7 +207,7 @@
         "event_time_stamp": {
             "time_stamp": 20
         },
-        "valid": true
+        "validity": true
     },
 
     // f9 key_down
@@ -230,7 +230,7 @@
         "event_time_stamp": {
             "time_stamp": 22
         },
-        "valid": true
+        "validity": true
     },
 
     // caps_lock_state_changed is sent by caps_lock+f9 => f10.
@@ -249,7 +249,7 @@
         "event_time_stamp": {
             "time_stamp": 24
         },
-        "valid": true
+        "validity": true
     },
 
     // f9 key_up
@@ -272,7 +272,7 @@
         "event_time_stamp": {
             "time_stamp": 26
         },
-        "valid": true
+        "validity": true
     },
 
     // tab key_down
@@ -295,7 +295,7 @@
         "event_time_stamp": {
             "time_stamp": 28
         },
-        "valid": true
+        "validity": true
     },
 
     // tab key_up
@@ -318,6 +318,6 @@
         "event_time_stamp": {
             "time_stamp": 30
         },
-        "valid": true
+        "validity": true
     }
 ]

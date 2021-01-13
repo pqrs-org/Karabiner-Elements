@@ -19,7 +19,7 @@
         "event_time_stamp": {
             "time_stamp": 2
         },
-        "valid": true
+        "validity": true
     },
 
     // f11 key_up
@@ -42,7 +42,7 @@
         "event_time_stamp": {
             "time_stamp": 4
         },
-        "valid": true
+        "validity": true
     },
 
     // caps_lock key_down
@@ -65,7 +65,7 @@
         "event_time_stamp": {
             "time_stamp": 6
         },
-        "valid": true
+        "validity": true
     },
 
     // caps_lock key_up
@@ -88,7 +88,7 @@
         "event_time_stamp": {
             "time_stamp": 8
         },
-        "valid": true
+        "validity": true
     },
 
     // We have to use caps_lock_state_changed to modify caps_lock state instead of send caps_lock key directly.
@@ -107,7 +107,7 @@
         "event_time_stamp": {
             "time_stamp": 10
         },
-        "valid": true
+        "validity": true
     },
 
     // f11 key_down
@@ -130,7 +130,7 @@
         "event_time_stamp": {
             "time_stamp": 12
         },
-        "valid": true
+        "validity": true
     },
 
     // f11 key_up
@@ -153,7 +153,7 @@
         "event_time_stamp": {
             "time_stamp": 14
         },
-        "valid": true
+        "validity": true
     },
 
     // tab key_down
@@ -176,7 +176,7 @@
         "event_time_stamp": {
             "time_stamp": 16
         },
-        "valid": true
+        "validity": true
     },
 
     // tab key_up
@@ -199,6 +199,6 @@
         "event_time_stamp": {
             "time_stamp": 18
         },
-        "valid": true
+        "validity": true
     }
 ]

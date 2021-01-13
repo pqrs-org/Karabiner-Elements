@@ -18,7 +18,7 @@
         "event_time_stamp": {
             "time_stamp": 2
         },
-        "valid": true
+        "validity": true
     },
     {
         "device_id": 1,
@@ -39,7 +39,7 @@
         "event_time_stamp": {
             "time_stamp": 4
         },
-        "valid": true
+        "validity": true
     },
     {
         "device_id": 1,
@@ -60,7 +60,7 @@
         "event_time_stamp": {
             "time_stamp": 6
         },
-        "valid": true
+        "validity": true
     },
     {
         "device_id": 1,
@@ -81,7 +81,7 @@
         "event_time_stamp": {
             "time_stamp": 8
         },
-        "valid": true
+        "validity": true
     },
     {
         "device_id": 1,
@@ -102,7 +102,7 @@
         "event_time_stamp": {
             "time_stamp": 10
         },
-        "valid": true
+        "validity": true
     },
     {
         "device_id": 1,
@@ -123,7 +123,7 @@
         "event_time_stamp": {
             "time_stamp": 12
         },
-        "valid": true
+        "validity": true
     },
     {
         "action": "invoke_dispatcher",
@@ -148,7 +148,7 @@
         "event_time_stamp": {
             "time_stamp": 10002
         },
-        "valid": true
+        "validity": true
     },
     {
         "device_id": 1,
@@ -169,7 +169,7 @@
         "event_time_stamp": {
             "time_stamp": 10002
         },
-        "valid": true
+        "validity": true
     },
     {
         "device_id": 1,
@@ -190,7 +190,7 @@
         "event_time_stamp": {
             "time_stamp": 10004
         },
-        "valid": true
+        "validity": true
     },
     {
         "device_id": 1,
@@ -211,6 +211,6 @@
         "event_time_stamp": {
             "time_stamp": 10006
         },
-        "valid": true
+        "validity": true
     }
 ]

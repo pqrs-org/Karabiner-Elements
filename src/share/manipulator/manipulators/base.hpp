@@ -10,7 +10,7 @@ namespace manipulator {
 namespace manipulators {
 class base {
 protected:
-  base(void) : valid_(true) {
+  base(void) : validity_(validity::valid) {
   }
 
 public:
@@ -38,11 +38,11 @@ public:
   virtual void handle_pointing_device_event_from_event_tap(const event_queue::entry& front_input_event,
                                                            event_queue::queue& output_event_queue) = 0;
 
-  bool get_valid(void) const {
-    return valid_;
+  validity get_validity(void) const {
+    return validity_;
   }
-  virtual void set_valid(bool value) {
-    valid_ = value;
+  virtual void set_validity(validity value) {
+    validity_ = value;
   }
 
   void push_back_condition(std::shared_ptr<manipulator::conditions::base> condition) {
@@ -106,7 +106,7 @@ public:
   }
 
 protected:
-  bool valid_;
+  validity validity_;
   condition_manager condition_manager_;
 };
 } // namespace manipulators

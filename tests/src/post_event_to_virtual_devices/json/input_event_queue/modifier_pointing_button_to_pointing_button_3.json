@@ -18,7 +18,7 @@
         "event_time_stamp": {
             "time_stamp": 2
         },
-        "valid": true
+        "validity": true
     },
     {
         "device_id": 2,
@@ -39,7 +39,7 @@
         "event_time_stamp": {
             "time_stamp": 3
         },
-        "valid": true
+        "validity": true
     },
     {
         "device_id": 1,
@@ -60,7 +60,7 @@
         "event_time_stamp": {
             "time_stamp": 4
         },
-        "valid": true
+        "validity": true
     },
     {
         "device_id": 1,
@@ -81,6 +81,6 @@
         "event_time_stamp": {
             "time_stamp": 8
         },
-        "valid": true
+        "validity": true
     }
 ]

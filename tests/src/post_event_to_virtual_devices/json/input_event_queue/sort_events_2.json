@@ -21,7 +21,7 @@
         "event_time_stamp": {
             "time_stamp": 1000
         },
-        "valid": true
+        "validity": true
     },
     {
         "device_id": 1,
@@ -42,7 +42,7 @@
         "event_time_stamp": {
             "time_stamp": 1000
         },
-        "valid": true
+        "validity": true
     },
     {
         "pause_manipulation": false

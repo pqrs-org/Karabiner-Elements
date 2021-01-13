@@ -19,7 +19,7 @@
         "event_time_stamp": {
             "time_stamp": 2
         },
-        "valid": true
+        "validity": true
     },
     {
         "action": "invoke_dispatcher",
@@ -44,7 +44,7 @@
         "event_time_stamp": {
             "time_stamp": 10002
         },
-        "valid": true
+        "validity": true
     },
     {
         "description": "*** tab key_down, f1 key_down, tab key_up, f1 key_up (f1 is not canceled by tab key_up) ***",
@@ -66,7 +66,7 @@
         "event_time_stamp": {
             "time_stamp": 10004
         },
-        "valid": true
+        "validity": true
     },
     {
         "device_id": 1,
@@ -87,7 +87,7 @@
         "event_time_stamp": {
             "time_stamp": 10006
         },
-        "valid": true
+        "validity": true
     },
     {
         "device_id": 1,
@@ -108,7 +108,7 @@
         "event_time_stamp": {
             "time_stamp": 10008
         },
-        "valid": true
+        "validity": true
     },
     {
         "action": "invoke_dispatcher",
@@ -133,6 +133,6 @@
         "event_time_stamp": {
             "time_stamp": 20002
         },
-        "valid": true
+        "validity": true
     }
 ]

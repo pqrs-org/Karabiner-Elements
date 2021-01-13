@@ -126,7 +126,7 @@ public:
                        entry.get_original_event(),
                        entry.get_state(),
                        entry.get_lazy());
-    events_.back().set_valid(entry.get_valid());
+    events_.back().set_validity(entry.get_validity());
   }
 
   void clear_events(void) {

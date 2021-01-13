@@ -20,6 +20,6 @@
             "type": "momentary_switch_event"
         },
         "state": "original",
-        "valid": true
+        "validity": 1
     }
 ]

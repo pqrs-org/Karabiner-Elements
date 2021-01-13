@@ -109,12 +109,12 @@ public:
             case event_queue::event::type::virtual_hid_keyboard_configuration_changed: {
               bool skip = false;
 
-              if (front_input_event.get_valid()) {
+              if (front_input_event.get_validity() == validity::valid) {
                 std::lock_guard<std::mutex> lock(manipulators_mutex_);
 
                 for (auto&& m : manipulators_) {
                   if (m->already_manipulated(front_input_event)) {
-                    front_input_event.set_valid(false);
+                    front_input_event.set_validity(validity::invalid);
                     skip = true;
                     break;
                   }
@@ -145,7 +145,7 @@ public:
             }
           }
 
-          if (input_event_queue->get_front_event().get_valid()) {
+          if (input_event_queue->get_front_event().get_validity() == validity::valid) {
             output_event_queue->push_back_entry(input_event_queue->get_front_event());
           }
 
@@ -163,7 +163,7 @@ public:
       std::lock_guard<std::mutex> lock(manipulators_mutex_);
 
       for (auto&& m : manipulators_) {
-        m->set_valid(false);
+        m->set_validity(validity::invalid);
       }
     }
 
@@ -194,7 +194,7 @@ private:
                                        std::end(manipulators_),
                                        [](const auto& it) {
                                          // Keep active manipulators.
-                                         return !it->get_valid() && !it->active();
+                                         return it->get_validity() == validity::invalid && !it->active();
                                        }),
                         std::end(manipulators_));
   }

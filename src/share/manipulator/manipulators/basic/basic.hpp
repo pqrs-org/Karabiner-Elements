@@ -183,7 +183,7 @@ public:
 
       // ----------------------------------------
 
-      if (!front_input_event.get_valid()) {
+      if (front_input_event.get_validity() == validity::invalid) {
         return manipulate_result::passed;
       }
 
@@ -203,7 +203,7 @@ public:
             // ----------------------------------------
             // Check whether event is target.
 
-            if (!valid_) {
+            if (validity_ == validity::invalid) {
               is_target = false;
             }
 
@@ -243,7 +243,7 @@ public:
                     break;
                   }
 
-                  if (!entry.get_valid()) {
+                  if (entry.get_validity() == validity::invalid) {
                     continue;
                   }
 
@@ -437,7 +437,7 @@ public:
         }
 
         if (current_manipulated_original_event) {
-          front_input_event.set_valid(false);
+          front_input_event.set_validity(validity::invalid);
 
           absolute_time_duration time_stamp_delay(0);
 

@@ -20,7 +20,7 @@
             "type": "momentary_switch_event"
         },
         "state": "manipulated",
-        "valid": true
+        "validity": 1
     },
     {
         "device_id": 1,
@@ -43,7 +43,7 @@
             "type": "momentary_switch_event"
         },
         "state": "manipulated",
-        "valid": true
+        "validity": 1
     },
     {
         "device_id": 1,
@@ -66,6 +66,6 @@
             "type": "momentary_switch_event"
         },
         "state": "original",
-        "valid": true
+        "validity": 1
     }
 ]

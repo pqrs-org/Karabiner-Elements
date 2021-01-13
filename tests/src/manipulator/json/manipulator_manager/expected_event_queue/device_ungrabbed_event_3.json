@@ -20,7 +20,7 @@
             "type": "momentary_switch_event"
         },
         "state": "manipulated",
-        "valid": true
+        "validity": 1
     },
     {
         "device_id": 2,
@@ -43,7 +43,7 @@
             "type": "momentary_switch_event"
         },
         "state": "manipulated",
-        "valid": true
+        "validity": 1
     },
     {
         "device_id": 1,
@@ -66,7 +66,7 @@
             "type": "momentary_switch_event"
         },
         "state": "manipulated",
-        "valid": true
+        "validity": 1
     },
     {
         "device_id": 1,
@@ -83,7 +83,7 @@
             "type": "device_ungrabbed"
         },
         "state": "virtual_event",
-        "valid": true
+        "validity": 1
     },
     {
         "device_id": 2,
@@ -106,7 +106,7 @@
             "type": "momentary_switch_event"
         },
         "state": "manipulated",
-        "valid": true
+        "validity": 1
     },
     {
         "device_id": 3,
@@ -123,6 +123,6 @@
             "type": "device_ungrabbed"
         },
         "state": "virtual_event",
-        "valid": true
+        "validity": 1
     }
 ]
