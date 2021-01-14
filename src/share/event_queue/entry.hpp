@@ -20,14 +20,16 @@ public:
         event_type event_type,
         const class event& original_event,
         state state,
-        bool lazy = false) : device_id_(device_id),
-                             event_time_stamp_(event_time_stamp),
-                             validity_(validity::valid),
-                             state_(state),
-                             lazy_(lazy),
-                             event_(event),
-                             event_type_(event_type),
-                             original_event_(original_event) {
+        bool lazy = false,
+        validity validity = validity::valid)
+      : device_id_(device_id),
+        event_time_stamp_(event_time_stamp),
+        validity_(validity),
+        state_(state),
+        lazy_(lazy),
+        event_(event),
+        event_type_(event_type),
+        original_event_(original_event) {
   }
 
   entry& operator=(const entry& other) {

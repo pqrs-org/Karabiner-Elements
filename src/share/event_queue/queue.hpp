@@ -30,7 +30,8 @@ public:
                           event_type event_type,
                           const class event& original_event,
                           state state,
-                          bool lazy = false) {
+                          bool lazy = false,
+                          validity validity = validity::valid) {
     auto t = event_time_stamp;
     t.set_time_stamp(t.get_time_stamp() + time_stamp_delay_);
 
@@ -40,7 +41,8 @@ public:
                          event_type,
                          original_event,
                          state,
-                         lazy);
+                         lazy,
+                         validity);
 
     sort_events();
 
@@ -125,8 +127,8 @@ public:
                        entry.get_event_type(),
                        entry.get_original_event(),
                        entry.get_state(),
-                       entry.get_lazy());
-    events_.back().set_validity(entry.get_validity());
+                       entry.get_lazy(),
+                       entry.get_validity());
   }
 
   void clear_events(void) {
