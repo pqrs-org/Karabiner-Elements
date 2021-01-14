@@ -69,13 +69,13 @@ public:
         }
 
         if (event_queues->empty()) {
-          event_queues->push_back(std::make_shared<event_queue::queue>(fmt::format("queue {0}", event_queues->size())));
-          event_queues->push_back(std::make_shared<event_queue::queue>(fmt::format("queue {0}", event_queues->size())));
+          event_queues->push_back(std::make_shared<event_queue::queue>(fmt::format("queue_{0}", event_queues->size())));
+          event_queues->push_back(std::make_shared<event_queue::queue>(fmt::format("complex_modifications_applied_event_queue_{0}", event_queues->size())));
           connector->emplace_back_connection(manipulator_managers->back(),
                                              (*event_queues)[0],
                                              (*event_queues)[1]);
         } else {
-          event_queues->push_back(std::make_shared<event_queue::queue>(fmt::format("queue {0}", event_queues->size())));
+          event_queues->push_back(std::make_shared<event_queue::queue>(fmt::format("complex_modifications_applied_event_queue_{0}", event_queues->size())));
           connector->emplace_back_connection(manipulator_managers->back(),
                                              event_queues->back());
         }
@@ -110,13 +110,13 @@ public:
         manipulator_managers->back()->push_back_manipulator(m);
 
         if (event_queues->empty()) {
-          event_queues->push_back(std::make_shared<event_queue::queue>(fmt::format("queue {0}", event_queues->size())));
-          event_queues->push_back(std::make_shared<event_queue::queue>(fmt::format("queue {0}", event_queues->size())));
+          event_queues->push_back(std::make_shared<event_queue::queue>(fmt::format("queue_{0}", event_queues->size())));
+          event_queues->push_back(std::make_shared<event_queue::queue>(fmt::format("fn_function_keys_applied_event_queue", event_queues->size())));
           connector->emplace_back_connection(manipulator_managers->back(),
                                              (*event_queues)[0],
                                              (*event_queues)[1]);
         } else {
-          event_queues->push_back(std::make_shared<event_queue::queue>(fmt::format("queue {0}", event_queues->size())));
+          event_queues->push_back(std::make_shared<event_queue::queue>(fmt::format("fn_function_keys_applied_event_queue", event_queues->size())));
           connector->emplace_back_connection(manipulator_managers->back(),
                                              event_queues->back());
         }
@@ -130,7 +130,7 @@ public:
         manipulator_managers->push_back(std::make_unique<manipulator::manipulator_manager>());
         manipulator_managers->back()->push_back_manipulator(post_event_to_virtual_devices_manipulator);
 
-        event_queues->push_back(std::make_shared<event_queue::queue>(fmt::format("queue {0}", event_queues->size())));
+        event_queues->push_back(std::make_shared<event_queue::queue>(fmt::format("posted_event_queue", event_queues->size())));
         connector->emplace_back_connection(manipulator_managers->back(),
                                            event_queues->back());
       }
