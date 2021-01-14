@@ -40,12 +40,15 @@ public:
     manipulators_.push_back(ptr);
   }
 
-  void manipulate(std::weak_ptr<event_queue::queue> weak_input_event_queue,
+  /**
+   * Return true if caller needs to `manipulate` again.
+   */
+  bool manipulate(std::weak_ptr<event_queue::queue> weak_input_event_queue,
                   std::weak_ptr<event_queue::queue> weak_output_event_queue,
                   absolute_time_point now) {
     if (auto input_event_queue = weak_input_event_queue.lock()) {
       if (auto output_event_queue = weak_output_event_queue.lock()) {
-        while (!input_event_queue->empty()) {
+        if (!input_event_queue->empty()) {
           auto& front_input_event = input_event_queue->get_front_event();
 
           switch (front_input_event.get_event().get_type()) {
@@ -150,12 +153,16 @@ public:
           }
 
           input_event_queue->erase_front_event();
+
+          return true;
         }
 
       finish:
         remove_invalid_manipulators();
       }
     }
+
+    return false;
   }
 
   void invalidate_manipulators(void) {

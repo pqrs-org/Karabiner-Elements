@@ -29,9 +29,14 @@ public:
 
     void manipulate(absolute_time_point now) const {
       if (auto manipulator_manager = weak_manipulator_manager_.lock()) {
-        manipulator_manager->manipulate(weak_input_event_queue_,
-                                        weak_output_event_queue_,
-                                        now);
+        while (true) {
+          auto processed = manipulator_manager->manipulate(weak_input_event_queue_,
+                                                           weak_output_event_queue_,
+                                                           now);
+          if (!processed) {
+            break;
+          }
+        }
       }
     }
 
@@ -61,8 +66,8 @@ public:
       if (auto input_event_queue = weak_input_event_queue_.lock()) {
         if (auto output_event_queue = weak_output_event_queue_.lock()) {
           logger::get_logger()->info("connection events sizes: {0} -> {1}",
-                                    input_event_queue->get_entries().size(),
-                                    output_event_queue->get_entries().size());
+                                     input_event_queue->get_entries().size(),
+                                     output_event_queue->get_entries().size());
         }
       }
     }
