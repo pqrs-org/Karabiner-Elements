@@ -83,7 +83,7 @@
         "keyboard_input": {
             "keys": [
                 {
-                    "key_code": "caps_lock"
+                    "key_code": "f10"
                 }
             ],
             "modifiers": []
@@ -103,7 +103,7 @@
         "keyboard_input": {
             "keys": [
                 {
-                    "key_code": "f9"
+                    "key_code": "caps_lock"
                 }
             ],
             "modifiers": []
@@ -123,7 +123,7 @@
         "keyboard_input": {
             "keys": [
                 {
-                    "key_code": "caps_lock"
+                    "key_code": "tab"
                 }
             ],
             "modifiers": []
@@ -137,26 +137,6 @@
             "modifiers": []
         },
         "time_stamp": 70,
-        "type": "keyboard_input"
-    },
-    {
-        "keyboard_input": {
-            "keys": [
-                {
-                    "key_code": "tab"
-                }
-            ],
-            "modifiers": []
-        },
-        "time_stamp": 75,
-        "type": "keyboard_input"
-    },
-    {
-        "keyboard_input": {
-            "keys": [],
-            "modifiers": []
-        },
-        "time_stamp": 80,
         "type": "keyboard_input"
     }
 ]

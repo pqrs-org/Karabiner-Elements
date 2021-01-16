@@ -42,10 +42,6 @@ public:
         return manipulate_result::passed;
       }
 
-      // Note: output_event_queue::modifier_flag_manager_ will be changed by push_back_entry.
-      output_event_queue->push_back_entry(front_input_event);
-      front_input_event.set_validity(validity::invalid);
-
       // We have to synchronize the caps_lock state in the following variables when caps lock state is changed.
       // - output_event_queue::modifier_flag_manager_
       // - key_event_dispatcher_.pressed_modifier_flags_
@@ -124,8 +120,11 @@ public:
         key_event_dispatcher_.dispatch_modifier_key_event(output_event_queue->get_modifier_flag_manager(),
                                                           queue_,
                                                           front_input_event.get_event_time_stamp().get_time_stamp());
-        output_event_queue->get_modifier_flag_manager().erase_all_sticky_modifier_flags();
       }
+
+      // Note: output_event_queue::modifier_flag_manager_ will be changed by push_back_entry.
+      output_event_queue->push_back_entry(front_input_event);
+      front_input_event.set_validity(validity::invalid);
 
       switch (front_input_event.get_event().get_type()) {
         case event_queue::event::type::momentary_switch_event:
@@ -236,7 +235,6 @@ public:
         key_event_dispatcher_.dispatch_modifier_key_event(output_event_queue->get_modifier_flag_manager(),
                                                           queue_,
                                                           front_input_event.get_event_time_stamp().get_time_stamp());
-        output_event_queue->get_modifier_flag_manager().erase_all_sticky_modifier_flags();
       }
     }
 
@@ -258,6 +256,23 @@ public:
     key_event_dispatcher_.dispatch_modifier_key_event(output_event_queue.get_modifier_flag_manager(),
                                                       queue_,
                                                       front_input_event.get_event_time_stamp().get_time_stamp());
+
+    // We have to keep sticky modifiers state except the caps lock
+    // in order to keep the sticky modifiers state after all keys are released.
+    //
+    // About the exception of caps lock:
+    // The caps lock will be handled as "toggle" in above dispatch_modifier_key_event.
+    // In the following case, unless erasing stikcy modifiers,
+    // the caps lock sticky modifier will be erased at (3) and
+    // caps lock event is not sent at (4).
+    //
+    // (1) sticky_modifier caps_lock true
+    // (2) device_keys_and_pointing_buttons_are_released
+    //     - usage::caps_lock is sent to turn caps lock on.
+    // (3) sticky_modifier caps_lock false
+    // (4) Another key is pressed
+    //     - We need to send usage::caps_lock at here.
+
     output_event_queue.get_modifier_flag_manager().erase_caps_lock_sticky_modifier_flags();
 
     // pointing buttons

@@ -68,6 +68,14 @@ public:
                                                                                device_id);
         pointing_button_manager_.push_back_active_pointing_button(active_pointing_button);
       }
+
+      // Erase sticky modifiers
+      if (event_type == event_type::key_down &&
+          validity == validity::valid &&
+          !e->modifier_flag()) {
+        modifier_flag_manager_.erase_all_sticky_modifier_flags();
+      }
+
     } else if (event.get_type() == event::type::sticky_modifier) {
       if (auto sticky_modifier = event.get_sticky_modifier()) {
         auto type = sticky_modifier->second ? modifier_flag_manager::active_modifier_flag::type::increase_sticky
@@ -77,6 +85,7 @@ public:
                                                                          device_id);
         modifier_flag_manager_.push_back_active_modifier_flag(active_modifier_flag);
       }
+
     } else if (event.get_type() == event::type::caps_lock_state_changed) {
       if (auto integer_value = event.get_integer_value()) {
         auto type = (*integer_value ? modifier_flag_manager::active_modifier_flag::type::increase_led_lock
