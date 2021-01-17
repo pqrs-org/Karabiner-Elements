@@ -55,7 +55,7 @@ public:
         // 2. caps_lock key_up
         // 3. caps_lock_state_changed(on)
         // 4. f9 key_down
-        // 5. set_modifier_flag_lock_state (caps_lock off)
+        // 5. sticky_modifier caps_lock false (caps_lock off)
         //    (from modifiers.mandatory)
         //
         // Without synchronization, the caps_lock event will not be sent at (5)
@@ -63,10 +63,9 @@ public:
         // We have to set the state on at (3).
         //
         // Note:
-        // We should not change the key_event_dispatcher_ state while modifier_flag_manager contains flags except led_lock.
+        // We should not change the key_event_dispatcher_ state while modifier_flag_manager contains sticky caps_lock modifier.
         // The modifiers.mandatory pushes sticky_modifier to modifier_flag_manager.
         // While modifiers.mandatory controls modifier_flag_manager, key_event_dispatcher_ should not be updated by LED state.
-        // (The behavior is described in docs/DEVELOPMENT.md.)
 
         if (output_event_queue->get_modifier_flag_manager().sticky_size(modifier_flag::caps_lock) == 0) {
           if (auto state = front_input_event.get_event().get_integer_value()) {
