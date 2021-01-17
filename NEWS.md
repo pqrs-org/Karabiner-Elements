@@ -9,6 +9,7 @@
         -   Note: This change will be applied when you create a new profile.
     -   The caps lock delay of Karabiner Virtual HID Keyboard has been removed.
         The state of caps lock will be changed immediately after you press the caps lock key.
+        -   Note: Restarting macOS may be required for this change to take effect.
 -   ✨ New Features
     -   Added `apple_vendor_keyboard_key_code` and `apple_vendor_top_case_key_code` to event definitions.
         -   [apple_vendor_keyboard_key_code](https://github.com/pqrs-org/Karabiner-Elements/blob/master/src/share/types/momentary_switch_event_details/apple_vendor_keyboard_key_code.hpp)
