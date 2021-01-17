@@ -6,6 +6,7 @@
 #include "console_user_server_client.hpp"
 #include "constants.hpp"
 #include "grabber/grabber_state_json_writer.hpp"
+#include "hid_event_system_monitor.hpp"
 #include "logger.hpp"
 #include "monitor/version_monitor.hpp"
 #include "receiver.hpp"
@@ -51,6 +52,12 @@ public:
 
       start_receiver(console_user_server_socket_uid);
     });
+
+    //
+    // hid_event_system_monitor_
+    //
+
+    hid_event_system_monitor_ = std::make_unique<hid_event_system_monitor>();
   }
 
   virtual ~components_manager(void) {
@@ -94,6 +101,7 @@ private:
 
   std::unique_ptr<version_monitor> version_monitor_;
   std::unique_ptr<session_monitor_receiver> session_monitor_receiver_;
+  std::unique_ptr<hid_event_system_monitor> hid_event_system_monitor_;
   std::unique_ptr<receiver> receiver_;
 };
 } // namespace grabber
