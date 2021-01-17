@@ -1,6 +1,6 @@
 #pragma once
 
-// pqrs::osx::iokit_service v2.0
+// pqrs::osx::iokit_service v2.1
 
 // (C) Copyright Takayama Fumihiko 2019.
 // Distributed under the Boost Software License, Version 1.0.
@@ -8,6 +8,7 @@
 
 #include <optional>
 #include <pqrs/cf/cf_ptr.hpp>
+#include <pqrs/cf/string.hpp>
 #include <pqrs/osx/iokit_iterator.hpp>
 #include <pqrs/osx/iokit_types.hpp>
 
@@ -115,6 +116,37 @@ public:
       if (r) {
         result = properties;
         CFRelease(properties);
+      }
+    }
+
+    return result;
+  }
+
+  std::optional<int64_t> find_int64_property(CFStringRef key) const {
+    std::optional<int64_t> result;
+
+    if (registry_entry_) {
+      if (auto property = IORegistryEntryCreateCFProperty(*registry_entry_, key, kCFAllocatorDefault, kNilOptions)) {
+        if (CFGetTypeID(property) == CFNumberGetTypeID()) {
+          int64_t value = 0;
+          if (CFNumberGetValue(static_cast<CFNumberRef>(property), kCFNumberSInt64Type, &value)) {
+            result = value;
+          }
+        }
+        CFRelease(property);
+      }
+    }
+
+    return result;
+  }
+
+  std::optional<std::string> find_string_property(CFStringRef key) const {
+    std::optional<std::string> result;
+
+    if (registry_entry_) {
+      if (auto property = IORegistryEntryCreateCFProperty(*registry_entry_, key, kCFAllocatorDefault, kNilOptions)) {
+        result = cf::make_string(property);
+        CFRelease(property);
       }
     }
 
