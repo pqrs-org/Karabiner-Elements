@@ -297,6 +297,15 @@ The caps lock is quite different from the normal modifier.
 -   karabiner_grabber makes `event::type::caps_lock_state_changed` event and processes it.
 -   The state of `modifier_flag_manager` is changed by `event::type::caps_lock_state_changed`.
 
+### modifier state holders
+
+-   `modifier_flag_manager`
+    -   Keep ideal modifiers state for event modification.
+-   `key_event_dispatcher`
+    -   Keep actually sent modifiers.
+
+For example, `modifier_flag_manager` contains the lazy modifiers, but `key_event_dispatcher` does not.
+
 ### The flow of handling caps lock as modifier
 
 Example:
@@ -319,43 +328,34 @@ Example:
 }
 ```
 
-Error case when treating the caps lock modifier as lazy modifier:
-
 -   Press the physical caps_lock key (`hid::usage::keyboard_or_keypad::keyboard_caps_lock`)
     -   `key_event_dispatcher` is updated.
         -   `pressed_keys_.insert(caps_lock)`
     -   macOS update the caps lock LED state (on).
     -   `event::type::caps_lock_state_changed (on)` is sent via `karabiner_observer`.
-        -   `modifier_flag_manager increase_lock (caps_lock)`
+        -   `modifier_flag_manager increase_led_lock (caps_lock)`
+        -   `key_event_dispatcher` is updated.
+            -   `pressed_modifier_flags_.insert(caps_lock)`
 -   Release the physical caps_lock key (`hid::usage::keyboard_or_keypad::keyboard_caps_lock`)
     -   `key_event_dispatcher` is updated.
         -   `pressed_keys_.erase(caps_lock)`
--   Press `down_arrow` key.
-    -   **[1]** `event::type::set_modifier_flag_lock_state (caps_lock, off)` is sent by `modifiers.mandatory`.
-        -   `modifier_flag_manager decrease_lock (caps_lock)`
+-   Press `down_arrow` key.j
+    -   `sticky_modifier caps_lock false` is sent by `modifiers.mandatory`.
+        -   `modifier_flag_manager decrease_sticky (caps_lock)`
     -   `hid::usage::keyboard_or_keypad::keyboard_caps_lock` is sent via virtual hid keyboard.
     -   `key_event_dispatcher` is updated.
         -   `pressed_modifier_flags_.erase(caps_lock)`
     -   `d` is sent via virtual hid keyboard.
-    -   **[2]** `event::type::set_modifier_flag_lock_state (caps_lock, on)` is sent by `modifiers.mandatory`.
-        -   `modifier_flag_manager increase_lock (caps_lock)`
-    -   **[3]** macOS update the caps lock LED state (off).
-    -   **[4]** `event::type::caps_lock_state_changed (off)` is sent via `karabiner_observer`.
-        -   `modifier_flag_manager decrease_lock (caps_lock)`
+    -   sticky_modifiers are erased.
+    -   `sticky_modifier caps_lock true` is sent by `modifiers.mandatory`.
+        -   `modifier_flag_manager increase_sticky (caps_lock)`
+    -   macOS update the caps lock LED state (off).
+    -   `event::type::caps_lock_state_changed (off)` is sent via `karabiner_observer`.
+        -   `modifier_flag_manager decrease_led_lock (caps_lock)`
+            -   Note: led_lock will be ignored while other counter is active in modifier_flag_manager.
 -   Release `down_arrow` key.
     -   `d` is sent via virtual hid keyboard.
 -   Press `tab` key.
+    -   `hid::usage::keyboard_or_keypad::keyboard_caps_lock` is sent via virtual hid keyboard by sticky_modifier.
+    -   sticky_modifiers are erased.
     -   `tab` is sent via virtual hid keyboard.
-
-The caps lock key event is not sent at **[2]** because it is lazy modifier.
-The LED state change of **[1]** is not immediately, so the actual change is at **[3]**.
-So, **[4]** overwrites the state of **[2]**, and **[2]** is ignored.
-
-### modifier state holders
-
--   `modifier_flag_manager`
-    -   Keep ideal modifiers state for event modification.
--   `key_event_dispatcher`
-    -   Keep actually sent modifiers.
-
-For example, `modifier_flag_manager` contains the lazy modifiers, but `key_event_dispatcher` does not.
