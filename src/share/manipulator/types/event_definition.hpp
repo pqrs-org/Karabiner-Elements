@@ -18,6 +18,7 @@ public:
     select_input_source,
     set_variable,
     mouse_key,
+    sticky_modifier,
   };
 
   enum class any_type {
@@ -34,7 +35,8 @@ public:
                                std::string,                                              // For shell_command
                                std::vector<pqrs::osx::input_source_selector::specifier>, // For select_input_source
                                std::pair<std::string, int>,                              // For set_variable
-                               mouse_key                                                 // For mouse_key
+                               mouse_key,                                                // For mouse_key
+                               std::pair<modifier_flag, bool>                            // For sticky_modifier
                                >;
 
   event_definition(void) : type_(type::none),
@@ -94,6 +96,8 @@ public:
         return event_queue::event::make_set_variable_event(std::get<std::pair<std::string, int>>(value_));
       case type::mouse_key:
         return event_queue::event::make_mouse_key_event(std::get<mouse_key>(value_));
+      case type::sticky_modifier:
+        return event_queue::event::make_sticky_modifier_event(std::get<std::pair<modifier_flag, bool>>(value_));
     }
   }
 
@@ -266,6 +270,38 @@ public:
 
       return true;
     }
+
+    //
+    // sticky_modifier
+    //
+
+    if (key == "sticky_modifier") {
+      check_type(json);
+
+      pqrs::json::requires_object(value, "`" + key + "`");
+
+      type_ = type::sticky_modifier;
+
+      for (const auto& [k, v] : value.items()) {
+        // k is always std::string.
+
+        pqrs::json::requires_boolean(v, "`" + k + "`");
+
+        try {
+          value_ = std::make_pair(
+              nlohmann::json(k).get<modifier_flag>(),
+              v.get<bool>());
+        } catch (const pqrs::json::unmarshal_error& e) {
+          throw pqrs::json::unmarshal_error(fmt::format("`{0}` error: {1}", k, e.what()));
+        }
+      }
+
+      return true;
+    }
+
+    //
+    // description
+    //
 
     if (key == "description") {
       // Do nothing

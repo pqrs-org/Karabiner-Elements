@@ -227,11 +227,15 @@ public:
     return e;
   }
 
-  static event make_sticky_modifier_event(modifier_flag modifier_flag, bool value) {
+  static event make_sticky_modifier_event(const std::pair<modifier_flag, bool>& value) {
     event e;
     e.type_ = type::sticky_modifier;
-    e.value_ = std::make_pair(modifier_flag, value);
+    e.value_ = value;
     return e;
+  }
+
+  static event make_sticky_modifier_event(modifier_flag modifier_flag, bool value) {
+    return make_sticky_modifier_event(std::make_pair(modifier_flag, value));
   }
 
   static event make_stop_keyboard_repeat_event(void) {
