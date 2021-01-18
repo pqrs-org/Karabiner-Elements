@@ -77,13 +77,25 @@ public:
       }
 
     } else if (event.get_type() == event::type::sticky_modifier) {
-      if (auto sticky_modifier = event.get_sticky_modifier()) {
-        auto type = sticky_modifier->second ? modifier_flag_manager::active_modifier_flag::type::increase_sticky
-                                            : modifier_flag_manager::active_modifier_flag::type::decrease_sticky;
-        modifier_flag_manager::active_modifier_flag active_modifier_flag(type,
-                                                                         sticky_modifier->first,
-                                                                         device_id);
-        modifier_flag_manager_.push_back_active_modifier_flag(active_modifier_flag);
+      if (event_type == event_type::key_down || event_type == event_type::single) {
+        if (auto sticky_modifier = event.get_sticky_modifier()) {
+          auto type = modifier_flag_manager::active_modifier_flag::type::increase_sticky;
+
+          if (sticky_modifier->second == sticky_modifier_type::toggle) {
+            if (modifier_flag_manager_.sticky_size(sticky_modifier->first) > 0) {
+              type = modifier_flag_manager::active_modifier_flag::type::decrease_sticky;
+            }
+          } else {
+            if (sticky_modifier->second != sticky_modifier_type::on) {
+              type = modifier_flag_manager::active_modifier_flag::type::decrease_sticky;
+            }
+          }
+
+          modifier_flag_manager::active_modifier_flag active_modifier_flag(type,
+                                                                           sticky_modifier->first,
+                                                                           device_id);
+          modifier_flag_manager_.push_back_active_modifier_flag(active_modifier_flag);
+        }
       }
 
     } else if (event.get_type() == event::type::caps_lock_state_changed) {

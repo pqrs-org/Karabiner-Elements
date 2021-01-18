@@ -36,7 +36,7 @@ public:
                                std::vector<pqrs::osx::input_source_selector::specifier>, // For select_input_source
                                std::pair<std::string, int>,                              // For set_variable
                                mouse_key,                                                // For mouse_key
-                               std::pair<modifier_flag, bool>                            // For sticky_modifier
+                               std::pair<modifier_flag, sticky_modifier_type>            // For sticky_modifier
                                >;
 
   event_definition(void) : type_(type::none),
@@ -97,7 +97,7 @@ public:
       case type::mouse_key:
         return event_queue::event::make_mouse_key_event(std::get<mouse_key>(value_));
       case type::sticky_modifier:
-        return event_queue::event::make_sticky_modifier_event(std::get<std::pair<modifier_flag, bool>>(value_));
+        return event_queue::event::make_sticky_modifier_event(std::get<std::pair<modifier_flag, sticky_modifier_type>>(value_));
     }
   }
 
@@ -285,14 +285,12 @@ public:
       for (const auto& [k, v] : value.items()) {
         // k is always std::string.
 
-        pqrs::json::requires_boolean(v, "`" + k + "`");
-
         try {
           value_ = std::make_pair(
               nlohmann::json(k).get<modifier_flag>(),
-              v.get<bool>());
+              v.get<sticky_modifier_type>());
         } catch (const pqrs::json::unmarshal_error& e) {
-          throw pqrs::json::unmarshal_error(fmt::format("`{0}` error: {1}", k, e.what()));
+          throw pqrs::json::unmarshal_error(fmt::format("`{0}` error: {1}", key, e.what()));
         }
       }
 

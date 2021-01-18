@@ -130,4 +130,15 @@ TEST_CASE("to_event_definition") {
     krbn::manipulator::to_event_definition event_definition(json);
     REQUIRE(event_definition.get_repeat() == false);
   }
+  // sticky_modifier
+  {
+    auto json = nlohmann::json::object({
+        {"sticky_modifier", nlohmann::json::object({{"left_shift", "toggle"}})},
+    });
+
+    krbn::manipulator::to_event_definition event_definition(json);
+    auto pair = event_definition.get_event_definition().get_if<std::pair<krbn::modifier_flag, krbn::sticky_modifier_type>>();
+    REQUIRE(pair->first == krbn::modifier_flag::left_shift);
+    REQUIRE(pair->second == krbn::sticky_modifier_type::toggle);
+  }
 }

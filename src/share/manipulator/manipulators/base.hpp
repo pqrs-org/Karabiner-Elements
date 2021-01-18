@@ -98,7 +98,9 @@ public:
     if (momentary_switch_event.caps_lock()) {
       // Send sticky_modifier event for caps_lock.
       event = event_queue::event::make_sticky_modifier_event(modifier_flag::caps_lock,
-                                                             event_type == event_type::key_down);
+                                                             event_type == event_type::key_down
+                                                                 ? sticky_modifier_type::on
+                                                                 : sticky_modifier_type::off);
       event_type = event_type::single;
     }
 

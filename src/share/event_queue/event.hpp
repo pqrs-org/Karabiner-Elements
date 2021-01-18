@@ -47,7 +47,7 @@ public:
                                std::vector<pqrs::osx::input_source_selector::specifier>, // For select_input_source
                                std::pair<std::string, int>,                              // For set_variable
                                mouse_key,                                                // For mouse_key
-                               std::pair<modifier_flag, bool>,                           // For sticky_modifier
+                               std::pair<modifier_flag, sticky_modifier_type>,           // For sticky_modifier
                                pqrs::osx::frontmost_application_monitor::application,    // For frontmost_application_changed
                                pqrs::osx::input_source::properties,                      // For input_source_changed
                                device_properties,                                        // For device_grabbed
@@ -82,7 +82,7 @@ public:
           } else if (key == "mouse_key") {
             result.value_ = value.get<mouse_key>();
           } else if (key == "sticky_modifier") {
-            result.value_ = value.get<std::pair<modifier_flag, bool>>();
+            result.value_ = value.get<std::pair<modifier_flag, sticky_modifier_type>>();
           } else if (key == "frontmost_application") {
             result.value_ = value.get<pqrs::osx::frontmost_application_monitor::application>();
           } else if (key == "input_source_properties") {
@@ -227,15 +227,15 @@ public:
     return e;
   }
 
-  static event make_sticky_modifier_event(const std::pair<modifier_flag, bool>& value) {
+  static event make_sticky_modifier_event(const std::pair<modifier_flag, sticky_modifier_type>& value) {
     event e;
     e.type_ = type::sticky_modifier;
     e.value_ = value;
     return e;
   }
 
-  static event make_sticky_modifier_event(modifier_flag modifier_flag, bool value) {
-    return make_sticky_modifier_event(std::make_pair(modifier_flag, value));
+  static event make_sticky_modifier_event(modifier_flag modifier_flag, sticky_modifier_type type) {
+    return make_sticky_modifier_event(std::make_pair(modifier_flag, type));
   }
 
   static event make_stop_keyboard_repeat_event(void) {
@@ -369,10 +369,10 @@ public:
     return std::nullopt;
   }
 
-  std::optional<std::pair<modifier_flag, bool>> get_sticky_modifier(void) const {
+  std::optional<std::pair<modifier_flag, sticky_modifier_type>> get_sticky_modifier(void) const {
     try {
       if (type_ == type::sticky_modifier) {
-        return std::get<std::pair<modifier_flag, bool>>(value_);
+        return std::get<std::pair<modifier_flag, sticky_modifier_type>>(value_);
       }
     } catch (std::bad_variant_access&) {
     }

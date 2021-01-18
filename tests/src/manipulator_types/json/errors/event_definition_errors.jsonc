@@ -188,5 +188,42 @@
             }
         },
         "error": "`mouse_key` error: `x` must be number, but is `null`"
+    },
+
+    // sticky_modifier
+
+    {
+        "class": "event_definition",
+        "input": {
+            "sticky_modifier": null
+        },
+        "error": "`sticky_modifier` must be object, but is `null`"
+    },
+    {
+        "class": "event_definition",
+        "input": {
+            "sticky_modifier": {
+                "unknown": null
+            }
+        },
+        "error": "`sticky_modifier` error: unknown modifier_flag: `unknown`"
+    },
+    {
+        "class": "event_definition",
+        "input": {
+            "sticky_modifier": {
+                "left_shift": null
+            }
+        },
+        "error": "`sticky_modifier` error: json must be string, but is `null`"
+    },
+    {
+        "class": "event_definition",
+        "input": {
+            "sticky_modifier": {
+                "left_shift": "unknown"
+            }
+        },
+        "error": "`sticky_modifier` error: unknown value: `unknown`"
     }
 ]
