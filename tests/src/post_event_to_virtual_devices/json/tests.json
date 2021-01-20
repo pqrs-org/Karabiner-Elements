@@ -736,5 +736,11 @@
         "rules": ["json/rules/fn_function_keys.json"],
         "input_event_queue": "json/input_event_queue/fn_function_keys_1.json",
         "expected_post_event_to_virtual_devices_queue": "json/expected_post_event_to_virtual_devices_queue/fn_function_keys_1.json"
+    },
+    {
+        "description": "sticky modifier",
+        "rules": ["json/rules/sticky_modifier.json"],
+        "input_event_queue": "json/input_event_queue/sticky_modifier_1.jsonc",
+        "expected_post_event_to_virtual_devices_queue": "json/expected_post_event_to_virtual_devices_queue/sticky_modifier_1.json"
     }
 ]

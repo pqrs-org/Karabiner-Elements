@@ -1,0 +1,139 @@
+[
+    // left_shift key_down
+    {
+        "device_id": 1,
+        "event": {
+            "type": "momentary_switch_event",
+            "momentary_switch_event": {
+                "key_code": "left_shift"
+            }
+        },
+        "event_type": "key_down",
+        "lazy": false,
+        "original_event": {
+            "type": "momentary_switch_event",
+            "momentary_switch_event": {
+                "key_code": "left_shift"
+            }
+        },
+        "event_time_stamp": {
+            "time_stamp": 2
+        },
+        "validity": true
+    },
+
+    // left_shift key_up
+    {
+        "device_id": 1,
+        "event": {
+            "type": "momentary_switch_event",
+            "momentary_switch_event": {
+                "key_code": "left_shift"
+            }
+        },
+        "event_type": "key_up",
+        "lazy": false,
+        "original_event": {
+            "type": "momentary_switch_event",
+            "momentary_switch_event": {
+                "key_code": "left_shift"
+            }
+        },
+        "event_time_stamp": {
+            "time_stamp": 4
+        },
+        "validity": true
+    },
+
+    // spacebar key_down
+    {
+        "device_id": 1,
+        "event": {
+            "type": "momentary_switch_event",
+            "momentary_switch_event": {
+                "key_code": "spacebar"
+            }
+        },
+        "event_type": "key_down",
+        "lazy": false,
+        "original_event": {
+            "type": "momentary_switch_event",
+            "momentary_switch_event": {
+                "key_code": "spacebar"
+            }
+        },
+        "event_time_stamp": {
+            "time_stamp": 6
+        },
+        "validity": true
+    },
+
+    // tab key_down
+    {
+        "device_id": 1,
+        "event": {
+            "type": "momentary_switch_event",
+            "momentary_switch_event": {
+                "key_code": "tab"
+            }
+        },
+        "event_type": "key_down",
+        "lazy": false,
+        "original_event": {
+            "type": "momentary_switch_event",
+            "momentary_switch_event": {
+                "key_code": "tab"
+            }
+        },
+        "event_time_stamp": {
+            "time_stamp": 8
+        },
+        "validity": true
+    },
+
+    // spacebar key_up
+    {
+        "device_id": 1,
+        "event": {
+            "type": "momentary_switch_event",
+            "momentary_switch_event": {
+                "key_code": "spacebar"
+            }
+        },
+        "event_type": "key_up",
+        "lazy": false,
+        "original_event": {
+            "type": "momentary_switch_event",
+            "momentary_switch_event": {
+                "key_code": "spacebar"
+            }
+        },
+        "event_time_stamp": {
+            "time_stamp": 10
+        },
+        "validity": true
+    },
+
+    // tab key_up
+    {
+        "device_id": 1,
+        "event": {
+            "type": "momentary_switch_event",
+            "momentary_switch_event": {
+                "key_code": "tab"
+            }
+        },
+        "event_type": "key_up",
+        "lazy": false,
+        "original_event": {
+            "type": "momentary_switch_event",
+            "momentary_switch_event": {
+                "key_code": "tab"
+            }
+        },
+        "event_time_stamp": {
+            "time_stamp": 12
+        },
+        "validity": true
+    }
+]

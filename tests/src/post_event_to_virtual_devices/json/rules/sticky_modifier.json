@@ -1,0 +1,19 @@
+[
+    {
+        "description": "left_shift -> sticky_modifier.left_shift",
+        "type": "basic",
+        "from": {
+            "key_code": "left_shift",
+            "modifiers": {
+                "optional": ["any"]
+            }
+        },
+        "to": [
+            {
+                "sticky_modifier": {
+                    "left_shift": "toggle"
+                }
+            }
+        ]
+    }
+]
