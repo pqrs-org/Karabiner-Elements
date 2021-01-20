@@ -1591,6 +1591,7 @@
         "category": "Sticky modifier keys"
     },
     {
+        "not_from": true,
         "label": "sticky left_control",
         "data": {
             "sticky_modifier": {
@@ -1599,6 +1600,7 @@
         }
     },
     {
+        "not_from": true,
         "label": "sticky left_shift",
         "data": {
             "sticky_modifier": {
@@ -1607,6 +1609,7 @@
         }
     },
     {
+        "not_from": true,
         "label": "sticky left_option",
         "data": {
             "sticky_modifier": {
@@ -1615,6 +1618,7 @@
         }
     },
     {
+        "not_from": true,
         "label": "sticky left_command",
         "data": {
             "sticky_modifier": {
@@ -1623,6 +1627,7 @@
         }
     },
     {
+        "not_from": true,
         "label": "sticky right_control",
         "data": {
             "sticky_modifier": {
@@ -1631,6 +1636,7 @@
         }
     },
     {
+        "not_from": true,
         "label": "sticky right_shift",
         "data": {
             "sticky_modifier": {
@@ -1639,6 +1645,7 @@
         }
     },
     {
+        "not_from": true,
         "label": "sticky right_option",
         "data": {
             "sticky_modifier": {
@@ -1647,6 +1654,7 @@
         }
     },
     {
+        "not_from": true,
         "label": "sticky right_command",
         "data": {
             "sticky_modifier": {
@@ -1655,6 +1663,7 @@
         }
     },
     {
+        "not_from": true,
         "label": "sticky fn",
         "data": {
             "sticky_modifier": {
