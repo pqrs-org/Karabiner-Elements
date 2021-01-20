@@ -1,0 +1,104 @@
+[
+    {
+        "keyboard_input": {
+            "keys": [],
+            "modifiers": [
+                "left_shift"
+            ]
+        },
+        "time_stamp": 6,
+        "type": "keyboard_input"
+    },
+    {
+        "keyboard_input": {
+            "keys": [],
+            "modifiers": [
+                "left_shift",
+                "left_option"
+            ]
+        },
+        "time_stamp": 11,
+        "type": "keyboard_input"
+    },
+    {
+        "keyboard_input": {
+            "keys": [],
+            "modifiers": [
+                "left_shift"
+            ]
+        },
+        "time_stamp": 16,
+        "type": "keyboard_input"
+    },
+    {
+        "keyboard_input": {
+            "keys": [],
+            "modifiers": [
+                "left_shift",
+                "right_option"
+            ]
+        },
+        "time_stamp": 21,
+        "type": "keyboard_input"
+    },
+    {
+        "keyboard_input": {
+            "keys": [
+                {
+                    "key_code": "tab"
+                }
+            ],
+            "modifiers": [
+                "left_shift",
+                "right_option"
+            ]
+        },
+        "time_stamp": 26,
+        "type": "keyboard_input"
+    },
+    {
+        "keyboard_input": {
+            "keys": [],
+            "modifiers": [
+                "left_shift",
+                "right_option"
+            ]
+        },
+        "time_stamp": 31,
+        "type": "keyboard_input"
+    },
+    {
+        "keyboard_input": {
+            "keys": [],
+            "modifiers": [
+                "right_option"
+            ]
+        },
+        "time_stamp": 36,
+        "type": "keyboard_input"
+    },
+    {
+        "keyboard_input": {
+            "keys": [
+                {
+                    "key_code": "spacebar"
+                }
+            ],
+            "modifiers": [
+                "right_option"
+            ]
+        },
+        "time_stamp": 41,
+        "type": "keyboard_input"
+    },
+    {
+        "keyboard_input": {
+            "keys": [],
+            "modifiers": [
+                "right_option"
+            ]
+        },
+        "time_stamp": 46,
+        "type": "keyboard_input"
+    }
+]
