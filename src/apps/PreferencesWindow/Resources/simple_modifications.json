@@ -1588,6 +1588,81 @@
         }
     },
     {
+        "category": "Sticky modifier keys"
+    },
+    {
+        "label": "sticky left_control",
+        "data": {
+            "sticky_modifier": {
+                "left_control": "toggle"
+            }
+        }
+    },
+    {
+        "label": "sticky left_shift",
+        "data": {
+            "sticky_modifier": {
+                "left_shift": "toggle"
+            }
+        }
+    },
+    {
+        "label": "sticky left_option",
+        "data": {
+            "sticky_modifier": {
+                "left_option": "toggle"
+            }
+        }
+    },
+    {
+        "label": "sticky left_command",
+        "data": {
+            "sticky_modifier": {
+                "left_command": "toggle"
+            }
+        }
+    },
+    {
+        "label": "sticky right_control",
+        "data": {
+            "sticky_modifier": {
+                "right_control": "toggle"
+            }
+        }
+    },
+    {
+        "label": "sticky right_shift",
+        "data": {
+            "sticky_modifier": {
+                "right_shift": "toggle"
+            }
+        }
+    },
+    {
+        "label": "sticky right_option",
+        "data": {
+            "sticky_modifier": {
+                "right_option": "toggle"
+            }
+        }
+    },
+    {
+        "label": "sticky right_command",
+        "data": {
+            "sticky_modifier": {
+                "right_command": "toggle"
+            }
+        }
+    },
+    {
+        "label": "sticky fn",
+        "data": {
+            "sticky_modifier": {
+                "fn": "toggle"
+            }
+        }
+    },
+    {
         "category": "Others"
     },
     {
