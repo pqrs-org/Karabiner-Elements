@@ -51,6 +51,8 @@ public:
     if (product_ && is_keyboard_ && is_pointing_device_) {
       if (*product_ == "Apple Internal Touch Bar") {
         is_built_in_touch_bar_ = true;
+      } else if (*product_ == "TouchBarUserDevice") {
+        is_built_in_touch_bar_ = true;
       } else {
         if ((*product_).find("Apple Internal ") != std::string::npos) {
           if (*is_keyboard_ == true && *is_pointing_device_ == false) {
