@@ -292,6 +292,19 @@ public:
                          });
   }
 
+  bool is_sticky_active(modifier_flag modifier_flag) const {
+    auto count = std::accumulate(std::begin(active_modifier_flags_),
+                                 std::end(active_modifier_flags_),
+                                 0,
+                                 [&](const auto& count, const auto& f) {
+                                   if (f.get_modifier_flag() == modifier_flag && f.sticky()) {
+                                     return count + f.get_count();
+                                   }
+                                   return count;
+                                 });
+    return count > 0;
+  }
+
   pqrs::karabiner::driverkit::virtual_hid_device_driver::hid_report::modifiers make_hid_report_modifiers(void) const {
     pqrs::karabiner::driverkit::virtual_hid_device_driver::hid_report::modifiers modifiers;
 
