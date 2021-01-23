@@ -102,9 +102,11 @@ public:
         auto to_json = nlohmann::json::object({
             {"consumer_key_code", "mute"},
         });
+        std::vector<manipulator::to_event_definition> to_event_definitions;
+        to_event_definitions.emplace_back(to_json);
 
         auto m = std::make_shared<manipulator::manipulators::basic::basic>(manipulator::manipulators::basic::from_event_definition(from_json),
-                                                                           manipulator::to_event_definition(to_json));
+                                                                           to_event_definitions);
         m->push_back_condition(manipulator::manipulator_factory::make_event_changed_if_condition(false));
 
         manipulator_managers->back()->push_back_manipulator(m);

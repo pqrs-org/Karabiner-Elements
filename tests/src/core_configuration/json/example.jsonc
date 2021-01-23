@@ -16,17 +16,21 @@
                     "from": {
                         "key_code": "caps_lock"
                     },
-                    "to": {
-                        "key_code": "delete_or_backspace"
-                    }
+                    "to": [
+                        {
+                            "key_code": "delete_or_backspace"
+                        }
+                    ]
                 },
                 {
                     "from": {
                         "key_code": "escape"
                     },
-                    "to": {
-                        "key_code": "spacebar"
-                    }
+                    "to": [
+                        {
+                            "key_code": "spacebar"
+                        }
+                    ]
                 }
             ],
             "fn_function_keys": [
@@ -34,9 +38,11 @@
                     "from": {
                         "key_code": "f1"
                     },
-                    "to": {
-                        "key_code": "escape"
-                    }
+                    "to": [
+                        {
+                            "key_code": "escape"
+                        }
+                    ]
                 }
             ],
             "complex_modifications": {
@@ -146,9 +152,11 @@
                             "from": {
                                 "key_code": "caps_lock"
                             },
-                            "to": {
-                                "key_code": "left_control"
-                            }
+                            "to": [
+                                {
+                                    "key_code": "left_control"
+                                }
+                            ]
                         }
                     ],
                     "fn_function_keys": [
@@ -156,17 +164,21 @@
                             "from": {
                                 "key_code": "f1"
                             },
-                            "to": {
-                                "key_code": "escape"
-                            }
+                            "to": [
+                                {
+                                    "key_code": "escape"
+                                }
+                            ]
                         },
                         {
                             "from": {
                                 "key_code": "f2"
                             },
-                            "to": {
-                                "key_code": ""
-                            }
+                            "to": [
+                                {
+                                    "key_code": ""
+                                }
+                            ]
                         }
                     ]
                 },
@@ -188,9 +200,11 @@
                         "is_pointing_device": false
                     },
                     "ignore": false,
+                    // v1 format
                     "simple_modifications": {
                         "caps_lock": "left_control"
                     },
+                    // v1 format
                     "fn_function_keys": {
                         "f1": "escape",
                         "f2": ""
@@ -205,9 +219,25 @@
         {
             "name": "fn_function_keys v1",
             "selected": false,
+            // v1 format
             "fn_function_keys": {
                 "f1": "escape"
             }
+        },
+        {
+            "name": "simple_modifications v2",
+            "selected": false,
+            // v2 format
+            "simple_modifications": [
+                {
+                    "from": {
+                        "key_code": "caps_lock"
+                    },
+                    "to": {
+                        "key_code": "right_control"
+                    }
+                }
+            ]
         }
     ],
     "dummy": {

@@ -56,9 +56,13 @@ private:
         from_json["modifiers"]["optional"].push_back("any");
 
         auto to_json = json_utility::parse_jsonc(pair.second);
+        std::vector<manipulator::to_event_definition> to_event_definitions;
+        for (auto&& j : to_json) {
+          to_event_definitions.emplace_back(j);
+        }
 
         return std::make_shared<manipulator::manipulators::basic::basic>(manipulator::manipulators::basic::from_event_definition(from_json),
-                                                                         manipulator::to_event_definition(to_json));
+                                                                         to_event_definitions);
 
       } catch (const pqrs::json::unmarshal_error& e) {
         logger::get_logger()->error(fmt::format("karabiner.json error: {0}", e.what()));

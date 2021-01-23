@@ -60,9 +60,12 @@ public:
             {"modifiers", nlohmann::json::array({"fn"})},
         });
 
+        std::vector<manipulator::to_event_definition> to_event_definitions;
+        to_event_definitions.emplace_back(to_json);
+
         try {
           auto manipulator = std::make_shared<manipulator::manipulators::basic::basic>(manipulator::manipulators::basic::from_event_definition(from_json),
-                                                                                       manipulator::to_event_definition(to_json));
+                                                                                       to_event_definitions);
           manipulator_manager_->push_back_manipulator(std::shared_ptr<manipulator::manipulators::base>(manipulator));
 
         } catch (const pqrs::json::unmarshal_error& e) {
@@ -153,9 +156,12 @@ public:
         auto to_json = d["to"];
         to_json["modifiers"] = nlohmann::json::array({"fn"});
 
+        std::vector<manipulator::to_event_definition> to_event_definitions;
+        to_event_definitions.emplace_back(to_json);
+
         try {
           auto manipulator = std::make_shared<manipulator::manipulators::basic::basic>(manipulator::manipulators::basic::from_event_definition(from_json),
-                                                                                       manipulator::to_event_definition(to_json));
+                                                                                       to_event_definitions);
           manipulator_manager_->push_back_manipulator(std::shared_ptr<manipulator::manipulators::base>(manipulator));
 
         } catch (const pqrs::json::unmarshal_error& e) {
@@ -185,10 +191,15 @@ private:
       if (to_json.empty()) {
         return nullptr;
       }
-      to_json["modifiers"] = to_modifiers;
+
+      std::vector<manipulator::to_event_definition> to_event_definitions;
+      for (auto&& j : to_json) {
+        j["modifiers"] = to_modifiers;
+        to_event_definitions.emplace_back(j);
+      }
 
       return std::make_shared<manipulator::manipulators::basic::basic>(manipulator::manipulators::basic::from_event_definition(from_json),
-                                                                       manipulator::to_event_definition(to_json));
+                                                                       to_event_definitions);
     } catch (const pqrs::json::unmarshal_error& e) {
       logger::get_logger()->error(fmt::format("karabiner.json error: {0}", e.what()));
     } catch (const std::exception& e) {

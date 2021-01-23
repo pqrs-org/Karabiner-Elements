@@ -44,7 +44,7 @@
     for (NSDictionary* dict in jsonObject) {
       NSString* category = dict[@"category"];
       NSString* label = dict[@"label"];
-      NSDictionary* data = dict[@"data"];
+      NSArray* data = dict[@"data"];
 
       if (category) {
         [self.fromMenu addItem:[NSMenuItem separatorItem]];
@@ -66,14 +66,14 @@
           [self.toMenu addItem:item];
           [self.toMenuWithInherited addItem:[item copy]];
         }
-      } else if (label && data) {
+      } else if (label && data.count > 0) {
         label = [NSString stringWithFormat:@"  %@", label];
 
         if (!dict[@"not_from"]) {
           NSMenuItem* item = [[NSMenuItem alloc] initWithTitle:label
                                                         action:NULL
                                                  keyEquivalent:@""];
-          item.representedObject = [KarabinerKitJsonUtility createJsonString:data];
+          item.representedObject = [KarabinerKitJsonUtility createJsonString:data[0]];
           [self.fromMenu addItem:item];
         }
         if (!dict[@"not_to"]) {

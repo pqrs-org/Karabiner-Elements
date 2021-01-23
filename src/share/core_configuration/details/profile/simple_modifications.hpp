@@ -23,7 +23,7 @@ public:
         auto to_json = json_utility::parse_jsonc(it.second);
 
         if (from_json.is_object() &&
-            to_json.is_object()) {
+            to_json.is_array()) {
           if (!from_json.empty() &&
               !to_json.empty() &&
               froms.find(it.first) == std::end(froms)) {
@@ -64,7 +64,7 @@ public:
                     const std::string& to) {
     try {
       auto from_json_string = json_utility::parse_jsonc(from).dump();
-      auto to_json_string = json_utility::parse_jsonc(to).dump();
+      auto to_json_string = migrate_to_json(json_utility::parse_jsonc(to)).dump();
 
       if (index < pairs_.size()) {
         pairs_[index].first = from_json_string;
@@ -78,7 +78,7 @@ public:
                       const std::string& to) {
     try {
       auto from_json_string = json_utility::parse_jsonc(from).dump();
-      auto to_json_string = json_utility::parse_jsonc(to).dump();
+      auto to_json_string = migrate_to_json(json_utility::parse_jsonc(to)).dump();
 
       for (auto&& it : pairs_) {
         if (it.first == from_json_string) {
@@ -95,7 +95,7 @@ private:
     // Override existing definition
 
     if (json.is_array()) {
-      // v2 format
+      // v2,v3 format
 
       for (const auto& j : json) {
         if (j.is_object()) {
@@ -112,8 +112,7 @@ private:
               from_json.erase("");
               from_json_string = from_json.dump();
             } else if (key == "to") {
-              nlohmann::json to_json = value;
-              to_json.erase("");
+              nlohmann::json to_json = migrate_to_json(value);
               to_json_string = to_json.dump();
             } else {
               logger::get_logger()->error("json error: Unknown key: {0} in {1}", key, pqrs::json::dump_for_error_message(j));
@@ -144,7 +143,7 @@ private:
           }
 
           if (!it.value().empty()) {
-            nlohmann::json to_json({{"key_code", it.value()}});
+            auto to_json = nlohmann::json::array({nlohmann::json::object({{"key_code", it.value()}})});
             to_json_string = to_json.dump();
           }
 
@@ -176,6 +175,23 @@ private:
                    std::end(pairs_));
     } catch (std::exception&) {
     }
+  }
+
+  nlohmann::json migrate_to_json(const nlohmann::json& to_json) {
+    // v2 -> v3
+
+    if (to_json.is_object()) {
+      auto result = to_json;
+
+      result.erase("");
+      if (result.empty()) {
+        return nlohmann::json::array();
+      } else {
+        return nlohmann::json::array({result});
+      }
+    }
+
+    return to_json;
   }
 
   // Note:

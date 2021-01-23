@@ -103,7 +103,7 @@
     if (![to isKindOfClass:NSString.class] ||
         [to length] == 0) {
       [SimpleModificationsTableViewController selectPopUpButtonMenu:toCellView.popUpButton
-                                                         definition:from];
+                                                         definition:[NSString stringWithFormat:@"[%@]", from]];
       to = toCellView.popUpButton.selectedItem.representedObject;
     }
     toCellView.popUpButton.enabled = YES;

@@ -89,51 +89,51 @@ public:
 
     json.push_back(nlohmann::json::object());
     json.back()["from"]["key_code"] = "f1";
-    json.back()["to"]["consumer_key_code"] = "display_brightness_decrement";
+    json.back()["to"] = nlohmann::json::array({nlohmann::json::object({{"consumer_key_code", "display_brightness_decrement"}})});
 
     json.push_back(nlohmann::json::object());
     json.back()["from"]["key_code"] = "f2";
-    json.back()["to"]["consumer_key_code"] = "display_brightness_increment";
+    json.back()["to"] = nlohmann::json::array({nlohmann::json::object({{"consumer_key_code", "display_brightness_increment"}})});
 
     json.push_back(nlohmann::json::object());
     json.back()["from"]["key_code"] = "f3";
-    json.back()["to"]["apple_vendor_keyboard_key_code"] = "mission_control";
+    json.back()["to"] = nlohmann::json::array({nlohmann::json::object({{"apple_vendor_keyboard_key_code", "mission_control"}})});
 
     json.push_back(nlohmann::json::object());
     json.back()["from"]["key_code"] = "f4";
-    json.back()["to"]["apple_vendor_keyboard_key_code"] = "spotlight";
+    json.back()["to"] = nlohmann::json::array({nlohmann::json::object({{"apple_vendor_keyboard_key_code", "spotlight"}})});
 
     json.push_back(nlohmann::json::object());
     json.back()["from"]["key_code"] = "f5";
-    json.back()["to"]["consumer_key_code"] = "dictation";
+    json.back()["to"] = nlohmann::json::array({nlohmann::json::object({{"consumer_key_code", "dictation"}})});
 
     json.push_back(nlohmann::json::object());
     json.back()["from"]["key_code"] = "f6";
-    json.back()["to"]["key_code"] = "f6";
+    json.back()["to"] = nlohmann::json::array({nlohmann::json::object({{"key_code", "f6"}})});
 
     json.push_back(nlohmann::json::object());
     json.back()["from"]["key_code"] = "f7";
-    json.back()["to"]["consumer_key_code"] = "rewind";
+    json.back()["to"] = nlohmann::json::array({nlohmann::json::object({{"consumer_key_code", "rewind"}})});
 
     json.push_back(nlohmann::json::object());
     json.back()["from"]["key_code"] = "f8";
-    json.back()["to"]["consumer_key_code"] = "play_or_pause";
+    json.back()["to"] = nlohmann::json::array({nlohmann::json::object({{"consumer_key_code", "play_or_pause"}})});
 
     json.push_back(nlohmann::json::object());
     json.back()["from"]["key_code"] = "f9";
-    json.back()["to"]["consumer_key_code"] = "fast_forward";
+    json.back()["to"] = nlohmann::json::array({nlohmann::json::object({{"consumer_key_code", "fast_forward"}})});
 
     json.push_back(nlohmann::json::object());
     json.back()["from"]["key_code"] = "f10";
-    json.back()["to"]["consumer_key_code"] = "mute";
+    json.back()["to"] = nlohmann::json::array({nlohmann::json::object({{"consumer_key_code", "mute"}})});
 
     json.push_back(nlohmann::json::object());
     json.back()["from"]["key_code"] = "f11";
-    json.back()["to"]["consumer_key_code"] = "volume_decrement";
+    json.back()["to"] = nlohmann::json::array({nlohmann::json::object({{"consumer_key_code", "volume_decrement"}})});
 
     json.push_back(nlohmann::json::object());
     json.back()["from"]["key_code"] = "f12";
-    json.back()["to"]["consumer_key_code"] = "volume_increment";
+    json.back()["to"] = nlohmann::json::array({nlohmann::json::object({{"consumer_key_code", "volume_increment"}})});
 
     return json;
   }

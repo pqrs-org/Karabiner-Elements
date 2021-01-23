@@ -9,16 +9,16 @@
 using simple_modifications = krbn::core_configuration::details::simple_modifications;
 
 TEST_CASE("valid") {
-  krbn::core_configuration::core_configuration configuration("json/example.json", geteuid());
+  krbn::core_configuration::core_configuration configuration("json/example.jsonc", geteuid());
 
   {
     std::vector<std::pair<std::string, std::string>> expected;
 
-    expected.emplace_back(nlohmann::json{{"key_code", "caps_lock"}}.dump(),
-                          nlohmann::json{{"key_code", "delete_or_backspace"}}.dump());
+    expected.emplace_back(nlohmann::json::object({{"key_code", "caps_lock"}}).dump(),
+                          nlohmann::json::array({nlohmann::json::object({{"key_code", "delete_or_backspace"}})}).dump());
 
-    expected.emplace_back(nlohmann::json{{"key_code", "escape"}}.dump(),
-                          nlohmann::json{{"key_code", "spacebar"}}.dump());
+    expected.emplace_back(nlohmann::json::object({{"key_code", "escape"}}).dump(),
+                          nlohmann::json::array({nlohmann::json::object({{"key_code", "spacebar"}})}).dump());
 
     REQUIRE(configuration.get_selected_profile().get_simple_modifications().get_pairs() == expected);
   }
@@ -30,41 +30,41 @@ TEST_CASE("valid") {
   {
     std::vector<std::pair<std::string, std::string>> expected;
 
-    expected.emplace_back(nlohmann::json{{"key_code", "f1"}}.dump(),
-                          nlohmann::json{{"key_code", "escape"}}.dump());
+    expected.emplace_back(nlohmann::json::object({{"key_code", "f1"}}).dump(),
+                          nlohmann::json::array({nlohmann::json::object({{"key_code", "escape"}})}).dump());
 
-    expected.emplace_back(nlohmann::json{{"key_code", "f2"}}.dump(),
-                          nlohmann::json{{"consumer_key_code", "display_brightness_increment"}}.dump());
+    expected.emplace_back(nlohmann::json::object({{"key_code", "f2"}}).dump(),
+                          nlohmann::json::array({nlohmann::json::object({{"consumer_key_code", "display_brightness_increment"}})}).dump());
 
-    expected.emplace_back(nlohmann::json{{"key_code", "f3"}}.dump(),
-                          nlohmann::json{{"apple_vendor_keyboard_key_code", "mission_control"}}.dump());
+    expected.emplace_back(nlohmann::json::object({{"key_code", "f3"}}).dump(),
+                          nlohmann::json::array({nlohmann::json::object({{"apple_vendor_keyboard_key_code", "mission_control"}})}).dump());
 
-    expected.emplace_back(nlohmann::json{{"key_code", "f4"}}.dump(),
-                          nlohmann::json{{"apple_vendor_keyboard_key_code", "spotlight"}}.dump());
+    expected.emplace_back(nlohmann::json::object({{"key_code", "f4"}}).dump(),
+                          nlohmann::json::array({nlohmann::json::object({{"apple_vendor_keyboard_key_code", "spotlight"}})}).dump());
 
-    expected.emplace_back(nlohmann::json{{"key_code", "f5"}}.dump(),
-                          nlohmann::json{{"consumer_key_code", "dictation"}}.dump());
+    expected.emplace_back(nlohmann::json::object({{"key_code", "f5"}}).dump(),
+                          nlohmann::json::array({nlohmann::json::object({{"consumer_key_code", "dictation"}})}).dump());
 
-    expected.emplace_back(nlohmann::json{{"key_code", "f6"}}.dump(),
-                          nlohmann::json{{"key_code", "f6"}}.dump());
+    expected.emplace_back(nlohmann::json::object({{"key_code", "f6"}}).dump(),
+                          nlohmann::json::array({nlohmann::json::object({{"key_code", "f6"}})}).dump());
 
-    expected.emplace_back(nlohmann::json{{"key_code", "f7"}}.dump(),
-                          nlohmann::json{{"consumer_key_code", "rewind"}}.dump());
+    expected.emplace_back(nlohmann::json::object({{"key_code", "f7"}}).dump(),
+                          nlohmann::json::array({nlohmann::json::object({{"consumer_key_code", "rewind"}})}).dump());
 
-    expected.emplace_back(nlohmann::json{{"key_code", "f8"}}.dump(),
-                          nlohmann::json{{"consumer_key_code", "play_or_pause"}}.dump());
+    expected.emplace_back(nlohmann::json::object({{"key_code", "f8"}}).dump(),
+                          nlohmann::json::array({nlohmann::json::object({{"consumer_key_code", "play_or_pause"}})}).dump());
 
-    expected.emplace_back(nlohmann::json{{"key_code", "f9"}}.dump(),
-                          nlohmann::json{{"consumer_key_code", "fast_forward"}}.dump());
+    expected.emplace_back(nlohmann::json::object({{"key_code", "f9"}}).dump(),
+                          nlohmann::json::array({nlohmann::json::object({{"consumer_key_code", "fast_forward"}})}).dump());
 
-    expected.emplace_back(nlohmann::json{{"key_code", "f10"}}.dump(),
-                          nlohmann::json{{"consumer_key_code", "mute"}}.dump());
+    expected.emplace_back(nlohmann::json::object({{"key_code", "f10"}}).dump(),
+                          nlohmann::json::array({nlohmann::json::object({{"consumer_key_code", "mute"}})}).dump());
 
-    expected.emplace_back(nlohmann::json{{"key_code", "f11"}}.dump(),
-                          nlohmann::json{{"consumer_key_code", "volume_decrement"}}.dump());
+    expected.emplace_back(nlohmann::json::object({{"key_code", "f11"}}).dump(),
+                          nlohmann::json::array({nlohmann::json::object({{"consumer_key_code", "volume_decrement"}})}).dump());
 
-    expected.emplace_back(nlohmann::json{{"key_code", "f12"}}.dump(),
-                          nlohmann::json{{"consumer_key_code", "volume_increment"}}.dump());
+    expected.emplace_back(nlohmann::json::object({{"key_code", "f12"}}).dump(),
+                          nlohmann::json::array({nlohmann::json::object({{"consumer_key_code", "volume_increment"}})}).dump());
 
     REQUIRE(configuration.get_selected_profile().get_fn_function_keys().get_pairs() == expected);
   }
@@ -158,11 +158,11 @@ TEST_CASE("invalid_key_code_name.json") {
 
   std::vector<std::pair<std::string, std::string>> expected;
 
-  expected.emplace_back(nlohmann::json{{"key_code", "caps_lock_2"}}.dump(),
-                        nlohmann::json{{"key_code", "delete_or_backspace"}}.dump());
+  expected.emplace_back(nlohmann::json::object({{"key_code", "caps_lock_2"}}).dump(),
+                        nlohmann::json::array({nlohmann::json::object({{"key_code", "delete_or_backspace"}})}).dump());
 
-  expected.emplace_back(nlohmann::json{{"key_code", "escape"}}.dump(),
-                        nlohmann::json{{"key_code", "spacebar"}}.dump());
+  expected.emplace_back(nlohmann::json::object({{"key_code", "escape"}}).dump(),
+                        nlohmann::json::array({nlohmann::json::object({{"key_code", "spacebar"}})}).dump());
 
   REQUIRE(configuration.get_selected_profile().get_simple_modifications().get_pairs() == expected);
   REQUIRE(configuration.is_loaded() == true);
@@ -216,41 +216,41 @@ nlohmann::json get_default_virtual_hid_keyboard_json(void) {
 std::vector<std::pair<std::string, std::string>> make_default_fn_function_keys_pairs(void) {
   std::vector<std::pair<std::string, std::string>> pairs;
 
-  pairs.emplace_back(nlohmann::json{{"key_code", "f1"}}.dump(),
-                     nlohmann::json{{"consumer_key_code", "display_brightness_decrement"}}.dump());
+  pairs.emplace_back(nlohmann::json::object({{"key_code", "f1"}}).dump(),
+                     nlohmann::json::array({nlohmann::json::object({{"consumer_key_code", "display_brightness_decrement"}})}).dump());
 
-  pairs.emplace_back(nlohmann::json{{"key_code", "f2"}}.dump(),
-                     nlohmann::json{{"consumer_key_code", "display_brightness_increment"}}.dump());
+  pairs.emplace_back(nlohmann::json::object({{"key_code", "f2"}}).dump(),
+                     nlohmann::json::array({nlohmann::json::object({{"consumer_key_code", "display_brightness_increment"}})}).dump());
 
-  pairs.emplace_back(nlohmann::json{{"key_code", "f3"}}.dump(),
-                     nlohmann::json{{"apple_vendor_keyboard_key_code", "mission_control"}}.dump());
+  pairs.emplace_back(nlohmann::json::object({{"key_code", "f3"}}).dump(),
+                     nlohmann::json::array({nlohmann::json::object({{"apple_vendor_keyboard_key_code", "mission_control"}})}).dump());
 
-  pairs.emplace_back(nlohmann::json{{"key_code", "f4"}}.dump(),
-                     nlohmann::json{{"apple_vendor_keyboard_key_code", "spotlight"}}.dump());
+  pairs.emplace_back(nlohmann::json::object({{"key_code", "f4"}}).dump(),
+                     nlohmann::json::array({nlohmann::json::object({{"apple_vendor_keyboard_key_code", "spotlight"}})}).dump());
 
-  pairs.emplace_back(nlohmann::json{{"key_code", "f5"}}.dump(),
-                     nlohmann::json{{"consumer_key_code", "dictation"}}.dump());
+  pairs.emplace_back(nlohmann::json::object({{"key_code", "f5"}}).dump(),
+                     nlohmann::json::array({nlohmann::json::object({{"consumer_key_code", "dictation"}})}).dump());
 
-  pairs.emplace_back(nlohmann::json{{"key_code", "f6"}}.dump(),
-                     nlohmann::json{{"key_code", "f6"}}.dump());
+  pairs.emplace_back(nlohmann::json::object({{"key_code", "f6"}}).dump(),
+                     nlohmann::json::array({nlohmann::json::object({{"key_code", "f6"}})}).dump());
 
-  pairs.emplace_back(nlohmann::json{{"key_code", "f7"}}.dump(),
-                     nlohmann::json{{"consumer_key_code", "rewind"}}.dump());
+  pairs.emplace_back(nlohmann::json::object({{"key_code", "f7"}}).dump(),
+                     nlohmann::json::array({nlohmann::json::object({{"consumer_key_code", "rewind"}})}).dump());
 
-  pairs.emplace_back(nlohmann::json{{"key_code", "f8"}}.dump(),
-                     nlohmann::json{{"consumer_key_code", "play_or_pause"}}.dump());
+  pairs.emplace_back(nlohmann::json::object({{"key_code", "f8"}}).dump(),
+                     nlohmann::json::array({nlohmann::json::object({{"consumer_key_code", "play_or_pause"}})}).dump());
 
-  pairs.emplace_back(nlohmann::json{{"key_code", "f9"}}.dump(),
-                     nlohmann::json{{"consumer_key_code", "fast_forward"}}.dump());
+  pairs.emplace_back(nlohmann::json::object({{"key_code", "f9"}}).dump(),
+                     nlohmann::json::array({nlohmann::json::object({{"consumer_key_code", "fast_forward"}})}).dump());
 
-  pairs.emplace_back(nlohmann::json{{"key_code", "f10"}}.dump(),
-                     nlohmann::json{{"consumer_key_code", "mute"}}.dump());
+  pairs.emplace_back(nlohmann::json::object({{"key_code", "f10"}}).dump(),
+                     nlohmann::json::array({nlohmann::json::object({{"consumer_key_code", "mute"}})}).dump());
 
-  pairs.emplace_back(nlohmann::json{{"key_code", "f11"}}.dump(),
-                     nlohmann::json{{"consumer_key_code", "volume_decrement"}}.dump());
+  pairs.emplace_back(nlohmann::json::object({{"key_code", "f11"}}).dump(),
+                     nlohmann::json::array({nlohmann::json::object({{"consumer_key_code", "volume_decrement"}})}).dump());
 
-  pairs.emplace_back(nlohmann::json{{"key_code", "f12"}}.dump(),
-                     nlohmann::json{{"consumer_key_code", "volume_increment"}}.dump());
+  pairs.emplace_back(nlohmann::json::object({{"key_code", "f12"}}).dump(),
+                     nlohmann::json::array({nlohmann::json::object({{"consumer_key_code", "volume_increment"}})}).dump());
 
   return pairs;
 }
@@ -393,26 +393,26 @@ TEST_CASE("profile") {
     {
       std::vector<std::pair<std::string, std::string>> expected;
 
-      expected.emplace_back(nlohmann::json{{"key_code", "from 1"}}.dump(),
-                            nlohmann::json{{"key_code", "to 1"}}.dump());
+      expected.emplace_back(nlohmann::json::object({{"key_code", "from 1"}}).dump(),
+                            nlohmann::json::array({nlohmann::json::object({{"key_code", "to 1"}})}).dump());
 
-      expected.emplace_back(nlohmann::json{{"key_code", "from 2"}}.dump(),
-                            nlohmann::json{{"key_code", "to 2"}}.dump());
+      expected.emplace_back(nlohmann::json::object({{"key_code", "from 2"}}).dump(),
+                            nlohmann::json::array({nlohmann::json::object({{"key_code", "to 2"}})}).dump());
 
-      expected.emplace_back(nlohmann::json{{"key_code", "from 3"}}.dump(),
-                            nlohmann::json{{"key_code", "to 3"}}.dump());
+      expected.emplace_back(nlohmann::json::object({{"key_code", "from 3"}}).dump(),
+                            nlohmann::json::array({nlohmann::json::object({{"key_code", "to 3"}})}).dump());
 
-      expected.emplace_back(nlohmann::json{{"key_code", "from 10"}}.dump(),
-                            nlohmann::json{{"key_code", "to 10"}}.dump());
+      expected.emplace_back(nlohmann::json::object({{"key_code", "from 10"}}).dump(),
+                            nlohmann::json::array({nlohmann::json::object({{"key_code", "to 10"}})}).dump());
 
       REQUIRE(profile.get_simple_modifications().get_pairs() == expected);
     }
     {
       auto expected = make_default_fn_function_keys_pairs();
-      expected[2].second = nlohmann::json{{"key_code", "to f3"}}.dump();
-      expected[3].second = nlohmann::json{{"key_code", "to f4"}}.dump();
-      expected.emplace_back(nlohmann::json{{"key_code", "f13"}}.dump(),
-                            nlohmann::json{{"key_code", "to f13"}}.dump());
+      expected[2].second = nlohmann::json::array({nlohmann::json::object({{"key_code", "to f3"}})}).dump();
+      expected[3].second = nlohmann::json::array({nlohmann::json::object({{"key_code", "to f4"}})}).dump();
+      expected.emplace_back(nlohmann::json::object({{"key_code", "f13"}}).dump(),
+                            nlohmann::json::array({nlohmann::json::object({{"key_code", "to f13"}})}).dump());
       REQUIRE(profile.get_fn_function_keys().get_pairs() == expected);
     }
     {
@@ -562,8 +562,8 @@ TEST_CASE("profile") {
     {
       std::vector<std::pair<std::string, std::string>> expected;
 
-      expected.emplace_back(nlohmann::json{{"key_code", "key"}}.dump(),
-                            nlohmann::json{{"key_code", "value"}}.dump());
+      expected.emplace_back(nlohmann::json::object({{"key_code", "key"}}).dump(),
+                            nlohmann::json::array({nlohmann::json::object({{"key_code", "value"}})}).dump());
 
       REQUIRE(profile.get_simple_modifications().get_pairs() == expected);
     }
@@ -752,8 +752,8 @@ TEST_CASE("profile.to_json") {
     profile.get_virtual_hid_keyboard().set_mouse_key_xy_scale(250);
 
     auto expected_fn_function_keys = get_default_fn_function_keys_json();
-    expected_fn_function_keys[2]["to"]["key_code"] = "to f3";
-    expected_fn_function_keys[2]["to"].erase("apple_vendor_keyboard_key_code"); // Remove expose_all
+    expected_fn_function_keys[2]["to"][0]["key_code"] = "to f3";
+    expected_fn_function_keys[2]["to"][0].erase("apple_vendor_keyboard_key_code"); // Remove expose_all
     auto expected_virtual_hid_keyboard = get_default_virtual_hid_keyboard_json();
     expected_virtual_hid_keyboard["country_code"] = 20;
     expected_virtual_hid_keyboard["mouse_key_xy_scale"] = 250;
@@ -808,16 +808,16 @@ TEST_CASE("profile.to_json") {
 
     expected["simple_modifications"].push_back(nlohmann::json::object());
     expected["simple_modifications"].back()["from"]["key_code"] = "from 1";
-    expected["simple_modifications"].back()["to"]["key_code"] = "to 1";
+    expected["simple_modifications"].back()["to"] = nlohmann::json::array({nlohmann::json::object({{"key_code", "to 1"}})});
     expected["simple_modifications"].push_back(nlohmann::json::object());
     expected["simple_modifications"].back()["from"]["key_code"] = "from 4";
-    expected["simple_modifications"].back()["to"]["key_code"] = "to 4";
+    expected["simple_modifications"].back()["to"] = nlohmann::json::array({nlohmann::json::object({{"key_code", "to 4"}})});
     expected["simple_modifications"].push_back(nlohmann::json::object());
     expected["simple_modifications"].back()["from"]["key_code"] = "from 2";
-    expected["simple_modifications"].back()["to"]["key_code"] = "to 2";
+    expected["simple_modifications"].back()["to"] = nlohmann::json::array({nlohmann::json::object({{"key_code", "to 2"}})});
     expected["simple_modifications"].push_back(nlohmann::json::object());
     expected["simple_modifications"].back()["from"]["key_code"] = "from 5";
-    expected["simple_modifications"].back()["to"]["key_code"] = "to 5";
+    expected["simple_modifications"].back()["to"] = nlohmann::json::array({nlohmann::json::object({{"key_code", "to 5"}})});
 
     REQUIRE(profile.to_json() == expected);
   }
@@ -852,20 +852,20 @@ TEST_CASE("simple_modifications") {
     {
       std::vector<std::pair<std::string, std::string>> expected;
 
-      expected.emplace_back(nlohmann::json{{"key_code", "a"}}.dump(),
-                            nlohmann::json{{"key_code", "f1"}}.dump());
+      expected.emplace_back(nlohmann::json::object({{"key_code", "a"}}).dump(),
+                            nlohmann::json::array({nlohmann::json::object({{"key_code", "f1"}})}).dump());
 
-      expected.emplace_back(nlohmann::json{{"key_code", "b"}}.dump(),
-                            nlohmann::json{{"key_code", "f2"}}.dump());
+      expected.emplace_back(nlohmann::json::object({{"key_code", "b"}}).dump(),
+                            nlohmann::json::array({nlohmann::json::object({{"key_code", "f2"}})}).dump());
 
-      expected.emplace_back(nlohmann::json{{"key_code", "dummy"}}.dump(),
-                            nlohmann::json{{"key_code", "f3"}}.dump());
+      expected.emplace_back(nlohmann::json::object({{"key_code", "dummy"}}).dump(),
+                            nlohmann::json::array({nlohmann::json::object({{"key_code", "f3"}})}).dump());
 
-      expected.emplace_back(nlohmann::json{{"key_code", "f4"}}.dump(),
-                            nlohmann::json{{"key_code", "dummy"}}.dump());
+      expected.emplace_back(nlohmann::json::object({{"key_code", "f4"}}).dump(),
+                            nlohmann::json::array({nlohmann::json::object({{"key_code", "dummy"}})}).dump());
 
-      expected.emplace_back(nlohmann::json{{"key_code", "f5"}}.dump(),
-                            nlohmann::json{{"key_code", nlohmann::json()}}.dump());
+      expected.emplace_back(nlohmann::json::object({{"key_code", "f5"}}).dump(),
+                            nlohmann::json::array({nlohmann::json::object({{"key_code", nlohmann::json()}})}).dump());
 
       REQUIRE(simple_modifications.get_pairs() == expected);
     }
@@ -886,17 +886,17 @@ TEST_CASE("simple_modifications") {
     {
       std::vector<std::pair<std::string, std::string>> expected;
 
-      expected.emplace_back(nlohmann::json{{"key_code", "a"}}.dump(),
-                            nlohmann::json{{"key_code", "f1"}}.dump());
+      expected.emplace_back(nlohmann::json::object({{"key_code", "a"}}).dump(),
+                            nlohmann::json::array({nlohmann::json::object({{"key_code", "f1"}})}).dump());
 
-      expected.emplace_back(nlohmann::json{{"key_code", "b"}}.dump(),
-                            nlohmann::json{{"key_code", "f2"}}.dump());
+      expected.emplace_back(nlohmann::json::object({{"key_code", "b"}}).dump(),
+                            nlohmann::json::array({nlohmann::json::object({{"key_code", "f2"}})}).dump());
 
-      expected.emplace_back(nlohmann::json{{"key_code", "dummy"}}.dump(),
-                            nlohmann::json{{"key_code", "f3"}}.dump());
+      expected.emplace_back(nlohmann::json::object({{"key_code", "dummy"}}).dump(),
+                            nlohmann::json::array({nlohmann::json::object({{"key_code", "f3"}})}).dump());
 
-      expected.emplace_back(nlohmann::json{{"key_code", "f4"}}.dump(),
-                            nlohmann::json{{"key_code", "dummy"}}.dump());
+      expected.emplace_back(nlohmann::json::object({{"key_code", "f4"}}).dump(),
+                            nlohmann::json::array({nlohmann::json::object({{"key_code", "dummy"}})}).dump());
 
       REQUIRE(simple_modifications.get_pairs() == expected);
     }
@@ -904,56 +904,72 @@ TEST_CASE("simple_modifications") {
 
   // replace_pair
   {
+    // v3 style
     krbn::core_configuration::details::simple_modifications simple_modifications;
     simple_modifications.push_back_pair();
     simple_modifications.replace_pair(0,
                                       "{ \"key_code\" : \"a\" }",
-                                      "{\"key_code\":\"a\"}");
-    REQUIRE(simple_modifications.get_pairs()[0].first == nlohmann::json{{"key_code", "a"}}.dump());
-    REQUIRE(simple_modifications.get_pairs()[0].second == nlohmann::json{{"key_code", "a"}}.dump());
+                                      "[{\"key_code\":\"a\"}]");
+    REQUIRE(simple_modifications.get_pairs()[0].first == nlohmann::json::object({{"key_code", "a"}}).dump());
+    REQUIRE(simple_modifications.get_pairs()[0].second == nlohmann::json::array({nlohmann::json::object({{"key_code", "a"}})}).dump());
+
+    // v2 style
+    simple_modifications.replace_pair(0,
+                                      "{ \"key_code\" : \"a\" }",
+                                      "{\"key_code\":\"b\"}");
+    REQUIRE(simple_modifications.get_pairs()[0].first == nlohmann::json::object({{"key_code", "a"}}).dump());
+    REQUIRE(simple_modifications.get_pairs()[0].second == nlohmann::json::array({nlohmann::json::object({{"key_code", "b"}})}).dump());
 
     // Invalid from json
     simple_modifications.replace_pair(0,
                                       "{ \"key_code\" : \"a\" }",
                                       "{\"}");
-    REQUIRE(simple_modifications.get_pairs()[0].first == nlohmann::json{{"key_code", "a"}}.dump());
-    REQUIRE(simple_modifications.get_pairs()[0].second == nlohmann::json{{"key_code", "a"}}.dump());
+    REQUIRE(simple_modifications.get_pairs()[0].first == nlohmann::json::object({{"key_code", "a"}}).dump());
+    REQUIRE(simple_modifications.get_pairs()[0].second == nlohmann::json::array({nlohmann::json::object({{"key_code", "b"}})}).dump());
 
     // Invalid to json
     simple_modifications.replace_pair(0,
                                       "{\"}",
-                                      "{ \"key_code\" : \"a\" }");
-    REQUIRE(simple_modifications.get_pairs()[0].first == nlohmann::json{{"key_code", "a"}}.dump());
-    REQUIRE(simple_modifications.get_pairs()[0].second == nlohmann::json{{"key_code", "a"}}.dump());
+                                      "{ \"key_code\" : \"c\" }");
+    REQUIRE(simple_modifications.get_pairs()[0].first == nlohmann::json::object({{"key_code", "a"}}).dump());
+    REQUIRE(simple_modifications.get_pairs()[0].second == nlohmann::json::array({nlohmann::json::object({{"key_code", "b"}})}).dump());
   }
 
   // replace_second
   {
+    // v3 style
     krbn::core_configuration::details::simple_modifications simple_modifications;
     simple_modifications.push_back_pair();
     simple_modifications.replace_pair(0,
                                       "{ \"key_code\" : \"a\" }",
-                                      "{\"key_code\":\"a\"}");
-    REQUIRE(simple_modifications.get_pairs()[0].first == nlohmann::json{{"key_code", "a"}}.dump());
-    REQUIRE(simple_modifications.get_pairs()[0].second == nlohmann::json{{"key_code", "a"}}.dump());
+                                      "[{\"key_code\":\"a\"}]");
+    REQUIRE(simple_modifications.get_pairs()[0].first == nlohmann::json::object({{"key_code", "a"}}).dump());
+    REQUIRE(simple_modifications.get_pairs()[0].second == nlohmann::json::array({nlohmann::json::object({{"key_code", "a"}})}).dump());
+
+    // v2 style
+    simple_modifications.replace_pair(0,
+                                      "{ \"key_code\" : \"a\" }",
+                                      "{\"key_code\":\"b\"}");
+    REQUIRE(simple_modifications.get_pairs()[0].first == nlohmann::json::object({{"key_code", "a"}}).dump());
+    REQUIRE(simple_modifications.get_pairs()[0].second == nlohmann::json::array({nlohmann::json::object({{"key_code", "b"}})}).dump());
 
     simple_modifications.replace_second("{ \"key_code\" : \"a\" }",
-                                        "{\"key_code\":\"b\"}");
-    REQUIRE(simple_modifications.get_pairs()[0].first == nlohmann::json{{"key_code", "a"}}.dump());
-    REQUIRE(simple_modifications.get_pairs()[0].second == nlohmann::json{{"key_code", "b"}}.dump());
+                                        "[{\"key_code\":\"c\"}]");
+    REQUIRE(simple_modifications.get_pairs()[0].first == nlohmann::json::object({{"key_code", "a"}}).dump());
+    REQUIRE(simple_modifications.get_pairs()[0].second == nlohmann::json::array({nlohmann::json::object({{"key_code", "c"}})}).dump());
 
     simple_modifications.replace_second("{\"key_code\":\"a\"}",
-                                        "{\"key_code\":\"c\"}");
-    REQUIRE(simple_modifications.get_pairs()[0].first == nlohmann::json{{"key_code", "a"}}.dump());
-    REQUIRE(simple_modifications.get_pairs()[0].second == nlohmann::json{{"key_code", "c"}}.dump());
+                                        "[{\"key_code\":\"d\"}]");
+    REQUIRE(simple_modifications.get_pairs()[0].first == nlohmann::json::object({{"key_code", "a"}}).dump());
+    REQUIRE(simple_modifications.get_pairs()[0].second == nlohmann::json::array({nlohmann::json::object({{"key_code", "d"}})}).dump());
 
     // Invalid from json
     simple_modifications.replace_second("{\"}",
-                                        "{ \"key_code\" : \"a\" }");
+                                        "[{ \"key_code\" : \"a\" }]");
 
     // Invalid to json
     simple_modifications.replace_second("{ \"key_code\" : \"a\" }",
-                                        "{\"}");
+                                        "[{\"}]");
   }
 }
 
@@ -984,19 +1000,19 @@ TEST_CASE("simple_modifications.to_json") {
     auto expected = nlohmann::json::array();
     expected.push_back(nlohmann::json::object());
     expected.back()["from"]["key_code"] = "a";
-    expected.back()["to"]["key_code"] = "f1";
+    expected.back()["to"] = nlohmann::json::array({nlohmann::json::object({{"key_code", "f1"}})});
     expected.push_back(nlohmann::json::object());
     expected.back()["from"]["key_code"] = "b";
-    expected.back()["to"]["key_code"] = "f2";
+    expected.back()["to"] = nlohmann::json::array({nlohmann::json::object({{"key_code", "f2"}})});
     expected.push_back(nlohmann::json::object());
     expected.back()["from"]["key_code"] = "dummy";
-    expected.back()["to"]["key_code"] = "f3";
+    expected.back()["to"] = nlohmann::json::array({nlohmann::json::object({{"key_code", "f3"}})});
     expected.push_back(nlohmann::json::object());
     expected.back()["from"]["key_code"] = "f4";
-    expected.back()["to"]["key_code"] = "dummy";
+    expected.back()["to"] = nlohmann::json::array({nlohmann::json::object({{"key_code", "dummy"}})});
     expected.push_back(nlohmann::json::object());
     expected.back()["from"]["key_code"] = "c";
-    expected.back()["to"]["key_code"] = "f6";
+    expected.back()["to"] = nlohmann::json::array({nlohmann::json::object({{"key_code", "f6"}})});
 
     REQUIRE(simple_modifications.to_json() == expected);
   }
@@ -1006,10 +1022,10 @@ TEST_CASE("simple_modifications.to_json") {
     auto json = nlohmann::json::array();
     json.push_back(nlohmann::json::object());
     json.back()["from"]["consumer_key_code"] = "mute";
-    json.back()["to"]["pointing_button"] = "button3";
+    json.back()["to"] = nlohmann::json::array({nlohmann::json::object({{"pointing_button", "button3"}})});
     json.push_back(nlohmann::json::object());
     json.back()["from"]["key_code"] = "a";
-    json.back()["to"]["key_code"] = "f1";
+    json.back()["to"] = nlohmann::json::array({nlohmann::json::object({{"key_code", "f1"}})});
 
     krbn::core_configuration::details::simple_modifications simple_modifications;
     simple_modifications.update(json);
@@ -1021,7 +1037,7 @@ TEST_CASE("simple_modifications.to_json") {
                                     pqrs::hid::usage::consumer::mute));
     }
     {
-      krbn::manipulator::to_event_definition to_event_definition(krbn::json_utility::parse_jsonc(simple_modifications.get_pairs()[0].second));
+      krbn::manipulator::to_event_definition to_event_definition(krbn::json_utility::parse_jsonc(simple_modifications.get_pairs()[0].second)[0]);
       REQUIRE(to_event_definition.get_event_definition().get_if<krbn::momentary_switch_event>()->get_usage_pair() ==
               pqrs::hid::usage_pair(pqrs::hid::usage_page::button,
                                     pqrs::hid::usage::button::button_3));
@@ -1034,7 +1050,7 @@ TEST_CASE("simple_modifications.to_json") {
                                     pqrs::hid::usage::keyboard_or_keypad::keyboard_a));
     }
     {
-      krbn::manipulator::to_event_definition to_event_definition(krbn::json_utility::parse_jsonc(simple_modifications.get_pairs()[1].second));
+      krbn::manipulator::to_event_definition to_event_definition(krbn::json_utility::parse_jsonc(simple_modifications.get_pairs()[1].second)[0]);
       REQUIRE(to_event_definition.get_event_definition().get_if<krbn::momentary_switch_event>()->get_usage_pair() ==
               pqrs::hid::usage_pair(pqrs::hid::usage_page::keyboard_or_keypad,
                                     pqrs::hid::usage::keyboard_or_keypad::keyboard_f1));

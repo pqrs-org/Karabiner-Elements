@@ -130,10 +130,10 @@ public:
   }
 
   basic(const from_event_definition& from,
-        const to_event_definition& to) : base(),
-                                         dispatcher_client(),
-                                         from_(from),
-                                         to_({to}) {
+        const std::vector<to_event_definition>& to) : base(),
+                                                      dispatcher_client(),
+                                                      from_(from),
+                                                      to_(to) {
   }
 
   virtual ~basic(void) {
