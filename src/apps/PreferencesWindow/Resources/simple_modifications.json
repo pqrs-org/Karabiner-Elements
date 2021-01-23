@@ -2191,6 +2191,105 @@
         ]
     },
     {
+        "not_from": true,
+        "label": "sticky left_control (pressing and holding down is disabled)",
+        "data": [
+            {
+                "sticky_modifier": {
+                    "left_control": "toggle"
+                }
+            }
+        ]
+    },
+    {
+        "not_from": true,
+        "label": "sticky left_shift (pressing and holding down is disabled)",
+        "data": [
+            {
+                "sticky_modifier": {
+                    "left_shift": "toggle"
+                }
+            }
+        ]
+    },
+    {
+        "not_from": true,
+        "label": "sticky left_option (pressing and holding down is disabled)",
+        "data": [
+            {
+                "sticky_modifier": {
+                    "left_option": "toggle"
+                }
+            }
+        ]
+    },
+    {
+        "not_from": true,
+        "label": "sticky left_command (pressing and holding down is disabled)",
+        "data": [
+            {
+                "sticky_modifier": {
+                    "left_command": "toggle"
+                }
+            }
+        ]
+    },
+    {
+        "not_from": true,
+        "label": "sticky right_control (pressing and holding down is disabled)",
+        "data": [
+            {
+                "sticky_modifier": {
+                    "right_control": "toggle"
+                }
+            }
+        ]
+    },
+    {
+        "not_from": true,
+        "label": "sticky right_shift (pressing and holding down is disabled)",
+        "data": [
+            {
+                "sticky_modifier": {
+                    "right_shift": "toggle"
+                }
+            }
+        ]
+    },
+    {
+        "not_from": true,
+        "label": "sticky right_option (pressing and holding down is disabled)",
+        "data": [
+            {
+                "sticky_modifier": {
+                    "right_option": "toggle"
+                }
+            }
+        ]
+    },
+    {
+        "not_from": true,
+        "label": "sticky right_command (pressing and holding down is disabled)",
+        "data": [
+            {
+                "sticky_modifier": {
+                    "right_command": "toggle"
+                }
+            }
+        ]
+    },
+    {
+        "not_from": true,
+        "label": "sticky fn (pressing and holding down is disabled)",
+        "data": [
+            {
+                "sticky_modifier": {
+                    "fn": "toggle"
+                }
+            }
+        ]
+    },
+    {
         "category": "Others"
     },
     {
