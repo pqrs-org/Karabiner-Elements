@@ -5,7 +5,6 @@
 #include "constants.hpp"
 #include "device_grabber_details/entry.hpp"
 #include "device_grabber_details/fn_function_keys_manipulator_manager.hpp"
-#include "device_grabber_details/notification_message_manager.hpp"
 #include "device_grabber_details/simple_modifications_manipulator_manager.hpp"
 #include "event_tap_utility.hpp"
 #include "grabber/grabber_state_json_writer.hpp"
@@ -19,6 +18,7 @@
 #include "manipulator/manipulators/post_event_to_virtual_devices/post_event_to_virtual_devices.hpp"
 #include "monitor/configuration_monitor.hpp"
 #include "monitor/event_tap_monitor.hpp"
+#include "notification_message_manager.hpp"
 #include "probable_stuck_events_manager.hpp"
 #include "types.hpp"
 #include <deque>
@@ -344,7 +344,7 @@ public:
       logger_unique_filter_.reset();
     });
 
-    notification_message_manager_ = std::make_shared<device_grabber_details::notification_message_manager>(
+    notification_message_manager_ = std::make_shared<notification_message_manager>(
         weak_console_user_server_client);
   }
 
@@ -998,7 +998,7 @@ private:
   std::shared_ptr<manipulator::manipulator_manager> post_event_to_virtual_devices_manipulator_manager_;
   std::shared_ptr<event_queue::queue> posted_event_queue_;
 
-  std::shared_ptr<device_grabber_details::notification_message_manager> notification_message_manager_;
+  std::shared_ptr<notification_message_manager> notification_message_manager_;
 
   mutable pqrs::spdlog::unique_filter logger_unique_filter_;
 };
