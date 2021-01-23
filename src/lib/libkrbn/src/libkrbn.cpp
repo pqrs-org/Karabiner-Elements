@@ -172,10 +172,13 @@ void libkrbn_get_modifier_flag_name(char* buffer, size_t length, int32_t usage_p
                                pqrs::hid::usage_page::value_t(usage_page),
                                pqrs::hid::usage::value_t(usage))
                                .make_modifier_flag()) {
-    strlcpy(buffer, nlohmann::json(*modifier_flag).dump().c_str(), length);
-  } else {
-    strlcpy(buffer, "", length);
+    if (auto name = get_modifier_flag_name(*modifier_flag)) {
+      strlcpy(buffer, name->data(), length);
+      return;
+    }
   }
+
+  strlcpy(buffer, "", length);
 }
 
 void libkrbn_get_simple_modification_json_string(char* buffer, size_t length, int32_t usage_page, int32_t usage) {

@@ -2,6 +2,7 @@
 
 #include <cstdint>
 #include <pqrs/karabiner/driverkit/virtual_hid_device_driver.hpp>
+#include <string_view>
 
 namespace krbn {
 enum class modifier_flag : uint32_t {
@@ -44,43 +45,38 @@ inline std::optional<pqrs::karabiner::driverkit::virtual_hid_device_driver::hid_
   }
 }
 
-inline void to_json(nlohmann::json& json, const modifier_flag& value) {
+inline std::optional<std::string_view> get_modifier_flag_name(modifier_flag value) {
   switch (value) {
     case modifier_flag::zero:
-      json = "zero";
-      break;
+      return "zero";
     case modifier_flag::caps_lock:
-      json = "caps_lock";
-      break;
+      return "caps_lock";
     case modifier_flag::left_control:
-      json = "left_control";
-      break;
+      return "left_control";
     case modifier_flag::left_shift:
-      json = "left_shift";
-      break;
+      return "left_shift";
     case modifier_flag::left_option:
-      json = "left_option";
-      break;
+      return "left_option";
     case modifier_flag::left_command:
-      json = "left_command";
-      break;
+      return "left_command";
     case modifier_flag::right_control:
-      json = "right_control";
-      break;
+      return "right_control";
     case modifier_flag::right_shift:
-      json = "right_shift";
-      break;
+      return "right_shift";
     case modifier_flag::right_option:
-      json = "right_option";
-      break;
+      return "right_option";
     case modifier_flag::right_command:
-      json = "right_command";
-      break;
+      return "right_command";
     case modifier_flag::fn:
-      json = "fn";
-      break;
+      return "fn";
     case modifier_flag::end_:
-      break;
+      return std::nullopt;
+  }
+}
+
+inline void to_json(nlohmann::json& json, const modifier_flag& value) {
+  if (auto name = get_modifier_flag_name(value)) {
+    json = *name;
   }
 }
 
