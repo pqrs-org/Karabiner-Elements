@@ -34,7 +34,9 @@
   }
 
   // Insert new item for definition
-  if (definition && ![definition isEqualToString:@"[]"]) {
+  if (definition &&
+      ![definition isEqualToString:@"{}"] &&
+      ![definition isEqualToString:@"[]"]) {
     [popUpButton.menu addItem:[NSMenuItem separatorItem]];
 
     NSMenuItem* item = [[NSMenuItem alloc] initWithTitle:definition

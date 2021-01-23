@@ -50,7 +50,7 @@ public:
 
   void push_back_pair(void) {
     pairs_.emplace_back(nlohmann::json::object().dump(),
-                        nlohmann::json::object().dump());
+                        nlohmann::json::array().dump());
   }
 
   void erase_pair(size_t index) {
