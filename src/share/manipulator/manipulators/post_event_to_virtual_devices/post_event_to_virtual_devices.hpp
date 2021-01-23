@@ -7,6 +7,7 @@
 #include "keyboard_repeat_detector.hpp"
 #include "krbn_notification_center.hpp"
 #include "mouse_key_handler.hpp"
+#include "notification_message_manager.hpp"
 #include "queue.hpp"
 #include "types.hpp"
 #include <pqrs/karabiner/driverkit/virtual_hid_device_service.hpp>
@@ -17,9 +18,12 @@ namespace manipulators {
 namespace post_event_to_virtual_devices {
 class post_event_to_virtual_devices final : public base, public pqrs::dispatcher::extra::dispatcher_client {
 public:
-  post_event_to_virtual_devices(std::weak_ptr<console_user_server_client> weak_console_user_server_client) : base(),
-                                                                                                             dispatcher_client(),
-                                                                                                             weak_console_user_server_client_(weak_console_user_server_client) {
+  post_event_to_virtual_devices(std::weak_ptr<console_user_server_client> weak_console_user_server_client,
+                                std::weak_ptr<notification_message_manager> weak_notification_message_manager)
+      : base(),
+        dispatcher_client(),
+        weak_console_user_server_client_(weak_console_user_server_client),
+        weak_notification_message_manager_(weak_notification_message_manager) {
     mouse_key_handler_ = std::make_unique<mouse_key_handler>(queue_);
   }
 
@@ -124,6 +128,10 @@ public:
       // Note: output_event_queue::modifier_flag_manager_ will be changed by push_back_entry.
       output_event_queue->push_back_entry(front_input_event);
       front_input_event.set_validity(validity::invalid);
+
+      if (auto notification_message_manager = weak_notification_message_manager_.lock()) {
+        notification_message_manager->async_update_sticky_modifiers_message(output_event_queue->get_modifier_flag_manager());
+      }
 
       switch (front_input_event.get_event().get_type()) {
         case event_queue::event::type::momentary_switch_event:
@@ -274,6 +282,10 @@ public:
 
     output_event_queue.get_modifier_flag_manager().erase_caps_lock_sticky_modifier_flags();
 
+    if (auto notification_message_manager = weak_notification_message_manager_.lock()) {
+      notification_message_manager->async_update_sticky_modifiers_message(output_event_queue.get_modifier_flag_manager());
+    }
+
     // pointing buttons
 
     {
@@ -411,6 +423,7 @@ private:
   }
 
   std::weak_ptr<console_user_server_client> weak_console_user_server_client_;
+  std::weak_ptr<notification_message_manager> weak_notification_message_manager_;
 
   queue queue_;
   key_event_dispatcher key_event_dispatcher_;

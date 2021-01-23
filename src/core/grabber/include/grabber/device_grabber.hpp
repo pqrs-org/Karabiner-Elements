@@ -45,6 +45,9 @@ public:
                                                                                             is_virtual_hid_pointing_ready_(false),
                                                                                             profile_(nlohmann::json::object()),
                                                                                             logger_unique_filter_(logger::get_logger()) {
+    notification_message_manager_ = std::make_shared<notification_message_manager>(
+        weak_console_user_server_client);
+
     simple_modifications_manipulator_manager_ = std::make_shared<device_grabber_details::simple_modifications_manipulator_manager>();
     complex_modifications_manipulator_manager_ = std::make_shared<manipulator::manipulator_manager>();
     fn_function_keys_manipulator_manager_ = std::make_shared<device_grabber_details::fn_function_keys_manipulator_manager>();
@@ -152,7 +155,8 @@ public:
 
     post_event_to_virtual_devices_manipulator_ =
         std::make_shared<manipulator::manipulators::post_event_to_virtual_devices::post_event_to_virtual_devices>(
-            weak_console_user_server_client);
+            weak_console_user_server_client,
+            notification_message_manager_);
     post_event_to_virtual_devices_manipulator_manager_->push_back_manipulator(std::shared_ptr<manipulator::manipulators::base>(post_event_to_virtual_devices_manipulator_));
 
     complex_modifications_applied_event_queue_->enable_manipulator_environment_json_output(constants::get_manipulator_environment_json_file_path());
@@ -320,7 +324,7 @@ public:
       // notification_message_manager_
 
       if (notification_message_manager_) {
-        notification_message_manager_->erase_device(device_id);
+        notification_message_manager_->async_erase_device(device_id);
       }
 
       // ----------------------------------------
@@ -343,16 +347,11 @@ public:
       logger::get_logger()->error("{0}: {1}", message, kern_return.to_string());
       logger_unique_filter_.reset();
     });
-
-    notification_message_manager_ = std::make_shared<notification_message_manager>(
-        weak_console_user_server_client);
   }
 
   virtual ~device_grabber(void) {
     detach_from_dispatcher([this] {
       stop();
-
-      notification_message_manager_ = nullptr;
 
       hid_manager_ = nullptr;
 
@@ -365,6 +364,8 @@ public:
       fn_function_keys_manipulator_manager_ = nullptr;
       post_event_to_virtual_devices_manipulator_manager_ = nullptr;
       virtual_hid_device_service_client_ = nullptr;
+
+      notification_message_manager_ = nullptr;
     });
   }
 
@@ -783,7 +784,7 @@ private:
         logger_unique_filter_.warn(message);
 
         if (notification_message_manager_) {
-          notification_message_manager_->set_device_ungrabbable_temporarily_message(
+          notification_message_manager_->async_set_device_ungrabbable_temporarily_message(
               entry->get_device_id(),
               fmt::format("{0} is ignored temporarily until {1} is pressed again.",
                           entry->get_device_short_name(),
@@ -803,7 +804,7 @@ private:
 
   void unset_device_ungrabbable_temporarily_notification_message(device_id id) const {
     if (notification_message_manager_) {
-      notification_message_manager_->set_device_ungrabbable_temporarily_message(id, "");
+      notification_message_manager_->async_set_device_ungrabbable_temporarily_message(id, "");
     }
   }
 
@@ -983,6 +984,8 @@ private:
 
   manipulator::manipulator_managers_connector manipulator_managers_connector_;
 
+  std::shared_ptr<notification_message_manager> notification_message_manager_;
+
   std::shared_ptr<event_queue::queue> merged_input_event_queue_;
 
   std::shared_ptr<device_grabber_details::simple_modifications_manipulator_manager> simple_modifications_manipulator_manager_;
@@ -997,8 +1000,6 @@ private:
   std::shared_ptr<manipulator::manipulators::post_event_to_virtual_devices::post_event_to_virtual_devices> post_event_to_virtual_devices_manipulator_;
   std::shared_ptr<manipulator::manipulator_manager> post_event_to_virtual_devices_manipulator_manager_;
   std::shared_ptr<event_queue::queue> posted_event_queue_;
-
-  std::shared_ptr<notification_message_manager> notification_message_manager_;
 
   mutable pqrs::spdlog::unique_filter logger_unique_filter_;
 };

@@ -3,29 +3,46 @@
 #include "modifier_flag_manager.hpp"
 #include "types/device_id.hpp"
 #include <map>
+#include <pqrs/dispatcher.hpp>
 #include <sstream>
 
+// `krbn::notification_message_manager` can be used safely in a multi-threaded environment.
+
 namespace krbn {
-class notification_message_manager final {
+class notification_message_manager final : public pqrs::dispatcher::extra::dispatcher_client {
 public:
-  notification_message_manager(std::weak_ptr<console_user_server_client> weak_console_user_server_client) : weak_console_user_server_client_(weak_console_user_server_client) {
+  notification_message_manager(std::weak_ptr<console_user_server_client> weak_console_user_server_client)
+      : dispatcher_client(),
+        weak_console_user_server_client_(weak_console_user_server_client) {
     post_message("");
   }
 
-  void set_device_ungrabbable_temporarily_message(device_id id,
-                                                  const std::string& message) {
-    device_ungrabbable_temporarily_messages_[id] = message;
-
-    post_message_if_needed();
+  virtual ~notification_message_manager(void) {
+    detach_from_dispatcher();
   }
 
-  void erase_device(device_id id) {
-    device_ungrabbable_temporarily_messages_.erase(id);
+  void async_set_device_ungrabbable_temporarily_message(device_id id,
+                                                        const std::string& message) {
+    enqueue_to_dispatcher([this, id, message] {
+      device_ungrabbable_temporarily_messages_[id] = message;
 
-    post_message_if_needed();
+      post_message_if_needed();
+    });
   }
 
-  void update_sticky_modifiers_message(const modifier_flag_manager& modifier_flag_manager) {
+  void async_erase_device(device_id id) {
+    enqueue_to_dispatcher([this, id] {
+      device_ungrabbable_temporarily_messages_.erase(id);
+
+      post_message_if_needed();
+    });
+  }
+
+  void async_update_sticky_modifiers_message(const modifier_flag_manager& modifier_flag_manager) {
+    //
+    // Build message synchronously.
+    //
+
     std::stringstream ss;
 
     for (const auto& f : {
@@ -46,9 +63,17 @@ public:
       }
     }
 
-    sticky_modifiers_message_ = ss.str();
+    auto message = ss.str();
 
-    post_message_if_needed();
+    //
+    // Update sticky_modifiers_message_.
+    //
+
+    enqueue_to_dispatcher([this, message] {
+      sticky_modifiers_message_ = message;
+
+      post_message_if_needed();
+    });
   }
 
 private:
