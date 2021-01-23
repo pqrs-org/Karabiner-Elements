@@ -34,7 +34,7 @@
   }
 
   // Insert new item for definition
-  if (definition && ![definition isEqualToString:@"{}"]) {
+  if (definition && ![definition isEqualToString:@"[]"]) {
     [popUpButton.menu addItem:[NSMenuItem separatorItem]];
 
     NSMenuItem* item = [[NSMenuItem alloc] initWithTitle:definition
@@ -167,9 +167,9 @@
       fromJsonString = [KarabinerKitJsonUtility createJsonString:from];
     }
 
-    NSString* toJsonString = [KarabinerKitJsonUtility createJsonString:@{}];
-    NSDictionary* to = json[@"to"];
-    if (to) {
+    NSString* toJsonString = [KarabinerKitJsonUtility createJsonString:@[]];
+    NSArray* to = json[@"to"];
+    if (to && to.count > 0) {
       toJsonString = [KarabinerKitJsonUtility createJsonString:to];
     }
 
