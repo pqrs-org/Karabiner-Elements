@@ -296,4 +296,12 @@
   libkrbn_core_configuration_set_selected_profile_virtual_hid_keyboard_mouse_key_xy_scale(self.libkrbnCoreConfiguration, (int)(value));
 }
 
+- (NSInteger)selectedProfileVirtualHIDKeyboardIndicateStickyModifierKeysState {
+  return libkrbn_core_configuration_get_selected_profile_virtual_hid_keyboard_indicate_sticky_modifier_keys_state(self.libkrbnCoreConfiguration);
+}
+
+- (void)setSelectedProfileVirtualHIDKeyboardIndicateStickyModifierKeysState:(NSInteger)value {
+  libkrbn_core_configuration_set_selected_profile_virtual_hid_keyboard_indicate_sticky_modifier_keys_state(self.libkrbnCoreConfiguration, (int)(value));
+}
+
 @end

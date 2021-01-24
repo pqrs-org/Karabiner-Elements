@@ -64,5 +64,6 @@
 
 @property NSInteger selectedProfileVirtualHIDKeyboardCountryCode;
 @property NSInteger selectedProfileVirtualHIDKeyboardMouseKeyXYScale;
+@property NSInteger selectedProfileVirtualHIDKeyboardIndicateStickyModifierKeysState;
 
 @end

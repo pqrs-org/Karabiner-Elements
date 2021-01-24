@@ -34,6 +34,7 @@
 @property(weak) IBOutlet NSStepper* virtualHIDKeyboardCountryCodeStepper;
 @property(weak) IBOutlet NSTextField* virtualHIDKeyboardMouseKeyXYScaleText;
 @property(weak) IBOutlet NSStepper* virtualHIDKeyboardMouseKeyXYScaleStepper;
+@property(weak) IBOutlet NSButton* virtualHIDKeyboardIndicateStickyModifierKeysState;
 @property(weak) IBOutlet NSButton* checkForUpdateOnStartupButton;
 @property(weak) IBOutlet NSButton* systemDefaultProfileCopyButton;
 @property(weak) IBOutlet NSTextField* systemDefaultProfileStateLabel;
@@ -160,6 +161,7 @@
   KarabinerKitCoreConfigurationModel* coreConfigurationModel = [KarabinerKitConfigurationManager sharedManager].coreConfigurationModel;
   NSInteger countryCode = coreConfigurationModel.selectedProfileVirtualHIDKeyboardCountryCode;
   NSInteger mouseKeyXYScale = coreConfigurationModel.selectedProfileVirtualHIDKeyboardMouseKeyXYScale;
+  NSInteger indicateStickyModifierKeysState = coreConfigurationModel.selectedProfileVirtualHIDKeyboardIndicateStickyModifierKeysState;
 
   {
     NSTextField* t = self.virtualHIDKeyboardCountryCodeText;
@@ -185,6 +187,12 @@
       s.integerValue = mouseKeyXYScale;
     }
   }
+  {
+    NSButton* b = self.virtualHIDKeyboardIndicateStickyModifierKeysState;
+    if (sender != b) {
+      b.state = indicateStickyModifierKeysState ? NSControlStateValueOn : NSControlStateValueOff;
+    }
+  }
 }
 
 - (IBAction)changeVirtualHIDKeyboardCountryCode:(NSControl*)sender {
@@ -208,6 +216,14 @@
 
   KarabinerKitCoreConfigurationModel* coreConfigurationModel = [KarabinerKitConfigurationManager sharedManager].coreConfigurationModel;
   coreConfigurationModel.selectedProfileVirtualHIDKeyboardMouseKeyXYScale = sender.integerValue;
+  [coreConfigurationModel save];
+
+  [self setupVirtualHIDKeyboardConfiguration:sender];
+}
+
+- (IBAction)changeVirtualHIDKeyboardIndicateStickyModifierKeysState:(NSControl*)sender {
+  KarabinerKitCoreConfigurationModel* coreConfigurationModel = [KarabinerKitConfigurationManager sharedManager].coreConfigurationModel;
+  coreConfigurationModel.selectedProfileVirtualHIDKeyboardIndicateStickyModifierKeysState = (self.virtualHIDKeyboardIndicateStickyModifierKeysState.state == NSControlStateValueOn);
   [coreConfigurationModel save];
 
   [self setupVirtualHIDKeyboardConfiguration:sender];
