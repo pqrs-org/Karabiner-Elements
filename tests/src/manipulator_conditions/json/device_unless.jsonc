@@ -1,6 +1,6 @@
 [
     {
-        "type": "device_if",
+        "type": "device_unless",
         "identifiers": [
             {
                 "vendor_id": 1000,
@@ -11,19 +11,22 @@
                 "product_id": 2001
             },
             {
-                "description": "any product_id",
                 "vendor_id": 1099
+            },
+            {
+                // Empty identifier is ignored.
             }
         ]
     },
     {
-        "type": "device_if",
+        "type": "device_unless",
         "identifiers": [
             {
                 "vendor_id": 8888
             },
             {
-                "description": "condition is ignored if error"
+                // Invalid `identifiers` is ignored.
+                "unknown": "unknown"
             }
         ]
     }

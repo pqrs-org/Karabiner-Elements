@@ -115,21 +115,6 @@
         "error": "unknown key `is-pointing-device` in `{\"is-pointing-device\":true,\"vendor_id\":1234}`"
     },
 
-    // extra errors
-
-    {
-        "class": "device",
-        "input": {
-            "type": "device_if",
-            "identifiers": [
-                {
-                    "product_id": 1234
-                }
-            ]
-        },
-        "error": "`vendor_id` must be specified: `{\"product_id\":1234}`"
-    },
-
     // unknown key
 
     {

@@ -87,6 +87,7 @@ public:
                                         from_optional_modifiers,
                                         to_modifiers)) {
             m->push_back_condition(manipulator::manipulator_factory::make_event_changed_if_condition(false));
+            m->push_back_condition(manipulator::manipulator_factory::make_device_unless_touch_bar_condition());
 
             auto c = manipulator::manipulator_factory::make_device_if_condition(device);
             m->push_back_condition(c);
@@ -109,6 +110,7 @@ public:
                                     from_optional_modifiers,
                                     to_modifiers)) {
         m->push_back_condition(manipulator::manipulator_factory::make_event_changed_if_condition(false));
+        m->push_back_condition(manipulator::manipulator_factory::make_device_unless_touch_bar_condition());
 
         manipulator_manager_->push_back_manipulator(m);
       }

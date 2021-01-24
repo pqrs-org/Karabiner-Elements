@@ -346,12 +346,7 @@ TEST_CASE("conditions.device") {
       pqrs::hid::vendor_id::value_t(1000), pqrs::hid::product_id::value_t(2000), krbn::location_id(4000), std::nullopt, std::nullopt);
 
   {
-    actual_examples_helper helper("device_if.json");
-
-    REQUIRE(helper.get_error_messages() ==
-            std::vector<std::string>({
-                "`vendor_id` must be specified: `{\"description\":\"condition is ignored if error\"}`",
-            }));
+    actual_examples_helper helper("device_if.jsonc");
 
     {
       auto e = manipulator_conditions_helper.make_event_queue_entry(device_id_8888_9999);
@@ -379,12 +374,7 @@ TEST_CASE("conditions.device") {
     }
   }
   {
-    actual_examples_helper helper("device_unless.json");
-
-    REQUIRE(helper.get_error_messages() ==
-            std::vector<std::string>({
-                "`vendor_id` must be specified: `{\"description\":\"condition is ignored if error\"}`",
-            }));
+    actual_examples_helper helper("device_unless.jsonc");
 
     {
       auto e = manipulator_conditions_helper.make_event_queue_entry(device_id_8888_9999);

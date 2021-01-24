@@ -82,6 +82,19 @@ inline std::shared_ptr<conditions::base> make_device_if_condition(const core_con
           {"product_id", type_safe::get(device.get_identifiers().get_product_id())},
           {"is_keyboard", device.get_identifiers().get_is_keyboard()},
           {"is_pointing_device", device.get_identifiers().get_is_pointing_device()},
+          // Skip location_id because it changes according to the location of the connected USB port.
+          // Skip is_touch_bar in order to override by is_keyboard.
+      }),
+  });
+  return std::make_shared<conditions::device>(json);
+}
+
+inline std::shared_ptr<conditions::base> make_device_unless_touch_bar_condition(void) {
+  nlohmann::json json;
+  json["type"] = "device_unless";
+  json["identifiers"] = nlohmann::json::array({
+      nlohmann::json::object({
+          {"is_touch_bar", true},
       }),
   });
   return std::make_shared<conditions::device>(json);

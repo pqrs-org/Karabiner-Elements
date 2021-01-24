@@ -7,6 +7,7 @@
 -   💥 Breaking changes
     -   Changed the default function of f4 key to `spotlight`, f5 key to `dictation`, f6 key to `f6`.
         -   Note: This change will be applied when you create a new profile.
+    -   Changed to Karabiner-Elements does not modify f1-f12 keys on touch bar.
     -   The caps lock delay of Karabiner Virtual HID Keyboard has been removed.
         The state of caps lock will be changed immediately after you press the caps lock key.
         -   Note: Restarting macOS may be required for this change to take effect.

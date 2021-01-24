@@ -77,6 +77,9 @@ public:
           if (d.is_pointing_device && d.is_pointing_device != dp->get_is_pointing_device()) {
             fulfilled = false;
           }
+          if (d.is_touch_bar && d.is_touch_bar != dp->get_is_built_in_touch_bar()) {
+            fulfilled = false;
+          }
 
           if (fulfilled) {
             switch (type_) {
@@ -107,6 +110,16 @@ private:
     std::optional<location_id> location_id;
     std::optional<bool> is_keyboard;
     std::optional<bool> is_pointing_device;
+    std::optional<bool> is_touch_bar;
+
+    bool valid(void) const {
+      return vendor_id ||
+             product_id ||
+             location_id ||
+             is_keyboard ||
+             is_pointing_device ||
+             is_touch_bar;
+    }
   };
 
   void handle_identifiers_json(const nlohmann::json& json) {
@@ -143,6 +156,11 @@ private:
 
           d.is_pointing_device = value.get<bool>();
 
+        } else if (key == "is_touch_bar") {
+          pqrs::json::requires_boolean(value, "identifiers entry `is_touch_bar`");
+
+          d.is_touch_bar = value.get<bool>();
+
         } else if (key == "description") {
           // Do nothing
 
@@ -152,12 +170,9 @@ private:
         }
       }
 
-      if (!d.vendor_id) {
-        throw pqrs::json::unmarshal_error(
-            fmt::format("`vendor_id` must be specified: `{0}`", pqrs::json::dump_for_error_message(j)));
+      if (d.valid()) {
+        definitions_.push_back(d);
       }
-
-      definitions_.push_back(d);
     }
   }
 
