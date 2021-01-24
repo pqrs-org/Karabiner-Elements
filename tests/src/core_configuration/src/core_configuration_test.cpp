@@ -209,6 +209,7 @@ nlohmann::json get_default_fn_function_keys_json(void) {
 nlohmann::json get_default_virtual_hid_keyboard_json(void) {
   return nlohmann::json{
       {"country_code", 0},
+      {"indicate_sticky_modifier_keys_state", true},
       {"mouse_key_xy_scale", 100},
   };
 }
@@ -1391,6 +1392,7 @@ TEST_CASE("virtual_hid_keyboard.to_json") {
 
     nlohmann::json expected({
         {"country_code", 10},
+        {"indicate_sticky_modifier_keys_state", true},
         {"mouse_key_xy_scale", 50},
         {"dummy", {{"keep_me", true}}},
     });

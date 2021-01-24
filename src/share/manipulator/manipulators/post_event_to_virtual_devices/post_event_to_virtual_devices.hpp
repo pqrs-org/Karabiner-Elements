@@ -129,9 +129,7 @@ public:
       output_event_queue->push_back_entry(front_input_event);
       front_input_event.set_validity(validity::invalid);
 
-      if (auto notification_message_manager = weak_notification_message_manager_.lock()) {
-        notification_message_manager->async_update_sticky_modifiers_message(output_event_queue->get_modifier_flag_manager());
-      }
+      update_sticky_modifiers_notification_message(output_event_queue->get_modifier_flag_manager());
 
       switch (front_input_event.get_event().get_type()) {
         case event_queue::event::type::momentary_switch_event:
@@ -220,6 +218,7 @@ public:
         case event_queue::event::type::virtual_hid_keyboard_configuration_changed:
           if (auto c = front_input_event.get_event().get_if<core_configuration::details::virtual_hid_keyboard>()) {
             mouse_key_handler_->set_virtual_hid_keyboard_configuration(*c);
+            virtual_hid_keyboard_configuration_ = *c;
           }
           break;
 
@@ -282,9 +281,7 @@ public:
 
     output_event_queue.get_modifier_flag_manager().erase_caps_lock_sticky_modifier_flags();
 
-    if (auto notification_message_manager = weak_notification_message_manager_.lock()) {
-      notification_message_manager->async_update_sticky_modifiers_message(output_event_queue.get_modifier_flag_manager());
-    }
+    update_sticky_modifiers_notification_message(output_event_queue.get_modifier_flag_manager());
 
     // pointing buttons
 
@@ -422,6 +419,16 @@ private:
     pressed_buttons_ = report.buttons;
   }
 
+  void update_sticky_modifiers_notification_message(const modifier_flag_manager& modifier_flag_manager) const {
+    if (auto notification_message_manager = weak_notification_message_manager_.lock()) {
+      if (virtual_hid_keyboard_configuration_.get_indicate_sticky_modifier_keys_state()) {
+        notification_message_manager->async_update_sticky_modifiers_message(modifier_flag_manager);
+      } else {
+        notification_message_manager->async_clear_sticky_modifiers_message();
+      }
+    }
+  }
+
   std::weak_ptr<console_user_server_client> weak_console_user_server_client_;
   std::weak_ptr<notification_message_manager> weak_notification_message_manager_;
 
@@ -430,6 +437,7 @@ private:
   std::unique_ptr<mouse_key_handler> mouse_key_handler_;
   std::unordered_set<modifier_flag> pressed_modifier_flags_;
   pqrs::karabiner::driverkit::virtual_hid_device_driver::hid_report::buttons pressed_buttons_;
+  core_configuration::details::virtual_hid_keyboard virtual_hid_keyboard_configuration_;
 };
 } // namespace post_event_to_virtual_devices
 } // namespace manipulators

@@ -76,6 +76,14 @@ public:
     });
   }
 
+  void async_clear_sticky_modifiers_message(void) {
+    enqueue_to_dispatcher([this] {
+      sticky_modifiers_message_ = "";
+
+      post_message_if_needed();
+    });
+  }
+
 private:
   void post_message(const std::string& message) const {
     if (auto c = weak_console_user_server_client_.lock()) {

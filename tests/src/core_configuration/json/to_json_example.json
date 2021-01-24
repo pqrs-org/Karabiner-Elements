@@ -359,6 +359,7 @@
             ],
             "virtual_hid_keyboard": {
                 "country_code": 99,
+                "indicate_sticky_modifier_keys_state": false,
                 "mouse_key_xy_scale": 150
             }
         },
@@ -504,6 +505,7 @@
             "simple_modifications": [],
             "virtual_hid_keyboard": {
                 "country_code": 0,
+                "indicate_sticky_modifier_keys_state": true,
                 "mouse_key_xy_scale": 100
             }
         },
@@ -649,6 +651,7 @@
             "simple_modifications": [],
             "virtual_hid_keyboard": {
                 "country_code": 0,
+                "indicate_sticky_modifier_keys_state": true,
                 "mouse_key_xy_scale": 100
             }
         },
@@ -805,6 +808,7 @@
             ],
             "virtual_hid_keyboard": {
                 "country_code": 0,
+                "indicate_sticky_modifier_keys_state": true,
                 "mouse_key_xy_scale": 100
             }
         }

@@ -136,6 +136,7 @@
             },
             "virtual_hid_keyboard": {
                 "country_code": 99,
+                "indicate_sticky_modifier_keys_state": false,
                 "mouse_key_xy_scale": 150
             },
             "devices": [
