@@ -17,6 +17,7 @@
         -   [apple_vendor_top_case_key_code](https://github.com/pqrs-org/Karabiner-Elements/blob/master/src/share/types/momentary_switch_event_details/apple_vendor_top_case_key_code.hpp)
 -   ⚡️ Improvements
     -   Updated in-app screenshots to Big Sur.
+    -   Added the close button to notification window.
 
 ## Karabiner-Elements 13.1.0
 
