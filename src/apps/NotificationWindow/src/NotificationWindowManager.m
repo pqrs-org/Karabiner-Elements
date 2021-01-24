@@ -86,7 +86,7 @@ static void staticCallback(const char* filePath,
   [window setBackgroundColor:NSColor.clearColor];
   [window setOpaque:NO];
   [window setLevel:NSStatusWindowLevel];
-  [window setIgnoresMouseEvents:YES];
+  // [window setIgnoresMouseEvents:YES];
   [window setCollectionBehavior:(NSWindowCollectionBehaviorCanJoinAllSpaces |
                                  NSWindowCollectionBehaviorIgnoresCycle |
                                  NSWindowCollectionBehaviorStationary)];
