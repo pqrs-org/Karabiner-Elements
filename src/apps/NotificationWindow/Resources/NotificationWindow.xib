@@ -21,21 +21,21 @@
                 <rect key="frame" x="0.0" y="0.0" width="384" height="88"/>
                 <autoresizingMask key="autoresizingMask"/>
                 <subviews>
-                    <imageView horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="pT3-c6-Yay">
+                    <imageView focusRingType="none" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="pT3-c6-Yay">
                         <rect key="frame" x="12" y="20" width="48" height="48"/>
                         <constraints>
                             <constraint firstAttribute="width" constant="48" id="CH4-uZ-g3Q"/>
                             <constraint firstAttribute="height" constant="48" id="Cc4-DQ-UA8"/>
                         </constraints>
-                        <imageCell key="cell" refusesFirstResponder="YES" alignment="left" imageScaling="proportionallyDown" image="app" id="gjW-ha-L8E"/>
+                        <imageCell key="cell" refusesFirstResponder="YES" focusRingType="none" alignment="left" imageScaling="proportionallyDown" image="app" id="gjW-ha-L8E"/>
                     </imageView>
-                    <textField verticalHuggingPriority="750" horizontalCompressionResistancePriority="250" translatesAutoresizingMaskIntoConstraints="NO" id="MNS-Om-o9U">
+                    <textField focusRingType="none" verticalHuggingPriority="750" horizontalCompressionResistancePriority="250" translatesAutoresizingMaskIntoConstraints="NO" id="MNS-Om-o9U">
                         <rect key="frame" x="70" y="12" width="304" height="64"/>
                         <constraints>
                             <constraint firstAttribute="width" constant="300" id="LhF-TV-CJY"/>
                             <constraint firstAttribute="height" constant="64" id="rgZ-h3-Vqk"/>
                         </constraints>
-                        <textFieldCell key="cell" controlSize="small" selectable="YES" title="Multiline Label" id="Gqp-PV-2vn">
+                        <textFieldCell key="cell" controlSize="small" focusRingType="none" title="Multiline Label" id="Gqp-PV-2vn">
                             <font key="font" metaFont="message" size="11"/>
                             <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
                             <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
