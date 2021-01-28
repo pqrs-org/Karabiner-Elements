@@ -1,10 +1,7 @@
 # Changelog
 
-## Karabiner-Elements 13.2.0
+## Beta
 
--   [📦 Download](https://github.com/pqrs-org/Karabiner-Elements/releases/download/v13.2.0/Karabiner-Elements-13.2.0.dmg)
--   📅 Release date
-    -   Jan 27, 2021
 -   🐛 Bug Fixes
     -   Fixed an issue that installer requires Rosetta 2 on Apple Silicon Macs.
 -   💥 Breaking changes
