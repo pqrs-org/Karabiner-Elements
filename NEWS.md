@@ -13,7 +13,6 @@
     -   Changed to Karabiner-Elements does not modify f1-f12 keys on touch bar.
     -   The caps lock delay of Karabiner Virtual HID Keyboard has been removed.
         The state of caps lock will be changed immediately after you press the caps lock key.
-        -   Note: Restarting macOS may be required for this change to take effect.
 -   ✨ New Features
     -   Supported [`sticky modifier keys`](https://karabiner-elements.pqrs.org/docs/help/how-to/sticky-modifier-key/)
     -   Added `apple_vendor_keyboard_key_code` and `apple_vendor_top_case_key_code` to event definitions.
