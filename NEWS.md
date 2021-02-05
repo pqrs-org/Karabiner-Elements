@@ -3,7 +3,7 @@
 ## Beta
 
 -   ⚡️ Improvements
-    -   Changed to terminate virtual HID devices immediately when Karabiner-Elements is quitted.
+    -   Changed to terminate virtual HID devices immediately after quit Karabiner-Elements.
 
 ## Karabiner-Elements 13.3.0
 
