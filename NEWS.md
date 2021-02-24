@@ -2,6 +2,8 @@
 
 ## Beta
 
+-   🐛 Bug Fixes
+    -   Fixed an issue that Karabiner-Elements stops working with `virtual_hid_keyboard is not ready. Please wait for a while.` error message when you kill `karabiner_console_user_server` process manually.
 -   ⚡️ Improvements
     -   Changed to terminate virtual HID devices immediately after quit Karabiner-Elements.
 
