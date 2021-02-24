@@ -13,7 +13,7 @@
 #include "logger.hpp"
 #include "types.hpp"
 #include <fstream>
-#include <glob.h>
+#include <glob/glob.hpp>
 #include <pqrs/filesystem.hpp>
 #include <pqrs/osx/process_info.hpp>
 #include <pqrs/osx/session.hpp>
@@ -192,15 +192,16 @@ private:
     }
 
     auto pattern = backups_directory + "/karabiner_????????.json";
+    auto paths = glob::glob(pattern);
+    std::sort(std::begin(paths), std::end(paths));
 
-    glob_t glob_result;
-    if (glob(pattern.c_str(), 0, nullptr, &glob_result) == 0) {
-      const int keep_count = 20;
-      for (int i = 0; i < static_cast<int>(glob_result.gl_pathc) - keep_count; ++i) {
-        unlink(glob_result.gl_pathv[i]);
+    const int keep_count = 20;
+    if (paths.size() > keep_count) {
+      for (int i = 0; i < paths.size() - keep_count; ++i) {
+        std::error_code error_code;
+        std::filesystem::remove(paths[i], error_code);
       }
     }
-    globfree(&glob_result);
   }
 
   static std::string make_current_local_yyyymmdd_string(void) {
