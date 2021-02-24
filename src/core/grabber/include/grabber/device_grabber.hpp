@@ -7,6 +7,7 @@
 #include "device_grabber_details/fn_function_keys_manipulator_manager.hpp"
 #include "device_grabber_details/simple_modifications_manipulator_manager.hpp"
 #include "event_tap_utility.hpp"
+#include "filesystem_utility.hpp"
 #include "grabber/grabber_state_json_writer.hpp"
 #include "hid_keyboard_caps_lock_led_state_manager.hpp"
 #include "hid_queue_values_converter.hpp"
@@ -63,6 +64,13 @@ public:
         "fn_function_keys_applied_event_queue");
     posted_event_queue_ = std::make_shared<event_queue::queue>(
         "posted_event_queue");
+
+    //
+    // virtual_hid_device_service_client_
+    //
+
+    // Remove old socket files.
+    filesystem_utility::remove_files_by_glob(constants::get_virtual_hid_device_service_client_socket_file_path_glob_pattern());
 
     virtual_hid_device_service_client_ = std::make_shared<pqrs::karabiner::driverkit::virtual_hid_device_service::client>(
         constants::get_virtual_hid_device_service_client_socket_file_path());
