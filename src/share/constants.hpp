@@ -1,10 +1,12 @@
 #pragma once
 
 #include <CoreFoundation/CoreFoundation.h>
+#include <chrono>
 #include <cstdlib>
 #include <pqrs/osx/launchctl.hpp>
 #include <spdlog/fmt/fmt.h>
 #include <string>
+#include <string_view>
 #include <thread>
 
 namespace krbn {
@@ -38,8 +40,17 @@ public:
     return "/Library/Application Support/org.pqrs/tmp/karabiner_grabber_receiver";
   }
 
-  static const char* get_virtual_hid_device_service_client_socket_file_path(void) {
-    return "/Library/Application Support/org.pqrs/tmp/rootonly/virtual_hid_device_service_client.sock";
+  static std::string get_virtual_hid_device_service_client_socket_file_path(void) {
+    auto now = std::chrono::system_clock::now();
+    auto duration = now.time_since_epoch();
+    auto milliseconds = std::chrono::duration_cast<std::chrono::milliseconds>(duration).count();
+
+    return fmt::format("/Library/Application Support/org.pqrs/tmp/rootonly/virtual_hid_device_service_client.{0}.sock",
+                       milliseconds);
+  }
+
+  static std::string_view get_virtual_hid_device_service_client_socket_file_path_glob_pattern(void) {
+    return "/Library/Application Support/org.pqrs/tmp/rootonly/virtual_hid_device_service_client.*.sock";
   }
 
   static std::string get_grabber_session_monitor_receiver_socket_file_path(void) {
