@@ -46,7 +46,7 @@ public:
       });
     });
 
-    client_impl_->connect_failed.connect([this](auto&& error_code) {
+    auto connect_failed_handler = [this](auto&& error_code) {
       enqueue_to_dispatcher([this, error_code] {
         connect_failed(error_code);
       });
@@ -56,6 +56,14 @@ public:
       }
 
       start_reconnect_timer();
+    };
+
+    client_impl_->connect_failed.connect([connect_failed_handler](auto&& error_code) {
+      connect_failed_handler(error_code);
+    });
+
+    client_impl_->bind_failed.connect([connect_failed_handler](auto&& error_code) {
+      connect_failed_handler(error_code);
     });
 
     client_impl_->closed.connect([this] {
