@@ -1,6 +1,7 @@
 #pragma once
 
 #include "apple_notification_center.hpp"
+#include "chrono_utility.hpp"
 #include "components_manager_killer.hpp"
 #include "constants.hpp"
 #include "device_grabber_details/entry.hpp"
@@ -30,6 +31,7 @@
 #include <pqrs/osx/iokit_hid_manager.hpp>
 #include <pqrs/osx/system_preferences.hpp>
 #include <pqrs/spdlog.hpp>
+#include <string_view>
 #include <thread>
 #include <time.h>
 
@@ -70,10 +72,15 @@ public:
     //
 
     // Remove old socket files.
-    filesystem_utility::remove_files_by_glob(constants::get_virtual_hid_device_service_client_socket_file_path_glob_pattern());
+    {
+      auto directory_path = virtual_hid_device_service_client_socket_directory_path();
+      std::error_code ec;
+      std::filesystem::remove_all(directory_path, ec);
+      std::filesystem::create_directory(directory_path, ec);
+    }
 
     virtual_hid_device_service_client_ = std::make_shared<pqrs::karabiner::driverkit::virtual_hid_device_service::client>(
-        constants::get_virtual_hid_device_service_client_socket_file_path());
+        virtual_hid_device_service_client_socket_file_path().string());
 
     virtual_hid_device_service_client_->connected.connect([this] {
       logger::get_logger()->info("virtual_hid_device_service_client_ connected");
@@ -581,6 +588,20 @@ public:
   }
 
 private:
+  std::filesystem::path virtual_hid_device_service_client_socket_directory_path(void) const {
+    // Note:
+    // The socket file path length must be <= 103 because sizeof(sockaddr_un.sun_path) == 104.
+    // So we use the shorten name virtual_hid_device_service_client => vhidd_client.
+
+    return "/Library/Application Support/org.pqrs/tmp/rootonly/vhidd_client";
+  }
+
+  std::filesystem::path virtual_hid_device_service_client_socket_file_path(void) const {
+    return fmt::format("{0}/{1}.sock",
+                       virtual_hid_device_service_client_socket_directory_path().string(),
+                       chrono_utility::nanoseconds_since_epoch());
+  }
+
   void stop(void) {
     configuration_monitor_ = nullptr;
 
