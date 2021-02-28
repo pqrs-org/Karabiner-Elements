@@ -1,6 +1,7 @@
 #pragma once
 
 #include "constants.hpp"
+#include "logger.hpp"
 #include <glob/glob.hpp>
 #include <pqrs/filesystem.hpp>
 #include <string_view>
