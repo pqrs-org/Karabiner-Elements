@@ -58,6 +58,8 @@ public:
 
               auto uid = json.at("user_id").get<uid_t>();
 
+              filesystem_utility::mkdir_system_user_directory(uid);
+
               if (json.at("on_console").get<bool>()) {
                 new_value = uid;
               } else {
