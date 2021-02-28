@@ -3,6 +3,7 @@
 // `krbn::console_user_server::components_manager` can be used safely in a multi-threaded environment.
 
 #include "application_launcher.hpp"
+#include "chrono_utility.hpp"
 #include "components_manager_killer.hpp"
 #include "constants.hpp"
 #include "grabber_client.hpp"
@@ -98,12 +99,31 @@ public:
   }
 
 private:
+  std::filesystem::path grabber_client_socket_directory_path(void) const {
+    return fmt::format("{0}/grabber_client",
+                       constants::get_system_user_directory(geteuid()).string());
+  }
+
+  std::filesystem::path grabber_client_socket_file_path(void) const {
+    return fmt::format("{0}/{1:x}.sock",
+                       grabber_client_socket_directory_path().string(),
+                       chrono_utility::nanoseconds_since_epoch());
+  }
+
   void start_grabber_client(void) {
     if (grabber_client_) {
       return;
     }
 
-    grabber_client_ = std::make_shared<grabber_client>();
+    // Remove old socket files.
+    {
+      auto directory_path = grabber_client_socket_directory_path();
+      std::error_code ec;
+      std::filesystem::remove_all(directory_path, ec);
+      std::filesystem::create_directory(directory_path, ec);
+    }
+
+    grabber_client_ = std::make_shared<grabber_client>(grabber_client_socket_file_path());
 
     grabber_client_->connected.connect([this] {
       version_monitor_->async_manual_check();
