@@ -23,12 +23,15 @@ public:
   nod::signal<void(void)> connected;
   nod::signal<void(const asio::error_code&)> connect_failed;
   nod::signal<void(void)> closed;
+  nod::signal<void(std::shared_ptr<std::vector<uint8_t>>, std::shared_ptr<asio::local::datagram_protocol::endpoint>)> received;
 
   // Methods
 
   grabber_client(const grabber_client&) = delete;
 
-  grabber_client(void) : dispatcher_client() {
+  grabber_client(std::optional<std::string> client_socket_file_path = std::nullopt)
+      : dispatcher_client(),
+        client_socket_file_path_(client_socket_file_path) {
   }
 
   virtual ~grabber_client(void) {
@@ -47,7 +50,7 @@ public:
       auto socket_file_path = constants::get_grabber_socket_file_path();
       client_ = std::make_unique<pqrs::local_datagram::client>(weak_dispatcher_,
                                                                socket_file_path,
-                                                               std::nullopt,
+                                                               client_socket_file_path_,
                                                                constants::get_local_datagram_buffer_size());
       client_->set_server_check_interval(std::chrono::milliseconds(3000));
       client_->set_reconnect_interval(std::chrono::milliseconds(1000));
@@ -76,6 +79,12 @@ public:
 
       client_->error_occurred.connect([](auto&& error_code) {
         logger::get_logger()->error("grabber_client error: {0}", error_code.message());
+      });
+
+      client_->received.connect([this](auto&& buffer, auto&& sender_endpoint) {
+        enqueue_to_dispatcher([this, buffer, sender_endpoint] {
+          received(buffer, sender_endpoint);
+        });
       });
 
       client_->async_start();
@@ -226,6 +235,7 @@ private:
     logger::get_logger()->info("grabber_client is stopped.");
   }
 
+  std::optional<std::string> client_socket_file_path_;
   std::unique_ptr<pqrs::local_datagram::client> client_;
 };
 } // namespace krbn
