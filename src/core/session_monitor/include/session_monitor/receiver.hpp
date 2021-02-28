@@ -28,7 +28,6 @@ public:
     // (We have to make a socket file which includes the real user ID in the file path.)
     std::string socket_file_path(constants::get_session_monitor_receiver_socket_file_path(getuid()));
 
-    filesystem_utility::mkdir_rootonly_directory();
     unlink(socket_file_path.c_str());
 
     server_ = std::make_unique<pqrs::local_datagram::server>(weak_dispatcher_,

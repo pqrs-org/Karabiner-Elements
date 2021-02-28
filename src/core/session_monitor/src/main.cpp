@@ -1,5 +1,6 @@
 #include "constants.hpp"
 #include "dispatcher_utility.hpp"
+#include "filesystem_utility.hpp"
 #include "karabiner_version.h"
 #include "logger.hpp"
 #include "process_utility.hpp"
@@ -58,6 +59,12 @@ int main(int argc, const char* argv[]) {
       return 1;
     }
   }
+
+  //
+  // Make socket directory.
+  //
+
+  krbn::filesystem_utility::mkdir_rootonly_directory();
 
   //
   // Run components_manager
