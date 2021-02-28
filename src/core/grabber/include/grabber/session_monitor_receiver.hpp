@@ -24,7 +24,6 @@ public:
   session_monitor_receiver(void) : dispatcher_client() {
     std::string socket_file_path(constants::get_grabber_session_monitor_receiver_socket_file_path());
 
-    filesystem_utility::mkdir_rootonly_directory();
     unlink(socket_file_path.c_str());
 
     server_ = std::make_unique<pqrs::local_datagram::server>(weak_dispatcher_,

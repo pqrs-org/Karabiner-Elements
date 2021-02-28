@@ -87,6 +87,7 @@ int daemon(void) {
 
   {
     filesystem_utility::mkdir_tmp_directory();
+    filesystem_utility::mkdir_rootonly_directory();
 
     unlink(constants::get_grabber_socket_file_path());
 
