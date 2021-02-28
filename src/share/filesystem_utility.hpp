@@ -32,6 +32,32 @@ inline void mkdir_rootonly_directory(void) {
   chmod(constants::get_rootonly_directory().c_str(), 0700);
 }
 
+inline void mkdir_system_user_directory(uid_t uid) {
+  mkdir_tmp_directory();
+
+  {
+    auto directory_path = constants::get_system_user_directory();
+
+    pqrs::filesystem::create_directory_with_intermediate_directories(
+        directory_path.string(),
+        0755);
+
+    chown(directory_path.c_str(), uid, 0);
+    chmod(directory_path.c_str(), 0755);
+  }
+
+  {
+    auto directory_path = constants::get_system_user_directory(uid);
+
+    pqrs::filesystem::create_directory_with_intermediate_directories(
+        directory_path.string(),
+        0700);
+
+    chown(directory_path.c_str(), uid, 0);
+    chmod(directory_path.c_str(), 0700);
+  }
+}
+
 inline void remove_files_by_glob(const std::string_view& pattern) {
   for (auto path : glob::glob(pattern.data())) {
     logger::get_logger()->info("Remove {0}", path.c_str());

@@ -3,6 +3,7 @@
 #include <CoreFoundation/CoreFoundation.h>
 #include <chrono>
 #include <cstdlib>
+#include <filesystem>
 #include <pqrs/osx/launchctl.hpp>
 #include <spdlog/fmt/fmt.h>
 #include <string>
@@ -26,6 +27,14 @@ public:
 
   static std::string get_rootonly_directory(void) {
     return "/Library/Application Support/org.pqrs/tmp/rootonly";
+  }
+
+  static std::filesystem::path get_system_user_directory(void) {
+    return "/Library/Application Support/org.pqrs/tmp/user";
+  }
+
+  static std::filesystem::path get_system_user_directory(uid_t uid) {
+    return fmt::format("{0}/{1}", get_system_user_directory().string(), uid);
   }
 
   static const char* get_observer_state_json_file_path(void) {
