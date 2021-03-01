@@ -51,51 +51,49 @@ System requirements to build Karabiner-Elements:
     git submodule update --init --recursive --depth 1
     ```
 
-2.  Find your codesign identity if you have one.<br />
-    (Skip this step if you don't have your codesign identity.)
+2.  (Optional) If you have a codesign identity:
 
-    ```shell
-    security find-identity -p codesigning -v | grep 'Developer ID Application'
-    ```
+    1.  Find your codesign identity.
 
-    The result is as follows.
+        ```shell
+        security find-identity -p codesigning -v | grep 'Developer ID Application'
+        ```
 
-    ```text
-    1) 8D660191481C98F5C56630847A6C39D95C166F22 "Developer ID Application: Fumihiko Takayama (G43BCU2T37)"
-    ```
+        The result is as follows.
 
-    Your codesign identity is `8D660191481C98F5C56630847A6C39D95C166F22` in the above case.
+        ```text
+        1) 8D660191481C98F5C56630847A6C39D95C166F22 "Developer ID Application: Fumihiko Takayama (G43BCU2T37)"
+        ```
 
-3.  Set environment variable to use your codesign identity.<br />
-    (Skip this step if you don't have your codesign identity.)
+        Your codesign identity is `8D660191481C98F5C56630847A6C39D95C166F22` in the above case.
 
-    ```shell
-    export PQRS_ORG_CODE_SIGN_IDENTITY=8D660191481C98F5C56630847A6C39D95C166F22
-    ```
+    2.  Set environment variable to use your codesign identity.
 
-4.  Find your codesign identity for installer signing if you have one.<br />
-    (Skip this step if you don't have your codesign identity.)
+        ```shell
+        export PQRS_ORG_CODE_SIGN_IDENTITY=8D660191481C98F5C56630847A6C39D95C166F22
+        ```
 
-    ```shell
-    security find-identity -p basic -v | grep 'Developer ID Installer'
-    ```
+    3.  Find your codesign identity for installer signing.
 
-    The result is as follows.
+        ```shell
+        security find-identity -p basic -v | grep 'Developer ID Installer'
+        ```
 
-    ```text
-    1) C86BB5F7830071C7B0B07D168A9A9375CC2D02C5 "Developer ID Installer: Fumihiko Takayama (G43BCU2T37)"
-    ```
+        The result is as follows.
 
-    Your codesign identity is `C86BB5F7830071C7B0B07D168A9A9375CC2D02C5` in the above case.
+        ```text
+        1) C86BB5F7830071C7B0B07D168A9A9375CC2D02C5 "Developer ID Installer: Fumihiko Takayama (G43BCU2T37)"
+        ```
 
-5.  Set environment variable to use your codesign identity for installer signing.<br />
-    (Skip this step if you don't have your codesign identity.)
+        Your codesign identity is `C86BB5F7830071C7B0B07D168A9A9375CC2D02C5` in the above case.
 
-    ```shell
-    export PQRS_ORG_INSTALLER_CODE_SIGN_IDENTITY=C86BB5F7830071C7B0B07D168A9A9375CC2D02C5
-    ```
+    4.  Set environment variable to use your codesign identity for installer signing.
 
-6.  Build a package by executing a following command in Terminal.app.
+        ```shell
+        export PQRS_ORG_INSTALLER_CODE_SIGN_IDENTITY=C86BB5F7830071C7B0B07D168A9A9375CC2D02C5
+        ```
+
+3.  Build a package by executing a following command in Terminal.app.
 
     ```shell
     make package
