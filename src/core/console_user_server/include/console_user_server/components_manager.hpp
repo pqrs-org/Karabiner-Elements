@@ -11,14 +11,16 @@
 #include "menu_process_manager.hpp"
 #include "monitor/configuration_monitor.hpp"
 #include "monitor/version_monitor.hpp"
-#include "receiver.hpp"
 #include "updater_process_manager.hpp"
 #include <pqrs/dispatcher.hpp>
 #include <pqrs/osx/frontmost_application_monitor.hpp>
 #include <pqrs/osx/input_source_monitor.hpp>
+#include <pqrs/osx/input_source_selector.hpp>
+#include <pqrs/osx/input_source_selector/extra/nlohmann_json.hpp>
 #include <pqrs/osx/json_file_monitor.hpp>
 #include <pqrs/osx/session.hpp>
 #include <pqrs/osx/system_preferences_monitor.hpp>
+#include <pqrs/shell.hpp>
 #include <thread>
 
 namespace krbn {
@@ -48,7 +50,6 @@ public:
 
     session_monitor_->on_console_changed.connect([this](auto&& on_console) {
       if (!on_console) {
-        receiver_ = nullptr;
         stop_grabber_client();
 
       } else {
@@ -58,25 +59,8 @@ public:
             constants::get_user_configuration_directory(),
             0700);
 
-        receiver_ = nullptr;
         stop_grabber_client();
-
-        receiver_ = std::make_unique<receiver>();
-
-        receiver_->bound.connect([this] {
-          stop_grabber_client();
-          start_grabber_client();
-        });
-
-        receiver_->bind_failed.connect([this](auto&& error_code) {
-          stop_grabber_client();
-        });
-
-        receiver_->closed.connect([this] {
-          stop_grabber_client();
-        });
-
-        receiver_->async_start();
+        start_grabber_client();
       }
     });
   }
@@ -86,7 +70,6 @@ public:
       stop_grabber_client();
 
       session_monitor_ = nullptr;
-      receiver_ = nullptr;
       version_monitor_ = nullptr;
     });
   }
@@ -146,6 +129,53 @@ private:
       version_monitor_->async_manual_check();
 
       stop_child_components();
+    });
+
+    grabber_client_->received.connect([this](auto&& buffer, auto&& sender_endpoint) {
+      if (buffer) {
+        if (buffer->empty()) {
+          return;
+        }
+
+        try {
+          nlohmann::json json = nlohmann::json::from_msgpack(*buffer);
+          switch (json.at("operation_type").get<operation_type>()) {
+            case operation_type::select_input_source: {
+              using specifiers_t = std::vector<pqrs::osx::input_source_selector::specifier>;
+              auto specifiers = json.at("input_source_specifiers").get<specifiers_t>();
+              if (input_source_selector_) {
+                input_source_selector_->async_select(std::make_shared<specifiers_t>(specifiers));
+              }
+              break;
+            }
+
+            case operation_type::shell_command_execution: {
+              auto shell_command = json.at("shell_command").get<std::string>();
+              auto background_shell_command = pqrs::shell::make_background_command_string(shell_command);
+              system(background_shell_command.c_str());
+              break;
+            }
+
+            case operation_type::set_notification_message: {
+              auto notification_message = json.at("notification_message").get<std::string>();
+              json_writer::async_save_to_file(
+                  nlohmann::json::object({
+                      {"body", notification_message},
+                  }),
+                  constants::get_user_notification_message_file_path(),
+                  0700,
+                  0600);
+              break;
+            }
+
+            default:
+              break;
+          }
+          return;
+        } catch (std::exception& e) {
+          logger::get_logger()->error("received data is corrupted");
+        }
+      }
     });
 
     grabber_client_->async_start();
@@ -221,6 +251,10 @@ private:
 
     input_source_monitor_->async_start();
 
+    // input_source_selector_
+
+    input_source_selector_ = std::make_unique<pqrs::osx::input_source_selector::selector>(weak_dispatcher_);
+
     // Start configuration_monitor_
 
     configuration_monitor_->async_start();
@@ -232,6 +266,7 @@ private:
     system_preferences_monitor_ = nullptr;
     frontmost_application_monitor_ = nullptr;
     input_source_monitor_ = nullptr;
+    input_source_selector_ = nullptr;
 
     configuration_monitor_ = nullptr;
   }
@@ -241,7 +276,6 @@ private:
   std::unique_ptr<version_monitor> version_monitor_;
 
   std::unique_ptr<pqrs::osx::session::monitor> session_monitor_;
-  std::unique_ptr<receiver> receiver_;
   std::shared_ptr<grabber_client> grabber_client_;
 
   // Child components
@@ -254,6 +288,7 @@ private:
   // Therefore, we have to use `frontmost_application_monitor` in `console_user_server`.
   std::unique_ptr<pqrs::osx::frontmost_application_monitor::monitor> frontmost_application_monitor_;
   std::unique_ptr<pqrs::osx::input_source_monitor> input_source_monitor_;
+  std::unique_ptr<pqrs::osx::input_source_selector::selector> input_source_selector_;
 };
 } // namespace console_user_server
 } // namespace krbn
