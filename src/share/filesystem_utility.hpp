@@ -42,7 +42,7 @@ inline void mkdir_system_user_directory(uid_t uid) {
         directory_path.string(),
         0755);
 
-    chown(directory_path.c_str(), uid, 0);
+    chown(directory_path.c_str(), 0, 0);
     chmod(directory_path.c_str(), 0755);
   }
 

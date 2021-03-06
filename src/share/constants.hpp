@@ -69,10 +69,6 @@ public:
     return fmt::format("{0}/karabiner_session_monitor_receiver.{1}", get_rootonly_directory(), uid);
   }
 
-  static const char* get_console_user_server_socket_directory(void) {
-    return "/Library/Application Support/org.pqrs/tmp/karabiner_console_user_server";
-  }
-
   static const char* get_system_configuration_directory(void) {
     return "/Library/Application Support/org.pqrs/config";
   }

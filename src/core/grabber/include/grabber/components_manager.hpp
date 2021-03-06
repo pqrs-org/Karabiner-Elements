@@ -82,14 +82,6 @@ private:
   void start_receiver(uid_t uid) {
     version_monitor_->async_manual_check();
 
-    // Prepare console_user_server_socket_directory
-    {
-      auto socket_file_path = console_user_server_client::make_console_user_server_socket_directory(uid);
-      mkdir(socket_file_path.c_str(), 0700);
-      chown(socket_file_path.c_str(), uid, 0);
-      chmod(socket_file_path.c_str(), 0700);
-    }
-
     // receiver_
 
     receiver_ = nullptr;

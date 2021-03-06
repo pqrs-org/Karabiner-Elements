@@ -33,20 +33,19 @@ public:
     });
   }
 
-  void async_start(uid_t uid) {
-    enqueue_to_dispatcher([this, uid] {
+  void async_start(const std::string& endpoint_path) {
+    enqueue_to_dispatcher([this, endpoint_path] {
       client_ = nullptr;
 
-      auto socket_file_path = make_console_user_server_socket_file_path(uid);
       client_ = std::make_unique<pqrs::local_datagram::client>(weak_dispatcher_,
-                                                               socket_file_path,
+                                                               endpoint_path,
                                                                std::nullopt,
                                                                constants::get_local_datagram_buffer_size());
       client_->set_server_check_interval(std::chrono::milliseconds(3000));
       client_->set_reconnect_interval(std::chrono::milliseconds(1000));
 
-      client_->connected.connect([this, uid] {
-        logger::get_logger()->info("console_user_server_client is connected. (uid:{0})", uid);
+      client_->connected.connect([this, endpoint_path] {
+        logger::get_logger()->info("console_user_server_client is connected: {0}", endpoint_path);
 
         enqueue_to_dispatcher([this] {
           connected();
@@ -59,8 +58,8 @@ public:
         });
       });
 
-      client_->closed.connect([this, uid] {
-        logger::get_logger()->info("console_user_server_client is closed. (uid:{0})", uid);
+      client_->closed.connect([this, endpoint_path] {
+        logger::get_logger()->info("console_user_server_client is closed: {0}", endpoint_path);
 
         enqueue_to_dispatcher([this] {
           closed();
@@ -120,16 +119,6 @@ public:
         client_->async_send(nlohmann::json::to_msgpack(json));
       }
     });
-  }
-
-  static std::string make_console_user_server_socket_directory(uid_t uid) {
-    std::stringstream ss;
-    ss << constants::get_console_user_server_socket_directory() << "/" << uid;
-    return ss.str();
-  }
-
-  static std::string make_console_user_server_socket_file_path(uid_t uid) {
-    return make_console_user_server_socket_directory(uid) + "/receiver";
   }
 
 private:

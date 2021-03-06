@@ -90,16 +90,6 @@ int daemon(void) {
     filesystem_utility::mkdir_rootonly_directory();
 
     unlink(constants::get_grabber_socket_file_path());
-
-    // Make console_user_server_socket_directory
-
-    std::stringstream ss;
-    ss << "rm -r '" << constants::get_console_user_server_socket_directory() << "'";
-    system(ss.str().c_str());
-
-    mkdir(constants::get_console_user_server_socket_directory(), 0755);
-    chown(constants::get_console_user_server_socket_directory(), 0, 0);
-    chmod(constants::get_console_user_server_socket_directory(), 0755);
   }
 
   //

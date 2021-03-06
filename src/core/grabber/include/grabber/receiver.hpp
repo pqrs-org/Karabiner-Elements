@@ -94,28 +94,32 @@ public:
               logger::get_logger()->info("karabiner_console_user_server is connected.");
 
               console_user_server_client_ = nullptr;
-              console_user_server_client_ = std::make_shared<console_user_server_client>();
 
-              console_user_server_client_->connected.connect([this, user_core_configuration_file_path] {
-                stop_device_grabber();
-                start_device_grabber(user_core_configuration_file_path);
-              });
+              if (!sender_endpoint->path().empty()) {
+                console_user_server_client_ = std::make_shared<console_user_server_client>();
 
-              console_user_server_client_->connect_failed.connect([this](auto&& error_code) {
-                console_user_server_client_ = nullptr;
+                console_user_server_client_->connected.connect([this, user_core_configuration_file_path] {
+                  stop_device_grabber();
+                  start_device_grabber(user_core_configuration_file_path);
+                });
 
-                stop_device_grabber();
-                start_grabbing_if_system_core_configuration_file_exists();
-              });
+                console_user_server_client_->connect_failed.connect([this](auto&& error_code) {
+                  console_user_server_client_ = nullptr;
 
-              console_user_server_client_->closed.connect([this] {
-                console_user_server_client_ = nullptr;
+                  stop_device_grabber();
+                  start_grabbing_if_system_core_configuration_file_exists();
+                });
 
-                stop_device_grabber();
-                start_grabbing_if_system_core_configuration_file_exists();
-              });
+                console_user_server_client_->closed.connect([this] {
+                  console_user_server_client_ = nullptr;
 
-              console_user_server_client_->async_start(current_console_user_id_);
+                  stop_device_grabber();
+                  start_grabbing_if_system_core_configuration_file_exists();
+                });
+
+                console_user_server_client_->async_start(sender_endpoint->path());
+              }
+
               break;
             }
 
