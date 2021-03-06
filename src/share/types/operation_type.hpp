@@ -21,7 +21,6 @@ enum class operation_type : uint8_t {
   // grabber -> console_user_server
   shell_command_execution,
   select_input_source,
-  set_notification_message,
   end_,
 };
 
