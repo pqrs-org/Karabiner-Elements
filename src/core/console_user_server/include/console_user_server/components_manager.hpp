@@ -184,6 +184,7 @@ private:
 
     // Run NotificationWindow
 
+    application_launcher::kill_notification_window();
     application_launcher::launch_notification_window();
 
     // Run MultitouchExtension
