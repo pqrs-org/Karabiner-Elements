@@ -40,7 +40,6 @@ NLOHMANN_JSON_SERIALIZE_ENUM(
         {operation_type::set_variables, "set_variables"},
         {operation_type::shell_command_execution, "shell_command_execution"},
         {operation_type::select_input_source, "select_input_source"},
-        {operation_type::set_notification_message, "set_notification_message"},
         {operation_type::end_, "end_"},
     });
 } // namespace krbn

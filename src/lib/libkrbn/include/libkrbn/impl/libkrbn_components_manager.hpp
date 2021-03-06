@@ -151,7 +151,7 @@ public:
 
   void enable_notification_message_json_file_monitor(libkrbn_file_monitor_callback callback,
                                                      void* refcon) {
-    notification_message_json_file_monitor_ = std::make_unique<libkrbn_file_monitor>(krbn::constants::get_user_notification_message_file_path(),
+    notification_message_json_file_monitor_ = std::make_unique<libkrbn_file_monitor>(krbn::constants::get_notification_message_file_path(),
                                                                                      callback,
                                                                                      refcon);
   }

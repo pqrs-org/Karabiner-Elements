@@ -1,5 +1,6 @@
 #pragma once
 
+#include "json_writer.hpp"
 #include "modifier_flag_manager.hpp"
 #include "types/device_id.hpp"
 #include <map>
@@ -14,7 +15,9 @@ public:
   notification_message_manager(std::weak_ptr<console_user_server_client> weak_console_user_server_client)
       : dispatcher_client(),
         weak_console_user_server_client_(weak_console_user_server_client) {
-    post_message("");
+    enqueue_to_dispatcher([this] {
+      save_message("");
+    });
   }
 
   virtual ~notification_message_manager(void) {
@@ -26,7 +29,7 @@ public:
     enqueue_to_dispatcher([this, id, message] {
       device_ungrabbable_temporarily_messages_[id] = message;
 
-      post_message_if_needed();
+      save_message_if_needed();
     });
   }
 
@@ -34,7 +37,7 @@ public:
     enqueue_to_dispatcher([this, id] {
       device_ungrabbable_temporarily_messages_.erase(id);
 
-      post_message_if_needed();
+      save_message_if_needed();
     });
   }
 
@@ -72,7 +75,7 @@ public:
     enqueue_to_dispatcher([this, message] {
       sticky_modifiers_message_ = message;
 
-      post_message_if_needed();
+      save_message_if_needed();
     });
   }
 
@@ -80,22 +83,26 @@ public:
     enqueue_to_dispatcher([this] {
       sticky_modifiers_message_ = "";
 
-      post_message_if_needed();
+      save_message_if_needed();
     });
   }
 
 private:
-  void post_message(const std::string& message) const {
-    if (auto c = weak_console_user_server_client_.lock()) {
-      c->async_set_notification_message(message);
-    }
+  void save_message(const std::string& message) const {
+    json_writer::async_save_to_file(
+        nlohmann::json::object({
+            {"body", message},
+        }),
+        constants::get_notification_message_file_path(),
+        0755,
+        0644);
   }
 
-  void post_message_if_needed(void) {
+  void save_message_if_needed(void) {
     auto message = make_message();
     if (previous_message_ != message) {
       previous_message_ = message;
-      post_message(message);
+      save_message(message);
     }
   }
 

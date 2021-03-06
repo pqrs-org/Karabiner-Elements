@@ -108,19 +108,6 @@ public:
     });
   }
 
-  void async_set_notification_message(const std::string& message) {
-    enqueue_to_dispatcher([this, message] {
-      nlohmann::json json{
-          {"operation_type", operation_type::set_notification_message},
-          {"notification_message", message},
-      };
-
-      if (client_) {
-        client_->async_send(nlohmann::json::to_msgpack(json));
-      }
-    });
-  }
-
 private:
   void async_send(const uint8_t* _Nonnull p, size_t length) const {
     if (client_) {
