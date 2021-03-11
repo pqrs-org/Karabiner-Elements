@@ -12,9 +12,9 @@
 namespace krbn {
 class notification_message_manager final : public pqrs::dispatcher::extra::dispatcher_client {
 public:
-  notification_message_manager(std::weak_ptr<console_user_server_client> weak_console_user_server_client)
+  notification_message_manager(const std::filesystem::path& notification_message_file_path)
       : dispatcher_client(),
-        weak_console_user_server_client_(weak_console_user_server_client) {
+        notification_message_file_path_(notification_message_file_path) {
     enqueue_to_dispatcher([this] {
       save_message("");
     });
@@ -93,7 +93,7 @@ private:
         nlohmann::json::object({
             {"body", message},
         }),
-        constants::get_notification_message_file_path(),
+        notification_message_file_path_.string(),
         0755,
         0644);
   }
@@ -126,7 +126,7 @@ private:
     return ss.str();
   }
 
-  std::weak_ptr<console_user_server_client> weak_console_user_server_client_;
+  std::filesystem::path notification_message_file_path_;
   std::map<device_id, std::string> device_ungrabbable_temporarily_messages_;
   std::string sticky_modifiers_message_;
   std::string previous_message_;

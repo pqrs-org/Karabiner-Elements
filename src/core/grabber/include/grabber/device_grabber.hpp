@@ -49,7 +49,7 @@ public:
                                                                                             profile_(nlohmann::json::object()),
                                                                                             logger_unique_filter_(logger::get_logger()) {
     notification_message_manager_ = std::make_shared<notification_message_manager>(
-        weak_console_user_server_client);
+        constants::get_notification_message_file_path());
 
     simple_modifications_manipulator_manager_ = std::make_shared<device_grabber_details::simple_modifications_manipulator_manager>();
     complex_modifications_manipulator_manager_ = std::make_shared<manipulator::manipulator_manager>();
