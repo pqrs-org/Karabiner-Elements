@@ -7,6 +7,7 @@
 #include "components_manager_killer.hpp"
 #include "constants.hpp"
 #include "grabber_client.hpp"
+#include "launchctl_utility.hpp"
 #include "logger.hpp"
 #include "menu_process_manager.hpp"
 #include "monitor/configuration_monitor.hpp"
@@ -182,10 +183,9 @@ private:
 
     menu_process_manager_ = std::make_unique<menu_process_manager>(configuration_monitor_);
 
-    // Run NotificationWindow
+    // Restart NotificationWindow
 
-    application_launcher::kill_notification_window();
-    application_launcher::launch_notification_window();
+    launchctl_utility::restart_notification_window();
 
     // Run MultitouchExtension
 

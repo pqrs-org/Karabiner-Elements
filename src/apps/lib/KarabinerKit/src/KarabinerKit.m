@@ -73,6 +73,7 @@ static void version_changed_callback(void* refcon) {
   [alert addButtonWithTitle:@"Cancel"];
   if ([alert runModal] == NSAlertFirstButtonReturn) {
     libkrbn_launchctl_manage_console_user_server(false);
+    libkrbn_launchctl_manage_notification_window(false);
     return YES;
   }
   return NO;

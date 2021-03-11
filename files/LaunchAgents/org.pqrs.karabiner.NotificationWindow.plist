@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple Computer//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+  <dict>
+    <key>Label</key>
+    <string>org.pqrs.karabiner.NotificationWindow</string>
+    <key>Disabled</key>
+    <true/>
+    <key>KeepAlive</key>
+    <true/>
+    <key>ProgramArguments</key>
+    <array>
+      <string>/Library/Application Support/org.pqrs/Karabiner-Elements/Karabiner-NotificationWindow.app/Contents/MacOS/Karabiner-NotificationWindow</string>
+    </array>
+  </dict>
+</plist>

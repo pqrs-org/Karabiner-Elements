@@ -80,6 +80,10 @@ void libkrbn_launchctl_manage_console_user_server(bool load) {
   krbn::launchctl_utility::manage_console_user_server(load);
 }
 
+void libkrbn_launchctl_manage_notification_window(bool load) {
+  krbn::launchctl_utility::manage_notification_window(load);
+}
+
 void libkrbn_launchctl_manage_session_monitor(void) {
   krbn::launchctl_utility::manage_session_monitor();
 }

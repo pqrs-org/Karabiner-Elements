@@ -22,6 +22,7 @@ killall karabiner_grabber
 killall karabiner_observer
 killall karabiner_session_monitor
 killall karabiner_console_user_server
+killall Karabiner-NotificationWindow
 
 # Update version file
 

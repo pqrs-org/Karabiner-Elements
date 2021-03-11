@@ -18,14 +18,6 @@ public:
     system("killall Karabiner-Menu");
   }
 
-  static void launch_notification_window(void) {
-    system("open -g '/Library/Application Support/org.pqrs/Karabiner-Elements/Karabiner-NotificationWindow.app'");
-  }
-
-  static void kill_notification_window(void) {
-    system("killall Karabiner-NotificationWindow");
-  }
-
   static void launch_preferences(void) {
     system("open '/Applications/Karabiner-Elements.app'");
   }

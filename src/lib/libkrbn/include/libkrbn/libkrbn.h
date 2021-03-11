@@ -32,6 +32,7 @@ bool libkrbn_lock_single_application_with_user_pid_file(const char* pid_file_nam
 void libkrbn_unlock_single_application(void);
 
 void libkrbn_launchctl_manage_console_user_server(bool load);
+void libkrbn_launchctl_manage_notification_window(bool load);
 void libkrbn_launchctl_manage_session_monitor(void);
 void libkrbn_launchctl_restart_console_user_server(void);
 

@@ -76,5 +76,33 @@ inline void restart_console_user_server(void) {
                                   service_name,
                                   true);
 }
+
+inline void manage_notification_window(bool load) {
+  auto domain_target = pqrs::osx::launchctl::make_gui_domain_target();
+  auto service_name = constants::get_notification_window_launchctl_service_name();
+  auto service_path = constants::get_notification_window_launchctl_service_path();
+
+  if (load) {
+    pqrs::osx::launchctl::enable(domain_target,
+                                 service_name,
+                                 service_path);
+    pqrs::osx::launchctl::kickstart(domain_target,
+                                    service_name,
+                                    false);
+  } else {
+    pqrs::osx::launchctl::disable(domain_target,
+                                  service_name,
+                                  service_path);
+  }
+}
+
+inline void restart_notification_window(void) {
+  auto domain_target = pqrs::osx::launchctl::make_gui_domain_target();
+  auto service_name = constants::get_notification_window_launchctl_service_name();
+
+  pqrs::osx::launchctl::kickstart(domain_target,
+                                  service_name,
+                                  true);
+}
 } // namespace launchctl_utility
 } // namespace krbn

@@ -266,5 +266,13 @@ public:
   static pqrs::osx::launchctl::service_path get_console_user_server_launchctl_service_path(void) {
     return pqrs::osx::launchctl::service_path("/Library/LaunchAgents/org.pqrs.karabiner.karabiner_console_user_server.plist");
   }
+
+  static pqrs::osx::launchctl::service_name get_notification_window_launchctl_service_name(void) {
+    return pqrs::osx::launchctl::service_name("org.pqrs.karabiner.NotificationWindow");
+  }
+
+  static pqrs::osx::launchctl::service_path get_notification_window_launchctl_service_path(void) {
+    return pqrs::osx::launchctl::service_path("/Library/LaunchAgents/org.pqrs.karabiner.NotificationWindow.plist");
+  }
 };
 } // namespace krbn
