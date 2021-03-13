@@ -1,6 +1,6 @@
 #pragma once
 
-// pqrs::osx::launchctl v1.1
+// pqrs::osx::launchctl v2.0
 
 // (C) Copyright Takayama Fumihiko 2019.
 // Distributed under the Boost Software License, Version 1.0.
@@ -12,6 +12,7 @@
 #include "launchctl/service_name.hpp"
 #include "launchctl/service_path.hpp"
 #include "launchctl/service_target.hpp"
+#include <type_safe/flag_set.hpp>
 
 namespace pqrs {
 namespace osx {
@@ -53,18 +54,28 @@ inline void disable(const domain_target& domain_target,
   }
 }
 
+enum class kickstart_flags {
+  kill,
+  background,
+  _flag_set_size,
+};
+
 inline void kickstart(const domain_target& domain_target,
                       const service_name& service_name,
-                      bool kill = false) {
+                      type_safe::flag_set<kickstart_flags> flags = type_safe::flag_set<kickstart_flags>()) {
   auto service_target = make_service_target(domain_target, service_name);
 
   {
     std::stringstream ss;
     ss << "/bin/launchctl kickstart ";
-    if (kill) {
+    if (flags & kickstart_flags::kill) {
       ss << " -k ";
     }
     ss << service_target;
+
+    if (flags & kickstart_flags::background) {
+      ss << " & ";
+    }
 
     auto command = ss.str();
     system(command.c_str());
