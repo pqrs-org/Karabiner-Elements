@@ -17,8 +17,7 @@ inline void manage_observer_agent(void) {
                                service_name,
                                service_path);
   pqrs::osx::launchctl::kickstart(domain_target,
-                                  service_name,
-                                  false);
+                                  service_name);
 }
 
 inline void manage_grabber_agent(void) {
@@ -30,8 +29,7 @@ inline void manage_grabber_agent(void) {
                                service_name,
                                service_path);
   pqrs::osx::launchctl::kickstart(domain_target,
-                                  service_name,
-                                  false);
+                                  service_name);
 }
 
 inline void manage_session_monitor(void) {
@@ -43,8 +41,7 @@ inline void manage_session_monitor(void) {
                                service_name,
                                service_path);
   pqrs::osx::launchctl::kickstart(domain_target,
-                                  service_name,
-                                  false);
+                                  service_name);
 }
 
 inline void manage_console_user_server(bool load) {
@@ -57,8 +54,7 @@ inline void manage_console_user_server(bool load) {
                                  service_name,
                                  service_path);
     pqrs::osx::launchctl::kickstart(domain_target,
-                                    service_name,
-                                    false);
+                                    service_name);
   } else {
     pqrs::osx::launchctl::disable(domain_target,
                                   service_name,
@@ -72,9 +68,11 @@ inline void restart_console_user_server(void) {
   auto domain_target = pqrs::osx::launchctl::make_gui_domain_target();
   auto service_name = constants::get_console_user_server_launchctl_service_name();
 
+  auto flags = pqrs::osx::launchctl::kickstart_flags::kill |
+               pqrs::osx::launchctl::kickstart_flags::background;
   pqrs::osx::launchctl::kickstart(domain_target,
                                   service_name,
-                                  true);
+                                  flags);
 }
 
 inline void manage_notification_window(bool load) {
@@ -87,8 +85,7 @@ inline void manage_notification_window(bool load) {
                                  service_name,
                                  service_path);
     pqrs::osx::launchctl::kickstart(domain_target,
-                                    service_name,
-                                    false);
+                                    service_name);
   } else {
     pqrs::osx::launchctl::disable(domain_target,
                                   service_name,
@@ -100,9 +97,11 @@ inline void restart_notification_window(void) {
   auto domain_target = pqrs::osx::launchctl::make_gui_domain_target();
   auto service_name = constants::get_notification_window_launchctl_service_name();
 
+  auto flags = pqrs::osx::launchctl::kickstart_flags::kill |
+               pqrs::osx::launchctl::kickstart_flags::background;
   pqrs::osx::launchctl::kickstart(domain_target,
                                   service_name,
-                                  true);
+                                  flags);
 }
 } // namespace launchctl_utility
 } // namespace krbn
