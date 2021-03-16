@@ -8,6 +8,7 @@
 
 #include "base_impl.hpp"
 #include "client_impl.hpp"
+#include <filesystem>
 #include <nod/nod.hpp>
 #include <pqrs/dispatcher.hpp>
 #include <unistd.h>
@@ -35,7 +36,7 @@ public:
     terminate_base_impl();
   }
 
-  void async_bind(const std::string& server_socket_file_path,
+  void async_bind(const std::filesystem::path& server_socket_file_path,
                   size_t buffer_size,
                   std::optional<std::chrono::milliseconds> server_check_interval) {
     async_close();
@@ -102,7 +103,7 @@ public:
 
 private:
   // This method is executed in `io_service_thread_`.
-  void start_server_check(const std::string& server_socket_file_path,
+  void start_server_check(const std::filesystem::path& server_socket_file_path,
                           std::optional<std::chrono::milliseconds> server_check_interval) {
     if (server_check_interval) {
       server_check_timer_.start(
@@ -122,7 +123,7 @@ private:
   }
 
   // This method is executed in `io_service_thread_`.
-  void check_server(const std::string& server_socket_file_path) {
+  void check_server(const std::filesystem::path& server_socket_file_path) {
     if (!socket_ ||
         !socket_ready_) {
       stop_server_check();

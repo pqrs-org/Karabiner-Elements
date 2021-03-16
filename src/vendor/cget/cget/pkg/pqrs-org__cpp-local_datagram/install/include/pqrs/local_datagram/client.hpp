@@ -7,6 +7,7 @@
 // `pqrs::local_datagram::client` can be used safely in a multi-threaded environment.
 
 #include "impl/client_impl.hpp"
+#include <filesystem>
 #include <nod/nod.hpp>
 #include <pqrs/dispatcher.hpp>
 #include <unordered_map>
@@ -28,12 +29,13 @@ public:
   client(const client&) = delete;
 
   client(std::weak_ptr<dispatcher::dispatcher> weak_dispatcher,
-         const std::string& server_socket_file_path,
-         const std::optional<std::string>& client_socket_file_path,
+         const std::filesystem::path& server_socket_file_path,
+         const std::optional<std::filesystem::path>& client_socket_file_path,
          size_t buffer_size) : dispatcher_client(weak_dispatcher),
                                server_socket_file_path_(server_socket_file_path),
                                client_socket_file_path_(client_socket_file_path),
                                buffer_size_(buffer_size),
+                               server_socket_file_path_resolver_(nullptr),
                                client_send_entries_(std::make_shared<std::deque<std::shared_ptr<impl::send_entry>>>()),
                                reconnect_timer_(*this) {
     client_impl_ = std::make_shared<impl::client_impl>(
@@ -103,6 +105,10 @@ public:
     reconnect_interval_ = value;
   }
 
+  void set_server_socket_file_path_resolver(std::function<std::filesystem::path(void)> value) {
+    server_socket_file_path_resolver_ = value;
+  }
+
   void async_start(void) {
     enqueue_to_dispatcher([this] {
       connect();
@@ -147,7 +153,15 @@ private:
   // This method is executed in the dispatcher thread.
   void connect(void) {
     if (client_impl_) {
-      client_impl_->async_connect(server_socket_file_path_,
+      std::filesystem::path server_socket_file_path;
+
+      if (server_socket_file_path_resolver_) {
+        server_socket_file_path = server_socket_file_path_resolver_();
+      } else {
+        server_socket_file_path = server_socket_file_path_;
+      }
+
+      client_impl_->async_connect(server_socket_file_path,
                                   client_socket_file_path_,
                                   buffer_size_,
                                   server_check_interval_);
@@ -199,11 +213,13 @@ private:
     });
   }
 
-  std::string server_socket_file_path_;
-  std::optional<std::string> client_socket_file_path_;
+  std::filesystem::path server_socket_file_path_;
+  std::optional<std::filesystem::path> client_socket_file_path_;
   size_t buffer_size_;
   std::optional<std::chrono::milliseconds> server_check_interval_;
   std::optional<std::chrono::milliseconds> reconnect_interval_;
+  std::function<std::filesystem::path(void)> server_socket_file_path_resolver_;
+
   std::shared_ptr<std::deque<std::shared_ptr<impl::send_entry>>> client_send_entries_;
   std::shared_ptr<impl::client_impl> client_impl_;
   dispatcher::extra::timer reconnect_timer_;

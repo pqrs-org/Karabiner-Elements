@@ -401,7 +401,7 @@ protected:
   bool socket_ready_;
 
   // Server
-  std::string bound_path_;
+  std::filesystem::path bound_path_;
   std::vector<uint8_t> receive_buffer_;
   asio::local::datagram_protocol::endpoint receive_sender_endpoint_;
 

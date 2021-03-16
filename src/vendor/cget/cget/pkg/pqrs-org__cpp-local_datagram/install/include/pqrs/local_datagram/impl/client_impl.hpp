@@ -10,6 +10,7 @@
 #include "base_impl.hpp"
 #include "send_entry.hpp"
 #include <deque>
+#include <filesystem>
 #include <nod/nod.hpp>
 #include <optional>
 #include <pqrs/dispatcher.hpp>
@@ -42,8 +43,8 @@ public:
   }
 
   // Set client_socket_file_path if you need bidirectional communication.
-  void async_connect(const std::string& server_socket_file_path,
-                     const std::optional<std::string>& client_socket_file_path,
+  void async_connect(const std::filesystem::path& server_socket_file_path,
+                     const std::optional<std::filesystem::path>& client_socket_file_path,
                      size_t buffer_size,
                      std::optional<std::chrono::milliseconds> server_check_interval) {
     io_service_.post([this, server_socket_file_path, client_socket_file_path, buffer_size, server_check_interval] {

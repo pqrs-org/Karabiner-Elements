@@ -7,6 +7,7 @@
 // `pqrs::local_datagram::server` can be used safely in a multi-threaded environment.
 
 #include "impl/server_impl.hpp"
+#include <filesystem>
 #include <nod/nod.hpp>
 #include <pqrs/dispatcher.hpp>
 
@@ -26,7 +27,7 @@ public:
   server(const server&) = delete;
 
   server(std::weak_ptr<dispatcher::dispatcher> weak_dispatcher,
-         const std::string& server_socket_file_path,
+         const std::filesystem::path& server_socket_file_path,
          size_t buffer_size) : dispatcher_client(weak_dispatcher),
                                server_socket_file_path_(server_socket_file_path),
                                buffer_size_(buffer_size),
@@ -186,7 +187,7 @@ private:
     });
   }
 
-  std::string server_socket_file_path_;
+  std::filesystem::path server_socket_file_path_;
   size_t buffer_size_;
   std::optional<std::chrono::milliseconds> server_check_interval_;
   std::optional<std::chrono::milliseconds> reconnect_interval_;
