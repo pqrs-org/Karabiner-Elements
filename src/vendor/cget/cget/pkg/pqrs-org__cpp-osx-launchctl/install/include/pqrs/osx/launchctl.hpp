@@ -1,6 +1,6 @@
 #pragma once
 
-// pqrs::osx::launchctl v2.0
+// pqrs::osx::launchctl v2.1
 
 // (C) Copyright Takayama Fumihiko 2019.
 // Distributed under the Boost Software License, Version 1.0.
@@ -17,6 +17,22 @@
 namespace pqrs {
 namespace osx {
 namespace launchctl {
+inline void bootstrap(const domain_target& domain_target,
+                      const service_path& service_path) {
+  {
+    auto command = (std::stringstream() << "/bin/launchctl bootstrap " << domain_target << " " << service_path).str();
+    system(command.c_str());
+  }
+}
+
+inline void bootout(const domain_target& domain_target,
+                    const service_path& service_path) {
+  {
+    auto command = (std::stringstream() << "/bin/launchctl bootout " << domain_target << " " << service_path).str();
+    system(command.c_str());
+  }
+}
+
 inline void enable(const domain_target& domain_target,
                    const service_name& service_name,
                    const service_path& service_path) {
@@ -29,10 +45,9 @@ inline void enable(const domain_target& domain_target,
     auto command = (std::stringstream() << "/bin/launchctl enable " << service_target).str();
     system(command.c_str());
   }
-  {
-    auto command = (std::stringstream() << "/bin/launchctl bootstrap " << domain_target << " " << service_path).str();
-    system(command.c_str());
-  }
+
+  bootstrap(domain_target, service_path);
+
   {
     auto command = (std::stringstream() << "/bin/launchctl enable " << service_target).str();
     system(command.c_str());
@@ -44,10 +59,8 @@ inline void disable(const domain_target& domain_target,
                     const service_path& service_path) {
   auto service_target = make_service_target(domain_target, service_name);
 
-  {
-    auto command = (std::stringstream() << "/bin/launchctl bootout " << domain_target << " " << service_path).str();
-    system(command.c_str());
-  }
+  bootout(domain_target, service_path);
+
   {
     auto command = (std::stringstream() << "/bin/launchctl disable " << service_target).str();
     system(command.c_str());
