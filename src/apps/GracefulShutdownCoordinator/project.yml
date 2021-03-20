@@ -27,5 +27,6 @@ targets:
         excludes:
           - .gitignore
           - '*.plist.in'
+      - path: ../share/Resources/app.icns
     dependencies:
       - sdk: libc++.tbd
