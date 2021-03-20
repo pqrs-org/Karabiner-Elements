@@ -1,0 +1,31 @@
+name: Karabiner-GracefulShutdownCoordinator
+
+targets:
+  Karabiner-GracefulShutdownCoordinator:
+    settings:
+      PRODUCT_BUNDLE_IDENTIFIER: org.pqrs.Karabiner-GracefulShutdownCoordinator
+      CODE_SIGN_ENTITLEMENTS: ''
+      CODE_SIGN_IDENTITY: '-'
+      CODE_SIGN_STYLE: Manual
+      SYSTEM_HEADER_SEARCH_PATHS:
+        - ../../vendor/cget/include
+      HEADER_SEARCH_PATHS:
+        - ../../lib/libkrbn/include
+      OTHER_LDFLAGS:
+        - -L../../lib/libkrbn/build/Release
+        - -lkrbn
+      SWIFT_OBJC_BRIDGING_HEADER: src/Bridging-Header.h
+    type: application
+    platform: macOS
+    deploymentTarget: 10.15
+    sources:
+      - path: src
+        compilerFlags:
+          - -Wall
+          - -Werror
+      - path: Resources
+        excludes:
+          - .gitignore
+          - '*.plist.in'
+    dependencies:
+      - sdk: libc++.tbd
