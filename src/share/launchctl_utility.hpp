@@ -75,6 +75,14 @@ inline void restart_console_user_server(void) {
                                   flags);
 }
 
+inline void bootout_console_user_server(void) {
+  auto domain_target = pqrs::osx::launchctl::make_gui_domain_target();
+  auto service_path = constants::get_console_user_server_launchctl_service_path();
+
+  pqrs::osx::launchctl::bootout(domain_target,
+                                service_path);
+}
+
 inline void manage_notification_window(bool load) {
   auto domain_target = pqrs::osx::launchctl::make_gui_domain_target();
   auto service_name = constants::get_notification_window_launchctl_service_name();
