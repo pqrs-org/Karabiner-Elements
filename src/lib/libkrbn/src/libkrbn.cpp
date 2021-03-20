@@ -92,6 +92,10 @@ void libkrbn_launchctl_restart_console_user_server(void) {
   krbn::launchctl_utility::restart_console_user_server();
 }
 
+void libkrbn_launchctl_bootout_console_user_server(void) {
+  krbn::launchctl_utility::bootout_console_user_server();
+}
+
 void libkrbn_check_for_updates_in_background(void) {
   krbn::update_utility::check_for_updates_in_background();
 }
