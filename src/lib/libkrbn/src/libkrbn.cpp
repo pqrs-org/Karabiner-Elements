@@ -124,6 +124,14 @@ bool libkrbn_driver_running(void) {
   return pqrs::karabiner::driverkit::virtual_hid_device_service::utility::driver_running();
 }
 
+bool libkrbn_virtual_hid_keyboard_exists(void) {
+  return pqrs::karabiner::driverkit::virtual_hid_device_service::utility::virtual_hid_keyboard_exists();
+}
+
+bool libkrbn_virtual_hid_pointing_exists(void) {
+  return pqrs::karabiner::driverkit::virtual_hid_device_service::utility::virtual_hid_pointing_exists();
+}
+
 bool libkrbn_system_core_configuration_file_path_exists(void) {
   return pqrs::filesystem::exists(krbn::constants::get_system_core_configuration_file_path());
 }
