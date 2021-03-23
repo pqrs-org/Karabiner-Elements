@@ -235,6 +235,14 @@ public:
     return 32 * 1024;
   }
 
+  static pqrs::osx::launchctl::service_name get_grabber_daemon_launchctl_service_name(void) {
+    return pqrs::osx::launchctl::service_name("org.pqrs.karabiner.karabiner_grabber");
+  }
+
+  static pqrs::osx::launchctl::service_path get_grabber_daemon_launchctl_service_path(void) {
+    return pqrs::osx::launchctl::service_path("/Library/LaunchDaemons/org.pqrs.karabiner.karabiner_grabber.plist");
+  }
+
   static pqrs::osx::launchctl::service_name get_observer_agent_launchctl_service_name(void) {
     return pqrs::osx::launchctl::service_name("org.pqrs.karabiner.agent.karabiner_observer");
   }
