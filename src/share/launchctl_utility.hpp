@@ -8,6 +8,14 @@
 
 namespace krbn {
 namespace launchctl_utility {
+inline void bootout_grabber_daemon(void) {
+  auto domain_target = pqrs::osx::launchctl::make_system_domain_target();
+  auto service_path = constants::get_grabber_daemon_launchctl_service_path();
+
+  pqrs::osx::launchctl::bootout(domain_target,
+                                service_path);
+}
+
 inline void manage_observer_agent(void) {
   auto domain_target = pqrs::osx::launchctl::make_gui_domain_target();
   auto service_name = constants::get_observer_agent_launchctl_service_name();
