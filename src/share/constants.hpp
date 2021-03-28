@@ -45,8 +45,8 @@ public:
     return "/Library/Application Support/org.pqrs/tmp/karabiner_grabber_state.json";
   }
 
-  static const char* get_grabber_socket_file_path(void) {
-    return "/Library/Application Support/org.pqrs/tmp/karabiner_grabber_receiver";
+  static std::filesystem::path get_grabber_socket_directory_path(void) {
+    return "/Library/Application Support/org.pqrs/tmp/krbn_grabber";
   }
 
   static std::string get_grabber_session_monitor_receiver_socket_file_path(void) {

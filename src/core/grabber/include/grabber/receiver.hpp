@@ -24,9 +24,16 @@ public:
            std::weak_ptr<grabber_state_json_writer> weak_grabber_state_json_writer) : dispatcher_client(),
                                                                                       current_console_user_id_(current_console_user_id),
                                                                                       weak_grabber_state_json_writer_(weak_grabber_state_json_writer) {
-    std::string socket_file_path(constants::get_grabber_socket_file_path());
+    // Remove old socket files.
+    {
+      auto directory_path = constants::get_grabber_socket_directory_path();
+      std::error_code ec;
+      std::filesystem::remove_all(directory_path, ec);
+      std::filesystem::create_directory(directory_path, ec);
+      chmod(directory_path.c_str(), 0755);
+    }
 
-    unlink(socket_file_path.c_str());
+    auto socket_file_path = grabber_socket_file_path();
 
     server_ = std::make_unique<pqrs::local_datagram::server>(weak_dispatcher_,
                                                              socket_file_path,
@@ -184,6 +191,20 @@ public:
   }
 
 private:
+  std::filesystem::path grabber_socket_file_path(void) const {
+    auto now = std::chrono::system_clock::now();
+    auto duration = now.time_since_epoch();
+
+    std::stringstream ss;
+    ss << constants::get_grabber_socket_directory_path().string()
+       << "/"
+       << std::hex
+       << std::chrono::duration_cast<std::chrono::nanoseconds>(duration).count()
+       << ".sock";
+
+    return ss.str();
+  }
+
   void start_grabbing_if_system_core_configuration_file_exists(void) {
     auto file_path = constants::get_system_core_configuration_file_path();
     if (pqrs::filesystem::exists(file_path)) {

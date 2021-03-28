@@ -82,15 +82,11 @@ int daemon(void) {
   }
 
   //
-  // Make socket directory.
+  // Make directories.
   //
 
-  {
-    filesystem_utility::mkdir_tmp_directory();
-    filesystem_utility::mkdir_rootonly_directory();
-
-    unlink(constants::get_grabber_socket_file_path());
-  }
+  filesystem_utility::mkdir_tmp_directory();
+  filesystem_utility::mkdir_rootonly_directory();
 
   //
   // Run components_manager

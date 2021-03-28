@@ -5,6 +5,7 @@
 #include "constants.hpp"
 #include "logger.hpp"
 #include "types.hpp"
+#include <glob/glob.hpp>
 #include <nod/nod.hpp>
 #include <pqrs/dispatcher.hpp>
 #include <pqrs/filesystem.hpp>
@@ -47,13 +48,16 @@ public:
         return;
       }
 
-      auto socket_file_path = constants::get_grabber_socket_file_path();
+      auto socket_file_path = find_grabber_socket_file_path();
       client_ = std::make_unique<pqrs::local_datagram::client>(weak_dispatcher_,
                                                                socket_file_path,
                                                                client_socket_file_path_,
                                                                constants::get_local_datagram_buffer_size());
       client_->set_server_check_interval(std::chrono::milliseconds(3000));
       client_->set_reconnect_interval(std::chrono::milliseconds(1000));
+      client_->set_server_socket_file_path_resolver([this] {
+        return find_grabber_socket_file_path();
+      });
 
       client_->connected.connect([this] {
         logger::get_logger()->info("grabber_client is connected.");
@@ -225,6 +229,18 @@ public:
   }
 
 private:
+  std::filesystem::path find_grabber_socket_file_path(void) const {
+    auto pattern = (constants::get_grabber_socket_directory_path() / "*.sock").string();
+    auto paths = glob::glob(pattern);
+    std::sort(std::begin(paths), std::end(paths));
+
+    if (!paths.empty()) {
+      return paths.back();
+    }
+
+    return constants::get_grabber_socket_directory_path() / "not_found.sock";
+  }
+
   void stop(void) {
     if (!client_) {
       return;
