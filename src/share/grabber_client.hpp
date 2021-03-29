@@ -48,9 +48,8 @@ public:
         return;
       }
 
-      auto socket_file_path = find_grabber_socket_file_path();
       client_ = std::make_unique<pqrs::local_datagram::client>(weak_dispatcher_,
-                                                               socket_file_path,
+                                                               find_grabber_socket_file_path(),
                                                                client_socket_file_path_,
                                                                constants::get_local_datagram_buffer_size());
       client_->set_server_check_interval(std::chrono::milliseconds(3000));
