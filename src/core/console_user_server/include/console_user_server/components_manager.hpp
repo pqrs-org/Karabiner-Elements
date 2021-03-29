@@ -84,8 +84,7 @@ public:
 
 private:
   std::filesystem::path grabber_client_socket_directory_path(void) const {
-    return fmt::format("{0}/grabber_client",
-                       constants::get_system_user_directory(geteuid()).string());
+    return constants::get_system_user_directory(geteuid()) / "grabber_client";
   }
 
   std::filesystem::path grabber_client_socket_file_path(void) const {
@@ -94,18 +93,28 @@ private:
                        chrono_utility::nanoseconds_since_epoch());
   }
 
+  void prepare_grabber_client_socket_directory(void) {
+    //
+    // Remove old socket files.
+    //
+
+    auto directory_path = grabber_client_socket_directory_path();
+    std::error_code ec;
+    std::filesystem::remove_all(directory_path, ec);
+
+    //
+    // Create directory.
+    //
+
+    std::filesystem::create_directory(directory_path, ec);
+  }
+
   void start_grabber_client(void) {
     if (grabber_client_) {
       return;
     }
 
-    // Remove old socket files.
-    {
-      auto directory_path = grabber_client_socket_directory_path();
-      std::error_code ec;
-      std::filesystem::remove_all(directory_path, ec);
-      std::filesystem::create_directory(directory_path, ec);
-    }
+    prepare_grabber_client_socket_directory();
 
     grabber_client_ = std::make_shared<grabber_client>(grabber_client_socket_file_path());
 
@@ -124,6 +133,11 @@ private:
       version_monitor_->async_manual_check();
 
       stop_child_components();
+
+      // connect_failed will be triggered if grabber_client_socket_directory does not exist
+      // due to the parent directory (system_user_directory) is not ready.
+      // For this case, we have to create grabber_client_socket_directory each time.
+      prepare_grabber_client_socket_directory();
     });
 
     grabber_client_->closed.connect([this] {
