@@ -1,5 +1,6 @@
 #pragma once
 
+#include "filesystem_utility.hpp"
 #include <pqrs/local_datagram.hpp>
 #include <types/operation_type.hpp>
 
@@ -34,13 +35,15 @@ public:
         return;
       }
 
-      auto socket_file_path = constants::get_grabber_session_monitor_receiver_socket_file_path();
       client_ = std::make_unique<pqrs::local_datagram::client>(weak_dispatcher_,
-                                                               socket_file_path,
+                                                               get_grabber_session_monitor_receiver_socket_file_path(),
                                                                std::nullopt,
                                                                constants::get_local_datagram_buffer_size());
       client_->set_server_check_interval(std::chrono::milliseconds(3000));
       client_->set_reconnect_interval(std::chrono::milliseconds(1000));
+      client_->set_server_socket_file_path_resolver([this] {
+        return get_grabber_session_monitor_receiver_socket_file_path();
+      });
 
       client_->connected.connect([this] {
         logger::get_logger()->info("session_monitor_receiver_client is connected.");
@@ -96,6 +99,11 @@ public:
   }
 
 private:
+  std::filesystem::path get_grabber_session_monitor_receiver_socket_file_path(void) const {
+    return filesystem_utility::find_socket_file_path(
+        constants::get_grabber_session_monitor_receiver_socket_directory_path());
+  }
+
   void stop(void) {
     if (!client_) {
       return;

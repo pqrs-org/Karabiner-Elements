@@ -22,12 +22,17 @@ public:
   session_monitor_receiver(const session_monitor_receiver&) = delete;
 
   session_monitor_receiver(void) : dispatcher_client() {
-    std::string socket_file_path(constants::get_grabber_session_monitor_receiver_socket_file_path());
-
-    unlink(socket_file_path.c_str());
+    // Remove old socket files.
+    auto socket_directory_path = constants::get_grabber_session_monitor_receiver_socket_directory_path();
+    {
+      std::error_code ec;
+      std::filesystem::remove_all(socket_directory_path, ec);
+      std::filesystem::create_directory(socket_directory_path, ec);
+      chmod(socket_directory_path.c_str(), 0700);
+    }
 
     server_ = std::make_unique<pqrs::local_datagram::server>(weak_dispatcher_,
-                                                             socket_file_path,
+                                                             socket_directory_path / filesystem_utility::make_socket_file_basename(),
                                                              constants::get_local_datagram_buffer_size());
     server_->set_server_check_interval(std::chrono::milliseconds(3000));
     server_->set_reconnect_interval(std::chrono::milliseconds(1000));
