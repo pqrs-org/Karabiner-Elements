@@ -76,5 +76,17 @@ inline std::filesystem::path make_socket_file_basename(void) {
 
   return ss.str();
 }
+
+inline std::filesystem::path find_socket_file_path(const std::filesystem::path& directory) {
+  auto pattern = (directory / "*.sock").string();
+  auto paths = glob::glob(pattern);
+  std::sort(std::begin(paths), std::end(paths));
+
+  if (!paths.empty()) {
+    return paths.back();
+  }
+
+  return directory / "not_found.sock";
+}
 } // namespace filesystem_utility
 } // namespace krbn

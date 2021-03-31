@@ -3,6 +3,7 @@
 // `krbn::grabber_client` can be used safely in a multi-threaded environment.
 
 #include "constants.hpp"
+#include "filesystem_utility.hpp"
 #include "logger.hpp"
 #include "types.hpp"
 #include <glob/glob.hpp>
@@ -229,15 +230,8 @@ public:
 
 private:
   std::filesystem::path find_grabber_socket_file_path(void) const {
-    auto pattern = (constants::get_grabber_socket_directory_path() / "*.sock").string();
-    auto paths = glob::glob(pattern);
-    std::sort(std::begin(paths), std::end(paths));
-
-    if (!paths.empty()) {
-      return paths.back();
-    }
-
-    return constants::get_grabber_socket_directory_path() / "not_found.sock";
+    return filesystem_utility::find_socket_file_path(
+        constants::get_grabber_socket_directory_path());
   }
 
   void stop(void) {
