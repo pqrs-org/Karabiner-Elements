@@ -5,6 +5,7 @@
 #include "console_user_server_client.hpp"
 #include "constants.hpp"
 #include "device_grabber.hpp"
+#include "filesystem_utility.hpp"
 #include "grabber/grabber_state_json_writer.hpp"
 #include "types.hpp"
 #include <pqrs/dispatcher.hpp>
@@ -192,17 +193,7 @@ public:
 
 private:
   std::filesystem::path grabber_socket_file_path(void) const {
-    auto now = std::chrono::system_clock::now();
-    auto duration = now.time_since_epoch();
-
-    std::stringstream ss;
-    ss << constants::get_grabber_socket_directory_path().string()
-       << "/"
-       << std::hex
-       << std::chrono::duration_cast<std::chrono::nanoseconds>(duration).count()
-       << ".sock";
-
-    return ss.str();
+    return constants::get_grabber_socket_directory_path() / filesystem_utility::make_socket_file_basename();
   }
 
   void start_grabbing_if_system_core_configuration_file_exists(void) {

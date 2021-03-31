@@ -1,5 +1,6 @@
 #pragma once
 
+#include "chrono_utility.hpp"
 #include "constants.hpp"
 #include "logger.hpp"
 #include <glob/glob.hpp>
@@ -65,6 +66,15 @@ inline void remove_files_by_glob(const std::string_view& pattern) {
     std::error_code error_code;
     std::filesystem::remove(path, error_code);
   }
+}
+
+inline std::filesystem::path make_socket_file_basename(void) {
+  std::stringstream ss;
+  ss << std::hex
+     << chrono_utility::nanoseconds_since_epoch()
+     << ".sock";
+
+  return ss.str();
 }
 } // namespace filesystem_utility
 } // namespace krbn

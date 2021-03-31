@@ -6,6 +6,7 @@
 #include "chrono_utility.hpp"
 #include "components_manager_killer.hpp"
 #include "constants.hpp"
+#include "filesystem_utility.hpp"
 #include "grabber_client.hpp"
 #include "launchctl_utility.hpp"
 #include "logger.hpp"
@@ -88,9 +89,7 @@ private:
   }
 
   std::filesystem::path grabber_client_socket_file_path(void) const {
-    return fmt::format("{0}/{1:x}.sock",
-                       grabber_client_socket_directory_path().string(),
-                       chrono_utility::nanoseconds_since_epoch());
+    return grabber_client_socket_directory_path() / filesystem_utility::make_socket_file_basename();
   }
 
   void prepare_grabber_client_socket_directory(void) {

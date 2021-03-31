@@ -597,9 +597,7 @@ private:
   }
 
   std::filesystem::path virtual_hid_device_service_client_socket_file_path(void) const {
-    return fmt::format("{0}/{1:x}.sock",
-                       virtual_hid_device_service_client_socket_directory_path().string(),
-                       chrono_utility::nanoseconds_since_epoch());
+    return virtual_hid_device_service_client_socket_directory_path() / filesystem_utility::make_socket_file_basename();
   }
 
   void stop(void) {
