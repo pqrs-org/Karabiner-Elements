@@ -6,6 +6,7 @@
 #include "process_utility.hpp"
 #include "session_monitor/components_manager.hpp"
 #include <iostream>
+#include <pqrs/gcd.hpp>
 #include <pqrs/osx/process_info.hpp>
 
 int main(int argc, const char* argv[]) {

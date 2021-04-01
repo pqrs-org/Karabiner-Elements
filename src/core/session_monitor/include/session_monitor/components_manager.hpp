@@ -4,7 +4,6 @@
 
 #include "components_manager_killer.hpp"
 #include "monitor/version_monitor.hpp"
-#include "receiver.hpp"
 #include "session_monitor_receiver_client.hpp"
 #include <pqrs/osx/session.hpp>
 
@@ -36,16 +35,8 @@ public:
     client_ = std::make_unique<session_monitor_receiver_client>();
 
     client_->connected.connect([this] {
-      send_to_receiver();
-    });
+      logger::get_logger()->info("connected");
 
-    //
-    // receiver_
-    //
-
-    receiver_ = std::make_unique<receiver>();
-
-    receiver_->bound.connect([this] {
       send_to_receiver();
     });
 
@@ -68,7 +59,6 @@ public:
       send_timer_.stop();
 
       session_monitor_ = nullptr;
-      receiver_ = nullptr;
       client_ = nullptr;
       version_monitor_ = nullptr;
     });
@@ -82,10 +72,6 @@ public:
 
       if (client_) {
         client_->async_start();
-      }
-
-      if (receiver_) {
-        receiver_->async_start();
       }
 
       if (session_monitor_) {
@@ -114,7 +100,6 @@ private:
   bool on_console_;
   std::unique_ptr<version_monitor> version_monitor_;
   std::unique_ptr<session_monitor_receiver_client> client_;
-  std::unique_ptr<receiver> receiver_;
   std::unique_ptr<pqrs::osx::session::monitor> session_monitor_;
   pqrs::dispatcher::extra::timer send_timer_;
 };

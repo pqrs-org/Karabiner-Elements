@@ -35,9 +35,13 @@ public:
         return;
       }
 
+      // We have to use `getuid` (not `geteuid`) since `karabiner_session_monitor` is run as root by suid.
+      // (We have to make a socket file which includes the real user ID in the file path.)
+      auto client_socket_file_path = constants::get_session_monitor_receiver_socket_file_path(getuid());
+
       client_ = std::make_unique<pqrs::local_datagram::client>(weak_dispatcher_,
                                                                get_grabber_session_monitor_receiver_socket_file_path(),
-                                                               std::nullopt,
+                                                               client_socket_file_path,
                                                                constants::get_local_datagram_buffer_size());
       client_->set_server_check_interval(std::chrono::milliseconds(3000));
       client_->set_reconnect_interval(std::chrono::milliseconds(1000));
