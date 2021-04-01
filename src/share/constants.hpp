@@ -25,7 +25,7 @@ public:
     return "/Library/Application Support/org.pqrs/tmp/pid";
   }
 
-  static std::string get_rootonly_directory(void) {
+  static std::filesystem::path get_rootonly_directory(void) {
     return "/Library/Application Support/org.pqrs/tmp/rootonly";
   }
 
@@ -45,8 +45,8 @@ public:
     return get_rootonly_directory() / std::filesystem::path("krbn_session");
   }
 
-  static std::string get_session_monitor_receiver_socket_file_path(uid_t uid) {
-    return fmt::format("{0}/karabiner_session_monitor_receiver.{1}", get_rootonly_directory(), uid);
+  static std::string get_session_monitor_receiver_client_socket_directory_path(uid_t uid) {
+    return get_rootonly_directory() / fmt::format("krbn_session.{0}", uid);
   }
 
   static const char* get_observer_state_json_file_path(void) {

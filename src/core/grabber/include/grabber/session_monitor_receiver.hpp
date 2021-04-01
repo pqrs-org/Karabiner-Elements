@@ -83,7 +83,10 @@ public:
 
               // manage session_monitor_client_
 
-              register_session_monitor_client(uid);
+              if (!sender_endpoint->path().empty()) {
+                register_session_monitor_client(uid,
+                                                sender_endpoint->path());
+              }
 
               break;
             }
@@ -115,11 +118,11 @@ public:
   }
 
 private:
-  void register_session_monitor_client(uid_t uid) {
+  void register_session_monitor_client(uid_t uid,
+                                       const std::string& endpoint_path) {
     if (session_monitor_clients_.find(uid) == std::end(session_monitor_clients_)) {
-      auto socket_file_path = constants::get_session_monitor_receiver_socket_file_path(uid);
       auto client = std::make_shared<pqrs::local_datagram::client>(weak_dispatcher_,
-                                                                   socket_file_path,
+                                                                   endpoint_path,
                                                                    std::nullopt,
                                                                    constants::get_local_datagram_buffer_size());
       session_monitor_clients_[uid] = client;
