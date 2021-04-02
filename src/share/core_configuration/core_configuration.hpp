@@ -176,8 +176,8 @@ private:
 
     pqrs::filesystem::create_directory_with_intermediate_directories(backups_directory, 0700);
 
-    auto backup_file_path = backups_directory +
-                            "/karabiner_" + make_current_local_yyyymmdd_string() + ".json";
+    auto backup_file_path = backups_directory /
+                            fmt::format("karabiner_{0}.json", make_current_local_yyyymmdd_string());
     if (pqrs::filesystem::exists(backup_file_path)) {
       return;
     }
@@ -191,7 +191,7 @@ private:
       return;
     }
 
-    auto pattern = backups_directory + "/karabiner_????????.json";
+    auto pattern = (backups_directory / "karabiner_????????.json").string();
     auto paths = glob::glob(pattern);
     std::sort(std::begin(paths), std::end(paths));
 

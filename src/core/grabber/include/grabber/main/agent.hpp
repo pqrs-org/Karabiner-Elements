@@ -16,7 +16,7 @@ int agent(void) {
   //
 
   logger::set_async_rotating_logger("grabber_agent",
-                                    constants::get_user_log_directory() + "/grabber_agent.log",
+                                    constants::get_user_log_directory() / "grabber_agent.log",
                                     pqrs::spdlog::filesystem::log_directory_perms_0700);
   logger::get_logger()->info("version {0}", karabiner_version);
 

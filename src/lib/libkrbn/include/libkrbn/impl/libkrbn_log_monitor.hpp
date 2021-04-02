@@ -34,7 +34,7 @@ public:
     };
     auto log_directory = krbn::constants::get_user_log_directory();
     if (!log_directory.empty()) {
-      targets.push_back(log_directory + "/console_user_server.log");
+      targets.push_back(log_directory / "console_user_server.log");
     }
 
     monitor_ = std::make_unique<pqrs::spdlog::monitor>(pqrs::dispatcher::extra::get_shared_dispatcher(),

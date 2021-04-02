@@ -13,10 +13,10 @@
 namespace krbn {
 class process_utility final {
 public:
-  static bool lock_single_application(const std::string& pid_file_path) {
+  static bool lock_single_application(const std::filesystem::path& pid_file_path) {
     std::lock_guard<std::mutex> lock(get_mutex());
 
-    auto pid_directory = pqrs::filesystem::dirname(pid_file_path);
+    auto pid_directory = pid_file_path.parent_path();
     if (pid_directory.empty()) {
       throw std::runtime_error("failed to get user pid directory");
     }
@@ -56,13 +56,13 @@ public:
     }
   }
 
-  static bool lock_single_application_with_user_pid_file(const std::string& pid_file_name) {
+  static bool lock_single_application_with_user_pid_file(const std::filesystem::path& pid_file_name) {
     auto pid_directory = constants::get_user_pid_directory();
     if (pid_directory.empty()) {
       throw std::runtime_error("failed to get user pid directory");
     }
 
-    std::string pid_file_path = pid_directory + "/" + pid_file_name;
+    std::filesystem::path pid_file_path = pid_directory / pid_file_name;
     return lock_single_application(pid_file_path);
   }
 

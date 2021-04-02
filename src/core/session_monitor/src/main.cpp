@@ -51,8 +51,8 @@ int main(int argc, const char* argv[]) {
   {
     // We have to use `getuid` (not `geteuid`) since `karabiner_session_monitor` is run as root by suid.
     // (We have to make pid file which includes the real user ID in the file path.)
-    std::string pid_file_path = krbn::constants::get_pid_directory() +
-                                fmt::format("/karabiner_session_monitor.{0}.pid", getuid());
+    auto pid_file_path = krbn::constants::get_pid_directory() /
+                         fmt::format("karabiner_session_monitor.{0}.pid", getuid());
     if (!krbn::process_utility::lock_single_application(pid_file_path)) {
       auto message = "Exit since another process is running.";
       krbn::logger::get_logger()->info(message);

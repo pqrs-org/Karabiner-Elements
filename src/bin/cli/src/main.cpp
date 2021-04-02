@@ -90,13 +90,19 @@ int copy_current_profile_to_system_default_profile(void) {
 
 int remove_system_default_profile(void) {
   if (!pqrs::filesystem::exists(krbn::constants::get_system_core_configuration_file_path())) {
-    krbn::logger::get_logger()->error("{0} is not found.", krbn::constants::get_system_core_configuration_file_path());
+    krbn::logger::get_logger()->error("{0} is not found.",
+                                      krbn::constants::get_system_core_configuration_file_path().string());
     return 1;
   }
-  if (unlink(krbn::constants::get_system_core_configuration_file_path()) != 0) {
-    krbn::logger::get_logger()->error("Failed to unlink {0}.");
+
+  std::error_code error_code;
+  std::filesystem::remove(krbn::constants::get_system_core_configuration_file_path(), error_code);
+
+  if (error_code) {
+    krbn::logger::get_logger()->error("Failed to unlink {0}.", error_code.message());
     return 1;
   }
+
   return 0;
 }
 } // namespace

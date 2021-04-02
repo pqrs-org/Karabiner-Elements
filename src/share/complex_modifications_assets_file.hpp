@@ -9,10 +9,10 @@
 namespace krbn {
 class complex_modifications_assets_file final {
 public:
-  complex_modifications_assets_file(const std::string& file_path) : file_path_(file_path) {
+  complex_modifications_assets_file(const std::filesystem::path& file_path) : file_path_(file_path) {
     std::ifstream stream(file_path);
     if (!stream) {
-      throw std::runtime_error(std::string("failed to open ") + file_path);
+      throw std::runtime_error(fmt::format("failed to open {0}", file_path.string()));
     } else {
       auto json = json_utility::parse_jsonc(stream);
 
@@ -47,7 +47,7 @@ public:
     }
   }
 
-  const std::string& get_file_path(void) const {
+  const std::filesystem::path& get_file_path(void) const {
     return file_path_;
   }
 
@@ -71,7 +71,8 @@ public:
   }
 
   bool user_file(void) const {
-    return pqrs::string::starts_with(file_path_, constants::get_user_complex_modifications_assets_directory());
+    return pqrs::string::starts_with(file_path_.string(),
+                                     constants::get_user_complex_modifications_assets_directory().string());
   }
 
   std::vector<std::string> lint(void) const {
@@ -98,7 +99,7 @@ public:
   }
 
 private:
-  std::string file_path_;
+  std::filesystem::path file_path_;
   std::string title_;
   std::vector<core_configuration::details::complex_modifications_rule> rules_;
 };

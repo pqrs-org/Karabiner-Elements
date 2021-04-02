@@ -27,7 +27,7 @@ int main(int argc, const char* argv[]) {
 
   if (!krbn::constants::get_user_log_directory().empty()) {
     krbn::logger::set_async_rotating_logger("console_user_server",
-                                            krbn::constants::get_user_log_directory() + "/console_user_server.log",
+                                            krbn::constants::get_user_log_directory() / "console_user_server.log",
                                             pqrs::spdlog::filesystem::log_directory_perms_0700);
   }
 

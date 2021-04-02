@@ -29,7 +29,7 @@ int daemon(void) {
   //
 
   {
-    bool another_process_running = !process_utility::lock_single_application(constants::get_pid_directory() + "/karabiner_grabber.pid");
+    bool another_process_running = !process_utility::lock_single_application(constants::get_pid_directory() / "karabiner_grabber.pid");
 
     if (another_process_running) {
       auto message = "Exit since another process is running.";
