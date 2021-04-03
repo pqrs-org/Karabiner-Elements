@@ -138,7 +138,7 @@ public:
       }
 
       if (!directory.empty()) {
-        directory += "karabiner";
+        directory /= "karabiner";
       }
     }
 
