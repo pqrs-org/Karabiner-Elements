@@ -80,7 +80,7 @@ public:
     }
 
     virtual_hid_device_service_client_ = std::make_shared<pqrs::karabiner::driverkit::virtual_hid_device_service::client>(
-        virtual_hid_device_service_client_socket_file_path().string());
+        virtual_hid_device_service_client_socket_file_path());
 
     virtual_hid_device_service_client_->connected.connect([this] {
       logger::get_logger()->info("virtual_hid_device_service_client_ connected");
