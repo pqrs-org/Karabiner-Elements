@@ -13,11 +13,13 @@
 #include <spdlog/fmt/fmt.h>
 #include <spdlog/formatter.h>
 
+#include <algorithm>
 #include <array>
 #include <chrono>
 #include <ctime>
 #include <cctype>
 #include <cstring>
+#include <iterator>
 #include <memory>
 #include <mutex>
 #include <string>
@@ -45,12 +47,12 @@ public:
             return;
         }
 
-        if (padinfo_.side_ == padding_info::left)
+        if (padinfo_.side_ == padding_info::pad_side::left)
         {
             pad_it(remaining_pad_);
             remaining_pad_ = 0;
         }
-        else if (padinfo_.side_ == padding_info::center)
+        else if (padinfo_.side_ == padding_info::pad_side::center)
         {
             auto half_pad = remaining_pad_ / 2;
             auto reminder = remaining_pad_ & 1;
@@ -127,7 +129,7 @@ public:
 
     void format(const details::log_msg &msg, const std::tm &, memory_buf_t &dest) override
     {
-        string_view_t &level_name = level::to_string_view(msg.level);
+        const string_view_t &level_name = level::to_string_view(msg.level);
         ScopedPadder p(level_name.size(), padinfo_, dest);
         fmt_helper::append_string_view(level_name, dest);
     }
@@ -814,11 +816,31 @@ public:
         : flag_formatter(padinfo)
     {}
 
+#ifdef _MSC_VER
+#pragma warning(push)
+#pragma warning(disable : 4127) // consider using 'if constexpr' instead
+#endif // _MSC_VER
     static const char *basename(const char *filename)
     {
-        const char *rv = std::strrchr(filename, os::folder_sep);
-        return rv != nullptr ? rv + 1 : filename;
+        // if the size is 2 (1 character + null terminator) we can use the more efficient strrchr
+        // the branch will be elided by optimizations
+        if (sizeof(os::folder_seps) == 2)
+        {
+            const char *rv = std::strrchr(filename, os::folder_seps[0]);
+            return rv != nullptr ? rv + 1 : filename;
+        }
+        else
+        {
+            const std::reverse_iterator<const char*> begin(filename + std::strlen(filename));
+            const std::reverse_iterator<const char*> end(filename);
+
+            const auto it = std::find_first_of(begin, end, std::begin(os::folder_seps), std::end(os::folder_seps) - 1);
+            return it != end ? it.base() : filename;
+        }
     }
+#ifdef _MSC_VER
+#pragma warning(pop)
+#endif // _MSC_VER
 
     void format(const details::log_msg &msg, const std::tm &, memory_buf_t &dest) override
     {
@@ -1246,9 +1268,24 @@ SPDLOG_INLINE void pattern_formatter::handle_flag_(char flag, details::padding_i
 
     default: // Unknown flag appears as is
         auto unknown_flag = details::make_unique<details::aggregate_formatter>();
-        unknown_flag->add_ch('%');
-        unknown_flag->add_ch(flag);
-        formatters_.push_back((std::move(unknown_flag)));
+
+        if (!padding.truncate_)
+        {
+            unknown_flag->add_ch('%');
+            unknown_flag->add_ch(flag);
+            formatters_.push_back((std::move(unknown_flag)));
+        }
+        // fix issue #1617 (prev char was '!' and should have been treated as funcname flag instead of truncating flag)
+        // spdlog::set_pattern("[%10!] %v") => "[      main] some message"
+        // spdlog::set_pattern("[%3!!] %v") => "[mai] some message"
+        else
+        {
+            padding.truncate_ = false;
+            formatters_.push_back(details::make_unique<details::source_funcname_formatter<Padder>>(padding));
+            unknown_flag->add_ch(flag);
+            formatters_.push_back((std::move(unknown_flag)));
+        }
+
         break;
     }
 }
@@ -1270,15 +1307,15 @@ SPDLOG_INLINE details::padding_info pattern_formatter::handle_padspec_(std::stri
     switch (*it)
     {
     case '-':
-        side = padding_info::right;
+        side = padding_info::pad_side::right;
         ++it;
         break;
     case '=':
-        side = padding_info::center;
+        side = padding_info::pad_side::center;
         ++it;
         break;
     default:
-        side = details::padding_info::left;
+        side = details::padding_info::pad_side::left;
         break;
     }
 

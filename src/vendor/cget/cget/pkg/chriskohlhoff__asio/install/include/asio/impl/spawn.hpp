@@ -309,6 +309,7 @@ struct associated_allocator<detail::coro_handler<Handler, T>, Allocator>
 
 template <typename Handler, typename T, typename Executor>
 struct associated_executor<detail::coro_handler<Handler, T>, Executor>
+  : detail::associated_executor_forwarding_base<Handler, Executor>
 {
   typedef typename associated_executor<Handler, Executor>::type type;
 

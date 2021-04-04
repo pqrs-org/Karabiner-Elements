@@ -76,6 +76,7 @@ std::size_t win_iocp_io_context::cancel_timer(timer_queue<Time_Traits>& queue,
   mutex::scoped_lock lock(dispatch_mutex_);
   op_queue<win_iocp_operation> ops;
   std::size_t n = queue.cancel_timer(timer, ops, max_cancelled);
+  lock.unlock();
   post_deferred_completions(ops);
   return n;
 }

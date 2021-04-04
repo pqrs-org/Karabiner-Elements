@@ -21,7 +21,7 @@ namespace spdlog {
 namespace cfg {
 
 // search for SPDLOG_LEVEL= in the args and use it to init the levels
-void load_argv_levels(int argc, const char **argv)
+inline void load_argv_levels(int argc, const char **argv)
 {
     const std::string spdlog_level_prefix = "SPDLOG_LEVEL=";
     for (int i = 1; i < argc; i++)
@@ -30,13 +30,12 @@ void load_argv_levels(int argc, const char **argv)
         if (arg.find(spdlog_level_prefix) == 0)
         {
             auto levels_string = arg.substr(spdlog_level_prefix.size());
-            auto levels = helpers::extract_levels(levels_string);
-            details::registry::instance().update_levels(std::move(levels));
+            helpers::load_levels(levels_string);
         }
     }
 }
 
-void load_argv_levels(int argc, char **argv)
+inline void load_argv_levels(int argc, char **argv)
 {
     load_argv_levels(argc, const_cast<const char **>(argv));
 }

@@ -72,6 +72,21 @@ public:
       resolver_service_base& other_service,
       implementation_type& other_impl);
 
+  // Move-construct a new timer implementation.
+  void converting_move_construct(implementation_type& impl,
+      resolver_service_base&, implementation_type& other_impl)
+  {
+    move_construct(impl, other_impl);
+  }
+
+  // Move-assign from another timer implementation.
+  void converting_move_assign(implementation_type& impl,
+      resolver_service_base& other_service,
+      implementation_type& other_impl)
+  {
+    move_assign(impl, other_service, other_impl);
+  }
+
   // Cancel pending asynchronous operations.
   ASIO_DECL void cancel(implementation_type& impl);
 

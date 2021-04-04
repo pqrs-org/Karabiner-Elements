@@ -142,6 +142,29 @@ public:
   {
   }
 
+  // All resolvers have access to each other's implementations.
+  template <typename InternetProtocol1, typename Executor1>
+  friend class basic_resolver;
+
+  /// Move-construct a basic_resolver from another.
+  /**
+   * This constructor moves a resolver from one object to another.
+   *
+   * @param other The other basic_resolver object from which the move will
+   * occur.
+   *
+   * @note Following the move, the moved-from object is in the same state as if
+   * constructed using the @c basic_resolver(const executor_type&) constructor.
+   */
+  template <typename Executor1>
+  basic_resolver(basic_resolver<InternetProtocol, Executor1>&& other,
+      typename enable_if<
+          is_convertible<Executor1, Executor>::value
+      >::type* = 0)
+    : impl_(std::move(other.impl_))
+  {
+  }
+
   /// Move-assign a basic_resolver from another.
   /**
    * This assignment operator moves a resolver from one object to another.
@@ -157,6 +180,29 @@ public:
   basic_resolver& operator=(basic_resolver&& other)
   {
     impl_ = std::move(other.impl_);
+    return *this;
+  }
+
+  /// Move-assign a basic_resolver from another.
+  /**
+   * This assignment operator moves a resolver from one object to another.
+   * Cancels any outstanding asynchronous operations associated with the target
+   * object.
+   *
+   * @param other The other basic_resolver object from which the move will
+   * occur.
+   *
+   * @note Following the move, the moved-from object is in the same state as if
+   * constructed using the @c basic_resolver(const executor_type&) constructor.
+   */
+  template <typename Executor1>
+  typename enable_if<
+    is_convertible<Executor1, Executor>::value,
+    basic_resolver&
+  >::type operator=(basic_resolver<InternetProtocol, Executor1>&& other)
+  {
+    basic_resolver tmp(std::move(other));
+    impl_ = std::move(tmp.impl_);
     return *this;
   }
 #endif // defined(ASIO_HAS_MOVE) || defined(GENERATING_DOCUMENTATION)

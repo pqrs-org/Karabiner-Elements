@@ -443,13 +443,13 @@
 #    endif // __has_feature(__cxx_variable_templates__)
 #   endif // (__cplusplus >= 201402)
 #  endif // defined(__clang__)
-#  if defined(__GNUC__)
+#  if defined(__GNUC__) && !defined(__INTEL_COMPILER)
 #   if (__GNUC__ >= 6)
 #    if (__cplusplus >= 201402)
 #     define ASIO_HAS_VARIABLE_TEMPLATES 1
 #    endif // (__cplusplus >= 201402)
 #   endif // (__GNUC__ >= 6)
-#  endif // defined(__GNUC__)
+#  endif // defined(__GNUC__) && !defined(__INTEL_COMPILER)
 #  if defined(ASIO_MSVC)
 #   if (_MSC_VER >= 1901)
 #    define ASIO_HAS_VARIABLE_TEMPLATES 1
@@ -491,13 +491,13 @@
 #    define ASIO_HAS_CONSTANT_EXPRESSION_SFINAE 1
 #   endif // (__cplusplus >= 201402)
 #  endif // defined(__clang__)
-#  if defined(__GNUC__)
+#  if defined(__GNUC__) && !defined(__INTEL_COMPILER)
 #   if (__GNUC__ >= 7)
 #    if (__cplusplus >= 201402)
 #     define ASIO_HAS_CONSTANT_EXPRESSION_SFINAE 1
 #    endif // (__cplusplus >= 201402)
 #   endif // (__GNUC__ >= 7)
-#  endif // defined(__GNUC__)
+#  endif // defined(__GNUC__) && !defined(__INTEL_COMPILER)
 #  if defined(ASIO_MSVC)
 #   if (_MSC_VER >= 1901)
 #    define ASIO_HAS_CONSTANT_EXPRESSION_SFINAE 1
@@ -509,11 +509,11 @@
 // Enable workarounds for lack of working expression SFINAE.
 #if !defined(ASIO_HAS_WORKING_EXPRESSION_SFINAE)
 # if !defined(ASIO_DISABLE_WORKING_EXPRESSION_SFINAE)
-#  if !defined(ASIO_MSVC)
+#  if !defined(ASIO_MSVC) && !defined(__INTEL_COMPILER)
 #   if (__cplusplus >= 201103)
 #    define ASIO_HAS_WORKING_EXPRESSION_SFINAE 1
 #   endif // (__cplusplus >= 201103)
-#  endif // !defined(ASIO_MSVC)
+#  endif // !defined(ASIO_MSVC) && !defined(__INTEL_COMPILER)
 # endif // !defined(ASIO_DISABLE_WORKING_EXPRESSION_SFINAE)
 #endif // !defined(ASIO_HAS_WORKING_EXPRESSION_SFINAE)
 
@@ -1489,13 +1489,9 @@
 // UNIX domain sockets.
 #if !defined(ASIO_HAS_LOCAL_SOCKETS)
 # if !defined(ASIO_DISABLE_LOCAL_SOCKETS)
-#  if !defined(ASIO_WINDOWS) \
-  && !defined(ASIO_WINDOWS_RUNTIME) \
-  && !defined(__CYGWIN__)
+#  if !defined(ASIO_WINDOWS_RUNTIME)
 #   define ASIO_HAS_LOCAL_SOCKETS 1
-#  endif // !defined(ASIO_WINDOWS)
-         //   && !defined(ASIO_WINDOWS_RUNTIME)
-         //   && !defined(__CYGWIN__)
+#  endif // !defined(ASIO_WINDOWS_RUNTIME)
 # endif // !defined(ASIO_DISABLE_LOCAL_SOCKETS)
 #endif // !defined(ASIO_HAS_LOCAL_SOCKETS)
 
@@ -1770,7 +1766,9 @@
 #if !defined(ASIO_HAS_CO_AWAIT)
 # if !defined(ASIO_DISABLE_CO_AWAIT)
 #  if defined(ASIO_MSVC)
-#   if (_MSC_FULL_VER >= 190023506)
+#   if (_MSC_VER >= 1928) && (_MSVC_LANG >= 201705)
+#    define ASIO_HAS_CO_AWAIT 1
+#   elif (_MSC_FULL_VER >= 190023506)
 #    if defined(_RESUMABLE_FUNCTIONS_SUPPORTED)
 #     define ASIO_HAS_CO_AWAIT 1
 #    endif // defined(_RESUMABLE_FUNCTIONS_SUPPORTED)
@@ -1795,6 +1793,11 @@
 // Standard library support for coroutines.
 #if !defined(ASIO_HAS_STD_COROUTINE)
 # if !defined(ASIO_DISABLE_STD_COROUTINE)
+#  if defined(ASIO_MSVC)
+#   if (_MSC_VER >= 1928) && (_MSVC_LANG >= 201705)
+#    define ASIO_HAS_STD_COROUTINE 1
+#   endif // (_MSC_VER >= 1928) && (_MSVC_LANG >= 201705)
+#  endif // defined(ASIO_MSVC)
 #  if defined(__GNUC__)
 #   if (__cplusplus >= 201709) && (__cpp_impl_coroutine >= 201902)
 #    if __has_include(<coroutine>)
@@ -1818,5 +1821,16 @@
 #if !defined(ASIO_NODISCARD)
 # define ASIO_NODISCARD
 #endif // !defined(ASIO_NODISCARD)
+
+// Kernel support for MSG_NOSIGNAL.
+#if !defined(ASIO_HAS_MSG_NOSIGNAL)
+# if defined(__linux__)
+#  define ASIO_HAS_MSG_NOSIGNAL 1
+# elif defined(_POSIX_VERSION)
+#  if (_POSIX_VERSION >= 200809L)
+#   define ASIO_HAS_MSG_NOSIGNAL 1
+#  endif // _POSIX_VERSION >= 200809L
+# endif // defined(_POSIX_VERSION)
+#endif // !defined(ASIO_HAS_MSG_NOSIGNAL)
 
 #endif // ASIO_DETAIL_CONFIG_HPP

@@ -91,7 +91,8 @@ struct has_static_require_concept
 template <typename T, typename Property>
 struct static_require_concept_trait<T, Property,
   typename enable_if<
-    has_static_require_concept<T, typename decay<Property>::type>::value
+    has_static_require_concept<typename decay<T>::type,
+      typename decay<Property>::type>::value
   >::type>
 {
   ASIO_STATIC_CONSTEXPR(bool, is_valid = true);

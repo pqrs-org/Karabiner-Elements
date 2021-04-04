@@ -59,7 +59,7 @@ struct is_executor_of_impl_base :
 template <typename T, typename F>
 struct is_executor_of_impl :
   conditional<
-    can_execute<T, F>::value,
+    can_execute<typename add_const<T>::type, F>::value,
     is_executor_of_impl_base<T, F>,
     false_type
   >::type

@@ -218,6 +218,7 @@ struct associated_allocator<
 template <typename ReadHandler, typename Executor>
 struct associated_executor<
     detail::buffered_fill_handler<ReadHandler>, Executor>
+  : detail::associated_executor_forwarding_base<ReadHandler, Executor>
 {
   typedef typename associated_executor<ReadHandler, Executor>::type type;
 
@@ -469,6 +470,7 @@ template <typename MutableBufferSequence,
 struct associated_executor<
     detail::buffered_read_some_handler<MutableBufferSequence, ReadHandler>,
     Executor>
+  : detail::associated_executor_forwarding_base<ReadHandler, Executor>
 {
   typedef typename associated_executor<ReadHandler, Executor>::type type;
 

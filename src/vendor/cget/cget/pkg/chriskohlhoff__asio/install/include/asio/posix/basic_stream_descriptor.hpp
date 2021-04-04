@@ -21,6 +21,8 @@
 #if defined(ASIO_HAS_POSIX_STREAM_DESCRIPTOR) \
   || defined(GENERATING_DOCUMENTATION)
 
+#include "asio/detail/push_options.hpp"
+
 namespace asio {
 namespace posix {
 
@@ -463,6 +465,8 @@ private:
 
 } // namespace posix
 } // namespace asio
+
+#include "asio/detail/pop_options.hpp"
 
 #endif // defined(ASIO_HAS_POSIX_STREAM_DESCRIPTOR)
        //   || defined(GENERATING_DOCUMENTATION)

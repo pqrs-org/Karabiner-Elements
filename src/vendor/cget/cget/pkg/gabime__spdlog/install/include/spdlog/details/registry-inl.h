@@ -67,7 +67,11 @@ SPDLOG_INLINE void registry::initialize_logger(std::shared_ptr<logger> new_logge
         new_logger->set_error_handler(err_handler_);
     }
 
-    new_logger->set_level(levels_.get(new_logger->name()));
+    // set new level according to previously configured level or default level
+    auto it = log_levels_.find(new_logger->name());
+    auto new_level = it != log_levels_.end() ? it->second : global_log_level_;
+    new_logger->set_level(new_level);
+
     new_logger->flush_on(flush_level_);
 
     if (backtrace_n_messages_ > 0)
@@ -171,7 +175,7 @@ SPDLOG_INLINE void registry::set_level(level::level_enum log_level)
     {
         l.second->set_level(log_level);
     }
-    levels_.set_default(log_level);
+    global_log_level_ = log_level;
 }
 
 SPDLOG_INLINE void registry::flush_on(level::level_enum log_level)
@@ -263,14 +267,24 @@ SPDLOG_INLINE void registry::set_automatic_registration(bool automatic_registrat
     automatic_registration_ = automatic_registration;
 }
 
-SPDLOG_INLINE void registry::update_levels(cfg::log_levels levels)
+SPDLOG_INLINE void registry::set_levels(log_levels levels, level::level_enum *global_level)
 {
     std::lock_guard<std::mutex> lock(logger_map_mutex_);
-    levels_ = std::move(levels);
-    for (auto &l : loggers_)
+    log_levels_ = std::move(levels);
+    auto global_level_requested = global_level != nullptr;
+    global_log_level_ = global_level_requested ? *global_level : global_log_level_;
+
+    for (auto &logger : loggers_)
     {
-        auto &logger = l.second;
-        logger->set_level(levels_.get(logger->name()));
+        auto logger_entry = log_levels_.find(logger.first);
+        if (logger_entry != log_levels_.end())
+        {
+            logger.second->set_level(logger_entry->second);
+        }
+        else if (global_level_requested)
+        {
+            logger.second->set_level(*global_level);
+        }
     }
 }
 

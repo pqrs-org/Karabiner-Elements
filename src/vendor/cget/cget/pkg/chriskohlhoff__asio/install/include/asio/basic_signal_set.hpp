@@ -28,6 +28,8 @@
 #include "asio/error.hpp"
 #include "asio/execution_context.hpp"
 
+#include "asio/detail/push_options.hpp"
+
 namespace asio {
 
 /// Provides signal functionality.
@@ -564,5 +566,7 @@ private:
 };
 
 } // namespace asio
+
+#include "asio/detail/pop_options.hpp"
 
 #endif // ASIO_BASIC_SIGNAL_SET_HPP

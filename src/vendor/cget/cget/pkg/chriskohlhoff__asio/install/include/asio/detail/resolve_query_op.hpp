@@ -55,11 +55,11 @@ public:
 #endif
 
   resolve_query_op(socket_ops::weak_cancel_token_type cancel_token,
-      const query_type& query, scheduler_impl& sched,
+      const query_type& qry, scheduler_impl& sched,
       Handler& handler, const IoExecutor& io_ex)
     : resolve_op(&resolve_query_op::do_complete),
       cancel_token_(cancel_token),
-      query_(query),
+      query_(qry),
       scheduler_(sched),
       handler_(ASIO_MOVE_CAST(Handler)(handler)),
       work_(handler_, io_ex),

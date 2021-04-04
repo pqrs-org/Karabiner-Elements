@@ -228,6 +228,19 @@ public:
 
 #if !defined(GENERATING_DOCUMENTATION)
 
+#if defined(_MSC_VER)
+template <typename T>
+T dummy_return()
+{
+  return std::move(*static_cast<T*>(nullptr));
+}
+
+template <>
+void dummy_return()
+{
+}
+#endif // defined(_MSC_VER)
+
 template <typename Executor, typename R, typename... Args>
 class async_result<use_awaitable_t<Executor>, R(Args...)>
 {
@@ -235,19 +248,6 @@ public:
   typedef typename detail::awaitable_handler<
       Executor, typename decay<Args>::type...> handler_type;
   typedef typename handler_type::awaitable_type return_type;
-
-#if defined(_MSC_VER)
-  template <typename T>
-  static T dummy_return()
-  {
-    return std::move(*static_cast<T*>(nullptr));
-  }
-
-  template <>
-  static void dummy_return()
-  {
-  }
-#endif // defined(_MSC_VER)
 
   template <typename Initiation, typename... InitArgs>
   static return_type initiate(Initiation initiation,

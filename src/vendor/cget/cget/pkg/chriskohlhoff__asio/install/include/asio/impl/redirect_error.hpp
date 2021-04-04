@@ -357,6 +357,7 @@ struct async_result<redirect_error_t<CompletionToken>, Signature>
 
 template <typename Handler, typename Executor>
 struct associated_executor<detail::redirect_error_handler<Handler>, Executor>
+  : detail::associated_executor_forwarding_base<Handler, Executor>
 {
   typedef typename associated_executor<Handler, Executor>::type type;
 

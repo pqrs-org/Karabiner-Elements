@@ -11,6 +11,7 @@
 #include <spdlog/details/os.h>
 #include <spdlog/details/registry.h>
 
+#include <algorithm>
 #include <string>
 #include <utility>
 #include <sstream>
@@ -78,24 +79,40 @@ inline std::unordered_map<std::string, std::string> extract_key_vals_(const std:
     return rv;
 }
 
-SPDLOG_INLINE log_levels extract_levels(const std::string &input)
+SPDLOG_INLINE void load_levels(const std::string &input)
 {
+    if (input.empty() || input.size() > 512)
+    {
+        return;
+    }
+
     auto key_vals = extract_key_vals_(input);
-    log_levels rv;
+    std::unordered_map<std::string, level::level_enum> levels;
+    level::level_enum global_level = level::info;
+    bool global_level_found = false;
 
     for (auto &name_level : key_vals)
     {
         auto &logger_name = name_level.first;
         auto level_name = to_lower_(name_level.second);
         auto level = level::from_str(level_name);
-        // fallback to "info" if unrecognized level name
+        // ignore unrecognized level names
         if (level == level::off && level_name != "off")
         {
-            level = level::info;
+            continue;
         }
-        rv.set(logger_name, level);
+        if (logger_name.empty()) // no logger name indicate global level
+        {
+            global_level_found = true;
+            global_level = level;
+        }
+        else
+        {
+            levels[logger_name] = level;
+        }
     }
-    return rv;
+
+    details::registry::instance().set_levels(std::move(levels), global_level_found ? &global_level : nullptr);
 }
 
 } // namespace helpers

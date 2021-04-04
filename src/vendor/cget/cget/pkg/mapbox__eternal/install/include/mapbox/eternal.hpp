@@ -2,6 +2,7 @@
 
 #include <utility>
 #include <functional>
+#include <cstdint>
 
 // GCC 4.9 compatibility
 #if !defined(__clang__) && defined(__GNUC__) && __GNUC__ < 5
@@ -340,12 +341,12 @@ namespace impl {
 // Use different constants for 32 bit vs. 64 bit size_t
 constexpr std::size_t hash_offset =
     std::conditional_t<sizeof(std::size_t) < 8,
-                       std::integral_constant<std::size_t, 0x811C9DC5>,
-                       std::integral_constant<std::size_t, 0xCBF29CE484222325>>::value;
+                       std::integral_constant<uint32_t, 0x811C9DC5>,
+                       std::integral_constant<uint64_t, 0xCBF29CE484222325>>::value;
 constexpr std::size_t hash_prime =
     std::conditional_t<sizeof(std::size_t) < 8,
-                       std::integral_constant<std::size_t, 0x1000193>,
-                       std::integral_constant<std::size_t, 0x100000001B3>>::value;
+                       std::integral_constant<uint32_t, 0x1000193>,
+                       std::integral_constant<uint64_t, 0x100000001B3>>::value;
 
 // FNV-1a hash
 constexpr static std::size_t str_hash(const char* str,

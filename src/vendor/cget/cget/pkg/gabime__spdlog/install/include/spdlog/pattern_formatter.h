@@ -22,7 +22,7 @@ namespace details {
 // padding information.
 struct padding_info
 {
-    enum pad_side
+    enum class pad_side
     {
         left,
         right,
@@ -42,7 +42,7 @@ struct padding_info
         return enabled_;
     }
     size_t width_ = 0;
-    pad_side side_ = left;
+    pad_side side_ = pad_side::left;
     bool truncate_ = false;
     bool enabled_ = false;
 };
@@ -92,9 +92,9 @@ public:
     void format(const details::log_msg &msg, memory_buf_t &dest) override;
 
     template<typename T, typename... Args>
-    pattern_formatter &add_flag(char flag, const Args &... args)
+    pattern_formatter &add_flag(char flag, Args&&...args)
     {
-        custom_handlers_[flag] = details::make_unique<T>(args...);
+        custom_handlers_[flag] = details::make_unique<T>(std::forward<Args>(args)...);
         return *this;
     }
     void set_pattern(std::string pattern);

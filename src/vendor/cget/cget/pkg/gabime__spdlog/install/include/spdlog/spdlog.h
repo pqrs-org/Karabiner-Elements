@@ -31,7 +31,7 @@ using default_factory = synchronous_factory;
 // Example:
 //   spdlog::create<daily_file_sink_st>("logger_name", "dailylog_filename", 11, 59);
 template<typename Sink, typename... SinkArgs>
-inline std::shared_ptr<spdlog::logger> create(std::string logger_name, SinkArgs &&... sink_args)
+inline std::shared_ptr<spdlog::logger> create(std::string logger_name, SinkArgs &&...sink_args)
 {
     return default_factory::create<Sink>(std::move(logger_name), std::forward<SinkArgs>(sink_args)...);
 }
@@ -67,8 +67,14 @@ SPDLOG_API void disable_backtrace();
 // call dump backtrace on default logger
 SPDLOG_API void dump_backtrace();
 
+// Get global logging level
+SPDLOG_API level::level_enum get_level();
+
 // Set global logging level
 SPDLOG_API void set_level(level::level_enum log_level);
+
+// Determine whether the default logger should log messages with a certain level
+SPDLOG_API bool should_log(level::level_enum lvl);
 
 // Set global flush level
 SPDLOG_API void flush_on(level::level_enum log_level);
@@ -105,7 +111,7 @@ SPDLOG_API void set_automatic_registration(bool automatic_registration);
 //
 // The default logger object can be accessed using the spdlog::default_logger():
 // For example, to add another sink to it:
-// spdlog::default_logger()->sinks()->push_back(some_sink);
+// spdlog::default_logger()->sinks().push_back(some_sink);
 //
 // The default logger can replaced using spdlog::set_default_logger(new_logger).
 // For example, to replace it with a file logger.
@@ -122,51 +128,51 @@ SPDLOG_API spdlog::logger *default_logger_raw();
 SPDLOG_API void set_default_logger(std::shared_ptr<spdlog::logger> default_logger);
 
 template<typename FormatString, typename... Args>
-inline void log(source_loc source, level::level_enum lvl, const FormatString &fmt, const Args &... args)
+inline void log(source_loc source, level::level_enum lvl, const FormatString &fmt, Args&&...args)
 {
-    default_logger_raw()->log(source, lvl, fmt, args...);
+    default_logger_raw()->log(source, lvl, fmt, std::forward<Args>(args)...);
 }
 
 template<typename FormatString, typename... Args>
-inline void log(level::level_enum lvl, const FormatString &fmt, const Args &... args)
+inline void log(level::level_enum lvl, const FormatString &fmt, Args&&...args)
 {
-    default_logger_raw()->log(source_loc{}, lvl, fmt, args...);
+    default_logger_raw()->log(source_loc{}, lvl, fmt, std::forward<Args>(args)...);
 }
 
 template<typename FormatString, typename... Args>
-inline void trace(const FormatString &fmt, const Args &... args)
+inline void trace(const FormatString &fmt, Args&&...args)
 {
-    default_logger_raw()->trace(fmt, args...);
+    default_logger_raw()->trace(fmt, std::forward<Args>(args)...);
 }
 
 template<typename FormatString, typename... Args>
-inline void debug(const FormatString &fmt, const Args &... args)
+inline void debug(const FormatString &fmt, Args&&...args)
 {
-    default_logger_raw()->debug(fmt, args...);
+    default_logger_raw()->debug(fmt, std::forward<Args>(args)...);
 }
 
 template<typename FormatString, typename... Args>
-inline void info(const FormatString &fmt, const Args &... args)
+inline void info(const FormatString &fmt, Args&&...args)
 {
-    default_logger_raw()->info(fmt, args...);
+    default_logger_raw()->info(fmt, std::forward<Args>(args)...);
 }
 
 template<typename FormatString, typename... Args>
-inline void warn(const FormatString &fmt, const Args &... args)
+inline void warn(const FormatString &fmt, Args&&...args)
 {
-    default_logger_raw()->warn(fmt, args...);
+    default_logger_raw()->warn(fmt, std::forward<Args>(args)...);
 }
 
 template<typename FormatString, typename... Args>
-inline void error(const FormatString &fmt, const Args &... args)
+inline void error(const FormatString &fmt, Args&&...args)
 {
-    default_logger_raw()->error(fmt, args...);
+    default_logger_raw()->error(fmt, std::forward<Args>(args)...);
 }
 
 template<typename FormatString, typename... Args>
-inline void critical(const FormatString &fmt, const Args &... args)
+inline void critical(const FormatString &fmt, Args&&...args)
 {
-    default_logger_raw()->critical(fmt, args...);
+    default_logger_raw()->critical(fmt, std::forward<Args>(args)...);
 }
 
 template<typename T>

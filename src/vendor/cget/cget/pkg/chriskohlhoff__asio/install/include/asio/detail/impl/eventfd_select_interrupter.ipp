@@ -23,11 +23,11 @@
 #include <sys/stat.h>
 #include <sys/types.h>
 #include <fcntl.h>
-#if __GLIBC__ == 2 && __GLIBC_MINOR__ < 8
+#if __GLIBC__ == 2 && __GLIBC_MINOR__ < 8 && !defined(__UCLIBC__)
 # include <asm/unistd.h>
-#else // __GLIBC__ == 2 && __GLIBC_MINOR__ < 8
+#else // __GLIBC__ == 2 && __GLIBC_MINOR__ < 8 && !defined(__UCLIBC__)
 # include <sys/eventfd.h>
-#endif // __GLIBC__ == 2 && __GLIBC_MINOR__ < 8
+#endif // __GLIBC__ == 2 && __GLIBC_MINOR__ < 8 && !defined(__UCLIBC__)
 #include "asio/detail/cstdint.hpp"
 #include "asio/detail/eventfd_select_interrupter.hpp"
 #include "asio/detail/throw_error.hpp"
@@ -45,14 +45,14 @@ eventfd_select_interrupter::eventfd_select_interrupter()
 
 void eventfd_select_interrupter::open_descriptors()
 {
-#if __GLIBC__ == 2 && __GLIBC_MINOR__ < 8
+#if __GLIBC__ == 2 && __GLIBC_MINOR__ < 8 && !defined(__UCLIBC__)
   write_descriptor_ = read_descriptor_ = syscall(__NR_eventfd, 0);
   if (read_descriptor_ != -1)
   {
     ::fcntl(read_descriptor_, F_SETFL, O_NONBLOCK);
     ::fcntl(read_descriptor_, F_SETFD, FD_CLOEXEC);
   }
-#else // __GLIBC__ == 2 && __GLIBC_MINOR__ < 8
+#else // __GLIBC__ == 2 && __GLIBC_MINOR__ < 8 && !defined(__UCLIBC__)
 # if defined(EFD_CLOEXEC) && defined(EFD_NONBLOCK)
   write_descriptor_ = read_descriptor_ =
     ::eventfd(0, EFD_CLOEXEC | EFD_NONBLOCK);
@@ -69,7 +69,7 @@ void eventfd_select_interrupter::open_descriptors()
       ::fcntl(read_descriptor_, F_SETFD, FD_CLOEXEC);
     }
   }
-#endif // __GLIBC__ == 2 && __GLIBC_MINOR__ < 8
+#endif // __GLIBC__ == 2 && __GLIBC_MINOR__ < 8 && !defined(__UCLIBC__)
 
   if (read_descriptor_ == -1)
   {
@@ -152,7 +152,9 @@ bool eventfd_select_interrupter::reset()
         return false;
       if (errno == EINTR)
         continue;
-      if (errno == EWOULDBLOCK || errno == EAGAIN)
+      if (errno == EWOULDBLOCK)
+        return true;
+      if (errno == EAGAIN)
         return true;
       return false;
     }

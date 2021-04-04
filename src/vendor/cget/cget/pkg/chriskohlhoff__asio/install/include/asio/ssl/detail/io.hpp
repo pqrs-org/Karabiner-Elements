@@ -398,6 +398,7 @@ template <typename Stream, typename Operation,
     typename Handler, typename Executor>
 struct associated_executor<
     ssl::detail::io_op<Stream, Operation, Handler>, Executor>
+  : detail::associated_executor_forwarding_base<Handler, Executor>
 {
   typedef typename associated_executor<Handler, Executor>::type type;
 

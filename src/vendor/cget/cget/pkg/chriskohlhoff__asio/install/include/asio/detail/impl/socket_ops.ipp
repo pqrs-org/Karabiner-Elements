@@ -1387,9 +1387,9 @@ signed_size_type send(socket_type s, const buf* bufs, size_t count,
   msghdr msg = msghdr();
   msg.msg_iov = const_cast<buf*>(bufs);
   msg.msg_iovlen = static_cast<int>(count);
-#if defined(__linux__)
+#if defined(ASIO_HAS_MSG_NOSIGNAL)
   flags |= MSG_NOSIGNAL;
-#endif // defined(__linux__)
+#endif // defined(ASIO_HAS_MSG_NOSIGNAL)
   signed_size_type result = ::sendmsg(s, &msg, flags);
   get_last_error(ec, result < 0);
   return result;
@@ -1418,9 +1418,9 @@ signed_size_type send1(socket_type s, const void* data, size_t size,
   ec.assign(0, ec.category());
   return bytes_transferred;
 #else // defined(ASIO_WINDOWS) || defined(__CYGWIN__)
-#if defined(__linux__)
+#if defined(ASIO_HAS_MSG_NOSIGNAL)
   flags |= MSG_NOSIGNAL;
-#endif // defined(__linux__)
+#endif // defined(ASIO_HAS_MSG_NOSIGNAL)
   signed_size_type result = ::send(s,
       static_cast<const char*>(data), size, flags);
   get_last_error(ec, result < 0);
@@ -1616,9 +1616,9 @@ signed_size_type sendto(socket_type s, const buf* bufs, size_t count,
   msg.msg_namelen = static_cast<int>(addrlen);
   msg.msg_iov = const_cast<buf*>(bufs);
   msg.msg_iovlen = static_cast<int>(count);
-#if defined(__linux__)
+#if defined(ASIO_HAS_MSG_NOSIGNAL)
   flags |= MSG_NOSIGNAL;
-#endif // defined(__linux__)
+#endif // defined(ASIO_HAS_MSG_NOSIGNAL)
   signed_size_type result = ::sendmsg(s, &msg, flags);
   get_last_error(ec, result < 0);
   return result;
@@ -1656,9 +1656,9 @@ signed_size_type sendto1(socket_type s, const void* data, size_t size,
   ec.assign(0, ec.category());
   return bytes_transferred;
 #else // defined(ASIO_WINDOWS) || defined(__CYGWIN__)
-#if defined(__linux__)
+#if defined(ASIO_HAS_MSG_NOSIGNAL)
   flags |= MSG_NOSIGNAL;
-#endif // defined(__linux__)
+#endif // defined(ASIO_HAS_MSG_NOSIGNAL)
   signed_size_type result = call_sendto(&msghdr::msg_namelen,
       s, data, size, flags, addr, addrlen);
   get_last_error(ec, result < 0);
@@ -2543,7 +2543,7 @@ int inet_pton(int af, const char* src, void* dest,
     bytes[1] = static_cast<unsigned char>(b1);
     bytes[2] = static_cast<unsigned char>(b2);
     bytes[3] = static_cast<unsigned char>(b3);
-    ec.assign(), ec.category());
+    ec.assign(0, ec.category());
     return 1;
   }
   else if (af == ASIO_OS_DEF(AF_INET6))

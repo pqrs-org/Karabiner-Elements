@@ -198,6 +198,7 @@ struct associated_allocator<
 template <typename WriteHandler, typename Executor>
 struct associated_executor<
     detail::buffered_flush_handler<WriteHandler>, Executor>
+  : detail::associated_executor_forwarding_base<WriteHandler, Executor>
 {
   typedef typename associated_executor<WriteHandler, Executor>::type type;
 
@@ -455,6 +456,7 @@ template <typename ConstBufferSequence,
 struct associated_executor<
     detail::buffered_write_some_handler<ConstBufferSequence, WriteHandler>,
     Executor>
+  : detail::associated_executor_forwarding_base<WriteHandler, Executor>
 {
   typedef typename associated_executor<WriteHandler, Executor>::type type;
 

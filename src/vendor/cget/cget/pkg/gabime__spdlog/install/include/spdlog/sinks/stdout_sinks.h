@@ -8,6 +8,10 @@
 #include <spdlog/sinks/sink.h>
 #include <cstdio>
 
+#ifdef _WIN32
+#include <spdlog/details/windows_include.h>
+#endif
+
 namespace spdlog {
 
 namespace sinks {
@@ -36,6 +40,9 @@ protected:
     mutex_t &mutex_;
     FILE *file_;
     std::unique_ptr<spdlog::formatter> formatter_;
+#ifdef _WIN32
+    HANDLE handle_;    
+#endif // WIN32
 };
 
 template<typename ConsoleMutex>

@@ -111,7 +111,7 @@ public:
 
       void await_suspend(coroutine_handle<void>) noexcept
       {
-        this_->pop_frame();
+        this->this_->pop_frame();
       }
 
       void await_resume() const noexcept

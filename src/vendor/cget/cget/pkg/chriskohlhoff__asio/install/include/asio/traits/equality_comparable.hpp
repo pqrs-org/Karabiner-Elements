@@ -55,8 +55,12 @@ template <typename T>
 struct equality_comparable_trait<T,
   typename void_type<
     decltype(
-      static_cast<bool>(declval<const T>() == declval<const T>()),
-      static_cast<bool>(declval<const T>() != declval<const T>())
+      static_cast<void>(
+        static_cast<bool>(declval<const T>() == declval<const T>())
+      ),
+      static_cast<void>(
+        static_cast<bool>(declval<const T>() != declval<const T>())
+      )
     )
   >::type>
 {

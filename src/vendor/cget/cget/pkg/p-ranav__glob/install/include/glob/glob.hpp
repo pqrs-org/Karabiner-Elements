@@ -154,8 +154,13 @@ std::vector<fs::path> filter(const std::vector<fs::path> &names,
 static inline 
 fs::path expand_tilde(fs::path path) {
   if (path.empty()) return path;
-
+#ifdef _WIN32
+  char* home;
+  size_t sz;
+  errno_t err = _dupenv_s(&home, &sz, "USERPROFILE");
+#else
   const char * home = std::getenv("HOME");
+#endif
   if (home == nullptr) {
     throw std::invalid_argument("error: Unable to expand `~` - HOME environment variable not set.");
   }
@@ -176,7 +181,9 @@ bool has_magic(const std::string &pathname) {
 }
 
 static inline 
-bool is_hidden(const std::string &pathname) { return pathname[0] == '.'; }
+bool is_hidden(const std::string &pathname) {
+  return std::regex_match(pathname, std::regex("^(.*\\/)*\\.[^\\.\\/]+\\/*$"));
+}
 
 static inline 
 bool is_recursive(const std::string &pattern) { return pattern == "**"; }
@@ -203,7 +210,7 @@ std::vector<fs::path> iter_directory(const fs::path &dirname, bool dironly) {
           }
         }
       }
-    } catch (std::exception& e) {
+    } catch (std::exception&) {
       // not a directory
       // do nothing
     }
@@ -316,20 +323,20 @@ std::vector<fs::path> glob(const std::string &pathname, bool recursive = false,
 
   if (dirname.empty()) {
     if (recursive && is_recursive(basename.string())) {
-      return glob2(dirname, basename, dironly);
+      return glob2(dirname, basename.string(), dironly);
     } else {
-      return glob1(dirname, basename, dironly);
+      return glob1(dirname, basename.string(), dironly);
     }
   }
 
   std::vector<fs::path> dirs;
   if (dirname != fs::path(pathname) && has_magic(dirname.string())) {
-    dirs = glob(dirname, recursive, true);
+    dirs = glob(dirname.string(), recursive, true);
   } else {
     dirs = {dirname};
   }
 
-  std::function<std::vector<fs::path>(const fs::path &, const fs::path &, bool)>
+  std::function<std::vector<fs::path>(const fs::path &, const std::string &, bool)>
       glob_in_dir;
   if (has_magic(basename.string())) {
     if (recursive && is_recursive(basename.string())) {
@@ -342,7 +349,7 @@ std::vector<fs::path> glob(const std::string &pathname, bool recursive = false,
   }
 
   for (auto &d : dirs) {
-    for (auto &name : glob_in_dir(d, basename, dironly)) {
+    for (auto &name : glob_in_dir(d, basename.string(), dironly)) {
       fs::path subresult = name;
       if (name.parent_path().empty()) {
         subresult = d / name;
