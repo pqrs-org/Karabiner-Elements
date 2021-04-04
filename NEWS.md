@@ -1,6 +1,6 @@
 # Changelog
 
-## Beta
+## Karabiner-Elements 13.4.0
 
 -   🐛 Bug Fixes
     -   Fixed an issue that Karabiner-Elements stops working with `virtual_hid_keyboard is not ready. Please wait for a while.` error message when you kill `karabiner_console_user_server` process manually.
