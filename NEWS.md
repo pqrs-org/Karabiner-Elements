@@ -12,7 +12,7 @@
 
 ### 🔔 Notes for Mac computers with Apple Silicon (Apple M1) users
 
-macOS Big Sur 11.2 or earlier have an issue within memory management and HID device handling that causes kernel panics on Mac computers with Apple Silicon.
+macOS Big Sur 11.2 or earlier has an issue within memory management and HID device handling that causes kernel panics on Mac computers with Apple Silicon.
 The virtual device that is used internally by Karabiner-Elements triggers this issue, and a kernel panic might be caused at macOS shutdown.
 
 We confirmed that this issue has been fixed in [macOS Big Sur 11.3 Beta](https://beta.apple.com/sp/betaprogram/).
