@@ -63,8 +63,6 @@ public:
 
               auto uid = json.at("user_id").get<uid_t>();
 
-              filesystem_utility::mkdir_system_user_directory(uid);
-
               if (json.at("on_console").get<bool>()) {
                 new_value = uid;
               } else {
@@ -75,6 +73,10 @@ public:
 
               if (current_console_user_id_ != new_value) {
                 current_console_user_id_ = new_value;
+
+                if (new_value) {
+                  filesystem_utility::mkdir_system_user_directory(*new_value);
+                }
 
                 enqueue_to_dispatcher([this, new_value] {
                   current_console_user_id_changed(new_value);
