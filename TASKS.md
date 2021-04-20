@@ -3,7 +3,7 @@
 -   [ ] Migrate Objective-C code to Swift.
     -   [x] EventViewer
     -   [ ] KarabinerKit
-    -   [ ] Menu
+    -   [x] Menu
     -   [ ] Preferences
     -   [x] Updater
     -   [ ] MultitouchExtension
