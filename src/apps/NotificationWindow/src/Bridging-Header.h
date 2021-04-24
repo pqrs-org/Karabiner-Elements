@@ -2,4 +2,4 @@
 
 #import "KarabinerKit/KarabinerKit.h"
 #import "libkrbn/libkrbn.h"
-#import "NotificationWindowManager.h"
+#import "NotificationWindowView.h"
