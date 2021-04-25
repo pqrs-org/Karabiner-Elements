@@ -2,7 +2,7 @@ import AppKit
 
 @NSApplicationMain
 public class AppDelegate: NSObject, NSApplicationDelegate {
-    var notificationWindowManager: NotificationWindowManager?
+    private var notificationWindowManager: NotificationWindowManager?
 
     public func applicationDidFinishLaunching(_: Notification) {
         ProcessInfo.processInfo.enableSuddenTermination()

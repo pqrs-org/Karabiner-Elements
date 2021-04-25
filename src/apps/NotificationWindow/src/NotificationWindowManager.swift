@@ -1,3 +1,5 @@
+import SwiftUI
+
 private func callback(_ filePath: UnsafePointer<Int8>?,
                       _ context: UnsafeMutableRawPointer?)
 {
@@ -10,16 +12,16 @@ private func callback(_ filePath: UnsafePointer<Int8>?,
             DispatchQueue.main.async { [weak obj] in
                 guard let obj = obj else { return }
 
-                obj.setText(body)
+                NotificationMessage.shared.text = body.trimmingCharacters(in: .whitespacesAndNewlines)
+                obj.updateWindowsVisibility()
             }
         }
     }
 }
 
 public class NotificationWindowManager {
-    var text = ""
-    var windowControllers: [NSWindowController] = []
-    var observers = KarabinerKitSmartObserverContainer()
+    private var windows: [NSWindow] = []
+    private var observers = KarabinerKitSmartObserverContainer()
 
     init() {
         let center = NotificationCenter.default
@@ -45,63 +47,54 @@ public class NotificationWindowManager {
 
     func updateWindows() {
         // The old window sometimes does not deallocated properly when screen count is decreased.
-        // Thus, we hide the window before clear windowControllers.
-        windowControllers.forEach { c in
-            c.window?.orderOut(self)
+        // Thus, we hide the window before clear windows.
+        windows.forEach {
+            w in w.orderOut(self)
         }
-        windowControllers.removeAll()
+        windows.removeAll()
 
         NSScreen.screens.forEach { screen in
-            let controller = NSWindowController(windowNibName: "NotificationWindow")
-            if let window = controller.window {
-                setupWindow(window: window, screen: screen)
-                windowControllers.append(controller)
-            }
+            let window = NSWindow(
+                contentRect: .zero,
+                styleMask: [
+                    .fullSizeContentView,
+                ],
+                backing: .buffered,
+                defer: false
+            )
+
+            window.contentView = NSHostingView(rootView: NotificationView(window: window))
+            window.backgroundColor = NSColor.clear
+            window.isOpaque = false
+            window.level = .statusBar
+            // window.ignoresMouseEvents = true
+            window.collectionBehavior.insert(.canJoinAllSpaces)
+            window.collectionBehavior.insert(.ignoresCycle)
+            window.collectionBehavior.insert(.stationary)
+
+            let screenFrame = screen.visibleFrame
+            let windowFrame = window.frame
+            let margin = CGFloat(10.0)
+            window.setFrameOrigin(NSMakePoint(
+                screenFrame.origin.x + screenFrame.size.width - windowFrame.width - margin,
+                screenFrame.origin.y + margin
+            ))
+
+            windows.append(window)
         }
 
-        setNotificationText()
+        updateWindowsVisibility()
     }
 
-    func setupWindow(window: NSWindow!,
-                     screen: NSScreen!)
-    {
-        window.backgroundColor = NSColor.clear
-        window.isOpaque = false
-        window.level = .statusBar
-        // window.ignoresMouseEvents = true
-        window.collectionBehavior.insert(.canJoinAllSpaces)
-        window.collectionBehavior.insert(.ignoresCycle)
-        window.collectionBehavior.insert(.stationary)
+    func updateWindowsVisibility() {
+        let hide = NotificationMessage.shared.text.isEmpty
 
-        let screenFrame = screen.visibleFrame
-        let windowFrame = window.frame
-        let margin = CGFloat(10.0)
-        window.setFrameOrigin(NSMakePoint(
-            screenFrame.origin.x + screenFrame.size.width - windowFrame.size.width - margin,
-            screenFrame.origin.y + margin
-        ))
-    }
-
-    func setNotificationText() {
-        windowControllers.forEach { controller in
-            if text.isEmpty {
-                controller.window?.orderOut(self)
+        windows.forEach { w in
+            if hide {
+                w.orderOut(self)
             } else {
-                let view = controller.window?.contentView as! NotificationWindowView
-                view.text.stringValue = text
-
-                controller.window?.orderFront(self)
+                w.orderFront(self)
             }
-        }
-    }
-
-    func setText(_ text: String) {
-        self.text = text
-
-        DispatchQueue.main.async { [weak self] in
-            guard let self = self else { return }
-
-            self.setNotificationText()
         }
     }
 }
