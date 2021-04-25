@@ -12,7 +12,7 @@
     -   [ ] EventViewer
     -   [ ] Preferences
     -   [ ] MultitouchExtension
-    -   [ ] NotificationWindow
+    -   [x] NotificationWindow
 -   [ ] Add scroll wheel to source events.
 -   [ ] Add mouse movement to source events.
 -   [ ] Add `event_type` to `to` in order to support `key_down` only event.
