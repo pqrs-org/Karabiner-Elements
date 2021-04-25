@@ -17,7 +17,7 @@
             <windowPositionMask key="initialPositionMask" leftStrut="YES" rightStrut="YES" topStrut="YES" bottomStrut="YES"/>
             <rect key="contentRect" x="196" y="240" width="400" height="88"/>
             <rect key="screenRect" x="0.0" y="0.0" width="2048" height="1255"/>
-            <view key="contentView" id="D8E-iP-bAO" customClass="NotificationWindowView">
+            <view key="contentView" id="D8E-iP-bAO" customClass="NotificationWindowView" customModule="Karabiner_NotificationWindow">
                 <rect key="frame" x="0.0" y="0.0" width="384" height="88"/>
                 <autoresizingMask key="autoresizingMask"/>
                 <subviews>
