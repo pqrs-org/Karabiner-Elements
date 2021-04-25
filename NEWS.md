@@ -4,6 +4,7 @@
 
 -   ⚡️ Improvements
     -   Improved Karabiner-Elements tmp directory handling to reduce the frequency of mds process accessing it.
+    -   Several Objective-C code around GUI has been rewritten in Swift + SwiftUI.
 
 ## Karabiner-Elements 13.4.0
 
