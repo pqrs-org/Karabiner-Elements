@@ -7,10 +7,9 @@
     -   [ ] Preferences
     -   [x] Updater
     -   [ ] MultitouchExtension
-    -   [ ] NotificationWindow
+    -   [x] NotificationWindow
 -   [ ] Migrate to SwiftUI.
     -   [ ] EventViewer
-    -   [ ] Menu
     -   [ ] Preferences
     -   [ ] MultitouchExtension
     -   [ ] NotificationWindow
