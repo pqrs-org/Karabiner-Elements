@@ -7,9 +7,8 @@ jobs:
     runs-on: macOS-latest
 
     steps:
-      - uses: actions/checkout@v1
+      - uses: actions/checkout@v2
         with:
-          fetch-depth: 1
           submodules: recursive
       - name: xcode-select
         run: sudo xcode-select -s /Applications/Xcode_12.app
