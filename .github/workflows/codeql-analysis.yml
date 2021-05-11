@@ -23,7 +23,7 @@ on:
 jobs:
   analyze:
     name: Analyze
-    runs-on: ubuntu-latest
+    runs-on: macOS-latest
     permissions:
       actions: read
       contents: read
@@ -40,6 +40,12 @@ jobs:
     steps:
     - name: Checkout repository
       uses: actions/checkout@v2
+      with:
+        submodules: recursive
+    - name: xcode-select
+      run: sudo xcode-select -s /Applications/Xcode_12.app
+    - name: brew install
+      run: brew install xcodegen
 
     # Initializes the CodeQL tools for scanning.
     - name: Initialize CodeQL
