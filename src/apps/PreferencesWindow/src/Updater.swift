@@ -1,3 +1,5 @@
+import AppKit
+
 #if USE_SPARKLE
     import Sparkle
 #endif
