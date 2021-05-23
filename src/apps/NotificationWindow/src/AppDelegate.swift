@@ -10,7 +10,6 @@ public class AppDelegate: NSObject, NSApplicationDelegate {
         libkrbn_initialize()
 
         KarabinerKit.setup()
-        KarabinerKit.exitIfAnotherProcessIsRunning("notification_window.pid")
         KarabinerKit.observeConsoleUserServerIsDisabledNotification()
 
         notificationWindowManager = NotificationWindowManager()
