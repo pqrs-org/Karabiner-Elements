@@ -99,6 +99,14 @@ public class MenuController: NSObject, NSMenuDelegate {
         // Append items
         //
 
+        let version = Bundle.main.object(forInfoDictionaryKey: "CFBundleVersion") as! String
+        menu.insertItem(withTitle: "Karabiner-Elements \(version)",
+                        action: nil,
+                        keyEquivalent: "",
+                        at: 0)
+
+        menu.insertItem(NSMenuItem.separator(), at: 1)
+
         if let coreConfigurationModel = KarabinerKitConfigurationManager.shared().coreConfigurationModel {
             for i in 0 ..< coreConfigurationModel.profilesCount {
                 let newItem = NSMenuItem(title: coreConfigurationModel.profileName(at: i),
@@ -114,7 +122,7 @@ public class MenuController: NSObject, NSMenuDelegate {
                     newItem.state = .off
                 }
 
-                menu.insertItem(newItem, at: Int(i))
+                menu.insertItem(newItem, at: Int(i + 2))
             }
         }
     }
