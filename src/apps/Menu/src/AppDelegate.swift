@@ -10,7 +10,6 @@ public class AppDelegate: NSObject, NSApplicationDelegate {
         libkrbn_initialize()
 
         KarabinerKit.setup()
-        KarabinerKit.exitIfAnotherProcessIsRunning("menu.pid")
         KarabinerKit.observeConsoleUserServerIsDisabledNotification()
 
         menuController.setup()
