@@ -17,3 +17,12 @@ run:
 
 xcode:
 	open *.xcodeproj
+
+install:
+	bash ../../../scripts/codesign.sh build/Release
+
+	sudo chflags nouchg,noschg /Applications/Karabiner-Elements.app
+	sudo rsync -a --delete \
+		build/Release/Karabiner-Elements.app \
+		/Applications
+	sudo chflags uchg,schg /Applications/Karabiner-Elements.app
