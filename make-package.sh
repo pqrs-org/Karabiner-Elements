@@ -41,10 +41,6 @@ cp src/core/grabber/build/Release/karabiner_grabber "$basedir"
 cp src/core/observer/build/Release/karabiner_observer "$basedir"
 cp src/core/session_monitor/build/Release/karabiner_session_monitor "$basedir"
 
-basedir="pkgroot/Library/Application Support/org.pqrs/Karabiner-Elements/updater"
-mkdir -p "$basedir"
-cp -R "src/apps/Updater/build/Release/Karabiner-Elements.app" "$basedir"
-
 mkdir -p "pkgroot/Library"
 cp -R files/LaunchDaemons "pkgroot/Library"
 cp -R files/LaunchAgents "pkgroot/Library"

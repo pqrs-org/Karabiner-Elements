@@ -5,7 +5,6 @@
     -   [ ] KarabinerKit
     -   [x] Menu
     -   [ ] Preferences
-    -   [x] Updater
     -   [ ] MultitouchExtension
     -   [x] NotificationWindow
 -   [ ] Migrate to SwiftUI.
