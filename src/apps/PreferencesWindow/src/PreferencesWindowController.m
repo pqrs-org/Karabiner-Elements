@@ -4,6 +4,7 @@
 #import "DevicesTableViewController.h"
 #import "FnFunctionKeysTableViewController.h"
 #import "KarabinerKit/KarabinerKit.h"
+#import "Karabiner_Elements-Swift.h"
 #import "LogFileTextViewController.h"
 #import "NotificationKeys.h"
 #import "ProfilesTableViewController.h"
@@ -287,11 +288,11 @@
 }
 
 - (IBAction)checkForUpdatesStableOnly:(id)sender {
-  libkrbn_check_for_updates_stable_only();
+  [Updater checkForUpdatesStableOnly];
 }
 
 - (IBAction)checkForUpdatesWithBetaVersion:(id)sender {
-  libkrbn_check_for_updates_with_beta_version();
+  [Updater checkForUpdatesWithBetaVersion];
 }
 
 - (IBAction)systemDefaultProfileCopy:(id)sender {
