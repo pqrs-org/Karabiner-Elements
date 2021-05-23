@@ -92,16 +92,8 @@ void libkrbn_launchctl_bootout_console_user_server(void) {
   krbn::launchctl_utility::bootout_console_user_server();
 }
 
-void libkrbn_check_for_updates_in_background(void) {
-  krbn::update_utility::check_for_updates_in_background();
-}
-
 void libkrbn_check_for_updates_stable_only(void) {
   krbn::update_utility::check_for_updates_stable_only();
-}
-
-void libkrbn_check_for_updates_with_beta_version(void) {
-  krbn::update_utility::check_for_updates_with_beta_version();
 }
 
 void libkrbn_launch_event_viewer(void) {
