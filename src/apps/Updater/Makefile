@@ -8,6 +8,10 @@ clean:
 	rm -fr *.xcodeproj
 	rm -fr build
 
+purge-swift-package-manager-cache:
+	rm -fr ~/Library/Developer/Xcode/DerivedData/Karabiner-Elements-*
+	rm -fr ~/Library/Caches/org.swift.swiftpm/repositories/Sparkle-*
+
 run:
 	./build/Release/Karabiner-Elements.app/Contents/MacOS/Karabiner-Elements
 
