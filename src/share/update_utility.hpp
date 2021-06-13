@@ -22,7 +22,7 @@ public:
 
 private:
   static void launch_updater(const std::string& argument) {
-    auto command = std::string("open '/Library/Application Support/org.pqrs/Karabiner-Elements/updater/Karabiner-Elements.app' --args ") + argument;
+    auto command = std::string("open -n '/Applications/Karabiner-Elements.app' --args ") + argument;
     system(command.c_str());
   }
 };
