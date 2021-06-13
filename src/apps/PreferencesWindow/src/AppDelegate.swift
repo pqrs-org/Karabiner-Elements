@@ -11,7 +11,6 @@ public class AppDelegate: NSObject, NSApplicationDelegate {
 
     override public init() {
         super.init()
-
         libkrbn_initialize()
     }
 
@@ -33,10 +32,52 @@ public class AppDelegate: NSObject, NSApplicationDelegate {
         systemPreferencesManager.setup()
         preferencesWindowController.setup()
         stateJsonMonitor.start()
+
+        NotificationCenter.default.addObserver(forName: Updater.didFindValidUpdate,
+                                               object: nil,
+                                               queue: .main) { [weak self] _ in
+            guard let self = self else { return }
+
+            self.preferencesWindowController.show()
+        }
+
+        NotificationCenter.default.addObserver(forName: Updater.updaterDidNotFindUpdate,
+                                               object: nil,
+                                               queue: .main) { _ in
+            NSApplication.shared.terminate(nil)
+        }
+
+        //
+        // Run updater or open preferences.
+        //
+
+        if CommandLine.arguments.count > 1 {
+            let command = CommandLine.arguments[1]
+            switch command {
+            case "checkForUpdatesInBackground":
+                Updater.shared.checkForUpdatesInBackground()
+                return
+            case "checkForUpdatesStableOnly":
+                Updater.shared.checkForUpdatesStableOnly()
+                return
+            case "checkForUpdatesWithBetaVersion":
+                Updater.shared.checkForUpdatesWithBetaVersion()
+                return
+            default:
+                break
+            }
+        }
+
+        preferencesWindowController.show()
     }
 
     public func applicationWillTerminate(_: Notification) {
         libkrbn_terminate()
+    }
+
+    public func applicationShouldHandleReopen(_: NSApplication, hasVisibleWindows _: Bool) -> Bool {
+        preferencesWindowController.show()
+        return true
     }
 
     @objc func handleGetURLEvent(_ event: NSAppleEventDescriptor,
@@ -81,14 +122,5 @@ public class AppDelegate: NSObject, NSApplicationDelegate {
 
         alert.beginSheetModal(for: preferencesWindow) { _ in
         }
-    }
-
-    public func applicationShouldTerminateAfterLastWindowClosed(_: NSApplication) -> Bool {
-        return true
-    }
-
-    public func applicationShouldHandleReopen(_: NSApplication, hasVisibleWindows _: Bool) -> Bool {
-        preferencesWindowController.show()
-        return true
     }
 }

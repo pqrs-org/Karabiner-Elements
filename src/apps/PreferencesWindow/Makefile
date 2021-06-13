@@ -15,6 +15,15 @@ purge-swift-package-manager-cache:
 run:
 	./build/Release/Karabiner-Elements.app/Contents/MacOS/Karabiner-Elements
 
+run-checkForUpdatesInBackground:
+	./build/Release/Karabiner-Elements.app/Contents/MacOS/Karabiner-Elements checkForUpdatesInBackground
+
+run-checkForUpdatesStableOnly:
+	./build/Release/Karabiner-Elements.app/Contents/MacOS/Karabiner-Elements checkForUpdatesStableOnly
+
+run-checkForUpdatesWithBetaVersion:
+	./build/Release/Karabiner-Elements.app/Contents/MacOS/Karabiner-Elements checkForUpdatesWithBetaVersion
+
 xcode:
 	open *.xcodeproj
 

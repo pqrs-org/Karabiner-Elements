@@ -6,53 +6,49 @@ import AppKit
 
 @objc
 public class Updater: NSObject {
-    static func checkForUpdatesInBackground() {
+    @objc
+    public static let shared = Updater()
+    @objc
+    public static let didFindValidUpdate = Notification.Name("didFindValidUpdate")
+    @objc
+    public static let updaterDidNotFindUpdate = Notification.Name("updaterDidNotFindUpdate")
+
+    func checkForUpdatesInBackground() {
         #if USE_SPARKLE
             let url = feedURL(false)
             print("checkForUpdates \(url)")
 
             SUUpdater.shared().feedURL = url
+            SUUpdater.shared().delegate = self
             SUUpdater.shared().checkForUpdatesInBackground()
         #endif
     }
 
     @objc
-    static func checkForUpdatesStableOnly() {
+    func checkForUpdatesStableOnly() {
         #if USE_SPARKLE
             let url = feedURL(false)
             print("checkForUpdates \(url)")
 
             SUUpdater.shared().feedURL = url
+            SUUpdater.shared().delegate = self
             SUUpdater.shared()?.checkForUpdates(self)
         #endif
     }
 
     @objc
-    static func checkForUpdatesWithBetaVersion() {
+    func checkForUpdatesWithBetaVersion() {
         #if USE_SPARKLE
             let url = feedURL(true)
             print("checkForUpdates \(url)")
 
             SUUpdater.shared().feedURL = url
+            SUUpdater.shared().delegate = self
             SUUpdater.shared()?.checkForUpdates(self)
         #endif
     }
 
-    @objc
-    static func startTerminationTimer() -> Timer {
-        return Timer.scheduledTimer(withTimeInterval: 1.0,
-                                    repeats: true) { (_: Timer) in
-            #if USE_SPARKLE
-                if !SUUpdater.shared().updateInProgress {
-                    NSApplication.shared.terminate(self)
-                }
-            #else
-                NSApplication.shared.terminate(self)
-            #endif
-        }
-    }
-
-    private static func feedURL(_ includingBetaVersions: Bool) -> URL {
+    private func feedURL(_ includingBetaVersions: Bool) -> URL {
         // ----------------------------------------
         // check beta & stable releases.
 
@@ -66,3 +62,15 @@ public class Updater: NSObject {
         return URL(string: "https://appcast.pqrs.org/karabiner-elements-appcast.xml")!
     }
 }
+
+#if USE_SPARKLE
+    extension Updater: SUUpdaterDelegate {
+        public func updater(_: SUUpdater, didFindValidUpdate _: SUAppcastItem) {
+            NotificationCenter.default.post(name: Updater.didFindValidUpdate, object: nil)
+        }
+
+        public func updaterDidNotFindUpdate(_: SUUpdater) {
+            NotificationCenter.default.post(name: Updater.updaterDidNotFindUpdate, object: nil)
+        }
+    }
+#endif
