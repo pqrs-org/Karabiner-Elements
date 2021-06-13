@@ -8,6 +8,7 @@ public class AppDelegate: NSObject, NSApplicationDelegate {
     @IBOutlet var preferencesWindowController: PreferencesWindowController!
     @IBOutlet var systemPreferencesManager: SystemPreferencesManager!
     @IBOutlet var stateJsonMonitor: StateJsonMonitor!
+    private var updaterMode = false
 
     override public init() {
         super.init()
@@ -43,8 +44,12 @@ public class AppDelegate: NSObject, NSApplicationDelegate {
 
         NotificationCenter.default.addObserver(forName: Updater.updaterDidNotFindUpdate,
                                                object: nil,
-                                               queue: .main) { _ in
-            NSApplication.shared.terminate(nil)
+                                               queue: .main) { [weak self] _ in
+            guard let self = self else { return }
+
+            if self.updaterMode {
+                NSApplication.shared.terminate(nil)
+            }
         }
 
         //
@@ -56,6 +61,7 @@ public class AppDelegate: NSObject, NSApplicationDelegate {
             switch command {
             case "checkForUpdatesInBackground":
                 #if USE_SPARKLE
+                    updaterMode = true
                     Updater.shared.checkForUpdatesInBackground()
                     return
                 #else
@@ -63,6 +69,7 @@ public class AppDelegate: NSObject, NSApplicationDelegate {
                 #endif
             case "checkForUpdatesStableOnly":
                 #if USE_SPARKLE
+                    updaterMode = true
                     Updater.shared.checkForUpdatesStableOnly()
                     return
                 #else
@@ -70,6 +77,7 @@ public class AppDelegate: NSObject, NSApplicationDelegate {
                 #endif
             case "checkForUpdatesWithBetaVersion":
                 #if USE_SPARKLE
+                    updaterMode = true
                     Updater.shared.checkForUpdatesWithBetaVersion()
                     return
                 #else
