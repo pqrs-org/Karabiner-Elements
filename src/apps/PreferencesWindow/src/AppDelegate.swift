@@ -55,14 +55,26 @@ public class AppDelegate: NSObject, NSApplicationDelegate {
             let command = CommandLine.arguments[1]
             switch command {
             case "checkForUpdatesInBackground":
-                Updater.shared.checkForUpdatesInBackground()
-                return
+                #if USE_SPARKLE
+                    Updater.shared.checkForUpdatesInBackground()
+                    return
+                #else
+                    NSApplication.shared.terminate(self)
+                #endif
             case "checkForUpdatesStableOnly":
-                Updater.shared.checkForUpdatesStableOnly()
-                return
+                #if USE_SPARKLE
+                    Updater.shared.checkForUpdatesStableOnly()
+                    return
+                #else
+                    NSApplication.shared.terminate(self)
+                #endif
             case "checkForUpdatesWithBetaVersion":
-                Updater.shared.checkForUpdatesWithBetaVersion()
-                return
+                #if USE_SPARKLE
+                    Updater.shared.checkForUpdatesWithBetaVersion()
+                    return
+                #else
+                    NSApplication.shared.terminate(self)
+                #endif
             default:
                 break
             }
