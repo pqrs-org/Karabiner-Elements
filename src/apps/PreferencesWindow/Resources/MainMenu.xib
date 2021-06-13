@@ -454,7 +454,7 @@
             </items>
             <point key="canvasLocation" x="88" y="476"/>
         </menu>
-        <window title="Karabiner-Elements Preferences" allowsToolTipsWhenApplicationIsInactive="NO" autorecalculatesKeyViewLoop="NO" releasedWhenClosed="NO" animationBehavior="default" id="QvC-M9-y7g">
+        <window title="Karabiner-Elements Preferences" allowsToolTipsWhenApplicationIsInactive="NO" autorecalculatesKeyViewLoop="NO" releasedWhenClosed="NO" visibleAtLaunch="NO" animationBehavior="default" id="QvC-M9-y7g">
             <windowStyleMask key="styleMask" titled="YES" closable="YES" miniaturizable="YES" resizable="YES"/>
             <rect key="contentRect" x="335" y="390" width="1000" height="550"/>
             <rect key="screenRect" x="0.0" y="0.0" width="2560" height="1415"/>
@@ -464,16 +464,16 @@
                 <autoresizingMask key="autoresizingMask"/>
                 <subviews>
                     <tabView initialItem="SOT-pf-9fT" translatesAutoresizingMaskIntoConstraints="NO" id="W8s-8N-CIx">
-                        <rect key="frame" x="13" y="10" width="905" height="350"/>
+                        <rect key="frame" x="13" y="10" width="905" height="189"/>
                         <font key="font" metaFont="menu"/>
                         <tabViewItems>
                             <tabViewItem label="Simple modifications" identifier="1" id="SOT-pf-9fT">
                                 <view key="view" id="aYZ-Ew-w2F">
-                                    <rect key="frame" x="10" y="33" width="885" height="304"/>
+                                    <rect key="frame" x="10" y="33" width="885" height="143"/>
                                     <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                     <subviews>
                                         <customView translatesAutoresizingMaskIntoConstraints="NO" id="Cqw-ll-1Rg">
-                                            <rect key="frame" x="187" y="264" width="511" height="30"/>
+                                            <rect key="frame" x="187" y="103" width="511" height="30"/>
                                             <subviews>
                                                 <popUpButton verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="oB5-NY-D3P">
                                                     <rect key="frame" x="98" y="1" width="407" height="25"/>
@@ -508,13 +508,13 @@
                                             </constraints>
                                         </customView>
                                         <scrollView autohidesScrollers="YES" horizontalLineScroll="28" horizontalPageScroll="10" verticalLineScroll="28" verticalPageScroll="10" usesPredominantAxisScrolling="NO" translatesAutoresizingMaskIntoConstraints="NO" id="7r4-lM-Seb">
-                                            <rect key="frame" x="17" y="42" width="851" height="212"/>
+                                            <rect key="frame" x="17" y="42" width="851" height="51"/>
                                             <clipView key="contentView" id="fPj-Ru-opD">
-                                                <rect key="frame" x="1" y="1" width="849" height="210"/>
-                                                <autoresizingMask key="autoresizingMask"/>
+                                                <rect key="frame" x="1" y="1" width="849" height="49"/>
+                                                <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                                 <subviews>
                                                     <tableView verticalHuggingPriority="750" allowsExpansionToolTips="YES" columnAutoresizingStyle="firstColumnOnly" alternatingRowBackgroundColors="YES" columnReordering="NO" columnSelection="YES" columnResizing="NO" multipleSelection="NO" autosaveColumns="NO" rowHeight="26" rowSizeStyle="automatic" headerView="bin-92-FO9" viewBased="YES" id="qEO-TG-yM2">
-                                                        <rect key="frame" x="0.0" y="0.0" width="849" height="187"/>
+                                                        <rect key="frame" x="0.0" y="0.0" width="849" height="28"/>
                                                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                                         <size key="intercellSpacing" width="3" height="2"/>
                                                         <color key="backgroundColor" name="controlBackgroundColor" catalog="System" colorSpace="catalog"/>
@@ -534,7 +534,7 @@
                                                                 <tableColumnResizingMask key="resizingMask" resizeWithTable="YES" userResizable="YES"/>
                                                                 <prototypeCellViews>
                                                                     <tableCellView identifier="SimpleModificationsFromCellView" id="Vw4-ce-qQw" customClass="SimpleModificationsTableCellView">
-                                                                        <rect key="frame" x="11" y="1" width="308" height="26"/>
+                                                                        <rect key="frame" x="1" y="1" width="308" height="26"/>
                                                                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                                                         <subviews>
                                                                             <popUpButton verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="l7m-AB-Jzs">
@@ -570,7 +570,7 @@
                                                                 <tableColumnResizingMask key="resizingMask" resizeWithTable="YES" userResizable="YES"/>
                                                                 <prototypeCellViews>
                                                                     <tableCellView identifier="SimpleModificationsToCellView" id="o0g-iq-ccT" customClass="SimpleModificationsTableCellView">
-                                                                        <rect key="frame" x="322" y="1" width="350" height="26"/>
+                                                                        <rect key="frame" x="312" y="1" width="350" height="26"/>
                                                                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                                                         <subviews>
                                                                             <popUpButton verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="grX-GY-0Tj">
@@ -606,7 +606,7 @@
                                                                 <tableColumnResizingMask key="resizingMask" resizeWithTable="YES" userResizable="YES"/>
                                                                 <prototypeCellViews>
                                                                     <tableCellView identifier="SimpleModificationsDeleteCellView" id="Tg2-rB-0jS" customClass="SimpleModificationsTableCellView">
-                                                                        <rect key="frame" x="675" y="1" width="124" height="26"/>
+                                                                        <rect key="frame" x="665" y="1" width="124" height="26"/>
                                                                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                                                         <subviews>
                                                                             <button verticalHuggingPriority="750" imageHugsTitle="YES" translatesAutoresizingMaskIntoConstraints="NO" id="zfo-6t-308">
@@ -2545,6 +2545,9 @@ In this case, you have to change the country code to avoid the conflict.
                     <constraint firstItem="W8s-8N-CIx" firstAttribute="top" secondItem="EiT-Mj-1SZ" secondAttribute="top" constant="12" id="zWU-Lj-dB2"/>
                 </constraints>
             </view>
+            <connections>
+                <outlet property="delegate" destination="5ke-qB-Wr5" id="9zh-TH-rJn"/>
+            </connections>
             <point key="canvasLocation" x="117" y="245"/>
         </window>
         <window title="Add rule" allowsToolTipsWhenApplicationIsInactive="NO" autorecalculatesKeyViewLoop="NO" hidesOnDeactivate="YES" releasedWhenClosed="NO" visibleAtLaunch="NO" frameAutosaveName="" animationBehavior="default" id="FqN-OP-TO2" customClass="NSPanel">

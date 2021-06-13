@@ -122,6 +122,11 @@
   // Do not manage grabber_agent and observer_agent because they are designed to run only once.
 }
 
+- (BOOL)windowShouldClose:(NSWindow*)sender {
+  [NSApplication.sharedApplication terminate:self];
+  return YES;
+}
+
 - (void)show {
   [self.window makeKeyAndOrderFront:self];
   [NSApp activateIgnoringOtherApps:YES];
@@ -288,11 +293,11 @@
 }
 
 - (IBAction)checkForUpdatesStableOnly:(id)sender {
-  [Updater checkForUpdatesStableOnly];
+  [Updater.shared checkForUpdatesStableOnly];
 }
 
 - (IBAction)checkForUpdatesWithBetaVersion:(id)sender {
-  [Updater checkForUpdatesWithBetaVersion];
+  [Updater.shared checkForUpdatesWithBetaVersion];
 }
 
 - (IBAction)systemDefaultProfileCopy:(id)sender {
