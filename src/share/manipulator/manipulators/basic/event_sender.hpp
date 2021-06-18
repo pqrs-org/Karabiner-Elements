@@ -131,6 +131,11 @@ inline void post_events_at_key_down(const event_queue::entry& front_input_event,
           is_modifier_key_event = true;
         }
       }
+      if (auto e = event->get_if<mouse_key>()) {
+        if (e->is_speed_multiplier()) {
+          is_modifier_key_event = true;
+        }
+      }
 
       {
         // Unset lazy if event is modifier key event in order to keep modifier keys order.

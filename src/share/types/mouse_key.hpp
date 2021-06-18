@@ -76,6 +76,10 @@ public:
            horizontal_wheel_ == 0;
   }
 
+  bool is_speed_multiplier(void) const {
+    return is_zero();
+  }
+
   void invert_wheel(void) {
     vertical_wheel_ = -vertical_wheel_;
     horizontal_wheel_ = -horizontal_wheel_;
@@ -99,13 +103,7 @@ public:
     return result;
   }
 
-  bool operator==(const mouse_key& other) const {
-    return x_ == other.x_ &&
-           y_ == other.y_ &&
-           vertical_wheel_ == other.vertical_wheel_ &&
-           horizontal_wheel_ == other.horizontal_wheel_ &&
-           speed_multiplier_ == other.speed_multiplier_;
-  }
+  constexpr auto operator<=>(const mouse_key&) const = default;
 
   bool operator!=(const mouse_key& other) const {
     return !(*this == other);
