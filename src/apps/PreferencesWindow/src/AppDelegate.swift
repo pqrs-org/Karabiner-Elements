@@ -110,40 +110,44 @@ public class AppDelegate: NSObject, NSApplicationDelegate {
         // - url == "karabiner://karabiner/simple_modifications/new?json={xxx}"
         guard let url = event.paramDescriptor(forKeyword: AEKeyword(keyDirectObject))?.stringValue else { return }
 
-        KarabinerKit.endAllAttachedSheets(preferencesWindow)
+        DispatchQueue.main.async { [weak self] in
+            guard let self = self else { return }
 
-        let urlComponents = URLComponents(string: url)
+            KarabinerKit.endAllAttachedSheets(self.preferencesWindow)
 
-        if urlComponents?.path == "/assets/complex_modifications/import" {
-            if let queryItems = urlComponents?.queryItems {
-                for pair in queryItems {
-                    if pair.name == "url" {
-                        complexModificationsFileImportWindowController.setup(pair.value)
-                        complexModificationsFileImportWindowController.show()
-                        return
+            let urlComponents = URLComponents(string: url)
+
+            if urlComponents?.path == "/assets/complex_modifications/import" {
+                if let queryItems = urlComponents?.queryItems {
+                    for pair in queryItems {
+                        if pair.name == "url" {
+                            self.complexModificationsFileImportWindowController.setup(pair.value)
+                            self.complexModificationsFileImportWindowController.show()
+                            return
+                        }
                     }
                 }
             }
-        }
 
-        if urlComponents?.path == "/simple_modifications/new" {
-            if let queryItems = urlComponents?.queryItems {
-                for pair in queryItems {
-                    if pair.name == "json" {
-                        simpleModificationsTableViewController.addItem(fromJson: pair.value)
-                        simpleModificationsTableViewController.openSimpleModificationsTab()
-                        return
+            if urlComponents?.path == "/simple_modifications/new" {
+                if let queryItems = urlComponents?.queryItems {
+                    for pair in queryItems {
+                        if pair.name == "json" {
+                            self.simpleModificationsTableViewController.addItem(fromJson: pair.value)
+                            self.simpleModificationsTableViewController.openSimpleModificationsTab()
+                            return
+                        }
                     }
                 }
             }
-        }
 
-        let alert = NSAlert()
-        alert.messageText = "Error"
-        alert.informativeText = "Unknown URL"
-        alert.addButton(withTitle: "OK")
+            let alert = NSAlert()
+            alert.messageText = "Error"
+            alert.informativeText = "Unknown URL"
+            alert.addButton(withTitle: "OK")
 
-        alert.beginSheetModal(for: preferencesWindow) { _ in
+            alert.beginSheetModal(for: self.preferencesWindow) { _ in
+            }
         }
     }
 }
