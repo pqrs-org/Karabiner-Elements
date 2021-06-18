@@ -88,6 +88,9 @@ public class AppDelegate: NSObject, NSApplicationDelegate {
             }
         }
 
+        var psn = ProcessSerialNumber(highLongOfPSN: 0, lowLongOfPSN: UInt32(kCurrentProcess))
+        TransformProcessType(&psn, ProcessApplicationTransformState(kProcessTransformToForegroundApplication))
+
         preferencesWindowController.show()
     }
 
