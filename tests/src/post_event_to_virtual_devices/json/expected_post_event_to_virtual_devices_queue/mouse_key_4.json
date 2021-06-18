@@ -1,0 +1,36 @@
+[
+    {
+        "keyboard_input": {
+            "keys": [],
+            "modifiers": [
+                "right_option"
+            ]
+        },
+        "time_stamp": 5,
+        "type": "keyboard_input"
+    },
+    {
+        "keyboard_input": {
+            "keys": [
+                {
+                    "key_code": "a"
+                }
+            ],
+            "modifiers": [
+                "right_option"
+            ]
+        },
+        "time_stamp": 10,
+        "type": "keyboard_input"
+    },
+    {
+        "keyboard_input": {
+            "keys": [],
+            "modifiers": [
+                "right_option"
+            ]
+        },
+        "time_stamp": 15,
+        "type": "keyboard_input"
+    }
+]

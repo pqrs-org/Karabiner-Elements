@@ -32,5 +32,23 @@
                 "pointing_button": "button1"
             }
         ]
+    },
+    {
+        "description": "right_option -> speed_multiplier which is treated as like modifier",
+        "type": "basic",
+        "from": {
+            "key_code": "right_option",
+            "modifiers": {
+                "optional": ["any"]
+            }
+        },
+        "to": [
+            {
+                "mouse_key": {
+                    "speed_multiplier": 0.5
+                },
+                "modifiers": ["right_option"]
+            }
+        ]
     }
 ]
