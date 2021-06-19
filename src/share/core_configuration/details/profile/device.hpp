@@ -84,8 +84,7 @@ public:
     // manipulate_caps_lock_led_
 
     if (!manipulate_caps_lock_led_configured) {
-      if (identifiers_.get_is_keyboard() &&
-          identifiers_.is_apple()) {
+      if (identifiers_.get_is_keyboard()) {
         manipulate_caps_lock_led_ = true;
       }
     }
