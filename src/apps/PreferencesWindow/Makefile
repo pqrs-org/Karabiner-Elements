@@ -3,8 +3,8 @@ all:
 	make -C ../lib/KarabinerKit
 	bash run-xcodegen.sh
 	xcodebuild -configuration Release -alltargets SYMROOT="$(CURDIR)/build"
-	[ -d build/Release/Karabiner-Elements.app/Contents/Frameworks/Sparkle.framework ] && \
-		install -m 644 ../share/Resources/app.icns build/Release/Karabiner-Elements.app/Contents/Frameworks/Sparkle.framework/Versions/A/Resources/Autoupdate.app/Contents/Resources/AppIcon.icns
+# We have to ignore the error because `install` will be failed if Sparkle is disabled when PQRS_ORG_CODE_SIGN_IDENTITY is empty.
+	-install -m 644 ../share/Resources/app.icns build/Release/Karabiner-Elements.app/Contents/Frameworks/Sparkle.framework/Versions/A/Resources/Autoupdate.app/Contents/Resources/AppIcon.icns
 
 clean:
 	rm -fr *.xcodeproj
