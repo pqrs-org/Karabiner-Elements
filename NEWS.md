@@ -1,7 +1,10 @@
 # Changelog
 
-## Beta
+## Karabiner-Elements 13.5.0
 
+-   [📦 Download](https://github.com/pqrs-org/Karabiner-Elements/releases/download/v13.5.0/Karabiner-Elements-13.5.0.dmg)
+-   📅 Release date
+    -   Jun 20, 2021
 -   ⚡️ Improvements
     -   Improved temporary directory handling to reduce the frequency of mds process accessing it.
     -   Improved `mouse_key.speed_multiplier` handling when it is used with `to.modifiers`, the modifier is retained while speed_multiplier is active.
