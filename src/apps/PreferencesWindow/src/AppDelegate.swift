@@ -98,6 +98,13 @@ public class AppDelegate: NSObject, NSApplicationDelegate {
         libkrbn_terminate()
     }
 
+    public func applicationShouldTerminateAfterLastWindowClosed(_: NSApplication) -> Bool {
+        if Updater.shared.updateInProgress {
+            return false
+        }
+        return true
+    }
+
     public func applicationShouldHandleReopen(_: NSApplication, hasVisibleWindows _: Bool) -> Bool {
         preferencesWindowController.show()
         return true
