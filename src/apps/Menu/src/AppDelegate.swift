@@ -12,7 +12,7 @@ public class AppDelegate: NSObject, NSApplicationDelegate {
         KarabinerKit.setup()
         KarabinerKit.observeConsoleUserServerIsDisabledNotification()
 
-        menuController.setup()
+        MenuController.shared.setup()
     }
 
     public func applicationWillTerminate(_: Notification) {

@@ -1,11 +1,20 @@
 public class MenuController: NSObject, NSMenuDelegate {
-    @IBOutlet var menu: NSMenu!
+    static let shared = MenuController()
+
+    var menu: NSMenu!
     var statusItem: NSStatusItem?
     var menuIcon: NSImage?
     var observers: KarabinerKitSmartObserverContainer?
 
+    override public init() {
+        super.init()
+        menu = NSMenu(title: "Karabiner-Elements")
+    }
+
     public func setup() {
         terminateIfHidden()
+
+        menu.delegate = self
 
         menuIcon = NSImage(named: "MenuIcon")
 
@@ -87,25 +96,23 @@ public class MenuController: NSObject, NSMenuDelegate {
         // Clear existing items
         //
 
-        while let item = menu.item(at: 0) {
-            if item.title == "endoflist" {
-                break
-            }
-
-            menu.removeItem(at: 0)
-        }
+        menu.removeAllItems()
 
         //
         // Append items
         //
 
         let version = Bundle.main.object(forInfoDictionaryKey: "CFBundleVersion") as! String
-        menu.insertItem(withTitle: "Karabiner-Elements \(version)",
-                        action: nil,
-                        keyEquivalent: "",
-                        at: 0)
+        menu.addItem(withTitle: "Karabiner-Elements \(version)",
+                     action: nil,
+                     keyEquivalent: "")
 
-        menu.insertItem(NSMenuItem.separator(), at: 1)
+        // Profiles
+
+        menu.addItem(NSMenuItem.separator())
+        menu.addItem(withTitle: "Profiles",
+                     action: nil,
+                     keyEquivalent: "")
 
         if let coreConfigurationModel = KarabinerKitConfigurationManager.shared().coreConfigurationModel {
             for i in 0 ..< coreConfigurationModel.profilesCount {
@@ -115,6 +122,7 @@ public class MenuController: NSObject, NSMenuDelegate {
 
                 newItem.target = self
                 newItem.representedObject = UInt(i)
+                newItem.indentationLevel = 1
 
                 if coreConfigurationModel.profileSelected(at: i) {
                     newItem.state = .on
@@ -122,12 +130,42 @@ public class MenuController: NSObject, NSMenuDelegate {
                     newItem.state = .off
                 }
 
-                menu.insertItem(newItem, at: Int(i + 2))
+                menu.addItem(newItem)
             }
+        }
+
+        // Others
+
+        menu.addItem(NSMenuItem.separator())
+        do {
+            let newItem = NSMenuItem(title: "Preferences...",
+                                     action: #selector(openPreferences),
+                                     keyEquivalent: "")
+            newItem.target = self
+            menu.addItem(newItem)
+        }
+        do {
+            let newItem = NSMenuItem(title: "Launch EventViewer...",
+                                     action: #selector(launchEventViewer),
+                                     keyEquivalent: "")
+            newItem.target = self
+            menu.addItem(newItem)
+        }
+
+        // Quit
+
+        menu.addItem(NSMenuItem.separator())
+        do {
+            let newItem = NSMenuItem(title: "Quit Karabiner-Elements",
+                                     action: #selector(quitKarabiner),
+                                     keyEquivalent: "")
+            newItem.target = self
+            menu.addItem(newItem)
         }
     }
 
-    @objc func profileSelected(sender: NSMenuItem) {
+    @objc
+    func profileSelected(sender: NSMenuItem) {
         let index = sender.representedObject as! UInt
         if let coreConfigurationModel = KarabinerKitConfigurationManager.shared().coreConfigurationModel {
             coreConfigurationModel.selectProfile(at: index)
@@ -137,19 +175,18 @@ public class MenuController: NSObject, NSMenuDelegate {
         }
     }
 
-    @IBAction func openPreferences(_: Any) {
+    @objc
+    func openPreferences(_: Any) {
         libkrbn_launch_preferences()
     }
 
-    @IBAction func checkForUpdates(_: Any) {
-        libkrbn_check_for_updates_stable_only()
-    }
-
-    @IBAction func launchEventViewer(_: Any) {
+    @objc
+    func launchEventViewer(_: Any) {
         libkrbn_launch_event_viewer()
     }
 
-    @IBAction func quitKarabiner(_: Any) {
+    @objc
+    func quitKarabiner(_: Any) {
         KarabinerKit.quitKarabinerWithConfirmation()
     }
 }
