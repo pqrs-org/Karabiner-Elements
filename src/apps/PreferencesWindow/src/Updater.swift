@@ -48,6 +48,14 @@ public class Updater: NSObject {
         #endif
     }
 
+    var updateInProgress: Bool {
+        #if USE_SPARKLE
+            return SUUpdater.shared().updateInProgress
+        #else
+            return false
+        #endif
+    }
+
     private func feedURL(_ includingBetaVersions: Bool) -> URL {
         // ----------------------------------------
         // check beta & stable releases.
