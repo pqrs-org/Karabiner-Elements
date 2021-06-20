@@ -122,11 +122,6 @@
   // Do not manage grabber_agent and observer_agent because they are designed to run only once.
 }
 
-- (BOOL)windowShouldClose:(NSWindow*)sender {
-  [NSApplication.sharedApplication terminate:self];
-  return YES;
-}
-
 - (void)show {
   [self.window makeKeyAndOrderFront:self];
   [NSApp activateIgnoringOtherApps:YES];
