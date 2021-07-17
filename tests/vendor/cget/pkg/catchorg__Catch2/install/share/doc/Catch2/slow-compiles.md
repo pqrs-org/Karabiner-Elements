@@ -5,6 +5,7 @@
 [Short answer](#short-answer)<br>
 [Long answer](#long-answer)<br>
 [Practical example](#practical-example)<br>
+[Using the static library Catch2WithMain](#using-the-static-library-catch2withmain)<br>
 [Other possible solutions](#other-possible-solutions)<br>
 
 Several people have reported that test code written with Catch takes much longer to compile than they would expect. Why is that?
@@ -63,6 +64,39 @@ $ g++ tests-main.o factorial.o tests-factorial.cpp -o tests && ./tests -r compac
 tests-factorial.cpp:11: failed: Factorial(0) == 1 for: 0 == 1
 Failed 1 test case, failed 1 assertion.
 ```
+
+
+## Using the static library Catch2WithMain
+
+Catch2 also provides a static library that implements the runner. Note
+that this support is experimental, due to interactions between Catch2 v2
+implementation and C++ linking limitations.
+
+As with the `Catch2` target, the `Catch2WithMain` CMake target can be used
+either from a subdirectory, or from installed build.
+
+
+### CMake
+```cmake
+add_executable(tests-factorial tests-factorial.cpp)
+
+target_link_libraries(tests-factorial Catch2::Catch2WithMain)
+```
+
+### bazel
+```python
+cc_test(
+    name = "hello_world_test",
+    srcs = [
+        "test/hello_world_test.cpp",
+    ],
+    deps = [
+        "lib_hello_world",
+        "@catch2//:catch2_with_main",
+    ],
+)
+```
+
 
 ## Other possible solutions
 You can also opt to sacrifice some features in order to speed-up Catch's compilation times. For details see the [documentation on Catch's compile-time configuration](configuration.md#other-toggles).

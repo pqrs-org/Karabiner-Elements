@@ -36,6 +36,20 @@ add_subdirectory(lib/Catch2)
 target_link_libraries(tests Catch2::Catch2)
 ```
 
+Another possibility is to use [FetchContent](https://cmake.org/cmake/help/latest/module/FetchContent.html):
+```cmake
+Include(FetchContent)
+
+FetchContent_Declare(
+  Catch2
+  GIT_REPOSITORY https://github.com/catchorg/Catch2.git
+  GIT_TAG        v2.13.1)
+
+FetchContent_MakeAvailable(Catch2)
+
+target_link_libraries(tests Catch2::Catch2)
+```
+
 ## Automatic test registration
 
 Catch2's repository also contains two CMake scripts that help users
@@ -43,7 +57,7 @@ with automatically registering their `TEST_CASE`s with CTest. They
 can be found in the `contrib` folder, and are
 
 1) `Catch.cmake` (and its dependency `CatchAddTests.cmake`)
-2) `ParseAndAddCatchTests.cmake`
+2) `ParseAndAddCatchTests.cmake` (deprecated)
 
 If Catch2 has been installed in system, both of these can be used after
 doing `find_package(Catch2 REQUIRED)`. Otherwise you need to add them
@@ -83,6 +97,10 @@ catch_discover_tests(target
                      [TEST_SUFFIX suffix]
                      [PROPERTIES name1 value1...]
                      [TEST_LIST var]
+                     [REPORTER reporter]
+                     [OUTPUT_DIR dir]
+                     [OUTPUT_PREFIX prefix]
+                     [OUTPUT_SUFFIX suffix]
 )
 ```
 
@@ -129,13 +147,46 @@ default `<target>_TESTS`.  This can be useful when the same test
 executable is being used in multiple calls to `catch_discover_tests()`.
 Note that this variable is only available in CTest.
 
+* `REPORTER reporter`
+
+Use the specified reporter when running the test case. The reporter will
+be passed to the test runner as `--reporter reporter`.
+
+* `OUTPUT_DIR dir`
+
+If specified, the parameter is passed along as
+`--out dir/<test_name>` to test executable. The actual file name is the
+same as the test name. This should be used instead of
+`EXTRA_ARGS --out foo` to avoid race conditions writing the result output
+when using parallel test execution.
+
+* `OUTPUT_PREFIX prefix`
+
+May be used in conjunction with `OUTPUT_DIR`.
+If specified, `prefix` is added to each output file name, like so
+`--out dir/prefix<test_name>`.
+
+* `OUTPUT_SUFFIX suffix`
+
+May be used in conjunction with `OUTPUT_DIR`.
+If specified, `suffix` is added to each output file name, like so
+`--out dir/<test_name>suffix`. This can be used to add a file extension to
+the output file name e.g. ".xml".
+
 
 ### `ParseAndAddCatchTests.cmake`
+
+⚠ This script is [deprecated](https://github.com/catchorg/Catch2/pull/2120)
+in Catch 2.13.4 and superseded by the above approach using `catch_discover_tests`.
+See [#2092](https://github.com/catchorg/Catch2/issues/2092) for details.
 
 `ParseAndAddCatchTests` works by parsing all implementation files
 associated with the provided target, and registering them via CTest's
 `add_test`. This approach has some limitations, such as the fact that
-commented-out tests will be registered anyway.
+commented-out tests will be registered anyway. More serious, only a
+subset of the assertion macros currently available in Catch can be
+detected by this script and tests with any macros that cannot be
+parsed are *silently ignored*.
 
 
 #### Usage

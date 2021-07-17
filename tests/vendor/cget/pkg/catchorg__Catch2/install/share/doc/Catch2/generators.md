@@ -42,7 +42,7 @@ that allows users to implement their own generators.
 effects. The simplest usage is shown below, where the `SECTION` "one"
 runs 4 (2\*2) times, and `SECTION` "two" is run 6 times (2\*3).
 
-```
+```cpp
 TEST_CASE("Generators") {
     auto i = GENERATE(1, 2);
     SECTION("one") {
@@ -51,7 +51,7 @@ TEST_CASE("Generators") {
     }
     SECTION("two") {
         auto k = GENERATE(4, 5, 6);
-        REQUIRE(j != k);
+        REQUIRE(i != k);
     }
 }
 ```
@@ -60,7 +60,7 @@ The specific order of the `SECTION`s will be "one", "one", "two", "two",
 "two", "one"...
 
 
-The fact that `GENERATE` introduces a virtual `SECTION` can als obe used
+The fact that `GENERATE` introduces a virtual `SECTION` can also be used
 to make a generator replay only some `SECTION`s, without having to
 explicitly add a `SECTION`. As an example, the code below reports 3
 assertions, because the "first" section is run once, but the "second"

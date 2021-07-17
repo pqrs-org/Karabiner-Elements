@@ -94,6 +94,9 @@ A thread-safe header-only mocking framework for C++14.
 
 ## Applications & Tools
 
+### [App Mesh](https://github.com/laoshanxi/app-mesh)
+A high available cloud native micro-service application management platform implemented by modern C++.
+
 ### [ArangoDB](https://github.com/arangodb/arangodb)
 ArangoDB is a native multi-model database with flexible data models for documents, graphs, and key-values.
 

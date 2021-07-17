@@ -21,12 +21,12 @@ to the codebase itself.
 
 ## Using Git(Hub)
 
-Ongoing development happens in the `master` branch for Catch2 v2, and in
-`dev-v3` for the next major version, v3.
+Ongoing development happens in the `v2.x` branch for Catch2 v2, and in
+`devel` for the next major version, v3.
 
 Commits should be small and atomic. A commit is atomic when, after it is
 applied, the codebase, tests and all, still works as expected. Small
-commits are also prefered, as they make later operations with git history,
+commits are also preferred, as they make later operations with git history,
 whether it is bisecting, reverting, or something else, easier.
 
 _When submitting a pull request please do not include changes to the

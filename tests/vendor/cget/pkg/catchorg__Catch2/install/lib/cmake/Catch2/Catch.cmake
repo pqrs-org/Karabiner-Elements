@@ -33,6 +33,10 @@ same as the Catch name; see also ``TEST_PREFIX`` and ``TEST_SUFFIX``.
                          [TEST_SUFFIX suffix]
                          [PROPERTIES name1 value1...]
                          [TEST_LIST var]
+                         [REPORTER reporter]
+                         [OUTPUT_DIR dir]
+                         [OUTPUT_PREFIX prefix}
+                         [OUTPUT_SUFFIX suffix]
     )
 
   ``catch_discover_tests`` sets up a post-build command on the test executable
@@ -90,6 +94,28 @@ same as the Catch name; see also ``TEST_PREFIX`` and ``TEST_SUFFIX``.
     executable is being used in multiple calls to ``catch_discover_tests()``.
     Note that this variable is only available in CTest.
 
+  ``REPORTER reporter``
+    Use the specified reporter when running the test case. The reporter will
+    be passed to the Catch executable as ``--reporter reporter``.
+
+  ``OUTPUT_DIR dir``
+    If specified, the parameter is passed along as
+    ``--out dir/<test_name>`` to Catch executable. The actual file name is the
+    same as the test name. This should be used instead of
+    ``EXTRA_ARGS --out foo`` to avoid race conditions writing the result output
+    when using parallel test execution.
+
+  ``OUTPUT_PREFIX prefix``
+    May be used in conjunction with ``OUTPUT_DIR``.
+    If specified, ``prefix`` is added to each output file name, like so
+    ``--out dir/prefix<test_name>``.
+
+  ``OUTPUT_SUFFIX suffix``
+    May be used in conjunction with ``OUTPUT_DIR``.
+    If specified, ``suffix`` is added to each output file name, like so
+    ``--out dir/<test_name>suffix``. This can be used to add a file extension to
+    the output e.g. ".xml".
+
 #]=======================================================================]
 
 #------------------------------------------------------------------------------
@@ -97,7 +123,7 @@ function(catch_discover_tests TARGET)
   cmake_parse_arguments(
     ""
     ""
-    "TEST_PREFIX;TEST_SUFFIX;WORKING_DIRECTORY;TEST_LIST"
+    "TEST_PREFIX;TEST_SUFFIX;WORKING_DIRECTORY;TEST_LIST;REPORTER;OUTPUT_DIR;OUTPUT_PREFIX;OUTPUT_SUFFIX"
     "TEST_SPEC;EXTRA_ARGS;PROPERTIES"
     ${ARGN}
   )
@@ -110,7 +136,7 @@ function(catch_discover_tests TARGET)
   endif()
 
   ## Generate a unique name based on the extra arguments
-  string(SHA1 args_hash "${_TEST_SPEC} ${_EXTRA_ARGS}")
+  string(SHA1 args_hash "${_TEST_SPEC} ${_EXTRA_ARGS} ${_REPORTER} ${_OUTPUT_DIR} ${_OUTPUT_PREFIX} ${_OUTPUT_SUFFIX}")
   string(SUBSTRING ${args_hash} 0 7 args_hash)
 
   # Define rule to generate test list for aforementioned test executable
@@ -134,6 +160,10 @@ function(catch_discover_tests TARGET)
             -D "TEST_PREFIX=${_TEST_PREFIX}"
             -D "TEST_SUFFIX=${_TEST_SUFFIX}"
             -D "TEST_LIST=${_TEST_LIST}"
+            -D "TEST_REPORTER=${_REPORTER}"
+            -D "TEST_OUTPUT_DIR=${_OUTPUT_DIR}"
+            -D "TEST_OUTPUT_PREFIX=${_OUTPUT_PREFIX}"
+            -D "TEST_OUTPUT_SUFFIX=${_OUTPUT_SUFFIX}"
             -D "CTEST_FILE=${ctest_tests_file}"
             -P "${_CATCH_DISCOVER_TESTS_SCRIPT}"
     VERBATIM
@@ -172,4 +202,5 @@ endfunction()
 
 set(_CATCH_DISCOVER_TESTS_SCRIPT
   ${CMAKE_CURRENT_LIST_DIR}/CatchAddTests.cmake
+  CACHE INTERNAL "Catch2 full path to CatchAddTests.cmake helper file"
 )

@@ -72,6 +72,13 @@ Instead you will have to write this:
             REQUIRE_THAT(foo(), m1 || m2 || m3);
 ```
 
+### `ParseAndAddCatchTests.cmake`
+
+The CMake/CTest integration using `ParseAndAddCatchTests.cmake` is deprecated,
+as it can be replaced by `Catch.cmake` that provides the function
+`catch_discover_tests` to get tests directly from a CMake target via the
+command line interface instead of parsing C++ code with regular expressions.
+
 
 ## Planned changes
 

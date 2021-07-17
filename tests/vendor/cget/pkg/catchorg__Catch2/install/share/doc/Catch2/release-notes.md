@@ -2,6 +2,12 @@
 
 # Release notes
 **Contents**<br>
+[2.13.6](#2136)<br>
+[2.13.5](#2135)<br>
+[2.13.4](#2134)<br>
+[2.13.3](#2133)<br>
+[2.13.2](#2132)<br>
+[2.13.1](#2131)<br>
 [2.13.0](#2130)<br>
 [2.12.4](#2124)<br>
 [2.12.3](#2123)<br>
@@ -39,6 +45,95 @@
 [2.0.1](#201)<br>
 [Older versions](#older-versions)<br>
 [Even Older versions](#even-older-versions)<br>
+
+
+## 2.13.6
+
+### Fixes
+* Disabling all signal handlers no longer breaks compilation  (#2212, #2213)
+
+### Miscellaneous
+* `catch_discover_tests` should handle escaped semicolon (`;`) better (#2214, #2215)
+
+
+## 2.13.5
+
+### Improvements
+* Detection of MAC and IPHONE platforms has been improved (#2140, #2157)
+* Added workaround for bug in XLC 16.1.0.1 (#2155)
+* Add detection for LCC when it is masquerading as GCC (#2199)
+* Modified posix signal handling so it supports newer libcs (#2178)
+  * `MINSIGSTKSZ` was no longer usable in constexpr context.
+
+### Fixes
+* Fixed compilation of benchmarking when `min` and `max` macros are defined (#2159)
+  * Including `windows.h` without `NOMINMAX` remains a really bad idea, don't do it
+
+### Miscellaneous
+* `Catch2WithMain` target (static library) is no longer built by default (#2142)
+  * Building it by default was at best unnecessary overhead for people not using it, and at worst it caused trouble with install paths
+  * To have it built, set CMake option `CATCH_BUILD_STATIC_LIBRARY` to `ON`
+* The check whether Catch2 is being built as a subproject is now more reliable (#2202, #2204)
+  * The problem was that if the variable name used internally was defined the project including Catch2 as subproject, it would not be properly overwritten for Catch2's CMake.
+
+
+## 2.13.4
+
+### Improvements
+* Improved the hashing algorithm used for shuffling test cases (#2070)
+  * `TEST_CASE`s that differ only in the last character should be properly shuffled
+  * Note that this means that v2.13.4 gives you a different order of test cases than 2.13.3, even given the same seed.
+
+### Miscellaneous
+* Deprecated `ParseAndAddCatchTests` CMake integration (#2092)
+  * It is impossible to implement it properly for all the different test case variants Catch2 provides, and there are better options provided.
+  * Use `catch_discover_tests` instead, which uses runtime information about available tests.
+* Fixed bug in `catch_discover_tests` that would cause it to fail when used in specific project structures (#2119)
+* Added Bazel build file
+* Added an experimental static library target to CMake
+
+
+## 2.13.3
+
+### Fixes
+* Fixed possible infinite loop when combining generators with section filter (`-c` option) (#2025)
+
+### Miscellaneous
+* Fixed `ParseAndAddCatchTests` not finding `TEST_CASE`s without tags (#2055, #2056)
+* `ParseAndAddCatchTests` supports `CMP0110` policy for changing behaviour of `add_test` (#2057)
+  * This was the shortlived change in CMake 3.18.0 that temporarily broke `ParseAndAddCatchTests`
+
+
+## 2.13.2
+
+### Improvements
+* Implemented workaround for AppleClang shadowing bug (#2030)
+* Implemented workaround for NVCC ICE (#2005, #2027)
+
+### Fixes
+* Fixed detection of `std::uncaught_exceptions` support under non-msvc platforms (#2021)
+* Fixed the experimental stdout/stderr capture under Windows (#2013)
+
+### Miscellaneous
+* `catch_discover_tests` has been improved significantly (#2023, #2039)
+  * You can now specify which reporter should be used
+  * You can now modify where the output will be written
+  * `WORKING_DIRECTORY` setting is respected
+* `ParseAndAddCatchTests` now supports `TEMPLATE_TEST_CASE` macros (#2031)
+* Various documentation fixes and improvements (#2022, #2028, #2034)
+
+
+## 2.13.1
+
+### Improvements
+* `ParseAndAddCatchTests` handles CMake v3.18.0 correctly (#1984)
+* Improved autodetection of `std::byte` (#1992)
+* Simplified implementation of templated test cases (#2007)
+  * This should have a tiny positive effect on its compilation throughput
+
+### Fixes
+* Automatic stringification of ranges handles sentinel ranges properly (#2004)
+
 
 ## 2.13.0
 
@@ -632,7 +727,7 @@ than `single_include/catch.hpp`.**
 * CLR objects (`T^`) can now be stringified (#1216)
   * This affects code compiled as C++/CLI
 * Added `PredicateMatcher`, a matcher that takes an arbitrary predicate function (#1236)
-  * See [documentation for details](https://github.com/catchorg/Catch2/blob/master/docs/matchers.md)
+  * See [documentation for details](https://github.com/catchorg/Catch2/blob/v2.x/docs/matchers.md)
 
 ### Others
 * Modified CMake-installed pkg-config to allow `#include <catch.hpp>`(#1239)
@@ -660,7 +755,7 @@ than `single_include/catch.hpp`.**
 * Added an option to warn (+ exit with error) when no tests were ran (#1158)
   * Use as `-w NoTests`
 * Added provisional support for Emscripten (#1114)
-* [Added a way to override the fallback stringifier](https://github.com/catchorg/Catch2/blob/master/docs/configuration.md#fallback-stringifier) (#1024)
+* [Added a way to override the fallback stringifier](https://github.com/catchorg/Catch2/blob/v2.x/docs/configuration.md#fallback-stringifier) (#1024)
   * This allows project's own stringification machinery to be easily reused for Catch
 * `Catch::Session::run()` now accepts `char const * const *`, allowing it to accept array of string literals (#1031, #1178)
   * The embedded version of Clara was bumped to v1.1.3
