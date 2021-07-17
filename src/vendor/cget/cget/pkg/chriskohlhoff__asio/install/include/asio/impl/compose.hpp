@@ -2,7 +2,7 @@
 // impl/compose.hpp
 // ~~~~~~~~~~~~~~~~
 //
-// Copyright (c) 2003-2020 Christopher M. Kohlhoff (chris at kohlhoff dot com)
+// Copyright (c) 2003-2021 Christopher M. Kohlhoff (chris at kohlhoff dot com)
 //
 // Distributed under the Boost Software License, Version 1.0. (See accompanying
 // file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
@@ -17,6 +17,7 @@
 
 #include "asio/detail/config.hpp"
 #include "asio/associated_executor.hpp"
+#include "asio/detail/base_from_cancellation_state.hpp"
 #include "asio/detail/handler_alloc_helpers.hpp"
 #include "asio/detail/handler_cont_helpers.hpp"
 #include "asio/detail/handler_invoke_helpers.hpp"
@@ -293,13 +294,16 @@ namespace detail
   template <typename Impl, typename Work, typename Handler, typename Signature>
   class composed_op
 #endif // defined(ASIO_HAS_VARIADIC_TEMPLATES)
+    : public base_from_cancellation_state<Handler>
   {
   public:
     template <typename I, typename W, typename H>
     composed_op(ASIO_MOVE_ARG(I) impl,
         ASIO_MOVE_ARG(W) work,
         ASIO_MOVE_ARG(H) handler)
-      : impl_(ASIO_MOVE_CAST(I)(impl)),
+      : base_from_cancellation_state<Handler>(
+          handler, enable_terminal_cancellation()),
+        impl_(ASIO_MOVE_CAST(I)(impl)),
         work_(ASIO_MOVE_CAST(W)(work)),
         handler_(ASIO_MOVE_CAST(H)(handler)),
         invocations_(0)
@@ -308,7 +312,10 @@ namespace detail
 
 #if defined(ASIO_HAS_MOVE)
     composed_op(composed_op&& other)
-      : impl_(ASIO_MOVE_CAST(Impl)(other.impl_)),
+      : base_from_cancellation_state<Handler>(
+          ASIO_MOVE_CAST(base_from_cancellation_state<
+            Handler>)(other)),
+        impl_(ASIO_MOVE_CAST(Impl)(other.impl_)),
         work_(ASIO_MOVE_CAST(Work)(other.work_)),
         handler_(ASIO_MOVE_CAST(Handler)(other.handler_)),
         invocations_(other.invocations_)
@@ -342,13 +349,15 @@ namespace detail
     {
       if (invocations_ < ~0u)
         ++invocations_;
+      this->get_cancellation_state().slot().clear();
       impl_(*this, ASIO_MOVE_CAST(T)(t)...);
     }
 
     void complete(Args... args)
     {
       this->work_.reset();
-      this->handler_(ASIO_MOVE_CAST(Args)(args)...);
+      ASIO_MOVE_OR_LVALUE(Handler)(this->handler_)(
+          ASIO_MOVE_CAST(Args)(args)...);
     }
 
 #else // defined(ASIO_HAS_VARIADIC_TEMPLATES)
@@ -357,13 +366,14 @@ namespace detail
     {
       if (invocations_ < ~0u)
         ++invocations_;
+      this->get_cancellation_state().slot().clear();
       impl_(*this);
     }
 
     void complete()
     {
       this->work_.reset();
-      this->handler_();
+      ASIO_MOVE_OR_LVALUE(Handler)(this->handler_)();
     }
 
 #define ASIO_PRIVATE_COMPOSED_OP_DEF(n) \
@@ -372,6 +382,7 @@ namespace detail
     { \
       if (invocations_ < ~0u) \
         ++invocations_; \
+      this->get_cancellation_state().slot().clear(); \
       impl_(*this, ASIO_VARIADIC_MOVE_ARGS(n)); \
     } \
     \
@@ -379,13 +390,35 @@ namespace detail
     void complete(ASIO_VARIADIC_MOVE_PARAMS(n)) \
     { \
       this->work_.reset(); \
-      this->handler_(ASIO_VARIADIC_MOVE_ARGS(n)); \
+      ASIO_MOVE_OR_LVALUE(Handler)(this->handler_)( \
+          ASIO_VARIADIC_MOVE_ARGS(n)); \
     } \
     /**/
     ASIO_VARIADIC_GENERATE(ASIO_PRIVATE_COMPOSED_OP_DEF)
 #undef ASIO_PRIVATE_COMPOSED_OP_DEF
 
 #endif // defined(ASIO_HAS_VARIADIC_TEMPLATES)
+
+    void reset_cancellation_state()
+    {
+      base_from_cancellation_state<Handler>::reset_cancellation_state(handler_);
+    }
+
+    template <typename Filter>
+    void reset_cancellation_state(ASIO_MOVE_ARG(Filter) filter)
+    {
+      base_from_cancellation_state<Handler>::reset_cancellation_state(handler_,
+          ASIO_MOVE_CAST(Filter)(filter));
+    }
+
+    template <typename InFilter, typename OutFilter>
+    void reset_cancellation_state(ASIO_MOVE_ARG(InFilter) in_filter,
+        ASIO_MOVE_ARG(OutFilter) out_filter)
+    {
+      base_from_cancellation_state<Handler>::reset_cancellation_state(handler_,
+          ASIO_MOVE_CAST(InFilter)(in_filter),
+          ASIO_MOVE_CAST(OutFilter)(out_filter));
+    }
 
   //private:
     Impl impl_;
@@ -500,7 +533,9 @@ namespace detail
   get_composed_io_executor(IoObject& io_object,
       typename enable_if<
         !is_executor<IoObject>::value
-          && !execution::is_executor<IoObject>::value
+      >::type* = 0,
+      typename enable_if<
+        !execution::is_executor<IoObject>::value
       >::type* = 0)
   {
     return io_object.get_executor();
@@ -518,6 +553,23 @@ namespace detail
 } // namespace detail
 
 #if !defined(GENERATING_DOCUMENTATION)
+
+template <template <typename, typename> class Associator,
+    typename Impl, typename Work, typename Handler,
+    typename Signature, typename DefaultCandidate>
+struct associator<Associator,
+    detail::composed_op<Impl, Work, Handler, Signature>,
+    DefaultCandidate>
+  : Associator<Handler, DefaultCandidate>
+{
+  static typename Associator<Handler, DefaultCandidate>::type get(
+      const detail::composed_op<Impl, Work, Handler, Signature>& h,
+      const DefaultCandidate& c = DefaultCandidate()) ASIO_NOEXCEPT
+  {
+    return Associator<Handler, DefaultCandidate>::get(h.handler_, c);
+  }
+};
+
 #if defined(ASIO_HAS_VARIADIC_TEMPLATES)
 
 template <typename CompletionToken, typename Signature,

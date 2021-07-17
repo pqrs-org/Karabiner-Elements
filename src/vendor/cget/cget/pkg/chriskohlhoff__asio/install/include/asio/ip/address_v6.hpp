@@ -2,7 +2,7 @@
 // ip/address_v6.hpp
 // ~~~~~~~~~~~~~~~~~
 //
-// Copyright (c) 2003-2020 Christopher M. Kohlhoff (chris at kohlhoff dot com)
+// Copyright (c) 2003-2021 Christopher M. Kohlhoff (chris at kohlhoff dot com)
 //
 // Distributed under the Boost Software License, Version 1.0. (See accompanying
 // file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
@@ -18,11 +18,16 @@
 #include "asio/detail/config.hpp"
 #include <string>
 #include "asio/detail/array.hpp"
+#include "asio/detail/cstdint.hpp"
 #include "asio/detail/socket_types.hpp"
 #include "asio/detail/string_view.hpp"
 #include "asio/detail/winsock_init.hpp"
 #include "asio/error_code.hpp"
 #include "asio/ip/address_v4.hpp"
+
+#if defined(ASIO_HAS_STD_HASH)
+# include <functional>
+#endif // defined(ASIO_HAS_STD_HASH)
 
 #if !defined(ASIO_NO_IOSTREAM)
 # include <iosfwd>
@@ -34,6 +39,9 @@ namespace asio {
 namespace ip {
 
 template <typename> class basic_address_iterator;
+
+/// Type used for storing IPv6 scope IDs.
+typedef uint_least32_t scope_id_type;
 
 /// Implements IP version 6 style addresses.
 /**
@@ -63,7 +71,7 @@ public:
 
   /// Construct an address from raw bytes and scope ID.
   ASIO_DECL explicit address_v6(const bytes_type& bytes,
-      unsigned long scope_id = 0);
+      scope_id_type scope_id = 0);
 
   /// Copy constructor.
   ASIO_DECL address_v6(const address_v6& other) ASIO_NOEXCEPT;
@@ -86,7 +94,7 @@ public:
   /**
    * Returns the scope ID associated with the IPv6 address.
    */
-  unsigned long scope_id() const ASIO_NOEXCEPT
+  scope_id_type scope_id() const ASIO_NOEXCEPT
   {
     return scope_id_;
   }
@@ -95,7 +103,7 @@ public:
   /**
    * Modifies the scope ID associated with the IPv6 address.
    */
-  void scope_id(unsigned long id) ASIO_NOEXCEPT
+  void scope_id(scope_id_type id) ASIO_NOEXCEPT
   {
     scope_id_ = id;
   }
@@ -232,7 +240,7 @@ private:
   asio::detail::in6_addr_type addr_;
 
   // The scope ID associated with the address.
-  unsigned long scope_id_;
+  scope_id_type scope_id_;
 };
 
 /// Create an IPv6 address from raw bytes and scope ID.
@@ -240,7 +248,7 @@ private:
  * @relates address_v6
  */
 inline address_v6 make_address_v6(const address_v6::bytes_type& bytes,
-    unsigned long scope_id = 0)
+    scope_id_type scope_id = 0)
 {
   return address_v6(bytes, scope_id);
 }
@@ -330,6 +338,39 @@ std::basic_ostream<Elem, Traits>& operator<<(
 
 } // namespace ip
 } // namespace asio
+
+#if defined(ASIO_HAS_STD_HASH)
+namespace std {
+
+template <>
+struct hash<asio::ip::address_v6>
+{
+  std::size_t operator()(const asio::ip::address_v6& addr)
+    const ASIO_NOEXCEPT
+  {
+    const asio::ip::address_v6::bytes_type bytes = addr.to_bytes();
+    std::size_t result = static_cast<std::size_t>(addr.scope_id());
+    combine_4_bytes(result, &bytes[0]);
+    combine_4_bytes(result, &bytes[4]);
+    combine_4_bytes(result, &bytes[8]);
+    combine_4_bytes(result, &bytes[12]);
+    return result;
+  }
+
+private:
+  static void combine_4_bytes(std::size_t& seed, const unsigned char* bytes)
+  {
+    const std::size_t bytes_hash =
+      (static_cast<std::size_t>(bytes[0]) << 24) |
+      (static_cast<std::size_t>(bytes[1]) << 16) |
+      (static_cast<std::size_t>(bytes[2]) << 8) |
+      (static_cast<std::size_t>(bytes[3]));
+    seed ^= bytes_hash + 0x9e3779b9 + (seed << 6) + (seed >> 2);
+  }
+};
+
+} // namespace std
+#endif // defined(ASIO_HAS_STD_HASH)
 
 #include "asio/detail/pop_options.hpp"
 

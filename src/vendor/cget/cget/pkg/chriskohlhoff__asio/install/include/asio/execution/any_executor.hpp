@@ -2,7 +2,7 @@
 // execution/any_executor.hpp
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~
 //
-// Copyright (c) 2003-2020 Christopher M. Kohlhoff (chris at kohlhoff dot com)
+// Copyright (c) 2003-2021 Christopher M. Kohlhoff (chris at kohlhoff dot com)
 //
 // Distributed under the Boost Software License, Version 1.0. (See accompanying
 // file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
@@ -1306,8 +1306,8 @@ public:
 
   template <typename AnyExecutor1, typename AnyExecutor2>
   friend typename enable_if<
-    is_same<AnyExecutor1, any_executor>::value
-      || is_same<AnyExecutor2, any_executor>::value,
+    is_base_of<any_executor, AnyExecutor1>::value
+      || is_base_of<any_executor, AnyExecutor2>::value,
     bool
   >::type operator==(const AnyExecutor1& a,
       const AnyExecutor2& b) ASIO_NOEXCEPT
@@ -1335,8 +1335,8 @@ public:
 
   template <typename AnyExecutor1, typename AnyExecutor2>
   friend typename enable_if<
-    is_same<AnyExecutor1, any_executor>::value
-      || is_same<AnyExecutor2, any_executor>::value,
+    is_base_of<any_executor, AnyExecutor1>::value
+      || is_base_of<any_executor, AnyExecutor2>::value,
     bool
   >::type operator!=(const AnyExecutor1& a,
       const AnyExecutor2& b) ASIO_NOEXCEPT
@@ -1503,8 +1503,8 @@ public:
 
   template <typename AnyExecutor1, typename AnyExecutor2>
   friend typename enable_if<
-    is_same<AnyExecutor1, any_executor>::value
-      || is_same<AnyExecutor2, any_executor>::value,
+    is_base_of<any_executor, AnyExecutor1>::value
+      || is_base_of<any_executor, AnyExecutor2>::value,
     bool
   >::type operator==(const AnyExecutor1& a,
       const AnyExecutor2& b) ASIO_NOEXCEPT
@@ -1532,8 +1532,8 @@ public:
 
   template <typename AnyExecutor1, typename AnyExecutor2>
   friend typename enable_if<
-    is_same<AnyExecutor1, any_executor>::value
-      || is_same<AnyExecutor2, any_executor>::value,
+    is_base_of<any_executor, AnyExecutor1>::value
+      || is_base_of<any_executor, AnyExecutor2>::value,
     bool
   >::type operator!=(const AnyExecutor1& a,
       const AnyExecutor2& b) ASIO_NOEXCEPT
@@ -1918,8 +1918,8 @@ inline void swap(any_executor<SupportableProperties...>& a,
     \
     template <typename AnyExecutor1, typename AnyExecutor2> \
     friend typename enable_if< \
-      is_same<AnyExecutor1, any_executor>::value \
-        || is_same<AnyExecutor2, any_executor>::value, \
+      is_base_of<any_executor, AnyExecutor1>::value \
+        || is_base_of<any_executor, AnyExecutor2>::value, \
       bool \
     >::type operator==(const AnyExecutor1& a, \
         const AnyExecutor2& b) ASIO_NOEXCEPT \
@@ -1947,8 +1947,8 @@ inline void swap(any_executor<SupportableProperties...>& a,
     \
     template <typename AnyExecutor1, typename AnyExecutor2> \
     friend typename enable_if< \
-      is_same<AnyExecutor1, any_executor>::value \
-        || is_same<AnyExecutor2, any_executor>::value, \
+      is_base_of<any_executor, AnyExecutor1>::value \
+        || is_base_of<any_executor, AnyExecutor2>::value, \
       bool \
     >::type operator!=(const AnyExecutor1& a, \
         const AnyExecutor2& b) ASIO_NOEXCEPT \

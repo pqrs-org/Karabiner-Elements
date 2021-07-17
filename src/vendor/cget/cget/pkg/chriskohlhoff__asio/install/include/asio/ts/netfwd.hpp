@@ -2,7 +2,7 @@
 // ts/netfwd.hpp
 // ~~~~~~~~~~~~~
 //
-// Copyright (c) 2003-2020 Christopher M. Kohlhoff (chris at kohlhoff dot com)
+// Copyright (c) 2003-2021 Christopher M. Kohlhoff (chris at kohlhoff dot com)
 //
 // Distributed under the Boost Software License, Version 1.0. (See accompanying
 // file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
@@ -45,7 +45,7 @@ class executor_binder;
 #if !defined(ASIO_EXECUTOR_WORK_GUARD_DECL)
 #define ASIO_EXECUTOR_WORK_GUARD_DECL
 
-template <typename Executor, typename = void>
+template <typename Executor, typename = void, typename = void>
 class executor_work_guard;
 
 #endif // !defined(ASIO_EXECUTOR_WORK_GUARD_DECL)
@@ -90,15 +90,7 @@ struct prefer_only;
 
 } // namespace execution
 
-typedef execution::any_executor<
-    execution::context_as_t<execution_context&>,
-    execution::blocking_t::never_t,
-    execution::prefer_only<execution::blocking_t::possibly_t>,
-    execution::prefer_only<execution::outstanding_work_t::tracked_t>,
-    execution::prefer_only<execution::outstanding_work_t::untracked_t>,
-    execution::prefer_only<execution::relationship_t::fork_t>,
-    execution::prefer_only<execution::relationship_t::continuation_t>
-  > any_io_executor;
+class any_io_executor;
 
 #endif // defined(ASIO_USE_TS_EXECUTOR_AS_DEFAULT)
 

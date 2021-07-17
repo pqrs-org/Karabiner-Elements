@@ -2,7 +2,7 @@
 // detail/win_iocp_handle_service.hpp
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 //
-// Copyright (c) 2003-2020 Christopher M. Kohlhoff (chris at kohlhoff dot com)
+// Copyright (c) 2003-2021 Christopher M. Kohlhoff (chris at kohlhoff dot com)
 // Copyright (c) 2008 Rep Invariant Systems, Inc. (info@repinvariant.com)
 //
 // Distributed under the Boost Software License, Version 1.0. (See accompanying
@@ -20,6 +20,7 @@
 
 #if defined(ASIO_HAS_IOCP)
 
+#include "asio/associated_cancellation_slot.hpp"
 #include "asio/error.hpp"
 #include "asio/execution_context.hpp"
 #include "asio/detail/buffer_sequence_adapter.hpp"
@@ -147,19 +148,26 @@ public:
       const ConstBufferSequence& buffers,
       Handler& handler, const IoExecutor& io_ex)
   {
+    typename associated_cancellation_slot<Handler>::type slot
+      = asio::get_associated_cancellation_slot(handler);
+
     // Allocate and construct an operation to wrap the handler.
     typedef win_iocp_handle_write_op<
         ConstBufferSequence, Handler, IoExecutor> op;
     typename op::ptr p = { asio::detail::addressof(handler),
       op::ptr::allocate(handler), 0 };
-    p.p = new (p.v) op(buffers, handler, io_ex);
+    operation* o = p.p = new (p.v) op(buffers, handler, io_ex);
 
     ASIO_HANDLER_CREATION((iocp_service_.context(), *p.p, "handle", &impl,
           reinterpret_cast<uintmax_t>(impl.handle_), "async_write_some"));
 
+    // Optionally register for per-operation cancellation.
+    if (slot.is_connected())
+      o = &slot.template emplace<iocp_op_cancellation>(impl.handle_, o);
+
     start_write_op(impl, 0,
         buffer_sequence_adapter<asio::const_buffer,
-          ConstBufferSequence>::first(buffers), p.p);
+          ConstBufferSequence>::first(buffers), o);
     p.v = p.p = 0;
   }
 
@@ -170,19 +178,26 @@ public:
       uint64_t offset, const ConstBufferSequence& buffers,
       Handler& handler, const IoExecutor& io_ex)
   {
+    typename associated_cancellation_slot<Handler>::type slot
+      = asio::get_associated_cancellation_slot(handler);
+
     // Allocate and construct an operation to wrap the handler.
     typedef win_iocp_handle_write_op<
         ConstBufferSequence, Handler, IoExecutor> op;
     typename op::ptr p = { asio::detail::addressof(handler),
       op::ptr::allocate(handler), 0 };
-    p.p = new (p.v) op(buffers, handler, io_ex);
+    operation* o = p.p = new (p.v) op(buffers, handler, io_ex);
 
     ASIO_HANDLER_CREATION((iocp_service_.context(), *p.p, "handle", &impl,
           reinterpret_cast<uintmax_t>(impl.handle_), "async_write_some_at"));
 
+    // Optionally register for per-operation cancellation.
+    if (slot.is_connected())
+      o = &slot.template emplace<iocp_op_cancellation>(impl.handle_, o);
+
     start_write_op(impl, offset,
         buffer_sequence_adapter<asio::const_buffer,
-          ConstBufferSequence>::first(buffers), p.p);
+          ConstBufferSequence>::first(buffers), o);
     p.v = p.p = 0;
   }
 
@@ -214,19 +229,26 @@ public:
       const MutableBufferSequence& buffers,
       Handler& handler, const IoExecutor& io_ex)
   {
+    typename associated_cancellation_slot<Handler>::type slot
+      = asio::get_associated_cancellation_slot(handler);
+
     // Allocate and construct an operation to wrap the handler.
     typedef win_iocp_handle_read_op<
         MutableBufferSequence, Handler, IoExecutor> op;
     typename op::ptr p = { asio::detail::addressof(handler),
       op::ptr::allocate(handler), 0 };
-    p.p = new (p.v) op(buffers, handler, io_ex);
+    operation* o = p.p = new (p.v) op(buffers, handler, io_ex);
 
     ASIO_HANDLER_CREATION((iocp_service_.context(), *p.p, "handle", &impl,
           reinterpret_cast<uintmax_t>(impl.handle_), "async_read_some"));
 
+    // Optionally register for per-operation cancellation.
+    if (slot.is_connected())
+      o = &slot.template emplace<iocp_op_cancellation>(impl.handle_, o);
+
     start_read_op(impl, 0,
         buffer_sequence_adapter<asio::mutable_buffer,
-          MutableBufferSequence>::first(buffers), p.p);
+          MutableBufferSequence>::first(buffers), o);
     p.v = p.p = 0;
   }
 
@@ -239,19 +261,26 @@ public:
       uint64_t offset, const MutableBufferSequence& buffers,
       Handler& handler, const IoExecutor& io_ex)
   {
+    typename associated_cancellation_slot<Handler>::type slot
+      = asio::get_associated_cancellation_slot(handler);
+
     // Allocate and construct an operation to wrap the handler.
     typedef win_iocp_handle_read_op<
         MutableBufferSequence, Handler, IoExecutor> op;
     typename op::ptr p = { asio::detail::addressof(handler),
       op::ptr::allocate(handler), 0 };
-    p.p = new (p.v) op(buffers, handler, io_ex);
+    operation* o = p.p = new (p.v) op(buffers, handler, io_ex);
 
     ASIO_HANDLER_CREATION((iocp_service_.context(), *p.p, "handle", &impl,
           reinterpret_cast<uintmax_t>(impl.handle_), "async_read_some_at"));
 
+    // Optionally register for per-operation cancellation.
+    if (slot.is_connected())
+      o = &slot.template emplace<iocp_op_cancellation>(impl.handle_, o);
+
     start_read_op(impl, offset,
         buffer_sequence_adapter<asio::mutable_buffer,
-          MutableBufferSequence>::first(buffers), p.p);
+          MutableBufferSequence>::first(buffers), o);
     p.v = p.p = 0;
   }
 
@@ -309,6 +338,45 @@ private:
   // Helper function to close a handle when the associated object is being
   // destroyed.
   ASIO_DECL void close_for_destruction(implementation_type& impl);
+
+  // Helper class used to implement per operation cancellation.
+  class iocp_op_cancellation : public operation
+  {
+  public:
+    iocp_op_cancellation(HANDLE h, operation* target)
+      : operation(&iocp_op_cancellation::do_complete),
+        handle_(h),
+        target_(target)
+    {
+    }
+
+    static void do_complete(void* owner, operation* base,
+        const asio::error_code& result_ec,
+        std::size_t bytes_transferred)
+    {
+      iocp_op_cancellation* o = static_cast<iocp_op_cancellation*>(base);
+      o->target_->complete(owner, result_ec, bytes_transferred);
+    }
+
+    void operator()(cancellation_type_t type)
+    {
+#if defined(_WIN32_WINNT) && (_WIN32_WINNT >= 0x0600)
+      if (!!(type &
+            (cancellation_type::terminal
+              | cancellation_type::partial
+              | cancellation_type::total)))
+      {
+        ::CancelIoEx(handle_, this);
+      }
+#else // defined(_WIN32_WINNT) && (_WIN32_WINNT >= 0x0600)
+      (void)type;
+#endif // defined(_WIN32_WINNT) && (_WIN32_WINNT >= 0x0600)
+    }
+
+  private:
+    HANDLE handle_;
+    operation* target_;
+  };
 
   // The IOCP service used for running asynchronous operations and dispatching
   // handlers.

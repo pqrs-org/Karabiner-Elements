@@ -2,7 +2,7 @@
 // impl/src.hpp
 // ~~~~~~~~~~~~
 //
-// Copyright (c) 2003-2020 Christopher M. Kohlhoff (chris at kohlhoff dot com)
+// Copyright (c) 2003-2021 Christopher M. Kohlhoff (chris at kohlhoff dot com)
 //
 // Distributed under the Boost Software License, Version 1.0. (See accompanying
 // file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
@@ -54,6 +54,7 @@
 #include "asio/detail/impl/socket_select_interrupter.ipp"
 #include "asio/detail/impl/strand_executor_service.ipp"
 #include "asio/detail/impl/strand_service.ipp"
+#include "asio/detail/impl/thread_context.ipp"
 #include "asio/detail/impl/throw_error.ipp"
 #include "asio/detail/impl/timer_queue_ptime.ipp"
 #include "asio/detail/impl/timer_queue_set.ipp"

@@ -2,7 +2,7 @@
 // execution/connect.hpp
 // ~~~~~~~~~~~~~~~~~~~~~
 //
-// Copyright (c) 2003-2020 Christopher M. Kohlhoff (chris at kohlhoff dot com)
+// Copyright (c) 2003-2021 Christopher M. Kohlhoff (chris at kohlhoff dot com)
 //
 // Distributed under the Boost Software License, Version 1.0. (See accompanying
 // file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
@@ -157,7 +157,8 @@ enum overload_type
   ill_formed
 };
 
-template <typename S, typename R, typename = void>
+template <typename S, typename R, typename = void,
+   typename = void, typename = void, typename = void>
 struct call_traits
 {
   ASIO_STATIC_CONSTEXPR(overload_type, overload = ill_formed);
@@ -168,13 +169,13 @@ struct call_traits
 template <typename S, typename R>
 struct call_traits<S, void(R),
   typename enable_if<
-    (
-      connect_member<S, R>::is_valid
-      &&
-      is_operation_state<typename connect_member<S, R>::result_type>::value
-      &&
-      is_sender<typename remove_cvref<S>::type>::value
-    )
+    connect_member<S, R>::is_valid
+  >::type,
+  typename enable_if<
+    is_operation_state<typename connect_member<S, R>::result_type>::value
+  >::type,
+  typename enable_if<
+    is_sender<typename remove_cvref<S>::type>::value
   >::type> :
   connect_member<S, R>
 {
@@ -184,15 +185,16 @@ struct call_traits<S, void(R),
 template <typename S, typename R>
 struct call_traits<S, void(R),
   typename enable_if<
-    (
-      !connect_member<S, R>::is_valid
-      &&
-      connect_free<S, R>::is_valid
-      &&
-      is_operation_state<typename connect_free<S, R>::result_type>::value
-      &&
-      is_sender<typename remove_cvref<S>::type>::value
-    )
+    !connect_member<S, R>::is_valid
+  >::type,
+  typename enable_if<
+    connect_free<S, R>::is_valid
+  >::type,
+  typename enable_if<
+    is_operation_state<typename connect_free<S, R>::result_type>::value
+  >::type,
+  typename enable_if<
+    is_sender<typename remove_cvref<S>::type>::value
   >::type> :
   connect_free<S, R>
 {
@@ -202,24 +204,25 @@ struct call_traits<S, void(R),
 template <typename S, typename R>
 struct call_traits<S, void(R),
   typename enable_if<
-    (
-      !connect_member<S, R>::is_valid
-      &&
-      !connect_free<S, R>::is_valid
-      &&
-      is_receiver<R>::value
-      &&
-      conditional<
-        !is_as_receiver<
-          typename remove_cvref<R>::type
-        >::value,
-        is_executor_of<
-          typename remove_cvref<S>::type,
-          as_invocable<typename remove_cvref<R>::type, S>
-        >,
-        false_type
-      >::type::value
-    )
+    !connect_member<S, R>::is_valid
+  >::type,
+  typename enable_if<
+    !connect_free<S, R>::is_valid
+  >::type,
+  typename enable_if<
+    is_receiver<R>::value
+  >::type,
+  typename enable_if<
+    conditional<
+      !is_as_receiver<
+        typename remove_cvref<R>::type
+      >::value,
+      is_executor_of<
+        typename remove_cvref<S>::type,
+        as_invocable<typename remove_cvref<R>::type, S>
+      >,
+      false_type
+    >::type::value
   >::type>
 {
   ASIO_STATIC_CONSTEXPR(overload_type, overload = adapter);

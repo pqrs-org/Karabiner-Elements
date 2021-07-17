@@ -2,7 +2,7 @@
 // system_executor.hpp
 // ~~~~~~~~~~~~~~~~~~~
 //
-// Copyright (c) 2003-2020 Christopher M. Kohlhoff (chris at kohlhoff dot com)
+// Copyright (c) 2003-2021 Christopher M. Kohlhoff (chris at kohlhoff dot com)
 //
 // Distributed under the Boost Software License, Version 1.0. (See accompanying
 // file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
@@ -43,6 +43,12 @@ public:
     : allocator_(Allocator())
   {
   }
+
+#if !defined(GENERATING_DOCUMENTATION)
+private:
+  friend struct asio_require_fn::impl;
+  friend struct asio_prefer_fn::impl;
+#endif // !defined(GENERATING_DOCUMENTATION)
 
   /// Obtain an executor with the @c blocking.possibly property.
   /**
@@ -169,6 +175,15 @@ public:
         Relationship, std::allocator<void> >();
   }
 
+#if !defined(GENERATING_DOCUMENTATION)
+private:
+  friend struct asio_query_fn::impl;
+  friend struct asio::execution::detail::blocking_t<0>;
+  friend struct asio::execution::detail::mapping_t<0>;
+  friend struct asio::execution::detail::outstanding_work_t<0>;
+  friend struct asio::execution::detail::relationship_t<0>;
+#endif // !defined(GENERATING_DOCUMENTATION)
+
   /// Query the current value of the @c mapping property.
   /**
    * Do not call this function directly. It is intended for use with the
@@ -278,6 +293,7 @@ public:
    */
   std::size_t query(execution::occupancy_t) const ASIO_NOEXCEPT;
 
+public:
   /// Compare two executors for equality.
   /**
    * Two executors are equal if they refer to the same underlying io_context.
@@ -298,6 +314,11 @@ public:
     return false;
   }
 
+#if !defined(GENERATING_DOCUMENTATION)
+private:
+  friend struct asio_execution_execute_fn::impl;
+#endif // !defined(GENERATING_DOCUMENTATION)
+
   /// Execution function.
   /**
    * Do not call this function directly. It is intended for use with the
@@ -314,6 +335,7 @@ public:
   }
 
 #if !defined(ASIO_NO_TS_EXECUTORS)
+public:
   /// Obtain the underlying execution context.
   system_context& context() const ASIO_NOEXCEPT;
 

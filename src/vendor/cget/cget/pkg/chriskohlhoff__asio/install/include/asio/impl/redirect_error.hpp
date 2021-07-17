@@ -2,7 +2,7 @@
 // impl/redirect_error.hpp
 // ~~~~~~~~~~~~~~~~~~~~~~~
 //
-// Copyright (c) 2003-2020 Christopher M. Kohlhoff (chris at kohlhoff dot com)
+// Copyright (c) 2003-2021 Christopher M. Kohlhoff (chris at kohlhoff dot com)
 //
 // Distributed under the Boost Software License, Version 1.0. (See accompanying
 // file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
@@ -16,8 +16,7 @@
 #endif // defined(_MSC_VER) && (_MSC_VER >= 1200)
 
 #include "asio/detail/config.hpp"
-#include "asio/associated_executor.hpp"
-#include "asio/associated_allocator.hpp"
+#include "asio/associator.hpp"
 #include "asio/async_result.hpp"
 #include "asio/detail/handler_alloc_helpers.hpp"
 #include "asio/detail/handler_cont_helpers.hpp"
@@ -55,7 +54,7 @@ public:
 
   void operator()()
   {
-    handler_();
+    ASIO_MOVE_OR_LVALUE(Handler)(handler_)();
   }
 
 #if defined(ASIO_HAS_VARIADIC_TEMPLATES)
@@ -66,7 +65,8 @@ public:
   >::type
   operator()(ASIO_MOVE_ARG(Arg) arg, ASIO_MOVE_ARG(Args)... args)
   {
-    handler_(ASIO_MOVE_CAST(Arg)(arg),
+    ASIO_MOVE_OR_LVALUE(Handler)(handler_)(
+        ASIO_MOVE_CAST(Arg)(arg),
         ASIO_MOVE_CAST(Args)(args)...);
   }
 
@@ -75,7 +75,8 @@ public:
       ASIO_MOVE_ARG(Args)... args)
   {
     ec_ = ec;
-    handler_(ASIO_MOVE_CAST(Args)(args)...);
+    ASIO_MOVE_OR_LVALUE(Handler)(handler_)(
+        ASIO_MOVE_CAST(Args)(args)...);
   }
 
 #else // defined(ASIO_HAS_VARIADIC_TEMPLATES)
@@ -86,13 +87,14 @@ public:
   >::type
   operator()(ASIO_MOVE_ARG(Arg) arg)
   {
-    handler_(ASIO_MOVE_CAST(Arg)(arg));
+    ASIO_MOVE_OR_LVALUE(Handler)(handler_)(
+        ASIO_MOVE_CAST(Arg)(arg));
   }
 
   void operator()(const asio::error_code& ec)
   {
     ec_ = ec;
-    handler_();
+    ASIO_MOVE_OR_LVALUE(Handler)(handler_)();
   }
 
 #define ASIO_PRIVATE_REDIRECT_ERROR_DEF(n) \
@@ -102,7 +104,8 @@ public:
   >::type \
   operator()(ASIO_MOVE_ARG(Arg) arg, ASIO_VARIADIC_MOVE_PARAMS(n)) \
   { \
-    handler_(ASIO_MOVE_CAST(Arg)(arg), \
+    ASIO_MOVE_OR_LVALUE(Handler)(handler_)( \
+        ASIO_MOVE_CAST(Arg)(arg), \
         ASIO_VARIADIC_MOVE_ARGS(n)); \
   } \
   \
@@ -111,7 +114,8 @@ public:
       ASIO_VARIADIC_MOVE_PARAMS(n)) \
   { \
     ec_ = ec; \
-    handler_(ASIO_VARIADIC_MOVE_ARGS(n)); \
+    ASIO_MOVE_OR_LVALUE(Handler)(handler_)( \
+        ASIO_VARIADIC_MOVE_ARGS(n)); \
   } \
   /**/
   ASIO_VARIADIC_GENERATE(ASIO_PRIVATE_REDIRECT_ERROR_DEF)
@@ -202,6 +206,78 @@ struct redirect_error_signature<R(const asio::error_code&, Args...)>
   typedef R type(Args...);
 };
 
+# if defined(ASIO_HAS_REF_QUALIFIED_FUNCTIONS)
+
+template <typename R, typename... Args>
+struct redirect_error_signature<R(asio::error_code, Args...) &>
+{
+  typedef R type(Args...) &;
+};
+
+template <typename R, typename... Args>
+struct redirect_error_signature<R(const asio::error_code&, Args...) &>
+{
+  typedef R type(Args...) &;
+};
+
+template <typename R, typename... Args>
+struct redirect_error_signature<R(asio::error_code, Args...) &&>
+{
+  typedef R type(Args...) &&;
+};
+
+template <typename R, typename... Args>
+struct redirect_error_signature<R(const asio::error_code&, Args...) &&>
+{
+  typedef R type(Args...) &&;
+};
+
+#  if defined(ASIO_HAS_NOEXCEPT_FUNCTION_TYPE)
+
+template <typename R, typename... Args>
+struct redirect_error_signature<
+  R(asio::error_code, Args...) noexcept>
+{
+  typedef R type(Args...) & noexcept;
+};
+
+template <typename R, typename... Args>
+struct redirect_error_signature<
+  R(const asio::error_code&, Args...) noexcept>
+{
+  typedef R type(Args...) & noexcept;
+};
+
+template <typename R, typename... Args>
+struct redirect_error_signature<
+  R(asio::error_code, Args...) & noexcept>
+{
+  typedef R type(Args...) & noexcept;
+};
+
+template <typename R, typename... Args>
+struct redirect_error_signature<
+  R(const asio::error_code&, Args...) & noexcept>
+{
+  typedef R type(Args...) & noexcept;
+};
+
+template <typename R, typename... Args>
+struct redirect_error_signature<
+  R(asio::error_code, Args...) && noexcept>
+{
+  typedef R type(Args...) && noexcept;
+};
+
+template <typename R, typename... Args>
+struct redirect_error_signature<
+  R(const asio::error_code&, Args...) && noexcept>
+{
+  typedef R type(Args...) && noexcept;
+};
+
+#  endif // defined(ASIO_HAS_NOEXCEPT_FUNCTION_TYPE)
+# endif // defined(ASIO_HAS_REF_QUALIFIED_FUNCTIONS)
 #else // defined(ASIO_HAS_VARIADIC_TEMPLATES)
 
 template <typename R>
@@ -234,6 +310,161 @@ struct redirect_error_signature<R(const asio::error_code&)>
   ASIO_VARIADIC_GENERATE(ASIO_PRIVATE_REDIRECT_ERROR_DEF)
 #undef ASIO_PRIVATE_REDIRECT_ERROR_DEF
 
+# if defined(ASIO_HAS_REF_QUALIFIED_FUNCTIONS)
+
+template <typename R>
+struct redirect_error_signature<R(asio::error_code) &>
+{
+  typedef R type() &;
+};
+
+template <typename R>
+struct redirect_error_signature<R(const asio::error_code&) &>
+{
+  typedef R type() &;
+};
+
+template <typename R>
+struct redirect_error_signature<R(asio::error_code) &&>
+{
+  typedef R type() &&;
+};
+
+template <typename R>
+struct redirect_error_signature<R(const asio::error_code&) &&>
+{
+  typedef R type() &&;
+};
+
+#define ASIO_PRIVATE_REDIRECT_ERROR_DEF(n) \
+  template <typename R, ASIO_VARIADIC_TPARAMS(n)> \
+  struct redirect_error_signature< \
+      R(asio::error_code, ASIO_VARIADIC_TARGS(n)) &> \
+  { \
+    typedef R type(ASIO_VARIADIC_TARGS(n)) &; \
+  }; \
+  \
+  template <typename R, ASIO_VARIADIC_TPARAMS(n)> \
+  struct redirect_error_signature< \
+      R(const asio::error_code&, ASIO_VARIADIC_TARGS(n)) &> \
+  { \
+    typedef R type(ASIO_VARIADIC_TARGS(n)) &; \
+  }; \
+  \
+  template <typename R, ASIO_VARIADIC_TPARAMS(n)> \
+  struct redirect_error_signature< \
+      R(asio::error_code, ASIO_VARIADIC_TARGS(n)) &&> \
+  { \
+    typedef R type(ASIO_VARIADIC_TARGS(n)) &&; \
+  }; \
+  \
+  template <typename R, ASIO_VARIADIC_TPARAMS(n)> \
+  struct redirect_error_signature< \
+      R(const asio::error_code&, ASIO_VARIADIC_TARGS(n)) &&> \
+  { \
+    typedef R type(ASIO_VARIADIC_TARGS(n)) &&; \
+  }; \
+  /**/
+  ASIO_VARIADIC_GENERATE(ASIO_PRIVATE_REDIRECT_ERROR_DEF)
+#undef ASIO_PRIVATE_REDIRECT_ERROR_DEF
+
+#  if defined(ASIO_HAS_NOEXCEPT_FUNCTION_TYPE)
+
+template <typename R>
+struct redirect_error_signature<
+  R(asio::error_code) noexcept>
+{
+  typedef R type() noexcept;
+};
+
+template <typename R>
+struct redirect_error_signature<
+  R(const asio::error_code&) noexcept>
+{
+  typedef R type() noexcept;
+};
+
+template <typename R>
+struct redirect_error_signature<
+  R(asio::error_code) & noexcept>
+{
+  typedef R type() & noexcept;
+};
+
+template <typename R>
+struct redirect_error_signature<
+  R(const asio::error_code&) & noexcept>
+{
+  typedef R type() & noexcept;
+};
+
+template <typename R>
+struct redirect_error_signature<
+  R(asio::error_code) && noexcept>
+{
+  typedef R type() && noexcept;
+};
+
+template <typename R>
+struct redirect_error_signature<
+  R(const asio::error_code&) && noexcept>
+{
+  typedef R type() && noexcept;
+};
+
+#define ASIO_PRIVATE_REDIRECT_ERROR_DEF(n) \
+  template <typename R, ASIO_VARIADIC_TPARAMS(n)> \
+  struct redirect_error_signature< \
+      R(asio::error_code, ASIO_VARIADIC_TARGS(n)) noexcept> \
+  { \
+    typedef R type(ASIO_VARIADIC_TARGS(n)) noexcept; \
+  }; \
+  \
+  template <typename R, ASIO_VARIADIC_TPARAMS(n)> \
+  struct redirect_error_signature< \
+      R(const asio::error_code&, \
+        ASIO_VARIADIC_TARGS(n)) noexcept> \
+  { \
+    typedef R type(ASIO_VARIADIC_TARGS(n)) noexcept; \
+  }; \
+  \
+  template <typename R, ASIO_VARIADIC_TPARAMS(n)> \
+  struct redirect_error_signature< \
+      R(asio::error_code, \
+        ASIO_VARIADIC_TARGS(n)) & noexcept> \
+  { \
+    typedef R type(ASIO_VARIADIC_TARGS(n)) & noexcept; \
+  }; \
+  \
+  template <typename R, ASIO_VARIADIC_TPARAMS(n)> \
+  struct redirect_error_signature< \
+      R(const asio::error_code&, \
+        ASIO_VARIADIC_TARGS(n)) & noexcept> \
+  { \
+    typedef R type(ASIO_VARIADIC_TARGS(n)) & noexcept; \
+  }; \
+  \
+  template <typename R, ASIO_VARIADIC_TPARAMS(n)> \
+  struct redirect_error_signature< \
+      R(asio::error_code, \
+        ASIO_VARIADIC_TARGS(n)) && noexcept> \
+  { \
+    typedef R type(ASIO_VARIADIC_TARGS(n)) && noexcept; \
+  }; \
+  \
+  template <typename R, ASIO_VARIADIC_TPARAMS(n)> \
+  struct redirect_error_signature< \
+      R(const asio::error_code&, \
+        ASIO_VARIADIC_TARGS(n)) && noexcept> \
+  { \
+    typedef R type(ASIO_VARIADIC_TARGS(n)) && noexcept; \
+  }; \
+  /**/
+  ASIO_VARIADIC_GENERATE(ASIO_PRIVATE_REDIRECT_ERROR_DEF)
+#undef ASIO_PRIVATE_REDIRECT_ERROR_DEF
+
+#  endif // defined(ASIO_HAS_NOEXCEPT_FUNCTION_TYPE)
+# endif // defined(ASIO_HAS_REF_QUALIFIED_FUNCTIONS)
 #endif // defined(ASIO_HAS_VARIADIC_TEMPLATES)
 
 } // namespace detail
@@ -355,30 +586,17 @@ struct async_result<redirect_error_t<CompletionToken>, Signature>
 #endif // defined(ASIO_HAS_VARIADIC_TEMPLATES)
 };
 
-template <typename Handler, typename Executor>
-struct associated_executor<detail::redirect_error_handler<Handler>, Executor>
-  : detail::associated_executor_forwarding_base<Handler, Executor>
+template <template <typename, typename> class Associator,
+    typename Handler, typename DefaultCandidate>
+struct associator<Associator,
+    detail::redirect_error_handler<Handler>, DefaultCandidate>
+  : Associator<Handler, DefaultCandidate>
 {
-  typedef typename associated_executor<Handler, Executor>::type type;
-
-  static type get(
+  static typename Associator<Handler, DefaultCandidate>::type get(
       const detail::redirect_error_handler<Handler>& h,
-      const Executor& ex = Executor()) ASIO_NOEXCEPT
+      const DefaultCandidate& c = DefaultCandidate()) ASIO_NOEXCEPT
   {
-    return associated_executor<Handler, Executor>::get(h.handler_, ex);
-  }
-};
-
-template <typename Handler, typename Allocator>
-struct associated_allocator<detail::redirect_error_handler<Handler>, Allocator>
-{
-  typedef typename associated_allocator<Handler, Allocator>::type type;
-
-  static type get(
-      const detail::redirect_error_handler<Handler>& h,
-      const Allocator& a = Allocator()) ASIO_NOEXCEPT
-  {
-    return associated_allocator<Handler, Allocator>::get(h.handler_, a);
+    return Associator<Handler, DefaultCandidate>::get(h.handler_, c);
   }
 };
 

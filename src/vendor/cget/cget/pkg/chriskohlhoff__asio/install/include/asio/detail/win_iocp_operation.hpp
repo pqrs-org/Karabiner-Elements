@@ -2,7 +2,7 @@
 // detail/win_iocp_operation.hpp
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 //
-// Copyright (c) 2003-2020 Christopher M. Kohlhoff (chris at kohlhoff dot com)
+// Copyright (c) 2003-2021 Christopher M. Kohlhoff (chris at kohlhoff dot com)
 //
 // Distributed under the Boost Software License, Version 1.0. (See accompanying
 // file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
@@ -51,6 +51,16 @@ public:
     func_(0, this, asio::error_code(), 0);
   }
 
+  void reset()
+  {
+    Internal = 0;
+    InternalHigh = 0;
+    Offset = 0;
+    OffsetHigh = 0;
+    hEvent = 0;
+    ready_ = 0;
+  }
+
 protected:
   typedef void (*func_type)(
       void*, win_iocp_operation*,
@@ -66,16 +76,6 @@ protected:
   // Prevents deletion through this type.
   ~win_iocp_operation()
   {
-  }
-
-  void reset()
-  {
-    Internal = 0;
-    InternalHigh = 0;
-    Offset = 0;
-    OffsetHigh = 0;
-    hEvent = 0;
-    ready_ = 0;
   }
 
 private:

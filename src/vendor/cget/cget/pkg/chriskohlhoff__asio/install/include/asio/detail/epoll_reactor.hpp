@@ -2,7 +2,7 @@
 // detail/epoll_reactor.hpp
 // ~~~~~~~~~~~~~~~~~~~~~~~~
 //
-// Copyright (c) 2003-2020 Christopher M. Kohlhoff (chris at kohlhoff dot com)
+// Copyright (c) 2003-2021 Christopher M. Kohlhoff (chris at kohlhoff dot com)
 //
 // Distributed under the Boost Software License, Version 1.0. (See accompanying
 // file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
@@ -114,10 +114,7 @@ public:
       per_descriptor_data& source_descriptor_data);
 
   // Post a reactor operation for immediate completion.
-  void post_immediate_completion(reactor_op* op, bool is_continuation)
-  {
-    scheduler_.post_immediate_completion(op, is_continuation);
-  }
+  void post_immediate_completion(operation* op, bool is_continuation);
 
   // Start a new operation. The reactor operation will be performed when the
   // given descriptor is flagged as ready, or an error has occurred.
@@ -130,6 +127,13 @@ public:
   // operation_aborted error.
   ASIO_DECL void cancel_ops(socket_type descriptor,
       per_descriptor_data& descriptor_data);
+
+  // Cancel all operations associated with the given descriptor and key. The
+  // handlers associated with the descriptor will be invoked with the
+  // operation_aborted error.
+  ASIO_DECL void cancel_ops_by_key(socket_type descriptor,
+      per_descriptor_data& descriptor_data,
+      int op_type, void* cancellation_key);
 
   // Cancel any operations that are running against the descriptor and remove
   // its registration from the reactor. The reactor resources associated with
@@ -169,6 +173,12 @@ public:
   std::size_t cancel_timer(timer_queue<Time_Traits>& queue,
       typename timer_queue<Time_Traits>::per_timer_data& timer,
       std::size_t max_cancelled = (std::numeric_limits<std::size_t>::max)());
+
+  // Cancel the timer operations associated with the given key.
+  template <typename Time_Traits>
+  void cancel_timer_by_key(timer_queue<Time_Traits>& queue,
+      typename timer_queue<Time_Traits>::per_timer_data* timer,
+      void* cancellation_key);
 
   // Move the timer operations associated with the given timer.
   template <typename Time_Traits>

@@ -2,7 +2,7 @@
 // impl/post.hpp
 // ~~~~~~~~~~~~~
 //
-// Copyright (c) 2003-2020 Christopher M. Kohlhoff (chris at kohlhoff dot com)
+// Copyright (c) 2003-2021 Christopher M. Kohlhoff (chris at kohlhoff dot com)
 //
 // Distributed under the Boost Software License, Version 1.0. (See accompanying
 // file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
@@ -56,7 +56,8 @@ public:
           asio::require(ex, execution::blocking.never),
           execution::relationship.fork,
           execution::allocator(alloc)),
-        ASIO_MOVE_CAST(CompletionHandler)(handler));
+        asio::detail::bind_handler(
+          ASIO_MOVE_CAST(CompletionHandler)(handler)));
   }
 
   template <typename CompletionHandler>
@@ -77,7 +78,8 @@ public:
     typename associated_allocator<handler_t>::type alloc(
         (get_associated_allocator)(handler));
 
-    ex.post(ASIO_MOVE_CAST(CompletionHandler)(handler), alloc);
+    ex.post(asio::detail::bind_handler(
+          ASIO_MOVE_CAST(CompletionHandler)(handler)), alloc);
   }
 };
 
@@ -103,7 +105,8 @@ public:
         execution::is_executor<
           typename conditional<true, executor_type, CompletionHandler>::type
         >::value
-        &&
+      >::type* = 0,
+      typename enable_if<
         !detail::is_work_dispatcher_required<
           typename decay<CompletionHandler>::type,
           Executor
@@ -120,7 +123,8 @@ public:
           asio::require(ex_, execution::blocking.never),
           execution::relationship.fork,
           execution::allocator(alloc)),
-        ASIO_MOVE_CAST(CompletionHandler)(handler));
+        asio::detail::bind_handler(
+          ASIO_MOVE_CAST(CompletionHandler)(handler)));
   }
 
   template <typename CompletionHandler>
@@ -129,7 +133,8 @@ public:
         execution::is_executor<
           typename conditional<true, executor_type, CompletionHandler>::type
         >::value
-        &&
+      >::type* = 0,
+      typename enable_if<
         detail::is_work_dispatcher_required<
           typename decay<CompletionHandler>::type,
           Executor
@@ -160,7 +165,8 @@ public:
         !execution::is_executor<
           typename conditional<true, executor_type, CompletionHandler>::type
         >::value
-        &&
+      >::type* = 0,
+      typename enable_if<
         !detail::is_work_dispatcher_required<
           typename decay<CompletionHandler>::type,
           Executor
@@ -172,7 +178,8 @@ public:
     typename associated_allocator<handler_t>::type alloc(
         (get_associated_allocator)(handler));
 
-    ex_.post(ASIO_MOVE_CAST(CompletionHandler)(handler), alloc);
+    ex_.post(asio::detail::bind_handler(
+          ASIO_MOVE_CAST(CompletionHandler)(handler)), alloc);
   }
 
   template <typename CompletionHandler>
@@ -181,7 +188,8 @@ public:
         !execution::is_executor<
           typename conditional<true, executor_type, CompletionHandler>::type
         >::value
-        &&
+      >::type* = 0,
+      typename enable_if<
         detail::is_work_dispatcher_required<
           typename decay<CompletionHandler>::type,
           Executor
@@ -220,9 +228,9 @@ template <typename Executor,
     ASIO_COMPLETION_TOKEN_FOR(void()) CompletionToken>
 ASIO_INITFN_AUTO_RESULT_TYPE(CompletionToken, void()) post(
     const Executor& ex, ASIO_MOVE_ARG(CompletionToken) token,
-    typename enable_if<
+    typename constraint<
       execution::is_executor<Executor>::value || is_executor<Executor>::value
-    >::type*)
+    >::type)
 {
   return async_initiate<CompletionToken, void()>(
       detail::initiate_post_with_executor<Executor>(ex), token);
@@ -232,8 +240,8 @@ template <typename ExecutionContext,
     ASIO_COMPLETION_TOKEN_FOR(void()) CompletionToken>
 inline ASIO_INITFN_AUTO_RESULT_TYPE(CompletionToken, void()) post(
     ExecutionContext& ctx, ASIO_MOVE_ARG(CompletionToken) token,
-    typename enable_if<is_convertible<
-      ExecutionContext&, execution_context&>::value>::type*)
+    typename constraint<is_convertible<
+      ExecutionContext&, execution_context&>::value>::type)
 {
   return async_initiate<CompletionToken, void()>(
       detail::initiate_post_with_executor<

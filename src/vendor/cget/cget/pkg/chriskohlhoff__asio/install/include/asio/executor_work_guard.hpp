@@ -2,7 +2,7 @@
 // executor_work_guard.hpp
 // ~~~~~~~~~~~~~~~~~~~~~~~
 //
-// Copyright (c) 2003-2020 Christopher M. Kohlhoff (chris at kohlhoff dot com)
+// Copyright (c) 2003-2021 Christopher M. Kohlhoff (chris at kohlhoff dot com)
 //
 // Distributed under the Boost Software License, Version 1.0. (See accompanying
 // file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
@@ -31,7 +31,7 @@ namespace asio {
 #if !defined(ASIO_EXECUTOR_WORK_GUARD_DECL)
 #define ASIO_EXECUTOR_WORK_GUARD_DECL
 
-template <typename Executor, typename = void>
+template <typename Executor, typename = void, typename = void>
 class executor_work_guard;
 
 #endif // !defined(ASIO_EXECUTOR_WORK_GUARD_DECL)
@@ -41,7 +41,7 @@ class executor_work_guard;
 #if defined(GENERATING_DOCUMENTATION)
 template <typename Executor>
 #else // defined(GENERATING_DOCUMENTATION)
-template <typename Executor, typename>
+template <typename Executor, typename, typename>
 #endif // defined(GENERATING_DOCUMENTATION)
 class executor_work_guard
 {
@@ -129,7 +129,10 @@ private:
 template <typename Executor>
 class executor_work_guard<Executor,
     typename enable_if<
-      !is_executor<Executor>::value && execution::is_executor<Executor>::value
+      !is_executor<Executor>::value
+    >::type,
+    typename enable_if<
+      execution::is_executor<Executor>::value
     >::type>
 {
 public:
@@ -217,9 +220,9 @@ private:
 /// Create an @ref executor_work_guard object.
 template <typename Executor>
 inline executor_work_guard<Executor> make_work_guard(const Executor& ex,
-    typename enable_if<
+    typename constraint<
       is_executor<Executor>::value || execution::is_executor<Executor>::value
-    >::type* = 0)
+    >::type = 0)
 {
   return executor_work_guard<Executor>(ex);
 }
@@ -228,9 +231,9 @@ inline executor_work_guard<Executor> make_work_guard(const Executor& ex,
 template <typename ExecutionContext>
 inline executor_work_guard<typename ExecutionContext::executor_type>
 make_work_guard(ExecutionContext& ctx,
-    typename enable_if<
+    typename constraint<
       is_convertible<ExecutionContext&, execution_context&>::value
-    >::type* = 0)
+    >::type = 0)
 {
   return executor_work_guard<typename ExecutionContext::executor_type>(
       ctx.get_executor());
@@ -240,10 +243,15 @@ make_work_guard(ExecutionContext& ctx,
 template <typename T>
 inline executor_work_guard<typename associated_executor<T>::type>
 make_work_guard(const T& t,
-    typename enable_if<
-      !is_executor<T>::value && !execution::is_executor<T>::value
-        && !is_convertible<T&, execution_context&
-    >::value>::type* = 0)
+    typename constraint<
+      !is_executor<T>::value
+    >::type = 0,
+    typename constraint<
+      !execution::is_executor<T>::value
+    >::type = 0,
+    typename constraint<
+      !is_convertible<T&, execution_context&>::value
+    >::type = 0)
 {
   return executor_work_guard<typename associated_executor<T>::type>(
       associated_executor<T>::get(t));
@@ -253,9 +261,9 @@ make_work_guard(const T& t,
 template <typename T, typename Executor>
 inline executor_work_guard<typename associated_executor<T, Executor>::type>
 make_work_guard(const T& t, const Executor& ex,
-    typename enable_if<
+    typename constraint<
       is_executor<Executor>::value || execution::is_executor<Executor>::value
-    >::type* = 0)
+    >::type = 0)
 {
   return executor_work_guard<typename associated_executor<T, Executor>::type>(
       associated_executor<T, Executor>::get(t, ex));
@@ -266,11 +274,18 @@ template <typename T, typename ExecutionContext>
 inline executor_work_guard<typename associated_executor<T,
   typename ExecutionContext::executor_type>::type>
 make_work_guard(const T& t, ExecutionContext& ctx,
-    typename enable_if<
-      !is_executor<T>::value && !execution::is_executor<T>::value
-        && !is_convertible<T&, execution_context&>::value
-        && is_convertible<ExecutionContext&, execution_context&>::value
-    >::type* = 0)
+    typename constraint<
+      !is_executor<T>::value
+    >::type = 0,
+    typename constraint<
+      !execution::is_executor<T>::value
+    >::type = 0,
+    typename constraint<
+      !is_convertible<T&, execution_context&>::value
+    >::type = 0,
+    typename constraint<
+      is_convertible<ExecutionContext&, execution_context&>::value
+    >::type = 0)
 {
   return executor_work_guard<typename associated_executor<T,
     typename ExecutionContext::executor_type>::type>(

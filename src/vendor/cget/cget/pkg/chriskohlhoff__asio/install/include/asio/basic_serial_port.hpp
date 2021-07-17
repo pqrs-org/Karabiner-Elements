@@ -2,7 +2,7 @@
 // basic_serial_port.hpp
 // ~~~~~~~~~~~~~~~~~~~~~
 //
-// Copyright (c) 2003-2020 Christopher M. Kohlhoff (chris at kohlhoff dot com)
+// Copyright (c) 2003-2021 Christopher M. Kohlhoff (chris at kohlhoff dot com)
 // Copyright (c) 2008 Rep Invariant Systems, Inc. (info@repinvariant.com)
 //
 // Distributed under the Boost Software License, Version 1.0. (See accompanying
@@ -94,7 +94,7 @@ public:
    * serial port.
    */
   explicit basic_serial_port(const executor_type& ex)
-    : impl_(ex)
+    : impl_(0, ex)
   {
   }
 
@@ -108,11 +108,11 @@ public:
    */
   template <typename ExecutionContext>
   explicit basic_serial_port(ExecutionContext& context,
-      typename enable_if<
+      typename constraint<
         is_convertible<ExecutionContext&, execution_context&>::value,
-        basic_serial_port
-      >::type* = 0)
-    : impl_(context)
+        defaulted_constraint
+      >::type = defaulted_constraint())
+    : impl_(0, 0, context)
   {
   }
 
@@ -129,7 +129,7 @@ public:
    * port.
    */
   basic_serial_port(const executor_type& ex, const char* device)
-    : impl_(ex)
+    : impl_(0, ex)
   {
     asio::error_code ec;
     impl_.get_service().open(impl_.get_implementation(), device, ec);
@@ -150,10 +150,10 @@ public:
    */
   template <typename ExecutionContext>
   basic_serial_port(ExecutionContext& context, const char* device,
-      typename enable_if<
+      typename constraint<
         is_convertible<ExecutionContext&, execution_context&>::value
-      >::type* = 0)
-    : impl_(context)
+      >::type = 0)
+    : impl_(0, 0, context)
   {
     asio::error_code ec;
     impl_.get_service().open(impl_.get_implementation(), device, ec);
@@ -173,7 +173,7 @@ public:
    * port.
    */
   basic_serial_port(const executor_type& ex, const std::string& device)
-    : impl_(ex)
+    : impl_(0, ex)
   {
     asio::error_code ec;
     impl_.get_service().open(impl_.get_implementation(), device, ec);
@@ -194,10 +194,10 @@ public:
    */
   template <typename ExecutionContext>
   basic_serial_port(ExecutionContext& context, const std::string& device,
-      typename enable_if<
+      typename constraint<
         is_convertible<ExecutionContext&, execution_context&>::value
-      >::type* = 0)
-    : impl_(context)
+      >::type = 0)
+    : impl_(0, 0, context)
   {
     asio::error_code ec;
     impl_.get_service().open(impl_.get_implementation(), device, ec);
@@ -219,7 +219,7 @@ public:
    */
   basic_serial_port(const executor_type& ex,
       const native_handle_type& native_serial_port)
-    : impl_(ex)
+    : impl_(0, ex)
   {
     asio::error_code ec;
     impl_.get_service().assign(impl_.get_implementation(),
@@ -243,10 +243,10 @@ public:
   template <typename ExecutionContext>
   basic_serial_port(ExecutionContext& context,
       const native_handle_type& native_serial_port,
-      typename enable_if<
+      typename constraint<
         is_convertible<ExecutionContext&, execution_context&>::value
-      >::type* = 0)
-    : impl_(context)
+      >::type = 0)
+    : impl_(0, 0, context)
   {
     asio::error_code ec;
     impl_.get_service().assign(impl_.get_implementation(),

@@ -2,7 +2,7 @@
 // asio.hpp
 // ~~~~~~~~
 //
-// Copyright (c) 2003-2020 Christopher M. Kohlhoff (chris at kohlhoff dot com)
+// Copyright (c) 2003-2021 Christopher M. Kohlhoff (chris at kohlhoff dot com)
 //
 // Distributed under the Boost Software License, Version 1.0. (See accompanying
 // file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
@@ -17,6 +17,8 @@
 
 #include "asio/associated_allocator.hpp"
 #include "asio/associated_executor.hpp"
+#include "asio/associated_cancellation_slot.hpp"
+#include "asio/associator.hpp"
 #include "asio/async_result.hpp"
 #include "asio/awaitable.hpp"
 #include "asio/basic_datagram_socket.hpp"
@@ -33,6 +35,7 @@
 #include "asio/basic_stream_socket.hpp"
 #include "asio/basic_streambuf.hpp"
 #include "asio/basic_waitable_timer.hpp"
+#include "asio/bind_cancellation_slot.hpp"
 #include "asio/bind_executor.hpp"
 #include "asio/buffer.hpp"
 #include "asio/buffered_read_stream_fwd.hpp"
@@ -42,6 +45,9 @@
 #include "asio/buffered_write_stream_fwd.hpp"
 #include "asio/buffered_write_stream.hpp"
 #include "asio/buffers_iterator.hpp"
+#include "asio/cancellation_signal.hpp"
+#include "asio/cancellation_state.hpp"
+#include "asio/cancellation_type.hpp"
 #include "asio/co_spawn.hpp"
 #include "asio/completion_condition.hpp"
 #include "asio/compose.hpp"

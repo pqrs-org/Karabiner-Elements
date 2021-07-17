@@ -2,7 +2,7 @@
 // impl/co_spawn.hpp
 // ~~~~~~~~~~~~~~~~~
 //
-// Copyright (c) 2003-2020 Christopher M. Kohlhoff (chris at kohlhoff dot com)
+// Copyright (c) 2003-2021 Christopher M. Kohlhoff (chris at kohlhoff dot com)
 //
 // Distributed under the Boost Software License, Version 1.0. (See accompanying
 // file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
@@ -16,6 +16,7 @@
 #endif // defined(_MSC_VER) && (_MSC_VER >= 1200)
 
 #include "asio/detail/config.hpp"
+#include "asio/associated_cancellation_slot.hpp"
 #include "asio/awaitable.hpp"
 #include "asio/dispatch.hpp"
 #include "asio/execution/outstanding_work.hpp"
@@ -76,16 +77,18 @@ make_co_spawn_work_guard(const Executor& ex)
 }
 
 template <typename T, typename Executor, typename F, typename Handler>
-awaitable<void, Executor> co_spawn_entry_point(
+awaitable<awaitable_thread_entry_point, Executor> co_spawn_entry_point(
     awaitable<T, Executor>*, Executor ex, F f, Handler handler)
 {
   auto spawn_work = make_co_spawn_work_guard(ex);
   auto handler_work = make_co_spawn_work_guard(
       asio::get_associated_executor(handler, ex));
 
-  (void) co_await (post)(spawn_work.get_executor(),
-      use_awaitable_t<Executor>{});
+  (void) co_await (dispatch)(
+      use_awaitable_t<Executor>{__FILE__, __LINE__, "co_spawn_entry_point"});
 
+  (co_await awaitable_thread_has_context_switched{}) = false;
+  std::exception_ptr e = nullptr;
   bool done = false;
   try
   {
@@ -93,36 +96,63 @@ awaitable<void, Executor> co_spawn_entry_point(
 
     done = true;
 
-    (dispatch)(handler_work.get_executor(),
-        [handler = std::move(handler), t = std::move(t)]() mutable
-        {
-          handler(std::exception_ptr(), std::move(t));
-        });
+    if (co_await awaitable_thread_has_context_switched{})
+    {
+      (dispatch)(handler_work.get_executor(),
+          [handler = std::move(handler), t = std::move(t)]() mutable
+          {
+            std::move(handler)(std::exception_ptr(), std::move(t));
+          });
+    }
+    else
+    {
+      (post)(handler_work.get_executor(),
+          [handler = std::move(handler), t = std::move(t)]() mutable
+          {
+            std::move(handler)(std::exception_ptr(), std::move(t));
+          });
+    }
+
+    co_return;
   }
   catch (...)
   {
     if (done)
       throw;
 
+    e = std::current_exception();
+  }
+
+  if (co_await awaitable_thread_has_context_switched{})
+  {
     (dispatch)(handler_work.get_executor(),
-        [handler = std::move(handler), e = std::current_exception()]() mutable
+        [handler = std::move(handler), e]() mutable
         {
-          handler(e, T());
+          std::move(handler)(e, T());
+        });
+  }
+  else
+  {
+    (post)(handler_work.get_executor(),
+        [handler = std::move(handler), e]() mutable
+        {
+          std::move(handler)(e, T());
         });
   }
 }
 
 template <typename Executor, typename F, typename Handler>
-awaitable<void, Executor> co_spawn_entry_point(
+awaitable<awaitable_thread_entry_point, Executor> co_spawn_entry_point(
     awaitable<void, Executor>*, Executor ex, F f, Handler handler)
 {
   auto spawn_work = make_co_spawn_work_guard(ex);
   auto handler_work = make_co_spawn_work_guard(
       asio::get_associated_executor(handler, ex));
 
-  (void) co_await (post)(spawn_work.get_executor(),
+  (void) co_await (dispatch)(
       use_awaitable_t<Executor>{__FILE__, __LINE__, "co_spawn_entry_point"});
 
+  (co_await awaitable_thread_has_context_switched{}) = false;
   std::exception_ptr e = nullptr;
   try
   {
@@ -133,11 +163,22 @@ awaitable<void, Executor> co_spawn_entry_point(
     e = std::current_exception();
   }
 
-  (dispatch)(handler_work.get_executor(),
-      [handler = std::move(handler), e]() mutable
-      {
-        handler(e);
-      });
+  if (co_await awaitable_thread_has_context_switched{})
+  {
+    (dispatch)(handler_work.get_executor(),
+        [handler = std::move(handler), e]() mutable
+        {
+          std::move(handler)(e);
+        });
+  }
+  else
+  {
+    (post)(handler_work.get_executor(),
+        [handler = std::move(handler), e]() mutable
+        {
+          std::move(handler)(e);
+        });
+  }
 }
 
 template <typename T, typename Executor>
@@ -180,9 +221,16 @@ public:
   {
     typedef typename result_of<F()>::type awaitable_type;
 
+    cancellation_state proxy_cancel_state(
+        asio::get_associated_cancellation_slot(handler),
+        enable_total_cancellation());
+
+    cancellation_state cancel_state(proxy_cancel_state.slot());
+
     auto a = (co_spawn_entry_point)(static_cast<awaitable_type*>(nullptr),
         ex_, std::forward<F>(f), std::forward<Handler>(handler));
-    awaitable_handler<executor_type, void>(std::move(a), ex_).launch();
+    awaitable_handler<executor_type, void>(std::move(a), ex_,
+        proxy_cancel_state.slot(), cancel_state).launch();
   }
 
 private:
@@ -198,10 +246,10 @@ inline ASIO_INITFN_AUTO_RESULT_TYPE(
     CompletionToken, void(std::exception_ptr, T))
 co_spawn(const Executor& ex,
     awaitable<T, AwaitableExecutor> a, CompletionToken&& token,
-    typename enable_if<
+    typename constraint<
       (is_executor<Executor>::value || execution::is_executor<Executor>::value)
         && is_convertible<Executor, AwaitableExecutor>::value
-    >::type*)
+    >::type)
 {
   return async_initiate<CompletionToken, void(std::exception_ptr, T)>(
       detail::initiate_co_spawn<AwaitableExecutor>(AwaitableExecutor(ex)),
@@ -215,10 +263,10 @@ inline ASIO_INITFN_AUTO_RESULT_TYPE(
     CompletionToken, void(std::exception_ptr))
 co_spawn(const Executor& ex,
     awaitable<void, AwaitableExecutor> a, CompletionToken&& token,
-    typename enable_if<
+    typename constraint<
       (is_executor<Executor>::value || execution::is_executor<Executor>::value)
         && is_convertible<Executor, AwaitableExecutor>::value
-    >::type*)
+    >::type)
 {
   return async_initiate<CompletionToken, void(std::exception_ptr)>(
       detail::initiate_co_spawn<AwaitableExecutor>(AwaitableExecutor(ex)),
@@ -233,11 +281,11 @@ inline ASIO_INITFN_AUTO_RESULT_TYPE(
     CompletionToken, void(std::exception_ptr, T))
 co_spawn(ExecutionContext& ctx,
     awaitable<T, AwaitableExecutor> a, CompletionToken&& token,
-    typename enable_if<
+    typename constraint<
       is_convertible<ExecutionContext&, execution_context&>::value
         && is_convertible<typename ExecutionContext::executor_type,
           AwaitableExecutor>::value
-    >::type*)
+    >::type)
 {
   return (co_spawn)(ctx.get_executor(), std::move(a),
       std::forward<CompletionToken>(token));
@@ -250,11 +298,11 @@ inline ASIO_INITFN_AUTO_RESULT_TYPE(
     CompletionToken, void(std::exception_ptr))
 co_spawn(ExecutionContext& ctx,
     awaitable<void, AwaitableExecutor> a, CompletionToken&& token,
-    typename enable_if<
+    typename constraint<
       is_convertible<ExecutionContext&, execution_context&>::value
         && is_convertible<typename ExecutionContext::executor_type,
           AwaitableExecutor>::value
-    >::type*)
+    >::type)
 {
   return (co_spawn)(ctx.get_executor(), std::move(a),
       std::forward<CompletionToken>(token));
@@ -266,9 +314,9 @@ template <typename Executor, typename F,
 inline ASIO_INITFN_AUTO_RESULT_TYPE(CompletionToken,
     typename detail::awaitable_signature<typename result_of<F()>::type>::type)
 co_spawn(const Executor& ex, F&& f, CompletionToken&& token,
-    typename enable_if<
+    typename constraint<
       is_executor<Executor>::value || execution::is_executor<Executor>::value
-    >::type*)
+    >::type)
 {
   return async_initiate<CompletionToken,
     typename detail::awaitable_signature<typename result_of<F()>::type>::type>(
@@ -283,9 +331,9 @@ template <typename ExecutionContext, typename F,
 inline ASIO_INITFN_AUTO_RESULT_TYPE(CompletionToken,
     typename detail::awaitable_signature<typename result_of<F()>::type>::type)
 co_spawn(ExecutionContext& ctx, F&& f, CompletionToken&& token,
-    typename enable_if<
+    typename constraint<
       is_convertible<ExecutionContext&, execution_context&>::value
-    >::type*)
+    >::type)
 {
   return (co_spawn)(ctx.get_executor(), std::forward<F>(f),
       std::forward<CompletionToken>(token));

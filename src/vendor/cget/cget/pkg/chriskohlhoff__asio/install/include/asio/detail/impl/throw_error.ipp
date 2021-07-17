@@ -2,7 +2,7 @@
 // detail/impl/throw_error.ipp
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~
 //
-// Copyright (c) 2003-2020 Christopher M. Kohlhoff (chris at kohlhoff dot com)
+// Copyright (c) 2003-2021 Christopher M. Kohlhoff (chris at kohlhoff dot com)
 //
 // Distributed under the Boost Software License, Version 1.0. (See accompanying
 // file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
@@ -34,7 +34,9 @@ void do_throw_error(const asio::error_code& err)
 void do_throw_error(const asio::error_code& err, const char* location)
 {
   // boostify: non-boost code starts here
-#if defined(ASIO_MSVC) && defined(ASIO_HAS_STD_SYSTEM_ERROR)
+#if defined(ASIO_MSVC) \
+  && defined(ASIO_HAS_STD_SYSTEM_ERROR) \
+  && (_MSC_VER < 1928)
   // Microsoft's implementation of std::system_error is non-conformant in that
   // it ignores the error code's message when a "what" string is supplied. We'll
   // work around this by explicitly formatting the "what" string.
@@ -43,12 +45,16 @@ void do_throw_error(const asio::error_code& err, const char* location)
   what_msg += err.message();
   asio::system_error e(err, what_msg);
   asio::detail::throw_exception(e);
-#else // defined(ASIO_MSVC) && defined(ASIO_HAS_STD_SYSTEM_ERROR)
+#else // defined(ASIO_MSVC)
+      //   && defined(ASIO_HAS_STD_SYSTEM_ERROR)
+      //   && (_MSC_VER < 1928)
   // boostify: non-boost code ends here
   asio::system_error e(err, location);
   asio::detail::throw_exception(e);
   // boostify: non-boost code starts here
-#endif // defined(ASIO_MSVC) && defined(ASIO_HAS_STD_SYSTEM_ERROR)
+#endif // defined(ASIO_MSVC)
+       //   && defined(ASIO_HAS_STD_SYSTEM_ERROR)
+       //   && (_MSC_VER < 1928)
   // boostify: non-boost code ends here
 }
 

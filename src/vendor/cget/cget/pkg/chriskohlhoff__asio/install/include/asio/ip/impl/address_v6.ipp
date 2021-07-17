@@ -2,7 +2,7 @@
 // ip/impl/address_v6.ipp
 // ~~~~~~~~~~~~~~~~~~~~~~
 //
-// Copyright (c) 2003-2020 Christopher M. Kohlhoff (chris at kohlhoff dot com)
+// Copyright (c) 2003-2021 Christopher M. Kohlhoff (chris at kohlhoff dot com)
 //
 // Distributed under the Boost Software License, Version 1.0. (See accompanying
 // file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
@@ -38,7 +38,7 @@ address_v6::address_v6() ASIO_NOEXCEPT
 }
 
 address_v6::address_v6(const address_v6::bytes_type& bytes,
-    unsigned long scope)
+    scope_id_type scope)
   : scope_id_(scope)
 {
 #if UCHAR_MAX > 0xFF

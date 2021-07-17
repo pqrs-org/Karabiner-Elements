@@ -2,7 +2,7 @@
 // execution/prefer_only.hpp
 // ~~~~~~~~~~~~~~~~~~~~~~~~~
 //
-// Copyright (c) 2003-2020 Christopher M. Kohlhoff (chris at kohlhoff dot com)
+// Copyright (c) 2003-2021 Christopher M. Kohlhoff (chris at kohlhoff dot com)
 //
 // Distributed under the Boost Software License, Version 1.0. (See accompanying
 // file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
@@ -220,7 +220,9 @@ struct prefer_only :
   prefer(const Executor& ex, const prefer_only<Property>& p,
       typename enable_if<
         is_same<Property, InnerProperty>::value
-          && can_prefer<const Executor&, const InnerProperty&>::value
+      >::type* = 0,
+      typename enable_if<
+        can_prefer<const Executor&, const InnerProperty&>::value
       >::type* = 0)
 #if !defined(ASIO_MSVC) \
   && !defined(__clang__) // Clang crashes if noexcept is used here.
@@ -238,7 +240,9 @@ struct prefer_only :
   query(const Executor& ex, const prefer_only<Property>& p,
       typename enable_if<
         is_same<Property, InnerProperty>::value
-          && can_query<const Executor&, const InnerProperty&>::value
+      >::type* = 0,
+      typename enable_if<
+        can_query<const Executor&, const InnerProperty&>::value
       >::type* = 0)
 #if !defined(ASIO_MSVC) \
   && !defined(__clang__) // Clang crashes if noexcept is used here.

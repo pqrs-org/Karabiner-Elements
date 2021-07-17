@@ -1,0 +1,1 @@
+../../cget/pkg/chriskohlhoff__asio/install/include/asio/cancellation_type.hpp

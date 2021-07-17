@@ -2,7 +2,7 @@
 // detached.hpp
 // ~~~~~~~~~~~~
 //
-// Copyright (c) 2003-2020 Christopher M. Kohlhoff (chris at kohlhoff dot com)
+// Copyright (c) 2003-2021 Christopher M. Kohlhoff (chris at kohlhoff dot com)
 //
 // Distributed under the Boost Software License, Version 1.0. (See accompanying
 // file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
@@ -61,9 +61,9 @@ public:
     /// that to construct the adapted executor.
     template <typename OtherExecutor>
     executor_with_default(const OtherExecutor& ex,
-        typename enable_if<
+        typename constraint<
           is_convertible<OtherExecutor, InnerExecutor>::value
-        >::type* = 0) ASIO_NOEXCEPT
+        >::type = 0) ASIO_NOEXCEPT
       : InnerExecutor(ex)
     {
     }

@@ -2,7 +2,7 @@
 // execution/occupancy.hpp
 // ~~~~~~~~~~~~~~~~~~~~~~~
 //
-// Copyright (c) 2003-2020 Christopher M. Kohlhoff (chris at kohlhoff dot com)
+// Copyright (c) 2003-2021 Christopher M. Kohlhoff (chris at kohlhoff dot com)
 //
 // Distributed under the Boost Software License, Version 1.0. (See accompanying
 // file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
@@ -67,8 +67,18 @@ struct occupancy_t
 #if defined(ASIO_HAS_VARIABLE_TEMPLATES)
   template <typename T>
   ASIO_STATIC_CONSTEXPR(bool,
-    is_applicable_property_v = is_executor<T>::value
-      || is_sender<T>::value || is_scheduler<T>::value);
+    is_applicable_property_v = (
+      is_executor<T>::value
+        || conditional<
+            is_executor<T>::value,
+            false_type,
+            is_sender<T>
+          >::type::value
+        || conditional<
+            is_executor<T>::value,
+            false_type,
+            is_scheduler<T>
+          >::type::value));
 #endif // defined(ASIO_HAS_VARIABLE_TEMPLATES)
 
   ASIO_STATIC_CONSTEXPR(bool, is_requirable = false);
@@ -79,16 +89,46 @@ struct occupancy_t
   {
   }
 
+  template <typename T>
+  struct static_proxy
+  {
+#if defined(ASIO_HAS_DEDUCED_QUERY_STATIC_CONSTEXPR_MEMBER_TRAIT)
+    struct type
+    {
+      template <typename P>
+      static constexpr auto query(ASIO_MOVE_ARG(P) p)
+        noexcept(
+          noexcept(
+            conditional<true, T, P>::type::query(ASIO_MOVE_CAST(P)(p))
+          )
+        )
+        -> decltype(
+          conditional<true, T, P>::type::query(ASIO_MOVE_CAST(P)(p))
+        )
+      {
+        return T::query(ASIO_MOVE_CAST(P)(p));
+      }
+    };
+#else // defined(ASIO_HAS_DEDUCED_QUERY_STATIC_CONSTEXPR_MEMBER_TRAIT)
+    typedef T type;
+#endif // defined(ASIO_HAS_DEDUCED_QUERY_STATIC_CONSTEXPR_MEMBER_TRAIT)
+  };
+
+  template <typename T>
+  struct query_static_constexpr_member :
+    traits::query_static_constexpr_member<
+      typename static_proxy<T>::type, occupancy_t> {};
+
 #if defined(ASIO_HAS_DEDUCED_STATIC_QUERY_TRAIT) \
   && defined(ASIO_HAS_SFINAE_VARIABLE_TEMPLATES)
   template <typename T>
   static ASIO_CONSTEXPR
-  typename traits::query_static_constexpr_member<T, occupancy_t>::result_type
+  typename query_static_constexpr_member<T>::result_type
   static_query()
     ASIO_NOEXCEPT_IF((
-      traits::query_static_constexpr_member<T, occupancy_t>::is_noexcept))
+      query_static_constexpr_member<T>::is_noexcept))
   {
-    return traits::query_static_constexpr_member<T, occupancy_t>::value();
+    return query_static_constexpr_member<T>::value();
   }
 
   template <typename E, typename T = decltype(occupancy_t::static_query<E>())>
@@ -132,8 +172,16 @@ template <typename T>
 struct is_applicable_property<T, execution::occupancy_t>
   : integral_constant<bool,
       execution::is_executor<T>::value
-        || execution::is_sender<T>::value
-        || execution::is_scheduler<T>::value>
+        || conditional<
+            execution::is_executor<T>::value,
+            false_type,
+            execution::is_sender<T>
+          >::type::value
+        || conditional<
+            execution::is_executor<T>::value,
+            false_type,
+            execution::is_scheduler<T>
+          >::type::value>
 {
 };
 
@@ -147,20 +195,20 @@ namespace traits {
 template <typename T>
 struct static_query<T, execution::occupancy_t,
   typename enable_if<
-    traits::query_static_constexpr_member<T,
-      execution::occupancy_t>::is_valid
+    execution::detail::occupancy_t<0>::
+      query_static_constexpr_member<T>::is_valid
   >::type>
 {
   ASIO_STATIC_CONSTEXPR(bool, is_valid = true);
   ASIO_STATIC_CONSTEXPR(bool, is_noexcept = true);
 
-  typedef typename traits::query_static_constexpr_member<T,
-    execution::occupancy_t>::result_type result_type;
+  typedef typename execution::detail::occupancy_t<0>::
+    query_static_constexpr_member<T>::result_type result_type;
 
   static ASIO_CONSTEXPR result_type value()
   {
-    return traits::query_static_constexpr_member<T,
-      execution::occupancy_t>::value();
+    return execution::detail::occupancy_t<0>::
+      query_static_constexpr_member<T>::value();
   }
 };
 

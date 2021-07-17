@@ -2,7 +2,7 @@
 // ssl/detail/write_op.hpp
 // ~~~~~~~~~~~~~~~~~~~~~~~
 //
-// Copyright (c) 2003-2020 Christopher M. Kohlhoff (chris at kohlhoff dot com)
+// Copyright (c) 2003-2021 Christopher M. Kohlhoff (chris at kohlhoff dot com)
 //
 // Distributed under the Boost Software License, Version 1.0. (See accompanying
 // file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
@@ -60,7 +60,7 @@ public:
       const asio::error_code& ec,
       const std::size_t& bytes_transferred) const
   {
-    handler(ec, bytes_transferred);
+    ASIO_MOVE_OR_LVALUE(Handler)(handler)(ec, bytes_transferred);
   }
 
 private:

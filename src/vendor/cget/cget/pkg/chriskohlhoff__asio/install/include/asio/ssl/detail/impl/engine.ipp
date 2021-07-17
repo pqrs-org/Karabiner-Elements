@@ -2,7 +2,7 @@
 // ssl/detail/impl/engine.ipp
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~
 //
-// Copyright (c) 2003-2020 Christopher M. Kohlhoff (chris at kohlhoff dot com)
+// Copyright (c) 2003-2021 Christopher M. Kohlhoff (chris at kohlhoff dot com)
 //
 // Distributed under the Boost Software License, Version 1.0. (See accompanying
 // file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
@@ -79,6 +79,20 @@ engine::~engine()
   if (ssl_)
     ::SSL_free(ssl_);
 }
+
+#if defined(ASIO_HAS_MOVE)
+engine& engine::operator=(engine&& other) ASIO_NOEXCEPT
+{
+  if (this != &other)
+  {
+    ssl_ = other.ssl_;
+    ext_bio_ = other.ext_bio_;
+    other.ssl_ = 0;
+    other.ext_bio_ = 0;
+  }
+  return *this;
+}
+#endif // defined(ASIO_HAS_MOVE)
 
 SSL* engine::native_handle()
 {

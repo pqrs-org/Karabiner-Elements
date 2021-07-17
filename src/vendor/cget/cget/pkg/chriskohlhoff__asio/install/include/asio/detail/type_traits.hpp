@@ -2,7 +2,7 @@
 // detail/type_traits.hpp
 // ~~~~~~~~~~~~~~~~~~~~~~
 //
-// Copyright (c) 2003-2020 Christopher M. Kohlhoff (chris at kohlhoff dot com)
+// Copyright (c) 2003-2021 Christopher M. Kohlhoff (chris at kohlhoff dot com)
 //
 // Distributed under the Boost Software License, Version 1.0. (See accompanying
 // file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
@@ -142,6 +142,14 @@ template <typename Head, typename... Tail> struct conjunction<Head, Tail...> :
   conditional<Head::value, conjunction<Tail...>, Head>::type {};
 
 #endif // defined(ASIO_HAS_VARIADIC_TEMPLATES)
+
+struct defaulted_constraint
+{
+  ASIO_CONSTEXPR defaulted_constraint() {}
+};
+
+template <bool Condition, typename Type = int>
+struct constraint : enable_if<Condition, Type> {};
 
 } // namespace asio
 

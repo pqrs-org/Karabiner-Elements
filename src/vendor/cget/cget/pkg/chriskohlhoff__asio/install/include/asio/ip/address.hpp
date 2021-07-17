@@ -2,7 +2,7 @@
 // ip/address.hpp
 // ~~~~~~~~~~~~~~
 //
-// Copyright (c) 2003-2020 Christopher M. Kohlhoff (chris at kohlhoff dot com)
+// Copyright (c) 2003-2021 Christopher M. Kohlhoff (chris at kohlhoff dot com)
 //
 // Distributed under the Boost Software License, Version 1.0. (See accompanying
 // file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
@@ -24,6 +24,10 @@
 #include "asio/ip/address_v4.hpp"
 #include "asio/ip/address_v6.hpp"
 #include "asio/ip/bad_address_cast.hpp"
+
+#if defined(ASIO_HAS_STD_HASH)
+# include <functional>
+#endif // defined(ASIO_HAS_STD_HASH)
 
 #if !defined(ASIO_NO_IOSTREAM)
 # include <iosfwd>
@@ -257,6 +261,24 @@ std::basic_ostream<Elem, Traits>& operator<<(
 
 } // namespace ip
 } // namespace asio
+
+#if defined(ASIO_HAS_STD_HASH)
+namespace std {
+
+template <>
+struct hash<asio::ip::address>
+{
+  std::size_t operator()(const asio::ip::address& addr)
+    const ASIO_NOEXCEPT
+  {
+    return addr.is_v4()
+      ? std::hash<asio::ip::address_v4>()(addr.to_v4())
+      : std::hash<asio::ip::address_v6>()(addr.to_v6());
+  }
+};
+
+} // namespace std
+#endif // defined(ASIO_HAS_STD_HASH)
 
 #include "asio/detail/pop_options.hpp"
 

@@ -2,7 +2,7 @@
 // detail/impl/dev_poll_reactor.hpp
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 //
-// Copyright (c) 2003-2020 Christopher M. Kohlhoff (chris at kohlhoff dot com)
+// Copyright (c) 2003-2021 Christopher M. Kohlhoff (chris at kohlhoff dot com)
 //
 // Distributed under the Boost Software License, Version 1.0. (See accompanying
 // file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
@@ -19,10 +19,18 @@
 
 #if defined(ASIO_HAS_DEV_POLL)
 
+#include "asio/detail/scheduler.hpp"
+
 #include "asio/detail/push_options.hpp"
 
 namespace asio {
 namespace detail {
+
+inline void dev_poll_reactor::post_immediate_completion(
+    reactor_op* op, bool is_continuation)
+{
+  scheduler_.post_immediate_completion(op, is_continuation);
+}
 
 template <typename Time_Traits>
 void dev_poll_reactor::add_timer_queue(timer_queue<Time_Traits>& queue)

@@ -2,7 +2,7 @@
 // detail/reactor_op_queue.hpp
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~
 //
-// Copyright (c) 2003-2020 Christopher M. Kohlhoff (chris at kohlhoff dot com)
+// Copyright (c) 2003-2021 Christopher M. Kohlhoff (chris at kohlhoff dot com)
 //
 // Distributed under the Boost Software License, Version 1.0. (See accompanying
 // file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
@@ -98,6 +98,50 @@ public:
         asio::error::operation_aborted)
   {
     return this->cancel_operations(operations_.find(descriptor), ops, ec);
+  }
+
+  // Cancel operations associated with the descriptor identified by the
+  // supplied iterator, and the specified cancellation key. Any operations
+  // pending for the descriptor with the key will be cancelled. Returns true if
+  // any operations were cancelled, in which case the reactor's event
+  // demultiplexing function may need to be interrupted and restarted.
+  bool cancel_operations_by_key(iterator i, op_queue<operation>& ops,
+      void* cancellation_key, const asio::error_code& ec =
+        asio::error::operation_aborted)
+  {
+    bool result = false;
+    if (i != operations_.end())
+    {
+      op_queue<reactor_op> other_ops;
+      while (reactor_op* op = i->second.front())
+      {
+        i->second.pop();
+        if (op->cancellation_key_ == cancellation_key)
+        {
+          op->ec_ = ec;
+          ops.push(op);
+          result = true;
+        }
+        else
+          other_ops.push(op);
+      }
+      i->second.push(other_ops);
+      if (i->second.empty())
+        operations_.erase(i);
+    }
+    return result;
+  }
+
+  // Cancel all operations associated with the descriptor. Any operations
+  // pending for the descriptor will be cancelled. Returns true if any
+  // operations were cancelled, in which case the reactor's event
+  // demultiplexing function may need to be interrupted and restarted.
+  bool cancel_operations_by_key(Descriptor descriptor, op_queue<operation>& ops,
+      void* cancellation_key, const asio::error_code& ec =
+        asio::error::operation_aborted)
+  {
+    return this->cancel_operations_by_key(
+        operations_.find(descriptor), ops, cancellation_key, ec);
   }
 
   // Whether there are no operations in the queue.

@@ -2,7 +2,7 @@
 // read_at.hpp
 // ~~~~~~~~~~~
 //
-// Copyright (c) 2003-2020 Christopher M. Kohlhoff (chris at kohlhoff dot com)
+// Copyright (c) 2003-2021 Christopher M. Kohlhoff (chris at kohlhoff dot com)
 //
 // Distributed under the Boost Software License, Version 1.0. (See accompanying
 // file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
@@ -457,6 +457,17 @@ std::size_t read_at(SyncRandomAccessReadDevice& d,
  *     d, 42, buffers,
  *     asio::transfer_all(),
  *     handler); @endcode
+ *
+ * @par Per-Operation Cancellation
+ * This asynchronous operation supports cancellation for the following
+ * asio::cancellation_type values:
+ *
+ * @li @c cancellation_type::terminal
+ *
+ * @li @c cancellation_type::partial
+ *
+ * if they are also supported by the @c AsyncRandomAccessReadDevice type's
+ * async_read_some_at operation.
  */
 template <typename AsyncRandomAccessReadDevice, typename MutableBufferSequence,
     ASIO_COMPLETION_TOKEN_FOR(void (asio::error_code,
@@ -535,6 +546,17 @@ async_read_at(AsyncRandomAccessReadDevice& d, uint64_t offset,
  * See the @ref buffer documentation for information on reading into multiple
  * buffers in one go, and how to use it with arrays, boost::array or
  * std::vector.
+ *
+ * @par Per-Operation Cancellation
+ * This asynchronous operation supports cancellation for the following
+ * asio::cancellation_type values:
+ *
+ * @li @c cancellation_type::terminal
+ *
+ * @li @c cancellation_type::partial
+ *
+ * if they are also supported by the @c AsyncRandomAccessReadDevice type's
+ * async_read_some_at operation.
  */
 template <typename AsyncRandomAccessReadDevice,
     typename MutableBufferSequence, typename CompletionCondition,
@@ -598,6 +620,17 @@ async_read_at(AsyncRandomAccessReadDevice& d,
  *     d, 42, b,
  *     asio::transfer_all(),
  *     handler); @endcode
+ *
+ * @par Per-Operation Cancellation
+ * This asynchronous operation supports cancellation for the following
+ * asio::cancellation_type values:
+ *
+ * @li @c cancellation_type::terminal
+ *
+ * @li @c cancellation_type::partial
+ *
+ * if they are also supported by the @c AsyncRandomAccessReadDevice type's
+ * async_read_some_at operation.
  */
 template <typename AsyncRandomAccessReadDevice, typename Allocator,
     ASIO_COMPLETION_TOKEN_FOR(void (asio::error_code,
@@ -664,6 +697,17 @@ async_read_at(AsyncRandomAccessReadDevice& d,
  * not, the handler will not be invoked from within this function. On
  * immediate completion, invocation of the handler will be performed in a
  * manner equivalent to using asio::post().
+ *
+ * @par Per-Operation Cancellation
+ * This asynchronous operation supports cancellation for the following
+ * asio::cancellation_type values:
+ *
+ * @li @c cancellation_type::terminal
+ *
+ * @li @c cancellation_type::partial
+ *
+ * if they are also supported by the @c AsyncRandomAccessReadDevice type's
+ * async_read_some_at operation.
  */
 template <typename AsyncRandomAccessReadDevice,
     typename Allocator, typename CompletionCondition,

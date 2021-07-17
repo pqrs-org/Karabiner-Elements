@@ -2,7 +2,7 @@
 // detail/strand_service.hpp
 // ~~~~~~~~~~~~~~~~~~~~~~~~~
 //
-// Copyright (c) 2003-2020 Christopher M. Kohlhoff (chris at kohlhoff dot com)
+// Copyright (c) 2003-2021 Christopher M. Kohlhoff (chris at kohlhoff dot com)
 //
 // Distributed under the Boost Software License, Version 1.0. (See accompanying
 // file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
@@ -96,11 +96,10 @@ public:
       const implementation_type& impl) const;
 
 private:
-  // Helper function to dispatch a handler. Returns true if the handler should
-  // be dispatched immediately.
-  ASIO_DECL bool do_dispatch(implementation_type& impl, operation* op);
+  // Helper function to dispatch a handler.
+  ASIO_DECL void do_dispatch(implementation_type& impl, operation* op);
 
-  // Helper fiunction to post a handler.
+  // Helper function to post a handler.
   ASIO_DECL void do_post(implementation_type& impl,
       operation* op, bool is_continuation);
 

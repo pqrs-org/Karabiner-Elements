@@ -2,7 +2,7 @@
 // read.hpp
 // ~~~~~~~~
 //
-// Copyright (c) 2003-2020 Christopher M. Kohlhoff (chris at kohlhoff dot com)
+// Copyright (c) 2003-2021 Christopher M. Kohlhoff (chris at kohlhoff dot com)
 //
 // Distributed under the Boost Software License, Version 1.0. (See accompanying
 // file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
@@ -75,9 +75,9 @@ namespace asio {
  */
 template <typename SyncReadStream, typename MutableBufferSequence>
 std::size_t read(SyncReadStream& s, const MutableBufferSequence& buffers,
-    typename enable_if<
+    typename constraint<
       is_mutable_buffer_sequence<MutableBufferSequence>::value
-    >::type* = 0);
+    >::type = 0);
 
 /// Attempt to read a certain amount of data from a stream before returning.
 /**
@@ -118,9 +118,9 @@ std::size_t read(SyncReadStream& s, const MutableBufferSequence& buffers,
 template <typename SyncReadStream, typename MutableBufferSequence>
 std::size_t read(SyncReadStream& s, const MutableBufferSequence& buffers,
     asio::error_code& ec,
-    typename enable_if<
+    typename constraint<
       is_mutable_buffer_sequence<MutableBufferSequence>::value
-    >::type* = 0);
+    >::type = 0);
 
 /// Attempt to read a certain amount of data from a stream before returning.
 /**
@@ -172,9 +172,9 @@ template <typename SyncReadStream, typename MutableBufferSequence,
   typename CompletionCondition>
 std::size_t read(SyncReadStream& s, const MutableBufferSequence& buffers,
     CompletionCondition completion_condition,
-    typename enable_if<
+    typename constraint<
       is_mutable_buffer_sequence<MutableBufferSequence>::value
-    >::type* = 0);
+    >::type = 0);
 
 /// Attempt to read a certain amount of data from a stream before returning.
 /**
@@ -219,9 +219,9 @@ template <typename SyncReadStream, typename MutableBufferSequence,
     typename CompletionCondition>
 std::size_t read(SyncReadStream& s, const MutableBufferSequence& buffers,
     CompletionCondition completion_condition, asio::error_code& ec,
-    typename enable_if<
+    typename constraint<
       is_mutable_buffer_sequence<MutableBufferSequence>::value
-    >::type* = 0);
+    >::type = 0);
 
 #if !defined(ASIO_NO_DYNAMIC_BUFFER_V1)
 
@@ -255,10 +255,12 @@ std::size_t read(SyncReadStream& s, const MutableBufferSequence& buffers,
 template <typename SyncReadStream, typename DynamicBuffer_v1>
 std::size_t read(SyncReadStream& s,
     ASIO_MOVE_ARG(DynamicBuffer_v1) buffers,
-    typename enable_if<
+    typename constraint<
       is_dynamic_buffer_v1<typename decay<DynamicBuffer_v1>::type>::value
-        && !is_dynamic_buffer_v2<typename decay<DynamicBuffer_v1>::type>::value
-    >::type* = 0);
+    >::type = 0,
+    typename constraint<
+      !is_dynamic_buffer_v2<typename decay<DynamicBuffer_v1>::type>::value
+    >::type = 0);
 
 /// Attempt to read a certain amount of data from a stream before returning.
 /**
@@ -290,10 +292,12 @@ template <typename SyncReadStream, typename DynamicBuffer_v1>
 std::size_t read(SyncReadStream& s,
     ASIO_MOVE_ARG(DynamicBuffer_v1) buffers,
     asio::error_code& ec,
-    typename enable_if<
+    typename constraint<
       is_dynamic_buffer_v1<typename decay<DynamicBuffer_v1>::type>::value
-        && !is_dynamic_buffer_v2<typename decay<DynamicBuffer_v1>::type>::value
-    >::type* = 0);
+    >::type = 0,
+    typename constraint<
+      !is_dynamic_buffer_v2<typename decay<DynamicBuffer_v1>::type>::value
+    >::type = 0);
 
 /// Attempt to read a certain amount of data from a stream before returning.
 /**
@@ -336,10 +340,12 @@ template <typename SyncReadStream, typename DynamicBuffer_v1,
 std::size_t read(SyncReadStream& s,
     ASIO_MOVE_ARG(DynamicBuffer_v1) buffers,
     CompletionCondition completion_condition,
-    typename enable_if<
+    typename constraint<
       is_dynamic_buffer_v1<typename decay<DynamicBuffer_v1>::type>::value
-        && !is_dynamic_buffer_v2<typename decay<DynamicBuffer_v1>::type>::value
-    >::type* = 0);
+    >::type = 0,
+    typename constraint<
+      !is_dynamic_buffer_v2<typename decay<DynamicBuffer_v1>::type>::value
+    >::type = 0);
 
 /// Attempt to read a certain amount of data from a stream before returning.
 /**
@@ -383,10 +389,12 @@ template <typename SyncReadStream, typename DynamicBuffer_v1,
 std::size_t read(SyncReadStream& s,
     ASIO_MOVE_ARG(DynamicBuffer_v1) buffers,
     CompletionCondition completion_condition, asio::error_code& ec,
-    typename enable_if<
+    typename constraint<
       is_dynamic_buffer_v1<typename decay<DynamicBuffer_v1>::type>::value
-        && !is_dynamic_buffer_v2<typename decay<DynamicBuffer_v1>::type>::value
-    >::type* = 0);
+    >::type = 0,
+    typename constraint<
+      !is_dynamic_buffer_v2<typename decay<DynamicBuffer_v1>::type>::value
+    >::type = 0);
 
 #if !defined(ASIO_NO_EXTENSIONS)
 #if !defined(ASIO_NO_IOSTREAM)
@@ -564,9 +572,9 @@ std::size_t read(SyncReadStream& s, basic_streambuf<Allocator>& b,
  */
 template <typename SyncReadStream, typename DynamicBuffer_v2>
 std::size_t read(SyncReadStream& s, DynamicBuffer_v2 buffers,
-    typename enable_if<
+    typename constraint<
       is_dynamic_buffer_v2<DynamicBuffer_v2>::value
-    >::type* = 0);
+    >::type = 0);
 
 /// Attempt to read a certain amount of data from a stream before returning.
 /**
@@ -597,9 +605,9 @@ std::size_t read(SyncReadStream& s, DynamicBuffer_v2 buffers,
 template <typename SyncReadStream, typename DynamicBuffer_v2>
 std::size_t read(SyncReadStream& s, DynamicBuffer_v2 buffers,
     asio::error_code& ec,
-    typename enable_if<
+    typename constraint<
       is_dynamic_buffer_v2<DynamicBuffer_v2>::value
-    >::type* = 0);
+    >::type = 0);
 
 /// Attempt to read a certain amount of data from a stream before returning.
 /**
@@ -641,9 +649,9 @@ template <typename SyncReadStream, typename DynamicBuffer_v2,
     typename CompletionCondition>
 std::size_t read(SyncReadStream& s, DynamicBuffer_v2 buffers,
     CompletionCondition completion_condition,
-    typename enable_if<
+    typename constraint<
       is_dynamic_buffer_v2<DynamicBuffer_v2>::value
-    >::type* = 0);
+    >::type = 0);
 
 /// Attempt to read a certain amount of data from a stream before returning.
 /**
@@ -686,9 +694,9 @@ template <typename SyncReadStream, typename DynamicBuffer_v2,
     typename CompletionCondition>
 std::size_t read(SyncReadStream& s, DynamicBuffer_v2 buffers,
     CompletionCondition completion_condition, asio::error_code& ec,
-    typename enable_if<
+    typename constraint<
       is_dynamic_buffer_v2<DynamicBuffer_v2>::value
-    >::type* = 0);
+    >::type = 0);
 
 /*@}*/
 /**
@@ -758,6 +766,17 @@ std::size_t read(SyncReadStream& s, DynamicBuffer_v2 buffers,
  *     s, buffers,
  *     asio::transfer_all(),
  *     handler); @endcode
+ *
+ * @par Per-Operation Cancellation
+ * This asynchronous operation supports cancellation for the following
+ * asio::cancellation_type values:
+ *
+ * @li @c cancellation_type::terminal
+ *
+ * @li @c cancellation_type::partial
+ *
+ * if they are also supported by the @c AsyncReadStream type's
+ * @c async_read_some operation.
  */
 template <typename AsyncReadStream, typename MutableBufferSequence,
     ASIO_COMPLETION_TOKEN_FOR(void (asio::error_code,
@@ -770,9 +789,9 @@ async_read(AsyncReadStream& s, const MutableBufferSequence& buffers,
     ASIO_MOVE_ARG(ReadHandler) handler
       ASIO_DEFAULT_COMPLETION_TOKEN(
         typename AsyncReadStream::executor_type),
-    typename enable_if<
+    typename constraint<
       is_mutable_buffer_sequence<MutableBufferSequence>::value
-    >::type* = 0);
+    >::type = 0);
 
 /// Start an asynchronous operation to read a certain amount of data from a
 /// stream.
@@ -836,6 +855,17 @@ async_read(AsyncReadStream& s, const MutableBufferSequence& buffers,
  * See the @ref buffer documentation for information on reading into multiple
  * buffers in one go, and how to use it with arrays, boost::array or
  * std::vector.
+ *
+ * @par Per-Operation Cancellation
+ * This asynchronous operation supports cancellation for the following
+ * asio::cancellation_type values:
+ *
+ * @li @c cancellation_type::terminal
+ *
+ * @li @c cancellation_type::partial
+ *
+ * if they are also supported by the @c AsyncReadStream type's
+ * @c async_read_some operation.
  */
 template <typename AsyncReadStream,
     typename MutableBufferSequence, typename CompletionCondition,
@@ -850,9 +880,9 @@ async_read(AsyncReadStream& s, const MutableBufferSequence& buffers,
     ASIO_MOVE_ARG(ReadHandler) handler
       ASIO_DEFAULT_COMPLETION_TOKEN(
         typename AsyncReadStream::executor_type),
-    typename enable_if<
+    typename constraint<
       is_mutable_buffer_sequence<MutableBufferSequence>::value
-    >::type* = 0);
+    >::type = 0);
 
 #if !defined(ASIO_NO_DYNAMIC_BUFFER_V1)
 
@@ -905,6 +935,17 @@ async_read(AsyncReadStream& s, const MutableBufferSequence& buffers,
  *     s, buffers,
  *     asio::transfer_all(),
  *     handler); @endcode
+ *
+ * @par Per-Operation Cancellation
+ * This asynchronous operation supports cancellation for the following
+ * asio::cancellation_type values:
+ *
+ * @li @c cancellation_type::terminal
+ *
+ * @li @c cancellation_type::partial
+ *
+ * if they are also supported by the @c AsyncReadStream type's
+ * @c async_read_some operation.
  */
 template <typename AsyncReadStream, typename DynamicBuffer_v1,
     ASIO_COMPLETION_TOKEN_FOR(void (asio::error_code,
@@ -918,10 +959,12 @@ async_read(AsyncReadStream& s,
     ASIO_MOVE_ARG(ReadHandler) handler
       ASIO_DEFAULT_COMPLETION_TOKEN(
         typename AsyncReadStream::executor_type),
-    typename enable_if<
+    typename constraint<
       is_dynamic_buffer_v1<typename decay<DynamicBuffer_v1>::type>::value
-        && !is_dynamic_buffer_v2<typename decay<DynamicBuffer_v1>::type>::value
-    >::type* = 0);
+    >::type = 0,
+    typename constraint<
+      !is_dynamic_buffer_v2<typename decay<DynamicBuffer_v1>::type>::value
+    >::type = 0);
 
 /// Start an asynchronous operation to read a certain amount of data from a
 /// stream.
@@ -980,6 +1023,17 @@ async_read(AsyncReadStream& s,
  * not, the handler will not be invoked from within this function. On
  * immediate completion, invocation of the handler will be performed in a
  * manner equivalent to using asio::post().
+ *
+ * @par Per-Operation Cancellation
+ * This asynchronous operation supports cancellation for the following
+ * asio::cancellation_type values:
+ *
+ * @li @c cancellation_type::terminal
+ *
+ * @li @c cancellation_type::partial
+ *
+ * if they are also supported by the @c AsyncReadStream type's
+ * @c async_read_some operation.
  */
 template <typename AsyncReadStream,
     typename DynamicBuffer_v1, typename CompletionCondition,
@@ -995,10 +1049,12 @@ async_read(AsyncReadStream& s,
     ASIO_MOVE_ARG(ReadHandler) handler
       ASIO_DEFAULT_COMPLETION_TOKEN(
         typename AsyncReadStream::executor_type),
-    typename enable_if<
+    typename constraint<
       is_dynamic_buffer_v1<typename decay<DynamicBuffer_v1>::type>::value
-        && !is_dynamic_buffer_v2<typename decay<DynamicBuffer_v1>::type>::value
-    >::type* = 0);
+    >::type = 0,
+    typename constraint<
+      !is_dynamic_buffer_v2<typename decay<DynamicBuffer_v1>::type>::value
+    >::type = 0);
 
 #if !defined(ASIO_NO_EXTENSIONS)
 #if !defined(ASIO_NO_IOSTREAM)
@@ -1050,6 +1106,17 @@ async_read(AsyncReadStream& s,
  *     s, b,
  *     asio::transfer_all(),
  *     handler); @endcode
+ *
+ * @par Per-Operation Cancellation
+ * This asynchronous operation supports cancellation for the following
+ * asio::cancellation_type values:
+ *
+ * @li @c cancellation_type::terminal
+ *
+ * @li @c cancellation_type::partial
+ *
+ * if they are also supported by the @c AsyncReadStream type's
+ * @c async_read_some operation.
  */
 template <typename AsyncReadStream, typename Allocator,
     ASIO_COMPLETION_TOKEN_FOR(void (asio::error_code,
@@ -1118,6 +1185,17 @@ async_read(AsyncReadStream& s, basic_streambuf<Allocator>& b,
  * not, the handler will not be invoked from within this function. On
  * immediate completion, invocation of the handler will be performed in a
  * manner equivalent to using asio::post().
+ *
+ * @par Per-Operation Cancellation
+ * This asynchronous operation supports cancellation for the following
+ * asio::cancellation_type values:
+ *
+ * @li @c cancellation_type::terminal
+ *
+ * @li @c cancellation_type::partial
+ *
+ * if they are also supported by the @c AsyncReadStream type's
+ * @c async_read_some operation.
  */
 template <typename AsyncReadStream,
     typename Allocator, typename CompletionCondition,
@@ -1186,6 +1264,17 @@ async_read(AsyncReadStream& s, basic_streambuf<Allocator>& b,
  *     s, buffers,
  *     asio::transfer_all(),
  *     handler); @endcode
+ *
+ * @par Per-Operation Cancellation
+ * This asynchronous operation supports cancellation for the following
+ * asio::cancellation_type values:
+ *
+ * @li @c cancellation_type::terminal
+ *
+ * @li @c cancellation_type::partial
+ *
+ * if they are also supported by the @c AsyncReadStream type's
+ * @c async_read_some operation.
  */
 template <typename AsyncReadStream, typename DynamicBuffer_v2,
     ASIO_COMPLETION_TOKEN_FOR(void (asio::error_code,
@@ -1198,9 +1287,9 @@ async_read(AsyncReadStream& s, DynamicBuffer_v2 buffers,
     ASIO_MOVE_ARG(ReadHandler) handler
       ASIO_DEFAULT_COMPLETION_TOKEN(
         typename AsyncReadStream::executor_type),
-    typename enable_if<
+    typename constraint<
       is_dynamic_buffer_v2<DynamicBuffer_v2>::value
-    >::type* = 0);
+    >::type = 0);
 
 /// Start an asynchronous operation to read a certain amount of data from a
 /// stream.
@@ -1259,6 +1348,17 @@ async_read(AsyncReadStream& s, DynamicBuffer_v2 buffers,
  * not, the handler will not be invoked from within this function. On
  * immediate completion, invocation of the handler will be performed in a
  * manner equivalent to using asio::post().
+ *
+ * @par Per-Operation Cancellation
+ * This asynchronous operation supports cancellation for the following
+ * asio::cancellation_type values:
+ *
+ * @li @c cancellation_type::terminal
+ *
+ * @li @c cancellation_type::partial
+ *
+ * if they are also supported by the @c AsyncReadStream type's
+ * @c async_read_some operation.
  */
 template <typename AsyncReadStream,
     typename DynamicBuffer_v2, typename CompletionCondition,
@@ -1273,9 +1373,9 @@ async_read(AsyncReadStream& s, DynamicBuffer_v2 buffers,
     ASIO_MOVE_ARG(ReadHandler) handler
       ASIO_DEFAULT_COMPLETION_TOKEN(
         typename AsyncReadStream::executor_type),
-    typename enable_if<
+    typename constraint<
       is_dynamic_buffer_v2<DynamicBuffer_v2>::value
-    >::type* = 0);
+    >::type = 0);
 
 /*@}*/
 

@@ -2,7 +2,7 @@
 // impl/io_context.hpp
 // ~~~~~~~~~~~~~~~~~~~
 //
-// Copyright (c) 2003-2020 Christopher M. Kohlhoff (chris at kohlhoff dot com)
+// Copyright (c) 2003-2021 Christopher M. Kohlhoff (chris at kohlhoff dot com)
 //
 // Distributed under the Boost Software License, Version 1.0. (See accompanying
 // file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
@@ -20,7 +20,6 @@
 #include "asio/detail/fenced_block.hpp"
 #include "asio/detail/handler_type_requirements.hpp"
 #include "asio/detail/non_const_lvalue.hpp"
-#include "asio/detail/recycling_allocator.hpp"
 #include "asio/detail/service_registry.hpp"
 #include "asio/detail/throw_error.hpp"
 #include "asio/detail/type_traits.hpp"
@@ -244,11 +243,16 @@ io_context::basic_executor_type<Allocator, Bits>::operator=(
 {
   if (this != &other)
   {
+    io_context* old_io_context = io_context_;
     io_context_ = other.io_context_;
     allocator_ = std::move(other.allocator_);
     bits_ = other.bits_;
     if (Bits & outstanding_work_tracked)
+    {
       other.io_context_ = 0;
+      if (old_io_context)
+        old_io_context->impl_.work_finished();
+    }
   }
   return *this;
 }

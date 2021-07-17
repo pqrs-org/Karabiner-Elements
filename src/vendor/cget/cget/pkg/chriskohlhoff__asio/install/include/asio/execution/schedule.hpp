@@ -2,7 +2,7 @@
 // execution/schedule.hpp
 // ~~~~~~~~~~~~~~~~~~~~~~
 //
-// Copyright (c) 2003-2020 Christopher M. Kohlhoff (chris at kohlhoff dot com)
+// Copyright (c) 2003-2021 Christopher M. Kohlhoff (chris at kohlhoff dot com)
 //
 // Distributed under the Boost Software License, Version 1.0. (See accompanying
 // file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
@@ -86,7 +86,7 @@ enum overload_type
   ill_formed
 };
 
-template <typename S, typename = void>
+template <typename S, typename = void, typename = void, typename = void>
 struct call_traits
 {
   ASIO_STATIC_CONSTEXPR(overload_type, overload = ill_formed);
@@ -97,9 +97,7 @@ struct call_traits
 template <typename S>
 struct call_traits<S,
   typename enable_if<
-    (
-      schedule_member<S>::is_valid
-    )
+    schedule_member<S>::is_valid
   >::type> :
   schedule_member<S>
 {
@@ -109,11 +107,10 @@ struct call_traits<S,
 template <typename S>
 struct call_traits<S,
   typename enable_if<
-    (
-      !schedule_member<S>::is_valid
-      &&
-      schedule_free<S>::is_valid
-    )
+    !schedule_member<S>::is_valid
+  >::type,
+  typename enable_if<
+    schedule_free<S>::is_valid
   >::type> :
   schedule_free<S>
 {
@@ -123,13 +120,13 @@ struct call_traits<S,
 template <typename S>
 struct call_traits<S,
   typename enable_if<
-    (
-      !schedule_member<S>::is_valid
-      &&
-      !schedule_free<S>::is_valid
-      &&
-      is_executor<typename decay<S>::type>::value
-    )
+    !schedule_member<S>::is_valid
+  >::type,
+  typename enable_if<
+    !schedule_free<S>::is_valid
+  >::type,
+  typename enable_if<
+    is_executor<typename decay<S>::type>::value
   >::type>
 {
   ASIO_STATIC_CONSTEXPR(overload_type, overload = identity);

@@ -2,7 +2,7 @@
 // write.hpp
 // ~~~~~~~~~
 //
-// Copyright (c) 2003-2020 Christopher M. Kohlhoff (chris at kohlhoff dot com)
+// Copyright (c) 2003-2021 Christopher M. Kohlhoff (chris at kohlhoff dot com)
 //
 // Distributed under the Boost Software License, Version 1.0. (See accompanying
 // file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
@@ -75,9 +75,9 @@ namespace asio {
  */
 template <typename SyncWriteStream, typename ConstBufferSequence>
 std::size_t write(SyncWriteStream& s, const ConstBufferSequence& buffers,
-    typename enable_if<
+    typename constraint<
       is_const_buffer_sequence<ConstBufferSequence>::value
-    >::type* = 0);
+    >::type = 0);
 
 /// Write all of the supplied data to a stream before returning.
 /**
@@ -118,9 +118,9 @@ std::size_t write(SyncWriteStream& s, const ConstBufferSequence& buffers,
 template <typename SyncWriteStream, typename ConstBufferSequence>
 std::size_t write(SyncWriteStream& s, const ConstBufferSequence& buffers,
     asio::error_code& ec,
-    typename enable_if<
+    typename constraint<
       is_const_buffer_sequence<ConstBufferSequence>::value
-    >::type* = 0);
+    >::type = 0);
 
 /// Write a certain amount of data to a stream before returning.
 /**
@@ -172,9 +172,9 @@ template <typename SyncWriteStream, typename ConstBufferSequence,
     typename CompletionCondition>
 std::size_t write(SyncWriteStream& s, const ConstBufferSequence& buffers,
     CompletionCondition completion_condition,
-    typename enable_if<
+    typename constraint<
       is_const_buffer_sequence<ConstBufferSequence>::value
-    >::type* = 0);
+    >::type = 0);
 
 /// Write a certain amount of data to a stream before returning.
 /**
@@ -219,9 +219,9 @@ template <typename SyncWriteStream, typename ConstBufferSequence,
     typename CompletionCondition>
 std::size_t write(SyncWriteStream& s, const ConstBufferSequence& buffers,
     CompletionCondition completion_condition, asio::error_code& ec,
-    typename enable_if<
+    typename constraint<
       is_const_buffer_sequence<ConstBufferSequence>::value
-    >::type* = 0);
+    >::type = 0);
 
 #if !defined(ASIO_NO_DYNAMIC_BUFFER_V1)
 
@@ -255,10 +255,12 @@ std::size_t write(SyncWriteStream& s, const ConstBufferSequence& buffers,
 template <typename SyncWriteStream, typename DynamicBuffer_v1>
 std::size_t write(SyncWriteStream& s,
     ASIO_MOVE_ARG(DynamicBuffer_v1) buffers,
-    typename enable_if<
+    typename constraint<
       is_dynamic_buffer_v1<typename decay<DynamicBuffer_v1>::type>::value
-        && !is_dynamic_buffer_v2<typename decay<DynamicBuffer_v1>::type>::value
-    >::type* = 0);
+    >::type = 0,
+    typename constraint<
+      !is_dynamic_buffer_v2<typename decay<DynamicBuffer_v1>::type>::value
+    >::type = 0);
 
 /// Write all of the supplied data to a stream before returning.
 /**
@@ -291,10 +293,12 @@ template <typename SyncWriteStream, typename DynamicBuffer_v1>
 std::size_t write(SyncWriteStream& s,
     ASIO_MOVE_ARG(DynamicBuffer_v1) buffers,
     asio::error_code& ec,
-    typename enable_if<
+    typename constraint<
       is_dynamic_buffer_v1<typename decay<DynamicBuffer_v1>::type>::value
-        && !is_dynamic_buffer_v2<typename decay<DynamicBuffer_v1>::type>::value
-    >::type* = 0);
+    >::type = 0,
+    typename constraint<
+      !is_dynamic_buffer_v2<typename decay<DynamicBuffer_v1>::type>::value
+    >::type = 0);
 
 /// Write a certain amount of data to a stream before returning.
 /**
@@ -337,10 +341,12 @@ template <typename SyncWriteStream, typename DynamicBuffer_v1,
 std::size_t write(SyncWriteStream& s,
     ASIO_MOVE_ARG(DynamicBuffer_v1) buffers,
     CompletionCondition completion_condition,
-    typename enable_if<
+    typename constraint<
       is_dynamic_buffer_v1<typename decay<DynamicBuffer_v1>::type>::value
-        && !is_dynamic_buffer_v2<typename decay<DynamicBuffer_v1>::type>::value
-    >::type* = 0);
+    >::type = 0,
+    typename constraint<
+      !is_dynamic_buffer_v2<typename decay<DynamicBuffer_v1>::type>::value
+    >::type = 0);
 
 /// Write a certain amount of data to a stream before returning.
 /**
@@ -384,10 +390,12 @@ template <typename SyncWriteStream, typename DynamicBuffer_v1,
 std::size_t write(SyncWriteStream& s,
     ASIO_MOVE_ARG(DynamicBuffer_v1) buffers,
     CompletionCondition completion_condition, asio::error_code& ec,
-    typename enable_if<
+    typename constraint<
       is_dynamic_buffer_v1<typename decay<DynamicBuffer_v1>::type>::value
-        && !is_dynamic_buffer_v2<typename decay<DynamicBuffer_v1>::type>::value
-    >::type* = 0);
+    >::type = 0,
+    typename constraint<
+      !is_dynamic_buffer_v2<typename decay<DynamicBuffer_v1>::type>::value
+    >::type = 0);
 
 #if !defined(ASIO_NO_EXTENSIONS)
 #if !defined(ASIO_NO_IOSTREAM)
@@ -565,9 +573,9 @@ std::size_t write(SyncWriteStream& s, basic_streambuf<Allocator>& b,
  */
 template <typename SyncWriteStream, typename DynamicBuffer_v2>
 std::size_t write(SyncWriteStream& s, DynamicBuffer_v2 buffers,
-    typename enable_if<
+    typename constraint<
       is_dynamic_buffer_v2<DynamicBuffer_v2>::value
-    >::type* = 0);
+    >::type = 0);
 
 /// Write all of the supplied data to a stream before returning.
 /**
@@ -599,9 +607,9 @@ std::size_t write(SyncWriteStream& s, DynamicBuffer_v2 buffers,
 template <typename SyncWriteStream, typename DynamicBuffer_v2>
 std::size_t write(SyncWriteStream& s, DynamicBuffer_v2 buffers,
     asio::error_code& ec,
-    typename enable_if<
+    typename constraint<
       is_dynamic_buffer_v2<DynamicBuffer_v2>::value
-    >::type* = 0);
+    >::type = 0);
 
 /// Write a certain amount of data to a stream before returning.
 /**
@@ -643,9 +651,9 @@ template <typename SyncWriteStream, typename DynamicBuffer_v2,
     typename CompletionCondition>
 std::size_t write(SyncWriteStream& s, DynamicBuffer_v2 buffers,
     CompletionCondition completion_condition,
-    typename enable_if<
+    typename constraint<
       is_dynamic_buffer_v2<DynamicBuffer_v2>::value
-    >::type* = 0);
+    >::type = 0);
 
 /// Write a certain amount of data to a stream before returning.
 /**
@@ -688,9 +696,9 @@ template <typename SyncWriteStream, typename DynamicBuffer_v2,
     typename CompletionCondition>
 std::size_t write(SyncWriteStream& s, DynamicBuffer_v2 buffers,
     CompletionCondition completion_condition, asio::error_code& ec,
-    typename enable_if<
+    typename constraint<
       is_dynamic_buffer_v2<DynamicBuffer_v2>::value
-    >::type* = 0);
+    >::type = 0);
 
 /*@}*/
 /**
@@ -752,6 +760,17 @@ std::size_t write(SyncWriteStream& s, DynamicBuffer_v2 buffers,
  * See the @ref buffer documentation for information on writing multiple
  * buffers in one go, and how to use it with arrays, boost::array or
  * std::vector.
+ *
+ * @par Per-Operation Cancellation
+ * This asynchronous operation supports cancellation for the following
+ * asio::cancellation_type values:
+ *
+ * @li @c cancellation_type::terminal
+ *
+ * @li @c cancellation_type::partial
+ *
+ * if they are also supported by the @c AsyncWriteStream type's
+ * @c async_write_some operation.
  */
 template <typename AsyncWriteStream, typename ConstBufferSequence,
     ASIO_COMPLETION_TOKEN_FOR(void (asio::error_code,
@@ -764,9 +783,9 @@ async_write(AsyncWriteStream& s, const ConstBufferSequence& buffers,
     ASIO_MOVE_ARG(WriteHandler) handler
       ASIO_DEFAULT_COMPLETION_TOKEN(
         typename AsyncWriteStream::executor_type),
-    typename enable_if<
+    typename constraint<
       is_const_buffer_sequence<ConstBufferSequence>::value
-    >::type* = 0);
+    >::type = 0);
 
 /// Start an asynchronous operation to write a certain amount of data to a
 /// stream.
@@ -834,6 +853,17 @@ async_write(AsyncWriteStream& s, const ConstBufferSequence& buffers,
  * See the @ref buffer documentation for information on writing multiple
  * buffers in one go, and how to use it with arrays, boost::array or
  * std::vector.
+ *
+ * @par Per-Operation Cancellation
+ * This asynchronous operation supports cancellation for the following
+ * asio::cancellation_type values:
+ *
+ * @li @c cancellation_type::terminal
+ *
+ * @li @c cancellation_type::partial
+   *
+ * if they are also supported by the @c AsyncWriteStream type's
+ * @c async_write_some operation.
  */
 template <typename AsyncWriteStream,
     typename ConstBufferSequence, typename CompletionCondition,
@@ -844,9 +874,9 @@ ASIO_INITFN_AUTO_RESULT_TYPE(WriteHandler,
 async_write(AsyncWriteStream& s, const ConstBufferSequence& buffers,
     CompletionCondition completion_condition,
     ASIO_MOVE_ARG(WriteHandler) handler,
-    typename enable_if<
+    typename constraint<
       is_const_buffer_sequence<ConstBufferSequence>::value
-    >::type* = 0);
+    >::type = 0);
 
 #if !defined(ASIO_NO_DYNAMIC_BUFFER_V1)
 
@@ -892,6 +922,17 @@ async_write(AsyncWriteStream& s, const ConstBufferSequence& buffers,
  * not, the handler will not be invoked from within this function. On
  * immediate completion, invocation of the handler will be performed in a
  * manner equivalent to using asio::post().
+ *
+ * @par Per-Operation Cancellation
+ * This asynchronous operation supports cancellation for the following
+ * asio::cancellation_type values:
+ *
+ * @li @c cancellation_type::terminal
+ *
+ * @li @c cancellation_type::partial
+ *
+ * if they are also supported by the @c AsyncWriteStream type's
+ * @c async_write_some operation.
  */
 template <typename AsyncWriteStream, typename DynamicBuffer_v1,
     ASIO_COMPLETION_TOKEN_FOR(void (asio::error_code,
@@ -905,10 +946,12 @@ async_write(AsyncWriteStream& s,
     ASIO_MOVE_ARG(WriteHandler) handler
       ASIO_DEFAULT_COMPLETION_TOKEN(
         typename AsyncWriteStream::executor_type),
-    typename enable_if<
+    typename constraint<
       is_dynamic_buffer_v1<typename decay<DynamicBuffer_v1>::type>::value
-        && !is_dynamic_buffer_v2<typename decay<DynamicBuffer_v1>::type>::value
-    >::type* = 0);
+    >::type = 0,
+    typename constraint<
+      !is_dynamic_buffer_v2<typename decay<DynamicBuffer_v1>::type>::value
+    >::type = 0);
 
 /// Start an asynchronous operation to write a certain amount of data to a
 /// stream.
@@ -966,6 +1009,17 @@ async_write(AsyncWriteStream& s,
  * not, the handler will not be invoked from within this function. On
  * immediate completion, invocation of the handler will be performed in a
  * manner equivalent to using asio::post().
+ *
+ * @par Per-Operation Cancellation
+ * This asynchronous operation supports cancellation for the following
+ * asio::cancellation_type values:
+ *
+ * @li @c cancellation_type::terminal
+ *
+ * @li @c cancellation_type::partial
+ *
+ * if they are also supported by the @c AsyncWriteStream type's
+ * @c async_write_some operation.
  */
 template <typename AsyncWriteStream,
     typename DynamicBuffer_v1, typename CompletionCondition,
@@ -977,10 +1031,12 @@ async_write(AsyncWriteStream& s,
     ASIO_MOVE_ARG(DynamicBuffer_v1) buffers,
     CompletionCondition completion_condition,
     ASIO_MOVE_ARG(WriteHandler) handler,
-    typename enable_if<
+    typename constraint<
       is_dynamic_buffer_v1<typename decay<DynamicBuffer_v1>::type>::value
-        && !is_dynamic_buffer_v2<typename decay<DynamicBuffer_v1>::type>::value
-    >::type* = 0);
+    >::type = 0,
+    typename constraint<
+      !is_dynamic_buffer_v2<typename decay<DynamicBuffer_v1>::type>::value
+    >::type = 0);
 
 #if !defined(ASIO_NO_EXTENSIONS)
 #if !defined(ASIO_NO_IOSTREAM)
@@ -1025,6 +1081,17 @@ async_write(AsyncWriteStream& s,
  * not, the handler will not be invoked from within this function. On
  * immediate completion, invocation of the handler will be performed in a
  * manner equivalent to using asio::post().
+ *
+ * @par Per-Operation Cancellation
+ * This asynchronous operation supports cancellation for the following
+ * asio::cancellation_type values:
+ *
+ * @li @c cancellation_type::terminal
+ *
+ * @li @c cancellation_type::partial
+ *
+ * if they are also supported by the @c AsyncWriteStream type's
+ * @c async_write_some operation.
  */
 template <typename AsyncWriteStream, typename Allocator,
     ASIO_COMPLETION_TOKEN_FOR(void (asio::error_code,
@@ -1092,6 +1159,17 @@ async_write(AsyncWriteStream& s, basic_streambuf<Allocator>& b,
  * not, the handler will not be invoked from within this function. On
  * immediate completion, invocation of the handler will be performed in a
  * manner equivalent to using asio::post().
+ *
+ * @par Per-Operation Cancellation
+ * This asynchronous operation supports cancellation for the following
+ * asio::cancellation_type values:
+ *
+ * @li @c cancellation_type::terminal
+ *
+ * @li @c cancellation_type::partial
+ *
+ * if they are also supported by the @c AsyncWriteStream type's
+ * @c async_write_some operation.
  */
 template <typename AsyncWriteStream,
     typename Allocator, typename CompletionCondition,
@@ -1149,6 +1227,17 @@ async_write(AsyncWriteStream& s, basic_streambuf<Allocator>& b,
  * not, the handler will not be invoked from within this function. On
  * immediate completion, invocation of the handler will be performed in a
  * manner equivalent to using asio::post().
+ *
+ * @par Per-Operation Cancellation
+ * This asynchronous operation supports cancellation for the following
+ * asio::cancellation_type values:
+ *
+ * @li @c cancellation_type::terminal
+ *
+ * @li @c cancellation_type::partial
+ *
+ * if they are also supported by the @c AsyncWriteStream type's
+ * @c async_write_some operation.
  */
 template <typename AsyncWriteStream, typename DynamicBuffer_v2,
     ASIO_COMPLETION_TOKEN_FOR(void (asio::error_code,
@@ -1161,9 +1250,9 @@ async_write(AsyncWriteStream& s, DynamicBuffer_v2 buffers,
     ASIO_MOVE_ARG(WriteHandler) handler
       ASIO_DEFAULT_COMPLETION_TOKEN(
         typename AsyncWriteStream::executor_type),
-    typename enable_if<
+    typename constraint<
       is_dynamic_buffer_v2<DynamicBuffer_v2>::value
-    >::type* = 0);
+    >::type = 0);
 
 /// Start an asynchronous operation to write a certain amount of data to a
 /// stream.
@@ -1221,6 +1310,17 @@ async_write(AsyncWriteStream& s, DynamicBuffer_v2 buffers,
  * not, the handler will not be invoked from within this function. On
  * immediate completion, invocation of the handler will be performed in a
  * manner equivalent to using asio::post().
+ *
+ * @par Per-Operation Cancellation
+ * This asynchronous operation supports cancellation for the following
+ * asio::cancellation_type values:
+ *
+ * @li @c cancellation_type::terminal
+ *
+ * @li @c cancellation_type::partial
+ *
+ * if they are also supported by the @c AsyncWriteStream type's
+ * @c async_write_some operation.
  */
 template <typename AsyncWriteStream,
     typename DynamicBuffer_v2, typename CompletionCondition,
@@ -1231,9 +1331,9 @@ ASIO_INITFN_AUTO_RESULT_TYPE(WriteHandler,
 async_write(AsyncWriteStream& s, DynamicBuffer_v2 buffers,
     CompletionCondition completion_condition,
     ASIO_MOVE_ARG(WriteHandler) handler,
-    typename enable_if<
+    typename constraint<
       is_dynamic_buffer_v2<DynamicBuffer_v2>::value
-    >::type* = 0);
+    >::type = 0);
 
 /*@}*/
 
