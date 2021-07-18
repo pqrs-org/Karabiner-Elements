@@ -7,6 +7,7 @@ pqrs-org/cpp-environment_variable
 pqrs-org/cpp-filesystem
 pqrs-org/cpp-json
 pqrs-org/cpp-local_datagram
+pqrs-org/cpp-osx-cg_display
 pqrs-org/cpp-osx-cg_event
 pqrs-org/cpp-osx-chrono
 pqrs-org/cpp-osx-file_monitor
