@@ -1,0 +1,1 @@
+../../../../cget/pkg/pqrs-org__cpp-osx-cg_event/install/include/pqrs/osx/cg_event/mouse.hpp
