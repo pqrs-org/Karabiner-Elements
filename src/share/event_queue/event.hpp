@@ -27,6 +27,7 @@ public:
     set_variable,
     mouse_key,
     sticky_modifier,
+    software_function,
     stop_keyboard_repeat,
     // virtual events (passive)
     device_keys_and_pointing_buttons_are_released,
@@ -48,6 +49,7 @@ public:
                                std::pair<std::string, int>,                              // For set_variable
                                mouse_key,                                                // For mouse_key
                                std::pair<modifier_flag, sticky_modifier_type>,           // For sticky_modifier
+                               software_function,                                        // For software_function
                                pqrs::osx::frontmost_application_monitor::application,    // For frontmost_application_changed
                                pqrs::osx::input_source::properties,                      // For input_source_changed
                                device_properties,                                        // For device_grabbed
@@ -83,6 +85,8 @@ public:
             result.value_ = value.get<mouse_key>();
           } else if (key == "sticky_modifier") {
             result.value_ = value.get<std::pair<modifier_flag, sticky_modifier_type>>();
+          } else if (key == "software_function") {
+            result.value_ = value.get<software_function>();
           } else if (key == "frontmost_application") {
             result.value_ = value.get<pqrs::osx::frontmost_application_monitor::application>();
           } else if (key == "input_source_properties") {
@@ -153,6 +157,12 @@ public:
       case type::sticky_modifier:
         if (auto v = get_sticky_modifier()) {
           json["sticky_modifier"] = *v;
+        }
+        break;
+
+      case type::software_function:
+        if (auto v = get_if<software_function>()) {
+          json["software_function"] = *v;
         }
         break;
 
@@ -236,6 +246,13 @@ public:
 
   static event make_sticky_modifier_event(modifier_flag modifier_flag, sticky_modifier_type type) {
     return make_sticky_modifier_event(std::make_pair(modifier_flag, type));
+  }
+
+  static event make_software_function_event(const software_function& value) {
+    event e;
+    e.type_ = type::software_function;
+    e.value_ = value;
+    return e;
   }
 
   static event make_stop_keyboard_repeat_event(void) {
@@ -426,6 +443,7 @@ private:
       TO_C_STRING(set_variable);
       TO_C_STRING(mouse_key);
       TO_C_STRING(sticky_modifier);
+      TO_C_STRING(software_function);
       TO_C_STRING(stop_keyboard_repeat);
       TO_C_STRING(device_keys_and_pointing_buttons_are_released);
       TO_C_STRING(device_grabbed);
@@ -458,6 +476,7 @@ private:
     TO_TYPE(set_variable);
     TO_TYPE(mouse_key);
     TO_TYPE(sticky_modifier);
+    TO_TYPE(software_function);
     TO_TYPE(stop_keyboard_repeat);
     TO_TYPE(device_keys_and_pointing_buttons_are_released);
     TO_TYPE(device_grabbed);
