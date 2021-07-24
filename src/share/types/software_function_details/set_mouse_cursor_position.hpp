@@ -39,6 +39,8 @@ public:
     screen_ = value;
   }
 
+  constexpr bool operator==(const set_mouse_cursor_position&) const = default;
+
 private:
   int x_;
   int y_;
@@ -46,7 +48,6 @@ private:
 };
 
 inline void to_json(nlohmann::json& json, const set_mouse_cursor_position& value) {
-  json["type"] = set_mouse_cursor_position::type;
   json["x"] = value.get_x();
   json["y"] = value.get_y();
   if (auto v = value.get_screen()) {

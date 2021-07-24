@@ -28,6 +28,8 @@ public:
     return std::get_if<T>(&value_);
   }
 
+  constexpr bool operator==(const software_function&) const = default;
+
 private:
   value_t value_;
 };
@@ -36,24 +38,31 @@ inline void to_json(nlohmann::json& json, const software_function& value) {
   if (auto v = value.get_if<std::monostate>()) {
     json = nullptr;
   } else if (auto v = value.get_if<software_function_details::cg_event_double_click>()) {
-    json = *v;
+    json = nlohmann::json::object({"cg_event_double_click", *v});
   } else if (auto v = value.get_if<software_function_details::set_mouse_cursor_position>()) {
-    json = *v;
+    json = nlohmann::json::object({"set_mouse_cursor_position", *v});
   }
 }
 
 inline void from_json(const nlohmann::json& json, software_function& value) {
   pqrs::json::requires_object(json, "json");
 
-  auto type = pqrs::json::find<std::string>(json, "type");
-  if (!type) {
-    throw pqrs::json::unmarshal_error(fmt::format("`type` must be specified: {0}", pqrs::json::dump_for_error_message(json)));
-  }
-
-  if (*type == software_function_details::cg_event_double_click::type) {
-    value.set_value(json.get<software_function_details::cg_event_double_click>());
-  } else if (*type == software_function_details::set_mouse_cursor_position::type) {
-    value.set_value(json.get<software_function_details::set_mouse_cursor_position>());
+  for (const auto& [k, v] : json.items()) {
+    if (k == "cg_event_double_click") {
+      try {
+        value.set_value(v.get<software_function_details::cg_event_double_click>());
+      } catch (const pqrs::json::unmarshal_error& e) {
+        throw pqrs::json::unmarshal_error(fmt::format("`{0}` error: {1}", k, e.what()));
+      }
+    } else if (k == "set_mouse_cursor_position") {
+      try {
+        value.set_value(v.get<software_function_details::set_mouse_cursor_position>());
+      } catch (const pqrs::json::unmarshal_error& e) {
+        throw pqrs::json::unmarshal_error(fmt::format("`{0}` error: {1}", k, e.what()));
+      }
+    } else {
+      throw pqrs::json::unmarshal_error(fmt::format("unknown key: `{0}`", k));
+    }
   }
 }
 } // namespace krbn

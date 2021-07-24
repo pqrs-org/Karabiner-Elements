@@ -8,8 +8,6 @@ namespace krbn {
 namespace software_function_details {
 class cg_event_double_click {
 public:
-  static constexpr std::string_view type = "cg_event_double_click";
-
   cg_event_double_click(void)
       : button_(0) {
   }
@@ -22,12 +20,13 @@ public:
     button_ = value;
   }
 
+  constexpr bool operator==(const cg_event_double_click&) const = default;
+
 private:
   uint32_t button_;
 };
 
 inline void to_json(nlohmann::json& json, const cg_event_double_click& value) {
-  json["type"] = cg_event_double_click::type;
   json["button"] = value.get_button();
 }
 
