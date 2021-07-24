@@ -225,5 +225,88 @@
             }
         },
         "error": "`sticky_modifier` error: unknown value: `unknown`"
+    },
+
+    // software_function
+
+    {
+        "class": "event_definition",
+        "input": {
+            "software_function": null
+        },
+        "error": "`software_function` must be object, but is `null`"
+    },
+    {
+        "class": "event_definition",
+        "input": {
+            "software_function": {
+                "unknown": null
+            }
+        },
+        "error": "`software_function` error: unknown key: `unknown`"
+    },
+    // cg_event_double_click
+    {
+        "class": "event_definition",
+        "input": {
+            "software_function": {
+                "cg_event_double_click": null
+            }
+        },
+        "error": "`software_function` error: `cg_event_double_click` error: json must be object, but is `null`"
+    },
+    {
+        "class": "event_definition",
+        "input": {
+            "software_function": {
+                "cg_event_double_click": {
+                    "button": null
+                }
+            }
+        },
+        "error": "`software_function` error: `cg_event_double_click` error: `button` must be number, but is `null`"
+    },
+    {
+        "class": "event_definition",
+        "input": {
+            "software_function": {
+                "cg_event_double_click": {
+                    "unknown": null
+                }
+            }
+        },
+        "error": "`software_function` error: `cg_event_double_click` error: unknown key: `unknown`"
+    },
+    // set_mouse_cursor_position
+    {
+        "class": "event_definition",
+        "input": {
+            "software_function": {
+                "set_mouse_cursor_position": null
+            }
+        },
+        "error": "`software_function` error: `set_mouse_cursor_position` error: json must be object, but is `null`"
+    },
+    {
+        "class": "event_definition",
+        "input": {
+            "software_function": {
+                "set_mouse_cursor_position": {
+                    "x": null
+                }
+            }
+        },
+        "error": "`software_function` error: `set_mouse_cursor_position` error: `x` must be number, but is `null`"
+    },
+    {
+        "class": "event_definition",
+        "input": {
+            "software_function": {
+                "set_mouse_cursor_position": {
+                    "unknown": null
+                }
+            }
+        },
+        "error": "`software_function` error: `set_mouse_cursor_position` error: unknown key: `unknown`"
     }
 ]
