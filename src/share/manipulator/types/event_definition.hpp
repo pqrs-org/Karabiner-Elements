@@ -19,6 +19,7 @@ public:
     set_variable,
     mouse_key,
     sticky_modifier,
+    software_function,
   };
 
   enum class any_type {
@@ -29,15 +30,15 @@ public:
     pointing_button,
   };
 
-  using value_t = std::variant<std::monostate,
-                               momentary_switch_event,
-                               any_type,                                                 // For any
-                               std::string,                                              // For shell_command
-                               std::vector<pqrs::osx::input_source_selector::specifier>, // For select_input_source
-                               std::pair<std::string, int>,                              // For set_variable
-                               mouse_key,                                                // For mouse_key
-                               std::pair<modifier_flag, sticky_modifier_type>            // For sticky_modifier
-                               >;
+  using value_t = std::variant<momentary_switch_event,                                   // For type::momentary_switch_event
+                               any_type,                                                 // For type::any
+                               std::string,                                              // For type::shell_command
+                               std::vector<pqrs::osx::input_source_selector::specifier>, // For type::select_input_source
+                               std::pair<std::string, int>,                              // For type::set_variable
+                               mouse_key,                                                // For type::mouse_key
+                               std::pair<modifier_flag, sticky_modifier_type>,           // For type::sticky_modifier
+                               software_function,                                        // For type::software_function
+                               std::monostate>;                                          // For type::none
 
   event_definition(void) : type_(type::none),
                            value_(std::monostate()) {
@@ -98,6 +99,8 @@ public:
         return event_queue::event::make_mouse_key_event(std::get<mouse_key>(value_));
       case type::sticky_modifier:
         return event_queue::event::make_sticky_modifier_event(std::get<std::pair<modifier_flag, sticky_modifier_type>>(value_));
+      case type::software_function:
+        return event_queue::event::make_software_function_event(std::get<software_function>(value_));
     }
   }
 
@@ -292,6 +295,26 @@ public:
         } catch (const pqrs::json::unmarshal_error& e) {
           throw pqrs::json::unmarshal_error(fmt::format("`{0}` error: {1}", key, e.what()));
         }
+      }
+
+      return true;
+    }
+
+    //
+    // software_function
+    //
+
+    if (key == "software_function") {
+      check_type(json);
+
+      pqrs::json::requires_object(value, "`" + key + "`");
+
+      type_ = type::software_function;
+
+      try {
+        value_ = value.get<software_function>();
+      } catch (const pqrs::json::unmarshal_error& e) {
+        throw pqrs::json::unmarshal_error(fmt::format("`{0}` error: {1}", key, e.what()));
       }
 
       return true;

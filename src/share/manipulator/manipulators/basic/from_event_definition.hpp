@@ -225,6 +225,7 @@ inline void from_json(const nlohmann::json& json, from_event_definition& d) {
       case event_definition::type::set_variable:
       case event_definition::type::mouse_key:
       case event_definition::type::sticky_modifier:
+      case event_definition::type::software_function:
         throw pqrs::json::unmarshal_error(fmt::format("event type is invalid: `{0}`", pqrs::json::dump_for_error_message(json)));
     }
   }
