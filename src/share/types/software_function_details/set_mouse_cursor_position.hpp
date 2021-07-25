@@ -1,5 +1,6 @@
 #pragma once
 
+#include <CoreGraphics/CoreGraphics.h>
 #include <optional>
 #include <pqrs/hash.hpp>
 #include <pqrs/json.hpp>
@@ -37,6 +38,10 @@ public:
 
   void set_screen(std::optional<uint32_t> value) {
     screen_ = value;
+  }
+
+  CGPoint get_point(const CGRect& bounds) const {
+    return CGPointMake(x_, y_);
   }
 
   constexpr bool operator==(const set_mouse_cursor_position&) const = default;
