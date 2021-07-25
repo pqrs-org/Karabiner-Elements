@@ -106,6 +106,7 @@ public:
             case event_queue::event::type::select_input_source:
             case event_queue::event::type::mouse_key:
             case event_queue::event::type::sticky_modifier:
+            case event_queue::event::type::software_function:
             case event_queue::event::type::stop_keyboard_repeat:
             case event_queue::event::type::caps_lock_state_changed:
             case event_queue::event::type::system_preferences_properties_changed:
