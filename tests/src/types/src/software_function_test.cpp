@@ -54,5 +54,7 @@ TEST_CASE("software_function") {
     auto value = json.get<krbn::software_function>();
     REQUIRE(value.get_if<krbn::software_function_details::cg_event_double_click>() == nullptr);
     REQUIRE(value.get_if<krbn::software_function_details::set_mouse_cursor_position>()->get_x() == 100);
+
+    REQUIRE(nlohmann::json(value) == json);
   }
 }
