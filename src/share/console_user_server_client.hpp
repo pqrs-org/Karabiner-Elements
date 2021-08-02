@@ -108,6 +108,19 @@ public:
     });
   }
 
+  void async_software_function(const software_function& software_function) const {
+    enqueue_to_dispatcher([this, software_function] {
+      nlohmann::json json{
+          {"operation_type", operation_type::software_function},
+          {"software_function", software_function},
+      };
+
+      if (client_) {
+        client_->async_send(nlohmann::json::to_msgpack(json));
+      }
+    });
+  }
+
 private:
   void async_send(const uint8_t* _Nonnull p, size_t length) const {
     if (client_) {

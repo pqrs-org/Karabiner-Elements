@@ -13,6 +13,7 @@
 #include "menu_process_manager.hpp"
 #include "monitor/configuration_monitor.hpp"
 #include "monitor/version_monitor.hpp"
+#include "software_function_handler.hpp"
 #include "updater_process_manager.hpp"
 #include <pqrs/dispatcher.hpp>
 #include <pqrs/osx/frontmost_application_monitor.hpp>
@@ -170,6 +171,14 @@ private:
               break;
             }
 
+            case operation_type::software_function: {
+              if (software_function_handler_) {
+                software_function_handler_->execute_software_function(
+                    json.at("software_function").get<software_function>());
+              }
+              break;
+            }
+
             default:
               break;
           }
@@ -257,6 +266,10 @@ private:
 
     input_source_selector_ = std::make_unique<pqrs::osx::input_source_selector::selector>(weak_dispatcher_);
 
+    // software_function_handler_
+
+    software_function_handler_ = std::make_unique<software_function_handler>();
+
     // Start configuration_monitor_
 
     configuration_monitor_->async_start();
@@ -269,6 +282,7 @@ private:
     frontmost_application_monitor_ = nullptr;
     input_source_monitor_ = nullptr;
     input_source_selector_ = nullptr;
+    software_function_handler_ = nullptr;
 
     configuration_monitor_ = nullptr;
   }
@@ -291,6 +305,7 @@ private:
   std::unique_ptr<pqrs::osx::frontmost_application_monitor::monitor> frontmost_application_monitor_;
   std::unique_ptr<pqrs::osx::input_source_monitor> input_source_monitor_;
   std::unique_ptr<pqrs::osx::input_source_selector::selector> input_source_selector_;
+  std::unique_ptr<software_function_handler> software_function_handler_;
 };
 } // namespace console_user_server
 } // namespace krbn

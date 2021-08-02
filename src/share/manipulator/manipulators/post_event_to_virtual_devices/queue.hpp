@@ -23,6 +23,7 @@ public:
       pointing_input,
       shell_command,
       select_input_source,
+      software_function,
     };
 
     event(const pqrs::karabiner::driverkit::virtual_hid_device_driver::hid_report::keyboard_input& value,
@@ -69,6 +70,15 @@ public:
       event e;
       e.type_ = type::select_input_source;
       e.value_ = input_source_specifiers;
+      e.time_stamp_ = time_stamp;
+      return e;
+    }
+
+    static event make_software_function_event(const software_function& software_function,
+                                              absolute_time_point time_stamp) {
+      event e;
+      e.type_ = type::software_function;
+      e.value_ = software_function;
       e.time_stamp_ = time_stamp;
       return e;
     }
@@ -129,6 +139,12 @@ public:
             json["input_source_specifiers"] = *v;
           }
           break;
+
+        case type::software_function:
+          if (auto v = get_software_function()) {
+            json["software_function"] = *v;
+          }
+          break;
       }
 
       return json;
@@ -187,6 +203,13 @@ public:
       return std::nullopt;
     }
 
+    std::optional<software_function> get_software_function(void) const {
+      if (type_ == type::software_function) {
+        return std::get<software_function>(value_);
+      }
+      return std::nullopt;
+    }
+
     absolute_time_point get_time_stamp(void) const {
       return time_stamp_;
     }
@@ -214,6 +237,7 @@ public:
         TO_C_STRING(pointing_input);
         TO_C_STRING(shell_command);
         TO_C_STRING(select_input_source);
+        TO_C_STRING(software_function);
       }
 
       return nullptr;
@@ -225,8 +249,9 @@ public:
                  pqrs::karabiner::driverkit::virtual_hid_device_driver::hid_report::apple_vendor_top_case_input,
                  pqrs::karabiner::driverkit::virtual_hid_device_driver::hid_report::apple_vendor_keyboard_input,
                  pqrs::karabiner::driverkit::virtual_hid_device_driver::hid_report::pointing_input,
-                 std::string,                                             // For shell_command
-                 std::vector<pqrs::osx::input_source_selector::specifier> // For select_input_source
+                 std::string,                                              // For shell_command
+                 std::vector<pqrs::osx::input_source_selector::specifier>, // For select_input_source
+                 software_function                                         // For software_function
                  >
         value_;
     absolute_time_point time_stamp_;
@@ -384,6 +409,15 @@ public:
     events_.push_back(e);
   }
 
+  void push_back_software_function_event(const software_function& software_function,
+                                         absolute_time_point time_stamp) {
+    // Do not call adjust_time_stamp.
+    auto e = event::make_software_function_event(software_function,
+                                                 time_stamp);
+
+    events_.push_back(e);
+  }
+
   bool empty(void) const {
     return events_.empty();
   }
@@ -441,12 +475,8 @@ public:
               }
             }
             if (auto shell_command = e.get_shell_command()) {
-              try {
-                if (auto client = weak_console_user_server_client.lock()) {
-                  client->async_shell_command_execution(*shell_command);
-                }
-              } catch (std::exception& e) {
-                logger::get_logger()->error("error in shell_command: {0}", e.what());
+              if (auto client = weak_console_user_server_client.lock()) {
+                client->async_shell_command_execution(*shell_command);
               }
             }
             if (auto input_source_specifiers = e.get_input_source_specifiers()) {
@@ -470,6 +500,11 @@ public:
                   specifiers->push_back(specifier);
                 }
                 client->async_select_input_source(specifiers);
+              }
+            }
+            if (auto software_function = e.get_software_function()) {
+              if (auto client = weak_console_user_server_client.lock()) {
+                client->async_software_function(*software_function);
               }
             }
 

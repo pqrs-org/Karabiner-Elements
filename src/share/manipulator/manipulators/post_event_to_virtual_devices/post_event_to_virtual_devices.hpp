@@ -9,7 +9,6 @@
 #include "mouse_key_handler.hpp"
 #include "notification_message_manager.hpp"
 #include "queue.hpp"
-#include "software_function_handler.hpp"
 #include "types.hpp"
 #include <pqrs/karabiner/driverkit/virtual_hid_device_service.hpp>
 
@@ -26,13 +25,11 @@ public:
         weak_console_user_server_client_(weak_console_user_server_client),
         weak_notification_message_manager_(weak_notification_message_manager) {
     mouse_key_handler_ = std::make_unique<mouse_key_handler>(queue_);
-    software_function_handler_ = std::make_unique<software_function_handler>();
   }
 
   virtual ~post_event_to_virtual_devices(void) {
     detach_from_dispatcher([this] {
       mouse_key_handler_ = nullptr;
-      software_function_handler_ = nullptr;
     });
   }
 
@@ -207,7 +204,8 @@ public:
         case event_queue::event::type::software_function:
           if (auto e = front_input_event.get_event().get_if<software_function>()) {
             if (front_input_event.get_event_type() == event_type::key_down) {
-              software_function_handler_->execute_software_function(*e);
+              queue_.push_back_software_function_event(*e,
+                                                       front_input_event.get_event_time_stamp().get_time_stamp());
             }
           }
           break;
@@ -446,7 +444,6 @@ private:
   queue queue_;
   key_event_dispatcher key_event_dispatcher_;
   std::unique_ptr<mouse_key_handler> mouse_key_handler_;
-  std::unique_ptr<software_function_handler> software_function_handler_;
   std::unordered_set<modifier_flag> pressed_modifier_flags_;
   pqrs::karabiner::driverkit::virtual_hid_device_driver::hid_report::buttons pressed_buttons_;
   core_configuration::details::virtual_hid_keyboard virtual_hid_keyboard_configuration_;

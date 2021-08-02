@@ -21,6 +21,7 @@ enum class operation_type : uint8_t {
   // grabber -> console_user_server
   shell_command_execution,
   select_input_source,
+  software_function,
   end_,
 };
 
@@ -39,6 +40,7 @@ NLOHMANN_JSON_SERIALIZE_ENUM(
         {operation_type::set_variables, "set_variables"},
         {operation_type::shell_command_execution, "shell_command_execution"},
         {operation_type::select_input_source, "select_input_source"},
+        {operation_type::software_function, "software_function"},
         {operation_type::end_, "end_"},
     });
 } // namespace krbn
