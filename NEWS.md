@@ -1,5 +1,11 @@
 # Changelog
 
+## Beta
+
+-   ✨ New Features
+    -   Added [`software_function.cg_event_double_click`](https://karabiner-elements.pqrs.org/docs/json/complex-modifications-manipulator-definition/to/software_function/cg_event_double_click/).
+    -   Added [`software_function.set_mouse_cursor_position`](https://karabiner-elements.pqrs.org/docs/json/complex-modifications-manipulator-definition/to/software_function/set_mouse_cursor_position/).
+
 ## Karabiner-Elements 13.5.0
 
 -   [📦 Download](https://github.com/pqrs-org/Karabiner-Elements/releases/download/v13.5.0/Karabiner-Elements-13.5.0.dmg)
