@@ -22,6 +22,29 @@ TEST_CASE("software_function") {
   // set_mouse_cursor_position
   //
 
+  // position_value
+  {
+    auto json = nlohmann::json(20);
+    auto value = json.get<krbn::software_function_details::set_mouse_cursor_position::position_value>();
+    REQUIRE(value.get_value() == 20);
+    REQUIRE(value.get_type() == krbn::software_function_details::set_mouse_cursor_position::position_value::type::point);
+    REQUIRE(value.point_value(1200) == 20);
+  }
+  {
+    auto json = nlohmann::json("50%");
+    auto value = json.get<krbn::software_function_details::set_mouse_cursor_position::position_value>();
+    REQUIRE(value.get_value() == 50);
+    REQUIRE(value.get_type() == krbn::software_function_details::set_mouse_cursor_position::position_value::type::percent);
+    REQUIRE(value.point_value(1200) == 600);
+  }
+  {
+    auto json = nlohmann::json("20");
+    auto value = json.get<krbn::software_function_details::set_mouse_cursor_position::position_value>();
+    REQUIRE(value.get_value() == 20);
+    REQUIRE(value.get_type() == krbn::software_function_details::set_mouse_cursor_position::position_value::type::point);
+    REQUIRE(value.point_value(1200) == 20);
+  }
+
   {
     auto json = nlohmann::json::object({
         {"x", 100},

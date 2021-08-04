@@ -4,11 +4,56 @@
 #include <optional>
 #include <pqrs/hash.hpp>
 #include <pqrs/json.hpp>
+#include <regex>
 
 namespace krbn {
 namespace software_function_details {
 class set_mouse_cursor_position {
 public:
+  class position_value {
+  public:
+    enum class type {
+      point,
+      percent,
+    };
+
+    position_value(void)
+        : value_(0),
+          type_(type::point) {
+    }
+
+    int get_value(void) const {
+      return value_;
+    }
+
+    void set_value(int value) {
+      value_ = value;
+    }
+
+    type get_type(void) const {
+      return type_;
+    }
+
+    void set_type(type value) {
+      type_ = value;
+    }
+
+    int point_value(int bounds) {
+      switch (type_) {
+        case type::point:
+          return value_;
+        case type::percent:
+          return (bounds * value_) / 100;
+      }
+    }
+
+    constexpr bool operator==(const position_value&) const = default;
+
+  private:
+    int value_;
+    type type_;
+  };
+
   set_mouse_cursor_position(void)
       : x_(0),
         y_(0) {
@@ -50,6 +95,66 @@ private:
   std::optional<uint32_t> screen_;
 };
 
+//
+// set_mouse_cursor_position::position_value json
+//
+
+inline void to_json(nlohmann::json& json, const set_mouse_cursor_position::position_value& value) {
+  switch (value.get_type()) {
+    case set_mouse_cursor_position::position_value::type::point:
+      json = value.get_value();
+      break;
+
+    case set_mouse_cursor_position::position_value::type::percent:
+      json = fmt::format("{0}%", value.get_value());
+      break;
+  }
+}
+
+inline void from_json(const nlohmann::json& json, set_mouse_cursor_position::position_value& value) {
+  if (json.is_number()) {
+    value.set_value(json.get<int>());
+    value.set_type(set_mouse_cursor_position::position_value::type::point);
+    return;
+  }
+
+  if (json.is_string()) {
+    auto s = json.get<std::string>();
+
+    try {
+      //
+      // percent
+      //
+
+      {
+        std::regex r("(\\d+)%");
+        std::smatch m;
+
+        if (std::regex_match(s, m, r)) {
+          value.set_value(std::stoi(m[1]));
+          value.set_type(set_mouse_cursor_position::position_value::type::percent);
+          return;
+        }
+      }
+
+      //
+      // point
+      //
+
+      value.set_value(std::stoi(s));
+      value.set_type(set_mouse_cursor_position::position_value::type::point);
+      return;
+
+    } catch (std::exception& e) {
+      throw pqrs::json::unmarshal_error(fmt::format("unsupported format: `{0}`", s));
+    }
+  }
+}
+
+//
+// set_mouse_cursor_position json
+//
+
 inline void to_json(nlohmann::json& json, const set_mouse_cursor_position& value) {
   json["x"] = value.get_x();
   json["y"] = value.get_y();
@@ -80,6 +185,18 @@ inline void from_json(const nlohmann::json& json, set_mouse_cursor_position& val
 } // namespace krbn
 
 namespace std {
+template <>
+struct hash<krbn::software_function_details::set_mouse_cursor_position::position_value> final {
+  std::size_t operator()(const krbn::software_function_details::set_mouse_cursor_position::position_value& value) const {
+    std::size_t h = 0;
+
+    pqrs::hash::combine(h, value.get_value());
+    pqrs::hash::combine(h, value.get_type());
+
+    return h;
+  }
+};
+
 template <>
 struct hash<krbn::software_function_details::set_mouse_cursor_position> final {
   std::size_t operator()(const krbn::software_function_details::set_mouse_cursor_position& value) const {
