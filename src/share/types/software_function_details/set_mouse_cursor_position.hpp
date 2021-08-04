@@ -9,8 +9,6 @@ namespace krbn {
 namespace software_function_details {
 class set_mouse_cursor_position {
 public:
-  static constexpr std::string_view type = "set_mouse_cursor_position";
-
   set_mouse_cursor_position(void)
       : x_(0),
         y_(0) {
