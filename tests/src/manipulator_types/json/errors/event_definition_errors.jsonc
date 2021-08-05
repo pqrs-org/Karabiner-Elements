@@ -296,7 +296,7 @@
                 }
             }
         },
-        "error": "`software_function` error: `set_mouse_cursor_position` error: `x` must be number, but is `null`"
+        "error": "`software_function` error: `set_mouse_cursor_position` error: json must be number or string, but is `null`"
     },
     {
         "class": "event_definition",

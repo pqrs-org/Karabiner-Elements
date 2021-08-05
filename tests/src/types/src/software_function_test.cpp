@@ -48,13 +48,15 @@ TEST_CASE("software_function") {
   {
     auto json = nlohmann::json::object({
         {"x", 100},
-        {"y", 200},
+        {"y", "20%"},
         {"screen", 1},
     });
 
     auto value = json.get<krbn::software_function_details::set_mouse_cursor_position>();
-    REQUIRE(value.get_x() == 100);
-    REQUIRE(value.get_y() == 200);
+    REQUIRE(value.get_x().get_value() == 100);
+    REQUIRE(value.get_x().get_type() == krbn::software_function_details::set_mouse_cursor_position::position_value::type::point);
+    REQUIRE(value.get_y().get_value() == 20);
+    REQUIRE(value.get_y().get_type() == krbn::software_function_details::set_mouse_cursor_position::position_value::type::percent);
     REQUIRE(value.get_screen() == 1);
 
     REQUIRE(nlohmann::json(value) == json);
@@ -76,7 +78,7 @@ TEST_CASE("software_function") {
 
     auto value = json.get<krbn::software_function>();
     REQUIRE(value.get_if<krbn::software_function_details::cg_event_double_click>() == nullptr);
-    REQUIRE(value.get_if<krbn::software_function_details::set_mouse_cursor_position>()->get_x() == 100);
+    REQUIRE(value.get_if<krbn::software_function_details::set_mouse_cursor_position>()->get_x().get_value() == 100);
 
     REQUIRE(nlohmann::json(value) == json);
   }

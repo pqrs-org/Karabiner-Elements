@@ -38,7 +38,7 @@ public:
       type_ = value;
     }
 
-    int point_value(int bounds) {
+    int point_value(int bounds) const {
       switch (type_) {
         case type::point:
           return value_;
@@ -54,24 +54,22 @@ public:
     type type_;
   };
 
-  set_mouse_cursor_position(void)
-      : x_(0),
-        y_(0) {
+  set_mouse_cursor_position(void) {
   }
 
-  int get_x(void) const {
+  const position_value& get_x(void) const {
     return x_;
   }
 
-  void set_x(int value) {
+  void set_x(const position_value& value) {
     x_ = value;
   }
 
-  int get_y(void) const {
+  const position_value& get_y(void) const {
     return y_;
   }
 
-  void set_y(int value) {
+  void set_y(const position_value& value) {
     y_ = value;
   }
 
@@ -84,14 +82,15 @@ public:
   }
 
   CGPoint get_point(const CGRect& bounds) const {
-    return CGPointMake(x_, y_);
+    return CGPointMake(x_.point_value(bounds.size.width),
+                       y_.point_value(bounds.size.height));
   }
 
   constexpr bool operator==(const set_mouse_cursor_position&) const = default;
 
 private:
-  int x_;
-  int y_;
+  position_value x_;
+  position_value y_;
   std::optional<uint32_t> screen_;
 };
 
@@ -149,6 +148,8 @@ inline void from_json(const nlohmann::json& json, set_mouse_cursor_position::pos
       throw pqrs::json::unmarshal_error(fmt::format("unsupported format: `{0}`", s));
     }
   }
+
+  throw pqrs::json::unmarshal_error(fmt::format("json must be number or string, but is `{0}`", pqrs::json::dump_for_error_message(json)));
 }
 
 //
@@ -168,11 +169,9 @@ inline void from_json(const nlohmann::json& json, set_mouse_cursor_position& val
 
   for (const auto& [k, v] : json.items()) {
     if (k == "x") {
-      pqrs::json::requires_number(v, "`" + k + "`");
-      value.set_x(v.get<int>());
+      value.set_x(v.get<set_mouse_cursor_position::position_value>());
     } else if (k == "y") {
-      pqrs::json::requires_number(v, "`" + k + "`");
-      value.set_y(v.get<int>());
+      value.set_y(v.get<set_mouse_cursor_position::position_value>());
     } else if (k == "screen") {
       pqrs::json::requires_number(v, "`" + k + "`");
       value.set_screen(v.get<int>());
