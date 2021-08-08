@@ -7,8 +7,10 @@
 TEST_CASE("simple_modifications.json") {
   auto json = krbn::unit_testing::json_helper::load_jsonc("../../../src/apps/PreferencesWindow/Resources/simple_modifications.json");
   for (const auto& entry : json) {
-    if (auto data = pqrs::json::find_object(entry, "data")) {
-      krbn::manipulator::to_event_definition e(data->value());
+    if (auto data = pqrs::json::find_array(entry, "data")) {
+      for (const auto& d : **data) {
+        krbn::manipulator::to_event_definition e(d);
+      }
     }
   }
 }
