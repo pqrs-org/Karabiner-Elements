@@ -7,6 +7,7 @@
 #include "spdlog.hpp"
 #include <deque>
 #include <fstream>
+#include <utf8cpp/utf8.h>
 #include <vector>
 
 namespace pqrs {
@@ -29,6 +30,8 @@ public:
   void read_next_line(void) {
     if (stream_) {
       if (std::getline(stream_, line_)) {
+        line_ = utf8::replace_invalid(line_);
+
         sort_key_ = spdlog::make_sort_key(line_);
 
         // skip if sort_key_ == std::nullopt (== broken line)

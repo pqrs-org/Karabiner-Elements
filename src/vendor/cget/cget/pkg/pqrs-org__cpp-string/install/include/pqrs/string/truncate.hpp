@@ -6,24 +6,27 @@
 
 #include <sstream>
 #include <string_view>
+#include <utf8cpp/utf8.h>
 
 namespace pqrs {
 namespace string {
 inline std::string truncate(const std::string_view& s,
                             size_t length,
                             const std::string_view& placeholder = "...") {
-  if (s.length() <= length) {
-    return std::string(s);
-  }
+  // Replace invalid character to ensure no invalid characters until the end of string before create substring.
+  auto valid_string = utf8::replace_invalid(s);
 
-  if (length <= placeholder.length()) {
-    return std::string(s.substr(0, length));
-  }
+  if (valid_string.length() <= length ||
+      length <= placeholder.length()) {
+    return trim_invalid_right_copy(valid_string.substr(0, length));
 
-  std::stringstream ss;
-  ss << s.substr(0, length - placeholder.length())
-     << placeholder;
-  return ss.str();
+  } else {
+    // Append placeholder
+    std::stringstream ss;
+    ss << trim_invalid_right_copy(valid_string.substr(0, length - placeholder.length()))
+       << placeholder;
+    return ss.str();
+  }
 }
 } // namespace string
 } // namespace pqrs

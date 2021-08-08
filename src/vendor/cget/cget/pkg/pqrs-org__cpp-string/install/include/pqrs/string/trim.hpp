@@ -7,6 +7,7 @@
 #include <algorithm>
 #include <cctype>
 #include <string_view>
+#include <utf8cpp/utf8.h>
 
 namespace pqrs {
 namespace string {
@@ -46,9 +47,22 @@ inline std::string trim_right_copy(const std::string_view& s) {
   return result;
 }
 
-static inline std::string trim_copy(const std::string_view& s) {
+inline std::string trim_copy(const std::string_view& s) {
   std::string result(s);
   trim(result);
+  return result;
+}
+
+inline void trim_invalid_right(std::string& s) {
+  auto pos = utf8::find_invalid(s);
+  if (pos != std::string::npos) {
+    s = s.substr(0, pos);
+  }
+}
+
+inline std::string trim_invalid_right_copy(const std::string_view& s) {
+  std::string result(s);
+  trim_invalid_right(result);
   return result;
 }
 } // namespace string
