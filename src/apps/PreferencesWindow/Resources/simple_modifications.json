@@ -2290,6 +2290,108 @@
         ]
     },
     {
+        "category": "Software function"
+    },
+    {
+        "not_from": true,
+        "label": "CGEvent double click (left button)",
+        "data": [
+            {
+                "software_function": {
+                    "cg_event_double_click": {
+                        "button": 0
+                    }
+                }
+            }
+        ]
+    },
+    {
+        "not_from": true,
+        "label": "CGEvent double click (right button)",
+        "data": [
+            {
+                "software_function": {
+                    "cg_event_double_click": {
+                        "button": 1
+                    }
+                }
+            }
+        ]
+    },
+    {
+        "not_from": true,
+        "label": "CGEvent double click (center button)",
+        "data": [
+            {
+                "software_function": {
+                    "cg_event_double_click": {
+                        "button": 2
+                    }
+                }
+            }
+        ]
+    },
+    {
+        "not_from": true,
+        "label": "Set mouse cursor position to (0,0) of the first screen",
+        "data": [
+            {
+                "software_function": {
+                    "set_mouse_cursor_position": {
+                        "x": 0,
+                        "y": 0,
+                        "screen": 0
+                    }
+                }
+            }
+        ]
+    },
+    {
+        "not_from": true,
+        "label": "Set mouse cursor position to the center of the first screen",
+        "data": [
+            {
+                "software_function": {
+                    "set_mouse_cursor_position": {
+                        "x": "50%",
+                        "y": "50%",
+                        "screen": 0
+                    }
+                }
+            }
+        ]
+    },
+    {
+        "not_from": true,
+        "label": "Set mouse cursor position to (0,0) of the second screen",
+        "data": [
+            {
+                "software_function": {
+                    "set_mouse_cursor_position": {
+                        "x": 0,
+                        "y": 0,
+                        "screen": 1
+                    }
+                }
+            }
+        ]
+    },
+    {
+        "not_from": true,
+        "label": "Set mouse cursor position to the center of the second screen",
+        "data": [
+            {
+                "software_function": {
+                    "set_mouse_cursor_position": {
+                        "x": "50%",
+                        "y": "50%",
+                        "screen": 1
+                    }
+                }
+            }
+        ]
+    },
+    {
         "category": "Others"
     },
     {
