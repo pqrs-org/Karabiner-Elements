@@ -21,6 +21,7 @@
 #include <new>
 #include <tuple>
 #include "asio/associated_cancellation_slot.hpp"
+#include "asio/detail/recycling_allocator.hpp"
 #include "asio/detail/type_traits.hpp"
 #include "asio/dispatch.hpp"
 
@@ -229,6 +230,105 @@ struct parallel_group_op_handler
   std::shared_ptr<parallel_group_state<Condition, Handler, Ops...> > state_;
 };
 
+// Handler for an individual operation within the parallel group that has an
+// explicitly specified executor.
+template <typename Executor, std::size_t I,
+    typename Condition, typename Handler, typename... Ops>
+struct parallel_group_op_handler_with_executor :
+  parallel_group_op_handler<I, Condition, Handler, Ops...>
+{
+  typedef parallel_group_op_handler<I, Condition, Handler, Ops...> base_type;
+  typedef asio::cancellation_slot cancellation_slot_type;
+  typedef Executor executor_type;
+
+  parallel_group_op_handler_with_executor(
+      std::shared_ptr<parallel_group_state<Condition, Handler, Ops...> > state,
+      executor_type ex)
+    : parallel_group_op_handler<I, Condition, Handler, Ops...>(std::move(state))
+  {
+    cancel_proxy_ =
+      &this->state_->cancellation_signals_[I].slot().template
+        emplace<cancel_proxy>(this->state_, std::move(ex));
+  }
+
+  cancellation_slot_type get_cancellation_slot() const noexcept
+  {
+    return cancel_proxy_->signal_.slot();
+  }
+
+  executor_type get_executor() const noexcept
+  {
+    return cancel_proxy_->executor_;
+  }
+
+  // Proxy handler that forwards the emitted signal to the correct executor.
+  struct cancel_proxy
+  {
+    cancel_proxy(
+        std::shared_ptr<parallel_group_state<
+          Condition, Handler, Ops...> > state,
+        executor_type ex)
+      : state_(std::move(state)),
+        executor_(std::move(ex))
+    {
+    }
+
+    void operator()(cancellation_type_t type)
+    {
+      if (auto state = state_.lock())
+      {
+        asio::cancellation_signal* sig = &signal_;
+        asio::dispatch(executor_,
+            [state, sig, type]{ sig->emit(type); });
+      }
+    }
+
+    std::weak_ptr<parallel_group_state<Condition, Handler, Ops...> > state_;
+    asio::cancellation_signal signal_;
+    executor_type executor_;
+  };
+
+  cancel_proxy* cancel_proxy_;
+};
+
+// Helper to launch an operation using the correct executor, if any.
+template <std::size_t I, typename Op, typename = void>
+struct parallel_group_op_launcher
+{
+  template <typename Condition, typename Handler, typename... Ops>
+  static void launch(Op& op,
+    const std::shared_ptr<parallel_group_state<
+      Condition, Handler, Ops...> >& state)
+  {
+    typedef typename associated_executor<Op>::type ex_type;
+    ex_type ex = asio::get_associated_executor(op);
+    std::move(op)(
+        parallel_group_op_handler_with_executor<ex_type, I,
+          Condition, Handler, Ops...>(state, std::move(ex)));
+  }
+};
+
+// Specialised launcher for operations that specify no executor.
+template <std::size_t I, typename Op>
+struct parallel_group_op_launcher<I, Op,
+    typename enable_if<
+      is_same<
+        typename associated_executor<
+          Op>::asio_associated_executor_is_unspecialised,
+        void
+      >::value
+    >::type>
+{
+  template <typename Condition, typename Handler, typename... Ops>
+  static void launch(Op& op,
+    const std::shared_ptr<parallel_group_state<
+      Condition, Handler, Ops...> >& state)
+  {
+    std::move(op)(
+        parallel_group_op_handler<I, Condition, Handler, Ops...>(state));
+  }
+};
+
 template <typename Condition, typename Handler, typename... Ops>
 struct parallel_group_cancellation_handler
 {
@@ -264,13 +364,14 @@ void parallel_group_launch(Condition cancellation_condition, Handler handler,
 
   // Create the shared state for the operation.
   typedef parallel_group_state<Condition, Handler, Ops...> state_type;
-  std::shared_ptr<state_type> state = std::make_shared<state_type>(
+  std::shared_ptr<state_type> state = std::allocate_shared<state_type>(
+      asio::detail::recycling_allocator<state_type,
+        asio::detail::thread_info_base::parallel_group_tag>(),
       std::move(cancellation_condition), std::move(handler));
 
   // Initiate each individual operation in the group.
   int fold[] = { 0,
-    ( std::move(std::get<I>(ops))(
-        parallel_group_op_handler<I, Condition, Handler, Ops...>{state}),
+    ( parallel_group_op_launcher<I, Ops>::launch(std::get<I>(ops), state),
       0 )...
   };
   (void)fold;

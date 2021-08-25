@@ -19,6 +19,8 @@
 #include "asio/error_code.hpp"
 #include "asio/experimental/detail/partial_promise.hpp"
 
+#include "asio/detail/push_options.hpp"
+
 namespace asio {
 
 class any_io_executor;
@@ -272,6 +274,8 @@ struct async_result<experimental::use_coro_t<Executor>, R(Args...)>
 #endif // !defined(GENERATING_DOCUMENTATION)
 
 } // namespace asio
+
+#include "asio/detail/pop_options.hpp"
 
 #include "asio/experimental/coro.hpp"
 

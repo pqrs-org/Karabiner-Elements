@@ -16,7 +16,7 @@
 #endif // defined(_MSC_VER) && (_MSC_VER >= 1200)
 
 #include "asio/detail/config.hpp"
-#include "asio/posix/descriptor.hpp"
+#include "asio/posix/basic_descriptor.hpp"
 
 #if defined(ASIO_HAS_POSIX_STREAM_DESCRIPTOR) \
   || defined(GENERATING_DOCUMENTATION)
@@ -154,7 +154,7 @@ public:
    * constructor.
    */
   basic_stream_descriptor(basic_stream_descriptor&& other) ASIO_NOEXCEPT
-    : descriptor(std::move(other))
+    : basic_descriptor<Executor>(std::move(other))
   {
   }
 
@@ -172,7 +172,7 @@ public:
    */
   basic_stream_descriptor& operator=(basic_stream_descriptor&& other)
   {
-    descriptor::operator=(std::move(other));
+    basic_descriptor<Executor>::operator=(std::move(other));
     return *this;
   }
 #endif // defined(ASIO_HAS_MOVE) || defined(GENERATING_DOCUMENTATION)

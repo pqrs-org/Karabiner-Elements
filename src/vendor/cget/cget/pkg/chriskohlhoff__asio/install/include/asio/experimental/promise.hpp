@@ -24,6 +24,8 @@
 
 #include <variant>
 
+#include "asio/detail/push_options.hpp"
+
 namespace asio {
 namespace experimental {
 
@@ -597,5 +599,7 @@ struct async_result<experimental::use_promise_t<Executor>, R(Args...)>
 #endif // !defined(GENERATING_DOCUMENTATION)
 
 } // namespace asio
+
+#include "asio/detail/pop_options.hpp"
 
 #endif // ASIO_EXPERIMENTAL_PROMISE_HPP

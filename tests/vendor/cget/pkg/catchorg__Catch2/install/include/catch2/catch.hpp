@@ -1,6 +1,6 @@
 /*
- *  Catch v2.13.6
- *  Generated: 2021-04-16 18:23:38.044268
+ *  Catch v2.13.7
+ *  Generated: 2021-07-28 20:29:27.753164
  *  ----------------------------------------------------------
  *  This file has been merged from multiple headers. Please don't edit it directly
  *  Copyright (c) 2021 Two Blue Cubes Ltd. All rights reserved.
@@ -15,7 +15,7 @@
 
 #define CATCH_VERSION_MAJOR 2
 #define CATCH_VERSION_MINOR 13
-#define CATCH_VERSION_PATCH 6
+#define CATCH_VERSION_PATCH 7
 
 #ifdef __clang__
 #    pragma clang system_header
@@ -326,7 +326,7 @@ namespace Catch {
   // Check if byte is available and usable
   #  if __has_include(<cstddef>) && defined(CATCH_CPP17_OR_GREATER)
   #    include <cstddef>
-  #    if __cpp_lib_byte > 0
+  #    if defined(__cpp_lib_byte) && (__cpp_lib_byte > 0)
   #      define CATCH_INTERNAL_CONFIG_CPP17_BYTE
   #    endif
   #  endif // __has_include(<cstddef>) && defined(CATCH_CPP17_OR_GREATER)
@@ -5458,6 +5458,8 @@ namespace Catch {
 } // namespace Catch
 
 // end catch_outlier_classification.hpp
+
+#include <iterator>
 #endif // CATCH_CONFIG_ENABLE_BENCHMARKING
 
 #include <string>
@@ -6342,9 +6344,10 @@ namespace Catch {
 
         void writeTestCase(TestCaseNode const& testCaseNode);
 
-        void writeSection(std::string const& className,
-                          std::string const& rootName,
-                          SectionNode const& sectionNode);
+        void writeSection( std::string const& className,
+                           std::string const& rootName,
+                           SectionNode const& sectionNode,
+                           bool testOkToFail );
 
         void writeAssertions(SectionNode const& sectionNode);
         void writeAssertion(AssertionStats const& stats);
@@ -6879,7 +6882,7 @@ namespace Catch {
                     }
                     iters *= 2;
                 }
-                throw optimized_away_error{};
+                Catch::throw_exception(optimized_away_error{});
             }
         } // namespace Detail
     } // namespace Benchmark
@@ -6887,6 +6890,7 @@ namespace Catch {
 
 // end catch_run_for_at_least.hpp
 #include <algorithm>
+#include <iterator>
 
 namespace Catch {
     namespace Benchmark {
@@ -15376,7 +15380,7 @@ namespace Catch {
     }
 
     Version const& libraryVersion() {
-        static Version version( 2, 13, 6, "", 0 );
+        static Version version( 2, 13, 7, "", 0 );
         return version;
     }
 
@@ -16789,6 +16793,7 @@ CATCH_REGISTER_REPORTER("console", ConsoleReporter)
 #include <sstream>
 #include <ctime>
 #include <algorithm>
+#include <iomanip>
 
 namespace Catch {
 
@@ -16816,7 +16821,7 @@ namespace Catch {
 #else
             std::strftime(timeStamp, timeStampSize, fmt, timeInfo);
 #endif
-            return std::string(timeStamp);
+            return std::string(timeStamp, timeStampSize-1);
         }
 
         std::string fileNameTag(const std::vector<std::string> &tags) {
@@ -16827,6 +16832,17 @@ namespace Catch {
                 return it->substr(1);
             return std::string();
         }
+
+        // Formats the duration in seconds to 3 decimal places.
+        // This is done because some genius defined Maven Surefire schema
+        // in a way that only accepts 3 decimal places, and tools like
+        // Jenkins use that schema for validation JUnit reporter output.
+        std::string formatDuration( double seconds ) {
+            ReusableStringStream rss;
+            rss << std::fixed << std::setprecision( 3 ) << seconds;
+            return rss.str();
+        }
+
     } // anonymous namespace
 
     JunitReporter::JunitReporter( ReporterConfig const& _config )
@@ -16896,7 +16912,7 @@ namespace Catch {
         if( m_config->showDurations() == ShowDurations::Never )
             xml.writeAttribute( "time", "" );
         else
-            xml.writeAttribute( "time", suiteTime );
+            xml.writeAttribute( "time", formatDuration( suiteTime ) );
         xml.writeAttribute( "timestamp", getCurrentTimestamp() );
 
         // Write properties if there are any
@@ -16941,12 +16957,13 @@ namespace Catch {
         if ( !m_config->name().empty() )
             className = m_config->name() + "." + className;
 
-        writeSection( className, "", rootSection );
+        writeSection( className, "", rootSection, stats.testInfo.okToFail() );
     }
 
-    void JunitReporter::writeSection(  std::string const& className,
-                        std::string const& rootName,
-                        SectionNode const& sectionNode ) {
+    void JunitReporter::writeSection( std::string const& className,
+                                      std::string const& rootName,
+                                      SectionNode const& sectionNode,
+                                      bool testOkToFail) {
         std::string name = trim( sectionNode.stats.sectionInfo.name );
         if( !rootName.empty() )
             name = rootName + '/' + name;
@@ -16963,12 +16980,17 @@ namespace Catch {
                 xml.writeAttribute( "classname", className );
                 xml.writeAttribute( "name", name );
             }
-            xml.writeAttribute( "time", ::Catch::Detail::stringify( sectionNode.stats.durationInSeconds ) );
+            xml.writeAttribute( "time", formatDuration( sectionNode.stats.durationInSeconds ) );
             // This is not ideal, but it should be enough to mimic gtest's
             // junit output.
             // Ideally the JUnit reporter would also handle `skipTest`
             // events and write those out appropriately.
             xml.writeAttribute( "status", "run" );
+
+            if (sectionNode.stats.assertions.failedButOk) {
+                xml.scopedElement("skipped")
+                    .writeAttribute("message", "TEST_CASE tagged with !mayfail");
+            }
 
             writeAssertions( sectionNode );
 
@@ -16979,9 +17001,9 @@ namespace Catch {
         }
         for( auto const& childNode : sectionNode.childSections )
             if( className.empty() )
-                writeSection( name, "", *childNode );
+                writeSection( name, "", *childNode, testOkToFail );
             else
-                writeSection( className, name, *childNode );
+                writeSection( className, name, *childNode, testOkToFail );
     }
 
     void JunitReporter::writeAssertions( SectionNode const& sectionNode ) {

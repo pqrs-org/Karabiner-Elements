@@ -97,6 +97,13 @@ public:
   // operation_aborted error.
   ASIO_DECL void cancel_ops(socket_type descriptor, per_descriptor_data&);
 
+  // Cancel all operations associated with the given descriptor and key. The
+  // handlers associated with the descriptor will be invoked with the
+  // operation_aborted error.
+  ASIO_DECL void cancel_ops_by_key(socket_type descriptor,
+      per_descriptor_data& descriptor_data,
+      int op_type, void* cancellation_key);
+
   // Cancel any operations that are running against the descriptor and remove
   // its registration from the reactor. The reactor resources associated with
   // the descriptor must be released by calling cleanup_descriptor_data.

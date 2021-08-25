@@ -51,6 +51,7 @@ public:
   {
     return experimental::deferred_async_operation<
         Signature, Initiation, InitArgs...>(
+          experimental::deferred_init_tag{},
           ASIO_MOVE_CAST(Initiation)(initiation),
           ASIO_MOVE_CAST(InitArgs)(args)...);
     }
@@ -69,9 +70,10 @@ public:
     return experimental::deferred_sequence<
         experimental::deferred_async_operation<
           R(Args...), Initiation, InitArgs...>,
-        Function>(
+        Function>(experimental::deferred_init_tag{},
           experimental::deferred_async_operation<
             R(Args...), Initiation, InitArgs...>(
+              experimental::deferred_init_tag{},
               ASIO_MOVE_CAST(Initiation)(initiation),
               ASIO_MOVE_CAST(InitArgs)(init_args)...),
           ASIO_MOVE_CAST(Function)(token.function_));

@@ -22,6 +22,8 @@
 #include "asio/experimental/use_coro.hpp"
 #include "asio/post.hpp"
 
+#include "asio/detail/push_options.hpp"
+
 namespace asio {
 namespace experimental {
 
@@ -1047,5 +1049,7 @@ struct coro_promise final :
 } // namespace detail
 } // namespace experimental
 } // namespace asio
+
+#include "asio/detail/pop_options.hpp"
 
 #endif // ASIO_EXPERIMENTAL_CORO_HPP

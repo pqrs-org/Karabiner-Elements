@@ -108,7 +108,8 @@ public:
         executor_type ex = this_->executor_;
         execution::execute(
             asio::prefer(
-              asio::require(ex,
+              asio::require(
+                ASIO_MOVE_CAST(executor_type)(ex),
                 execution::blocking.never),
             execution::allocator(allocator)),
             ASIO_MOVE_CAST(invoker)(*this_));
