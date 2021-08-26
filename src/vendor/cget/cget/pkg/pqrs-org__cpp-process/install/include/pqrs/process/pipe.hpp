@@ -25,6 +25,8 @@ public:
   }
 
   std::optional<int> get_read_end(void) const {
+    std::lock_guard<std::mutex> lock(mutex_);
+
     int fd = file_descriptors_[0];
     if (fd) {
       return fd;
@@ -33,6 +35,8 @@ public:
   }
 
   std::optional<int> get_write_end(void) const {
+    std::lock_guard<std::mutex> lock(mutex_);
+
     int fd = file_descriptors_[1];
     if (fd) {
       return fd;
@@ -41,6 +45,8 @@ public:
   }
 
   void close_read_end(void) {
+    std::lock_guard<std::mutex> lock(mutex_);
+
     if (file_descriptors_[0]) {
       close(file_descriptors_[0]);
       file_descriptors_[0] = 0;
@@ -48,6 +54,8 @@ public:
   }
 
   void close_write_end(void) {
+    std::lock_guard<std::mutex> lock(mutex_);
+
     if (file_descriptors_[1]) {
       close(file_descriptors_[1]);
       file_descriptors_[1] = 0;
@@ -56,6 +64,7 @@ public:
 
 private:
   int file_descriptors_[2];
+  mutable std::mutex mutex_;
 };
 } // namespace process
 } // namespace pqrs
