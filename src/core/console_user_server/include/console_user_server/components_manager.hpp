@@ -13,6 +13,7 @@
 #include "menu_process_manager.hpp"
 #include "monitor/configuration_monitor.hpp"
 #include "monitor/version_monitor.hpp"
+#include "shell_command_handler.hpp"
 #include "software_function_handler.hpp"
 #include "updater_process_manager.hpp"
 #include <pqrs/dispatcher.hpp>
@@ -23,7 +24,6 @@
 #include <pqrs/osx/json_file_monitor.hpp>
 #include <pqrs/osx/session.hpp>
 #include <pqrs/osx/system_preferences_monitor.hpp>
-#include <pqrs/shell.hpp>
 #include <thread>
 
 namespace krbn {
@@ -166,8 +166,9 @@ private:
 
             case operation_type::shell_command_execution: {
               auto shell_command = json.at("shell_command").get<std::string>();
-              auto background_shell_command = pqrs::shell::make_background_command_string(shell_command);
-              system(background_shell_command.c_str());
+              if (shell_command_handler_) {
+                shell_command_handler_->run(shell_command);
+              }
               break;
             }
 
@@ -270,6 +271,10 @@ private:
 
     software_function_handler_ = std::make_unique<software_function_handler>();
 
+    // shell_command_handler_
+
+    shell_command_handler_ = std::make_unique<shell_command_handler>();
+
     // Start configuration_monitor_
 
     configuration_monitor_->async_start();
@@ -283,6 +288,7 @@ private:
     input_source_monitor_ = nullptr;
     input_source_selector_ = nullptr;
     software_function_handler_ = nullptr;
+    shell_command_handler_ = nullptr;
 
     configuration_monitor_ = nullptr;
   }
@@ -306,6 +312,7 @@ private:
   std::unique_ptr<pqrs::osx::input_source_monitor> input_source_monitor_;
   std::unique_ptr<pqrs::osx::input_source_selector::selector> input_source_selector_;
   std::unique_ptr<software_function_handler> software_function_handler_;
+  std::unique_ptr<shell_command_handler> shell_command_handler_;
 };
 } // namespace console_user_server
 } // namespace krbn
