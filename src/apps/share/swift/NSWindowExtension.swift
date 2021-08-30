@@ -1,7 +1,7 @@
 import AppKit
 
-extension NSWindow {
-    public func centerToOtherWindow(_ other: NSWindow) {
+public extension NSWindow {
+    func centerToOtherWindow(_ other: NSWindow) {
         setFrame(
             NSMakeRect(
                 other.frame.origin.x + (other.frame.size.width / 2) - (frame.size.width / 2),
