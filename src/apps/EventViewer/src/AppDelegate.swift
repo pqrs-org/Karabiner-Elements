@@ -52,7 +52,7 @@ public class AppDelegate: NSObject, NSApplicationDelegate {
     }
 
     public func applicationShouldTerminateAfterLastWindowClosed(_: NSApplication) -> Bool {
-        return true
+        true
     }
 
     @IBAction func setWindowProperty(_: Any) {

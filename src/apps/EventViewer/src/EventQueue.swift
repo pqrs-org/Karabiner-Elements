@@ -134,7 +134,7 @@ public class EventQueue: NSObject, NSTableViewDataSource {
     }
 
     public func observed() -> Bool {
-        return libkrbn_hid_value_monitor_observed()
+        libkrbn_hid_value_monitor_observed()
     }
 
     public func append(_ entry: EventQueueEntry) {
@@ -283,7 +283,7 @@ public class EventQueue: NSObject, NSTableViewDataSource {
     //
 
     public func numberOfRows(in _: NSTableView) -> Int {
-        return queue.count
+        queue.count
     }
 
     public func tableView(_: NSTableView,
