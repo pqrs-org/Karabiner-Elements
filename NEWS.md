@@ -9,6 +9,7 @@
     -   Fixed an issue that karabiner.json parse error message is not shown in Preferences > Log if the error message contains corrupted characters.
 -   ⚡️ Improvements
     -   Changed to log the output of shell_command into console_user_server.log.
+    -   The notification window transparency will be increased when the mouse cursor is hovered.
 
 ## Karabiner-Elements 13.5.0
 
