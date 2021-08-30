@@ -39,9 +39,9 @@ public class KeyResponder: NSView {
         NSGraphicsContext.restoreGraphicsState()
     }
 
-//
+    //
     // Key event handlers
-//
+    //
 
     override public func keyDown(with _: NSEvent) {}
 
