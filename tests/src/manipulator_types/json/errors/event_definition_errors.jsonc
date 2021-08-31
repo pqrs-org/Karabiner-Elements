@@ -171,6 +171,43 @@
         "error": "`set_variable.value` is not found in `{\"name\":\"flag\"}`"
     },
 
+    // set_notification_message
+
+    {
+        "class": "event_definition",
+        "input": {
+            "set_notification_message": null
+        },
+        "error": "`set_notification_message` error: json must be object, but is `null`"
+    },
+    {
+        "class": "event_definition",
+        "input": {
+            "set_notification_message": {
+                "id": null
+            }
+        },
+        "error": "`set_notification_message` error: id must be string, but is `null`"
+    },
+    {
+        "class": "event_definition",
+        "input": {
+            "set_notification_message": {
+                "text": null
+            }
+        },
+        "error": "`set_notification_message` error: text must be string, but is `null`"
+    },
+    {
+        "class": "event_definition",
+        "input": {
+            "set_notification_message": {
+                "value": "value"
+            }
+        },
+        "error": "`set_notification_message` error: unknown key: `value`"
+    },
+
     // mouse_key
 
     {
