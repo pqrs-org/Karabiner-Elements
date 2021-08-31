@@ -12,6 +12,7 @@ add_executable(
   src/modifier_flag_test.cpp
   src/momentary_switch_event_test.cpp
   src/mouse_key_test.cpp
+  src/notification_message_test.cpp
   src/operation_type_test.cpp
   src/pointing_motion_test.cpp
   src/software_function_test.cpp

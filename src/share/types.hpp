@@ -12,6 +12,7 @@
 #include "types/modifier_flag.hpp"
 #include "types/momentary_switch_event.hpp"
 #include "types/mouse_key.hpp"
+#include "types/notification_message.hpp"
 #include "types/operation_type.hpp"
 #include "types/pointing_motion.hpp"
 #include "types/product_id.hpp"
