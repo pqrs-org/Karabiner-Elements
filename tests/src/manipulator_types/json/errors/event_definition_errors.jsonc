@@ -178,7 +178,7 @@
         "input": {
             "mouse_key": null
         },
-        "error": "`mouse_key` must be object, but is `null`"
+        "error": "`mouse_key` error: json must be object, but is `null`"
     },
     {
         "class": "event_definition",
@@ -234,7 +234,7 @@
         "input": {
             "software_function": null
         },
-        "error": "`software_function` must be object, but is `null`"
+        "error": "`software_function` error: json must be object, but is `null`"
     },
     {
         "class": "event_definition",

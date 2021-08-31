@@ -25,6 +25,7 @@ public:
     shell_command,
     select_input_source,
     set_variable,
+    set_notification_message,
     mouse_key,
     sticky_modifier,
     software_function,
@@ -47,6 +48,7 @@ public:
                                std::string,                                              // For shell_command
                                std::vector<pqrs::osx::input_source_selector::specifier>, // For select_input_source
                                std::pair<std::string, int>,                              // For set_variable
+                               notification_message,                                     // For set_notification_message
                                mouse_key,                                                // For mouse_key
                                std::pair<modifier_flag, sticky_modifier_type>,           // For sticky_modifier
                                software_function,                                        // For software_function
@@ -81,6 +83,8 @@ public:
             result.value_ = value.get<std::vector<pqrs::osx::input_source_selector::specifier>>();
           } else if (key == "set_variable") {
             result.value_ = value.get<std::pair<std::string, int>>();
+          } else if (key == "set_notification_message") {
+            result.value_ = value.get<notification_message>();
           } else if (key == "mouse_key") {
             result.value_ = value.get<mouse_key>();
           } else if (key == "sticky_modifier") {
@@ -145,6 +149,12 @@ public:
       case type::set_variable:
         if (auto v = get_set_variable()) {
           json["set_variable"] = *v;
+        }
+        break;
+
+      case type::set_notification_message:
+        if (auto v = get_if<notification_message>()) {
+          json["set_notification_message"] = *v;
         }
         break;
 
@@ -227,6 +237,13 @@ public:
     event e;
     e.type_ = type::set_variable;
     e.value_ = pair;
+    return e;
+  }
+
+  static event make_set_notification_message_event(const notification_message& value) {
+    event e;
+    e.type_ = type::set_notification_message;
+    e.value_ = value;
     return e;
   }
 
@@ -441,6 +458,7 @@ private:
       TO_C_STRING(shell_command);
       TO_C_STRING(select_input_source);
       TO_C_STRING(set_variable);
+      TO_C_STRING(set_notification_message);
       TO_C_STRING(mouse_key);
       TO_C_STRING(sticky_modifier);
       TO_C_STRING(software_function);
@@ -474,6 +492,7 @@ private:
     TO_TYPE(shell_command);
     TO_TYPE(select_input_source);
     TO_TYPE(set_variable);
+    TO_TYPE(set_notification_message);
     TO_TYPE(mouse_key);
     TO_TYPE(sticky_modifier);
     TO_TYPE(software_function);

@@ -185,6 +185,14 @@ public:
           }
           break;
 
+        case event_queue::event::type::set_notification_message:
+          if (auto message = front_input_event.get_event().get_if<notification_message>()) {
+            if (auto notification_message_manager = weak_notification_message_manager_.lock()) {
+              notification_message_manager->async_set_notification_message(*message);
+            }
+          }
+          break;
+
         case event_queue::event::type::mouse_key:
           if (auto mouse_key = front_input_event.get_event().get_mouse_key()) {
             if (front_input_event.get_event_type() == event_type::key_down) {

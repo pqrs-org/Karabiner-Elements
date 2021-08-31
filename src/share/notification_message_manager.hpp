@@ -69,11 +69,11 @@ public:
     auto message = ss.str();
 
     //
-    // Update sticky_modifiers_message_.
+    // Update messages_.
     //
 
     enqueue_to_dispatcher([this, message] {
-      sticky_modifiers_message_ = message;
+      messages_["__system__sticky_modifiers"] = message;
 
       save_message_if_needed();
     });
@@ -81,7 +81,15 @@ public:
 
   void async_clear_sticky_modifiers_message(void) {
     enqueue_to_dispatcher([this] {
-      sticky_modifiers_message_ = "";
+      messages_["__system__sticky_modifiers"] = "";
+
+      save_message_if_needed();
+    });
+  }
+
+  void async_set_notification_message(const notification_message& notification_message) {
+    enqueue_to_dispatcher([this, notification_message] {
+      messages_[std::string("__user__") + notification_message.get_id()] = notification_message.get_text();
 
       save_message_if_needed();
     });
@@ -111,16 +119,21 @@ private:
 
     for (const auto& m : device_ungrabbable_temporarily_messages_) {
       if (!m.second.empty()) {
+        if (ss.tellp() > 0) {
+          ss << "\n";
+        }
         ss << m.second;
         break;
       }
     }
 
-    if (!sticky_modifiers_message_.empty()) {
-      if (ss.tellp() > 0) {
-        ss << "\n";
+    for (const auto& m : messages_) {
+      if (!m.second.empty()) {
+        if (ss.tellp() > 0) {
+          ss << "\n";
+        }
+        ss << m.second;
       }
-      ss << sticky_modifiers_message_;
     }
 
     return ss.str();
@@ -128,7 +141,7 @@ private:
 
   std::filesystem::path notification_message_file_path_;
   std::map<device_id, std::string> device_ungrabbable_temporarily_messages_;
-  std::string sticky_modifiers_message_;
+  std::map<std::string, std::string> messages_;
   std::string previous_message_;
 };
 } // namespace krbn

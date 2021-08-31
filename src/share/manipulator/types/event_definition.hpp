@@ -17,6 +17,7 @@ public:
     shell_command,
     select_input_source,
     set_variable,
+    set_notification_message,
     mouse_key,
     sticky_modifier,
     software_function,
@@ -35,6 +36,7 @@ public:
                                std::string,                                              // For type::shell_command
                                std::vector<pqrs::osx::input_source_selector::specifier>, // For type::select_input_source
                                std::pair<std::string, int>,                              // For type::set_variable
+                               notification_message,                                     // For type::set_notification_message
                                mouse_key,                                                // For type::mouse_key
                                std::pair<modifier_flag, sticky_modifier_type>,           // For type::sticky_modifier
                                software_function,                                        // For type::software_function
@@ -95,6 +97,8 @@ public:
         return event_queue::event::make_select_input_source_event(std::get<std::vector<pqrs::osx::input_source_selector::specifier>>(value_));
       case type::set_variable:
         return event_queue::event::make_set_variable_event(std::get<std::pair<std::string, int>>(value_));
+      case type::set_notification_message:
+        return event_queue::event::make_set_notification_message_event(std::get<notification_message>(value_));
       case type::mouse_key:
         return event_queue::event::make_mouse_key_event(std::get<mouse_key>(value_));
       case type::sticky_modifier:
@@ -255,13 +259,29 @@ public:
     }
 
     //
+    // set_notification_message
+    //
+
+    if (key == "set_notification_message") {
+      check_type(json);
+
+      type_ = type::set_notification_message;
+
+      try {
+        value_ = value.get<notification_message>();
+      } catch (const pqrs::json::unmarshal_error& e) {
+        throw pqrs::json::unmarshal_error(fmt::format("`{0}` error: {1}", key, e.what()));
+      }
+
+      return true;
+    }
+
+    //
     // mouse_key
     //
 
     if (key == "mouse_key") {
       check_type(json);
-
-      pqrs::json::requires_object(value, "`" + key + "`");
 
       type_ = type::mouse_key;
 
@@ -306,8 +326,6 @@ public:
 
     if (key == "software_function") {
       check_type(json);
-
-      pqrs::json::requires_object(value, "`" + key + "`");
 
       type_ = type::software_function;
 
