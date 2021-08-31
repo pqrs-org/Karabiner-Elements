@@ -54,7 +54,11 @@ public class NotificationWindowManager {
         windows.removeAll()
 
         NSScreen.screens.forEach { screen in
-            let window = NSWindow(
+            //
+            // Main window
+            //
+
+            let mainWindow = NSWindow(
                 contentRect: .zero,
                 styleMask: [
                     .fullSizeContentView,
@@ -63,24 +67,52 @@ public class NotificationWindowManager {
                 defer: false
             )
 
-            window.contentView = NSHostingView(rootView: NotificationView(window: window))
-            window.backgroundColor = NSColor.clear
-            window.isOpaque = false
-            window.level = .statusBar
-            // window.ignoresMouseEvents = true
-            window.collectionBehavior.insert(.canJoinAllSpaces)
-            window.collectionBehavior.insert(.ignoresCycle)
-            window.collectionBehavior.insert(.stationary)
+            mainWindow.contentView = NSHostingView(rootView: MainView())
+            mainWindow.backgroundColor = NSColor.clear
+            mainWindow.isOpaque = false
+            mainWindow.level = .statusBar
+            mainWindow.ignoresMouseEvents = true
+            mainWindow.collectionBehavior.insert(.canJoinAllSpaces)
+            mainWindow.collectionBehavior.insert(.ignoresCycle)
+            mainWindow.collectionBehavior.insert(.stationary)
 
             let screenFrame = screen.visibleFrame
-            let windowFrame = window.frame
+            let windowFrame = mainWindow.frame
             let margin = CGFloat(10.0)
-            window.setFrameOrigin(NSMakePoint(
+            mainWindow.setFrameOrigin(NSMakePoint(
                 screenFrame.origin.x + screenFrame.size.width - windowFrame.width - margin,
                 screenFrame.origin.y + margin
             ))
 
-            windows.append(window)
+            windows.append(mainWindow)
+
+            //
+            // Close button
+            //
+
+            let buttonWindow = NSWindow(
+                contentRect: NSMakeRect(mainWindow.frame.origin.x + CGFloat(-8.0),
+                                        mainWindow.frame.origin.y + CGFloat(36.0),
+                                        CGFloat(24.0),
+                                        CGFloat(24.0)),
+                styleMask: [
+                    .fullSizeContentView,
+                ],
+                backing: .buffered,
+                defer: false
+            )
+            buttonWindow.contentView = NSHostingView(rootView: ButtonView(mainWindow: mainWindow, buttonWindow: buttonWindow))
+            buttonWindow.backgroundColor = NSColor.clear
+            buttonWindow.isOpaque = false
+            buttonWindow.level = .statusBar
+            buttonWindow.ignoresMouseEvents = false
+            buttonWindow.collectionBehavior.insert(.canJoinAllSpaces)
+            buttonWindow.collectionBehavior.insert(.ignoresCycle)
+            buttonWindow.collectionBehavior.insert(.stationary)
+
+            mainWindow.addChildWindow(buttonWindow, ordered: .above)
+
+            windows.append(buttonWindow)
         }
 
         updateWindowsVisibility()
