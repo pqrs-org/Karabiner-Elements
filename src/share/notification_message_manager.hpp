@@ -42,12 +42,6 @@ public:
   }
 
   void async_update_sticky_modifiers_message(const modifier_flag_manager& modifier_flag_manager) {
-    //
-    // Build message synchronously.
-    //
-
-    std::stringstream ss;
-
     for (const auto& f : {
              modifier_flag::left_control,
              modifier_flag::left_shift,
@@ -59,22 +53,22 @@ public:
              modifier_flag::right_command,
              modifier_flag::fn,
          }) {
-      if (modifier_flag_manager.is_sticky_active(f)) {
-        if (auto name = get_modifier_flag_name(f)) {
-          ss << "sticky " << *name << "\n";
+      if (auto name = get_modifier_flag_name(f)) {
+        auto id = fmt::format("__system__sticky_{0}", *name);
+
+        if (modifier_flag_manager.is_sticky_active(f)) {
+          enqueue_to_dispatcher([this, id, name] {
+            messages_[id] = fmt::format("sticky {0}", *name);
+          });
+        } else {
+          enqueue_to_dispatcher([this, id] {
+            messages_[id] = "";
+          });
         }
       }
     }
 
-    auto message = ss.str();
-
-    //
-    // Update messages_.
-    //
-
-    enqueue_to_dispatcher([this, message] {
-      messages_["__system__sticky_modifiers"] = message;
-
+    enqueue_to_dispatcher([this] {
       save_message_if_needed();
     });
   }
@@ -89,7 +83,7 @@ public:
 
   void async_set_notification_message(const notification_message& notification_message) {
     enqueue_to_dispatcher([this, notification_message] {
-      messages_[std::string("__user__") + notification_message.get_id()] = notification_message.get_text();
+      messages_[fmt::format("__user__{0}", notification_message.get_id())] = notification_message.get_text();
 
       save_message_if_needed();
     });
