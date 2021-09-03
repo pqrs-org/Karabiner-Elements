@@ -2,6 +2,9 @@
 
 ## Karabiner-Elements 13.6.0
 
+-   [📦 Download](https://github.com/pqrs-org/Karabiner-Elements/releases/download/v13.6.0/Karabiner-Elements-13.6.0.dmg)
+-   📅 Release date
+    -   Sep 3, 2021
 -   ✨ New Features
     -   Add new features for writing your own settings:
         -   Added [`software_function.cg_event_double_click`](https://karabiner-elements.pqrs.org/docs/json/complex-modifications-manipulator-definition/to/software_function/cg_event_double_click/).
