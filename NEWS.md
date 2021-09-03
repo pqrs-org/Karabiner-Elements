@@ -1,6 +1,6 @@
 # Changelog
 
-## Beta
+## Karabiner-Elements 13.6.0
 
 -   ✨ New Features
     -   Add new features for writing your own settings:
