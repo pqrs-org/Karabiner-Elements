@@ -15,7 +15,12 @@
 #include <string>
 #include <sys/wait.h>
 #include <thread>
+#include <unistd.h>
 #include <vector>
+
+#ifdef __APPLE__
+extern char** environ;
+#endif
 
 namespace pqrs {
 namespace process {
@@ -76,7 +81,7 @@ public:
                     file_actions_->get_actions(),
                     nullptr,
                     &(argv_[0]),
-                    nullptr) != 0) {
+                    environ) != 0) {
       enqueue_to_dispatcher([this] {
         run_failed();
       });
