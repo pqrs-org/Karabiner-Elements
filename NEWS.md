@@ -1,6 +1,6 @@
 # Changelog
 
-## Beta
+## Karabiner-Elements 13.7.0
 
 -   🐛 Bug Fixes
     -   Fix an issue that `shell_command` does not set environment variables (HOME, USER, etc.).
