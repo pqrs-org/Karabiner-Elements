@@ -1,5 +1,10 @@
 # Changelog
 
+## Beta
+
+-   🐛 Bug Fixes
+    -   Fix an issue that `shell_command` does not set environment variables (HOME, USER, etc.).
+
 ## Karabiner-Elements 13.6.0
 
 -   [📦 Download](https://github.com/pqrs-org/Karabiner-Elements/releases/download/v13.6.0/Karabiner-Elements-13.6.0.dmg)
