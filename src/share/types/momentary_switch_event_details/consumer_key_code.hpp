@@ -11,6 +11,7 @@ constexpr std::pair<const mapbox::eternal::string, const pqrs::hid::usage::value
     {"dictation", pqrs::hid::usage::consumer::voice_command},
 
     {"power", pqrs::hid::usage::consumer::power},
+    {"menu", pqrs::hid::usage::consumer::menu}, // Touch ID key on Magic Keyboard
     {"display_brightness_increment", pqrs::hid::usage::consumer::display_brightness_increment},
     {"display_brightness_decrement", pqrs::hid::usage::consumer::display_brightness_decrement},
     {"fast_forward", pqrs::hid::usage::consumer::fast_forward},
