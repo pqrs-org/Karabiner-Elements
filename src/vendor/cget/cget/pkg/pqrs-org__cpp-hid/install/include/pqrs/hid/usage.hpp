@@ -300,6 +300,7 @@ constexpr value_t button_32(0x20);
 namespace consumer {
 constexpr value_t consumer_control(0x0001);
 constexpr value_t power(0x0030);
+constexpr value_t menu(0x0040);
 constexpr value_t display_brightness_increment(0x006f); // from macOS IOHIDUsageTables.h
 constexpr value_t display_brightness_decrement(0x0070); // from macOS IOHIDUsageTables.h
 constexpr value_t fast_forward(0x00b3);
