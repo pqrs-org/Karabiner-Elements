@@ -1,5 +1,11 @@
 # Changelog
 
+## Beta
+
+-   ✨ New Features
+    -   Add new features for writing your own settings:
+        -   Added [`software_function.iokit_power_management_sleep_system`](https://karabiner-elements.pqrs.org/docs/json/complex-modifications-manipulator-definition/to/software_function/iokit_power_management_sleep_system/).
+
 ## Karabiner-Elements 13.7.0
 
 -   [📦 Download](https://github.com/pqrs-org/Karabiner-Elements/releases/download/v13.7.0/Karabiner-Elements-13.7.0.dmg)
