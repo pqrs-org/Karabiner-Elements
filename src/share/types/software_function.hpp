@@ -1,6 +1,7 @@
 #pragma once
 
 #include "software_function_details/cg_event_double_click.hpp"
+#include "software_function_details/iokit_power_management_sleep_system.hpp"
 #include "software_function_details/set_mouse_cursor_position.hpp"
 #include <pqrs/hash.hpp>
 #include <pqrs/json.hpp>
@@ -9,6 +10,7 @@ namespace krbn {
 class software_function final {
 public:
   using value_t = std::variant<software_function_details::cg_event_double_click,
+                               software_function_details::iokit_power_management_sleep_system,
                                software_function_details::set_mouse_cursor_position,
                                std::monostate>;
 
@@ -39,6 +41,8 @@ inline void to_json(nlohmann::json& json, const software_function& value) {
     json = nullptr;
   } else if (auto v = value.get_if<software_function_details::cg_event_double_click>()) {
     json = nlohmann::json::object({{"cg_event_double_click", *v}});
+  } else if (auto v = value.get_if<software_function_details::iokit_power_management_sleep_system>()) {
+    json = nlohmann::json::object({{"iokit_power_management_sleep_system", *v}});
   } else if (auto v = value.get_if<software_function_details::set_mouse_cursor_position>()) {
     json = nlohmann::json::object({{"set_mouse_cursor_position", *v}});
   }
@@ -54,6 +58,13 @@ inline void from_json(const nlohmann::json& json, software_function& value) {
       } catch (const pqrs::json::unmarshal_error& e) {
         throw pqrs::json::unmarshal_error(fmt::format("`{0}` error: {1}", k, e.what()));
       }
+    } else if (k == "iokit_power_management_sleep_system") {
+      try {
+        value.set_value(v.get<software_function_details::iokit_power_management_sleep_system>());
+      } catch (const pqrs::json::unmarshal_error& e) {
+        throw pqrs::json::unmarshal_error(fmt::format("`{0}` error: {1}", k, e.what()));
+      }
+
     } else if (k == "set_mouse_cursor_position") {
       try {
         value.set_value(v.get<software_function_details::set_mouse_cursor_position>());

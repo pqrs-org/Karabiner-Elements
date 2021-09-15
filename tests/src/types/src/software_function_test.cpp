@@ -19,6 +19,21 @@ TEST_CASE("software_function") {
   }
 
   //
+  // iokit_power_management_sleep_system
+  //
+
+  {
+    auto json = nlohmann::json::object({
+        {"delay_milliseconds", 100},
+    });
+
+    auto value = json.get<krbn::software_function_details::iokit_power_management_sleep_system>();
+    REQUIRE(value.get_delay_milliseconds() == std::chrono::milliseconds(100));
+
+    REQUIRE(nlohmann::json(value) == json);
+  }
+
+  //
   // set_mouse_cursor_position
   //
 

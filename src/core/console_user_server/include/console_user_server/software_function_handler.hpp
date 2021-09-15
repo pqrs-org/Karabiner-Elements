@@ -1,8 +1,11 @@
 #pragma once
 
+#include "logger.hpp"
+#include <IOKit/pwr_mgt/IOPMLib.h>
 #include <pqrs/osx/accessibility.hpp>
 #include <pqrs/osx/cg_display.hpp>
 #include <pqrs/osx/cg_event.hpp>
+#include <pqrs/osx/iokit_return.hpp>
 #include <pqrs/osx/system_preferences.hpp>
 
 namespace krbn {
@@ -21,6 +24,8 @@ public:
   void execute_software_function(const software_function& software_function) {
     if (auto v = software_function.get_if<software_function_details::cg_event_double_click>()) {
       execute_cg_event_double_click(*v);
+    } else if (auto v = software_function.get_if<software_function_details::iokit_power_management_sleep_system>()) {
+      execute_iokit_power_management_sleep_system(*v);
     } else if (auto v = software_function.get_if<software_function_details::set_mouse_cursor_position>()) {
       execute_set_mouse_cursor_position(*v);
     }
@@ -36,6 +41,24 @@ private:
     pqrs::osx::cg_event::mouse::post_double_click(
         pqrs::osx::cg_event::mouse::cursor_position(),
         CGMouseButton(cg_event_double_click.get_button()));
+  }
+
+  void execute_iokit_power_management_sleep_system(const software_function_details::iokit_power_management_sleep_system& iokit_power_management_sleep_system) {
+    auto duration = pqrs::osx::chrono::make_absolute_time_duration(iokit_power_management_sleep_system.get_delay_milliseconds());
+
+    enqueue_to_dispatcher(
+        [] {
+          auto fb = IOPMFindPowerManagement(MACH_PORT_NULL);
+          if (fb != IO_OBJECT_NULL) {
+            pqrs::osx::iokit_return r = IOPMSleepSystem(fb);
+            if (!r) {
+              logger::get_logger()->error("IOPMSleepSystem error: {0}", r.to_string());
+            }
+
+            IOServiceClose(fb);
+          }
+        },
+        when_now() + pqrs::osx::chrono::make_milliseconds(duration));
   }
 
   void execute_set_mouse_cursor_position(const software_function_details::set_mouse_cursor_position& set_mouse_cursor_position) {
