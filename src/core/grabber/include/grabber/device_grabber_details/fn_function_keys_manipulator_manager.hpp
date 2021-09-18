@@ -174,6 +174,43 @@ public:
         }
       }
     }
+
+    // Touch ID
+    {
+      try {
+        auto from_json = nlohmann::json::object({
+            {"consumer_key_code", "menu"},
+            {
+                "modifiers",
+                nlohmann::json::object({
+                    {"optional", nlohmann::json::array({"any"})},
+                }),
+            },
+        });
+
+        auto to_json = nlohmann::json::object({{
+            "software_function",
+            nlohmann::json::object({
+                {"iokit_power_management_sleep_system", nlohmann::json::object()},
+            }),
+        }});
+
+        std::vector<manipulator::to_event_definition> to_event_definitions;
+        to_event_definitions.emplace_back(to_json);
+
+        auto manipulator = std::make_shared<manipulator::manipulators::basic::basic>(manipulator::manipulators::basic::from_event_definition(from_json),
+                                                                                     to_event_definitions);
+
+        manipulator->push_back_condition(krbn::manipulator::manipulator_factory::make_frontmost_application_unless_condition({
+            "^com\\.apple\\.loginwindow$",
+        }));
+
+        manipulator_manager_->push_back_manipulator(std::shared_ptr<manipulator::manipulators::base>(manipulator));
+
+      } catch (const std::exception& e) {
+        logger::get_logger()->error(e.what());
+      }
+    }
   }
 
 private:
