@@ -106,6 +106,13 @@ inline std::shared_ptr<conditions::base> make_event_changed_if_condition(bool va
   json["value"] = value;
   return std::make_shared<conditions::event_changed>(json);
 }
+
+inline std::shared_ptr<conditions::base> make_frontmost_application_unless_condition(const std::vector<std::string>& bundle_identifiers) {
+  nlohmann::json json;
+  json["type"] = "frontmost_application_unless";
+  json["bundle_identifiers"] = bundle_identifiers;
+  return std::make_shared<conditions::frontmost_application>(json);
+}
 } // namespace manipulator_factory
 } // namespace manipulator
 } // namespace krbn
