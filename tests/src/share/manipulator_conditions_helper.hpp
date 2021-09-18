@@ -14,8 +14,12 @@ public:
   manipulator_conditions_helper(void) : last_device_id_(0) {
   }
 
-  const krbn::manipulator::manipulator_environment& get_manipulator_environment(void) {
+  const krbn::manipulator::manipulator_environment& get_manipulator_environment(void) const {
     return manipulator_environment_;
+  }
+
+  krbn::manipulator::manipulator_environment& get_manipulator_environment(void) {
+    return const_cast<krbn::manipulator::manipulator_environment&>(static_cast<const manipulator_conditions_helper&>(*this).get_manipulator_environment());
   }
 
   krbn::device_id prepare_device(std::optional<pqrs::hid::vendor_id::value_t> vendor_id,

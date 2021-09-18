@@ -123,6 +123,33 @@ TEST_CASE("manipulator_factory::make_device_if_condition") {
   }
 }
 
+TEST_CASE("manipulator_factory::make_frontmost_application_unless_condition") {
+  krbn::unit_testing::manipulator_conditions_helper manipulator_conditions_helper;
+
+  auto c = krbn::manipulator::manipulator_factory::make_frontmost_application_unless_condition({
+      "^com\\.apple\\.loginwindow$",
+  });
+
+  {
+    pqrs::osx::frontmost_application_monitor::application application;
+    application.set_bundle_identifier("com.apple.Terminal");
+    application.set_file_path("/Applications/Utilities/Terminal.app/Contents/MacOS/Terminal");
+    manipulator_conditions_helper.get_manipulator_environment().set_frontmost_application(application);
+
+    auto e = manipulator_conditions_helper.make_event_queue_entry(krbn::device_id(0));
+    REQUIRE(c->is_fulfilled(e, manipulator_conditions_helper.get_manipulator_environment()) == true);
+  }
+  {
+    pqrs::osx::frontmost_application_monitor::application application;
+    application.set_bundle_identifier("com.apple.loginwindow");
+    application.set_file_path("/System/Library/CoreServices/loginwindow.app/Contents/MacOS/loginwindow");
+    manipulator_conditions_helper.get_manipulator_environment().set_frontmost_application(application);
+
+    auto e = manipulator_conditions_helper.make_event_queue_entry(krbn::device_id(0));
+    REQUIRE(c->is_fulfilled(e, manipulator_conditions_helper.get_manipulator_environment()) == false);
+  }
+}
+
 TEST_CASE("errors") {
   {
     nlohmann::json json;
