@@ -930,6 +930,15 @@
         ]
     },
     {
+        "not_to": true,
+        "label": "Touch ID on Magic Keyboard",
+        "data": [
+            {
+                "consumer_key_code": "menu"
+            }
+        ]
+    },
+    {
         "label": "eject",
         "data": [
             {
@@ -2387,6 +2396,17 @@
                         "y": "50%",
                         "screen": 1
                     }
+                }
+            }
+        ]
+    },
+    {
+        "not_from": true,
+        "label": "Sleep (IOKit Power Management Sleep System)",
+        "data": [
+            {
+                "software_function": {
+                    "iokit_power_management_sleep_system": {}
                 }
             }
         ]
