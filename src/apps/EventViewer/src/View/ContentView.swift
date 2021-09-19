@@ -13,35 +13,35 @@ struct ContentView: View {
                         NavigationLink(destination: MainView(),
                                        tag: "Main",
                                        selection: $selection) {
-                            Text("Main")
+                            Label("Main", systemImage: "magnifyingglass")
                         }
                         .padding(10)
 
                         NavigationLink(destination: FrontmostApplicationView(),
                                        tag: "FrontmostApplication",
                                        selection: $selection) {
-                            Text("FrontmostApplication")
+                            Label("FrontmostApplication", systemImage: "checkmark.circle")
                         }
                         .padding(10)
 
                         NavigationLink(destination: VariablesView(),
                                        tag: "Variables",
                                        selection: $selection) {
-                            Text("Variables")
+                            Label("Variables", systemImage: "cube")
                         }
                         .padding(10)
 
                         NavigationLink(destination: DevicesView(),
                                        tag: "Devices",
                                        selection: $selection) {
-                            Text("Devices")
+                            Label("Devices", systemImage: "keyboard")
                         }
                         .padding(10)
 
                         NavigationLink(destination: PreferencesView(),
                                        tag: "Preferences",
                                        selection: $selection) {
-                            Text("Preferences")
+                            Label("Preferences", systemImage: "gearshape")
                         }
                         .padding(10)
                     }
