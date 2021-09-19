@@ -13,3 +13,6 @@ run:
 	# Do not execute Karabiner-EventViewer.app/Contents/MacOS/Karabiner-EventViewer directly.
 	# We have to run as app in order to apply the user approval for Input Monitoring.
 	open build/Release/Karabiner-EventViewer.app
+
+xcode:
+	open Karabiner-EventViewer.xcodeproj
