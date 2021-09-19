@@ -15,8 +15,8 @@ You can download previous versions of Karabiner-Elements from [here](https://kar
 
 ## Supported systems
 
--   macOS Catalina (10.15.6 or later)
--   macOS Big Sur (11.0)
+-   macOS 11 Big Sur
+-   macOS 12 Monterey
 
 ## Usage
 
@@ -34,8 +34,10 @@ If you would like to contribute financially to the development of Karabiner Elem
 
 System requirements to build Karabiner-Elements:
 
--   macOS 10.15+
--   Xcode 12+
+-   macOS 11+
+-   Xcode 13+
+    -   Xcode for macOS Monterey is required.
+    -   Xcode 13 RC and Xcode 13.0 are not satisfy this requirements. As of Sep 2021, use Xcode 13 beta 5 at Sep 2021.
 -   Command Line Tools for Xcode (`xcode-select --install`)
 -   xz (`brew install xz`)
 -   [XcodeGen](https://github.com/yonaskolb/XcodeGen) (`brew install xcodegen`)

@@ -25,7 +25,7 @@ targets:
         SWIFT_OBJC_BRIDGING_HEADER: src/Bridging-Header.h
     type: application
     platform: macOS
-    deploymentTarget: 10.15
+    deploymentTarget: 11.0
     sources:
       - path: src
         compilerFlags:

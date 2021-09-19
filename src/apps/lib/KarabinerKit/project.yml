@@ -16,7 +16,7 @@ targets:
         - -lkrbn
     type: library.static
     platform: macOS
-    deploymentTarget: 10.15
+    deploymentTarget: 11.0
     sources:
       - path: src
         compilerFlags:
