@@ -51,7 +51,7 @@ struct ContentView: View {
                     Spacer()
                 }
             }
-        }.frame(minWidth: 900, minHeight: 550)
+        }.frame(minWidth: 900, minHeight: 650)
     }
 }
 
