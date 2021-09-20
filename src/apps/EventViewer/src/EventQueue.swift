@@ -23,9 +23,11 @@ private func callback(_ deviceId: UInt64,
         //
 
         if UserSettings.shared.showHex {
-            entry.code = String(format: "0x%02x,0x%02x", usagePage, usage)
+            entry.usagePage = String(format: "0x%02x", usagePage)
+            entry.usage = String(format: "0x%02x", usage)
         } else {
-            entry.code = String(format: "%d,%d", usagePage, usage)
+            entry.usagePage = String(format: "%d", usagePage)
+            entry.usage = String(format: "%d", usage)
         }
 
         //
@@ -97,38 +99,54 @@ private func callback(_ deviceId: UInt64,
 
         if simpleModificationJsonString != "" {
             libkrbn_get_momentary_switch_event_usage_name(&buffer, buffer.count, usagePage, usage)
-            let usageName = String(cString: buffer)
 
             obj.simpleModificationJsonString = simpleModificationJsonString
-            obj.updateAddSimpleModificationButton("Add \(usageName) to Karabiner-Elements")
+            // let usageName = String(cString: buffer)
+            // obj.updateAddSimpleModificationButton("Add \(usageName) to Karabiner-Elements")
         }
     }
 }
 
 @objcMembers
-public class EventQueueEntry: NSObject {
-    var eventType: String = ""
-    var code: String = ""
-    var name: String = ""
-    var misc: String = ""
+public class EventQueueEntry: NSObject, Identifiable {
+    public var id = UUID()
+    public var eventType: String = ""
+    public var usagePage: String = ""
+    public var usage: String = ""
+    public var name: String = ""
+    public var misc: String = ""
 }
 
-public class EventQueue: NSObject, NSTableViewDataSource {
-    var queue: [EventQueueEntry] = []
+public class EventQueue: ObservableObject {
+    public static let shared = EventQueue()
+
     let maxQueueCount = 256
     var modifierFlags: [UInt64: Set<String>] = [:]
-    var simpleModificationJsonString: String = ""
 
-    @IBOutlet var view: NSTableView!
-    @IBOutlet var addSimpleModificationButton: NSButton!
+    @Published var queue: [EventQueueEntry] = []
+    @Published var simpleModificationJsonString: String = ""
+
+    init() {
+        let e1 = EventQueueEntry()
+        e1.eventType = "down"
+        e1.usagePage = "0x01"
+        e1.usage = "0x01"
+        e1.name = "name1"
+        queue.append(e1)
+
+        let e2 = EventQueueEntry()
+        e2.eventType = "up"
+        e2.usagePage = "0x01"
+        e2.usage = "0x01"
+        e2.name = "name2"
+        queue.append(e2)
+    }
 
     deinit {
         libkrbn_disable_hid_value_monitor()
     }
 
     public func setup() {
-        updateAddSimpleModificationButton(nil)
-
         let obj = unsafeBitCast(self, to: UnsafeMutableRawPointer.self)
         libkrbn_enable_hid_value_monitor(callback, obj)
     }
@@ -142,35 +160,18 @@ public class EventQueue: NSObject, NSTableViewDataSource {
         if queue.count > maxQueueCount {
             queue.removeFirst()
         }
-        refresh()
     }
 
-    func refresh() {
-        view.reloadData()
-        view.scrollRowToVisible(queue.count - 1)
-    }
-
-    public func updateAddSimpleModificationButton(_ title: String?) {
-        if title != nil {
-            addSimpleModificationButton.title = title!
-            addSimpleModificationButton.isHidden = false
-        } else {
-            addSimpleModificationButton.isHidden = true
-        }
-    }
-
-    @IBAction func clear(_: NSButton) {
+    public func clear() {
         queue.removeAll()
-        updateAddSimpleModificationButton(nil)
-        refresh()
     }
 
-    @IBAction func copy(_: NSButton) {
+    public func copy() {
         var string = ""
 
         queue.forEach { entry in
             let eventType = "type:\(entry.eventType)".padding(toLength: 20, withPad: " ", startingAt: 0)
-            let code = "HID usage:\(entry.code)".padding(toLength: 20, withPad: " ", startingAt: 0)
+            let code = "HID usage: usage page:\(entry.usagePage), usage:\(entry.usage)".padding(toLength: 20, withPad: " ", startingAt: 0)
             let name = "name:\(entry.name)".padding(toLength: 60, withPad: " ", startingAt: 0)
             let misc = "misc:\(entry.misc)"
 
@@ -184,7 +185,7 @@ public class EventQueue: NSObject, NSTableViewDataSource {
         }
     }
 
-    @IBAction func addSimpleModification(_: NSButton) {
+    public func addSimpleModification() {
         guard let string = simpleModificationJsonString.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed) else { return }
         guard let url = URL(string: "karabiner://karabiner/simple_modifications/new?json=\(string)") else { return }
         NSWorkspace.shared.open(url)
@@ -222,60 +223,6 @@ public class EventQueue: NSObject, NSTableViewDataSource {
         }
 
         return names.joined(separator: ",")
-    }
-
-    func pushMouseEvent(event: NSEvent, eventType: String) {
-        let entry = EventQueueEntry()
-        entry.eventType = eventType
-        entry.code = String(event.buttonNumber)
-        entry.name = "button\(event.buttonNumber + 1)"
-
-        entry.misc = String(format: "{x:%d,y:%d} click_count:%d",
-                            Int(event.locationInWindow.x),
-                            Int(event.locationInWindow.y),
-                            Int(event.clickCount))
-        let flags = modifierFlagsString(event.modifierFlags)
-        if !flags.isEmpty {
-            entry.misc.append(" flags:\(flags)")
-        }
-
-        append(entry)
-    }
-
-    func pushScrollWheelEvent(event: NSEvent, eventType: String) {
-        let entry = EventQueueEntry()
-        entry.eventType = eventType
-        entry.misc = String(format: "dx:%.03f dy:%.03f dz:%.03f",
-                            event.deltaX,
-                            event.deltaY,
-                            event.deltaZ)
-
-        append(entry)
-    }
-
-    func pushMouseEvent(_ event: NSEvent) {
-        switch event.type {
-        case .leftMouseDown,
-             .rightMouseDown,
-             .otherMouseDown,
-             .leftMouseUp,
-             .rightMouseUp,
-             .otherMouseUp:
-            // Do nothing
-            break
-
-        case .leftMouseDragged,
-             .rightMouseDragged,
-             .otherMouseDragged:
-            pushMouseEvent(event: event, eventType: "mouse_dragged")
-
-        case .scrollWheel:
-            pushScrollWheelEvent(event: event, eventType: "scroll_wheel")
-
-        default:
-            // Do nothing
-            break
-        }
     }
 
     //
