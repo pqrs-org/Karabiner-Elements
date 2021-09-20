@@ -127,19 +127,7 @@ public class EventQueue: ObservableObject {
     @Published var simpleModificationJsonString: String = ""
 
     init() {
-        let e1 = EventQueueEntry()
-        e1.eventType = "down"
-        e1.usagePage = "0x01"
-        e1.usage = "0x01"
-        e1.name = "name1"
-        queue.append(e1)
-
-        let e2 = EventQueueEntry()
-        e2.eventType = "up"
-        e2.usagePage = "0x01"
-        e2.usage = "0x01"
-        e2.name = "name2"
-        queue.append(e2)
+        clear()
     }
 
     deinit {
@@ -164,6 +152,11 @@ public class EventQueue: ObservableObject {
 
     public func clear() {
         queue.removeAll()
+
+        // Fill queue with empty entries to avoid SwiftUI List rendering corruption at MainView.swift.
+        while queue.count < maxQueueCount {
+            queue.append(EventQueueEntry())
+        }
     }
 
     public func copy() {
