@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.Cocoa.XIB" version="3.0" toolsVersion="17701" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none" useAutolayout="YES">
+<document type="com.apple.InterfaceBuilder3.Cocoa.XIB" version="3.0" toolsVersion="19158" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none" useAutolayout="YES">
     <dependencies>
         <deployment identifier="macosx"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="17701"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="19158"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
     <objects>
@@ -253,7 +253,7 @@
             <windowStyleMask key="styleMask" titled="YES" closable="YES" miniaturizable="YES" resizable="YES"/>
             <windowPositionMask key="initialPositionMask" leftStrut="YES" rightStrut="YES" topStrut="YES" bottomStrut="YES"/>
             <rect key="contentRect" x="335" y="122" width="874" height="550"/>
-            <rect key="screenRect" x="0.0" y="0.0" width="2048" height="1255"/>
+            <rect key="screenRect" x="0.0" y="0.0" width="3008" height="1667"/>
             <value key="minSize" type="size" width="874" height="550"/>
             <view key="contentView" wantsLayer="YES" id="372">
                 <rect key="frame" x="0.0" y="0.0" width="874" height="550"/>
@@ -268,39 +268,33 @@
                                     <rect key="frame" x="10" y="33" width="834" height="493"/>
                                     <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                     <subviews>
-                                        <box borderType="line" title="Keyboard &amp; pointing events" translatesAutoresizingMaskIntoConstraints="NO" id="614">
+                                        <box ambiguous="YES" borderType="line" title="Keyboard &amp; pointing events" translatesAutoresizingMaskIntoConstraints="NO" id="614">
                                             <rect key="frame" x="14" y="198" width="806" height="285"/>
-                                            <view key="contentView" id="pJS-41-sBt">
+                                            <view key="contentView" ambiguous="YES" id="pJS-41-sBt">
                                                 <rect key="frame" x="3" y="3" width="800" height="267"/>
                                                 <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                                 <subviews>
-                                                    <button verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="541">
+                                                    <button verticalHuggingPriority="750" ambiguous="YES" translatesAutoresizingMaskIntoConstraints="NO" id="541">
                                                         <rect key="frame" x="10" y="230" width="152" height="32"/>
                                                         <buttonCell key="cell" type="push" title="copy to pasteboard" bezelStyle="rounded" alignment="center" refusesFirstResponder="YES" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="542">
                                                             <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
                                                             <font key="font" metaFont="system"/>
                                                         </buttonCell>
-                                                        <connections>
-                                                            <action selector="copy:" target="571" id="590"/>
-                                                        </connections>
                                                     </button>
-                                                    <button verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="539">
+                                                    <button verticalHuggingPriority="750" ambiguous="YES" translatesAutoresizingMaskIntoConstraints="NO" id="539">
                                                         <rect key="frame" x="158" y="230" width="125" height="32"/>
                                                         <buttonCell key="cell" type="push" title="clear the result" bezelStyle="rounded" alignment="center" refusesFirstResponder="YES" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="540">
                                                             <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
                                                             <font key="font" metaFont="system"/>
                                                         </buttonCell>
-                                                        <connections>
-                                                            <action selector="clear:" target="571" id="580"/>
-                                                        </connections>
                                                     </button>
-                                                    <scrollView horizontalLineScroll="16" horizontalPageScroll="10" verticalLineScroll="16" verticalPageScroll="10" hasHorizontalScroller="NO" usesPredominantAxisScrolling="NO" translatesAutoresizingMaskIntoConstraints="NO" id="561">
+                                                    <scrollView ambiguous="YES" horizontalLineScroll="16" horizontalPageScroll="10" verticalLineScroll="16" verticalPageScroll="10" hasHorizontalScroller="NO" usesPredominantAxisScrolling="NO" translatesAutoresizingMaskIntoConstraints="NO" id="561">
                                                         <rect key="frame" x="17" y="10" width="766" height="217"/>
-                                                        <clipView key="contentView" drawsBackground="NO" id="OS0-60-iDz">
+                                                        <clipView key="contentView" ambiguous="YES" drawsBackground="NO" id="OS0-60-iDz">
                                                             <rect key="frame" x="1" y="1" width="749" height="215"/>
                                                             <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                                             <subviews>
-                                                                <tableView focusRingType="none" verticalHuggingPriority="750" allowsExpansionToolTips="YES" columnAutoresizingStyle="lastColumnOnly" alternatingRowBackgroundColors="YES" columnReordering="NO" columnResizing="NO" multipleSelection="NO" autosaveColumns="NO" typeSelect="NO" enabled="NO" rowHeight="14" headerView="565" id="564">
+                                                                <tableView focusRingType="none" verticalHuggingPriority="750" ambiguous="YES" allowsExpansionToolTips="YES" columnAutoresizingStyle="lastColumnOnly" alternatingRowBackgroundColors="YES" columnReordering="NO" columnResizing="NO" multipleSelection="NO" autosaveColumns="NO" typeSelect="NO" enabled="NO" rowHeight="14" headerView="565" id="564">
                                                                     <rect key="frame" x="0.0" y="0.0" width="749" height="192"/>
                                                                     <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                                                     <size key="intercellSpacing" width="3" height="2"/>
@@ -354,9 +348,6 @@
                                                                             <tableColumnResizingMask key="resizingMask" resizeWithTable="YES"/>
                                                                         </tableColumn>
                                                                     </tableColumns>
-                                                                    <connections>
-                                                                        <outlet property="dataSource" destination="571" id="573"/>
-                                                                    </connections>
                                                                 </tableView>
                                                             </subviews>
                                                             <nil key="backgroundColor"/>
@@ -374,15 +365,12 @@
                                                             <autoresizingMask key="autoresizingMask"/>
                                                         </tableHeaderView>
                                                     </scrollView>
-                                                    <button verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="e5W-WO-Kah">
+                                                    <button verticalHuggingPriority="750" ambiguous="YES" translatesAutoresizingMaskIntoConstraints="NO" id="e5W-WO-Kah">
                                                         <rect key="frame" x="715" y="230" width="75" height="32"/>
                                                         <buttonCell key="cell" type="push" title="Button" bezelStyle="rounded" alignment="center" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="ShI-z6-Eh3">
                                                             <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
                                                             <font key="font" metaFont="system"/>
                                                         </buttonCell>
-                                                        <connections>
-                                                            <action selector="addSimpleModification:" target="571" id="ZGo-zy-0fr"/>
-                                                        </connections>
                                                     </button>
                                                 </subviews>
                                                 <constraints>
@@ -401,13 +389,13 @@
                                                 </constraints>
                                             </view>
                                         </box>
-                                        <box title="Input area" translatesAutoresizingMaskIntoConstraints="NO" id="HuX-nl-e5r">
+                                        <box ambiguous="YES" title="Input area" translatesAutoresizingMaskIntoConstraints="NO" id="HuX-nl-e5r">
                                             <rect key="frame" x="14" y="6" width="806" height="166"/>
-                                            <view key="contentView" id="dbf-S3-bPS">
+                                            <view key="contentView" ambiguous="YES" id="dbf-S3-bPS">
                                                 <rect key="frame" x="3" y="3" width="800" height="148"/>
                                                 <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                                 <subviews>
-                                                    <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="ITd-Nj-Y8H">
+                                                    <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" ambiguous="YES" translatesAutoresizingMaskIntoConstraints="NO" id="ITd-Nj-Y8H">
                                                         <rect key="frame" x="8" y="122" width="125" height="16"/>
                                                         <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" title="Text input test field:" id="Rse-px-eu0">
                                                             <font key="font" metaFont="menu"/>
@@ -415,13 +403,13 @@
                                                             <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
                                                         </textFieldCell>
                                                     </textField>
-                                                    <scrollView horizontalLineScroll="10" horizontalPageScroll="10" verticalLineScroll="10" verticalPageScroll="10" hasHorizontalScroller="NO" usesPredominantAxisScrolling="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Ko0-IW-1A7">
+                                                    <scrollView ambiguous="YES" horizontalLineScroll="10" horizontalPageScroll="10" verticalLineScroll="10" verticalPageScroll="10" hasHorizontalScroller="NO" usesPredominantAxisScrolling="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Ko0-IW-1A7">
                                                         <rect key="frame" x="10" y="10" width="642" height="112"/>
-                                                        <clipView key="contentView" drawsBackground="NO" id="Hx6-3h-z4E">
+                                                        <clipView key="contentView" ambiguous="YES" drawsBackground="NO" id="Hx6-3h-z4E">
                                                             <rect key="frame" x="1" y="1" width="625" height="110"/>
                                                             <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                                             <subviews>
-                                                                <textView importsGraphics="NO" verticallyResizable="YES" baseWritingDirection="leftToRight" usesFontPanel="YES" findStyle="panel" allowsUndo="YES" usesRuler="YES" allowsNonContiguousLayout="YES" smartInsertDelete="YES" id="A4A-YB-ifF">
+                                                                <textView ambiguous="YES" importsGraphics="NO" verticallyResizable="YES" baseWritingDirection="leftToRight" usesFontPanel="YES" findStyle="panel" allowsUndo="YES" usesRuler="YES" allowsNonContiguousLayout="YES" smartInsertDelete="YES" id="A4A-YB-ifF">
                                                                     <rect key="frame" x="0.0" y="0.0" width="625" height="110"/>
                                                                     <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                                                     <color key="textColor" name="textColor" catalog="System" colorSpace="catalog"/>
@@ -456,26 +444,12 @@
                                                             <autoresizingMask key="autoresizingMask"/>
                                                         </scroller>
                                                     </scrollView>
-                                                    <customView translatesAutoresizingMaskIntoConstraints="NO" id="925" customClass="KeyResponder" customModule="Karabiner_EventViewer">
-                                                        <rect key="frame" x="662" y="10" width="128" height="128"/>
-                                                        <constraints>
-                                                            <constraint firstAttribute="height" constant="128" id="ZpY-NJ-utg"/>
-                                                            <constraint firstAttribute="width" constant="128" id="emK-zy-Ulc"/>
-                                                        </constraints>
-                                                        <connections>
-                                                            <outlet property="eventQueue" destination="571" id="Poj-Mm-4Ev"/>
-                                                        </connections>
-                                                    </customView>
                                                 </subviews>
                                                 <constraints>
-                                                    <constraint firstItem="925" firstAttribute="leading" secondItem="Ko0-IW-1A7" secondAttribute="trailing" constant="10" id="71T-bv-pXe"/>
                                                     <constraint firstAttribute="trailing" relation="greaterThanOrEqual" secondItem="ITd-Nj-Y8H" secondAttribute="trailing" id="HlT-vb-3y0"/>
-                                                    <constraint firstAttribute="bottom" secondItem="925" secondAttribute="bottom" constant="10" id="LUK-OT-Q0o"/>
-                                                    <constraint firstAttribute="trailing" secondItem="925" secondAttribute="trailing" constant="10" id="Ltn-dn-Ffo"/>
                                                     <constraint firstItem="ITd-Nj-Y8H" firstAttribute="top" secondItem="dbf-S3-bPS" secondAttribute="top" constant="10" id="MPH-go-yMk"/>
                                                     <constraint firstItem="Ko0-IW-1A7" firstAttribute="leading" secondItem="ITd-Nj-Y8H" secondAttribute="leading" id="ThY-bL-SzB"/>
                                                     <constraint firstItem="Ko0-IW-1A7" firstAttribute="top" secondItem="ITd-Nj-Y8H" secondAttribute="bottom" id="UzD-XM-dIw"/>
-                                                    <constraint firstItem="925" firstAttribute="top" secondItem="dbf-S3-bPS" secondAttribute="top" constant="10" id="a0L-66-a7q"/>
                                                     <constraint firstItem="ITd-Nj-Y8H" firstAttribute="leading" secondItem="dbf-S3-bPS" secondAttribute="leading" constant="10" id="q4e-1q-mew"/>
                                                     <constraint firstAttribute="bottom" secondItem="Ko0-IW-1A7" secondAttribute="bottom" constant="10" id="r2d-fX-jse"/>
                                                 </constraints>
@@ -748,7 +722,6 @@
         <customObject id="494" userLabel="App Delegate" customClass="AppDelegate" customModule="Karabiner_EventViewer">
             <connections>
                 <outlet property="devicesController" destination="ggU-FE-hiD" id="UKi-IL-yhy"/>
-                <outlet property="eventQueue" destination="571" id="hYY-uI-Yex"/>
                 <outlet property="frontmostApplicationController" destination="5Ro-l9-Pmw" id="kJT-Hv-RJh"/>
                 <outlet property="variablesController" destination="Hua-x6-m2N" id="bcq-GU-wQo"/>
                 <outlet property="window" destination="371" id="532"/>
@@ -757,12 +730,6 @@
         <customObject id="ggU-FE-hiD" customClass="DevicesController" customModule="Karabiner_EventViewer">
             <connections>
                 <outlet property="textView" destination="pzX-J3-r2O" id="lLT-uo-5zn"/>
-            </connections>
-        </customObject>
-        <customObject id="571" customClass="EventQueue" customModule="Karabiner_EventViewer">
-            <connections>
-                <outlet property="addSimpleModificationButton" destination="e5W-WO-Kah" id="eWW-tb-Yab"/>
-                <outlet property="view" destination="564" id="qxL-30-rPh"/>
             </connections>
         </customObject>
         <customObject id="5Ro-l9-Pmw" customClass="FrontmostApplicationController" customModule="Karabiner_EventViewer">
