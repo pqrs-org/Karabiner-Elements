@@ -12,7 +12,7 @@ struct MainView: View {
                         Button(action: {
                             EventQueue.shared.copy()
                         }) {
-                            Label("Copy to pasteboard", systemImage: "paperclip.circle")
+                            Label("Copy to pasteboard", systemImage: "arrow.right.doc.on.clipboard")
                         }
 
                         Button(action: {
