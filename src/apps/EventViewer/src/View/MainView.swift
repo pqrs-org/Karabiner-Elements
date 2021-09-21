@@ -20,6 +20,16 @@ struct MainView: View {
                         }) {
                             Label("Clear", systemImage: "clear")
                         }
+
+                        Spacer()
+
+                        if eventQueue.simpleModificationJsonString.count > 0 {
+                            Button(action: {
+                                EventQueue.shared.addSimpleModification()
+                            }) {
+                                Label(eventQueue.addSimpleModificationButtonText, systemImage: "plus.circle")
+                            }
+                        }
                     }
 
                     ScrollViewReader { proxy in

@@ -98,11 +98,11 @@ private func callback(_ deviceId: UInt64,
         let simpleModificationJsonString = String(cString: buffer)
 
         if simpleModificationJsonString != "" {
-            libkrbn_get_momentary_switch_event_usage_name(&buffer, buffer.count, usagePage, usage)
-
             obj.simpleModificationJsonString = simpleModificationJsonString
-            // let usageName = String(cString: buffer)
-            // obj.updateAddSimpleModificationButton("Add \(usageName) to Karabiner-Elements")
+
+            libkrbn_get_momentary_switch_event_usage_name(&buffer, buffer.count, usagePage, usage)
+            let usageName = String(cString: buffer)
+            obj.addSimpleModificationButtonText = "Add \(usageName) to Karabiner-Elements"
         }
     }
 }
@@ -125,6 +125,7 @@ public class EventQueue: ObservableObject {
 
     @Published var queue: [EventQueueEntry] = []
     @Published var simpleModificationJsonString: String = ""
+    @Published var addSimpleModificationButtonText: String = ""
 
     init() {
         clear()
