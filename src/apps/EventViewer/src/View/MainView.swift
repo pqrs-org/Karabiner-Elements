@@ -2,10 +2,21 @@ import SwiftUI
 
 struct MainView: View {
     @ObservedObject var eventQueue = EventQueue.shared
-    @State private var textInput: String = "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat."
+    @State private var textInput: String = "Press the key you want to investigate."
 
     var body: some View {
         VStack(alignment: .leading, spacing: 12.0) {
+            GroupBox(label: Text("Text input test field")) {
+                VStack {
+                    TextEditor(
+                        text: $textInput
+                    )
+                    .frame(height: 60)
+                    .disableAutocorrection(true)
+                }
+                .padding(6.0)
+            }
+
             GroupBox(label: Text("Keyboard & pointing events")) {
                 VStack(alignment: .leading, spacing: 6.0) {
                     HStack(alignment: .center, spacing: 12.0) {
@@ -77,17 +88,6 @@ struct MainView: View {
                             }
                         }
                     }
-                }
-                .padding(6.0)
-            }
-
-            GroupBox(label: Text("Text input test field")) {
-                VStack {
-                    TextEditor(
-                        text: $textInput
-                    )
-                    .frame(height: 60)
-                    .disableAutocorrection(true)
                 }
                 .padding(6.0)
             }
