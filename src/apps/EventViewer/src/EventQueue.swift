@@ -163,12 +163,14 @@ public class EventQueue: ObservableObject {
         var string = ""
 
         queue.forEach { entry in
-            let eventType = "type:\(entry.eventType)".padding(toLength: 20, withPad: " ", startingAt: 0)
-            let code = "HID usage: usage page:\(entry.usagePage), usage:\(entry.usage)".padding(toLength: 20, withPad: " ", startingAt: 0)
-            let name = "name:\(entry.name)".padding(toLength: 60, withPad: " ", startingAt: 0)
-            let misc = "misc:\(entry.misc)"
+            if entry.eventType.count > 0 {
+                let eventType = "type:\(entry.eventType)".padding(toLength: 20, withPad: " ", startingAt: 0)
+                let code = "HID usage: \(entry.usagePage),\(entry.usage)".padding(toLength: 20, withPad: " ", startingAt: 0)
+                let name = "name:\(entry.name)".padding(toLength: 60, withPad: " ", startingAt: 0)
+                let misc = "misc:\(entry.misc)"
 
-            string.append("\(eventType) \(code) \(name) \(misc)\n")
+                string.append("\(eventType) \(code) \(name) \(misc)\n")
+            }
         }
 
         if !string.isEmpty {
