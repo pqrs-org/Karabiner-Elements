@@ -46,12 +46,12 @@ struct ContentView: View {
                         .padding(10)
                     }
                     .listStyle(SidebarListStyle())
-                    .frame(width: 200)
+                    .frame(width: 250)
 
                     Spacer()
                 }
             }
-        }.frame(minWidth: 900, minHeight: 650)
+        }.frame(minWidth: 1100, minHeight: 650)
     }
 }
 
