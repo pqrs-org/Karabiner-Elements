@@ -1,4 +1,4 @@
-import Cocoa
+import SwiftUI
 
 private func callback(_ deviceId: UInt64,
                       _ usagePage: Int32,
@@ -108,7 +108,7 @@ private func callback(_ deviceId: UInt64,
 }
 
 @objcMembers
-public class EventQueueEntry: NSObject, Identifiable {
+public class EventQueueEntry: Identifiable {
     public var id = UUID()
     public var eventType: String = ""
     public var usagePage: String = ""
@@ -219,21 +219,5 @@ public class EventQueue: ObservableObject {
         }
 
         return names.joined(separator: ",")
-    }
-
-    //
-    // NSTableViewDataSource
-    //
-
-    public func numberOfRows(in _: NSTableView) -> Int {
-        queue.count
-    }
-
-    public func tableView(_: NSTableView,
-                          objectValueFor tableColumn: NSTableColumn?,
-                          row: Int) -> Any?
-    {
-        guard let identifier = tableColumn?.identifier else { return nil }
-        return queue[row].value(forKey: identifier.rawValue)
     }
 }
