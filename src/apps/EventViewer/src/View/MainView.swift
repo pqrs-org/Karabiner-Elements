@@ -8,10 +8,18 @@ struct MainView: View {
         VStack(alignment: .leading, spacing: 12.0) {
             GroupBox(label: Text("Keyboard & pointing events")) {
                 VStack(alignment: .leading, spacing: 6.0) {
-                    Button(action: {
-                        EventQueue.shared.clear()
-                    }) {
-                        Label("Clear", systemImage: "clear")
+                    HStack(alignment: .center, spacing: 12.0) {
+                        Button(action: {
+                            EventQueue.shared.copy()
+                        }) {
+                            Label("Copy to pasteboard", systemImage: "paperclip.circle")
+                        }
+
+                        Button(action: {
+                            EventQueue.shared.clear()
+                        }) {
+                            Label("Clear", systemImage: "clear")
+                        }
                     }
 
                     ScrollViewReader { proxy in
@@ -49,7 +57,6 @@ struct MainView: View {
                                     }
                                     .frame(alignment: .leading)
                                 }
-                                .padding(.horizontal, 8)
 
                                 Divider()
                             }
