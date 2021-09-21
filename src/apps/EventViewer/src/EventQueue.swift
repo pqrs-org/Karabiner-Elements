@@ -133,15 +133,13 @@ public class EventQueue: ObservableObject {
 
     init() {
         clear()
+
+        let obj = unsafeBitCast(self, to: UnsafeMutableRawPointer.self)
+        libkrbn_enable_hid_value_monitor(callback, obj)
     }
 
     deinit {
         libkrbn_disable_hid_value_monitor()
-    }
-
-    public func setup() {
-        let obj = unsafeBitCast(self, to: UnsafeMutableRawPointer.self)
-        libkrbn_enable_hid_value_monitor(callback, obj)
     }
 
     public func observed() -> Bool {

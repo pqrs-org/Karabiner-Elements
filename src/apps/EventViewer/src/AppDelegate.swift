@@ -4,12 +4,12 @@ import SwiftUI
 @NSApplicationMain
 public class AppDelegate: NSObject, NSApplicationDelegate {
     @IBOutlet var window: NSWindow!
-    @IBOutlet var eventQueue: EventQueue!
-    @IBOutlet var frontmostApplicationController: FrontmostApplicationController!
     @IBOutlet var variablesController: VariablesController!
     @IBOutlet var devicesController: DevicesController!
 
     var inputMonitoringAlertWindow: NSWindow?
+
+    private var newWindow: NSWindow?
 
     public func applicationDidFinishLaunching(_: Notification) {
         ProcessInfo.processInfo.enableSuddenTermination()
@@ -17,15 +17,13 @@ public class AppDelegate: NSObject, NSApplicationDelegate {
         libkrbn_initialize()
 
         setWindowProperty(self)
-        eventQueue.setup()
-        frontmostApplicationController.setup()
         variablesController.setup()
         devicesController.setup()
 
         DispatchQueue.main.asyncAfter(deadline: .now() + 3.0) { [weak self] in
             guard let self = self else { return }
 
-            if !self.eventQueue.observed() {
+            if !EventQueue.shared.observed() {
                 self.inputMonitoringAlertWindow = NSPanel(
                     contentRect: .zero,
                     styleMask: [
@@ -45,6 +43,21 @@ public class AppDelegate: NSObject, NSApplicationDelegate {
                 self.inputMonitoringAlertWindow!.makeKeyAndOrderFront(nil)
             }
         }
+
+        newWindow = NSWindow(
+            contentRect: NSMakeRect(0, 0, 600, 500),
+            styleMask: [
+                .titled,
+                .closable,
+                .miniaturizable,
+                .fullSizeContentView,
+            ],
+            backing: .buffered,
+            defer: false
+        )
+        newWindow!.contentView = NSHostingView(rootView: ContentView())
+        newWindow!.center()
+        newWindow!.makeKeyAndOrderFront(self)
     }
 
     public func applicationWillTerminate(_: Notification) {
