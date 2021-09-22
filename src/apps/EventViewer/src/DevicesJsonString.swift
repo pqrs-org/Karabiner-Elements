@@ -4,19 +4,19 @@ private func callback(_ filePath: UnsafePointer<Int8>?, _ context: UnsafeMutable
     if filePath == nil { return }
 
     let path = String(cString: filePath!)
-    let obj: Devices! = unsafeBitCast(context, to: Devices.self)
+    let obj: DevicesJsonString! = unsafeBitCast(context, to: DevicesJsonString.self)
 
     guard let text = try? String(contentsOfFile: path, encoding: .utf8) else { return }
 
     DispatchQueue.main.async { [weak obj] in
         guard let obj = obj else { return }
-        
+
         obj.text = text
     }
 }
 
-public class Devices: ObservableObject {
-    public static let shared = Devices()
+public class DevicesJsonString: ObservableObject {
+    public static let shared = DevicesJsonString()
 
     @Published var text = ""
 

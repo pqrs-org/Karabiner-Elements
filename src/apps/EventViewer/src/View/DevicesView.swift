@@ -1,7 +1,7 @@
 import SwiftUI
 
 struct DevicesView: View {
-    @ObservedObject var devices = Devices.shared
+    @ObservedObject var devicesJsonString = DevicesJsonString.shared
 
     var body: some View {
         VStack(alignment: .leading, spacing: 12.0) {
@@ -10,7 +10,7 @@ struct DevicesView: View {
                     ScrollView {
                         HStack {
                             VStack(alignment: .leading) {
-                                Text(devices.text)
+                                Text(devicesJsonString.text)
                                     .lineLimit(nil)
                                     .font(.custom("Menlo", size: 11.0))
                             }
