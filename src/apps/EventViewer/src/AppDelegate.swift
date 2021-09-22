@@ -3,12 +3,8 @@ import SwiftUI
 
 @NSApplicationMain
 public class AppDelegate: NSObject, NSApplicationDelegate {
-    @IBOutlet var window: NSWindow!
-    @IBOutlet var variablesController: VariablesController!
-
+    var window: NSWindow!
     var inputMonitoringAlertWindow: NSWindow?
-
-    private var newWindow: NSWindow?
 
     public func applicationDidFinishLaunching(_: Notification) {
         ProcessInfo.processInfo.enableSuddenTermination()
@@ -16,7 +12,6 @@ public class AppDelegate: NSObject, NSApplicationDelegate {
         libkrbn_initialize()
 
         setWindowProperty(self)
-        variablesController.setup()
 
         DispatchQueue.main.asyncAfter(deadline: .now() + 3.0) { [weak self] in
             guard let self = self else { return }
@@ -42,8 +37,8 @@ public class AppDelegate: NSObject, NSApplicationDelegate {
             }
         }
 
-        newWindow = NSWindow(
-            contentRect: NSMakeRect(0, 0, 600, 500),
+        window = NSWindow(
+            contentRect: .zero,
             styleMask: [
                 .titled,
                 .closable,
@@ -53,9 +48,9 @@ public class AppDelegate: NSObject, NSApplicationDelegate {
             backing: .buffered,
             defer: false
         )
-        newWindow!.contentView = NSHostingView(rootView: ContentView())
-        newWindow!.center()
-        newWindow!.makeKeyAndOrderFront(self)
+        window!.contentView = NSHostingView(rootView: ContentView())
+        window!.center()
+        window!.makeKeyAndOrderFront(self)
     }
 
     public func applicationWillTerminate(_: Notification) {
