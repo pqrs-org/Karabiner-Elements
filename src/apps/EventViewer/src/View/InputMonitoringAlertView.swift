@@ -2,31 +2,22 @@ import SwiftUI
 
 struct InputMonitoringAlertView: View {
     var body: some View {
-        VStack(alignment: .center) {
-            HStack {
-                Image(decorative: "baseline_warning_black_48pt")
-                    .resizable()
-                    .frame(width: 48.0, height: 48.0)
-                Text("EventViewer Alert")
-            }
+        VStack(alignment: .center, spacing: 20.0) {
+            Label("EventViewer Alert", systemImage: "exclamationmark.triangle.fill").font(.system(size: 24))
 
             Text("EventViewer requires Input Monitoring permission.\nYou have to allow Karabiner-EventViewer on Security & Privacy System Preferences.")
                 .multilineTextAlignment(.center)
                 .fixedSize(horizontal: false, vertical: true)
 
             Button(action: { openSystemPreferencesSecurity() }) {
-                Image(decorative: "ic_forward_18pt")
-                Text("Open Security & Privacy System Preferences")
-                    .fixedSize(horizontal: false, vertical: true)
+                Label("Open Security & Privacy System Preferences...", systemImage: "arrow.forward.circle.fill")
             }
-            .padding(.top, 20)
 
             Image(decorative: "input_monitoring")
                 .resizable()
                 .aspectRatio(contentMode: .fit)
                 .frame(height: 200.0)
                 .border(Color.gray, width: /*@START_MENU_TOKEN@*/1/*@END_MENU_TOKEN@*/)
-                .padding(.top, 40)
         }
         .frame(width: 600)
         .padding()
