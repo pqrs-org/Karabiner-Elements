@@ -61,7 +61,7 @@ public class AppDelegate: NSObject, NSApplicationDelegate {
         true
     }
 
-    @IBAction func setWindowProperty(_: Any) {
+    private func setWindowProperty(_: Any) {
         if let window = self.window {
             // ----------------------------------------
             if UserSettings.shared.forceStayTop {
