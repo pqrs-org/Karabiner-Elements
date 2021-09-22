@@ -117,7 +117,7 @@ public class EventQueueEntry: Identifiable, Equatable {
     public var misc: String = ""
 
     public static func == (lhs: EventQueueEntry, rhs: EventQueueEntry) -> Bool {
-        return lhs.id == rhs.id
+        lhs.id == rhs.id
     }
 }
 
