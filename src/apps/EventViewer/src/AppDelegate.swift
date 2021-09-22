@@ -3,13 +3,28 @@ import SwiftUI
 
 @NSApplicationMain
 public class AppDelegate: NSObject, NSApplicationDelegate {
-    var window: NSWindow!
+    var window: NSWindow?
     var inputMonitoringAlertWindow: NSWindow?
 
     public func applicationDidFinishLaunching(_: Notification) {
         ProcessInfo.processInfo.enableSuddenTermination()
 
         libkrbn_initialize()
+
+        window = NSWindow(
+            contentRect: .zero,
+            styleMask: [
+                .titled,
+                .closable,
+                .miniaturizable,
+                .fullSizeContentView,
+            ],
+            backing: .buffered,
+            defer: false
+        )
+        window!.contentView = NSHostingView(rootView: ContentView())
+        window!.center()
+        window!.makeKeyAndOrderFront(self)
 
         setWindowProperty(self)
 
@@ -30,27 +45,12 @@ public class AppDelegate: NSObject, NSApplicationDelegate {
                 self.inputMonitoringAlertWindow!.hidesOnDeactivate = false
                 self.inputMonitoringAlertWindow!.title = "Input Monitoring Permissions Alert"
                 self.inputMonitoringAlertWindow!.contentView = NSHostingView(rootView: InputMonitoringAlertView())
-                self.inputMonitoringAlertWindow!.centerToOtherWindow(self.window)
+                self.inputMonitoringAlertWindow!.centerToOtherWindow(self.window!)
 
-                self.window.addChildWindow(self.inputMonitoringAlertWindow!, ordered: .above)
+                self.window!.addChildWindow(self.inputMonitoringAlertWindow!, ordered: .above)
                 self.inputMonitoringAlertWindow!.makeKeyAndOrderFront(nil)
             }
         }
-
-        window = NSWindow(
-            contentRect: .zero,
-            styleMask: [
-                .titled,
-                .closable,
-                .miniaturizable,
-                .fullSizeContentView,
-            ],
-            backing: .buffered,
-            defer: false
-        )
-        window!.contentView = NSHostingView(rootView: ContentView())
-        window!.center()
-        window!.makeKeyAndOrderFront(self)
     }
 
     public func applicationWillTerminate(_: Notification) {
@@ -62,23 +62,25 @@ public class AppDelegate: NSObject, NSApplicationDelegate {
     }
 
     @IBAction func setWindowProperty(_: Any) {
-        // ----------------------------------------
-        if UserSettings.shared.forceStayTop {
-            window.level = .floating
-        } else {
-            window.level = .normal
-        }
+        if let window = self.window {
+            // ----------------------------------------
+            if UserSettings.shared.forceStayTop {
+                window.level = .floating
+            } else {
+                window.level = .normal
+            }
 
-        // ----------------------------------------
-        if UserSettings.shared.showInAllSpaces {
-            window.collectionBehavior.insert(.canJoinAllSpaces)
-        } else {
-            window.collectionBehavior.remove(.canJoinAllSpaces)
-        }
+            // ----------------------------------------
+            if UserSettings.shared.showInAllSpaces {
+                window.collectionBehavior.insert(.canJoinAllSpaces)
+            } else {
+                window.collectionBehavior.remove(.canJoinAllSpaces)
+            }
 
-        window.collectionBehavior.insert(.managed)
-        window.collectionBehavior.remove(.moveToActiveSpace)
-        window.collectionBehavior.remove(.transient)
+            window.collectionBehavior.insert(.managed)
+            window.collectionBehavior.remove(.moveToActiveSpace)
+            window.collectionBehavior.remove(.transient)
+        }
     }
 }
 
