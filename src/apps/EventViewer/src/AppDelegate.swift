@@ -5,7 +5,6 @@ import SwiftUI
 public class AppDelegate: NSObject, NSApplicationDelegate {
     @IBOutlet var window: NSWindow!
     @IBOutlet var variablesController: VariablesController!
-    @IBOutlet var devicesController: DevicesController!
 
     var inputMonitoringAlertWindow: NSWindow?
 
@@ -18,7 +17,6 @@ public class AppDelegate: NSObject, NSApplicationDelegate {
 
         setWindowProperty(self)
         variablesController.setup()
-        devicesController.setup()
 
         DispatchQueue.main.asyncAfter(deadline: .now() + 3.0) { [weak self] in
             guard let self = self else { return }
