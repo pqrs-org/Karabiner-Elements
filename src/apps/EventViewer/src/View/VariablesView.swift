@@ -22,7 +22,7 @@ struct VariablesView: View {
                 }
                 .padding(6.0)
             }
-            
+
             Spacer()
         }
         .padding()

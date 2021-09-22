@@ -26,7 +26,15 @@ public class AppDelegate: NSObject, NSApplicationDelegate {
         window!.center()
         window!.makeKeyAndOrderFront(self)
 
-        setWindowProperty(self)
+        setWindowProperty()
+
+        NotificationCenter.default.addObserver(forName: UserSettings.windowSettingChanged,
+                                               object: nil,
+                                               queue: .main) { [weak self] _ in
+            guard let self = self else { return }
+
+            self.setWindowProperty()
+        }
 
         DispatchQueue.main.asyncAfter(deadline: .now() + 3.0) { [weak self] in
             guard let self = self else { return }
@@ -61,7 +69,7 @@ public class AppDelegate: NSObject, NSApplicationDelegate {
         true
     }
 
-    private func setWindowProperty(_: Any) {
+    private func setWindowProperty() {
         if let window = self.window {
             // ----------------------------------------
             if UserSettings.shared.forceStayTop {
