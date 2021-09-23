@@ -63,6 +63,11 @@ struct FrontmostApplicationView: View {
 
                             Divider().id("divider \(entry.id)")
                         }
+                        .onAppear {
+                            if let last = frontmostApplicationHistory.entries.last {
+                                proxy.scrollTo("divider \(last.id)", anchor: .bottom)
+                            }
+                        }
                         .onChange(of: frontmostApplicationHistory.entries) { newEntries in
                             if let last = newEntries.last {
                                 proxy.scrollTo("divider \(last.id)", anchor: .bottom)
