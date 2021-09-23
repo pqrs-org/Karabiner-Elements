@@ -23,46 +23,40 @@ struct FrontmostApplicationView: View {
                     ScrollViewReader { proxy in
                         // swiftformat:disable:next unusedArguments
                         List($frontmostApplicationHistory.entries) { $entry in
-                            VStack {
-                                if entry.bundleIdentifier.count > 0 {
-                                    HStack(alignment: .bottom, spacing: 0) {
-                                        Text("Bundle Identifier: ")
-                                            .font(.caption)
+                            HStack {
+                                VStack {
+                                    if entry.bundleIdentifier.count > 0 {
+                                        HStack(alignment: .center, spacing: 0) {
+                                            Text("Bundle Identifier: ")
+                                                .font(.caption)
 
-                                        Text(entry.bundleIdentifier)
+                                            Text(entry.bundleIdentifier)
 
-                                        Spacer()
+                                            Spacer()
+                                        }
+                                    }
+
+                                    if entry.filePath.count > 0 {
+                                        HStack(alignment: .center, spacing: 0) {
+                                            Text("File Path: ")
+                                                .font(.caption)
+
+                                            Text(entry.filePath)
+
+                                            Spacer()
+                                        }
                                     }
                                 }
 
-                                if entry.filePath.count > 0 {
-                                    HStack(alignment: .bottom, spacing: 0) {
-                                        Text("File Path: ")
-                                            .font(.caption)
-
-                                        Text(entry.filePath)
-
-                                        Spacer()
-                                    }
-                                }
+                                Spacer()
 
                                 if entry.bundleIdentifier.count > 0 ||
                                     entry.filePath.count > 0
                                 {
-                                    HStack {
-                                        Spacer()
-
-                                        Button(action: {
-                                            let string =
-                                                "\(entry.bundleIdentifier)\n" +
-                                                "\(entry.filePath)\n"
-
-                                            let pboard = NSPasteboard.general
-                                            pboard.clearContents()
-                                            pboard.writeObjects([string as NSString])
-                                        }) {
-                                            Label("Copy to pasteboard", systemImage: "arrow.right.doc.on.clipboard").font(.caption)
-                                        }
+                                    Button(action: {
+                                        entry.copyToPasteboard()
+                                    }) {
+                                        Label("Copy to pasteboard", systemImage: "arrow.right.doc.on.clipboard")
                                     }
                                 }
                             }

@@ -29,6 +29,16 @@ public class FrontmostApplicationEntry: Identifiable, Equatable {
     public var bundleIdentifier = ""
     public var filePath = ""
 
+    public func copyToPasteboard() {
+        let string =
+            "\(bundleIdentifier)\n" +
+            "\(filePath)\n"
+
+        let pboard = NSPasteboard.general
+        pboard.clearContents()
+        pboard.writeObjects([string as NSString])
+    }
+
     public static func == (lhs: FrontmostApplicationEntry, rhs: FrontmostApplicationEntry) -> Bool {
         lhs.id == rhs.id
     }
