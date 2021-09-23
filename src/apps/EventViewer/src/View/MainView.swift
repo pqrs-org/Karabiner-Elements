@@ -80,6 +80,11 @@ struct MainView: View {
 
                             Divider().id("divider \(entry.id)")
                         }
+                        .onAppear {
+                            if let last = eventQueue.queue.last {
+                                proxy.scrollTo("divider \(last.id)", anchor: .bottom)
+                            }
+                        }
                         .onChange(of: eventQueue.queue) { newQueue in
                             if let last = newQueue.last {
                                 proxy.scrollTo("divider \(last.id)", anchor: .bottom)
