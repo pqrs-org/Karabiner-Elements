@@ -21,13 +21,13 @@ struct MainView: View {
                 VStack(alignment: .leading, spacing: 6.0) {
                     HStack(alignment: .center, spacing: 12.0) {
                         Button(action: {
-                            EventQueue.shared.copy()
+                            eventQueue.copy()
                         }) {
                             Label("Copy to pasteboard", systemImage: "arrow.right.doc.on.clipboard")
                         }
 
                         Button(action: {
-                            EventQueue.shared.clear()
+                            eventQueue.clear()
                         }) {
                             Label("Clear", systemImage: "clear")
                         }
@@ -36,7 +36,7 @@ struct MainView: View {
 
                         if eventQueue.simpleModificationJsonString.count > 0 {
                             Button(action: {
-                                EventQueue.shared.addSimpleModification()
+                                eventQueue.addSimpleModification()
                             }) {
                                 Label(eventQueue.addSimpleModificationButtonText, systemImage: "plus.circle")
                             }
