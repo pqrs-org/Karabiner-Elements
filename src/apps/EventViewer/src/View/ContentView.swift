@@ -20,7 +20,7 @@ struct ContentView: View {
                         NavigationLink(destination: FrontmostApplicationView(),
                                        tag: "FrontmostApplication",
                                        selection: $selection) {
-                            Label("FrontmostApplication", systemImage: "checkmark.circle")
+                            Label("Frontmost Application", systemImage: "checkmark.circle")
                         }
                         .padding(10)
 
@@ -51,7 +51,10 @@ struct ContentView: View {
                     Spacer()
                 }
             }
-        }.frame(minWidth: 1100, minHeight: 650)
+        }.frame(minWidth: 1100,
+                maxWidth: .infinity,
+                minHeight: 650,
+                maxHeight: .infinity)
     }
 }
 
