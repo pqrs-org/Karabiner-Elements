@@ -8,24 +8,51 @@ struct FrontmostApplicationView: View {
             GroupBox(label: Text("Frontmost application history")) {
                 VStack(alignment: .leading, spacing: 12.0) {
                     Text("You can investigate a bundle identifier and a file path of the frontmost application.")
+                    Label("Please switch to apps which you want to know Bundle Identifier.", systemImage: "info.circle.fill")
+
+                    HStack(alignment: .center, spacing: 12.0) {
+                        Button(action: {
+                            frontmostApplicationHistory.clear()
+                        }) {
+                            Label("Clear", systemImage: "clear")
+                        }
+
+                        Spacer()
+                    }
 
                     ScrollViewReader { proxy in
-                        ScrollView {
-                            HStack {
-                                VStack(alignment: .leading) {
-                                    Text(frontmostApplicationHistory.text)
-                                        .lineLimit(nil)
-                                        .font(.custom("Menlo", size: 11.0))
+                        // swiftformat:disable:next unusedArguments
+                        List($frontmostApplicationHistory.entries) { $entry in
+                            VStack {
+                                if entry.bundleIdentifier.count > 0 {
+                                    HStack(alignment: .bottom, spacing: 0) {
+                                        Text("Bundle Identifier: ")
+                                            .font(.caption)
 
-                                    Text("").id("frontmostApplicationHistoryButtom")
+                                        Text(entry.bundleIdentifier)
+
+                                        Spacer()
+                                    }
                                 }
 
-                                Spacer()
+                                if entry.filePath.count > 0 {
+                                    HStack(alignment: .bottom, spacing: 0) {
+                                        Text("File Path: ")
+                                            .font(.caption)
+
+                                        Text(entry.filePath)
+
+                                        Spacer()
+                                    }
+                                }
                             }
-                            .background(Color(NSColor.textBackgroundColor))
+
+                            Divider().id("divider \(entry.id)")
                         }
-                        .onReceive(frontmostApplicationHistory.$text) { _ in
-                            proxy.scrollTo("frontmostApplicationHistoryButtom", anchor: .bottom)
+                        .onChange(of: frontmostApplicationHistory.entries) { newEntries in
+                            if let last = newEntries.last {
+                                proxy.scrollTo("divider \(last.id)", anchor: .bottom)
+                            }
                         }
                     }
                 }

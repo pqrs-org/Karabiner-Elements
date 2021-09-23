@@ -16,24 +16,33 @@ private func callback(_ bundleIdentifier: UnsafePointer<Int8>?,
     DispatchQueue.main.async { [weak obj] in
         guard let obj = obj else { return }
 
-        if obj.text.count > 4 * 1024 {
-            obj.text = ""
-        }
+        let e = FrontmostApplicationEntry()
+        e.bundleIdentifier = identifier
+        e.filePath = path
 
-        obj.text +=
-            "Bundle Identifier:  \(identifier)\n" +
-            "File Path:          \(path)\n" +
-            "\n"
+        obj.append(e)
+    }
+}
+
+public class FrontmostApplicationEntry: Identifiable, Equatable {
+    public var id = UUID()
+    public var bundleIdentifier = ""
+    public var filePath = ""
+
+    public static func == (lhs: FrontmostApplicationEntry, rhs: FrontmostApplicationEntry) -> Bool {
+        lhs.id == rhs.id
     }
 }
 
 public class FrontmostApplicationHistory: ObservableObject {
     public static let shared = FrontmostApplicationHistory()
 
-    @Published var text = ""
+    let maxCount = 16
+
+    @Published var entries: [FrontmostApplicationEntry] = []
 
     init() {
-        text = "Please switch to apps which you want to know Bundle Identifier.\n\n"
+        clear()
 
         let obj = unsafeBitCast(self, to: UnsafeMutableRawPointer.self)
         libkrbn_enable_frontmost_application_monitor(callback, obj)
@@ -41,5 +50,22 @@ public class FrontmostApplicationHistory: ObservableObject {
 
     deinit {
         libkrbn_disable_frontmost_application_monitor()
+    }
+
+    public func append(_ entry: FrontmostApplicationEntry) {
+        entries.append(entry)
+
+        if entries.count > maxCount {
+            entries.removeFirst()
+        }
+    }
+
+    public func clear() {
+        entries.removeAll()
+
+        // Fill with empty entries to avoid SwiftUI List rendering corruption at FrontmostApplicationView.swift.
+        while entries.count < maxCount {
+            entries.append(FrontmostApplicationEntry())
+        }
     }
 }
