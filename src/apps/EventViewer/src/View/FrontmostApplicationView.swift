@@ -45,6 +45,26 @@ struct FrontmostApplicationView: View {
                                         Spacer()
                                     }
                                 }
+
+                                if entry.bundleIdentifier.count > 0 ||
+                                    entry.filePath.count > 0
+                                {
+                                    HStack {
+                                        Spacer()
+
+                                        Button(action: {
+                                            let string =
+                                                "\(entry.bundleIdentifier)\n" +
+                                                "\(entry.filePath)\n"
+
+                                            let pboard = NSPasteboard.general
+                                            pboard.clearContents()
+                                            pboard.writeObjects([string as NSString])
+                                        }) {
+                                            Label("Copy to pasteboard", systemImage: "arrow.right.doc.on.clipboard").font(.caption)
+                                        }
+                                    }
+                                }
                             }
 
                             Divider().id("divider \(entry.id)")
