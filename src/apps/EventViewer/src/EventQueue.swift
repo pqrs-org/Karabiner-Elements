@@ -107,14 +107,13 @@ private func callback(_ deviceId: UInt64,
     }
 }
 
-@objcMembers
 public class EventQueueEntry: Identifiable, Equatable {
     public var id = UUID()
-    public var eventType: String = ""
-    public var usagePage: String = ""
-    public var usage: String = ""
-    public var name: String = ""
-    public var misc: String = ""
+    public var eventType = ""
+    public var usagePage = ""
+    public var usage = ""
+    public var name = ""
+    public var misc = ""
 
     public static func == (lhs: EventQueueEntry, rhs: EventQueueEntry) -> Bool {
         lhs.id == rhs.id
