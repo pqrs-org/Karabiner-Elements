@@ -46,45 +46,43 @@ struct MainView: View {
                     ScrollViewReader { proxy in
                         // swiftformat:disable:next unusedArguments
                         List($eventQueue.queue) { $entry in
-                            VStack {
-                                HStack(alignment: .center, spacing: 0) {
-                                    Text(entry.eventType)
-                                        .font(.title)
-                                        .frame(width: 70, alignment: .leading)
+                            HStack(alignment: .center, spacing: 0) {
+                                Text(entry.eventType)
+                                    .font(.title)
+                                    .frame(width: 70, alignment: .leading)
 
-                                    VStack(alignment: .leading, spacing: 0) {
-                                        Text(entry.name)
-                                        Text(entry.misc)
-                                            .font(.caption)
-                                    }
-
-                                    Spacer()
-
-                                    VStack(alignment: .trailing, spacing: 0) {
-                                        if entry.usagePage.count > 0 {
-                                            HStack(alignment: .bottom, spacing: 0) {
-                                                Text("usage page: ")
-                                                    .font(.caption)
-                                                Text(entry.usagePage)
-                                            }
-                                        }
-                                        if entry.usage.count > 0 {
-                                            HStack(alignment: .bottom, spacing: 0) {
-                                                Text("usage: ")
-                                                    .font(.caption)
-                                                Text(entry.usage)
-                                            }
-                                        }
-                                    }
-                                    .frame(alignment: .leading)
+                                VStack(alignment: .leading, spacing: 0) {
+                                    Text(entry.name)
+                                    Text(entry.misc)
+                                        .font(.caption)
                                 }
 
-                                Divider()
+                                Spacer()
+
+                                VStack(alignment: .trailing, spacing: 0) {
+                                    if entry.usagePage.count > 0 {
+                                        HStack(alignment: .bottom, spacing: 0) {
+                                            Text("usage page: ")
+                                                .font(.caption)
+                                            Text(entry.usagePage)
+                                        }
+                                    }
+                                    if entry.usage.count > 0 {
+                                        HStack(alignment: .bottom, spacing: 0) {
+                                            Text("usage: ")
+                                                .font(.caption)
+                                            Text(entry.usage)
+                                        }
+                                    }
+                                }
+                                .frame(alignment: .leading)
                             }
+
+                            Divider().id("divider \(entry.id)")
                         }
                         .onChange(of: eventQueue.queue) { newQueue in
                             if let last = newQueue.last {
-                                proxy.scrollTo(last.id, anchor: .bottom)
+                                proxy.scrollTo("divider \(last.id)", anchor: .bottom)
                             }
                         }
                     }
