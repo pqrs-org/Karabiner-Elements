@@ -183,20 +183,32 @@ public:
             {
                 "modifiers",
                 nlohmann::json::object({
-                    {"optional", nlohmann::json::array({"any"})},
+                    // Use `"mandatory": ["any"]` to ensure command+control+q will be send even if other modifiers (option,shift) are pressed.
+                    {"mandatory", nlohmann::json::array({"any"})},
                 }),
             },
         });
 
-        auto to_json = nlohmann::json::object({{
-            "software_function",
-            nlohmann::json::object({
-                {"iokit_power_management_sleep_system", nlohmann::json::object()},
-            }),
-        }});
-
         std::vector<manipulator::to_event_definition> to_event_definitions;
-        to_event_definitions.emplace_back(to_json);
+
+        // iokit_power_management_sleep_system
+        to_event_definitions.emplace_back(nlohmann::json::object({
+            {
+                "software_function",
+                nlohmann::json::object({
+                    {"iokit_power_management_sleep_system", nlohmann::json::object()},
+                }),
+            },
+        }));
+
+        // command+control+q (Lock screen)
+        to_event_definitions.emplace_back(nlohmann::json::object({
+            {"key_code", "q"},
+            {"modifiers", nlohmann::json::array({
+                              "left_command",
+                              "left_control",
+                          })},
+        }));
 
         auto manipulator = std::make_shared<manipulator::manipulators::basic::basic>(manipulator::manipulators::basic::from_event_definition(from_json),
                                                                                      to_event_definitions);
