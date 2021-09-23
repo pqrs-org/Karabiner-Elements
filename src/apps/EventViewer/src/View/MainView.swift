@@ -21,7 +21,7 @@ struct MainView: View {
                 VStack(alignment: .leading, spacing: 6.0) {
                     HStack(alignment: .center, spacing: 12.0) {
                         Button(action: {
-                            eventQueue.copy()
+                            eventQueue.copyToPasteboard()
                         }) {
                             Label("Copy to pasteboard", systemImage: "arrow.right.doc.on.clipboard")
                         }

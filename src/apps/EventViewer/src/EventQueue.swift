@@ -123,12 +123,13 @@ public class EventQueueEntry: Identifiable, Equatable {
 public class EventQueue: ObservableObject {
     public static let shared = EventQueue()
 
-    let maxQueueCount = 256
+    let maxCount = 256
     var modifierFlags: [UInt64: Set<String>] = [:]
 
     @Published var queue: [EventQueueEntry] = []
     @Published var simpleModificationJsonString: String = ""
     @Published var addSimpleModificationButtonText: String = ""
+    @Published var unknownEventEntries: [EventQueueEntry] = []
 
     init() {
         clear()
@@ -147,7 +148,7 @@ public class EventQueue: ObservableObject {
 
     public func append(_ entry: EventQueueEntry) {
         queue.append(entry)
-        if queue.count > maxQueueCount {
+        if queue.count > maxCount {
             queue.removeFirst()
         }
     }
@@ -156,12 +157,12 @@ public class EventQueue: ObservableObject {
         queue.removeAll()
 
         // Fill queue with empty entries to avoid SwiftUI List rendering corruption at MainView.swift.
-        while queue.count < maxQueueCount {
+        while queue.count < maxCount {
             queue.append(EventQueueEntry())
         }
     }
 
-    public func copy() {
+    public func copyToPasteboard() {
         var string = ""
 
         queue.forEach { entry in
