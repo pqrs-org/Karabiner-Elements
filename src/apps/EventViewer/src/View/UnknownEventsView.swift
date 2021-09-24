@@ -1,7 +1,7 @@
 import SwiftUI
 
 struct UnknownEventsView: View {
-    @ObservedObject var eventQueue = EventQueue.shared
+    @ObservedObject var eventHistory = EventHistory.shared
 
     var body: some View {
         VStack(alignment: .leading, spacing: 12.0) {
@@ -9,13 +9,13 @@ struct UnknownEventsView: View {
                 VStack(alignment: .leading, spacing: 6.0) {
                     HStack(alignment: .center, spacing: 12.0) {
                         Button(action: {
-                            eventQueue.copyToPasteboardUnknownEvents()
+                            eventHistory.copyToPasteboardUnknownEvents()
                         }) {
                             Label("Copy to pasteboard", systemImage: "arrow.right.doc.on.clipboard")
                         }
 
                         Button(action: {
-                            eventQueue.clearUnknownEvents()
+                            eventHistory.clearUnknownEvents()
                         }) {
                             Label("Clear", systemImage: "clear")
                         }
@@ -24,7 +24,7 @@ struct UnknownEventsView: View {
                     }
 
                     // swiftformat:disable:next unusedArguments
-                    List($eventQueue.unknownEventEntries) { $entry in
+                    List($eventHistory.unknownEventEntries) { $entry in
                         HStack(alignment: .center, spacing: 0) {
                             Text(entry.eventType)
                                 .font(.title)

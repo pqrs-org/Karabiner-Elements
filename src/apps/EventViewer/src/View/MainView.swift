@@ -1,7 +1,7 @@
 import SwiftUI
 
 struct MainView: View {
-    @ObservedObject var eventQueue = EventQueue.shared
+    @ObservedObject var eventHistory = EventHistory.shared
     @State private var textInput: String = "Press the key you want to investigate."
 
     var body: some View {
@@ -21,31 +21,31 @@ struct MainView: View {
                 VStack(alignment: .leading, spacing: 6.0) {
                     HStack(alignment: .center, spacing: 12.0) {
                         Button(action: {
-                            eventQueue.copyToPasteboard()
+                            eventHistory.copyToPasteboard()
                         }) {
                             Label("Copy to pasteboard", systemImage: "arrow.right.doc.on.clipboard")
                         }
 
                         Button(action: {
-                            eventQueue.clear()
+                            eventHistory.clear()
                         }) {
                             Label("Clear", systemImage: "clear")
                         }
 
                         Spacer()
 
-                        if eventQueue.simpleModificationJsonString.count > 0 {
+                        if eventHistory.simpleModificationJsonString.count > 0 {
                             Button(action: {
-                                eventQueue.addSimpleModification()
+                                eventHistory.addSimpleModification()
                             }) {
-                                Label(eventQueue.addSimpleModificationButtonText, systemImage: "plus.circle")
+                                Label(eventHistory.addSimpleModificationButtonText, systemImage: "plus.circle")
                             }
                         }
                     }
 
                     ScrollViewReader { proxy in
                         // swiftformat:disable:next unusedArguments
-                        List($eventQueue.queue) { $entry in
+                        List($eventHistory.entries) { $entry in
                             HStack(alignment: .center, spacing: 0) {
                                 Text(entry.eventType)
                                     .font(.title)
@@ -81,12 +81,12 @@ struct MainView: View {
                             Divider().id("divider \(entry.id)")
                         }
                         .onAppear {
-                            if let last = eventQueue.queue.last {
+                            if let last = eventHistory.entries.last {
                                 proxy.scrollTo("divider \(last.id)", anchor: .bottom)
                             }
                         }
-                        .onChange(of: eventQueue.queue) { newQueue in
-                            if let last = newQueue.last {
+                        .onChange(of: eventHistory.entries) { newEntries in
+                            if let last = newEntries.last {
                                 proxy.scrollTo("divider \(last.id)", anchor: .bottom)
                             }
                         }

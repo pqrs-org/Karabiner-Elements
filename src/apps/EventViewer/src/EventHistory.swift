@@ -61,12 +61,12 @@ private func callback(_ deviceId: UInt64,
     }
 
     // usage::consumer::ac_pan (Horizontal mouse wheel)
-    if usagePage == 0xc, usage == 0x238 {
+    if usagePage == 0xC, usage == 0x238 {
         return
     }
 
     // usage::consumer unknown
-    if usagePage == 0xc, usage == -1 {
+    if usagePage == 0xC, usage == -1 {
         return
     }
 
@@ -74,12 +74,12 @@ private func callback(_ deviceId: UInt64,
     // Add entry
     //
 
-    let obj: EventQueue! = unsafeBitCast(context, to: EventQueue.self)
+    let obj: EventHistory! = unsafeBitCast(context, to: EventHistory.self)
 
     DispatchQueue.main.async { [weak obj] in
         guard let obj = obj else { return }
 
-        let entry = EventQueueEntry()
+        let entry = EventHistoryEntry()
 
         //
         // entry.code
@@ -154,7 +154,7 @@ private func callback(_ deviceId: UInt64,
         }
 
         //
-        // EventQueue.queue
+        // Add to entries
         //
 
         obj.append(entry)
@@ -176,7 +176,7 @@ private func callback(_ deviceId: UInt64,
     }
 }
 
-public class EventQueueEntry: Identifiable, Equatable {
+public class EventHistoryEntry: Identifiable, Equatable {
     public var id = UUID()
     public var eventType = ""
     public var usagePage = ""
@@ -184,21 +184,21 @@ public class EventQueueEntry: Identifiable, Equatable {
     public var name = ""
     public var misc = ""
 
-    public static func == (lhs: EventQueueEntry, rhs: EventQueueEntry) -> Bool {
+    public static func == (lhs: EventHistoryEntry, rhs: EventHistoryEntry) -> Bool {
         lhs.id == rhs.id
     }
 }
 
-public class EventQueue: ObservableObject {
-    public static let shared = EventQueue()
+public class EventHistory: ObservableObject {
+    public static let shared = EventHistory()
 
     let maxCount = 256
     var modifierFlags: [UInt64: Set<String>] = [:]
 
-    @Published var queue: [EventQueueEntry] = []
+    @Published var entries: [EventHistoryEntry] = []
     @Published var simpleModificationJsonString: String = ""
     @Published var addSimpleModificationButtonText: String = ""
-    @Published var unknownEventEntries: [EventQueueEntry] = []
+    @Published var unknownEventEntries: [EventHistoryEntry] = []
 
     init() {
         clear()
@@ -215,26 +215,26 @@ public class EventQueue: ObservableObject {
         libkrbn_hid_value_monitor_observed()
     }
 
-    public func append(_ entry: EventQueueEntry) {
-        queue.append(entry)
-        if queue.count > maxCount {
-            queue.removeFirst()
+    public func append(_ entry: EventHistoryEntry) {
+        entries.append(entry)
+        if entries.count > maxCount {
+            entries.removeFirst()
         }
     }
 
     public func clear() {
-        queue.removeAll()
+        entries.removeAll()
 
-        // Fill queue with empty entries to avoid SwiftUI List rendering corruption at MainView.swift.
-        while queue.count < maxCount {
-            queue.append(EventQueueEntry())
+        // Fill with empty entries to avoid SwiftUI List rendering corruption at MainView.swift.
+        while entries.count < maxCount {
+            entries.append(EventHistoryEntry())
         }
     }
 
     public func copyToPasteboard() {
         var string = ""
 
-        queue.forEach { entry in
+        entries.forEach { entry in
             if entry.eventType.count > 0 {
                 let eventType = "type:\(entry.eventType)".padding(toLength: 20, withPad: " ", startingAt: 0)
                 let code = "HID usage: \(entry.usagePage),\(entry.usage)".padding(toLength: 20, withPad: " ", startingAt: 0)
@@ -296,7 +296,7 @@ public class EventQueue: ObservableObject {
     // Unknown Events
     //
 
-    public func appendUnknownEvent(_ entry: EventQueueEntry) {
+    public func appendUnknownEvent(_ entry: EventHistoryEntry) {
         unknownEventEntries.append(entry)
         if unknownEventEntries.count > maxCount {
             unknownEventEntries.removeFirst()

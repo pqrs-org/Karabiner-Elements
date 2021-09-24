@@ -40,7 +40,7 @@ public class AppDelegate: NSObject, NSApplicationDelegate {
         DispatchQueue.main.asyncAfter(deadline: .now() + 3.0) { [weak self] in
             guard let self = self else { return }
 
-            if !EventQueue.shared.observed() {
+            if !EventHistory.shared.observed() {
                 self.inputMonitoringAlertWindow = NSPanel(
                     contentRect: .zero,
                     styleMask: [
