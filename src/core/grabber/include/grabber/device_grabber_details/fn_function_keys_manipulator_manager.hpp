@@ -190,7 +190,7 @@ public:
                      },
                  }),
                  nlohmann::json::object({
-                     // Lock button on Magic Keyboard without Touch ID
+                     // Lock key on Magic Keyboard without Touch ID
                      {"consumer_key_code", "al_terminal_lock_or_screensaver"},
                      {
                          "modifiers",
