@@ -12,7 +12,7 @@ constexpr std::pair<const mapbox::eternal::string, const pqrs::hid::usage::value
 
     {"power", pqrs::hid::usage::consumer::power},
     {"menu", pqrs::hid::usage::consumer::menu},                                                       // Touch ID key on Magic Keyboard
-    {"al_terminal_lock_or_screensaver", pqrs::hid::usage::consumer::al_terminal_lock_or_screensaver}, // Power button on Magic Keyboard without Touch ID
+    {"al_terminal_lock_or_screensaver", pqrs::hid::usage::consumer::al_terminal_lock_or_screensaver}, // Lock button on Magic Keyboard without Touch ID
     {"display_brightness_increment", pqrs::hid::usage::consumer::display_brightness_increment},
     {"display_brightness_decrement", pqrs::hid::usage::consumer::display_brightness_decrement},
     {"fast_forward", pqrs::hid::usage::consumer::fast_forward},

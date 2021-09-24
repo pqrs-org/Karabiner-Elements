@@ -175,49 +175,62 @@ public:
       }
     }
 
-    // Touch ID
     {
       try {
-        auto from_json = nlohmann::json::object({
-            {"consumer_key_code", "menu"},
-            {
-                "modifiers",
-                nlohmann::json::object({
-                    // Use `"mandatory": ["any"]` to ensure command+control+q will be send even if other modifiers (option,shift) are pressed.
-                    {"mandatory", nlohmann::json::array({"any"})},
-                }),
-            },
-        });
+        for (const auto& from_json : {
+                 nlohmann::json::object({
+                     // Touch ID
+                     {"consumer_key_code", "menu"},
+                     {
+                         "modifiers",
+                         nlohmann::json::object({
+                             // Use `"mandatory": ["any"]` to ensure command+control+q will be send even if other modifiers (option,shift) are pressed.
+                             {"mandatory", nlohmann::json::array({"any"})},
+                         }),
+                     },
+                 }),
+                 nlohmann::json::object({
+                     // Lock button on Magic Keyboard without Touch ID
+                     {"consumer_key_code", "al_terminal_lock_or_screensaver"},
+                     {
+                         "modifiers",
+                         nlohmann::json::object({
+                             // Use `"mandatory": ["any"]` to ensure command+control+q will be send even if other modifiers (option,shift) are pressed.
+                             {"mandatory", nlohmann::json::array({"any"})},
+                         }),
+                     },
+                 }),
+             }) {
+          std::vector<manipulator::to_event_definition> to_event_definitions;
 
-        std::vector<manipulator::to_event_definition> to_event_definitions;
+          // iokit_power_management_sleep_system
+          to_event_definitions.emplace_back(nlohmann::json::object({
+              {
+                  "software_function",
+                  nlohmann::json::object({
+                      {"iokit_power_management_sleep_system", nlohmann::json::object()},
+                  }),
+              },
+          }));
 
-        // iokit_power_management_sleep_system
-        to_event_definitions.emplace_back(nlohmann::json::object({
-            {
-                "software_function",
-                nlohmann::json::object({
-                    {"iokit_power_management_sleep_system", nlohmann::json::object()},
-                }),
-            },
-        }));
+          // command+control+q (Lock screen)
+          to_event_definitions.emplace_back(nlohmann::json::object({
+              {"key_code", "q"},
+              {"modifiers", nlohmann::json::array({
+                                "left_command",
+                                "left_control",
+                            })},
+          }));
 
-        // command+control+q (Lock screen)
-        to_event_definitions.emplace_back(nlohmann::json::object({
-            {"key_code", "q"},
-            {"modifiers", nlohmann::json::array({
-                              "left_command",
-                              "left_control",
-                          })},
-        }));
+          auto manipulator = std::make_shared<manipulator::manipulators::basic::basic>(manipulator::manipulators::basic::from_event_definition(from_json),
+                                                                                       to_event_definitions);
 
-        auto manipulator = std::make_shared<manipulator::manipulators::basic::basic>(manipulator::manipulators::basic::from_event_definition(from_json),
-                                                                                     to_event_definitions);
+          manipulator->push_back_condition(krbn::manipulator::manipulator_factory::make_frontmost_application_unless_condition({
+              "^com\\.apple\\.loginwindow$",
+          }));
 
-        manipulator->push_back_condition(krbn::manipulator::manipulator_factory::make_frontmost_application_unless_condition({
-            "^com\\.apple\\.loginwindow$",
-        }));
-
-        manipulator_manager_->push_back_manipulator(std::shared_ptr<manipulator::manipulators::base>(manipulator));
+          manipulator_manager_->push_back_manipulator(std::shared_ptr<manipulator::manipulators::base>(manipulator));
+        }
 
       } catch (const std::exception& e) {
         logger::get_logger()->error(e.what());
