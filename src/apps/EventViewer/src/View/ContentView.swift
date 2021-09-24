@@ -20,7 +20,7 @@ struct ContentView: View {
                         NavigationLink(destination: FrontmostApplicationView(),
                                        tag: "FrontmostApplication",
                                        selection: $selection) {
-                            Label("Frontmost Application", systemImage: "checkmark.circle")
+                            Label("Frontmost Application", systemImage: "triangle.circle")
                         }
                         .padding(10)
 
