@@ -128,11 +128,10 @@ bool libkrbn_system_core_configuration_file_path_exists(void) {
   return pqrs::filesystem::exists(krbn::constants::get_system_core_configuration_file_path());
 }
 
-bool libkrbn_is_momentary_switch_event(int32_t usage_page, int32_t usage) {
-  return krbn::momentary_switch_event(
-             pqrs::hid::usage_page::value_t(usage_page),
-             pqrs::hid::usage::value_t(usage))
-      .valid();
+bool libkrbn_is_momentary_switch_event_target(int32_t usage_page, int32_t usage) {
+  return krbn::momentary_switch_event::target(
+      pqrs::hid::usage_page::value_t(usage_page),
+      pqrs::hid::usage::value_t(usage));
 }
 
 bool libkrbn_is_modifier_flag(int32_t usage_page, int32_t usage) {

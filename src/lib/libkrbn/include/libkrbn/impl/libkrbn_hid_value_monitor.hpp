@@ -1,7 +1,6 @@
 #pragma once
 
 #include "event_queue.hpp"
-#include "hid_queue_values_converter.hpp"
 #include "libkrbn/libkrbn.h"
 #include <atomic>
 #include <pqrs/osx/iokit_hid_manager.hpp>
@@ -48,10 +47,7 @@ public:
         });
 
         hid_queue_value_monitor->values_arrived.connect([this, callback, refcon, device_id](auto&& values_ptr) {
-          auto event_queue = krbn::event_queue::utility::make_queue(device_id,
-                                                                    hid_queue_values_converter_.make_hid_values(device_id,
-                                                                                                                values_ptr));
-          values_arrived(callback, refcon, event_queue);
+          values_arrived(callback, refcon, device_id, values_ptr);
         });
 
         hid_queue_value_monitor->async_start(kIOHIDOptionsTypeNone,
@@ -63,7 +59,6 @@ public:
       auto device_id = krbn::make_device_id(registry_entry_id);
 
       hid_queue_value_monitors_.erase(device_id);
-      hid_queue_values_converter_.erase_device(device_id);
     });
 
     hid_manager_->error_occurred.connect([](auto&& message, auto&& kern_return) {
@@ -87,30 +82,19 @@ public:
 private:
   void values_arrived(libkrbn_hid_value_monitor_callback callback,
                       void* refcon,
-                      std::shared_ptr<krbn::event_queue::queue> event_queue) {
-    for (const auto& entry : event_queue->get_entries()) {
-      libkrbn_hid_value_event_type event_type = libkrbn_hid_value_event_type_key_down;
-      switch (entry.get_event_type()) {
-        case krbn::event_type::key_down:
-          event_type = libkrbn_hid_value_event_type_key_down;
-          break;
-        case krbn::event_type::key_up:
-          event_type = libkrbn_hid_value_event_type_key_up;
-          break;
-        case krbn::event_type::single:
-          event_type = libkrbn_hid_value_event_type_single;
-          break;
-      }
+                      krbn::device_id device_id,
+                      std::shared_ptr<std::vector<pqrs::cf::cf_ptr<IOHIDValueRef>>> values) {
+    for (const auto& value : *values) {
+      auto v = pqrs::osx::iokit_hid_value(*value);
 
-      if (auto e = entry.get_event().get_if<krbn::momentary_switch_event>()) {
-        if (e->valid()) {
-          if (callback) {
-            callback(type_safe::get(entry.get_device_id()),
-                     type_safe::get(e->get_usage_pair().get_usage_page()),
-                     type_safe::get(e->get_usage_pair().get_usage()),
-                     event_type,
-                     refcon);
-          }
+      if (auto usage_page = v.get_usage_page()) {
+        if (auto usage = v.get_usage()) {
+
+          callback(type_safe::get(device_id),
+                   type_safe::get(*usage_page),
+                   type_safe::get(*usage),
+                   v.get_integer_value(),
+                   refcon);
         }
       }
     }
@@ -118,6 +102,5 @@ private:
 
   std::unique_ptr<pqrs::osx::iokit_hid_manager> hid_manager_;
   std::unordered_map<krbn::device_id, std::shared_ptr<pqrs::osx::iokit_hid_queue_value_monitor>> hid_queue_value_monitors_;
-  krbn::hid_queue_values_converter hid_queue_values_converter_;
   std::atomic<bool> observed_;
 };

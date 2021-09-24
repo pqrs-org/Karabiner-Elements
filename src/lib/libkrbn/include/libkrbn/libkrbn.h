@@ -50,7 +50,7 @@ bool libkrbn_system_core_configuration_file_path_exists(void);
 
 // types
 
-bool libkrbn_is_momentary_switch_event(int32_t usage_page, int32_t usage);
+bool libkrbn_is_momentary_switch_event_target(int32_t usage_page, int32_t usage);
 bool libkrbn_is_modifier_flag(int32_t usage_page, int32_t usage);
 void libkrbn_get_momentary_switch_event_json_string(char* buffer, size_t length, int32_t usage_page, int32_t usage);
 void libkrbn_get_momentary_switch_event_usage_name(char* buffer, size_t length, int32_t usage_page, int32_t usage);
@@ -326,7 +326,7 @@ typedef enum {
 typedef void (*libkrbn_hid_value_monitor_callback)(uint64_t device_id,
                                                    int32_t usage_page,
                                                    int32_t usage,
-                                                   libkrbn_hid_value_event_type event_type,
+                                                   int64_t integet_value,
                                                    void* refcon);
 void libkrbn_enable_hid_value_monitor(libkrbn_hid_value_monitor_callback callback,
                                       void* refcon);
