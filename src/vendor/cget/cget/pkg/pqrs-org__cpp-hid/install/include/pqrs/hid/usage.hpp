@@ -313,8 +313,8 @@ constexpr value_t voice_command(0x00cf);
 constexpr value_t mute(0x00e2);
 constexpr value_t volume_increment(0x00e9);
 constexpr value_t volume_decrement(0x00ea);
-constexpr value_t ac_pan(0x0238);
 constexpr value_t al_terminal_lock_or_screensaver(0x019e);
+constexpr value_t ac_pan(0x0238);
 } // namespace consumer
 
 //
