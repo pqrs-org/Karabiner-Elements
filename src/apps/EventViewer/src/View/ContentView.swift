@@ -38,6 +38,13 @@ struct ContentView: View {
                         }
                         .padding(10)
 
+                        NavigationLink(destination: UnknownEventsView(),
+                                       tag: "UnknownEvents",
+                                       selection: $selection) {
+                            Label("Unknown Events", systemImage: "questionmark.square.dashed")
+                        }
+                        .padding(10)
+
                         NavigationLink(destination: PreferencesView(),
                                        tag: "Preferences",
                                        selection: $selection) {

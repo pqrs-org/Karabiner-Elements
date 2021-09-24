@@ -3,19 +3,82 @@ import SwiftUI
 private func callback(_ deviceId: UInt64,
                       _ usagePage: Int32,
                       _ usage: Int32,
-                      _ eventType: libkrbn_hid_value_event_type,
+                      _ integerValue: Int64,
                       _ context: UnsafeMutableRawPointer?)
 {
+    //
+    // Skip specific events
+    //
+
+    // usage_page::undefined
+    if usagePage == 0 {
+        return
+    }
+
+    // usage::undefined
+    if usage == 0 {
+        return
+    }
+
+    // usage::generic_desktop::x
+    if usagePage == 0x1, usage == 0x30 {
+        return
+    }
+
+    // usage::generic_desktop::y
+    if usagePage == 0x1, usage == 0x31 {
+        return
+    }
+
+    // usage::generic_desktop::z
+    if usagePage == 0x1, usage == 0x32 {
+        return
+    }
+
+    // usage::generic_desktop::wheel
+    if usagePage == 0x1, usage == 0x38 {
+        return
+    }
+
+    // usage::keyboard_or_keypad::error_rollover
+    if usagePage == 0x7, usage == 0x1 {
+        return
+    }
+
+    // usage::keyboard_or_keypad::post_fail
+    if usagePage == 0x7, usage == 0x2 {
+        return
+    }
+
+    // usage::keyboard_or_keypad::error_undefined
+    if usagePage == 0x7, usage == 0x3 {
+        return
+    }
+
+    // usage::keyboard_or_keypad unknown
+    if usagePage == 0x7, usage == -1 {
+        return
+    }
+
+    // usage::consumer::ac_pan (Horizontal mouse wheel)
+    if usagePage == 0xc, usage == 0x238 {
+        return
+    }
+
+    // usage::consumer unknown
+    if usagePage == 0xc, usage == -1 {
+        return
+    }
+
+    //
+    // Add entry
+    //
+
     let obj: EventQueue! = unsafeBitCast(context, to: EventQueue.self)
 
     DispatchQueue.main.async { [weak obj] in
         guard let obj = obj else { return }
 
-        if !libkrbn_is_momentary_switch_event(usagePage, usage) {
-            return
-        }
-
-        var buffer = [Int8](repeating: 0, count: 256)
         let entry = EventQueueEntry()
 
         //
@@ -31,9 +94,20 @@ private func callback(_ deviceId: UInt64,
         }
 
         //
+        // Handle unknown events
+        //
+
+        if !libkrbn_is_momentary_switch_event_target(usagePage, usage) {
+            entry.eventType = "\(integerValue)"
+            obj.appendUnknownEvent(entry)
+            return
+        }
+
+        //
         // entry.name
         //
 
+        var buffer = [Int8](repeating: 0, count: 256)
         libkrbn_get_momentary_switch_event_json_string(&buffer, buffer.count, usagePage, usage)
         let jsonString = String(cString: buffer)
 
@@ -51,7 +125,7 @@ private func callback(_ deviceId: UInt64,
                 obj.modifierFlags[deviceId] = Set()
             }
 
-            if eventType == libkrbn_hid_value_event_type_key_down {
+            if integerValue != 0 {
                 obj.modifierFlags[deviceId]!.insert(modifierFlagName)
             } else {
                 obj.modifierFlags[deviceId]!.remove(modifierFlagName)
@@ -62,15 +136,10 @@ private func callback(_ deviceId: UInt64,
         // entry.eventType
         //
 
-        switch eventType {
-        case libkrbn_hid_value_event_type_key_down:
+        if integerValue != 0 {
             entry.eventType = "down"
-        case libkrbn_hid_value_event_type_key_up:
+        } else {
             entry.eventType = "up"
-        case libkrbn_hid_value_event_type_single:
-            break
-        default:
-            break
         }
 
         //
@@ -221,5 +290,39 @@ public class EventQueue: ObservableObject {
         }
 
         return names.joined(separator: ",")
+    }
+
+    //
+    // Unknown Events
+    //
+
+    public func appendUnknownEvent(_ entry: EventQueueEntry) {
+        unknownEventEntries.append(entry)
+        if unknownEventEntries.count > maxCount {
+            unknownEventEntries.removeFirst()
+        }
+    }
+
+    public func clearUnknownEvents() {
+        unknownEventEntries.removeAll()
+    }
+
+    public func copyToPasteboardUnknownEvents() {
+        var string = ""
+
+        unknownEventEntries.forEach { entry in
+            if entry.eventType.count > 0 {
+                let eventType = "value:\(entry.eventType)".padding(toLength: 20, withPad: " ", startingAt: 0)
+                let code = "HID usage: \(entry.usagePage),\(entry.usage)".padding(toLength: 20, withPad: " ", startingAt: 0)
+
+                string.append("\(eventType) \(code)\n")
+            }
+        }
+
+        if !string.isEmpty {
+            let pboard = NSPasteboard.general
+            pboard.clearContents()
+            pboard.writeObjects([string as NSString])
+        }
     }
 }
