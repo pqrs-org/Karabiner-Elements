@@ -939,6 +939,15 @@
         ]
     },
     {
+        "not_to": true,
+        "label": "Lock key on Magic Keyboard without Touch ID",
+        "data": [
+            {
+                "consumer_key_code": "al_terminal_lock_or_screensaver"
+            }
+        ]
+    },
+    {
         "label": "eject",
         "data": [
             {
