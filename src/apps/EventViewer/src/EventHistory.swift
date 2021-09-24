@@ -75,6 +75,11 @@ private func callback(_ deviceId: UInt64,
         return
     }
 
+    // usage::apple_vendor_keyboard unknown
+    if usagePage == 0xFF01, usage == -1 {
+        return
+    }
+
     //
     // Add entry
     //
