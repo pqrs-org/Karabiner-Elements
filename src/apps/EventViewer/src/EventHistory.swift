@@ -70,6 +70,11 @@ private func callback(_ deviceId: UInt64,
         return
     }
 
+    // usage::apple_vendor_top_case unknown
+    if usagePage == 0xFF, usage == -1 {
+        return
+    }
+
     //
     // Add entry
     //
