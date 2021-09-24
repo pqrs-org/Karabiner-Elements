@@ -7,6 +7,14 @@ struct DevicesView: View {
         VStack(alignment: .leading, spacing: 12.0) {
             GroupBox(label: Text("Devices")) {
                 VStack(alignment: .leading, spacing: 12.0) {
+                    Button(action: {
+                        let pboard = NSPasteboard.general
+                        pboard.clearContents()
+                        pboard.writeObjects([devicesJsonString.text as NSString])
+                    }) {
+                        Label("Copy to pasteboard", systemImage: "arrow.right.doc.on.clipboard")
+                    }
+
                     ScrollView {
                         HStack {
                             VStack(alignment: .leading) {
