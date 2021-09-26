@@ -211,8 +211,6 @@ public class EventHistory: ObservableObject {
     @Published var unknownEventEntries: [EventHistoryEntry] = []
 
     init() {
-        clear()
-
         let obj = unsafeBitCast(self, to: UnsafeMutableRawPointer.self)
         libkrbn_enable_hid_value_monitor(callback, obj)
     }
@@ -234,11 +232,6 @@ public class EventHistory: ObservableObject {
 
     public func clear() {
         entries.removeAll()
-
-        // Fill with empty entries to avoid SwiftUI List rendering corruption at MainView.swift.
-        while entries.count < maxCount {
-            entries.append(EventHistoryEntry())
-        }
     }
 
     public func copyToPasteboard() {
