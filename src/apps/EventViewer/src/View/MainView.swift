@@ -17,11 +17,12 @@ struct MainView: View {
                 .padding(6.0)
             }
 
-            if eventHistory.entries.count == 0 {
-                Spacer()
-            } else {
-                GroupBox(label: Text("Keyboard & pointing events")) {
-                    VStack(alignment: .leading, spacing: 6.0) {
+            GroupBox(label: Text("Keyboard & pointing events")) {
+                VStack(alignment: .leading, spacing: 6.0) {
+                    if eventHistory.entries.count == 0 {
+                        Divider()
+                        Spacer()
+                    } else {
                         HStack(alignment: .center, spacing: 12.0) {
                             Button(action: {
                                 eventHistory.copyToPasteboard()
@@ -103,8 +104,8 @@ struct MainView: View {
                             }
                         }
                     }
-                    .padding(6.0)
                 }
+                .padding(6.0)
             }
         }
         .padding()
