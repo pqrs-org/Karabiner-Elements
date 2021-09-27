@@ -8,77 +8,86 @@ struct FrontmostApplicationView: View {
             GroupBox(label: Text("Frontmost application history")) {
                 VStack(alignment: .leading, spacing: 12.0) {
                     Text("You can investigate a bundle identifier and a file path of the frontmost application.")
+
                     Label("Please switch to apps which you want to know Bundle Identifier.", systemImage: "info.circle.fill")
 
-                    HStack(alignment: .center, spacing: 12.0) {
-                        Button(action: {
-                            frontmostApplicationHistory.clear()
-                        }) {
-                            Label("Clear", systemImage: "clear")
-                        }
-
+                    if frontmostApplicationHistory.entries.count == 0 {
+                        Divider()
                         Spacer()
-                    }
-
-                    ScrollViewReader { proxy in
-                        // swiftformat:disable:next unusedArguments
-                        List($frontmostApplicationHistory.entries) { $entry in
-                            HStack {
-                                VStack {
-                                    if entry.bundleIdentifier.count > 0 {
-                                        HStack(alignment: .center, spacing: 0) {
-                                            Text("Bundle Identifier: ")
-                                                .font(.caption)
-
-                                            Text(entry.bundleIdentifier)
-
-                                            Spacer()
-                                        }
-                                    }
-
-                                    if entry.filePath.count > 0 {
-                                        HStack(alignment: .center, spacing: 0) {
-                                            Text("File Path: ")
-                                                .font(.caption)
-
-                                            Text(entry.filePath)
-
-                                            Spacer()
-                                        }
-                                    }
-                                }
-
-                                Spacer()
-
-                                if entry.bundleIdentifier.count > 0 ||
-                                    entry.filePath.count > 0
-                                {
-                                    Button(action: {
-                                        entry.copyToPasteboard()
-                                    }) {
-                                        Label("Copy to pasteboard", systemImage: "arrow.right.doc.on.clipboard")
-                                    }
-                                }
+                    } else {
+                        HStack(alignment: .center, spacing: 12.0) {
+                            Button(action: {
+                                frontmostApplicationHistory.clear()
+                            }) {
+                                Label("Clear", systemImage: "clear")
                             }
 
-                            Divider().id("divider \(entry.id)")
+                            Spacer()
                         }
-                        .onAppear {
-                            if let last = frontmostApplicationHistory.entries.last {
-                                proxy.scrollTo("divider \(last.id)", anchor: .bottom)
+
+                        ScrollViewReader { proxy in
+                            ScrollView {
+                                VStack(alignment: .leading, spacing: 0.0) {
+                                    // swiftformat:disable:next unusedArguments
+                                    ForEach($frontmostApplicationHistory.entries) { $entry in
+                                        HStack {
+                                            VStack {
+                                                HStack(alignment: .center, spacing: 0) {
+                                                    Text("Bundle Identifier: ")
+                                                        .font(.caption)
+
+                                                    Text(entry.bundleIdentifier)
+
+                                                    Spacer()
+                                                }
+
+                                                HStack(alignment: .center, spacing: 0) {
+                                                    Text("File Path: ")
+                                                        .font(.caption)
+
+                                                    Text(entry.filePath)
+
+                                                    Spacer()
+                                                }
+                                            }
+
+                                            Spacer()
+
+                                            if entry.bundleIdentifier.count > 0 ||
+                                                entry.filePath.count > 0
+                                            {
+                                                Button(action: {
+                                                    entry.copyToPasteboard()
+                                                }) {
+                                                    Label("Copy to pasteboard", systemImage: "arrow.right.doc.on.clipboard")
+                                                }
+                                            }
+                                        }
+                                        .padding(.vertical, 6.0)
+                                        .padding(.horizontal, 12.0)
+
+                                        Divider().id("divider \(entry.id)")
+                                    }
+
+                                    Spacer()
+                                }
                             }
-                        }
-                        .onChange(of: frontmostApplicationHistory.entries) { newEntries in
-                            if let last = newEntries.last {
-                                proxy.scrollTo("divider \(last.id)", anchor: .bottom)
+                            .background(Color(NSColor.textBackgroundColor))
+                            .onAppear {
+                                if let last = frontmostApplicationHistory.entries.last {
+                                    proxy.scrollTo("divider \(last.id)", anchor: .bottom)
+                                }
+                            }
+                            .onChange(of: frontmostApplicationHistory.entries) { newEntries in
+                                if let last = newEntries.last {
+                                    proxy.scrollTo("divider \(last.id)", anchor: .bottom)
+                                }
                             }
                         }
                     }
                 }
                 .padding(6.0)
             }
-
-            Spacer()
         }
         .padding()
     }

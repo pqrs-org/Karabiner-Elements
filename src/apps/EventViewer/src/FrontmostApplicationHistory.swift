@@ -52,8 +52,6 @@ public class FrontmostApplicationHistory: ObservableObject {
     @Published var entries: [FrontmostApplicationEntry] = []
 
     init() {
-        clear()
-
         let obj = unsafeBitCast(self, to: UnsafeMutableRawPointer.self)
         libkrbn_enable_frontmost_application_monitor(callback, obj)
     }
@@ -72,10 +70,5 @@ public class FrontmostApplicationHistory: ObservableObject {
 
     public func clear() {
         entries.removeAll()
-
-        // Fill with empty entries to avoid SwiftUI List rendering corruption at FrontmostApplicationView.swift.
-        while entries.count < maxCount {
-            entries.append(FrontmostApplicationEntry())
-        }
     }
 }
