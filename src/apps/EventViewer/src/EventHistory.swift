@@ -202,7 +202,8 @@ public class EventHistoryEntry: Identifiable, Equatable {
 public class EventHistory: ObservableObject {
     public static let shared = EventHistory()
 
-    let maxCount = 256
+    // Keep maxCount small since too many entries causes performance issue at SwiftUI rendering.
+    let maxCount = 32
     var modifierFlags: [UInt64: Set<String>] = [:]
 
     @Published var entries: [EventHistoryEntry] = []
