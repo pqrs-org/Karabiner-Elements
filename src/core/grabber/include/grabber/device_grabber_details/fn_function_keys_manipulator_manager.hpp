@@ -181,24 +181,10 @@ public:
                  nlohmann::json::object({
                      // Touch ID
                      {"consumer_key_code", "menu"},
-                     {
-                         "modifiers",
-                         nlohmann::json::object({
-                             // Use `"mandatory": ["any"]` to ensure command+control+q will be send even if other modifiers (option,shift) are pressed.
-                             {"mandatory", nlohmann::json::array({"any"})},
-                         }),
-                     },
                  }),
                  nlohmann::json::object({
                      // Lock key on Magic Keyboard without Touch ID
                      {"consumer_key_code", "al_terminal_lock_or_screensaver"},
-                     {
-                         "modifiers",
-                         nlohmann::json::object({
-                             // Use `"mandatory": ["any"]` to ensure command+control+q will be send even if other modifiers (option,shift) are pressed.
-                             {"mandatory", nlohmann::json::array({"any"})},
-                         }),
-                     },
                  }),
              }) {
           std::vector<manipulator::to_event_definition> to_event_definitions;
