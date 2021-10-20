@@ -76,12 +76,10 @@ public class NotificationWindowManager {
             mainWindow.collectionBehavior.insert(.ignoresCycle)
             mainWindow.collectionBehavior.insert(.stationary)
 
-            let screenFrame = screen.visibleFrame
-            let windowFrame = mainWindow.frame
-            let margin = CGFloat(10.0)
+            let screenFrame = screen.frame
             mainWindow.setFrameOrigin(NSMakePoint(
-                screenFrame.origin.x + screenFrame.size.width - windowFrame.width - margin,
-                screenFrame.origin.y + margin
+                screenFrame.origin.x + screenFrame.size.width - 410,
+                screenFrame.origin.y + 10
             ))
 
             windows.append(mainWindow)
