@@ -939,7 +939,6 @@
         ]
     },
     {
-        "not_to": true,
         "label": "Lock key on Magic Keyboard without Touch ID",
         "data": [
             {
