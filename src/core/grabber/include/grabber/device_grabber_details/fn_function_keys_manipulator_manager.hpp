@@ -203,31 +203,12 @@ public:
              }) {
           std::vector<manipulator::to_event_definition> to_event_definitions;
 
-          // iokit_power_management_sleep_system
           to_event_definitions.emplace_back(nlohmann::json::object({
-              {
-                  "software_function",
-                  nlohmann::json::object({
-                      {"iokit_power_management_sleep_system", nlohmann::json::object()},
-                  }),
-              },
-          }));
-
-          // command+control+q (Lock screen)
-          to_event_definitions.emplace_back(nlohmann::json::object({
-              {"key_code", "q"},
-              {"modifiers", nlohmann::json::array({
-                                "left_command",
-                                "left_control",
-                            })},
+              {"consumer_key_code", "al_terminal_lock_or_screensaver"},
           }));
 
           auto manipulator = std::make_shared<manipulator::manipulators::basic::basic>(manipulator::manipulators::basic::from_event_definition(from_json),
                                                                                        to_event_definitions);
-
-          manipulator->push_back_condition(krbn::manipulator::manipulator_factory::make_frontmost_application_unless_condition({
-              "^com\\.apple\\.loginwindow$",
-          }));
 
           manipulator_manager_->push_back_manipulator(std::shared_ptr<manipulator::manipulators::base>(manipulator));
         }
