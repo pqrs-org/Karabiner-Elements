@@ -20,7 +20,7 @@ namespace nod {
 		};
 		/// Deleter that doesn't delete
 		inline void no_delete(disconnector*){
-		};
+		}
 	} // namespace detail
 
 	/// Base template for the signal class

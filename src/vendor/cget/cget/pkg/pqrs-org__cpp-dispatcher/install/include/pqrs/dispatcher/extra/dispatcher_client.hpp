@@ -67,6 +67,13 @@ public:
     return false;
   }
 
+  bool dispatcher_thread(void) const {
+    if (auto d = weak_dispatcher_.lock()) {
+      return d->dispatcher_thread();
+    }
+    return false;
+  }
+
 protected:
   std::weak_ptr<dispatcher> weak_dispatcher_;
   object_id object_id_;
