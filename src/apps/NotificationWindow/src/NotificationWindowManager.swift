@@ -20,7 +20,8 @@ private func callback(_ filePath: UnsafePointer<Int8>?,
 }
 
 public class NotificationWindowManager {
-    private var windows: [NSWindow] = []
+    private var mainWindows: [NSWindow] = []
+    private var buttonWindows: [NSWindow] = []
     private var observers = KarabinerKitSmartObserverContainer()
 
     init() {
@@ -46,12 +47,24 @@ public class NotificationWindowManager {
     }
 
     func updateWindows() {
+        //
         // The old window sometimes does not deallocated properly when screen count is decreased.
         // Thus, we hide the window before clear windows.
-        windows.forEach {
+        //
+
+        mainWindows.forEach {
             w in w.orderOut(self)
         }
-        windows.removeAll()
+        mainWindows.removeAll()
+
+        buttonWindows.forEach {
+            w in w.orderOut(self)
+        }
+        buttonWindows.removeAll()
+
+        //
+        // Create windows
+        //
 
         NSScreen.screens.forEach { screen in
             //
@@ -74,23 +87,23 @@ public class NotificationWindowManager {
             mainWindow.ignoresMouseEvents = true
             mainWindow.collectionBehavior.insert(.canJoinAllSpaces)
             mainWindow.collectionBehavior.insert(.ignoresCycle)
-            mainWindow.collectionBehavior.insert(.stationary)
+            //mainWindow.collectionBehavior.insert(.stationary)
 
-            let screenFrame = screen.frame
+            let screenFrame = screen.visibleFrame
             mainWindow.setFrameOrigin(NSMakePoint(
                 screenFrame.origin.x + screenFrame.size.width - 410,
                 screenFrame.origin.y + 10
             ))
 
-            windows.append(mainWindow)
+            mainWindows.append(mainWindow)
 
             //
             // Close button
             //
 
             let buttonWindow = NSWindow(
-                contentRect: NSMakeRect(mainWindow.frame.origin.x + CGFloat(-8.0),
-                                        mainWindow.frame.origin.y + CGFloat(36.0),
+                contentRect: NSMakeRect(mainWindow.frame.origin.x - 8,
+                                        mainWindow.frame.origin.y + 36,
                                         CGFloat(24.0),
                                         CGFloat(24.0)),
                 styleMask: [
@@ -106,11 +119,9 @@ public class NotificationWindowManager {
             buttonWindow.ignoresMouseEvents = false
             buttonWindow.collectionBehavior.insert(.canJoinAllSpaces)
             buttonWindow.collectionBehavior.insert(.ignoresCycle)
-            buttonWindow.collectionBehavior.insert(.stationary)
+            //buttonWindow.collectionBehavior.insert(.stationary)
 
-            mainWindow.addChildWindow(buttonWindow, ordered: .above)
-
-            windows.append(buttonWindow)
+            buttonWindows.append(buttonWindow)
         }
 
         updateWindowsVisibility()
@@ -119,7 +130,15 @@ public class NotificationWindowManager {
     func updateWindowsVisibility() {
         let hide = NotificationMessage.shared.text.isEmpty
 
-        windows.forEach { w in
+        mainWindows.forEach { w in
+            if hide {
+                w.orderOut(self)
+            } else {
+                w.orderFront(self)
+            }
+        }
+
+        buttonWindows.forEach { w in
             if hide {
                 w.orderOut(self)
             } else {
