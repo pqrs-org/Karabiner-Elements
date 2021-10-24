@@ -78,7 +78,12 @@ public class MenuController: NSObject, NSMenuDelegate {
 
         if let coreConfigurationModel = KarabinerKitConfigurationManager.shared().coreConfigurationModel {
             if coreConfigurationModel.globalConfigurationShowProfileNameInMenuBar {
-                title = coreConfigurationModel.selectedProfileName
+                if coreConfigurationModel.globalConfigurationShowInMenuBar {
+                    // Add padding
+                    title += " "
+                }
+
+                title += coreConfigurationModel.selectedProfileName
             }
         }
 
