@@ -8,6 +8,9 @@ clean:
 	rm -fr *.xcodeproj
 	rm -fr build
 
+xcode:
+	open *.xcodeproj
+
 run:
 	./build/Release/Karabiner-Menu.app/Contents/MacOS/Karabiner-Menu
 
