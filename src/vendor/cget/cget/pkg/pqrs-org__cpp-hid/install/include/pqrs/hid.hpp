@@ -1,6 +1,6 @@
 #pragma once
 
-// pqrs::hid v2.7
+// pqrs::hid v2.8
 
 // (C) Copyright Takayama Fumihiko 2020.
 // Distributed under the Boost Software License, Version 1.0.

@@ -313,8 +313,90 @@ constexpr value_t voice_command(0x00cf);
 constexpr value_t mute(0x00e2);
 constexpr value_t volume_increment(0x00e9);
 constexpr value_t volume_decrement(0x00ea);
+
+// application launch buttons
+
+constexpr value_t al_word_processor(0x0184);
+constexpr value_t al_text_editor(0x0185);
+constexpr value_t al_spreadsheet(0x0186);
+constexpr value_t al_graphics_editor(0x0187);
+constexpr value_t al_presentation_app(0x0188);
+constexpr value_t al_database_app(0x0189);
+constexpr value_t al_email_reader(0x018a);
+constexpr value_t al_newsreader(0x018b);
+constexpr value_t al_voicemail(0x018c);
+constexpr value_t al_contacts_or_address_book(0x018d);
+constexpr value_t al_Calendar_Or_Schedule(0x018E);
+constexpr value_t al_task_or_project_manager(0x018f);
+constexpr value_t al_log_or_journal_or_timecard(0x0190);
+constexpr value_t al_checkbook_or_finance(0x0191);
+constexpr value_t al_calculator(0x0192);
+constexpr value_t al_a_or_v_capture_or_playback(0x0193);
+constexpr value_t al_local_machine_browser(0x0194);
+constexpr value_t al_lan_or_wan_browser(0x0195);
+constexpr value_t al_internet_browser(0x0196);
+constexpr value_t al_remote_networking_or_isp_connect(0x0197);
+constexpr value_t al_network_conference(0x0198);
+constexpr value_t al_network_chat(0x0199);
+constexpr value_t al_telephony_or_dialer(0x019a);
+constexpr value_t al_logon(0x019b);
+constexpr value_t al_logoff(0x019c);
+constexpr value_t al_logon_or_logoff(0x019d);
 constexpr value_t al_terminal_lock_or_screensaver(0x019e);
-constexpr value_t ac_pan(0x0238);
+constexpr value_t al_control_panel(0x019f);
+constexpr value_t al_command_line_processor_or_run(0x01a0);
+constexpr value_t al_process_or_task_manager(0x01a1);
+constexpr value_t al_select_task_or_application(0x01a2);
+constexpr value_t al_next_task_or_application(0x01a3);
+constexpr value_t al_previous_task_or_application(0x01a4);
+constexpr value_t al_preemptive_halt_task_or_application(0x01a5);
+constexpr value_t al_integrated_help_center(0x01a6);
+constexpr value_t al_documents(0x01a7);
+constexpr value_t al_thesaurus(0x01a8);
+constexpr value_t al_dictionary(0x01a9);
+constexpr value_t al_desktop(0x01aa);
+constexpr value_t al_spell_check(0x01ab);
+constexpr value_t al_grammer_check(0x01ac);
+constexpr value_t al_wireless_status(0x01ad);
+constexpr value_t al_keyboard_layout(0x01ae);
+constexpr value_t al_virus_protection(0x01af);
+constexpr value_t al_encryption(0x01b0);
+constexpr value_t al_screen_saver(0x01b1);
+constexpr value_t al_alarms(0x01b2);
+constexpr value_t al_clock(0x01b3);
+constexpr value_t al_file_browser(0x01b4);
+constexpr value_t al_power_status(0x01b5);
+constexpr value_t al_image_browser(0x01b6);
+constexpr value_t al_audio_browser(0x01b7);
+constexpr value_t al_movie_browser(0x01b8);
+constexpr value_t al_digital_rights_manager(0x01b9);
+constexpr value_t al_digital_wallet(0x01ba);
+constexpr value_t al_instant_messaging(0x01bc);
+constexpr value_t al_oem_feature_browser(0x01bd);
+constexpr value_t al_oem_help(0x01be);
+constexpr value_t al_online_community(0x01bf);
+constexpr value_t al_entertainment_content_browser(0x01c0);
+constexpr value_t al_online_shopping_browswer(0x01c1);
+constexpr value_t al_smart_card_information_or_help(0x01c2);
+constexpr value_t al_market_monitor_or_finance_browser(0x01c3);
+constexpr value_t al_customized_corporate_news_browser(0x01c4);
+constexpr value_t al_online_activity_browswer(0x01c5);
+constexpr value_t al_research_or_search_browswer(0x01c6);
+constexpr value_t al_audio_player(0x01c7);
+constexpr value_t al_message_status(0x01c8);
+constexpr value_t al_contact_sync(0x01c9);
+constexpr value_t al_navigation(0x01ca);
+constexpr value_t al_contextaware_desktop_assistant(0x01cb);
+
+// generic gui application controls
+
+constexpr value_t ac_home(0x0223);
+constexpr value_t ac_back(0x0224);
+constexpr value_t ac_forward(0x0225);
+constexpr value_t ac_refresh(0x0227);
+constexpr value_t ac_bookmarks(0x022a);
+constexpr value_t ac_pan(0x0238); // Horizontal mouse wheel
+
 } // namespace consumer
 
 //
