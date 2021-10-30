@@ -43,10 +43,11 @@
   return jsonObject;
 }
 
-+ (NSString*)createJsonString:(id)json {
++ (NSString*)createJsonString:(id)json
+                      options:(NSJSONWritingOptions)options {
   NSError* error = nil;
   NSData* data = [NSJSONSerialization dataWithJSONObject:json
-                                                 options:NSJSONWritingPrettyPrinted
+                                                 options:options
                                                    error:&error];
   if (error) {
     NSLog(@"[JsonUtility createJsonString] error: %@", error);
@@ -61,10 +62,22 @@
   return [[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding];
 }
 
++ (NSString*)createJsonString:(id)json {
+  return [self createJsonString:json options:NSJSONWritingPrettyPrinted];
+}
+
 + (NSString*)createPrettyPrintedString:(NSString*)string {
   id jsonObject = [self loadString:string];
   if (jsonObject) {
     return [self createJsonString:jsonObject];
+  }
+  return nil;
+}
+
++ (NSString*)createCompactJsonString:(NSString*)string {
+  id jsonObject = [self loadString:string];
+  if (jsonObject) {
+    return [self createJsonString:jsonObject options:0];
   }
   return nil;
 }
