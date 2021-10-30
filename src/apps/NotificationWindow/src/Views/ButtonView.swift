@@ -11,7 +11,7 @@ struct ButtonView: View {
                 buttonWindow.orderOut(self)
             }
         ) {
-            Image(decorative: "ic_cancel_18pt")
+            Image(systemName: "xmark.circle")
                 .resizable()
                 .frame(width: 24.0, height: 24.0)
                 .foregroundColor(Color.gray)
