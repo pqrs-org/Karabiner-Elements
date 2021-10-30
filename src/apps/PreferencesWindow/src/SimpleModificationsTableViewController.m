@@ -39,7 +39,8 @@
       ![definition isEqualToString:@"[]"]) {
     [popUpButton.menu addItem:[NSMenuItem separatorItem]];
 
-    NSMenuItem* item = [[NSMenuItem alloc] initWithTitle:definition
+    NSString* compactJsonString = [KarabinerKitJsonUtility createCompactJsonString:definition];
+    NSMenuItem* item = [[NSMenuItem alloc] initWithTitle:compactJsonString
                                                   action:NULL
                                            keyEquivalent:@""];
     item.representedObject = definition;
