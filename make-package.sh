@@ -2,6 +2,18 @@
 
 set -u
 
+# Check Xcode version
+
+sdkversion=$(xcrun --show-sdk-version)
+if [ ${sdkversion%.*} -lt 12 ]; then
+    echo
+    echo 'ERROR:'
+    echo '  Xcode is too old.'
+    echo '  You have to use Xcode 13.1 or later.'
+    echo
+    exit 1
+fi
+
 # Package build into a signed .dmg file
 
 version=$(cat version)
