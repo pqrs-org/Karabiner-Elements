@@ -1,6 +1,6 @@
 # Changelog
 
-## Beta
+## Karabiner-Elements 14.0.0
 
 -   💥 Breaking changes
     -   macOS 10.15 support has been dropped.
