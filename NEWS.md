@@ -6,6 +6,7 @@
     -   macOS 10.15 support has been dropped.
 -   ✨ New Features
     -   Supported Touch ID on Magic Keyboard.
+    -   Supported application launcher keys (Mail, Browser, Calculator, etc.) which are belong to HID Consumer Usage Page and Application Launch Buttons Usage.
     -   Add new features for writing your own settings:
         -   Added [`software_function.iokit_power_management_sleep_system`](https://karabiner-elements.pqrs.org/docs/json/complex-modifications-manipulator-definition/to/software_function/iokit_power_management_sleep_system/).
 -   ⚡️ Improvements
