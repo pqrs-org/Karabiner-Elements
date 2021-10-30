@@ -2423,17 +2423,14 @@
         "category": "Application Launch keys"
     },
     {
-        "not_to": true,
         "label": "al_word_processor",
         "data": [{ "consumer_key_code": "al_word_processor" }]
     },
     {
-        "not_to": true,
         "label": "al_text_editor",
         "data": [{ "consumer_key_code": "al_text_editor" }]
     },
     {
-        "not_to": true,
         "label": "al_spreadsheet",
         "data": [{ "consumer_key_code": "al_spreadsheet" }]
     },
@@ -2443,7 +2440,6 @@
         "data": [{ "consumer_key_code": "al_graphics_editor" }]
     },
     {
-        "not_to": true,
         "label": "al_presentation_app",
         "data": [{ "consumer_key_code": "al_presentation_app" }]
     },
@@ -2453,7 +2449,6 @@
         "data": [{ "consumer_key_code": "al_database_app" }]
     },
     {
-        "not_to": true,
         "label": "al_email_reader",
         "data": [{ "consumer_key_code": "al_email_reader" }]
     },
@@ -2493,7 +2488,6 @@
         "data": [{ "consumer_key_code": "al_checkbook_or_finance" }]
     },
     {
-        "not_to": true,
         "label": "al_calculator",
         "data": [{ "consumer_key_code": "al_calculator" }]
     },
@@ -2503,7 +2497,6 @@
         "data": [{ "consumer_key_code": "al_a_or_v_capture_or_playback" }]
     },
     {
-        "not_to": true,
         "label": "al_local_machine_browser",
         "data": [{ "consumer_key_code": "al_local_machine_browser" }]
     },
@@ -2513,7 +2506,6 @@
         "data": [{ "consumer_key_code": "al_lan_or_wan_browser" }]
     },
     {
-        "not_to": true,
         "label": "al_internet_browser",
         "data": [{ "consumer_key_code": "al_internet_browser" }]
     },
@@ -2605,7 +2597,6 @@
         "data": [{ "consumer_key_code": "al_thesaurus" }]
     },
     {
-        "not_to": true,
         "label": "al_dictionary",
         "data": [{ "consumer_key_code": "al_dictionary" }]
     },

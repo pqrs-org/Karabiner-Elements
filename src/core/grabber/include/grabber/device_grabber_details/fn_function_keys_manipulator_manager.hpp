@@ -175,6 +175,11 @@ public:
       }
     }
 
+    //
+    // Change keys which macOS will ignore.
+    //
+
+    // Touch ID
     {
       try {
         for (const auto& from_json : {
@@ -201,6 +206,78 @@ public:
 
       } catch (const std::exception& e) {
         logger::get_logger()->error(e.what());
+      }
+    }
+
+    // Application launch buttons
+    {
+      nlohmann::json data = nlohmann::json::array();
+
+      data.push_back(nlohmann::json::object({
+          {"from", nlohmann::json::object({{"consumer_key_code", "al_word_processor"}})},
+          {"to", nlohmann::json::object({{"shell_command", "open -a 'Pages.app'"}})},
+      }));
+
+      data.push_back(nlohmann::json::object({
+          {"from", nlohmann::json::object({{"consumer_key_code", "al_text_editor"}})},
+          {"to", nlohmann::json::object({{"shell_command", "open -a 'TextEdit.app'"}})},
+      }));
+
+      data.push_back(nlohmann::json::object({
+          {"from", nlohmann::json::object({{"consumer_key_code", "al_spreadsheet"}})},
+          {"to", nlohmann::json::object({{"shell_command", "open -a 'Numbers.app'"}})},
+      }));
+
+      data.push_back(nlohmann::json::object({
+          {"from", nlohmann::json::object({{"consumer_key_code", "al_presentation_app"}})},
+          {"to", nlohmann::json::object({{"shell_command", "open -a 'Keynote.app'"}})},
+      }));
+
+      data.push_back(nlohmann::json::object({
+          {"from", nlohmann::json::object({{"consumer_key_code", "al_email_reader"}})},
+          {"to", nlohmann::json::object({{"shell_command", "open -a 'Mail.app'"}})},
+      }));
+
+      data.push_back(nlohmann::json::object({
+          {"from", nlohmann::json::object({{"consumer_key_code", "al_calculator"}})},
+          {"to", nlohmann::json::object({{"shell_command", "open -a 'Calculator.app'"}})},
+      }));
+
+      data.push_back(nlohmann::json::object({
+          {"from", nlohmann::json::object({{"consumer_key_code", "al_local_machine_browser"}})},
+          {"to", nlohmann::json::object({{"shell_command", "open -a 'Finder.app'"}})},
+      }));
+
+      data.push_back(nlohmann::json::object({
+          {"from", nlohmann::json::object({{"consumer_key_code", "al_internet_browser"}})},
+          {"to", nlohmann::json::object({{"shell_command", "open -a 'Safari.app'"}})},
+      }));
+
+      data.push_back(nlohmann::json::object({
+          {"from", nlohmann::json::object({{"consumer_key_code", "al_dictionary"}})},
+          {"to", nlohmann::json::object({{"shell_command", "open -a 'Dictionary.app'"}})},
+      }));
+
+      for (const auto& d : data) {
+        auto from_json = d["from"];
+        from_json["modifiers"]["mandatory"] = nlohmann::json::array({"any"});
+
+        auto to_json = d["to"];
+
+        std::vector<manipulator::to_event_definition> to_event_definitions;
+        to_event_definitions.emplace_back(to_json);
+
+        try {
+          auto manipulator = std::make_shared<manipulator::manipulators::basic::basic>(manipulator::manipulators::basic::from_event_definition(from_json),
+                                                                                       to_event_definitions);
+          manipulator_manager_->push_back_manipulator(std::shared_ptr<manipulator::manipulators::base>(manipulator));
+
+        } catch (const pqrs::json::unmarshal_error& e) {
+          logger::get_logger()->error(fmt::format("karabiner.json error: {0}", e.what()));
+
+        } catch (const std::exception& e) {
+          logger::get_logger()->error(e.what());
+        }
       }
     }
   }
