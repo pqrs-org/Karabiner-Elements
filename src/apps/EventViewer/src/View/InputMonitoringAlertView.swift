@@ -1,5 +1,11 @@
 import SwiftUI
 
+class InputMonitoringAlertData: ObservableObject {
+    public static let shared = InputMonitoringAlertData()
+
+    @Published var showing = false
+}
+
 struct InputMonitoringAlertView: View {
     var body: some View {
         VStack(alignment: .center, spacing: 20.0) {
@@ -24,8 +30,6 @@ struct InputMonitoringAlertView: View {
     }
 
     func openSystemPreferencesSecurity() {
-        NSApplication.shared.miniaturizeAll(self)
-
         let url = URL(string: "x-apple.systempreferences:com.apple.preference.security?Privacy_ListenEvent")!
         NSWorkspace.shared.open(url)
     }

@@ -4,7 +4,6 @@ import SwiftUI
 @NSApplicationMain
 public class AppDelegate: NSObject, NSApplicationDelegate {
     var window: NSWindow?
-    var inputMonitoringAlertWindow: NSWindow?
 
     public func applicationDidFinishLaunching(_: Notification) {
         ProcessInfo.processInfo.enableSuddenTermination()
@@ -37,27 +36,9 @@ public class AppDelegate: NSObject, NSApplicationDelegate {
             self.setWindowProperty()
         }
 
-        DispatchQueue.main.asyncAfter(deadline: .now() + 3.0) { [weak self] in
-            guard let self = self else { return }
-
+        DispatchQueue.main.asyncAfter(deadline: .now() + 3.0) {
             if !EventHistory.shared.observed() {
-                self.inputMonitoringAlertWindow = NSPanel(
-                    contentRect: .zero,
-                    styleMask: [
-                        .titled,
-                        .closable,
-                        .fullSizeContentView,
-                    ],
-                    backing: .buffered,
-                    defer: false
-                )
-                self.inputMonitoringAlertWindow!.hidesOnDeactivate = false
-                self.inputMonitoringAlertWindow!.title = "Input Monitoring Permissions Alert"
-                self.inputMonitoringAlertWindow!.contentView = NSHostingView(rootView: InputMonitoringAlertView())
-                self.inputMonitoringAlertWindow!.centerToOtherWindow(self.window!)
-
-                self.window!.addChildWindow(self.inputMonitoringAlertWindow!, ordered: .above)
-                self.inputMonitoringAlertWindow!.makeKeyAndOrderFront(nil)
+                InputMonitoringAlertData.shared.showing = true
             }
         }
     }

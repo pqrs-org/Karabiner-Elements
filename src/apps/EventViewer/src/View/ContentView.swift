@@ -1,6 +1,7 @@
 import SwiftUI
 
 struct ContentView: View {
+    @ObservedObject var inputMonitoringAlertData = InputMonitoringAlertData.shared
     @State private var selection: String? = "Main"
 
     let version = Bundle.main.object(forInfoDictionaryKey: "CFBundleVersion") as! String
@@ -58,10 +59,29 @@ struct ContentView: View {
                     Spacer()
                 }
             }
-        }.frame(minWidth: 1100,
-                maxWidth: .infinity,
-                minHeight: 650,
-                maxHeight: .infinity)
+        }
+        .frame(minWidth: 1100,
+               maxWidth: .infinity,
+               minHeight: 650,
+               maxHeight: .infinity)
+        .sheet(isPresented: $inputMonitoringAlertData.showing) {
+            ZStack(alignment: .topLeading) {
+                InputMonitoringAlertView()
+
+                Button(
+                    action: {
+                        inputMonitoringAlertData.showing = false
+                    }
+                ) {
+                    Image(systemName: "xmark.circle")
+                        .resizable()
+                        .frame(width: 24.0, height: 24.0)
+                        .foregroundColor(Color(NSColor.textColor))
+                }
+                .buttonStyle(PlainButtonStyle())
+                .offset(x: 10, y: 10)
+            }
+        }
     }
 }
 
