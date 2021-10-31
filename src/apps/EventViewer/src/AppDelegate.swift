@@ -36,10 +36,8 @@ public class AppDelegate: NSObject, NSApplicationDelegate {
             self.setWindowProperty()
         }
 
-        DispatchQueue.main.asyncAfter(deadline: .now() + 3.0) {
-            if !EventHistory.shared.observed() {
-                InputMonitoringAlertData.shared.showing = true
-            }
+        if !IOHIDRequestAccess(kIOHIDRequestTypeListenEvent) {
+            InputMonitoringAlertData.shared.showing = true
         }
     }
 
