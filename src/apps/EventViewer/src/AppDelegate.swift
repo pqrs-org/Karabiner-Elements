@@ -71,7 +71,7 @@ public class AppDelegate: NSObject, NSApplicationDelegate {
     }
 
     private func setWindowProperty() {
-        if let window = self.window {
+        if let window = window {
             // ----------------------------------------
             if UserSettings.shared.forceStayTop {
                 window.level = .floating

@@ -87,7 +87,7 @@ public class NotificationWindowManager {
             mainWindow.ignoresMouseEvents = true
             mainWindow.collectionBehavior.insert(.canJoinAllSpaces)
             mainWindow.collectionBehavior.insert(.ignoresCycle)
-            //mainWindow.collectionBehavior.insert(.stationary)
+            // mainWindow.collectionBehavior.insert(.stationary)
 
             let screenFrame = screen.visibleFrame
             mainWindow.setFrameOrigin(NSMakePoint(
@@ -119,7 +119,7 @@ public class NotificationWindowManager {
             buttonWindow.ignoresMouseEvents = false
             buttonWindow.collectionBehavior.insert(.canJoinAllSpaces)
             buttonWindow.collectionBehavior.insert(.ignoresCycle)
-            //buttonWindow.collectionBehavior.insert(.stationary)
+            // buttonWindow.collectionBehavior.insert(.stationary)
 
             buttonWindows.append(buttonWindow)
         }
