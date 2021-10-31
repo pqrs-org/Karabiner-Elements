@@ -1,5 +1,10 @@
 name: Karabiner-EventViewer
 
+packages:
+  AXSwift:
+    url: https://github.com/tmandry/AXSwift
+    from: 0.3.2
+
 targets:
   Karabiner-EventViewer:
     settings:
@@ -34,3 +39,4 @@ targets:
           - '*.plist.in'
     dependencies:
       - sdk: libc++.tbd
+      - package: AXSwift
