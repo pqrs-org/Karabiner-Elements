@@ -62,7 +62,6 @@ public class AlertWindowsManager: NSObject {
                 defer: false
             )
             driverVersionNotMatchedAlertWindow!.hidesOnDeactivate = false
-            driverVersionNotMatchedAlertWindow!.title = DriverVersionNotMatchedAlertView.title
             driverVersionNotMatchedAlertWindow!.contentView = NSHostingView(rootView: DriverVersionNotMatchedAlertView())
             driverVersionNotMatchedAlertWindow!.centerToOtherWindow(parentWindow)
             parentWindow.addChildWindow(driverVersionNotMatchedAlertWindow!, ordered: .above)
