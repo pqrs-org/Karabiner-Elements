@@ -1,16 +1,11 @@
 import SwiftUI
 
 struct InputMonitoringPermissionsAlertView: View {
-    public static let title = "Input Monitoring Permissions Alert"
-
     var body: some View {
-        VStack(alignment: .leading, spacing: 20.0) {
-            HStack {
-                Image(decorative: "baseline_warning_black_48pt")
-                    .resizable()
-                    .frame(width: 48.0, height: 48.0)
-                Text(InputMonitoringPermissionsAlertView.title)
-            }
+        VStack(spacing: 20.0) {
+            Label("Please allow Karabiner apps to monitor input events",
+                  systemImage: "lightbulb")
+                .font(.system(size: 24))
 
             Text("karabiner_grabber and karabiner_observer require Input Monitoring permission.\nPlease allow them on Security & Privacy System Preferences.")
                 .fixedSize(horizontal: false, vertical: true)
@@ -26,10 +21,10 @@ struct InputMonitoringPermissionsAlertView: View {
                 .resizable()
                 .aspectRatio(contentMode: .fit)
                 .border(Color.gray, width: 1)
-                .frame(height: 200)
+                .frame(height: 300)
         }
         .padding()
-        .frame(width: 550)
+        .frame(width: 700)
     }
 
     private func openSystemPreferencesSecurity() {

@@ -98,7 +98,6 @@ public class AlertWindowsManager: NSObject {
                 defer: false
             )
             inputMonitoringPermissionsAlertWindow!.hidesOnDeactivate = false
-            inputMonitoringPermissionsAlertWindow!.title = InputMonitoringPermissionsAlertView.title
             inputMonitoringPermissionsAlertWindow!.contentView = NSHostingView(rootView: InputMonitoringPermissionsAlertView())
             inputMonitoringPermissionsAlertWindow!.centerToOtherWindow(parentWindow)
             parentWindow.addChildWindow(inputMonitoringPermissionsAlertWindow!, ordered: .above)
