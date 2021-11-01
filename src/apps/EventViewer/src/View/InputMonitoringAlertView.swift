@@ -9,11 +9,14 @@ class InputMonitoringAlertData: ObservableObject {
 struct InputMonitoringAlertView: View {
     var body: some View {
         VStack(alignment: .center, spacing: 20.0) {
-            Label("EventViewer Alert", systemImage: "exclamationmark.triangle.fill").font(.system(size: 24))
+            Label("Please allow Karabiner-EventViewer to monitor input events",
+                  systemImage: "exclamationmark.triangle.fill")
+                .font(.system(size: 24))
 
-            Text("EventViewer requires Input Monitoring permission.\nYou have to allow Karabiner-EventViewer on Security & Privacy System Preferences.")
-                .multilineTextAlignment(.center)
-                .fixedSize(horizontal: false, vertical: true)
+            VStack(spacing: 0) {
+                Text("Karabiner-EventViewer requires Input Monitoring permission to show input events.")
+                Text("Please allow on Security & Privacy System Preferences.")
+            }
 
             Button(action: { openSystemPreferencesSecurity() }) {
                 Label("Open Security & Privacy System Preferences...", systemImage: "arrow.forward.circle.fill")
@@ -25,7 +28,7 @@ struct InputMonitoringAlertView: View {
                 .frame(height: 300.0)
                 .border(Color.gray, width: 1)
         }
-        .frame(width: 600)
+        .frame(width: 800)
         .padding()
     }
 
