@@ -24,7 +24,7 @@ struct DriverNotLoadedAlertView: View {
                         Image(decorative: "dext-allow")
                             .resizable()
                             .aspectRatio(contentMode: .fit)
-                            .frame(height: 200)
+                            .frame(height: 300)
                             .border(Color.gray, width: 1)
                     }.padding()
                 }.frame(width: 400)
