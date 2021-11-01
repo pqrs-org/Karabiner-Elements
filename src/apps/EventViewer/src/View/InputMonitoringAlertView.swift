@@ -19,7 +19,8 @@ struct InputMonitoringAlertView: View {
             }
 
             Button(action: { openSystemPreferencesSecurity() }) {
-                Label("Open Security & Privacy System Preferences...", systemImage: "arrow.forward.circle.fill")
+                Label("Open Security & Privacy System Preferences...",
+                      systemImage: "arrow.forward.circle.fill")
             }
 
             Image(decorative: "input_monitoring")
