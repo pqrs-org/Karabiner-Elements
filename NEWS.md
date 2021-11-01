@@ -1,10 +1,10 @@
 # Changelog
 
-## Karabiner-Elements 14.0.0
+## Karabiner-Elements 14.1.0
 
--   [📦 Download](https://github.com/pqrs-org/Karabiner-Elements/releases/download/v14.0.0/Karabiner-Elements-14.0.0.dmg)
+-   [📦 Download](https://github.com/pqrs-org/Karabiner-Elements/releases/download/v14.1.0/Karabiner-Elements-14.1.0.dmg)
 -   📅 Release date
-    -   Oct 30, 2021
+    -   Nov 1, 2021
 -   💥 Breaking changes
     -   macOS 10.15 support has been dropped.
 -   ✨ New Features
