@@ -27,7 +27,6 @@ public class AlertWindowsManager: NSObject {
                 defer: false
             )
             driverNotLoadedAlertWindow!.hidesOnDeactivate = false
-            driverNotLoadedAlertWindow!.title = DriverNotLoadedAlertView.title
             driverNotLoadedAlertWindow!.contentView = NSHostingView(rootView: DriverNotLoadedAlertView())
             driverNotLoadedAlertWindow!.centerToOtherWindow(parentWindow)
             parentWindow.addChildWindow(driverNotLoadedAlertWindow!, ordered: .above)

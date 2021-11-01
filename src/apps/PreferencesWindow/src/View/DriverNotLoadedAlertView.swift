@@ -1,18 +1,13 @@
 import SwiftUI
 
 struct DriverNotLoadedAlertView: View {
-    public static let title = "Driver Alert"
-
     var body: some View {
         VStack(alignment: .leading) {
-            HStack {
-                Image(decorative: "baseline_warning_black_48pt")
-                    .resizable()
-                    .frame(width: 48.0, height: 48.0)
-                Text(DriverNotLoadedAlertView.title)
-            }
+            Label("Please allow Karabiner-VirtualHIDDevice-Manager system software",
+                  systemImage: "lightbulb")
+                .font(.system(size: 24))
 
-            HStack(alignment: .top) {
+            HStack(alignment: .top, spacing: 40.0) {
                 GroupBox {
                     VStack(alignment: .leading, spacing: 20.0) {
                         Text("The virtual keyboard and mouse driver is not loaded.\nPlease allow system software from \".Karabiner-VirtualHIDDevice-Manager\" on Security & Privacy System Preferences.")
