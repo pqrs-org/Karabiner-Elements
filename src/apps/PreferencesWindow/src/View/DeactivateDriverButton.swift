@@ -19,10 +19,8 @@ struct DeactivateDriverButton: View {
                     }
                 })
             }) {
-                Image(decorative: "ic_star_rate_18pt")
-                    .resizable()
-                    .frame(width: GUISize.buttonIconWidth, height: GUISize.buttonIconHeight)
-                Text("Deactivate driver")
+                Label("Deactivate driver",
+                      systemImage: "star.fill")
             }
 
             if self.showingProgress {

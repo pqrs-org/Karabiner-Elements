@@ -19,10 +19,8 @@ struct ActivateDriverButton: View {
                     }
                 })
             }) {
-                Image(decorative: "ic_star_rate_18pt")
-                    .resizable()
-                    .frame(width: GUISize.buttonIconWidth, height: GUISize.buttonIconHeight)
-                Text("Activate driver")
+                Label("Activate driver",
+                      systemImage: "star.fill")
             }
 
             if self.showingProgress {
