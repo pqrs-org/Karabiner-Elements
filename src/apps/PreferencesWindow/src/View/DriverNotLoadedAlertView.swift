@@ -10,15 +10,14 @@ struct DriverNotLoadedAlertView: View {
             HStack(alignment: .top, spacing: 40.0) {
                 GroupBox {
                     VStack(alignment: .leading, spacing: 20.0) {
-                        Text("The virtual keyboard and mouse driver is not loaded.\nPlease allow system software from \".Karabiner-VirtualHIDDevice-Manager\" on Security & Privacy System Preferences.")
-                            .fixedSize(horizontal: false, vertical: true)
+                        VStack(alignment: .leading, spacing: 0) {
+                            Text("The virtual keyboard and mouse driver is not loaded.")
+                            Text("Please allow system software from \".Karabiner-VirtualHIDDevice-Manager\" on Security & Privacy System Preferences.")
+                        }
 
                         Button(action: { openSystemPreferencesSecurity() }) {
-                            Image(decorative: "ic_forward_18pt")
-                                .resizable()
-                                .frame(width: GUISize.buttonIconWidth, height: GUISize.buttonIconHeight)
-                            Text("Open Security & Privacy System Preferences")
-                                .fixedSize(horizontal: false, vertical: true)
+                            Label("Open Security & Privacy System Preferences...",
+                                  systemImage: "arrow.forward.circle.fill")
                         }
 
                         Image(decorative: "dext-allow")
@@ -31,8 +30,10 @@ struct DriverNotLoadedAlertView: View {
 
                 GroupBox(label: Text("Advanced")) {
                     VStack(alignment: .leading, spacing: 20.0) {
-                        Text("If macOS failed to load the driver in the early stage, the allow button might be not shown on Security & Privacy System Preferences.\nIn this case, you need to reinstall the driver in order for the button to appear.")
-                            .fixedSize(horizontal: false, vertical: true)
+                        VStack(alignment: .leading, spacing: 0) {
+                            Text("If macOS failed to load the driver in the early stage, the allow button might be not shown on Security & Privacy System Preferences.")
+                            Text("In this case, you need to reinstall the driver in order for the button to appear.")
+                        }
 
                         Text("How to reinstall driver:")
 
