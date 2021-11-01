@@ -10,6 +10,10 @@ public class AppDelegate: NSObject, NSApplicationDelegate {
 
         libkrbn_initialize()
 
+        if !IOHIDRequestAccess(kIOHIDRequestTypeListenEvent) {
+            InputMonitoringAlertData.shared.showing = true
+        }
+
         window = NSWindow(
             contentRect: .zero,
             styleMask: [
@@ -22,6 +26,7 @@ public class AppDelegate: NSObject, NSApplicationDelegate {
             backing: .buffered,
             defer: false
         )
+        window!.title = "Karabiner-EventViewer"
         window!.contentView = NSHostingView(rootView: ContentView())
         window!.center()
         window!.makeKeyAndOrderFront(self)
@@ -34,10 +39,6 @@ public class AppDelegate: NSObject, NSApplicationDelegate {
             guard let self = self else { return }
 
             self.setWindowProperty()
-        }
-
-        if !IOHIDRequestAccess(kIOHIDRequestTypeListenEvent) {
-            InputMonitoringAlertData.shared.showing = true
         }
     }
 
