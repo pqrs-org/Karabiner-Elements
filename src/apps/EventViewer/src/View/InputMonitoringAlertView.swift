@@ -10,7 +10,7 @@ struct InputMonitoringAlertView: View {
     var body: some View {
         VStack(alignment: .center, spacing: 20.0) {
             Label("Please allow Karabiner-EventViewer to monitor input events",
-                  systemImage: "exclamationmark.triangle.fill")
+                  systemImage: "lightbulb")
                 .font(.system(size: 24))
 
             VStack(spacing: 0) {
