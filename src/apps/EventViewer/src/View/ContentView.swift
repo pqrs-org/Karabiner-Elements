@@ -1,6 +1,8 @@
 import SwiftUI
 
 struct ContentView: View {
+    let window: NSWindow?
+
     @ObservedObject var inputMonitoringAlertData = InputMonitoringAlertData.shared
     @State private var selection: String? = "Main"
 
@@ -9,7 +11,7 @@ struct ContentView: View {
     var body: some View {
         VStack {
             if inputMonitoringAlertData.showing {
-                InputMonitoringAlertView()
+                InputMonitoringAlertView(window: window)
             } else {
                 NavigationView {
                     VStack(alignment: .leading, spacing: 0) {
@@ -73,6 +75,6 @@ struct ContentView: View {
 
 struct ContentView_Previews: PreviewProvider {
     static var previews: some View {
-        ContentView()
+        ContentView(window: nil)
     }
 }

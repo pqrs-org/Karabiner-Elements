@@ -7,6 +7,8 @@ class InputMonitoringAlertData: ObservableObject {
 }
 
 struct InputMonitoringAlertView: View {
+    let window: NSWindow?
+
     var body: some View {
         VStack(alignment: .center, spacing: 20.0) {
             Label("Please allow Karabiner-EventViewer to monitor input events",
@@ -34,17 +36,17 @@ struct InputMonitoringAlertView: View {
     }
 
     func openSystemPreferencesSecurity() {
-        NSApplication.shared.miniaturizeAll(self)
-
         let url = URL(string: "x-apple.systempreferences:com.apple.preference.security?Privacy_ListenEvent")!
         NSWorkspace.shared.open(url)
+
+        window?.orderBack(self)
     }
 }
 
 struct InputMonitoringAlertView_Previews: PreviewProvider {
     static var previews: some View {
         Group {
-            InputMonitoringAlertView()
+            InputMonitoringAlertView(window: nil)
                 .previewLayout(.sizeThatFits)
         }
     }

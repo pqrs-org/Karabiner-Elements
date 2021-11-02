@@ -27,7 +27,7 @@ public class AppDelegate: NSObject, NSApplicationDelegate {
             defer: false
         )
         window!.title = "Karabiner-EventViewer"
-        window!.contentView = NSHostingView(rootView: ContentView())
+        window!.contentView = NSHostingView(rootView: ContentView(window: window))
         window!.center()
         window!.makeKeyAndOrderFront(self)
 
