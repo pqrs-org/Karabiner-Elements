@@ -86,6 +86,13 @@ public class AlertWindowsManager: NSObject {
     @objc
     public func showInputMonitoringPermissionsAlertWindow() {
         if inputMonitoringPermissionsAlertWindow == nil {
+            let view = InputMonitoringPermissionsAlertView(parentWindow: parentWindow,
+                                                           onCloseButtonPressed: { [weak self] in
+                                                               guard let self = self else { return }
+
+                                                               self.hideInputMonitoringPermissionsAlertWindow()
+                                                           })
+
             inputMonitoringPermissionsAlertWindow = NSPanel(
                 contentRect: .zero,
                 styleMask: [
@@ -96,21 +103,20 @@ public class AlertWindowsManager: NSObject {
                 backing: .buffered,
                 defer: false
             )
-            inputMonitoringPermissionsAlertWindow!.hidesOnDeactivate = false
-            inputMonitoringPermissionsAlertWindow!.contentView = NSHostingView(rootView: InputMonitoringPermissionsAlertView())
-            inputMonitoringPermissionsAlertWindow!.centerToOtherWindow(parentWindow)
-            parentWindow.addChildWindow(inputMonitoringPermissionsAlertWindow!, ordered: .above)
-        }
+            inputMonitoringPermissionsAlertWindow!.contentView = NSHostingView(rootView: view)
 
-        inputMonitoringPermissionsAlertWindow!.makeKeyAndOrderFront(nil)
+            parentWindow.beginSheet(inputMonitoringPermissionsAlertWindow!) { [weak self] _ in
+                guard let self = self else { return }
+
+                self.inputMonitoringPermissionsAlertWindow = nil
+            }
+        }
     }
 
     @objc
     public func hideInputMonitoringPermissionsAlertWindow() {
         if inputMonitoringPermissionsAlertWindow != nil {
-            parentWindow.removeChildWindow(inputMonitoringPermissionsAlertWindow!)
-            inputMonitoringPermissionsAlertWindow!.close()
-            inputMonitoringPermissionsAlertWindow = nil
+            parentWindow.endSheet(inputMonitoringPermissionsAlertWindow!)
         }
     }
 }
