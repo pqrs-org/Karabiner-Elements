@@ -57,6 +57,12 @@ public class AlertWindowsManager: NSObject {
     @objc
     public func showDriverVersionNotMatchedAlertWindow() {
         if driverVersionNotMatchedAlertWindow == nil {
+            let view = DriverVersionNotMatchedAlertView(onCloseButtonPressed: { [weak self] in
+                guard let self = self else { return }
+
+                self.hideDriverVersionNotMatchedAlertWindow()
+            })
+
             driverVersionNotMatchedAlertWindow = NSPanel(
                 contentRect: .zero,
                 styleMask: [
@@ -67,21 +73,20 @@ public class AlertWindowsManager: NSObject {
                 backing: .buffered,
                 defer: false
             )
-            driverVersionNotMatchedAlertWindow!.hidesOnDeactivate = false
-            driverVersionNotMatchedAlertWindow!.contentView = NSHostingView(rootView: DriverVersionNotMatchedAlertView())
-            driverVersionNotMatchedAlertWindow!.centerToOtherWindow(parentWindow)
-            parentWindow.addChildWindow(driverVersionNotMatchedAlertWindow!, ordered: .above)
-        }
+            driverVersionNotMatchedAlertWindow!.contentView = NSHostingView(rootView: view)
 
-        driverVersionNotMatchedAlertWindow!.makeKeyAndOrderFront(nil)
+            parentWindow.beginSheet(driverVersionNotMatchedAlertWindow!) { [weak self] _ in
+                guard let self = self else { return }
+
+                self.driverVersionNotMatchedAlertWindow = nil
+            }
+        }
     }
 
     @objc
     public func hideDriverVersionNotMatchedAlertWindow() {
         if driverVersionNotMatchedAlertWindow != nil {
-            parentWindow.removeChildWindow(driverVersionNotMatchedAlertWindow!)
-            driverVersionNotMatchedAlertWindow!.close()
-            driverVersionNotMatchedAlertWindow = nil
+            parentWindow.endSheet(driverVersionNotMatchedAlertWindow!)
         }
     }
 
