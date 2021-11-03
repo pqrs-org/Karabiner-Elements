@@ -28,16 +28,7 @@ struct InputMonitoringPermissionsAlertView: View {
             .padding()
             .frame(width: 700)
 
-            Button(
-                action: onCloseButtonPressed
-            ) {
-                Image(systemName: "xmark.circle")
-                    .resizable()
-                    .frame(width: 24.0, height: 24.0)
-                    .foregroundColor(Color.gray)
-            }
-            .offset(x: 10, y: 10)
-            .buttonStyle(PlainButtonStyle())
+            SheetCloseButton(onCloseButtonPressed: onCloseButtonPressed)
         }
     }
 
