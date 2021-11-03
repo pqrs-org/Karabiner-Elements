@@ -16,6 +16,13 @@ public class AlertWindowsManager: NSObject {
     @objc
     public func showDriverNotLoadedAlertWindow() {
         if driverNotLoadedAlertWindow == nil {
+            let view = DriverNotLoadedAlertView(parentWindow: parentWindow,
+                                                onCloseButtonPressed: { [weak self] in
+                                                    guard let self = self else { return }
+
+                                                    self.hideDriverNotLoadedAlertWindow()
+                                                })
+
             driverNotLoadedAlertWindow = NSPanel(
                 contentRect: .zero,
                 styleMask: [
@@ -26,21 +33,20 @@ public class AlertWindowsManager: NSObject {
                 backing: .buffered,
                 defer: false
             )
-            driverNotLoadedAlertWindow!.hidesOnDeactivate = false
-            driverNotLoadedAlertWindow!.contentView = NSHostingView(rootView: DriverNotLoadedAlertView())
-            driverNotLoadedAlertWindow!.centerToOtherWindow(parentWindow)
-            parentWindow.addChildWindow(driverNotLoadedAlertWindow!, ordered: .above)
-        }
+            driverNotLoadedAlertWindow!.contentView = NSHostingView(rootView: view)
 
-        driverNotLoadedAlertWindow!.makeKeyAndOrderFront(nil)
+            parentWindow.beginSheet(driverNotLoadedAlertWindow!) { [weak self] _ in
+                guard let self = self else { return }
+
+                self.driverNotLoadedAlertWindow = nil
+            }
+        }
     }
 
     @objc
     public func hideDriverNotLoadedAlertWindow() {
         if driverNotLoadedAlertWindow != nil {
-            parentWindow.removeChildWindow(driverNotLoadedAlertWindow!)
-            driverNotLoadedAlertWindow!.close()
-            driverNotLoadedAlertWindow = nil
+            parentWindow.endSheet(driverNotLoadedAlertWindow!)
         }
     }
 
