@@ -3,7 +3,7 @@
 ## Beta
 
 -   ⚡️ Improvements
-    -   Add System Extensions tab to EventViewer.
+    -   Added System Extensions tab to EventViewer.
 
 ## Karabiner-Elements 14.2.0
 
