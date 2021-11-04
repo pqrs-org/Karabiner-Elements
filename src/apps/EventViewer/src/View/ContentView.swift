@@ -47,7 +47,7 @@ struct ContentView: View {
                             NavigationLink(destination: SystemExtensionsView(),
                                            tag: "SystemExtensions",
                                            selection: $selection) {
-                                Label("System Extensions", systemImage: "puzzlepiece.extension")
+                                Label("System Extensions", systemImage: "puzzlepiece")
                             }
                             .padding(10)
 
