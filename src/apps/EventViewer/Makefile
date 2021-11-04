@@ -8,6 +8,10 @@ clean:
 	rm -fr *.xcodeproj
 	rm -fr build
 
+purge-swift-package-manager-cache:
+	rm -fr ~/Library/Developer/Xcode/DerivedData/Karabiner-EventViewer-*
+	rm -fr ~/Library/Caches/org.swift.swiftpm/repositories/SwiftShell-*
+
 run:
 	bash ../../../scripts/codesign.sh build/Release
 	# Do not execute Karabiner-EventViewer.app/Contents/MacOS/Karabiner-EventViewer directly.

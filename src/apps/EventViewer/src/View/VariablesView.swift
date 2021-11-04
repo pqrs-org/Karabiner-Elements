@@ -21,6 +21,7 @@ struct VariablesView: View {
                                 Text(variablesJsonString.text)
                                     .lineLimit(nil)
                                     .font(.custom("Menlo", size: 11.0))
+                                    .padding(5)
                             }
 
                             Spacer()

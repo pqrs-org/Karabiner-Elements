@@ -1,5 +1,10 @@
 name: Karabiner-EventViewer
 
+packages:
+  SwiftShell:
+    url: https://github.com/kareman/SwiftShell
+    from: 5.1.0
+
 targets:
   Karabiner-EventViewer:
     settings:
@@ -34,3 +39,4 @@ targets:
           - '*.plist.in'
     dependencies:
       - sdk: libc++.tbd
+      - package: SwiftShell
