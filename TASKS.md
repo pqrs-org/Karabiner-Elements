@@ -8,10 +8,11 @@
     -   [ ] MultitouchExtension
     -   [x] NotificationWindow
 -   [ ] Migrate to SwiftUI.
-    -   [ ] EventViewer
     -   [ ] Preferences
     -   [ ] MultitouchExtension
+    -   [x] EventViewer
     -   [x] NotificationWindow
+-   [ ] Add disable scroll wheel feature.
 -   [ ] Add scroll wheel to source events.
 -   [ ] Add mouse movement to source events.
 -   [ ] Add `event_type` to `to` in order to support `key_down` only event.
