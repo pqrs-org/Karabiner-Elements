@@ -11,7 +11,7 @@ jobs:
         with:
           submodules: recursive
       - name: xcode-select
-        run: sudo xcode-select -s /Applications/Xcode_13.0_beta.app
+        run: sudo xcode-select -s /Applications/Xcode_13.1.app
       - name: brew install
         run: brew install xcodegen
       - name: package
