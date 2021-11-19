@@ -58,6 +58,8 @@ int main(int argc, const char* argv[]) {
       system_preferences_monitor_callback,
       nullptr);
 
+  std::cout << "libkrbn_get_notification_message_body: " << libkrbn_get_notification_message_body() << std::endl;
+
   std::thread thread([] {
     global_wait->wait_notice();
 

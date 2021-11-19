@@ -287,6 +287,8 @@ void libkrbn_enable_notification_message_json_file_monitor(libkrbn_file_monitor_
                                                            void* refcon);
 void libkrbn_disable_notification_message_json_file_monitor(void);
 
+const char* libkrbn_get_notification_message_body(void);
+
 //
 // libkrbn_frontmost_application_monitor
 //

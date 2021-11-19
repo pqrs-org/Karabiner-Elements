@@ -472,6 +472,22 @@ void libkrbn_disable_notification_message_json_file_monitor(void) {
   }
 }
 
+const char* libkrbn_get_notification_message_body(void) {
+  static std::string message;
+
+  std::ifstream input(krbn::constants::get_notification_message_file_path());
+  if (input) {
+    try {
+      auto json = krbn::json_utility::parse_jsonc(input);
+      message = json["body"].get<std::string>();
+    } catch (const std::exception& e) {
+      message = "";
+    }
+  }
+
+  return message.c_str();
+}
+
 //
 // frontmost_application_monitor
 //
