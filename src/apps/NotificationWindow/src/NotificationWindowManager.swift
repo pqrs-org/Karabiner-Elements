@@ -1,21 +1,16 @@
 import SwiftUI
 
-private func callback(_ filePath: UnsafePointer<Int8>?,
+private func callback(_: UnsafePointer<Int8>?,
                       _ context: UnsafeMutableRawPointer?)
 {
-    let path = String(cString: filePath!)
     let obj: NotificationWindowManager! = unsafeBitCast(context, to: NotificationWindowManager.self)
 
-    let json = KarabinerKitJsonUtility.loadFile(path)
-    if let dictionary = json as? [String: Any] {
-        if let body = dictionary["body"] as? String {
-            DispatchQueue.main.async { [weak obj] in
-                guard let obj = obj else { return }
+    DispatchQueue.main.async { [weak obj] in
+        guard let obj = obj else { return }
 
-                NotificationMessage.shared.text = body.trimmingCharacters(in: .whitespacesAndNewlines)
-                obj.updateWindowsVisibility()
-            }
-        }
+        let body = String(cString: libkrbn_get_notification_message_body())
+        NotificationMessage.shared.text = body.trimmingCharacters(in: .whitespacesAndNewlines)
+        obj.updateWindowsVisibility()
     }
 }
 
