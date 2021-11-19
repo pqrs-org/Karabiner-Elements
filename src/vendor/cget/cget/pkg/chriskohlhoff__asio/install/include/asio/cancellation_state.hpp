@@ -86,6 +86,14 @@ public:
   }
 
   /// Construct and attach to a parent slot to create a new child slot.
+  /**
+   * Initialises the cancellation state so that it allows terminal cancellation
+   * only. Equivalent to <tt>cancellation_state(slot,
+   * enable_terminal_cancellation())</tt>.
+   *
+   * @param slot The parent cancellation slot to which the state will be
+   * attached.
+   */
   template <typename CancellationSlot>
   ASIO_CONSTEXPR explicit cancellation_state(CancellationSlot slot)
     : impl_(slot.is_connected() ? &slot.template emplace<impl<> >() : 0)
@@ -93,6 +101,23 @@ public:
   }
 
   /// Construct and attach to a parent slot to create a new child slot.
+  /**
+   * @param slot The parent cancellation slot to which the state will be
+   * attached.
+   *
+   * @param filter A function object that is used to transform incoming
+   * cancellation signals as they are received from the parent slot. This
+   * function object must have the signature:
+   * @code asio::cancellation_type_t filter(
+   *     asio::cancellation_type_t); @endcode
+   *
+   * The library provides the following pre-defined cancellation filters:
+   *
+   * @li asio::disable_cancellation
+   * @li asio::enable_terminal_cancellation
+   * @li asio::enable_partial_cancellation
+   * @li asio::enable_total_cancellation
+   */
   template <typename CancellationSlot, typename Filter>
   ASIO_CONSTEXPR cancellation_state(CancellationSlot slot, Filter filter)
     : impl_(slot.is_connected()
@@ -102,6 +127,29 @@ public:
   }
 
   /// Construct and attach to a parent slot to create a new child slot.
+  /**
+   * @param slot The parent cancellation slot to which the state will be
+   * attached.
+   *
+   * @param in_filter A function object that is used to transform incoming
+   * cancellation signals as they are received from the parent slot. This
+   * function object must have the signature:
+   * @code asio::cancellation_type_t in_filter(
+   *     asio::cancellation_type_t); @endcode
+   *
+   * @param out_filter A function object that is used to transform outcoming
+   * cancellation signals as they are relayed to the child slot. This function
+   * object must have the signature:
+   * @code asio::cancellation_type_t out_filter(
+   *     asio::cancellation_type_t); @endcode
+   *
+   * The library provides the following pre-defined cancellation filters:
+   *
+   * @li asio::disable_cancellation
+   * @li asio::enable_terminal_cancellation
+   * @li asio::enable_partial_cancellation
+   * @li asio::enable_total_cancellation
+   */
   template <typename CancellationSlot, typename InFilter, typename OutFilter>
   ASIO_CONSTEXPR cancellation_state(CancellationSlot slot,
       InFilter in_filter, OutFilter out_filter)
@@ -122,7 +170,7 @@ public:
     return impl_ ? impl_->signal_.slot() : cancellation_slot();
   }
 
-  /// Returns specified cancellation types have been triggered.
+  /// Returns the cancellation types that have been triggered.
   cancellation_type_t cancelled() const ASIO_NOEXCEPT
   {
     return impl_ ? impl_->cancelled_ : cancellation_type_t();

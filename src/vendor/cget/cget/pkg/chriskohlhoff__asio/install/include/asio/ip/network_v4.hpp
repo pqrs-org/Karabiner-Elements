@@ -122,7 +122,7 @@ public:
   /// Obtain the true network address, omitting any host bits.
   network_v4 canonical() const ASIO_NOEXCEPT
   {
-    return network_v4(network(), netmask());
+    return network_v4(network(), prefix_length());
   }
 
   /// Test if network is a valid host address.

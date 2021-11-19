@@ -1,4 +1,4 @@
-// Copyright (C) 2016-2019 Jonathan Müller <jonathanmueller.dev@gmail.com>
+// Copyright (C) 2016-2020 Jonathan Müller <jonathanmueller.dev@gmail.com>
 // This file is subject to the license terms in the LICENSE file
 // found in the top-level directory of this distribution.
 
@@ -219,7 +219,7 @@ namespace strong_typedef_op
         constexpr typename std::enable_if<!is_strong_typedef<T>::value, T&&>::type
             forward_or_underlying(T&& type) noexcept
         {
-            return forward<T>(type);
+            return detail::forward<T>(type);
         }
     } // namespace detail
 
@@ -338,16 +338,16 @@ namespace strong_typedef_op
     TYPE_SAFE_CONSTEXPR14 StrongTypedef& operator Op(Name<StrongTypedef>&       lhs,               \
                                                      const Name<StrongTypedef>& rhs)               \
     {                                                                                              \
-        detail::get_underlying<StrongTypedef>(static_cast<StrongTypedef&>(lhs)) Op                 \
-            detail::get_underlying<StrongTypedef>(static_cast<const StrongTypedef&>(rhs));         \
+        detail::get_underlying<StrongTypedef>(static_cast<StrongTypedef&>(lhs))                    \
+            Op detail::get_underlying<StrongTypedef>(static_cast<const StrongTypedef&>(rhs));      \
         return static_cast<StrongTypedef&>(lhs);                                                   \
     } /** \exclude */                                                                              \
     template <class StrongTypedef>                                                                 \
     TYPE_SAFE_CONSTEXPR14 StrongTypedef& operator Op(Name<StrongTypedef>&  lhs,                    \
                                                      Name<StrongTypedef>&& rhs)                    \
     {                                                                                              \
-        detail::get_underlying<StrongTypedef>(static_cast<StrongTypedef&>(lhs)) Op                 \
-            detail::get_underlying<StrongTypedef>(static_cast<StrongTypedef&&>(rhs));              \
+        detail::get_underlying<StrongTypedef>(static_cast<StrongTypedef&>(lhs))                    \
+            Op detail::get_underlying<StrongTypedef>(static_cast<StrongTypedef&&>(rhs));           \
         return static_cast<StrongTypedef&>(lhs);                                                   \
     }                                                                                              \
     /** \exclude */                                                                                \
@@ -355,16 +355,16 @@ namespace strong_typedef_op
     TYPE_SAFE_CONSTEXPR14 StrongTypedef&& operator Op(Name<StrongTypedef>&&      lhs,              \
                                                       const Name<StrongTypedef>& rhs)              \
     {                                                                                              \
-        detail::get_underlying<StrongTypedef>(static_cast<StrongTypedef&&>(lhs)) Op                \
-            detail::get_underlying<StrongTypedef>(static_cast<const StrongTypedef&>(rhs));         \
+        detail::get_underlying<StrongTypedef>(static_cast<StrongTypedef&&>(lhs))                   \
+            Op detail::get_underlying<StrongTypedef>(static_cast<const StrongTypedef&>(rhs));      \
         return static_cast<StrongTypedef&&>(lhs);                                                  \
     } /** \exclude */                                                                              \
     template <class StrongTypedef>                                                                 \
     TYPE_SAFE_CONSTEXPR14 StrongTypedef&& operator Op(Name<StrongTypedef>&& lhs,                   \
                                                       Name<StrongTypedef>&& rhs)                   \
     {                                                                                              \
-        detail::get_underlying<StrongTypedef>(static_cast<StrongTypedef&&>(lhs)) Op                \
-            detail::get_underlying<StrongTypedef>(static_cast<StrongTypedef&&>(rhs));              \
+        detail::get_underlying<StrongTypedef>(static_cast<StrongTypedef&&>(lhs))                   \
+            Op detail::get_underlying<StrongTypedef>(static_cast<StrongTypedef&&>(rhs));           \
         return static_cast<StrongTypedef&&>(lhs);                                                  \
     }                                                                                              \
     /* mixed */                                                                                    \

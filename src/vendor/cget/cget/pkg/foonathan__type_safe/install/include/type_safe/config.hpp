@@ -1,4 +1,4 @@
-// Copyright (C) 2016-2019 Jonathan Müller <jonathanmueller.dev@gmail.com>
+// Copyright (C) 2016-2020 Jonathan Müller <jonathanmueller.dev@gmail.com>
 // This file is subject to the license terms in the LICENSE file
 // found in the top-level directory of this distribution.
 
@@ -29,12 +29,21 @@
 #    define TYPE_SAFE_ENABLE_WRAPPER 1
 #endif
 
-#ifndef TYPE_SAFE_ARITHMETIC_UB
-/// Controls whether [ts::arithmetic_policy_default]() is [ts::undefined_behavior_arithmetic]() or
-/// [ts::default_arithmetic]().
+#ifndef TYPE_SAFE_ARITHMETIC_POLICY
+/// Controls whether [ts::arithmetic_policy_default]() is [ts::undefined_behavior_arithmetic](),
+/// [ts::checked_arithmetic](), or [ts::default_arithmetic]().
 ///
 /// It is [ts::undefined_behavior_arithmetic]() by default.
-#    define TYPE_SAFE_ARITHMETIC_UB 1
+#    define TYPE_SAFE_ARITHMETIC_POLICY 1
+#endif
+
+#ifndef TYPE_SAFE_DELETE_FUNCTIONS
+#    if defined(_MSC_VER) && _MSC_VER < 1914
+#        define TYPE_SAFE_DELETE_FUNCTIONS 0
+#    else
+/// \exclude
+#        define TYPE_SAFE_DELETE_FUNCTIONS 0
+#    endif
 #endif
 
 #ifndef TYPE_SAFE_USE_REF_QUALIFIERS

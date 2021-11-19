@@ -87,29 +87,17 @@ public:
 #endif // !defined(GENERATING_DOCUMENTATION)
 
   /// Default constructor.
-  any_io_executor() ASIO_NOEXCEPT
-    : base_type()
-  {
-  }
+  ASIO_DECL any_io_executor() ASIO_NOEXCEPT;
 
   /// Construct in an empty state. Equivalent effects to default constructor.
-  any_io_executor(nullptr_t) ASIO_NOEXCEPT
-    : base_type(nullptr_t())
-  {
-  }
+  ASIO_DECL any_io_executor(nullptr_t) ASIO_NOEXCEPT;
 
   /// Copy constructor.
-  any_io_executor(const any_io_executor& e) ASIO_NOEXCEPT
-    : base_type(static_cast<const base_type&>(e))
-  {
-  }
+  ASIO_DECL any_io_executor(const any_io_executor& e) ASIO_NOEXCEPT;
 
 #if defined(ASIO_HAS_MOVE) || defined(GENERATING_DOCUMENTATION)
   /// Move constructor.
-  any_io_executor(any_io_executor&& e) ASIO_NOEXCEPT
-    : base_type(static_cast<base_type&&>(e))
-  {
-  }
+  ASIO_DECL any_io_executor(any_io_executor&& e) ASIO_NOEXCEPT;
 #endif // defined(ASIO_HAS_MOVE) || defined(GENERATING_DOCUMENTATION)
 
   /// Construct to point to the same target as another any_executor.
@@ -158,38 +146,23 @@ public:
 #endif // defined(GENERATING_DOCUMENTATION)
 
   /// Assignment operator.
-  any_io_executor& operator=(const any_io_executor& e) ASIO_NOEXCEPT
-  {
-    base_type::operator=(static_cast<const base_type&>(e));
-    return *this;
-  }
+  ASIO_DECL any_io_executor& operator=(
+      const any_io_executor& e) ASIO_NOEXCEPT;
 
 #if defined(ASIO_HAS_MOVE) || defined(GENERATING_DOCUMENTATION)
   /// Move assignment operator.
-  any_io_executor& operator=(any_io_executor&& e) ASIO_NOEXCEPT
-  {
-    base_type::operator=(static_cast<base_type&&>(e));
-    return *this;
-  }
+  ASIO_DECL any_io_executor& operator=(
+      any_io_executor&& e) ASIO_NOEXCEPT;
 #endif // defined(ASIO_HAS_MOVE) || defined(GENERATING_DOCUMENTATION)
 
   /// Assignment operator that sets the polymorphic wrapper to the empty state.
-  any_io_executor& operator=(nullptr_t)
-  {
-    base_type::operator=(nullptr_t());
-    return *this;
-  }
+  ASIO_DECL any_io_executor& operator=(nullptr_t);
 
   /// Destructor.
-  ~any_io_executor()
-  {
-  }
+  ASIO_DECL ~any_io_executor();
 
   /// Swap targets with another polymorphic wrapper.
-  void swap(any_io_executor& other) ASIO_NOEXCEPT
-  {
-    static_cast<base_type&>(*this).swap(static_cast<base_type&>(other));
-  }
+  ASIO_DECL void swap(any_io_executor& other) ASIO_NOEXCEPT;
 
   /// Obtain a polymorphic wrapper with the specified property.
   /**
@@ -229,6 +202,30 @@ public:
 };
 
 #if !defined(GENERATING_DOCUMENTATION)
+
+template <>
+ASIO_DECL any_io_executor any_io_executor::require(
+    const execution::blocking_t::never_t&, int) const;
+
+template <>
+ASIO_DECL any_io_executor any_io_executor::prefer(
+    const execution::blocking_t::possibly_t&, int) const;
+
+template <>
+ASIO_DECL any_io_executor any_io_executor::prefer(
+    const execution::outstanding_work_t::tracked_t&, int) const;
+
+template <>
+ASIO_DECL any_io_executor any_io_executor::prefer(
+    const execution::outstanding_work_t::untracked_t&, int) const;
+
+template <>
+ASIO_DECL any_io_executor any_io_executor::prefer(
+    const execution::relationship_t::fork_t&, int) const;
+
+template <>
+ASIO_DECL any_io_executor any_io_executor::prefer(
+    const execution::relationship_t::continuation_t&, int) const;
 
 namespace traits {
 
@@ -296,5 +293,9 @@ struct prefer_member<any_io_executor, Prop> :
 } // namespace asio
 
 #include "asio/detail/pop_options.hpp"
+
+#if defined(ASIO_HEADER_ONLY)
+# include "asio/impl/any_io_executor.ipp"
+#endif // defined(ASIO_HEADER_ONLY)
 
 #endif // ASIO_ANY_IO_EXECUTOR_HPP

@@ -38,6 +38,7 @@ using std::int64_t;
 using std::int_least64_t;
 using std::uint64_t;
 using std::uint_least64_t;
+using std::uintptr_t;
 using std::uintmax_t;
 #else // defined(ASIO_HAS_CSTDINT)
 using boost::int16_t;
@@ -52,6 +53,7 @@ using boost::int64_t;
 using boost::int_least64_t;
 using boost::uint64_t;
 using boost::uint_least64_t;
+using boost::uintptr_t;
 using boost::uintmax_t;
 #endif // defined(ASIO_HAS_CSTDINT)
 

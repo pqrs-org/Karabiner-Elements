@@ -25,6 +25,7 @@
 #include "asio/detail/object_pool.hpp"
 #include "asio/detail/op_queue.hpp"
 #include "asio/detail/reactor_op.hpp"
+#include "asio/detail/scheduler_task.hpp"
 #include "asio/detail/select_interrupter.hpp"
 #include "asio/detail/socket_types.hpp"
 #include "asio/detail/timer_queue_base.hpp"
@@ -42,7 +43,8 @@ namespace asio {
 namespace detail {
 
 class epoll_reactor
-  : public execution_context_service_base<epoll_reactor>
+  : public execution_context_service_base<epoll_reactor>,
+    public scheduler_task
 {
 private:
   // The mutex type used by this reactor.

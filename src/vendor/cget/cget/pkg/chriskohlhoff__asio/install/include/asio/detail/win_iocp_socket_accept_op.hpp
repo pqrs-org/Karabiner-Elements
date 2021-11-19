@@ -53,8 +53,8 @@ public:
       protocol_(protocol),
       peer_endpoint_(peer_endpoint),
       enable_connection_aborted_(enable_connection_aborted),
-      cancel_requested_(0),
       proxy_op_(0),
+      cancel_requested_(0),
       handler_(ASIO_MOVE_CAST(Handler)(handler)),
       work_(handler_, io_ex)
   {

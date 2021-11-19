@@ -35,7 +35,7 @@
 #if defined(ASIO_HAS_IOCP)
 # include "asio/detail/win_iocp_serial_port_service.hpp"
 #else
-# include "asio/detail/reactive_serial_port_service.hpp"
+# include "asio/detail/posix_serial_port_service.hpp"
 #endif
 
 #if defined(ASIO_HAS_MOVE)
@@ -78,7 +78,7 @@ public:
   typedef detail::win_iocp_serial_port_service::native_handle_type
     native_handle_type;
 #else
-  typedef detail::reactive_serial_port_service::native_handle_type
+  typedef detail::posix_serial_port_service::native_handle_type
     native_handle_type;
 #endif
 
@@ -893,7 +893,7 @@ private:
 #if defined(ASIO_HAS_IOCP)
   detail::io_object_impl<detail::win_iocp_serial_port_service, Executor> impl_;
 #else
-  detail::io_object_impl<detail::reactive_serial_port_service, Executor> impl_;
+  detail::io_object_impl<detail::posix_serial_port_service, Executor> impl_;
 #endif
 };
 

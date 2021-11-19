@@ -48,6 +48,19 @@ struct cancellation_state_t
 
 /// Awaitable object that returns the cancellation state of the current
 /// coroutine.
+/**
+ * @par Example
+ * @code asio::awaitable<void> my_coroutine()
+ * {
+ *   asio::cancellation_state cs
+ *     = co_await asio::this_coro::cancellation_state;
+ *
+ *   // ...
+ *
+ *   if (cs.cancelled() != asio::cancellation_type::none)
+ *     // ...
+ * } @endcode
+ */
 #if defined(ASIO_HAS_CONSTEXPR) || defined(GENERATING_DOCUMENTATION)
 constexpr cancellation_state_t cancellation_state;
 #elif defined(ASIO_MSVC)
@@ -58,17 +71,74 @@ __declspec(selectany) cancellation_state_t cancellation_state;
 
 /// Returns an awaitable object that may be used to reset the cancellation state
 /// of the current coroutine.
+/**
+ * Let <tt>P</tt> be the cancellation slot associated with the current
+ * coroutine's `co_spawn` completion handler. Assigns a new
+ * asio::cancellation_state object <tt>S</tt>, constructed as
+ * <tt>S(P)</tt>, into the current coroutine's cancellation state object.
+ *
+ * @par Example
+ * @code asio::awaitable<void> my_coroutine()
+ * {
+ *   co_await asio::this_coro::reset_cancellation_state();
+ *
+ *   // ...
+ * } @endcode
+ *
+ * @note The cancellation state is shared by all coroutines in the same "thread
+ * of execution" that was created using asio::co_spawn.
+ */
 ASIO_NODISCARD ASIO_CONSTEXPR unspecified
 reset_cancellation_state();
 
 /// Returns an awaitable object that may be used to reset the cancellation state
 /// of the current coroutine.
+/**
+ * Let <tt>P</tt> be the cancellation slot associated with the current
+ * coroutine's `co_spawn` completion handler. Assigns a new
+ * asio::cancellation_state object <tt>S</tt>, constructed as <tt>S(P,
+ * std::forward<Filter>(filter))</tt>, into the current coroutine's
+ * cancellation state object.
+ *
+ * @par Example
+ * @code asio::awaitable<void> my_coroutine()
+ * {
+ *   co_await asio::this_coro::reset_cancellation_state(
+ *       asio::enable_partial_cancellation());
+ *
+ *   // ...
+ * } @endcode
+ *
+ * @note The cancellation state is shared by all coroutines in the same "thread
+ * of execution" that was created using asio::co_spawn.
+ */
 template <typename Filter>
 ASIO_NODISCARD ASIO_CONSTEXPR unspecified
 reset_cancellation_state(ASIO_MOVE_ARG(Filter) filter);
 
 /// Returns an awaitable object that may be used to reset the cancellation state
 /// of the current coroutine.
+/**
+ * Let <tt>P</tt> be the cancellation slot associated with the current
+ * coroutine's `co_spawn` completion handler. Assigns a new
+ * asio::cancellation_state object <tt>S</tt>, constructed as <tt>S(P,
+ * std::forward<InFilter>(in_filter),
+ * std::forward<OutFilter>(out_filter))</tt>, into the current coroutine's
+ * cancellation state object.
+ *
+ * @par Example
+ * @code asio::awaitable<void> my_coroutine()
+ * {
+ *   co_await asio::this_coro::reset_cancellation_state(
+ *       asio::enable_partial_cancellation(),
+ *       asio::disable_cancellation());
+ *
+ *   // ...
+ * } @endcode
+ *
+ * @note The cancellation state is shared by all coroutines in the same "thread
+ * of execution" that was created using asio::co_spawn.
+ */
 template <typename InFilter, typename OutFilter>
 ASIO_NODISCARD ASIO_CONSTEXPR unspecified
 reset_cancellation_state(
@@ -77,11 +147,30 @@ reset_cancellation_state(
 
 /// Returns an awaitable object that may be used to determine whether the
 /// coroutine throws if trying to suspend when it has been cancelled.
+/**
+ * @par Example
+ * @code asio::awaitable<void> my_coroutine()
+ * {
+ *   if (co_await asio::this_coro::throw_if_cancelled)
+ *     // ...
+ *
+ *   // ...
+ * } @endcode
+ */
 ASIO_NODISCARD ASIO_CONSTEXPR unspecified
 throw_if_cancelled();
 
 /// Returns an awaitable object that may be used to specify whether the
 /// coroutine throws if trying to suspend when it has been cancelled.
+/**
+ * @par Example
+ * @code asio::awaitable<void> my_coroutine()
+ * {
+ *   co_await asio::this_coro::throw_if_cancelled(false);
+ *
+ *   // ...
+ * } @endcode
+ */
 ASIO_NODISCARD ASIO_CONSTEXPR unspecified
 throw_if_cancelled(bool value);
 
@@ -105,8 +194,8 @@ struct reset_cancellation_state_1_t
 {
   template <typename F>
   ASIO_CONSTEXPR reset_cancellation_state_1_t(
-      ASIO_MOVE_ARG(F) filter)
-    : filter(ASIO_MOVE_CAST(F)(filter))
+      ASIO_MOVE_ARG(F) filt)
+    : filter(ASIO_MOVE_CAST(F)(filt))
   {
   }
 
@@ -127,9 +216,9 @@ struct reset_cancellation_state_2_t
 {
   template <typename F1, typename F2>
   ASIO_CONSTEXPR reset_cancellation_state_2_t(
-      ASIO_MOVE_ARG(F1) in_filter, ASIO_MOVE_ARG(F2) out_filter)
-    : in_filter(ASIO_MOVE_CAST(F1)(in_filter)),
-      out_filter(ASIO_MOVE_CAST(F2)(out_filter))
+      ASIO_MOVE_ARG(F1) in_filt, ASIO_MOVE_ARG(F2) out_filt)
+    : in_filter(ASIO_MOVE_CAST(F1)(in_filt)),
+      out_filter(ASIO_MOVE_CAST(F2)(out_filt))
   {
   }
 
@@ -167,8 +256,8 @@ throw_if_cancelled()
 
 struct throw_if_cancelled_1_t
 {
-  ASIO_CONSTEXPR throw_if_cancelled_1_t(bool value)
-    : value(value)
+  ASIO_CONSTEXPR throw_if_cancelled_1_t(bool val)
+    : value(val)
   {
   }
 

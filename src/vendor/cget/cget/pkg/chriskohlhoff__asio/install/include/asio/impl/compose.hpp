@@ -63,6 +63,26 @@ namespace detail
     executor_type executor_;
   };
 
+  template <>
+  struct composed_work_guard<system_executor>
+  {
+  public:
+    typedef system_executor executor_type;
+
+    composed_work_guard(const system_executor&)
+    {
+    }
+
+    void reset()
+    {
+    }
+
+    executor_type get_executor() const ASIO_NOEXCEPT
+    {
+      return system_executor();
+    }
+  };
+
 #if !defined(ASIO_NO_TS_EXECUTORS)
 
   template <typename Executor>

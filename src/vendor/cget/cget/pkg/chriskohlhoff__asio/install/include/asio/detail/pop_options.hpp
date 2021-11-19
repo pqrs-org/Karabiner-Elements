@@ -146,4 +146,8 @@
 #  endif
 # endif
 
+# pragma pop_macro ("emit")
+# pragma pop_macro ("signal")
+# pragma pop_macro ("slot")
+
 #endif

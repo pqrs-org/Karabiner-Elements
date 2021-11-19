@@ -1117,6 +1117,15 @@ struct query_member<
 
 } // namespace traits
 
+namespace execution {
+
+template <>
+struct is_executor<thread_pool> : false_type
+{
+};
+
+} // namespace execution
+
 #endif // !defined(GENERATING_DOCUMENTATION)
 
 } // namespace asio

@@ -17,7 +17,8 @@
 
 #include "asio/detail/config.hpp"
 
-#if !defined(ASIO_HAS_IOCP)
+#if !defined(ASIO_HAS_IOCP) \
+  && !defined(ASIO_HAS_IO_URING_AS_DEFAULT)
 
 #include "asio/buffer.hpp"
 #include "asio/error.hpp"
@@ -601,5 +602,6 @@ public:
 #include "asio/detail/pop_options.hpp"
 
 #endif // !defined(ASIO_HAS_IOCP)
+       //   && !defined(ASIO_HAS_IO_URING_AS_DEFAULT)
 
 #endif // ASIO_DETAIL_REACTIVE_SOCKET_SERVICE_HPP

@@ -11,6 +11,10 @@
 #ifndef ASIO_EXPERIMENTAL_IMPL_PROMISE_HPP
 #define ASIO_EXPERIMENTAL_IMPL_PROMISE_HPP
 
+#if defined(_MSC_VER) && (_MSC_VER >= 1200)
+# pragma once
+#endif // defined(_MSC_VER) && (_MSC_VER >= 1200)
+
 #include "asio/cancellation_signal.hpp"
 #include "asio/experimental/detail/completion_handler_erasure.hpp"
 #include <tuple>

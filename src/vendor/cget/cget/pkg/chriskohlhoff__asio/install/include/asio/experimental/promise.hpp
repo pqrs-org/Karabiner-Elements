@@ -12,6 +12,10 @@
 #ifndef ASIO_EXPERIMENTAL_PROMISE_HPP
 #define ASIO_EXPERIMENTAL_PROMISE_HPP
 
+#if defined(_MSC_VER) && (_MSC_VER >= 1200)
+# pragma once
+#endif // defined(_MSC_VER) && (_MSC_VER >= 1200)
+
 #include "asio/detail/config.hpp"
 #include "asio/detail/type_traits.hpp"
 #include "asio/any_io_executor.hpp"
@@ -89,7 +93,7 @@ struct promise<void(Ts...), Executor>
 
   void cancel(cancellation_type level = cancellation_type::all)
   {
-    if (impl_)
+    if (impl_ && !impl_->done)
     {
       asio::dispatch(impl_->executor,
           [level, impl = impl_]{impl->cancel.emit(level);});
@@ -145,7 +149,7 @@ struct promise<void(Ts...), Executor>
         {
           [ct, s=self]<std::size_t... Idx>(std::index_sequence<Idx...>)
           {
-            (get<Idx>(s->tup).cancel(ct), ... );
+            (std::get<Idx>(s->tup).cancel(ct), ... );
           }(std::make_index_sequence<sizeof...(Ps)>{});
         }
       };
@@ -225,7 +229,7 @@ struct promise<void(Ts...), Executor>
         {
           [level, s=self]<std::size_t... Idx>(std::index_sequence<Idx...>)
           {
-            (get<Idx>(s->tup).cancel(level), ... );
+            (std::get<Idx>(s->tup).cancel(level), ... );
           }(std::make_index_sequence<sizeof...(Ps)>{});
         }
       };
@@ -246,10 +250,11 @@ struct promise<void(Ts...), Executor>
         {
           return [impl]<typename... Args>(Args&& ... args)
           {
-            get<I>(impl->partial_result).emplace(std::forward<Args>(args)...);
-            if ((get<Idx>(impl->partial_result) && ...)) // we're done.
+            std::get<I>(impl->partial_result).emplace(
+                std::forward<Args>(args)...);
+            if ((std::get<Idx>(impl->partial_result) && ...)) // we're done.
             {
-              impl->result = {*get<Idx>(impl->partial_result)...};
+              impl->result = {*std::get<Idx>(impl->partial_result)...};
 
               impl->done = true;
               if (auto f = std::exchange(impl->completion, nullptr); !!f)

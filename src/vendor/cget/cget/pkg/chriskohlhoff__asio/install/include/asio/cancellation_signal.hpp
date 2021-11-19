@@ -21,8 +21,6 @@
 #include <utility>
 #include "asio/cancellation_type.hpp"
 #include "asio/detail/cstddef.hpp"
-#include "asio/detail/thread_context.hpp"
-#include "asio/detail/thread_info_base.hpp"
 #include "asio/detail/type_traits.hpp"
 #include "asio/detail/variadic_templates.hpp"
 
@@ -111,17 +109,7 @@ public:
   {
   }
 
-  ~cancellation_signal()
-  {
-    if (handler_)
-    {
-      std::pair<void*, std::size_t> mem = handler_->destroy();
-      detail::thread_info_base::deallocate(
-          detail::thread_info_base::cancellation_signal_tag(),
-          detail::thread_context::top_of_thread_call_stack(),
-          mem.first, mem.second);
-    }
-  }
+  ASIO_DECL ~cancellation_signal();
 
   /// Emits the signal and causes invocation of the slot's handler, if any.
   void emit(cancellation_type_t type)
@@ -251,18 +239,7 @@ public:
   /**
    * Destroys any existing handler in the slot.
    */
-  void clear()
-  {
-    if (handler_ != 0 && *handler_ != 0)
-    {
-      std::pair<void*, std::size_t> mem = (*handler_)->destroy();
-      detail::thread_info_base::deallocate(
-          detail::thread_info_base::cancellation_signal_tag(),
-          detail::thread_context::top_of_thread_call_stack(),
-          mem.first, mem.second);
-      *handler_ = 0;
-    }
-  }
+  ASIO_DECL void clear();
 
   /// Returns whether the slot is connected to a signal.
   ASIO_CONSTEXPR bool is_connected() const ASIO_NOEXCEPT
@@ -299,49 +276,14 @@ private:
   {
   }
 
-  std::pair<void*, std::size_t> prepare_memory(
-      std::size_t size, std::size_t align)
-  {
-    assert(handler_);
-    std::pair<void*, std::size_t> mem;
-    if (*handler_)
-    {
-      mem = (*handler_)->destroy();
-      *handler_ = 0;
-    }
-    if (size > mem.second
-        || reinterpret_cast<std::size_t>(mem.first) % align != 0)
-    {
-      if (mem.first)
-      {
-        detail::thread_info_base::deallocate(
-            detail::thread_info_base::cancellation_signal_tag(),
-            detail::thread_context::top_of_thread_call_stack(),
-            mem.first, mem.second);
-      }
-      mem.first = detail::thread_info_base::allocate(
-          detail::thread_info_base::cancellation_signal_tag(),
-          detail::thread_context::top_of_thread_call_stack(),
-          size, align);
-      mem.second = size;
-    }
-    return mem;
-  }
+  ASIO_DECL std::pair<void*, std::size_t> prepare_memory(
+      std::size_t size, std::size_t align);
 
   struct auto_delete_helper
   {
     std::pair<void*, std::size_t> mem;
 
-    ~auto_delete_helper()
-    {
-      if (mem.first)
-      {
-        detail::thread_info_base::deallocate(
-            detail::thread_info_base::cancellation_signal_tag(),
-            detail::thread_context::top_of_thread_call_stack(),
-            mem.first, mem.second);
-      }
-    }
+    ASIO_DECL ~auto_delete_helper();
   };
 
   detail::cancellation_handler_base** handler_;
@@ -355,5 +297,9 @@ inline cancellation_slot cancellation_signal::slot() ASIO_NOEXCEPT
 } // namespace asio
 
 #include "asio/detail/pop_options.hpp"
+
+#if defined(ASIO_HEADER_ONLY)
+# include "asio/impl/cancellation_signal.ipp"
+#endif // defined(ASIO_HEADER_ONLY)
 
 #endif // ASIO_CANCELLATION_SIGNAL_HPP

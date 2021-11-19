@@ -1,4 +1,4 @@
-// Copyright (C) 2016-2019 Jonathan Müller <jonathanmueller.dev@gmail.com>
+// Copyright (C) 2016-2020 Jonathan Müller <jonathanmueller.dev@gmail.com>
 // This file is subject to the license terms in the LICENSE file
 // found in the top-level directory of this distribution.
 
@@ -80,8 +80,10 @@ public:
     using floating_point_type = FloatT;
 
     //=== constructors ===//
+#if TYPE_SAFE_DELETE_FUNCTIONS
     /// \exclude
     floating_point() = delete;
+#endif
 
     /// \effects Initializes the floating point with the given value.
     /// \notes These functions do not participate in overload resolution,
@@ -103,10 +105,16 @@ public:
     : value_(static_cast<T>(val))
     {}
 
+#if TYPE_SAFE_DELETE_FUNCTIONS
     /// \exclude
     template <typename T,
               typename = detail::fallback_safe_floating_point_conversion<T, floating_point_type>>
     constexpr floating_point(T) = delete;
+    /// \exclude
+    template <typename T,
+              typename = detail::fallback_safe_floating_point_conversion<T, floating_point_type>>
+    constexpr floating_point(const floating_point<T>&) = delete;
+#endif
 
     //=== assignment ===//
     /// \effects Assigns the floating point the given value.
@@ -134,10 +142,16 @@ public:
         return *this;
     }
 
+#if TYPE_SAFE_DELETE_FUNCTIONS
     /// \exclude
     template <typename T,
               typename = detail::fallback_safe_floating_point_conversion<T, floating_point_type>>
     floating_point& operator=(T) = delete;
+    /// \exclude
+    template <typename T,
+              typename = detail::fallback_safe_floating_point_conversion<T, floating_point_type>>
+    floating_point& operator=(const floating_point<T>&) = delete;
+#endif
 
     //=== conversion back ===//
     /// \returns The stored value as the native floating point type.

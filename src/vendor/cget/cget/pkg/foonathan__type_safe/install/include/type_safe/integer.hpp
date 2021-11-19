@@ -1,4 +1,4 @@
-// Copyright (C) 2016-2019 Jonathan Müller <jonathanmueller.dev@gmail.com>
+// Copyright (C) 2016-2020 Jonathan Müller <jonathanmueller.dev@gmail.com>
 // This file is subject to the license terms in the LICENSE file
 // found in the top-level directory of this distribution.
 
@@ -30,9 +30,12 @@ namespace detail
 
     template <typename From, typename To>
     struct is_safe_integer_conversion
-    : std::integral_constant<bool, detail::is_integer<From>::value && detail::is_integer<To>::value
-                                       && sizeof(From) <= sizeof(To)
-                                       && std::is_signed<From>::value == std::is_signed<To>::value>
+    : std::integral_constant<bool,
+                             detail::is_integer<From>::value && detail::is_integer<To>::value
+                                 && ((sizeof(From) <= sizeof(To)
+                                      && std::is_signed<From>::value == std::is_signed<To>::value)
+                                     || (sizeof(From) < sizeof(To) && std::is_unsigned<From>::value
+                                         && std::is_signed<To>::value))>
     {};
 
     template <typename From, typename To>
@@ -99,8 +102,10 @@ public:
     using integer_type = IntegerT;
 
     //=== constructors ===//
+#if TYPE_SAFE_DELETE_FUNCTIONS
     /// \exclude
     integer() = delete;
+#endif
 
     /// \effects Initializes it with the given value.
     /// \notes This function does not participate in overload resolution
@@ -120,9 +125,14 @@ public:
     : value_(static_cast<T>(val))
     {}
 
+#if TYPE_SAFE_DELETE_FUNCTIONS
     /// \exclude
     template <typename T, typename = detail::fallback_safe_integer_conversion<T, integer_type>>
     constexpr integer(T) = delete;
+    /// \exclude
+    template <typename T, typename = detail::fallback_safe_integer_conversion<T, integer_type>>
+    constexpr integer(const integer<T, Policy>&) = delete;
+#endif
 
     //=== assignment ===//
     /// \effects Assigns it with the given value.
@@ -148,9 +158,14 @@ public:
         return *this;
     }
 
+#if TYPE_SAFE_DELETE_FUNCTIONS
     /// \exclude
     template <typename T, typename = detail::fallback_safe_integer_conversion<T, integer_type>>
-    integer& operator=(T) = delete;
+    constexpr integer(T) = delete;
+    /// \exclude
+    template <typename T, typename = detail::fallback_safe_integer_conversion<T, integer_type>>
+    integer& operator=(const integer<T, Policy>&) = delete;
+#endif
 
     //=== conversion back ===//
     /// \returns The stored value as the native integer type.
@@ -179,7 +194,7 @@ public:
     {
         static_assert(std::is_signed<integer_type>::value,
                       "cannot call unary minus on unsigned integer");
-        return -value_;
+        return integer(Policy::template do_multiplication(value_, integer_type(-1)));
     }
 
     /// \effects Increments the integer by one.
@@ -241,7 +256,7 @@ public:
     template <typename T, typename = detail::enable_safe_integer_conversion<T, integer_type>>
     TYPE_SAFE_FORCE_INLINE integer& operator+=(const integer<T, Policy>& other)
     {
-        value_ = Policy::template do_addition(value_, static_cast<T>(other));
+        value_ = Policy::template do_addition<integer_type>(value_, static_cast<T>(other));
         return *this;
     }
     TYPE_SAFE_DETAIL_MAKE_OP(+=)
@@ -252,7 +267,7 @@ public:
     template <typename T, typename = detail::enable_safe_integer_conversion<T, integer_type>>
     TYPE_SAFE_FORCE_INLINE integer& operator-=(const integer<T, Policy>& other)
     {
-        value_ = Policy::template do_subtraction(value_, static_cast<T>(other));
+        value_ = Policy::template do_subtraction<integer_type>(value_, static_cast<T>(other));
         return *this;
         return *this;
     }
@@ -264,7 +279,7 @@ public:
     template <typename T, typename = detail::enable_safe_integer_conversion<T, integer_type>>
     TYPE_SAFE_FORCE_INLINE integer& operator*=(const integer<T, Policy>& other)
     {
-        value_ = Policy::template do_multiplication(value_, static_cast<T>(other));
+        value_ = Policy::template do_multiplication<integer_type>(value_, static_cast<T>(other));
         return *this;
     }
     TYPE_SAFE_DETAIL_MAKE_OP(*=)
@@ -275,7 +290,7 @@ public:
     template <typename T, typename = detail::enable_safe_integer_conversion<T, integer_type>>
     TYPE_SAFE_FORCE_INLINE integer& operator/=(const integer<T, Policy>& other)
     {
-        value_ = Policy::template do_division(value_, static_cast<T>(other));
+        value_ = Policy::template do_division<integer_type>(value_, static_cast<T>(other));
         return *this;
     }
     TYPE_SAFE_DETAIL_MAKE_OP(/=)
@@ -286,7 +301,7 @@ public:
     template <typename T, typename = detail::enable_safe_integer_conversion<T, integer_type>>
     TYPE_SAFE_FORCE_INLINE integer& operator%=(const integer<T, Policy>& other)
     {
-        value_ = Policy::template do_modulo(value_, static_cast<T>(other));
+        value_ = Policy::template do_modulo<integer_type>(value_, static_cast<T>(other));
         return *this;
     }
     TYPE_SAFE_DETAIL_MAKE_OP(%=)

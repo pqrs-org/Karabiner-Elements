@@ -213,21 +213,20 @@ io_context::wrap(Handler handler)
 
 #endif // !defined(ASIO_NO_DEPRECATED)
 
-template <typename Allocator, unsigned int Bits>
+template <typename Allocator, uintptr_t Bits>
 io_context::basic_executor_type<Allocator, Bits>&
 io_context::basic_executor_type<Allocator, Bits>::operator=(
     const basic_executor_type& other) ASIO_NOEXCEPT
 {
   if (this != &other)
   {
-    io_context* old_io_context = io_context_;
-    io_context_ = other.io_context_;
-    allocator_ = other.allocator_;
-    bits_ = other.bits_;
+    static_cast<Allocator&>(*this) = static_cast<const Allocator&>(other);
+    io_context* old_io_context = context_ptr();
+    target_ = other.target_;
     if (Bits & outstanding_work_tracked)
     {
-      if (io_context_)
-        io_context_->impl_.work_started();
+      if (context_ptr())
+        context_ptr()->impl_.work_started();
       if (old_io_context)
         old_io_context->impl_.work_finished();
     }
@@ -236,20 +235,19 @@ io_context::basic_executor_type<Allocator, Bits>::operator=(
 }
 
 #if defined(ASIO_HAS_MOVE)
-template <typename Allocator, unsigned int Bits>
+template <typename Allocator, uintptr_t Bits>
 io_context::basic_executor_type<Allocator, Bits>&
 io_context::basic_executor_type<Allocator, Bits>::operator=(
     basic_executor_type&& other) ASIO_NOEXCEPT
 {
   if (this != &other)
   {
-    io_context* old_io_context = io_context_;
-    io_context_ = other.io_context_;
-    allocator_ = std::move(other.allocator_);
-    bits_ = other.bits_;
+    static_cast<Allocator&>(*this) = static_cast<Allocator&&>(other);
+    io_context* old_io_context = context_ptr();
+    target_ = other.target_;
     if (Bits & outstanding_work_tracked)
     {
-      other.io_context_ = 0;
+      other.target_ = 0;
       if (old_io_context)
         old_io_context->impl_.work_finished();
     }
@@ -258,14 +256,14 @@ io_context::basic_executor_type<Allocator, Bits>::operator=(
 }
 #endif // defined(ASIO_HAS_MOVE)
 
-template <typename Allocator, unsigned int Bits>
+template <typename Allocator, uintptr_t Bits>
 inline bool io_context::basic_executor_type<Allocator,
     Bits>::running_in_this_thread() const ASIO_NOEXCEPT
 {
-  return io_context_->impl_.can_dispatch();
+  return context_ptr()->impl_.can_dispatch();
 }
 
-template <typename Allocator, unsigned int Bits>
+template <typename Allocator, uintptr_t Bits>
 template <typename Function>
 void io_context::basic_executor_type<Allocator, Bits>::execute(
     ASIO_MOVE_ARG(Function) f) const
@@ -274,7 +272,7 @@ void io_context::basic_executor_type<Allocator, Bits>::execute(
 
   // Invoke immediately if the blocking.possibly property is enabled and we are
   // already inside the thread pool.
-  if ((bits_ & blocking_never) == 0 && io_context_->impl_.can_dispatch())
+  if ((bits() & blocking_never) == 0 && context_ptr()->impl_.can_dispatch())
   {
     // Make a local, non-const copy of the function.
     function_type tmp(ASIO_MOVE_CAST(Function)(f));
@@ -293,7 +291,7 @@ void io_context::basic_executor_type<Allocator, Bits>::execute(
     }
     catch (...)
     {
-      io_context_->impl_.capture_current_exception();
+      context_ptr()->impl_.capture_current_exception();
       return;
     }
 #endif // defined(ASIO_HAS_STD_EXCEPTION_PTR)
@@ -302,41 +300,43 @@ void io_context::basic_executor_type<Allocator, Bits>::execute(
 
   // Allocate and construct an operation to wrap the function.
   typedef detail::executor_op<function_type, Allocator, detail::operation> op;
-  typename op::ptr p = { detail::addressof(allocator_),
-      op::ptr::allocate(allocator_), 0 };
-  p.p = new (p.v) op(ASIO_MOVE_CAST(Function)(f), allocator_);
+  typename op::ptr p = {
+      detail::addressof(static_cast<const Allocator&>(*this)),
+      op::ptr::allocate(static_cast<const Allocator&>(*this)), 0 };
+  p.p = new (p.v) op(ASIO_MOVE_CAST(Function)(f),
+      static_cast<const Allocator&>(*this));
 
-  ASIO_HANDLER_CREATION((*io_context_, *p.p,
-        "io_context", io_context_, 0, "execute"));
+  ASIO_HANDLER_CREATION((*context_ptr(), *p.p,
+        "io_context", context_ptr(), 0, "execute"));
 
-  io_context_->impl_.post_immediate_completion(p.p,
-      (bits_ & relationship_continuation) != 0);
+  context_ptr()->impl_.post_immediate_completion(p.p,
+      (bits() & relationship_continuation) != 0);
   p.v = p.p = 0;
 }
 
 #if !defined(ASIO_NO_TS_EXECUTORS)
-template <typename Allocator, unsigned int Bits>
+template <typename Allocator, uintptr_t Bits>
 inline io_context& io_context::basic_executor_type<
     Allocator, Bits>::context() const ASIO_NOEXCEPT
 {
-  return *io_context_;
+  return *context_ptr();
 }
 
-template <typename Allocator, unsigned int Bits>
+template <typename Allocator, uintptr_t Bits>
 inline void io_context::basic_executor_type<Allocator,
     Bits>::on_work_started() const ASIO_NOEXCEPT
 {
-  io_context_->impl_.work_started();
+  context_ptr()->impl_.work_started();
 }
 
-template <typename Allocator, unsigned int Bits>
+template <typename Allocator, uintptr_t Bits>
 inline void io_context::basic_executor_type<Allocator,
     Bits>::on_work_finished() const ASIO_NOEXCEPT
 {
-  io_context_->impl_.work_finished();
+  context_ptr()->impl_.work_finished();
 }
 
-template <typename Allocator, unsigned int Bits>
+template <typename Allocator, uintptr_t Bits>
 template <typename Function, typename OtherAllocator>
 void io_context::basic_executor_type<Allocator, Bits>::dispatch(
     ASIO_MOVE_ARG(Function) f, const OtherAllocator& a) const
@@ -344,7 +344,7 @@ void io_context::basic_executor_type<Allocator, Bits>::dispatch(
   typedef typename decay<Function>::type function_type;
 
   // Invoke immediately if we are already inside the thread pool.
-  if (io_context_->impl_.can_dispatch())
+  if (context_ptr()->impl_.can_dispatch())
   {
     // Make a local, non-const copy of the function.
     function_type tmp(ASIO_MOVE_CAST(Function)(f));
@@ -360,14 +360,14 @@ void io_context::basic_executor_type<Allocator, Bits>::dispatch(
   typename op::ptr p = { detail::addressof(a), op::ptr::allocate(a), 0 };
   p.p = new (p.v) op(ASIO_MOVE_CAST(Function)(f), a);
 
-  ASIO_HANDLER_CREATION((*io_context_, *p.p,
-        "io_context", io_context_, 0, "dispatch"));
+  ASIO_HANDLER_CREATION((*context_ptr(), *p.p,
+        "io_context", context_ptr(), 0, "dispatch"));
 
-  io_context_->impl_.post_immediate_completion(p.p, false);
+  context_ptr()->impl_.post_immediate_completion(p.p, false);
   p.v = p.p = 0;
 }
 
-template <typename Allocator, unsigned int Bits>
+template <typename Allocator, uintptr_t Bits>
 template <typename Function, typename OtherAllocator>
 void io_context::basic_executor_type<Allocator, Bits>::post(
     ASIO_MOVE_ARG(Function) f, const OtherAllocator& a) const
@@ -380,14 +380,14 @@ void io_context::basic_executor_type<Allocator, Bits>::post(
   typename op::ptr p = { detail::addressof(a), op::ptr::allocate(a), 0 };
   p.p = new (p.v) op(ASIO_MOVE_CAST(Function)(f), a);
 
-  ASIO_HANDLER_CREATION((*io_context_, *p.p,
-        "io_context", io_context_, 0, "post"));
+  ASIO_HANDLER_CREATION((*context_ptr(), *p.p,
+        "io_context", context_ptr(), 0, "post"));
 
-  io_context_->impl_.post_immediate_completion(p.p, false);
+  context_ptr()->impl_.post_immediate_completion(p.p, false);
   p.v = p.p = 0;
 }
 
-template <typename Allocator, unsigned int Bits>
+template <typename Allocator, uintptr_t Bits>
 template <typename Function, typename OtherAllocator>
 void io_context::basic_executor_type<Allocator, Bits>::defer(
     ASIO_MOVE_ARG(Function) f, const OtherAllocator& a) const
@@ -400,10 +400,10 @@ void io_context::basic_executor_type<Allocator, Bits>::defer(
   typename op::ptr p = { detail::addressof(a), op::ptr::allocate(a), 0 };
   p.p = new (p.v) op(ASIO_MOVE_CAST(Function)(f), a);
 
-  ASIO_HANDLER_CREATION((*io_context_, *p.p,
-        "io_context", io_context_, 0, "defer"));
+  ASIO_HANDLER_CREATION((*context_ptr(), *p.p,
+        "io_context", context_ptr(), 0, "defer"));
 
-  io_context_->impl_.post_immediate_completion(p.p, true);
+  context_ptr()->impl_.post_immediate_completion(p.p, true);
   p.v = p.p = 0;
 }
 #endif // !defined(ASIO_NO_TS_EXECUTORS)
