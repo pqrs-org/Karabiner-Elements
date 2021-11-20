@@ -1,7 +1,10 @@
 # Changelog
 
-## Beta
+## Karabiner-Elements 14.3.0
 
+-   [📦 Download](https://github.com/pqrs-org/Karabiner-Elements/releases/download/v14.3.0/Karabiner-Elements-14.3.0.dmg)
+-   📅 Release date
+    -   Nov 20, 2021
 -   ⚡️ Improvements
     -   Added System Extensions tab to EventViewer.
     -   Added a workaround for macOS's ioreg command issue that consumes high CPU usage on macOS Monterey.
