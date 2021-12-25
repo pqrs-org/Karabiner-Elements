@@ -1,0 +1,13 @@
+include:
+  - project-base.yml
+
+targets:
+  Karabiner-Elements:
+    settings:
+      configs:
+        debug:
+          SWIFT_ACTIVE_COMPILATION_CONDITIONS: 'USE_SPARKLE DEBUG'
+        release:
+          SWIFT_ACTIVE_COMPILATION_CONDITIONS: 'USE_SPARKLE'
+    dependencies:
+      - package: Sparkle
