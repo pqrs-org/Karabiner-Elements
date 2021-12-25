@@ -1,11 +1,11 @@
 import AppKit
+import SwiftUI
 
 @NSApplicationMain
 public class AppDelegate: NSObject, NSApplicationDelegate {
     @IBOutlet var simpleModificationsTableViewController: SimpleModificationsTableViewController!
     @IBOutlet var complexModificationsFileImportWindowController: ComplexModificationsFileImportWindowController!
-    @IBOutlet var preferencesWindow: NSWindow!
-    @IBOutlet var preferencesWindowController: PreferencesWindowController!
+    @IBOutlet var window: NSWindow!
     @IBOutlet var systemPreferencesManager: SystemPreferencesManager!
     @IBOutlet var stateJsonMonitor: StateJsonMonitor!
     private var updaterMode = false
@@ -31,20 +31,22 @@ public class AppDelegate: NSObject, NSApplicationDelegate {
         KarabinerKit.observeConsoleUserServerIsDisabledNotification()
 
         systemPreferencesManager.setup()
-        preferencesWindowController.setup()
         stateJsonMonitor.start()
 
         NotificationCenter.default.addObserver(forName: Updater.didFindValidUpdate,
                                                object: nil,
-                                               queue: .main) { [weak self] _ in
+                                               queue: .main)
+        { [weak self] _ in
             guard let self = self else { return }
 
-            self.preferencesWindowController.show()
+            self.window!.makeKeyAndOrderFront(self)
+            NSApp.activate(ignoringOtherApps: true)
         }
 
         NotificationCenter.default.addObserver(forName: Updater.updaterDidNotFindUpdate,
                                                object: nil,
-                                               queue: .main) { [weak self] _ in
+                                               queue: .main)
+        { [weak self] _ in
             guard let self = self else { return }
 
             if self.updaterMode {
@@ -91,7 +93,22 @@ public class AppDelegate: NSObject, NSApplicationDelegate {
         var psn = ProcessSerialNumber(highLongOfPSN: 0, lowLongOfPSN: UInt32(kCurrentProcess))
         TransformProcessType(&psn, ProcessApplicationTransformState(kProcessTransformToForegroundApplication))
 
-        preferencesWindowController.show()
+        window = NSWindow(
+            contentRect: .zero,
+            styleMask: [
+                .titled,
+                .closable,
+                .miniaturizable,
+                .resizable,
+                .fullSizeContentView,
+            ],
+            backing: .buffered,
+            defer: false
+        )
+        window!.title = "Karabiner-Elements Preferences"
+        window!.contentView = NSHostingView(rootView: ContentView(window: window))
+        window!.center()
+        window!.makeKeyAndOrderFront(self)
     }
 
     public func applicationWillTerminate(_: Notification) {
@@ -105,11 +122,6 @@ public class AppDelegate: NSObject, NSApplicationDelegate {
         return true
     }
 
-    public func applicationShouldHandleReopen(_: NSApplication, hasVisibleWindows _: Bool) -> Bool {
-        preferencesWindowController.show()
-        return true
-    }
-
     @objc func handleGetURLEvent(_ event: NSAppleEventDescriptor,
                                  withReplyEvent _: NSAppleEventDescriptor)
     {
@@ -120,7 +132,7 @@ public class AppDelegate: NSObject, NSApplicationDelegate {
         DispatchQueue.main.async { [weak self] in
             guard let self = self else { return }
 
-            KarabinerKit.endAllAttachedSheets(self.preferencesWindow)
+            KarabinerKit.endAllAttachedSheets(self.window)
 
             let urlComponents = URLComponents(string: url)
 
@@ -153,7 +165,7 @@ public class AppDelegate: NSObject, NSApplicationDelegate {
             alert.informativeText = "Unknown URL"
             alert.addButton(withTitle: "OK")
 
-            alert.beginSheetModal(for: self.preferencesWindow) { _ in
+            alert.beginSheetModal(for: self.window) { _ in
             }
         }
     }
