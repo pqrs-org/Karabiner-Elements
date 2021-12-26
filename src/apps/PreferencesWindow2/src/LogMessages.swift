@@ -20,7 +20,7 @@ private func callback(_ logLines: UnsafeMutableRawPointer?,
     DispatchQueue.main.async { [weak obj] in
         guard let obj = obj else { return }
 
-        obj.append(logMessageEntries)
+        obj.setEntries(logMessageEntries)
     }
 }
 
@@ -41,8 +41,6 @@ public class LogMessageEntry: Identifiable, Equatable {
 
 public class LogMessages: ObservableObject {
     public static let shared = LogMessages()
-
-    let maxCount = 256
 
     @Published var entries: [LogMessageEntry] = []
     @Published var currentTimeString = ""
@@ -73,11 +71,7 @@ public class LogMessages: ObservableObject {
         libkrbn_disable_log_monitor()
     }
 
-    public func append(_ newEntries: [LogMessageEntry]) {
-        entries += newEntries
-
-        if entries.count > maxCount {
-            entries.removeFirst()
-        }
+    public func setEntries(_ entries: [LogMessageEntry]) {
+        self.entries = entries
     }
 }

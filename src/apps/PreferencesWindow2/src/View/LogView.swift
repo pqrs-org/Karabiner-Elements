@@ -9,6 +9,7 @@ struct LogView: View {
                 ScrollView {
                     logMessages.entries.map {
                         Text($0.text)
+                            .font(.custom("Menlo", size: 11.0))
                     }.reduce(Text("")) { $0 + $1 }
                 }
             }
