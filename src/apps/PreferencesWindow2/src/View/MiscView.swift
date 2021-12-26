@@ -79,6 +79,22 @@ struct MiscView: View {
                 .padding(6.0)
             }
 
+            GroupBox(label: Text("Export & Import")) {
+                VStack(alignment: .leading, spacing: 12.0) {
+                    HStack {
+                        Button(action: {
+                            let url = URL(fileURLWithPath: String(cString: libkrbn_get_user_configuration_directory()), isDirectory: true)
+                            NSWorkspace.shared.open(url)
+                        }) {
+                            Label("Open config folder (~/.config/karabiner)", systemImage: "arrow.up.forward.app")
+                        }
+
+                        Spacer()
+                    }
+                }
+                .padding(6.0)
+            }
+
             GroupBox(label: Text("Web sites")) {
                 VStack(alignment: .leading, spacing: 12.0) {
                     HStack {
