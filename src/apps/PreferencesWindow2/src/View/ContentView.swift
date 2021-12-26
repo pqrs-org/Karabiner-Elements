@@ -67,6 +67,13 @@ struct ContentView: View {
                             Label("Log", systemImage: "doc.plaintext")
                         }
                         .padding(10)
+
+                        NavigationLink(destination: UninstallView(),
+                                       tag: "Uninstall",
+                                       selection: $selection) {
+                            Label("Uninstall", systemImage: "trash")
+                        }
+                        .padding(10)
                     }
                     .listStyle(SidebarListStyle())
                     .frame(width: 250)
