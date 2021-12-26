@@ -9,12 +9,22 @@ final class Settings: ObservableObject {
 
     init() {
         coreConfigurationModel = KarabinerKitConfigurationManager.shared().coreConfigurationModel
-        showMenu = coreConfigurationModel.globalConfigurationShowInMenuBar
+
+        showIconInMenuBar = coreConfigurationModel.globalConfigurationShowInMenuBar
+        showProfileNameInMenuBar = coreConfigurationModel.globalConfigurationShowProfileNameInMenuBar
     }
 
-    @Published var showMenu: Bool {
+    @Published var showIconInMenuBar: Bool {
         didSet {
-            coreConfigurationModel.globalConfigurationShowInMenuBar = showMenu
+            coreConfigurationModel.globalConfigurationShowInMenuBar = showIconInMenuBar
+            coreConfigurationModel.save()
+            libkrbn_launch_menu()
+        }
+    }
+
+    @Published var showProfileNameInMenuBar: Bool {
+        didSet {
+            coreConfigurationModel.globalConfigurationShowProfileNameInMenuBar = showProfileNameInMenuBar
             coreConfigurationModel.save()
             libkrbn_launch_menu()
         }
