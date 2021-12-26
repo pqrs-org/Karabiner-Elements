@@ -109,6 +109,9 @@ public class AppDelegate: NSObject, NSApplicationDelegate {
         window!.contentView = NSHostingView(rootView: ContentView(window: window))
         window!.center()
         window!.makeKeyAndOrderFront(self)
+
+        window!.makeKeyAndOrderFront(self)
+        NSApp.activate(ignoringOtherApps: true)
     }
 
     public func applicationWillTerminate(_: Notification) {

@@ -10,8 +10,16 @@ final class Settings: ObservableObject {
     init() {
         coreConfigurationModel = KarabinerKitConfigurationManager.shared().coreConfigurationModel
 
+        checkForUpdatesOnStartup = coreConfigurationModel.globalConfigurationCheckForUpdatesOnStartup
         showIconInMenuBar = coreConfigurationModel.globalConfigurationShowInMenuBar
         showProfileNameInMenuBar = coreConfigurationModel.globalConfigurationShowProfileNameInMenuBar
+    }
+
+    @Published var checkForUpdatesOnStartup: Bool {
+        didSet {
+            coreConfigurationModel.globalConfigurationCheckForUpdatesOnStartup = checkForUpdatesOnStartup
+            coreConfigurationModel.save()
+        }
     }
 
     @Published var showIconInMenuBar: Bool {
