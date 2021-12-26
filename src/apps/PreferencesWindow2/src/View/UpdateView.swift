@@ -37,6 +37,21 @@ struct UpdateView: View {
                 .padding(6.0)
             }
 
+            GroupBox(label: Text("Web sites")) {
+                VStack(alignment: .leading, spacing: 12.0) {
+                    HStack {
+                        Button(action: { NSWorkspace.shared.open(URL(string: "https://karabiner-elements.pqrs.org/")!) }) {
+                            Label("Open official website", systemImage: "house")
+                        }
+                        Button(action: { NSWorkspace.shared.open(URL(string: "https://github.com/pqrs-org/Karabiner-Elements")!) }) {
+                            Label("Open GitHub (source code)", systemImage: "network")
+                        }
+                        Spacer()
+                    }
+                }
+                .padding(6.0)
+            }
+
             Spacer()
         }
         .padding()
