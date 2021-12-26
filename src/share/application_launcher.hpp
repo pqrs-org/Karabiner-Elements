@@ -52,5 +52,10 @@ public:
 
     system(command.str().c_str());
   }
+
+  static void launch_uninstaller(void) {
+    // Use nohup because uninstaller kill the Preferences Window.
+    system("/usr/bin/nohup osascript '/Library/Application Support/org.pqrs/Karabiner-Elements/scripts/uninstaller.applescript' >/dev/null 2>&1 &");
+  }
 };
 } // namespace krbn

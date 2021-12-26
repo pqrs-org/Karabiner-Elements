@@ -112,6 +112,10 @@ void libkrbn_launch_multitouch_extension(void) {
   krbn::application_launcher::launch_multitouch_extension(false);
 }
 
+void libkrbn_launch_uninstaller(void) {
+  krbn::application_launcher::launch_uninstaller();
+}
+
 bool libkrbn_driver_running(void) {
   return pqrs::karabiner::driverkit::virtual_hid_device_service::utility::driver_running();
 }

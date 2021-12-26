@@ -42,6 +42,7 @@ void libkrbn_launch_event_viewer(void);
 void libkrbn_launch_menu(void);
 void libkrbn_launch_preferences(void);
 void libkrbn_launch_multitouch_extension(void);
+void libkrbn_launch_uninstaller(void);
 
 bool libkrbn_driver_running(void);
 bool libkrbn_virtual_hid_keyboard_exists(void);
