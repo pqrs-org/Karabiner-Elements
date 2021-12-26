@@ -64,6 +64,21 @@ struct MiscView: View {
                 .padding(6.0)
             }
 
+            GroupBox(label: Text("Extra tool")) {
+                VStack(alignment: .leading, spacing: 12.0) {
+                    HStack {
+                        Button(action: {
+                            libkrbn_launch_multitouch_extension()
+                        }) {
+                            Label("Open Karabiner-MultitouchExtension app", systemImage: "arrow.up.forward.app")
+                        }
+
+                        Spacer()
+                    }
+                }
+                .padding(6.0)
+            }
+
             GroupBox(label: Text("Web sites")) {
                 VStack(alignment: .leading, spacing: 12.0) {
                     HStack {
