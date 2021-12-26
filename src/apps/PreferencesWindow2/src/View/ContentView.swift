@@ -86,6 +86,24 @@ struct ContentView: View {
                     .frame(width: 250)
 
                     Spacer()
+
+                    Divider()
+
+                    VStack(alignment: .leading, spacing: 16) {
+                        Button(action: {
+                            libkrbn_launchctl_restart_console_user_server()
+                            KarabinerKit.relaunch()
+                        }) {
+                            Label("Restart Karabiner-Elements", systemImage: "arrow.clockwise")
+                        }
+
+                        Button(action: {
+                            KarabinerKit.quitKarabinerWithConfirmation()
+                        }) {
+                            Label("Quit Karabiner-Elements", systemImage: "xmark.circle.fill")
+                        }
+                    }
+                    .padding(10)
                 }
             }
             .frame(minWidth: 1100,

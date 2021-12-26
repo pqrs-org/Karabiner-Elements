@@ -12,13 +12,6 @@ struct MiscView: View {
                         Text("Karabiner-Elements version \(version)")
                         Spacer()
                     }
-
-                    Button(action: {
-                        libkrbn_launchctl_restart_console_user_server()
-                        KarabinerKit.relaunch()
-                    }) {
-                        Label("Restart Karabiner-Elements", systemImage: "arrow.clockwise")
-                    }
                 }
                 .padding(6.0)
             }
