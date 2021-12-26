@@ -65,7 +65,6 @@
   [self setupDevicesParameters:nil];
   [self setupVirtualHIDKeyboardConfiguration:nil];
   [self.profilesTableViewController setup];
-  [self setupMiscTabControls];
   [self.logFileTextViewController monitor];
 
   self.observers = [KarabinerKitSmartObserverContainer new];
@@ -84,7 +83,6 @@
 
                              [self setupDevicesParameters:nil];
                              [self setupVirtualHIDKeyboardConfiguration:nil];
-                             [self setupMiscTabControls];
                            }];
     [self.observers addObserver:o notificationCenter:center];
   }
@@ -243,36 +241,6 @@
 
   [self updateSystemPreferencesUIValues];
   [self.systemPreferencesManager updateSystemPreferencesValues:model];
-}
-
-- (void)setupMiscTabControls {
-  if (libkrbn_system_core_configuration_file_path_exists()) {
-    self.systemDefaultProfileStateLabel.hidden = YES;
-    self.systemDefaultProfileRemoveButton.hidden = NO;
-  } else {
-    self.systemDefaultProfileStateLabel.hidden = NO;
-    self.systemDefaultProfileRemoveButton.hidden = YES;
-  }
-}
-
-- (IBAction)systemDefaultProfileCopy:(id)sender {
-  // Ensure karabiner.json exists before copy.
-  KarabinerKitCoreConfigurationModel* coreConfigurationModel = [KarabinerKitConfigurationManager sharedManager].coreConfigurationModel;
-  [coreConfigurationModel save];
-
-  NSString* path = @"/Library/Application Support/org.pqrs/Karabiner-Elements/scripts/copy_current_profile_to_system_default_profile.applescript";
-  [[[NSAppleScript alloc] initWithContentsOfURL:[NSURL fileURLWithPath:path] error:nil] executeAndReturnError:nil];
-  [self setupMiscTabControls];
-}
-
-- (IBAction)systemDefaultProfileRemove:(id)sender {
-  NSString* path = @"/Library/Application Support/org.pqrs/Karabiner-Elements/scripts/remove_system_default_profile.applescript";
-  [[[NSAppleScript alloc] initWithContentsOfURL:[NSURL fileURLWithPath:path] error:nil] executeAndReturnError:nil];
-  [self setupMiscTabControls];
-}
-
-- (IBAction)quitWithConfirmation:(id)sender {
-  [KarabinerKit quitKarabinerWithConfirmation];
 }
 
 @end

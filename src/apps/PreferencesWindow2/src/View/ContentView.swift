@@ -77,17 +77,21 @@ struct ContentView: View {
                             }
                             .padding(10)
 
-                            NavigationLink(destination: LogView(),
-                                           tag: "Log",
-                                           selection: $selection) {
-                                Label("Log", systemImage: "doc.plaintext")
-                            }
-                            .padding(10)
-
                             NavigationLink(destination: UninstallView(),
                                            tag: "Uninstall",
                                            selection: $selection) {
                                 Label("Uninstall", systemImage: "trash")
+                            }
+                            .padding(10)
+                        }
+
+                        Divider()
+
+                        Group {
+                            NavigationLink(destination: LogView(),
+                                           tag: "Log",
+                                           selection: $selection) {
+                                Label("Log", systemImage: "doc.plaintext")
                             }
                             .padding(10)
                         }
