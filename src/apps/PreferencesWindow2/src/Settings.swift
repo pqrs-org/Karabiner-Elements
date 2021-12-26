@@ -13,6 +13,8 @@ final class Settings: ObservableObject {
         checkForUpdatesOnStartup = coreConfigurationModel.globalConfigurationCheckForUpdatesOnStartup
         showIconInMenuBar = coreConfigurationModel.globalConfigurationShowInMenuBar
         showProfileNameInMenuBar = coreConfigurationModel.globalConfigurationShowProfileNameInMenuBar
+
+        updateSystemDefaultProfileExists()
     }
 
     @Published var checkForUpdatesOnStartup: Bool {
@@ -36,5 +38,29 @@ final class Settings: ObservableObject {
             coreConfigurationModel.save()
             libkrbn_launch_menu()
         }
+    }
+
+    @Published var systemDefaultProfileExists: Bool = false
+    private func updateSystemDefaultProfileExists() {
+        systemDefaultProfileExists = libkrbn_system_core_configuration_file_path_exists()
+    }
+
+    func installSystemDefaultProfile() {
+        // Ensure karabiner.json exists before copy.
+        coreConfigurationModel.save()
+
+        let url = URL(fileURLWithPath: "/Library/Application Support/org.pqrs/Karabiner-Elements/scripts/copy_current_profile_to_system_default_profile.applescript")
+        guard let script = NSAppleScript(contentsOf: url, error: nil) else { return }
+        script.executeAndReturnError(nil)
+
+        updateSystemDefaultProfileExists()
+    }
+
+    func removeSystemDefaultProfile() {
+        let url = URL(fileURLWithPath: "/Library/Application Support/org.pqrs/Karabiner-Elements/scripts/remove_system_default_profile.applescript")
+        guard let script = NSAppleScript(contentsOf: url, error: nil) else { return }
+        script.executeAndReturnError(nil)
+
+        updateSystemDefaultProfileExists()
     }
 }

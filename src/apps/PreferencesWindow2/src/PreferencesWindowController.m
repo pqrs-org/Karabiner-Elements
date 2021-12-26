@@ -246,14 +246,6 @@
 }
 
 - (void)setupMiscTabControls {
-  KarabinerKitCoreConfigurationModel* coreConfigurationModel = [KarabinerKitConfigurationManager sharedManager].coreConfigurationModel;
-
-  if (coreConfigurationModel.globalConfigurationCheckForUpdatesOnStartup) {
-    self.checkForUpdateOnStartupButton.state = NSControlStateValueOn;
-  } else {
-    self.checkForUpdateOnStartupButton.state = NSControlStateValueOff;
-  }
-
   if (libkrbn_system_core_configuration_file_path_exists()) {
     self.systemDefaultProfileStateLabel.hidden = YES;
     self.systemDefaultProfileRemoveButton.hidden = NO;
@@ -261,38 +253,6 @@
     self.systemDefaultProfileStateLabel.hidden = NO;
     self.systemDefaultProfileRemoveButton.hidden = YES;
   }
-
-  if (coreConfigurationModel.globalConfigurationShowInMenuBar) {
-    self.showInMenuBarButton.state = NSControlStateValueOn;
-  } else {
-    self.showInMenuBarButton.state = NSControlStateValueOff;
-  }
-
-  if (coreConfigurationModel.globalConfigurationShowProfileNameInMenuBar) {
-    self.showProfileNameInMenuBarButton.state = NSControlStateValueOn;
-  } else {
-    self.showProfileNameInMenuBarButton.state = NSControlStateValueOff;
-  }
-}
-
-- (IBAction)changeMiscTabControls:(id)sender {
-  KarabinerKitCoreConfigurationModel* coreConfigurationModel = [KarabinerKitConfigurationManager sharedManager].coreConfigurationModel;
-
-  coreConfigurationModel.globalConfigurationCheckForUpdatesOnStartup = (self.checkForUpdateOnStartupButton.state == NSControlStateValueOn);
-  coreConfigurationModel.globalConfigurationShowInMenuBar = (self.showInMenuBarButton.state == NSControlStateValueOn);
-  coreConfigurationModel.globalConfigurationShowProfileNameInMenuBar = (self.showProfileNameInMenuBarButton.state == NSControlStateValueOn);
-
-  [coreConfigurationModel save];
-
-  libkrbn_launch_menu();
-}
-
-- (IBAction)checkForUpdatesStableOnly:(id)sender {
-  [Updater.shared checkForUpdatesStableOnly];
-}
-
-- (IBAction)checkForUpdatesWithBetaVersion:(id)sender {
-  [Updater.shared checkForUpdatesWithBetaVersion];
 }
 
 - (IBAction)systemDefaultProfileCopy:(id)sender {
@@ -309,35 +269,6 @@
   NSString* path = @"/Library/Application Support/org.pqrs/Karabiner-Elements/scripts/remove_system_default_profile.applescript";
   [[[NSAppleScript alloc] initWithContentsOfURL:[NSURL fileURLWithPath:path] error:nil] executeAndReturnError:nil];
   [self setupMiscTabControls];
-}
-
-- (IBAction)launchUninstaller:(id)sender {
-  // Use nohup because uninstaller kill the Preferences Window.
-  system("/usr/bin/nohup osascript '/Library/Application Support/org.pqrs/Karabiner-Elements/scripts/uninstaller.applescript' >/dev/null 2>&1 &");
-}
-
-- (IBAction)launchMultitouchExtension:(id)sender {
-  libkrbn_launch_multitouch_extension();
-}
-
-- (IBAction)openOfficialWebsite:(id)sender {
-  [[NSWorkspace sharedWorkspace] openURL:[NSURL URLWithString:@"https://karabiner-elements.pqrs.org/"]];
-}
-
-- (IBAction)openGitHub:(id)sender {
-  [[NSWorkspace sharedWorkspace] openURL:[NSURL URLWithString:@"https://github.com/pqrs-org/Karabiner-Elements"]];
-}
-
-- (IBAction)openConfigDirectory:(id)sender {
-  NSURL* url = [NSURL fileURLWithPath:[NSString stringWithUTF8String:libkrbn_get_user_configuration_directory()]
-                          isDirectory:YES];
-  NSLog(@"%@", url);
-  [[NSWorkspace sharedWorkspace] openURL:url];
-}
-
-- (IBAction)restart:(id)sender {
-  libkrbn_launchctl_restart_console_user_server();
-  [KarabinerKit relaunch];
 }
 
 - (IBAction)quitWithConfirmation:(id)sender {
