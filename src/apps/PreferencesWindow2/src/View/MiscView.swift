@@ -1,9 +1,21 @@
 import SwiftUI
 
 struct MiscView: View {
+    @ObservedObject var settings = Settings.shared
+
     var body: some View {
         VStack(alignment: .leading, spacing: 12.0) {
-            Text("Misc")
+            GroupBox(label: Text("Menu bar")) {
+                VStack(alignment: .leading, spacing: 12.0) {
+                    Toggle(isOn: $settings.showMenu) {
+                        Text("Show icon in menu bar (Default: on)")
+                        Spacer()
+                    }
+                }
+                .padding(6.0)
+            }
+
+            Spacer()
         }
         .padding()
     }
