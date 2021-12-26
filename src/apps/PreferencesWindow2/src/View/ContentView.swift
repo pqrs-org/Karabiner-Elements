@@ -61,6 +61,13 @@ struct ContentView: View {
                         }
                         .padding(10)
 
+                        NavigationLink(destination: AdvancedView(),
+                                       tag: "Advanced",
+                                       selection: $selection) {
+                            Label("Advanced", systemImage: "leaf.fill")
+                        }
+                        .padding(10)
+
                         NavigationLink(destination: LogView(),
                                        tag: "Log",
                                        selection: $selection) {
