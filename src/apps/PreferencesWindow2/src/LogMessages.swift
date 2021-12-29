@@ -1,5 +1,11 @@
 import SwiftUI
 
+enum LogLevel {
+    case info
+    case warn
+    case error
+}
+
 private func callback(_ logLines: UnsafeMutableRawPointer?,
                       _ context: UnsafeMutableRawPointer?)
 {
@@ -13,7 +19,15 @@ private func callback(_ logLines: UnsafeMutableRawPointer?,
     for i in 0 ..< size {
         let line = libkrbn_log_lines_get_line(logLines, i)
         if line != nil {
-            logMessageEntries.append(LogMessageEntry(String(cString: line!) + "\n"))
+            var logLevel = LogLevel.info
+            if libkrbn_log_lines_is_warn_line(line) {
+                logLevel = LogLevel.warn
+            }
+            if libkrbn_log_lines_is_error_line(line) {
+                logLevel = LogLevel.error
+            }
+
+            logMessageEntries.append(LogMessageEntry(text: String(cString: line!), logLevel: logLevel))
         }
     }
 
@@ -30,8 +44,19 @@ public class LogMessageEntry: Identifiable, Equatable {
     public var foregroundColor = Color.primary
     public var backgroundColor = Color.clear
 
-    init(_ text: String) {
+    init(text: String, logLevel: LogLevel) {
         self.text = text
+
+        switch logLevel {
+        case LogLevel.info:
+            break
+        case LogLevel.warn:
+            foregroundColor = Color(colorString: "#8a6d3bff")
+            backgroundColor = Color(colorString: "#fcf8e3ff")
+        case LogLevel.error:
+            foregroundColor = Color(colorString: "#a94442ff")
+            backgroundColor = Color(colorString: "#f2dedeff")
+        }
     }
 
     public static func == (lhs: LogMessageEntry, rhs: LogMessageEntry) -> Bool {

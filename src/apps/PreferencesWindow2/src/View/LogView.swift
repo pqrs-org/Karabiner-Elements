@@ -7,10 +7,14 @@ struct LogView: View {
         VStack(alignment: .leading, spacing: 12.0) {
             GeometryReader { _ in
                 ScrollView {
-                    logMessages.entries.map {
-                        Text($0.text)
-                            .font(.custom("Menlo", size: 11.0))
-                    }.reduce(Text("")) { $0 + $1 }
+                    VStack(alignment: .leading, spacing: 0) {
+                        ForEach(logMessages.entries) { e in
+                            Text(e.text)
+                                .font(.custom("Menlo", size: 11.0))
+                                .foregroundColor(e.foregroundColor)
+                                .background(e.backgroundColor)
+                        }
+                    }
                 }
             }
         }
