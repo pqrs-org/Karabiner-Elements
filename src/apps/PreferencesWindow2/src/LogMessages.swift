@@ -72,7 +72,13 @@ public class LogMessages: ObservableObject {
 
     private var timer: Timer?
 
-    init() {
+    init() {}
+
+    deinit {
+        unwatch()
+    }
+
+    public func watch() {
         let obj = unsafeBitCast(self, to: UnsafeMutableRawPointer.self)
         libkrbn_enable_log_monitor(callback, obj)
 
@@ -92,7 +98,7 @@ public class LogMessages: ObservableObject {
         }
     }
 
-    deinit {
+    public func unwatch() {
         libkrbn_disable_log_monitor()
     }
 

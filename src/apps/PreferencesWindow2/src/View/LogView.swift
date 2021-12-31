@@ -14,11 +14,19 @@ struct LogView: View {
                                 .foregroundColor(e.foregroundColor)
                                 .background(e.backgroundColor)
                         }
+                        Spacer()
                     }
+                    .background(Color(NSColor.textBackgroundColor))
                 }
             }
         }
         .padding()
+        .onAppear {
+            logMessages.watch()
+        }
+        .onDisappear {
+            logMessages.unwatch()
+        }
     }
 }
 
