@@ -5,11 +5,12 @@ struct LogView: View {
 
     var body: some View {
         VStack(alignment: .leading, spacing: 12.0) {
-            GeometryReader { _ in
-                ScrollView {
+            ScrollView {
+                ScrollViewReader { proxy in
                     VStack(alignment: .leading, spacing: 0) {
                         ForEach(logMessages.entries) { e in
                             Text(e.text)
+                                .id(e.id)
                                 .font(.custom("Menlo", size: 11.0))
                                 .foregroundColor(e.foregroundColor)
                                 .background(e.backgroundColor)
@@ -17,11 +18,16 @@ struct LogView: View {
                         Spacer()
                     }
                     .background(Color(NSColor.textBackgroundColor))
+                    .onChange(of: logMessages.entries.count) { _ in
+                        if let last = logMessages.entries.last {
+                            proxy.scrollTo(last.id, anchor: .bottom)
+                        }
+                    }
                 }
             }
             HStack {
                 Text("Current time: \(logMessages.currentTimeString)")
-                
+
                 Spacer()
 
                 Button(action: {

@@ -79,6 +79,8 @@ public class LogMessages: ObservableObject {
     }
 
     public func watch() {
+        entries = []
+
         let obj = unsafeBitCast(self, to: UnsafeMutableRawPointer.self)
         libkrbn_enable_log_monitor(callback, obj)
 
