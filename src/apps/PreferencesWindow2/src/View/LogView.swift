@@ -19,6 +19,24 @@ struct LogView: View {
                     .background(Color(NSColor.textBackgroundColor))
                 }
             }
+            HStack {
+                Text("Current time: \(logMessages.currentTimeString)")
+                
+                Spacer()
+
+                Button(action: {
+                    var text = ""
+                    for e in logMessages.entries {
+                        text += e.text + "\n"
+                    }
+
+                    let pboard = NSPasteboard.general
+                    pboard.clearContents()
+                    pboard.writeObjects([text as NSString])
+                }) {
+                    Label("Copy to pasteboard", systemImage: "arrow.right.doc.on.clipboard")
+                }
+            }
         }
         .padding()
         .onAppear {
