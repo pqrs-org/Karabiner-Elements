@@ -79,6 +79,13 @@ final class Settings: ObservableObject {
         updateProfiles()
     }
 
+    public func appendProfile() {
+        libkrbn_core_configuration_push_back_profile(libkrbnCoreConfiguration)
+        save()
+
+        updateProfiles()
+    }
+
     public func removeProfile(_ profile: Profile) {
         libkrbn_core_configuration_erase_profile(libkrbnCoreConfiguration, profile.index)
         save()

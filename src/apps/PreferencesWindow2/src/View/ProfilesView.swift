@@ -29,6 +29,7 @@ struct ProfilesView: View {
                             }) {
                                 Label("Remove", systemImage: "minus.circle.fill")
                             }
+
                             .padding(.leading, 12.0)
                             .disabled(profile.selected)
                         }
@@ -40,6 +41,12 @@ struct ProfilesView: View {
                 }
             }
             .background(Color(NSColor.textBackgroundColor))
+
+            Button(action: {
+                settings.appendProfile()
+            }) {
+                Label("Add new profile", systemImage: "plus.circle.fill")
+            }
         }
         .padding()
     }
