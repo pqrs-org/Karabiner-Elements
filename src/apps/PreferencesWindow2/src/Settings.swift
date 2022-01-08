@@ -37,21 +37,27 @@ final class Settings: ObservableObject {
     }
 
     public func updateProperties(_ initializedCoreConfiguration: UnsafeMutableRawPointer?) {
-        didSetEnabled = true
+        didSetEnabled = false
 
         libkrbnCoreConfiguration = initializedCoreConfiguration
+
+        updateProfiles()
 
         checkForUpdatesOnStartup = libkrbn_core_configuration_get_global_configuration_check_for_updates_on_startup(libkrbnCoreConfiguration)
         showIconInMenuBar = libkrbn_core_configuration_get_global_configuration_show_in_menu_bar(libkrbnCoreConfiguration)
         showProfileNameInMenuBar = libkrbn_core_configuration_get_global_configuration_show_profile_name_in_menu_bar(libkrbnCoreConfiguration)
 
-        updateProfiles()
         updateSystemDefaultProfileExists()
 
         didSetEnabled = true
     }
 
+    //
+    // Profiles
+    //
+
     @Published var profiles: [Profile] = []
+
     private func updateProfiles() {
         var newProfiles: [Profile] = []
 
@@ -72,6 +78,17 @@ final class Settings: ObservableObject {
 
         updateProfiles()
     }
+
+    public func removeProfile(_ profile: Profile) {
+        libkrbn_core_configuration_erase_profile(libkrbnCoreConfiguration, profile.index)
+        save()
+
+        updateProfiles()
+    }
+
+    //
+    // Misc
+    //
 
     @Published var checkForUpdatesOnStartup: Bool = false {
         didSet {
