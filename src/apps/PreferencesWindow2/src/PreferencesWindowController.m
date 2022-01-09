@@ -7,7 +7,6 @@
 #import "Karabiner_Elements-Swift.h"
 #import "LogFileTextViewController.h"
 #import "NotificationKeys.h"
-#import "ProfilesTableViewController.h"
 #import "SimpleModificationsMenuManager.h"
 #import "SimpleModificationsTableViewController.h"
 #import "SystemPreferencesManager.h"
@@ -36,13 +35,6 @@
 @property(weak) IBOutlet NSTextField* virtualHIDKeyboardMouseKeyXYScaleText;
 @property(weak) IBOutlet NSStepper* virtualHIDKeyboardMouseKeyXYScaleStepper;
 @property(weak) IBOutlet NSButton* virtualHIDKeyboardIndicateStickyModifierKeysState;
-@property(weak) IBOutlet NSButton* checkForUpdateOnStartupButton;
-@property(weak) IBOutlet NSButton* systemDefaultProfileCopyButton;
-@property(weak) IBOutlet NSTextField* systemDefaultProfileStateLabel;
-@property(weak) IBOutlet NSButton* systemDefaultProfileRemoveButton;
-@property(weak) IBOutlet NSButton* showInMenuBarButton;
-@property(weak) IBOutlet NSButton* showProfileNameInMenuBarButton;
-@property(weak) IBOutlet ProfilesTableViewController* profilesTableViewController;
 @property(weak) IBOutlet SimpleModificationsMenuManager* simpleModificationsMenuManager;
 @property(weak) IBOutlet SimpleModificationsTableViewController* simpleModificationsTableViewController;
 @property(weak) IBOutlet SystemPreferencesManager* systemPreferencesManager;
@@ -64,7 +56,6 @@
   [self.devicesTableViewController setup];
   [self setupDevicesParameters:nil];
   [self setupVirtualHIDKeyboardConfiguration:nil];
-  [self.profilesTableViewController setup];
   [self.logFileTextViewController monitor];
 
   self.observers = [KarabinerKitSmartObserverContainer new];
