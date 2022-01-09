@@ -26,7 +26,7 @@ struct ProfileEditView: View {
                                     settings.updateProfileName(profile!, name)
                                     showing = false
                                 }) {
-                                    Label("Save", systemImage: "pencil")
+                                    Label("Save", systemImage: "checkmark")
                                         .padding(.horizontal, 36.0)
                                 }
 
@@ -36,7 +36,7 @@ struct ProfileEditView: View {
                                 Button(action: {
                                     showing = false
                                 }) {
-                                    Label("Cancel", systemImage: "pencil.slash")
+                                    Label("Cancel", systemImage: "xmark")
                                 }
 
                                 Spacer()
