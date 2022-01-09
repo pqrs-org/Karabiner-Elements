@@ -4,7 +4,7 @@ struct VirtualKeyboardView: View {
     @ObservedObject var settings = Settings.shared
 
     var body: some View {
-        VStack(alignment: .leading, spacing: 12.0) {
+        VStack(alignment: .leading, spacing: 24.0) {
             GroupBox(label: Text("Mouse key")) {
                 VStack(alignment: .leading, spacing: 12.0) {
                     HStack {

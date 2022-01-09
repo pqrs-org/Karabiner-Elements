@@ -5,7 +5,7 @@ struct UpdateView: View {
     let version = Bundle.main.object(forInfoDictionaryKey: "CFBundleVersion") as! String
 
     var body: some View {
-        VStack(alignment: .leading, spacing: 12.0) {
+        VStack(alignment: .leading, spacing: 24.0) {
             GroupBox(label: Text("Update")) {
                 VStack(alignment: .leading, spacing: 12.0) {
                     HStack {

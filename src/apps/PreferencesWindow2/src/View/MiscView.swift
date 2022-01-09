@@ -4,7 +4,7 @@ struct MiscView: View {
     @ObservedObject var settings = Settings.shared
 
     var body: some View {
-        VStack(alignment: .leading, spacing: 12.0) {
+        VStack(alignment: .leading, spacing: 24.0) {
             GroupBox(label: Text("Menu bar")) {
                 VStack(alignment: .leading, spacing: 12.0) {
                     HStack {

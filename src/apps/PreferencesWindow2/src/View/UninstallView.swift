@@ -2,7 +2,7 @@ import SwiftUI
 
 struct UninstallView: View {
     var body: some View {
-        VStack(alignment: .leading, spacing: 12.0) {
+        VStack(alignment: .leading, spacing: 24.0) {
             GroupBox(label: Text("Uninstall")) {
                 VStack(alignment: .leading, spacing: 12.0) {
                     HStack {
