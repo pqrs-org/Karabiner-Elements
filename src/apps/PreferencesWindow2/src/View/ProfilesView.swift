@@ -18,9 +18,9 @@ struct ProfilesView: View {
                                 editingProfile = profile
                                 showingSheet = true
                             }) {
-                                Image(systemName: "pencil")
+                                Label("Edit", systemImage: "pencil")
                             }
-                            .padding(.leading, 6.0)
+                            .padding(.leading, 12.0)
 
                             Spacer()
 

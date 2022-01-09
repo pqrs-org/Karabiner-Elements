@@ -41,6 +41,10 @@ final class Settings: ObservableObject {
 
         libkrbnCoreConfiguration = initializedCoreConfiguration
 
+        virtualHIDKeyboardCountryCode = Int(libkrbn_core_configuration_get_selected_profile_virtual_hid_keyboard_country_code(libkrbnCoreConfiguration))
+        virtualHIDKeyboardMouseKeyXYScale = Int(libkrbn_core_configuration_get_selected_profile_virtual_hid_keyboard_mouse_key_xy_scale(libkrbnCoreConfiguration))
+        virtualHIDKeyboardIndicateStickyModifierKeysState = libkrbn_core_configuration_get_selected_profile_virtual_hid_keyboard_indicate_sticky_modifier_keys_state(libkrbnCoreConfiguration)
+
         updateProfiles()
 
         checkForUpdatesOnStartup = libkrbn_core_configuration_get_global_configuration_check_for_updates_on_startup(libkrbnCoreConfiguration)
@@ -50,6 +54,37 @@ final class Settings: ObservableObject {
         updateSystemDefaultProfileExists()
 
         didSetEnabled = true
+    }
+
+    //
+    // Virtual Keybaord
+    //
+
+    @Published var virtualHIDKeyboardCountryCode: Int = 0 {
+        didSet {
+            if didSetEnabled {
+                libkrbn_core_configuration_set_selected_profile_virtual_hid_keyboard_country_code(libkrbnCoreConfiguration, UInt8(virtualHIDKeyboardCountryCode))
+                save()
+            }
+        }
+    }
+
+    @Published var virtualHIDKeyboardMouseKeyXYScale: Int = 0 {
+        didSet {
+            if didSetEnabled {
+                libkrbn_core_configuration_set_selected_profile_virtual_hid_keyboard_mouse_key_xy_scale(libkrbnCoreConfiguration, Int32(virtualHIDKeyboardMouseKeyXYScale))
+                save()
+            }
+        }
+    }
+
+    @Published var virtualHIDKeyboardIndicateStickyModifierKeysState: Bool = false {
+        didSet {
+            if didSetEnabled {
+                libkrbn_core_configuration_set_selected_profile_virtual_hid_keyboard_indicate_sticky_modifier_keys_state(libkrbnCoreConfiguration, virtualHIDKeyboardIndicateStickyModifierKeysState)
+                save()
+            }
+        }
     }
 
     //
@@ -80,7 +115,7 @@ final class Settings: ObservableObject {
     }
 
     public func updateProfileName(_ profile: Profile, _ name: String) {
-        libkrbn_core_configuration_set_profile_name(libkrbnCoreConfiguration, profile.index, name.cString(using:.utf8))
+        libkrbn_core_configuration_set_profile_name(libkrbnCoreConfiguration, profile.index, name.cString(using: .utf8))
         save()
 
         updateProfiles()
