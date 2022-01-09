@@ -1,22 +1,34 @@
 class ConnectedDevice: Identifiable {
     var id = UUID()
     var index: Int
-    var manufacturer: String
-    var product: String
+    var manufacturerName: String
+    var productName: String
+    var vendorId: UInt64
+    var productId: UInt64
+    var isKeyboard: Bool
+    var isPointingDevice: Bool
     var isBuiltInKeyboard: Bool
     var isBuiltInTrackpad: Bool
     var isBuiltInTouchBar: Bool
 
     init(index: Int,
-         manufacturer: String,
-         product: String,
+         manufacturerName: String,
+         productName: String,
+         vendorId: UInt64,
+         productId: UInt64,
+         isKeyboard: Bool,
+         isPointingDevice: Bool,
          isBuiltInKeyboard: Bool,
          isBuiltInTrackpad: Bool,
          isBuiltInTouchBar: Bool)
     {
         self.index = index
-        self.manufacturer = manufacturer
-        self.product = product
+        self.manufacturerName = manufacturerName
+        self.productName = productName
+        self.vendorId = vendorId
+        self.productId = productId
+        self.isKeyboard = isKeyboard
+        self.isPointingDevice = isPointingDevice
         self.isBuiltInKeyboard = isBuiltInKeyboard
         self.isBuiltInTrackpad = isBuiltInTrackpad
         self.isBuiltInTouchBar = isBuiltInTouchBar
