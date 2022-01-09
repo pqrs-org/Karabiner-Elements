@@ -35,6 +35,8 @@ struct ProfilesView: View {
                             }
                         }
                         .padding(12.0)
+                        .background(Color(profile.selected ? NSColor.selectedTextBackgroundColor : NSColor.textBackgroundColor))
+
                         Divider()
                     }
 
