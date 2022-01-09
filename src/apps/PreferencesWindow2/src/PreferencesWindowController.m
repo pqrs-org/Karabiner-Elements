@@ -5,12 +5,10 @@
 #import "FnFunctionKeysTableViewController.h"
 #import "KarabinerKit/KarabinerKit.h"
 #import "Karabiner_Elements-Swift.h"
-#import "LogFileTextViewController.h"
 #import "NotificationKeys.h"
 #import "SimpleModificationsMenuManager.h"
 #import "SimpleModificationsTableViewController.h"
 #import "SystemPreferencesManager.h"
-#import "VirtualHIDKeyboardTypeBackgroundView.h"
 #import "libkrbn/libkrbn.h"
 #import <pqrs/weakify.h>
 
@@ -20,7 +18,6 @@
 @property(weak) IBOutlet ComplexModificationsRulesTableViewController* complexModificationsRulesTableViewController;
 @property(weak) IBOutlet DevicesTableViewController* devicesTableViewController;
 @property(weak) IBOutlet FnFunctionKeysTableViewController* fnFunctionKeysTableViewController;
-@property(weak) IBOutlet LogFileTextViewController* logFileTextViewController;
 @property(weak) IBOutlet NSButton* useFkeysAsStandardFunctionKeysButton;
 @property(weak) IBOutlet NSTableView* devicesTableView;
 @property(weak) IBOutlet NSTextField* delayBeforeOpenDeviceText;
@@ -29,12 +26,6 @@
 @property(weak) IBOutlet NSTableView* fnFunctionKeysTableView;
 @property(weak) IBOutlet NSTableView* simpleModificationsTableView;
 @property(weak) IBOutlet NSTextField* versionLabel;
-@property(weak) IBOutlet NSTabViewItem* virtualHIDKeyboardTabViewItem;
-@property(weak) IBOutlet NSTextField* virtualHIDKeyboardCountryCodeText;
-@property(weak) IBOutlet NSStepper* virtualHIDKeyboardCountryCodeStepper;
-@property(weak) IBOutlet NSTextField* virtualHIDKeyboardMouseKeyXYScaleText;
-@property(weak) IBOutlet NSStepper* virtualHIDKeyboardMouseKeyXYScaleStepper;
-@property(weak) IBOutlet NSButton* virtualHIDKeyboardIndicateStickyModifierKeysState;
 @property(weak) IBOutlet SimpleModificationsMenuManager* simpleModificationsMenuManager;
 @property(weak) IBOutlet SimpleModificationsTableViewController* simpleModificationsTableViewController;
 @property(weak) IBOutlet SystemPreferencesManager* systemPreferencesManager;
@@ -55,8 +46,6 @@
   [self.complexModificationsParametersTabController setup];
   [self.devicesTableViewController setup];
   [self setupDevicesParameters:nil];
-  [self setupVirtualHIDKeyboardConfiguration:nil];
-  [self.logFileTextViewController monitor];
 
   self.observers = [KarabinerKitSmartObserverContainer new];
   @weakify(self);
@@ -73,7 +62,6 @@
                              }
 
                              [self setupDevicesParameters:nil];
-                             [self setupVirtualHIDKeyboardConfiguration:nil];
                            }];
     [self.observers addObserver:o notificationCenter:center];
   }
@@ -145,78 +133,6 @@
   [coreConfigurationModel save];
 
   [self setupDevicesParameters:sender];
-}
-
-- (void)setupVirtualHIDKeyboardConfiguration:(id)sender {
-  KarabinerKitCoreConfigurationModel* coreConfigurationModel = [KarabinerKitConfigurationManager sharedManager].coreConfigurationModel;
-  NSInteger countryCode = coreConfigurationModel.selectedProfileVirtualHIDKeyboardCountryCode;
-  NSInteger mouseKeyXYScale = coreConfigurationModel.selectedProfileVirtualHIDKeyboardMouseKeyXYScale;
-  NSInteger indicateStickyModifierKeysState = coreConfigurationModel.selectedProfileVirtualHIDKeyboardIndicateStickyModifierKeysState;
-
-  {
-    NSTextField* t = self.virtualHIDKeyboardCountryCodeText;
-    if (sender != t) {
-      t.stringValue = @(countryCode).stringValue;
-    }
-  }
-  {
-    NSStepper* s = self.virtualHIDKeyboardCountryCodeStepper;
-    if (sender != s) {
-      s.integerValue = countryCode;
-    }
-  }
-  {
-    NSTextField* t = self.virtualHIDKeyboardMouseKeyXYScaleText;
-    if (sender != t) {
-      t.stringValue = @(mouseKeyXYScale).stringValue;
-    }
-  }
-  {
-    NSStepper* s = self.virtualHIDKeyboardMouseKeyXYScaleStepper;
-    if (sender != s) {
-      s.integerValue = mouseKeyXYScale;
-    }
-  }
-  {
-    NSButton* b = self.virtualHIDKeyboardIndicateStickyModifierKeysState;
-    if (sender != b) {
-      b.state = indicateStickyModifierKeysState ? NSControlStateValueOn : NSControlStateValueOff;
-    }
-  }
-}
-
-- (IBAction)changeVirtualHIDKeyboardCountryCode:(NSControl*)sender {
-  // If sender.stringValue is empty, set "0"
-  if (sender.integerValue == 0) {
-    sender.integerValue = 0;
-  }
-
-  KarabinerKitCoreConfigurationModel* coreConfigurationModel = [KarabinerKitConfigurationManager sharedManager].coreConfigurationModel;
-  coreConfigurationModel.selectedProfileVirtualHIDKeyboardCountryCode = sender.integerValue;
-  [coreConfigurationModel save];
-
-  [self setupVirtualHIDKeyboardConfiguration:sender];
-}
-
-- (IBAction)changeVirtualHIDKeyboardMouseKeyXYScale:(NSControl*)sender {
-  // If sender.stringValue is empty, set "0"
-  if (sender.integerValue == 0) {
-    sender.integerValue = 0;
-  }
-
-  KarabinerKitCoreConfigurationModel* coreConfigurationModel = [KarabinerKitConfigurationManager sharedManager].coreConfigurationModel;
-  coreConfigurationModel.selectedProfileVirtualHIDKeyboardMouseKeyXYScale = sender.integerValue;
-  [coreConfigurationModel save];
-
-  [self setupVirtualHIDKeyboardConfiguration:sender];
-}
-
-- (IBAction)changeVirtualHIDKeyboardIndicateStickyModifierKeysState:(NSControl*)sender {
-  KarabinerKitCoreConfigurationModel* coreConfigurationModel = [KarabinerKitConfigurationManager sharedManager].coreConfigurationModel;
-  coreConfigurationModel.selectedProfileVirtualHIDKeyboardIndicateStickyModifierKeysState = (self.virtualHIDKeyboardIndicateStickyModifierKeysState.state == NSControlStateValueOn);
-  [coreConfigurationModel save];
-
-  [self setupVirtualHIDKeyboardConfiguration:sender];
 }
 
 - (void)updateSystemPreferencesUIValues {
