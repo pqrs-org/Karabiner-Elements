@@ -51,6 +51,46 @@ bool libkrbn_connected_devices_get_device_identifiers(libkrbn_connected_devices*
   return false;
 }
 
+uint64_t libkrbn_connected_devices_get_vendor_id(libkrbn_connected_devices* p, size_t index) {
+  if (auto c = reinterpret_cast<libkrbn_connected_devices_class*>(p)) {
+    const auto& devices = c->get_connected_devices().get_devices();
+    if (index < devices.size()) {
+      return type_safe::get(devices[index].get_identifiers().get_vendor_id());
+    }
+  }
+  return 0;
+}
+
+uint64_t libkrbn_connected_devices_get_product_id(libkrbn_connected_devices* p, size_t index) {
+  if (auto c = reinterpret_cast<libkrbn_connected_devices_class*>(p)) {
+    const auto& devices = c->get_connected_devices().get_devices();
+    if (index < devices.size()) {
+      return type_safe::get(devices[index].get_identifiers().get_product_id());
+    }
+  }
+  return 0;
+}
+
+bool libkrbn_connected_devices_get_is_keyboard(libkrbn_connected_devices* p, size_t index) {
+  if (auto c = reinterpret_cast<libkrbn_connected_devices_class*>(p)) {
+    const auto& devices = c->get_connected_devices().get_devices();
+    if (index < devices.size()) {
+      return devices[index].get_identifiers().get_is_keyboard();
+    }
+  }
+  return false;
+}
+
+bool libkrbn_connected_devices_get_is_pointing_device(libkrbn_connected_devices* p, size_t index) {
+  if (auto c = reinterpret_cast<libkrbn_connected_devices_class*>(p)) {
+    const auto& devices = c->get_connected_devices().get_devices();
+    if (index < devices.size()) {
+      return devices[index].get_identifiers().get_is_pointing_device();
+    }
+  }
+  return false;
+}
+
 bool libkrbn_connected_devices_get_is_built_in_keyboard(libkrbn_connected_devices* p, size_t index) {
   if (auto c = reinterpret_cast<libkrbn_connected_devices_class*>(p)) {
     const auto& devices = c->get_connected_devices().get_devices();
