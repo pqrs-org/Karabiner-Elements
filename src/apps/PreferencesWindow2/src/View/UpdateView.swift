@@ -13,8 +13,10 @@ struct UpdateView: View {
                         Spacer()
                     }
 
-                    Toggle(isOn: $settings.checkForUpdatesOnStartup) {
-                        Text("Check for updates on startup (Default: on)")
+                    HStack {
+                        Toggle(isOn: $settings.checkForUpdatesOnStartup) {
+                            Text("Check for updates on startup (Default: on)")
+                        }
                         Spacer()
                     }
 
