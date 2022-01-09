@@ -79,6 +79,13 @@ final class Settings: ObservableObject {
         updateProfiles()
     }
 
+    public func updateProfileName(_ profile: Profile, _ name: String) {
+        libkrbn_core_configuration_set_profile_name(libkrbnCoreConfiguration, profile.index, name.cString(using:.utf8))
+        save()
+
+        updateProfiles()
+    }
+
     public func appendProfile() {
         libkrbn_core_configuration_push_back_profile(libkrbnCoreConfiguration)
         save()

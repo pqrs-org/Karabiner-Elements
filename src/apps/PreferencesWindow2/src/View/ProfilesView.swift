@@ -1,7 +1,9 @@
 import SwiftUI
 
 struct ProfilesView: View {
-    @ObservedObject var settings = Settings.shared
+    @ObservedObject private var settings = Settings.shared
+    @State private var showingSheet = false
+    @State private var editingProfile: Profile?
 
     var body: some View {
         VStack(alignment: .leading, spacing: 12.0) {
@@ -11,6 +13,14 @@ struct ProfilesView: View {
                     ForEach($settings.profiles) { $profile in
                         HStack(alignment: .center, spacing: 0) {
                             Text(profile.name)
+
+                            Button(action: {
+                                editingProfile = profile
+                                showingSheet = true
+                            }) {
+                                Image(systemName: "pencil")
+                            }
+                            .padding(.leading, 6.0)
 
                             Spacer()
 
@@ -23,15 +33,6 @@ struct ProfilesView: View {
                                     Label("Select", systemImage: "square")
                                 }
                             }
-
-                            Button(action: {
-                                settings.removeProfile(profile)
-                            }) {
-                                Label("Remove", systemImage: "minus.circle.fill")
-                            }
-
-                            .padding(.leading, 12.0)
-                            .disabled(profile.selected)
                         }
                         .padding(12.0)
                         Divider()
@@ -49,6 +50,9 @@ struct ProfilesView: View {
             }
         }
         .padding()
+        .sheet(isPresented: $showingSheet) {
+            ProfileEditView(profile: $editingProfile, showing: $showingSheet)
+        }
     }
 }
 
