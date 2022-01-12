@@ -29,6 +29,15 @@ final class Settings: ObservableObject {
 
         let obj = unsafeBitCast(self, to: UnsafeMutableRawPointer.self)
         libkrbn_enable_configuration_monitor(callback, obj)
+
+        NotificationCenter.default.addObserver(forName: ConnectedDevices.didConnectedDevicesUpdate,
+                                               object: nil,
+                                               queue: .main)
+        { [weak self] _ in
+            guard let self = self else { return }
+
+            self.updateConnectedDeviceSettings()
+        }
     }
 
     private func save() {
@@ -40,6 +49,8 @@ final class Settings: ObservableObject {
         didSetEnabled = false
 
         libkrbnCoreConfiguration = initializedCoreConfiguration
+
+        updateConnectedDeviceSettings()
 
         virtualHIDKeyboardCountryCode = Int(libkrbn_core_configuration_get_selected_profile_virtual_hid_keyboard_country_code(libkrbnCoreConfiguration))
         virtualHIDKeyboardMouseKeyXYScale = Int(libkrbn_core_configuration_get_selected_profile_virtual_hid_keyboard_mouse_key_xy_scale(libkrbnCoreConfiguration))
@@ -54,6 +65,35 @@ final class Settings: ObservableObject {
         updateSystemDefaultProfileExists()
 
         didSetEnabled = true
+    }
+
+    //
+    // Connected Device Settings
+    //
+
+    @Published var connectedDeviceSettings: [ConnectedDeviceSetting] = []
+
+    private func updateConnectedDeviceSettings() {
+        var newConnectedDeviceSettings: [ConnectedDeviceSetting] = []
+
+        ConnectedDevices.shared.connectedDevices.forEach { connectedDevice in
+            let ignore = libkrbn_core_configuration_get_selected_profile_device_ignore2(libkrbnCoreConfiguration,
+                                                                                        connectedDevice.vendorId,
+                                                                                        connectedDevice.productId,
+                                                                                        connectedDevice.isKeyboard,
+                                                                                        connectedDevice.isPointingDevice)
+            let manipulateCapsLockLed = libkrbn_core_configuration_get_selected_profile_device_manipulate_caps_lock_led2(libkrbnCoreConfiguration,
+                                                                                                                         connectedDevice.vendorId,
+                                                                                                                         connectedDevice.productId,
+                                                                                                                         connectedDevice.isKeyboard,
+                                                                                                                         connectedDevice.isPointingDevice)
+            newConnectedDeviceSettings.append(
+                ConnectedDeviceSetting(connectedDevice: connectedDevice,
+                                       ignore: ignore,
+                                       manipulateCapsLockLed: manipulateCapsLockLed))
+        }
+
+        connectedDeviceSettings = newConnectedDeviceSettings
     }
 
     //

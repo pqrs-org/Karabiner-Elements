@@ -2,16 +2,15 @@ import SwiftUI
 
 struct DevicesView: View {
     @ObservedObject private var settings = Settings.shared
-    @ObservedObject private var connectedDevices = ConnectedDevices.shared
 
     var body: some View {
         VStack(alignment: .leading, spacing: 12.0) {
             ScrollView {
                 VStack(alignment: .leading, spacing: 0.0) {
                     // swiftformat:disable:next unusedArguments
-                    ForEach($connectedDevices.connectedDevices) { $connectedDevice in
+                    ForEach($settings.connectedDeviceSettings) { $connectedDeviceSetting in
                         HStack(alignment: .center, spacing: 0) {
-                            Text("\(connectedDevice.productName) \(connectedDevice.manufacturerName)")
+                            Text("\(connectedDeviceSetting.connectedDevice.productName) \(connectedDeviceSetting.connectedDevice.manufacturerName)")
 
                             Spacer()
 
@@ -19,28 +18,28 @@ struct DevicesView: View {
                                 HStack(alignment: .center, spacing: 0) {
                                     Text("Vendor ID: ")
                                         .font(.caption)
-                                    Text(String(connectedDevice.vendorId)
+                                    Text(String(connectedDeviceSetting.connectedDevice.vendorId)
                                         .padding(toLength: 6, withPad: " ", startingAt: 0))
                                         .font(.custom("Menlo", size: 11.0))
                                 }
                                 HStack(alignment: .center, spacing: 0) {
                                     Text("Product ID: ")
                                         .font(.caption)
-                                    Text(String(connectedDevice.productId)
+                                    Text(String(connectedDeviceSetting.connectedDevice.productId)
                                         .padding(toLength: 6, withPad: " ", startingAt: 0))
                                         .font(.custom("Menlo", size: 11.0))
                                 }
                             }
 
                             HStack(alignment: .center, spacing: 0) {
-                                if connectedDevice.isKeyboard {
+                                if connectedDeviceSetting.connectedDevice.isKeyboard {
                                     Image(systemName: "keyboard")
                                 }
                             }
                             .frame(width: 20.0)
 
                             HStack(alignment: .center, spacing: 0) {
-                                if connectedDevice.isPointingDevice {
+                                if connectedDeviceSetting.connectedDevice.isPointingDevice {
                                     Image(systemName: "capsule.portrait")
                                 }
                             }

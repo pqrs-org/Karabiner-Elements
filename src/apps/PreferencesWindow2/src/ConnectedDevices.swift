@@ -35,7 +35,7 @@ final class ConnectedDevices: ObservableObject {
         for i in 0 ..< size {
             var manufacturerName = String(cString: libkrbn_connected_devices_get_descriptions_manufacturer(libkrbnConnectedDevices, i))
                 .replacingOccurrences(of: "[\r\n]", with: " ", options: .regularExpression)
-             if manufacturerName == "" {
+            if manufacturerName == "" {
                 manufacturerName = "No manufacturer name"
             }
 
@@ -62,5 +62,10 @@ final class ConnectedDevices: ObservableObject {
         }
 
         connectedDevices = newConnectedDevices
+
+        NotificationCenter.default.post(
+            name: ConnectedDevices.didConnectedDevicesUpdate,
+            object: nil
+        )
     }
 }
