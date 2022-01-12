@@ -384,6 +384,22 @@ bool libkrbn_core_configuration_get_selected_profile_device_ignore(libkrbn_core_
   return false;
 }
 
+bool libkrbn_core_configuration_get_selected_profile_device_ignore2(libkrbn_core_configuration* p,
+                                                                    uint64_t vendor_id,
+                                                                    uint64_t product_id,
+                                                                    bool is_keyboard,
+                                                                    bool is_pointing_device) {
+  if (auto c = reinterpret_cast<libkrbn_core_configuration_class*>(p)) {
+    return c->get_core_configuration().get_selected_profile().get_device_ignore(
+        krbn::device_identifiers(
+            pqrs::hid::vendor_id::value_t(vendor_id),
+            pqrs::hid::product_id::value_t(product_id),
+            is_keyboard,
+            is_pointing_device));
+  }
+  return false;
+}
+
 void libkrbn_core_configuration_set_selected_profile_device_ignore(libkrbn_core_configuration* p,
                                                                    const libkrbn_device_identifiers* device_identifiers,
                                                                    bool value) {
@@ -402,6 +418,22 @@ bool libkrbn_core_configuration_get_selected_profile_device_manipulate_caps_lock
       auto identifiers = libkrbn_cpp::make_device_identifiers(*device_identifiers);
       return c->get_core_configuration().get_selected_profile().get_device_manipulate_caps_lock_led(identifiers);
     }
+  }
+  return false;
+}
+
+bool libkrbn_core_configuration_get_selected_profile_device_manipulate_caps_lock_led2(libkrbn_core_configuration* p,
+                                                                                      uint64_t vendor_id,
+                                                                                      uint64_t product_id,
+                                                                                      bool is_keyboard,
+                                                                                      bool is_pointing_device) {
+  if (auto c = reinterpret_cast<libkrbn_core_configuration_class*>(p)) {
+    return c->get_core_configuration().get_selected_profile().get_device_manipulate_caps_lock_led(
+        krbn::device_identifiers(
+            pqrs::hid::vendor_id::value_t(vendor_id),
+            pqrs::hid::product_id::value_t(product_id),
+            is_keyboard,
+            is_pointing_device));
   }
   return false;
 }
