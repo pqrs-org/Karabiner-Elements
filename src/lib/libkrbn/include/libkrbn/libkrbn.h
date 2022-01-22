@@ -189,9 +189,20 @@ void libkrbn_core_configuration_set_selected_profile_device_manipulate_caps_lock
                                                                                       bool value);
 bool libkrbn_core_configuration_get_selected_profile_device_disable_built_in_keyboard_if_exists(libkrbn_core_configuration* p,
                                                                                                 const libkrbn_device_identifiers* device_identifiers);
+bool libkrbn_core_configuration_get_selected_profile_device_disable_built_in_keyboard_if_exists2(libkrbn_core_configuration* p,
+                                                                                                 uint64_t vendor_id,
+                                                                                                 uint64_t product_id,
+                                                                                                 bool is_keyboard,
+                                                                                                 bool is_pointing_device);
 void libkrbn_core_configuration_set_selected_profile_device_disable_built_in_keyboard_if_exists(libkrbn_core_configuration* p,
                                                                                                 const libkrbn_device_identifiers* device_identifiers,
                                                                                                 bool value);
+void libkrbn_core_configuration_set_selected_profile_device_disable_built_in_keyboard_if_exists2(libkrbn_core_configuration* p,
+                                                                                                 uint64_t vendor_id,
+                                                                                                 uint64_t product_id,
+                                                                                                 bool is_keyboard,
+                                                                                                 bool is_pointing_device,
+                                                                                                 bool value);
 
 //
 // libkrbn_complex_modifications_assets_manager
