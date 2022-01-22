@@ -83,41 +83,24 @@ struct ContentView: View {
                                 Label("Uninstall", systemImage: "trash")
                             }
                             .padding(10)
-                        }
 
-                        Divider()
-
-                        Group {
                             NavigationLink(destination: LogView(),
                                            tag: "Log",
                                            selection: $selection) {
                                 Label("Log", systemImage: "doc.plaintext")
                             }
                             .padding(10)
+
+                            NavigationLink(destination: ActionView(),
+                                           tag: "Action",
+                                           selection: $selection) {
+                                Label("Quit, Restart", systemImage: "bolt.circle")
+                            }
+                            .padding(10)
                         }
                     }
                     .listStyle(SidebarListStyle())
                     .frame(width: 250)
-
-                    Spacer()
-
-                    Divider()
-
-                    VStack(alignment: .leading, spacing: 16) {
-                        Button(action: {
-                            libkrbn_launchctl_restart_console_user_server()
-                            KarabinerKit.relaunch()
-                        }) {
-                            Label("Restart Karabiner-Elements", systemImage: "arrow.clockwise")
-                        }
-
-                        Button(action: {
-                            KarabinerKit.quitKarabinerWithConfirmation()
-                        }) {
-                            Label("Quit Karabiner-Elements", systemImage: "xmark.circle.fill")
-                        }
-                    }
-                    .padding(10)
                 }
             }
             .frame(minWidth: 1100,
