@@ -87,41 +87,6 @@ finish:
   [self.fnFunctionKeysTableViewController updateConnectedDevicesMenu];
 }
 
-- (void)hasCapsLockLedChanged:(id)sender {
-  NSInteger row = [self.tableView rowForView:sender];
-  if (row != -1) {
-    KarabinerKitCoreConfigurationModel* coreConfigurationModel = [KarabinerKitConfigurationManager sharedManager].coreConfigurationModel;
-    DevicesTableCellView* cellView = [self.tableView viewAtColumn:1 row:row makeIfNecessary:NO];
-    libkrbn_device_identifiers deviceIdentifiers = cellView.deviceIdentifiers;
-
-    if (cellView.checkbox.state == NSControlStateValueOff) {
-      [coreConfigurationModel setSelectedProfileDeviceManipulateCapsLockLed:&(deviceIdentifiers)
-                                                                      value:NO];
-      [coreConfigurationModel save];
-
-    } else {
-      if (libkrbn_device_identifiers_is_apple(&deviceIdentifiers)) {
-        [coreConfigurationModel setSelectedProfileDeviceManipulateCapsLockLed:&(deviceIdentifiers)
-                                                                        value:YES];
-        [coreConfigurationModel save];
-
-      } else {
-        [self.window beginSheet:self.hasCapsLockLedConfirmationPanel
-              completionHandler:^(NSModalResponse returnCode) {
-                if (returnCode == NSModalResponseOK) {
-                  [coreConfigurationModel setSelectedProfileDeviceManipulateCapsLockLed:&(deviceIdentifiers)
-                                                                                  value:YES];
-                  [coreConfigurationModel save];
-
-                } else {
-                  cellView.checkbox.state = NSControlStateValueOff;
-                }
-              }];
-      }
-    }
-  }
-}
-
 - (IBAction)setManipulateCapsLockLed:(id)sender {
   [self.window endSheet:self.hasCapsLockLedConfirmationPanel
              returnCode:NSModalResponseOK];

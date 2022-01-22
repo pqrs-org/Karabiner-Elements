@@ -54,8 +54,10 @@ struct DevicesView: View {
 
                                 Spacer()
 
-                                Toggle(isOn: $connectedDeviceSetting.manipulateCapsLockLed) {
-                                    Text("Manipulate caps lock LED")
+                                if connectedDeviceSetting.connectedDevice.isKeyboard {
+                                    Toggle(isOn: $connectedDeviceSetting.manipulateCapsLockLed) {
+                                        Text("Manipulate caps lock LED")
+                                    }
                                 }
                             }
                         }

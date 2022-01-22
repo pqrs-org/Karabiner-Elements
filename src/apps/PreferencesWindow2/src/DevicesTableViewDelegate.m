@@ -42,31 +42,6 @@
     return result;
   }
 
-  if ([tableColumn.identifier isEqualToString:@"DevicesManipulateCapsLockLEDColumn"]) {
-    DevicesTableCellView* result = [tableView makeViewWithIdentifier:@"DevicesManipulateCapsLockLEDCellView" owner:self];
-    KarabinerKitConnectedDevices* connectedDevices = [KarabinerKitDeviceManager sharedManager].connectedDevices;
-    libkrbn_device_identifiers deviceIdentifiers = [connectedDevices deviceIdentifiersAtIndex:row];
-
-    result.checkbox.action = @selector(hasCapsLockLedChanged:);
-    result.checkbox.target = self.devicesTableViewController;
-
-    result.deviceIdentifiers = deviceIdentifiers;
-
-    KarabinerKitCoreConfigurationModel* coreConfigurationModel = [KarabinerKitConfigurationManager sharedManager].coreConfigurationModel;
-    if ([coreConfigurationModel selectedProfileDeviceManipulateCapsLockLed:(&deviceIdentifiers)]) {
-      result.checkbox.state = NSControlStateValueOn;
-    } else {
-      result.checkbox.state = NSControlStateValueOff;
-    }
-
-    result.checkbox.enabled = YES;
-    if (!deviceIdentifiers.is_keyboard) {
-      result.checkbox.enabled = NO;
-    }
-
-    return result;
-  }
-
   if ([tableColumn.identifier isEqualToString:@"DevicesVendorIdColumn"]) {
     NSTableCellView* result = [tableView makeViewWithIdentifier:@"DevicesVendorIdCellView" owner:self];
     KarabinerKitConnectedDevices* connectedDevices = [KarabinerKitDeviceManager sharedManager].connectedDevices;
