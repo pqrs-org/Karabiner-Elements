@@ -51,6 +51,7 @@ final class Settings: ObservableObject {
         libkrbnCoreConfiguration = initializedCoreConfiguration
 
         updateConnectedDeviceSettings()
+        delayMillisecondsBeforeOpenDevice = Int(libkrbn_core_configuration_get_selected_profile_parameters_delay_milliseconds_before_open_device(libkrbnCoreConfiguration))
 
         virtualHIDKeyboardCountryCode = Int(libkrbn_core_configuration_get_selected_profile_virtual_hid_keyboard_country_code(libkrbnCoreConfiguration))
         virtualHIDKeyboardMouseKeyXYScale = Int(libkrbn_core_configuration_get_selected_profile_virtual_hid_keyboard_mouse_key_xy_scale(libkrbnCoreConfiguration))
@@ -68,7 +69,7 @@ final class Settings: ObservableObject {
     }
 
     //
-    // Connected Device Settings
+    // Devices
     //
 
     @Published var connectedDeviceSettings: [ConnectedDeviceSetting] = []
@@ -81,6 +82,15 @@ final class Settings: ObservableObject {
         }
 
         connectedDeviceSettings = newConnectedDeviceSettings
+    }
+
+    @Published var delayMillisecondsBeforeOpenDevice: Int = 0 {
+        didSet {
+            if didSetEnabled {
+                libkrbn_core_configuration_set_selected_profile_parameters_delay_milliseconds_before_open_device(libkrbnCoreConfiguration, Int32(delayMillisecondsBeforeOpenDevice))
+                save()
+            }
+        }
     }
 
     //

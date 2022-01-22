@@ -18,21 +18,21 @@ struct ContentView: View {
                                            selection: $selection) {
                                 Label("Simple Modifications", systemImage: "gearshape")
                             }
-                            .padding(10)
+                            .padding(5.0)
 
                             NavigationLink(destination: FunctionKeysView(),
                                            tag: "FunctionKeys",
                                            selection: $selection) {
                                 Label("Function Keys", systemImage: "speaker.wave.2.circle")
                             }
-                            .padding(10)
+                            .padding(5.0)
 
                             NavigationLink(destination: ComplexModificationsView(),
                                            tag: "ComplexModifications",
                                            selection: $selection) {
                                 Label("Complex Modifications", systemImage: "gearshape.2")
                             }
-                            .padding(10)
+                            .padding(5.0)
                         }
 
                         Divider()
@@ -43,21 +43,29 @@ struct ContentView: View {
                                            selection: $selection) {
                                 Label("Devices", systemImage: "keyboard")
                             }
-                            .padding(10)
+                            .padding(5.0)
+
+                            NavigationLink(destination: DevicesAdvancedView(),
+                                           tag: "DevicesAdvanced",
+                                           selection: $selection) {
+                                Label("Advanced", systemImage: "keyboard")
+                            }
+                            .padding(.leading, 20.0)
+                            .padding(.vertical, 5.0)
 
                             NavigationLink(destination: VirtualKeyboardView(),
                                            tag: "VirtualKeyboard",
                                            selection: $selection) {
                                 Label("Virtual Keyboard", systemImage: "puzzlepiece")
                             }
-                            .padding(10)
+                            .padding(5.0)
 
                             NavigationLink(destination: ProfilesView(),
                                            tag: "Profiles",
                                            selection: $selection) {
                                 Label("Profiles", systemImage: "person.3")
                             }
-                            .padding(10)
+                            .padding(5.0)
                         }
 
                         Divider()
@@ -68,35 +76,39 @@ struct ContentView: View {
                                            selection: $selection) {
                                 Label("Update", systemImage: "network")
                             }
-                            .padding(10)
+                            .padding(5.0)
 
                             NavigationLink(destination: MiscView(),
                                            tag: "Misc",
                                            selection: $selection) {
                                 Label("Misc", systemImage: "leaf")
                             }
-                            .padding(10)
+                            .padding(5.0)
 
                             NavigationLink(destination: UninstallView(),
                                            tag: "Uninstall",
                                            selection: $selection) {
                                 Label("Uninstall", systemImage: "trash")
                             }
-                            .padding(10)
+                            .padding(5.0)
+                        }
 
+                        Divider()
+
+                        Group {
                             NavigationLink(destination: LogView(),
                                            tag: "Log",
                                            selection: $selection) {
                                 Label("Log", systemImage: "doc.plaintext")
                             }
-                            .padding(10)
+                            .padding(5.0)
 
                             NavigationLink(destination: ActionView(),
                                            tag: "Action",
                                            selection: $selection) {
                                 Label("Quit, Restart", systemImage: "bolt.circle")
                             }
-                            .padding(10)
+                            .padding(5.0)
                         }
                     }
                     .listStyle(SidebarListStyle())
