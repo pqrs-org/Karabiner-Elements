@@ -51,7 +51,12 @@ struct DevicesView: View {
                                 Toggle(isOn: $connectedDeviceSetting.modifyEvents) {
                                     Text("Modify events")
                                 }
+
                                 Spacer()
+
+                                Toggle(isOn: $connectedDeviceSetting.manipulateCapsLockLed) {
+                                    Text("Manipulate caps lock LED")
+                                }
                             }
                         }
                         .padding(12.0)
