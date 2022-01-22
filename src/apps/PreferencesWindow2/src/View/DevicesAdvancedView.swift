@@ -30,6 +30,43 @@ struct DevicesAdvancedView: View {
             }
 
             Spacer()
+                .frame(height: 24.0)
+
+            GroupBox(label: Text("Disable the built-in keyboard while one of the following selected devices is connected")) {
+                ScrollView {
+                    VStack(alignment: .leading, spacing: 0.0) {
+                        // swiftformat:disable:next unusedArguments
+                        ForEach($settings.connectedDeviceSettings) { $connectedDeviceSetting in
+                            HStack(alignment: .center, spacing: 0) {
+                                Toggle(isOn: $connectedDeviceSetting.disableBuiltInKeyboardIfExists) {
+                                    Text("\(connectedDeviceSetting.connectedDevice.productName) (\(connectedDeviceSetting.connectedDevice.manufacturerName)) [\(String(connectedDeviceSetting.connectedDevice.vendorId)),\(String(connectedDeviceSetting.connectedDevice.productId))]")
+                                }.disabled(
+                                    connectedDeviceSetting.connectedDevice.isBuiltInKeyboard ||
+                                        connectedDeviceSetting.connectedDevice.isBuiltInTrackpad ||
+                                        connectedDeviceSetting.connectedDevice.isBuiltInTouchBar
+                                )
+
+                                Spacer()
+
+                                if connectedDeviceSetting.connectedDevice.isKeyboard {
+                                    Image(systemName: "keyboard")
+                                }
+                                if connectedDeviceSetting.connectedDevice.isPointingDevice {
+                                    Image(systemName: "capsule.portrait")
+                                }
+                            }
+                            .padding(12.0)
+
+                            Divider()
+                        }
+
+                        Spacer()
+                    }
+                }
+                .background(Color(NSColor.textBackgroundColor))
+            }
+
+            Spacer()
         }
         .padding()
     }
