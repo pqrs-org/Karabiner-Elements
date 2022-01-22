@@ -20,7 +20,7 @@ private func callback(_ initializedCoreConfiguration: UnsafeMutableRawPointer?,
 final class Settings: ObservableObject {
     static let shared = Settings()
 
-    private var libkrbnCoreConfiguration: UnsafeMutableRawPointer?
+    var libkrbnCoreConfiguration: UnsafeMutableRawPointer?
     private var didSetEnabled = false
 
     init() {
@@ -40,7 +40,7 @@ final class Settings: ObservableObject {
         }
     }
 
-    private func save() {
+    func save() {
         print("save")
         libkrbn_core_configuration_save(libkrbnCoreConfiguration)
     }
@@ -77,20 +77,7 @@ final class Settings: ObservableObject {
         var newConnectedDeviceSettings: [ConnectedDeviceSetting] = []
 
         ConnectedDevices.shared.connectedDevices.forEach { connectedDevice in
-            let ignore = libkrbn_core_configuration_get_selected_profile_device_ignore2(libkrbnCoreConfiguration,
-                                                                                        connectedDevice.vendorId,
-                                                                                        connectedDevice.productId,
-                                                                                        connectedDevice.isKeyboard,
-                                                                                        connectedDevice.isPointingDevice)
-            let manipulateCapsLockLed = libkrbn_core_configuration_get_selected_profile_device_manipulate_caps_lock_led2(libkrbnCoreConfiguration,
-                                                                                                                         connectedDevice.vendorId,
-                                                                                                                         connectedDevice.productId,
-                                                                                                                         connectedDevice.isKeyboard,
-                                                                                                                         connectedDevice.isPointingDevice)
-            newConnectedDeviceSettings.append(
-                ConnectedDeviceSetting(connectedDevice: connectedDevice,
-                                       ignore: ignore,
-                                       manipulateCapsLockLed: manipulateCapsLockLed))
+            newConnectedDeviceSettings.append(ConnectedDeviceSetting(connectedDevice))
         }
 
         connectedDeviceSettings = newConnectedDeviceSettings
