@@ -11,7 +11,7 @@ struct DevicesView: View {
                     ForEach($settings.connectedDeviceSettings) { $connectedDeviceSetting in
                         VStack(alignment: .leading, spacing: 0.0) {
                             HStack(alignment: .center, spacing: 0) {
-                                Text("\(connectedDeviceSetting.connectedDevice.productName) \(connectedDeviceSetting.connectedDevice.manufacturerName)")
+                                Text("\(connectedDeviceSetting.connectedDevice.productName) (\(connectedDeviceSetting.connectedDevice.manufacturerName))")
 
                                 Spacer()
 
