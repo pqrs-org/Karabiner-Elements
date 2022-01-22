@@ -1,7 +1,6 @@
 #import "PreferencesWindowController.h"
 #import "ComplexModificationsParametersTabController.h"
 #import "ComplexModificationsRulesTableViewController.h"
-#import "DevicesTableViewController.h"
 #import "FnFunctionKeysTableViewController.h"
 #import "KarabinerKit/KarabinerKit.h"
 #import "Karabiner_Elements-Swift.h"
@@ -16,13 +15,8 @@
 
 @property(weak) IBOutlet ComplexModificationsParametersTabController* complexModificationsParametersTabController;
 @property(weak) IBOutlet ComplexModificationsRulesTableViewController* complexModificationsRulesTableViewController;
-@property(weak) IBOutlet DevicesTableViewController* devicesTableViewController;
 @property(weak) IBOutlet FnFunctionKeysTableViewController* fnFunctionKeysTableViewController;
 @property(weak) IBOutlet NSButton* useFkeysAsStandardFunctionKeysButton;
-@property(weak) IBOutlet NSTableView* devicesTableView;
-@property(weak) IBOutlet NSTextField* delayBeforeOpenDeviceText;
-@property(weak) IBOutlet NSStepper* delayBeforeOpenDeviceStepper;
-@property(weak) IBOutlet NSTableView* devicesExternalKeyboardTableView;
 @property(weak) IBOutlet NSTableView* fnFunctionKeysTableView;
 @property(weak) IBOutlet NSTableView* simpleModificationsTableView;
 @property(weak) IBOutlet NSTextField* versionLabel;
@@ -44,8 +38,6 @@
   [self.fnFunctionKeysTableViewController setup];
   [self.complexModificationsRulesTableViewController setup];
   [self.complexModificationsParametersTabController setup];
-  [self.devicesTableViewController setup];
-  [self setupDevicesParameters:nil];
 
   self.observers = [KarabinerKitSmartObserverContainer new];
   @weakify(self);
@@ -60,8 +52,6 @@
                              if (!self) {
                                return;
                              }
-
-                             [self setupDevicesParameters:nil];
                            }];
     [self.observers addObserver:o notificationCenter:center];
   }
@@ -88,8 +78,6 @@
 
   [self.simpleModificationsTableView reloadData];
   [self.fnFunctionKeysTableView reloadData];
-  [self.devicesTableView reloadData];
-  [self.devicesExternalKeyboardTableView reloadData];
 
   [self updateSystemPreferencesUIValues];
 
@@ -102,37 +90,6 @@
 - (void)show {
   [self.window makeKeyAndOrderFront:self];
   [NSApp activateIgnoringOtherApps:YES];
-}
-
-- (void)setupDevicesParameters:(id)sender {
-  KarabinerKitCoreConfigurationModel* coreConfigurationModel = [KarabinerKitConfigurationManager sharedManager].coreConfigurationModel;
-  NSInteger delayBeforeOpenDevice = coreConfigurationModel.selectedProfileParametersDelayMillisecondsBeforeOpenDevice;
-
-  {
-    NSTextField* t = self.delayBeforeOpenDeviceText;
-    if (sender != t) {
-      t.stringValue = @(delayBeforeOpenDevice).stringValue;
-    }
-  }
-  {
-    NSStepper* s = self.delayBeforeOpenDeviceStepper;
-    if (sender != s) {
-      s.integerValue = delayBeforeOpenDevice;
-    }
-  }
-}
-
-- (IBAction)changeDelayBeforeOpenDevice:(NSControl*)sender {
-  // If sender.stringValue is empty, set "0"
-  if (sender.integerValue == 0) {
-    sender.integerValue = 0;
-  }
-
-  KarabinerKitCoreConfigurationModel* coreConfigurationModel = [KarabinerKitConfigurationManager sharedManager].coreConfigurationModel;
-  coreConfigurationModel.selectedProfileParametersDelayMillisecondsBeforeOpenDevice = sender.integerValue;
-  [coreConfigurationModel save];
-
-  [self setupDevicesParameters:sender];
 }
 
 - (void)updateSystemPreferencesUIValues {
