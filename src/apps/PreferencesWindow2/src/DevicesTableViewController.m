@@ -87,14 +87,4 @@ finish:
   [self.fnFunctionKeysTableViewController updateConnectedDevicesMenu];
 }
 
-- (IBAction)setManipulateCapsLockLed:(id)sender {
-  [self.window endSheet:self.hasCapsLockLedConfirmationPanel
-             returnCode:NSModalResponseOK];
-}
-
-- (IBAction)cancelSetManipulateCapsLockLed:(id)sender {
-  [self.window endSheet:self.hasCapsLockLedConfirmationPanel
-             returnCode:NSModalResponseCancel];
-}
-
 @end

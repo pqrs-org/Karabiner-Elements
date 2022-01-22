@@ -48,15 +48,23 @@ struct DevicesView: View {
                             }
 
                             HStack(alignment: .center, spacing: 0) {
-                                Toggle(isOn: $connectedDeviceSetting.modifyEvents) {
-                                    Text("Modify events")
-                                }
+                                if connectedDeviceSetting.connectedDevice.isAppleDevice &&
+                                    !connectedDeviceSetting.connectedDevice.isKeyboard
+                                {
+                                    Text("Apple pointing devices are not supported")
+                                        .foregroundColor(Color(NSColor.placeholderTextColor))
+                                    Spacer()
+                                } else {
+                                    Toggle(isOn: $connectedDeviceSetting.modifyEvents) {
+                                        Text("Modify events")
+                                    }
 
-                                Spacer()
+                                    Spacer()
 
-                                if connectedDeviceSetting.connectedDevice.isKeyboard {
-                                    Toggle(isOn: $connectedDeviceSetting.manipulateCapsLockLed) {
-                                        Text("Manipulate caps lock LED")
+                                    if connectedDeviceSetting.connectedDevice.isKeyboard {
+                                        Toggle(isOn: $connectedDeviceSetting.manipulateCapsLockLed) {
+                                            Text("Manipulate caps lock LED")
+                                        }
                                     }
                                 }
                             }
