@@ -6,6 +6,7 @@ struct ContentView: View {
     @State private var selection: String? = "SimpleModifications"
 
     let version = Bundle.main.object(forInfoDictionaryKey: "CFBundleVersion") as! String
+    let padding = 6.0
 
     var body: some View {
         VStack {
@@ -18,21 +19,21 @@ struct ContentView: View {
                                            selection: $selection) {
                                 Label("Simple Modifications", systemImage: "gearshape")
                             }
-                            .padding(5.0)
+                            .padding(padding)
 
                             NavigationLink(destination: FunctionKeysView(),
                                            tag: "FunctionKeys",
                                            selection: $selection) {
                                 Label("Function Keys", systemImage: "speaker.wave.2.circle")
                             }
-                            .padding(5.0)
+                            .padding(padding)
 
                             NavigationLink(destination: ComplexModificationsView(),
                                            tag: "ComplexModifications",
                                            selection: $selection) {
                                 Label("Complex Modifications", systemImage: "gearshape.2")
                             }
-                            .padding(5.0)
+                            .padding(padding)
                         }
 
                         Divider()
@@ -43,7 +44,7 @@ struct ContentView: View {
                                            selection: $selection) {
                                 Label("Devices", systemImage: "keyboard")
                             }
-                            .padding(5.0)
+                            .padding(padding)
 
                             NavigationLink(destination: DevicesAdvancedView(),
                                            tag: "DevicesAdvanced",
@@ -51,21 +52,21 @@ struct ContentView: View {
                                 Label("Advanced", systemImage: "keyboard")
                             }
                             .padding(.leading, 20.0)
-                            .padding(.vertical, 5.0)
+                            .padding(.vertical, padding)
 
                             NavigationLink(destination: VirtualKeyboardView(),
                                            tag: "VirtualKeyboard",
                                            selection: $selection) {
                                 Label("Virtual Keyboard", systemImage: "puzzlepiece")
                             }
-                            .padding(5.0)
+                            .padding(padding)
 
                             NavigationLink(destination: ProfilesView(),
                                            tag: "Profiles",
                                            selection: $selection) {
                                 Label("Profiles", systemImage: "person.3")
                             }
-                            .padding(5.0)
+                            .padding(padding)
                         }
 
                         Divider()
@@ -76,21 +77,21 @@ struct ContentView: View {
                                            selection: $selection) {
                                 Label("Update", systemImage: "network")
                             }
-                            .padding(5.0)
+                            .padding(padding)
 
                             NavigationLink(destination: MiscView(),
                                            tag: "Misc",
                                            selection: $selection) {
                                 Label("Misc", systemImage: "leaf")
                             }
-                            .padding(5.0)
+                            .padding(padding)
 
                             NavigationLink(destination: UninstallView(),
                                            tag: "Uninstall",
                                            selection: $selection) {
                                 Label("Uninstall", systemImage: "trash")
                             }
-                            .padding(5.0)
+                            .padding(padding)
                         }
 
                         Divider()
@@ -101,14 +102,14 @@ struct ContentView: View {
                                            selection: $selection) {
                                 Label("Log", systemImage: "doc.plaintext")
                             }
-                            .padding(5.0)
+                            .padding(padding)
 
                             NavigationLink(destination: ActionView(),
                                            tag: "Action",
                                            selection: $selection) {
                                 Label("Quit, Restart", systemImage: "bolt.circle")
                             }
-                            .padding(5.0)
+                            .padding(padding)
                         }
                     }
                     .listStyle(SidebarListStyle())
