@@ -55,7 +55,8 @@ final class ConnectedDevices: ObservableObject {
                 isPointingDevice: libkrbn_connected_devices_get_is_pointing_device(libkrbnConnectedDevices, i),
                 isBuiltInKeyboard: libkrbn_connected_devices_get_is_built_in_keyboard(libkrbnConnectedDevices, i),
                 isBuiltInTrackpad: libkrbn_connected_devices_get_is_built_in_trackpad(libkrbnConnectedDevices, i),
-                isBuiltInTouchBar: libkrbn_connected_devices_get_is_built_in_touch_bar(libkrbnConnectedDevices, i)
+                isBuiltInTouchBar: libkrbn_connected_devices_get_is_built_in_touch_bar(libkrbnConnectedDevices, i),
+                isAppleDevice: libkrbn_connected_devices_is_apple(libkrbnConnectedDevices, i)
             )
 
             newConnectedDevices.append(connectedDevice)

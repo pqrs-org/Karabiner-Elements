@@ -10,6 +10,7 @@ class ConnectedDevice: Identifiable {
     var isBuiltInKeyboard: Bool
     var isBuiltInTrackpad: Bool
     var isBuiltInTouchBar: Bool
+    var isAppleDevice: Bool
 
     init(index: Int,
          manufacturerName: String,
@@ -20,7 +21,8 @@ class ConnectedDevice: Identifiable {
          isPointingDevice: Bool,
          isBuiltInKeyboard: Bool,
          isBuiltInTrackpad: Bool,
-         isBuiltInTouchBar: Bool)
+         isBuiltInTouchBar: Bool,
+         isAppleDevice: Bool)
     {
         self.index = index
         self.manufacturerName = manufacturerName
@@ -32,5 +34,6 @@ class ConnectedDevice: Identifiable {
         self.isBuiltInKeyboard = isBuiltInKeyboard
         self.isBuiltInTrackpad = isBuiltInTrackpad
         self.isBuiltInTouchBar = isBuiltInTouchBar
+        self.isAppleDevice = isAppleDevice
     }
 }
