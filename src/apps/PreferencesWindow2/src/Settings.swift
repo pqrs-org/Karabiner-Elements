@@ -70,6 +70,11 @@ final class Settings: ObservableObject {
                 libkrbnCoreConfiguration,
                 "basic.simultaneous_threshold_milliseconds"
             ))
+        complexModificationsParameterMouseMotionToScrollSpeed = Int(
+            libkrbn_core_configuration_get_selected_profile_complex_modifications_parameter(
+                libkrbnCoreConfiguration,
+                "mouse_motion_to_scroll.speed"
+            ))
 
         updateConnectedDeviceSettings()
         delayMillisecondsBeforeOpenDevice = Int(libkrbn_core_configuration_get_selected_profile_parameters_delay_milliseconds_before_open_device(libkrbnCoreConfiguration))
@@ -139,6 +144,19 @@ final class Settings: ObservableObject {
                     libkrbnCoreConfiguration,
                     "basic.simultaneous_threshold_milliseconds",
                     Int32(complexModificationsParameterSimultaneousThresholdMilliseconds)
+                )
+                save()
+            }
+        }
+    }
+
+    @Published var complexModificationsParameterMouseMotionToScrollSpeed: Int = 0 {
+        didSet {
+            if didSetEnabled {
+                libkrbn_core_configuration_set_selected_profile_complex_modifications_parameter(
+                    libkrbnCoreConfiguration,
+                    "mouse_motion_to_scroll.speed",
+                    Int32(complexModificationsParameterMouseMotionToScrollSpeed)
                 )
                 save()
             }

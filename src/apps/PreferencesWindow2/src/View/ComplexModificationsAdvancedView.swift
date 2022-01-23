@@ -5,7 +5,7 @@ struct ComplexModificationsAdvancedView: View {
 
     var body: some View {
         VStack(alignment: .leading, spacing: 24.0) {
-            GroupBox(label: Text("Basic parameters")) {
+            GroupBox(label: Text("type:basic parameters")) {
                 VStack(alignment: .leading, spacing: 12.0) {
                     HStack {
                         Text("to_if_alone_timeout_milliseconds:")
@@ -58,6 +58,23 @@ struct ComplexModificationsAdvancedView: View {
                                      width: 50)
 
                         Text("(Default value is 50)")
+                        Spacer()
+                    }
+                }
+                .padding(6.0)
+            }
+
+            GroupBox(label: Text("type:mouse_motion_to_scroll parameters")) {
+                VStack(alignment: .leading, spacing: 12.0) {
+                    HStack {
+                        Text("speed:")
+
+                        IntTextField(value: $settings.complexModificationsParameterMouseMotionToScrollSpeed,
+                                     range: 0 ... 10000,
+                                     step: 10,
+                                     width: 50)
+
+                        Text("% (Default value is 100)")
                         Spacer()
                     }
                 }
