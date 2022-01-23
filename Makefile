@@ -16,6 +16,7 @@ build:
 
 clean:
 	$(MAKE) -C src clean
+	$(MAKE) -C tests clean
 	rm -rf pkgroot
 	rm -f *.dmg
 
