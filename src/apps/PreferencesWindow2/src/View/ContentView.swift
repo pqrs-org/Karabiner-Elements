@@ -38,10 +38,9 @@ struct ContentView: View {
                             NavigationLink(destination: ComplexModificationsAdvancedView(),
                                            tag: "ComplexModificationsAdvanced",
                                            selection: $selection) {
-                                Label("Advanced", systemImage: "gearshape.2")
+                                Label("Parameters", systemImage: "dial.min")
                             }
-                            .padding(.leading, 20.0)
-                            .padding(.vertical, padding)
+                            .padding(padding)
                         }
 
                         Divider()
@@ -57,10 +56,9 @@ struct ContentView: View {
                             NavigationLink(destination: DevicesAdvancedView(),
                                            tag: "DevicesAdvanced",
                                            selection: $selection) {
-                                Label("Advanced", systemImage: "keyboard")
+                                Label("Devices > Advanced", systemImage: "keyboard")
                             }
-                            .padding(.leading, 20.0)
-                            .padding(.vertical, padding)
+                            .padding(padding)
 
                             NavigationLink(destination: VirtualKeyboardView(),
                                            tag: "VirtualKeyboard",
