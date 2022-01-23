@@ -50,6 +50,7 @@ final class Settings: ObservableObject {
 
         libkrbnCoreConfiguration = initializedCoreConfiguration
 
+        updateComplexModificationsRules()
         complexModificationsParameterToIfAloneTimeoutMilliseconds = Int(
             libkrbn_core_configuration_get_selected_profile_complex_modifications_parameter(
                 libkrbnCoreConfiguration,
@@ -97,6 +98,21 @@ final class Settings: ObservableObject {
     //
     // Complex modifications
     //
+
+    @Published var complexModificationsRules: [ComplexModificationsRule] = []
+
+    private func updateComplexModificationsRules() {
+        var newComplexModificationsRules: [ComplexModificationsRule] = []
+
+        let size = libkrbn_core_configuration_get_selected_profile_complex_modifications_rules_size(libkrbnCoreConfiguration)
+        for i in 0 ..< size {
+            let complexModificationsRule = ComplexModificationsRule(i,
+                                                                    String(cString: libkrbn_core_configuration_get_selected_profile_complex_modifications_rule_description(libkrbnCoreConfiguration, i)))
+            newComplexModificationsRules.append(complexModificationsRule)
+        }
+
+        complexModificationsRules = newComplexModificationsRules
+    }
 
     @Published var complexModificationsParameterToIfAloneTimeoutMilliseconds: Int = 0 {
         didSet {
