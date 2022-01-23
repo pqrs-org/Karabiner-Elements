@@ -34,6 +34,14 @@ struct ContentView: View {
                                 Label("Complex Modifications", systemImage: "gearshape.2")
                             }
                             .padding(padding)
+
+                            NavigationLink(destination: ComplexModificationsAdvancedView(),
+                                           tag: "ComplexModificationsAdvanced",
+                                           selection: $selection) {
+                                Label("Advanced", systemImage: "gearshape.2")
+                            }
+                            .padding(.leading, 20.0)
+                            .padding(.vertical, padding)
                         }
 
                         Divider()
