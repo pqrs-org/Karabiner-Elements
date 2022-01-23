@@ -18,6 +18,20 @@ struct ComplexModificationsAdvancedView: View {
                         Text("(Default value is 1000)")
                         Spacer()
                     }
+
+                    Divider()
+
+                    HStack {
+                        Text("to_if_held_down_threshold_milliseconds:")
+
+                        IntTextField(value: $settings.complexModificationsParameterToIfHeldDownThresholdMilliseconds,
+                                     range: 0 ... 10000,
+                                     step: 100,
+                                     width: 50)
+
+                        Text("(Default value is 500)")
+                        Spacer()
+                    }
                 }
                 .padding(6.0)
             }
