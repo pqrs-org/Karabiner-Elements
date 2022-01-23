@@ -46,6 +46,20 @@ struct ComplexModificationsAdvancedView: View {
                         Text("(Default value is 500)")
                         Spacer()
                     }
+
+                    Divider()
+
+                    HStack {
+                        Text("simultaneous_threshold_milliseconds:")
+
+                        IntTextField(value: $settings.complexModificationsParameterSimultaneousThresholdMilliseconds,
+                                     range: 0 ... 1000,
+                                     step: 20,
+                                     width: 50)
+
+                        Text("(Default value is 50)")
+                        Spacer()
+                    }
                 }
                 .padding(6.0)
             }

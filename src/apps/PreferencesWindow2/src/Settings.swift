@@ -65,6 +65,11 @@ final class Settings: ObservableObject {
                 libkrbnCoreConfiguration,
                 "basic.to_delayed_action_delay_milliseconds"
             ))
+        complexModificationsParameterSimultaneousThresholdMilliseconds = Int(
+            libkrbn_core_configuration_get_selected_profile_complex_modifications_parameter(
+                libkrbnCoreConfiguration,
+                "basic.simultaneous_threshold_milliseconds"
+            ))
 
         updateConnectedDeviceSettings()
         delayMillisecondsBeforeOpenDevice = Int(libkrbn_core_configuration_get_selected_profile_parameters_delay_milliseconds_before_open_device(libkrbnCoreConfiguration))
@@ -121,6 +126,19 @@ final class Settings: ObservableObject {
                     libkrbnCoreConfiguration,
                     "basic.to_delayed_action_delay_milliseconds",
                     Int32(complexModificationsParameterToDelayedActionDelayMilliseconds)
+                )
+                save()
+            }
+        }
+    }
+
+    @Published var complexModificationsParameterSimultaneousThresholdMilliseconds: Int = 0 {
+        didSet {
+            if didSetEnabled {
+                libkrbn_core_configuration_set_selected_profile_complex_modifications_parameter(
+                    libkrbnCoreConfiguration,
+                    "basic.simultaneous_threshold_milliseconds",
+                    Int32(complexModificationsParameterSimultaneousThresholdMilliseconds)
                 )
                 save()
             }
