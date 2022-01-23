@@ -32,6 +32,20 @@ struct ComplexModificationsAdvancedView: View {
                         Text("(Default value is 500)")
                         Spacer()
                     }
+
+                    Divider()
+
+                    HStack {
+                        Text("to_delayed_action_delay_milliseconds:")
+
+                        IntTextField(value: $settings.complexModificationsParameterToDelayedActionDelayMilliseconds,
+                                     range: 0 ... 10000,
+                                     step: 100,
+                                     width: 50)
+
+                        Text("(Default value is 500)")
+                        Spacer()
+                    }
                 }
                 .padding(6.0)
             }
