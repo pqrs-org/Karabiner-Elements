@@ -114,6 +114,15 @@ final class Settings: ObservableObject {
         complexModificationsRules = newComplexModificationsRules
     }
 
+    public func moveComplexModificationsRules(_ sourceIndex: Int, _ destinationIndex: Int) {
+        libkrbn_core_configuration_move_selected_profile_complex_modifications_rule(libkrbnCoreConfiguration,
+                                                                                    sourceIndex,
+                                                                                    destinationIndex)
+        save()
+
+        updateComplexModificationsRules()
+    }
+
     @Published var complexModificationsParameterToIfAloneTimeoutMilliseconds: Int = 0 {
         didSet {
             if didSetEnabled {

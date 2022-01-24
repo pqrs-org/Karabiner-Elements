@@ -29,7 +29,7 @@ struct ComplexModificationsView: View {
                     .moveDisabled(moveDisabled)
                 }.onMove { indices, destination in
                     if let first = indices.first {
-                        print("first \(first), destication \(destination)")
+                        settings.moveComplexModificationsRules(first, destination)
                     }
                 }
             }
