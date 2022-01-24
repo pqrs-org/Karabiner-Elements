@@ -65,6 +65,25 @@ public:
     }
   }
 
+  void move_rule(size_t source_index, size_t destination_index) {
+    if (source_index < destination_index) {
+      for (size_t i = source_index; i < destination_index; ++i) {
+        swap_rules(i, i + 1);
+      }
+    } else if (destination_index < source_index) {
+      size_t i = source_index - 1;
+      while (i >= destination_index) {
+        swap_rules(i, i + 1);
+
+        if (i == 0) {
+          break;
+        }
+
+        --i;
+      }
+    }
+  }
+
   std::optional<std::pair<int, int>> minmax_parameter_value(const std::string& name) const {
     std::optional<std::pair<int, int>> result;
 
