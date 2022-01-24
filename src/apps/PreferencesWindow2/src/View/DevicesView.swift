@@ -5,7 +5,7 @@ struct DevicesView: View {
 
     var body: some View {
         VStack(alignment: .leading, spacing: 12.0) {
-            ScrollView {
+            List {
                 VStack(alignment: .leading, spacing: 0.0) {
                     // swiftformat:disable:next unusedArguments
                     ForEach($settings.connectedDeviceSettings) { $connectedDeviceSetting in
@@ -69,7 +69,7 @@ struct DevicesView: View {
                                 }
                             }
                         }
-                        .padding(12.0)
+                        .padding(.vertical, 12.0)
 
                         Divider()
                     }

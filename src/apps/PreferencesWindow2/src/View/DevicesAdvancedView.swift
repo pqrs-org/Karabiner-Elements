@@ -33,7 +33,7 @@ struct DevicesAdvancedView: View {
                 .frame(height: 24.0)
 
             GroupBox(label: Text("Disable the built-in keyboard while one of the following selected devices is connected")) {
-                ScrollView {
+                List {
                     VStack(alignment: .leading, spacing: 0.0) {
                         // swiftformat:disable:next unusedArguments
                         ForEach($settings.connectedDeviceSettings) { $connectedDeviceSetting in
@@ -55,7 +55,7 @@ struct DevicesAdvancedView: View {
                                     Image(systemName: "capsule.portrait")
                                 }
                             }
-                            .padding(12.0)
+                            .padding(.vertical, 12.0)
 
                             Divider()
                         }
