@@ -7,7 +7,7 @@ struct ProfilesView: View {
 
     var body: some View {
         VStack(alignment: .leading, spacing: 12.0) {
-            ScrollView {
+            List {
                 VStack(alignment: .leading, spacing: 0.0) {
                     // swiftformat:disable:next unusedArguments
                     ForEach($settings.profiles) { $profile in
@@ -34,8 +34,7 @@ struct ProfilesView: View {
                                 }
                             }
                         }
-                        .padding(12.0)
-                        .background(Color(profile.selected ? NSColor.selectedTextBackgroundColor : NSColor.textBackgroundColor))
+                        .padding(.vertical, 12.0)
 
                         Divider()
                     }
