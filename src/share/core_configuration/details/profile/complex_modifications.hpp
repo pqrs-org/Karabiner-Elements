@@ -67,7 +67,7 @@ public:
 
   void move_rule(size_t source_index, size_t destination_index) {
     if (source_index < destination_index) {
-      for (size_t i = source_index; i < destination_index; ++i) {
+      for (size_t i = source_index; i < destination_index - 1; ++i) {
         swap_rules(i, i + 1);
       }
     } else if (destination_index < source_index) {

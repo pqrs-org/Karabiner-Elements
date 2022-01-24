@@ -1279,113 +1279,160 @@ TEST_CASE("complex_modifications.move_rule") {
             },
         },
     });
-    krbn::core_configuration::details::complex_modifications complex_modifications(json);
-    auto& rules = complex_modifications.get_rules();
-    REQUIRE(rules.size() == 5);
-    REQUIRE(rules[0].get_description() == "rule 1");
-    REQUIRE(rules[1].get_description() == "rule 2");
-    REQUIRE(rules[2].get_description() == "rule 3");
-    REQUIRE(rules[3].get_description() == "rule 4");
-    REQUIRE(rules[4].get_description() == "rule 5");
+
+    {
+      krbn::core_configuration::details::complex_modifications complex_modifications(json);
+      auto& rules = complex_modifications.get_rules();
+      REQUIRE(rules.size() == 5);
+      REQUIRE(rules[0].get_description() == "rule 1");
+      REQUIRE(rules[1].get_description() == "rule 2");
+      REQUIRE(rules[2].get_description() == "rule 3");
+      REQUIRE(rules[3].get_description() == "rule 4");
+      REQUIRE(rules[4].get_description() == "rule 5");
+    }
 
     // source_index == destination_index
-
-    complex_modifications.move_rule(0, 0);
-    REQUIRE(rules.size() == 5);
-    REQUIRE(rules[0].get_description() == "rule 1");
-    REQUIRE(rules[1].get_description() == "rule 2");
-    REQUIRE(rules[2].get_description() == "rule 3");
-    REQUIRE(rules[3].get_description() == "rule 4");
-    REQUIRE(rules[4].get_description() == "rule 5");
-
-    // source_index < destination_index
-
-    complex_modifications.move_rule(0, 1);
-    REQUIRE(rules.size() == 5);
-    REQUIRE(rules[0].get_description() == "rule 2");
-    REQUIRE(rules[1].get_description() == "rule 1");
-    REQUIRE(rules[2].get_description() == "rule 3");
-    REQUIRE(rules[3].get_description() == "rule 4");
-    REQUIRE(rules[4].get_description() == "rule 5");
+    {
+      krbn::core_configuration::details::complex_modifications complex_modifications(json);
+      auto& rules = complex_modifications.get_rules();
+      complex_modifications.move_rule(0, 0);
+      REQUIRE(rules.size() == 5);
+      REQUIRE(rules[0].get_description() == "rule 1");
+      REQUIRE(rules[1].get_description() == "rule 2");
+      REQUIRE(rules[2].get_description() == "rule 3");
+      REQUIRE(rules[3].get_description() == "rule 4");
+      REQUIRE(rules[4].get_description() == "rule 5");
+    }
 
     // source_index < destination_index
-
-    complex_modifications.move_rule(0, 3);
-    REQUIRE(rules.size() == 5);
-    REQUIRE(rules[0].get_description() == "rule 1");
-    REQUIRE(rules[1].get_description() == "rule 3");
-    REQUIRE(rules[2].get_description() == "rule 4");
-    REQUIRE(rules[3].get_description() == "rule 2");
-    REQUIRE(rules[4].get_description() == "rule 5");
+    {
+      krbn::core_configuration::details::complex_modifications complex_modifications(json);
+      auto& rules = complex_modifications.get_rules();
+      complex_modifications.move_rule(0, 1);
+      REQUIRE(rules.size() == 5);
+      REQUIRE(rules[0].get_description() == "rule 1");
+      REQUIRE(rules[1].get_description() == "rule 2");
+      REQUIRE(rules[2].get_description() == "rule 3");
+      REQUIRE(rules[3].get_description() == "rule 4");
+      REQUIRE(rules[4].get_description() == "rule 5");
+    }
 
     // source_index < destination_index
+    {
+      krbn::core_configuration::details::complex_modifications complex_modifications(json);
+      auto& rules = complex_modifications.get_rules();
+      complex_modifications.move_rule(0, 2);
+      REQUIRE(rules.size() == 5);
+      REQUIRE(rules[0].get_description() == "rule 2");
+      REQUIRE(rules[1].get_description() == "rule 1");
+      REQUIRE(rules[2].get_description() == "rule 3");
+      REQUIRE(rules[3].get_description() == "rule 4");
+      REQUIRE(rules[4].get_description() == "rule 5");
+    }
 
-    complex_modifications.move_rule(2, 4);
-    REQUIRE(rules.size() == 5);
-    REQUIRE(rules[0].get_description() == "rule 1");
-    REQUIRE(rules[1].get_description() == "rule 3");
-    REQUIRE(rules[2].get_description() == "rule 2");
-    REQUIRE(rules[3].get_description() == "rule 5");
-    REQUIRE(rules[4].get_description() == "rule 4");
+    // source_index < destination_index
+    {
+      krbn::core_configuration::details::complex_modifications complex_modifications(json);
+      auto& rules = complex_modifications.get_rules();
+      complex_modifications.move_rule(0, 3);
+      REQUIRE(rules.size() == 5);
+      REQUIRE(rules[0].get_description() == "rule 2");
+      REQUIRE(rules[1].get_description() == "rule 3");
+      REQUIRE(rules[2].get_description() == "rule 1");
+      REQUIRE(rules[3].get_description() == "rule 4");
+      REQUIRE(rules[4].get_description() == "rule 5");
+    }
+
+    // source_index < destination_index
+    {
+      krbn::core_configuration::details::complex_modifications complex_modifications(json);
+      auto& rules = complex_modifications.get_rules();
+      complex_modifications.move_rule(2, 4);
+      REQUIRE(rules.size() == 5);
+      REQUIRE(rules[0].get_description() == "rule 1");
+      REQUIRE(rules[1].get_description() == "rule 2");
+      REQUIRE(rules[2].get_description() == "rule 4");
+      REQUIRE(rules[3].get_description() == "rule 3");
+      REQUIRE(rules[4].get_description() == "rule 5");
+    }
 
     // destination_index is out of range
-
-    complex_modifications.move_rule(0, 10);
-    REQUIRE(rules.size() == 5);
-    REQUIRE(rules[0].get_description() == "rule 3");
-    REQUIRE(rules[1].get_description() == "rule 2");
-    REQUIRE(rules[2].get_description() == "rule 5");
-    REQUIRE(rules[3].get_description() == "rule 4");
-    REQUIRE(rules[4].get_description() == "rule 1");
-
-    // source_index > destination_index
-
-    complex_modifications.move_rule(1, 0);
-    REQUIRE(rules.size() == 5);
-    REQUIRE(rules[0].get_description() == "rule 2");
-    REQUIRE(rules[1].get_description() == "rule 3");
-    REQUIRE(rules[2].get_description() == "rule 5");
-    REQUIRE(rules[3].get_description() == "rule 4");
-    REQUIRE(rules[4].get_description() == "rule 1");
+    {
+      krbn::core_configuration::details::complex_modifications complex_modifications(json);
+      auto& rules = complex_modifications.get_rules();
+      complex_modifications.move_rule(0, 10);
+      REQUIRE(rules.size() == 5);
+      REQUIRE(rules[0].get_description() == "rule 2");
+      REQUIRE(rules[1].get_description() == "rule 3");
+      REQUIRE(rules[2].get_description() == "rule 4");
+      REQUIRE(rules[3].get_description() == "rule 5");
+      REQUIRE(rules[4].get_description() == "rule 1");
+    }
 
     // source_index > destination_index
-
-    complex_modifications.move_rule(2, 0);
-    REQUIRE(rules.size() == 5);
-    REQUIRE(rules[0].get_description() == "rule 5");
-    REQUIRE(rules[1].get_description() == "rule 2");
-    REQUIRE(rules[2].get_description() == "rule 3");
-    REQUIRE(rules[3].get_description() == "rule 4");
-    REQUIRE(rules[4].get_description() == "rule 1");
-
-    // source_index > destination_index
-
-    complex_modifications.move_rule(3, 0);
-    REQUIRE(rules.size() == 5);
-    REQUIRE(rules[0].get_description() == "rule 4");
-    REQUIRE(rules[1].get_description() == "rule 5");
-    REQUIRE(rules[2].get_description() == "rule 2");
-    REQUIRE(rules[3].get_description() == "rule 3");
-    REQUIRE(rules[4].get_description() == "rule 1");
+    {
+      krbn::core_configuration::details::complex_modifications complex_modifications(json);
+      auto& rules = complex_modifications.get_rules();
+      complex_modifications.move_rule(1, 0);
+      REQUIRE(rules.size() == 5);
+      REQUIRE(rules[0].get_description() == "rule 2");
+      REQUIRE(rules[1].get_description() == "rule 1");
+      REQUIRE(rules[2].get_description() == "rule 3");
+      REQUIRE(rules[3].get_description() == "rule 4");
+      REQUIRE(rules[4].get_description() == "rule 5");
+    }
 
     // source_index > destination_index
+    {
+      krbn::core_configuration::details::complex_modifications complex_modifications(json);
+      auto& rules = complex_modifications.get_rules();
+      complex_modifications.move_rule(2, 0);
+      REQUIRE(rules.size() == 5);
+      REQUIRE(rules[0].get_description() == "rule 3");
+      REQUIRE(rules[1].get_description() == "rule 1");
+      REQUIRE(rules[2].get_description() == "rule 2");
+      REQUIRE(rules[3].get_description() == "rule 4");
+      REQUIRE(rules[4].get_description() == "rule 5");
+    }
 
-    complex_modifications.move_rule(3, 1);
-    REQUIRE(rules.size() == 5);
-    REQUIRE(rules[0].get_description() == "rule 4");
-    REQUIRE(rules[1].get_description() == "rule 3");
-    REQUIRE(rules[2].get_description() == "rule 5");
-    REQUIRE(rules[3].get_description() == "rule 2");
-    REQUIRE(rules[4].get_description() == "rule 1");
+    // source_index > destination_index
+    {
+      krbn::core_configuration::details::complex_modifications complex_modifications(json);
+      auto& rules = complex_modifications.get_rules();
+      complex_modifications.move_rule(3, 0);
+      REQUIRE(rules.size() == 5);
+      REQUIRE(rules[0].get_description() == "rule 4");
+      REQUIRE(rules[1].get_description() == "rule 1");
+      REQUIRE(rules[2].get_description() == "rule 2");
+      REQUIRE(rules[3].get_description() == "rule 3");
+      REQUIRE(rules[4].get_description() == "rule 5");
+    }
+
+    // source_index > destination_index
+    {
+      krbn::core_configuration::details::complex_modifications complex_modifications(json);
+      auto& rules = complex_modifications.get_rules();
+      complex_modifications.move_rule(3, 1);
+      REQUIRE(rules.size() == 5);
+      REQUIRE(rules[0].get_description() == "rule 1");
+      REQUIRE(rules[1].get_description() == "rule 4");
+      REQUIRE(rules[2].get_description() == "rule 2");
+      REQUIRE(rules[3].get_description() == "rule 3");
+      REQUIRE(rules[4].get_description() == "rule 5");
+    }
 
     // source_index is out of range
-    complex_modifications.move_rule(10, 0);
-    REQUIRE(rules.size() == 5);
-    REQUIRE(rules[0].get_description() == "rule 1");
-    REQUIRE(rules[1].get_description() == "rule 4");
-    REQUIRE(rules[2].get_description() == "rule 3");
-    REQUIRE(rules[3].get_description() == "rule 5");
-    REQUIRE(rules[4].get_description() == "rule 2");
+    {
+      krbn::core_configuration::details::complex_modifications complex_modifications(json);
+      auto& rules = complex_modifications.get_rules();
+      complex_modifications.move_rule(10, 0);
+      REQUIRE(rules.size() == 5);
+      REQUIRE(rules[0].get_description() == "rule 5");
+      REQUIRE(rules[1].get_description() == "rule 1");
+      REQUIRE(rules[2].get_description() == "rule 2");
+      REQUIRE(rules[3].get_description() == "rule 3");
+      REQUIRE(rules[4].get_description() == "rule 4");
+    }
   }
 }
 
