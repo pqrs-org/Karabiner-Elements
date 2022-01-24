@@ -237,6 +237,10 @@ public:
     complex_modifications_.swap_rules(index1, index2);
   }
 
+  void move_complex_modifications_rule(size_t source_index, size_t destination_index) {
+    complex_modifications_.move_rule(source_index, destination_index);
+  }
+
   void set_complex_modifications_parameter(const std::string& name, int value) {
     complex_modifications_.set_parameter_value(name, value);
   }

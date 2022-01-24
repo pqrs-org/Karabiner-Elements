@@ -136,6 +136,7 @@ size_t libkrbn_core_configuration_get_selected_profile_complex_modifications_rul
 const char* libkrbn_core_configuration_get_selected_profile_complex_modifications_rule_description(libkrbn_core_configuration* p, size_t index);
 void libkrbn_core_configuration_erase_selected_profile_complex_modifications_rule(libkrbn_core_configuration* p, size_t index);
 void libkrbn_core_configuration_swap_selected_profile_complex_modifications_rules(libkrbn_core_configuration* p, size_t index1, size_t index2);
+void libkrbn_core_configuration_move_selected_profile_complex_modifications_rule(libkrbn_core_configuration* p, size_t source_index, size_t destination_index);
 int libkrbn_core_configuration_get_selected_profile_complex_modifications_parameter(libkrbn_core_configuration* p,
                                                                                     const char* name);
 void libkrbn_core_configuration_set_selected_profile_complex_modifications_parameter(libkrbn_core_configuration* p,
