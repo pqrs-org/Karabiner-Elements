@@ -22,6 +22,12 @@ struct ComplexModificationsView: View {
                                 .padding(.leading, 6.0)
 
                             Spacer()
+
+                            Button(action: {
+                                settings.removeComplexModificationsRule(complexModificationRule)
+                            }) {
+                                Label("Remove", systemImage: "minus.circle.fill")
+                            }
                         }
 
                         Divider()
@@ -29,7 +35,7 @@ struct ComplexModificationsView: View {
                     .moveDisabled(moveDisabled)
                 }.onMove { indices, destination in
                     if let first = indices.first {
-                        settings.moveComplexModificationsRules(first, destination)
+                        settings.moveComplexModificationsRule(first, destination)
                     }
                 }
             }
