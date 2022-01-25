@@ -43,6 +43,8 @@ final class Settings: ObservableObject {
     func save() {
         print("save")
         libkrbn_core_configuration_save(libkrbnCoreConfiguration)
+
+        updateProperties(libkrbnCoreConfiguration)
     }
 
     public func updateProperties(_ initializedCoreConfiguration: UnsafeMutableRawPointer?) {
@@ -114,13 +116,16 @@ final class Settings: ObservableObject {
         complexModificationsRules = newComplexModificationsRules
     }
 
-    public func moveComplexModificationsRules(_ sourceIndex: Int, _ destinationIndex: Int) {
+    public func moveComplexModificationsRule(_ sourceIndex: Int, _ destinationIndex: Int) {
         libkrbn_core_configuration_move_selected_profile_complex_modifications_rule(libkrbnCoreConfiguration,
                                                                                     sourceIndex,
                                                                                     destinationIndex)
         save()
+    }
 
-        updateComplexModificationsRules()
+    public func removeComplexModificationsRule(_ complexModificationRule: ComplexModificationsRule) {
+        libkrbn_core_configuration_erase_selected_profile_complex_modifications_rule(libkrbnCoreConfiguration, complexModificationRule.index)
+        save()
     }
 
     @Published var complexModificationsParameterToIfAloneTimeoutMilliseconds: Int = 0 {
@@ -267,29 +272,21 @@ final class Settings: ObservableObject {
     public func selectProfile(_ profile: Profile) {
         libkrbn_core_configuration_select_profile(libkrbnCoreConfiguration, profile.index)
         save()
-
-        updateProfiles()
     }
 
     public func updateProfileName(_ profile: Profile, _ name: String) {
         libkrbn_core_configuration_set_profile_name(libkrbnCoreConfiguration, profile.index, name.cString(using: .utf8))
         save()
-
-        updateProfiles()
     }
 
     public func appendProfile() {
         libkrbn_core_configuration_push_back_profile(libkrbnCoreConfiguration)
         save()
-
-        updateProfiles()
     }
 
     public func removeProfile(_ profile: Profile) {
         libkrbn_core_configuration_erase_profile(libkrbnCoreConfiguration, profile.index)
         save()
-
-        updateProfiles()
     }
 
     //
