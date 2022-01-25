@@ -35,7 +35,8 @@ public class AppDelegate: NSObject, NSApplicationDelegate {
 
         NotificationCenter.default.addObserver(forName: UserSettings.windowSettingChanged,
                                                object: nil,
-                                               queue: .main) { [weak self] _ in
+                                               queue: .main)
+        { [weak self] _ in
             guard let self = self else { return }
 
             self.setWindowProperty()

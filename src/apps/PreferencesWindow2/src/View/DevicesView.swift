@@ -48,8 +48,8 @@ struct DevicesView: View {
                             }
 
                             HStack(alignment: .center, spacing: 0) {
-                                if connectedDeviceSetting.connectedDevice.isAppleDevice &&
-                                    !connectedDeviceSetting.connectedDevice.isKeyboard
+                                if connectedDeviceSetting.connectedDevice.isAppleDevice,
+                                   !connectedDeviceSetting.connectedDevice.isKeyboard
                                 {
                                     Text("Apple pointing devices are not supported")
                                         .foregroundColor(Color(NSColor.placeholderTextColor))

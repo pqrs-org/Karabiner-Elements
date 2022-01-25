@@ -23,7 +23,8 @@ public class NotificationWindowManager {
         let center = NotificationCenter.default
         let o = center.addObserver(forName: NSApplication.didChangeScreenParametersNotification,
                                    object: nil,
-                                   queue: .main) { [weak self] _ in
+                                   queue: .main)
+        { [weak self] _ in
             guard let self = self else { return }
 
             self.updateWindows()

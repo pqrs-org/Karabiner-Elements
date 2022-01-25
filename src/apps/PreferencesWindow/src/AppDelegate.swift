@@ -36,7 +36,8 @@ public class AppDelegate: NSObject, NSApplicationDelegate {
 
         NotificationCenter.default.addObserver(forName: Updater.didFindValidUpdate,
                                                object: nil,
-                                               queue: .main) { [weak self] _ in
+                                               queue: .main)
+        { [weak self] _ in
             guard let self = self else { return }
 
             self.preferencesWindowController.show()
@@ -44,7 +45,8 @@ public class AppDelegate: NSObject, NSApplicationDelegate {
 
         NotificationCenter.default.addObserver(forName: Updater.updaterDidNotFindUpdate,
                                                object: nil,
-                                               queue: .main) { [weak self] _ in
+                                               queue: .main)
+        { [weak self] _ in
             guard let self = self else { return }
 
             if self.updaterMode {
