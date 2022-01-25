@@ -35,6 +35,13 @@ struct ProfilesView: View {
                             }
                         }
                         .padding(.vertical, 12.0)
+                        .padding(.horizontal, profile.selected ? 12.0 : 0)
+                        .overlay(
+                            RoundedRectangle(cornerRadius: 8)
+                                .stroke(Color(NSColor.selectedControlColor),
+                                        lineWidth: profile.selected ? 3 : 0)
+                                .padding(2)
+                        )
 
                         Divider()
                     }
