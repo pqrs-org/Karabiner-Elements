@@ -30,7 +30,6 @@ struct UnknownEventsView: View {
             ScrollViewReader { proxy in
               ScrollView {
                 VStack(alignment: .leading, spacing: 0.0) {
-                  // swiftformat:disable:next unusedArguments
                   ForEach($eventHistory.unknownEventEntries) { $entry in
                     HStack(alignment: .center, spacing: 0) {
                       Text(entry.eventType)

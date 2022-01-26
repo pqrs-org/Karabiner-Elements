@@ -8,7 +8,6 @@ struct ComplexModificationsView: View {
   var body: some View {
     VStack(alignment: .leading, spacing: 12.0) {
       List {
-        // swiftformat:disable:next unusedArguments
         ForEach($settings.complexModificationsRules) { $complexModificationRule in
           VStack {
             HStack(alignment: .center, spacing: 0) {

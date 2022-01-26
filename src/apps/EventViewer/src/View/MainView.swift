@@ -50,7 +50,6 @@ struct MainView: View {
             ScrollViewReader { proxy in
               ScrollView {
                 VStack(alignment: .leading, spacing: 0.0) {
-                  // swiftformat:disable:next unusedArguments
                   ForEach($eventHistory.entries) { $entry in
                     HStack(alignment: .center, spacing: 0) {
                       Text(entry.eventType)

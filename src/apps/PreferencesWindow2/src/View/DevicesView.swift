@@ -7,7 +7,6 @@ struct DevicesView: View {
     VStack(alignment: .leading, spacing: 12.0) {
       List {
         VStack(alignment: .leading, spacing: 0.0) {
-          // swiftformat:disable:next unusedArguments
           ForEach($settings.connectedDeviceSettings) { $connectedDeviceSetting in
             VStack(alignment: .leading, spacing: 0.0) {
               HStack(alignment: .center, spacing: 0) {

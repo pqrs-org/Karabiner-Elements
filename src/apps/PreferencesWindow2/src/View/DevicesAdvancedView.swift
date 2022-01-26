@@ -43,7 +43,6 @@ struct DevicesAdvancedView: View {
       ) {
         List {
           VStack(alignment: .leading, spacing: 0.0) {
-            // swiftformat:disable:next unusedArguments
             ForEach($settings.connectedDeviceSettings) { $connectedDeviceSetting in
               HStack(alignment: .center, spacing: 0) {
                 Toggle(isOn: $connectedDeviceSetting.disableBuiltInKeyboardIfExists) {

@@ -8,14 +8,25 @@ struct ComplexModificationsAssetsView: View {
     VStack(alignment: .leading, spacing: 12.0) {
       Text("files \(assetFiles.files.count)")
       List {
-        // swiftformat:disable:next unusedArguments
         ForEach($assetFiles.files) { $assetFile in
-          VStack {
+          VStack(alignment: .leading, spacing: 8.0) {
             HStack(alignment: .center, spacing: 0) {
               Text(assetFile.title)
-                .padding(.leading, 6.0)
 
               Spacer()
+            }
+
+            ForEach($assetFile.assetRules) { $assetRule in
+              HStack(alignment: .center, spacing: 0) {
+                Text(assetRule.description)
+                  .padding(.leading, 12.0)
+
+                Button(action: {
+                  showing = false
+                }) {
+                  Label("Enable", systemImage: "plus.circle.fill")
+                }
+              }
             }
 
             Divider()

@@ -9,7 +9,6 @@ struct ProfilesView: View {
     VStack(alignment: .leading, spacing: 12.0) {
       List {
         VStack(alignment: .leading, spacing: 0.0) {
-          // swiftformat:disable:next unusedArguments
           ForEach($settings.profiles) { $profile in
             HStack(alignment: .center, spacing: 0) {
               Text(profile.name)
