@@ -4,130 +4,132 @@ import SwiftUI
 
 @objc
 public class AlertWindowsManager: NSObject {
-    @IBOutlet var parentWindow: NSWindow!
-    var driverNotLoadedAlertWindow: NSWindow?
-    var driverVersionNotMatchedAlertWindow: NSWindow?
-    var inputMonitoringPermissionsAlertWindow: NSWindow?
+  @IBOutlet var parentWindow: NSWindow!
+  var driverNotLoadedAlertWindow: NSWindow?
+  var driverVersionNotMatchedAlertWindow: NSWindow?
+  var inputMonitoringPermissionsAlertWindow: NSWindow?
 
-    //
-    // driverNotLoadedAlertWindow
-    //
+  //
+  // driverNotLoadedAlertWindow
+  //
 
-    @objc
-    public func showDriverNotLoadedAlertWindow() {
-        if driverNotLoadedAlertWindow == nil {
-            let view = DriverNotLoadedAlertView(parentWindow: parentWindow,
-                                                onCloseButtonPressed: { [weak self] in
-                                                    guard let self = self else { return }
+  @objc
+  public func showDriverNotLoadedAlertWindow() {
+    if driverNotLoadedAlertWindow == nil {
+      let view = DriverNotLoadedAlertView(
+        parentWindow: parentWindow,
+        onCloseButtonPressed: { [weak self] in
+          guard let self = self else { return }
 
-                                                    self.hideDriverNotLoadedAlertWindow()
-                                                })
+          self.hideDriverNotLoadedAlertWindow()
+        })
 
-            driverNotLoadedAlertWindow = NSPanel(
-                contentRect: .zero,
-                styleMask: [
-                    .titled,
-                    .closable,
-                    .fullSizeContentView,
-                ],
-                backing: .buffered,
-                defer: false
-            )
-            driverNotLoadedAlertWindow!.contentView = NSHostingView(rootView: view)
+      driverNotLoadedAlertWindow = NSPanel(
+        contentRect: .zero,
+        styleMask: [
+          .titled,
+          .closable,
+          .fullSizeContentView,
+        ],
+        backing: .buffered,
+        defer: false
+      )
+      driverNotLoadedAlertWindow!.contentView = NSHostingView(rootView: view)
 
-            parentWindow.beginSheet(driverNotLoadedAlertWindow!) { [weak self] _ in
-                guard let self = self else { return }
+      parentWindow.beginSheet(driverNotLoadedAlertWindow!) { [weak self] _ in
+        guard let self = self else { return }
 
-                self.driverNotLoadedAlertWindow = nil
-            }
-        }
+        self.driverNotLoadedAlertWindow = nil
+      }
     }
+  }
 
-    @objc
-    public func hideDriverNotLoadedAlertWindow() {
-        if driverNotLoadedAlertWindow != nil {
-            parentWindow.endSheet(driverNotLoadedAlertWindow!)
-        }
+  @objc
+  public func hideDriverNotLoadedAlertWindow() {
+    if driverNotLoadedAlertWindow != nil {
+      parentWindow.endSheet(driverNotLoadedAlertWindow!)
     }
+  }
 
-    //
-    // driverVersionNotMatchedAlertWindow
-    //
+  //
+  // driverVersionNotMatchedAlertWindow
+  //
 
-    @objc
-    public func showDriverVersionNotMatchedAlertWindow() {
-        if driverVersionNotMatchedAlertWindow == nil {
-            let view = DriverVersionNotMatchedAlertView(onCloseButtonPressed: { [weak self] in
-                guard let self = self else { return }
+  @objc
+  public func showDriverVersionNotMatchedAlertWindow() {
+    if driverVersionNotMatchedAlertWindow == nil {
+      let view = DriverVersionNotMatchedAlertView(onCloseButtonPressed: { [weak self] in
+        guard let self = self else { return }
 
-                self.hideDriverVersionNotMatchedAlertWindow()
-            })
+        self.hideDriverVersionNotMatchedAlertWindow()
+      })
 
-            driverVersionNotMatchedAlertWindow = NSPanel(
-                contentRect: .zero,
-                styleMask: [
-                    .titled,
-                    .closable,
-                    .fullSizeContentView,
-                ],
-                backing: .buffered,
-                defer: false
-            )
-            driverVersionNotMatchedAlertWindow!.contentView = NSHostingView(rootView: view)
+      driverVersionNotMatchedAlertWindow = NSPanel(
+        contentRect: .zero,
+        styleMask: [
+          .titled,
+          .closable,
+          .fullSizeContentView,
+        ],
+        backing: .buffered,
+        defer: false
+      )
+      driverVersionNotMatchedAlertWindow!.contentView = NSHostingView(rootView: view)
 
-            parentWindow.beginSheet(driverVersionNotMatchedAlertWindow!) { [weak self] _ in
-                guard let self = self else { return }
+      parentWindow.beginSheet(driverVersionNotMatchedAlertWindow!) { [weak self] _ in
+        guard let self = self else { return }
 
-                self.driverVersionNotMatchedAlertWindow = nil
-            }
-        }
+        self.driverVersionNotMatchedAlertWindow = nil
+      }
     }
+  }
 
-    @objc
-    public func hideDriverVersionNotMatchedAlertWindow() {
-        if driverVersionNotMatchedAlertWindow != nil {
-            parentWindow.endSheet(driverVersionNotMatchedAlertWindow!)
-        }
+  @objc
+  public func hideDriverVersionNotMatchedAlertWindow() {
+    if driverVersionNotMatchedAlertWindow != nil {
+      parentWindow.endSheet(driverVersionNotMatchedAlertWindow!)
     }
+  }
 
-    //
-    // inputMonitoringPermissionsAlertWindow
-    //
+  //
+  // inputMonitoringPermissionsAlertWindow
+  //
 
-    @objc
-    public func showInputMonitoringPermissionsAlertWindow() {
-        if inputMonitoringPermissionsAlertWindow == nil {
-            let view = InputMonitoringPermissionsAlertView(parentWindow: parentWindow,
-                                                           onCloseButtonPressed: { [weak self] in
-                                                               guard let self = self else { return }
+  @objc
+  public func showInputMonitoringPermissionsAlertWindow() {
+    if inputMonitoringPermissionsAlertWindow == nil {
+      let view = InputMonitoringPermissionsAlertView(
+        parentWindow: parentWindow,
+        onCloseButtonPressed: { [weak self] in
+          guard let self = self else { return }
 
-                                                               self.hideInputMonitoringPermissionsAlertWindow()
-                                                           })
+          self.hideInputMonitoringPermissionsAlertWindow()
+        })
 
-            inputMonitoringPermissionsAlertWindow = NSPanel(
-                contentRect: .zero,
-                styleMask: [
-                    .titled,
-                    .closable,
-                    .fullSizeContentView,
-                ],
-                backing: .buffered,
-                defer: false
-            )
-            inputMonitoringPermissionsAlertWindow!.contentView = NSHostingView(rootView: view)
+      inputMonitoringPermissionsAlertWindow = NSPanel(
+        contentRect: .zero,
+        styleMask: [
+          .titled,
+          .closable,
+          .fullSizeContentView,
+        ],
+        backing: .buffered,
+        defer: false
+      )
+      inputMonitoringPermissionsAlertWindow!.contentView = NSHostingView(rootView: view)
 
-            parentWindow.beginSheet(inputMonitoringPermissionsAlertWindow!) { [weak self] _ in
-                guard let self = self else { return }
+      parentWindow.beginSheet(inputMonitoringPermissionsAlertWindow!) { [weak self] _ in
+        guard let self = self else { return }
 
-                self.inputMonitoringPermissionsAlertWindow = nil
-            }
-        }
+        self.inputMonitoringPermissionsAlertWindow = nil
+      }
     }
+  }
 
-    @objc
-    public func hideInputMonitoringPermissionsAlertWindow() {
-        if inputMonitoringPermissionsAlertWindow != nil {
-            parentWindow.endSheet(inputMonitoringPermissionsAlertWindow!)
-        }
+  @objc
+  public func hideInputMonitoringPermissionsAlertWindow() {
+    if inputMonitoringPermissionsAlertWindow != nil {
+      parentWindow.endSheet(inputMonitoringPermissionsAlertWindow!)
     }
+  }
 }

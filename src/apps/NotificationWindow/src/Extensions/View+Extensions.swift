@@ -3,7 +3,7 @@
 import SwiftUI
 
 extension View {
-    func whenHovered(_ mouseIsInside: @escaping (Bool) -> Void) -> some View {
-        modifier(MouseInsideModifier(mouseIsInside))
-    }
+  func whenHovered(_ mouseIsInside: @escaping (Bool) -> Void) -> some View {
+    modifier(MouseInsideModifier(mouseIsInside))
+  }
 }

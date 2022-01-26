@@ -2,21 +2,21 @@ import AppKit
 
 @NSApplicationMain
 public class AppDelegate: NSObject, NSApplicationDelegate {
-    private var notificationWindowManager: NotificationWindowManager?
+  private var notificationWindowManager: NotificationWindowManager?
 
-    public func applicationDidFinishLaunching(_: Notification) {
-        ProcessInfo.processInfo.enableSuddenTermination()
+  public func applicationDidFinishLaunching(_: Notification) {
+    ProcessInfo.processInfo.enableSuddenTermination()
 
-        libkrbn_initialize()
+    libkrbn_initialize()
 
-        KarabinerKit.setup()
+    KarabinerKit.setup()
 
-        notificationWindowManager = NotificationWindowManager()
-    }
+    notificationWindowManager = NotificationWindowManager()
+  }
 
-    public func applicationWillTerminate(_: Notification) {
-        notificationWindowManager = nil
+  public func applicationWillTerminate(_: Notification) {
+    notificationWindowManager = nil
 
-        libkrbn_terminate()
-    }
+    libkrbn_terminate()
+  }
 }

@@ -27,5 +27,5 @@ gitclean:
 ibtool-upgrade:
 	find * -name '*.xib' | while read f; do xcrun ibtool --upgrade "$$f"; done
 
-swiftformat:
-	find src/apps -name '*.swift' -print0 | xargs -0 swiftformat
+swift-format:
+	find src/apps -name '*.swift' -print0 | xargs -0 swift-format -i
