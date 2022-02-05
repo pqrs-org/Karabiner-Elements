@@ -149,7 +149,19 @@ final class Settings: ObservableObject {
 
   public func removeComplexModificationsRule(_ complexModificationRule: ComplexModificationsRule) {
     libkrbn_core_configuration_erase_selected_profile_complex_modifications_rule(
-      libkrbnCoreConfiguration, complexModificationRule.index
+      libkrbnCoreConfiguration,
+      complexModificationRule.index
+    )
+    save()
+  }
+
+  public func addComplexModificationRule(
+    _ complexModificationsAssetRule: ComplexModificationsAssetRule
+  ) {
+    libkrbn_complex_modifications_assets_manager_add_rule_to_core_configuration_selected_profile(
+      complexModificationsAssetRule.fileIndex,
+      complexModificationsAssetRule.ruleIndex,
+      libkrbnCoreConfiguration
     )
     save()
   }

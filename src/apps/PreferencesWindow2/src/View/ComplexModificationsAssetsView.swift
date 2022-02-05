@@ -22,6 +22,7 @@ struct ComplexModificationsAssetsView: View {
                   .padding(.leading, 12.0)
 
                 Button(action: {
+                  Settings.shared.addComplexModificationRule(assetRule)
                   showing = false
                 }) {
                   Label("Enable", systemImage: "plus.circle.fill")
