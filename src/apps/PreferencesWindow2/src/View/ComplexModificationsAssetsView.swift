@@ -6,11 +6,10 @@ struct ComplexModificationsAssetsView: View {
 
   var body: some View {
     VStack(alignment: .leading, spacing: 12.0) {
-      Text("files \(assetFiles.files.count)")
       List {
         ForEach($assetFiles.files) { $assetFile in
           VStack(alignment: .leading, spacing: 8.0) {
-            HStack(alignment: .center, spacing: 0) {
+            HStack(alignment: .center, spacing: 16.0) {
               Text(assetFile.title)
                 .font(.title)
 
@@ -23,11 +22,20 @@ struct ComplexModificationsAssetsView: View {
               }
 
               Spacer()
+
+              if assetFile.userFile {
+                Button(action: {
+                  assetFiles.removeFile(assetFile)
+                }) {
+                  Label("Remove", systemImage: "minus.circle.fill")
+                    .font(.caption)
+                }
+              }
             }
 
             VStack(alignment: .leading, spacing: 8) {
               ForEach($assetFile.assetRules) { $assetRule in
-                HStack(alignment: .center, spacing: 0) {
+                HStack(alignment: .center, spacing: 16.0) {
                   Text(assetRule.description)
 
                   Button(action: {

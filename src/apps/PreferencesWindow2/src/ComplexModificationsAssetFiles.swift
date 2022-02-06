@@ -42,4 +42,10 @@ final class ComplexModificationsAssetFiles: ObservableObject {
 
     files = newFiles
   }
+
+  public func removeFile(_ complexModificationsAssetFile: ComplexModificationsAssetFile) {
+    libkrbn_complex_modifications_assets_manager_erase_file(complexModificationsAssetFile.index)
+
+    updateFiles()
+  }
 }
