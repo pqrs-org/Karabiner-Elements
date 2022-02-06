@@ -19,10 +19,6 @@
 
 @implementation ComplexModificationsRulesTableViewController
 
-- (IBAction)openRulesSite:(id)sender {
-  [[NSWorkspace sharedWorkspace] openURL:[NSURL URLWithString:@"https://ke-complex-modifications.pqrs.org/"]];
-}
-
 - (IBAction)openAddRulePanel:(id)sender {
   if (self.complexModificationsTabViewItem.tabState != NSSelectedTab) {
     [self.complexModificationsTabViewItem.tabView selectTabViewItem:self.complexModificationsTabViewItem];

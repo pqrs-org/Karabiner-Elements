@@ -5,7 +5,7 @@ struct ComplexModificationsAssetsView: View {
   @ObservedObject private var assetFiles = ComplexModificationsAssetFiles.shared
 
   var body: some View {
-    VStack(alignment: .leading, spacing: 12.0) {
+    VStack(alignment: .center, spacing: 12.0) {
       List {
         ForEach($assetFiles.files) { $assetFile in
           VStack(alignment: .leading, spacing: 8.0) {
@@ -59,12 +59,19 @@ struct ComplexModificationsAssetsView: View {
       Spacer()
 
       Button(action: {
+        NSWorkspace.shared.open(URL(string: "https://ke-complex-modifications.pqrs.org/")!)
+      }) {
+        Label(
+          "Import more rules from the Internet (Open a web browser)",
+          systemImage: "icloud.and.arrow.down.fill")
+      }
+
+      Button(action: {
         showing = false
       }) {
         Label("Close", systemImage: "xmark")
           .frame(minWidth: 0, maxWidth: .infinity)
       }
-      .padding(.top, 36.0)
     }
     .padding()
     .frame(width: 1000, height: 600)
