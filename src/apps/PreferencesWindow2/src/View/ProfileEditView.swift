@@ -23,21 +23,22 @@ struct ProfileEditView: View {
                 Spacer()
 
                 Button(action: {
-                  settings.updateProfileName(profile!, name)
                   showing = false
                 }) {
-                  Label("Save", systemImage: "checkmark")
-                    .padding(.horizontal, 36.0)
+                  Label("Cancel", systemImage: "xmark")
                 }
 
                 Spacer()
                   .frame(width: 24.0)
 
                 Button(action: {
+                  settings.updateProfileName(profile!, name)
                   showing = false
                 }) {
-                  Label("Cancel", systemImage: "xmark")
+                  Label("Save", systemImage: "checkmark")
+                    .buttonLabelStyle()
                 }
+                .prominentButtonStyle()
 
                 Spacer()
               }
@@ -58,9 +59,10 @@ struct ProfileEditView: View {
                   settings.removeProfile(profile!)
                   showing = false
                 }) {
-                  Label("Remove profile", systemImage: "minus.circle.fill")
-                    .padding(.horizontal, 24.0)
+                  Label("Remove profile", systemImage: "trash.fill")
+                    .buttonLabelStyle()
                 }
+                .deleteButtonStyle()
 
                 Spacer()
               }
