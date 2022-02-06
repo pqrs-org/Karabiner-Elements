@@ -155,6 +155,19 @@ final class Settings: ObservableObject {
     save()
   }
 
+  public func addComplexModificationRules(
+    _ complexModificationsAssetFile: ComplexModificationsAssetFile
+  ) {
+    for rule in complexModificationsAssetFile.assetRules {
+      libkrbn_complex_modifications_assets_manager_add_rule_to_core_configuration_selected_profile(
+        rule.fileIndex,
+        rule.ruleIndex,
+        libkrbnCoreConfiguration
+      )
+    }
+    save()
+  }
+
   public func addComplexModificationRule(
     _ complexModificationsAssetRule: ComplexModificationsAssetRule
   ) {

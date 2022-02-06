@@ -12,23 +12,35 @@ struct ComplexModificationsAssetsView: View {
           VStack(alignment: .leading, spacing: 8.0) {
             HStack(alignment: .center, spacing: 0) {
               Text(assetFile.title)
+                .font(.title)
+
+              Button(action: {
+                Settings.shared.addComplexModificationRules(assetFile)
+                showing = false
+              }) {
+                Label("Enable All", systemImage: "plus.circle.fill")
+                  .font(.caption)
+              }
 
               Spacer()
             }
 
-            ForEach($assetFile.assetRules) { $assetRule in
-              HStack(alignment: .center, spacing: 0) {
-                Text(assetRule.description)
-                  .padding(.leading, 12.0)
+            VStack(alignment: .leading, spacing: 8) {
+              ForEach($assetFile.assetRules) { $assetRule in
+                HStack(alignment: .center, spacing: 0) {
+                  Text(assetRule.description)
 
-                Button(action: {
-                  Settings.shared.addComplexModificationRule(assetRule)
-                  showing = false
-                }) {
-                  Label("Enable", systemImage: "plus.circle.fill")
+                  Button(action: {
+                    Settings.shared.addComplexModificationRule(assetRule)
+                    showing = false
+                  }) {
+                    Label("Enable", systemImage: "plus.circle.fill")
+                  }
                 }
               }
             }
+            .padding(.leading, 32.0)
+            .padding(.vertical, 16.0)
 
             Divider()
           }
@@ -44,7 +56,7 @@ struct ComplexModificationsAssetsView: View {
         Label("Close", systemImage: "xmark")
           .frame(minWidth: 0, maxWidth: .infinity)
       }
-      .padding(.top, 24.0)
+      .padding(.top, 36.0)
     }
     .padding()
     .frame(width: 1000, height: 600)
