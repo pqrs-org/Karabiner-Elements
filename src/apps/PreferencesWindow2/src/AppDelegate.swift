@@ -4,8 +4,6 @@ import SwiftUI
 @NSApplicationMain
 public class AppDelegate: NSObject, NSApplicationDelegate {
   @IBOutlet var simpleModificationsTableViewController: SimpleModificationsTableViewController!
-  @IBOutlet var complexModificationsFileImportWindowController:
-    ComplexModificationsFileImportWindowController!
   @IBOutlet var window: NSWindow!
   @IBOutlet var systemPreferencesManager: SystemPreferencesManager!
   @IBOutlet var stateJsonMonitor: StateJsonMonitor!
@@ -150,8 +148,13 @@ public class AppDelegate: NSObject, NSApplicationDelegate {
         if let queryItems = urlComponents?.queryItems {
           for pair in queryItems {
             if pair.name == "url" {
-              self.complexModificationsFileImportWindowController.setup(pair.value)
-              self.complexModificationsFileImportWindowController.show()
+              ComplexModificationsFileImport.shared.fetchJson(URL(string: pair.value!)!)
+
+              ContentViewStates.shared.navigationSelection = NavigationTag.complexModifications.rawValue
+
+              ContentViewStates.shared.complexModificationsSheetView =
+                ComplexModificationsSheetView.fileImport
+              ContentViewStates.shared.complexModificationsSheetPresented = true
               return
             }
           }

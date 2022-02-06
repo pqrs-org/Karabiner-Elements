@@ -10,6 +10,11 @@ struct SimpleModificationsView: View {
       Button(action: {
         contentViewStates.navigationSelection = NavigationTag.complexModifications.rawValue
 
+        ComplexModificationsFileImport.shared.fetchJson(
+          URL(string: "https://ke-complex-modifications.pqrs.org/json/personal_tekezo.json")!
+          //URL(string: "https://ke-complex-modifications.pqrs.org/json/personal_tekezo2.json")!
+        )
+
         contentViewStates.complexModificationsSheetView = ComplexModificationsSheetView.fileImport
         contentViewStates.complexModificationsSheetPresented = true
       }) {
