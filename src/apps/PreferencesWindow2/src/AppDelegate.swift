@@ -111,7 +111,7 @@ public class AppDelegate: NSObject, NSApplicationDelegate {
       defer: false
     )
     window!.title = "Karabiner-Elements Preferences"
-    window!.contentView = NSHostingView(rootView: ContentView(window: window))
+    window!.contentView = NSHostingView(rootView: ContentView())
     window!.center()
     window!.makeKeyAndOrderFront(self)
 

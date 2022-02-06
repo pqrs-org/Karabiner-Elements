@@ -17,9 +17,7 @@ enum NavigationTag: String {
 }
 
 struct ContentView: View {
-  let window: NSWindow?
-
-  @State private var selection: String? = NavigationTag.simpleModifications.rawValue
+  @ObservedObject private var contentViewStates = ContentViewStates.shared
 
   let version = Bundle.main.object(forInfoDictionaryKey: "CFBundleVersion") as! String
   let padding = 6.0
@@ -33,7 +31,7 @@ struct ContentView: View {
               NavigationLink(
                 destination: SimpleModificationsView(),
                 tag: NavigationTag.simpleModifications.rawValue,
-                selection: $selection
+                selection: $contentViewStates.navigationSelection
               ) {
                 Label("Simple Modifications", systemImage: "gearshape")
               }
@@ -42,7 +40,7 @@ struct ContentView: View {
               NavigationLink(
                 destination: FunctionKeysView(),
                 tag: NavigationTag.functionKeys.rawValue,
-                selection: $selection
+                selection: $contentViewStates.navigationSelection
               ) {
                 Label("Function Keys", systemImage: "speaker.wave.2.circle")
               }
@@ -51,7 +49,7 @@ struct ContentView: View {
               NavigationLink(
                 destination: ComplexModificationsView(),
                 tag: NavigationTag.complexModifications.rawValue,
-                selection: $selection
+                selection: $contentViewStates.navigationSelection
               ) {
                 Label("Complex Modifications", systemImage: "gearshape.2")
               }
@@ -60,7 +58,7 @@ struct ContentView: View {
               NavigationLink(
                 destination: ComplexModificationsAdvancedView(),
                 tag: NavigationTag.complexModificationsAdvanced.rawValue,
-                selection: $selection
+                selection: $contentViewStates.navigationSelection
               ) {
                 Label("Parameters", systemImage: "dial.min")
               }
@@ -73,7 +71,7 @@ struct ContentView: View {
               NavigationLink(
                 destination: DevicesView(),
                 tag: NavigationTag.devices.rawValue,
-                selection: $selection
+                selection: $contentViewStates.navigationSelection
               ) {
                 Label("Devices", systemImage: "keyboard")
               }
@@ -82,7 +80,7 @@ struct ContentView: View {
               NavigationLink(
                 destination: DevicesAdvancedView(),
                 tag: NavigationTag.devicesAdvanced.rawValue,
-                selection: $selection
+                selection: $contentViewStates.navigationSelection
               ) {
                 Label("Devices > Advanced", systemImage: "keyboard")
               }
@@ -91,7 +89,7 @@ struct ContentView: View {
               NavigationLink(
                 destination: VirtualKeyboardView(),
                 tag: NavigationTag.virtualKeyboard.rawValue,
-                selection: $selection
+                selection: $contentViewStates.navigationSelection
               ) {
                 Label("Virtual Keyboard", systemImage: "puzzlepiece")
               }
@@ -100,7 +98,7 @@ struct ContentView: View {
               NavigationLink(
                 destination: ProfilesView(),
                 tag: NavigationTag.profiles.rawValue,
-                selection: $selection
+                selection: $contentViewStates.navigationSelection
               ) {
                 Label("Profiles", systemImage: "person.3")
               }
@@ -113,7 +111,7 @@ struct ContentView: View {
               NavigationLink(
                 destination: UpdateView(),
                 tag: NavigationTag.update.rawValue,
-                selection: $selection
+                selection: $contentViewStates.navigationSelection
               ) {
                 Label("Update", systemImage: "network")
               }
@@ -122,7 +120,7 @@ struct ContentView: View {
               NavigationLink(
                 destination: MiscView(),
                 tag: NavigationTag.misc.rawValue,
-                selection: $selection
+                selection: $contentViewStates.navigationSelection
               ) {
                 Label("Misc", systemImage: "leaf")
               }
@@ -131,7 +129,7 @@ struct ContentView: View {
               NavigationLink(
                 destination: UninstallView(),
                 tag: NavigationTag.uninstall.rawValue,
-                selection: $selection
+                selection: $contentViewStates.navigationSelection
               ) {
                 Label("Uninstall", systemImage: "trash")
               }
@@ -144,7 +142,7 @@ struct ContentView: View {
               NavigationLink(
                 destination: LogView(),
                 tag: NavigationTag.log.rawValue,
-                selection: $selection
+                selection: $contentViewStates.navigationSelection
               ) {
                 Label("Log", systemImage: "doc.plaintext")
               }
@@ -153,7 +151,7 @@ struct ContentView: View {
               NavigationLink(
                 destination: ActionView(),
                 tag: NavigationTag.action.rawValue,
-                selection: $selection
+                selection: $contentViewStates.navigationSelection
               ) {
                 Label("Quit, Restart", systemImage: "bolt.circle")
               }
@@ -175,6 +173,6 @@ struct ContentView: View {
 
 struct ContentView_Previews: PreviewProvider {
   static var previews: some View {
-    ContentView(window: nil)
+    ContentView()
   }
 }
