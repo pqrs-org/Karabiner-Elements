@@ -27,9 +27,10 @@ struct ComplexModificationsAssetsView: View {
                 Button(action: {
                   assetFiles.removeFile(assetFile)
                 }) {
-                  Label("Remove", systemImage: "minus.circle.fill")
-                    .font(.caption)
+                  Label("Remove", systemImage: "trash.fill")
+                    .buttonLabelStyle()
                 }
+                .deleteButtonStyle()
               }
             }
 

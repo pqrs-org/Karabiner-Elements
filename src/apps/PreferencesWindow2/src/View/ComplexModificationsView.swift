@@ -33,8 +33,10 @@ struct ComplexModificationsView: View {
               Button(action: {
                 settings.removeComplexModificationsRule(complexModificationRule)
               }) {
-                Label("Remove", systemImage: "minus.circle.fill")
+                Label("Remove", systemImage: "trash.fill")
+                  .buttonLabelStyle()
               }
+              .deleteButtonStyle()
             }
 
             Divider()
