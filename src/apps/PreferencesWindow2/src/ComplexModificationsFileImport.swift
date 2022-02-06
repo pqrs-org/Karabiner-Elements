@@ -6,7 +6,7 @@ final class ComplexModificationsFileImport: ObservableObject {
   @Published var fetching: Bool = false
   @Published var url: URL?
   @Published var error: String?
-  @Published var jsonData: [String: Any]?
+  @Published var jsonData: Data?
   @Published var title: String = ""
   @Published var descriptions: [String] = []
 
@@ -20,24 +20,46 @@ final class ComplexModificationsFileImport: ObservableObject {
     descriptions = []
 
     task = URLSession.shared.dataTask(with: url) { [weak self] (data, response, error) in
-      guard let self = self else { return }
-      guard let data = data else { return }
+      DispatchQueue.main.async {
+        guard let self = self else { return }
+        guard let data = data else { return }
 
-      self.fetching = false
+        self.fetching = false
 
-      do {
-        self.jsonData = try JSONSerialization.jsonObject(with: data) as? [String: Any]
+        if let error = error {
+          self.error = error.localizedDescription
+        } else {
+          do {
+            self.jsonData = data
+            let json = try JSONSerialization.jsonObject(with: data) as? [String: Any]
 
-        self.title = self.jsonData?["title"] as! String
-        for rule in (self.jsonData?["rules"] as! [[String: Any]]) {
-          self.descriptions.append(rule["description"] as! String)
+            self.title = json?["title"] as! String
+            for rule in (json?["rules"] as! [[String: Any]]) {
+              self.descriptions.append(rule["description"] as! String)
+            }
+          } catch {
+            self.jsonData = nil
+            self.error = error.localizedDescription
+          }
         }
-      } catch {
-        self.error = error.localizedDescription
       }
     }
 
     fetching = true
     task?.resume()
+  }
+
+  public func save() {
+    if let data = self.jsonData {
+      let directory = String(cString: libkrbn_get_user_complex_modifications_assets_directory())
+      let time = Int(NSDate().timeIntervalSince1970)
+      let path = URL(fileURLWithPath: "\(directory)/\(time).json")
+
+      do {
+        try data.write(to: path)
+      } catch {
+        self.error = error.localizedDescription
+      }
+    }
   }
 }
