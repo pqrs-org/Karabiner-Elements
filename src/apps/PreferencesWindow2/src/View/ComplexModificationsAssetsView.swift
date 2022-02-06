@@ -1,7 +1,7 @@
 import SwiftUI
 
 struct ComplexModificationsAssetsView: View {
-  @Binding var showing: Bool
+  @ObservedObject private var contentViewStates = ContentViewStates.shared
   @ObservedObject private var assetFiles = ComplexModificationsAssetFiles.shared
 
   var body: some View {
@@ -15,7 +15,7 @@ struct ComplexModificationsAssetsView: View {
 
               Button(action: {
                 Settings.shared.addComplexModificationRules(assetFile)
-                showing = false
+                contentViewStates.complexModificationsSheetPresented = false
               }) {
                 Label("Enable All", systemImage: "plus.circle.fill")
                   .font(.caption)
@@ -40,7 +40,7 @@ struct ComplexModificationsAssetsView: View {
 
                   Button(action: {
                     Settings.shared.addComplexModificationRule(assetRule)
-                    showing = false
+                    contentViewStates.complexModificationsSheetPresented = false
                   }) {
                     Label("Enable", systemImage: "plus.circle.fill")
                   }
@@ -67,7 +67,7 @@ struct ComplexModificationsAssetsView: View {
       }
 
       Button(action: {
-        showing = false
+        contentViewStates.complexModificationsSheetPresented = false
       }) {
         Label("Close", systemImage: "xmark")
           .frame(minWidth: 0, maxWidth: .infinity)
@@ -82,9 +82,7 @@ struct ComplexModificationsAssetsView: View {
 }
 
 struct ComplexModificationsAssetsView_Previews: PreviewProvider {
-  @State static var showing = true
-
   static var previews: some View {
-    ComplexModificationsAssetsView(showing: $showing)
+    ComplexModificationsAssetsView()
   }
 }

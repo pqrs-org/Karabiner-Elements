@@ -9,6 +9,9 @@ struct SimpleModificationsView: View {
 
       Button(action: {
         contentViewStates.navigationSelection = NavigationTag.complexModifications.rawValue
+
+        contentViewStates.complexModificationsSheetView = ComplexModificationsSheetView.fileImport
+        contentViewStates.complexModificationsSheetPresented = true
       }) {
         Label("Debug", systemImage: "hammer.fill")
       }

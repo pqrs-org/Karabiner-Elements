@@ -1,9 +1,14 @@
 import SwiftUI
 
+enum ComplexModificationsSheetView: String {
+  case assets
+  case fileImport
+}
+
 struct ComplexModificationsView: View {
+  @ObservedObject private var contentViewStates = ContentViewStates.shared
   @ObservedObject private var settings = Settings.shared
   @State private var moveDisabled: Bool = true
-  @State private var showingSheet = false
 
   var body: some View {
     VStack(alignment: .leading, spacing: 12.0) {
@@ -56,14 +61,22 @@ struct ComplexModificationsView: View {
       }
 
       Button(action: {
-        showingSheet = true
+        contentViewStates.complexModificationsSheetView = ComplexModificationsSheetView.assets
+        contentViewStates.complexModificationsSheetPresented = true
       }) {
         Label("Add rule", systemImage: "plus.circle.fill")
       }
     }
     .padding()
-    .sheet(isPresented: $showingSheet) {
-      ComplexModificationsAssetsView(showing: $showingSheet)
+    .sheet(isPresented: $contentViewStates.complexModificationsSheetPresented) {
+      if let sheetView = contentViewStates.complexModificationsSheetView {
+        switch sheetView {
+        case ComplexModificationsSheetView.assets:
+          ComplexModificationsAssetsView()
+        case ComplexModificationsSheetView.fileImport:
+          ComplexModificationsFileImportView()
+        }
+      }
     }
   }
 }
