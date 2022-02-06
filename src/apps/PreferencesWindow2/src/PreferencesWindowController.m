@@ -1,5 +1,4 @@
 #import "PreferencesWindowController.h"
-#import "ComplexModificationsRulesTableViewController.h"
 #import "FnFunctionKeysTableViewController.h"
 #import "KarabinerKit/KarabinerKit.h"
 #import "Karabiner_Elements-Swift.h"
@@ -12,7 +11,6 @@
 
 @interface PreferencesWindowController ()
 
-@property(weak) IBOutlet ComplexModificationsRulesTableViewController* complexModificationsRulesTableViewController;
 @property(weak) IBOutlet FnFunctionKeysTableViewController* fnFunctionKeysTableViewController;
 @property(weak) IBOutlet NSButton* useFkeysAsStandardFunctionKeysButton;
 @property(weak) IBOutlet NSTableView* fnFunctionKeysTableView;
@@ -34,7 +32,6 @@
   [self.simpleModificationsMenuManager setup];
   [self.simpleModificationsTableViewController setup];
   [self.fnFunctionKeysTableViewController setup];
-  [self.complexModificationsRulesTableViewController setup];
 
   self.observers = [KarabinerKitSmartObserverContainer new];
   @weakify(self);
