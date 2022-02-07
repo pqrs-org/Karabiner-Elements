@@ -216,6 +216,7 @@ void libkrbn_complex_modifications_assets_manager_reload(void);
 
 size_t libkrbn_complex_modifications_assets_manager_get_files_size(void);
 const char* libkrbn_complex_modifications_assets_manager_get_file_title(size_t index);
+time_t libkrbn_complex_modifications_assets_manager_get_file_last_write_time(size_t index);
 
 size_t libkrbn_complex_modifications_assets_manager_get_rules_size(size_t file_index);
 const char* libkrbn_complex_modifications_assets_manager_get_rule_description(size_t file_index,

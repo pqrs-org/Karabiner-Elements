@@ -32,6 +32,15 @@ public:
     return nullptr;
   }
 
+  time_t get_file_last_write_time(size_t index) const {
+    if (auto f = find_file(index)) {
+      if (auto t = f->last_write_time()) {
+        return std::chrono::duration_cast<std::chrono::seconds>(t->time_since_epoch()).count();
+      }
+    }
+    return 0;
+  }
+
   bool user_file(size_t index) const {
     if (auto f = find_file(index)) {
       return f->user_file();

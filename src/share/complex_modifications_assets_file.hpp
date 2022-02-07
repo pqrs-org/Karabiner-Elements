@@ -66,6 +66,20 @@ public:
     }
   }
 
+  std::optional<std::filesystem::file_time_type> last_write_time(void) const {
+    std::error_code error_code;
+    auto result = std::filesystem::last_write_time(file_path_, error_code);
+
+    if (error_code) {
+      logger::get_logger()->error("Failed to get last_write_time of {0}: {1}.",
+                                  file_path_.string(),
+                                  error_code.message());
+      return std::nullopt;
+    }
+
+    return result;
+  }
+
   void unlink_file(void) const {
     unlink(file_path_.c_str());
   }
