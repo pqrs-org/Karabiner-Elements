@@ -34,10 +34,6 @@
     }
 
     result.checkbox.enabled = YES;
-    if (libkrbn_device_identifiers_is_apple(&deviceIdentifiers) &&
-        !deviceIdentifiers.is_keyboard) {
-      result.checkbox.enabled = NO;
-    }
 
     return result;
   }

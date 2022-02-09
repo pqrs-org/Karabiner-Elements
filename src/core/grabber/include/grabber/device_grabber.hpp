@@ -660,7 +660,7 @@ private:
           event_queue::entry qe(e.get_device_id(),
                                 e.get_event_time_stamp(),
                                 e.get_event(),
-                                e.get_event_type(),
+                                is_built_in_pointing_device(entry) ? event_type::single : e.get_event_type(),
                                 e.get_original_event(),
                                 e.get_state());
 
@@ -745,7 +745,11 @@ private:
   // This method is executed in the shared dispatcher thread.
   void grab_device(std::shared_ptr<device_grabber_details::entry> entry) const {
     if (make_grabbable_state(entry) == grabbable_state::state::grabbable) {
-      entry->async_start_queue_value_monitor();
+      if (is_built_in_pointing_device(entry)) {
+        entry->async_start_queue_value_monitor_no_seize();
+      } else {
+        entry->async_start_queue_value_monitor();
+      }
     } else {
       entry->async_stop_queue_value_monitor();
     }
@@ -856,6 +860,10 @@ private:
       return it->second->is_grabbed(time_stamp);
     }
     return false;
+  }
+
+  bool is_built_in_pointing_device(std::shared_ptr<device_grabber_details::entry> entry) const {
+    return entry->get_device_properties()->get_is_built_in_pointing_device().value_or(false);
   }
 
   bool is_pointing_device_grabbed(void) const {
