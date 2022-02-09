@@ -200,7 +200,7 @@ public:
                                                       *mouse_key,
                                                       output_event_queue,
                                                       front_input_event.get_event_time_stamp().get_time_stamp());
-            } else {
+            } else if (front_input_event.get_event_type() == event_type::key_up) {
               mouse_key_handler_->erase_mouse_key(front_input_event.get_device_id(),
                                                   *mouse_key,
                                                   output_event_queue,

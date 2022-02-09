@@ -70,7 +70,7 @@ public:
       }
 
       // Erase sticky modifiers
-      if (event_type == event_type::key_down &&
+      if ((event_type == event_type::key_down || event_type == event_type::single) &&
           validity == validity::valid &&
           !e->modifier_flag()) {
         modifier_flag_manager_.erase_all_sticky_modifier_flags();

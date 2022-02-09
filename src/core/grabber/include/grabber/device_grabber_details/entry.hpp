@@ -153,6 +153,18 @@ public:
     }
   }
 
+  void async_start_queue_value_monitor_no_seize(void) {
+    if (hid_queue_value_monitor_) {
+      if (!hid_queue_value_monitor_async_start_called_) {
+        first_value_arrived_ = false;
+        hid_queue_value_monitor_async_start_called_ = true;
+      }
+
+      hid_queue_value_monitor_->async_start(kIOHIDOptionsTypeNone,
+                                            std::chrono::milliseconds(1000));
+    }
+  }
+
   void async_stop_queue_value_monitor(void) {
     if (hid_queue_value_monitor_) {
       hid_queue_value_monitor_async_start_called_ = false;
