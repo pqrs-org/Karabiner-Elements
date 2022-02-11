@@ -27,11 +27,16 @@ struct ComplexModificationsAssetsView: View {
                 Button(action: {
                   assetFiles.removeFile(assetFile)
                 }) {
-                  Label("Remove", systemImage: "trash.fill")
-                    .buttonLabelStyle()
+                  Image(systemName: "trash.fill")
+                    .buttonImageStyle()
                 }
                 .deleteButtonStyle()
               }
+            }
+
+            if assetFile.userFile {
+              Text("Imported at \(assetFile.importedAt)")
+                .font(.caption)
             }
 
             VStack(alignment: .leading, spacing: 8) {

@@ -301,7 +301,7 @@ const char* libkrbn_complex_modifications_assets_manager_get_file_title(size_t i
   return nullptr;
 }
 
-time_t libkrbn_complex_modifications_assets_manager_get_file_mtime(size_t index) {
+time_t libkrbn_complex_modifications_assets_manager_get_file_last_write_time(size_t index) {
   if (libkrbn_components_manager_) {
     if (auto m = libkrbn_components_manager_->get_complex_modifications_assets_manager()) {
       return m->get_file_last_write_time(index);

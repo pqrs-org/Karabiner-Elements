@@ -36,6 +36,9 @@ final class ComplexModificationsAssetFiles: ObservableObject {
           String(
             cString: libkrbn_complex_modifications_assets_manager_get_file_title(fileIndex)),
           libkrbn_complex_modifications_assets_manager_user_file(fileIndex),
+          Date(
+            timeIntervalSince1970: TimeInterval(
+              libkrbn_complex_modifications_assets_manager_get_file_last_write_time(fileIndex))),
           rules
         ))
     }
