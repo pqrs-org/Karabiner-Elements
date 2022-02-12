@@ -119,16 +119,44 @@ void libkrbn_core_configuration_erase_selected_profile_simple_modification(libkr
 
 size_t libkrbn_core_configuration_get_selected_profile_fn_function_keys_size(libkrbn_core_configuration* p,
                                                                              const libkrbn_device_identifiers* device_identifiers);
+size_t libkrbn_core_configuration_get_selected_profile_fn_function_keys_size2(libkrbn_core_configuration* p,
+                                                                              bool specify_device,
+                                                                              uint64_t vendor_id,
+                                                                              uint64_t product_id,
+                                                                              bool is_keyboard,
+                                                                              bool is_pointing_device);
 const char* libkrbn_core_configuration_get_selected_profile_fn_function_key_from_json_string(libkrbn_core_configuration* p,
                                                                                              size_t index,
                                                                                              const libkrbn_device_identifiers* device_identifiers);
+const char* libkrbn_core_configuration_get_selected_profile_fn_function_key_from_json_string2(libkrbn_core_configuration* p,
+                                                                                              size_t index,
+                                                                                              bool specify_device,
+                                                                                              uint64_t vendor_id,
+                                                                                              uint64_t product_id,
+                                                                                              bool is_keyboard,
+                                                                                              bool is_pointing_device);
 const char* libkrbn_core_configuration_get_selected_profile_fn_function_key_to_json_string(libkrbn_core_configuration* p,
                                                                                            size_t index,
                                                                                            const libkrbn_device_identifiers* device_identifiers);
+const char* libkrbn_core_configuration_get_selected_profile_fn_function_key_to_json_string2(libkrbn_core_configuration* p,
+                                                                                            size_t index,
+                                                                                            bool specify_device,
+                                                                                            uint64_t vendor_id,
+                                                                                            uint64_t product_id,
+                                                                                            bool is_keyboard,
+                                                                                            bool is_pointing_device);
 void libkrbn_core_configuration_replace_selected_profile_fn_function_key(libkrbn_core_configuration* p,
                                                                          const char* from_json_string,
                                                                          const char* to_json_string,
                                                                          const libkrbn_device_identifiers* device_identifiers);
+void libkrbn_core_configuration_replace_selected_profile_fn_function_key2(libkrbn_core_configuration* p,
+                                                                          const char* from_json_string,
+                                                                          const char* to_json_string,
+                                                                          bool specify_device,
+                                                                          uint64_t vendor_id,
+                                                                          uint64_t product_id,
+                                                                          bool is_keyboard,
+                                                                          bool is_pointing_device);
 
 // profile:complex_modifications
 
