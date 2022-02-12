@@ -28,7 +28,7 @@ struct ComplexModificationsAssetsView: View {
                   assetFiles.removeFile(assetFile)
                 }) {
                   Image(systemName: "trash.fill")
-                    .buttonImageStyle()
+                    .buttonLabelStyle()
                 }
                 .deleteButtonStyle()
               }

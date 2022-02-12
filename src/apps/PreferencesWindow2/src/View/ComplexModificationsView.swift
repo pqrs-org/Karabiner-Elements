@@ -34,7 +34,7 @@ struct ComplexModificationsView: View {
                 settings.removeComplexModificationsRule(complexModificationRule)
               }) {
                 Image(systemName: "trash.fill")
-                  .buttonImageStyle()
+                  .buttonLabelStyle()
               }
               .deleteButtonStyle()
             }
