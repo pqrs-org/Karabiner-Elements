@@ -54,6 +54,8 @@ final class Settings: ObservableObject {
 
     libkrbnCoreConfiguration = initializedCoreConfiguration
 
+    updateFnFunctionKeys()
+
     updateComplexModificationsRules()
     complexModificationsParameterToIfAloneTimeoutMilliseconds = Int(
       libkrbn_core_configuration_get_selected_profile_complex_modifications_parameter(
@@ -110,6 +112,56 @@ final class Settings: ObservableObject {
     updateSystemDefaultProfileExists()
 
     didSetEnabled = true
+  }
+
+  //
+  // Fn Function Keys
+  //
+
+  @Published var fnFunctionKeys: [SimpleModification] = []
+
+  public func makeFnFunctionKeys(_ connectedDevice: ConnectedDevice?) -> [SimpleModification] {
+    var result: [SimpleModification] = []
+
+    let size = libkrbn_core_configuration_get_selected_profile_fn_function_keys_size2(
+      libkrbnCoreConfiguration,
+      connectedDevice != nil,
+      connectedDevice?.vendorId ?? 0,
+      connectedDevice?.productId ?? 0,
+      connectedDevice?.isKeyboard ?? false,
+      connectedDevice?.isPointingDevice ?? false)
+    for i in 0..<size {
+      let simpleModification = SimpleModification(
+        String(
+          cString:
+            libkrbn_core_configuration_get_selected_profile_fn_function_key_from_json_string2(
+              libkrbnCoreConfiguration,
+              i,
+              connectedDevice != nil,
+              connectedDevice?.vendorId ?? 0,
+              connectedDevice?.productId ?? 0,
+              connectedDevice?.isKeyboard ?? false,
+              connectedDevice?.isPointingDevice ?? false)),
+        String(
+          cString:
+            libkrbn_core_configuration_get_selected_profile_fn_function_key_to_json_string2(
+              libkrbnCoreConfiguration,
+              i,
+              connectedDevice != nil,
+              connectedDevice?.vendorId ?? 0,
+              connectedDevice?.productId ?? 0,
+              connectedDevice?.isKeyboard ?? false,
+              connectedDevice?.isPointingDevice ?? false))
+      )
+
+      result.append(simpleModification)
+    }
+
+    return result
+  }
+
+  private func updateFnFunctionKeys() {
+    fnFunctionKeys = makeFnFunctionKeys(nil)
   }
 
   //
