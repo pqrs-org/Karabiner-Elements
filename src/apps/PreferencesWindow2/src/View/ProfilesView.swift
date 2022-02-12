@@ -33,8 +33,7 @@ struct ProfilesView: View {
                 }
               }
             }
-            .padding(.vertical, 12.0)
-            .padding(.horizontal, profile.selected ? 12.0 : 0)
+            .padding(12.0)
             .overlay(
               RoundedRectangle(cornerRadius: 8)
                 .stroke(
