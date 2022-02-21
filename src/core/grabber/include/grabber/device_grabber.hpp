@@ -239,7 +239,8 @@ public:
           if (it != std::end(entries_)) {
             auto event_queue = event_queue::utility::make_queue(device_id,
                                                                 hid_queue_values_converter_.make_hid_values(device_id,
-                                                                                                            values_ptr));
+                                                                                                            values_ptr),
+                                                                is_built_in_pointing_device(it->second));
             event_queue = event_queue::utility::insert_device_keys_and_pointing_buttons_are_released_event(event_queue,
                                                                                                            device_id,
                                                                                                            it->second->get_pressed_keys_manager());
