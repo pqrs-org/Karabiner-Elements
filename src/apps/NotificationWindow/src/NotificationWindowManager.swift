@@ -16,8 +16,12 @@ private func callback(
 }
 
 public class NotificationWindowManager {
-  private var mainWindows: [NSWindow] = []
-  private var buttonWindows: [NSWindow] = []
+  private struct ScreenWindow {
+    var mainWindow: NSWindow
+    var closeButtonWindow: NSWindow
+  }
+
+  private var screenWindows: [ScreenWindow] = []
   private var observers = KarabinerKitSmartObserverContainer()
 
   init() {
@@ -45,84 +49,90 @@ public class NotificationWindowManager {
   }
 
   func updateWindows() {
-    //
-    // The old window sometimes does not deallocated properly when screen count is decreased.
-    // Thus, we hide the window before clear windows.
-    //
-
-    mainWindows.forEach {
-      w in w.orderOut(self)
-    }
-    mainWindows.removeAll()
-
-    buttonWindows.forEach {
-      w in w.orderOut(self)
-    }
-    buttonWindows.removeAll()
+    let screens = NSScreen.screens
 
     //
     // Create windows
     //
+    // Note:
+    // Do not release existing windows even if screens.count < screenWindows.count to avoid a high CPU usage issue.
+    //
 
-    NSScreen.screens.forEach { screen in
+    while screenWindows.count < screens.count {
+      let screenWindow = ScreenWindow(
+        mainWindow: NSWindow(
+          contentRect: .zero,
+          styleMask: [
+            .fullSizeContentView
+          ],
+          backing: .buffered,
+          defer: false
+        ),
+        closeButtonWindow: NSWindow(
+          contentRect: .zero,
+          styleMask: [
+            .fullSizeContentView
+          ],
+          backing: .buffered,
+          defer: false
+        )
+      )
+
       //
       // Main window
       //
 
-      let mainWindow = NSWindow(
-        contentRect: .zero,
-        styleMask: [
-          .fullSizeContentView
-        ],
-        backing: .buffered,
-        defer: false
-      )
-
-      mainWindow.contentView = NSHostingView(rootView: MainView())
-      mainWindow.backgroundColor = NSColor.clear
-      mainWindow.isOpaque = false
-      mainWindow.level = .statusBar
-      mainWindow.ignoresMouseEvents = true
-      mainWindow.collectionBehavior.insert(.canJoinAllSpaces)
-      mainWindow.collectionBehavior.insert(.ignoresCycle)
-      // mainWindow.collectionBehavior.insert(.stationary)
-
-      let screenFrame = screen.visibleFrame
-      mainWindow.setFrameOrigin(
-        NSMakePoint(
-          screenFrame.origin.x + screenFrame.size.width - 410,
-          screenFrame.origin.y + 10
-        ))
-
-      mainWindows.append(mainWindow)
+      screenWindow.mainWindow.contentView = NSHostingView(rootView: MainView())
+      screenWindow.mainWindow.backgroundColor = NSColor.clear
+      screenWindow.mainWindow.isOpaque = false
+      screenWindow.mainWindow.level = .statusBar
+      screenWindow.mainWindow.ignoresMouseEvents = true
+      screenWindow.mainWindow.collectionBehavior.insert(.canJoinAllSpaces)
+      screenWindow.mainWindow.collectionBehavior.insert(.ignoresCycle)
+      // screenWindow.mainWindow.collectionBehavior.insert(.stationary)
 
       //
       // Close button
       //
 
-      let buttonWindow = NSWindow(
-        contentRect: NSMakeRect(
-          mainWindow.frame.origin.x - 8,
-          mainWindow.frame.origin.y + 36,
-          CGFloat(24.0),
-          CGFloat(24.0)),
-        styleMask: [
-          .fullSizeContentView
-        ],
-        backing: .buffered,
-        defer: false
-      )
-      buttonWindow.contentView = NSHostingView(
-        rootView: ButtonView(mainWindow: mainWindow, buttonWindow: buttonWindow))
-      buttonWindow.backgroundColor = NSColor.clear
-      buttonWindow.isOpaque = false
-      buttonWindow.level = .statusBar
-      buttonWindow.ignoresMouseEvents = false
-      buttonWindow.collectionBehavior.insert(.canJoinAllSpaces)
-      buttonWindow.collectionBehavior.insert(.ignoresCycle)
-      // buttonWindow.collectionBehavior.insert(.stationary)
+      screenWindow.closeButtonWindow.contentView = NSHostingView(
+        rootView: ButtonView(
+          mainWindow: screenWindow.mainWindow,
+          buttonWindow: screenWindow.closeButtonWindow))
+      screenWindow.closeButtonWindow.backgroundColor = NSColor.clear
+      screenWindow.closeButtonWindow.isOpaque = false
+      screenWindow.closeButtonWindow.level = .statusBar
+      screenWindow.closeButtonWindow.ignoresMouseEvents = false
+      screenWindow.closeButtonWindow.collectionBehavior.insert(.canJoinAllSpaces)
+      screenWindow.closeButtonWindow.collectionBehavior.insert(.ignoresCycle)
+      // screenWindow.closeButtonWindow.collectionBehavior.insert(.stationary)
 
-      buttonWindows.append(buttonWindow)
+      screenWindows.append(screenWindow)
+    }
+
+    //
+    // Update window frame
+    //
+
+    for (i, screenWindow) in screenWindows.enumerated() {
+      var screenFrame = NSZeroRect
+      if i < screens.count {
+        screenFrame = screens[i].visibleFrame
+
+        screenWindow.mainWindow.setFrameOrigin(
+          NSMakePoint(
+            screenFrame.origin.x + screenFrame.size.width - 410,
+            screenFrame.origin.y + 10
+          ))
+
+        screenWindow.closeButtonWindow.setFrame(
+          NSMakeRect(
+            screenWindow.mainWindow.frame.origin.x - 8,
+            screenWindow.mainWindow.frame.origin.y + 36,
+            CGFloat(24.0),
+            CGFloat(24.0)),
+          display: false)
+      }
     }
 
     updateWindowsVisibility()
@@ -130,20 +140,15 @@ public class NotificationWindowManager {
 
   func updateWindowsVisibility() {
     let hide = NotificationMessage.shared.text.isEmpty
+    let screens = NSScreen.screens
 
-    mainWindows.forEach { w in
-      if hide {
-        w.orderOut(self)
+    for (i, screenWindow) in screenWindows.enumerated() {
+      if hide || i >= screens.count {
+        screenWindow.mainWindow.orderOut(self)
+        screenWindow.closeButtonWindow.orderOut(self)
       } else {
-        w.orderFront(self)
-      }
-    }
-
-    buttonWindows.forEach { w in
-      if hide {
-        w.orderOut(self)
-      } else {
-        w.orderFront(self)
+        screenWindow.mainWindow.orderFront(self)
+        screenWindow.closeButtonWindow.orderFront(self)
       }
     }
   }
