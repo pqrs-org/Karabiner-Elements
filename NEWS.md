@@ -1,5 +1,10 @@
 # Changelog
 
+## Beta
+
+-   ⚡️ Improvements
+    -   Improve NotificationWindow multiple screens handling.
+
 ## Karabiner-Elements 14.3.0
 
 -   [📦 Download](https://github.com/pqrs-org/Karabiner-Elements/releases/download/v14.3.0/Karabiner-Elements-14.3.0.dmg)
