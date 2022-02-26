@@ -130,6 +130,7 @@ final class Settings: ObservableObject {
       connectedDevice?.productId ?? 0,
       connectedDevice?.isKeyboard ?? false,
       connectedDevice?.isPointingDevice ?? false)
+
     for i in 0..<size {
       let simpleModification = SimpleModification(
         String(
@@ -310,6 +311,18 @@ final class Settings: ObservableObject {
     }
 
     connectedDeviceSettings = newConnectedDeviceSettings
+  }
+
+  public func findConnectedDeviceSetting(_ connectedDevice: ConnectedDevice)
+    -> ConnectedDeviceSetting?
+  {
+    for connectedDeviceSetting in connectedDeviceSettings {
+      if connectedDeviceSetting.connectedDevice.id == connectedDevice.id {
+        return connectedDeviceSetting
+      }
+    }
+
+    return nil
   }
 
   @Published var delayMillisecondsBeforeOpenDevice: Int = 0 {
