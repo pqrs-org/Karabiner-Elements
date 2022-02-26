@@ -150,7 +150,8 @@ public class AppDelegate: NSObject, NSApplicationDelegate {
             if pair.name == "url" {
               ComplexModificationsFileImport.shared.fetchJson(URL(string: pair.value!)!)
 
-              ContentViewStates.shared.navigationSelection = NavigationTag.complexModifications.rawValue
+              ContentViewStates.shared.navigationSelection =
+                NavigationTag.complexModifications.rawValue
 
               ContentViewStates.shared.complexModificationsSheetView =
                 ComplexModificationsSheetView.fileImport
