@@ -1,7 +1,10 @@
 # Changelog
 
-## Beta
+## Karabiner-Elements 14.4.0
 
+-   [📦 Download](https://github.com/pqrs-org/Karabiner-Elements/releases/download/v14.4.0/Karabiner-Elements-14.4.0.dmg)
+-   📅 Release date
+    -   Mar 1, 2022
 -   🐛 Bug Fixes
     -   Fixed an issue that NotificationWindow cause high CPU usage in some environments.
 
