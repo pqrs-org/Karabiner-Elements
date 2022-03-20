@@ -2,7 +2,7 @@
 // impl/defer.hpp
 // ~~~~~~~~~~~~~~
 //
-// Copyright (c) 2003-2021 Christopher M. Kohlhoff (chris at kohlhoff dot com)
+// Copyright (c) 2003-2022 Christopher M. Kohlhoff (chris at kohlhoff dot com)
 //
 // Distributed under the Boost Software License, Version 1.0. (See accompanying
 // file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
@@ -216,34 +216,34 @@ private:
 
 } // namespace detail
 
-template <ASIO_COMPLETION_TOKEN_FOR(void()) CompletionToken>
-ASIO_INITFN_AUTO_RESULT_TYPE(CompletionToken, void()) defer(
-    ASIO_MOVE_ARG(CompletionToken) token)
+template <ASIO_COMPLETION_TOKEN_FOR(void()) NullaryToken>
+ASIO_INITFN_AUTO_RESULT_TYPE(NullaryToken, void()) defer(
+    ASIO_MOVE_ARG(NullaryToken) token)
 {
-  return async_initiate<CompletionToken, void()>(
+  return async_initiate<NullaryToken, void()>(
       detail::initiate_defer(), token);
 }
 
 template <typename Executor,
-    ASIO_COMPLETION_TOKEN_FOR(void()) CompletionToken>
-ASIO_INITFN_AUTO_RESULT_TYPE(CompletionToken, void()) defer(
-    const Executor& ex, ASIO_MOVE_ARG(CompletionToken) token,
+    ASIO_COMPLETION_TOKEN_FOR(void()) NullaryToken>
+ASIO_INITFN_AUTO_RESULT_TYPE(NullaryToken, void()) defer(
+    const Executor& ex, ASIO_MOVE_ARG(NullaryToken) token,
     typename constraint<
       execution::is_executor<Executor>::value || is_executor<Executor>::value
     >::type)
 {
-  return async_initiate<CompletionToken, void()>(
+  return async_initiate<NullaryToken, void()>(
       detail::initiate_defer_with_executor<Executor>(ex), token);
 }
 
 template <typename ExecutionContext,
-    ASIO_COMPLETION_TOKEN_FOR(void()) CompletionToken>
-inline ASIO_INITFN_AUTO_RESULT_TYPE(CompletionToken, void()) defer(
-    ExecutionContext& ctx, ASIO_MOVE_ARG(CompletionToken) token,
+    ASIO_COMPLETION_TOKEN_FOR(void()) NullaryToken>
+inline ASIO_INITFN_AUTO_RESULT_TYPE(NullaryToken, void()) defer(
+    ExecutionContext& ctx, ASIO_MOVE_ARG(NullaryToken) token,
     typename constraint<is_convertible<
       ExecutionContext&, execution_context&>::value>::type)
 {
-  return async_initiate<CompletionToken, void()>(
+  return async_initiate<NullaryToken, void()>(
       detail::initiate_defer_with_executor<
         typename ExecutionContext::executor_type>(
           ctx.get_executor()), token);

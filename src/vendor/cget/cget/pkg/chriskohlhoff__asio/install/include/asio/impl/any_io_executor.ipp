@@ -2,7 +2,7 @@
 // impl/any_io_executor.ipp
 // ~~~~~~~~~~~~~~~~~~~~~~~~
 //
-// Copyright (c) 2003-2021 Christopher M. Kohlhoff (chris at kohlhoff dot com)
+// Copyright (c) 2003-2022 Christopher M. Kohlhoff (chris at kohlhoff dot com)
 //
 // Distributed under the Boost Software License, Version 1.0. (See accompanying
 // file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
@@ -16,6 +16,9 @@
 #endif // defined(_MSC_VER) && (_MSC_VER >= 1200)
 
 #include "asio/detail/config.hpp"
+
+#if !defined(ASIO_USE_TS_EXECUTOR_AS_DEFAULT)
+
 #include "asio/any_io_executor.hpp"
 
 #include "asio/detail/push_options.hpp"
@@ -120,5 +123,7 @@ any_io_executor any_io_executor::prefer(
 } // namespace asio
 
 #include "asio/detail/pop_options.hpp"
+
+#endif // !defined(ASIO_USE_TS_EXECUTOR_AS_DEFAULT)
 
 #endif // ASIO_IMPL_ANY_IO_EXECUTOR_IPP

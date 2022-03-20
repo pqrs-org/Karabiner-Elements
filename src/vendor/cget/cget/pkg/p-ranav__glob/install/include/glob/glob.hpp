@@ -89,7 +89,7 @@ std::string translate(const std::string &pattern) {
 
         // Escape set operations (&&, ~~ and ||).
         std::string result;
-        std::regex_replace(std::back_inserter(result),          // ressult
+        std::regex_replace(std::back_inserter(result),          // result
                            stuff.begin(), stuff.end(),          // string
                            std::regex(std::string{R"([&~|])"}), // pattern
                            std::string{R"(\\\1)"});             // repl

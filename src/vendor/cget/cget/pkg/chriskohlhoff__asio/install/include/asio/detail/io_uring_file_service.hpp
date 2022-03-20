@@ -2,7 +2,7 @@
 // detail/io_uring_file_service.hpp
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 //
-// Copyright (c) 2003-2021 Christopher M. Kohlhoff (chris at kohlhoff dot com)
+// Copyright (c) 2003-2022 Christopher M. Kohlhoff (chris at kohlhoff dot com)
 //
 // Distributed under the Boost Software License, Version 1.0. (See accompanying
 // file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
@@ -127,6 +127,14 @@ public:
     return descriptor_service_.native_handle(impl);
   }
 
+  // Release ownership of the native descriptor representation.
+  native_handle_type release(implementation_type& impl,
+      asio::error_code& ec)
+  {
+    ec = success_ec_;
+    return descriptor_service_.release(impl);
+  }
+
   // Cancel all operations associated with the file.
   asio::error_code cancel(implementation_type& impl,
       asio::error_code& ec)
@@ -234,6 +242,9 @@ public:
 private:
   // The implementation used for initiating asynchronous operations.
   descriptor_service descriptor_service_;
+
+  // Cached success value to avoid accessing category singleton.
+  const asio::error_code success_ec_;
 };
 
 } // namespace detail

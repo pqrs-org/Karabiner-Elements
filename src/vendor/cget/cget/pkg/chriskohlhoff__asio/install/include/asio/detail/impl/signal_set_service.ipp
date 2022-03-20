@@ -2,7 +2,7 @@
 // detail/impl/signal_set_service.ipp
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 //
-// Copyright (c) 2003-2021 Christopher M. Kohlhoff (chris at kohlhoff dot com)
+// Copyright (c) 2003-2022 Christopher M. Kohlhoff (chris at kohlhoff dot com)
 //
 // Distributed under the Boost Software License, Version 1.0. (See accompanying
 // file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
@@ -525,6 +525,33 @@ asio::error_code signal_set_service::cancel(
 
   ec = asio::error_code();
   return ec;
+}
+
+void signal_set_service::cancel_ops_by_key(
+    signal_set_service::implementation_type& impl, void* cancellation_key)
+{
+  op_queue<operation> ops;
+  {
+    op_queue<signal_op> other_ops;
+    signal_state* state = get_signal_state();
+    static_mutex::scoped_lock lock(state->mutex_);
+
+    while (signal_op* op = impl.queue_.front())
+    {
+      impl.queue_.pop();
+      if (op->cancellation_key_ == cancellation_key)
+      {
+        op->ec_ = asio::error::operation_aborted;
+        ops.push(op);
+      }
+      else
+        other_ops.push(op);
+    }
+
+    impl.queue_.push(other_ops);
+  }
+
+  scheduler_.post_deferred_completions(ops);
 }
 
 void signal_set_service::deliver_signal(int signal_number)

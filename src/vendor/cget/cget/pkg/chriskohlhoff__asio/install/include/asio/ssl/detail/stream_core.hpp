@@ -2,7 +2,7 @@
 // ssl/detail/stream_core.hpp
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~
 //
-// Copyright (c) 2003-2021 Christopher M. Kohlhoff (chris at kohlhoff dot com)
+// Copyright (c) 2003-2022 Christopher M. Kohlhoff (chris at kohlhoff dot com)
 //
 // Distributed under the Boost Software License, Version 1.0. (See accompanying
 // file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
@@ -40,6 +40,20 @@ struct stream_core
   template <typename Executor>
   stream_core(SSL_CTX* context, const Executor& ex)
     : engine_(context),
+      pending_read_(ex),
+      pending_write_(ex),
+      output_buffer_space_(max_tls_record_size),
+      output_buffer_(asio::buffer(output_buffer_space_)),
+      input_buffer_space_(max_tls_record_size),
+      input_buffer_(asio::buffer(input_buffer_space_))
+  {
+    pending_read_.expires_at(neg_infin());
+    pending_write_.expires_at(neg_infin());
+  }
+
+  template <typename Executor>
+  stream_core(SSL* ssl_impl, const Executor& ex)
+    : engine_(ssl_impl),
       pending_read_(ex),
       pending_write_(ex),
       output_buffer_space_(max_tls_record_size),
@@ -117,6 +131,7 @@ struct stream_core
       input_buffer_space_ =
         ASIO_MOVE_CAST(std::vector<unsigned char>)(
           other.input_buffer_space_);
+      input_buffer_ = other.input_buffer_;
       input_ = other.input_;
       other.output_buffer_ = asio::mutable_buffer(0, 0);
       other.input_buffer_ = asio::mutable_buffer(0, 0);

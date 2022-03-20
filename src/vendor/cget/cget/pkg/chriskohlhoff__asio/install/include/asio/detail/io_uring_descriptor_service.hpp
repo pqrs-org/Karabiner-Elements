@@ -2,7 +2,7 @@
 // detail/io_uring_descriptor_service.hpp
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 //
-// Copyright (c) 2003-2021 Christopher M. Kohlhoff (chris at kohlhoff dot com)
+// Copyright (c) 2003-2022 Christopher M. Kohlhoff (chris at kohlhoff dot com)
 //
 // Distributed under the Boost Software License, Version 1.0. (See accompanying
 // file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
@@ -359,7 +359,7 @@ public:
     if (bufs_type::is_single_buffer)
     {
       return descriptor_ops::sync_write_at1(impl.descriptor_,
-          offset, impl.state_, bufs_type::first(buffers).data(),
+          impl.state_, offset, bufs_type::first(buffers).data(),
           bufs_type::first(buffers).size(), ec);
     }
     else

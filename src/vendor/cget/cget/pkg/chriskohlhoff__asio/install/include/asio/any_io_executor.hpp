@@ -2,7 +2,7 @@
 // any_io_executor.hpp
 // ~~~~~~~~~~~~~~~~~~~
 //
-// Copyright (c) 2003-2021 Christopher M. Kohlhoff (chris at kohlhoff dot com)
+// Copyright (c) 2003-2022 Christopher M. Kohlhoff (chris at kohlhoff dot com)
 //
 // Distributed under the Boost Software License, Version 1.0. (See accompanying
 // file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
@@ -294,8 +294,10 @@ struct prefer_member<any_io_executor, Prop> :
 
 #include "asio/detail/pop_options.hpp"
 
-#if defined(ASIO_HEADER_ONLY)
+#if defined(ASIO_HEADER_ONLY) \
+  && !defined(ASIO_USE_TS_EXECUTOR_AS_DEFAULT)
 # include "asio/impl/any_io_executor.ipp"
 #endif // defined(ASIO_HEADER_ONLY)
+       //   && !defined(ASIO_USE_TS_EXECUTOR_AS_DEFAULT)
 
 #endif // ASIO_ANY_IO_EXECUTOR_HPP

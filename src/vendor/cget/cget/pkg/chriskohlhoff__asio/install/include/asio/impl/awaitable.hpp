@@ -2,7 +2,7 @@
 // impl/awaitable.hpp
 // ~~~~~~~~~~~~~~~~~~
 //
-// Copyright (c) 2003-2021 Christopher M. Kohlhoff (chris at kohlhoff dot com)
+// Copyright (c) 2003-2022 Christopher M. Kohlhoff (chris at kohlhoff dot com)
 //
 // Distributed under the Boost Software License, Version 1.0. (See accompanying
 // file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
@@ -19,7 +19,6 @@
 #include <exception>
 #include <new>
 #include <tuple>
-#include <utility>
 #include "asio/cancellation_signal.hpp"
 #include "asio/cancellation_state.hpp"
 #include "asio/detail/thread_context.hpp"
@@ -372,7 +371,7 @@ public:
           typename result_of<Function(awaitable_frame_base*)>::type,
           awaitable_thread<Executor>*
         >::value
-      >::type* = 0)
+      >::type* = nullptr)
   {
     struct result
     {

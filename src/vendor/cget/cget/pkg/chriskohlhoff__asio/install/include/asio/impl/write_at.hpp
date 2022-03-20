@@ -2,7 +2,7 @@
 // impl/write_at.hpp
 // ~~~~~~~~~~~~~~~~~
 //
-// Copyright (c) 2003-2021 Christopher M. Kohlhoff (chris at kohlhoff dot com)
+// Copyright (c) 2003-2022 Christopher M. Kohlhoff (chris at kohlhoff dot com)
 //
 // Distributed under the Boost Software License, Version 1.0. (See accompanying
 // file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
@@ -408,36 +408,36 @@ struct associator<Associator,
 template <typename AsyncRandomAccessWriteDevice,
     typename ConstBufferSequence, typename CompletionCondition,
     ASIO_COMPLETION_TOKEN_FOR(void (asio::error_code,
-      std::size_t)) WriteHandler>
-inline ASIO_INITFN_AUTO_RESULT_TYPE(WriteHandler,
+      std::size_t)) WriteToken>
+inline ASIO_INITFN_AUTO_RESULT_TYPE(WriteToken,
     void (asio::error_code, std::size_t))
 async_write_at(AsyncRandomAccessWriteDevice& d,
     uint64_t offset, const ConstBufferSequence& buffers,
     CompletionCondition completion_condition,
-    ASIO_MOVE_ARG(WriteHandler) handler)
+    ASIO_MOVE_ARG(WriteToken) token)
 {
-  return async_initiate<WriteHandler,
+  return async_initiate<WriteToken,
     void (asio::error_code, std::size_t)>(
       detail::initiate_async_write_at_buffer_sequence<
         AsyncRandomAccessWriteDevice>(d),
-      handler, offset, buffers,
+      token, offset, buffers,
       ASIO_MOVE_CAST(CompletionCondition)(completion_condition));
 }
 
 template <typename AsyncRandomAccessWriteDevice, typename ConstBufferSequence,
     ASIO_COMPLETION_TOKEN_FOR(void (asio::error_code,
-      std::size_t)) WriteHandler>
-inline ASIO_INITFN_AUTO_RESULT_TYPE(WriteHandler,
+      std::size_t)) WriteToken>
+inline ASIO_INITFN_AUTO_RESULT_TYPE(WriteToken,
     void (asio::error_code, std::size_t))
 async_write_at(AsyncRandomAccessWriteDevice& d,
     uint64_t offset, const ConstBufferSequence& buffers,
-    ASIO_MOVE_ARG(WriteHandler) handler)
+    ASIO_MOVE_ARG(WriteToken) token)
 {
-  return async_initiate<WriteHandler,
+  return async_initiate<WriteToken,
     void (asio::error_code, std::size_t)>(
       detail::initiate_async_write_at_buffer_sequence<
         AsyncRandomAccessWriteDevice>(d),
-      handler, offset, buffers, transfer_all());
+      token, offset, buffers, transfer_all());
 }
 
 #if !defined(ASIO_NO_EXTENSIONS)
@@ -602,36 +602,36 @@ struct associator<Associator,
 template <typename AsyncRandomAccessWriteDevice,
     typename Allocator, typename CompletionCondition,
     ASIO_COMPLETION_TOKEN_FOR(void (asio::error_code,
-      std::size_t)) WriteHandler>
-inline ASIO_INITFN_AUTO_RESULT_TYPE(WriteHandler,
+      std::size_t)) WriteToken>
+inline ASIO_INITFN_AUTO_RESULT_TYPE(WriteToken,
     void (asio::error_code, std::size_t))
 async_write_at(AsyncRandomAccessWriteDevice& d,
     uint64_t offset, asio::basic_streambuf<Allocator>& b,
     CompletionCondition completion_condition,
-    ASIO_MOVE_ARG(WriteHandler) handler)
+    ASIO_MOVE_ARG(WriteToken) token)
 {
-  return async_initiate<WriteHandler,
+  return async_initiate<WriteToken,
     void (asio::error_code, std::size_t)>(
       detail::initiate_async_write_at_streambuf<
         AsyncRandomAccessWriteDevice>(d),
-      handler, offset, &b,
+      token, offset, &b,
       ASIO_MOVE_CAST(CompletionCondition)(completion_condition));
 }
 
 template <typename AsyncRandomAccessWriteDevice, typename Allocator,
     ASIO_COMPLETION_TOKEN_FOR(void (asio::error_code,
-      std::size_t)) WriteHandler>
-inline ASIO_INITFN_AUTO_RESULT_TYPE(WriteHandler,
+      std::size_t)) WriteToken>
+inline ASIO_INITFN_AUTO_RESULT_TYPE(WriteToken,
     void (asio::error_code, std::size_t))
 async_write_at(AsyncRandomAccessWriteDevice& d,
     uint64_t offset, asio::basic_streambuf<Allocator>& b,
-    ASIO_MOVE_ARG(WriteHandler) handler)
+    ASIO_MOVE_ARG(WriteToken) token)
 {
-  return async_initiate<WriteHandler,
+  return async_initiate<WriteToken,
     void (asio::error_code, std::size_t)>(
       detail::initiate_async_write_at_streambuf<
         AsyncRandomAccessWriteDevice>(d),
-      handler, offset, &b, transfer_all());
+      token, offset, &b, transfer_all());
 }
 
 #endif // !defined(ASIO_NO_IOSTREAM)

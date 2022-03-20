@@ -2,7 +2,7 @@
 // detail/win_iocp_file_service.hpp
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 //
-// Copyright (c) 2003-2021 Christopher M. Kohlhoff (chris at kohlhoff dot com)
+// Copyright (c) 2003-2022 Christopher M. Kohlhoff (chris at kohlhoff dot com)
 //
 // Distributed under the Boost Software License, Version 1.0. (See accompanying
 // file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
@@ -128,6 +128,13 @@ public:
   native_handle_type native_handle(const implementation_type& impl) const
   {
     return handle_service_.native_handle(impl);
+  }
+
+  // Release ownership of a file.
+  native_handle_type release(implementation_type& impl,
+      asio::error_code& ec)
+  {
+    return handle_service_.release(impl, ec);
   }
 
   // Cancel all operations associated with the file.

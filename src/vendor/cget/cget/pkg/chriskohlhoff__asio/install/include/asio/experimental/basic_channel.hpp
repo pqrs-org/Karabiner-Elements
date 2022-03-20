@@ -2,7 +2,7 @@
 // experimental/basic_channel.hpp
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 //
-// Copyright (c) 2003-2021 Christopher M. Kohlhoff (chris at kohlhoff dot com)
+// Copyright (c) 2003-2022 Christopher M. Kohlhoff (chris at kohlhoff dot com)
 //
 // Distributed under the Boost Software License, Version 1.0. (See accompanying
 // file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
@@ -214,6 +214,12 @@ public:
   }
 #endif // defined(ASIO_HAS_MOVE) || defined(GENERATING_DOCUMENTATION)
 
+  /// Destructor.
+  ~basic_channel()
+  {
+    service_->destroy(impl_);
+  }
+
   /// Get the executor associated with the object.
   executor_type get_executor() ASIO_NOEXCEPT
   {
@@ -280,6 +286,10 @@ public:
   std::size_t try_send_n(std::size_t count, ASIO_MOVE_ARG(Args)... args);
 
   /// Asynchronously send a message.
+  /**
+   * @par Completion Signature
+   * @code void(asio::error_code) @endcode
+   */
   template <typename... Args,
       ASIO_COMPLETION_TOKEN_FOR(void (asio::error_code))
         CompletionToken ASIO_DEFAULT_COMPLETION_TOKEN_TYPE(executor_type)>
@@ -301,6 +311,11 @@ public:
   }
 
   /// Asynchronously receive a message.
+  /**
+   * @par Completion Signature
+   * As determined by the <tt>Signatures...</tt> template parameter and the
+   * channel traits.
+   */
   template <typename CompletionToken
       ASIO_DEFAULT_COMPLETION_TOKEN_TYPE(executor_type)>
   auto async_receive(

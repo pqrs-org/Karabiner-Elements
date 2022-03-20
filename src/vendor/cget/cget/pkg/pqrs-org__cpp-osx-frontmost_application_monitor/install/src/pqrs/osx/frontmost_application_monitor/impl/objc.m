@@ -106,9 +106,7 @@ bool pqrs_osx_frontmost_application_monitor_initialize(pqrs_osx_frontmost_applic
 // This function is called in the monitor's dispatcher thread.
 void pqrs_osx_frontmost_application_monitor_terminate(pqrs_osx_frontmost_application_monitor_objc** monitor) {
   if (monitor) {
-#ifndef __clang_analyzer__
-    PqrsOsxFrontmostApplicationMonitor* o = (__bridge_transfer PqrsOsxFrontmostApplicationMonitor*)(*monitor);
-    o = nil;
-#endif
+    CFRelease(*monitor);
+    *monitor = nil;
   }
 }

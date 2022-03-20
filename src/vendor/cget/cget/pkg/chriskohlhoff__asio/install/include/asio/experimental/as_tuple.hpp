@@ -2,7 +2,7 @@
 // experimental/as_tuple.hpp
 // ~~~~~~~~~~~~~~~~~~~~~~~~~
 //
-// Copyright (c) 2003-2021 Christopher M. Kohlhoff (chris at kohlhoff dot com)
+// Copyright (c) 2003-2022 Christopher M. Kohlhoff (chris at kohlhoff dot com)
 //
 // Distributed under the Boost Software License, Version 1.0. (See accompanying
 // file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
@@ -114,7 +114,8 @@ public:
 /// Create a completion token to specify that the completion handler arguments
 /// should be combined into a single tuple argument.
 template <typename CompletionToken>
-inline ASIO_CONSTEXPR as_tuple_t<typename decay<CompletionToken>::type>
+ASIO_NODISCARD inline
+ASIO_CONSTEXPR as_tuple_t<typename decay<CompletionToken>::type>
 as_tuple(ASIO_MOVE_ARG(CompletionToken) completion_token)
 {
   return as_tuple_t<typename decay<CompletionToken>::type>(

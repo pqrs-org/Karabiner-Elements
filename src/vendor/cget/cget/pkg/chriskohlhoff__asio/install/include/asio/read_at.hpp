@@ -2,7 +2,7 @@
 // read_at.hpp
 // ~~~~~~~~~~~
 //
-// Copyright (c) 2003-2021 Christopher M. Kohlhoff (chris at kohlhoff dot com)
+// Copyright (c) 2003-2022 Christopher M. Kohlhoff (chris at kohlhoff dot com)
 //
 // Distributed under the Boost Software License, Version 1.0. (See accompanying
 // file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
@@ -403,9 +403,10 @@ std::size_t read_at(SyncRandomAccessReadDevice& d,
 /// specified offset.
 /**
  * This function is used to asynchronously read a certain number of bytes of
- * data from a random access device at the specified offset. The function call
- * always returns immediately. The asynchronous operation will continue until
- * one of the following conditions is true:
+ * data from a random access device at the specified offset. It is an
+ * initiating function for an @ref asynchronous_operation, and always returns
+ * immediately. The asynchronous operation will continue until one of the
+ * following conditions is true:
  *
  * @li The supplied buffers are full. That is, the bytes transferred is equal to
  * the sum of the buffer sizes.
@@ -424,11 +425,13 @@ std::size_t read_at(SyncRandomAccessReadDevice& d,
  * of the buffer sizes indicates the maximum number of bytes to read from the
  * device. Although the buffers object may be copied as necessary, ownership of
  * the underlying memory blocks is retained by the caller, which must guarantee
- * that they remain valid until the handler is called.
+ * that they remain valid until the completion handler is called.
  *
- * @param handler The handler to be called when the read operation completes.
- * Copies will be made of the handler as required. The function signature of the
- * handler must be:
+ * @param token The @ref completion_token that will be used to produce a
+ * completion handler, which will be called when the read completes.
+ * Potential completion tokens include @ref use_future, @ref use_awaitable,
+ * @ref yield_context, or a function object with the correct completion
+ * signature. The function signature of the completion handler must be:
  * @code void handler(
  *   // Result of operation.
  *   const asio::error_code& error,
@@ -439,9 +442,12 @@ std::size_t read_at(SyncRandomAccessReadDevice& d,
  *   std::size_t bytes_transferred
  * ); @endcode
  * Regardless of whether the asynchronous operation completes immediately or
- * not, the handler will not be invoked from within this function. On
- * immediate completion, invocation of the handler will be performed in a
+ * not, the completion handler will not be invoked from within this function.
+ * On immediate completion, invocation of the handler will be performed in a
  * manner equivalent to using asio::post().
+ *
+ * @par Completion Signature
+ * @code void(asio::error_code, std::size_t) @endcode
  *
  * @par Example
  * To read into a single data buffer use the @ref buffer function as follows:
@@ -471,14 +477,14 @@ std::size_t read_at(SyncRandomAccessReadDevice& d,
  */
 template <typename AsyncRandomAccessReadDevice, typename MutableBufferSequence,
     ASIO_COMPLETION_TOKEN_FOR(void (asio::error_code,
-      std::size_t)) ReadHandler
+      std::size_t)) ReadToken
         ASIO_DEFAULT_COMPLETION_TOKEN_TYPE(
           typename AsyncRandomAccessReadDevice::executor_type)>
-ASIO_INITFN_AUTO_RESULT_TYPE(ReadHandler,
+ASIO_INITFN_AUTO_RESULT_TYPE(ReadToken,
     void (asio::error_code, std::size_t))
 async_read_at(AsyncRandomAccessReadDevice& d, uint64_t offset,
     const MutableBufferSequence& buffers,
-    ASIO_MOVE_ARG(ReadHandler) handler
+    ASIO_MOVE_ARG(ReadToken) token
       ASIO_DEFAULT_COMPLETION_TOKEN(
         typename AsyncRandomAccessReadDevice::executor_type));
 
@@ -486,9 +492,10 @@ async_read_at(AsyncRandomAccessReadDevice& d, uint64_t offset,
 /// specified offset.
 /**
  * This function is used to asynchronously read a certain number of bytes of
- * data from a random access device at the specified offset. The function call
- * always returns immediately. The asynchronous operation will continue until
- * one of the following conditions is true:
+ * data from a random access device at the specified offset. It is an
+ * initiating function for an @ref asynchronous_operation, and always returns
+ * immediately. The asynchronous operation will continue until one of the
+ * following conditions is true:
  *
  * @li The supplied buffers are full. That is, the bytes transferred is equal to
  * the sum of the buffer sizes.
@@ -504,7 +511,7 @@ async_read_at(AsyncRandomAccessReadDevice& d, uint64_t offset,
  * of the buffer sizes indicates the maximum number of bytes to read from the
  * device. Although the buffers object may be copied as necessary, ownership of
  * the underlying memory blocks is retained by the caller, which must guarantee
- * that they remain valid until the handler is called.
+ * that they remain valid until the completion handler is called.
  *
  * @param completion_condition The function object to be called to determine
  * whether the read operation is complete. The signature of the function object
@@ -520,9 +527,11 @@ async_read_at(AsyncRandomAccessReadDevice& d, uint64_t offset,
  * return value indicates the maximum number of bytes to be read on the next
  * call to the device's async_read_some_at function.
  *
- * @param handler The handler to be called when the read operation completes.
- * Copies will be made of the handler as required. The function signature of the
- * handler must be:
+ * @param token The @ref completion_token that will be used to produce a
+ * completion handler, which will be called when the read completes.
+ * Potential completion tokens include @ref use_future, @ref use_awaitable,
+ * @ref yield_context, or a function object with the correct completion
+ * signature. The function signature of the completion handler must be:
  * @code void handler(
  *   // Result of operation.
  *   const asio::error_code& error,
@@ -533,9 +542,12 @@ async_read_at(AsyncRandomAccessReadDevice& d, uint64_t offset,
  *   std::size_t bytes_transferred
  * ); @endcode
  * Regardless of whether the asynchronous operation completes immediately or
- * not, the handler will not be invoked from within this function. On
- * immediate completion, invocation of the handler will be performed in a
+ * not, the completion handler will not be invoked from within this function.
+ * On immediate completion, invocation of the handler will be performed in a
  * manner equivalent to using asio::post().
+ *
+ * @par Completion Signature
+ * @code void(asio::error_code, std::size_t) @endcode
  *
  * @par Example
  * To read into a single data buffer use the @ref buffer function as follows:
@@ -561,15 +573,15 @@ async_read_at(AsyncRandomAccessReadDevice& d, uint64_t offset,
 template <typename AsyncRandomAccessReadDevice,
     typename MutableBufferSequence, typename CompletionCondition,
     ASIO_COMPLETION_TOKEN_FOR(void (asio::error_code,
-      std::size_t)) ReadHandler
+      std::size_t)) ReadToken
         ASIO_DEFAULT_COMPLETION_TOKEN_TYPE(
           typename AsyncRandomAccessReadDevice::executor_type)>
-ASIO_INITFN_AUTO_RESULT_TYPE(ReadHandler,
+ASIO_INITFN_AUTO_RESULT_TYPE(ReadToken,
     void (asio::error_code, std::size_t))
 async_read_at(AsyncRandomAccessReadDevice& d,
     uint64_t offset, const MutableBufferSequence& buffers,
     CompletionCondition completion_condition,
-    ASIO_MOVE_ARG(ReadHandler) handler
+    ASIO_MOVE_ARG(ReadToken) token
       ASIO_DEFAULT_COMPLETION_TOKEN(
         typename AsyncRandomAccessReadDevice::executor_type));
 
@@ -580,9 +592,10 @@ async_read_at(AsyncRandomAccessReadDevice& d,
 /// specified offset.
 /**
  * This function is used to asynchronously read a certain number of bytes of
- * data from a random access device at the specified offset. The function call
- * always returns immediately. The asynchronous operation will continue until
- * one of the following conditions is true:
+ * data from a random access device at the specified offset. It is an
+ * initiating function for an @ref asynchronous_operation, and always returns
+ * immediately. The asynchronous operation will continue until one of the
+ * following conditions is true:
  *
  * @li An error occurred.
  *
@@ -596,11 +609,13 @@ async_read_at(AsyncRandomAccessReadDevice& d,
  *
  * @param b A basic_streambuf object into which the data will be read. Ownership
  * of the streambuf is retained by the caller, which must guarantee that it
- * remains valid until the handler is called.
+ * remains valid until the completion handler is called.
  *
- * @param handler The handler to be called when the read operation completes.
- * Copies will be made of the handler as required. The function signature of the
- * handler must be:
+ * @param token The @ref completion_token that will be used to produce a
+ * completion handler, which will be called when the read completes.
+ * Potential completion tokens include @ref use_future, @ref use_awaitable,
+ * @ref yield_context, or a function object with the correct completion
+ * signature. The function signature of the completion handler must be:
  * @code void handler(
  *   // Result of operation.
  *   const asio::error_code& error,
@@ -611,9 +626,12 @@ async_read_at(AsyncRandomAccessReadDevice& d,
  *   std::size_t bytes_transferred
  * ); @endcode
  * Regardless of whether the asynchronous operation completes immediately or
- * not, the handler will not be invoked from within this function. On
- * immediate completion, invocation of the handler will be performed in a
+ * not, the completion handler will not be invoked from within this function.
+ * On immediate completion, invocation of the handler will be performed in a
  * manner equivalent to using asio::post().
+ *
+ * @par Completion Signature
+ * @code void(asio::error_code, std::size_t) @endcode
  *
  * @note This overload is equivalent to calling:
  * @code asio::async_read_at(
@@ -634,14 +652,14 @@ async_read_at(AsyncRandomAccessReadDevice& d,
  */
 template <typename AsyncRandomAccessReadDevice, typename Allocator,
     ASIO_COMPLETION_TOKEN_FOR(void (asio::error_code,
-      std::size_t)) ReadHandler
+      std::size_t)) ReadToken
         ASIO_DEFAULT_COMPLETION_TOKEN_TYPE(
           typename AsyncRandomAccessReadDevice::executor_type)>
-ASIO_INITFN_AUTO_RESULT_TYPE(ReadHandler,
+ASIO_INITFN_AUTO_RESULT_TYPE(ReadToken,
     void (asio::error_code, std::size_t))
 async_read_at(AsyncRandomAccessReadDevice& d,
     uint64_t offset, basic_streambuf<Allocator>& b,
-    ASIO_MOVE_ARG(ReadHandler) handler
+    ASIO_MOVE_ARG(ReadToken) token
       ASIO_DEFAULT_COMPLETION_TOKEN(
         typename AsyncRandomAccessReadDevice::executor_type));
 
@@ -649,9 +667,10 @@ async_read_at(AsyncRandomAccessReadDevice& d,
 /// specified offset.
 /**
  * This function is used to asynchronously read a certain number of bytes of
- * data from a random access device at the specified offset. The function call
- * always returns immediately. The asynchronous operation will continue until
- * one of the following conditions is true:
+ * data from a random access device at the specified offset. It is an
+ * initiating function for an @ref asynchronous_operation, and always returns
+ * immediately. The asynchronous operation will continue until one of the
+ * following conditions is true:
  *
  * @li The completion_condition function object returns 0.
  *
@@ -665,7 +684,7 @@ async_read_at(AsyncRandomAccessReadDevice& d,
  *
  * @param b A basic_streambuf object into which the data will be read. Ownership
  * of the streambuf is retained by the caller, which must guarantee that it
- * remains valid until the handler is called.
+ * remains valid until the completion handler is called.
  *
  * @param completion_condition The function object to be called to determine
  * whether the read operation is complete. The signature of the function object
@@ -681,9 +700,11 @@ async_read_at(AsyncRandomAccessReadDevice& d,
  * return value indicates the maximum number of bytes to be read on the next
  * call to the device's async_read_some_at function.
  *
- * @param handler The handler to be called when the read operation completes.
- * Copies will be made of the handler as required. The function signature of the
- * handler must be:
+ * @param token The @ref completion_token that will be used to produce a
+ * completion handler, which will be called when the read completes.
+ * Potential completion tokens include @ref use_future, @ref use_awaitable,
+ * @ref yield_context, or a function object with the correct completion
+ * signature. The function signature of the completion handler must be:
  * @code void handler(
  *   // Result of operation.
  *   const asio::error_code& error,
@@ -694,9 +715,12 @@ async_read_at(AsyncRandomAccessReadDevice& d,
  *   std::size_t bytes_transferred
  * ); @endcode
  * Regardless of whether the asynchronous operation completes immediately or
- * not, the handler will not be invoked from within this function. On
- * immediate completion, invocation of the handler will be performed in a
+ * not, the completion handler will not be invoked from within this function.
+ * On immediate completion, invocation of the handler will be performed in a
  * manner equivalent to using asio::post().
+ *
+ * @par Completion Signature
+ * @code void(asio::error_code, std::size_t) @endcode
  *
  * @par Per-Operation Cancellation
  * This asynchronous operation supports cancellation for the following
@@ -712,15 +736,15 @@ async_read_at(AsyncRandomAccessReadDevice& d,
 template <typename AsyncRandomAccessReadDevice,
     typename Allocator, typename CompletionCondition,
     ASIO_COMPLETION_TOKEN_FOR(void (asio::error_code,
-      std::size_t)) ReadHandler
+      std::size_t)) ReadToken
         ASIO_DEFAULT_COMPLETION_TOKEN_TYPE(
           typename AsyncRandomAccessReadDevice::executor_type)>
-ASIO_INITFN_AUTO_RESULT_TYPE(ReadHandler,
+ASIO_INITFN_AUTO_RESULT_TYPE(ReadToken,
     void (asio::error_code, std::size_t))
 async_read_at(AsyncRandomAccessReadDevice& d,
     uint64_t offset, basic_streambuf<Allocator>& b,
     CompletionCondition completion_condition,
-    ASIO_MOVE_ARG(ReadHandler) handler
+    ASIO_MOVE_ARG(ReadToken) token
       ASIO_DEFAULT_COMPLETION_TOKEN(
         typename AsyncRandomAccessReadDevice::executor_type));
 

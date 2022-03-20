@@ -2,7 +2,7 @@
 // experimental/detail/channel_send_functions.hpp
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 //
-// Copyright (c) 2003-2021 Christopher M. Kohlhoff (chris at kohlhoff dot com)
+// Copyright (c) 2003-2022 Christopher M. Kohlhoff (chris at kohlhoff dot com)
 //
 // Distributed under the Boost Software License, Version 1.0. (See accompanying
 // file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
@@ -18,6 +18,7 @@
 #include "asio/detail/config.hpp"
 #include "asio/async_result.hpp"
 #include "asio/detail/type_traits.hpp"
+#include "asio/error_code.hpp"
 #include "asio/experimental/detail/channel_message.hpp"
 
 #include "asio/detail/push_options.hpp"

@@ -2,7 +2,7 @@
 // associated_cancellation_slot.hpp
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 //
-// Copyright (c) 2003-2021 Christopher M. Kohlhoff (chris at kohlhoff dot com)
+// Copyright (c) 2003-2022 Christopher M. Kohlhoff (chris at kohlhoff dot com)
 //
 // Distributed under the Boost Software License, Version 1.0. (See accompanying
 // file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
@@ -122,7 +122,7 @@ struct associated_cancellation_slot
  * @returns <tt>associated_cancellation_slot<T>::get(t)</tt>
  */
 template <typename T>
-inline typename associated_cancellation_slot<T>::type
+ASIO_NODISCARD inline typename associated_cancellation_slot<T>::type
 get_associated_cancellation_slot(const T& t) ASIO_NOEXCEPT
 {
   return associated_cancellation_slot<T>::get(t);
@@ -134,7 +134,8 @@ get_associated_cancellation_slot(const T& t) ASIO_NOEXCEPT
  * CancellationSlot>::get(t, st)</tt>
  */
 template <typename T, typename CancellationSlot>
-inline typename associated_cancellation_slot<T, CancellationSlot>::type
+ASIO_NODISCARD inline
+typename associated_cancellation_slot<T, CancellationSlot>::type
 get_associated_cancellation_slot(const T& t,
     const CancellationSlot& st) ASIO_NOEXCEPT
 {

@@ -2,8 +2,8 @@
 // experimental/coro.hpp
 // ~~~~~~~~~~~~~~~~~~~~~
 //
-// Copyright (c) 2021 Klemens D. Morgenstern
-//                    (klemens dot morgenstern at gmx dot net)
+// Copyright (c) 2021-2022 Klemens D. Morgenstern
+//                         (klemens dot morgenstern at gmx dot net)
 //
 // Distributed under the Boost Software License, Version 1.0. (See accompanying
 // file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
@@ -177,7 +177,7 @@ struct coro
    */
   template <typename CompletionToken>
     requires std::is_void_v<input_type>
-  auto async_resume(CompletionToken&& token)
+  auto async_resume(CompletionToken&& token) &
   {
     return async_initiate<CompletionToken,
         typename traits::completion_handler>(
@@ -194,7 +194,7 @@ struct coro
    * @note This overload is only available for coroutines with an input value.
    */
   template <typename CompletionToken, detail::convertible_to<input_type> T>
-  auto async_resume(T&& ip, CompletionToken&& token)
+  auto async_resume(T&& ip, CompletionToken&& token) &
   {
     return async_initiate<CompletionToken,
         typename traits::completion_handler>(

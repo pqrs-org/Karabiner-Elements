@@ -2,8 +2,8 @@
 // experimental/detail/completion_handler_erasure.hpp
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 //
-// Copyright (c) 2021 Klemens D. Morgenstern
-//                    (klemens dot morgenstern at gmx dot net)
+// Copyright (c) 2021-2022 Klemens D. Morgenstern
+//                         (klemens dot morgenstern at gmx dot net)
 //
 // Distributed under the Boost Software License, Version 1.0. (See accompanying
 // file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
@@ -12,6 +12,7 @@
 #ifndef ASIO_EXPERIMENTAL_DETAIL_COMPLETION_HANDLER_ERASURE_HPP
 #define ASIO_EXPERIMENTAL_DETAIL_COMPLETION_HANDLER_ERASURE_HPP
 
+#include <new>
 #include "asio/associated_allocator.hpp"
 #include "asio/dispatch.hpp"
 
@@ -28,7 +29,7 @@ struct completion_handler_erasure_base;
 template<typename Func, typename Signature, typename Executor>
 struct completion_handler_erasure_impl;
 
-template<typename Return,  typename ... Args, typename Executor>
+template<typename Return, typename... Args, typename Executor>
 struct completion_handler_erasure_base<Return(Args...), Executor>
 {
   Executor executor;
@@ -38,23 +39,83 @@ struct completion_handler_erasure_base<Return(Args...), Executor>
   {
   }
 
-  virtual Return call(Args ...args) = 0;
+  virtual Return call(Args... args) = 0;
+  virtual void destroy() = 0;
   virtual ~completion_handler_erasure_base() = default;
 };
 
-template<typename Func, typename Return,  typename ... Args, typename Executor>
+template<typename Func, typename Return, typename... Args, typename Executor>
 struct completion_handler_erasure_impl<Func, Return(Args...), Executor> final
     : completion_handler_erasure_base<Return(Args...), Executor>
 {
+  using allocator_base = typename associated_allocator<Func>::type;
+  using allocator_type =
+    typename std::allocator_traits<allocator_base>::template rebind_alloc<
+      completion_handler_erasure_impl>;
+
   completion_handler_erasure_impl(Executor&& exec, Func&& func)
     : completion_handler_erasure_base<Return(Args...), Executor>(
         std::move(exec)), func(std::move(func))
   {
   }
 
-  virtual Return call(Args ...args) override
+  struct uninit_deleter_t
   {
-    std::move(func)(std::move(args)...);
+    allocator_type allocator;
+
+    uninit_deleter_t(const Func& func)
+      : allocator(get_associated_allocator(func))
+    {
+    }
+
+    void operator()(completion_handler_erasure_impl* p)
+    {
+      std::allocator_traits<allocator_type>::deallocate(allocator, p, 1);
+    }
+  };
+
+  static completion_handler_erasure_impl* make(Executor exec, Func&& func)
+  {
+    uninit_deleter_t deleter(func);
+    std::unique_ptr<completion_handler_erasure_impl, uninit_deleter_t>
+      uninit_ptr(std::allocator_traits<allocator_type>::allocate(
+            deleter.allocator, 1), deleter);
+    completion_handler_erasure_impl* ptr =
+      new (uninit_ptr.get()) completion_handler_erasure_impl(
+        std::move(exec), std::move(func));
+    uninit_ptr.release();
+    return ptr;
+  }
+
+  struct deleter_t
+  {
+    allocator_type allocator;
+
+    deleter_t(const Func& func)
+      : allocator(get_associated_allocator(func))
+    {
+    }
+
+    void operator()(completion_handler_erasure_impl* p)
+    {
+      std::allocator_traits<allocator_type>::destroy(allocator, p);
+      std::allocator_traits<allocator_type>::deallocate(allocator, p, 1);
+    }
+  };
+
+  virtual Return call(Args... args) override
+  {
+    std::unique_ptr<completion_handler_erasure_impl,
+      deleter_t> p(this, deleter_t(func));
+    Func f(std::move(func));
+    p.reset();
+    std::move(f)(std::move(args)...);
+  }
+
+  virtual void destroy() override
+  {
+    std::unique_ptr<completion_handler_erasure_impl,
+      deleter_t>(this, deleter_t(func));
   }
 
   Func func;
@@ -63,43 +124,15 @@ struct completion_handler_erasure_impl<Func, Return(Args...), Executor> final
 template<typename Signature, typename Executor = any_io_executor>
 struct completion_handler_erasure;
 
-template<typename Return,  typename ... Args, typename Executor>
+template<typename Return, typename... Args, typename Executor>
 struct completion_handler_erasure<Return(Args...), Executor>
 {
   struct deleter_t
   {
-    using allocator_base = typename associated_allocator<Executor>::type;
-    using allocator_type =
-      typename std::allocator_traits<allocator_base>::template rebind_alloc<
-        completion_handler_erasure_base<Return(Args...), Executor>>;
-
-    allocator_type allocator;
-    std::size_t size;
-
-    template<typename Func>
-    static std::unique_ptr<
-        completion_handler_erasure_base<Return(Args...), Executor>, deleter_t>
-    make(Executor exec, Func&& func)
-    {
-      using type = completion_handler_erasure_impl<
-          std::remove_reference_t<Func>, Return(Args...), Executor>;
-      using alloc_type =  typename std::allocator_traits<
-          allocator_base>::template rebind_alloc<type>;
-      auto alloc = alloc_type(get_associated_allocator(exec));
-      auto size = sizeof(type);
-      auto p = std::allocator_traits<alloc_type>::allocate(alloc, size);
-      auto res = std::unique_ptr<type, deleter_t>(
-          p, deleter_t{allocator_type(alloc), size});
-      std::allocator_traits<alloc_type>::construct(alloc,
-          p, std::move(exec), std::forward<Func>(func));
-      return res;
-    }
-
     void operator()(
-        completion_handler_erasure_base<Return(Args...), Executor> * p)
+        completion_handler_erasure_base<Return(Args...), Executor>* p)
     {
-      std::allocator_traits<allocator_type>::destroy(allocator, p);
-      std::allocator_traits<allocator_type>::deallocate(allocator, p, size);
+      p->destroy();
     }
   };
 
@@ -119,26 +152,29 @@ struct completion_handler_erasure<Return(Args...), Executor>
 
   template<typename Func>
   completion_handler_erasure(Executor exec, Func&& func)
-    : impl_(deleter_t::make(std::move(exec), std::forward<Func>(func)))
+    : impl_(completion_handler_erasure_impl<
+        std::decay_t<Func>, Return(Args...), Executor>::make(
+          std::move(exec), std::forward<Func>(func)))
   {
   }
 
   ~completion_handler_erasure()
   {
-    if (auto f = std::exchange(impl_, nullptr); f != nullptr)
+    if (impl_)
     {
-      asio::dispatch(f->executor,
-          [f = std::move(f)]() mutable
+      Executor executor(impl_->executor);
+      asio::dispatch(executor,
+          [impl = std::move(impl_)]() mutable
           {
-            std::move(f)->call(Args{}...);
+            impl.reset();
           });
     }
   }
 
-  Return operator()(Args ... args)
+  Return operator()(Args... args)
   {
-    if (auto f = std::exchange(impl_, nullptr); f != nullptr)
-      f->call(std::move(args)...);
+    if (impl_)
+      impl_.release()->call(std::move(args)...);
   }
 
   constexpr bool operator==(nullptr_t) const noexcept {return impl_ == nullptr;}

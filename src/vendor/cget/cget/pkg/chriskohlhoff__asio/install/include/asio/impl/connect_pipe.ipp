@@ -2,7 +2,7 @@
 // impl/connect_pipe.ipp
 // ~~~~~~~~~~~~~~~~~~~~~
 //
-// Copyright (c) 2003-2021 Christopher M. Kohlhoff (chris at kohlhoff dot com)
+// Copyright (c) 2003-2022 Christopher M. Kohlhoff (chris at kohlhoff dot com)
 // Copyright (c) 2021 Klemens D. Morgenstern
 //                    (klemens dot morgenstern at gmx dot net)
 //

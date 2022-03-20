@@ -2,7 +2,7 @@
 // bind_cancellation_slot.hpp
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~
 //
-// Copyright (c) 2003-2021 Christopher M. Kohlhoff (chris at kohlhoff dot com)
+// Copyright (c) 2003-2022 Christopher M. Kohlhoff (chris at kohlhoff dot com)
 //
 // Distributed under the Boost Software License, Version 1.0. (See accompanying
 // file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
@@ -458,7 +458,8 @@ private:
 /// Associate an object of type @c T with a cancellation slot of type
 /// @c CancellationSlot.
 template <typename CancellationSlot, typename T>
-inline cancellation_slot_binder<typename decay<T>::type, CancellationSlot>
+ASIO_NODISCARD inline
+cancellation_slot_binder<typename decay<T>::type, CancellationSlot>
 bind_cancellation_slot(const CancellationSlot& s, ASIO_MOVE_ARG(T) t)
 {
   return cancellation_slot_binder<
@@ -619,9 +620,10 @@ public:
 
   template <typename Initiation, typename RawCompletionToken, typename... Args>
   static ASIO_INITFN_DEDUCED_RESULT_TYPE(T, Signature,
-    (async_result<T, Signature>::initiate(
+    (async_initiate<T, Signature>(
         declval<init_wrapper<typename decay<Initiation>::type> >(),
-        declval<T>(), declval<ASIO_MOVE_ARG(Args)>()...)))
+        declval<RawCompletionToken>().get(),
+        declval<ASIO_MOVE_ARG(Args)>()...)))
   initiate(
       ASIO_MOVE_ARG(Initiation) initiation,
       ASIO_MOVE_ARG(RawCompletionToken) token,
@@ -638,9 +640,9 @@ public:
 
   template <typename Initiation, typename RawCompletionToken>
   static ASIO_INITFN_DEDUCED_RESULT_TYPE(T, Signature,
-    (async_result<T, Signature>::initiate(
+    (async_initiate<T, Signature>(
         declval<init_wrapper<typename decay<Initiation>::type> >(),
-        declval<T>())))
+        declval<RawCompletionToken>().get())))
   initiate(
       ASIO_MOVE_ARG(Initiation) initiation,
       ASIO_MOVE_ARG(RawCompletionToken) token)
@@ -656,9 +658,10 @@ public:
   template <typename Initiation, typename RawCompletionToken, \
       ASIO_VARIADIC_TPARAMS(n)> \
   static ASIO_INITFN_DEDUCED_RESULT_TYPE(T, Signature, \
-    (async_result<T, Signature>::initiate( \
+    (async_initiate<T, Signature>( \
         declval<init_wrapper<typename decay<Initiation>::type> >(), \
-        declval<T>(), ASIO_VARIADIC_MOVE_DECLVAL(n)))) \
+        declval<RawCompletionToken>().get(), \
+        ASIO_VARIADIC_MOVE_DECLVAL(n)))) \
   initiate( \
       ASIO_MOVE_ARG(Initiation) initiation, \
       ASIO_MOVE_ARG(RawCompletionToken) token, \

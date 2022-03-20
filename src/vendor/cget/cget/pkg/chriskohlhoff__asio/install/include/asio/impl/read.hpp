@@ -2,7 +2,7 @@
 // impl/read.hpp
 // ~~~~~~~~~~~~~
 //
-// Copyright (c) 2003-2021 Christopher M. Kohlhoff (chris at kohlhoff dot com)
+// Copyright (c) 2003-2022 Christopher M. Kohlhoff (chris at kohlhoff dot com)
 //
 // Distributed under the Boost Software License, Version 1.0. (See accompanying
 // file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
@@ -561,37 +561,37 @@ struct associator<Associator,
 template <typename AsyncReadStream,
     typename MutableBufferSequence, typename CompletionCondition,
     ASIO_COMPLETION_TOKEN_FOR(void (asio::error_code,
-      std::size_t)) ReadHandler>
-inline ASIO_INITFN_AUTO_RESULT_TYPE(ReadHandler,
+      std::size_t)) ReadToken>
+inline ASIO_INITFN_AUTO_RESULT_TYPE(ReadToken,
     void (asio::error_code, std::size_t))
 async_read(AsyncReadStream& s, const MutableBufferSequence& buffers,
     CompletionCondition completion_condition,
-    ASIO_MOVE_ARG(ReadHandler) handler,
+    ASIO_MOVE_ARG(ReadToken) token,
     typename constraint<
       is_mutable_buffer_sequence<MutableBufferSequence>::value
     >::type)
 {
-  return async_initiate<ReadHandler,
+  return async_initiate<ReadToken,
     void (asio::error_code, std::size_t)>(
-      detail::initiate_async_read_buffer_sequence<AsyncReadStream>(s), handler,
+      detail::initiate_async_read_buffer_sequence<AsyncReadStream>(s), token,
       buffers, ASIO_MOVE_CAST(CompletionCondition)(completion_condition));
 }
 
 template <typename AsyncReadStream, typename MutableBufferSequence,
     ASIO_COMPLETION_TOKEN_FOR(void (asio::error_code,
-      std::size_t)) ReadHandler>
-inline ASIO_INITFN_AUTO_RESULT_TYPE(ReadHandler,
+      std::size_t)) ReadToken>
+inline ASIO_INITFN_AUTO_RESULT_TYPE(ReadToken,
     void (asio::error_code, std::size_t))
 async_read(AsyncReadStream& s, const MutableBufferSequence& buffers,
-    ASIO_MOVE_ARG(ReadHandler) handler,
+    ASIO_MOVE_ARG(ReadToken) token,
     typename constraint<
       is_mutable_buffer_sequence<MutableBufferSequence>::value
     >::type)
 {
-  return async_initiate<ReadHandler,
+  return async_initiate<ReadToken,
     void (asio::error_code, std::size_t)>(
       detail::initiate_async_read_buffer_sequence<AsyncReadStream>(s),
-      handler, buffers, transfer_all());
+      token, buffers, transfer_all());
 }
 
 #if !defined(ASIO_NO_DYNAMIC_BUFFER_V1)
@@ -836,12 +836,12 @@ struct associator<Associator,
 
 template <typename AsyncReadStream, typename DynamicBuffer_v1,
     ASIO_COMPLETION_TOKEN_FOR(void (asio::error_code,
-      std::size_t)) ReadHandler>
-inline ASIO_INITFN_AUTO_RESULT_TYPE(ReadHandler,
+      std::size_t)) ReadToken>
+inline ASIO_INITFN_AUTO_RESULT_TYPE(ReadToken,
     void (asio::error_code, std::size_t))
 async_read(AsyncReadStream& s,
     ASIO_MOVE_ARG(DynamicBuffer_v1) buffers,
-    ASIO_MOVE_ARG(ReadHandler) handler,
+    ASIO_MOVE_ARG(ReadToken) token,
     typename constraint<
       is_dynamic_buffer_v1<typename decay<DynamicBuffer_v1>::type>::value
     >::type,
@@ -851,19 +851,19 @@ async_read(AsyncReadStream& s,
 {
   return async_read(s,
       ASIO_MOVE_CAST(DynamicBuffer_v1)(buffers),
-      transfer_all(), ASIO_MOVE_CAST(ReadHandler)(handler));
+      transfer_all(), ASIO_MOVE_CAST(ReadToken)(token));
 }
 
 template <typename AsyncReadStream,
     typename DynamicBuffer_v1, typename CompletionCondition,
     ASIO_COMPLETION_TOKEN_FOR(void (asio::error_code,
-      std::size_t)) ReadHandler>
-inline ASIO_INITFN_AUTO_RESULT_TYPE(ReadHandler,
+      std::size_t)) ReadToken>
+inline ASIO_INITFN_AUTO_RESULT_TYPE(ReadToken,
     void (asio::error_code, std::size_t))
 async_read(AsyncReadStream& s,
     ASIO_MOVE_ARG(DynamicBuffer_v1) buffers,
     CompletionCondition completion_condition,
-    ASIO_MOVE_ARG(ReadHandler) handler,
+    ASIO_MOVE_ARG(ReadToken) token,
     typename constraint<
       is_dynamic_buffer_v1<typename decay<DynamicBuffer_v1>::type>::value
     >::type,
@@ -871,10 +871,10 @@ async_read(AsyncReadStream& s,
       !is_dynamic_buffer_v2<typename decay<DynamicBuffer_v1>::type>::value
     >::type)
 {
-  return async_initiate<ReadHandler,
+  return async_initiate<ReadToken,
     void (asio::error_code, std::size_t)>(
       detail::initiate_async_read_dynbuf_v1<AsyncReadStream>(s),
-      handler, ASIO_MOVE_CAST(DynamicBuffer_v1)(buffers),
+      token, ASIO_MOVE_CAST(DynamicBuffer_v1)(buffers),
       ASIO_MOVE_CAST(CompletionCondition)(completion_condition));
 }
 
@@ -883,29 +883,29 @@ async_read(AsyncReadStream& s,
 
 template <typename AsyncReadStream, typename Allocator,
     ASIO_COMPLETION_TOKEN_FOR(void (asio::error_code,
-      std::size_t)) ReadHandler>
-inline ASIO_INITFN_AUTO_RESULT_TYPE(ReadHandler,
+      std::size_t)) ReadToken>
+inline ASIO_INITFN_AUTO_RESULT_TYPE(ReadToken,
     void (asio::error_code, std::size_t))
 async_read(AsyncReadStream& s, basic_streambuf<Allocator>& b,
-    ASIO_MOVE_ARG(ReadHandler) handler)
+    ASIO_MOVE_ARG(ReadToken) token)
 {
   return async_read(s, basic_streambuf_ref<Allocator>(b),
-      ASIO_MOVE_CAST(ReadHandler)(handler));
+      ASIO_MOVE_CAST(ReadToken)(token));
 }
 
 template <typename AsyncReadStream,
     typename Allocator, typename CompletionCondition,
     ASIO_COMPLETION_TOKEN_FOR(void (asio::error_code,
-      std::size_t)) ReadHandler>
-inline ASIO_INITFN_AUTO_RESULT_TYPE(ReadHandler,
+      std::size_t)) ReadToken>
+inline ASIO_INITFN_AUTO_RESULT_TYPE(ReadToken,
     void (asio::error_code, std::size_t))
 async_read(AsyncReadStream& s, basic_streambuf<Allocator>& b,
     CompletionCondition completion_condition,
-    ASIO_MOVE_ARG(ReadHandler) handler)
+    ASIO_MOVE_ARG(ReadToken) token)
 {
   return async_read(s, basic_streambuf_ref<Allocator>(b),
       ASIO_MOVE_CAST(CompletionCondition)(completion_condition),
-      ASIO_MOVE_CAST(ReadHandler)(handler));
+      ASIO_MOVE_CAST(ReadToken)(token));
 }
 
 #endif // !defined(ASIO_NO_IOSTREAM)
@@ -1158,37 +1158,37 @@ struct associator<Associator,
 
 template <typename AsyncReadStream, typename DynamicBuffer_v2,
     ASIO_COMPLETION_TOKEN_FOR(void (asio::error_code,
-      std::size_t)) ReadHandler>
-inline ASIO_INITFN_AUTO_RESULT_TYPE(ReadHandler,
+      std::size_t)) ReadToken>
+inline ASIO_INITFN_AUTO_RESULT_TYPE(ReadToken,
     void (asio::error_code, std::size_t))
 async_read(AsyncReadStream& s, DynamicBuffer_v2 buffers,
-    ASIO_MOVE_ARG(ReadHandler) handler,
+    ASIO_MOVE_ARG(ReadToken) token,
     typename constraint<
       is_dynamic_buffer_v2<DynamicBuffer_v2>::value
     >::type)
 {
   return async_read(s,
       ASIO_MOVE_CAST(DynamicBuffer_v2)(buffers),
-      transfer_all(), ASIO_MOVE_CAST(ReadHandler)(handler));
+      transfer_all(), ASIO_MOVE_CAST(ReadToken)(token));
 }
 
 template <typename AsyncReadStream,
     typename DynamicBuffer_v2, typename CompletionCondition,
     ASIO_COMPLETION_TOKEN_FOR(void (asio::error_code,
-      std::size_t)) ReadHandler>
-inline ASIO_INITFN_AUTO_RESULT_TYPE(ReadHandler,
+      std::size_t)) ReadToken>
+inline ASIO_INITFN_AUTO_RESULT_TYPE(ReadToken,
     void (asio::error_code, std::size_t))
 async_read(AsyncReadStream& s, DynamicBuffer_v2 buffers,
     CompletionCondition completion_condition,
-    ASIO_MOVE_ARG(ReadHandler) handler,
+    ASIO_MOVE_ARG(ReadToken) token,
     typename constraint<
       is_dynamic_buffer_v2<DynamicBuffer_v2>::value
     >::type)
 {
-  return async_initiate<ReadHandler,
+  return async_initiate<ReadToken,
     void (asio::error_code, std::size_t)>(
       detail::initiate_async_read_dynbuf_v2<AsyncReadStream>(s),
-      handler, ASIO_MOVE_CAST(DynamicBuffer_v2)(buffers),
+      token, ASIO_MOVE_CAST(DynamicBuffer_v2)(buffers),
       ASIO_MOVE_CAST(CompletionCondition)(completion_condition));
 }
 

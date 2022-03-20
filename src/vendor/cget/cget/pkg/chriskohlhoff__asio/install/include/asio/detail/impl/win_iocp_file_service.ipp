@@ -2,7 +2,7 @@
 // detail/impl/win_iocp_file_service.ipp
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 //
-// Copyright (c) 2003-2021 Christopher M. Kohlhoff (chris at kohlhoff dot com)
+// Copyright (c) 2003-2022 Christopher M. Kohlhoff (chris at kohlhoff dot com)
 //
 // Distributed under the Boost Software License, Version 1.0. (See accompanying
 // file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
@@ -88,6 +88,8 @@ asio::error_code win_iocp_file_service::open(
     flags |= FILE_FLAG_SEQUENTIAL_SCAN;
   else
     flags |= FILE_FLAG_RANDOM_ACCESS;
+  if ((open_flags & file_base::sync_all_on_write) != 0)
+    flags |= FILE_FLAG_WRITE_THROUGH;
 
   HANDLE handle = ::CreateFileA(path, access, 0, 0, disposition, flags, 0);
   if (handle != INVALID_HANDLE_VALUE)

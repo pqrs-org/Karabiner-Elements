@@ -2,7 +2,7 @@
 // detail/io_uring_socket_recvfrom_op.hpp
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 //
-// Copyright (c) 2003-2021 Christopher M. Kohlhoff (chris at kohlhoff dot com)
+// Copyright (c) 2003-2022 Christopher M. Kohlhoff (chris at kohlhoff dot com)
 //
 // Distributed under the Boost Software License, Version 1.0. (See accompanying
 // file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
@@ -121,7 +121,7 @@ private:
   socket_type socket_;
   socket_ops::state_type state_;
   MutableBufferSequence buffers_;
-  Endpoint sender_endpoint_;
+  Endpoint& sender_endpoint_;
   socket_base::message_flags flags_;
   buffer_sequence_adapter<asio::mutable_buffer,
       MutableBufferSequence> bufs_;

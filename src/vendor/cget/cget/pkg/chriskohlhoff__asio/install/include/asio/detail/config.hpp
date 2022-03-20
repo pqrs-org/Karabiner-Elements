@@ -2,7 +2,7 @@
 // detail/config.hpp
 // ~~~~~~~~~~~~~~~~~
 //
-// Copyright (c) 2003-2021 Christopher M. Kohlhoff (chris at kohlhoff dot com)
+// Copyright (c) 2003-2022 Christopher M. Kohlhoff (chris at kohlhoff dot com)
 //
 // Distributed under the Boost Software License, Version 1.0. (See accompanying
 // file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
@@ -597,7 +597,9 @@
 
 #if defined(ASIO_HAS_ALIGNOF)
 # define ASIO_ALIGNOF(T) alignof(T)
-# if defined(__GNUC__)
+# if defined(__STDCPP_DEFAULT_NEW_ALIGNMENT__)
+#  define ASIO_DEFAULT_ALIGN __STDCPP_DEFAULT_NEW_ALIGNMENT__
+# elif defined(__GNUC__)
 #  if ((__GNUC__ == 4) && (__GNUC_MINOR__ >= 9)) || (__GNUC__ > 4)
 #   define ASIO_DEFAULT_ALIGN alignof(std::max_align_t)
 #  else // ((__GNUC__ == 4) && (__GNUC_MINOR__ >= 9)) || (__GNUC__ > 4)
@@ -1192,14 +1194,17 @@
 // Standard library support for iostream move construction and assignment.
 #if !defined(ASIO_HAS_STD_IOSTREAM_MOVE)
 # if !defined(ASIO_DISABLE_STD_IOSTREAM_MOVE)
-#  if defined(__GNUC__)
+#  if defined(__clang__)
+#   if (__cplusplus >= 201103)
+#    define ASIO_HAS_STD_IOSTREAM_MOVE 1
+#   endif // (__cplusplus >= 201103)
+#  elif defined(__GNUC__)
 #   if (__GNUC__ > 4)
 #    if (__cplusplus >= 201103) || defined(__GXX_EXPERIMENTAL_CXX0X__)
 #     define ASIO_HAS_STD_IOSTREAM_MOVE 1
 #    endif // (__cplusplus >= 201103) || defined(__GXX_EXPERIMENTAL_CXX0X__)
 #   endif // (__GNUC__ > 4)
-#  endif // defined(__GNUC__)
-#  if defined(ASIO_MSVC)
+#  elif defined(ASIO_MSVC)
 #   if (_MSC_VER >= 1700)
 #    define ASIO_HAS_STD_IOSTREAM_MOVE 1
 #   endif // (_MSC_VER >= 1700)

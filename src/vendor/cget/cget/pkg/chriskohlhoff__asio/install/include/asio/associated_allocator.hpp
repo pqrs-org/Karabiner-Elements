@@ -2,7 +2,7 @@
 // associated_allocator.hpp
 // ~~~~~~~~~~~~~~~~~~~~~~~~
 //
-// Copyright (c) 2003-2021 Christopher M. Kohlhoff (chris at kohlhoff dot com)
+// Copyright (c) 2003-2022 Christopher M. Kohlhoff (chris at kohlhoff dot com)
 //
 // Distributed under the Boost Software License, Version 1.0. (See accompanying
 // file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
@@ -37,7 +37,7 @@ struct has_allocator_type : false_type
 
 template <typename T>
 struct has_allocator_type<T,
-  typename void_type<typename T::executor_type>::type>
+  typename void_type<typename T::allocator_type>::type>
     : true_type
 {
 };
@@ -122,7 +122,7 @@ struct associated_allocator
  * @returns <tt>associated_allocator<T>::get(t)</tt>
  */
 template <typename T>
-inline typename associated_allocator<T>::type
+ASIO_NODISCARD inline typename associated_allocator<T>::type
 get_associated_allocator(const T& t) ASIO_NOEXCEPT
 {
   return associated_allocator<T>::get(t);
@@ -133,7 +133,7 @@ get_associated_allocator(const T& t) ASIO_NOEXCEPT
  * @returns <tt>associated_allocator<T, Allocator>::get(t, a)</tt>
  */
 template <typename T, typename Allocator>
-inline typename associated_allocator<T, Allocator>::type
+ASIO_NODISCARD inline typename associated_allocator<T, Allocator>::type
 get_associated_allocator(const T& t, const Allocator& a) ASIO_NOEXCEPT
 {
   return associated_allocator<T, Allocator>::get(t, a);

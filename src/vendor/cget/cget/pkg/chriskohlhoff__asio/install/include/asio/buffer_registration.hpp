@@ -2,7 +2,7 @@
 // buffer_registration.hpp
 // ~~~~~~~~~~~~~~~~~~~~~~~
 //
-// Copyright (c) 2003-2021 Christopher M. Kohlhoff (chris at kohlhoff dot com)
+// Copyright (c) 2003-2022 Christopher M. Kohlhoff (chris at kohlhoff dot com)
 //
 // Distributed under the Boost Software License, Version 1.0. (See accompanying
 // file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
@@ -27,6 +27,7 @@
 #include "asio/registered_buffer.hpp"
 
 #if defined(ASIO_HAS_IO_URING)
+# include "asio/detail/scheduler.hpp"
 # include "asio/detail/io_uring_service.hpp"
 #endif // defined(ASIO_HAS_IO_URING)
 

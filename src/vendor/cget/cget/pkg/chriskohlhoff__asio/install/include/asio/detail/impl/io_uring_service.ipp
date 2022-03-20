@@ -2,7 +2,7 @@
 // detail/impl/io_uring_service.ipp
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 //
-// Copyright (c) 2003-2021 Christopher M. Kohlhoff (chris at kohlhoff dot com)
+// Copyright (c) 2003-2022 Christopher M. Kohlhoff (chris at kohlhoff dot com)
 //
 // Distributed under the Boost Software License, Version 1.0. (See accompanying
 // file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
@@ -22,6 +22,7 @@
 #include <cstddef>
 #include <sys/eventfd.h>
 #include "asio/detail/io_uring_service.hpp"
+#include "asio/detail/reactor_op.hpp"
 #include "asio/detail/scheduler.hpp"
 #include "asio/detail/throw_error.hpp"
 #include "asio/error.hpp"
@@ -517,7 +518,7 @@ void io_uring_service::init_ring()
     asio::detail::throw_error(ec, "io_uring_queue_init");
   }
 
-#if defined(ASIO_HAS_EPOLL)
+#if !defined(ASIO_HAS_IO_URING_AS_DEFAULT)
   event_fd_ = ::eventfd(0, EFD_CLOEXEC | EFD_NONBLOCK);
   if (event_fd_ < 0)
   {
@@ -536,10 +537,10 @@ void io_uring_service::init_ring()
         asio::error::get_system_category());
     asio::detail::throw_error(ec, "io_uring_queue_init");
   }
-#endif // defined(ASIO_HAS_EPOLL)
+#endif // !defined(ASIO_HAS_IO_URING_AS_DEFAULT)
 }
 
-#if defined(ASIO_HAS_EPOLL)
+#if !defined(ASIO_HAS_IO_URING_AS_DEFAULT)
 class io_uring_service::event_fd_read_op :
   public reactor_op
 {
@@ -585,14 +586,14 @@ public:
 private:
   io_uring_service* service_;
 };
-#endif // defined(ASIO_HAS_EPOLL)
+#endif // !defined(ASIO_HAS_IO_URING_AS_DEFAULT)
 
 void io_uring_service::register_with_reactor()
 {
-#if defined(ASIO_HAS_EPOLL)
+#if !defined(ASIO_HAS_IO_URING_AS_DEFAULT)
   reactor_.register_internal_descriptor(reactor::read_op,
       event_fd_, reactor_data_, new event_fd_read_op(this));
-#endif // defined(ASIO_HAS_EPOLL)
+#endif // !defined(ASIO_HAS_IO_URING_AS_DEFAULT)
 }
 
 io_uring_service::io_object* io_uring_service::allocate_io_object()
