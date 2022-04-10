@@ -79,8 +79,8 @@ struct FunctionKeysView: View {
         VStack(alignment: .leading, spacing: 0) {
           ForEach($fnFunctionKeys) { $fnFunctionKey in
             HStack {
-              Text(fnFunctionKey.fromJsonString)
-              Text(fnFunctionKey.toJsonString)
+              Text(fnFunctionKey.fromJsonString ?? "")
+              Text(fnFunctionKey.toJsonString ?? "")
             }
           }
         }
