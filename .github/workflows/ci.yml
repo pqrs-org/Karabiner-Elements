@@ -4,14 +4,14 @@ on: [push, pull_request]
 
 jobs:
   build:
-    runs-on: macos-12
+    runs-on: macos-11
 
     steps:
       - uses: actions/checkout@v2
         with:
           submodules: recursive
-      - name: xcode-select
-        run: sudo xcode-select -s /Applications/Xcode_13.3.app
+#      - name: xcode-select
+#        run: sudo xcode-select -s /Applications/Xcode_13.3.app
       - name: brew install
         run: brew install xcodegen
       - name: package
