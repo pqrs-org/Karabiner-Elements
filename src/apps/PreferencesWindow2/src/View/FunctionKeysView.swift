@@ -72,6 +72,7 @@ struct FunctionKeysView: View {
   }
 
   struct FnFunctionKeysView: View {
+    @ObservedObject private var simpleModificationDefinitions = SimpleModificationDefinitions.shared
     @State var fnFunctionKeys: [SimpleModification]
 
     var body: some View {
@@ -79,8 +80,17 @@ struct FunctionKeysView: View {
         VStack(alignment: .leading, spacing: 0) {
           ForEach($fnFunctionKeys) { $fnFunctionKey in
             HStack {
-              Text(fnFunctionKey.fromJsonString ?? "")
-              Text(fnFunctionKey.toJsonString ?? "")
+              SimpleModificationPickerView(
+                categories: simpleModificationDefinitions.fromCategories,
+                entry: SimpleModificationDefinitionEntry(
+                  fnFunctionKey.fromJsonString ?? "", fnFunctionKey.fromJsonString ?? "")
+              )
+
+              SimpleModificationPickerView(
+                categories: simpleModificationDefinitions.toCategories,
+                entry: SimpleModificationDefinitionEntry(
+                  fnFunctionKey.toJsonString ?? "", fnFunctionKey.toJsonString ?? "")
+              )
             }
           }
         }
