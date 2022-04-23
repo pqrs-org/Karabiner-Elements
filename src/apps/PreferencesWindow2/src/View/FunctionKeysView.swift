@@ -80,10 +80,8 @@ struct FunctionKeysView: View {
         VStack(alignment: .leading, spacing: 0) {
           ForEach($fnFunctionKeys) { $fnFunctionKey in
             HStack {
-              SimpleModificationPickerView(
-                categories: simpleModificationDefinitions.fromCategories,
-                entry: fnFunctionKey.fromEntry
-              )
+              Text(fnFunctionKey.fromEntry.label)
+                .frame(width: 40)
 
               SimpleModificationPickerView(
                 categories: simpleModificationDefinitions.toCategories,
