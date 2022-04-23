@@ -1,14 +1,28 @@
 class SimpleModification: Identifiable {
   var id = UUID()
-  var fromJsonString: String?
-  var toJsonString: String?
+  var fromEntry: SimpleModificationDefinitionEntry
+  var toEntry: SimpleModificationDefinitionEntry
 
   init(
     _ fromJsonString: String,
     _ toJsonString: String
   ) {
-    self.fromJsonString = SimpleModification.formatCompactJsonString(string: fromJsonString)
-    self.toJsonString = SimpleModification.formatCompactJsonString(string: toJsonString)
+    do {
+      let s = SimpleModification.formatCompactJsonString(string: fromJsonString) ?? ""
+      self.fromEntry = SimpleModificationDefinitionEntry(
+        SimpleModificationDefinitions.shared.fromCategories.findLabel(jsonString: s),
+        s
+      )
+    }
+
+    do {
+      let s = SimpleModification.formatCompactJsonString(string: toJsonString) ?? ""
+      print("to json \(s)")
+      self.toEntry = SimpleModificationDefinitionEntry(
+        SimpleModificationDefinitions.shared.toCategories.findLabel(jsonString: s),
+        s
+      )
+    }
   }
 
   static func formatCompactJsonString(string jsonString: String) -> String? {

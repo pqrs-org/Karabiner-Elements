@@ -82,14 +82,12 @@ struct FunctionKeysView: View {
             HStack {
               SimpleModificationPickerView(
                 categories: simpleModificationDefinitions.fromCategories,
-                entry: SimpleModificationDefinitionEntry(
-                  fnFunctionKey.fromJsonString ?? "", fnFunctionKey.fromJsonString ?? "")
+                entry: fnFunctionKey.fromEntry
               )
 
               SimpleModificationPickerView(
                 categories: simpleModificationDefinitions.toCategories,
-                entry: SimpleModificationDefinitionEntry(
-                  fnFunctionKey.toJsonString ?? "", fnFunctionKey.toJsonString ?? "")
+                entry: fnFunctionKey.toEntry
               )
             }
           }
