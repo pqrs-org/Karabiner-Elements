@@ -72,7 +72,6 @@ struct FunctionKeysView: View {
   }
 
   struct FnFunctionKeysView: View {
-    @ObservedObject private var simpleModificationDefinitions = SimpleModificationDefinitions.shared
     @State var fnFunctionKeys: [SimpleModification]
 
     var body: some View {
@@ -84,7 +83,7 @@ struct FunctionKeysView: View {
                 .frame(width: 40)
 
               SimpleModificationPickerView(
-                categories: simpleModificationDefinitions.toCategories,
+                categories: SimpleModificationDefinitions.shared.toCategories,
                 entry: fnFunctionKey.toEntry
               )
             }

@@ -3,8 +3,8 @@ import SwiftUI
 public class SimpleModificationDefinitions: ObservableObject {
   public static let shared = SimpleModificationDefinitions()
 
-  @Published var fromCategories: SimpleModificationDefinitionCategories
-  @Published var toCategories: SimpleModificationDefinitionCategories
+  private(set) var fromCategories: SimpleModificationDefinitionCategories
+  private(set) var toCategories: SimpleModificationDefinitionCategories
 
   init() {
     fromCategories = SimpleModificationDefinitionCategories()
