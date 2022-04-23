@@ -1,6 +1,6 @@
 import SwiftUI
 
-public class SimpleModificationDefinitions: ObservableObject {
+public class SimpleModificationDefinitions {
   public static let shared = SimpleModificationDefinitions()
 
   private(set) var fromCategories: SimpleModificationDefinitionCategories
