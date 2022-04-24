@@ -1,4 +1,4 @@
-class SimpleModificationDefinitionEntry: Identifiable {
+class SimpleModificationDefinitionEntry: Identifiable, Equatable {
   var id = UUID()
 
   var label: String
@@ -10,5 +10,9 @@ class SimpleModificationDefinitionEntry: Identifiable {
   ) {
     self.label = label
     self.json = json
+  }
+
+  public static func == (lhs: SimpleModificationDefinitionEntry, rhs: SimpleModificationDefinitionEntry) -> Bool {
+    lhs.label == rhs.label && lhs.json == rhs.json
   }
 }
