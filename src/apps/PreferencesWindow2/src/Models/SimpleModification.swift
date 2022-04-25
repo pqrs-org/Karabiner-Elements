@@ -1,4 +1,4 @@
-class SimpleModification: Identifiable {
+struct SimpleModification: Identifiable {
   var id = UUID()
   var fromEntry: SimpleModificationDefinitionEntry
   var toEntry: SimpleModificationDefinitionEntry
@@ -17,9 +17,8 @@ class SimpleModification: Identifiable {
 
     do {
       let s = SimpleModification.formatCompactJsonString(string: toJsonString) ?? ""
-      print("to json \(s)")
       self.toEntry = SimpleModificationDefinitionEntry(
-        SimpleModificationDefinitions.shared.toCategories.findLabel(jsonString: s),
+        SimpleModificationDefinitions.shared.toCategoriesWithInheritDefault.findLabel(jsonString: s),
         s
       )
     }
