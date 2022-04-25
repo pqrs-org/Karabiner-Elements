@@ -1,4 +1,4 @@
-class SimpleModificationDefinitionCategory: Identifiable {
+struct SimpleModificationDefinitionCategory: Identifiable {
   var id = UUID()
 
   var name: String
