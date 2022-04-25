@@ -1,4 +1,4 @@
-class ConnectedDevice: Identifiable {
+struct ConnectedDevice: Identifiable {
   var id = UUID()
   var index: Int
   var manufacturerName: String
