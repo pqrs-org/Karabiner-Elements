@@ -58,11 +58,7 @@ struct FunctionKeysView: View {
         .frame(width: 250)
 
         VStack {
-          FnFunctionKeysView(
-            fnFunctionKeys: selectedDevice == nil
-              ? settings.fnFunctionKeys
-              : settings.findConnectedDeviceSetting(selectedDevice!)?.fnFunctionKeys ?? []
-          )
+          FnFunctionKeysView(selectedDevice: selectedDevice)
 
           Spacer()
         }
@@ -72,21 +68,36 @@ struct FunctionKeysView: View {
   }
 
   struct FnFunctionKeysView: View {
-    @State var fnFunctionKeys: [SimpleModification]
+    private let selectedDevice: ConnectedDevice?
+    private let fnFunctionKeys: [SimpleModification]
+
+    init(selectedDevice: ConnectedDevice?) {
+      self.selectedDevice = selectedDevice
+      self.fnFunctionKeys =
+        selectedDevice == nil
+        ? Settings.shared.fnFunctionKeys
+        : Settings.shared.findConnectedDeviceSetting(selectedDevice!)?.fnFunctionKeys ?? []
+    }
 
     var body: some View {
-      List {
-        VStack(alignment: .leading, spacing: 0) {
-          ForEach($fnFunctionKeys) { $fnFunctionKey in
-            HStack {
-              Text(fnFunctionKey.fromEntry.label)
-                .frame(width: 40)
+      VStack(alignment: .leading, spacing: 0) {
+        ForEach(fnFunctionKeys) { fnFunctionKey in
+          HStack {
+            Text(fnFunctionKey.fromEntry.label)
+              .frame(width: 40)
 
-              SimpleModificationPickerView(
-                categories: SimpleModificationDefinitions.shared.toCategories,
-                entry: fnFunctionKey.toEntry
-              )
-            }
+            SimpleModificationPickerView(
+              categories: selectedDevice == nil
+                ? SimpleModificationDefinitions.shared.toCategories
+                : SimpleModificationDefinitions.shared.toCategoriesWithInheritDefault,
+              label: fnFunctionKey.toEntry.label,
+              action: { json in
+                Settings.shared.updateFnFunctionKey(
+                  fromJson: fnFunctionKey.fromEntry.json,
+                  toJson: json,
+                  device: selectedDevice)
+              }
+            )
           }
         }
       }
