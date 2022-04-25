@@ -165,6 +165,24 @@ final class Settings: ObservableObject {
     fnFunctionKeys = makeFnFunctionKeys(nil)
   }
 
+  public func updateFnFunctionKey(
+    fromJson: String,
+    toJson: String,
+    device: ConnectedDevice?
+  ) {
+    libkrbn_core_configuration_replace_selected_profile_fn_function_key2(
+      libkrbnCoreConfiguration,
+      fromJson.cString(using: .utf8),
+      toJson.cString(using: .utf8),
+      device != nil,
+      device?.vendorId ?? 0,
+      device?.productId ?? 0,
+      device?.isKeyboard ?? false,
+      device?.isPointingDevice ?? false
+    )
+    save()
+  }
+
   //
   // Complex modifications
   //
