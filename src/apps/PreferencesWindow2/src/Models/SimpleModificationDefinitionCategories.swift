@@ -1,4 +1,6 @@
-class SimpleModificationDefinitionCategories: Identifiable {
+struct SimpleModificationDefinitionCategories: Identifiable {
+  var id = UUID()
+
   var categories: [SimpleModificationDefinitionCategory] = []
 
   func findLabel(jsonString: String) -> String {
