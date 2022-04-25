@@ -1,14 +1,16 @@
 import SwiftUI
 
-public class SimpleModificationDefinitions {
+public struct SimpleModificationDefinitions {
   public static let shared = SimpleModificationDefinitions()
 
   private(set) var fromCategories: SimpleModificationDefinitionCategories
   private(set) var toCategories: SimpleModificationDefinitionCategories
+  private(set) var toCategoriesWithInheritDefault: SimpleModificationDefinitionCategories
 
   init() {
     fromCategories = SimpleModificationDefinitionCategories()
     toCategories = SimpleModificationDefinitionCategories()
+    toCategoriesWithInheritDefault = SimpleModificationDefinitionCategories()
 
     if let path = Bundle.main.path(forResource: "simple_modifications", ofType: "json") {
       if let jsonData = try? Data(contentsOf: URL(fileURLWithPath: path)) {
@@ -68,6 +70,21 @@ public class SimpleModificationDefinitions {
             toCategories.categories.append(toCategory)
           }
         }
+      }
+    }
+
+    //
+    // Make toCategoriesWithInheritDefault
+    //
+
+    do {
+      var inheritDefaultKeyCategory = SimpleModificationDefinitionCategory("Inherit default key")
+      inheritDefaultKeyCategory.entries.append(
+        SimpleModificationDefinitionEntry("--- (Inherit default key)", "[]"))
+
+      toCategoriesWithInheritDefault.categories.append(inheritDefaultKeyCategory)
+      toCategories.categories.forEach { category in
+        toCategoriesWithInheritDefault.categories.append(category)
       }
     }
   }
