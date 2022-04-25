@@ -1,17 +1,18 @@
 import SwiftUI
 
 struct SimpleModificationPickerView: View {
-  @State var categories: SimpleModificationDefinitionCategories
-  @State var entry: SimpleModificationDefinitionEntry
+  var categories: SimpleModificationDefinitionCategories
+  var label: String
+  var action: (_ json: String) -> Void
 
   var body: some View {
-    Menu(entry.label) {
-      ForEach($categories.categories) { $category in
+    Menu(label) {
+      ForEach(categories.categories) { category in
         Menu(category.name) {
-          ForEach($category.entries) { $e in
+          ForEach(category.entries) { e in
             Button(
               action: {
-                entry = e
+                action(e.json)
               },
               label: {
                 Text(e.label)
