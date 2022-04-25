@@ -1,4 +1,4 @@
-class SimpleModificationDefinitionEntry: Identifiable, Equatable {
+struct SimpleModificationDefinitionEntry: Identifiable, Equatable {
   var id = UUID()
 
   var label: String
@@ -12,7 +12,9 @@ class SimpleModificationDefinitionEntry: Identifiable, Equatable {
     self.json = json
   }
 
-  public static func == (lhs: SimpleModificationDefinitionEntry, rhs: SimpleModificationDefinitionEntry) -> Bool {
+  public static func == (
+    lhs: SimpleModificationDefinitionEntry, rhs: SimpleModificationDefinitionEntry
+  ) -> Bool {
     lhs.label == rhs.label && lhs.json == rhs.json
   }
 }
