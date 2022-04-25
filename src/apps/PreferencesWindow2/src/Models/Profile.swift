@@ -1,4 +1,4 @@
-class Profile: Identifiable {
+struct Profile: Identifiable {
   var id = UUID()
   var index: Int
   var name: String
