@@ -80,7 +80,7 @@ struct FunctionKeysView: View {
     }
 
     var body: some View {
-      VStack(alignment: .leading, spacing: 0) {
+      VStack(alignment: .leading, spacing: 6.0) {
         ForEach(fnFunctionKeys) { fnFunctionKey in
           HStack {
             Text(fnFunctionKey.fromEntry.label)
@@ -99,8 +99,11 @@ struct FunctionKeysView: View {
               }
             )
           }
+
+          Divider()
         }
       }
+      .background(Color(NSColor.textBackgroundColor))
     }
   }
 }
