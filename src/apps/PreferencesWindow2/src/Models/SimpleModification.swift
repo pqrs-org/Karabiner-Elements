@@ -18,7 +18,7 @@ struct SimpleModification: Identifiable {
     do {
       let s = SimpleModification.formatCompactJsonString(string: toJsonString) ?? ""
       self.toEntry = SimpleModificationDefinitionEntry(
-        SimpleModificationDefinitions.shared.toCategoriesWithInheritDefault.findLabel(jsonString: s),
+        SimpleModificationDefinitions.shared.toCategoriesWithInheritBase.findLabel(jsonString: s),
         s
       )
     }

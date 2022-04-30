@@ -89,7 +89,7 @@ struct FunctionKeysView: View {
             SimpleModificationPickerView(
               categories: selectedDevice == nil
                 ? SimpleModificationDefinitions.shared.toCategories
-                : SimpleModificationDefinitions.shared.toCategoriesWithInheritDefault,
+                : SimpleModificationDefinitions.shared.toCategoriesWithInheritBase,
               label: fnFunctionKey.toEntry.label,
               action: { json in
                 Settings.shared.updateFnFunctionKey(

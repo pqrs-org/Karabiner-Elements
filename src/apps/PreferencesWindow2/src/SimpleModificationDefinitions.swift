@@ -5,12 +5,12 @@ public struct SimpleModificationDefinitions {
 
   private(set) var fromCategories: SimpleModificationDefinitionCategories
   private(set) var toCategories: SimpleModificationDefinitionCategories
-  private(set) var toCategoriesWithInheritDefault: SimpleModificationDefinitionCategories
+  private(set) var toCategoriesWithInheritBase: SimpleModificationDefinitionCategories
 
   init() {
     fromCategories = SimpleModificationDefinitionCategories()
     toCategories = SimpleModificationDefinitionCategories()
-    toCategoriesWithInheritDefault = SimpleModificationDefinitionCategories()
+    toCategoriesWithInheritBase = SimpleModificationDefinitionCategories()
 
     if let path = Bundle.main.path(forResource: "simple_modifications", ofType: "json") {
       if let jsonData = try? Data(contentsOf: URL(fileURLWithPath: path)) {
@@ -74,17 +74,17 @@ public struct SimpleModificationDefinitions {
     }
 
     //
-    // Make toCategoriesWithInheritDefault
+    // Make toCategoriesWithInheritBase
     //
 
     do {
-      var inheritDefaultKeyCategory = SimpleModificationDefinitionCategory("Inherit default key")
-      inheritDefaultKeyCategory.entries.append(
-        SimpleModificationDefinitionEntry("--- (Inherit default key)", "[]"))
+      var inheritBaseKeyCategory = SimpleModificationDefinitionCategory("Inherit the base setting")
+      inheritBaseKeyCategory.entries.append(
+        SimpleModificationDefinitionEntry("--- (Inherit the base setting)", "[]"))
 
-      toCategoriesWithInheritDefault.categories.append(inheritDefaultKeyCategory)
+      toCategoriesWithInheritBase.categories.append(inheritBaseKeyCategory)
       toCategories.categories.forEach { category in
-        toCategoriesWithInheritDefault.categories.append(category)
+        toCategoriesWithInheritBase.categories.append(category)
       }
     }
   }
