@@ -33,6 +33,7 @@ class ConnectedDeviceSetting: Identifiable {
         connectedDevice.isPointingDevice)
     self.disableBuiltInKeyboardIfExists = disableBuiltInKeyboardIfExists
 
+    simpleModifications = Settings.shared.makeSimpleModifications(connectedDevice)
     fnFunctionKeys = Settings.shared.makeFnFunctionKeys(connectedDevice)
 
     didSetEnabled = true
@@ -83,5 +84,6 @@ class ConnectedDeviceSetting: Identifiable {
     }
   }
 
+  @Published var simpleModifications: [SimpleModification] = []
   @Published var fnFunctionKeys: [SimpleModification] = []
 }

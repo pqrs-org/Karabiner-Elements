@@ -1,27 +1,70 @@
 import SwiftUI
 
 struct SimpleModificationsView: View {
-  @ObservedObject private var contentViewStates = ContentViewStates.shared
+  @ObservedObject private var settings = Settings.shared
+  @State private var selectedDevice: ConnectedDevice? = nil
 
   var body: some View {
     VStack(alignment: .leading, spacing: 12.0) {
-      Text("Simple Modifications")
+      HStack(alignment: .top, spacing: 12.0) {
+        DeviceSelectorView(selectedDevice: $selectedDevice)
 
-      Button(action: {
-        contentViewStates.navigationSelection = NavigationTag.complexModifications.rawValue
+        VStack {
+          SimpleModificationView(selectedDevice: selectedDevice)
 
-        ComplexModificationsFileImport.shared.fetchJson(
-          URL(string: "https://ke-complex-modifications.pqrs.org/json/personal_tekezo.json")!
-          //URL(string: "https://ke-complex-modifications.pqrs.org/json/personal_tekezo2.json")!
-        )
+          Spacer()
+        }
 
-        contentViewStates.complexModificationsSheetView = ComplexModificationsSheetView.fileImport
-        contentViewStates.complexModificationsSheetPresented = true
-      }) {
-        Label("Debug", systemImage: "hammer.fill")
+        Spacer()
       }
     }
     .padding()
+  }
+
+  struct SimpleModificationView: View {
+    private let selectedDevice: ConnectedDevice?
+    private let simpleModifications: [SimpleModification]
+
+    init(selectedDevice: ConnectedDevice?) {
+      self.selectedDevice = selectedDevice
+      self.simpleModifications =
+        selectedDevice == nil
+        ? Settings.shared.simpleModifications
+        : Settings.shared.findConnectedDeviceSetting(selectedDevice!)?.simpleModifications ?? []
+    }
+
+    var body: some View {
+      VStack(alignment: .leading, spacing: 6.0) {
+        ForEach(simpleModifications) { simpleModification in
+          HStack {
+            SimpleModificationPickerView(
+              categories: SimpleModificationDefinitions.shared.fromCategories,
+              label: simpleModification.fromEntry.label,
+              action: { json in
+                //Settings.shared.updateFnFunctionKey(
+                //  fromJson: simpleModification.fromEntry.json,
+                //  toJson: json,
+                //  device: selectedDevice)
+              }
+            )
+
+            SimpleModificationPickerView(
+              categories: SimpleModificationDefinitions.shared.toCategories,
+              label: simpleModification.toEntry.label,
+              action: { json in
+                //Settings.shared.updateFnFunctionKey(
+                //  fromJson: fnFunctionKey.fromEntry.json,
+                //  toJson: json,
+                //  device: selectedDevice)
+              }
+            )
+          }
+
+          Divider()
+        }
+      }
+      .background(Color(NSColor.textBackgroundColor))
+    }
   }
 }
 

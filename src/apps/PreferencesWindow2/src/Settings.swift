@@ -54,7 +54,8 @@ final class Settings: ObservableObject {
 
     libkrbnCoreConfiguration = initializedCoreConfiguration
 
-    updateFnFunctionKeys()
+    simpleModifications = makeSimpleModifications(nil)
+    fnFunctionKeys = makeFnFunctionKeys(nil)
 
     updateComplexModificationsRules()
     complexModificationsParameterToIfAloneTimeoutMilliseconds = Int(
@@ -115,6 +116,53 @@ final class Settings: ObservableObject {
   }
 
   //
+  // Simple Modifications
+  //
+
+  @Published var simpleModifications: [SimpleModification] = []
+
+  public func makeSimpleModifications(_ connectedDevice: ConnectedDevice?) -> [SimpleModification] {
+    var result: [SimpleModification] = []
+
+    let size = libkrbn_core_configuration_get_selected_profile_simple_modifications_size2(
+      libkrbnCoreConfiguration,
+      connectedDevice != nil,
+      connectedDevice?.vendorId ?? 0,
+      connectedDevice?.productId ?? 0,
+      connectedDevice?.isKeyboard ?? false,
+      connectedDevice?.isPointingDevice ?? false)
+
+    for i in 0..<size {
+      let simpleModification = SimpleModification(
+        String(
+          cString:
+            libkrbn_core_configuration_get_selected_profile_simple_modification_from_json_string2(
+              libkrbnCoreConfiguration,
+              i,
+              connectedDevice != nil,
+              connectedDevice?.vendorId ?? 0,
+              connectedDevice?.productId ?? 0,
+              connectedDevice?.isKeyboard ?? false,
+              connectedDevice?.isPointingDevice ?? false)),
+        String(
+          cString:
+            libkrbn_core_configuration_get_selected_profile_simple_modification_to_json_string2(
+              libkrbnCoreConfiguration,
+              i,
+              connectedDevice != nil,
+              connectedDevice?.vendorId ?? 0,
+              connectedDevice?.productId ?? 0,
+              connectedDevice?.isKeyboard ?? false,
+              connectedDevice?.isPointingDevice ?? false))
+      )
+
+      result.append(simpleModification)
+    }
+
+    return result
+  }
+
+  //
   // Fn Function Keys
   //
 
@@ -159,10 +207,6 @@ final class Settings: ObservableObject {
     }
 
     return result
-  }
-
-  private func updateFnFunctionKeys() {
-    fnFunctionKeys = makeFnFunctionKeys(nil)
   }
 
   public func updateFnFunctionKey(
