@@ -3,9 +3,7 @@ import SwiftUI
 
 @NSApplicationMain
 public class AppDelegate: NSObject, NSApplicationDelegate {
-  @IBOutlet var window: NSWindow!
-  @IBOutlet var systemPreferencesManager: SystemPreferencesManager!
-  @IBOutlet var stateJsonMonitor: StateJsonMonitor!
+  private var window: NSWindow?
   private var updaterMode = false
 
   override public init() {
@@ -28,9 +26,6 @@ public class AppDelegate: NSObject, NSApplicationDelegate {
 
     KarabinerKit.setup()
     KarabinerKit.observeConsoleUserServerIsDisabledNotification()
-
-    systemPreferencesManager.setup()
-    stateJsonMonitor.start()
 
     NotificationCenter.default.addObserver(
       forName: Updater.didFindValidUpdate,
@@ -114,6 +109,13 @@ public class AppDelegate: NSObject, NSApplicationDelegate {
 
     window!.makeKeyAndOrderFront(self)
     NSApp.activate(ignoringOtherApps: true)
+
+    //
+    // Start StateJsonMonitor
+    //
+
+    AlertWindowsManager.shared.parentWindow = window
+    StateJsonMonitor.shared.start()
   }
 
   public func applicationWillTerminate(_: Notification) {
@@ -179,12 +181,14 @@ public class AppDelegate: NSObject, NSApplicationDelegate {
         }
       }
 
-      let alert = NSAlert()
-      alert.messageText = "Error"
-      alert.informativeText = "Unknown URL"
-      alert.addButton(withTitle: "OK")
+      if let window = self.window {
+        let alert = NSAlert()
+        alert.messageText = "Error"
+        alert.informativeText = "Unknown URL"
+        alert.addButton(withTitle: "OK")
 
-      alert.beginSheetModal(for: self.window) { _ in
+        alert.beginSheetModal(for: window) { _ in
+        }
       }
     }
   }

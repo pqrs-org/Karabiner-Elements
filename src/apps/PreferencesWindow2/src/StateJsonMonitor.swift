@@ -22,7 +22,8 @@ private struct State: Codable {
 
 @objc
 public class StateJsonMonitor: NSObject {
-  @IBOutlet private var alertWindowsManager: AlertWindowsManager!
+  static let shared = StateJsonMonitor()
+
   private var states: [String: State] = [:]
   private var driverVersionNotMatchedAlertViewShown = false
 
@@ -76,15 +77,15 @@ public class StateJsonMonitor: NSObject {
       // do nothing here to prevent showing DriverNotLoadedAlertWindow after the driver is deactivated.
     } else {
       if driverNotLoaded {
-        alertWindowsManager.showDriverNotLoadedAlertWindow()
+        AlertWindowsManager.shared.showDriverNotLoadedAlertWindow()
       } else {
-        alertWindowsManager.hideDriverNotLoadedAlertWindow()
+        AlertWindowsManager.shared.hideDriverNotLoadedAlertWindow()
 
         if driverVersionNotMatched {
-          alertWindowsManager.showDriverVersionNotMatchedAlertWindow()
+          AlertWindowsManager.shared.showDriverVersionNotMatchedAlertWindow()
           driverVersionNotMatchedAlertViewShown = true
         } else {
-          alertWindowsManager.hideDriverVersionNotMatchedAlertWindow()
+          AlertWindowsManager.shared.hideDriverVersionNotMatchedAlertWindow()
         }
       }
     }
@@ -94,9 +95,9 @@ public class StateJsonMonitor: NSObject {
     //
 
     if inputMonitoringNotPermitted {
-      alertWindowsManager.showInputMonitoringPermissionsAlertWindow()
+      AlertWindowsManager.shared.showInputMonitoringPermissionsAlertWindow()
     } else {
-      alertWindowsManager.hideInputMonitoringPermissionsAlertWindow()
+      AlertWindowsManager.shared.hideInputMonitoringPermissionsAlertWindow()
     }
   }
 }
