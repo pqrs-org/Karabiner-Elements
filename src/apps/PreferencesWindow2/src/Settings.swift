@@ -166,15 +166,15 @@ final class Settings: ObservableObject {
 
   public func updateSimpleModification(
     index: Int,
-    fromJson: String,
-    toJson: String,
+    fromJsonString: String,
+    toJsonString: String,
     device: ConnectedDevice?
   ) {
     libkrbn_core_configuration_replace_selected_profile_simple_modification2(
       libkrbnCoreConfiguration,
       index,
-      fromJson.cString(using: .utf8),
-      toJson.cString(using: .utf8),
+      fromJsonString.cString(using: .utf8),
+      toJsonString.cString(using: .utf8),
       device != nil,
       device?.vendorId ?? 0,
       device?.productId ?? 0,
@@ -193,8 +193,54 @@ final class Settings: ObservableObject {
       device?.isKeyboard ?? false,
       device?.isPointingDevice ?? false
     )
-    // We have not to call `save()` here.
+    // Do not to call `save()` here because partial settings will be erased at save.
     updateProperties(libkrbnCoreConfiguration)
+  }
+
+  public func appendSimpleModification(
+    jsonString: String,
+    device: ConnectedDevice?
+  ) {
+    if let jsonData = jsonString.data(using: .utf8) {
+      if let jsonDict = try? JSONSerialization.jsonObject(with: jsonData, options: [])
+        as? [String: Any]
+      {
+        let fromJsonString =
+          SimpleModification.formatCompactJsonString(jsonObject: jsonDict["from"] ?? "") ?? "{}"
+        let toJsonString =
+          SimpleModification.formatCompactJsonString(jsonObject: jsonDict["to"] ?? "") ?? "[]"
+
+        libkrbn_core_configuration_push_back_selected_profile_simple_modification2(
+          libkrbnCoreConfiguration,
+          device != nil,
+          device?.vendorId ?? 0,
+          device?.productId ?? 0,
+          device?.isKeyboard ?? false,
+          device?.isPointingDevice ?? false)
+
+        let size = libkrbn_core_configuration_get_selected_profile_simple_modifications_size2(
+          libkrbnCoreConfiguration,
+          device != nil,
+          device?.vendorId ?? 0,
+          device?.productId ?? 0,
+          device?.isKeyboard ?? false,
+          device?.isPointingDevice ?? false)
+
+        libkrbn_core_configuration_replace_selected_profile_simple_modification2(
+          libkrbnCoreConfiguration,
+          size - 1,
+          fromJsonString.cString(using: .utf8),
+          toJsonString.cString(using: .utf8),
+          device != nil,
+          device?.vendorId ?? 0,
+          device?.productId ?? 0,
+          device?.isKeyboard ?? false,
+          device?.isPointingDevice ?? false)
+
+        // Do not to call `save()` here because partial settings will be erased at save.
+        updateProperties(libkrbnCoreConfiguration)
+      }
+    }
   }
 
   public func removeSimpleModification(
@@ -265,14 +311,14 @@ final class Settings: ObservableObject {
   }
 
   public func updateFnFunctionKey(
-    fromJson: String,
-    toJson: String,
+    fromJsonString: String,
+    toJsonString: String,
     device: ConnectedDevice?
   ) {
     libkrbn_core_configuration_replace_selected_profile_fn_function_key2(
       libkrbnCoreConfiguration,
-      fromJson.cString(using: .utf8),
-      toJson.cString(using: .utf8),
+      fromJsonString.cString(using: .utf8),
+      toJsonString.cString(using: .utf8),
       device != nil,
       device?.vendorId ?? 0,
       device?.productId ?? 0,
