@@ -54,7 +54,9 @@ struct FunctionKeysView: View {
 
           Divider()
         }
+        Spacer()
       }
+      .padding(10)
       .background(Color(NSColor.textBackgroundColor))
     }
   }

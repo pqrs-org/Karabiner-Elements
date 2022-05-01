@@ -7,24 +7,21 @@ struct SimpleModification: Identifiable {
   init(
     index: Int,
     fromJsonString: String,
-    toJsonString: String
+    toJsonString: String,
+    toCategories: SimpleModificationDefinitionCategories
   ) {
     self.index = index
 
     do {
       let s = SimpleModification.formatCompactJsonString(string: fromJsonString) ?? ""
-      self.fromEntry = SimpleModificationDefinitionEntry(
-        SimpleModificationDefinitions.shared.fromCategories.findLabel(jsonString: s),
-        s
-      )
+      let label = SimpleModificationDefinitions.shared.fromCategories.findLabel(jsonString: s)
+      self.fromEntry = SimpleModificationDefinitionEntry(label, s)
     }
 
     do {
       let s = SimpleModification.formatCompactJsonString(string: toJsonString) ?? ""
-      self.toEntry = SimpleModificationDefinitionEntry(
-        SimpleModificationDefinitions.shared.toCategoriesWithInheritBase.findLabel(jsonString: s),
-        s
-      )
+      let label = toCategories.findLabel(jsonString: s)
+      self.toEntry = SimpleModificationDefinitionEntry(label, s)
     }
   }
 

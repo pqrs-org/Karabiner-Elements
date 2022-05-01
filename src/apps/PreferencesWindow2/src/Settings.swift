@@ -154,7 +154,8 @@ final class Settings: ObservableObject {
               connectedDevice?.vendorId ?? 0,
               connectedDevice?.productId ?? 0,
               connectedDevice?.isKeyboard ?? false,
-              connectedDevice?.isPointingDevice ?? false))
+              connectedDevice?.isPointingDevice ?? false)),
+        toCategories: SimpleModificationDefinitions.shared.toCategories
       )
 
       result.append(simpleModification)
@@ -174,6 +175,35 @@ final class Settings: ObservableObject {
       index,
       fromJson.cString(using: .utf8),
       toJson.cString(using: .utf8),
+      device != nil,
+      device?.vendorId ?? 0,
+      device?.productId ?? 0,
+      device?.isKeyboard ?? false,
+      device?.isPointingDevice ?? false
+    )
+    save()
+  }
+
+  public func appendSimpleModification(device: ConnectedDevice?) {
+    libkrbn_core_configuration_push_back_selected_profile_simple_modification2(
+      libkrbnCoreConfiguration,
+      device != nil,
+      device?.vendorId ?? 0,
+      device?.productId ?? 0,
+      device?.isKeyboard ?? false,
+      device?.isPointingDevice ?? false
+    )
+    // We have not to call `save()` here.
+    updateProperties(libkrbnCoreConfiguration)
+  }
+
+  public func removeSimpleModification(
+    index: Int,
+    device: ConnectedDevice?
+  ) {
+    libkrbn_core_configuration_erase_selected_profile_simple_modification2(
+      libkrbnCoreConfiguration,
+      index,
       device != nil,
       device?.vendorId ?? 0,
       device?.productId ?? 0,
@@ -222,7 +252,10 @@ final class Settings: ObservableObject {
               connectedDevice?.vendorId ?? 0,
               connectedDevice?.productId ?? 0,
               connectedDevice?.isKeyboard ?? false,
-              connectedDevice?.isPointingDevice ?? false))
+              connectedDevice?.isPointingDevice ?? false)),
+        toCategories: connectedDevice == nil
+          ? SimpleModificationDefinitions.shared.toCategories
+          : SimpleModificationDefinitions.shared.toCategoriesWithInheritBase
       )
 
       result.append(simpleModification)

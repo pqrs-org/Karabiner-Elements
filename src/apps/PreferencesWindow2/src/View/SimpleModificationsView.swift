@@ -60,11 +60,37 @@ struct SimpleModificationsView: View {
                   device: selectedDevice)
               }
             )
+
+            Button(action: {
+              Settings.shared.removeSimpleModification(
+                index: simpleModification.index,
+                device: selectedDevice)
+            }) {
+              Image(systemName: "trash.fill")
+                .buttonLabelStyle()
+            }
+            .deleteButtonStyle()
           }
 
           Divider()
         }
+
+        HStack {
+          Button(action: {
+            Settings.shared.appendSimpleModification(device: selectedDevice)
+          }) {
+            Label("Add item", systemImage: "plus.circle.fill")
+          }
+
+          Spacer()
+        }
+        .if(simpleModifications.count > 0) {
+          $0.padding(.top, 20.0)
+        }
+
+        Spacer()
       }
+      .padding(10)
       .background(Color(NSColor.textBackgroundColor))
     }
   }

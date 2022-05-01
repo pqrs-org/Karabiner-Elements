@@ -13,6 +13,10 @@ struct SimpleModificationDefinitionCategories: Identifiable {
         }
       }
 
+      if compactJsonString == "{}" || compactJsonString == "[]" {
+        return "---"
+      }
+
       return compactJsonString
     }
 
