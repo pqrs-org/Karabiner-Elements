@@ -353,7 +353,7 @@ void libkrbn_core_configuration_erase_selected_profile_simple_modification(libkr
   }
 }
 
-void libkrbn_core_configuration_erase_selected_profile_simple_modification(libkrbn_core_configuration* p,
+void libkrbn_core_configuration_erase_selected_profile_simple_modification2(libkrbn_core_configuration* p,
                                                                            size_t index,
                                                                            bool specify_device,
                                                                            uint64_t vendor_id,
