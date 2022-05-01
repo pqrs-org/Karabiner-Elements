@@ -6,9 +6,21 @@ final class ContentViewStates: ObservableObject {
   @Published var navigationSelection: String? = NavigationTag.simpleModifications.rawValue
 
   //
+  // SimpleModificationsView
+  //
+
+  @Published var simpleModificationsViewSelectedDevice: ConnectedDevice?
+
+  //
+  // FunctionKeysView
+  //
+
+  @Published var functionKeysViewSelectedDevice: ConnectedDevice?
+
+  //
   // ComplexModifications
   //
 
-  @Published var complexModificationsSheetPresented: Bool = false
-  @Published var complexModificationsSheetView: ComplexModificationsSheetView?
+  @Published var complexModificationsViewSheetPresented: Bool = false
+  @Published var complexModificationsViewSheetView: ComplexModificationsSheetView?
 }
