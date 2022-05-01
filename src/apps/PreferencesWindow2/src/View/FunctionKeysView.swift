@@ -2,15 +2,15 @@ import SwiftUI
 
 struct FunctionKeysView: View {
   @ObservedObject private var settings = Settings.shared
-  @State private var selectedDevice: ConnectedDevice? = nil
+  @ObservedObject private var contentViewStates = ContentViewStates.shared
 
   var body: some View {
     VStack(alignment: .leading, spacing: 12.0) {
       HStack(alignment: .top, spacing: 12.0) {
-        DeviceSelectorView(selectedDevice: $selectedDevice)
+        DeviceSelectorView(selectedDevice: $contentViewStates.functionKeysViewSelectedDevice)
 
         VStack {
-          FnFunctionKeysView(selectedDevice: selectedDevice)
+          FnFunctionKeysView(selectedDevice: contentViewStates.functionKeysViewSelectedDevice)
 
           Spacer()
         }
@@ -45,8 +45,8 @@ struct FunctionKeysView: View {
               label: fnFunctionKey.toEntry.label,
               action: { json in
                 Settings.shared.updateFnFunctionKey(
-                  fromJson: fnFunctionKey.fromEntry.json,
-                  toJson: json,
+                  fromJsonString: fnFunctionKey.fromEntry.json,
+                  toJsonString: json,
                   device: selectedDevice)
               }
             )

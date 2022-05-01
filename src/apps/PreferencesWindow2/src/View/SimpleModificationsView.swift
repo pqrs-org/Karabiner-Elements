@@ -2,15 +2,16 @@ import SwiftUI
 
 struct SimpleModificationsView: View {
   @ObservedObject private var settings = Settings.shared
-  @State private var selectedDevice: ConnectedDevice? = nil
+  @ObservedObject private var contentViewStates = ContentViewStates.shared
 
   var body: some View {
     VStack(alignment: .leading, spacing: 12.0) {
       HStack(alignment: .top, spacing: 12.0) {
-        DeviceSelectorView(selectedDevice: $selectedDevice)
+        DeviceSelectorView(selectedDevice: $contentViewStates.simpleModificationsViewSelectedDevice)
 
         VStack {
-          SimpleModificationView(selectedDevice: selectedDevice)
+          SimpleModificationView(
+            selectedDevice: contentViewStates.simpleModificationsViewSelectedDevice)
 
           Spacer()
         }
@@ -43,8 +44,8 @@ struct SimpleModificationsView: View {
               action: { json in
                 Settings.shared.updateSimpleModification(
                   index: simpleModification.index,
-                  fromJson: json,
-                  toJson: simpleModification.toEntry.json,
+                  fromJsonString: json,
+                  toJsonString: simpleModification.toEntry.json,
                   device: selectedDevice)
               }
             )
@@ -55,8 +56,8 @@ struct SimpleModificationsView: View {
               action: { json in
                 Settings.shared.updateSimpleModification(
                   index: simpleModification.index,
-                  fromJson: simpleModification.fromEntry.json,
-                  toJson: json,
+                  fromJsonString: simpleModification.fromEntry.json,
+                  toJsonString: json,
                   device: selectedDevice)
               }
             )
