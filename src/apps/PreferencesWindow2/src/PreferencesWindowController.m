@@ -1,23 +1,17 @@
 #import "PreferencesWindowController.h"
-#import "FnFunctionKeysTableViewController.h"
 #import "KarabinerKit/KarabinerKit.h"
 #import "Karabiner_Elements-Swift.h"
 #import "NotificationKeys.h"
-#import "SimpleModificationsMenuManager.h"
-#import "SimpleModificationsTableViewController.h"
 #import "SystemPreferencesManager.h"
 #import "libkrbn/libkrbn.h"
 #import <pqrs/weakify.h>
 
 @interface PreferencesWindowController ()
 
-@property(weak) IBOutlet FnFunctionKeysTableViewController* fnFunctionKeysTableViewController;
 @property(weak) IBOutlet NSButton* useFkeysAsStandardFunctionKeysButton;
 @property(weak) IBOutlet NSTableView* fnFunctionKeysTableView;
 @property(weak) IBOutlet NSTableView* simpleModificationsTableView;
 @property(weak) IBOutlet NSTextField* versionLabel;
-@property(weak) IBOutlet SimpleModificationsMenuManager* simpleModificationsMenuManager;
-@property(weak) IBOutlet SimpleModificationsTableViewController* simpleModificationsTableViewController;
 @property(weak) IBOutlet SystemPreferencesManager* systemPreferencesManager;
 @property KarabinerKitSmartObserverContainer* observers;
 
@@ -28,10 +22,6 @@
 - (void)setup {
   // ----------------------------------------
   // Setup
-
-  [self.simpleModificationsMenuManager setup];
-  [self.simpleModificationsTableViewController setup];
-  [self.fnFunctionKeysTableViewController setup];
 
   self.observers = [KarabinerKitSmartObserverContainer new];
   @weakify(self);

@@ -3,7 +3,6 @@ import SwiftUI
 
 @NSApplicationMain
 public class AppDelegate: NSObject, NSApplicationDelegate {
-  @IBOutlet var simpleModificationsTableViewController: SimpleModificationsTableViewController!
   @IBOutlet var window: NSWindow!
   @IBOutlet var systemPreferencesManager: SystemPreferencesManager!
   @IBOutlet var stateJsonMonitor: StateJsonMonitor!
@@ -153,9 +152,9 @@ public class AppDelegate: NSObject, NSApplicationDelegate {
               ContentViewStates.shared.navigationSelection =
                 NavigationTag.complexModifications.rawValue
 
-              ContentViewStates.shared.complexModificationsSheetView =
+              ContentViewStates.shared.complexModificationsViewSheetView =
                 ComplexModificationsSheetView.fileImport
-              ContentViewStates.shared.complexModificationsSheetPresented = true
+              ContentViewStates.shared.complexModificationsViewSheetPresented = true
               return
             }
           }
@@ -166,9 +165,15 @@ public class AppDelegate: NSObject, NSApplicationDelegate {
         if let queryItems = urlComponents?.queryItems {
           for pair in queryItems {
             if pair.name == "json" {
-              self.simpleModificationsTableViewController.addItem(fromJson: pair.value)
-              self.simpleModificationsTableViewController.openSimpleModificationsTab()
-              return
+              if let jsonString = pair.value {
+                ContentViewStates.shared.navigationSelection =
+                  NavigationTag.simpleModifications.rawValue
+
+                Settings.shared.appendSimpleModification(
+                  jsonString: jsonString,
+                  device: ContentViewStates.shared.simpleModificationsViewSelectedDevice)
+                return
+              }
             }
           }
         }
