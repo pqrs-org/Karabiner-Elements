@@ -149,7 +149,8 @@ void libkrbn_core_configuration_push_back_selected_profile_simple_modification2(
                                                                                 bool is_pointing_device);
 void libkrbn_core_configuration_erase_selected_profile_simple_modification(libkrbn_core_configuration* p, size_t index,
                                                                            const libkrbn_device_identifiers* device_identifiers);
-void libkrbn_core_configuration_erase_selected_profile_simple_modification2(libkrbn_core_configuration* p, size_t index,
+void libkrbn_core_configuration_erase_selected_profile_simple_modification2(libkrbn_core_configuration* p,
+                                                                            size_t index,
                                                                             bool specify_device,
                                                                             uint64_t vendor_id,
                                                                             uint64_t product_id,
