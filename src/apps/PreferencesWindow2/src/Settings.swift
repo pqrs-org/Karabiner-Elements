@@ -134,7 +134,8 @@ final class Settings: ObservableObject {
 
     for i in 0..<size {
       let simpleModification = SimpleModification(
-        String(
+        index: i,
+        fromJsonString: String(
           cString:
             libkrbn_core_configuration_get_selected_profile_simple_modification_from_json_string2(
               libkrbnCoreConfiguration,
@@ -144,7 +145,7 @@ final class Settings: ObservableObject {
               connectedDevice?.productId ?? 0,
               connectedDevice?.isKeyboard ?? false,
               connectedDevice?.isPointingDevice ?? false)),
-        String(
+        toJsonString: String(
           cString:
             libkrbn_core_configuration_get_selected_profile_simple_modification_to_json_string2(
               libkrbnCoreConfiguration,
@@ -160,6 +161,26 @@ final class Settings: ObservableObject {
     }
 
     return result
+  }
+
+  public func updateSimpleModification(
+    index: Int,
+    fromJson: String,
+    toJson: String,
+    device: ConnectedDevice?
+  ) {
+    libkrbn_core_configuration_replace_selected_profile_simple_modification2(
+      libkrbnCoreConfiguration,
+      index,
+      fromJson.cString(using: .utf8),
+      toJson.cString(using: .utf8),
+      device != nil,
+      device?.vendorId ?? 0,
+      device?.productId ?? 0,
+      device?.isKeyboard ?? false,
+      device?.isPointingDevice ?? false
+    )
+    save()
   }
 
   //
@@ -181,7 +202,8 @@ final class Settings: ObservableObject {
 
     for i in 0..<size {
       let simpleModification = SimpleModification(
-        String(
+        index: i,
+        fromJsonString: String(
           cString:
             libkrbn_core_configuration_get_selected_profile_fn_function_key_from_json_string2(
               libkrbnCoreConfiguration,
@@ -191,7 +213,7 @@ final class Settings: ObservableObject {
               connectedDevice?.productId ?? 0,
               connectedDevice?.isKeyboard ?? false,
               connectedDevice?.isPointingDevice ?? false)),
-        String(
+        toJsonString: String(
           cString:
             libkrbn_core_configuration_get_selected_profile_fn_function_key_to_json_string2(
               libkrbnCoreConfiguration,

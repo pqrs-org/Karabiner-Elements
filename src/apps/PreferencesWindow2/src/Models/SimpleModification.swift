@@ -1,12 +1,16 @@
 struct SimpleModification: Identifiable {
   var id = UUID()
+  var index = -1
   var fromEntry: SimpleModificationDefinitionEntry
   var toEntry: SimpleModificationDefinitionEntry
 
   init(
-    _ fromJsonString: String,
-    _ toJsonString: String
+    index: Int,
+    fromJsonString: String,
+    toJsonString: String
   ) {
+    self.index = index
+
     do {
       let s = SimpleModification.formatCompactJsonString(string: fromJsonString) ?? ""
       self.fromEntry = SimpleModificationDefinitionEntry(

@@ -41,10 +41,11 @@ struct SimpleModificationsView: View {
               categories: SimpleModificationDefinitions.shared.fromCategories,
               label: simpleModification.fromEntry.label,
               action: { json in
-                //Settings.shared.updateFnFunctionKey(
-                //  fromJson: simpleModification.fromEntry.json,
-                //  toJson: json,
-                //  device: selectedDevice)
+                Settings.shared.updateSimpleModification(
+                  index: simpleModification.index,
+                  fromJson: json,
+                  toJson: simpleModification.toEntry.json,
+                  device: selectedDevice)
               }
             )
 
@@ -52,10 +53,11 @@ struct SimpleModificationsView: View {
               categories: SimpleModificationDefinitions.shared.toCategories,
               label: simpleModification.toEntry.label,
               action: { json in
-                //Settings.shared.updateFnFunctionKey(
-                //  fromJson: fnFunctionKey.fromEntry.json,
-                //  toJson: json,
-                //  device: selectedDevice)
+                Settings.shared.updateSimpleModification(
+                  index: simpleModification.index,
+                  fromJson: simpleModification.fromEntry.json,
+                  toJson: json,
+                  device: selectedDevice)
               }
             )
           }
