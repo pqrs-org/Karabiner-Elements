@@ -15,7 +15,7 @@ struct ComplexModificationsAssetsView: View {
 
               Button(action: {
                 Settings.shared.addComplexModificationRules(assetFile)
-                contentViewStates.complexModificationsSheetPresented = false
+                contentViewStates.complexModificationsViewSheetPresented = false
               }) {
                 Label("Enable All", systemImage: "plus.circle.fill")
                   .font(.caption)
@@ -46,7 +46,7 @@ struct ComplexModificationsAssetsView: View {
 
                   Button(action: {
                     Settings.shared.addComplexModificationRule(assetRule)
-                    contentViewStates.complexModificationsSheetPresented = false
+                    contentViewStates.complexModificationsViewSheetPresented = false
                   }) {
                     Label("Enable", systemImage: "plus.circle.fill")
                   }
@@ -73,7 +73,7 @@ struct ComplexModificationsAssetsView: View {
       }
 
       Button(action: {
-        contentViewStates.complexModificationsSheetPresented = false
+        contentViewStates.complexModificationsViewSheetPresented = false
       }) {
         Label("Close", systemImage: "xmark")
           .frame(minWidth: 0, maxWidth: .infinity)

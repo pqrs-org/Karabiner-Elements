@@ -42,7 +42,7 @@ struct ComplexModificationsFileImportView: View {
         Spacer()
 
         Button(action: {
-          contentViewStates.complexModificationsSheetPresented = false
+          contentViewStates.complexModificationsViewSheetPresented = false
         }) {
           Label("Cancel", systemImage: "xmark")
         }
@@ -53,7 +53,7 @@ struct ComplexModificationsFileImportView: View {
         Button(action: {
           complexModificationsFileImport.save()
 
-          contentViewStates.complexModificationsSheetView = ComplexModificationsSheetView.assets
+          contentViewStates.complexModificationsViewSheetView = ComplexModificationsSheetView.assets
         }) {
           Label("Import", systemImage: "tray.and.arrow.down.fill")
             .buttonLabelStyle()

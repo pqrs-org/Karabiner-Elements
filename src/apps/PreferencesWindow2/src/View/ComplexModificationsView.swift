@@ -63,15 +63,15 @@ struct ComplexModificationsView: View {
       }
 
       Button(action: {
-        contentViewStates.complexModificationsSheetView = ComplexModificationsSheetView.assets
-        contentViewStates.complexModificationsSheetPresented = true
+        contentViewStates.complexModificationsViewSheetView = ComplexModificationsSheetView.assets
+        contentViewStates.complexModificationsViewSheetPresented = true
       }) {
         Label("Add rule", systemImage: "plus.circle.fill")
       }
     }
     .padding()
-    .sheet(isPresented: $contentViewStates.complexModificationsSheetPresented) {
-      if let sheetView = contentViewStates.complexModificationsSheetView {
+    .sheet(isPresented: $contentViewStates.complexModificationsViewSheetPresented) {
+      if let sheetView = contentViewStates.complexModificationsViewSheetView {
         switch sheetView {
         case ComplexModificationsSheetView.assets:
           ComplexModificationsAssetsView()
