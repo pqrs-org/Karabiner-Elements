@@ -3179,7 +3179,7 @@
     },
     {
         "not_from": true,
-        "label": "dashboard",
+        "label": "key_code::dashboard",
         "data": [
             {
                 "key_code": "dashboard"
@@ -3197,7 +3197,7 @@
     },
     {
         "not_from": true,
-        "label": "launchpad",
+        "label": "key_code::launchpad",
         "data": [
             {
                 "key_code": "launchpad"
@@ -3206,7 +3206,7 @@
     },
     {
         "not_from": true,
-        "label": "mission_control",
+        "label": "key_code::mission_control",
         "data": [
             {
                 "key_code": "mission_control"
@@ -3232,7 +3232,7 @@
         ]
     },
     {
-        "label": "fn",
+        "label": "key_code::fn",
         "data": [
             {
                 "key_code": "fn"
