@@ -9,11 +9,7 @@
 @interface PreferencesWindowController ()
 
 @property(weak) IBOutlet NSButton* useFkeysAsStandardFunctionKeysButton;
-@property(weak) IBOutlet NSTableView* fnFunctionKeysTableView;
-@property(weak) IBOutlet NSTableView* simpleModificationsTableView;
-@property(weak) IBOutlet NSTextField* versionLabel;
 @property(weak) IBOutlet SystemPreferencesManager* systemPreferencesManager;
-@property KarabinerKitSmartObserverContainer* observers;
 
 @end
 
@@ -21,47 +17,7 @@
 
 - (void)setup {
   // ----------------------------------------
-  // Setup
-
-  self.observers = [KarabinerKitSmartObserverContainer new];
-  @weakify(self);
-
-  {
-    NSNotificationCenter* center = [NSNotificationCenter defaultCenter];
-    id o = [center addObserverForName:kKarabinerKitConfigurationIsLoaded
-                               object:nil
-                                queue:[NSOperationQueue mainQueue]
-                           usingBlock:^(NSNotification* note) {
-                             @strongify(self);
-                             if (!self) {
-                               return;
-                             }
-                           }];
-    [self.observers addObserver:o notificationCenter:center];
-  }
-  {
-    NSNotificationCenter* center = [NSNotificationCenter defaultCenter];
-    id o = [center addObserverForName:kSystemPreferencesValuesAreUpdated
-                               object:nil
-                                queue:[NSOperationQueue mainQueue]
-                           usingBlock:^(NSNotification* note) {
-                             @strongify(self);
-                             if (!self) {
-                               return;
-                             }
-
-                             [self updateSystemPreferencesUIValues];
-                           }];
-    [self.observers addObserver:o notificationCenter:center];
-  }
-
-  // ----------------------------------------
   // Update UI values
-
-  self.versionLabel.stringValue = [[NSBundle mainBundle] infoDictionary][@"CFBundleVersion"];
-
-  [self.simpleModificationsTableView reloadData];
-  [self.fnFunctionKeysTableView reloadData];
 
   [self updateSystemPreferencesUIValues];
 
@@ -69,11 +25,6 @@
   libkrbn_launchctl_manage_session_monitor();
   libkrbn_launchctl_manage_console_user_server(true);
   // Do not manage grabber_agent and observer_agent because they are designed to run only once.
-}
-
-- (void)show {
-  [self.window makeKeyAndOrderFront:self];
-  [NSApp activateIgnoringOtherApps:YES];
 }
 
 - (void)updateSystemPreferencesUIValues {
