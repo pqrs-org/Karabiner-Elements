@@ -24,7 +24,7 @@ final class Settings: ObservableObject {
   var libkrbnCoreConfiguration: UnsafeMutableRawPointer?
   private var didSetEnabled = false
 
-  init() {
+  private init() {
     updateProperties(nil)
     didSetEnabled = true
 
