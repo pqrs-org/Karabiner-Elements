@@ -20,21 +20,18 @@ private struct State: Codable {
   var hid_device_open_permitted: Bool?
 }
 
-@objc
 public class StateJsonMonitor: NSObject {
   static let shared = StateJsonMonitor()
 
   private var states: [String: State] = [:]
   private var driverVersionNotMatchedAlertViewShown = false
 
-  @objc
   public func start() {
     let obj = unsafeBitCast(self, to: UnsafeMutableRawPointer.self)
     libkrbn_enable_observer_state_json_file_monitor(callback, obj)
     libkrbn_enable_grabber_state_json_file_monitor(callback, obj)
   }
 
-  @objc
   public func stop() {
     libkrbn_disable_observer_state_json_file_monitor()
     libkrbn_disable_grabber_state_json_file_monitor()
