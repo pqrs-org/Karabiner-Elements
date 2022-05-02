@@ -21,10 +21,21 @@ struct ProfilesView: View {
               }
               .padding(.leading, 12.0)
 
+              if !profile.selected {
+                Button(action: {
+                  settings.removeProfile(profile)
+                }) {
+                  Image(systemName: "trash.fill")
+                    .buttonLabelStyle()
+                }
+                .deleteButtonStyle()
+                .padding(.leading, 12.0)
+              }
+
               Spacer()
 
               if profile.selected {
-                Label("Selected", systemImage: "checkmark.square")
+                Label("Selected", systemImage: "checkmark.square.fill")
               } else {
                 Button(action: {
                   settings.selectProfile(profile)
