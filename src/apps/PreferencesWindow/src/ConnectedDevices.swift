@@ -22,7 +22,7 @@ final class ConnectedDevices: ObservableObject {
   static let shared = ConnectedDevices()
   static let didConnectedDevicesUpdate = Notification.Name("didConnectedDevicesUpdate")
 
-  init() {
+  private init() {
     let obj = unsafeBitCast(self, to: UnsafeMutableRawPointer.self)
     libkrbn_enable_connected_devices_monitor(callback, obj)
   }
