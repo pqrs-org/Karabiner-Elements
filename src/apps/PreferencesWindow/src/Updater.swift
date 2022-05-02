@@ -4,13 +4,9 @@ import AppKit
   import Sparkle
 #endif
 
-@objc
 public class Updater: NSObject {
-  @objc
   public static let shared = Updater()
-  @objc
   public static let didFindValidUpdate = Notification.Name("didFindValidUpdate")
-  @objc
   public static let updaterDidNotFindUpdate = Notification.Name("updaterDidNotFindUpdate")
 
   func checkForUpdatesInBackground() {
@@ -24,7 +20,6 @@ public class Updater: NSObject {
     #endif
   }
 
-  @objc
   func checkForUpdatesStableOnly() {
     #if USE_SPARKLE
       let url = feedURL(false)
@@ -36,7 +31,6 @@ public class Updater: NSObject {
     #endif
   }
 
-  @objc
   func checkForUpdatesWithBetaVersion() {
     #if USE_SPARKLE
       let url = feedURL(true)

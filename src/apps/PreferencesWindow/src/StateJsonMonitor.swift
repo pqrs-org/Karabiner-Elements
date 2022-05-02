@@ -20,20 +20,18 @@ private struct State: Codable {
   var hid_device_open_permitted: Bool?
 }
 
-@objc
 public class StateJsonMonitor: NSObject {
-  @IBOutlet private var alertWindowsManager: AlertWindowsManager!
+  static let shared = StateJsonMonitor()
+
   private var states: [String: State] = [:]
   private var driverVersionNotMatchedAlertViewShown = false
 
-  @objc
   public func start() {
     let obj = unsafeBitCast(self, to: UnsafeMutableRawPointer.self)
     libkrbn_enable_observer_state_json_file_monitor(callback, obj)
     libkrbn_enable_grabber_state_json_file_monitor(callback, obj)
   }
 
-  @objc
   public func stop() {
     libkrbn_disable_observer_state_json_file_monitor()
     libkrbn_disable_grabber_state_json_file_monitor()
@@ -76,15 +74,15 @@ public class StateJsonMonitor: NSObject {
       // do nothing here to prevent showing DriverNotLoadedAlertWindow after the driver is deactivated.
     } else {
       if driverNotLoaded {
-        alertWindowsManager.showDriverNotLoadedAlertWindow()
+        AlertWindowsManager.shared.showDriverNotLoadedAlertWindow()
       } else {
-        alertWindowsManager.hideDriverNotLoadedAlertWindow()
+        AlertWindowsManager.shared.hideDriverNotLoadedAlertWindow()
 
         if driverVersionNotMatched {
-          alertWindowsManager.showDriverVersionNotMatchedAlertWindow()
+          AlertWindowsManager.shared.showDriverVersionNotMatchedAlertWindow()
           driverVersionNotMatchedAlertViewShown = true
         } else {
-          alertWindowsManager.hideDriverVersionNotMatchedAlertWindow()
+          AlertWindowsManager.shared.hideDriverVersionNotMatchedAlertWindow()
         }
       }
     }
@@ -94,9 +92,9 @@ public class StateJsonMonitor: NSObject {
     //
 
     if inputMonitoringNotPermitted {
-      alertWindowsManager.showInputMonitoringPermissionsAlertWindow()
+      AlertWindowsManager.shared.showInputMonitoringPermissionsAlertWindow()
     } else {
-      alertWindowsManager.hideInputMonitoringPermissionsAlertWindow()
+      AlertWindowsManager.shared.hideInputMonitoringPermissionsAlertWindow()
     }
   }
 }
