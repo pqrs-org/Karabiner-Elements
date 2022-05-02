@@ -7,30 +7,21 @@ class ConnectedDeviceSetting: Identifiable {
   init(_ connectedDevice: ConnectedDevice) {
     self.connectedDevice = connectedDevice
 
-    let ignore = libkrbn_core_configuration_get_selected_profile_device_ignore2(
+    let ignore = libkrbn_core_configuration_get_selected_profile_device_ignore(
       Settings.shared.libkrbnCoreConfiguration,
-      connectedDevice.vendorId,
-      connectedDevice.productId,
-      connectedDevice.isKeyboard,
-      connectedDevice.isPointingDevice)
+      connectedDevice.libkrbnDeviceIdentifiers)
     modifyEvents = !ignore
 
     let manipulateCapsLockLed =
-      libkrbn_core_configuration_get_selected_profile_device_manipulate_caps_lock_led2(
+      libkrbn_core_configuration_get_selected_profile_device_manipulate_caps_lock_led(
         Settings.shared.libkrbnCoreConfiguration,
-        connectedDevice.vendorId,
-        connectedDevice.productId,
-        connectedDevice.isKeyboard,
-        connectedDevice.isPointingDevice)
+        connectedDevice.libkrbnDeviceIdentifiers)
     self.manipulateCapsLockLed = manipulateCapsLockLed
 
     let disableBuiltInKeyboardIfExists =
-      libkrbn_core_configuration_get_selected_profile_device_disable_built_in_keyboard_if_exists2(
+      libkrbn_core_configuration_get_selected_profile_device_disable_built_in_keyboard_if_exists(
         Settings.shared.libkrbnCoreConfiguration,
-        connectedDevice.vendorId,
-        connectedDevice.productId,
-        connectedDevice.isKeyboard,
-        connectedDevice.isPointingDevice)
+        connectedDevice.libkrbnDeviceIdentifiers)
     self.disableBuiltInKeyboardIfExists = disableBuiltInKeyboardIfExists
 
     simpleModifications = Settings.shared.makeSimpleModifications(connectedDevice)
@@ -42,12 +33,9 @@ class ConnectedDeviceSetting: Identifiable {
   @Published var modifyEvents: Bool = false {
     didSet {
       if didSetEnabled {
-        libkrbn_core_configuration_set_selected_profile_device_ignore2(
+        libkrbn_core_configuration_set_selected_profile_device_ignore(
           Settings.shared.libkrbnCoreConfiguration,
-          connectedDevice.vendorId,
-          connectedDevice.productId,
-          connectedDevice.isKeyboard,
-          connectedDevice.isPointingDevice,
+          connectedDevice.libkrbnDeviceIdentifiers,
           !modifyEvents)
         Settings.shared.save()
       }
@@ -57,12 +45,9 @@ class ConnectedDeviceSetting: Identifiable {
   @Published var manipulateCapsLockLed: Bool = false {
     didSet {
       if didSetEnabled {
-        libkrbn_core_configuration_set_selected_profile_device_manipulate_caps_lock_led2(
+        libkrbn_core_configuration_set_selected_profile_device_manipulate_caps_lock_led(
           Settings.shared.libkrbnCoreConfiguration,
-          connectedDevice.vendorId,
-          connectedDevice.productId,
-          connectedDevice.isKeyboard,
-          connectedDevice.isPointingDevice,
+          connectedDevice.libkrbnDeviceIdentifiers,
           manipulateCapsLockLed)
         Settings.shared.save()
       }
@@ -72,12 +57,9 @@ class ConnectedDeviceSetting: Identifiable {
   @Published var disableBuiltInKeyboardIfExists: Bool = false {
     didSet {
       if didSetEnabled {
-        libkrbn_core_configuration_set_selected_profile_device_disable_built_in_keyboard_if_exists2(
+        libkrbn_core_configuration_set_selected_profile_device_disable_built_in_keyboard_if_exists(
           Settings.shared.libkrbnCoreConfiguration,
-          connectedDevice.vendorId,
-          connectedDevice.productId,
-          connectedDevice.isKeyboard,
-          connectedDevice.isPointingDevice,
+          connectedDevice.libkrbnDeviceIdentifiers,
           disableBuiltInKeyboardIfExists)
         Settings.shared.save()
       }

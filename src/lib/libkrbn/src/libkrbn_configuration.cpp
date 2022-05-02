@@ -14,53 +14,11 @@ krbn::core_configuration::details::simple_modifications* find_simple_modificatio
   return nullptr;
 }
 
-krbn::core_configuration::details::simple_modifications* find_simple_modifications2(libkrbn_core_configuration* p,
-                                                                                    bool specify_device,
-                                                                                    uint64_t vendor_id,
-                                                                                    uint64_t product_id,
-                                                                                    bool is_keyboard,
-                                                                                    bool is_pointing_device) {
-  if (auto c = reinterpret_cast<libkrbn_core_configuration_class*>(p)) {
-    if (specify_device) {
-      return c->get_core_configuration().get_selected_profile().find_simple_modifications(
-          krbn::device_identifiers(
-              pqrs::hid::vendor_id::value_t(vendor_id),
-              pqrs::hid::product_id::value_t(product_id),
-              is_keyboard,
-              is_pointing_device));
-    } else {
-      return &(c->get_core_configuration().get_selected_profile().get_simple_modifications());
-    }
-  }
-  return nullptr;
-}
-
 krbn::core_configuration::details::simple_modifications* find_fn_function_keys(libkrbn_core_configuration* p,
                                                                                const libkrbn_device_identifiers* device_identifiers) {
   if (auto c = reinterpret_cast<libkrbn_core_configuration_class*>(p)) {
     if (device_identifiers) {
       return c->get_core_configuration().get_selected_profile().find_fn_function_keys(libkrbn_cpp::make_device_identifiers(*device_identifiers));
-    } else {
-      return &(c->get_core_configuration().get_selected_profile().get_fn_function_keys());
-    }
-  }
-  return nullptr;
-}
-
-krbn::core_configuration::details::simple_modifications* find_fn_function_keys2(libkrbn_core_configuration* p,
-                                                                                bool specify_device,
-                                                                                uint64_t vendor_id,
-                                                                                uint64_t product_id,
-                                                                                bool is_keyboard,
-                                                                                bool is_pointing_device) {
-  if (auto c = reinterpret_cast<libkrbn_core_configuration_class*>(p)) {
-    if (specify_device) {
-      return c->get_core_configuration().get_selected_profile().find_fn_function_keys(
-          krbn::device_identifiers(
-              pqrs::hid::vendor_id::value_t(vendor_id),
-              pqrs::hid::product_id::value_t(product_id),
-              is_keyboard,
-              is_pointing_device));
     } else {
       return &(c->get_core_configuration().get_selected_profile().get_fn_function_keys());
     }
@@ -204,23 +162,6 @@ size_t libkrbn_core_configuration_get_selected_profile_simple_modifications_size
   return 0;
 }
 
-size_t libkrbn_core_configuration_get_selected_profile_simple_modifications_size2(libkrbn_core_configuration* p,
-                                                                                  bool specify_device,
-                                                                                  uint64_t vendor_id,
-                                                                                  uint64_t product_id,
-                                                                                  bool is_keyboard,
-                                                                                  bool is_pointing_device) {
-  if (auto m = find_simple_modifications2(p,
-                                          specify_device,
-                                          vendor_id,
-                                          product_id,
-                                          is_keyboard,
-                                          is_pointing_device)) {
-    return m->get_pairs().size();
-  }
-  return 0;
-}
-
 const char* libkrbn_core_configuration_get_selected_profile_simple_modification_from_json_string(libkrbn_core_configuration* p,
                                                                                                  size_t index,
                                                                                                  const libkrbn_device_identifiers* device_identifiers) {
@@ -233,52 +174,10 @@ const char* libkrbn_core_configuration_get_selected_profile_simple_modification_
   return nullptr;
 }
 
-const char* libkrbn_core_configuration_get_selected_profile_simple_modification_from_json_string2(libkrbn_core_configuration* p,
-                                                                                                  size_t index,
-                                                                                                  bool specify_device,
-                                                                                                  uint64_t vendor_id,
-                                                                                                  uint64_t product_id,
-                                                                                                  bool is_keyboard,
-                                                                                                  bool is_pointing_device) {
-  if (auto m = find_simple_modifications2(p,
-                                          specify_device,
-                                          vendor_id,
-                                          product_id,
-                                          is_keyboard,
-                                          is_pointing_device)) {
-    const auto& pairs = m->get_pairs();
-    if (index < pairs.size()) {
-      return pairs[index].first.c_str();
-    }
-  }
-  return nullptr;
-}
-
 const char* libkrbn_core_configuration_get_selected_profile_simple_modification_to_json_string(libkrbn_core_configuration* p,
                                                                                                size_t index,
                                                                                                const libkrbn_device_identifiers* device_identifiers) {
   if (auto m = find_simple_modifications(p, device_identifiers)) {
-    const auto& pairs = m->get_pairs();
-    if (index < pairs.size()) {
-      return pairs[index].second.c_str();
-    }
-  }
-  return nullptr;
-}
-
-const char* libkrbn_core_configuration_get_selected_profile_simple_modification_to_json_string2(libkrbn_core_configuration* p,
-                                                                                                size_t index,
-                                                                                                bool specify_device,
-                                                                                                uint64_t vendor_id,
-                                                                                                uint64_t product_id,
-                                                                                                bool is_keyboard,
-                                                                                                bool is_pointing_device) {
-  if (auto m = find_simple_modifications2(p,
-                                          specify_device,
-                                          vendor_id,
-                                          product_id,
-                                          is_keyboard,
-                                          is_pointing_device)) {
     const auto& pairs = m->get_pairs();
     if (index < pairs.size()) {
       return pairs[index].second.c_str();
@@ -300,47 +199,9 @@ void libkrbn_core_configuration_replace_selected_profile_simple_modification(lib
   }
 }
 
-void libkrbn_core_configuration_replace_selected_profile_simple_modification2(libkrbn_core_configuration* p,
-                                                                              size_t index,
-                                                                              const char* from_json_string,
-                                                                              const char* to_json_string,
-                                                                              bool specify_device,
-                                                                              uint64_t vendor_id,
-                                                                              uint64_t product_id,
-                                                                              bool is_keyboard,
-                                                                              bool is_pointing_device) {
-  if (auto m = find_simple_modifications2(p,
-                                          specify_device,
-                                          vendor_id,
-                                          product_id,
-                                          is_keyboard,
-                                          is_pointing_device)) {
-    if (from_json_string &&
-        to_json_string) {
-      m->replace_pair(index, from_json_string, to_json_string);
-    }
-  }
-}
-
 void libkrbn_core_configuration_push_back_selected_profile_simple_modification(libkrbn_core_configuration* p,
                                                                                const libkrbn_device_identifiers* device_identifiers) {
   if (auto m = find_simple_modifications(p, device_identifiers)) {
-    m->push_back_pair();
-  }
-}
-
-void libkrbn_core_configuration_push_back_selected_profile_simple_modification2(libkrbn_core_configuration* p,
-                                                                                bool specify_device,
-                                                                                uint64_t vendor_id,
-                                                                                uint64_t product_id,
-                                                                                bool is_keyboard,
-                                                                                bool is_pointing_device) {
-  if (auto m = find_simple_modifications2(p,
-                                          specify_device,
-                                          vendor_id,
-                                          product_id,
-                                          is_keyboard,
-                                          is_pointing_device)) {
     m->push_back_pair();
   }
 }
@@ -353,43 +214,9 @@ void libkrbn_core_configuration_erase_selected_profile_simple_modification(libkr
   }
 }
 
-void libkrbn_core_configuration_erase_selected_profile_simple_modification2(libkrbn_core_configuration* p,
-                                                                           size_t index,
-                                                                           bool specify_device,
-                                                                           uint64_t vendor_id,
-                                                                           uint64_t product_id,
-                                                                           bool is_keyboard,
-                                                                           bool is_pointing_device) {
-  if (auto m = find_simple_modifications2(p,
-                                          specify_device,
-                                          vendor_id,
-                                          product_id,
-                                          is_keyboard,
-                                          is_pointing_device)) {
-    m->erase_pair(index);
-  }
-}
-
 size_t libkrbn_core_configuration_get_selected_profile_fn_function_keys_size(libkrbn_core_configuration* p,
                                                                              const libkrbn_device_identifiers* device_identifiers) {
   if (auto k = find_fn_function_keys(p, device_identifiers)) {
-    return k->get_pairs().size();
-  }
-  return 0;
-}
-
-size_t libkrbn_core_configuration_get_selected_profile_fn_function_keys_size2(libkrbn_core_configuration* p,
-                                                                              bool specify_device,
-                                                                              uint64_t vendor_id,
-                                                                              uint64_t product_id,
-                                                                              bool is_keyboard,
-                                                                              bool is_pointing_device) {
-  if (auto k = find_fn_function_keys2(p,
-                                      specify_device,
-                                      vendor_id,
-                                      product_id,
-                                      is_keyboard,
-                                      is_pointing_device)) {
     return k->get_pairs().size();
   }
   return 0;
@@ -399,27 +226,6 @@ const char* libkrbn_core_configuration_get_selected_profile_fn_function_key_from
                                                                                              size_t index,
                                                                                              const libkrbn_device_identifiers* device_identifiers) {
   if (auto k = find_fn_function_keys(p, device_identifiers)) {
-    const auto& pairs = k->get_pairs();
-    if (index < pairs.size()) {
-      return pairs[index].first.c_str();
-    }
-  }
-  return nullptr;
-}
-
-const char* libkrbn_core_configuration_get_selected_profile_fn_function_key_from_json_string2(libkrbn_core_configuration* p,
-                                                                                              size_t index,
-                                                                                              bool specify_device,
-                                                                                              uint64_t vendor_id,
-                                                                                              uint64_t product_id,
-                                                                                              bool is_keyboard,
-                                                                                              bool is_pointing_device) {
-  if (auto k = find_fn_function_keys2(p,
-                                      specify_device,
-                                      vendor_id,
-                                      product_id,
-                                      is_keyboard,
-                                      is_pointing_device)) {
     const auto& pairs = k->get_pairs();
     if (index < pairs.size()) {
       return pairs[index].first.c_str();
@@ -440,53 +246,11 @@ const char* libkrbn_core_configuration_get_selected_profile_fn_function_key_to_j
   return nullptr;
 }
 
-const char* libkrbn_core_configuration_get_selected_profile_fn_function_key_to_json_string2(libkrbn_core_configuration* p,
-                                                                                            size_t index,
-                                                                                            bool specify_device,
-                                                                                            uint64_t vendor_id,
-                                                                                            uint64_t product_id,
-                                                                                            bool is_keyboard,
-                                                                                            bool is_pointing_device) {
-  if (auto k = find_fn_function_keys2(p,
-                                      specify_device,
-                                      vendor_id,
-                                      product_id,
-                                      is_keyboard,
-                                      is_pointing_device)) {
-    const auto& pairs = k->get_pairs();
-    if (index < pairs.size()) {
-      return pairs[index].second.c_str();
-    }
-  }
-  return nullptr;
-}
-
 void libkrbn_core_configuration_replace_selected_profile_fn_function_key(libkrbn_core_configuration* p,
                                                                          const char* from_json_string,
                                                                          const char* to_json_string,
                                                                          const libkrbn_device_identifiers* device_identifiers) {
   if (auto k = find_fn_function_keys(p, device_identifiers)) {
-    if (from_json_string &&
-        to_json_string) {
-      k->replace_second(from_json_string, to_json_string);
-    }
-  }
-}
-
-void libkrbn_core_configuration_replace_selected_profile_fn_function_key2(libkrbn_core_configuration* p,
-                                                                          const char* from_json_string,
-                                                                          const char* to_json_string,
-                                                                          bool specify_device,
-                                                                          uint64_t vendor_id,
-                                                                          uint64_t product_id,
-                                                                          bool is_keyboard,
-                                                                          bool is_pointing_device) {
-  if (auto k = find_fn_function_keys2(p,
-                                      specify_device,
-                                      vendor_id,
-                                      product_id,
-                                      is_keyboard,
-                                      is_pointing_device)) {
     if (from_json_string &&
         to_json_string) {
       k->replace_second(from_json_string, to_json_string);
@@ -626,22 +390,6 @@ bool libkrbn_core_configuration_get_selected_profile_device_ignore(libkrbn_core_
   return false;
 }
 
-bool libkrbn_core_configuration_get_selected_profile_device_ignore2(libkrbn_core_configuration* p,
-                                                                    uint64_t vendor_id,
-                                                                    uint64_t product_id,
-                                                                    bool is_keyboard,
-                                                                    bool is_pointing_device) {
-  if (auto c = reinterpret_cast<libkrbn_core_configuration_class*>(p)) {
-    return c->get_core_configuration().get_selected_profile().get_device_ignore(
-        krbn::device_identifiers(
-            pqrs::hid::vendor_id::value_t(vendor_id),
-            pqrs::hid::product_id::value_t(product_id),
-            is_keyboard,
-            is_pointing_device));
-  }
-  return false;
-}
-
 void libkrbn_core_configuration_set_selected_profile_device_ignore(libkrbn_core_configuration* p,
                                                                    const libkrbn_device_identifiers* device_identifiers,
                                                                    bool value) {
@@ -653,23 +401,6 @@ void libkrbn_core_configuration_set_selected_profile_device_ignore(libkrbn_core_
   }
 }
 
-void libkrbn_core_configuration_set_selected_profile_device_ignore2(libkrbn_core_configuration* p,
-                                                                    uint64_t vendor_id,
-                                                                    uint64_t product_id,
-                                                                    bool is_keyboard,
-                                                                    bool is_pointing_device,
-                                                                    bool value) {
-  if (auto c = reinterpret_cast<libkrbn_core_configuration_class*>(p)) {
-    c->get_core_configuration().get_selected_profile().set_device_ignore(
-        krbn::device_identifiers(
-            pqrs::hid::vendor_id::value_t(vendor_id),
-            pqrs::hid::product_id::value_t(product_id),
-            is_keyboard,
-            is_pointing_device),
-        value);
-  }
-}
-
 bool libkrbn_core_configuration_get_selected_profile_device_manipulate_caps_lock_led(libkrbn_core_configuration* p,
                                                                                      const libkrbn_device_identifiers* device_identifiers) {
   if (auto c = reinterpret_cast<libkrbn_core_configuration_class*>(p)) {
@@ -677,22 +408,6 @@ bool libkrbn_core_configuration_get_selected_profile_device_manipulate_caps_lock
       auto identifiers = libkrbn_cpp::make_device_identifiers(*device_identifiers);
       return c->get_core_configuration().get_selected_profile().get_device_manipulate_caps_lock_led(identifiers);
     }
-  }
-  return false;
-}
-
-bool libkrbn_core_configuration_get_selected_profile_device_manipulate_caps_lock_led2(libkrbn_core_configuration* p,
-                                                                                      uint64_t vendor_id,
-                                                                                      uint64_t product_id,
-                                                                                      bool is_keyboard,
-                                                                                      bool is_pointing_device) {
-  if (auto c = reinterpret_cast<libkrbn_core_configuration_class*>(p)) {
-    return c->get_core_configuration().get_selected_profile().get_device_manipulate_caps_lock_led(
-        krbn::device_identifiers(
-            pqrs::hid::vendor_id::value_t(vendor_id),
-            pqrs::hid::product_id::value_t(product_id),
-            is_keyboard,
-            is_pointing_device));
   }
   return false;
 }
@@ -708,23 +423,6 @@ void libkrbn_core_configuration_set_selected_profile_device_manipulate_caps_lock
   }
 }
 
-void libkrbn_core_configuration_set_selected_profile_device_manipulate_caps_lock_led2(libkrbn_core_configuration* p,
-                                                                                      uint64_t vendor_id,
-                                                                                      uint64_t product_id,
-                                                                                      bool is_keyboard,
-                                                                                      bool is_pointing_device,
-                                                                                      bool value) {
-  if (auto c = reinterpret_cast<libkrbn_core_configuration_class*>(p)) {
-    c->get_core_configuration().get_selected_profile().set_device_manipulate_caps_lock_led(
-        krbn::device_identifiers(
-            pqrs::hid::vendor_id::value_t(vendor_id),
-            pqrs::hid::product_id::value_t(product_id),
-            is_keyboard,
-            is_pointing_device),
-        value);
-  }
-}
-
 bool libkrbn_core_configuration_get_selected_profile_device_disable_built_in_keyboard_if_exists(libkrbn_core_configuration* p,
                                                                                                 const libkrbn_device_identifiers* device_identifiers) {
   if (auto c = reinterpret_cast<libkrbn_core_configuration_class*>(p)) {
@@ -732,22 +430,6 @@ bool libkrbn_core_configuration_get_selected_profile_device_disable_built_in_key
       auto identifiers = libkrbn_cpp::make_device_identifiers(*device_identifiers);
       return c->get_core_configuration().get_selected_profile().get_device_disable_built_in_keyboard_if_exists(identifiers);
     }
-  }
-  return false;
-}
-
-bool libkrbn_core_configuration_get_selected_profile_device_disable_built_in_keyboard_if_exists2(libkrbn_core_configuration* p,
-                                                                                                 uint64_t vendor_id,
-                                                                                                 uint64_t product_id,
-                                                                                                 bool is_keyboard,
-                                                                                                 bool is_pointing_device) {
-  if (auto c = reinterpret_cast<libkrbn_core_configuration_class*>(p)) {
-    return c->get_core_configuration().get_selected_profile().get_device_disable_built_in_keyboard_if_exists(
-        krbn::device_identifiers(
-            pqrs::hid::vendor_id::value_t(vendor_id),
-            pqrs::hid::product_id::value_t(product_id),
-            is_keyboard,
-            is_pointing_device));
   }
   return false;
 }
@@ -760,22 +442,5 @@ void libkrbn_core_configuration_set_selected_profile_device_disable_built_in_key
       auto identifiers = libkrbn_cpp::make_device_identifiers(*device_identifiers);
       c->get_core_configuration().get_selected_profile().set_device_disable_built_in_keyboard_if_exists(identifiers, value);
     }
-  }
-}
-
-void libkrbn_core_configuration_set_selected_profile_device_disable_built_in_keyboard_if_exists2(libkrbn_core_configuration* p,
-                                                                                                 uint64_t vendor_id,
-                                                                                                 uint64_t product_id,
-                                                                                                 bool is_keyboard,
-                                                                                                 bool is_pointing_device,
-                                                                                                 bool value) {
-  if (auto c = reinterpret_cast<libkrbn_core_configuration_class*>(p)) {
-    c->get_core_configuration().get_selected_profile().set_device_disable_built_in_keyboard_if_exists(
-        krbn::device_identifiers(
-            pqrs::hid::vendor_id::value_t(vendor_id),
-            pqrs::hid::product_id::value_t(product_id),
-            is_keyboard,
-            is_pointing_device),
-        value);
   }
 }
