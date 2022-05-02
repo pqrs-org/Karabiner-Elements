@@ -116,6 +116,14 @@ public class AppDelegate: NSObject, NSApplicationDelegate {
 
     AlertWindowsManager.shared.parentWindow = window
     StateJsonMonitor.shared.start()
+
+    //
+    // launchctl
+    //
+
+    libkrbn_launchctl_manage_session_monitor()
+    libkrbn_launchctl_manage_console_user_server(true)
+    // Do not manage grabber_agent and observer_agent because they are designed to run only once.
   }
 
   public func applicationWillTerminate(_: Notification) {

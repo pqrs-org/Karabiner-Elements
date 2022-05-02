@@ -2,6 +2,7 @@ import SwiftUI
 
 struct FunctionKeysView: View {
   @ObservedObject private var settings = Settings.shared
+  @ObservedObject private var systemPreferences = SystemPreferences.shared
   @ObservedObject private var contentViewStates = ContentViewStates.shared
 
   var body: some View {
@@ -14,6 +15,14 @@ struct FunctionKeysView: View {
 
           Spacer()
         }
+      }
+
+      HStack {
+        Toggle(isOn: $systemPreferences.useFkeysAsStandardFunctionKeys) {
+          Text("Use all F1, F2, etc. keys as standard function keys")
+        }
+
+        Spacer()
       }
     }
     .padding()
