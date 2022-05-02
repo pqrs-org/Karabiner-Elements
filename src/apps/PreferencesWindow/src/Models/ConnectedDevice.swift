@@ -1,16 +1,18 @@
-struct ConnectedDevice: Identifiable {
-  var id = UUID()
-  var index: Int
-  var manufacturerName: String
-  var productName: String
-  var vendorId: UInt64
-  var productId: UInt64
-  var isKeyboard: Bool
-  var isPointingDevice: Bool
-  var isBuiltInKeyboard: Bool
-  var isBuiltInTrackpad: Bool
-  var isBuiltInTouchBar: Bool
-  var isAppleDevice: Bool
+class ConnectedDevice: Identifiable {
+  let id = UUID()
+  let index: Int
+  let manufacturerName: String
+  let productName: String
+  let vendorId: UInt64
+  let productId: UInt64
+  let isKeyboard: Bool
+  let isPointingDevice: Bool
+  let isBuiltInKeyboard: Bool
+  let isBuiltInTrackpad: Bool
+  let isBuiltInTouchBar: Bool
+  let isAppleDevice: Bool
+
+  let libkrbnDeviceIdentifiers: UnsafeMutablePointer<libkrbn_device_identifiers>
 
   init(
     index: Int,
@@ -36,5 +38,17 @@ struct ConnectedDevice: Identifiable {
     self.isBuiltInTrackpad = isBuiltInTrackpad
     self.isBuiltInTouchBar = isBuiltInTouchBar
     self.isAppleDevice = isAppleDevice
+
+    libkrbnDeviceIdentifiers = UnsafeMutablePointer<libkrbn_device_identifiers>.allocate(
+      capacity: 1)
+    libkrbnDeviceIdentifiers.pointee.vendor_id = vendorId
+    libkrbnDeviceIdentifiers.pointee.product_id = productId
+    libkrbnDeviceIdentifiers.pointee.is_keyboard = isKeyboard
+    libkrbnDeviceIdentifiers.pointee.is_pointing_device = isPointingDevice
+  }
+
+  deinit {
+    print("deinit")
+    libkrbnDeviceIdentifiers.deallocate()
   }
 }
