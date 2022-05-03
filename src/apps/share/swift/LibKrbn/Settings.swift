@@ -15,6 +15,11 @@ private func callback(
     guard let obj = obj else { return }
 
     obj.updateProperties(initializedCoreConfiguration)
+
+    NotificationCenter.default.post(
+      name: LibKrbn.Settings.didConfigurationLoad,
+      object: nil
+    )
   }
 }
 
@@ -22,13 +27,17 @@ extension LibKrbn {
   final class Settings: ObservableObject {
     static let shared = Settings()
 
+    static let didConfigurationLoad = Notification.Name("didConfigurationLoad")
+
     var libkrbnCoreConfiguration: UnsafeMutableRawPointer?
     private var didSetEnabled = false
 
     private init() {
       updateProperties(nil)
       didSetEnabled = true
+    }
 
+    func start() {
       let obj = unsafeBitCast(self, to: UnsafeMutableRawPointer.self)
       libkrbn_enable_configuration_monitor(callback, obj)
 

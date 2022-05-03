@@ -26,6 +26,7 @@ public class AppDelegate: NSObject, NSApplicationDelegate {
 
     KarabinerKit.setup()
     KarabinerKit.observeConsoleUserServerIsDisabledNotification()
+    LibKrbn.Settings.shared.start()
 
     NotificationCenter.default.addObserver(
       forName: Updater.didFindValidUpdate,
