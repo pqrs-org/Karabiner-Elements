@@ -1,3 +1,5 @@
+import Foundation
+
 extension LibKrbn {
   struct ComplexModificationsRule: Identifiable {
     var id = UUID()

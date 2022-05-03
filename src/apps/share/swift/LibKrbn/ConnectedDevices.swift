@@ -9,7 +9,7 @@ private func callback(
   if initializedConnectedDevices == nil { return }
   if context == nil { return }
 
-    let obj: LibKrbn.ConnectedDevices! = unsafeBitCast(context, to: LibKrbn.ConnectedDevices.self)
+  let obj: LibKrbn.ConnectedDevices! = unsafeBitCast(context, to: LibKrbn.ConnectedDevices.self)
 
   DispatchQueue.main.async { [weak obj] in
     guard let obj = obj else { return }

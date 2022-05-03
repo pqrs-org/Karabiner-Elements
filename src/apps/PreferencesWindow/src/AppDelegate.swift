@@ -180,7 +180,7 @@ public class AppDelegate: NSObject, NSApplicationDelegate {
                 ContentViewStates.shared.navigationSelection =
                   NavigationTag.simpleModifications.rawValue
 
-                  LibKrbn.Settings.shared.appendSimpleModification(
+                LibKrbn.Settings.shared.appendSimpleModification(
                   jsonString: jsonString,
                   device: ContentViewStates.shared.simpleModificationsViewSelectedDevice)
                 return

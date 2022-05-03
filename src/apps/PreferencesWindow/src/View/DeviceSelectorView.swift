@@ -2,7 +2,7 @@ import SwiftUI
 
 struct DeviceSelectorView: View {
   @ObservedObject private var settings = LibKrbn.Settings.shared
-    @Binding var selectedDevice: LibKrbn.ConnectedDevice?
+  @Binding var selectedDevice: LibKrbn.ConnectedDevice?
 
   var body: some View {
     List {

@@ -29,15 +29,15 @@ struct FunctionKeysView: View {
   }
 
   struct FnFunctionKeysView: View {
-      private let selectedDevice: LibKrbn.ConnectedDevice?
-      private let fnFunctionKeys: [LibKrbn.SimpleModification]
+    private let selectedDevice: LibKrbn.ConnectedDevice?
+    private let fnFunctionKeys: [LibKrbn.SimpleModification]
 
-      init(selectedDevice: LibKrbn.ConnectedDevice?) {
+    init(selectedDevice: LibKrbn.ConnectedDevice?) {
       self.selectedDevice = selectedDevice
       self.fnFunctionKeys =
         selectedDevice == nil
-          ? LibKrbn.Settings.shared.fnFunctionKeys
-          : LibKrbn.Settings.shared.findConnectedDeviceSetting(selectedDevice!)?.fnFunctionKeys ?? []
+        ? LibKrbn.Settings.shared.fnFunctionKeys
+        : LibKrbn.Settings.shared.findConnectedDeviceSetting(selectedDevice!)?.fnFunctionKeys ?? []
     }
 
     var body: some View {
@@ -49,11 +49,11 @@ struct FunctionKeysView: View {
 
             SimpleModificationPickerView(
               categories: selectedDevice == nil
-              ? LibKrbn.SimpleModificationDefinitions.shared.toCategories
-              : LibKrbn.SimpleModificationDefinitions.shared.toCategoriesWithInheritBase,
+                ? LibKrbn.SimpleModificationDefinitions.shared.toCategories
+                : LibKrbn.SimpleModificationDefinitions.shared.toCategoriesWithInheritBase,
               label: fnFunctionKey.toEntry.label,
               action: { json in
-                  LibKrbn.Settings.shared.updateFnFunctionKey(
+                LibKrbn.Settings.shared.updateFnFunctionKey(
                   fromJsonString: fnFunctionKey.fromEntry.json,
                   toJsonString: json,
                   device: selectedDevice)

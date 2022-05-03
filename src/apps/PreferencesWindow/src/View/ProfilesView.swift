@@ -3,7 +3,7 @@ import SwiftUI
 struct ProfilesView: View {
   @ObservedObject private var settings = LibKrbn.Settings.shared
   @State private var showingSheet = false
-    @State private var editingProfile: LibKrbn.Profile?
+  @State private var editingProfile: LibKrbn.Profile?
 
   var body: some View {
     VStack(alignment: .leading, spacing: 12.0) {

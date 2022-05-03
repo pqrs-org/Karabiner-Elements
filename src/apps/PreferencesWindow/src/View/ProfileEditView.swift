@@ -1,7 +1,7 @@
 import SwiftUI
 
 struct ProfileEditView: View {
-    @Binding var profile: LibKrbn.Profile?
+  @Binding var profile: LibKrbn.Profile?
   @Binding var showing: Bool
   @State private var name = ""
   @ObservedObject private var settings = LibKrbn.Settings.shared
@@ -55,7 +55,7 @@ struct ProfileEditView: View {
 }
 
 struct ProfileEditView_Previews: PreviewProvider {
-    @State static var profile: LibKrbn.Profile? = LibKrbn.Profile(0, "", false)
+  @State static var profile: LibKrbn.Profile? = LibKrbn.Profile(0, "", false)
   @State static var showing = true
   static var previews: some View {
     ProfileEditView(profile: $profile, showing: $showing)

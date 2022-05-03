@@ -14,7 +14,7 @@ struct ComplexModificationsAssetsView: View {
                 .font(.title)
 
               Button(action: {
-                  LibKrbn.Settings.shared.addComplexModificationRules(assetFile)
+                LibKrbn.Settings.shared.addComplexModificationRules(assetFile)
                 contentViewStates.complexModificationsViewSheetPresented = false
               }) {
                 Label("Enable All", systemImage: "plus.circle.fill")
