@@ -4,7 +4,6 @@ public class MenuController: NSObject, NSMenuDelegate {
   var menu: NSMenu!
   var statusItem: NSStatusItem?
   var menuIcon: NSImage?
-  var observers: KarabinerKitSmartObserverContainer?
 
   override public init() {
     super.init()
@@ -12,8 +11,6 @@ public class MenuController: NSObject, NSMenuDelegate {
   }
 
   public func setup() {
-    terminateIfHidden()
-
     menu.delegate = self
 
     menuIcon = NSImage(named: "MenuIcon")
@@ -24,14 +21,9 @@ public class MenuController: NSObject, NSMenuDelegate {
     statusItem?.button?.font = NSFont.systemFont(ofSize: NSFont.smallSystemFontSize)
     statusItem?.menu = menu
 
-    setStatusItemImage()
-    setStatusItemTitle()
-
-    observers = KarabinerKitSmartObserverContainer()
-
-    let center = NotificationCenter.default
-    let o = center.addObserver(
-      forName: NSNotification.Name(rawValue: kKarabinerKitConfigurationIsLoaded), object: nil,
+    NotificationCenter.default.addObserver(
+      forName: LibKrbn.Settings.didConfigurationLoad,
+      object: nil,
       queue: .main
     ) { [weak self] _ in
       guard let self = self else { return }
@@ -40,23 +32,14 @@ public class MenuController: NSObject, NSMenuDelegate {
       self.setStatusItemImage()
       self.setStatusItemTitle()
     }
-    observers?.addObserver(o, notificationCenter: center)
+
+    LibKrbn.Settings.shared.start()
   }
 
   func terminateIfHidden() {
-    var terminate = false
-
-    if let coreConfigurationModel = KarabinerKitConfigurationManager.shared()?
-      .coreConfigurationModel
+    if !LibKrbn.Settings.shared.showIconInMenuBar,
+      !LibKrbn.Settings.shared.showProfileNameInMenuBar
     {
-      if !coreConfigurationModel.globalConfigurationShowInMenuBar,
-        !coreConfigurationModel.globalConfigurationShowProfileNameInMenuBar
-      {
-        terminate = true
-      }
-    }
-
-    if terminate {
       NSApplication.shared.terminate(self)
     }
   }
@@ -64,11 +47,8 @@ public class MenuController: NSObject, NSMenuDelegate {
   func setStatusItemImage() {
     var showImage = false
 
-    if let coreConfigurationModel = KarabinerKitConfigurationManager.shared().coreConfigurationModel
-    {
-      if coreConfigurationModel.globalConfigurationShowInMenuBar {
-        showImage = true
-      }
+    if LibKrbn.Settings.shared.showIconInMenuBar {
+      showImage = true
     }
 
     if showImage {
@@ -82,15 +62,16 @@ public class MenuController: NSObject, NSMenuDelegate {
   func setStatusItemTitle() {
     var title = ""
 
-    if let coreConfigurationModel = KarabinerKitConfigurationManager.shared().coreConfigurationModel
-    {
-      if coreConfigurationModel.globalConfigurationShowProfileNameInMenuBar {
-        if coreConfigurationModel.globalConfigurationShowInMenuBar {
-          // Add padding
-          title += " "
-        }
+    if LibKrbn.Settings.shared.showProfileNameInMenuBar {
+      if LibKrbn.Settings.shared.showIconInMenuBar {
+        // Add padding
+        title += " "
+      }
 
-        title += coreConfigurationModel.selectedProfileName
+      LibKrbn.Settings.shared.profiles.forEach { profile in
+        if profile.selected {
+          title += profile.name
+        }
       }
     }
 
@@ -128,26 +109,23 @@ public class MenuController: NSObject, NSMenuDelegate {
       action: nil,
       keyEquivalent: "")
 
-    if let coreConfigurationModel = KarabinerKitConfigurationManager.shared().coreConfigurationModel
-    {
-      for i in 0..<coreConfigurationModel.profilesCount {
-        let newItem = NSMenuItem(
-          title: coreConfigurationModel.profileName(at: i),
-          action: #selector(profileSelected),
-          keyEquivalent: "")
+    LibKrbn.Settings.shared.profiles.forEach { profile in
+      let newItem = NSMenuItem(
+        title: profile.name,
+        action: #selector(profileSelected),
+        keyEquivalent: "")
 
-        newItem.target = self
-        newItem.representedObject = UInt(i)
-        newItem.indentationLevel = 1
+      newItem.target = self
+      newItem.representedObject = profile.id
+      newItem.indentationLevel = 1
 
-        if coreConfigurationModel.profileSelected(at: i) {
-          newItem.state = .on
-        } else {
-          newItem.state = .off
-        }
-
-        menu.addItem(newItem)
+      if profile.selected {
+        newItem.state = .on
+      } else {
+        newItem.state = .off
       }
+
+      menu.addItem(newItem)
     }
 
     // Others
@@ -185,11 +163,12 @@ public class MenuController: NSObject, NSMenuDelegate {
 
   @objc
   func profileSelected(sender: NSMenuItem) {
-    let index = sender.representedObject as! UInt
-    if let coreConfigurationModel = KarabinerKitConfigurationManager.shared().coreConfigurationModel
-    {
-      coreConfigurationModel.selectProfile(at: index)
-      coreConfigurationModel.save()
+    if let id = sender.representedObject as? UUID {
+      LibKrbn.Settings.shared.profiles.forEach { profile in
+        if id == profile.id {
+          LibKrbn.Settings.shared.selectProfile(profile)
+        }
+      }
 
       setStatusItemTitle()
     }
