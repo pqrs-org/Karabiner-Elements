@@ -1,7 +1,7 @@
 import SwiftUI
 
 struct SimpleModificationPickerView: View {
-  var categories: SimpleModificationDefinitionCategories
+    var categories: LibKrbn.SimpleModificationDefinitionCategories
   var label: String
   var action: (_ json: String) -> Void
 

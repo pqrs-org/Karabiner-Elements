@@ -1,7 +1,7 @@
 import SwiftUI
 
 struct ComplexModificationsAdvancedView: View {
-  @ObservedObject private var settings = Settings.shared
+  @ObservedObject private var settings = LibKrbn.Settings.shared
 
   var body: some View {
     VStack(alignment: .leading, spacing: 24.0) {

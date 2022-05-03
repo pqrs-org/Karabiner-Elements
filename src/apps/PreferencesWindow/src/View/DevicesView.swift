@@ -1,7 +1,7 @@
 import SwiftUI
 
 struct DevicesView: View {
-  @ObservedObject private var settings = Settings.shared
+  @ObservedObject private var settings = LibKrbn.Settings.shared
 
   var body: some View {
     VStack(alignment: .leading, spacing: 12.0) {

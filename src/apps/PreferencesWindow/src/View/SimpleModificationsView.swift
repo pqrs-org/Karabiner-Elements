@@ -1,7 +1,7 @@
 import SwiftUI
 
 struct SimpleModificationsView: View {
-  @ObservedObject private var settings = Settings.shared
+  @ObservedObject private var settings = LibKrbn.Settings.shared
   @ObservedObject private var contentViewStates = ContentViewStates.shared
 
   var body: some View {
@@ -23,15 +23,15 @@ struct SimpleModificationsView: View {
   }
 
   struct SimpleModificationView: View {
-    private let selectedDevice: ConnectedDevice?
-    private let simpleModifications: [SimpleModification]
+      private let selectedDevice: LibKrbn.ConnectedDevice?
+      private let simpleModifications: [LibKrbn.SimpleModification]
 
-    init(selectedDevice: ConnectedDevice?) {
+      init(selectedDevice: LibKrbn.ConnectedDevice?) {
       self.selectedDevice = selectedDevice
       self.simpleModifications =
         selectedDevice == nil
-        ? Settings.shared.simpleModifications
-        : Settings.shared.findConnectedDeviceSetting(selectedDevice!)?.simpleModifications ?? []
+          ? LibKrbn.Settings.shared.simpleModifications
+          : LibKrbn.Settings.shared.findConnectedDeviceSetting(selectedDevice!)?.simpleModifications ?? []
     }
 
     var body: some View {
@@ -39,10 +39,10 @@ struct SimpleModificationsView: View {
         ForEach(simpleModifications) { simpleModification in
           HStack {
             SimpleModificationPickerView(
-              categories: SimpleModificationDefinitions.shared.fromCategories,
+                categories: LibKrbn.SimpleModificationDefinitions.shared.fromCategories,
               label: simpleModification.fromEntry.label,
               action: { json in
-                Settings.shared.updateSimpleModification(
+                  LibKrbn.Settings.shared.updateSimpleModification(
                   index: simpleModification.index,
                   fromJsonString: json,
                   toJsonString: simpleModification.toEntry.json,
@@ -51,10 +51,10 @@ struct SimpleModificationsView: View {
             )
 
             SimpleModificationPickerView(
-              categories: SimpleModificationDefinitions.shared.toCategories,
+                categories: LibKrbn.SimpleModificationDefinitions.shared.toCategories,
               label: simpleModification.toEntry.label,
               action: { json in
-                Settings.shared.updateSimpleModification(
+                  LibKrbn.Settings.shared.updateSimpleModification(
                   index: simpleModification.index,
                   fromJsonString: simpleModification.fromEntry.json,
                   toJsonString: json,
@@ -63,7 +63,7 @@ struct SimpleModificationsView: View {
             )
 
             Button(action: {
-              Settings.shared.removeSimpleModification(
+                LibKrbn.Settings.shared.removeSimpleModification(
                 index: simpleModification.index,
                 device: selectedDevice)
             }) {
@@ -78,7 +78,7 @@ struct SimpleModificationsView: View {
 
         HStack {
           Button(action: {
-            Settings.shared.appendSimpleModification(device: selectedDevice)
+              LibKrbn.Settings.shared.appendSimpleModification(device: selectedDevice)
           }) {
             Label("Add item", systemImage: "plus.circle.fill")
           }

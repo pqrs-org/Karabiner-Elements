@@ -7,7 +7,7 @@ enum ComplexModificationsSheetView: String {
 
 struct ComplexModificationsView: View {
   @ObservedObject private var contentViewStates = ContentViewStates.shared
-  @ObservedObject private var settings = Settings.shared
+  @ObservedObject private var settings = LibKrbn.Settings.shared
   @State private var moveDisabled: Bool = true
 
   var body: some View {

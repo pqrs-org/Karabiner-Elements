@@ -5,21 +5,21 @@ final class ComplexModificationsAssetFiles: ObservableObject {
     libkrbn_enable_complex_modifications_assets_manager()
   }
 
-  @Published var files: [ComplexModificationsAssetFile] = []
+  @Published var files: [LibKrbn.ComplexModificationsAssetFile] = []
 
   public func updateFiles() {
-    var newFiles: [ComplexModificationsAssetFile] = []
+    var newFiles: [LibKrbn.ComplexModificationsAssetFile] = []
 
     libkrbn_complex_modifications_assets_manager_reload()
 
     let filesSize = libkrbn_complex_modifications_assets_manager_get_files_size()
     for fileIndex in 0..<filesSize {
-      var rules: [ComplexModificationsAssetRule] = []
+      var rules: [LibKrbn.ComplexModificationsAssetRule] = []
 
       let rulesSize = libkrbn_complex_modifications_assets_manager_get_rules_size(fileIndex)
       for ruleIndex in 0..<rulesSize {
         rules.append(
-          ComplexModificationsAssetRule(
+          LibKrbn.ComplexModificationsAssetRule(
             fileIndex,
             ruleIndex,
             String(
@@ -31,7 +31,7 @@ final class ComplexModificationsAssetFiles: ObservableObject {
       }
 
       newFiles.append(
-        ComplexModificationsAssetFile(
+        LibKrbn.ComplexModificationsAssetFile(
           fileIndex,
           String(
             cString: libkrbn_complex_modifications_assets_manager_get_file_title(fileIndex)),
@@ -46,7 +46,7 @@ final class ComplexModificationsAssetFiles: ObservableObject {
     files = newFiles
   }
 
-  public func removeFile(_ complexModificationsAssetFile: ComplexModificationsAssetFile) {
+  public func removeFile(_ complexModificationsAssetFile: LibKrbn.ComplexModificationsAssetFile) {
     libkrbn_complex_modifications_assets_manager_erase_file(complexModificationsAssetFile.index)
 
     updateFiles()

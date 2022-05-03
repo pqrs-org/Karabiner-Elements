@@ -9,13 +9,13 @@ final class ContentViewStates: ObservableObject {
   // SimpleModificationsView
   //
 
-  @Published var simpleModificationsViewSelectedDevice: ConnectedDevice?
+    @Published var simpleModificationsViewSelectedDevice: LibKrbn.ConnectedDevice?
 
   //
   // FunctionKeysView
   //
 
-  @Published var functionKeysViewSelectedDevice: ConnectedDevice?
+    @Published var functionKeysViewSelectedDevice: LibKrbn.ConnectedDevice?
 
   //
   // ComplexModifications

@@ -1,7 +1,7 @@
 import SwiftUI
 
 struct FunctionKeysView: View {
-  @ObservedObject private var settings = Settings.shared
+  @ObservedObject private var settings = LibKrbn.Settings.shared
   @ObservedObject private var systemPreferences = SystemPreferences.shared
   @ObservedObject private var contentViewStates = ContentViewStates.shared
 
@@ -29,15 +29,15 @@ struct FunctionKeysView: View {
   }
 
   struct FnFunctionKeysView: View {
-    private let selectedDevice: ConnectedDevice?
-    private let fnFunctionKeys: [SimpleModification]
+      private let selectedDevice: LibKrbn.ConnectedDevice?
+      private let fnFunctionKeys: [LibKrbn.SimpleModification]
 
-    init(selectedDevice: ConnectedDevice?) {
+      init(selectedDevice: LibKrbn.ConnectedDevice?) {
       self.selectedDevice = selectedDevice
       self.fnFunctionKeys =
         selectedDevice == nil
-        ? Settings.shared.fnFunctionKeys
-        : Settings.shared.findConnectedDeviceSetting(selectedDevice!)?.fnFunctionKeys ?? []
+          ? LibKrbn.Settings.shared.fnFunctionKeys
+          : LibKrbn.Settings.shared.findConnectedDeviceSetting(selectedDevice!)?.fnFunctionKeys ?? []
     }
 
     var body: some View {
@@ -49,11 +49,11 @@ struct FunctionKeysView: View {
 
             SimpleModificationPickerView(
               categories: selectedDevice == nil
-                ? SimpleModificationDefinitions.shared.toCategories
-                : SimpleModificationDefinitions.shared.toCategoriesWithInheritBase,
+              ? LibKrbn.SimpleModificationDefinitions.shared.toCategories
+              : LibKrbn.SimpleModificationDefinitions.shared.toCategoriesWithInheritBase,
               label: fnFunctionKey.toEntry.label,
               action: { json in
-                Settings.shared.updateFnFunctionKey(
+                  LibKrbn.Settings.shared.updateFnFunctionKey(
                   fromJsonString: fnFunctionKey.fromEntry.json,
                   toJsonString: json,
                   device: selectedDevice)
