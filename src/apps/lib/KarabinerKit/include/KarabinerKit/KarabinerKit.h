@@ -1,10 +1,6 @@
 // -*- mode: objective-c -*-
 
 @import Foundation;
-#import "KarabinerKit/ConfigurationManager.h"
-#import "KarabinerKit/CoreConfigurationModel.h"
-#import "KarabinerKit/JsonUtility.h"
-#import "KarabinerKit/NotificationKeys.h"
 #import "KarabinerKit/SmartObserverContainer.h"
 
 @interface KarabinerKit : NSObject
