@@ -23,7 +23,7 @@ on:
 jobs:
   analyze:
     name: Analyze
-    runs-on: macos-11
+    runs-on: macos-12
     permissions:
       actions: read
       contents: read
