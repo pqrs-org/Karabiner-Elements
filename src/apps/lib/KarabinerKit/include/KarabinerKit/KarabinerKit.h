@@ -2,6 +2,7 @@
 
 @import Foundation;
 #import "KarabinerKit/SmartObserverContainer.h"
+#import "libkrbn/libkrbn.h"
 
 @interface KarabinerKit : NSObject
 
