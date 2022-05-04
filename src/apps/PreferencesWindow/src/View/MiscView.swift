@@ -79,7 +79,9 @@ struct MiscView: View {
               settings.removeSystemDefaultProfile()
             }) {
               Label("Remove the system default configuration", systemImage: "trash")
+                .buttonLabelStyle()
             }
+            .deleteButtonStyle()
           } else {
             Text("System default configuration is not set.").foregroundColor(
               Color.primary.opacity(0.5))

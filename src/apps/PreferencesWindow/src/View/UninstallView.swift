@@ -10,7 +10,10 @@ struct UninstallView: View {
               libkrbn_launch_uninstaller()
             }) {
               Label("Launch uninstaller", systemImage: "trash")
+                .buttonLabelStyle()
             }
+            .deleteButtonStyle()
+
             Spacer()
           }
         }

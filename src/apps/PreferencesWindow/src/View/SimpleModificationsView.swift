@@ -36,64 +36,66 @@ struct SimpleModificationsView: View {
     }
 
     var body: some View {
-      VStack(alignment: .leading, spacing: 6.0) {
-        ForEach(simpleModifications) { simpleModification in
-          HStack {
-            SimpleModificationPickerView(
-              categories: LibKrbn.SimpleModificationDefinitions.shared.fromCategories,
-              label: simpleModification.fromEntry.label,
-              action: { json in
-                LibKrbn.Settings.shared.updateSimpleModification(
-                  index: simpleModification.index,
-                  fromJsonString: json,
-                  toJsonString: simpleModification.toEntry.json,
-                  device: selectedDevice)
-              }
-            )
+      ScrollView {
+        VStack(alignment: .leading, spacing: 6.0) {
+          ForEach(simpleModifications) { simpleModification in
+            HStack {
+              SimpleModificationPickerView(
+                categories: LibKrbn.SimpleModificationDefinitions.shared.fromCategories,
+                label: simpleModification.fromEntry.label,
+                action: { json in
+                  LibKrbn.Settings.shared.updateSimpleModification(
+                    index: simpleModification.index,
+                    fromJsonString: json,
+                    toJsonString: simpleModification.toEntry.json,
+                    device: selectedDevice)
+                }
+              )
 
-            SimpleModificationPickerView(
-              categories: LibKrbn.SimpleModificationDefinitions.shared.toCategories,
-              label: simpleModification.toEntry.label,
-              action: { json in
-                LibKrbn.Settings.shared.updateSimpleModification(
-                  index: simpleModification.index,
-                  fromJsonString: simpleModification.fromEntry.json,
-                  toJsonString: json,
-                  device: selectedDevice)
-              }
-            )
+              SimpleModificationPickerView(
+                categories: LibKrbn.SimpleModificationDefinitions.shared.toCategories,
+                label: simpleModification.toEntry.label,
+                action: { json in
+                  LibKrbn.Settings.shared.updateSimpleModification(
+                    index: simpleModification.index,
+                    fromJsonString: simpleModification.fromEntry.json,
+                    toJsonString: json,
+                    device: selectedDevice)
+                }
+              )
 
-            Button(action: {
-              LibKrbn.Settings.shared.removeSimpleModification(
-                index: simpleModification.index,
-                device: selectedDevice)
-            }) {
-              Image(systemName: "trash.fill")
-                .buttonLabelStyle()
+              Button(action: {
+                LibKrbn.Settings.shared.removeSimpleModification(
+                  index: simpleModification.index,
+                  device: selectedDevice)
+              }) {
+                Image(systemName: "trash.fill")
+                  .buttonLabelStyle()
+              }
+              .deleteButtonStyle()
             }
-            .deleteButtonStyle()
+
+            Divider()
           }
 
-          Divider()
-        }
+          HStack {
+            Button(action: {
+              LibKrbn.Settings.shared.appendSimpleModification(device: selectedDevice)
+            }) {
+              Label("Add item", systemImage: "plus.circle.fill")
+            }
 
-        HStack {
-          Button(action: {
-            LibKrbn.Settings.shared.appendSimpleModification(device: selectedDevice)
-          }) {
-            Label("Add item", systemImage: "plus.circle.fill")
+            Spacer()
+          }
+          .if(simpleModifications.count > 0) {
+            $0.padding(.top, 20.0)
           }
 
           Spacer()
         }
-        .if(simpleModifications.count > 0) {
-          $0.padding(.top, 20.0)
-        }
-
-        Spacer()
+        .padding(10)
+        .background(Color(NSColor.textBackgroundColor))
       }
-      .padding(10)
-      .background(Color(NSColor.textBackgroundColor))
     }
   }
 }

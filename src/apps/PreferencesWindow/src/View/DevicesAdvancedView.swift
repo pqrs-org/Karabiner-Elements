@@ -39,40 +39,46 @@ struct DevicesAdvancedView: View {
 
       GroupBox(
         label: Text(
-          "Disable the built-in keyboard while one of the following selected devices is connected")
+          "Disable the built-in keyboard")
       ) {
-        List {
-          VStack(alignment: .leading, spacing: 0.0) {
-            ForEach($settings.connectedDeviceSettings) { $connectedDeviceSetting in
-              HStack(alignment: .center, spacing: 0) {
-                Toggle(isOn: $connectedDeviceSetting.disableBuiltInKeyboardIfExists) {
-                  Text(
-                    "\(connectedDeviceSetting.connectedDevice.productName) (\(connectedDeviceSetting.connectedDevice.manufacturerName)) [\(String(connectedDeviceSetting.connectedDevice.vendorId)),\(String(connectedDeviceSetting.connectedDevice.productId))]"
+        VStack(alignment: .leading, spacing: 12.0) {
+          Text(
+            "Disable the built-in keyboard while one of the following selected devices is connected."
+          )
+
+          List {
+            VStack(alignment: .leading, spacing: 0.0) {
+              ForEach($settings.connectedDeviceSettings) { $connectedDeviceSetting in
+                HStack(alignment: .center, spacing: 0) {
+                  Toggle(isOn: $connectedDeviceSetting.disableBuiltInKeyboardIfExists) {
+                    Text(
+                      "\(connectedDeviceSetting.connectedDevice.productName) (\(connectedDeviceSetting.connectedDevice.manufacturerName)) [\(String(connectedDeviceSetting.connectedDevice.vendorId)),\(String(connectedDeviceSetting.connectedDevice.productId))]"
+                    )
+                  }.disabled(
+                    connectedDeviceSetting.connectedDevice.isBuiltInKeyboard
+                      || connectedDeviceSetting.connectedDevice.isBuiltInTrackpad
+                      || connectedDeviceSetting.connectedDevice.isBuiltInTouchBar
                   )
-                }.disabled(
-                  connectedDeviceSetting.connectedDevice.isBuiltInKeyboard
-                    || connectedDeviceSetting.connectedDevice.isBuiltInTrackpad
-                    || connectedDeviceSetting.connectedDevice.isBuiltInTouchBar
-                )
 
-                Spacer()
+                  Spacer()
 
-                if connectedDeviceSetting.connectedDevice.isKeyboard {
-                  Image(systemName: "keyboard")
+                  if connectedDeviceSetting.connectedDevice.isKeyboard {
+                    Image(systemName: "keyboard")
+                  }
+                  if connectedDeviceSetting.connectedDevice.isPointingDevice {
+                    Image(systemName: "capsule.portrait")
+                  }
                 }
-                if connectedDeviceSetting.connectedDevice.isPointingDevice {
-                  Image(systemName: "capsule.portrait")
-                }
+                .padding(.vertical, 8.0)
+
+                Divider()
               }
-              .padding(.vertical, 12.0)
 
-              Divider()
+              Spacer()
             }
-
-            Spacer()
           }
+          .background(Color(NSColor.textBackgroundColor))
         }
-        .background(Color(NSColor.textBackgroundColor))
       }
 
       Spacer()
