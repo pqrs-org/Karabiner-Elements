@@ -51,7 +51,6 @@ extension LibKrbn {
     }
 
     deinit {
-      print("deinit")
       libkrbnDeviceIdentifiers.deallocate()
     }
   }
