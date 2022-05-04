@@ -41,32 +41,34 @@ struct FunctionKeysView: View {
     }
 
     var body: some View {
-      VStack(alignment: .leading, spacing: 6.0) {
-        ForEach(fnFunctionKeys) { fnFunctionKey in
-          HStack {
-            Text(fnFunctionKey.fromEntry.label)
-              .frame(width: 40)
+      ScrollView {
+        VStack(alignment: .leading, spacing: 6.0) {
+          ForEach(fnFunctionKeys) { fnFunctionKey in
+            HStack {
+              Text(fnFunctionKey.fromEntry.label)
+                .frame(width: 40)
 
-            SimpleModificationPickerView(
-              categories: selectedDevice == nil
-                ? LibKrbn.SimpleModificationDefinitions.shared.toCategories
-                : LibKrbn.SimpleModificationDefinitions.shared.toCategoriesWithInheritBase,
-              label: fnFunctionKey.toEntry.label,
-              action: { json in
-                LibKrbn.Settings.shared.updateFnFunctionKey(
-                  fromJsonString: fnFunctionKey.fromEntry.json,
-                  toJsonString: json,
-                  device: selectedDevice)
-              }
-            )
+              SimpleModificationPickerView(
+                categories: selectedDevice == nil
+                  ? LibKrbn.SimpleModificationDefinitions.shared.toCategories
+                  : LibKrbn.SimpleModificationDefinitions.shared.toCategoriesWithInheritBase,
+                label: fnFunctionKey.toEntry.label,
+                action: { json in
+                  LibKrbn.Settings.shared.updateFnFunctionKey(
+                    fromJsonString: fnFunctionKey.fromEntry.json,
+                    toJsonString: json,
+                    device: selectedDevice)
+                }
+              )
+            }
+
+            Divider()
           }
-
-          Divider()
+          Spacer()
         }
-        Spacer()
+        .padding(10)
+        .background(Color(NSColor.textBackgroundColor))
       }
-      .padding(10)
-      .background(Color(NSColor.textBackgroundColor))
     }
   }
 }
