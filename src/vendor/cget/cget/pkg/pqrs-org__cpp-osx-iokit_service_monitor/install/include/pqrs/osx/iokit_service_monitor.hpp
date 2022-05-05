@@ -1,6 +1,6 @@
 #pragma once
 
-// pqrs::osx::iokit_service_monitor v4.1
+// pqrs::osx::iokit_service_monitor v4.2
 
 // (C) Copyright Takayama Fumihiko 2018.
 // Distributed under the Boost Software License, Version 1.0.
@@ -71,7 +71,7 @@ public:
       if (*matching_dictionary_) {
         io_iterator_t it = IO_OBJECT_NULL;
         CFRetain(*matching_dictionary_);
-        kern_return r = IOServiceGetMatchingServices(kIOMainPortDefault,
+        kern_return r = IOServiceGetMatchingServices(type_safe::get(iokit_mach_port::null),
                                                      *matching_dictionary_,
                                                      &it);
         if (!r) {
@@ -90,7 +90,7 @@ private:
   // This method is executed in cf_run_loop_thread_.
   void start(void) {
     if (!notification_port_) {
-      notification_port_ = IONotificationPortCreate(kIOMainPortDefault);
+      notification_port_ = IONotificationPortCreate(type_safe::get(iokit_mach_port::null));
       if (!notification_port_) {
         enqueue_to_dispatcher([this] {
           error_occurred("IONotificationPortCreate is failed.", kIOReturnError);
