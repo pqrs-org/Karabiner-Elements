@@ -1,9 +1,9 @@
 import SwiftUI
 
 struct SimpleModificationPickerView: View {
-  var categories: LibKrbn.SimpleModificationDefinitionCategories
-  var label: String
-  var action: (_ json: String) -> Void
+  private(set) var categories: LibKrbn.SimpleModificationDefinitionCategories
+  private(set) var label: String
+  private(set) var action: (_ json: String) -> Void
 
   var body: some View {
     Menu(label) {
