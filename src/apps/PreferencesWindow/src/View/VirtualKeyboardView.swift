@@ -8,7 +8,7 @@ struct VirtualKeyboardView: View {
       GroupBox(label: Text("Mouse key")) {
         VStack(alignment: .leading, spacing: 12.0) {
           HStack {
-            Text("XY speed:")
+            Text("Tracking speed:")
 
             IntTextField(
               value: $settings.virtualHIDKeyboardMouseKeyXYScale,
