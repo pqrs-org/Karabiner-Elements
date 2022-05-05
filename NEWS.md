@@ -1,5 +1,10 @@
 # Changelog
 
+## Beta
+
+-   ⚡️ Improvements
+    -   Preferences Window is rewritten in SwiftUI.
+
 ## Karabiner-Elements 14.4.0
 
 -   [📦 Download](https://github.com/pqrs-org/Karabiner-Elements/releases/download/v14.4.0/Karabiner-Elements-14.4.0.dmg)
