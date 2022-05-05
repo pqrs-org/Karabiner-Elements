@@ -52,6 +52,7 @@ struct ComplexModificationsFileImportView: View {
 
         Button(action: {
           complexModificationsFileImport.save()
+          ComplexModificationsAssetFiles.shared.updateFiles()
 
           contentViewStates.complexModificationsViewSheetView = ComplexModificationsSheetView.assets
         }) {
