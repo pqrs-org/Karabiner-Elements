@@ -8,55 +8,64 @@ struct ComplexModificationsAssetsView: View {
     VStack(alignment: .center, spacing: 12.0) {
       List {
         ForEach($assetFiles.files) { $assetFile in
-          VStack(alignment: .leading, spacing: 8.0) {
-            HStack(alignment: .center, spacing: 16.0) {
-              Text(assetFile.title)
-                .font(.title)
+          VStack(alignment: .leading, spacing: 4.0) {
+            GroupBox(
+              label:
+                HStack(alignment: .bottom, spacing: 16.0) {
+                  Text(assetFile.title)
+                    .font(.title)
 
-              Button(action: {
-                LibKrbn.Settings.shared.addComplexModificationRules(assetFile)
-                contentViewStates.complexModificationsViewSheetPresented = false
-              }) {
-                Label("Enable All", systemImage: "plus.circle.fill")
-                  .font(.caption)
+                  Spacer()
+
+                  Button(action: {
+                    LibKrbn.Settings.shared.addComplexModificationRules(assetFile)
+                    contentViewStates.complexModificationsViewSheetPresented = false
+                  }) {
+                    Label("Enable All", systemImage: "plus.circle.fill")
+                      .font(.caption)
+                  }
+
+                  if assetFile.userFile {
+                    Button(action: {
+                      assetFiles.removeFile(assetFile)
+                    }) {
+                      Image(systemName: "trash.fill")
+                        .buttonLabelStyle()
+                    }
+                    .deleteButtonStyle()
+                  }
+                }
+            ) {
+              VStack(alignment: .leading, spacing: 8.0) {
+                VStack(alignment: .leading, spacing: 8) {
+                  ForEach($assetFile.assetRules) { $assetRule in
+                    HStack(alignment: .center, spacing: 16.0) {
+                      Text(assetRule.description)
+
+                      Button(action: {
+                        LibKrbn.Settings.shared.addComplexModificationRule(assetRule)
+                        contentViewStates.complexModificationsViewSheetPresented = false
+                      }) {
+                        Label("Enable", systemImage: "plus.circle.fill")
+                      }
+
+                      Spacer()
+                    }
+                  }
+                }
+                .padding()
               }
+            }
 
+            HStack(alignment: .bottom) {
               Spacer()
 
               if assetFile.userFile {
-                Button(action: {
-                  assetFiles.removeFile(assetFile)
-                }) {
-                  Image(systemName: "trash.fill")
-                    .buttonLabelStyle()
-                }
-                .deleteButtonStyle()
+                Text("Imported at \(assetFile.importedAt)")
+                  .font(.caption)
               }
             }
-
-            if assetFile.userFile {
-              Text("Imported at \(assetFile.importedAt)")
-                .font(.caption)
-            }
-
-            VStack(alignment: .leading, spacing: 8) {
-              ForEach($assetFile.assetRules) { $assetRule in
-                HStack(alignment: .center, spacing: 16.0) {
-                  Text(assetRule.description)
-
-                  Button(action: {
-                    LibKrbn.Settings.shared.addComplexModificationRule(assetRule)
-                    contentViewStates.complexModificationsViewSheetPresented = false
-                  }) {
-                    Label("Enable", systemImage: "plus.circle.fill")
-                  }
-                }
-              }
-            }
-            .padding(.leading, 32.0)
-            .padding(.vertical, 16.0)
-
-            Divider()
+            .padding(.bottom, 32.0)
           }
         }
       }
