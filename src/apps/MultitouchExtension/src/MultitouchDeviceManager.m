@@ -125,7 +125,7 @@ static void relaunch(void* refcon, io_iterator_t iterator) {
       [self unregisterIONotification];
     }
 
-    self.notificationPort = IONotificationPortCreate(kIOMasterPortDefault);
+    self.notificationPort = IONotificationPortCreate(0);
     if (!self.notificationPort) {
       NSLog(@"[ERROR] IONotificationPortCreate");
       return;
