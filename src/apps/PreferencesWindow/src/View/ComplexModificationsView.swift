@@ -47,6 +47,16 @@ struct ComplexModificationsView: View {
             settings.moveComplexModificationsRule(first, destination)
           }
         }
+
+        Button(action: {
+          contentViewStates.complexModificationsViewSheetView = ComplexModificationsSheetView.assets
+          contentViewStates.complexModificationsViewSheetPresented = true
+        }) {
+          Label("Add rule", systemImage: "plus.circle.fill")
+        }
+        .if($settings.complexModificationsRules.count > 0) {
+          $0.padding(.top, 20.0)
+        }
       }
       .background(Color(NSColor.textBackgroundColor))
 
@@ -60,13 +70,6 @@ struct ComplexModificationsView: View {
             .frame(width: 16.0, height: 16.0)
           Text("icon")
         }
-      }
-
-      Button(action: {
-        contentViewStates.complexModificationsViewSheetView = ComplexModificationsSheetView.assets
-        contentViewStates.complexModificationsViewSheetPresented = true
-      }) {
-        Label("Add rule", systemImage: "plus.circle.fill")
       }
     }
     .padding()
