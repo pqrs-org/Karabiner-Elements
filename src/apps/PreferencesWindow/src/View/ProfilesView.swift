@@ -57,16 +57,17 @@ struct ProfilesView: View {
             Divider()
           }
 
+          Button(action: {
+            settings.appendProfile()
+          }) {
+            Label("Add new profile", systemImage: "plus.circle.fill")
+          }
+          .padding(.top, 20.0)
+
           Spacer()
         }
       }
       .background(Color(NSColor.textBackgroundColor))
-
-      Button(action: {
-        settings.appendProfile()
-      }) {
-        Label("Add new profile", systemImage: "plus.circle.fill")
-      }
     }
     .padding()
     .sheet(isPresented: $showingSheet) {
