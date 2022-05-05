@@ -1,0 +1,1 @@
+../../../cget/pkg/gabime__spdlog/install/include/spdlog/sinks/qt_sinks.h

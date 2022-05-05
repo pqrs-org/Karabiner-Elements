@@ -1,6 +1,6 @@
 #pragma once
 
-// pqrs::osx::iokit_service v2.1
+// pqrs::osx::iokit_service v2.2
 
 // (C) Copyright Takayama Fumihiko 2019.
 // Distributed under the Boost Software License, Version 1.0.
@@ -29,8 +29,8 @@ public:
   explicit iokit_registry_entry(const iokit_object_ptr& registry_entry) : registry_entry_(registry_entry) {
   }
 
-  static iokit_registry_entry get_root_entry(mach_port_t master_port = kIOMasterPortDefault) {
-    return iokit_registry_entry(IORegistryGetRootEntry(master_port));
+  static iokit_registry_entry get_root_entry(mach_port_t main_port = kIOMainPortDefault) {
+    return iokit_registry_entry(IORegistryGetRootEntry(main_port));
   }
 
   //
