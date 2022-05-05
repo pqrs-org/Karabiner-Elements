@@ -54,7 +54,7 @@ struct ComplexModificationsView: View {
         }) {
           Label("Add rule", systemImage: "plus.circle.fill")
         }
-        .if($settings.complexModificationsRules.count > 0) {
+        .if(settings.complexModificationsRules.count > 0) {
           $0.padding(.top, 20.0)
         }
       }
