@@ -36,6 +36,7 @@ struct SimpleModificationsView: View {
     }
 
     var body: some View {
+      // Use `ScrollView` instead of `List` to avoid `AttributeGraph: cycle detected through attribute` error.
       ScrollView {
         VStack(alignment: .leading, spacing: 6.0) {
           ForEach(simpleModifications) { simpleModification in
@@ -82,8 +83,11 @@ struct SimpleModificationsView: View {
             Button(action: {
               LibKrbn.Settings.shared.appendSimpleModification(device: selectedDevice)
             }) {
-              Label("Add item", systemImage: "plus.circle.fill")
+              // Use `Image` and `Text` instead of `Label` to set icon color like `Button` in `List`.
+              Image(systemName: "plus.circle.fill").foregroundColor(.blue)
+              Text("Add item")
             }
+            .buttonStyle(.automatic)
 
             Spacer()
           }
