@@ -37,24 +37,22 @@ struct ComplexModificationsAssetsView: View {
                 }
             ) {
               VStack(alignment: .leading, spacing: 8.0) {
-                VStack(alignment: .leading, spacing: 8) {
-                  ForEach($assetFile.assetRules) { $assetRule in
-                    HStack(alignment: .center, spacing: 16.0) {
-                      Text(assetRule.description)
+                ForEach($assetFile.assetRules) { $assetRule in
+                  HStack(alignment: .center, spacing: 16.0) {
+                    Text(assetRule.description)
 
-                      Button(action: {
-                        LibKrbn.Settings.shared.addComplexModificationRule(assetRule)
-                        contentViewStates.complexModificationsViewSheetPresented = false
-                      }) {
-                        Label("Enable", systemImage: "plus.circle.fill")
-                      }
-
-                      Spacer()
+                    Button(action: {
+                      LibKrbn.Settings.shared.addComplexModificationRule(assetRule)
+                      contentViewStates.complexModificationsViewSheetPresented = false
+                    }) {
+                      Label("Enable", systemImage: "plus.circle.fill")
                     }
+
+                    Spacer()
                   }
                 }
-                .padding()
               }
+              .padding()
             }
 
             HStack(alignment: .bottom) {
