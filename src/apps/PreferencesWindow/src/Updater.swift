@@ -1,78 +1,85 @@
-import AppKit
+import Foundation
 
 #if USE_SPARKLE
   import Sparkle
 #endif
 
-public class Updater: NSObject {
+final class Updater: ObservableObject {
   public static let shared = Updater()
+
   public static let didFindValidUpdate = Notification.Name("didFindValidUpdate")
   public static let updaterDidNotFindUpdate = Notification.Name("updaterDidNotFindUpdate")
 
+  #if USE_SPARKLE
+    private let updaterController: SPUStandardUpdaterController
+    private let delegate = SparkleDelegate()
+  #endif
+
+  @Published var canCheckForUpdates = false
+  @Published var sessionInProgress = false
+
+  private init() {
+    #if USE_SPARKLE
+      updaterController = SPUStandardUpdaterController(
+        startingUpdater: true,
+        updaterDelegate: delegate,
+        userDriverDelegate: nil
+      )
+
+      updaterController.updater.publisher(for: \.canCheckForUpdates)
+        .assign(to: &$canCheckForUpdates)
+      updaterController.updater.publisher(for: \.sessionInProgress)
+        .assign(to: &$sessionInProgress)
+    #endif
+  }
+
   func checkForUpdatesInBackground() {
     #if USE_SPARKLE
-      let url = feedURL(false)
-      print("checkForUpdates \(url)")
-
-      SUUpdater.shared().feedURL = url
-      SUUpdater.shared().delegate = self
-      SUUpdater.shared().checkForUpdatesInBackground()
+      delegate.includingBetaVersions = false
+      updaterController.updater.checkForUpdatesInBackground()
     #endif
   }
 
   func checkForUpdatesStableOnly() {
     #if USE_SPARKLE
-      let url = feedURL(false)
-      print("checkForUpdates \(url)")
-
-      SUUpdater.shared().feedURL = url
-      SUUpdater.shared().delegate = self
-      SUUpdater.shared()?.checkForUpdates(self)
+      delegate.includingBetaVersions = false
+      updaterController.checkForUpdates(nil)
     #endif
   }
 
   func checkForUpdatesWithBetaVersion() {
     #if USE_SPARKLE
-      let url = feedURL(true)
-      print("checkForUpdates \(url)")
-
-      SUUpdater.shared().feedURL = url
-      SUUpdater.shared().delegate = self
-      SUUpdater.shared()?.checkForUpdates(self)
+      delegate.includingBetaVersions = true
+      updaterController.checkForUpdates(nil)
     #endif
   }
 
-  var updateInProgress: Bool {
-    #if USE_SPARKLE
-      return SUUpdater.shared().updateInProgress
-    #else
-      return false
-    #endif
-  }
+  private class SparkleDelegate: NSObject, SPUUpdaterDelegate,
+    SPUStandardUserDriverDelegate
+  {
+    var includingBetaVersions = false
 
-  private func feedURL(_ includingBetaVersions: Bool) -> URL {
-    // ----------------------------------------
-    // check beta & stable releases.
+    func feedURLString(for updater: SPUUpdater) -> String? {
+      var url = "https://appcast.pqrs.org/karabiner-elements-appcast.xml"
+      if includingBetaVersions {
+        url = "https://appcast.pqrs.org/karabiner-elements-appcast-devel.xml"
+      }
 
-    // Once we check appcast.xml, SUFeedURL is stored in a user's preference file.
-    // So that Sparkle gives priority to a preference over Info.plist,
-    // we overwrite SUFeedURL here.
-    if includingBetaVersions {
-      return URL(string: "https://appcast.pqrs.org/karabiner-elements-appcast-devel.xml")!
+      print("feedURLString \(url)")
+
+      return url
     }
 
-    return URL(string: "https://appcast.pqrs.org/karabiner-elements-appcast.xml")!
-  }
-}
-
-#if USE_SPARKLE
-  extension Updater: SUUpdaterDelegate {
-    public func updater(_: SUUpdater, didFindValidUpdate _: SUAppcastItem) {
+    func updater(_: SPUUpdater, didFindValidUpdate _: SUAppcastItem) {
       NotificationCenter.default.post(name: Updater.didFindValidUpdate, object: nil)
     }
 
-    public func updaterDidNotFindUpdate(_: SUUpdater) {
+    func updaterDidNotFindUpdate(_: SPUUpdater) {
       NotificationCenter.default.post(name: Updater.updaterDidNotFindUpdate, object: nil)
     }
+
+    func updater(_: SPUUpdater, didAbortWithError error: Error) {
+      print("Sparkle error: \(error)")
+    }
   }
-#endif
+}

@@ -35,7 +35,7 @@ public class AppDelegate: NSObject, NSApplicationDelegate {
     ) { [weak self] _ in
       guard let self = self else { return }
 
-      self.window!.makeKeyAndOrderFront(self)
+      self.window?.makeKeyAndOrderFront(self)
       NSApp.activate(ignoringOtherApps: true)
     }
 
@@ -108,7 +108,6 @@ public class AppDelegate: NSObject, NSApplicationDelegate {
     window!.center()
     window!.makeKeyAndOrderFront(self)
 
-    window!.makeKeyAndOrderFront(self)
     NSApp.activate(ignoringOtherApps: true)
 
     //
@@ -132,7 +131,7 @@ public class AppDelegate: NSObject, NSApplicationDelegate {
   }
 
   public func applicationShouldTerminateAfterLastWindowClosed(_: NSApplication) -> Bool {
-    if Updater.shared.updateInProgress {
+    if Updater.shared.sessionInProgress {
       return false
     }
     return true
