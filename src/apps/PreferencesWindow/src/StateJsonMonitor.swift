@@ -20,7 +20,7 @@ private struct State: Codable {
   var hid_device_open_permitted: Bool?
 }
 
-public class StateJsonMonitor: NSObject {
+public class StateJsonMonitor {
   static let shared = StateJsonMonitor()
 
   private var states: [String: State] = [:]
