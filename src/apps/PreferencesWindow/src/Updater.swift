@@ -54,32 +54,34 @@ final class Updater: ObservableObject {
     #endif
   }
 
-  private class SparkleDelegate: NSObject, SPUUpdaterDelegate,
-    SPUStandardUserDriverDelegate
-  {
-    var includingBetaVersions = false
+  #if USE_SPARKLE
+    private class SparkleDelegate: NSObject, SPUUpdaterDelegate,
+      SPUStandardUserDriverDelegate
+    {
+      var includingBetaVersions = false
 
-    func feedURLString(for updater: SPUUpdater) -> String? {
-      var url = "https://appcast.pqrs.org/karabiner-elements-appcast.xml"
-      if includingBetaVersions {
-        url = "https://appcast.pqrs.org/karabiner-elements-appcast-devel.xml"
+      func feedURLString(for updater: SPUUpdater) -> String? {
+        var url = "https://appcast.pqrs.org/karabiner-elements-appcast.xml"
+        if includingBetaVersions {
+          url = "https://appcast.pqrs.org/karabiner-elements-appcast-devel.xml"
+        }
+
+        print("feedURLString \(url)")
+
+        return url
       }
 
-      print("feedURLString \(url)")
+      func updater(_: SPUUpdater, didFindValidUpdate _: SUAppcastItem) {
+        NotificationCenter.default.post(name: Updater.didFindValidUpdate, object: nil)
+      }
 
-      return url
-    }
+      func updaterDidNotFindUpdate(_: SPUUpdater) {
+        NotificationCenter.default.post(name: Updater.updaterDidNotFindUpdate, object: nil)
+      }
 
-    func updater(_: SPUUpdater, didFindValidUpdate _: SUAppcastItem) {
-      NotificationCenter.default.post(name: Updater.didFindValidUpdate, object: nil)
+      func updater(_: SPUUpdater, didAbortWithError error: Error) {
+        print("Sparkle error: \(error)")
+      }
     }
-
-    func updaterDidNotFindUpdate(_: SPUUpdater) {
-      NotificationCenter.default.post(name: Updater.updaterDidNotFindUpdate, object: nil)
-    }
-
-    func updater(_: SPUUpdater, didAbortWithError error: Error) {
-      print("Sparkle error: \(error)")
-    }
-  }
+  #endif
 }
