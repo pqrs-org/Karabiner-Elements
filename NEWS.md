@@ -4,6 +4,7 @@
 
 -   ⚡️ Improvements
     -   Preferences Window is rewritten in SwiftUI.
+    -   Sparkle Framework has been updated.
 
 ## Karabiner-Elements 14.4.0
 
