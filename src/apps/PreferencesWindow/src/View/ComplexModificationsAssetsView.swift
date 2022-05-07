@@ -45,7 +45,9 @@ struct ComplexModificationsAssetsView: View {
                       LibKrbn.Settings.shared.addComplexModificationRule(assetRule)
                       contentViewStates.complexModificationsViewSheetPresented = false
                     }) {
-                      Label("Enable", systemImage: "plus.circle.fill")
+                      // Use `Image` and `Text` instead of `Label` to set icon color like `Button` in `List`.
+                      Image(systemName: "plus.circle.fill").foregroundColor(.blue)
+                      Text("Enable")
                     }
 
                     Spacer()
