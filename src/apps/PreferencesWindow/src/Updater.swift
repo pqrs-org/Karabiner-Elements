@@ -8,7 +8,7 @@ final class Updater: ObservableObject {
   public static let shared = Updater()
 
   public static let didFindValidUpdate = Notification.Name("didFindValidUpdate")
-  public static let updaterDidNotFindUpdate = Notification.Name("updaterDidNotFindUpdate")
+  public static let didFinishUpdateCycleFor = Notification.Name("didFinishUpdateCycleFor")
 
   #if USE_SPARKLE
     private let updaterController: SPUStandardUpdaterController
@@ -17,6 +17,7 @@ final class Updater: ObservableObject {
 
   @Published var canCheckForUpdates = false
   @Published var sessionInProgress = false
+  @Published var errorMessage = ""
 
   private init() {
     #if USE_SPARKLE
@@ -75,12 +76,16 @@ final class Updater: ObservableObject {
         NotificationCenter.default.post(name: Updater.didFindValidUpdate, object: nil)
       }
 
-      func updaterDidNotFindUpdate(_: SPUUpdater) {
-        NotificationCenter.default.post(name: Updater.updaterDidNotFindUpdate, object: nil)
-      }
+      func updater(
+        _: SPUUpdater, didFinishUpdateCycleFor _: SPUUpdateCheck, error: Error?
+      ) {
+        if let error = error {
+          dump(error, to: &Updater.shared.errorMessage)
+        } else {
+          Updater.shared.errorMessage = ""
+        }
 
-      func updater(_: SPUUpdater, didAbortWithError error: Error) {
-        print("Sparkle error: \(error)")
+        NotificationCenter.default.post(name: Updater.didFinishUpdateCycleFor, object: nil)
       }
     }
   #endif

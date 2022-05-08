@@ -40,7 +40,7 @@ public class AppDelegate: NSObject, NSApplicationDelegate {
     }
 
     NotificationCenter.default.addObserver(
-      forName: Updater.updaterDidNotFindUpdate,
+      forName: Updater.didFinishUpdateCycleFor,
       object: nil,
       queue: .main
     ) { [weak self] _ in

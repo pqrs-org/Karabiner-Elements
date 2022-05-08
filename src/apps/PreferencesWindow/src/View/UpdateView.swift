@@ -38,6 +38,15 @@ struct UpdateView: View {
             }
             .disabled(!updater.canCheckForUpdates)
           }
+
+          if updater.errorMessage != "" {
+            VStack {
+              Text("Update error: \(updater.errorMessage)")
+                .padding()
+            }
+            .foregroundColor(Color(colorString: "#a94442ff"))
+            .background(Color(colorString: "#f2dedeff"))
+          }
         }
         .padding(6.0)
       }
