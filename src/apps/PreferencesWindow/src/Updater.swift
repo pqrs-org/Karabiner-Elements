@@ -79,11 +79,23 @@ final class Updater: ObservableObject {
       func updater(
         _: SPUUpdater, didFinishUpdateCycleFor _: SPUUpdateCheck, error: Error?
       ) {
-        if let error = error {
-          dump(error, to: &Updater.shared.errorMessage)
+        //
+        // Update errorMessage
+        //
+
+        if let error = error as? NSError {
+          if error.code == Sparkle.SUError.noUpdateError.rawValue {
+            Updater.shared.errorMessage = ""
+          } else {
+            dump(error, to: &Updater.shared.errorMessage)
+          }
         } else {
           Updater.shared.errorMessage = ""
         }
+
+        //
+        // Post notification
+        //
 
         NotificationCenter.default.post(name: Updater.didFinishUpdateCycleFor, object: nil)
       }
