@@ -52,11 +52,11 @@ public class LogMessageEntry: Identifiable, Equatable {
     case LogLevel.info:
       break
     case LogLevel.warn:
-      foregroundColor = Color(colorString: "#8a6d3bff")
-      backgroundColor = Color(colorString: "#fcf8e3ff")
+      foregroundColor = Color.warningForeground
+      backgroundColor = Color.warningBackground
     case LogLevel.error:
-      foregroundColor = Color(colorString: "#a94442ff")
-      backgroundColor = Color(colorString: "#f2dedeff")
+      foregroundColor = Color.errorForeground
+      backgroundColor = Color.errorBackground
     }
   }
 

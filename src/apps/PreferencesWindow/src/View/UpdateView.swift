@@ -44,8 +44,8 @@ struct UpdateView: View {
               Text("Update error: \(updater.errorMessage)")
                 .padding()
             }
-            .foregroundColor(Color(colorString: "#a94442ff"))
-            .background(Color(colorString: "#f2dedeff"))
+            .foregroundColor(Color.errorForeground)
+            .background(Color.errorBackground)
           }
         }
         .padding(6.0)
