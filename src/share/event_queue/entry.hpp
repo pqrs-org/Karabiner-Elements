@@ -19,6 +19,7 @@ public:
         const class event& event,
         event_type event_type,
         const class event& original_event,
+        event_origin event_origin,
         state state,
         bool lazy = false,
         validity validity = validity::valid)
@@ -29,7 +30,8 @@ public:
         lazy_(lazy),
         event_(event),
         event_type_(event_type),
-        original_event_(original_event) {
+        original_event_(original_event),
+        event_origin_(event_origin) {
   }
 
   entry& operator=(const entry& other) {
@@ -41,6 +43,7 @@ public:
     event_ = other.event_;
     event_type_ = other.event_type_;
     original_event_ = other.original_event_;
+    event_origin_ = other.event_origin_;
     return *this;
   }
 
@@ -54,6 +57,7 @@ public:
                  event(),
                  event_type::key_down,
                  event(),
+                 event_origin::none,
                  state::original);
 
     if (json.is_object()) {
@@ -87,6 +91,10 @@ public:
 
       if (auto v = pqrs::json::find_json(json, "original_event")) {
         result.original_event_ = event::make_from_json(v->value());
+      }
+
+      if (auto v = pqrs::json::find<state>(json, "event_origin")) {
+        result.event_origin_ = static_cast<event_origin>(*v);
       }
     }
 
@@ -165,6 +173,12 @@ public:
     return original_event_;
   }
 
+  event_origin get_event_origin(void) const {
+    // We don't have to use mutex since there is not setter.
+
+    return event_origin_;
+  }
+
   nlohmann::json to_json(void) const {
     return nlohmann::json({
         {"device_id", type_safe::get(get_device_id())},
@@ -175,6 +189,7 @@ public:
         {"event", get_event()},
         {"event_type", get_event_type()},
         {"original_event", get_original_event()},
+        {"event_origin", get_event_origin()},
     });
   }
 
@@ -186,7 +201,8 @@ public:
            get_lazy() == other.get_lazy() &&
            get_event() == other.get_event() &&
            get_event_type() == other.get_event_type() &&
-           get_original_event() == other.get_original_event();
+           get_original_event() == other.get_original_event() &&
+           get_event_origin() == other.get_event_origin();
   }
 
   bool operator!=(const entry& other) const {
@@ -215,6 +231,7 @@ private:
   event event_;
   event_type event_type_;
   event original_event_;
+  event_origin event_origin_;
   mutable std::mutex mutex_;
 };
 

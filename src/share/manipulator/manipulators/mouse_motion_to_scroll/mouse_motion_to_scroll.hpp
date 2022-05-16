@@ -170,6 +170,7 @@ private:
                                             event_time_stamp,
                                             time_stamp_delay,
                                             original_event_,
+                                            event_origin::grabbed_device,
                                             *output_event_queue);
       }
 
@@ -184,6 +185,7 @@ private:
                                                event_queue::event(pointing_motion),
                                                event_type::single,
                                                original_event_,
+                                               event_origin::grabbed_device,
                                                event_queue::state::manipulated);
       }
 
@@ -196,6 +198,7 @@ private:
                                             event_time_stamp,
                                             time_stamp_delay,
                                             original_event_,
+                                            event_origin::grabbed_device,
                                             *output_event_queue);
       }
 

@@ -126,6 +126,10 @@ public:
                 }
               }
 
+              if (front_input_event.get_event_origin() == event_origin::observed_device) {
+                skip = true;
+              }
+
               if (!skip) {
                 std::lock_guard<std::mutex> lock(manipulators_mutex_);
 

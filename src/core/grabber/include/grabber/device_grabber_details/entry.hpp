@@ -23,6 +23,7 @@ public:
                                                                                           first_value_arrived_(false),
                                                                                           grabbed_(false),
                                                                                           disabled_(false),
+                                                                                          event_origin_(event_origin::none),
                                                                                           grabbed_time_stamp_(0),
                                                                                           ungrabbed_time_stamp_(0) {
     device_properties_ = std::make_shared<device_properties>(device_id,
@@ -35,6 +36,8 @@ public:
     device_name_ = iokit_utility::make_device_name_for_log(device_id,
                                                            device);
     device_short_name_ = iokit_utility::make_device_name(device);
+
+    update_event_origin();
   }
 
   ~entry(void) {
@@ -50,6 +53,26 @@ public:
 
   void set_core_configuration(std::weak_ptr<const core_configuration::core_configuration> core_configuration) {
     core_configuration_ = core_configuration;
+
+    //
+    // Update event_origin_
+    //
+
+    auto old_event_origin = event_origin_;
+    update_event_origin();
+    if (old_event_origin != event_origin_) {
+      logger::get_logger()->info("device_grabber_details::entry event_origin_ is updated. {0}: {1} -> {2}",
+                                 device_name_,
+                                 nlohmann::json(old_event_origin),
+                                 nlohmann::json(event_origin_));
+
+      // Ungrab device if event_origin is changed in order to change IOHIDDeviceOpen option (kIOHIDOptionsTypeSeizeDevice or kIOHIDOptionsTypeNone)
+      async_stop_queue_value_monitor();
+    }
+
+    //
+    // Update caps_lock_led_state_manager state
+    //
 
     control_caps_lock_led_state_manager();
   }
@@ -110,17 +133,8 @@ public:
     disabled_ = value;
   }
 
-  bool is_ignored_device(void) const {
-    if (device_properties_) {
-      if (auto c = core_configuration_.lock()) {
-        if (auto device_identifiers = device_properties_->get_device_identifiers()) {
-          return c->get_selected_profile().get_device_ignore(
-              *device_identifiers);
-        }
-      }
-    }
-
-    return false;
+  event_origin get_event_origin(void) const {
+    return event_origin_;
   }
 
   bool is_disable_built_in_keyboard_if_exists(void) const {
@@ -148,19 +162,12 @@ public:
         hid_queue_value_monitor_async_start_called_ = true;
       }
 
-      hid_queue_value_monitor_->async_start(kIOHIDOptionsTypeSeizeDevice,
-                                            std::chrono::milliseconds(1000));
-    }
-  }
-
-  void async_start_queue_value_monitor_no_seize(void) {
-    if (hid_queue_value_monitor_) {
-      if (!hid_queue_value_monitor_async_start_called_) {
-        first_value_arrived_ = false;
-        hid_queue_value_monitor_async_start_called_ = true;
+      auto options = kIOHIDOptionsTypeSeizeDevice;
+      if (event_origin_ == event_origin::observed_device) {
+        options = kIOHIDOptionsTypeNone;
       }
 
-      hid_queue_value_monitor_->async_start(kIOHIDOptionsTypeNone,
+      hid_queue_value_monitor_->async_start(options,
                                             std::chrono::milliseconds(1000));
     }
   }
@@ -193,13 +200,34 @@ public:
   }
 
 private:
+  bool is_ignored_device(void) const {
+    if (device_properties_) {
+      if (auto c = core_configuration_.lock()) {
+        if (auto device_identifiers = device_properties_->get_device_identifiers()) {
+          return c->get_selected_profile().get_device_ignore(
+              *device_identifiers);
+        }
+      }
+    }
+
+    return false;
+  }
+
+  void update_event_origin(void) {
+    if (is_ignored_device()) {
+      event_origin_ = event_origin::observed_device;
+    } else {
+      event_origin_ = event_origin::grabbed_device;
+    }
+  }
+
   void control_caps_lock_led_state_manager(void) {
     if (caps_lock_led_state_manager_) {
       if (device_properties_) {
         if (auto c = core_configuration_.lock()) {
           if (auto device_identifiers = device_properties_->get_device_identifiers()) {
             if (c->get_selected_profile().get_device_manipulate_caps_lock_led(*device_identifiers)) {
-              if (grabbed_) {
+              if (grabbed_ && event_origin_ == event_origin::grabbed_device) {
                 caps_lock_led_state_manager_->async_start();
                 return;
               }
@@ -227,6 +255,7 @@ private:
 
   bool grabbed_;
   bool disabled_;
+  event_origin event_origin_;
 
   absolute_time_point grabbed_time_stamp_;
   absolute_time_point ungrabbed_time_stamp_;
