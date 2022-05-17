@@ -93,8 +93,8 @@ public:
         result.original_event_ = event::make_from_json(v->value());
       }
 
-      if (auto v = pqrs::json::find<state>(json, "event_origin")) {
-        result.event_origin_ = static_cast<event_origin>(*v);
+      if (auto v = pqrs::json::find<event_origin>(json, "event_origin")) {
+        result.event_origin_ = *v;
       }
     }
 
