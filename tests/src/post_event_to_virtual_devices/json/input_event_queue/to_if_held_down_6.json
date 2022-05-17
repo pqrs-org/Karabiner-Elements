@@ -2,67 +2,71 @@
     {
         "device_id": 1,
         "event": {
-            "type": "momentary_switch_event",
             "momentary_switch_event": {
                 "key_code": "left_shift"
-            }
+            },
+            "type": "momentary_switch_event"
+        },
+        "event_origin": "grabbed_device",
+        "event_time_stamp": {
+            "time_stamp": 2
         },
         "event_type": "key_down",
         "lazy": false,
         "original_event": {
-            "type": "momentary_switch_event",
             "momentary_switch_event": {
                 "key_code": "left_shift"
-            }
-        },
-        "event_time_stamp": {
-            "time_stamp": 2
+            },
+            "type": "momentary_switch_event"
         },
         "validity": true
     },
     {
         "device_id": 1,
         "event": {
-            "type": "momentary_switch_event",
             "momentary_switch_event": {
                 "key_code": "f3"
-            }
+            },
+            "type": "momentary_switch_event"
+        },
+        "event_origin": "grabbed_device",
+        "event_time_stamp": {
+            "time_stamp": 4
         },
         "event_type": "key_down",
         "lazy": false,
         "original_event": {
-            "type": "momentary_switch_event",
             "momentary_switch_event": {
                 "key_code": "f3"
-            }
-        },
-        "event_time_stamp": {
-            "time_stamp": 4
+            },
+            "type": "momentary_switch_event"
         },
         "validity": true
     },
     {
         "action": "invoke_dispatcher",
+        "event_origin": "grabbed_device",
         "time_stamp": 10000
     },
     {
         "device_id": 1,
         "event": {
-            "type": "momentary_switch_event",
             "momentary_switch_event": {
                 "key_code": "tab"
-            }
+            },
+            "type": "momentary_switch_event"
+        },
+        "event_origin": "grabbed_device",
+        "event_time_stamp": {
+            "time_stamp": 10002
         },
         "event_type": "key_down",
         "lazy": false,
         "original_event": {
-            "type": "momentary_switch_event",
             "momentary_switch_event": {
                 "key_code": "tab"
-            }
-        },
-        "event_time_stamp": {
-            "time_stamp": 10002
+            },
+            "type": "momentary_switch_event"
         },
         "validity": true
     }

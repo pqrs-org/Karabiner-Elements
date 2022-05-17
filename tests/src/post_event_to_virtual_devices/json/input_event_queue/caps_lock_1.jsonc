@@ -8,6 +8,7 @@
                 "key_code": "caps_lock"
             }
         },
+        "event_origin": "grabbed_device",
         "event_type": "key_down",
         "lazy": false,
         "original_event": {
@@ -31,6 +32,7 @@
                 "key_code": "caps_lock"
             }
         },
+        "event_origin": "grabbed_device",
         "event_type": "key_up",
         "lazy": false,
         "original_event": {
@@ -52,6 +54,7 @@
             "type": "caps_lock_state_changed",
             "caps_lock_state_changed": 1
         },
+        "event_origin": "grabbed_device",
         "event_type": "single",
         "lazy": false,
         "original_event": {
@@ -73,6 +76,7 @@
                 "key_code": "caps_lock"
             }
         },
+        "event_origin": "grabbed_device",
         "event_type": "key_down",
         "lazy": false,
         "original_event": {
@@ -96,6 +100,7 @@
                 "key_code": "caps_lock"
             }
         },
+        "event_origin": "grabbed_device",
         "event_type": "key_up",
         "lazy": false,
         "original_event": {
@@ -117,6 +122,7 @@
             "type": "caps_lock_state_changed",
             "caps_lock_state_changed": 1
         },
+        "event_origin": "grabbed_device",
         "event_type": "single",
         "lazy": false,
         "original_event": {

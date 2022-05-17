@@ -55,6 +55,7 @@ TEST_CASE("entry") {
                                   a_event,
                                   krbn::event_type::key_down,
                                   a_event,
+                                  krbn::event_origin::grabbed_device,
                                   krbn::event_queue::state::original,
                                   false);
   auto entry2 = entry1;
@@ -435,6 +436,7 @@ TEST_CASE("needs_swap") {
                                          spacebar_event,
                                          krbn::event_type::key_down,
                                          spacebar_event,
+                                         krbn::event_origin::grabbed_device,
                                          krbn::event_queue::state::original);
   krbn::event_queue::entry right_shift_down(krbn::device_id(1),
                                             krbn::event_queue::event_time_stamp(
@@ -442,6 +444,7 @@ TEST_CASE("needs_swap") {
                                             right_shift_event,
                                             krbn::event_type::key_down,
                                             right_shift_event,
+                                            krbn::event_origin::grabbed_device,
                                             krbn::event_queue::state::original);
   krbn::event_queue::entry escape_down(krbn::device_id(1),
                                        krbn::event_queue::event_time_stamp(
@@ -449,6 +452,7 @@ TEST_CASE("needs_swap") {
                                        escape_event,
                                        krbn::event_type::key_down,
                                        escape_event,
+                                       krbn::event_origin::grabbed_device,
                                        krbn::event_queue::state::original);
   krbn::event_queue::entry spacebar_up(krbn::device_id(1),
                                        krbn::event_queue::event_time_stamp(
@@ -456,6 +460,7 @@ TEST_CASE("needs_swap") {
                                        spacebar_event,
                                        krbn::event_type::key_up,
                                        spacebar_event,
+                                       krbn::event_origin::grabbed_device,
                                        krbn::event_queue::state::original);
   krbn::event_queue::entry right_shift_up(krbn::device_id(1),
                                           krbn::event_queue::event_time_stamp(
@@ -463,6 +468,7 @@ TEST_CASE("needs_swap") {
                                           right_shift_event,
                                           krbn::event_type::key_up,
                                           right_shift_event,
+                                          krbn::event_origin::grabbed_device,
                                           krbn::event_queue::state::original);
 
   REQUIRE(krbn::event_queue::queue::needs_swap(spacebar_down, spacebar_down) == false);

@@ -2,84 +2,88 @@
     {
         "device_id": 1,
         "event": {
-            "type": "momentary_switch_event",
             "momentary_switch_event": {
                 "key_code": "spacebar"
-            }
+            },
+            "type": "momentary_switch_event"
         },
-        "event_type": "key_down",
-        "lazy": false,
-        "original_event": {
-            "type": "momentary_switch_event",
-            "momentary_switch_event": {
-                "key_code": "spacebar"
-            }
-        },
+        "event_origin": "grabbed_device",
         "event_time_stamp": {
             "time_stamp": 100
         },
+        "event_type": "key_down",
+        "lazy": false,
+        "original_event": {
+            "momentary_switch_event": {
+                "key_code": "spacebar"
+            },
+            "type": "momentary_switch_event"
+        },
         "valid": true
     },
     {
         "device_id": 1,
         "event": {
-            "type": "momentary_switch_event",
             "momentary_switch_event": {
                 "key_code": "escape"
-            }
+            },
+            "type": "momentary_switch_event"
+        },
+        "event_origin": "grabbed_device",
+        "event_time_stamp": {
+            "time_stamp": 200
         },
         "event_type": "key_down",
         "lazy": false,
         "original_event": {
-            "type": "momentary_switch_event",
             "momentary_switch_event": {
                 "key_code": "escape"
-            }
-        },
-        "event_time_stamp": {
-            "time_stamp": 200
+            },
+            "type": "momentary_switch_event"
         },
         "valid": true
     },
     {
         "device_id": 1,
         "event": {
-            "type": "momentary_switch_event",
             "momentary_switch_event": {
                 "key_code": "spacebar"
-            }
+            },
+            "type": "momentary_switch_event"
         },
-        "event_type": "key_up",
-        "lazy": false,
-        "original_event": {
-            "type": "momentary_switch_event",
-            "momentary_switch_event": {
-                "key_code": "spacebar"
-            }
-        },
+        "event_origin": "grabbed_device",
         "event_time_stamp": {
             "time_stamp": 300
         },
+        "event_type": "key_up",
+        "lazy": false,
+        "original_event": {
+            "momentary_switch_event": {
+                "key_code": "spacebar"
+            },
+            "type": "momentary_switch_event"
+        },
         "valid": true
     },
     {
         "device_id": 1,
         "event": {
-            "type": "momentary_switch_event",
             "momentary_switch_event": {
                 "key_code": "escape"
-            }
+            },
+            "type": "momentary_switch_event"
+        },
+        "event_origin": "grabbed_device",
+        "event_time_stamp": {
+            "time_stamp": 400
         },
         "event_type": "key_up",
         "lazy": false,
         "original_event": {
-            "type": "momentary_switch_event",
             "momentary_switch_event": {
                 "key_code": "escape"
-            }
-        },
-        "event_time_stamp": {
-            "time_stamp": 400
+            },
+            "type": "momentary_switch_event"
         },
         "valid": true
     }

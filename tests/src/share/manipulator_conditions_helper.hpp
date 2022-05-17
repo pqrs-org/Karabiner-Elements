@@ -61,6 +61,7 @@ public:
                                     krbn::event_type::key_down,
                                     krbn::event_queue::event(krbn::momentary_switch_event(pqrs::hid::usage_page::keyboard_or_keypad,
                                                                                           pqrs::hid::usage::keyboard_or_keypad::keyboard_a)),
+                                    krbn::event_origin::grabbed_device,
                                     krbn::event_queue::state::original);
   };
 
