@@ -64,13 +64,13 @@
         "validity": true
     },
 
-    // spacebar key_down
+    // button1 key_down
     {
-        "device_id": 1,
+        "device_id": 2,
         "event": {
             "type": "momentary_switch_event",
             "momentary_switch_event": {
-                "key_code": "spacebar"
+                "pointing_button": "button1"
             }
         },
         "event_origin": "observed_device",
@@ -79,7 +79,7 @@
         "original_event": {
             "type": "momentary_switch_event",
             "momentary_switch_event": {
-                "key_code": "spacebar"
+                "pointing_button": "button1"
             }
         },
         "event_time_stamp": {
@@ -112,13 +112,13 @@
         "validity": true
     },
 
-    // spacebar key_up
+    // button1 key_up
     {
-        "device_id": 1,
+        "device_id": 2,
         "event": {
             "type": "momentary_switch_event",
             "momentary_switch_event": {
-                "key_code": "spacebar"
+                "pointing_button": "button1"
             }
         },
         "event_origin": "observed_device",
@@ -127,7 +127,7 @@
         "original_event": {
             "type": "momentary_switch_event",
             "momentary_switch_event": {
-                "key_code": "spacebar"
+                "pointing_button": "button1"
             }
         },
         "event_time_stamp": {
