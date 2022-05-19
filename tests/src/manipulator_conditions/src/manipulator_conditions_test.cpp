@@ -170,6 +170,7 @@ TEST_CASE("conditions.frontmost_application") {
                                  krbn::event_type::key_down,
                                  krbn::event_queue::event(krbn::momentary_switch_event(pqrs::hid::usage_page::keyboard_or_keypad,
                                                                                        pqrs::hid::usage::keyboard_or_keypad::keyboard_a)),
+                                 krbn::event_origin::grabbed_device,
                                  krbn::event_queue::state::original);
 
   // bundle_identifiers matching
@@ -242,6 +243,7 @@ TEST_CASE("conditions.input_source") {
                                  krbn::event_type::key_down,
                                  krbn::event_queue::event(krbn::momentary_switch_event(pqrs::hid::usage_page::keyboard_or_keypad,
                                                                                        pqrs::hid::usage::keyboard_or_keypad::keyboard_a)),
+                                 krbn::event_origin::grabbed_device,
                                  krbn::event_queue::state::original);
 
   // language matching
@@ -474,6 +476,7 @@ TEST_CASE("conditions.event_changed") {
                                           krbn::event_type::key_down,
                                           krbn::event_queue::event(krbn::momentary_switch_event(pqrs::hid::usage_page::keyboard_or_keypad,
                                                                                                 pqrs::hid::usage::keyboard_or_keypad::keyboard_a)),
+                                          krbn::event_origin::grabbed_device,
                                           krbn::event_queue::state::original);
   krbn::event_queue::entry manipulated_entry(krbn::device_id(1),
                                              krbn::event_queue::event_time_stamp(krbn::absolute_time_point(0)),
@@ -482,6 +485,7 @@ TEST_CASE("conditions.event_changed") {
                                              krbn::event_type::key_down,
                                              krbn::event_queue::event(krbn::momentary_switch_event(pqrs::hid::usage_page::keyboard_or_keypad,
                                                                                                    pqrs::hid::usage::keyboard_or_keypad::keyboard_a)),
+                                             krbn::event_origin::grabbed_device,
                                              krbn::event_queue::state::manipulated);
 
   {
@@ -513,6 +517,7 @@ TEST_CASE("conditions.keyboard_type") {
                                  krbn::event_type::key_down,
                                  krbn::event_queue::event(krbn::momentary_switch_event(pqrs::hid::usage_page::keyboard_or_keypad,
                                                                                        pqrs::hid::usage::keyboard_or_keypad::keyboard_a)),
+                                 krbn::event_origin::grabbed_device,
                                  krbn::event_queue::state::original);
 
   pqrs::osx::system_preferences::properties system_preferences_properties;
@@ -573,6 +578,7 @@ TEST_CASE("conditions.variable") {
                                  krbn::event_type::key_down,
                                  krbn::event_queue::event(krbn::momentary_switch_event(pqrs::hid::usage_page::keyboard_or_keypad,
                                                                                        pqrs::hid::usage::keyboard_or_keypad::keyboard_a)),
+                                 krbn::event_origin::grabbed_device,
                                  krbn::event_queue::state::original);
 
   manipulator_environment.set_variable("variable_name", 123);

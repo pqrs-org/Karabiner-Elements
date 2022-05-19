@@ -59,7 +59,8 @@ public:
           hid_queue_value_monitor->values_arrived.connect([this, device_id](auto&& values_ptr) {
             auto event_queue = event_queue::utility::make_queue(device_id,
                                                                 hid_queue_values_converter_.make_hid_values(device_id,
-                                                                                                            values_ptr));
+                                                                                                            values_ptr),
+                                                                event_origin::observed_device);
             for (const auto& e : event_queue->get_entries()) {
               if (e.get_event().get_type() == event_queue::event::type::caps_lock_state_changed) {
                 if (auto client = grabber_client_.lock()) {
@@ -74,7 +75,8 @@ public:
           hid_queue_value_monitor->values_arrived.connect([this, device_id](auto&& values_ptr) {
             auto event_queue = event_queue::utility::make_queue(device_id,
                                                                 hid_queue_values_converter_.make_hid_values(device_id,
-                                                                                                            values_ptr));
+                                                                                                            values_ptr),
+                                                                event_origin::observed_device);
             for (const auto& entry : event_queue->get_entries()) {
               if (auto e = entry.get_event().template get_if<momentary_switch_event>()) {
                 if (auto client = grabber_client_.lock()) {

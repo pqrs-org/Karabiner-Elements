@@ -29,6 +29,7 @@ public:
                           const class event& event,
                           event_type event_type,
                           const class event& original_event,
+                          event_origin event_origin,
                           state state,
                           bool lazy = false,
                           validity validity = validity::valid) {
@@ -40,6 +41,7 @@ public:
                          event,
                          event_type,
                          original_event,
+                         event_origin,
                          state,
                          lazy,
                          validity);
@@ -147,6 +149,7 @@ public:
                        entry.get_event(),
                        entry.get_event_type(),
                        entry.get_original_event(),
+                       entry.get_event_origin(),
                        entry.get_state(),
                        entry.get_lazy(),
                        entry.get_validity());

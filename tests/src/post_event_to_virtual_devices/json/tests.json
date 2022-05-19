@@ -84,6 +84,12 @@
         "expected_post_event_to_virtual_devices_queue": "json/expected_post_event_to_virtual_devices_queue/not_changed_1.json"
     },
     {
+        "description": "observed_device_1",
+        "rules": ["json/rules/from_key.json"],
+        "input_event_queue": "json/input_event_queue/observed_device_1.json",
+        "expected_post_event_to_virtual_devices_queue": "json/expected_post_event_to_virtual_devices_queue/observed_device_1.json"
+    },
+    {
         "description": "sort_events_1 (f1,f2 -> left_shift+f2)",
         "rules": ["json/rules/from_key.json"],
         "input_event_queue": "json/input_event_queue/sort_events_1.json",
@@ -298,6 +304,12 @@
         "rules": ["json/rules/to_if_alone.json"],
         "input_event_queue": "json/input_event_queue/to_if_alone_6.json",
         "expected_post_event_to_virtual_devices_queue": "json/expected_post_event_to_virtual_devices_queue/to_if_alone_6.json"
+    },
+    {
+        "description": "to_if_alone_observed_device_1",
+        "rules": ["json/rules/to_if_alone.json"],
+        "input_event_queue": "json/input_event_queue/to_if_alone_observed_device_1.json",
+        "expected_post_event_to_virtual_devices_queue": "json/expected_post_event_to_virtual_devices_queue/to_if_alone_observed_device_1.json"
     },
     {
         "description": "to_after_key_up_1",
@@ -754,5 +766,17 @@
         "rules": ["json/rules/sticky_modifier.json"],
         "input_event_queue": "json/input_event_queue/sticky_modifier_2.jsonc",
         "expected_post_event_to_virtual_devices_queue": "json/expected_post_event_to_virtual_devices_queue/sticky_modifier_2.json"
+    },
+    {
+        "description": "sticky modifier",
+        "rules": ["json/rules/sticky_modifier.json"],
+        "input_event_queue": "json/input_event_queue/sticky_modifier_3.jsonc",
+        "expected_post_event_to_virtual_devices_queue": "json/expected_post_event_to_virtual_devices_queue/sticky_modifier_3.json"
+    },
+    {
+        "description": "sticky modifier",
+        "rules": ["json/rules/sticky_modifier.json"],
+        "input_event_queue": "json/input_event_queue/sticky_modifier_observed_device_1.jsonc",
+        "expected_post_event_to_virtual_devices_queue": "json/expected_post_event_to_virtual_devices_queue/sticky_modifier_observed_device_1.json"
     }
 ]

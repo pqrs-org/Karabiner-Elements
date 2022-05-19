@@ -239,7 +239,8 @@ public:
           if (it != std::end(entries_)) {
             auto event_queue = event_queue::utility::make_queue(device_id,
                                                                 hid_queue_values_converter_.make_hid_values(device_id,
-                                                                                                            values_ptr));
+                                                                                                            values_ptr),
+                                                                it->second->get_event_origin());
             event_queue = event_queue::utility::insert_device_keys_and_pointing_buttons_are_released_event(event_queue,
                                                                                                            device_id,
                                                                                                            it->second->get_pressed_keys_manager());
@@ -250,8 +251,9 @@ public:
         entry->get_hid_queue_value_monitor()->started.connect([this, device_id] {
           auto it = entries_.find(device_id);
           if (it != std::end(entries_)) {
-            logger::get_logger()->info("{0} is grabbed.",
-                                       it->second->get_device_name());
+            logger::get_logger()->info("{0} hid queue value monitor is started ({1}).",
+                                       it->second->get_device_name(),
+                                       it->second->get_event_origin() == event_origin::grabbed_device ? "grabbed" : "observed");
             logger_unique_filter_.reset();
 
             post_device_grabbed_event(it->second->get_device_properties());
@@ -267,7 +269,7 @@ public:
         entry->get_hid_queue_value_monitor()->stopped.connect([this, device_id] {
           auto it = entries_.find(device_id);
           if (it != std::end(entries_)) {
-            logger::get_logger()->info("{0} is ungrabbed.",
+            logger::get_logger()->info("{0} hid queue value monitor is stopped.",
                                        it->second->get_device_name());
             logger_unique_filter_.reset();
 
@@ -400,6 +402,7 @@ public:
                                  e,
                                  event_type,
                                  event,
+                                 event_origin::virtual_device,
                                  event_queue::state::virtual_event);
 
         merged_input_event_queue_->push_back_entry(entry);
@@ -513,6 +516,7 @@ public:
                                  event,
                                  t,
                                  event,
+                                 event_origin::virtual_device,
                                  event_queue::state::virtual_event);
         merged_input_event_queue_->push_back_entry(entry);
       }
@@ -529,6 +533,7 @@ public:
                                event,
                                event_type::single,
                                event,
+                               event_origin::virtual_device,
                                event_queue::state::virtual_event);
 
       merged_input_event_queue_->push_back_entry(entry);
@@ -545,6 +550,7 @@ public:
                                event,
                                event_type::single,
                                event,
+                               event_origin::virtual_device,
                                event_queue::state::virtual_event);
 
       merged_input_event_queue_->push_back_entry(entry);
@@ -562,6 +568,7 @@ public:
                                event,
                                event_type::single,
                                event,
+                               event_origin::virtual_device,
                                event_queue::state::virtual_event);
 
       merged_input_event_queue_->push_back_entry(entry);
@@ -579,6 +586,7 @@ public:
                                event,
                                event_type::single,
                                event,
+                               event_origin::virtual_device,
                                event_queue::state::virtual_event);
 
       merged_input_event_queue_->push_back_entry(entry);
@@ -648,12 +656,14 @@ private:
       bool needs_regrab = false;
 
       for (const auto& e : event_queue->get_entries()) {
-        if (auto ev = e.get_event().get_if<momentary_switch_event>()) {
-          needs_regrab |= probable_stuck_events_manager->update(
-              *ev,
-              e.get_event_type(),
-              e.get_event_time_stamp().get_time_stamp(),
-              device_state::grabbed);
+        if (entry->get_event_origin() == event_origin::grabbed_device) {
+          if (auto ev = e.get_event().get_if<momentary_switch_event>()) {
+            needs_regrab |= probable_stuck_events_manager->update(
+                *ev,
+                e.get_event_type(),
+                e.get_event_time_stamp().get_time_stamp(),
+                device_state::grabbed);
+          }
         }
 
         if (!entry->get_disabled()) {
@@ -662,6 +672,7 @@ private:
                                 e.get_event(),
                                 e.get_event_type(),
                                 e.get_original_event(),
+                                e.get_event_origin(),
                                 e.get_state());
 
           merged_input_event_queue_->push_back_entry(qe);
@@ -686,6 +697,7 @@ private:
                                  event,
                                  event_type::single,
                                  event,
+                                 event_origin::virtual_device,
                                  event_queue::state::virtual_event);
 
         merged_input_event_queue_->push_back_entry(entry);
@@ -702,6 +714,7 @@ private:
                              event,
                              event_type::single,
                              event,
+                             event_origin::virtual_device,
                              event_queue::state::virtual_event);
 
     merged_input_event_queue_->push_back_entry(entry);
@@ -716,6 +729,7 @@ private:
                              event,
                              event_type::single,
                              event,
+                             event_origin::virtual_device,
                              event_queue::state::virtual_event);
 
     merged_input_event_queue_->push_back_entry(entry);
@@ -763,20 +777,6 @@ private:
   grabbable_state::state make_grabbable_state(std::shared_ptr<device_grabber_details::entry> entry) const {
     if (!entry) {
       return grabbable_state::state::ungrabbable_permanently;
-    }
-
-    if (entry->is_ignored_device()) {
-      auto device_properties = entry->get_device_properties();
-
-      // If we need to disable the built-in keyboard, we have to grab it.
-      if (device_properties &&
-          device_properties->get_is_built_in_keyboard().value_or(false) &&
-          need_to_disable_built_in_keyboard()) {
-        // Do nothing
-      } else {
-        unset_device_ungrabbable_temporarily_notification_message(entry->get_device_id());
-        return grabbable_state::state::ungrabbable_permanently;
-      }
     }
 
     // ----------------------------------------

@@ -68,7 +68,8 @@ TEST_CASE("utility::make_queue") {
                                                      pqrs::hid::usage::generic_desktop::x));
 
   auto queue = krbn::event_queue::utility::make_queue(krbn::device_id(1),
-                                                      hid_values);
+                                                      hid_values,
+                                                      krbn::event_origin::grabbed_device);
   REQUIRE(queue->get_entries().size() == 8);
 
   {

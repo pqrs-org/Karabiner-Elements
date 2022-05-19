@@ -7,7 +7,8 @@ namespace krbn {
 namespace event_queue {
 namespace utility {
 static inline std::shared_ptr<queue> make_queue(device_id device_id,
-                                                const std::vector<pqrs::osx::iokit_hid_value>& hid_values) {
+                                                const std::vector<pqrs::osx::iokit_hid_value>& hid_values,
+                                                event_origin event_origin) {
   auto result = std::make_shared<queue>();
 
   // The pointing motion usage (hid_usage::gd_x, hid_usage::gd_y, etc.) are splitted from one HID report.
@@ -34,6 +35,7 @@ static inline std::shared_ptr<queue> make_queue(device_id device_id,
                                  event,
                                  event_type::single,
                                  event,
+                                 event_origin,
                                  state::original);
 
       pointing_motion_time_stamp = std::nullopt;
@@ -55,6 +57,7 @@ static inline std::shared_ptr<queue> make_queue(device_id device_id,
                                      event,
                                      v.get_integer_value() ? event_type::key_down : event_type::key_up,
                                      event,
+                                     event_origin,
                                      state::original);
 
         } else if (v.conforms_to(pqrs::hid::usage_page::generic_desktop,
@@ -97,6 +100,7 @@ static inline std::shared_ptr<queue> make_queue(device_id device_id,
                                      event,
                                      event_type::single,
                                      event,
+                                     event_origin,
                                      state::virtual_event);
         }
       }
@@ -135,6 +139,7 @@ static inline std::shared_ptr<queue> insert_device_keys_and_pointing_buttons_are
                                          event,
                                          event_type::single,
                                          event,
+                                         event_origin::virtual_device,
                                          state::virtual_event);
             }
           }

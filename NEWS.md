@@ -2,6 +2,12 @@
 
 ## Beta
 
+-   💥 Breaking changes
+    -   The following modifier flags and manipulators are now canceled even for events from devices not grabbed by Karabiner-Elements, e.g. mouse clicks.
+        -   sticky modifiers
+        -   `to_if_alone`
+        -   `to_if_held_down`
+        -   `to_delayed_action`
 -   ⚡️ Improvements
     -   Preferences Window is rewritten in SwiftUI.
     -   Sparkle Framework has been updated.
