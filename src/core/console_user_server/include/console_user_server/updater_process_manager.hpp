@@ -21,8 +21,20 @@ public:
                 checked_ = true;
 
                 if (core_configuration->get_global_configuration().get_check_for_updates_on_startup()) {
-                  logger::get_logger()->info("Check for updates...");
-                  update_utility::check_for_updates_in_background();
+                  // Note:
+                  //
+                  // During the updates, Karabiner-Elements.app and console_user_server binaries are overwritten asynchronous.
+                  // And console_user_server will be restarted via version check.
+                  // If console_user_server is restarted before Karabiner-Elements.app overwritten,
+                  // checking for updates runs with the old version of Karabiner-Elements.app.
+                  //
+                  // Wait before checking for updates to avoid it.
+                  enqueue_to_dispatcher(
+                      [] {
+                        logger::get_logger()->info("Check for updates...");
+                        update_utility::check_for_updates_in_background();
+                      },
+                      when_now() + std::chrono::seconds(30));
                 }
               }
             }
