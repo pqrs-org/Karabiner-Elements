@@ -22,8 +22,7 @@
         "valid": true
     },
     {
-        "action": "invalidate_manipulators",
-        "event_origin": "grabbed_device"
+        "action": "invalidate_manipulators"
     },
     {
         "description": "This event should be manipulated even after invalidate_manipulators.",
