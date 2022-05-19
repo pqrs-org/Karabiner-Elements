@@ -1,6 +1,5 @@
 [
     {
-        "event_origin": "grabbed_device",
         "pause_manipulation": true
     },
     {
@@ -92,7 +91,6 @@
         "validity": true
     },
     {
-        "event_origin": "grabbed_device",
         "pause_manipulation": false
     }
 ]

@@ -24,7 +24,6 @@
     },
     {
         "action": "invoke_dispatcher",
-        "event_origin": "grabbed_device",
         "time_stamp": 10000
     },
     {
@@ -118,7 +117,6 @@
     },
     {
         "action": "invoke_dispatcher",
-        "event_origin": "grabbed_device",
         "time_stamp": 20000
     },
     {
