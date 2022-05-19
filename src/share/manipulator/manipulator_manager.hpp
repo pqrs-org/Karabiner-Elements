@@ -114,6 +114,11 @@ public:
             case event_queue::event::type::virtual_hid_keyboard_configuration_changed: {
               bool skip = false;
 
+              // Set validity validity::invalid in order to prevent events from being changed in manipulators.
+              if (front_input_event.get_event_origin() == event_origin::observed_device) {
+                front_input_event.set_validity(validity::invalid);
+              }
+
               if (front_input_event.get_validity() == validity::valid) {
                 std::lock_guard<std::mutex> lock(manipulators_mutex_);
 
@@ -124,10 +129,6 @@ public:
                     break;
                   }
                 }
-              }
-
-              if (front_input_event.get_event_origin() == event_origin::observed_device) {
-                skip = true;
               }
 
               if (!skip) {
@@ -152,6 +153,11 @@ public:
               }
               break;
             }
+          }
+
+          // Restore validity to send events to the next event_queue.
+          if (input_event_queue->get_front_event().get_event_origin() == event_origin::observed_device) {
+            input_event_queue->get_front_event().set_validity(validity::valid);
           }
 
           if (input_event_queue->get_front_event().get_validity() == validity::valid) {
