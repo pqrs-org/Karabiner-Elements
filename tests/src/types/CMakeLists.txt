@@ -18,6 +18,7 @@ add_executable(
   src/pointing_motion_test.cpp
   src/software_function_test.cpp
   src/test.cpp
+  src/virtual_hid_devices_state_test.cpp
 )
 
 target_link_libraries(
