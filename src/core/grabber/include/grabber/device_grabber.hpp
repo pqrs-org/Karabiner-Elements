@@ -44,8 +44,6 @@ public:
   device_grabber(std::weak_ptr<console_user_server_client> weak_console_user_server_client,
                  std::weak_ptr<grabber_state_json_writer> weak_grabber_state_json_writer) : dispatcher_client(),
                                                                                             virtual_hid_device_service_check_timer_(*this),
-                                                                                            is_virtual_hid_keyboard_ready_(false),
-                                                                                            is_virtual_hid_pointing_ready_(false),
                                                                                             profile_(nlohmann::json::object()),
                                                                                             logger_unique_filter_(logger::get_logger()) {
     notification_message_manager_ = std::make_shared<notification_message_manager>(
@@ -124,10 +122,10 @@ public:
     });
 
     virtual_hid_device_service_client_->virtual_hid_keyboard_ready_response.connect([this](auto&& ready) {
-      if (is_virtual_hid_keyboard_ready_ != ready) {
+      if (virtual_hid_devices_state_.get_virtual_hid_keyboard_ready() != ready) {
         logger::get_logger()->info("virtual_hid_device_service_client_ virtual_hid_keyboard_ready_response: {0}", ready);
 
-        is_virtual_hid_keyboard_ready_ = ready;
+        virtual_hid_devices_state_.set_virtual_hid_keyboard_ready(ready);
 
         // The virtual_hid_keyboard might be terminated due to virtual_hid_device_service_client_ error.
         // We try to reinitialize the device.
@@ -142,12 +140,12 @@ public:
     });
 
     virtual_hid_device_service_client_->virtual_hid_pointing_ready_response.connect([this](auto&& ready) {
-      if (is_virtual_hid_pointing_ready_ != ready) {
+      if (virtual_hid_devices_state_.get_virtual_hid_pointing_ready() != ready) {
         logger::get_logger()->info("virtual_hid_device_service_client_ virtual_hid_pointing_ready_response: {0}", ready);
 
-        is_virtual_hid_pointing_ready_ = ready;
+        virtual_hid_devices_state_.set_virtual_hid_pointing_ready(ready);
 
-        // The virtual_hid_keyboard might be terminated due to virtual_hid_device_service_client_ error.
+        // The virtual_hid_pointing might be terminated due to virtual_hid_device_service_client_ error.
         // We try to reinitialize the device.
         if (!ready) {
           virtual_hid_device_service_client_->async_virtual_hid_pointing_terminate();
@@ -782,7 +780,7 @@ private:
     // ----------------------------------------
     // Ungrabbable while virtual_hid_device_service_client_ is not ready.
 
-    if (!is_virtual_hid_keyboard_ready_) {
+    if (!virtual_hid_devices_state_.get_virtual_hid_keyboard_ready()) {
       std::string message = "virtual_hid_keyboard is not ready. Please wait for a while.";
       logger_unique_filter_.warn(message);
       unset_device_ungrabbable_temporarily_notification_message(entry->get_device_id());
@@ -987,8 +985,7 @@ private:
   std::shared_ptr<pqrs::karabiner::driverkit::virtual_hid_device_service::client> virtual_hid_device_service_client_;
 
   pqrs::dispatcher::extra::timer virtual_hid_device_service_check_timer_;
-  bool is_virtual_hid_keyboard_ready_;
-  bool is_virtual_hid_pointing_ready_;
+  virtual_hid_devices_state virtual_hid_devices_state_;
 
   std::vector<nod::scoped_connection> external_signal_connections_;
 

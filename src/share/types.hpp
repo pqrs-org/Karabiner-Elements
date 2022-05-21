@@ -21,6 +21,7 @@
 #include "types/sticky_modifier_type.hpp"
 #include "types/validity.hpp"
 #include "types/vendor_id.hpp"
+#include "types/virtual_hid_devices_state.hpp"
 #include <pqrs/osx/frontmost_application_monitor.hpp>
 #include <pqrs/osx/frontmost_application_monitor/extra/nlohmann_json.hpp>
 #include <pqrs/osx/input_source.hpp>
