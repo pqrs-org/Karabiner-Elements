@@ -249,6 +249,7 @@ public:
         case event_queue::event::type::pointing_device_event_from_event_tap:
         case event_queue::event::type::frontmost_application_changed:
         case event_queue::event::type::input_source_changed:
+        case event_queue::event::type::virtual_hid_devices_state_changed:
           // Do nothing
           break;
       }

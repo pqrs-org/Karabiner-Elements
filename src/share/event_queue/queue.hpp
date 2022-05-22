@@ -138,6 +138,9 @@ public:
     if (auto properties = event.get_if<pqrs::osx::system_preferences::properties>()) {
       manipulator_environment_.set_system_preferences_properties(*properties);
     }
+    if (auto state = event.get_if<virtual_hid_devices_state>()) {
+      manipulator_environment_.set_virtual_hid_devices_state(*state);
+    }
     if (auto configuration = event.get_if<core_configuration::details::virtual_hid_keyboard>()) {
       manipulator_environment_.set_virtual_hid_keyboard_country_code(configuration->get_country_code());
     }

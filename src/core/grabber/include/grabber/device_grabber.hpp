@@ -126,6 +126,7 @@ public:
         logger::get_logger()->info("virtual_hid_device_service_client_ virtual_hid_keyboard_ready_response: {0}", ready);
 
         virtual_hid_devices_state_.set_virtual_hid_keyboard_ready(ready);
+        async_post_virtual_hid_devices_state_changed_event();
 
         // The virtual_hid_keyboard might be terminated due to virtual_hid_device_service_client_ error.
         // We try to reinitialize the device.
@@ -144,6 +145,7 @@ public:
         logger::get_logger()->info("virtual_hid_device_service_client_ virtual_hid_pointing_ready_response: {0}", ready);
 
         virtual_hid_devices_state_.set_virtual_hid_pointing_ready(ready);
+        async_post_virtual_hid_devices_state_changed_event();
 
         // The virtual_hid_pointing might be terminated due to virtual_hid_device_service_client_ error.
         // We try to reinitialize the device.
@@ -561,6 +563,23 @@ public:
     enqueue_to_dispatcher([this] {
       auto event = event_queue::event::make_system_preferences_properties_changed_event(
           system_preferences_properties_);
+      event_queue::entry entry(device_id(0),
+                               event_queue::event_time_stamp(pqrs::osx::chrono::mach_absolute_time_point()),
+                               event,
+                               event_type::single,
+                               event,
+                               event_origin::virtual_device,
+                               event_queue::state::virtual_event);
+
+      merged_input_event_queue_->push_back_entry(entry);
+
+      krbn_notification_center::get_instance().enqueue_input_event_arrived(*this);
+    });
+  }
+
+  void async_post_virtual_hid_devices_state_changed_event(void) {
+    enqueue_to_dispatcher([this] {
+      auto event = event_queue::event::make_virtual_hid_devices_state_changed_event(virtual_hid_devices_state_);
       event_queue::entry entry(device_id(0),
                                event_queue::event_time_stamp(pqrs::osx::chrono::mach_absolute_time_point()),
                                event,

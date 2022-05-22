@@ -30,6 +30,12 @@ public:
     virtual_hid_pointing_ready_ = value;
   }
 
+  constexpr auto operator<=>(const virtual_hid_devices_state&) const = default;
+
+  bool operator!=(const virtual_hid_devices_state& other) const {
+    return !(*this == other);
+  }
+
 private:
   bool virtual_hid_keyboard_ready_;
   bool virtual_hid_pointing_ready_;

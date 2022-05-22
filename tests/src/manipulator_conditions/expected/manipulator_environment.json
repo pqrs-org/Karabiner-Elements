@@ -25,6 +25,10 @@
         "value1": 100,
         "value2": 200
     },
+    "virtual_hid_devices_state": {
+        "virtual_hid_keyboard_ready": false,
+        "virtual_hid_pointing_ready": false
+    },
     "virtual_hid_keyboard_country_code": 0,
     "virtual_hid_keyboard_keyboard_type": "iso"
 }

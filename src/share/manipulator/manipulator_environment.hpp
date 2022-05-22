@@ -41,6 +41,7 @@ public:
         {"input_source", input_source_json},
         {"variables", variables_},
         {"system_preferences_properties", system_preferences_properties_},
+        {"virtual_hid_devices_state", virtual_hid_devices_state_},
         {"virtual_hid_keyboard_country_code", virtual_hid_keyboard_country_code_},
         {"virtual_hid_keyboard_keyboard_type", virtual_hid_keyboard_keyboard_type_},
     });
@@ -109,6 +110,11 @@ public:
     async_save_to_file();
   }
 
+  void set_virtual_hid_devices_state(const virtual_hid_devices_state& value) {
+    virtual_hid_devices_state_ = value;
+    async_save_to_file();
+  }
+
   pqrs::hid::country_code::value_t get_virtual_hid_keyboard_country_code(void) const {
     return virtual_hid_keyboard_country_code_;
   }
@@ -152,6 +158,7 @@ private:
   pqrs::osx::system_preferences::properties system_preferences_properties_;
   pqrs::hid::country_code::value_t virtual_hid_keyboard_country_code_;
   std::string virtual_hid_keyboard_keyboard_type_; // cache value
+  virtual_hid_devices_state virtual_hid_devices_state_;
 };
 } // namespace manipulator
 } // namespace krbn

@@ -39,6 +39,7 @@ public:
     frontmost_application_changed,
     input_source_changed,
     system_preferences_properties_changed,
+    virtual_hid_devices_state_changed,
     virtual_hid_keyboard_configuration_changed,
   };
 
@@ -56,6 +57,7 @@ public:
                                pqrs::osx::input_source::properties,                      // For input_source_changed
                                device_properties,                                        // For device_grabbed
                                pqrs::osx::system_preferences::properties,                // For system_preferences_properties_changed
+                               virtual_hid_devices_state,                                // For virtual_hid_devices_state_changed
                                core_configuration::details::virtual_hid_keyboard,        // For virtual_hid_keyboard_configuration_changed
                                std::monostate>;                                          // For virtual events
 
@@ -97,6 +99,8 @@ public:
             result.value_ = value.get<pqrs::osx::input_source::properties>();
           } else if (key == "system_preferences_properties") {
             result.value_ = value.get<pqrs::osx::system_preferences::properties>();
+          } else if (key == "virtual_hid_devices_state") {
+            result.value_ = value.get<virtual_hid_devices_state>();
           } else if (key == "virtual_hid_keyboard_configuration") {
             result.value_ = value.get<core_configuration::details::virtual_hid_keyboard>();
           }
@@ -191,6 +195,12 @@ public:
       case type::system_preferences_properties_changed:
         if (auto v = std::get_if<pqrs::osx::system_preferences::properties>(&value_)) {
           json["system_preferences_properties"] = *v;
+        }
+        break;
+
+      case type::virtual_hid_devices_state_changed:
+        if (auto v = std::get_if<virtual_hid_devices_state>(&value_)) {
+          json["virtual_hid_devices_state"] = *v;
         }
         break;
 
@@ -320,6 +330,13 @@ public:
     event e;
     e.type_ = type::system_preferences_properties_changed;
     e.value_ = properties;
+    return e;
+  }
+
+  static event make_virtual_hid_devices_state_changed_event(const virtual_hid_devices_state& virtual_hid_devices_state) {
+    event e;
+    e.type_ = type::virtual_hid_devices_state_changed;
+    e.value_ = virtual_hid_devices_state;
     return e;
   }
 
@@ -471,6 +488,7 @@ private:
       TO_C_STRING(frontmost_application_changed);
       TO_C_STRING(input_source_changed);
       TO_C_STRING(system_preferences_properties_changed);
+      TO_C_STRING(virtual_hid_devices_state_changed);
       TO_C_STRING(virtual_hid_keyboard_configuration_changed);
     }
 
@@ -505,6 +523,7 @@ private:
     TO_TYPE(frontmost_application_changed);
     TO_TYPE(input_source_changed);
     TO_TYPE(system_preferences_properties_changed);
+    TO_TYPE(virtual_hid_devices_state_changed);
     TO_TYPE(virtual_hid_keyboard_configuration_changed);
 
 #undef TO_TYPE
