@@ -879,6 +879,7 @@ private:
     for (const auto& e : entries_) {
       if (auto device_properties = e.second->get_device_properties()) {
         if (device_properties->get_is_pointing_device().value_or(false) &&
+            e.second->get_event_origin() == event_origin::grabbed_device &&
             e.second->get_grabbed()) {
           return true;
         }
