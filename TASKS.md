@@ -1,15 +1,16 @@
 # Tasks
 
+-   [ ] Migrate Catch2 to boost-ext/ut.
 -   [ ] Migrate Objective-C code to Swift.
-    -   [x] EventViewer
     -   [ ] KarabinerKit
-    -   [x] Menu
-    -   [ ] Preferences
     -   [ ] MultitouchExtension
+    -   [x] EventViewer
+    -   [x] Menu
+    -   [x] Preferences
     -   [x] NotificationWindow
 -   [ ] Migrate to SwiftUI.
-    -   [ ] Preferences
     -   [ ] MultitouchExtension
+    -   [x] Preferences
     -   [x] EventViewer
     -   [x] NotificationWindow
 -   [ ] Add disable scroll wheel feature.
