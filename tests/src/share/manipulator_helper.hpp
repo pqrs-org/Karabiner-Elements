@@ -6,12 +6,17 @@
 #include "manipulator/manipulator_manager.hpp"
 #include "manipulator/manipulator_managers_connector.hpp"
 #include "manipulator/manipulators/post_event_to_virtual_devices/post_event_to_virtual_devices.hpp"
+#include <boost/ut.hpp>
 #include <pqrs/json.hpp>
 #include <pqrs/thread_wait.hpp>
 
 namespace krbn {
 namespace unit_testing {
+using namespace boost::ut;
+using namespace boost::ut::literals;
+
 class manipulator_helper final : pqrs::dispatcher::extra::dispatcher_client {
+
 public:
   manipulator_helper(void) : dispatcher_client() {
     pseudo_time_source_ = std::make_shared<pqrs::dispatcher::pseudo_time_source>();
@@ -53,7 +58,7 @@ public:
 
         {
           std::ifstream ifs(rule.get<std::string>());
-          REQUIRE(ifs);
+          expect(static_cast<bool>(ifs));
           for (const auto& j : json_utility::parse_jsonc(ifs)) {
             core_configuration::details::complex_modifications_parameters parameters;
             auto m = manipulator::manipulator_factory::make_manipulator(j,
@@ -139,7 +144,7 @@ public:
                                            event_queues->back());
       }
 
-      REQUIRE(!event_queues->empty());
+      expect(!event_queues->empty());
 
       // Run manipulators
 
@@ -150,7 +155,7 @@ public:
       bool pause_manipulation = false;
 
       std::ifstream ifs(test["input_event_queue"].get<std::string>());
-      REQUIRE(ifs);
+      expect(static_cast<bool>(ifs));
       for (const auto& j : json_utility::parse_jsonc(ifs)) {
         enqueue_to_dispatcher([=, &pause_manipulation] {
           if (auto s = pqrs::json::find<std::string>(j, "action")) {
@@ -227,34 +232,34 @@ public:
       if (auto s = pqrs::json::find<std::string>(test, "expected_event_queue")) {
         if (overwrite_expected_results) {
           std::ofstream ofs(*s);
-          REQUIRE(ofs);
+          expect(static_cast<bool>(ofs));
           ofs << nlohmann::json(event_queues->back()->get_entries()).dump(4) << std::endl;
         }
 
         std::ifstream ifs(*s);
-        REQUIRE(ifs);
+        expect(static_cast<bool>(ifs));
         auto expected = json_utility::parse_jsonc(ifs);
 
-        REQUIRE(event_queues->front()->get_entries().empty());
-        REQUIRE(nlohmann::json(event_queues->back()->get_entries()).dump() == expected.dump());
+        expect(event_queues->front()->get_entries().empty());
+        expect(nlohmann::json(event_queues->back()->get_entries()).dump() == expected.dump());
 
       } else if (auto s = pqrs::json::find<std::string>(test, "expected_post_event_to_virtual_devices_queue")) {
         if (overwrite_expected_results) {
           std::ofstream ofs(*s);
-          REQUIRE(ofs);
+          expect(static_cast<bool>(ofs));
           ofs << nlohmann::json(post_event_to_virtual_devices_manipulator->get_queue().get_events()).dump(4) << std::endl;
         }
 
         std::ifstream ifs(*s);
-        REQUIRE(ifs);
+        expect(static_cast<bool>(ifs));
         auto expected = json_utility::parse_jsonc(ifs);
 
-        REQUIRE(post_event_to_virtual_devices_manipulator);
-        REQUIRE(nlohmann::json(post_event_to_virtual_devices_manipulator->get_queue().get_events()).dump() == expected.dump());
+        expect(post_event_to_virtual_devices_manipulator.get());
+        expect(nlohmann::json(post_event_to_virtual_devices_manipulator->get_queue().get_events()).dump() == expected.dump());
 
       } else {
         logger::get_logger()->error("There are not expected results.");
-        REQUIRE(false);
+        expect(false);
       }
 
       input_event_arrived_connection.disconnect();
