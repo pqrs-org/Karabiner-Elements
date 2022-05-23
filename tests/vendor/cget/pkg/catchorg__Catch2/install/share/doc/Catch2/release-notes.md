@@ -2,6 +2,8 @@
 
 # Release notes
 **Contents**<br>
+[2.13.9](#2139)<br>
+[2.13.8](#2138)<br>
 [2.13.7](#2137)<br>
 [2.13.6](#2136)<br>
 [2.13.5](#2135)<br>
@@ -46,6 +48,25 @@
 [2.0.1](#201)<br>
 [Older versions](#older-versions)<br>
 [Even Older versions](#even-older-versions)<br>
+
+
+## 2.13.9
+
+### Fixes
+* Fixed issue with `-#` (filename-as-tag) flag when `__FILE__` expands into filename without directories (#2328, #2393)
+* Fixed `CAPTURE` macro not being variadic when disabled through `CATCH_CONFIG_DISABLE` (#2316, #2378)
+
+
+## 2.13.8
+
+### Fixes
+* Made `Approx::operator()` const (#2288)
+* Improved pkg-config files (#2284)
+* Fixed warning suppression leaking out of Catch2 when compiled with clang.exe (#2280)
+* The macro-generated names for things like `TEST_CASE` no longer create reserved identifiers (#2336)
+
+### Improvements
+* Clang-tidy should no longer warn about missing virtual dispatch in `FilterGenerator`'s constructor (#2314)
 
 
 ## 2.13.7

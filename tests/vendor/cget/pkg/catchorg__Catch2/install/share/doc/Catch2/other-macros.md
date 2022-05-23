@@ -121,7 +121,7 @@ constructor, or before Catch2's session is created in user's own main._
 
 `ANON_TEST_CASE` is a `TEST_CASE` replacement that will autogenerate
 unique name. The advantage of this is that you do not have to think
-of a name for the test case,`the disadvantage is that the name doesn't
+of a name for the test case, the disadvantage is that the name doesn't
 necessarily remain stable across different links, and thus it might be
 hard to run directly.
 
