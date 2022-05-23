@@ -9,19 +9,7 @@ add_executable(
   src/test.cpp
 )
 
-target_link_libraries(
-  karabiner_test
-  "-framework CoreFoundation"
-  "-framework CoreGraphics"
-)
-
 add_executable(
   overwrite_expected_results
   src/overwrite_expected_results.cpp
-)
-
-target_link_libraries(
-  overwrite_expected_results
-  "-framework CoreFoundation"
-  "-framework CoreGraphics"
 )
