@@ -15,7 +15,7 @@ inline const char* get_pattern(void) {
   return "[%Y-%m-%d %H:%M:%S.%e] [%l] [%n] %v";
 }
 
-inline std::optional<uint64_t> make_sort_key(const std::string& line) {
+inline std::optional<uint64_t> find_date_number(const std::string& line) {
   // line == "[2016-09-22 20:18:37.649] [info] [<name>] <message>"
   // return 20160922201837649
 
@@ -106,6 +106,10 @@ inline std::optional<uint64_t> make_sort_key(const std::string& line) {
   }
 
   return std::nullopt;
+}
+
+inline std::optional<uint64_t> make_sort_key(const std::string& line) {
+  return find_date_number(line);
 }
 
 inline std::optional<::spdlog::level::level_enum> find_level(const std::string& line) {

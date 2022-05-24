@@ -111,9 +111,9 @@ std::string translate(const std::string &pattern) {
       static std::string special_characters = "()[]{}?*+-|^$\\.&~# \t\n\r\v\f";
       static std::map<int, std::string> special_characters_map;
       if (special_characters_map.empty()) {
-        for (auto &c : special_characters) {
+        for (auto &sc : special_characters) {
           special_characters_map.insert(
-              std::make_pair(static_cast<int>(c), std::string{"\\"} + std::string(1, c)));
+              std::make_pair(static_cast<int>(sc), std::string{"\\"} + std::string(1, sc)));
         }
       }
 
@@ -157,7 +157,7 @@ fs::path expand_tilde(fs::path path) {
 #ifdef _WIN32
   char* home;
   size_t sz;
-  errno_t err = _dupenv_s(&home, &sz, "USERPROFILE");
+  _dupenv_s(&home, &sz, "USERPROFILE");
 #else
   const char * home = std::getenv("HOME");
 #endif
@@ -238,7 +238,7 @@ std::vector<fs::path> rlistdir(const fs::path &dirname, bool dironly) {
 // This helper function recursively yields relative pathnames inside a literal
 // directory.
 static inline 
-std::vector<fs::path> glob2(const fs::path &dirname, const std::string &pattern,
+std::vector<fs::path> glob2(const fs::path &dirname, [[maybe_unused]] const std::string &pattern,
                             bool dironly) {
   // std::cout << "In glob2\n";
   std::vector<fs::path> result;
