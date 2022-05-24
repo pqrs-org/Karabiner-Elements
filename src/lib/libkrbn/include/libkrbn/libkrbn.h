@@ -322,6 +322,7 @@ size_t libkrbn_log_lines_get_size(libkrbn_log_lines* p);
 const char* libkrbn_log_lines_get_line(libkrbn_log_lines* p, size_t index);
 bool libkrbn_log_lines_is_warn_line(const char* line);
 bool libkrbn_log_lines_is_error_line(const char* line);
+uint64_t libkrbn_log_lines_get_date_number(const char* line);
 
 //
 // libkrbn_hid_value_monitor

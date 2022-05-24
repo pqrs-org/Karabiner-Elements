@@ -39,3 +39,10 @@ bool libkrbn_log_lines_is_warn_line(const char* line) {
 bool libkrbn_log_lines_is_error_line(const char* line) {
   return pqrs::spdlog::find_level(line) == spdlog::level::err;
 }
+
+uint64_t libkrbn_log_lines_get_date_number(const char* line) {
+  if (auto n = pqrs::spdlog::find_date_number(line)) {
+    return *n;
+  }
+  return 0;
+}
