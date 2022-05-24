@@ -28,6 +28,12 @@ struct LogView: View {
       HStack {
         Text("Current time: \(logMessages.currentTimeString)")
 
+        Button(action: {
+          logMessages.addDivider()
+        }) {
+          Label("Add divider", systemImage: "scissors")
+        }
+
         Spacer()
 
         Button(action: {
