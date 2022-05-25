@@ -169,21 +169,6 @@ private func callback(
     //
 
     obj.append(entry)
-
-    //
-    // simpleModificationJsonString
-    //
-
-    libkrbn_get_simple_modification_json_string(&buffer, buffer.count, usagePage, usage)
-    let simpleModificationJsonString = String(cString: buffer)
-
-    if simpleModificationJsonString != "" {
-      obj.simpleModificationJsonString = simpleModificationJsonString
-
-      libkrbn_get_momentary_switch_event_usage_name(&buffer, buffer.count, usagePage, usage)
-      let usageName = String(cString: buffer)
-      obj.addSimpleModificationButtonText = "Add \(usageName) to Karabiner-Elements"
-    }
   }
 }
 
@@ -208,8 +193,6 @@ public class EventHistory: ObservableObject {
   var modifierFlags: [UInt64: Set<String>] = [:]
 
   @Published var entries: [EventHistoryEntry] = []
-  @Published var simpleModificationJsonString: String = ""
-  @Published var addSimpleModificationButtonText: String = ""
   @Published var unknownEventEntries: [EventHistoryEntry] = []
 
   init() {
@@ -256,16 +239,6 @@ public class EventHistory: ObservableObject {
       pboard.clearContents()
       pboard.writeObjects([string as NSString])
     }
-  }
-
-  public func addSimpleModification() {
-    guard
-      let string = simpleModificationJsonString.addingPercentEncoding(
-        withAllowedCharacters: .urlQueryAllowed)
-    else { return }
-    guard let url = URL(string: "karabiner://karabiner/simple_modifications/new?json=\(string)")
-    else { return }
-    NSWorkspace.shared.open(url)
   }
 
   //

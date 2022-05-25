@@ -19,87 +19,76 @@ struct MainView: View {
 
       GroupBox(label: Text("Keyboard & pointing events")) {
         VStack(alignment: .leading, spacing: 6.0) {
-          if eventHistory.entries.count == 0 {
-            Divider()
+          HStack(alignment: .center, spacing: 12.0) {
+            Button(action: {
+              eventHistory.copyToPasteboard()
+            }) {
+              Label("Copy to pasteboard", systemImage: "arrow.right.doc.on.clipboard")
+            }
+            .disabled(eventHistory.entries.isEmpty)
+
+            Button(action: {
+              eventHistory.clear()
+            }) {
+              Label("Clear", systemImage: "clear")
+            }
+            .disabled(eventHistory.entries.isEmpty)
+
             Spacer()
-          } else {
-            HStack(alignment: .center, spacing: 12.0) {
-              Button(action: {
-                eventHistory.copyToPasteboard()
-              }) {
-                Label("Copy to pasteboard", systemImage: "arrow.right.doc.on.clipboard")
-              }
+          }
 
-              Button(action: {
-                eventHistory.clear()
-              }) {
-                Label("Clear", systemImage: "clear")
-              }
+          ScrollViewReader { proxy in
+            ScrollView {
+              VStack(alignment: .leading, spacing: 0.0) {
+                ForEach($eventHistory.entries) { $entry in
+                  HStack(alignment: .center, spacing: 0) {
+                    Text(entry.eventType)
+                      .font(.title)
+                      .frame(width: 70, alignment: .leading)
 
-              Spacer()
+                    VStack(alignment: .leading, spacing: 0) {
+                      Text(entry.name)
+                      Text(entry.misc)
+                        .font(.caption)
+                    }
 
-              if eventHistory.simpleModificationJsonString.count > 0 {
-                Button(action: {
-                  eventHistory.addSimpleModification()
-                }) {
-                  Label(eventHistory.addSimpleModificationButtonText, systemImage: "plus.circle")
+                    Spacer()
+
+                    VStack(alignment: .trailing, spacing: 0) {
+                      if entry.usagePage.count > 0 {
+                        HStack(alignment: .bottom, spacing: 0) {
+                          Text("usage page: ")
+                            .font(.caption)
+                          Text(entry.usagePage)
+                        }
+                      }
+                      if entry.usage.count > 0 {
+                        HStack(alignment: .bottom, spacing: 0) {
+                          Text("usage: ")
+                            .font(.caption)
+                          Text(entry.usage)
+                        }
+                      }
+                    }
+                    .frame(alignment: .leading)
+                  }
+                  .padding(.horizontal, 12.0)
+
+                  Divider().id("divider \(entry.id)")
                 }
+
+                Spacer()
               }
             }
-
-            ScrollViewReader { proxy in
-              ScrollView {
-                VStack(alignment: .leading, spacing: 0.0) {
-                  ForEach($eventHistory.entries) { $entry in
-                    HStack(alignment: .center, spacing: 0) {
-                      Text(entry.eventType)
-                        .font(.title)
-                        .frame(width: 70, alignment: .leading)
-
-                      VStack(alignment: .leading, spacing: 0) {
-                        Text(entry.name)
-                        Text(entry.misc)
-                          .font(.caption)
-                      }
-
-                      Spacer()
-
-                      VStack(alignment: .trailing, spacing: 0) {
-                        if entry.usagePage.count > 0 {
-                          HStack(alignment: .bottom, spacing: 0) {
-                            Text("usage page: ")
-                              .font(.caption)
-                            Text(entry.usagePage)
-                          }
-                        }
-                        if entry.usage.count > 0 {
-                          HStack(alignment: .bottom, spacing: 0) {
-                            Text("usage: ")
-                              .font(.caption)
-                            Text(entry.usage)
-                          }
-                        }
-                      }
-                      .frame(alignment: .leading)
-                    }
-                    .padding(.horizontal, 12.0)
-
-                    Divider().id("divider \(entry.id)")
-                  }
-
-                  Spacer()
-                }
+            .background(Color(NSColor.textBackgroundColor))
+            .onAppear {
+              if let last = eventHistory.entries.last {
+                proxy.scrollTo("divider \(last.id)", anchor: .bottom)
               }
-              .background(Color(NSColor.textBackgroundColor))
-              .onAppear {
-                if let last = eventHistory.entries.last {
-                  proxy.scrollTo("divider \(last.id)", anchor: .bottom)
-                }
-              }
-              .onChange(of: eventHistory.entries) { newEntries in
-                if let last = newEntries.last {
-                  proxy.scrollTo("divider \(last.id)", anchor: .bottom)
-                }
+            }
+            .onChange(of: eventHistory.entries) { newEntries in
+              if let last = newEntries.last {
+                proxy.scrollTo("divider \(last.id)", anchor: .bottom)
               }
             }
           }
