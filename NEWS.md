@@ -9,7 +9,7 @@
         -   `to_if_held_down`
         -   `to_delayed_action`
 -   ⚡️ Improvements
-    -   Improved the behavior of sticky modifiers when using used the built-in trackpad. (Thanks to @quarkw)
+    -   Improved behavior the sticky modifiers when used together with the built-in trackpad. (Thanks to @quarkw)
     -   Preferences Window is rewritten in SwiftUI.
     -   Sparkle Framework has been updated.
 
