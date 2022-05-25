@@ -142,7 +142,6 @@ public class AppDelegate: NSObject, NSApplicationDelegate {
     withReplyEvent _: NSAppleEventDescriptor
   ) {
     // - url == "karabiner://karabiner/assets/complex_modifications/import?url=xxx"
-    // - url == "karabiner://karabiner/simple_modifications/new?json={xxx}"
     guard let url = event.paramDescriptor(forKeyword: AEKeyword(keyDirectObject))?.stringValue
     else { return }
 
@@ -166,24 +165,6 @@ public class AppDelegate: NSObject, NSApplicationDelegate {
                 ComplexModificationsSheetView.fileImport
               ContentViewStates.shared.complexModificationsViewSheetPresented = true
               return
-            }
-          }
-        }
-      }
-
-      if urlComponents?.path == "/simple_modifications/new" {
-        if let queryItems = urlComponents?.queryItems {
-          for pair in queryItems {
-            if pair.name == "json" {
-              if let jsonString = pair.value {
-                ContentViewStates.shared.navigationSelection =
-                  NavigationTag.simpleModifications.rawValue
-
-                LibKrbn.Settings.shared.appendSimpleModification(
-                  jsonString: jsonString,
-                  device: ContentViewStates.shared.simpleModificationsViewSelectedDevice)
-                return
-              }
             }
           }
         }
