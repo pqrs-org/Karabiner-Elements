@@ -6,6 +6,7 @@
 #include "momentary_switch_event_details/key_code.hpp"
 #include "momentary_switch_event_details/pointing_button.hpp"
 #include <nlohmann/json.hpp>
+#include <ostream>
 #include <pqrs/hash.hpp>
 #include <variant>
 
@@ -196,6 +197,11 @@ inline void from_json(const nlohmann::json& json, momentary_switch_event& value)
       throw pqrs::json::unmarshal_error(fmt::format("unknown key: `{0}`", k));
     }
   }
+}
+
+inline std::ostream& operator<<(std::ostream& stream, const momentary_switch_event& value) {
+  stream << nlohmann::json(value);
+  return stream;
 }
 } // namespace krbn
 
