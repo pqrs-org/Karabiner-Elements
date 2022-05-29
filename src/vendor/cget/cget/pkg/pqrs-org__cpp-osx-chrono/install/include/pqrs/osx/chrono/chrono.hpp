@@ -20,7 +20,8 @@ inline absolute_time_point mach_absolute_time_point(void) {
 inline std::chrono::nanoseconds make_nanoseconds(absolute_time_duration time) {
   auto& t = impl::get_mach_timebase_info_data();
   if (t.numer != t.denom && t.denom != 0) {
-    return std::chrono::nanoseconds(type_safe::get(time) * t.numer / t.denom);
+    auto f = static_cast<double>(t.numer) / t.denom;
+    return std::chrono::nanoseconds(static_cast<int64_t>(type_safe::get(time) * f));
   }
   return std::chrono::nanoseconds(type_safe::get(time));
 }
@@ -32,7 +33,8 @@ inline std::chrono::milliseconds make_milliseconds(absolute_time_duration time) 
 inline absolute_time_duration make_absolute_time_duration(std::chrono::nanoseconds time) {
   auto& t = impl::get_mach_timebase_info_data();
   if (t.numer != t.denom && t.numer != 0) {
-    return absolute_time_duration(time.count() * t.denom / t.numer);
+    auto f = static_cast<double>(t.denom) / t.numer;
+    return absolute_time_duration(static_cast<int64_t>(time.count() * f));
   }
   return absolute_time_duration(time.count());
 }
