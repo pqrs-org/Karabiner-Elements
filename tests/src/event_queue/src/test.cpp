@@ -1,5 +1,10 @@
-#include "test_runner.hpp"
+#include "event_queue_event_time_stamp_test.hpp"
+#include "event_queue_test.hpp"
+#include "event_queue_utility_test.hpp"
 
-int main(int argc, char* argv[]) {
-  return run_tests(argc, argv);
+int main(void) {
+  run_event_queue_event_time_stamp_test();
+  run_event_queue_test();
+  run_event_queue_utility_test();
+  return 0;
 }
