@@ -1,5 +1,12 @@
-#include "test_runner.hpp"
+#include "core_configuration_test.hpp"
+#include "device_test.hpp"
+#include "errors_test.hpp"
+#include "global_configuration_test.hpp"
 
-int main(int argc, char* argv[]) {
-  return run_tests(argc, argv);
+int main(void) {
+  run_core_configuration_test();
+  run_device_test();
+  run_errors_test();
+  run_global_configuration_test();
+  return 0;
 }
