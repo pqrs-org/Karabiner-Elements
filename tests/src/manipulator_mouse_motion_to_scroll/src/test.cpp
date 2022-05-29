@@ -1,5 +1,10 @@
-#include "test_runner.hpp"
+#include "counter_test.hpp"
+#include "errors_test.hpp"
+#include "options_test.hpp"
 
-int main(int argc, char* argv[]) {
-  return run_tests(argc, argv);
+int main(void) {
+  run_counter_test();
+  run_errors_test();
+  run_options_test();
+  return 0;
 }

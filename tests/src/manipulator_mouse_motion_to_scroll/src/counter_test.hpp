@@ -1,8 +1,7 @@
-#include <catch2/catch.hpp>
-#include <iostream>
-
 #include "../../share/json_helper.hpp"
 #include "manipulator/manipulators/mouse_motion_to_scroll/counter.hpp"
+#include <boost/ut.hpp>
+#include <iostream>
 
 namespace mouse_motion_to_scroll = krbn::manipulator::manipulators::mouse_motion_to_scroll;
 
@@ -79,61 +78,66 @@ private:
   nlohmann::json result_;
 };
 
-TEST_CASE("json/input") {
-  {
-    auto input_files_json = krbn::unit_testing::json_helper::load_jsonc("json/files.jsonc");
-    for (const auto& file_json : input_files_json) {
-      auto input_file_path = "json/" + file_json.at("input").get<std::string>();
-      auto expected_file_path = "json/" + file_json.at("expected").get<std::string>();
-      auto input_json = krbn::unit_testing::json_helper::load_jsonc(input_file_path);
-      auto expected_json = krbn::unit_testing::json_helper::load_jsonc(expected_file_path);
+void run_counter_test(void) {
+  using namespace boost::ut;
+  using namespace boost::ut::literals;
 
-      std::cout << input_file_path << std::endl;
+  "json/input"_test = [] {
+    {
+      auto input_files_json = krbn::unit_testing::json_helper::load_jsonc("json/files.jsonc");
+      for (const auto& file_json : input_files_json) {
+        auto input_file_path = "json/" + file_json.at("input").get<std::string>();
+        auto expected_file_path = "json/" + file_json.at("expected").get<std::string>();
+        auto input_json = krbn::unit_testing::json_helper::load_jsonc(input_file_path);
+        auto expected_json = krbn::unit_testing::json_helper::load_jsonc(expected_file_path);
 
-      auto time_source = std::make_shared<pqrs::dispatcher::pseudo_time_source>();
-      auto dispatcher = std::make_shared<pqrs::dispatcher::dispatcher>(time_source);
+        std::cout << input_file_path << std::endl;
 
-      {
-        krbn::core_configuration::details::complex_modifications_parameters parameters(input_json.at("parameters"));
-        mouse_motion_to_scroll::options options;
-        options.update(input_json.at("options"));
-        counter_test counter_test(time_source,
-                                  dispatcher,
-                                  parameters,
-                                  options);
+        auto time_source = std::make_shared<pqrs::dispatcher::pseudo_time_source>();
+        auto dispatcher = std::make_shared<pqrs::dispatcher::dispatcher>(time_source);
 
-        std::chrono::milliseconds first_time_stamp(0);
-        std::chrono::milliseconds last_time_stamp(0);
+        {
+          krbn::core_configuration::details::complex_modifications_parameters parameters(input_json.at("parameters"));
+          mouse_motion_to_scroll::options options;
+          options.update(input_json.at("options"));
+          counter_test counter_test(time_source,
+                                    dispatcher,
+                                    parameters,
+                                    options);
 
-        for (const auto& j : input_json.at("input")) {
-          auto time_stamp = std::chrono::duration_cast<std::chrono::milliseconds>(
-              std::chrono::nanoseconds(j.at("time_stamp").get<uint64_t>()));
+          std::chrono::milliseconds first_time_stamp(0);
+          std::chrono::milliseconds last_time_stamp(0);
 
-          if (first_time_stamp == std::chrono::milliseconds(0)) {
-            first_time_stamp = time_stamp;
+          for (const auto& j : input_json.at("input")) {
+            auto time_stamp = std::chrono::duration_cast<std::chrono::milliseconds>(
+                std::chrono::nanoseconds(j.at("time_stamp").get<uint64_t>()));
+
+            if (first_time_stamp == std::chrono::milliseconds(0)) {
+              first_time_stamp = time_stamp;
+            }
+            last_time_stamp = time_stamp;
+
+            auto x = j.at("pointing_motion").at("x").get<int>();
+            auto y = j.at("pointing_motion").at("y").get<int>();
+
+            counter_test.update(x,
+                                y,
+                                pqrs::dispatcher::time_point(time_stamp));
           }
-          last_time_stamp = time_stamp;
-
-          auto x = j.at("pointing_motion").at("x").get<int>();
-          auto y = j.at("pointing_motion").at("y").get<int>();
-
-          counter_test.update(x,
-                              y,
-                              pqrs::dispatcher::time_point(time_stamp));
-        }
 
 #if 0
           std::cout << "t:" << (time_stamp - first_time_stamp).count()
                     << " x,y:" << x << "," << y << std::endl;
 #endif
 
-        counter_test.set_now(first_time_stamp.count());
-        counter_test.set_now(last_time_stamp.count() + 1000);
+          counter_test.set_now(first_time_stamp.count());
+          counter_test.set_now(last_time_stamp.count() + 1000);
 
-        REQUIRE(counter_test.get_result() == expected_json);
+          expect(counter_test.get_result() == expected_json);
+        }
+
+        dispatcher->terminate();
       }
-
-      dispatcher->terminate();
     }
-  }
+  };
 }
