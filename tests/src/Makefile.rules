@@ -1,6 +1,5 @@
 .PHONY: build_make
 build_make:
-	make -C ../../lib/test_runner
 	mkdir -p build \
 		&& cd build \
 		&& cmake .. \
