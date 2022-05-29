@@ -1,5 +1,10 @@
-#include "test_runner.hpp"
+#include "connected_devices_test.hpp"
+#include "descriptions_test.hpp"
+#include "device_test.hpp"
 
-int main(int argc, char* argv[]) {
-  return run_tests(argc, argv);
+int main(void) {
+  run_connected_devices_test();
+  run_descriptions_test();
+  run_device_test();
+  return 0;
 }
