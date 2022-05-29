@@ -7,11 +7,9 @@ project (karabiner_test)
 add_executable(
   karabiner_test
   src/test.cpp
-  src/version_monitor_test.cpp
 )
 
 target_link_libraries(
   karabiner_test
-  test_runner
   "-framework CoreServices"
 )
