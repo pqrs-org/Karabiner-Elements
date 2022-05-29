@@ -1,0 +1,62 @@
+#pragma once
+
+#include <ostream>
+#include <pqrs/json.hpp>
+#include <spdlog/fmt/fmt.h>
+#include <variant>
+
+namespace krbn {
+class manipulator_environment_variable final {
+public:
+  using value_t = std::variant<int,
+                               bool,
+                               std::string>;
+
+  manipulator_environment_variable(void)
+      : value_(0) {}
+
+  manipulator_environment_variable(value_t value)
+      : value_(value) {}
+
+  template <typename T>
+  const T* get_if(void) const {
+    return std::get_if<T>(&value_);
+  }
+
+  bool operator==(const manipulator_environment_variable& other) const {
+    return value_ == other.value_;
+  }
+
+private:
+  value_t value_;
+};
+
+inline void to_json(nlohmann::json& j, const manipulator_environment_variable& value) {
+  if (auto v = value.get_if<int>()) {
+    j = *v;
+  } else if (auto v = value.get_if<bool>()) {
+    j = *v;
+  } else if (auto v = value.get_if<std::string>()) {
+    j = *v;
+  }
+}
+
+inline void from_json(const nlohmann::json& j, manipulator_environment_variable& value) {
+  if (j.is_number()) {
+    value = manipulator_environment_variable(j.get<int>());
+  } else if (j.is_boolean()) {
+    value = manipulator_environment_variable(j.get<bool>());
+  } else if (j.is_string()) {
+    value = manipulator_environment_variable(j.get<std::string>());
+  } else {
+    throw pqrs::json::unmarshal_error(
+        fmt::format("json must be number, boolean or string, but is `{0}`",
+                    pqrs::json::dump_for_error_message(j)));
+  }
+}
+
+inline std::ostream& operator<<(std::ostream& stream, const manipulator_environment_variable& value) {
+  stream << nlohmann::json(value);
+  return stream;
+}
+} // namespace krbn

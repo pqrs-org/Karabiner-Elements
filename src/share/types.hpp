@@ -10,6 +10,7 @@
 #include "types/grabbable_state.hpp"
 #include "types/led_state.hpp"
 #include "types/location_id.hpp"
+#include "types/manipulator_environment_variable.hpp"
 #include "types/modifier_flag.hpp"
 #include "types/momentary_switch_event.hpp"
 #include "types/mouse_key.hpp"
