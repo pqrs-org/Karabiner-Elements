@@ -18,6 +18,7 @@ void run_manipulator_environment_variable_test(void) {
     t v6("hello");
     t v7("world");
     t v8("hello");
+    t v9(0);
 
     expect(v1 != v2); // int, int
     expect(v1 != v4); // int, bool
@@ -28,8 +29,9 @@ void run_manipulator_environment_variable_test(void) {
 
     expect(v6 != v7); // std::string, std::string
 
-    expect(v1 == v3); // int, int
-    expect(v6 == v8); // std::string, std::string
+    expect(v1 == v3);  // int, int
+    expect(v6 == v8);  // std::string, std::string
+    expect(v9 == t()); // default value
 
     expect("10"sv == nlohmann::json(v1).dump());
     expect("20"sv == nlohmann::json(v2).dump());

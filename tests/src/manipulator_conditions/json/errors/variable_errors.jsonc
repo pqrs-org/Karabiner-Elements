@@ -41,7 +41,7 @@
             "type": "variable_if",
             "value": null
         },
-        "error": "`value` must be number, but is `null`"
+        "error": "json must be number, boolean or string, but is `null`"
     },
 
     // unknown key

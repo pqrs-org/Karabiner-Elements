@@ -165,7 +165,7 @@ void run_event_queue_test(void) {
       nlohmann::json expected;
       expected["type"] = "set_variable";
       expected["set_variable"] = nlohmann::json::array({"example1", 100});
-      auto json = krbn::event_queue::event::make_set_variable_event(std::make_pair("example1", 100)).to_json();
+      auto json = krbn::event_queue::event::make_set_variable_event(std::make_pair("example1", krbn::manipulator_environment_variable(100))).to_json();
       expect(json == expected);
       auto event_from_json = krbn::event_queue::event::make_from_json(json);
       expect(json == event_from_json.to_json());
@@ -432,7 +432,7 @@ void run_event_queue_test(void) {
     }
   };
 
-  "needs_swap"_test =[] {
+  "needs_swap"_test = [] {
     krbn::event_queue::entry spacebar_down(krbn::device_id(1),
                                            krbn::event_queue::event_time_stamp(
                                                krbn::absolute_time_point(100)),

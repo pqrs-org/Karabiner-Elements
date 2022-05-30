@@ -35,7 +35,7 @@ public:
                                any_type,                                                 // For type::any
                                std::string,                                              // For type::shell_command
                                std::vector<pqrs::osx::input_source_selector::specifier>, // For type::select_input_source
-                               std::pair<std::string, int>,                              // For type::set_variable
+                               std::pair<std::string, manipulator_environment_variable>, // For type::set_variable
                                notification_message,                                     // For type::set_notification_message
                                mouse_key,                                                // For type::mouse_key
                                std::pair<modifier_flag, sticky_modifier_type>,           // For type::sticky_modifier
@@ -76,9 +76,9 @@ public:
     return std::nullopt;
   }
 
-  std::optional<std::pair<std::string, int>> get_set_variable(void) const {
+  std::optional<std::pair<std::string, manipulator_environment_variable>> get_set_variable(void) const {
     if (type_ == type::set_variable) {
-      return std::get<std::pair<std::string, int>>(value_);
+      return std::get<std::pair<std::string, manipulator_environment_variable>>(value_);
     }
     return std::nullopt;
   }
@@ -96,7 +96,7 @@ public:
       case type::select_input_source:
         return event_queue::event::make_select_input_source_event(std::get<std::vector<pqrs::osx::input_source_selector::specifier>>(value_));
       case type::set_variable:
-        return event_queue::event::make_set_variable_event(std::get<std::pair<std::string, int>>(value_));
+        return event_queue::event::make_set_variable_event(std::get<std::pair<std::string, manipulator_environment_variable>>(value_));
       case type::set_notification_message:
         return event_queue::event::make_set_notification_message_event(std::get<notification_message>(value_));
       case type::mouse_key:
@@ -221,7 +221,7 @@ public:
       pqrs::json::requires_object(value, "`" + key + "`");
 
       std::optional<std::string> variable_name;
-      std::optional<int> variable_value;
+      std::optional<manipulator_environment_variable> variable_value;
 
       for (const auto& [k, v] : value.items()) {
         // k is always std::string.
@@ -234,7 +234,7 @@ public:
         } else if (k == "value") {
           pqrs::json::requires_number(v, "`" + key + ".value`");
 
-          variable_value = v.get<int>();
+          variable_value = v.get<manipulator_environment_variable>();
 
         } else if (k == "description") {
           // Do nothing

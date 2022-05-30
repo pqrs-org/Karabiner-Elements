@@ -40,9 +40,7 @@ public:
         name_ = value.get<std::string>();
 
       } else if (key == "value") {
-        pqrs::json::requires_number(value, "`value`");
-
-        value_ = value.get<int>();
+        value_ = value.get<manipulator_environment_variable>();
 
       } else if (key == "description") {
         // Do nothing
@@ -77,7 +75,7 @@ public:
 private:
   type type_;
   std::optional<std::string> name_;
-  std::optional<int> value_;
+  std::optional<manipulator_environment_variable> value_;
 };
 } // namespace conditions
 } // namespace manipulator

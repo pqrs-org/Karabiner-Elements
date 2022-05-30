@@ -120,7 +120,7 @@ int main(int argc, char** argv) {
   options.add_options()("select-profile", "Select a profile by name.", cxxopts::value<std::string>());
   options.add_options()("show-current-profile-name", "Show current profile name");
   options.add_options()("list-profile-names", "Show all profile names");
-  options.add_options()("set-variables", "Json string: {[key: string]: number}", cxxopts::value<std::string>());
+  options.add_options()("set-variables", "Json string: {[key: string]: number|boolean|string}", cxxopts::value<std::string>());
   options.add_options()("copy-current-profile-to-system-default-profile", "Copy the current profile to system default profile.");
   options.add_options()("remove-system-default-profile", "Remove the system default profile.");
   options.add_options()("lint-complex-modifications", "Check complex_modifications.json",

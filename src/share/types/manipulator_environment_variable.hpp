@@ -18,6 +18,10 @@ public:
   manipulator_environment_variable(value_t value)
       : value_(value) {}
 
+  const value_t& get_value(void) const {
+    return value_;
+  }
+
   template <typename T>
   const T* get_if(void) const {
     return std::get_if<T>(&value_);
@@ -60,3 +64,16 @@ inline std::ostream& operator<<(std::ostream& stream, const manipulator_environm
   return stream;
 }
 } // namespace krbn
+
+namespace std {
+template <>
+struct hash<krbn::manipulator_environment_variable> final {
+  std::size_t operator()(const krbn::manipulator_environment_variable& value) const {
+    std::size_t h = 0;
+
+    pqrs::hash::combine(h, value.get_value());
+
+    return h;
+  }
+};
+} // namespace std
