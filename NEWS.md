@@ -11,6 +11,7 @@
 -   ⚡️ Improvements
     -   Improved behavior the sticky modifiers when used together with the built-in trackpad. (Thanks to @quarkw)
     -   Preferences Window is rewritten in SwiftUI.
+    -   `set_variable` now supports bool and string value.
     -   Sparkle Framework has been updated.
 
 ## Karabiner-Elements 14.4.0
