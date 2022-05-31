@@ -232,8 +232,6 @@ public:
           variable_name = v.get<std::string>();
 
         } else if (k == "value") {
-          pqrs::json::requires_number(v, "`" + key + ".value`");
-
           variable_value = v.get<manipulator_environment_variable>();
 
         } else if (k == "description") {

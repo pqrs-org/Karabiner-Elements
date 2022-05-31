@@ -4,6 +4,7 @@
 void run_event_definition_test(void) {
   using namespace boost::ut;
   using namespace boost::ut::literals;
+  using namespace std::string_view_literals;
 
   "to_event_definition"_test = [] {
     {
@@ -143,6 +144,49 @@ void run_event_definition_test(void) {
       auto pair = event_definition.get_event_definition().get_if<std::pair<krbn::modifier_flag, krbn::sticky_modifier_type>>();
       expect(pair->first == krbn::modifier_flag::left_shift);
       expect(pair->second == krbn::sticky_modifier_type::toggle);
+    }
+    // set_variable
+    {
+      auto json = nlohmann::json::object({
+          {"set_variable", nlohmann::json::object({
+                               {"name", "variable1"},
+                               {"value", 42},
+                           })},
+      });
+
+      krbn::manipulator::to_event_definition event_definition(json);
+      auto pair = event_definition.get_event_definition().get_set_variable();
+      expect(pair != std::nullopt);
+      expect("variable1"sv == pair->first);
+      expect(krbn::manipulator_environment_variable(42) == pair->second);
+    }
+    {
+      auto json = nlohmann::json::object({
+          {"set_variable", nlohmann::json::object({
+                               {"name", "variable2"},
+                               {"value", true},
+                           })},
+      });
+
+      krbn::manipulator::to_event_definition event_definition(json);
+      auto pair = event_definition.get_event_definition().get_set_variable();
+      expect(pair != std::nullopt);
+      expect("variable2"sv == pair->first);
+      expect(krbn::manipulator_environment_variable(true) == pair->second);
+    }
+    {
+      auto json = nlohmann::json::object({
+          {"set_variable", nlohmann::json::object({
+                               {"name", "variable3"},
+                               {"value", "on"},
+                           })},
+      });
+
+      krbn::manipulator::to_event_definition event_definition(json);
+      auto pair = event_definition.get_event_definition().get_set_variable();
+      expect(pair != std::nullopt);
+      expect("variable3"sv == pair->first);
+      expect(krbn::manipulator_environment_variable("on") == pair->second);
     }
   };
 }

@@ -141,7 +141,7 @@
                 "value": null
             }
         },
-        "error": "`set_variable.value` must be number, but is `null`"
+        "error": "json must be number, boolean or string, but is `null`"
     },
     {
         "class": "event_definition",
