@@ -4,6 +4,13 @@ struct ComplexModificationsAssetsView: View {
   @ObservedObject private var contentViewStates = ContentViewStates.shared
   @ObservedObject private var assetFiles = ComplexModificationsAssetFiles.shared
 
+  let formatter = DateFormatter()
+
+  init() {
+    formatter.locale = Locale(identifier: "en_US_POSIX")
+    formatter.dateFormat = "yyyy-MM-dd HH:mm:ss"
+  }
+
   var body: some View {
     VStack(alignment: .center, spacing: 12.0) {
       List {
@@ -15,33 +22,10 @@ struct ComplexModificationsAssetsView: View {
                   .font(.title)
 
                 Spacer()
-
-                Button(action: {
-                  LibKrbn.Settings.shared.addComplexModificationRules(assetFile)
-                  contentViewStates.complexModificationsViewSheetPresented = false
-                }) {
-                  Label("Enable All", systemImage: "plus.circle.fill")
-                    .font(.caption)
-                }
-
-                if assetFile.userFile {
-                  Button(action: {
-                    assetFiles.removeFile(assetFile)
-                  }) {
-                    Image(systemName: "trash.fill")
-                      .buttonLabelStyle()
-                  }
-                  .deleteButtonStyle()
-                }
               }
           ) {
             VStack(alignment: .leading, spacing: 8.0) {
               ForEach($assetFile.assetRules) { $assetRule in
-                if assetRule.ruleIndex > 0 {
-                  Divider()
-                    .padding(.vertical, 4.0)
-                }
-
                 HStack(alignment: .center, spacing: 16.0) {
                   Text(assetRule.description)
 
@@ -56,18 +40,41 @@ struct ComplexModificationsAssetsView: View {
 
                   Spacer()
                 }
+
+                Divider()
+                  .padding(.vertical, 4.0)
+              }
+
+              HStack {
+                Spacer()
+
+                if assetFile.userFile {
+                  Text(
+                    "Imported at \(formatter.string(from: assetFile.importedAt))"
+                  )
+                  .font(.caption)
+                }
+
+                Button(action: {
+                  LibKrbn.Settings.shared.addComplexModificationRules(assetFile)
+                  contentViewStates.complexModificationsViewSheetPresented = false
+                }) {
+                  Text("Enable All")
+                    .font(.caption)
+                }
+
+                if assetFile.userFile {
+                  Button(action: {
+                    assetFiles.removeFile(assetFile)
+                  }) {
+                    Image(systemName: "trash.fill")
+                      .buttonLabelStyle()
+                  }
+                  .deleteButtonStyle()
+                }
               }
             }
             .padding()
-          }
-
-          HStack(alignment: .bottom) {
-            Spacer()
-
-            if assetFile.userFile {
-              Text("Imported at \(assetFile.importedAt)")
-                .font(.caption)
-            }
           }
           .padding(.bottom, 32.0)
         }
