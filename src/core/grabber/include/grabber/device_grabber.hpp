@@ -673,14 +673,14 @@ private:
       bool needs_regrab = false;
 
       for (const auto& e : event_queue->get_entries()) {
-        if (entry->get_event_origin() == event_origin::grabbed_device) {
-          if (auto ev = e.get_event().get_if<momentary_switch_event>()) {
-            needs_regrab |= probable_stuck_events_manager->update(
-                *ev,
-                e.get_event_type(),
-                e.get_event_time_stamp().get_time_stamp(),
-                device_state::grabbed);
-          }
+        if (auto ev = e.get_event().get_if<momentary_switch_event>()) {
+          needs_regrab |= probable_stuck_events_manager->update(
+              *ev,
+              e.get_event_type(),
+              e.get_event_time_stamp().get_time_stamp(),
+              entry->get_event_origin() == event_origin::grabbed_device
+                  ? device_state::grabbed
+                  : device_state::ungrabbed);
         }
 
         if (!entry->get_disabled()) {
@@ -794,6 +794,16 @@ private:
   grabbable_state::state make_grabbable_state(std::shared_ptr<device_grabber_details::entry> entry) const {
     if (!entry) {
       return grabbable_state::state::ungrabbable_permanently;
+    }
+
+    //
+    // The device is always grabbable if it is ignored devices
+    // because karabiner_grabber does not seize the device and do not affect existing hidd processing.
+    // (e.g. key repeat)
+    //
+
+    if (entry->get_event_origin() == event_origin::observed_device) {
+      return grabbable_state::state::grabbable;
     }
 
     // ----------------------------------------
