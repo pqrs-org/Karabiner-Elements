@@ -47,15 +47,15 @@ public:
   void update(void) {
     // use_fkeys_as_standard_function_keys_
 
-    if (auto value = find_bool_property(CFSTR("com.apple.keyboard.fnState"),
-                                        CFSTR("Apple Global Domain"))) {
+    if (auto value = find_app_bool_property(CFSTR("com.apple.keyboard.fnState"),
+                                            CFSTR("Apple Global Domain"))) {
       use_fkeys_as_standard_function_keys_ = *value;
     }
 
     // scroll_direction_is_natural_
 
-    if (auto value = find_bool_property(CFSTR("com.apple.swipescrolldirection"),
-                                        CFSTR("Apple Global Domain"))) {
+    if (auto value = find_app_bool_property(CFSTR("com.apple.swipescrolldirection"),
+                                            CFSTR("Apple Global Domain"))) {
       scroll_direction_is_natural_ = *value;
     }
 
@@ -64,7 +64,9 @@ public:
     keyboard_types_.clear();
 
     if (auto value = find_dictionary_property(CFSTR("keyboardtype"),
-                                              CFSTR("com.apple.keyboardtype"))) {
+                                              CFSTR("com.apple.keyboardtype"),
+                                              user::any_user,
+                                              host::current_host)) {
       CFDictionaryApplyFunction(
           *value,
           [](const void* key, const void* value, void* context) {
