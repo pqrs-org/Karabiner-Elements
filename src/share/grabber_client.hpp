@@ -209,7 +209,7 @@ public:
   /**
    * @brief Set variables
    *
-   * @param variables nlohmann::json::object which type is {[key: string]: number}.
+   * @param variables nlohmann::json::object which type is {[key: string]: number|boolean|string}.
    * @param processed A callback which is called when the request is processed.
    *                  (When data is sent to grabber or error occurred)
    */
