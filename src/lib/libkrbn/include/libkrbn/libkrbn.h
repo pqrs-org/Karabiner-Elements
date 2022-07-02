@@ -356,6 +356,9 @@ void libkrbn_enable_grabber_client(libkrbn_grabber_client_connected_callback con
                                    libkrbn_grabber_client_connect_failed_callback connect_failed_callback,
                                    libkrbn_grabber_client_closed_callback closed_callback);
 void libkrbn_disable_grabber_client(void);
+void libkrbn_grabber_client_async_set_keyboard_type_ansi(uint64_t country_code);
+void libkrbn_grabber_client_async_set_keyboard_type_iso(uint64_t country_code);
+void libkrbn_grabber_client_async_set_keyboard_type_jis(uint64_t country_code);
 void libkrbn_grabber_client_async_set_variable(const char* name, int value);
 void libkrbn_grabber_client_sync_set_variable(const char* name, int value);
 

@@ -225,6 +225,13 @@ public:
     grabber_client_ = nullptr;
   }
 
+  void grabber_client_async_set_keyboard_type(pqrs::hid::country_code::value_t country_code,
+                                              pqrs::osx::iokit_keyboard_type::value_t keyboard_type) const {
+    if (grabber_client_) {
+      grabber_client_->async_set_keyboard_type(country_code, keyboard_type);
+    }
+  }
+
   void grabber_client_async_set_variable(const std::string& name, int value) {
     if (grabber_client_) {
       grabber_client_->async_set_variable(name, value);

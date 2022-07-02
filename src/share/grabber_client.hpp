@@ -209,7 +209,7 @@ public:
 
   void async_set_keyboard_type(pqrs::hid::country_code::value_t country_code,
                                pqrs::osx::iokit_keyboard_type::value_t keyboard_type) const {
-    enqueue_to_dispatcher([this, variables, processed] {
+    enqueue_to_dispatcher([this, country_code, keyboard_type] {
       nlohmann::json json{
           {"operation_type", operation_type::set_keyboard_type},
           {"country_code", country_code},
