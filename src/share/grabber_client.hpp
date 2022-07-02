@@ -12,6 +12,7 @@
 #include <pqrs/filesystem.hpp>
 #include <pqrs/local_datagram.hpp>
 #include <pqrs/osx/frontmost_application_monitor.hpp>
+#include <pqrs/osx/iokit_types.hpp>
 #include <pqrs/osx/system_preferences.hpp>
 #include <pqrs/osx/system_preferences/extra/nlohmann_json.hpp>
 #include <unistd.h>
@@ -202,6 +203,21 @@ public:
         if (client_) {
           client_->async_send(nlohmann::json::to_msgpack(json));
         }
+      }
+    });
+  }
+
+  void async_set_keyboard_type(pqrs::hid::country_code::value_t country_code,
+                               pqrs::osx::iokit_keyboard_type::value_t keyboard_type) const {
+    enqueue_to_dispatcher([this, variables, processed] {
+      nlohmann::json json{
+          {"operation_type", operation_type::set_keyboard_type},
+          {"country_code", country_code},
+          {"keyboard_type", keyboard_type},
+      };
+
+      if (client_) {
+        client_->async_send(nlohmann::json::to_msgpack(json));
       }
     });
   }
