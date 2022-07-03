@@ -20,7 +20,7 @@ public class DevicesJsonString: ObservableObject {
 
   @Published var text = ""
 
-  init() {
+  private init() {
     let obj = unsafeBitCast(self, to: UnsafeMutableRawPointer.self)
     libkrbn_enable_device_details_json_file_monitor(callback, obj)
   }

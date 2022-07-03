@@ -48,11 +48,11 @@ public class FrontmostApplicationEntry: Identifiable, Equatable {
 public class FrontmostApplicationHistory: ObservableObject {
   public static let shared = FrontmostApplicationHistory()
 
-  let maxCount = 16
+  private let maxCount = 16
 
   @Published var entries: [FrontmostApplicationEntry] = []
 
-  init() {
+  private init() {
     let obj = unsafeBitCast(self, to: UnsafeMutableRawPointer.self)
     libkrbn_enable_frontmost_application_monitor(callback, obj)
   }

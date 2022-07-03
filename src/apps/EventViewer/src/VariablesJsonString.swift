@@ -20,7 +20,7 @@ public class VariablesJsonString: ObservableObject {
 
   @Published var text = ""
 
-  init() {
+  private init() {
     let obj = unsafeBitCast(self, to: UnsafeMutableRawPointer.self)
     libkrbn_enable_manipulator_environment_json_file_monitor(callback, obj)
   }

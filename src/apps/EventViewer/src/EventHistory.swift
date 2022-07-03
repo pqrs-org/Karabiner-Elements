@@ -189,13 +189,13 @@ public class EventHistory: ObservableObject {
   public static let shared = EventHistory()
 
   // Keep maxCount small since too many entries causes performance issue at SwiftUI rendering.
-  let maxCount = 32
-  var modifierFlags: [UInt64: Set<String>] = [:]
+  private let maxCount = 32
+  public var modifierFlags: [UInt64: Set<String>] = [:]
 
   @Published var entries: [EventHistoryEntry] = []
   @Published var unknownEventEntries: [EventHistoryEntry] = []
 
-  init() {
+  private init() {
     let obj = unsafeBitCast(self, to: UnsafeMutableRawPointer.self)
     libkrbn_enable_hid_value_monitor(callback, obj)
   }
