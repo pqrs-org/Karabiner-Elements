@@ -60,6 +60,9 @@ final class SystemPreferences: ObservableObject {
   @Published var keyboardTypes: [LibKrbn.KeyboardType] = [] {
     didSet {
       if didSetEnabled {
+        keyboardTypes.forEach { keyboardType in
+          LibKrbn.GrabberClient.shared.setKeyboardType(keyboardType)
+        }
       }
     }
   }

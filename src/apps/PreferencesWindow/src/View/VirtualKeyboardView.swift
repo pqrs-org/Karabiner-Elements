@@ -3,9 +3,32 @@ import SwiftUI
 struct VirtualKeyboardView: View {
   @ObservedObject private var settings = LibKrbn.Settings.shared
   @ObservedObject private var systemPreferences = SystemPreferences.shared
+  @ObservedObject private var grabberClient = LibKrbn.GrabberClient.shared
 
   var body: some View {
     VStack(alignment: .leading, spacing: 24.0) {
+      GroupBox(label: Text("Keyboard type")) {
+        // Use `ScrollView` instead of `List` to avoid `AttributeGraph: cycle detected through attribute` error.
+        ScrollView {
+          VStack(alignment: .leading, spacing: 6.0) {
+            ForEach($systemPreferences.keyboardTypes) { $keyboardType in
+              HStack {
+                Picker(
+                  "Country code: \(keyboardType.countryCode)", selection: $keyboardType.keyboardType
+                ) {
+                  Text("---").tag(-1)
+                  Text("ANSI").tag(LibKrbn.KeyboardType.NamedType.ansi.rawValue)
+                  Text("ISO").tag(LibKrbn.KeyboardType.NamedType.iso.rawValue)
+                  Text("JIS").tag(LibKrbn.KeyboardType.NamedType.jis.rawValue)
+                }.disabled(!grabberClient.enabled)
+              }
+            }
+          }
+          .padding(10)
+          .background(Color(NSColor.textBackgroundColor))
+        }
+      }
+
       GroupBox(label: Text("Mouse key")) {
         VStack(alignment: .leading, spacing: 12.0) {
           HStack {
@@ -66,28 +89,6 @@ struct VirtualKeyboardView: View {
           }
         }
         .padding(6.0)
-      }
-
-      GroupBox(label: Text("Keyboard type")) {
-      // Use `ScrollView` instead of `List` to avoid `AttributeGraph: cycle detected through attribute` error.
-        ScrollView {
-          VStack(alignment: .leading, spacing: 6.0) {
-            ForEach($systemPreferences.keyboardTypes) { $keyboardType in
-              HStack {
-                Picker(
-                  "Country code \(keyboardType.countryCode)", selection: $keyboardType.keyboardType
-                ) {
-                  Text("---").tag(-1)
-                  Text("ANSI").tag(LibKrbn.KeyboardType.NamedType.ansi.rawValue)
-                  Text("ISO").tag(LibKrbn.KeyboardType.NamedType.iso.rawValue)
-                  Text("JIS").tag(LibKrbn.KeyboardType.NamedType.jis.rawValue)
-                }
-              }
-            }
-          }
-          .padding(10)
-          .background(Color(NSColor.textBackgroundColor))
-        }
       }
 
       Spacer()
