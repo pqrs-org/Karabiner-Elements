@@ -1,7 +1,7 @@
 import SwiftUI
 
 struct LogView: View {
-  @ObservedObject var logMessages = LogMessages.shared
+  @ObservedObject private var logMessages = LogMessages.shared
 
   var body: some View {
     VStack(alignment: .leading, spacing: 12.0) {

@@ -1,8 +1,8 @@
 import SwiftUI
 
 struct UpdateView: View {
-  @ObservedObject var settings = LibKrbn.Settings.shared
-  @ObservedObject var updater = Updater.shared
+  @ObservedObject private var settings = LibKrbn.Settings.shared
+  @ObservedObject private var updater = Updater.shared
   let version = Bundle.main.object(forInfoDictionaryKey: "CFBundleVersion") as! String
 
   var body: some View {

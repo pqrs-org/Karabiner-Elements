@@ -1,8 +1,8 @@
 import SwiftUI
 
 struct ActionView: View {
-  @ObservedObject var settings = LibKrbn.Settings.shared
-  let version = Bundle.main.object(forInfoDictionaryKey: "CFBundleVersion") as! String
+  @ObservedObject private var settings = LibKrbn.Settings.shared
+  private let version = Bundle.main.object(forInfoDictionaryKey: "CFBundleVersion") as! String
 
   var body: some View {
     VStack(alignment: .leading, spacing: 24.0) {
