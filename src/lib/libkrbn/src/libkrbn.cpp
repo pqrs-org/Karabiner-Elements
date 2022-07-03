@@ -377,6 +377,11 @@ void libkrbn_disable_system_preferences_monitor(void) {
   }
 }
 
+size_t libkrbn_system_preferences_properties_get_keyboard_types_size(void) {
+  libkrbn_system_preferences_properties p;
+  return std::size(p.keyboard_types);
+}
+
 //
 // connected_devices_monitor
 //
