@@ -1,10 +1,20 @@
 import SwiftUI
 
+enum NavigationTag: String {
+  case main
+  case frontmostApplication
+  case variables
+  case devices
+  case systemExtensions
+  case unknownEvents
+  case preferences
+}
+
 struct ContentView: View {
   let window: NSWindow?
 
   @ObservedObject var inputMonitoringAlertData = InputMonitoringAlertData.shared
-  @State private var selection: String? = "Main"
+  @State private var selection: NavigationTag = NavigationTag.main
 
   let version = Bundle.main.object(forInfoDictionaryKey: "CFBundleVersion") as! String
 
@@ -13,85 +23,88 @@ struct ContentView: View {
       if inputMonitoringAlertData.showing {
         InputMonitoringAlertView(window: window)
       } else {
-        NavigationView {
+        HStack {
           VStack(alignment: .leading, spacing: 0) {
-            List {
-              NavigationLink(
-                destination: MainView(),
-                tag: "Main",
-                selection: $selection
-              ) {
-                Label("Main", systemImage: "magnifyingglass")
-              }
-              .padding(10)
-
-              NavigationLink(
-                destination: FrontmostApplicationView(),
-                tag: "FrontmostApplication",
-                selection: $selection
-              ) {
-                Label("Frontmost Application", systemImage: "triangle.circle")
-              }
-              .padding(10)
-
-              NavigationLink(
-                destination: VariablesView(),
-                tag: "Variables",
-                selection: $selection
-              ) {
-                Label("Variables", systemImage: "cube")
-              }
-              .padding(10)
-
-              NavigationLink(
-                destination: DevicesView(),
-                tag: "Devices",
-                selection: $selection
-              ) {
-                Label("Devices", systemImage: "keyboard")
-              }
-              .padding(10)
-
-              NavigationLink(
-                destination: SystemExtensionsView(),
-                tag: "SystemExtensions",
-                selection: $selection
-              ) {
-                Label("System Extensions", systemImage: "puzzlepiece")
-              }
-              .padding(10)
-
-              NavigationLink(
-                destination: UnknownEventsView(),
-                tag: "UnknownEvents",
-                selection: $selection
-              ) {
-                Label("Unknown Events", systemImage: "questionmark.square.dashed")
-              }
-              .padding(10)
-
-              NavigationLink(
-                destination: PreferencesView(),
-                tag: "Preferences",
-                selection: $selection
-              ) {
-                Label("Preferences", systemImage: "gearshape")
-              }
-              .padding(10)
+            Button(action: {
+              selection = NavigationTag.main
+            }) {
+              SidebarLabelView(text: "Main", systemImage: "magnifyingglass")
             }
-            .listStyle(SidebarListStyle())
-            .frame(width: 250)
+            .sidebarButtonStyle(selected: selection == NavigationTag.main)
+
+            Button(action: {
+              selection = NavigationTag.frontmostApplication
+            }) {
+              SidebarLabelView(text: "Frontmost Application", systemImage: "triangle.circle")
+            }
+            .sidebarButtonStyle(selected: selection == NavigationTag.frontmostApplication)
+
+            Button(action: {
+              selection = NavigationTag.variables
+            }) {
+              SidebarLabelView(text: "Variables", systemImage: "cube")
+            }
+            .sidebarButtonStyle(selected: selection == NavigationTag.variables)
+
+            Button(action: {
+              selection = NavigationTag.devices
+            }) {
+              SidebarLabelView(text: "Devices", systemImage: "keyboard")
+            }
+            .sidebarButtonStyle(selected: selection == NavigationTag.devices)
+
+            Button(action: {
+              selection = NavigationTag.systemExtensions
+            }) {
+              SidebarLabelView(text: "System Extensions", systemImage: "puzzlepiece")
+            }
+            .sidebarButtonStyle(selected: selection == NavigationTag.systemExtensions)
+
+            Button(action: {
+              selection = NavigationTag.unknownEvents
+            }) {
+              SidebarLabelView(text: "Unknown Events", systemImage: "questionmark.square.dashed")
+            }
+            .sidebarButtonStyle(selected: selection == NavigationTag.unknownEvents)
+
+            Button(action: {
+              selection = NavigationTag.preferences
+            }) {
+              SidebarLabelView(text: "Preferences", systemImage: "gearshape")
+            }
+            .sidebarButtonStyle(selected: selection == NavigationTag.preferences)
 
             Spacer()
           }
+          .frame(width: 250)
+
+          Divider()
+
+          switch selection {
+          case NavigationTag.main:
+            MainView()
+          case NavigationTag.frontmostApplication:
+            FrontmostApplicationView()
+          case NavigationTag.variables:
+            VariablesView()
+          case NavigationTag.devices:
+            DevicesView()
+          case NavigationTag.systemExtensions:
+            SystemExtensionsView()
+          case NavigationTag.unknownEvents:
+            UnknownEventsView()
+          case NavigationTag.preferences:
+            PreferencesView()
+          }
+
         }
-        .frame(
-          minWidth: 1100,
-          maxWidth: .infinity,
-          minHeight: 650,
-          maxHeight: .infinity)
       }
     }
+    .frame(
+      minWidth: 1100,
+      maxWidth: .infinity,
+      minHeight: 650,
+      maxHeight: .infinity)
   }
 }
 
