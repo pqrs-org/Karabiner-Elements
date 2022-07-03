@@ -587,21 +587,11 @@ void libkrbn_disable_grabber_client(void) {
   }
 }
 
-void libkrbn_grabber_client_async_set_keyboard_type_ansi(uint64_t country_code) {
+void libkrbn_grabber_client_async_set_keyboard_type(uint64_t country_code, uint64_t keyboard_type) {
   if (libkrbn_components_manager_) {
-    libkrbn_components_manager_->grabber_client_async_set_keyboard_type(pqrs::hid::country_code::value_t(country_code), pqrs::osx::iokit_keyboard_type::ansi);
-  }
-}
-
-void libkrbn_grabber_client_async_set_keyboard_type_iso(uint64_t country_code) {
-  if (libkrbn_components_manager_) {
-    libkrbn_components_manager_->grabber_client_async_set_keyboard_type(pqrs::hid::country_code::value_t(country_code), pqrs::osx::iokit_keyboard_type::iso);
-  }
-}
-
-void libkrbn_grabber_client_async_set_keyboard_type_jis(uint64_t country_code) {
-  if (libkrbn_components_manager_) {
-    libkrbn_components_manager_->grabber_client_async_set_keyboard_type(pqrs::hid::country_code::value_t(country_code), pqrs::osx::iokit_keyboard_type::jis);
+    libkrbn_components_manager_->grabber_client_async_set_keyboard_type(
+        pqrs::hid::country_code::value_t(country_code),
+        pqrs::osx::iokit_keyboard_type::value_t(keyboard_type));
   }
 }
 
