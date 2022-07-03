@@ -10,8 +10,8 @@ private func callback(
   if context == nil { return }
 
   let obj: SystemPreferences! = unsafeBitCast(context, to: SystemPreferences.self)
-  let systemPreferencesPropertiesCopy = systemPreferencesProperties!.pointee
-  obj.updateProperties(systemPreferencesPropertiesCopy)
+  var systemPreferencesPropertiesCopy = systemPreferencesProperties!.pointee
+  obj.updateProperties(&systemPreferencesPropertiesCopy)
 }
 
 final class SystemPreferences: ObservableObject {
@@ -27,11 +27,21 @@ final class SystemPreferences: ObservableObject {
   }
 
   public func updateProperties(
-    _ systemPreferencesProperties: libkrbn_system_preferences_properties
+    _ systemPreferencesProperties: inout libkrbn_system_preferences_properties
   ) {
     didSetEnabled = false
 
     useFkeysAsStandardFunctionKeys = systemPreferencesProperties.use_fkeys_as_standard_function_keys
+
+    let keyboardTypesSize = libkrbn_system_preferences_properties_get_keyboard_types_size()
+    withUnsafePointer(to: &(systemPreferencesProperties.keyboard_types.0)) {
+      keyboardTypesPtr in
+      var newKeyboardTypes = [Int32](repeating: -1, count: keyboardTypesSize)
+      for i in 0..<keyboardTypesSize {
+        newKeyboardTypes[i] = keyboardTypesPtr[i]
+      }
+      keyboardTypes = newKeyboardTypes
+    }
 
     didSetEnabled = true
   }
@@ -43,6 +53,13 @@ final class SystemPreferences: ObservableObject {
           UserDefaults.standard.persistentDomain(forName: UserDefaults.globalDomain) ?? [:]
         domain["com.apple.keyboard.fnState"] = useFkeysAsStandardFunctionKeys
         UserDefaults.standard.setPersistentDomain(domain, forName: UserDefaults.globalDomain)
+      }
+    }
+  }
+
+  @Published var keyboardTypes: [Int32] = [] {
+    didSet {
+      if didSetEnabled {
       }
     }
   }
