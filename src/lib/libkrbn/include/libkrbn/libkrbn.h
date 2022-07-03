@@ -212,7 +212,7 @@ void libkrbn_disable_configuration_monitor(void);
 
 struct libkrbn_system_preferences_properties {
   bool use_fkeys_as_standard_function_keys;
-  int32_t keyboard_types[16];
+  int32_t keyboard_types[8];
 };
 
 typedef void (*libkrbn_system_preferences_monitor_callback)(const struct libkrbn_system_preferences_properties* properties,
