@@ -10,12 +10,20 @@ private func callback(
   if context == nil { return }
 
   let obj: SystemPreferences! = unsafeBitCast(context, to: SystemPreferences.self)
-  var systemPreferencesPropertiesCopy = systemPreferencesProperties!.pointee
-  obj.updateProperties(&systemPreferencesPropertiesCopy)
+  let systemPreferencesPropertiesCopy = systemPreferencesProperties!.pointee
+  DispatchQueue.main.async { [weak obj, systemPreferencesPropertiesCopy] in
+    guard let obj = obj else { return }
+
+    var properties = systemPreferencesPropertiesCopy
+    obj.updateProperties(&properties)
+  }
 }
 
 final class SystemPreferences: ObservableObject {
   static let shared = SystemPreferences()
+
+  // This variable will be used in VirtualKeyboardView in order to show "log out required" message.
+  @Published var keyboardTypeChanged = false
 
   private var didSetEnabled = false
 
@@ -31,7 +39,8 @@ final class SystemPreferences: ObservableObject {
   ) {
     didSetEnabled = false
 
-    useFkeysAsStandardFunctionKeys = systemPreferencesProperties.use_fkeys_as_standard_function_keys
+    useFkeysAsStandardFunctionKeys =
+      systemPreferencesProperties.use_fkeys_as_standard_function_keys
 
     let keyboardTypesSize = libkrbn_system_preferences_properties_get_keyboard_types_size()
     withUnsafePointer(to: &(systemPreferencesProperties.keyboard_types.0)) {
@@ -63,6 +72,8 @@ final class SystemPreferences: ObservableObject {
         keyboardTypes.forEach { keyboardType in
           LibKrbn.GrabberClient.shared.setKeyboardType(keyboardType)
         }
+
+        keyboardTypeChanged = true
       }
     }
   }

@@ -569,6 +569,8 @@ extension Color {
       UInt8(components.opacity * 255))
   }
 
+  public static var infoBackground: Color = Color(colorString: "#cff4fcff")
+  public static var infoForeground: Color = Color(colorString: "#055160ff")
   public static var errorBackground: Color = Color(colorString: "#f2dedeff")
   public static var errorForeground: Color = Color(colorString: "#a94442ff")
   public static var warningBackground: Color = Color(colorString: "#fcf8e3ff")
