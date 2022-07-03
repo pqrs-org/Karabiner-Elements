@@ -51,9 +51,11 @@ struct VirtualKeyboardView: View {
                 if keyboardType.keyboardType < 0 {
                   Text("---").tag(-1)
                 }
-                Text("ANSI").tag(LibKrbn.KeyboardType.NamedType.ansi.rawValue)
-                Text("ISO").tag(LibKrbn.KeyboardType.NamedType.iso.rawValue)
-                Text("JIS").tag(LibKrbn.KeyboardType.NamedType.jis.rawValue)
+                Text("ANSI (North America, most of Asia and others)").tag(
+                  LibKrbn.KeyboardType.NamedType.ansi.rawValue)
+                Text("ISO (Europe, Latin America, Middle-East and others)").tag(
+                  LibKrbn.KeyboardType.NamedType.iso.rawValue)
+                Text("JIS (Japanese)").tag(LibKrbn.KeyboardType.NamedType.jis.rawValue)
               }.disabled(!grabberClient.enabled)
 
               Spacer()
