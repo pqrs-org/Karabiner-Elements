@@ -24,150 +24,179 @@ struct ContentView: View {
 
   var body: some View {
     VStack {
-      NavigationView {
+      HStack {
         VStack(alignment: .leading, spacing: 0) {
-          List {
-            Group {
-              NavigationLink(
-                destination: SimpleModificationsView(),
-                tag: NavigationTag.simpleModifications.rawValue,
-                selection: $contentViewStates.navigationSelection
-              ) {
-                Label("Simple Modifications", systemImage: "gearshape")
-              }
-              .padding(padding)
-
-              NavigationLink(
-                destination: FunctionKeysView(),
-                tag: NavigationTag.functionKeys.rawValue,
-                selection: $contentViewStates.navigationSelection
-              ) {
-                Label("Function Keys", systemImage: "speaker.wave.2.circle")
-              }
-              .padding(padding)
-
-              NavigationLink(
-                destination: ComplexModificationsView(),
-                tag: NavigationTag.complexModifications.rawValue,
-                selection: $contentViewStates.navigationSelection
-              ) {
-                Label("Complex Modifications", systemImage: "gearshape.2")
-              }
-              .padding(padding)
-
-              NavigationLink(
-                destination: ComplexModificationsAdvancedView(),
-                tag: NavigationTag.complexModificationsAdvanced.rawValue,
-                selection: $contentViewStates.navigationSelection
-              ) {
-                Label("Parameters", systemImage: "dial.min")
-              }
-              .padding(padding)
+          Group {
+            Button(action: {
+              contentViewStates.navigationSelection = NavigationTag.simpleModifications
+            }) {
+              SidebarLabelView(text: "Simple Modifications", systemImage: "gearshape", padding: 2.0)
             }
+            .sidebarButtonStyle(
+              selected: contentViewStates.navigationSelection
+                == NavigationTag.simpleModifications)
 
-            Divider()
-
-            Group {
-              NavigationLink(
-                destination: DevicesView(),
-                tag: NavigationTag.devices.rawValue,
-                selection: $contentViewStates.navigationSelection
-              ) {
-                Label("Devices", systemImage: "keyboard")
-              }
-              .padding(padding)
-
-              NavigationLink(
-                destination: DevicesAdvancedView(),
-                tag: NavigationTag.devicesAdvanced.rawValue,
-                selection: $contentViewStates.navigationSelection
-              ) {
-                Label("Devices > Advanced", systemImage: "keyboard")
-              }
-              .padding(padding)
-
-              NavigationLink(
-                destination: VirtualKeyboardView(),
-                tag: NavigationTag.virtualKeyboard.rawValue,
-                selection: $contentViewStates.navigationSelection
-              ) {
-                Label("Virtual Keyboard", systemImage: "puzzlepiece")
-              }
-              .padding(padding)
-
-              NavigationLink(
-                destination: ProfilesView(),
-                tag: NavigationTag.profiles.rawValue,
-                selection: $contentViewStates.navigationSelection
-              ) {
-                Label("Profiles", systemImage: "person.3")
-              }
-              .padding(padding)
+            Button(action: {
+              contentViewStates.navigationSelection = NavigationTag.functionKeys
+            }) {
+              SidebarLabelView(
+                text: "Function Keys", systemImage: "speaker.wave.2.circle", padding: 2.0)
             }
+            .sidebarButtonStyle(
+              selected: contentViewStates.navigationSelection == NavigationTag.functionKeys
+            )
 
-            Divider()
-
-            Group {
-              NavigationLink(
-                destination: UpdateView(),
-                tag: NavigationTag.update.rawValue,
-                selection: $contentViewStates.navigationSelection
-              ) {
-                Label("Update", systemImage: "network")
-              }
-              .padding(padding)
-
-              NavigationLink(
-                destination: MiscView(),
-                tag: NavigationTag.misc.rawValue,
-                selection: $contentViewStates.navigationSelection
-              ) {
-                Label("Misc", systemImage: "leaf")
-              }
-              .padding(padding)
-
-              NavigationLink(
-                destination: UninstallView(),
-                tag: NavigationTag.uninstall.rawValue,
-                selection: $contentViewStates.navigationSelection
-              ) {
-                Label("Uninstall", systemImage: "trash")
-              }
-              .padding(padding)
+            Button(action: {
+              contentViewStates.navigationSelection = NavigationTag.complexModifications
+            }) {
+              SidebarLabelView(
+                text: "Complex Modifications", systemImage: "gearshape.2", padding: 2.0)
             }
+            .sidebarButtonStyle(
+              selected: contentViewStates.navigationSelection
+                == NavigationTag.complexModifications)
 
-            Divider()
-
-            Group {
-              NavigationLink(
-                destination: LogView(),
-                tag: NavigationTag.log.rawValue,
-                selection: $contentViewStates.navigationSelection
-              ) {
-                Label("Log", systemImage: "doc.plaintext")
-              }
-              .padding(padding)
-
-              NavigationLink(
-                destination: ActionView(),
-                tag: NavigationTag.action.rawValue,
-                selection: $contentViewStates.navigationSelection
-              ) {
-                Label("Quit, Restart", systemImage: "bolt.circle")
-              }
-              .padding(padding)
+            Button(action: {
+              contentViewStates.navigationSelection =
+                NavigationTag.complexModificationsAdvanced
+            }) {
+              SidebarLabelView(text: "Parameters", systemImage: "dial.min", padding: 2.0)
             }
+            .sidebarButtonStyle(
+              selected: contentViewStates.navigationSelection
+                == NavigationTag.complexModificationsAdvanced)
           }
-          .listStyle(SidebarListStyle())
-          .frame(width: 250)
+
+          Divider()
+            .padding(.vertical, 10.0)
+
+          Group {
+            Button(action: {
+              contentViewStates.navigationSelection = NavigationTag.devices
+            }) {
+              SidebarLabelView(text: "Devices", systemImage: "keyboard", padding: 2.0)
+            }
+            .sidebarButtonStyle(
+              selected: contentViewStates.navigationSelection == NavigationTag.devices)
+
+            Button(action: {
+              contentViewStates.navigationSelection = NavigationTag.devicesAdvanced
+            }) {
+              SidebarLabelView(text: "Devices > Advanced", systemImage: "keyboard", padding: 2.0)
+            }
+            .sidebarButtonStyle(
+              selected: contentViewStates.navigationSelection
+                == NavigationTag.devicesAdvanced)
+
+            Button(action: {
+              contentViewStates.navigationSelection = NavigationTag.virtualKeyboard
+            }) {
+              SidebarLabelView(text: "Virtual Keyboard", systemImage: "puzzlepiece", padding: 2.0)
+            }
+            .sidebarButtonStyle(
+              selected: contentViewStates.navigationSelection
+                == NavigationTag.virtualKeyboard)
+
+            Button(action: {
+              contentViewStates.navigationSelection = NavigationTag.profiles
+            }) {
+              SidebarLabelView(text: "Profiles", systemImage: "person.3", padding: 2.0)
+            }
+            .sidebarButtonStyle(
+              selected: contentViewStates.navigationSelection == NavigationTag.profiles)
+          }
+
+          Divider()
+            .padding(.vertical, 10.0)
+
+          Group {
+            Button(action: {
+              contentViewStates.navigationSelection = NavigationTag.update
+            }) {
+              SidebarLabelView(text: "Update", systemImage: "network", padding: 2.0)
+            }
+            .sidebarButtonStyle(
+              selected: contentViewStates.navigationSelection == NavigationTag.update)
+
+            Button(action: {
+              contentViewStates.navigationSelection = NavigationTag.misc
+            }) {
+              SidebarLabelView(text: "Misc", systemImage: "leaf", padding: 2.0)
+            }
+            .sidebarButtonStyle(
+              selected: contentViewStates.navigationSelection == NavigationTag.misc)
+
+            Button(action: {
+              contentViewStates.navigationSelection = NavigationTag.uninstall
+            }) {
+              SidebarLabelView(text: "Uninstall", systemImage: "trash", padding: 2.0)
+            }
+            .sidebarButtonStyle(
+              selected: contentViewStates.navigationSelection == NavigationTag.uninstall)
+          }
+
+          Divider()
+            .padding(.vertical, 10.0)
+
+          Group {
+            Button(action: {
+              contentViewStates.navigationSelection = NavigationTag.log
+            }) {
+              SidebarLabelView(text: "Log", systemImage: "doc.plaintext", padding: 2.0)
+            }
+            .sidebarButtonStyle(
+              selected: contentViewStates.navigationSelection == NavigationTag.log)
+
+            Button(action: {
+              contentViewStates.navigationSelection = NavigationTag.action
+            }) {
+              SidebarLabelView(text: "Quit, Restart", systemImage: "bolt.circle", padding: 2.0)
+            }
+            .sidebarButtonStyle(
+              selected: contentViewStates.navigationSelection == NavigationTag.action)
+          }
+
+          Spacer()
+        }
+        .frame(width: 250)
+
+        Divider()
+
+        switch contentViewStates.navigationSelection {
+        case NavigationTag.simpleModifications:
+          SimpleModificationsView()
+        case NavigationTag.functionKeys:
+          FunctionKeysView()
+        case NavigationTag.complexModifications:
+          ComplexModificationsView()
+        case NavigationTag.complexModificationsAdvanced:
+          ComplexModificationsAdvancedView()
+        case NavigationTag.devices:
+          DevicesView()
+        case NavigationTag.devicesAdvanced:
+          DevicesAdvancedView()
+        case NavigationTag.virtualKeyboard:
+          VirtualKeyboardView()
+        case NavigationTag.profiles:
+          ProfilesView()
+        case NavigationTag.update:
+          UpdateView()
+        case NavigationTag.misc:
+          MiscView()
+        case NavigationTag.uninstall:
+          UninstallView()
+        case NavigationTag.log:
+          LogView()
+        case NavigationTag.action:
+          ActionView()
         }
       }
-      .frame(
-        minWidth: 1100,
-        maxWidth: .infinity,
-        minHeight: 650,
-        maxHeight: .infinity)
     }
+    .frame(
+      minWidth: 1100,
+      maxWidth: .infinity,
+      minHeight: 650,
+      maxHeight: .infinity)
   }
 }
 

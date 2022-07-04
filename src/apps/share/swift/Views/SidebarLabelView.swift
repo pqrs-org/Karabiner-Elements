@@ -3,6 +3,7 @@ import SwiftUI
 struct SidebarLabelView: View {
   private(set) var text: String
   private(set) var systemImage: String
+  private(set) var padding = 6.0
 
   var body: some View {
     HStack {
@@ -17,7 +18,7 @@ struct SidebarLabelView: View {
 
       Spacer()
     }
-    .padding(.vertical, 6.0)
+    .padding(.vertical, padding)
     .padding(.leading, 12.0)
     .sidebarButtonLabelStyle()
   }
