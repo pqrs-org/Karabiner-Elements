@@ -100,6 +100,11 @@ public:
     server_check_interval_ = value;
   }
 
+  // You have to call `set_client_socket_check_interval` before `async_start`.
+  void set_client_socket_check_interval(std::optional<std::chrono::milliseconds> value) {
+    client_socket_check_interval_ = value;
+  }
+
   // You have to call `set_reconnect_interval` before `async_start`.
   void set_reconnect_interval(std::optional<std::chrono::milliseconds> value) {
     reconnect_interval_ = value;
@@ -164,7 +169,8 @@ private:
       client_impl_->async_connect(server_socket_file_path,
                                   client_socket_file_path_,
                                   buffer_size_,
-                                  server_check_interval_);
+                                  server_check_interval_,
+                                  client_socket_check_interval_);
     }
   }
 
@@ -217,6 +223,7 @@ private:
   std::optional<std::filesystem::path> client_socket_file_path_;
   size_t buffer_size_;
   std::optional<std::chrono::milliseconds> server_check_interval_;
+  std::optional<std::chrono::milliseconds> client_socket_check_interval_;
   std::optional<std::chrono::milliseconds> reconnect_interval_;
   std::function<std::filesystem::path(void)> server_socket_file_path_resolver_;
 

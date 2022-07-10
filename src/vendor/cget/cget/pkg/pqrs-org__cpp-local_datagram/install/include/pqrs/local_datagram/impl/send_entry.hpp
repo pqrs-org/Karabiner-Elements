@@ -19,9 +19,8 @@ public:
   // We append `type` into the beginning of data in order to avoid this issue.
 
   enum class type : uint8_t {
-    server_check,
+    heartbeat,
     user_data,
-    response,
   };
 
   send_entry(type t,

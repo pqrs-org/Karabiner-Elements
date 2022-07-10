@@ -148,6 +148,7 @@ private:
       server_check_client_impl_->async_connect(server_socket_file_path,
                                                std::nullopt,
                                                buffer_size,
+                                               std::nullopt,
                                                std::nullopt);
     }
   }
