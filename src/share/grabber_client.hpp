@@ -55,6 +55,7 @@ public:
                                                                client_socket_file_path_,
                                                                constants::get_local_datagram_buffer_size());
       client_->set_server_check_interval(std::chrono::milliseconds(3000));
+      client_->set_client_socket_check_interval(std::chrono::milliseconds(3000));
       client_->set_reconnect_interval(std::chrono::milliseconds(1000));
       client_->set_server_socket_file_path_resolver([this] {
         return find_grabber_socket_file_path();

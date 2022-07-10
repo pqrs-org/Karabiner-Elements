@@ -42,6 +42,7 @@ public:
                                                                std::nullopt,
                                                                constants::get_local_datagram_buffer_size());
       client_->set_server_check_interval(std::chrono::milliseconds(3000));
+      client_->set_client_socket_check_interval(std::chrono::milliseconds(3000));
       client_->set_reconnect_interval(std::chrono::milliseconds(1000));
 
       client_->connected.connect([this, endpoint_path] {

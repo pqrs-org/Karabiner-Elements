@@ -53,6 +53,7 @@ public:
           client_socket_directory_path / filesystem_utility::make_socket_file_basename(),
           constants::get_local_datagram_buffer_size());
       client_->set_server_check_interval(std::chrono::milliseconds(3000));
+      client_->set_client_socket_check_interval(std::chrono::milliseconds(3000));
       client_->set_reconnect_interval(std::chrono::milliseconds(1000));
       client_->set_server_socket_file_path_resolver([this] {
         return get_grabber_session_monitor_receiver_socket_file_path();

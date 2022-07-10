@@ -130,6 +130,7 @@ private:
       session_monitor_clients_[uid] = client;
 
       client->set_server_check_interval(std::chrono::milliseconds(3000));
+      client->set_client_socket_check_interval(std::chrono::milliseconds(3000));
 
       client->closed.connect([this, uid] {
         logger::get_logger()->info("session_monitor_client is closed (uid:{0})", uid);
