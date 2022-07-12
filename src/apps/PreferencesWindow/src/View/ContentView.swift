@@ -166,8 +166,11 @@ struct ContentView: View {
         VStack(alignment: .leading, spacing: 0) {
           if settings.saveErrorMessage != "" {
             VStack {
-              Label(settings.saveErrorMessage, systemImage: "exclamationmark.circle.fill")
-                .padding()
+              Label(
+                "Save failed:\n\(settings.saveErrorMessage)",
+                systemImage: "exclamationmark.circle.fill"
+              )
+              .padding()
             }
             .foregroundColor(Color.errorForeground)
             .background(Color.errorBackground)
