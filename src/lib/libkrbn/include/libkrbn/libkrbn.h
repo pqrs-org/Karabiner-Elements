@@ -69,6 +69,7 @@ bool libkrbn_device_identifiers_is_apple(const libkrbn_device_identifiers* p);
 typedef void libkrbn_core_configuration;
 void libkrbn_core_configuration_terminate(libkrbn_core_configuration** p);
 void libkrbn_core_configuration_save(libkrbn_core_configuration* p);
+const char* libkrbn_core_configuration_get_save_error_message(void);
 
 // global_configuration
 

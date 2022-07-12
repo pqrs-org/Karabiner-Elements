@@ -32,6 +32,8 @@ extension LibKrbn {
     var libkrbnCoreConfiguration: UnsafeMutableRawPointer?
     private var didSetEnabled = false
 
+    @Published var saveErrorMessage = ""
+
     private init() {
       updateProperties(nil)
       didSetEnabled = true
@@ -55,6 +57,7 @@ extension LibKrbn {
     func save() {
       print("save")
       libkrbn_core_configuration_save(libkrbnCoreConfiguration)
+      saveErrorMessage = String(cString: libkrbn_core_configuration_get_save_error_message())
 
       updateProperties(libkrbnCoreConfiguration)
     }

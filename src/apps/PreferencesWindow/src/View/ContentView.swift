@@ -18,6 +18,7 @@ enum NavigationTag: String {
 
 struct ContentView: View {
   @ObservedObject private var contentViewStates = ContentViewStates.shared
+  @ObservedObject private var settings = LibKrbn.Settings.shared
 
   let version = Bundle.main.object(forInfoDictionaryKey: "CFBundleVersion") as! String
   let padding = 6.0
@@ -162,33 +163,44 @@ struct ContentView: View {
 
         Divider()
 
-        switch contentViewStates.navigationSelection {
-        case NavigationTag.simpleModifications:
-          SimpleModificationsView()
-        case NavigationTag.functionKeys:
-          FunctionKeysView()
-        case NavigationTag.complexModifications:
-          ComplexModificationsView()
-        case NavigationTag.complexModificationsAdvanced:
-          ComplexModificationsAdvancedView()
-        case NavigationTag.devices:
-          DevicesView()
-        case NavigationTag.devicesAdvanced:
-          DevicesAdvancedView()
-        case NavigationTag.virtualKeyboard:
-          VirtualKeyboardView()
-        case NavigationTag.profiles:
-          ProfilesView()
-        case NavigationTag.update:
-          UpdateView()
-        case NavigationTag.misc:
-          MiscView()
-        case NavigationTag.uninstall:
-          UninstallView()
-        case NavigationTag.log:
-          LogView()
-        case NavigationTag.action:
-          ActionView()
+        VStack(alignment: .leading, spacing: 0) {
+          if settings.saveErrorMessage != "" {
+            VStack {
+              Label(settings.saveErrorMessage, systemImage: "exclamationmark.circle.fill")
+                .padding()
+            }
+            .foregroundColor(Color.errorForeground)
+            .background(Color.errorBackground)
+          }
+
+          switch contentViewStates.navigationSelection {
+          case NavigationTag.simpleModifications:
+            SimpleModificationsView()
+          case NavigationTag.functionKeys:
+            FunctionKeysView()
+          case NavigationTag.complexModifications:
+            ComplexModificationsView()
+          case NavigationTag.complexModificationsAdvanced:
+            ComplexModificationsAdvancedView()
+          case NavigationTag.devices:
+            DevicesView()
+          case NavigationTag.devicesAdvanced:
+            DevicesAdvancedView()
+          case NavigationTag.virtualKeyboard:
+            VirtualKeyboardView()
+          case NavigationTag.profiles:
+            ProfilesView()
+          case NavigationTag.update:
+            UpdateView()
+          case NavigationTag.misc:
+            MiscView()
+          case NavigationTag.uninstall:
+            UninstallView()
+          case NavigationTag.log:
+            LogView()
+          case NavigationTag.action:
+            ActionView()
+          }
         }
       }
     }
