@@ -179,6 +179,7 @@ private:
   // This method is executed in `io_service_thread_`.
   void stop_client_socket_check(void) {
     client_socket_check_timer_.stop();
+    client_socket_check_client_impl_ = nullptr;
   }
 
   // This method is executed in `io_service_thread_`.

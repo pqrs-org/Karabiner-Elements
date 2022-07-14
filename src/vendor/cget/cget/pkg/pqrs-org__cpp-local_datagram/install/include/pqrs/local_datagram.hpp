@@ -1,6 +1,6 @@
 #pragma once
 
-// pqrs::local_datagram v5.4
+// pqrs::local_datagram v5.5
 
 // (C) Copyright Takayama Fumihiko 2018.
 // Distributed under the Boost Software License, Version 1.0.
