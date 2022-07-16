@@ -48,6 +48,9 @@ struct FunctionKeysView: View {
               Text(fnFunctionKey.fromEntry.label)
                 .frame(width: 40)
 
+              Image(systemName: "arrow.forward")
+                .padding(.horizontal, 6.0)
+
               SimpleModificationPickerView(
                 categories: selectedDevice == nil
                   ? LibKrbn.SimpleModificationDefinitions.shared.toCategories

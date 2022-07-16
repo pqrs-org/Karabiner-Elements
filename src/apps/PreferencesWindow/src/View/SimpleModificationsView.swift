@@ -53,6 +53,9 @@ struct SimpleModificationsView: View {
                 }
               )
 
+              Image(systemName: "arrow.forward")
+                .padding(.horizontal, 6.0)
+
               SimpleModificationPickerView(
                 categories: LibKrbn.SimpleModificationDefinitions.shared.toCategories,
                 label: simpleModification.toEntry.label,
@@ -64,6 +67,7 @@ struct SimpleModificationsView: View {
                     device: selectedDevice)
                 }
               )
+              .padding(.trailing, 24.0)
 
               Button(action: {
                 LibKrbn.Settings.shared.removeSimpleModification(
