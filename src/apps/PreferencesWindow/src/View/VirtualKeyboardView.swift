@@ -16,8 +16,8 @@ struct VirtualKeyboardView: View {
                   "Log out will be required when you changed keyboard type (ANSI, ISO or JIS)",
                   systemImage: "lightbulb"
                 )
-                .padding()
               }
+              .padding()
               .foregroundColor(Color.warningForeground)
               .background(Color.warningBackground)
             } else {
@@ -26,8 +26,8 @@ struct VirtualKeyboardView: View {
                   "Log out is required to apply keyboard type changes",
                   systemImage: "lightbulb"
                 )
-                .padding()
               }
+              .padding()
               .foregroundColor(Color.errorForeground)
               .background(Color.errorBackground)
             }
@@ -42,35 +42,49 @@ struct VirtualKeyboardView: View {
             .background(Color.infoBackground)
           }
 
-          ForEach($systemPreferences.keyboardTypes) { $keyboardType in
-            HStack {
-              Picker(
-                "Country code: \(keyboardType.countryCode)",
-                selection: $keyboardType.keyboardType
-              ) {
-                if keyboardType.keyboardType < 0 {
-                  Text("---").tag(-1)
-                }
-                Text("ANSI (North America, most of Asia and others)").tag(
-                  LibKrbn.KeyboardType.NamedType.ansi.rawValue)
-                Text("ISO (Europe, Latin America, Middle-East and others)").tag(
-                  LibKrbn.KeyboardType.NamedType.iso.rawValue)
-                Text("JIS (Japanese)").tag(LibKrbn.KeyboardType.NamedType.jis.rawValue)
-              }.disabled(!grabberClient.enabled)
+          // Use `ScrollView` instead of `List` to avoid `AttributeGraph: cycle detected through attribute` error.
+          ScrollView {
+            ForEach($systemPreferences.keyboardTypes) { $keyboardType in
+              HStack {
+                Picker(
+                  "Country code: \(keyboardType.countryCode)",
+                  selection: $keyboardType.keyboardType
+                ) {
+                  if keyboardType.keyboardType < 0 {
+                    Text("---").tag(-1)
+                  }
+                  Text("ANSI (North America, most of Asia and others)").tag(
+                    LibKrbn.KeyboardType.NamedType.ansi.rawValue)
+                  Text("ISO (Europe, Latin America, Middle-East and others)").tag(
+                    LibKrbn.KeyboardType.NamedType.iso.rawValue)
+                  Text("JIS (Japanese)").tag(LibKrbn.KeyboardType.NamedType.jis.rawValue)
+                }.disabled(!grabberClient.enabled)
 
-              Spacer()
+                Spacer()
 
-              if settings.virtualHIDKeyboardCountryCode == keyboardType.countryCode {
-                Label("Selected", systemImage: "checkmark.square.fill")
-              } else {
-                Button(action: {
-                  settings.virtualHIDKeyboardCountryCode = keyboardType.countryCode
-                }) {
-                  Label("Select", systemImage: "square")
+                if settings.virtualHIDKeyboardCountryCode == keyboardType.countryCode {
+                  Label("Selected", systemImage: "checkmark.square.fill")
+                } else {
+                  Button(action: {
+                    settings.virtualHIDKeyboardCountryCode = keyboardType.countryCode
+                  }) {
+                    Label("Select", systemImage: "square")
+                  }
                 }
               }
             }
           }
+
+          VStack(alignment: .leading, spacing: 0.0) {
+            Text("Note:")
+            Text(
+              "The keyboard type configurations (ANSI, ISO, JIS) are shared by all of this Mac users."
+            )
+            Text("The country code selection is saved for each user.")
+          }
+          .padding()
+          .foregroundColor(Color.warningForeground)
+          .background(Color.warningBackground)
         }
         .padding(6.0)
         .background(Color(NSColor.textBackgroundColor))
