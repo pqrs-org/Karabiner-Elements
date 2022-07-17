@@ -1,7 +1,10 @@
 # Changelog
 
-## Beta
+## Karabiner-Elements 14.5.0
 
+-   [📦 Download](https://github.com/pqrs-org/Karabiner-Elements/releases/download/v14.5.0/Karabiner-Elements-14.5.0.dmg)
+-   📅 Release date
+    -   Jul 17, 2022
 -   💥 Breaking changes
     -   The following modifier flags and manipulators are now canceled even for events from devices not grabbed by Karabiner-Elements, e.g. mouse clicks.
         -   `sticky modifiers`
