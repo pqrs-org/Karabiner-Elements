@@ -58,17 +58,7 @@ public:
     // Update event_origin_
     //
 
-    auto old_event_origin = event_origin_;
     update_event_origin();
-    if (old_event_origin != event_origin_) {
-      logger::get_logger()->info("device_grabber_details::entry event_origin_ is updated. {0}: {1} -> {2}",
-                                 device_name_,
-                                 nlohmann::json(old_event_origin),
-                                 nlohmann::json(event_origin_));
-
-      // Ungrab device if event_origin is changed in order to change IOHIDDeviceOpen option (kIOHIDOptionsTypeSeizeDevice or kIOHIDOptionsTypeNone)
-      async_stop_queue_value_monitor();
-    }
 
     //
     // Update caps_lock_led_state_manager state
@@ -230,6 +220,8 @@ private:
   }
 
   void update_event_origin(void) {
+    auto old_event_origin = event_origin_;
+
     if (disabled_) {
       event_origin_ = event_origin::grabbed_device;
     } else {
@@ -238,6 +230,13 @@ private:
       } else {
         event_origin_ = event_origin::grabbed_device;
       }
+    }
+
+    if (old_event_origin != event_origin_) {
+      logger::get_logger()->info("device_grabber_details::entry event_origin_ is updated. {0}: {1} -> {2}",
+                                 device_name_,
+                                 nlohmann::json(old_event_origin),
+                                 nlohmann::json(event_origin_));
     }
   }
 
