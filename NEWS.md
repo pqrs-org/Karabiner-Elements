@@ -1,5 +1,10 @@
 # Changelog
 
+## Beta
+
+-   🐛 Bug Fixes
+    -   Fixed an issue that "Disable the built-in keyboard" feature does not work if the built-in keyboard is not included in the event modification target devices.
+
 ## Karabiner-Elements 14.5.0
 
 -   [📦 Download](https://github.com/pqrs-org/Karabiner-Elements/releases/download/v14.5.0/Karabiner-Elements-14.5.0.dmg)

@@ -131,6 +131,8 @@ public:
 
   void set_disabled(bool value) {
     disabled_ = value;
+
+    update_event_origin();
   }
 
   event_origin get_event_origin(void) const {
@@ -156,16 +158,30 @@ public:
   }
 
   void async_start_queue_value_monitor(void) {
+    auto options = kIOHIDOptionsTypeSeizeDevice;
+    if (event_origin_ == event_origin::observed_device) {
+      options = kIOHIDOptionsTypeNone;
+    }
+
+    //
+    // Stop if already started with different options.
+    //
+
+    if (options != hid_queue_value_monitor_async_start_option_) {
+      async_stop_queue_value_monitor();
+    }
+
+    //
+    // Start
+    //
+
     if (hid_queue_value_monitor_) {
       if (!hid_queue_value_monitor_async_start_called_) {
         first_value_arrived_ = false;
         hid_queue_value_monitor_async_start_called_ = true;
       }
 
-      auto options = kIOHIDOptionsTypeSeizeDevice;
-      if (event_origin_ == event_origin::observed_device) {
-        options = kIOHIDOptionsTypeNone;
-      }
+      hid_queue_value_monitor_async_start_option_ = options;
 
       hid_queue_value_monitor_->async_start(options,
                                             std::chrono::milliseconds(1000));
@@ -214,10 +230,14 @@ private:
   }
 
   void update_event_origin(void) {
-    if (is_ignored_device()) {
-      event_origin_ = event_origin::observed_device;
-    } else {
+    if (disabled_) {
       event_origin_ = event_origin::grabbed_device;
+    } else {
+      if (is_ignored_device()) {
+        event_origin_ = event_origin::observed_device;
+      } else {
+        event_origin_ = event_origin::grabbed_device;
+      }
     }
   }
 
@@ -247,6 +267,7 @@ private:
 
   std::shared_ptr<pqrs::osx::iokit_hid_queue_value_monitor> hid_queue_value_monitor_;
   bool hid_queue_value_monitor_async_start_called_;
+  std::optional<IOOptionBits> hid_queue_value_monitor_async_start_option_;
   bool first_value_arrived_;
 
   std::shared_ptr<hid_keyboard_caps_lock_led_state_manager> caps_lock_led_state_manager_;
