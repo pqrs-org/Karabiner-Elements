@@ -52,7 +52,7 @@ struct DevicesView: View {
                 .frame(width: 20.0)
               }
 
-              HStack(alignment: .center, spacing: 0) {
+              HStack(alignment: .top, spacing: 0) {
                 if connectedDeviceSetting.connectedDevice.isAppleDevice,
                   !connectedDeviceSetting.connectedDevice.isKeyboard
                 {
@@ -67,8 +67,16 @@ struct DevicesView: View {
                   Spacer()
 
                   if connectedDeviceSetting.connectedDevice.isKeyboard {
-                    Toggle(isOn: $connectedDeviceSetting.manipulateCapsLockLed) {
-                      Text("Manipulate caps lock LED")
+                    VStack(alignment: .leading, spacing: 6.0) {
+                      Toggle(isOn: $connectedDeviceSetting.manipulateCapsLockLed) {
+                        Text("Manipulate caps lock LED")
+                      }
+
+                      if !connectedDeviceSetting.connectedDevice.isBuiltInKeyboard {
+                        Toggle(isOn: $connectedDeviceSetting.treatAsBuiltInKeyboard) {
+                          Text("Treat as a built-in keyboard")
+                        }
+                      }
                     }
                   }
                 }

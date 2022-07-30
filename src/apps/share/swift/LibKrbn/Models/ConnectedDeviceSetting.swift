@@ -15,17 +15,20 @@ extension LibKrbn {
         connectedDevice.libkrbnDeviceIdentifiers)
       modifyEvents = !ignore
 
-      let manipulateCapsLockLed =
+      self.manipulateCapsLockLed =
         libkrbn_core_configuration_get_selected_profile_device_manipulate_caps_lock_led(
           Settings.shared.libkrbnCoreConfiguration,
           connectedDevice.libkrbnDeviceIdentifiers)
-      self.manipulateCapsLockLed = manipulateCapsLockLed
 
-      let disableBuiltInKeyboardIfExists =
+      self.treatAsBuiltInKeyboard =
+        libkrbn_core_configuration_get_selected_profile_device_treat_as_built_in_keyboard(
+          Settings.shared.libkrbnCoreConfiguration,
+          connectedDevice.libkrbnDeviceIdentifiers)
+
+      self.disableBuiltInKeyboardIfExists =
         libkrbn_core_configuration_get_selected_profile_device_disable_built_in_keyboard_if_exists(
           Settings.shared.libkrbnCoreConfiguration,
           connectedDevice.libkrbnDeviceIdentifiers)
-      self.disableBuiltInKeyboardIfExists = disableBuiltInKeyboardIfExists
 
       simpleModifications = LibKrbn.Settings.shared.makeSimpleModifications(connectedDevice)
       fnFunctionKeys = LibKrbn.Settings.shared.makeFnFunctionKeys(connectedDevice)
@@ -52,6 +55,18 @@ extension LibKrbn {
             Settings.shared.libkrbnCoreConfiguration,
             connectedDevice.libkrbnDeviceIdentifiers,
             manipulateCapsLockLed)
+          Settings.shared.save()
+        }
+      }
+    }
+
+    @Published var treatAsBuiltInKeyboard: Bool = false {
+      didSet {
+        if didSetEnabled {
+          libkrbn_core_configuration_set_selected_profile_device_treat_as_built_in_keyboard(
+            Settings.shared.libkrbnCoreConfiguration,
+            connectedDevice.libkrbnDeviceIdentifiers,
+            treatAsBuiltInKeyboard)
           Settings.shared.save()
         }
       }
