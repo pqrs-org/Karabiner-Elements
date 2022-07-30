@@ -339,6 +339,7 @@ void run_core_configuration_test(void) {
                               {"ignore", true},
                               {"disable_built_in_keyboard_if_exists", true},
                               {"manipulate_caps_lock_led", false},
+                              {"treat_as_built_in_keyboard", false},
                           },
                           // duplicated identifiers
                           {
@@ -363,6 +364,7 @@ void run_core_configuration_test(void) {
                               {"ignore", true},
                               {"disable_built_in_keyboard_if_exists", true},
                               {"manipulate_caps_lock_led", false},
+                              {"treat_as_built_in_keyboard", false},
                           },
                           {
                               {"identifiers", {
@@ -386,6 +388,7 @@ void run_core_configuration_test(void) {
                               {"ignore", false},
                               {"disable_built_in_keyboard_if_exists", true},
                               {"manipulate_caps_lock_led", false},
+                              {"treat_as_built_in_keyboard", false},
                           },
                       }},
       });
@@ -625,6 +628,7 @@ void run_core_configuration_test(void) {
                               {"ignore", true},
                               {"disable_built_in_keyboard_if_exists", true},
                               {"manipulate_caps_lock_led", false},
+                              {"treat_as_built_in_keyboard", false},
                           },
                       }},
       });
@@ -795,6 +799,7 @@ void run_core_configuration_test(void) {
                               {"fn_function_keys", nlohmann::json::array()},
                               {"manipulate_caps_lock_led", false},
                               {"simple_modifications", nlohmann::json::array()},
+                              {"treat_as_built_in_keyboard", false},
                           },
                       }},
           {"dummy", {{"keep_me", true}}},

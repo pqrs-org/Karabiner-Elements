@@ -35,6 +35,16 @@
         "error": "`manipulate_caps_lock_led` must be boolean, but is `null`"
     },
 
+    // treat_as_built_in_keyboard
+
+    {
+        "class": "devices",
+        "input": {
+            "treat_as_built_in_keyboard": null
+        },
+        "error": "`treat_as_built_in_keyboard` must be boolean, but is `null`"
+    },
+
     // disable_built_in_keyboard_if_exists
 
     {

@@ -10,6 +10,7 @@ public:
   device(const nlohmann::json& json) : json_(json),
                                        ignore_(false),
                                        manipulate_caps_lock_led_(false),
+                                       treat_as_built_in_keyboard_(false),
                                        disable_built_in_keyboard_if_exists_(false) {
     auto ignore_configured = false;
     auto manipulate_caps_lock_led_configured = false;
@@ -46,6 +47,11 @@ public:
         manipulate_caps_lock_led_ = value.get<bool>();
         manipulate_caps_lock_led_configured = true;
 
+      } else if (key == "treat_as_built_in_keyboard") {
+        pqrs::json::requires_boolean(value, "`" + key + "`");
+
+        treat_as_built_in_keyboard_ = value.get<bool>();
+
       } else if (key == "disable_built_in_keyboard_if_exists") {
         pqrs::json::requires_boolean(value, "`" + key + "`");
 
@@ -67,8 +73,9 @@ public:
       }
     }
 
-    // ----------------------------------------
+    //
     // Set special default value for specific devices.
+    //
 
     // ignore_
 
@@ -88,6 +95,12 @@ public:
         manipulate_caps_lock_led_ = true;
       }
     }
+
+    //
+    // Coordicate between settings.
+    //
+
+    coordicate_between_properties();
   }
 
   static nlohmann::json make_default_fn_function_keys_json(void) {
@@ -108,6 +121,7 @@ public:
     j["identifiers"] = identifiers_;
     j["ignore"] = ignore_;
     j["manipulate_caps_lock_led"] = manipulate_caps_lock_led_;
+    j["treat_as_built_in_keyboard"] = treat_as_built_in_keyboard_;
     j["disable_built_in_keyboard_if_exists"] = disable_built_in_keyboard_if_exists_;
     j["simple_modifications"] = simple_modifications_.to_json();
     j["fn_function_keys"] = fn_function_keys_.to_json();
@@ -123,6 +137,8 @@ public:
   }
   void set_ignore(bool value) {
     ignore_ = value;
+
+    coordicate_between_properties();
   }
 
   bool get_manipulate_caps_lock_led(void) const {
@@ -130,6 +146,17 @@ public:
   }
   void set_manipulate_caps_lock_led(bool value) {
     manipulate_caps_lock_led_ = value;
+
+    coordicate_between_properties();
+  }
+
+  bool get_treat_as_built_in_keyboard(void) const {
+    return treat_as_built_in_keyboard_;
+  }
+  void set_treat_as_built_in_keyboard(bool value) {
+    treat_as_built_in_keyboard_ = value;
+
+    coordicate_between_properties();
   }
 
   bool get_disable_built_in_keyboard_if_exists(void) const {
@@ -137,6 +164,8 @@ public:
   }
   void set_disable_built_in_keyboard_if_exists(bool value) {
     disable_built_in_keyboard_if_exists_ = value;
+
+    coordicate_between_properties();
   }
 
   const simple_modifications& get_simple_modifications(void) const {
@@ -154,10 +183,20 @@ public:
   }
 
 private:
+  void coordicate_between_properties(void) {
+    // Set `disable_built_in_keyboard_if_exists_` false if `treat_as_built_in_keyboard_` is true.
+    // If both settings are true, the device will always be disabled.
+    // To avoid this situation, set `disable_built_in_keyboard_if_exists_` to false.
+    if (treat_as_built_in_keyboard_ && disable_built_in_keyboard_if_exists_) {
+      disable_built_in_keyboard_if_exists_ = false;
+    }
+  }
+
   nlohmann::json json_;
   device_identifiers identifiers_;
   bool ignore_;
   bool manipulate_caps_lock_led_;
+  bool treat_as_built_in_keyboard_;
   bool disable_built_in_keyboard_if_exists_;
   simple_modifications simple_modifications_;
   simple_modifications fn_function_keys_;

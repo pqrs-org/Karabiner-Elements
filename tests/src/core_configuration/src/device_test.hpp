@@ -88,6 +88,7 @@ void run_device_test(void) {
       expect(device.get_identifiers().get_is_pointing_device() == false);
       expect(device.get_ignore() == false);
       expect(device.get_manipulate_caps_lock_led() == false);
+      expect(device.get_treat_as_built_in_keyboard() == false);
       expect(device.get_disable_built_in_keyboard_if_exists() == false);
     }
 
@@ -103,6 +104,7 @@ void run_device_test(void) {
           {"disable_built_in_keyboard_if_exists", true},
           {"ignore", true},
           {"manipulate_caps_lock_led", true},
+          {"treat_as_built_in_keyboard", false},
       });
       krbn::core_configuration::details::device device(json);
       expect(device.get_identifiers().get_vendor_id() == pqrs::hid::vendor_id::value_t(1234));
@@ -111,6 +113,7 @@ void run_device_test(void) {
       expect(device.get_identifiers().get_is_pointing_device() == true);
       expect(device.get_ignore() == true);
       expect(device.get_manipulate_caps_lock_led() == true);
+      expect(device.get_treat_as_built_in_keyboard() == false);
       expect(device.get_disable_built_in_keyboard_if_exists() == true);
     }
 
@@ -178,6 +181,46 @@ void run_device_test(void) {
         expect(device.get_manipulate_caps_lock_led() == false);
       }
     }
+    // Coordicate between settings
+    {
+      nlohmann::json json({
+          {"identifiers", {
+                              {"vendor_id", 1234},
+                              {"product_id", 5678},
+                              {"is_keyboard", false},
+                              {"is_pointing_device", true},
+                          }},
+          {"treat_as_built_in_keyboard", true},
+          {"disable_built_in_keyboard_if_exists", true},
+      });
+      {
+        // disable_built_in_keyboard_if_exists will be false when treat_as_built_in_keyboard is true.
+
+        krbn::core_configuration::details::device device(json);
+        expect(device.get_treat_as_built_in_keyboard() == true);
+        expect(device.get_disable_built_in_keyboard_if_exists() == false);
+
+        // disable_built_in_keyboard_if_exists will be false even set true.
+
+        device.set_disable_built_in_keyboard_if_exists(true); // ignored
+        expect(device.get_disable_built_in_keyboard_if_exists() == false);
+
+        // If treat_as_built_in_keyboard is false, disable_built_in_keyboard_if_exists can be true.
+
+        device.set_treat_as_built_in_keyboard(false);
+        expect(device.get_treat_as_built_in_keyboard() == false);
+        expect(device.get_disable_built_in_keyboard_if_exists() == false);
+
+        device.set_disable_built_in_keyboard_if_exists(true);
+        expect(device.get_disable_built_in_keyboard_if_exists() == true);
+
+        // disable_built_in_keyboard_if_exists will be false if treat_as_built_in_keyboard is set true
+
+        device.set_treat_as_built_in_keyboard(true);
+        expect(device.get_treat_as_built_in_keyboard() == true);
+        expect(device.get_disable_built_in_keyboard_if_exists() == false);
+      }
+    }
   };
 
   "device.to_json"_test = [] {
@@ -208,6 +251,7 @@ void run_device_test(void) {
           {"fn_function_keys", nlohmann::json::array()},
           {"manipulate_caps_lock_led", false},
           {"simple_modifications", nlohmann::json::array()},
+          {"treat_as_built_in_keyboard", false},
       });
       expect(device.to_json() == expected);
 
@@ -229,6 +273,7 @@ void run_device_test(void) {
                           }},
           {"ignore", true},
           {"manipulate_caps_lock_led", true},
+          {"treat_as_built_in_keyboard", true},
       });
       krbn::core_configuration::details::device device(json);
       nlohmann::json expected({
@@ -260,6 +305,7 @@ void run_device_test(void) {
           {"ignore", true},
           {"manipulate_caps_lock_led", true},
           {"simple_modifications", nlohmann::json::array()},
+          {"treat_as_built_in_keyboard", true},
       });
       expect(device.to_json() == expected);
     }
