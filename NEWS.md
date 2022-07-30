@@ -2,6 +2,8 @@
 
 ## Beta
 
+-   ✨ New Features
+    -   `Treat as built-in keyboard` setting has been added into Devices configuration. It works with "Disable the built-in keyboard" feature.
 -   🐛 Bug Fixes
     -   Fixed an issue that "Disable the built-in keyboard" feature does not work if the built-in keyboard is not included in the event modification target devices.
 
