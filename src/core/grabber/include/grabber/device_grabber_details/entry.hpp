@@ -147,6 +147,23 @@ public:
     return false;
   }
 
+  bool determine_is_built_in_keyboard(void) const {
+    if (device_properties_) {
+      if (device_properties_->get_is_built_in_keyboard()) {
+        return true;
+      }
+
+      if (auto c = core_configuration_.lock()) {
+        if (auto device_identifiers = device_properties_->get_device_identifiers()) {
+          return c->get_selected_profile().get_device_treat_as_built_in_keyboard(
+              *device_identifiers);
+        }
+      }
+    }
+
+    return false;
+  }
+
   void async_start_queue_value_monitor(void) {
     auto options = kIOHIDOptionsTypeSeizeDevice;
     if (event_origin_ == event_origin::observed_device) {

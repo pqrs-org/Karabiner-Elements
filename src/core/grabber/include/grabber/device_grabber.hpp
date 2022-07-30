@@ -924,13 +924,11 @@ private:
 
   void update_devices_disabled(void) {
     for (const auto& e : entries_) {
-      if (auto device_properties = e.second->get_device_properties()) {
-        if (device_properties->get_is_built_in_keyboard().value_or(false) &&
-            need_to_disable_built_in_keyboard()) {
-          e.second->set_disabled(true);
-        } else {
-          e.second->set_disabled(false);
-        }
+      if (e.second->determine_is_built_in_keyboard() &&
+          need_to_disable_built_in_keyboard()) {
+        e.second->set_disabled(true);
+      } else {
+        e.second->set_disabled(false);
       }
     }
   }
