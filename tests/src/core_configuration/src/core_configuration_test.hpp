@@ -163,6 +163,8 @@ void run_core_configuration_test(void) {
 
     expect(configuration.get_global_configuration().get_check_for_updates_on_startup() == false);
     expect(configuration.get_global_configuration().get_show_in_menu_bar() == false);
+    expect(configuration.get_global_configuration().get_show_profile_name_in_menu_bar() == false);
+    expect(configuration.get_global_configuration().get_unsafe_ui() == true);
 
     expect(configuration.is_loaded() == true);
 
@@ -191,6 +193,7 @@ void run_core_configuration_test(void) {
       expect(configuration.get_global_configuration().get_check_for_updates_on_startup() == true);
       expect(configuration.get_global_configuration().get_show_in_menu_bar() == true);
       expect(configuration.get_global_configuration().get_show_profile_name_in_menu_bar() == false);
+      expect(configuration.get_global_configuration().get_unsafe_ui() == false);
       expect(configuration.get_profiles().size() == 1);
       expect((configuration.get_profiles())[0].get_name() == "Default profile");
       expect((configuration.get_profiles())[0].get_selected() == true);
