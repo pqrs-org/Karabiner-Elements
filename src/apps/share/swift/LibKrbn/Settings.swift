@@ -122,6 +122,8 @@ extension LibKrbn {
       showProfileNameInMenuBar =
         libkrbn_core_configuration_get_global_configuration_show_profile_name_in_menu_bar(
           libkrbnCoreConfiguration)
+      unsafeUI = libkrbn_core_configuration_get_global_configuration_unsafe_ui(
+        libkrbnCoreConfiguration)
 
       updateSystemDefaultProfileExists()
 
@@ -578,6 +580,17 @@ extension LibKrbn {
           )
           save()
           libkrbn_launch_menu()
+        }
+      }
+    }
+
+    @Published var unsafeUI: Bool = false {
+      didSet {
+        if didSetEnabled {
+          libkrbn_core_configuration_set_global_configuration_unsafe_ui(
+            libkrbnCoreConfiguration, unsafeUI
+          )
+          save()
         }
       }
     }
