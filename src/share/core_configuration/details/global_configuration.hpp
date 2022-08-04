@@ -10,7 +10,8 @@ public:
   global_configuration(const nlohmann::json& json) : json_(json),
                                                      check_for_updates_on_startup_(true),
                                                      show_in_menu_bar_(true),
-                                                     show_profile_name_in_menu_bar_(false) {
+                                                     show_profile_name_in_menu_bar_(false),
+                                                     unsafe_ui_(false) {
     if (auto v = pqrs::json::find<bool>(json, "check_for_updates_on_startup")) {
       check_for_updates_on_startup_ = *v;
     }
@@ -22,6 +23,10 @@ public:
     if (auto v = pqrs::json::find<bool>(json, "show_profile_name_in_menu_bar")) {
       show_profile_name_in_menu_bar_ = *v;
     }
+
+    if (auto v = pqrs::json::find<bool>(json, "unsafe_ui")) {
+      unsafe_ui_ = *v;
+    }
   }
 
   nlohmann::json to_json(void) const {
@@ -29,6 +34,7 @@ public:
     j["check_for_updates_on_startup"] = check_for_updates_on_startup_;
     j["show_in_menu_bar"] = show_in_menu_bar_;
     j["show_profile_name_in_menu_bar"] = show_profile_name_in_menu_bar_;
+    j["unsafe_ui"] = unsafe_ui_;
     return j;
   }
 
@@ -53,11 +59,19 @@ public:
     show_profile_name_in_menu_bar_ = value;
   }
 
+  bool get_unsafe_ui(void) const {
+    return unsafe_ui_;
+  }
+  void set_unsafe_ui(bool value) {
+    unsafe_ui_ = value;
+  }
+
 private:
   nlohmann::json json_;
   bool check_for_updates_on_startup_;
   bool show_in_menu_bar_;
   bool show_profile_name_in_menu_bar_;
+  bool unsafe_ui_;
 };
 
 inline void to_json(nlohmann::json& json, const global_configuration& global_configuration) {
