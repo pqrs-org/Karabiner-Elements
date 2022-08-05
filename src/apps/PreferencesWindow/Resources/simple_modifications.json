@@ -1533,7 +1533,7 @@
         "category": "Mouse buttons"
     },
     {
-        "not_from": true,
+        "unsafe_from": true,
         "label": "button1",
         "data": [
             {

@@ -40,6 +40,7 @@ extension LibKrbn {
                 guard let data = jsonEntry["data"] as? [Any] else { return }
 
                 let notFrom = jsonEntry["not_from"] as? Bool ?? false
+                let unsafeFrom = jsonEntry["unsafe_from"] as? Bool ?? false
                 let notTo = jsonEntry["not_to"] as? Bool ?? false
 
                 if !notFrom {
@@ -48,7 +49,7 @@ extension LibKrbn {
                       jsonObject: data[0])
                     {
                       fromCategory.entries.append(
-                        SimpleModificationDefinitionEntry(label, compactDataJson))
+                        SimpleModificationDefinitionEntry(label, compactDataJson, unsafeFrom))
                     }
                   }
                 }
@@ -57,7 +58,7 @@ extension LibKrbn {
                     jsonObject: data)
                   {
                     toCategory.entries.append(
-                      SimpleModificationDefinitionEntry(label, compactDataJson))
+                      SimpleModificationDefinitionEntry(label, compactDataJson, false))
                   }
                 }
               }
@@ -82,7 +83,7 @@ extension LibKrbn {
         var inheritBaseKeyCategory = SimpleModificationDefinitionCategory(
           "Inherit the base setting")
         inheritBaseKeyCategory.entries.append(
-          SimpleModificationDefinitionEntry("--- (Inherit the base setting)", "[]"))
+          SimpleModificationDefinitionEntry("--- (Inherit the base setting)", "[]", false))
 
         toCategoriesWithInheritBase.categories.append(inheritBaseKeyCategory)
         toCategories.categories.forEach { category in

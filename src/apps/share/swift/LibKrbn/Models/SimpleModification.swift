@@ -18,13 +18,13 @@ extension LibKrbn {
       do {
         let s = SimpleModification.formatCompactJsonString(string: fromJsonString) ?? ""
         let label = SimpleModificationDefinitions.shared.fromCategories.findLabel(jsonString: s)
-        self.fromEntry = SimpleModificationDefinitionEntry(label, s)
+        self.fromEntry = SimpleModificationDefinitionEntry(label, s, false)
       }
 
       do {
         let s = SimpleModification.formatCompactJsonString(string: toJsonString) ?? ""
         let label = toCategories.findLabel(jsonString: s)
-        self.toEntry = SimpleModificationDefinitionEntry(label, s)
+        self.toEntry = SimpleModificationDefinitionEntry(label, s, false)
       }
     }
 
