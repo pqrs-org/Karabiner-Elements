@@ -13,6 +13,7 @@ enum NavigationTag: String {
   case misc
   case uninstall
   case log
+  case pro
   case action
 }
 
@@ -27,6 +28,28 @@ struct ContentView: View {
     VStack {
       HStack {
         VStack(alignment: .leading, spacing: 0) {
+          if settings.unsafeUI {
+            Button(action: {
+              contentViewStates.navigationSelection = NavigationTag.pro
+            }) {
+              HStack {
+                Spacer()
+
+                Text("Unsafe configuration is enabled")
+
+                Spacer()
+              }
+              .sidebarButtonLabelStyle()
+            }
+            .buttonStyle(PlainButtonStyle())
+            .background(Color.red)
+            .foregroundColor(.white)
+            .cornerRadius(5)
+
+            Divider()
+              .padding(.vertical, 2.0)
+          }
+
           Group {
             Button(action: {
               contentViewStates.navigationSelection = NavigationTag.simpleModifications
@@ -149,6 +172,14 @@ struct ContentView: View {
               selected: contentViewStates.navigationSelection == NavigationTag.log)
 
             Button(action: {
+              contentViewStates.navigationSelection = NavigationTag.pro
+            }) {
+              SidebarLabelView(text: "Pro", systemImage: "flame", padding: 2.0)
+            }
+            .sidebarButtonStyle(
+              selected: contentViewStates.navigationSelection == NavigationTag.pro)
+
+            Button(action: {
               contentViewStates.navigationSelection = NavigationTag.action
             }) {
               SidebarLabelView(text: "Quit, Restart", systemImage: "bolt.circle", padding: 2.0)
@@ -201,6 +232,8 @@ struct ContentView: View {
             UninstallView()
           case NavigationTag.log:
             LogView()
+          case NavigationTag.pro:
+            ProView()
           case NavigationTag.action:
             ActionView()
           }
@@ -210,7 +243,7 @@ struct ContentView: View {
     .frame(
       minWidth: 1100,
       maxWidth: .infinity,
-      minHeight: 650,
+      minHeight: 680,
       maxHeight: .infinity)
   }
 }
