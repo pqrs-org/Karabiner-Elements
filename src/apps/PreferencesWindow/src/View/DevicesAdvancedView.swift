@@ -50,26 +50,33 @@ struct DevicesAdvancedView: View {
             VStack(alignment: .leading, spacing: 0.0) {
               ForEach($settings.connectedDeviceSettings) { $connectedDeviceSetting in
                 HStack(alignment: .center, spacing: 0) {
-                  Toggle(isOn: $connectedDeviceSetting.disableBuiltInKeyboardIfExists) {
-                    Text(
-                      "\(connectedDeviceSetting.connectedDevice.productName) (\(connectedDeviceSetting.connectedDevice.manufacturerName)) [\(String(connectedDeviceSetting.connectedDevice.vendorId)),\(String(connectedDeviceSetting.connectedDevice.productId))]"
-                    )
-                  }.disabled(
-                    connectedDeviceSetting.connectedDevice.isBuiltInKeyboard
-                      || connectedDeviceSetting.connectedDevice.isBuiltInTrackpad
-                      || connectedDeviceSetting.connectedDevice.isBuiltInTouchBar
+                  HStack(spacing: 4.0) {
+                    Spacer()
+                    if connectedDeviceSetting.connectedDevice.isKeyboard {
+                      Image(systemName: "keyboard")
+                    }
+                    if connectedDeviceSetting.connectedDevice.isPointingDevice {
+                      Image(systemName: "capsule.portrait")
+                    }
+                  }
+                  .frame(width: 50.0)
+
+                  Text(
+                    "\(connectedDeviceSetting.connectedDevice.productName) (\(connectedDeviceSetting.connectedDevice.manufacturerName)) [\(String(connectedDeviceSetting.connectedDevice.vendorId)),\(String(connectedDeviceSetting.connectedDevice.productId))]"
                   )
+                  .padding(.leading, 12.0)
 
                   Spacer()
 
-                  if connectedDeviceSetting.connectedDevice.isKeyboard {
-                    Image(systemName: "keyboard")
-                  }
-                  if connectedDeviceSetting.connectedDevice.isPointingDevice {
-                    Image(systemName: "capsule.portrait")
-                  }
+                  Toggle("", isOn: $connectedDeviceSetting.disableBuiltInKeyboardIfExists)
+                    .switchToggleStyle()
+                    .disabled(
+                      connectedDeviceSetting.connectedDevice.isBuiltInKeyboard
+                        || connectedDeviceSetting.connectedDevice.isBuiltInTrackpad
+                        || connectedDeviceSetting.connectedDevice.isBuiltInTouchBar
+                    )
                 }
-                .padding(.vertical, 8.0)
+                .padding(.vertical, 12.0)
 
                 Divider()
               }
