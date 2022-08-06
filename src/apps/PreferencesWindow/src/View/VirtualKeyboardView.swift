@@ -43,15 +43,17 @@ struct VirtualKeyboardView: View {
                   settings.virtualHIDKeyboardCountryCode = keyboardType.countryCode
                 }) {
                   HStack {
-                    if settings.virtualHIDKeyboardCountryCode == keyboardType.countryCode {
-                      Image(systemName: "checkmark.circle.fill")
-                    } else {
-                      Image(systemName: "circle")
+                    HStack {
+                      if settings.virtualHIDKeyboardCountryCode == keyboardType.countryCode {
+                        Image(systemName: "checkmark.circle.fill")
+                      } else {
+                        Image(systemName: "circle")
+                      }
                     }
-                  }
-                  .foregroundColor(.accentColor)
+                    .foregroundColor(.accentColor)
 
-                  Text("Country code: \(keyboardType.countryCode)")
+                    Text("Country code: \(keyboardType.countryCode)")
+                  }
                 }
                 .buttonStyle(.plain)
 
