@@ -5,5 +5,6 @@ extension Toggle {
     self
       .toggleStyle(.switch)
       .controlSize(.small)
+      .font(.body)
   }
 }

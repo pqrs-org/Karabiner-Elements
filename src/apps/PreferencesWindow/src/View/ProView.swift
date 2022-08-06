@@ -8,10 +8,10 @@ struct ProView: View {
       GroupBox(label: Text("Pro mode")) {
         VStack(alignment: .leading, spacing: 12.0) {
           HStack {
-            Text("Enable unsafe configuration (Default: off)")
-
-            Toggle("", isOn: $settings.unsafeUI)
-              .switchToggleStyle()
+            Toggle(isOn: $settings.unsafeUI) {
+              Text("Enable unsafe configuration (Default: off)")
+            }
+            .switchToggleStyle()
 
             Spacer()
           }
