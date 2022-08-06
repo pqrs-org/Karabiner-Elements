@@ -96,6 +96,15 @@ struct DevicesView: View {
               .padding(.leading, 62.0)
             }
             .padding(.vertical, 12.0)
+            .padding(.trailing, 12.0)
+            .overlay(
+              RoundedRectangle(cornerRadius: 8)
+                .stroke(
+                  Color(NSColor.selectedControlColor),
+                  lineWidth: connectedDeviceSetting.modifyEvents ? 3 : 0
+                )
+                .padding(2)
+            )
 
             Divider()
           }
