@@ -20,7 +20,7 @@ struct FunctionKeysView: View {
       HStack {
         Toggle(isOn: $systemPreferences.useFkeysAsStandardFunctionKeys) {
           Text("Use all F1, F2, etc. keys as standard function keys")
-        }
+        }.switchToggleStyle()
 
         Spacer()
       }

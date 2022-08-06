@@ -18,6 +18,8 @@ struct UpdateView: View {
             Toggle(isOn: $settings.checkForUpdatesOnStartup) {
               Text("Check for updates on startup (Default: on)")
             }
+            .switchToggleStyle()
+
             Spacer()
           }
 

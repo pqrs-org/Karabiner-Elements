@@ -11,6 +11,8 @@ struct MiscView: View {
             Toggle(isOn: $settings.showIconInMenuBar) {
               Text("Show icon in menu bar (Default: on)")
             }
+            .switchToggleStyle()
+
             Spacer()
           }
 
@@ -18,6 +20,8 @@ struct MiscView: View {
             Toggle(isOn: $settings.showProfileNameInMenuBar) {
               Text("Show profile name in menu bar (Default: off)")
             }
+            .switchToggleStyle()
+
             Spacer()
           }
         }

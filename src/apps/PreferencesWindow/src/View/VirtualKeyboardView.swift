@@ -115,6 +115,7 @@ struct VirtualKeyboardView: View {
             Toggle(isOn: $settings.virtualHIDKeyboardIndicateStickyModifierKeysState) {
               Text("Indicate sticky modifier keys state (Default: on)")
             }
+            .switchToggleStyle()
 
             Spacer()
           }
