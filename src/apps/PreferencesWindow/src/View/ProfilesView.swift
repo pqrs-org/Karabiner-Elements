@@ -11,7 +11,23 @@ struct ProfilesView: View {
         VStack(alignment: .leading, spacing: 0.0) {
           ForEach($settings.profiles) { $profile in
             HStack(alignment: .center, spacing: 0) {
-              Text(profile.name)
+              Button(action: {
+                settings.selectProfile(profile)
+              }) {
+                HStack {
+                  HStack {
+                    if profile.selected {
+                      Image(systemName: "checkmark.circle.fill")
+                    } else {
+                      Image(systemName: "circle")
+                    }
+                  }
+                  .foregroundColor(.accentColor)
+
+                  Text(profile.name)
+                }
+              }
+              .buttonStyle(.plain)
 
               Button(action: {
                 editingProfile = profile
@@ -19,7 +35,9 @@ struct ProfilesView: View {
               }) {
                 Label("Edit", systemImage: "pencil.circle.fill")
               }
-              .padding(.leading, 12.0)
+              .padding(.leading, 24.0)
+
+              Spacer()
 
               if !profile.selected {
                 Button(action: {
@@ -29,19 +47,6 @@ struct ProfilesView: View {
                     .buttonLabelStyle()
                 }
                 .deleteButtonStyle()
-                .padding(.leading, 12.0)
-              }
-
-              Spacer()
-
-              if profile.selected {
-                Label("Selected", systemImage: "checkmark.square.fill")
-              } else {
-                Button(action: {
-                  settings.selectProfile(profile)
-                }) {
-                  Label("Select", systemImage: "square")
-                }
               }
             }
             .padding(12.0)
