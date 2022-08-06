@@ -8,7 +8,7 @@ struct DevicesView: View {
       List {
         VStack(alignment: .leading, spacing: 0.0) {
           ForEach($settings.connectedDeviceSettings) { $connectedDeviceSetting in
-            VStack(alignment: .leading, spacing: 0.0) {
+            VStack(alignment: .leading, spacing: 8.0) {
               HStack(alignment: .center, spacing: 0) {
                 Text(
                   "\(connectedDeviceSetting.connectedDevice.productName) (\(connectedDeviceSetting.connectedDevice.manufacturerName))"
@@ -64,19 +64,24 @@ struct DevicesView: View {
                   Toggle(isOn: $connectedDeviceSetting.modifyEvents) {
                     Text("Modify events")
                   }
+                  .switchToggleStyle()
 
                   Spacer()
 
                   if connectedDeviceSetting.connectedDevice.isKeyboard {
-                    VStack(alignment: .leading, spacing: 6.0) {
-                      Toggle(isOn: $connectedDeviceSetting.manipulateCapsLockLed) {
-                        Text("Manipulate caps lock LED")
+                    VStack(alignment: .trailing, spacing: 6.0) {
+                      HStack {
+                        Toggle(isOn: $connectedDeviceSetting.manipulateCapsLockLed) {
+                          Text("Manipulate caps lock LED")
+                        }
+                        .switchToggleStyle()
                       }
 
                       if !connectedDeviceSetting.connectedDevice.isBuiltInKeyboard {
                         Toggle(isOn: $connectedDeviceSetting.treatAsBuiltInKeyboard) {
                           Text("Treat as a built-in keyboard")
                         }
+                        .switchToggleStyle()
                       }
                     }
                   }
