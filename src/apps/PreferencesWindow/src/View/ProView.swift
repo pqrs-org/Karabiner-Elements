@@ -17,7 +17,7 @@ struct ProView: View {
           }
 
           VStack(alignment: .leading, spacing: 0.0) {
-            Text("Note:")
+            Text("Warning:")
             Text("Unsafe configuration disables the foolproof feature on the configuration UI.")
             Text(
               "You should not enable unsafe configuration unless you are ready to stop Karabiner-Elements from remote machine such as Screen Sharing."
@@ -28,8 +28,8 @@ struct ProView: View {
             Text("- Allow you to change left-click in Simple Modifications tab.")
           }
           .padding()
-          .foregroundColor(Color.warningForeground)
-          .background(Color.warningBackground)
+          .foregroundColor(Color.errorForeground)
+          .background(Color.errorBackground)
         }
         .padding(6.0)
       }
