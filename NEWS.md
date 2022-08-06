@@ -1,5 +1,10 @@
 # Changelog
 
+## Beta
+
+-   ✨ New Features
+    -   Add `Enable unsafe configuration` feature into Preferences > Pro tab.
+
 ## Karabiner-Elements 14.6.0
 
 -   [📦 Download](https://github.com/pqrs-org/Karabiner-Elements/releases/download/v14.6.0/Karabiner-Elements-14.6.0.dmg)
