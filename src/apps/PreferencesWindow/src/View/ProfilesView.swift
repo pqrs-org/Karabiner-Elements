@@ -29,35 +29,31 @@ struct ProfilesView: View {
               }
               .buttonStyle(.plain)
 
+              Spacer()
+
               Button(action: {
                 editingProfile = profile
                 showingSheet = true
               }) {
                 Label("Edit", systemImage: "pencil.circle.fill")
               }
-              .padding(.leading, 24.0)
 
-              Spacer()
+              HStack {
+                Spacer()
 
-              if !profile.selected {
-                Button(action: {
-                  settings.removeProfile(profile)
-                }) {
-                  Image(systemName: "trash.fill")
-                    .buttonLabelStyle()
+                if !profile.selected {
+                  Button(action: {
+                    settings.removeProfile(profile)
+                  }) {
+                    Image(systemName: "trash.fill")
+                      .buttonLabelStyle()
+                  }
+                  .deleteButtonStyle()
                 }
-                .deleteButtonStyle()
               }
+              .frame(width: 60)
             }
-            .padding(12.0)
-            .overlay(
-              RoundedRectangle(cornerRadius: 8)
-                .stroke(
-                  Color(NSColor.selectedControlColor),
-                  lineWidth: profile.selected ? 3 : 0
-                )
-                .padding(2)
-            )
+            .padding(.vertical, 12.0)
 
             Divider()
           }
