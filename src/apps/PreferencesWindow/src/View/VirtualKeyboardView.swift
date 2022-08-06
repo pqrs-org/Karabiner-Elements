@@ -10,10 +10,12 @@ struct VirtualKeyboardView: View {
       GroupBox(label: Text("Keyboard type")) {
         VStack(alignment: .leading, spacing: 6.0) {
           HStack {
+            Spacer()
+
             if !systemPreferences.keyboardTypeChanged {
               VStack {
                 Label(
-                  "Log out will be required when you changed keyboard type (ANSI, ISO or JIS)",
+                  "Log out will be required when you changed keyboard type (ANSI, ISO or JIS) from the drop-down list",
                   systemImage: "lightbulb"
                 )
               }
@@ -31,25 +33,29 @@ struct VirtualKeyboardView: View {
               .foregroundColor(Color.errorForeground)
               .background(Color.errorBackground)
             }
-
-            Spacer()
-
-            VStack {
-              Text("Selection will be reflected immediately")
-            }
-            .padding()
-            .foregroundColor(Color.infoForeground)
-            .background(Color.infoBackground)
           }
 
           // Use `ScrollView` instead of `List` to avoid `AttributeGraph: cycle detected through attribute` error.
           ScrollView {
             ForEach($systemPreferences.keyboardTypes) { $keyboardType in
               HStack {
-                Picker(
-                  "Country code: \(keyboardType.countryCode)",
-                  selection: $keyboardType.keyboardType
-                ) {
+                Button(action: {
+                  settings.virtualHIDKeyboardCountryCode = keyboardType.countryCode
+                }) {
+                  HStack {
+                    if settings.virtualHIDKeyboardCountryCode == keyboardType.countryCode {
+                      Image(systemName: "checkmark.circle.fill")
+                    } else {
+                      Image(systemName: "circle")
+                    }
+                  }
+                  .foregroundColor(.accentColor)
+
+                  Text("Country code: \(keyboardType.countryCode)")
+                }
+                .buttonStyle(.plain)
+
+                Picker("", selection: $keyboardType.keyboardType) {
                   if keyboardType.keyboardType < 0 {
                     Text("---").tag(-1)
                   }
@@ -61,26 +67,20 @@ struct VirtualKeyboardView: View {
                 }.disabled(!grabberClient.enabled)
 
                 Spacer()
-
-                if settings.virtualHIDKeyboardCountryCode == keyboardType.countryCode {
-                  Label("Selected", systemImage: "checkmark.square.fill")
-                } else {
-                  Button(action: {
-                    settings.virtualHIDKeyboardCountryCode = keyboardType.countryCode
-                  }) {
-                    Label("Select", systemImage: "square")
-                  }
-                }
               }
             }
           }
 
-          VStack(alignment: .leading, spacing: 0.0) {
-            Text("Note:")
-            Text(
-              "The keyboard type configurations (ANSI, ISO, JIS) are shared by all of this Mac users."
-            )
-            Text("The country code selection is saved for each user.")
+          HStack {
+            VStack(alignment: .leading, spacing: 0.0) {
+              Text("Note:")
+              Text(
+                "The keyboard type configurations (ANSI, ISO, JIS) are shared by all of this Mac users."
+              )
+              Text("The country code selection is saved for each user.")
+            }
+
+            Spacer()
           }
           .padding()
           .foregroundColor(Color.warningForeground)
