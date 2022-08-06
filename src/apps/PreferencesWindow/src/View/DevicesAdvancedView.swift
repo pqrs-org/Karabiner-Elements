@@ -49,34 +49,34 @@ struct DevicesAdvancedView: View {
           List {
             VStack(alignment: .leading, spacing: 0.0) {
               ForEach($settings.connectedDeviceSettings) { $connectedDeviceSetting in
-                HStack(alignment: .center, spacing: 0) {
-                  HStack(spacing: 4.0) {
-                    Spacer()
-                    if connectedDeviceSetting.connectedDevice.isKeyboard {
-                      Image(systemName: "keyboard")
+                Toggle(isOn: $connectedDeviceSetting.disableBuiltInKeyboardIfExists) {
+                  HStack(alignment: .center, spacing: 0) {
+                    HStack(spacing: 4.0) {
+                      Spacer()
+                      if connectedDeviceSetting.connectedDevice.isKeyboard {
+                        Image(systemName: "keyboard")
+                      }
+                      if connectedDeviceSetting.connectedDevice.isPointingDevice {
+                        Image(systemName: "capsule.portrait")
+                      }
                     }
-                    if connectedDeviceSetting.connectedDevice.isPointingDevice {
-                      Image(systemName: "capsule.portrait")
-                    }
-                  }
-                  .frame(width: 50.0)
+                    .frame(width: 50.0)
 
-                  Text(
-                    "\(connectedDeviceSetting.connectedDevice.productName) (\(connectedDeviceSetting.connectedDevice.manufacturerName)) [\(String(connectedDeviceSetting.connectedDevice.vendorId)),\(String(connectedDeviceSetting.connectedDevice.productId))]"
-                  )
-                  .padding(.leading, 12.0)
-
-                  Spacer()
-
-                  Toggle("", isOn: $connectedDeviceSetting.disableBuiltInKeyboardIfExists)
-                    .switchToggleStyle()
-                    .disabled(
-                      connectedDeviceSetting.connectedDevice.isBuiltInKeyboard
-                        || connectedDeviceSetting.connectedDevice.isBuiltInTrackpad
-                        || connectedDeviceSetting.connectedDevice.isBuiltInTouchBar
+                    Text(
+                      "\(connectedDeviceSetting.connectedDevice.productName) (\(connectedDeviceSetting.connectedDevice.manufacturerName)) [\(String(connectedDeviceSetting.connectedDevice.vendorId)),\(String(connectedDeviceSetting.connectedDevice.productId))]"
                     )
+                    .padding(.leading, 12.0)
+
+                    Spacer()
+                  }
+                  .padding(.vertical, 12.0)
                 }
-                .padding(.vertical, 12.0)
+                .switchToggleStyle()
+                .disabled(
+                  connectedDeviceSetting.connectedDevice.isBuiltInKeyboard
+                    || connectedDeviceSetting.connectedDevice.isBuiltInTrackpad
+                    || connectedDeviceSetting.connectedDevice.isBuiltInTouchBar
+                )
 
                 Divider()
               }
