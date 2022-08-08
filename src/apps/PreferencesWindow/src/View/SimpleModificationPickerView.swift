@@ -20,9 +20,9 @@ struct SimpleModificationPickerView: View {
                 label: {
                   // We have to use `Image` and `Text` in menu instead of `Label` in order to show image.
                   if e.label == label {
-                    Image(systemName: "checkmark.square.fill")
+                    Image(systemName: "circle.circle.fill")
                   } else {
-                    Image(systemName: "square")
+                    Image(systemName: "circle")
                   }
 
                   Text(e.label)
@@ -32,9 +32,9 @@ struct SimpleModificationPickerView: View {
         } label: {
           // We have to use `Image` and `Text` in menu instead of `Label` in order to show image.
           if category.include(label: label) {
-            Image(systemName: "checkmark.square.fill")
+            Image(systemName: "circle.circle.fill")
           } else {
-            Image(systemName: "square")
+            Image(systemName: "circle")
           }
 
           Text(category.name)

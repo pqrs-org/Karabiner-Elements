@@ -17,7 +17,7 @@ struct ProfilesView: View {
                 HStack {
                   HStack {
                     if profile.selected {
-                      Image(systemName: "checkmark.circle.fill")
+                      Image(systemName: "circle.circle.fill")
                     } else {
                       Image(systemName: "circle")
                     }

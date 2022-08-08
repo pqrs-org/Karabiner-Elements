@@ -45,7 +45,7 @@ struct VirtualKeyboardView: View {
                   HStack {
                     HStack {
                       if settings.virtualHIDKeyboardCountryCode == keyboardType.countryCode {
-                        Image(systemName: "checkmark.circle.fill")
+                        Image(systemName: "circle.circle.fill")
                       } else {
                         Image(systemName: "circle")
                       }
