@@ -20,7 +20,7 @@ struct ProView: View {
             Text("Warning:")
             Text("Unsafe configuration disables the foolproof feature on the configuration UI.")
             Text(
-              "You should not enable unsafe configuration unless you are ready to stop Karabiner-Elements from remote machine such as Screen Sharing."
+              "You should not enable unsafe configuration unless you are ready to stop Karabiner-Elements from remote machine. (e.g., using Screen Sharing)"
             )
             Text("")
             Text("Unsafe configuration allows the following items:")
