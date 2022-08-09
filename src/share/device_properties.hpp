@@ -65,6 +65,48 @@ public:
       }
     }
 
+    if (transport_) {
+      // FIFO means the device connected via SPI (Serial Peripheral Interface)
+      //
+      // Note:
+      // SPI devices does not have vendor_id, product_id, product_name as follows.
+      // So, we have to use `transport` to determine whether the device is built-in.
+      //
+      // {
+      //     "device_id": 4294969283,
+      //     "is_karabiner_virtual_hid_device": false,
+      //     "is_keyboard": true,
+      //     "is_pointing_device": false,
+      //     "location_id": 161,
+      //     "manufacturer": "Apple",
+      //     "transport": "FIFO"
+      // },
+      // {
+      //     "device_id": 4294969354,
+      //     "is_karabiner_virtual_hid_device": false,
+      //     "is_keyboard": false,
+      //     "is_pointing_device": true,
+      //     "location_id": 161,
+      //     "manufacturer": "Apple",
+      //     "transport": "FIFO"
+      // },
+
+      if (is_keyboard_) {
+        if (*transport_ == "FIFO" && *is_keyboard_ == true) {
+          is_built_in_keyboard_ = true;
+        }
+      }
+      if (is_pointing_device_) {
+        if (*transport_ == "FIFO" && *is_pointing_device_ == true) {
+          is_built_in_pointing_device_ = true;
+        }
+      }
+    }
+
+    //
+    // Set is_karabiner_virtual_hid_device_
+    //
+
     is_karabiner_virtual_hid_device_ = iokit_utility::is_karabiner_virtual_hid_device(device);
 
     update_device_identifiers();
