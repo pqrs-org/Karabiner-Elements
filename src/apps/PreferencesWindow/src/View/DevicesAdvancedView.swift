@@ -72,11 +72,16 @@ struct DevicesAdvancedView: View {
                     .padding(.vertical, 12.0)
                   }
                   .switchToggleStyle()
-                  .disabled(
+                  .if(
                     connectedDeviceSetting.connectedDevice.isBuiltInKeyboard
                       || connectedDeviceSetting.connectedDevice.isBuiltInTrackpad
                       || connectedDeviceSetting.connectedDevice.isBuiltInTouchBar
-                  )
+                  ) {
+                    $0
+                      .disabled(true)
+                      .foregroundColor(Color(NSColor.disabledControlTextColor))
+                  }
+
                   Spacer()
                 }
 
