@@ -2,7 +2,8 @@
     {
         "descriptions": {
             "manufacturer": "manufacturer1",
-            "product": "product1"
+            "product": "product1",
+            "transport": "USB"
         },
         "identifiers": {
             "is_keyboard": true,
@@ -17,7 +18,8 @@
     {
         "descriptions": {
             "manufacturer": "manufacturer2",
-            "product": "product2"
+            "product": "product2",
+            "transport": "USB"
         },
         "identifiers": {
             "is_keyboard": false,
@@ -32,7 +34,8 @@
     {
         "descriptions": {
             "manufacturer": "manufacturer3",
-            "product": "product3"
+            "product": "product3",
+            "transport": "USB"
         },
         "identifiers": {
             "is_keyboard": false,
@@ -47,7 +50,8 @@
     {
         "descriptions": {
             "manufacturer": "manufacturer1",
-            "product": "product4"
+            "product": "product4",
+            "transport": "Bluetooth"
         },
         "identifiers": {
             "is_keyboard": true,
@@ -62,7 +66,8 @@
     {
         "descriptions": {
             "manufacturer": "manufacturer1",
-            "product": "product4"
+            "product": "product4",
+            "transport": "Bluetooth"
         },
         "identifiers": {
             "is_keyboard": false,
@@ -77,7 +82,8 @@
     {
         "descriptions": {
             "manufacturer": "manufacturer1",
-            "product": "product5"
+            "product": "product5",
+            "transport": "Bluetooth"
         },
         "identifiers": {
             "is_keyboard": true,

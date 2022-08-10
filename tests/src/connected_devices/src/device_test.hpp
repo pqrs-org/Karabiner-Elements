@@ -8,7 +8,8 @@ void run_device_test(void) {
   "connected_devices::details::device"_test = [] {
     {
       krbn::connected_devices::details::descriptions descriptions("manufacturer1",
-                                                                  "product1");
+                                                                  "product1",
+                                                                  "USB");
       krbn::device_identifiers identifiers(pqrs::hid::vendor_id::value_t(1234),
                                            pqrs::hid::product_id::value_t(5678),
                                            true,
@@ -26,52 +27,54 @@ void run_device_test(void) {
       expect(device.get_is_built_in_touch_bar() == true);
 
       expect(device.to_json() == nlohmann::json(
-                                      {{
-                                           "descriptions",
-                                           {
-                                               {
-                                                   "manufacturer",
-                                                   "manufacturer1",
-                                               },
-                                               {
-                                                   "product",
-                                                   "product1",
-                                               },
+                                     {{
+                                          "descriptions",
+                                          {{
+                                               "manufacturer",
+                                               "manufacturer1",
                                            },
-                                       },
-                                       {
-                                           "identifiers",
                                            {
-                                               {
-                                                   "vendor_id",
-                                                   1234,
-                                               },
-                                               {
-                                                   "product_id",
-                                                   5678,
-                                               },
-                                               {
-                                                   "is_keyboard",
-                                                   true,
-                                               },
-                                               {
-                                                   "is_pointing_device",
-                                                   false,
-                                               },
+                                               "product",
+                                               "product1",
                                            },
-                                       },
-                                       {
-                                           "is_built_in_keyboard",
-                                           true,
-                                       },
-                                       {
-                                           "is_built_in_trackpad",
-                                           true,
-                                       },
-                                       {
-                                           "is_built_in_touch_bar",
-                                           true,
-                                       }}));
+                                           {
+                                               "transport",
+                                               "USB",
+                                           }},
+                                      },
+                                      {
+                                          "identifiers",
+                                          {
+                                              {
+                                                  "vendor_id",
+                                                  1234,
+                                              },
+                                              {
+                                                  "product_id",
+                                                  5678,
+                                              },
+                                              {
+                                                  "is_keyboard",
+                                                  true,
+                                              },
+                                              {
+                                                  "is_pointing_device",
+                                                  false,
+                                              },
+                                          },
+                                      },
+                                      {
+                                          "is_built_in_keyboard",
+                                          true,
+                                      },
+                                      {
+                                          "is_built_in_trackpad",
+                                          true,
+                                      },
+                                      {
+                                          "is_built_in_touch_bar",
+                                          true,
+                                      }}));
     }
     {
       auto device1 = krbn::connected_devices::details::device::make_from_json(nlohmann::json(nullptr));

@@ -2,7 +2,8 @@
     {
         "descriptions": {
             "manufacturer": "test !",
-            "product": "test !"
+            "product": "test !",
+            "transport": "USB"
         },
         "identifiers": {
             "is_keyboard": true,

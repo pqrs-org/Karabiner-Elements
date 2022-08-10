@@ -16,7 +16,8 @@
 //     {
 //         "descriptions": {
 //             "manufacturer": "Unknown",
-//             "product": "HHKB-BT"
+//             "product": "HHKB-BT",
+//             "transport": "Bluetooth"
 //         },
 //         "identifiers": {
 //             "is_keyboard": true,
@@ -30,7 +31,8 @@
 //     {
 //         "descriptions": {
 //             "manufacturer": "Apple Inc.",
-//             "product": "Apple Internal Keyboard / Trackpad"
+//             "product": "Apple Internal Keyboard / Trackpad",
+//             "transport": "USB"
 //         },
 //         "identifiers": {
 //             "is_keyboard": true,
@@ -88,11 +90,11 @@ public:
     devices_.push_back(device);
 
     std::sort(devices_.begin(), devices_.end(), [](auto&& a, auto&& b) {
-      auto a_name = a.get_descriptions().get_product() + a.get_descriptions().get_manufacturer();
+      auto a_name = a.get_descriptions().get_product() + a.get_descriptions().get_manufacturer() + a.get_descriptions().get_transport();
       auto a_kb = a.get_identifiers().get_is_keyboard();
       auto a_pd = a.get_identifiers().get_is_pointing_device();
 
-      auto b_name = b.get_descriptions().get_product() + b.get_descriptions().get_manufacturer();
+      auto b_name = b.get_descriptions().get_product() + b.get_descriptions().get_manufacturer() + a.get_descriptions().get_transport();
       auto b_kb = b.get_identifiers().get_is_keyboard();
       auto b_pd = b.get_identifiers().get_is_pointing_device();
 
