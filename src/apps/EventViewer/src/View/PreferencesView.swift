@@ -11,6 +11,7 @@ struct PreferencesView: View {
             Toggle(isOn: $userSettings.forceStayTop) {
               Text("Force EventViewer to stay on top of other windows (Default: off)")
             }
+            .switchToggleStyle()
 
             Spacer()
           }
@@ -19,6 +20,7 @@ struct PreferencesView: View {
             Toggle(isOn: $userSettings.showInAllSpaces) {
               Text("Show EventViewer in all spaces (Default: off)")
             }
+            .switchToggleStyle()
 
             Spacer()
           }
@@ -32,6 +34,7 @@ struct PreferencesView: View {
             Toggle(isOn: $userSettings.showHex) {
               Text("Show HID usage in hexadecimal format (Default: off)")
             }
+            .switchToggleStyle()
 
             Spacer()
           }
