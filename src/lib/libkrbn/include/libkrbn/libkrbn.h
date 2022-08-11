@@ -240,6 +240,7 @@ void libkrbn_connected_devices_terminate(libkrbn_connected_devices** p);
 size_t libkrbn_connected_devices_get_size(libkrbn_connected_devices* p);
 const char* libkrbn_connected_devices_get_descriptions_manufacturer(libkrbn_connected_devices* p, size_t index);
 const char* libkrbn_connected_devices_get_descriptions_product(libkrbn_connected_devices* p, size_t index);
+const char* libkrbn_connected_devices_get_descriptions_transport(libkrbn_connected_devices* p, size_t index);
 bool libkrbn_connected_devices_get_device_identifiers(libkrbn_connected_devices* p,
                                                       size_t index,
                                                       libkrbn_device_identifiers* device_identifiers);

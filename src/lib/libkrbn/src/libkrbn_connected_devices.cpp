@@ -34,6 +34,16 @@ const char* libkrbn_connected_devices_get_descriptions_product(libkrbn_connected
   return nullptr;
 }
 
+const char* libkrbn_connected_devices_get_descriptions_transport(libkrbn_connected_devices* p, size_t index) {
+  if (auto c = reinterpret_cast<libkrbn_connected_devices_class*>(p)) {
+    const auto& devices = c->get_connected_devices().get_devices();
+    if (index < devices.size()) {
+      return devices[index].get_descriptions().get_transport().c_str();
+    }
+  }
+  return nullptr;
+}
+
 bool libkrbn_connected_devices_get_device_identifiers(libkrbn_connected_devices* p, size_t index, libkrbn_device_identifiers* device_identifiers) {
   if (auto c = reinterpret_cast<libkrbn_connected_devices_class*>(p)) {
     if (device_identifiers) {
