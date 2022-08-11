@@ -63,9 +63,16 @@ struct DevicesAdvancedView: View {
                       }
                       .frame(width: 50.0)
 
-                      Text(
-                        "\(connectedDeviceSetting.connectedDevice.productName) (\(connectedDeviceSetting.connectedDevice.manufacturerName)) [\(String(connectedDeviceSetting.connectedDevice.vendorId)),\(String(connectedDeviceSetting.connectedDevice.productId))]"
-                      )
+                      HStack {
+                        Text(
+                          "\(connectedDeviceSetting.connectedDevice.productName) (\(connectedDeviceSetting.connectedDevice.manufacturerName))"
+                        )
+                        if connectedDeviceSetting.connectedDevice.transport != "FIFO" {
+                          Text(
+                            " [\(String(connectedDeviceSetting.connectedDevice.vendorId)),\(String(connectedDeviceSetting.connectedDevice.productId))]"
+                          )
+                        }
+                      }
                       .padding(.leading, 12.0)
                       .padding(.trailing, 12.0)
                     }
