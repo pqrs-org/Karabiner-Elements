@@ -1,8 +1,8 @@
 # Changelog
 
-## Karabiner-Elements 14.7.0
+## Karabiner-Elements 14.8.0
 
--   [📦 Download](https://github.com/pqrs-org/Karabiner-Elements/releases/download/v14.7.0/Karabiner-Elements-14.7.0.dmg)
+-   [📦 Download](https://github.com/pqrs-org/Karabiner-Elements/releases/download/v14.8.0/Karabiner-Elements-14.8.0.dmg)
 -   📅 Release date
     -   Aug 11, 2022
 -   ✨ New Features
