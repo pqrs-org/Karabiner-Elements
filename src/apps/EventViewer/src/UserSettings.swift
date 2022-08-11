@@ -29,11 +29,4 @@ final class UserSettings: ObservableObject {
       )
     }
   }
-
-  @UserDefault("kShowHex", defaultValue: false)
-  var showHex: Bool {
-    willSet {
-      objectWillChange.send()
-    }
-  }
 }

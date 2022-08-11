@@ -44,6 +44,7 @@ struct UnknownEventsView: View {
                             Text("usage page: ")
                               .font(.caption)
                             Text(entry.usagePage)
+                              .font(.custom("Menlo", size: 11.0))
                           }
                         }
                         if entry.usage.count > 0 {
@@ -51,6 +52,7 @@ struct UnknownEventsView: View {
                             Text("usage: ")
                               .font(.caption)
                             Text(entry.usage)
+                              .font(.custom("Menlo", size: 11.0))
                           }
                         }
                       }

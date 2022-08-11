@@ -28,20 +28,6 @@ struct PreferencesView: View {
         .padding(6.0)
       }
 
-      GroupBox(label: Text("Others")) {
-        VStack(alignment: .leading, spacing: 12.0) {
-          HStack {
-            Toggle(isOn: $userSettings.showHex) {
-              Text("Show HID usage in hexadecimal format (Default: off)")
-            }
-            .switchToggleStyle()
-
-            Spacer()
-          }
-        }
-        .padding(6.0)
-      }
-
       Spacer()
     }
     .padding()

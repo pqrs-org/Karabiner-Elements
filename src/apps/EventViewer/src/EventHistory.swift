@@ -96,13 +96,14 @@ private func callback(
     // entry.code
     //
 
-    if UserSettings.shared.showHex {
-      entry.usagePage = String(format: "0x%02x", usagePage)
-      entry.usage = String(format: "0x%02x", usage)
-    } else {
-      entry.usagePage = String(format: "%d", usagePage)
-      entry.usage = String(format: "%d", usage)
-    }
+    entry.usagePage = String(
+      format: "%5d (0x%04x)",
+      usagePage,
+      usagePage)
+    entry.usage = String(
+      format: "%5d (0x%04x)",
+      usage,
+      usage)
 
     //
     // Handle unknown events
