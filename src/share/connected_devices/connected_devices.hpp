@@ -90,11 +90,17 @@ public:
     devices_.push_back(device);
 
     std::sort(devices_.begin(), devices_.end(), [](auto&& a, auto&& b) {
-      auto a_name = a.get_descriptions().get_product() + a.get_descriptions().get_manufacturer() + a.get_descriptions().get_transport();
+      auto a_name = fmt::format("{0} {1} {2}",
+                                a.get_descriptions().get_product(),
+                                a.get_descriptions().get_manufacturer(),
+                                a.get_descriptions().get_transport());
       auto a_kb = a.get_identifiers().get_is_keyboard();
       auto a_pd = a.get_identifiers().get_is_pointing_device();
 
-      auto b_name = b.get_descriptions().get_product() + b.get_descriptions().get_manufacturer() + a.get_descriptions().get_transport();
+      auto b_name = fmt::format("{0} {1} {2}",
+                                b.get_descriptions().get_product(),
+                                b.get_descriptions().get_manufacturer(),
+                                b.get_descriptions().get_transport());
       auto b_kb = b.get_identifiers().get_is_keyboard();
       auto b_pd = b.get_identifiers().get_is_pointing_device();
 
