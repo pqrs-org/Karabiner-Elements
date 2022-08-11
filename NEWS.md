@@ -4,6 +4,8 @@
 
 -   ✨ New Features
     -   Add `Enable unsafe configuration` feature into Preferences > Pro tab.
+-   🐛 Bug Fixes
+    -   Fixed ans issue that the built-in keyboard is not be treated as the built-in keyboard if the keyboard is connected via SPI (Serial Peripheral Interface), such as M2 MacBook Air.
 
 ## Karabiner-Elements 14.6.0
 
