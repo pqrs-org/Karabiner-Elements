@@ -6,6 +6,7 @@ extension LibKrbn {
     let index: Int
     let manufacturerName: String
     let productName: String
+    let transport: String
     let vendorId: UInt64
     let productId: UInt64
     let isKeyboard: Bool
@@ -21,6 +22,7 @@ extension LibKrbn {
       index: Int,
       manufacturerName: String,
       productName: String,
+      transport: String,
       vendorId: UInt64,
       productId: UInt64,
       isKeyboard: Bool,
@@ -33,6 +35,7 @@ extension LibKrbn {
       self.index = index
       self.manufacturerName = manufacturerName
       self.productName = productName
+      self.transport = transport
       self.vendorId = vendorId
       self.productId = productId
       self.isKeyboard = isKeyboard

@@ -28,32 +28,34 @@ struct DevicesView: View {
 
                 Spacer()
 
-                VStack(alignment: .trailing, spacing: 0) {
-                  HStack(alignment: .center, spacing: 0) {
-                    Spacer()
+                if connectedDeviceSetting.connectedDevice.transport != "FIFO" {
+                  VStack(alignment: .trailing, spacing: 0) {
+                    HStack(alignment: .center, spacing: 0) {
+                      Spacer()
 
-                    Text("Vendor ID: ")
-                      .font(.caption)
-                    Text(
-                      String(
-                        format: "%5d (0x%04x)",
-                        connectedDeviceSetting.connectedDevice.vendorId,
-                        connectedDeviceSetting.connectedDevice.vendorId)
-                    )
-                    .font(.custom("Menlo", size: 11.0))
-                  }
-                  HStack(alignment: .center, spacing: 0) {
-                    Spacer()
+                      Text("Vendor ID: ")
+                        .font(.caption)
+                      Text(
+                        String(
+                          format: "%5d (0x%04x)",
+                          connectedDeviceSetting.connectedDevice.vendorId,
+                          connectedDeviceSetting.connectedDevice.vendorId)
+                      )
+                      .font(.custom("Menlo", size: 11.0))
+                    }
+                    HStack(alignment: .center, spacing: 0) {
+                      Spacer()
 
-                    Text("Product ID: ")
-                      .font(.caption)
-                    Text(
-                      String(
-                        format: "%5d (0x%04x)",
-                        connectedDeviceSetting.connectedDevice.productId,
-                        connectedDeviceSetting.connectedDevice.productId)
-                    )
-                    .font(.custom("Menlo", size: 11.0))
+                      Text("Product ID: ")
+                        .font(.caption)
+                      Text(
+                        String(
+                          format: "%5d (0x%04x)",
+                          connectedDeviceSetting.connectedDevice.productId,
+                          connectedDeviceSetting.connectedDevice.productId)
+                      )
+                      .font(.custom("Menlo", size: 11.0))
+                    }
                   }
                 }
               }

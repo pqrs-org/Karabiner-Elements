@@ -35,6 +35,11 @@ extension LibKrbn {
 
       let size = libkrbn_connected_devices_get_size(libkrbnConnectedDevices)
       for i in 0..<size {
+        let transport = String(
+          cString: libkrbn_connected_devices_get_descriptions_transport(
+            libkrbnConnectedDevices, i)
+        )
+
         var manufacturerName = String(
           cString: libkrbn_connected_devices_get_descriptions_manufacturer(
             libkrbnConnectedDevices, i)
@@ -49,13 +54,18 @@ extension LibKrbn {
         )
         .replacingOccurrences(of: "[\r\n]", with: " ", options: .regularExpression)
         if productName == "" {
-          productName = "No product name"
+          if transport == "FIFO" {
+            productName = "Apple Internal Keyboard / Trackpad"
+          } else {
+            productName = "No product name"
+          }
         }
 
         let connectedDevice = ConnectedDevice(
           index: i,
           manufacturerName: manufacturerName,
           productName: productName,
+          transport: transport,
           vendorId: libkrbn_connected_devices_get_vendor_id(libkrbnConnectedDevices, i),
           productId: libkrbn_connected_devices_get_product_id(libkrbnConnectedDevices, i),
           isKeyboard: libkrbn_connected_devices_get_is_keyboard(libkrbnConnectedDevices, i),
