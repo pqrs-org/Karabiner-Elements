@@ -69,7 +69,12 @@ struct DevicesAdvancedView: View {
                         )
                         if connectedDeviceSetting.connectedDevice.transport != "FIFO" {
                           Text(
-                            " [\(String(connectedDeviceSetting.connectedDevice.vendorId)),\(String(connectedDeviceSetting.connectedDevice.productId))]"
+                            String(
+                              format: " [%d,%d (0x%04x,0x%04x)]",
+                              connectedDeviceSetting.connectedDevice.vendorId,
+                              connectedDeviceSetting.connectedDevice.productId,
+                              connectedDeviceSetting.connectedDevice.vendorId,
+                              connectedDeviceSetting.connectedDevice.productId)
                           )
                         }
                       }
