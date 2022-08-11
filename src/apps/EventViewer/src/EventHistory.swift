@@ -97,11 +97,11 @@ private func callback(
     //
 
     entry.usagePage = String(
-      format: "%5d (0x%04x)",
+      format: "%d (0x%04x)",
       usagePage,
       usagePage)
     entry.usage = String(
-      format: "%5d (0x%04x)",
+      format: "%d (0x%04x)",
       usage,
       usage)
 
@@ -221,25 +221,30 @@ public class EventHistory: ObservableObject {
   }
 
   public func copyToPasteboard() {
-    var string = ""
+    var string = "[\n"
 
     entries.forEach { entry in
       if entry.eventType.count > 0 {
-        let eventType = "type:\(entry.eventType)".padding(toLength: 20, withPad: " ", startingAt: 0)
-        let code = "HID usage: \(entry.usagePage),\(entry.usage)".padding(
-          toLength: 20, withPad: " ", startingAt: 0)
-        let name = "name:\(entry.name)".padding(toLength: 60, withPad: " ", startingAt: 0)
-        let misc = "misc:\(entry.misc)"
+        if string != "[\n" {
+          string += ",\n"
+        }
 
-        string.append("\(eventType) \(code) \(name) \(misc)\n")
+        string += "  {\n"
+        string += "    \"type\": \"\(entry.eventType)\",\n"
+        string += "    \"name\": \(entry.name),\n"
+        string += "    \"usagePage\": \"\(entry.usagePage)\",\n"
+        string += "    \"usage\": \"\(entry.usage)\",\n"
+        string += "    \"misc\": \"\(entry.misc)\"\n"
+        string += "  }"
       }
     }
 
-    if !string.isEmpty {
-      let pboard = NSPasteboard.general
-      pboard.clearContents()
-      pboard.writeObjects([string as NSString])
-    }
+    string += "\n"
+    string += "]"
+
+    let pboard = NSPasteboard.general
+    pboard.clearContents()
+    pboard.writeObjects([string as NSString])
   }
 
   //
@@ -292,23 +297,27 @@ public class EventHistory: ObservableObject {
   }
 
   public func copyToPasteboardUnknownEvents() {
-    var string = ""
+    var string = "[\n"
 
     unknownEventEntries.forEach { entry in
       if entry.eventType.count > 0 {
-        let eventType = "value:\(entry.eventType)".padding(
-          toLength: 20, withPad: " ", startingAt: 0)
-        let code = "HID usage: \(entry.usagePage),\(entry.usage)".padding(
-          toLength: 20, withPad: " ", startingAt: 0)
+        if string != "[\n" {
+          string += ",\n"
+        }
 
-        string.append("\(eventType) \(code)\n")
+        string += "  {\n"
+        string += "    \"value\": \"\(entry.eventType)\",\n"
+        string += "    \"usagePage\": \"\(entry.usagePage)\",\n"
+        string += "    \"usage\": \"\(entry.usage)\"\n"
+        string += "  }"
       }
     }
 
-    if !string.isEmpty {
-      let pboard = NSPasteboard.general
-      pboard.clearContents()
-      pboard.writeObjects([string as NSString])
-    }
+    string += "\n"
+    string += "]"
+
+    let pboard = NSPasteboard.general
+    pboard.clearContents()
+    pboard.writeObjects([string as NSString])
   }
 }
