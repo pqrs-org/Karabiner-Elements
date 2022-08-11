@@ -1,7 +1,10 @@
 # Changelog
 
-## Beta
+## Karabiner-Elements 14.7.0
 
+-   [📦 Download](https://github.com/pqrs-org/Karabiner-Elements/releases/download/v14.7.0/Karabiner-Elements-14.7.0.dmg)
+-   📅 Release date
+    -   Aug 11, 2022
 -   ✨ New Features
     -   Add `Enable unsafe configuration` feature into Preferences > Pro tab.
 -   🐛 Bug Fixes
