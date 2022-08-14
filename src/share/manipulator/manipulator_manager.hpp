@@ -111,8 +111,7 @@ public:
             case event_queue::event::type::software_function:
             case event_queue::event::type::stop_keyboard_repeat:
             case event_queue::event::type::caps_lock_state_changed:
-            case event_queue::event::type::system_preferences_properties_changed:
-            case event_queue::event::type::virtual_hid_keyboard_configuration_changed: {
+            case event_queue::event::type::system_preferences_properties_changed: {
               bool skip = false;
 
               // Set validity validity::invalid in order to prevent events from being changed in manipulators.

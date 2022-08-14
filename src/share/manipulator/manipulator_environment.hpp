@@ -1,5 +1,6 @@
 #pragma once
 
+#include "core_configuration/core_configuration.hpp"
 #include "device_properties_manager.hpp"
 #include "json_writer.hpp"
 #include "logger.hpp"
@@ -21,7 +22,7 @@ class manipulator_environment final {
 public:
   manipulator_environment(const manipulator_environment&) = delete;
 
-  manipulator_environment(void) : virtual_hid_keyboard_country_code_(0) {
+  manipulator_environment(void) {
   }
 
   nlohmann::json to_json(void) const {
@@ -42,7 +43,6 @@ public:
         {"variables", variables_},
         {"system_preferences_properties", system_preferences_properties_},
         {"virtual_hid_devices_state", virtual_hid_devices_state_},
-        {"virtual_hid_keyboard_country_code", virtual_hid_keyboard_country_code_},
         {"virtual_hid_keyboard_keyboard_type", virtual_hid_keyboard_keyboard_type_},
     });
   }
@@ -100,6 +100,16 @@ public:
     async_save_to_file();
   }
 
+  std::weak_ptr<const core_configuration::core_configuration> get_core_configuration(void) const {
+    return core_configuration_;
+  }
+
+  void set_core_configuration(std::weak_ptr<const core_configuration::core_configuration> core_configuration) {
+    core_configuration_ = core_configuration;
+    update_virtual_hid_keyboard_keyboard_type();
+    async_save_to_file();
+  }
+
   const pqrs::osx::system_preferences::properties& get_system_preferences_properties(void) const {
     return system_preferences_properties_;
   }
@@ -115,16 +125,6 @@ public:
     async_save_to_file();
   }
 
-  pqrs::hid::country_code::value_t get_virtual_hid_keyboard_country_code(void) const {
-    return virtual_hid_keyboard_country_code_;
-  }
-
-  void set_virtual_hid_keyboard_country_code(pqrs::hid::country_code::value_t value) {
-    virtual_hid_keyboard_country_code_ = value;
-    update_virtual_hid_keyboard_keyboard_type();
-    async_save_to_file();
-  }
-
   const std::string& get_virtual_hid_keyboard_keyboard_type(void) const {
     return virtual_hid_keyboard_keyboard_type_;
   }
@@ -137,10 +137,15 @@ private:
   }
 
   void update_virtual_hid_keyboard_keyboard_type(void) {
+    pqrs::hid::country_code::value_t country_code(0);
+    if (auto c = core_configuration_.lock()) {
+      country_code = c->get_selected_profile().get_virtual_hid_keyboard().get_country_code();
+    }
+
     pqrs::osx::system_preferences::keyboard_type_key key(
         hid::vendor_id::karabiner_virtual_hid_device,
         hid::product_id::karabiner_virtual_hid_keyboard,
-        virtual_hid_keyboard_country_code_);
+        country_code);
     auto& keyboard_types = system_preferences_properties_.get_keyboard_types();
     auto it = keyboard_types.find(key);
     if (it != std::end(keyboard_types)) {
@@ -155,8 +160,8 @@ private:
   pqrs::osx::frontmost_application_monitor::application frontmost_application_;
   pqrs::osx::input_source::properties input_source_properties_;
   std::unordered_map<std::string, manipulator_environment_variable> variables_;
+  std::weak_ptr<const core_configuration::core_configuration> core_configuration_;
   pqrs::osx::system_preferences::properties system_preferences_properties_;
-  pqrs::hid::country_code::value_t virtual_hid_keyboard_country_code_;
   std::string virtual_hid_keyboard_keyboard_type_; // cache value
   virtual_hid_devices_state virtual_hid_devices_state_;
 };

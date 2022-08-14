@@ -219,26 +219,6 @@ void run_event_queue_test(void) {
     }
     {
       nlohmann::json expected;
-      expected["type"] = "virtual_hid_keyboard_configuration_changed";
-      expected["virtual_hid_keyboard_configuration"] = nlohmann::json::object({
-          {"country_code", 123},
-          {"indicate_sticky_modifier_keys_state", false},
-          {"mouse_key_xy_scale", 150},
-      });
-
-      krbn::core_configuration::details::virtual_hid_keyboard virtual_hid_keyboard;
-      virtual_hid_keyboard.set_country_code(pqrs::hid::country_code::value_t(123));
-      virtual_hid_keyboard.set_indicate_sticky_modifier_keys_state(false);
-      virtual_hid_keyboard.set_mouse_key_xy_scale(150);
-
-      auto e = krbn::event_queue::event::make_virtual_hid_keyboard_configuration_changed_event(virtual_hid_keyboard);
-      auto json = e.to_json();
-      expect(json == expected);
-      auto event_from_json = krbn::event_queue::event::make_from_json(json);
-      expect(json == event_from_json.to_json());
-    }
-    {
-      nlohmann::json expected;
       expected["type"] = "device_keys_and_pointing_buttons_are_released";
       auto json = device_keys_and_pointing_buttons_are_released_event.to_json();
       expect(json == expected);

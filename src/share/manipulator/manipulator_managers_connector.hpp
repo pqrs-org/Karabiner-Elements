@@ -46,6 +46,15 @@ public:
       }
     }
 
+    void set_manipulator_environment_core_configuration(std::weak_ptr<const core_configuration::core_configuration>& core_configuration) {
+      if (auto queue = weak_input_event_queue_.lock()) {
+        queue->get_manipulator_environment().set_core_configuration(core_configuration);
+      }
+      if (auto queue = weak_output_event_queue_.lock()) {
+        queue->get_manipulator_environment().set_core_configuration(core_configuration);
+      }
+    }
+
     bool needs_virtual_hid_pointing(void) const {
       if (auto manipulator_manager = weak_manipulator_manager_.lock()) {
         return manipulator_manager->needs_virtual_hid_pointing();
@@ -116,6 +125,14 @@ public:
 
     for (auto&& c : connections_) {
       c.invalidate_manipulators();
+    }
+  }
+
+  void set_manipulator_environment_core_configuration(std::weak_ptr<const core_configuration::core_configuration> core_configuration) {
+    std::lock_guard<std::mutex> lock(connections_mutex_);
+
+    for (auto&& c : connections_) {
+      c.set_manipulator_environment_core_configuration(core_configuration);
     }
   }
 

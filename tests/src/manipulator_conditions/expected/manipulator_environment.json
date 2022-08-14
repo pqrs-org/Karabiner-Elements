@@ -29,6 +29,5 @@
         "virtual_hid_keyboard_ready": false,
         "virtual_hid_pointing_ready": false
     },
-    "virtual_hid_keyboard_country_code": 0,
     "virtual_hid_keyboard_keyboard_type": "iso"
 }

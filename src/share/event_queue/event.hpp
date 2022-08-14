@@ -40,7 +40,6 @@ public:
     input_source_changed,
     system_preferences_properties_changed,
     virtual_hid_devices_state_changed,
-    virtual_hid_keyboard_configuration_changed,
   };
 
   using value_t = std::variant<momentary_switch_event,                                   // For type::momentary_switch_event
@@ -58,7 +57,6 @@ public:
                                device_properties,                                        // For device_grabbed
                                pqrs::osx::system_preferences::properties,                // For system_preferences_properties_changed
                                virtual_hid_devices_state,                                // For virtual_hid_devices_state_changed
-                               core_configuration::details::virtual_hid_keyboard,        // For virtual_hid_keyboard_configuration_changed
                                std::monostate>;                                          // For virtual events
 
   event(void) : type_(type::none),
@@ -101,8 +99,6 @@ public:
             result.value_ = value.get<pqrs::osx::system_preferences::properties>();
           } else if (key == "virtual_hid_devices_state") {
             result.value_ = value.get<virtual_hid_devices_state>();
-          } else if (key == "virtual_hid_keyboard_configuration") {
-            result.value_ = value.get<core_configuration::details::virtual_hid_keyboard>();
           }
         }
       }
@@ -201,12 +197,6 @@ public:
       case type::virtual_hid_devices_state_changed:
         if (auto v = std::get_if<virtual_hid_devices_state>(&value_)) {
           json["virtual_hid_devices_state"] = *v;
-        }
-        break;
-
-      case type::virtual_hid_keyboard_configuration_changed:
-        if (auto v = std::get_if<core_configuration::details::virtual_hid_keyboard>(&value_)) {
-          json["virtual_hid_keyboard_configuration"] = *v;
         }
         break;
 
@@ -337,13 +327,6 @@ public:
     event e;
     e.type_ = type::virtual_hid_devices_state_changed;
     e.value_ = virtual_hid_devices_state;
-    return e;
-  }
-
-  static event make_virtual_hid_keyboard_configuration_changed_event(const core_configuration::details::virtual_hid_keyboard& configuration) {
-    event e;
-    e.type_ = type::virtual_hid_keyboard_configuration_changed;
-    e.value_ = configuration;
     return e;
   }
 
@@ -489,7 +472,6 @@ private:
       TO_C_STRING(input_source_changed);
       TO_C_STRING(system_preferences_properties_changed);
       TO_C_STRING(virtual_hid_devices_state_changed);
-      TO_C_STRING(virtual_hid_keyboard_configuration_changed);
     }
 
 #undef TO_C_STRING
@@ -524,7 +506,6 @@ private:
     TO_TYPE(input_source_changed);
     TO_TYPE(system_preferences_properties_changed);
     TO_TYPE(virtual_hid_devices_state_changed);
-    TO_TYPE(virtual_hid_keyboard_configuration_changed);
 
 #undef TO_TYPE
 

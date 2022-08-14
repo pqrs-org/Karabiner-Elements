@@ -423,6 +423,8 @@ public:
             e.second->set_core_configuration(core_configuration);
           }
 
+          manipulator_managers_connector_.set_manipulator_environment_core_configuration(core_configuration);
+
           logger_unique_filter_.reset();
           set_profile(core_configuration->get_selected_profile());
         }
@@ -580,24 +582,6 @@ public:
   void async_post_virtual_hid_devices_state_changed_event(void) {
     enqueue_to_dispatcher([this] {
       auto event = event_queue::event::make_virtual_hid_devices_state_changed_event(virtual_hid_devices_state_);
-      event_queue::entry entry(device_id(0),
-                               event_queue::event_time_stamp(pqrs::osx::chrono::mach_absolute_time_point()),
-                               event,
-                               event_type::single,
-                               event,
-                               event_origin::virtual_device,
-                               event_queue::state::virtual_event);
-
-      merged_input_event_queue_->push_back_entry(entry);
-
-      krbn_notification_center::get_instance().enqueue_input_event_arrived(*this);
-    });
-  }
-
-  void async_post_virtual_hid_keyboard_configuration_changed_event(void) {
-    enqueue_to_dispatcher([this] {
-      auto event = event_queue::event::make_virtual_hid_keyboard_configuration_changed_event(
-          profile_.get_virtual_hid_keyboard());
       event_queue::entry entry(device_id(0),
                                event_queue::event_time_stamp(pqrs::osx::chrono::mach_absolute_time_point()),
                                event,
@@ -984,7 +968,6 @@ private:
     update_devices_disabled();
     async_grab_devices();
     async_post_system_preferences_properties_changed_event();
-    async_post_virtual_hid_keyboard_configuration_changed_event();
   }
 
   void update_complex_modifications_manipulators(void) {

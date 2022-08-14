@@ -141,9 +141,6 @@ public:
     if (auto state = event.get_if<virtual_hid_devices_state>()) {
       manipulator_environment_.set_virtual_hid_devices_state(*state);
     }
-    if (auto configuration = event.get_if<core_configuration::details::virtual_hid_keyboard>()) {
-      manipulator_environment_.set_virtual_hid_keyboard_country_code(configuration->get_country_code());
-    }
   }
 
   void push_back_entry(const entry& entry) {
@@ -212,6 +209,10 @@ public:
 
   const manipulator::manipulator_environment& get_manipulator_environment(void) const {
     return manipulator_environment_;
+  }
+
+  manipulator::manipulator_environment& get_manipulator_environment(void) {
+    return const_cast<manipulator::manipulator_environment&>(static_cast<const queue&>(*this).get_manipulator_environment());
   }
 
   void enable_manipulator_environment_json_output(const std::string& file_path) {

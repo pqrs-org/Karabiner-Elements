@@ -232,13 +232,6 @@ public:
           }
           break;
 
-        case event_queue::event::type::virtual_hid_keyboard_configuration_changed:
-          if (auto c = front_input_event.get_event().get_if<core_configuration::details::virtual_hid_keyboard>()) {
-            mouse_key_handler_->set_virtual_hid_keyboard_configuration(*c);
-            virtual_hid_keyboard_configuration_ = *c;
-          }
-          break;
-
         case event_queue::event::type::none:
         case event_queue::event::type::set_variable:
         case event_queue::event::type::sticky_modifier:
