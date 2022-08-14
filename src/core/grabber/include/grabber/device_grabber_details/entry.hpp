@@ -2,6 +2,7 @@
 
 #include "core_configuration/core_configuration.hpp"
 #include "device_properties.hpp"
+#include "device_utility.hpp"
 #include "event_queue.hpp"
 #include "hid_keyboard_caps_lock_led_state_manager.hpp"
 #include "iokit_utility.hpp"
@@ -148,16 +149,9 @@ public:
   }
 
   bool determine_is_built_in_keyboard(void) const {
-    if (device_properties_) {
-      if (device_properties_->get_is_built_in_keyboard()) {
-        return true;
-      }
-
-      if (auto c = core_configuration_.lock()) {
-        if (auto device_identifiers = device_properties_->get_device_identifiers()) {
-          return c->get_selected_profile().get_device_treat_as_built_in_keyboard(
-              *device_identifiers);
-        }
+    if (auto c = core_configuration_.lock()) {
+      if (device_properties_) {
+        return device_utility::determine_is_built_in_keyboard(*c, *device_properties_);
       }
     }
 
