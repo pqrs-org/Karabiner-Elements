@@ -472,6 +472,35 @@ void run_manipulator_conditions_test(void) {
         expect(condition.is_fulfilled(e, environment) == false);
       }
     }
+
+    // is_built_in_keyboard
+    {
+      nlohmann::json json;
+      json["type"] = "device_if";
+      json["identifiers"] = nlohmann::json::array();
+      json["identifiers"].push_back(nlohmann::json::object());
+      json["identifiers"].back()["is_built_in_keyboard"] = true;
+      krbn::manipulator::conditions::device condition(json);
+
+      {
+        auto e = manipulator_conditions_helper.make_event_queue_entry(device_id_1000_2000);
+        expect(condition.is_fulfilled(e, environment) == false);
+      }
+      {
+        manipulator_conditions_helper.get_core_configuration()->get_selected_profile().set_device_treat_as_built_in_keyboard(
+            krbn::device_identifiers(pqrs::hid::vendor_id::value_t(1000), pqrs::hid::product_id::value_t(2000), true, false),
+            true);
+        auto e = manipulator_conditions_helper.make_event_queue_entry(device_id_1000_2000);
+        expect(condition.is_fulfilled(e, environment) == true);
+      }
+      {
+        manipulator_conditions_helper.get_core_configuration()->get_selected_profile().set_device_treat_as_built_in_keyboard(
+            krbn::device_identifiers(pqrs::hid::vendor_id::value_t(1000), pqrs::hid::product_id::value_t(2000), true, false),
+            false);
+        auto e = manipulator_conditions_helper.make_event_queue_entry(device_id_1000_2000);
+        expect(condition.is_fulfilled(e, environment) == false);
+      }
+    }
   };
 
   "conditions.event_changed"_test = [] {

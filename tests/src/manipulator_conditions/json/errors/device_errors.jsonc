@@ -100,6 +100,30 @@
         },
         "error": "identifiers entry `is_pointing_device` must be boolean, but is `null`"
     },
+    {
+        "class": "device",
+        "input": {
+            "type": "device_if",
+            "identifiers": [
+                {
+                    "is_touch_bar": null
+                }
+            ]
+        },
+        "error": "identifiers entry `is_touch_bar` must be boolean, but is `null`"
+    },
+    {
+        "class": "device",
+        "input": {
+            "type": "device_if",
+            "identifiers": [
+                {
+                    "is_built_in_keyboard": null
+                }
+            ]
+        },
+        "error": "identifiers entry `is_built_in_keyboard` must be boolean, but is `null`"
+    },
 
     {
         "class": "device",

@@ -2,6 +2,7 @@
 
 #include "base.hpp"
 #include "device_properties_manager.hpp"
+#include "device_utility.hpp"
 #include <optional>
 #include <pqrs/hid.hpp>
 #include <pqrs/hid/extra/nlohmann_json.hpp>
@@ -80,6 +81,13 @@ public:
           if (d.is_touch_bar && d.is_touch_bar != dp->get_is_built_in_touch_bar()) {
             fulfilled = false;
           }
+          if (d.is_built_in_keyboard) {
+            if (auto c = manipulator_environment.get_core_configuration().lock()) {
+              if (d.is_built_in_keyboard != device_utility::determine_is_built_in_keyboard(*c, *dp)) {
+                fulfilled = false;
+              }
+            }
+          }
 
           if (fulfilled) {
             switch (type_) {
@@ -111,6 +119,7 @@ private:
     std::optional<bool> is_keyboard;
     std::optional<bool> is_pointing_device;
     std::optional<bool> is_touch_bar;
+    std::optional<bool> is_built_in_keyboard;
 
     bool valid(void) const {
       return vendor_id ||
@@ -118,7 +127,8 @@ private:
              location_id ||
              is_keyboard ||
              is_pointing_device ||
-             is_touch_bar;
+             is_touch_bar ||
+             is_built_in_keyboard;
     }
   };
 
@@ -160,6 +170,11 @@ private:
           pqrs::json::requires_boolean(value, "identifiers entry `is_touch_bar`");
 
           d.is_touch_bar = value.get<bool>();
+
+        } else if (key == "is_built_in_keyboard") {
+          pqrs::json::requires_boolean(value, "identifiers entry `is_built_in_keyboard`");
+
+          d.is_built_in_keyboard = value.get<bool>();
 
         } else if (key == "description") {
           // Do nothing
