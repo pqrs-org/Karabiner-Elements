@@ -2798,6 +2798,124 @@
         "data": [{ "consumer_key_code": "ac_bookmarks" }]
     },
     {
+        "category": "Remote control buttons"
+    },
+    {
+        "not_to": true,
+        "label": "menu_pick",
+        "data": [{ "consumer_key_code": "menu_pick" }]
+    },
+    {
+        "not_to": true,
+        "label": "menu_up",
+        "data": [{ "consumer_key_code": "menu_up" }]
+    },
+    {
+        "not_to": true,
+        "label": "menu_down",
+        "data": [{ "consumer_key_code": "menu_down" }]
+    },
+    {
+        "not_to": true,
+        "label": "menu_left",
+        "data": [{ "consumer_key_code": "menu_left" }]
+    },
+    {
+        "not_to": true,
+        "label": "menu_right",
+        "data": [{ "consumer_key_code": "menu_right" }]
+    },
+    {
+        "not_to": true,
+        "label": "menu_escape",
+        "data": [{ "consumer_key_code": "menu_escape" }]
+    },
+    {
+        "not_to": true,
+        "label": "menu_value_increase",
+        "data": [{ "consumer_key_code": "menu_value_increase" }]
+    },
+    {
+        "not_to": true,
+        "label": "menu_value_decrease",
+        "data": [{ "consumer_key_code": "menu_value_decrease" }]
+    },
+    {
+        "not_to": true,
+        "label": "data_on_screen",
+        "data": [{ "consumer_key_code": "data_on_screen" }]
+    },
+    {
+        "not_to": true,
+        "label": "closed_caption",
+        "data": [{ "consumer_key_code": "closed_caption" }]
+    },
+    {
+        "not_to": true,
+        "label": "closed_caption_select",
+        "data": [{ "consumer_key_code": "closed_caption_select" }]
+    },
+    {
+        "not_to": true,
+        "label": "vcr_or_tv",
+        "data": [{ "consumer_key_code": "vcr_or_tv" }]
+    },
+    {
+        "not_to": true,
+        "label": "broadcast_mode",
+        "data": [{ "consumer_key_code": "broadcast_mode" }]
+    },
+    {
+        "not_to": true,
+        "label": "snapshot",
+        "data": [{ "consumer_key_code": "snapshot" }]
+    },
+    {
+        "not_to": true,
+        "label": "still",
+        "data": [{ "consumer_key_code": "still" }]
+    },
+    {
+        "not_to": true,
+        "label": "picture_in_picture_toggle",
+        "data": [{ "consumer_key_code": "picture_in_picture_toggle" }]
+    },
+    {
+        "not_to": true,
+        "label": "picture_in_picture_swap",
+        "data": [{ "consumer_key_code": "picture_in_picture_swap" }]
+    },
+    {
+        "not_to": true,
+        "label": "red_menu_button",
+        "data": [{ "consumer_key_code": "red_menu_button" }]
+    },
+    {
+        "not_to": true,
+        "label": "green_menu_button",
+        "data": [{ "consumer_key_code": "green_menu_button" }]
+    },
+    {
+        "not_to": true,
+        "label": "blue_menu_button",
+        "data": [{ "consumer_key_code": "blue_menu_button" }]
+    },
+    {
+        "not_to": true,
+        "label": "yellow_menu_button",
+        "data": [{ "consumer_key_code": "yellow_menu_button" }]
+    },
+    {
+        "not_to": true,
+        "label": "aspect",
+        "data": [{ "consumer_key_code": "aspect" }]
+    },
+    {
+        "not_to": true,
+        "label": "three_dimensional_mode_select",
+        "data": [{ "consumer_key_code": "three_dimensional_mode_select" }]
+    },
+    {
         "category": "Others"
     },
     {

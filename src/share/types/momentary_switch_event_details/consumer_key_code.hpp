@@ -11,10 +11,35 @@ constexpr std::pair<const mapbox::eternal::string, const pqrs::hid::usage::value
     {"dictation", pqrs::hid::usage::consumer::voice_command},
 
     {"power", pqrs::hid::usage::consumer::power},
-    {"menu", pqrs::hid::usage::consumer::menu}, // Touch ID key on Magic Keyboard
 
+    {"menu", pqrs::hid::usage::consumer::menu}, // Touch ID key on Magic Keyboard
+    {"menu_pick", pqrs::hid::usage::consumer::menu_pick},
+    {"menu_up", pqrs::hid::usage::consumer::menu_up},
+    {"menu_down", pqrs::hid::usage::consumer::menu_down},
+    {"menu_left", pqrs::hid::usage::consumer::menu_left},
+    {"menu_right", pqrs::hid::usage::consumer::menu_right},
+    {"menu_escape", pqrs::hid::usage::consumer::menu_escape},
+    {"menu_value_increase", pqrs::hid::usage::consumer::menu_value_increase},
+    {"menu_value_decrease", pqrs::hid::usage::consumer::menu_value_decrease},
+
+    {"data_on_screen", pqrs::hid::usage::consumer::data_on_screen},
+    {"closed_caption", pqrs::hid::usage::consumer::closed_caption},
+    {"closed_caption_select", pqrs::hid::usage::consumer::closed_caption_select},
+    {"vcr_or_tv", pqrs::hid::usage::consumer::vcr_or_tv},
+    {"broadcast_mode", pqrs::hid::usage::consumer::broadcast_mode},
+    {"snapshot", pqrs::hid::usage::consumer::snapshot},
+    {"still", pqrs::hid::usage::consumer::still},
+    {"picture_in_picture_toggle", pqrs::hid::usage::consumer::picture_in_picture_toggle},
+    {"picture_in_picture_swap", pqrs::hid::usage::consumer::picture_in_picture_swap},
+    {"red_menu_button", pqrs::hid::usage::consumer::red_menu_button},
+    {"green_menu_button", pqrs::hid::usage::consumer::green_menu_button},
+    {"blue_menu_button", pqrs::hid::usage::consumer::blue_menu_button},
+    {"yellow_menu_button", pqrs::hid::usage::consumer::yellow_menu_button},
+    {"aspect", pqrs::hid::usage::consumer::aspect},
+    {"three_dimensional_mode_select", pqrs::hid::usage::consumer::three_dimensional_mode_select},
     {"display_brightness_increment", pqrs::hid::usage::consumer::display_brightness_increment},
     {"display_brightness_decrement", pqrs::hid::usage::consumer::display_brightness_decrement},
+
     {"fast_forward", pqrs::hid::usage::consumer::fast_forward},
     {"rewind", pqrs::hid::usage::consumer::rewind},
     {"scan_next_track", pqrs::hid::usage::consumer::scan_next_track},
