@@ -300,9 +300,35 @@ constexpr value_t button_32(0x20);
 namespace consumer {
 constexpr value_t consumer_control(0x0001);
 constexpr value_t power(0x0030);
+
 constexpr value_t menu(0x0040);
+constexpr value_t menu_pick(0x0041);
+constexpr value_t menu_up(0x0042);
+constexpr value_t menu_down(0x0043);
+constexpr value_t menu_left(0x0044);
+constexpr value_t menu_right(0x0045);
+constexpr value_t menu_escape(0x0046);
+constexpr value_t menu_value_increase(0x0047);
+constexpr value_t menu_value_decrease(0x0048);
+
+constexpr value_t data_on_screen(0x0060);
+constexpr value_t closed_caption(0x0061);
+constexpr value_t closed_caption_select(0x0062);
+constexpr value_t vcr_or_tv(0x0063);
+constexpr value_t broadcast_mode(0x0064);
+constexpr value_t snapshot(0x0065);
+constexpr value_t still(0x0066);
+constexpr value_t picture_in_picture_toggle(0x0067);
+constexpr value_t picture_in_picture_swap(0x0068);
+constexpr value_t red_menu_button(0x0069);
+constexpr value_t green_menu_button(0x006a);
+constexpr value_t blue_menu_button(0x006b);
+constexpr value_t yellow_menu_button(0x006c);
+constexpr value_t aspect(0x006d);
+constexpr value_t three_dimensional_mode_select(0x006e);
 constexpr value_t display_brightness_increment(0x006f); // from macOS IOHIDUsageTables.h
 constexpr value_t display_brightness_decrement(0x0070); // from macOS IOHIDUsageTables.h
+
 constexpr value_t fast_forward(0x00b3);
 constexpr value_t rewind(0x00b4);
 constexpr value_t scan_next_track(0x00b5);
