@@ -5,6 +5,8 @@
 -   ✨ New Features
     -   Supported Remote control buttons. (menu arrows buttons, color buttons)
     -   `is_built_in_keyboard` has been added into `device_if` and `device_unless`.
+-   🐛 Bug Fixes
+    -   Fixed an issue that the ignored device's modifier keys are not ignored properly.
 
 ## Karabiner-Elements 14.8.0
 

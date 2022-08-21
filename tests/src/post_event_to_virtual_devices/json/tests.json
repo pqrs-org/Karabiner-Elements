@@ -90,6 +90,12 @@
         "expected_post_event_to_virtual_devices_queue": "json/expected_post_event_to_virtual_devices_queue/observed_device_1.json"
     },
     {
+        "description": "observed_device_2",
+        "rules": ["json/rules/from_key.json"],
+        "input_event_queue": "json/input_event_queue/observed_device_2.jsonc",
+        "expected_post_event_to_virtual_devices_queue": "json/expected_post_event_to_virtual_devices_queue/observed_device_2.json"
+    },
+    {
         "description": "sort_events_1 (f1,f2 -> left_shift+f2)",
         "rules": ["json/rules/from_key.json"],
         "input_event_queue": "json/input_event_queue/sort_events_1.json",
