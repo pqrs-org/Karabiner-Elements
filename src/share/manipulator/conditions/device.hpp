@@ -17,6 +17,8 @@ public:
   enum class type {
     device_if,
     device_unless,
+    device_exists_if,
+    device_exists_unless,
   };
 
   device(const nlohmann::json& json) : base(),
@@ -35,6 +37,10 @@ public:
           type_ = type::device_if;
         } else if (t == "device_unless") {
           type_ = type::device_unless;
+        } else if (t == "device_exists_if") {
+          type_ = type::device_exists_if;
+        } else if (t == "device_exists_unless") {
+          type_ = type::device_exists_unless;
         } else {
           throw pqrs::json::unmarshal_error(fmt::format("unknown type `{0}`", t));
         }
@@ -59,45 +65,44 @@ public:
   virtual bool is_fulfilled(const event_queue::entry& entry,
                             const manipulator_environment& manipulator_environment) const {
     if (!definitions_.empty()) {
-      if (auto dp = manipulator_environment.find_device_properties(entry.get_device_id())) {
-        for (const auto& d : definitions_) {
-          bool fulfilled = true;
-
-          if (d.vendor_id && d.vendor_id != dp->get_vendor_id()) {
-            fulfilled = false;
-          }
-          if (d.product_id && d.product_id != dp->get_product_id()) {
-            fulfilled = false;
-          }
-          if (d.location_id && d.location_id != dp->get_location_id()) {
-            fulfilled = false;
-          }
-          if (d.is_keyboard && d.is_keyboard != dp->get_is_keyboard()) {
-            fulfilled = false;
-          }
-          if (d.is_pointing_device && d.is_pointing_device != dp->get_is_pointing_device()) {
-            fulfilled = false;
-          }
-          if (d.is_touch_bar && d.is_touch_bar != dp->get_is_built_in_touch_bar()) {
-            fulfilled = false;
-          }
-          if (d.is_built_in_keyboard) {
-            if (auto c = manipulator_environment.get_core_configuration().lock()) {
-              if (d.is_built_in_keyboard != device_utility::determine_is_built_in_keyboard(*c, *dp)) {
-                fulfilled = false;
+      switch (type_) {
+        case type::device_if:
+        case type::device_unless:
+          if (auto dp = manipulator_environment.find_device_properties(entry.get_device_id())) {
+            for (const auto& d : definitions_) {
+              if (d.fulfilled(*dp, manipulator_environment)) {
+                switch (type_) {
+                  case type::device_if:
+                  case type::device_exists_if:
+                    return true;
+                  case type::device_unless:
+                  case type::device_exists_unless:
+                    return false;
+                }
               }
             }
           }
+          break;
 
-          if (fulfilled) {
-            switch (type_) {
-              case type::device_if:
-                return true;
-              case type::device_unless:
-                return false;
+        case type::device_exists_if:
+        case type::device_exists_unless:
+          for (const auto& [device_id, dp] : manipulator_environment.get_device_properties_manager().get_map()) {
+            if (dp) {
+              for (const auto& d : definitions_) {
+                if (d.fulfilled(*dp, manipulator_environment)) {
+                  switch (type_) {
+                    case type::device_if:
+                    case type::device_exists_if:
+                      return true;
+                    case type::device_unless:
+                    case type::device_exists_unless:
+                      return false;
+                  }
+                }
+              }
             }
           }
-        }
+          break;
       }
     }
 
@@ -105,8 +110,10 @@ public:
 
     switch (type_) {
       case type::device_if:
+      case type::device_exists_if:
         return false;
       case type::device_unless:
+      case type::device_exists_unless:
         return true;
     }
   }
@@ -129,6 +136,37 @@ private:
              is_pointing_device ||
              is_touch_bar ||
              is_built_in_keyboard;
+    }
+
+    bool fulfilled(const device_properties& device_properties,
+                   const manipulator_environment& manipulator_environment) const {
+      if (vendor_id && vendor_id != device_properties.get_vendor_id()) {
+        return false;
+      }
+      if (product_id && product_id != device_properties.get_product_id()) {
+        return false;
+      }
+      if (location_id && location_id != device_properties.get_location_id()) {
+        return false;
+      }
+      if (is_keyboard && is_keyboard != device_properties.get_is_keyboard()) {
+        return false;
+      }
+      if (is_pointing_device && is_pointing_device != device_properties.get_is_pointing_device()) {
+        return false;
+      }
+      if (is_touch_bar && is_touch_bar != device_properties.get_is_built_in_touch_bar()) {
+        return false;
+      }
+      if (is_built_in_keyboard) {
+        if (auto c = manipulator_environment.get_core_configuration().lock()) {
+          if (is_built_in_keyboard != device_utility::determine_is_built_in_keyboard(*c, device_properties)) {
+            return false;
+          }
+        }
+      }
+
+      return true;
     }
   };
 

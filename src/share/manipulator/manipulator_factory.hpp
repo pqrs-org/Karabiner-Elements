@@ -50,7 +50,9 @@ inline std::shared_ptr<conditions::base> make_condition(const nlohmann::json& js
   auto type = it->get<std::string>();
 
   if (type == "device_if" ||
-      type == "device_unless") {
+      type == "device_unless" ||
+      type == "device_exists_if" ||
+      type == "device_exists_unless") {
     return std::make_shared<conditions::device>(json);
   } else if (type == "event_changed_if" ||
              type == "event_changed_unless") {

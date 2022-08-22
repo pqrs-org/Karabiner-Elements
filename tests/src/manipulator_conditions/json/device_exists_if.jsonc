@@ -1,0 +1,11 @@
+[
+    {
+        "type": "device_exists_if",
+        "identifiers": [
+            {
+                "vendor_id": 1000,
+                "product_id": 2000
+            }
+        ]
+    }
+]
