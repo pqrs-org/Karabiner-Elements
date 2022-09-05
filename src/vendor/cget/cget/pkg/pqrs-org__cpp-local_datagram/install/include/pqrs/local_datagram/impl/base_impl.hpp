@@ -7,7 +7,9 @@
 // `pqrs::local_datagram::impl::base_impl` can be used safely in a multi-threaded environment.
 
 #include "asio_helper.hpp"
+#include "next_heartbeat_deadline_timer.hpp"
 #include "send_entry.hpp"
+#include <algorithm>
 #include <deque>
 #include <filesystem>
 #include <nod/nod.hpp>
@@ -25,6 +27,7 @@ public:
   nod::signal<void(const asio::error_code&)> bind_failed;
   nod::signal<void(std::shared_ptr<std::vector<uint8_t>>, std::shared_ptr<asio::local::datagram_protocol::endpoint> sender_endpoint)> received;
   nod::signal<void(void)> closed;
+  nod::signal<void(std::shared_ptr<asio::local::datagram_protocol::endpoint> sender_endpoint)> next_heartbeat_deadline_exceeded;
   nod::signal<void(const asio::error_code&)> error_occurred;
 
   enum class mode {
@@ -123,7 +126,9 @@ public:
         return;
       }
 
+      //
       // Close socket
+      //
 
       asio::error_code error_code;
 
@@ -135,7 +140,15 @@ public:
       send_invoker_.cancel();
       send_deadline_.cancel();
 
+      //
+      // Clear next heartbeat deadline timers
+      //
+
+      next_heartbeat_deadline_timers_.clear();
+
+      //
       // Signal
+      //
 
       if (socket_ready_) {
         socket_ready_ = false;
@@ -169,17 +182,62 @@ public:
                                   if (!error_code) {
                                     if (bytes_transferred > 0) {
                                       auto t = send_entry::type(receive_buffer_[0]);
-                                      if (t == send_entry::type::user_data) {
-                                        auto v = std::make_shared<std::vector<uint8_t>>(bytes_transferred - 1);
-                                        std::copy(std::begin(receive_buffer_) + 1,
-                                                  std::begin(receive_buffer_) + bytes_transferred,
-                                                  std::begin(*v));
+                                      switch (t) {
+                                        case send_entry::type::heartbeat:
+                                          if (bytes_transferred - 1 >= sizeof(uint32_t)) {
+                                            auto p = reinterpret_cast<const uint32_t*>(&(receive_buffer_[1]));
+                                            auto next_heartbeat_deadline = *p++;
 
-                                        auto sender_endpoint = std::make_shared<asio::local::datagram_protocol::endpoint>(receive_sender_endpoint_);
+                                            if (next_heartbeat_deadline > 0) {
+                                              std::chrono::milliseconds next_heartbeat_deadline_ms(next_heartbeat_deadline);
+                                              auto sender_endpoint = std::make_shared<asio::local::datagram_protocol::endpoint>(receive_sender_endpoint_);
 
-                                        enqueue_to_dispatcher([this, v, sender_endpoint] {
-                                          received(v, sender_endpoint);
-                                        });
+                                              enqueue_to_dispatcher([this, next_heartbeat_deadline_ms, sender_endpoint] {
+                                                auto it = std::find_if(
+                                                    std::begin(next_heartbeat_deadline_timers_),
+                                                    std::end(next_heartbeat_deadline_timers_),
+                                                    [sender_endpoint](auto&& t) {
+                                                      return *(t->get_sender_endpoint()) == *sender_endpoint;
+                                                    });
+                                                if (it == std::end(next_heartbeat_deadline_timers_)) {
+                                                  auto t = std::make_shared<next_heartbeat_deadline_timer>(weak_dispatcher_,
+                                                                                                           sender_endpoint,
+                                                                                                           next_heartbeat_deadline_ms);
+                                                  t->next_heartbeat_deadline_exceeded.connect([this, sender_endpoint] {
+                                                    next_heartbeat_deadline_exceeded(sender_endpoint);
+
+                                                    next_heartbeat_deadline_timers_.erase(
+                                                        std::remove_if(
+                                                            std::begin(next_heartbeat_deadline_timers_),
+                                                            std::end(next_heartbeat_deadline_timers_),
+                                                            [sender_endpoint](auto&& t) {
+                                                              return t->get_sender_endpoint() == sender_endpoint;
+                                                            }),
+                                                        std::end(next_heartbeat_deadline_timers_));
+                                                  });
+                                                  next_heartbeat_deadline_timers_.push_back(t);
+                                                } else {
+                                                  (*it)->set_timer(next_heartbeat_deadline_ms);
+                                                }
+                                              });
+                                            }
+                                          }
+                                          break;
+
+                                        case send_entry::type::user_data: {
+                                          auto v = std::make_shared<std::vector<uint8_t>>(bytes_transferred - 1);
+                                          std::copy(std::begin(receive_buffer_) + 1,
+                                                    std::begin(receive_buffer_) + bytes_transferred,
+                                                    std::begin(*v));
+
+                                          auto sender_endpoint = std::make_shared<asio::local::datagram_protocol::endpoint>(receive_sender_endpoint_);
+
+                                          enqueue_to_dispatcher([this, v, sender_endpoint] {
+                                            received(v, sender_endpoint);
+                                          });
+
+                                          break;
+                                        }
                                       }
                                     }
                                   }
@@ -404,6 +462,7 @@ protected:
   std::filesystem::path bound_path_;
   std::vector<uint8_t> receive_buffer_;
   asio::local::datagram_protocol::endpoint receive_sender_endpoint_;
+  std::vector<std::shared_ptr<next_heartbeat_deadline_timer>> next_heartbeat_deadline_timers_;
 
   // Sender
   asio::steady_timer send_invoker_;

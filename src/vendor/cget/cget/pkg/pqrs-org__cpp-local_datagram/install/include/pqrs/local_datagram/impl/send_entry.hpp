@@ -17,6 +17,20 @@ class send_entry final {
 public:
   // Sending empty data causes `No buffer space available` error after wake up on macOS.
   // We append `type` into the beginning of data in order to avoid this issue.
+  //
+  // Data structure for each types:
+  //
+  // - heartbeat
+  //   |type (uint8_t)|
+  //   |next heartbeat deadline (uint32_t)| *since v6.0
+  //
+  //   The next heartbeat deadline specifies milliseconds to server that
+  //   server should assume client is dead if the next heartbeat is not come until the deadline.
+  //
+  //
+  // - user_data
+  //   |type (uint8_t)|
+  //   |user specific data (variable length)| *optional
 
   enum class type : uint8_t {
     heartbeat,

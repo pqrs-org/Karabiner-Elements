@@ -49,12 +49,14 @@ public:
                      const std::optional<std::filesystem::path>& client_socket_file_path,
                      size_t buffer_size,
                      std::optional<std::chrono::milliseconds> server_check_interval,
+                     std::optional<std::chrono::milliseconds> next_heartbeat_deadline,
                      std::optional<std::chrono::milliseconds> client_socket_check_interval) {
     io_service_.post([this,
                       server_socket_file_path,
                       client_socket_file_path,
                       buffer_size,
                       server_check_interval,
+                      next_heartbeat_deadline,
                       client_socket_check_interval] {
       if (socket_) {
         return;
@@ -105,40 +107,49 @@ public:
 
       // Connect
 
-      socket_->async_connect(asio::local::datagram_protocol::endpoint(server_socket_file_path),
-                             [this, server_check_interval, client_socket_check_interval, client_socket_file_path](auto&& error_code) {
-                               if (error_code) {
-                                 enqueue_to_dispatcher([this, error_code] {
-                                   connect_failed(error_code);
-                                 });
-                               } else {
-                                 socket_ready_ = true;
+      socket_->async_connect(
+          asio::local::datagram_protocol::endpoint(server_socket_file_path),
+          [this,
+           server_check_interval,
+           next_heartbeat_deadline,
+           client_socket_check_interval,
+           client_socket_file_path](auto&& error_code) {
+            if (error_code) {
+              enqueue_to_dispatcher([this, error_code] {
+                connect_failed(error_code);
+              });
+            } else {
+              socket_ready_ = true;
 
-                                 stop_server_check();
-                                 start_server_check(server_check_interval);
+              stop_server_check();
+              start_server_check(server_check_interval,
+                                 next_heartbeat_deadline);
 
-                                 stop_client_socket_check();
-                                 start_client_socket_check(client_socket_file_path,
-                                                           client_socket_check_interval);
+              stop_client_socket_check();
+              start_client_socket_check(client_socket_file_path,
+                                        client_socket_check_interval);
 
-                                 enqueue_to_dispatcher([this] {
-                                   connected();
-                                 });
+              enqueue_to_dispatcher([this] {
+                connected();
+              });
 
-                                 start_actors();
-                               }
-                             });
+              start_actors();
+            }
+          });
     });
   }
 
 private:
   // This method is executed in `io_service_thread_`.
-  void start_server_check(std::optional<std::chrono::milliseconds> server_check_interval) {
+  void start_server_check(std::optional<std::chrono::milliseconds> server_check_interval,
+                          std::optional<std::chrono::milliseconds> next_heartbeat_deadline) {
     if (server_check_interval) {
       server_check_timer_.start(
-          [this] {
-            io_service_.post([this] {
-              check_server();
+          [this,
+           next_heartbeat_deadline] {
+            io_service_.post([this,
+                              next_heartbeat_deadline] {
+              check_server(next_heartbeat_deadline);
             });
           },
           *server_check_interval);
@@ -151,13 +162,24 @@ private:
   }
 
   // This method is executed in `io_service_thread_`.
-  void check_server(void) {
+  void check_server(std::optional<std::chrono::milliseconds> next_heartbeat_deadline) {
     if (!socket_ ||
         !socket_ready_) {
       stop_server_check();
     }
 
-    auto b = std::make_shared<send_entry>(send_entry::type::heartbeat, nullptr);
+    uint32_t next_heartbeat_deadline_value = 0;
+    if (next_heartbeat_deadline) {
+      next_heartbeat_deadline_value = next_heartbeat_deadline->count();
+    }
+
+    std::vector<uint8_t> v(sizeof(uint32_t));
+    auto p = reinterpret_cast<uint32_t*>(&(v[0]));
+    *p++ = next_heartbeat_deadline_value;
+
+    auto b = std::make_shared<send_entry>(send_entry::type::heartbeat,
+                                          v,
+                                          nullptr);
     async_send(b);
   }
 
@@ -206,10 +228,12 @@ private:
 
       size_t buffer_size = 32;
       client_socket_check_client_impl_->async_connect(client_socket_file_path,
-                                                      std::nullopt,
+                                                      std::nullopt, // client_socket_file_path
                                                       buffer_size,
-                                                      std::nullopt,
-                                                      std::nullopt);
+                                                      std::nullopt, // server_check_interval
+                                                      std::nullopt, // next_heartbeat_deadline
+                                                      std::nullopt  // client_socket_check_interval
+      );
     }
   }
 

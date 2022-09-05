@@ -100,6 +100,11 @@ public:
     server_check_interval_ = value;
   }
 
+  // You have to call `set_next_heartbeat_deadline` before `async_start`.
+  void set_next_heartbeat_deadline(std::optional<std::chrono::milliseconds> value) {
+    next_heartbeat_deadline_ = value;
+  }
+
   // You have to call `set_client_socket_check_interval` before `async_start`.
   void set_client_socket_check_interval(std::optional<std::chrono::milliseconds> value) {
     client_socket_check_interval_ = value;
@@ -170,6 +175,7 @@ private:
                                   client_socket_file_path_,
                                   buffer_size_,
                                   server_check_interval_,
+                                  next_heartbeat_deadline_,
                                   client_socket_check_interval_);
     }
   }
@@ -223,6 +229,7 @@ private:
   std::optional<std::filesystem::path> client_socket_file_path_;
   size_t buffer_size_;
   std::optional<std::chrono::milliseconds> server_check_interval_;
+  std::optional<std::chrono::milliseconds> next_heartbeat_deadline_;
   std::optional<std::chrono::milliseconds> client_socket_check_interval_;
   std::optional<std::chrono::milliseconds> reconnect_interval_;
   std::function<std::filesystem::path(void)> server_socket_file_path_resolver_;

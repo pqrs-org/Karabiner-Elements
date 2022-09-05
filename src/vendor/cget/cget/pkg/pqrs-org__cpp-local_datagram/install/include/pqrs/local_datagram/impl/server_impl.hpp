@@ -146,10 +146,12 @@ private:
 
       size_t buffer_size = 32;
       server_check_client_impl_->async_connect(server_socket_file_path,
-                                               std::nullopt,
+                                               std::nullopt, // client_socket_file_path
                                                buffer_size,
-                                               std::nullopt,
-                                               std::nullopt);
+                                               std::nullopt, // server_check_interval
+                                               std::nullopt, // next_heartbeat_deadline
+                                               std::nullopt  // client_socket_check_interval
+      );
     }
   }
 
