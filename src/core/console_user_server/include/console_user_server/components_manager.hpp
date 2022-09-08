@@ -190,6 +190,11 @@ private:
       }
     });
 
+    grabber_client_->next_heartbeat_deadline_exceeded.connect([this] {
+      stop_grabber_client();
+      start_grabber_client();
+    });
+
     grabber_client_->async_start();
   }
 

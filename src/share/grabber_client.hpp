@@ -27,6 +27,7 @@ public:
   nod::signal<void(const asio::error_code&)> connect_failed;
   nod::signal<void(void)> closed;
   nod::signal<void(std::shared_ptr<std::vector<uint8_t>>, std::shared_ptr<asio::local::datagram_protocol::endpoint>)> received;
+  nod::signal<void(void)> next_heartbeat_deadline_exceeded;
 
   // Methods
 
@@ -90,6 +91,14 @@ public:
       client_->received.connect([this](auto&& buffer, auto&& sender_endpoint) {
         enqueue_to_dispatcher([this, buffer, sender_endpoint] {
           received(buffer, sender_endpoint);
+        });
+      });
+
+      client_->next_heartbeat_deadline_exceeded.connect([this](auto&& sender_endpoint) {
+        logger::get_logger()->info("grabber_client next heartbeat deadline exceeded");
+
+        enqueue_to_dispatcher([this] {
+          next_heartbeat_deadline_exceeded();
         });
       });
 
