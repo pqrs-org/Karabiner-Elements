@@ -52,19 +52,18 @@ public:
     session_monitor_ = std::make_unique<pqrs::osx::session::monitor>(weak_dispatcher_);
 
     session_monitor_->on_console_changed.connect([this](auto&& on_console) {
-      if (!on_console) {
-        stop_grabber_client();
+      logger::get_logger()->info("on_console_changed: on_console:{}", on_console);
 
-      } else {
-        version_monitor_->async_manual_check();
+      on_console_ = on_console;
 
-        pqrs::filesystem::create_directory_with_intermediate_directories(
-            constants::get_user_configuration_directory(),
-            0700);
+      version_monitor_->async_manual_check();
 
-        stop_grabber_client();
-        start_grabber_client();
-      }
+      pqrs::filesystem::create_directory_with_intermediate_directories(
+          constants::get_user_configuration_directory(),
+          0700);
+
+      stop_grabber_client();
+      start_grabber_client();
     });
   }
 
@@ -111,6 +110,10 @@ private:
 
   void start_grabber_client(void) {
     if (grabber_client_) {
+      return;
+    }
+
+    if (!on_console_) {
       return;
     }
 
@@ -302,6 +305,7 @@ private:
 
   std::unique_ptr<version_monitor> version_monitor_;
 
+  std::optional<bool> on_console_;
   std::unique_ptr<pqrs::osx::session::monitor> session_monitor_;
   std::shared_ptr<grabber_client> grabber_client_;
 
