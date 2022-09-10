@@ -113,7 +113,7 @@ private:
       return;
     }
 
-    if (!on_console_) {
+    if (on_console_ != true) {
       return;
     }
 
