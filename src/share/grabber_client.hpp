@@ -71,6 +71,8 @@ public:
       });
 
       client_->connect_failed.connect([this](auto&& error_code) {
+        logger::get_logger()->error("grabber_client connect_failed: {0}", error_code.message());
+
         enqueue_to_dispatcher([this, error_code] {
           connect_failed(error_code);
         });
