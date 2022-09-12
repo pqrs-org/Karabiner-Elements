@@ -1,5 +1,10 @@
 # Changelog
 
+## Beta
+
+-   ⚡️ Improvements
+    -   Sparkle Framework has been updated.
+
 ## Karabiner-Elements 14.9.0
 
 -   [📦 Download](https://github.com/pqrs-org/Karabiner-Elements/releases/download/v14.9.0/Karabiner-Elements-14.9.0.dmg)
