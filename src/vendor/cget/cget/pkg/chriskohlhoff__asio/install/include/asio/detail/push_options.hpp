@@ -29,6 +29,15 @@
 #  endif // !defined(ASIO_DISABLE_VISIBILITY)
 # endif // (__GNUC__ == 4 && __GNUC_MINOR__ >= 1) || (__GNUC__ > 4)
 
+# pragma push_macro ("emit")
+# undef emit
+
+# pragma push_macro ("signal")
+# undef signal
+
+# pragma push_macro ("slot")
+# undef slot
+
 #elif defined(__clang__)
 
 // Clang
@@ -163,9 +172,9 @@
 //
 // Must remain the last #elif since some other vendors (Metrowerks, for example)
 // also #define _MSC_VER
-
 # pragma warning (disable:4103)
 # pragma warning (push)
+# pragma warning (disable:4619) // suppress 'there is no warning number XXXX'
 # pragma warning (disable:4127)
 # pragma warning (disable:4180)
 # pragma warning (disable:4244)

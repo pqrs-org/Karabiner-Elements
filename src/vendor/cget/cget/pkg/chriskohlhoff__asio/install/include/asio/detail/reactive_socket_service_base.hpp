@@ -596,8 +596,7 @@ protected:
 
   // Start the asynchronous connect operation.
   ASIO_DECL void start_connect_op(base_implementation_type& impl,
-      reactor_op* op, bool is_continuation,
-      const socket_addr_type* addr, size_t addrlen);
+      reactor_op* op, bool is_continuation, const void* addr, size_t addrlen);
 
   // Helper class used to implement per-operation cancellation
   class reactor_op_cancellation

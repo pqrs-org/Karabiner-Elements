@@ -23,15 +23,15 @@
 
 namespace asio {
 
-/// Class used to specify that an asynchronous operation is detached.
+/// A @ref completion_token type used to specify that an asynchronous operation
+/// is detached.
 /**
-
  * The detached_t class is used to indicate that an asynchronous operation is
  * detached. That is, there is no completion handler waiting for the
  * operation's result. A detached_t object may be passed as a handler to an
  * asynchronous operation, typically using the special value
  * @c asio::detached. For example:
-
+ *
  * @code my_socket.async_send(my_buffer, asio::detached);
  * @endcode
  */
@@ -93,7 +93,8 @@ public:
   }
 };
 
-/// A special value, similar to std::nothrow.
+/// A @ref completion_token object used to specify that an asynchronous
+/// operation is detached.
 /**
  * See the documentation for asio::detached_t for a usage example.
  */

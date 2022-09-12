@@ -30,6 +30,12 @@
 #include "asio/detail/push_options.hpp"
 
 namespace asio {
+namespace detail {
+
+template <typename> class initiate_async_buffered_fill;
+template <typename> class initiate_async_buffered_read_some;
+
+} // namespace detail
 
 /// Adds buffering to the read-related operations of a stream.
 /**
@@ -144,11 +150,15 @@ public:
       ASIO_COMPLETION_TOKEN_FOR(void (asio::error_code,
         std::size_t)) WriteHandler
           ASIO_DEFAULT_COMPLETION_TOKEN_TYPE(executor_type)>
-  ASIO_INITFN_AUTO_RESULT_TYPE(WriteHandler,
+  ASIO_INITFN_AUTO_RESULT_TYPE_PREFIX(WriteHandler,
       void (asio::error_code, std::size_t))
   async_write_some(const ConstBufferSequence& buffers,
       ASIO_MOVE_ARG(WriteHandler) handler
         ASIO_DEFAULT_COMPLETION_TOKEN(executor_type))
+    ASIO_INITFN_AUTO_RESULT_TYPE_SUFFIX((
+      declval<typename conditional<true, Stream&, WriteHandler>::type>()
+        .async_write_some(buffers,
+          ASIO_MOVE_CAST(WriteHandler)(handler))))
   {
     return next_layer_.async_write_some(buffers,
         ASIO_MOVE_CAST(WriteHandler)(handler));
@@ -171,11 +181,16 @@ public:
       ASIO_COMPLETION_TOKEN_FOR(void (asio::error_code,
         std::size_t)) ReadHandler
           ASIO_DEFAULT_COMPLETION_TOKEN_TYPE(executor_type)>
-  ASIO_INITFN_AUTO_RESULT_TYPE(ReadHandler,
+  ASIO_INITFN_AUTO_RESULT_TYPE_PREFIX(ReadHandler,
       void (asio::error_code, std::size_t))
   async_fill(
       ASIO_MOVE_ARG(ReadHandler) handler
-        ASIO_DEFAULT_COMPLETION_TOKEN(executor_type));
+        ASIO_DEFAULT_COMPLETION_TOKEN(executor_type))
+    ASIO_INITFN_AUTO_RESULT_TYPE_SUFFIX((
+      async_initiate<ReadHandler,
+        void (asio::error_code, std::size_t)>(
+          declval<detail::initiate_async_buffered_fill<Stream> >(),
+          handler, declval<detail::buffered_stream_storage*>())));
 
   /// Read some data from the stream. Returns the number of bytes read. Throws
   /// an exception on failure.
@@ -198,11 +213,16 @@ public:
       ASIO_COMPLETION_TOKEN_FOR(void (asio::error_code,
         std::size_t)) ReadHandler
           ASIO_DEFAULT_COMPLETION_TOKEN_TYPE(executor_type)>
-  ASIO_INITFN_AUTO_RESULT_TYPE(ReadHandler,
+  ASIO_INITFN_AUTO_RESULT_TYPE_PREFIX(ReadHandler,
       void (asio::error_code, std::size_t))
   async_read_some(const MutableBufferSequence& buffers,
       ASIO_MOVE_ARG(ReadHandler) handler
-        ASIO_DEFAULT_COMPLETION_TOKEN(executor_type));
+        ASIO_DEFAULT_COMPLETION_TOKEN(executor_type))
+    ASIO_INITFN_AUTO_RESULT_TYPE_SUFFIX((
+      async_initiate<ReadHandler,
+        void (asio::error_code, std::size_t)>(
+          declval<detail::initiate_async_buffered_read_some<Stream> >(),
+          handler, declval<detail::buffered_stream_storage*>(), buffers)));
 
   /// Peek at the incoming data on the stream. Returns the number of bytes read.
   /// Throws an exception on failure.

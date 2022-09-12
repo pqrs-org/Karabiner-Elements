@@ -106,11 +106,11 @@ struct parallel_group_completion_handler
 
   void operator()()
   {
-    this->invoke(std::make_index_sequence<sizeof...(Ops)>());
+    this->invoke(asio::detail::make_index_sequence<sizeof...(Ops)>());
   }
 
   template <std::size_t... I>
-  void invoke(std::index_sequence<I...>)
+  void invoke(asio::detail::index_sequence<I...>)
   {
     this->invoke(std::tuple_cat(std::move(std::get<I>(args_).get())...));
   }
@@ -118,11 +118,13 @@ struct parallel_group_completion_handler
   template <typename... Args>
   void invoke(std::tuple<Args...>&& args)
   {
-    this->invoke(std::move(args), std::make_index_sequence<sizeof...(Args)>());
+    this->invoke(std::move(args),
+        asio::detail::index_sequence_for<Args...>());
   }
 
   template <typename... Args, std::size_t... I>
-  void invoke(std::tuple<Args...>&& args, std::index_sequence<I...>)
+  void invoke(std::tuple<Args...>&& args,
+      asio::detail::index_sequence<I...>)
   {
     std::move(handler_)(completion_order_, std::move(std::get<I>(args))...);
   }
@@ -133,7 +135,7 @@ struct parallel_group_completion_handler
   std::tuple<
       parallel_group_op_result<
         typename parallel_op_signature_as_tuple<
-          typename parallel_op_signature<Ops>::type
+          typename completion_signature_of<Ops>::type
         >::type
       >...
     > args_{};
@@ -356,7 +358,7 @@ struct parallel_group_cancellation_handler
 template <typename Condition, typename Handler,
     typename... Ops, std::size_t... I>
 void parallel_group_launch(Condition cancellation_condition, Handler handler,
-    std::tuple<Ops...>& ops, std::index_sequence<I...>)
+    std::tuple<Ops...>& ops, asio::detail::index_sequence<I...>)
 {
   // Get the user's completion handler's cancellation slot, so that we can allow
   // cancellation of the entire group.
@@ -392,23 +394,6 @@ void parallel_group_launch(Condition cancellation_condition, Handler handler,
 
 } // namespace detail
 } // namespace experimental
-
-template <typename R, typename... Args>
-class async_result<
-    experimental::detail::parallel_op_signature_probe,
-    R(Args...)>
-{
-public:
-  typedef experimental::detail::parallel_op_signature_probe_result<
-    void(Args...)> return_type;
-
-  template <typename Initiation, typename... InitArgs>
-  static return_type initiate(Initiation&&,
-      experimental::detail::parallel_op_signature_probe, InitArgs&&...)
-  {
-    return return_type{};
-  }
-};
 
 template <template <typename, typename> class Associator,
     typename Handler, typename... Ops, typename DefaultCandidate>

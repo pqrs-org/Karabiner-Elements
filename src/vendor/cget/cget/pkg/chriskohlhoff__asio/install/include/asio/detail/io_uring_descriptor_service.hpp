@@ -130,6 +130,7 @@ public:
   {
     descriptor_ops::ioctl(impl.descriptor_, impl.state_,
         command.name(), static_cast<ioctl_arg_type*>(command.data()), ec);
+    ASIO_ERROR_LOCATION(ec);
     return ec;
   }
 
@@ -145,6 +146,7 @@ public:
   {
     descriptor_ops::set_user_non_blocking(
         impl.descriptor_, impl.state_, mode, ec);
+    ASIO_ERROR_LOCATION(ec);
     return ec;
   }
 
@@ -160,6 +162,7 @@ public:
   {
     descriptor_ops::set_internal_non_blocking(
         impl.descriptor_, impl.state_, mode, ec);
+    ASIO_ERROR_LOCATION(ec);
     return ec;
   }
 
@@ -184,6 +187,7 @@ public:
       break;
     }
 
+    ASIO_ERROR_LOCATION(ec);
     return ec;
   }
 
@@ -252,9 +256,10 @@ public:
     typedef buffer_sequence_adapter<asio::const_buffer,
         ConstBufferSequence> bufs_type;
 
+    size_t n;
     if (bufs_type::is_single_buffer)
     {
-      return descriptor_ops::sync_write1(impl.descriptor_,
+      n = descriptor_ops::sync_write1(impl.descriptor_,
           impl.state_, bufs_type::first(buffers).data(),
           bufs_type::first(buffers).size(), ec);
     }
@@ -262,9 +267,12 @@ public:
     {
       bufs_type bufs(buffers);
 
-      return descriptor_ops::sync_write(impl.descriptor_, impl.state_,
+      n = descriptor_ops::sync_write(impl.descriptor_, impl.state_,
           bufs.buffers(), bufs.count(), bufs.all_empty(), ec);
     }
+
+    ASIO_ERROR_LOCATION(ec);
+    return n;
   }
 
   // Wait until data can be written without blocking.
@@ -274,6 +282,7 @@ public:
     // Wait for descriptor to become ready.
     descriptor_ops::poll_write(impl.descriptor_, impl.state_, ec);
 
+    ASIO_ERROR_LOCATION(ec);
     return 0;
   }
 
@@ -356,9 +365,10 @@ public:
     typedef buffer_sequence_adapter<asio::const_buffer,
         ConstBufferSequence> bufs_type;
 
+    size_t n;
     if (bufs_type::is_single_buffer)
     {
-      return descriptor_ops::sync_write_at1(impl.descriptor_,
+      n = descriptor_ops::sync_write_at1(impl.descriptor_,
           impl.state_, offset, bufs_type::first(buffers).data(),
           bufs_type::first(buffers).size(), ec);
     }
@@ -366,9 +376,12 @@ public:
     {
       bufs_type bufs(buffers);
 
-      return descriptor_ops::sync_write_at(impl.descriptor_, impl.state_,
+      n = descriptor_ops::sync_write_at(impl.descriptor_, impl.state_,
           offset, bufs.buffers(), bufs.count(), bufs.all_empty(), ec);
     }
+
+    ASIO_ERROR_LOCATION(ec);
+    return n;
   }
 
   // Wait until data can be written without blocking.
@@ -432,9 +445,10 @@ public:
     typedef buffer_sequence_adapter<asio::mutable_buffer,
         MutableBufferSequence> bufs_type;
 
+    size_t n;
     if (bufs_type::is_single_buffer)
     {
-      return descriptor_ops::sync_read1(impl.descriptor_,
+      n = descriptor_ops::sync_read1(impl.descriptor_,
           impl.state_, bufs_type::first(buffers).data(),
           bufs_type::first(buffers).size(), ec);
     }
@@ -442,9 +456,12 @@ public:
     {
       bufs_type bufs(buffers);
 
-      return descriptor_ops::sync_read(impl.descriptor_, impl.state_,
+      n = descriptor_ops::sync_read(impl.descriptor_, impl.state_,
           bufs.buffers(), bufs.count(), bufs.all_empty(), ec);
     }
+
+    ASIO_ERROR_LOCATION(ec);
+    return n;
   }
 
   // Wait until data can be read without blocking.
@@ -454,6 +471,7 @@ public:
     // Wait for descriptor to become ready.
     descriptor_ops::poll_read(impl.descriptor_, impl.state_, ec);
 
+    ASIO_ERROR_LOCATION(ec);
     return 0;
   }
 

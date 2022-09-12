@@ -15,6 +15,8 @@
 # pragma once
 #endif // defined(_MSC_VER) && (_MSC_VER >= 1200)
 
+#include "asio/append.hpp"
+#include "asio/as_tuple.hpp"
 #include "asio/associated_allocator.hpp"
 #include "asio/associated_executor.hpp"
 #include "asio/associated_cancellation_slot.hpp"
@@ -63,6 +65,7 @@
 #include "asio/coroutine.hpp"
 #include "asio/deadline_timer.hpp"
 #include "asio/defer.hpp"
+#include "asio/deferred.hpp"
 #include "asio/detached.hpp"
 #include "asio/dispatch.hpp"
 #include "asio/error.hpp"
@@ -137,6 +140,7 @@
 #include "asio/ip/unicast.hpp"
 #include "asio/ip/v6_only.hpp"
 #include "asio/is_applicable_property.hpp"
+#include "asio/is_contiguous_iterator.hpp"
 #include "asio/is_executor.hpp"
 #include "asio/is_read_buffered.hpp"
 #include "asio/is_write_buffered.hpp"
@@ -154,6 +158,7 @@
 #include "asio/posix/stream_descriptor.hpp"
 #include "asio/post.hpp"
 #include "asio/prefer.hpp"
+#include "asio/prepend.hpp"
 #include "asio/query.hpp"
 #include "asio/random_access_file.hpp"
 #include "asio/read.hpp"

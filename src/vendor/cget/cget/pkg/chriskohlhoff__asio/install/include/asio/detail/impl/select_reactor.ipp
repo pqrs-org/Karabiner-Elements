@@ -66,6 +66,7 @@ select_reactor::select_reactor(asio::execution_context& ctx)
 #if defined(ASIO_HAS_IOCP)
     stop_thread_(false),
     thread_(0),
+    restart_reactor_(this),
 #endif // defined(ASIO_HAS_IOCP)
     shutdown_(false)
 {
@@ -113,8 +114,12 @@ void select_reactor::shutdown()
 void select_reactor::notify_fork(
     asio::execution_context::fork_event fork_ev)
 {
+#if defined(ASIO_HAS_IOCP)
+  (void)fork_ev;
+#else // defined(ASIO_HAS_IOCP)
   if (fork_ev == asio::execution_context::fork_child)
     interrupter_.recreate();
+#endif // defined(ASIO_HAS_IOCP)
 }
 
 void select_reactor::init_task()
@@ -262,7 +267,12 @@ void select_reactor::run(long usec, op_queue<operation>& ops)
     if (!interrupter_.reset())
     {
       lock.lock();
+#if defined(ASIO_HAS_IOCP)
+      stop_thread_ = true;
+      scheduler_.post_immediate_completion(&restart_reactor_, false);
+#else // defined(ASIO_HAS_IOCP)
       interrupter_.recreate();
+#endif // defined(ASIO_HAS_IOCP)
     }
     --retval;
   }
@@ -302,6 +312,31 @@ void select_reactor::run_thread()
     run(true, ops);
     scheduler_.post_deferred_completions(ops);
     lock.lock();
+  }
+}
+
+void select_reactor::restart_reactor::do_complete(void* owner, operation* base,
+    const asio::error_code& /*ec*/, std::size_t /*bytes_transferred*/)
+{
+  if (owner)
+  {
+    select_reactor* reactor = static_cast<restart_reactor*>(base)->reactor_;
+
+    if (reactor->thread_)
+    {
+      reactor->thread_->join();
+      delete reactor->thread_;
+      reactor->thread_ = 0;
+    }
+
+    asio::detail::mutex::scoped_lock lock(reactor->mutex_);
+    reactor->interrupter_.recreate();
+    reactor->stop_thread_ = false;
+    lock.unlock();
+
+    asio::detail::signal_blocker sb;
+    reactor->thread_ =
+      new asio::detail::thread(thread_function(reactor));
   }
 }
 #endif // defined(ASIO_HAS_IOCP)

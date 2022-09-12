@@ -223,6 +223,41 @@ enum misc_errors
   fd_set_failure
 };
 
+// boostify: non-boost code starts here
+#if !defined(ASIO_ERROR_LOCATION)
+# define ASIO_ERROR_LOCATION(e) (void)0
+#endif // !defined(ASIO_ERROR_LOCATION)
+
+// boostify: non-boost code ends here
+#if !defined(ASIO_ERROR_LOCATION) \
+  && !defined(ASIO_DISABLE_ERROR_LOCATION) \
+  && defined(ASIO_HAS_BOOST_CONFIG) \
+  && (BOOST_VERSION >= 107900)
+
+# define ASIO_ERROR_LOCATION(e) \
+  do { \
+    BOOST_STATIC_CONSTEXPR boost::source_location loc \
+      = BOOST_CURRENT_LOCATION; \
+    (e).assign((e), &loc); \
+  } while (false)
+
+#else // !defined(ASIO_ERROR_LOCATION)
+      //   && !defined(ASIO_DISABLE_ERROR_LOCATION)
+      //   && defined(ASIO_HAS_BOOST_CONFIG)
+      //   && (BOOST_VERSION >= 107900)
+
+# define ASIO_ERROR_LOCATION(e) (void)0
+
+#endif // !defined(ASIO_ERROR_LOCATION)
+       //   && !defined(ASIO_DISABLE_ERROR_LOCATION)
+       //   && defined(ASIO_HAS_BOOST_CONFIG)
+       //   && (BOOST_VERSION >= 107900)
+
+inline void clear(asio::error_code& ec)
+{
+  ec.assign(0, ec.category());
+}
+
 inline const asio::error_category& get_system_category()
 {
   return asio::system_category();

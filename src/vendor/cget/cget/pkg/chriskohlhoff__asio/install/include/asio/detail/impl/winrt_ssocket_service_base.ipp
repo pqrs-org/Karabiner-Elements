@@ -182,7 +182,7 @@ std::size_t winrt_ssocket_service_base::do_get_endpoint(
         : impl.socket_->Information->RemotePort);
     unsigned long scope = 0;
 
-    switch (reinterpret_cast<const socket_addr_type*>(addr)->sa_family)
+    switch (static_cast<const socket_addr_type*>(addr)->sa_family)
     {
     case ASIO_OS_DEF(AF_INET):
       if (addr_len < sizeof(sockaddr_in4_type))
@@ -351,7 +351,7 @@ asio::error_code winrt_ssocket_service_base::do_connect(
 
   char addr_string[max_addr_v6_str_len];
   unsigned short port;
-  switch (reinterpret_cast<const socket_addr_type*>(addr)->sa_family)
+  switch (static_cast<const socket_addr_type*>(addr)->sa_family)
   {
   case ASIO_OS_DEF(AF_INET):
     socket_ops::inet_ntop(ASIO_OS_DEF(AF_INET),
@@ -401,7 +401,7 @@ void winrt_ssocket_service_base::start_connect_op(
 
   char addr_string[max_addr_v6_str_len];
   unsigned short port = 0;
-  switch (reinterpret_cast<const socket_addr_type*>(addr)->sa_family)
+  switch (static_cast<const socket_addr_type*>(addr)->sa_family)
   {
   case ASIO_OS_DEF(AF_INET):
     socket_ops::inet_ntop(ASIO_OS_DEF(AF_INET),

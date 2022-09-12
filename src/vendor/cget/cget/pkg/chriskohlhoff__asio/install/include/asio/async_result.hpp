@@ -808,6 +808,40 @@ struct async_result_has_initiate_memfn
 #endif
 
 #if defined(GENERATING_DOCUMENTATION)
+# define ASIO_INITFN_AUTO_RESULT_TYPE_PREFIX(ct, sig) \
+  auto
+# define ASIO_INITFN_AUTO_RESULT_TYPE_PREFIX2(ct, sig0, sig1) \
+  auto
+# define ASIO_INITFN_AUTO_RESULT_TYPE_PREFIX3(ct, sig0, sig1, sig2) \
+  auto
+# define ASIO_INITFN_AUTO_RESULT_TYPE_SUFFIX(expr)
+#elif defined(ASIO_HAS_RETURN_TYPE_DEDUCTION)
+# define ASIO_INITFN_AUTO_RESULT_TYPE_PREFIX(ct, sig) \
+  auto
+# define ASIO_INITFN_AUTO_RESULT_TYPE_PREFIX2(ct, sig0, sig1) \
+  auto
+# define ASIO_INITFN_AUTO_RESULT_TYPE_PREFIX3(ct, sig0, sig1, sig2) \
+  auto
+# define ASIO_INITFN_AUTO_RESULT_TYPE_SUFFIX(expr)
+#elif defined(ASIO_HAS_DECLTYPE)
+# define ASIO_INITFN_AUTO_RESULT_TYPE_PREFIX(ct, sig) \
+  auto
+# define ASIO_INITFN_AUTO_RESULT_TYPE_PREFIX2(ct, sig0, sig1) \
+  auto
+# define ASIO_INITFN_AUTO_RESULT_TYPE_PREFIX3(ct, sig0, sig1, sig2) \
+  auto
+# define ASIO_INITFN_AUTO_RESULT_TYPE_SUFFIX(expr) -> decltype expr
+#else
+# define ASIO_INITFN_AUTO_RESULT_TYPE_PREFIX(ct, sig) \
+  ASIO_INITFN_RESULT_TYPE(ct, sig)
+# define ASIO_INITFN_AUTO_RESULT_TYPE_PREFIX2(ct, sig0, sig1) \
+  ASIO_INITFN_RESULT_TYPE2(ct, sig0, sig1)
+# define ASIO_INITFN_AUTO_RESULT_TYPE_PREFIX3(ct, sig0, sig1, sig2) \
+  ASIO_INITFN_RESULT_TYPE3(ct, sig0, sig1, sig2)
+# define ASIO_INITFN_AUTO_RESULT_TYPE_SUFFIX(expr)
+#endif
+
+#if defined(GENERATING_DOCUMENTATION)
 # define ASIO_INITFN_DEDUCED_RESULT_TYPE(ct, sig, expr) \
   void_or_deduced
 # define ASIO_INITFN_DEDUCED_RESULT_TYPE2(ct, sig0, sig1, expr) \
@@ -1198,6 +1232,328 @@ ASIO_CONCEPT completion_token_for =
 #endif // defined(ASIO_HAS_CONCEPTS)
        //   && defined(ASIO_HAS_VARIADIC_TEMPLATES)
        //   && defined(ASIO_HAS_DECLTYPE)
+
+namespace detail {
+
+struct async_operation_probe {};
+struct async_operation_probe_result {};
+
+template <typename Call, typename = void>
+struct is_async_operation_call : false_type
+{
+};
+
+template <typename Call>
+struct is_async_operation_call<Call,
+    typename void_type<
+      typename enable_if<
+        is_same<
+          typename result_of<Call>::type,
+          async_operation_probe_result
+        >::value
+      >::type
+    >::type> : true_type
+{
+};
+
+} // namespace detail
+
+#if !defined(GENERATING_DOCUMENTATION)
+#if defined(ASIO_HAS_VARIADIC_TEMPLATES)
+
+template <typename... Signatures>
+class async_result<detail::async_operation_probe, Signatures...>
+{
+public:
+  typedef detail::async_operation_probe_result return_type;
+
+  template <typename Initiation, typename... InitArgs>
+  static return_type initiate(ASIO_MOVE_ARG(Initiation),
+      detail::async_operation_probe, ASIO_MOVE_ARG(InitArgs)...)
+  {
+    return return_type();
+  }
+};
+
+#else // defined(ASIO_HAS_VARIADIC_TEMPLATES)
+
+namespace detail {
+
+struct async_result_probe_base
+{
+  typedef detail::async_operation_probe_result return_type;
+
+  template <typename Initiation>
+  static return_type initiate(ASIO_MOVE_ARG(Initiation),
+      detail::async_operation_probe)
+  {
+    return return_type();
+  }
+
+#define ASIO_PRIVATE_INITIATE_DEF(n) \
+  template <typename Initiation, ASIO_VARIADIC_TPARAMS(n)> \
+  static return_type initiate(ASIO_MOVE_ARG(Initiation), \
+      detail::async_operation_probe, \
+      ASIO_VARIADIC_UNNAMED_MOVE_PARAMS(n)) \
+  { \
+    return return_type(); \
+  } \
+  /**/
+  ASIO_VARIADIC_GENERATE(ASIO_PRIVATE_INITIATE_DEF)
+#undef ASIO_PRIVATE_INITIATE_DEF
+};
+
+} // namespace detail
+
+template <typename Sig0>
+class async_result<detail::async_operation_probe, Sig0>
+  : public detail::async_result_probe_base {};
+
+template <typename Sig0, typename Sig1>
+class async_result<detail::async_operation_probe, Sig0, Sig1>
+  : public detail::async_result_probe_base {};
+
+template <typename Sig0, typename Sig1, typename Sig2>
+class async_result<detail::async_operation_probe, Sig0, Sig1, Sig2>
+  : public detail::async_result_probe_base {};
+
+#endif // defined(ASIO_HAS_VARIADIC_TEMPLATES)
+#endif // !defined(GENERATING_DOCUMENTATION)
+
+#if defined(GENERATION_DOCUMENTATION)
+
+/// The is_async_operation trait detects whether a type @c T and arguments
+/// @c Args... may be used to initiate an asynchronous operation.
+/**
+ * Class template @c is_async_operation is a trait is derived from @c true_type
+ * if the expression <tt>T(Args..., token)</tt> initiates an asynchronous
+ * operation, where @c token is an unspecified completion token type. Otherwise,
+ * @c is_async_operation is derived from @c false_type.
+ */
+template <typename T, typename... Args>
+struct is_async_operation : integral_constant<bool, automatically_determined>
+{
+};
+
+#elif defined(ASIO_HAS_VARIADIC_TEMPLATES)
+
+template <typename T, typename... Args>
+struct is_async_operation :
+  detail::is_async_operation_call<
+    T(Args..., detail::async_operation_probe)>
+{
+};
+
+#else // defined(ASIO_HAS_VARIADIC_TEMPLATES)
+
+template <typename T, typename = void, typename = void, typename = void,
+    typename = void, typename = void, typename = void, typename = void,
+    typename = void, typename = void>
+struct is_async_operation :
+  detail::is_async_operation_call<
+    T(detail::async_operation_probe)>
+{
+};
+
+#define ASIO_PRIVATE_IS_ASYNC_OP_DEF(n) \
+  template <typename T, ASIO_VARIADIC_TPARAMS(n)> \
+  struct is_async_operation<T, ASIO_VARIADIC_TARGS(n)> : \
+    detail::is_async_operation_call< \
+      T(ASIO_VARIADIC_TARGS(n), detail::async_operation_probe)> \
+  { \
+  }; \
+  /**/
+  ASIO_VARIADIC_GENERATE(ASIO_PRIVATE_IS_ASYNC_OP_DEF)
+#undef ASIO_PRIVATE_IS_ASYNC_OP_DEF
+
+#endif // defined(ASIO_HAS_VARIADIC_TEMPLATES)
+
+#if defined(ASIO_HAS_CONCEPTS) \
+  && defined(ASIO_HAS_VARIADIC_TEMPLATES)
+
+template <typename T, typename... Args>
+ASIO_CONCEPT async_operation = is_async_operation<T, Args...>::value;
+
+#define ASIO_ASYNC_OPERATION(t) \
+  ::asio::async_operation<t>
+#define ASIO_ASYNC_OPERATION1(t, a0) \
+  ::asio::async_operation<t, a0>
+#define ASIO_ASYNC_OPERATION2(t, a0, a1) \
+  ::asio::async_operation<t, a0, a1>
+#define ASIO_ASYNC_OPERATION3(t, a0, a1, a2) \
+  ::asio::async_operation<t, a0, a1, a2>
+
+#else // defined(ASIO_HAS_CONCEPTS)
+      //   && defined(ASIO_HAS_VARIADIC_TEMPLATES)
+
+#define ASIO_ASYNC_OPERATION(t) typename
+#define ASIO_ASYNC_OPERATION1(t, a0) typename
+#define ASIO_ASYNC_OPERATION2(t, a0, a1) typename
+#define ASIO_ASYNC_OPERATION3(t, a0, a1, a2) typename
+
+#endif // defined(ASIO_HAS_CONCEPTS)
+       //   && defined(ASIO_HAS_VARIADIC_TEMPLATES)
+
+namespace detail {
+
+struct completion_signature_probe {};
+
+template <typename T>
+struct completion_signature_probe_result
+{
+  typedef T type;
+};
+
+template <>
+struct completion_signature_probe_result<void>
+{
+};
+
+} // namespace detail
+
+#if !defined(GENERATING_DOCUMENTATION)
+#if defined(ASIO_HAS_VARIADIC_TEMPLATES)
+
+template <typename... Signatures>
+class async_result<detail::completion_signature_probe, Signatures...>
+{
+public:
+  typedef detail::completion_signature_probe_result<void> return_type;
+
+  template <typename Initiation, typename... InitArgs>
+  static return_type initiate(ASIO_MOVE_ARG(Initiation),
+      detail::completion_signature_probe, ASIO_MOVE_ARG(InitArgs)...)
+  {
+    return return_type();
+  }
+};
+
+template <typename Signature>
+class async_result<detail::completion_signature_probe, Signature>
+{
+public:
+  typedef detail::completion_signature_probe_result<Signature> return_type;
+
+  template <typename Initiation, typename... InitArgs>
+  static return_type initiate(ASIO_MOVE_ARG(Initiation),
+      detail::completion_signature_probe, ASIO_MOVE_ARG(InitArgs)...)
+  {
+    return return_type();
+  }
+};
+
+#else // defined(ASIO_HAS_VARIADIC_TEMPLATES)
+
+namespace detail {
+
+template <typename Signature>
+class async_result_sig_probe_base
+{
+public:
+  typedef detail::completion_signature_probe_result<Signature> return_type;
+
+  template <typename Initiation>
+  static return_type initiate(ASIO_MOVE_ARG(Initiation),
+      detail::async_operation_probe)
+  {
+    return return_type();
+  }
+
+#define ASIO_PRIVATE_INITIATE_DEF(n) \
+  template <typename Initiation, ASIO_VARIADIC_TPARAMS(n)> \
+  static return_type initiate(ASIO_MOVE_ARG(Initiation), \
+      detail::completion_signature_probe, \
+      ASIO_VARIADIC_UNNAMED_MOVE_PARAMS(n)) \
+  { \
+    return return_type(); \
+  } \
+  /**/
+  ASIO_VARIADIC_GENERATE(ASIO_PRIVATE_INITIATE_DEF)
+#undef ASIO_PRIVATE_INITIATE_DEF
+};
+
+} // namespace detail
+
+template <>
+class async_result<detail::completion_signature_probe>
+  : public detail::async_result_sig_probe_base<void> {};
+
+template <typename Sig0>
+class async_result<detail::completion_signature_probe, Sig0>
+  : public detail::async_result_sig_probe_base<Sig0> {};
+
+template <typename Sig0, typename Sig1>
+class async_result<detail::completion_signature_probe, Sig0, Sig1>
+  : public detail::async_result_sig_probe_base<void> {};
+
+template <typename Sig0, typename Sig1, typename Sig2>
+class async_result<detail::completion_signature_probe, Sig0, Sig1, Sig2>
+  : public detail::async_result_sig_probe_base<void> {};
+
+#endif // defined(ASIO_HAS_VARIADIC_TEMPLATES)
+#endif // !defined(GENERATING_DOCUMENTATION)
+
+#if defined(GENERATING_DOCUMENTATION)
+
+/// The completion_signature_of trait determines the completion signature
+/// of an asynchronous operation.
+/**
+ * Class template @c completion_signature_of is a trait with a member type
+ * alias @c type that denotes the completion signature of the asynchronous
+ * operation initiated by the expression <tt>T(Args..., token)</tt> operation,
+ * where @c token is an unspecified completion token type. If the asynchronous
+ * operation does not have exactly one completion signature, the instantion of
+ * the trait is well-formed but the member type alias @c type is omitted. If
+ * the expression <tt>T(Args..., token)</tt> is not an asynchronous operation
+ * then use of the trait is ill-formed.
+ */
+template <typename T, typename... Args>
+struct completion_signature_of
+{
+  typedef automatically_determined type;
+};
+
+template <typename T, typename... Args>
+using completion_signature_of_t =
+  typename completion_signature_of<T, Args...>::type;
+
+#elif defined(ASIO_HAS_VARIADIC_TEMPLATES)
+
+template <typename T, typename... Args>
+struct completion_signature_of :
+  result_of<T(Args..., detail::completion_signature_probe)>::type
+{
+};
+
+#if defined(ASIO_HAS_ALIAS_TEMPLATES)
+template <typename T, typename... Args>
+using completion_signature_of_t =
+  typename completion_signature_of<T, Args...>::type;
+#endif // defined(ASIO_HAS_ALIAS_TEMPLATES)
+
+#else // defined(ASIO_HAS_VARIADIC_TEMPLATES)
+
+template <typename T, typename = void, typename = void, typename = void,
+    typename = void, typename = void, typename = void, typename = void,
+    typename = void, typename = void>
+struct completion_signature_of :
+  result_of<T(detail::completion_signature_probe)>::type
+{
+};
+
+#define ASIO_PRIVATE_COMPLETION_SIG_OF_DEF(n) \
+  template <typename T, ASIO_VARIADIC_TPARAMS(n)> \
+  struct completion_signature_of<T, ASIO_VARIADIC_TARGS(n)> : \
+    result_of< \
+      T(ASIO_VARIADIC_TARGS(n), \
+        detail::completion_signature_probe)>::type \
+  { \
+  }; \
+  /**/
+  ASIO_VARIADIC_GENERATE(ASIO_PRIVATE_COMPLETION_SIG_OF_DEF)
+#undef ASIO_PRIVATE_COMPLETION_SIG_OF_DEF
+
+#endif // defined(ASIO_HAS_VARIADIC_TEMPLATES)
 
 namespace detail {
 

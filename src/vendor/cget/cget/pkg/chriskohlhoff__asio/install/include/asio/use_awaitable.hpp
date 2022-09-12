@@ -32,7 +32,7 @@
 
 namespace asio {
 
-/// A completion token that represents the currently executing coroutine.
+/// A @ref completion_token that represents the currently executing coroutine.
 /**
  * The @c use_awaitable_t class, with its value @c use_awaitable, is used to
  * represent the currently executing coroutine. This completion token may be
@@ -143,7 +143,8 @@ struct use_awaitable_t
 #endif // defined(ASIO_ENABLE_HANDLER_TRACKING)
 };
 
-/// A completion token object that represents the currently executing coroutine.
+/// A @ref completion_token object that represents the currently executing
+/// coroutine.
 /**
  * See the documentation for asio::use_awaitable_t for a usage example.
  */

@@ -101,6 +101,7 @@ asio::error_code io_uring_descriptor_service::assign(
   if (is_open(impl))
   {
     ec = asio::error::already_open;
+    ASIO_ERROR_LOCATION(ec);
     return ec;
   }
 
@@ -137,6 +138,7 @@ asio::error_code io_uring_descriptor_service::close(
   //   http://lkml.org/lkml/2005/9/10/129
   construct(impl);
 
+  ASIO_ERROR_LOCATION(ec);
   return ec;
 }
 
@@ -166,6 +168,7 @@ asio::error_code io_uring_descriptor_service::cancel(
   if (!is_open(impl))
   {
     ec = asio::error::bad_descriptor;
+    ASIO_ERROR_LOCATION(ec);
     return ec;
   }
 

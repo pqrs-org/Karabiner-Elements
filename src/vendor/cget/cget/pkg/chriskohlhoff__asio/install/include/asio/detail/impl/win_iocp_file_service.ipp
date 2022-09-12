@@ -56,6 +56,7 @@ asio::error_code win_iocp_file_service::open(
   if (is_open(impl))
   {
     ec = asio::error::already_open;
+    ASIO_ERROR_LOCATION(ec);
     return ec;
   }
 
@@ -66,6 +67,8 @@ asio::error_code win_iocp_file_service::open(
     access = GENERIC_WRITE;
   else if ((open_flags & file_base::read_write) != 0)
     access = GENERIC_READ | GENERIC_WRITE;
+
+  DWORD share = FILE_SHARE_READ | FILE_SHARE_WRITE;
 
   DWORD disposition = 0;
   if ((open_flags & file_base::create) != 0)
@@ -91,7 +94,7 @@ asio::error_code win_iocp_file_service::open(
   if ((open_flags & file_base::sync_all_on_write) != 0)
     flags |= FILE_FLAG_WRITE_THROUGH;
 
-  HANDLE handle = ::CreateFileA(path, access, 0, 0, disposition, flags, 0);
+  HANDLE handle = ::CreateFileA(path, access, share, 0, disposition, flags, 0);
   if (handle != INVALID_HANDLE_VALUE)
   {
     if (disposition == OPEN_ALWAYS && (open_flags & file_base::truncate) != 0)
@@ -101,6 +104,7 @@ asio::error_code win_iocp_file_service::open(
         DWORD last_error = ::GetLastError();
         ::CloseHandle(handle);
         ec.assign(last_error, asio::error::get_system_category());
+        ASIO_ERROR_LOCATION(ec);
         return ec;
       }
     }
@@ -109,12 +113,14 @@ asio::error_code win_iocp_file_service::open(
     if (ec)
       ::CloseHandle(handle);
     impl.offset_ = 0;
+    ASIO_ERROR_LOCATION(ec);
     return ec;
   }
   else
   {
     DWORD last_error = ::GetLastError();
     ec.assign(last_error, asio::error::get_system_category());
+    ASIO_ERROR_LOCATION(ec);
     return ec;
   }
 }
@@ -126,13 +132,14 @@ uint64_t win_iocp_file_service::size(
   LARGE_INTEGER result;
   if (::GetFileSizeEx(native_handle(impl), &result))
   {
-    ec.assign(0, ec.category());
+    asio::error::clear(ec);
     return static_cast<uint64_t>(result.QuadPart);
   }
   else
   {
     DWORD last_error = ::GetLastError();
     ec.assign(last_error, asio::error::get_system_category());
+    ASIO_ERROR_LOCATION(ec);
     return 0;
   }
 }
@@ -156,15 +163,17 @@ asio::error_code win_iocp_file_service::resize(
     }
 
     if (result)
-      ec.assign(0, ec.category());
+      asio::error::clear(ec);
     else
       ec.assign(last_error, asio::error::get_system_category());
+    ASIO_ERROR_LOCATION(ec);
     return ec;
   }
   else
   {
     DWORD last_error = ::GetLastError();
     ec.assign(last_error, asio::error::get_system_category());
+    ASIO_ERROR_LOCATION(ec);
     return ec;
   }
 }
@@ -176,13 +185,14 @@ asio::error_code win_iocp_file_service::sync_all(
   BOOL result = ::FlushFileBuffers(native_handle(impl));
   if (result)
   {
-    ec.assign(0, ec.category());
+    asio::error::clear(ec);
     return ec;
   }
   else
   {
     DWORD last_error = ::GetLastError();
     ec.assign(last_error, asio::error::get_system_category());
+    ASIO_ERROR_LOCATION(ec);
     return ec;
   }
 }
@@ -197,7 +207,7 @@ asio::error_code win_iocp_file_service::sync_data(
     if (!nt_flush_buffers_file_ex_(native_handle(impl),
           flush_flags_file_data_sync_only, 0, 0, &status))
     {
-      ec.assign(0, ec.category());
+      asio::error::clear(ec);
       return ec;
     }
   }
@@ -222,6 +232,7 @@ uint64_t win_iocp_file_service::seek(
     break;
   default:
     ec = asio::error::invalid_argument;
+    ASIO_ERROR_LOCATION(ec);
     return 0;
   }
 
@@ -230,13 +241,14 @@ uint64_t win_iocp_file_service::seek(
   if (::SetFilePointerEx(native_handle(impl), distance, &new_offset, method))
   {
     impl.offset_ = new_offset.QuadPart;
-    ec.assign(0, ec.category());
+    asio::error::clear(ec);
     return impl.offset_;
   }
   else
   {
     DWORD last_error = ::GetLastError();
     ec.assign(last_error, asio::error::get_system_category());
+    ASIO_ERROR_LOCATION(ec);
     return 0;
   }
 }

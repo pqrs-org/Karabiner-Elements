@@ -78,10 +78,12 @@ public:
 
   void operator()()
   {
+    typename associated_allocator<Handler>::type alloc(
+        (get_associated_allocator)(handler_));
     execution::execute(
         asio::prefer(executor_,
           execution::blocking.possibly,
-          execution::allocator((get_associated_allocator)(handler_))),
+          execution::allocator(alloc)),
         asio::detail::bind_handler(
           ASIO_MOVE_CAST(Handler)(handler_)));
   }

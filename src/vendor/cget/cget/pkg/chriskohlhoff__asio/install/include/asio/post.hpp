@@ -25,6 +25,12 @@
 #include "asio/detail/push_options.hpp"
 
 namespace asio {
+namespace detail {
+
+class initiate_post;
+template <typename> class initiate_post_with_executor;
+
+} // namespace detail
 
 /// Submits a completion token or function object for execution.
 /**
@@ -75,8 +81,11 @@ namespace asio {
  * @code void() @endcode
  */
 template <ASIO_COMPLETION_TOKEN_FOR(void()) NullaryToken>
-ASIO_INITFN_AUTO_RESULT_TYPE(NullaryToken, void()) post(
-    ASIO_MOVE_ARG(NullaryToken) token);
+ASIO_INITFN_AUTO_RESULT_TYPE_PREFIX(NullaryToken, void()) post(
+    ASIO_MOVE_ARG(NullaryToken) token)
+  ASIO_INITFN_AUTO_RESULT_TYPE_SUFFIX((
+    async_initiate<NullaryToken, void()>(
+        declval<detail::initiate_post>(), token)));
 
 /// Submits a completion token or function object for execution.
 /**
@@ -154,13 +163,16 @@ ASIO_INITFN_AUTO_RESULT_TYPE(NullaryToken, void()) post(
 template <typename Executor,
     ASIO_COMPLETION_TOKEN_FOR(void()) NullaryToken
       ASIO_DEFAULT_COMPLETION_TOKEN_TYPE(Executor)>
-ASIO_INITFN_AUTO_RESULT_TYPE(NullaryToken, void()) post(
+ASIO_INITFN_AUTO_RESULT_TYPE_PREFIX(NullaryToken, void()) post(
     const Executor& ex,
     ASIO_MOVE_ARG(NullaryToken) token
       ASIO_DEFAULT_COMPLETION_TOKEN(Executor),
     typename constraint<
       execution::is_executor<Executor>::value || is_executor<Executor>::value
-    >::type = 0);
+    >::type = 0)
+  ASIO_INITFN_AUTO_RESULT_TYPE_SUFFIX((
+    async_initiate<NullaryToken, void()>(
+        declval<detail::initiate_post_with_executor<Executor> >(), token)));
 
 /// Submits a completion token or function object for execution.
 /**
@@ -179,13 +191,17 @@ template <typename ExecutionContext,
     ASIO_COMPLETION_TOKEN_FOR(void()) NullaryToken
       ASIO_DEFAULT_COMPLETION_TOKEN_TYPE(
         typename ExecutionContext::executor_type)>
-ASIO_INITFN_AUTO_RESULT_TYPE(NullaryToken, void()) post(
+ASIO_INITFN_AUTO_RESULT_TYPE_PREFIX(NullaryToken, void()) post(
     ExecutionContext& ctx,
     ASIO_MOVE_ARG(NullaryToken) token
       ASIO_DEFAULT_COMPLETION_TOKEN(
         typename ExecutionContext::executor_type),
     typename constraint<is_convertible<
-      ExecutionContext&, execution_context&>::value>::type = 0);
+      ExecutionContext&, execution_context&>::value>::type = 0)
+  ASIO_INITFN_AUTO_RESULT_TYPE_SUFFIX((
+    async_initiate<NullaryToken, void()>(
+        declval<detail::initiate_post_with_executor<
+          typename ExecutionContext::executor_type> >(), token)));
 
 } // namespace asio
 

@@ -121,7 +121,7 @@ void create_pipe(native_pipe_handle p[2], asio::error_code& ec)
   }
 #endif // _WIN32_WINNT >= 0x601
 
-  ec.assign(0, ec.category());
+  asio::error::clear(ec);
 #else // defined(ASIO_HAS_IOCP)
   int result = ::pipe(p);
   detail::descriptor_ops::get_last_error(ec, result != 0);

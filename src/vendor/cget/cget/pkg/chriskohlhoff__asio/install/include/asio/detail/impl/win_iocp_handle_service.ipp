@@ -182,11 +182,15 @@ asio::error_code win_iocp_handle_service::assign(
   if (is_open(impl))
   {
     ec = asio::error::already_open;
+    ASIO_ERROR_LOCATION(ec);
     return ec;
   }
 
   if (iocp_service_.register_handle(handle, ec))
+  {
+    ASIO_ERROR_LOCATION(ec);
     return ec;
+  }
 
   impl.handle_ = handle;
   ec = asio::error_code();
@@ -221,6 +225,7 @@ asio::error_code win_iocp_handle_service::close(
     ec = asio::error_code();
   }
 
+  ASIO_ERROR_LOCATION(ec);
   return ec;
 }
 
@@ -233,12 +238,16 @@ win_iocp_handle_service::native_handle_type win_iocp_handle_service::release(
 
   cancel(impl, ec);
   if (ec)
+  {
+    ASIO_ERROR_LOCATION(ec);
     return INVALID_HANDLE_VALUE;
+  }
 
   nt_set_info_fn fn = get_nt_set_info();
   if (fn == 0)
   {
     ec = asio::error::operation_not_supported;
+    ASIO_ERROR_LOCATION(ec);
     return INVALID_HANDLE_VALUE;
   }
 
@@ -248,6 +257,7 @@ win_iocp_handle_service::native_handle_type win_iocp_handle_service::release(
         61 /* FileReplaceCompletionInformation */))
   {
     ec = asio::error::operation_not_supported;
+    ASIO_ERROR_LOCATION(ec);
     return INVALID_HANDLE_VALUE;
   }
 
@@ -263,6 +273,7 @@ asio::error_code win_iocp_handle_service::cancel(
   if (!is_open(impl))
   {
     ec = asio::error::bad_descriptor;
+    ASIO_ERROR_LOCATION(ec);
     return ec;
   }
 
@@ -324,6 +335,7 @@ asio::error_code win_iocp_handle_service::cancel(
     ec = asio::error::operation_not_supported;
   }
 
+  ASIO_ERROR_LOCATION(ec);
   return ec;
 }
 
@@ -334,6 +346,7 @@ size_t win_iocp_handle_service::do_write(
   if (!is_open(impl))
   {
     ec = asio::error::bad_descriptor;
+    ASIO_ERROR_LOCATION(ec);
     return 0;
   }
 
@@ -347,6 +360,7 @@ size_t win_iocp_handle_service::do_write(
   overlapped_wrapper overlapped(ec);
   if (ec)
   {
+    ASIO_ERROR_LOCATION(ec);
     return 0;
   }
 
@@ -362,6 +376,7 @@ size_t win_iocp_handle_service::do_write(
     {
       ec = asio::error_code(last_error,
           asio::error::get_system_category());
+      ASIO_ERROR_LOCATION(ec);
       return 0;
     }
   }
@@ -375,6 +390,7 @@ size_t win_iocp_handle_service::do_write(
     DWORD last_error = ::GetLastError();
     ec = asio::error_code(last_error,
         asio::error::get_system_category());
+    ASIO_ERROR_LOCATION(ec);
     return 0;
   }
 
@@ -426,6 +442,7 @@ size_t win_iocp_handle_service::do_read(
   if (!is_open(impl))
   {
     ec = asio::error::bad_descriptor;
+    ASIO_ERROR_LOCATION(ec);
     return 0;
   }
   
@@ -439,6 +456,7 @@ size_t win_iocp_handle_service::do_read(
   overlapped_wrapper overlapped(ec);
   if (ec)
   {
+    ASIO_ERROR_LOCATION(ec);
     return 0;
   }
 
@@ -461,6 +479,7 @@ size_t win_iocp_handle_service::do_read(
         ec = asio::error_code(last_error,
             asio::error::get_system_category());
       }
+      ASIO_ERROR_LOCATION(ec);
       return 0;
     }
   }
@@ -481,6 +500,7 @@ size_t win_iocp_handle_service::do_read(
       ec = asio::error_code(last_error,
           asio::error::get_system_category());
     }
+    ASIO_ERROR_LOCATION(ec);
     return (last_error == ERROR_MORE_DATA) ? bytes_transferred : 0;
   }
 

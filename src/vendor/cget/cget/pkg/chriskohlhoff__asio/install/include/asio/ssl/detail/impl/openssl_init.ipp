@@ -85,9 +85,13 @@ public:
 #endif // (OPENSSL_VERSION_NUMBER >= 0x10002000L)
        // && (OPENSSL_VERSION_NUMBER < 0x10100000L)
        // && !defined(SSL_OP_NO_COMPRESSION)
-#if !defined(OPENSSL_IS_BORINGSSL) && !defined(ASIO_USE_WOLFSSL)
+#if !defined(OPENSSL_IS_BORINGSSL) \
+    && !defined(ASIO_USE_WOLFSSL) \
+    && (OPENSSL_VERSION_NUMBER < 0x30000000L)
     ::CONF_modules_unload(1);
-#endif // !defined(OPENSSL_IS_BORINGSSL) && !defined(ASIO_USE_WOLFSSL)
+#endif // !defined(OPENSSL_IS_BORINGSSL)
+       //   && !defined(ASIO_USE_WOLFSSL)
+       //   && (OPENSSL_VERSION_NUMBER < 0x30000000L)
 #if !defined(OPENSSL_NO_ENGINE) \
   && (OPENSSL_VERSION_NUMBER < 0x10100000L)
     ::ENGINE_cleanup();

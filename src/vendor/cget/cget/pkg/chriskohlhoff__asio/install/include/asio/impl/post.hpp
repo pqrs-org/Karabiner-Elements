@@ -217,8 +217,11 @@ private:
 } // namespace detail
 
 template <ASIO_COMPLETION_TOKEN_FOR(void()) NullaryToken>
-ASIO_INITFN_AUTO_RESULT_TYPE(NullaryToken, void()) post(
+ASIO_INITFN_AUTO_RESULT_TYPE_PREFIX(NullaryToken, void()) post(
     ASIO_MOVE_ARG(NullaryToken) token)
+  ASIO_INITFN_AUTO_RESULT_TYPE_SUFFIX((
+    async_initiate<NullaryToken, void()>(
+        declval<detail::initiate_post>(), token)))
 {
   return async_initiate<NullaryToken, void()>(
       detail::initiate_post(), token);
@@ -226,11 +229,14 @@ ASIO_INITFN_AUTO_RESULT_TYPE(NullaryToken, void()) post(
 
 template <typename Executor,
     ASIO_COMPLETION_TOKEN_FOR(void()) NullaryToken>
-ASIO_INITFN_AUTO_RESULT_TYPE(NullaryToken, void()) post(
+ASIO_INITFN_AUTO_RESULT_TYPE_PREFIX(NullaryToken, void()) post(
     const Executor& ex, ASIO_MOVE_ARG(NullaryToken) token,
     typename constraint<
       execution::is_executor<Executor>::value || is_executor<Executor>::value
     >::type)
+  ASIO_INITFN_AUTO_RESULT_TYPE_SUFFIX((
+    async_initiate<NullaryToken, void()>(
+        declval<detail::initiate_post_with_executor<Executor> >(), token)))
 {
   return async_initiate<NullaryToken, void()>(
       detail::initiate_post_with_executor<Executor>(ex), token);
@@ -238,10 +244,14 @@ ASIO_INITFN_AUTO_RESULT_TYPE(NullaryToken, void()) post(
 
 template <typename ExecutionContext,
     ASIO_COMPLETION_TOKEN_FOR(void()) NullaryToken>
-inline ASIO_INITFN_AUTO_RESULT_TYPE(NullaryToken, void()) post(
+inline ASIO_INITFN_AUTO_RESULT_TYPE_PREFIX(NullaryToken, void()) post(
     ExecutionContext& ctx, ASIO_MOVE_ARG(NullaryToken) token,
     typename constraint<is_convertible<
       ExecutionContext&, execution_context&>::value>::type)
+  ASIO_INITFN_AUTO_RESULT_TYPE_SUFFIX((
+    async_initiate<NullaryToken, void()>(
+        declval<detail::initiate_post_with_executor<
+          typename ExecutionContext::executor_type> >(), token)))
 {
   return async_initiate<NullaryToken, void()>(
       detail::initiate_post_with_executor<

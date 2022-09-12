@@ -59,6 +59,10 @@ template <typename Executor = any_io_executor>
 class basic_serial_port
   : public serial_port_base
 {
+private:
+  class initiate_async_write_some;
+  class initiate_async_read_some;
+
 public:
   /// The type of the executor associated with the object.
   typedef Executor executor_type;
@@ -285,6 +289,55 @@ public:
   basic_serial_port& operator=(basic_serial_port&& other)
   {
     impl_ = std::move(other.impl_);
+    return *this;
+  }
+
+  // All serial ports have access to each other's implementations.
+  template <typename Executor1>
+  friend class basic_serial_port;
+
+  /// Move-construct a basic_serial_port from a serial port of another executor
+  /// type.
+  /**
+   * This constructor moves a serial port from one object to another.
+   *
+   * @param other The other basic_serial_port object from which the move will
+   * occur.
+   *
+   * @note Following the move, the moved-from object is in the same state as if
+   * constructed using the @c basic_serial_port(const executor_type&)
+   * constructor.
+   */
+  template <typename Executor1>
+  basic_serial_port(basic_serial_port<Executor1>&& other,
+      typename constraint<
+        is_convertible<Executor1, Executor>::value,
+        defaulted_constraint
+      >::type = defaulted_constraint())
+    : impl_(std::move(other.impl_))
+  {
+  }
+
+  /// Move-assign a basic_serial_port from a serial port of another executor
+  /// type.
+  /**
+   * This assignment operator moves a serial port from one object to another.
+   *
+   * @param other The other basic_serial_port object from which the move will
+   * occur.
+   *
+   * @note Following the move, the moved-from object is in the same state as if
+   * constructed using the @c basic_serial_port(const executor_type&)
+   * constructor.
+   */
+  template <typename Executor1>
+  typename constraint<
+    is_convertible<Executor1, Executor>::value,
+    basic_serial_port&
+  >::type operator=(basic_serial_port<Executor1>&& other)
+  {
+    basic_serial_port tmp(std::move(other));
+    impl_ = std::move(tmp.impl_);
     return *this;
   }
 #endif // defined(ASIO_HAS_MOVE) || defined(GENERATING_DOCUMENTATION)
@@ -709,11 +762,15 @@ public:
       ASIO_COMPLETION_TOKEN_FOR(void (asio::error_code,
         std::size_t)) WriteToken
           ASIO_DEFAULT_COMPLETION_TOKEN_TYPE(executor_type)>
-  ASIO_INITFN_AUTO_RESULT_TYPE(WriteToken,
+  ASIO_INITFN_AUTO_RESULT_TYPE_PREFIX(WriteToken,
       void (asio::error_code, std::size_t))
   async_write_some(const ConstBufferSequence& buffers,
       ASIO_MOVE_ARG(WriteToken) token
         ASIO_DEFAULT_COMPLETION_TOKEN(executor_type))
+    ASIO_INITFN_AUTO_RESULT_TYPE_SUFFIX((
+      async_initiate<WriteToken,
+        void (asio::error_code, std::size_t)>(
+          declval<initiate_async_write_some>(), token, buffers)))
   {
     return async_initiate<WriteToken,
       void (asio::error_code, std::size_t)>(
@@ -840,11 +897,15 @@ public:
       ASIO_COMPLETION_TOKEN_FOR(void (asio::error_code,
         std::size_t)) ReadToken
           ASIO_DEFAULT_COMPLETION_TOKEN_TYPE(executor_type)>
-  ASIO_INITFN_AUTO_RESULT_TYPE(ReadToken,
+  ASIO_INITFN_AUTO_RESULT_TYPE_PREFIX(ReadToken,
       void (asio::error_code, std::size_t))
   async_read_some(const MutableBufferSequence& buffers,
       ASIO_MOVE_ARG(ReadToken) token
         ASIO_DEFAULT_COMPLETION_TOKEN(executor_type))
+    ASIO_INITFN_AUTO_RESULT_TYPE_SUFFIX((
+      async_initiate<ReadToken,
+        void (asio::error_code, std::size_t)>(
+          declval<initiate_async_read_some>(), token, buffers)))
   {
     return async_initiate<ReadToken,
       void (asio::error_code, std::size_t)>(

@@ -38,6 +38,7 @@
 # include <boost/type_traits/is_destructible.hpp>
 # include <boost/type_traits/is_function.hpp>
 # include <boost/type_traits/is_object.hpp>
+# include <boost/type_traits/is_pointer.hpp>
 # include <boost/type_traits/is_same.hpp>
 # include <boost/type_traits/remove_cv.hpp>
 # include <boost/type_traits/remove_pointer.hpp>
@@ -52,7 +53,12 @@ namespace asio {
 #if defined(ASIO_HAS_STD_TYPE_TRAITS)
 using std::add_const;
 using std::add_lvalue_reference;
+#if defined(ASIO_MSVC) && (_MSC_VER < 1900)
 using std::aligned_storage;
+#else // defined(ASIO_MSVC) && (_MSC_VER < 1900)
+template <std::size_t N, std::size_t A>
+struct aligned_storage { struct type { alignas(A) unsigned char data[N]; }; };
+#endif // defined(ASIO_MSVC) && (_MSC_VER < 1900)
 using std::alignment_of;
 using std::conditional;
 using std::decay;
@@ -72,6 +78,7 @@ using std::is_move_constructible;
 using std::is_nothrow_copy_constructible;
 using std::is_nothrow_destructible;
 using std::is_object;
+using std::is_pointer;
 using std::is_reference;
 using std::is_same;
 using std::is_scalar;
@@ -120,6 +127,7 @@ struct is_nothrow_copy_constructible : boost::has_nothrow_copy<T> {};
 template <typename T>
 struct is_nothrow_destructible : boost::has_nothrow_destructor<T> {};
 using boost::is_object;
+using boost::is_pointer;
 using boost::is_reference;
 using boost::is_same;
 using boost::is_scalar;

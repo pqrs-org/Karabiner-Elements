@@ -133,7 +133,7 @@ std::regex compile_pattern(const std::string &pattern) {
 }
 
 static inline 
-bool fnmatch_case(const fs::path &name, const std::string &pattern) {
+bool fnmatch(const fs::path &name, const std::string &pattern) {
   return std::regex_match(name.string(), compile_pattern(pattern));
 }
 
@@ -144,7 +144,7 @@ std::vector<fs::path> filter(const std::vector<fs::path> &names,
   std::vector<fs::path> result;
   for (auto &name : names) {
     // std::cout << "Checking for " << name.string() << "\n";
-    if (fnmatch_case(name, pattern)) {
+    if (fnmatch(name, pattern)) {
       result.push_back(name);
     }
   }

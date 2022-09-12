@@ -95,6 +95,9 @@ namespace asio {
 template <typename Executor = any_io_executor>
 class basic_signal_set
 {
+private:
+  class initiate_async_wait;
+
 public:
   /// The type of the executor associated with the object.
   typedef Executor executor_type;
@@ -535,11 +538,14 @@ public:
   template <
     ASIO_COMPLETION_TOKEN_FOR(void (asio::error_code, int))
       SignalToken ASIO_DEFAULT_COMPLETION_TOKEN_TYPE(executor_type)>
-  ASIO_INITFN_AUTO_RESULT_TYPE(SignalToken,
+  ASIO_INITFN_AUTO_RESULT_TYPE_PREFIX(SignalToken,
       void (asio::error_code, int))
   async_wait(
       ASIO_MOVE_ARG(SignalToken) token
         ASIO_DEFAULT_COMPLETION_TOKEN(executor_type))
+    ASIO_INITFN_AUTO_RESULT_TYPE_SUFFIX((
+      async_initiate<SignalToken, void (asio::error_code, int)>(
+          declval<initiate_async_wait>(), token)))
   {
     return async_initiate<SignalToken, void (asio::error_code, int)>(
         initiate_async_wait(this), token);

@@ -58,6 +58,9 @@ namespace asio {
 template <typename Executor = any_io_executor>
 class basic_writable_pipe
 {
+private:
+  class initiate_async_write_some;
+
 public:
   /// The type of the executor associated with the object.
   typedef Executor executor_type;
@@ -200,6 +203,53 @@ public:
     impl_ = std::move(other.impl_);
     return *this;
   }
+
+  // All pipes have access to each other's implementations.
+  template <typename Executor1>
+  friend class basic_writable_pipe;
+
+  /// Move-construct a basic_writable_pipe from a pipe of another executor type.
+  /**
+   * This constructor moves a pipe from one object to another.
+   *
+   * @param other The other basic_writable_pipe object from which the move will
+   * occur.
+   *
+   * @note Following the move, the moved-from object is in the same state as if
+   * constructed using the @c basic_writable_pipe(const executor_type&)
+   * constructor.
+   */
+  template <typename Executor1>
+  basic_writable_pipe(basic_writable_pipe<Executor1>&& other,
+      typename constraint<
+        is_convertible<Executor1, Executor>::value,
+        defaulted_constraint
+      >::type = defaulted_constraint())
+    : impl_(std::move(other.impl_))
+  {
+  }
+
+  /// Move-assign a basic_writable_pipe from a pipe of another executor type.
+  /**
+   * This assignment operator moves a pipe from one object to another.
+   *
+   * @param other The other basic_writable_pipe object from which the move will
+   * occur.
+   *
+   * @note Following the move, the moved-from object is in the same state as if
+   * constructed using the @c basic_writable_pipe(const executor_type&)
+   * constructor.
+   */
+  template <typename Executor1>
+  typename constraint<
+    is_convertible<Executor1, Executor>::value,
+    basic_writable_pipe&
+  >::type operator=(basic_writable_pipe<Executor1>&& other)
+  {
+    basic_writable_pipe tmp(std::move(other));
+    impl_ = std::move(tmp.impl_);
+    return *this;
+  }
 #endif // defined(ASIO_HAS_MOVE) || defined(GENERATING_DOCUMENTATION)
 
   /// Destroys the pipe.
@@ -309,6 +359,58 @@ public:
   {
     impl_.get_service().close(impl_.get_implementation(), ec);
     ASIO_SYNC_OP_VOID_RETURN(ec);
+  }
+
+  /// Release ownership of the underlying native pipe.
+  /**
+   * This function causes all outstanding asynchronous write operations to
+   * finish immediately, and the handlers for cancelled operations will be
+   * passed the asio::error::operation_aborted error. Ownership of the
+   * native pipe is then transferred to the caller.
+   *
+   * @throws asio::system_error Thrown on failure.
+   *
+   * @note This function is unsupported on Windows versions prior to Windows
+   * 8.1, and will fail with asio::error::operation_not_supported on
+   * these platforms.
+   */
+#if defined(ASIO_MSVC) && (ASIO_MSVC >= 1400) \
+  && (!defined(_WIN32_WINNT) || _WIN32_WINNT < 0x0603)
+  __declspec(deprecated("This function always fails with "
+        "operation_not_supported when used on Windows versions "
+        "prior to Windows 8.1."))
+#endif
+  native_handle_type release()
+  {
+    asio::error_code ec;
+    native_handle_type s = impl_.get_service().release(
+        impl_.get_implementation(), ec);
+    asio::detail::throw_error(ec, "release");
+    return s;
+  }
+
+  /// Release ownership of the underlying native pipe.
+  /**
+   * This function causes all outstanding asynchronous write operations to
+   * finish immediately, and the handlers for cancelled operations will be
+   * passed the asio::error::operation_aborted error. Ownership of the
+   * native pipe is then transferred to the caller.
+   *
+   * @param ec Set to indicate what error occurred, if any.
+   *
+   * @note This function is unsupported on Windows versions prior to Windows
+   * 8.1, and will fail with asio::error::operation_not_supported on
+   * these platforms.
+   */
+#if defined(ASIO_MSVC) && (ASIO_MSVC >= 1400) \
+  && (!defined(_WIN32_WINNT) || _WIN32_WINNT < 0x0603)
+  __declspec(deprecated("This function always fails with "
+        "operation_not_supported when used on Windows versions "
+        "prior to Windows 8.1."))
+#endif
+  native_handle_type release(asio::error_code& ec)
+  {
+    return impl_.get_service().release(impl_.get_implementation(), ec);
   }
 
   /// Get the native pipe representation.
@@ -457,11 +559,15 @@ public:
       ASIO_COMPLETION_TOKEN_FOR(void (asio::error_code,
         std::size_t)) WriteToken
           ASIO_DEFAULT_COMPLETION_TOKEN_TYPE(executor_type)>
-  ASIO_INITFN_AUTO_RESULT_TYPE(WriteToken,
+  ASIO_INITFN_AUTO_RESULT_TYPE_PREFIX(WriteToken,
       void (asio::error_code, std::size_t))
   async_write_some(const ConstBufferSequence& buffers,
       ASIO_MOVE_ARG(WriteToken) token
         ASIO_DEFAULT_COMPLETION_TOKEN(executor_type))
+    ASIO_INITFN_AUTO_RESULT_TYPE_SUFFIX((
+      async_initiate<WriteToken,
+        void (asio::error_code, std::size_t)>(
+          declval<initiate_async_write_some>(), token, buffers)))
   {
     return async_initiate<WriteToken,
       void (asio::error_code, std::size_t)>(

@@ -47,8 +47,10 @@ public:
   }
 
   static void do_complete(void* owner, operation* base,
-      const asio::error_code& ec, std::size_t bytes_transferred)
+      const asio::error_code& result_ec, std::size_t bytes_transferred)
   {
+    asio::error_code ec(result_ec);
+
     // Take ownership of the operation object.
     win_iocp_overlapped_op* o(static_cast<win_iocp_overlapped_op*>(base));
     ptr p = { asio::detail::addressof(o->handler_), o, o };
@@ -59,6 +61,8 @@ public:
     handler_work<Handler, IoExecutor> w(
         ASIO_MOVE_CAST2(handler_work<Handler, IoExecutor>)(
           o->work_));
+
+    ASIO_ERROR_LOCATION(ec);
 
     // Make a copy of the handler so that the memory can be deallocated before
     // the upcall is made. Even if we're not about to make an upcall, a

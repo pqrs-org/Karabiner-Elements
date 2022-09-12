@@ -27,7 +27,6 @@
 #include "asio/experimental/parallel_group.hpp"
 #include "asio/multiple_exceptions.hpp"
 #include "asio/this_coro.hpp"
-#include "asio/use_awaitable.hpp"
 
 #include "asio/detail/push_options.hpp"
 
@@ -83,7 +82,7 @@ awaitable<void, Executor> operator&&(
       co_spawn(ex, std::move(u), deferred)
     ).async_wait(
       wait_for_one_error(),
-      use_awaitable_t<Executor>{}
+      deferred
     );
 
   if (ex0 && ex1)
@@ -112,7 +111,7 @@ awaitable<U, Executor> operator&&(
       co_spawn(ex, detail::awaitable_wrap(std::move(u)), deferred)
     ).async_wait(
       wait_for_one_error(),
-      use_awaitable_t<Executor>{}
+      deferred
     );
 
   if (ex0 && ex1)
@@ -141,7 +140,7 @@ awaitable<T, Executor> operator&&(
       co_spawn(ex, std::move(u), deferred)
     ).async_wait(
       wait_for_one_error(),
-      use_awaitable_t<Executor>{}
+      deferred
     );
 
   if (ex0 && ex1)
@@ -170,7 +169,7 @@ awaitable<std::tuple<T, U>, Executor> operator&&(
       co_spawn(ex, detail::awaitable_wrap(std::move(u)), deferred)
     ).async_wait(
       wait_for_one_error(),
-      use_awaitable_t<Executor>{}
+      deferred
     );
 
   if (ex0 && ex1)
@@ -201,7 +200,7 @@ awaitable<std::tuple<T..., std::monostate>, Executor> operator&&(
       co_spawn(ex, std::move(u), deferred)
     ).async_wait(
       wait_for_one_error(),
-      use_awaitable_t<Executor>{}
+      deferred
     );
 
   if (ex0 && ex1)
@@ -230,7 +229,7 @@ awaitable<std::tuple<T..., U>, Executor> operator&&(
       co_spawn(ex, detail::awaitable_wrap(std::move(u)), deferred)
     ).async_wait(
       wait_for_one_error(),
-      use_awaitable_t<Executor>{}
+      deferred
     );
 
   if (ex0 && ex1)
@@ -261,7 +260,7 @@ awaitable<std::variant<std::monostate, std::monostate>, Executor> operator||(
       co_spawn(ex, std::move(u), deferred)
     ).async_wait(
       wait_for_one_success(),
-      use_awaitable_t<Executor>{}
+      deferred
     );
 
   if (order[0] == 0)
@@ -303,7 +302,7 @@ awaitable<std::variant<std::monostate, U>, Executor> operator||(
       co_spawn(ex, detail::awaitable_wrap(std::move(u)), deferred)
     ).async_wait(
       wait_for_one_success(),
-      use_awaitable_t<Executor>{}
+      deferred
     );
 
   if (order[0] == 0)
@@ -347,7 +346,7 @@ awaitable<std::variant<T, std::monostate>, Executor> operator||(
       co_spawn(ex, std::move(u), deferred)
     ).async_wait(
       wait_for_one_success(),
-      use_awaitable_t<Executor>{}
+      deferred
     );
 
   if (order[0] == 0)
@@ -391,7 +390,7 @@ awaitable<std::variant<T, U>, Executor> operator||(
       co_spawn(ex, detail::awaitable_wrap(std::move(u)), deferred)
     ).async_wait(
       wait_for_one_success(),
-      use_awaitable_t<Executor>{}
+      deferred
     );
 
   if (order[0] == 0)
@@ -457,7 +456,7 @@ awaitable<std::variant<T..., std::monostate>, Executor> operator||(
       co_spawn(ex, std::move(u), deferred)
     ).async_wait(
       wait_for_one_success(),
-      use_awaitable_t<Executor>{}
+      deferred
     );
 
   using widen = detail::widen_variant<T..., std::monostate>;
@@ -500,7 +499,7 @@ awaitable<std::variant<T..., U>, Executor> operator||(
       co_spawn(ex, detail::awaitable_wrap(std::move(u)), deferred)
     ).async_wait(
       wait_for_one_success(),
-      use_awaitable_t<Executor>{}
+      deferred
     );
 
   using widen = detail::widen_variant<T..., U>;

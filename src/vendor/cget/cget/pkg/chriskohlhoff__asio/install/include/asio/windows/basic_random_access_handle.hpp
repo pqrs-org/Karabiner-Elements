@@ -39,6 +39,10 @@ template <typename Executor = any_io_executor>
 class basic_random_access_handle
   : public basic_overlapped_handle<Executor>
 {
+private:
+  class initiate_async_write_some_at;
+  class initiate_async_read_some_at;
+
 public:
   /// The type of the executor associated with the object.
   typedef Executor executor_type;
@@ -168,6 +172,51 @@ public:
     basic_overlapped_handle<Executor>::operator=(std::move(other));
     return *this;
   }
+
+  /// Move-construct a random-access handle from a handle of another executor
+  /// type.
+  /**
+   * This constructor moves a random-access handle from one object to another.
+   *
+   * @param other The other random-access handle object from which the
+   * move will occur.
+   *
+   * @note Following the move, the moved-from object is in the same state as if
+   * constructed using the @c basic_random_access_handle(const executor_type&)
+   * constructor.
+   */
+  template<typename Executor1>
+  basic_random_access_handle(basic_random_access_handle<Executor1>&& other,
+      typename constraint<
+        is_convertible<Executor1, Executor>::value,
+        defaulted_constraint
+      >::type = defaulted_constraint())
+    : basic_overlapped_handle<Executor>(std::move(other))
+  {
+  }
+
+  /// Move-assign a random-access handle from a handle of another executor
+  /// type.
+  /**
+   * This assignment operator moves a random-access handle from one object to
+   * another.
+   *
+   * @param other The other random-access handle object from which the
+   * move will occur.
+   *
+   * @note Following the move, the moved-from object is in the same state as if
+   * constructed using the @c basic_random_access_handle(const executor_type&)
+   * constructor.
+   */
+  template<typename Executor1>
+  typename constraint<
+    is_convertible<Executor1, Executor>::value,
+    basic_random_access_handle&
+  >::type operator=(basic_random_access_handle<Executor1>&& other)
+  {
+    basic_overlapped_handle<Executor>::operator=(std::move(other));
+    return *this;
+  }
 #endif // defined(ASIO_HAS_MOVE) || defined(GENERATING_DOCUMENTATION)
 
   /// Write some data to the handle at the specified offset.
@@ -293,12 +342,16 @@ public:
       ASIO_COMPLETION_TOKEN_FOR(void (asio::error_code,
         std::size_t)) WriteToken
           ASIO_DEFAULT_COMPLETION_TOKEN_TYPE(executor_type)>
-  ASIO_INITFN_AUTO_RESULT_TYPE(WriteToken,
+  ASIO_INITFN_AUTO_RESULT_TYPE_PREFIX(WriteToken,
       void (asio::error_code, std::size_t))
   async_write_some_at(uint64_t offset,
       const ConstBufferSequence& buffers,
       ASIO_MOVE_ARG(WriteToken) token
         ASIO_DEFAULT_COMPLETION_TOKEN(executor_type))
+    ASIO_INITFN_AUTO_RESULT_TYPE_SUFFIX((
+      async_initiate<WriteToken,
+        void (asio::error_code, std::size_t)>(
+          declval<initiate_async_write_some_at>(), token, offset, buffers)))
   {
     return async_initiate<WriteToken,
       void (asio::error_code, std::size_t)>(
@@ -431,12 +484,16 @@ public:
       ASIO_COMPLETION_TOKEN_FOR(void (asio::error_code,
         std::size_t)) ReadToken
           ASIO_DEFAULT_COMPLETION_TOKEN_TYPE(executor_type)>
-  ASIO_INITFN_AUTO_RESULT_TYPE(ReadToken,
+  ASIO_INITFN_AUTO_RESULT_TYPE_PREFIX(ReadToken,
       void (asio::error_code, std::size_t))
   async_read_some_at(uint64_t offset,
       const MutableBufferSequence& buffers,
       ASIO_MOVE_ARG(ReadToken) token
         ASIO_DEFAULT_COMPLETION_TOKEN(executor_type))
+    ASIO_INITFN_AUTO_RESULT_TYPE_SUFFIX((
+      async_initiate<ReadToken,
+        void (asio::error_code, std::size_t)>(
+          declval<initiate_async_read_some_at>(), token, offset, buffers)))
   {
     return async_initiate<ReadToken,
       void (asio::error_code, std::size_t)>(

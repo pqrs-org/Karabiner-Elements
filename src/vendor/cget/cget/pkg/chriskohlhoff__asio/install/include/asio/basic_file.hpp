@@ -334,7 +334,7 @@ public:
   typename constraint<
     is_convertible<Executor1, Executor>::value,
     basic_file&
-  >::type operator=(basic_file<Executor1> && other)
+  >::type operator=(basic_file<Executor1>&& other)
   {
     basic_file tmp(std::move(other));
     impl_ = std::move(tmp.impl_);

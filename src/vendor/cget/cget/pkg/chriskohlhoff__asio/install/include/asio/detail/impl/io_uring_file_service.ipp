@@ -49,13 +49,17 @@ asio::error_code io_uring_file_service::open(
   if (is_open(impl))
   {
     ec = asio::error::already_open;
+    ASIO_ERROR_LOCATION(ec);
     return ec;
   }
 
   descriptor_ops::state_type state = 0;
   int fd = descriptor_ops::open(path, static_cast<int>(open_flags), 0777, ec);
   if (fd < 0)
+  {
+    ASIO_ERROR_LOCATION(ec);
     return ec;
+  }
 
   // We're done. Take ownership of the serial port descriptor.
   if (descriptor_service_.assign(impl, fd, ec))
@@ -67,6 +71,7 @@ asio::error_code io_uring_file_service::open(
   (void)::posix_fadvise(native_handle(impl), 0, 0,
       impl.is_stream_ ? POSIX_FADV_SEQUENTIAL : POSIX_FADV_RANDOM);
 
+  ASIO_ERROR_LOCATION(ec);
   return ec;
 }
 
@@ -77,6 +82,7 @@ uint64_t io_uring_file_service::size(
   struct stat s;
   int result = ::fstat(native_handle(impl), &s);
   descriptor_ops::get_last_error(ec, result != 0);
+  ASIO_ERROR_LOCATION(ec);
   return !ec ? s.st_size : 0;
 }
 
@@ -86,6 +92,7 @@ asio::error_code io_uring_file_service::resize(
 {
   int result = ::ftruncate(native_handle(impl), n);
   descriptor_ops::get_last_error(ec, result != 0);
+  ASIO_ERROR_LOCATION(ec);
   return ec;
 }
 
@@ -108,6 +115,7 @@ asio::error_code io_uring_file_service::sync_data(
   int result = ::fsync(native_handle(impl));
 #endif // defined(_POSIX_SYNCHRONIZED_IO)
   descriptor_ops::get_last_error(ec, result != 0);
+  ASIO_ERROR_LOCATION(ec);
   return ec;
 }
 
@@ -117,6 +125,7 @@ uint64_t io_uring_file_service::seek(
 {
   int64_t result = ::lseek(native_handle(impl), offset, whence);
   descriptor_ops::get_last_error(ec, result < 0);
+  ASIO_ERROR_LOCATION(ec);
   return !ec ? static_cast<uint64_t>(result) : 0;
 }
 

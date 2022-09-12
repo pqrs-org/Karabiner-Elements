@@ -202,10 +202,15 @@ template <typename Stream>
 template <
     ASIO_COMPLETION_TOKEN_FOR(void (asio::error_code,
       std::size_t)) WriteHandler>
-ASIO_INITFN_AUTO_RESULT_TYPE(WriteHandler,
+ASIO_INITFN_AUTO_RESULT_TYPE_PREFIX(WriteHandler,
     void (asio::error_code, std::size_t))
 buffered_write_stream<Stream>::async_flush(
     ASIO_MOVE_ARG(WriteHandler) handler)
+  ASIO_INITFN_AUTO_RESULT_TYPE_SUFFIX((
+    async_initiate<WriteHandler,
+      void (asio::error_code, std::size_t)>(
+        declval<detail::initiate_async_buffered_flush<Stream> >(),
+        handler, declval<detail::buffered_stream_storage*>())))
 {
   return async_initiate<WriteHandler,
     void (asio::error_code, std::size_t)>(
@@ -444,11 +449,16 @@ template <typename Stream>
 template <typename ConstBufferSequence,
     ASIO_COMPLETION_TOKEN_FOR(void (asio::error_code,
       std::size_t)) WriteHandler>
-ASIO_INITFN_AUTO_RESULT_TYPE(WriteHandler,
+ASIO_INITFN_AUTO_RESULT_TYPE_PREFIX(WriteHandler,
     void (asio::error_code, std::size_t))
 buffered_write_stream<Stream>::async_write_some(
     const ConstBufferSequence& buffers,
     ASIO_MOVE_ARG(WriteHandler) handler)
+  ASIO_INITFN_AUTO_RESULT_TYPE_SUFFIX((
+    async_initiate<WriteHandler,
+      void (asio::error_code, std::size_t)>(
+        declval<detail::initiate_async_buffered_write_some<Stream> >(),
+        handler, declval<detail::buffered_stream_storage*>(), buffers)))
 {
   return async_initiate<WriteHandler,
     void (asio::error_code, std::size_t)>(

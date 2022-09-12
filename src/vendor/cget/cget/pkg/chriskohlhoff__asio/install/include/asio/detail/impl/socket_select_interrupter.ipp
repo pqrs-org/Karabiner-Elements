@@ -60,11 +60,11 @@ void socket_select_interrupter::open_descriptors()
   addr.sin_family = AF_INET;
   addr.sin_addr.s_addr = socket_ops::host_to_network_long(INADDR_LOOPBACK);
   addr.sin_port = 0;
-  if (socket_ops::bind(acceptor.get(), (const socket_addr_type*)&addr,
+  if (socket_ops::bind(acceptor.get(), &addr,
         addr_len, ec) == socket_error_retval)
     asio::detail::throw_error(ec, "socket_select_interrupter");
 
-  if (socket_ops::getsockname(acceptor.get(), (socket_addr_type*)&addr,
+  if (socket_ops::getsockname(acceptor.get(), &addr,
         &addr_len, ec) == socket_error_retval)
     asio::detail::throw_error(ec, "socket_select_interrupter");
 
@@ -83,7 +83,7 @@ void socket_select_interrupter::open_descriptors()
   if (client.get() == invalid_socket)
     asio::detail::throw_error(ec, "socket_select_interrupter");
 
-  if (socket_ops::connect(client.get(), (const socket_addr_type*)&addr,
+  if (socket_ops::connect(client.get(), &addr,
         addr_len, ec) == socket_error_retval)
     asio::detail::throw_error(ec, "socket_select_interrupter");
 

@@ -65,6 +65,13 @@ class stream :
   public stream_base,
   private noncopyable
 {
+private:
+  class initiate_async_handshake;
+  class initiate_async_buffered_handshake;
+  class initiate_async_shutdown;
+  class initiate_async_write_some;
+  class initiate_async_read_some;
+
 public:
   /// The native handle type of the SSL stream.
   typedef SSL* native_handle_type;
@@ -511,11 +518,15 @@ public:
       ASIO_COMPLETION_TOKEN_FOR(void (asio::error_code))
         HandshakeToken
           ASIO_DEFAULT_COMPLETION_TOKEN_TYPE(executor_type)>
-  ASIO_INITFN_AUTO_RESULT_TYPE(HandshakeToken,
+  ASIO_INITFN_AUTO_RESULT_TYPE_PREFIX(HandshakeToken,
       void (asio::error_code))
   async_handshake(handshake_type type,
       ASIO_MOVE_ARG(HandshakeToken) token
         ASIO_DEFAULT_COMPLETION_TOKEN(executor_type))
+    ASIO_INITFN_AUTO_RESULT_TYPE_SUFFIX((
+      async_initiate<HandshakeToken,
+        void (asio::error_code)>(
+          declval<initiate_async_handshake>(), token, type)))
   {
     return async_initiate<HandshakeToken,
       void (asio::error_code)>(
@@ -568,11 +579,15 @@ public:
       ASIO_COMPLETION_TOKEN_FOR(void (asio::error_code,
         std::size_t)) BufferedHandshakeToken
           ASIO_DEFAULT_COMPLETION_TOKEN_TYPE(executor_type)>
-  ASIO_INITFN_AUTO_RESULT_TYPE(BufferedHandshakeToken,
+  ASIO_INITFN_AUTO_RESULT_TYPE_PREFIX(BufferedHandshakeToken,
       void (asio::error_code, std::size_t))
   async_handshake(handshake_type type, const ConstBufferSequence& buffers,
       ASIO_MOVE_ARG(BufferedHandshakeToken) token
         ASIO_DEFAULT_COMPLETION_TOKEN(executor_type))
+    ASIO_INITFN_AUTO_RESULT_TYPE_SUFFIX((
+      async_initiate<BufferedHandshakeToken,
+        void (asio::error_code, std::size_t)>(
+          declval<initiate_async_buffered_handshake>(), token, type, buffers)))
   {
     return async_initiate<BufferedHandshakeToken,
       void (asio::error_code, std::size_t)>(
@@ -643,11 +658,15 @@ public:
       ASIO_COMPLETION_TOKEN_FOR(void (asio::error_code))
         ShutdownToken
           ASIO_DEFAULT_COMPLETION_TOKEN_TYPE(executor_type)>
-  ASIO_INITFN_AUTO_RESULT_TYPE(ShutdownToken,
+  ASIO_INITFN_AUTO_RESULT_TYPE_PREFIX(ShutdownToken,
       void (asio::error_code))
   async_shutdown(
       ASIO_MOVE_ARG(ShutdownToken) token
         ASIO_DEFAULT_COMPLETION_TOKEN(executor_type))
+    ASIO_INITFN_AUTO_RESULT_TYPE_SUFFIX((
+      async_initiate<ShutdownToken,
+        void (asio::error_code)>(
+          declval<initiate_async_shutdown>(), token)))
   {
     return async_initiate<ShutdownToken,
       void (asio::error_code)>(
@@ -751,11 +770,15 @@ public:
       ASIO_COMPLETION_TOKEN_FOR(void (asio::error_code,
         std::size_t)) WriteToken
           ASIO_DEFAULT_COMPLETION_TOKEN_TYPE(executor_type)>
-  ASIO_INITFN_AUTO_RESULT_TYPE(WriteToken,
+  ASIO_INITFN_AUTO_RESULT_TYPE_PREFIX(WriteToken,
       void (asio::error_code, std::size_t))
   async_write_some(const ConstBufferSequence& buffers,
       ASIO_MOVE_ARG(WriteToken) token
         ASIO_DEFAULT_COMPLETION_TOKEN(executor_type))
+    ASIO_INITFN_AUTO_RESULT_TYPE_SUFFIX((
+      async_initiate<WriteToken,
+        void (asio::error_code, std::size_t)>(
+          declval<initiate_async_write_some>(), token, buffers)))
   {
     return async_initiate<WriteToken,
       void (asio::error_code, std::size_t)>(
@@ -859,11 +882,15 @@ public:
       ASIO_COMPLETION_TOKEN_FOR(void (asio::error_code,
         std::size_t)) ReadToken
           ASIO_DEFAULT_COMPLETION_TOKEN_TYPE(executor_type)>
-  ASIO_INITFN_AUTO_RESULT_TYPE(ReadToken,
+  ASIO_INITFN_AUTO_RESULT_TYPE_PREFIX(ReadToken,
       void (asio::error_code, std::size_t))
   async_read_some(const MutableBufferSequence& buffers,
       ASIO_MOVE_ARG(ReadToken) token
         ASIO_DEFAULT_COMPLETION_TOKEN(executor_type))
+    ASIO_INITFN_AUTO_RESULT_TYPE_SUFFIX((
+      async_initiate<ReadToken,
+        void (asio::error_code, std::size_t)>(
+          declval<initiate_async_read_some>(), token, buffers)))
   {
     return async_initiate<ReadToken,
       void (asio::error_code, std::size_t)>(

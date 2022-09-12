@@ -63,29 +63,27 @@ typedef weak_ptr<void> weak_cancel_token_type;
 
 #if !defined(ASIO_WINDOWS_RUNTIME)
 
-ASIO_DECL socket_type accept(socket_type s, socket_addr_type* addr,
+ASIO_DECL socket_type accept(socket_type s, void* addr,
     std::size_t* addrlen, asio::error_code& ec);
 
-ASIO_DECL socket_type sync_accept(socket_type s,
-    state_type state, socket_addr_type* addr,
-    std::size_t* addrlen, asio::error_code& ec);
+ASIO_DECL socket_type sync_accept(socket_type s, state_type state,
+    void* addr, std::size_t* addrlen, asio::error_code& ec);
 
 #if defined(ASIO_HAS_IOCP)
 
-ASIO_DECL void complete_iocp_accept(socket_type s,
-    void* output_buffer, DWORD address_length,
-    socket_addr_type* addr, std::size_t* addrlen,
+ASIO_DECL void complete_iocp_accept(socket_type s, void* output_buffer,
+    DWORD address_length, void* addr, std::size_t* addrlen,
     socket_type new_socket, asio::error_code& ec);
 
 #else // defined(ASIO_HAS_IOCP)
 
 ASIO_DECL bool non_blocking_accept(socket_type s,
-    state_type state, socket_addr_type* addr, std::size_t* addrlen,
+    state_type state, void* addr, std::size_t* addrlen,
     asio::error_code& ec, socket_type& new_socket);
 
 #endif // defined(ASIO_HAS_IOCP)
 
-ASIO_DECL int bind(socket_type s, const socket_addr_type* addr,
+ASIO_DECL int bind(socket_type s, const void* addr,
     std::size_t addrlen, asio::error_code& ec);
 
 ASIO_DECL int close(socket_type s, state_type& state,
@@ -100,10 +98,10 @@ ASIO_DECL bool set_internal_non_blocking(socket_type s,
 ASIO_DECL int shutdown(socket_type s,
     int what, asio::error_code& ec);
 
-ASIO_DECL int connect(socket_type s, const socket_addr_type* addr,
+ASIO_DECL int connect(socket_type s, const void* addr,
     std::size_t addrlen, asio::error_code& ec);
 
-ASIO_DECL void sync_connect(socket_type s, const socket_addr_type* addr,
+ASIO_DECL void sync_connect(socket_type s, const void* addr,
     std::size_t addrlen, asio::error_code& ec);
 
 #if defined(ASIO_HAS_IOCP)
@@ -166,20 +164,20 @@ ASIO_DECL bool non_blocking_recv1(socket_type s,
 
 #endif // defined(ASIO_HAS_IOCP)
 
-ASIO_DECL signed_size_type recvfrom(socket_type s, buf* bufs,
-    size_t count, int flags, socket_addr_type* addr,
+ASIO_DECL signed_size_type recvfrom(socket_type s,
+    buf* bufs, size_t count, int flags, void* addr,
     std::size_t* addrlen, asio::error_code& ec);
 
-ASIO_DECL signed_size_type recvfrom1(socket_type s, void* data,
-    size_t size, int flags, socket_addr_type* addr,
+ASIO_DECL signed_size_type recvfrom1(socket_type s,
+    void* data, size_t size, int flags, void* addr,
     std::size_t* addrlen, asio::error_code& ec);
 
 ASIO_DECL size_t sync_recvfrom(socket_type s, state_type state,
-    buf* bufs, size_t count, int flags, socket_addr_type* addr,
+    buf* bufs, size_t count, int flags, void* addr,
     std::size_t* addrlen, asio::error_code& ec);
 
 ASIO_DECL size_t sync_recvfrom1(socket_type s, state_type state,
-    void* data, size_t size, int flags, socket_addr_type* addr,
+    void* data, size_t size, int flags, void* addr,
     std::size_t* addrlen, asio::error_code& ec);
 
 #if defined(ASIO_HAS_IOCP)
@@ -190,14 +188,12 @@ ASIO_DECL void complete_iocp_recvfrom(
 
 #else // defined(ASIO_HAS_IOCP)
 
-ASIO_DECL bool non_blocking_recvfrom(socket_type s,
-    buf* bufs, size_t count, int flags,
-    socket_addr_type* addr, std::size_t* addrlen,
+ASIO_DECL bool non_blocking_recvfrom(socket_type s, buf* bufs,
+    size_t count, int flags, void* addr, std::size_t* addrlen,
     asio::error_code& ec, size_t& bytes_transferred);
 
-ASIO_DECL bool non_blocking_recvfrom1(socket_type s,
-    void* data, size_t size, int flags,
-    socket_addr_type* addr, std::size_t* addrlen,
+ASIO_DECL bool non_blocking_recvfrom1(socket_type s, void* data,
+    size_t size, int flags, void* addr, std::size_t* addrlen,
     asio::error_code& ec, size_t& bytes_transferred);
 
 #endif // defined(ASIO_HAS_IOCP)
@@ -255,32 +251,30 @@ ASIO_DECL bool non_blocking_send1(socket_type s,
 
 #endif // defined(ASIO_HAS_IOCP)
 
-ASIO_DECL signed_size_type sendto(socket_type s, const buf* bufs,
-    size_t count, int flags, const socket_addr_type* addr,
+ASIO_DECL signed_size_type sendto(socket_type s,
+    const buf* bufs, size_t count, int flags, const void* addr,
     std::size_t addrlen, asio::error_code& ec);
 
-ASIO_DECL signed_size_type sendto1(socket_type s, const void* data,
-    size_t size, int flags, const socket_addr_type* addr,
+ASIO_DECL signed_size_type sendto1(socket_type s,
+    const void* data, size_t size, int flags, const void* addr,
     std::size_t addrlen, asio::error_code& ec);
 
 ASIO_DECL size_t sync_sendto(socket_type s, state_type state,
-    const buf* bufs, size_t count, int flags, const socket_addr_type* addr,
+    const buf* bufs, size_t count, int flags, const void* addr,
     std::size_t addrlen, asio::error_code& ec);
 
 ASIO_DECL size_t sync_sendto1(socket_type s, state_type state,
-    const void* data, size_t size, int flags, const socket_addr_type* addr,
+    const void* data, size_t size, int flags, const void* addr,
     std::size_t addrlen, asio::error_code& ec);
 
 #if !defined(ASIO_HAS_IOCP)
 
-ASIO_DECL bool non_blocking_sendto(socket_type s,
-    const buf* bufs, size_t count, int flags,
-    const socket_addr_type* addr, std::size_t addrlen,
+ASIO_DECL bool non_blocking_sendto(socket_type s, const buf* bufs,
+    size_t count, int flags, const void* addr, std::size_t addrlen,
     asio::error_code& ec, size_t& bytes_transferred);
 
-ASIO_DECL bool non_blocking_sendto1(socket_type s,
-    const void* data, size_t size, int flags,
-    const socket_addr_type* addr, std::size_t addrlen,
+ASIO_DECL bool non_blocking_sendto1(socket_type s, const void* data,
+    size_t size, int flags, const void* addr, std::size_t addrlen,
     asio::error_code& ec, size_t& bytes_transferred);
 
 #endif // !defined(ASIO_HAS_IOCP)
@@ -296,10 +290,10 @@ ASIO_DECL int getsockopt(socket_type s, state_type state,
     int level, int optname, void* optval,
     size_t* optlen, asio::error_code& ec);
 
-ASIO_DECL int getpeername(socket_type s, socket_addr_type* addr,
+ASIO_DECL int getpeername(socket_type s, void* addr,
     std::size_t* addrlen, bool cached, asio::error_code& ec);
 
-ASIO_DECL int getsockname(socket_type s, socket_addr_type* addr,
+ASIO_DECL int getsockname(socket_type s, void* addr,
     std::size_t* addrlen, asio::error_code& ec);
 
 ASIO_DECL int ioctl(socket_type s, state_type& state,
@@ -344,19 +338,17 @@ ASIO_DECL asio::error_code background_getaddrinfo(
 
 ASIO_DECL void freeaddrinfo(addrinfo_type* ai);
 
-ASIO_DECL asio::error_code getnameinfo(
-    const socket_addr_type* addr, std::size_t addrlen,
-    char* host, std::size_t hostlen, char* serv,
+ASIO_DECL asio::error_code getnameinfo(const void* addr,
+    std::size_t addrlen, char* host, std::size_t hostlen, char* serv,
     std::size_t servlen, int flags, asio::error_code& ec);
 
-ASIO_DECL asio::error_code sync_getnameinfo(
-    const socket_addr_type* addr, std::size_t addrlen,
-    char* host, std::size_t hostlen, char* serv,
+ASIO_DECL asio::error_code sync_getnameinfo(const void* addr,
+    std::size_t addrlen, char* host, std::size_t hostlen, char* serv,
     std::size_t servlen, int sock_type, asio::error_code& ec);
 
 ASIO_DECL asio::error_code background_getnameinfo(
     const weak_cancel_token_type& cancel_token,
-    const socket_addr_type* addr, std::size_t addrlen,
+    const void* addr, std::size_t addrlen,
     char* host, std::size_t hostlen, char* serv,
     std::size_t servlen, int sock_type, asio::error_code& ec);
 

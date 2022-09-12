@@ -179,7 +179,7 @@ std::size_t sync_read(int d, state_type state, buf* bufs,
   // A request to read 0 bytes on a stream is a no-op.
   if (all_empty)
   {
-    ec.assign(0, ec.category());
+    asio::error::clear(ec);
     return 0;
   }
 
@@ -225,7 +225,7 @@ std::size_t sync_read1(int d, state_type state, void* data,
   // A request to read 0 bytes on a stream is a no-op.
   if (size == 0)
   {
-    ec.assign(0, ec.category());
+    asio::error::clear(ec);
     return 0;
   }
 
@@ -347,7 +347,7 @@ std::size_t sync_write(int d, state_type state, const buf* bufs,
   // A request to write 0 bytes on a stream is a no-op.
   if (all_empty)
   {
-    ec.assign(0, ec.category());
+    asio::error::clear(ec);
     return 0;
   }
 
@@ -386,7 +386,7 @@ std::size_t sync_write1(int d, state_type state, const void* data,
   // A request to write 0 bytes on a stream is a no-op.
   if (size == 0)
   {
-    ec.assign(0, ec.category());
+    asio::error::clear(ec);
     return 0;
   }
 
@@ -489,7 +489,7 @@ std::size_t sync_read_at(int d, state_type state, uint64_t offset,
   // A request to read 0 bytes on a stream is a no-op.
   if (all_empty)
   {
-    ec.assign(0, ec.category());
+    asio::error::clear(ec);
     return 0;
   }
 
@@ -535,7 +535,7 @@ std::size_t sync_read_at1(int d, state_type state, uint64_t offset,
   // A request to read 0 bytes on a stream is a no-op.
   if (size == 0)
   {
-    ec.assign(0, ec.category());
+    asio::error::clear(ec);
     return 0;
   }
 
@@ -658,7 +658,7 @@ std::size_t sync_write_at(int d, state_type state, uint64_t offset,
   // A request to write 0 bytes on a stream is a no-op.
   if (all_empty)
   {
-    ec.assign(0, ec.category());
+    asio::error::clear(ec);
     return 0;
   }
 
@@ -698,7 +698,7 @@ std::size_t sync_write_at1(int d, state_type state, uint64_t offset,
   // A request to write 0 bytes on a stream is a no-op.
   if (size == 0)
   {
-    ec.assign(0, ec.category());
+    asio::error::clear(ec);
     return 0;
   }
 

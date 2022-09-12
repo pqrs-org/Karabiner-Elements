@@ -137,6 +137,7 @@ public:
       asio::error_code& ec)
   {
     ec = asio::error::operation_not_supported;
+    ASIO_ERROR_LOCATION(ec);
     return ec;
   }
 

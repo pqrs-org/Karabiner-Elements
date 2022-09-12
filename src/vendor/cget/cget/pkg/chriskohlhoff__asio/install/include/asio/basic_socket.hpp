@@ -68,6 +68,10 @@ template <typename Protocol, typename Executor>
 class basic_socket
   : public socket_base
 {
+private:
+  class initiate_async_connect;
+  class initiate_async_wait;
+
 public:
   /// The type of the executor associated with the object.
   typedef Executor executor_type;
@@ -360,7 +364,7 @@ public:
     is_convertible<Protocol1, Protocol>::value
       && is_convertible<Executor1, Executor>::value,
     basic_socket&
-  >::type operator=(basic_socket<Protocol1, Executor1> && other)
+  >::type operator=(basic_socket<Protocol1, Executor1>&& other)
   {
     basic_socket tmp(std::move(other));
     impl_ = std::move(tmp.impl_);
@@ -964,11 +968,15 @@ public:
   template <
       ASIO_COMPLETION_TOKEN_FOR(void (asio::error_code))
         ConnectToken ASIO_DEFAULT_COMPLETION_TOKEN_TYPE(executor_type)>
-  ASIO_INITFN_AUTO_RESULT_TYPE(ConnectToken,
+  ASIO_INITFN_AUTO_RESULT_TYPE_PREFIX(ConnectToken,
       void (asio::error_code))
   async_connect(const endpoint_type& peer_endpoint,
       ASIO_MOVE_ARG(ConnectToken) token
         ASIO_DEFAULT_COMPLETION_TOKEN(executor_type))
+    ASIO_INITFN_AUTO_RESULT_TYPE_SUFFIX((
+      async_initiate<ConnectToken, void (asio::error_code)>(
+          declval<initiate_async_connect>(), token,
+          peer_endpoint, declval<asio::error_code&>())))
   {
     asio::error_code open_ec;
     if (!is_open())
@@ -1814,11 +1822,14 @@ public:
   template <
       ASIO_COMPLETION_TOKEN_FOR(void (asio::error_code))
         WaitToken ASIO_DEFAULT_COMPLETION_TOKEN_TYPE(executor_type)>
-  ASIO_INITFN_AUTO_RESULT_TYPE(WaitToken,
+  ASIO_INITFN_AUTO_RESULT_TYPE_PREFIX(WaitToken,
       void (asio::error_code))
   async_wait(wait_type w,
       ASIO_MOVE_ARG(WaitToken) token
         ASIO_DEFAULT_COMPLETION_TOKEN(executor_type))
+    ASIO_INITFN_AUTO_RESULT_TYPE_SUFFIX((
+      async_initiate<WaitToken, void (asio::error_code)>(
+          declval<initiate_async_wait>(), token, w)))
   {
     return async_initiate<WaitToken, void (asio::error_code)>(
         initiate_async_wait(this), token, w);

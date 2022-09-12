@@ -141,6 +141,9 @@ class basic_waitable_timer;
 template <typename Clock, typename WaitTraits, typename Executor>
 class basic_waitable_timer
 {
+private:
+  class initiate_async_wait;
+
 public:
   /// The type of the executor associated with the object.
   typedef Executor executor_type;
@@ -338,7 +341,7 @@ public:
   basic_waitable_timer(
       basic_waitable_timer<Clock, WaitTraits, Executor1>&& other,
       typename constraint<
-          is_convertible<Executor1, Executor>::value
+        is_convertible<Executor1, Executor>::value
       >::type = 0)
     : impl_(std::move(other.impl_))
   {
@@ -766,11 +769,14 @@ public:
   template <
       ASIO_COMPLETION_TOKEN_FOR(void (asio::error_code))
         WaitToken ASIO_DEFAULT_COMPLETION_TOKEN_TYPE(executor_type)>
-  ASIO_INITFN_AUTO_RESULT_TYPE(WaitToken,
-      void (asio::error_code))
+  ASIO_INITFN_AUTO_RESULT_TYPE_PREFIX(
+      WaitToken, void (asio::error_code))
   async_wait(
       ASIO_MOVE_ARG(WaitToken) token
         ASIO_DEFAULT_COMPLETION_TOKEN(executor_type))
+    ASIO_INITFN_AUTO_RESULT_TYPE_SUFFIX((
+      async_initiate<WaitToken, void (asio::error_code)>(
+          declval<initiate_async_wait>(), token)))
   {
     return async_initiate<WaitToken, void (asio::error_code)>(
         initiate_async_wait(this), token);

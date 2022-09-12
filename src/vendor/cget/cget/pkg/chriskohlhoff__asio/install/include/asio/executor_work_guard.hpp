@@ -36,8 +36,8 @@ class executor_work_guard;
 
 #if defined(GENERATING_DOCUMENTATION)
 
-/// An object of type @c executor_work_guard controls ownership of executor work
-/// within a scope.
+/// An object of type @c executor_work_guard controls ownership of outstanding
+/// executor work within a scope.
 template <typename Executor>
 class executor_work_guard
 {
@@ -244,6 +244,11 @@ private:
 #endif // !defined(GENERATING_DOCUMENTATION)
 
 /// Create an @ref executor_work_guard object.
+/**
+ * @param ex An executor.
+ *
+ * @returns A work guard constructed with the specified executor.
+ */
 template <typename Executor>
 ASIO_NODISCARD inline executor_work_guard<Executor>
 make_work_guard(const Executor& ex,
@@ -255,6 +260,12 @@ make_work_guard(const Executor& ex,
 }
 
 /// Create an @ref executor_work_guard object.
+/**
+ * @param ctx An execution context, from which an executor will be obtained.
+ *
+ * @returns A work guard constructed with the execution context's executor,
+ * obtained by performing <tt>ctx.get_executor()</tt>.
+ */
 template <typename ExecutionContext>
 ASIO_NODISCARD inline
 executor_work_guard<typename ExecutionContext::executor_type>
@@ -268,6 +279,13 @@ make_work_guard(ExecutionContext& ctx,
 }
 
 /// Create an @ref executor_work_guard object.
+/**
+ * @param t An arbitrary object, such as a completion handler, for which the
+ * associated executor will be obtained.
+ *
+ * @returns A work guard constructed with the associated executor of the object
+ * @c t, which is obtained as if by calling <tt>get_associated_executor(t)</tt>.
+ */
 template <typename T>
 ASIO_NODISCARD inline
 executor_work_guard<typename associated_executor<T>::type>
@@ -287,6 +305,17 @@ make_work_guard(const T& t,
 }
 
 /// Create an @ref executor_work_guard object.
+/**
+ * @param t An arbitrary object, such as a completion handler, for which the
+ * associated executor will be obtained.
+ *
+ * @param ex An executor to be used as the candidate object when determining the
+ * associated executor.
+ *
+ * @returns A work guard constructed with the associated executor of the object
+ * @c t, which is obtained as if by calling <tt>get_associated_executor(t,
+ * ex)</tt>.
+ */
 template <typename T, typename Executor>
 ASIO_NODISCARD inline
 executor_work_guard<typename associated_executor<T, Executor>::type>
@@ -300,6 +329,17 @@ make_work_guard(const T& t, const Executor& ex,
 }
 
 /// Create an @ref executor_work_guard object.
+/**
+ * @param t An arbitrary object, such as a completion handler, for which the
+ * associated executor will be obtained.
+ *
+ * @param ctx An execution context, from which an executor is obtained to use as
+ * the candidate object for determining the associated executor.
+ *
+ * @returns A work guard constructed with the associated executor of the object
+ * @c t, which is obtained as if by calling <tt>get_associated_executor(t,
+ * ctx.get_executor())</tt>.
+ */
 template <typename T, typename ExecutionContext>
 ASIO_NODISCARD inline executor_work_guard<typename associated_executor<T,
   typename ExecutionContext::executor_type>::type>

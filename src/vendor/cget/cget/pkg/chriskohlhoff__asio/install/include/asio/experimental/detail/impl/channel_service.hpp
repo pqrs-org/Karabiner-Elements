@@ -181,10 +181,8 @@ void channel_service<Mutex>::reset(
 
   typename Mutex::scoped_lock lock(impl.mutex_);
 
-  if (impl.receive_state_ == closed)
-    impl.receive_state_ = block;
-  if (impl.send_state_ == closed)
-    impl.send_state_ = impl.max_buffer_size_ ? buffer : block;
+  impl.receive_state_ = block;
+  impl.send_state_ = impl.max_buffer_size_ ? buffer : block;
   impl.buffer_clear();
 }
 

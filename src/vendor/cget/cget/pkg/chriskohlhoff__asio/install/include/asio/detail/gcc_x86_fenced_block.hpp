@@ -55,7 +55,7 @@ private:
   {
     int r = 0, m = 1;
     __asm__ __volatile__ (
-        "xchgl %0, %1" :
+        "xchg{l} %0, %1" :
         "=r"(r), "=m"(m) :
         "0"(1), "m"(m) :
         "memory", "cc");

@@ -212,8 +212,11 @@ private:
 } // namespace detail
 
 template <ASIO_COMPLETION_TOKEN_FOR(void()) NullaryToken>
-ASIO_INITFN_AUTO_RESULT_TYPE(NullaryToken, void()) dispatch(
+ASIO_INITFN_AUTO_RESULT_TYPE_PREFIX(NullaryToken, void()) dispatch(
     ASIO_MOVE_ARG(NullaryToken) token)
+  ASIO_INITFN_AUTO_RESULT_TYPE_SUFFIX((
+    async_initiate<NullaryToken, void()>(
+        declval<detail::initiate_dispatch>(), token)))
 {
   return async_initiate<NullaryToken, void()>(
       detail::initiate_dispatch(), token);
@@ -221,11 +224,14 @@ ASIO_INITFN_AUTO_RESULT_TYPE(NullaryToken, void()) dispatch(
 
 template <typename Executor,
     ASIO_COMPLETION_TOKEN_FOR(void()) NullaryToken>
-ASIO_INITFN_AUTO_RESULT_TYPE(NullaryToken, void()) dispatch(
+ASIO_INITFN_AUTO_RESULT_TYPE_PREFIX(NullaryToken, void()) dispatch(
     const Executor& ex, ASIO_MOVE_ARG(NullaryToken) token,
     typename constraint<
       execution::is_executor<Executor>::value || is_executor<Executor>::value
     >::type)
+  ASIO_INITFN_AUTO_RESULT_TYPE_SUFFIX((
+    async_initiate<NullaryToken, void()>(
+        declval<detail::initiate_dispatch_with_executor<Executor> >(), token)))
 {
   return async_initiate<NullaryToken, void()>(
       detail::initiate_dispatch_with_executor<Executor>(ex), token);
@@ -233,10 +239,14 @@ ASIO_INITFN_AUTO_RESULT_TYPE(NullaryToken, void()) dispatch(
 
 template <typename ExecutionContext,
     ASIO_COMPLETION_TOKEN_FOR(void()) NullaryToken>
-inline ASIO_INITFN_AUTO_RESULT_TYPE(NullaryToken, void()) dispatch(
+inline ASIO_INITFN_AUTO_RESULT_TYPE_PREFIX(NullaryToken, void()) dispatch(
     ExecutionContext& ctx, ASIO_MOVE_ARG(NullaryToken) token,
     typename constraint<is_convertible<
       ExecutionContext&, execution_context&>::value>::type)
+  ASIO_INITFN_AUTO_RESULT_TYPE_SUFFIX((
+    async_initiate<NullaryToken, void()>(
+        declval<detail::initiate_dispatch_with_executor<
+          typename ExecutionContext::executor_type> >(), token)))
 {
   return async_initiate<NullaryToken, void()>(
       detail::initiate_dispatch_with_executor<

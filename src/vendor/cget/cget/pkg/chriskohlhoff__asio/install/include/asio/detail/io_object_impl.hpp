@@ -69,7 +69,16 @@ public:
     service_->move_construct(implementation_, other.implementation_);
   }
 
-  // Perform a converting move-construction of an I/O object.
+  // Perform converting move-construction of an I/O object on the same service.
+  template <typename Executor1>
+  io_object_impl(io_object_impl<IoObjectService, Executor1>&& other)
+    : service_(&other.get_service()),
+      executor_(other.get_executor())
+  {
+    service_->move_construct(implementation_, other.get_implementation());
+  }
+
+  // Perform converting move-construction of an I/O object on another service.
   template <typename IoObjectService1, typename Executor1>
   io_object_impl(io_object_impl<IoObjectService1, Executor1>&& other)
     : service_(&asio::use_service<IoObjectService>(

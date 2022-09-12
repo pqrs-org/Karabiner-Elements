@@ -154,8 +154,11 @@ struct io_context::initiate_dispatch
 };
 
 template <typename LegacyCompletionHandler>
-ASIO_INITFN_AUTO_RESULT_TYPE(LegacyCompletionHandler, void ())
+ASIO_INITFN_AUTO_RESULT_TYPE_PREFIX(LegacyCompletionHandler, void ())
 io_context::dispatch(ASIO_MOVE_ARG(LegacyCompletionHandler) handler)
+  ASIO_INITFN_AUTO_RESULT_TYPE_SUFFIX((
+    async_initiate<LegacyCompletionHandler, void ()>(
+        declval<initiate_dispatch>(), handler, this)))
 {
   return async_initiate<LegacyCompletionHandler, void ()>(
       initiate_dispatch(), handler, this);
@@ -193,8 +196,11 @@ struct io_context::initiate_post
 };
 
 template <typename LegacyCompletionHandler>
-ASIO_INITFN_AUTO_RESULT_TYPE(LegacyCompletionHandler, void ())
+ASIO_INITFN_AUTO_RESULT_TYPE_PREFIX(LegacyCompletionHandler, void ())
 io_context::post(ASIO_MOVE_ARG(LegacyCompletionHandler) handler)
+  ASIO_INITFN_AUTO_RESULT_TYPE_SUFFIX((
+    async_initiate<LegacyCompletionHandler, void ()>(
+        declval<initiate_post>(), handler, this)))
 {
   return async_initiate<LegacyCompletionHandler, void ()>(
       initiate_post(), handler, this);

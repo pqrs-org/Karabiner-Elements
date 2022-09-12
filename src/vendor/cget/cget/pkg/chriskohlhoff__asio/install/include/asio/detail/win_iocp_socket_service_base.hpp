@@ -569,9 +569,8 @@ protected:
 
   // Helper function to start an asynchronous send_to operation.
   ASIO_DECL void start_send_to_op(base_implementation_type& impl,
-      WSABUF* buffers, std::size_t buffer_count,
-      const socket_addr_type* addr, int addrlen,
-      socket_base::message_flags flags, operation* op);
+      WSABUF* buffers, std::size_t buffer_count, const void* addr,
+      int addrlen, socket_base::message_flags flags, operation* op);
 
   // Helper function to start an asynchronous receive operation.
   ASIO_DECL void start_receive_op(base_implementation_type& impl,
@@ -585,7 +584,7 @@ protected:
 
   // Helper function to start an asynchronous receive_from operation.
   ASIO_DECL void start_receive_from_op(base_implementation_type& impl,
-      WSABUF* buffers, std::size_t buffer_count, socket_addr_type* addr,
+      WSABUF* buffers, std::size_t buffer_count, void* addr,
       socket_base::message_flags flags, int* addrlen, operation* op);
 
   // Helper function to start an asynchronous accept operation.
@@ -599,9 +598,8 @@ protected:
 
   // Start the asynchronous connect operation using the reactor.
   ASIO_DECL int start_connect_op(base_implementation_type& impl,
-      int family, int type, const socket_addr_type* remote_addr,
-      std::size_t remote_addrlen, win_iocp_socket_connect_op_base* op,
-      operation* iocp_op);
+      int family, int type, const void* remote_addr, std::size_t remote_addrlen,
+      win_iocp_socket_connect_op_base* op, operation* iocp_op);
 
   // Helper function to close a socket when the associated object is being
   // destroyed.

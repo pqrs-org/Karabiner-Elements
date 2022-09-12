@@ -169,30 +169,12 @@ namespace detail {
  * returning when there is no more work to do. For example, the io_context may
  * be being run in a background thread that is launched prior to the
  * application's asynchronous operations. The run() call may be kept running by
- * creating an executor that tracks work against the io_context:
+ * using the @ref make_work_guard function to create an object of type
+ * asio::executor_work_guard<io_context::executor_type>:
  *
  * @code asio::io_context io_context;
- * auto work = asio::require(io_context.get_executor(),
- *     asio::execution::outstanding_work.tracked);
- * ... @endcode
- *
- * If using C++03, which lacks automatic variable type deduction, you may
- * compute the return type of the require call:
- *
- * @code asio::io_context io_context;
- * typename asio::require_result<
- *     asio::io_context::executor_type,
- *     asio::exeution::outstanding_work_t::tracked_t>
- *   work = asio::require(io_context.get_executor(),
- *     asio::execution::outstanding_work.tracked);
- * ... @endcode
- *
- * or store the result in the type-erasing executor wrapper, any_io_executor:
- *
- * @code asio::io_context io_context;
- * asio::any_io_executor work
- *   = asio::require(io_context.get_executor(),
- *       asio::execution::outstanding_work.tracked);
+ * asio::executor_work_guard<asio::io_context::executor_type>
+ *   = asio::make_work_guard(io_context);
  * ... @endcode
  *
  * To effect a shutdown, the application will then need to call the io_context
@@ -201,15 +183,13 @@ namespace detail {
  * permitting ready handlers to be dispatched.
  *
  * Alternatively, if the application requires that all operations and handlers
- * be allowed to finish normally, store the work-tracking executor in an
- * any_io_executor object, so that it may be explicitly reset.
+ * be allowed to finish normally, the work object may be explicitly reset.
  *
  * @code asio::io_context io_context;
- * asio::any_io_executor work
- *   = asio::require(io_context.get_executor(),
- *       asio::execution::outstanding_work.tracked);
+ * asio::executor_work_guard<asio::io_context::executor_type>
+ *   = asio::make_work_guard(io_context);
  * ...
- * work = asio::any_io_executor(); // Allow run() to exit. @endcode
+ * work.reset(); // Allow run() to exit. @endcode
  */
 class io_context
   : public execution_context
@@ -219,6 +199,11 @@ private:
 #if defined(ASIO_HAS_IOCP)
   friend class detail::win_iocp_overlapped_ptr;
 #endif
+
+#if !defined(ASIO_NO_DEPRECATED)
+  struct initiate_dispatch;
+  struct initiate_post;
+#endif // !defined(ASIO_NO_DEPRECATED)
 
 public:
   template <typename Allocator, uintptr_t Bits>
@@ -576,8 +561,11 @@ public:
    * throws an exception.
    */
   template <typename LegacyCompletionHandler>
-  ASIO_INITFN_AUTO_RESULT_TYPE(LegacyCompletionHandler, void ())
-  dispatch(ASIO_MOVE_ARG(LegacyCompletionHandler) handler);
+  ASIO_INITFN_AUTO_RESULT_TYPE_PREFIX(LegacyCompletionHandler, void ())
+  dispatch(ASIO_MOVE_ARG(LegacyCompletionHandler) handler)
+    ASIO_INITFN_AUTO_RESULT_TYPE_SUFFIX((
+      async_initiate<LegacyCompletionHandler, void ()>(
+          declval<initiate_dispatch>(), handler, this)));
 
   /// (Deprecated: Use asio::post().) Request the io_context to invoke
   /// the given handler and return immediately.
@@ -603,8 +591,11 @@ public:
    * throws an exception.
    */
   template <typename LegacyCompletionHandler>
-  ASIO_INITFN_AUTO_RESULT_TYPE(LegacyCompletionHandler, void ())
-  post(ASIO_MOVE_ARG(LegacyCompletionHandler) handler);
+  ASIO_INITFN_AUTO_RESULT_TYPE_PREFIX(LegacyCompletionHandler, void ())
+  post(ASIO_MOVE_ARG(LegacyCompletionHandler) handler)
+    ASIO_INITFN_AUTO_RESULT_TYPE_SUFFIX((
+      async_initiate<LegacyCompletionHandler, void ()>(
+          declval<initiate_post>(), handler, this)));
 
   /// (Deprecated: Use asio::bind_executor().) Create a new handler that
   /// automatically dispatches the wrapped handler on the io_context.
@@ -640,11 +631,6 @@ public:
 private:
   io_context(const io_context&) ASIO_DELETED;
   io_context& operator=(const io_context&) ASIO_DELETED;
-
-#if !defined(ASIO_NO_DEPRECATED)
-  struct initiate_dispatch;
-  struct initiate_post;
-#endif // !defined(ASIO_NO_DEPRECATED)
 
   // Helper function to add the implementation.
   ASIO_DECL impl_type& add_impl(impl_type* impl);

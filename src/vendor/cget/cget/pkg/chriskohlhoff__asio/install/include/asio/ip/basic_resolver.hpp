@@ -67,6 +67,9 @@ template <typename InternetProtocol, typename Executor>
 class basic_resolver
   : public resolver_base
 {
+private:
+  class initiate_async_resolve;
+
 public:
   /// The type of the executor associated with the object.
   typedef Executor executor_type;
@@ -676,11 +679,15 @@ public:
       ASIO_COMPLETION_TOKEN_FOR(void (asio::error_code,
         results_type)) ResolveToken
           ASIO_DEFAULT_COMPLETION_TOKEN_TYPE(executor_type)>
-  ASIO_INITFN_AUTO_RESULT_TYPE(ResolveToken,
+  ASIO_INITFN_AUTO_RESULT_TYPE_PREFIX(ResolveToken,
       void (asio::error_code, results_type))
   async_resolve(const query& q,
       ASIO_MOVE_ARG(ResolveToken) token
         ASIO_DEFAULT_COMPLETION_TOKEN(executor_type))
+    ASIO_INITFN_AUTO_RESULT_TYPE_SUFFIX((
+      asio::async_initiate<ResolveToken,
+        void (asio::error_code, results_type)>(
+          declval<initiate_async_resolve>(), token, q)))
   {
     return asio::async_initiate<ResolveToken,
       void (asio::error_code, results_type)>(
@@ -739,12 +746,17 @@ public:
       ASIO_COMPLETION_TOKEN_FOR(void (asio::error_code,
         results_type)) ResolveToken
           ASIO_DEFAULT_COMPLETION_TOKEN_TYPE(executor_type)>
-  ASIO_INITFN_AUTO_RESULT_TYPE(ResolveToken,
+  ASIO_INITFN_AUTO_RESULT_TYPE_PREFIX(ResolveToken,
       void (asio::error_code, results_type))
   async_resolve(ASIO_STRING_VIEW_PARAM host,
       ASIO_STRING_VIEW_PARAM service,
       ASIO_MOVE_ARG(ResolveToken) token
         ASIO_DEFAULT_COMPLETION_TOKEN(executor_type))
+    ASIO_INITFN_AUTO_RESULT_TYPE_SUFFIX((
+      asio::async_initiate<ResolveToken,
+        void (asio::error_code, results_type)>(
+          declval<initiate_async_resolve>(), token,
+          declval<basic_resolver_query<protocol_type>&>())))
   {
     return async_resolve(host, service, resolver_base::flags(),
         ASIO_MOVE_CAST(ResolveToken)(token));
@@ -807,13 +819,18 @@ public:
       ASIO_COMPLETION_TOKEN_FOR(void (asio::error_code,
         results_type)) ResolveToken
           ASIO_DEFAULT_COMPLETION_TOKEN_TYPE(executor_type)>
-  ASIO_INITFN_AUTO_RESULT_TYPE(ResolveToken,
+  ASIO_INITFN_AUTO_RESULT_TYPE_PREFIX(ResolveToken,
       void (asio::error_code, results_type))
   async_resolve(ASIO_STRING_VIEW_PARAM host,
       ASIO_STRING_VIEW_PARAM service,
       resolver_base::flags resolve_flags,
       ASIO_MOVE_ARG(ResolveToken) token
         ASIO_DEFAULT_COMPLETION_TOKEN(executor_type))
+    ASIO_INITFN_AUTO_RESULT_TYPE_SUFFIX((
+      asio::async_initiate<ResolveToken,
+        void (asio::error_code, results_type)>(
+          declval<initiate_async_resolve>(), token,
+          declval<basic_resolver_query<protocol_type>&>())))
   {
     basic_resolver_query<protocol_type> q(static_cast<std::string>(host),
         static_cast<std::string>(service), resolve_flags);
@@ -878,12 +895,17 @@ public:
       ASIO_COMPLETION_TOKEN_FOR(void (asio::error_code,
         results_type)) ResolveToken
           ASIO_DEFAULT_COMPLETION_TOKEN_TYPE(executor_type)>
-  ASIO_INITFN_AUTO_RESULT_TYPE(ResolveToken,
+  ASIO_INITFN_AUTO_RESULT_TYPE_PREFIX(ResolveToken,
       void (asio::error_code, results_type))
   async_resolve(const protocol_type& protocol,
       ASIO_STRING_VIEW_PARAM host, ASIO_STRING_VIEW_PARAM service,
       ASIO_MOVE_ARG(ResolveToken) token
         ASIO_DEFAULT_COMPLETION_TOKEN(executor_type))
+    ASIO_INITFN_AUTO_RESULT_TYPE_SUFFIX((
+      asio::async_initiate<ResolveToken,
+        void (asio::error_code, results_type)>(
+          declval<initiate_async_resolve>(), token,
+          declval<basic_resolver_query<protocol_type>&>())))
   {
     return async_resolve(protocol, host, service, resolver_base::flags(),
         ASIO_MOVE_CAST(ResolveToken)(token));
@@ -949,13 +971,18 @@ public:
       ASIO_COMPLETION_TOKEN_FOR(void (asio::error_code,
         results_type)) ResolveToken
           ASIO_DEFAULT_COMPLETION_TOKEN_TYPE(executor_type)>
-  ASIO_INITFN_AUTO_RESULT_TYPE(ResolveToken,
+  ASIO_INITFN_AUTO_RESULT_TYPE_PREFIX(ResolveToken,
       void (asio::error_code, results_type))
   async_resolve(const protocol_type& protocol,
       ASIO_STRING_VIEW_PARAM host, ASIO_STRING_VIEW_PARAM service,
       resolver_base::flags resolve_flags,
       ASIO_MOVE_ARG(ResolveToken) token
         ASIO_DEFAULT_COMPLETION_TOKEN(executor_type))
+    ASIO_INITFN_AUTO_RESULT_TYPE_SUFFIX((
+      asio::async_initiate<ResolveToken,
+        void (asio::error_code, results_type)>(
+          declval<initiate_async_resolve>(), token,
+          declval<basic_resolver_query<protocol_type>&>())))
   {
     basic_resolver_query<protocol_type> q(
         protocol, static_cast<std::string>(host),
@@ -1042,11 +1069,15 @@ public:
       ASIO_COMPLETION_TOKEN_FOR(void (asio::error_code,
         results_type)) ResolveToken
           ASIO_DEFAULT_COMPLETION_TOKEN_TYPE(executor_type)>
-  ASIO_INITFN_AUTO_RESULT_TYPE(ResolveToken,
+  ASIO_INITFN_AUTO_RESULT_TYPE_PREFIX(ResolveToken,
       void (asio::error_code, results_type))
   async_resolve(const endpoint_type& e,
       ASIO_MOVE_ARG(ResolveToken) token
         ASIO_DEFAULT_COMPLETION_TOKEN(executor_type))
+    ASIO_INITFN_AUTO_RESULT_TYPE_SUFFIX((
+      asio::async_initiate<ResolveToken,
+        void (asio::error_code, results_type)>(
+          declval<initiate_async_resolve>(), token, e)))
   {
     return asio::async_initiate<ResolveToken,
       void (asio::error_code, results_type)>(

@@ -44,6 +44,7 @@ void reactive_socket_service_base::construct(
 {
   impl.socket_ = invalid_socket;
   impl.state_ = 0;
+  impl.reactor_data_ = reactor::per_descriptor_data();
 }
 
 void reactive_socket_service_base::base_move_construct(
@@ -267,8 +268,7 @@ void reactive_socket_service_base::start_accept_op(
 
 void reactive_socket_service_base::start_connect_op(
     reactive_socket_service_base::base_implementation_type& impl,
-    reactor_op* op, bool is_continuation,
-    const socket_addr_type* addr, size_t addrlen)
+    reactor_op* op, bool is_continuation, const void* addr, size_t addrlen)
 {
   if ((impl.state_ & socket_ops::non_blocking)
       || socket_ops::set_internal_non_blocking(

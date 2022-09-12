@@ -800,13 +800,18 @@ struct associator<Associator,
 template <typename Protocol, typename Executor, typename EndpointSequence,
     ASIO_COMPLETION_TOKEN_FOR(void (asio::error_code,
       typename Protocol::endpoint)) RangeConnectToken>
-inline ASIO_INITFN_AUTO_RESULT_TYPE(RangeConnectToken,
+inline ASIO_INITFN_AUTO_RESULT_TYPE_PREFIX(RangeConnectToken,
     void (asio::error_code, typename Protocol::endpoint))
 async_connect(basic_socket<Protocol, Executor>& s,
     const EndpointSequence& endpoints,
     ASIO_MOVE_ARG(RangeConnectToken) token,
     typename constraint<is_endpoint_sequence<
         EndpointSequence>::value>::type)
+  ASIO_INITFN_AUTO_RESULT_TYPE_SUFFIX((
+    async_initiate<RangeConnectToken,
+      void (asio::error_code, typename Protocol::endpoint)>(
+        declval<detail::initiate_async_range_connect<Protocol, Executor> >(),
+        token, endpoints, declval<detail::default_connect_condition>())))
 {
   return async_initiate<RangeConnectToken,
     void (asio::error_code, typename Protocol::endpoint)>(
@@ -818,26 +823,38 @@ async_connect(basic_socket<Protocol, Executor>& s,
 template <typename Protocol, typename Executor, typename Iterator,
     ASIO_COMPLETION_TOKEN_FOR(void (asio::error_code,
       Iterator)) IteratorConnectToken>
-inline ASIO_INITFN_AUTO_RESULT_TYPE(IteratorConnectToken,
+inline ASIO_INITFN_AUTO_RESULT_TYPE_PREFIX(IteratorConnectToken,
     void (asio::error_code, Iterator))
 async_connect(basic_socket<Protocol, Executor>& s, Iterator begin,
     ASIO_MOVE_ARG(IteratorConnectToken) token,
     typename constraint<!is_endpoint_sequence<Iterator>::value>::type)
+  ASIO_INITFN_AUTO_RESULT_TYPE_SUFFIX((
+    async_initiate<IteratorConnectToken,
+      void (asio::error_code, Iterator)>(
+        declval<detail::initiate_async_iterator_connect<Protocol, Executor> >(),
+        token, begin, Iterator(),
+        declval<detail::default_connect_condition>())))
 {
   return async_initiate<IteratorConnectToken,
     void (asio::error_code, Iterator)>(
       detail::initiate_async_iterator_connect<Protocol, Executor>(s),
-      token, begin, Iterator(), detail::default_connect_condition());
+      token, begin, Iterator(),
+      detail::default_connect_condition());
 }
 #endif // !defined(ASIO_NO_DEPRECATED)
 
 template <typename Protocol, typename Executor, typename Iterator,
     ASIO_COMPLETION_TOKEN_FOR(void (asio::error_code,
       Iterator)) IteratorConnectToken>
-inline ASIO_INITFN_AUTO_RESULT_TYPE(IteratorConnectToken,
+inline ASIO_INITFN_AUTO_RESULT_TYPE_PREFIX(IteratorConnectToken,
     void (asio::error_code, Iterator))
 async_connect(basic_socket<Protocol, Executor>& s, Iterator begin, Iterator end,
     ASIO_MOVE_ARG(IteratorConnectToken) token)
+  ASIO_INITFN_AUTO_RESULT_TYPE_SUFFIX((
+    async_initiate<IteratorConnectToken,
+      void (asio::error_code, Iterator)>(
+        declval<detail::initiate_async_iterator_connect<Protocol, Executor> >(),
+        token, begin, end, declval<detail::default_connect_condition>())))
 {
   return async_initiate<IteratorConnectToken,
     void (asio::error_code, Iterator)>(
@@ -849,13 +866,18 @@ template <typename Protocol, typename Executor,
     typename EndpointSequence, typename ConnectCondition,
     ASIO_COMPLETION_TOKEN_FOR(void (asio::error_code,
       typename Protocol::endpoint)) RangeConnectToken>
-inline ASIO_INITFN_AUTO_RESULT_TYPE(RangeConnectToken,
+inline ASIO_INITFN_AUTO_RESULT_TYPE_PREFIX(RangeConnectToken,
     void (asio::error_code, typename Protocol::endpoint))
 async_connect(basic_socket<Protocol, Executor>& s,
     const EndpointSequence& endpoints, ConnectCondition connect_condition,
     ASIO_MOVE_ARG(RangeConnectToken) token,
     typename constraint<is_endpoint_sequence<
         EndpointSequence>::value>::type)
+  ASIO_INITFN_AUTO_RESULT_TYPE_SUFFIX((
+    async_initiate<RangeConnectToken,
+      void (asio::error_code, typename Protocol::endpoint)>(
+        declval<detail::initiate_async_range_connect<Protocol, Executor> >(),
+        token, endpoints, connect_condition)))
 {
   return async_initiate<RangeConnectToken,
     void (asio::error_code, typename Protocol::endpoint)>(
@@ -868,12 +890,17 @@ template <typename Protocol, typename Executor,
     typename Iterator, typename ConnectCondition,
     ASIO_COMPLETION_TOKEN_FOR(void (asio::error_code,
       Iterator)) IteratorConnectToken>
-inline ASIO_INITFN_AUTO_RESULT_TYPE(IteratorConnectToken,
+inline ASIO_INITFN_AUTO_RESULT_TYPE_PREFIX(IteratorConnectToken,
     void (asio::error_code, Iterator))
 async_connect(basic_socket<Protocol, Executor>& s, Iterator begin,
     ConnectCondition connect_condition,
     ASIO_MOVE_ARG(IteratorConnectToken) token,
     typename constraint<!is_endpoint_sequence<Iterator>::value>::type)
+  ASIO_INITFN_AUTO_RESULT_TYPE_SUFFIX((
+    async_initiate<IteratorConnectToken,
+      void (asio::error_code, Iterator)>(
+        declval<detail::initiate_async_iterator_connect<Protocol, Executor> >(),
+        token, begin, Iterator(), connect_condition)))
 {
   return async_initiate<IteratorConnectToken,
     void (asio::error_code, Iterator)>(
@@ -886,11 +913,16 @@ template <typename Protocol, typename Executor,
     typename Iterator, typename ConnectCondition,
     ASIO_COMPLETION_TOKEN_FOR(void (asio::error_code,
       Iterator)) IteratorConnectToken>
-inline ASIO_INITFN_AUTO_RESULT_TYPE(IteratorConnectToken,
+inline ASIO_INITFN_AUTO_RESULT_TYPE_PREFIX(IteratorConnectToken,
     void (asio::error_code, Iterator))
 async_connect(basic_socket<Protocol, Executor>& s, Iterator begin,
     Iterator end, ConnectCondition connect_condition,
     ASIO_MOVE_ARG(IteratorConnectToken) token)
+  ASIO_INITFN_AUTO_RESULT_TYPE_SUFFIX((
+    async_initiate<IteratorConnectToken,
+      void (asio::error_code, Iterator)>(
+        declval<detail::initiate_async_iterator_connect<Protocol, Executor> >(),
+        token, begin, end, connect_condition)))
 {
   return async_initiate<IteratorConnectToken,
     void (asio::error_code, Iterator)>(

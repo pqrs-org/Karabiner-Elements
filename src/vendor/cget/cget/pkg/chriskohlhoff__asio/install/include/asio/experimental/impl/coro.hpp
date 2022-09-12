@@ -1011,7 +1011,6 @@ struct coro<Yield, Return, Executor>::initiate_async_resume
 
       auto ch = detail::coroutine_handle<promise_type>::from_promise(*coro);
       assert(ch && !ch.done());
-      assert(coro->awaited_from == detail::noop_coroutine());
 
       coro->awaited_from = post_coroutine(std::move(exec), std::move(h));
       coro->reset_error();
@@ -1033,7 +1032,6 @@ struct coro<Yield, Return, Executor>::initiate_async_resume
 
       auto ch = detail::coroutine_handle<promise_type>::from_promise(*coro);
       assert(ch && !ch.done());
-      assert(coro->awaited_from == detail::noop_coroutine());
 
       coro->awaited_from = detail::post_coroutine(exec,
           [coro, h = std::move(h)]() mutable
@@ -1083,7 +1081,6 @@ struct coro<Yield, Return, Executor>::initiate_async_resume
       }
       else
       {
-        assert(coro->awaited_from == detail::noop_coroutine());
         coro->awaited_from =
           detail::post_coroutine(exec,
               [coro, h = std::move(h)]() mutable
@@ -1135,7 +1132,6 @@ struct coro<Yield, Return, Executor>::initiate_async_resume
       }
       else
       {
-        assert(coro->awaited_from == detail::noop_coroutine());
         coro->awaited_from =
           detail::post_coroutine(exec,
               [h = std::move(h), coro]() mutable
