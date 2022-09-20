@@ -62,17 +62,36 @@ private:
   }
 
   void execute_set_mouse_cursor_position(const software_function_details::set_mouse_cursor_position& set_mouse_cursor_position) {
+    if (auto target_display_id = get_target_display_id(set_mouse_cursor_position)) {
+      auto local_display_point = set_mouse_cursor_position.get_point(CGDisplayBounds(*target_display_id));
+      CGDisplayMoveCursorToPoint(*target_display_id, local_display_point);
+    }
+  }
+
+  std::optional<CGDirectDisplayID> get_target_display_id(const software_function_details::set_mouse_cursor_position& set_mouse_cursor_position) {
     if (auto screen = set_mouse_cursor_position.get_screen()) {
       auto active_displays = pqrs::osx::cg_display::active_displays();
       if (*screen < active_displays.size()) {
-        CGDisplayMoveCursorToPoint(active_displays[*screen],
-                                   set_mouse_cursor_position.get_point(
-                                       CGDisplayBounds(active_displays[*screen])));
+        return std::optional<CGDirectDisplayID>(active_displays[*screen]);
       }
     } else {
-      CGWarpMouseCursorPosition(set_mouse_cursor_position.get_point(
-          CGDisplayBounds(CGMainDisplayID())));
+      return get_active_display_id();
     }
+
+    return std::nullopt;
+  }
+
+  // Gets the screen that the mouse cursor is on
+  std::optional<CGDirectDisplayID> get_active_display_id() {
+    CGPoint mouse_loc = CGEventGetLocation(CGEventCreate(nil));
+
+    CGDirectDisplayID active_display_id;
+
+    if (CGGetDisplaysWithPoint(mouse_loc, 1, &active_display_id, nullptr) != kCGErrorSuccess) {
+      return std::nullopt;
+    }
+
+    return std::optional<CGDirectDisplayID>(active_display_id);
   }
 
 private:
