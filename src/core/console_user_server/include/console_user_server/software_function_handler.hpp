@@ -75,23 +75,10 @@ private:
         return std::optional<CGDirectDisplayID>(active_displays[*screen]);
       }
     } else {
-      return get_active_display_id();
+      return pqrs::osx::cg_display::get_online_display_id_by_mouse_cursor();
     }
 
     return std::nullopt;
-  }
-
-  // Gets the screen that the mouse cursor is on
-  std::optional<CGDirectDisplayID> get_active_display_id() {
-    CGPoint mouse_loc = CGEventGetLocation(CGEventCreate(nil));
-
-    CGDirectDisplayID active_display_id;
-
-    if (CGGetDisplaysWithPoint(mouse_loc, 1, &active_display_id, nullptr) != kCGErrorSuccess) {
-      return std::nullopt;
-    }
-
-    return std::optional<CGDirectDisplayID>(active_display_id);
   }
 
 private:
