@@ -1,12 +1,14 @@
 #pragma once
 
-// pqrs::osx::cg_display v1.0
+// pqrs::osx::cg_display v1.2
 
 // (C) Copyright Takayama Fumihiko 2021.
 // Distributed under the Boost Software License, Version 1.0.
 // (See http://www.boost.org/LICENSE_1_0.txt)
 
 #include <CoreGraphics/CoreGraphics.h>
+#include <optional>
+#include <pqrs/osx/cg_event.hpp>
 #include <vector>
 
 namespace pqrs {
@@ -39,6 +41,18 @@ inline std::vector<CGDirectDisplayID> active_displays(void) {
   std::vector<CGDirectDisplayID> displays(display_count);
   CGGetActiveDisplayList(displays.size(), displays.data(), &display_count);
   return displays;
+}
+
+inline std::optional<CGDirectDisplayID> get_online_display_id_by_mouse_cursor() {
+  CGDirectDisplayID display_id;
+  if (CGGetDisplaysWithPoint(cg_event::mouse::cursor_position(),
+                             1,
+                             &display_id,
+                             nullptr) == kCGErrorSuccess) {
+    return display_id;
+  }
+
+  return std::nullopt;
 }
 
 } // namespace cg_display
