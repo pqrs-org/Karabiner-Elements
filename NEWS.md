@@ -3,6 +3,7 @@
 ## Beta
 
 -   ⚡️ Improvements
+    -   Update `set_mouse_cursor_position` to use the current screen if `screen` option is not specified. (Thanks to @gnawf)
     -   Sparkle Framework has been updated.
 
 ## Karabiner-Elements 14.9.0
