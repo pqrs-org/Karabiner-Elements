@@ -5,6 +5,8 @@
 -   ⚡️ Improvements
     -   Update `set_mouse_cursor_position` to use the current screen if `screen` option is not specified. (Thanks to @gnawf)
     -   Sparkle Framework has been updated.
+-   🐛 Bug Fixes
+    -   Fixed an issue that the `device_if` and `device_unless` does not work if vendor_id or product_id is zero. (or more precisely, if vendor_id or product_id cannot be retrieved and is set to 0)
 
 ## Karabiner-Elements 14.9.0
 
