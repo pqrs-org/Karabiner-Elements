@@ -29,6 +29,12 @@ void run_device_test(void) {
     auto device_id_1099_9999 = manipulator_conditions_helper.prepare_device(
         pqrs::hid::vendor_id::value_t(1099), pqrs::hid::product_id::value_t(9999), std::nullopt, true, false);
 
+    auto device_id_0000_0000 = manipulator_conditions_helper.prepare_device(
+        pqrs::hid::vendor_id::value_t(0), pqrs::hid::product_id::value_t(0), std::nullopt, true, false);
+
+    auto device_id_nullopt_nullopt = manipulator_conditions_helper.prepare_device(
+        std::nullopt, std::nullopt, std::nullopt, true, false);
+
     auto device_id_1000_2000_tt = manipulator_conditions_helper.prepare_device(
         pqrs::hid::vendor_id::value_t(1000), pqrs::hid::product_id::value_t(2000), std::nullopt, true, true);
 
@@ -165,6 +171,30 @@ void run_device_test(void) {
       }
       {
         auto e = manipulator_conditions_helper.make_event_queue_entry(device_id_1000_2000_4000);
+        expect(condition.is_fulfilled(e, environment) == false);
+      }
+    }
+
+    // std::nullopt
+    {
+      nlohmann::json json;
+      json["type"] = "device_if";
+      json["identifiers"] = nlohmann::json::array();
+      json["identifiers"].push_back(nlohmann::json::object());
+      json["identifiers"].back()["vendor_id"] = 0;
+      json["identifiers"].back()["product_id"] = 0;
+      krbn::manipulator::conditions::device condition(json);
+
+      {
+        auto e = manipulator_conditions_helper.make_event_queue_entry(device_id_0000_0000);
+        expect(condition.is_fulfilled(e, environment) == true);
+      }
+      {
+        auto e = manipulator_conditions_helper.make_event_queue_entry(device_id_nullopt_nullopt);
+        expect(condition.is_fulfilled(e, environment) == true);
+      }
+      {
+        auto e = manipulator_conditions_helper.make_event_queue_entry(device_id_1000_2000);
         expect(condition.is_fulfilled(e, environment) == false);
       }
     }

@@ -140,22 +140,27 @@ private:
 
     bool fulfilled(const device_properties& device_properties,
                    const manipulator_environment& manipulator_environment) const {
-      if (vendor_id && vendor_id != device_properties.get_vendor_id()) {
+      //
+      // If `device_properties.vendor_id` is std::nullopt, it is treated as 0 in `devices.identifiers` in `karabiner.json`, so std::nullopt is also treated as 0 here.
+      // Other properties are treated in the same way.
+      //
+
+      if (vendor_id && vendor_id != device_properties.get_vendor_id().value_or(pqrs::hid::vendor_id::value_t(0))) {
         return false;
       }
-      if (product_id && product_id != device_properties.get_product_id()) {
+      if (product_id && product_id != device_properties.get_product_id().value_or(pqrs::hid::product_id::value_t(0))) {
         return false;
       }
-      if (location_id && location_id != device_properties.get_location_id()) {
+      if (location_id && location_id != device_properties.get_location_id().value_or(krbn::location_id(0))) {
         return false;
       }
-      if (is_keyboard && is_keyboard != device_properties.get_is_keyboard()) {
+      if (is_keyboard && is_keyboard != device_properties.get_is_keyboard().value_or(false)) {
         return false;
       }
-      if (is_pointing_device && is_pointing_device != device_properties.get_is_pointing_device()) {
+      if (is_pointing_device && is_pointing_device != device_properties.get_is_pointing_device().value_or(false)) {
         return false;
       }
-      if (is_touch_bar && is_touch_bar != device_properties.get_is_built_in_touch_bar()) {
+      if (is_touch_bar && is_touch_bar != device_properties.get_is_built_in_touch_bar().value_or(false)) {
         return false;
       }
       if (is_built_in_keyboard) {
