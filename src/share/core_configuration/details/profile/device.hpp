@@ -138,7 +138,7 @@ public:
   void set_ignore(bool value) {
     ignore_ = value;
 
-    coordicate_between_properties();
+    coordinate_between_properties();
   }
 
   bool get_manipulate_caps_lock_led(void) const {
@@ -147,7 +147,7 @@ public:
   void set_manipulate_caps_lock_led(bool value) {
     manipulate_caps_lock_led_ = value;
 
-    coordicate_between_properties();
+    coordinate_between_properties();
   }
 
   bool get_treat_as_built_in_keyboard(void) const {
@@ -156,7 +156,7 @@ public:
   void set_treat_as_built_in_keyboard(bool value) {
     treat_as_built_in_keyboard_ = value;
 
-    coordicate_between_properties();
+    coordinate_between_properties();
   }
 
   bool get_disable_built_in_keyboard_if_exists(void) const {
@@ -165,7 +165,7 @@ public:
   void set_disable_built_in_keyboard_if_exists(bool value) {
     disable_built_in_keyboard_if_exists_ = value;
 
-    coordicate_between_properties();
+    coordinate_between_properties();
   }
 
   const simple_modifications& get_simple_modifications(void) const {
@@ -183,7 +183,7 @@ public:
   }
 
 private:
-  void coordicate_between_properties(void) {
+  void coordinate_between_properties(void) {
     // Set `disable_built_in_keyboard_if_exists_` false if `treat_as_built_in_keyboard_` is true.
     // If both settings are true, the device will always be disabled.
     // To avoid this situation, set `disable_built_in_keyboard_if_exists_` to false.

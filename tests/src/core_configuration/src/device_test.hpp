@@ -181,7 +181,7 @@ void run_device_test(void) {
         expect(device.get_manipulate_caps_lock_led() == false);
       }
     }
-    // Coordicate between settings
+    // Coordinate between settings
     {
       nlohmann::json json({
           {"identifiers", {
