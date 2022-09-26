@@ -97,10 +97,10 @@ public:
     }
 
     //
-    // Coordicate between settings.
+    // Coordinate between settings.
     //
 
-    coordicate_between_properties();
+    coordinate_between_properties();
   }
 
   static nlohmann::json make_default_fn_function_keys_json(void) {
