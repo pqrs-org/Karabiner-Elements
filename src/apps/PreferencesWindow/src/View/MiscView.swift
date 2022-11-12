@@ -24,6 +24,16 @@ struct MiscView: View {
 
             Spacer()
           }
+
+          HStack {
+            Toggle(isOn: $settings.askForConfirmationBeforeQuitting) {
+              Text("Ask for confirmation when quitting (Default: on)")
+            }
+            .switchToggleStyle()
+
+            Spacer()
+          }
+
         }
         .padding(6.0)
       }

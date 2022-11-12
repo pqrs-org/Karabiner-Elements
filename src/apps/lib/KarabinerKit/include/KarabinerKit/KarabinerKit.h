@@ -12,6 +12,6 @@
 + (void)observeConsoleUserServerIsDisabledNotification;
 
 + (void)relaunch;
-+ (BOOL)quitKarabinerWithConfirmation;
++ (BOOL)quitKarabiner:(bool)askForConfirmation;
 
 @end

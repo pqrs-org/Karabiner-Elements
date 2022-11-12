@@ -13,6 +13,7 @@ void run_global_configuration_test(void) {
       expect(global_configuration.get_check_for_updates_on_startup() == true);
       expect(global_configuration.get_show_in_menu_bar() == true);
       expect(global_configuration.get_show_profile_name_in_menu_bar() == false);
+      expect(global_configuration.get_ask_for_confirmation_before_quitting() == true);
       expect(global_configuration.get_unsafe_ui() == false);
     }
 
@@ -22,12 +23,14 @@ void run_global_configuration_test(void) {
           {"check_for_updates_on_startup", false},
           {"show_in_menu_bar", false},
           {"show_profile_name_in_menu_bar", true},
+          {"ask_for_confirmation_before_quitting", false},
           {"unsafe_ui", true},
       };
       krbn::core_configuration::details::global_configuration global_configuration(json);
       expect(global_configuration.get_check_for_updates_on_startup() == false);
       expect(global_configuration.get_show_in_menu_bar() == false);
       expect(global_configuration.get_show_profile_name_in_menu_bar() == true);
+      expect(global_configuration.get_ask_for_confirmation_before_quitting() == false);
       expect(global_configuration.get_unsafe_ui() == true);
     }
 
@@ -43,6 +46,7 @@ void run_global_configuration_test(void) {
       expect(global_configuration.get_check_for_updates_on_startup() == true);
       expect(global_configuration.get_show_in_menu_bar() == true);
       expect(global_configuration.get_show_profile_name_in_menu_bar() == false);
+      expect(global_configuration.get_ask_for_confirmation_before_quitting() == true);
       expect(global_configuration.get_unsafe_ui() == false);
     }
   };

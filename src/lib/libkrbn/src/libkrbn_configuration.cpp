@@ -90,6 +90,19 @@ void libkrbn_core_configuration_set_global_configuration_show_profile_name_in_me
   }
 }
 
+bool libkrbn_core_configuration_get_global_configuration_ask_for_confirmation_before_quitting(libkrbn_core_configuration* p) {
+  if (auto c = reinterpret_cast<libkrbn_core_configuration_class*>(p)) {
+    return c->get_core_configuration().get_global_configuration().get_ask_for_confirmation_before_quitting();
+  }
+  return false;
+}
+
+void libkrbn_core_configuration_set_global_configuration_ask_for_confirmation_before_quitting(libkrbn_core_configuration* p, bool value) {
+  if (auto c = reinterpret_cast<libkrbn_core_configuration_class*>(p)) {
+    return c->get_core_configuration().get_global_configuration().set_ask_for_confirmation_before_quitting(value);
+  }
+}
+
 bool libkrbn_core_configuration_get_global_configuration_unsafe_ui(libkrbn_core_configuration* p) {
   if (auto c = reinterpret_cast<libkrbn_core_configuration_class*>(p)) {
     return c->get_core_configuration().get_global_configuration().get_unsafe_ui();
