@@ -186,6 +186,6 @@ public class MenuController: NSObject, NSMenuDelegate {
 
   @objc
   func quitKarabiner(_: Any) {
-    KarabinerKit.quitKarabinerWithConfirmation()
+    KarabinerKit.quitKarabiner(LibKrbn.Settings.shared.askForConfirmationBeforeQuitting)
   }
 }

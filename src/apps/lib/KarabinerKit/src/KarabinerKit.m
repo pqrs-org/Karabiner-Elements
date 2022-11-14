@@ -58,18 +58,24 @@ static void version_changed_callback(void* refcon) {
   [NSApp terminate:nil];
 }
 
-+ (BOOL)quitKarabinerWithConfirmation {
-  NSAlert* alert = [NSAlert new];
-  alert.messageText = @"Are you sure you want to quit Karabiner-Elements?";
-  alert.informativeText = @"The changed key will be restored after Karabiner-Elements is quit.";
-  [alert addButtonWithTitle:@"Quit"];
-  [alert addButtonWithTitle:@"Cancel"];
-  if ([alert runModal] == NSAlertFirstButtonReturn) {
++ (BOOL)quitKarabiner:(bool)askForConfirmation {
+  if (askForConfirmation) {
+    NSAlert* alert = [NSAlert new];
+    alert.messageText = @"Are you sure you want to quit Karabiner-Elements?";
+    alert.informativeText = @"The changed key will be restored after Karabiner-Elements is quit.";
+    [alert addButtonWithTitle:@"Quit"];
+    [alert addButtonWithTitle:@"Cancel"];
+    if ([alert runModal] == NSAlertFirstButtonReturn) {
+      libkrbn_launchctl_manage_console_user_server(false);
+      libkrbn_launchctl_manage_notification_window(false);
+      return YES;
+    }
+    return NO;
+  } else {
     libkrbn_launchctl_manage_console_user_server(false);
     libkrbn_launchctl_manage_notification_window(false);
     return YES;
   }
-  return NO;
 }
 
 @end
