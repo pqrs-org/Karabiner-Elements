@@ -1,5 +1,10 @@
 # Changelog
 
+## Beta
+
+-   ✨ New Features
+    -   Add `Ask for confirmation when quitting` option into Preferences > Pro tab. (Thanks to @basti1302)
+
 ## Karabiner-Elements 14.10.0
 
 -   [📦 Download](https://github.com/pqrs-org/Karabiner-Elements/releases/download/v14.10.0/Karabiner-Elements-14.10.0.dmg)
