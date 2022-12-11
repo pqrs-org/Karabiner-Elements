@@ -10,6 +10,7 @@
 #include "process_utility.hpp"
 #include <iostream>
 #include <mach/mach.h>
+#include <pqrs/osx/workspace.hpp>
 
 namespace krbn {
 namespace grabber {
@@ -38,6 +39,13 @@ int daemon(void) {
       return 1;
     }
   }
+
+  //
+  // Check Karabiner-Elements.app exists
+  //
+
+  auto settings_application_url = pqrs::osx::workspace::find_application_url_by_bundle_identifier("org.pqrs.Karabiner-Elements.Preferences");
+  logger::get_logger()->info("Karabiner-Elements.app path: {0}", settings_application_url);
 
   //
   // Prepare state_json_writer
