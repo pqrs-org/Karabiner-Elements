@@ -6,6 +6,10 @@
 #import <pqrs/osx/frontmost_application_monitor/impl/objc.h>
 #import <pqrs/weakify.h>
 
+#if !__has_feature(objc_arc)
+#error "You have to add -fobjc-arc into compile options"
+#endif
+
 @interface PqrsOsxFrontmostApplicationMonitor : NSObject
 
 @property NSOperationQueue* queue;

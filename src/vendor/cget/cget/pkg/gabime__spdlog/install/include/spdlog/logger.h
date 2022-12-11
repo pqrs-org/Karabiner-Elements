@@ -33,7 +33,7 @@
         {                                                                                                                                  \
             if (location.filename)                                                                                                         \
             {                                                                                                                              \
-                err_handler_(fmt_lib::format("{} [{}({})]", ex.what(), location.filename, location.line));                                 \
+                err_handler_(fmt_lib::format(SPDLOG_FMT_STRING("{} [{}({})]"), ex.what(), location.filename, location.line));              \
             }                                                                                                                              \
             else                                                                                                                           \
             {                                                                                                                              \
@@ -319,6 +319,10 @@ public:
     // each sink will get a separate instance of the formatter object.
     void set_formatter(std::unique_ptr<formatter> f);
 
+    // set formatting for the sinks in this logger.
+    // equivalent to
+    //     set_formatter(make_unique<pattern_formatter>(pattern, time_type))
+    // Note: each sink will get a new instance of a formatter object, replacing the old one.
     void set_pattern(std::string pattern, pattern_time_type time_type = pattern_time_type::local);
 
     // backtrace support.
@@ -363,12 +367,13 @@ protected:
         }
         SPDLOG_TRY
         {
-#ifdef SPDLOG_USE_STD_FORMAT
-            memory_buf_t buf = std::vformat(fmt, std::make_format_args(std::forward<Args>(args)...));
-#else
             memory_buf_t buf;
-            fmt::detail::vformat_to(buf, fmt, fmt::make_format_args(std::forward<Args>(args)...));
+#ifdef SPDLOG_USE_STD_FORMAT
+            fmt_lib::vformat_to(std::back_inserter(buf), fmt, fmt_lib::make_format_args(std::forward<Args>(args)...));
+#else
+            fmt::vformat_to(fmt::appender(buf), fmt, fmt::make_format_args(std::forward<Args>(args)...));
 #endif
+
             details::log_msg log_msg(loc, name_, lvl, string_view_t(buf.data(), buf.size()));
             log_it_(log_msg, log_enabled, traceback_enabled);
         }
@@ -388,13 +393,14 @@ protected:
         SPDLOG_TRY
         {
             // format to wmemory_buffer and convert to utf8
-            ;
-#    ifdef SPDLOG_USE_STD_FORMAT
-            wmemory_buf_t wbuf = std::vformat(fmt, std::make_wformat_args(std::forward<Args>(args)...));
-#    else
             wmemory_buf_t wbuf;
-            fmt::detail::vformat_to(wbuf, fmt, fmt::make_format_args<fmt::wformat_context>(std::forward<Args>(args)...));
+#    ifdef SPDLOG_USE_STD_FORMAT
+            fmt_lib::vformat_to(
+                std::back_inserter(wbuf), fmt, fmt_lib::make_format_args<fmt_lib::wformat_context>(std::forward<Args>(args)...));
+#    else
+            fmt::vformat_to(std::back_inserter(wbuf), fmt, fmt::make_format_args<fmt::wformat_context>(std::forward<Args>(args)...));
 #    endif
+
             memory_buf_t buf;
             details::os::wstr_to_utf8buf(wstring_view_t(wbuf.data(), wbuf.size()), buf);
             details::log_msg log_msg(loc, name_, lvl, string_view_t(buf.data(), buf.size()));

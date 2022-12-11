@@ -8,8 +8,10 @@
 #include <cctype>
 #include <spdlog/common.h>
 
-#if defined(__has_include) && __has_include(<version>)
-#    include <version>
+#if defined(__has_include)
+#    if __has_include(<version>)
+#        include <version>
+#    endif
 #endif
 
 #if __cpp_lib_span >= 202002L
@@ -239,7 +241,7 @@ struct formatter<spdlog::details::dump_info<T>, char>
 
         if (put_positions)
         {
-            spdlog::fmt_lib::format_to(inserter, "{:04X}: ", pos);
+            spdlog::fmt_lib::format_to(inserter, SPDLOG_FMT_STRING("{:04X}: "), pos);
         }
     }
 };

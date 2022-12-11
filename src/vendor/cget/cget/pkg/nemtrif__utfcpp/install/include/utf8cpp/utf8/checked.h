@@ -148,7 +148,7 @@ namespace utf8
             case internal::INVALID_LEAD :
             case internal::INCOMPLETE_SEQUENCE :
             case internal::OVERLONG_SEQUENCE :
-                throw invalid_utf8(*it);
+                throw invalid_utf8(static_cast<uint8_t>(*it));
             case internal::INVALID_CODE_POINT :
                 throw invalid_code_point(cp);
         }

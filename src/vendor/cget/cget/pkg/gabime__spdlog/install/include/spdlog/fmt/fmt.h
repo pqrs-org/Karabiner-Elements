@@ -21,8 +21,12 @@
 #    endif
 // enable the 'n' flag in for backward compatibility with fmt 6.x
 #    define FMT_DEPRECATED_N_SPECIFIER
+// enable ostream formatting for backward compatibility with fmt 8.x
+#    define FMT_DEPRECATED_OSTREAM
+
 #    include <spdlog/fmt/bundled/core.h>
 #    include <spdlog/fmt/bundled/format.h>
+
 #else // SPDLOG_FMT_EXTERNAL is defined - use external fmtlib
 #    include <fmt/core.h>
 #    include <fmt/format.h>
