@@ -9,6 +9,8 @@ Karabiner-Elements is a powerful utility for keyboard customization on macOS Sie
 
 You can download Karabiner-Elements from the [official site](https://karabiner-elements.pqrs.org/).
 
+Alternatively, for users of [homebrew](https://brew.sh/), Karabiner-Elements may be installed with `brew install --cask karabiner-elements`.
+
 ### Old releases
 
 You can download previous versions of Karabiner-Elements from [here](https://karabiner-elements.pqrs.org/docs/releasenotes/).
