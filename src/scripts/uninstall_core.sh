@@ -20,7 +20,7 @@ if [ /Library/LaunchDaemons/org.pqrs.karabiner.karabiner_observer.plist ]; then
 fi
 
 #
-# Clear immutable flag
+# Clear immutable flag (uchg and schg were set until Karabiner-Elements 14.10.0)
 #
 
 chflags nouchg,noschg /Applications/Karabiner-Elements.app

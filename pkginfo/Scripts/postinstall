@@ -9,12 +9,6 @@ export PATH
 chmod 4755 '/Library/Application Support/org.pqrs/Karabiner-Elements/bin/karabiner_session_monitor'
 
 # ------------------------------------------------------------
-# Set immutable flag
-
-chflags uchg,schg /Applications/Karabiner-Elements.app
-chflags uchg,schg /Applications/Karabiner-EventViewer.app
-
-# ------------------------------------------------------------
 # Relaunch karabiner processes
 
 killall karabiner_kextd
