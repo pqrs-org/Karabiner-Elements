@@ -36,8 +36,6 @@ void libkrbn_launchctl_manage_session_monitor(void);
 void libkrbn_launchctl_restart_console_user_server(void);
 void libkrbn_launchctl_bootout_console_user_server(void);
 
-void libkrbn_check_for_updates_stable_only(void);
-
 void libkrbn_launch_event_viewer(void);
 void libkrbn_launch_menu(void);
 void libkrbn_launch_preferences(void);
