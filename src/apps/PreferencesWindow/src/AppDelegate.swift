@@ -1,5 +1,6 @@
 import AppKit
 import SwiftUI
+import os
 
 @NSApplicationMain
 public class AppDelegate: NSObject, NSApplicationDelegate {
@@ -60,6 +61,12 @@ public class AppDelegate: NSObject, NSApplicationDelegate {
       switch command {
       case "checkForUpdatesInBackground":
         #if USE_SPARKLE
+          if !libkrbn_lock_single_application_with_user_pid_file("check_for_updates_in_background")
+          {
+            print("Exit since another process is running.")
+            NSApplication.shared.terminate(self)
+          }
+
           updaterMode = true
           Updater.shared.checkForUpdatesInBackground()
           return
