@@ -15,6 +15,22 @@
 namespace krbn {
 namespace grabber {
 namespace main {
+
+namespace {
+void create_application_symlink(const std::filesystem::path& symlink_path,
+                                const std::filesystem::path& actual_path) {
+  if (!std::filesystem::exists(symlink_path)) {
+    logger::get_logger()->info("Create a symlink: {0} -> {1}", symlink_path.string(), actual_path.string());
+
+    std::error_code error_code;
+    std::filesystem::create_symlink(actual_path, symlink_path, error_code);
+    if (error_code) {
+      logger::get_logger()->error("Failed to create symlink: {0}", error_code.message());
+    }
+  }
+}
+} // namespace
+
 int daemon(void) {
   //
   // Setup logger
@@ -39,6 +55,13 @@ int daemon(void) {
       return 1;
     }
   }
+
+  //
+  // Create symlinks to /Applications
+  //
+
+  create_application_symlink("/Applications/Karabiner-Elements.app",
+                             "/Library/Application Support/org.pqrs/Karabiner-Elements/Karabiner-Elements.app");
 
   //
   // Check Karabiner-Elements.app exists
