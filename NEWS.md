@@ -6,6 +6,7 @@
     -   Add `Ask for confirmation when quitting` option into Preferences > Pro tab. (Thanks to @basti1302)
 -   🐛 Bug Fixes
     -   Fixed an issue that uninstaller does not remove Karabiner-Elements.app and Karabiner-EventViewer.app in macOS Ventura.
+    -   Fixed an issue that could cause multiple update windows will be shown.
 
 ## Karabiner-Elements 14.10.0
 
