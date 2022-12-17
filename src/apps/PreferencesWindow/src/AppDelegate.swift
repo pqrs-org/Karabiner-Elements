@@ -66,22 +66,6 @@ public class AppDelegate: NSObject, NSApplicationDelegate {
         #else
           NSApplication.shared.terminate(self)
         #endif
-      case "checkForUpdatesStableOnly":
-        #if USE_SPARKLE
-          updaterMode = true
-          Updater.shared.checkForUpdatesStableOnly()
-          return
-        #else
-          NSApplication.shared.terminate(self)
-        #endif
-      case "checkForUpdatesWithBetaVersion":
-        #if USE_SPARKLE
-          updaterMode = true
-          Updater.shared.checkForUpdatesWithBetaVersion()
-          return
-        #else
-          NSApplication.shared.terminate(self)
-        #endif
       default:
         break
       }
