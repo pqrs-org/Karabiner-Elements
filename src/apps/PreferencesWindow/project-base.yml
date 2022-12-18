@@ -2,7 +2,7 @@ name: Karabiner-Elements
 packages:
   Sparkle:
     url: https://github.com/sparkle-project/Sparkle
-    from: 2.2.2
+    from: 2.3.0
 
 targets:
   Karabiner-Elements:
