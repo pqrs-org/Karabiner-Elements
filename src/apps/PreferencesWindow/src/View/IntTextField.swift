@@ -35,6 +35,14 @@ struct IntTextField: View {
         step: step
       ) {
         Text("")
+      }.whenHovered { hover in
+        if hover {
+          // In macOS 13.0.1, if the corresponding TextField has the focus, changing the value by Stepper will not be reflected in the TextField.
+          // Therefore, we should remove the focus before Stepper will be clicked.
+          DispatchQueue.main.async {
+            NSApp.keyWindow?.makeFirstResponder(nil)
+          }
+        }
       }
     }
   }
