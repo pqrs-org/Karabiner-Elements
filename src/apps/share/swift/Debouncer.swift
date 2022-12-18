@@ -1,3 +1,5 @@
+import Foundation
+
 class Debouncer {
   let delay: TimeInterval
   var timer: Timer?
