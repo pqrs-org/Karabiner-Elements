@@ -4,7 +4,7 @@ all:
 	bash run-xcodegen.sh
 	xcodebuild -configuration Release -alltargets SYMROOT="$(CURDIR)/build"
 
-clean:
+clean: purge-swift-package-manager-cache
 	rm -fr *.xcodeproj
 	rm -fr build
 
