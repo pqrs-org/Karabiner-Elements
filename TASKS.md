@@ -1,6 +1,6 @@
 # Tasks
 
--   [ ] Migrate Catch2 to boost-ext/ut.
+-   [x] Migrate Catch2 to boost-ext/ut.
 -   [ ] Migrate Objective-C code to Swift.
     -   [ ] KarabinerKit
     -   [ ] MultitouchExtension
@@ -13,6 +13,8 @@
     -   [x] Preferences
     -   [x] EventViewer
     -   [x] NotificationWindow
+-   [ ] Update launch daemons and agents with dropping macOS 12 support.
+    -   <https://developer.apple.com/documentation/servicemanagement/updating_helper_executables_from_earlier_versions_of_macos>
 -   [ ] Add disable scroll wheel feature.
 -   [ ] Add scroll wheel to source events.
 -   [ ] Add mouse movement to source events.
