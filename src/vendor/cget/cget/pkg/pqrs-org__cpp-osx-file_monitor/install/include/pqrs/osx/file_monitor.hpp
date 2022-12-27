@@ -1,6 +1,6 @@
 #pragma once
 
-// pqrs::osx::file_monitor v1.5
+// pqrs::osx::file_monitor v1.6
 
 // (C) Copyright Takayama Fumihiko 2018.
 // Distributed under the Boost Software License, Version 1.0.
@@ -17,7 +17,6 @@
 #include <CoreServices/CoreServices.h>
 #include <nod/nod.hpp>
 #include <pqrs/cf/array.hpp>
-#include <pqrs/cf/run_loop_thread.hpp>
 #include <pqrs/cf/string.hpp>
 #include <pqrs/dispatcher.hpp>
 #include <pqrs/filesystem.hpp>
@@ -42,7 +41,7 @@ public:
                                                         files_(files),
                                                         directories_(cf::make_cf_mutable_array()),
                                                         stream_(nullptr) {
-    cf_run_loop_thread_ = std::make_unique<cf::run_loop_thread>();
+    queue_ = dispatch_queue_create("org.pqrs.osx.file_monitor", DISPATCH_QUEUE_SERIAL);
 
     std::unordered_set<std::string> directories;
     for (const auto& f : files) {
@@ -56,31 +55,33 @@ public:
         }
       }
     }
+
+    dispatch_sync(queue_, ^{
+      impl::file_monitors_manager::insert(this);
+    });
   }
 
   virtual ~file_monitor(void) {
-    // dispatcher_client
-
-    detach_from_dispatcher();
-
-    // cf_run_loop_thread
-
-    cf_run_loop_thread_->enqueue(^{
-      unregister_stream();
+    // Wrap with dispatch_sync to prevent file_monitor destruction while static_stream_callback is running.
+    dispatch_sync(queue_, ^{
+      impl::file_monitors_manager::erase(this);
     });
 
-    cf_run_loop_thread_->terminate();
-    cf_run_loop_thread_ = nullptr;
+    dispatch_release(queue_);
+
+    detach_from_dispatcher([this] {
+      unregister_stream();
+    });
   }
 
   void async_start(void) {
-    cf_run_loop_thread_->enqueue(^{
+    enqueue_to_dispatcher([this] {
       register_stream();
     });
   }
 
   void enqueue_file_changed(const std::string& file_path) {
-    cf_run_loop_thread_->enqueue(^{
+    enqueue_to_dispatcher([this, file_path] {
       auto it = file_bodies_.find(file_path);
       if (it != std::end(file_bodies_)) {
         auto changed_file_body = it->second;
@@ -108,7 +109,7 @@ public:
   }
 
 private:
-  // This method is executed in cf_run_loop_thread_.
+  // This method is executed in the dispatcher thread.
   void register_stream(void) {
     // Skip if already started.
 
@@ -177,20 +178,17 @@ private:
         error_occurred("FSEventStreamCreate is failed.");
       });
     } else {
-      FSEventStreamScheduleWithRunLoop(stream_,
-                                       cf_run_loop_thread_->get_run_loop(),
-                                       kCFRunLoopCommonModes);
+      FSEventStreamSetDispatchQueue(stream_,
+                                    queue_);
       if (!FSEventStreamStart(stream_)) {
         enqueue_to_dispatcher([this] {
           error_occurred("FSEventStreamStart is failed.");
         });
       }
-
-      cf_run_loop_thread_->wake();
     }
   }
 
-  // This method is executed in cf_run_loop_thread_.
+  // This method is executed in the dispatcher thread.
   void unregister_stream(void) {
     if (stream_) {
       FSEventStreamStop(stream_);
@@ -216,6 +214,10 @@ private:
       return;
     }
 
+    if (!impl::file_monitors_manager::alive(self)) {
+      return;
+    }
+
     auto fs_events = std::make_shared<std::vector<fs_event>>();
 
     auto paths = static_cast<const char**>(event_paths);
@@ -226,12 +228,12 @@ private:
       }
     }
 
-    self->cf_run_loop_thread_->enqueue(^{
+    self->enqueue_to_dispatcher([self, fs_events] {
       self->stream_callback(fs_events);
     });
   }
 
-  // This method is executed in cf_run_loop_thread_.
+  // This method is executed in the dispatcher thread.
   void stream_callback(std::shared_ptr<std::vector<fs_event>> fs_events) {
     for (auto e : *fs_events) {
       if (e.flags & (kFSEventStreamEventFlagRootChanged |
@@ -286,7 +288,7 @@ private:
     }
   }
 
-  // This method is executed in cf_run_loop_thread_.
+  // This method is executed in the dispatcher thread.
   std::pair<bool, std::shared_ptr<std::vector<uint8_t>>> update_file_bodies(const std::string& file_path) {
     if (std::any_of(std::begin(files_),
                     std::end(files_),
@@ -315,7 +317,7 @@ private:
   }
 
   std::vector<std::string> files_;
-  std::unique_ptr<cf::run_loop_thread> cf_run_loop_thread_;
+  dispatch_queue_t queue_;
   cf::cf_ptr<CFMutableArrayRef> directories_;
   FSEventStreamRef stream_;
   // FSEventStreamEventPath -> file in files_
@@ -325,6 +327,11 @@ private:
   // }
   std::unordered_map<std::string, std::string> stream_file_paths_;
   std::unordered_map<std::string, std::shared_ptr<std::vector<uint8_t>>> file_bodies_;
+
+  class impl {
+  public:
+#include "impl/file_monitors_manager.hpp"
+  };
 };
 } // namespace osx
 } // namespace pqrs

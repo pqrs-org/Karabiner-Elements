@@ -1,6 +1,6 @@
 #pragma once
 
-// pqrs::osx::json_file_monitor v1.0
+// pqrs::osx::json_file_monitor v1.1
 
 // (C) Copyright Takayama Fumihiko 2019.
 // Distributed under the Boost Software License, Version 1.0.
@@ -35,7 +35,7 @@ public:
               nlohmann::json::parse(std::begin(*changed_file_body),
                                     std::end(*changed_file_body)));
         } catch (std::exception& e) {
-          auto message = e.what();
+          std::string message(e.what());
           enqueue_to_dispatcher([this, changed_file_path, message] {
             json_error_occurred(changed_file_path, message);
           });
