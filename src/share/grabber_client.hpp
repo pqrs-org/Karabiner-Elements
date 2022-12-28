@@ -242,7 +242,7 @@ public:
    *                  (When data is sent to grabber or error occurred)
    */
   void async_set_variables(const nlohmann::json& variables,
-                           const std::function<void(void)>& processed = nullptr) const {
+                           std::function<void(void)> processed = nullptr) const {
     enqueue_to_dispatcher([this, variables, processed] {
       nlohmann::json json{
           {"operation_type", operation_type::set_variables},

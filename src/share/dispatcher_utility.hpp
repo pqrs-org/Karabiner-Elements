@@ -36,7 +36,7 @@ public:
     return std::make_shared<scoped_dispatcher_manager>();
   }
 
-  static void enqueue_to_file_writer_dispatcher(const std::function<void(void)>& function) {
+  static void enqueue_to_file_writer_dispatcher(std::function<void(void)> function) {
     std::lock_guard<std::mutex> lock(get_file_writer_mutex());
 
     if (get_file_writer()) {
@@ -57,7 +57,7 @@ private:
       dispatcher_->detach(object_id_);
     }
 
-    void enqueue(const std::function<void(void)>& function) {
+    void enqueue(std::function<void(void)> function) {
       dispatcher_->enqueue(object_id_,
                            function);
     }
