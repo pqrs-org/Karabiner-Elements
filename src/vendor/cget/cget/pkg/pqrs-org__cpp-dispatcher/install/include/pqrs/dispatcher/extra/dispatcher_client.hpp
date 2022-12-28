@@ -37,13 +37,13 @@ public:
     }
   }
 
-  void detach_from_dispatcher(const std::function<void(void)>& function) const {
+  void detach_from_dispatcher(std::function<void(void)> function) const {
     if (auto d = weak_dispatcher_.lock()) {
       d->detach(object_id_, function);
     }
   }
 
-  void enqueue_to_dispatcher(const std::function<void(void)>& function,
+  void enqueue_to_dispatcher(std::function<void(void)> function,
                              time_point when = dispatcher::when_immediately()) const {
     if (auto d = weak_dispatcher_.lock()) {
       d->enqueue(object_id_, function, when);

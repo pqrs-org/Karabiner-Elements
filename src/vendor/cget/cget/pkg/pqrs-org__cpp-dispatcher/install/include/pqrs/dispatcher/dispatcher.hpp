@@ -211,7 +211,7 @@ public:
   // Note:
   // Do not wait (thread::join, etc.) in `function` in order to avoid a deadlock.
   void detach(const object_id& object_id,
-              const std::function<void(void)>& function) {
+              std::function<void(void)> function) {
     if (!detach(object_id)) {
       return;
     }
@@ -236,12 +236,13 @@ public:
       // Run detached function with dispatcher's object_id.
       // (`object_id` in arguments is already detached.)
 
-      enqueue(object_id_,
-              [w, &function] {
-                function();
-                w->notify();
-              },
-              when_internal_detached());
+      enqueue(
+          object_id_,
+          [w, function] {
+            function();
+            w->notify();
+          },
+          when_internal_detached());
 
       w->wait_notice();
     }
@@ -315,7 +316,7 @@ public:
   // Note:
   // Do not wait (thread::join, etc.) in `function` in order to avoid a deadlock.
   void enqueue(const object_id& object_id,
-               const std::function<void(void)>& function,
+               std::function<void(void)> function,
                time_point when = when_immediately()) {
     {
       std::lock_guard<std::mutex> lock(mutex_);
@@ -377,7 +378,7 @@ private:
   class entry final {
   public:
     entry(uint64_t object_id_value,
-          const std::function<void(void)>& function,
+          std::function<void(void)> function,
           time_point when) : object_id_value_(object_id_value),
                              function_(function),
                              when_(when) {

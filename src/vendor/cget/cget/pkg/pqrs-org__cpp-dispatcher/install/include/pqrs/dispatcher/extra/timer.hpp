@@ -33,7 +33,7 @@ public:
     }
   }
 
-  void start(const std::function<void(void)>& function,
+  void start(std::function<void(void)> function,
              duration interval) {
     dispatcher_client_.enqueue_to_dispatcher([this, function, interval] {
       ++current_function_id_;

@@ -139,7 +139,7 @@ public:
   }
 
   void async_send(const std::vector<uint8_t>& v,
-                  const std::function<void(void)>& processed = nullptr) {
+                  std::function<void(void)> processed = nullptr) {
     auto entry = std::make_shared<impl::send_entry>(impl::send_entry::type::user_data,
                                                     v,
                                                     nullptr,
@@ -149,7 +149,7 @@ public:
 
   void async_send(const uint8_t* p,
                   size_t length,
-                  const std::function<void(void)>& processed = nullptr) {
+                  std::function<void(void)> processed = nullptr) {
     auto entry = std::make_shared<impl::send_entry>(impl::send_entry::type::user_data,
                                                     p,
                                                     length,
