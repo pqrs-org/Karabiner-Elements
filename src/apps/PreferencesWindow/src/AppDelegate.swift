@@ -25,8 +25,6 @@ public class AppDelegate: NSObject, NSApplicationDelegate {
 
     ProcessInfo.processInfo.enableSuddenTermination()
 
-    registerApplicationToLaunchServices("/Applications/Karabiner-Elements.app")
-
     KarabinerKit.setup()
     KarabinerKit.observeConsoleUserServerIsDisabledNotification()
     LibKrbn.Settings.shared.start()
@@ -173,10 +171,5 @@ public class AppDelegate: NSObject, NSApplicationDelegate {
         }
       }
     }
-  }
-
-  // Update the application name in System Settings > Login Items.
-  private func registerApplicationToLaunchServices(_ path: String) {
-    LSRegisterURL(NSURL.fileURL(withPath: path, isDirectory: true) as CFURL, true)
   }
 }
