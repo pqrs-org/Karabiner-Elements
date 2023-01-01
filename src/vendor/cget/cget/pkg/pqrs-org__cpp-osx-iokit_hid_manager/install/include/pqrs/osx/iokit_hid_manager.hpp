@@ -1,6 +1,6 @@
 #pragma once
 
-// pqrs::osx::iokit_hid_manager v4.0
+// pqrs::osx::iokit_hid_manager v5.0
 
 // (C) Copyright Takayama Fumihiko 2018.
 // Distributed under the Boost Software License, Version 1.0.
@@ -30,10 +30,13 @@ public:
   iokit_hid_manager(const iokit_hid_manager&) = delete;
 
   iokit_hid_manager(std::weak_ptr<dispatcher::dispatcher> weak_dispatcher,
+                    std::shared_ptr<cf::run_loop_thread> run_loop_thread,
                     const std::vector<cf::cf_ptr<CFDictionaryRef>>& matching_dictionaries,
-                    pqrs::dispatcher::duration device_matched_delay = pqrs::dispatcher::duration(0)) : dispatcher_client(weak_dispatcher),
-                                                                                                       matching_dictionaries_(matching_dictionaries),
-                                                                                                       device_matched_delay_(device_matched_delay) {
+                    pqrs::dispatcher::duration device_matched_delay = pqrs::dispatcher::duration(0))
+      : dispatcher_client(weak_dispatcher),
+        run_loop_thread_(run_loop_thread),
+        matching_dictionaries_(matching_dictionaries),
+        device_matched_delay_(device_matched_delay) {
   }
 
   virtual ~iokit_hid_manager(void) {
@@ -119,6 +122,7 @@ private:
     for (const auto& matching_dictionary : matching_dictionaries_) {
       if (matching_dictionary) {
         auto monitor = std::make_shared<iokit_service_monitor>(weak_dispatcher_,
+                                                               run_loop_thread_,
                                                                *matching_dictionary);
 
         monitor->service_matched.connect([this](auto&& registry_entry_id, auto&& service_ptr) {
@@ -193,6 +197,7 @@ private:
     }
   }
 
+  std::shared_ptr<cf::run_loop_thread> run_loop_thread_;
   std::vector<cf::cf_ptr<CFDictionaryRef>> matching_dictionaries_;
   pqrs::dispatcher::duration device_matched_delay_;
   std::vector<std::shared_ptr<iokit_service_monitor>> service_monitors_;

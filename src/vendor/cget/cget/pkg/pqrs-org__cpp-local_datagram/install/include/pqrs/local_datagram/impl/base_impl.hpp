@@ -6,6 +6,7 @@
 
 // `pqrs::local_datagram::impl::base_impl` can be used safely in a multi-threaded environment.
 
+#include "../helper.hpp"
 #include "asio_helper.hpp"
 #include "next_heartbeat_deadline_timer.hpp"
 #include "send_entry.hpp"
@@ -23,6 +24,7 @@ class base_impl : public dispatcher::extra::dispatcher_client {
 public:
   // Signals (invoked from the dispatcher thread)
 
+  nod::signal<void(const std::string&)> warning_reported;
   nod::signal<void(void)> bound;
   nod::signal<void(const asio::error_code&)> bind_failed;
   nod::signal<void(std::shared_ptr<std::vector<uint8_t>>, std::shared_ptr<asio::local::datagram_protocol::endpoint> sender_endpoint)> received;
@@ -189,37 +191,43 @@ public:
                                             auto next_heartbeat_deadline = *p++;
 
                                             if (next_heartbeat_deadline > 0) {
-                                              std::chrono::milliseconds next_heartbeat_deadline_ms(next_heartbeat_deadline);
-                                              auto sender_endpoint = std::make_shared<asio::local::datagram_protocol::endpoint>(receive_sender_endpoint_);
+                                              if (!non_empty_filesystem_endpoint_path(receive_sender_endpoint_)) {
+                                                enqueue_to_dispatcher([this] {
+                                                  warning_reported("sender endpoint is required when next_heartbeat_deadline is specified");
+                                                });
+                                              } else {
+                                                std::chrono::milliseconds next_heartbeat_deadline_ms(next_heartbeat_deadline);
+                                                auto sender_endpoint = std::make_shared<asio::local::datagram_protocol::endpoint>(receive_sender_endpoint_);
 
-                                              enqueue_to_dispatcher([this, next_heartbeat_deadline_ms, sender_endpoint] {
-                                                auto it = std::find_if(
-                                                    std::begin(next_heartbeat_deadline_timers_),
-                                                    std::end(next_heartbeat_deadline_timers_),
-                                                    [sender_endpoint](auto&& t) {
-                                                      return *(t->get_sender_endpoint()) == *sender_endpoint;
+                                                enqueue_to_dispatcher([this, next_heartbeat_deadline_ms, sender_endpoint] {
+                                                  auto it = std::find_if(
+                                                      std::begin(next_heartbeat_deadline_timers_),
+                                                      std::end(next_heartbeat_deadline_timers_),
+                                                      [sender_endpoint](auto&& t) {
+                                                        return *(t->get_sender_endpoint()) == *sender_endpoint;
+                                                      });
+                                                  if (it == std::end(next_heartbeat_deadline_timers_)) {
+                                                    auto t = std::make_shared<next_heartbeat_deadline_timer>(weak_dispatcher_,
+                                                                                                             sender_endpoint,
+                                                                                                             next_heartbeat_deadline_ms);
+                                                    t->next_heartbeat_deadline_exceeded.connect([this, sender_endpoint] {
+                                                      next_heartbeat_deadline_exceeded(sender_endpoint);
+
+                                                      next_heartbeat_deadline_timers_.erase(
+                                                          std::remove_if(
+                                                              std::begin(next_heartbeat_deadline_timers_),
+                                                              std::end(next_heartbeat_deadline_timers_),
+                                                              [sender_endpoint](auto&& t) {
+                                                                return t->get_sender_endpoint() == sender_endpoint;
+                                                              }),
+                                                          std::end(next_heartbeat_deadline_timers_));
                                                     });
-                                                if (it == std::end(next_heartbeat_deadline_timers_)) {
-                                                  auto t = std::make_shared<next_heartbeat_deadline_timer>(weak_dispatcher_,
-                                                                                                           sender_endpoint,
-                                                                                                           next_heartbeat_deadline_ms);
-                                                  t->next_heartbeat_deadline_exceeded.connect([this, sender_endpoint] {
-                                                    next_heartbeat_deadline_exceeded(sender_endpoint);
-
-                                                    next_heartbeat_deadline_timers_.erase(
-                                                        std::remove_if(
-                                                            std::begin(next_heartbeat_deadline_timers_),
-                                                            std::end(next_heartbeat_deadline_timers_),
-                                                            [sender_endpoint](auto&& t) {
-                                                              return t->get_sender_endpoint() == sender_endpoint;
-                                                            }),
-                                                        std::end(next_heartbeat_deadline_timers_));
-                                                  });
-                                                  next_heartbeat_deadline_timers_.push_back(t);
-                                                } else {
-                                                  (*it)->set_timer(next_heartbeat_deadline_ms);
-                                                }
-                                              });
+                                                    next_heartbeat_deadline_timers_.push_back(t);
+                                                  } else {
+                                                    (*it)->set_timer(next_heartbeat_deadline_ms);
+                                                  }
+                                                });
+                                              }
                                             }
                                           }
                                           break;

@@ -1,6 +1,6 @@
 #pragma once
 
-// pqrs::osx::iokit_hid_queue_value_monitor v1.12
+// pqrs::osx::iokit_hid_queue_value_monitor v2.0
 
 // (C) Copyright Takayama Fumihiko 2018.
 // Distributed under the Boost Software License, Version 1.0.
@@ -32,24 +32,28 @@ public:
 
   iokit_hid_queue_value_monitor(const iokit_hid_queue_value_monitor&) = delete;
 
+  // CFRunLoopRun may get stuck in rare cases if cf::run_loop_thread generation is repeated frequently in macOS 13.
+  // If such a condition occurs, cf::run_loop_thread detects it and calls abort to avoid it.
+  // However, to avoid the problem itself, cf::run_loop_thread should be provided externally instead of having it internally.
   iokit_hid_queue_value_monitor(std::weak_ptr<dispatcher::dispatcher> weak_dispatcher,
-                                IOHIDDeviceRef device) : dispatcher_client(weak_dispatcher),
-                                                         hid_device_(device),
-                                                         device_scheduled_(false),
-                                                         open_timer_(*this),
-                                                         last_open_error_(kIOReturnSuccess) {
-    cf_run_loop_thread_ = std::make_unique<cf::run_loop_thread>();
-
+                                std::shared_ptr<cf::run_loop_thread> run_loop_thread,
+                                IOHIDDeviceRef device)
+      : dispatcher_client(weak_dispatcher),
+        run_loop_thread_(run_loop_thread),
+        hid_device_(device),
+        device_scheduled_(false),
+        open_timer_(*this),
+        last_open_error_(kIOReturnSuccess) {
     // Schedule device
 
-    cf_run_loop_thread_->enqueue(^{
+    run_loop_thread_->enqueue(^{
       if (hid_device_.get_device()) {
         IOHIDDeviceRegisterRemovalCallback(*(hid_device_.get_device()),
                                            static_device_removal_callback,
                                            this);
 
         IOHIDDeviceScheduleWithRunLoop(*(hid_device_.get_device()),
-                                       cf_run_loop_thread_->get_run_loop(),
+                                       run_loop_thread_->get_run_loop(),
                                        kCFRunLoopCommonModes);
 
         device_scheduled_ = true;
@@ -62,9 +66,9 @@ public:
 
     detach_from_dispatcher();
 
-    // cf_run_loop_thread
+    // run_loop_thread
 
-    cf_run_loop_thread_->enqueue(^{
+    run_loop_thread_->enqueue(^{
       stop();
 
       if (hid_device_.get_device()) {
@@ -74,21 +78,26 @@ public:
 
         if (device_scheduled_) {
           IOHIDDeviceUnscheduleFromRunLoop(*(hid_device_.get_device()),
-                                           cf_run_loop_thread_->get_run_loop(),
+                                           run_loop_thread_->get_run_loop(),
                                            kCFRunLoopCommonModes);
         }
       }
     });
 
-    cf_run_loop_thread_->terminate();
-    cf_run_loop_thread_ = nullptr;
+    // Wait until all tasks are processed
+
+    auto wait = make_thread_wait();
+    run_loop_thread_->enqueue(^{
+      wait->notify();
+    });
+    wait->wait_notice();
   }
 
   void async_start(IOOptionBits open_options,
                    std::chrono::milliseconds open_timer_interval) {
     open_timer_.start(
         [this, open_options] {
-          cf_run_loop_thread_->enqueue(^{
+          run_loop_thread_->enqueue(^{
             start(open_options);
           });
         },
@@ -96,7 +105,7 @@ public:
   }
 
   void async_stop(void) {
-    cf_run_loop_thread_->enqueue(^{
+    run_loop_thread_->enqueue(^{
       stop();
     });
   }
@@ -167,7 +176,7 @@ private:
                                                  this);
 
         IOHIDQueueScheduleWithRunLoop(*queue_,
-                                      cf_run_loop_thread_->get_run_loop(),
+                                      run_loop_thread_->get_run_loop(),
                                       kCFRunLoopCommonModes);
 
         IOHIDQueueStart(*queue_);
@@ -179,10 +188,10 @@ private:
     if (queue_) {
       IOHIDQueueStop(*queue_);
 
-      // IOHIDQueueUnscheduleFromRunLoop might cause SIGSEGV if it is not called in cf_run_loop_thread_.
+      // IOHIDQueueUnscheduleFromRunLoop might cause SIGSEGV if it is not called in run_loop_thread_.
 
       IOHIDQueueUnscheduleFromRunLoop(*queue_,
-                                      cf_run_loop_thread_->get_run_loop(),
+                                      run_loop_thread_->get_run_loop(),
                                       kCFRunLoopCommonModes);
 
       queue_ = nullptr;
@@ -201,7 +210,7 @@ private:
       return;
     }
 
-    self->cf_run_loop_thread_->enqueue(^{
+    self->run_loop_thread_->enqueue(^{
       self->device_removal_callback();
     });
   }
@@ -222,7 +231,7 @@ private:
       return;
     }
 
-    self->cf_run_loop_thread_->enqueue(^{
+    self->run_loop_thread_->enqueue(^{
       self->queue_value_available_callback();
     });
   }
@@ -252,8 +261,9 @@ private:
     }
   }
 
+  std::shared_ptr<cf::run_loop_thread> run_loop_thread_;
+
   iokit_hid_device hid_device_;
-  std::unique_ptr<cf::run_loop_thread> cf_run_loop_thread_;
   bool device_scheduled_;
   dispatcher::extra::timer open_timer_;
   std::optional<IOOptionBits> open_options_;

@@ -1,6 +1,6 @@
 #pragma once
 
-// pqrs::osx::iokit_service_monitor v4.2
+// pqrs::osx::iokit_service_monitor v5.0
 
 // (C) Copyright Takayama Fumihiko 2018.
 // Distributed under the Boost Software License, Version 1.0.
@@ -32,11 +32,16 @@ public:
 
   iokit_service_monitor(const iokit_service_monitor&) = delete;
 
+  // CFRunLoopRun may get stuck in rare cases if cf::run_loop_thread generation is repeated frequently in macOS 13.
+  // If such a condition occurs, cf::run_loop_thread detects it and calls abort to avoid it.
+  // However, to avoid the problem itself, cf::run_loop_thread should be provided externally instead of having it internally.
   iokit_service_monitor(std::weak_ptr<dispatcher::dispatcher> weak_dispatcher,
-                        CFDictionaryRef _Nonnull matching_dictionary) : dispatcher_client(weak_dispatcher),
-                                                                        matching_dictionary_(matching_dictionary),
-                                                                        notification_port_(nullptr) {
-    cf_run_loop_thread_ = std::make_unique<cf::run_loop_thread>();
+                        std::shared_ptr<cf::run_loop_thread> run_loop_thread,
+                        CFDictionaryRef _Nonnull matching_dictionary)
+      : dispatcher_client(weak_dispatcher),
+        run_loop_thread_(run_loop_thread),
+        matching_dictionary_(matching_dictionary),
+        notification_port_(nullptr) {
   }
 
   virtual ~iokit_service_monitor(void) {
@@ -44,30 +49,35 @@ public:
 
     detach_from_dispatcher();
 
-    // cf_run_loop_thread
+    // run_loop_thread
 
-    cf_run_loop_thread_->enqueue(^{
+    run_loop_thread_->enqueue(^{
       stop();
     });
 
-    cf_run_loop_thread_->terminate();
-    cf_run_loop_thread_ = nullptr;
+    // Wait until all tasks are processed
+
+    auto wait = make_thread_wait();
+    run_loop_thread_->enqueue(^{
+      wait->notify();
+    });
+    wait->wait_notice();
   }
 
   void async_start(void) {
-    cf_run_loop_thread_->enqueue(^{
+    run_loop_thread_->enqueue(^{
       start();
     });
   }
 
   void async_stop(void) {
-    cf_run_loop_thread_->enqueue(^{
+    run_loop_thread_->enqueue(^{
       stop();
     });
   }
 
   void async_invoke_service_matched(void) {
-    cf_run_loop_thread_->enqueue(^{
+    run_loop_thread_->enqueue(^{
       if (*matching_dictionary_) {
         io_iterator_t it = IO_OBJECT_NULL;
         CFRetain(*matching_dictionary_);
@@ -87,7 +97,7 @@ public:
   }
 
 private:
-  // This method is executed in cf_run_loop_thread_.
+  // This method is executed in run_loop_thread_.
   void start(void) {
     if (!notification_port_) {
       notification_port_ = IONotificationPortCreate(type_safe::get(iokit_mach_port::null));
@@ -99,9 +109,7 @@ private:
       }
 
       if (auto loop_source = IONotificationPortGetRunLoopSource(notification_port_)) {
-        CFRunLoopAddSource(cf_run_loop_thread_->get_run_loop(),
-                           loop_source,
-                           kCFRunLoopCommonModes);
+        run_loop_thread_->add_source(loop_source);
       } else {
         enqueue_to_dispatcher([this] {
           error_occurred("IONotificationPortGetRunLoopSource is failed.", kIOReturnError);
@@ -159,16 +167,14 @@ private:
     }
   }
 
-  // This method is executed in cf_run_loop_thread_.
+  // This method is executed in run_loop_thread_.
   void stop(void) {
     matched_notification_ = iokit_iterator();
     terminated_notification_ = iokit_iterator();
 
     if (notification_port_) {
       if (auto loop_source = IONotificationPortGetRunLoopSource(notification_port_)) {
-        CFRunLoopRemoveSource(cf_run_loop_thread_->get_run_loop(),
-                              loop_source,
-                              kCFRunLoopCommonModes);
+        run_loop_thread_->remove_source(loop_source);
       }
 
       IONotificationPortDestroy(notification_port_);
@@ -184,7 +190,7 @@ private:
 
     auto services = make_services(iokit_iterator(iterator));
 
-    self->cf_run_loop_thread_->enqueue(^{
+    self->run_loop_thread_->enqueue(^{
       self->matched_callback(services);
     });
   }
@@ -207,7 +213,7 @@ private:
 
     auto services = make_services(iokit_iterator(iterator));
 
-    self->cf_run_loop_thread_->enqueue(^{
+    self->run_loop_thread_->enqueue(^{
       self->terminated_callback(services);
     });
   }
@@ -237,9 +243,9 @@ private:
     return services;
   }
 
+  std::shared_ptr<cf::run_loop_thread> run_loop_thread_;
   cf::cf_ptr<CFDictionaryRef> matching_dictionary_;
 
-  std::unique_ptr<cf::run_loop_thread> cf_run_loop_thread_;
   IONotificationPortRef _Nullable notification_port_;
   iokit_iterator matched_notification_;
   iokit_iterator terminated_notification_;

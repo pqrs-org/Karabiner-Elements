@@ -17,6 +17,7 @@ class server final : public dispatcher::extra::dispatcher_client {
 public:
   // Signals (invoked from the dispatcher thread)
 
+  nod::signal<void(const std::string&)> warning_reported;
   nod::signal<void(void)> bound;
   nod::signal<void(const asio::error_code&)> bind_failed;
   nod::signal<void(void)> closed;
@@ -103,6 +104,12 @@ private:
 
     server_impl_ = std::make_unique<impl::server_impl>(weak_dispatcher_,
                                                        server_send_entries_);
+
+    server_impl_->warning_reported.connect([this](auto&& message) {
+      enqueue_to_dispatcher([this, message] {
+        warning_reported(message);
+      });
+    });
 
     server_impl_->bound.connect([this] {
       enqueue_to_dispatcher([this] {

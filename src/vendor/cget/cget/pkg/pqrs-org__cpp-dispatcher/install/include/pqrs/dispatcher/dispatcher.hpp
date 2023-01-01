@@ -308,7 +308,7 @@ public:
         exit_ = true;
       }
 
-      cv_.notify_one();
+      cv_.notify_all();
       worker_thread_.join();
     }
   }
@@ -359,11 +359,11 @@ public:
       }
     }
 
-    cv_.notify_one();
+    cv_.notify_all();
   }
 
   void invoke(void) {
-    cv_.notify_one();
+    cv_.notify_all();
   }
 
   static constexpr time_point when_internal_detached() {

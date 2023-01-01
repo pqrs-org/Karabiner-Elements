@@ -1,6 +1,6 @@
 #pragma once
 
-// pqrs::cf::run_loop_thread v2.0
+// pqrs::cf::run_loop_thread v2.2
 
 // (C) Copyright Takayama Fumihiko 2018.
 // Distributed under the Boost Software License, Version 1.0.
@@ -19,41 +19,66 @@ public:
   run_loop_thread(const run_loop_thread&) = delete;
 
   run_loop_thread(void) {
-    running_wait_ = make_thread_wait();
+    std::atomic<bool> ready = false;
 
-    thread_ = std::thread([this] {
+    thread_ = std::thread([this, &ready] {
       run_loop_ = CFRunLoopGetCurrent();
 
-      // Append empty source to prevent immediately quitting of `CFRunLoopRun`.
+      // Append a source to prevent immediately quitting of `CFRunLoopRun`.
 
       auto context = CFRunLoopSourceContext();
-      context.perform = perform;
-      auto source = CFRunLoopSourceCreate(kCFAllocatorDefault,
-                                          0,
-                                          &context);
+      context.info = reinterpret_cast<void*>(&ready);
+      context.perform = [](void* _Nullable info) {
+        auto ready = reinterpret_cast<std::atomic<bool>*>(info);
+        *ready = true;
+      };
 
-      CFRunLoopAddSource(*run_loop_,
-                         source,
-                         kCFRunLoopCommonModes);
+      {
+        std::lock_guard<std::mutex> lock(initial_source_mutex_);
+
+        initial_source_ = CFRunLoopSourceCreate(kCFAllocatorDefault,
+                                                0,
+                                                &context);
+        CFRelease(*initial_source_);
+
+        CFRunLoopAddSource(*run_loop_,
+                           *initial_source_,
+                           kCFRunLoopCommonModes);
+      }
 
       // Run
-
-      CFRunLoopPerformBlock(*run_loop_,
-                            kCFRunLoopCommonModes,
-                            ^{
-                              running_wait_->notify();
-                            });
 
       CFRunLoopRun();
 
       // Remove source
 
       CFRunLoopRemoveSource(*run_loop_,
-                            source,
+                            *initial_source_,
                             kCFRunLoopCommonModes);
-
-      CFRelease(source);
     });
+
+    // Wait until CFRunLoop is running.
+
+    auto since = std::chrono::system_clock::now();
+    while (!ready) {
+      auto now = std::chrono::system_clock::now();
+      if (now - since > std::chrono::milliseconds(3000)) {
+        // Although this does not usually happen, it is reached when CFRunLoop processing does not start due to a problem with CFRunLoop.
+        // Abort because it is irrecoverable.
+        abort();
+      }
+
+      {
+        std::lock_guard<std::mutex> lock(initial_source_mutex_);
+
+        if (run_loop_ && initial_source_) {
+          CFRunLoopSourceSignal(*initial_source_);
+          CFRunLoopWakeUp(*run_loop_);
+        }
+      }
+
+      std::this_thread::sleep_for(std::chrono::milliseconds(100));
+    }
   }
 
   ~run_loop_thread(void) {
@@ -62,6 +87,7 @@ public:
       abort();
     }
 
+    initial_source_ = nullptr;
     run_loop_ = nullptr;
   }
 
@@ -76,28 +102,36 @@ public:
   }
 
   CFRunLoopRef _Nonnull get_run_loop(void) const {
-    // We wait until running to avoid a segmentation fault which is described in `enqueue`.
-
-    wait_until_running();
-
     return *run_loop_;
   }
 
   void wake(void) const {
-    // Do not touch run_loop_ until `CFRunLoopRun` is called.
-    // A segmentation fault occurs if we touch `run_loop_` while `CFRunLoopRun' is processing.
-
-    wait_until_running();
-
     CFRunLoopWakeUp(*run_loop_);
   }
 
+  void add_source(CFRunLoopSourceRef _Nullable source,
+                  CFRunLoopMode _Nonnull mode = kCFRunLoopCommonModes) {
+    if (source) {
+      CFRunLoopAddSource(*run_loop_,
+                         source,
+                         mode);
+
+      CFRunLoopWakeUp(*run_loop_);
+    }
+  }
+
+  void remove_source(CFRunLoopSourceRef _Nullable source,
+                     CFRunLoopMode _Nonnull mode = kCFRunLoopCommonModes) {
+    if (source) {
+      CFRunLoopRemoveSource(*run_loop_,
+                            source,
+                            mode);
+
+      CFRunLoopWakeUp(*run_loop_);
+    }
+  }
+
   void enqueue(void (^_Nonnull block)(void)) const {
-    // Do not call `CFRunLoopPerformBlock` until `CFRunLoopRun` is called.
-    // A segmentation fault occurs if we call `CFRunLoopPerformBlock` while `CFRunLoopRun' is processing.
-
-    wait_until_running();
-
     CFRunLoopPerformBlock(*run_loop_,
                           kCFRunLoopCommonModes,
                           block);
@@ -106,16 +140,11 @@ public:
   }
 
 private:
-  void wait_until_running(void) const {
-    running_wait_->wait_notice();
-  }
-
-  static void perform(void* _Nullable info) {
-  }
-
   std::thread thread_;
   cf_ptr<CFRunLoopRef> run_loop_;
-  std::shared_ptr<thread_wait> running_wait_;
+
+  cf_ptr<CFRunLoopSourceRef> initial_source_;
+  std::mutex initial_source_mutex_;
 };
 } // namespace cf
 } // namespace pqrs

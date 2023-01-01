@@ -1,6 +1,6 @@
 #pragma once
 
-// pqrs::osx::iokit_hid_device_open_checker v1.2
+// pqrs::osx::iokit_hid_device_open_checker v2.0
 
 // (C) Copyright Takayama Fumihiko 2019.
 // Distributed under the Boost Software License, Version 1.0.
@@ -23,11 +23,13 @@ public:
   iokit_hid_device_open_checker(const iokit_hid_device_open_checker&) = delete;
 
   iokit_hid_device_open_checker(std::weak_ptr<dispatcher::dispatcher> weak_dispatcher,
+                                std::shared_ptr<cf::run_loop_thread> run_loop_thread,
                                 const std::vector<cf::cf_ptr<CFDictionaryRef>>& matching_dictionaries,
                                 pqrs::dispatcher::duration device_matched_delay = pqrs::dispatcher::duration(0)) : dispatcher_client(weak_dispatcher),
                                                                                                                    permitted_(false),
                                                                                                                    timer_(*this) {
     iokit_hid_manager_ = std::make_unique<iokit_hid_manager>(weak_dispatcher,
+                                                             run_loop_thread,
                                                              matching_dictionaries,
                                                              device_matched_delay);
 
