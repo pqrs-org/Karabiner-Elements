@@ -77,6 +77,8 @@ struct DevicesAdvancedView: View {
                               connectedDeviceSetting.connectedDevice.productId)
                           )
                         }
+
+                        Spacer()
                       }
                       .padding(.leading, 12.0)
                       .padding(.trailing, 12.0)
