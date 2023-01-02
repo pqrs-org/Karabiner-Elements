@@ -29,6 +29,7 @@ public:
     };
 
     hid_manager_ = std::make_unique<pqrs::osx::iokit_hid_manager>(pqrs::dispatcher::extra::get_shared_dispatcher(),
+                                                                  pqrs::cf::run_loop_thread::extra::get_shared_run_loop_thread(),
                                                                   matching_dictionaries);
 
     hid_manager_->device_matched.connect([this, callback, refcon](auto&& registry_entry_id, auto&& device_ptr) {
@@ -38,6 +39,7 @@ public:
                                                                            *device_ptr);
 
         auto hid_queue_value_monitor = std::make_shared<pqrs::osx::iokit_hid_queue_value_monitor>(pqrs::dispatcher::extra::get_shared_dispatcher(),
+                                                                                                  pqrs::cf::run_loop_thread::extra::get_shared_run_loop_thread(),
                                                                                                   *device_ptr);
         hid_queue_value_monitors_[device_id] = hid_queue_value_monitor;
 

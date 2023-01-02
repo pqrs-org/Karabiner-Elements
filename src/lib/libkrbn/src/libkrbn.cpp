@@ -7,6 +7,7 @@
 #include "libkrbn/impl/libkrbn_components_manager.hpp"
 #include "libkrbn/impl/libkrbn_cpp.hpp"
 #include "process_utility.hpp"
+#include "run_loop_thread_utility.hpp"
 #include "types.hpp"
 #include "update_utility.hpp"
 #include <fstream>
@@ -17,6 +18,7 @@
 
 namespace {
 std::shared_ptr<krbn::dispatcher_utility::scoped_dispatcher_manager> scoped_dispatcher_manager_;
+std::shared_ptr<krbn::run_loop_thread_utility::scoped_run_loop_thread_manager> scoped_run_loop_thread_manager_;
 std::unique_ptr<libkrbn_components_manager> libkrbn_components_manager_;
 } // namespace
 
@@ -35,6 +37,10 @@ void libkrbn_initialize(void) {
     scoped_dispatcher_manager_ = krbn::dispatcher_utility::initialize_dispatchers();
   }
 
+  if (!scoped_run_loop_thread_manager_) {
+    scoped_run_loop_thread_manager_ = krbn::run_loop_thread_utility::initialize_shared_run_loop_thread();
+  }
+
   if (!libkrbn_components_manager_) {
     libkrbn_components_manager_ = std::make_unique<libkrbn_components_manager>();
   }
@@ -44,6 +50,8 @@ void libkrbn_terminate(void) {
   krbn::logger::get_logger()->info(__func__);
 
   libkrbn_components_manager_ = nullptr;
+
+  scoped_run_loop_thread_manager_ = nullptr;
 
   scoped_dispatcher_manager_ = nullptr;
 }
