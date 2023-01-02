@@ -27,72 +27,77 @@ struct DevicesView: View {
                 .padding(.leading, 12.0)
 
                 Spacer()
+              }
+
+              HStack(alignment: .top, spacing: 0.0) {
+                VStack(alignment: .leading, spacing: 0.0) {
+                  if connectedDeviceSetting.connectedDevice.isAppleDevice,
+                    !connectedDeviceSetting.connectedDevice.isKeyboard,
+                    !settings.unsafeUI
+                  {
+                    Text("Apple pointing devices are not supported")
+                      .foregroundColor(Color(NSColor.placeholderTextColor))
+                    Spacer()
+                  } else {
+                    Toggle(isOn: $connectedDeviceSetting.modifyEvents) {
+                      Text("Modify events")
+
+                      Spacer()
+                    }
+                    .switchToggleStyle()
+                  }
+
+                  if connectedDeviceSetting.connectedDevice.isKeyboard {
+                    Toggle(isOn: $connectedDeviceSetting.manipulateCapsLockLed) {
+                      Text("Manipulate caps lock LED")
+
+                      Spacer()
+                    }
+                    .switchToggleStyle()
+
+                    if !connectedDeviceSetting.connectedDevice.isBuiltInKeyboard {
+                      Toggle(isOn: $connectedDeviceSetting.treatAsBuiltInKeyboard) {
+                        Text("Treat as a built-in keyboard")
+
+                        Spacer()
+                      }
+                      .switchToggleStyle()
+                    }
+                  }
+                }
+                .frame(width: 240.0)
+
+                Spacer()
 
                 if connectedDeviceSetting.connectedDevice.transport != "FIFO" {
                   VStack(alignment: .trailing, spacing: 0) {
-                    HStack(alignment: .center, spacing: 0) {
+                    HStack(alignment: .firstTextBaseline, spacing: 0) {
                       Spacer()
 
                       Text("Vendor ID: ")
-                        .font(.caption)
+
                       Text(
                         String(
                           format: "%5d (0x%04x)",
                           connectedDeviceSetting.connectedDevice.vendorId,
                           connectedDeviceSetting.connectedDevice.vendorId)
                       )
-                      .font(.custom("Menlo", size: 11.0))
                     }
+
                     HStack(alignment: .center, spacing: 0) {
                       Spacer()
 
                       Text("Product ID: ")
-                        .font(.caption)
+
                       Text(
                         String(
                           format: "%5d (0x%04x)",
                           connectedDeviceSetting.connectedDevice.productId,
                           connectedDeviceSetting.connectedDevice.productId)
                       )
-                      .font(.custom("Menlo", size: 11.0))
                     }
                   }
-                }
-              }
-
-              HStack(alignment: .top, spacing: 0) {
-                if connectedDeviceSetting.connectedDevice.isAppleDevice,
-                  !connectedDeviceSetting.connectedDevice.isKeyboard,
-                  !settings.unsafeUI
-                {
-                  Text("Apple pointing devices are not supported")
-                    .foregroundColor(Color(NSColor.placeholderTextColor))
-                  Spacer()
-                } else {
-                  Toggle(isOn: $connectedDeviceSetting.modifyEvents) {
-                    Text("Modify events")
-                  }
-                  .switchToggleStyle()
-
-                  Spacer()
-
-                  if connectedDeviceSetting.connectedDevice.isKeyboard {
-                    VStack(alignment: .trailing, spacing: 6.0) {
-                      HStack {
-                        Toggle(isOn: $connectedDeviceSetting.manipulateCapsLockLed) {
-                          Text("Manipulate caps lock LED")
-                        }
-                        .switchToggleStyle()
-                      }
-
-                      if !connectedDeviceSetting.connectedDevice.isBuiltInKeyboard {
-                        Toggle(isOn: $connectedDeviceSetting.treatAsBuiltInKeyboard) {
-                          Text("Treat as a built-in keyboard")
-                        }
-                        .switchToggleStyle()
-                      }
-                    }
-                  }
+                  .font(.custom("Menlo", size: 12.0))
                 }
               }
               .padding(.leading, 62.0)
