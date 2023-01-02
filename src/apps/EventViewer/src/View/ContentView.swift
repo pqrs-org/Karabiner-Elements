@@ -7,7 +7,7 @@ enum NavigationTag: String {
   case devices
   case systemExtensions
   case unknownEvents
-  case preferences
+  case settings
 }
 
 struct ContentView: View {
@@ -68,11 +68,11 @@ struct ContentView: View {
             .sidebarButtonStyle(selected: selection == NavigationTag.unknownEvents)
 
             Button(action: {
-              selection = NavigationTag.preferences
+              selection = NavigationTag.settings
             }) {
-              SidebarLabelView(text: "Preferences", systemImage: "gearshape")
+              SidebarLabelView(text: "Settings", systemImage: "gearshape")
             }
-            .sidebarButtonStyle(selected: selection == NavigationTag.preferences)
+            .sidebarButtonStyle(selected: selection == NavigationTag.settings)
 
             Spacer()
           }
@@ -93,8 +93,8 @@ struct ContentView: View {
             SystemExtensionsView()
           case NavigationTag.unknownEvents:
             UnknownEventsView()
-          case NavigationTag.preferences:
-            PreferencesView()
+          case NavigationTag.settings:
+            SettingsView()
           }
         }
       }
