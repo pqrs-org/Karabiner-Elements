@@ -17,21 +17,6 @@ namespace krbn {
 namespace grabber {
 namespace main {
 
-namespace {
-void create_application_symlink(const std::filesystem::path& symlink_path,
-                                const std::filesystem::path& actual_path) {
-  if (!std::filesystem::exists(symlink_path)) {
-    logger::get_logger()->info("Create a symlink: {0} -> {1}", symlink_path.string(), actual_path.string());
-
-    std::error_code error_code;
-    std::filesystem::create_symlink(actual_path, symlink_path, error_code);
-    if (error_code) {
-      logger::get_logger()->error("Failed to create symlink: {0}", error_code.message());
-    }
-  }
-}
-} // namespace
-
 int daemon(void) {
   //
   // Setup logger
@@ -58,11 +43,31 @@ int daemon(void) {
   }
 
   //
-  // Create symlinks to /Applications
+  // Restore /Applications/Karabiner-Elements.app if it was removed manually
   //
 
-  create_application_symlink("/Applications/Karabiner-Elements.app",
-                             "/Library/Application Support/org.pqrs/Karabiner-Elements/Karabiner-Elements.app");
+  if (!std::filesystem::exists("/Applications/Karabiner-Elements.app")) {
+    logger::get_logger()->info("Restore /Applications/Karabiner-Elements.app");
+
+    // In order to have it registered with launch services,
+    // we have to copy application files instead of creating symlink at /Applications/Karabiner-Elements.app.
+
+    auto copy_options = std::filesystem::copy_options::update_existing |
+                        std::filesystem::copy_options::recursive |
+                        std::filesystem::copy_options::copy_symlinks;
+    std::error_code error_code;
+    std::filesystem::copy("/Library/Application Support/org.pqrs/Karabiner-Elements/Karabiner-Elements.app",
+                          "/Applications/Karabiner-Elements.app",
+                          copy_options,
+                          error_code);
+    if (error_code) {
+      logger::get_logger()->error("Failed to restore /Applications/Karabiner-Elements.app: {0}", error_code.message());
+    }
+  }
+
+  //
+  // Register /Applications/Karabiner-Elements.app to launch services
+  //
 
   {
     auto status = pqrs::osx::launch_services::register_application("/Applications/Karabiner-Elements.app");
