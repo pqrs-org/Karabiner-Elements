@@ -22,6 +22,7 @@
 #include "monitor/event_tap_monitor.hpp"
 #include "notification_message_manager.hpp"
 #include "probable_stuck_events_manager.hpp"
+#include "run_loop_thread_utility.hpp"
 #include "types.hpp"
 #include <deque>
 #include <fstream>
@@ -69,16 +70,7 @@ public:
     // virtual_hid_device_service_client_
     //
 
-    // Remove old socket files.
-    {
-      auto directory_path = virtual_hid_device_service_client_socket_directory_path();
-      std::error_code ec;
-      std::filesystem::remove_all(directory_path, ec);
-      std::filesystem::create_directory(directory_path, ec);
-    }
-
-    virtual_hid_device_service_client_ = std::make_shared<pqrs::karabiner::driverkit::virtual_hid_device_service::client>(
-        virtual_hid_device_service_client_socket_file_path());
+    virtual_hid_device_service_client_ = std::make_shared<pqrs::karabiner::driverkit::virtual_hid_device_service::client>();
 
     virtual_hid_device_service_client_->connected.connect([this] {
       logger::get_logger()->info("virtual_hid_device_service_client_ connected");
@@ -210,6 +202,7 @@ public:
     };
 
     hid_manager_ = std::make_unique<pqrs::osx::iokit_hid_manager>(weak_dispatcher_,
+                                                                  pqrs::cf::run_loop_thread::extra::get_shared_run_loop_thread(),
                                                                   matching_dictionaries,
                                                                   std::chrono::milliseconds(1000));
 
@@ -597,18 +590,6 @@ public:
   }
 
 private:
-  std::filesystem::path virtual_hid_device_service_client_socket_directory_path(void) const {
-    // Note:
-    // The socket file path length must be <= 103 because sizeof(sockaddr_un.sun_path) == 104.
-    // So we use the shorten name virtual_hid_device_service_client => vhidd_client.
-
-    return "/Library/Application Support/org.pqrs/tmp/rootonly/vhidd_client";
-  }
-
-  std::filesystem::path virtual_hid_device_service_client_socket_file_path(void) const {
-    return virtual_hid_device_service_client_socket_directory_path() / filesystem_utility::make_socket_file_basename();
-  }
-
   void stop(void) {
     configuration_monitor_ = nullptr;
 
