@@ -39,6 +39,7 @@ public:
     };
 
     hid_manager_ = std::make_unique<pqrs::osx::iokit_hid_manager>(weak_dispatcher_,
+                                                                  pqrs::cf::run_loop_thread::extra::get_shared_run_loop_thread(),
                                                                   matching_dictionaries,
                                                                   std::chrono::milliseconds(0));
 
@@ -51,6 +52,7 @@ public:
                                                                    *device_ptr);
 
         auto hid_queue_value_monitor = std::make_shared<pqrs::osx::iokit_hid_queue_value_monitor>(weak_dispatcher_,
+                                                                                                  pqrs::cf::run_loop_thread::extra::get_shared_run_loop_thread(),
                                                                                                   *device_ptr);
         hid_queue_value_monitors_[device_id] = hid_queue_value_monitor;
 

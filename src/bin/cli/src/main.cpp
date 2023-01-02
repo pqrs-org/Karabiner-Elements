@@ -11,6 +11,7 @@
 #include "karabiner_version.h"
 #include "logger.hpp"
 #include "monitor/configuration_monitor.hpp"
+#include "run_loop_thread_utility.hpp"
 #include <iostream>
 #include <nlohmann/json.hpp>
 #include <pqrs/thread_wait.hpp>
@@ -109,6 +110,7 @@ int remove_system_default_profile(void) {
 
 int main(int argc, char** argv) {
   auto scoped_dispatcher_manager = krbn::dispatcher_utility::initialize_dispatchers();
+  auto scoped_run_loop_thread_manager = krbn::run_loop_thread_utility::initialize_shared_run_loop_thread();
 
   int exit_code = 0;
 

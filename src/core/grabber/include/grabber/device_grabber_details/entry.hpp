@@ -7,6 +7,7 @@
 #include "hid_keyboard_caps_lock_led_state_manager.hpp"
 #include "iokit_utility.hpp"
 #include "pressed_keys_manager.hpp"
+#include "run_loop_thread_utility.hpp"
 #include "types.hpp"
 #include <pqrs/osx/iokit_hid_queue_value_monitor.hpp>
 
@@ -32,6 +33,7 @@ public:
 
     pressed_keys_manager_ = std::make_shared<pressed_keys_manager>();
     hid_queue_value_monitor_ = std::make_shared<pqrs::osx::iokit_hid_queue_value_monitor>(pqrs::dispatcher::extra::get_shared_dispatcher(),
+                                                                                          pqrs::cf::run_loop_thread::extra::get_shared_run_loop_thread(),
                                                                                           device);
     caps_lock_led_state_manager_ = std::make_shared<krbn::hid_keyboard_caps_lock_led_state_manager>(device);
     device_name_ = iokit_utility::make_device_name_for_log(device_id,

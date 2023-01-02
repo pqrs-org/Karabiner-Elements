@@ -1,4 +1,5 @@
 #include "../../share/json_helper.hpp"
+#include "run_loop_thread_utility.hpp"
 #include "state_json_writer.hpp"
 #include <boost/ut.hpp>
 #include <pqrs/filesystem.hpp>
@@ -8,6 +9,7 @@ int main(void) {
   using namespace boost::ut::literals;
 
   auto scoped_dispatcher_manager = krbn::dispatcher_utility::initialize_dispatchers();
+  auto scoped_run_loop_thread_manager = krbn::run_loop_thread_utility::initialize_shared_run_loop_thread();
 
   "state_json_writer"_test = [] {
     system("rm -rf tmp");

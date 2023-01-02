@@ -8,3 +8,8 @@ add_executable(
   karabiner_test
   src/test.cpp
 )
+
+target_link_libraries(
+  karabiner_test
+  "-framework CoreFoundation"
+)

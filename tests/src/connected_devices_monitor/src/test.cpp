@@ -1,4 +1,5 @@
 #include "monitor/connected_devices_monitor.hpp"
+#include "run_loop_thread_utility.hpp"
 #include <boost/ut.hpp>
 
 namespace {
@@ -43,6 +44,7 @@ int main(void) {
   using namespace boost::ut::literals;
 
   auto scoped_dispatcher_manager = krbn::dispatcher_utility::initialize_dispatchers();
+  auto scoped_run_loop_thread_manager = krbn::run_loop_thread_utility::initialize_shared_run_loop_thread();
 
   "connected_devices_monitor"_test = [] {
     {

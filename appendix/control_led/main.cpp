@@ -1,6 +1,7 @@
 #include "dispatcher_utility.hpp"
 #include "hid_keyboard_caps_lock_led_state_manager.hpp"
 #include "iokit_utility.hpp"
+#include "run_loop_thread_utility.hpp"
 #include <csignal>
 #include <pqrs/osx/iokit_hid_manager.hpp>
 #include <pqrs/osx/iokit_return.hpp>
@@ -18,6 +19,7 @@ public:
     };
 
     hid_manager_ = std::make_unique<pqrs::osx::iokit_hid_manager>(weak_dispatcher_,
+                                                                  pqrs::cf::run_loop_thread::extra::get_shared_run_loop_thread(),
                                                                   matching_dictionaries);
 
     hid_manager_->device_matched.connect([this, led_state](auto&& registry_entry_id, auto&& device_ptr) {
@@ -68,6 +70,7 @@ auto global_wait = pqrs::make_thread_wait();
 
 int main(int argc, const char* argv[]) {
   auto scoped_dispatcher_manager = krbn::dispatcher_utility::initialize_dispatchers();
+  auto scoped_run_loop_thread_manager = krbn::run_loop_thread_utility::initialize_shared_run_loop_thread();
 
   std::signal(SIGINT, [](int) {
     global_wait->notify();
@@ -93,6 +96,7 @@ int main(int argc, const char* argv[]) {
     }
   }
 
+  scoped_run_loop_thread_manager = nullptr;
   scoped_dispatcher_manager = nullptr;
 
   std::cout << "finished" << std::endl;

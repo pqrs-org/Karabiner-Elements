@@ -1,6 +1,7 @@
 #pragma once
 
 #include "logger.hpp"
+#include "run_loop_thread_utility.hpp"
 #include <pqrs/osx/iokit_hid_device_open_checker.hpp>
 
 namespace krbn {
@@ -25,6 +26,7 @@ inline bool run_checker(void) {
   };
 
   auto checker = std::make_unique<pqrs::osx::iokit_hid_device_open_checker>(pqrs::dispatcher::extra::get_shared_dispatcher(),
+                                                                            pqrs::cf::run_loop_thread::extra::get_shared_run_loop_thread(),
                                                                             matching_dictionaries);
 
   checker->device_open_permitted.connect([&] {

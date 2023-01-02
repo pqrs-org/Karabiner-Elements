@@ -1,6 +1,7 @@
 #include "dispatcher_utility.hpp"
 #include "grabber/main/agent.hpp"
 #include "grabber/main/daemon.hpp"
+#include "run_loop_thread_utility.hpp"
 #include <pqrs/osx/process_info.hpp>
 
 int main(int argc, const char* argv[]) {
@@ -9,6 +10,7 @@ int main(int argc, const char* argv[]) {
   //
 
   auto scoped_dispatcher_manager = krbn::dispatcher_utility::initialize_dispatchers();
+  auto scoped_run_loop_thread_manager = krbn::run_loop_thread_utility::initialize_shared_run_loop_thread();
 
   signal(SIGUSR1, SIG_IGN);
   signal(SIGUSR2, SIG_IGN);

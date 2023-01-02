@@ -6,6 +6,7 @@
 #include "launchctl_utility.hpp"
 #include "logger.hpp"
 #include "process_utility.hpp"
+#include "run_loop_thread_utility.hpp"
 #include <pqrs/dispatcher.hpp>
 #include <pqrs/filesystem.hpp>
 
@@ -15,6 +16,7 @@ int main(int argc, const char* argv[]) {
   //
 
   auto scoped_dispatcher_manager = krbn::dispatcher_utility::initialize_dispatchers();
+  auto scoped_run_loop_thread_manager = krbn::run_loop_thread_utility::initialize_shared_run_loop_thread();
 
   signal(SIGUSR1, SIG_IGN);
   signal(SIGUSR2, SIG_IGN);
