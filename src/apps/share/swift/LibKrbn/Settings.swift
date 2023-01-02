@@ -62,9 +62,9 @@ extension LibKrbn {
         print("save")
         libkrbn_core_configuration_save(self.libkrbnCoreConfiguration)
         self.saveErrorMessage = String(cString: libkrbn_core_configuration_get_save_error_message())
-
-        self.updateProperties(self.libkrbnCoreConfiguration)
       }
+
+      self.updateProperties(self.libkrbnCoreConfiguration)
     }
 
     public func updateProperties(_ initializedCoreConfiguration: UnsafeMutableRawPointer?) {
