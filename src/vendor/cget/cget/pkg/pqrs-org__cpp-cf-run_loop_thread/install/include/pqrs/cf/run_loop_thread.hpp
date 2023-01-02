@@ -1,6 +1,6 @@
 #pragma once
 
-// pqrs::cf::run_loop_thread v2.2
+// pqrs::cf::run_loop_thread v2.4
 
 // (C) Copyright Takayama Fumihiko 2018.
 // Distributed under the Boost Software License, Version 1.0.
@@ -16,6 +16,11 @@ namespace pqrs {
 namespace cf {
 class run_loop_thread final {
 public:
+  class extra {
+  public:
+#include "run_loop_thread/extra/shared_run_loop_thread.hpp"
+  };
+
   run_loop_thread(const run_loop_thread&) = delete;
 
   run_loop_thread(void) {
