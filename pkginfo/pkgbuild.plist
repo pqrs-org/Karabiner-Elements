@@ -3,7 +3,7 @@
 <plist version="1.0">
   <array>
     <dict>
-      <key>RootRelativeBundlePath</key>      <string>Library/Application Support/org.pqrs/Karabiner-Elements/Karabiner-Elements.app</string>
+      <key>RootRelativeBundlePath</key>      <string>/Applications/Karabiner-Elements.app</string>
       <key>BundleHasStrictIdentifier</key>   <false/>
       <key>BundleIsRelocatable</key>         <false/>
       <key>BundleIsVersionChecked</key>      <false/>
