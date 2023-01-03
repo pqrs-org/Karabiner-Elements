@@ -22,7 +22,7 @@ struct InputMonitoringAlertView: View {
         Text("Please allow on Privacy & Security System Settings.")
       }
 
-      Button(action: { openSystemPreferencesSecurity() }) {
+      Button(action: { openSystemSettingsSecurity() }) {
         Label(
           "Open Privacy & Security System Settings...",
           systemImage: "arrow.forward.circle.fill")
@@ -38,7 +38,7 @@ struct InputMonitoringAlertView: View {
     .padding()
   }
 
-  func openSystemPreferencesSecurity() {
+  func openSystemSettingsSecurity() {
     let url = URL(
       string: "x-apple.systempreferences:com.apple.preference.security?Privacy_ListenEvent")!
     NSWorkspace.shared.open(url)
