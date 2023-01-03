@@ -133,8 +133,8 @@ public class MenuController: NSObject, NSMenuDelegate {
     menu.addItem(NSMenuItem.separator())
     do {
       let newItem = NSMenuItem(
-        title: "Preferences...",
-        action: #selector(openPreferences),
+        title: "Settings...",
+        action: #selector(openSettings),
         keyEquivalent: "")
       newItem.target = self
       menu.addItem(newItem)
@@ -175,8 +175,8 @@ public class MenuController: NSObject, NSMenuDelegate {
   }
 
   @objc
-  func openPreferences(_: Any) {
-    libkrbn_launch_preferences()
+  func openSettings(_: Any) {
+    libkrbn_launch_settings()
   }
 
   @objc

@@ -38,7 +38,7 @@ void libkrbn_launchctl_bootout_console_user_server(void);
 
 void libkrbn_launch_event_viewer(void);
 void libkrbn_launch_menu(void);
-void libkrbn_launch_preferences(void);
+void libkrbn_launch_settings(void);
 void libkrbn_launch_multitouch_extension(void);
 void libkrbn_launch_uninstaller(void);
 

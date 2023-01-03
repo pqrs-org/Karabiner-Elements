@@ -108,8 +108,8 @@ void libkrbn_launch_menu(void) {
   krbn::application_launcher::launch_menu();
 }
 
-void libkrbn_launch_preferences(void) {
-  krbn::application_launcher::launch_preferences();
+void libkrbn_launch_settings(void) {
+  krbn::application_launcher::launch_settings();
 }
 
 void libkrbn_launch_multitouch_extension(void) {

@@ -18,7 +18,7 @@ public:
     system("killall Karabiner-Menu");
   }
 
-  static void launch_preferences(void) {
+  static void launch_settings(void) {
     system("open '/Applications/Karabiner-Elements.app'");
   }
 
@@ -54,7 +54,7 @@ public:
   }
 
   static void launch_uninstaller(void) {
-    // Use nohup because uninstaller kill the Preferences Window.
+    // Use nohup because uninstaller kill the Settings Window.
     system("/usr/bin/nohup osascript '/Library/Application Support/org.pqrs/Karabiner-Elements/scripts/uninstaller.applescript' >/dev/null 2>&1 &");
   }
 };
