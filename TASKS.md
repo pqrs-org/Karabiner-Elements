@@ -6,11 +6,11 @@
     -   [ ] MultitouchExtension
     -   [x] EventViewer
     -   [x] Menu
-    -   [x] Preferences
+    -   [x] Settings
     -   [x] NotificationWindow
 -   [ ] Migrate to SwiftUI.
     -   [ ] MultitouchExtension
-    -   [x] Preferences
+    -   [x] Settings
     -   [x] EventViewer
     -   [x] NotificationWindow
 -   [ ] Update launch daemons and agents with dropping macOS 12 support.

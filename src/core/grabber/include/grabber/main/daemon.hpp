@@ -78,7 +78,7 @@ int daemon(void) {
   // Check Karabiner-Elements.app exists
   //
 
-  auto settings_application_url = pqrs::osx::workspace::find_application_url_by_bundle_identifier("org.pqrs.Karabiner-Elements.Preferences");
+  auto settings_application_url = pqrs::osx::workspace::find_application_url_by_bundle_identifier("org.pqrs.Karabiner-Elements.Settings");
   logger::get_logger()->info("Karabiner-Elements.app path: {0}", settings_application_url);
 
   //

@@ -5,7 +5,7 @@
     <key>Label</key>
     <string>org.pqrs.karabiner.karabiner_observer</string>
     <key>AssociatedBundleIdentifiers</key>
-    <string>org.pqrs.Karabiner-Elements.Preferences</string>
+    <string>org.pqrs.Karabiner-Elements.Settings</string>
     <key>Disabled</key>
     <false/>
     <key>KeepAlive</key>

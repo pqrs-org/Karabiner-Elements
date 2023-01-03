@@ -53,7 +53,7 @@ public class AppDelegate: NSObject, NSApplicationDelegate {
     }
 
     //
-    // Run updater or open preferences.
+    // Run updater or open settings.
     //
 
     if CommandLine.arguments.count > 1 {
@@ -94,7 +94,7 @@ public class AppDelegate: NSObject, NSApplicationDelegate {
       backing: .buffered,
       defer: false
     )
-    window!.title = "Karabiner-Elements Preferences"
+    window!.title = "Karabiner-Elements Settings"
     window!.contentView = NSHostingView(rootView: ContentView())
     window!.center()
     window!.makeKeyAndOrderFront(self)

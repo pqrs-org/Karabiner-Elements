@@ -15,11 +15,11 @@
         <customObject id="Voe-Tx-rLC" customClass="AppDelegate" customModule="Karabiner_Elements"/>
         <menu title="Main Menu" systemMenu="main" id="AYu-sK-qS6">
             <items>
-                <menuItem title="Karabiner-Elements Preferences" id="1Xt-HY-uBw" userLabel="Karabiner-Elements Preferences">
+                <menuItem title="Karabiner-Elements Settings" id="1Xt-HY-uBw" userLabel="Karabiner-Elements Settings">
                     <modifierMask key="keyEquivalentModifierMask"/>
-                    <menu key="submenu" title="Karabiner-Elements Preferences" systemMenu="apple" id="uQy-DD-JDr">
+                    <menu key="submenu" title="Karabiner-Elements Settings" systemMenu="apple" id="uQy-DD-JDr">
                         <items>
-                            <menuItem title="Hide Karabiner-Elements Preferences" keyEquivalent="h" id="Olw-nP-bQN">
+                            <menuItem title="Hide Karabiner-Elements Settings" keyEquivalent="h" id="Olw-nP-bQN">
                                 <connections>
                                     <action selector="hide:" target="-1" id="PnN-Uc-m68"/>
                                 </connections>
@@ -37,7 +37,7 @@
                                 </connections>
                             </menuItem>
                             <menuItem isSeparatorItem="YES" id="TZI-3b-uc9"/>
-                            <menuItem title="Quit Karabiner-Elements Preferences" keyEquivalent="q" id="pc0-ds-IqP">
+                            <menuItem title="Quit Karabiner-Elements Settings" keyEquivalent="q" id="pc0-ds-IqP">
                                 <connections>
                                     <action selector="terminate:" target="-1" id="J9R-Lm-n58"/>
                                 </connections>

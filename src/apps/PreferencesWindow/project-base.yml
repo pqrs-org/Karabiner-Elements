@@ -8,7 +8,7 @@ targets:
   Karabiner-Elements:
     settings:
       base:
-        PRODUCT_BUNDLE_IDENTIFIER: org.pqrs.Karabiner-Elements.Preferences
+        PRODUCT_BUNDLE_IDENTIFIER: org.pqrs.Karabiner-Elements.Settings
         CODE_SIGN_ENTITLEMENTS: ''
         CODE_SIGN_IDENTITY: '-'
         CODE_SIGN_STYLE: Manual

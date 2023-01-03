@@ -14,13 +14,13 @@ struct InputMonitoringPermissionsAlertView: View {
         .font(.system(size: 24))
 
         Text(
-          "karabiner_grabber and karabiner_observer require Input Monitoring permission.\nPlease allow them on Security & Privacy System Preferences."
+          "karabiner_grabber and karabiner_observer require Input Monitoring permission.\nPlease allow them on Privacy & Security System Settings."
         )
         .fixedSize(horizontal: false, vertical: true)
 
-        Button(action: { openSystemPreferencesSecurity() }) {
+        Button(action: { openSystemSettingsSecurity() }) {
           Label(
-            "Open Security & Privacy System Preferences...",
+            "Open Privacy & Security System Settings...",
             systemImage: "arrow.forward.circle.fill")
         }
 
@@ -37,7 +37,7 @@ struct InputMonitoringPermissionsAlertView: View {
     }
   }
 
-  private func openSystemPreferencesSecurity() {
+  private func openSystemSettingsSecurity() {
     let url = URL(
       string: "x-apple.systempreferences:com.apple.preference.security?Privacy_ListenEvent")!
     NSWorkspace.shared.open(url)
