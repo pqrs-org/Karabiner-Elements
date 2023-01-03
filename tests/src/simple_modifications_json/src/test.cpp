@@ -8,7 +8,7 @@ int main(void) {
   using namespace boost::ut::literals;
 
   "simple_modifications.json"_test = [] {
-    auto json = krbn::unit_testing::json_helper::load_jsonc("../../../src/apps/PreferencesWindow/Resources/simple_modifications.json");
+    auto json = krbn::unit_testing::json_helper::load_jsonc("../../../src/apps/SettingsWindow/Resources/simple_modifications.json");
     auto label_set = std::unordered_set<std::string>();
 
     for (const auto& entry : json) {

@@ -3,7 +3,7 @@ all:
 	$(MAKE) -C apps/Menu
 	$(MAKE) -C apps/MultitouchExtension
 	$(MAKE) -C apps/NotificationWindow
-	$(MAKE) -C apps/PreferencesWindow
+	$(MAKE) -C apps/SettingsWindow
 	$(MAKE) -C apps/lib/KarabinerKit
 	$(MAKE) -C bin/cli
 	$(MAKE) -C core/console_user_server
@@ -17,7 +17,7 @@ clean:
 	$(MAKE) -C apps/Menu clean
 	$(MAKE) -C apps/MultitouchExtension clean
 	$(MAKE) -C apps/NotificationWindow clean
-	$(MAKE) -C apps/PreferencesWindow clean
+	$(MAKE) -C apps/SettingsWindow clean
 	$(MAKE) -C apps/lib/KarabinerKit clean
 	$(MAKE) -C bin/cli clean
 	$(MAKE) -C core/console_user_server clean
