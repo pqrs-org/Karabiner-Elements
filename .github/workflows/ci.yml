@@ -10,8 +10,8 @@ jobs:
       - uses: actions/checkout@v2
         with:
           submodules: recursive
-#      - name: xcode-select
-#        run: sudo xcode-select -s /Applications/Xcode_13.3.app
+      - name: xcode-select
+        run: sudo xcode-select -s /Applications/Xcode_14.2.app
       - name: brew install
         run: brew install xcodegen
       - name: package
