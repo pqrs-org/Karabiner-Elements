@@ -17,7 +17,10 @@ let bundleIdentifiers = [
 
 let lsregisterCommandPath =
   "/System/Library/Frameworks/CoreServices.framework/Versions/A/Frameworks/LaunchServices.framework/Versions/A/Support/lsregister"
-let deleteTargetURLRegex = #/\/build\/|\/Build\//#
+let deleteTargetURLRegex = #/
+  /build/ |
+  /Build/
+/#
 
 for bundleIdentifier in bundleIdentifiers {
   let urls = NSWorkspace.shared.urlsForApplications(withBundleIdentifier: bundleIdentifier)
@@ -25,7 +28,7 @@ for bundleIdentifier in bundleIdentifiers {
   for url in urls {
     let path = url.path
     if path.matches(of: deleteTargetURLRegex).count > 0 {
-      print("unregister \(path)")
+      print("unregister from the Launch Services database: \(path)")
 
       let process = Process()
       process.launchPath = lsregisterCommandPath

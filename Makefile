@@ -6,7 +6,7 @@ all:
 
 package: clean
 	./make-package.sh
-	$(MAKE) clean-launch-service-database.swift
+	$(MAKE) clean-launch-service-database
 
 build:
 	$(MAKE) -C src
@@ -16,15 +16,15 @@ clean:
 	$(MAKE) -C tests clean
 	rm -rf pkgroot
 	rm -f *.dmg
-	$(MAKE) clean-launch-service-database.swift
+	$(MAKE) clean-launch-service-database
 
-clean-launch-service-database.swift:
-	swift scripts/clean-launch-service-database.swift
+clean-launch-service-database:
+	bash scripts/clean-launch-service-database.sh
 
 gitclean:
 	git clean -f -x -d
 	(cd src/vendor/Karabiner-DriverKit-VirtualHIDDevice && git clean -f -x -d)
-	$(MAKE) clean-launch-service-database.swift
+	$(MAKE) clean-launch-service-database
 
 notarize:
 	xcrun notarytool \
