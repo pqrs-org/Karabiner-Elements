@@ -2,10 +2,12 @@
 
 ## Beta
 
+-   💥 Breaking changes
+    -   Changed bundle identifier of Karabiner-Elements Settings to `org.pqrs.Karabiner-Elements.Settings` from `org.pqrs.Karabiner-Elements.Preferences`.
 -   ✨ New Features
-    -   Add `Ask for confirmation when quitting` option into Preferences > Pro tab. (Thanks to @basti1302)
+    -   Added `Ask for confirmation when quitting` option into Preferences > Pro tab. (Thanks to @basti1302)
 -   ⚡️ Improvements
-    -   Improved health checks for inter-process communication to better recover from errors
+    -   Improved health checks for inter-process communication to better recover from errors.
 -   🐛 Bug Fixes
     -   Fixed an issue that uninstaller does not remove Karabiner-Elements.app and Karabiner-EventViewer.app in macOS Ventura.
     -   Fixed an issue that could cause multiple update windows will be shown.
