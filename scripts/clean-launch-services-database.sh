@@ -9,7 +9,7 @@ set -e # forbid command failure
 
 major=$(sw_vers -productVersion | awk -F. '{print $1}')
 if [ $major -ge 13 ]; then
-    swift scripts/clean-launch-service-database.swift
+    swift scripts/clean-launch-services-database.swift
 else
-    echo "Skip: clean-launch-service-database.swift is available since macOS 13"
+    echo "Skip: clean-launch-services-database.swift is available since macOS 13"
 fi
