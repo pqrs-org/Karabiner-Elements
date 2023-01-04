@@ -8,6 +8,8 @@ struct UninstallView: View {
           HStack {
             Button(action: {
               libkrbn_launch_uninstaller()
+
+              NSApplication.shared.terminate(nil)
             }) {
               Label("Launch uninstaller", systemImage: "trash")
                 .buttonLabelStyle()
