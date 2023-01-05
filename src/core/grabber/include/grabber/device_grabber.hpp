@@ -44,7 +44,6 @@ public:
 
   device_grabber(std::weak_ptr<console_user_server_client> weak_console_user_server_client,
                  std::weak_ptr<grabber_state_json_writer> weak_grabber_state_json_writer) : dispatcher_client(),
-                                                                                            virtual_hid_device_service_check_timer_(*this),
                                                                                             profile_(nlohmann::json::object()),
                                                                                             logger_unique_filter_(logger::get_logger()) {
     notification_message_manager_ = std::make_shared<notification_message_manager>(
@@ -150,15 +149,6 @@ public:
         async_grab_devices();
       }
     });
-
-    virtual_hid_device_service_check_timer_.start(
-        [this] {
-          virtual_hid_device_service_client_->async_driver_loaded();
-          virtual_hid_device_service_client_->async_driver_version_matched();
-          virtual_hid_device_service_client_->async_virtual_hid_keyboard_ready();
-          virtual_hid_device_service_client_->async_virtual_hid_pointing_ready();
-        },
-        std::chrono::milliseconds(1000));
 
     post_event_to_virtual_devices_manipulator_ =
         std::make_shared<manipulator::manipulators::post_event_to_virtual_devices::post_event_to_virtual_devices>(
@@ -597,7 +587,6 @@ private:
 
     event_tap_monitor_ = nullptr;
 
-    virtual_hid_device_service_check_timer_.stop();
     virtual_hid_device_service_client_->async_stop();
   }
 
@@ -976,7 +965,6 @@ private:
 
   std::shared_ptr<pqrs::karabiner::driverkit::virtual_hid_device_service::client> virtual_hid_device_service_client_;
 
-  pqrs::dispatcher::extra::timer virtual_hid_device_service_check_timer_;
   virtual_hid_devices_state virtual_hid_devices_state_;
 
   std::vector<nod::scoped_connection> external_signal_connections_;
