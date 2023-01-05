@@ -30,7 +30,7 @@ struct DevicesView: View {
               }
 
               HStack(alignment: .top, spacing: 0.0) {
-                VStack(alignment: .leading, spacing: 0.0) {
+                VStack(alignment: .leading, spacing: 4.0) {
                   if connectedDeviceSetting.connectedDevice.isAppleDevice,
                     !connectedDeviceSetting.connectedDevice.isKeyboard,
                     !settings.unsafeUI
@@ -70,7 +70,7 @@ struct DevicesView: View {
                 Spacer()
 
                 if connectedDeviceSetting.connectedDevice.transport != "FIFO" {
-                  VStack(alignment: .trailing, spacing: 0) {
+                  VStack(alignment: .trailing, spacing: 4.0) {
                     HStack(alignment: .firstTextBaseline, spacing: 0) {
                       Spacer()
 
