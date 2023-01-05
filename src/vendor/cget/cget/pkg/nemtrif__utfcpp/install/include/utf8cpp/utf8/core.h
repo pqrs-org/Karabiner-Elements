@@ -297,6 +297,55 @@ namespace internal
         return utf8::internal::validate_next(it, end, ignored);
     }
 
+    // Internal implementation of both checked and unchecked append() function
+    // This function will be invoked by the overloads below, as they will know
+    // the octet_type.
+    template <typename octet_iterator, typename octet_type>
+    octet_iterator append(uint32_t cp, octet_iterator result) {
+        if (cp < 0x80)                        // one octet
+            *(result++) = static_cast<octet_type>(cp);
+        else if (cp < 0x800) {                // two octets
+            *(result++) = static_cast<octet_type>((cp >> 6)          | 0xc0);
+            *(result++) = static_cast<octet_type>((cp & 0x3f)        | 0x80);
+        }
+        else if (cp < 0x10000) {              // three octets
+            *(result++) = static_cast<octet_type>((cp >> 12)         | 0xe0);
+            *(result++) = static_cast<octet_type>(((cp >> 6) & 0x3f) | 0x80);
+            *(result++) = static_cast<octet_type>((cp & 0x3f)        | 0x80);
+        }
+        else {                                // four octets
+            *(result++) = static_cast<octet_type>((cp >> 18)         | 0xf0);
+            *(result++) = static_cast<octet_type>(((cp >> 12) & 0x3f)| 0x80);
+            *(result++) = static_cast<octet_type>(((cp >> 6) & 0x3f) | 0x80);
+            *(result++) = static_cast<octet_type>((cp & 0x3f)        | 0x80);
+        }
+        return result;
+    }
+    
+    // One of the following overloads will be invoked from the API calls
+
+    // A simple (but dangerous) case: the caller appends byte(s) to a char array
+    inline char* append(uint32_t cp, char* result) {
+        return append<char*, char>(cp, result);
+    }
+
+    // Hopefully, most common case: the caller uses back_inserter
+    // i.e. append(cp, std::back_inserter(str));
+    template<typename container_type>
+    std::back_insert_iterator<container_type> append
+            (uint32_t cp, std::back_insert_iterator<container_type> result) {
+        return append<std::back_insert_iterator<container_type>,
+            typename container_type::value_type>(cp, result);
+    }
+
+    // The caller uses some other kind of output operator - not covered above
+    // Note that in this case we are not able to determine octet_type
+    // so we assume it's uint_8; that can cause a conversion warning if we are wrong.
+    template <typename octet_iterator>
+    octet_iterator append(uint32_t cp, octet_iterator result) {
+        return append<octet_iterator, uint8_t>(cp, result);
+    }
+
 } // namespace internal
 
     /// The library API - functions intended to be called by the users

@@ -50,6 +50,7 @@ namespace utf8
         uint8_t u8;
     public:
         invalid_utf8 (uint8_t u) : u8(u) {}
+        invalid_utf8 (char c) : u8(static_cast<uint8_t>(c)) {}
         virtual const char* what() const UTF_CPP_NOEXCEPT UTF_CPP_OVERRIDE { return "Invalid UTF-8"; }
         uint8_t utf8_octet() const {return u8;}
     };
@@ -75,24 +76,7 @@ namespace utf8
         if (!utf8::internal::is_code_point_valid(cp))
             throw invalid_code_point(cp);
 
-        if (cp < 0x80)                        // one octet
-            *(result++) = static_cast<uint8_t>(cp);
-        else if (cp < 0x800) {                // two octets
-            *(result++) = static_cast<uint8_t>((cp >> 6)            | 0xc0);
-            *(result++) = static_cast<uint8_t>((cp & 0x3f)          | 0x80);
-        }
-        else if (cp < 0x10000) {              // three octets
-            *(result++) = static_cast<uint8_t>((cp >> 12)           | 0xe0);
-            *(result++) = static_cast<uint8_t>(((cp >> 6) & 0x3f)   | 0x80);
-            *(result++) = static_cast<uint8_t>((cp & 0x3f)          | 0x80);
-        }
-        else {                                // four octets
-            *(result++) = static_cast<uint8_t>((cp >> 18)           | 0xf0);
-            *(result++) = static_cast<uint8_t>(((cp >> 12) & 0x3f)  | 0x80);
-            *(result++) = static_cast<uint8_t>(((cp >> 6) & 0x3f)   | 0x80);
-            *(result++) = static_cast<uint8_t>((cp & 0x3f)          | 0x80);
-        }
-        return result;
+        return internal::append(cp, result);
     }
 
     template <typename octet_iterator, typename output_iterator>
