@@ -770,6 +770,15 @@ private:
       return grabbable_state::state::ungrabbable_temporarily;
     }
 
+    if (needs_grab_pointing_device()) {
+      if (!virtual_hid_devices_state_.get_virtual_hid_pointing_ready()) {
+        std::string message = "virtual_hid_pointing is not ready. Please wait for a while.";
+        logger_unique_filter_.warn(message);
+        unset_device_ungrabbable_temporarily_notification_message(entry->get_device_id());
+        return grabbable_state::state::ungrabbable_temporarily;
+      }
+    }
+
     // ----------------------------------------
     // Ungrabbable before observed.
 
@@ -839,16 +848,28 @@ private:
     return false;
   }
 
-  bool is_pointing_device_grabbed(void) const {
+  bool needs_grab_pointing_device(void) const {
+    //
+    // Check if there is a pointing device to grab
+    //
+
     for (const auto& e : entries_) {
       if (auto device_properties = e.second->get_device_properties()) {
         if (device_properties->get_is_pointing_device().value_or(false) &&
-            e.second->get_event_origin() == event_origin::grabbed_device &&
-            e.second->get_grabbed()) {
+            e.second->get_event_origin() == event_origin::grabbed_device) {
           return true;
         }
       }
     }
+
+    //
+    // Check if a setting exists that would fire pointing device events
+    //
+
+    if (manipulator_managers_connector_.needs_virtual_hid_pointing()) {
+      return true;
+    }
+
     return false;
   }
 
@@ -858,8 +879,7 @@ private:
   }
 
   void update_virtual_hid_pointing(void) {
-    if (is_pointing_device_grabbed() ||
-        manipulator_managers_connector_.needs_virtual_hid_pointing()) {
+    if (needs_grab_pointing_device()) {
       virtual_hid_device_service_client_->async_virtual_hid_pointing_initialize();
       return;
     }
