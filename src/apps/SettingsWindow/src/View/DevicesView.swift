@@ -30,7 +30,7 @@ struct DevicesView: View {
               }
 
               HStack(alignment: .top, spacing: 0.0) {
-                VStack(alignment: .leading, spacing: 4.0) {
+                VStack(alignment: .leading, spacing: 0.0) {
                   if connectedDeviceSetting.connectedDevice.isAppleDevice,
                     !connectedDeviceSetting.connectedDevice.isKeyboard,
                     !settings.unsafeUI
@@ -39,33 +39,35 @@ struct DevicesView: View {
                       .foregroundColor(Color(NSColor.placeholderTextColor))
                     Spacer()
                   } else {
-                    Toggle(isOn: $connectedDeviceSetting.modifyEvents) {
-                      Text("Modify events")
-
-                      Spacer()
-                    }
-                    .switchToggleStyle()
-                  }
-
-                  if connectedDeviceSetting.connectedDevice.isKeyboard {
-                    Toggle(isOn: $connectedDeviceSetting.manipulateCapsLockLed) {
-                      Text("Manipulate caps lock LED")
-
-                      Spacer()
-                    }
-                    .switchToggleStyle()
-
-                    if !connectedDeviceSetting.connectedDevice.isBuiltInKeyboard {
-                      Toggle(isOn: $connectedDeviceSetting.treatAsBuiltInKeyboard) {
-                        Text("Treat as a built-in keyboard")
+                    VStack(alignment: .leading, spacing: 4.0) {
+                      Toggle(isOn: $connectedDeviceSetting.modifyEvents) {
+                        Text("Modify events")
 
                         Spacer()
                       }
                       .switchToggleStyle()
+
+                      if connectedDeviceSetting.connectedDevice.isKeyboard {
+                        Toggle(isOn: $connectedDeviceSetting.manipulateCapsLockLed) {
+                          Text("Manipulate caps lock LED")
+
+                          Spacer()
+                        }
+                        .switchToggleStyle()
+
+                        if !connectedDeviceSetting.connectedDevice.isBuiltInKeyboard {
+                          Toggle(isOn: $connectedDeviceSetting.treatAsBuiltInKeyboard) {
+                            Text("Treat as a built-in keyboard")
+
+                            Spacer()
+                          }
+                          .switchToggleStyle()
+                        }
+                      }
                     }
+                    .frame(width: 240.0)
                   }
                 }
-                .frame(width: 240.0)
 
                 Spacer()
 
@@ -101,6 +103,7 @@ struct DevicesView: View {
                 }
               }
               .padding(.leading, 62.0)
+              .padding(.top, 4.0)
             }
             .padding(.vertical, 12.0)
             .padding(.trailing, 12.0)
