@@ -1,7 +1,10 @@
 # Changelog
 
-## Beta
+## Karabiner-Elements 14.11.0
 
+-   [📦 Download](https://github.com/pqrs-org/Karabiner-Elements/releases/download/v14.11.0/Karabiner-Elements-14.11.0.dmg)
+-   📅 Release date
+    -   Jan 7, 2023
 -   💥 Breaking changes
     -   Changed bundle identifier of Karabiner-Elements Settings to `org.pqrs.Karabiner-Elements.Settings` from `org.pqrs.Karabiner-Elements.Preferences`.
 -   ✨ New Features
