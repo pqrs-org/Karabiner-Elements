@@ -8,7 +8,7 @@
 -   💥 Breaking changes
     -   Changed bundle identifier of Karabiner-Elements Settings to `org.pqrs.Karabiner-Elements.Settings` from `org.pqrs.Karabiner-Elements.Preferences`.
 -   ✨ New Features
-    -   Added `Ask for confirmation when quitting` option into Preferences > Pro tab. (Thanks to @basti1302)
+    -   Added `Ask for confirmation when quitting` option into Settings > Misc tab. (Thanks to @basti1302)
 -   ⚡️ Improvements
     -   Improved health checks for inter-process communication to better recover from errors.
 -   🐛 Bug Fixes
