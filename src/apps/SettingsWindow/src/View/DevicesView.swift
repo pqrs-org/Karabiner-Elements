@@ -47,6 +47,13 @@ struct DevicesView: View {
                       }
                       .switchToggleStyle()
 
+                      Toggle(isOn: $connectedDeviceSetting.disableOnSleep) {
+                        Text("Disable on sleep")
+
+                        Spacer()
+                      }
+                      .switchToggleStyle()
+
                       if connectedDeviceSetting.connectedDevice.isKeyboard {
                         Toggle(isOn: $connectedDeviceSetting.manipulateCapsLockLed) {
                           Text("Manipulate caps lock LED")

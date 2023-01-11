@@ -57,6 +57,8 @@ public:
 
         try {
           nlohmann::json json = nlohmann::json::from_msgpack(*buffer);
+          logger::get_logger()->warn("session_monitor_receiver, operation type: {0}", json.at("operation_type").get<std::string>());
+
           switch (json.at("operation_type").get<operation_type>()) {
             case operation_type::console_user_id_changed: {
               auto new_value = current_console_user_id_;
