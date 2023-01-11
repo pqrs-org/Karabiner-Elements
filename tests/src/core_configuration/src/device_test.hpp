@@ -88,6 +88,7 @@ void run_device_test(void) {
       expect(device.get_identifiers().get_is_pointing_device() == false);
       expect(device.get_ignore() == false);
       expect(device.get_manipulate_caps_lock_led() == false);
+      expect(device.get_disable_on_sleep() == false);
       expect(device.get_treat_as_built_in_keyboard() == false);
       expect(device.get_disable_built_in_keyboard_if_exists() == false);
     }
@@ -104,6 +105,7 @@ void run_device_test(void) {
           {"disable_built_in_keyboard_if_exists", true},
           {"ignore", true},
           {"manipulate_caps_lock_led", true},
+          {"disable_on_sleep", true},
           {"treat_as_built_in_keyboard", false},
       });
       krbn::core_configuration::details::device device(json);
@@ -113,6 +115,7 @@ void run_device_test(void) {
       expect(device.get_identifiers().get_is_pointing_device() == true);
       expect(device.get_ignore() == true);
       expect(device.get_manipulate_caps_lock_led() == true);
+      expect(device.get_disable_on_sleep() == true);
       expect(device.get_treat_as_built_in_keyboard() == false);
       expect(device.get_disable_built_in_keyboard_if_exists() == true);
     }

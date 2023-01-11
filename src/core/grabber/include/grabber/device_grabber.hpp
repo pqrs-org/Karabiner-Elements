@@ -615,7 +615,7 @@ private:
   void values_arrived(std::shared_ptr<device_grabber_details::entry> entry,
                       std::shared_ptr<event_queue::queue> event_queue) {
     // Manipulate events
-
+    
     if (auto probable_stuck_events_manager = find_probable_stuck_events_manager(entry->get_device_id())) {
       if (!entry->get_first_value_arrived()) {
         // First grabbed event is arrived.
