@@ -157,7 +157,6 @@ private:
 
         try {
           nlohmann::json json = nlohmann::json::from_msgpack(*buffer);
-          logger::get_logger()->warn("components_manager, operation type: {0}", json.at("operation_type").get<std::string>());
 
           switch (json.at("operation_type").get<operation_type>()) {
             case operation_type::select_input_source: {

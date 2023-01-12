@@ -67,8 +67,6 @@ public:
 
         try {
           nlohmann::json json = nlohmann::json::from_msgpack(*buffer);
-          logger::get_logger()->warn("grabber receiver, operation type: {0}", json.at("operation_type").get<std::string>());
-          
           switch (json.at("operation_type").get<operation_type>()) {
             case operation_type::momentary_switch_event_arrived: {
               if (device_grabber_) {
