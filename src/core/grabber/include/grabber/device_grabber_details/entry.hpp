@@ -63,6 +63,8 @@ public:
     });
 
     deregister_sleep_activity_notifier();
+    cf_run_loop_thread_->terminate();
+    cf_run_loop_thread_ = nullptr;
   }
 
   device_id get_device_id(void) const {
@@ -110,7 +112,7 @@ public:
   void set_first_value_arrived(bool value) {
     first_value_arrived_ = value;
   }
-  
+
   std::shared_ptr<hid_keyboard_caps_lock_led_state_manager> get_caps_lock_led_state_manager(void) const {
     return caps_lock_led_state_manager_;
   }
@@ -132,6 +134,8 @@ public:
   }
 
   void set_grabbed(bool value) {
+    logger::get_logger()->warn("set_grabbedtype: {0}", value);
+
     grabbed_ = value;
 
     if (grabbed_) {
@@ -140,9 +144,10 @@ public:
       ungrabbed_time_stamp_ = pqrs::osx::chrono::mach_absolute_time_point();
     }
 
-    control_caps_lock_led_state_manager();
-
-    control_disable_on_sleep();
+    // control_caps_lock_led_state_manager() seems to wake up the system
+    if (grabbed_ || !disable_on_sleep_activity_notifier_registered_) {
+      control_caps_lock_led_state_manager();
+    }
   }
 
   bool get_disabled(void) const {
@@ -231,10 +236,10 @@ public:
   }
 
   bool is_grabbed(absolute_time_point time_stamp) {
-    if (disable_on_sleep_activity_notifier_registered_) {
+    if (!grabbed_ && disable_on_sleep_activity_notifier_registered_) {
       return false;
     }
-    
+
     if (grabbed_) {
       if (grabbed_time_stamp_ <= time_stamp) {
         return true;
