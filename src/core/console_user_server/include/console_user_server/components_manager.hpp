@@ -157,7 +157,6 @@ private:
 
         try {
           nlohmann::json json = nlohmann::json::from_msgpack(*buffer);
-
           switch (json.at("operation_type").get<operation_type>()) {
             case operation_type::select_input_source: {
               using specifiers_t = std::vector<pqrs::osx::input_source_selector::specifier>;
