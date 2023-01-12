@@ -70,7 +70,6 @@ public:
   }
 
   void set_core_configuration(std::weak_ptr<const core_configuration::core_configuration> core_configuration) {
-    logger::get_logger()->warn("set_core_configuration");
     core_configuration_ = core_configuration;
 
     //
@@ -133,7 +132,6 @@ public:
   }
 
   void set_grabbed(bool value) {
-    logger::get_logger()->warn("set_grabbed: {0}", value);
     grabbed_ = value;
 
     if (grabbed_) {
@@ -233,6 +231,10 @@ public:
   }
 
   bool is_grabbed(absolute_time_point time_stamp) {
+    if (disable_on_sleep_activity_notifier_registered_) {
+      return false;
+    }
+    
     if (grabbed_) {
       if (grabbed_time_stamp_ <= time_stamp) {
         return true;
@@ -313,7 +315,7 @@ void control_disable_on_sleep(void) {
         if (grabbed_ && event_origin_ == event_origin::grabbed_device) {
           if (c->get_selected_profile().get_device_disable_on_sleep(*device_identifiers)) {
             if (!disable_on_sleep_activity_notifier_registered_) {
-              logger::get_logger()->warn("register for system power");
+              logger::get_logger()->info("register for system power");
               
               /* Register for sleep/wake messages */
               notify_callback_port_ = IORegisterForSystemPower(this, &notify_port_ref_, sleep_wake_callback, &sleep_root_notifier_);
@@ -328,8 +330,6 @@ void control_disable_on_sleep(void) {
             }
             return;
           } else {
-            logger::get_logger()->warn("deregister for system power");
-
             deregister_sleep_activity_notifier();
             return;
           }
@@ -344,7 +344,7 @@ void deregister_sleep_activity_notifier(void) {
     return;
   }
 
-  logger::get_logger()->warn("deregister for system power");
+  logger::get_logger()->info("deregister for system power");
 
   // remove the sleep notification port from the application runloop
   CFRunLoopRemoveSource(CFRunLoopGetCurrent(), IONotificationPortGetRunLoopSource(notify_port_ref_), kCFRunLoopCommonModes);
@@ -406,7 +406,7 @@ void sleep_wake_callback(void* refCon, io_service_t service, natural_t message_t
             IOAllowPowerChange or IOCancelPowerChange, the system will wait 30
             seconds then go to sleep.
         */
-        logger::get_logger()->warn("kIOMessageCanSystemSleep");
+        logger::get_logger()->debug("kIOMessageCanSystemSleep received");
 
         original_entry->set_grabbed(false);
 
@@ -420,7 +420,7 @@ void sleep_wake_callback(void* refCon, io_service_t service, natural_t message_t
             NOTE: If you call IOCancelPowerChange to deny sleep it returns
             kIOReturnSuccess, however the system WILL still go to sleep.
         */
-        logger::get_logger()->warn("kIOMessageSystemWillSleep");
+        logger::get_logger()->debug("kIOMessageSystemWillSleep received");
 
         original_entry->set_grabbed(false);
 
@@ -429,7 +429,7 @@ void sleep_wake_callback(void* refCon, io_service_t service, natural_t message_t
 
       case kIOMessageSystemWillNotSleep:
         //Announces that the system has retracted a previous attempt to sleep; it follows kIOMessageCanSystemSleep.
-        logger::get_logger()->warn("kIOMessageSystemWillNotSleep: {0}", message_argument);
+        logger::get_logger()->debug("kIOMessageSystemWillNotSleep received");
 
         original_entry->set_grabbed(true);
 
@@ -437,7 +437,7 @@ void sleep_wake_callback(void* refCon, io_service_t service, natural_t message_t
 
       case kIOMessageSystemWillPowerOn:
         //System has started the wake up process...
-        logger::get_logger()->warn("kIOMessageSystemWillPowerOn: {0}", message_argument);
+        logger::get_logger()->debug("kIOMessageSystemWillPowerOn received");
 
         original_entry->set_grabbed(true);
 
@@ -445,7 +445,7 @@ void sleep_wake_callback(void* refCon, io_service_t service, natural_t message_t
 
       case kIOMessageSystemHasPoweredOn:
         //System has finished waking up...
-        logger::get_logger()->warn("kIOMessageSystemHasPoweredOn: {0}", message_argument);
+        logger::get_logger()->debug("kIOMessageSystemHasPoweredOn received");
 
         original_entry->set_grabbed(true);
 
