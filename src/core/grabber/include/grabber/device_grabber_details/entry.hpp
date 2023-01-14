@@ -9,19 +9,11 @@
 #include "pressed_keys_manager.hpp"
 #include "run_loop_thread_utility.hpp"
 #include "types.hpp"
-#include <IOKit/IOMessage.h>
-#include <IOKit/pwr_mgt/IOPMLib.h>
-#include <pqrs/cf/run_loop_thread.hpp>
 #include <pqrs/osx/iokit_hid_queue_value_monitor.hpp>
-#include <pqrs/osx/process_info.hpp>
 
 namespace krbn {
 namespace grabber {
 namespace device_grabber_details {
-
-class entry;
-void sleep_wake_callback(void* refCon, io_service_t service, natural_t message_type, void* message_argument);
-
 class entry final : public pqrs::dispatcher::extra::dispatcher_client {
 public:
   entry(device_id device_id,
@@ -49,8 +41,6 @@ public:
     device_short_name_ = iokit_utility::make_device_name(device);
 
     update_event_origin();
-
-    control_disable_on_sleep();
   }
 
   ~entry(void) {
@@ -58,8 +48,6 @@ public:
       hid_queue_value_monitor_ = nullptr;
       caps_lock_led_state_manager_ = nullptr;
     });
-
-    deregister_sleep_activity_notifier();
   }
 
   device_id get_device_id(void) const {
@@ -80,12 +68,6 @@ public:
     //
 
     control_caps_lock_led_state_manager();
-
-    //
-    // Update disable_on_sleep notifier
-    //
-
-    control_disable_on_sleep();
   }
 
   std::shared_ptr<device_properties> get_device_properties(void) const {
@@ -120,17 +102,11 @@ public:
     return device_short_name_;
   }
 
-  bool is_disable_on_sleep_activity_notifier_registered(void) {
-    return disable_on_sleep_activity_notifier_registered_;
-  }
-
   bool get_grabbed(void) const {
     return grabbed_;
   }
 
   void set_grabbed(bool value) {
-    logger::get_logger()->warn("set_grabbedtype: {0}", value);
-
     grabbed_ = value;
 
     if (grabbed_) {
@@ -139,10 +115,7 @@ public:
       ungrabbed_time_stamp_ = pqrs::osx::chrono::mach_absolute_time_point();
     }
 
-    // control_caps_lock_led_state_manager() seems to wake up the system
-    if (grabbed_ || !disable_on_sleep_activity_notifier_registered_) {
-      control_caps_lock_led_state_manager();
-    }
+    control_caps_lock_led_state_manager();
   }
 
   bool get_disabled(void) const {
@@ -153,10 +126,6 @@ public:
     disabled_ = value;
 
     update_event_origin();
-  }
-
-  io_connect_t get_notify_callback_port(void) const {
-    return notify_callback_port_;
   }
 
   event_origin get_event_origin(void) const {
@@ -178,6 +147,19 @@ public:
         }
       }
     }
+    return false;
+  }
+
+  bool is_disable_on_sleep(void) const {
+    if (device_properties_) {
+      if (auto c = core_configuration_.lock()) {
+        if (auto device_identifiers = device_properties_->get_device_identifiers()) {
+          return c->get_selected_profile().get_device_disable_on_sleep(
+              *device_identifiers);
+        }
+      }
+    }
+
     return false;
   }
 
@@ -231,10 +213,6 @@ public:
   }
 
   bool is_grabbed(absolute_time_point time_stamp) {
-    if (!grabbed_ && disable_on_sleep_activity_notifier_registered_) {
-      return false;
-    }
-
     if (grabbed_) {
       if (grabbed_time_stamp_ <= time_stamp) {
         return true;
@@ -307,63 +285,6 @@ private:
     }
   }
 
-  void control_disable_on_sleep(void) {
-    if (device_properties_) {
-      if (auto c = core_configuration_.lock()) {
-        if (auto device_identifiers = device_properties_->get_device_identifiers()) {
-          if (grabbed_ && event_origin_ == event_origin::grabbed_device) {
-            if (c->get_selected_profile().get_device_disable_on_sleep(*device_identifiers)) {
-              if (!disable_on_sleep_activity_notifier_registered_) {
-                logger::get_logger()->info("register for system power");
-
-                /* Register for sleep/wake messages */
-                notify_callback_port_ = IORegisterForSystemPower(this, &notify_port_ref_, sleep_wake_callback, &sleep_root_notifier_);
-                if (notify_callback_port_ == 0) {
-                  logger::get_logger()->warn("notify_callback_port_ is 0");
-                  return;
-                }
-
-                CFRunLoopAddSource(pqrs::cf::run_loop_thread::extra::get_shared_run_loop_thread()->get_run_loop(),
-                                   IONotificationPortGetRunLoopSource(notify_port_ref_),
-                                   kCFRunLoopCommonModes);
-
-                disable_on_sleep_activity_notifier_registered_ = true;
-              }
-              return;
-            } else {
-              deregister_sleep_activity_notifier();
-              return;
-            }
-          }
-        }
-      }
-    }
-  }
-
-  void deregister_sleep_activity_notifier(void) {
-    if (!disable_on_sleep_activity_notifier_registered_) {
-      return;
-    }
-
-    logger::get_logger()->info("deregister for system power");
-
-    // remove the sleep notification port from the application runloop
-    CFRunLoopRemoveSource(CFRunLoopGetCurrent(), IONotificationPortGetRunLoopSource(notify_port_ref_), kCFRunLoopCommonModes);
-
-    // deregister for system sleep notifications
-    IODeregisterForSystemPower(&sleep_root_notifier_);
-
-    // IORegisterForSystemPower implicitly opens the Root Power Domain IOService
-    // so we close it here
-    IOServiceClose(notify_callback_port_);
-
-    // destroy the notification port allocated by IORegisterForSystemPower
-    IONotificationPortDestroy(notify_port_ref_);
-
-    disable_on_sleep_activity_notifier_registered_ = false;
-    return;
-  }
-
   device_id device_id_;
   std::weak_ptr<const core_configuration::core_configuration> core_configuration_;
   std::shared_ptr<device_properties> device_properties_;
@@ -382,78 +303,9 @@ private:
   bool disabled_;
   event_origin event_origin_;
 
-  bool disable_on_sleep_activity_notifier_registered_;
-
-  IONotificationPortRef notify_port_ref_;
-  io_connect_t notify_callback_port_;
-  io_object_t sleep_root_notifier_;
-
   absolute_time_point grabbed_time_stamp_;
   absolute_time_point ungrabbed_time_stamp_;
 };
-
-void sleep_wake_callback(void* refCon, io_service_t service, natural_t message_type, void* message_argument) {
-  entry* original_entry = (entry*)refCon;
-  switch (message_type) {
-    case kIOMessageCanSystemSleep:
-      /* Idle sleep is about to kick in. This message will not be sent for forced sleep.
-          Applications have a chance to prevent sleep by calling IOCancelPowerChange.
-          Most applications should not prevent idle sleep.
-          Power Management waits up to 30 seconds for you to either allow or deny idle
-          sleep. If you don't acknowledge this power change by calling either
-          IOAllowPowerChange or IOCancelPowerChange, the system will wait 30
-          seconds then go to sleep.
-      */
-      logger::get_logger()->debug("kIOMessageCanSystemSleep received");
-
-      original_entry->set_grabbed(false);
-
-      IOAllowPowerChange(original_entry->get_notify_callback_port(), (long)message_argument);
-      break;
-
-    case kIOMessageSystemWillSleep:
-      /* The system WILL go to sleep. If you do not call IOAllowPowerChange or
-          IOCancelPowerChange to acknowledge this message, sleep will be
-          delayed by 30 seconds.
-          NOTE: If you call IOCancelPowerChange to deny sleep it returns
-          kIOReturnSuccess, however the system WILL still go to sleep.
-      */
-      logger::get_logger()->debug("kIOMessageSystemWillSleep received");
-
-      original_entry->set_grabbed(false);
-
-      IOAllowPowerChange(original_entry->get_notify_callback_port(), (long)message_argument);
-      break;
-
-    case kIOMessageSystemWillNotSleep:
-      // Announces that the system has retracted a previous attempt to sleep; it follows kIOMessageCanSystemSleep.
-      logger::get_logger()->debug("kIOMessageSystemWillNotSleep received");
-
-      original_entry->set_grabbed(true);
-
-      break;
-
-    case kIOMessageSystemWillPowerOn:
-      // System has started the wake up process...
-      logger::get_logger()->debug("kIOMessageSystemWillPowerOn received");
-
-      original_entry->set_grabbed(true);
-
-      break;
-
-    case kIOMessageSystemHasPoweredOn:
-      // System has finished waking up...
-      logger::get_logger()->debug("kIOMessageSystemHasPoweredOn received");
-
-      original_entry->set_grabbed(true);
-
-      break;
-
-    default:
-      break;
-  }
-}
-
 } // namespace device_grabber_details
 } // namespace grabber
 } // namespace krbn

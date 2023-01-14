@@ -45,6 +45,7 @@ public:
 
   device_grabber(std::weak_ptr<console_user_server_client> weak_console_user_server_client,
                  std::weak_ptr<grabber_state_json_writer> weak_grabber_state_json_writer) : dispatcher_client(),
+                                                                                            system_sleeping_(false),
                                                                                             profile_(nlohmann::json::object()),
                                                                                             logger_unique_filter_(logger::get_logger()) {
     notification_message_manager_ = std::make_shared<notification_message_manager>(
@@ -356,22 +357,34 @@ public:
     power_management_monitor_ = std::make_unique<pqrs::osx::iokit_power_management::monitor>(weak_dispatcher_,
                                                                                              pqrs::cf::run_loop_thread::extra::get_shared_run_loop_thread());
 
-    power_management_monitor_->system_will_sleep.connect([](auto&& kernel_port,
-                                                            auto&& notification_id,
-                                                            auto&& wait) {
+    power_management_monitor_->system_will_sleep.connect([this](auto&& kernel_port,
+                                                                auto&& notification_id,
+                                                                auto&& wait) {
       logger::get_logger()->info("system_will_sleep");
 
-      IOAllowPowerChange(kernel_port, notification_id);
+      set_system_sleeping(true);
 
-      wait->notify();
+      enqueue_to_dispatcher(
+          [kernel_port, notification_id, wait]() {
+            logger::get_logger()->info("call IOAllowPowerChange");
+
+            IOAllowPowerChange(kernel_port, notification_id);
+
+            wait->notify();
+          },
+          when_now() + std::chrono::seconds(1));
     });
 
-    power_management_monitor_->system_will_power_on.connect([] {
+    power_management_monitor_->system_will_power_on.connect([this] {
       logger::get_logger()->info("system_will_power_on");
+
+      set_system_sleeping(false);
     });
 
-    power_management_monitor_->system_has_powered_on.connect([] {
+    power_management_monitor_->system_has_powered_on.connect([this] {
       logger::get_logger()->info("system_has_powered_on");
+
+      set_system_sleeping(false);
     });
 
     power_management_monitor_->can_system_sleep.connect([](auto&& kernel_port,
@@ -384,8 +397,10 @@ public:
       wait->notify();
     });
 
-    power_management_monitor_->system_will_not_sleep.connect([] {
-      logger::get_logger()->info("system_will_not_sleepod");
+    power_management_monitor_->system_will_not_sleep.connect([this] {
+      logger::get_logger()->info("system_will_not_sleep");
+
+      set_system_sleeping(false);
     });
 
     power_management_monitor_->error_occurred.connect([](auto&& message) {
@@ -949,9 +964,16 @@ private:
       if (e.second->determine_is_built_in_keyboard() &&
           need_to_disable_built_in_keyboard()) {
         e.second->set_disabled(true);
-      } else {
-        e.second->set_disabled(false);
+        continue;
       }
+
+      if (e.second->is_disable_on_sleep() && system_sleeping_) {
+        logger::get_logger()->info("disable {0} on sleep", e.second->get_device_name());
+        e.second->set_disabled(true);
+        continue;
+      }
+
+      e.second->set_disabled(false);
     }
   }
 
@@ -1031,6 +1053,13 @@ private:
     }
   }
 
+  void set_system_sleeping(bool value) {
+    system_sleeping_ = value;
+
+    update_devices_disabled();
+    async_grab_devices();
+  }
+
   std::shared_ptr<pqrs::karabiner::driverkit::virtual_hid_device_service::client> virtual_hid_device_service_client_;
 
   virtual_hid_devices_state virtual_hid_devices_state_;
@@ -1052,6 +1081,7 @@ private:
   hid_queue_values_converter hid_queue_values_converter_;
 
   std::unique_ptr<pqrs::osx::iokit_power_management::monitor> power_management_monitor_;
+  bool system_sleeping_;
 
   core_configuration::details::profile profile_;
   pqrs::osx::system_preferences::properties system_preferences_properties_;

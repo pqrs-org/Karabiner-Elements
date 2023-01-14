@@ -15,7 +15,6 @@ public:
                                        disable_built_in_keyboard_if_exists_(false) {
     auto ignore_configured = false;
     auto manipulate_caps_lock_led_configured = false;
-    auto disable_on_sleep_configured = false;
 
     // ----------------------------------------
     // Set default value
@@ -53,7 +52,6 @@ public:
         pqrs::json::requires_boolean(value, "`" + key + "`");
 
         disable_on_sleep_ = value.get<bool>();
-        disable_on_sleep_configured = true;
 
       } else if (key == "treat_as_built_in_keyboard") {
         pqrs::json::requires_boolean(value, "`" + key + "`");
@@ -101,14 +99,6 @@ public:
     if (!manipulate_caps_lock_led_configured) {
       if (identifiers_.get_is_keyboard()) {
         manipulate_caps_lock_led_ = true;
-      }
-    }
-
-    // disable_on_sleep_
-
-    if (!disable_on_sleep_configured) {
-      if (!identifiers_.get_is_keyboard()) {
-        disable_on_sleep_ = false;
       }
     }
 
