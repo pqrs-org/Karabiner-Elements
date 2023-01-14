@@ -57,7 +57,6 @@ public:
 
         try {
           nlohmann::json json = nlohmann::json::from_msgpack(*buffer);
-
           switch (json.at("operation_type").get<operation_type>()) {
             case operation_type::console_user_id_changed: {
               auto new_value = current_console_user_id_;
