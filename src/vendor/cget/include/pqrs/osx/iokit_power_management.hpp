@@ -1,0 +1,1 @@
+../../../cget/pkg/pqrs-org__cpp-osx-iokit_power_management/install/include/pqrs/osx/iokit_power_management.hpp
