@@ -461,7 +461,7 @@ void libkrbn_core_configuration_set_selected_profile_device_manipulate_caps_lock
 }
 
 bool libkrbn_core_configuration_get_selected_profile_device_disable_on_sleep(libkrbn_core_configuration* p,
-                                                                                     const libkrbn_device_identifiers* device_identifiers) {
+                                                                             const libkrbn_device_identifiers* device_identifiers) {
   if (auto c = reinterpret_cast<libkrbn_core_configuration_class*>(p)) {
     if (device_identifiers) {
       auto identifiers = libkrbn_cpp::make_device_identifiers(*device_identifiers);
@@ -472,8 +472,8 @@ bool libkrbn_core_configuration_get_selected_profile_device_disable_on_sleep(lib
 }
 
 void libkrbn_core_configuration_set_selected_profile_device_disable_on_sleep(libkrbn_core_configuration* p,
-                                                                                     const libkrbn_device_identifiers* device_identifiers,
-                                                                                     bool value) {
+                                                                             const libkrbn_device_identifiers* device_identifiers,
+                                                                             bool value) {
   if (auto c = reinterpret_cast<libkrbn_core_configuration_class*>(p)) {
     if (device_identifiers) {
       auto identifiers = libkrbn_cpp::make_device_identifiers(*device_identifiers);
