@@ -30,6 +30,7 @@
 #include <nod/nod.hpp>
 #include <pqrs/karabiner/driverkit/virtual_hid_device_driver.hpp>
 #include <pqrs/osx/iokit_hid_manager.hpp>
+#include <pqrs/osx/iokit_power_management.hpp>
 #include <pqrs/osx/system_preferences.hpp>
 #include <pqrs/spdlog.hpp>
 #include <string_view>
@@ -347,11 +348,58 @@ public:
       logger::get_logger()->error("{0}: {1}", message, kern_return.to_string());
       logger_unique_filter_.reset();
     });
+
+    //
+    // power_management_monitor_
+    //
+
+    power_management_monitor_ = std::make_unique<pqrs::osx::iokit_power_management::monitor>(weak_dispatcher_,
+                                                                                             pqrs::cf::run_loop_thread::extra::get_shared_run_loop_thread());
+
+    power_management_monitor_->system_will_sleep.connect([](auto&& kernel_port,
+                                                            auto&& notification_id,
+                                                            auto&& wait) {
+      logger::get_logger()->info("system_will_sleep");
+
+      IOAllowPowerChange(kernel_port, notification_id);
+
+      wait->notify();
+    });
+
+    power_management_monitor_->system_will_power_on.connect([] {
+      logger::get_logger()->info("system_will_power_on");
+    });
+
+    power_management_monitor_->system_has_powered_on.connect([] {
+      logger::get_logger()->info("system_has_powered_on");
+    });
+
+    power_management_monitor_->can_system_sleep.connect([](auto&& kernel_port,
+                                                           auto&& notification_id,
+                                                           auto&& wait) {
+      logger::get_logger()->info("can_system_sleep");
+
+      IOAllowPowerChange(kernel_port, notification_id);
+
+      wait->notify();
+    });
+
+    power_management_monitor_->system_will_not_sleep.connect([] {
+      logger::get_logger()->info("system_will_not_sleepod");
+    });
+
+    power_management_monitor_->error_occurred.connect([](auto&& message) {
+      logger::get_logger()->error("power_management_monitor_ error: {0}", message);
+    });
+
+    power_management_monitor_->async_start();
   }
 
   virtual ~device_grabber(void) {
     detach_from_dispatcher([this] {
       stop();
+
+      power_management_monitor_ = nullptr;
 
       hid_manager_ = nullptr;
 
@@ -1002,6 +1050,8 @@ private:
   std::unordered_map<device_id, std::shared_ptr<probable_stuck_events_manager>> probable_stuck_events_managers_;
   std::unordered_map<device_id, std::shared_ptr<device_grabber_details::entry>> entries_;
   hid_queue_values_converter hid_queue_values_converter_;
+
+  std::unique_ptr<pqrs::osx::iokit_power_management::monitor> power_management_monitor_;
 
   core_configuration::details::profile profile_;
   pqrs::osx::system_preferences::properties system_preferences_properties_;
