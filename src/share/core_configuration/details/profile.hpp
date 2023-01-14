@@ -321,7 +321,7 @@ public:
   }
 
   void set_device_disable_on_sleep(const device_identifiers& identifiers,
-                                           bool disable_on_sleep) {
+                                   bool disable_on_sleep) {
     add_device(identifiers);
 
     for (auto&& device : devices_) {
