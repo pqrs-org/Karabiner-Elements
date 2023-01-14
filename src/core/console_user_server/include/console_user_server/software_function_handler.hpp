@@ -1,10 +1,10 @@
 #pragma once
 
 #include "logger.hpp"
-#include <IOKit/pwr_mgt/IOPMLib.h>
 #include <pqrs/osx/accessibility.hpp>
 #include <pqrs/osx/cg_display.hpp>
 #include <pqrs/osx/cg_event.hpp>
+#include <pqrs/osx/iokit_power_management.hpp>
 #include <pqrs/osx/iokit_return.hpp>
 #include <pqrs/osx/system_preferences.hpp>
 
@@ -48,14 +48,9 @@ private:
 
     enqueue_to_dispatcher(
         [] {
-          auto fb = IOPMFindPowerManagement(MACH_PORT_NULL);
-          if (fb != IO_OBJECT_NULL) {
-            pqrs::osx::iokit_return r = IOPMSleepSystem(fb);
-            if (!r) {
-              logger::get_logger()->error("IOPMSleepSystem error: {0}", r.to_string());
-            }
-
-            IOServiceClose(fb);
+          auto r = pqrs::osx::iokit_power_management::sleep();
+          if (!r) {
+            logger::get_logger()->error("IOPMSleepSystem error: {0}", r.to_string());
           }
         },
         when_now() + pqrs::osx::chrono::make_milliseconds(duration));
