@@ -813,6 +813,10 @@ private:
       return grabbable_state::state::ungrabbable_permanently;
     }
 
+    if (system_sleeping_) {
+      return grabbable_state::state::ungrabbable_temporarily;
+    }
+
     //
     // The device is always grabbable if it is ignored devices
     // because karabiner_grabber does not seize the device and do not affect existing hidd processing.
