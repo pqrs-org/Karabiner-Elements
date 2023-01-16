@@ -14,7 +14,10 @@ public:
     }
 
     ~scoped_run_loop_thread_manager(void) {
-      get_power_management_run_loop_thread() = nullptr;
+      if (get_power_management_run_loop_thread()) {
+        get_power_management_run_loop_thread()->terminate();
+        get_power_management_run_loop_thread() = nullptr;
+      }
 
       pqrs::cf::run_loop_thread::extra::terminate_shared_run_loop_thread();
     }
