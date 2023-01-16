@@ -355,7 +355,7 @@ public:
     //
 
     power_management_monitor_ = std::make_unique<pqrs::osx::iokit_power_management::monitor>(weak_dispatcher_,
-                                                                                             pqrs::cf::run_loop_thread::extra::get_shared_run_loop_thread());
+                                                                                             run_loop_thread_utility::get_power_management_run_loop_thread());
 
     power_management_monitor_->system_will_sleep.connect([this](auto&& kernel_port,
                                                                 auto&& notification_id,
