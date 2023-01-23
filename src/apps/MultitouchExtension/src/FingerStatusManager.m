@@ -218,6 +218,9 @@
         ++fingerCount.lowerHalfAreaCount;
       } else {
         ++fingerCount.upperHalfAreaCount;
+        if (e.point.y > 0.75) {
+          ++fingerCount.upperQuarterAreaCount;
+        }
       }
 
       ++fingerCount.totalCount;
