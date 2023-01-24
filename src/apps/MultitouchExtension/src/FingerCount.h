@@ -4,6 +4,7 @@
 
 @interface FingerCount : NSObject
 
+@property int upperQuarterAreaCount;
 @property int upperHalfAreaCount;
 @property int lowerHalfAreaCount;
 @property int leftHalfAreaCount;
