@@ -17,6 +17,6 @@
 
 - (NSArray<FingerStatusEntry*>*)copyEntries;
 
-- (FingerCount*)createFingerCount;
+- (FingerCount)createFingerCount;
 
 @end

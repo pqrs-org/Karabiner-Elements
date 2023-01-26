@@ -14,27 +14,53 @@
 // C methods
 //
 
-static void setGrabberVariable(FingerCount* count, bool sync) {
+static void setGrabberVariable(FingerCount count, bool sync) {
+  static FingerCount previousFingerCount;
+  static bool previousFingerCountInitialized = false;
+
+  if (!previousFingerCountInitialized) {
+    previousFingerCountInitialized = true;
+    previousFingerCount.upperQuarterAreaCount = -1;
+    previousFingerCount.lowerQuarterAreaCount = -1;
+    previousFingerCount.leftQuarterAreaCount = -1;
+    previousFingerCount.rightQuarterAreaCount = -1;
+    previousFingerCount.upperHalfAreaCount = -1;
+    previousFingerCount.lowerHalfAreaCount = -1;
+    previousFingerCount.leftHalfAreaCount = -1;
+    previousFingerCount.rightHalfAreaCount = -1;
+    previousFingerCount.totalCount = -1;
+  }
+
+#define ENTRY(COUNT_NAME, VARIABLE_NAME) \
+  { count.COUNT_NAME, &(previousFingerCount.COUNT_NAME), VARIABLE_NAME }
+
   struct {
     int count;
+    int* previousCount;
     const char* name;
   } entries[] = {
-      {count.upperQuarterAreaCount, "multitouch_extension_finger_count_upper_quarter_area"},
-      {count.lowerQuarterAreaCount, "multitouch_extension_finger_count_lower_quarter_area"},
-      {count.leftQuarterAreaCount, "multitouch_extension_finger_count_left_quarter_area"},
-      {count.rightQuarterAreaCount, "multitouch_extension_finger_count_right_quarter_area"},
-      {count.upperHalfAreaCount, "multitouch_extension_finger_count_upper_half_area"},
-      {count.lowerHalfAreaCount, "multitouch_extension_finger_count_lower_half_area"},
-      {count.leftHalfAreaCount, "multitouch_extension_finger_count_left_half_area"},
-      {count.rightHalfAreaCount, "multitouch_extension_finger_count_right_half_area"},
-      {count.totalCount, "multitouch_extension_finger_count_total"},
+      ENTRY(upperQuarterAreaCount, "multitouch_extension_finger_count_upper_quarter_area"),
+      ENTRY(lowerQuarterAreaCount, "multitouch_extension_finger_count_lower_quarter_area"),
+      ENTRY(leftQuarterAreaCount, "multitouch_extension_finger_count_left_quarter_area"),
+      ENTRY(rightQuarterAreaCount, "multitouch_extension_finger_count_right_quarter_area"),
+      ENTRY(upperHalfAreaCount, "multitouch_extension_finger_count_upper_half_area"),
+      ENTRY(lowerHalfAreaCount, "multitouch_extension_finger_count_lower_half_area"),
+      ENTRY(leftHalfAreaCount, "multitouch_extension_finger_count_left_half_area"),
+      ENTRY(rightHalfAreaCount, "multitouch_extension_finger_count_right_half_area"),
+      ENTRY(totalCount, "multitouch_extension_finger_count_total"),
   };
 
+#undef ENTRY
+
   for (int i = 0; i < sizeof(entries) / sizeof(entries[0]); ++i) {
-    if (sync) {
-      libkrbn_grabber_client_sync_set_variable(entries[i].name, entries[i].count);
-    } else {
-      libkrbn_grabber_client_async_set_variable(entries[i].name, entries[i].count);
+    if (*(entries[i].previousCount) != entries[i].count) {
+      if (sync) {
+        libkrbn_grabber_client_sync_set_variable(entries[i].name, entries[i].count);
+      } else {
+        libkrbn_grabber_client_async_set_variable(entries[i].name, entries[i].count);
+      }
+
+      *(entries[i].previousCount) = entries[i].count;
     }
   }
 }
@@ -51,7 +77,9 @@ static void enable(void) {
 
     [manager setCallback:YES];
 
-    setGrabberVariable([FingerCount new], false);
+    FingerCount fingerCount;
+    memset(&fingerCount, 0, sizeof(fingerCount));
+    setGrabberVariable(fingerCount, false);
   });
 }
 
@@ -124,7 +152,7 @@ static void disable(void) {
 
   {
     NSNotificationCenter* center = [NSNotificationCenter defaultCenter];
-    id o = [center addObserverForName:kFixedFingerStateChanged
+    id o = [center addObserverForName:kFingerStateChanged
                                object:nil
                                 queue:[NSOperationQueue mainQueue]
                            usingBlock:^(NSNotification* note) {
@@ -167,7 +195,9 @@ static void disable(void) {
 
   [[MultitouchDeviceManager sharedMultitouchDeviceManager] setCallback:NO];
 
-  setGrabberVariable([FingerCount new], true);
+  FingerCount fingerCount;
+  memset(&fingerCount, 0, sizeof(fingerCount));
+  setGrabberVariable(fingerCount, true);
 
   libkrbn_terminate();
 }

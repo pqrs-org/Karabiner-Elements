@@ -37,8 +37,6 @@
        fingers:(int)fingers
      timestamp:(double)timestamp
          frame:(int)frame {
-  BOOL callFixedFingerStateChanged = NO;
-
   @synchronized(self) {
     //
     // Update physical touched fingers
@@ -76,7 +74,6 @@
         NSRect targetArea = [PreferencesController makeTargetArea];
         if (NSPointInRect(e.point, targetArea)) {
           e.ignored = NO;
-          callFixedFingerStateChanged = YES;
         }
       }
 
@@ -118,13 +115,8 @@
       return;
     }
 
-    [[NSNotificationCenter defaultCenter] postNotificationName:kPhysicalFingerStateChanged
+    [[NSNotificationCenter defaultCenter] postNotificationName:kFingerStateChanged
                                                         object:self];
-
-    if (callFixedFingerStateChanged) {
-      [[NSNotificationCenter defaultCenter] postNotificationName:kFixedFingerStateChanged
-                                                          object:self];
-    }
   });
 }
 
@@ -182,7 +174,7 @@
                                                     }
                                                   }
 
-                                                  [[NSNotificationCenter defaultCenter] postNotificationName:kFixedFingerStateChanged
+                                                  [[NSNotificationCenter defaultCenter] postNotificationName:kFingerStateChanged
                                                                                                       object:self];
                                                 }];
     [[NSRunLoop mainRunLoop] addTimer:entry.delayTimer forMode:NSRunLoopCommonModes];
@@ -195,9 +187,10 @@
   }
 }
 
-- (FingerCount*)createFingerCount {
+- (FingerCount)createFingerCount {
   @synchronized(self) {
-    FingerCount* fingerCount = [FingerCount new];
+    FingerCount fingerCount;
+    memset(&fingerCount, 0, sizeof(fingerCount));
 
     for (FingerStatusEntry* e in self.entries) {
       if (e.ignored) {

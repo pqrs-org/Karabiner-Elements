@@ -24,24 +24,7 @@
     @weakify(self);
     {
       NSNotificationCenter* center = [NSNotificationCenter defaultCenter];
-      id o = [center addObserverForName:kPhysicalFingerStateChanged
-                                 object:nil
-                                  queue:[NSOperationQueue mainQueue]
-                             usingBlock:^(NSNotification* note) {
-                               @strongify(self);
-                               if (!self) {
-                                 return;
-                               }
-
-                               if (self.window.visible) {
-                                 [self updateFingerStatusEntries:note.object];
-                               }
-                             }];
-      [_observers addObserver:o notificationCenter:center];
-    }
-    {
-      NSNotificationCenter* center = [NSNotificationCenter defaultCenter];
-      id o = [center addObserverForName:kFixedFingerStateChanged
+      id o = [center addObserverForName:kFingerStateChanged
                                  object:nil
                                   queue:[NSOperationQueue mainQueue]
                              usingBlock:^(NSNotification* note) {
