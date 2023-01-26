@@ -1,5 +1,14 @@
 # Changelog
 
+## Beta
+
+-   ✨ New Features
+    -   Added the following variables in MultitouchExtension. (Thanks to @codeanpeace)
+        -   multitouch_extension_finger_count_upper_quarter_area
+        -   multitouch_extension_finger_count_lower_quarter_area
+        -   multitouch_extension_finger_count_left_quarter_area
+        -   multitouch_extension_finger_count_right_quarter_area
+
 ## Karabiner-Elements 14.11.0
 
 -   [📦 Download](https://github.com/pqrs-org/Karabiner-Elements/releases/download/v14.11.0/Karabiner-Elements-14.11.0.dmg)
