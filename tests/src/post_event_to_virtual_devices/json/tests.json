@@ -554,25 +554,25 @@
     {
         "description": "mouse_key_1",
         "rules": ["json/rules/mouse_key.json"],
-        "input_event_queue": "json/input_event_queue/mouse_key_1.json",
+        "input_event_queue": "json/input_event_queue/mouse_key_1.jsonc",
         "expected_post_event_to_virtual_devices_queue": "json/expected_post_event_to_virtual_devices_queue/mouse_key_1.json"
     },
     {
         "description": "mouse_key_2",
         "rules": ["json/rules/mouse_key.json"],
-        "input_event_queue": "json/input_event_queue/mouse_key_2.json",
+        "input_event_queue": "json/input_event_queue/mouse_key_2.jsonc",
         "expected_post_event_to_virtual_devices_queue": "json/expected_post_event_to_virtual_devices_queue/mouse_key_2.json"
     },
     {
         "description": "mouse_key_3",
         "rules": ["json/rules/mouse_key.json"],
-        "input_event_queue": "json/input_event_queue/mouse_key_3.json",
+        "input_event_queue": "json/input_event_queue/mouse_key_3.jsonc",
         "expected_post_event_to_virtual_devices_queue": "json/expected_post_event_to_virtual_devices_queue/mouse_key_3.json"
     },
     {
         "description": "mouse_key_4 (speed_multiplier)",
         "rules": ["json/rules/mouse_key.json"],
-        "input_event_queue": "json/input_event_queue/mouse_key_4.json",
+        "input_event_queue": "json/input_event_queue/mouse_key_4.jsonc",
         "expected_post_event_to_virtual_devices_queue": "json/expected_post_event_to_virtual_devices_queue/mouse_key_4.json"
     },
     {

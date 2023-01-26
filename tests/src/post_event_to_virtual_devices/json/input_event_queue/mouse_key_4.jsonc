@@ -64,5 +64,15 @@
             "type": "momentary_switch_event"
         },
         "validity": true
+    },
+    {
+        // Ensure mouse_key_handler timer invoked
+        "action": "invoke_dispatcher",
+        "time_stamp": 1000
+    },
+    {
+        // Process mouse_key_handler timer result
+        "action": "invoke_dispatcher",
+        "time_stamp": 1001
     }
 ]

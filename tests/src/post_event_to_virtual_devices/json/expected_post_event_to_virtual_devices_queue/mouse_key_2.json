@@ -51,5 +51,16 @@
         },
         "time_stamp": 20,
         "type": "keyboard_input"
+    },
+    {
+        "pointing_input": {
+            "buttons": [],
+            "horizontal_wheel": 0,
+            "vertical_wheel": 0,
+            "x": 12,
+            "y": 0
+        },
+        "time_stamp": 4,
+        "type": "pointing_input"
     }
 ]
