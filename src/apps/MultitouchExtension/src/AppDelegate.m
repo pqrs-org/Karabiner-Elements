@@ -20,6 +20,9 @@ static void setGrabberVariable(FingerCount* count, bool sync) {
     const char* name;
   } entries[] = {
       {count.upperQuarterAreaCount, "multitouch_extension_finger_count_upper_quarter_area"},
+      {count.lowerQuarterAreaCount, "multitouch_extension_finger_count_lower_quarter_area"},
+      {count.leftQuarterAreaCount, "multitouch_extension_finger_count_left_quarter_area"},
+      {count.rightQuarterAreaCount, "multitouch_extension_finger_count_right_quarter_area"},
       {count.upperHalfAreaCount, "multitouch_extension_finger_count_upper_half_area"},
       {count.lowerHalfAreaCount, "multitouch_extension_finger_count_lower_half_area"},
       {count.leftHalfAreaCount, "multitouch_extension_finger_count_left_half_area"},

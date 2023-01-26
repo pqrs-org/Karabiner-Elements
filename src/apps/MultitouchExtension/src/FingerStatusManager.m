@@ -210,12 +210,21 @@
 
       if (e.point.x < 0.5) {
         ++fingerCount.leftHalfAreaCount;
+        if (e.point.x < 0.25) {
+          ++fingerCount.leftQuarterAreaCount;
+        }
       } else {
         ++fingerCount.rightHalfAreaCount;
+        if (e.point.x > 0.75) {
+          ++fingerCount.rightQuarterAreaCount;
+        }
       }
 
       if (e.point.y < 0.5) {
         ++fingerCount.lowerHalfAreaCount;
+        if (e.point.y < 0.25) {
+          ++fingerCount.lowerQuarterAreaCount;
+        }
       } else {
         ++fingerCount.upperHalfAreaCount;
         if (e.point.y > 0.75) {
