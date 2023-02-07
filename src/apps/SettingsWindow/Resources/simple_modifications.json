@@ -3288,7 +3288,7 @@
     },
     {
         "not_from": true,
-        "label": "apple_display_brightness",
+        "label": "apple_display_brightness_increment",
         "data": [
             {
                 "key_code": "apple_display_brightness_increment"
