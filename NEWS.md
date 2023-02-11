@@ -9,6 +9,7 @@
         -   multitouch_extension_finger_count_left_quarter_area
         -   multitouch_extension_finger_count_right_quarter_area
 -   ⚡️ Improvements
+    -   Fix inconsistent and confusing brightness label in Simple Modifications. (Thanks to @revolter)
     -   Improved MultitouchExtension to synchronize finger count (half and quarter) variables with finger movement.
 
 ## Karabiner-Elements 14.11.0
