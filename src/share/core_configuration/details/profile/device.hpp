@@ -10,7 +10,6 @@ public:
   device(const nlohmann::json& json) : json_(json),
                                        ignore_(false),
                                        manipulate_caps_lock_led_(false),
-                                       disable_on_sleep_(false),
                                        treat_as_built_in_keyboard_(false),
                                        disable_built_in_keyboard_if_exists_(false) {
     auto ignore_configured = false;
@@ -47,11 +46,6 @@ public:
 
         manipulate_caps_lock_led_ = value.get<bool>();
         manipulate_caps_lock_led_configured = true;
-
-      } else if (key == "disable_on_sleep") {
-        pqrs::json::requires_boolean(value, "`" + key + "`");
-
-        disable_on_sleep_ = value.get<bool>();
 
       } else if (key == "treat_as_built_in_keyboard") {
         pqrs::json::requires_boolean(value, "`" + key + "`");
@@ -127,7 +121,6 @@ public:
     j["identifiers"] = identifiers_;
     j["ignore"] = ignore_;
     j["manipulate_caps_lock_led"] = manipulate_caps_lock_led_;
-    j["disable_on_sleep"] = disable_on_sleep_;
     j["treat_as_built_in_keyboard"] = treat_as_built_in_keyboard_;
     j["disable_built_in_keyboard_if_exists"] = disable_built_in_keyboard_if_exists_;
     j["simple_modifications"] = simple_modifications_.to_json();
@@ -153,15 +146,6 @@ public:
   }
   void set_manipulate_caps_lock_led(bool value) {
     manipulate_caps_lock_led_ = value;
-
-    coordinate_between_properties();
-  }
-
-  bool get_disable_on_sleep(void) const {
-    return disable_on_sleep_;
-  }
-  void set_disable_on_sleep(bool value) {
-    disable_on_sleep_ = value;
 
     coordinate_between_properties();
   }
@@ -212,7 +196,6 @@ private:
   device_identifiers identifiers_;
   bool ignore_;
   bool manipulate_caps_lock_led_;
-  bool disable_on_sleep_;
   bool treat_as_built_in_keyboard_;
   bool disable_built_in_keyboard_if_exists_;
   simple_modifications simple_modifications_;

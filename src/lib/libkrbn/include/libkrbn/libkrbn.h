@@ -169,11 +169,6 @@ bool libkrbn_core_configuration_get_selected_profile_device_manipulate_caps_lock
 void libkrbn_core_configuration_set_selected_profile_device_manipulate_caps_lock_led(libkrbn_core_configuration* p,
                                                                                      const libkrbn_device_identifiers* device_identifiers,
                                                                                      bool value);
-bool libkrbn_core_configuration_get_selected_profile_device_disable_on_sleep(libkrbn_core_configuration* p,
-                                                                             const libkrbn_device_identifiers* device_identifiers);
-void libkrbn_core_configuration_set_selected_profile_device_disable_on_sleep(libkrbn_core_configuration* p,
-                                                                             const libkrbn_device_identifiers* device_identifiers,
-                                                                             bool value);
 bool libkrbn_core_configuration_get_selected_profile_device_treat_as_built_in_keyboard(libkrbn_core_configuration* p,
                                                                                        const libkrbn_device_identifiers* device_identifiers);
 void libkrbn_core_configuration_set_selected_profile_device_treat_as_built_in_keyboard(libkrbn_core_configuration* p,

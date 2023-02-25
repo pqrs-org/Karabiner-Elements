@@ -150,19 +150,6 @@ public:
     return false;
   }
 
-  bool is_disable_on_sleep(void) const {
-    if (device_properties_) {
-      if (auto c = core_configuration_.lock()) {
-        if (auto device_identifiers = device_properties_->get_device_identifiers()) {
-          return c->get_selected_profile().get_device_disable_on_sleep(
-              *device_identifiers);
-        }
-      }
-    }
-
-    return false;
-  }
-
   bool determine_is_built_in_keyboard(void) const {
     if (auto c = core_configuration_.lock()) {
       if (device_properties_) {

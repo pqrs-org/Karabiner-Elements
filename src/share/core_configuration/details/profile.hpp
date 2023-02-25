@@ -307,31 +307,6 @@ public:
     }
   }
 
-  bool get_device_disable_on_sleep(const device_identifiers& identifiers) const {
-    for (const auto& d : devices_) {
-      if (d.get_identifiers() == identifiers) {
-        return d.get_disable_on_sleep();
-      }
-    }
-
-    details::device d(nlohmann::json({
-        {"identifiers", identifiers},
-    }));
-    return d.get_disable_on_sleep();
-  }
-
-  void set_device_disable_on_sleep(const device_identifiers& identifiers,
-                                   bool disable_on_sleep) {
-    add_device(identifiers);
-
-    for (auto&& device : devices_) {
-      if (device.get_identifiers() == identifiers) {
-        device.set_disable_on_sleep(disable_on_sleep);
-        return;
-      }
-    }
-  }
-
   bool get_device_treat_as_built_in_keyboard(const device_identifiers& identifiers) const {
     for (const auto& d : devices_) {
       if (d.get_identifiers() == identifiers) {

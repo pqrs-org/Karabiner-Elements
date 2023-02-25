@@ -20,11 +20,6 @@ extension LibKrbn {
           Settings.shared.libkrbnCoreConfiguration,
           connectedDevice.libkrbnDeviceIdentifiers)
 
-      self.disableOnSleep =
-        libkrbn_core_configuration_get_selected_profile_device_disable_on_sleep(
-          Settings.shared.libkrbnCoreConfiguration,
-          connectedDevice.libkrbnDeviceIdentifiers)
-
       self.treatAsBuiltInKeyboard =
         libkrbn_core_configuration_get_selected_profile_device_treat_as_built_in_keyboard(
           Settings.shared.libkrbnCoreConfiguration,
@@ -60,18 +55,6 @@ extension LibKrbn {
             Settings.shared.libkrbnCoreConfiguration,
             connectedDevice.libkrbnDeviceIdentifiers,
             manipulateCapsLockLed)
-          Settings.shared.save()
-        }
-      }
-    }
-
-    @Published var disableOnSleep: Bool = false {
-      didSet {
-        if didSetEnabled {
-          libkrbn_core_configuration_set_selected_profile_device_disable_on_sleep(
-            Settings.shared.libkrbnCoreConfiguration,
-            connectedDevice.libkrbnDeviceIdentifiers,
-            disableOnSleep)
           Settings.shared.save()
         }
       }

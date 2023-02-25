@@ -968,16 +968,9 @@ private:
       if (e.second->determine_is_built_in_keyboard() &&
           need_to_disable_built_in_keyboard()) {
         e.second->set_disabled(true);
-        continue;
+      } else {
+        e.second->set_disabled(false);
       }
-
-      if (e.second->is_disable_on_sleep() && system_sleeping_) {
-        logger::get_logger()->info("disable {0} on sleep", e.second->get_device_name());
-        e.second->set_disabled(true);
-        continue;
-      }
-
-      e.second->set_disabled(false);
     }
   }
 
