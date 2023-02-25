@@ -813,6 +813,15 @@ private:
       return grabbable_state::state::ungrabbable_permanently;
     }
 
+    //
+    // In macOS, the behavior of devices in sleep differs depending on whether the device is seized or not.
+    // For devices that have been seized, it will attempt to wake up on any event.
+    // In other words, even moving the mouse pointer will prevent sleep.
+    //
+    // There seems to be no way to avoid this behavior, at least on macOS 13, other than to ungrab the device.
+    // Therefore, do not grab the device while system is sleeping.
+    //
+
     if (system_sleeping_) {
       return grabbable_state::state::ungrabbable_temporarily;
     }
