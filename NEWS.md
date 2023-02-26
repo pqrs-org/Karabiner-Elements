@@ -12,6 +12,7 @@
     -   Prevent moving the mouse from waking up from sleep by ungrab devices during system sleep. (Thanks to @aspacca)
     -   Fix inconsistent and confusing brightness label in Simple Modifications. (Thanks to @revolter)
     -   Improved MultitouchExtension to synchronize finger count (half and quarter) variables with finger movement.
+    -   An error message is now displayed when trying to enable both "Treat as a built-in keyboard" and "Disable the built-in keyboard", which cannot be enabled at the same time for the same device, in the device settings.
 
 ## Karabiner-Elements 14.11.0
 
