@@ -30,6 +30,7 @@
 #include <nod/nod.hpp>
 #include <pqrs/karabiner/driverkit/virtual_hid_device_driver.hpp>
 #include <pqrs/osx/iokit_hid_manager.hpp>
+#include <pqrs/osx/iokit_power_management.hpp>
 #include <pqrs/osx/system_preferences.hpp>
 #include <pqrs/spdlog.hpp>
 #include <string_view>
@@ -44,6 +45,7 @@ public:
 
   device_grabber(std::weak_ptr<console_user_server_client> weak_console_user_server_client,
                  std::weak_ptr<grabber_state_json_writer> weak_grabber_state_json_writer) : dispatcher_client(),
+                                                                                            system_sleeping_(false),
                                                                                             profile_(nlohmann::json::object()),
                                                                                             logger_unique_filter_(logger::get_logger()) {
     notification_message_manager_ = std::make_shared<notification_message_manager>(
@@ -347,11 +349,72 @@ public:
       logger::get_logger()->error("{0}: {1}", message, kern_return.to_string());
       logger_unique_filter_.reset();
     });
+
+    //
+    // power_management_monitor_
+    //
+
+    power_management_monitor_ = std::make_unique<pqrs::osx::iokit_power_management::monitor>(weak_dispatcher_,
+                                                                                             run_loop_thread_utility::get_power_management_run_loop_thread());
+
+    power_management_monitor_->system_will_sleep.connect([this](auto&& kernel_port,
+                                                                auto&& notification_id,
+                                                                auto&& wait) {
+      logger::get_logger()->info("system_will_sleep");
+
+      set_system_sleeping(true);
+
+      enqueue_to_dispatcher(
+          [kernel_port, notification_id, wait]() {
+            logger::get_logger()->info("call IOAllowPowerChange");
+
+            IOAllowPowerChange(kernel_port, notification_id);
+
+            wait->notify();
+          },
+          when_now() + std::chrono::seconds(1));
+    });
+
+    power_management_monitor_->system_will_power_on.connect([this] {
+      logger::get_logger()->info("system_will_power_on");
+
+      set_system_sleeping(false);
+    });
+
+    power_management_monitor_->system_has_powered_on.connect([this] {
+      logger::get_logger()->info("system_has_powered_on");
+
+      set_system_sleeping(false);
+    });
+
+    power_management_monitor_->can_system_sleep.connect([](auto&& kernel_port,
+                                                           auto&& notification_id,
+                                                           auto&& wait) {
+      logger::get_logger()->info("can_system_sleep");
+
+      IOAllowPowerChange(kernel_port, notification_id);
+
+      wait->notify();
+    });
+
+    power_management_monitor_->system_will_not_sleep.connect([this] {
+      logger::get_logger()->info("system_will_not_sleep");
+
+      set_system_sleeping(false);
+    });
+
+    power_management_monitor_->error_occurred.connect([](auto&& message) {
+      logger::get_logger()->error("power_management_monitor_ error: {0}", message);
+    });
+
+    power_management_monitor_->async_start();
   }
 
   virtual ~device_grabber(void) {
     detach_from_dispatcher([this] {
       stop();
+
+      power_management_monitor_ = nullptr;
 
       hid_manager_ = nullptr;
 
@@ -751,6 +814,19 @@ private:
     }
 
     //
+    // In macOS, the behavior of devices in sleep differs depending on whether the device is seized or not.
+    // For devices that have been seized, it will attempt to wake up on any event.
+    // In other words, even moving the mouse pointer will prevent sleep.
+    //
+    // There seems to be no way to avoid this behavior, at least on macOS 13, other than to ungrab the device.
+    // Therefore, do not grab the device while system is sleeping.
+    //
+
+    if (system_sleeping_) {
+      return grabbable_state::state::ungrabbable_temporarily;
+    }
+
+    //
     // The device is always grabbable if it is ignored devices
     // because karabiner_grabber does not seize the device and do not affect existing hidd processing.
     // (e.g. key repeat)
@@ -983,6 +1059,13 @@ private:
     }
   }
 
+  void set_system_sleeping(bool value) {
+    system_sleeping_ = value;
+
+    update_devices_disabled();
+    async_grab_devices();
+  }
+
   std::shared_ptr<pqrs::karabiner::driverkit::virtual_hid_device_service::client> virtual_hid_device_service_client_;
 
   virtual_hid_devices_state virtual_hid_devices_state_;
@@ -1002,6 +1085,9 @@ private:
   std::unordered_map<device_id, std::shared_ptr<probable_stuck_events_manager>> probable_stuck_events_managers_;
   std::unordered_map<device_id, std::shared_ptr<device_grabber_details::entry>> entries_;
   hid_queue_values_converter hid_queue_values_converter_;
+
+  std::unique_ptr<pqrs::osx::iokit_power_management::monitor> power_management_monitor_;
+  bool system_sleeping_;
 
   core_configuration::details::profile profile_;
   pqrs::osx::system_preferences::properties system_preferences_properties_;
