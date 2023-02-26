@@ -104,6 +104,8 @@ struct DevicesView: View {
               }
               .padding(.leading, 62.0)
               .padding(.top, 4.0)
+
+              DevicesBuiltInErrorMessageView(connectedDeviceSetting: $connectedDeviceSetting)
             }
             .padding(.vertical, 12.0)
             .padding(.trailing, 12.0)

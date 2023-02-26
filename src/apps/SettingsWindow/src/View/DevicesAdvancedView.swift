@@ -99,6 +99,8 @@ struct DevicesAdvancedView: View {
                   Spacer()
                 }
 
+                DevicesBuiltInErrorMessageView(connectedDeviceSetting: $connectedDeviceSetting)
+
                 Divider()
               }
 
