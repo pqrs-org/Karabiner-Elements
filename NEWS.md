@@ -9,6 +9,7 @@
         -   multitouch_extension_finger_count_left_quarter_area
         -   multitouch_extension_finger_count_right_quarter_area
 -   ⚡️ Improvements
+    -   Prevent moving the mouse from waking up from sleep by ungrab devices during system sleep. (Thanks to @aspacca)
     -   Fix inconsistent and confusing brightness label in Simple Modifications. (Thanks to @revolter)
     -   Improved MultitouchExtension to synchronize finger count (half and quarter) variables with finger movement.
 
