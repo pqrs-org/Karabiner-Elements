@@ -34,7 +34,7 @@ struct ProView: View {
         .padding(6.0)
       }
 
-      GroupBox(label: Text("Delay before open device")) {
+      GroupBox(label: Text("Delay to grab device")) {
         VStack(alignment: .leading, spacing: 12.0) {
           HStack {
             IntTextField(
