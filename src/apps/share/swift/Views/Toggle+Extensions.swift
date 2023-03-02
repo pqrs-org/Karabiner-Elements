@@ -1,10 +1,13 @@
 import SwiftUI
 
 extension Toggle {
-  func switchToggleStyle() -> some View {
+  func switchToggleStyle(
+    controlSize: ControlSize = .small,
+    font: Font = .body
+  ) -> some View {
     self
       .toggleStyle(.switch)
-      .controlSize(.small)
-      .font(.body)
+      .controlSize(controlSize)
+      .font(font)
   }
 }
