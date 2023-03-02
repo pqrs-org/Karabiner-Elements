@@ -6,7 +6,6 @@ enum NavigationTag: String {
   case complexModifications
   case complexModificationsAdvanced
   case devices
-  case devicesAdvanced
   case virtualKeyboard
   case profiles
   case update
@@ -102,15 +101,6 @@ struct ContentView: View {
             }
             .sidebarButtonStyle(
               selected: contentViewStates.navigationSelection == NavigationTag.devices)
-
-            Button(action: {
-              contentViewStates.navigationSelection = NavigationTag.devicesAdvanced
-            }) {
-              SidebarLabelView(text: "Devices > Advanced", systemImage: "keyboard", padding: 2.0)
-            }
-            .sidebarButtonStyle(
-              selected: contentViewStates.navigationSelection
-                == NavigationTag.devicesAdvanced)
 
             Button(action: {
               contentViewStates.navigationSelection = NavigationTag.virtualKeyboard
@@ -218,8 +208,6 @@ struct ContentView: View {
             ComplexModificationsAdvancedView()
           case NavigationTag.devices:
             DevicesView()
-          case NavigationTag.devicesAdvanced:
-            DevicesAdvancedView()
           case NavigationTag.virtualKeyboard:
             VirtualKeyboardView()
           case NavigationTag.profiles:

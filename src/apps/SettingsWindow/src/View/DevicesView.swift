@@ -47,25 +47,42 @@ struct DevicesView: View {
                       }
                       .switchToggleStyle()
 
-                      if connectedDeviceSetting.connectedDevice.isKeyboard {
-                        Toggle(isOn: $connectedDeviceSetting.manipulateCapsLockLed) {
-                          Text("Manipulate caps lock LED")
+                      VStack(alignment: .leading, spacing: 2.0) {
+                        if connectedDeviceSetting.connectedDevice.isKeyboard {
+                          if connectedDeviceSetting.modifyEvents {
+                            Toggle(isOn: $connectedDeviceSetting.manipulateCapsLockLed) {
+                              Text("Manipulate caps lock LED")
 
-                          Spacer()
-                        }
-                        .switchToggleStyle()
-
-                        if !connectedDeviceSetting.connectedDevice.isBuiltInKeyboard {
-                          Toggle(isOn: $connectedDeviceSetting.treatAsBuiltInKeyboard) {
-                            Text("Treat as a built-in keyboard")
-
-                            Spacer()
+                              Spacer()
+                            }
+                            .switchToggleStyle(controlSize: .mini, font: .callout)
                           }
-                          .switchToggleStyle()
+
+                          if !connectedDeviceSetting.connectedDevice.isBuiltInKeyboard
+                            && !connectedDeviceSetting.disableBuiltInKeyboardIfExists
+                          {
+                            Toggle(isOn: $connectedDeviceSetting.treatAsBuiltInKeyboard) {
+                              Text("Treat as a built-in keyboard")
+
+                              Spacer()
+                            }
+                            .switchToggleStyle(controlSize: .mini, font: .callout)
+                          }
+
+                          if !connectedDeviceSetting.connectedDevice.isBuiltInKeyboard
+                            && !connectedDeviceSetting.treatAsBuiltInKeyboard
+                          {
+                            Toggle(isOn: $connectedDeviceSetting.disableBuiltInKeyboardIfExists) {
+                              Text("Disable the built-in keyboard while this device is connected")
+
+                              Spacer()
+                            }
+                            .switchToggleStyle(controlSize: .mini, font: .callout)
+                          }
                         }
-                      }
+                      }.padding(.leading, 20)
                     }
-                    .frame(width: 240.0)
+                    .frame(width: 400.0)
                   }
                 }
 
@@ -104,8 +121,6 @@ struct DevicesView: View {
               }
               .padding(.leading, 62.0)
               .padding(.top, 4.0)
-
-              DevicesBuiltInErrorMessageView(connectedDeviceSetting: $connectedDeviceSetting)
             }
             .padding(.vertical, 12.0)
             .padding(.trailing, 12.0)
