@@ -40,12 +40,16 @@ struct DevicesView: View {
                     Spacer()
                   } else {
                     VStack(alignment: .leading, spacing: 4.0) {
-                      Toggle(isOn: $connectedDeviceSetting.modifyEvents) {
-                        Text("Modify events")
+                      HStack {
+                        Toggle(isOn: $connectedDeviceSetting.modifyEvents) {
+                          Text("Modify events")
+                        }
+                        .switchToggleStyle()
+                        .frame(width: 140.0)
 
                         Spacer()
                       }
-                      .switchToggleStyle()
+                      .padding(.bottom, 10)
 
                       VStack(alignment: .leading, spacing: 2.0) {
                         if connectedDeviceSetting.connectedDevice.isKeyboard {
