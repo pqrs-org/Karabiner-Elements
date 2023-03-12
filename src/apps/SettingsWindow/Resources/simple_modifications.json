@@ -1,5 +1,17 @@
 [
     {
+        "category": "Disable this key"
+    },
+    {
+        "label": "vk_none",
+        "not_from": true,
+        "data": [
+            {
+                "key_code": "vk_none"
+            }
+        ]
+    },
+    {
         "category": "Modifier keys"
     },
     {
@@ -1158,18 +1170,6 @@
         "data": [
             {
                 "key_code": "keypad_comma"
-            }
-        ]
-    },
-    {
-        "category": "Virtual Keys"
-    },
-    {
-        "label": "vk_none (disable this key)",
-        "not_from": true,
-        "data": [
-            {
-                "key_code": "vk_none"
             }
         ]
     },
