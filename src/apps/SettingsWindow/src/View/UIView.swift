@@ -2,44 +2,35 @@ import SwiftUI
 
 struct UIView: View {
   @ObservedObject private var settings = LibKrbn.Settings.shared
+  @ObservedObject private var appIcons = AppIcons.shared
 
   var body: some View {
     VStack(alignment: .leading, spacing: 24.0) {
-      GroupBox(label: Text("Icon")) {
+      GroupBox(label: Text("App icon")) {
         VStack(alignment: .leading, spacing: 12.0) {
-          HStack {
-            Image(decorative: "000-KarabinerElements")
-              .resizable()
-              .frame(width: 64.0, height: 64.0)
+          Picker(selection: $settings.appIcon, label: Text("")) {
+            ForEach($appIcons.icons) { $appIcon in
+              HStack {
+                Image(decorative: appIcon.karabinerElementsThumbnailImageName)
+                  .resizable()
+                  .frame(width: 64.0, height: 64.0)
 
-            Image(decorative: "000-EventViewer")
-              .resizable()
-              .frame(width: 64.0, height: 64.0)
+                Image(decorative: appIcon.eventViewerThumbnailImageName)
+                  .resizable()
+                  .frame(width: 64.0, height: 64.0)
 
-            Image(decorative: "000-MultitouchExtension")
-              .resizable()
-              .frame(width: 64.0, height: 64.0)
+                Image(decorative: appIcon.multitouchExtensionThumbnailImageName)
+                  .resizable()
+                  .frame(width: 64.0, height: 64.0)
 
-            Spacer()
-          }
+                Spacer()
+              }
+              .padding(.vertical, 5.0)
+              .tag(appIcon.id)
+            }
+          }.pickerStyle(RadioGroupPickerStyle())
 
           Divider()
-
-          HStack {
-            Image(decorative: "001-KarabinerElements")
-              .resizable()
-              .frame(width: 64.0, height: 64.0)
-
-            Image(decorative: "001-EventViewer")
-              .resizable()
-              .frame(width: 64.0, height: 64.0)
-
-            Image(decorative: "001-MultitouchExtension")
-              .resizable()
-              .frame(width: 64.0, height: 64.0)
-
-            Spacer()
-          }
         }
         .padding(6.0)
       }
