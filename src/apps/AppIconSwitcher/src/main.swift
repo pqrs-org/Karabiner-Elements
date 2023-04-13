@@ -1,7 +1,6 @@
 import AppKit
 
 for argument in CommandLine.arguments {
-
   if let icon = NSImage(named: "\(argument)-KarabinerElements.icns") {
     let result = NSWorkspace.shared.setIcon(
       icon,
