@@ -7,6 +7,16 @@ struct UIView: View {
     VStack(alignment: .leading, spacing: 24.0) {
       GroupBox(label: Text("App icon")) {
         VStack(alignment: .leading, spacing: 12.0) {
+          VStack {
+            Label(
+              "The app icon changes may take several seconds or require reopening the application.",
+              systemImage: "lightbulb"
+            )
+            .padding()
+            .foregroundColor(Color.warningForeground)
+            .background(Color.warningBackground)
+          }
+
           Picker(selection: $appIcons.selectedAppIconNumber, label: Text("")) {
             ForEach($appIcons.icons) { $appIcon in
               HStack {
