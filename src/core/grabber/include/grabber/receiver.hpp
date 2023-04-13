@@ -157,10 +157,19 @@ public:
               }
               break;
 
-            case operation_type::set_app_icon:
-              // `set_keyboard_type` requires root privileges.
-              application_launcher::launch_app_icon_switcher(json.at("number").get<int>());
+            case operation_type::set_app_icon: {
+              // `set_app_icon` requires root privileges.
+              auto number = json.at("number").get<int>();
+
+              application_launcher::launch_app_icon_switcher(number);
+
+              auto file_path = constants::get_system_app_icon_configuration_file_path();
+              auto json = nlohmann::json::object({
+                  {"number", number},
+              });
+              json_writer::async_save_to_file(json, file_path, 0755, 0644);
               break;
+            }
 
             case operation_type::set_keyboard_type:
               // `set_keyboard_type` requires root privileges.
