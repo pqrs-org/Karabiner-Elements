@@ -2,16 +2,16 @@ import SwiftUI
 
 public class AppIcon: Identifiable, Equatable {
   public var id: String
-  public var karabinerElementsThumbnailImageName: String
-  public var eventViewerThumbnailImageName: String
-  public var multitouchExtensionThumbnailImageName: String
+  public var karabinerElementsThumbnailImage: NSImage?
+  public var eventViewerThumbnailImage: NSImage?
+  public var multitouchExtensionThumbnailImage: NSImage?
 
   init(_ id: String) {
     self.id = id
 
-    karabinerElementsThumbnailImageName = "\(id)-KarabinerElements"
-    eventViewerThumbnailImageName = "\(id)-EventViewer"
-    multitouchExtensionThumbnailImageName = "\(id)-MultitouchExtension"
+    karabinerElementsThumbnailImage = NSImage(named: "\(id)-KarabinerElements.png")
+    eventViewerThumbnailImage = NSImage(named: "\(id)-EventViewer.png")
+    multitouchExtensionThumbnailImage = NSImage(named: "\(id)-MultitouchExtension.png")
   }
 
   public static func == (lhs: AppIcon, rhs: AppIcon) -> Bool {

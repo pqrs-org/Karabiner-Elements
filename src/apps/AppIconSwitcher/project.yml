@@ -20,3 +20,5 @@ targets:
           - .gitignore
           - '*.plist.in'
       - path: ../share/Resources/icons
+        excludes:
+          - '*.png'

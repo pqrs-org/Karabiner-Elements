@@ -11,17 +11,23 @@ struct UIView: View {
           Picker(selection: $setting, label: Text("")) {
             ForEach($appIcons.icons) { $appIcon in
               HStack {
-                Image(decorative: appIcon.karabinerElementsThumbnailImageName)
-                  .resizable()
-                  .frame(width: 64.0, height: 64.0)
+                if let image = appIcon.karabinerElementsThumbnailImage {
+                  Image(nsImage: image)
+                    .resizable()
+                    .frame(width: 64.0, height: 64.0)
+                }
 
-                Image(decorative: appIcon.eventViewerThumbnailImageName)
-                  .resizable()
-                  .frame(width: 64.0, height: 64.0)
+                if let image = appIcon.eventViewerThumbnailImage {
+                  Image(nsImage: image)
+                    .resizable()
+                    .frame(width: 64.0, height: 64.0)
+                }
 
-                Image(decorative: appIcon.multitouchExtensionThumbnailImageName)
-                  .resizable()
-                  .frame(width: 64.0, height: 64.0)
+                if let image = appIcon.multitouchExtensionThumbnailImage {
+                  Image(nsImage: image)
+                    .resizable()
+                    .frame(width: 64.0, height: 64.0)
+                }
 
                 Spacer()
               }
