@@ -161,6 +161,8 @@ public:
               // `set_app_icon` requires root privileges.
               auto number = json.at("number").get<int>();
 
+              logger::get_logger()->info("set_app_icon {0}", number);
+
               application_launcher::launch_app_icon_switcher(number);
 
               auto file_path = constants::get_system_app_icon_configuration_file_path();
