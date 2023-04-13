@@ -1,14 +1,14 @@
 import SwiftUI
 
 struct UIView: View {
-  @ObservedObject private var settings = LibKrbn.Settings.shared
   @ObservedObject private var appIcons = AppIcons.shared
+  @State private var setting = "000"
 
   var body: some View {
     VStack(alignment: .leading, spacing: 24.0) {
       GroupBox(label: Text("App icon")) {
         VStack(alignment: .leading, spacing: 12.0) {
-          Picker(selection: $settings.appIcon, label: Text("")) {
+          Picker(selection: $setting, label: Text("")) {
             ForEach($appIcons.icons) { $appIcon in
               HStack {
                 Image(decorative: appIcon.karabinerElementsThumbnailImageName)

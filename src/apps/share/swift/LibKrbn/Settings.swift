@@ -557,14 +557,6 @@ extension LibKrbn {
     // Misc
     //
 
-    @Published var appIcon: String = "000" {
-      didSet {
-        if didSetEnabled {
-          AppIcons.shared.apply()
-        }
-      }
-    }
-
     @Published var checkForUpdatesOnStartup: Bool = false {
       didSet {
         if didSetEnabled {
