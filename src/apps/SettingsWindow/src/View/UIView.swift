@@ -2,13 +2,12 @@ import SwiftUI
 
 struct UIView: View {
   @ObservedObject private var appIcons = AppIcons.shared
-  @State private var setting = "000"
 
   var body: some View {
     VStack(alignment: .leading, spacing: 24.0) {
       GroupBox(label: Text("App icon")) {
         VStack(alignment: .leading, spacing: 12.0) {
-          Picker(selection: $setting, label: Text("")) {
+          Picker(selection: $appIcons.selectedAppIconNumber, label: Text("")) {
             ForEach($appIcons.icons) { $appIcon in
               HStack {
                 if let image = appIcon.karabinerElementsThumbnailImage {
