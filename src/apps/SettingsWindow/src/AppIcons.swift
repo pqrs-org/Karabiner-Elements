@@ -26,13 +26,15 @@ public class AppIcons: ObservableObject {
   public static let shared = AppIcons()
 
   private var didSetEnabled = false
+  // Start GrabberClient when init
+  private var grabberClient = LibKrbn.GrabberClient.shared
 
   @Published var icons: [AppIcon] = []
 
   @Published var selectedAppIconNumber: Int32 = 0 {
     didSet {
       if didSetEnabled {
-        LibKrbn.GrabberClient.shared.setAppIcon(selectedAppIconNumber)
+        grabberClient.setAppIcon(selectedAppIconNumber)
       }
     }
   }
