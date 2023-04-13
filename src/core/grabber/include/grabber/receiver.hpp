@@ -2,6 +2,7 @@
 
 // `krbn::grabber::receiver` can be used safely in a multi-threaded environment.
 
+#include "app_icon.hpp"
 #include "application_launcher.hpp"
 #include "console_user_server_client.hpp"
 #include "constants.hpp"
@@ -165,11 +166,7 @@ public:
 
               application_launcher::launch_app_icon_switcher(number);
 
-              auto file_path = constants::get_system_app_icon_configuration_file_path();
-              auto json = nlohmann::json::object({
-                  {"number", number},
-              });
-              json_writer::async_save_to_file(json, file_path, 0755, 0644);
+              app_icon(number).async_save_to_file(constants::get_system_app_icon_configuration_file_path());
               break;
             }
 
