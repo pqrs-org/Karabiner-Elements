@@ -2,6 +2,7 @@
 
 // `krbn::grabber::receiver` can be used safely in a multi-threaded environment.
 
+#include "application_launcher.hpp"
 #include "console_user_server_client.hpp"
 #include "constants.hpp"
 #include "device_grabber.hpp"
@@ -154,6 +155,11 @@ public:
               if (device_grabber_) {
                 device_grabber_->async_post_input_source_changed_event(input_source_properties_);
               }
+              break;
+
+            case operation_type::set_app_icon:
+              // `set_keyboard_type` requires root privileges.
+              application_launcher::launch_app_icon_switcher(json.at("number").get<int>());
               break;
 
             case operation_type::set_keyboard_type:
