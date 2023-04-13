@@ -591,6 +591,12 @@ void libkrbn_disable_grabber_client(void) {
   }
 }
 
+void libkrbn_grabber_client_async_set_app_icon(int number) {
+  if (libkrbn_components_manager_) {
+    libkrbn_components_manager_->grabber_client_async_set_app_icon(number);
+  }
+}
+
 void libkrbn_grabber_client_async_set_keyboard_type(uint64_t country_code, uint64_t keyboard_type) {
   if (libkrbn_components_manager_) {
     libkrbn_components_manager_->grabber_client_async_set_keyboard_type(
