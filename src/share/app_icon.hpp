@@ -39,6 +39,10 @@ public:
     }
   }
 
+  int get_number(void) const {
+    return number_;
+  }
+
   nlohmann::json to_json(void) const {
     return nlohmann::json::object({
         {"number", number_},
