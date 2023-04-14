@@ -42,6 +42,7 @@ public class AppIcons: ObservableObject {
   init() {
     icons.append(AppIcon(0))
     icons.append(AppIcon(1))
+    icons.append(AppIcon(2))
 
     if let jsonData = try? Data(
       contentsOf: URL(
