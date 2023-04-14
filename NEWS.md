@@ -3,6 +3,8 @@
 ## Beta
 
 -   ✨ New Features
+    -   Added the ability to switch application icons. This can be changed from the UI tab in Settings.
+    -   Added new application icons. (Thanks to @Zabriskije)
     -   Added the following variables in MultitouchExtension. (Thanks to @codeanpeace)
         -   multitouch_extension_finger_count_upper_quarter_area
         -   multitouch_extension_finger_count_lower_quarter_area
