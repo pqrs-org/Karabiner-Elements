@@ -111,20 +111,6 @@ struct VirtualKeyboardView: View {
         .padding(6.0)
       }
 
-      GroupBox(label: Text("Sticky modifier keys")) {
-        VStack(alignment: .leading, spacing: 12.0) {
-          HStack {
-            Toggle(isOn: $settings.virtualHIDKeyboardIndicateStickyModifierKeysState) {
-              Text("Indicate sticky modifier keys state (Default: on)")
-            }
-            .switchToggleStyle()
-
-            Spacer()
-          }
-        }
-        .padding(6.0)
-      }
-
       Spacer()
     }
     .padding()

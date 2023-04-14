@@ -1,0 +1,24 @@
+name: Karabiner-AppIconSwitcher
+
+targets:
+  Karabiner-AppIconSwitcher:
+    settings:
+      PRODUCT_BUNDLE_IDENTIFIER: org.pqrs.Karabiner-AppIconSwitcher
+      CODE_SIGN_ENTITLEMENTS: ''
+      CODE_SIGN_IDENTITY: '-'
+      CODE_SIGN_STYLE: Manual
+    type: application
+    platform: macOS
+    deploymentTarget: 11.0
+    sources:
+      - path: src
+        compilerFlags:
+          - -Wall
+          - -Werror
+      - path: Resources
+        excludes:
+          - .gitignore
+          - '*.plist.in'
+      - path: ../share/Resources/icons
+        excludes:
+          - '*.png'

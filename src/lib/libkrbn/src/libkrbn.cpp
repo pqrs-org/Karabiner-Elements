@@ -72,6 +72,10 @@ const char* libkrbn_get_user_complex_modifications_assets_directory(void) {
   return krbn::constants::get_user_complex_modifications_assets_directory().c_str();
 }
 
+const char* libkrbn_get_system_app_icon_configuration_file_path(void) {
+  return krbn::constants::get_system_app_icon_configuration_file_path().c_str();
+}
+
 bool libkrbn_lock_single_application_with_user_pid_file(const char* _Nonnull pid_file_name) {
   return krbn::process_utility::lock_single_application_with_user_pid_file(pid_file_name);
 }
@@ -588,6 +592,12 @@ void libkrbn_enable_grabber_client(libkrbn_grabber_client_connected_callback con
 void libkrbn_disable_grabber_client(void) {
   if (libkrbn_components_manager_) {
     libkrbn_components_manager_->disable_grabber_client();
+  }
+}
+
+void libkrbn_grabber_client_async_set_app_icon(int number) {
+  if (libkrbn_components_manager_) {
+    libkrbn_components_manager_->grabber_client_async_set_app_icon(number);
   }
 }
 

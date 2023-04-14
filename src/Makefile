@@ -1,4 +1,5 @@
 all:
+	$(MAKE) -C apps/AppIconSwitcher
 	$(MAKE) -C apps/EventViewer
 	$(MAKE) -C apps/Menu
 	$(MAKE) -C apps/MultitouchExtension
@@ -13,6 +14,7 @@ all:
 	$(MAKE) -C lib/libkrbn
 
 clean:
+	$(MAKE) -C apps/AppIconSwitcher clean
 	$(MAKE) -C apps/EventViewer clean
 	$(MAKE) -C apps/Menu clean
 	$(MAKE) -C apps/MultitouchExtension clean

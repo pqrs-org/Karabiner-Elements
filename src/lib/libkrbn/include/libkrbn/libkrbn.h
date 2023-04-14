@@ -26,6 +26,7 @@ const char* libkrbn_get_distributed_notification_observed_object(void);
 const char* libkrbn_get_distributed_notification_console_user_server_is_disabled(void);
 const char* libkrbn_get_user_configuration_directory(void);
 const char* libkrbn_get_user_complex_modifications_assets_directory(void);
+const char* libkrbn_get_system_app_icon_configuration_file_path(void);
 
 bool libkrbn_lock_single_application_with_user_pid_file(const char* pid_file_name);
 void libkrbn_unlock_single_application(void);
@@ -367,6 +368,7 @@ void libkrbn_enable_grabber_client(libkrbn_grabber_client_connected_callback con
                                    libkrbn_grabber_client_connect_failed_callback connect_failed_callback,
                                    libkrbn_grabber_client_closed_callback closed_callback);
 void libkrbn_disable_grabber_client(void);
+void libkrbn_grabber_client_async_set_app_icon(int number);
 void libkrbn_grabber_client_async_set_keyboard_type(uint64_t country_code, uint64_t keyboard_type);
 void libkrbn_grabber_client_async_set_variable(const char* name, int value);
 void libkrbn_grabber_client_sync_set_variable(const char* name, int value);

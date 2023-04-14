@@ -13,44 +13,51 @@
 namespace krbn {
 class constants final {
 public:
-  static std::filesystem::path get_version_file_path(void) {
-    return "/Library/Application Support/org.pqrs/Karabiner-Elements/version";
+  static const std::filesystem::path& get_version_file_path(void) {
+    static auto path = std::filesystem::path("/Library/Application Support/org.pqrs/Karabiner-Elements/version");
+    return path;
   }
 
-  static std::filesystem::path get_tmp_directory(void) {
-    return "/Library/Application Support/org.pqrs/tmp";
+  static const std::filesystem::path& get_tmp_directory(void) {
+    static auto path = std::filesystem::path("/Library/Application Support/org.pqrs/tmp");
+    return path;
   }
 
-  static std::filesystem::path get_pid_directory(void) {
-    return get_tmp_directory() / "pid";
+  static const std::filesystem::path& get_pid_directory(void) {
+    static auto path = get_tmp_directory() / "pid";
+    return path;
   }
 
-  static std::filesystem::path get_rootonly_directory(void) {
-    return get_tmp_directory() / "rootonly";
+  static const std::filesystem::path& get_rootonly_directory(void) {
+    static auto path = get_tmp_directory() / "rootonly";
+    return path;
   }
 
-  static std::filesystem::path get_system_user_directory(void) {
-    return get_tmp_directory() / "user";
+  static const std::filesystem::path& get_system_user_directory(void) {
+    static auto path = get_tmp_directory() / "user";
+    return path;
   }
 
   static std::filesystem::path get_system_user_directory(uid_t uid) {
     return get_system_user_directory() / fmt::format("{0}", uid);
   }
 
-  static std::filesystem::path get_grabber_socket_directory_path(void) {
+  static const std::filesystem::path& get_grabber_socket_directory_path(void) {
     // Note:
     // The socket file path length must be <= 103 because sizeof(sockaddr_un.sun_path) == 104.
     // So we use the shorten name karabiner_grabber => krbn_grabber.
 
-    return get_tmp_directory() / "krbn_grabber";
+    static auto path = get_tmp_directory() / "krbn_grabber";
+    return path;
   }
 
-  static std::filesystem::path get_grabber_session_monitor_receiver_socket_directory_path(void) {
+  static const std::filesystem::path& get_grabber_session_monitor_receiver_socket_directory_path(void) {
     // Note:
     // The socket file path length must be <= 103 because sizeof(sockaddr_un.sun_path) == 104.
     // So we use the shorten name karabiner_session_monitor_receiver => krbn_session.
 
-    return get_rootonly_directory() / std::filesystem::path("krbn_session");
+    static auto path = get_rootonly_directory() / std::filesystem::path("krbn_session");
+    return path;
   }
 
   static std::filesystem::path get_session_monitor_receiver_client_socket_directory_path(uid_t uid) {
@@ -61,36 +68,49 @@ public:
     return get_rootonly_directory() / fmt::format("krbn_session.{0}", uid);
   }
 
-  static std::filesystem::path get_observer_state_json_file_path(void) {
-    return get_tmp_directory() / "karabiner_observer_state.json";
+  static const std::filesystem::path& get_observer_state_json_file_path(void) {
+    static auto path = get_tmp_directory() / "karabiner_observer_state.json";
+    return path;
   }
 
-  static std::filesystem::path get_grabber_state_json_file_path(void) {
-    return get_tmp_directory() / "karabiner_grabber_state.json";
+  static const std::filesystem::path& get_grabber_state_json_file_path(void) {
+    static auto path = get_tmp_directory() / "karabiner_grabber_state.json";
+    return path;
   }
 
-  static std::filesystem::path get_devices_json_file_path(void) {
-    return get_tmp_directory() / "karabiner_grabber_devices.json";
+  static const std::filesystem::path& get_devices_json_file_path(void) {
+    static auto path = get_tmp_directory() / "karabiner_grabber_devices.json";
+    return path;
   }
 
-  static std::filesystem::path get_device_details_json_file_path(void) {
-    return get_tmp_directory() / "karabiner_grabber_device_details.json";
+  static const std::filesystem::path& get_device_details_json_file_path(void) {
+    static auto path = get_tmp_directory() / "karabiner_grabber_device_details.json";
+    return path;
   }
 
-  static std::filesystem::path get_manipulator_environment_json_file_path(void) {
-    return get_tmp_directory() / "karabiner_grabber_manipulator_environment.json";
+  static const std::filesystem::path& get_manipulator_environment_json_file_path(void) {
+    static auto path = get_tmp_directory() / "karabiner_grabber_manipulator_environment.json";
+    return path;
   }
 
-  static std::filesystem::path get_notification_message_file_path(void) {
-    return get_tmp_directory() / "karabiner_notification_message.json";
+  static const std::filesystem::path& get_notification_message_file_path(void) {
+    static auto path = get_tmp_directory() / "karabiner_notification_message.json";
+    return path;
   }
 
-  static std::filesystem::path get_system_configuration_directory(void) {
-    return "/Library/Application Support/org.pqrs/config";
+  static const std::filesystem::path& get_system_configuration_directory(void) {
+    static auto path = std::filesystem::path("/Library/Application Support/org.pqrs/config");
+    return path;
   }
 
-  static std::filesystem::path get_system_core_configuration_file_path(void) {
-    return get_system_configuration_directory() / "karabiner.json";
+  static const std::filesystem::path& get_system_app_icon_configuration_file_path(void) {
+    static auto path = get_system_configuration_directory() / "karabiner_app_icon.json";
+    return path;
+  }
+
+  static const std::filesystem::path& get_system_core_configuration_file_path(void) {
+    static auto path = get_system_configuration_directory() / "karabiner.json";
+    return path;
   }
 
   static const std::filesystem::path& get_user_configuration_directory(void) {

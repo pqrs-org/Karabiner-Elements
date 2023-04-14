@@ -17,6 +17,7 @@ enum class operation_type : uint8_t {
   frontmost_application_changed,
   input_source_changed,
   // any -> grabber
+  set_app_icon,
   set_keyboard_type,
   set_variables,
   // grabber -> console_user_server
@@ -38,6 +39,7 @@ NLOHMANN_JSON_SERIALIZE_ENUM(
         {operation_type::system_preferences_updated, "system_preferences_updated"},
         {operation_type::frontmost_application_changed, "frontmost_application_changed"},
         {operation_type::input_source_changed, "input_source_changed"},
+        {operation_type::set_app_icon, "set_app_icon"},
         {operation_type::set_keyboard_type, "set_keyboard_type"},
         {operation_type::set_variables, "set_variables"},
         {operation_type::shell_command_execution, "shell_command_execution"},

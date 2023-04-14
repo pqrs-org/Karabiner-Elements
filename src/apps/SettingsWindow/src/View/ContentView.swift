@@ -9,6 +9,7 @@ enum NavigationTag: String {
   case virtualKeyboard
   case profiles
   case update
+  case ui
   case misc
   case uninstall
   case log
@@ -133,6 +134,14 @@ struct ContentView: View {
               selected: contentViewStates.navigationSelection == NavigationTag.update)
 
             Button(action: {
+              contentViewStates.navigationSelection = NavigationTag.ui
+            }) {
+              SidebarLabelView(text: "UI", systemImage: "switch.2", padding: 2.0)
+            }
+            .sidebarButtonStyle(
+              selected: contentViewStates.navigationSelection == NavigationTag.ui)
+
+            Button(action: {
               contentViewStates.navigationSelection = NavigationTag.misc
             }) {
               SidebarLabelView(text: "Misc", systemImage: "leaf", padding: 2.0)
@@ -214,6 +223,8 @@ struct ContentView: View {
             ProfilesView()
           case NavigationTag.update:
             UpdateView()
+          case NavigationTag.ui:
+            UIView()
           case NavigationTag.misc:
             MiscView()
           case NavigationTag.uninstall:

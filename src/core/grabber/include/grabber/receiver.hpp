@@ -2,6 +2,8 @@
 
 // `krbn::grabber::receiver` can be used safely in a multi-threaded environment.
 
+#include "app_icon.hpp"
+#include "application_launcher.hpp"
 #include "console_user_server_client.hpp"
 #include "constants.hpp"
 #include "device_grabber.hpp"
@@ -155,6 +157,18 @@ public:
                 device_grabber_->async_post_input_source_changed_event(input_source_properties_);
               }
               break;
+
+            case operation_type::set_app_icon: {
+              // `set_app_icon` requires root privileges.
+              auto number = json.at("number").get<int>();
+
+              logger::get_logger()->info("set_app_icon {0}", number);
+
+              application_launcher::launch_app_icon_switcher(number);
+
+              app_icon(number).async_save_to_file(constants::get_system_app_icon_configuration_file_path());
+              break;
+            }
 
             case operation_type::set_keyboard_type:
               // `set_keyboard_type` requires root privileges.
