@@ -89,6 +89,14 @@ struct UIView: View {
                 Spacer()
               }
               .padding(.vertical, 5.0)
+              .overlay(
+                RoundedRectangle(cornerRadius: 8)
+                  .stroke(
+                    Color(NSColor.selectedControlColor),
+                    lineWidth: appIcons.selectedAppIconNumber == appIcon.id ? 3 : 0
+                  )
+              )
+
               .tag(appIcon.id)
             }
           }.pickerStyle(RadioGroupPickerStyle())
@@ -96,6 +104,7 @@ struct UIView: View {
           Divider()
         }
         .padding(6.0)
+        .background(Color(NSColor.textBackgroundColor))
       }
 
       Spacer()
