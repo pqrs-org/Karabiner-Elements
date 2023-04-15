@@ -12,9 +12,11 @@
         -   multitouch_extension_finger_count_right_quarter_area
 -   ⚡️ Improvements
     -   Prevent moving the mouse from waking up from sleep by ungrab devices during system sleep. (Thanks to @aspacca)
-    -   Fix inconsistent and confusing brightness label in Simple Modifications. (Thanks to @revolter)
+    -   Fixed inconsistent and confusing brightness label in Simple Modifications. (Thanks to @revolter)
     -   Improved MultitouchExtension to synchronize finger count (half and quarter) variables with finger movement.
-    -   Move "Disable the built-in keyboard while this device is connected" settings into Devices tab from Devices > Advanced tab in Settings.
+    -   Moved "Disable the built-in keyboard while this device is connected" settings into Devices tab from Devices > Advanced tab in Settings.
+-   🐛 Bug Fixes
+    -   Fixed an issue that dynamic keyboard type change (ANSI, ISO and JIS) by changing the country code of the virtual keyboard did not work properly.
 
 ## Karabiner-Elements 14.11.0
 
