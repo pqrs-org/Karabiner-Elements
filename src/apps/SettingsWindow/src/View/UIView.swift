@@ -57,7 +57,7 @@ struct UIView: View {
         VStack(alignment: .leading, spacing: 12.0) {
           VStack {
             Label(
-              "The app icon changes may take several seconds or require reopening the application.",
+              "It takes a few seconds for changes to the application icon to take effect.\nAnd to update the Dock icon, you need to close and reopen the application.",
               systemImage: "lightbulb"
             )
             .padding()
