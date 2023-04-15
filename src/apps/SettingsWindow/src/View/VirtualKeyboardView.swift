@@ -36,41 +36,40 @@ struct VirtualKeyboardView: View {
           }
 
           // Use `ScrollView` instead of `List` to avoid `AttributeGraph: cycle detected through attribute` error.
-          ScrollView {
-            ForEach($systemPreferences.keyboardTypes) { $keyboardType in
-              HStack {
-                Button(action: {
-                  settings.virtualHIDKeyboardCountryCode = keyboardType.countryCode
-                }) {
+          ForEach($systemPreferences.keyboardTypes) { $keyboardType in
+            HStack {
+              Button(action: {
+                settings.virtualHIDKeyboardCountryCode = keyboardType.countryCode
+              }) {
+                HStack {
                   HStack {
-                    HStack {
-                      if settings.virtualHIDKeyboardCountryCode == keyboardType.countryCode {
-                        Image(systemName: "circle.circle.fill")
-                      } else {
-                        Image(systemName: "circle")
-                      }
+                    if settings.virtualHIDKeyboardCountryCode == keyboardType.countryCode {
+                      Image(systemName: "circle.circle.fill")
+                    } else {
+                      Image(systemName: "circle")
                     }
-                    .foregroundColor(.accentColor)
-
-                    Text("Country code: \(keyboardType.countryCode)")
                   }
+                  .foregroundColor(.accentColor)
+
+                  Text("Country code: \(keyboardType.countryCode)")
                 }
-                .buttonStyle(.plain)
-
-                Picker("", selection: $keyboardType.keyboardType) {
-                  if keyboardType.keyboardType < 0 {
-                    Text("---").tag(-1)
-                  }
-                  Text("ANSI (North America, most of Asia and others)").tag(
-                    LibKrbn.KeyboardType.NamedType.ansi.rawValue)
-                  Text("ISO (Europe, Latin America, Middle-East and others)").tag(
-                    LibKrbn.KeyboardType.NamedType.iso.rawValue)
-                  Text("JIS (Japanese)").tag(LibKrbn.KeyboardType.NamedType.jis.rawValue)
-                }.disabled(!grabberClient.enabled)
-
-                Spacer()
               }
+              .buttonStyle(.plain)
+
+              Picker("", selection: $keyboardType.keyboardType) {
+                if keyboardType.keyboardType < 0 {
+                  Text("---").tag(-1)
+                }
+                Text("ANSI (North America, most of Asia and others)").tag(
+                  LibKrbn.KeyboardType.NamedType.ansi.rawValue)
+                Text("ISO (Europe, Latin America, Middle-East and others)").tag(
+                  LibKrbn.KeyboardType.NamedType.iso.rawValue)
+                Text("JIS (Japanese)").tag(LibKrbn.KeyboardType.NamedType.jis.rawValue)
+              }.disabled(!grabberClient.enabled)
+
+              Spacer()
             }
+            .padding(.vertical, 2.0)
           }
 
           HStack {
