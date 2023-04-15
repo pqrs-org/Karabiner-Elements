@@ -33,6 +33,18 @@ inline void from_json(const nlohmann::json& j, value_t& value) {
 }
 } // namespace product_id
 
+namespace report_id {
+inline void to_json(nlohmann::json& j, const value_t& value) {
+  j = type_safe::get(value);
+}
+
+inline void from_json(const nlohmann::json& j, value_t& value) {
+  json::requires_number(j, "json");
+
+  value = value_t(j.get<type_safe::underlying_type<value_t>>());
+}
+} // namespace report_id
+
 namespace usage_page {
 inline void to_json(nlohmann::json& j, const value_t& value) {
   j = type_safe::get(value);

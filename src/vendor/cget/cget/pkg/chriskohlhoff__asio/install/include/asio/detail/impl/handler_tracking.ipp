@@ -2,7 +2,7 @@
 // detail/impl/handler_tracking.ipp
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 //
-// Copyright (c) 2003-2022 Christopher M. Kohlhoff (chris at kohlhoff dot com)
+// Copyright (c) 2003-2023 Christopher M. Kohlhoff (chris at kohlhoff dot com)
 //
 // Distributed under the Boost Software License, Version 1.0. (See accompanying
 // file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
@@ -365,7 +365,9 @@ void handler_tracking::write_line(const char* format, ...)
   va_start(args, format);
 
   char line[256] = "";
-#if defined(ASIO_HAS_SECURE_RTL)
+#if defined(ASIO_HAS_SNPRINTF)
+  int length = vsnprintf(line, sizeof(line), format, args);
+#elif defined(ASIO_HAS_SECURE_RTL)
   int length = vsprintf_s(line, sizeof(line), format, args);
 #else // defined(ASIO_HAS_SECURE_RTL)
   int length = vsprintf(line, format, args);

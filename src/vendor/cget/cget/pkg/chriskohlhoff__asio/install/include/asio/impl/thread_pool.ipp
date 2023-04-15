@@ -2,7 +2,7 @@
 // impl/thread_pool.ipp
 // ~~~~~~~~~~~~~~~~~~~~
 //
-// Copyright (c) 2003-2022 Christopher M. Kohlhoff (chris at kohlhoff dot com)
+// Copyright (c) 2003-2023 Christopher M. Kohlhoff (chris at kohlhoff dot com)
 //
 // Distributed under the Boost Software License, Version 1.0. (See accompanying
 // file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
@@ -98,6 +98,7 @@ thread_pool::~thread_pool()
 {
   stop();
   join();
+  shutdown();
 }
 
 void thread_pool::stop()
@@ -114,11 +115,11 @@ void thread_pool::attach()
 
 void thread_pool::join()
 {
-  if (!threads_.empty())
-  {
+  if (num_threads_)
     scheduler_.work_finished();
+
+  if (!threads_.empty())
     threads_.join();
-  }
 }
 
 detail::scheduler& thread_pool::add_scheduler(detail::scheduler* s)

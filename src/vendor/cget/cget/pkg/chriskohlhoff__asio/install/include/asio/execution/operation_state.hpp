@@ -2,7 +2,7 @@
 // execution/operation_state.hpp
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 //
-// Copyright (c) 2003-2022 Christopher M. Kohlhoff (chris at kohlhoff dot com)
+// Copyright (c) 2003-2023 Christopher M. Kohlhoff (chris at kohlhoff dot com)
 //
 // Distributed under the Boost Software License, Version 1.0. (See accompanying
 // file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
@@ -16,6 +16,9 @@
 #endif // defined(_MSC_VER) && (_MSC_VER >= 1200)
 
 #include "asio/detail/config.hpp"
+
+#if !defined(ASIO_NO_DEPRECATED)
+
 #include "asio/detail/type_traits.hpp"
 #include "asio/execution/start.hpp"
 
@@ -90,5 +93,7 @@ ASIO_CONCEPT operation_state = is_operation_state<T>::value;
 } // namespace asio
 
 #include "asio/detail/pop_options.hpp"
+
+#endif // !defined(ASIO_NO_DEPRECATED)
 
 #endif // ASIO_EXECUTION_OPERATION_STATE_HPP

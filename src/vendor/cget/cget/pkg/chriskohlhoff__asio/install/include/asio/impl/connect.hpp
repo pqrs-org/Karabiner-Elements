@@ -2,7 +2,7 @@
 // impl/connect.hpp
 // ~~~~~~~~~~~~~~~~
 //
-// Copyright (c) 2003-2022 Christopher M. Kohlhoff (chris at kohlhoff dot com)
+// Copyright (c) 2003-2023 Christopher M. Kohlhoff (chris at kohlhoff dot com)
 //
 // Distributed under the Boost Software License, Version 1.0. (See accompanying
 // file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
@@ -764,10 +764,21 @@ struct associator<Associator,
     DefaultCandidate>
   : Associator<RangeConnectHandler, DefaultCandidate>
 {
-  static typename Associator<RangeConnectHandler, DefaultCandidate>::type get(
-      const detail::range_connect_op<Protocol, Executor,
+  static typename Associator<RangeConnectHandler, DefaultCandidate>::type
+  get(const detail::range_connect_op<Protocol, Executor, EndpointSequence,
+        ConnectCondition, RangeConnectHandler>& h) ASIO_NOEXCEPT
+  {
+    return Associator<RangeConnectHandler, DefaultCandidate>::get(h.handler_);
+  }
+
+  static ASIO_AUTO_RETURN_TYPE_PREFIX2(
+      typename Associator<RangeConnectHandler, DefaultCandidate>::type)
+  get(const detail::range_connect_op<Protocol, Executor,
         EndpointSequence, ConnectCondition, RangeConnectHandler>& h,
-      const DefaultCandidate& c = DefaultCandidate()) ASIO_NOEXCEPT
+      const DefaultCandidate& c) ASIO_NOEXCEPT
+    ASIO_AUTO_RETURN_TYPE_SUFFIX((
+      Associator<RangeConnectHandler, DefaultCandidate>::get(
+        h.handler_, c)))
   {
     return Associator<RangeConnectHandler, DefaultCandidate>::get(
         h.handler_, c);
@@ -785,10 +796,21 @@ struct associator<Associator,
   : Associator<IteratorConnectHandler, DefaultCandidate>
 {
   static typename Associator<IteratorConnectHandler, DefaultCandidate>::type
-  get(
-      const detail::iterator_connect_op<Protocol, Executor,
+  get(const detail::iterator_connect_op<Protocol, Executor, Iterator,
+        ConnectCondition, IteratorConnectHandler>& h) ASIO_NOEXCEPT
+  {
+    return Associator<IteratorConnectHandler, DefaultCandidate>::get(
+        h.handler_);
+  }
+
+  static ASIO_AUTO_RETURN_TYPE_PREFIX2(
+      typename Associator<IteratorConnectHandler, DefaultCandidate>::type)
+  get(const detail::iterator_connect_op<Protocol, Executor,
         Iterator, ConnectCondition, IteratorConnectHandler>& h,
-      const DefaultCandidate& c = DefaultCandidate()) ASIO_NOEXCEPT
+      const DefaultCandidate& c) ASIO_NOEXCEPT
+    ASIO_AUTO_RETURN_TYPE_SUFFIX((
+      Associator<IteratorConnectHandler, DefaultCandidate>::get(
+        h.handler_, c)))
   {
     return Associator<IteratorConnectHandler, DefaultCandidate>::get(
         h.handler_, c);

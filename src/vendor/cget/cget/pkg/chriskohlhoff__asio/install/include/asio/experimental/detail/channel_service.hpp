@@ -2,7 +2,7 @@
 // experimental/detail/channel_service.hpp
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 //
-// Copyright (c) 2003-2022 Christopher M. Kohlhoff (chris at kohlhoff dot com)
+// Copyright (c) 2003-2023 Christopher M. Kohlhoff (chris at kohlhoff dot com)
 //
 // Distributed under the Boost Software License, Version 1.0. (See accompanying
 // file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
@@ -185,7 +185,6 @@ public:
   bool try_receive(implementation_type<Traits, Signatures...>& impl,
       ASIO_MOVE_ARG(Handler) handler);
 
-  // Asynchronously send a new value into the channel.
   // Asynchronously receive a value from the channel.
   template <typename Traits, typename... Signatures,
       typename Handler, typename IoExecutor>
@@ -484,6 +483,187 @@ struct channel_service<Mutex>::implementation_type<Traits, R()>
 private:
   // Number of buffered "values".
   std::size_t buffer_;
+};
+
+// The implementation for an error_code signature.
+template <typename Mutex>
+template <typename Traits, typename R>
+struct channel_service<Mutex>::implementation_type<
+    Traits, R(asio::error_code)>
+  : channel_service::base_implementation_type
+{
+  // The traits type associated with the channel.
+  typedef typename Traits::template rebind<R(asio::error_code)>::other
+    traits_type;
+
+  // Type of an element stored in the buffer.
+  typedef typename conditional<
+      has_signature<
+        typename traits_type::receive_cancelled_signature,
+        R(asio::error_code)
+      >::value,
+      typename conditional<
+        has_signature<
+          typename traits_type::receive_closed_signature,
+          R(asio::error_code)
+        >::value,
+        channel_payload<R(asio::error_code)>,
+        channel_payload<
+          R(asio::error_code),
+          typename traits_type::receive_closed_signature
+        >
+      >::type,
+      typename conditional<
+        has_signature<
+          typename traits_type::receive_closed_signature,
+          R(asio::error_code),
+          typename traits_type::receive_cancelled_signature
+        >::value,
+        channel_payload<
+          R(asio::error_code),
+          typename traits_type::receive_cancelled_signature
+        >,
+        channel_payload<
+          R(asio::error_code),
+          typename traits_type::receive_cancelled_signature,
+          typename traits_type::receive_closed_signature
+        >
+      >::type
+    >::type payload_type;
+
+  // Construct with empty buffer.
+  implementation_type()
+    : size_(0)
+  {
+    first_.count_ = 0;
+  }
+
+  // Move from another buffer.
+  void buffer_move_from(implementation_type& other)
+  {
+    size_ = other.buffer_;
+    other.size_ = 0;
+    first_ = other.first_;
+    other.first.count_ = 0;
+    rest_ = ASIO_MOVE_CAST(
+        typename traits_type::template container<
+          buffered_value>::type)(other.rest_);
+    other.buffer_clear();
+  }
+
+  // Get number of buffered elements.
+  std::size_t buffer_size() const
+  {
+    return size_;
+  }
+
+  // Push a new value to the back of the buffer.
+  void buffer_push(payload_type payload)
+  {
+    buffered_value& last = rest_.empty() ? first_ : rest_.back();
+    if (last.count_ == 0)
+    {
+      value_handler handler{last.value_};
+      payload.receive(handler);
+      last.count_ = 1;
+    }
+    else
+    {
+      asio::error_code value{last.value_};
+      value_handler handler{value};
+      payload.receive(handler);
+      if (last.value_ == value)
+        ++last.count_;
+      else
+        rest_.push_back({value, 1});
+    }
+    ++size_;
+  }
+
+  // Push new values to the back of the buffer.
+  std::size_t buffer_push_n(std::size_t count, payload_type payload)
+  {
+    std::size_t available = this->max_buffer_size_ - size_;
+    count = (count < available) ? count : available;
+    if (count > 0)
+    {
+      buffered_value& last = rest_.empty() ? first_ : rest_.back();
+      if (last.count_ == 0)
+      {
+        payload.receive(value_handler{last.value_});
+        last.count_ = count;
+      }
+      else
+      {
+        asio::error_code value{last.value_};
+        payload.receive(value_handler{value});
+        if (last.value_ == value)
+          last.count_ += count;
+        else
+          rest_.push_back({value, count});
+      }
+      size_ += count;
+    }
+    return count;
+  }
+
+  // Get the element at the front of the buffer.
+  payload_type buffer_front()
+  {
+    return payload_type({0, first_.value_});
+  }
+
+  // Pop a value from the front of the buffer.
+  void buffer_pop()
+  {
+    --size_;
+    if (--first_.count_ == 0 && !rest_.empty())
+    {
+      first_ = rest_.front();
+      rest_.pop_front();
+    }
+  }
+
+  // Clear all values from the buffer.
+  void buffer_clear()
+  {
+    size_ = 0;
+    first_.count_ == 0;
+    rest_.clear();
+  }
+
+private:
+  struct buffered_value
+  {
+    asio::error_code value_;
+    std::size_t count_;
+  };
+
+  struct value_handler
+  {
+    asio::error_code& target_;
+
+    template <typename... Args>
+    void operator()(const asio::error_code& value, Args&&...)
+    {
+      target_ = value;
+    }
+  };
+
+  buffered_value& last_value()
+  {
+    return rest_.empty() ? first_ : rest_.back();
+  }
+
+  // Total number of buffered values.
+  std::size_t size_;
+
+  // The first buffered value is maintained as a separate data member to avoid
+  // allocating space in the container in the common case.
+  buffered_value first_;
+
+  // The rest of the buffered values.
+  typename traits_type::template container<buffered_value>::type rest_;
 };
 
 } // namespace detail

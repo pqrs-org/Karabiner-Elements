@@ -2,7 +2,7 @@
 // deferred.hpp
 // ~~~~~~~~~~~~
 //
-// Copyright (c) 2003-2022 Christopher M. Kohlhoff (chris at kohlhoff dot com)
+// Copyright (c) 2003-2023 Christopher M. Kohlhoff (chris at kohlhoff dot com)
 //
 // Distributed under the Boost Software License, Version 1.0. (See accompanying
 // file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
@@ -38,23 +38,27 @@ struct is_deferred : false_type
 {
 };
 
+/// Helper type to wrap multiple completion signatures.
+template <typename... Signatures>
+struct deferred_signatures
+{
+};
+
 namespace detail {
 
-// Helper trait for getting the completion signature of the tail in a sequence
+// Helper trait for getting the completion signatures of the tail in a sequence
 // when invoked with the specified arguments.
 
-template <typename HeadSignature, typename Tail>
-struct deferred_sequence_signature;
+template <typename Tail, typename... Signatures>
+struct deferred_sequence_signatures;
 
-template <typename R, typename... Args, typename Tail>
-struct deferred_sequence_signature<R(Args...), Tail>
+template <typename Tail, typename R, typename... Args, typename... Signatures>
+struct deferred_sequence_signatures<Tail, R(Args...), Signatures...>
+  : completion_signature_of<decltype(declval<Tail>()(declval<Args>()...))>
 {
   static_assert(
       !is_same<decltype(declval<Tail>()(declval<Args>()...)), void>::value,
       "deferred functions must produce a deferred return type");
-
-  typedef typename completion_signature_of<
-    decltype(declval<Tail>()(declval<Args>()...))>::type type;
 };
 
 // Completion handler for the head component of a deferred sequence.
@@ -81,6 +85,88 @@ public:
 //private:
   Handler handler_;
   Tail tail_;
+};
+
+template <typename Head, typename Tail, typename... Signatures>
+class deferred_sequence_base
+{
+private:
+  struct initiate
+  {
+    template <typename Handler>
+    void operator()(ASIO_MOVE_ARG(Handler) handler,
+        Head head, ASIO_MOVE_ARG(Tail) tail)
+    {
+      ASIO_MOVE_OR_LVALUE(Head)(head)(
+          deferred_sequence_handler<
+            typename decay<Handler>::type,
+            typename decay<Tail>::type>(
+              ASIO_MOVE_CAST(Handler)(handler),
+              ASIO_MOVE_CAST(Tail)(tail)));
+    }
+  };
+
+  Head head_;
+  Tail tail_;
+
+public:
+  template <typename H, typename T>
+  ASIO_CONSTEXPR explicit deferred_sequence_base(
+      ASIO_MOVE_ARG(H) head, ASIO_MOVE_ARG(T) tail)
+    : head_(ASIO_MOVE_CAST(H)(head)),
+      tail_(ASIO_MOVE_CAST(T)(tail))
+  {
+  }
+
+  template <ASIO_COMPLETION_TOKEN_FOR(Signatures...) CompletionToken>
+  auto operator()(
+      ASIO_MOVE_ARG(CompletionToken) token) ASIO_RVALUE_REF_QUAL
+    -> decltype(
+        asio::async_initiate<CompletionToken, Signatures...>(
+          declval<initiate>(), token,
+          ASIO_MOVE_OR_LVALUE(Head)(this->head_),
+          ASIO_MOVE_OR_LVALUE(Tail)(this->tail_)))
+  {
+    return asio::async_initiate<CompletionToken, Signatures...>(
+        initiate(), token,
+        ASIO_MOVE_OR_LVALUE(Head)(head_),
+        ASIO_MOVE_OR_LVALUE(Tail)(tail_));
+  }
+
+#if defined(ASIO_HAS_REF_QUALIFIED_FUNCTIONS)
+  template <ASIO_COMPLETION_TOKEN_FOR(Signatures...) CompletionToken>
+  auto operator()(
+      ASIO_MOVE_ARG(CompletionToken) token) const &
+    -> decltype(
+        asio::async_initiate<CompletionToken, Signatures...>(
+          initiate(), token, this->head_, this->tail_))
+  {
+    return asio::async_initiate<CompletionToken, Signatures...>(
+        initiate(), token, head_, tail_);
+  }
+#endif // defined(ASIO_HAS_REF_QUALIFIED_FUNCTIONS)
+};
+
+// Two-step application of variadic Signatures to determine correct base type.
+
+template <typename Head, typename Tail>
+struct deferred_sequence_types
+{
+  template <typename... Signatures>
+  struct op1
+  {
+    typedef deferred_sequence_base<Head, Tail, Signatures...> type;
+  };
+
+  template <typename... Signatures>
+  struct op2
+  {
+    typedef typename deferred_sequence_signatures<Tail, Signatures...>::template
+      apply<op1>::type::type type;
+  };
+
+  typedef typename completion_signature_of<Head>::template
+    apply<op2>::type::type base;
 };
 
 } // namespace detail
@@ -333,6 +419,88 @@ public:
 #endif // defined(ASIO_HAS_REF_QUALIFIED_FUNCTIONS)
 };
 
+/// Encapsulates a deferred asynchronous operation thas has multiple completion
+/// signatures.
+template <typename... Signatures, typename Initiation, typename... InitArgs>
+class ASIO_NODISCARD deferred_async_operation<
+    deferred_signatures<Signatures...>, Initiation, InitArgs...>
+{
+private:
+  typedef typename decay<Initiation>::type initiation_t;
+  initiation_t initiation_;
+  typedef std::tuple<typename decay<InitArgs>::type...> init_args_t;
+  init_args_t init_args_;
+
+  template <typename CompletionToken, std::size_t... I>
+  auto invoke_helper(
+      ASIO_MOVE_ARG(CompletionToken) token,
+      detail::index_sequence<I...>)
+    -> decltype(
+        asio::async_initiate<CompletionToken, Signatures...>(
+          ASIO_MOVE_CAST(initiation_t)(initiation_), token,
+          std::get<I>(ASIO_MOVE_CAST(init_args_t)(init_args_))...))
+  {
+    return asio::async_initiate<CompletionToken, Signatures...>(
+        ASIO_MOVE_CAST(initiation_t)(initiation_), token,
+        std::get<I>(ASIO_MOVE_CAST(init_args_t)(init_args_))...);
+  }
+
+#if defined(ASIO_HAS_REF_QUALIFIED_FUNCTIONS)
+  template <typename CompletionToken, std::size_t... I>
+  auto const_invoke_helper(
+      ASIO_MOVE_ARG(CompletionToken) token,
+      detail::index_sequence<I...>) const &
+    -> decltype(
+        asio::async_initiate<CompletionToken, Signatures...>(
+          initiation_t(initiation_), token, std::get<I>(init_args_)...))
+    {
+    return asio::async_initiate<CompletionToken, Signatures...>(
+        initiation_t(initiation_), token, std::get<I>(init_args_)...);
+  }
+#endif // defined(ASIO_HAS_REF_QUALIFIED_FUNCTIONS)
+
+public:
+  /// Construct a deferred asynchronous operation from the arguments to an
+  /// initiation function object.
+  template <typename I, typename... A>
+  ASIO_CONSTEXPR explicit deferred_async_operation(
+      deferred_init_tag, ASIO_MOVE_ARG(I) initiation,
+      ASIO_MOVE_ARG(A)... init_args)
+    : initiation_(ASIO_MOVE_CAST(I)(initiation)),
+      init_args_(ASIO_MOVE_CAST(A)(init_args)...)
+  {
+  }
+
+  /// Initiate the asynchronous operation using the supplied completion token.
+  template <ASIO_COMPLETION_TOKEN_FOR(Signatures...) CompletionToken>
+  auto operator()(
+      ASIO_MOVE_ARG(CompletionToken) token) ASIO_RVALUE_REF_QUAL
+    -> decltype(
+        this->invoke_helper(
+          ASIO_MOVE_CAST(CompletionToken)(token),
+          detail::index_sequence_for<InitArgs...>()))
+  {
+    return this->invoke_helper(
+        ASIO_MOVE_CAST(CompletionToken)(token),
+        detail::index_sequence_for<InitArgs...>());
+  }
+
+#if defined(ASIO_HAS_REF_QUALIFIED_FUNCTIONS)
+  template <ASIO_COMPLETION_TOKEN_FOR(Signatures...) CompletionToken>
+  auto operator()(
+      ASIO_MOVE_ARG(CompletionToken) token) const &
+    -> decltype(
+        this->const_invoke_helper(
+          ASIO_MOVE_CAST(CompletionToken)(token),
+          detail::index_sequence_for<InitArgs...>()))
+  {
+    return this->const_invoke_helper(
+        ASIO_MOVE_CAST(CompletionToken)(token),
+        detail::index_sequence_for<InitArgs...>());
+  }
+#endif // defined(ASIO_HAS_REF_QUALIFIED_FUNCTIONS)
+};
+
 #if !defined(GENERATING_DOCUMENTATION)
 template <typename Signature, typename Initiation, typename... InitArgs>
 struct is_deferred<
@@ -343,66 +511,25 @@ struct is_deferred<
 
 /// Defines a link between two consecutive operations in a sequence.
 template <typename Head, typename Tail>
-class ASIO_NODISCARD deferred_sequence
+class ASIO_NODISCARD deferred_sequence :
+  public detail::deferred_sequence_types<Head, Tail>::base
 {
-private:
-  typedef typename detail::deferred_sequence_signature<
-    typename completion_signature_of<Head>::type, Tail>::type
-      signature;
-
-  struct initiate
-  {
-    template <typename Handler>
-    void operator()(ASIO_MOVE_ARG(Handler) handler,
-        Head head, ASIO_MOVE_ARG(Tail) tail)
-    {
-      ASIO_MOVE_OR_LVALUE(Head)(head)(
-          detail::deferred_sequence_handler<
-            typename decay<Handler>::type,
-            typename decay<Tail>::type>(
-              ASIO_MOVE_CAST(Handler)(handler),
-              ASIO_MOVE_CAST(Tail)(tail)));
-    }
-  };
-
-  Head head_;
-  Tail tail_;
-
 public:
   template <typename H, typename T>
   ASIO_CONSTEXPR explicit deferred_sequence(deferred_init_tag,
       ASIO_MOVE_ARG(H) head, ASIO_MOVE_ARG(T) tail)
-    : head_(ASIO_MOVE_CAST(H)(head)),
-      tail_(ASIO_MOVE_CAST(T)(tail))
+    : detail::deferred_sequence_types<Head, Tail>::base(
+        ASIO_MOVE_CAST(H)(head), ASIO_MOVE_CAST(T)(tail))
   {
   }
 
-  template <ASIO_COMPLETION_TOKEN_FOR(signature) CompletionToken>
-  auto operator()(
-      ASIO_MOVE_ARG(CompletionToken) token) ASIO_RVALUE_REF_QUAL
-    -> decltype(
-        asio::async_initiate<CompletionToken, signature>(
-          declval<initiate>(), token,
-          ASIO_MOVE_OR_LVALUE(Head)(this->head_),
-          ASIO_MOVE_OR_LVALUE(Tail)(this->tail_)))
-  {
-    return asio::async_initiate<CompletionToken, signature>(
-        initiate(), token,
-        ASIO_MOVE_OR_LVALUE(Head)(head_),
-        ASIO_MOVE_OR_LVALUE(Tail)(tail_));
-  }
+#if defined(GENERATING_DOCUMENTATION)
+  template <typename CompletionToken>
+  auto operator()(ASIO_MOVE_ARG(CompletionToken) token)
+    ASIO_RVALUE_REF_QUAL;
 
-#if defined(ASIO_HAS_REF_QUALIFIED_FUNCTIONS)
-  template <ASIO_COMPLETION_TOKEN_FOR(signature) CompletionToken>
-  auto operator()(
-      ASIO_MOVE_ARG(CompletionToken) token) const &
-    -> decltype(
-        asio::async_initiate<CompletionToken, signature>(
-          initiate(), token, head_, tail_))
-  {
-    return asio::async_initiate<CompletionToken, signature>(
-        initiate(), token, head_, tail_);
-  }
+  template <typename CompletionToken>
+  auto operator()(ASIO_MOVE_ARG(CompletionToken) token) const &;
 #endif // defined(ASIO_HAS_REF_QUALIFIED_FUNCTIONS)
 };
 

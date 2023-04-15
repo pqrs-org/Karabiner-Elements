@@ -2,7 +2,7 @@
 // detail/io_uring_descriptor_service.hpp
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 //
-// Copyright (c) 2003-2022 Christopher M. Kohlhoff (chris at kohlhoff dot com)
+// Copyright (c) 2003-2023 Christopher M. Kohlhoff (chris at kohlhoff dot com)
 //
 // Distributed under the Boost Software License, Version 1.0. (See accompanying
 // file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
@@ -118,6 +118,14 @@ public:
 
   // Release ownership of the native descriptor representation.
   ASIO_DECL native_handle_type release(implementation_type& impl);
+
+  // Release ownership of the native descriptor representation.
+  native_handle_type release(implementation_type& impl,
+      asio::error_code& ec)
+  {
+    ec = success_ec_;
+    return release(impl);
+  }
 
   // Cancel all operations associated with the descriptor.
   ASIO_DECL asio::error_code cancel(implementation_type& impl,

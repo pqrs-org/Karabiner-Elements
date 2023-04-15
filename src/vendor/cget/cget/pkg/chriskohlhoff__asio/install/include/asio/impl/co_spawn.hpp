@@ -2,7 +2,7 @@
 // impl/co_spawn.hpp
 // ~~~~~~~~~~~~~~~~~
 //
-// Copyright (c) 2003-2022 Christopher M. Kohlhoff (chris at kohlhoff dot com)
+// Copyright (c) 2003-2023 Christopher M. Kohlhoff (chris at kohlhoff dot com)
 //
 // Distributed under the Boost Software License, Version 1.0. (See accompanying
 // file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
@@ -96,22 +96,19 @@ awaitable<awaitable_thread_entry_point, Executor> co_spawn_entry_point(
 
     done = true;
 
-    if (co_await awaitable_thread_has_context_switched{})
+    bool switched = (co_await awaitable_thread_has_context_switched{});
+    if (!switched)
     {
-      (dispatch)(handler_work.get_executor(),
-          [handler = std::move(handler), t = std::move(t)]() mutable
-          {
-            std::move(handler)(std::exception_ptr(), std::move(t));
-          });
+      (void) co_await (post)(
+          use_awaitable_t<Executor>{__FILE__,
+            __LINE__, "co_spawn_entry_point"});
     }
-    else
-    {
-      (post)(handler_work.get_executor(),
-          [handler = std::move(handler), t = std::move(t)]() mutable
-          {
-            std::move(handler)(std::exception_ptr(), std::move(t));
-          });
-    }
+
+    (dispatch)(handler_work.get_executor(),
+        [handler = std::move(handler), t = std::move(t)]() mutable
+        {
+          std::move(handler)(std::exception_ptr(), std::move(t));
+        });
 
     co_return;
   }
@@ -123,22 +120,18 @@ awaitable<awaitable_thread_entry_point, Executor> co_spawn_entry_point(
     e = std::current_exception();
   }
 
-  if (co_await awaitable_thread_has_context_switched{})
+  bool switched = (co_await awaitable_thread_has_context_switched{});
+  if (!switched)
   {
-    (dispatch)(handler_work.get_executor(),
-        [handler = std::move(handler), e]() mutable
-        {
-          std::move(handler)(e, T());
-        });
+    (void) co_await (post)(
+        use_awaitable_t<Executor>{__FILE__, __LINE__, "co_spawn_entry_point"});
   }
-  else
-  {
-    (post)(handler_work.get_executor(),
-        [handler = std::move(handler), e]() mutable
-        {
-          std::move(handler)(e, T());
-        });
-  }
+
+  (dispatch)(handler_work.get_executor(),
+      [handler = std::move(handler), e]() mutable
+      {
+        std::move(handler)(e, T());
+      });
 }
 
 template <typename Executor, typename F, typename Handler>
@@ -163,22 +156,18 @@ awaitable<awaitable_thread_entry_point, Executor> co_spawn_entry_point(
     e = std::current_exception();
   }
 
-  if (co_await awaitable_thread_has_context_switched{})
+  bool switched = (co_await awaitable_thread_has_context_switched{});
+  if (!switched)
   {
-    (dispatch)(handler_work.get_executor(),
-        [handler = std::move(handler), e]() mutable
-        {
-          std::move(handler)(e);
-        });
+    (void) co_await (post)(
+        use_awaitable_t<Executor>{__FILE__, __LINE__, "co_spawn_entry_point"});
   }
-  else
-  {
-    (post)(handler_work.get_executor(),
-        [handler = std::move(handler), e]() mutable
-        {
-          std::move(handler)(e);
-        });
-  }
+
+  (dispatch)(handler_work.get_executor(),
+      [handler = std::move(handler), e]() mutable
+      {
+        std::move(handler)(e);
+      });
 }
 
 template <typename T, typename Executor>
@@ -203,8 +192,8 @@ template <typename Handler, typename Executor, typename = void>
 class co_spawn_cancellation_handler
 {
 public:
-  co_spawn_cancellation_handler(const Handler& handler, const Executor& ex)
-    : ex_(asio::get_associated_executor(handler, ex))
+  co_spawn_cancellation_handler(const Handler&, const Executor& ex)
+    : ex_(ex)
   {
   }
 
@@ -221,7 +210,7 @@ public:
 
 private:
   cancellation_signal signal_;
-  typename associated_executor<Handler, Executor>::type ex_;
+  Executor ex_;
 };
 
 

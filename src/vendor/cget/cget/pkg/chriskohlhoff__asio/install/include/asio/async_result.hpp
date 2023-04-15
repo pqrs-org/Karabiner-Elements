@@ -2,7 +2,7 @@
 // async_result.hpp
 // ~~~~~~~~~~~~~~~~
 //
-// Copyright (c) 2003-2022 Christopher M. Kohlhoff (chris at kohlhoff dot com)
+// Copyright (c) 2003-2023 Christopher M. Kohlhoff (chris at kohlhoff dot com)
 //
 // Distributed under the Boost Software License, Version 1.0. (See accompanying
 // file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
@@ -1398,6 +1398,42 @@ namespace detail {
 
 struct completion_signature_probe {};
 
+#if defined(ASIO_HAS_VARIADIC_TEMPLATES)
+
+template <typename... T>
+struct completion_signature_probe_result
+{
+  template <template <typename...> class Op>
+  struct apply
+  {
+    typedef Op<T...> type;
+  };
+};
+
+template <typename T>
+struct completion_signature_probe_result<T>
+{
+  typedef T type;
+
+  template <template <typename...> class Op>
+  struct apply
+  {
+    typedef Op<T> type;
+  };
+};
+
+template <>
+struct completion_signature_probe_result<void>
+{
+  template <template <typename...> class Op>
+  struct apply
+  {
+    typedef Op<> type;
+  };
+};
+
+#else // defined(ASIO_HAS_VARIADIC_TEMPLATES)
+
 template <typename T>
 struct completion_signature_probe_result
 {
@@ -1409,6 +1445,8 @@ struct completion_signature_probe_result<void>
 {
 };
 
+#endif // defined(ASIO_HAS_VARIADIC_TEMPLATES)
+
 } // namespace detail
 
 #if !defined(GENERATING_DOCUMENTATION)
@@ -1418,7 +1456,7 @@ template <typename... Signatures>
 class async_result<detail::completion_signature_probe, Signatures...>
 {
 public:
-  typedef detail::completion_signature_probe_result<void> return_type;
+  typedef detail::completion_signature_probe_result<Signatures...> return_type;
 
   template <typename Initiation, typename... InitArgs>
   static return_type initiate(ASIO_MOVE_ARG(Initiation),

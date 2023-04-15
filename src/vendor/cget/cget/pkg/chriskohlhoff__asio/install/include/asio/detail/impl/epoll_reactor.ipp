@@ -2,7 +2,7 @@
 // detail/impl/epoll_reactor.ipp
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 //
-// Copyright (c) 2003-2022 Christopher M. Kohlhoff (chris at kohlhoff dot com)
+// Copyright (c) 2003-2023 Christopher M. Kohlhoff (chris at kohlhoff dot com)
 //
 // Distributed under the Boost Software License, Version 1.0. (See accompanying
 // file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
@@ -229,14 +229,23 @@ void epoll_reactor::move_descriptor(socket_type,
   source_descriptor_data = 0;
 }
 
+void epoll_reactor::call_post_immediate_completion(
+    operation* op, bool is_continuation, const void* self)
+{
+  static_cast<const epoll_reactor*>(self)->post_immediate_completion(
+      op, is_continuation);
+}
+
 void epoll_reactor::start_op(int op_type, socket_type descriptor,
     epoll_reactor::per_descriptor_data& descriptor_data, reactor_op* op,
-    bool is_continuation, bool allow_speculative)
+    bool is_continuation, bool allow_speculative,
+    void (*on_immediate)(operation*, bool, const void*),
+    const void* immediate_arg)
 {
   if (!descriptor_data)
   {
     op->ec_ = asio::error::bad_descriptor;
-    post_immediate_completion(op, is_continuation);
+    on_immediate(op, is_continuation, immediate_arg);
     return;
   }
 
@@ -244,7 +253,7 @@ void epoll_reactor::start_op(int op_type, socket_type descriptor,
 
   if (descriptor_data->shutdown_)
   {
-    post_immediate_completion(op, is_continuation);
+    on_immediate(op, is_continuation, immediate_arg);
     return;
   }
 
@@ -262,7 +271,7 @@ void epoll_reactor::start_op(int op_type, socket_type descriptor,
             if (descriptor_data->registered_events_ != 0)
               descriptor_data->try_speculative_[op_type] = false;
           descriptor_lock.unlock();
-          scheduler_.post_immediate_completion(op, is_continuation);
+          on_immediate(op, is_continuation, immediate_arg);
           return;
         }
       }
@@ -270,7 +279,7 @@ void epoll_reactor::start_op(int op_type, socket_type descriptor,
       if (descriptor_data->registered_events_ == 0)
       {
         op->ec_ = asio::error::operation_not_supported;
-        scheduler_.post_immediate_completion(op, is_continuation);
+        on_immediate(op, is_continuation, immediate_arg);
         return;
       }
 
@@ -289,7 +298,7 @@ void epoll_reactor::start_op(int op_type, socket_type descriptor,
           {
             op->ec_ = asio::error_code(errno,
                 asio::error::get_system_category());
-            scheduler_.post_immediate_completion(op, is_continuation);
+            on_immediate(op, is_continuation, immediate_arg);
             return;
           }
         }
@@ -298,7 +307,7 @@ void epoll_reactor::start_op(int op_type, socket_type descriptor,
     else if (descriptor_data->registered_events_ == 0)
     {
       op->ec_ = asio::error::operation_not_supported;
-      scheduler_.post_immediate_completion(op, is_continuation);
+      on_immediate(op, is_continuation, immediate_arg);
       return;
     }
     else

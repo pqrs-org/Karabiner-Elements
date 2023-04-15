@@ -2,7 +2,7 @@
 // impl/read_at.hpp
 // ~~~~~~~~~~~~~~~~
 //
-// Copyright (c) 2003-2022 Christopher M. Kohlhoff (chris at kohlhoff dot com)
+// Copyright (c) 2003-2023 Christopher M. Kohlhoff (chris at kohlhoff dot com)
 //
 // Distributed under the Boost Software License, Version 1.0. (See accompanying
 // file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
@@ -406,11 +406,22 @@ struct associator<Associator,
     DefaultCandidate>
   : Associator<ReadHandler, DefaultCandidate>
 {
-  static typename Associator<ReadHandler, DefaultCandidate>::type get(
-      const detail::read_at_op<AsyncRandomAccessReadDevice,
+  static typename Associator<ReadHandler, DefaultCandidate>::type
+  get(const detail::read_at_op<AsyncRandomAccessReadDevice,
+        MutableBufferSequence, MutableBufferIterator,
+        CompletionCondition, ReadHandler>& h) ASIO_NOEXCEPT
+  {
+    return Associator<ReadHandler, DefaultCandidate>::get(h.handler_);
+  }
+
+  static ASIO_AUTO_RETURN_TYPE_PREFIX2(
+      typename Associator<ReadHandler, DefaultCandidate>::type)
+  get(const detail::read_at_op<AsyncRandomAccessReadDevice,
         MutableBufferSequence, MutableBufferIterator,
         CompletionCondition, ReadHandler>& h,
-      const DefaultCandidate& c = DefaultCandidate()) ASIO_NOEXCEPT
+      const DefaultCandidate& c) ASIO_NOEXCEPT
+    ASIO_AUTO_RETURN_TYPE_SUFFIX((
+      Associator<ReadHandler, DefaultCandidate>::get(h.handler_, c)))
   {
     return Associator<ReadHandler, DefaultCandidate>::get(h.handler_, c);
   }
@@ -686,10 +697,20 @@ struct associator<Associator,
     DefaultCandidate>
   : Associator<ReadHandler, DefaultCandidate>
 {
-  static typename Associator<ReadHandler, DefaultCandidate>::type get(
-      const detail::read_at_streambuf_op<AsyncRandomAccessReadDevice,
+  static typename Associator<ReadHandler, DefaultCandidate>::type
+  get(const detail::read_at_streambuf_op<AsyncRandomAccessReadDevice,
+        Executor, CompletionCondition, ReadHandler>& h) ASIO_NOEXCEPT
+  {
+    return Associator<ReadHandler, DefaultCandidate>::get(h.handler_);
+  }
+
+  static ASIO_AUTO_RETURN_TYPE_PREFIX2(
+      typename Associator<ReadHandler, DefaultCandidate>::type)
+  get(const detail::read_at_streambuf_op<AsyncRandomAccessReadDevice,
         Executor, CompletionCondition, ReadHandler>& h,
-      const DefaultCandidate& c = DefaultCandidate()) ASIO_NOEXCEPT
+      const DefaultCandidate& c) ASIO_NOEXCEPT
+    ASIO_AUTO_RETURN_TYPE_SUFFIX((
+      Associator<ReadHandler, DefaultCandidate>::get(h.handler_, c)))
   {
     return Associator<ReadHandler, DefaultCandidate>::get(h.handler_, c);
   }

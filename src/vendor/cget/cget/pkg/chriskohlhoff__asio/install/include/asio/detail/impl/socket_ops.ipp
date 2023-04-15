@@ -2,7 +2,7 @@
 // detail/impl/socket_ops.ipp
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~
 //
-// Copyright (c) 2003-2022 Christopher M. Kohlhoff (chris at kohlhoff dot com)
+// Copyright (c) 2003-2023 Christopher M. Kohlhoff (chris at kohlhoff dot com)
 //
 // Distributed under the Boost Software License, Version 1.0. (See accompanying
 // file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
@@ -2519,7 +2519,11 @@ const char* inet_ntop(int af, const void* src, char* dest, size_t length,
         && ((ipv6_address->s6_addr[1] & 0x0f) == 0x02));
     if ((!is_link_local && !is_multicast_link_local)
         || if_indextoname(static_cast<unsigned>(scope_id), if_name + 1) == 0)
+#if defined(ASIO_HAS_SNPRINTF)
+      snprintf(if_name + 1, sizeof(if_name) - 1, "%lu", scope_id);
+#else // defined(ASIO_HAS_SNPRINTF)
       sprintf(if_name + 1, "%lu", scope_id);
+#endif // defined(ASIO_HAS_SNPRINTF)
     strcat(dest, if_name);
   }
   return result;
@@ -3627,7 +3631,9 @@ inline asio::error_code getnameinfo_emulation(
       {
         return ec = asio::error::no_buffer_space;
       }
-#if defined(ASIO_HAS_SECURE_RTL)
+#if defined(ASIO_HAS_SNPRINTF)
+      snprintf(serv, servlen, "%u", ntohs(port));
+#elif defined(ASIO_HAS_SECURE_RTL)
       sprintf_s(serv, servlen, "%u", ntohs(port));
 #else // defined(ASIO_HAS_SECURE_RTL)
       sprintf(serv, "%u", ntohs(port));
@@ -3650,7 +3656,9 @@ inline asio::error_code getnameinfo_emulation(
         {
           return ec = asio::error::no_buffer_space;
         }
-#if defined(ASIO_HAS_SECURE_RTL)
+#if defined(ASIO_HAS_SNPRINTF)
+        snprintf(serv, servlen, "%u", ntohs(port));
+#elif defined(ASIO_HAS_SECURE_RTL)
         sprintf_s(serv, servlen, "%u", ntohs(port));
 #else // defined(ASIO_HAS_SECURE_RTL)
         sprintf(serv, "%u", ntohs(port));

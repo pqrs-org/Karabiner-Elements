@@ -2,7 +2,7 @@
 // detail/config.hpp
 // ~~~~~~~~~~~~~~~~~
 //
-// Copyright (c) 2003-2022 Christopher M. Kohlhoff (chris at kohlhoff dot com)
+// Copyright (c) 2003-2023 Christopher M. Kohlhoff (chris at kohlhoff dot com)
 //
 // Distributed under the Boost Software License, Version 1.0. (See accompanying
 // file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
@@ -396,6 +396,17 @@
 #  endif // defined(ASIO_MSVC)
 # endif // !defined(ASIO_DISABLE_DECLTYPE)
 #endif // !defined(ASIO_HAS_DECLTYPE)
+#if defined(ASIO_HAS_DECLTYPE)
+# define ASIO_AUTO_RETURN_TYPE_PREFIX(t) auto
+# define ASIO_AUTO_RETURN_TYPE_PREFIX2(t0, t1) auto
+# define ASIO_AUTO_RETURN_TYPE_PREFIX3(t0, t1, t2) auto
+# define ASIO_AUTO_RETURN_TYPE_SUFFIX(expr) -> decltype expr
+#else // defined(ASIO_HAS_DECLTYPE)
+# define ASIO_AUTO_RETURN_TYPE_PREFIX(t) t
+# define ASIO_AUTO_RETURN_TYPE_PREFIX2(t0, t1) t0, t1
+# define ASIO_AUTO_RETURN_TYPE_PREFIX3(t0, t1, t2) t0, t1, t2
+# define ASIO_AUTO_RETURN_TYPE_SUFFIX(expr)
+#endif // defined(ASIO_HAS_DECLTYPE)
 
 // Support alias templates on compilers known to allow it.
 #if !defined(ASIO_HAS_ALIAS_TEMPLATES)
@@ -432,7 +443,11 @@
 #   if (__cpp_return_type_deduction >= 201304)
 #    define ASIO_HAS_RETURN_TYPE_DEDUCTION 1
 #   endif // (__cpp_return_type_deduction >= 201304)
-#  endif // defined(__cpp_return_type_deduction)
+#  elif defined(ASIO_MSVC)
+#   if (_MSC_VER >= 1900 && _MSVC_LANG >= 201402)
+#    define ASIO_HAS_RETURN_TYPE_DEDUCTION 1
+#   endif // (_MSC_VER >= 1900 && _MSVC_LANG >= 201402)
+#  endif // defined(ASIO_MSVC)
 # endif // !defined(ASIO_DISABLE_RETURN_TYPE_DEDUCTION)
 #endif // !defined(ASIO_HAS_RETURN_TYPE_DEDUCTION)
 
@@ -655,6 +670,19 @@
 # define ASIO_DEFAULT_ALIGN 1
 #endif // defined(ASIO_HAS_ALIGNOF)
 
+// Support for user-defined literals.
+#if !defined(ASIO_HAS_USER_DEFINED_LITERALS)
+# if !defined(ASIO_DISABLE_USER_DEFINED_LITERALS)
+#  if (__cplusplus >= 201103)
+#   define ASIO_HAS_USER_DEFINED_LITERALS 1
+#  elif defined(ASIO_MSVC)
+#   if (_MSC_VER >= 1900 && _MSVC_LANG >= 201103)
+#    define ASIO_HAS_USER_DEFINED_LITERALS 1
+#   endif // (_MSC_VER >= 1900 && _MSVC_LANG >= 201103)
+#  endif // defined(ASIO_MSVC)
+# endif // !defined(ASIO_DISABLE_USER_DEFINED_LITERALS)
+#endif // !defined(ASIO_HAS_USER_DEFINED_LITERALS)
+
 // Standard library support for aligned allocation.
 #if !defined(ASIO_HAS_STD_ALIGNED_ALLOC)
 # if !defined(ASIO_DISABLE_STD_ALIGNED_ALLOC)
@@ -699,6 +727,30 @@
 #  endif // (__cplusplus >= 201703)
 # endif // !defined(ASIO_DISABLE_STD_ALIGNED_ALLOC)
 #endif // !defined(ASIO_HAS_STD_ALIGNED_ALLOC)
+
+// Standard library support for std::align.
+#if !defined(ASIO_HAS_STD_ALIGN)
+# if !defined(ASIO_DISABLE_STD_ALIGN)
+#  if defined(__clang__)
+#   if defined(ASIO_HAS_CLANG_LIBCXX)
+#    define ASIO_HAS_STD_ALIGN 1
+#   elif (__cplusplus >= 201103)
+#    define ASIO_HAS_STD_ALIGN 1
+#   endif // (__cplusplus >= 201103)
+#  elif defined(__GNUC__)
+#   if (__GNUC__ >= 6)
+#    if (__cplusplus >= 201103) || defined(__GXX_EXPERIMENTAL_CXX0X__)
+#     define ASIO_HAS_STD_ALIGN 1
+#    endif // (__cplusplus >= 201103) || defined(__GXX_EXPERIMENTAL_CXX0X__)
+#   endif // (__GNUC__ >= 6)
+#  endif // defined(__GNUC__)
+#  if defined(ASIO_MSVC)
+#   if (_MSC_VER >= 1700)
+#    define ASIO_HAS_STD_ALIGN 1
+#   endif // (_MSC_VER >= 1700)
+#  endif // defined(ASIO_MSVC)
+# endif // !defined(ASIO_DISABLE_STD_ALIGN)
+#endif // !defined(ASIO_HAS_STD_ALIGN)
 
 // Standard library support for system errors.
 #if !defined(ASIO_HAS_STD_SYSTEM_ERROR)
@@ -1338,14 +1390,11 @@
 #   if (_MSC_VER >= 1911 && _MSVC_LANG >= 201703)
 #    define ASIO_HAS_STD_INVOKE_RESULT 1
 #   endif // (_MSC_VER >= 1911 && _MSVC_LANG >= 201703)
+#  else // defined(ASIO_MSVC)
+#   if (__cplusplus >= 201703)
+#    define ASIO_HAS_STD_INVOKE_RESULT 1
+#   endif // (__cplusplus >= 201703)
 #  endif // defined(ASIO_MSVC)
-#  if defined(ASIO_HAS_CLANG_LIBCXX)
-#   if (_LIBCPP_VERSION >= 13000)
-#    if (__cplusplus >= 201703)
-#     define ASIO_HAS_STD_INVOKE_RESULT 1
-#    endif // (__cplusplus >= 201703)
-#   endif // (_LIBCPP_VERSION >= 13000)
-#  endif // defined(ASIO_HAS_CLANG_LIBCXX)
 # endif // !defined(ASIO_DISABLE_STD_INVOKE_RESULT)
 #endif // !defined(ASIO_HAS_STD_INVOKE_RESULT)
 
@@ -1420,6 +1469,30 @@
 #  endif // defined(ASIO_MSVC)
 # endif // !defined(ASIO_DISABLE_STD_ANY)
 #endif // !defined(ASIO_HAS_STD_ANY)
+
+// Standard library support for std::variant.
+#if !defined(ASIO_HAS_STD_VARIANT)
+# if !defined(ASIO_DISABLE_STD_VARIANT)
+#  if defined(__clang__)
+#   if (__cplusplus >= 201703)
+#    if __has_include(<variant>)
+#     define ASIO_HAS_STD_VARIANT 1
+#    endif // __has_include(<variant>)
+#   endif // (__cplusplus >= 201703)
+#  elif defined(__GNUC__)
+#   if (__GNUC__ >= 7)
+#    if (__cplusplus >= 201703)
+#     define ASIO_HAS_STD_VARIANT 1
+#    endif // (__cplusplus >= 201703)
+#   endif // (__GNUC__ >= 7)
+#  endif // defined(__GNUC__)
+#  if defined(ASIO_MSVC)
+#   if (_MSC_VER >= 1910) && (_MSVC_LANG >= 201703)
+#    define ASIO_HAS_STD_VARIANT 1
+#   endif // (_MSC_VER >= 1910) && (_MSVC_LANG >= 201703)
+#  endif // defined(ASIO_MSVC)
+# endif // !defined(ASIO_DISABLE_STD_VARIANT)
+#endif // !defined(ASIO_HAS_STD_VARIANT)
 
 // Standard library support for std::source_location.
 #if !defined(ASIO_HAS_STD_SOURCE_LOCATION)
@@ -2069,6 +2142,20 @@
 # define ASIO_UNUSED_VARIABLE
 #endif // !defined(ASIO_UNUSED_VARIABLE)
 
+// Helper macro to tell the optimiser what may be assumed to be true.
+#if defined(ASIO_MSVC)
+# define ASIO_ASSUME(expr) __assume(expr)
+#elif defined(__clang__)
+# if __has_builtin(__builtin_assume)
+#  define ASIO_ASSUME(expr) __builtin_assume(expr)
+# endif // __has_builtin(__builtin_assume)
+#elif defined(__GNUC__)
+# define ASIO_ASSUME(expr) if (expr) {} else { __builtin_unreachable(); }
+#endif // defined(__GNUC__)
+#if !defined(ASIO_ASSUME)
+# define ASIO_ASSUME (void)0
+#endif // !defined(ASIO_ASSUME)
+
 // Support the co_await keyword on compilers known to allow it.
 #if !defined(ASIO_HAS_CO_AWAIT)
 # if !defined(ASIO_DISABLE_CO_AWAIT)
@@ -2081,11 +2168,23 @@
 #    endif // defined(_RESUMABLE_FUNCTIONS_SUPPORTED)
 #   endif // (_MSC_FULL_VER >= 190023506)
 #  elif defined(__clang__)
-#   if (__cplusplus >= 201703) && (__cpp_coroutines >= 201703)
-#    if __has_include(<experimental/coroutine>)
-#     define ASIO_HAS_CO_AWAIT 1
-#    endif // __has_include(<experimental/coroutine>)
-#   endif // (__cplusplus >= 201703) && (__cpp_coroutines >= 201703)
+#   if (__clang_major__ >= 14)
+#    if (__cplusplus >= 202002) && (__cpp_impl_coroutine >= 201902)
+#     if __has_include(<coroutine>)
+#      define ASIO_HAS_CO_AWAIT 1
+#     endif // __has_include(<coroutine>)
+#    elif (__cplusplus >= 201703) && (__cpp_coroutines >= 201703)
+#     if __has_include(<experimental/coroutine>)
+#      define ASIO_HAS_CO_AWAIT 1
+#     endif // __has_include(<experimental/coroutine>)
+#    endif // (__cplusplus >= 201703) && (__cpp_coroutines >= 201703)
+#   else // (__clang_major__ >= 14)
+#    if (__cplusplus >= 201703) && (__cpp_coroutines >= 201703)
+#     if __has_include(<experimental/coroutine>)
+#      define ASIO_HAS_CO_AWAIT 1
+#     endif // __has_include(<experimental/coroutine>)
+#    endif // (__cplusplus >= 201703) && (__cpp_coroutines >= 201703)
+#   endif // (__clang_major__ >= 14)
 #  elif defined(__GNUC__)
 #   if (__cplusplus >= 201709) && (__cpp_impl_coroutine >= 201902)
 #    if __has_include(<coroutine>)
@@ -2103,8 +2202,15 @@
 #   if (_MSC_VER >= 1928) && (_MSVC_LANG >= 201705)
 #    define ASIO_HAS_STD_COROUTINE 1
 #   endif // (_MSC_VER >= 1928) && (_MSVC_LANG >= 201705)
-#  endif // defined(ASIO_MSVC)
-#  if defined(__GNUC__)
+#  elif defined(__clang__)
+#   if (__clang_major__ >= 14)
+#    if (__cplusplus >= 202002) && (__cpp_impl_coroutine >= 201902)
+#     if __has_include(<coroutine>)
+#      define ASIO_HAS_STD_COROUTINE 1
+#     endif // __has_include(<coroutine>)
+#    endif // (__cplusplus >= 202002) && (__cpp_impl_coroutine >= 201902)
+#   endif // (__clang_major__ >= 14)
+#  elif defined(__GNUC__)
 #   if (__cplusplus >= 201709) && (__cpp_impl_coroutine >= 201902)
 #    if __has_include(<coroutine>)
 #     define ASIO_HAS_STD_COROUTINE 1
@@ -2184,5 +2290,16 @@
 #  endif // defined(ASIO_MSVC)
 # endif // !defined(ASIO_DISABLE_STD_TO_ADDRESS)
 #endif // !defined(ASIO_HAS_STD_TO_ADDRESS)
+
+// Standard library support for snprintf.
+#if !defined(ASIO_HAS_SNPRINTF)
+# if !defined(ASIO_DISABLE_SNPRINTF)
+#  if defined(__apple_build_version__)
+#    if (__clang_major__ >= 14)
+#     define ASIO_HAS_SNPRINTF 1
+#    endif // (__clang_major__ >= 14)
+#  endif // defined(__apple_build_version__)
+# endif // !defined(ASIO_DISABLE_SNPRINTF)
+#endif // !defined(ASIO_HAS_SNPRINTF)
 
 #endif // ASIO_DETAIL_CONFIG_HPP

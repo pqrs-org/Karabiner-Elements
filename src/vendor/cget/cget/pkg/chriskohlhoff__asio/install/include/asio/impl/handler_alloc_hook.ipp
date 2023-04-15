@@ -2,7 +2,7 @@
 // impl/handler_alloc_hook.ipp
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~
 //
-// Copyright (c) 2003-2022 Christopher M. Kohlhoff (chris at kohlhoff dot com)
+// Copyright (c) 2003-2023 Christopher M. Kohlhoff (chris at kohlhoff dot com)
 //
 // Distributed under the Boost Software License, Version 1.0. (See accompanying
 // file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
@@ -51,7 +51,7 @@ asio_handler_deallocate(void* pointer, std::size_t size, ...)
       detail::thread_context::top_of_thread_call_stack(), pointer, size);
 #else // !defined(ASIO_DISABLE_SMALL_BLOCK_RECYCLING)
   (void)size;
-  aligned_delete(pointer)
+  aligned_delete(pointer);
 #endif // !defined(ASIO_DISABLE_SMALL_BLOCK_RECYCLING)
 }
 

@@ -2,7 +2,7 @@
 // any_io_executor.hpp
 // ~~~~~~~~~~~~~~~~~~~
 //
-// Copyright (c) 2003-2022 Christopher M. Kohlhoff (chris at kohlhoff dot com)
+// Copyright (c) 2003-2023 Christopher M. Kohlhoff (chris at kohlhoff dot com)
 //
 // Distributed under the Boost Software License, Version 1.0. (See accompanying
 // file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
@@ -123,6 +123,40 @@ public:
   }
 #endif // defined(GENERATING_DOCUMENTATION)
 
+  /// Construct to point to the same target as another any_executor.
+#if defined(GENERATING_DOCUMENTATION)
+  template <class... OtherSupportableProperties>
+    any_io_executor(std::nothrow_t,
+      execution::any_executor<OtherSupportableProperties...> e);
+#else // defined(GENERATING_DOCUMENTATION)
+  template <typename OtherAnyExecutor>
+  any_io_executor(std::nothrow_t, OtherAnyExecutor e,
+      typename constraint<
+        conditional<
+          !is_same<OtherAnyExecutor, any_io_executor>::value
+            && is_base_of<execution::detail::any_executor_base,
+              OtherAnyExecutor>::value,
+          typename execution::detail::supportable_properties<
+            0, supportable_properties_type>::template
+              is_valid_target<OtherAnyExecutor>,
+          false_type
+        >::type::value
+      >::type = 0) ASIO_NOEXCEPT
+    : base_type(std::nothrow, ASIO_MOVE_CAST(OtherAnyExecutor)(e))
+  {
+  }
+#endif // defined(GENERATING_DOCUMENTATION)
+
+  /// Construct to point to the same target as another any_executor.
+  ASIO_DECL any_io_executor(std::nothrow_t,
+      const any_io_executor& e) ASIO_NOEXCEPT;
+
+#if defined(ASIO_HAS_MOVE) || defined(GENERATING_DOCUMENTATION)
+  /// Construct to point to the same target as another any_executor.
+  ASIO_DECL any_io_executor(std::nothrow_t,
+      any_io_executor&& e) ASIO_NOEXCEPT;
+#endif // defined(ASIO_HAS_MOVE) || defined(GENERATING_DOCUMENTATION)
+
   /// Construct a polymorphic wrapper for the specified executor.
 #if defined(GENERATING_DOCUMENTATION)
   template <ASIO_EXECUTION_EXECUTOR Executor>
@@ -141,6 +175,28 @@ public:
         >::type::value
       >::type = 0)
     : base_type(ASIO_MOVE_CAST(Executor)(e))
+  {
+  }
+#endif // defined(GENERATING_DOCUMENTATION)
+
+  /// Construct a polymorphic wrapper for the specified executor.
+#if defined(GENERATING_DOCUMENTATION)
+  template <ASIO_EXECUTION_EXECUTOR Executor>
+  any_io_executor(std::nothrow_t, Executor e);
+#else // defined(GENERATING_DOCUMENTATION)
+  template <ASIO_EXECUTION_EXECUTOR Executor>
+  any_io_executor(std::nothrow_t, Executor e,
+      typename constraint<
+        conditional<
+          !is_same<Executor, any_io_executor>::value
+            && !is_base_of<execution::detail::any_executor_base,
+              Executor>::value,
+          execution::detail::is_valid_target_executor<
+            Executor, supportable_properties_type>,
+          false_type
+        >::type::value
+      >::type = 0) ASIO_NOEXCEPT
+    : base_type(std::nothrow, ASIO_MOVE_CAST(Executor)(e))
   {
   }
 #endif // defined(GENERATING_DOCUMENTATION)

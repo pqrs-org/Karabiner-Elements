@@ -2,7 +2,7 @@
 // detail/impl/win_iocp_io_context.ipp
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 //
-// Copyright (c) 2003-2022 Christopher M. Kohlhoff (chris at kohlhoff dot com)
+// Copyright (c) 2003-2023 Christopher M. Kohlhoff (chris at kohlhoff dot com)
 //
 // Distributed under the Boost Software License, Version 1.0. (See accompanying
 // file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
@@ -168,7 +168,10 @@ void win_iocp_io_context::shutdown()
   }
 
   if (timer_thread_.get())
+  {
     timer_thread_->join();
+    timer_thread_.reset();
+  }
 }
 
 asio::error_code win_iocp_io_context::register_handle(

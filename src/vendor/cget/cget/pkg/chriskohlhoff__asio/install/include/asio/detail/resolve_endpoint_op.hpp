@@ -2,7 +2,7 @@
 // detail/resolve_endpoint_op.hpp
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 //
-// Copyright (c) 2003-2022 Christopher M. Kohlhoff (chris at kohlhoff dot com)
+// Copyright (c) 2003-2023 Christopher M. Kohlhoff (chris at kohlhoff dot com)
 //
 // Distributed under the Boost Software License, Version 1.0. (See accompanying
 // file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
@@ -70,6 +70,7 @@ public:
       std::size_t /*bytes_transferred*/)
   {
     // Take ownership of the operation object.
+    ASIO_ASSUME(base != 0);
     resolve_endpoint_op* o(static_cast<resolve_endpoint_op*>(base));
     ptr p = { asio::detail::addressof(o->handler_), o, o };
 

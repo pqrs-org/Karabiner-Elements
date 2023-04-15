@@ -2,7 +2,7 @@
 // impl/use_future.hpp
 // ~~~~~~~~~~~~~~~~~~~
 //
-// Copyright (c) 2003-2022 Christopher M. Kohlhoff (chris at kohlhoff dot com)
+// Copyright (c) 2003-2023 Christopher M. Kohlhoff (chris at kohlhoff dot com)
 //
 // Distributed under the Boost Software License, Version 1.0. (See accompanying
 // file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
@@ -211,6 +211,11 @@ public:
   {
   }
 
+  execution_context& query(execution::context_t) const ASIO_NOEXCEPT
+  {
+    return asio::query(system_executor(), execution::context);
+  }
+
   static ASIO_CONSTEXPR Blocking query(execution::blocking_t)
   {
     return Blocking();
@@ -231,9 +236,14 @@ public:
   template <typename F>
   void execute(ASIO_MOVE_ARG(F) f) const
   {
+#if defined(ASIO_NO_DEPRECATED)
+    asio::require(system_executor(), Blocking()).execute(
+        promise_invoker<T, F>(p_, ASIO_MOVE_CAST(F)(f)));
+#else // defined(ASIO_NO_DEPRECATED)
     execution::execute(
         asio::require(system_executor(), Blocking()),
         promise_invoker<T, F>(p_, ASIO_MOVE_CAST(F)(f)));
+#endif // defined(ASIO_NO_DEPRECATED)
   }
 
 #if !defined(ASIO_NO_TS_EXECUTORS)
@@ -988,6 +998,21 @@ struct query_static_constexpr_member<
 };
 
 #endif // !defined(ASIO_HAS_DEDUCED_QUERY_STATIC_CONSTEXPR_TRAIT)
+
+#if !defined(ASIO_HAS_DEDUCED_QUERY_MEMBER_TRAIT)
+
+template <typename T, typename Blocking>
+struct query_member<
+    asio::detail::promise_executor<T, Blocking>,
+    execution::context_t
+  >
+{
+  ASIO_STATIC_CONSTEXPR(bool, is_valid = true);
+  ASIO_STATIC_CONSTEXPR(bool, is_noexcept = true);
+  typedef asio::system_context& result_type;
+};
+
+#endif // !defined(ASIO_HAS_DEDUCED_QUERY_MEMBER_TRAIT)
 
 #if !defined(ASIO_HAS_DEDUCED_REQUIRE_MEMBER_TRAIT)
 

@@ -2,7 +2,7 @@
 // experimental/detail/channel_message.hpp
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 //
-// Copyright (c) 2003-2022 Christopher M. Kohlhoff (chris at kohlhoff dot com)
+// Copyright (c) 2003-2023 Christopher M. Kohlhoff (chris at kohlhoff dot com)
 //
 // Distributed under the Boost Software License, Version 1.0. (See accompanying
 // file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
@@ -18,6 +18,7 @@
 #include "asio/detail/config.hpp"
 #include <tuple>
 #include "asio/detail/type_traits.hpp"
+#include "asio/detail/utility.hpp"
 
 #include "asio/detail/push_options.hpp"
 
@@ -104,11 +105,17 @@ public:
   template <typename Handler>
   void receive(Handler& h)
   {
-    std::apply(ASIO_MOVE_OR_LVALUE(Handler)(h),
-        ASIO_MOVE_CAST(args_type)(args_));
+    this->do_receive(h, asio::detail::index_sequence_for<Args...>());
   }
 
 private:
+  template <typename Handler, std::size_t... I>
+  void do_receive(Handler& h, asio::detail::index_sequence<I...>)
+  {
+    ASIO_MOVE_OR_LVALUE(Handler)(h)(
+        std::get<I>(ASIO_MOVE_CAST(args_type)(args_))...);
+  }
+
   typedef std::tuple<typename decay<Args>::type...> args_type;
   args_type args_;
 };

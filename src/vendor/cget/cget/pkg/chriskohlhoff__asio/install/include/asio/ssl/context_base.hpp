@@ -2,7 +2,7 @@
 // ssl/context_base.hpp
 // ~~~~~~~~~~~~~~~~~~~~
 //
-// Copyright (c) 2003-2022 Christopher M. Kohlhoff (chris at kohlhoff dot com)
+// Copyright (c) 2003-2023 Christopher M. Kohlhoff (chris at kohlhoff dot com)
 //
 // Distributed under the Boost Software License, Version 1.0. (See accompanying
 // file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
@@ -105,60 +105,60 @@ public:
   };
 
   /// Bitmask type for SSL options.
-  typedef long options;
+  typedef uint64_t options;
 
 #if defined(GENERATING_DOCUMENTATION)
   /// Implement various bug workarounds.
-  static const long default_workarounds = implementation_defined;
+  static const uint64_t default_workarounds = implementation_defined;
 
   /// Always create a new key when using tmp_dh parameters.
-  static const long single_dh_use = implementation_defined;
+  static const uint64_t single_dh_use = implementation_defined;
 
   /// Disable SSL v2.
-  static const long no_sslv2 = implementation_defined;
+  static const uint64_t no_sslv2 = implementation_defined;
 
   /// Disable SSL v3.
-  static const long no_sslv3 = implementation_defined;
+  static const uint64_t no_sslv3 = implementation_defined;
 
   /// Disable TLS v1.
-  static const long no_tlsv1 = implementation_defined;
+  static const uint64_t no_tlsv1 = implementation_defined;
 
   /// Disable TLS v1.1.
-  static const long no_tlsv1_1 = implementation_defined;
+  static const uint64_t no_tlsv1_1 = implementation_defined;
 
   /// Disable TLS v1.2.
-  static const long no_tlsv1_2 = implementation_defined;
+  static const uint64_t no_tlsv1_2 = implementation_defined;
 
   /// Disable TLS v1.3.
-  static const long no_tlsv1_3 = implementation_defined;
+  static const uint64_t no_tlsv1_3 = implementation_defined;
 
   /// Disable compression. Compression is disabled by default.
-  static const long no_compression = implementation_defined;
+  static const uint64_t no_compression = implementation_defined;
 #else
-  ASIO_STATIC_CONSTANT(long, default_workarounds = SSL_OP_ALL);
-  ASIO_STATIC_CONSTANT(long, single_dh_use = SSL_OP_SINGLE_DH_USE);
-  ASIO_STATIC_CONSTANT(long, no_sslv2 = SSL_OP_NO_SSLv2);
-  ASIO_STATIC_CONSTANT(long, no_sslv3 = SSL_OP_NO_SSLv3);
-  ASIO_STATIC_CONSTANT(long, no_tlsv1 = SSL_OP_NO_TLSv1);
+  ASIO_STATIC_CONSTANT(uint64_t, default_workarounds = SSL_OP_ALL);
+  ASIO_STATIC_CONSTANT(uint64_t, single_dh_use = SSL_OP_SINGLE_DH_USE);
+  ASIO_STATIC_CONSTANT(uint64_t, no_sslv2 = SSL_OP_NO_SSLv2);
+  ASIO_STATIC_CONSTANT(uint64_t, no_sslv3 = SSL_OP_NO_SSLv3);
+  ASIO_STATIC_CONSTANT(uint64_t, no_tlsv1 = SSL_OP_NO_TLSv1);
 # if defined(SSL_OP_NO_TLSv1_1)
-  ASIO_STATIC_CONSTANT(long, no_tlsv1_1 = SSL_OP_NO_TLSv1_1);
+  ASIO_STATIC_CONSTANT(uint64_t, no_tlsv1_1 = SSL_OP_NO_TLSv1_1);
 # else // defined(SSL_OP_NO_TLSv1_1)
-  ASIO_STATIC_CONSTANT(long, no_tlsv1_1 = 0x10000000L);
+  ASIO_STATIC_CONSTANT(uint64_t, no_tlsv1_1 = 0x10000000L);
 # endif // defined(SSL_OP_NO_TLSv1_1)
 # if defined(SSL_OP_NO_TLSv1_2)
-  ASIO_STATIC_CONSTANT(long, no_tlsv1_2 = SSL_OP_NO_TLSv1_2);
+  ASIO_STATIC_CONSTANT(uint64_t, no_tlsv1_2 = SSL_OP_NO_TLSv1_2);
 # else // defined(SSL_OP_NO_TLSv1_2)
-  ASIO_STATIC_CONSTANT(long, no_tlsv1_2 = 0x08000000L);
+  ASIO_STATIC_CONSTANT(uint64_t, no_tlsv1_2 = 0x08000000L);
 # endif // defined(SSL_OP_NO_TLSv1_2)
 # if defined(SSL_OP_NO_TLSv1_3)
-  ASIO_STATIC_CONSTANT(long, no_tlsv1_3 = SSL_OP_NO_TLSv1_3);
+  ASIO_STATIC_CONSTANT(uint64_t, no_tlsv1_3 = SSL_OP_NO_TLSv1_3);
 # else // defined(SSL_OP_NO_TLSv1_3)
-  ASIO_STATIC_CONSTANT(long, no_tlsv1_3 = 0x20000000L);
+  ASIO_STATIC_CONSTANT(uint64_t, no_tlsv1_3 = 0x20000000L);
 # endif // defined(SSL_OP_NO_TLSv1_3)
 # if defined(SSL_OP_NO_COMPRESSION)
-  ASIO_STATIC_CONSTANT(long, no_compression = SSL_OP_NO_COMPRESSION);
+  ASIO_STATIC_CONSTANT(uint64_t, no_compression = SSL_OP_NO_COMPRESSION);
 # else // defined(SSL_OP_NO_COMPRESSION)
-  ASIO_STATIC_CONSTANT(long, no_compression = 0x20000L);
+  ASIO_STATIC_CONSTANT(uint64_t, no_compression = 0x20000L);
 # endif // defined(SSL_OP_NO_COMPRESSION)
 #endif
 

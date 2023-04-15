@@ -2,7 +2,7 @@
 // impl/src.hpp
 // ~~~~~~~~~~~~
 //
-// Copyright (c) 2003-2022 Christopher M. Kohlhoff (chris at kohlhoff dot com)
+// Copyright (c) 2003-2023 Christopher M. Kohlhoff (chris at kohlhoff dot com)
 //
 // Distributed under the Boost Software License, Version 1.0. (See accompanying
 // file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
@@ -19,6 +19,7 @@
 # error Do not compile Asio library source with ASIO_HEADER_ONLY defined
 #endif
 
+#include "asio/impl/any_completion_executor.ipp"
 #include "asio/impl/any_io_executor.ipp"
 #include "asio/impl/cancellation_signal.ipp"
 #include "asio/impl/connect_pipe.ipp"

@@ -2,7 +2,7 @@
 // asio.hpp
 // ~~~~~~~~
 //
-// Copyright (c) 2003-2022 Christopher M. Kohlhoff (chris at kohlhoff dot com)
+// Copyright (c) 2003-2023 Christopher M. Kohlhoff (chris at kohlhoff dot com)
 //
 // Distributed under the Boost Software License, Version 1.0. (See accompanying
 // file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
@@ -15,11 +15,15 @@
 # pragma once
 #endif // defined(_MSC_VER) && (_MSC_VER >= 1200)
 
+#include "asio/any_completion_executor.hpp"
+#include "asio/any_completion_handler.hpp"
+#include "asio/any_io_executor.hpp"
 #include "asio/append.hpp"
 #include "asio/as_tuple.hpp"
 #include "asio/associated_allocator.hpp"
-#include "asio/associated_executor.hpp"
 #include "asio/associated_cancellation_slot.hpp"
+#include "asio/associated_executor.hpp"
+#include "asio/associated_immediate_executor.hpp"
 #include "asio/associator.hpp"
 #include "asio/async_result.hpp"
 #include "asio/awaitable.hpp"
@@ -45,6 +49,7 @@
 #include "asio/bind_allocator.hpp"
 #include "asio/bind_cancellation_slot.hpp"
 #include "asio/bind_executor.hpp"
+#include "asio/bind_immediate_executor.hpp"
 #include "asio/buffer.hpp"
 #include "asio/buffer_registration.hpp"
 #include "asio/buffered_read_stream_fwd.hpp"
@@ -62,6 +67,7 @@
 #include "asio/compose.hpp"
 #include "asio/connect.hpp"
 #include "asio/connect_pipe.hpp"
+#include "asio/consign.hpp"
 #include "asio/coroutine.hpp"
 #include "asio/deadline_timer.hpp"
 #include "asio/defer.hpp"
@@ -147,6 +153,7 @@
 #include "asio/local/basic_endpoint.hpp"
 #include "asio/local/connect_pair.hpp"
 #include "asio/local/datagram_protocol.hpp"
+#include "asio/local/seq_packet_protocol.hpp"
 #include "asio/local/stream_protocol.hpp"
 #include "asio/multiple_exceptions.hpp"
 #include "asio/packaged_task.hpp"
@@ -173,6 +180,7 @@
 #include "asio/serial_port.hpp"
 #include "asio/serial_port_base.hpp"
 #include "asio/signal_set.hpp"
+#include "asio/signal_set_base.hpp"
 #include "asio/socket_base.hpp"
 #include "asio/static_thread_pool.hpp"
 #include "asio/steady_timer.hpp"

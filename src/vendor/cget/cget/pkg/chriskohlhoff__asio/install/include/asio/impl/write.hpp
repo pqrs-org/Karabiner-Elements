@@ -2,7 +2,7 @@
 // impl/write.hpp
 // ~~~~~~~~~~~~~~
 //
-// Copyright (c) 2003-2022 Christopher M. Kohlhoff (chris at kohlhoff dot com)
+// Copyright (c) 2003-2023 Christopher M. Kohlhoff (chris at kohlhoff dot com)
 //
 // Distributed under the Boost Software License, Version 1.0. (See accompanying
 // file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
@@ -511,10 +511,21 @@ struct associator<Associator,
     DefaultCandidate>
   : Associator<WriteHandler, DefaultCandidate>
 {
-  static typename Associator<WriteHandler, DefaultCandidate>::type get(
-      const detail::write_op<AsyncWriteStream, ConstBufferSequence,
+  static typename Associator<WriteHandler, DefaultCandidate>::type
+  get(const detail::write_op<AsyncWriteStream, ConstBufferSequence,
+        ConstBufferIterator, CompletionCondition, WriteHandler>& h)
+    ASIO_NOEXCEPT
+  {
+    return Associator<WriteHandler, DefaultCandidate>::get(h.handler_);
+  }
+
+  static ASIO_AUTO_RETURN_TYPE_PREFIX2(
+      typename Associator<WriteHandler, DefaultCandidate>::type)
+  get(const detail::write_op<AsyncWriteStream, ConstBufferSequence,
         ConstBufferIterator, CompletionCondition, WriteHandler>& h,
-      const DefaultCandidate& c = DefaultCandidate()) ASIO_NOEXCEPT
+      const DefaultCandidate& c) ASIO_NOEXCEPT
+    ASIO_AUTO_RETURN_TYPE_SUFFIX((
+      Associator<WriteHandler, DefaultCandidate>::get(h.handler_, c)))
   {
     return Associator<WriteHandler, DefaultCandidate>::get(h.handler_, c);
   }
@@ -757,10 +768,20 @@ struct associator<Associator,
     DefaultCandidate>
   : Associator<WriteHandler, DefaultCandidate>
 {
-  static typename Associator<WriteHandler, DefaultCandidate>::type get(
-      const detail::write_dynbuf_v1_op<AsyncWriteStream,
+  static typename Associator<WriteHandler, DefaultCandidate>::type
+  get(const detail::write_dynbuf_v1_op<AsyncWriteStream, DynamicBuffer_v1,
+        CompletionCondition, WriteHandler>& h) ASIO_NOEXCEPT
+  {
+    return Associator<WriteHandler, DefaultCandidate>::get(h.handler_);
+  }
+
+  static ASIO_AUTO_RETURN_TYPE_PREFIX2(
+      typename Associator<WriteHandler, DefaultCandidate>::type)
+  get(const detail::write_dynbuf_v1_op<AsyncWriteStream,
         DynamicBuffer_v1, CompletionCondition, WriteHandler>& h,
-      const DefaultCandidate& c = DefaultCandidate()) ASIO_NOEXCEPT
+      const DefaultCandidate& c) ASIO_NOEXCEPT
+    ASIO_AUTO_RETURN_TYPE_SUFFIX((
+      Associator<WriteHandler, DefaultCandidate>::get(h.handler_, c)))
   {
     return Associator<WriteHandler, DefaultCandidate>::get(h.handler_, c);
   }
@@ -1054,35 +1075,22 @@ struct associator<Associator,
     DefaultCandidate>
   : Associator<WriteHandler, DefaultCandidate>
 {
-  static typename Associator<WriteHandler, DefaultCandidate>::type get(
-      const detail::write_dynbuf_v2_op<AsyncWriteStream,
+  static typename Associator<WriteHandler, DefaultCandidate>::type
+  get(const detail::write_dynbuf_v2_op<AsyncWriteStream, DynamicBuffer_v2,
+        CompletionCondition, WriteHandler>& h) ASIO_NOEXCEPT
+  {
+    return Associator<WriteHandler, DefaultCandidate>::get(h.handler_);
+  }
+
+  static ASIO_AUTO_RETURN_TYPE_PREFIX2(
+      typename Associator<WriteHandler, DefaultCandidate>::type)
+  get(const detail::write_dynbuf_v2_op<AsyncWriteStream,
         DynamicBuffer_v2, CompletionCondition, WriteHandler>& h,
-      const DefaultCandidate& c = DefaultCandidate()) ASIO_NOEXCEPT
+      const DefaultCandidate& c) ASIO_NOEXCEPT
+    ASIO_AUTO_RETURN_TYPE_SUFFIX((
+      Associator<WriteHandler, DefaultCandidate>::get(h.handler_, c)))
   {
     return Associator<WriteHandler, DefaultCandidate>::get(h.handler_, c);
-  }
-};
-
-template <typename AsyncWriteStream, typename DynamicBuffer_v2,
-    typename CompletionCondition, typename WriteHandler,
-    typename CancellationSlot>
-struct associated_cancellation_slot<
-    detail::write_dynbuf_v2_op<AsyncWriteStream,
-      DynamicBuffer_v2, CompletionCondition, WriteHandler>,
-    CancellationSlot>
-  : detail::associated_cancellation_slot_forwarding_base<
-      WriteHandler, CancellationSlot>
-{
-  typedef typename associated_cancellation_slot<
-      WriteHandler, CancellationSlot>::type type;
-
-  static type get(
-      const detail::write_dynbuf_v2_op<AsyncWriteStream,
-        DynamicBuffer_v2, CompletionCondition, WriteHandler>& h,
-      const CancellationSlot& s = CancellationSlot()) ASIO_NOEXCEPT
-  {
-    return associated_cancellation_slot<WriteHandler,
-        CancellationSlot>::get(h.handler_, s);
   }
 };
 

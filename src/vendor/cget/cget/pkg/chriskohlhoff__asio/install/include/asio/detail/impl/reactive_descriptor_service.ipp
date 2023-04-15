@@ -2,7 +2,7 @@
 // detail/impl/reactive_descriptor_service.ipp
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 //
-// Copyright (c) 2003-2022 Christopher M. Kohlhoff (chris at kohlhoff dot com)
+// Copyright (c) 2003-2023 Christopher M. Kohlhoff (chris at kohlhoff dot com)
 //
 // Distributed under the Boost Software License, Version 1.0. (See accompanying
 // file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
@@ -197,10 +197,10 @@ asio::error_code reactive_descriptor_service::cancel(
   return ec;
 }
 
-void reactive_descriptor_service::start_op(
-    reactive_descriptor_service::implementation_type& impl,
-    int op_type, reactor_op* op, bool is_continuation,
-    bool is_non_blocking, bool noop)
+void reactive_descriptor_service::do_start_op(implementation_type& impl,
+    int op_type, reactor_op* op, bool is_continuation, bool is_non_blocking,
+    bool noop, void (*on_immediate)(operation* op, bool, const void*),
+    const void* immediate_arg)
 {
   if (!noop)
   {
@@ -208,13 +208,13 @@ void reactive_descriptor_service::start_op(
         descriptor_ops::set_internal_non_blocking(
           impl.descriptor_, impl.state_, true, op->ec_))
     {
-      reactor_.start_op(op_type, impl.descriptor_,
-          impl.reactor_data_, op, is_continuation, is_non_blocking);
+      reactor_.start_op(op_type, impl.descriptor_, impl.reactor_data_, op,
+          is_continuation, is_non_blocking, on_immediate, immediate_arg);
       return;
     }
   }
 
-  reactor_.post_immediate_completion(op, is_continuation);
+  on_immediate(op, is_continuation, immediate_arg);
 }
 
 } // namespace detail

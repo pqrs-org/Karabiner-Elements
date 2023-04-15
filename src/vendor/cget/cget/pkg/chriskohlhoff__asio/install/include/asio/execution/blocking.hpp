@@ -2,7 +2,7 @@
 // execution/blocking.hpp
 // ~~~~~~~~~~~~~~~~~~~~~~
 //
-// Copyright (c) 2003-2022 Christopher M. Kohlhoff (chris at kohlhoff dot com)
+// Copyright (c) 2003-2023 Christopher M. Kohlhoff (chris at kohlhoff dot com)
 //
 // Distributed under the Boost Software License, Version 1.0. (See accompanying
 // file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
@@ -25,6 +25,7 @@
 #include "asio/prefer.hpp"
 #include "asio/query.hpp"
 #include "asio/require.hpp"
+#include "asio/traits/execute_member.hpp"
 #include "asio/traits/query_free.hpp"
 #include "asio/traits/query_member.hpp"
 #include "asio/traits/query_static_constexpr_member.hpp"
@@ -208,6 +209,12 @@ template <int I = 0>
 struct blocking_t
 {
 #if defined(ASIO_HAS_VARIABLE_TEMPLATES)
+# if defined(ASIO_NO_DEPRECATED)
+  template <typename T>
+  ASIO_STATIC_CONSTEXPR(bool,
+    is_applicable_property_v = (
+      is_executor<T>::value));
+# else // defined(ASIO_NO_DEPRECATED)
   template <typename T>
   ASIO_STATIC_CONSTEXPR(bool,
     is_applicable_property_v = (
@@ -221,7 +228,9 @@ struct blocking_t
             is_executor<T>::value,
             false_type,
             is_scheduler<T>
-          >::type::value));
+          >::type::value
+      ));
+# endif // defined(ASIO_NO_DEPRECATED)
 #endif // defined(ASIO_HAS_VARIABLE_TEMPLATES)
 
   ASIO_STATIC_CONSTEXPR(bool, is_requirable = false);
@@ -510,6 +519,12 @@ template <int I = 0>
 struct possibly_t
 {
 #if defined(ASIO_HAS_VARIABLE_TEMPLATES)
+# if defined(ASIO_NO_DEPRECATED)
+  template <typename T>
+  ASIO_STATIC_CONSTEXPR(bool,
+    is_applicable_property_v = (
+      is_executor<T>::value));
+# else // defined(ASIO_NO_DEPRECATED)
   template <typename T>
   ASIO_STATIC_CONSTEXPR(bool,
     is_applicable_property_v = (
@@ -523,7 +538,9 @@ struct possibly_t
             is_executor<T>::value,
             false_type,
             is_scheduler<T>
-          >::type::value));
+          >::type::value
+      ));
+# endif // defined(ASIO_NO_DEPRECATED)
 #endif // defined(ASIO_HAS_VARIABLE_TEMPLATES)
 
   ASIO_STATIC_CONSTEXPR(bool, is_requirable = true);
@@ -742,7 +759,11 @@ public:
 
   template <typename Function>
   typename enable_if<
+#if defined(ASIO_NO_DEPRECATED)
+    traits::execute_member<const Executor&, Function>::is_valid
+#else // defined(ASIO_NO_DEPRECATED)
     execution::can_execute<const Executor&, Function>::value
+#endif // defined(ASIO_NO_DEPRECATED)
   >::type execute(ASIO_MOVE_ARG(Function) f) const
   {
     blocking_adaptation::blocking_execute(
@@ -767,6 +788,12 @@ template <int I = 0>
 struct always_t
 {
 #if defined(ASIO_HAS_VARIABLE_TEMPLATES)
+# if defined(ASIO_NO_DEPRECATED)
+  template <typename T>
+  ASIO_STATIC_CONSTEXPR(bool,
+    is_applicable_property_v = (
+      is_executor<T>::value));
+# else // defined(ASIO_NO_DEPRECATED)
   template <typename T>
   ASIO_STATIC_CONSTEXPR(bool,
     is_applicable_property_v = (
@@ -780,7 +807,9 @@ struct always_t
             is_executor<T>::value,
             false_type,
             is_scheduler<T>
-          >::type::value));
+          >::type::value
+      ));
+# endif // defined(ASIO_NO_DEPRECATED)
 #endif // defined(ASIO_HAS_VARIABLE_TEMPLATES)
 
   ASIO_STATIC_CONSTEXPR(bool, is_requirable = true);
@@ -888,6 +917,12 @@ template <int I>
 struct never_t
 {
 #if defined(ASIO_HAS_VARIABLE_TEMPLATES)
+# if defined(ASIO_NO_DEPRECATED)
+  template <typename T>
+  ASIO_STATIC_CONSTEXPR(bool,
+    is_applicable_property_v = (
+      is_executor<T>::value));
+# else // defined(ASIO_NO_DEPRECATED)
   template <typename T>
   ASIO_STATIC_CONSTEXPR(bool,
     is_applicable_property_v = (
@@ -901,7 +936,9 @@ struct never_t
             is_executor<T>::value,
             false_type,
             is_scheduler<T>
-          >::type::value));
+          >::type::value
+      ));
+# endif // defined(ASIO_NO_DEPRECATED)
 #endif // defined(ASIO_HAS_VARIABLE_TEMPLATES)
 
   ASIO_STATIC_CONSTEXPR(bool, is_requirable = true);
@@ -1007,6 +1044,7 @@ template <typename T>
 struct is_applicable_property<T, execution::blocking_t>
   : integral_constant<bool,
       execution::is_executor<T>::value
+#if !defined(ASIO_NO_DEPRECATED)
         || conditional<
             execution::is_executor<T>::value,
             false_type,
@@ -1016,7 +1054,9 @@ struct is_applicable_property<T, execution::blocking_t>
             execution::is_executor<T>::value,
             false_type,
             execution::is_scheduler<T>
-          >::type::value>
+          >::type::value
+#endif // !defined(ASIO_NO_DEPRECATED)
+    >
 {
 };
 
@@ -1024,6 +1064,7 @@ template <typename T>
 struct is_applicable_property<T, execution::blocking_t::possibly_t>
   : integral_constant<bool,
       execution::is_executor<T>::value
+#if !defined(ASIO_NO_DEPRECATED)
         || conditional<
             execution::is_executor<T>::value,
             false_type,
@@ -1033,7 +1074,9 @@ struct is_applicable_property<T, execution::blocking_t::possibly_t>
             execution::is_executor<T>::value,
             false_type,
             execution::is_scheduler<T>
-          >::type::value>
+          >::type::value
+#endif // !defined(ASIO_NO_DEPRECATED)
+    >
 {
 };
 
@@ -1041,6 +1084,7 @@ template <typename T>
 struct is_applicable_property<T, execution::blocking_t::always_t>
   : integral_constant<bool,
       execution::is_executor<T>::value
+#if !defined(ASIO_NO_DEPRECATED)
         || conditional<
             execution::is_executor<T>::value,
             false_type,
@@ -1050,7 +1094,9 @@ struct is_applicable_property<T, execution::blocking_t::always_t>
             execution::is_executor<T>::value,
             false_type,
             execution::is_scheduler<T>
-          >::type::value>
+          >::type::value
+#endif // !defined(ASIO_NO_DEPRECATED)
+    >
 {
 };
 
@@ -1058,6 +1104,7 @@ template <typename T>
 struct is_applicable_property<T, execution::blocking_t::never_t>
   : integral_constant<bool,
       execution::is_executor<T>::value
+#if !defined(ASIO_NO_DEPRECATED)
         || conditional<
             execution::is_executor<T>::value,
             false_type,
@@ -1067,7 +1114,9 @@ struct is_applicable_property<T, execution::blocking_t::never_t>
             execution::is_executor<T>::value,
             false_type,
             execution::is_scheduler<T>
-          >::type::value>
+          >::type::value
+#endif // !defined(ASIO_NO_DEPRECATED)
+    >
 {
 };
 

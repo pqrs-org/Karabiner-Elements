@@ -2,7 +2,7 @@
 // execution/occupancy.hpp
 // ~~~~~~~~~~~~~~~~~~~~~~~
 //
-// Copyright (c) 2003-2022 Christopher M. Kohlhoff (chris at kohlhoff dot com)
+// Copyright (c) 2003-2023 Christopher M. Kohlhoff (chris at kohlhoff dot com)
 //
 // Distributed under the Boost Software License, Version 1.0. (See accompanying
 // file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
@@ -65,6 +65,12 @@ template <int I = 0>
 struct occupancy_t
 {
 #if defined(ASIO_HAS_VARIABLE_TEMPLATES)
+# if defined(ASIO_NO_DEPRECATED)
+  template <typename T>
+  ASIO_STATIC_CONSTEXPR(bool,
+    is_applicable_property_v = (
+      is_executor<T>::value));
+# else // defined(ASIO_NO_DEPRECATED)
   template <typename T>
   ASIO_STATIC_CONSTEXPR(bool,
     is_applicable_property_v = (
@@ -78,7 +84,9 @@ struct occupancy_t
             is_executor<T>::value,
             false_type,
             is_scheduler<T>
-          >::type::value));
+          >::type::value
+      ));
+# endif // defined(ASIO_NO_DEPRECATED)
 #endif // defined(ASIO_HAS_VARIABLE_TEMPLATES)
 
   ASIO_STATIC_CONSTEXPR(bool, is_requirable = false);
@@ -172,6 +180,7 @@ template <typename T>
 struct is_applicable_property<T, execution::occupancy_t>
   : integral_constant<bool,
       execution::is_executor<T>::value
+#if !defined(ASIO_NO_DEPRECATED)
         || conditional<
             execution::is_executor<T>::value,
             false_type,
@@ -181,7 +190,9 @@ struct is_applicable_property<T, execution::occupancy_t>
             execution::is_executor<T>::value,
             false_type,
             execution::is_scheduler<T>
-          >::type::value>
+          >::type::value
+#endif // !defined(ASIO_NO_DEPRECATED)
+    >
 {
 };
 

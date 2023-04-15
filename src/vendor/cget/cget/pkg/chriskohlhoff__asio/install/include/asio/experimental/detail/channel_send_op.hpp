@@ -2,7 +2,7 @@
 // experimental/detail/channel_send_op.hpp
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 //
-// Copyright (c) 2003-2022 Christopher M. Kohlhoff (chris at kohlhoff dot com)
+// Copyright (c) 2003-2023 Christopher M. Kohlhoff (chris at kohlhoff dot com)
 //
 // Distributed under the Boost Software License, Version 1.0. (See accompanying
 // file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
@@ -36,6 +36,11 @@ public:
   Payload get_payload()
   {
     return ASIO_MOVE_CAST(Payload)(payload_);
+  }
+
+  void immediate()
+  {
+    func_(this, immediate_op, 0);
   }
 
   void complete()
@@ -121,7 +126,10 @@ public:
     if (a != channel_operation::destroy_op)
     {
       ASIO_HANDLER_INVOCATION_BEGIN((handler.arg1_));
-      w.complete(handler, handler.handler_);
+      if (a == channel_operation::immediate_op)
+        w.immediate(handler, handler.handler_, 0);
+      else
+        w.complete(handler, handler.handler_);
       ASIO_HANDLER_INVOCATION_END;
     }
   }

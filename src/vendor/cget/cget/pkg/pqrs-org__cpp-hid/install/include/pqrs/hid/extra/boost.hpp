@@ -20,6 +20,12 @@ inline std::size_t hash_value(const value_t& value) {
 }
 } // namespace product_id
 
+namespace report_id {
+inline std::size_t hash_value(const value_t& value) {
+  return std::hash<value_t>{}(value);
+}
+} // namespace report_id
+
 namespace usage_page {
 inline std::size_t hash_value(const value_t& value) {
   return std::hash<value_t>{}(value);

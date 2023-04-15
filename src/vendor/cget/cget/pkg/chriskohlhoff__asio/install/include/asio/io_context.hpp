@@ -2,7 +2,7 @@
 // io_context.hpp
 // ~~~~~~~~~~~~~~
 //
-// Copyright (c) 2003-2022 Christopher M. Kohlhoff (chris at kohlhoff dot com)
+// Copyright (c) 2003-2023 Christopher M. Kohlhoff (chris at kohlhoff dot com)
 //
 // Distributed under the Boost Software License, Version 1.0. (See accompanying
 // file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
@@ -1005,20 +1005,7 @@ public:
       || static_cast<const Allocator&>(a) != static_cast<const Allocator&>(b);
   }
 
-#if !defined(GENERATING_DOCUMENTATION)
-private:
-  friend struct asio_execution_execute_fn::impl;
-#endif // !defined(GENERATING_DOCUMENTATION)
-
   /// Execution function.
-  /**
-   * Do not call this function directly. It is intended for use with the
-   * execution::execute customisation point.
-   *
-   * For example:
-   * @code auto ex = my_io_context.get_executor();
-   * execution::execute(ex, my_function_object); @endcode
-   */
   template <typename Function>
   void execute(ASIO_MOVE_ARG(Function) f) const;
 

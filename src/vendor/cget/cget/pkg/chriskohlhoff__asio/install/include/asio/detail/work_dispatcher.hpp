@@ -2,7 +2,7 @@
 // detail/work_dispatcher.hpp
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~
 //
-// Copyright (c) 2003-2022 Christopher M. Kohlhoff (chris at kohlhoff dot com)
+// Copyright (c) 2003-2023 Christopher M. Kohlhoff (chris at kohlhoff dot com)
 //
 // Distributed under the Boost Software License, Version 1.0. (See accompanying
 // file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
@@ -80,12 +80,16 @@ public:
   {
     typename associated_allocator<Handler>::type alloc(
         (get_associated_allocator)(handler_));
-    execution::execute(
-        asio::prefer(executor_,
-          execution::blocking.possibly,
-          execution::allocator(alloc)),
+#if defined(ASIO_NO_DEPRECATED)
+    asio::prefer(executor_, execution::allocator(alloc)).execute(
         asio::detail::bind_handler(
           ASIO_MOVE_CAST(Handler)(handler_)));
+#else // defined(ASIO_NO_DEPRECATED)
+    execution::execute(
+        asio::prefer(executor_, execution::allocator(alloc)),
+        asio::detail::bind_handler(
+          ASIO_MOVE_CAST(Handler)(handler_)));
+#endif // defined(ASIO_NO_DEPRECATED)
   }
 
 private:

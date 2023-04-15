@@ -2,7 +2,7 @@
 // experimental/detail/channel_receive_op.hpp
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 //
-// Copyright (c) 2003-2022 Christopher M. Kohlhoff (chris at kohlhoff dot com)
+// Copyright (c) 2003-2023 Christopher M. Kohlhoff (chris at kohlhoff dot com)
 //
 // Distributed under the Boost Software License, Version 1.0. (See accompanying
 // file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
@@ -33,6 +33,11 @@ template <typename Payload>
 class channel_receive : public channel_operation
 {
 public:
+  void immediate(Payload payload)
+  {
+    func_(this, immediate_op, &payload);
+  }
+
   void complete(Payload payload)
   {
     func_(this, complete_op, &payload);
@@ -79,7 +84,7 @@ public:
     // with the handler. Consequently, a local copy of the handler is required
     // to ensure that any owning sub-object remains valid until after we have
     // deallocated the memory here.
-    if (a == channel_operation::complete_op)
+    if (a != channel_operation::destroy_op)
     {
       Payload* payload = static_cast<Payload*>(v);
       channel_handler<Payload, Handler> handler(
@@ -87,7 +92,10 @@ public:
       p.h = asio::detail::addressof(handler.handler_);
       p.reset();
       ASIO_HANDLER_INVOCATION_BEGIN(());
-      w.complete(handler, handler.handler_);
+      if (a == channel_operation::immediate_op)
+        w.immediate(handler, handler.handler_, 0);
+      else
+        w.complete(handler, handler.handler_);
       ASIO_HANDLER_INVOCATION_END;
     }
     else

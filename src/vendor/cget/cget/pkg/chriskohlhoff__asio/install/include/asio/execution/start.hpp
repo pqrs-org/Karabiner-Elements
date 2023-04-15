@@ -2,7 +2,7 @@
 // execution/start.hpp
 // ~~~~~~~~~~~~~~~~~~~
 //
-// Copyright (c) 2003-2022 Christopher M. Kohlhoff (chris at kohlhoff dot com)
+// Copyright (c) 2003-2023 Christopher M. Kohlhoff (chris at kohlhoff dot com)
 //
 // Distributed under the Boost Software License, Version 1.0. (See accompanying
 // file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
@@ -16,6 +16,9 @@
 #endif // defined(_MSC_VER) && (_MSC_VER >= 1200)
 
 #include "asio/detail/config.hpp"
+
+#if !defined(ASIO_NO_DEPRECATED)
+
 #include "asio/detail/type_traits.hpp"
 #include "asio/traits/start_member.hpp"
 #include "asio/traits/start_free.hpp"
@@ -243,5 +246,7 @@ constexpr bool is_nothrow_start_v
 #endif // defined(GENERATING_DOCUMENTATION)
 
 #include "asio/detail/pop_options.hpp"
+
+#endif // !defined(ASIO_NO_DEPRECATED)
 
 #endif // ASIO_EXECUTION_START_HPP
