@@ -109,31 +109,47 @@ public class StateJsonMonitor {
       needsInputMonitoringPermissionsAlert = false
     }
 
-    // print("needsDriverNotLoadedAlert \(needsDriverNotLoadedAlert)")
-    // print("needsDriverVersionNotMatchedAlert \(needsDriverVersionNotMatchedAlert)")
-    // print("needsInputMonitoringPermissionsAlert \(needsInputMonitoringPermissionsAlert)")
+    print("needsDriverNotLoadedAlert \(needsDriverNotLoadedAlert)")
+    print("needsDriverVersionNotMatchedAlert \(needsDriverVersionNotMatchedAlert)")
+    print("needsInputMonitoringPermissionsAlert \(needsInputMonitoringPermissionsAlert)")
 
     //
     // Update alert window
     //
 
-    updateAlertWindow(needsDriverNotLoadedAlert) {
-      AlertWindowsManager.shared.updateDriverNotLoadedAlertWindow()
-    }
-    updateAlertWindow(needsDriverVersionNotMatchedAlert) {
-      AlertWindowsManager.shared.updateDriverVersionNotMatchedAlertWindow()
-    }
-    updateAlertWindow(needsInputMonitoringPermissionsAlert) {
-      AlertWindowsManager.shared.updateInputMonitoringPermissionsAlertWindow()
-    }
+    updateAlertWindow(
+      needsAlert: { return StateJsonMonitor.shared.needsDriverNotLoadedAlert },
+      show: { AlertWindowsManager.shared.showDriverNotLoadedAlertWindow() },
+      hide: { AlertWindowsManager.shared.hideDriverNotLoadedAlertWindow() })
+
+    updateAlertWindow(
+      needsAlert: { return StateJsonMonitor.shared.needsDriverVersionNotMatchedAlert },
+      show: { AlertWindowsManager.shared.showDriverVersionNotMatchedAlertWindow() },
+      hide: { AlertWindowsManager.shared.hideDriverVersionNotMatchedAlertWindow() })
+
+    updateAlertWindow(
+      needsAlert: { return StateJsonMonitor.shared.needsInputMonitoringPermissionsAlert },
+      show: { AlertWindowsManager.shared.showInputMonitoringPermissionsAlertWindow() },
+      hide: { AlertWindowsManager.shared.hideInputMonitoringPermissionsAlertWindow() })
   }
 
-  private func updateAlertWindow(_ needsAlert: Bool, execute work: @escaping () -> Void) {
+  private func updateAlertWindow(
+    needsAlert: @escaping () -> Bool,
+    show: @escaping () -> Void,
+    hide: @escaping () -> Void
+  ) {
+    // Note:
     // Delay before displaying the alert to avoid the alert appearing momentarily.
     // (e.g, when karabiner_grabbedr is restarted)
 
-    DispatchQueue.main.asyncAfter(
-      deadline: .now() + (needsAlert ? 3 : 0),
-      execute: work)
+    if needsAlert() {
+      DispatchQueue.main.asyncAfter(deadline: .now() + 3) {
+        if needsAlert() {
+          show()
+        }
+      }
+    } else {
+      hide()
+    }
   }
 }
