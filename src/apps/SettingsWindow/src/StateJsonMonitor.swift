@@ -24,7 +24,10 @@ public class StateJsonMonitor {
   static let shared = StateJsonMonitor()
 
   private var states: [String: State] = [:]
-  private var driverVersionNotMatchedAlertViewShown = false
+
+  public var needsDriverNotLoadedAlert = false
+  public var needsDriverVersionNotMatchedAlert = false
+  public var needsInputMonitoringPermissionsAlert = false
 
   public func start() {
     let obj = unsafeBitCast(self, to: UnsafeMutableRawPointer.self)
@@ -64,25 +67,34 @@ public class StateJsonMonitor {
       }
     }
 
+    // print("driverNotLoaded \(driverNotLoaded)")
+    // print("driverVersionNotMatched \(driverVersionNotMatched)")
+    // print("inputMonitoringNotPermitted \(inputMonitoringNotPermitted)")
+
     //
     // - DriverNotLoadedAlertWindow
     // - DriverVersionNotMatchedAlertWindow
     //
 
-    if driverVersionNotMatchedAlertViewShown {
+    if needsDriverVersionNotMatchedAlert {
       // If DriverVersionNotMatchedAlertWindow is shown,
-      // do nothing here to prevent showing DriverNotLoadedAlertWindow after the driver is deactivated.
+      // keep needsDriverNotLoadedAlert to prevent showing DriverNotLoadedAlertWindow after the driver is deactivated.
+
+      if !driverVersionNotMatched {
+        needsDriverVersionNotMatchedAlert = false
+      }
+
     } else {
       if driverNotLoaded {
-        AlertWindowsManager.shared.showDriverNotLoadedAlertWindow()
+        needsDriverNotLoadedAlert = true
+        needsDriverVersionNotMatchedAlert = false
       } else {
-        AlertWindowsManager.shared.hideDriverNotLoadedAlertWindow()
+        needsDriverNotLoadedAlert = false
 
         if driverVersionNotMatched {
-          AlertWindowsManager.shared.showDriverVersionNotMatchedAlertWindow()
-          driverVersionNotMatchedAlertViewShown = true
+          needsDriverVersionNotMatchedAlert = true
         } else {
-          AlertWindowsManager.shared.hideDriverVersionNotMatchedAlertWindow()
+          needsDriverVersionNotMatchedAlert = false
         }
       }
     }
@@ -92,9 +104,36 @@ public class StateJsonMonitor {
     //
 
     if inputMonitoringNotPermitted {
-      AlertWindowsManager.shared.showInputMonitoringPermissionsAlertWindow()
+      needsInputMonitoringPermissionsAlert = true
     } else {
-      AlertWindowsManager.shared.hideInputMonitoringPermissionsAlertWindow()
+      needsInputMonitoringPermissionsAlert = false
     }
+
+    // print("needsDriverNotLoadedAlert \(needsDriverNotLoadedAlert)")
+    // print("needsDriverVersionNotMatchedAlert \(needsDriverVersionNotMatchedAlert)")
+    // print("needsInputMonitoringPermissionsAlert \(needsInputMonitoringPermissionsAlert)")
+
+    //
+    // Update alert window
+    //
+
+    updateAlertWindow(needsDriverNotLoadedAlert) {
+      AlertWindowsManager.shared.updateDriverNotLoadedAlertWindow()
+    }
+    updateAlertWindow(needsDriverVersionNotMatchedAlert) {
+      AlertWindowsManager.shared.updateDriverVersionNotMatchedAlertWindow()
+    }
+    updateAlertWindow(needsInputMonitoringPermissionsAlert) {
+      AlertWindowsManager.shared.updateInputMonitoringPermissionsAlertWindow()
+    }
+  }
+
+  private func updateAlertWindow(_ needsAlert: Bool, execute work: @escaping () -> Void) {
+    // Delay before displaying the alert to avoid the alert appearing momentarily.
+    // (e.g, when karabiner_grabbedr is restarted)
+
+    DispatchQueue.main.asyncAfter(
+      deadline: .now() + (needsAlert ? 3 : 0),
+      execute: work)
   }
 }

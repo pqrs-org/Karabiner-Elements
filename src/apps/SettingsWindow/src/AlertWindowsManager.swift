@@ -14,7 +14,15 @@ public class AlertWindowsManager {
   // driverNotLoadedAlertWindow
   //
 
-  public func showDriverNotLoadedAlertWindow() {
+  public func updateDriverNotLoadedAlertWindow() {
+    if StateJsonMonitor.shared.needsDriverNotLoadedAlert {
+      showDriverNotLoadedAlertWindow()
+    } else {
+      hideDriverNotLoadedAlertWindow()
+    }
+  }
+
+  private func showDriverNotLoadedAlertWindow() {
     if let parentWindow = parentWindow {
       if driverNotLoadedAlertWindow == nil {
         let view = DriverNotLoadedAlertView(
@@ -46,7 +54,7 @@ public class AlertWindowsManager {
     }
   }
 
-  public func hideDriverNotLoadedAlertWindow() {
+  private func hideDriverNotLoadedAlertWindow() {
     if let parentWindow = parentWindow {
       if driverNotLoadedAlertWindow != nil {
         parentWindow.endSheet(driverNotLoadedAlertWindow!)
@@ -58,7 +66,15 @@ public class AlertWindowsManager {
   // driverVersionNotMatchedAlertWindow
   //
 
-  public func showDriverVersionNotMatchedAlertWindow() {
+  public func updateDriverVersionNotMatchedAlertWindow() {
+    if StateJsonMonitor.shared.needsDriverVersionNotMatchedAlert {
+      showDriverVersionNotMatchedAlertWindow()
+    } else {
+      hideDriverVersionNotMatchedAlertWindow()
+    }
+  }
+
+  private func showDriverVersionNotMatchedAlertWindow() {
     if let parentWindow = parentWindow {
       if driverVersionNotMatchedAlertWindow == nil {
         let view = DriverVersionNotMatchedAlertView(onCloseButtonPressed: { [weak self] in
@@ -88,7 +104,7 @@ public class AlertWindowsManager {
     }
   }
 
-  public func hideDriverVersionNotMatchedAlertWindow() {
+  private func hideDriverVersionNotMatchedAlertWindow() {
     if let parentWindow = parentWindow {
       if driverVersionNotMatchedAlertWindow != nil {
         parentWindow.endSheet(driverVersionNotMatchedAlertWindow!)
@@ -100,7 +116,15 @@ public class AlertWindowsManager {
   // inputMonitoringPermissionsAlertWindow
   //
 
-  public func showInputMonitoringPermissionsAlertWindow() {
+  public func updateInputMonitoringPermissionsAlertWindow() {
+    if StateJsonMonitor.shared.needsInputMonitoringPermissionsAlert {
+      showInputMonitoringPermissionsAlertWindow()
+    } else {
+      hideInputMonitoringPermissionsAlertWindow()
+    }
+  }
+
+  private func showInputMonitoringPermissionsAlertWindow() {
     if let parentWindow = parentWindow {
       if inputMonitoringPermissionsAlertWindow == nil {
         let view = InputMonitoringPermissionsAlertView(
@@ -132,7 +156,7 @@ public class AlertWindowsManager {
     }
   }
 
-  public func hideInputMonitoringPermissionsAlertWindow() {
+  private func hideInputMonitoringPermissionsAlertWindow() {
     if let parentWindow = parentWindow {
       if inputMonitoringPermissionsAlertWindow != nil {
         parentWindow.endSheet(inputMonitoringPermissionsAlertWindow!)
