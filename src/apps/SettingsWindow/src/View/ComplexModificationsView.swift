@@ -12,6 +12,27 @@ struct ComplexModificationsView: View {
 
   var body: some View {
     VStack(alignment: .leading, spacing: 12.0) {
+      HStack {
+        Button(action: {
+          contentViewStates.complexModificationsViewSheetView = ComplexModificationsSheetView.assets
+          contentViewStates.complexModificationsViewSheetPresented = true
+        }) {
+          Label("Add rule", systemImage: "plus.circle.fill")
+        }
+
+        Spacer()
+
+        if settings.complexModificationsRules.count > 1 {
+          HStack {
+            Text("You can reorder list by dragging")
+            Image(systemName: "arrow.up.arrow.down.square.fill")
+                    .resizable(resizingMode: .stretch)
+                    .frame(width: 16.0, height: 16.0)
+            Text("icon")
+          }
+        }
+      }.padding([.leading, .trailing], 16)
+
       List {
         ForEach($settings.complexModificationsRules) { $complexModificationRule in
           VStack {
@@ -47,30 +68,8 @@ struct ComplexModificationsView: View {
             settings.moveComplexModificationsRule(first, destination)
           }
         }
-
-        Button(action: {
-          contentViewStates.complexModificationsViewSheetView = ComplexModificationsSheetView.assets
-          contentViewStates.complexModificationsViewSheetPresented = true
-        }) {
-          Label("Add rule", systemImage: "plus.circle.fill")
-        }
-        .if(settings.complexModificationsRules.count > 0) {
-          $0.padding(.top, 20.0)
-        }
       }
       .background(Color(NSColor.textBackgroundColor))
-
-      Spacer()
-
-      if settings.complexModificationsRules.count > 1 {
-        HStack {
-          Text("You can reorder list by dragging")
-          Image(systemName: "arrow.up.arrow.down.square.fill")
-            .resizable(resizingMode: .stretch)
-            .frame(width: 16.0, height: 16.0)
-          Text("icon")
-        }
-      }
     }
     .padding()
     .sheet(isPresented: $contentViewStates.complexModificationsViewSheetPresented) {
