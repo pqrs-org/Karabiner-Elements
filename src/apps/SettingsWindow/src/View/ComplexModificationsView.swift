@@ -17,7 +17,7 @@ struct ComplexModificationsView: View {
           contentViewStates.complexModificationsViewSheetView = ComplexModificationsSheetView.assets
           contentViewStates.complexModificationsViewSheetPresented = true
         }) {
-          Label("Add rule", systemImage: "plus.circle.fill")
+          AccentColorIconLabel(title: "Add rule", systemImage: "plus.circle.fill")
         }
 
         Spacer()
