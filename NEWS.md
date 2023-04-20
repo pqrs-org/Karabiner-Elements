@@ -1,5 +1,11 @@
 # Changelog
 
+## Beta
+
+-   ⚡️ Improvements
+    -   Added the ability to filter by keywords when adding Complex Modifications rules.
+    -   Adjusted the position of the Add rule button in Complex Modifications. (Thanks to @GanZhiXiong)
+
 ## Karabiner-Elements 14.12.0
 
 -   [📦 Download](https://github.com/pqrs-org/Karabiner-Elements/releases/download/v14.12.0/Karabiner-Elements-14.12.0.dmg)
