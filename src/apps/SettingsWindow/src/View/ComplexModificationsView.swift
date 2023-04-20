@@ -26,8 +26,8 @@ struct ComplexModificationsView: View {
           HStack {
             Text("You can reorder list by dragging")
             Image(systemName: "arrow.up.arrow.down.square.fill")
-                    .resizable(resizingMode: .stretch)
-                    .frame(width: 16.0, height: 16.0)
+              .resizable(resizingMode: .stretch)
+              .frame(width: 16.0, height: 16.0)
             Text("icon")
           }
         }
