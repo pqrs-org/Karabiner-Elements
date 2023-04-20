@@ -22,5 +22,19 @@ extension LibKrbn {
       self.importedAt = importedAt
       self.assetRules = assetRules
     }
+
+    public func match(_ search: String) -> Bool {
+      if title.range(of: search, options: .caseInsensitive) != nil {
+        return true
+      }
+
+      for assetRule in assetRules {
+        if assetRule.description.range(of: search, options: .caseInsensitive) != nil {
+          return true
+        }
+      }
+
+      return false
+    }
   }
 }

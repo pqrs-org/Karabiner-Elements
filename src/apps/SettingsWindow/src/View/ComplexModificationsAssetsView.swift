@@ -3,6 +3,7 @@ import SwiftUI
 struct ComplexModificationsAssetsView: View {
   @ObservedObject private var contentViewStates = ContentViewStates.shared
   @ObservedObject private var assetFiles = ComplexModificationsAssetFiles.shared
+  @State private var search = ""
 
   let formatter = DateFormatter()
 
@@ -13,70 +14,80 @@ struct ComplexModificationsAssetsView: View {
 
   var body: some View {
     VStack(alignment: .center, spacing: 12.0) {
+      HStack {
+        Image(systemName: "magnifyingglass")
+          .foregroundColor(.gray)
+
+        TextField("Search", text: $search)
+      }
+      .padding(.vertical, 10.0)
+
       List {
         ForEach($assetFiles.files) { $assetFile in
-          GroupBox(
-            label:
-              HStack(alignment: .bottom, spacing: 16.0) {
-                Text(assetFile.title)
-                  .font(.title)
-
-                Spacer()
-              }
-          ) {
-            VStack(alignment: .leading, spacing: 8.0) {
-              ForEach($assetFile.assetRules) { $assetRule in
-                HStack(alignment: .center, spacing: 16.0) {
-                  Text(assetRule.description)
-
-                  Button(action: {
-                    LibKrbn.Settings.shared.addComplexModificationRule(assetRule)
-                    contentViewStates.complexModificationsViewSheetPresented = false
-                  }) {
-                    // Use `Image` and `Text` instead of `Label` to set icon color like `Button` in `List`.
-                    Image(systemName: "plus.circle.fill").foregroundColor(.blue)
-                    Text("Enable")
-                  }
+          if search == "" || assetFile.match(search) {
+            GroupBox(
+              label:
+                HStack(alignment: .bottom, spacing: 16.0) {
+                  Text(assetFile.title)
+                    .font(.title)
 
                   Spacer()
                 }
+            ) {
+              VStack(alignment: .leading, spacing: 8.0) {
+                ForEach($assetFile.assetRules) { $assetRule in
+                  HStack(alignment: .center, spacing: 16.0) {
+                    Text(assetRule.description)
 
-                Divider()
-                  .padding(.vertical, 4.0)
-              }
+                    Button(action: {
+                      LibKrbn.Settings.shared.addComplexModificationRule(assetRule)
+                      contentViewStates.complexModificationsViewSheetPresented = false
+                    }) {
+                      // Use `Image` and `Text` instead of `Label` to set icon color like `Button` in `List`.
+                      Image(systemName: "plus.circle.fill").foregroundColor(.blue)
+                      Text("Enable")
+                    }
 
-              HStack {
-                Spacer()
-
-                if assetFile.userFile {
-                  Text(
-                    "Imported at \(formatter.string(from: assetFile.importedAt))"
-                  )
-                  .font(.caption)
-                }
-
-                Button(action: {
-                  LibKrbn.Settings.shared.addComplexModificationRules(assetFile)
-                  contentViewStates.complexModificationsViewSheetPresented = false
-                }) {
-                  Text("Enable All")
-                    .font(.caption)
-                }
-
-                if assetFile.userFile {
-                  Button(action: {
-                    assetFiles.removeFile(assetFile)
-                  }) {
-                    Image(systemName: "trash.fill")
-                      .buttonLabelStyle()
+                    Spacer()
                   }
-                  .deleteButtonStyle()
+
+                  Divider()
+                    .padding(.vertical, 4.0)
+                }
+
+                HStack {
+                  Spacer()
+
+                  if assetFile.userFile {
+                    Text(
+                      "Imported at \(formatter.string(from: assetFile.importedAt))"
+                    )
+                    .font(.caption)
+                  }
+
+                  Button(action: {
+                    LibKrbn.Settings.shared.addComplexModificationRules(assetFile)
+                    contentViewStates.complexModificationsViewSheetPresented = false
+                  }) {
+                    Text("Enable All")
+                      .font(.caption)
+                  }
+
+                  if assetFile.userFile {
+                    Button(action: {
+                      assetFiles.removeFile(assetFile)
+                    }) {
+                      Image(systemName: "trash.fill")
+                        .buttonLabelStyle()
+                    }
+                    .deleteButtonStyle()
+                  }
                 }
               }
+              .padding()
             }
-            .padding()
+            .padding(.bottom, 32.0)
           }
-          .padding(.bottom, 32.0)
         }
       }
       .background(Color(NSColor.textBackgroundColor))
