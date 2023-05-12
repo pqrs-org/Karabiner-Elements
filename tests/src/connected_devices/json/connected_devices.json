@@ -6,6 +6,7 @@
             "transport": "USB"
         },
         "identifiers": {
+            "device_address": "",
             "is_keyboard": true,
             "is_pointing_device": false,
             "product_id": 5678,
@@ -22,6 +23,7 @@
             "transport": "USB"
         },
         "identifiers": {
+            "device_address": "",
             "is_keyboard": false,
             "is_pointing_device": true,
             "product_id": 5679,
@@ -38,6 +40,7 @@
             "transport": "USB"
         },
         "identifiers": {
+            "device_address": "",
             "is_keyboard": false,
             "is_pointing_device": true,
             "product_id": 6789,
@@ -54,6 +57,7 @@
             "transport": "Bluetooth"
         },
         "identifiers": {
+            "device_address": "ec-ba-73-21-e6-f4",
             "is_keyboard": true,
             "is_pointing_device": false,
             "product_id": 678,
@@ -70,6 +74,7 @@
             "transport": "Bluetooth"
         },
         "identifiers": {
+            "device_address": "ec-ba-73-21-e6-f4",
             "is_keyboard": false,
             "is_pointing_device": true,
             "product_id": 678,
@@ -86,10 +91,11 @@
             "transport": "Bluetooth"
         },
         "identifiers": {
+            "device_address": "ec-ba-73-21-e6-f5",
             "is_keyboard": true,
             "is_pointing_device": false,
-            "product_id": 678,
-            "vendor_id": 1234
+            "product_id": 0,
+            "vendor_id": 0
         },
         "is_built_in_keyboard": false,
         "is_built_in_touch_bar": true,

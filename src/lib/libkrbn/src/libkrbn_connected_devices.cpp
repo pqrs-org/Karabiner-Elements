@@ -81,6 +81,16 @@ uint64_t libkrbn_connected_devices_get_product_id(libkrbn_connected_devices* p, 
   return 0;
 }
 
+const char* libkrbn_connected_devices_get_device_address(libkrbn_connected_devices* p, size_t index) {
+  if (auto c = reinterpret_cast<libkrbn_connected_devices_class*>(p)) {
+    const auto& devices = c->get_connected_devices().get_devices();
+    if (index < devices.size()) {
+      return devices[index].get_identifiers().get_device_address().c_str();
+    }
+  }
+  return nullptr;
+}
+
 bool libkrbn_connected_devices_get_is_keyboard(libkrbn_connected_devices* p, size_t index) {
   if (auto c = reinterpret_cast<libkrbn_connected_devices_class*>(p)) {
     const auto& devices = c->get_connected_devices().get_devices();

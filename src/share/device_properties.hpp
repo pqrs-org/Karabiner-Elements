@@ -26,6 +26,7 @@ public:
     product_ = hid_device.find_product();
     serial_number_ = hid_device.find_serial_number();
     transport_ = hid_device.find_transport();
+    device_address_ = hid_device.find_device_address();
     is_keyboard_ = iokit_utility::is_keyboard(hid_device);
     is_pointing_device_ = iokit_utility::is_pointing_device(hid_device);
 
@@ -138,6 +139,9 @@ public:
     if (transport_) {
       json["transport"] = *transport_;
     }
+    if (device_address_) {
+      json["device_address"] = *device_address_;
+    }
     if (is_keyboard_) {
       json["is_keyboard"] = *is_keyboard_;
     }
@@ -222,6 +226,16 @@ public:
 
   device_properties& set_transport(const std::string& value) {
     transport_ = value;
+    return *this;
+  }
+
+  std::optional<std::string> get_device_address(void) const {
+    return device_address_;
+  }
+
+  device_properties& set_device_address(const std::string& value) {
+    device_address_ = value;
+    update_device_identifiers();
     return *this;
   }
 
@@ -341,6 +355,7 @@ private:
     device_identifiers_ = std::make_shared<device_identifiers>(
         vendor_id_.value_or(pqrs::hid::vendor_id::value_t(0)),
         product_id_.value_or(pqrs::hid::product_id::value_t(0)),
+        device_address_.value_or(""),
         is_keyboard_.value_or(false),
         is_pointing_device_.value_or(false));
   }
@@ -353,6 +368,7 @@ private:
   std::optional<std::string> product_;
   std::optional<std::string> serial_number_;
   std::optional<std::string> transport_;
+  std::optional<std::string> device_address_;
   std::optional<bool> is_keyboard_;
   std::optional<bool> is_pointing_device_;
   std::optional<bool> is_built_in_keyboard_;

@@ -30,6 +30,7 @@ public:
 
   krbn::device_id prepare_device(std::optional<pqrs::hid::vendor_id::value_t> vendor_id,
                                  std::optional<pqrs::hid::product_id::value_t> product_id,
+                                 std::optional<std::string> device_address,
                                  std::optional<krbn::location_id> location_id,
                                  std::optional<bool> is_keyboard,
                                  std::optional<bool> is_pointing_device) {
@@ -42,6 +43,9 @@ public:
     }
     if (product_id) {
       properties.set(*product_id);
+    }
+    if (device_address) {
+      properties.set_device_address(*device_address);
     }
     if (location_id) {
       properties.set(*location_id);

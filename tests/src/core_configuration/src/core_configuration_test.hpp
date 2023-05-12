@@ -282,10 +282,12 @@ void run_core_configuration_test(void) {
 
       expect(profile.get_device_ignore(krbn::device_identifiers(pqrs::hid::vendor_id::value_t(4176),
                                                                 pqrs::hid::product_id::value_t(1031),
+                                                                "",
                                                                 true,
                                                                 false)) == true);
       expect(profile.get_device_ignore(krbn::device_identifiers(pqrs::hid::vendor_id::value_t(0x05ac),
                                                                 pqrs::hid::product_id::value_t(0x262),
+                                                                "",
                                                                 true,
                                                                 false)) == false);
     }
@@ -539,12 +541,14 @@ void run_core_configuration_test(void) {
         {
           krbn::device_identifiers identifiers(pqrs::hid::vendor_id::value_t(1112),
                                                pqrs::hid::product_id::value_t(2222),
+                                               "ec-ba-73-21-e6-f5",
                                                false,
                                                true);
           profile.set_device_disable_built_in_keyboard_if_exists(identifiers, true);
           expect(profile.get_devices().size() == 5);
           expect((profile.get_devices())[4].get_identifiers().get_vendor_id() == pqrs::hid::vendor_id::value_t(1112));
           expect((profile.get_devices())[4].get_identifiers().get_product_id() == pqrs::hid::product_id::value_t(2222));
+          expect((profile.get_devices())[4].get_identifiers().get_device_address() == "ec-ba-73-21-e6-f5");
           expect((profile.get_devices())[4].get_identifiers().get_is_keyboard() == false);
           expect((profile.get_devices())[4].get_identifiers().get_is_pointing_device() == true);
           expect((profile.get_devices())[4].get_ignore() == true);
@@ -626,6 +630,10 @@ void run_core_configuration_test(void) {
                                                   {
                                                       "product_id",
                                                       5678,
+                                                  },
+                                                  {
+                                                      "device_address",
+                                                      "ec-ba-73-21-e6-f5"
                                                   },
                                                   {
                                                       "is_keyboard",
@@ -795,6 +803,10 @@ void run_core_configuration_test(void) {
                                                   {
                                                       "product_id",
                                                       5678,
+                                                  },
+                                                  {
+                                                      "device_address",
+                                                      "ec-ba-73-21-e6-f5"
                                                   },
                                                   {
                                                       "is_keyboard",

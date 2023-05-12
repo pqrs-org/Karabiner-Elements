@@ -12,6 +12,7 @@ extern "C" {
 typedef struct {
   uint64_t vendor_id;
   uint64_t product_id;
+  const char* device_address;
   bool is_keyboard;
   bool is_pointing_device;
 } libkrbn_device_identifiers;
@@ -247,6 +248,7 @@ bool libkrbn_connected_devices_get_device_identifiers(libkrbn_connected_devices*
                                                       libkrbn_device_identifiers* device_identifiers);
 uint64_t libkrbn_connected_devices_get_vendor_id(libkrbn_connected_devices* p, size_t index);
 uint64_t libkrbn_connected_devices_get_product_id(libkrbn_connected_devices* p, size_t index);
+const char* libkrbn_connected_devices_get_device_address(libkrbn_connected_devices* p, size_t index);
 bool libkrbn_connected_devices_get_is_keyboard(libkrbn_connected_devices* p, size_t index);
 bool libkrbn_connected_devices_get_is_pointing_device(libkrbn_connected_devices* p, size_t index);
 bool libkrbn_connected_devices_get_is_built_in_keyboard(libkrbn_connected_devices* p, size_t index);

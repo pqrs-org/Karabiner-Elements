@@ -6,6 +6,7 @@
             "transport": "USB"
         },
         "identifiers": {
+            "device_address": "",
             "is_keyboard": true,
             "is_pointing_device": false,
             "product_id": 5678,
