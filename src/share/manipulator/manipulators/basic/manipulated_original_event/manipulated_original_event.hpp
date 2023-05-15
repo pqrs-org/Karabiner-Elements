@@ -47,8 +47,8 @@ public:
     return halted_;
   }
 
-  void set_halted(void) {
-    halted_ = true;
+  void set_halted(bool value) {
+    halted_ = value;
   }
 
   const events_at_key_up& get_events_at_key_up(void) const {

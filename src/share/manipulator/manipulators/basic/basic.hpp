@@ -552,11 +552,16 @@ public:
                                                                        time_stamp_delay,
                                                                        *output_event_queue);
 
+                    bool was_halted = current_manipulated_original_event->get_halted();
+                    current_manipulated_original_event->set_halted(false); //reset halted, so we can use variables manipulation, as described in manual
+
                     event_sender::post_extra_to_events(front_input_event,
                                                        from_.get_simultaneous_options().get_to_after_key_up(),
                                                        *current_manipulated_original_event,
                                                        time_stamp_delay,
                                                        *output_event_queue);
+
+                    current_manipulated_original_event->set_halted(was_halted); //restore halted, in order not to affect latter logic
 
                     event_sender::post_from_mandatory_modifiers_key_down(front_input_event,
                                                                          *current_manipulated_original_event,

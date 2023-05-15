@@ -171,9 +171,7 @@ inline void post_events_at_key_down(const event_queue::entry& front_input_event,
                                               event_queue::state::manipulated,
                                               it->get_lazy());
 
-        if (it->get_halt()) {
-          current_manipulated_original_event.set_halted();
-        }
+        current_manipulated_original_event.set_halted(it->get_halt());
       }
 
       // Post key_up event
@@ -282,9 +280,7 @@ inline void post_extra_to_events(const event_queue::entry& front_input_event,
                                               event_queue::state::manipulated,
                                               it->get_lazy());
 
-        if (it->get_halt()) {
-          current_manipulated_original_event.set_halted();
-        }
+        current_manipulated_original_event.set_halted(it->get_halt());
       }
 
       // Post key_up event
