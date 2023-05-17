@@ -13,6 +13,14 @@ void system_preferences_monitor_callback(const struct libkrbn_system_preferences
             << std::endl;
 }
 
+void connected_devices_monitor_callback(libkrbn_connected_devices* devices,
+                                        void* refcon) {
+  // Check that get_device_address returns a fixed allocated address.
+  auto* p1 = reinterpret_cast<const void*>(libkrbn_connected_devices_get_device_address(devices, 0));
+  auto* p2 = reinterpret_cast<const void*>(libkrbn_connected_devices_get_device_address(devices, 0));
+  assert(p1 == p2);
+}
+
 auto global_wait = pqrs::make_thread_wait();
 } // namespace
 
@@ -22,6 +30,8 @@ int main(int argc, const char* argv[]) {
   signal(SIGINT, [](int) {
     global_wait->notify();
   });
+
+  libkrbn_enable_connected_devices_monitor(connected_devices_monitor_callback, nullptr);
 
   {
     libkrbn_enable_complex_modifications_assets_manager();
@@ -40,6 +50,20 @@ int main(int argc, const char* argv[]) {
 
         for (size_t j = 0; j < rules_size; ++j) {
           std::cout << "      " << libkrbn_complex_modifications_assets_manager_get_rule_description(i, j) << std::endl;
+
+          if (j >= 2) {
+            if (rules_size - j > 1) {
+              std::cout << "      ..." << std::endl;
+            }
+            break;
+          }
+        }
+
+        if (i >= 2) {
+          if (size - i > 1) {
+            std::cout << "  ..." << std::endl;
+          }
+          break;
         }
       }
     }
