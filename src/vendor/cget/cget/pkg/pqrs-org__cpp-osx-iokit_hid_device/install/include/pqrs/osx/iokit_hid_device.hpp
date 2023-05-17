@@ -1,6 +1,6 @@
 #pragma once
 
-// pqrs::osx::iokit_hid_device v4.0
+// pqrs::osx::iokit_hid_device v4.1
 
 // (C) Copyright Takayama Fumihiko 2018.
 // Distributed under the Boost Software License, Version 1.0.
@@ -111,6 +111,10 @@ public:
 
   std::optional<std::string> find_transport(void) const {
     return find_string_property(CFSTR(kIOHIDTransportKey));
+  }
+
+  std::optional<std::string> find_device_address(void) const {
+    return find_string_property(CFSTR("DeviceAddress"));
   }
 
   // Note:
