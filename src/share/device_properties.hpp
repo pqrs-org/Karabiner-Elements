@@ -346,6 +346,7 @@ public:
            product_ == other.product_ &&
            serial_number_ == other.serial_number_ &&
            transport_ == other.transport_ &&
+           device_address_ == other.device_address_ &&
            is_keyboard_ == other.is_keyboard_ &&
            is_pointing_device_ == other.is_pointing_device_;
   }
