@@ -15,6 +15,9 @@
                 "vendor_id": 1099
             },
             {
+                "device_address": "aa-bb-cc-dd-ee-ff"
+            },
+            {
                 // Empty identifier is ignored.
             }
         ]

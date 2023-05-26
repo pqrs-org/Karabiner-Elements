@@ -68,6 +68,7 @@ extension LibKrbn {
           transport: transport,
           vendorId: libkrbn_connected_devices_get_vendor_id(libkrbnConnectedDevices, i),
           productId: libkrbn_connected_devices_get_product_id(libkrbnConnectedDevices, i),
+          deviceAddress: libkrbn_connected_devices_get_device_address(libkrbnConnectedDevices, i),
           isKeyboard: libkrbn_connected_devices_get_is_keyboard(libkrbnConnectedDevices, i),
           isPointingDevice: libkrbn_connected_devices_get_is_pointing_device(
             libkrbnConnectedDevices, i),

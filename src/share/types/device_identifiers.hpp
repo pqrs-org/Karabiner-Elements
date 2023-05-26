@@ -10,15 +10,18 @@ class device_identifiers final {
 public:
   device_identifiers(void) : vendor_id_(pqrs::hid::vendor_id::value_t(0)),
                              product_id_(pqrs::hid::product_id::value_t(0)),
+                             device_address_(""),
                              is_keyboard_(false),
                              is_pointing_device_(false) {
   }
 
   device_identifiers(pqrs::hid::vendor_id::value_t vendor_id,
                      pqrs::hid::product_id::value_t product_id,
+                     std::string device_address,
                      bool is_keyboard,
                      bool is_pointing_device) : vendor_id_(vendor_id),
                                                 product_id_(product_id),
+                                                device_address_(device_address),
                                                 is_keyboard_(is_keyboard),
                                                 is_pointing_device_(is_pointing_device) {
   }
@@ -47,6 +50,14 @@ public:
     product_id_ = value;
   }
 
+  const std::string& get_device_address(void) const {
+    return device_address_;
+  }
+
+  void set_device_address(std::string value) {
+    device_address_ = value;
+  }
+
   bool get_is_keyboard(void) const {
     return is_keyboard_;
   }
@@ -71,6 +82,7 @@ public:
   bool operator==(const device_identifiers& other) const {
     return vendor_id_ == other.vendor_id_ &&
            product_id_ == other.product_id_ &&
+           device_address_ == other.device_address_ &&
            is_keyboard_ == other.is_keyboard_ &&
            is_pointing_device_ == other.is_pointing_device_;
   }
@@ -79,6 +91,7 @@ private:
   nlohmann::json json_;
   pqrs::hid::vendor_id::value_t vendor_id_;
   pqrs::hid::product_id::value_t product_id_;
+  std::string device_address_;
   bool is_keyboard_;
   bool is_pointing_device_;
 };
@@ -87,6 +100,7 @@ inline void to_json(nlohmann::json& json, const device_identifiers& value) {
   json = value.get_json();
   json["vendor_id"] = type_safe::get(value.get_vendor_id());
   json["product_id"] = type_safe::get(value.get_product_id());
+  json["device_address"] = value.get_device_address();
   json["is_keyboard"] = value.get_is_keyboard();
   json["is_pointing_device"] = value.get_is_pointing_device();
 }
@@ -104,6 +118,11 @@ inline void from_json(const nlohmann::json& json, device_identifiers& value) {
       pqrs::json::requires_number(v, "`" + k + "`");
 
       value.set_product_id(v.get<pqrs::hid::product_id::value_t>());
+
+    } else if (k == "device_address") {
+      pqrs::json::requires_string(v, "`" + k + "`");
+
+      value.set_device_address(v.get<std::string>());
 
     } else if (k == "is_keyboard") {
       pqrs::json::requires_boolean(v, "`" + k + "`");

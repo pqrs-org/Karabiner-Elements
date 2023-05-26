@@ -15,7 +15,7 @@ void run_device_exists_test(void) {
     auto& environment = manipulator_conditions_helper.get_manipulator_environment();
 
     auto device_id_8888_9999 = manipulator_conditions_helper.prepare_device(
-        pqrs::hid::vendor_id::value_t(8888), pqrs::hid::product_id::value_t(9999), std::nullopt, true, false);
+        pqrs::hid::vendor_id::value_t(8888), pqrs::hid::product_id::value_t(9999), "", std::nullopt, true, false);
 
     {
       auto e = manipulator_conditions_helper.make_event_queue_entry(device_id_8888_9999);
@@ -23,7 +23,7 @@ void run_device_exists_test(void) {
     }
 
     manipulator_conditions_helper.prepare_device(
-        pqrs::hid::vendor_id::value_t(1000), pqrs::hid::product_id::value_t(2000), std::nullopt, true, false);
+        pqrs::hid::vendor_id::value_t(1000), pqrs::hid::product_id::value_t(2000), "", std::nullopt, true, false);
 
     {
       auto e = manipulator_conditions_helper.make_event_queue_entry(device_id_8888_9999);
@@ -39,7 +39,7 @@ void run_device_exists_test(void) {
     auto& environment = manipulator_conditions_helper.get_manipulator_environment();
 
     auto device_id_8888_9999 = manipulator_conditions_helper.prepare_device(
-        pqrs::hid::vendor_id::value_t(8888), pqrs::hid::product_id::value_t(9999), std::nullopt, true, false);
+        pqrs::hid::vendor_id::value_t(8888), pqrs::hid::product_id::value_t(9999), "", std::nullopt, true, false);
 
     {
       auto e = manipulator_conditions_helper.make_event_queue_entry(device_id_8888_9999);
@@ -47,7 +47,7 @@ void run_device_exists_test(void) {
     }
 
     manipulator_conditions_helper.prepare_device(
-        pqrs::hid::vendor_id::value_t(1000), pqrs::hid::product_id::value_t(2000), std::nullopt, true, false);
+        pqrs::hid::vendor_id::value_t(1000), pqrs::hid::product_id::value_t(2000), "", std::nullopt, true, false);
 
     {
       auto e = manipulator_conditions_helper.make_event_queue_entry(device_id_8888_9999);

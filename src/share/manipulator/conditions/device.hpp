@@ -123,6 +123,7 @@ private:
     std::optional<pqrs::hid::vendor_id::value_t> vendor_id;
     std::optional<pqrs::hid::product_id::value_t> product_id;
     std::optional<location_id> location_id;
+    std::optional<std::string> device_address;
     std::optional<bool> is_keyboard;
     std::optional<bool> is_pointing_device;
     std::optional<bool> is_touch_bar;
@@ -132,6 +133,7 @@ private:
       return vendor_id ||
              product_id ||
              location_id ||
+             device_address ||
              is_keyboard ||
              is_pointing_device ||
              is_touch_bar ||
@@ -152,6 +154,9 @@ private:
         return false;
       }
       if (location_id && location_id != device_properties.get_location_id().value_or(krbn::location_id(0))) {
+        return false;
+      }
+      if (device_address && device_address != device_properties.get_device_address().value_or("")) {
         return false;
       }
       if (is_keyboard && is_keyboard != device_properties.get_is_keyboard().value_or(false)) {
@@ -198,6 +203,11 @@ private:
           pqrs::json::requires_number(value, "identifiers entry `location_id`");
 
           d.location_id = location_id(value.get<int>());
+
+        } else if (key == "device_address") {
+          pqrs::json::requires_string(value, "identifiers entry `device_address`");
+
+          d.device_address = value.get<std::string>();
 
         } else if (key == "is_keyboard") {
           pqrs::json::requires_boolean(value, "identifiers entry `is_keyboard`");

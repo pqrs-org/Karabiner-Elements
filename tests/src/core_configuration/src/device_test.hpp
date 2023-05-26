@@ -21,28 +21,32 @@ void run_device_test(void) {
       nlohmann::json json({
           {"vendor_id", 1234},
           {"product_id", 5678},
+          {"device_address", "ec-ba-73-21-e6-f5"},
           {"is_keyboard", true},
           {"is_pointing_device", true},
       });
       auto identifiers = json.get<krbn::device_identifiers>();
       expect(identifiers.get_vendor_id() == pqrs::hid::vendor_id::value_t(1234));
       expect(identifiers.get_product_id() == pqrs::hid::product_id::value_t(5678));
+      expect(identifiers.get_device_address() == "ec-ba-73-21-e6-f5");
       expect(identifiers.get_is_keyboard() == true);
       expect(identifiers.get_is_pointing_device() == true);
     }
 
     // construct with vendor_id, product_id, ...
     {
-      krbn::device_identifiers identifiers(pqrs::hid::vendor_id::value_t(1234), pqrs::hid::product_id::value_t(5678), true, false);
+      krbn::device_identifiers identifiers(pqrs::hid::vendor_id::value_t(1234), pqrs::hid::product_id::value_t(5678), "ec-ba-73-21-e6-f5", true, false);
       expect(identifiers.get_vendor_id() == pqrs::hid::vendor_id::value_t(1234));
       expect(identifiers.get_product_id() == pqrs::hid::product_id::value_t(5678));
+      expect(identifiers.get_device_address() == "ec-ba-73-21-e6-f5");
       expect(identifiers.get_is_keyboard() == true);
       expect(identifiers.get_is_pointing_device() == false);
     }
     {
-      krbn::device_identifiers identifiers(pqrs::hid::vendor_id::value_t(4321), pqrs::hid::product_id::value_t(8765), false, true);
+      krbn::device_identifiers identifiers(pqrs::hid::vendor_id::value_t(4321), pqrs::hid::product_id::value_t(8765), "", false, true);
       expect(identifiers.get_vendor_id() == pqrs::hid::vendor_id::value_t(4321));
       expect(identifiers.get_product_id() == pqrs::hid::product_id::value_t(8765));
+      expect(identifiers.get_device_address() == "");
       expect(identifiers.get_is_keyboard() == false);
       expect(identifiers.get_is_pointing_device() == true);
     }
@@ -55,6 +59,7 @@ void run_device_test(void) {
       nlohmann::json expected({
           {"vendor_id", 0},
           {"product_id", 0},
+          {"device_address", ""},
           {"is_keyboard", false},
           {"is_pointing_device", false},
       });
@@ -70,6 +75,7 @@ void run_device_test(void) {
           {"dummy", {{"keep_me", true}}},
           {"vendor_id", 0},
           {"product_id", 0},
+          {"device_address", ""},
           {"is_keyboard", false},
           {"is_pointing_device", true},
       });
@@ -84,6 +90,7 @@ void run_device_test(void) {
       krbn::core_configuration::details::device device(json);
       expect(device.get_identifiers().get_vendor_id() == pqrs::hid::vendor_id::value_t(0));
       expect(device.get_identifiers().get_product_id() == pqrs::hid::product_id::value_t(0));
+      expect(device.get_identifiers().get_device_address() == "");
       expect(device.get_identifiers().get_is_keyboard() == false);
       expect(device.get_identifiers().get_is_pointing_device() == false);
       expect(device.get_ignore() == false);
@@ -98,6 +105,7 @@ void run_device_test(void) {
           {"identifiers", {
                               {"vendor_id", 1234},
                               {"product_id", 5678},
+                              {"device_address", "ec-ba-73-21-e6-f5"},
                               {"is_keyboard", true},
                               {"is_pointing_device", true},
                           }},
@@ -109,6 +117,7 @@ void run_device_test(void) {
       krbn::core_configuration::details::device device(json);
       expect(device.get_identifiers().get_vendor_id() == pqrs::hid::vendor_id::value_t(1234));
       expect(device.get_identifiers().get_product_id() == pqrs::hid::product_id::value_t(5678));
+      expect(device.get_identifiers().get_device_address() == "ec-ba-73-21-e6-f5");
       expect(device.get_identifiers().get_is_keyboard() == true);
       expect(device.get_identifiers().get_is_pointing_device() == true);
       expect(device.get_ignore() == true);
@@ -239,6 +248,10 @@ void run_device_test(void) {
                                   0,
                               },
                               {
+                                  "device_address",
+                                  ""
+                              },
+                              {
                                   "is_keyboard",
                                   false,
                               },
@@ -292,6 +305,10 @@ void run_device_test(void) {
                               {
                                   "product_id",
                                   0,
+                              },
+                              {
+                                  "device_address",
+                                  ""
                               },
                               {
                                   "is_keyboard",

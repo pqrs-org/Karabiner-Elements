@@ -94,30 +94,44 @@ struct DevicesView: View {
 
                 if connectedDeviceSetting.connectedDevice.transport != "FIFO" {
                   VStack(alignment: .trailing, spacing: 4.0) {
-                    HStack(alignment: .firstTextBaseline, spacing: 0) {
-                      Spacer()
-
-                      Text("Vendor ID: ")
-
-                      Text(
-                        String(
-                          format: "%5d (0x%04x)",
-                          connectedDeviceSetting.connectedDevice.vendorId,
-                          connectedDeviceSetting.connectedDevice.vendorId)
-                      )
+                    if connectedDeviceSetting.connectedDevice.vendorId != 0 {
+                      HStack(alignment: .firstTextBaseline, spacing: 0) {
+                        Spacer()
+                        
+                        Text("Vendor ID: ")
+                        
+                        Text(
+                          String(
+                            format: "%5d (0x%04x)",
+                            connectedDeviceSetting.connectedDevice.vendorId,
+                            connectedDeviceSetting.connectedDevice.vendorId)
+                        )
+                      }
                     }
 
-                    HStack(alignment: .center, spacing: 0) {
-                      Spacer()
-
-                      Text("Product ID: ")
-
-                      Text(
-                        String(
-                          format: "%5d (0x%04x)",
-                          connectedDeviceSetting.connectedDevice.productId,
-                          connectedDeviceSetting.connectedDevice.productId)
-                      )
+                    if connectedDeviceSetting.connectedDevice.productId != 0 {
+                      HStack(alignment: .center, spacing: 0) {
+                        Spacer()
+                        
+                        Text("Product ID: ")
+                        
+                        Text(
+                          String(
+                            format: "%5d (0x%04x)",
+                            connectedDeviceSetting.connectedDevice.productId,
+                            connectedDeviceSetting.connectedDevice.productId)
+                        )
+                      }
+                    }
+                      
+                    if !connectedDeviceSetting.connectedDevice.deviceAddress.isEmpty {
+                      HStack(alignment: .center, spacing: 0) {
+                        Spacer()
+                        
+                        Text("Device Address: ")
+                        
+                        Text(connectedDeviceSetting.connectedDevice.deviceAddress)
+                      }
                     }
                   }
                   .font(.custom("Menlo", size: 12.0))
