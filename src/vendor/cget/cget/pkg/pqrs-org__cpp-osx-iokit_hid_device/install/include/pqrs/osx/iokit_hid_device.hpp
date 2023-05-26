@@ -1,6 +1,6 @@
 #pragma once
 
-// pqrs::osx::iokit_hid_device v4.1
+// pqrs::osx::iokit_hid_device v4.2
 
 // (C) Copyright Takayama Fumihiko 2018.
 // Distributed under the Boost Software License, Version 1.0.
@@ -12,13 +12,18 @@
 #include <pqrs/cf/array.hpp>
 #include <pqrs/cf/string.hpp>
 #include <pqrs/hid.hpp>
+#include <pqrs/osx/iokit_object_ptr.hpp>
+#include <pqrs/osx/iokit_registry_entry.hpp>
 #include <pqrs/osx/iokit_types.hpp>
 
 namespace pqrs {
 namespace osx {
 class iokit_hid_device final {
 public:
-  iokit_hid_device(IOHIDDeviceRef device) : device_(device) {
+  iokit_hid_device(IOHIDDeviceRef device)
+      : device_(device),
+        service_(device ? IOHIDDeviceGetService(device) : IO_OBJECT_NULL),
+        registry_entry_(service_) {
   }
 
   virtual ~iokit_hid_device(void) {
@@ -26,6 +31,14 @@ public:
 
   cf::cf_ptr<IOHIDDeviceRef> get_device(void) const {
     return device_;
+  }
+
+  iokit_object_ptr get_service(void) const {
+    return service_;
+  }
+
+  iokit_registry_entry get_registry_entry(void) const {
+    return registry_entry_;
   }
 
   // Note:
@@ -40,15 +53,15 @@ public:
     return false;
   }
 
-  std::optional<int64_t> find_int64_property(CFStringRef key) const {
-    if (device_) {
-      auto property = IOHIDDeviceGetProperty(*device_, key);
-      if (property) {
-        if (CFGetTypeID(property) == CFNumberGetTypeID()) {
-          int64_t value = 0;
-          if (CFNumberGetValue(static_cast<CFNumberRef>(property), kCFNumberSInt64Type, &value)) {
-            return value;
-          }
+  std::optional<int64_t> find_int64_property(CFStringRef key, bool include_parents = false) const {
+    if (auto property = registry_entry_.find_int64_property(key)) {
+      return property;
+    }
+
+    if (include_parents) {
+      for (const auto& entry : get_parent_registry_entries(registry_entry_)) {
+        if (auto property = entry.find_int64_property(key)) {
+          return property;
         }
       }
     }
@@ -56,65 +69,82 @@ public:
     return std::nullopt;
   }
 
-  std::optional<std::string> find_string_property(CFStringRef key) const {
-    if (device_) {
-      auto property = IOHIDDeviceGetProperty(*device_, key);
-      return cf::make_string(property);
+  std::optional<std::string> find_string_property(CFStringRef key, bool include_parents = false) const {
+    if (auto property = registry_entry_.find_string_property(key)) {
+      return property;
+    }
+
+    if (include_parents) {
+      for (const auto& entry : get_parent_registry_entries(registry_entry_)) {
+        if (auto property = entry.find_string_property(key)) {
+          return property;
+        }
+      }
     }
 
     return std::nullopt;
   }
 
   std::optional<int64_t> find_max_input_report_size(void) const {
-    return find_int64_property(CFSTR(kIOHIDMaxInputReportSizeKey));
+    return find_int64_property(CFSTR(kIOHIDMaxInputReportSizeKey),
+                               false);
   }
 
   std::optional<hid::vendor_id::value_t> find_vendor_id(void) const {
-    if (auto value = find_int64_property(CFSTR(kIOHIDVendorIDKey))) {
+    if (auto value = find_int64_property(CFSTR(kIOHIDVendorIDKey),
+                                         true)) {
       return hid::vendor_id::value_t(*value);
     }
     return std::nullopt;
   }
 
   std::optional<hid::product_id::value_t> find_product_id(void) const {
-    if (auto value = find_int64_property(CFSTR(kIOHIDProductIDKey))) {
+    if (auto value = find_int64_property(CFSTR(kIOHIDProductIDKey),
+                                         true)) {
       return hid::product_id::value_t(*value);
     }
     return std::nullopt;
   }
 
   std::optional<hid::country_code::value_t> find_country_code(void) const {
-    if (auto value = find_int64_property(CFSTR(kIOHIDCountryCodeKey))) {
+    if (auto value = find_int64_property(CFSTR(kIOHIDCountryCodeKey),
+                                         true)) {
       return hid::country_code::value_t(*value);
     }
     return std::nullopt;
   }
 
   std::optional<iokit_hid_location_id::value_t> find_location_id(void) const {
-    if (auto value = find_int64_property(CFSTR(kIOHIDLocationIDKey))) {
+    if (auto value = find_int64_property(CFSTR(kIOHIDLocationIDKey),
+                                         false)) {
       return iokit_hid_location_id::value_t(*value);
     }
     return std::nullopt;
   }
 
   std::optional<std::string> find_manufacturer(void) const {
-    return find_string_property(CFSTR(kIOHIDManufacturerKey));
+    return find_string_property(CFSTR(kIOHIDManufacturerKey),
+                                true);
   }
 
   std::optional<std::string> find_product(void) const {
-    return find_string_property(CFSTR(kIOHIDProductKey));
+    return find_string_property(CFSTR(kIOHIDProductKey),
+                                true);
   }
 
   std::optional<std::string> find_serial_number(void) const {
-    return find_string_property(CFSTR(kIOHIDSerialNumberKey));
+    return find_string_property(CFSTR(kIOHIDSerialNumberKey),
+                                true);
   }
 
   std::optional<std::string> find_transport(void) const {
-    return find_string_property(CFSTR(kIOHIDTransportKey));
+    return find_string_property(CFSTR(kIOHIDTransportKey),
+                                true);
   }
 
   std::optional<std::string> find_device_address(void) const {
-    return find_string_property(CFSTR("DeviceAddress"));
+    return find_string_property(CFSTR("DeviceAddress"),
+                                true);
   }
 
   // Note:
@@ -170,7 +200,37 @@ public:
   }
 
 private:
+  std::vector<iokit_registry_entry> get_parent_registry_entries(iokit_registry_entry registry_entry) const {
+    std::vector<iokit_registry_entry> result;
+
+    // Only target registry entries with matching location id
+    if (auto location_id = registry_entry.find_int64_property(CFSTR(kIOHIDLocationIDKey))) {
+      auto parent_iterator = registry_entry.get_parent_iterator(kIOServicePlane);
+      while (true) {
+        auto next = parent_iterator.next();
+        if (!next) {
+          break;
+        }
+
+        pqrs::osx::iokit_registry_entry entry(next);
+        if (auto parent_location_id = entry.find_int64_property(CFSTR(kIOHIDLocationIDKey))) {
+          if (location_id == parent_location_id) {
+            result.push_back(entry);
+          }
+        }
+
+        for (const auto& e : get_parent_registry_entries(entry)) {
+          result.push_back(e);
+        }
+      }
+    }
+
+    return result;
+  }
+
   cf::cf_ptr<IOHIDDeviceRef> device_;
+  iokit_object_ptr service_;
+  iokit_registry_entry registry_entry_;
 };
 } // namespace osx
 } // namespace pqrs
