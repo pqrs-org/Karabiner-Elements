@@ -97,9 +97,9 @@ struct DevicesView: View {
                     if connectedDeviceSetting.connectedDevice.vendorId != 0 {
                       HStack(alignment: .firstTextBaseline, spacing: 0) {
                         Spacer()
-                        
+
                         Text("Vendor ID: ")
-                        
+
                         Text(
                           String(
                             format: "%5d (0x%04x)",
@@ -112,9 +112,9 @@ struct DevicesView: View {
                     if connectedDeviceSetting.connectedDevice.productId != 0 {
                       HStack(alignment: .center, spacing: 0) {
                         Spacer()
-                        
+
                         Text("Product ID: ")
-                        
+
                         Text(
                           String(
                             format: "%5d (0x%04x)",
@@ -123,13 +123,13 @@ struct DevicesView: View {
                         )
                       }
                     }
-                      
+
                     if !connectedDeviceSetting.connectedDevice.deviceAddress.isEmpty {
                       HStack(alignment: .center, spacing: 0) {
                         Spacer()
-                        
+
                         Text("Device Address: ")
-                        
+
                         Text(connectedDeviceSetting.connectedDevice.deviceAddress)
                       }
                     }

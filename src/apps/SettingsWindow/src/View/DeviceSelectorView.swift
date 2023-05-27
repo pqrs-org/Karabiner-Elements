@@ -25,8 +25,13 @@ struct DeviceSelectorView: View {
           Button(action: {
             selectedDevice = connectedDeviceSetting.connectedDevice
           }) {
-            let noId = connectedDeviceSetting.connectedDevice.vendorId == 0 && connectedDeviceSetting.connectedDevice.productId == 0
-            let label = noId ? connectedDeviceSetting.connectedDevice.deviceAddress : "\(String(connectedDeviceSetting.connectedDevice.vendorId)),\(String(connectedDeviceSetting.connectedDevice.productId))"
+            let noId =
+              connectedDeviceSetting.connectedDevice.vendorId == 0
+              && connectedDeviceSetting.connectedDevice.productId == 0
+            let label =
+              noId
+              ? connectedDeviceSetting.connectedDevice.deviceAddress
+              : "\(String(connectedDeviceSetting.connectedDevice.vendorId)),\(String(connectedDeviceSetting.connectedDevice.productId))"
             HStack {
               Text(
                 """
