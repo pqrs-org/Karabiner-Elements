@@ -3,6 +3,7 @@
 ## Beta
 
 -   ✨ New Features
+    -   Use Bluetooth address (Bluetooth MAC address) is used to identify the device when the Bluetooth device does not have Vendor ID and Product ID. (Thanks to @stackia)
     -   The `device_address` condition has been added into `device_if` and `device_unless`. (Thanks to @stackia)
 -   ⚡️ Improvements
     -   Added the ability to filter by keywords when adding Complex Modifications rules.
