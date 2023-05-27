@@ -30,6 +30,7 @@ struct SystemExtensionsView: View {
                   .lineLimit(nil)
                   .font(.custom("Menlo", size: 11.0))
                   .padding(5)
+                  .macOS12EnableTextSelection()
               }
 
               Spacer()

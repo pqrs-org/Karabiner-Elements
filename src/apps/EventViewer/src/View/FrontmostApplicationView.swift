@@ -39,6 +39,7 @@ struct FrontmostApplicationView: View {
                             .font(.caption)
 
                           Text(entry.bundleIdentifier)
+                            .macOS12EnableTextSelection()
 
                           Spacer()
                         }
@@ -48,6 +49,7 @@ struct FrontmostApplicationView: View {
                             .font(.caption)
 
                           Text(entry.filePath)
+                            .macOS12EnableTextSelection()
 
                           Spacer()
                         }
