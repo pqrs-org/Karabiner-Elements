@@ -356,9 +356,9 @@ private:
     device_identifiers_ = std::make_shared<device_identifiers>(
         vendor_id_.value_or(pqrs::hid::vendor_id::value_t(0)),
         product_id_.value_or(pqrs::hid::product_id::value_t(0)),
-        device_address_.value_or(""),
         is_keyboard_.value_or(false),
-        is_pointing_device_.value_or(false));
+        is_pointing_device_.value_or(false),
+        device_address_.value_or(""));
   }
 
   device_id device_id_;

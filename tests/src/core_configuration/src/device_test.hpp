@@ -35,15 +35,39 @@ void run_device_test(void) {
 
     // construct with vendor_id, product_id, ...
     {
-      krbn::device_identifiers identifiers(pqrs::hid::vendor_id::value_t(1234), pqrs::hid::product_id::value_t(5678), "ec-ba-73-21-e6-f5", true, false);
+      krbn::device_identifiers identifiers(pqrs::hid::vendor_id::value_t(1234),
+                                           pqrs::hid::product_id::value_t(5678),
+                                           true,
+                                           false,
+                                           "ec-ba-73-21-e6-f5" // device_address (ignored)
+      );
       expect(identifiers.get_vendor_id() == pqrs::hid::vendor_id::value_t(1234));
       expect(identifiers.get_product_id() == pqrs::hid::product_id::value_t(5678));
-      expect(identifiers.get_device_address() == "ec-ba-73-21-e6-f5");
+      expect(identifiers.get_device_address() == "");
       expect(identifiers.get_is_keyboard() == true);
       expect(identifiers.get_is_pointing_device() == false);
     }
     {
-      krbn::device_identifiers identifiers(pqrs::hid::vendor_id::value_t(4321), pqrs::hid::product_id::value_t(8765), "", false, true);
+      krbn::device_identifiers identifiers(pqrs::hid::vendor_id::value_t(0),
+                                           pqrs::hid::product_id::value_t(0),
+                                           true,
+                                           false,
+                                           "ec-ba-73-21-e6-f5" // device_address
+      );
+      expect(identifiers.get_vendor_id() == pqrs::hid::vendor_id::value_t(0));
+      expect(identifiers.get_product_id() == pqrs::hid::product_id::value_t(0));
+      expect(identifiers.get_device_address() == "ec-ba-73-21-e6-f5");
+      expect(identifiers.get_is_keyboard() == true);
+      expect(identifiers.get_is_pointing_device() == false);
+    }
+
+    {
+      krbn::device_identifiers identifiers(pqrs::hid::vendor_id::value_t(4321),
+                                           pqrs::hid::product_id::value_t(8765),
+                                           false,
+                                           true,
+                                           "" // device_address
+      );
       expect(identifiers.get_vendor_id() == pqrs::hid::vendor_id::value_t(4321));
       expect(identifiers.get_product_id() == pqrs::hid::product_id::value_t(8765));
       expect(identifiers.get_device_address() == "");
@@ -59,7 +83,6 @@ void run_device_test(void) {
       nlohmann::json expected({
           {"vendor_id", 0},
           {"product_id", 0},
-          {"device_address", ""},
           {"is_keyboard", false},
           {"is_pointing_device", false},
       });
@@ -75,7 +98,6 @@ void run_device_test(void) {
           {"dummy", {{"keep_me", true}}},
           {"vendor_id", 0},
           {"product_id", 0},
-          {"device_address", ""},
           {"is_keyboard", false},
           {"is_pointing_device", true},
       });
@@ -248,10 +270,6 @@ void run_device_test(void) {
                                   0,
                               },
                               {
-                                  "device_address",
-                                  ""
-                              },
-                              {
                                   "is_keyboard",
                                   false,
                               },
@@ -305,10 +323,6 @@ void run_device_test(void) {
                               {
                                   "product_id",
                                   0,
-                              },
-                              {
-                                  "device_address",
-                                  ""
                               },
                               {
                                   "is_keyboard",

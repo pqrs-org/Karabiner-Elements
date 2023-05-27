@@ -12,9 +12,10 @@ void run_device_test(void) {
                                                                   "USB");
       krbn::device_identifiers identifiers(pqrs::hid::vendor_id::value_t(1234),
                                            pqrs::hid::product_id::value_t(5678),
-                                           "",
                                            true,
-                                           false);
+                                           false,
+                                           "" // device_address
+      );
       krbn::connected_devices::details::device device(descriptions,
                                                       identifiers,
                                                       true,
@@ -53,10 +54,6 @@ void run_device_test(void) {
                                               {
                                                   "product_id",
                                                   5678,
-                                              },
-                                              {
-                                                  "device_address",
-                                                  "",
                                               },
                                               {
                                                   "is_keyboard",
@@ -177,7 +174,7 @@ void run_device_test(void) {
           .set_product("product")
           .set(pqrs::hid::vendor_id::value_t(1234))
           .set(pqrs::hid::product_id::value_t(5678))
-          .set_device_address("ec-ba-73-21-e6-f4")
+          .set_device_address("ec-ba-73-21-e6-f4") // ignored
           .set_is_keyboard(true);
 
       {
@@ -187,7 +184,32 @@ void run_device_test(void) {
         expect(device.get_descriptions().get_product() == "product");
         expect(device.get_identifiers().get_vendor_id() == pqrs::hid::vendor_id::value_t(1234));
         expect(device.get_identifiers().get_product_id() == pqrs::hid::product_id::value_t(5678));
-        expect(device.get_identifiers().get_device_address() == "ec-ba-73-21-e6-f4");
+        expect(device.get_identifiers().get_device_address() == "");
+        expect(device.get_identifiers().get_is_keyboard() == true);
+        expect(device.get_identifiers().get_is_pointing_device() == false);
+        expect(device.get_is_built_in_keyboard() == false);
+        expect(device.get_is_built_in_trackpad() == false);
+        expect(device.get_is_built_in_touch_bar() == false);
+      }
+    }
+    {
+      krbn::device_properties device_properties;
+      device_properties
+          .set_manufacturer("manufacturer")
+          .set_product("product")
+          .set(pqrs::hid::vendor_id::value_t(0))
+          .set(pqrs::hid::product_id::value_t(0))
+          .set_device_address("ec-ba-73-21-e6-f5")
+          .set_is_keyboard(true);
+
+      {
+        krbn::connected_devices::details::device device(device_properties);
+
+        expect(device.get_descriptions().get_manufacturer() == "manufacturer");
+        expect(device.get_descriptions().get_product() == "product");
+        expect(device.get_identifiers().get_vendor_id() == pqrs::hid::vendor_id::value_t(0));
+        expect(device.get_identifiers().get_product_id() == pqrs::hid::product_id::value_t(0));
+        expect(device.get_identifiers().get_device_address() == "ec-ba-73-21-e6-f5");
         expect(device.get_identifiers().get_is_keyboard() == true);
         expect(device.get_identifiers().get_is_pointing_device() == false);
         expect(device.get_is_built_in_keyboard() == false);

@@ -9,17 +9,19 @@ void run_device_identifiers_test(void) {
     {
       krbn::device_identifiers di(pqrs::hid::vendor_id::value_t(1234),
                                   pqrs::hid::product_id::value_t(5678),
-                                  "",
-                                  true,
-                                  false);
+                                  true,  // is_keyboard
+                                  false, // is_pointing_device
+                                  ""     // device_address
+      );
       expect(di.is_apple() == false);
     }
     {
       krbn::device_identifiers di(pqrs::hid::vendor_id::value_t(1452),
                                   pqrs::hid::product_id::value_t(610),
-                                  "",
-                                  true,
-                                  false);
+                                  true,  // is_keyboard
+                                  false, // is_pointing_device
+                                  ""     // device_address
+      );
       expect(di.is_apple() == true);
     }
     {

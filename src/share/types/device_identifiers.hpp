@@ -8,22 +8,31 @@
 namespace krbn {
 class device_identifiers final {
 public:
-  device_identifiers(void) : vendor_id_(pqrs::hid::vendor_id::value_t(0)),
-                             product_id_(pqrs::hid::product_id::value_t(0)),
-                             device_address_(""),
-                             is_keyboard_(false),
-                             is_pointing_device_(false) {
+  device_identifiers(void)
+      : vendor_id_(pqrs::hid::vendor_id::value_t(0)),
+        product_id_(pqrs::hid::product_id::value_t(0)),
+        is_keyboard_(false),
+        is_pointing_device_(false),
+        device_address_("") {
   }
 
   device_identifiers(pqrs::hid::vendor_id::value_t vendor_id,
                      pqrs::hid::product_id::value_t product_id,
-                     std::string device_address,
                      bool is_keyboard,
-                     bool is_pointing_device) : vendor_id_(vendor_id),
-                                                product_id_(product_id),
-                                                device_address_(device_address),
-                                                is_keyboard_(is_keyboard),
-                                                is_pointing_device_(is_pointing_device) {
+                     bool is_pointing_device,
+                     std::string device_address)
+      : vendor_id_(vendor_id),
+        product_id_(product_id),
+        is_keyboard_(is_keyboard),
+        is_pointing_device_(is_pointing_device) {
+    // Some bluetooth devices do not have a vendor_id or product_id.
+    // Such devices use device_address to distinguish between devices.
+    // The device_address will be changed when the hardware is replaced,
+    // so we use device_address only when vendor_id and product_id are zero.
+    if (vendor_id == pqrs::hid::vendor_id::value_t(0) &&
+        product_id == pqrs::hid::product_id::value_t(0)) {
+      device_address_ = device_address;
+    }
   }
 
   const nlohmann::json& get_json(void) const {
@@ -50,14 +59,6 @@ public:
     product_id_ = value;
   }
 
-  const std::string& get_device_address(void) const {
-    return device_address_;
-  }
-
-  void set_device_address(std::string value) {
-    device_address_ = value;
-  }
-
   bool get_is_keyboard(void) const {
     return is_keyboard_;
   }
@@ -72,6 +73,14 @@ public:
 
   void set_is_pointing_device(bool value) {
     is_pointing_device_ = value;
+  }
+
+  const std::string& get_device_address(void) const {
+    return device_address_;
+  }
+
+  void set_device_address(std::string value) {
+    device_address_ = value;
   }
 
   bool is_apple(void) const {
@@ -91,18 +100,22 @@ private:
   nlohmann::json json_;
   pqrs::hid::vendor_id::value_t vendor_id_;
   pqrs::hid::product_id::value_t product_id_;
-  std::string device_address_;
   bool is_keyboard_;
   bool is_pointing_device_;
+  // optional identifier
+  std::string device_address_;
 };
 
 inline void to_json(nlohmann::json& json, const device_identifiers& value) {
   json = value.get_json();
   json["vendor_id"] = type_safe::get(value.get_vendor_id());
   json["product_id"] = type_safe::get(value.get_product_id());
-  json["device_address"] = value.get_device_address();
   json["is_keyboard"] = value.get_is_keyboard();
   json["is_pointing_device"] = value.get_is_pointing_device();
+
+  if (value.get_device_address() != "") {
+    json["device_address"] = value.get_device_address();
+  }
 }
 
 inline void from_json(const nlohmann::json& json, device_identifiers& value) {

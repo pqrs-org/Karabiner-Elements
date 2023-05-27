@@ -282,14 +282,16 @@ void run_core_configuration_test(void) {
 
       expect(profile.get_device_ignore(krbn::device_identifiers(pqrs::hid::vendor_id::value_t(4176),
                                                                 pqrs::hid::product_id::value_t(1031),
-                                                                "",
                                                                 true,
-                                                                false)) == true);
+                                                                false,
+                                                                "" // device_address
+                                                                )) == true);
       expect(profile.get_device_ignore(krbn::device_identifiers(pqrs::hid::vendor_id::value_t(0x05ac),
                                                                 pqrs::hid::product_id::value_t(0x262),
-                                                                "",
                                                                 true,
-                                                                false)) == false);
+                                                                false,
+                                                                "" // device_address
+                                                                )) == false);
     }
 
     // load values from json
@@ -541,18 +543,37 @@ void run_core_configuration_test(void) {
         {
           krbn::device_identifiers identifiers(pqrs::hid::vendor_id::value_t(1112),
                                                pqrs::hid::product_id::value_t(2222),
-                                               "ec-ba-73-21-e6-f5",
                                                false,
-                                               true);
+                                               true,
+                                               "ec-ba-73-21-e6-f5" // device_address (ignored)
+          );
           profile.set_device_disable_built_in_keyboard_if_exists(identifiers, true);
           expect(profile.get_devices().size() == 5);
           expect((profile.get_devices())[4].get_identifiers().get_vendor_id() == pqrs::hid::vendor_id::value_t(1112));
           expect((profile.get_devices())[4].get_identifiers().get_product_id() == pqrs::hid::product_id::value_t(2222));
-          expect((profile.get_devices())[4].get_identifiers().get_device_address() == "ec-ba-73-21-e6-f5");
+          expect((profile.get_devices())[4].get_identifiers().get_device_address() == "");
           expect((profile.get_devices())[4].get_identifiers().get_is_keyboard() == false);
           expect((profile.get_devices())[4].get_identifiers().get_is_pointing_device() == true);
           expect((profile.get_devices())[4].get_ignore() == true);
           expect((profile.get_devices())[4].get_disable_built_in_keyboard_if_exists() == true);
+        }
+
+        {
+          krbn::device_identifiers identifiers(pqrs::hid::vendor_id::value_t(0),
+                                               pqrs::hid::product_id::value_t(0),
+                                               false,
+                                               true,
+                                               "ec-ba-73-21-e6-f5" // device_address
+          );
+          profile.set_device_disable_built_in_keyboard_if_exists(identifiers, true);
+          expect(profile.get_devices().size() == 6);
+          expect((profile.get_devices())[5].get_identifiers().get_vendor_id() == pqrs::hid::vendor_id::value_t(0));
+          expect((profile.get_devices())[5].get_identifiers().get_product_id() == pqrs::hid::product_id::value_t(0));
+          expect((profile.get_devices())[5].get_identifiers().get_device_address() == "ec-ba-73-21-e6-f5");
+          expect((profile.get_devices())[5].get_identifiers().get_is_keyboard() == false);
+          expect((profile.get_devices())[5].get_identifiers().get_is_pointing_device() == true);
+          expect((profile.get_devices())[5].get_ignore() == true);
+          expect((profile.get_devices())[5].get_disable_built_in_keyboard_if_exists() == true);
         }
       }
     }
@@ -631,10 +652,7 @@ void run_core_configuration_test(void) {
                                                       "product_id",
                                                       5678,
                                                   },
-                                                  {
-                                                      "device_address",
-                                                      "ec-ba-73-21-e6-f5"
-                                                  },
+                                                  {"device_address", "ec-ba-73-21-e6-f5"},
                                                   {
                                                       "is_keyboard",
                                                       true,
@@ -804,10 +822,7 @@ void run_core_configuration_test(void) {
                                                       "product_id",
                                                       5678,
                                                   },
-                                                  {
-                                                      "device_address",
-                                                      "ec-ba-73-21-e6-f5"
-                                                  },
+                                                  {"device_address", "ec-ba-73-21-e6-f5"},
                                                   {
                                                       "is_keyboard",
                                                       true,
