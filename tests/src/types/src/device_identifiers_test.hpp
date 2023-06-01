@@ -11,6 +11,7 @@ void run_device_identifiers_test(void) {
                                   pqrs::hid::product_id::value_t(5678),
                                   true,  // is_keyboard
                                   false, // is_pointing_device
+                                  false, // is_game_pad
                                   ""     // device_address
       );
       expect(di.is_apple() == false);
@@ -20,6 +21,7 @@ void run_device_identifiers_test(void) {
                                   pqrs::hid::product_id::value_t(610),
                                   true,  // is_keyboard
                                   false, // is_pointing_device
+                                  false, // is_game_pad
                                   ""     // device_address
       );
       expect(di.is_apple() == true);
@@ -32,6 +34,7 @@ void run_device_identifiers_test(void) {
       expect(di.get_device_address() == "");
       expect(di.get_is_keyboard() == false);
       expect(di.get_is_pointing_device() == false);
+      expect(di.get_is_game_pad() == false);
     }
     {
       auto json = nlohmann::json::object({
@@ -40,6 +43,7 @@ void run_device_identifiers_test(void) {
           {"device_address", "aa-bb-cc-dd-ee-ff"},
           {"is_keyboard", true},
           {"is_pointing_device", false},
+          {"is_game_pad", false},
           {"dummy key", "dummy value"},
       });
 
@@ -49,6 +53,7 @@ void run_device_identifiers_test(void) {
       expect(di.get_device_address() == "aa-bb-cc-dd-ee-ff");
       expect(di.get_is_keyboard() == true);
       expect(di.get_is_pointing_device() == false);
+      expect(di.get_is_game_pad() == false);
       expect(nlohmann::json(di) == json);
     }
     {
@@ -58,6 +63,16 @@ void run_device_identifiers_test(void) {
 
       auto di = json.get<krbn::device_identifiers>();
       expect(di.get_is_pointing_device() == true);
+      expect(nlohmann::json(di).at("is_pointing_device").get<bool>() == true);
+    }
+    {
+      auto json = nlohmann::json::object({
+          {"is_game_pad", true},
+      });
+
+      auto di = json.get<krbn::device_identifiers>();
+      expect(di.get_is_game_pad() == true);
+      expect(nlohmann::json(di).at("is_game_pad").get<bool>() == true);
     }
   };
 }
