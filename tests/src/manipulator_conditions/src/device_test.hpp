@@ -312,6 +312,7 @@ void run_device_test(void) {
                                      pqrs::hid::product_id::value_t(2000),
                                      true,  // is_keyboard
                                      false, // is_pointing_device
+                                     false, // is_game_pad
                                      ""     // device_address
                                      ),
             true);
@@ -324,6 +325,7 @@ void run_device_test(void) {
                                      pqrs::hid::product_id::value_t(2000),
                                      true,  // is_keyboard
                                      false, // is_pointing_device
+                                     false, // is_game_pad
                                      ""     // device_address
                                      ),
             false);
