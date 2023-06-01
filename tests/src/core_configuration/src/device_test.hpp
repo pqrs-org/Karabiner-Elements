@@ -37,8 +37,9 @@ void run_device_test(void) {
     {
       krbn::device_identifiers identifiers(pqrs::hid::vendor_id::value_t(1234),
                                            pqrs::hid::product_id::value_t(5678),
-                                           true,
-                                           false,
+                                           true,               // is_keyboard
+                                           false,              // is_pointing_device
+                                           false,              // is_game_pad
                                            "ec-ba-73-21-e6-f5" // device_address (ignored)
       );
       expect(identifiers.get_vendor_id() == pqrs::hid::vendor_id::value_t(1234));
@@ -50,8 +51,9 @@ void run_device_test(void) {
     {
       krbn::device_identifiers identifiers(pqrs::hid::vendor_id::value_t(0),
                                            pqrs::hid::product_id::value_t(0),
-                                           true,
-                                           false,
+                                           true,               // is_keyboard
+                                           false,              // is_pointing_device
+                                           false,              // is_game_pad
                                            "ec-ba-73-21-e6-f5" // device_address
       );
       expect(identifiers.get_vendor_id() == pqrs::hid::vendor_id::value_t(0));
@@ -64,9 +66,10 @@ void run_device_test(void) {
     {
       krbn::device_identifiers identifiers(pqrs::hid::vendor_id::value_t(4321),
                                            pqrs::hid::product_id::value_t(8765),
-                                           false,
-                                           true,
-                                           "" // device_address
+                                           false, // is_keyboard
+                                           true,  // is_pointing_device
+                                           false, // is_game_pad
+                                           ""     // device_address
       );
       expect(identifiers.get_vendor_id() == pqrs::hid::vendor_id::value_t(4321));
       expect(identifiers.get_product_id() == pqrs::hid::product_id::value_t(8765));
@@ -85,6 +88,7 @@ void run_device_test(void) {
           {"product_id", 0},
           {"is_keyboard", false},
           {"is_pointing_device", false},
+          {"is_game_pad", false},
       });
       expect(nlohmann::json(identifiers) == expected);
     }
@@ -100,6 +104,7 @@ void run_device_test(void) {
           {"product_id", 0},
           {"is_keyboard", false},
           {"is_pointing_device", true},
+          {"is_game_pad", false},
       });
       expect(nlohmann::json(identifiers) == expected);
     }
@@ -277,6 +282,10 @@ void run_device_test(void) {
                                   "is_pointing_device",
                                   false,
                               },
+                              {
+                                  "is_game_pad",
+                                  false,
+                              },
                           }},
           {"ignore", false},
           {"fn_function_keys", nlohmann::json::array()},
@@ -330,6 +339,10 @@ void run_device_test(void) {
                               },
                               {
                                   "is_pointing_device",
+                                  false,
+                              },
+                              {
+                                  "is_game_pad",
                                   false,
                               },
                           }},
