@@ -72,6 +72,8 @@ extension LibKrbn {
           isKeyboard: libkrbn_connected_devices_get_is_keyboard(libkrbnConnectedDevices, i),
           isPointingDevice: libkrbn_connected_devices_get_is_pointing_device(
             libkrbnConnectedDevices, i),
+          isGamePad: libkrbn_connected_devices_get_is_game_pad(
+            libkrbnConnectedDevices, i),
           isBuiltInKeyboard: libkrbn_connected_devices_get_is_built_in_keyboard(
             libkrbnConnectedDevices, i),
           isBuiltInTrackpad: libkrbn_connected_devices_get_is_built_in_trackpad(
