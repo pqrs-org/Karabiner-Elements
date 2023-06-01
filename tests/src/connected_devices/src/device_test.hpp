@@ -12,9 +12,10 @@ void run_device_test(void) {
                                                                   "USB");
       krbn::device_identifiers identifiers(pqrs::hid::vendor_id::value_t(1234),
                                            pqrs::hid::product_id::value_t(5678),
-                                           true,
-                                           false,
-                                           "" // device_address
+                                           true,  // is_keyboard
+                                           false, // is_pointing_device
+                                           false, // is_game_pad
+                                           ""     // device_address
       );
       krbn::connected_devices::details::device device(descriptions,
                                                       identifiers,
@@ -61,6 +62,10 @@ void run_device_test(void) {
                                               },
                                               {
                                                   "is_pointing_device",
+                                                  false,
+                                              },
+                                              {
+                                                  "is_game_pad",
                                                   false,
                                               },
                                           },

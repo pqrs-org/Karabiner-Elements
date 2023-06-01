@@ -22,6 +22,7 @@ void run_connected_devices_test(void) {
                                              pqrs::hid::product_id::value_t(5678),
                                              true,  // is_keyboard
                                              false, // is_pointing_device
+                                             false, // is_game_pad
                                              ""     // device_address
         );
         krbn::connected_devices::details::device device(descriptions,
@@ -40,6 +41,7 @@ void run_connected_devices_test(void) {
                                              pqrs::hid::product_id::value_t(5678),
                                              true,  // is_keyboard
                                              false, // is_pointing_device
+                                             false, // is_game_pad
                                              ""     // device_address
         );
         krbn::connected_devices::details::device device(descriptions,
@@ -58,6 +60,7 @@ void run_connected_devices_test(void) {
                                              pqrs::hid::product_id::value_t(6789),
                                              false, // is_keyboard
                                              true,  // is_pointing_device
+                                             false, // is_game_pad
                                              ""     // device_address
         );
         krbn::connected_devices::details::device device(descriptions,
@@ -76,6 +79,7 @@ void run_connected_devices_test(void) {
                                              pqrs::hid::product_id::value_t(5679),
                                              false, // is_keyboard
                                              true,  // is_pointing_device
+                                             false, // is_game_pad
                                              ""     // device_address
         );
         krbn::connected_devices::details::device device(descriptions,
@@ -95,6 +99,7 @@ void run_connected_devices_test(void) {
                                              pqrs::hid::product_id::value_t(678),
                                              false,              // is_keyboard
                                              true,               // is_pointing_device
+                                             false,              // is_game_pad
                                              "ec-ba-73-21-e6-f4" // device_address (ignored)
         );
         krbn::connected_devices::details::device device(descriptions,
@@ -113,6 +118,7 @@ void run_connected_devices_test(void) {
                                              pqrs::hid::product_id::value_t(678),
                                              true,               // is_keyboard
                                              false,              // is_pointing_device
+                                             false,              // is_game_pad
                                              "ec-ba-73-21-e6-f4" // device_address (ignored)
         );
         krbn::connected_devices::details::device device(descriptions,
@@ -132,6 +138,7 @@ void run_connected_devices_test(void) {
                                              pqrs::hid::product_id::value_t(0),
                                              true,               // is_keyboard
                                              false,              // is_pointing_device
+                                             false,              // is_game_pad
                                              "ec-ba-73-21-e6-f5" // device_address
         );
         krbn::connected_devices::details::device device(descriptions,
@@ -210,6 +217,7 @@ void run_connected_devices_test(void) {
                                            pqrs::hid::product_id::value_t(5678),
                                            true,  // is_keyboard
                                            false, // is_pointing_device
+                                           false, // is_game_pad
                                            ""     // device_address
       );
       krbn::connected_devices::details::device device(descriptions,
