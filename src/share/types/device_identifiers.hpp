@@ -13,6 +13,7 @@ public:
         product_id_(pqrs::hid::product_id::value_t(0)),
         is_keyboard_(false),
         is_pointing_device_(false),
+        is_game_pad_(false),
         device_address_("") {
   }
 
@@ -20,11 +21,13 @@ public:
                      pqrs::hid::product_id::value_t product_id,
                      bool is_keyboard,
                      bool is_pointing_device,
+                     bool is_game_pad,
                      std::string device_address)
       : vendor_id_(vendor_id),
         product_id_(product_id),
         is_keyboard_(is_keyboard),
-        is_pointing_device_(is_pointing_device) {
+        is_pointing_device_(is_pointing_device),
+        is_game_pad_(is_game_pad) {
     // Some bluetooth devices do not have a vendor_id or product_id.
     // Such devices use device_address to distinguish between devices.
     // The device_address will be changed when the hardware is replaced,
@@ -75,6 +78,14 @@ public:
     is_pointing_device_ = value;
   }
 
+  bool get_is_game_pad(void) const {
+    return is_game_pad_;
+  }
+
+  void set_is_game_pad(bool value) {
+    is_game_pad_ = value;
+  }
+
   const std::string& get_device_address(void) const {
     return device_address_;
   }
@@ -93,7 +104,8 @@ public:
            product_id_ == other.product_id_ &&
            device_address_ == other.device_address_ &&
            is_keyboard_ == other.is_keyboard_ &&
-           is_pointing_device_ == other.is_pointing_device_;
+           is_pointing_device_ == other.is_pointing_device_ &&
+           is_game_pad_ == other.is_game_pad_;
   }
 
 private:
@@ -102,6 +114,7 @@ private:
   pqrs::hid::product_id::value_t product_id_;
   bool is_keyboard_;
   bool is_pointing_device_;
+  bool is_game_pad_;
   // optional identifier
   std::string device_address_;
 };
@@ -112,6 +125,7 @@ inline void to_json(nlohmann::json& json, const device_identifiers& value) {
   json["product_id"] = type_safe::get(value.get_product_id());
   json["is_keyboard"] = value.get_is_keyboard();
   json["is_pointing_device"] = value.get_is_pointing_device();
+  json["is_game_pad"] = value.get_is_game_pad();
 
   if (value.get_device_address() != "") {
     json["device_address"] = value.get_device_address();
@@ -146,6 +160,11 @@ inline void from_json(const nlohmann::json& json, device_identifiers& value) {
       pqrs::json::requires_boolean(v, "`" + k + "`");
 
       value.set_is_pointing_device(v.get<bool>());
+
+    } else if (k == "is_game_pad") {
+      pqrs::json::requires_boolean(v, "`" + k + "`");
+
+      value.set_is_game_pad(v.get<bool>());
 
     } else {
       // Allow unknown key
