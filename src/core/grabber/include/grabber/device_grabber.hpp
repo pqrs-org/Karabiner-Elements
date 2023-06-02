@@ -854,7 +854,7 @@ private:
       return grabbable_state::state::ungrabbable_temporarily;
     }
 
-    if (needs_grab_pointing_device()) {
+    if (needs_prepare_virtual_hid_pointing_device()) {
       if (!virtual_hid_devices_state_.get_virtual_hid_pointing_ready()) {
         std::string message = "virtual_hid_pointing is not ready. Please wait for a while.";
         logger_unique_filter_.warn(message);
@@ -932,7 +932,7 @@ private:
     return false;
   }
 
-  bool needs_grab_pointing_device(void) const {
+  bool needs_prepare_virtual_hid_pointing_device(void) const {
     //
     // Check if there is a pointing device to grab
     // (The game pad also sends mouse events, so a virtual pointing device should be prepared as well.)
@@ -966,7 +966,7 @@ private:
   }
 
   void update_virtual_hid_pointing(void) {
-    if (needs_grab_pointing_device()) {
+    if (needs_prepare_virtual_hid_pointing_device()) {
       virtual_hid_device_service_client_->async_virtual_hid_pointing_initialize();
       return;
     }
