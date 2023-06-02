@@ -935,13 +935,16 @@ private:
   bool needs_grab_pointing_device(void) const {
     //
     // Check if there is a pointing device to grab
+    // (The game pad also sends mouse events, so a virtual pointing device should be prepared as well.)
     //
 
     for (const auto& e : entries_) {
       if (auto device_properties = e.second->get_device_properties()) {
-        if (device_properties->get_is_pointing_device().value_or(false) &&
-            e.second->get_event_origin() == event_origin::grabbed_device) {
-          return true;
+        if (e.second->get_event_origin() == event_origin::grabbed_device) {
+          if (device_properties->get_is_pointing_device().value_or(false) ||
+              device_properties->get_is_game_pad().value_or(false)) {
+            return true;
+          }
         }
       }
     }
