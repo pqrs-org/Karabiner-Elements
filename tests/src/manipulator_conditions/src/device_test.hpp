@@ -17,6 +17,7 @@ void run_device_test(void) {
         std::nullopt,                         // location_id
         true,                                 // is_keyboard,
         false,                                // is_pointing_device
+        false,                                // is_game_pad
         ""                                    // device_address
     );
 
@@ -26,6 +27,7 @@ void run_device_test(void) {
         std::nullopt,                         // location_id
         true,                                 // is_keyboard,
         false,                                // is_pointing_device
+        false,                                // is_game_pad
         ""                                    // device_address
     );
 
@@ -35,6 +37,7 @@ void run_device_test(void) {
         std::nullopt,                         // location_id
         true,                                 // is_keyboard,
         false,                                // is_pointing_device
+        false,                                // is_game_pad
         ""                                    // device_address
     );
 
@@ -44,6 +47,7 @@ void run_device_test(void) {
         std::nullopt,                         // location_id
         true,                                 // is_keyboard,
         false,                                // is_pointing_device
+        false,                                // is_game_pad
         ""                                    // device_address
     );
 
@@ -53,6 +57,7 @@ void run_device_test(void) {
         std::nullopt,                         // location_id
         true,                                 // is_keyboard,
         false,                                // is_pointing_device
+        false,                                // is_game_pad
         ""                                    // device_address
     );
 
@@ -62,6 +67,7 @@ void run_device_test(void) {
         std::nullopt,                         // location_id
         true,                                 // is_keyboard,
         false,                                // is_pointing_device
+        false,                                // is_game_pad
         ""                                    // device_address
     );
 
@@ -71,6 +77,7 @@ void run_device_test(void) {
         std::nullopt,                      // location_id
         true,                              // is_keyboard,
         false,                             // is_pointing_device
+        false,                             // is_game_pad
         "aa-bb-cc-dd-ee-ff"                // device_address
     );
 
@@ -80,6 +87,7 @@ void run_device_test(void) {
         std::nullopt, // location_id
         true,         // is_keyboard,
         false,        // is_pointing_device
+        false,        // is_game_pad
         std::nullopt  // device_address
     );
 
@@ -89,6 +97,7 @@ void run_device_test(void) {
         std::nullopt,                         // location_id
         true,                                 // is_keyboard,
         true,                                 // is_pointing_device
+        false,                                // is_game_pad
         ""                                    // device_address
     );
 
@@ -98,6 +107,7 @@ void run_device_test(void) {
         std::nullopt,                         // location_id
         true,                                 // is_keyboard,
         false,                                // is_pointing_device
+        false,                                // is_game_pad
         ""                                    // device_address
     );
 
@@ -107,6 +117,7 @@ void run_device_test(void) {
         std::nullopt,                         // location_id
         false,                                // is_keyboard,
         true,                                 // is_pointing_device
+        false,                                // is_game_pad
         ""                                    // device_address
     );
 
@@ -116,6 +127,7 @@ void run_device_test(void) {
         std::nullopt,                         // location_id
         false,                                // is_keyboard,
         false,                                // is_pointing_device
+        false,                                // is_game_pad
         ""                                    // device_address
     );
 
@@ -125,6 +137,7 @@ void run_device_test(void) {
         krbn::location_id(3000),              // location_id
         std::nullopt,                         // is_keyboard,
         std::nullopt,                         // is_pointing_device
+        std::nullopt,                         // is_game_pad
         ""                                    // device_address
     );
 
@@ -134,6 +147,7 @@ void run_device_test(void) {
         std::nullopt,                         // location_id
         std::nullopt,                         // is_keyboard,
         std::nullopt,                         // is_pointing_device
+        std::nullopt,                         // is_game_pad
         std::nullopt                          // device_address
     );
 
@@ -143,6 +157,7 @@ void run_device_test(void) {
         krbn::location_id(4000),              // location_id
         std::nullopt,                         // is_keyboard,
         std::nullopt,                         // is_pointing_device
+        std::nullopt,                         // is_game_pad
         ""                                    // device_address
     );
 
@@ -331,6 +346,35 @@ void run_device_test(void) {
             false);
         auto e = manipulator_conditions_helper.make_event_queue_entry(device_id_1000_2000);
         expect(condition.is_fulfilled(e, environment) == false);
+      }
+    }
+
+    // is_game_pad
+    {
+      nlohmann::json json;
+      json["type"] = "device_if";
+      json["identifiers"] = nlohmann::json::array();
+      json["identifiers"].push_back(nlohmann::json::object());
+      json["identifiers"].back()["is_game_pad"] = true;
+      krbn::manipulator::conditions::device condition(json);
+
+      {
+        auto e = manipulator_conditions_helper.make_event_queue_entry(device_id_1000_2000);
+        expect(condition.is_fulfilled(e, environment) == false);
+      }
+      {
+        auto d = manipulator_conditions_helper.prepare_device(
+            pqrs::hid::vendor_id::value_t(1000),  // vendor_id
+            pqrs::hid::product_id::value_t(2000), // product_id,
+            std::nullopt,                         // location_id
+            false,                                // is_keyboard,
+            false,                                // is_pointing_device
+            true,                                 // is_game_pad
+            ""                                    // device_address
+        );
+
+        auto e = manipulator_conditions_helper.make_event_queue_entry(d);
+        expect(condition.is_fulfilled(e, environment) == true);
       }
     }
   };

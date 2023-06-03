@@ -107,6 +107,7 @@ void run_manipulator_factory_test(void) {
         std::nullopt,                         // location_id
         true,                                 // is_keyboard,
         false,                                // is_pointing_device
+        false,                                // is_game_pad
         ""                                    // device_address
     );
 
@@ -116,6 +117,7 @@ void run_manipulator_factory_test(void) {
         std::nullopt,                         // location_id
         false,                                // is_keyboard,
         true,                                 // is_pointing_device
+        false,                                // is_game_pad
         ""                                    // device_address
     );
 
@@ -125,6 +127,7 @@ void run_manipulator_factory_test(void) {
         std::nullopt,                         // location_id
         true,                                 // is_keyboard,
         false,                                // is_pointing_device
+        false,                                // is_game_pad
         ""                                    // device_address
     );
 

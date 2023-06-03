@@ -33,6 +33,7 @@ public:
                                  std::optional<krbn::location_id> location_id,
                                  std::optional<bool> is_keyboard,
                                  std::optional<bool> is_pointing_device,
+                                 std::optional<bool> is_game_pad,
                                  std::optional<std::string> device_address) {
     ++last_device_id_;
     krbn::device_id device_id(last_device_id_);
@@ -52,6 +53,9 @@ public:
     }
     if (is_pointing_device) {
       properties.set_is_pointing_device(*is_pointing_device);
+    }
+    if (is_game_pad) {
+      properties.set_is_game_pad(*is_game_pad);
     }
     if (device_address) {
       properties.set_device_address(*device_address);
