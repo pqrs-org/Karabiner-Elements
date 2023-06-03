@@ -1,18 +1,17 @@
 import SwiftUI
 
 struct SimpleModificationPickerView: View {
-  @ObservedObject private var settings = LibKrbn.Settings.shared
-
   private(set) var categories: LibKrbn.SimpleModificationDefinitionCategories
   private(set) var label: String
   private(set) var action: (_ json: String) -> Void
+  private(set) var showUnsafe: Bool
 
   var body: some View {
     Menu(label) {
       ForEach(categories.categories) { category in
         Menu {
           ForEach(category.entries) { e in
-            if !e.unsafe || settings.unsafeUI {
+            if !e.unsafe || showUnsafe {
               Button(
                 action: {
                   action(e.json)

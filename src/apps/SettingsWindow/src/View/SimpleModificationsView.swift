@@ -23,6 +23,8 @@ struct SimpleModificationsView: View {
   }
 
   struct SimpleModificationView: View {
+    @ObservedObject private var settings = LibKrbn.Settings.shared
+
     private let selectedDevice: LibKrbn.ConnectedDevice?
     private let simpleModifications: [LibKrbn.SimpleModification]
 
@@ -50,7 +52,8 @@ struct SimpleModificationsView: View {
                     fromJsonString: json,
                     toJsonString: simpleModification.toEntry.json,
                     device: selectedDevice)
-                }
+                },
+                showUnsafe: settings.unsafeUI || (selectedDevice?.isGamePad ?? false)
               )
 
               Image(systemName: "arrow.forward")
@@ -65,7 +68,8 @@ struct SimpleModificationsView: View {
                     fromJsonString: simpleModification.fromEntry.json,
                     toJsonString: json,
                     device: selectedDevice)
-                }
+                },
+                showUnsafe: settings.unsafeUI || (selectedDevice?.isGamePad ?? false)
               )
               .padding(.trailing, 24.0)
 

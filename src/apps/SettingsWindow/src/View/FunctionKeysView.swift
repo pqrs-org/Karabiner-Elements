@@ -29,6 +29,8 @@ struct FunctionKeysView: View {
   }
 
   struct FnFunctionKeysView: View {
+    @ObservedObject private var settings = LibKrbn.Settings.shared
+
     private let selectedDevice: LibKrbn.ConnectedDevice?
     private let fnFunctionKeys: [LibKrbn.SimpleModification]
 
@@ -61,7 +63,8 @@ struct FunctionKeysView: View {
                     fromJsonString: fnFunctionKey.fromEntry.json,
                     toJsonString: json,
                     device: selectedDevice)
-                }
+                },
+                showUnsafe: settings.unsafeUI || (selectedDevice?.isGamePad ?? false)
               )
             }
 
