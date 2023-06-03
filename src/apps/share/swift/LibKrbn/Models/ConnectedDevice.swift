@@ -12,6 +12,7 @@ extension LibKrbn {
     let deviceAddress: String
     let isKeyboard: Bool
     let isPointingDevice: Bool
+    let isGamePad: Bool
     let isBuiltInKeyboard: Bool
     let isBuiltInTrackpad: Bool
     let isBuiltInTouchBar: Bool
@@ -29,6 +30,7 @@ extension LibKrbn {
       deviceAddress: UnsafePointer<CChar>,
       isKeyboard: Bool,
       isPointingDevice: Bool,
+      isGamePad: Bool,
       isBuiltInKeyboard: Bool,
       isBuiltInTrackpad: Bool,
       isBuiltInTouchBar: Bool,
@@ -43,6 +45,7 @@ extension LibKrbn {
       self.deviceAddress = String(cString: deviceAddress)
       self.isKeyboard = isKeyboard
       self.isPointingDevice = isPointingDevice
+      self.isGamePad = isGamePad
       self.isBuiltInKeyboard = isBuiltInKeyboard
       self.isBuiltInTrackpad = isBuiltInTrackpad
       self.isBuiltInTouchBar = isBuiltInTouchBar
@@ -55,6 +58,7 @@ extension LibKrbn {
       libkrbnDeviceIdentifiers.pointee.device_address = deviceAddress
       libkrbnDeviceIdentifiers.pointee.is_keyboard = isKeyboard
       libkrbnDeviceIdentifiers.pointee.is_pointing_device = isPointingDevice
+      libkrbnDeviceIdentifiers.pointee.is_game_pad = isGamePad
     }
 
     deinit {

@@ -50,6 +50,9 @@ struct DeviceSelectorView: View {
                 if connectedDeviceSetting.connectedDevice.isPointingDevice {
                   Image(systemName: "capsule.portrait")
                 }
+                if connectedDeviceSetting.connectedDevice.isGamePad {
+                  Image(systemName: "gamecontroller")
+                }
               }
             }
             .sidebarButtonLabelStyle()

@@ -8,6 +8,7 @@
         "identifiers": {
             "is_keyboard": true,
             "is_pointing_device": false,
+            "is_game_pad": false,
             "product_id": 5678,
             "vendor_id": 1234
         },
@@ -24,6 +25,7 @@
         "identifiers": {
             "is_keyboard": false,
             "is_pointing_device": true,
+            "is_game_pad": false,
             "product_id": 5679,
             "vendor_id": 1234
         },
@@ -40,6 +42,7 @@
         "identifiers": {
             "is_keyboard": false,
             "is_pointing_device": true,
+            "is_game_pad": false,
             "product_id": 6789,
             "vendor_id": 2345
         },
@@ -56,6 +59,7 @@
         "identifiers": {
             "is_keyboard": true,
             "is_pointing_device": false,
+            "is_game_pad": false,
             "product_id": 678,
             "vendor_id": 123
         },
@@ -72,6 +76,7 @@
         "identifiers": {
             "is_keyboard": false,
             "is_pointing_device": true,
+            "is_game_pad": false,
             "product_id": 678,
             "vendor_id": 123
         },
@@ -89,6 +94,7 @@
             "device_address": "ec-ba-73-21-e6-f5",
             "is_keyboard": true,
             "is_pointing_device": false,
+            "is_game_pad": false,
             "product_id": 0,
             "vendor_id": 0
         },

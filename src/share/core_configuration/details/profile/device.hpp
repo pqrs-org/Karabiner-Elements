@@ -80,7 +80,8 @@ public:
     // ignore_
 
     if (!ignore_configured) {
-      if (identifiers_.get_is_pointing_device()) {
+      if (identifiers_.get_is_pointing_device() ||
+          identifiers_.get_is_game_pad()) {
         ignore_ = true;
       } else if (identifiers_.get_vendor_id() == pqrs::hid::vendor_id::value_t(0x1050)) {
         // YubiKey token

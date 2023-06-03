@@ -20,6 +20,7 @@ void run_device_exists_test(void) {
         std::nullopt,                         // location_id
         true,                                 // is_keyboard,
         false,                                // is_pointing_device
+        false,                                // is_game_pad
         ""                                    // device_address
     );
 
@@ -34,6 +35,7 @@ void run_device_exists_test(void) {
         std::nullopt,                         // location_id
         true,                                 // is_keyboard,
         false,                                // is_pointing_device
+        false,                                // is_game_pad
         ""                                    // device_address
     );
 
@@ -56,6 +58,7 @@ void run_device_exists_test(void) {
         std::nullopt,                         // location_id
         true,                                 // is_keyboard,
         false,                                // is_pointing_device
+        false,                                // is_game_pad
         ""                                    // device_address
     );
 
@@ -70,6 +73,7 @@ void run_device_exists_test(void) {
         std::nullopt,                         // location_id
         true,                                 // is_keyboard,
         false,                                // is_pointing_device
+        false,                                // is_game_pad
         ""                                    // device_address
     );
 

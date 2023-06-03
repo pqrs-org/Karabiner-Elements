@@ -8,6 +8,7 @@
         "identifiers": {
             "is_keyboard": true,
             "is_pointing_device": false,
+            "is_game_pad": false,
             "product_id": 5678,
             "vendor_id": 1234
         },

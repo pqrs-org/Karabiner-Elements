@@ -15,6 +15,7 @@ typedef struct {
   const char* device_address;
   bool is_keyboard;
   bool is_pointing_device;
+  bool is_game_pad;
 } libkrbn_device_identifiers;
 
 void libkrbn_set_logging_level_off(void);
@@ -251,6 +252,7 @@ uint64_t libkrbn_connected_devices_get_product_id(libkrbn_connected_devices* p, 
 const char* libkrbn_connected_devices_get_device_address(libkrbn_connected_devices* p, size_t index);
 bool libkrbn_connected_devices_get_is_keyboard(libkrbn_connected_devices* p, size_t index);
 bool libkrbn_connected_devices_get_is_pointing_device(libkrbn_connected_devices* p, size_t index);
+bool libkrbn_connected_devices_get_is_game_pad(libkrbn_connected_devices* p, size_t index);
 bool libkrbn_connected_devices_get_is_built_in_keyboard(libkrbn_connected_devices* p, size_t index);
 bool libkrbn_connected_devices_get_is_built_in_trackpad(libkrbn_connected_devices* p, size_t index);
 bool libkrbn_connected_devices_get_is_built_in_touch_bar(libkrbn_connected_devices* p, size_t index);

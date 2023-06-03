@@ -32,6 +32,17 @@ public:
     return false;
   }
 
+  static bool is_game_pad(const pqrs::osx::iokit_hid_device& device) {
+    if (device.conforms_to(pqrs::hid::usage_page::generic_desktop,
+                           pqrs::hid::usage::generic_desktop::joystick) ||
+        device.conforms_to(pqrs::hid::usage_page::generic_desktop,
+                           pqrs::hid::usage::generic_desktop::game_pad)) {
+      return true;
+    }
+
+    return false;
+  }
+
   static bool is_karabiner_virtual_hid_device(IOHIDDeviceRef _Nonnull device) {
     pqrs::osx::iokit_hid_device hid_device(device);
 

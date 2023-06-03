@@ -191,6 +191,14 @@ public:
         pqrs::osx::iokit_hid_manager::make_matching_dictionary(
             pqrs::hid::usage_page::generic_desktop,
             pqrs::hid::usage::generic_desktop::pointer),
+
+        pqrs::osx::iokit_hid_manager::make_matching_dictionary(
+            pqrs::hid::usage_page::generic_desktop,
+            pqrs::hid::usage::generic_desktop::joystick),
+
+        pqrs::osx::iokit_hid_manager::make_matching_dictionary(
+            pqrs::hid::usage_page::generic_desktop,
+            pqrs::hid::usage::generic_desktop::game_pad),
     };
 
     hid_manager_ = std::make_unique<pqrs::osx::iokit_hid_manager>(weak_dispatcher_,
@@ -846,7 +854,7 @@ private:
       return grabbable_state::state::ungrabbable_temporarily;
     }
 
-    if (needs_grab_pointing_device()) {
+    if (needs_prepare_virtual_hid_pointing_device()) {
       if (!virtual_hid_devices_state_.get_virtual_hid_pointing_ready()) {
         std::string message = "virtual_hid_pointing is not ready. Please wait for a while.";
         logger_unique_filter_.warn(message);
@@ -924,16 +932,19 @@ private:
     return false;
   }
 
-  bool needs_grab_pointing_device(void) const {
+  bool needs_prepare_virtual_hid_pointing_device(void) const {
     //
     // Check if there is a pointing device to grab
+    // (The game pad also sends mouse events, so a virtual pointing device should be prepared as well.)
     //
 
     for (const auto& e : entries_) {
       if (auto device_properties = e.second->get_device_properties()) {
-        if (device_properties->get_is_pointing_device().value_or(false) &&
-            e.second->get_event_origin() == event_origin::grabbed_device) {
-          return true;
+        if (e.second->get_event_origin() == event_origin::grabbed_device) {
+          if (device_properties->get_is_pointing_device().value_or(false) ||
+              device_properties->get_is_game_pad().value_or(false)) {
+            return true;
+          }
         }
       }
     }
@@ -955,7 +966,7 @@ private:
   }
 
   void update_virtual_hid_pointing(void) {
-    if (needs_grab_pointing_device()) {
+    if (needs_prepare_virtual_hid_pointing_device()) {
       virtual_hid_device_service_client_->async_virtual_hid_pointing_initialize();
       return;
     }

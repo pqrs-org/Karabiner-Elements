@@ -18,6 +18,9 @@ struct DevicesView: View {
                   if connectedDeviceSetting.connectedDevice.isPointingDevice {
                     Image(systemName: "capsule.portrait")
                   }
+                  if connectedDeviceSetting.connectedDevice.isGamePad {
+                    Image(systemName: "gamecontroller")
+                  }
                 }
                 .frame(width: 50.0)
 

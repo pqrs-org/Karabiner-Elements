@@ -126,6 +126,7 @@ private:
     std::optional<std::string> device_address;
     std::optional<bool> is_keyboard;
     std::optional<bool> is_pointing_device;
+    std::optional<bool> is_game_pad;
     std::optional<bool> is_touch_bar;
     std::optional<bool> is_built_in_keyboard;
 
@@ -136,6 +137,7 @@ private:
              device_address ||
              is_keyboard ||
              is_pointing_device ||
+             is_game_pad ||
              is_touch_bar ||
              is_built_in_keyboard;
     }
@@ -163,6 +165,9 @@ private:
         return false;
       }
       if (is_pointing_device && is_pointing_device != device_properties.get_is_pointing_device().value_or(false)) {
+        return false;
+      }
+      if (is_game_pad && is_game_pad != device_properties.get_is_game_pad().value_or(false)) {
         return false;
       }
       if (is_touch_bar && is_touch_bar != device_properties.get_is_built_in_touch_bar().value_or(false)) {
@@ -218,6 +223,11 @@ private:
           pqrs::json::requires_boolean(value, "identifiers entry `is_pointing_device`");
 
           d.is_pointing_device = value.get<bool>();
+
+        } else if (key == "is_game_pad") {
+          pqrs::json::requires_boolean(value, "identifiers entry `is_game_pad`");
+
+          d.is_game_pad = value.get<bool>();
 
         } else if (key == "is_touch_bar") {
           pqrs::json::requires_boolean(value, "identifiers entry `is_touch_bar`");

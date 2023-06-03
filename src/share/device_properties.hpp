@@ -29,6 +29,7 @@ public:
     device_address_ = hid_device.find_device_address();
     is_keyboard_ = iokit_utility::is_keyboard(hid_device);
     is_pointing_device_ = iokit_utility::is_pointing_device(hid_device);
+    is_game_pad_ = iokit_utility::is_game_pad(hid_device);
 
     //
     // Override manufacturer_ and product_
@@ -147,6 +148,9 @@ public:
     }
     if (is_pointing_device_) {
       json["is_pointing_device"] = *is_pointing_device_;
+    }
+    if (is_game_pad_) {
+      json["is_game_pad"] = *is_game_pad_;
     }
     if (is_built_in_keyboard_) {
       json["is_built_in_keyboard"] = *is_built_in_keyboard_;
@@ -268,6 +272,16 @@ public:
     return *this;
   }
 
+  std::optional<bool> get_is_game_pad(void) const {
+    return is_game_pad_;
+  }
+
+  device_properties& set_is_game_pad(bool value) {
+    is_game_pad_ = value;
+    update_device_identifiers();
+    return *this;
+  }
+
   std::optional<bool> get_is_built_in_keyboard(void) const {
     return is_built_in_keyboard_;
   }
@@ -325,6 +339,15 @@ public:
       }
     }
 
+    // is_game_pad
+    {
+      auto p1 = is_game_pad_.value_or(false);
+      auto p2 = other.is_game_pad_.value_or(false);
+      if (p1 != p2) {
+        return p1;
+      }
+    }
+
     // device_id
     {
       auto r1 = device_id_;
@@ -348,7 +371,8 @@ public:
            transport_ == other.transport_ &&
            device_address_ == other.device_address_ &&
            is_keyboard_ == other.is_keyboard_ &&
-           is_pointing_device_ == other.is_pointing_device_;
+           is_pointing_device_ == other.is_pointing_device_ &&
+           is_game_pad_ == other.is_game_pad_;
   }
 
 private:
@@ -358,6 +382,7 @@ private:
         product_id_.value_or(pqrs::hid::product_id::value_t(0)),
         is_keyboard_.value_or(false),
         is_pointing_device_.value_or(false),
+        is_game_pad_.value_or(false),
         device_address_.value_or(""));
   }
 
@@ -372,6 +397,7 @@ private:
   std::optional<std::string> device_address_;
   std::optional<bool> is_keyboard_;
   std::optional<bool> is_pointing_device_;
+  std::optional<bool> is_game_pad_;
   std::optional<bool> is_built_in_keyboard_;
   std::optional<bool> is_built_in_pointing_device_;
   std::optional<bool> is_built_in_touch_bar_;

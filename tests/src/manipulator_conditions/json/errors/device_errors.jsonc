@@ -106,6 +106,18 @@
             "type": "device_if",
             "identifiers": [
                 {
+                    "is_game_pad": null
+                }
+            ]
+        },
+        "error": "identifiers entry `is_game_pad` must be boolean, but is `null`"
+    },
+    {
+        "class": "device",
+        "input": {
+            "type": "device_if",
+            "identifiers": [
+                {
                     "is_touch_bar": null
                 }
             ]
