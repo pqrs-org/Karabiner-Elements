@@ -756,6 +756,12 @@
         "expected_post_event_to_virtual_devices_queue": "json/expected_post_event_to_virtual_devices_queue/halt_4.json"
     },
     {
+        "description": "halt_5 (simultaneous_options)",
+        "rules": ["json/rules/halt.json"],
+        "input_event_queue": "json/input_event_queue/halt_5.json",
+        "expected_post_event_to_virtual_devices_queue": "json/expected_post_event_to_virtual_devices_queue/halt_5.json"
+    },
+    {
         "description": "f10 to mute (fn function keys)",
         "rules": ["json/rules/fn_function_keys.json"],
         "input_event_queue": "json/input_event_queue/fn_function_keys_1.json",

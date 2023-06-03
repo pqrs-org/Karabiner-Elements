@@ -37,5 +37,32 @@
                 "halt": true
             }
         ]
+    },
+    {
+        "description": "with simultaneous_options",
+        "type": "basic",
+        "from": {
+            "simultaneous": [
+                {
+                    "key_code": "f10"
+                },
+                {
+                    "key_code": "f11"
+                }
+            ],
+            "simultaneous_options": {
+                "to_after_key_up": [
+                    {
+                        "key_code": "f12"
+                    }
+                ]
+            }
+        },
+        "to": [
+            {
+                "key_code": "f13",
+                "halt": true
+            }
+        ]
     }
 ]

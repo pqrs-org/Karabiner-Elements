@@ -1,0 +1,22 @@
+[
+    {
+        "keyboard_input": {
+            "keys": [
+                {
+                    "key_code": "f13"
+                }
+            ],
+            "modifiers": []
+        },
+        "time_stamp": 5,
+        "type": "keyboard_input"
+    },
+    {
+        "keyboard_input": {
+            "keys": [],
+            "modifiers": []
+        },
+        "time_stamp": 10,
+        "type": "keyboard_input"
+    }
+]
