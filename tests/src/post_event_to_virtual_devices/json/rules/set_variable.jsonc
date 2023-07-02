@@ -1,0 +1,44 @@
+[
+    {
+        "description": "a -> flag_a (old style)",
+        "type": "basic",
+        "from": {
+            "key_code": "a"
+        },
+        "to": [
+            {
+                "set_variable": {
+                    "name": "flag_a",
+                    "value": 1
+                }
+            }
+        ],
+        "to_after_key_up": [
+            {
+                "set_variable": {
+                    "name": "flag_a",
+                    "value": 0
+                }
+            }
+        ]
+    },
+    {
+        "description": "tab -> escape if flag_a on",
+        "type": "basic",
+        "from": {
+            "key_code": "tab"
+        },
+        "to": [
+            {
+                "key_code": "escape"
+            }
+        ],
+        "conditions": [
+            {
+                "name": "flag_a",
+                "type": "variable_if",
+                "value": 1
+            }
+        ]
+    }
+]

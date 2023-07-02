@@ -790,5 +790,11 @@
         "rules": ["json/rules/sticky_modifier.json"],
         "input_event_queue": "json/input_event_queue/sticky_modifier_observed_device_1.jsonc",
         "expected_post_event_to_virtual_devices_queue": "json/expected_post_event_to_virtual_devices_queue/sticky_modifier_observed_device_1.json"
+    },
+    {
+        "description": "set_variable",
+        "rules": ["json/rules/set_variable.jsonc"],
+        "input_event_queue": "json/input_event_queue/set_variable_1.jsonc",
+        "expected_post_event_to_virtual_devices_queue": "json/expected_post_event_to_virtual_devices_queue/set_variable_1.jsonc"
     }
 ]
