@@ -170,6 +170,17 @@
         },
         "error": "`set_variable.value` is not found in `{\"name\":\"flag\"}`"
     },
+    {
+        "class": "event_definition",
+        "input": {
+            "set_variable": {
+                "name": "flag",
+                "value": 1,
+                "unknown": null
+            }
+        },
+        "error": "unknown key `unknown` in `{\"name\":\"flag\",\"unknown\":null,\"value\":1}`"
+    },
 
     // set_notification_message
 
