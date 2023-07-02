@@ -42,22 +42,22 @@ public:
     virtual_hid_devices_state_changed,
   };
 
-  using value_t = std::variant<momentary_switch_event,                                   // For type::momentary_switch_event
-                               pointing_motion,                                          // For type::pointing_motion
-                               int64_t,                                                  // For type::caps_lock_state_changed
-                               std::string,                                              // For shell_command
-                               std::vector<pqrs::osx::input_source_selector::specifier>, // For select_input_source
-                               std::pair<std::string, manipulator_environment_variable>, // For set_variable
-                               notification_message,                                     // For set_notification_message
-                               mouse_key,                                                // For mouse_key
-                               std::pair<modifier_flag, sticky_modifier_type>,           // For sticky_modifier
-                               software_function,                                        // For software_function
-                               pqrs::osx::frontmost_application_monitor::application,    // For frontmost_application_changed
-                               pqrs::osx::input_source::properties,                      // For input_source_changed
-                               device_properties,                                        // For device_grabbed
-                               pqrs::osx::system_preferences::properties,                // For system_preferences_properties_changed
-                               virtual_hid_devices_state,                                // For virtual_hid_devices_state_changed
-                               std::monostate>;                                          // For virtual events
+  using value_t = std::variant<momentary_switch_event,                                         // For type::momentary_switch_event
+                               pointing_motion,                                                // For type::pointing_motion
+                               int64_t,                                                        // For type::caps_lock_state_changed
+                               std::string,                                                    // For shell_command
+                               std::vector<pqrs::osx::input_source_selector::specifier>,       // For select_input_source
+                               std::pair<std::string, manipulator_environment_variable_value>, // For set_variable
+                               notification_message,                                           // For set_notification_message
+                               mouse_key,                                                      // For mouse_key
+                               std::pair<modifier_flag, sticky_modifier_type>,                 // For sticky_modifier
+                               software_function,                                              // For software_function
+                               pqrs::osx::frontmost_application_monitor::application,          // For frontmost_application_changed
+                               pqrs::osx::input_source::properties,                            // For input_source_changed
+                               device_properties,                                              // For device_grabbed
+                               pqrs::osx::system_preferences::properties,                      // For system_preferences_properties_changed
+                               virtual_hid_devices_state,                                      // For virtual_hid_devices_state_changed
+                               std::monostate>;                                                // For virtual events
 
   event(void) : type_(type::none),
                 value_(std::monostate()) {
@@ -82,7 +82,7 @@ public:
           } else if (key == "input_source_specifiers") {
             result.value_ = value.get<std::vector<pqrs::osx::input_source_selector::specifier>>();
           } else if (key == "set_variable") {
-            result.value_ = value.get<std::pair<std::string, manipulator_environment_variable>>();
+            result.value_ = value.get<std::pair<std::string, manipulator_environment_variable_value>>();
           } else if (key == "set_notification_message") {
             result.value_ = value.get<notification_message>();
           } else if (key == "mouse_key") {
@@ -233,7 +233,7 @@ public:
     return e;
   }
 
-  static event make_set_variable_event(const std::pair<std::string, manipulator_environment_variable>& pair) {
+  static event make_set_variable_event(const std::pair<std::string, manipulator_environment_variable_value>& pair) {
     event e;
     e.type_ = type::set_variable;
     e.value_ = pair;
@@ -383,10 +383,10 @@ public:
     return std::nullopt;
   }
 
-  std::optional<std::pair<std::string, manipulator_environment_variable>> get_set_variable(void) const {
+  std::optional<std::pair<std::string, manipulator_environment_variable_value>> get_set_variable(void) const {
     try {
       if (type_ == type::set_variable) {
-        return std::get<std::pair<std::string, manipulator_environment_variable>>(value_);
+        return std::get<std::pair<std::string, manipulator_environment_variable_value>>(value_);
       }
     } catch (std::bad_variant_access&) {
     }

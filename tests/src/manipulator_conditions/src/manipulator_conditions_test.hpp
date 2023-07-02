@@ -106,8 +106,8 @@ void run_manipulator_conditions_test(void) {
     properties.set_input_source_id("com.apple.keylayout.US");
     manipulator_environment.set_input_source_properties(properties);
 
-    manipulator_environment.set_variable("value1", krbn::manipulator_environment_variable(100));
-    manipulator_environment.set_variable("value2", krbn::manipulator_environment_variable(200));
+    manipulator_environment.set_variable("value1", krbn::manipulator_environment_variable_value(100));
+    manipulator_environment.set_variable("value2", krbn::manipulator_environment_variable_value(200));
 
     pqrs::osx::system_preferences::properties system_preferences_properties;
     system_preferences_properties.set_use_fkeys_as_standard_function_keys(true);
@@ -398,9 +398,9 @@ void run_manipulator_conditions_test(void) {
                                    krbn::event_origin::grabbed_device,
                                    krbn::event_queue::state::original);
 
-    manipulator_environment.set_variable("variable_name", krbn::manipulator_environment_variable(123));
-    manipulator_environment.set_variable("variable_bool", krbn::manipulator_environment_variable(true));
-    manipulator_environment.set_variable("variable_string", krbn::manipulator_environment_variable("hello"));
+    manipulator_environment.set_variable("variable_name", krbn::manipulator_environment_variable_value(123));
+    manipulator_environment.set_variable("variable_bool", krbn::manipulator_environment_variable_value(true));
+    manipulator_environment.set_variable("variable_string", krbn::manipulator_environment_variable_value("hello"));
 
     //
     // variable_if

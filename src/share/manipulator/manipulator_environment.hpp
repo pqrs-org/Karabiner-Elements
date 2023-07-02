@@ -90,15 +90,15 @@ public:
     async_save_to_file();
   }
 
-  manipulator_environment_variable get_variable(const std::string& name) const {
+  manipulator_environment_variable_value get_variable(const std::string& name) const {
     auto it = variables_.find(name);
     if (it != std::end(variables_)) {
       return it->second;
     }
-    return manipulator_environment_variable();
+    return manipulator_environment_variable_value();
   }
 
-  void set_variable(const std::string& name, const manipulator_environment_variable& value) {
+  void set_variable(const std::string& name, const manipulator_environment_variable_value& value) {
     // logger::get_logger()->info("set_variable {0} {1}", name, value);
     variables_[name] = value;
     async_save_to_file();
@@ -163,7 +163,7 @@ private:
   device_properties_manager device_properties_manager_;
   pqrs::osx::frontmost_application_monitor::application frontmost_application_;
   pqrs::osx::input_source::properties input_source_properties_;
-  std::unordered_map<std::string, manipulator_environment_variable> variables_;
+  std::unordered_map<std::string, manipulator_environment_variable_value> variables_;
   std::weak_ptr<const core_configuration::core_configuration> core_configuration_;
   pqrs::osx::system_preferences::properties system_preferences_properties_;
   std::string virtual_hid_keyboard_keyboard_type_; // cache value

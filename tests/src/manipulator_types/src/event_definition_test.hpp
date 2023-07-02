@@ -158,7 +158,7 @@ void run_event_definition_test(void) {
       auto pair = event_definition.get_event_definition().get_set_variable();
       expect(pair != std::nullopt);
       expect("variable1"sv == pair->first);
-      expect(krbn::manipulator_environment_variable(42) == pair->second);
+      expect(krbn::manipulator_environment_variable_value(42) == pair->second);
     }
     {
       auto json = nlohmann::json::object({
@@ -172,7 +172,7 @@ void run_event_definition_test(void) {
       auto pair = event_definition.get_event_definition().get_set_variable();
       expect(pair != std::nullopt);
       expect("variable2"sv == pair->first);
-      expect(krbn::manipulator_environment_variable(true) == pair->second);
+      expect(krbn::manipulator_environment_variable_value(true) == pair->second);
     }
     {
       auto json = nlohmann::json::object({
@@ -186,7 +186,7 @@ void run_event_definition_test(void) {
       auto pair = event_definition.get_event_definition().get_set_variable();
       expect(pair != std::nullopt);
       expect("variable3"sv == pair->first);
-      expect(krbn::manipulator_environment_variable("on") == pair->second);
+      expect(krbn::manipulator_environment_variable_value("on") == pair->second);
     }
   };
 }

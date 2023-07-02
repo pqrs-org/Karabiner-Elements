@@ -562,7 +562,7 @@ public:
     });
   }
 
-  void async_post_set_variable_event(const std::string& name, const manipulator_environment_variable& value) {
+  void async_post_set_variable_event(const std::string& name, const manipulator_environment_variable_value& value) {
     enqueue_to_dispatcher([this, name, value] {
       auto event = event_queue::event::make_set_variable_event(std::make_pair(name, value));
 

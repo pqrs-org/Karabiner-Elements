@@ -8,7 +8,7 @@ void run_manipulator_environment_variable_test(void) {
   using namespace std::string_view_literals;
 
   "manipulator_environment_variable"_test = [] {
-    using t = krbn::manipulator_environment_variable;
+    using t = krbn::manipulator_environment_variable_value;
 
     t v1(10);
     t v2(20);

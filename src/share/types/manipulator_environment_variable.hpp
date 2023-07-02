@@ -6,16 +6,16 @@
 #include <variant>
 
 namespace krbn {
-class manipulator_environment_variable final {
+class manipulator_environment_variable_value final {
 public:
   using value_t = std::variant<int,
                                bool,
                                std::string>;
 
-  manipulator_environment_variable(void)
+  manipulator_environment_variable_value(void)
       : value_(0) {}
 
-  manipulator_environment_variable(value_t value)
+  manipulator_environment_variable_value(value_t value)
       : value_(value) {}
 
   const value_t& get_value(void) const {
@@ -27,7 +27,7 @@ public:
     return std::get_if<T>(&value_);
   }
 
-  bool operator==(const manipulator_environment_variable& other) const {
+  bool operator==(const manipulator_environment_variable_value& other) const {
     return value_ == other.value_;
   }
 
@@ -35,7 +35,7 @@ private:
   value_t value_;
 };
 
-inline void to_json(nlohmann::json& j, const manipulator_environment_variable& value) {
+inline void to_json(nlohmann::json& j, const manipulator_environment_variable_value& value) {
   if (auto v = value.get_if<int>()) {
     j = *v;
   } else if (auto v = value.get_if<bool>()) {
@@ -45,13 +45,13 @@ inline void to_json(nlohmann::json& j, const manipulator_environment_variable& v
   }
 }
 
-inline void from_json(const nlohmann::json& j, manipulator_environment_variable& value) {
+inline void from_json(const nlohmann::json& j, manipulator_environment_variable_value& value) {
   if (j.is_number()) {
-    value = manipulator_environment_variable(j.get<int>());
+    value = manipulator_environment_variable_value(j.get<int>());
   } else if (j.is_boolean()) {
-    value = manipulator_environment_variable(j.get<bool>());
+    value = manipulator_environment_variable_value(j.get<bool>());
   } else if (j.is_string()) {
-    value = manipulator_environment_variable(j.get<std::string>());
+    value = manipulator_environment_variable_value(j.get<std::string>());
   } else {
     throw pqrs::json::unmarshal_error(
         fmt::format("json must be number, boolean or string, but is `{0}`",
@@ -59,7 +59,7 @@ inline void from_json(const nlohmann::json& j, manipulator_environment_variable&
   }
 }
 
-inline std::ostream& operator<<(std::ostream& stream, const manipulator_environment_variable& value) {
+inline std::ostream& operator<<(std::ostream& stream, const manipulator_environment_variable_value& value) {
   stream << nlohmann::json(value);
   return stream;
 }
@@ -67,8 +67,8 @@ inline std::ostream& operator<<(std::ostream& stream, const manipulator_environm
 
 namespace std {
 template <>
-struct hash<krbn::manipulator_environment_variable> final {
-  std::size_t operator()(const krbn::manipulator_environment_variable& value) const {
+struct hash<krbn::manipulator_environment_variable_value> final {
+  std::size_t operator()(const krbn::manipulator_environment_variable_value& value) const {
     std::size_t h = 0;
 
     pqrs::hash::combine(h, value.get_value());

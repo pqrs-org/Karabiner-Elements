@@ -182,7 +182,7 @@ public:
             case operation_type::set_variables:
               if (device_grabber_) {
                 for (const auto& [k, v] : json.at("variables").items()) {
-                  device_grabber_->async_post_set_variable_event(k, v.get<manipulator_environment_variable>());
+                  device_grabber_->async_post_set_variable_event(k, v.get<manipulator_environment_variable_value>());
                 }
               }
               break;

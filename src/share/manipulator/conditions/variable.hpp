@@ -40,7 +40,7 @@ public:
         name_ = value.get<std::string>();
 
       } else if (key == "value") {
-        value_ = value.get<manipulator_environment_variable>();
+        value_ = value.get<manipulator_environment_variable_value>();
 
       } else if (key == "description") {
         // Do nothing
@@ -75,7 +75,7 @@ public:
 private:
   type type_;
   std::optional<std::string> name_;
-  std::optional<manipulator_environment_variable> value_;
+  std::optional<manipulator_environment_variable_value> value_;
 };
 } // namespace conditions
 } // namespace manipulator
