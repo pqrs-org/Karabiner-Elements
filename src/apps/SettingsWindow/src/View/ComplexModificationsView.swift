@@ -44,20 +44,6 @@ struct ComplexModificationsView: View {
                   .onHover { hovering in
                     moveDisabled = !hovering
                   }
-                  .contextMenu {
-                    Button {
-                      settings.moveComplexModificationsRule(complexModificationRule.index, 0)
-                    } label: {
-                      Label("Move item to top", systemImage: "arrow.up.to.line")
-                    }
-
-                    Button {
-                      settings.moveComplexModificationsRule(
-                        complexModificationRule.index, settings.complexModificationsRules.count)
-                    } label: {
-                      Label("Move item to bottom", systemImage: "arrow.down.to.line")
-                    }
-                  }
               }
 
               Text(complexModificationRule.description)
@@ -72,6 +58,22 @@ struct ComplexModificationsView: View {
                   .buttonLabelStyle()
               }
               .deleteButtonStyle()
+            }
+            .contextMenu {
+              Section(header: Text("Position")) {
+                Button {
+                  settings.moveComplexModificationsRule(complexModificationRule.index, 0)
+                } label: {
+                  Label("Move item to top", systemImage: "arrow.up.to.line")
+                }
+
+                Button {
+                  settings.moveComplexModificationsRule(
+                    complexModificationRule.index, settings.complexModificationsRules.count)
+                } label: {
+                  Label("Move item to bottom", systemImage: "arrow.down.to.line")
+                }
+              }
             }
 
             Divider()
