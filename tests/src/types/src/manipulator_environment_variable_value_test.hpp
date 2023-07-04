@@ -2,12 +2,12 @@
 #include "types.hpp"
 #include <boost/ut.hpp>
 
-void run_manipulator_environment_variable_test(void) {
+void run_manipulator_environment_variable_value_test(void) {
   using namespace boost::ut;
   using namespace boost::ut::literals;
   using namespace std::string_view_literals;
 
-  "manipulator_environment_variable"_test = [] {
+  "manipulator_environment_variable_value"_test = [] {
     using t = krbn::manipulator_environment_variable_value;
 
     t v1(10);

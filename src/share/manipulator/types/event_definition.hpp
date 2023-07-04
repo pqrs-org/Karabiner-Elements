@@ -31,16 +31,16 @@ public:
     pointing_button,
   };
 
-  using value_t = std::variant<momentary_switch_event,                                         // For type::momentary_switch_event
-                               any_type,                                                       // For type::any
-                               std::string,                                                    // For type::shell_command
-                               std::vector<pqrs::osx::input_source_selector::specifier>,       // For type::select_input_source
-                               std::pair<std::string, manipulator_environment_variable_value>, // For type::set_variable
-                               notification_message,                                           // For type::set_notification_message
-                               mouse_key,                                                      // For type::mouse_key
-                               std::pair<modifier_flag, sticky_modifier_type>,                 // For type::sticky_modifier
-                               software_function,                                              // For type::software_function
-                               std::monostate>;                                                // For type::none
+  using value_t = std::variant<momentary_switch_event,                                   // For type::momentary_switch_event
+                               any_type,                                                 // For type::any
+                               std::string,                                              // For type::shell_command
+                               std::vector<pqrs::osx::input_source_selector::specifier>, // For type::select_input_source
+                               manipulator_environment_variable_set_variable,            // For type::set_variable
+                               notification_message,                                     // For type::set_notification_message
+                               mouse_key,                                                // For type::mouse_key
+                               std::pair<modifier_flag, sticky_modifier_type>,           // For type::sticky_modifier
+                               software_function,                                        // For type::software_function
+                               std::monostate>;                                          // For type::none
 
   event_definition(void) : type_(type::none),
                            value_(std::monostate()) {
@@ -76,9 +76,9 @@ public:
     return std::nullopt;
   }
 
-  std::optional<std::pair<std::string, manipulator_environment_variable_value>> get_set_variable(void) const {
+  std::optional<manipulator_environment_variable_set_variable> get_set_variable(void) const {
     if (type_ == type::set_variable) {
-      return std::get<std::pair<std::string, manipulator_environment_variable_value>>(value_);
+      return std::get<manipulator_environment_variable_set_variable>(value_);
     }
     return std::nullopt;
   }
@@ -96,7 +96,7 @@ public:
       case type::select_input_source:
         return event_queue::event::make_select_input_source_event(std::get<std::vector<pqrs::osx::input_source_selector::specifier>>(value_));
       case type::set_variable:
-        return event_queue::event::make_set_variable_event(std::get<std::pair<std::string, manipulator_environment_variable_value>>(value_));
+        return event_queue::event::make_set_variable_event(std::get<manipulator_environment_variable_set_variable>(value_));
       case type::set_notification_message:
         return event_queue::event::make_set_notification_message_event(std::get<notification_message>(value_));
       case type::mouse_key:
@@ -218,40 +218,24 @@ public:
     if (key == "set_variable") {
       check_type(json);
 
-      pqrs::json::requires_object(value, "`" + key + "`");
+      manipulator_environment_variable_set_variable v;
 
-      std::optional<std::string> variable_name;
-      std::optional<manipulator_environment_variable_value> variable_value;
-
-      for (const auto& [k, v] : value.items()) {
-        // k is always std::string.
-
-        if (k == "name") {
-          pqrs::json::requires_string(v, "`" + key + ".name`");
-
-          variable_name = v.get<std::string>();
-
-        } else if (k == "value") {
-          variable_value = v.get<manipulator_environment_variable_value>();
-
-        } else if (k == "description") {
-          // Do nothing
-
-        } else {
-          throw pqrs::json::unmarshal_error(fmt::format("unknown key `{0}` in `{1}`", k, pqrs::json::dump_for_error_message(value)));
-        }
+      try {
+        v = value.get<manipulator_environment_variable_set_variable>();
+      } catch (const pqrs::json::unmarshal_error& e) {
+        throw pqrs::json::unmarshal_error(fmt::format("`{0}` error: {1}", key, e.what()));
       }
 
-      if (!variable_name) {
+      if (v.get_name() == std::nullopt) {
         throw pqrs::json::unmarshal_error(fmt::format("`{0}.name` is not found in `{1}`", key, pqrs::json::dump_for_error_message(value)));
       }
 
-      if (!variable_value) {
+      if (v.get_value() == std::nullopt) {
         throw pqrs::json::unmarshal_error(fmt::format("`{0}.value` is not found in `{1}`", key, pqrs::json::dump_for_error_message(value)));
       }
 
       type_ = type::set_variable;
-      value_ = std::make_pair(*variable_name, *variable_value);
+      value_ = v;
 
       return true;
     }

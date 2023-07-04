@@ -562,9 +562,9 @@ public:
     });
   }
 
-  void async_post_set_variable_event(const std::string& name, const manipulator_environment_variable_value& value) {
-    enqueue_to_dispatcher([this, name, value] {
-      auto event = event_queue::event::make_set_variable_event(std::make_pair(name, value));
+  void async_post_set_variable_event(const manipulator_environment_variable_set_variable& value) {
+    enqueue_to_dispatcher([this, value] {
+      auto event = event_queue::event::make_set_variable_event(value);
 
       for (const auto& t : {event_type::key_down, event_type::key_up}) {
         event_queue::entry entry(device_id(0),

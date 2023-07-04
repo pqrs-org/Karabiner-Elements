@@ -2,7 +2,8 @@
 #include "errors_test.hpp"
 #include "event_origin_test.hpp"
 #include "grabbable_state_test.hpp"
-#include "manipulator_environment_variable_test.hpp"
+#include "manipulator_environment_variable_set_variable_test.hpp"
+#include "manipulator_environment_variable_value_test.hpp"
 #include "modifier_flag_test.hpp"
 #include "momentary_switch_event_test.hpp"
 #include "mouse_key_test.hpp"
@@ -17,7 +18,8 @@ int main(void) {
   run_errors_test();
   run_event_origin_test();
   run_grabbable_state_test();
-  run_manipulator_environment_variable_test();
+  run_manipulator_environment_variable_set_variable_test();
+  run_manipulator_environment_variable_value_test();
   run_modifier_flag_test();
   run_momentary_switch_event_test();
   run_mouse_key_test();

@@ -123,7 +123,7 @@
         "input": {
             "set_variable": null
         },
-        "error": "`set_variable` must be object, but is `null`"
+        "error": "`set_variable` error: json must be object, but is `null`"
     },
     {
         "class": "event_definition",
@@ -132,7 +132,7 @@
                 "name": null
             }
         },
-        "error": "`set_variable.name` must be string, but is `null`"
+        "error": "`set_variable` error: `name` must be string, but is `null`"
     },
     {
         "class": "event_definition",
@@ -141,7 +141,7 @@
                 "value": null
             }
         },
-        "error": "json must be number, boolean or string, but is `null`"
+        "error": "`set_variable` error: json must be number, boolean or string, but is `null`"
     },
     {
         "class": "event_definition",
@@ -150,7 +150,7 @@
                 "Name": "flag"
             }
         },
-        "error": "unknown key `Name` in `{\"Name\":\"flag\"}`"
+        "error": "`set_variable` error: unknown key: `Name`"
     },
     {
         "class": "event_definition",
@@ -179,7 +179,7 @@
                 "unknown": null
             }
         },
-        "error": "unknown key `unknown` in `{\"name\":\"flag\",\"unknown\":null,\"value\":1}`"
+        "error": "`set_variable` error: unknown key: `unknown`"
     },
 
     // set_notification_message

@@ -131,10 +131,25 @@ public:
     if (auto properties = event.get_input_source_properties()) {
       manipulator_environment_.set_input_source_properties(*properties);
     }
-    if (event_type == event_type::key_down) {
-      if (auto set_variable = event.get_set_variable()) {
-        manipulator_environment_.set_variable(set_variable->first,
-                                              set_variable->second);
+    if (auto set_variable = event.get_set_variable()) {
+      switch (event_type) {
+        case event_type::key_down:
+          if (auto n = set_variable->get_name()) {
+            if (auto v = set_variable->get_value()) {
+              manipulator_environment_.set_variable(*n, *v);
+            }
+          }
+          break;
+        case event_type::key_up:
+          if (auto n = set_variable->get_name()) {
+            if (auto v = set_variable->get_key_up_value()) {
+              manipulator_environment_.set_variable(*n, *v);
+            }
+          }
+          break;
+        case event_type::single:
+          // Do nothing
+          break;
       }
     }
     if (auto properties = event.get_if<pqrs::osx::system_preferences::properties>()) {

@@ -23,6 +23,22 @@
         ]
     },
     {
+        "description": "b -> flag_b (new style)",
+        "type": "basic",
+        "from": {
+            "key_code": "b"
+        },
+        "to": [
+            {
+                "set_variable": {
+                    "name": "flag_b",
+                    "value": 1,
+                    "key_up_value": 0
+                }
+            }
+        ]
+    },
+    {
         "description": "tab -> escape if flag_a on",
         "type": "basic",
         "from": {

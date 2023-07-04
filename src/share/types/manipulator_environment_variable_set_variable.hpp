@@ -40,6 +40,16 @@ public:
     key_up_value_ = value;
   }
 
+  bool operator==(const manipulator_environment_variable_set_variable& other) const {
+    return name_ == other.name_ &&
+           value_ == other.value_ &&
+           key_up_value_ == other.key_up_value_;
+  }
+
+  bool operator!=(const manipulator_environment_variable_set_variable& other) const {
+    return !(*this == other);
+  }
+
 private:
   std::optional<std::string> name_;
   std::optional<manipulator_environment_variable_value> value_;
@@ -47,6 +57,8 @@ private:
 };
 
 inline void to_json(nlohmann::json& json, const manipulator_environment_variable_set_variable& m) {
+  json = nlohmann::json::object();
+
   if (auto v = m.get_name()) {
     json["name"] = *v;
   }
