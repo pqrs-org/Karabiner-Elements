@@ -56,5 +56,24 @@
                 "value": 1
             }
         ]
+    },
+    {
+        "description": "tab -> spacebar if flag_b on",
+        "type": "basic",
+        "from": {
+            "key_code": "tab"
+        },
+        "to": [
+            {
+                "key_code": "spacebar"
+            }
+        ],
+        "conditions": [
+            {
+                "name": "flag_b",
+                "type": "variable_if",
+                "value": 1
+            }
+        ]
     }
 ]

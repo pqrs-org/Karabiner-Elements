@@ -796,5 +796,11 @@
         "rules": ["json/rules/set_variable.jsonc"],
         "input_event_queue": "json/input_event_queue/set_variable_1.jsonc",
         "expected_post_event_to_virtual_devices_queue": "json/expected_post_event_to_virtual_devices_queue/set_variable_1.jsonc"
+    },
+    {
+        "description": "set_variable (key_up_value)",
+        "rules": ["json/rules/set_variable.jsonc"],
+        "input_event_queue": "json/input_event_queue/set_variable_2.jsonc",
+        "expected_post_event_to_virtual_devices_queue": "json/expected_post_event_to_virtual_devices_queue/set_variable_2.jsonc"
     }
 ]
