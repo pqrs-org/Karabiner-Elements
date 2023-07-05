@@ -35,6 +35,12 @@
 # include <experimental/coroutine>
 #endif // defined(ASIO_HAS_STD_COROUTINE)
 
+#if defined(ASIO_ENABLE_HANDLER_TRACKING)
+# if defined(ASIO_HAS_SOURCE_LOCATION)
+#  include "asio/detail/source_location.hpp"
+# endif // defined(ASIO_HAS_SOURCE_LOCATION)
+#endif // defined(ASIO_ENABLE_HANDLER_TRACKING)
+
 #include "asio/detail/push_options.hpp"
 
 namespace asio {
@@ -838,14 +844,32 @@ public:
   }
 
   template <async_operation Op>
-  auto await_transform(Op&& op)
+  auto await_transform(Op&& op
+#if defined(ASIO_ENABLE_HANDLER_TRACKING)
+# if defined(ASIO_HAS_SOURCE_LOCATION)
+      , asio::detail::source_location location
+        = asio::detail::source_location::current()
+# endif // defined(ASIO_HAS_SOURCE_LOCATION)
+#endif // defined(ASIO_ENABLE_HANDLER_TRACKING)
+    )
   {
     class [[nodiscard]] awaitable
     {
     public:
-      awaitable(Op&& op, co_composed_promise& promise)
+      awaitable(Op&& op, co_composed_promise& promise
+#if defined(ASIO_ENABLE_HANDLER_TRACKING)
+# if defined(ASIO_HAS_SOURCE_LOCATION)
+          , const asio::detail::source_location& location
+# endif // defined(ASIO_HAS_SOURCE_LOCATION)
+#endif // defined(ASIO_ENABLE_HANDLER_TRACKING)
+        )
         : op_(std::forward<Op>(op)),
           promise_(promise)
+#if defined(ASIO_ENABLE_HANDLER_TRACKING)
+# if defined(ASIO_HAS_SOURCE_LOCATION)
+        , location_(location)
+# endif // defined(ASIO_HAS_SOURCE_LOCATION)
+#endif // defined(ASIO_ENABLE_HANDLER_TRACKING)
       {
       }
 
@@ -862,6 +886,14 @@ public:
           promise_.state_.on_suspend_->fn_ =
             [](void* p)
             {
+#if defined(ASIO_ENABLE_HANDLER_TRACKING)
+# if defined(ASIO_HAS_SOURCE_LOCATION)
+              ASIO_HANDLER_LOCATION((
+                  static_cast<awaitable*>(p)->location_.file_name(),
+                  static_cast<awaitable*>(p)->location_.line(),
+                  static_cast<awaitable*>(p)->location_.function_name()));
+# endif // defined(ASIO_HAS_SOURCE_LOCATION)
+#endif // defined(ASIO_ENABLE_HANDLER_TRACKING)
               std::forward<Op>(static_cast<awaitable*>(p)->op_)(
                   co_composed_handler<Executors, Handler,
                     Return, completion_signature_of_t<Op>>(
@@ -879,10 +911,21 @@ public:
     private:
       Op&& op_;
       co_composed_promise& promise_;
+#if defined(ASIO_ENABLE_HANDLER_TRACKING)
+# if defined(ASIO_HAS_SOURCE_LOCATION)
+      asio::detail::source_location location_;
+# endif // defined(ASIO_HAS_SOURCE_LOCATION)
+#endif // defined(ASIO_ENABLE_HANDLER_TRACKING)
     };
 
     state_.check_for_cancellation_on_transform();
-    return awaitable{std::forward<Op>(op), *this};
+    return awaitable{std::forward<Op>(op), *this
+#if defined(ASIO_ENABLE_HANDLER_TRACKING)
+# if defined(ASIO_HAS_SOURCE_LOCATION)
+        , location
+# endif // defined(ASIO_HAS_SOURCE_LOCATION)
+#endif // defined(ASIO_ENABLE_HANDLER_TRACKING)
+      };
   }
 
   template <typename... Args>

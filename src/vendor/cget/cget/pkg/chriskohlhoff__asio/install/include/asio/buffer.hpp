@@ -892,6 +892,25 @@ private:
  * bufs2.push_back(asio::buffer(d2));
  * bufs2.push_back(asio::buffer(d3));
  * bytes_transferred = sock.send(bufs2); @endcode
+ *
+ * @par Buffer Literals
+ *
+ * The `_buf` literal suffix, defined in namespace
+ * <tt>asio::buffer_literals</tt>, may be used to create @c const_buffer
+ * objects from string, binary integer, and hexadecimal integer literals.
+ * For example:
+ *
+ * @code
+ * using namespace asio::buffer_literals;
+ *
+ * asio::const_buffer b1 = "hello"_buf;
+ * asio::const_buffer b2 = 0xdeadbeef_buf;
+ * asio::const_buffer b3 = 0x0123456789abcdef0123456789abcdef_buf;
+ * asio::const_buffer b4 = 0b1010101011001100_buf; @endcode
+ *
+ * Note that the memory associated with a buffer literal is valid for the
+ * lifetime of the program. This means that the buffer can be safely used with
+ * asynchronous operations.
  */
 /*@{*/
 
@@ -1568,6 +1587,14 @@ ASIO_NODISCARD inline ASIO_MUTABLE_BUFFER buffer(
       defaulted_constraint
     >::type = defaulted_constraint(),
     typename constraint<
+      !is_convertible<T, const_buffer>::value,
+      defaulted_constraint
+    >::type = defaulted_constraint(),
+    typename constraint<
+      !is_convertible<T, mutable_buffer>::value,
+      defaulted_constraint
+    >::type = defaulted_constraint(),
+    typename constraint<
       !is_const<
         typename remove_reference<
           typename std::iterator_traits<typename T::iterator>::reference
@@ -1595,6 +1622,14 @@ ASIO_NODISCARD inline ASIO_MUTABLE_BUFFER buffer(
     T& data, std::size_t max_size_in_bytes,
     typename constraint<
       is_contiguous_iterator<typename T::iterator>::value,
+      defaulted_constraint
+    >::type = defaulted_constraint(),
+    typename constraint<
+      !is_convertible<T, const_buffer>::value,
+      defaulted_constraint
+    >::type = defaulted_constraint(),
+    typename constraint<
+      !is_convertible<T, mutable_buffer>::value,
       defaulted_constraint
     >::type = defaulted_constraint(),
     typename constraint<
@@ -1627,6 +1662,14 @@ ASIO_NODISCARD inline ASIO_CONST_BUFFER buffer(
       defaulted_constraint
     >::type = defaulted_constraint(),
     typename constraint<
+      !is_convertible<T, const_buffer>::value,
+      defaulted_constraint
+    >::type = defaulted_constraint(),
+    typename constraint<
+      !is_convertible<T, mutable_buffer>::value,
+      defaulted_constraint
+    >::type = defaulted_constraint(),
+    typename constraint<
       is_const<
         typename remove_reference<
           typename std::iterator_traits<typename T::iterator>::reference
@@ -1657,6 +1700,14 @@ ASIO_NODISCARD inline ASIO_CONST_BUFFER buffer(
       defaulted_constraint
     >::type = defaulted_constraint(),
     typename constraint<
+      !is_convertible<T, const_buffer>::value,
+      defaulted_constraint
+    >::type = defaulted_constraint(),
+    typename constraint<
+      !is_convertible<T, mutable_buffer>::value,
+      defaulted_constraint
+    >::type = defaulted_constraint(),
+    typename constraint<
       is_const<
         typename remove_reference<
           typename std::iterator_traits<typename T::iterator>::reference
@@ -1684,6 +1735,14 @@ ASIO_NODISCARD inline ASIO_CONST_BUFFER buffer(
     typename constraint<
       is_contiguous_iterator<typename T::const_iterator>::value,
       defaulted_constraint
+    >::type = defaulted_constraint(),
+    typename constraint<
+      !is_convertible<T, const_buffer>::value,
+      defaulted_constraint
+    >::type = defaulted_constraint(),
+    typename constraint<
+      !is_convertible<T, mutable_buffer>::value,
+      defaulted_constraint
     >::type = defaulted_constraint()) ASIO_NOEXCEPT
 {
   return ASIO_CONST_BUFFER(
@@ -1705,6 +1764,14 @@ ASIO_NODISCARD inline ASIO_CONST_BUFFER buffer(
     const T& data, std::size_t max_size_in_bytes,
     typename constraint<
       is_contiguous_iterator<typename T::const_iterator>::value,
+      defaulted_constraint
+    >::type = defaulted_constraint(),
+    typename constraint<
+      !is_convertible<T, const_buffer>::value,
+      defaulted_constraint
+    >::type = defaulted_constraint(),
+    typename constraint<
+      !is_convertible<T, mutable_buffer>::value,
       defaulted_constraint
     >::type = defaulted_constraint()) ASIO_NOEXCEPT
 {

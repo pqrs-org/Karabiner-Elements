@@ -1,6 +1,6 @@
 #pragma once
 
-// pqrs::cf::run_loop_thread v2.4
+// pqrs::cf::run_loop_thread v2.5
 
 // (C) Copyright Takayama Fumihiko 2018.
 // Distributed under the Boost Software License, Version 1.0.
@@ -82,7 +82,8 @@ public:
         }
       }
 
-      std::this_thread::sleep_for(std::chrono::milliseconds(100));
+      // The period of time should be as short as possible, as the thread sleeps at least once here.
+      std::this_thread::sleep_for(std::chrono::milliseconds(10));
     }
   }
 

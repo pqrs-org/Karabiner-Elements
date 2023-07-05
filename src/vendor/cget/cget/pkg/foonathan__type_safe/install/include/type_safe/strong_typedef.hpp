@@ -5,13 +5,23 @@
 #ifndef TYPE_SAFE_STRONG_TYPEDEF_HPP_INCLUDED
 #define TYPE_SAFE_STRONG_TYPEDEF_HPP_INCLUDED
 
+#if defined(TYPE_SAFE_IMPORT_STD_MODULE)
+import std;
+#else
 #include <iosfwd>
 #include <iterator>
 #include <type_traits>
 #include <utility>
+#endif
 
 #include <type_safe/config.hpp>
 #include <type_safe/detail/all_of.hpp>
+
+#ifdef _MSC_VER
+#    define TYPE_SAFE_MSC_EMPTY_BASES __declspec(empty_bases)
+#else
+#    define TYPE_SAFE_MSC_EMPTY_BASES
+#endif
 
 namespace type_safe
 {
@@ -91,7 +101,6 @@ public:
         swap(static_cast<T&>(a), static_cast<T&>(b));
     }
 
-private:
     T value_;
 };
 
@@ -100,6 +109,14 @@ namespace detail
 {
     template <class Tag, typename T>
     T underlying_type(strong_typedef<Tag, T>);
+
+    template <typename... Ts>
+    struct make_void
+    {
+        typedef void type;
+    };
+    template <typename... Ts>
+    using void_t = typename make_void<Ts...>::type;
 } // namespace detail
 
 /// The underlying type of the [ts::strong_typedef]().
@@ -107,6 +124,19 @@ namespace detail
 template <class StrongTypedef>
 using underlying_type
     = decltype(detail::underlying_type(std::declval<typename std::decay<StrongTypedef>::type>()));
+
+
+/// \group is_strong_typedef
+/// Whether a type `T` is a [ts::strong_type]()
+template <class T, typename = detail::void_t<>>
+struct TYPE_SAFE_MSC_EMPTY_BASES is_strong_typedef : std::false_type
+{};
+
+/// \group is_strong_typedef
+template <class T>
+struct is_strong_typedef<T, detail::void_t<decltype(detail::underlying_type(std::declval<T>()))>>
+    : std::true_type
+{};
 
 /// Accesses the underlying value.
 /// \returns A reference to the underlying value.
@@ -189,24 +219,6 @@ namespace strong_typedef_op
                           "Can not forward an rvalue as an lvalue.");
             return static_cast<T&&>(t);
         }
-
-        template <typename... Ts>
-        struct make_void
-        {
-            typedef void type;
-        };
-        template <typename... Ts>
-        using void_t = typename make_void<Ts...>::type;
-
-        template <class T, typename = void_t<>>
-        struct is_strong_typedef : std::false_type
-        {};
-
-        template <class T>
-        struct is_strong_typedef<
-            T, void_t<decltype(type_safe::detail::underlying_type(std::declval<T>()))>>
-        : std::true_type
-        {};
 
         template <class StrongTypedef,
                   typename = typename std::enable_if<is_strong_typedef<StrongTypedef>::value>::type>
@@ -548,24 +560,24 @@ namespace strong_typedef_op
     }
 
     template <class StrongTypedef>
-    struct integer_arithmetic : unary_plus<StrongTypedef>,
-                                unary_minus<StrongTypedef>,
-                                addition<StrongTypedef>,
-                                subtraction<StrongTypedef>,
-                                multiplication<StrongTypedef>,
-                                division<StrongTypedef>,
-                                modulo<StrongTypedef>,
-                                increment<StrongTypedef>,
-                                decrement<StrongTypedef>
+    struct TYPE_SAFE_MSC_EMPTY_BASES integer_arithmetic : unary_plus<StrongTypedef>,
+                                                          unary_minus<StrongTypedef>,
+                                                          addition<StrongTypedef>,
+                                                          subtraction<StrongTypedef>,
+                                                          multiplication<StrongTypedef>,
+                                                          division<StrongTypedef>,
+                                                          modulo<StrongTypedef>,
+                                                          increment<StrongTypedef>,
+                                                          decrement<StrongTypedef>
     {};
 
     template <class StrongTypedef>
-    struct floating_point_arithmetic : unary_plus<StrongTypedef>,
-                                       unary_minus<StrongTypedef>,
-                                       addition<StrongTypedef>,
-                                       subtraction<StrongTypedef>,
-                                       multiplication<StrongTypedef>,
-                                       division<StrongTypedef>
+    struct TYPE_SAFE_MSC_EMPTY_BASES floating_point_arithmetic : unary_plus<StrongTypedef>,
+                                                                 unary_minus<StrongTypedef>,
+                                                                 addition<StrongTypedef>,
+                                                                 subtraction<StrongTypedef>,
+                                                                 multiplication<StrongTypedef>,
+                                                                 division<StrongTypedef>
     {};
 
     template <class StrongTypedef>
@@ -590,10 +602,10 @@ namespace strong_typedef_op
     TYPE_SAFE_DETAIL_MAKE_STRONG_TYPEDEF_OP(bitwise_and, &)
 
     template <class StrongTypedef>
-    struct bitmask : complement<StrongTypedef>,
-                     bitwise_or<StrongTypedef>,
-                     bitwise_xor<StrongTypedef>,
-                     bitwise_and<StrongTypedef>
+    struct TYPE_SAFE_MSC_EMPTY_BASES bitmask : complement<StrongTypedef>,
+                                               bitwise_or<StrongTypedef>,
+                                               bitwise_xor<StrongTypedef>,
+                                               bitwise_and<StrongTypedef>
     {};
 
     template <class StrongTypedef, typename IntT>
@@ -656,7 +668,8 @@ namespace strong_typedef_op
     };
 
     template <class StrongTypedef, class Category, typename T, typename Distance = std::ptrdiff_t>
-    struct iterator : dereference<StrongTypedef, T, T*, const T*>, increment<StrongTypedef>
+    struct TYPE_SAFE_MSC_EMPTY_BASES iterator : dereference<StrongTypedef, T, T*, const T*>,
+                                                increment<StrongTypedef>
     {
         using iterator_category = Category;
         using value_type        = typename std::remove_cv<T>::type;
@@ -666,31 +679,31 @@ namespace strong_typedef_op
     };
 
     template <class StrongTypedef, typename T, typename Distance = std::ptrdiff_t>
-    struct input_iterator : iterator<StrongTypedef, std::input_iterator_tag, T, Distance>,
-                            equality_comparison<StrongTypedef>
+    struct TYPE_SAFE_MSC_EMPTY_BASES input_iterator : iterator<StrongTypedef, std::input_iterator_tag, T, Distance>,
+                                                      equality_comparison<StrongTypedef>
     {};
 
     template <class StrongTypedef, typename T, typename Distance = std::ptrdiff_t>
-    struct output_iterator : iterator<StrongTypedef, std::output_iterator_tag, T, Distance>
+    struct TYPE_SAFE_MSC_EMPTY_BASES output_iterator : iterator<StrongTypedef, std::output_iterator_tag, T, Distance>
     {};
 
     template <class StrongTypedef, typename T, typename Distance = std::ptrdiff_t>
-    struct forward_iterator : input_iterator<StrongTypedef, T, Distance>
+    struct TYPE_SAFE_MSC_EMPTY_BASES forward_iterator : input_iterator<StrongTypedef, T, Distance>
     {
         using iterator_category = std::forward_iterator_tag;
     };
 
     template <class StrongTypedef, typename T, typename Distance = std::ptrdiff_t>
-    struct bidirectional_iterator : forward_iterator<StrongTypedef, T, Distance>,
-                                    decrement<StrongTypedef>
+    struct TYPE_SAFE_MSC_EMPTY_BASES bidirectional_iterator : forward_iterator<StrongTypedef, T, Distance>,
+                                                              decrement<StrongTypedef>
     {
         using iterator_category = std::bidirectional_iterator_tag;
     };
 
     template <class StrongTypedef, typename T, typename Distance = std::ptrdiff_t>
-    struct random_access_iterator : bidirectional_iterator<StrongTypedef, T, Distance>,
-                                    array_subscript<StrongTypedef, T, Distance>,
-                                    relational_comparison<StrongTypedef>
+    struct TYPE_SAFE_MSC_EMPTY_BASES random_access_iterator : bidirectional_iterator<StrongTypedef, T, Distance>,
+                                                              array_subscript<StrongTypedef, T, Distance>,
+                                                              relational_comparison<StrongTypedef>
     {
         using iterator_category = std::random_access_iterator_tag;
 
@@ -775,7 +788,7 @@ namespace strong_typedef_op
 /// Inherit from it in the `std::hash<StrongTypedef>` specialization to make
 /// it hashable like the underlying type. See example/strong_typedef.cpp.
 template <class StrongTypedef>
-struct hashable : std::hash<type_safe::underlying_type<StrongTypedef>>
+struct TYPE_SAFE_MSC_EMPTY_BASES hashable : std::hash<type_safe::underlying_type<StrongTypedef>>
 {
     using underlying_type = type_safe::underlying_type<StrongTypedef>;
     using underlying_hash = std::hash<underlying_type>;
@@ -787,5 +800,7 @@ struct hashable : std::hash<type_safe::underlying_type<StrongTypedef>>
     }
 };
 } // namespace type_safe
+
+#undef TYPE_SAFE_MSC_EMPTY_BASES
 
 #endif // TYPE_SAFE_STRONG_TYPEDEF_HPP_INCLUDED

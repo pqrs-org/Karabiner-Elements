@@ -212,8 +212,9 @@ private:
   ASIO_DECL void free_io_object(io_object* s);
 
   // Helper function to cancel all operations associated with the given I/O
-  // object. This function does not acquire the I/O object's mutex.
-  ASIO_DECL void do_cancel_ops(
+  // object. This function must be called while the I/O object's mutex is held.
+  // Returns true if there are operations for which cancellation is pending.
+  ASIO_DECL bool do_cancel_ops(
       per_io_object_data& io_obj, op_queue<operation>& ops);
 
   // Helper function to add a new timer queue.

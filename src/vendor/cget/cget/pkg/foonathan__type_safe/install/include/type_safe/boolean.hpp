@@ -5,10 +5,14 @@
 #ifndef TYPE_SAFE_BOOLEAN_HPP_INCLUDED
 #define TYPE_SAFE_BOOLEAN_HPP_INCLUDED
 
+#if defined(TYPE_SAFE_IMPORT_STD_MODULE)
+import std;
+#else
 #include <functional>
 #include <iosfwd>
 #include <type_traits>
 #include <utility>
+#endif
 
 #include <type_safe/detail/force_inline.hpp>
 

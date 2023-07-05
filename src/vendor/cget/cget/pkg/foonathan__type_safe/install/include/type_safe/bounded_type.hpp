@@ -5,8 +5,12 @@
 #ifndef TYPE_SAFE_BOUNDED_TYPE_HPP_INCLUDED
 #define TYPE_SAFE_BOUNDED_TYPE_HPP_INCLUDED
 
+#if defined(TYPE_SAFE_IMPORT_STD_MODULE)
+import std;
+#else
 #include <limits>
 #include <type_traits>
+#endif
 
 #include <type_safe/constrained_type.hpp>
 #include <type_safe/detail/constant_parser.hpp>

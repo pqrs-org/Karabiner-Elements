@@ -5,9 +5,13 @@
 #ifndef TYPE_SAFE_DEFERRED_CONSTRUCTION_HPP_INCLUDED
 #define TYPE_SAFE_DEFERRED_CONSTRUCTION_HPP_INCLUDED
 
+#if defined(TYPE_SAFE_IMPORT_STD_MODULE)
+import std;
+#else
 #include <new>
 #include <type_traits>
 #include <utility>
+#endif
 
 #include <type_safe/detail/assert.hpp>
 
@@ -166,8 +170,7 @@ private:
         return static_cast<const void*>(&storage_);
     }
 
-    using storage_t = typename std::aligned_storage<sizeof(T), alignof(T)>::type;
-    storage_t storage_;
+    alignas(T) unsigned char storage_[sizeof(T)];
     bool      initialized_;
 };
 

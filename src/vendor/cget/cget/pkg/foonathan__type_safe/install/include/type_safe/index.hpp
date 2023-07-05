@@ -5,7 +5,11 @@
 #ifndef TYPE_SAFE_INDEX_HPP_INCLUDED
 #define TYPE_SAFE_INDEX_HPP_INCLUDED
 
+#if defined(TYPE_SAFE_IMPORT_STD_MODULE)
+import std;
+#else
 #include <cstddef>
+#endif
 
 #include <type_safe/config.hpp>
 #include <type_safe/strong_typedef.hpp>

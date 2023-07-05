@@ -13,12 +13,22 @@ namespace type_safe
 /// \exclude
 namespace detail
 {
+    template <typename T>
+    struct get_target_underlying_integer
+    {
+        using type = T;
+    };
+    template <typename T, class Policy>
+    struct get_target_underlying_integer<integer<T, Policy>>
+    {
+        using type = T;
+    };
+
     template <typename T, class Policy>
     struct get_target_integer
     {
         using type = integer<T, Policy>;
     };
-
     template <typename T, class Policy>
     struct get_target_integer<integer<T, Policy>, Policy>
     {
@@ -30,7 +40,6 @@ namespace detail
     {
         using type = floating_point<T>;
     };
-
     template <typename T>
     struct get_target_floating_point<floating_point<T>>
     {
@@ -71,10 +80,11 @@ template <typename Target, typename Source,
           typename = typename std::enable_if<std::is_arithmetic<Source>::value>::type>
 TYPE_SAFE_FORCE_INLINE constexpr Target narrow_cast(const Source& source) noexcept
 {
-    return detail::is_narrowing<Target>(source)
+    using underlying = typename detail::get_target_underlying_integer<Target>::type;
+    return detail::is_narrowing<underlying>(source)
                ? DEBUG_UNREACHABLE(detail::precondition_error_handler{},
                                    "conversion would truncate value")
-               : static_cast<Target>(source);
+               : static_cast<Target>(static_cast<underlying>(source));
 }
 
 /// \returns A [ts::integer]() with the same value as `source` but of a different type.

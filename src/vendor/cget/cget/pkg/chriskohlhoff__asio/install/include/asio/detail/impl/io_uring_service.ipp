@@ -377,13 +377,21 @@ void io_uring_service::deregister_io_object(
   if (!io_obj->shutdown_)
   {
     op_queue<operation> ops;
-    do_cancel_ops(io_obj, ops);
+    bool pending_cancelled_ops = do_cancel_ops(io_obj, ops);
     io_obj->shutdown_ = true;
     io_object_lock.unlock();
     scheduler_.post_deferred_completions(ops);
-
-    // Leave io_obj set so that it will be freed by the subsequent
-    // call to cleanup_io_obj.
+    if (pending_cancelled_ops)
+    {
+      // There are still pending operations. Prevent cleanup_io_object from
+      // freeing the I/O object and let the last operation to complete free it.
+      io_obj = 0;
+    }
+    else
+    {
+      // Leave io_obj set so that it will be freed by the subsequent call to
+      // cleanup_io_object.
+    }
   }
   else
   {
@@ -610,7 +618,7 @@ void io_uring_service::free_io_object(io_uring_service::io_object* io_obj)
   registered_io_objects_.free(io_obj);
 }
 
-void io_uring_service::do_cancel_ops(
+bool io_uring_service::do_cancel_ops(
     per_io_object_data& io_obj, op_queue<operation>& ops)
 {
   bool cancel_op = false;
@@ -646,6 +654,8 @@ void io_uring_service::do_cancel_ops(
     }
     submit_sqes();
   }
+
+  return cancel_op;
 }
 
 void io_uring_service::do_add_timer_queue(timer_queue_base& queue)
@@ -760,12 +770,18 @@ io_uring_service::io_queue::io_queue()
 struct io_uring_service::perform_io_cleanup_on_block_exit
 {
   explicit perform_io_cleanup_on_block_exit(io_uring_service* s)
-    : service_(s), first_op_(0)
+    : service_(s), io_object_to_free_(0), first_op_(0)
   {
   }
 
   ~perform_io_cleanup_on_block_exit()
   {
+    if (io_object_to_free_)
+    {
+      mutex::scoped_lock lock(service_->mutex_);
+      service_->free_io_object(io_object_to_free_);
+    }
+
     if (first_op_)
     {
       // Post the remaining completed operations for invocation.
@@ -786,6 +802,7 @@ struct io_uring_service::perform_io_cleanup_on_block_exit
   }
 
   io_uring_service* service_;
+  io_object* io_object_to_free_;
   op_queue<operation> ops_;
   operation* first_op_;
 };
@@ -845,6 +862,15 @@ operation* io_uring_service::io_queue::perform_io(int result)
         io_cleanup.ops_.push(op);
       }
     }
+  }
+
+  // The last operation to complete on a shut down object must free it.
+  if (io_object_->shutdown_)
+  {
+    io_cleanup.io_object_to_free_ = io_object_;
+    for (int i = 0; i < max_ops; ++i)
+      if (!io_object_->queues_[i].op_queue_.empty())
+        io_cleanup.io_object_to_free_ = 0;
   }
 
   // The first operation will be returned for completion now. The others will

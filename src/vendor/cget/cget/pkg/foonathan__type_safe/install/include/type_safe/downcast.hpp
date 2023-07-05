@@ -5,7 +5,11 @@
 #ifndef TYPE_SAFE_DOWNCAST_HPP_INCLUDED
 #define TYPE_SAFE_DOWNCAST_HPP_INCLUDED
 
+#if defined(TYPE_SAFE_IMPORT_STD_MODULE)
+import std;
+#else
 #include <type_traits>
+#endif
 
 #include <type_safe/config.hpp>
 #include <type_safe/detail/assert.hpp>

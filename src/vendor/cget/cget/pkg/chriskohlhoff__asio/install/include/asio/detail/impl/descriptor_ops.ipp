@@ -180,7 +180,7 @@ bool set_internal_non_blocking(int d, state_type& state,
 # if defined(ENOTTY)
   if (ec.value() == ENOTTY)
   {
-    int result = ::fcntl(d, F_GETFL, 0);
+    result = ::fcntl(d, F_GETFL, 0);
     get_last_error(ec, result < 0);
     if (result >= 0)
     {

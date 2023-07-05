@@ -5,9 +5,13 @@
 #ifndef TYPE_SAFE_FLAG_SET_HPP_INCLUDED
 #define TYPE_SAFE_FLAG_SET_HPP_INCLUDED
 
+#if defined(TYPE_SAFE_IMPORT_STD_MODULE)
+import std;
+#else
 #include <climits>
 #include <cstdint>
 #include <type_traits>
+#endif
 
 #include <type_safe/flag.hpp>
 #include <type_safe/types.hpp>

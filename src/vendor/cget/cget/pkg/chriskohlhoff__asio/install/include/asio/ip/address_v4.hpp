@@ -124,11 +124,12 @@ public:
   /// Get the address in bytes, in network byte order.
   ASIO_DECL bytes_type to_bytes() const ASIO_NOEXCEPT;
 
-  /// Get the address as an unsigned integer in host byte order
+  /// Get the address as an unsigned integer in host byte order.
   ASIO_DECL uint_type to_uint() const ASIO_NOEXCEPT;
 
 #if !defined(ASIO_NO_DEPRECATED)
-  /// Get the address as an unsigned long in host byte order
+  /// (Deprecated: Use to_uint().) Get the address as an unsigned long in host
+  /// byte order.
   ASIO_DECL unsigned long to_ulong() const;
 #endif // !defined(ASIO_NO_DEPRECATED)
 

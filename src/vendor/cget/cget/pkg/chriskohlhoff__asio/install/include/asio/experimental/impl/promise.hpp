@@ -143,6 +143,19 @@ struct promise_impl<void(Ts...), Executor, Allocator>
     std::exchange(completion, nullptr)->invoke(std::forward<T_>(ts)...);
   }
 
+  template<std::size_t... Idx>
+  void complete_with_result_impl(asio::detail::index_sequence<Idx...>)
+  {
+    auto& result_type = *reinterpret_cast<promise_impl::result_type*>(&result);
+    this->complete(std::get<Idx>(std::move(result_type))...);
+  }
+
+  void complete_with_result()
+  {
+    complete_with_result_impl(
+        asio::detail::make_index_sequence<sizeof...(Ts)>{});
+  }
+
   template<typename... T_>
   void cancel_impl_(std::exception_ptr*, T_*...)
   {
@@ -228,7 +241,7 @@ struct promise_handler<void(Ts...), Executor, Allocator>
     impl_->done = true;
 
     if (impl_->completion)
-      impl_->complete(std::move(ts)...);
+      impl_->complete_with_result();
   }
 };
 

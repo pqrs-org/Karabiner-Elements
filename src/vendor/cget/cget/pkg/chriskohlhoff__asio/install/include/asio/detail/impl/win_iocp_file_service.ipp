@@ -225,7 +225,8 @@ uint64_t win_iocp_file_service::seek(
     method = FILE_BEGIN;
     break;
   case file_base::seek_cur:
-    method = FILE_CURRENT;
+    method = FILE_BEGIN;
+    offset = static_cast<int64_t>(impl.offset_) + offset;
     break;
   case file_base::seek_end:
     method = FILE_END;

@@ -5,7 +5,12 @@
 #ifndef TYPE_SAFE_DETAIL_ALIGNED_UNION_HPP_INCLUDED
 #define TYPE_SAFE_DETAIL_ALIGNED_UNION_HPP_INCLUDED
 
-#include <type_traits>
+#if defined(TYPE_SAFE_IMPORT_STD_MODULE)
+import std;
+#else
+#    include <cstddef>
+#    include <type_traits>
+#endif
 
 namespace type_safe
 {
@@ -30,18 +35,25 @@ namespace detail
         return max(t, max(ts...));
     }
 
-    // std::aligned_union not available on all compilers
     template <typename... Types>
-    struct aligned_union
+    class aligned_union
     {
+    public:
         static constexpr auto size_value      = detail::max(sizeof(Types)...);
         static constexpr auto alignment_value = detail::max(alignof(Types)...);
 
-        using type = typename std::aligned_storage<size_value, alignment_value>::type;
-    };
+        void* get() noexcept
+        {
+            return &storage_;
+        }
+        const void* get() const noexcept
+        {
+            return &storage_;
+        }
 
-    template <typename... Types>
-    using aligned_union_t = typename aligned_union<Types...>::type;
+    private:
+        alignas(alignment_value) unsigned char storage_[size_value];
+    };
 } // namespace detail
 } // namespace type_safe
 

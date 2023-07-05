@@ -5,7 +5,11 @@
 #ifndef TYPE_SAFE_DETAIL_CONSTANT_PARSER_HPP_INCLUDED
 #define TYPE_SAFE_DETAIL_CONSTANT_PARSER_HPP_INCLUDED
 
+#if defined(TYPE_SAFE_IMPORT_STD_MODULE)
+import std;
+#else
 #include <type_traits>
+#endif
 
 namespace type_safe
 {

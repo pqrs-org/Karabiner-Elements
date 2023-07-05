@@ -56,17 +56,17 @@ public:
 
   /// Construct, passing the specified argument to initialise the next layer.
   template <typename Arg>
-  explicit buffered_stream(Arg& a)
-    : inner_stream_impl_(a),
+  explicit buffered_stream(ASIO_MOVE_OR_LVALUE_ARG(Arg) a)
+    : inner_stream_impl_(ASIO_MOVE_OR_LVALUE(Arg)(a)),
       stream_impl_(inner_stream_impl_)
   {
   }
 
   /// Construct, passing the specified argument to initialise the next layer.
   template <typename Arg>
-  explicit buffered_stream(Arg& a, std::size_t read_buffer_size,
-      std::size_t write_buffer_size)
-    : inner_stream_impl_(a, write_buffer_size),
+  explicit buffered_stream(ASIO_MOVE_OR_LVALUE_ARG(Arg) a,
+      std::size_t read_buffer_size, std::size_t write_buffer_size)
+    : inner_stream_impl_(ASIO_MOVE_OR_LVALUE(Arg)(a), write_buffer_size),
       stream_impl_(inner_stream_impl_, read_buffer_size)
   {
   }

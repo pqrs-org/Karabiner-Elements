@@ -5,7 +5,11 @@
 #ifndef TYPE_SAFE_VISITOR_HPP_INCLUDED
 #define TYPE_SAFE_VISITOR_HPP_INCLUDED
 
+#if defined(TYPE_SAFE_IMPORT_STD_MODULE)
+import std;
+#else
 #include <utility>
+#endif
 
 #include <type_safe/optional.hpp>
 #include <type_safe/variant.hpp>

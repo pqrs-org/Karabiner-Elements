@@ -5,9 +5,13 @@
 #ifndef TYPE_SAFE_REFERENCE_HPP_INCLUDED
 #define TYPE_SAFE_REFERENCE_HPP_INCLUDED
 
-#include <new>
-#include <type_traits>
-#include <utility>
+#if defined(TYPE_SAFE_IMPORT_STD_MODULE)
+import std;
+#else
+#    include <new>
+#    include <type_traits>
+#    include <utility>
+#endif
 
 #include <type_safe/detail/aligned_union.hpp>
 #include <type_safe/detail/assert.hpp>
@@ -125,8 +129,8 @@ public:
                                                                  std::forward<Args>(args)...)),
                                      XValue>
     {
-        using result = decltype(
-            detail::map_invoke(std::forward<Func>(f), get(), std::forward<Args>(args)...));
+        using result = decltype(detail::map_invoke(std::forward<Func>(f), get(),
+                                                   std::forward<Args>(args)...));
         return detail::rebind_object_ref<result, XValue>(
             detail::map_invoke(std::forward<Func>(f), get(), std::forward<Args>(args)...));
     }
@@ -596,7 +600,7 @@ public:
                                                                        Functor, Return, Args...>>
     explicit function_ref(Functor& f) : cb_(&invoke_functor<Functor>)
     {
-        ::new (get_memory()) void*(&f);
+        ::new (storage_.get()) void*(&f);
     }
 
     /// Converting copy constructor.
@@ -635,7 +639,7 @@ public:
     /// \effects Invokes the stored function with the specified arguments and returns the result.
     Return operator()(Args... args) const
     {
-        return cb_(get_memory(), static_cast<Args>(args)...);
+        return cb_(storage_.get(), static_cast<Args>(args)...);
     }
 
 private:
@@ -664,22 +668,12 @@ private:
 
         DEBUG_ASSERT(fptr, detail::precondition_error_handler{},
                      "function pointer must not be null");
-        ::new (get_memory()) stored_pointer_type(reinterpret_cast<stored_pointer_type>(fptr));
+        ::new (storage_.get()) stored_pointer_type(reinterpret_cast<stored_pointer_type>(fptr));
 
         cb_ = &invoke_function_pointer<pointer_type, stored_pointer_type>;
     }
 
-    void* get_memory() noexcept
-    {
-        return &storage_;
-    }
-
-    const void* get_memory() const noexcept
-    {
-        return &storage_;
-    }
-
-    using storage  = detail::aligned_union_t<void*, Return (*)(Args...)>;
+    using storage  = detail::aligned_union<void*, Return (*)(Args...)>;
     using callback = Return (*)(const void*, Args...);
 
     storage  storage_;

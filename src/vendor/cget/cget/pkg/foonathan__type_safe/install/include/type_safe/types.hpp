@@ -5,10 +5,14 @@
 #ifndef TYPE_SAFE_TYPES_HPP_INCLUDED
 #define TYPE_SAFE_TYPES_HPP_INCLUDED
 
+#if defined(TYPE_SAFE_IMPORT_STD_MODULE)
+import std;
+#else
 #include <cmath>
 #include <cstddef>
 #include <cstdint>
 #include <limits>
+#endif
 
 #include <type_safe/boolean.hpp>
 #include <type_safe/config.hpp>
@@ -55,23 +59,23 @@ namespace detail
 
 inline namespace types
 {
-    //=== fixed with integer ===//
+    //=== fixed width integer ===//
     /// \module types
-    using int8_t = TYPE_SAFE_DETAIL_WRAP(integer, int8_t);
+    using int8_t = TYPE_SAFE_DETAIL_WRAP(integer, std::int8_t);
     /// \module types
-    using int16_t = TYPE_SAFE_DETAIL_WRAP(integer, int16_t);
+    using int16_t = TYPE_SAFE_DETAIL_WRAP(integer, std::int16_t);
     /// \module types
-    using int32_t = TYPE_SAFE_DETAIL_WRAP(integer, int32_t);
+    using int32_t = TYPE_SAFE_DETAIL_WRAP(integer, std::int32_t);
     /// \module types
-    using int64_t = TYPE_SAFE_DETAIL_WRAP(integer, int64_t);
+    using int64_t = TYPE_SAFE_DETAIL_WRAP(integer, std::int64_t);
     /// \module types
-    using uint8_t = TYPE_SAFE_DETAIL_WRAP(integer, uint8_t);
+    using uint8_t = TYPE_SAFE_DETAIL_WRAP(integer, std::uint8_t);
     /// \module types
-    using uint16_t = TYPE_SAFE_DETAIL_WRAP(integer, uint16_t);
+    using uint16_t = TYPE_SAFE_DETAIL_WRAP(integer, std::uint16_t);
     /// \module types
-    using uint32_t = TYPE_SAFE_DETAIL_WRAP(integer, uint32_t);
+    using uint32_t = TYPE_SAFE_DETAIL_WRAP(integer, std::uint32_t);
     /// \module types
-    using uint64_t = TYPE_SAFE_DETAIL_WRAP(integer, uint64_t);
+    using uint64_t = TYPE_SAFE_DETAIL_WRAP(integer, std::uint64_t);
 
     inline namespace literals
     {
@@ -133,53 +137,53 @@ inline namespace types
     } // namespace literals
 
     /// \module types
-    using int_fast8_t = TYPE_SAFE_DETAIL_WRAP(integer, int_fast8_t);
+    using int_fast8_t = TYPE_SAFE_DETAIL_WRAP(integer, std::int_fast8_t);
     /// \module types
-    using int_fast16_t = TYPE_SAFE_DETAIL_WRAP(integer, int_fast16_t);
+    using int_fast16_t = TYPE_SAFE_DETAIL_WRAP(integer, std::int_fast16_t);
     /// \module types
-    using int_fast32_t = TYPE_SAFE_DETAIL_WRAP(integer, int_fast32_t);
+    using int_fast32_t = TYPE_SAFE_DETAIL_WRAP(integer, std::int_fast32_t);
     /// \module types
-    using int_fast64_t = TYPE_SAFE_DETAIL_WRAP(integer, int_fast64_t);
+    using int_fast64_t = TYPE_SAFE_DETAIL_WRAP(integer, std::int_fast64_t);
     /// \module types
-    using uint_fast8_t = TYPE_SAFE_DETAIL_WRAP(integer, uint_fast8_t);
+    using uint_fast8_t = TYPE_SAFE_DETAIL_WRAP(integer, std::uint_fast8_t);
     /// \module types
-    using uint_fast16_t = TYPE_SAFE_DETAIL_WRAP(integer, uint_fast16_t);
+    using uint_fast16_t = TYPE_SAFE_DETAIL_WRAP(integer, std::uint_fast16_t);
     /// \module types
-    using uint_fast32_t = TYPE_SAFE_DETAIL_WRAP(integer, uint_fast32_t);
+    using uint_fast32_t = TYPE_SAFE_DETAIL_WRAP(integer, std::uint_fast32_t);
     /// \module types
-    using uint_fast64_t = TYPE_SAFE_DETAIL_WRAP(integer, uint_fast64_t);
+    using uint_fast64_t = TYPE_SAFE_DETAIL_WRAP(integer, std::uint_fast64_t);
 
     /// \module types
-    using int_least8_t = TYPE_SAFE_DETAIL_WRAP(integer, int_least8_t);
+    using int_least8_t = TYPE_SAFE_DETAIL_WRAP(integer, std::int_least8_t);
     /// \module types
-    using int_least16_t = TYPE_SAFE_DETAIL_WRAP(integer, int_least16_t);
+    using int_least16_t = TYPE_SAFE_DETAIL_WRAP(integer, std::int_least16_t);
     /// \module types
-    using int_least32_t = TYPE_SAFE_DETAIL_WRAP(integer, int_least32_t);
+    using int_least32_t = TYPE_SAFE_DETAIL_WRAP(integer, std::int_least32_t);
     /// \module types
-    using int_least64_t = TYPE_SAFE_DETAIL_WRAP(integer, int_least64_t);
+    using int_least64_t = TYPE_SAFE_DETAIL_WRAP(integer, std::int_least64_t);
     /// \module types
-    using uint_least8_t = TYPE_SAFE_DETAIL_WRAP(integer, uint_least8_t);
+    using uint_least8_t = TYPE_SAFE_DETAIL_WRAP(integer, std::uint_least8_t);
     /// \module types
-    using uint_least16_t = TYPE_SAFE_DETAIL_WRAP(integer, uint_least16_t);
+    using uint_least16_t = TYPE_SAFE_DETAIL_WRAP(integer, std::uint_least16_t);
     /// \module types
-    using uint_least32_t = TYPE_SAFE_DETAIL_WRAP(integer, uint_least32_t);
+    using uint_least32_t = TYPE_SAFE_DETAIL_WRAP(integer, std::uint_least32_t);
     /// \module types
-    using uint_least64_t = TYPE_SAFE_DETAIL_WRAP(integer, uint_least64_t);
+    using uint_least64_t = TYPE_SAFE_DETAIL_WRAP(integer, std::uint_least64_t);
 
     /// \module types
-    using intmax_t = TYPE_SAFE_DETAIL_WRAP(integer, intmax_t);
+    using intmax_t = TYPE_SAFE_DETAIL_WRAP(integer, std::intmax_t);
     /// \module types
-    using uintmax_t = TYPE_SAFE_DETAIL_WRAP(integer, uintmax_t);
+    using uintmax_t = TYPE_SAFE_DETAIL_WRAP(integer, std::uintmax_t);
     /// \module types
-    using intptr_t = TYPE_SAFE_DETAIL_WRAP(integer, intptr_t);
+    using intptr_t = TYPE_SAFE_DETAIL_WRAP(integer, std::intptr_t);
     /// \module types
-    using uintptr_t = TYPE_SAFE_DETAIL_WRAP(integer, uintptr_t);
+    using uintptr_t = TYPE_SAFE_DETAIL_WRAP(integer, std::uintptr_t);
 
     //=== special integer types ===//
     /// \module types
-    using ptrdiff_t = TYPE_SAFE_DETAIL_WRAP(integer, ptrdiff_t);
+    using ptrdiff_t = TYPE_SAFE_DETAIL_WRAP(integer, std::ptrdiff_t);
     /// \module types
-    using size_t = TYPE_SAFE_DETAIL_WRAP(integer, size_t);
+    using size_t = TYPE_SAFE_DETAIL_WRAP(integer, std::size_t);
 
     /// \module types
     using int_t = TYPE_SAFE_DETAIL_WRAP(integer, int);

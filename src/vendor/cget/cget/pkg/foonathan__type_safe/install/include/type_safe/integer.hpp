@@ -5,10 +5,14 @@
 #ifndef TYPE_SAFE_INTEGER_HPP_INCLUDED
 #define TYPE_SAFE_INTEGER_HPP_INCLUDED
 
+#if defined(TYPE_SAFE_IMPORT_STD_MODULE)
+import std;
+#else
 #include <functional>
 #include <iosfwd>
 #include <limits>
 #include <type_traits>
+#endif
 
 #include <type_safe/arithmetic_policy.hpp>
 #include <type_safe/detail/assert.hpp>
@@ -51,14 +55,6 @@ namespace detail
     : std::integral_constant<bool, is_safe_integer_conversion<A, B>::value
                                        || is_safe_integer_conversion<B, A>::value>
     {};
-
-    template <typename A, typename B>
-    using enable_safe_integer_comparison =
-        typename std::enable_if<is_safe_integer_comparison<A, B>::value>::type;
-
-    template <typename A, typename B>
-    using fallback_safe_integer_comparison =
-        typename std::enable_if<!is_safe_integer_comparison<A, B>::value>::type;
 
     template <typename A, typename B>
     struct is_safe_integer_operation
@@ -269,7 +265,6 @@ public:
     {
         value_ = Policy::template do_subtraction<integer_type>(value_, static_cast<T>(other));
         return *this;
-        return *this;
     }
     TYPE_SAFE_DETAIL_MAKE_OP(-=)
 
@@ -456,111 +451,178 @@ TYPE_SAFE_FORCE_INLINE constexpr integer<UnsignedInteger, Policy> abs(
 
 //=== comparison ===//
 /// \exclude
+namespace detail
+{
+    // A signed, B unsigned
+    template <typename A, typename B, class Policy>
+    TYPE_SAFE_FORCE_INLINE constexpr bool cmp_equal_unsafe_impl(const integer<A, Policy>& a,
+                                                                const integer<B, Policy>& b,
+                                                                std::true_type,
+                                                                std::false_type) noexcept
+    {
+        using UA = typename make_unsigned<A>::type;
+        return static_cast<A>(a) < 0 ? false : UA(static_cast<A>(a)) == static_cast<B>(b);
+    }
+
+    // A unsigned, B signed
+    template <typename A, typename B, class Policy>
+    TYPE_SAFE_FORCE_INLINE constexpr bool cmp_equal_unsafe_impl(const integer<A, Policy>& a,
+                                                                const integer<B, Policy>& b,
+                                                                std::false_type,
+                                                                std::true_type) noexcept
+    {
+        using UB = typename make_unsigned<B>::type;
+        return static_cast<B>(b) < 0 ? false : UB(static_cast<B>(b)) == static_cast<A>(a);
+    }
+
+    // A and B same signedness
+    template <typename A, typename B, class Policy>
+    TYPE_SAFE_FORCE_INLINE constexpr bool cmp_equal_impl(const integer<A, Policy>& a,
+                                                         const integer<B, Policy>& b,
+                                                         std::true_type) noexcept
+    {
+        return static_cast<A>(a) == static_cast<B>(b);
+    }
+
+    // A and B different signedness
+    template <typename A, typename B, class Policy>
+    TYPE_SAFE_FORCE_INLINE constexpr bool cmp_equal_impl(const integer<A, Policy>& a,
+                                                         const integer<B, Policy>& b,
+                                                         std::false_type) noexcept
+    {
+        return cmp_equal_unsafe_impl(a, b, std::is_signed<A>(), std::is_signed<B>());
+    }
+
+    // A signed, B unsigned
+    template <typename A, typename B, class Policy>
+    TYPE_SAFE_FORCE_INLINE constexpr bool cmp_less_unsafe_impl(const integer<A, Policy>& a,
+                                                               const integer<B, Policy>& b,
+                                                               std::true_type,
+                                                               std::false_type) noexcept
+    {
+        using UA = typename make_unsigned<A>::type;
+        return static_cast<A>(a) < 0 ? true : UA(static_cast<A>(a)) < static_cast<B>(b);
+    }
+
+    // A unsigned, B signed
+    template <typename A, typename B, class Policy>
+    TYPE_SAFE_FORCE_INLINE constexpr bool cmp_less_unsafe_impl(const integer<A, Policy>& a,
+                                                               const integer<B, Policy>& b,
+                                                               std::false_type,
+                                                               std::true_type) noexcept
+    {
+        using UB = typename make_unsigned<B>::type;
+        return static_cast<B>(b) < 0 ? false : static_cast<A>(a) < UB(static_cast<B>(b));
+    }
+
+    // A and B same signedness
+    template <typename A, typename B, class Policy>
+    TYPE_SAFE_FORCE_INLINE constexpr bool cmp_less_impl(const integer<A, Policy>& a,
+                                                        const integer<B, Policy>& b,
+                                                        std::true_type) noexcept
+    {
+        return static_cast<A>(a) < static_cast<B>(b);
+    }
+
+    // A and B different signedness
+    template <typename A, typename B, class Policy>
+    TYPE_SAFE_FORCE_INLINE constexpr bool cmp_less_impl(const integer<A, Policy>& a,
+                                                        const integer<B, Policy>& b,
+                                                        std::false_type) noexcept
+    {
+        return cmp_less_unsafe_impl(a, b, std::is_signed<A>(), std::is_signed<B>());
+    }
+
+} // namespace detail
+
+/// \exclude
 #define TYPE_SAFE_DETAIL_MAKE_OP(Op)                                                               \
     /** \group int_comp                                                                            \
-     * \param 3                                                                                    \
+     * \param 2                                                                                    \
      * \exclude */                                                                                 \
-    template <typename A, typename B, class Policy,                                                \
-              typename = detail::enable_safe_integer_comparison<A, B>>                             \
-    TYPE_SAFE_FORCE_INLINE constexpr bool operator Op(const A& a, const integer<B, Policy>& b)     \
+    template <typename A, typename B, class Policy>                                                \
+    TYPE_SAFE_FORCE_INLINE constexpr bool operator Op(const A&                  a,                 \
+                                                      const integer<B, Policy>& b) noexcept        \
     {                                                                                              \
         return integer<A, Policy>(a) Op b;                                                         \
     }                                                                                              \
     /** \group int_comp                                                                            \
-     * \param 3                                                                                    \
+     * \param 2                                                                                    \
      * \exclude */                                                                                 \
-    template <typename A, class Policy, typename B,                                                \
-              typename = detail::enable_safe_integer_comparison<A, B>>                             \
-    TYPE_SAFE_FORCE_INLINE constexpr bool operator Op(const integer<A, Policy>& a, const B& b)     \
+    template <typename A, class Policy, typename B>                                                \
+    TYPE_SAFE_FORCE_INLINE constexpr bool operator Op(const integer<A, Policy>& a,                 \
+                                                      const B&                  b) noexcept                         \
     {                                                                                              \
         return a Op integer<B, Policy>(b);                                                         \
-    }                                                                                              \
-    /** \exclude */                                                                                \
-    template <typename A, class Policy, typename B,                                                \
-              typename = detail::fallback_safe_integer_comparison<A, B>>                           \
-    constexpr bool operator Op(integer<A, Policy>, integer<B, Policy>) = delete;                   \
-    /** \exclude */                                                                                \
-    template <typename A, typename B, class Policy,                                                \
-              typename = detail::fallback_safe_integer_comparison<A, B>>                           \
-    constexpr bool operator Op(A, integer<B, Policy>) = delete;                                    \
-    /** \exclude */                                                                                \
-    template <typename A, class Policy, typename B,                                                \
-              typename = detail::fallback_safe_integer_comparison<A, B>>                           \
-    constexpr bool operator Op(integer<A, Policy>, B) = delete;
+    }
 
 /// \returns The result of the comparison of the stored integer value in the [ts::integer]().
 /// \notes These functions do not participate in overload resolution
 /// unless `A` and `B` are both integer types.
 /// \group int_comp Comparison operators
 /// \module types
-/// \param 3
+/// \param 2
 /// \exclude
-template <typename A, typename B, class Policy,
-          typename = detail::enable_safe_integer_comparison<A, B>>
+template <typename A, typename B, class Policy>
 TYPE_SAFE_FORCE_INLINE constexpr bool operator==(const integer<A, Policy>& a,
-                                                 const integer<B, Policy>& b)
+                                                 const integer<B, Policy>& b) noexcept
 {
-    return static_cast<A>(a) == static_cast<B>(b);
+    return detail::cmp_equal_impl(a, b, detail::is_safe_integer_comparison<A, B>());
 }
 TYPE_SAFE_DETAIL_MAKE_OP(==)
 
 /// \group int_comp Comparison operators
-/// \param 3
+/// \param 2
 /// \exclude
-template <typename A, typename B, class Policy,
-          typename = detail::enable_safe_integer_comparison<A, B>>
+template <typename A, typename B, class Policy>
 TYPE_SAFE_FORCE_INLINE constexpr bool operator!=(const integer<A, Policy>& a,
-                                                 const integer<B, Policy>& b)
+                                                 const integer<B, Policy>& b) noexcept
 {
-    return static_cast<A>(a) != static_cast<B>(b);
+    return !detail::cmp_equal_impl(a, b, detail::is_safe_integer_comparison<A, B>());
 }
 TYPE_SAFE_DETAIL_MAKE_OP(!=)
 
 /// \group int_comp Comparison operators
-/// \param 3
+/// \param 2
 /// \exclude
-template <typename A, typename B, class Policy,
-          typename = detail::enable_safe_integer_comparison<A, B>>
+template <typename A, typename B, class Policy>
 TYPE_SAFE_FORCE_INLINE constexpr bool operator<(const integer<A, Policy>& a,
-                                                const integer<B, Policy>& b)
+                                                const integer<B, Policy>& b) noexcept
 {
-    return static_cast<A>(a) < static_cast<B>(b);
+    return detail::cmp_less_impl(a, b, detail::is_safe_integer_comparison<A, B>());
 }
 TYPE_SAFE_DETAIL_MAKE_OP(<)
 
 /// \group int_comp Comparison operators
-/// \param 3
+/// \param 2
 /// \exclude
-template <typename A, typename B, class Policy,
-          typename = detail::enable_safe_integer_comparison<A, B>>
+template <typename A, typename B, class Policy>
 TYPE_SAFE_FORCE_INLINE constexpr bool operator<=(const integer<A, Policy>& a,
-                                                 const integer<B, Policy>& b)
+                                                 const integer<B, Policy>& b) noexcept
 {
-    return static_cast<A>(a) <= static_cast<B>(b);
+    return !detail::cmp_less_impl(b, a, detail::is_safe_integer_comparison<A, B>());
 }
 TYPE_SAFE_DETAIL_MAKE_OP(<=)
 
 /// \group int_comp Comparison operators
-/// \param 3
+/// \param 2
 /// \exclude
-template <typename A, typename B, class Policy,
-          typename = detail::enable_safe_integer_comparison<A, B>>
+template <typename A, typename B, class Policy>
 TYPE_SAFE_FORCE_INLINE constexpr bool operator>(const integer<A, Policy>& a,
-                                                const integer<B, Policy>& b)
+                                                const integer<B, Policy>& b) noexcept
 {
-    return static_cast<A>(a) > static_cast<B>(b);
+    return detail::cmp_less_impl(b, a, detail::is_safe_integer_comparison<A, B>());
 }
 TYPE_SAFE_DETAIL_MAKE_OP(>)
 
 /// \group int_comp Comparison operators
-/// \param 3
+/// \param 2
 /// \exclude
-template <typename A, typename B, class Policy,
-          typename = detail::enable_safe_integer_comparison<A, B>>
+template <typename A, typename B, class Policy>
 TYPE_SAFE_FORCE_INLINE constexpr bool operator>=(const integer<A, Policy>& a,
-                                                 const integer<B, Policy>& b)
+                                                 const integer<B, Policy>& b) noexcept
 {
-    return static_cast<A>(a) >= static_cast<B>(b);
+    return !detail::cmp_less_impl(a, b, detail::is_safe_integer_comparison<A, B>());
 }
 TYPE_SAFE_DETAIL_MAKE_OP(>=)
 

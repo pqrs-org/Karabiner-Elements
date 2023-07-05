@@ -5,9 +5,13 @@
 #ifndef TYPE_SAFE_OPTIONAL_HPP_INCLUDED
 #define TYPE_SAFE_OPTIONAL_HPP_INCLUDED
 
+#if defined(TYPE_SAFE_IMPORT_STD_MODULE)
+import std;
+#else
 #include <functional>
 #include <new>
 #include <type_traits>
+#endif
 
 #include <type_safe/detail/assert.hpp>
 #include <type_safe/detail/assign_or_construct.hpp>
@@ -251,7 +255,7 @@ public:
     template <typename T, typename = typename std::enable_if<!std::is_same<
                               typename std::decay<T>::type, basic_optional<storage>>::value>::type>
     basic_optional(T&& value,
-                   decltype(std::declval<storage>().create_value(std::forward<T>(value)), 0) = 0)
+                   decltype(std::declval<storage>().create_value(std::declval<T>()), 0) = 0)
     {
         get_storage().create_value(std::forward<T>(value));
     }
@@ -268,7 +272,7 @@ public:
         = 0>
     explicit basic_optional(
         T&& value,
-        decltype(std::declval<storage>().create_value_explicit(std::forward<T>(value)), 0) = 0)
+        decltype(std::declval<storage>().create_value_explicit(std::declval<T>()), 0) = 0)
     {
         get_storage().create_value_explicit(std::forward<T>(value));
     }
@@ -942,8 +946,7 @@ private:
         return static_cast<const void*>(&storage_);
     }
 
-    using storage_t = typename std::aligned_storage<sizeof(value_type), alignof(value_type)>::type;
-    storage_t storage_;
+    alignas(value_type) unsigned char storage_[sizeof(value_type)];
     bool      empty_;
 };
 

@@ -5,7 +5,11 @@
 #ifndef TYPE_SAFE_DETAIL_IS_NOTHROW_SWAPABLE_HPP_INCLUDED
 #define TYPE_SAFE_DETAIL_IS_NOTHROW_SWAPABLE_HPP_INCLUDED
 
+#if defined(TYPE_SAFE_IMPORT_STD_MODULE)
+import std;
+#else
 #include <utility>
+#endif
 
 namespace type_safe
 {

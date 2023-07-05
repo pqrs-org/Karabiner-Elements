@@ -272,11 +272,13 @@ private:
 
   enum
   {
+#if !defined(_WIN32_WINNT) || (_WIN32_WINNT < 0x0600)
     // Timeout to use with GetQueuedCompletionStatus on older versions of
     // Windows. Some versions of windows have a "bug" where a call to
     // GetQueuedCompletionStatus can appear stuck even though there are events
     // waiting on the queue. Using a timeout helps to work around the issue.
     default_gqcs_timeout = 500,
+#endif // !defined(_WIN32_WINNT) || (_WIN32_WINNT < 0x0600)
 
     // Maximum waitable timer timeout, in milliseconds.
     max_timeout_msec = 5 * 60 * 1000,

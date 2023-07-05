@@ -5,8 +5,12 @@
 #ifndef TYPE_SAFE_CONFIG_HPP_INCLUDED
 #define TYPE_SAFE_CONFIG_HPP_INCLUDED
 
+#if defined(TYPE_SAFE_IMPORT_STD_MODULE)
+import std;
+#else
 #include <cstddef>
 #include <cstdlib>
+#endif
 
 #ifndef TYPE_SAFE_ENABLE_ASSERTIONS
 /// Controls whether internal assertions are enabled.

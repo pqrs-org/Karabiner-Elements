@@ -5,7 +5,11 @@
 #ifndef TYPE_SAFE_OUTPUT_PARAMETER_HPP_INCLUDED
 #define TYPE_SAFE_OUTPUT_PARAMETER_HPP_INCLUDED
 
+#if defined(TYPE_SAFE_IMPORT_STD_MODULE)
+import std;
+#else
 #include <new>
+#endif
 
 #include <type_safe/deferred_construction.hpp>
 #include <type_safe/detail/assert.hpp>

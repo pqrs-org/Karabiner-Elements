@@ -175,10 +175,6 @@ struct async_result<as_tuple_t<CompletionToken>, Signatures...>
   : async_result<CompletionToken,
       typename detail::as_tuple_signature<Signatures>::type...>
 {
-  typedef async_result<CompletionToken,
-    typename detail::as_tuple_signature<Signatures>::type...>
-      base_async_result;
-
   template <typename Initiation>
   struct init_wrapper
   {
@@ -203,23 +199,94 @@ struct async_result<as_tuple_t<CompletionToken>, Signatures...>
   };
 
   template <typename Initiation, typename RawCompletionToken, typename... Args>
-  static ASIO_INITFN_DEDUCED_RESULT_TYPE(CompletionToken,
-      typename detail::as_tuple_signature<Signatures>::type...,
-      (base_async_result::initiate(
-        declval<init_wrapper<typename decay<Initiation>::type> >(),
-        declval<CompletionToken>(),
-        declval<ASIO_MOVE_ARG(Args)>()...)))
+  static ASIO_INITFN_AUTO_RESULT_TYPE_PREFIX(CompletionToken,
+      typename detail::as_tuple_signature<Signatures>::type...)
   initiate(
       ASIO_MOVE_ARG(Initiation) initiation,
       ASIO_MOVE_ARG(RawCompletionToken) token,
       ASIO_MOVE_ARG(Args)... args)
+    ASIO_INITFN_AUTO_RESULT_TYPE_SUFFIX((
+      async_initiate<
+        typename conditional<
+          is_const<typename remove_reference<RawCompletionToken>::type>::value,
+            const CompletionToken, CompletionToken>::type,
+        typename detail::as_tuple_signature<Signatures>::type...>(
+          init_wrapper<typename decay<Initiation>::type>(
+            ASIO_MOVE_CAST(Initiation)(initiation)),
+          token.token_, ASIO_MOVE_CAST(Args)(args)...)))
   {
-    return base_async_result::initiate(
+    return async_initiate<
+      typename conditional<
+        is_const<typename remove_reference<RawCompletionToken>::type>::value,
+          const CompletionToken, CompletionToken>::type,
+      typename detail::as_tuple_signature<Signatures>::type...>(
         init_wrapper<typename decay<Initiation>::type>(
           ASIO_MOVE_CAST(Initiation)(initiation)),
         token.token_, ASIO_MOVE_CAST(Args)(args)...);
   }
 };
+
+#if defined(ASIO_MSVC)
+
+// Workaround for MSVC internal compiler error.
+
+template <typename CompletionToken, typename Signature>
+struct async_result<as_tuple_t<CompletionToken>, Signature>
+  : async_result<CompletionToken,
+      typename detail::as_tuple_signature<Signature>::type>
+{
+  template <typename Initiation>
+  struct init_wrapper
+  {
+    init_wrapper(Initiation init)
+      : initiation_(ASIO_MOVE_CAST(Initiation)(init))
+    {
+    }
+
+    template <typename Handler, typename... Args>
+    void operator()(
+        ASIO_MOVE_ARG(Handler) handler,
+        ASIO_MOVE_ARG(Args)... args)
+    {
+      ASIO_MOVE_CAST(Initiation)(initiation_)(
+          detail::as_tuple_handler<
+            typename decay<Handler>::type>(
+              ASIO_MOVE_CAST(Handler)(handler)),
+          ASIO_MOVE_CAST(Args)(args)...);
+    }
+
+    Initiation initiation_;
+  };
+
+  template <typename Initiation, typename RawCompletionToken, typename... Args>
+  static ASIO_INITFN_AUTO_RESULT_TYPE_PREFIX(CompletionToken,
+      typename detail::as_tuple_signature<Signatures>::type...)
+  initiate(
+      ASIO_MOVE_ARG(Initiation) initiation,
+      ASIO_MOVE_ARG(RawCompletionToken) token,
+      ASIO_MOVE_ARG(Args)... args)
+    ASIO_INITFN_AUTO_RESULT_TYPE_SUFFIX((
+      async_initiate<
+        typename conditional<
+          is_const<typename remove_reference<RawCompletionToken>::type>::value,
+            const CompletionToken, CompletionToken>::type,
+        typename detail::as_tuple_signature<Signature>::type>(
+          init_wrapper<typename decay<Initiation>::type>(
+            ASIO_MOVE_CAST(Initiation)(initiation)),
+          token.token_, ASIO_MOVE_CAST(Args)(args)...)))
+  {
+    return async_initiate<
+      typename conditional<
+        is_const<typename remove_reference<RawCompletionToken>::type>::value,
+          const CompletionToken, CompletionToken>::type,
+      typename detail::as_tuple_signature<Signature>::type>(
+        init_wrapper<typename decay<Initiation>::type>(
+          ASIO_MOVE_CAST(Initiation)(initiation)),
+        token.token_, ASIO_MOVE_CAST(Args)(args)...);
+  }
+};
+
+#endif // defined(ASIO_MSVC)
 
 template <template <typename, typename> class Associator,
     typename Handler, typename DefaultCandidate>

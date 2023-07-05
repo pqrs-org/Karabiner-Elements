@@ -5,9 +5,13 @@
 #ifndef TYPE_SAFE_FLOATING_POINT_HPP_INCLUDED
 #define TYPE_SAFE_FLOATING_POINT_HPP_INCLUDED
 
+#if defined(TYPE_SAFE_IMPORT_STD_MODULE)
+import std;
+#else
 #include <functional>
 #include <iosfwd>
 #include <type_traits>
+#endif
 
 #include <type_safe/detail/force_inline.hpp>
 

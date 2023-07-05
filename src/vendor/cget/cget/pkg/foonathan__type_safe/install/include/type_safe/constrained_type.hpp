@@ -5,10 +5,14 @@
 #ifndef TYPE_SAFE_CONSTRAINED_TYPE_HPP_INCLUDED
 #define TYPE_SAFE_CONSTRAINED_TYPE_HPP_INCLUDED
 
+#if defined(TYPE_SAFE_IMPORT_STD_MODULE)
+import std;
+#else
 #include <iterator>
 #include <stdexcept>
 #include <type_traits>
 #include <utility>
+#endif
 
 #include <type_safe/config.hpp>
 #include <type_safe/detail/assert.hpp>

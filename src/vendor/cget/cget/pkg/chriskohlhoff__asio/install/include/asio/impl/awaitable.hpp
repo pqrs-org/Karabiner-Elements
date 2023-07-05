@@ -30,6 +30,12 @@
 #include "asio/system_error.hpp"
 #include "asio/this_coro.hpp"
 
+#if defined(ASIO_ENABLE_HANDLER_TRACKING)
+# if defined(ASIO_HAS_SOURCE_LOCATION)
+#  include "asio/detail/source_location.hpp"
+# endif // defined(ASIO_HAS_SOURCE_LOCATION)
+#endif // defined(ASIO_ENABLE_HANDLER_TRACKING)
+
 #include "asio/detail/push_options.hpp"
 
 namespace asio {
@@ -169,7 +175,13 @@ public:
 
   template <typename Op>
   auto await_transform(Op&& op,
-      typename constraint<is_async_operation<Op>::value>::type = 0)
+      typename constraint<is_async_operation<Op>::value>::type = 0
+#if defined(ASIO_ENABLE_HANDLER_TRACKING)
+# if defined(ASIO_HAS_SOURCE_LOCATION)
+      , detail::source_location location = detail::source_location::current()
+# endif // defined(ASIO_HAS_SOURCE_LOCATION)
+#endif // defined(ASIO_ENABLE_HANDLER_TRACKING)
+    )
   {
     if (attached_thread_->entry_point()->throw_if_cancelled_)
       if (!!attached_thread_->get_cancellation_state().cancelled())
@@ -177,7 +189,13 @@ public:
 
     return awaitable_async_op<typename completion_signature_of<Op>::type,
       typename decay<Op>::type, Executor>{
-        std::forward<Op>(op), this};
+        std::forward<Op>(op), this
+#if defined(ASIO_ENABLE_HANDLER_TRACKING)
+# if defined(ASIO_HAS_SOURCE_LOCATION)
+        , location
+# endif // defined(ASIO_HAS_SOURCE_LOCATION)
+#endif // defined(ASIO_ENABLE_HANDLER_TRACKING)
+      };
   }
 
   // This await transformation obtains the associated executor of the thread of
@@ -1085,10 +1103,21 @@ class awaitable_async_op
 public:
   typedef awaitable_async_op_handler<Signature, Executor> handler_type;
 
-  awaitable_async_op(Op&& o, awaitable_frame_base<Executor>* frame)
+  awaitable_async_op(Op&& o, awaitable_frame_base<Executor>* frame
+#if defined(ASIO_ENABLE_HANDLER_TRACKING)
+# if defined(ASIO_HAS_SOURCE_LOCATION)
+      , const detail::source_location& location
+# endif // defined(ASIO_HAS_SOURCE_LOCATION)
+#endif // defined(ASIO_ENABLE_HANDLER_TRACKING)
+    )
     : op_(std::forward<Op>(o)),
       frame_(frame),
       result_()
+#if defined(ASIO_ENABLE_HANDLER_TRACKING)
+# if defined(ASIO_HAS_SOURCE_LOCATION)
+    , location_(location)
+# endif // defined(ASIO_HAS_SOURCE_LOCATION)
+#endif // defined(ASIO_ENABLE_HANDLER_TRACKING)
   {
   }
 
@@ -1103,6 +1132,12 @@ public:
         [](void* arg)
         {
           awaitable_async_op* self = static_cast<awaitable_async_op*>(arg);
+#if defined(ASIO_ENABLE_HANDLER_TRACKING)
+# if defined(ASIO_HAS_SOURCE_LOCATION)
+          ASIO_HANDLER_LOCATION((self->location_.file_name(),
+              self->location_.line(), self->location_.function_name()));
+# endif // defined(ASIO_HAS_SOURCE_LOCATION)
+#endif // defined(ASIO_ENABLE_HANDLER_TRACKING)
           std::forward<Op&&>(self->op_)(
               handler_type(self->frame_->detach_thread(), self->result_));
         }, this);
@@ -1117,6 +1152,11 @@ private:
   Op&& op_;
   awaitable_frame_base<Executor>* frame_;
   typename handler_type::result_type result_;
+#if defined(ASIO_ENABLE_HANDLER_TRACKING)
+# if defined(ASIO_HAS_SOURCE_LOCATION)
+  detail::source_location location_;
+# endif // defined(ASIO_HAS_SOURCE_LOCATION)
+#endif // defined(ASIO_ENABLE_HANDLER_TRACKING)
 };
 
 } // namespace detail
