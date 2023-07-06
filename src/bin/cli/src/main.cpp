@@ -196,27 +196,33 @@ int main(int argc, char** argv) {
     {
       std::string key = "lint-complex-modifications";
       if (parse_result.count(key)) {
-        auto file_path = parse_result[key].as<std::string>();
-        try {
-          auto assets_file = krbn::complex_modifications_assets_file(file_path);
-          auto error_messages = assets_file.lint();
-          if (error_messages.empty()) {
-            std::cout << "ok" << std::endl;
+        auto glob_pattern = parse_result[key].as<std::string>();
+        for (const auto& file_path : glob::glob(glob_pattern)) {
+          std::cout << file_path << ": ";
 
-          } else {
-            exit_code = 1;
+          try {
+            auto assets_file = krbn::complex_modifications_assets_file(file_path.string());
+            auto error_messages = assets_file.lint();
+            if (error_messages.empty()) {
+              std::cout << "ok" << std::endl;
 
-            for (const auto& e : error_messages) {
-              std::cout << e << std::endl;
+            } else {
+              exit_code = 1;
+
+              for (const auto& e : error_messages) {
+                std::cout << e << std::endl;
+              }
+              goto finish;
             }
-          }
-          goto finish;
 
-        } catch (std::exception& e) {
-          exit_code = 1;
-          std::cout << e.what() << std::endl;
-          goto finish;
+          } catch (std::exception& e) {
+            exit_code = 1;
+            std::cout << e.what() << std::endl;
+            goto finish;
+          }
         }
+
+        goto finish;
       }
     }
 
