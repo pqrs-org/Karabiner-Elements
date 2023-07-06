@@ -60,7 +60,7 @@ inline void mkdir_system_user_directory(uid_t uid) {
 }
 
 inline void remove_files_by_glob(const std::string_view& pattern) {
-  for (auto path : glob::glob(pattern.data())) {
+  for (const auto& path : glob::glob(pattern.data())) {
     logger::get_logger()->info("Remove {0}", path.c_str());
 
     std::error_code error_code;
