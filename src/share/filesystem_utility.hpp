@@ -59,15 +59,6 @@ inline void mkdir_system_user_directory(uid_t uid) {
   }
 }
 
-inline void remove_files_by_glob(const std::string_view& pattern) {
-  for (const auto& path : glob::glob(pattern.data())) {
-    logger::get_logger()->info("Remove {0}", path.c_str());
-
-    std::error_code error_code;
-    std::filesystem::remove(path, error_code);
-  }
-}
-
 inline std::filesystem::path make_socket_file_basename(void) {
   std::stringstream ss;
   ss << std::hex
