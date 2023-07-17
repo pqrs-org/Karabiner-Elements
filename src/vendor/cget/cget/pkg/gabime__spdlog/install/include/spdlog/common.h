@@ -17,7 +17,12 @@
 #include <cstdio>
 
 #ifdef SPDLOG_USE_STD_FORMAT
-#    include <string_view>
+#    include <version>
+#    if __cpp_lib_format >= 202207L
+#        include <format>
+#    else
+#        include <string_view>
+#    endif
 #endif
 
 #ifdef SPDLOG_COMPILED_LIB
@@ -59,14 +64,14 @@
 #if defined(_MSC_VER) && (_MSC_VER < 1900)
 #    define SPDLOG_NOEXCEPT _NOEXCEPT
 #    define SPDLOG_CONSTEXPR
-#    define SPDLOG_CONSTEXPR_FUNC
+#    define SPDLOG_CONSTEXPR_FUNC inline
 #else
 #    define SPDLOG_NOEXCEPT noexcept
 #    define SPDLOG_CONSTEXPR constexpr
 #    if __cplusplus >= 201402L
 #        define SPDLOG_CONSTEXPR_FUNC constexpr
 #    else
-#        define SPDLOG_CONSTEXPR_FUNC
+#        define SPDLOG_CONSTEXPR_FUNC inline
 #    endif
 #endif
 
@@ -102,7 +107,8 @@
 #    define SPDLOG_TRY try
 #    define SPDLOG_THROW(ex) throw(ex)
 #    define SPDLOG_CATCH_STD                                                                                                               \
-        catch (const std::exception &) {}
+        catch (const std::exception &)                                                                                                     \
+        {}
 #endif
 
 namespace spdlog {
@@ -134,7 +140,11 @@ using string_view_t = std::string_view;
 using memory_buf_t = std::string;
 
 template<typename... Args>
+#    if __cpp_lib_format >= 202207L
+using format_string_t = std::format_string<Args...>;
+#    else
 using format_string_t = std::string_view;
+#    endif
 
 template<class T, class Char = char>
 struct is_convertible_to_basic_format_string : std::integral_constant<bool, std::is_convertible<T, std::basic_string_view<Char>>::value>
@@ -145,7 +155,11 @@ using wstring_view_t = std::wstring_view;
 using wmemory_buf_t = std::wstring;
 
 template<typename... Args>
+#        if __cpp_lib_format >= 202207L
+using wformat_string_t = std::wformat_string<Args...>;
+#        else
 using wformat_string_t = std::wstring_view;
+#        endif
 #    endif
 #    define SPDLOG_BUF_TO_STRING(x) x
 #else // use fmt lib instead of std::format
@@ -160,12 +174,19 @@ using format_string_t = fmt::format_string<Args...>;
 template<class T>
 using remove_cvref_t = typename std::remove_cv<typename std::remove_reference<T>::type>::type;
 
+template<typename Char>
+#    if FMT_VERSION >= 90101
+using fmt_runtime_string = fmt::runtime_format_string<Char>;
+#    else
+using fmt_runtime_string = fmt::basic_runtime<Char>;
+#    endif
+
 // clang doesn't like SFINAE disabled constructor in std::is_convertible<> so have to repeat the condition from basic_format_string here,
 // in addition, fmt::basic_runtime<Char> is only convertible to basic_format_string<Char> but not basic_string_view<Char>
 template<class T, class Char = char>
 struct is_convertible_to_basic_format_string
     : std::integral_constant<bool,
-          std::is_convertible<T, fmt::basic_string_view<Char>>::value || std::is_same<remove_cvref_t<T>, fmt::basic_runtime<Char>>::value>
+          std::is_convertible<T, fmt::basic_string_view<Char>>::value || std::is_same<remove_cvref_t<T>, fmt_runtime_string<Char>>::value>
 {};
 
 #    if defined(SPDLOG_WCHAR_FILENAMES) || defined(SPDLOG_WCHAR_TO_UTF8_SUPPORT)
@@ -323,6 +344,44 @@ struct file_event_handlers
 
 namespace details {
 
+// to_string_view
+
+SPDLOG_CONSTEXPR_FUNC spdlog::string_view_t to_string_view(const memory_buf_t &buf) SPDLOG_NOEXCEPT
+{
+    return spdlog::string_view_t{buf.data(), buf.size()};
+}
+
+SPDLOG_CONSTEXPR_FUNC spdlog::string_view_t to_string_view(spdlog::string_view_t str) SPDLOG_NOEXCEPT
+{
+    return str;
+}
+
+#if defined(SPDLOG_WCHAR_FILENAMES) || defined(SPDLOG_WCHAR_TO_UTF8_SUPPORT)
+SPDLOG_CONSTEXPR_FUNC spdlog::wstring_view_t to_string_view(const wmemory_buf_t &buf) SPDLOG_NOEXCEPT
+{
+    return spdlog::wstring_view_t{buf.data(), buf.size()};
+}
+
+SPDLOG_CONSTEXPR_FUNC spdlog::wstring_view_t to_string_view(spdlog::wstring_view_t str) SPDLOG_NOEXCEPT
+{
+    return str;
+}
+#endif
+
+#ifndef SPDLOG_USE_STD_FORMAT
+template<typename T, typename... Args>
+inline fmt::basic_string_view<T> to_string_view(fmt::basic_format_string<T, Args...> fmt)
+{
+    return fmt;
+}
+#elif __cpp_lib_format >= 202207L
+template<typename T, typename... Args>
+SPDLOG_CONSTEXPR_FUNC std::basic_string_view<T> to_string_view(std::basic_format_string<T, Args...> fmt) SPDLOG_NOEXCEPT
+{
+    return fmt.get();
+}
+#endif
+
 // make_unique support for pre c++14
 
 #if __cplusplus >= 201402L // C++14 and beyond
@@ -333,7 +392,7 @@ template<bool B, class T = void>
 using enable_if_t = typename std::enable_if<B, T>::type;
 
 template<typename T, typename... Args>
-std::unique_ptr<T> make_unique(Args &&... args)
+std::unique_ptr<T> make_unique(Args &&...args)
 {
     static_assert(!std::is_array<T>::value, "arrays not supported");
     return std::unique_ptr<T>(new T(std::forward<Args>(args)...));

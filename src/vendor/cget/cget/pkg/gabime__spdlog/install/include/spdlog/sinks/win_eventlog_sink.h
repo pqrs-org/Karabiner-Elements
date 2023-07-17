@@ -210,7 +210,7 @@ private:
     HANDLE hEventLog_{NULL};
     internal::sid_t current_user_sid_;
     std::string source_;
-    WORD event_id_;
+    DWORD event_id_;
 
     HANDLE event_log_handle()
     {
@@ -241,12 +241,12 @@ protected:
         details::os::utf8_to_wstrbuf(string_view_t(formatted.data(), formatted.size()), buf);
 
         LPCWSTR lp_wstr = buf.data();
-        succeeded = static_cast<bool>(::ReportEventW(event_log_handle(), eventlog::get_event_type(msg), eventlog::get_event_category(msg), event_id_,
-            current_user_sid_.as_sid(), 1, 0, &lp_wstr, nullptr));
+        succeeded = static_cast<bool>(::ReportEventW(event_log_handle(), eventlog::get_event_type(msg), eventlog::get_event_category(msg),
+            event_id_, current_user_sid_.as_sid(), 1, 0, &lp_wstr, nullptr));
 #else
         LPCSTR lp_str = formatted.data();
-        succeeded = static_cast<bool>(::ReportEventA(event_log_handle(), eventlog::get_event_type(msg), eventlog::get_event_category(msg), event_id_,
-            current_user_sid_.as_sid(), 1, 0, &lp_str, nullptr));
+        succeeded = static_cast<bool>(::ReportEventA(event_log_handle(), eventlog::get_event_type(msg), eventlog::get_event_category(msg),
+            event_id_, current_user_sid_.as_sid(), 1, 0, &lp_str, nullptr));
 #endif
 
         if (!succeeded)
@@ -258,7 +258,7 @@ protected:
     void flush_() override {}
 
 public:
-    win_eventlog_sink(std::string const &source, WORD event_id = 1000 /* according to mscoree.dll */)
+    win_eventlog_sink(std::string const &source, DWORD event_id = 1000 /* according to mscoree.dll */)
         : source_(source)
         , event_id_(event_id)
     {

@@ -210,7 +210,7 @@ SPDLOG_INLINE void logger::flush_()
 SPDLOG_INLINE void logger::dump_backtrace_()
 {
     using details::log_msg;
-    if (tracer_.enabled())
+    if (tracer_.enabled() && !tracer_.empty())
     {
         sink_it_(log_msg{name(), level::info, "****************** Backtrace Start ******************"});
         tracer_.foreach_pop([this](const log_msg &msg) { this->sink_it_(msg); });
@@ -248,9 +248,9 @@ SPDLOG_INLINE void logger::err_handler_(const std::string &msg)
         char date_buf[64];
         std::strftime(date_buf, sizeof(date_buf), "%Y-%m-%d %H:%M:%S", &tm_time);
 #if defined(USING_R) && defined(R_R_H) // if in R environment
-        REprintf("[*** LOG ERROR #%04zu ***] [%s] [%s] {%s}\n", err_counter, date_buf, name().c_str(), msg.c_str());
+        REprintf("[*** LOG ERROR #%04zu ***] [%s] [%s] %s\n", err_counter, date_buf, name().c_str(), msg.c_str());
 #else
-        std::fprintf(stderr, "[*** LOG ERROR #%04zu ***] [%s] [%s] {%s}\n", err_counter, date_buf, name().c_str(), msg.c_str());
+        std::fprintf(stderr, "[*** LOG ERROR #%04zu ***] [%s] [%s] %s\n", err_counter, date_buf, name().c_str(), msg.c_str());
 #endif
     }
 }
