@@ -14,6 +14,7 @@ targets:
         - -L../../lib/libkrbn/build/Release
         - -lKarabinerKit
         - -lkrbn
+      OTHER_SWIFT_FLAGS: '-warnings-as-errors'
     type: library.static
     platform: macOS
     deploymentTarget: 11.0

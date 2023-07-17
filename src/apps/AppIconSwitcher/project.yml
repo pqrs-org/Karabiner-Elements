@@ -7,6 +7,7 @@ targets:
       CODE_SIGN_ENTITLEMENTS: ''
       CODE_SIGN_IDENTITY: '-'
       CODE_SIGN_STYLE: Manual
+      OTHER_SWIFT_FLAGS: '-warnings-as-errors'
     type: application
     platform: macOS
     deploymentTarget: 11.0

@@ -19,6 +19,7 @@ targets:
       OTHER_LDFLAGS:
         - -L../../lib/libkrbn/build/Release
         - -lkrbn
+      OTHER_SWIFT_FLAGS: '-warnings-as-errors'
       SWIFT_OBJC_BRIDGING_HEADER: src/Bridging-Header.h
     type: application
     platform: macOS
