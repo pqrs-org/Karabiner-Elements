@@ -2,6 +2,7 @@
 @objc
 class FingerStatusManager: NSObject {
   static let shared = FingerStatusManager()
+  static let fingerStateChanged = Notification.Name("fingerStateChanged")
 
   var entries: [FingerStatusEntry] = []
 

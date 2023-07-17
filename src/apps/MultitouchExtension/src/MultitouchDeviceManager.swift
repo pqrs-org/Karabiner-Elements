@@ -29,9 +29,9 @@ static int callback(MTDeviceRef device,
 class MultitouchDeviceManager {
   static let shared = MultitouchDeviceManager()
 
-  private var devices: [MTDeviceRef] = []
   private let notificationPort = IONotificationPortCreate(kIOMasterPortDefault)
-  private var loopSource: Unmanaged<CFRunLoopSource>?
+
+  private var devices: [MTDeviceRef] = []
   private var wakeObserver: NSObjectProtocol?
 
   func setCallback(_ set: Bool) {
@@ -77,108 +77,54 @@ class MultitouchDeviceManager {
   // IONotification
   //
 
-  /*
-- (void)releaseIterator:(io_iterator_t)iterator {
-  for (;;) {
-    io_object_t obj = IOIteratorNext(iterator);
-    if (!obj) break;
+  private func releaseIterator(_ iterator: io_iterator_t) {
+    while true {
+      let obj = IOIteratorNext(iterator)
+      if obj == 0 {
+        break
+      }
 
-    IOObjectRelease(obj);
+      IOObjectRelease(obj)
+    }
   }
-}
-
-static void relaunch(void* refcon, io_iterator_t iterator) {
-  // Relaunch when devices are plugged/unplugged.
-  [KarabinerKit relaunch];
-}
-*/
 
   func registerIONotification() {
     print("registerIONotification")
 
-    /*
+    //
+    // Relaunch if device is connected or disconnected
+    //
 
-  @synchronized(self) {
-    if (self.notificationPort) {
-      [self unregisterIONotification];
-    }
+    let match = IOServiceMatching("AppleMultitouchDevice") as NSMutableDictionary
 
-    self.notificationPort = IONotificationPortCreate(0);
-    if (!self.notificationPort) {
-      NSLog(@"[ERROR] IONotificationPortCreate");
-      return;
-    }
+    for notification in [
+      kIOMatchedNotification,
+      kIOTerminatedNotification,
+    ] {
+      do {
+        var it: io_iterator_t = 0
 
-    {
-      // ------------------------------------------------------------
-      NSMutableDictionary* match = (__bridge NSMutableDictionary*)(IOServiceMatching("AppleMultitouchDevice"));
+        let kr = IOServiceAddMatchingNotification(
+          notificationPort,
+          notification,
+          match,
+          { _, _ in
+            KarabinerKit.relaunch()
+          },
+          nil,
+          &it)
+        if kr != kIOReturnSuccess {
+          print("IOServiceAddMatchingNotification error: \(kr)")
+          return
+        }
 
-      // ----------------------------------------------------------------------
-      io_iterator_t it;
-      kern_return_t kr;
-
-      // for kIOTerminatedNotification
-      kr = IOServiceAddMatchingNotification(self.notificationPort,
-                                            kIOTerminatedNotification,
-                                            (__bridge CFMutableDictionaryRef)(match),
-                                            relaunch,
-                                            (__bridge void*)(self),
-                                            &it);
-      if (kr != kIOReturnSuccess) {
-        NSLog(@"[ERROR] IOServiceAddMatchingNotification");
-        return;
+        releaseIterator(it)
       }
-      [self releaseIterator:it];
     }
 
-    {
-      // ------------------------------------------------------------
-      NSMutableDictionary* match = (__bridge NSMutableDictionary*)(IOServiceMatching("AppleMultitouchDevice"));
-
-      // ----------------------------------------------------------------------
-      io_iterator_t it;
-      kern_return_t kr;
-
-      // for kIOMatchedNotification
-      kr = IOServiceAddMatchingNotification(self.notificationPort,
-                                            kIOMatchedNotification,
-                                            (__bridge CFMutableDictionaryRef)(match),
-                                            relaunch,
-                                            (__bridge void*)(self),
-                                            &it);
-      if (kr != kIOReturnSuccess) {
-        NSLog(@"[ERROR] IOServiceAddMatchingNotification");
-        return;
-      }
-      [self releaseIterator:it];
-    }
-
-    // ----------------------------------------------------------------------
-    self.loopSource = IONotificationPortGetRunLoopSource(self.notificationPort);
-    if (!self.loopSource) {
-      NSLog(@"[ERROR] IONotificationPortGetRunLoopSource");
-      return;
-    }
-    CFRunLoopAddSource(CFRunLoopGetCurrent(), self.loopSource, kCFRunLoopDefaultMode);
-  }
-  */
-  }
-
-  func unregisterIONotification() {
-    print("unregisterIONotification")
-
-    /*
-  @synchronized(self) {
-    if (self.notificationPort) {
-      if (self.loopSource) {
-        CFRunLoopSourceInvalidate(self.loopSource);
-        self.loopSource = nil;
-      }
-      IONotificationPortDestroy(self.notificationPort);
-      self.notificationPort = nil;
-    }
-  }
-  */
+    let runLoop = CFRunLoopGetCurrent()
+    let loopSource = IONotificationPortGetRunLoopSource(notificationPort).takeUnretainedValue()
+    CFRunLoopAddSource(runLoop, loopSource, .defaultMode)
   }
 
   //

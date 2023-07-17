@@ -59,7 +59,6 @@ private func setGrabberVariable(_ count: FingerCount, _ sync: Bool) {
 
 private func enable() {
   Task { @MainActor in
-    MultitouchDeviceManager.shared.registerIONotification()
     MultitouchDeviceManager.shared.registerWakeNotification()
 
     // sleep until devices are settled.
@@ -73,9 +72,6 @@ private func enable() {
 
 private func disable() {
   Task { @MainActor in
-    MultitouchDeviceManager.shared.unregisterIONotification()
-    MultitouchDeviceManager.shared.unregisterWakeNotification()
-
     MultitouchDeviceManager.shared.setCallback(false)
   }
 }
@@ -133,7 +129,7 @@ public class AppDelegate: NSObject, NSApplicationDelegate {
     //
 
     NotificationCenter.default.addObserver(
-      forName: Notification.Name("kFingerStateChanged"),  // TODO: Use FingerStatusManager.fingerStateChanged
+      forName: FingerStatusManager.fingerStateChanged,
       object: nil,
       queue: .main
     ) { _ in
@@ -151,6 +147,8 @@ public class AppDelegate: NSObject, NSApplicationDelegate {
       enable,
       disable,
       disable)
+
+    MultitouchDeviceManager.shared.registerIONotification()
 
     //
     // Disable App Nap
