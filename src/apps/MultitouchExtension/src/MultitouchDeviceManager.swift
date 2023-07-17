@@ -88,6 +88,7 @@ class MultitouchDeviceManager {
     }
   }
 
+  @MainActor
   func registerIONotification() {
     print("registerIONotification")
 
@@ -122,9 +123,8 @@ class MultitouchDeviceManager {
       }
     }
 
-    let runLoop = CFRunLoopGetCurrent()
     let loopSource = IONotificationPortGetRunLoopSource(notificationPort).takeUnretainedValue()
-    CFRunLoopAddSource(runLoop, loopSource, .defaultMode)
+    CFRunLoopAddSource(RunLoop.current.getCFRunLoop(), loopSource, .defaultMode)
   }
 
   //
