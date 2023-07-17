@@ -1,26 +1,11 @@
-#import "FingerStatusManager.h"
-#import "NotificationKeys.h"
-#import "PreferencesController.h"
-#import "PreferencesKeys.h"
-#import <pqrs/weakify.h>
+// TODO: Remove @objc
+@objc
+class FingerStatusManager: NSObject {
+  static let shared = FingerStatusManager()
 
-@interface FingerStatusManager ()
+  var entries: [FingerStatusEntry] = []
 
-@property NSMutableArray<FingerStatusEntry*>* entries;
-@end
-
-@implementation FingerStatusManager
-
-- (instancetype)init {
-  self = [super init];
-
-  if (self) {
-    _entries = [NSMutableArray new];
-  }
-
-  return self;
-}
-
+  /*
 + (instancetype)sharedFingerStatusManager {
   static dispatch_once_t once;
   static FingerStatusManager* manager;
@@ -231,5 +216,5 @@
     return fingerCount;
   }
 }
-
-@end
+*/
+}

@@ -1,7 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.Cocoa.XIB" version="3.0" toolsVersion="15505" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none" useAutolayout="YES">
+<document type="com.apple.InterfaceBuilder3.Cocoa.XIB" version="3.0" toolsVersion="21701" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none" useAutolayout="YES">
     <dependencies>
-        <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="15505"/>
+        <deployment identifier="macosx"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="21701"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
     <objects>
@@ -82,12 +83,13 @@
                     </menu>
                 </menuItem>
             </items>
+            <point key="canvasLocation" x="21" y="120"/>
         </menu>
         <window title="Karabiner-MultitouchExtension" allowsToolTipsWhenApplicationIsInactive="NO" autorecalculatesKeyViewLoop="NO" releasedWhenClosed="NO" visibleAtLaunch="NO" animationBehavior="default" id="371">
             <windowStyleMask key="styleMask" titled="YES" closable="YES"/>
             <windowPositionMask key="initialPositionMask" leftStrut="YES" rightStrut="YES" topStrut="YES" bottomStrut="YES"/>
             <rect key="contentRect" x="335" y="389" width="540" height="567"/>
-            <rect key="screenRect" x="0.0" y="0.0" width="1920" height="1177"/>
+            <rect key="screenRect" x="0.0" y="0.0" width="3008" height="1667"/>
             <view key="contentView" id="372">
                 <rect key="frame" x="0.0" y="0.0" width="540" height="567"/>
                 <autoresizingMask key="autoresizingMask"/>
@@ -101,7 +103,7 @@
                         <imageCell key="cell" refusesFirstResponder="YES" alignment="left" animates="YES" imageScaling="proportionallyDown" image="app" id="577"/>
                     </imageView>
                     <textField verticalHuggingPriority="750" horizontalCompressionResistancePriority="250" setsMaxLayoutWidthAtFirstLayout="YES" translatesAutoresizingMaskIntoConstraints="NO" id="581">
-                        <rect key="frame" x="58" y="533" width="285" height="18"/>
+                        <rect key="frame" x="58" y="534" width="285" height="17"/>
                         <textFieldCell key="cell" sendsActionOnEndEditing="YES" title="Karabiner-MultitouchExtension preferences" id="582">
                             <font key="font" metaFont="system" size="14"/>
                             <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
@@ -118,28 +120,28 @@
                                     <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                     <subviews>
                                         <box borderType="line" title="Basic" translatesAutoresizingMaskIntoConstraints="NO" id="580">
-                                            <rect key="frame" x="14" y="370" width="486" height="92"/>
+                                            <rect key="frame" x="14" y="364" width="486" height="98"/>
                                             <view key="contentView" id="hck-Mb-Jdu">
-                                                <rect key="frame" x="3" y="3" width="480" height="74"/>
+                                                <rect key="frame" x="4" y="5" width="478" height="78"/>
                                                 <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                                 <subviews>
                                                     <button translatesAutoresizingMaskIntoConstraints="NO" id="537">
-                                                        <rect key="frame" x="8" y="48" width="182" height="18"/>
+                                                        <rect key="frame" x="7" y="51" width="186" height="18"/>
                                                         <buttonCell key="cell" type="check" title="Start at login (Default: off)" bezelStyle="regularSquare" imagePosition="left" alignment="left" state="on" inset="2" id="538">
                                                             <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
-                                                            <font key="font" metaFont="menu"/>
+                                                            <font key="font" metaFont="system"/>
                                                         </buttonCell>
                                                         <connections>
                                                             <binding destination="687" name="value" keyPath="values.kStartAtLogin" id="AHP-Iz-fr0"/>
                                                         </connections>
                                                     </button>
                                                     <button translatesAutoresizingMaskIntoConstraints="NO" id="585">
-                                                        <rect key="frame" x="8" y="8" width="353" height="34"/>
+                                                        <rect key="frame" x="7" y="10" width="357" height="32"/>
                                                         <buttonCell key="cell" type="check" bezelStyle="regularSquare" imagePosition="left" alignment="left" state="on" inset="2" id="586">
                                                             <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
                                                             <string key="title">Hide icon in Dock (Default: off)
 (You need to restart app to enable/disable this option.)</string>
-                                                            <font key="font" metaFont="menu"/>
+                                                            <font key="font" metaFont="system"/>
                                                         </buttonCell>
                                                         <connections>
                                                             <binding destination="687" name="value" keyPath="values.kHideIconInDock" id="747"/>
@@ -158,23 +160,23 @@
                                             </constraints>
                                         </box>
                                         <box title="Area" translatesAutoresizingMaskIntoConstraints="NO" id="mOB-bD-xxj">
-                                            <rect key="frame" x="14" y="13" width="486" height="341"/>
+                                            <rect key="frame" x="14" y="13" width="486" height="335"/>
                                             <view key="contentView" id="rm9-wp-Sgt">
-                                                <rect key="frame" x="3" y="3" width="480" height="323"/>
+                                                <rect key="frame" x="4" y="5" width="478" height="315"/>
                                                 <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                                 <subviews>
                                                     <customView translatesAutoresizingMaskIntoConstraints="NO" id="595" customClass="IgnoredAreaView">
-                                                        <rect key="frame" x="107" y="72" width="266" height="180"/>
+                                                        <rect key="frame" x="106" y="68" width="266" height="180"/>
                                                         <constraints>
                                                             <constraint firstAttribute="height" constant="180" id="ddd-gv-Uql"/>
                                                             <constraint firstAttribute="width" constant="266" id="qtJ-8S-lHl"/>
                                                         </constraints>
                                                     </customView>
                                                     <customView translatesAutoresizingMaskIntoConstraints="NO" id="ox7-Ij-4b4">
-                                                        <rect key="frame" x="185" y="257" width="110" height="49"/>
+                                                        <rect key="frame" x="184" y="253" width="110" height="47"/>
                                                         <subviews>
                                                             <textField verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="614">
-                                                                <rect key="frame" x="-2" y="32" width="114" height="17"/>
+                                                                <rect key="frame" x="-2" y="31" width="114" height="16"/>
                                                                 <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" title="Ignored area (top)" id="615">
                                                                     <font key="font" metaFont="menu"/>
                                                                     <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
@@ -182,10 +184,10 @@
                                                                 </textFieldCell>
                                                             </textField>
                                                             <customView translatesAutoresizingMaskIntoConstraints="NO" id="hyV-dy-Iql">
-                                                                <rect key="frame" x="16" y="0.0" width="78" height="32"/>
+                                                                <rect key="frame" x="16" y="0.0" width="78" height="31"/>
                                                                 <subviews>
                                                                     <textField verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="596">
-                                                                        <rect key="frame" x="5" y="5" width="50" height="22"/>
+                                                                        <rect key="frame" x="5" y="5" width="50" height="21"/>
                                                                         <constraints>
                                                                             <constraint firstAttribute="width" constant="50" id="a1B-NK-Zcw"/>
                                                                         </constraints>
@@ -207,7 +209,7 @@
                                                                         </connections>
                                                                     </textField>
                                                                     <stepper horizontalHuggingPriority="750" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="611">
-                                                                        <rect key="frame" x="57" y="2" width="19" height="27"/>
+                                                                        <rect key="frame" x="57" y="1" width="19" height="28"/>
                                                                         <stepperCell key="cell" continuous="YES" alignment="left" maxValue="100" id="612"/>
                                                                         <connections>
                                                                             <action selector="draw:" target="595" id="717"/>
@@ -236,10 +238,10 @@
                                                         </constraints>
                                                     </customView>
                                                     <customView translatesAutoresizingMaskIntoConstraints="NO" id="h8j-63-TPk">
-                                                        <rect key="frame" x="21" y="129" width="81" height="66"/>
+                                                        <rect key="frame" x="20" y="126" width="81" height="63"/>
                                                         <subviews>
                                                             <textField verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="616">
-                                                                <rect key="frame" x="-2" y="32" width="85" height="34"/>
+                                                                <rect key="frame" x="-2" y="31" width="85" height="32"/>
                                                                 <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" alignment="center" id="617">
                                                                     <font key="font" metaFont="menu"/>
                                                                     <string key="title">Ignored area
@@ -249,10 +251,10 @@
                                                                 </textFieldCell>
                                                             </textField>
                                                             <customView translatesAutoresizingMaskIntoConstraints="NO" id="1LH-hf-nkH">
-                                                                <rect key="frame" x="2" y="0.0" width="78" height="32"/>
+                                                                <rect key="frame" x="2" y="0.0" width="78" height="31"/>
                                                                 <subviews>
                                                                     <textField verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="604">
-                                                                        <rect key="frame" x="5" y="5" width="50" height="22"/>
+                                                                        <rect key="frame" x="5" y="5" width="50" height="21"/>
                                                                         <constraints>
                                                                             <constraint firstAttribute="width" constant="50" id="GgQ-io-Bff"/>
                                                                         </constraints>
@@ -274,7 +276,7 @@
                                                                         </connections>
                                                                     </textField>
                                                                     <stepper horizontalHuggingPriority="750" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="628">
-                                                                        <rect key="frame" x="57" y="2" width="19" height="27"/>
+                                                                        <rect key="frame" x="57" y="2" width="19" height="28"/>
                                                                         <stepperCell key="cell" continuous="YES" alignment="left" maxValue="100" id="629"/>
                                                                         <connections>
                                                                             <action selector="draw:" target="595" id="718"/>
@@ -303,10 +305,10 @@
                                                         </constraints>
                                                     </customView>
                                                     <customView translatesAutoresizingMaskIntoConstraints="NO" id="akl-in-P0f">
-                                                        <rect key="frame" x="378" y="129" width="81" height="66"/>
+                                                        <rect key="frame" x="377" y="126" width="81" height="63"/>
                                                         <subviews>
                                                             <textField verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="618">
-                                                                <rect key="frame" x="-2" y="32" width="85" height="34"/>
+                                                                <rect key="frame" x="-2" y="31" width="85" height="32"/>
                                                                 <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" alignment="center" id="619">
                                                                     <font key="font" metaFont="menu"/>
                                                                     <string key="title">Ignored area
@@ -316,10 +318,10 @@
                                                                 </textFieldCell>
                                                             </textField>
                                                             <customView translatesAutoresizingMaskIntoConstraints="NO" id="LEv-Ik-YDa">
-                                                                <rect key="frame" x="2" y="0.0" width="78" height="32"/>
+                                                                <rect key="frame" x="2" y="0.0" width="78" height="31"/>
                                                                 <subviews>
                                                                     <textField verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="607">
-                                                                        <rect key="frame" x="5" y="5" width="50" height="22"/>
+                                                                        <rect key="frame" x="5" y="5" width="50" height="21"/>
                                                                         <constraints>
                                                                             <constraint firstAttribute="width" constant="50" id="ffu-op-YQE"/>
                                                                         </constraints>
@@ -341,7 +343,7 @@
                                                                         </connections>
                                                                     </textField>
                                                                     <stepper horizontalHuggingPriority="750" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="630">
-                                                                        <rect key="frame" x="57" y="2" width="19" height="27"/>
+                                                                        <rect key="frame" x="57" y="2" width="19" height="28"/>
                                                                         <stepperCell key="cell" continuous="YES" alignment="left" maxValue="100" id="631"/>
                                                                         <connections>
                                                                             <action selector="draw:" target="595" id="719"/>
@@ -369,10 +371,10 @@
                                                         </constraints>
                                                     </customView>
                                                     <customView translatesAutoresizingMaskIntoConstraints="NO" id="WuO-ds-VGf">
-                                                        <rect key="frame" x="173" y="18" width="134" height="49"/>
+                                                        <rect key="frame" x="172" y="16" width="134" height="47"/>
                                                         <subviews>
                                                             <textField verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="620">
-                                                                <rect key="frame" x="-2" y="32" width="138" height="17"/>
+                                                                <rect key="frame" x="-2" y="31" width="138" height="16"/>
                                                                 <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" title="Ignored area (bottom)" id="621">
                                                                     <font key="font" metaFont="menu"/>
                                                                     <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
@@ -380,10 +382,10 @@
                                                                 </textFieldCell>
                                                             </textField>
                                                             <customView translatesAutoresizingMaskIntoConstraints="NO" id="pkX-qp-m6y">
-                                                                <rect key="frame" x="28" y="0.0" width="78" height="32"/>
+                                                                <rect key="frame" x="28" y="0.0" width="78" height="31"/>
                                                                 <subviews>
                                                                     <textField verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="601">
-                                                                        <rect key="frame" x="5" y="5" width="50" height="22"/>
+                                                                        <rect key="frame" x="5" y="5" width="50" height="21"/>
                                                                         <constraints>
                                                                             <constraint firstAttribute="width" constant="50" id="cQf-aj-aoq"/>
                                                                         </constraints>
@@ -405,7 +407,7 @@
                                                                         </connections>
                                                                     </textField>
                                                                     <stepper horizontalHuggingPriority="750" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="632">
-                                                                        <rect key="frame" x="57" y="2" width="19" height="27"/>
+                                                                        <rect key="frame" x="57" y="1" width="19" height="28"/>
                                                                         <stepperCell key="cell" continuous="YES" alignment="left" maxValue="100" id="633"/>
                                                                         <connections>
                                                                             <action selector="draw:" target="595" id="720"/>
@@ -467,21 +469,21 @@
                                         <box borderType="line" title="Increase stability by relaunching at wake up" translatesAutoresizingMaskIntoConstraints="NO" id="774">
                                             <rect key="frame" x="14" y="383" width="486" height="79"/>
                                             <view key="contentView" id="wCM-Of-Yhy">
-                                                <rect key="frame" x="3" y="3" width="480" height="61"/>
+                                                <rect key="frame" x="4" y="5" width="478" height="59"/>
                                                 <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                                 <subviews>
                                                     <button translatesAutoresizingMaskIntoConstraints="NO" id="789">
-                                                        <rect key="frame" x="15" y="35" width="292" height="18"/>
+                                                        <rect key="frame" x="15" y="33" width="292" height="18"/>
                                                         <buttonCell key="cell" type="check" title="Relaunch after wake from sleep (Default: on)" bezelStyle="regularSquare" imagePosition="left" alignment="left" state="on" inset="2" id="799">
                                                             <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
-                                                            <font key="font" metaFont="menu"/>
+                                                            <font key="font" metaFont="system"/>
                                                         </buttonCell>
                                                         <connections>
                                                             <binding destination="687" name="value" keyPath="values.kRelaunchAfterWakeUpFromSleep" id="802"/>
                                                         </connections>
                                                     </button>
                                                     <textField verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="792">
-                                                        <rect key="frame" x="45" y="10" width="134" height="17"/>
+                                                        <rect key="frame" x="45" y="8" width="134" height="17"/>
                                                         <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" title="Wait before relaunch:" id="795">
                                                             <font key="font" metaFont="menu"/>
                                                             <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
@@ -489,7 +491,7 @@
                                                         </textFieldCell>
                                                     </textField>
                                                     <textField verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="790">
-                                                        <rect key="frame" x="187" y="8" width="36" height="22"/>
+                                                        <rect key="frame" x="187" y="6" width="36" height="22"/>
                                                         <constraints>
                                                             <constraint firstAttribute="width" constant="36" id="jHA-1n-r4R"/>
                                                         </constraints>
@@ -506,14 +508,14 @@
                                                         </connections>
                                                     </textField>
                                                     <stepper horizontalHuggingPriority="750" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="791">
-                                                        <rect key="frame" x="220" y="5" width="19" height="27"/>
+                                                        <rect key="frame" x="220" y="3" width="19" height="27"/>
                                                         <stepperCell key="cell" continuous="YES" alignment="left" maxValue="100" id="796"/>
                                                         <connections>
                                                             <binding destination="687" name="value" keyPath="values.kRelaunchWait" id="800"/>
                                                         </connections>
                                                     </stepper>
                                                     <textField verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="793">
-                                                        <rect key="frame" x="239" y="10" width="183" height="17"/>
+                                                        <rect key="frame" x="239" y="8" width="183" height="17"/>
                                                         <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" title="seconds (Default: 3 seconds)" id="794">
                                                             <font key="font" metaFont="menu"/>
                                                             <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
@@ -539,11 +541,11 @@
                                         <box borderType="line" title="Delay" translatesAutoresizingMaskIntoConstraints="NO" id="803">
                                             <rect key="frame" x="14" y="231" width="486" height="146"/>
                                             <view key="contentView" id="gwU-bY-aIb">
-                                                <rect key="frame" x="3" y="3" width="480" height="128"/>
+                                                <rect key="frame" x="4" y="5" width="478" height="126"/>
                                                 <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                                 <subviews>
                                                     <textField verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="807">
-                                                        <rect key="frame" x="15" y="101" width="194" height="17"/>
+                                                        <rect key="frame" x="15" y="99" width="194" height="17"/>
                                                         <constraints>
                                                             <constraint firstAttribute="width" constant="190" id="JdL-pS-6vm"/>
                                                         </constraints>
@@ -554,7 +556,7 @@
                                                         </textFieldCell>
                                                     </textField>
                                                     <textField verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="805">
-                                                        <rect key="frame" x="212" y="99" width="60" height="22"/>
+                                                        <rect key="frame" x="212" y="97" width="60" height="22"/>
                                                         <constraints>
                                                             <constraint firstAttribute="width" constant="60" id="1Om-mr-bZ1"/>
                                                         </constraints>
@@ -571,14 +573,14 @@
                                                         </connections>
                                                     </textField>
                                                     <stepper horizontalHuggingPriority="750" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="806">
-                                                        <rect key="frame" x="269" y="96" width="19" height="27"/>
+                                                        <rect key="frame" x="269" y="94" width="19" height="27"/>
                                                         <stepperCell key="cell" continuous="YES" alignment="left" increment="100" maxValue="99999" id="811"/>
                                                         <connections>
                                                             <binding destination="687" name="value" keyPath="values.kDelayBeforeTurnOn" id="O4Z-mo-A2o"/>
                                                         </connections>
                                                     </stepper>
                                                     <textField verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="hNF-BI-yOb">
-                                                        <rect key="frame" x="288" y="101" width="152" height="17"/>
+                                                        <rect key="frame" x="288" y="99" width="152" height="17"/>
                                                         <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" title="milliseconds (Default: 0)" id="N7h-F4-Ing">
                                                             <font key="font" metaFont="menu"/>
                                                             <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
@@ -586,7 +588,7 @@
                                                         </textFieldCell>
                                                     </textField>
                                                     <textField verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="808">
-                                                        <rect key="frame" x="25" y="79" width="376" height="17"/>
+                                                        <rect key="frame" x="25" y="77" width="376" height="17"/>
                                                         <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" title="(Increasing this value allows you to ignore unintended touch.)" id="809">
                                                             <font key="font" metaFont="menu"/>
                                                             <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
@@ -594,7 +596,7 @@
                                                         </textFieldCell>
                                                     </textField>
                                                     <textField verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="822">
-                                                        <rect key="frame" x="15" y="32" width="191" height="17"/>
+                                                        <rect key="frame" x="15" y="30" width="191" height="17"/>
                                                         <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" title="Finger release detection delay:" id="825">
                                                             <font key="font" metaFont="menu"/>
                                                             <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
@@ -602,7 +604,7 @@
                                                         </textFieldCell>
                                                     </textField>
                                                     <textField verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="820">
-                                                        <rect key="frame" x="212" y="30" width="60" height="22"/>
+                                                        <rect key="frame" x="212" y="28" width="60" height="22"/>
                                                         <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" selectable="YES" editable="YES" sendsActionOnEndEditing="YES" state="on" borderStyle="bezel" drawsBackground="YES" id="827">
                                                             <numberFormatter key="formatter" formatterBehavior="default10_4" numberStyle="decimal" minimumIntegerDigits="1" maximumIntegerDigits="309" maximumFractionDigits="3" id="828">
                                                                 <integer key="minimum" value="0"/>
@@ -616,14 +618,14 @@
                                                         </connections>
                                                     </textField>
                                                     <stepper horizontalHuggingPriority="750" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="821">
-                                                        <rect key="frame" x="269" y="27" width="19" height="27"/>
+                                                        <rect key="frame" x="269" y="25" width="19" height="27"/>
                                                         <stepperCell key="cell" continuous="YES" alignment="left" increment="100" maxValue="99999" id="826"/>
                                                         <connections>
                                                             <binding destination="687" name="value" keyPath="values.kDelayBeforeTurnOff" id="5cL-l0-yse"/>
                                                         </connections>
                                                     </stepper>
                                                     <textField verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="XU3-SC-qfl">
-                                                        <rect key="frame" x="288" y="32" width="152" height="17"/>
+                                                        <rect key="frame" x="288" y="30" width="152" height="17"/>
                                                         <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" title="milliseconds (Default: 0)" id="Z6c-aB-GLH">
                                                             <font key="font" metaFont="menu"/>
                                                             <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
@@ -631,7 +633,7 @@
                                                         </textFieldCell>
                                                     </textField>
                                                     <textField verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="823">
-                                                        <rect key="frame" x="25" y="10" width="385" height="17"/>
+                                                        <rect key="frame" x="25" y="8" width="385" height="17"/>
                                                         <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" title="(Increasing this value allows you to ignore unintended release.)" id="824">
                                                             <font key="font" metaFont="menu"/>
                                                             <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
@@ -679,7 +681,7 @@
                         </tabViewItems>
                     </tabView>
                     <button verticalHuggingPriority="750" imageHugsTitle="YES" translatesAutoresizingMaskIntoConstraints="NO" id="FEU-e4-BNd">
-                        <rect key="frame" x="424" y="527" width="111" height="27"/>
+                        <rect key="frame" x="431" y="527" width="105" height="27"/>
                         <buttonCell key="cell" type="push" title="Restart app" bezelStyle="rounded" image="ic_refresh_18pt" imagePosition="left" alignment="center" controlSize="small" refusesFirstResponder="YES" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="3O2-BD-OA6">
                             <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
                             <font key="font" metaFont="message" size="11"/>
@@ -707,7 +709,7 @@
             </connections>
             <point key="canvasLocation" x="132" y="-224.5"/>
         </window>
-        <customObject id="494" customClass="AppDelegate">
+        <customObject id="494" customClass="AppDelegate" customModule="Karabiner_MultitouchExtension" customModuleProvider="target">
             <connections>
                 <outlet property="preferences" destination="533" id="ZRM-zd-u7p"/>
             </connections>

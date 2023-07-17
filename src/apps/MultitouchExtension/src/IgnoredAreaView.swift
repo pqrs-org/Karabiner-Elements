@@ -1,19 +1,7 @@
-#import "IgnoredAreaView.h"
-#import "FingerStatusManager.h"
-#import "KarabinerKit/KarabinerKit.h"
-#import "NotificationKeys.h"
-#import "PreferencesController.h"
-#import <pqrs/weakify.h>
+import SwiftUI
 
-@interface IgnoredAreaView ()
-
-@property NSArray<FingerStatusEntry*>* fingerStatusEntries;
-@property KarabinerKitSmartObserverContainer* observers;
-
-@end
-
-@implementation IgnoredAreaView
-
+struct IgnoredAreaView: View {
+  /*
 - (instancetype)initWithFrame:(NSRect)frameRect {
   self = [super initWithFrame:frameRect];
 
@@ -45,11 +33,13 @@
 }
 
 - (void)updateFingerStatusEntries:(FingerStatusManager*)manager {
+  /*
   if (manager) {
     self.fingerStatusEntries = [manager copyEntries];
 
     [self setNeedsDisplay:YES];
   }
+  */
 }
 
 - (void)drawRect:(NSRect)dirtyRect {
@@ -113,5 +103,10 @@
 - (IBAction)draw:(id)sender {
   [self setNeedsDisplay:YES];
 }
+*/
 
-@end
+  var body: some View {
+    ZStack {
+    }
+  }
+}

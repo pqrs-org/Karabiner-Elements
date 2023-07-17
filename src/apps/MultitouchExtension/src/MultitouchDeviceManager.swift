@@ -1,9 +1,4 @@
-#import "MultitouchDeviceManager.h"
-#import "FingerStatusManager.h"
-#import "KarabinerKit/KarabinerKit.h"
-#import "PreferencesKeys.h"
-#import <pqrs/weakify.h>
-
+/*
 //
 // Multitouch callback
 //
@@ -28,41 +23,19 @@ static int callback(MTDeviceRef device,
 
   return 0;
 }
+*/
 
-@interface MultitouchDeviceManager ()
+// TODO: Remove @objc
+class MultitouchDeviceManager {
+  static let shared = MultitouchDeviceManager()
 
-@property(copy) NSArray* devices;
-@property IONotificationPortRef notificationPort;
-@property CFRunLoopSourceRef loopSource;
-@property KarabinerKitSmartObserverContainer* observers;
+  private var devices: [MTDeviceRef] = []
+  private let notificationPort = IONotificationPortCreate(kIOMasterPortDefault)
+  private var loopSource: Unmanaged<CFRunLoopSource>?
+  private var wakeObserver: NSObjectProtocol?
 
-@end
-
-@implementation MultitouchDeviceManager
-
-- (instancetype)init {
-  self = [super init];
-
-  if (self) {
-    _devices = nil;
-    _observers = [KarabinerKitSmartObserverContainer new];
-  }
-
-  return self;
-}
-
-+ (instancetype)sharedMultitouchDeviceManager {
-  static dispatch_once_t once;
-  static MultitouchDeviceManager* manager;
-
-  dispatch_once(&once, ^{
-    manager = [MultitouchDeviceManager new];
-  });
-
-  return manager;
-}
-
-- (void)setCallback:(BOOL)set {
+  func setCallback(_ set: Bool) {
+    /*
   @synchronized(self) {
     //
     // Unset callback (even if set is YES.)
@@ -97,12 +70,14 @@ static int callback(MTDeviceRef device,
       }
     }
   }
-}
+  */
+  }
 
-//
-// IONotification
-//
+  //
+  // IONotification
+  //
 
+  /*
 - (void)releaseIterator:(io_iterator_t)iterator {
   for (;;) {
     io_object_t obj = IOIteratorNext(iterator);
@@ -116,9 +91,12 @@ static void relaunch(void* refcon, io_iterator_t iterator) {
   // Relaunch when devices are plugged/unplugged.
   [KarabinerKit relaunch];
 }
+*/
 
-- (void)registerIONotification {
-  NSLog(@"registerIONotification");
+  func registerIONotification() {
+    print("registerIONotification")
+
+    /*
 
   @synchronized(self) {
     if (self.notificationPort) {
@@ -183,11 +161,13 @@ static void relaunch(void* refcon, io_iterator_t iterator) {
     }
     CFRunLoopAddSource(CFRunLoopGetCurrent(), self.loopSource, kCFRunLoopDefaultMode);
   }
-}
+  */
+  }
 
-- (void)unregisterIONotification {
-  NSLog(@"unregisterIONotification");
+  func unregisterIONotification() {
+    print("unregisterIONotification")
 
+    /*
   @synchronized(self) {
     if (self.notificationPort) {
       if (self.loopSource) {
@@ -198,13 +178,15 @@ static void relaunch(void* refcon, io_iterator_t iterator) {
       self.notificationPort = nil;
     }
   }
-}
+  */
+  }
 
-//
-// WakeNotification
-//
+  //
+  // WakeNotification
+  //
 
-- (void)registerWakeNotification {
+  func registerWakeNotification() {
+    /*
   @weakify(self);
 
   NSNotificationCenter* center = [[NSWorkspace sharedWorkspace] notificationCenter];
@@ -235,10 +217,13 @@ static void relaunch(void* refcon, io_iterator_t iterator) {
                          }];
 
   [self.observers addObserver:o notificationCenter:center];
-}
+  */
+  }
 
-- (void)unregisterWakeNotification {
-  self.observers = [KarabinerKitSmartObserverContainer new];
+  func unregisterWakeNotification() {
+    if let o = wakeObserver {
+      NotificationCenter.default.removeObserver(o)
+      wakeObserver = nil
+    }
+  }
 }
-
-@end
