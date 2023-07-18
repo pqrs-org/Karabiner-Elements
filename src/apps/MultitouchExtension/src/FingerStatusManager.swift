@@ -26,6 +26,8 @@ class FingerStatusManager: NSObject {
     timestamp: Double,
     frame: Int32
   ) {
+    let targetArea = UserSettings.shared.targetArea
+
     //
     // Update physical touched fingers
     //
@@ -35,54 +37,45 @@ class FingerStatusManager: NSObject {
       //   4: touched
       //   1-3,5-7: near
       let touched = (finger.state == 4)
-      print(touched)
 
-      /*
-      FingerStatusEntry* e = [self findEntry:device identifier:identifier];
-      if (!e) {
-        if (!touched) {
-          continue;
-        } else {
-          e = [[FingerStatusEntry alloc] initWithDevice:device identifier:identifier];
-          [self.entries addObject:e];
-        }
-      }
-
-      e.frame = frame;
-      e.point = NSMakePoint(data[i].normalized.position.x, data[i].normalized.position.y);
+      let e = getEntry(device: device, identifier: Int(finger.identifier))
+      e.frame = Int(frame)
+      e.point = NSMakePoint(
+        CGFloat(finger.normalized.position.x),
+        CGFloat(finger.normalized.position.y))
 
       // Note:
       // Once the point in targetArea, keep `ignored == NO`.
-      if (e.ignored) {
-        NSRect targetArea = [PreferencesController makeTargetArea];
-        if (NSPointInRect(e.point, targetArea)) {
-          e.ignored = NO;
+      if e.ignored {
+        if NSPointInRect(e.point, targetArea) {
+          e.ignored = false
         }
       }
 
-      if (e.touchedPhysically != touched) {
-        e.touchedPhysically = touched;
+      if e.touchedPhysically != touched {
+        e.touchedPhysically = touched
 
+        /*
         [self setFingerStatusEntryDelayTimer:e touched:touched];
+        */
       }
-      */
     }
 
     //
     // Update physical untouched fingers
     //
 
-    /*
-    for (FingerStatusEntry* e in self.entries) {
-      if (e.device == device &&
-          e.frame != frame &&
-          e.touchedPhysically) {
-        e.touchedPhysically = NO;
+    for e in entries {
+      if e.device == device && e.frame != frame && e.touchedPhysically {
+        e.touchedPhysically = false
 
+        /*
         [self setFingerStatusEntryDelayTimer:e touched:NO];
+        */
       }
+
+      print("frame:\(frame) identifier:\(e.identifier) touchedPhysically:\(e.touchedPhysically) ignored:\(e.ignored)")
     }
-    */
   }
 
   /*
@@ -107,20 +100,22 @@ class FingerStatusManager: NSObject {
                                                         object:self];
   });
 }
+*/
 
-// Note: This method is called in @synchronized(self)
-- (FingerStatusEntry*)findEntry:(MTDeviceRef)device
-                     identifier:(int)identifier {
-  for (FingerStatusEntry* e in self.entries) {
-    if (e.device == device &&
-        e.identifier == identifier) {
-      return e;
+  @MainActor
+  private func getEntry(device: MTDevice, identifier: Int) -> FingerStatusEntry {
+    for e in entries {
+      if e.device == device && e.identifier == identifier {
+        return e
+      }
     }
+
+    let e = FingerStatusEntry(device: device, identifier: identifier)
+    entries.append(e)
+    return e
   }
 
-  return nil;
-}
-
+  /*
 // Note: This method is called in @synchronized(self)
 - (void)setFingerStatusEntryDelayTimer:(FingerStatusEntry*)entry
                                touched:(BOOL)touched {
