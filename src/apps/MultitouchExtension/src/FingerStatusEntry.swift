@@ -9,7 +9,7 @@ class FingerStatusEntry {
   // Unique keys
   //
 
-  var device: MTDeviceRef
+  var device: MTDevice
   var identifier = 0
 
   //
@@ -38,7 +38,7 @@ class FingerStatusEntry {
   // Methods
   //
 
-  init(device: MTDeviceRef, identifier: Int) {
+  init(device: MTDevice, identifier: Int) {
     self.device = device
     self.identifier = identifier
     /*

@@ -4,7 +4,7 @@ class FingerStatusManager: NSObject {
   static let shared = FingerStatusManager()
   static let fingerStateChanged = Notification.Name("fingerStateChanged")
 
-  var entries: [FingerStatusEntry] = []
+  private var entries: [FingerStatusEntry] = []
 
   /*
 + (instancetype)sharedFingerStatusManager {
@@ -17,12 +17,15 @@ class FingerStatusManager: NSObject {
 
   return manager;
 }
+*/
 
-- (void)update:(MTDeviceRef)device
-          data:(Finger*)data
-       fingers:(int)fingers
-     timestamp:(double)timestamp
-         frame:(int)frame {
+  func update(
+    device: MTDevice,
+    data: [Finger],
+    timestamp: Double,
+    frame: Int32
+  ) {
+    /*
   @synchronized(self) {
     //
     // Update physical touched fingers
@@ -83,7 +86,10 @@ class FingerStatusManager: NSObject {
         [self setFingerStatusEntryDelayTimer:e touched:NO];
       }
     }
+    */
   }
+
+  /*
 
   //
   // Post notifications

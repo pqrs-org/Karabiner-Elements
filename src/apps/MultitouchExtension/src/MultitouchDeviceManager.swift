@@ -1,76 +1,68 @@
-/*
-//
-// Multitouch callback
-//
+private func callback(
+  _ device: MTDevice?,
+  _ data: UnsafeMutablePointer<Finger>?,
+  _ fingers: Int32,
+  _ timestamp: Double,
+  _ frame: Int32
+) -> Int32 {
+  print(fingers)
 
-static int callback(MTDeviceRef device,
-                    Finger* data,
-                    int fingers,
-                    double timestamp,
-                    int frame) {
-  if (!data) {
-    fingers = 0;
+  var fingerData: [Finger] = []
+  var fingerCount = Int(fingers)
+
+  if data == nil {
+    fingerCount = 0
+  } else {
+    fingerData = Array(UnsafeBufferPointer(start: data, count: fingerCount))
   }
 
-  if (device) {
-    FingerStatusManager* manager = [FingerStatusManager sharedFingerStatusManager];
-    [manager update:device
-               data:data
-            fingers:fingers
-          timestamp:timestamp
-              frame:frame];
+  if let device = device {
+    FingerStatusManager.shared.update(
+      device: device,
+      data: fingerData,
+      timestamp: timestamp,
+      frame: frame)
   }
 
-  return 0;
+  return 0
 }
-*/
 
-// TODO: Remove @objc
 class MultitouchDeviceManager {
   static let shared = MultitouchDeviceManager()
 
   private let notificationPort = IONotificationPortCreate(kIOMasterPortDefault)
 
-  private var devices: [MTDeviceRef] = []
+  private var devices: [MTDevice] = []
   private var wakeObserver: NSObjectProtocol?
 
-  func setCallback(_ set: Bool) {
-    /*
-  @synchronized(self) {
+  @MainActor
+  func setCallback(_ register: Bool) {
+    print("setCallback \(register)")
+
     //
-    // Unset callback (even if set is YES.)
+    // Unset callback first
     //
 
-    if (self.devices) {
-      for (NSUInteger i = 0; i < self.devices.count; ++i) {
-        MTDeviceRef device = (__bridge MTDeviceRef)(self.devices[i]);
-        if (!device) continue;
-
-        MTDeviceStop(device, 0);
-        MTUnregisterContactFrameCallback(device, callback);
-      }
-
-      self.devices = nil;
+    for device in devices {
+      MTDeviceStop(device, 0)
+      MTUnregisterContactFrameCallback(device, callback)
     }
 
+    devices.removeAll()
+
     //
-    // Set callback if needed
+    // Set callbacodk
     //
 
-    if (set) {
-      self.devices = (NSArray*)CFBridgingRelease(MTDeviceCreateList());
-      if (self.devices) {
-        for (NSUInteger i = 0; i < self.devices.count; ++i) {
-          MTDeviceRef device = (__bridge MTDeviceRef)(self.devices[i]);
-          if (!device) continue;
+    if register {
+      devices = (MTDeviceCreateList().takeUnretainedValue() as? [MTDevice]) ?? []
 
-          MTRegisterContactFrameCallback(device, callback);
-          MTDeviceStart(device, 0);
-        }
+      for device in devices {
+        print("start")
+        MTRegisterContactFrameCallback(device, callback)
+        MTDeviceStart(device, 0)
       }
     }
-  }
-  */
   }
 
   //
