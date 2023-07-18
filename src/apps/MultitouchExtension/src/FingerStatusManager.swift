@@ -73,34 +73,14 @@ class FingerStatusManager: NSObject {
         [self setFingerStatusEntryDelayTimer:e touched:NO];
         */
       }
-
-      print("frame:\(frame) identifier:\(e.identifier) touchedPhysically:\(e.touchedPhysically) ignored:\(e.ignored)")
     }
+
+    //
+    // Post notifications
+    //
+
+    NotificationCenter.default.post(name: FingerStatusManager.fingerStateChanged, object: nil)
   }
-
-  /*
-
-  //
-  // Post notifications
-  //
-  // Note:
-  // This method might be called on a background thread.
-  // We use dispatch_async to ensure the notification is post on the main thread
-  // in order to avoid a deadlock at quitting app.
-  //
-
-  @weakify(self);
-  dispatch_async(dispatch_get_main_queue(), ^{
-    @strongify(self);
-    if (!self) {
-      return;
-    }
-
-    [[NSNotificationCenter defaultCenter] postNotificationName:kFingerStateChanged
-                                                        object:self];
-  });
-}
-*/
 
   @MainActor
   private func getEntry(device: MTDevice, identifier: Int) -> FingerStatusEntry {
