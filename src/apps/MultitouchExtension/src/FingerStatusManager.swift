@@ -19,31 +19,25 @@ class FingerStatusManager: NSObject {
 }
 */
 
+  @MainActor
   func update(
     device: MTDevice,
-    data: [Finger],
+    fingers: [Finger],
     timestamp: Double,
     frame: Int32
   ) {
-    /*
-  @synchronized(self) {
     //
     // Update physical touched fingers
     //
 
-    for (int i = 0; i < fingers; ++i) {
-      int identifier = data[i].identifier;
-
+    for finger in fingers {
       // state values:
       //   4: touched
       //   1-3,5-7: near
-      BOOL touched = NO;
-      if (data[i].state == 4) {
-        touched = YES;
-      } else {
-        touched = NO;
-      }
+      let touched = (finger.state == 4)
+      print(touched)
 
+      /*
       FingerStatusEntry* e = [self findEntry:device identifier:identifier];
       if (!e) {
         if (!touched) {
@@ -71,12 +65,14 @@ class FingerStatusManager: NSObject {
 
         [self setFingerStatusEntryDelayTimer:e touched:touched];
       }
+      */
     }
 
     //
     // Update physical untouched fingers
     //
 
+    /*
     for (FingerStatusEntry* e in self.entries) {
       if (e.device == device &&
           e.frame != frame &&

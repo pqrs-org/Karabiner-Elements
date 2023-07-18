@@ -1,27 +1,23 @@
 private func callback(
   _ device: MTDevice?,
-  _ data: UnsafeMutablePointer<Finger>?,
-  _ fingers: Int32,
+  _ fingerData: UnsafeMutablePointer<Finger>?,
+  _ fingerCount: Int32,
   _ timestamp: Double,
   _ frame: Int32
 ) -> Int32 {
-  print(fingers)
-
-  var fingerData: [Finger] = []
-  var fingerCount = Int(fingers)
-
-  if data == nil {
-    fingerCount = 0
-  } else {
-    fingerData = Array(UnsafeBufferPointer(start: data, count: fingerCount))
-  }
+  let fingers =
+    fingerData != nil
+    ? Array(UnsafeBufferPointer(start: fingerData, count: Int(fingerCount)))
+    : []
 
   if let device = device {
-    FingerStatusManager.shared.update(
-      device: device,
-      data: fingerData,
-      timestamp: timestamp,
-      frame: frame)
+    Task { @MainActor in
+      FingerStatusManager.shared.update(
+        device: device,
+        fingers: fingers,
+        timestamp: timestamp,
+        frame: frame)
+    }
   }
 
   return 0
@@ -58,7 +54,6 @@ class MultitouchDeviceManager {
       devices = (MTDeviceCreateList().takeUnretainedValue() as? [MTDevice]) ?? []
 
       for device in devices {
-        print("start")
         MTRegisterContactFrameCallback(device, callback)
         MTDeviceStart(device, 0)
       }
