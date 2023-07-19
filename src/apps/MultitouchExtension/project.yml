@@ -27,6 +27,10 @@ targets:
         compilerFlags:
           - -Wall
           - -Werror
+      - path: ../share/swift
+        compilerFlags:
+          - -Wall
+          - -Werror
       - path: Resources
         excludes:
           - .gitignore

@@ -82,8 +82,6 @@ private func disable() {
 
 @NSApplicationMain
 public class AppDelegate: NSObject, NSApplicationDelegate {
-  @IBOutlet var preferences: PreferencesController!
-
   private var activity: NSObjectProtocol?
 
   public func applicationDidFinishLaunching(_: Notification) {
@@ -121,7 +119,7 @@ public class AppDelegate: NSObject, NSApplicationDelegate {
     //
 
     if CommandLine.arguments.contains("--show-ui") {
-      preferences.show()
+      SettingsWindowManager.shared.show()
     }
 
     //
@@ -181,7 +179,7 @@ public class AppDelegate: NSObject, NSApplicationDelegate {
     _: NSApplication,
     hasVisibleWindows _: Bool
   ) -> Bool {
-    preferences.show()
+    SettingsWindowManager.shared.show()
     return true
   }
 }
