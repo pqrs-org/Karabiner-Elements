@@ -30,7 +30,7 @@ struct ContentView: View {
         VStack(alignment: .leading, spacing: 0) {
           if settings.unsafeUI {
             Button(action: {
-              contentViewStates.navigationSelection = NavigationTag.pro
+              contentViewStates.navigationSelection = .pro
             }) {
               HStack {
                 Spacer()
@@ -52,43 +52,39 @@ struct ContentView: View {
 
           Group {
             Button(action: {
-              contentViewStates.navigationSelection = NavigationTag.simpleModifications
+              contentViewStates.navigationSelection = .simpleModifications
             }) {
               SidebarLabelView(text: "Simple Modifications", systemImage: "gearshape", padding: 2.0)
             }
             .sidebarButtonStyle(
-              selected: contentViewStates.navigationSelection
-                == NavigationTag.simpleModifications)
+              selected: contentViewStates.navigationSelection == .simpleModifications)
 
             Button(action: {
-              contentViewStates.navigationSelection = NavigationTag.functionKeys
+              contentViewStates.navigationSelection = .functionKeys
             }) {
               SidebarLabelView(
                 text: "Function Keys", systemImage: "speaker.wave.2.circle", padding: 2.0)
             }
             .sidebarButtonStyle(
-              selected: contentViewStates.navigationSelection == NavigationTag.functionKeys
+              selected: contentViewStates.navigationSelection == .functionKeys
             )
 
             Button(action: {
-              contentViewStates.navigationSelection = NavigationTag.complexModifications
+              contentViewStates.navigationSelection = .complexModifications
             }) {
               SidebarLabelView(
                 text: "Complex Modifications", systemImage: "gearshape.2", padding: 2.0)
             }
             .sidebarButtonStyle(
-              selected: contentViewStates.navigationSelection
-                == NavigationTag.complexModifications)
+              selected: contentViewStates.navigationSelection == .complexModifications)
 
             Button(action: {
-              contentViewStates.navigationSelection =
-                NavigationTag.complexModificationsAdvanced
+              contentViewStates.navigationSelection = .complexModificationsAdvanced
             }) {
               SidebarLabelView(text: "Parameters", systemImage: "dial.min", padding: 2.0)
             }
             .sidebarButtonStyle(
-              selected: contentViewStates.navigationSelection
-                == NavigationTag.complexModificationsAdvanced)
+              selected: contentViewStates.navigationSelection == .complexModificationsAdvanced)
           }
 
           Divider()
@@ -96,37 +92,36 @@ struct ContentView: View {
 
           Group {
             Button(action: {
-              contentViewStates.navigationSelection = NavigationTag.devices
+              contentViewStates.navigationSelection = .devices
             }) {
               SidebarLabelView(text: "Devices", systemImage: "keyboard", padding: 2.0)
             }
             .sidebarButtonStyle(
-              selected: contentViewStates.navigationSelection == NavigationTag.devices)
+              selected: contentViewStates.navigationSelection == .devices)
 
             Button(action: {
-              contentViewStates.navigationSelection = NavigationTag.virtualKeyboard
+              contentViewStates.navigationSelection = .virtualKeyboard
             }) {
               SidebarLabelView(text: "Virtual Keyboard", systemImage: "puzzlepiece", padding: 2.0)
             }
             .sidebarButtonStyle(
-              selected: contentViewStates.navigationSelection
-                == NavigationTag.virtualKeyboard)
+              selected: contentViewStates.navigationSelection == .virtualKeyboard)
 
             Button(action: {
-              contentViewStates.navigationSelection = NavigationTag.profiles
+              contentViewStates.navigationSelection = .profiles
             }) {
               SidebarLabelView(text: "Profiles", systemImage: "person.3", padding: 2.0)
             }
             .sidebarButtonStyle(
-              selected: contentViewStates.navigationSelection == NavigationTag.profiles)
+              selected: contentViewStates.navigationSelection == .profiles)
 
             Button(action: {
-              contentViewStates.navigationSelection = NavigationTag.ui
+              contentViewStates.navigationSelection = .ui
             }) {
               SidebarLabelView(text: "UI", systemImage: "switch.2", padding: 2.0)
             }
             .sidebarButtonStyle(
-              selected: contentViewStates.navigationSelection == NavigationTag.ui)
+              selected: contentViewStates.navigationSelection == .ui)
           }
 
           Divider()
@@ -134,28 +129,28 @@ struct ContentView: View {
 
           Group {
             Button(action: {
-              contentViewStates.navigationSelection = NavigationTag.update
+              contentViewStates.navigationSelection = .update
             }) {
               SidebarLabelView(text: "Update", systemImage: "network", padding: 2.0)
             }
             .sidebarButtonStyle(
-              selected: contentViewStates.navigationSelection == NavigationTag.update)
+              selected: contentViewStates.navigationSelection == .update)
 
             Button(action: {
-              contentViewStates.navigationSelection = NavigationTag.misc
+              contentViewStates.navigationSelection = .misc
             }) {
               SidebarLabelView(text: "Misc", systemImage: "leaf", padding: 2.0)
             }
             .sidebarButtonStyle(
-              selected: contentViewStates.navigationSelection == NavigationTag.misc)
+              selected: contentViewStates.navigationSelection == .misc)
 
             Button(action: {
-              contentViewStates.navigationSelection = NavigationTag.uninstall
+              contentViewStates.navigationSelection = .uninstall
             }) {
               SidebarLabelView(text: "Uninstall", systemImage: "trash", padding: 2.0)
             }
             .sidebarButtonStyle(
-              selected: contentViewStates.navigationSelection == NavigationTag.uninstall)
+              selected: contentViewStates.navigationSelection == .uninstall)
           }
 
           Divider()
@@ -163,28 +158,28 @@ struct ContentView: View {
 
           Group {
             Button(action: {
-              contentViewStates.navigationSelection = NavigationTag.log
+              contentViewStates.navigationSelection = .log
             }) {
               SidebarLabelView(text: "Log", systemImage: "doc.plaintext", padding: 2.0)
             }
             .sidebarButtonStyle(
-              selected: contentViewStates.navigationSelection == NavigationTag.log)
+              selected: contentViewStates.navigationSelection == .log)
 
             Button(action: {
-              contentViewStates.navigationSelection = NavigationTag.pro
+              contentViewStates.navigationSelection = .pro
             }) {
               SidebarLabelView(text: "Pro", systemImage: "flame", padding: 2.0)
             }
             .sidebarButtonStyle(
-              selected: contentViewStates.navigationSelection == NavigationTag.pro)
+              selected: contentViewStates.navigationSelection == .pro)
 
             Button(action: {
-              contentViewStates.navigationSelection = NavigationTag.action
+              contentViewStates.navigationSelection = .action
             }) {
               SidebarLabelView(text: "Quit, Restart", systemImage: "bolt.circle", padding: 2.0)
             }
             .sidebarButtonStyle(
-              selected: contentViewStates.navigationSelection == NavigationTag.action)
+              selected: contentViewStates.navigationSelection == .action)
           }
 
           Spacer()
@@ -207,33 +202,33 @@ struct ContentView: View {
           }
 
           switch contentViewStates.navigationSelection {
-          case NavigationTag.simpleModifications:
+          case .simpleModifications:
             SimpleModificationsView()
-          case NavigationTag.functionKeys:
+          case .functionKeys:
             FunctionKeysView()
-          case NavigationTag.complexModifications:
+          case .complexModifications:
             ComplexModificationsView()
-          case NavigationTag.complexModificationsAdvanced:
+          case .complexModificationsAdvanced:
             ComplexModificationsAdvancedView()
-          case NavigationTag.devices:
+          case .devices:
             DevicesView()
-          case NavigationTag.virtualKeyboard:
+          case .virtualKeyboard:
             VirtualKeyboardView()
-          case NavigationTag.profiles:
+          case .profiles:
             ProfilesView()
-          case NavigationTag.ui:
+          case .ui:
             UIView()
-          case NavigationTag.update:
+          case .update:
             UpdateView()
-          case NavigationTag.misc:
+          case .misc:
             MiscView()
-          case NavigationTag.uninstall:
+          case .uninstall:
             UninstallView()
-          case NavigationTag.log:
+          case .log:
             LogView()
-          case NavigationTag.pro:
+          case .pro:
             ProView()
-          case NavigationTag.action:
+          case .action:
             ActionView()
           }
         }
