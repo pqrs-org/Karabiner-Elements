@@ -1,23 +1,13 @@
+import Combine
+
 // TODO: Remove @objc
 @objc
-class FingerStatusManager: NSObject {
+class FingerStatusManager: NSObject, ObservableObject {
   static let shared = FingerStatusManager()
   static let fingerStateChanged = Notification.Name("fingerStateChanged")
 
-  private var entries: [FingerStatusEntry] = []
-
-  /*
-+ (instancetype)sharedFingerStatusManager {
-  static dispatch_once_t once;
-  static FingerStatusManager* manager;
-
-  dispatch_once(&once, ^{
-    manager = [FingerStatusManager new];
-  });
-
-  return manager;
-}
-*/
+  private(set) var objectWillChange = ObservableObjectPublisher()
+  private(set) var entries: [FingerStatusEntry] = []
 
   @MainActor
   func update(
@@ -73,6 +63,8 @@ class FingerStatusManager: NSObject {
         [self setFingerStatusEntryDelayTimer:e touched:NO];
         */
       }
+
+      //print("\(e.touchedPhysically) \(e.point)")
     }
 
     //
@@ -80,6 +72,8 @@ class FingerStatusManager: NSObject {
     //
 
     NotificationCenter.default.post(name: FingerStatusManager.fingerStateChanged, object: nil)
+
+    objectWillChange.send()
   }
 
   @MainActor

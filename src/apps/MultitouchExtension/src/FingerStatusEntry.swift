@@ -4,7 +4,9 @@ enum FingerStatusEntryTimerMode {
   case untouched
 }
 
-class FingerStatusEntry {
+class FingerStatusEntry: Identifiable {
+  public var id = UUID()
+
   //
   // Unique keys
   //
