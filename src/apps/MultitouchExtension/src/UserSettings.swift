@@ -32,28 +32,28 @@ final class UserSettings: ObservableObject {
   }
 
   @UserDefault("kIgnoredAreaTop", defaultValue: 0)
-  var ignoredAreaTop: Double {
+  var ignoredAreaTop: Int {
     willSet {
       objectWillChange.send()
     }
   }
 
   @UserDefault("kIgnoredAreaBottom", defaultValue: 0)
-  var ignoredAreaBottom: Double {
+  var ignoredAreaBottom: Int {
     willSet {
       objectWillChange.send()
     }
   }
 
   @UserDefault("kIgnoredAreaLeft", defaultValue: 0)
-  var ignoredAreaLeft: Double {
+  var ignoredAreaLeft: Int {
     willSet {
       objectWillChange.send()
     }
   }
 
   @UserDefault("kIgnoredAreaRight", defaultValue: 0)
-  var ignoredAreaRight: Double {
+  var ignoredAreaRight: Int {
     willSet {
       objectWillChange.send()
     }
@@ -74,10 +74,10 @@ final class UserSettings: ObservableObject {
   }
 
   var targetArea: NSRect {
-    let top = ignoredAreaTop / 100
-    let bottom = ignoredAreaBottom / 100
-    let left = ignoredAreaLeft / 100
-    let right = ignoredAreaRight / 100
+    let top = Double(ignoredAreaTop) / 100
+    let bottom = Double(ignoredAreaBottom) / 100
+    let left = Double(ignoredAreaLeft) / 100
+    let right = Double(ignoredAreaRight) / 100
 
     return NSMakeRect(
       left,
