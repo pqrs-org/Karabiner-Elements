@@ -131,10 +131,7 @@ public class AppDelegate: NSObject, NSApplicationDelegate {
       object: nil,
       queue: .main
     ) { _ in
-      /*
-                              FingerStatusManager* manager = [FingerStatusManager sharedFingerStatusManager];
-                              setGrabberVariable([manager createFingerCount], false);
-                              */
+      setGrabberVariable(FingerStatusManager.shared.fingerCount, false)
     }
 
     //
@@ -166,11 +163,7 @@ public class AppDelegate: NSObject, NSApplicationDelegate {
 
     MultitouchDeviceManager.shared.setCallback(false)
 
-    /*
-    FingerCount fingerCount;
-    memset(&fingerCount, 0, sizeof(fingerCount));
-    setGrabberVariable(fingerCount, true);
-    */
+    setGrabberVariable(FingerCount(), true)
 
     libkrbn_terminate()
   }

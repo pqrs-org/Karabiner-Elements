@@ -143,50 +143,48 @@ class FingerStatusManager: NSObject, ObservableObject {
     return [[NSArray alloc] initWithArray:self.entries copyItems:YES];
   }
 }
+*/
 
-- (FingerCount)createFingerCount {
-  @synchronized(self) {
-    FingerCount fingerCount;
-    memset(&fingerCount, 0, sizeof(fingerCount));
+  @MainActor
+  var fingerCount: FingerCount {
+    var fingerCount = FingerCount()
 
-    for (FingerStatusEntry* e in self.entries) {
-      if (e.ignored) {
-        continue;
+    for e in entries {
+      if e.ignored {
+        continue
       }
 
-      if (!e.touchedFixed) {
-        continue;
+      if !e.touchedFixed {
+        continue
       }
 
-      if (e.point.x < 0.5) {
-        ++fingerCount.leftHalfAreaCount;
-        if (e.point.x < 0.25) {
-          ++fingerCount.leftQuarterAreaCount;
+      if e.point.x < 0.5 {
+        fingerCount.leftHalfAreaCount += 1
+        if e.point.x < 0.25 {
+          fingerCount.leftQuarterAreaCount += 1
         }
       } else {
-        ++fingerCount.rightHalfAreaCount;
-        if (e.point.x > 0.75) {
-          ++fingerCount.rightQuarterAreaCount;
+        fingerCount.rightHalfAreaCount += 1
+        if e.point.x > 0.75 {
+          fingerCount.rightQuarterAreaCount += 1
         }
       }
 
-      if (e.point.y < 0.5) {
-        ++fingerCount.lowerHalfAreaCount;
-        if (e.point.y < 0.25) {
-          ++fingerCount.lowerQuarterAreaCount;
+      if e.point.y < 0.5 {
+        fingerCount.lowerHalfAreaCount += 1
+        if e.point.y < 0.25 {
+          fingerCount.lowerQuarterAreaCount += 1
         }
       } else {
-        ++fingerCount.upperHalfAreaCount;
-        if (e.point.y > 0.75) {
-          ++fingerCount.upperQuarterAreaCount;
+        fingerCount.upperHalfAreaCount += 1
+        if e.point.y > 0.75 {
+          fingerCount.upperQuarterAreaCount += 1
         }
       }
 
-      ++fingerCount.totalCount;
+      fingerCount.totalCount += 1
     }
 
-    return fingerCount;
+    return fingerCount
   }
-}
-*/
 }
