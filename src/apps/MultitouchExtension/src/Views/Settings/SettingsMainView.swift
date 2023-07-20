@@ -11,8 +11,6 @@ struct SettingsMainView: View {
       HStack {
         Text("SettingsMainView")
 
-        Text("\(userSettings.targetArea.origin.y)")
-
         Spacer()
       }
 
@@ -39,7 +37,7 @@ struct SettingsMainView: View {
                 let diameter = 10.0
 
                 Circle()
-                  .fill(Color.red)
+                  .stroke(entry.ignored ? Color.black : Color.red, style: StrokeStyle(lineWidth: 2))
                   .frame(width: diameter)
                   .padding(.leading, areaSize.width * entry.point.x - (diameter / 2))
                   .padding(.top, areaSize.height * (1.0 - entry.point.y) - (diameter / 2))

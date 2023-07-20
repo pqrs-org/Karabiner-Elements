@@ -2,79 +2,12 @@ import SwiftUI
 
 struct IgnoredAreaView: View {
   /*
-- (instancetype)initWithFrame:(NSRect)frameRect {
-  self = [super initWithFrame:frameRect];
-
-  if (self) {
-    _fingerStatusEntries = [NSArray new];
-    _observers = [KarabinerKitSmartObserverContainer new];
-
-    @weakify(self);
-    {
-      NSNotificationCenter* center = [NSNotificationCenter defaultCenter];
-      id o = [center addObserverForName:kFingerStateChanged
-                                 object:nil
-                                  queue:[NSOperationQueue mainQueue]
-                             usingBlock:^(NSNotification* note) {
-                               @strongify(self);
-                               if (!self) {
-                                 return;
-                               }
-
-                               if (self.window.visible) {
-                                 [self updateFingerStatusEntries:note.object];
-                               }
-                             }];
-      [_observers addObserver:o notificationCenter:center];
-    }
-  }
-
-  return self;
-}
-
-- (void)updateFingerStatusEntries:(FingerStatusManager*)manager {
-  /*
-  if (manager) {
-    self.fingerStatusEntries = [manager copyEntries];
-
-    [self setNeedsDisplay:YES];
-  }
-  */
-}
-
 - (void)drawRect:(NSRect)dirtyRect {
   [NSGraphicsContext saveGraphicsState];
   {
-    NSRect bounds = [self bounds];
-
-    // Draw bounds
-    [[[NSColor grayColor] colorWithAlphaComponent:0.5] set];
-    [[NSBezierPath bezierPathWithRoundedRect:bounds xRadius:10 yRadius:10] fill];
-
-    // Draw target area
-    NSRect targetArea = [PreferencesController makeTargetArea];
-
-    [[NSColor grayColor] set];
-    [[NSBezierPath bezierPathWithRoundedRect:NSMakeRect(bounds.size.width * targetArea.origin.x,
-                                                        bounds.size.height * targetArea.origin.y,
-                                                        bounds.size.width * targetArea.size.width,
-                                                        bounds.size.height * targetArea.size.height)
-                                     xRadius:10
-                                     yRadius:10] fill];
-
     // Draw fingers
     for (FingerStatusEntry* e in self.fingerStatusEntries) {
       const CGFloat DIAMETER = 10.0f;
-
-      if (!e.touchedPhysically && !e.touchedFixed) {
-        [[NSColor blackColor] set];
-      } else {
-        if (e.ignored) {
-          [[NSColor blueColor] set];
-        } else {
-          [[NSColor redColor] set];
-        }
-      }
 
       if (e.touchedPhysically) {
         NSRect rect = NSMakeRect(bounds.size.width * e.point.x - DIAMETER / 2,
@@ -97,12 +30,6 @@ struct IgnoredAreaView: View {
       }
     }
   }
-  [NSGraphicsContext restoreGraphicsState];
-}
-
-- (IBAction)draw:(id)sender {
-  [self setNeedsDisplay:YES];
-}
 */
 
   var body: some View {
