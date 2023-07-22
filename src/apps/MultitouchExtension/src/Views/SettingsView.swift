@@ -3,6 +3,7 @@ import SwiftUI
 enum NavigationTag: String {
   case main
   case advanced
+  case action
 }
 
 struct SettingsView: View {
@@ -14,19 +15,33 @@ struct SettingsView: View {
     VStack {
       HStack {
         VStack(alignment: .leading, spacing: 0) {
-          Button(action: {
-            selection = .main
-          }) {
-            SidebarLabelView(text: "Main", systemImage: "gearshape")
-          }
-          .sidebarButtonStyle(selected: selection == .main)
+          Group {
+            Button(action: {
+              selection = .main
+            }) {
+              SidebarLabelView(text: "Main", systemImage: "gearshape")
+            }
+            .sidebarButtonStyle(selected: selection == .main)
 
-          Button(action: {
-            selection = .advanced
-          }) {
-            SidebarLabelView(text: "Advanced", systemImage: "hammer")
+            Button(action: {
+              selection = .advanced
+            }) {
+              SidebarLabelView(text: "Advanced", systemImage: "hammer")
+            }
+            .sidebarButtonStyle(selected: selection == .advanced)
           }
-          .sidebarButtonStyle(selected: selection == .advanced)
+
+          Divider()
+            .padding(.vertical, 10.0)
+
+          Group {
+            Button(action: {
+              selection = .action
+            }) {
+              SidebarLabelView(text: "Quit, Restart", systemImage: "bolt.circle")
+            }
+            .sidebarButtonStyle(selected: selection == .action)
+          }
 
           Spacer()
         }
@@ -39,6 +54,8 @@ struct SettingsView: View {
           SettingsMainView()
         case .advanced:
           SettingsAdvancedView()
+        case .action:
+          SettingsActionView()
         }
       }
     }.frame(width: 900, height: 550)
