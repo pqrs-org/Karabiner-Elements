@@ -33,7 +33,7 @@ public class AppDelegate: NSObject, NSApplicationDelegate {
     //
 
     if CommandLine.arguments.contains("--start-at-login") {
-      if !UserSettings.shared.startAtLogin {
+      if !UserSettings.shared.openAtLogin {
         NSApplication.shared.terminate(self)
       }
     }

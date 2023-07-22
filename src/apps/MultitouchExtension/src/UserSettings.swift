@@ -4,7 +4,7 @@ final class UserSettings: ObservableObject {
   static let shared = UserSettings()
 
   @UserDefault("kStartAtLogin", defaultValue: false)
-  var startAtLogin: Bool {
+  var openAtLogin: Bool {
     willSet {
       objectWillChange.send()
     }

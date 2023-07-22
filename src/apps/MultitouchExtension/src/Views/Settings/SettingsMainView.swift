@@ -8,10 +8,35 @@ struct SettingsMainView: View {
 
   var body: some View {
     VStack(alignment: .leading, spacing: 25.0) {
-      HStack {
-        Text("SettingsMainView")
+      GroupBox(label: Text("Basic")) {
+        VStack(alignment: .leading, spacing: 25.0) {
+          HStack {
+            Toggle(isOn: $userSettings.openAtLogin) {
+              Text("Open at login")
+            }
+            .switchToggleStyle()
 
-        Spacer()
+            Text("(Default: off)")
+
+            Spacer()
+          }
+
+          VStack(alignment: .leading) {
+            HStack {
+              Toggle(isOn: $userSettings.hideIconInDock) {
+                Text("Hide icon in Dock")
+              }
+              .switchToggleStyle()
+
+              Text("(Default: off)")
+
+              Spacer()
+            }
+
+            Text("(You need to restart app to enable/disable this option)")
+          }
+        }
+        .padding(6.0)
       }
 
       GroupBox(label: Text("Area")) {
@@ -97,6 +122,7 @@ struct SettingsMainView: View {
           }
         }
       }
+      .padding(6.0)
 
       Spacer()
     }.padding()
