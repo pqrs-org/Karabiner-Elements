@@ -106,7 +106,7 @@ final class MEGrabberClient {
 
   init() {
     NotificationCenter.default.addObserver(
-      forName: FingerStatusManager.fingerStateChanged,
+      forName: FingerStatusManager.fingerCountChanged,
       object: nil,
       queue: .main
     ) { _ in

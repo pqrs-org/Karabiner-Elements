@@ -1,10 +1,8 @@
 import Combine
 
-// TODO: Remove @objc
-@objc
-class FingerStatusManager: NSObject, ObservableObject {
+class FingerStatusManager: ObservableObject {
   static let shared = FingerStatusManager()
-  static let fingerStateChanged = Notification.Name("fingerStateChanged")
+  static let fingerCountChanged = Notification.Name("fingerCountChanged")
 
   private(set) var objectWillChange = ObservableObjectPublisher()
   private(set) var entries: [FingerStatusEntry] = []
@@ -68,82 +66,19 @@ class FingerStatusManager: NSObject, ObservableObject {
     }
 
     //
+    // Remove untouched fingers
+    //
+
+    entries.removeAll(where: { $0.touchedPhysically == false && $0.touchedFixed == false })
+
+    //
     // Post notifications
     //
 
-    NotificationCenter.default.post(name: FingerStatusManager.fingerStateChanged, object: nil)
+    NotificationCenter.default.post(name: FingerStatusManager.fingerCountChanged, object: nil)
 
     objectWillChange.send()
   }
-
-  @MainActor
-  private func getEntry(device: MTDevice, identifier: Int) -> FingerStatusEntry {
-    for e in entries {
-      if e.device == device && e.identifier == identifier {
-        return e
-      }
-    }
-
-    let e = FingerStatusEntry(device: device, identifier: identifier)
-    entries.append(e)
-    return e
-  }
-
-  /*
-// Note: This method is called in @synchronized(self)
-- (void)setFingerStatusEntryDelayTimer:(FingerStatusEntry*)entry
-                               touched:(BOOL)touched {
-  enum FingerStatusEntryTimerMode timerMode = FingerStatusEntryTimerModeNone;
-  if (touched) {
-    timerMode = FingerStatusEntryTimerModeTouched;
-  } else {
-    timerMode = FingerStatusEntryTimerModeUntouched;
-  }
-
-  if (entry.timerMode != timerMode) {
-    entry.timerMode = timerMode;
-
-    NSUserDefaults* defaults = [NSUserDefaults standardUserDefaults];
-
-    double delay = 0;
-    if (touched) {
-      delay = [defaults integerForKey:kDelayBeforeTurnOn];
-    } else {
-      delay = [defaults integerForKey:kDelayBeforeTurnOff];
-    }
-
-    [entry.delayTimer invalidate];
-
-    @weakify(self);
-    entry.delayTimer = [NSTimer timerWithTimeInterval:delay / 1000.0
-                                              repeats:NO
-                                                block:^(NSTimer* timer) {
-                                                  @strongify(self);
-                                                  if (!self) {
-                                                    return;
-                                                  }
-
-                                                  @synchronized(self) {
-                                                    entry.touchedFixed = touched;
-
-                                                    if (!touched) {
-                                                      [self.entries removeObjectIdenticalTo:entry];
-                                                    }
-                                                  }
-
-                                                  [[NSNotificationCenter defaultCenter] postNotificationName:kFingerStateChanged
-                                                                                                      object:self];
-                                                }];
-    [[NSRunLoop mainRunLoop] addTimer:entry.delayTimer forMode:NSRunLoopCommonModes];
-  }
-}
-
-- (NSArray<FingerStatusEntry*>*)copyEntries {
-  @synchronized(self) {
-    return [[NSArray alloc] initWithArray:self.entries copyItems:YES];
-  }
-}
-*/
 
   @MainActor
   var fingerCount: FingerCount {
@@ -187,4 +122,17 @@ class FingerStatusManager: NSObject, ObservableObject {
 
     return fingerCount
   }
+
+  private func getEntry(device: MTDevice, identifier: Int) -> FingerStatusEntry {
+    for e in entries {
+      if e.device == device && e.identifier == identifier {
+        return e
+      }
+    }
+
+    let e = FingerStatusEntry(device: device, identifier: identifier)
+    entries.append(e)
+    return e
+  }
+
 }

@@ -1,9 +1,3 @@
-enum FingerStatusEntryTimerMode {
-  case none
-  case touched
-  case untouched
-}
-
 class FingerStatusEntry: Identifiable {
   public var id = UUID()
 
@@ -20,7 +14,7 @@ class FingerStatusEntry: Identifiable {
 
   var frame = 0
 
-  var point = NSMakePoint(0, 0)
+  var point = NSZeroPoint
 
   // True if the finger is touched physically.
   var touchedPhysically = false
@@ -31,10 +25,14 @@ class FingerStatusEntry: Identifiable {
   // True while the finger has never entered the valid area.
   var ignored = true
 
-  /*
-@property NSTimer* delayTimer;
-@property enum FingerStatusEntryTimerMode timerMode;
-*/
+  var delayTask: Task<(), Never>?
+
+  enum DelayMode {
+    case none
+    case touched
+    case untouched
+  }
+  private var delayMode = DelayMode.none
 
   //
   // Methods
@@ -43,9 +41,39 @@ class FingerStatusEntry: Identifiable {
   init(device: MTDevice, identifier: Int) {
     self.device = device
     self.identifier = identifier
-    /*
-    _delayTimer = nil
-    _timerMode = FingerStatusEntryTimerModeNone
-    */
+  }
+
+  func setDelayTask(mode: DelayMode) {
+    if delayMode != mode {
+      delayTask?.cancel()
+
+      let delay =
+        mode == .touched
+        ? UserSettings.shared.delayBeforeTurnOn
+        : UserSettings.shared.delayBeforeTurnOff
+
+      delayMode = mode
+      delayTask = Task { @MainActor in
+        do {
+          try await Task.sleep(nanoseconds: UInt64(delay) * 1000 * 1000)
+
+          switch delayMode {
+          case .touched:
+            touchedFixed = true
+
+          case .untouched:
+            touchedFixed = false
+
+          case .none:
+            // Do nothing
+            break
+          }
+
+          NotificationCenter.default.post(name: FingerStatusManager.fingerCountChanged, object: nil)
+        } catch {
+          print("cancelled")
+        }
+      }
+    }
   }
 }
