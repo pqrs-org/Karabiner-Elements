@@ -49,28 +49,25 @@ struct IgnoredAreaView: View {
               .top, areaSize.height * (1.0 - targetArea.origin.y - targetArea.size.height))
 
           ForEach(fingerManager.states) { state in
-            if state.touchedPhysically {
+            if state.touchedPhysically || state.touchedFixed {
               let diameter = 10.0
+              let color = state.ignored ? Color.black : Color.red
+              let leading = areaSize.width * state.point.x - (diameter / 2)
+              let top = areaSize.height * (1.0 - state.point.y) - (diameter / 2)
 
               Circle()
-                .stroke(
-                  state.ignored ? Color.black : Color.red, style: StrokeStyle(lineWidth: 2)
-                )
+                .stroke(color, style: StrokeStyle(lineWidth: 2))
                 .frame(width: diameter)
-                .padding(.leading, areaSize.width * state.point.x - (diameter / 2))
-                .padding(.top, areaSize.height * (1.0 - state.point.y) - (diameter / 2))
-            }
+                .padding(.leading, leading)
+                .padding(.top, top)
 
-            if state.touchedFixed {
-              let diameter = 5.0
-
-              Circle()
-                .fill(
-                  state.ignored ? Color.black : Color.red
-                )
-                .frame(width: diameter)
-                .padding(.leading, areaSize.width * state.point.x - (diameter / 2))
-                .padding(.top, areaSize.height * (1.0 - state.point.y) - (diameter / 2))
+              if state.touchedFixed {
+                Circle()
+                  .fill(color)
+                  .frame(width: diameter)
+                  .padding(.leading, leading)
+                  .padding(.top, top)
+              }
             }
           }
         }
