@@ -1,4 +1,6 @@
-class FingerStatus: Identifiable {
+class FingerState: Identifiable {
+  static let fingerStateChanged = Notification.Name("fingerStateChanged")
+
   public var id = UUID()
 
   //
@@ -73,7 +75,7 @@ class FingerStatus: Identifiable {
             break
           }
 
-          NotificationCenter.default.post(name: FingerStatusManager.fingerCountChanged, object: nil)
+          NotificationCenter.default.post(name: FingerState.fingerStateChanged, object: nil)
         } catch {
           print("cancelled")
         }

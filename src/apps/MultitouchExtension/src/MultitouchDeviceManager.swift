@@ -12,7 +12,7 @@ private func callback(
 
   if let device = device {
     Task { @MainActor in
-      FingerStatusManager.shared.update(
+      FingerManager.shared.update(
         device: device,
         fingers: fingers,
         timestamp: timestamp,

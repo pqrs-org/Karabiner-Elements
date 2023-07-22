@@ -2,7 +2,7 @@ import SwiftUI
 
 struct SettingsMainView: View {
   @ObservedObject private var userSettings = UserSettings.shared
-  @ObservedObject private var fingerStatus = FingerStatusManager.shared
+  @ObservedObject private var fingerManager = FingerManager.shared
 
   private let areaSize = CGSize(width: 280.0, height: 200.0)
 
@@ -82,29 +82,29 @@ struct SettingsMainView: View {
                   .padding(
                     .top, areaSize.height * (1.0 - targetArea.origin.y - targetArea.size.height))
 
-                ForEach(fingerStatus.entries) { entry in
-                  if entry.touchedPhysically {
+                ForEach(fingerManager.states) { state in
+                  if state.touchedPhysically {
                     let diameter = 10.0
 
                     Circle()
                       .stroke(
-                        entry.ignored ? Color.black : Color.red, style: StrokeStyle(lineWidth: 2)
+                        state.ignored ? Color.black : Color.red, style: StrokeStyle(lineWidth: 2)
                       )
                       .frame(width: diameter)
-                      .padding(.leading, areaSize.width * entry.point.x - (diameter / 2))
-                      .padding(.top, areaSize.height * (1.0 - entry.point.y) - (diameter / 2))
+                      .padding(.leading, areaSize.width * state.point.x - (diameter / 2))
+                      .padding(.top, areaSize.height * (1.0 - state.point.y) - (diameter / 2))
                   }
 
-                  if entry.touchedFixed {
+                  if state.touchedFixed {
                     let diameter = 5.0
 
                     Circle()
                       .fill(
-                        entry.ignored ? Color.black : Color.red
+                        state.ignored ? Color.black : Color.red
                       )
                       .frame(width: diameter)
-                      .padding(.leading, areaSize.width * entry.point.x - (diameter / 2))
-                      .padding(.top, areaSize.height * (1.0 - entry.point.y) - (diameter / 2))
+                      .padding(.leading, areaSize.width * state.point.x - (diameter / 2))
+                      .padding(.top, areaSize.height * (1.0 - state.point.y) - (diameter / 2))
                   }
                 }
               }

@@ -106,12 +106,12 @@ final class MEGrabberClient {
 
   init() {
     NotificationCenter.default.addObserver(
-      forName: FingerStatusManager.fingerCountChanged,
+      forName: FingerState.fingerStateChanged,
       object: nil,
       queue: .main
     ) { _ in
       Task { @MainActor in
-        staticSetGrabberVariable(FingerStatusManager.shared.fingerCount, false)
+        staticSetGrabberVariable(FingerManager.shared.fingerCount, false)
       }
     }
 

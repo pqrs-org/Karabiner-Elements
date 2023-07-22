@@ -1,11 +1,10 @@
 import Combine
 
-class FingerStatusManager: ObservableObject {
-  static let shared = FingerStatusManager()
-  static let fingerCountChanged = Notification.Name("fingerCountChanged")
+class FingerManager: ObservableObject {
+  static let shared = FingerManager()
 
   private(set) var objectWillChange = ObservableObjectPublisher()
-  private(set) var entries: [FingerStatus] = []
+  private(set) var states: [FingerState] = []
 
   @MainActor
   func update(
@@ -26,27 +25,27 @@ class FingerStatusManager: ObservableObject {
       //   1-3,5-7: near
       let touched = (finger.state == 4)
 
-      let e = getEntry(device: device, identifier: Int(finger.identifier))
-      e.frame = Int(frame)
-      e.point = NSMakePoint(
+      let s = getFingerState(device: device, identifier: Int(finger.identifier))
+      s.frame = Int(frame)
+      s.point = NSMakePoint(
         CGFloat(finger.normalized.position.x),
         CGFloat(finger.normalized.position.y))
 
       // Note:
       // Once the point in targetArea, keep `ignored == NO`.
-      if e.ignored {
-        if NSPointInRect(e.point, targetArea) {
-          e.ignored = false
+      if s.ignored {
+        if NSPointInRect(s.point, targetArea) {
+          s.ignored = false
         }
       }
 
-      if e.touchedPhysically != touched {
-        e.touchedPhysically = touched
+      if s.touchedPhysically != touched {
+        s.touchedPhysically = touched
 
-        e.setDelayTask(
+        s.setDelayTask(
           mode: touched
-            ? FingerStatus.DelayMode.touched
-            : FingerStatus.DelayMode.untouched)
+            ? FingerState.DelayMode.touched
+            : FingerState.DelayMode.untouched)
       }
     }
 
@@ -54,11 +53,11 @@ class FingerStatusManager: ObservableObject {
     // Update physical untouched fingers
     //
 
-    for e in entries {
-      if e.device == device && e.frame != frame && e.touchedPhysically {
-        e.touchedPhysically = false
+    for s in states {
+      if s.device == device && s.frame != frame && s.touchedPhysically {
+        s.touchedPhysically = false
 
-        e.setDelayTask(mode: FingerStatus.DelayMode.untouched)
+        s.setDelayTask(mode: FingerState.DelayMode.untouched)
       }
 
       //print("\(e.touchedPhysically) \(e.point)")
@@ -68,13 +67,13 @@ class FingerStatusManager: ObservableObject {
     // Remove untouched fingers
     //
 
-    entries.removeAll(where: { $0.touchedPhysically == false && $0.touchedFixed == false })
+    states.removeAll(where: { $0.touchedPhysically == false && $0.touchedFixed == false })
 
     //
     // Post notifications
     //
 
-    NotificationCenter.default.post(name: FingerStatusManager.fingerCountChanged, object: nil)
+    NotificationCenter.default.post(name: FingerState.fingerStateChanged, object: nil)
 
     objectWillChange.send()
   }
@@ -83,35 +82,35 @@ class FingerStatusManager: ObservableObject {
   var fingerCount: FingerCount {
     var fingerCount = FingerCount()
 
-    for e in entries {
-      if e.ignored {
+    for s in states {
+      if s.ignored {
         continue
       }
 
-      if !e.touchedFixed {
+      if !s.touchedFixed {
         continue
       }
 
-      if e.point.x < 0.5 {
+      if s.point.x < 0.5 {
         fingerCount.leftHalfAreaCount += 1
-        if e.point.x < 0.25 {
+        if s.point.x < 0.25 {
           fingerCount.leftQuarterAreaCount += 1
         }
       } else {
         fingerCount.rightHalfAreaCount += 1
-        if e.point.x > 0.75 {
+        if s.point.x > 0.75 {
           fingerCount.rightQuarterAreaCount += 1
         }
       }
 
-      if e.point.y < 0.5 {
+      if s.point.y < 0.5 {
         fingerCount.lowerHalfAreaCount += 1
-        if e.point.y < 0.25 {
+        if s.point.y < 0.25 {
           fingerCount.lowerQuarterAreaCount += 1
         }
       } else {
         fingerCount.upperHalfAreaCount += 1
-        if e.point.y > 0.75 {
+        if s.point.y > 0.75 {
           fingerCount.upperQuarterAreaCount += 1
         }
       }
@@ -122,16 +121,16 @@ class FingerStatusManager: ObservableObject {
     return fingerCount
   }
 
-  private func getEntry(device: MTDevice, identifier: Int) -> FingerStatus {
-    for e in entries {
-      if e.device == device && e.identifier == identifier {
-        return e
+  private func getFingerState(device: MTDevice, identifier: Int) -> FingerState {
+    for s in states {
+      if s.device == device && s.identifier == identifier {
+        return s
       }
     }
 
-    let e = FingerStatus(device: device, identifier: identifier)
-    entries.append(e)
-    return e
+    let s = FingerState(device: device, identifier: identifier)
+    states.append(s)
+    return s
   }
 
 }
