@@ -43,9 +43,10 @@ class FingerStatusManager: ObservableObject {
       if e.touchedPhysically != touched {
         e.touchedPhysically = touched
 
-        /*
-        [self setFingerStatusEntryDelayTimer:e touched:touched];
-        */
+        e.setDelayTask(
+          mode: touched
+            ? FingerStatusEntry.DelayMode.touched
+            : FingerStatusEntry.DelayMode.untouched)
       }
     }
 
@@ -57,9 +58,7 @@ class FingerStatusManager: ObservableObject {
       if e.device == device && e.frame != frame && e.touchedPhysically {
         e.touchedPhysically = false
 
-        /*
-        [self setFingerStatusEntryDelayTimer:e touched:NO];
-        */
+        e.setDelayTask(mode: FingerStatusEntry.DelayMode.untouched)
       }
 
       //print("\(e.touchedPhysically) \(e.point)")

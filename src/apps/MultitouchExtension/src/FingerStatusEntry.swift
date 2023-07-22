@@ -57,6 +57,10 @@ class FingerStatusEntry: Identifiable {
         do {
           try await Task.sleep(nanoseconds: UInt64(delay) * 1000 * 1000)
 
+          if Task.isCancelled {
+            return
+          }
+
           switch delayMode {
           case .touched:
             touchedFixed = true
