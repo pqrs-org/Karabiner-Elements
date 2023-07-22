@@ -1,4 +1,4 @@
-class FingerStatusEntry: Identifiable {
+class FingerStatus: Identifiable {
   public var id = UUID()
 
   //

@@ -5,7 +5,7 @@ class FingerStatusManager: ObservableObject {
   static let fingerCountChanged = Notification.Name("fingerCountChanged")
 
   private(set) var objectWillChange = ObservableObjectPublisher()
-  private(set) var entries: [FingerStatusEntry] = []
+  private(set) var entries: [FingerStatus] = []
 
   @MainActor
   func update(
@@ -45,8 +45,8 @@ class FingerStatusManager: ObservableObject {
 
         e.setDelayTask(
           mode: touched
-            ? FingerStatusEntry.DelayMode.touched
-            : FingerStatusEntry.DelayMode.untouched)
+            ? FingerStatus.DelayMode.touched
+            : FingerStatus.DelayMode.untouched)
       }
     }
 
@@ -58,7 +58,7 @@ class FingerStatusManager: ObservableObject {
       if e.device == device && e.frame != frame && e.touchedPhysically {
         e.touchedPhysically = false
 
-        e.setDelayTask(mode: FingerStatusEntry.DelayMode.untouched)
+        e.setDelayTask(mode: FingerStatus.DelayMode.untouched)
       }
 
       //print("\(e.touchedPhysically) \(e.point)")
@@ -122,14 +122,14 @@ class FingerStatusManager: ObservableObject {
     return fingerCount
   }
 
-  private func getEntry(device: MTDevice, identifier: Int) -> FingerStatusEntry {
+  private func getEntry(device: MTDevice, identifier: Int) -> FingerStatus {
     for e in entries {
       if e.device == device && e.identifier == identifier {
         return e
       }
     }
 
-    let e = FingerStatusEntry(device: device, identifier: identifier)
+    let e = FingerStatus(device: device, identifier: identifier)
     entries.append(e)
     return e
   }
