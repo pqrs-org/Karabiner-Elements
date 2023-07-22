@@ -55,7 +55,7 @@ class FingerStatusEntry: Identifiable {
       delayMode = mode
       delayTask = Task { @MainActor in
         do {
-          try await Task.sleep(nanoseconds: UInt64(delay) * 1000 * 1000)
+          try await Task.sleep(nanoseconds: UInt64(delay) * 1_000_000)
 
           if Task.isCancelled {
             return

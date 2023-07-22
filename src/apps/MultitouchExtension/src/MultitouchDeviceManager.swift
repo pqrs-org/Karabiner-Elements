@@ -23,6 +23,7 @@ private func callback(
   return 0
 }
 
+@MainActor
 class MultitouchDeviceManager {
   static let shared = MultitouchDeviceManager()
 
@@ -31,7 +32,6 @@ class MultitouchDeviceManager {
   private var devices: [MTDevice] = []
   private var wakeObserver: NSObjectProtocol?
 
-  @MainActor
   func setCallback(_ register: Bool) {
     print("setCallback \(register)")
 
@@ -75,7 +75,6 @@ class MultitouchDeviceManager {
     }
   }
 
-  @MainActor
   func registerIONotification() {
     print("registerIONotification")
 
@@ -119,44 +118,30 @@ class MultitouchDeviceManager {
   //
 
   func registerWakeNotification() {
-    /*
-  @weakify(self);
+    NotificationCenter.default.addObserver(
+      forName: NSWorkspace.didWakeNotification,
+      object: nil,
+      queue: .main
+    ) { _ in
+      Task { @MainActor in
+        print("didWakeNotification")
 
-  NSNotificationCenter* center = [[NSWorkspace sharedWorkspace] notificationCenter];
-  id o = [center addObserverForName:NSWorkspaceDidWakeNotification
-                             object:nil
-                              queue:[NSOperationQueue mainQueue]
-                         usingBlock:^(NSNotification* note) {
-                           @strongify(self);
-                           if (!self) {
-                             return;
-                           }
+        do {
+          // Sleep until devices are settled.
+          try await Task.sleep(nanoseconds: 1_000_000_000)
 
-                           NSLog(@"NSWorkspaceDidWakeNotification");
+          if UserSettings.shared.relaunchAfterWakeUpFromSleep {
+            try await Task.sleep(
+              nanoseconds: UInt64(UserSettings.shared.relaunchWait) * 1_000_000_000)
 
-                           // sleep until devices are settled.
-                           [NSThread sleepForTimeInterval:1.0];
+            KarabinerKit.relaunch()
+          }
 
-                           if ([[NSUserDefaults standardUserDefaults] boolForKey:kRelaunchAfterWakeUpFromSleep]) {
-                             double wait = [[[NSUserDefaults standardUserDefaults] stringForKey:kRelaunchWait] doubleValue];
-                             if (wait > 0) {
-                               [NSThread sleepForTimeInterval:wait];
-                             }
-
-                             [KarabinerKit relaunch];
-                           }
-
-                           [self setCallback:YES];
-                         }];
-
-  [self.observers addObserver:o notificationCenter:center];
-  */
-  }
-
-  func unregisterWakeNotification() {
-    if let o = wakeObserver {
-      NotificationCenter.default.removeObserver(o)
-      wakeObserver = nil
+          MultitouchDeviceManager.shared.setCallback(true)
+        } catch {
+          print(error.localizedDescription)
+        }
+      }
     }
   }
 }
