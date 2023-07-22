@@ -94,6 +94,18 @@ struct SettingsMainView: View {
                       .padding(.leading, areaSize.width * entry.point.x - (diameter / 2))
                       .padding(.top, areaSize.height * (1.0 - entry.point.y) - (diameter / 2))
                   }
+
+                  if entry.touchedFixed {
+                    let diameter = 5.0
+
+                    Circle()
+                      .fill(
+                        entry.ignored ? Color.black : Color.red
+                      )
+                      .frame(width: diameter)
+                      .padding(.leading, areaSize.width * entry.point.x - (diameter / 2))
+                      .padding(.top, areaSize.height * (1.0 - entry.point.y) - (diameter / 2))
+                  }
                 }
               }
 
