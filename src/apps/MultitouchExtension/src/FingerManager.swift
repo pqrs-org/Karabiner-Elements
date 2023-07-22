@@ -6,6 +6,18 @@ class FingerManager: ObservableObject {
   private(set) var objectWillChange = ObservableObjectPublisher()
   private(set) var states: [FingerState] = []
 
+  init() {
+    NotificationCenter.default.addObserver(
+      forName: FingerState.fingerStateChanged,
+      object: nil,
+      queue: .main
+    ) { [weak self] _ in
+      guard let self = self else { return }
+
+      self.objectWillChange.send()
+    }
+  }
+
   @MainActor
   func update(
     device: MTDevice,
@@ -74,8 +86,6 @@ class FingerManager: ObservableObject {
     //
 
     NotificationCenter.default.post(name: FingerState.fingerStateChanged, object: nil)
-
-    objectWillChange.send()
   }
 
   @MainActor
