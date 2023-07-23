@@ -1,9 +1,6 @@
 import SwiftUI
 
 struct SettingsAreaView: View {
-  @ObservedObject private var userSettings = UserSettings.shared
-  @ObservedObject private var fingerManager = FingerManager.shared
-
   var body: some View {
     VStack(alignment: .leading, spacing: 25.0) {
       GroupBox(label: Text("Area")) {
