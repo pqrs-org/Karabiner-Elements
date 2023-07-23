@@ -5,6 +5,8 @@ class FingerManager: ObservableObject {
 
   private(set) var objectWillChange = ObservableObjectPublisher()
   private(set) var states: [FingerState] = []
+  // Task to reduce the frequency of calling objectWillChange.send
+  private var objectWillChangeTask: Task<(), Never>?
 
   init() {
     NotificationCenter.default.addObserver(
@@ -14,7 +16,19 @@ class FingerManager: ObservableObject {
     ) { [weak self] _ in
       guard let self = self else { return }
 
-      self.objectWillChange.send()
+      if self.objectWillChangeTask == nil {
+        self.objectWillChangeTask = Task { @MainActor in
+          do {
+            try await Task.sleep(nanoseconds: 50 * NSEC_PER_MSEC)
+          } catch {
+            print(error.localizedDescription)
+          }
+
+          self.objectWillChange.send()
+
+          self.objectWillChangeTask = nil
+        }
+      }
     }
   }
 
@@ -142,5 +156,4 @@ class FingerManager: ObservableObject {
     states.append(s)
     return s
   }
-
 }
