@@ -27,7 +27,7 @@ class FingerState: Identifiable {
   // True while the finger has never entered the valid area.
   var ignored = true
 
-  var delayTask: Task<(), Never>?
+  private var delayTask: Task<(), Never>?
 
   enum DelayMode {
     case none
