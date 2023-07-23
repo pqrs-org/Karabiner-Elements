@@ -42,6 +42,8 @@ struct SettingsMainView: View {
           HStack {
             IgnoredAreaView()
 
+            FingerCountView()
+
             Spacer()
           }
         }
