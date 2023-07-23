@@ -84,8 +84,6 @@ private func staticSetGrabberVariable(_ count: FingerCount, _ sync: Bool) {
 
 private func enable() {
   Task { @MainActor in
-    MultitouchDeviceManager.shared.registerWakeNotification()
-
     // sleep until devices are settled.
     try await Task.sleep(nanoseconds: NSEC_PER_SEC)
 

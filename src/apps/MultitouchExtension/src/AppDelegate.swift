@@ -51,7 +51,13 @@ public class AppDelegate: NSObject, NSApplicationDelegate {
     //
 
     MEGrabberClient.shared.setGrabberVariable(FingerCount(), true)
-    MultitouchDeviceManager.shared.registerIONotification()
+    MultitouchDeviceManager.shared.observeIONotification()
+
+    //
+    // Register wake up handler
+    //
+
+    MultitouchDeviceManager.shared.observeWakeNotification()
 
     //
     // Disable App Nap

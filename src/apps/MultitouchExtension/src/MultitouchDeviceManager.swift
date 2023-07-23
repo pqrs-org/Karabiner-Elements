@@ -75,8 +75,8 @@ class MultitouchDeviceManager {
     }
   }
 
-  func registerIONotification() {
-    print("registerIONotification")
+  func observeIONotification() {
+    print("observeIONotification")
 
     //
     // Relaunch if device is connected or disconnected
@@ -117,8 +117,8 @@ class MultitouchDeviceManager {
   // WakeNotification
   //
 
-  func registerWakeNotification() {
-    NotificationCenter.default.addObserver(
+  func observeWakeNotification() {
+    NSWorkspace.shared.notificationCenter.addObserver(
       forName: NSWorkspace.didWakeNotification,
       object: nil,
       queue: .main

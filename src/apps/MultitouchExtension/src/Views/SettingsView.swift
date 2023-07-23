@@ -45,7 +45,7 @@ struct SettingsView: View {
 
           Spacer()
         }
-        .frame(width: 250)
+        .frame(width: 200)
 
         Divider()
 
