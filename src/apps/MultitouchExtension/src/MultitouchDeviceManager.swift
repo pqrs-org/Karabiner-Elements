@@ -128,11 +128,11 @@ class MultitouchDeviceManager {
 
         do {
           // Sleep until devices are settled.
-          try await Task.sleep(nanoseconds: 1_000_000_000)
+          try await Task.sleep(nanoseconds: NSEC_PER_SEC)
 
           if UserSettings.shared.relaunchAfterWakeUpFromSleep {
             try await Task.sleep(
-              nanoseconds: UInt64(UserSettings.shared.relaunchWait) * 1_000_000_000)
+              nanoseconds: UInt64(UserSettings.shared.relaunchWait) * NSEC_PER_SEC)
 
             KarabinerKit.relaunch()
           }
