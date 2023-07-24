@@ -15,17 +15,17 @@ typedef struct {
   double timestamp;
   int identifier;
   int state;
-  int unknown1;
-  int unknown2;
+  int fingerId;
+  int handId;
   mtReadout normalized;
   float size;
-  int unknown3;
+  int pressure;
   float angle;
   float majorAxis;
   float minorAxis;
-  mtReadout unknown4;
-  int unknown5[2];
-  float unknown6;
+  mtReadout absoluteVector;
+  int unknown1[2];
+  float zDensity;
 } Finger;
 
 typedef struct CF_BRIDGED_TYPE(id) MTDevice *MTDeviceRef;
