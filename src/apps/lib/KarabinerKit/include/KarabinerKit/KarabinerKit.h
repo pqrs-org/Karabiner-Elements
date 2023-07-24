@@ -1,7 +1,6 @@
 // -*- mode: objective-c -*-
 
-@import Foundation;
-#import "KarabinerKit/SmartObserverContainer.h"
+@import AppKit;
 #import "libkrbn/libkrbn.h"
 
 @interface KarabinerKit : NSObject

@@ -22,11 +22,9 @@ public class NotificationWindowManager {
   }
 
   private var screenWindows: [ScreenWindow] = []
-  private var observers = KarabinerKitSmartObserverContainer()
 
   init() {
-    let center = NotificationCenter.default
-    let o = center.addObserver(
+    NotificationCenter.default.addObserver(
       forName: NSApplication.didChangeScreenParametersNotification,
       object: nil,
       queue: .main
@@ -35,8 +33,6 @@ public class NotificationWindowManager {
 
       self.updateWindows()
     }
-
-    observers.addObserver(o, notificationCenter: center)
 
     updateWindows()
 
