@@ -1,19 +1,7 @@
 #import "KarabinerKit/KarabinerKit.h"
 #import "libkrbn/libkrbn.h"
 
-static void version_changed_callback(void* refcon) {
-  [KarabinerKit relaunch];
-}
-
 @implementation KarabinerKit
-
-+ (void)setup {
-  static dispatch_once_t once;
-
-  dispatch_once(&once, ^{
-    libkrbn_enable_version_monitor(version_changed_callback, NULL);
-  });
-}
 
 + (void)endAllAttachedSheets:(NSWindow*)window {
   for (;;) {
@@ -39,22 +27,6 @@ static void version_changed_callback(void* refcon) {
 }
 
 + (void)consoleUserServerIsDisabledCallback {
-  [NSApp terminate:nil];
-}
-
-+ (void)relaunch {
-  libkrbn_unlock_single_application();
-
-  for (int i = 0; i < 5; ++i) {
-    @try {
-      [NSTask launchedTaskWithLaunchPath:[[NSBundle mainBundle] executablePath] arguments:@[]];
-      break;
-    } @catch (NSException* exception) {
-      NSLog(@"KarabinerKit relaunch error %@", exception);
-      [NSThread sleepForTimeInterval:1.0];
-    }
-  }
-
   [NSApp terminate:nil];
 }
 
