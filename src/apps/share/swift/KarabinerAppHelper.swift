@@ -32,4 +32,11 @@ final class KarabinerAppHelper: NSObject {
       NSApplication.shared.terminate(self)
     }
   }
+
+  func endAllAttachedSheets(_ window: NSWindow) {
+    while let sheet = window.attachedSheet {
+      endAllAttachedSheets(sheet)
+      window.endSheet(sheet)
+    }
+  }
 }

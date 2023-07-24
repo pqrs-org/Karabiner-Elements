@@ -3,18 +3,6 @@
 
 @implementation KarabinerKit
 
-+ (void)endAllAttachedSheets:(NSWindow*)window {
-  for (;;) {
-    NSWindow* sheet = window.attachedSheet;
-    if (!sheet) {
-      break;
-    }
-
-    [self endAllAttachedSheets:sheet];
-    [window endSheet:sheet];
-  }
-}
-
 + (BOOL)quitKarabiner:(bool)askForConfirmation {
   if (askForConfirmation) {
     NSAlert* alert = [NSAlert new];

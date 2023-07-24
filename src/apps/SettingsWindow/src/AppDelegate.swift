@@ -139,7 +139,9 @@ public class AppDelegate: NSObject, NSApplicationDelegate {
     DispatchQueue.main.async { [weak self] in
       guard let self = self else { return }
 
-      KarabinerKit.endAllAttachedSheets(self.window)
+      if let window = self.window {
+        KarabinerAppHelper.shared.endAllAttachedSheets(window)
+      }
 
       let urlComponents = URLComponents(string: url)
 
