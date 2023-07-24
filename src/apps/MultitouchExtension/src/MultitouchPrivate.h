@@ -28,7 +28,7 @@ typedef struct {
   float unknown6;
 } Finger;
 
-typedef void* MTDeviceRef;
+typedef struct CF_BRIDGED_TYPE(id) MTDevice *MTDeviceRef;
 typedef int (*MTContactCallbackFunction)(MTDeviceRef, Finger*, int, double, int);
 
 CFMutableArrayRef MTDeviceCreateList(void);

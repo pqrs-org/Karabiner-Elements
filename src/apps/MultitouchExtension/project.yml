@@ -18,11 +18,16 @@ targets:
         - -lKarabinerKit
         - -lkrbn
       OTHER_SWIFT_FLAGS: '-warnings-as-errors'
+      SWIFT_OBJC_BRIDGING_HEADER: src/Bridging-Header.h
     type: application
     platform: macOS
     deploymentTarget: 11.0
     sources:
       - path: src
+        compilerFlags:
+          - -Wall
+          - -Werror
+      - path: ../share/swift
         compilerFlags:
           - -Wall
           - -Werror
