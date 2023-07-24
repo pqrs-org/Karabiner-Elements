@@ -37,16 +37,60 @@ struct IgnoredAreaView: View {
             .frame(width: areaSize.width, height: areaSize.height)
 
           let targetArea = userSettings.targetArea
+          let areaWidth = areaSize.width * targetArea.size.width
+          let areaHeight = areaSize.height * targetArea.size.height
+          let areaLeading = areaSize.width * targetArea.origin.x
+          let areaTop = areaSize.height * (1.0 - targetArea.origin.y - targetArea.size.height)
+          let areaX25 = areaSize.width * (targetArea.origin.x + targetArea.size.width * 0.25)
+          let areaX50 = areaSize.width * (targetArea.origin.x + targetArea.size.width * 0.5)
+          let areaX75 = areaSize.width * (targetArea.origin.x + targetArea.size.width * 0.75)
+          let areaY25 =
+            areaSize.height * (1.0 - targetArea.origin.y - targetArea.size.height * 0.25)
+          let areaY50 = areaSize.height * (1.0 - targetArea.origin.y - targetArea.size.height * 0.5)
+          let areaY75 =
+            areaSize.height * (1.0 - targetArea.origin.y - targetArea.size.height * 0.75)
 
           RoundedRectangle(cornerRadius: 10.0)
             .fill(Color.gray)
-            .frame(
-              width: areaSize.width * targetArea.size.width,
-              height: areaSize.height * targetArea.size.height
-            )
-            .padding(.leading, areaSize.width * targetArea.origin.x)
-            .padding(
-              .top, areaSize.height * (1.0 - targetArea.origin.y - targetArea.size.height))
+            .frame(width: areaWidth, height: areaHeight)
+            .padding(.leading, areaLeading)
+            .padding(.top, areaTop)
+            .overlay(
+              Group {
+                Path { path in
+                  path.addLines([
+                    CGPoint(x: areaX50, y: areaTop),
+                    CGPoint(x: areaX50, y: areaTop + areaHeight),
+                  ])
+
+                  path.addLines([
+                    CGPoint(x: areaLeading, y: areaY50),
+                    CGPoint(x: areaLeading + areaWidth, y: areaY50),
+                  ])
+                }.stroke(.black, lineWidth: 1)
+
+                Path { path in
+                  path.addLines([
+                    CGPoint(x: areaX25, y: areaTop),
+                    CGPoint(x: areaX25, y: areaTop + areaHeight),
+                  ])
+
+                  path.addLines([
+                    CGPoint(x: areaX75, y: areaTop),
+                    CGPoint(x: areaX75, y: areaTop + areaHeight),
+                  ])
+
+                  path.addLines([
+                    CGPoint(x: areaLeading, y: areaY25),
+                    CGPoint(x: areaLeading + areaWidth, y: areaY25),
+                  ])
+
+                  path.addLines([
+                    CGPoint(x: areaLeading, y: areaY75),
+                    CGPoint(x: areaLeading + areaWidth, y: areaY75),
+                  ])
+                }.stroke(.black, style: StrokeStyle(lineWidth: 1, dash: [2]))
+              })
 
           ForEach(fingerManager.states) { state in
             if state.touchedPhysically || state.touchedFixed {
