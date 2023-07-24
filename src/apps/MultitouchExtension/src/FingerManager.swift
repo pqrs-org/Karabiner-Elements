@@ -105,6 +105,13 @@ class FingerManager: ObservableObject {
   @MainActor
   var fingerCount: FingerCount {
     var fingerCount = FingerCount()
+    let targetArea = UserSettings.shared.targetArea
+    let x25 = targetArea.origin.x + targetArea.size.width * 0.25
+    let x50 = targetArea.origin.x + targetArea.size.width * 0.5
+    let x75 = targetArea.origin.x + targetArea.size.width * 0.75
+    let y25 = targetArea.origin.y + targetArea.size.height * 0.25
+    let y50 = targetArea.origin.y + targetArea.size.height * 0.5
+    let y75 = targetArea.origin.y + targetArea.size.height * 0.75
 
     for s in states {
       if s.ignored {
@@ -115,26 +122,26 @@ class FingerManager: ObservableObject {
         continue
       }
 
-      if s.point.x < 0.5 {
+      if s.point.x < x50 {
         fingerCount.leftHalfAreaCount += 1
-        if s.point.x < 0.25 {
+        if s.point.x < x25 {
           fingerCount.leftQuarterAreaCount += 1
         }
       } else {
         fingerCount.rightHalfAreaCount += 1
-        if s.point.x > 0.75 {
+        if s.point.x > x75 {
           fingerCount.rightQuarterAreaCount += 1
         }
       }
 
-      if s.point.y < 0.5 {
+      if s.point.y < y50 {
         fingerCount.lowerHalfAreaCount += 1
-        if s.point.y < 0.25 {
+        if s.point.y < y25 {
           fingerCount.lowerQuarterAreaCount += 1
         }
       } else {
         fingerCount.upperHalfAreaCount += 1
-        if s.point.y > 0.75 {
+        if s.point.y > y75 {
           fingerCount.upperQuarterAreaCount += 1
         }
       }
