@@ -9,7 +9,7 @@ public class AppDelegate: NSObject, NSApplicationDelegate {
 
     libkrbn_initialize()
 
-    KarabinerAppHelper.observeVersionChange()
+    KarabinerAppHelper.shared.observeVersionChange()
 
     notificationWindowManager = NotificationWindowManager()
   }

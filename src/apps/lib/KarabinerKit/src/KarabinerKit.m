@@ -15,21 +15,6 @@
   }
 }
 
-+ (void)observeConsoleUserServerIsDisabledNotification {
-  NSString* name = [NSString stringWithUTF8String:libkrbn_get_distributed_notification_console_user_server_is_disabled()];
-  NSString* object = [NSString stringWithUTF8String:libkrbn_get_distributed_notification_observed_object()];
-
-  [[NSDistributedNotificationCenter defaultCenter] addObserver:self
-                                                      selector:@selector(consoleUserServerIsDisabledCallback)
-                                                          name:name
-                                                        object:object
-                                            suspensionBehavior:NSNotificationSuspensionBehaviorDeliverImmediately];
-}
-
-+ (void)consoleUserServerIsDisabledCallback {
-  [NSApp terminate:nil];
-}
-
 + (BOOL)quitKarabiner:(bool)askForConfirmation {
   if (askForConfirmation) {
     NSAlert* alert = [NSAlert new];
