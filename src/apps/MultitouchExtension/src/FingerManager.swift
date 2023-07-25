@@ -68,15 +68,20 @@ class FingerManager: ObservableObject {
         }
       }
 
+      
 
       if s.touchedPhysically != touched || s.palmed != palmed {
+        if !s.palmed && !s.touchedPhysically {
+          s.setDelayTask(
+            mode: FingerState.DelayMode.touched)
+
+        }
+        else if !palmed && !touched {
+          s.setDelayTask(
+            mode: FingerState.DelayMode.untouched)
+        }
         s.palmed = palmed
         s.touchedPhysically = touched
-
-        s.setDelayTask(
-          mode: touched || palmed
-            ? FingerState.DelayMode.touched
-            : FingerState.DelayMode.untouched)
       }
     }
 
@@ -85,8 +90,9 @@ class FingerManager: ObservableObject {
     //
 
     for s in states {
-      if s.device == device && s.frame != frame && s.touchedPhysically {
+      if s.device == device && s.frame != frame && (s.touchedPhysically && !s.palmed) {
         s.touchedPhysically = false
+        s.palmed = false
 
         s.setDelayTask(mode: FingerState.DelayMode.untouched)
       }
@@ -124,47 +130,49 @@ class FingerManager: ObservableObject {
       }
 
       if s.touchedFixed {
-        if s.point.x < x50 {
-          fingerCount.leftHalfAreaCount += 1
-          if s.point.x < x25 {
-            fingerCount.leftQuarterAreaCount += 1
+        if s.touchedPhysically {
+          if s.point.x < x50 {
+            fingerCount.leftHalfAreaCount += 1
+            if s.point.x < x25 {
+              fingerCount.leftQuarterAreaCount += 1
+            }
+          } else {
+            fingerCount.rightHalfAreaCount += 1
+            if s.point.x > x75 {
+              fingerCount.rightQuarterAreaCount += 1
+            }
           }
-        } else {
-          fingerCount.rightHalfAreaCount += 1
-          if s.point.x > x75 {
-            fingerCount.rightQuarterAreaCount += 1
+
+          if s.point.y < y50 {
+            fingerCount.lowerHalfAreaCount += 1
+            if s.point.y < y25 {
+              fingerCount.lowerQuarterAreaCount += 1
+            }
+          } else {
+            fingerCount.upperHalfAreaCount += 1
+            if s.point.y > y75 {
+              fingerCount.upperQuarterAreaCount += 1
+            }
           }
+
+          fingerCount.totalCount += 1
         }
 
-        if s.point.y < y50 {
-          fingerCount.lowerHalfAreaCount += 1
-          if s.point.y < y25 {
-            fingerCount.lowerQuarterAreaCount += 1
+        if s.palmed {
+          if s.point.x < x50 {
+            fingerCount.leftHalfAreaPalmCount += 1
+          } else {
+            fingerCount.rightHalfAreaPalmCount += 1
           }
-        } else {
-          fingerCount.upperHalfAreaCount += 1
-          if s.point.y > y75 {
-            fingerCount.upperQuarterAreaCount += 1
+
+          if s.point.y < y50 {
+            fingerCount.lowerHalfAreaPalmCount += 1
+          } else {
+            fingerCount.upperHalfAreaPalmCount += 1
           }
+
+          fingerCount.totalPalmCount += 1
         }
-
-        fingerCount.totalCount += 1
-      }
-
-      if s.palmed {
-        if s.point.x < x50 {
-          fingerCount.leftHalfAreaPalmCount += 1
-        } else {
-          fingerCount.rightHalfAreaPalmCount += 1
-        }
-
-        if s.point.y < y50 {
-          fingerCount.lowerHalfAreaPalmCount += 1
-        } else {
-          fingerCount.upperHalfAreaPalmCount += 1
-        }
-
-        fingerCount.totalPalmCount += 1
       }
     }
 
