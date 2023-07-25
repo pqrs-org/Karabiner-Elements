@@ -25,8 +25,8 @@ public class AppDelegate: NSObject, NSApplicationDelegate {
 
     ProcessInfo.processInfo.enableSuddenTermination()
 
-    KarabinerKit.setup()
-    KarabinerKit.observeConsoleUserServerIsDisabledNotification()
+    KarabinerAppHelper.shared.observeVersionChange()
+    KarabinerAppHelper.shared.observeConsoleUserServerIsDisabledNotification()
     LibKrbn.Settings.shared.start()
 
     NotificationCenter.default.addObserver(
@@ -139,7 +139,9 @@ public class AppDelegate: NSObject, NSApplicationDelegate {
     DispatchQueue.main.async { [weak self] in
       guard let self = self else { return }
 
-      KarabinerKit.endAllAttachedSheets(self.window)
+      if let window = self.window {
+        KarabinerAppHelper.shared.endAllAttachedSheets(window)
+      }
 
       let urlComponents = URLComponents(string: url)
 

@@ -96,7 +96,7 @@ class MultitouchDeviceManager {
           notification,
           match,
           { _, _ in
-            KarabinerKit.relaunch()
+            Relauncher.relaunch()
           },
           nil,
           &it)
@@ -134,7 +134,7 @@ class MultitouchDeviceManager {
             try await Task.sleep(
               nanoseconds: UInt64(UserSettings.shared.relaunchWait) * NSEC_PER_SEC)
 
-            KarabinerKit.relaunch()
+            Relauncher.relaunch()
           }
 
           MultitouchDeviceManager.shared.setCallback(true)

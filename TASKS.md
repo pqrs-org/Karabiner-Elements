@@ -1,9 +1,9 @@
 # Tasks
 
 -   [x] Migrate Catch2 to boost-ext/ut.
--   [ ] Migrate Objective-C code to Swift.
-    -   [ ] KarabinerKit
-    -   [ ] MultitouchExtension
+-   [x] Migrate Objective-C code to Swift.
+    -   [x] KarabinerKit
+    -   [x] MultitouchExtension
     -   [x] EventViewer
     -   [x] Menu
     -   [x] Settings

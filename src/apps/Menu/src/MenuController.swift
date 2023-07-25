@@ -1,3 +1,5 @@
+import AppKit
+
 public class MenuController: NSObject, NSMenuDelegate {
   static let shared = MenuController()
 
@@ -186,6 +188,7 @@ public class MenuController: NSObject, NSMenuDelegate {
 
   @objc
   func quitKarabiner(_: Any) {
-    KarabinerKit.quitKarabiner(LibKrbn.Settings.shared.askForConfirmationBeforeQuitting)
+    KarabinerAppHelper.shared.quitKarabiner(
+      askForConfirmation: LibKrbn.Settings.shared.askForConfirmationBeforeQuitting)
   }
 }

@@ -11,7 +11,7 @@ struct ActionView: View {
           HStack {
             Button(action: {
               libkrbn_launchctl_restart_console_user_server()
-              KarabinerKit.relaunch()
+              Relauncher.relaunch()
             }) {
               Label("Restart Karabiner-Elements", systemImage: "arrow.clockwise")
             }
@@ -21,7 +21,8 @@ struct ActionView: View {
 
           HStack {
             Button(action: {
-              KarabinerKit.quitKarabiner(settings.askForConfirmationBeforeQuitting)
+              KarabinerAppHelper.shared.quitKarabiner(
+                askForConfirmation: settings.askForConfirmationBeforeQuitting)
             }) {
               Label("Quit Karabiner-Elements", systemImage: "xmark.circle.fill")
             }
