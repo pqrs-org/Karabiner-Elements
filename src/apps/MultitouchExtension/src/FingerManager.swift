@@ -1,5 +1,4 @@
 import Combine
-import AppKit
 
 class FingerManager: ObservableObject {
   static let shared = FingerManager()
@@ -8,10 +7,8 @@ class FingerManager: ObservableObject {
   private(set) var states: [FingerState] = []
   // Task to reduce the frequency of calling objectWillChange.send
   private var objectWillChangeTask: Task<(), Never>?
-  private var hapticPerformer: NSHapticFeedbackPerformer
 
   init() {
-    hapticPerformer = NSHapticFeedbackManager.defaultPerformer
     NotificationCenter.default.addObserver(
       forName: FingerState.fingerStateChanged,
       object: nil,
@@ -72,21 +69,6 @@ class FingerManager: ObservableObject {
 
 
       if s.touchedPhysically != touched || s.palmed != palmed {
-        if s.palmed != palmed {
-          hapticPerformer.perform(
-            .levelChange,
-            performanceTime: .now
-            )
-          hapticPerformer.perform(
-            .generic,
-            performanceTime: .now
-            )
-          hapticPerformer.perform(
-            .alignment,
-            performanceTime: .now
-            )
-        }
-
         s.palmed = palmed
         s.touchedPhysically = touched
 
