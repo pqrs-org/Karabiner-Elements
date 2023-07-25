@@ -50,24 +50,12 @@ class FingerManager: ObservableObject {
     //
 
     for finger in fingers {
-      /**
-      print("frame: \(finger.frame)")
-      print("state: \(finger.state)")
-      print("normalized: \(finger.normalized)")
-      print("size: \(finger.size)")
-      print("pressure: \(finger.pressure)")
-      print("angle: \(finger.angle)")
-      print("absoluteVector: \(finger.absoluteVector)")
-      print("unknown1: \(finger.unknown1)")
-      print("density: \(finger.zDensity)")
-      **/
-      //print("pressure: \(finger.pressure), z: \(finger.zDensity), size: \(finger.size)")
       // state values:
       //   4: touched
       //   1-3,5-7: near
 
       let s = getFingerState(device: device, identifier: Int(finger.identifier))
-      let palmed = (finger.size > palmThreshold && finger.angle > 12)// || (s.touchedPhysically && s.palmed)
+      let palmed = (Double(finger.size) > palmThreshold)
       let touched = (finger.state == 4 && !palmed)
       s.frame = Int(frame)
       s.point = NSMakePoint(
@@ -84,10 +72,7 @@ class FingerManager: ObservableObject {
 
 
       if s.touchedPhysically != touched || s.palmed != palmed {
-        /**
-        if palmed {
-          print("Feedback \(palmed ? "Palmed" : "Unpalmed")")
-          
+        if s.palmed != palmed {
           hapticPerformer.perform(
             .levelChange,
             performanceTime: .now
@@ -101,7 +86,6 @@ class FingerManager: ObservableObject {
             performanceTime: .now
             )
         }
-        **/
 
         s.palmed = palmed
         s.touchedPhysically = touched

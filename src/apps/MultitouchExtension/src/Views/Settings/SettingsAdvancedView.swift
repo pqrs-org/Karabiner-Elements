@@ -90,16 +90,16 @@ struct SettingsAdvancedView: View {
 
               DoubleTextField(
                 value: $userSettings.palmThreshold,
-                range: 0...1000000000000000,
-                step: 100000000000000,
+                range: 0...10,
+                step: 1,
                 width: 80)
 
-              Text("size threshold (Default: 100000000000000)")
+              Text("palm threshold (Default: 2)")
 
               Spacer()
             }
 
-            Text("(Increasing this value allows you to ignore unintended touch)")
+            Text("(Increasing this value allows you to ignore unintended palm touches)")
           }
 
         }

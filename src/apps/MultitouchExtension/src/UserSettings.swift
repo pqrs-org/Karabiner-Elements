@@ -73,7 +73,7 @@ final class UserSettings: ObservableObject {
     }
   }
   
-  @UserDefault("kPalmThreshold", defaultValue: 13743898659100.75)
+  @UserDefault("kPalmThreshold", defaultValue: 2.0)
   var palmThreshold: Double {
     willSet {
       objectWillChange.send()
