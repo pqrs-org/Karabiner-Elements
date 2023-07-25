@@ -80,8 +80,6 @@ struct SettingsAdvancedView: View {
         .padding(6.0)
       }
 
-      Spacer()
-
       GroupBox(label: Text("Palm Detection")) {
         VStack(alignment: .leading, spacing: 30.0) {
           VStack(alignment: .leading) {
@@ -91,10 +89,10 @@ struct SettingsAdvancedView: View {
               DoubleTextField(
                 value: $userSettings.palmThreshold,
                 range: 0...10,
-                step: 1,
+                step: 0.5,
                 width: 80)
 
-              Text("palm threshold (Default: 2)")
+              Text("touch size threshold (Default: 2)")
 
               Spacer()
             }

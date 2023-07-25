@@ -18,6 +18,8 @@ class FingerState: Identifiable {
 
   var point = NSZeroPoint
 
+  var size = 0.0
+
   // True if the finger is touched physically.
   var touchedPhysically = false
 

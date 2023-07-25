@@ -55,6 +55,7 @@ class FingerManager: ObservableObject {
       let palmed = (Double(finger.size) > palmThreshold)
       let touched = (finger.state == 4 && !palmed)
       s.frame = Int(frame)
+      s.size = Double(finger.size)
       s.point = NSMakePoint(
         CGFloat(finger.normalized.position.x),
         CGFloat(finger.normalized.position.y))
