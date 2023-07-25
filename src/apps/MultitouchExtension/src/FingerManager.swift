@@ -1,4 +1,5 @@
 import Combine
+import AppKit
 
 class FingerManager: ObservableObject {
   static let shared = FingerManager()
@@ -7,8 +8,10 @@ class FingerManager: ObservableObject {
   private(set) var states: [FingerState] = []
   // Task to reduce the frequency of calling objectWillChange.send
   private var objectWillChangeTask: Task<(), Never>?
+  private var hapticPerformer: NSHapticFeedbackPerformer
 
   init() {
+    hapticPerformer = NSHapticFeedbackManager.defaultPerformer
     NotificationCenter.default.addObserver(
       forName: FingerState.fingerStateChanged,
       object: nil,
@@ -40,18 +43,32 @@ class FingerManager: ObservableObject {
     frame: Int32
   ) {
     let targetArea = UserSettings.shared.targetArea
+    let palmThreshold = UserSettings.shared.palmThreshold
 
     //
     // Update physical touched fingers
     //
 
     for finger in fingers {
+      /**
+      print("frame: \(finger.frame)")
+      print("state: \(finger.state)")
+      print("normalized: \(finger.normalized)")
+      print("size: \(finger.size)")
+      print("pressure: \(finger.pressure)")
+      print("angle: \(finger.angle)")
+      print("absoluteVector: \(finger.absoluteVector)")
+      print("unknown1: \(finger.unknown1)")
+      print("density: \(finger.zDensity)")
+      **/
+      //print("pressure: \(finger.pressure), z: \(finger.zDensity), size: \(finger.size)")
       // state values:
       //   4: touched
       //   1-3,5-7: near
-      let touched = (finger.state == 4)
 
       let s = getFingerState(device: device, identifier: Int(finger.identifier))
+      let palmed = (finger.size > palmThreshold && finger.angle > 12)// || (s.touchedPhysically && s.palmed)
+      let touched = (finger.state == 4 && !palmed)
       s.frame = Int(frame)
       s.point = NSMakePoint(
         CGFloat(finger.normalized.position.x),
@@ -65,11 +82,32 @@ class FingerManager: ObservableObject {
         }
       }
 
-      if s.touchedPhysically != touched {
+
+      if s.touchedPhysically != touched || s.palmed != palmed {
+        /**
+        if palmed {
+          print("Feedback \(palmed ? "Palmed" : "Unpalmed")")
+          
+          hapticPerformer.perform(
+            .levelChange,
+            performanceTime: .now
+            )
+          hapticPerformer.perform(
+            .generic,
+            performanceTime: .now
+            )
+          hapticPerformer.perform(
+            .alignment,
+            performanceTime: .now
+            )
+        }
+        **/
+
+        s.palmed = palmed
         s.touchedPhysically = touched
 
         s.setDelayTask(
-          mode: touched
+          mode: touched || palmed
             ? FingerState.DelayMode.touched
             : FingerState.DelayMode.untouched)
       }
@@ -93,7 +131,7 @@ class FingerManager: ObservableObject {
     // Remove untouched fingers
     //
 
-    states.removeAll(where: { $0.touchedPhysically == false && $0.touchedFixed == false })
+    states.removeAll(where: { $0.touchedPhysically == false && $0.touchedFixed == false && $0.palmed == false })
 
     //
     // Post notifications
@@ -118,35 +156,49 @@ class FingerManager: ObservableObject {
         continue
       }
 
-      if !s.touchedFixed {
-        continue
+      if s.touchedFixed {
+        if s.point.x < x50 {
+          fingerCount.leftHalfAreaCount += 1
+          if s.point.x < x25 {
+            fingerCount.leftQuarterAreaCount += 1
+          }
+        } else {
+          fingerCount.rightHalfAreaCount += 1
+          if s.point.x > x75 {
+            fingerCount.rightQuarterAreaCount += 1
+          }
+        }
+
+        if s.point.y < y50 {
+          fingerCount.lowerHalfAreaCount += 1
+          if s.point.y < y25 {
+            fingerCount.lowerQuarterAreaCount += 1
+          }
+        } else {
+          fingerCount.upperHalfAreaCount += 1
+          if s.point.y > y75 {
+            fingerCount.upperQuarterAreaCount += 1
+          }
+        }
+
+        fingerCount.totalCount += 1
       }
 
-      if s.point.x < x50 {
-        fingerCount.leftHalfAreaCount += 1
-        if s.point.x < x25 {
-          fingerCount.leftQuarterAreaCount += 1
+      if s.palmed {
+        if s.point.x < x50 {
+          fingerCount.leftHalfAreaPalmCount += 1
+        } else {
+          fingerCount.rightHalfAreaPalmCount += 1
         }
-      } else {
-        fingerCount.rightHalfAreaCount += 1
-        if s.point.x > x75 {
-          fingerCount.rightQuarterAreaCount += 1
-        }
-      }
 
-      if s.point.y < y50 {
-        fingerCount.lowerHalfAreaCount += 1
-        if s.point.y < y25 {
-          fingerCount.lowerQuarterAreaCount += 1
+        if s.point.y < y50 {
+          fingerCount.lowerHalfAreaPalmCount += 1
+        } else {
+          fingerCount.upperHalfAreaPalmCount += 1
         }
-      } else {
-        fingerCount.upperHalfAreaCount += 1
-        if s.point.y > y75 {
-          fingerCount.upperQuarterAreaCount += 1
-        }
-      }
 
-      fingerCount.totalCount += 1
+        fingerCount.totalPalmCount += 1
+      }
     }
 
     return fingerCount

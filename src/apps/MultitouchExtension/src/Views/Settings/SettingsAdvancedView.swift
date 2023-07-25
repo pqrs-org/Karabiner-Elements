@@ -81,6 +81,32 @@ struct SettingsAdvancedView: View {
       }
 
       Spacer()
+
+      GroupBox(label: Text("Palm Detection")) {
+        VStack(alignment: .leading, spacing: 30.0) {
+          VStack(alignment: .leading) {
+            HStack {
+              Text("Threshold:")
+
+              DoubleTextField(
+                value: $userSettings.palmThreshold,
+                range: 0...1000000000000000,
+                step: 100000000000000,
+                width: 80)
+
+              Text("size threshold (Default: 100000000000000)")
+
+              Spacer()
+            }
+
+            Text("(Increasing this value allows you to ignore unintended touch)")
+          }
+
+        }
+        .padding(6.0)
+      }
+
+      Spacer()
     }.padding()
   }
 }

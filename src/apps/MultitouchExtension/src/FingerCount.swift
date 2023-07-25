@@ -8,4 +8,9 @@ struct FingerCount {
   var leftHalfAreaCount = 0
   var rightHalfAreaCount = 0
   var totalCount = 0
+  var upperHalfAreaPalmCount = 0
+  var lowerHalfAreaPalmCount = 0
+  var leftHalfAreaPalmCount = 0
+  var rightHalfAreaPalmCount = 0
+  var totalPalmCount = 0
 }
