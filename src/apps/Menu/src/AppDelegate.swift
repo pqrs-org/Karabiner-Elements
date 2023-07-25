@@ -2,8 +2,6 @@ import AppKit
 
 @NSApplicationMain
 public class AppDelegate: NSObject, NSApplicationDelegate {
-  @IBOutlet var menuController: MenuController!
-
   public func applicationDidFinishLaunching(_: Notification) {
     ProcessInfo.processInfo.enableSuddenTermination()
 

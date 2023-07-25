@@ -21,7 +21,8 @@ struct ActionView: View {
 
           HStack {
             Button(action: {
-              KarabinerKit.quitKarabiner(settings.askForConfirmationBeforeQuitting)
+              KarabinerAppHelper.shared.quitKarabiner(
+                askForConfirmation: settings.askForConfirmationBeforeQuitting)
             }) {
               Label("Quit Karabiner-Elements", systemImage: "xmark.circle.fill")
             }

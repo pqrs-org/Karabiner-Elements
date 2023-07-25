@@ -1,4 +1,1 @@
-// -*- mode: objective-c -*-
-
-#import "KarabinerKit/KarabinerKit.h"
-#import "libkrbn/libkrbn.h"
+#include "libkrbn/libkrbn.h"

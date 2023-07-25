@@ -1,4 +1,4 @@
-// -*- mode: objective-c -*-
+#include <AppKit/AppKit.h>
 
 typedef struct {
   float x;
@@ -29,7 +29,7 @@ typedef struct {
 } Finger;
 
 typedef struct CF_BRIDGED_TYPE(id) MTDevice *MTDeviceRef;
-typedef int (*MTContactCallbackFunction)(MTDeviceRef, Finger*, int, double, int);
+typedef int (*MTContactCallbackFunction)(MTDeviceRef, Finger *, int, double, int);
 
 CFMutableArrayRef MTDeviceCreateList(void);
 void MTRegisterContactFrameCallback(MTDeviceRef, MTContactCallbackFunction);

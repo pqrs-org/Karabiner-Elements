@@ -1,3 +1,5 @@
+import AppKit
+
 final class ComplexModificationsAssetFiles: ObservableObject {
   static let shared = ComplexModificationsAssetFiles()
 

@@ -1,3 +1,1 @@
-// -*- mode: objective-c -*-
-
-#import "libkrbn/libkrbn.h"
+#include "libkrbn/libkrbn.h"

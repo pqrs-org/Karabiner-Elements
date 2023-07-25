@@ -1,5 +1,2 @@
-// -*- mode: objective-c -*-
-
-#import "KarabinerKit/KarabinerKit.h"
-#import "MultitouchPrivate.h"
-#import "libkrbn/libkrbn.h"
+#include "MultitouchPrivate.h"
+#include "libkrbn/libkrbn.h"

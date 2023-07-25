@@ -1,3 +1,5 @@
+import AppKit
+
 final class ComplexModificationsFileImport: ObservableObject {
   static let shared = ComplexModificationsFileImport()
 
