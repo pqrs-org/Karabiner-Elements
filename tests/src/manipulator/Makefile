@@ -7,10 +7,9 @@ overwrite_expected_results:
 	./build/overwrite_expected_results
 
 update_input_jsons:
-	for f in json/manipulator_manager/input_event_queue/*.json; do \
-		python3 ../../scripts/update-tests-input-json.py $$f > $$f.tmp; \
-		mv $$f.tmp $$f; \
-		prettier --write $$f; \
-	done
+	python3 ../../scripts/update_tests_input_json.py \
+		json/manipulator_manager/input_event_queue/*.json
+	prettier --write \
+		json/manipulator_manager/input_event_queue/*.json
 
 include ../Makefile.rules
