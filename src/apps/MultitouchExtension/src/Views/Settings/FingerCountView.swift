@@ -31,6 +31,20 @@ struct FingerCountView: View {
         Text("right: \(fingerCount.rightQuarterAreaCount)").font(font)
       }
       .padding(.horizontal, 10.0)
+
+      VStack(alignment: .trailing) {
+        Text("palm-total")
+        Text("\(fingerCount.totalPalmCount)").font(font)
+      }
+      
+      VStack(alignment: .trailing) {
+        Text("palm-half")
+        Text("upper: \(fingerCount.upperHalfAreaPalmCount)").font(font)
+        Text("lower: \(fingerCount.lowerHalfAreaPalmCount)").font(font)
+        Text("left: \(fingerCount.leftHalfAreaPalmCount)").font(font)
+        Text("right: \(fingerCount.rightHalfAreaPalmCount)").font(font)
+      }
+      .padding(.horizontal, 10.0)
     }
   }
 }

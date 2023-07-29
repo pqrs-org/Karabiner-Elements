@@ -36,6 +36,7 @@ struct IgnoredAreaView: View {
             .fill(Color.gray.opacity(0.5))
             .frame(width: areaSize.width, height: areaSize.height)
 
+          let palmThreshold = userSettings.palmThreshold
           let targetArea = userSettings.targetArea
           let areaWidth = areaSize.width * targetArea.size.width
           let areaHeight = areaSize.height * targetArea.size.height
@@ -93,9 +94,13 @@ struct IgnoredAreaView: View {
               })
 
           ForEach(fingerManager.states) { state in
-            if state.touchedPhysically || state.touchedFixed {
-              let diameter = 10.0
-              let color = state.ignored ? Color.black : Color.red
+            if state.touchedPhysically || state.touchedFixed || state.palmed {
+              let minDiameter = 5.0
+              let thresholdDiameter = 15 + palmThreshold * 5
+              let palmed = state.size > palmThreshold
+              let diameter = minDiameter + (thresholdDiameter - minDiameter) * (state.size/palmThreshold)
+              let palmedColor = Color.purple
+              let color = state.ignored ? Color.black : (palmed ? palmedColor : Color.red)
               let leading = areaSize.width * state.point.x - (diameter / 2)
               let top = areaSize.height * (1.0 - state.point.y) - (diameter / 2)
 
@@ -112,6 +117,16 @@ struct IgnoredAreaView: View {
                   .padding(.leading, leading)
                   .padding(.top, top)
               }
+              let palmThresholdLeading = areaSize.width * state.point.x - (thresholdDiameter / 2)
+              let palmThresholdTop = areaSize.height * (1.0 - state.point.y) - (thresholdDiameter / 2)
+              VStack {
+              Circle()
+                .stroke(!state.touchedFixed ? Color.black : (palmed ? Color.gray : palmedColor), style: StrokeStyle(lineWidth: 2))
+                .frame(width: thresholdDiameter)
+              Text("\(String(format: "%.1f", state.size))")
+              }
+                .padding(.leading, palmThresholdLeading)
+                .padding(.top, palmThresholdTop)
             }
           }
         }
