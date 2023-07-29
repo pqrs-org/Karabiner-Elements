@@ -12,6 +12,11 @@ private class PreviousFingerCount {
   var leftHalfAreaCount = PreviousValue()
   var rightHalfAreaCount = PreviousValue()
   var totalCount = PreviousValue()
+  var upperHalfAreaPalmCount = PreviousValue()
+  var lowerHalfAreaPalmCount = PreviousValue()
+  var leftHalfAreaPalmCount = PreviousValue()
+  var rightHalfAreaPalmCount = PreviousValue()
+  var totalPalmCount = PreviousValue()
 }
 
 private var previousFingerCount = PreviousFingerCount()
@@ -68,6 +73,31 @@ private func staticSetGrabberVariable(_ count: FingerCount, _ sync: Bool) {
       name: "multitouch_extension_finger_count_total",
       value: count.totalCount,
       previousValue: previousFingerCount.totalCount
+    ),
+    GrabberVariable(
+      name: "multitouch_extension_palm_count_upper_half_area",
+      value: count.upperHalfAreaPalmCount,
+      previousValue: previousFingerCount.upperHalfAreaPalmCount
+    ),
+    GrabberVariable(
+      name: "multitouch_extension_palm_count_lower_half_area",
+      value: count.lowerHalfAreaPalmCount,
+      previousValue: previousFingerCount.lowerHalfAreaPalmCount
+    ),
+    GrabberVariable(
+      name: "multitouch_extension_palm_count_left_half_area",
+      value: count.leftHalfAreaPalmCount,
+      previousValue: previousFingerCount.leftHalfAreaPalmCount
+    ),
+    GrabberVariable(
+      name: "multitouch_extension_palm_count_right_half_area",
+      value: count.rightHalfAreaPalmCount,
+      previousValue: previousFingerCount.rightHalfAreaPalmCount
+    ),
+    GrabberVariable(
+      name: "multitouch_extension_palm_count_total",
+      value: count.totalPalmCount,
+      previousValue: previousFingerCount.totalPalmCount
     ),
   ] {
     if gv.previousValue.value != gv.value {
