@@ -3,13 +3,13 @@
 ## Beta
 
 -   ✨ New Features
+    -   Palm detection is supported in MultitouchExtension. (Thanks to @quarkw)
     -   Use Bluetooth address (Bluetooth MAC address) is used to identify the device when the Bluetooth device does not have Vendor ID and Product ID. (Thanks to @stackia)
     -   Partial gamepad support (only some buttons on DirectInput devices are supported. Xinput is not supported at all)
     -   Added "Move item to top" and "Move item to bottom" into the context menu of the Complex Modifications list.
     -   Changes for users who write their own json.
         -   The `device_address` condition has been added into `device_if` and `device_unless`. (Thanks to @stackia)
         -   Added `key_up_value` to `set_variable`.
-    -   Palm detection is supported in MultitouchExtension. (Thanks to @quarkw)
 -   ⚡️ Improvements
     -   Added the ability to filter by keywords when adding Complex Modifications rules.
     -   Adjusted the position of the Add rule button in Complex Modifications. (Thanks to @GanZhiXiong)
