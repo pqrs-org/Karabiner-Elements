@@ -97,11 +97,10 @@ struct IgnoredAreaView: View {
             if state.touchedPhysically || state.touchedFixed || state.palmed {
               let minDiameter = 5.0
               let thresholdDiameter = 15 + palmThreshold * 5
-              let palmed = state.size > palmThreshold
               let diameter =
                 minDiameter + (thresholdDiameter - minDiameter) * (state.size / palmThreshold)
               let palmedColor = Color.purple
-              let color = state.ignored ? Color.black : (palmed ? palmedColor : Color.red)
+              let color = state.ignored ? Color.black : (state.palmed ? palmedColor : Color.red)
               let leading = areaSize.width * state.point.x - (diameter / 2)
               let top = areaSize.height * (1.0 - state.point.y) - (diameter / 2)
 
@@ -119,7 +118,7 @@ struct IgnoredAreaView: View {
               VStack {
                 Circle()
                   .stroke(
-                    !state.touchedFixed ? Color.black : (palmed ? Color.gray : palmedColor),
+                    !state.touchedFixed ? Color.black : (state.palmed ? Color.gray : palmedColor),
                     style: StrokeStyle(lineWidth: 2)
                   )
                   .frame(width: thresholdDiameter)

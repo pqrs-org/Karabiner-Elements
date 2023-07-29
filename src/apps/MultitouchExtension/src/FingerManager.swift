@@ -50,10 +50,9 @@ class FingerManager: ObservableObject {
       // state values:
       //   4: touched
       //   1-3,5-7: near
+      let touched = (finger.state == 4)
 
       let s = getFingerState(device: device, identifier: Int(finger.identifier))
-      let palmed = (Double(finger.size) > palmThreshold)
-      let touched = (finger.state == 4 && !palmed)
       s.frame = Int(frame)
       s.size = Double(finger.size)
       s.point = NSMakePoint(
@@ -68,17 +67,19 @@ class FingerManager: ObservableObject {
         }
       }
 
-      if s.touchedPhysically != touched || s.palmed != palmed {
-        if !s.palmed && !s.touchedPhysically {
-          s.setDelayTask(
-            mode: FingerState.DelayMode.touched)
+      // Note:
+      // Once the finger is recognised as a palm, keep `palmed` in order to continue to recognise it as a palm even when the palm leaves.
+      if Double(finger.size) > palmThreshold {
+        s.palmed = true
+      }
 
-        } else if !palmed && !touched {
-          s.setDelayTask(
-            mode: FingerState.DelayMode.untouched)
-        }
-        s.palmed = palmed
+      if s.touchedPhysically != touched {
         s.touchedPhysically = touched
+
+        s.setDelayTask(
+          mode: touched
+            ? FingerState.DelayMode.touched
+            : FingerState.DelayMode.untouched)
       }
     }
 
@@ -87,7 +88,7 @@ class FingerManager: ObservableObject {
     //
 
     for s in states {
-      if s.device == device && s.frame != frame && (s.touchedPhysically && !s.palmed) {
+      if s.device == device && s.frame != frame && s.touchedPhysically {
         s.touchedPhysically = false
         s.palmed = false
 
@@ -101,9 +102,7 @@ class FingerManager: ObservableObject {
     // Remove untouched fingers
     //
 
-    states.removeAll(where: {
-      $0.touchedPhysically == false && $0.touchedFixed == false && $0.palmed == false
-    })
+    states.removeAll(where: { $0.touchedPhysically == false && $0.touchedFixed == false })
 
     //
     // Post notifications
@@ -128,50 +127,52 @@ class FingerManager: ObservableObject {
         continue
       }
 
-      if s.touchedFixed {
-        if s.touchedPhysically {
-          if s.point.x < x50 {
-            fingerCount.leftHalfAreaCount += 1
-            if s.point.x < x25 {
-              fingerCount.leftQuarterAreaCount += 1
-            }
-          } else {
-            fingerCount.rightHalfAreaCount += 1
-            if s.point.x > x75 {
-              fingerCount.rightQuarterAreaCount += 1
-            }
-          }
+      if !s.touchedFixed {
+        continue
+      }
 
-          if s.point.y < y50 {
-            fingerCount.lowerHalfAreaCount += 1
-            if s.point.y < y25 {
-              fingerCount.lowerQuarterAreaCount += 1
-            }
-          } else {
-            fingerCount.upperHalfAreaCount += 1
-            if s.point.y > y75 {
-              fingerCount.upperQuarterAreaCount += 1
-            }
-          }
+      if s.palmed {
+        // If palm is detected, we do not increment touched finger counter.
 
-          fingerCount.totalCount += 1
+        if s.point.x < x50 {
+          fingerCount.leftHalfAreaPalmCount += 1
+        } else {
+          fingerCount.rightHalfAreaPalmCount += 1
         }
 
-        if s.palmed {
-          if s.point.x < x50 {
-            fingerCount.leftHalfAreaPalmCount += 1
-          } else {
-            fingerCount.rightHalfAreaPalmCount += 1
-          }
-
-          if s.point.y < y50 {
-            fingerCount.lowerHalfAreaPalmCount += 1
-          } else {
-            fingerCount.upperHalfAreaPalmCount += 1
-          }
-
-          fingerCount.totalPalmCount += 1
+        if s.point.y < y50 {
+          fingerCount.lowerHalfAreaPalmCount += 1
+        } else {
+          fingerCount.upperHalfAreaPalmCount += 1
         }
+
+        fingerCount.totalPalmCount += 1
+      } else {
+        if s.point.x < x50 {
+          fingerCount.leftHalfAreaCount += 1
+          if s.point.x < x25 {
+            fingerCount.leftQuarterAreaCount += 1
+          }
+        } else {
+          fingerCount.rightHalfAreaCount += 1
+          if s.point.x > x75 {
+            fingerCount.rightQuarterAreaCount += 1
+          }
+        }
+
+        if s.point.y < y50 {
+          fingerCount.lowerHalfAreaCount += 1
+          if s.point.y < y25 {
+            fingerCount.lowerQuarterAreaCount += 1
+          }
+        } else {
+          fingerCount.upperHalfAreaCount += 1
+          if s.point.y > y75 {
+            fingerCount.upperQuarterAreaCount += 1
+          }
+        }
+
+        fingerCount.totalCount += 1
       }
     }
 
