@@ -9,9 +9,11 @@
     -   Changes for users who write their own json.
         -   The `device_address` condition has been added into `device_if` and `device_unless`. (Thanks to @stackia)
         -   Added `key_up_value` to `set_variable`.
+    -   Palm detection is supported in MultitouchExtension. (Thanks to @quarkw)
 -   ⚡️ Improvements
     -   Added the ability to filter by keywords when adding Complex Modifications rules.
     -   Adjusted the position of the Add rule button in Complex Modifications. (Thanks to @GanZhiXiong)
+    -   MultitouchExtension has been rewritten in Swift.
 
 ## Karabiner-Elements 14.12.0
 
