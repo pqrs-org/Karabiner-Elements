@@ -36,7 +36,7 @@ struct FingerCountView: View {
         Text("palm-total")
         Text("\(fingerCount.totalPalmCount)").font(font)
       }
-      
+
       VStack(alignment: .trailing) {
         Text("palm-half")
         Text("upper: \(fingerCount.upperHalfAreaPalmCount)").font(font)

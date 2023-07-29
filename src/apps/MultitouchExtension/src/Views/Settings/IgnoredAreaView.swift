@@ -98,7 +98,8 @@ struct IgnoredAreaView: View {
               let minDiameter = 5.0
               let thresholdDiameter = 15 + palmThreshold * 5
               let palmed = state.size > palmThreshold
-              let diameter = minDiameter + (thresholdDiameter - minDiameter) * (state.size/palmThreshold)
+              let diameter =
+                minDiameter + (thresholdDiameter - minDiameter) * (state.size / palmThreshold)
               let palmedColor = Color.purple
               let color = state.ignored ? Color.black : (palmed ? palmedColor : Color.red)
               let leading = areaSize.width * state.point.x - (diameter / 2)
@@ -118,15 +119,19 @@ struct IgnoredAreaView: View {
                   .padding(.top, top)
               }
               let palmThresholdLeading = areaSize.width * state.point.x - (thresholdDiameter / 2)
-              let palmThresholdTop = areaSize.height * (1.0 - state.point.y) - (thresholdDiameter / 2)
+              let palmThresholdTop =
+                areaSize.height * (1.0 - state.point.y) - (thresholdDiameter / 2)
               VStack {
-              Circle()
-                .stroke(!state.touchedFixed ? Color.black : (palmed ? Color.gray : palmedColor), style: StrokeStyle(lineWidth: 2))
-                .frame(width: thresholdDiameter)
-              Text("\(String(format: "%.1f", state.size))")
+                Circle()
+                  .stroke(
+                    !state.touchedFixed ? Color.black : (palmed ? Color.gray : palmedColor),
+                    style: StrokeStyle(lineWidth: 2)
+                  )
+                  .frame(width: thresholdDiameter)
+                Text("\(String(format: "%.1f", state.size))")
               }
-                .padding(.leading, palmThresholdLeading)
-                .padding(.top, palmThresholdTop)
+              .padding(.leading, palmThresholdLeading)
+              .padding(.top, palmThresholdTop)
             }
           }
         }

@@ -68,15 +68,12 @@ class FingerManager: ObservableObject {
         }
       }
 
-      
-
       if s.touchedPhysically != touched || s.palmed != palmed {
         if !s.palmed && !s.touchedPhysically {
           s.setDelayTask(
             mode: FingerState.DelayMode.touched)
 
-        }
-        else if !palmed && !touched {
+        } else if !palmed && !touched {
           s.setDelayTask(
             mode: FingerState.DelayMode.untouched)
         }
@@ -104,7 +101,9 @@ class FingerManager: ObservableObject {
     // Remove untouched fingers
     //
 
-    states.removeAll(where: { $0.touchedPhysically == false && $0.touchedFixed == false && $0.palmed == false })
+    states.removeAll(where: {
+      $0.touchedPhysically == false && $0.touchedFixed == false && $0.palmed == false
+    })
 
     //
     // Post notifications

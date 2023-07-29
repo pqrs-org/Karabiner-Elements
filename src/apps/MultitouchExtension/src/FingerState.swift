@@ -28,7 +28,7 @@ class FingerState: Identifiable {
 
   // True while the finger has never entered the valid area.
   var ignored = true
-  
+
   // True if the palm is larger than the threshold
   var palmed = false
 
