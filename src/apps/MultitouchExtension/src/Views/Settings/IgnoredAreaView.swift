@@ -105,12 +105,6 @@ struct IgnoredAreaView: View {
               let leading = areaSize.width * state.point.x - (diameter / 2)
               let top = areaSize.height * (1.0 - state.point.y) - (diameter / 2)
 
-              Circle()
-                .stroke(color, style: StrokeStyle(lineWidth: 2))
-                .frame(width: diameter)
-                .padding(.leading, leading)
-                .padding(.top, top)
-
               if state.touchedFixed {
                 Circle()
                   .fill(color)
@@ -118,6 +112,7 @@ struct IgnoredAreaView: View {
                   .padding(.leading, leading)
                   .padding(.top, top)
               }
+
               let palmThresholdLeading = areaSize.width * state.point.x - (thresholdDiameter / 2)
               let palmThresholdTop =
                 areaSize.height * (1.0 - state.point.y) - (thresholdDiameter / 2)
