@@ -90,7 +90,6 @@ class FingerManager: ObservableObject {
     for s in states {
       if s.device == device && s.frame != frame && s.touchedPhysically {
         s.touchedPhysically = false
-        s.palmed = false
 
         s.setDelayTask(mode: FingerState.DelayMode.untouched)
       }
