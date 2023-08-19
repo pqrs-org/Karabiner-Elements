@@ -8,8 +8,8 @@
     -   [x] Menu
     -   [x] Settings
     -   [x] NotificationWindow
--   [ ] Migrate to SwiftUI.
-    -   [ ] MultitouchExtension
+-   [x] Migrate to SwiftUI.
+    -   [x] MultitouchExtension
     -   [x] Settings
     -   [x] EventViewer
     -   [x] NotificationWindow
