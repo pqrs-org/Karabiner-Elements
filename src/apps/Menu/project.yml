@@ -7,8 +7,6 @@ targets:
       CODE_SIGN_ENTITLEMENTS: ''
       CODE_SIGN_IDENTITY: '-'
       CODE_SIGN_STYLE: Manual
-      SYSTEM_HEADER_SEARCH_PATHS:
-        - ../../vendor/cget/include
       HEADER_SEARCH_PATHS:
         - ../../lib/libkrbn/include
       OTHER_LDFLAGS:
@@ -16,6 +14,8 @@ targets:
         - -lkrbn
       OTHER_SWIFT_FLAGS: '-warnings-as-errors'
       SWIFT_OBJC_BRIDGING_HEADER: src/Bridging-Header.h
+      SYSTEM_HEADER_SEARCH_PATHS:
+        - ../../vendor/cget/include
     type: application
     platform: macOS
     deploymentTarget: 11.0

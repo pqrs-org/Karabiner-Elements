@@ -6,12 +6,15 @@ targets:
       CODE_SIGN_ENTITLEMENTS: ''
       CODE_SIGN_IDENTITY: '-'
       CODE_SIGN_STYLE: Manual
-      SYSTEM_HEADER_SEARCH_PATHS:
-        - ../../vendor/cget/include
-        - ../../vendor/Karabiner-DriverKit-VirtualHIDDevice/include
       HEADER_SEARCH_PATHS:
         - include
         - ../../share
+      OTHER_SWIFT_FLAGS: '-warnings-as-errors'
+      SWIFT_OBJC_BRIDGING_HEADER:
+        - ../../vendor/cget/include/pqrs/osx/frontmost_application_monitor/impl/Bridging-Header.h
+      SYSTEM_HEADER_SEARCH_PATHS:
+        - ../../vendor/cget/include
+        - ../../vendor/Karabiner-DriverKit-VirtualHIDDevice/include
     type: library.static
     platform: macOS
     deploymentTarget: 11.0
@@ -21,7 +24,4 @@ targets:
           - -Wall
           - -Werror
           - '-std=c++20'
-      - path: ../../vendor/cget/src/pqrs/osx/frontmost_application_monitor/impl/objc.m
-        compilerFlags:
-          - -Wall
-          - -Werror
+      - path: ../../vendor/cget/src/pqrs/osx/frontmost_application_monitor

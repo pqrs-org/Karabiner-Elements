@@ -6,11 +6,14 @@ targets:
       CODE_SIGN_ENTITLEMENTS: ''
       CODE_SIGN_IDENTITY: '-'
       CODE_SIGN_STYLE: Manual
+      HEADER_SEARCH_PATHS:
+        - ../../share
+      OTHER_SWIFT_FLAGS: '-warnings-as-errors'
+      SWIFT_OBJC_BRIDGING_HEADER:
+        - ../../vendor/cget/include/pqrs/osx/process_info/impl/Bridging-Header.h
       SYSTEM_HEADER_SEARCH_PATHS:
         - ../../vendor/cget/include
         - ../../vendor/Karabiner-DriverKit-VirtualHIDDevice/include
-      HEADER_SEARCH_PATHS:
-        - ../../share
     type: tool
     platform: macOS
     deploymentTarget: 11.0

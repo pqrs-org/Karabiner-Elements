@@ -1,10 +1,11 @@
 all:
 	$(MAKE) -C ../../src/lib/libkrbn
-	$(MAKE) build_make
+	xcodegen generate
+	xcodebuild -configuration Release -alltargets SYMROOT="$(CURDIR)/build"
 
 clean: clean_builds
 
 run:
-	./build/a.out
+	./build/Release/dump_libkrbn
 
 include ../Makefile.rules

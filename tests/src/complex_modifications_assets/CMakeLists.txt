@@ -7,5 +7,4 @@ project (karabiner_test)
 add_executable(
   karabiner_test
   src/test.cpp
-  ../../../src/vendor/cget/src/pqrs/osx/process_info/objc.m
 )

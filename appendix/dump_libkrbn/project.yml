@@ -1,0 +1,29 @@
+name: dump_libkrbn
+
+targets:
+  dump_libkrbn:
+    settings:
+      CODE_SIGN_ENTITLEMENTS: ''
+      CODE_SIGN_IDENTITY: '-'
+      CODE_SIGN_STYLE: Manual
+      HEADER_SEARCH_PATHS:
+        - ../../src/lib/libkrbn/include
+      OTHER_LDFLAGS:
+        - -L../../src/lib/libkrbn/build/Release
+        - -lkrbn
+      OTHER_SWIFT_FLAGS: '-warnings-as-errors'
+      SWIFT_OBJC_BRIDGING_HEADER: Bridging-Header.h
+      SYSTEM_HEADER_SEARCH_PATHS:
+        - ../../src/vendor/cget/include
+        - ../../src/vendor/Karabiner-DriverKit-VirtualHIDDevice/include
+    type: tool
+    platform: macOS
+    deploymentTarget: 11.0
+    sources:
+      - path: main.cpp
+        compilerFlags:
+          - -Wall
+          - -Werror
+          - '-std=c++20'
+      - path: ../../src/vendor/cget/src/pqrs/osx/frontmost_application_monitor
+      - path: ../../src/vendor/cget/src/pqrs/osx/process_info

@@ -7,4 +7,5 @@ build_make:
 
 .PHONY: clean_builds
 clean_builds:
+	rm -fr *.xcodeproj
 	rm -rf build
