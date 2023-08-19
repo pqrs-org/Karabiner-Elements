@@ -69,43 +69,90 @@ struct co_spawn_work_guard<Executor,
 
 #endif // !defined(ASIO_NO_TS_EXECUTORS)
 
-template <typename Executor>
-inline co_spawn_work_guard<Executor>
-make_co_spawn_work_guard(const Executor& ex)
+template <typename Handler, typename Executor,
+    typename Function, typename = void>
+struct co_spawn_state
 {
-  return co_spawn_work_guard<Executor>(ex);
-}
+  template <typename H, typename F>
+  co_spawn_state(H&& h, const Executor& ex, F&& f)
+    : handler(std::forward<H>(h)),
+      spawn_work(ex),
+      handler_work(asio::get_associated_executor(handler, ex)),
+      function(std::forward<F>(f))
+  {
+  }
 
-template <typename T, typename Executor, typename F, typename Handler>
+  Handler handler;
+  co_spawn_work_guard<Executor> spawn_work;
+  co_spawn_work_guard<typename associated_executor<
+    Handler, Executor>::type> handler_work;
+  Function function;
+};
+
+template <typename Handler, typename Executor, typename Function>
+struct co_spawn_state<Handler, Executor, Function,
+    typename enable_if<
+      is_same<
+        typename associated_executor<Handler,
+          Executor>::asio_associated_executor_is_unspecialised,
+        void
+      >::value
+    >::type>
+{
+  template <typename H, typename F>
+  co_spawn_state(H&& h, const Executor& ex, F&& f)
+    : handler(std::forward<H>(h)),
+      handler_work(ex),
+      function(std::forward<F>(f))
+  {
+  }
+
+  Handler handler;
+  co_spawn_work_guard<Executor> handler_work;
+  Function function;
+};
+
+struct co_spawn_dispatch
+{
+  template <typename CompletionToken>
+  auto operator()(CompletionToken&& token) const
+    -> decltype(asio::dispatch(std::forward<CompletionToken>(token)))
+  {
+    return asio::dispatch(std::forward<CompletionToken>(token));
+  }
+};
+
+struct co_spawn_post
+{
+  template <typename CompletionToken>
+  auto operator()(CompletionToken&& token) const
+    -> decltype(asio::post(std::forward<CompletionToken>(token)))
+  {
+    return asio::post(std::forward<CompletionToken>(token));
+  }
+};
+
+template <typename T, typename Handler, typename Executor, typename Function>
 awaitable<awaitable_thread_entry_point, Executor> co_spawn_entry_point(
-    awaitable<T, Executor>*, Executor ex, F f, Handler handler)
+    awaitable<T, Executor>*, co_spawn_state<Handler, Executor, Function> s)
 {
-  auto spawn_work = make_co_spawn_work_guard(ex);
-  auto handler_work = make_co_spawn_work_guard(
-      asio::get_associated_executor(handler, ex));
-
-  (void) co_await (dispatch)(
-      use_awaitable_t<Executor>{__FILE__, __LINE__, "co_spawn_entry_point"});
+  (void) co_await co_spawn_dispatch{};
 
   (co_await awaitable_thread_has_context_switched{}) = false;
   std::exception_ptr e = nullptr;
   bool done = false;
   try
   {
-    T t = co_await f();
+    T t = co_await s.function();
 
     done = true;
 
     bool switched = (co_await awaitable_thread_has_context_switched{});
     if (!switched)
-    {
-      (void) co_await (post)(
-          use_awaitable_t<Executor>{__FILE__,
-            __LINE__, "co_spawn_entry_point"});
-    }
+      (void) co_await co_spawn_post();
 
-    (dispatch)(handler_work.get_executor(),
-        [handler = std::move(handler), t = std::move(t)]() mutable
+    (dispatch)(s.handler_work.get_executor(),
+        [handler = std::move(s.handler), t = std::move(t)]() mutable
         {
           std::move(handler)(std::exception_ptr(), std::move(t));
         });
@@ -122,34 +169,26 @@ awaitable<awaitable_thread_entry_point, Executor> co_spawn_entry_point(
 
   bool switched = (co_await awaitable_thread_has_context_switched{});
   if (!switched)
-  {
-    (void) co_await (post)(
-        use_awaitable_t<Executor>{__FILE__, __LINE__, "co_spawn_entry_point"});
-  }
+    (void) co_await co_spawn_post();
 
-  (dispatch)(handler_work.get_executor(),
-      [handler = std::move(handler), e]() mutable
+  (dispatch)(s.handler_work.get_executor(),
+      [handler = std::move(s.handler), e]() mutable
       {
         std::move(handler)(e, T());
       });
 }
 
-template <typename Executor, typename F, typename Handler>
+template <typename Handler, typename Executor, typename Function>
 awaitable<awaitable_thread_entry_point, Executor> co_spawn_entry_point(
-    awaitable<void, Executor>*, Executor ex, F f, Handler handler)
+    awaitable<void, Executor>*, co_spawn_state<Handler, Executor, Function> s)
 {
-  auto spawn_work = make_co_spawn_work_guard(ex);
-  auto handler_work = make_co_spawn_work_guard(
-      asio::get_associated_executor(handler, ex));
-
-  (void) co_await (dispatch)(
-      use_awaitable_t<Executor>{__FILE__, __LINE__, "co_spawn_entry_point"});
+  (void) co_await co_spawn_dispatch{};
 
   (co_await awaitable_thread_has_context_switched{}) = false;
   std::exception_ptr e = nullptr;
   try
   {
-    co_await f();
+    co_await s.function();
   }
   catch (...)
   {
@@ -158,13 +197,10 @@ awaitable<awaitable_thread_entry_point, Executor> co_spawn_entry_point(
 
   bool switched = (co_await awaitable_thread_has_context_switched{});
   if (!switched)
-  {
-    (void) co_await (post)(
-        use_awaitable_t<Executor>{__FILE__, __LINE__, "co_spawn_entry_point"});
-  }
+    (void) co_await co_spawn_post();
 
-  (dispatch)(handler_work.get_executor(),
-      [handler = std::move(handler), e]() mutable
+  (dispatch)(s.handler_work.get_executor(),
+      [handler = std::move(s.handler), e]() mutable
       {
         std::move(handler)(e);
       });
@@ -265,6 +301,7 @@ public:
   {
     typedef typename result_of<F()>::type awaitable_type;
     typedef typename decay<Handler>::type handler_type;
+    typedef typename decay<F>::type function_type;
     typedef co_spawn_cancellation_handler<
       handler_type, Executor> cancel_handler_type;
 
@@ -281,7 +318,8 @@ public:
     cancellation_state cancel_state(proxy_slot);
 
     auto a = (co_spawn_entry_point)(static_cast<awaitable_type*>(nullptr),
-        ex_, std::forward<F>(f), std::forward<Handler>(handler));
+        co_spawn_state<handler_type, Executor, function_type>(
+          std::forward<Handler>(handler), ex_, std::forward<F>(f)));
     awaitable_handler<executor_type, void>(std::move(a),
         ex_, proxy_slot, cancel_state).launch();
   }

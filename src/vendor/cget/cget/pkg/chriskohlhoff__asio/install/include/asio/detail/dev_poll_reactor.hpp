@@ -108,9 +108,8 @@ public:
   {
     start_op(op_type, descriptor, descriptor_data,
         op, is_continuation, allow_speculative,
-        &epoll_reactor::call_post_immediate_completion, this);
+        &dev_poll_reactor::call_post_immediate_completion, this);
   }
-
 
   // Cancel all operations associated with the given descriptor. The
   // handlers associated with the descriptor will be invoked with the

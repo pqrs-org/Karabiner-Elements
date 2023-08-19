@@ -700,7 +700,7 @@ protected:
   {
   public:
     reactor_op_cancellation(reactor* r,
-        reactor::per_descriptor_data* p, int d, int o)
+        reactor::per_descriptor_data* p, socket_type d, int o)
       : reactor_(r),
         reactor_data_(p),
         descriptor_(d),
@@ -723,7 +723,7 @@ protected:
   private:
     reactor* reactor_;
     reactor::per_descriptor_data* reactor_data_;
-    int descriptor_;
+    socket_type descriptor_;
     int op_type_;
   };
 

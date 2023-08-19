@@ -2,12 +2,12 @@
 
 // (C) Copyright Takayama Fumihiko 2019.
 // Distributed under the Boost Software License, Version 1.0.
-// (See http://www.boost.org/LICENSE_1_0.txt)
+// (See https://www.boost.org/LICENSE_1_0.txt)
 
 // `pqrs::osx::frontmost_application_monitor` can be used safely in a multi-threaded environment.
 
 #include "application.hpp"
-#include "impl/objc.h"
+#include "impl/impl.h"
 #include <nod/nod.hpp>
 #include <pqrs/dispatcher.hpp>
 
@@ -24,8 +24,7 @@ public:
 
   monitor(const monitor&) = delete;
 
-  monitor(std::weak_ptr<dispatcher::dispatcher> weak_dispatcher) : dispatcher_client(weak_dispatcher),
-                                                                   monitor_(nullptr) {
+  monitor(std::weak_ptr<dispatcher::dispatcher> weak_dispatcher) : dispatcher_client(weak_dispatcher) {
   }
 
   virtual ~monitor(void) {
@@ -36,13 +35,8 @@ public:
 
   void async_start(void) {
     enqueue_to_dispatcher([this] {
-      if (monitor_) {
-        return;
-      }
-
-      pqrs_osx_frontmost_application_monitor_initialize(&monitor_,
-                                                        static_cpp_callback,
-                                                        this);
+      pqrs_osx_frontmost_application_monitor_register(static_cpp_callback,
+                                                      this);
     });
   }
 
@@ -54,12 +48,10 @@ public:
 
 private:
   void stop(void) {
-    if (!monitor_) {
-      return;
-    }
-
-    pqrs_osx_frontmost_application_monitor_terminate(&monitor_);
-    monitor_ = nullptr;
+    enqueue_to_dispatcher([this] {
+      pqrs_osx_frontmost_application_monitor_unregister(static_cpp_callback,
+                                                        this);
+    });
   }
 
   static void static_cpp_callback(const char* bundle_identifier,
@@ -85,8 +77,6 @@ private:
       frontmost_application_changed(application_ptr);
     });
   }
-
-  pqrs_osx_frontmost_application_monitor_objc* monitor_;
 };
 } // namespace frontmost_application_monitor
 } // namespace osx

@@ -435,15 +435,16 @@ void io_uring_service::run(long usec, op_queue<operation>& ops)
     ? ::io_uring_peek_cqe(&ring_, &cqe)
     : ::io_uring_wait_cqe(&ring_, &cqe);
 
-  if (result == 0 && usec > 0)
+  if (local_ops > 0)
   {
-    if (::io_uring_cqe_get_data(cqe) != &ts)
+    if (result != 0 || ::io_uring_cqe_get_data(cqe) != &ts)
     {
       mutex::scoped_lock lock(mutex_);
       if (::io_uring_sqe* sqe = get_sqe())
       {
         ++local_ops;
         ::io_uring_prep_timeout_remove(sqe, reinterpret_cast<__u64>(&ts), 0);
+        ::io_uring_sqe_set_data(sqe, &ts);
         submit_sqes();
       }
     }
@@ -451,37 +452,41 @@ void io_uring_service::run(long usec, op_queue<operation>& ops)
 
   bool check_timers = false;
   int count = 0;
-  while (result == 0)
+  while (result == 0 || local_ops > 0)
   {
-    if (void* ptr = ::io_uring_cqe_get_data(cqe))
+    if (result == 0)
     {
-      if (ptr == this)
+      if (void* ptr = ::io_uring_cqe_get_data(cqe))
       {
-        // The io_uring service was interrupted.
+        if (ptr == this)
+        {
+          // The io_uring service was interrupted.
+        }
+        else if (ptr == &timer_queues_)
+        {
+          check_timers = true;
+        }
+        else if (ptr == &timeout_)
+        {
+          check_timers = true;
+          timeout_.tv_sec = 0;
+          timeout_.tv_nsec = 0;
+        }
+        else if (ptr == &ts)
+        {
+          --local_ops;
+        }
+        else
+        {
+          io_queue* io_q = static_cast<io_queue*>(ptr);
+          io_q->set_result(cqe->res);
+          ops.push(io_q);
+        }
       }
-      else if (ptr == &timer_queues_)
-      {
-        check_timers = true;
-      }
-      else if (ptr == &timeout_)
-      {
-        check_timers = true;
-        timeout_.tv_sec = 0;
-        timeout_.tv_nsec = 0;
-      }
-      else if (ptr == &ts)
-      {
-        --local_ops;
-      }
-      else
-      {
-        io_queue* io_q = static_cast<io_queue*>(ptr);
-        io_q->set_result(cqe->res);
-        ops.push(io_q);
-      }
+      ::io_uring_cqe_seen(&ring_, cqe);
+      ++count;
     }
-    ::io_uring_cqe_seen(&ring_, cqe);
-    result = (++count < complete_batch_size || local_ops > 0)
+    result = (count < complete_batch_size || local_ops > 0)
       ? ::io_uring_peek_cqe(&ring_, &cqe) : -EAGAIN;
   }
 

@@ -386,6 +386,7 @@ asio::error_code signal_set_service::add(
         if (state->flags_[signal_number] != signal_set_base::flags::dont_care)
         {
           ec = asio::error::invalid_argument;
+          delete new_registration;
           return ec;
         }
         struct sigaction sa;
@@ -397,6 +398,7 @@ asio::error_code signal_set_service::add(
         {
           ec = asio::error_code(errno,
               asio::error::get_system_category());
+          delete new_registration;
           return ec;
         }
         state->flags_[signal_number] = f;

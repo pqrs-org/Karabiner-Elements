@@ -242,7 +242,7 @@ public:
     : service_(other.service_),
       executor_(other.executor_)
   {
-    service_->move_construct(impl_, *other.service_, other.impl_);
+    service_->move_construct(impl_, other.impl_);
   }
 
   /// Move-assign a basic_channel from another.
