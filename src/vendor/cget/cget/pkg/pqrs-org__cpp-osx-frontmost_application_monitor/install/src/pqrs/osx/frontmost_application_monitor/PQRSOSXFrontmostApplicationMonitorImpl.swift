@@ -4,7 +4,7 @@
 
 import AppKit
 
-private actor PQRSOSXFrontmostApplicationMonitor {
+private class PQRSOSXFrontmostApplicationMonitor {
   static let shared = PQRSOSXFrontmostApplicationMonitor()
 
   struct Callback {
@@ -12,6 +12,9 @@ private actor PQRSOSXFrontmostApplicationMonitor {
     let context: UnsafeMutableRawPointer?
   }
 
+  // Use DispatchQueue instead of Swift Concurrency for macOS 11 support with C++ project.
+  // There is Swift Concurrency implementation in `appendix/PQRSOSXFrontmostApplicationMonitorImpl.swift`.
+  let queue = DispatchQueue(label: "org.pqrs.osx.frontmost_application_monitor")
   var callbacks: [Callback] = []
 
   init() {
@@ -22,15 +25,19 @@ private actor PQRSOSXFrontmostApplicationMonitor {
       forName: NSWorkspace.didActivateApplicationNotification,
       object: sharedWorkspace,
       queue: nil
-    ) { note in
+    ) { [weak self] note in
+      guard let self = self else { return }
+
       guard let userInfo = note.userInfo else {
         print("Missing notification info on NSWorkspace.didActivateApplicationNotification")
         return
       }
       let runningApplication = userInfo[NSWorkspace.applicationUserInfoKey] as! NSRunningApplication
 
-      Task.detached {
-        await self.runCallback(runningApplication)
+      self.queue.async { [weak self] in
+        guard let self = self else { return }
+
+        self.runCallback(runningApplication)
       }
     }
   }
@@ -84,14 +91,14 @@ func register(
   _ function: pqrs_osx_frontmost_application_monitor_callback,
   _ context: pqrs_osx_frontmost_application_monitor_callback_context
 ) {
-  Task.detached {
-    await PQRSOSXFrontmostApplicationMonitor.shared.register(
+  PQRSOSXFrontmostApplicationMonitor.shared.queue.async {
+    PQRSOSXFrontmostApplicationMonitor.shared.register(
       PQRSOSXFrontmostApplicationMonitor.Callback(
         function: function,
         context: context
       ))
 
-    await PQRSOSXFrontmostApplicationMonitor.shared.runCallbackWithFrontmostApplication()
+    PQRSOSXFrontmostApplicationMonitor.shared.runCallbackWithFrontmostApplication()
   }
 }
 
@@ -100,8 +107,8 @@ func unregister(
   _ function: pqrs_osx_frontmost_application_monitor_callback,
   _ context: pqrs_osx_frontmost_application_monitor_callback_context
 ) {
-  Task.detached {
-    await PQRSOSXFrontmostApplicationMonitor.shared.unregister(
+  PQRSOSXFrontmostApplicationMonitor.shared.queue.async {
+    PQRSOSXFrontmostApplicationMonitor.shared.unregister(
       PQRSOSXFrontmostApplicationMonitor.Callback(
         function: function,
         context: context
