@@ -17,10 +17,17 @@ int main(void) {
     }
 
     try {
-      krbn::duktape_utility::eval_file("data/reference-error.js");
+      krbn::duktape_utility::eval_file("data/reference_error.js");
       expect(false);
     } catch (krbn::duktape_eval_error& ex) {
       expect("javascript error: ReferenceError: identifier 'console2' undefined"sv == ex.what());
+    }
+
+    try {
+      krbn::duktape_utility::eval_file("data/module_not_found.js");
+      expect(false);
+    } catch (krbn::duktape_eval_error& ex) {
+      expect("javascript error: TypeError: cannot find module: data/not_found.js"sv == ex.what());
     }
   };
 

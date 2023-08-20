@@ -79,5 +79,23 @@ inline std::filesystem::path find_socket_file_path(const std::filesystem::path& 
 
   return directory / "not_found.sock";
 }
+
+inline std::optional<std::string> read_file(const std::filesystem::path& path) {
+  std::ifstream input(path);
+  if (input) {
+    std::string code;
+
+    input.seekg(0, std::ios::end);
+    code.reserve(input.tellg());
+    input.seekg(0, std::ios::beg);
+
+    code.assign(std::istreambuf_iterator<char>(input),
+                std::istreambuf_iterator<char>());
+
+    return code;
+  }
+
+  return std::nullopt;
+}
 } // namespace filesystem_utility
 } // namespace krbn
