@@ -127,7 +127,10 @@ int main(int argc, char** argv) {
   options.add_options()("remove-system-default-profile", "Remove the system default profile.");
   options.add_options()("lint-complex-modifications", "Check complex_modifications.json",
                         cxxopts::value<std::string>(),
-                        "complex_modifications.json");
+                        "glob-pattern");
+  options.add_options()("format-json", "Format json file",
+                        cxxopts::value<std::string>(),
+                        "glob-pattern");
   options.add_options()("version", "Displays version.");
   options.add_options()("version-number", "Displays version_number.");
   options.add_options()("help", "Print help.");
@@ -219,6 +222,35 @@ int main(int argc, char** argv) {
             exit_code = 1;
             std::cout << e.what() << std::endl;
             goto finish;
+          }
+        }
+
+        goto finish;
+      }
+    }
+
+    {
+      std::string key = "format-json";
+      if (parse_result.count(key)) {
+        auto glob_pattern = parse_result[key].as<std::string>();
+        for (const auto& file_path : glob::glob(glob_pattern)) {
+          std::cout << "formatting " << file_path.string() << std::endl;
+
+          std::ifstream input(file_path);
+          if (input) {
+            try {
+              auto json = krbn::json_utility::parse_jsonc(input);
+
+              auto status = std::filesystem::status(file_path);
+              auto directory_status = std::filesystem::status(file_path.parent_path());
+
+              krbn::json_writer::sync_save_to_file(json,
+                                                   file_path,
+                                                   static_cast<mode_t>(directory_status.permissions()),
+                                                   static_cast<mode_t>(status.permissions()));
+            } catch (std::exception& e) {
+              krbn::logger::get_logger()->error("parse error in {0}: {1}", file_path.string(), e.what());
+            }
           }
         }
 
