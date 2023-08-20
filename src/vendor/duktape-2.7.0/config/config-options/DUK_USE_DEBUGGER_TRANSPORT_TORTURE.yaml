@@ -1,0 +1,14 @@
+define: DUK_USE_DEBUGGER_TRANSPORT_TORTURE
+introduced: 1.2.0
+# Option is ignored unless debugger support is enabled.
+#requires:
+#  - DUK_USE_DEBUGGER_SUPPORT
+default: false
+tags:
+  - debugger
+  - development
+  - torture
+description: >
+  Development time option: force debugger transport torture.  Concretely this
+  now causes Duktape to read/write debug protocol data in 1-byte increments,
+  which stresses message parsing and transport code.

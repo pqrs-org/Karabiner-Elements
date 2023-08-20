@@ -1,0 +1,22 @@
+define: DUK_USE_ROM_OBJECTS
+introduced: 1.5.0
+requires:
+  - DUK_USE_ROM_STRINGS  # use both DUK_USE_ROM_STRINGS + DUK_USE_ROM_OBJECTS together for now
+default: false
+tags:
+  - lowmemory
+  - experimental
+description: >
+  Enable support for built-in objects compiled as constants and placed in a
+  read-only data section.  This reduces startup RAM usage considerably at the
+  cost of a larger code footprint and slower performance overall.  The built-in
+  objects will be immutable: the objects will be non-extensible.
+
+  ROM objects will always be non-extensible and properties are forced to be
+  non-configurable.  Other property attributes will have their usual values;
+  in particular, properties can be "writable" from a property attributes
+  standpoint, but an attempt to actually change the property value will fail
+  with a TypeError.  This may seem strange, but is necessary to allow a
+  property value to be overridden in a RAM object inheriting from a ROM object:
+  if the inherited ROM property was not writable, ECMAScript semantics would
+  prevent a new property from being established in the RAM object.

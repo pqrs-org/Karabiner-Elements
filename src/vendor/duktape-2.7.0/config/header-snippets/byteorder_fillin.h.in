@@ -1,0 +1,109 @@
+/*
+ *  Byte order and double memory layout detection
+ *
+ *  Endianness detection is a major portability hassle because the macros
+ *  and headers are not standardized.  There's even variance across UNIX
+ *  platforms.  Even with "standard" headers, details like underscore count
+ *  varies between platforms, e.g. both __BYTE_ORDER and _BYTE_ORDER are used
+ *  (Crossbridge has a single underscore, for instance).
+ *
+ *  The checks below are structured with this in mind: several approaches are
+ *  used, and at the end we check if any of them worked.  This allows generic
+ *  approaches to be tried first, and platform/compiler specific hacks tried
+ *  last.  As a last resort, the user can force a specific endianness, as it's
+ *  not likely that automatic detection will work on the most exotic platforms.
+ *
+ *  Duktape supports little and big endian machines.  There's also support
+ *  for a hybrid used by some ARM machines where integers are little endian
+ *  but IEEE double values use a mixed order (12345678 -> 43218765).  This
+ *  byte order for doubles is referred to as "mixed endian".
+ */
+
+/* GCC and Clang provide endianness defines as built-in predefines, with
+ * leading and trailing double underscores (e.g. __BYTE_ORDER__).  See
+ * output of "make gccpredefs" and "make clangpredefs".  Clang doesn't
+ * seem to provide __FLOAT_WORD_ORDER__; assume not mixed endian for clang.
+ * http://gcc.gnu.org/onlinedocs/cpp/Common-Predefined-Macros.html
+ */
+#if !defined(DUK_USE_BYTEORDER) && defined(__BYTE_ORDER__)
+#if defined(__ORDER_LITTLE_ENDIAN__) && (__BYTE_ORDER__ == __ORDER_LITTLE_ENDIAN__)
+#if defined(__FLOAT_WORD_ORDER__) && defined(__ORDER_LITTLE_ENDIAN__) && (__FLOAT_WORD_ORDER__ == __ORDER_LITTLE_ENDIAN__)
+#define DUK_USE_BYTEORDER 1
+#elif defined(__FLOAT_WORD_ORDER__) && defined(__ORDER_BIG_ENDIAN__) && (__FLOAT_WORD_ORDER__ == __ORDER_BIG_ENDIAN__)
+#define DUK_USE_BYTEORDER 2
+#elif !defined(__FLOAT_WORD_ORDER__)
+/* Float word order not known, assume not a hybrid. */
+#define DUK_USE_BYTEORDER 1
+#else
+/* Byte order is little endian but cannot determine IEEE double word order. */
+#endif  /* float word order */
+#elif defined(__ORDER_BIG_ENDIAN__) && (__BYTE_ORDER__ == __ORDER_BIG_ENDIAN__)
+#if defined(__FLOAT_WORD_ORDER__) && defined(__ORDER_BIG_ENDIAN__) && (__FLOAT_WORD_ORDER__ == __ORDER_BIG_ENDIAN__)
+#define DUK_USE_BYTEORDER 3
+#elif !defined(__FLOAT_WORD_ORDER__)
+/* Float word order not known, assume not a hybrid. */
+#define DUK_USE_BYTEORDER 3
+#else
+/* Byte order is big endian but cannot determine IEEE double word order. */
+#endif  /* float word order */
+#else
+/* Cannot determine byte order; __ORDER_PDP_ENDIAN__ is related to 32-bit
+ * integer ordering and is not relevant.
+ */
+#endif  /* integer byte order */
+#endif  /* !defined(DUK_USE_BYTEORDER) && defined(__BYTE_ORDER__) */
+
+/* More or less standard endianness predefines provided by header files.
+ * The ARM hybrid case is detected by assuming that __FLOAT_WORD_ORDER
+ * will be big endian, see: http://lists.mysql.com/internals/443.
+ * On some platforms some defines may be present with an empty value which
+ * causes comparisons to fail: https://github.com/svaarala/duktape/issues/453.
+ */
+#if !defined(DUK_USE_BYTEORDER)
+#if defined(__BYTE_ORDER) && defined(__LITTLE_ENDIAN) && (__BYTE_ORDER == __LITTLE_ENDIAN) || \
+    defined(_BYTE_ORDER) && defined(_LITTLE_ENDIAN) && (_BYTE_ORDER == _LITTLE_ENDIAN) || \
+    defined(__LITTLE_ENDIAN__)
+#if defined(__FLOAT_WORD_ORDER) && defined(__LITTLE_ENDIAN) && (__FLOAT_WORD_ORDER == __LITTLE_ENDIAN) || \
+    defined(_FLOAT_WORD_ORDER) && defined(_LITTLE_ENDIAN) && (_FLOAT_WORD_ORDER == _LITTLE_ENDIAN)
+#define DUK_USE_BYTEORDER 1
+#elif defined(__FLOAT_WORD_ORDER) && defined(__BIG_ENDIAN) && (__FLOAT_WORD_ORDER == __BIG_ENDIAN) || \
+      defined(_FLOAT_WORD_ORDER) && defined(_BIG_ENDIAN) && (_FLOAT_WORD_ORDER == _BIG_ENDIAN)
+#define DUK_USE_BYTEORDER 2
+#elif !defined(__FLOAT_WORD_ORDER) && !defined(_FLOAT_WORD_ORDER)
+/* Float word order not known, assume not a hybrid. */
+#define DUK_USE_BYTEORDER 1
+#else
+/* Byte order is little endian but cannot determine IEEE double word order. */
+#endif  /* float word order */
+#elif defined(__BYTE_ORDER) && defined(__BIG_ENDIAN) && (__BYTE_ORDER == __BIG_ENDIAN) || \
+      defined(_BYTE_ORDER) && defined(_BIG_ENDIAN) && (_BYTE_ORDER == _BIG_ENDIAN) || \
+      defined(__BIG_ENDIAN__)
+#if defined(__FLOAT_WORD_ORDER) && defined(__BIG_ENDIAN) && (__FLOAT_WORD_ORDER == __BIG_ENDIAN) || \
+    defined(_FLOAT_WORD_ORDER) && defined(_BIG_ENDIAN) && (_FLOAT_WORD_ORDER == _BIG_ENDIAN)
+#define DUK_USE_BYTEORDER 3
+#elif !defined(__FLOAT_WORD_ORDER) && !defined(_FLOAT_WORD_ORDER)
+/* Float word order not known, assume not a hybrid. */
+#define DUK_USE_BYTEORDER 3
+#else
+/* Byte order is big endian but cannot determine IEEE double word order. */
+#endif  /* float word order */
+#else
+/* Cannot determine byte order. */
+#endif  /* integer byte order */
+#endif  /* !defined(DUK_USE_BYTEORDER) */
+
+/* QNX gcc cross compiler seems to define e.g. __LITTLEENDIAN__ or __BIGENDIAN__:
+ *  $ /opt/qnx650/host/linux/x86/usr/bin/i486-pc-nto-qnx6.5.0-gcc -dM -E - </dev/null | grep -ni endian
+ *  67:#define __LITTLEENDIAN__ 1
+ *  $ /opt/qnx650/host/linux/x86/usr/bin/mips-unknown-nto-qnx6.5.0-gcc -dM -E - </dev/null | grep -ni endian
+ *  81:#define __BIGENDIAN__ 1
+ *  $ /opt/qnx650/host/linux/x86/usr/bin/arm-unknown-nto-qnx6.5.0-gcc -dM -E - </dev/null | grep -ni endian
+ *  70:#define __LITTLEENDIAN__ 1
+ */
+#if !defined(DUK_USE_BYTEORDER)
+#if defined(__LITTLEENDIAN__)
+#define DUK_USE_BYTEORDER 1
+#elif defined(__BIGENDIAN__)
+#define DUK_USE_BYTEORDER 3
+#endif
+#endif

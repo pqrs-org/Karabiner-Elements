@@ -1,0 +1,11 @@
+define: DUK_USE_NONSTD_ARRAY_CONCAT_TRAILER
+introduced: 1.0.0
+removed: 2.3.0
+default: true
+tags:
+  - ecmascript
+  - compliance
+description: >
+  In ES5.1 trailing gaps of an argument array don't count towards the result
+  length.  This is in essence a specification "bug" which was fixed in ES2015.
+  This option was removed in 2.3.0, and the remaining behavior matches ES2015.

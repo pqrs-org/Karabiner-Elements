@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8" />
+<link rel="stylesheet" href="reset.css" type="text/css" />
+<link rel="stylesheet" href="jquery-ui.min.css" type="text/css" />
+<link rel="stylesheet" href="style.css" type="text/css" />
+<title>Duktape debugger</title>
+</head>
+<body>
+
+<div id="part-header">
+((o) Duktape debugger
+</div>  <!-- #part-header -->
+
+<div id="part-middle">
+
+<div id="left-area">
+<a class="button" href="#" id="stepinto-button">Step&#x00a0;into</a>
+<a class="button" href="#" id="stepover-button">Step&#x00a0;over</a>
+<a class="button" href="#" id="stepout-button">Step&#x00a0;out</a>
+<a class="button" href="#" id="resume-button">Resume</a>
+<a class="button" href="#" id="pause-button">Pause</a>
+<br />
+<br />
+<br />
+<br />
+<a class="button" href="#" id="attach-button">Attach</a>
+<a class="button" href="#" id="detach-button">Detach</a>
+<a class="button" href="#" id="about-button">About</a>
+<a class="button" id="heap-dump-download-button" href="/heapDump.json" target="_blank">Dump&#x00a0;heap</a>
+<a class="button" href="#" id="show-bytecode-button">Show bytecode</a>
+</div>  <!-- #left-area -->
+
+<div id="center-area">
+<pre id="source-pre" class="sourcecode"><code id="source-code" class="sourcecode">
+// No source loaded
+</code></pre>
+<div>
+<select id="source-select"></select><br />
+<!-- <span id="source-filename">?</span> -->
+</div>
+<div id="exec-status">
+<div id="exec-state"><span id="current-state">?</span></div>
+<div id="exec-other"><span id="current-fileline">?</span><br /><span id="current-funcpc">?</span></div>
+</div>  <!-- #exec-status -->
+<div id="output">
+<div style="color: #dddddd">(output from script, print() and alert() calls)</div>
+</div>
+</div>  <!-- #center-area -->
+
+<div id="right-area">
+<div id="callstack">
+<div style="color: #dddddd">(callstack)</div>
+</div>
+<div id="locals">
+<div style="color: #dddddd">(locals)</div>
+</div>
+<div id="breakpoints">
+<div style="color: #dddddd">(breakpoints)</div>
+</div>
+<div id="eval">
+<input id="eval-input" value="print('hello world'); 1+2" /><button id="eval-button">Eval</button><input id="eval-watch" type="checkbox" />&#xa0;watch (eval on pause)
+<div id="eval-output"></div>
+<button id="putvar-button">PutVar</button><button id="getvar-button">GetVar</button><input id="varname-input" value="varname" /><input id="varvalue-input" value="varvalue" />
+<div id="var-output"></div>
+</div>
+</div>  <!-- #right-area -->
+
+</div>  <!-- #part-middle -->
+
+<div id="part-footer">
+<div>DUK_VERSION: <span id="duk-version">?</span>, DUK_GIT_DESCRIBE: <span id="duk-git-describe">?</span>, Target info: <span id="target-info">?</span>, Endianness: <span id="endianness">?</span><br />
+Debug protocol stats:
+recv <span id="debug-rx-bytes">?</span> (<span id="debug-rx-kbrate">?</span> kB/s), <span id="debug-rx-dvalues">?</span> dvalues, <span id="debug-rx-messages">?</span> messages;
+send <span id="debug-tx-bytes">?</span> (<span id="debug-tx-kbrate">?</span> kB/s), <span id="debug-tx-dvalues">?</span> dvalues, <span id="debug-tx-messages">?</span> messages
+</div>
+</div>  <!-- #part-footer -->
+
+<div id="about-dialog" title="About Duktape debugger">
+<p>Duktape debugger is a web UI for debugging ECMAScript on a target device.</p>
+<p>This web UI talks to a NodeJS debug server using <a href="http://socket.io/" target="_blank">socket.io</a>.
+The debug server talks to the target device using the Duktape debug protocol
+(see <a href="https://github.com/svaarala/duktape/blob/master/doc/debugger.rst" target="_blank">debugger.rst</a>).</p>
+</div>  <!-- #about-dialog -->
+
+<div id="bytecode-dialog" title="Bytecode for current function">
+<pre id="bytecode-preformatted"></pre>
+</div>
+
+<script src="jquery-1.11.1.min.js" type="text/javascript"></script>
+<script src="jquery-ui.min.js" type="text/javascript"></script>
+<script src="socket.io-1.2.0.js" type="text/javascript"></script>
+<script src="webui.js" type="text/javascript"></script>
+</body>
+</html>

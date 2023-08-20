@@ -1,0 +1,89 @@
+# Platform metadata.
+
+autodetect:
+  # Platforms for autodetect header.  Order matters because some defines
+  # overlap, so rules select for more specific define first.
+  -
+    name: Mac OSX, iPhone, Darwin
+    check: DUK_F_APPLE
+    include: platform_apple.h.in
+  -
+    name: Orbis
+    check: DUK_F_ORBIS
+    include: platform_orbis.h.in
+  -
+    name: OpenBSD
+    check: DUK_F_OPENBSD
+    include: platform_openbsd.h.in
+  -
+    name: Generic BSD
+    check: DUK_F_BSD
+    include: platform_genericbsd.h.in
+  -
+    name: Atari ST TOS
+    check: DUK_F_TOS
+    include: platform_tos.h.in
+  -
+    name: AmigaOS
+    check: DUK_F_AMIGAOS
+    include: platform_amigaos.h.in
+  -
+    name: Durango (XboxOne)
+    check: DUK_F_DURANGO
+    include: platform_durango.h.in
+  -
+    name: Windows
+    check: DUK_F_WINDOWS
+    include: platform_windows.h.in
+  -
+    name: Flashplayer (Crossbridge)
+    check: DUK_F_FLASHPLAYER
+    include: platform_flashplayer.h.in
+  -
+    name: QNX
+    check: DUK_F_QNX
+    include: platform_qnx.h.in
+  -
+    name: TI-Nspire
+    check: DUK_F_TINSPIRE
+    include: platform_tinspire.h.in
+  -
+    name: Emscripten
+    check: DUK_F_EMSCRIPTEN
+    include: platform_emscripten.h.in
+  -
+    name: Android
+    check: DUK_F_ANDROID
+    include: platform_android.h.in
+  -
+    name: Linux
+    check: DUK_F_LINUX
+    include: platform_linux.h.in
+  -
+    name: Solaris
+    check: DUK_F_SUN
+    include: platform_solaris.h.in
+  -
+    name: AIX
+    check: DUK_F_AIX
+    include: platform_aix.h.in
+  -
+    name: HPUX
+    check: DUK_F_HPUX
+    include: platform_hpux.h.in
+  -
+    name: Generic POSIX
+    check: DUK_F_POSIX
+    include: platform_posix.h.in
+  -
+    name: Cygwin
+    check: DUK_F_CYGWIN
+    include: platform_cygwin.h.in
+  -
+    name: Generic UNIX
+    check: DUK_F_UNIX
+    include: platform_genericunix.h.in
+  -
+    name: Generic fallback
+    check: null
+    include: platform_generic.h.in  # if nothing else

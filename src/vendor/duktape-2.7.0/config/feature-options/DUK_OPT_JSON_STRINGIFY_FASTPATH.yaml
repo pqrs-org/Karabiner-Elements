@@ -1,0 +1,9 @@
+define: DUK_OPT_JSON_STRINGIFY_FASTPATH
+introduced: 1.3.0
+tags:
+  - performance
+  - fastpath
+  - lowmemory
+description: >
+  Enable fast apth for JSON.stringify() serialization.  See
+  DUK_USE_JSON_STRINGIFY_FASTPATH for details.

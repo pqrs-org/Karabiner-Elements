@@ -1,0 +1,9 @@
+define: DUK_USE_HOBJECT_LAYOUT_3
+introduced: 1.0.0
+default: false
+tags:
+  - portability
+description: >
+  Use layout variant 3 for object properties.  Layout 3 can be used on any
+  target (including targets with alignment restrictions).  It's a bit more
+  packed than layout variant 2 but has a bit slower lookups.

@@ -1,0 +1,16 @@
+define: DUK_USE_ROM_PTRCOMP_FIRST
+introduced: 1.5.0
+related:
+  - DUK_USE_ROM_STRINGS
+  - DUK_USE_ROM_OBJECTS
+default: 0xf800
+tags:
+  - lowmemory
+  - experimental
+description: >
+  When using ROM pointer compression ROM pointers are compressed to the
+  integer range [DUK_USE_ROM_PTRCOMP_FIRST,0xffff].  The default value
+  allows for 2048 ROM pointers, which can point to objects and strings.
+
+  You may need to lower this value to support more pointers if there are
+  a lot of custom ROM strings/objects.

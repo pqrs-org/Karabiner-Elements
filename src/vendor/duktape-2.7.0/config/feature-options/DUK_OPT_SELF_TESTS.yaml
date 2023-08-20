@@ -1,0 +1,8 @@
+define: DUK_OPT_SELF_TESTS
+introduced: 1.0.0
+tags:
+  - debug
+description: >
+  Perform run-time self tests when a Duktape heap is created.  Catches
+  platform/compiler problems which cannot be reliably detected during
+  compile time.  Not enabled by default because of the extra footprint.

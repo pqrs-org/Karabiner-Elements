@@ -1,0 +1,9 @@
+define: DUK_USE_OS_STRING
+introduced: 1.0.0
+default:
+  string: "unknown"
+tags:
+  - portability
+description: >
+  Human-readable operating system string used in e.g. Duktape.env and debugger
+  protocol (example: linux).

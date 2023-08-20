@@ -1,0 +1,27 @@
+{
+  "name": "duk-debug",
+  "version": "0.1.0",
+  "description": "Duktape debugger",
+  "author": {
+    "name": "Sami Vaarala",
+    "email": "sami.vaarala@iki.fi"
+  },
+  "dependencies": {
+    "bluebird": "~2.6.4",
+    "body-parser": "~1.9.3",
+    "byline": "~4.2.1",
+    "events": "~1.0.2",
+    "express": "~4.10.1",
+    "http": "0.0.0",
+    "minimist": "~1.1.0",
+    "readline": "0.0.5",
+    "recursive-readdir-sync": "^1.0.6",
+    "socket.io": "~1.2.1",
+    "sprintf": "~0.1.5",
+    "stream": "0.0.2",
+    "utf8": "~2.0.0",
+    "util": "~0.10.3",
+    "yamljs": "~0.2.1"
+  },
+  "main": "duk_debug.js"
+}

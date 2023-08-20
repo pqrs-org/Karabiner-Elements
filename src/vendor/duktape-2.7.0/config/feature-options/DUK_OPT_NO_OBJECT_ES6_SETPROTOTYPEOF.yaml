@@ -1,0 +1,10 @@
+define: DUK_OPT_NO_OBJECT_ES6_SETPROTOTYPEOF
+introduced: 1.0.0
+removed: 1.0.0
+related:
+  - DUK_OPT_NO_ES6_OBJECT_SETPROTOTYPEOF
+tags:
+  - ecmascript
+  - ecmascript6
+description: >
+  Removed, use DUK_OPT_NO_ES6_OBJECT_SETPROTOTYPEOF instead.

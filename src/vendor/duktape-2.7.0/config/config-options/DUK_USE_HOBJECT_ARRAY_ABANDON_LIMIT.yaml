@@ -1,0 +1,15 @@
+define: DUK_USE_HOBJECT_ARRAY_ABANDON_LIMIT
+introduced: 2.1.0
+default: 2
+tags:
+  - performance
+  - lowmemory
+description: >
+  Abandon array part if its density is below L and array is larger than
+  DUK_USE_HOBJECT_ARRAY_ABANDON_MINSIZE.  The limit L is expressed as
+  a .3 fixed point point, e.g. 2 means 2/8 = 25%.
+
+  The default limit is quite low: one array entry with packed duk_tval is 8
+  bytes whereas one normal entry is 4+1+8 = 13 bytes without a hash entry,
+  and 17-21 bytes with a hash entry (load factor 0.5-1.0).  So the array part
+  shouldn't be abandoned very easily from a footprint point of view.

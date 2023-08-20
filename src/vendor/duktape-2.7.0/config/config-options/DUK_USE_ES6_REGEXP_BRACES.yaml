@@ -1,0 +1,8 @@
+define: DUK_USE_ES6_REGEXP_BRACES
+introduced: 1.5.0
+removed: 2.0.0
+default: true
+tags:
+  - ecmascript2015
+description: >
+  Replaced by DUK_USE_ES6_REGEXP_SYNTAX.

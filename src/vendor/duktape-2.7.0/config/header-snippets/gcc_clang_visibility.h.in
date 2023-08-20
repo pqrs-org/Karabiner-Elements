@@ -1,0 +1,26 @@
+#define DUK_EXTERNAL_DECL  __attribute__ ((visibility("default"))) extern
+#define DUK_EXTERNAL       __attribute__ ((visibility("default")))
+#if defined(DUK_SINGLE_FILE)
+#if (defined(DUK_F_GCC_VERSION) && DUK_F_GCC_VERSION >= 30101) || defined(DUK_F_CLANG)
+/* Minimize warnings for unused internal functions with GCC >= 3.1.1 and
+ * Clang.  Based on documentation it should suffice to have the attribute
+ * in the declaration only, but in practice some warnings are generated unless
+ * the attribute is also applied to the definition.
+ */
+#define DUK_INTERNAL_DECL  static __attribute__ ((unused))
+#define DUK_INTERNAL       static __attribute__ ((unused))
+#else
+#define DUK_INTERNAL_DECL  static
+#define DUK_INTERNAL       static
+#endif
+#else
+#if (defined(DUK_F_GCC_VERSION) && DUK_F_GCC_VERSION >= 30101) || defined(DUK_F_CLANG)
+#define DUK_INTERNAL_DECL  __attribute__ ((visibility("hidden"))) __attribute__ ((unused)) extern
+#define DUK_INTERNAL       __attribute__ ((visibility("hidden"))) __attribute__ ((unused))
+#else
+#define DUK_INTERNAL_DECL  __attribute__ ((visibility("hidden"))) extern
+#define DUK_INTERNAL       __attribute__ ((visibility("hidden")))
+#endif
+#endif
+#define DUK_LOCAL_DECL     static
+#define DUK_LOCAL          static

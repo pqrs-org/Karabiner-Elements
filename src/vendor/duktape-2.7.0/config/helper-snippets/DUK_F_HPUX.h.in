@@ -1,0 +1,7 @@
+/* HPUX */
+#if defined(__hpux)
+#define DUK_F_HPUX
+#if defined(__ia64)
+#define DUK_F_HPUX_ITANIUM
+#endif
+#endif

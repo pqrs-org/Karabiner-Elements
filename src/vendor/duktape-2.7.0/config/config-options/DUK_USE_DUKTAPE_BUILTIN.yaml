@@ -1,0 +1,7 @@
+define: DUK_USE_DUKTAPE_BUILTIN
+introduced: 2.0.0
+default: true
+tags:
+  - duktape
+description: >
+  Provide a Duktape built-in.

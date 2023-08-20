@@ -1,0 +1,8 @@
+define: DUK_USE_HOBJECT_LAYOUT_2
+introduced: 1.0.0
+default: true
+tags:
+  - portability
+description: >
+  Use layout variant 2 for object properties.  Layout 2 can be used on any
+  target (including targets with alignment restrictions).

@@ -1,0 +1,8 @@
+define: DUK_USE_ERRTHROW
+introduced: 1.0.0
+default: true
+tags:
+  - ecmascript
+description: >
+  Call Duktape.errThrow() when augmenting an ECMAScript error object
+  about to be thrown.

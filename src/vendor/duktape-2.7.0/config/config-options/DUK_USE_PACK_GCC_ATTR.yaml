@@ -1,0 +1,7 @@
+define: DUK_USE_PACK_GCC_ATTR
+introduced: 1.0.0
+default: false
+tags:
+  - portability
+description: >
+  Use gcc-specific attribute to force struct packing.

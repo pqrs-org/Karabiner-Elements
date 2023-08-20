@@ -1,0 +1,10 @@
+define: DUK_USE_HOBJECT_LAYOUT_1
+introduced: 1.0.0
+default: false
+tags:
+  - portability
+description: >
+  Use layout variant 1 for object properties.  Layout 1 can be used when the
+  target has no alignment restrictions.  It is preferable to other layouts
+  because it produces smaller code and provides direct access to property
+  keys.

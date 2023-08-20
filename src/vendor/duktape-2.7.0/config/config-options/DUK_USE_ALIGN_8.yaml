@@ -1,0 +1,11 @@
+define: DUK_USE_ALIGN_8
+introduced: 1.0.0
+removed: 1.3.0
+related:
+  - DUK_USE_ALIGN_BY
+default: false
+tags:
+  - portability
+description: >
+  Use 8-byte alignment for 64-bit integers and IEEE doubles.
+  Replaced by DUK_USE_ALIGN_BY.

@@ -1,0 +1,11 @@
+define: DUK_USE_HOBJECT_ARRAY_ABANDON_MINSIZE
+introduced: 2.5.0
+default: 257
+tags:
+  - performance
+  - lowmemory
+description: >
+  Minimum array size required for array to be abandoned.  For example, a value
+  of 257 means arrays up to 256 long are never abandoned.  The default value
+  ensures 8-bit lookups are not abandoned even if sparse or initialized in
+  random order.

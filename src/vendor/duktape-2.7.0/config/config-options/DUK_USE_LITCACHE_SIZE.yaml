@@ -1,0 +1,27 @@
+define: DUK_USE_LITCACHE_SIZE
+introduced: 2.3.0
+default: 256
+tags:
+  - performance
+  - lowmemory
+description: >
+  Size of the literal cache, which maps C literal memory addresses into
+  pinned duk_hstring heap object addresses.  The cache is used when
+  application code calls one of the duk_xxx_literal() API call variants,
+  such as duk_push_literal() or duk_get_prop_literal(), to speed up the
+  string intern check for the literal.  In successful cases this caching
+  makes using duk_xxx_literal() almost as fast as using borrowed heap
+  pointers with duk_xxx_heapptr().
+
+  When this option is defined, duk_hstrings related to literals encountered
+  in duk_xxx_literal() API calls are automatically pinned between
+  mark-and-sweep rounds.  This accomplishes two things.  First, it avoids the
+  need for cache invalidation for the literal cache in normal operation between
+  mark-and-sweep rounds.  Second, it reduces string table traffic (i.e. freeing
+  and reallocating) for literals which are likely to occur again and again.
+  However, the downside is that some strings that may occur only temporarily
+  will remain pinned until the next mark-and-sweep round.  If this matter, you
+  can avoid it by simply using e.g. duk_xxx_string() when dealing with such
+  strings.
+
+  The literal cache size must be a power of two (2^N).

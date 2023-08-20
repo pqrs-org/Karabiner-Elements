@@ -1,0 +1,5 @@
+/* C99 or above */
+#undef DUK_F_C99
+#if defined(__STDC_VERSION__) && (__STDC_VERSION__ >= 199901L)
+#define DUK_F_C99
+#endif

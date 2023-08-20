@@ -1,0 +1,9 @@
+define: DUK_USE_FLEX_C99
+introduced: 1.0.0
+default: true
+tags:
+  - portability
+description: >
+  Use C99 flexible array member for defining variable size structures.
+
+# XXX: currently unused, remove or mark unused so doesn't get emitted?

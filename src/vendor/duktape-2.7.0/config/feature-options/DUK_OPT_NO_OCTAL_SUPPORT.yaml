@@ -1,0 +1,7 @@
+define: DUK_OPT_NO_OCTAL_SUPPORT
+introduced: 1.0.0
+tags:
+  - ecmascript
+description: >
+  Disable optional octal number support (ECMAScript E5/E5.1
+  Annex B: http://www.ecma-international.org/ecma-262/5.1/#sec-B).

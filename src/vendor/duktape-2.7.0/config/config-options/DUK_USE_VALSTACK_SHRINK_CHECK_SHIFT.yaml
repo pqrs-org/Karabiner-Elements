@@ -1,0 +1,13 @@
+define: DUK_USE_VALSTACK_SHRINK_CHECK_SHIFT
+introduced: 2.2.0
+default: 2
+tags:
+  - performance
+  - lowmemory
+description: >
+  When doing a value stack shrink check, skip shrinking if the difference
+  between the minimum reserve and allocated size is less than
+  (curr_size >> DUK_USE_VALSTACK_SHRINK_CHECK_SHIFT) bytes.  A value of 2
+  means that the difference must be at least 25% for a shrink to happen.
+  If undefined, value stack is always shrunk to the minimum reserved size
+  with no slack.

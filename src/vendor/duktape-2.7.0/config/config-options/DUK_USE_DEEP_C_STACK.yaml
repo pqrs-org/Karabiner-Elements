@@ -1,0 +1,12 @@
+define: DUK_USE_DEEP_C_STACK
+introduced: 1.0.0
+removed: 1.3.0
+default: true
+tags:
+  - portability
+description: >
+  Assume deep C stacks are not an issue on the target platform; on some
+  embedded platforms the native C stack is very limited (e.g. 32-64 kB)
+  and overrunning the stack leads to difficult-to-diagnose problems.
+
+  Removed in Duktape 1.3.0, replaced by explicit recursion limits.

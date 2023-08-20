@@ -1,0 +1,14 @@
+define: DUK_USE_PARANOID_ERRORS
+introduced: 1.4.0
+default: false
+tags:
+  - ecmascript
+  - sandbox
+description: >
+  When enabled, error messages won't involve summarization of keys or values.
+  Summaries may be an issue in some security sensitive environments because
+  error messages will include e.g. property keys.
+
+  The default is to summarize offending base value and key for property access
+  errors such as "null.foo = 123;", invalid calls such as "undefined()", etc.
+  Base values and keys are summarized using duk_push_string_tval_readable().

@@ -1,0 +1,12 @@
+define: DUK_USE_EXPLICIT_NULL_INIT
+introduced: 1.0.0
+default: false
+tags:
+  - portability
+description: >
+  When zeroing structures, don't rely on memzero initializing pointers to
+  NULL.  Instead, write NULL values explicitly after zeroing.  This should
+  only be necessary when a NULL pointer is not represented by zero bytes in
+  memory.
+
+  # NOTE: Condition in Duktape 1.2 seems wrong, and is linked to packed tval.

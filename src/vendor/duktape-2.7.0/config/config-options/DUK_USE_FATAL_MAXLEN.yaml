@@ -1,0 +1,8 @@
+define: DUK_USE_FATAL_MAXLEN
+introduced: 2.2.0
+default: 128
+tags:
+  - portability
+description: >
+  Maximum length of fatal error message string when error is thrown by
+  Duktape internals, in particular for uncaught errors.

@@ -1,0 +1,7 @@
+define: DUK_USE_FUNCTION_BUILTIN
+introduced: 2.0.0
+default: true
+tags:
+  - ecmascript
+description: >
+  Provide a Function built-in.

@@ -1,0 +1,15 @@
+define: DUK_USE_REGEXP_SUPPORT
+introduced: 1.0.0
+default: true
+tags:
+  - ecmascript
+  - lowmemory
+description: >
+  Enable support for regular expressions (recommended).
+
+  When disabled, regexp literals are treated as a SyntaxError, RegExp
+  constructor and prototype functions throw an error,
+  String.prototype.replace() throws an error if given a regexp search value,
+  String.prototype.split() throws an error if given a regexp separator value,
+  String.prototype.search() and String.prototype.match() throw an error
+  unconditionally.

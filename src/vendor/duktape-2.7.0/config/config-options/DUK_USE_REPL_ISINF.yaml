@@ -1,0 +1,12 @@
+define: DUK_USE_REPL_ISINF
+introduced: 1.0.0
+default: false
+tags:
+  - portability
+description: >
+  Provide a built-in replacement for isinf(), duk_repl_isinf.
+
+  When enabled, define DUK_ISINF as duk_repl_isinf.
+
+# XXX: the dependency between DUK_USE_REPL_ISINF and DUK_ISINF
+# is a bit awkward.

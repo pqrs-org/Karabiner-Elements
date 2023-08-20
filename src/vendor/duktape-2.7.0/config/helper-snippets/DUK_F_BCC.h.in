@@ -1,0 +1,4 @@
+/* BCC (Bruce's C compiler): this is a "torture target" for compilation */
+#if defined(__BCC__) || defined(__BCC_VERSION__)
+#define DUK_F_BCC
+#endif

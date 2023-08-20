@@ -1,0 +1,17 @@
+define: DUK_USE_DEBUGGER_PAUSE_UNCAUGHT
+introduced: 1.4.0
+# Option is ignored unless debugger support is enabled.
+#requires:
+#  - DUK_USE_DEBUGGER_SUPPORT
+related:
+  - DUK_USE_DEBUGGER_THROW_NOTIFY
+default: false
+tags:
+  - debugger
+description: >
+  Pause automatically when an error is about to be thrown and that error is
+  (most likely) not going to be caught.  An error is considered uncaught if
+  there is no active catch clause in the current thread or in the current
+  thread's resumer chain.  This is not 100% accurate because there may be a
+  finally clause which neutralizes the throw (e.g. converts it to a "return"
+  or a "continue").

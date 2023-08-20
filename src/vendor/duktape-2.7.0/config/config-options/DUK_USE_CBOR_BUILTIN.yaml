@@ -1,0 +1,9 @@
+define: DUK_USE_CBOR_BUILTIN
+introduced: 2.5.0
+default: true
+tags:
+  - codec
+  - cbor
+  - experimental
+description: >
+  Provide a CBOR built-in with CBOR.encode() and CBOR.decode() functions.

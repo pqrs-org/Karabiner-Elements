@@ -1,0 +1,26 @@
+define: DUK_OPT_HAVE_CUSTOM_H
+introduced: 1.0.0
+deprecated: 1.3.0
+tags:
+  - portability
+description: >
+  Normally you define DUK_OPT_xxx feature options and the autodetecting
+  duk_config.h (previously internal duk_features.h.in) header resolves
+  these with platform/compiler constraints to determine effective compilation
+  options for Duktape internals.  The effective options are provided as
+  DUK_USE_xxx defines which you normally never see.
+
+  If you define DUK_OPT_HAVE_CUSTOM_H, Duktape will include "duk_custom.h"
+  after determining the appropriate DUK_USE_xxx defines but before compiling
+  any code.  The duk_custom.h header, which you provide, can then tweak the
+  active DUK_USE_xxx defines freely.  See duk_config.h and genconfig option
+  metadata for the available defines.
+
+  This approach is useful when the DUK_OPT_xxx feature options don't
+  provide enough flexibility to tweak the build.  The downside is that you can
+  easily create inconsistent DUK_USE_xxx flags, the customization header
+  will be version specific, and you need to peek into Duktape internals to
+  know what defines to tweak.
+
+  NOTE: This option is deprecated.  The preferred method for customization
+  starting from Duktape 1.3.0 is to create/modify a "duk_config.h" header.

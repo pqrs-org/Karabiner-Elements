@@ -1,0 +1,11 @@
+/* Workaround for GH-323: avoid inlining control when compiling from
+ * multiple sources, as it causes compiler portability trouble.
+ */
+#if !defined(DUK_SINGLE_FILE)
+#undef DUK_NOINLINE
+#undef DUK_INLINE
+#undef DUK_ALWAYS_INLINE
+#define DUK_NOINLINE       /*nop*/
+#define DUK_INLINE         /*nop*/
+#define DUK_ALWAYS_INLINE  /*nop*/
+#endif

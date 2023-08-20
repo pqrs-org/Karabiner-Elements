@@ -1,0 +1,8 @@
+define: DUK_USE_CBOR_DEC_RECLIMIT
+introduced: 2.6.0
+default: 1000
+tags:
+  - portability
+  - cstackdepth
+description: >
+  Maximum native stack recursion for CBOR decoding.

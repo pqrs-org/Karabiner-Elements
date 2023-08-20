@@ -1,0 +1,10 @@
+define: DUK_OPT_FASTINT
+introduced: 1.2.0
+tags:
+  - performance
+description: >
+  Enable support for 48-bit signed "fastint" integer values.  Fastints are
+  transparent to user code (both C and ECMAScript) but may be faster than
+  IEEE doubles on some platforms, especially those using softints.  The
+  downside of fastints is increased code footprint and a small performance
+  penalty for some kinds of code.

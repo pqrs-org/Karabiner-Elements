@@ -1,0 +1,14 @@
+define: DUK_USE_EXEC_FUN_LOCAL
+introduced: 1.4.0
+default: false
+tags:
+  - performance
+  - execution
+description: >
+  Use a local variable "fun" pointing to the current function in the bytecode
+  dispatch loop instead of looking up the current function through "thr" every
+  time it is needed.  On x64 performance is slightly better without a "fun"
+  local; on x86 performance is slightly better with one.
+
+  You should only tweak this if you're really interested in performance, and
+  should then do proper testing to see which value works better.

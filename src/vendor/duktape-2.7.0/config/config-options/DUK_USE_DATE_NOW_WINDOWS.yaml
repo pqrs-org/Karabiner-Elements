@@ -1,0 +1,8 @@
+define: DUK_USE_DATE_NOW_WINDOWS
+introduced: 1.0.0
+default: false
+tags:
+  - date
+  - portability
+description: >
+  Use Win32 API calls to get current datetime.

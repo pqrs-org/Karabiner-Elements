@@ -1,0 +1,12 @@
+define: DUK_USE_DEBUGGER_DUMPHEAP
+introduced: 1.2.0
+# Option is ignored unless debugger support is enabled.
+#requires:
+#  - DUK_USE_DEBUGGER_SUPPORT
+default: false
+tags:
+  - debugger
+description: >
+  Support the DumpHeap command.  This is optional because the command is not
+  always needed.  The command also has a relatively large footprint (about
+  10% of debugger code); in absolute terms it's about 1kB of code footprint.

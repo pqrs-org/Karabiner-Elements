@@ -6,6 +6,7 @@
 #include "complex_modifications_assets_file.hpp"
 #include "constants.hpp"
 #include "dispatcher_utility.hpp"
+#include "duktape_utility.hpp"
 #include "grabber_client.hpp"
 #include "json_utility.hpp"
 #include "karabiner_version.h"
@@ -128,7 +129,10 @@ int main(int argc, char** argv) {
   options.add_options()("lint-complex-modifications", "Check complex_modifications.json",
                         cxxopts::value<std::string>(),
                         "glob-pattern");
-  options.add_options()("format-json", "Format json file",
+  options.add_options()("format-json", "Format json files",
+                        cxxopts::value<std::string>(),
+                        "glob-pattern");
+  options.add_options()("eval-js", "Run javascript files using Duktape",
                         cxxopts::value<std::string>(),
                         "glob-pattern");
   options.add_options()("version", "Displays version.");
@@ -251,6 +255,22 @@ int main(int argc, char** argv) {
             } catch (std::exception& e) {
               krbn::logger::get_logger()->error("parse error in {0}: {1}", file_path.string(), e.what());
             }
+          }
+        }
+
+        goto finish;
+      }
+    }
+
+    {
+      std::string key = "eval-js";
+      if (parse_result.count(key)) {
+        auto glob_pattern = parse_result[key].as<std::string>();
+        for (const auto& file_path : glob::glob(glob_pattern)) {
+          try {
+            krbn::duktape_utility::eval_file(file_path);
+          } catch (std::exception& e) {
+            krbn::logger::get_logger()->error(e.what());
           }
         }
 

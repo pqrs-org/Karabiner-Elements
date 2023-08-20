@@ -1,0 +1,7 @@
+define: DUK_USE_MATH_BUILTIN
+introduced: 1.0.0
+default: true
+tags:
+  - ecmascript
+description: >
+  Provide a Math built-in.

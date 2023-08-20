@@ -1,0 +1,12 @@
+define: DUK_USE_STRHASH_SKIP_SHIFT
+introduced: 1.4.0
+default: 5
+tags:
+  - performance
+description: >
+  Shift value to use for string hash skip offset when using the default
+  (fast) string hash.  The skip offset is calculated as:
+  ((length >> DUK_USE_STRHASH_SKIP_SHIFT) + 1).  A higher value will be
+  slower but sample the string more densely.
+
+  You should only change this if you run into issues with the default value.

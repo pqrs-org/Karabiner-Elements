@@ -1,0 +1,14 @@
+define: DUK_OPT_NO_MARK_AND_SWEEP
+introduced: 1.0.0
+tags:
+  - gc
+  - memory
+description: >
+  Disable mark-and-sweep and use only reference counting for garbage
+  collection.  This reduces code footprint and eliminates garbage collection
+  pauses, but objects participating in unreachable reference cycles won't be
+  collected until the Duktape heap is destroyed.  In particular, function
+  instances won't be collected because they're always in a reference cycle
+  with their default prototype object.  Unreachable objects are collected if
+  you break reference cycles manually (and are always freed when a heap is
+  destroyed).

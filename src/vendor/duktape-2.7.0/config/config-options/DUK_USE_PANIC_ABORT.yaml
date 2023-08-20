@@ -1,0 +1,8 @@
+define: DUK_USE_PANIC_ABORT
+introduced: 1.0.0
+removed: 2.0.0
+default: true
+tags:
+  - portability
+description: >
+  Call abort() when the default panic handler is invoked.

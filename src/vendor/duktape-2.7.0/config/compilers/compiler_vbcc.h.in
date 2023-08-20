@@ -1,0 +1,23 @@
+#undef DUK_USE_BRANCH_HINTS
+
+#if defined(DUK_F_CPP)
+#define DUK_USE_COMPILER_STRING "vbcc-c++"
+#else
+#define DUK_USE_COMPILER_STRING "vbcc"
+#endif
+
+#undef DUK_USE_VARIADIC_MACROS
+#if defined(DUK_F_C99) || defined(DUK_F_CPP11)
+#define DUK_USE_VARIADIC_MACROS
+#endif
+
+/* VBCC supports C99 so check only for C99 for union initializer support.
+ * Designated union initializers would possibly work even without a C99 check.
+ */
+#undef DUK_USE_UNION_INITIALIZERS
+#if defined(DUK_F_C99)
+#define DUK_USE_UNION_INITIALIZERS
+#endif
+
+#define DUK_USE_FLEX_ZEROSIZE
+#define DUK_USE_PACK_DUMMY_MEMBER

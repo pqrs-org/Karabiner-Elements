@@ -1,0 +1,9 @@
+define: DUK_OPT_LIGHTFUNC_BUILTINS
+introduced: 1.1.0
+tags:
+  - lowmemory
+  - experimental
+description: >
+  Force built-in functions to be lightweight functions.  This reduces
+  memory footprint by around 14 kB at the cost of some non-compliant
+  behavior.

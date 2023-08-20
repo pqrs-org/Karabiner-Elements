@@ -1,0 +1,22 @@
+define: DUK_USE_NATIVE_STACK_CHECK
+introduced: 2.4.0
+default: false
+tags:
+  - portability
+  - execution
+description: >
+  Provide a macro hook to check for available native stack space for the
+  currently executing native thread.  The macro must evaluate to zero if
+  there is enough stack space available and non-zero otherwise; a RangeError
+  will then be thrown.
+
+  The definition of "enough space" depends on the target platform and the
+  compiler because the size of native stack frames cannot be easily known
+  in advance.  As a relatively safe estimate, one can check for 8kB of
+  available stack.
+
+  Duktape doesn't call this macro for every internal native call.  The macro
+  is called in code paths that are involved in potentially unlimited
+  recursion (such as making Ecmascript/native function calls, invoking
+  getters and Proxy traps, and resolving Proxy chains) and code paths
+  requiring a lot of stack space temporarily.

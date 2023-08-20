@@ -1,0 +1,11 @@
+define: DUK_USE_UNION_INITIALIZERS
+introduced: 1.5.0
+default: false
+tags:
+  - portability
+description: >
+  Compiler supports C99-style designated union initializers, e.g.
+  { .foo = 123 }.
+
+  When disabled, Duktape sometimes needs to resort to less efficient struct
+  initializers for portability.

@@ -1,0 +1,15 @@
+define: DUK_USE_JSON_STRINGIFY_FASTPATH
+introduced: 1.3.0
+default: false
+tags:
+  - performance
+  - fastpath
+  - lowmemory
+description: >
+  Enable fast path for JSON.stringify() serialization.  The fast path is used
+  when there is no "replacer" argument.  Indent argument and JX/JC format is
+  supported since Duktape 1.4.0.  The fast path increases code footprint by
+  roughly 1.5 kB but is up to 4-5x faster than the slow path.
+
+  Current limitation: assumes "long long" type exists (and covers duk_int64_t
+  range) and that sprintf() format string "%lld" works for "long long".

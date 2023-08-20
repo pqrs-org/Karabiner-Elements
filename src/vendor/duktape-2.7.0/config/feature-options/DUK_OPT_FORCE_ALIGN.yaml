@@ -1,0 +1,8 @@
+define: DUK_OPT_FORCE_ALIGN
+introduced: 1.0.0
+tags:
+  - portability
+description: >
+  Use -DDUK_OPT_FORCE_ALIGN=4 or -DDUK_OPT_FORCE_ALIGN=8 to force a
+  specific struct/value alignment instead of relying on Duktape's
+  automatic detection.  This shouldn't normally be needed.

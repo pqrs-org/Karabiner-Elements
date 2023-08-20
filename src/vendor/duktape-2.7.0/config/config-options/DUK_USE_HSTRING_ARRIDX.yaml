@@ -1,0 +1,12 @@
+define: DUK_USE_HSTRING_ARRIDX
+introduced: 2.0.0
+default: true
+tags:
+  - lowmemory
+description: >
+  When enabled, duk_hstring stores a precomputed array index (or "not an array
+  index") value related to the string.  This reduces code footprint and
+  improves performance a littl ebit.
+
+  When disabled, duk_hstring has a flag indicating whether it is an array
+  index or not, but the actual value is computed on-the-fly.

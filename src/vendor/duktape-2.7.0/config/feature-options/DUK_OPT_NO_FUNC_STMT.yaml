@@ -1,0 +1,9 @@
+define: DUK_OPT_NO_FUNC_STMT
+introduced: 1.0.0
+removed: 1.0.0
+related:
+  - DUK_OPT_NO_NONSTD_FUNC_STMT
+tags:
+  - ecmascript
+description: >
+  Removed, use DUK_OPT_NO_NONSTD_FUNC_STMT instead.

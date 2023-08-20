@@ -1,0 +1,13 @@
+define: DUK_USE_MS_STRINGTABLE_RESIZE
+introduced: 1.0.0
+removed: 2.1.0
+default: true
+tags:
+  - gc
+  - memory
+description: >
+  Enable forced string intern table resize during mark-and-sweep garbage
+  collection.  This is the recommended behavior.
+
+  It may be useful to disable this option when reference counting is disabled,
+  as mark-and-sweep collections will be more frequent and thus more expensive.

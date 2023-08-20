@@ -1,0 +1,74 @@
+#
+#  Each Duktape option is described as a YAML file named OPTION_NAME.yaml.
+#  YAML is used because it diffs well and has clean support for multiline
+#  inline strings.
+#
+
+# C #define name for the option.  Must match filename minus extension.
+define: DUK_USE_OBJSIZES16
+
+# Duktape version number where this option was first introduced.
+introduced: 1.1.0
+
+# Optional Duktape version number where this option was deprecated,
+# i.e. the option is supported but no longer recommended.
+# XXX: automatic #error with some -DDUK_USE_NO_DEPRECATED flag?
+#deprecated: 1.2.0
+
+# Optional Duktape version number where this option was removed,
+# i.e. the option is no longer supported but we may want to issue
+# a clear #error for it.
+#removed: 1.3.0
+
+# Optional indication that config option is defined but currently
+# unused, so that it can be omitted from generated header.
+#unused: true
+
+# Optional list of options that must also be defined to use this option.
+#requires:
+#  - DUK_USE_FOO
+#  - DUK_USE_BAR
+
+# Optional list of options that this option conflicts with.
+#conflicts:
+#  - DUK_USE_BAZ
+
+# Optional list of options that are related from a user and documentation
+# perspective.
+#related:
+#  - DUK_USE_QUUX
+
+# Default value for option:
+# - false: undefined (#undef DUK_USE_EXAMPLE)
+# - true: defined with no value (#define DUK_USE_EXAMPLE)
+# - string: defined with string value (#define DUK_USE_EXAMPLE "foo")
+# - number: defined with number value (#define DUK_USE_EXAMPLE 123)
+# - verbatim: define verbatim line(s)
+default: false
+
+# Tags related to option (required).  If present, first tag is used as a
+# primary tag for grouping.  Use 'misc' if nothing else is appropriate.
+tags:
+  - lowmemory
+  - experimental
+
+# When set to true, genconfig.py will warn if no forced value is provided.
+# This should be used sparingly, for options which are really strongly
+# recommended so that configure.py output should warn about it.
+#warn_if_missing: true
+
+# Description for option, no newlines.  Line breaking for e.g. C header
+# is automatic.
+description: >
+  Use a 16-bit object entry and array part sizes (for low memory
+  environments).  Also automatically drops support for an object hash
+  part to further reduce memory usage; there are rarely large objects
+  in low memory environments simply because there's no memory to store
+  a lot of properties.
+
+  By default use "description: >" markup which works well for paragraphs
+  (replacing newlines with spaces) but includes a trailing newline which
+  is also a good default.
+
+# Marker to avoid processing this file.
+example: true

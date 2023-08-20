@@ -1,0 +1,8 @@
+define: DUK_OPT_NO_TRACEBACKS
+introduced: 1.0.0
+tags:
+  - ecmascript
+description: >
+  Don't record traceback data into ECMAScript error objects (but still record
+  fileName and lineNumber).  Reduces footprint and makes error handling a bit
+  faster, at the cost of less informative ECMAScript errors.

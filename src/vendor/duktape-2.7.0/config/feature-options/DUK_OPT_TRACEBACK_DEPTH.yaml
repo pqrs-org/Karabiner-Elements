@@ -1,0 +1,6 @@
+define: DUK_OPT_TRACEBACK_DEPTH
+introduced: 1.0.0
+tags:
+  - ecmascript
+description: >
+  Override default traceback collection depth.  The default is currently 10.

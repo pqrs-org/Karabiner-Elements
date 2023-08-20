@@ -1,0 +1,15 @@
+define: DUK_USE_MATH_ROUND
+introduced: 1.0.0
+removed: 2.0.0
+default: true
+tags:
+  - portability
+description: >
+  Assume platform function round() is available and works correctly.
+  Some platforms don't have round() (it is defined in C99) and on some
+  platforms (e.g. some uclibc environments) it may not be provided even
+  though the compilation environment is nominally C99.
+
+  Removed in Duktape 2.0.0: if the platform doesn't have round(), simply
+  define a replacement for DUK_ROUND().  Currently DUK_ROUND() isn't used
+  at all however.

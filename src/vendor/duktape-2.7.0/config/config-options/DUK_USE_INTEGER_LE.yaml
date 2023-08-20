@@ -1,0 +1,11 @@
+define: DUK_USE_INTEGER_LE
+introduced: 1.0.0
+removed: 1.4.0
+default: true
+conflicts:
+  - DUK_USE_INTEGER_BE
+  - DUK_USE_INTEGER_ME
+tags:
+  - portability
+description: >
+  Integer memory representation is little endian on the target platform.

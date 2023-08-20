@@ -1,0 +1,9 @@
+define: DUK_USE_POW_WORKAROUNDS
+introduced: 2.0.0
+default: false
+tags:
+  - portability
+description: >
+  Enable workarounds to common pow() semantics issues.  At least NetBSD
+  6.0 x86 and Cygwin/MinGW have such issues, see test-bug-netbsd-math-pow.js
+  and test-bug-mingw-math-issues.js.

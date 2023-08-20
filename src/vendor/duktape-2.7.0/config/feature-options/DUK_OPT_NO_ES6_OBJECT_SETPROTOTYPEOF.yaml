@@ -1,0 +1,8 @@
+define: DUK_OPT_NO_ES6_OBJECT_SETPROTOTYPEOF
+introduced: 1.0.0
+tags:
+  - ecmascript
+  - ecmascript6
+description: >
+  Disable the non-standard (ES6) Object.setPrototypeOf method which
+  is enabled by default.

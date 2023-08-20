@@ -1,0 +1,76 @@
+#if defined(DUK_F_C99) || defined(DUK_F_CPP11)
+/* C99 / C++11 and above: rely on va_copy() which is required. */
+#define DUK_VA_COPY(dest,src) va_copy(dest,src)
+#else
+/* Clang: assume we have __va_copy() in non-C99 mode. */
+#define DUK_VA_COPY(dest,src) __va_copy(dest,src)
+#endif
+
+#define DUK_NORETURN(decl)  decl __attribute__((noreturn))
+
+#if defined(__clang__) && defined(__has_builtin)
+#if __has_builtin(__builtin_unreachable)
+#define DUK_UNREACHABLE()  do { __builtin_unreachable(); } while (0)
+#endif
+#endif
+
+#define DUK_USE_BRANCH_HINTS
+#define DUK_LIKELY(x)    __builtin_expect((x), 1)
+#define DUK_UNLIKELY(x)  __builtin_expect((x), 0)
+#if defined(__clang__) && defined(__has_builtin)
+#if __has_builtin(__builtin_unpredictable)
+#define DUK_UNPREDICTABLE(x)  __builtin_unpredictable((x))
+#endif
+#endif
+
+#if defined(DUK_F_C99) || defined(DUK_F_CPP11)
+#define DUK_NOINLINE        __attribute__((noinline))
+#define DUK_INLINE          inline
+#define DUK_ALWAYS_INLINE   inline __attribute__((always_inline))
+#endif
+
+/* DUK_HOT */
+/* DUK_COLD */
+
+#if defined(DUK_F_DLL_BUILD) && defined(DUK_F_WINDOWS)
+#snippet "msvc_visibility.h.in"
+#else
+#snippet "gcc_clang_visibility.h.in"
+#endif
+
+#if defined(DUK_F_CPP)
+#define DUK_USE_COMPILER_STRING "clang"
+#else
+#define DUK_USE_COMPILER_STRING "clang"
+#endif
+
+#undef DUK_USE_VARIADIC_MACROS
+#if defined(DUK_F_C99) || defined(DUK_F_CPP11)
+#define DUK_USE_VARIADIC_MACROS
+#endif
+
+#define DUK_USE_UNION_INITIALIZERS
+
+#undef DUK_USE_FLEX_C99
+#undef DUK_USE_FLEX_ZEROSIZE
+#undef DUK_USE_FLEX_ONESIZE
+#if defined(DUK_F_C99)
+#define DUK_USE_FLEX_C99
+#else
+#define DUK_USE_FLEX_ZEROSIZE
+#endif
+
+#define DUK_USE_CLANG_PRAGMAS
+#define DUK_USE_PACK_CLANG_ATTR
+
+#if defined(__clang__) && defined(__has_builtin)
+#if __has_builtin(__builtin_bswap64)
+#define DUK_BSWAP64(x) ((duk_uint64_t) __builtin_bswap64((duk_uint64_t) (x)))
+#endif
+#if __has_builtin(__builtin_bswap32)
+#define DUK_BSWAP32(x) ((duk_uint32_t) __builtin_bswap32((duk_uint32_t) (x)))
+#endif
+#if __has_builtin(__builtin_bswap16)
+#define DUK_BSWAP16(x) ((duk_uint16_t) __builtin_bswap16((duk_uint16_t) (x)))
+#endif
+#endif

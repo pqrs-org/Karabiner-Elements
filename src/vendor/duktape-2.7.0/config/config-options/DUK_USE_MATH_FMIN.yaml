@@ -1,0 +1,14 @@
+define: DUK_USE_MATH_FMIN
+introduced: 1.0.0
+removed: 2.0.0
+default: true
+tags:
+  - portability
+description: >
+  Assume platform function fmin() is available and works correctly.
+  Some platforms don't have fmin() (it is defined in C99) and on some
+  platforms (e.g. some uclibc environments) it may not be provided even
+  though the compilation environment is nominally C99.
+
+  Removed in Duktape 2.0.0: if the platform doesn't have fmin(), simply
+  define a replacement for DUK_FMIN().

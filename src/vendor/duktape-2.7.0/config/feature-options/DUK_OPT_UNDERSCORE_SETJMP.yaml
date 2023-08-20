@@ -1,0 +1,10 @@
+define: DUK_OPT_UNDERSCORE_SETJMP
+introduced: 1.1.0
+removed: 1.5.0
+tags:
+  - portability
+description: >
+  Force _setjmp/_longjmp for long control transfers.  This ensures signal
+  mask is not saved which can be a lot faster if setjmp/longjmp saves the
+  signal mask (this varies between platforms).  See comments in
+  DUK_OPT_SETJMP.

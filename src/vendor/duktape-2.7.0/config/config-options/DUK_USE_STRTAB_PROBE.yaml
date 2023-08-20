@@ -1,0 +1,8 @@
+define: DUK_USE_STRTAB_PROBE
+introduced: 1.1.0
+removed: 2.1.0
+default: true
+tags:
+  - lowmemory
+description: >
+  Use the default open addressing (probing) based string table algorithm.

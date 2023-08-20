@@ -1,0 +1,10 @@
+define: DUK_USE_FILE_IO
+introduced: 1.0.0
+removed: 2.0.0
+default: true
+tags:
+  - io
+description: >
+  File I/O support.  This is now used in a few API calls to e.g. push
+  a string from file contents or eval a file.  For portability it must
+  be possible to disable I/O altogether.

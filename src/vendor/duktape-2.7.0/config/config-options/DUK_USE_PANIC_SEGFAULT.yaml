@@ -1,0 +1,10 @@
+define: DUK_USE_PANIC_SEGFAULT
+introduced: 1.0.0
+removed: 2.0.0
+default: false
+tags:
+  - portability
+description: >
+  Cause an intentional segfault when the default panic handler is invoked.
+  This is useful when debugging with valgrind because a segfault provides
+  a nice C traceback in valgrind.

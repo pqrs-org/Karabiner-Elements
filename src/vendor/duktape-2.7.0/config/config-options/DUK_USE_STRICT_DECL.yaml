@@ -1,0 +1,13 @@
+define: DUK_USE_STRICT_DECL
+introduced: 1.1.0
+default: true
+tags:
+  - ecmascript
+  - experimental
+description: >
+  Enable support for "use strict" declaration (recommended).
+
+  When disabled, ECMAScript code is always executed in non-strict mode.
+  Duktape/C functions remain strict.  This option is useful in some legacy
+  environments where "use strict" declarations are used in existing code
+  base but the Javascript engine didn't actually support strict mode.

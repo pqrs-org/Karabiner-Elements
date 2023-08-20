@@ -1,0 +1,7 @@
+define: DUK_USE_ES6
+introduced: 2.0.0
+default: true
+tags:
+  - ecmascript2015
+description: >
+  Enable ES6 functionality not covered by other specific config options.

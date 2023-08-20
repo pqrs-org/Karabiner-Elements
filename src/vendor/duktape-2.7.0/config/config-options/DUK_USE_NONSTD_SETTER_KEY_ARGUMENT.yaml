@@ -1,0 +1,11 @@
+define: DUK_USE_NONSTD_SETTER_KEY_ARGUMENT
+introduced: 1.0.0
+default: true
+tags:
+  - ecmascript
+  - compliance
+description: >
+  Give setter calls the accessed property name as an additional non-standard
+  argument.  This allows a single setter function to be reused for multiple
+  properties more easily.  See
+  http://duktape.org/guide.html#propertyvirtualization.

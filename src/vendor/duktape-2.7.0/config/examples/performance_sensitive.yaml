@@ -1,0 +1,38 @@
+# Base configuration for performance sensitive environments, see
+# doc/performance-sensitive.rst.
+
+# You should choose the fastest setjmp/longjmp for your platform.
+
+# With the vast majority of compilers some of the 'undefined behavior'
+# assumptions are fine, and produce smaller and faster code, so enable
+# by default for performance oriented targets.  You may need to disable
+# this for some compilers.
+DUK_USE_ALLOW_UNDEFINED_BEHAVIOR: true
+
+DUK_USE_PREFER_SIZE: false
+DUK_USE_PACKED_TVAL: false  # packed duk_tval slower in most cases
+DUK_USE_FASTINT: true
+DUK_USE_VALSTACK_UNSAFE: true
+DUK_USE_FAST_REFCOUNT_DEFAULT: true
+
+DUK_USE_JSON_STRINGIFY_FASTPATH: true  # not fully portable right now
+DUK_USE_JSON_QUOTESTRING_FASTPATH: true
+DUK_USE_JSON_DECSTRING_FASTPATH: true
+DUK_USE_JSON_DECNUMBER_FASTPATH: true
+DUK_USE_JSON_EATWHITE_FASTPATH: true
+DUK_USE_BASE64_FASTPATH: true
+DUK_USE_HEX_FASTPATH: true
+DUK_USE_IDCHAR_FASTPATH: true
+DUK_USE_ARRAY_PROP_FASTPATH: true
+DUK_USE_ARRAY_FASTPATH: true
+DUK_USE_INTERRUPT_COUNTER: false
+
+DUK_USE_DEBUGGER_SUPPORT: false
+
+DUK_USE_STRHASH_DENSE: false
+DUK_USE_STRHASH_SKIP_SHIFT: 5  # may be able to reduce
+#DUK_USE_EXEC_FUN_LOCAL: false  # test both values, marginal benefit
+
+DUK_USE_LITCACHE_SIZE: 1024
+
+DUK_USE_REGEXP_CANON_WORKAROUND: true  # high footprint impact (128kB), enabled until a better solution

@@ -1,0 +1,8 @@
+define: DUK_USE_STRHASH16
+introduced: 1.1.0
+default: false
+tags:
+  - lowmemory
+  - experimental
+description: >
+  Use a 16-bit string hash field (for low memory environments).

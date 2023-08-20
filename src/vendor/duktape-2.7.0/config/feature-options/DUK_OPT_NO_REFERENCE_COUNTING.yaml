@@ -1,0 +1,9 @@
+define: DUK_OPT_NO_REFERENCE_COUNTING
+introduced: 1.0.0
+tags:
+  - gc
+  - memory
+description: >
+  Disable reference counting and use only mark-and-sweep for garbage
+  collection.  Although this reduces memory footprint of heap objects, the
+  downside is much more fluctuation in memory usage.

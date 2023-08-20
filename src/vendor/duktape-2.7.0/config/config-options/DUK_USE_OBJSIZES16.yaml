@@ -1,0 +1,12 @@
+define: DUK_USE_OBJSIZES16
+introduced: 1.1.0
+default: false
+tags:
+  - lowmemory
+  - experimental
+description: >
+  Use a 16-bit object entry and array part sizes (for low memory
+  environments).  Also automatically drops support for an object hash part
+  to further reduce memory usage; there are rarely large objects in low
+  memory environments simply because there's no memory to store a lot of
+  properties.

@@ -1,0 +1,11 @@
+define: DUK_USE_EXEC_REGCONST_OPTIMIZE
+introduced: 2.0.0
+default: true
+tags:
+  - performance
+  - execution
+description: >
+  Use an internal optimization to access registers and constants in the
+  bytecode executor.  The optimization avoids unnecessary shifts when computing
+  addresses but assumes sizeof(duk_tval) is 8 or 16.  This is almost always the
+  case, but when it isn't, disable this option.

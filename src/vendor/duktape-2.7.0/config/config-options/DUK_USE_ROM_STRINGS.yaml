@@ -1,0 +1,13 @@
+define: DUK_USE_ROM_STRINGS
+introduced: 1.5.0
+requires:
+  - DUK_USE_ROM_OBJECTS  # use both DUK_USE_ROM_STRINGS + DUK_USE_ROM_OBJECTS together for now
+default: false
+tags:
+  - lowmemory
+  - experimental
+description: >
+  Enable support for built-in (and optional user-supplied strings) which are
+  compiled as constants and placed in a read-only data section.  This reduces
+  startup RAM usage considerably at the cost of a larger code footprint and
+  slower string interning.

@@ -1,0 +1,11 @@
+define: DUK_USE_PANIC_HANDLER
+introduced: 1.0.0
+removed: 2.0.0
+default: false
+tags:
+  - portability
+description: >
+  Provide a custom panic handler.  A custom panic handler is recommended for
+  any environment where recovery from fatal errors is important.  A custom
+  handler can take appropriate action to recover, e.g. record the error and
+  reboot the target device.

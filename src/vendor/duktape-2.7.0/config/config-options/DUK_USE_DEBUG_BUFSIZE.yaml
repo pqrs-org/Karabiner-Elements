@@ -1,0 +1,12 @@
+define: DUK_USE_DEBUG_BUFSIZE
+introduced: 1.0.0
+related:  # not strictly required, value is defined even when DUK_USE_DEBUG not defined
+  - DUK_USE_DEBUG
+default: 65536
+tags:
+  - debug
+description: >
+  Debug code uses a static buffer as a formatting temporary to avoid side
+  effects in debug prints.  The static buffer is large by default, which
+  may be an issue in constrained environments.  You can set the buffer size
+  manually with this option, e.g. set DUK_USE_DEBUG_BUFSIZE to 2048.

@@ -1,0 +1,8 @@
+define: DUK_USE_GCC_PRAGMAS
+introduced: 1.0.0
+default: false
+tags:
+  - portability
+description: >
+  Use GCC-specific pragmas, e.g. "#pragma GCC diagnostic" to suppress
+  unnecessary warnings.

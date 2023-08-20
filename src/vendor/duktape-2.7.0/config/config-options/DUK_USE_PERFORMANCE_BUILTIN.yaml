@@ -1,0 +1,7 @@
+define: DUK_USE_PERFORMANCE_BUILTIN
+introduced: 2.2.0
+default: true
+tags:
+  - performance-api
+description: >
+  Provide a 'performance' global object based on https://www.w3.org/TR/hr-time/.

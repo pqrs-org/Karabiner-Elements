@@ -1,0 +1,5 @@
+/* BSD variant */
+#if defined(DUK_F_FREEBSD) || defined(DUK_F_NETBSD) || defined(DUK_F_OPENBSD) || \
+    defined(__bsdi__) || defined(__DragonFly__)
+#define DUK_F_BSD
+#endif

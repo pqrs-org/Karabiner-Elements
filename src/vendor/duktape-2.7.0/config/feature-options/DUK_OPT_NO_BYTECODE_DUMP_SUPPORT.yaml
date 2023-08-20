@@ -1,0 +1,7 @@
+define: DUK_OPT_NO_BYTECODE_DUMP_SUPPORT
+introduced: 1.3.0
+tags:
+  - api
+description: >
+  Disable API calls to dump/load functions to bytecode (reduces code
+  footprint).

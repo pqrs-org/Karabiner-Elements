@@ -1,0 +1,32 @@
+/* Durango = XboxOne
+ * Configuration is nearly identical to Windows, except for
+ * DUK_USE_DATE_TZO_WINDOWS.
+ */
+
+/* Initial fix: disable secure CRT related warnings when compiling Duktape
+ * itself (must be defined before including Windows headers).  Don't define
+ * for user code including duktape.h.
+ */
+#if defined(DUK_COMPILING_DUKTAPE) && !defined(_CRT_SECURE_NO_WARNINGS)
+#define _CRT_SECURE_NO_WARNINGS
+#endif
+
+/* MSVC does not have sys/param.h */
+#define DUK_USE_DATE_NOW_WINDOWS
+#define DUK_USE_DATE_TZO_WINDOWS_NO_DST
+/* Note: PRS and FMT are intentionally left undefined for now.  This means
+ * there is no platform specific date parsing/formatting but there is still
+ * the ISO 8601 standard format.
+ */
+#if defined(DUK_COMPILING_DUKTAPE)
+/* Only include when compiling Duktape to avoid polluting application build
+ * with a lot of unnecessary defines.
+ */
+#include <windows.h>
+#endif
+
+#define DUK_USE_OS_STRING "durango"
+
+#if !defined(DUK_USE_BYTEORDER)
+#define DUK_USE_BYTEORDER 1
+#endif

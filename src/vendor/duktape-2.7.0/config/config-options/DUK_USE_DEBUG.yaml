@@ -1,0 +1,9 @@
+define: DUK_USE_DEBUG
+introduced: 1.0.0
+default: false
+tags:
+  - debug
+description: >
+  Enable debug code in Duktape internals.  Without this option other
+  debugging options (such as DUK_USE_DEBUG_LEVEL and DUK_USE_DEBUG_WRITE)
+  have no effect.

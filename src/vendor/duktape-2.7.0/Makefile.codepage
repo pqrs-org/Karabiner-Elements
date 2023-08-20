@@ -1,0 +1,7 @@
+CC ?= gcc
+CC := $(CC)
+
+codepage:
+	$(CC) $(CFLAGS) $(CPPFLAGS) $(LDFLAGS) -o $@ -std=c99 -O2 -Wall -Wextra -Isrc/ \
+		src/duktape.c examples/codepage-conv/duk_codepage_conv.c \
+		examples/codepage-conv/test.c -lm

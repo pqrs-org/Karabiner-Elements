@@ -1,0 +1,25 @@
+#define DUK_USE_DATE_NOW_GETTIMEOFDAY
+#define DUK_USE_DATE_TZO_GMTIME_R
+#define DUK_USE_DATE_PRS_STRPTIME
+#define DUK_USE_DATE_FMT_STRFTIME
+#include <TargetConditionals.h>
+#include <architecture/byte_order.h>
+#include <sys/param.h>
+#include <sys/time.h>
+#include <time.h>
+
+/* http://stackoverflow.com/questions/5919996/how-to-detect-reliably-mac-os-x-ios-linux-windows-in-c-preprocessor */
+#if TARGET_IPHONE_SIMULATOR
+#define DUK_USE_OS_STRING "iphone-sim"
+#elif TARGET_OS_IPHONE
+#define DUK_USE_OS_STRING "iphone"
+#elif TARGET_OS_MAC
+#define DUK_USE_OS_STRING "osx"
+#else
+#define DUK_USE_OS_STRING "osx-unknown"
+#endif
+
+/* Use _setjmp() on Apple by default, see GH-55. */
+#define DUK_JMPBUF_TYPE       jmp_buf
+#define DUK_SETJMP(jb)        _setjmp((jb))
+#define DUK_LONGJMP(jb)       _longjmp((jb), 1)

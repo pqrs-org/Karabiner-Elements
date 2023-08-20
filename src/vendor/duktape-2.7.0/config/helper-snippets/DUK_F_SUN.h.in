@@ -1,0 +1,12 @@
+/* illumos / Solaris */
+#if defined(__sun) && defined(__SVR4)
+#define DUK_F_SUN
+#if defined(__SUNPRO_C) && (__SUNPRO_C < 0x550)
+#define DUK_F_OLD_SOLARIS
+/* Defines _ILP32 / _LP64 required by DUK_F_X86/DUK_F_X64.  Platforms
+ * are processed before architectures, so this happens before the
+ * DUK_F_X86/DUK_F_X64 detection is emitted.
+ */
+#include <sys/isa_defs.h>
+#endif
+#endif

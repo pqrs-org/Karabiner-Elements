@@ -1,0 +1,5 @@
+#define DUK_USE_ARCH_STRING "ppc32"
+#if !defined(DUK_USE_BYTEORDER)
+#define DUK_USE_BYTEORDER 3
+#endif
+#define DUK_USE_PACKED_TVAL

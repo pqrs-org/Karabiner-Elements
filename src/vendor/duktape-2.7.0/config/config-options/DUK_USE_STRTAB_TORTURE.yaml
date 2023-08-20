@@ -1,0 +1,9 @@
+define: DUK_USE_STRTAB_TORTURE
+introduced: 2.1.0
+default: false
+tags:
+  - torture
+description: >
+  Resize string table (grow, shrink back) for every intern.  Ensures string
+  table chaining is correct, and resize side effects are exercised on every
+  resize.

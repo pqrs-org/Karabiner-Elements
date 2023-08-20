@@ -1,0 +1,7 @@
+define: DUK_OPT_REFCOUNT16
+introduced: 1.1.0
+tags:
+  - lowmemory
+  - experimental
+description: >
+  Use a 16-bit reference count field (for low memory environments).

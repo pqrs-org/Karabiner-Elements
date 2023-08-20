@@ -1,0 +1,8 @@
+define: DUK_USE_PACKED_TVAL_POSSIBLE
+introduced: 1.0.0
+removed: 1.4.0
+default: false
+tags:
+  - portability
+description: >
+  Define when packed, 8-byte duk_tval representation is possible.

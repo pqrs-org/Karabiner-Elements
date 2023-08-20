@@ -1,0 +1,13 @@
+define: DUK_USE_UNDERSCORE_SETJMP
+introduced: 1.1.0
+removed: 1.5.0
+default: false
+tags:
+  - portability
+description: >
+  Use _setjmp/_longjmp for long control transfers.  This ensures signal
+  mask is not saved which can be a lot faster if setjmp/longjmp saves the
+  signal mask (this varies between platforms).  See comments in
+  DUK_USE_SETJMP.
+
+  Removed in Duktape 1.5.0: edit duk_config.h directly.

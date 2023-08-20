@@ -1,0 +1,7 @@
+define: DUK_USE_ES8
+introduced: 2.0.0
+default: true
+tags:
+  - ecmascript2017
+description: >
+  Enable ES8 functionality not covered by other specific config options.

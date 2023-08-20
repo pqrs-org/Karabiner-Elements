@@ -1,0 +1,10 @@
+define: DUK_OPT_NO_AUGMENT_ERRORS
+introduced: 1.0.0
+related:
+  - DUK_OPT_NO_TRACEBACKS
+tags:
+  - ecmascript
+description: >
+  Don't augment ECMAScript error objects with custom fields like fileName,
+  lineNumber, and traceback data.  Also disables Duktape.errCreate and
+  Duktape.errThrow error handler callbacks.  Implies DUK_OPT_NO_TRACEBACKS.

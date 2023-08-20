@@ -1,0 +1,13 @@
+define: DUK_USE_STRTAB_MAXSIZE
+introduced: 2.1.0
+default: 268435456
+tags:
+  - performance
+  - lowmemory
+description: >
+  Maximum size for Duktape heap string table, must be 2^N, and small enough
+  so that if the value is multiplied by sizeof(duk_hstring *) it won't overflow
+  duk_size_t.
+
+  To avoid resizing the strtable at all, set DUK_USE_STRTAB_MINSIZE and
+  DUK_USE_STRTAB_MAXSIZE to the same value.

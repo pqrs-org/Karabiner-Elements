@@ -1,0 +1,11 @@
+define: DUK_USE_EXEC_INDIRECT_BOUND_CHECK
+introduced: 1.0.0
+default: false
+tags:
+  - execution
+  - debug
+description: >
+  For opcodes with indirect indices, check final index against stack size.
+  Useful for diagnosing problems.  Normally this check is not necessary
+  because the compiler is trusted, and we don't bound check direct indices
+  either.

@@ -1,0 +1,11 @@
+/* Check whether we should use 64-bit integers or not.
+ *
+ * Quite incomplete now.  Use 64-bit types if detected (C99 or other detection)
+ * unless they are known to be unreliable.  For instance, 64-bit types are
+ * available on VBCC but seem to misbehave.
+ */
+#if defined(DUK_F_HAVE_64BIT) && !defined(DUK_F_VBCC)
+#define DUK_USE_64BIT_OPS
+#else
+#undef DUK_USE_64BIT_OPS
+#endif

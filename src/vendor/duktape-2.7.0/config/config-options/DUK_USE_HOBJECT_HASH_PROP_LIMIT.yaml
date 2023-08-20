@@ -1,0 +1,20 @@
+define: DUK_USE_HOBJECT_HASH_PROP_LIMIT
+introduced: 2.1.0
+default: 8
+tags:
+  - performance
+  - lowmemory
+description: >
+  Minimum number of properties needed for a hash part to be included in the
+  object property table.  This limit is checked whenever an object is resized.
+
+  A hash part improves property lookup performance even for small objects,
+  starting from roughly 4 properties.  However, this ignores the cost of
+  setting up and managing the hash part, which is offset only if property
+  lookups made through the hash part can offset the setup cost.  A hash part
+  is worth it for heavily accessed small objects or large objects (even those
+  accessed quite infrequently).  The limit doesn't take into account property
+  access frequency, so it is necessarily a compromise.
+
+  A lower value improves performance (a value as low a 4-8 can be useful)
+  while a higher value conserves memory.

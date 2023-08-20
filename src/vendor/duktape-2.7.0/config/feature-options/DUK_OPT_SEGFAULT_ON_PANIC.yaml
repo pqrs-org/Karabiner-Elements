@@ -1,0 +1,8 @@
+define: DUK_OPT_SEGFAULT_ON_PANIC
+introduced: 1.0.0
+tags:
+  - portability
+description: >
+  Cause the default panic handler to cause a segfault instead of using
+  abort() or exit().  This is useful when debugging with valgrind,
+  as a segfault provides a nice C traceback in valgrind.

@@ -1,0 +1,1 @@
+Lua is under the MIT license: http://www.lua.org/license.html.

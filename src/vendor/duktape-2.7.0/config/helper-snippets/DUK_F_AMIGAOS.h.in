@@ -1,0 +1,6 @@
+/* AmigaOS.  Neither AMIGA nor __amigaos__ is defined on VBCC, so user must
+ * define 'AMIGA' manually when using VBCC.
+ */
+#if defined(AMIGA) || defined(__amigaos__)
+#define DUK_F_AMIGAOS
+#endif

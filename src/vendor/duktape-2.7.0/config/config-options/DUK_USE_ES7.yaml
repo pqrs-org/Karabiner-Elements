@@ -1,0 +1,7 @@
+define: DUK_USE_ES7
+introduced: 2.0.0
+default: true
+tags:
+  - ecmascript2016
+description: >
+  Enable ES7 functionality not covered by other specific config options.

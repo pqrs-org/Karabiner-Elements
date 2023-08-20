@@ -1,0 +1,8 @@
+define: DUK_OPT_NO_ES6_OBJECT_PROTO_PROPERTY
+introduced: 1.0.0
+tags:
+  - ecmascript
+  - ecmascript6
+description: >
+  Disable the non-standard (ES6) Object.prototype.__proto__ property
+  which is enabled by default.

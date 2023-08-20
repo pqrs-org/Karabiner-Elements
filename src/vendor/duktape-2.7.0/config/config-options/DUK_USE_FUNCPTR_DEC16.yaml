@@ -1,0 +1,15 @@
+define: DUK_USE_FUNCPTR_DEC16
+introduced: 1.1.0
+requires:
+  - DUK_USE_FUNCPTR16
+default: false
+tags:
+  - lowmemory
+  - experimental
+description: >
+  Use together with DUK_USE_FUNCPTR16 for arbitrary data pointer compression.
+  DUK_USE_FUNCPTR_ENC16(udata,p) is a macro with a userdata and void ptr
+  argument, and a duk_uint16_t return value.  The userdata argument is the
+  heap userdata value given at heap creation.  Currently it is required that
+  NULL encodes to integer 0, and integer 0 decodes to NULL.  No other pointer
+  can be encoded to 0.

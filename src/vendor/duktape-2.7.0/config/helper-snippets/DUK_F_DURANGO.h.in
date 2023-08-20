@@ -1,0 +1,4 @@
+/* Durango (Xbox One) */
+#if defined(_DURANGO) || defined(_XBOX_ONE)
+#define DUK_F_DURANGO
+#endif

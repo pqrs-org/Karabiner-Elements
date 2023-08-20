@@ -1,0 +1,7 @@
+define: DUK_USE_FINALIZER_SUPPORT
+introduced: 2.0.0
+default: true
+tags:
+  - execution
+description: >
+  Enable support for object finalizers (Duktape specific).

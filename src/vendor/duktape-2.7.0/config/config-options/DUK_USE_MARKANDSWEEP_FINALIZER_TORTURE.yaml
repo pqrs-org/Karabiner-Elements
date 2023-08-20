@@ -1,0 +1,17 @@
+define: DUK_USE_MARKANDSWEEP_FINALIZER_TORTURE
+introduced: 1.3.0
+removed: 2.1.0
+related:
+  - DUK_USE_GC_TORTURE
+  - DUK_USE_REFZERO_FINALIZER_TORTURE
+default: false
+tags:
+  - gc
+  - memory
+  - development
+  - torture
+description: >
+  Development time option: simulate a fake finalizer call during every
+  mark-and-sweep round.  This is useful to detect bugs caused by finalizer
+  side effects.  Most useful when combined with DUK_USE_GC_TORTURE so that
+  potential finalizer side effects are realized on every allocation.

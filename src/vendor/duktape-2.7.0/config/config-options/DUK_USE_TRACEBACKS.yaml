@@ -1,0 +1,12 @@
+define: DUK_USE_TRACEBACKS
+introduced: 1.0.0
+default: true
+tags:
+  - ecmascript
+description: >
+  Record traceback data into ECMAScript error objects.
+
+  When disabled, traceback data is not recorded, but fileName/lineNumber of
+  the error cause are still recorded as explicit properties.  Disabling this
+  option reduces footprint and makes error handling a bit faster, at the cost
+  of less informative ECMAScript errors.

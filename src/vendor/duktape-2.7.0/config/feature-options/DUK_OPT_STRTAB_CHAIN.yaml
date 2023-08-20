@@ -1,0 +1,25 @@
+define: DUK_OPT_STRTAB_CHAIN
+introduced: 1.1.0
+related:
+  - DUK_OPT_STRTAB_CHAIN_SIZE
+tags:
+  - lowmemory
+description: >
+  Replace the default (open addressing, probing) string table structure with
+  one based on separate chaining.  There is a fixed-size top level hash table
+  (whose size is defined using DUK_OPT_STRTAB_CHAIN_SIZE), with each entry in
+  the hash table being: (a) NULL, (b) a duk_hstring pointer, or (c) a pointer
+  to an array of duk_hstring pointers.  The pointer arrays are gappy (the gaps
+  are reused on new inserts) and are never shrunk at the moment.
+
+  This option is intended for low memory environments to make Duktape's memory
+  behavior match a typical pool-based allocator better as follows:
+
+  The top level fixed structure never changes size, so there is no hash table
+  resize, and thus no need for resize temporaries.  The default string table
+  algorithm needs resizing from time to time and doesn't resize in place, so
+  you effectively need twice the string table size temporarily during a resize.
+
+  The pointer arrays vary in size, but their size (typically 8 to 64 bytes,
+  depending on the load factor) matches that of many other allocations which
+  works well with a pooled allocator.

@@ -1,0 +1,7 @@
+define: DUK_USE_HTML_COMMENTS
+introduced: 2.1.0
+default: true
+tags:
+  - ecmascript2015
+description: >
+  Enable ES2015 Annex B.1.3 HTML comment syntax.

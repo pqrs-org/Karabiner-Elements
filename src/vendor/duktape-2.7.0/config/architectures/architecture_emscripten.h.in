@@ -1,0 +1,5 @@
+#define DUK_USE_ARCH_STRING "emscripten"
+#if !defined(DUK_USE_BYTEORDER)
+#define DUK_USE_BYTEORDER 1
+#endif
+#undef DUK_USE_PACKED_TVAL

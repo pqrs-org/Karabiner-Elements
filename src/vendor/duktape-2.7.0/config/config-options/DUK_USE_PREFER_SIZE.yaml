@@ -1,0 +1,9 @@
+define: DUK_USE_PREFER_SIZE
+introduced: 1.2.0
+default: false
+tags:
+  - lowmemory
+description: >
+  Catch-all flag which can be used to choose between variant algorithms
+  where a speed-size tradeoff exists (e.g. lookup tables).  When it really
+  matters, specific use flags may be appropriate.

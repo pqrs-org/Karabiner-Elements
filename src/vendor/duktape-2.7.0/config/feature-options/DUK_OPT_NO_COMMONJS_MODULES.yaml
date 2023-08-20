@@ -1,0 +1,6 @@
+define: DUK_OPT_NO_COMMONJS_MODULES
+introduced: 1.0.0
+tags:
+  - ecmascript
+description: >
+  Disable support for CommonJS modules.  Causes require() to throw an error.

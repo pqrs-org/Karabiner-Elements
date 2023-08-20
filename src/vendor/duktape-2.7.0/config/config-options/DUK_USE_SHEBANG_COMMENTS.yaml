@@ -1,0 +1,8 @@
+define: DUK_USE_SHEBANG_COMMENTS
+introduced: 2.1.0
+default: true
+tags:
+  - ecmascript2015
+description: >
+  Support parsing of a "shebang" comment ('#!...') on the first line of
+  source text.

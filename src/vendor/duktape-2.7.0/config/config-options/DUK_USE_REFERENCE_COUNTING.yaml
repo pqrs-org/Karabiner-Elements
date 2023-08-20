@@ -1,0 +1,7 @@
+define: DUK_USE_REFERENCE_COUNTING
+introduced: 1.0.0
+default: true
+tags:
+  - gc
+description: >
+  Use reference counting for garbage collection.

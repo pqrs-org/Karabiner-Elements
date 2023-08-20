@@ -1,0 +1,9 @@
+define: DUK_USE_DATE_PARSE_STRING
+introduced: 1.3.0
+default: false
+tags:
+  - date
+  - portability
+description: >
+  Optional macro for parsing a date in a platform dependent manner,
+  see datetime.rst.

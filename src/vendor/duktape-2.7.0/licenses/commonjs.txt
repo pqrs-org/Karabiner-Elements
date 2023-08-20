@@ -1,0 +1,2 @@
+CommonJS specification snapshots are included in the references/
+directory.  CommonJS is under the MIT license: http://www.commonjs.org/.

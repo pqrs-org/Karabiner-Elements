@@ -1,0 +1,10 @@
+/* Windows, both 32-bit and 64-bit */
+#if defined(_WIN32) || defined(WIN32) || defined(_WIN64) || defined(WIN64) || \
+    defined(__WIN32__) || defined(__TOS_WIN__) || defined(__WINDOWS__)
+#define DUK_F_WINDOWS
+#if defined(_WIN64) || defined(WIN64)
+#define DUK_F_WIN64
+#else
+#define DUK_F_WIN32
+#endif
+#endif

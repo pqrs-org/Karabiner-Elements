@@ -1,0 +1,9 @@
+define: DUK_OPT_DDDPRINT
+introduced: 1.0.0
+requires:
+  - DUK_OPT_DEBUG
+tags:
+  - debug
+description: >
+  Enable even more debug printouts.  Not recommended unless you have
+  grep handy.

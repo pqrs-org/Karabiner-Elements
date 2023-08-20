@@ -1,0 +1,10 @@
+define: DUK_USE_ALLOW_UNDEFINED_BEHAVIOR
+introduced: 2.3.0
+default: false
+tags:
+  - portability
+description: >
+  Allow technically undefined behavior such as out-of-range double-to-integer
+  casts, floating point division by zero, etc. which are likely to work on the
+  majority of platforms.  Default is to avoid such behaviors, at the cost of
+  some footprint and performance.

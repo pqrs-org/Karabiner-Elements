@@ -1,0 +1,6 @@
+/* Motorola 68K.  Not defined by VBCC, so user must define one of these
+ * manually when using VBCC.
+ */
+#if defined(__m68k__) || defined(M68000) || defined(__MC68K__)
+#define DUK_F_M68K
+#endif

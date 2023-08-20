@@ -1,0 +1,8 @@
+define: DUK_OPT_STRTAB_CHAIN_SIZE
+introduced: 1.1.0
+requires:
+  - DUK_OPT_STRTAB_CHAIN
+tags:
+  - lowmemory
+description: >
+  Define stringtable size for DUK_OPT_STRTAB_CHAIN.

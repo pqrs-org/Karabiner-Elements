@@ -1,0 +1,11 @@
+define: DUK_USE_DOUBLE_LE
+introduced: 1.0.0
+removed: 1.4.0
+default: true
+conflicts:
+  - DUK_USE_DOUBLE_BE
+  - DUK_USE_DOUBLE_ME
+tags:
+  - portability
+description: >
+  IEEE double memory representation is little endian on the target platform.

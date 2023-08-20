@@ -1,0 +1,9 @@
+define: DUK_USE_PROVIDE_DEFAULT_ALLOC_FUNCTIONS
+introduced: 1.0.0
+default: true
+tags:
+  - portability
+description: >
+  Provide default allocation functions.
+
+  At the moment this option should be enabled.

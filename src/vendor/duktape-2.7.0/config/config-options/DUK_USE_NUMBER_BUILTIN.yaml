@@ -1,0 +1,7 @@
+define: DUK_USE_NUMBER_BUILTIN
+introduced: 2.0.0
+default: true
+tags:
+  - ecmascript
+description: >
+  Provide a Number built-in.

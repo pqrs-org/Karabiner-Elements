@@ -1,0 +1,4 @@
+/* Clang */
+#if defined(__clang__)
+#define DUK_F_CLANG
+#endif

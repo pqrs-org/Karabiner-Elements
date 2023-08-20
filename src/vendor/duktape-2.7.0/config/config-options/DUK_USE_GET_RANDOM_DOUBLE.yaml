@@ -1,0 +1,16 @@
+define: DUK_USE_GET_RANDOM_DOUBLE
+introduced: 2.0.0
+default: false
+tags:
+  - portability
+  - performance
+description: >
+  Override the default internal random number generator which is used for
+  Math.random() and some other internal call sites (currently, for example,
+  Array.prototype.sort()).  The default random number generator has a very
+  low footprint but is not suitable for serious statistics algorithms or
+  cryptography.  Overriding the random number generator may thus be useful
+  in some environments.
+
+  The macro gets a heap userdata argument and must provide an IEEE double
+  in the range [0,1[.

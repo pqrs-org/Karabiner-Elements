@@ -1,0 +1,8 @@
+define: DUK_USE_GET_MONOTONIC_TIME_CLOCK_GETTIME
+introduced: 2.2.0
+default: false
+tags:
+  - portability
+description: >
+  Use clock_gettime(CLOCK_MONOTONIC, ...) for monotonic time on POSIX
+  platforms.

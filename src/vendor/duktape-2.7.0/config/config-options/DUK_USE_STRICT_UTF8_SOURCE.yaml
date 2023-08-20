@@ -1,0 +1,11 @@
+define: DUK_USE_STRICT_UTF8_SOURCE
+introduced: 1.0.0
+default: false
+tags:
+  - ecmascript
+description: >
+  Enable strict UTF-8 parsing of source code.
+
+  When disabled, non-shortest encodings (normally invalid UTF-8) and surrogate
+  pair codepoints are accepted as valid source code characters.  Disabling
+  this option breaks compatibility with some test262 tests.

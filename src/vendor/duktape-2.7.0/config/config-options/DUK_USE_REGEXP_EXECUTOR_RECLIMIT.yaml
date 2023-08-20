@@ -1,0 +1,8 @@
+define: DUK_USE_REGEXP_EXECUTOR_RECLIMIT
+introduced: 1.3.0
+default: 10000
+tags:
+  - portability
+  - cstackdepth
+description: >
+  RegExp executor native call stack recursion limit.

@@ -1,0 +1,10 @@
+define: DUK_OPT_DECLARE
+introduced: 1.0.0
+tags:
+  - portability
+description: >
+  Provide declarations or additional preprocessor include directives to be
+  used when compiling Duktape.  You may need this if you set
+  DUK_OPT_PANIC_HANDLER to call your own panic handler function.  You can
+  also use this option to cause additional files to be included when compiling
+  Duktape.

@@ -1,0 +1,40 @@
+/*
+ *  Check whether or not a packed duk_tval representation is possible.
+ *  What's basically required is that pointers are 32-bit values
+ *  (sizeof(void *) == 4).  Best effort check, not always accurate.
+ *  If guess goes wrong, crashes may result; self tests also verify
+ *  the guess.
+ */
+
+/* Explicit marker needed; may be 'defined', 'undefined, 'or 'not provided'. */
+#if !defined(DUK_F_PACKED_TVAL_PROVIDED)
+#undef DUK_F_PACKED_TVAL_POSSIBLE
+
+/* Strict C99 case: DUK_UINTPTR_MAX (= UINTPTR_MAX) should be very reliable */
+#if !defined(DUK_F_PACKED_TVAL_POSSIBLE) && defined(DUK_UINTPTR_MAX)
+#if (DUK_UINTPTR_MAX <= 0xffffffffUL)
+#define DUK_F_PACKED_TVAL_POSSIBLE
+#endif
+#endif
+
+/* Non-C99 case, still relying on DUK_UINTPTR_MAX, as long as it is not a computed value */
+#if !defined(DUK_F_PACKED_TVAL_POSSIBLE) && defined(DUK_UINTPTR_MAX) && !defined(DUK_UINTPTR_MAX_COMPUTED)
+#if (DUK_UINTPTR_MAX <= 0xffffffffUL)
+#define DUK_F_PACKED_TVAL_POSSIBLE
+#endif
+#endif
+
+/* DUK_SIZE_MAX (= SIZE_MAX) is often reliable */
+#if !defined(DUK_F_PACKED_TVAL_POSSIBLE) && defined(DUK_SIZE_MAX) && !defined(DUK_SIZE_MAX_COMPUTED)
+#if (DUK_SIZE_MAX <= 0xffffffffUL)
+#define DUK_F_PACKED_TVAL_POSSIBLE
+#endif
+#endif
+
+#undef DUK_USE_PACKED_TVAL
+#if defined(DUK_F_PACKED_TVAL_POSSIBLE)
+#define DUK_USE_PACKED_TVAL
+#endif
+#undef DUK_F_PACKED_TVAL_POSSIBLE
+
+#endif  /* DUK_F_PACKED_TVAL_PROVIDED */

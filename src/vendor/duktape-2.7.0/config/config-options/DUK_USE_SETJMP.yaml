@@ -1,0 +1,17 @@
+define: DUK_USE_SETJMP
+introduced: 1.1.0
+removed: 1.5.0
+default: true
+tags:
+  - portability
+description: >
+  Use setjmp/longjmp for long control transfers.  This is the most portable
+  option for long control transfers.
+
+  The downside of setjmp/longjmp is that signal mask saving behavior is not
+  specified and varies between platforms.  Signal mask saving may have a
+  significant performance impact so you may want to force a specific provider
+  if performance matters for your application.  (This is the case for OSX,
+  for instance.)
+
+  Removed in Duktape 1.5.0: edit duk_config.h directly.

@@ -1,0 +1,16 @@
+#if defined(DUK_F_QNX) && defined(DUK_COMPILING_DUKTAPE)
+/* See: /opt/qnx650/target/qnx6/usr/include/sys/platform.h */
+#define _XOPEN_SOURCE    600
+#define _POSIX_C_SOURCE  200112L
+#endif
+
+#define DUK_USE_DATE_NOW_GETTIMEOFDAY
+#define DUK_USE_DATE_TZO_GMTIME_R
+#define DUK_USE_DATE_PRS_STRPTIME
+#define DUK_USE_DATE_FMT_STRFTIME
+#include <sys/types.h>
+#include <sys/param.h>
+#include <sys/time.h>
+#include <time.h>
+
+#define DUK_USE_OS_STRING "qnx"

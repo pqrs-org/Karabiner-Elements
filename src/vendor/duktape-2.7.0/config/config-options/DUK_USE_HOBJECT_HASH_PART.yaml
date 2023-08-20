@@ -1,0 +1,11 @@
+define: DUK_USE_HOBJECT_HASH_PART
+introduced: 1.1.0
+default: true
+tags:
+  - lowmemory
+  - experimental
+description: >
+  Use a hash table for objects that have enough properties.  This should be
+  enabled unless the target is very low on memory.
+
+  If DUK_USE_OBJSIZES16 is defined, this option must not be defined.

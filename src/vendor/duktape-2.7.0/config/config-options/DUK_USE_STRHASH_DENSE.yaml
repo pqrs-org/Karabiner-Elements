@@ -1,0 +1,10 @@
+define: DUK_USE_STRHASH_DENSE
+introduced: 1.4.0
+default: false
+tags:
+  - performance
+  - sandbox
+description: >
+  Use the slower but more dense string hash algorithm from Duktape 1.3.0 and
+  prior (based on Murmurhash2).  This may be useful if you're experiencing
+  collision issues with the default hash algorithm.

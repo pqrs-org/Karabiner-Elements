@@ -1,0 +1,9 @@
+define: DUK_USE_DATE_PRS_STRPTIME
+introduced: 1.0.0
+default: false
+tags:
+  - date
+  - portability
+description: >
+  Use strptime() to parse a platform specific datetime string into ECMAScript
+  time.

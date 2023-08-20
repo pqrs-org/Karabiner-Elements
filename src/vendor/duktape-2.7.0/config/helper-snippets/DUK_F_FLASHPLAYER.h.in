@@ -1,0 +1,4 @@
+/* Flash player (e.g. Crossbridge) */
+#if defined(__FLASHPLAYER__)
+#define DUK_F_FLASHPLAYER
+#endif

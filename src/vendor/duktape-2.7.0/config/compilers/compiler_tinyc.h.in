@@ -1,0 +1,18 @@
+#undef DUK_USE_BRANCH_HINTS
+
+#if defined(DUK_F_CPP)
+#define DUK_USE_COMPILER_STRING "tinyc++"
+#else
+#define DUK_USE_COMPILER_STRING "tinyc"
+#endif
+
+/* http://bellard.org/tcc/tcc-doc.html#SEC7 */
+#define DUK_USE_VARIADIC_MACROS
+
+#define DUK_USE_UNION_INITIALIZERS
+
+/* Most portable, wastes space */
+#define DUK_USE_FLEX_ONESIZE
+
+/* Most portable, potentially wastes space */
+#define DUK_USE_PACK_DUMMY_MEMBER

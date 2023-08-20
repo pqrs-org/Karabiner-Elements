@@ -1,0 +1,3 @@
+#if defined(ANDROID) || defined(__ANDROID__)
+#define DUK_F_ANDROID
+#endif

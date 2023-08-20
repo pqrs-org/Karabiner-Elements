@@ -1,0 +1,9 @@
+/* ULL / LL preprocessor constants should be avoided because they're not
+ * always available.  With suitable options, some compilers will support
+ * 64-bit integer types but won't support ULL / LL preprocessor constants.
+ * Assume C99/C++11 environments have these.  However, BCC is nominally
+ * C99 but doesn't support these constants.
+ */
+#if (defined(DUK_F_C99) || defined(DUK_F_CPP11)) && !defined(DUK_F_BCC)
+#define DUK_F_ULL_CONSTS
+#endif

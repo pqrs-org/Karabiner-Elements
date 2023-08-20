@@ -1,0 +1,10 @@
+define: DUK_USE_DATE_NOW_TIME
+introduced: 1.0.0
+default: false
+tags:
+  - date
+  - portability
+description: >
+  Use time() to get current datetime, with the limitation that datetime is
+  limited to one second resolution.  When enabled, appropriate date/time
+  headers must be included.

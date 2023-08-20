@@ -1,0 +1,24 @@
+/* Shared includes: C89 */
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <stdarg.h>  /* varargs */
+#include <setjmp.h>
+#include <stddef.h>  /* e.g. ptrdiff_t */
+#include <math.h>
+#include <limits.h>
+
+/* date.h is omitted, and included per platform */
+
+/* Shared includes: stdint.h is C99 */
+#if defined(DUK_F_NO_STDINT_H)
+/* stdint.h not available */
+#else
+/* Technically C99 (C++11) but found in many systems.  On some systems
+ * __STDC_LIMIT_MACROS and __STDC_CONSTANT_MACROS must be defined before
+ * including stdint.h (see above).
+ */
+#include <stdint.h>
+#endif
+
+/* <exception> is only included if needed, based on DUK_USE_xxx flags. */

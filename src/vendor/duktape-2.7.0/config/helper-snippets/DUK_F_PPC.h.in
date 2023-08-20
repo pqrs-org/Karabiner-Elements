@@ -1,0 +1,9 @@
+/* PowerPC */
+#if defined(__powerpc) || defined(__powerpc__) || defined(__PPC__)
+#define DUK_F_PPC
+#if defined(__PPC64__) || defined(__LP64__) || defined(_LP64)
+#define DUK_F_PPC64
+#else
+#define DUK_F_PPC32
+#endif
+#endif

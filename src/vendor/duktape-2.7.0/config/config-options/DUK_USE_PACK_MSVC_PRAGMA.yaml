@@ -1,0 +1,7 @@
+define: DUK_USE_PACK_MSVC_PRAGMA
+introduced: 1.0.0
+default: false
+tags:
+  - portability
+description: >
+  Use msvc-specific attribute to force struct packing.

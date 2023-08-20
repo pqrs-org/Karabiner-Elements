@@ -1,0 +1,24 @@
+# Enable debugger support in general, also needs interrupt support.
+DUK_USE_INTERRUPT_COUNTER: true
+DUK_USE_DEBUGGER_SUPPORT: true
+
+# Basic set of Notifys.
+DUK_USE_DEBUGGER_THROW_NOTIFY: true
+
+# Automatically pause on an uncaught error about to be thrown.
+DUK_USE_DEBUGGER_PAUSE_UNCAUGHT: true
+
+# Enable DumpHeap command (experimental).
+DUK_USE_DEBUGGER_DUMPHEAP: true
+
+# Enable object inspection commands: GetHeapObjInfo, GetObjPropDesc,
+# GetObjPropDescRange.
+DUK_USE_DEBUGGER_INSPECT: true
+
+# Transport torture testing: enable when testing your transport
+# implementation.
+DUK_USE_DEBUGGER_TRANSPORT_TORTURE: false
+
+# NOTE: If you're using the Duktape command line utility for debugging
+# (duk --debugger ...), remember to enable debugger support for the command
+# line tool when compiling it: -DDUK_CMDLINE_DEBUGGER_SUPPORT.

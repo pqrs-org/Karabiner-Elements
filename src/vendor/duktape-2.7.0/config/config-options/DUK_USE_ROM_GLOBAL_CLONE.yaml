@@ -1,0 +1,18 @@
+define: DUK_USE_ROM_GLOBAL_CLONE
+introduced: 1.5.0
+requires:
+  - DUK_USE_ROM_STRINGS
+  - DUK_USE_ROM_OBJECTS
+conflicts:
+  - DUK_USE_ROM_GLOBAL_INHERIT
+default: false
+tags:
+  - lowmemory
+  - experimental
+description: >
+  When using ROM built-in objects, create a RAM-based global object by copying
+  the properties of the ROM-based global object into a fresh empty object.
+
+  Having a writable global object is usually expected; if the global object is
+  not writable, it's not possible to e.g. declare functions outside of CommonJS
+  modules.

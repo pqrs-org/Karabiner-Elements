@@ -1,0 +1,12 @@
+define: DUK_OPT_FUNCPTR_ENC16
+introduced: 1.1.0
+requires:
+  - DUK_OPT_FUNCPTR16
+tags:
+  - lowmemory
+  - experimental
+description: >
+  Use together with DUK_OPT_FUNCPTR16 for function pointer compression.
+  DUK_OPT_FUNCPTR_ENC16(udata,p) is a macro with a userdata and void ptr
+  argument, and a duk_uint16_t return value.  The userdata arguments is the
+  heap userdata value given at heap creation.

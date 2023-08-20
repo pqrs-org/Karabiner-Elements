@@ -1,0 +1,8 @@
+define: DUK_USE_PANIC_EXIT
+introduced: 1.0.0
+removed: 2.0.0
+default: false
+tags:
+  - portability
+description: >
+  Call exit() when the default panic handler is invoked.

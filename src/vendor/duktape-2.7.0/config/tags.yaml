@@ -1,0 +1,102 @@
+# Properties for each tag:
+#
+# - title: title to use in header files
+#
+
+ecmascript:
+  title: ECMAScript Edition 5 (ES5) options
+
+ecmascript2015:
+  title: ECMAScript 2015 (ES6) options
+
+ecmascript2016:
+  title: ECMAScript 2016 (ES7) options
+
+ecmascript2017:
+  title: ECMAScript 2017 (ES8) options
+
+ecmascript2018:
+  title: ECMAScript 2018 (ES9) options
+
+duktape:
+  title: Duktape specific options
+
+compliance:
+  title: Compliance related options
+
+debugger:
+  title: Debugger options
+
+debug:
+  title: Debug options
+
+execution:
+  title: Execution options
+
+sandbox:
+  title: Sandboxing options
+
+performance:
+  title: Performance options
+
+portability:
+  title: Platform and portability options
+
+memory:
+  title: Memory management options
+
+lowmemory:
+  title: Low memory options
+
+gc:
+  title: Garbage collection options
+
+misc:
+  title: Miscellaneous options
+
+io:
+  title: I/O options
+
+development:
+  title: Developer-only options
+  description: >
+    Developer options which are not intended for end users and are not
+    part of semantic versioning guarantees (e.g. torture options).
+
+legacy:
+  title: Backwards compatibility options
+  description: >
+    Options for providing backwards compatible behavior.
+
+date:
+  title: Date handling options
+
+experimental:
+  title: Experimental options
+
+api:
+  title: API options
+
+fastpath:
+  title: Fast path performance options
+
+cstackdepth:
+  title: C stack depth
+
+torture:
+  title: Development time torture options
+  description: >
+    Development time options to stress test corner case handling by e.g.
+    causing a garbage collection on every allocation.
+
+cbor:
+  title: CBOR
+
+codec:
+  title: Codecs
+
+encoding-api:
+  title: WHATWG Encoding API
+
+performance-api:
+  title: Performance API (High Resolution Time)

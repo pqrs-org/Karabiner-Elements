@@ -1,0 +1,10 @@
+define: DUK_USE_CBOR_SUPPORT
+introduced: 2.5.0
+default: true
+tags:
+  - codec
+  - cbor
+  - experimental
+description: >
+  Include CBOR support.  When disabled, CBOR functions in the C API (and the
+  CBOR built-in, if enabled) will throw an error.

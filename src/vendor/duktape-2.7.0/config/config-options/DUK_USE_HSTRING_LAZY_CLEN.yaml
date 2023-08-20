@@ -1,0 +1,11 @@
+define: DUK_USE_HSTRING_LAZY_CLEN
+introduced: 2.2.0
+default: true
+tags:
+  - performance
+description: >
+  When enabled, duk_hstring charlen is computed only when accessed; because
+  the charlen of most strings is not accessed during their lifetime, this
+  reduces unnecessary charlen calculations.  When disabled, charlen is computed
+  during interning which has smaller code footprint at slightly slower charlen
+  handling.

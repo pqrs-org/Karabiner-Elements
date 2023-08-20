@@ -1,0 +1,10 @@
+define: DUK_USE_OCTAL_SUPPORT
+introduced: 1.0.0
+removed: 2.0.0
+default: true
+tags:
+  - ecmascript
+description: >
+  Enable optional octal number support (ECMAScript E5/E5.1
+  Annex B: http://www.ecma-international.org/ecma-262/5.1/#sec-B).
+  Recommended because existing code bases use octal numbers.

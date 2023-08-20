@@ -1,0 +1,94 @@
+#define DUK_F_HAVE_64BIT
+#include <inttypes.h>
+
+typedef uint8_t duk_uint8_t;
+typedef int8_t duk_int8_t;
+typedef uint16_t duk_uint16_t;
+typedef int16_t duk_int16_t;
+typedef uint32_t duk_uint32_t;
+typedef int32_t duk_int32_t;
+typedef uint64_t duk_uint64_t;
+typedef int64_t duk_int64_t;
+typedef uint_least8_t duk_uint_least8_t;
+typedef int_least8_t duk_int_least8_t;
+typedef uint_least16_t duk_uint_least16_t;
+typedef int_least16_t duk_int_least16_t;
+typedef uint_least32_t duk_uint_least32_t;
+typedef int_least32_t duk_int_least32_t;
+typedef uint_least64_t duk_uint_least64_t;
+typedef int_least64_t duk_int_least64_t;
+typedef uint_fast8_t duk_uint_fast8_t;
+typedef int_fast8_t duk_int_fast8_t;
+typedef uint_fast16_t duk_uint_fast16_t;
+typedef int_fast16_t duk_int_fast16_t;
+typedef uint_fast32_t duk_uint_fast32_t;
+typedef int_fast32_t duk_int_fast32_t;
+typedef uint_fast64_t duk_uint_fast64_t;
+typedef int_fast64_t duk_int_fast64_t;
+typedef uintptr_t duk_uintptr_t;
+typedef intptr_t duk_intptr_t;
+typedef uintmax_t duk_uintmax_t;
+typedef intmax_t duk_intmax_t;
+
+#define DUK_UINT8_MIN         0
+#define DUK_UINT8_MAX         UINT8_MAX
+#define DUK_INT8_MIN          INT8_MIN
+#define DUK_INT8_MAX          INT8_MAX
+#define DUK_UINT_LEAST8_MIN   0
+#define DUK_UINT_LEAST8_MAX   UINT_LEAST8_MAX
+#define DUK_INT_LEAST8_MIN    INT_LEAST8_MIN
+#define DUK_INT_LEAST8_MAX    INT_LEAST8_MAX
+#define DUK_UINT_FAST8_MIN    0
+#define DUK_UINT_FAST8_MAX    UINT_FAST8_MAX
+#define DUK_INT_FAST8_MIN     INT_FAST8_MIN
+#define DUK_INT_FAST8_MAX     INT_FAST8_MAX
+#define DUK_UINT16_MIN        0
+#define DUK_UINT16_MAX        UINT16_MAX
+#define DUK_INT16_MIN         INT16_MIN
+#define DUK_INT16_MAX         INT16_MAX
+#define DUK_UINT_LEAST16_MIN  0
+#define DUK_UINT_LEAST16_MAX  UINT_LEAST16_MAX
+#define DUK_INT_LEAST16_MIN   INT_LEAST16_MIN
+#define DUK_INT_LEAST16_MAX   INT_LEAST16_MAX
+#define DUK_UINT_FAST16_MIN   0
+#define DUK_UINT_FAST16_MAX   UINT_FAST16_MAX
+#define DUK_INT_FAST16_MIN    INT_FAST16_MIN
+#define DUK_INT_FAST16_MAX    INT_FAST16_MAX
+#define DUK_UINT32_MIN        0
+#define DUK_UINT32_MAX        UINT32_MAX
+#define DUK_INT32_MIN         INT32_MIN
+#define DUK_INT32_MAX         INT32_MAX
+#define DUK_UINT_LEAST32_MIN  0
+#define DUK_UINT_LEAST32_MAX  UINT_LEAST32_MAX
+#define DUK_INT_LEAST32_MIN   INT_LEAST32_MIN
+#define DUK_INT_LEAST32_MAX   INT_LEAST32_MAX
+#define DUK_UINT_FAST32_MIN   0
+#define DUK_UINT_FAST32_MAX   UINT_FAST32_MAX
+#define DUK_INT_FAST32_MIN    INT_FAST32_MIN
+#define DUK_INT_FAST32_MAX    INT_FAST32_MAX
+#define DUK_UINT64_MIN        0
+#define DUK_UINT64_MAX        UINT64_MAX
+#define DUK_INT64_MIN         INT64_MIN
+#define DUK_INT64_MAX         INT64_MAX
+#define DUK_UINT_LEAST64_MIN  0
+#define DUK_UINT_LEAST64_MAX  UINT_LEAST64_MAX
+#define DUK_INT_LEAST64_MIN   INT_LEAST64_MIN
+#define DUK_INT_LEAST64_MAX   INT_LEAST64_MAX
+#define DUK_UINT_FAST64_MIN   0
+#define DUK_UINT_FAST64_MAX   UINT_FAST64_MAX
+#define DUK_INT_FAST64_MIN    INT_FAST64_MIN
+#define DUK_INT_FAST64_MAX    INT_FAST64_MAX
+
+#define DUK_UINTPTR_MIN       0
+#define DUK_UINTPTR_MAX       UINTPTR_MAX
+#define DUK_INTPTR_MIN        INTPTR_MIN
+#define DUK_INTPTR_MAX        INTPTR_MAX
+
+#define DUK_UINTMAX_MIN       0
+#define DUK_UINTMAX_MAX       UINTMAX_MAX
+#define DUK_INTMAX_MIN        INTMAX_MIN
+#define DUK_INTMAX_MAX        INTMAX_MAX
+
+#define DUK_SIZE_MIN          0
+#define DUK_SIZE_MAX          SIZE_MAX
+#undef DUK_SIZE_MAX_COMPUTED

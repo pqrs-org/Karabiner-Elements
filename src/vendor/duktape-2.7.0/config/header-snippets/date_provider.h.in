@@ -1,0 +1,66 @@
+/*
+ *  Date provider selection
+ *
+ *  User may define DUK_USE_DATE_GET_NOW() etc directly, in which case we'll
+ *  rely on an external provider.  If this is not done, revert to previous
+ *  behavior and use Unix/Windows built-in provider.
+ */
+
+#if defined(DUK_COMPILING_DUKTAPE)
+
+#if defined(DUK_USE_DATE_GET_NOW)
+/* External provider already defined. */
+#elif defined(DUK_USE_DATE_NOW_GETTIMEOFDAY)
+#define DUK_USE_DATE_GET_NOW(ctx)            duk_bi_date_get_now_gettimeofday()
+#elif defined(DUK_USE_DATE_NOW_TIME)
+#define DUK_USE_DATE_GET_NOW(ctx)            duk_bi_date_get_now_time()
+#elif defined(DUK_USE_DATE_NOW_WINDOWS)
+#define DUK_USE_DATE_GET_NOW(ctx)            duk_bi_date_get_now_windows()
+#elif defined(DUK_USE_DATE_NOW_WINDOWS_SUBMS)
+#define DUK_USE_DATE_GET_NOW(ctx)            duk_bi_date_get_now_windows_subms()
+#else
+#error no provider for DUK_USE_DATE_GET_NOW()
+#endif
+
+#if defined(DUK_USE_DATE_GET_LOCAL_TZOFFSET)
+/* External provider already defined. */
+#elif defined(DUK_USE_DATE_TZO_GMTIME_R) || defined(DUK_USE_DATE_TZO_GMTIME_S) || defined(DUK_USE_DATE_TZO_GMTIME)
+#define DUK_USE_DATE_GET_LOCAL_TZOFFSET(d)   duk_bi_date_get_local_tzoffset_gmtime((d))
+#elif defined(DUK_USE_DATE_TZO_WINDOWS)
+#define DUK_USE_DATE_GET_LOCAL_TZOFFSET(d)   duk_bi_date_get_local_tzoffset_windows((d))
+#elif defined(DUK_USE_DATE_TZO_WINDOWS_NO_DST)
+#define DUK_USE_DATE_GET_LOCAL_TZOFFSET(d)   duk_bi_date_get_local_tzoffset_windows_no_dst((d))
+#else
+#error no provider for DUK_USE_DATE_GET_LOCAL_TZOFFSET()
+#endif
+
+#if defined(DUK_USE_DATE_PARSE_STRING)
+/* External provider already defined. */
+#elif defined(DUK_USE_DATE_PRS_STRPTIME)
+#define DUK_USE_DATE_PARSE_STRING(ctx,str)   duk_bi_date_parse_string_strptime((ctx), (str))
+#elif defined(DUK_USE_DATE_PRS_GETDATE)
+#define DUK_USE_DATE_PARSE_STRING(ctx,str)   duk_bi_date_parse_string_getdate((ctx), (str))
+#else
+/* No provider for DUK_USE_DATE_PARSE_STRING(), fall back to ISO 8601 only. */
+#endif
+
+#if defined(DUK_USE_DATE_FORMAT_STRING)
+/* External provider already defined. */
+#elif defined(DUK_USE_DATE_FMT_STRFTIME)
+#define DUK_USE_DATE_FORMAT_STRING(ctx,parts,tzoffset,flags) \
+	duk_bi_date_format_parts_strftime((ctx), (parts), (tzoffset), (flags))
+#else
+/* No provider for DUK_USE_DATE_FORMAT_STRING(), fall back to ISO 8601 only. */
+#endif
+
+#if defined(DUK_USE_GET_MONOTONIC_TIME)
+/* External provider already defined. */
+#elif defined(DUK_USE_GET_MONOTONIC_TIME_CLOCK_GETTIME)
+#define DUK_USE_GET_MONOTONIC_TIME(ctx)  duk_bi_date_get_monotonic_time_clock_gettime()
+#elif defined(DUK_USE_GET_MONOTONIC_TIME_WINDOWS_QPC)
+#define DUK_USE_GET_MONOTONIC_TIME(ctx)  duk_bi_date_get_monotonic_time_windows_qpc()
+#else
+/* No provider for DUK_USE_GET_MONOTONIC_TIME(), fall back to DUK_USE_DATE_GET_NOW(). */
+#endif
+
+#endif  /* DUK_COMPILING_DUKTAPE */

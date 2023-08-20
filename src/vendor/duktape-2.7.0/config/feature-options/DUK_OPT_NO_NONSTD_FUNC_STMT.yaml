@@ -1,0 +1,10 @@
+define: DUK_OPT_NO_NONSTD_FUNC_STMT
+introduced: 1.0.0
+tags:
+  - ecmascript
+description: >
+  Disable support for function declarations outside program or function top
+  level (also known as "function statements").  Such declarations are
+  non-standard and the strictly compliant behavior is to treat them as a
+  SyntaxError.  Default behavior is to treat them like ordinary function
+  declarations ("hoist" them to function top) with V8-like semantics.

@@ -1,0 +1,12 @@
+define: DUK_USE_REPL_SIGNBIT
+introduced: 1.0.0
+default: false
+tags:
+  - portability
+description: >
+  Provide a built-in replacement for signbit(), duk_repl_signbit.
+
+  When enabled, define DUK_SIGNBIT as duk_repl_signbit.
+
+# XXX: the dependency between DUK_USE_REPL_SIGNBIT and DUK_SIGNBIT
+# is a bit awkward.

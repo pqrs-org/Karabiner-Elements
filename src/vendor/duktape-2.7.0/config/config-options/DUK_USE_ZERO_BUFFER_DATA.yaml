@@ -1,0 +1,11 @@
+define: DUK_USE_ZERO_BUFFER_DATA
+introduced: 1.0.0
+default: true
+tags:
+  - memory
+  - ecmascript
+description: >
+  Zero data are of newly allocated buffer values (recommended).
+
+  When disabled, buffers are not zeroed and may contain arbitrary data.
+  Disabling this option only makes sense for performance reasons.

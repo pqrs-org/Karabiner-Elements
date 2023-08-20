@@ -1,0 +1,9 @@
+define: DUK_OPT_NO_PACKED_TVAL
+introduced: 1.0.0
+tags:
+  - memory
+  - portability
+description: >
+  Don't use the packed 8-byte internal value representation even if otherwise
+  possible.  The packed representation has more platform/compiler portability
+  issues than the unpacked one.

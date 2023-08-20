@@ -8,6 +8,8 @@ targets:
       CODE_SIGN_STYLE: Manual
       HEADER_SEARCH_PATHS:
         - ../../share
+        - ../../vendor/duktape-2.7.0/src
+        - ../../vendor/duktape-2.7.0/extras/console
       OTHER_SWIFT_FLAGS: '-warnings-as-errors'
       SWIFT_OBJC_BRIDGING_HEADER:
         - ../../vendor/cget/include/pqrs/osx/process_info/impl/Bridging-Header.h
@@ -23,6 +25,7 @@ targets:
           - -Wall
           - -Werror
           - '-std=c++20'
+      - path: ../../vendor/duktape-2.7.0/src/duktape.c
+      - path: ../../vendor/duktape-2.7.0/extras/console/duk_console.c
+      - path: ../../vendor/duktape-2.7.0/extras/module-duktape/duk_module_duktape.c
       - path: ../../vendor/cget/src/pqrs/osx/process_info
-    dependencies:
-      - framework: CoreServices.framework

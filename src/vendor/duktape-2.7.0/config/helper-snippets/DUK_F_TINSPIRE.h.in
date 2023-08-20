@@ -1,0 +1,4 @@
+/* TI-Nspire (using Ndless) */
+#if defined(_TINSPIRE)
+#define DUK_F_TINSPIRE
+#endif

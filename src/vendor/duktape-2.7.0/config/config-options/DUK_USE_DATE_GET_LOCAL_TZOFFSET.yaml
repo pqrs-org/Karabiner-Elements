@@ -1,0 +1,9 @@
+define: DUK_USE_DATE_GET_LOCAL_TZOFFSET
+introduced: 1.3.0
+default: false
+tags:
+  - date
+  - portability
+description: >
+  Mandatory macro for getting the local time offset for a given datetime,
+  see datetime.rst.

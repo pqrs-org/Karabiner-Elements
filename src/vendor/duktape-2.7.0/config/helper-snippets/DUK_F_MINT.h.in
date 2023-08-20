@@ -1,0 +1,4 @@
+/* Atari Mint */
+#if defined(__MINT__)
+#define DUK_F_MINT
+#endif

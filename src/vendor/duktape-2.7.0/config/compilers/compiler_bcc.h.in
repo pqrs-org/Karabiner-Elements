@@ -1,0 +1,24 @@
+#undef DUK_USE_BRANCH_HINTS
+
+#if defined(DUK_F_CPP)
+#define DUK_USE_COMPILER_STRING "bcc++"
+#else
+#define DUK_USE_COMPILER_STRING "bcc"
+#endif
+
+/* Most portable */
+#undef DUK_USE_VARIADIC_MACROS
+
+/* Most portable, wastes space */
+#undef DUK_USE_UNION_INITIALIZERS
+
+/* Most portable, wastes space */
+#define DUK_USE_FLEX_ONESIZE
+
+/* Most portable, potentially wastes space */
+#define DUK_USE_PACK_DUMMY_MEMBER
+
+/* BCC, assume we're on x86. */
+#if !defined(DUK_USE_BYTEORDER)
+#define DUK_USE_BYTEORDER 1
+#endif

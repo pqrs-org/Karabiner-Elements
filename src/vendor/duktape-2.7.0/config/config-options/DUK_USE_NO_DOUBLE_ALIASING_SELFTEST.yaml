@@ -1,0 +1,12 @@
+define: DUK_USE_NO_DOUBLE_ALIASING_SELFTEST
+introduced: 1.0.0
+removed: 1.4.0
+default: false
+tags:
+  - portability
+description: >
+  Disable double aliasing selftest (if self tests enabled).
+
+  Double aliasing testcase fails when Emscripten-generated code is run.
+  This is not fatal because it only affects packed duk_tval which we
+  avoid with Emscripten.

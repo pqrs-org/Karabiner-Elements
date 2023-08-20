@@ -1,0 +1,12 @@
+define: DUK_OPT_INTERRUPT_COUNTER
+introduced: 1.1.0
+related:
+  - DUK_OPT_DEBUGGER_SUPPORT
+tags:
+  - execution
+  - debugger
+description: >
+  Enable the internal bytecode executor periodic interrupt counter.
+  The mechanism is used to implement e.g. execution step limit, custom
+  profiling, and debugger interaction.  Enabling the interrupt counter
+  has a small impact on execution performance.

@@ -1,0 +1,12 @@
+define: DUK_USE_REPL_ISFINITE
+introduced: 1.0.0
+default: false
+tags:
+  - portability
+description: >
+  Provide a built-in replacement for isfinite(), duk_repl_isfinite.
+
+  When enabled, define DUK_ISFINITE as duk_repl_isfinite.
+
+# XXX: the dependency between DUK_USE_REPL_ISFINITE and DUK_ISFINITE
+# is a bit awkward.

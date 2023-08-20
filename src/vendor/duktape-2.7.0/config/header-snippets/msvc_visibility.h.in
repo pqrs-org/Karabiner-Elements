@@ -1,0 +1,19 @@
+/* MSVC dllexport/dllimport: appropriate __declspec depends on whether we're
+ * compiling Duktape or the application.
+ */
+#if defined(DUK_COMPILING_DUKTAPE)
+#define DUK_EXTERNAL_DECL  extern __declspec(dllexport)
+#define DUK_EXTERNAL       __declspec(dllexport)
+#else
+#define DUK_EXTERNAL_DECL  extern __declspec(dllimport)
+#define DUK_EXTERNAL       should_not_happen
+#endif
+#if defined(DUK_SINGLE_FILE)
+#define DUK_INTERNAL_DECL  static
+#define DUK_INTERNAL       static
+#else
+#define DUK_INTERNAL_DECL  extern
+#define DUK_INTERNAL       /*empty*/
+#endif
+#define DUK_LOCAL_DECL     static
+#define DUK_LOCAL          static

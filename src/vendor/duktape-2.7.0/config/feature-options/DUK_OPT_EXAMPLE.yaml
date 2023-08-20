@@ -1,0 +1,52 @@
+#
+#  Each Duktape option is described as a YAML file named OPTION_NAME.yaml.
+#  YAML is used because it diffs well and has clean support for multiline
+#  inline strings.
+#
+#  Metadata for feature options (DUK_OPT_xxx) is sparse, it's needed for
+#  legacy support.
+#
+
+# C #define name for the option.  Must match filename minus extension.
+define: DUK_OPT_OBJSIZES16
+
+# Duktape version number where this option was first introduced.
+introduced: 1.1.0
+#deprecated: 1.2.0
+#removed: 1.3.0
+
+# Optional indication that feature option is defined but currently
+# unused, so that it can be omitted from generated header.
+#unused: true
+
+# Optional list of options that must also be defined to use this option.
+#requires:
+#  - DUK_OPT_FOO
+#  - DUK_OPT_BAR
+
+# Optional list of options that this option conflicts with.
+#conflicts:
+#  - DUK_OPT_BAZ
+
+# Optional list of options that are related from a user and documentation
+# perspective.
+#related:
+#  - DUK_OPT_QUUX
+
+# Tags related to option (required).  If present, first tag is used as a
+# primary tag for grouping.  Use 'misc' if nothing else is appropriate.
+tags:
+  - lowmemory
+  - experimental
+
+# Description for option, no newlines.  Line breaking for e.g. C header
+# is automatic.
+description: >
+  Use a 16-bit object entry and array part sizes (for low memory
+  environments).  Also automatically drops support for an object hash
+  part to further reduce memory usage; there are rarely large objects
+  in low memory environments simply because there's no memory to store
+  a lot of properties.
+
+# Marker to avoid processing this file.
+example: true

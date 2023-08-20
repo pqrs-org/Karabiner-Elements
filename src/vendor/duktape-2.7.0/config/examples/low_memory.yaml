@@ -1,0 +1,158 @@
+# Base configuration for low memory environments, see
+# doc/low-memory.rst:
+#
+#   - Strips verbose errors etc
+#   - Strips some ES2015 features like Proxy support (re-enable if needed)
+#   - Strips some Duktape custom feature like JX/JC; keeps e.g. RegExp
+#     and other standard parts
+#   - Strips some commonly unnecessary API calls like bytecode dump/load
+#   - Does not enable pointer compression or external strings: these
+#     need target specific support code
+#   - Does not enable ROM string/object support by default, enable manually
+#
+
+# Consider switching alignment to align-by-1 or align-by-4 for more compact
+# memory layout if the architecture supports it.
+#DUK_USE_ALIGN_BY: 1
+
+# With the vast majority of compilers some of the 'undefined behavior'
+# assumptions are fine, and produce smaller and faster code, so enable
+# by default for lowmem targets.  You may need to disable this for some
+# compilers.
+DUK_USE_ALLOW_UNDEFINED_BEHAVIOR: true
+
+DUK_USE_PREFER_SIZE: true
+DUK_USE_EXEC_PREFER_SIZE: true
+DUK_USE_FAST_REFCOUNT_DEFAULT: false
+DUK_USE_AUGMENT_ERROR_CREATE: false
+DUK_USE_AUGMENT_ERROR_THROW: false
+DUK_USE_TRACEBACKS: false
+DUK_USE_ERRCREATE: false
+DUK_USE_ERRTHROW: false
+DUK_USE_VERBOSE_ERRORS: false
+DUK_USE_PARANOID_ERRORS: true
+DUK_USE_FATAL_MAXLEN: 64
+DUK_USE_VERBOSE_EXECUTOR_ERRORS: false  # <100 bytes footprint
+DUK_USE_DEBUGGER_SUPPORT: false  # must be disabled if DUK_USE_PC2LINE is disabled
+DUK_USE_PC2LINE: false
+DUK_USE_LEXER_SLIDING_WINDOW: false
+DUK_USE_JSON_STRINGIFY_FASTPATH: false
+DUK_USE_JSON_QUOTESTRING_FASTPATH: false
+DUK_USE_JSON_DECSTRING_FASTPATH: false
+DUK_USE_JSON_DECNUMBER_FASTPATH: false
+DUK_USE_JSON_EATWHITE_FASTPATH: false
+DUK_USE_BASE64_FASTPATH: false
+DUK_USE_HEX_FASTPATH: false
+DUK_USE_IDCHAR_FASTPATH: false
+DUK_USE_ARRAY_PROP_FASTPATH: false
+DUK_USE_ARRAY_FASTPATH: false
+DUK_USE_BYTECODE_DUMP_SUPPORT: false
+DUK_USE_JX: false
+DUK_USE_JC: false
+#DUK_USE_REGEXP_SUPPORT: false
+DUK_USE_DEBUG_BUFSIZE: 2048
+DUK_USE_LIGHTFUNC_BUILTINS: true
+
+# Grow value stack without any slack, and shrink to minimum reserved size with
+# no slack.  Increases allocation traffic but avoids allocating space not
+# actually needed.
+DUK_USE_VALSTACK_GROW_SHIFT: false
+DUK_USE_VALSTACK_SHRINK_CHECK_SHIFT: false
+DUK_USE_VALSTACK_SHRINK_SLACK_SHIFT: false
+
+# Using the same minsize and maxsize drops code footprint by around 400 bytes
+# (string table resize code is omitted).  Enabling DUK_USE_STRTAB_PTRCOMP
+# saves some RAM (two bytes per strtab entry) at the cost of 200-300 bytes of
+# code footprint.
+DUK_USE_STRTAB_MINSIZE: 128
+DUK_USE_STRTAB_MAXSIZE: 128
+DUK_USE_STRTAB_SHRINK_LIMIT: 0         # doesn't matter if minsize==masize
+DUK_USE_STRTAB_GROW_LIMIT: 65536       # -""-
+DUK_USE_STRTAB_RESIZE_CHECK_MASK: 255  # -""-
+#DUK_USE_STRTAB_PTRCOMP: true  # sometimes useful with pointer compression
+
+# Disable literal pinning and litcache.
+DUK_USE_LITCACHE_SIZE: false
+
+DUK_USE_HSTRING_ARRIDX: false
+DUK_USE_HSTRING_LAZY_CLEN: false  # non-lazy charlen is smaller
+
+# Only add a hash table for quite large objects to conserve memory.  Even
+# lower memory targets usually drop hash part support entirely.
+DUK_USE_HOBJECT_HASH_PROP_LIMIT: 64
+
+DUK_USE_HOBJECT_ARRAY_ABANDON_MINSIZE: 32
+
+# Disable freelist caching.
+DUK_USE_CACHE_ACTIVATION: false
+DUK_USE_CACHE_CATCHER: false
+
+# Consider using pointer compression, see doc/low-memory.rst.
+#DUK_USE_REFCOUNT16: true
+#DUK_USE_REFCOUNT32: false
+#DUK_USE_STRHASH16: true
+#DUK_USE_STRLEN16: true
+#DUK_USE_BUFLEN16: true
+#DUK_USE_OBJSIZES16: true
+#DUK_USE_HSTRING_CLEN: false
+#DUK_USE_HSTRING_LAZY_CLEN: false
+#DUK_USE_HOBJECT_HASH_PART: false
+#DUK_USE_HEAPPTR16
+#DUK_USE_HEAPPTR_DEC16
+#DUK_USE_HEAPPTR_ENC16
+
+# Consider using external strings, see doc/low_memory.rst.
+#DUK_USE_EXTERNAL_STRINGS: true
+#DUK_USE_EXTSTR_INTERN_CHECK
+#DUK_USE_EXTSTR_FREE
+
+# Consider removing Node.js Buffer and ES2015 typed array support if not
+# needed (about 10 kB code footprint difference on x64)
+DUK_USE_BUFFEROBJECT_SUPPORT: false
+
+# Consider to reduce code footprint at the expense of more erratic RAM usage
+#DUK_USE_REFERENCE_COUNTING: false
+#DUK_USE_DOUBLE_LINKED_HEAP: false
+
+# Consider to reduce code footprint at the expense of less safeguards against
+# bugs in calling C code.
+DUK_USE_VALSTACK_UNSAFE: true
+
+# Disable optimizations for case insensitive regexps.  If code involves
+# case insensitive regexps with large character classes, consider enabling
+# at least DUK_USE_REGEXP_CANON_BITMAP.
+DUK_USE_REGEXP_CANON_WORKAROUND: false  # very large footprint (~128kB)
+DUK_USE_REGEXP_CANON_BITMAP: false      # small footprint (~300-400 bytes)
+
+# Consider using ROM strings/objects to reduce footprint, see doc/low_memory.rst.
+# ROM strings/objects reduce startup RAM usage at the expense of code footprint
+# and some compliance.
+#DUK_USE_ROM_STRINGS: true
+#DUK_USE_ROM_OBJECTS: true
+#DUK_USE_ROM_GLOBAL_INHERIT: true  # select inherit or clone; inherit recommended
+#DUK_USE_ROM_GLOBAL_CLONE: false
+
+# Function footprint size reduction.
+DUK_USE_FUNC_NAME_PROPERTY: true  # compliance
+DUK_USE_FUNC_FILENAME_PROPERTY: false  # non-standard, can be removed
+
+# Consider these; disabled by default because they don't impact E5 compliance.
+DUK_USE_ES6: false
+DUK_USE_ES7: false
+DUK_USE_ES8: false
+DUK_USE_ES9: false
+DUK_USE_BASE64_SUPPORT: false
+DUK_USE_HEX_SUPPORT: false
+DUK_USE_COROUTINE_SUPPORT: false
+DUK_USE_SOURCE_NONBMP: false  # <300 bytes footprint
+DUK_USE_ES6_PROXY: false  # roughly 2kB footprint
+DUK_USE_ES7_EXP_OPERATOR: false  # pulls in pow()
+DUK_USE_ENCODING_BUILTINS: false
+DUK_USE_PERFORMANCE_BUILTIN: false
+DUK_USE_ES6_UNICODE_ESCAPE: false
+DUK_USE_HTML_COMMENTS: false
+DUK_USE_SHEBANG_COMMENTS: false
+DUK_USE_REFLECT_BUILTIN: false
+DUK_USE_SYMBOL_BUILTIN: false
+DUK_USE_CBOR_SUPPORT: false
+DUK_USE_CBOR_BUILTIN: false

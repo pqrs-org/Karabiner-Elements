@@ -1,0 +1,15 @@
+define: DUK_USE_ARRAY_FASTPATH
+introduced: 2.0.0
+default: true
+tags:
+  - performance
+  - fastpath
+  - lowmemory
+  - compliance
+description: >
+  Enable fast path for Array.prototype operations like push(), pop(), etc.
+  The fast path handles dense Array instances which are more common than
+  sparse arrays or non-array objects (which Array.prototype operations must
+  also support).  The fast path assumes that Array.prototype doesn't contain
+  inherited index properties; such properties are very rarely used in
+  practical code.  If compliance is critical, disable the fast path.

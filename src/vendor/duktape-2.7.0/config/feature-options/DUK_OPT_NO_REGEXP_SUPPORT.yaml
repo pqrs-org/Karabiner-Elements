@@ -1,0 +1,11 @@
+define: DUK_OPT_NO_REGEXP_SUPPORT
+introduced: 1.0.0
+tags:
+  - ecmascript
+description: >
+  Disable support for regular expressions.  Regexp literals are treated as
+  a SyntaxError, RegExp constructor and prototype functions throw an error,
+  String.prototype.replace() throws an error if given a regexp search value,
+  String.prototype.split() throws an error if given a regexp separator value,
+  String.prototype.search() and String.prototype.match() throw an error
+  unconditionally.

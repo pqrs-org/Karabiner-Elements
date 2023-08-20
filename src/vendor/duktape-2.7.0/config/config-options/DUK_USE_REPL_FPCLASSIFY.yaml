@@ -1,0 +1,12 @@
+define: DUK_USE_REPL_FPCLASSIFY
+introduced: 1.0.0
+default: false
+tags:
+  - portability
+description: >
+  Provide a built-in replacement for fpclassify(), duk_repl_fpclassify.
+
+  When enabled, define DUK_FPCLASSIFY as duk_repl_fpclassify.
+
+# XXX: the dependency between DUK_USE_REPL_FPCLASSIFY and DUK_FPCLASSIFY
+# is a bit awkward.

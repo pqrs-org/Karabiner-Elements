@@ -1,0 +1,12 @@
+define: DUK_USE_REPL_ISNAN
+introduced: 1.0.0
+default: false
+tags:
+  - portability
+description: >
+  Provide a built-in replacement for isnan(), duk_repl_isnan.
+
+  When enabled, define DUK_ISNAN as duk_repl_isnan.
+
+# XXX: the dependency between DUK_USE_REPL_ISNAN and DUK_ISNAN
+# is a bit awkward.

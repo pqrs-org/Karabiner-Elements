@@ -1,0 +1,9 @@
+/* SuperH */
+#if defined(__sh__) || \
+    defined(__sh1__) || defined(__SH1__) || \
+    defined(__sh2__) || defined(__SH2__) || \
+    defined(__sh3__) || defined(__SH3__) || \
+    defined(__sh4__) || defined(__SH4__) || \
+    defined(__sh5__) || defined(__SH5__)
+#define DUK_F_SUPERH
+#endif

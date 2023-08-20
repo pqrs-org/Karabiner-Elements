@@ -1,0 +1,7 @@
+define: DUK_USE_GET_MONOTONIC_TIME_WINDOWS_QPC
+introduced: 2.2.0
+default: false
+tags:
+  - portability
+description: >
+  Use QueryPerformanceCounter() for monotonic time on Windows.

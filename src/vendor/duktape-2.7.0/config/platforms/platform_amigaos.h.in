@@ -1,0 +1,26 @@
+#if defined(DUK_F_M68K)
+/* AmigaOS on M68k */
+#define DUK_USE_DATE_NOW_TIME
+#define DUK_USE_DATE_TZO_GMTIME
+/* no parsing (not an error) */
+#define DUK_USE_DATE_FMT_STRFTIME
+#include <time.h>
+#elif defined(DUK_F_PPC)
+#define DUK_USE_DATE_NOW_GETTIMEOFDAY
+#define DUK_USE_DATE_TZO_GMTIME_R
+#define DUK_USE_DATE_PRS_STRPTIME
+#define DUK_USE_DATE_FMT_STRFTIME
+#include <time.h>
+#if !defined(UINTPTR_MAX)
+#define UINTPTR_MAX UINT_MAX
+#endif
+#else
+#error AmigaOS but not M68K/PPC, not supported now
+#endif
+
+#define DUK_USE_OS_STRING "amigaos"
+
+/* AmigaOS on M68K or PPC is always big endian. */
+#if !defined(DUK_USE_BYTEORDER) && (defined(DUK_F_M68K) || defined(DUK_F_PPC))
+#define DUK_USE_BYTEORDER 3
+#endif

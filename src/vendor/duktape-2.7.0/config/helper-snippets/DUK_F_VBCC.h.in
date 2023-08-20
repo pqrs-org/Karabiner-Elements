@@ -1,0 +1,4 @@
+/* VBCC */
+#if defined(__VBCC__)
+#define DUK_F_VBCC
+#endif

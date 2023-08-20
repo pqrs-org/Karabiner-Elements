@@ -1,0 +1,8 @@
+define: DUK_OPT_NO_NONSTD_ACCESSOR_KEY_ARGUMENT
+introduced: 1.0.0
+tags:
+  - ecmascript
+description: >
+  Don't give setter/getter calls the property name being accessed as
+  an additional, non-standard property.  See
+  http://duktape.org/guide.html#propertyvirtualization.
