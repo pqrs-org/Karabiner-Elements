@@ -253,7 +253,9 @@ int main(int argc, char** argv) {
                                                    static_cast<mode_t>(directory_status.permissions()),
                                                    static_cast<mode_t>(status.permissions()));
             } catch (std::exception& e) {
-              krbn::logger::get_logger()->error("parse error in {0}: {1}", file_path.string(), e.what());
+              exit_code = 1;
+              std::cerr << fmt::format("parse error in {0}: {1}", file_path.string(), e.what()) << std::endl;
+              goto finish;
             }
           }
         }
@@ -270,7 +272,9 @@ int main(int argc, char** argv) {
           try {
             krbn::duktape_utility::eval_file(file_path);
           } catch (std::exception& e) {
-            krbn::logger::get_logger()->error(e.what());
+            exit_code = 1;
+            std::cerr << e.what() << std::endl;
+            goto finish;
           }
         }
 
