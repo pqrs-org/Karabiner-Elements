@@ -267,7 +267,11 @@ int main(int argc, char** argv) {
       if (parse_result.count(key)) {
         auto glob_pattern = parse_result[key].as<std::string>();
         for (const auto& file_path : glob::glob(glob_pattern)) {
-          krbn::duktape_utility::eval_file(file_path);
+          try {
+            krbn::duktape_utility::eval_file(file_path);
+          } catch (std::exception& e) {
+            krbn::logger::get_logger()->error(e.what());
+          }
         }
 
         goto finish;
