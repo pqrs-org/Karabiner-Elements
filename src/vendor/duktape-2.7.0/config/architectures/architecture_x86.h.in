@@ -1,0 +1,14 @@
+#define DUK_USE_ARCH_STRING "x86"
+#if !defined(DUK_USE_BYTEORDER)
+#define DUK_USE_BYTEORDER 1
+#endif
+
+#define DUK_USE_PACKED_TVAL
+
+/* FreeBSD, -m32, and clang prior to 5.0 has union aliasing issues which
+ * break duk_tval copying.  Disable packed duk_tval automatically.
+ */
+#if defined(DUK_F_FREEBSD) && defined(DUK_F_X86) && \
+    defined(__clang__) && defined(__clang_major__) && (__clang_major__ < 5)
+#undef DUK_USE_PACKED_TVAL
+#endif

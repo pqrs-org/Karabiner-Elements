@@ -1,0 +1,3 @@
+#define DUK_USE_ARCH_STRING "arm32"
+/* Byte order varies, so rely on autodetect. */
+#define DUK_USE_PACKED_TVAL

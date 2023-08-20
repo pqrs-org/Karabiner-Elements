@@ -1,0 +1,205 @@
+#if !defined(DUK_U64_CONSTANT)
+#define DUK_U64_CONSTANT(x) x##ULL
+#endif
+#if !defined(DUK_I64_CONSTANT)
+#define DUK_I64_CONSTANT(x) x##LL
+#endif
+
+#if !defined(DUK_VA_COPY)
+/* We need va_copy() which is defined in C99 / C++11, so an awkward
+ * replacement is needed for pre-C99 / pre-C++11 environments.  This
+ * will quite likely need portability hacks for some non-C99
+ * environments.
+ */
+#if defined(DUK_F_C99) || defined(DUK_F_CPP11)
+/* C99 / C++11 and above: rely on va_copy() which is required.
+ * Omit parenthesis on macro right side on purpose to minimize differences
+ * to direct use.
+ */
+#define DUK_VA_COPY(dest,src) va_copy(dest,src)
+#else
+/* Pre-C99: va_list type is implementation dependent.  This replacement
+ * assumes it is a plain value so that a simple assignment will work.
+ * This is not the case on all platforms (it may be a single-array element,
+ * for instance).
+ */
+#define DUK_VA_COPY(dest,src) do { (dest) = (src); } while (0)
+#endif
+#endif
+
+#if !defined(DUK_MACRO_STRINGIFY)
+/* Macro hackery to convert e.g. __LINE__ to a string without formatting,
+ * see: http://stackoverflow.com/questions/240353/convert-a-preprocessor-token-to-a-string
+ */
+#define DUK_MACRO_STRINGIFY_HELPER(x)  #x
+#define DUK_MACRO_STRINGIFY(x)  DUK_MACRO_STRINGIFY_HELPER(x)
+#endif
+
+#if !defined(DUK_CAUSE_SEGFAULT)
+/* This can be used for testing; valgrind will then indicate the C call stack
+ * leading to the call site.
+ */
+#define DUK_CAUSE_SEGFAULT()  do { *((volatile duk_uint32_t *) NULL) = (duk_uint32_t) 0xdeadbeefUL; } while (0)
+#endif
+
+#if !defined(DUK_UNREF)
+/* Macro for suppressing warnings for potentially unreferenced variables.
+ * The variables can be actually unreferenced or unreferenced in some
+ * specific cases only; for instance, if a variable is only debug printed,
+ * it is unreferenced when debug printing is disabled.  May cause warnings
+ * for volatile arguments.
+ */
+#define DUK_UNREF(x)  do { (void) (x); } while (0)
+#endif
+
+/* Fillin for DUK_NORETURN; DUK_WO_NORETURN() is used to insert dummy
+ * dummy statements after noreturn calls to silence harmless compiler
+ * warnings, e.g.:
+ *
+ *   DUK_ERROR_TYPE(thr, "aiee");
+ *   DUK_WO_NORETURN(return 0;);
+ *
+ * Statements inside DUK_WO_NORETURN() must NEVER be actually reachable,
+ * and they're only included to satisfy the compiler.
+ */
+#if defined(DUK_NORETURN)
+#define DUK_WO_NORETURN(stmt) do { } while (0)
+#else
+#define DUK_NORETURN(decl)  decl
+#define DUK_WO_NORETURN(stmt) do { stmt } while (0)
+#endif
+
+#if defined(DUK_UNREACHABLE)
+#define DUK_WO_UNREACHABLE(stmt) do { } while (0)
+#else
+/* Don't know how to declare unreachable point, so don't do it; this
+ * may cause some spurious compilation warnings (e.g. "variable used
+ * uninitialized").
+ */
+#define DUK_UNREACHABLE()  do { } while (0)
+#define DUK_WO_UNREACHABLE(stmt) do { stmt } while (0)
+#endif
+
+#if !defined(DUK_LOSE_CONST)
+/* Convert any input pointer into a "void *", losing a const qualifier.
+ * This is not fully portable because casting through duk_uintptr_t may
+ * not work on all architectures (e.g. those with long, segmented pointers).
+ */
+#define DUK_LOSE_CONST(src) ((void *) (duk_uintptr_t) (src))
+#endif
+
+#if !defined(DUK_LIKELY)
+#define DUK_LIKELY(x)    (x)
+#endif
+#if !defined(DUK_UNLIKELY)
+#define DUK_UNLIKELY(x)  (x)
+#endif
+#if !defined(DUK_UNPREDICTABLE)
+#define DUK_UNPREDICTABLE(x)  (x)
+#endif
+
+#if !defined(DUK_NOINLINE)
+#define DUK_NOINLINE       /*nop*/
+#endif
+#if !defined(DUK_INLINE)
+#define DUK_INLINE         /*nop*/
+#endif
+#if !defined(DUK_ALWAYS_INLINE)
+#define DUK_ALWAYS_INLINE  /*nop*/
+#endif
+
+#if !defined(DUK_HOT)
+#define DUK_HOT            /*nop*/
+#endif
+#if !defined(DUK_COLD)
+#define DUK_COLD           /*nop*/
+#endif
+
+#if !defined(DUK_EXTERNAL_DECL)
+#define DUK_EXTERNAL_DECL  extern
+#endif
+#if !defined(DUK_EXTERNAL)
+#define DUK_EXTERNAL       /*empty*/
+#endif
+#if !defined(DUK_INTERNAL_DECL)
+#if defined(DUK_SINGLE_FILE)
+#define DUK_INTERNAL_DECL  static
+#else
+#define DUK_INTERNAL_DECL  extern
+#endif
+#endif
+#if !defined(DUK_INTERNAL)
+#if defined(DUK_SINGLE_FILE)
+#define DUK_INTERNAL       static
+#else
+#define DUK_INTERNAL       /*empty*/
+#endif
+#endif
+#if !defined(DUK_LOCAL_DECL)
+#define DUK_LOCAL_DECL     static
+#endif
+#if !defined(DUK_LOCAL)
+#define DUK_LOCAL          static
+#endif
+
+#if !defined(DUK_FILE_MACRO)
+#define DUK_FILE_MACRO  __FILE__
+#endif
+#if !defined(DUK_LINE_MACRO)
+#define DUK_LINE_MACRO  __LINE__
+#endif
+#if !defined(DUK_FUNC_MACRO)
+#if defined(DUK_F_C99) || defined(DUK_F_CPP11)
+#define DUK_FUNC_MACRO  __func__
+#elif defined(__FUNCTION__)
+#define DUK_FUNC_MACRO  __FUNCTION__
+#else
+#define DUK_FUNC_MACRO  "unknown"
+#endif
+#endif
+
+#if defined(DUK_F_HAVE_64BIT)
+#if !defined(DUK_BSWAP64)
+#define DUK_BSWAP64(x) \
+	((((duk_uint64_t) (x)) >> 56U) | \
+	 ((((duk_uint64_t) (x)) >> 40U) & DUK_U64_CONSTANT(0xff00)) | \
+	 ((((duk_uint64_t) (x)) >> 24U) & DUK_U64_CONSTANT(0xff0000)) | \
+	 ((((duk_uint64_t) (x)) >> 8U) & DUK_U64_CONSTANT(0xff000000)) | \
+	 ((((duk_uint64_t) (x)) << 8U) & DUK_U64_CONSTANT(0xff00000000)) | \
+	 ((((duk_uint64_t) (x)) << 24U) & DUK_U64_CONSTANT(0xff0000000000)) | \
+	 ((((duk_uint64_t) (x)) << 40U) & DUK_U64_CONSTANT(0xff000000000000)) | \
+	 (((duk_uint64_t) (x)) << 56U))
+#endif
+#endif
+#if !defined(DUK_BSWAP32)
+#define DUK_BSWAP32(x) \
+	((((duk_uint32_t) (x)) >> 24U) | \
+	 ((((duk_uint32_t) (x)) >> 8U) & 0xff00UL) | \
+	 ((((duk_uint32_t) (x)) << 8U) & 0xff0000UL) | \
+	 (((duk_uint32_t) (x)) << 24U))
+#endif
+#if !defined(DUK_BSWAP16)
+#define DUK_BSWAP16(x) \
+	((duk_uint16_t) (x) >> 8U) | \
+	((duk_uint16_t) (x) << 8U)
+#endif
+
+/* DUK_USE_VARIADIC_MACROS: required from compilers, so no fill-in. */
+/* DUK_USE_UNION_INITIALIZERS: required from compilers, so no fill-in. */
+
+#if !(defined(DUK_USE_FLEX_C99) || defined(DUK_USE_FLEX_ZEROSIZE) || defined(DUK_USE_FLEX_ONESIZE))
+#if defined(DUK_F_C99)
+#define DUK_USE_FLEX_C99
+#else
+#define DUK_USE_FLEX_ZEROSIZE  /* Not standard but common enough */
+#endif
+#endif
+
+#if !(defined(DUK_USE_PACK_GCC_ATTR) || defined(DUK_USE_PACK_CLANG_ATTR) || \
+      defined(DUK_USE_PACK_MSVC_PRAGMA) || defined(DUK_USE_PACK_DUMMY_MEMBER))
+#define DUK_USE_PACK_DUMMY_MEMBER
+#endif
+
+#if 0  /* not defined by default */
+#undef DUK_USE_GCC_PRAGMAS
+#endif

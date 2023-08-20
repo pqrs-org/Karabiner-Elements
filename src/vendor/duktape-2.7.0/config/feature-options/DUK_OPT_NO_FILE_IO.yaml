@@ -1,0 +1,10 @@
+define: DUK_OPT_NO_FILE_IO
+introduced: 1.0.0
+tags:
+  - portability
+description: >
+  Disable use of ANSI C file I/O which might be a portability issue on some
+  platforms.  Causes duk_eval_file() to throw an error, makes built-in
+  print() and alert() no-ops, and suppresses writing of a panic
+  message to stderr on panic.  This option does not suppress debug
+  printing so don't enable debug printing if you wish to avoid I/O.

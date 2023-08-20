@@ -1,0 +1,9 @@
+define: DUK_OPT_NO_BROWSER_LIKE
+introduced: 1.0.0
+tags:
+  - ecmascript
+description: >
+  Disable browser-like functions.  Makes print() and alert() throw an error.
+
+  This option is confusing when used with the Duktape command line tool, as
+  the command like tool will immediately panic on startup.

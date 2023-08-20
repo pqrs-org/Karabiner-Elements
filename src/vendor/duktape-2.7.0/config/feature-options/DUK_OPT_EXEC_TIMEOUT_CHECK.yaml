@@ -1,0 +1,30 @@
+define: DUK_OPT_EXEC_TIMEOUT_CHECK
+introduced: 1.2.0
+requires:
+  - DUK_OPT_INTERRUPT_COUNTER
+tags:
+  - execution
+  - sandbox
+  - experimental
+description: >
+  NOTE: This mechanism is EXPERIMENTAL and the details may change
+  between releases.
+
+  Provide a hook to check for bytecode execution timeout.  The macro gets
+  a void ptr userdata argument (the userdata given to duk_heap_create())
+  and must evaluate to a duk_bool_t.  Duktape calls the macro as:
+  "if (DUK_OPT_EXEC_TIMEOUT_CHECK(udata)) { ... }".
+
+  The macro is called occasionally by the Duktape bytecode executor (i.e.
+  when executing ECMAScript code), typically from a few times per second
+  to a hundred times per second, but the interval varies a great deal
+  depending on what kind of code is being executed.
+
+  To indicate an execution timeout, the macro must return a non-zero value.
+  When that happens, Duktape starts to bubble a ``RangeError`` outwards
+  until control has been returned to the original protected call made by
+  the application.  Until that happens, the exec timeout macro must always
+  return non-zero to indicate an execution timeout is still in progress.
+
+  This mechanism and its limitations is described in more detail in
+  doc/sandboxing.rst.

@@ -1,0 +1,9 @@
+define: DUK_OPT_FUNC_NONSTD_CALLER_PROPERTY
+introduced: 1.0.0
+removed: 1.0.0
+related:
+  - DUK_OPT_NONSTD_FUNC_CALLER_PROPERTY
+tags:
+  - ecmascript
+description: >
+  Removed, use DUK_OPT_NONSTD_FUNC_CALLER_PROPERTY instead.

@@ -1,0 +1,11 @@
+define: DUK_USE_POW_NETBSD_WORKAROUND
+introduced: 1.0.0
+removed: 2.0.0
+default: false
+tags:
+  - portability
+description: >
+  NetBSD 6.0 x86 (at least) has a few problems with pow() semantics,
+  see test-bug-netbsd-math-pow.js.  Use NetBSD specific workaround.
+
+  (This might be a wider problem; if so, generalize the define name.)

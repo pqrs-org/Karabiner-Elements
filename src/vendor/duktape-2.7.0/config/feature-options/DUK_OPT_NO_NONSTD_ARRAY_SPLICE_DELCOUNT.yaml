@@ -1,0 +1,13 @@
+define: DUK_OPT_NO_NONSTD_ARRAY_SPLICE_DELCOUNT
+introduced: 1.0.0
+tags:
+  - ecmascript
+description: >
+  For better compatibility with existing code, Array.prototype.splice() has
+  non-standard behavior by default when the second argument (deleteCount)
+  is not given: the splice operation is extended to the end of the array, see
+  https://github.com/svaarala/duktape/blob/master/ecmascript-testcases/test-bi-array-proto-splice-no-delcount.js.
+
+  If this option is given, splice() will behave in a strictly conforming
+  fashion, treating a missing deleteCount the same as an undefined (or 0)
+  value.

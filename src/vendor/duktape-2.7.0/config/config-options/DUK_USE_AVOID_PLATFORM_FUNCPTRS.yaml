@@ -1,0 +1,13 @@
+define: DUK_USE_AVOID_PLATFORM_FUNCPTRS
+introduced: 1.0.0
+default: true
+tags:
+  - portability
+description: >
+  Don't assume that platform functions (e.g. math functions) are actual
+  functions.  This option is needed if platform functions may be defined
+  as macros.  This is certainly the case with some platform "polyfills"
+  which provide missing C99/C++11 functions through macros, and may be
+  the case with VS2013 (see GH-17).
+
+  This is now the default: the cost in footprint is negligible.

@@ -1,0 +1,9 @@
+/* SPARC */
+#if defined(sparc) || defined(__sparc) || defined(__sparc__)
+#define DUK_F_SPARC
+#if defined(__LP64__) || defined(_LP64)
+#define DUK_F_SPARC64
+#else
+#define DUK_F_SPARC32
+#endif
+#endif

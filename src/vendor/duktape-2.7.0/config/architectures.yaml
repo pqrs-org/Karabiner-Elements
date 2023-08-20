@@ -1,0 +1,71 @@
+# Architecture metadata.
+
+autodetect:
+  -
+    name: x86
+    check: DUK_F_X86
+    include: architecture_x86.h.in
+  -
+    name: x64
+    check: DUK_F_X64
+    include: architecture_x64.h.in
+  -
+    name: x32
+    check: DUK_F_X32
+    include: architecture_x32.h.in
+  -
+    name: ARM 32-bit
+    check: DUK_F_ARM32
+    include: architecture_arm32.h.in
+  -
+    name: ARM 64-bit
+    check: DUK_F_ARM64
+    include: architecture_arm64.h.in
+  -
+    name: MIPS 32-bit
+    check: DUK_F_MIPS32
+    include: architecture_mips32.h.in
+  -
+    name: MIPS 64-bit
+    check: DUK_F_MIPS64
+    include: architecture_mips64.h.in
+  -
+    name: PowerPC 32-bit
+    check: DUK_F_PPC32
+    include: architecture_powerpc32.h.in
+  -
+    name: PowerPC 64-bit
+    check: DUK_F_PPC64
+    include: architecture_powerpc64.h.in
+  -
+    name: SPARC 32-bit
+    check: DUK_F_SPARC32
+    include: architecture_sparc32.h.in
+  -
+    name: SPARC 64-bit
+    check: DUK_F_SPARC64
+    include: architecture_sparc64.h.in
+  -
+    name: RISC-V 32-bit
+    check: DUK_F_RISCV32
+    include: architecture_riscv32.h.in
+  -
+    name: RISC-V 64-bit
+    check: DUK_F_RISCV64
+    include: architecture_riscv64.h.in
+  -
+    name: SuperH
+    check: DUK_F_SUPERH
+    include: architecture_superh.h.in
+  -
+    name: Motorola 68k
+    check: DUK_F_M68K
+    include: architecture_m68k.h.in
+  -
+    name: Emscripten
+    check: DUK_F_EMSCRIPTEN
+    include: architecture_emscripten.h.in
+  -
+    name: Generic
+    check: null
+    include: architecture_generic.h.in

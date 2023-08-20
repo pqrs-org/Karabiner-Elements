@@ -1,0 +1,8 @@
+define: DUK_USE_DPRINT_RDTSC
+introduced: 1.0.0
+removed: 2.0.0
+default: false
+tags:
+  - debug
+description: >
+  Print RDTSC cycle count in debug prints if available.

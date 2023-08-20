@@ -1,0 +1,14 @@
+define: DUK_USE_DEBUGGER_THROW_NOTIFY
+introduced: 1.4.0
+# Option is ignored unless debugger support is enabled.
+#requires:
+#  - DUK_USE_DEBUGGER_SUPPORT
+related:
+  - DUK_USE_DEBUGGER_PAUSE_UNCAUGHT
+default: true
+tags:
+  - debugger
+description: >
+  Send a Throw notify when an error is about to be thrown.  The Throw notify
+  also indicates if an error is fatal (most likely not caught) which is very
+  useful in debugging.

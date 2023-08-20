@@ -1,0 +1,23 @@
+define: DUK_USE_ROM_GLOBAL_INHERIT
+introduced: 1.5.0
+requires:
+  - DUK_USE_ROM_STRINGS
+  - DUK_USE_ROM_OBJECTS
+conflicts:
+  - DUK_USE_ROM_GLOBAL_CLONE
+default: false
+tags:
+  - lowmemory
+  - experimental
+description: >
+  When using ROM built-in objects, create a RAM-based global object by creating
+  a fresh empty object which inherits from the ROM-based global object.  This
+  provides all the standard bindings with a small RAM footprint cost, but still
+  allows the global object to be extended and existing bindings overwritten
+  (but not deleted).  The downside of this compared to cloning a global object
+  is that the inheritance is not fully transparent and the result is less
+  compliant.
+
+  Having a writable global object is usually expected; if the global object is
+  not writable, it's not possible to e.g. declare functions outside of CommonJS
+  modules.

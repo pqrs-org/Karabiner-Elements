@@ -1,0 +1,9 @@
+define: DUK_USE_DATE_TZO_GMTIME_R
+introduced: 1.0.0
+default: false
+tags:
+  - date
+  - portability
+description: >
+  Use gmtime_r() to get local time offset at a certain time.
+  When enabled, appropriate date/time headers must be included.

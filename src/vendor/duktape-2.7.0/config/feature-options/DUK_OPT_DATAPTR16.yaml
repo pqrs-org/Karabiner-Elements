@@ -1,0 +1,20 @@
+define: DUK_OPT_DATAPTR16
+introduced: 1.1.0
+related:
+  - DUK_OPT_DATAPTR_ENC16
+  - DUK_OPT_DATAPTR_DEC16
+tags:
+  - lowmemory
+  - experimental
+description: >
+  Enable "compression" of arbitrary data pointers into an unsigned 16-bit
+  value.  Use together with DUK_OPT_DATAPTR_ENC16 and DUK_OPT_DATAPTR_DEC16.
+
+  Pointers compressed are any void pointers in C code, not just the Duktape
+  heap.  Also NULL pointer must encode and decode correctly.
+
+  Currently it is required that NULL encodes to integer 0, and integer
+  0 decodes to NULL.  No other pointer can be encoded to 0.
+
+  NOTE: This feature option is currently unimplemented, i.e. Duktape won't
+  compress any data pointers at the moment.

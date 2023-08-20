@@ -1,0 +1,7 @@
+define: DUK_USE_HEX_SUPPORT
+introduced: 2.3.0
+default: true
+tags:
+  - codec
+description: >
+  Enable hex encoding/decoding support.

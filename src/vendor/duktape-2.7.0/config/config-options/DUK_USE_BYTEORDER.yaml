@@ -1,0 +1,16 @@
+define: DUK_USE_BYTEORDER
+introduced: 1.4.0
+default: 0  # no reasonable automatic default
+tags:
+  - portability
+description: >
+  Byte order for platform: 1 = little endian, 2 = mixed (arm hybrid) endian,
+  3 = big endian.
+
+  ARM mixed endian means integers are little endian but IEEE doubles have
+  mixed endianness: big endian bytes 12345678 are ordered in memory as
+  43218765.  See http://infocenter.arm.com/help/index.jsp?topic=/com.arm.doc.dui0056d/Bcfhgcgd.html.
+
+  (This define should be produced by duk_config.h; currently Duktape internals
+  use automatically derived defines DUK_USE_{INTEGER,DOUBLE}_{LE,BE_ME}
+  instead of using this define directly.)

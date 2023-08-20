@@ -1,0 +1,6 @@
+/* Atari ST TOS.  __TOS__ defined by PureC.  No platform define in VBCC
+ * apparently, so to use with VBCC user must define __TOS__ manually.
+  */
+#if defined(__TOS__)
+#define DUK_F_TOS
+#endif

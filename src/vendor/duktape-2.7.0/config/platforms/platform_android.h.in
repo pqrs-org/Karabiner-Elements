@@ -1,0 +1,33 @@
+#if defined(DUK_COMPILING_DUKTAPE)
+#if !defined(_POSIX_C_SOURCE)
+#define _POSIX_C_SOURCE  200809L
+#endif
+#if !defined(_GNU_SOURCE)
+#define _GNU_SOURCE      /* e.g. getdate_r */
+#endif
+#if !defined(_XOPEN_SOURCE)
+#define _XOPEN_SOURCE    /* e.g. strptime */
+#endif
+#endif  /* DUK_COMPILING_DUKTAPE */
+
+#include <sys/types.h>
+#if defined(DUK_F_BCC)
+/* no endian.h or stdint.h */
+#else
+#include <endian.h>
+#include <stdint.h>
+#endif  /* DUK_F_BCC */
+#include <sys/param.h>
+#include <sys/time.h>
+#include <time.h>
+
+#define DUK_USE_DATE_NOW_GETTIMEOFDAY
+#define DUK_USE_DATE_TZO_GMTIME_R
+#define DUK_USE_DATE_PRS_STRPTIME
+#define DUK_USE_DATE_FMT_STRFTIME
+
+#if 0  /* XXX: safe condition? */
+#define DUK_USE_GET_MONOTONIC_TIME_CLOCK_GETTIME
+#endif
+
+#define DUK_USE_OS_STRING "android"

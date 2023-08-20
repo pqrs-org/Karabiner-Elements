@@ -1,0 +1,10 @@
+define: DUK_USE_INTERRUPT_DEBUG_FIXUP
+introduced: 1.4.0
+default: false
+tags:
+  - development
+description: >
+  For Duktape development only: enable "interrupt fixup" in call handling
+  so that heap->inst_count_exec and heap->inst_count_interrupt can be
+  manually checked to match.  Only useful when debugging and/or asserts
+  are enabled.

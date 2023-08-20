@@ -1,0 +1,52 @@
+# Debug request/notify command names provided by the debug client.
+# These are concretely notify names now.
+client_commands:
+  - Reserved_0
+  - Status
+  - Reserved_2  # Duktape 1.x: print notify
+  - Reserved_3  # Duktape 1.x: alert notify
+  - Reserved_4  # Duktape 1.x: log notify
+  - Throw
+  - Detaching
+  - AppNotify
+
+# Debug request/notify command names provided by the debug target (Duktape).
+target_commands:
+  - Reserved_0
+  - Reserved_1
+  - Reserved_2
+  - Reserved_3
+  - Reserved_4
+  - Reserved_5
+  - Reserved_6
+  - Reserved_7
+  - Reserved_8
+  - Reserved_9
+  - Reserved_10
+  - Reserved_11
+  - Reserved_12
+  - Reserved_13
+  - Reserved_14
+  - Reserved_15
+  - BasicInfo
+  - TriggerStatus
+  - Pause
+  - Resume
+  - StepInto
+  - StepOver
+  - StepOut
+  - ListBreak
+  - AddBreak
+  - DelBreak
+  - GetVar
+  - PutVar
+  - GetCallStack
+  - GetLocals
+  - Eval
+  - Detach
+  - DumpHeap
+  - GetBytecode
+  - AppRequest
+  - GetHeapObjInfo
+  - GetObjPropDesc
+  - GetObjPropDescRange

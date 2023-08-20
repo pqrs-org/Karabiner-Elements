@@ -1,0 +1,35 @@
+# Compiler metadata.
+
+autodetect:
+  -
+    name: Clang
+    check: DUK_F_CLANG
+    include: compiler_clang.h.in
+  -
+    name: GCC
+    check: DUK_F_GCC
+    include: compiler_gcc.h.in
+  -
+    name: MSVC
+    check: DUK_F_MSVC
+    include: compiler_msvc.h.in
+  -
+    name: Emscripten
+    check: DUK_F_EMSCRIPTEN
+    include: compiler_emscripten.h.in
+  -
+    name: TinyC
+    check: DUK_F_TINYC
+    include: compiler_tinyc.h.in
+  -
+    name: VBCC
+    check: DUK_F_VBCC
+    include: compiler_vbcc.h.in
+  -
+    name: Bruce's C compiler
+    check: DUK_F_BCC
+    include: compiler_bcc.h.in
+  -
+    name: Generic
+    check: null
+    include: compiler_generic.h.in

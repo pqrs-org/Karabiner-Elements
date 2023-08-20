@@ -1,0 +1,9 @@
+define: DUK_USE_NONSTD_REGEXP_DOLLAR_ESCAPE
+introduced: 1.0.0
+removed: 2.0.0
+default: true
+tags:
+  - ecmascript
+  - compliance
+description: >
+  Replaced by DUK_USE_ES6_REGEXP_SYNTAX.

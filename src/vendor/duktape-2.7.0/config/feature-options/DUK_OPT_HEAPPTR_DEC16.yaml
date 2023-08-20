@@ -1,0 +1,12 @@
+define: DUK_OPT_HEAPPTR_DEC16
+introduced: 1.1.0
+requires:
+  - DUK_OPT_HEAPPTR16
+tags:
+  - lowmemory
+  - experimental
+description: >
+  Use together with DUK_OPT_HEAPPTR16 for heap pointer compression.
+  DUK_OPT_HEAPPTR_DEC16(udata,x) is a macro with a userdata and duk_uint16_t
+  argument, and a void ptr return value.  The userdata argument is the heap
+  userdata value given at heap creation.

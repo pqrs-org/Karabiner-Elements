@@ -1,0 +1,8 @@
+define: DUK_USE_ERRCREATE
+introduced: 1.0.0
+default: true
+tags:
+  - ecmascript
+description: >
+  Call Duktape.errCreate() when augmenting an ECMAScript error object
+  being created.

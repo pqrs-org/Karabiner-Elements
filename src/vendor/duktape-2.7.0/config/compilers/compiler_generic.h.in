@@ -1,0 +1,24 @@
+#undef DUK_USE_BRANCH_HINTS
+
+#if defined(DUK_F_CPP)
+#define DUK_USE_COMPILER_STRING "generic-c++"
+#else
+#define DUK_USE_COMPILER_STRING "generic"
+#endif
+
+#undef DUK_USE_VARIADIC_MACROS
+#if defined(DUK_F_C99) || defined(DUK_F_CPP11)
+#define DUK_USE_VARIADIC_MACROS
+#endif
+
+/* C++ doesn't have standard designated union initializers ({ .foo = 1 }). */
+#undef DUK_USE_UNION_INITIALIZERS
+#if defined(DUK_F_C99)
+#define DUK_USE_UNION_INITIALIZERS
+#endif
+
+/* Most portable, wastes space */
+#define DUK_USE_FLEX_ONESIZE
+
+/* Most portable, potentially wastes space */
+#define DUK_USE_PACK_DUMMY_MEMBER

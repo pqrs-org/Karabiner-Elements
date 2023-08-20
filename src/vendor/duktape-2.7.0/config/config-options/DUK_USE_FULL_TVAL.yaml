@@ -1,0 +1,16 @@
+define: DUK_USE_FULL_TVAL
+introduced: 1.0.0
+removed: 1.2.0
+default: false
+tags:
+  - misc
+description: >
+  Initialize all bytes of a duk_tval when setting a value into one.
+
+  By default only needed fields are initialized which reduces code size and
+  improves performance slightly.  This should cause no functional issues but
+  may cause valgrind issues in rare cases, e.g. when debugger code dumps the
+  constant table of a function (which then reads uninitialized bits).
+
+  Removed in 1.2.0 because the option was never enabled and there was no
+  feature option to cause it to be used.

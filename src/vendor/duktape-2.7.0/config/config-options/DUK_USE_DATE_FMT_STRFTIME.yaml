@@ -1,0 +1,10 @@
+define: DUK_USE_DATE_FMT_STRFTIME
+introduced: 1.0.0
+default: false
+tags:
+  - date
+  - portability
+description: >
+  Use strftime() to format Date values in native, platform specific format
+  before falling back into ISO 8601.  When enabled, appropriate date/time
+  headers must be included.

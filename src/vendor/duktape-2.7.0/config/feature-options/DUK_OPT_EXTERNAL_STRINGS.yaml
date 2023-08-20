@@ -1,0 +1,11 @@
+define: DUK_OPT_EXTERNAL_STRINGS
+introduced: 1.1.0
+tags:
+  - memory
+description: >
+  Enable support for external strings.  An external string requires a Duktape
+  heap allocation to store a minimal string header, with the actual string
+  data being held behind a pointer (similarly to how dynamic buffers work).
+
+  This option is needed to use DUK_OPT_EXTSTR_INTERN_CHECK and/or
+  DUK_OPT_EXTSTR_FREE.

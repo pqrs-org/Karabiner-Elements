@@ -1,0 +1,9 @@
+define: DUK_USE_ESBC_MAX_BYTES
+introduced: 1.0.0
+requires:
+  - DUK_USE_ESBC_LIMITS
+default: 0x7fff0000
+tags:
+  - ecmascript
+description: >
+  Maximum byte count for compiled function bytecode.

@@ -1,0 +1,9 @@
+define: DUK_OPT_NO_PC2LINE
+introduced: 1.0.0
+tags:
+  - ecmascript
+description: >
+  Don't record a "pc2line" map into function instances.  Without this map,
+  exceptions won't have meaningful line numbers (virtual machine program
+  counter values cannot be translated to line numbers) but function instances
+  will have a smaller footprint.

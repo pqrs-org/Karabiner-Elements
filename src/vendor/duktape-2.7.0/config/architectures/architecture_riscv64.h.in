@@ -1,0 +1,3 @@
+#define DUK_USE_ARCH_STRING "riscv64"
+#define DUK_USE_BYTEORDER 1
+#undef DUK_USE_PACKED_TVAL

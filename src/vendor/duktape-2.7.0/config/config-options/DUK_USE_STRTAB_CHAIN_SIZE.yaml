@@ -1,0 +1,10 @@
+define: DUK_USE_STRTAB_CHAIN_SIZE
+introduced: 1.1.0
+removed: 2.1.0
+requires:
+  - DUK_USE_STRTAB_CHAIN
+default: false
+tags:
+  - lowmemory
+description: >
+  Define stringtable size for DUK_USE_STRTAB_CHAIN.

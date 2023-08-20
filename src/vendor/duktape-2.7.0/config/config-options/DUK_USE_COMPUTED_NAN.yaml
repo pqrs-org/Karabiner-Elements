@@ -1,0 +1,15 @@
+define: DUK_USE_COMPUTED_NAN
+introduced: 1.0.0
+default: false
+tags:
+  - portability
+description: >
+  The DUK_DOUBLE_NAN is not a constant but refers to a global variable with
+  an IEEE NaN value computed at run-time.  Some compilers don't provide a
+  constant for NaN, and may incorrectly evaluate (0 / 0) when doing
+  constant folding.
+
+  When enabled, define DUK_DOUBLE_NAN as duk_computed_nan.
+
+# XXX: Remove computed NaN from Duktape itself and let user provide
+# it instead?

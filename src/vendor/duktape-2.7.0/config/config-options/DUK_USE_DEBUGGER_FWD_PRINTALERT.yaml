@@ -1,0 +1,12 @@
+define: DUK_USE_DEBUGGER_FWD_PRINTALERT
+introduced: 1.2.0
+removed: 2.0.0
+# Option is ignored unless debugger support is enabled.
+#requires:
+#  - DUK_USE_DEBUGGER_SUPPORT
+default: false
+tags:
+  - debugger
+description: >
+  Forward calls to the built-in print() and alert() function to the debug
+  client.

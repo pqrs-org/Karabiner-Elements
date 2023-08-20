@@ -1,0 +1,12 @@
+define: DUK_OPT_DLL_BUILD
+introduced: 1.0.0
+tags:
+  - portability
+description: >
+  Add this define to both Duktape and application build when Duktape is
+  compiled as a DLL.  This is especially critical on Windows: the option
+  makes Duktape use __declspec(dllexport) and __declspec(dllimport) for
+  public symbols.
+
+  While this is not currently needed for Unix platforms, it should always
+  be used if you build as a DLL.

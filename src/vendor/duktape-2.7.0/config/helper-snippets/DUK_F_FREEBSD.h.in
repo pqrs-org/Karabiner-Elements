@@ -1,0 +1,4 @@
+/* FreeBSD */
+#if defined(__FreeBSD__) || defined(__FreeBSD)
+#define DUK_F_FREEBSD
+#endif

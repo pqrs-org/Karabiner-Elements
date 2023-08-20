@@ -1,0 +1,10 @@
+define: DUK_USE_JSON_QUOTESTRING_FASTPATH
+introduced: 1.3.0
+default: true
+tags:
+  - performance
+  - fastpath
+  - lowmemory
+description: >
+  Enable fast path for string quoting in JSON.stringify().  The fast path uses
+  a lookup table at a small cost in footprint.

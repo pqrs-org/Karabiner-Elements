@@ -1,0 +1,11 @@
+define: DUK_USE_VALSTACK_UNSAFE
+introduced: 1.2.0
+default: false
+tags:
+  - performance
+  - experimental
+description: >
+  Don't check allocated value stack size in operations like value stack
+  pushes.  Improves performance of API calls but causes unsafe memory
+  behavior (e.g. a segfault) when user code pushes beyond "checked" value
+  stack size.

@@ -1,0 +1,7 @@
+define: DUK_USE_STRING_BUILTIN
+introduced: 2.0.0
+default: true
+tags:
+  - ecmascript
+description: >
+  Provide a String built-in.

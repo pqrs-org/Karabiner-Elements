@@ -1,0 +1,9 @@
+define: DUK_USE_64BIT_OPS
+introduced: 1.0.0
+default: true
+tags:
+  - portability
+description: >
+  Use 64-bit integer operations.  On some platforms 64-bit types may be
+  available but 64-bit operations don't work correctly e.g. in integer/float
+  casts.

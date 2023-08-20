@@ -1,0 +1,59 @@
+/* Windows version can't obviously be determined at compile time,
+ * but _WIN32_WINNT indicates the minimum version targeted:
+ * - https://msdn.microsoft.com/en-us/library/6sehtctf.aspx
+ */
+
+/* Initial fix: disable secure CRT related warnings when compiling Duktape
+ * itself (must be defined before including Windows headers).  Don't define
+ * for user code including duktape.h.
+ */
+#if defined(DUK_COMPILING_DUKTAPE) && !defined(_CRT_SECURE_NO_WARNINGS)
+#define _CRT_SECURE_NO_WARNINGS
+#endif
+
+/* Windows 32-bit and 64-bit are currently the same. */
+/* MSVC does not have sys/param.h */
+
+#if defined(DUK_COMPILING_DUKTAPE)
+/* Only include when compiling Duktape to avoid polluting application build
+ * with a lot of unnecessary defines.
+ */
+#include <windows.h>
+#endif
+
+/* GetSystemTimePreciseAsFileTime() available from Windows 8:
+ * https://msdn.microsoft.com/en-us/library/windows/desktop/hh706895(v=vs.85).aspx
+ */
+#if defined(DUK_USE_DATE_NOW_WINDOWS_SUBMS) || defined(DUK_USE_DATE_NOW_WINDOWS)
+/* User forced provider. */
+#else
+#if defined(_WIN32_WINNT) && (_WIN32_WINNT >= 0x0602)
+#define DUK_USE_DATE_NOW_WINDOWS_SUBMS
+#else
+#define DUK_USE_DATE_NOW_WINDOWS
+#endif
+#endif
+
+#define DUK_USE_DATE_TZO_WINDOWS
+
+/* Note: PRS and FMT are intentionally left undefined for now.  This means
+ * there is no platform specific date parsing/formatting but there is still
+ * the ISO 8601 standard format.
+ */
+
+/* QueryPerformanceCounter() may go backwards in Windows XP, so enable for
+ * Vista and later: https://msdn.microsoft.com/en-us/library/windows/desktop/dn553408(v=vs.85).aspx#qpc_support_in_windows_versions
+ */
+#if !defined(DUK_USE_GET_MONOTONIC_TIME_WINDOWS_QPC) && \
+    defined(_WIN32_WINNT) && (_WIN32_WINNT >= 0x0600)
+#define DUK_USE_GET_MONOTONIC_TIME_WINDOWS_QPC
+#endif
+
+#define DUK_USE_OS_STRING "windows"
+
+/* On Windows, assume we're little endian.  Even Itanium which has a
+ * configurable endianness runs little endian in Windows.
+ */
+#if !defined(DUK_USE_BYTEORDER)
+#define DUK_USE_BYTEORDER 1
+#endif

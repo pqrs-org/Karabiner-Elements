@@ -1,0 +1,8 @@
+define: DUK_USE_GLOBAL_BINDING
+introduced: 2.1.0
+default: true
+tags:
+  - ecmascript
+  - experimental
+description: >
+  Provide a 'globalThis' binding (https://github.com/tc39/proposal-global).

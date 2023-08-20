@@ -1,0 +1,78 @@
+/*
+ *  Wrapper typedefs and constants for integer types, also sanity check types.
+ *
+ *  C99 typedefs are quite good but not always available, and we want to avoid
+ *  forcibly redefining the C99 typedefs.  So, there are Duktape wrappers for
+ *  all C99 typedefs and Duktape code should only use these typedefs.  Type
+ *  detection when C99 is not supported is best effort and may end up detecting
+ *  some types incorrectly.
+ *
+ *  Pointer sizes are a portability problem: pointers to different types may
+ *  have a different size and function pointers are very difficult to manage
+ *  portably.
+ *
+ *  http://en.wikipedia.org/wiki/C_data_types#Fixed-width_integer_types
+ *
+ *  Note: there's an interesting corner case when trying to define minimum
+ *  signed integer value constants which leads to the current workaround of
+ *  defining e.g. -0x80000000 as (-0x7fffffffL - 1L).  See doc/code-issues.txt
+ *  for a longer discussion.
+ *
+ *  Note: avoid typecasts and computations in macro integer constants as they
+ *  can then no longer be used in macro relational expressions (such as
+ *  #if DUK_SIZE_MAX < 0xffffffffUL).  There is internal code which relies on
+ *  being able to compare DUK_SIZE_MAX against a limit.
+ */
+
+/* XXX: add feature options to force basic types from outside? */
+
+#if !defined(INT_MAX)
+#error INT_MAX not defined
+#endif
+
+/* Check that architecture is two's complement, standard C allows e.g.
+ * INT_MIN to be -2**31+1 (instead of -2**31).
+ */
+#if defined(INT_MAX) && defined(INT_MIN)
+#if INT_MAX != -(INT_MIN + 1)
+#error platform does not seem complement of two
+#endif
+#else
+#error cannot check complement of two
+#endif
+
+/* Pointer size determination based on __WORDSIZE or architecture when
+ * that's not available.
+ */
+#if defined(DUK_F_X86) || defined(DUK_F_X32) || \
+    defined(DUK_F_M68K) || defined(DUK_F_PPC32) || \
+    defined(DUK_F_BCC) || \
+    (defined(__WORDSIZE) && (__WORDSIZE == 32)) || \
+    ((defined(DUK_F_OLD_SOLARIS) || defined(DUK_F_AIX) || \
+      defined(DUK_F_HPUX)) && defined(_ILP32)) || \
+    defined(DUK_F_ARM32)
+#define DUK_F_32BIT_PTRS
+#elif defined(DUK_F_X64) || \
+      (defined(__WORDSIZE) && (__WORDSIZE == 64)) || \
+   ((defined(DUK_F_OLD_SOLARIS) || defined(DUK_F_AIX) || \
+     defined(DUK_F_HPUX)) && defined(_LP64)) || \
+    defined(DUK_F_ARM64)
+#define DUK_F_64BIT_PTRS
+#else
+/* not sure, not needed with C99 anyway */
+#endif
+
+/* Intermediate define for 'have inttypes.h' */
+#undef DUK_F_HAVE_INTTYPES
+#if defined(__STDC_VERSION__) && (__STDC_VERSION__ >= 199901L) && \
+    !(defined(DUK_F_AMIGAOS) && defined(DUK_F_VBCC))
+/* vbcc + AmigaOS has C99 but no inttypes.h */
+#define DUK_F_HAVE_INTTYPES
+#elif defined(__cplusplus) && (__cplusplus >= 201103L)
+/* C++11 apparently ratified stdint.h */
+#define DUK_F_HAVE_INTTYPES
+#endif
+
+/* Basic integer typedefs and limits, preferably from inttypes.h, otherwise
+ * through automatic detection.
+ */

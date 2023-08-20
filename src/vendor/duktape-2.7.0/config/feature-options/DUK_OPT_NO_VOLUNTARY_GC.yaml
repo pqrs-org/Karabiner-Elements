@@ -1,0 +1,13 @@
+define: DUK_OPT_NO_VOLUNTARY_GC
+introduced: 1.0.0
+tags:
+  - gc
+  - memory
+description: >
+  Disable voluntary periodic mark-and-sweep collection.  A mark-and-sweep
+  collection is still triggered in an out-of-memory condition.  This option
+  should usually be combined with reference counting, which collects all
+  non-cyclical garbage.  Application code should also request an explicit
+  garbage collection from time to time when appropriate.  When this option
+  is used, Duktape will have no garbage collection pauses in ordinary use,
+  which is useful for timing sensitive applications like games.

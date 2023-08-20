@@ -1,0 +1,7 @@
+define: DUK_USE_ARRAY_BUILTIN
+introduced: 2.0.0
+default: true
+tags:
+  - ecmascript
+description: >
+  Provide an Array built-in.

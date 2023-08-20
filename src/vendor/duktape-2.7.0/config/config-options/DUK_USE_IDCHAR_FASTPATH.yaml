@@ -1,0 +1,10 @@
+define: DUK_USE_IDCHAR_FASTPATH
+introduced: 1.5.0
+default: true
+tags:
+  - performance
+  - fastpath
+  - lowmemory
+description: >
+  Enable fast path for identifier start/part tables, which affect lexing and
+  JSON performance slightly at a small cost in footprint.

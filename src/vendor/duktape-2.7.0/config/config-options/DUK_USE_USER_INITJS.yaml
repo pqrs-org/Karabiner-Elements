@@ -1,0 +1,13 @@
+define: DUK_USE_USER_INITJS
+introduced: 1.0.0
+removed: 2.0.0
+default: false
+tags:
+  - portability
+description: >
+  Provide a string to evaluate when a thread with new built-ins (a new global
+  environment) is created.  This allows you to make minor modifications to the
+  global environment before any code is executed in it.  The value must be a
+  string, e.g.:: -DDUK_OPT_USER_INITJS='"this.foo = 123"'.
+
+  Errors in the initialization code result in a fatal error.

@@ -1,0 +1,10 @@
+define: DUK_USE_VERBOSE_EXECUTOR_ERRORS
+introduced: 1.0.0
+default: true
+tags:
+  - ecmascript
+description: >
+  Use verbose error messages in bytecode executor (recommended).
+
+  When disabled, reduces footprint slightly at the cost of more obscure
+  error messages.

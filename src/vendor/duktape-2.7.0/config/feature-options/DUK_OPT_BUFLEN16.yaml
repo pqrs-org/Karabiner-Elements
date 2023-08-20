@@ -1,0 +1,7 @@
+define: DUK_OPT_BUFLEN16
+introduced: 1.1.0
+tags:
+  - lowmemory
+  - experimental
+description: >
+  Use a 16-bit buffer length field (for low memory environments).

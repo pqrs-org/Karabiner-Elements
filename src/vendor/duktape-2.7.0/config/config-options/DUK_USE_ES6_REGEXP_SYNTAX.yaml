@@ -1,0 +1,14 @@
+define: DUK_USE_ES6_REGEXP_SYNTAX
+introduced: 2.0.0
+default: true
+tags:
+  - ecmascript2015
+description: >
+  Enable support for additional RegExp syntax from E6 Section B.1.4, such as:
+  (1) dollar escape, (2) unescaped curly braces ('{' and '}'), and (3)
+  unescaped right bracket (']').  This option does not enable all of the ES6
+  syntax because not all of the extra syntax is implemented; rather, the option
+  enables whatever ES6 extra syntax has been implemented so far.
+
+  This option is recommended because a lot of existing code depends on literal
+  regexp braces, and other non-ES5 constructs.

@@ -1,0 +1,11 @@
+define: DUK_USE_SECTION_B
+introduced: 1.0.0
+default: true
+tags:
+  - ecmascript
+description: >
+  Enable optional features in ECMAScript specification
+  Annex B: http://www.ecma-international.org/ecma-262/5.1/#sec-B.
+
+  When disabled, escape(), unescape(), and String.prototype.substr()
+  throw an error.

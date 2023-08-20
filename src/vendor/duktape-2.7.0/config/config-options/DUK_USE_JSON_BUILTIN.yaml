@@ -1,0 +1,7 @@
+define: DUK_USE_JSON_BUILTIN
+introduced: 2.0.0
+default: true
+tags:
+  - ecmascript
+description: >
+  Provide a JSON built-in.

@@ -1,0 +1,11 @@
+define: DUK_USE_VALSTACK_LIMIT
+introduced: 2.2.0
+default: 1000000
+tags:
+  - misc
+description: >
+  Maximum value stack size.  If value stack is about to be grown beyond this
+  size (the check includes a possible spare so the check isn't exact) reject
+  the resize.  The limit must be low enough so that when multiplied by
+  sizeof(duk_tval), typically 8 or 16, the multiplication won't overflow
+  size_t.

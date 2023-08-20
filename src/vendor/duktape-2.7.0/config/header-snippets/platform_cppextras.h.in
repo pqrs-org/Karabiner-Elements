@@ -1,0 +1,9 @@
+/* Workaround for older C++ compilers before including <inttypes.h>,
+ * see e.g.: https://sourceware.org/bugzilla/show_bug.cgi?id=15366
+ */
+#if defined(__cplusplus) && !defined(__STDC_LIMIT_MACROS)
+#define __STDC_LIMIT_MACROS
+#endif
+#if defined(__cplusplus) && !defined(__STDC_CONSTANT_MACROS)
+#define __STDC_CONSTANT_MACROS
+#endif

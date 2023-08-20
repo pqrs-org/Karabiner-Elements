@@ -1,0 +1,7 @@
+define: DUK_OPT_DEBUG
+introduced: 1.0.0
+tags:
+  - debug
+description: >
+  Enable debug code in Duktape internals.  Without this option other
+  debugging options (such as DUK_OPT_DPRINT) have no effect.

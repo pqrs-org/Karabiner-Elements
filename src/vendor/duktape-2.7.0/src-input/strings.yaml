@@ -1,0 +1,1253 @@
+#
+#  Built-in strings
+#
+#  String data is always quoted for clarity.  Codepoints U+0000...U+00FF
+#  are identified with bytes 1:1 to allow even invalid UTF-8 strings to
+#  be represented.  Internal strings are represented as Symbols with a
+#  structured markup to avoid exposing the specific internal format (which
+#  begins with a 0x82 byte since Duktape 2.2).
+#
+#  Built-in strings can be mostly scanned automatically based on what
+#  strings built-in objects need, but there are also dependencies on
+#  certain built-in strings in C code (DUK_HTHREAD_STRING_XXX()) which
+#  are scanned using an external utility src/scan_used_stridx.py.
+#  Besides knowing the plain string values, metadata on some strings
+#  matters for built-in data generation, e.g. some strings must have
+#  an 8-bit string index.
+#
+
+strings:
+
+  # --- Standard built-in object related strings ---
+
+  # internal class values
+  - str: "Undefined"  # sort of
+    class_name: true
+  - str: "Null"       # sort of
+    class_name: true
+  - str: "Object"
+    class_name: true
+  - str: "Function"
+    class_name: true
+  - str: "Array"
+    class_name: true
+  - str: "String"
+    class_name: true
+  - str: "Symbol"
+    class_name: true
+    es6: true
+  - str: "Boolean"
+    class_name: true
+  - str: "Number"
+    class_name: true
+  - str: "Date"
+    class_name: true
+  - str: "RegExp"
+    class_name: true
+  - str: "Error"
+    class_name: true
+  - str: "Math"
+    class_name: true
+  - str: "JSON"
+    class_name: true
+  - str: "Arguments"
+    class_name: true
+
+  # built-in object names
+  - str: "Object"
+  - str: "Function"
+  - str: "Array"
+  - str: "String"
+  - str: "Boolean"
+  - str: "Number"
+  - str: "Date"
+  - str: "RegExp"
+  - str: "Error"
+  - str: "EvalError"
+  - str: "RangeError"
+  - str: "ReferenceError"
+  - str: "SyntaxError"
+  - str: "TypeError"
+  - str: "URIError"
+  - str: "Math"
+  - str: "JSON"
+
+  # Global object
+  - str: "eval"
+  - str: "parseInt"
+  - str: "parseFloat"
+  - str: "isNaN"
+  - str: "isFinite"
+  - str: "decodeURI"
+  - str: "decodeURIComponent"
+  - str: "encodeURI"
+  - str: "encodeURIComponent"
+  - str: "escape"
+  - str: "unescape"
+
+  # Object constructor
+  - str: "length"
+  - str: "prototype"
+  - str: "getPrototypeOf"
+  - str: "getOwnPropertyDescriptor"
+  - str: "getOwnPropertyNames"
+  - str: "create"
+  - str: "defineProperty"
+  - str: "defineProperties"
+  - str: "seal"
+  - str: "freeze"
+  - str: "preventExtensions"
+  - str: "isSealed"
+  - str: "isFrozen"
+  - str: "isExtensible"
+  - str: "keys"
+
+  # Property descriptors
+  - str: "value"
+  - str: "writable"
+  - str: "configurable"
+  - str: "enumerable"
+  - str: "get"
+  - str: "set"
+
+  # Object prototype
+  - str: "constructor"
+  - str: "toString"
+  - str: "toLocaleString"
+  - str: "valueOf"
+  - str: "hasOwnProperty"
+  - str: "isPrototypeOf"
+  - str: "propertyIsEnumerable"
+
+  # Object instances - no special properties
+
+  # Function constructor
+  - str: "length"
+  - str: "prototype"
+
+  # Function prototype
+  - str: "constructor"
+  - str: "toString"
+  - str: "apply"
+  - str: "call"
+  - str: "bind"
+
+  # Function instances
+  - str: "length"
+  - str: "prototype"
+  - str: "caller"  # bind() generated instances
+  - str: "arguments"  # bind() generated instances
+
+  # Array constructor
+  - str: "length"
+  - str: "prototype"
+  - str: "isArray"
+
+  # Array prototype
+  - str: "constructor"
+  - str: "toString"
+  - str: "toLocaleString"
+  - str: "concat"
+  - str: "join"
+  - str: "pop"
+  - str: "push"
+  - str: "reverse"
+  - str: "shift"
+  - str: "slice"
+  - str: "sort"
+  - str: "splice"
+  - str: "unshift"
+  - str: "indexOf"
+  - str: "lastIndexOf"
+  - str: "every"
+  - str: "some"
+  - str: "forEach"
+  - str: "map"
+  - str: "filter"
+  - str: "reduce"
+  - str: "reduceRight"
+
+  # Array instances
+  - str: "length"
+
+  # String constructor
+  - str: "length"
+  - str: "prototype"
+  - str: "fromCharCode"
+
+  # String prototype
+  - str: "constructor"
+  - str: "toString"
+  - str: "valueOf"
+  - str: "charAt"
+  - str: "charCodeAt"
+  - str: "concat"
+  - str: "indexOf"
+  - str: "lastIndexOf"
+  - str: "localeCompare"
+  - str: "match"
+  - str: "replace"
+  - str: "search"
+  - str: "slice"
+  - str: "split"
+  - str: "substring"
+  - str: "toLowerCase"
+  - str: "toLocaleLowerCase"
+  - str: "toUpperCase"
+  - str: "toLocaleUpperCase"
+  - str: "trim"
+  - str: "substr"
+    section_b: true
+
+  # String instances
+  - str: "length"
+
+  # Boolean constructor
+  - str: "length"
+  - str: "prototype"
+
+  # Boolean prototype
+  - str: "constructor"
+  - str: "toString"
+  - str: "valueOf"
+
+  # Boolean instances - no special properties
+
+  # Number constructor
+  - str: "length"
+  - str: "prototype"
+  - str: "MAX_VALUE"
+  - str: "MIN_VALUE"
+  - str: "NaN"
+  - str: "NEGATIVE_INFINITY"
+  - str: "POSITIVE_INFINITY"
+
+  # Number prototype
+  - str: "constructor"
+  - str: "toString"
+  - str: "toLocaleString"
+  - str: "valueOf"
+  - str: "toFixed"
+  - str: "toExponential"
+  - str: "toPrecision"
+
+  # Number instances - no special properties
+
+  # Date constructor
+  - str: "length"
+  - str: "prototype"
+  - str: "parse"
+  - str: "UTC"
+  - str: "now"
+
+  # Date prototype
+  - str: "constructor"
+  - str: "toString"
+  - str: "toDateString"
+  - str: "toTimeString"
+  - str: "toLocaleString"
+  - str: "toLocaleDateString"
+  - str: "toLocaleTimeString"
+  - str: "valueOf"
+  - str: "getTime"
+  - str: "getFullYear"
+  - str: "getUTCFullYear"
+  - str: "getMonth"
+  - str: "getUTCMonth"
+  - str: "getDate"
+  - str: "getUTCDate"
+  - str: "getDay"
+  - str: "getUTCDay"
+  - str: "getHours"
+  - str: "getUTCHours"
+  - str: "getMinutes"
+  - str: "getUTCMinutes"
+  - str: "getSeconds"
+  - str: "getUTCSeconds"
+  - str: "getMilliseconds"
+  - str: "getUTCMilliseconds"
+  - str: "getTimezoneOffset"
+  - str: "setTime"
+  - str: "setMilliseconds"
+  - str: "setUTCMilliseconds"
+  - str: "setSeconds"
+  - str: "setUTCSeconds"
+  - str: "setMinutes"
+  - str: "setUTCMinutes"
+  - str: "setHours"
+  - str: "setUTCHours"
+  - str: "setDate"
+  - str: "setUTCDate"
+  - str: "setMonth"
+  - str: "setUTCMonth"
+  - str: "setFullYear"
+  - str: "setUTCFullYear"
+  - str: "toUTCString"
+  - str: "toISOString"
+  - str: "toJSON"
+  - str: "getYear"
+    section_b: true
+  - str: "setYear"
+    section_b: true
+  - str: "toGMTString"
+    section_b: true
+
+  # Date instances - no special properties
+
+  # RegExp constructor
+  - str: "length"
+  - str: "prototype"
+
+  # RegExp prototype
+  - str: "constructor"
+  - str: "exec"
+  - str: "test"
+  - str: "toString"
+
+  # RegExp instances
+  - str: "source"
+  - str: "global"
+  - str: "ignoreCase"
+  - str: "multiline"
+  - str: "lastIndex"
+  - str: "flags"
+#  - str: "unicode"
+#  - str: "sticky"
+
+  # RegExp exec() results
+  - str: "index"
+  - str: "input"
+
+  # Error constructor
+  - str: "length"
+  - str: "prototype"
+
+  # Error prototype
+  - str: "constructor"
+  - str: "name"
+  - str: "message"
+  - str: "toString"
+
+  # Error instances - no special properties
+
+  # Error prototype / error fields (apply to all native errors in the spec)
+  - str: "name"
+  - str: "message"
+
+  # Math object
+  - str: "E"
+  - str: "LN10"
+  - str: "LN2"
+  - str: "LOG2E"
+  - str: "LOG10E"
+  - str: "PI"
+  - str: "SQRT1_2"
+  - str: "SQRT2"
+  - str: "abs"
+  - str: "acos"
+  - str: "asin"
+  - str: "atan"
+  - str: "atan2"
+  - str: "ceil"
+  - str: "cos"
+  - str: "exp"
+  - str: "floor"
+  - str: "log"
+  - str: "max"
+  - str: "min"
+  - str: "pow"
+  - str: "random"
+  - str: "round"
+  - str: "sin"
+  - str: "sqrt"
+  - str: "tan"
+
+  # JSON object
+  - str: "parse"
+  - str: "stringify"
+
+  # --- Other standard related strings ---
+
+  # typeof - these produce unfortunate naming conflicts like "Object" vs "object"
+  - str: "undefined"
+  - str: "boolean"
+  - str: "number"
+  - str: "string"
+  - str: "symbol"
+    es6: true
+  - str: "object"    # also returned for typeof null
+  - str: "function"
+
+  # type related
+  - str: "undefined"
+  - str: "null"
+  - str: "true"
+  - str: "false"
+
+  # special values
+  - str: "length"
+  - str: "NaN"
+  - str: "Infinity"
+  - str: "+Infinity"
+  - str: "-Infinity"
+  - str: "0"
+  - str: "+0"
+  - str: "-0"
+  - str: ""        # used as a class name for unused/invalid class
+    class_name: true
+  - str: ","       # for array joining
+  - str: "\n    "  # for tracebacks
+  - str: "[...]"   # for tracebacks
+  - str: "Invalid Date"  # for invalid Date instances
+
+  # arguments object (E5 Section 10.6)
+  - str: "arguments"
+  - str: "callee"
+  - str: "caller"
+
+  # "set" and "get" are strings we need in object literals but they are not
+  # ReservedWords.
+  - str: "get"
+  - str: "set"
+
+  # --- ES2015 specific strings ---
+
+  # Proxy
+  - str: "Proxy"
+    es6: true
+  #- str: "revocable"
+  #  es6: true
+
+  # Proxy trap names (ES2015 Section 9.5)
+  #- str: "getPrototypeOf"
+  #  es6: true
+  #- str: "setPrototypeOf"
+  #  es6: true
+  #- str: "isExtensible"
+  #  es6: true
+  #- str: "preventExtensions"
+  #  es6: true
+  #- str: "getOwnPropertyDescriptor"
+  #  es6: true
+  - str: "has"
+    es6: true
+  - str: "get"
+    es6: true
+  - str: "set"
+    es6: true
+  - str: "deleteProperty"
+    es6: true
+  #- str: "defineProperty"
+  #  es6: true
+  #- str: "enumerate"   # obsoleted in ES2016
+  #  es6: true
+  - str: "ownKeys"
+    es6: true
+  - str: "apply"
+    es6: true
+  - str: "construct"
+    es6: true
+  
+  - str: "Reflect"
+    es6: true
+  - str: "apply"
+    es6: true
+  - str: "construct"
+    es6: true
+  - str: "defineProperty"
+    es6: true
+  - str: "deleteProperty"
+    es6: true
+  - str: "get"
+    es6: true
+  - str: "getOwnPropertyDescriptor"
+    es6: true
+  - str: "getPrototypeOf"
+    es6: true
+  - str: "has"
+    es6: true
+  - str: "isExtensible"
+    es6: true
+  - str: "ownKeys"
+    es6: true
+  - str: "preventExtensions"
+    es6: true
+  - str: "set"
+    es6: true
+  - str: "setPrototypeOf"
+    es6: true
+
+  # Well-known symbols
+  - str:
+      type: symbol
+      variant: wellknown
+      string: "Symbol.toPrimitive"
+  - str:
+      type: symbol
+      variant: wellknown
+      string: "Symbol.hasInstance"
+  - str:
+      type: symbol
+      variant: wellknown
+      string: "Symbol.toStringTag"
+  - str:
+      type: symbol
+      variant: wellknown
+      string: "Symbol.isConcatSpreadable"
+
+  # Misc
+  - str: "setPrototypeOf"
+    es6: true
+  - str: "__proto__"
+    es6: true
+
+  # --- Node.js Buffer / TypedArray related strings ---
+
+  # Node.js class
+  - str: "Buffer"
+    class_name: true
+    nodejs_buffer: true
+
+  # Node.js Buffer constructor
+  - str: "concat"
+    nodejs_buffer: true
+  - str: "isEncoding"
+    nodejs_buffer: true
+  - str: "isBuffer"
+    nodejs_buffer: true
+  - str: "byteLength"
+    nodejs_buffer: true
+  - str: "compare"
+    nodejs_buffer: true
+
+  # Node.js Buffer prototype
+  - str: "toString"
+    nodejs_buffer: true
+  - str: "toJSON"
+    nodejs_buffer: true
+  - str: "write"
+    nodejs_buffer: true
+  - str: "fill"
+    nodejs_buffer: true
+  - str: "equals"
+    nodejs_buffer: true
+  - str: "compare"
+    nodejs_buffer: true
+  - str: "copy"
+    nodejs_buffer: true
+  - str: "slice"
+    nodejs_buffer: true
+  - str: "readUInt8"
+    nodejs_buffer: true
+  - str: "readInt8"
+    nodejs_buffer: true
+  - str: "readUInt16LE"
+    nodejs_buffer: true
+  - str: "readUInt16BE"
+    nodejs_buffer: true
+  - str: "readInt16LE"
+    nodejs_buffer: true
+  - str: "readInt16BE"
+    nodejs_buffer: true
+  - str: "readUInt32LE"
+    nodejs_buffer: true
+  - str: "readUInt32BE"
+    nodejs_buffer: true
+  - str: "readInt32LE"
+    nodejs_buffer: true
+  - str: "readInt32BE"
+    nodejs_buffer: true
+  - str: "readFloatLE"
+    nodejs_buffer: true
+  - str: "readFloatBE"
+    nodejs_buffer: true
+  - str: "readDoubleLE"
+    nodejs_buffer: true
+  - str: "readDoubleBE"
+    nodejs_buffer: true
+  - str: "readUIntLE"
+    nodejs_buffer: true
+  - str: "readUIntBE"
+    nodejs_buffer: true
+  - str: "readIntLE"
+    nodejs_buffer: true
+  - str: "readIntBE"
+    nodejs_buffer: true
+  - str: "writeUInt8"
+    nodejs_buffer: true
+  - str: "writeInt8"
+    nodejs_buffer: true
+  - str: "writeUInt16LE"
+    nodejs_buffer: true
+  - str: "writeUInt16BE"
+    nodejs_buffer: true
+  - str: "writeInt16LE"
+    nodejs_buffer: true
+  - str: "writeInt16BE"
+    nodejs_buffer: true
+  - str: "writeUInt32LE"
+    nodejs_buffer: true
+  - str: "writeUInt32BE"
+    nodejs_buffer: true
+  - str: "writeInt32LE"
+    nodejs_buffer: true
+  - str: "writeInt32BE"
+    nodejs_buffer: true
+  - str: "writeFloatLE"
+    nodejs_buffer: true
+  - str: "writeFloatBE"
+    nodejs_buffer: true
+  - str: "writeDoubleLE"
+    nodejs_buffer: true
+  - str: "writeDoubleBE"
+    nodejs_buffer: true
+  - str: "writeUIntLE"
+    nodejs_buffer: true
+  - str: "writeUIntBE"
+    nodejs_buffer: true
+  - str: "writeIntLE"
+    nodejs_buffer: true
+  - str: "writeIntBE"
+    nodejs_buffer: true
+
+  # Node.js toJSON()
+  - str: "type"
+    nodejs_buffer: true
+  - str: "data"
+    nodejs_buffer: true
+
+  # TypedArray classes
+  - str: "ArrayBuffer"
+    class_name: true
+    typed_array: true
+  - str: "DataView"
+    class_name: true
+    typed_array: true
+  - str: "Int8Array"
+    class_name: true
+    typed_array: true
+  - str: "Uint8Array"
+    class_name: true
+    typed_array: true
+  - str: "Uint8ClampedArray"
+    class_name: true
+    typed_array: true
+  - str: "Int16Array"
+    class_name: true
+    typed_array: true
+  - str: "Uint16Array"
+    class_name: true
+    typed_array: true
+  - str: "Int32Array"
+    class_name: true
+    typed_array: true
+  - str: "Uint32Array"
+    class_name: true
+    typed_array: true
+  - str: "Float32Array"
+    class_name: true
+    typed_array: true
+  - str: "Float64Array"
+    class_name: true
+    typed_array: true
+
+  # TypedArray ArrayBuffer constructor
+  - str: "isView"
+    typed_array: true
+
+  # TypedArray ArrayBuffer instance
+  - str: "slice"
+    typed_array: true
+
+  # TypedArray ArrayBufferView shared
+  - str: "buffer"
+    typed_array: true
+  - str: "length"
+    typed_array: true
+  #- str: "byteLength"
+  #  typed_array: true
+  #- str: "byteOffset"
+  #  typed_array: true
+  #- str: "BYTES_PER_ELEMENT"
+  #  typed_array: true
+
+  # TypedArray TypedArray (e.g. Uint8Array)
+  - str: "set"
+    typed_array: true
+  - str: "subarray"
+    typed_array: true
+
+  # TypedArray DataView
+  - str: "getInt8"
+    typed_array: true
+  - str: "getUint8"
+    typed_array: true
+  - str: "getInt16"
+    typed_array: true
+  - str: "getUint16"
+    typed_array: true
+  - str: "getInt32"
+    typed_array: true
+  - str: "getUint32"
+    typed_array: true
+  - str: "getFloat32"
+    typed_array: true
+  - str: "getFloat64"
+    typed_array: true
+  - str: "setInt8"
+    typed_array: true
+  - str: "setUint8"
+    typed_array: true
+  - str: "setInt16"
+    typed_array: true
+  - str: "setUint16"
+    typed_array: true
+  - str: "setInt32"
+    typed_array: true
+  - str: "setUint32"
+    typed_array: true
+  - str: "setFloat32"
+    typed_array: true
+  - str: "setFloat64"
+    typed_array: true
+
+  # --- Duktape specific strings ---
+
+  # non-standard global properties
+  - str: "Duktape"
+    duktape: true
+
+  # non-standard class values
+  - str: "global"  # implementation specific but shared by e.g. smjs and V8
+    duktape: true
+    class_name: true
+  - str: "ObjEnv"
+    duktape: true
+    class_name: true
+  - str: "DecEnv"
+    duktape: true
+    class_name: true
+  - str: "Buffer"
+    duktape: true
+    class_name: true
+  - str: "Pointer"
+    duktape: true
+    class_name: true
+  - str: "Thread"
+    duktape: true
+    class_name: true
+
+  # non-standard built-in object names
+  - str: "ThrowTypeError"  # implementation specific, matches V8
+    duktape: true
+
+  # non-standard error object (or Error.prototype) properties
+  - str: "stack"
+    duktape: true
+  - str: "pc"
+    duktape: true
+  - str: "fileName"
+    duktape: true
+  - str: "lineNumber"
+    duktape: true
+  #- str: "code"
+  #  duktape: true
+  - str:
+      type: symbol
+      variant: hidden
+      string: "Tracedata"
+    duktape: true
+    internal: true
+
+  # non-standard function instance properties
+  - str: "name"  # function declaration/expression name (or empty)
+    duktape: true
+  - str: "fileName"  # filename associated with function (shown in tracebacks)
+    duktape: true
+
+  # typeof - these produce unfortunate naming conflicts like "Object" vs "object"
+  #- str: "buffer"   # no longer used in Duktape 2.x for typeof (typeof plainBuffer -> 'object' instead)
+  #  duktape: true
+  - str: "pointer"
+    duktape: true
+
+  # GETPROPC delayed error, can use any shared hidden Symbol that can never
+  # occur in used visible values (which may be thrown and thus trigger special
+  # handling).  At present, use _Target which is only used by enumerator
+  # objects and nothing user visible.
+  - str:
+      type: symbol
+      variant: hidden
+      string: "Target"
+    duktape: true
+    internal: true
+
+  # internal property for primitive value (Boolean, Number, String)
+  - str:
+      type: symbol
+      variant: hidden
+      string: "Value"
+    duktape: true
+    internal: true
+
+  # internal properties for enumerator objects
+  - str:
+      type: symbol
+      variant: hidden
+      string: "Target"
+    duktape: true
+    internal: true
+  - str:
+      type: symbol
+      variant: hidden
+      string: "Next"
+    duktape: true
+    internal: true
+
+  # internal properties for RegExp instances
+  - str:
+      type: symbol
+      variant: hidden
+      string: "Bytecode"
+    duktape: true
+    internal: true
+
+  # internal properties for function objects
+  - str:
+      type: symbol
+      variant: hidden
+      string: "Formals"
+    duktape: true
+    internal: true
+  - str:
+      type: symbol
+      variant: hidden
+      string: "Varmap"
+    duktape: true
+    internal: true
+  - str:
+      type: symbol
+      variant: hidden
+      string: "Source"
+    duktape: true
+    internal: true
+  - str:
+      type: symbol
+      variant: hidden
+      string: "Pc2line"
+    duktape: true
+    internal: true
+
+  # internal properties for thread objects
+
+  # internal properties for argument objects
+  - str:
+      type: symbol
+      variant: hidden
+      string: "Map"
+    duktape: true
+    internal: true
+  - str:
+      type: symbol
+      variant: hidden
+      string: "Varenv"
+    duktape: true
+    internal: true
+  - str:
+      type: symbol
+      variant: hidden
+      string: "Callee"
+    duktape: true
+    internal: true
+
+  # internal properties for general objects
+  #- str:
+  #    type: symbol
+  #    variant: hidden
+  #    string: "Metatable"
+  #  duktape: true
+  #  internal: true
+  - str:
+      type: symbol
+      variant: hidden
+      string: "Finalizer"
+    duktape: true
+    internal: true
+
+  # internal property used for GETPROPC created error objects to delay
+  # their throwing (intentionally reuse an existing property name)
+  - str:
+      type: symbol
+      variant: hidden
+      string: "Value"
+    duktape: true
+    internal: true
+
+  # fake filename for compiled functions
+  - str: "compile"    # used as a filename for functions created with Function constructor
+    duktape: true
+  - str: "input"      # used as a filename for eval temp function
+    duktape: true
+
+  # Duktape object
+  - str: "errCreate"
+    duktape: true
+  - str: "errThrow"
+    duktape: true
+  - str: "env"
+    duktape: true
+  - str: "version"
+    duktape: true
+  - str: "info"
+    duktape: true
+  - str: "act"
+    duktape: true
+  - str: "gc"
+    duktape: true
+  - str: "fin"
+    duktape: true
+  - str: "enc"
+    duktape: true
+  - str: "dec"
+    duktape: true
+  - str: "compact"
+    duktape: true
+
+  # enc/dec algorithms
+  - str: "hex"
+    duktape: true
+  - str: "base64"
+    duktape: true
+  - str: "jx"
+    duktape: true
+  - str: "jc"
+    duktape: true
+
+  # Buffer constructor
+
+  # Buffer prototype
+
+  # Pointer constructor
+
+  # Pointer prototype
+
+  # Thread constructor
+  - str: "yield"
+    duktape: true
+  - str: "resume"
+    duktape: true
+  - str: "current"
+    duktape: true
+
+  # Thread prototype
+
+  # special literals for custom json encodings
+  - str: "{\"_undef\":true}"
+    duktape: true
+  - str: "{\"_nan\":true}"
+    duktape: true
+  - str: "{\"_inf\":true}"
+    duktape: true
+  - str: "{\"_ninf\":true}"
+    duktape: true
+  - str: "{\"_func\":true}"
+    duktape: true
+  - str: "{_func:true}"
+    duktape: true
+
+  # --- Standard reserved words (non-strict mode + strict mode) ---
+  # Note: order must match DUK_TOK_XXX reserved defines in duk_types.h
+
+  # E5 Section 7.6.1
+
+  # Keyword
+
+  - str: "break"
+    reserved_word: true
+  - str: "case"
+    reserved_word: true
+  - str: "catch"
+    reserved_word: true
+  - str: "continue"
+    reserved_word: true
+  - str: "debugger"
+    reserved_word: true
+  - str: "default"
+    reserved_word: true
+  - str: "delete"
+    reserved_word: true
+  - str: "do"
+    reserved_word: true
+  - str: "else"
+    reserved_word: true
+  - str: "finally"
+    reserved_word: true
+  - str: "for"
+    reserved_word: true
+  - str: "function"
+    reserved_word: true
+  - str: "if"
+    reserved_word: true
+  - str: "in"
+    reserved_word: true
+  - str: "instanceof"
+    reserved_word: true
+  - str: "new"
+    reserved_word: true
+  - str: "return"
+    reserved_word: true
+  - str: "switch"
+    reserved_word: true
+  - str: "this"
+    reserved_word: true
+  - str: "throw"
+    reserved_word: true
+  - str: "try"
+    reserved_word: true
+  - str: "typeof"
+    reserved_word: true
+  - str: "var"
+    reserved_word: true
+  - str: "const"  # future reserved word in E5.1, now supported by Duktape so moved here
+    reserved_word: true
+  - str: "void"
+    reserved_word: true
+  - str: "while"
+    reserved_word: true
+  - str: "with"
+    reserved_word: true
+
+  # Future reserved word
+
+  - str: "class"
+    reserved_word: true
+    future_reserved_word: true
+  - str: "enum"
+    reserved_word: true
+    future_reserved_word: true
+  - str: "export"
+    reserved_word: true
+    future_reserved_word: true
+  - str: "extends"
+    reserved_word: true
+    future_reserved_word: true
+  - str: "import"
+    reserved_word: true
+    future_reserved_word: true
+  - str: "super"
+    reserved_word: true
+    future_reserved_word: true
+
+  # E5 Section 7.8.1 and 7.8.2: special literals which the lexer
+  # basically treats like keywords
+
+  - str: "null"
+    reserved_word: true
+    special_literal: true
+  - str: "true"
+    reserved_word: true
+    special_literal: true
+  - str: "false"
+    reserved_word: true
+    special_literal: true
+
+  # "set" and "get" are *NOT* reserved words and there is even code
+  # in the wild with statements like "var set = 1;".  They are thus
+  # treated as ordinary identifiers and recognized by the compiler
+  # as tokens in a special way.
+  #- str: "get"
+  #- str: "set"
+
+  # --- Standard reserved words (strict mode only) ---
+  # Note: order must match DUK_TOK_XXX reserved defines in duk_types.h
+
+  # Future reserved word (additionally in strict mode)
+
+  - str: "implements"
+    reserved_word: true
+    future_reserved_word: true
+    future_reserved_word_strict: true
+  - str: "interface"
+    reserved_word: true
+    future_reserved_word: true
+    future_reserved_word_strict: true
+  - str: "let"
+    reserved_word: true
+    future_reserved_word: true
+    future_reserved_word_strict: true
+  - str: "package"
+    reserved_word: true
+    future_reserved_word: true
+    future_reserved_word_strict: true
+  - str: "private"
+    reserved_word: true
+    future_reserved_word: true
+    future_reserved_word_strict: true
+  - str: "protected"
+    reserved_word: true
+    future_reserved_word: true
+    future_reserved_word_strict: true
+  - str: "public"
+    reserved_word: true
+    future_reserved_word: true
+    future_reserved_word_strict: true
+  - str: "static"
+    reserved_word: true
+    future_reserved_word: true
+    future_reserved_word_strict: true
+  - str: "yield"
+    reserved_word: true
+    future_reserved_word: true
+    future_reserved_word_strict: true
+
+# Duktape duk_lexer.h expects these strings to be in this exact order
+# starting from "first reserved word".
+reserved_word_token_order:
+  - "break"
+  - "case"
+  - "catch"
+  - "continue"
+  - "debugger"
+  - "default"
+  - "delete"
+  - "do"
+  - "else"
+  - "finally"
+  - "for"
+  - "function"
+  - "if"
+  - "in"
+  - "instanceof"
+  - "new"
+  - "return"
+  - "switch"
+  - "this"
+  - "throw"
+  - "try"
+  - "typeof"
+  - "var"
+  - "const"
+  - "void"
+  - "while"
+  - "with"
+  - "class"
+  - "enum"
+  - "export"
+  - "extends"
+  - "import"
+  - "super"
+  - "null"
+  - "true"
+  - "false"
+  - "implements"
+  - "interface"
+  - "let"
+  - "package"
+  - "private"
+  - "protected"
+  - "public"
+  - "static"
+  - "yield"
+
+# Forced define names for specific strings for which automatic name generation
+# does a bad job.
+special_define_names:
+  # "typeof" has name conflicts like "object" and "Object", broken with
+  # explicit LC/UC prefix.
+  "undefined": "LC_UNDEFINED"
+  "Undefined": "UC_UNDEFINED"
+  "null": "LC_NULL"
+  "Null": "UC_NULL"
+  "object": "LC_OBJECT"
+  "Object": "UC_OBJECT"
+  "boolean": "LC_BOOLEAN"
+  "Boolean": "UC_BOOLEAN"
+  "number": "LC_NUMBER"
+  "Number": "UC_NUMBER"
+  "function": "LC_FUNCTION"
+  "Function": "UC_FUNCTION"
+  "string": "LC_STRING"
+  "String": "UC_STRING"
+  "array": "LC_ARRAY"
+  "Array": "UC_ARRAY"
+  "symbol": "LC_SYMBOL"
+  "Symbol": "UC_SYMBOL"
+  "arguments": "LC_ARGUMENTS"
+  "Arguments": "UC_ARGUMENTS"
+  "date": "LC_DATE"
+  "Date": "UC_DATE"
+  "buffer": "LC_BUFFER"
+  "Buffer": "UC_BUFFER"
+  "pointer": "LC_POINTER"
+  "Pointer": "UC_POINTER"
+  #"thread": "LC_THREAD"
+  "Thread": "UC_THREAD"
+
+  "error": "LC_ERROR"
+  "Error": "UC_ERROR"
+
+  # log levels
+  "trace": "LC_TRACE"
+  #"Trace": "UC_TRACE"
+  "debug": "LC_DEBUG"
+  #"Debug": "UC_DEBUG"
+  "info": "LC_INFO"
+  #"Info": "UC_INFO"
+  "warn": "LC_WARN"
+  #"Warn": "UC_WARN"
+  #"error": "LC_ERROR"    # already above
+  #"Error": "UC_ERROR"
+  "fatal": "LC_FATAL"
+  #"Fatal": "UC_FATAL"
+
+  "+Infinity": "PLUS_INFINITY"
+  "-Infinity": "MINUS_INFINITY"
+  "0": "ZERO"
+  "+0": "PLUS_ZERO"
+  "-0": "MINUS_ZERO"
+  "NaN": "NAN"
+  "isNaN": "IS_NAN"
+  "MIN_VALUE": "MIN_VALUE"
+  "MAX_VALUE": "MAX_VALUE"
+  "NEGATIVE_INFINITY": "NEGATIVE_INFINITY"
+  "POSITIVE_INFINITY": "POSITIVE_INFINITY"
+  "Invalid Date": "INVALID_DATE"
+
+  "decodeURIComponent": "DECODE_URI_COMPONENT"
+  "encodeURIComponent": "ENCODE_URI_COMPONENT"
+  "getUTCDate": "GET_UTC_DATE"
+  "getUTCDay": "GET_UTC_DAY"
+  "getUTCFullYear": "GET_UTC_FULL_YEAR"
+  "getUTCHours": "GET_UTC_HOURS"
+  "getUTCMilliseconds": "GET_UTC_MILLISECONDS"
+  "getUTCMinutes": "GET_UTC_MINUTES"
+  "getUTCMonth": "GET_UTC_MONTH"
+  "getUTCSeconds": "GET_UTC_SECONDS"
+  "setUTCDate": "SET_UTC_DATE"
+  "setUTCDay": "SET_UTC_DAY"
+  "setUTCFullYear": "SET_UTC_FULL_YEAR"
+  "setUTCHours": "SET_UTC_HOURS"
+  "setUTCMilliseconds": "SET_UTC_MILLISECONDS"
+  "setUTCMinutes": "SET_UTC_MINUTES"
+  "setUTCMonth": "SET_UTC_MONTH"
+  "setUTCSeconds": "SET_UTC_SECONDS"
+  "LOG10E": "LOG10E"
+  "LOG2E": "LOG2E"
+  "toISOString": "TO_ISO_STRING"
+  "toUTCString": "TO_UTC_STRING"
+  "toGMTString": "TO_GMT_STRING"
+  "URIError": "URI_ERROR"
+  "Duktape": "DUKTAPE"
+  "": "EMPTY_STRING"
+  ",": "COMMA"
+  "\n    ": "NEWLINE_4SPACE"
+  "[...]": "BRACKETED_ELLIPSIS"
+
+  "{\"_undef\":true}": "JSON_EXT_UNDEFINED"
+  "{\"_nan\":true}": "JSON_EXT_NAN"
+  "{\"_inf\":true}": "JSON_EXT_POSINF"
+  "{\"_ninf\":true}": "JSON_EXT_NEGINF"
+  "{\"_func\":true}": "JSON_EXT_FUNCTION1"
+  "{_func:true}": "JSON_EXT_FUNCTION2"
+
+  "BYTES_PER_ELEMENT": "BYTES_PER_ELEMENT"

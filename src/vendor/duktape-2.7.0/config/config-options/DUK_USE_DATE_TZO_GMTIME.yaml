@@ -1,0 +1,11 @@
+define: DUK_USE_DATE_TZO_GMTIME
+introduced: 1.0.0
+default: false
+tags:
+  - date
+  - portability
+description: >
+  Use gmtime() to get local time offset at a certain time.
+  When enabled, appropriate date/time headers must be included.
+
+  Since gmtime() is not re-entrant, this is not thread safe.

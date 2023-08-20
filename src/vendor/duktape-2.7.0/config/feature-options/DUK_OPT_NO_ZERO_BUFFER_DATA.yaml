@@ -1,0 +1,8 @@
+define: DUK_OPT_NO_ZERO_BUFFER_DATA
+introduced: 1.0.0
+tags:
+  - memory
+  - ecmascript
+description: >
+  By default Duktape zeroes data allocated for buffer values.  Define
+  this to disable the zeroing (perhaps for performance reasons).

@@ -1,0 +1,11 @@
+define: DUK_USE_DATE_PRS_GETDATE
+introduced: 1.3.0
+default: false
+tags:
+  - date
+  - portability
+description: >
+  Use getdate_r() to parse a platform specific datetime string into ECMAScript
+  time.  getdate_r() depends on DATEMSK being set so this is not always very
+  convenient for an embedded interpreter.  When enabled, appropriate date/time
+  headers must be included.

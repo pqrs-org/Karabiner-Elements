@@ -1,0 +1,16 @@
+define: DUK_USE_STRTAB_RESIZE_CHECK_MASK
+introduced: 2.1.0
+default: 255
+tags:
+  - performance
+  - lowmemory
+description: >
+  Somewhat technical: bit mask (must be 2^N-1) used against heap->st_count to
+  determine the interval between string table resize checks.  A resize check
+  is made when heap->st_count & DUK_USE_STRTAB_RESIZE_CHECK_MASK is zero.
+
+  A large value makes string table grow/shrink checks less frequent.  Usually
+  this has very little practical impact on memory performance.  There are
+  corner cases, such as dereferencing a large number of strings simultaneously,
+  where this parameter affects how many new strings need to be inserted before
+  the string table shrinks to a more appropriate size.

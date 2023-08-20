@@ -1,0 +1,14 @@
+define: DUK_USE_DEBUGGER_FWD_LOGGING
+introduced: 1.2.0
+removed: 2.0.0
+# Option is ignored unless debugger support is enabled.
+#requires:
+#  - DUK_USE_DEBUGGER_SUPPORT
+default: false
+tags:
+  - debugger
+description: >
+  Forward log writes using the built-in logging framework to the debug client.
+  Forwarding happens from the Duktape.Logger.prototype.info() etc calls before
+  the raw() function is called, so that logging is forwarded even if you
+  replace the backend.

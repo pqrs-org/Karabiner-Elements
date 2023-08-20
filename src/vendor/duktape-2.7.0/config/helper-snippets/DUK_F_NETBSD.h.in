@@ -1,0 +1,4 @@
+/* NetBSD */
+#if defined(__NetBSD__) || defined(__NetBSD)
+#define DUK_F_NETBSD
+#endif

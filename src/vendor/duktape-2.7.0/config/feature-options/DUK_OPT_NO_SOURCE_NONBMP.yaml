@@ -1,0 +1,7 @@
+define: DUK_OPT_NO_SOURCE_NONBMP
+introduced: 1.0.0
+tags:
+  - ecmascript
+description: >
+  Disable accurate Unicode support for non-BMP characters in source code.
+  Non-BMP characters are then always accepted as identifier characters.

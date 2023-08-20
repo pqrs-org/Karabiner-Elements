@@ -1,0 +1,21 @@
+/*
+ *  Convert DUK_USE_BYTEORDER, from whatever source, into currently used
+ *  internal defines.  If detection failed, #error out.
+ */
+
+#if defined(DUK_USE_BYTEORDER)
+#if (DUK_USE_BYTEORDER == 1)
+#define DUK_USE_INTEGER_LE
+#define DUK_USE_DOUBLE_LE
+#elif (DUK_USE_BYTEORDER == 2)
+#define DUK_USE_INTEGER_LE  /* integer endianness is little on purpose */
+#define DUK_USE_DOUBLE_ME
+#elif (DUK_USE_BYTEORDER == 3)
+#define DUK_USE_INTEGER_BE
+#define DUK_USE_DOUBLE_BE
+#else
+#error unsupported: byte order invalid
+#endif  /* byte order */
+#else
+#error unsupported: byte order detection failed
+#endif  /* defined(DUK_USE_BYTEORDER) */

@@ -1,0 +1,12 @@
+define: DUK_USE_REFCOUNT32
+introduced: 2.1.0
+default: true
+tags:
+  - gc
+description: >
+  Use a 32-bit reference count field.
+
+  While on some 64-bit systems it's theoretically possible to wrap a 32-bit
+  counter field, assuming a 16-byte duk_tval the Duktape heap would have to
+  be larger than 64GB for that to happen.  Because of this the default is to
+  use a 32-bit refcount field.

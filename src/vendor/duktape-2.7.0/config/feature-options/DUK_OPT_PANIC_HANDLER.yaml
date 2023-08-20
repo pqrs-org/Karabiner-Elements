@@ -1,0 +1,6 @@
+define: DUK_OPT_PANIC_HANDLER
+introduced: 1.0.0
+tags:
+  - portability
+description: >
+  Provide a custom panic handler.

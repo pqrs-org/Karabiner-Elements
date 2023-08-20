@@ -1,0 +1,11 @@
+define: DUK_USE_DOUBLE_LINKED_HEAP
+introduced: 1.0.0
+default: true
+tags:
+  - ecmascript
+description: >
+  Use a double-linked duk_heaphdr structure.  Required when reference
+  counting is enabled.
+
+# XXX: This must currently always match DUK_USE_REFERENCE_COUNTING
+# so remove as a separate option?

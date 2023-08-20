@@ -1,0 +1,15 @@
+define: DUK_OPT_DEEP_C_STACK
+introduced: 1.0.0
+removed: 1.3.0
+tags:
+  - memory
+  - portability
+description: >
+  By default Duktape imposes a sanity limit on the depth of the C stack
+  because it is often limited in embedded environments.  This option
+  forces Duktape to use a deep C stack which relaxes e.g. recursion limits.
+  Automatic feature detection enables deep C stacks on some platforms known
+  to have them (e.g. Linux, BSD, Windows).
+
+  Removed in Duktape 1.3.0, use explicit config options to control recursion
+  limits for shallow stack targets.

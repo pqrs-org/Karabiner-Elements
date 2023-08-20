@@ -1,0 +1,13 @@
+define: DUK_USE_HOBJECT_ARRAY_FAST_RESIZE_LIMIT
+introduced: 2.1.0
+default: 9
+tags:
+  - performance
+  - lowmemory
+description: >
+  Skip abandon check in object array part resize if new_size < L * old_size.
+  The limit L is expressed as a .3 fixed point value, e.g. 9 means 9/8 =
+  112.5% of current size.
+
+  This is rather technical and you should only change the parameter if you've
+  looked at the internals.

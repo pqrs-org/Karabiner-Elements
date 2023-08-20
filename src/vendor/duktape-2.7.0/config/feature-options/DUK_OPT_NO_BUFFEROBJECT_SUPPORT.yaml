@@ -1,0 +1,8 @@
+define: DUK_OPT_NO_BUFFEROBJECT_SUPPORT
+introduced: 1.3.0
+tags:
+  - ecmascript6
+description: >
+  Disable support for Khronos/ES6 typed arrays and Node.js Buffer objects
+  which reduces code footprint.  When disabled, Duktape custom plain buffers
+  and Duktape.Buffer are still supported.

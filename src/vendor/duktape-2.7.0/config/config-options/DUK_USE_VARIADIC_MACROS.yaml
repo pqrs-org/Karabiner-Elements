@@ -1,0 +1,11 @@
+define: DUK_USE_VARIADIC_MACROS
+introduced: 1.0.0
+default: true
+tags:
+  - portability
+description: >
+  Compiler supports C99-style variadic macros.  Highly recommended to enable
+  when possible.
+
+  When disabled, Duktape needs to resort to various hacks to work around
+  missing support for variadic macros.

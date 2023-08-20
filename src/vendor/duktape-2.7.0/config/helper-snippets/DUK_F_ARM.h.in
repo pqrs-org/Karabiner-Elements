@@ -1,0 +1,9 @@
+/* ARM */
+#if defined(__arm__) || defined(__thumb__) || defined(_ARM) || defined(_M_ARM) || defined(_M_ARM64) || defined(__aarch64__)
+#define DUK_F_ARM
+#if defined(__LP64__) || defined(_LP64) || defined(__arm64) || defined(__arm64__) || defined(_M_ARM64) || defined(__aarch64__)
+#define DUK_F_ARM64
+#else
+#define DUK_F_ARM32
+#endif
+#endif

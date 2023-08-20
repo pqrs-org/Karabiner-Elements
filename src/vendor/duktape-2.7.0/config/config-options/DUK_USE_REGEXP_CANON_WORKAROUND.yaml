@@ -1,0 +1,13 @@
+define: DUK_USE_REGEXP_CANON_WORKAROUND
+introduced: 1.4.0
+default: false
+tags:
+  - performance
+  - unicode
+  - experimental
+description: >
+  Use a 128kB lookup table for RegExp codepoint canonicalization to improve
+  performance of case insensitive RegExp handling.
+
+  This is a temporary workaround until there's better support for faster
+  Unicode handling.

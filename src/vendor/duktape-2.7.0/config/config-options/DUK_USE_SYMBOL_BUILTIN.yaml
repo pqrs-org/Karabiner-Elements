@@ -1,0 +1,10 @@
+define: DUK_USE_SYMBOL_BUILTIN
+introduced: 2.0.0
+default: true
+tags:
+  - ecmascript2015
+description: >
+  Provide ES6 Symbol built-ins.
+
+  Even with the built-ins disabled, symbols created by C code are still
+  supported.

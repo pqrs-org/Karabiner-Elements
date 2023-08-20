@@ -1,0 +1,11 @@
+define: DUK_USE_PACKED_TVAL
+introduced: 1.0.0
+default: false
+tags:
+  - portability
+description: >
+  Use a packed 8-byte representation for duk_tval.  The packed representation
+  represents non-number values as special IEEE double NaN values, and is only
+  possible for platforms with 32-bit pointers.  When the packed representation
+  is not available, Duktape uses a 12-16 byte struct/union which is more
+  portable.

@@ -1,0 +1,13 @@
+define: DUK_USE_DOUBLE_ME
+introduced: 1.0.0
+removed: 1.4.0
+default: false
+conflicts:
+  - DUK_USE_DOUBLE_LE
+  - DUK_USE_DOUBLE_BE
+tags:
+  - portability
+description: >
+  IEEE double memory representation is mixed endian on the target platform.
+  In other words the logical bytes ABCDEFGH are represented in memory as
+  DCBAHGFE.  This endianness is used by some ARM platforms.

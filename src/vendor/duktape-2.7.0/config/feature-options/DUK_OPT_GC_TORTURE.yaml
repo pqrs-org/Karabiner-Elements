@@ -1,0 +1,9 @@
+define: DUK_OPT_GC_TORTURE
+introduced: 1.0.0
+tags:
+  - gc
+  - memory
+  - development
+description: >
+  Development time option: force full mark-and-sweep on every allocation to
+  stress test memory management.

@@ -1,0 +1,14 @@
+define: DUK_USE_STRTAB_PTRCOMP
+introduced: 2.1.0
+default: false
+requires:
+  - DUK_USE_HEAPPTR16
+tags:
+  - performance
+  - lowmemory
+description: >
+  Pointer compress the top level heap->strtable[] string table.  On 32-bit
+  targets this saves 2 bytes per entry, e.g. for 256 entries 0.5kB.  However,
+  the additional pointer compression code increases footprint by 200-300
+  bytes.  The option also reduces performance a little bit, so this should
+  be enabled when RAM is much more constrained than ROM.

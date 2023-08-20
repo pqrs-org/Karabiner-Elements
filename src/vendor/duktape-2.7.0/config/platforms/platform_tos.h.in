@@ -1,0 +1,12 @@
+#define DUK_USE_DATE_NOW_TIME
+#define DUK_USE_DATE_TZO_GMTIME
+/* no parsing (not an error) */
+#define DUK_USE_DATE_FMT_STRFTIME
+#include <time.h>
+
+#define DUK_USE_OS_STRING  "tos"
+
+/* TOS on M68K is always big endian. */
+#if !defined(DUK_USE_BYTEORDER) && defined(DUK_F_M68K)
+#define DUK_USE_BYTEORDER 3
+#endif

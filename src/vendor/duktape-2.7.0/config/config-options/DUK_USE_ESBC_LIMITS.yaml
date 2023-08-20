@@ -1,0 +1,7 @@
+define: DUK_USE_ESBC_LIMITS
+introduced: 1.0.0
+default: true
+tags:
+  - ecmascript
+description: >
+  Impose byte and line number limits for compiled function bytecode.

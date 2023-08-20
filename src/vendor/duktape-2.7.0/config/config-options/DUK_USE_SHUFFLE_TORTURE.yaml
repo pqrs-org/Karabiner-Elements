@@ -1,0 +1,12 @@
+define: DUK_USE_SHUFFLE_TORTURE
+introduced: 1.2.0
+default: false
+tags:
+  - gc
+  - memory
+  - development
+  - torture
+description: >
+  Development time option: force compiler to shuffle every possible opcode
+  to stress shuffle behavior which is otherwise difficult to test for
+  comprehensively.

@@ -1,0 +1,18 @@
+# Enable compliant behavior, defaults favor "real world" compatibility.
+
+DUK_USE_NONSTD_ARRAY_SPLICE_DELCOUNT: false
+DUK_USE_NONSTD_FUNC_CALLER_PROPERTY: false
+DUK_USE_NONSTD_FUNC_SOURCE_PROPERTY: false
+DUK_USE_NONSTD_FUNC_STMT: false
+DUK_USE_NONSTD_GETTER_KEY_ARGUMENT: false
+DUK_USE_NONSTD_JSON_ESC_U2028_U2029: false
+DUK_USE_NONSTD_SETTER_KEY_ARGUMENT: false
+DUK_USE_NONSTD_STRING_FROMCHARCODE_32BIT: false
+DUK_USE_ES6_REGEXP_SYNTAX: false  # for ES5 compliance, disable ES6-only regexp extra syntax
+
+# These Array fast paths assume Array.prototype has no inherited index
+# properties which might affect reads/writes.  Such properties are very
+# rare so this assumption is usually a good one; for strict compliance,
+# disable the fast paths.
+DUK_USE_ARRAY_PROP_FASTPATH: false
+DUK_USE_ARRAY_FASTPATH: false

@@ -1,0 +1,26 @@
+/*
+ *  Alignment requirement and support for unaligned accesses
+ *
+ *  Assume unaligned accesses are not supported unless specifically allowed
+ *  in the target platform.  Some platforms may support unaligned accesses
+ *  but alignment to 4 or 8 may still be desirable.  Note that unaligned
+ *  accesses (and even pointers) relative to natural alignment (regardless
+ *  of target alignment) are technically undefined behavior and thus
+ *  compiler/architecture specific.
+ */
+
+/* If not forced, use safe default for alignment. */
+#if !defined(DUK_USE_ALIGN_BY)
+#define DUK_USE_ALIGN_BY 8
+#endif
+
+/* Compiler specific hackery needed to force struct size to match alignment,
+ * see e.g. duk_hbuffer.h.
+ *
+ * http://stackoverflow.com/questions/11130109/c-struct-size-alignment
+ * http://stackoverflow.com/questions/10951039/specifying-64-bit-alignment
+ */
+#if !(defined(DUK_USE_PACK_MSVC_PRAGMA) || defined(DUK_USE_PACK_GCC_ATTR) || \
+      defined(DUK_USE_PACK_CLANG_ATTR) || defined(DUK_USE_PACK_DUMMY_MEMBER))
+#define DUK_USE_PACK_DUMMY_MEMBER
+#endif

@@ -1,0 +1,9 @@
+define: DUK_USE_CPP_EXCEPTIONS
+introduced: 1.4.0
+default: false
+tags:
+  - portability
+description: >
+  Use C++ exceptions instead of setjmp/longjmp for long control transfers.
+  This allows Duktape/C functions written in C++ to use automatic destructors
+  (RAII or scope-based resource management).

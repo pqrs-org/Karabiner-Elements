@@ -1,0 +1,10 @@
+define: DUK_USE_DPRINT
+introduced: 1.0.0
+removed: 2.0.0
+requires:
+  - DUK_USE_DEBUG
+default: false
+tags:
+  - debug
+description: >
+  Enable debug printouts.  Replaced by DUK_USE_DEBUG_LEVEL.

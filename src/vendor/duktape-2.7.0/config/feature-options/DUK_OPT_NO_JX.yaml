@@ -1,0 +1,7 @@
+define: DUK_OPT_NO_JX
+introduced: 1.0.0
+tags:
+  - ecmascript
+description: >
+  Disable support for the JX format.  Reduces code footprint.  An attempt
+  to encode or decode the format causes an error.

@@ -1,0 +1,11 @@
+define: DUK_USE_REGEXP_CANON_BITMAP
+introduced: 2.2.0
+default: true
+tags:
+  - performance
+  - unicode
+description: >
+  Use a small lookup table (footprint impact is ~300-400 bytes) to speed up
+  case insensitive RegExp canonicalization.  The result is still much slower
+  than with DUK_USE_REGEXP_CANON_WORKAROUND but ~50x faster than without the
+  lookup.

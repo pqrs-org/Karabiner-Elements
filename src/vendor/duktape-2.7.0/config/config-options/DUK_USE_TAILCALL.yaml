@@ -1,0 +1,13 @@
+define: DUK_USE_TAILCALL
+introduced: 1.0.0
+conflicts:
+  - DUK_USE_NONSTD_FUNC_CALLER_PROPERTY
+default: true
+tags:
+  - ecmascript
+description: >
+  Enable tail call support (recommended).
+
+  The non-standard function 'caller' property feature conflicts with
+  tailcalls quite severely so tailcalls must be disabled if the 'caller'
+  property is enabled.

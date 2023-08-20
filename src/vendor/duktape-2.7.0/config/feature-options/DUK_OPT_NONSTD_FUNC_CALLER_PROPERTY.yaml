@@ -1,0 +1,14 @@
+define: DUK_OPT_NONSTD_FUNC_CALLER_PROPERTY
+introduced: 1.0.0
+tags:
+  - ecmascript
+description: >
+  Add a non-standard "caller" property to non-strict function instances
+  for better compatibility with existing code.  The semantics of this
+  property are not standardized and may vary between engines; Duktape tries
+  to behave close to V8 and Spidermonkey.  See
+  https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Function/caller
+  description of the property.  This feature disables tail call support.
+
+  This feature conflicts with several other features, so you should use it
+  only if it's absolutely necessary.

@@ -1,0 +1,6 @@
+# Base configuration for timing sensitive environments, see
+# doc/timing-sensitive.rst:
+
+DUK_USE_MARK_AND_SWEEP: true
+DUK_USE_REFERENCE_COUNTING: true
+DUK_USE_VOLUNTARY_GC: false

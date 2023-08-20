@@ -1,0 +1,11 @@
+define: DUK_USE_VERBOSE_ERRORS
+introduced: 1.0.0
+default: true
+tags:
+  - ecmascript
+description: >
+  Provide error message strings and file/line information for errors generated
+  by Duktape.
+
+  When disabled, reduces footprint at the cost of much less informative
+  ECMAScript errors.

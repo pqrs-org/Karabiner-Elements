@@ -1,0 +1,8 @@
+define: DUK_USE_AUGMENT_ERROR_THROW
+introduced: 1.0.0
+default: true
+tags:
+  - ecmascript
+description: >
+  Augment an ECMAScript error object at throw time with Duktape.errThrow
+  (if enabled).

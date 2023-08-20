@@ -1,0 +1,7 @@
+define: DUK_USE_EXEC_PREFER_SIZE
+introduced: 2.0.0
+default: false
+tags:
+  - lowmemory
+description: >
+  Prefer size over performance in bytecode executor.

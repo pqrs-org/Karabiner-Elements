@@ -1,0 +1,11 @@
+define: DUK_USE_FINALIZER_TORTURE
+introduced: 2.1.0
+default: false
+tags:
+  - gc
+  - memory
+  - development
+  - torture
+description: >
+  Development time option: simulate a fake finalizer call every time when
+  finalizers might be executed (even if the actual finalize_list is empty).

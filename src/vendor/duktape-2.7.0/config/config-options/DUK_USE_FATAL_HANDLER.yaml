@@ -1,0 +1,23 @@
+define: DUK_USE_FATAL_HANDLER
+introduced: 2.0.0
+default: false
+tags:
+  - portability
+warn_if_missing: true
+description: >
+  Provide a custom default fatal error handler to replace the built-in one
+  (which calls abort() without any error message).  The default fatal error
+  handler gets called when (1) a fatal error occurs and application code
+  didn't register a fatal error handler in heap creation or (2) a context-free
+  fatal error happens, concretely e.g. an assertion failure.
+
+  The handler is called like a C function with the prototype
+  "void fatal_handler(void *udata, const char *msg)".  The "msg" argument can
+  be NULL.  The "udata" argument matches the heap-related userdata but is
+  NULL for fatal errors unrelated to a heap/thread context (this is the case
+  for e.g. assertions).
+
+  A custom default fatal error handler is recommended for any environment
+  where recover from fatal errors is important.  A custom handler can take
+  appropriate action to recover, e.g. record the error and reboot the target
+  device.

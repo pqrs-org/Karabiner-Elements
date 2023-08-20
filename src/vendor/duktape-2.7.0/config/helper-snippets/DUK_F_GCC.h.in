@@ -1,0 +1,10 @@
+/* GCC.  Clang also defines __GNUC__ so don't detect GCC if using Clang. */
+#if defined(__GNUC__) && !defined(__clang__) && !defined(DUK_F_CLANG)
+#define DUK_F_GCC
+#if defined(__GNUC__) && defined(__GNUC_MINOR__) && defined(__GNUC_PATCHLEVEL__)
+/* Convenience, e.g. gcc 4.5.1 == 40501; http://stackoverflow.com/questions/6031819/emulating-gccs-builtin-unreachable */
+#define DUK_F_GCC_VERSION  (__GNUC__ * 10000L + __GNUC_MINOR__ * 100L + __GNUC_PATCHLEVEL__)
+#else
+#error cannot figure out gcc version
+#endif
+#endif

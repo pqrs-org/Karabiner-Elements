@@ -1,0 +1,7 @@
+define: DUK_USE_BYTECODE_DUMP_SUPPORT
+introduced: 1.3.0
+default: true
+tags:
+  - api
+description: >
+  Enable support for API calls to dump/load function bytecode.

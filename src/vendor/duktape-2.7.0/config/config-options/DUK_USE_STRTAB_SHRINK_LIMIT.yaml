@@ -1,0 +1,10 @@
+define: DUK_USE_STRTAB_SHRINK_LIMIT
+introduced: 2.1.0
+default: 6  # 6/16 = 0.375
+tags:
+  - performance
+  - lowmemory
+description: >
+  Shrink top level strtable allocation when load factor reaches this value.
+  Expressed as a .4 fixed point; the load factor is computed as
+  floor((count / size) * 16.0), e.g. 8 means a load factor of 0.5.

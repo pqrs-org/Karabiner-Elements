@@ -1,0 +1,8 @@
+define: DUK_USE_DEBUG_LEVEL
+introduced: 2.0.0
+default: 0
+tags:
+  - debug
+description: >
+  Set debug print level when DUK_USE_DEBUG is enabled.  The level can be
+  0 (minimal), 1 (verbose), 2 (very verbose).

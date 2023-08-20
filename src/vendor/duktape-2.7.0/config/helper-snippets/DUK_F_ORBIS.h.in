@@ -1,0 +1,4 @@
+/* Orbis (PS4) variant */
+#if defined(DUK_F_FREEBSD) && defined(__ORBIS__)
+#define DUK_F_ORBIS
+#endif

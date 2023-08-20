@@ -1,0 +1,10 @@
+define: DUK_USE_CALLSTACK_LIMIT
+introduced: 2.2.0
+default: 10000
+tags:
+  - misc
+description: >
+  Maximum call stack size.  If call stack would grow beyond this value, reject
+  the call in progress.  This mainly protects against runaway recursion.  Note
+  in particular that this limit is unrelated to the native C stack size which
+  has a separate limit define.

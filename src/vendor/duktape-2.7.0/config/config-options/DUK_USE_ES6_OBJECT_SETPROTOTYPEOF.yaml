@@ -1,0 +1,7 @@
+define: DUK_USE_ES6_OBJECT_SETPROTOTYPEOF
+introduced: 1.0.0
+default: true
+tags:
+  - ecmascript2015
+description: >
+  Provide the non-standard (ES6) Object.setPrototypeOf method.

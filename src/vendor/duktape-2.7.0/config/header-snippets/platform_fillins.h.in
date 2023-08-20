@@ -1,0 +1,327 @@
+/* An abort()-like primitive is needed by the default fatal error handler. */
+#if !defined(DUK_ABORT)
+#define DUK_ABORT             abort
+#endif
+
+#if !defined(DUK_SETJMP)
+#define DUK_JMPBUF_TYPE       jmp_buf
+#define DUK_SETJMP(jb)        setjmp((jb))
+#define DUK_LONGJMP(jb)       longjmp((jb), 1)
+#endif
+
+#if 0
+/* sigsetjmp() alternative */
+#define DUK_JMPBUF_TYPE       sigjmp_buf
+#define DUK_SETJMP(jb)        sigsetjmp((jb))
+#define DUK_LONGJMP(jb)       siglongjmp((jb), 1)
+#endif
+
+/* Special naming to avoid conflict with e.g. DUK_FREE() in duk_heap.h
+ * (which is unfortunately named).  May sometimes need replacement, e.g.
+ * some compilers don't handle zero length or NULL correctly in realloc().
+ */
+#if !defined(DUK_ANSI_MALLOC)
+#define DUK_ANSI_MALLOC      malloc
+#endif
+#if !defined(DUK_ANSI_REALLOC)
+#define DUK_ANSI_REALLOC     realloc
+#endif
+#if !defined(DUK_ANSI_CALLOC)
+#define DUK_ANSI_CALLOC      calloc
+#endif
+#if !defined(DUK_ANSI_FREE)
+#define DUK_ANSI_FREE        free
+#endif
+
+/* ANSI C (various versions) and some implementations require that the
+ * pointer arguments to memset(), memcpy(), and memmove() be valid values
+ * even when byte size is 0 (even a NULL pointer is considered invalid in
+ * this context).  Zero-size operations as such are allowed, as long as their
+ * pointer arguments point to a valid memory area.  The DUK_MEMSET(),
+ * DUK_MEMCPY(), and DUK_MEMMOVE() macros require this same behavior, i.e.:
+ * (1) pointers must be valid and non-NULL, (2) zero size must otherwise be
+ * allowed.  If these are not fulfilled, a macro wrapper is needed.
+ *
+ *   http://stackoverflow.com/questions/5243012/is-it-guaranteed-to-be-safe-to-perform-memcpy0-0-0
+ *   http://lists.cs.uiuc.edu/pipermail/llvmdev/2007-October/011065.html
+ *
+ * Not sure what's the required behavior when a pointer points just past the
+ * end of a buffer, which often happens in practice (e.g. zero size memmoves).
+ * For example, if allocation size is 3, the following pointer would not
+ * technically point to a valid memory byte:
+ *
+ *   <-- alloc -->
+ *   | 0 | 1 | 2 | .....
+ *                 ^-- p=3, points after last valid byte (2)
+ */
+#if !defined(DUK_MEMCPY)
+#if defined(DUK_F_UCLIBC)
+/* Old uclibcs have a broken memcpy so use memmove instead (this is overly wide
+ * now on purpose): http://lists.uclibc.org/pipermail/uclibc-cvs/2008-October/025511.html
+ */
+#define DUK_MEMCPY       memmove
+#else
+#define DUK_MEMCPY       memcpy
+#endif
+#endif
+#if !defined(DUK_MEMMOVE)
+#define DUK_MEMMOVE      memmove
+#endif
+#if !defined(DUK_MEMCMP)
+#define DUK_MEMCMP       memcmp
+#endif
+#if !defined(DUK_MEMSET)
+#define DUK_MEMSET       memset
+#endif
+#if !defined(DUK_STRLEN)
+#define DUK_STRLEN       strlen
+#endif
+#if !defined(DUK_STRCMP)
+#define DUK_STRCMP       strcmp
+#endif
+#if !defined(DUK_STRNCMP)
+#define DUK_STRNCMP      strncmp
+#endif
+#if !defined(DUK_SPRINTF)
+#define DUK_SPRINTF      sprintf
+#endif
+#if !defined(DUK_SNPRINTF)
+/* snprintf() is technically not part of C89 but usually available. */
+#define DUK_SNPRINTF     snprintf
+#endif
+#if !defined(DUK_VSPRINTF)
+#define DUK_VSPRINTF     vsprintf
+#endif
+#if !defined(DUK_VSNPRINTF)
+/* vsnprintf() is technically not part of C89 but usually available. */
+#define DUK_VSNPRINTF    vsnprintf
+#endif
+#if !defined(DUK_SSCANF)
+#define DUK_SSCANF       sscanf
+#endif
+#if !defined(DUK_VSSCANF)
+#define DUK_VSSCANF      vsscanf
+#endif
+#if !defined(DUK_MEMZERO)
+#define DUK_MEMZERO(p,n) DUK_MEMSET((p), 0, (n))
+#endif
+
+#if !defined(DUK_DOUBLE_INFINITY)
+#undef DUK_USE_COMPUTED_INFINITY
+#if defined(DUK_F_GCC_VERSION) && (DUK_F_GCC_VERSION < 40600)
+/* GCC older than 4.6: avoid overflow warnings related to using INFINITY */
+#define DUK_DOUBLE_INFINITY  (__builtin_inf())
+#elif defined(INFINITY)
+#define DUK_DOUBLE_INFINITY  ((double) INFINITY)
+#elif !defined(DUK_F_VBCC) && !defined(DUK_F_MSVC) && !defined(DUK_F_BCC) && \
+      !defined(DUK_F_OLD_SOLARIS) && !defined(DUK_F_AIX)
+#define DUK_DOUBLE_INFINITY  (1.0 / 0.0)
+#else
+/* In VBCC (1.0 / 0.0) results in a warning and 0.0 instead of infinity.
+ * Use a computed infinity (initialized when a heap is created at the
+ * latest).
+ */
+#define DUK_USE_COMPUTED_INFINITY
+#define DUK_DOUBLE_INFINITY  duk_computed_infinity
+#endif
+#endif
+
+#if !defined(DUK_DOUBLE_NAN)
+#undef DUK_USE_COMPUTED_NAN
+#if defined(NAN)
+#define DUK_DOUBLE_NAN       NAN
+#elif !defined(DUK_F_VBCC) && !defined(DUK_F_MSVC) && !defined(DUK_F_BCC) && \
+      !defined(DUK_F_OLD_SOLARIS) && !defined(DUK_F_AIX)
+#define DUK_DOUBLE_NAN       (0.0 / 0.0)
+#else
+/* In VBCC (0.0 / 0.0) results in a warning and 0.0 instead of NaN.
+ * In MSVC (VS2010 Express) (0.0 / 0.0) results in a compile error.
+ * Use a computed NaN (initialized when a heap is created at the
+ * latest).
+ */
+#define DUK_USE_COMPUTED_NAN
+#define DUK_DOUBLE_NAN       duk_computed_nan
+#endif
+#endif
+
+/* Many platforms are missing fpclassify() and friends, so use replacements
+ * if necessary.  The replacement constants (FP_NAN etc) can be anything but
+ * match Linux constants now.
+ */
+#undef DUK_USE_REPL_FPCLASSIFY
+#undef DUK_USE_REPL_SIGNBIT
+#undef DUK_USE_REPL_ISFINITE
+#undef DUK_USE_REPL_ISNAN
+#undef DUK_USE_REPL_ISINF
+
+/* Complex condition broken into separate parts. */
+#undef DUK_F_USE_REPL_ALL
+#if !(defined(FP_NAN) && defined(FP_INFINITE) && defined(FP_ZERO) && \
+      defined(FP_SUBNORMAL) && defined(FP_NORMAL))
+/* Missing some obvious constants. */
+#define DUK_F_USE_REPL_ALL
+#elif defined(DUK_F_AMIGAOS) && defined(DUK_F_VBCC)
+/* VBCC is missing the built-ins even in C99 mode (perhaps a header issue). */
+#define DUK_F_USE_REPL_ALL
+#elif defined(DUK_F_AMIGAOS) && defined(DUK_F_M68K)
+/* AmigaOS + M68K seems to have math issues even when using GCC cross
+ * compilation.  Use replacements for all AmigaOS versions on M68K
+ * regardless of compiler.
+ */
+#define DUK_F_USE_REPL_ALL
+#elif defined(DUK_F_FREEBSD) && defined(DUK_F_CLANG)
+/* Placeholder fix for (detection is wider than necessary):
+ * http://llvm.org/bugs/show_bug.cgi?id=17788
+ */
+#define DUK_F_USE_REPL_ALL
+#elif defined(DUK_F_UCLIBC)
+/* At least some uclibc versions have broken floating point math.  For
+ * example, fpclassify() can incorrectly classify certain NaN formats.
+ * To be safe, use replacements.
+ */
+#define DUK_F_USE_REPL_ALL
+#elif defined(DUK_F_AIX)
+/* Older versions may be missing isnan(), etc. */
+#define DUK_F_USE_REPL_ALL
+#endif
+
+#if defined(DUK_F_USE_REPL_ALL)
+#define DUK_USE_REPL_FPCLASSIFY
+#define DUK_USE_REPL_SIGNBIT
+#define DUK_USE_REPL_ISFINITE
+#define DUK_USE_REPL_ISNAN
+#define DUK_USE_REPL_ISINF
+#define DUK_FPCLASSIFY       duk_repl_fpclassify
+#define DUK_SIGNBIT          duk_repl_signbit
+#define DUK_ISFINITE         duk_repl_isfinite
+#define DUK_ISNAN            duk_repl_isnan
+#define DUK_ISINF            duk_repl_isinf
+#define DUK_FP_NAN           0
+#define DUK_FP_INFINITE      1
+#define DUK_FP_ZERO          2
+#define DUK_FP_SUBNORMAL     3
+#define DUK_FP_NORMAL        4
+#else
+#define DUK_FPCLASSIFY       fpclassify
+#define DUK_SIGNBIT          signbit
+#define DUK_ISFINITE         isfinite
+#define DUK_ISNAN            isnan
+#define DUK_ISINF            isinf
+#define DUK_FP_NAN           FP_NAN
+#define DUK_FP_INFINITE      FP_INFINITE
+#define DUK_FP_ZERO          FP_ZERO
+#define DUK_FP_SUBNORMAL     FP_SUBNORMAL
+#define DUK_FP_NORMAL        FP_NORMAL
+#endif
+
+#if defined(DUK_F_USE_REPL_ALL)
+#undef DUK_F_USE_REPL_ALL
+#endif
+
+/* These functions don't currently need replacement but are wrapped for
+ * completeness.  Because these are used as function pointers, they need
+ * to be defined as concrete C functions (not macros).
+ */
+#if !defined(DUK_FABS)
+#define DUK_FABS             fabs
+#endif
+#if !defined(DUK_FLOOR)
+#define DUK_FLOOR            floor
+#endif
+#if !defined(DUK_CEIL)
+#define DUK_CEIL             ceil
+#endif
+#if !defined(DUK_FMOD)
+#define DUK_FMOD             fmod
+#endif
+#if !defined(DUK_POW)
+#define DUK_POW              pow
+#endif
+#if !defined(DUK_ACOS)
+#define DUK_ACOS             acos
+#endif
+#if !defined(DUK_ASIN)
+#define DUK_ASIN             asin
+#endif
+#if !defined(DUK_ATAN)
+#define DUK_ATAN             atan
+#endif
+#if !defined(DUK_ATAN2)
+#define DUK_ATAN2            atan2
+#endif
+#if !defined(DUK_SIN)
+#define DUK_SIN              sin
+#endif
+#if !defined(DUK_COS)
+#define DUK_COS              cos
+#endif
+#if !defined(DUK_TAN)
+#define DUK_TAN              tan
+#endif
+#if !defined(DUK_EXP)
+#define DUK_EXP              exp
+#endif
+#if !defined(DUK_LOG)
+#define DUK_LOG              log
+#endif
+#if !defined(DUK_SQRT)
+#define DUK_SQRT             sqrt
+#endif
+
+/* The functions below exist only in C99/C++11 or later and need a workaround
+ * for platforms that don't include them.  MSVC isn't detected as C99, but
+ * these functions also exist in MSVC 2013 and later so include a clause for
+ * that too.  Android doesn't have log2; disable all of these for Android.
+ */
+#if (defined(DUK_F_C99) || defined(DUK_F_CPP11) || (defined(_MSC_VER) && (_MSC_VER >= 1800))) && \
+    !defined(DUK_F_ANDROID) && !defined(DUK_F_MINT)
+#if !defined(DUK_CBRT)
+#define DUK_CBRT             cbrt
+#endif
+#if !defined(DUK_LOG2)
+#define DUK_LOG2             log2
+#endif
+#if !defined(DUK_LOG10)
+#define DUK_LOG10            log10
+#endif
+#if !defined(DUK_TRUNC)
+#define DUK_TRUNC            trunc
+#endif
+#endif  /* DUK_F_C99 etc */
+
+/* NetBSD 6.0 x86 (at least) has a few problems with pow() semantics,
+ * see test-bug-netbsd-math-pow.js.  MinGW has similar (but different)
+ * issues, see test-bug-mingw-math-issues.js.  Enable pow() workarounds
+ * for these targets.
+ */
+#undef DUK_USE_POW_WORKAROUNDS
+#if defined(DUK_F_NETBSD) || defined(DUK_F_MINGW)
+#define DUK_USE_POW_WORKAROUNDS
+#endif
+
+/* Similar workarounds for atan2() semantics issues.  MinGW issues are
+ * documented in test-bug-mingw-math-issues.js.
+ */
+#undef DUK_USE_ATAN2_WORKAROUNDS
+#if defined(DUK_F_MINGW)
+#define DUK_USE_ATAN2_WORKAROUNDS
+#endif
+
+/* Rely as little as possible on compiler behavior for NaN comparison,
+ * signed zero handling, etc.  Currently never activated but may be needed
+ * for broken compilers.
+ */
+#undef DUK_USE_PARANOID_MATH
+
+/* There was a curious bug where test-bi-date-canceling.js would fail e.g.
+ * on 64-bit Ubuntu, gcc-4.8.1, -m32, and no -std=c99.  Some date computations
+ * using doubles would be optimized which then broke some corner case tests.
+ * The problem goes away by adding 'volatile' to the datetime computations.
+ * Not sure what the actual triggering conditions are, but using this on
+ * non-C99 systems solves the known issues and has relatively little cost
+ * on other platforms.
+ */
+#undef DUK_USE_PARANOID_DATE_COMPUTATION
+#if !defined(DUK_F_C99)
+#define DUK_USE_PARANOID_DATE_COMPUTATION
+#endif

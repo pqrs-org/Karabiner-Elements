@@ -1,0 +1,9 @@
+define: DUK_USE_ASSERTIONS
+introduced: 1.0.0
+default: false
+tags:
+  - development
+  - debug
+description: >
+  Enable internal assert checks.  These slow down execution considerably
+  so only use when debugging.

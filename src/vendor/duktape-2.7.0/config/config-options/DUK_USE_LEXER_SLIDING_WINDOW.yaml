@@ -1,0 +1,9 @@
+define: DUK_USE_LEXER_SLIDING_WINDOW
+introduced: 1.3.0
+default: true
+tags:
+  - lowmemory
+description: >
+  Use a sliding window approach for managing the lexer codepoint lookup window
+  (recommended).  If disabled, the lexer uses a slower algorithm which has a
+  slightly smaller code and RAM footprint.

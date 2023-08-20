@@ -1,0 +1,9 @@
+define: DUK_USE_GLOBAL_BUILTIN
+introduced: 2.0.0
+default: true
+tags:
+  - ecmascript
+description: >
+  Provide miscellaneous global built-ins like encodeURIComponent(), escape(),
+  Infinity, etc.  This is a catch-all for globals not covered by other options
+  (like DUK_USE_ARRAY_BUILTIN).

@@ -1,0 +1,12 @@
+define: DUK_USE_NONSTD_STRING_FROMCHARCODE_32BIT
+introduced: 1.2.0
+default: true
+tags:
+  - ecmascript
+  - compliance
+description: >
+  Allow 32-bit codepoints in String.fromCharCode().  This is non-compliant
+  (the E5.1 specification has a ToUint16() coercion for the codepoints) but
+  useful because Duktape supports non-BMP strings.
+
+  When disabled, Duktape provides the compliant behavior.

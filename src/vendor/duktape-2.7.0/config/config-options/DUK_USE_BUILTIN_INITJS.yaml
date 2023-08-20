@@ -1,0 +1,12 @@
+define: DUK_USE_BUILTIN_INITJS
+introduced: 1.0.0
+removed: 2.0.0
+default: true
+tags:
+  - ecmascript
+description: >
+  Use built-in .js init code when creating a new global context.
+  The .js init code (duk_initjs.js) provides some initialization
+  code that's nicer to implement in ECMAScript, and is also used
+  to provide some backwards compatibility bindings which are easy
+  to remove later.

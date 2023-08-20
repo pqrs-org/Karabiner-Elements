@@ -1,0 +1,8 @@
+define: DUK_OPT_DPRINT_COLORS
+introduced: 1.0.0
+tags:
+  - debug
+description: >
+  Enable coloring of debug prints with ANSI escape codes
+  (http://en.wikipedia.org/wiki/ANSI_escape_code).  The behavior is not
+  sensitive to terminal settings.

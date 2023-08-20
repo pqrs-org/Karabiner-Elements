@@ -1,0 +1,4 @@
+/* Cygwin */
+#if defined(__CYGWIN__)
+#define DUK_F_CYGWIN
+#endif

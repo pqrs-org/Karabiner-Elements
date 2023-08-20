@@ -1,0 +1,18 @@
+/* The most portable current time provider is time(), but it only has a
+ * one second resolution.
+ */
+#define DUK_USE_DATE_NOW_TIME
+
+/* The most portable way to figure out local time offset is gmtime(),
+ * but it's not thread safe so use with caution.
+ */
+#define DUK_USE_DATE_TZO_GMTIME
+
+/* Avoid custom date parsing and formatting for portability. */
+#undef DUK_USE_DATE_PRS_STRPTIME
+#undef DUK_USE_DATE_FMT_STRFTIME
+
+/* Rely on C89 headers only; time.h must be here. */
+#include <time.h>
+
+#define DUK_USE_OS_STRING "unknown"

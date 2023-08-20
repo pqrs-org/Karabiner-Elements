@@ -1,0 +1,8 @@
+define: DUK_USE_ALIGN_BY
+introduced: 1.3.0
+default: 8
+tags:
+  - portability
+description: >
+  Use N-byte alignment for 64-bit integers and IEEE doubles
+  (supported values are 1, 4, and 8).

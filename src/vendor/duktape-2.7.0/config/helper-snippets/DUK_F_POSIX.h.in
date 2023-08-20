@@ -1,0 +1,4 @@
+/* POSIX */
+#if defined(__posix)
+#define DUK_F_POSIX
+#endif

@@ -1,0 +1,12 @@
+define: DUK_USE_NATIVE_CALL_RECLIMIT
+introduced: 1.3.0
+default: 1000
+tags:
+  - portability
+  - cstackdepth
+description: >
+  Maximum duk_handle_call() / duk_handle_safe_call() C recursion limit.
+  Note that this does not limit bytecode executor internal call depth at
+  all (e.g. for ECMAScript-to-ECMAScript calls, thread yields/resumes, etc).
+  There is a separate callstack depth limit for threads which is independent
+  of this limit.

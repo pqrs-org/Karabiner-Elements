@@ -1,0 +1,17 @@
+define: DUK_USE_USER_DECLARE
+introduced: 1.0.0
+removed: 2.4.0
+default:
+  verbatim: '#define DUK_USE_USER_DECLARE() /* no user declarations */'
+tags:
+  - portability
+description: >
+  Provide declarations or additional preprocessor include directives to be
+  used when compiling Duktape.  You may need this if you set
+  DUK_USE_PANIC_HANDLER to call your own panic handler function.  You can
+  also use this option to cause additional files to be included when compiling
+  Duktape.
+
+  NOTE: This is only needed if using the default autodetecting duk_config.h
+  header.  When providing DUK_USE_xxx flags directly, you should just provide
+  all the necessary declarations in duk_config.h directly.

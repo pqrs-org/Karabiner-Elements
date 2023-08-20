@@ -1,0 +1,9 @@
+define: DUK_USE_BYTEORDER_FORCED
+introduced: 1.0.0
+removed: 1.4.0
+default: false
+tags:
+  - portability
+description: >
+  Byte order was forced (instead of being autodetected).  This has no
+  functional impact but the forced status shows up in Duktape.env.

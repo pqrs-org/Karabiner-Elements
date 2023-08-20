@@ -1,0 +1,10 @@
+define: DUK_OPT_FORCE_BYTEORDER
+introduced: 1.0.0
+tags:
+  - portability
+description: >
+  Use this to skip byte order detection and force a specific byte order:
+  1 for little endian, 2 for ARM "mixed" endian (integers little endian,
+  IEEE doubles mixed endian), 3 for big endian.  Byte order detection
+  relies on unstandardized platform specific header files, so this may be
+  required for custom platforms if compilation fails in endianness detection.

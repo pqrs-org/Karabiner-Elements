@@ -1,0 +1,9 @@
+define: DUK_USE_PROMISE_BUILTIN
+introduced: 2.2.0
+default: false  # disabled until fully functional
+tags:
+  - ecmascript
+description: >
+  Enable Promise built-in.
+
+  At present entirely non-functional, and disabled by default.

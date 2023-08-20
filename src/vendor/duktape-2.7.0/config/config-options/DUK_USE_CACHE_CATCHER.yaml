@@ -1,0 +1,9 @@
+define: DUK_USE_CACHE_CATCHER
+introduced: 2.2.0
+default: true
+tags:
+  - performance
+description: >
+  Cache duk_catcher records.  When releasing a duk_catcher, place it in
+  a free list for later reuse.  Mark-and-sweep frees the free list to keep
+  memory usage in check.

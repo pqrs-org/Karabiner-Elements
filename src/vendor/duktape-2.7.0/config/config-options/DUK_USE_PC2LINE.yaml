@@ -1,0 +1,11 @@
+define: DUK_USE_PC2LINE
+introduced: 1.0.0
+default: true
+tags:
+  - ecmascript
+description: >
+  Record a "pc2line" map into function instances which allows bytecode program
+  counter values to be mapped into line numbers e.g. in error tracebacks.
+
+  Without this map, exceptions won't have meaningful line numbers but function
+  instances will have a smaller footprint.

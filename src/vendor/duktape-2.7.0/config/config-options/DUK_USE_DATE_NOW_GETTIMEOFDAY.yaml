@@ -1,0 +1,9 @@
+define: DUK_USE_DATE_NOW_GETTIMEOFDAY
+introduced: 1.0.0
+default: false
+tags:
+  - date
+  - portability
+description: >
+  Use gettimeofday() to get current datetime.  When enabled, appropriate
+  date/time headers must be included.

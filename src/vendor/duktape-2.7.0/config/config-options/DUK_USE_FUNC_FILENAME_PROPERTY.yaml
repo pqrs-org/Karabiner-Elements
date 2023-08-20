@@ -1,0 +1,9 @@
+define: DUK_USE_FUNC_FILENAME_PROPERTY
+introduced: 2.0.0
+default: true
+tags:
+  - ecmascript
+  - compliance
+description: >
+  Add a non-standard ".fileName" property to function instances.  Disabling
+  reduces footprint.

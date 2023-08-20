@@ -1,0 +1,7 @@
+define: DUK_USE_JX
+introduced: 1.0.0
+default: true
+tags:
+  - ecmascript
+description: >
+  Enable support for the JX custom JSON format.

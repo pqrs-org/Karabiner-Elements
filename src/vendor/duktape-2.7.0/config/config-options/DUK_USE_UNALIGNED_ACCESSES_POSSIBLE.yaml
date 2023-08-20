@@ -1,0 +1,9 @@
+define: DUK_USE_UNALIGNED_ACCESSES_POSSIBLE
+introduced: 1.0.0
+removed: 1.4.0
+default: false
+tags:
+  - portability
+description: >
+  Target architecture unaligned memory accesses (e.g. 32-bit integer access
+  from an arbitrary address).

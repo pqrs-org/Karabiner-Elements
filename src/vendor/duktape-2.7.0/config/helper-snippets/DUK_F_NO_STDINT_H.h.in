@@ -1,0 +1,10 @@
+/* stdint.h not available */
+#if defined(DUK_F_WINDOWS) && defined(_MSC_VER)
+#if (_MSC_VER < 1700)
+/* VS2012+ has stdint.h, < VS2012 does not (but it's available for download). */
+#define DUK_F_NO_STDINT_H
+#endif
+#endif
+#if !defined(DUK_F_NO_STDINT_H) && (defined(DUK_F_TOS) || defined(DUK_F_BCC))
+#define DUK_F_NO_STDINT_H
+#endif

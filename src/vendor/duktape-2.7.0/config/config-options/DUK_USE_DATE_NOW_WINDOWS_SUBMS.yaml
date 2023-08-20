@@ -1,0 +1,9 @@
+define: DUK_USE_DATE_NOW_WINDOWS_SUBMS
+introduced: 2.2.0
+default: false
+tags:
+  - date
+  - portability
+description: >
+  Like DUK_USE_DATE_NOW_WINDOWS but use GetSystemTimePreciseAsFileTime(),
+  available since Windows 8, for sub-millisecond resolution.

@@ -1,0 +1,7 @@
+define: DUK_USE_BOOLEAN_BUILTIN
+introduced: 2.0.0
+default: true
+tags:
+  - ecmascript
+description: >
+  Provide a Boolean built-in.

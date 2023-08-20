@@ -1,0 +1,3 @@
+#if defined(DUK_USE_CPP_EXCEPTIONS) && !defined(__cplusplus)
+#error DUK_USE_CPP_EXCEPTIONS enabled but not compiling with a C++ compiler
+#endif

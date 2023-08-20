@@ -1,0 +1,10 @@
+define: DUK_USE_MARK_AND_SWEEP_RECLIMIT
+introduced: 1.3.0
+default: 256
+tags:
+  - portability
+  - cstackdepth
+description: >
+  Mark-and-sweep C recursion depth for marking phase; if reached,
+  mark object as a TEMPROOT and use multi-pass marking (slower but
+  same result).

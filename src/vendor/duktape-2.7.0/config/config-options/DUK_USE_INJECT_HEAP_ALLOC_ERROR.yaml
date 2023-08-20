@@ -1,0 +1,7 @@
+define: DUK_USE_INJECT_HEAP_ALLOC_ERROR
+introduced: 2.1.0
+default: false
+tags:
+  - development
+description: >
+  Force heap allocation to fail, value indicates the desired error position.

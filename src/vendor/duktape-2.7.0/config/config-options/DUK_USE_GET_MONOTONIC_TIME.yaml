@@ -1,0 +1,22 @@
+define: DUK_USE_GET_MONOTONIC_TIME
+introduced: 2.2.0
+default: false
+tags:
+  - portability
+description: >
+  Optional macro for getting monotonic time in milliseconds from an arbitrary
+  starting point (device startup, program startup, script startup, etc).
+  Fractional time values are allowed (and even recommended).  The time returned
+  must increase monotonically, and must not jump discontinuously even if system
+  date/time is reset.  The semantics are similar to POSIX clock_gettime()
+  CLOCK_MONOTONIC.
+
+  Monotonic time is used by Duktape for its internal needs, such as rate
+  limiting debugger transport peek callbacks.  It is also used to provide
+  performance.now().  If this option is not provided, Duktape falls back to
+  using DUK_USE_DATE_GET_NOW() which is usually fine.
+
+  If DUK_USE_DATE_GET_NOW() experiences time jumps or doesn't run in realtime
+  (which may be useful for some time virtualization cases) it's recommended
+  to provide this config option so that internals which need a reliable
+  realtime rate have a reliable time basis.

@@ -1,0 +1,13 @@
+define: DUK_USE_HSTRING_CLEN
+introduced: 1.5.0
+default: true
+tags:
+  - lowmemory
+  - experimental
+description: >
+  When DUK_USE_STRLEN16 enabled, indicates whether the character length
+  (clen16) field should be actually present (default) or computed on-the-fly.
+
+  When clen is computed on-the-fly the duk_hstring structure will be 4 bytes
+  smaller (from 10 bytes + 2 bytes padding to 8 bytes) which may be useful for
+  very low memory targets.

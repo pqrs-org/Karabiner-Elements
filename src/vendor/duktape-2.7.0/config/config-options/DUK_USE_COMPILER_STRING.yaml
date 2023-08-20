@@ -1,0 +1,9 @@
+define: DUK_USE_COMPILER_STRING
+introduced: 1.0.0
+default:
+  string: "unknown"
+tags:
+  - portability
+description: >
+  Human-readable compiler string used in e.g. Duktape.env and debugger
+  protocol (example: gcc).

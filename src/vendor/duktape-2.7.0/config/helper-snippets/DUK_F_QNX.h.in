@@ -1,0 +1,4 @@
+/* QNX */
+#if defined(__QNX__)
+#define DUK_F_QNX
+#endif

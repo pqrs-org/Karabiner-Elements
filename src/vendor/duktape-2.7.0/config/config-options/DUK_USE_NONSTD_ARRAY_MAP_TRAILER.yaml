@@ -1,0 +1,13 @@
+define: DUK_USE_NONSTD_ARRAY_MAP_TRAILER
+introduced: 1.0.0
+removed: 2.3.0
+default: true
+tags:
+  - ecmascript
+  - compliance
+description: >
+  This option was removed in 2.3.0 as it was unnecessary and in essence fixing
+  a Duktape bug.  ES5.0/ES5.1 already behave like ES2015 in that trailing gaps
+  in the input don't affect the result length.  The result array is created
+  with a length based on the input array in Step 6 of ES5.1 Section 15.4.4.19
+  and subsequent index writes don't affect the length.

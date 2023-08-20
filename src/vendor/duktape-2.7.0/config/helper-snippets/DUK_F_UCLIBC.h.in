@@ -1,0 +1,4 @@
+/* uclibc */
+#if defined(__UCLIBC__)
+#define DUK_F_UCLIBC
+#endif

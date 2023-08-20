@@ -1,0 +1,13 @@
+define: DUK_USE_HEAPPTR_ENC16
+introduced: 1.1.0
+requires:
+  - DUK_USE_HEAPPTR16
+default: false
+tags:
+  - lowmemory
+  - experimental
+description: >
+  Use together with DUK_USE_HEAPPTR16 for heap pointer compression.
+  DUK_USE_HEAPPTR_ENC16(udata,p) is a macro with a userdata and void ptr
+  argument, and a duk_uint16_t return value.  The userdata argument is the
+  heap userdata value given at heap creation.

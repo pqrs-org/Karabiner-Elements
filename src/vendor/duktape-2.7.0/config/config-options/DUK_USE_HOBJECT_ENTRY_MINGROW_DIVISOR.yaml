@@ -1,0 +1,8 @@
+define: DUK_USE_HOBJECT_ENTRY_MINGROW_ADD
+introduced: 2.1.0
+default: 16
+tags:
+  - performance
+description: >
+  Technical internal parameter, see sources for details.  Only adjust if
+  you've looked at the internals.

@@ -1,0 +1,11 @@
+define: DUK_USE_FLEX_ONESIZE
+introduced: 1.0.0
+default: false
+tags:
+  - portability
+description: >
+  Use a single element array to define variable size structures.  This is the
+  most portable alternative: zero-size arrays are not allowed by all compilers
+  and flexible array member ("char arr[]") is defined in C99.
+
+# XXX: currently unused, remove or mark unused so doesn't get emitted?

@@ -1,0 +1,45 @@
+#define DUK_NORETURN(decl)  decl __attribute__((noreturn))
+
+#if defined(__clang__) && defined(__has_builtin)
+#if __has_builtin(__builtin_unreachable)
+#define DUK_UNREACHABLE()  do { __builtin_unreachable(); } while (0)
+#endif
+#endif
+
+#define DUK_USE_BRANCH_HINTS
+#define DUK_LIKELY(x)    __builtin_expect((x), 1)
+#define DUK_UNLIKELY(x)  __builtin_expect((x), 0)
+#if defined(__clang__) && defined(__has_builtin)
+#if __has_builtin(__builtin_unpredictable)
+#define DUK_UNPREDICTABLE(x)  __builtin_unpredictable((x))
+#endif
+#endif
+
+#if defined(DUK_F_C99) || defined(DUK_F_CPP11)
+#define DUK_NOINLINE        __attribute__((noinline))
+#define DUK_INLINE          inline
+#define DUK_ALWAYS_INLINE   inline __attribute__((always_inline))
+#endif
+
+#snippet "gcc_clang_visibility.h.in"
+
+#define DUK_USE_COMPILER_STRING "emscripten"
+
+#undef DUK_USE_VARIADIC_MACROS
+#if defined(DUK_F_C99) || defined(DUK_F_CPP11)
+#define DUK_USE_VARIADIC_MACROS
+#endif
+
+#define DUK_USE_UNION_INITIALIZERS
+
+#undef DUK_USE_FLEX_C99
+#undef DUK_USE_FLEX_ZEROSIZE
+#undef DUK_USE_FLEX_ONESIZE
+#if defined(DUK_F_C99)
+#define DUK_USE_FLEX_C99
+#else
+#define DUK_USE_FLEX_ZEROSIZE
+#endif
+
+#undef DUK_USE_GCC_PRAGMAS
+#define DUK_USE_PACK_CLANG_ATTR

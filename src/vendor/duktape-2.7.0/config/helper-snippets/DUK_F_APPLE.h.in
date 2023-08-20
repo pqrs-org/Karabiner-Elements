@@ -1,0 +1,4 @@
+/* Apple OSX, iOS */
+#if defined(__APPLE__)
+#define DUK_F_APPLE
+#endif

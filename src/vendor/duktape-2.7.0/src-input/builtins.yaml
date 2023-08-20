@@ -1,0 +1,5539 @@
+#
+#  Built-in objects
+#
+
+# YAML conventions:
+#
+#   - Indent by two, indent lists of objects too.
+#   - Quoted used for keys, explicit string values, hex data, attributes.
+#     Not used for classes, built-in ID values, etc, unless necessary.
+#   - Double quotes used throughout to allow escaping.
+#
+# Top level object format is mostly self explanatory, a few notes:
+#
+#    - The "id" string is used for referencing objects from property table
+#    - Class names must match array in genbuiltins.py
+#    - If the top level object is a function:
+#      - varargs: if true, function is vararg (nargs = DUK_VARARGS)
+#      - nargs: nargs (ignored if varargs true); if missing, default from 'length' property
+#      - magic: see below
+#      - native: native function name
+#      - callable: true/false, depending on function
+#      - constructable: true/false, depending on function
+#      - special_call: true/false, used for .call(), .apply(), etc which
+#        need special casing in runtime call handling
+#    - To disable an object without removing its metadata, you can
+#      use 'disable: true'.
+#    - If the object is dependent on Duktape configuration, you can make the
+#      object optional using e.g. 'present_if: DUK_USE_BUFFEROBJECT_SUPPORT'.
+#      If the value is a list, the object is present if all listed options are
+#      enabled (logical AND).
+#    - If the object needs a DUK_BIDX_xxx define in Duktape source code, which
+#      also implies it'll get a slot in thr->builtins[] array, use 'bidx: true'.
+#
+# Property format:
+#
+#    - key: verbatim string key, codepoints U+0000...U+00FF map to bytes,
+#           so that \u0082 is 0x82 prefix, \u00FF is 0xFF prefix, etc.  Key
+#           can also be a symbol, with the same format as for symbol values.
+#    - value: see below
+#    - attributes: string of format /w?e?c?a?/, e.g. "wc" is writable and
+#                  configurable
+#        + w: writable
+#        + e: enumerable
+#        + c: configurable
+#        + a: accessor (determined automatically, not necessary to give explicitly)
+#    - auto_lightfunc: if true (which is default), function property may be
+#      automatically converted to a lightfunc if other automatic lightfunc
+#      conversion criteria are met; use "auto_lightfunc: false" to prevent
+#      lightfunc conversion
+#    - May also have feature tags like "es6: true" to indicate property
+#      is related to a specific standard
+#    - To disable a property without removing its metadata, you can use
+#      'disable: true'.
+#    - If the property is dependent on Duktape configuration, you can make the
+#      property optional using e.g. 'present_if: DUK_USE_BUFFEROBJECT_SUPPORT'.
+#      List of options is interpreted as for objects (logical AND).
+#
+# Property value format:
+#
+#    - ECMAScript undefined:
+#      - type: undefined
+#    - Plain YAML/JSON null (parses as Python None)
+#      - treated as ECMAScript null
+#    - Plain string:
+#      - treated as plain string, string data as with keys
+#    - Plain symbol:
+#      - type: symbol
+#      - variant: global, wellknown, hidden, userhidden
+#      - string: symbol string without any prefix
+#      - NOTE: ES2015 well-known symbols are local symbols with 'string' as
+#        their description, and a fixed suffix never overlapping with
+#        runtime local symbols
+#      - NOTE: "hidden symbols" are Duktape specific internal properties
+#        (called just internal properties in 1.x)
+#    - Plain number:
+#      - treated as a fastint/ieee double
+#    - IEEE double:
+#      - type: double
+#      - bytes: IEEE bytes in big endian format, hex encoded
+#      - NOTE: if you define a NaN, make sure it is in the Duktape normalized
+#        form (see bi_global 'NaN' property): otherwise strange things will
+#        happen with packed duk_tval
+#    - Buffer:
+#      - type: buffer
+#      - NOTE: not supported yet, type is reserved
+#    - Pointer:
+#      - type: pointer
+#      - NOTE: not supported yet, type is reserved
+#    - Lightfunc:
+#      - type: lightfunc
+#      - native: native function name
+#      - magic: -128 to 127
+#      - length: 0 to 15
+#      - nargs: 0 to 14; or varargs: true
+#      - varargs: if true, target has variable arguments
+#    - Reference to a built-in object:
+#      - type: object
+#        id: ID string of target object
+#    - Accessor (setter/getter):
+#      - type: accessor
+#      - getter_id: object ID of getter
+#      - setter_id: object ID of setter
+#    - Native function shorthand; alternative to defining a function as a
+#      native object and referencing it using an ID:
+#      - type: function (implicitly callable)
+#      - callable: default is true
+#      - constructable: default is false
+#      - native: native function name
+#      - length: function .length (optional, defaults to 0)
+#      - nargs: function nargs (optional, defaults to length)
+#      - varargs: if true, function is vararg (nargs = DUK_VARARGS)
+#      - magic: magic value for function (see below)
+#      - name: optional, provides .name property (non-writable, non-enumerable, non-configurable)
+#      - special_call: recognized in shorthand
+#    - Accessor (setter/getter) shorthand:
+#      - type: accessor
+#      - callable: default is true
+#      - constructable: default is false
+#      - getter: native function name
+#      - setter: native function name
+#      - getter_magic: magic value for getter
+#      - setter_magic: magic value for setter
+#      - getter_nargs: nargs value for getter
+#      - setter_nargs: nargs value for setter
+#      - getter_length: length value for getter (0 if missing)
+#      - setter_length: length value for setter (0 if missing)
+#    - Structured object shorthand:
+#      - type: structured
+#      - value: arbitrary JSON-like value
+#      - NOTE: value is converted into object(s) with properties
+#        similarly to JSON.parse() results: properties will be
+#        writable, enumerable, and configurable, inherit from
+#        Object.prototype, etc.
+#
+# Magic format:
+#
+#    - Plain number: direct magic value
+#    - Array iterator magic:
+#      - type: array_iter
+#      - funcname: function name, e.g. "forEach"
+#    - Built-in object index:
+#      - type: bidx
+#      - id: id of built-object, idx to thr->builtins[]
+#    - One-argument math function:
+#      - type: math_onearg
+#      - funcname: name of function, e.g. "cos"
+#    - Two-argument math function:
+#      - type: math_twoarg
+#      - funcname: name of function, e.g. "atan2"
+#    - Typed array constructor
+#      - type: typedarray_constructor
+#      - elem: element type, e.g. "int8"
+#      - shift: shift for element size (0 = 1 byte element, 2 = 4 byte element etc)
+
+objects:
+
+  # internal prototype: implementation specific
+  #  Smjs: Object.prototype
+  #  Rhino: Object.prototype
+  #  V8: *not* Object.prototype, but prototype chain includes Object.prototype
+  # external prototype: apparently not set
+  # external constructor: apparently not set
+  # internal class: implemented specific
+  #  Smjs: "global"
+  #  Rhino: "global"
+  #  V8: "global"
+  #
+  # E5 Sections B.2.1 and B.2.2 describe non-standard properties which are
+  # included below but flagged as extensions.
+
+  - id: bi_global
+    class: global
+    internal_prototype: bi_object_prototype
+    bidx: true
+
+    properties:
+      # 'globalThis' binding giving easy to access to the global object.
+      # Not yet standard, see https://github.com/tc39/proposal-global.
+      - key: "globalThis"
+        value:
+          type: object
+          id: bi_global
+        attributes: "wc"
+        # This could be stripped when DUK_USE_GLOBAL_BUILTIN is disabled
+        # but keep for now (the property is quite fundamental).
+        present_if: DUK_USE_GLOBAL_BINDING
+
+      - key: "NaN"
+        value:
+          type: double
+          bytes: "7ff8000000000000"  # DBL_NAN
+        attributes: ""
+        present_if: DUK_USE_GLOBAL_BUILTIN
+      - key: "Infinity"
+        value:
+          type: double
+          bytes: "7ff0000000000000"  # DBL_POSITIVE_INFINITY
+        attributes: ""
+        present_if: DUK_USE_GLOBAL_BUILTIN
+      - key: "undefined"
+        value:
+          type: undefined
+        attributes: ""
+        # This could be stripped when DUK_USE_GLOBAL_BUILTIN is disabled
+        # ("void 0" is the same and safer) but it's commonly used so keep.
+
+      - key: "Object"
+        value:
+          type: object
+          id: bi_object_constructor
+        present_if: DUK_USE_OBJECT_BUILTIN
+      - key: "Function"
+        value:
+          type: object
+          id: bi_function_constructor
+        present_if: DUK_USE_FUNCTION_BUILTIN
+      - key: "Array"
+        value:
+          type: object
+          id: bi_array_constructor
+        present_if: DUK_USE_ARRAY_BUILTIN
+      - key: "String"
+        value:
+          type: object
+          id: bi_string_constructor
+        present_if: DUK_USE_STRING_BUILTIN
+      - key: "Boolean"
+        value:
+          type: object
+          id: bi_boolean_constructor
+        present_if: DUK_USE_BOOLEAN_BUILTIN
+      - key: "Number"
+        value:
+          type: object
+          id: bi_number_constructor
+        present_if: DUK_USE_NUMBER_BUILTIN
+      - key: "Date"
+        value:
+          type: object
+          id: bi_date_constructor
+        present_if: DUK_USE_DATE_BUILTIN
+      - key: "RegExp"
+        value:
+          type: object
+          id: bi_regexp_constructor
+        present_if: DUK_USE_REGEXP_SUPPORT
+      - key: "Error"
+        value:
+          type: object
+          id: bi_error_constructor
+      - key: "EvalError"
+        value:
+          type: object
+          id: bi_eval_error_constructor
+      - key: "RangeError"
+        value:
+          type: object
+          id: bi_range_error_constructor
+      - key: "ReferenceError"
+        value:
+          type: object
+          id: bi_reference_error_constructor
+      - key: "SyntaxError"
+        value:
+          type: object
+          id: bi_syntax_error_constructor
+      - key: "TypeError"
+        value:
+          type: object
+          id: bi_type_error_constructor
+      - key: "URIError"
+        value:
+          type: object
+          id: bi_uri_error_constructor
+      - key: "Math"
+        value:
+          type: object
+          id: bi_math
+        present_if: DUK_USE_MATH_BUILTIN
+      - key: "JSON"
+        value:
+          type: object
+          id: bi_json
+        present_if: DUK_USE_JSON_BUILTIN
+
+      # CBOR
+      - key: "CBOR"
+        value:
+          type: object
+          id: bi_cbor
+        present_if: DUK_USE_CBOR_BUILTIN
+
+      # Duktape specific
+      - key: "Duktape"
+        value:
+          type: object
+          id: bi_duktape
+        duktape: true
+        # Remains present even when disabled: needed for error augmentation internally.
+        #present_if: DUK_USE_DUKTAPE_BUILTIN
+
+      # ES2015
+      - key: "Proxy"
+        value:
+          type: object
+          id: bi_proxy_constructor
+        es6: true
+        present_if: DUK_USE_ES6_PROXY
+      - key: "Reflect"
+        value:
+          type: object
+          id: bi_reflect
+        es6: true
+        present_if: DUK_USE_REFLECT_BUILTIN
+      - key: "Symbol"
+        value:
+          type: object
+          id: bi_symbol_constructor
+        es6: true
+        present_if: DUK_USE_SYMBOL_BUILTIN
+      - key: "Promise"
+        value:
+          type: object
+          id: bi_promise_constructor
+        es6: true
+        present_if: DUK_USE_PROMISE_BUILTIN
+
+      # Node.js Buffer
+      - key: "Buffer"
+        value:
+          type: object
+          id: bi_nodejs_buffer_constructor
+        nodejs_buffer: true
+        present_if: DUK_USE_BUFFEROBJECT_SUPPORT
+
+      # TypedArray
+      - key: "ArrayBuffer"
+        value:
+          type: object
+          id: bi_arraybuffer_constructor
+        typedarray: true
+        es6: true
+        present_if: DUK_USE_BUFFEROBJECT_SUPPORT
+      - key: "DataView"
+        value:
+          type: object
+          id: bi_dataview_constructor
+        typedarray: true
+        es6: true
+        present_if: DUK_USE_BUFFEROBJECT_SUPPORT
+      - key: "Int8Array"
+        value:
+          type: object
+          id: bi_int8array_constructor
+        typedarray: true
+        es6: true
+        present_if: DUK_USE_BUFFEROBJECT_SUPPORT
+      - key: "Uint8Array"
+        value:
+          type: object
+          id: bi_uint8array_constructor
+        typedarray: true
+        es6: true
+        present_if: DUK_USE_BUFFEROBJECT_SUPPORT
+      - key: "Uint8ClampedArray"
+        value:
+          type: object
+          id: bi_uint8clampedarray_constructor
+        typedarray: true
+        es6: true
+        present_if: DUK_USE_BUFFEROBJECT_SUPPORT
+      - key: "Int16Array"
+        value:
+          type: object
+          id: bi_int16array_constructor
+        typedarray: true
+        es6: true
+        present_if: DUK_USE_BUFFEROBJECT_SUPPORT
+      - key: "Uint16Array"
+        value:
+          type: object
+          id: bi_uint16array_constructor
+        typedarray: true
+        es6: true
+        present_if: DUK_USE_BUFFEROBJECT_SUPPORT
+      - key: "Int32Array"
+        value:
+          type: object
+          id: bi_int32array_constructor
+        typedarray: true
+        es6: true
+        present_if: DUK_USE_BUFFEROBJECT_SUPPORT
+      - key: "Uint32Array"
+        value:
+          type: object
+          id: bi_uint32array_constructor
+        typedarray: true
+        es6: true
+        present_if: DUK_USE_BUFFEROBJECT_SUPPORT
+      - key: "Float32Array"
+        value:
+          type: object
+          id: bi_float32array_constructor
+        typedarray: true
+        es6: true
+        present_if: DUK_USE_BUFFEROBJECT_SUPPORT
+      - key: "Float64Array"
+        value:
+          type: object
+          id: bi_float64array_constructor
+        typedarray: true
+        es6: true
+        present_if: DUK_USE_BUFFEROBJECT_SUPPORT
+
+      # Functions
+      - key: "eval"
+        value:
+          type: function
+          native: duk_bi_global_object_eval
+          length: 1
+          magic: 15  # see duk_js_call.c
+          special_call: true
+        auto_lightfunc: false  # automatic lightfunc conversion clashes with internal implementation
+        present_if: DUK_USE_GLOBAL_BUILTIN
+      - key: "parseInt"
+        value:
+          type: object
+          id: bi_parse_int
+        present_if: DUK_USE_GLOBAL_BUILTIN
+      - key: "parseFloat"
+        value:
+          type: object
+          id: bi_parse_float
+        present_if: DUK_USE_GLOBAL_BUILTIN
+      - key: "isNaN"
+        value:
+          type: function
+          native: duk_bi_global_object_is_nan
+          length: 1
+        present_if: DUK_USE_GLOBAL_BUILTIN
+      - key: "isFinite"
+        value:
+          type: function
+          native: duk_bi_global_object_is_finite
+          length: 1
+        present_if: DUK_USE_GLOBAL_BUILTIN
+      - key: "decodeURI"
+        value:
+          type: function
+          native: duk_bi_global_object_decode_uri
+          length: 1
+        present_if: DUK_USE_GLOBAL_BUILTIN
+      - key: "decodeURIComponent"
+        value:
+          type: function
+          native: duk_bi_global_object_decode_uri_component
+          length: 1
+        present_if: DUK_USE_GLOBAL_BUILTIN
+      - key: "encodeURI"
+        value:
+          type: function
+          native: duk_bi_global_object_encode_uri
+          length: 1
+        present_if: DUK_USE_GLOBAL_BUILTIN
+      - key: "encodeURIComponent"
+        value:
+          type: function
+          native: duk_bi_global_object_encode_uri_component
+          length: 1
+        present_if: DUK_USE_GLOBAL_BUILTIN
+
+      # Non-standard extensions: E5 Sections B.2.1 and B.2.2
+      #
+      # "length" is not specified explicitly in E5 but it follows the
+      # general argument count rule.  V8 also agrees on the lengths.
+
+      - key: "escape"
+        value:
+          type: function
+          native: duk_bi_global_object_escape
+          length: 1
+        section_b: true
+        present_if:
+          - DUK_USE_SECTION_B
+          - DUK_USE_GLOBAL_BUILTIN
+      - key: "unescape"
+        value:
+          type: function
+          native: duk_bi_global_object_unescape
+          length: 1
+        section_b: true
+        present_if:
+          - DUK_USE_SECTION_B
+          - DUK_USE_GLOBAL_BUILTIN
+
+      # Encoding API: https://encoding.spec.whatwg.org/
+      - key: "TextEncoder"
+        value:
+          type: object
+          id: bi_textencoder_constructor
+        encoding_api: true
+        present_if: DUK_USE_ENCODING_BUILTINS
+      - key: "TextDecoder"
+        value:
+          type: object
+          id: bi_textdecoder_constructor
+        encoding_api: true
+        present_if: DUK_USE_ENCODING_BUILTINS
+
+      # High resolution time API: https://www.w3.org/TR/hr-time/
+      # Firefox and Chrome: accessor with 'ec' attributes, setter
+      # allows overwrite.
+      # Use data property with 'wec' for now.
+      - key: "performance"
+        value:
+          type: object
+          id: bi_performance
+        attributes: "wec"
+        performance_api: true
+        present_if: DUK_USE_PERFORMANCE_BUILTIN
+
+  - id: bi_parse_int
+    class: Function
+    internal_prototype: bi_function_prototype
+    native: duk_bi_global_object_parse_int
+    callable: true
+    constructable: false
+    bidx: false
+    present_if: DUK_USE_OBJECT_BUILTIN
+
+    properties:
+      - key: "length"
+        value: 2
+        attributes: "c"
+
+  - id: bi_parse_float
+    class: Function
+    internal_prototype: bi_function_prototype
+    native: duk_bi_global_object_parse_float
+    callable: true
+    constructable: false
+    bidx: false
+    present_if: DUK_USE_OBJECT_BUILTIN
+
+    properties:
+      - key: "length"
+        value: 1
+        attributes: "c"
+
+  - id: bi_global_env
+    class: ObjEnv
+    duktape: true
+    bidx: true
+
+    # The internal 'target' property is now part of duk_hobjenv and handled
+    # specially by RAM built-in init code.  ROM built-ins provide an explicit
+    # initializer based on these properties.
+
+    objenv_target: bi_global
+    objenv_has_this: 0
+
+    properties: []
+
+  - id: bi_object_constructor
+    class: Function
+    internal_prototype: bi_function_prototype
+    native: duk_bi_object_constructor
+    callable: true
+    constructable: true
+    bidx: true
+    present_if: DUK_USE_OBJECT_BUILTIN
+
+    properties:
+      - key: "length"
+        value: 1
+        attributes: "c"
+      - key: "prototype"
+        value:
+          type: object
+          id: bi_object_prototype
+        attributes: ""
+      - key: "name"
+        value: "Object"
+        attributes: "c"
+
+      - key: "getPrototypeOf"
+        value:
+          type: function
+          native: duk_bi_object_getprototype_shared
+          length: 1
+          magic: 1
+      - key: "setPrototypeOf"
+        value:
+          type: function
+          native: duk_bi_object_setprototype_shared
+          length: 2
+          magic: 1
+        es6: true
+      - key: "getOwnPropertyDescriptor"
+        value:
+          type: function
+          native: duk_bi_object_constructor_get_own_property_descriptor
+          length: 2
+          magic: 0
+      - key: "getOwnPropertyNames"
+        value:
+          type: function
+          native: duk_bi_object_constructor_keys_shared
+          length: 1
+          magic: 1
+      - key: "assign"
+        value:
+          type: function
+          native: duk_bi_object_constructor_assign
+          length: 2
+          varargs: true
+        es6: true
+        present_if: DUK_USE_ES6
+      - key: "create"
+        value:
+          type: function
+          native: duk_bi_object_constructor_create
+          length: 2
+      - key: "defineProperty"
+        value:
+          type: function
+          native: duk_bi_object_constructor_define_property
+          length: 3
+          magic: 0
+      - key: "defineProperties"
+        value:
+          type: function
+          native: duk_bi_object_constructor_define_properties
+          length: 2
+      - key: "seal"
+        value:
+          type: function
+          native: duk_bi_object_constructor_seal_freeze_shared
+          length: 1
+          magic: 0
+      - key: "freeze"
+        value:
+          type: function
+          native: duk_bi_object_constructor_seal_freeze_shared
+          length: 1
+          magic: 1
+      - key: "preventExtensions"
+        value:
+          type: function
+          native: duk_bi_object_constructor_prevent_extensions
+          length: 1
+          magic: 0
+      - key: "isSealed"
+        value:
+          type: function
+          native: duk_bi_object_constructor_is_sealed_frozen_shared
+          length: 1
+          magic: 0
+      - key: "isFrozen"
+        value:
+          type: function
+          native: duk_bi_object_constructor_is_sealed_frozen_shared
+          length: 1
+          magic: 1
+      - key: "isExtensible"
+        value:
+          type: function
+          native: duk_bi_object_constructor_is_extensible
+          length: 1
+          magic: 0
+      - key: "keys"
+        value:
+          type: function
+          native: duk_bi_object_constructor_keys_shared
+          length: 1
+          magic: 0
+      - key: "getOwnPropertySymbols"
+        value:
+          type: function
+          native: duk_bi_object_constructor_keys_shared
+          length: 1
+          magic: 2
+        es6: true
+        present_if: DUK_USE_ES6
+      - key: "is"
+        value:
+          type: function
+          native: duk_bi_object_constructor_is
+          length: 2
+          nargs: 2
+        es6: true
+        present_if: DUK_USE_ES6
+
+  - id: bi_object_prototype
+    class: Object
+    # internal_prototype: null
+    bidx: true
+    # Present even when DUK_USE_OBJECT_BUILTIN disabled.
+
+    properties:
+      - key: "constructor"
+        value:
+          type: object
+          id: bi_object_constructor
+        attributes: "wc"
+        present_if: DUK_USE_OBJECT_BUILTIN
+
+      - key: "__proto__"
+        value:
+          type: accessor
+          getter: duk_bi_object_getprototype_shared
+          setter: duk_bi_object_setprototype_shared
+          getter_nargs: 0
+          setter_nargs: 1
+          getter_magic: 0
+          setter_magic: 0
+        attributes: "c"  # configurable in ES2015, also V8
+        es6: true  # also non-standard legacy
+        present_if: DUK_USE_OBJECT_BUILTIN
+
+      - key: "toString"
+        value:
+          type: function
+          native: duk_bi_object_prototype_to_string
+          length: 0
+        present_if: DUK_USE_OBJECT_BUILTIN
+      - key: "toLocaleString"
+        value:
+          type: function
+          native: duk_bi_object_prototype_to_locale_string
+          length: 0
+        present_if: DUK_USE_OBJECT_BUILTIN
+      - key: "valueOf"
+        value:
+          type: function
+          native: duk_bi_object_prototype_value_of
+          length: 0
+        present_if: DUK_USE_OBJECT_BUILTIN
+      - key: "hasOwnProperty"
+        value:
+          type: function
+          native: duk_bi_object_prototype_has_own_property
+          length: 1
+        present_if: DUK_USE_OBJECT_BUILTIN
+      - key: "isPrototypeOf"
+        value:
+          type: function
+          native: duk_bi_object_prototype_is_prototype_of
+          length: 1
+        present_if: DUK_USE_OBJECT_BUILTIN
+      - key: "propertyIsEnumerable"
+        value:
+          type: function
+          native: duk_bi_object_prototype_property_is_enumerable
+          length: 1
+        present_if: DUK_USE_OBJECT_BUILTIN
+
+      # __defineGetter, __defineSetter__, __lookupGetter__, __lookupSetter__: ES2017 Annex B
+      # https://tc39.github.io/ecma262/#sec-additional-properties-of-the-object.prototype-object
+
+      - key: "__defineGetter__"
+        value:
+          type: function
+          native: duk_bi_object_prototype_defineaccessor
+          length: 2
+          magic: 0  # define getter
+        present_if: DUK_USE_ES8
+      - key: "__defineSetter__"
+        value:
+          type: function
+          native: duk_bi_object_prototype_defineaccessor
+          length: 2
+          magic: 1  # define setter
+        present_if: DUK_USE_ES8
+      - key: "__lookupGetter__"
+        value:
+          type: function
+          native: duk_bi_object_prototype_lookupaccessor
+          length: 1
+          magic: 0  # lookup getter
+        present_if: DUK_USE_ES8
+      - key: "__lookupSetter__"
+        value:
+          type: function
+          native: duk_bi_object_prototype_lookupaccessor
+          length: 1
+          magic: 1  # lookup setter
+        present_if: DUK_USE_ES8
+
+  - id: bi_function_constructor
+    class: Function
+    internal_prototype: bi_function_prototype
+    varargs: true
+    native: duk_bi_function_constructor
+    callable: true
+    constructable: true
+    bidx: true
+    present_if: DUK_USE_FUNCTION_BUILTIN
+
+    properties:
+      - key: "length"
+        value: 1
+        attributes: "c"
+      - key: "prototype"
+        value:
+          type: object
+          id: bi_function_prototype
+        attributes: ""
+      - key: "name"
+        value: "Function"
+        attributes: "c"
+
+  # Note, unlike other prototype objects, Function.prototype is itself
+  # a Function and callable.  When invoked, it accepts any arguments
+  # and returns undefined.  It cannot be called as a constructor.
+  # See E5 Section 15.3.4.
+  - id: bi_function_prototype
+    class: Function
+    internal_prototype: bi_object_prototype
+    native: duk_bi_function_prototype
+    callable: true
+    constructable: false
+    bidx: true
+    nargs: 0  # given explicitly because .length is optional
+    # Present even when DUK_USE_FUNCTION_BUILTIN disabled.
+
+    properties:
+      - key: "length"
+        value: 0
+        attributes: "c"
+        present_if: DUK_USE_FUNCTION_BUILTIN
+      - key: "constructor"
+        value:
+          type: object
+          id: bi_function_constructor
+        attributes: "wc"
+        present_if: DUK_USE_FUNCTION_BUILTIN
+
+      # In ES2015 Function.prototype.name is not writable, but is configurable.
+      - key: "name"
+        value: ""
+        attributes: "c"
+        #present_if: DUK_USE_FUNCTION_BUILTIN  # Kept even when prototype is otherwise empty to guarantee a .name for functions
+
+      # test262 ch15/15.3/15.3.4/15.3.4.2/S15.3.4.2_A11 checks that Function.prototype.toString.length
+      # is zero, cannot find specification support for that but 0 is a good value.
+      - key: "toString"
+        value:
+          type: function
+          native: duk_bi_function_prototype_to_string
+          length: 0
+        present_if: DUK_USE_FUNCTION_BUILTIN
+      - key: "apply"
+        value:
+          type: function
+          native: duk_bi_function_prototype_apply
+          length: 2
+          magic: 1  # see duk_js_call.c
+          special_call: true
+        auto_lightfunc: false  # automatic lightfunc conversion clashes with internal implementation
+        present_if: DUK_USE_FUNCTION_BUILTIN
+      - key: "call"
+        value:
+          type: function
+          native: duk_bi_function_prototype_call
+          length: 1
+          magic: 0  # see duk_js_call.c
+          varargs: true
+          special_call: true
+        auto_lightfunc: false  # automatic lightfunc conversion clashes with internal implementation
+        present_if: DUK_USE_FUNCTION_BUILTIN
+      - key: "bind"
+        value:
+          type: function
+          native: duk_bi_function_prototype_bind
+          length: 1
+          varargs: true
+        present_if: DUK_USE_FUNCTION_BUILTIN
+
+      # ES2015
+      - key:  # @@hasInstance
+          type: symbol
+          variant: wellknown
+          string: "Symbol.hasInstance"
+        value:
+          type: function
+          native: duk_bi_function_prototype_hasinstance
+          length: 1
+        attributes: ""
+        es6: true
+        present_if: DUK_USE_SYMBOL_BUILTIN
+
+  # Duktape specific %NativeFunctionPrototype% which provides some getters.
+  #
+  - id: bi_native_function_prototype
+    class: Object
+    internal_prototype: bi_function_prototype
+    native: duk_bi_function_prototype
+    bidx: true
+    duktape: true
+    # Present even when DUK_USE_FUNCTION_BUILTIN disabled.
+
+    properties:
+      - key: "length"
+        value:
+          type: accessor
+          getter: duk_bi_native_function_length
+          getter_nargs: 0
+          getter_magic: 0
+          # Setter undefined: direct write fails (defineProperty() works).
+          # This mimics ES2015 function (own property) .length which is
+          # not writable but configurable.
+        attributes: "c"
+        #present_if: DUK_USE_FUNCTION_BUILTIN  # Kept to guarantee a .length for lightfuncs
+      - key: "name"
+        value:
+          type: accessor
+          getter: duk_bi_native_function_name
+          getter_nargs: 0
+          getter_magic: 0
+          # Setter undefined: direct write fails (defineProperty() works).
+          # This mimics ES2015 function (own property) .name which is
+          # not writable but configurable.
+        attributes: "c"
+        #present_if: DUK_USE_FUNCTION_BUILTIN  # Kept to guarantee a .name for lightfuncs
+
+  - id: bi_array_constructor
+    class: Function
+    internal_prototype: bi_function_prototype
+    varargs: true
+    native: duk_bi_array_constructor
+    callable: true
+    constructable: true
+    bidx: true
+    present_if: DUK_USE_ARRAY_BUILTIN
+
+    properties:
+      - key: "length"
+        value: 1
+        attributes: "c"
+      - key: "prototype"
+        value:
+          type: object
+          id: bi_array_prototype
+        attributes: ""
+      - key: "name"
+        value: "Array"
+        attributes: "c"
+      - key: "isArray"
+        value:
+          type: function
+          native: duk_bi_array_constructor_is_array
+          length: 1
+
+      #- key:  # @@species
+      #    type: symbol
+      #    variant: wellknown
+      #    string: "Symbol.species"
+      #  value: XXX
+      #  es6: true
+
+  - id: bi_array_prototype
+    class: Array
+    internal_prototype: bi_object_prototype
+    bidx: true
+    # Present even when DUK_USE_ARRAY_BUILTIN disabled.
+
+    # An array prototype is an Array itself.  It has a length property initialized to 0,
+    # with property attributes: writable, non-configurable, non-enumerable.  The attributes
+    # are not specified very explicitly for the prototype, but are given for Array instances
+    # in E5 Section 15.4.5.2 (and this matches the behavior of e.g. V8).
+
+    properties:
+      # With duk_harray added to the internal representation, .length is now virtual.
+      #- key: "length"
+      #  value: 0
+      #  attributes: "w"
+      - key: "constructor"
+        value:
+          type: object
+          id: bi_array_constructor
+        attributes: "wc"
+        present_if: DUK_USE_ARRAY_BUILTIN
+      - key: "toString"
+        value:
+          type: function
+          native: duk_bi_array_prototype_to_string
+          length: 0
+        present_if: DUK_USE_ARRAY_BUILTIN
+      - key: "toLocaleString"
+        value:
+          type: function
+          native: duk_bi_array_prototype_join_shared
+          length: 0
+          magic: 1  # magic: to_locale_string, here 1
+        present_if: DUK_USE_ARRAY_BUILTIN
+      - key: "concat"
+        value:
+          type: function
+          native: duk_bi_array_prototype_concat
+          length: 1
+          varargs: true
+        present_if: DUK_USE_ARRAY_BUILTIN
+      - key: "join"
+        value:
+          type: function
+          native: duk_bi_array_prototype_join_shared
+          length: 1
+          magic: 0  # magic: to_locale_string, here 0
+        present_if: DUK_USE_ARRAY_BUILTIN
+      - key: "pop"
+        value:
+          type: function
+          native: duk_bi_array_prototype_pop
+          length: 0
+        present_if: DUK_USE_ARRAY_BUILTIN
+      - key: "push"
+        value:
+          type: function
+          native: duk_bi_array_prototype_push
+          length: 1
+          varargs: true
+        present_if: DUK_USE_ARRAY_BUILTIN
+      - key: "reverse"
+        value:
+          type: function
+          native: duk_bi_array_prototype_reverse
+          length: 0
+        present_if: DUK_USE_ARRAY_BUILTIN
+      - key: "shift"
+        value:
+          type: function
+          native: duk_bi_array_prototype_shift
+          length: 0
+        present_if: DUK_USE_ARRAY_BUILTIN
+      - key: "slice"
+        value:
+          type: function
+          native: duk_bi_array_prototype_slice
+          length: 2
+        present_if: DUK_USE_ARRAY_BUILTIN
+      - key: "sort"
+        value:
+          type: function
+          native: duk_bi_array_prototype_sort
+          length: 1
+        present_if: DUK_USE_ARRAY_BUILTIN
+      - key: "splice"
+        value:
+          type: function
+          native: duk_bi_array_prototype_splice
+          length: 2
+          varargs: true
+        present_if: DUK_USE_ARRAY_BUILTIN
+      - key: "unshift"
+        value:
+          type: function
+          native: duk_bi_array_prototype_unshift
+          length: 1
+          varargs: true
+        present_if: DUK_USE_ARRAY_BUILTIN
+      - key: "indexOf"
+        value:
+          type: function
+          native: duk_bi_array_prototype_indexof_shared
+          length: 1
+          varargs: true
+          magic: 1  # magic: idx_step = +1
+        present_if: DUK_USE_ARRAY_BUILTIN
+      - key: "lastIndexOf"
+        value:
+          type: function
+          native: duk_bi_array_prototype_indexof_shared
+          length: 1
+          varargs: true
+          magic: -1  # magic: idx_step = -1
+        present_if: DUK_USE_ARRAY_BUILTIN
+      - key: "every"
+        value:
+          type: function
+          native: duk_bi_array_prototype_iter_shared
+          length: 1
+          nargs: 2
+          magic:
+            type: array_iter
+            funcname: "every"  # BI_ARRAY_ITER_EVERY
+        present_if: DUK_USE_ARRAY_BUILTIN
+      - key: "some"
+        value:
+          type: function
+          native: duk_bi_array_prototype_iter_shared
+          length: 1
+          nargs: 2
+          magic:
+            type: array_iter
+            funcname: "some"  # BI_ARRAY_ITER_SOME
+        present_if: DUK_USE_ARRAY_BUILTIN
+      - key: "forEach"
+        value:
+          type: function
+          native: duk_bi_array_prototype_iter_shared
+          length: 1
+          nargs: 2
+          magic:
+            type: array_iter
+            funcname: "forEach"  # BI_ARRAY_ITER_FOREACH
+        present_if: DUK_USE_ARRAY_BUILTIN
+      - key: "map"
+        value:
+          type: function
+          native: duk_bi_array_prototype_iter_shared
+          length: 1
+          nargs: 2
+          magic:
+            type: array_iter
+            funcname: "map"  # BI_ARRAY_ITER_MAP
+        present_if: DUK_USE_ARRAY_BUILTIN
+      - key: "filter"
+        value:
+          type: function
+          native: duk_bi_array_prototype_iter_shared
+          length: 1
+          nargs: 2
+          magic:
+            type: array_iter
+            funcname: filter  # BI_ARRAY_ITER_FILTER
+        present_if: DUK_USE_ARRAY_BUILTIN
+      - key: "reduce"
+        value:
+          type: function
+          native: duk_bi_array_prototype_reduce_shared
+          length: 1
+          varargs: true
+          magic: 1  # magic: idx_step = +1
+        present_if: DUK_USE_ARRAY_BUILTIN
+      - key: "reduceRight"
+        value:
+          type: function
+          native: duk_bi_array_prototype_reduce_shared
+          length: 1
+          varargs: true
+          magic: -1  # magic: idx_step = -1
+        present_if: DUK_USE_ARRAY_BUILTIN
+
+      #- key:  # @@iterator
+      #    type: symbol
+      #    variant: wellknown
+      #    string: "Symbol.iterator"
+      #  value: XXX
+      #  es6: true
+      #- key:  # @@unscopables
+      #    type: symbol
+      #    variant: wellknown
+      #    string: "Symbol.unscopables"
+      #  value: XXX
+      #  es6: true
+
+  - id: bi_string_constructor
+    class: Function
+    internal_prototype: bi_function_prototype
+    varargs: true
+    native: duk_bi_string_constructor
+    callable: true
+    constructable: true
+    bidx: true
+    present_if: DUK_USE_STRING_BUILTIN
+
+    properties:
+      - key: "length"
+        value: 1
+        attributes: "c"
+      - key: "prototype"
+        value:
+          type: object
+          id: bi_string_prototype
+        attributes: ""
+      - key: "name"
+        value: "String"
+        attributes: "c"
+
+      - key: "fromCharCode"
+        value:
+          type: function
+          native: duk_bi_string_constructor_from_char_code
+          length: 1
+          varargs: true
+      - key: "fromCodePoint"
+        value:
+          type: function
+          native: duk_bi_string_constructor_from_code_point
+          length: 1
+          varargs: true
+        present_if: DUK_USE_ES6
+
+  - id: bi_string_prototype
+    class: String
+    internal_prototype: bi_object_prototype
+    bidx: true
+    # Present even when DUK_USE_STRING_BUILTIN disabled.
+
+    # String prototype is a String instance and must have length value 0.
+    # This is supplied by the String instance virtual properties and does
+    # not need to be included in init data.
+    #
+    # Unlike Array.prototype.length, String.prototype.length has the default
+    # "length" attributes of built-in objects: non-writable, non-enumerable,
+    # non-configurable.
+
+    #length: 0,  # omitted; non-writable, non-enumerable, non-configurable
+
+    properties:
+      - key: "constructor"
+        value:
+          type: object
+          id: bi_string_constructor
+        attributes: "wc"
+        present_if: DUK_USE_STRING_BUILTIN
+
+      # Internal empty string value.  Note that this value is not writable
+      # which prevents a String instance's internal value also from being
+      # written with standard methods.  The internal code creating String
+      # instances has no such issues.
+      - key:
+          type: symbol
+          variant: hidden
+          string: "Value"
+        value: ""
+        attributes: ""
+        duktape: true
+
+      - key: "toString"
+        value:
+          type: function
+          native: duk_bi_string_prototype_to_string
+          length: 0
+        present_if: DUK_USE_STRING_BUILTIN
+      - key: "valueOf"
+        value:
+          type: function
+          native: duk_bi_string_prototype_to_string  # share native function, behavior is identical
+          length: 0
+        present_if: DUK_USE_STRING_BUILTIN
+      - key: "charAt"
+        value:
+          type: function
+          native: duk_bi_string_prototype_char_at
+          length: 1
+        present_if: DUK_USE_STRING_BUILTIN
+      - key: "charCodeAt"
+        value:
+          type: function
+          native: duk_bi_string_prototype_char_code_at
+          length: 1
+          magic: 0
+        present_if: DUK_USE_STRING_BUILTIN
+      - key: "codePointAt"
+        value:
+          type: function
+          native: duk_bi_string_prototype_char_code_at
+          length: 1
+          magic: 1
+        es6: true
+        present_if:
+          - DUK_USE_ES6
+          - DUK_USE_STRING_BUILTIN
+      - key: "concat"
+        value:
+          type: function
+          native: duk_bi_string_prototype_concat
+          length: 1
+          varargs: true
+        present_if: DUK_USE_STRING_BUILTIN
+      - key: "indexOf"
+        value:
+          type: function
+          native: duk_bi_string_prototype_indexof_shared
+          length: 1
+          nargs: 2
+          magic: 0  # magic = 0 -> indexOf
+        present_if: DUK_USE_STRING_BUILTIN
+      - key: "lastIndexOf"
+        value:
+          type: function
+          native: duk_bi_string_prototype_indexof_shared
+          length: 1
+          nargs: 2
+          magic: 1  # magic = 1 -> lastIndexOf
+        present_if: DUK_USE_STRING_BUILTIN
+      - key: "localeCompare"
+        value:
+          type: function
+          native: duk_bi_string_prototype_locale_compare
+          length: 1
+        present_if: DUK_USE_STRING_BUILTIN
+      - key: "match"
+        value:
+          type: function
+          native: duk_bi_string_prototype_match
+          length: 1
+        present_if:
+          - DUK_USE_STRING_BUILTIN
+          - DUK_USE_REGEXP_SUPPORT
+      - key: "replace"
+        value:
+          type: function
+          native: duk_bi_string_prototype_replace
+          length: 2
+        present_if: DUK_USE_STRING_BUILTIN
+      - key: "search"
+        value:
+          type: function
+          native: duk_bi_string_prototype_search
+          length: 1
+        present_if:
+          - DUK_USE_STRING_BUILTIN
+          - DUK_USE_REGEXP_SUPPORT
+      - key: "slice"
+        value:
+          type: function
+          native: duk_bi_string_prototype_slice
+          length: 2
+        present_if: DUK_USE_STRING_BUILTIN
+      - key: "split"
+        value:
+          type: function
+          native: duk_bi_string_prototype_split
+          length: 2
+        present_if: DUK_USE_STRING_BUILTIN
+      - key: "substring"
+        value:
+          type: function
+          native: duk_bi_string_prototype_substring
+          length: 2
+        present_if: DUK_USE_STRING_BUILTIN
+      - key: "toLowerCase"
+        value:
+          type: function
+          native: duk_bi_string_prototype_caseconv_shared
+          length: 0
+          magic: 0  # magic = uppercase
+        present_if: DUK_USE_STRING_BUILTIN
+      - key: "toLocaleLowerCase"
+        value:
+          type: function
+          native: duk_bi_string_prototype_caseconv_shared
+          length: 0
+          magic: 0  # magic = uppercase; no locale specific conversion now
+        present_if: DUK_USE_STRING_BUILTIN
+      - key: "toUpperCase"
+        value:
+          type: function
+          native: duk_bi_string_prototype_caseconv_shared
+          length: 0
+          magic: 1  # magic = uppercase
+        present_if: DUK_USE_STRING_BUILTIN
+      - key: "toLocaleUpperCase"
+        value:
+          type: function
+          native: duk_bi_string_prototype_caseconv_shared
+          length: 0
+          magic: 1  # magic = uppercase; no locale specific conversion now
+        present_if: DUK_USE_STRING_BUILTIN
+      - key: "trim"
+        value:
+          type: function
+          native: duk_bi_string_prototype_trim
+          length: 0
+        present_if: DUK_USE_STRING_BUILTIN
+      - key: "repeat"
+        value:
+          type: function
+          native: duk_bi_string_prototype_repeat
+          length: 1
+          nargs: 1
+        present_if:
+          - DUK_USE_ES6
+          - DUK_USE_STRING_BUILTIN
+      - key: "startsWith"
+        value:
+          type: function
+          native: duk_bi_string_prototype_startswith_endswith
+          length: 1
+          nargs: 2
+          magic: 0  # 0=startsWith
+        present_if:
+          - DUK_USE_ES6
+          - DUK_USE_STRING_BUILTIN
+      - key: "endsWith"
+        value:
+          type: function
+          native: duk_bi_string_prototype_startswith_endswith
+          length: 1
+          nargs: 2
+          magic: 1  # 1=endsWith
+        present_if:
+          - DUK_USE_ES6
+          - DUK_USE_STRING_BUILTIN
+      - key: "includes"
+        value:
+          type: function
+          native: duk_bi_string_prototype_includes
+          length: 1
+          nargs: 2
+        present_if:
+          - DUK_USE_ES6
+          - DUK_USE_STRING_BUILTIN
+
+      # Non-standard extension: E5 Section B.2.3
+
+      - key: "substr"
+        value:
+          type: function
+          native: duk_bi_string_prototype_substr
+          length: 2
+        section_b: true
+        present_if:
+          - DUK_USE_STRING_BUILTIN
+          - DUK_USE_SECTION_B
+
+      #- key:  # @@iterator
+      #    type: symbol
+      #    variant: wellknown
+      #    string: "Symbol.iterator"
+      #  value: XXX
+      #  es6: true
+
+  - id: bi_boolean_constructor
+    class: Function
+    internal_prototype: bi_function_prototype
+    native: duk_bi_boolean_constructor
+    callable: true
+    constructable: true
+    bidx: true
+    present_if: DUK_USE_BOOLEAN_BUILTIN
+
+    properties:
+      - key: "length"
+        value: 1
+        attributes: "c"
+      - key: "prototype"
+        value:
+          type: object
+          id: bi_boolean_prototype
+        attributes: ""
+      - key: "name"
+        value: "Boolean"
+        attributes: "c"
+
+  - id: bi_boolean_prototype
+    class: Boolean
+    internal_prototype: bi_object_prototype
+    bidx: true
+    # Present even when DUK_USE_BOOLEAN_BUILTIN disabled.
+
+    properties:
+      - key: "constructor"
+        value:
+          type: object
+          id: bi_boolean_constructor
+        attributes: "wc"
+        present_if: DUK_USE_BOOLEAN_BUILTIN
+
+      # Internal false boolean value.  Note that this value is not writable
+      # which prevents a Boolean instance's internal value also from being
+      # written with standard methods.  The internal code creating Boolean
+      # instances has no such issues.
+      - key:
+          type: symbol
+          variant: hidden
+          string: "Value"
+        value: false
+        attributes: ""
+        duktape: true
+
+      - key: "toString"
+        value:
+          type: function
+          native: duk_bi_boolean_prototype_tostring_shared
+          length: 0
+          magic: 1  # magic = coerce_tostring
+        present_if: DUK_USE_BOOLEAN_BUILTIN
+      - key: "valueOf"
+        value:
+          type: function
+          native: duk_bi_boolean_prototype_tostring_shared
+          length: 0
+          magic: 0  # magic = coerce_tostring
+        present_if: DUK_USE_BOOLEAN_BUILTIN
+
+  - id: bi_number_constructor
+    class: Function
+    internal_prototype: bi_function_prototype
+    varargs: true
+    native: duk_bi_number_constructor
+    callable: true
+    constructable: true
+    bidx: true
+    present_if: DUK_USE_NUMBER_BUILTIN
+
+    properties:
+      - key: "length"
+        value: 1
+        attributes: "c"
+      - key: "prototype"
+        value:
+          type: object
+          id: bi_number_prototype
+        attributes: ""
+      - key: "name"
+        value: "Number"
+        attributes: "c"
+      - key: "MAX_VALUE"
+        value:
+          type: double
+          bytes: "7fefffffffffffff"  # DBL_MAX_DOUBLE
+        attributes: ""
+      - key: "MIN_VALUE"
+        value:
+          type: double
+          bytes: "0000000000000001"  # DBL_MIN_DOUBLE
+        attributes: ""
+      - key: "NaN"
+        value:
+          type: double
+          bytes: "7ff8000000000000"  # DBL_NAN
+        attributes: ""
+      - key: "POSITIVE_INFINITY"
+        value:
+          type: double
+          bytes: "7ff0000000000000"  # DBL_POSITIVE_INFINITY
+        attributes: ""
+      - key: "NEGATIVE_INFINITY"
+        value:
+          type: double
+          bytes: "fff0000000000000"  # DBL_NEGATIVE_INFINITY
+        attributes: ""
+      - key: "EPSILON"
+        value:
+          type: double
+          bytes: "3cb0000000000000"   # 3ff0000000000001 - 3ff0000000000000 = 3cb0000000000000
+        attributes: ""
+        es6: true
+        present_if: DUK_USE_ES6
+      - key: "MAX_SAFE_INTEGER"
+        value:
+          # >>> struct.pack('>d', 9007199254740991.0).encode('hex')
+          # '433fffffffffffff'
+          type: double
+          bytes: "433fffffffffffff"
+        attributes: ""
+        es6: true
+        present_if: DUK_USE_ES6
+      - key: "MIN_SAFE_INTEGER"
+        value:
+          # >>> struct.pack('>d', -9007199254740991.0).encode('hex')
+          # 'c33fffffffffffff'
+          type: double
+          bytes: "c33fffffffffffff"
+        attributes: ""
+        es6: true
+        present_if: DUK_USE_ES6
+
+      - key: "isFinite"
+        value:
+          type: function
+          native: duk_bi_number_check_shared
+          length: 1
+          magic: 0
+        attributes: "wc"
+        es6: true
+        present_if: DUK_USE_ES6
+      - key: "isInteger"
+        value:
+          type: function
+          native: duk_bi_number_check_shared
+          length: 1
+          magic: 1
+        attributes: "wc"
+        es6: true
+        present_if: DUK_USE_ES6
+      - key: "isNaN"
+        value:
+          type: function
+          native: duk_bi_number_check_shared
+          length: 1
+          magic: 2
+        attributes: "wc"
+        es6: true
+        present_if: DUK_USE_ES6
+      - key: "isSafeInteger"
+        value:
+          type: function
+          native: duk_bi_number_check_shared
+          length: 1
+          magic: 3
+        attributes: "wc"
+        es6: true
+        present_if: DUK_USE_ES6
+      - key: "parseInt"  # Must map to the exactly same object as global parseInt()
+        value:
+          type: object
+          id: bi_parse_int
+        es6: true
+        present_if: DUK_USE_ES6
+      - key: "parseFloat"  # Must map to the exactly same object as global parseFloat()
+        value:
+          type: object
+          id: bi_parse_float
+        es6: true
+        present_if: DUK_USE_ES6
+
+  - id: bi_number_prototype
+    class: Number
+    internal_prototype: bi_object_prototype
+    bidx: true
+    # Present even when DUK_USE_NUMBER_BUILTIN disabled.
+
+    properties:
+      - key: "constructor"
+        value:
+          type: object
+          id: bi_number_constructor
+        attributes: "wc"
+        present_if: DUK_USE_NUMBER_BUILTIN
+
+    # Internal 0.0 number value.  Note that this value is not writable
+    # which prevents a Number instance's internal value also from being
+    # written with standard methods.  The internal code creating Number
+    # instances has no such issues.
+    #
+    # Number.prototype is a Number itself in ES5.1 and ES2016+.  It was
+    # briefly made a non-Number in ES2015 but this change was reverted
+    # in ES2016.
+      - key:
+          type: symbol
+          variant: hidden
+          string: "Value"
+        value: 0.0
+        attributes: ""
+        duktape: true
+
+      - key: "toString"
+        value:
+          type: function
+          native: duk_bi_number_prototype_to_string
+          length: 1
+        present_if: DUK_USE_NUMBER_BUILTIN
+      - key: "toLocaleString"
+        value:
+          type: function
+          native: duk_bi_number_prototype_to_locale_string
+          length: 1
+        present_if: DUK_USE_NUMBER_BUILTIN
+      - key: "valueOf"
+        value:
+          type: function
+          native: duk_bi_number_prototype_value_of
+          length: 0
+        present_if: DUK_USE_NUMBER_BUILTIN
+      - key: "toFixed"
+        value:
+          type: function
+          native: duk_bi_number_prototype_to_fixed
+          length: 1
+        present_if: DUK_USE_NUMBER_BUILTIN
+      - key: "toExponential"
+        value:
+          type: function
+          native: duk_bi_number_prototype_to_exponential
+          length: 1
+        present_if: DUK_USE_NUMBER_BUILTIN
+      - key: "toPrecision"
+        value:
+          type: function
+          native: duk_bi_number_prototype_to_precision
+          length: 1
+        present_if: DUK_USE_NUMBER_BUILTIN
+
+  - id: bi_date_constructor
+    class: Function
+    internal_prototype: bi_function_prototype
+    varargs: true
+    native: duk_bi_date_constructor
+    callable: true
+    constructable: true
+    bidx: true
+    present_if: DUK_USE_DATE_BUILTIN
+
+    properties:
+      - key: "length"
+        value: 7
+        attributes: "c"
+      - key: "prototype"
+        value:
+          type: object
+          id: bi_date_prototype
+        attributes: ""
+      - key: "name"
+        value: "Date"
+        attributes: "c"
+
+      - key: "parse"
+        value:
+          type: function
+          native: duk_bi_date_constructor_parse
+          length: 1
+      - key: "UTC"
+        value:
+          type: function
+          native: duk_bi_date_constructor_utc
+          length: 7
+          varargs: true
+      - key: "now"
+        value:
+          type: function
+          native: duk_bi_date_constructor_now
+          length: 0
+
+  - id: bi_date_prototype
+    class: Date
+    internal_prototype: bi_object_prototype
+    bidx: true
+    present_if: DUK_USE_DATE_BUILTIN
+
+    # The Date prototype is an instance of Date with [[PrimitiveValue]] NaN.
+    #
+    # Setters with optional arguments must be varargs functions because
+    # they must detect the number of parameters actually given (cannot
+    # assume parameters not given are undefined).
+    #
+    # Date.prototype.valueOf() and Date.prototype.getTime() have identical
+    # behavior so they share the same C function, but have different
+    # function instances.
+    #
+    # Getters, setters, and string conversion functions use shared native
+    # helpers and the function "magic" value is used to pass flags and
+    # parameters to the helpers.
+
+    properties:
+      - key: "constructor"
+        value:
+          type: object
+          id: bi_date_constructor
+        attributes: "wc"
+
+      # Internal date value (E5 Section 15.9.5).
+      #
+      # Note: the value is writable, as you can e.g. do the following (V8):
+      #  > Date.prototype.toString()
+      #  "Invalid Date"
+      #  > Date.prototype.setYear(2010)
+      #  1262296800000
+      #  > Date.prototype.toString()
+      #  "Fri Jan 01 2010 00:00:00 GMT+0200 (EET)"
+
+      - key:
+          type: symbol
+          variant: hidden
+          string: "Value"
+        value:
+          type: double
+          bytes: "7ff8000000000000"  # DBL_NAN
+        attributes: "w"
+        duktape: true
+
+      # NOTE: The magic values for Date prototype are special.  The actual control
+      # flags needed for the built-ins don't fit into LIGHTFUNC magic field, so
+      # the values here are indices to duk__date_magics[] in duk_bi_date.c which
+      # contains the actual control flags.  Magic values here must be kept in strict
+      # sync with duk_bi_date.c!
+
+      - key: "toString"
+        value:
+          type: function
+          native: duk_bi_date_prototype_tostring_shared
+          length: 0
+          magic: 0
+      - key: "toDateString"
+        value:
+          type: function
+          native: duk_bi_date_prototype_tostring_shared
+          length: 0
+          magic: 1
+      - key: "toTimeString"
+        value:
+          type: function
+          native: duk_bi_date_prototype_tostring_shared
+          length: 0
+          magic: 2
+      - key: "toLocaleString"
+        value:
+          type: function
+          native: duk_bi_date_prototype_tostring_shared
+          length: 0
+          magic: 3
+      - key: "toLocaleDateString"
+        value:
+          type: function
+          native: duk_bi_date_prototype_tostring_shared
+          length: 0
+          magic: 4
+      - key: "toLocaleTimeString"
+        value:
+          type: function
+          native: duk_bi_date_prototype_tostring_shared
+          length: 0
+          magic: 5
+      - key: "toUTCString"
+        value:
+          type: function
+          native: duk_bi_date_prototype_tostring_shared
+          length: 0
+          magic: 6
+      - key: "toISOString"
+        value:
+          type: function
+          native: duk_bi_date_prototype_tostring_shared
+          length: 0
+          magic: 7
+      - key: "toJSON"
+        value:
+          type: function
+          native: duk_bi_date_prototype_to_json
+          length: 1
+      - key: "valueOf"
+        value:
+          type: function
+          native: duk_bi_date_prototype_value_of
+          length: 0
+      - key: "getTime"
+        value:
+          type: function
+          native: duk_bi_date_prototype_value_of  # Native function shared on purpose
+          length: 0
+      - key: "getFullYear"
+        value:
+          type: function
+          native: duk_bi_date_prototype_get_shared
+          length: 0
+          magic: 8
+      - key: "getUTCFullYear"
+        value:
+          type: function
+          native: duk_bi_date_prototype_get_shared
+          length: 0
+          magic: 9
+      - key: "getMonth"
+        value:
+          type: function
+          native: duk_bi_date_prototype_get_shared
+          length: 0
+          magic: 10
+      - key: "getUTCMonth"
+        value:
+          type: function
+          native: duk_bi_date_prototype_get_shared
+          length: 0
+          magic: 11
+      - key: "getDate"
+        value:
+          type: function
+          native: duk_bi_date_prototype_get_shared
+          length: 0
+          magic: 12
+      - key: "getUTCDate"
+        value:
+          type: function
+          native: duk_bi_date_prototype_get_shared
+          length: 0
+          magic: 13
+      - key: "getDay"
+        value:
+          type: function
+          native: duk_bi_date_prototype_get_shared
+          length: 0
+          magic: 14
+      - key: "getUTCDay"
+        value:
+          type: function
+          native: duk_bi_date_prototype_get_shared
+          length: 0
+          magic: 15
+      - key: "getHours"
+        value:
+          type: function
+          native: duk_bi_date_prototype_get_shared
+          length: 0
+          magic: 16
+      - key: "getUTCHours"
+        value:
+          type: function
+          native: duk_bi_date_prototype_get_shared
+          length: 0
+          magic: 17
+      - key: "getMinutes"
+        value:
+          type: function
+          native: duk_bi_date_prototype_get_shared
+          length: 0
+          magic: 18
+      - key: "getUTCMinutes"
+        value:
+          type: function
+          native: duk_bi_date_prototype_get_shared
+          length: 0
+          magic: 19
+      - key: "getSeconds"
+        value:
+          type: function
+          native: duk_bi_date_prototype_get_shared
+          length: 0
+          magic: 20
+      - key: "getUTCSeconds"
+        value:
+          type: function
+          native: duk_bi_date_prototype_get_shared
+          length: 0
+          magic: 21
+      - key: "getMilliseconds"
+        value:
+          type: function
+          native: duk_bi_date_prototype_get_shared
+          length: 0
+          magic: 22
+      - key: "getUTCMilliseconds"
+        value:
+          type: function
+          native: duk_bi_date_prototype_get_shared
+          length: 0
+          magic: 23
+      - key: "getTimezoneOffset"
+        value:
+          type: function
+          native: duk_bi_date_prototype_get_timezone_offset
+          length: 0
+      - key: "setTime"
+        value:
+          type: function
+          native: duk_bi_date_prototype_set_time
+          length: 1
+      - key: "setMilliseconds"
+        value:
+          type: function
+          native: duk_bi_date_prototype_set_shared
+          length: 1
+          magic: 24
+      - key: "setUTCMilliseconds"
+        value:
+          type: function
+          native: duk_bi_date_prototype_set_shared
+          length: 1
+          magic: 25
+      - key: "setSeconds"
+        value:
+          type: function
+          native: duk_bi_date_prototype_set_shared
+          length: 2
+          varargs: true
+          magic: 26
+      - key: "setUTCSeconds"
+        value:
+          type: function
+          native: duk_bi_date_prototype_set_shared
+          length: 2
+          varargs: true
+          magic: 27
+      - key: "setMinutes"
+        value:
+          type: function
+          native: duk_bi_date_prototype_set_shared
+          length: 3
+          varargs: true
+          magic: 28
+      - key: "setUTCMinutes"
+        value:
+          type: function
+          native: duk_bi_date_prototype_set_shared
+          length: 3
+          varargs: true
+          magic: 29
+      - key: "setHours"
+        value:
+          type: function
+          native: duk_bi_date_prototype_set_shared
+          length: 4
+          varargs: true
+          magic: 30
+      - key: "setUTCHours"
+        value:
+          type: function
+          native: duk_bi_date_prototype_set_shared
+          length: 4
+          varargs: true
+          magic: 31
+      - key: "setDate"
+        value:
+          type: function
+          native: duk_bi_date_prototype_set_shared
+          length: 1
+          magic: 32
+      - key: "setUTCDate"
+        value:
+          type: function
+          native: duk_bi_date_prototype_set_shared
+          length: 1
+          magic: 33
+      - key: "setMonth"
+        value:
+          type: function
+          native: duk_bi_date_prototype_set_shared
+          length: 2
+          varargs: true
+          magic: 34
+      - key: "setUTCMonth"
+        value:
+          type: function
+          native: duk_bi_date_prototype_set_shared
+          length: 2
+          varargs: true
+          magic: 35
+      - key: "setFullYear"
+        value:
+          type: function
+          native: duk_bi_date_prototype_set_shared
+          length: 3
+          varargs: true
+          magic: 36
+      - key: "setUTCFullYear"
+        value:
+          type: function
+          native: duk_bi_date_prototype_set_shared
+          length: 3
+          varargs: true
+          magic: 37
+      # Note: toGMTString() is required to initially be the same Function
+      # object as the initial Date.prototype.toUTCString.  In other words
+      # the following must compare true:
+      #
+      #   Date.prototype.toGMTString === Date.prototype.toUTCString.
+      #
+      # This is currently handled using a small tweak in duk_hthread_builtins.c
+      # (for RAM objects) and genbuiltins.py (for ROM objects).
+      #
+      # Note that while Smjs respects the requirement in E5 Section B.2.6,
+      # V8 does not.
+      - key: "toGMTString"
+        value:
+          type: function
+          native: duk_bi_date_prototype_tostring_shared
+          length: 0
+          magic: 6
+        section_b: true
+
+      # Non-standard extensions: E5 Section B.2.4, B.2.5, B.2.6
+      #
+      # "length" values are not given explicitly but follows the general rule.
+      # The lengths below agree with V8.
+
+      - key: "getYear"
+        value:
+          type: function
+          native: duk_bi_date_prototype_get_shared
+          length: 0
+          magic: 38
+        section_b: true
+      - key: "setYear"
+        value:
+          type: function
+          native: duk_bi_date_prototype_set_shared
+          length: 1
+          magic: 39
+        section_b: true
+
+      - key:  # @@toPrimitive
+          type: symbol
+          variant: wellknown
+          string: "Symbol.toPrimitive"
+        value:
+          type: function
+          native: duk_bi_date_prototype_toprimitive
+          length: 1
+          name: "[Symbol.toPrimitive]"
+        attributes: "c"
+        es6: true
+        present_if: DUK_USE_SYMBOL_BUILTIN
+
+  - id: bi_regexp_constructor
+    class: Function
+    internal_prototype: bi_function_prototype
+    native: duk_bi_regexp_constructor
+    callable: true
+    constructable: true
+    bidx: true
+    present_if: DUK_USE_REGEXP_SUPPORT
+
+    properties:
+      - key: "length"
+        value: 2
+        attributes: "c"
+      - key: "prototype"
+        value:
+          type: object
+          id: bi_regexp_prototype
+        attributes: ""
+      - key: "name"
+        value: "RegExp"
+        attributes: "c"
+
+      #- key:  # @@species
+      #    type: symbol
+      #    variant: wellknown
+      #    string: "Symbol.species"
+      #  value: XXX
+      #  es6: true
+
+  - id: bi_regexp_prototype
+    class: Object  # Object in ES2015; RegExp in ES5
+    internal_prototype: bi_object_prototype
+    bidx: true
+    present_if: DUK_USE_REGEXP_SUPPORT
+
+    properties:
+      - key: "constructor"
+        value:
+          type: object
+          id: bi_regexp_constructor
+        attributes: "wc"
+
+      # In ES2015 RegExp.prototype is no longer a RegExp instance.
+
+      # "lastIndex" is writable, even in the RegExp.prototype object.
+      # This matches at least V8.
+      - key: "lastIndex"
+        value: 0
+        attributes: "w"
+
+      - key: "exec"
+        value:
+          type: function
+          native: duk_bi_regexp_prototype_exec
+          length: 1
+      - key: "test"
+        value:
+          type: function
+          native: duk_bi_regexp_prototype_test
+          length: 1
+      - key: "toString"
+        value:
+          type: function
+          native: duk_bi_regexp_prototype_tostring
+          length: 0
+
+      # In ES2015 .source, .global, .ignoreCase, etc are accessors.
+      # .flags is ES2015 but must be present because the constructor now
+      # relies on its presence for e.g. new RegExp(/foo/gim).
+
+      - key: "flags"
+        value:
+          type: accessor
+          getter: duk_bi_regexp_prototype_flags
+          getter_nargs: 0
+          getter_magic: 0
+          # setter undefined
+        attributes: "c"
+        es6: true
+
+      - key: "source"
+        value:
+          type: accessor
+          getter: duk_bi_regexp_prototype_shared_getter
+          getter_nargs: 0
+          getter_magic: 16  # default case in shared getter (value quite arbitrary)
+          # setter undefined
+        attributes: "c"
+      - key: "global"
+        value:
+          type: accessor
+          getter: duk_bi_regexp_prototype_shared_getter
+          getter_nargs: 0
+          getter_magic: 0
+          # setter undefined
+        attributes: "c"
+      - key: "ignoreCase"
+        value:
+          type: accessor
+          getter: duk_bi_regexp_prototype_shared_getter
+          getter_nargs: 0
+          getter_magic: 1
+          # setter undefined
+        attributes: "c"
+      - key: "multiline"
+        value:
+          type: accessor
+          getter: duk_bi_regexp_prototype_shared_getter
+          getter_nargs: 0
+          getter_magic: 2
+          # setter undefined
+        attributes: "c"
+      # .sticky and .unicode commented out; don't provide until implemented
+      # to avoid interfering with application feature detection code
+      #- key: "sticky"
+      #  value:
+      #    type: accessor
+      #    getter: duk_bi_regexp_prototype_shared_getter
+      #    getter_nargs: 0
+      #    getter_magic: 3
+      #    # setter undefined
+      #  attributes: "c"
+      #  es6: true
+      #  present_if: DUK_USE_ES6
+      #- key: "unicode"
+      #  value:
+      #    type: accessor
+      #    getter: duk_bi_regexp_prototype_shared_getter
+      #    getter_nargs: 0
+      #    getter_magic: 4
+      #    # setter undefined
+      #  attributes: "c"
+      #  es6: true
+      #  present_if: DUK_USE_ES6
+
+      #- key:  # @@match
+      #    type: symbol
+      #    variant: wellknown
+      #    string: "Symbol.match"
+      #  value: XXX
+      #  es6: true
+      #- key:  # @@replace
+      #    type: symbol
+      #    variant: wellknown
+      #    string: "Symbol.replace"
+      #  value: XXX
+      #  es6: true
+      #- key:  # @@search
+      #    type: symbol
+      #    variant: wellknown
+      #    string: "Symbol.search"
+      #  value: XXX
+      #  es6: true
+      #- key:  # @@split
+      #    type: symbol
+      #    variant: wellknown
+      #    string: "Symbol.split"
+      #  value: XXX
+      #  es6: true
+
+  - id: bi_error_constructor
+    class: Function
+    internal_prototype: bi_function_prototype
+    native: duk_bi_error_constructor_shared
+    callable: true
+    constructable: true
+    magic:
+      type: bidx
+      id: bi_error_prototype
+    bidx: true
+
+    properties:
+      - key: "length"
+        value: 1
+        attributes: "c"
+      - key: "prototype"
+        value:
+          type: object
+          id: bi_error_prototype
+        attributes: ""
+      - key: "name"
+        value: "Error"
+        attributes: "c"
+
+  - id: bi_error_prototype
+    class: Error
+    internal_prototype: bi_object_prototype
+    bidx: true
+
+    properties:
+      - key: "constructor"
+        value:
+          type: object
+          id: bi_error_constructor
+        attributes: "wc"
+
+      # Standard properties; property attributes:
+      #
+      # "message" is writable and deletable.  This matches the default
+      # attributes of "wc".  V8 and Smjs both match this.
+      #
+      # "name" is writable and deletable.  This matches the default
+      # attributes too.  Smjs behaves like this, but in V8 "name" is
+      # non-writable:
+      #
+      #  > Object.getOwnPropertyDescriptor(Error.prototype, "name")
+      #  { value: "Error",
+      #    writable: false,
+      #    enumerable: false,
+      #    configurable: false }
+      #
+      # We go with the standard attributes ("wc").
+
+      - key: "name"
+        value: "Error"
+      - key: "message"
+        value: ""
+
+      # Custom properties
+
+      - key: "stack"
+        value:
+          type: accessor
+          getter: duk_bi_error_prototype_stack_getter
+          setter: duk_bi_error_prototype_stack_setter
+          getter_nargs: 0
+          setter_nargs: 1
+          getter_magic: 0
+          setter_magic: 0
+        attributes: "c"
+        duktape: true
+      - key: "fileName"
+        value:
+          type: accessor
+          getter: duk_bi_error_prototype_filename_getter
+          setter: duk_bi_error_prototype_filename_setter
+          getter_nargs: 0
+          setter_nargs: 1
+          getter_magic: 0
+          setter_magic: 0
+        attributes: "c"
+        duktape: true
+      - key: "lineNumber"
+        value:
+          type: accessor
+          getter: duk_bi_error_prototype_linenumber_getter
+          setter: duk_bi_error_prototype_linenumber_setter
+          getter_nargs: 0
+          setter_nargs: 1
+          getter_magic: 0
+          setter_magic: 0
+        attributes: "c"
+        duktape: true
+      # XXX: columnNumber
+
+      - key: "toString"
+        value:
+          type: function
+          native: duk_bi_error_prototype_to_string
+          length: 0
+
+  # NOTE: Error subclass prototypes have an empty "message" property, even
+  # though one is inherited already from Error prototype (E5 Section 15.11.7.10).
+  #
+  # V8 does not respect this: Error subclasses ("native Errors" in E5 spec)
+  # do not have a "message" property at all.  Also, in V8 their "name" property
+  # is not writable and configurable as E5 requires.
+
+  - id: bi_eval_error_constructor
+    class: Function
+    internal_prototype: bi_error_constructor
+    native: duk_bi_error_constructor_shared
+    callable: true
+    constructable: true
+    magic:
+      type: bidx
+      id: bi_eval_error_prototype
+    bidx: true
+
+    properties:
+      - key: "length"
+        value: 1
+        attributes: "c"
+      - key: "prototype"
+        value:
+          type: object
+          id: bi_eval_error_prototype
+        attributes: ""
+      - key: "name"
+        value: "EvalError"
+        attributes: "c"
+
+  - id: bi_eval_error_prototype
+    class: Error
+    internal_prototype: bi_error_prototype
+    bidx: true
+
+    properties:
+      - key: "constructor"
+        value:
+          type: object
+          id: bi_eval_error_constructor
+        attributes: "wc"
+      - key: "name"
+        value: "EvalError"
+      - key: "message"
+        value: ""
+
+  - id: bi_range_error_constructor
+    class: Function
+    internal_prototype: bi_error_constructor
+    native: duk_bi_error_constructor_shared
+    callable: true
+    constructable: true
+    magic:
+      type: bidx
+      id: bi_range_error_prototype
+    bidx: true
+
+    properties:
+      - key: "length"
+        value: 1
+        attributes: "c"
+      - key: "prototype"
+        value:
+          type: object
+          id: bi_range_error_prototype
+        attributes: ""
+      - key: "name"
+        value: "RangeError"
+        attributes: "c"
+
+  - id: bi_range_error_prototype
+    class: Error
+    internal_prototype: bi_error_prototype
+    bidx: true
+
+    properties:
+      - key: "constructor"
+        value:
+          type: object
+          id: bi_range_error_constructor
+        attributes: "wc"
+      - key: "name"
+        value: "RangeError"
+      - key: "message"
+        value: ""
+
+  - id: bi_reference_error_constructor
+    class: Function
+    internal_prototype: bi_error_constructor
+    native: duk_bi_error_constructor_shared
+    callable: true
+    constructable: true
+    magic:
+      type: bidx
+      id: bi_reference_error_prototype
+    bidx: true
+
+    properties:
+      - key: "length"
+        value: 1
+        attributes: "c"
+      - key: "prototype"
+        value:
+          type: object
+          id: bi_reference_error_prototype
+        attributes: ""
+      - key: "name"
+        value: "ReferenceError"
+        attributes: "c"
+
+  - id: bi_reference_error_prototype
+    class: Error
+    internal_prototype: bi_error_prototype
+    bidx: true
+
+    properties:
+      - key: "constructor"
+        value:
+          type: object
+          id: bi_reference_error_constructor
+        attributes: "wc"
+      - key: "name"
+        value: "ReferenceError"
+      - key: "message"
+        value: ""
+
+  - id: bi_syntax_error_constructor
+    class: Function
+    internal_prototype: bi_error_constructor
+    native: duk_bi_error_constructor_shared
+    callable: true
+    constructable: true
+    magic:
+      type: bidx
+      id: bi_syntax_error_prototype
+    bidx: true
+
+    properties:
+      - key: "length"
+        value: 1
+        attributes: "c"
+      - key: "prototype"
+        value:
+          type: object
+          id: bi_syntax_error_prototype
+        attributes: ""
+      - key: "name"
+        value: "SyntaxError"
+        attributes: "c"
+
+  - id: bi_syntax_error_prototype
+    class: Error
+    internal_prototype: bi_error_prototype
+    bidx: true
+
+    properties:
+      - key: "constructor"
+        value:
+          type: object
+          id: bi_syntax_error_constructor
+        attributes: "wc"
+      - key: "name"
+        value: "SyntaxError"
+      - key: "message"
+        value: ""
+
+  - id: bi_type_error_constructor
+    class: Function
+    internal_prototype: bi_error_constructor
+    native: duk_bi_error_constructor_shared
+    callable: true
+    constructable: true
+    magic:
+      type: bidx
+      id: bi_type_error_prototype
+    bidx: true
+
+    properties:
+      - key: "length"
+        value: 1
+        attributes: "c"
+      - key: "prototype"
+        value:
+          type: object
+          id: bi_type_error_prototype
+        attributes: ""
+      - key: "name"
+        value: "TypeError"
+        attributes: "c"
+
+  - id: bi_type_error_prototype
+    class: Error
+    internal_prototype: bi_error_prototype
+    bidx: true
+
+    properties:
+      - key: "constructor"
+        value:
+          type: object
+          id: bi_type_error_constructor
+        attributes: "wc"
+      - key: "name"
+        value: "TypeError"
+      - key: "message"
+        value: ""
+
+  - id: bi_uri_error_constructor
+    class: Function
+    internal_prototype: bi_error_constructor
+    native: duk_bi_error_constructor_shared
+    callable: true
+    constructable: true
+    magic:
+      type: bidx
+      id: bi_uri_error_prototype
+    bidx: true
+
+    properties:
+      - key: "length"
+        value: 1
+        attributes: "c"
+      - key: "prototype"
+        value:
+          type: object
+          id: bi_uri_error_prototype
+        attributes: ""
+      - key: "name"
+        value: "URIError"
+        attributes: "c"
+
+  - id: bi_uri_error_prototype
+    class: Error
+    internal_prototype: bi_error_prototype
+    bidx: true
+
+    properties:
+      - key: "constructor"
+        value:
+          type: object
+          id: bi_uri_error_constructor
+        attributes: "wc"
+      - key: "name"
+        value: "URIError"
+      - key: "message"
+        value: ""
+
+  - id: bi_math
+    class: Math
+    internal_prototype: bi_object_prototype
+    bidx: false
+    present_if: DUK_USE_MATH_BUILTIN
+
+    # apparently no external "prototype" property
+    # apparently no external "constructor" property
+
+    properties:
+      - key: "E"
+        value:
+          type: double
+          bytes: "4005bf0a8b145769"  # DBL_E
+        attributes: ""
+      - key: "LN10"
+        value:
+          type: double
+          bytes: "40026bb1bbb55516"  # DBL_LN10
+        attributes: ""
+      - key: "LN2"
+        value:
+          type: double
+          bytes: "3fe62e42fefa39ef"  # DBL_LN2
+        attributes: ""
+      - key: "LOG2E"
+        value:
+          type: double
+          bytes: "3ff71547652b82fe"  # DBL_LOG2E
+        attributes: ""
+      - key: "LOG10E"
+        value:
+          type: double
+          bytes: "3fdbcb7b1526e50e"  # DBL_LOG10E
+        attributes: ""
+      - key: "PI"
+        value:
+          type: double
+          bytes: "400921fb54442d18"  # DBL_PI
+        attributes: ""
+      - key: "SQRT1_2"
+        value:
+          type: double
+          bytes: "3fe6a09e667f3bcd"  # DBL_SQRT1_2
+        attributes: ""
+      - key: "SQRT2"
+        value:
+          type: double
+          bytes: "3ff6a09e667f3bcd"  # DBL_SQRT2
+        attributes: ""
+
+      - key: "abs"
+        value:
+          type: function
+          native: duk_bi_math_object_onearg_shared
+          length: 1
+          magic:
+            type: math_onearg
+            funcname: "fabs"
+      - key: "acos"
+        value:
+          type: function
+          native: duk_bi_math_object_onearg_shared
+          length: 1
+          magic:
+            type: math_onearg
+            funcname: "acos"
+      - key: "asin"
+        value:
+          type: function
+          native: duk_bi_math_object_onearg_shared
+          length: 1
+          magic:
+            type: math_onearg
+            funcname: "asin"
+      - key: "atan"
+        value:
+          type: function
+          native: duk_bi_math_object_onearg_shared
+          length: 1
+          magic:
+            type: math_onearg
+            funcname: "atan"
+      - key: "atan2"
+        value:
+          type: function
+          native: duk_bi_math_object_twoarg_shared
+          length: 2
+          magic:
+            type: math_twoarg
+            funcname: "atan2"
+      - key: "cbrt"
+        value:
+          type: function
+          native: duk_bi_math_object_onearg_shared
+          length: 1
+          magic:
+            type: math_onearg
+            funcname: "cbrt"
+        es6: true
+        present_if: DUK_USE_ES6
+      - key: "ceil"
+        value:
+          type: function
+          native: duk_bi_math_object_onearg_shared
+          length: 1
+          magic:
+            type: math_onearg
+            funcname: "ceil"
+      - key: "clz32"
+        value:
+          type: function
+          native: duk_bi_math_object_clz32
+          length: 1
+        es6: true
+        present_if: DUK_USE_ES6
+      - key: "cos"
+        value:
+          type: function
+          native: duk_bi_math_object_onearg_shared
+          length: 1
+          magic:
+            type: math_onearg
+            funcname: "cos"
+      - key: "exp"
+        value:
+          type: function
+          native: duk_bi_math_object_onearg_shared
+          length: 1
+          magic:
+            type: math_onearg
+            funcname: "exp"
+      - key: "floor"
+        value:
+          type: function
+          native: duk_bi_math_object_onearg_shared
+          length: 1
+          magic:
+            type: math_onearg
+            funcname: "floor"
+      - key: "hypot"
+        value:
+          type: function
+          native: duk_bi_math_object_hypot
+          length: 2
+          varargs: true
+        es6: true
+        present_if: DUK_USE_ES6
+      - key: "imul"
+        value:
+          type: function
+          native: duk_bi_math_object_imul
+          length: 2
+        es6: true
+        present_if: DUK_USE_ES6
+      - key: "log"
+        value:
+          type: function
+          native: duk_bi_math_object_onearg_shared
+          length: 1
+          magic:
+            type: math_onearg
+            funcname: "log"
+      - key: "log2"
+        value:
+          type: function
+          native: duk_bi_math_object_onearg_shared
+          length: 1
+          magic:
+            type: math_onearg
+            funcname: "log2"
+        es6: true
+        present_if: DUK_USE_ES6
+      - key: "log10"
+        value:
+          type: function
+          native: duk_bi_math_object_onearg_shared
+          length: 1
+          magic:
+            type: math_onearg
+            funcname: "log10"
+        es6: true
+        present_if: DUK_USE_ES6
+      - key: "max"
+        value:
+          type: function
+          native: duk_bi_math_object_max
+          length: 2
+          varargs: true
+      - key: "min"
+        value:
+          type: function
+          native: duk_bi_math_object_min
+          length: 2
+          varargs: true
+      - key: "pow"
+        value:
+          type: function
+          native: duk_bi_math_object_twoarg_shared
+          length: 2
+          magic:
+            type: math_twoarg
+            funcname: "pow"
+      - key: "random"
+        value:
+          type: function
+          native: duk_bi_math_object_random
+          length: 0
+      - key: "round"
+        value:
+          type: function
+          native: duk_bi_math_object_onearg_shared
+          length: 1
+          magic:
+            type: math_onearg
+            funcname: "round"
+      - key: "sign"
+        value:
+          type: function
+          native: duk_bi_math_object_sign
+          length: 1
+        es6: true
+        present_if: DUK_USE_ES6
+      - key: "sin"
+        value:
+          type: function
+          native: duk_bi_math_object_onearg_shared
+          length: 1
+          magic:
+            type: math_onearg
+            funcname: "sin"
+      - key: "sqrt"
+        value:
+          type: function
+          native: duk_bi_math_object_onearg_shared
+          length: 1
+          magic:
+            type: math_onearg
+            funcname: "sqrt"
+      - key: "tan"
+        value:
+          type: function
+          native: duk_bi_math_object_onearg_shared
+          length: 1
+          magic:
+            type: math_onearg
+            funcname: "tan"
+      - key: "trunc"
+        value:
+          type: function
+          native: duk_bi_math_object_onearg_shared
+          length: 1
+          magic:
+            type: math_onearg
+            funcname: "trunc"
+        es6: true
+        present_if: DUK_USE_ES6
+      - key:
+          type: symbol
+          variant: wellknown
+          string: "Symbol.toStringTag"
+        value: "Math"
+        attributes: "c"
+        es6: true
+        present_if: DUK_USE_SYMBOL_BUILTIN
+
+  - id: bi_json
+    class: JSON
+    internal_prototype: bi_object_prototype
+    bidx: false
+    present_if:
+      - DUK_USE_JSON_BUILTIN
+      - DUK_USE_JSON_SUPPORT
+
+    # apparently no external "prototype" property
+    # apparently no external "constructor" property
+
+    properties:
+      - key: "parse"
+        value:
+          type: function
+          native: duk_bi_json_object_parse
+          length: 2
+      - key: "stringify"
+        value:
+          type: function
+          native: duk_bi_json_object_stringify
+          length: 3
+
+      #- key:  # @@toStringTag
+      #    type: symbol
+      #    variant: wellknown
+      #    string: "Symbol.toStringTag"
+      #  value: XXX
+      #  es6: true
+      #  present_if: DUK_USE_SYMBOL_BUILTIN
+
+  # E5 Section 13.2.3
+  - id: bi_type_error_thrower
+    class: Function
+    internal_prototype: bi_function_prototype
+    native: duk_bi_type_error_thrower
+    callable: true
+    constructable: false  # This is not clearly specified, but [[Construct]] is not set in E5 Section 13.2.3.
+    bidx: true
+
+    properties:
+      - key: "length"
+        value: 0
+        attributes: "c"
+      # Custom name, matches V8; ES2016 describes %ThrowTypeError% as being
+      # anonymous.
+      - key: "name"
+        value: "ThrowTypeError"
+        attributes: "c"
+        duktape: true
+
+  #
+  #  Duktape-specific built-ins
+  #
+
+  - id: bi_duktape
+    class: Object
+    internal_prototype: bi_object_prototype
+    duktape: true
+    bidx: true
+    #present_if: DUK_USE_DUKTAPE_BUILTIN  # Present even when properties disabled, error augmentation relies on it
+
+    # There are a few properties not listed here:
+    #   - "version" is added from parameter file automatically.
+    #   - "env" is added dynamically at runtime.
+
+    properties:
+      - key: "Pointer"
+        value:
+          type: object
+          id: bi_pointer_constructor
+        duktape: true
+        present_if: DUK_USE_DUKTAPE_BUILTIN
+      - key: "Thread"
+        value:
+          type: object
+          id: bi_thread_constructor
+        duktape: true
+        present_if:
+          - DUK_USE_COROUTINE_SUPPORT
+          - DUK_USE_DUKTAPE_BUILTIN
+      - key: "info"
+        value:
+          type: function
+          native: duk_bi_duktape_object_info
+          length: 1
+        duktape: true
+        present_if: DUK_USE_DUKTAPE_BUILTIN
+      - key: "act"
+        value:
+          type: function
+          native: duk_bi_duktape_object_act
+          length: 1
+        duktape: true
+        present_if: DUK_USE_DUKTAPE_BUILTIN
+      - key: "gc"
+        value:
+          type: function
+          native: duk_bi_duktape_object_gc
+          length: 1
+        duktape: true
+        present_if: DUK_USE_DUKTAPE_BUILTIN
+      - key: "fin"
+        value:
+          type: function
+          native: duk_bi_duktape_object_fin
+          length: 0
+          varargs: true
+        duktape: true
+        present_if:
+          - DUK_USE_FINALIZER_SUPPORT
+          - DUK_USE_DUKTAPE_BUILTIN
+      - key: "enc"
+        value:
+          type: function
+          native: duk_bi_duktape_object_enc
+          length: 0
+          varargs: true
+        duktape: true
+        present_if: DUK_USE_DUKTAPE_BUILTIN
+      - key: "dec"
+        value:
+          type: function
+          native: duk_bi_duktape_object_dec
+          length: 0
+          varargs: true
+        duktape: true
+        present_if: DUK_USE_DUKTAPE_BUILTIN
+      - key: "compact"
+        value:
+          type: function
+          native: duk_bi_duktape_object_compact
+          length: 1
+        duktape: true
+        present_if: DUK_USE_DUKTAPE_BUILTIN
+
+  - id: bi_thread_constructor
+    class: Function
+    internal_prototype: bi_function_prototype
+    varargs: true
+    native: duk_bi_thread_constructor
+    callable: true
+    constructable: true
+    duktape: true
+    bidx: false
+    present_if: DUK_USE_COROUTINE_SUPPORT
+
+    properties:
+      - key: "length"
+        value: 1
+        attributes: "c"
+        duktape: true
+      - key: "prototype"
+        value:
+          type: object
+          id: bi_thread_prototype
+        attributes: ""
+        duktape: true
+      - key: "name"
+        value: "Thread"
+        attributes: "c"
+        duktape: true
+
+      # "yield" is a reserved word but does not prevent its use as a property name
+      - key: "yield"
+        value:
+          type: function
+          native: duk_bi_thread_yield
+          length: 2
+        duktape: true
+        auto_lightfunc: false  # automatic lightfunc conversion clashes with internal implementation
+        present_if: DUK_USE_COROUTINE_SUPPORT
+      - key: "resume"
+        value:
+          type: function
+          native: duk_bi_thread_resume
+          length: 3
+        duktape: true
+        auto_lightfunc: false  # automatic lightfunc conversion clashes with internal implementation
+        present_if: DUK_USE_COROUTINE_SUPPORT
+      - key: "current"
+        value:
+          type: function
+          native: duk_bi_thread_current
+          length: 0
+        duktape: true
+        present_if: DUK_USE_COROUTINE_SUPPORT
+
+  - id: bi_thread_prototype
+    class: Object
+    internal_prototype: bi_object_prototype
+    duktape: true
+    bidx: true
+    # Present even when DUK_USE_DUKTAPE_BUILTIN disabled.
+
+    # Must be present even if coroutines are disabled for inheritance.
+    # Because Duktape.Thread.prototype is missing, the only way to access
+    # the prototype to e.g. add methods is to look it up from a thread
+    # instance.
+
+    # Note: we don't keep up with the E5 convention that prototype objects
+    # are some faux instances of their type (e.g. Date.prototype is a Date
+    # instance).
+    #
+    # Also, we don't currently have a "constructor" property because there is
+    # no explicit constructor object.
+
+    properties:
+      - key: "constructor"
+        value:
+          type: object
+          id: bi_thread_constructor
+        attributes: "wc"
+        duktape: true
+        present_if:
+          - DUK_USE_COROUTINE_SUPPORT
+          - DUK_USE_DUKTAPE_BUILTIN
+
+      # toString() and valueOf() are inherited from Object.prototype
+
+  - id: bi_pointer_constructor
+    class: Function
+    internal_prototype: bi_function_prototype
+    varargs: true
+    native: duk_bi_pointer_constructor
+    callable: true
+    constructable: true
+    duktape: true
+    bidx: false
+
+    properties:
+      - key: "length"
+        value: 1
+        attributes: "c"
+        duktape: true
+      - key: "prototype"
+        value:
+          type: object
+          id: bi_pointer_prototype
+        attributes: ""
+        duktape: true
+      - key: "name"
+        value: "Pointer"
+        attributes: "c"
+        duktape: true
+
+  - id: bi_pointer_prototype
+    class: Pointer
+    internal_prototype: bi_object_prototype
+    duktape: true
+    bidx: true
+    # Present even when DUK_USE_DUKTAPE_BUILTIN disabled.
+
+    properties:
+      - key: "constructor"
+        value:
+          type: object
+          id: bi_pointer_constructor
+        attributes: "wc"
+        duktape: true
+        present_if: DUK_USE_DUKTAPE_BUILTIN
+
+      - key: "toString"
+        value:
+          type: function
+          native: duk_bi_pointer_prototype_tostring_shared
+          length: 0
+          magic: 1  # magic = to_string
+        duktape: true
+        present_if: DUK_USE_DUKTAPE_BUILTIN
+      - key: "valueOf"
+        value:
+          type: function
+          native: duk_bi_pointer_prototype_tostring_shared
+          length: 0
+          magic: 0  # magic = to_string
+        duktape: true
+        present_if: DUK_USE_DUKTAPE_BUILTIN
+
+  # This is an Error *instance* used to avoid allocation when a "double error" occurs.
+  # The object is "frozen and sealed" to avoid code accidentally modifying the instance.
+  # This is important because the error is rethrown as is.
+
+  - id: bi_double_error
+    class: Error
+    internal_prototype: bi_error_prototype
+    extensible: false
+    duktape: true
+    bidx: true
+
+    # Note: this is the only non-extensible built-in, so there is special
+    # post-tweak in duk_hthread_builtins.c to handle this.
+
+    properties:
+      - key: "name"
+        value: "DoubleError"
+        attributes: ""
+        duktape: true
+      - key: "message"
+        value: "error in error handling"
+        attributes: ""
+        duktape: true
+
+  #
+  #  ES2015
+  #
+
+  - id: bi_proxy_constructor
+    class: Function
+    internal_prototype: bi_function_prototype
+    # no external prototype
+    native: duk_bi_proxy_constructor
+    callable: true
+    constructable: true
+    es6: true
+    bidx: false
+    present_if: DUK_USE_ES6_PROXY
+
+    properties:
+      - key: "length"
+        value: 2
+        attributes: "c"
+        es6: true
+      - key: "name"
+        value: "Proxy"
+        attributes: "c"
+        es6: true
+      #- key: "revocable"
+      #  value:
+      #    type: function
+      #    native: duk_bi_proxy_constructor_revocable
+      #    length: 2
+      #  es6: true
+
+  - id: bi_reflect
+    class: Object
+    internal_prototype: bi_object_prototype
+    bidx: false
+    present_if: DUK_USE_REFLECT_BUILTIN
+
+    properties:
+      - key: "apply"
+        value:
+          type: function
+          native: duk_bi_reflect_apply
+          length: 3
+          magic: 2  # see duk_js_call.c
+          special_call: true
+        auto_lightfunc: false  # automatic lightfunc conversion clashes with internal implementation
+        es6: true
+      - key: "construct"
+        value:
+          type: function
+          native: duk_bi_reflect_construct
+          length: 2
+          magic: 3  # see duk_js_call.c
+          special_call: true
+        auto_lightfunc: false  # automatic lightfunc conversion clashes with internal implementation
+        es6: true
+      - key: "defineProperty"
+        value:
+          type: function
+          native: duk_bi_object_constructor_define_property
+          length: 3
+          magic: 1
+        es6: true
+      - key: "deleteProperty"
+        value:
+          type: function
+          native: duk_bi_reflect_object_delete_property
+          length: 2
+        es6: true
+      - key: "get"
+        value:
+          type: function
+          native: duk_bi_reflect_object_get
+          length: 2
+          varargs: true
+        es6: true
+      - key: "getOwnPropertyDescriptor"
+        value:
+          type: function
+          native: duk_bi_object_constructor_get_own_property_descriptor
+          length: 2
+          magic: 1
+        es6: true
+      - key: "getPrototypeOf"
+        value:
+          type: function
+          native: duk_bi_object_getprototype_shared
+          length: 1
+          magic: 2
+        es6: true
+      - key: "has"
+        value:
+          type: function
+          native: duk_bi_reflect_object_has
+          length: 2
+        es6: true
+      - key: "isExtensible"
+        value:
+          type: function
+          native: duk_bi_object_constructor_is_extensible
+          length: 1
+          magic: 1
+        es6: true
+      - key: "ownKeys"
+        value:
+          type: function
+          native: duk_bi_object_constructor_keys_shared
+          length: 1
+          magic: 3
+        es6: true
+      - key: "preventExtensions"
+        value:
+          type: function
+          native: duk_bi_object_constructor_prevent_extensions
+          length: 1
+          magic: 1
+        es6: true
+      - key: "set"
+        value:
+          type: function
+          native: duk_bi_reflect_object_set
+          length: 3
+          varargs: true
+        es6: true
+      - key: "setPrototypeOf"
+        value:
+          type: function
+          native: duk_bi_object_setprototype_shared
+          length: 2
+          magic: 2
+        es6: true
+
+  - id: bi_symbol_constructor
+    class: Function
+    internal_prototype: bi_function_prototype
+    native: duk_bi_symbol_constructor_shared
+    callable: true
+    constructable: false  # new Symbol() not allowed
+    es6: true
+    nargs: 1
+    magic: 0
+    bidx: false
+    present_if: DUK_USE_SYMBOL_BUILTIN
+
+    properties:
+      - key: "length"
+        value: 0
+        attributes: "c"
+        es6: true
+      - key: "name"
+        value: "Symbol"
+        attributes: "c"
+        es6: true
+      - key: "prototype"
+        value:
+          type: object
+          id: bi_symbol_prototype
+        attributes: ""
+        es6: true
+
+      - key: "for"
+        value:
+          type: function
+          native: duk_bi_symbol_constructor_shared
+          magic: 1
+          length: 1
+          nargs: 1
+        attributes: "wc"
+        es6: true
+      - key: "keyFor"
+        value:
+          type: function
+          native: duk_bi_symbol_key_for
+          length: 1
+          nargs: 1
+        attributes: "wc"
+        es6: true
+
+      - key: "hasInstance"
+        value:
+          type: symbol
+          variant: wellknown
+          string: "Symbol.hasInstance"
+        attributes: ""
+        es6: true
+        present_if: DUK_USE_SYMBOL_BUILTIN
+      - key: "isConcatSpreadable"
+        value:
+          type: symbol
+          variant: wellknown
+          string: "Symbol.isConcatSpreadable"
+        attributes: ""
+        es6: true
+      - key: "iterator"
+        value:
+          type: symbol
+          variant: wellknown
+          string: "Symbol.iterator"
+        attributes: ""
+        es6: true
+        present_if: DUK_USE_SYMBOL_BUILTIN
+      #- key: "match"
+      #  value:
+      #    type: symbol
+      #    variant: wellknown
+      #    string: "Symbol.match"
+      #  attributes: ""
+      #  es6: true
+      #- key: "replace"
+      #  value:
+      #    type: symbol
+      #    variant: wellknown
+      #    string: "Symbol.replace"
+      #  attributes: ""
+      #  es6: true
+      #- key: "search"
+      #  value:
+      #    type: symbol
+      #    variant: wellknown
+      #    string: "Symbol.search"
+      #  attributes: ""
+      #  es6: true
+      #- key: "species"
+      #  value:
+      #    type: symbol
+      #    variant: wellknown
+      #    string: "Symbol.species"
+      #  attributes: ""
+      #  es6: true
+      #- key: "split"
+      #  value:
+      #    type: symbol
+      #    variant: wellknown
+      #    string: "Symbol.split"
+      #  attributes: ""
+      #  es6: true
+      - key: "toPrimitive"
+        value:
+          type: symbol
+          variant: wellknown
+          string: "Symbol.toPrimitive"
+        attributes: ""
+        es6: true
+      - key: "toStringTag"
+        value:
+          type: symbol
+          variant: wellknown
+          string: "Symbol.toStringTag"
+        attributes: ""
+        es6: true
+      #- key: "unscopables"
+      #  value:
+      #    type: symbol
+      #    variant: wellknown
+      #    string: "Symbol.unscopables"
+      #  attributes: ""
+      #  es6: true
+
+  - id: bi_symbol_prototype
+    class: Object
+    internal_prototype: bi_object_prototype
+    es6: true
+    bidx: true
+    # Present even when DUK_USE_SYMBOL_BUILTIN disabled so that symbol values
+    # created from C code can inherit through the Symbol prototype.
+
+    properties:
+      - key: "constructor"
+        value:
+          type: object
+          id: bi_symbol_constructor
+        attributes: "wc"
+        es6: true
+        present_if: DUK_USE_SYMBOL_BUILTIN
+
+      - key: "toString"
+        value:
+          type: function
+          native: duk_bi_symbol_tostring_shared
+          nargs: 0
+          magic: 0
+        attributes: "wc"
+        es6: true
+        present_if: DUK_USE_SYMBOL_BUILTIN
+      - key: "valueOf"
+        value:
+          type: function
+          native: duk_bi_symbol_tostring_shared
+          nargs: 0
+          magic: 1
+        attributes: "wc"
+        es6: true
+        present_if: DUK_USE_SYMBOL_BUILTIN
+      - key:  # @@toPrimitive
+          type: symbol
+          variant: wellknown
+          string: "Symbol.toPrimitive"
+        value:
+          type: function
+          native: duk_bi_symbol_toprimitive
+          nargs: 0  # hint is ignored
+          length: 0
+          name: "[Symbol.toPrimitive]"
+        attributes: "c"
+        es6: true
+        present_if: DUK_USE_SYMBOL_BUILTIN
+      - key:  # @@toStringTag
+          type: symbol
+          variant: wellknown
+          string: "Symbol.toStringTag"
+        value: "Symbol"
+        attributes: "c"
+        es6: true
+        present_if: DUK_USE_SYMBOL_BUILTIN
+
+  - id: bi_promise_constructor
+    class: Function
+    internal_prototype: bi_function_prototype
+    native: duk_bi_promise_constructor
+    callable: true
+    constructable: true
+    es6: true
+    nargs: 1
+    magic: 0
+    bidx: false
+    present_if: DUK_USE_PROMISE_BUILTIN
+
+    properties:
+      - key: "length"
+        value: 1
+        attributes: "c"
+        es6: true
+      - key: "name"
+        value: "Promise"
+        attributes: "c"
+        es6: true
+      - key: 'prototype'
+        value:
+          type: object
+          id: bi_promise_prototype
+        attributes: ""
+        es6: true
+      - key: 'all'
+        value:
+          type: function
+          native: duk_bi_promise_all
+          length: 1
+          varargs: false
+        attributes: 'wc'
+        es6: true
+      - key: 'race'
+        value:
+          type: function
+          native: duk_bi_promise_race
+          length: 1
+          varargs: false
+        attributes: 'wc'
+        es6: true
+      - key: 'reject'
+        value:
+          type: function
+          native: duk_bi_promise_reject
+          length: 1
+          varargs: false
+        attributes: 'wc'
+        es6: true
+      - key: 'resolve'
+        value:
+          type: function
+          native: duk_bi_promise_resolve
+          length: 1
+          varargs: false
+        attributes: 'wc'
+        es6: true
+      # @@species
+      # 'defer' is obsolete and not implemented:
+      # https://developer.mozilla.org/en-US/docs/Mozilla/JavaScript_code_modules/Promise.jsm/Deferred.
+      # 'accept' is obsolete and not implemented:
+      #https://bugs.chromium.org/p/v8/issues/detail?id=3238
+      # 'try': https://github.com/tc39/proposal-promise-try
+
+  - id: bi_promise_prototype
+    class: Object
+    internal_prototype: bi_object_prototype
+    es6: true
+    bidx: true
+    present_if: DUK_USE_PROMISE_BUILTIN
+
+    properties:
+      - key: 'constructor'
+        value:
+          type: object
+          id: bi_promise_constructor
+        attributes: "wc"
+        es6: true
+      - key: 'catch'
+        value:
+          type: function
+          native: duk_bi_promise_catch
+          length: 1
+          varargs: false
+        attributes: 'wc'
+        es6: true
+      - key: 'then'
+        value:
+          type: function
+          native: duk_bi_promise_then
+          length: 2
+          varargs: false
+        attributes: 'wc'
+        es6: true
+      # @@toStringTag
+      # 'chain' is an obsolete variant of .then and not implemented:
+      # https://stackoverflow.com/questions/34713965/the-feature-of-method-promise-prototype-chain-in-chrome
+
+      # 'finally': https://github.com/tc39/proposal-promise-finally
+
+  #
+  #  TypedArray
+  #
+
+  - id: bi_arraybuffer_constructor
+    class: Function
+    internal_prototype: bi_function_prototype
+    varargs: false
+    native: duk_bi_arraybuffer_constructor
+    callable: true
+    constructable: true
+    typedarray: true
+    es6: true
+    bidx: false
+    present_if: DUK_USE_BUFFEROBJECT_SUPPORT
+
+    properties:
+      - key: "length"
+        value: 1
+        attributes: "c"
+        typedarray: true
+        es6: true
+      - key: "prototype"
+        value:
+          type: object
+          id: bi_arraybuffer_prototype
+        attributes: ""
+        typedarray: true
+        es6: true
+      - key: "name"
+        value: "ArrayBuffer"
+        attributes: "c"
+        es6: true
+      - key: "isView"
+        value:
+          type: function
+          native: duk_bi_arraybuffer_isview
+          length: 1
+          varargs: false
+        typedarray: true
+        es6: true
+
+      #- key:  # @@species
+      #    type: symbol
+      #    variant: wellknown
+      #    string: "Symbol.species"
+      #  value: XXX
+      #  es6: true
+
+  - id: bi_arraybuffer_prototype
+    class: Object
+    internal_prototype: bi_object_prototype
+    typedarray: true
+    es6: true
+    bidx: true
+    present_if: DUK_USE_BUFFEROBJECT_SUPPORT
+
+    properties:
+      - key: "byteLength"
+        value:
+          type: accessor
+          getter: duk_bi_typedarray_bytelength_getter  # XXX: more lenient than required by spec now
+          getter_nargs: 0
+          getter_magic: 0
+        attributes: ""
+        typedarray: true
+        es6: true
+      - key: "constructor"
+        value:
+          type: object
+          id: bi_arraybuffer_constructor
+        attributes: "wc"
+        typedarray: true
+        es6: true
+      - key: "slice"
+        value:
+          type: function
+          native: duk_bi_buffer_slice_shared
+          length: 2
+          varargs: false
+          magic: 2  # magic: 0x01=isView, 0x02=create copy, 0x04=Node.js Buffer special
+        typedarray: true
+        es6: true
+
+      #- key:  # @@toStringTag
+      #    type: symbol
+      #    variant: wellknown
+      #    string: "Symbol.toStringTag"
+      #  value: XXX
+      #  es6: true
+
+  - id: bi_dataview_constructor
+    class: Function
+    internal_prototype: bi_function_prototype
+    varargs: false
+    native: duk_bi_dataview_constructor
+    callable: true
+    constructable: true
+    typedarray: true
+    es6: true
+    bidx: false
+    present_if: DUK_USE_BUFFEROBJECT_SUPPORT
+
+    properties:
+      - key: "length"
+        value: 3
+        attributes: "c"
+        typedarray: true
+        es6: true
+      - key: "prototype"
+        value:
+          type: object
+          id: bi_dataview_prototype
+        attributes: ""
+        typedarray: true
+        es6: true
+      - key: "name"
+        value: "DataView"
+        attributes: "c"
+        es6: true
+
+      #- key:  # @@species
+      #    type: symbol
+      #    variant: wellknown
+      #    string: "Symbol.species"
+      #  value: XXX
+      #  es6: true
+
+  - id: bi_dataview_prototype
+    class: Object
+    internal_prototype: bi_object_prototype
+    typedarray: true
+    es6: true
+    bidx: true
+    present_if: DUK_USE_BUFFEROBJECT_SUPPORT
+
+    properties:
+      - key: "byteLength"
+        value:
+          type: accessor
+          getter: duk_bi_typedarray_bytelength_getter
+          getter_nargs: 0
+          getter_magic: 0
+        attributes: ""
+        typedarray: true
+        es6: true
+      - key: "byteOffset"
+        value:
+          type: accessor
+          getter: duk_bi_typedarray_byteoffset_getter
+          getter_nargs: 0
+          getter_magic: 0
+        attributes: ""
+        typedarray: true
+        es6: true
+      - key: "buffer"
+        value:
+          type: accessor
+          getter: duk_bi_typedarray_buffer_getter
+          getter_nargs: 0
+          getter_magic: 0
+        attributes: ""
+        typedarray: true
+        es6: true
+      - key: "constructor"
+        value:
+          type: object
+          id: bi_dataview_constructor
+        attributes: "wc"
+        typedarray: true
+        es6: true
+
+      # Int8/Uint8 get/set calls don't have a little endian argument
+      # but length/nargs must provide it for the shared helper anyway.
+
+      - key: "getInt8"
+        value:
+          type: function
+          native: duk_bi_buffer_readfield
+          length: 2
+          varargs: false
+          magic:
+            type: buffer_readfield
+            elem: "8bit"
+            signed: true
+            bigendian: false
+            typedarray: true
+        typedarray: true
+        es6: true
+      - key: "getUint8"
+        value:
+          type: function
+          native: duk_bi_buffer_readfield
+          length: 2
+          varargs: false
+          magic:
+            type: buffer_readfield
+            elem: "8bit"
+            signed: false
+            bigendian: false
+            typedarray: true
+        typedarray: true
+        es6: true
+      - key: "getInt16"
+        value:
+          type: function
+          native: duk_bi_buffer_readfield
+          length: 2
+          varargs: false
+          magic:
+            type: buffer_readfield
+            elem: "16bit"
+            signed: true
+            bigendian: false
+            typedarray: true
+        typedarray: true
+        es6: true
+      - key: "getUint16"
+        value:
+          type: function
+          native: duk_bi_buffer_readfield
+          length: 2
+          varargs: false
+          magic:
+            type: buffer_readfield
+            elem: "16bit"
+            signed: false
+            bigendian: false
+            typedarray: true
+        typedarray: true
+        es6: true
+      - key: "getInt32"
+        value:
+          type: function
+          native: duk_bi_buffer_readfield
+          length: 2
+          varargs: false
+          magic:
+            type: buffer_readfield
+            elem: "32bit"
+            signed: true
+            bigendian: false
+            typedarray: true
+        typedarray: true
+        es6: true
+      - key: "getUint32"
+        value:
+          type: function
+          native: duk_bi_buffer_readfield
+          length: 2
+          varargs: false
+          magic:
+            type: buffer_readfield
+            elem: "32bit"
+            signed: false
+            bigendian: false
+            typedarray: true
+        typedarray: true
+        es6: true
+      - key: "getFloat32"
+        value:
+          type: function
+          native: duk_bi_buffer_readfield
+          length: 2
+          varargs: false
+          magic:
+            type: buffer_readfield
+            elem: "float"
+            signed: false
+            bigendian: false
+            typedarray: true
+        typedarray: true
+        es6: true
+      - key: "getFloat64"
+        value:
+          type: function
+          native: duk_bi_buffer_readfield
+          length: 2
+          varargs: false
+          magic:
+            type: buffer_readfield
+            elem: "double"
+            signed: false
+            bigendian: false
+            typedarray: true
+        typedarray: true
+        es6: true
+      - key: "setInt8"
+        value:
+          type: function
+          native: duk_bi_buffer_writefield
+          length: 3
+          varargs: false
+          magic:
+            type: buffer_writefield
+            elem: "8bit"
+            signed: true
+            bigendian: false
+            typedarray: true
+        typedarray: true
+        es6: true
+      - key: "setUint8"
+        value:
+          type: function
+          native: duk_bi_buffer_writefield
+          length: 3
+          varargs: false
+          magic:
+            type: buffer_writefield
+            elem: "8bit"
+            signed: false
+            bigendian: false
+            typedarray: true
+        typedarray: true
+        es6: true
+      - key: "setInt16"
+        value:
+          type: function
+          native: duk_bi_buffer_writefield
+          length: 3
+          varargs: false
+          magic:
+            type: buffer_writefield
+            elem: "16bit"
+            signed: true
+            bigendian: false
+            typedarray: true
+        typedarray: true
+        es6: true
+      - key: "setUint16"
+        value:
+          type: function
+          native: duk_bi_buffer_writefield
+          length: 3
+          varargs: false
+          magic:
+            type: buffer_writefield
+            elem: "16bit"
+            signed: false
+            bigendian: false
+            typedarray: true
+        typedarray: true
+        es6: true
+      - key: "setInt32"
+        value:
+          type: function
+          native: duk_bi_buffer_writefield
+          length: 3
+          varargs: false
+          magic:
+            type: buffer_writefield
+            elem: "32bit"
+            signed: true
+            bigendian: false
+            typedarray: true
+        typedarray: true
+        es6: true
+      - key: "setUint32"
+        value:
+          type: function
+          native: duk_bi_buffer_writefield
+          length: 3
+          varargs: false
+          magic:
+            type: buffer_writefield
+            elem: "32bit"
+            signed: false
+            bigendian: false
+            typedarray: true
+        typedarray: true
+        es6: true
+      - key: "setFloat32"
+        value:
+          type: function
+          native: duk_bi_buffer_writefield
+          length: 3
+          varargs: false
+          magic:
+            type: buffer_writefield
+            elem: "float"
+            signed: false
+            bigendian: false
+            typedarray: true
+        typedarray: true
+        es6: true
+      - key: "setFloat64"
+        value:
+          type: function
+          native: duk_bi_buffer_writefield
+          length: 3
+          varargs: false
+          magic:
+            type: buffer_writefield
+            elem: "double"
+            signed: false
+            bigendian: false
+            typedarray: true
+        typedarray: true
+        es6: true
+
+      #- key:  # @@toStringTag
+      #    type: symbol
+      #    variant: wellknown
+      #    string: "Symbol.toStringTag"
+      #  value: XXX
+      #  es6: true
+
+  # %TypedArray% constructor
+  # Prototype object providing properties shared by all TypedArray
+  # constructors.  Callable, but duk_bi_typedarray_constructor()
+  # rejects normal calls with TypeError; not constructable which
+  # rejects constructor calls with TypeError.
+  - id: bi_typedarray_constructor
+    class: Function
+    internal_prototype: bi_function_prototype
+    varargs: false
+    native: duk_bi_typedarray_constructor
+    callable: true
+    constructable: false
+    nargs: 0
+    magic: 0
+    typedarray: true
+    es6: true
+    bidx: false
+    present_if: DUK_USE_BUFFEROBJECT_SUPPORT
+
+    properties:
+      - key: "length"
+        value: 0
+        attributes: "c"
+        typedarray: true
+        es6: true
+      - key: "prototype"
+        value:
+          type: object
+          id: bi_typedarray_prototype
+        attributes: ""
+        es6: true
+      - key: "name"
+        value: "TypedArray"
+        attributes: "c"
+        es6: true
+
+      # .from
+      # .of
+      # @@species getter
+
+  # %TypedArrayPrototype%
+  # Custom prototype object providing properties shared by all TypedArray
+  # instances (reduces built-in object count).  The view specific prototypes
+  # (such as Uint8Array.prototype) are still needed so that e.g. instanceof
+  # will work properly.
+
+  - id: bi_typedarray_prototype
+    class: Object
+    internal_prototype: bi_object_prototype
+    # no external_prototype (specific views provide it)
+    typedarray: true
+    es6: true
+    bidx: false
+    # Present even when DUK_USE_BUFFEROBJECT_SUPPORT is disabled
+    # to support plain buffers.
+
+    properties:
+      - key: "byteLength"
+        value:
+          type: accessor
+          getter: duk_bi_typedarray_bytelength_getter
+          getter_nargs: 0
+          getter_magic: 0
+        attributes: ""
+        typedarray: true
+        es6: true
+      - key: "byteOffset"
+        value:
+          type: accessor
+          getter: duk_bi_typedarray_byteoffset_getter
+          getter_nargs: 0
+          getter_magic: 0
+        attributes: ""
+        typedarray: true
+        es6: true
+      - key: "buffer"
+        value:
+          type: accessor
+          getter: duk_bi_typedarray_buffer_getter
+          getter_nargs: 0
+          getter_magic: 0
+        attributes: ""
+        typedarray: true
+        es6: true
+        present_if: DUK_USE_BUFFEROBJECT_SUPPORT  # missing without bufferobject support
+      - key: "set"
+        value:
+          type: function
+          native: duk_bi_typedarray_set
+          length: 2
+          varargs: false
+        typedarray: true
+        es6: true
+        present_if: DUK_USE_BUFFEROBJECT_SUPPORT
+      - key: "subarray"
+        value:
+          type: function
+          native: duk_bi_buffer_slice_shared
+          length: 2
+          varargs: false
+          magic: 1  # magic: 0x01=isView, 0x02=create copy, 0x04=Node.js Buffer special
+        typedarray: true
+        es6: true
+        present_if: DUK_USE_BUFFEROBJECT_SUPPORT
+
+      #- key:  # @@iterator
+      #    type: symbol
+      #    variant: wellknown
+      #    string: "Symbol.iterator"
+      #  value: XXX
+      #  es6: true
+      #  present_if: DUK_USE_BUFFEROBJECT_SUPPORT
+      #- key:  # @@toStringTag
+      #    type: symbol
+      #    variant: wellknown
+      #    string: "Symbol.toStringTag"
+      #  value: XXX
+      #  es6: true
+      #  present_if: DUK_USE_BUFFEROBJECT_SUPPORT
+
+  - id: bi_int8array_constructor
+    class: Function
+    internal_prototype: bi_typedarray_constructor
+    varargs: false
+    native: duk_bi_typedarray_constructor
+    callable: true
+    constructable: true
+    magic:
+      type: typedarray_constructor
+      elem: "int8"
+      shift: 0
+    typedarray: true
+    es6: true
+    bidx: false
+    present_if: DUK_USE_BUFFEROBJECT_SUPPORT
+
+    properties:
+      - key: "length"
+        value: 3
+        attributes: "c"
+        typedarray: true
+        es6: true
+      - key: "prototype"
+        value:
+          type: object
+          id: bi_int8array_prototype
+        attributes: ""
+        typedarray: true
+        es6: true
+      - key: "name"
+        value: "Int8Array"
+        attributes: "c"
+        es6: true
+      - key: "BYTES_PER_ELEMENT"
+        value: 1
+        attributes: ""
+        typedarray: true
+        es6: true
+
+      #- key:  # @@species
+      #    type: symbol
+      #    variant: wellknown
+      #    string: "Symbol.species"
+      #  value: XXX
+      #  es6: true
+
+  - id: bi_int8array_prototype
+    internal_prototype: bi_typedarray_prototype
+    class: Object
+    typedarray: true
+    es6: true
+    bidx: true
+    present_if: DUK_USE_BUFFEROBJECT_SUPPORT
+
+    properties:
+      - key: "constructor"
+        value:
+          type: object
+          id: bi_int8array_constructor
+        attributes: "wc"
+        typedarray: true
+        es6: true
+      - key: "BYTES_PER_ELEMENT"
+        value: 1
+        attributes: ""
+        typedarray: true
+        es6: true
+
+  - id: bi_uint8array_constructor
+    class: Function
+    internal_prototype: bi_typedarray_constructor
+    varargs: false
+    native: duk_bi_typedarray_constructor
+    callable: true
+    constructable: true
+    magic:
+      type: typedarray_constructor
+      elem: "uint8"
+      shift: 0
+    typedarray: true
+    es6: true
+    bidx: false
+    present_if: DUK_USE_BUFFEROBJECT_SUPPORT
+
+    properties:
+      - key: "length"
+        value: 3
+        attributes: "c"
+        typedarray: true
+        es6: true
+      - key: "prototype"
+        value:
+          type: object
+          id: bi_uint8array_prototype
+        attributes: ""
+        typedarray: true
+        es6: true
+      - key: "name"
+        value: "Uint8Array"
+        attributes: "c"
+        es6: true
+      - key: "BYTES_PER_ELEMENT"
+        value: 1
+        attributes: ""
+        typedarray: true
+        es6: true
+
+      # Duktape custom: allocate a plain buffer, return value is always
+      # a freshly allocated fixed plain buffer.
+      - key: "allocPlain"
+        value:
+          type: function
+          native: duk_bi_uint8array_allocplain
+          length: 1
+          varargs: false
+        duktape: true
+
+      # Duktape custom: get plain buffer underlying a buffer object.
+      - key: "plainOf"
+        value:
+          type: function
+          native: duk_bi_uint8array_plainof
+          length: 1
+          varargs: false
+        duktape: true
+
+      #- key:  # @@species
+      #    type: symbol
+      #    variant: wellknown
+      #    string: "Symbol.species"
+      #  value: XXX
+      #  es6: true
+
+  - id: bi_uint8array_prototype
+    class: Object
+    internal_prototype: bi_typedarray_prototype
+    typedarray: true
+    es6: true
+    bidx: true
+    # Present even when DUK_USE_BUFFEROBJECT_SUPPORT is disabled
+    # to support plain buffers.
+
+    properties:
+      - key: "constructor"
+        value:
+          type: object
+          id: bi_uint8array_constructor
+        attributes: "wc"
+        typedarray: true
+        es6: true
+        present_if: DUK_USE_BUFFEROBJECT_SUPPORT  # missing without bufferobject support
+      - key: "BYTES_PER_ELEMENT"
+        value: 1
+        attributes: ""
+        typedarray: true
+        es6: true
+
+  - id: bi_uint8clampedarray_constructor
+    class: Function
+    internal_prototype: bi_typedarray_constructor
+    varargs: false
+    native: duk_bi_typedarray_constructor
+    callable: true
+    constructable: true
+    magic:
+      type: typedarray_constructor
+      elem: "uint8clamped"
+      shift: 0
+    typedarray: true
+    es6: true
+    bidx: false
+    present_if: DUK_USE_BUFFEROBJECT_SUPPORT
+
+    properties:
+      - key: "length"
+        value: 3
+        attributes: "c"
+        typedarray: true
+        es6: true
+      - key: "prototype"
+        value:
+          type: object
+          id: bi_uint8clampedarray_prototype
+        attributes: ""
+        typedarray: true
+        es6: true
+      - key: "name"
+        value: "Uint8ClampedArray"
+        attributes: "c"
+        es6: true
+      - key: "BYTES_PER_ELEMENT"
+        value: 1
+        attributes: ""
+        typedarray: true
+        es6: true
+
+      #- key:  # @@species
+      #    type: symbol
+      #    variant: wellknown
+      #    string: "Symbol.species"
+      #  value: XXX
+      #  es6: true
+
+  - id: bi_uint8clampedarray_prototype
+    class: Object
+    internal_prototype: bi_typedarray_prototype
+    typedarray: true
+    es6: true
+    bidx: true
+    present_if: DUK_USE_BUFFEROBJECT_SUPPORT
+
+    properties:
+      - key: "constructor"
+        value:
+          type: object
+          id: bi_uint8clampedarray_constructor
+        attributes: "wc"
+        typedarray: true
+        es6: true
+      - key: "BYTES_PER_ELEMENT"
+        value: 1
+        attributes: ""
+        typedarray: true
+        es6: true
+
+  - id: bi_int16array_constructor
+    class: Function
+    internal_prototype: bi_typedarray_constructor
+    varargs: false
+    native: duk_bi_typedarray_constructor
+    callable: true
+    constructable: true
+    magic:
+      type: typedarray_constructor
+      elem: "int16"
+      shift: 1
+    typedarray: true
+    es6: true
+    bidx: false
+    present_if: DUK_USE_BUFFEROBJECT_SUPPORT
+
+    properties:
+      - key: "length"
+        value: 3
+        attributes: "c"
+        typedarray: true
+        es6: true
+      - key: "prototype"
+        value:
+          type: object
+          id: bi_int16array_prototype
+        attributes: ""
+        typedarray: true
+        es6: true
+      - key: "name"
+        value: "Int16Array"
+        attributes: "c"
+        es6: true
+      - key: "BYTES_PER_ELEMENT"
+        value: 2
+        attributes: ""
+        typedarray: true
+        es6: true
+
+      #- key:  # @@species
+      #    type: symbol
+      #    variant: wellknown
+      #    string: "Symbol.species"
+      #  value: XXX
+      #  es6: true
+
+  - id: bi_int16array_prototype
+    class: Object
+    internal_prototype: bi_typedarray_prototype
+    typedarray: true
+    es6: true
+    bidx: true
+    present_if: DUK_USE_BUFFEROBJECT_SUPPORT
+
+    properties:
+      - key: "constructor"
+        value:
+          type: object
+          id: bi_int16array_constructor
+        attributes: "wc"
+        typedarray: true
+        es6: true
+      - key: "BYTES_PER_ELEMENT"
+        value: 2
+        attributes: ""
+        typedarray: true
+        es6: true
+
+  - id: bi_uint16array_constructor
+    class: Function
+    internal_prototype: bi_typedarray_constructor
+    varargs: false
+    native: duk_bi_typedarray_constructor
+    callable: true
+    constructable: true
+    magic:
+      type: typedarray_constructor
+      elem: "uint16"
+      shift: 1
+    typedarray: true
+    es6: true
+    bidx: false
+    present_if: DUK_USE_BUFFEROBJECT_SUPPORT
+
+    properties:
+      - key: "length"
+        value: 3
+        attributes: "c"
+        typedarray: true
+        es6: true
+      - key: "prototype"
+        value:
+          type: object
+          id: bi_uint16array_prototype
+        attributes: ""
+        typedarray: true
+        es6: true
+      - key: "name"
+        value: "Uint16Array"
+        attributes: "c"
+        es6: true
+      - key: "BYTES_PER_ELEMENT"
+        value: 2
+        attributes: ""
+        typedarray: true
+        es6: true
+
+      #- key:  # @@species
+      #    type: symbol
+      #    variant: wellknown
+      #    string: "Symbol.species"
+      #  value: XXX
+      #  es6: true
+
+  - id: bi_uint16array_prototype
+    class: Object
+    internal_prototype: bi_typedarray_prototype
+    typedarray: true
+    es6: true
+    bidx: true
+    present_if: DUK_USE_BUFFEROBJECT_SUPPORT
+
+    properties:
+      - key: "constructor"
+        value:
+          type: object
+          id: bi_uint16array_constructor
+        attributes: "wc"
+        typedarray: true
+        es6: true
+      - key: "BYTES_PER_ELEMENT"
+        value: 2
+        attributes: ""
+        typedarray: true
+        es6: true
+
+  - id: bi_int32array_constructor
+    class: Function
+    internal_prototype: bi_typedarray_constructor
+    varargs: false
+    native: duk_bi_typedarray_constructor
+    callable: true
+    constructable: true
+    magic:
+      type: typedarray_constructor
+      elem: "int32"
+      shift: 2
+    typedarray: true
+    es6: true
+    bidx: false
+    present_if: DUK_USE_BUFFEROBJECT_SUPPORT
+
+    properties:
+      - key: "length"
+        value: 3
+        attributes: "c"
+        typedarray: true
+        es6: true
+      - key: "prototype"
+        value:
+          type: object
+          id: bi_int32array_prototype
+        attributes: ""
+        typedarray: true
+        es6: true
+      - key: "name"
+        value: "Int32Array"
+        attributes: "c"
+        es6: true
+      - key: "BYTES_PER_ELEMENT"
+        value: 4
+        attributes: ""
+        typedarray: true
+        es6: true
+
+      #- key:  # @@species
+      #    type: symbol
+      #    variant: wellknown
+      #    string: "Symbol.species"
+      #  value: XXX
+      #  es6: true
+
+  - id: bi_int32array_prototype
+    class: Object
+    internal_prototype: bi_typedarray_prototype
+    typedarray: true
+    es6: true
+    bidx: true
+    present_if: DUK_USE_BUFFEROBJECT_SUPPORT
+
+    properties:
+      - key: "constructor"
+        value:
+          type: object
+          id: bi_int32array_constructor
+        attributes: "wc"
+        typedarray: true
+        es6: true
+      - key: "BYTES_PER_ELEMENT"
+        value: 4
+        attributes: ""
+        typedarray: true
+        es6: true
+
+  - id: bi_uint32array_constructor
+    class: Function
+    internal_prototype: bi_typedarray_constructor
+    varargs: false
+    native: duk_bi_typedarray_constructor
+    callable: true
+    constructable: true
+    magic:
+      type: typedarray_constructor
+      elem: "uint32"
+      shift: 2
+    typedarray: true
+    es6: true
+    bidx: false
+    present_if: DUK_USE_BUFFEROBJECT_SUPPORT
+
+    properties:
+      - key: "length"
+        value: 3
+        attributes: "c"
+        typedarray: true
+        es6: true
+      - key: "prototype"
+        value:
+          type: object
+          id: bi_uint32array_prototype
+        attributes: ""
+        typedarray: true
+        es6: true
+      - key: "name"
+        value: "Uint32Array"
+        attributes: "c"
+        es6: true
+      - key: "BYTES_PER_ELEMENT"
+        value: 4
+        attributes: ""
+        typedarray: true
+        es6: true
+
+      #- key:  # @@species
+      #    type: symbol
+      #    variant: wellknown
+      #    string: "Symbol.species"
+      #  value: XXX
+      #  es6: true
+
+  - id: bi_uint32array_prototype
+    class: Object
+    internal_prototype: bi_typedarray_prototype
+    typedarray: true
+    es6: true
+    bidx: true
+    present_if: DUK_USE_BUFFEROBJECT_SUPPORT
+
+    properties:
+      - key: "constructor"
+        value:
+          type: object
+          id: bi_uint32array_constructor
+        attributes: "wc"
+        typedarray: true
+        es6: true
+      - key: "BYTES_PER_ELEMENT"
+        value: 4
+        attributes: ""
+        typedarray: true
+        es6: true
+
+  - id: bi_float32array_constructor
+    class: Function
+    internal_prototype: bi_typedarray_constructor
+    varargs: false
+    native: duk_bi_typedarray_constructor
+    callable: true
+    constructable: true
+    magic:
+      type: typedarray_constructor
+      elem: "float32"
+      shift: 2
+    typedarray: true
+    es6: true
+    bidx: false
+    present_if: DUK_USE_BUFFEROBJECT_SUPPORT
+
+    properties:
+      - key: "length"
+        value: 3
+        attributes: "c"
+        typedarray: true
+        es6: true
+      - key: "prototype"
+        value:
+          type: object
+          id: bi_float32array_prototype
+        attributes: ""
+        typedarray: true
+        es6: true
+      - key: "name"
+        value: "Float32Array"
+        attributes: "c"
+        es6: true
+      - key: "BYTES_PER_ELEMENT"
+        value: 4
+        attributes: ""
+        typedarray: true
+        es6: true
+
+      #- key:  # @@species
+      #    type: symbol
+      #    variant: wellknown
+      #    string: "Symbol.species"
+      #  value: XXX
+      #  es6: true
+
+  - id: bi_float32array_prototype
+    class: Object
+    internal_prototype: bi_typedarray_prototype
+    typedarray: true
+    es6: true
+    bidx: true
+    present_if: DUK_USE_BUFFEROBJECT_SUPPORT
+
+    properties:
+      - key: "constructor"
+        value:
+          type: object
+          id: bi_float32array_constructor
+        attributes: "wc"
+        typedarray: true
+        es6: true
+      - key: "BYTES_PER_ELEMENT"
+        value: 4
+        attributes: ""
+        typedarray: true
+        es6: true
+
+  - id: bi_float64array_constructor
+    class: Function
+    internal_prototype: bi_typedarray_constructor
+    varargs: false
+    native: duk_bi_typedarray_constructor
+    callable: true
+    constructable: true
+    magic:
+      type: typedarray_constructor
+      elem: "float64"
+      shift: 3
+    typedarray: true
+    es6: true
+    bidx: false
+    present_if: DUK_USE_BUFFEROBJECT_SUPPORT
+
+    properties:
+      - key: "length"
+        value: 3
+        attributes: "c"
+        typedarray: true
+        es6: true
+      - key: "prototype"
+        value:
+          type: object
+          id: bi_float64array_prototype
+        attributes: ""
+        typedarray: true
+        es6: true
+      - key: "name"
+        value: "Float64Array"
+        attributes: "c"
+        es6: true
+      - key: "BYTES_PER_ELEMENT"
+        value: 8
+        attributes: ""
+        typedarray: true
+        es6: true
+
+      #- key:  # @@species
+      #    type: symbol
+      #    variant: wellknown
+      #    string: "Symbol.species"
+      #  value: XXX
+      #  es6: true
+
+  - id: bi_float64array_prototype
+    class: Object
+    internal_prototype: bi_typedarray_prototype
+    typedarray: true
+    es6: true
+    bidx: true
+    present_if: DUK_USE_BUFFEROBJECT_SUPPORT
+
+    properties:
+      - key: "constructor"
+        value:
+          type: object
+          id: bi_float64array_constructor
+        attributes: "wc"
+        typedarray: true
+        es6: true
+      - key: "BYTES_PER_ELEMENT"
+        value: 8
+        attributes: ""
+        typedarray: true
+        es6: true
+
+  #
+  #  Node.js Buffer
+  #
+
+  - id: bi_nodejs_buffer_constructor
+    class: Function
+    internal_prototype: bi_function_prototype
+    varargs: false
+    native: duk_bi_nodejs_buffer_constructor
+    callable: true
+    constructable: true
+    nodejs_buffer: true
+    bidx: false
+    present_if: DUK_USE_BUFFEROBJECT_SUPPORT
+
+    properties:
+      - key: "length"
+        value: 2
+        attributes: "c"
+        nodejs_buffer: true
+      - key: "prototype"
+        value:
+          type: object
+          id: bi_nodejs_buffer_prototype
+        attributes: ""
+        nodejs_buffer: true
+      - key: "name"
+        value: "Buffer"
+        attributes: "c"
+        nodejs_buffer: true
+
+      - key: "concat"
+        value:
+          type: function
+          native: duk_bi_nodejs_buffer_concat
+          length: 2
+          varargs: false
+        nodejs_buffer: true
+      - key: "isEncoding"
+        value:
+          type: function
+          native: duk_bi_nodejs_buffer_is_encoding
+          length: 1
+          varargs:
+        nodejs_buffer: true
+      - key: "isBuffer"
+        value:
+          type: function
+          native: duk_bi_nodejs_buffer_is_buffer
+          length: 1
+          varargs: false
+        nodejs_buffer: true
+      - key: "byteLength"
+        value:
+          type: function
+          native: duk_bi_nodejs_buffer_byte_length
+          length: 2
+          varargs: false
+        nodejs_buffer: true
+      - key: "compare"
+        value:
+          type: function
+          native: duk_bi_buffer_compare_shared
+          length: 2
+          varargs: false
+          magic: 3  # magic: 0x02=static call + 0x01=compare = 0x03
+        nodejs_buffer: true
+
+  - id: bi_nodejs_buffer_prototype
+    internal_prototype: bi_uint8array_prototype
+    class: Object
+    nodejs_buffer: true
+    bidx: true
+    present_if: DUK_USE_BUFFEROBJECT_SUPPORT
+
+    properties:
+      - key: "constructor"
+        value:
+          type: object
+          id: bi_nodejs_buffer_constructor
+        attributes: "wc"
+        nodejs_buffer: true
+
+      - key: "readUInt8"
+        value:
+          type: function
+          native: duk_bi_buffer_readfield
+          length: 2
+          varargs: false
+          magic:
+            type: buffer_readfield
+            elem: "8bit"
+            signed: false
+            bigendian: false
+            typedarray: false
+        nodejs_buffer: true
+      - key: "readInt8"
+        value:
+          type: function
+          native: duk_bi_buffer_readfield
+          length: 2
+          varargs: false
+          magic:
+            type: buffer_readfield
+            elem: "8bit"
+            signed: true
+            bigendian: false
+            typedarray: false
+        nodejs_buffer: true
+      - key: "readUInt16LE"
+        value:
+          type: function
+          native: duk_bi_buffer_readfield
+          length: 2
+          varargs: false
+          magic:
+            type: buffer_readfield
+            elem: "16bit"
+            signed: false
+            bigendian: false
+            typedarray: false
+        nodejs_buffer: true
+      - key: "readUInt16BE"
+        value:
+          type: function
+          native: duk_bi_buffer_readfield
+          length: 2
+          varargs: false
+          magic:
+            type: buffer_readfield
+            elem: "16bit"
+            signed: false
+            bigendian: true
+            typedarray: false
+        nodejs_buffer: true
+      - key: "readInt16LE"
+        value:
+          type: function
+          native: duk_bi_buffer_readfield
+          length: 2
+          varargs: false
+          magic:
+            type: buffer_readfield
+            elem: "16bit"
+            signed: true
+            bigendian: false
+            typedarray: false
+        nodejs_buffer: true
+      - key: "readInt16BE"
+        value:
+          type: function
+          native: duk_bi_buffer_readfield
+          length: 2
+          varargs: false
+          magic:
+            type: buffer_readfield
+            elem: "16bit"
+            signed: true
+            bigendian: true
+            typedarray: false
+        nodejs_buffer: true
+      - key: "readUInt32LE"
+        value:
+          type: function
+          native: duk_bi_buffer_readfield
+          length: 2
+          varargs: false
+          magic:
+            type: buffer_readfield
+            elem: "32bit"
+            signed: false
+            bigendian: false
+            typedarray: false
+        nodejs_buffer: true
+      - key: "readUInt32BE"
+        value:
+          type: function
+          native: duk_bi_buffer_readfield
+          length: 2
+          varargs: false
+          magic:
+            type: buffer_readfield
+            elem: "32bit"
+            signed: false
+            bigendian: true
+            typedarray: false
+        nodejs_buffer: true
+      - key: "readInt32LE"
+        value:
+          type: function
+          native: duk_bi_buffer_readfield
+          length: 2
+          varargs: false
+          magic:
+            type: buffer_readfield
+            elem: "32bit"
+            signed: true
+            bigendian: false
+            typedarray: false
+        nodejs_buffer: true
+      - key: "readInt32BE"
+        value:
+          type: function
+          native: duk_bi_buffer_readfield
+          length: 2
+          varargs: false
+          magic:
+            type: buffer_readfield
+            elem: "32bit"
+            signed: true
+            bigendian: true
+            typedarray: false
+        nodejs_buffer: true
+      - key: "readFloatLE"
+        value:
+          type: function
+          native: duk_bi_buffer_readfield
+          length: 2
+          varargs: false
+          magic:
+            type: buffer_readfield
+            elem: "float"
+            signed: false
+            bigendian: false
+            typedarray: false
+        nodejs_buffer: true
+      - key: "readFloatBE"
+        value:
+          type: function
+          native: duk_bi_buffer_readfield
+          length: 2
+          varargs: false
+          magic:
+            type: buffer_readfield
+            elem: "float"
+            signed: false
+            bigendian: true
+            typedarray: false
+        nodejs_buffer: true
+      - key: "readDoubleLE"
+        value:
+          type: function
+          native: duk_bi_buffer_readfield
+          length: 2
+          varargs: false
+          magic:
+            type: buffer_readfield
+            elem: "double"
+            signed: false
+            bigendian: false
+            typedarray: false
+        nodejs_buffer: true
+      - key: "readDoubleBE"
+        value:
+          type: function
+          native: duk_bi_buffer_readfield
+          length: 2
+          varargs: false
+          magic:
+            type: buffer_readfield
+            elem: "double"
+            signed: false
+            bigendian: true
+            typedarray: false
+        nodejs_buffer: true
+      - key: "readUIntLE"
+        value:
+          type: function
+          native: duk_bi_buffer_readfield
+          length: 3
+          varargs: false
+          magic:
+            type: buffer_readfield
+            elem: "varint"
+            signed: false
+            bigendian: false
+            typedarray: false
+        nodejs_buffer: true
+      - key: "readUIntBE"
+        value:
+          type: function
+          native: duk_bi_buffer_readfield
+          length: 3
+          varargs: false
+          magic:
+            type: buffer_readfield
+            elem: "varint"
+            signed: false
+            bigendian: true
+            typedarray: false
+        nodejs_buffer: true
+      - key: "readIntLE"
+        value:
+          type: function
+          native: duk_bi_buffer_readfield
+          length: 3
+          varargs: false
+          magic:
+            type: buffer_readfield
+            elem: "varint"
+            signed: true
+            bigendian: false
+            typedarray: false
+        nodejs_buffer: true
+      - key: "readIntBE"
+        value:
+          type: function
+          native: duk_bi_buffer_readfield
+          length: 3
+          varargs: false
+          magic:
+            type: buffer_readfield
+            elem: "varint"
+            signed: true
+            bigendian: true
+            typedarray: false
+        nodejs_buffer: true
+      - key: "writeUInt8"
+        value:
+          type: function
+          native: duk_bi_buffer_writefield
+          length: 3
+          varargs: false
+          magic:
+            type: buffer_writefield
+            elem: "8bit"
+            signed: false
+            bigendian: false
+            typedarray: false
+        nodejs_buffer: true
+      - key: "writeInt8"
+        value:
+          type: function
+          native: duk_bi_buffer_writefield
+          length: 3
+          varargs: false
+          magic:
+            type: buffer_writefield
+            elem: "8bit"
+            signed: true
+            bigendian: false
+            typedarray: false
+        nodejs_buffer: true
+      - key: "writeUInt16LE"
+        value:
+          type: function
+          native: duk_bi_buffer_writefield
+          length: 3
+          varargs: false
+          magic:
+            type: buffer_writefield
+            elem: "16bit"
+            signed: false
+            bigendian: false
+            typedarray: false
+        nodejs_buffer: true
+      - key: "writeUInt16BE"
+        value:
+          type: function
+          native: duk_bi_buffer_writefield
+          length: 3
+          varargs: false
+          magic:
+            type: buffer_writefield
+            elem: "16bit"
+            signed: false
+            bigendian: true
+            typedarray: false
+        nodejs_buffer: true
+      - key: "writeInt16LE"
+        value:
+          type: function
+          native: duk_bi_buffer_writefield
+          length: 3
+          varargs: false
+          magic:
+            type: buffer_writefield
+            elem: "16bit"
+            signed: true
+            bigendian: false
+            typedarray: false
+        nodejs_buffer: true
+      - key: "writeInt16BE"
+        value:
+          type: function
+          native: duk_bi_buffer_writefield
+          length: 3
+          varargs: false
+          magic:
+            type: buffer_writefield
+            elem: "16bit"
+            signed: true
+            bigendian: true
+            typedarray: false
+        nodejs_buffer: true
+      - key: "writeUInt32LE"
+        value:
+          type: function
+          native: duk_bi_buffer_writefield
+          length: 3
+          varargs: false
+          magic:
+            type: buffer_writefield
+            elem: "32bit"
+            signed: false
+            bigendian: false
+            typedarray: false
+        nodejs_buffer: true
+      - key: "writeUInt32BE"
+        value:
+          type: function
+          native: duk_bi_buffer_writefield
+          length: 3
+          varargs: false
+          magic:
+            type: buffer_writefield
+            elem: "32bit"
+            signed: false
+            bigendian: true
+            typedarray: false
+        nodejs_buffer: true
+      - key: "writeInt32LE"
+        value:
+          type: function
+          native: duk_bi_buffer_writefield
+          length: 3
+          varargs: false
+          magic:
+            type: buffer_writefield
+            elem: "32bit"
+            signed: true
+            bigendian: false
+            typedarray: false
+        nodejs_buffer: true
+      - key: "writeInt32BE"
+        value:
+          type: function
+          native: duk_bi_buffer_writefield
+          length: 3
+          varargs: false
+          magic:
+            type: buffer_writefield
+            elem: "32bit"
+            signed: true
+            bigendian: true
+            typedarray: false
+        nodejs_buffer: true
+      - key: "writeFloatLE"
+        value:
+          type: function
+          native: duk_bi_buffer_writefield
+          length: 3
+          varargs: false
+          magic:
+            type: buffer_writefield
+            elem: "float"
+            signed: false
+            bigendian: false
+            typedarray: false
+        nodejs_buffer: true
+      - key: "writeFloatBE"
+        value:
+          type: function
+          native: duk_bi_buffer_writefield
+          length: 3
+          varargs: false
+          magic:
+            type: buffer_writefield
+            elem: "float"
+            signed: false
+            bigendian: true
+            typedarray: false
+        nodejs_buffer: true
+      - key: "writeDoubleLE"
+        value:
+          type: function
+          native: duk_bi_buffer_writefield
+          length: 3
+          varargs: false
+          magic:
+            type: buffer_writefield
+            elem: "double"
+            signed: false
+            bigendian: false
+            typedarray: false
+        nodejs_buffer: true
+      - key: "writeDoubleBE"
+        value:
+          type: function
+          native: duk_bi_buffer_writefield
+          length: 3
+          varargs: false
+          magic:
+            type: buffer_writefield
+            elem: "double"
+            signed: false
+            bigendian: true
+            typedarray: false
+        nodejs_buffer: true
+      - key: "writeUIntLE"
+        value:
+          type: function
+          native: duk_bi_buffer_writefield
+          length: 4
+          varargs: false
+          magic:
+            type: buffer_writefield
+            elem: "varint"
+            signed: false
+            bigendian: false
+            typedarray: false
+        nodejs_buffer: true
+      - key: "writeUIntBE"
+        value:
+          type: function
+          native: duk_bi_buffer_writefield
+          length: 4
+          varargs: false
+          magic:
+            type: buffer_writefield
+            elem: "varint"
+            signed: false
+            bigendian: true
+            typedarray: false
+        nodejs_buffer: true
+      - key: "writeIntLE"
+        value:
+          type: function
+          native: duk_bi_buffer_writefield
+          length: 4
+          varargs: false
+          magic:
+            type: buffer_writefield
+            elem: "varint"
+            signed: true
+            bigendian: false
+            typedarray: false
+        nodejs_buffer: true
+      - key: "writeIntBE"
+        value:
+          type: function
+          native: duk_bi_buffer_writefield
+          length: 4
+          varargs: false
+          magic:
+            type: buffer_writefield
+            elem: "varint"
+            signed: true
+            bigendian: true
+            typedarray: false
+        nodejs_buffer: true
+      - key: "toString"
+        value:
+          type: function
+          native: duk_bi_nodejs_buffer_tostring
+          length: 3
+          varargs: false
+        nodejs_buffer: true
+      - key: "toJSON"
+        value:
+          type: function
+          native: duk_bi_nodejs_buffer_tojson
+          length: 0
+          varargs: false
+        nodejs_buffer: true
+      - key: "fill"
+        value:
+          type: function
+          native: duk_bi_nodejs_buffer_fill
+          length: 3
+          varargs: false
+        nodejs_buffer: true
+      - key: "equals"
+        value:
+          type: function
+          native: duk_bi_buffer_compare_shared
+          length: 1
+          varargs: false
+          magic: 0  # magic = 0: equals
+        nodejs_buffer: true
+      - key: "compare"
+        value:
+          type: function
+          native: duk_bi_buffer_compare_shared
+          length: 1
+          varargs: false
+          magic: 1  # magic = 1: compare
+        nodejs_buffer: true
+      - key: "copy"
+        value:
+          type: function
+          native: duk_bi_nodejs_buffer_copy
+          length: 4
+          varargs: false
+        nodejs_buffer: true
+      - key: "slice"
+        value:
+          type: function
+          native: duk_bi_buffer_slice_shared
+          length: 2
+          varargs: false
+          magic: 5  # magic: 0x01=isView, 0x02=create copy, 0x04=Node.js Buffer special
+        nodejs_buffer: true
+      - key: "write"
+        value:
+          type: function
+          native: duk_bi_nodejs_buffer_write
+          length: 4
+          varargs: false
+        nodejs_buffer: true
+
+  #
+  #  CBOR
+  #
+
+  - id: bi_cbor
+    class: Object
+    internal_prototype: bi_object_prototype
+    bidx: false
+    present_if: DUK_USE_CBOR_BUILTIN
+
+    properties:
+      - key: "encode"
+        value:
+          type: function
+          native: duk_bi_cbor_encode
+          length: 1
+        attributes: "wc"
+      - key: "decode"
+        value:
+          type: function
+          native: duk_bi_cbor_decode
+          length: 1
+        attributes: "wc"
+
+  #
+  #  Encoding API
+  #
+
+  - id: bi_textencoder_constructor
+    class: Function
+    internal_prototype: bi_function_prototype
+    nargs: 0
+    native: duk_bi_textencoder_constructor
+    callable: true
+    constructable: true
+    bidx: false
+    encoding_api: true
+    present_if: DUK_USE_ENCODING_BUILTINS
+
+    properties:
+      - key: "length"
+        value: 0
+        attributes: "c"
+        encoding_api: true
+      - key: "prototype"
+        value:
+          type: object
+          id: bi_textencoder_prototype
+        attributes: ""
+        encoding_api: true
+      - key: "name"
+        value: "TextEncoder"
+        attributes: "c"
+        encoding_api: true
+
+  - id: bi_textencoder_prototype
+    internal_prototype: bi_object_prototype
+    class: Object
+    bidx: false
+    encoding_api: true
+    present_if: DUK_USE_ENCODING_BUILTINS
+
+    properties:
+      - key: "constructor"
+        value:
+          type: object
+          id: bi_textencoder_constructor
+        attributes: "wc"
+        encoding_api: true
+      - key: "encoding"
+        value:
+          type: accessor
+          getter: duk_bi_textencoder_prototype_encoding_getter
+          getter_nargs: 0
+          getter_magic: 0
+        attributes: "ec"
+        encoding_api: true
+      - key: "encode"
+        value:
+          type: function
+          native: duk_bi_textencoder_prototype_encode
+          length: 0
+          nargs: 1
+        attributes: "wec"
+        encoding_api: true
+
+  - id: bi_textdecoder_constructor
+    class: Function
+    internal_prototype: bi_function_prototype
+    nargs: 2
+    native: duk_bi_textdecoder_constructor
+    callable: true
+    constructable: true
+    bidx: false
+    encoding_api: true
+    present_if: DUK_USE_ENCODING_BUILTINS
+
+    properties:
+      - key: "length"
+        value: 0
+        attributes: "c"
+        encoding_api: true
+      - key: "prototype"
+        value:
+          type: object
+          id: bi_textdecoder_prototype
+        attributes: ""
+        encoding_api: true
+      - key: "name"
+        value: "TextDecoder"
+        attributes: "c"
+        encoding_api: true
+
+  - id: bi_textdecoder_prototype
+    internal_prototype: bi_object_prototype
+    class: Object
+    bidx: false
+    encoding_api: true
+    present_if: DUK_USE_ENCODING_BUILTINS
+
+    properties:
+      - key: "constructor"
+        value:
+          type: object
+          id: bi_textdecoder_constructor
+        attributes: "wc"
+        encoding_api: true
+      - key: "encoding"
+        value:
+          type: accessor
+          getter: duk_bi_textdecoder_prototype_shared_getter
+          getter_nargs: 0
+          getter_magic: 0  # 0=encoding
+        attributes: "ec"
+        encoding_api: true
+      - key: "fatal"
+        value:
+          type: accessor
+          getter: duk_bi_textdecoder_prototype_shared_getter
+          getter_nargs: 0
+          getter_magic: 1  # 1=fatal
+        attributes: "ec"
+        encoding_api: true
+      - key: "ignoreBOM"
+        value:
+          type: accessor
+          getter: duk_bi_textdecoder_prototype_shared_getter
+          getter_nargs: 0
+          getter_magic: 2  # 2=ignoreBOM
+        attributes: "ec"
+        encoding_api: true
+      - key: "decode"
+        value:
+          type: function
+          native: duk_bi_textdecoder_prototype_decode
+          length: 0
+          nargs: 2
+        attributes: "wec"
+        encoding_api: true
+
+  - id: bi_performance
+    internal_prototype: bi_object_prototype
+    class: Object
+    bidx: false
+    performance_api: true
+    present_if: DUK_USE_PERFORMANCE_BUILTIN
+
+    properties:
+      # Firefox and Chrome: data property with 'wec' attributes,
+      # inherited from PerformancePrototype.  Use own data property
+      # for now.
+      - key: "now"
+        value:
+          type: function
+          native: duk_bi_performance_now
+          length: 0
+          nargs: 0
+        attributes: "wec"
+        performance_api: true
+      # Missing until semantics decided.
+      #- key: "timeOrigin"
+      #  value:
+      #    type: accessor
+      #    getter: duk_bi_performance_timeorigin_getter
+      #    getter_nargs: 0
+      #    getter_magic: 0
+      #  attributes: "ec"  # check
+      #  performance_api: true

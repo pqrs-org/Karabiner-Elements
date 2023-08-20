@@ -1,0 +1,15 @@
+/* MSVC */
+#if defined(_MSC_VER)
+/* MSVC preprocessor defines: http://msdn.microsoft.com/en-us/library/b0084kay.aspx
+ * _MSC_FULL_VER includes the build number, but it has at least two formats, see e.g.
+ * BOOST_MSVC_FULL_VER in http://www.boost.org/doc/libs/1_52_0/boost/config/compiler/visualc.hpp
+ */
+#define DUK_F_MSVC
+#if defined(_MSC_FULL_VER)
+#if (_MSC_FULL_VER > 100000000)
+#define DUK_F_MSVC_FULL_VER _MSC_FULL_VER
+#else
+#define DUK_F_MSCV_FULL_VER (_MSC_FULL_VER * 10)
+#endif
+#endif
+#endif  /* _MSC_VER */

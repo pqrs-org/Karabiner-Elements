@@ -1,0 +1,11 @@
+define: DUK_USE_JSON_ENC_RECLIMIT
+introduced: 1.3.0
+default: 1000
+tags:
+  - portability
+  - cstackdepth
+description: >
+  Maximum native stack recursion for JSON encoding.
+
+  Must be higher than the internal DUK_JSON_ENC_LOOPARRAY define when
+  DUK_USE_JSON_STRINGIFY_FASTPATH is enabled.

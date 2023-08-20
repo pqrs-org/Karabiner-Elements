@@ -1,0 +1,10 @@
+define: DUK_USE_HEX_FASTPATH
+introduced: 1.4.0
+default: true
+tags:
+  - performance
+  - fastpath
+  - lowmemory
+description: >
+  Enable fast path for hex encode/decode.  The fast path uses a lookup
+  table at a small cost in footprint.

@@ -1,0 +1,34 @@
+define: DUK_OPT_HEAPPTR16
+introduced: 1.1.0
+conflicts:
+  - DUK_OPT_DEBUG
+related:
+  - DUK_OPT_HEAPPTR_ENC16
+  - DUK_OPT_HEAPPTR_DEC16
+tags:
+  - lowmemory
+  - experimental
+description: >
+  Enable "compression" of Duktape heap pointers into an unsigned 16-bit value.
+  Use together with DUK_OPT_HEAPPTR_ENC16 and DUK_OPT_HEAPPTR_DEC16.
+
+  Pointers compressed are those allocated from Duktape heap, using the user
+  provided allocation functions.  Also NULL pointer must encode and decode
+  correctly.
+
+  Currently it is required that NULL encodes to integer 0, and integer
+  0 decodes to NULL.  No other pointer can be encoded to 0.
+
+  This option reduces memory usage by several kilobytes, but has several
+  downsides.  It can only be applied when Duktape heap is limited in size,
+  for instance, with 4-byte aligned allocations a 256kB heap (minus one value
+  for NULL) can be supported.  Pointer encoding and decoding may be relatively
+  complicated as they need to correctly handle NULL pointers and
+  non-continuous memory maps used by some targets.  The macro may need to call
+  out to a helper function in practice, which is much slower than an inline
+  implementation.
+
+  Current limitation:  Duktape internal debug code enabled with e.g.
+  DUK_OPT_DEBUG and DUK_OPT_DPRINT doesn't have enough plumbing to be able to
+  decode pointers.  Debug printing cannot currently be enabled when pointer
+  compression is active.

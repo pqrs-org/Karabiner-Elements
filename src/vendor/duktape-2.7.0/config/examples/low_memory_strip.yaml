@@ -1,0 +1,49 @@
+# More stripping for low memory environments, removing e.g. RegExp support,
+# coroutine support, etc.
+
+DUK_USE_BUFFEROBJECT_SUPPORT: false
+
+DUK_USE_REGEXP_SUPPORT: false
+
+DUK_USE_REFERENCE_COUNTING: false
+DUK_USE_DOUBLE_LINKED_HEAP: false
+
+# Consider to reduce code footprint at the expense of less safeguards against
+# bugs in calling C code
+DUK_USE_VALSTACK_UNSAFE: true
+
+# Short term workaround with large footprint, disable.
+DUK_USE_REGEXP_CANON_WORKAROUND: false
+
+# Coroutine support has about 2kB footprint.
+DUK_USE_COROUTINE_SUPPORT: false
+
+# Finalizer support has about 0.8kB footprint.
+DUK_USE_FINALIZER_SUPPORT: false
+
+# ES2015 Proxy has about 2kB footprint.
+DUK_USE_ES6_PROXY: false
+
+# Don't support non-BMP characters in source code (UTF-8 otherwise OK).
+DUK_USE_SOURCE_NONBMP: false
+
+# Don't include even .name property for functions.
+DUK_USE_FUNC_NAME_PROPERTY: false
+
+# Remove built-in bindings.
+DUK_USE_MATH_BUILTIN: false
+DUK_USE_DATE_BUILTIN: false
+DUK_USE_ARRAY_BUILTIN: false
+DUK_USE_STRING_BUILTIN: false
+DUK_USE_BOOLEAN_BUILTIN: false
+DUK_USE_NUMBER_BUILTIN: false
+DUK_USE_FUNCTION_BUILTIN: false
+DUK_USE_OBJECT_BUILTIN: false
+DUK_USE_DUKTAPE_BUILTIN: false
+DUK_USE_JSON_BUILTIN: false
+DUK_USE_ENCODING_BUILTINS: false
+DUK_USE_REFLECT_BUILTIN: false
+DUK_USE_JSON_SUPPORT: false   # also disables JSON support for C API
+DUK_USE_GLOBAL_BUILTIN: false
+DUK_USE_CBOR_SUPPORT: false
+DUK_USE_CBOR_BUILTIN: false

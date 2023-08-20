@@ -1,0 +1,13 @@
+define: DUK_USE_DEBUGGER_SUPPORT
+introduced: 1.2.0
+requires:
+  - DUK_USE_INTERRUPT_COUNTER
+default: false
+tags:
+  - debugger
+description: >
+  Enable support for Duktape debug protocol (see doc/debugger.rst) and the
+  debug API calls (duk_debugger_attach(), duk_debugger_detach(), etc).
+  This adds about 10kB of code footprint at the moment.
+
+  This option requires DUK_USE_INTERRUPT_COUNTER.

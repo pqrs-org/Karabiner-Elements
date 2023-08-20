@@ -1,0 +1,7 @@
+define: DUK_USE_PACK_DUMMY_MEMBER
+introduced: 1.0.0
+default: false
+tags:
+  - portability
+description: >
+  Use dummy struct member to force struct packing.

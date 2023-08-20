@@ -1,0 +1,8 @@
+define: DUK_USE_DATE_TZO_GMTIME_S
+introduced: 2.0.0
+default: false
+tags:
+  - date
+  - portability
+description: >
+  Use gmtime_s() to get local time offset at a certain time.

@@ -1,0 +1,10 @@
+define: DUK_OPT_NONSTD_FUNC_SOURCE_PROPERTY
+introduced: 1.0.0
+tags:
+  - ecmascript
+description: >
+  Add a non-standard "source" property to function instances.  This allows
+  function toString() to print out the actual function source.  The property
+  is disabled by default because it increases memory footprint.
+
+  NOTE: Unimplemented as of Duktape 1.2.0.

@@ -1,0 +1,5 @@
+/* AIX */
+#if defined(_AIX)
+/* defined(__xlc__) || defined(__IBMC__): works but too wide */
+#define DUK_F_AIX
+#endif

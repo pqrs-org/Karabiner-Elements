@@ -1,0 +1,3 @@
+/* These are necessary wild guesses. */
+#define DUK_USE_ARCH_STRING "generic"
+/* Rely on autodetection for byte order, alignment, and packed tval. */

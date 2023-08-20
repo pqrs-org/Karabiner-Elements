@@ -1,0 +1,14 @@
+/* MIPS.  Related defines: __MIPSEB__, __MIPSEL__, __mips_isa_rev, __LP64__ */
+#if defined(__mips__) || defined(mips) || defined(_MIPS_ISA) || \
+    defined(_R3000) || defined(_R4000) || defined(_R5900) || \
+    defined(_MIPS_ISA_MIPS1) || defined(_MIPS_ISA_MIPS2) || \
+    defined(_MIPS_ISA_MIPS3) || defined(_MIPS_ISA_MIPS4) || \
+    defined(__mips) || defined(__MIPS__)
+#define DUK_F_MIPS
+#if defined(__LP64__) || defined(_LP64) || defined(__mips64) || \
+    defined(__mips64__) || defined(__mips_n64)
+#define DUK_F_MIPS64
+#else
+#define DUK_F_MIPS32
+#endif
+#endif

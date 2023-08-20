@@ -1,0 +1,517 @@
+// http://stackoverflow.com/questions/71074/how-to-remove-firefoxs-dotted-outline-on-buttons-as-well-as-links/3844452#3844452
+:focus {
+	outline: none;
+}
+::-moz-focus-inner {
+	border: 0;
+}
+
+@keyframes pulsate {
+	from { opacity: 1; }
+	to { opacity: 0.25; }
+}
+
+#part-header {
+	background: #444444;
+	color: #ffffff;
+	font: 24pt monospace;
+	border-bottom: 2px solid #cccccc;
+	padding: 20px 0px 20px 10px;
+}
+
+/* http://css-tricks.com/snippets/css/a-guide-to-flexbox/ */
+#part-middle {
+	display: flex;
+	flex-direction: row;
+	flex-wrap: nowrap;
+	justify-content: space-between;
+	align-items: stretch;
+	align-content: stretch;
+
+	min-height: 800px;
+
+	border-top: 1px solid #ffffff;
+	padding: 8px;
+	margin-top: 2px;
+}
+#left-area {
+	flex: 0 0 11em;
+	margin-right: 20px;
+	margin-bottom: 10px;
+}
+#center-area {
+	flex: 1 1 0;
+	margin-bottom: 10px;
+}
+#right-area {
+	flex: 0 0 40em;
+	margin-left: 20px;
+	margin-bottom: 10px;
+}
+
+#part-footer {
+	clear: both;
+	border-top: 2px solid #bbbbbb;
+	background: #eeeeee;
+	color: #555555;
+	text-align: center;
+	padding-top: 12px;
+	padding-bottom: 12px;
+	line-height: 1.5;
+}
+
+#exec-status {
+	margin-top: 25px;
+	margin-bottom: 25px;
+}
+#exec-state {
+	display: inline-block;
+	vertical-align: middle;
+}
+#exec-other {
+	display: inline-block;
+	vertical-align: middle;
+	font-size: 125%;
+}
+#current-state {
+	background: #228822;
+	color: #ffffff;
+	font: 16pt;
+	padding: 6pt;
+	border: 5px solid #228822;
+	border-radius: 10px;
+	font-size: 200%;
+	font-weight: bold;
+	margin-right: 10px;
+}
+#current-state.notrunning {
+	background: #882222;
+	border: 5px solid #882222;
+	border-radius: 10px;
+	animation: pulsate 0.7s cubic-bezier(0.75, 0, 0.75, 1) infinite alternate;
+}
+#exec-other:hover {
+	text-decoration: underline;
+	color: #9999ff;
+}
+
+#left-area .button {
+	display: inline-block;
+	text-align: center;
+	width: 95%;
+	min-width: 6em;
+	background: #226622;
+	color: #ffffff;
+	font: 16pt sans-serif;
+	font-weight: bold;
+	text-decoration: none;
+	margin: 10px 0 0 0;
+	padding: 0.4em;
+	border: 2px solid #000000;
+	border-radius: 4px;
+}
+#left-area .button a {
+	color: #ffffff;
+	text-decoration: none;
+}
+#left-area .button:hover {
+	background: #55aa55;
+}
+#left-area .button:disabled {
+	background: #555555;
+	color: #888888;
+}
+#left-area .button:disabled a {
+	background: #555555;
+	color: #888888;
+}
+
+#pause-button.pending {
+	background: #5555ff;
+	animation: pulsate 0.2s cubic-bezier(0.75, 0, 0.75, 1) infinite alternate;
+}
+
+#attach-button {
+}
+#attach-button.enabled {
+	animation: pulsate 0.7s cubic-bezier(0.75, 0, 0.75, 1) infinite alternate;
+}
+
+.duktape-exec-line {
+	outline: 2px solid red;
+	background: #550000;
+}
+.duktape-break-line {
+	outline: 2px solid white;
+}
+
+#output {
+	font: 9pt monospace;
+	color: #000000;
+	border: 2px solid #cccccc;
+	border-radius: 5px;
+	padding: 3px;
+	height: 30ex;
+	overflow: scroll;
+	overflow-x: auto;
+	overflow-y: scroll;
+	white-space: pre;
+}
+#output .alert {
+	color: #ff0000;
+}
+/* Default color (should be overridden by level) */
+#output .log {
+	color: #00ff00;
+}
+/* Trace */
+#output .loglevel0 {
+	color: #cccccc;
+}
+/* Debug */
+#output .loglevel1 {
+	color: #cccccc;
+}
+/* Info */
+#output .loglevel2 {
+	color: #888888;
+	font-weight: bold;
+}
+/* Warn */
+#output .loglevel3 {
+	color: #ff4444;
+	font-weight: bold;
+}
+/* Error */
+#output .loglevel4 {
+	color: #ff0000;
+	font-weight: bold;
+}
+/* Fatal */
+#output .loglevel5 {
+	background: #000000;
+	color: #ff0000;
+	font-weight: bold;
+}
+#output .debugger-info {
+	color: #880000;
+	font-weight: bold;
+	font-style: italic;
+}
+#output .debugger-debug {
+	color: #888888;
+	font-weight: bold;
+	font-style: italic;
+}
+
+#callstack {
+	font: 9pt monospace;
+	color: #000000;
+	margin-top: 10px;
+	border: 2px solid #cccccc;
+	border-radius: 5px;
+	padding: 3px;
+	height: 14ex;
+	overflow: scroll;
+	overflow-x: auto;
+	overflow-y: scroll;
+	white-space: pre;
+}
+#callstack div:nth-child(2n) {
+	background: #eeeeee;
+}
+#callstack .func {
+}
+#callstack .rest {
+	float: right;
+	color: #6666ff;
+}
+#callstack .rest:hover {
+	text-decoration: underline;
+	color: #9999ff;
+}
+
+#locals {
+	font: 9pt monospace;
+	color: #000000;
+	margin-top: 10px;
+	border: 2px solid #cccccc;
+	border-radius: 5px;
+	padding: 10px;
+	height: 30ex;
+	overflow: scroll;
+	overflow-x: auto;
+	overflow-y: scroll;
+	white-space: pre;
+}
+#locals div:nth-child(2n) {
+	background: #eeeeee;
+}
+#locals .key {
+}
+#locals .value {
+	float: right;
+	color: #888888;
+}
+
+#breakpoints {
+	color: #000000;
+	margin-top: 10px;
+	border: 2px solid #cccccc;
+	border-radius: 5px;
+	padding: 3px;
+	height: 15ex;
+	overflow: scroll;
+	overflow-x: auto;
+	overflow-y: scroll;
+	white-space: pre;
+}
+#breakpoints div {
+	margin: 2px 0 2px 0;
+}
+#breakpoints div:nth-child(2n) {
+	background: #eeeeee;
+}
+#breakpoints a {
+	font: 9pt monospace;
+	color: #6666ff;
+}
+#breakpoints a:hover {
+	text-decoration: underline;
+	color: #9999ff;
+}
+.breakpoint-line {
+	clear: both;
+	padding-top: 2px;
+	padding-bottom: 2px;
+}
+#add-breakpoint-file {
+	font: 10pt monospace;
+	width: 10em;
+	padding: 5px;
+}
+#add-breakpoint-line {
+	font: 10pt monospace;
+	width: 3em;
+	margin-left: 3px;
+	padding: 5px;
+}
+#delete-all-breakpoints-button {
+	float: right;
+	font: 10pt sans-serif;
+	padding: 5px;
+	border: 1px solid #888888;
+	background: #ddffdd;
+	color: #000000;
+}
+#delete-all-breakpoints-button:hover {
+	background: #f8fff8;
+}
+#delete-all-breakpoints-button:disabled {
+	background: #dddddd;
+	color: #444444;
+}
+#add-breakpoint-button {
+	font: 10pt sans-serif;
+	margin-left: 10px;
+	padding: 5px;
+	border: 1px solid #888888;
+	background: #ddffdd;
+	color: #000000;
+}
+#add-breakpoint-button:hover {
+	background: #f8fff8;
+}
+#add-breakpoint-button:disabled {
+	background: #dddddd;
+	color: #444444;
+}
+#breakpoint-hint {
+	color: #aaaaaa;
+	font-style: italic;
+	margin-left: 10px;
+}
+.delete-breakpoint-button {
+	float: right;
+	display: inline;
+	font: 9pt sans-serif;
+	padding: 3px;
+	border: none;
+	background: none;
+	color: #6666ff;
+}
+.delete-breakpoint-button {
+	font: 9pt sans-serif;
+}
+.delete-breakpoint-button:hover {
+	text-decoration: underline;
+	color: #9999ff;
+}
+.delete-breakpoint-button:disabled {
+	color: #888888;
+}
+
+#about-dialog p {
+	margin: 10px 0 10px 0;
+}
+
+#bytecode-dialog p {
+	margin: 10px 0 10px 0;
+}
+#bytecode-dialog pre {
+	font: 10pt monospace;
+	color: #000000;
+}
+#bytecode-dialog div.highlight {
+	background: #888888;
+	color: #ffffff;
+}
+
+#eval {
+	color: #000000;
+	margin-top: 10px;
+	border: 2px solid #cccccc;
+	border-radius: 5px;
+	padding: 3px;
+	height: 30ex;
+	overflow: scroll;
+	overflow-x: auto;
+	overflow-y: scroll;
+	white-space: pre;
+}
+#eval-input {
+	display: inline;
+	font: 10pt monospace;
+	width: 20em;
+	padding: 5px;
+}
+#eval-button {
+	display: inline;
+	margin-left: 10px;
+	padding: 5px;
+	border: 1px solid #888888;
+	font: 10pt sans-serif;
+	background: #ddffdd;
+	color: #000000;
+}
+#eval-button {
+}
+#eval-button:hover {
+	background: #f8fff8;
+}
+#eval-button:disabled {
+	background: #dddddd;
+	color: #444444;
+}
+#eval-button.pending {
+	background: #5555ff;
+	animation: pulsate 0.2s cubic-bezier(0.75, 0, 0.75, 1) infinite alternate;
+}
+#eval-watch {
+	margin-left: 20px;
+	vertical-align: middle;
+}
+#eval-output {
+	font: 10pt monospace;
+	white-space: pre;
+	padding: 5px;
+	border: 1px solid #888888;
+	min-height: 4ex;
+	margin-top: 5px;
+}
+
+#varname-input {
+	font: 10pt monospace;
+	width: 10em;
+	padding: 5px;
+}
+#varvalue-input {
+	margin-left: 10px;
+	font: 10pt monospace;
+	width: 20em;
+	padding: 5px;
+}
+#getvar-button,
+#putvar-button {
+	display: inline;
+	float: right;
+	margin-left: 10px;
+	padding: 5px;
+	border: 1px solid #888888;
+	font: 10pt sans-serif;
+	background: #ddffdd;
+	color: #000000;
+}
+#getvar-button:hover,
+#putvar-button:hover {
+	background: #f8fff8;
+}
+#getvar-button:disabled,
+#putvar-button:disabled {
+	background: #dddddd;
+	color: #444444;
+}
+#var-output {
+	font: 10pt monospace;
+	white-space: pre;
+	padding: 5px;
+	border: 1px solid #888888;
+	min-height: 4ex;
+	margin-top: 5px;
+}
+
+#source-pre {
+	margin-top: 10px;
+	border: 2px solid #cccccc;
+	border-radius: 5px;
+	height: 400px;
+	overflow: scroll;
+	overflow-x: auto;
+	overflow-y: scroll;
+}
+#source-pre.running {
+	background: #eeeeee;
+	color: #888888;
+}
+#source-pre.running #source-code {
+	background: #eeeeee;
+	color: #888888;
+}
+#source-filename {
+	font-size: 125%;
+	color: #888888;
+}
+code.sourcecode {
+	counter-reset: source-line;
+}
+code.sourcecode div {
+	font: 10pt monospace;
+	padding: 2px 5px 2px 5px;
+	white-space: pre;
+	border-bottom: 1px solid #eeeeee;
+}
+code.sourcecode div:before {
+	display: inline-block;
+	content: counter(source-line);
+	counter-increment: source-line;
+	width: 4em;
+	color: #888888;
+	text-align: right;
+	margin-right: 20px;
+}
+code.sourcecode div.breakpoint:before {
+	margin-right: 0px;
+	border-right: 20px solid #ff0000;
+}
+code.sourcecode div.highlight {
+	background: #aaaaaa;
+	color: #000000;
+}
+code.sourcecode div.execution {
+	background: #000000;
+	color: #ffffff;
+}
+
+#source-select {
+	margin-top: 5px;
+}

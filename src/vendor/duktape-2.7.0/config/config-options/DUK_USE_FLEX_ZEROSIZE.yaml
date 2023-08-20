@@ -1,0 +1,11 @@
+define: DUK_USE_FLEX_ZEROSIZE
+introduced: 1.0.0
+default: false
+tags:
+  - portability
+description: >
+  Use a zero element array to define variable size structures.  This is not
+  fully portable but works with some compilers and is preferred over using
+  a one element array.
+
+# XXX: currently unused, remove or mark unused so doesn't get emitted?

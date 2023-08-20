@@ -1,0 +1,10 @@
+define: DUK_USE_VALSTACK_SHRINK_SLACK_SHIFT
+introduced: 2.2.0
+default: 4
+tags:
+  - performance
+  - lowmemory
+description: >
+  When shrinking, leave (curr_size >> DUK_USE_VALSTACK_SHRINK_SLACK_SHIFT)
+  bytes as a slack.  This shift count must be larger than
+  DUK_USE_VALSTACK_SHRINK_CHECK_SHIFT.

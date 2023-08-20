@@ -1,0 +1,21 @@
+define: DUK_OPT_FUNCPTR16
+introduced: 1.1.0
+related:
+  - DUK_OPT_FUNCPTR_ENC16
+  - DUK_OPT_FUNCPTR_DEC16
+tags:
+  - lowmemory
+  - experimental
+description: >
+  Enable "compression" of arbitrary C function pointers into an unsigned 16-bit
+  value.  Use together with DUK_OPT_FUNCPTR_ENC16 and DUK_OPT_FUNCPTR_DEC16.
+
+  Pointers compressed are any C function pointers.  Also NULL pointer must
+  encode and decode correctly.
+
+  Currently it is required that NULL encodes to integer 0, and integer
+  0 decodes to NULL.  No other pointer can be encoded to 0.
+
+  NOTE: This feature option is currently unimplemented, i.e. Duktape won't
+  compress any function pointers at the moment.  It might not be necessary
+  to support a NULL function pointer (uncertain until taken into use).

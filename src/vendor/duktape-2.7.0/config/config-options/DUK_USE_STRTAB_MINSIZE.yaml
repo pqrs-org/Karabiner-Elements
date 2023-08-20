@@ -1,0 +1,9 @@
+define: DUK_USE_STRTAB_MINSIZE
+introduced: 2.1.0
+default: 1024
+tags:
+  - performance
+  - lowmemory
+description: >
+  Minimum size for Duktape heap string table, must be 2^N, and should never
+  be lower than 64.

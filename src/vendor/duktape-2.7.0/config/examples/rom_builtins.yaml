@@ -1,0 +1,19 @@
+# Move built-in strings and objects to ROM (read-only data section) to reduce
+# RAM usage of Duktape heaps; all heaps will share the same built-in strings
+# and objects, except for the global object which is writable.  The downside
+# is that built-in objects (other than global object) will be read-only.
+
+# These should be used together.
+DUK_USE_ROM_STRINGS: true
+DUK_USE_ROM_OBJECTS: true
+
+# Provide a writable global object:
+#  - DUK_USE_ROM_GLOBAL_INHERIT: empty RAM global object inherits from ROM
+#    global object, uses very little RAM.
+#  - DUK_USE_ROM_GLOBAL_CLONE: ROM global object is cloned into RAM, more
+#    compliant but uses more RAM.
+#
+# If both are set to 'false', global object will be non-writable which
+# may surprise users.
+DUK_USE_ROM_GLOBAL_INHERIT: true
+DUK_USE_ROM_GLOBAL_CLONE: false

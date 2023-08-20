@@ -1,0 +1,10 @@
+define: DUK_USE_JSON_SUPPORT
+introduced: 2.0.0
+default: true
+tags:
+  - ecmascript
+description: >
+  Enable JSON functionality, affects both ECMAScript and C APIs.
+  Note that disabling DUK_USE_JSON_BUILTIN still leaves the C API intact
+  and pulls in the JSON encoding/decoding functionality; disable this
+  option to remove that too.
