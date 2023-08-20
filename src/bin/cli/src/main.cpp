@@ -267,19 +267,7 @@ int main(int argc, char** argv) {
       if (parse_result.count(key)) {
         auto glob_pattern = parse_result[key].as<std::string>();
         for (const auto& file_path : glob::glob(glob_pattern)) {
-          std::ifstream input(file_path);
-          if (input) {
-            std::string code;
-
-            input.seekg(0, std::ios::end);
-            code.reserve(input.tellg());
-            input.seekg(0, std::ios::beg);
-
-            code.assign(std::istreambuf_iterator<char>(input),
-                        std::istreambuf_iterator<char>());
-
-            krbn::duktape_utility::eval(code);
-          }
+          krbn::duktape_utility::eval_file(file_path);
         }
 
         goto finish;

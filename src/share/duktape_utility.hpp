@@ -18,5 +18,21 @@ inline void eval(const std::string_view& code) {
 
   duk_destroy_heap(ctx);
 }
+
+inline void eval_file(const std::filesystem::path& path) {
+  std::ifstream input(path);
+  if (input) {
+    std::string code;
+
+    input.seekg(0, std::ios::end);
+    code.reserve(input.tellg());
+    input.seekg(0, std::ios::beg);
+
+    code.assign(std::istreambuf_iterator<char>(input),
+                std::istreambuf_iterator<char>());
+
+    eval(code);
+  }
+}
 } // namespace duktape_utility
 } // namespace krbn
