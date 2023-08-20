@@ -205,7 +205,7 @@ int main(int argc, char** argv) {
       if (parse_result.count(key)) {
         auto glob_pattern = parse_result[key].as<std::string>();
         for (const auto& file_path : glob::glob(glob_pattern)) {
-          std::cout << file_path << ": ";
+          std::cout << file_path.string() << ": ";
 
           try {
             auto assets_file = krbn::complex_modifications_assets_file(file_path.string());
