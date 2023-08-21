@@ -126,21 +126,35 @@ int main(int argc, char** argv) {
   options.add_options()("set-variables", "Json string: {[key: string]: number|boolean|string}", cxxopts::value<std::string>());
   options.add_options()("copy-current-profile-to-system-default-profile", "Copy the current profile to system default profile.");
   options.add_options()("remove-system-default-profile", "Remove the system default profile.");
-  options.add_options()("lint-complex-modifications", "Check complex_modifications.json",
-                        cxxopts::value<std::string>(),
-                        "glob-pattern");
-  options.add_options()("format-json", "Format json files",
-                        cxxopts::value<std::string>(),
-                        "glob-pattern");
-  options.add_options()("eval-js", "Run javascript files using Duktape",
-                        cxxopts::value<std::string>(),
-                        "glob-pattern");
+  options.add_options()("lint-complex-modifications",
+                        "Check complex_modifications.json",
+                        cxxopts::value<std::vector<std::string>>(),
+                        "glob-patterns");
+  options.add_options()("format-json",
+                        "Format json files",
+                        cxxopts::value<std::vector<std::string>>(),
+                        "glob-patterns");
+  options.add_options()("eval-js",
+                        "Run javascript files using Duktape",
+                        cxxopts::value<std::vector<std::string>>(),
+                        "glob-patterns");
   options.add_options()("version", "Displays version.");
   options.add_options()("version-number", "Displays version_number.");
   options.add_options()("help", "Print help.");
+  options.add_options()("silent",
+                        "Suppress messages",
+                        cxxopts::value<bool>()->default_value("false"));
+
+  options.parse_positional({
+      "lint-complex-modifications",
+      "format-json",
+      "eval-js",
+  });
 
   try {
     auto parse_result = options.parse(argc, argv);
+
+    bool silent = parse_result["silent"].as<bool>();
 
     {
       std::string key = "select-profile";
@@ -203,29 +217,35 @@ int main(int argc, char** argv) {
     {
       std::string key = "lint-complex-modifications";
       if (parse_result.count(key)) {
-        auto glob_pattern = parse_result[key].as<std::string>();
-        for (const auto& file_path : glob::glob(glob_pattern)) {
-          std::cout << file_path.string() << ": ";
-
-          try {
-            auto assets_file = krbn::complex_modifications_assets_file(file_path.string());
-            auto error_messages = assets_file.lint();
-            if (error_messages.empty()) {
-              std::cout << "ok" << std::endl;
-
-            } else {
-              exit_code = 1;
-
-              for (const auto& e : error_messages) {
-                std::cout << e << std::endl;
-              }
-              goto finish;
+        auto glob_patterns = parse_result[key].as<std::vector<std::string>>();
+        for (const auto& glob_pattern : glob_patterns) {
+          for (const auto& file_path : glob::glob(glob_pattern)) {
+            if (!silent) {
+              std::cout << file_path.string() << ": ";
             }
 
-          } catch (std::exception& e) {
-            exit_code = 1;
-            std::cout << e.what() << std::endl;
-            goto finish;
+            try {
+              auto assets_file = krbn::complex_modifications_assets_file(file_path.string());
+              auto error_messages = assets_file.lint();
+              if (error_messages.empty()) {
+                if (!silent) {
+                  std::cout << "ok" << std::endl;
+                }
+
+              } else {
+                exit_code = 1;
+
+                for (const auto& e : error_messages) {
+                  std::cout << e << std::endl;
+                }
+                goto finish;
+              }
+
+            } catch (std::exception& e) {
+              exit_code = 1;
+              std::cout << e.what() << std::endl;
+              goto finish;
+            }
           }
         }
 
@@ -236,26 +256,30 @@ int main(int argc, char** argv) {
     {
       std::string key = "format-json";
       if (parse_result.count(key)) {
-        auto glob_pattern = parse_result[key].as<std::string>();
-        for (const auto& file_path : glob::glob(glob_pattern)) {
-          std::cout << "formatting " << file_path.string() << std::endl;
+        auto glob_patterns = parse_result[key].as<std::vector<std::string>>();
+        for (const auto& glob_pattern : glob_patterns) {
+          for (const auto& file_path : glob::glob(glob_pattern)) {
+            if (!silent) {
+              std::cout << "formatting " << file_path.string() << std::endl;
+            }
 
-          std::ifstream input(file_path);
-          if (input) {
-            try {
-              auto json = krbn::json_utility::parse_jsonc(input);
+            std::ifstream input(file_path);
+            if (input) {
+              try {
+                auto json = krbn::json_utility::parse_jsonc(input);
 
-              auto status = std::filesystem::status(file_path);
-              auto directory_status = std::filesystem::status(file_path.parent_path());
+                auto status = std::filesystem::status(file_path);
+                auto directory_status = std::filesystem::status(file_path.parent_path());
 
-              krbn::json_writer::sync_save_to_file(json,
-                                                   file_path,
-                                                   static_cast<mode_t>(directory_status.permissions()),
-                                                   static_cast<mode_t>(status.permissions()));
-            } catch (std::exception& e) {
-              exit_code = 1;
-              std::cerr << fmt::format("parse error in {0}: {1}", file_path.string(), e.what()) << std::endl;
-              goto finish;
+                krbn::json_writer::sync_save_to_file(json,
+                                                     file_path,
+                                                     static_cast<mode_t>(directory_status.permissions()),
+                                                     static_cast<mode_t>(status.permissions()));
+              } catch (std::exception& e) {
+                exit_code = 1;
+                std::cerr << fmt::format("parse error in {0}: {1}", file_path.string(), e.what()) << std::endl;
+                goto finish;
+              }
             }
           }
         }
@@ -267,14 +291,16 @@ int main(int argc, char** argv) {
     {
       std::string key = "eval-js";
       if (parse_result.count(key)) {
-        auto glob_pattern = parse_result[key].as<std::string>();
-        for (const auto& file_path : glob::glob(glob_pattern)) {
-          try {
-            krbn::duktape_utility::eval_file(file_path);
-          } catch (std::exception& e) {
-            exit_code = 1;
-            std::cerr << e.what() << std::endl;
-            goto finish;
+        auto glob_patterns = parse_result[key].as<std::vector<std::string>>();
+        for (const auto& glob_pattern : glob_patterns) {
+          for (const auto& file_path : glob::glob(glob_pattern)) {
+            try {
+              krbn::duktape_utility::eval_file(file_path);
+            } catch (std::exception& e) {
+              exit_code = 1;
+              std::cerr << e.what() << std::endl;
+              goto finish;
+            }
           }
         }
 
