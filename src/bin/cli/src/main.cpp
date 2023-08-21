@@ -142,7 +142,7 @@ int main(int argc, char** argv) {
   options.add_options()("version-number", "Displays version_number.");
   options.add_options()("help", "Print help.");
   options.add_options()("silent",
-                        "Suppress messages",
+                        "Suppress messages.",
                         cxxopts::value<bool>()->default_value("false"));
 
   options.parse_positional({
