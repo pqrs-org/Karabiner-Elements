@@ -27,7 +27,9 @@ int main(void) {
       krbn::duktape_utility::eval_file("data/module_not_found.js");
       expect(false);
     } catch (krbn::duktape_eval_error& ex) {
-      expect("javascript error: TypeError: cannot find module: data/not_found.js"sv == ex.what());
+      auto expected_message = fmt::format("javascript error: TypeError: cannot find module: {0}/not_found.js",
+                                          std::filesystem::absolute("data").string());
+      expect(std::string_view(expected_message) == ex.what());
     }
   };
 

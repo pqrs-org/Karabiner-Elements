@@ -30,7 +30,7 @@ inline void eval_file(const std::filesystem::path& path) noexcept(false) {
     // module-node
     //
 
-    duk_push_string(ctx, path.c_str());
+    duk_push_string(ctx, std::filesystem::absolute(path).c_str());
     duk_put_global_string(ctx, "__filename");
 
     duk_push_object(ctx);
