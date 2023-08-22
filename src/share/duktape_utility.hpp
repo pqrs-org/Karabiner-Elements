@@ -6,6 +6,7 @@
 #include <duktape.h>
 #include <filesystem>
 #include <fstream>
+#include <iostream>
 #include <spdlog/fmt/fmt.h>
 
 namespace krbn {
@@ -30,8 +31,16 @@ inline void eval_file(const std::filesystem::path& path) noexcept(false) {
     // module-node
     //
 
+    // Note:
+    // `__filename` will be updated in duk_module_node.c when `require()` is called.
+    // Since `__filename` is not set in the entry file, set it here.
     duk_push_string(ctx, std::filesystem::absolute(path).c_str());
     duk_put_global_string(ctx, "__filename");
+
+    // A custom extension in order to determine whether a script was executed directly from the command line or loaded with `require()`.
+    // Although setting `require.main` is a more nodejs-compatible method, we take this method, which does not require any changes to `duk_module_node.c`.
+    duk_push_string(ctx, std::filesystem::absolute(path).c_str());
+    duk_put_global_string(ctx, "__main");
 
     duk_push_object(ctx);
 
@@ -43,17 +52,20 @@ inline void eval_file(const std::filesystem::path& path) noexcept(false) {
           auto parent_id = duk_require_string(ctx, 1);
 
           if (std::string_view("") == parent_id) {
-            duk_get_global_string(ctx, "__filename");
-            auto filename = duk_to_string(ctx, -1);
+            duk_get_global_string(ctx, "__main");
+            auto filename = std::filesystem::path(duk_to_string(ctx, -1));
+            duk_pop(ctx);
 
             duk_push_sprintf(ctx,
                              "%s/%s.js",
-                             std::filesystem::path(filename).parent_path().c_str(),
+                             filename.parent_path().c_str(),
                              module_id);
           } else {
+            auto filename = std::filesystem::path(parent_id);
+
             duk_push_sprintf(ctx,
                              "%s/%s.js",
-                             std::filesystem::path(parent_id).parent_path().c_str(),
+                             filename.parent_path().c_str(),
                              module_id);
           }
 
