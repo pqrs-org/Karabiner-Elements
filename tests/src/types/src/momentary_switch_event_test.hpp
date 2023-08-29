@@ -39,6 +39,11 @@ void run_momentary_switch_event_test(void) {
       expect(e.pointing_button() == false);
       expect(nlohmann::json(e).get<krbn::momentary_switch_event>() == e);
     }
+    {
+      // Not target usage
+      expect(!krbn::momentary_switch_event::target(pqrs::hid::usage_page::keyboard_or_keypad,
+                                                   pqrs::hid::usage::keyboard_or_keypad::error_undefined));
+    }
 
     //
     // usage_page::consumer
@@ -52,6 +57,11 @@ void run_momentary_switch_event_test(void) {
       expect(e.caps_lock() == false);
       expect(e.pointing_button() == false);
       expect(nlohmann::json(e).get<krbn::momentary_switch_event>() == e);
+    }
+    {
+      // Not target usage
+      expect(!krbn::momentary_switch_event::target(pqrs::hid::usage_page::consumer,
+                                                   pqrs::hid::usage::consumer::consumer_control));
     }
 
     //
@@ -78,7 +88,6 @@ void run_momentary_switch_event_test(void) {
     }
     {
       // Not target usage
-
       expect(!krbn::momentary_switch_event::target(pqrs::hid::usage_page::apple_vendor_keyboard,
                                                    pqrs::hid::usage::apple_vendor_keyboard::caps_lock_delay_enable));
     }
@@ -104,6 +113,11 @@ void run_momentary_switch_event_test(void) {
       expect(e.caps_lock() == false);
       expect(e.pointing_button() == false);
       expect(nlohmann::json(e).get<krbn::momentary_switch_event>() == e);
+    }
+    {
+      // Not target usage
+      expect(!krbn::momentary_switch_event::target(pqrs::hid::usage_page::apple_vendor_top_case,
+                                                   pqrs::hid::usage::apple_vendor_top_case::clamshell_latched));
     }
 
     //

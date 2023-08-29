@@ -240,9 +240,14 @@ constexpr std::pair<const mapbox::eternal::string, const pqrs::hid::usage_pair> 
 
 constexpr auto other_usage_page_map = mapbox::eternal::hash_map<mapbox::eternal::string, pqrs::hid::usage_pair>(other_usage_page_pairs);
 
-inline bool target(pqrs::hid::usage::value_t usage) {
-  return pqrs::hid::usage::keyboard_or_keypad::keyboard_a <= usage &&
-         usage < pqrs::hid::usage::keyboard_or_keypad::reserved;
+inline bool target(pqrs::hid::usage_page::value_t usage_page,
+                   pqrs::hid::usage::value_t usage) {
+  if (usage_page == pqrs::hid::usage_page::keyboard_or_keypad) {
+    return pqrs::hid::usage::keyboard_or_keypad::keyboard_a <= usage &&
+           usage < pqrs::hid::usage::keyboard_or_keypad::reserved;
+  }
+
+  return false;
 }
 
 inline std::string make_name(pqrs::hid::usage::value_t usage) {

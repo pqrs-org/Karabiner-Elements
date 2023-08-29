@@ -16,11 +16,11 @@ class momentary_switch_event final {
 public:
   static bool target(pqrs::hid::usage_page::value_t usage_page,
                      pqrs::hid::usage::value_t usage) {
-    return (usage_page == pqrs::hid::usage_page::keyboard_or_keypad && momentary_switch_event_details::key_code::target(usage)) ||
-           (usage_page == pqrs::hid::usage_page::consumer && momentary_switch_event_details::consumer_key_code::target(usage)) ||
-           (usage_page == pqrs::hid::usage_page::apple_vendor_keyboard && momentary_switch_event_details::apple_vendor_keyboard_key_code::target(usage)) ||
-           (usage_page == pqrs::hid::usage_page::apple_vendor_top_case && momentary_switch_event_details::apple_vendor_top_case_key_code::target(usage)) ||
-           (usage_page == pqrs::hid::usage_page::button && momentary_switch_event_details::pointing_button::target(usage));
+    return momentary_switch_event_details::key_code::target(usage_page, usage) ||
+           momentary_switch_event_details::consumer_key_code::target(usage_page, usage) ||
+           momentary_switch_event_details::apple_vendor_keyboard_key_code::target(usage_page, usage) ||
+           momentary_switch_event_details::apple_vendor_top_case_key_code::target(usage_page, usage) ||
+           momentary_switch_event_details::pointing_button::target(usage_page, usage);
   }
 
   momentary_switch_event(void) {
