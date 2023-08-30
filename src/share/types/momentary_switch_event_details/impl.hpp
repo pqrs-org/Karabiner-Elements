@@ -8,29 +8,6 @@ namespace krbn {
 namespace momentary_switch_event_details {
 namespace impl {
 //
-// unnamed usage
-//
-
-inline std::string make_unnamed_name(pqrs::hid::usage::value_t usage) {
-  std::stringstream ss;
-  ss << "(number:" << type_safe::get(usage) << ")";
-  return ss.str();
-}
-
-inline std::optional<pqrs::hid::usage::value_t> find_unnamed_usage(const std::string& name) {
-  std::string_view prefix("(number:");
-
-  if (pqrs::string::starts_with(name, prefix)) {
-    try {
-      return pqrs::hid::usage::value_t(std::stoi(name.substr(prefix.size())));
-    } catch (const std::exception& e) {
-    }
-  }
-
-  return std::nullopt;
-}
-
-//
 // name and value pairs
 //
 
@@ -52,8 +29,7 @@ inline std::string make_name(const T& name_value_pairs,
     return it->first.c_str();
   }
 
-  // fallback
-  return make_unnamed_name(usage);
+  return "unsupported";
 }
 
 template <typename T>
@@ -64,8 +40,7 @@ inline std::optional<pqrs::hid::usage::value_t> find_usage(const T& name_value_m
     return it->second;
   }
 
-  // fallback
-  return find_unnamed_usage(name);
+  return std::nullopt;
 }
 
 //
