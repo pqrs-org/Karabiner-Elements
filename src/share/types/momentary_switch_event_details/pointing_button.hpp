@@ -46,7 +46,7 @@ constexpr auto name_value_map = mapbox::eternal::hash_map<mapbox::eternal::strin
 inline bool target(pqrs::hid::usage_page::value_t usage_page,
                    pqrs::hid::usage::value_t usage) {
   if (usage_page == pqrs::hid::usage_page::button) {
-    return true;
+    return impl::find_pair(name_value_pairs, usage) != std::end(name_value_pairs);
   }
 
   return false;
