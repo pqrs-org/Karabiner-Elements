@@ -133,6 +133,8 @@ public:
       hid_queue_values_converter_.erase_device(device_id);
       observed_devices_.erase(device_id);
 
+      hat_switch_converter::get_global_hat_switch_converter()->erase_device(device_id);
+
       send_observed_devices();
 
       async_rescan();
@@ -147,6 +149,8 @@ public:
     detach_from_dispatcher([this] {
       hid_manager_ = nullptr;
       hid_queue_value_monitors_.clear();
+
+      hat_switch_converter::get_global_hat_switch_converter()->clear();
     });
 
     logger::get_logger()->info("device_observer is stopped.");
