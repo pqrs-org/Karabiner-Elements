@@ -56,6 +56,7 @@ public:
       if (auto e = event.get_if<momentary_switch_event>()) {
         if (e->valid()) {
           auto usage_page = e->get_usage_pair().get_usage_page();
+          auto usage = e->get_usage_pair().get_usage();
 
           switch (*any_type) {
             case event_definition::any_type::key_code:
@@ -85,6 +86,17 @@ public:
             case event_definition::any_type::pointing_button:
               if (usage_page == pqrs::hid::usage_page::button) {
                 return true;
+              }
+              break;
+
+            case event_definition::any_type::dpad:
+              if (usage_page == pqrs::hid::usage_page::generic_desktop) {
+                if (usage == pqrs::hid::usage::generic_desktop::dpad_up ||
+                    usage == pqrs::hid::usage::generic_desktop::dpad_down ||
+                    usage == pqrs::hid::usage::generic_desktop::dpad_right ||
+                    usage == pqrs::hid::usage::generic_desktop::dpad_left) {
+                  return true;
+                }
               }
               break;
           }
