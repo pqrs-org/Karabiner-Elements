@@ -308,8 +308,8 @@ void run_momentary_switch_event_test(void) {
     //
 
     {
-      krbn::momentary_switch_event e(pqrs::hid::usage_page::button,
-                                     pqrs::hid::usage::value_t(1234));
+      krbn::momentary_switch_event e(pqrs::hid::usage_page::generic_desktop,
+                                     pqrs::hid::usage::generic_desktop::hat_switch);
       nlohmann::json actual = e;
       expect("\"unsupported\""sv == actual.dump());
     }
