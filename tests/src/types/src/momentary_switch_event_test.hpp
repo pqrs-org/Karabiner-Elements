@@ -5,6 +5,7 @@
 void run_momentary_switch_event_test(void) {
   using namespace boost::ut;
   using namespace boost::ut::literals;
+  using namespace std::literals;
 
   "momentary_switch_event"_test = [] {
     //
@@ -135,6 +136,20 @@ void run_momentary_switch_event_test(void) {
     }
 
     //
+    // dpad
+    //
+
+    {
+      krbn::momentary_switch_event e(pqrs::hid::usage_page::generic_desktop,
+                                     pqrs::hid::usage::generic_desktop::dpad_up);
+      expect(e.make_modifier_flag() == std::nullopt);
+      expect(e.modifier_flag() == false);
+      expect(e.caps_lock() == false);
+      expect(e.pointing_button() == false);
+      expect(nlohmann::json(e).get<krbn::momentary_switch_event>() == e);
+    }
+
+    //
     // map
     //
 
@@ -152,6 +167,8 @@ void run_momentary_switch_event_test(void) {
                                               pqrs::hid::usage::button::button_2));
       map.insert(krbn::momentary_switch_event(pqrs::hid::usage_page::button,
                                               pqrs::hid::usage::button::button_1));
+      map.insert(krbn::momentary_switch_event(pqrs::hid::usage_page::generic_desktop,
+                                              pqrs::hid::usage::generic_desktop::dpad_up));
 
       int i = 0;
       for (const auto& m : map) {
@@ -159,26 +176,30 @@ void run_momentary_switch_event_test(void) {
 
         switch (i++) {
           case 0:
-            expect(m == krbn::momentary_switch_event(pqrs::hid::usage_page::keyboard_or_keypad,
-                                                     pqrs::hid::usage::keyboard_or_keypad::keyboard_a));
+            expect(m == krbn::momentary_switch_event(pqrs::hid::usage_page::generic_desktop,
+                                                     pqrs::hid::usage::generic_desktop::dpad_up));
             break;
           case 1:
             expect(m == krbn::momentary_switch_event(pqrs::hid::usage_page::keyboard_or_keypad,
-                                                     pqrs::hid::usage::keyboard_or_keypad::keyboard_b));
+                                                     pqrs::hid::usage::keyboard_or_keypad::keyboard_a));
             break;
           case 2:
             expect(m == krbn::momentary_switch_event(pqrs::hid::usage_page::keyboard_or_keypad,
-                                                     pqrs::hid::usage::keyboard_or_keypad::keyboard_c));
+                                                     pqrs::hid::usage::keyboard_or_keypad::keyboard_b));
             break;
           case 3:
-            expect(m == krbn::momentary_switch_event(pqrs::hid::usage_page::button,
-                                                     pqrs::hid::usage::button::button_1));
+            expect(m == krbn::momentary_switch_event(pqrs::hid::usage_page::keyboard_or_keypad,
+                                                     pqrs::hid::usage::keyboard_or_keypad::keyboard_c));
             break;
           case 4:
             expect(m == krbn::momentary_switch_event(pqrs::hid::usage_page::button,
-                                                     pqrs::hid::usage::button::button_2));
+                                                     pqrs::hid::usage::button::button_1));
             break;
           case 5:
+            expect(m == krbn::momentary_switch_event(pqrs::hid::usage_page::button,
+                                                     pqrs::hid::usage::button::button_2));
+            break;
+          case 6:
             expect(m == krbn::momentary_switch_event(pqrs::hid::usage_page::consumer,
                                                      pqrs::hid::usage::consumer::mute));
             break;
@@ -270,16 +291,27 @@ void run_momentary_switch_event_test(void) {
     }
 
     //
-    // Unnamed
+    // dpad
     //
 
     {
-      std::string expected("{\"pointing_button\":\"(number:1234)\"}");
-      krbn::momentary_switch_event e(pqrs::hid::usage_page::button,
-                                     pqrs::hid::usage::value_t(1234));
+      std::string expected("{\"dpad\":\"up\"}");
+      krbn::momentary_switch_event e(pqrs::hid::usage_page::generic_desktop,
+                                     pqrs::hid::usage::generic_desktop::dpad_up);
       nlohmann::json actual = e;
       expect(actual.dump() == expected);
       expect(actual.get<krbn::momentary_switch_event>() == e);
+    }
+
+    //
+    // Unsupported
+    //
+
+    {
+      krbn::momentary_switch_event e(pqrs::hid::usage_page::button,
+                                     pqrs::hid::usage::value_t(1234));
+      nlohmann::json actual = e;
+      expect("\"unsupported\""sv == actual.dump());
     }
 
     //
@@ -299,11 +331,10 @@ void run_momentary_switch_event_test(void) {
 
     {
 
-      std::string expected("{\"consumer_key_code\":\"(number:568)\"}");
       krbn::momentary_switch_event e(pqrs::hid::usage_page::consumer,
                                      pqrs::hid::usage::consumer::ac_pan);
       nlohmann::json actual = e;
-      expect(actual.dump() == expected);
+      expect("\"unsupported\""sv == actual.dump());
     }
 
     //
