@@ -1790,6 +1790,45 @@
         ]
     },
     {
+        "category": "D-pad"
+    },
+    {
+        "not_to": true,
+        "label": "dpad up",
+        "data": [
+            {
+                "dpad": "up"
+            }
+        ]
+    },
+    {
+        "not_to": true,
+        "label": "dpad down",
+        "data": [
+            {
+                "dpad": "down"
+            }
+        ]
+    },
+    {
+        "not_to": true,
+        "label": "dpad left",
+        "data": [
+            {
+                "dpad": "left"
+            }
+        ]
+    },
+    {
+        "not_to": true,
+        "label": "dpad right",
+        "data": [
+            {
+                "dpad": "right"
+            }
+        ]
+    },
+    {
         "category": "Mouse keys"
     },
     {
@@ -2074,6 +2113,28 @@
             {
                 "mouse_key": {
                     "speed_multiplier": 0.5
+                }
+            }
+        ]
+    },
+    {
+        "not_from": true,
+        "label": "speed multiplier (0.25)",
+        "data": [
+            {
+                "mouse_key": {
+                    "speed_multiplier": 0.25
+                }
+            }
+        ]
+    },
+    {
+        "not_from": true,
+        "label": "speed multiplier (0.125)",
+        "data": [
+            {
+                "mouse_key": {
+                    "speed_multiplier": 0.125
                 }
             }
         ]
