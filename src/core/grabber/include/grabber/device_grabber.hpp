@@ -337,6 +337,10 @@ public:
         notification_message_manager_->async_erase_device(device_id);
       }
 
+      // hat_switch_converter
+
+      hat_switch_converter::get_global_hat_switch_converter()->erase_device(device_id);
+
       // ----------------------------------------
 
       output_devices_json();
@@ -437,6 +441,8 @@ public:
       virtual_hid_device_service_client_ = nullptr;
 
       notification_message_manager_ = nullptr;
+
+      hat_switch_converter::get_global_hat_switch_converter()->clear();
     });
   }
 

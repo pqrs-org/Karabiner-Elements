@@ -1,5 +1,6 @@
 #pragma once
 
+#include "hat_switch_convert.hpp"
 #include "pressed_keys_manager.hpp"
 #include "queue.hpp"
 
@@ -91,6 +92,22 @@ static inline std::shared_ptr<queue> make_queue(device_id device_id,
           }
           pointing_motion_time_stamp = v.get_time_stamp();
           pointing_motion_horizontal_wheel = static_cast<int>(v.get_integer_value());
+
+        } else if (v.conforms_to(pqrs::hid::usage_page::generic_desktop,
+                                 pqrs::hid::usage::generic_desktop::hat_switch)) {
+          // Convert hat switch to dpad.
+          auto pairs = hat_switch_converter::get_global_hat_switch_converter()->to_dpad_events(device_id,
+                                                                                               v.get_integer_value());
+          for (const auto& pair : pairs) {
+            event_queue::event event(pair.first);
+            result->emplace_back_entry(device_id,
+                                       event_time_stamp(v.get_time_stamp()),
+                                       event,
+                                       pair.second,
+                                       event,
+                                       event_origin,
+                                       state::original);
+          }
 
         } else if (v.conforms_to(pqrs::hid::usage_page::leds,
                                  pqrs::hid::usage::led::caps_lock)) {

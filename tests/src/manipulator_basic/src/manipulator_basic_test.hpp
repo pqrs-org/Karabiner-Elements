@@ -201,6 +201,12 @@ void run_manipulator_basic_test(void) {
       expect(!basic::from_event_definition::test_event(krbn::event_queue::event(krbn::momentary_switch_event(pqrs::hid::usage_page::button,
                                                                                                              pqrs::hid::usage::button::button_1)),
                                                        d));
+      expect(!basic::from_event_definition::test_event(krbn::event_queue::event(krbn::momentary_switch_event(pqrs::hid::usage_page::generic_desktop,
+                                                                                                             pqrs::hid::usage::generic_desktop::dpad_up)),
+                                                       d));
+      expect(!basic::from_event_definition::test_event(krbn::event_queue::event(krbn::momentary_switch_event(pqrs::hid::usage_page::generic_desktop,
+                                                                                                             pqrs::hid::usage::generic_desktop::hat_switch)),
+                                                       d));
     }
 
     {
@@ -220,6 +226,12 @@ void run_manipulator_basic_test(void) {
                                                        d));
       expect(!basic::from_event_definition::test_event(krbn::event_queue::event(krbn::momentary_switch_event(pqrs::hid::usage_page::button,
                                                                                                              pqrs::hid::usage::button::button_1)),
+                                                       d));
+      expect(!basic::from_event_definition::test_event(krbn::event_queue::event(krbn::momentary_switch_event(pqrs::hid::usage_page::generic_desktop,
+                                                                                                             pqrs::hid::usage::generic_desktop::dpad_up)),
+                                                       d));
+      expect(!basic::from_event_definition::test_event(krbn::event_queue::event(krbn::momentary_switch_event(pqrs::hid::usage_page::generic_desktop,
+                                                                                                             pqrs::hid::usage::generic_desktop::hat_switch)),
                                                        d));
     }
 
@@ -241,6 +253,38 @@ void run_manipulator_basic_test(void) {
       expect(basic::from_event_definition::test_event(krbn::event_queue::event(krbn::momentary_switch_event(pqrs::hid::usage_page::button,
                                                                                                             pqrs::hid::usage::button::button_1)),
                                                       d));
+      expect(!basic::from_event_definition::test_event(krbn::event_queue::event(krbn::momentary_switch_event(pqrs::hid::usage_page::generic_desktop,
+                                                                                                             pqrs::hid::usage::generic_desktop::dpad_up)),
+                                                       d));
+      expect(!basic::from_event_definition::test_event(krbn::event_queue::event(krbn::momentary_switch_event(pqrs::hid::usage_page::generic_desktop,
+                                                                                                             pqrs::hid::usage::generic_desktop::hat_switch)),
+                                                       d));
+    }
+
+    {
+      basic::from_event_definition d(nlohmann::json::object({
+          {"any", "dpad"},
+      }));
+
+      expect(!basic::from_event_definition::test_event(krbn::event_queue::event(krbn::momentary_switch_event(pqrs::hid::usage_page::keyboard_or_keypad,
+                                                                                                             pqrs::hid::usage::keyboard_or_keypad::keyboard_a)),
+                                                       d));
+      expect(!basic::from_event_definition::test_event(krbn::event_queue::event(krbn::momentary_switch_event(pqrs::hid::usage_page::consumer,
+                                                                                                             pqrs::hid::usage::consumer::mute)),
+                                                       d));
+      expect(!basic::from_event_definition::test_event(krbn::event_queue::event(
+                                                           krbn::momentary_switch_event(pqrs::hid::usage_page::apple_vendor_keyboard,
+                                                                                        pqrs::hid::usage::apple_vendor_keyboard::expose_all)),
+                                                       d));
+      expect(!basic::from_event_definition::test_event(krbn::event_queue::event(krbn::momentary_switch_event(pqrs::hid::usage_page::button,
+                                                                                                             pqrs::hid::usage::button::button_1)),
+                                                       d));
+      expect(basic::from_event_definition::test_event(krbn::event_queue::event(krbn::momentary_switch_event(pqrs::hid::usage_page::generic_desktop,
+                                                                                                            pqrs::hid::usage::generic_desktop::dpad_up)),
+                                                      d));
+      expect(!basic::from_event_definition::test_event(krbn::event_queue::event(krbn::momentary_switch_event(pqrs::hid::usage_page::generic_desktop,
+                                                                                                             pqrs::hid::usage::generic_desktop::hat_switch)),
+                                                       d));
     }
   };
 

@@ -5,7 +5,7 @@
 -   ✨ New Features
     -   Palm detection is supported in MultitouchExtension. (Thanks to @quarkw)
     -   Use Bluetooth address (Bluetooth MAC address) is used to identify the device when the Bluetooth device does not have Vendor ID and Product ID. (Thanks to @stackia)
-    -   Partial gamepad support (only some buttons on DirectInput devices are supported. Xinput is not supported at all)
+    -   Gamepad support (DirectInput devices are supported. Xinput is not supported at all)
     -   Added "Move item to top" and "Move item to bottom" into the context menu of the Complex Modifications list.
     -   Add the following options to `karabiner_cli`
         -   `--format-json`

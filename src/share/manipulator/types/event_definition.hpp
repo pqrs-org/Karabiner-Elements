@@ -29,6 +29,7 @@ public:
     apple_vendor_keyboard_key_code,
     apple_vendor_top_case_key_code,
     pointing_button,
+    dpad,
   };
 
   using value_t = std::variant<momentary_switch_event,                                   // For type::momentary_switch_event
@@ -121,7 +122,8 @@ public:
         key == "consumer_key_code" ||
         key == "apple_vendor_keyboard_key_code" ||
         key == "apple_vendor_top_case_key_code" ||
-        key == "pointing_button") {
+        key == "pointing_button" ||
+        key == "dpad") {
       check_type(json);
 
       try {
@@ -158,6 +160,9 @@ public:
       } else if (value == "pointing_button") {
         type_ = type::any;
         value_ = any_type::pointing_button;
+      } else if (value == "dpad") {
+        type_ = type::any;
+        value_ = any_type::dpad;
       } else {
         throw pqrs::json::unmarshal_error(fmt::format("unknown `{0}`: `{1}`", key, pqrs::json::dump_for_error_message(value)));
       }
