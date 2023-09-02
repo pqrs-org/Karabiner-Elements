@@ -109,6 +109,18 @@ static inline std::shared_ptr<queue> make_queue(device_id device_id,
                                        state::original);
           }
 
+        } else if (v.conforms_to(pqrs::hid::usage_page::generic_desktop,
+                                 pqrs::hid::usage::generic_desktop::z)) {
+          // Convert vertical verticalwheel
+          pointing_motion_time_stamp = v.get_time_stamp();
+          pointing_motion_vertical_wheel = static_cast<int>(v.get_integer_value());
+
+        } else if (v.conforms_to(pqrs::hid::usage_page::generic_desktop,
+                                 pqrs::hid::usage::generic_desktop::rz)) {
+          // Convert horizontal verticalwheel
+          pointing_motion_time_stamp = v.get_time_stamp();
+          pointing_motion_horizontal_wheel = -static_cast<int>(v.get_integer_value());
+
         } else if (v.conforms_to(pqrs::hid::usage_page::leds,
                                  pqrs::hid::usage::led::caps_lock)) {
           auto event = event_queue::event::make_caps_lock_state_changed_event(v.get_integer_value());
