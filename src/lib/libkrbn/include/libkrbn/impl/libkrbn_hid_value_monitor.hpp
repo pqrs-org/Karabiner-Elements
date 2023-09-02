@@ -68,6 +68,8 @@ public:
       auto device_id = krbn::make_device_id(registry_entry_id);
 
       hid_queue_value_monitors_.erase(device_id);
+
+      krbn::hat_switch_converter::get_global_hat_switch_converter()->erase_device(device_id);
     });
 
     hid_manager_->error_occurred.connect([](auto&& message, auto&& kern_return) {
