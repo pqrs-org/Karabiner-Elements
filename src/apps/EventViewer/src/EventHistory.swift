@@ -21,6 +21,11 @@ private func callback(
     return
   }
 
+  // usage::generic_desktop unknown
+  if usagePage == 0x1, usage == -1 {
+    return
+  }
+
   // usage::generic_desktop::x
   if usagePage == 0x1, usage == 0x30 {
     return
@@ -33,6 +38,11 @@ private func callback(
 
   // usage::generic_desktop::z
   if usagePage == 0x1, usage == 0x32 {
+    return
+  }
+
+  // usage::generic_desktop::rz
+  if usagePage == 0x1, usage == 0x35 {
     return
   }
 
