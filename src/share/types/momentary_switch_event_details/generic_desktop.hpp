@@ -5,12 +5,12 @@
 
 namespace krbn {
 namespace momentary_switch_event_details {
-namespace dpad {
+namespace generic_desktop {
 constexpr std::pair<const mapbox::eternal::string, const pqrs::hid::usage::value_t> name_value_pairs[] = {
-    {"up", pqrs::hid::usage::generic_desktop::dpad_up},
-    {"down", pqrs::hid::usage::generic_desktop::dpad_down},
-    {"right", pqrs::hid::usage::generic_desktop::dpad_right},
-    {"left", pqrs::hid::usage::generic_desktop::dpad_left},
+    {"dpad_up", pqrs::hid::usage::generic_desktop::dpad_up},
+    {"dpad_down", pqrs::hid::usage::generic_desktop::dpad_down},
+    {"dpad_right", pqrs::hid::usage::generic_desktop::dpad_right},
+    {"dpad_left", pqrs::hid::usage::generic_desktop::dpad_left},
 };
 
 constexpr auto name_value_map = mapbox::eternal::hash_map<mapbox::eternal::string, pqrs::hid::usage::value_t>(name_value_pairs);
@@ -35,6 +35,6 @@ inline pqrs::hid::usage_pair make_usage_pair(const std::string& key,
                                key,
                                json);
 }
-} // namespace dpad
+} // namespace generic_desktop
 } // namespace momentary_switch_event_details
 } // namespace krbn

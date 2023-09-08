@@ -3,7 +3,7 @@
 #include "momentary_switch_event_details/apple_vendor_keyboard_key_code.hpp"
 #include "momentary_switch_event_details/apple_vendor_top_case_key_code.hpp"
 #include "momentary_switch_event_details/consumer_key_code.hpp"
-#include "momentary_switch_event_details/dpad.hpp"
+#include "momentary_switch_event_details/generic_desktop.hpp"
 #include "momentary_switch_event_details/key_code.hpp"
 #include "momentary_switch_event_details/pointing_button.hpp"
 #include <nlohmann/json.hpp>
@@ -22,7 +22,7 @@ public:
            momentary_switch_event_details::apple_vendor_keyboard_key_code::target(usage_page, usage) ||
            momentary_switch_event_details::apple_vendor_top_case_key_code::target(usage_page, usage) ||
            momentary_switch_event_details::pointing_button::target(usage_page, usage) ||
-           momentary_switch_event_details::dpad::target(usage_page, usage);
+           momentary_switch_event_details::generic_desktop::target(usage_page, usage);
   }
 
   momentary_switch_event(void) {
@@ -174,8 +174,8 @@ inline void to_json(nlohmann::json& json, const momentary_switch_event& value) {
   } else if (momentary_switch_event_details::pointing_button::target(usage_page, usage)) {
     json["pointing_button"] = momentary_switch_event_details::pointing_button::make_name(usage);
 
-  } else if (momentary_switch_event_details::dpad::target(usage_page, usage)) {
-    json["dpad"] = momentary_switch_event_details::dpad::make_name(usage);
+  } else if (momentary_switch_event_details::generic_desktop::target(usage_page, usage)) {
+    json["generic_desktop"] = momentary_switch_event_details::generic_desktop::make_name(usage);
 
   } else {
     json = "unsupported";
@@ -201,8 +201,8 @@ inline void from_json(const nlohmann::json& json, momentary_switch_event& value)
     } else if (k == "pointing_button") {
       value.set_usage_pair(momentary_switch_event_details::pointing_button::make_usage_pair(k, v));
 
-    } else if (k == "dpad") {
-      value.set_usage_pair(momentary_switch_event_details::dpad::make_usage_pair(k, v));
+    } else if (k == "generic_desktop") {
+      value.set_usage_pair(momentary_switch_event_details::generic_desktop::make_usage_pair(k, v));
 
     } else {
       throw pqrs::json::unmarshal_error(fmt::format("unknown key: `{0}`", k));

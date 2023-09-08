@@ -136,7 +136,7 @@ void run_momentary_switch_event_test(void) {
     }
 
     //
-    // dpad
+    // usage_page::generic_desktop
     //
 
     {
@@ -291,11 +291,11 @@ void run_momentary_switch_event_test(void) {
     }
 
     //
-    // dpad
+    // generic_desktop
     //
 
     {
-      std::string expected("{\"dpad\":\"up\"}");
+      std::string expected("{\"generic_desktop\":\"dpad_up\"}");
       krbn::momentary_switch_event e(pqrs::hid::usage_page::generic_desktop,
                                      pqrs::hid::usage::generic_desktop::dpad_up);
       nlohmann::json actual = e;

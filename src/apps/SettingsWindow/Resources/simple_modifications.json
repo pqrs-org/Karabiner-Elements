@@ -1797,7 +1797,7 @@
         "label": "dpad up",
         "data": [
             {
-                "dpad": "up"
+                "generic_desktop": "dpad_up"
             }
         ]
     },
@@ -1806,7 +1806,7 @@
         "label": "dpad down",
         "data": [
             {
-                "dpad": "down"
+                "generic_desktop": "dpad_down"
             }
         ]
     },
@@ -1815,7 +1815,7 @@
         "label": "dpad left",
         "data": [
             {
-                "dpad": "left"
+                "generic_desktop": "dpad_left"
             }
         ]
     },
@@ -1824,7 +1824,7 @@
         "label": "dpad right",
         "data": [
             {
-                "dpad": "right"
+                "generic_desktop": "dpad_right"
             }
         ]
     },

@@ -20,6 +20,7 @@ public:
       consumer_input,
       apple_vendor_top_case_input,
       apple_vendor_keyboard_input,
+      generic_desktop_input,
       pointing_input,
       shell_command,
       select_input_source,
@@ -46,6 +47,12 @@ public:
 
     event(const pqrs::karabiner::driverkit::virtual_hid_device_driver::hid_report::apple_vendor_keyboard_input& value,
           absolute_time_point time_stamp) : type_(type::apple_vendor_keyboard_input),
+                                            value_(value),
+                                            time_stamp_(time_stamp) {
+    }
+
+    event(const pqrs::karabiner::driverkit::virtual_hid_device_driver::hid_report::generic_desktop_input& value,
+          absolute_time_point time_stamp) : type_(type::generic_desktop_input),
                                             value_(value),
                                             time_stamp_(time_stamp) {
     }
@@ -118,6 +125,13 @@ public:
           }
           break;
 
+        case type::generic_desktop_input:
+          if (auto v = get_generic_desktop_input()) {
+            json["generic_desktop_input"]["keys"] = virtual_hid_device_utility::to_json(v->keys,
+                                                                                        pqrs::hid::usage_page::generic_desktop);
+          }
+          break;
+
         case type::pointing_input:
           if (auto v = get_pointing_input()) {
             json["pointing_input"]["buttons"] = v->buttons;
@@ -182,6 +196,13 @@ public:
       return std::nullopt;
     }
 
+    std::optional<pqrs::karabiner::driverkit::virtual_hid_device_driver::hid_report::generic_desktop_input> get_generic_desktop_input(void) const {
+      if (type_ == type::generic_desktop_input) {
+        return std::get<pqrs::karabiner::driverkit::virtual_hid_device_driver::hid_report::generic_desktop_input>(value_);
+      }
+      return std::nullopt;
+    }
+
     std::optional<pqrs::karabiner::driverkit::virtual_hid_device_driver::hid_report::pointing_input> get_pointing_input(void) const {
       if (type_ == type::pointing_input) {
         return std::get<pqrs::karabiner::driverkit::virtual_hid_device_driver::hid_report::pointing_input>(value_);
@@ -234,6 +255,7 @@ public:
         TO_C_STRING(consumer_input);
         TO_C_STRING(apple_vendor_top_case_input);
         TO_C_STRING(apple_vendor_keyboard_input);
+        TO_C_STRING(generic_desktop_input);
         TO_C_STRING(pointing_input);
         TO_C_STRING(shell_command);
         TO_C_STRING(select_input_source);
@@ -248,6 +270,7 @@ public:
                  pqrs::karabiner::driverkit::virtual_hid_device_driver::hid_report::consumer_input,
                  pqrs::karabiner::driverkit::virtual_hid_device_driver::hid_report::apple_vendor_top_case_input,
                  pqrs::karabiner::driverkit::virtual_hid_device_driver::hid_report::apple_vendor_keyboard_input,
+                 pqrs::karabiner::driverkit::virtual_hid_device_driver::hid_report::generic_desktop_input,
                  pqrs::karabiner::driverkit::virtual_hid_device_driver::hid_report::pointing_input,
                  std::string,                                              // For shell_command
                  std::vector<pqrs::osx::input_source_selector::specifier>, // For select_input_source
@@ -377,6 +400,23 @@ public:
       }
 
       events_.emplace_back(apple_vendor_keyboard_input_, time_stamp);
+
+    } else if (usage_page == pqrs::hid::usage_page::generic_desktop) {
+      switch (event_type) {
+        case event_type::key_down:
+          generic_desktop_input_.keys.insert(type_safe::get(usage));
+          break;
+
+        case event_type::key_up:
+          generic_desktop_input_.keys.erase(type_safe::get(usage));
+          break;
+
+        case event_type::single:
+          // Do nothing
+          break;
+      }
+
+      events_.emplace_back(generic_desktop_input_, time_stamp);
     }
 
     keyboard_repeat_detector_.set(mse, event_type);
@@ -465,6 +505,11 @@ public:
               }
             }
             if (auto input = e.get_apple_vendor_keyboard_input()) {
+              if (auto client = weak_virtual_hid_device_service_client.lock()) {
+                client->async_post_report(*input);
+              }
+            }
+            if (auto input = e.get_generic_desktop_input()) {
               if (auto client = weak_virtual_hid_device_service_client.lock()) {
                 client->async_post_report(*input);
               }
@@ -608,6 +653,7 @@ private:
   pqrs::karabiner::driverkit::virtual_hid_device_driver::hid_report::consumer_input consumer_input_;
   pqrs::karabiner::driverkit::virtual_hid_device_driver::hid_report::apple_vendor_top_case_input apple_vendor_top_case_input_;
   pqrs::karabiner::driverkit::virtual_hid_device_driver::hid_report::apple_vendor_keyboard_input apple_vendor_keyboard_input_;
+  pqrs::karabiner::driverkit::virtual_hid_device_driver::hid_report::generic_desktop_input generic_desktop_input_;
 };
 
 inline std::ostream& operator<<(std::ostream& stream, const queue::event& event) {
