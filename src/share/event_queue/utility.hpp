@@ -110,14 +110,14 @@ static inline std::shared_ptr<queue> make_queue(device_id device_id,
           }
 
         } else if (v.conforms_to(pqrs::hid::usage_page::generic_desktop,
-                                 pqrs::hid::usage::generic_desktop::z)) {
-          // Convert vertical verticalwheel
+                                 pqrs::hid::usage::generic_desktop::rz)) {
+          // Convert vertical wheel
           pointing_motion_time_stamp = v.get_time_stamp();
           pointing_motion_vertical_wheel = static_cast<int>(v.get_integer_value());
 
         } else if (v.conforms_to(pqrs::hid::usage_page::generic_desktop,
-                                 pqrs::hid::usage::generic_desktop::rz)) {
-          // Convert horizontal verticalwheel
+                                 pqrs::hid::usage::generic_desktop::z)) {
+          // Convert horizontal wheel
           pointing_motion_time_stamp = v.get_time_stamp();
           pointing_motion_horizontal_wheel = -static_cast<int>(v.get_integer_value());
 
