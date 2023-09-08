@@ -51,6 +51,11 @@ private func callback(
     return
   }
 
+  // usage::generic_desktop::hat_switch
+  if usagePage == 0x1, usage == 0x39 {
+    return
+  }
+
   // usage::keyboard_or_keypad::error_rollover
   if usagePage == 0x7, usage == 0x1 {
     return
