@@ -2,6 +2,8 @@
 
 ## Beta
 
+-   🔔 Important Notes
+    -   A reboot is required when upgrading from version 14.12.17 or earlier, to update the virtual keyboard driver.
 -   ✨ New Features
     -   Palm detection is supported in MultitouchExtension. (Thanks to @quarkw)
     -   Use Bluetooth address (Bluetooth MAC address) is used to identify the device when the Bluetooth device does not have Vendor ID and Product ID. (Thanks to @stackia)
