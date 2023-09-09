@@ -28,10 +28,9 @@ extension LibKrbn {
         return true
       }
 
-      for assetRule in assetRules {
-        if assetRule.description.range(of: search, options: .caseInsensitive) != nil {
-          return true
-        }
+      for assetRule in assetRules
+      where assetRule.description.range(of: search, options: .caseInsensitive) != nil {
+        return true
       }
 
       return false

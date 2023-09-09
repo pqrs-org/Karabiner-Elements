@@ -335,7 +335,10 @@ extension LibKrbn {
       complexModificationsRules = newComplexModificationsRules
     }
 
-    public func replaceComplexModificationsRule(_ complexModificationRule: ComplexModificationsRule, _ jsonString: String) -> String? {
+    public func replaceComplexModificationsRule(
+      _ complexModificationRule: ComplexModificationsRule,
+      _ jsonString: String
+    ) -> String? {
       var errorMessageBuffer = [Int8](repeating: 0, count: 4 * 1024)
       libkrbn_core_configuration_replace_selected_profile_complex_modifications_rule(
         libkrbnCoreConfiguration,
@@ -480,10 +483,9 @@ extension LibKrbn {
     public func findConnectedDeviceSetting(_ connectedDevice: ConnectedDevice)
       -> ConnectedDeviceSetting?
     {
-      for connectedDeviceSetting in connectedDeviceSettings {
-        if connectedDeviceSetting.connectedDevice.id == connectedDevice.id {
-          return connectedDeviceSetting
-        }
+      for connectedDeviceSetting in connectedDeviceSettings
+      where connectedDeviceSetting.connectedDevice.id == connectedDevice.id {
+        return connectedDeviceSetting
       }
 
       return nil

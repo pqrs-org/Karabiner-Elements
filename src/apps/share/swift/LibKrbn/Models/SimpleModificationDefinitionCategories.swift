@@ -9,10 +9,8 @@ extension LibKrbn {
     func findLabel(jsonString: String) -> String {
       if let compactJsonString = SimpleModification.formatCompactJsonString(string: jsonString) {
         for category in categories {
-          for entry in category.entries {
-            if entry.json == compactJsonString {
-              return entry.label
-            }
+          for entry in category.entries where entry.json == compactJsonString {
+            return entry.label
           }
         }
 

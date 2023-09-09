@@ -14,10 +14,8 @@ extension LibKrbn {
     }
 
     func include(label: String) -> Bool {
-      for e: SimpleModificationDefinitionEntry in entries {
-        if e.label == label {
-          return true
-        }
+      for e: SimpleModificationDefinitionEntry in entries where e.label == label {
+        return true
       }
       return false
     }
