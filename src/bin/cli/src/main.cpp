@@ -351,6 +351,7 @@ int main(int argc, char** argv) {
     goto finish;
   }
 
+  options.show_positional_help();
   std::cout << options.help() << std::endl;
   std::cout << "Examples:" << std::endl;
   std::cout << "  karabiner_cli --select-profile 'Default profile'" << std::endl;
