@@ -16,7 +16,7 @@ struct ComplexModificationsEditView: View {
       if rule != nil {
         VStack(alignment: .leading, spacing: 12.0) {
           HStack(alignment: .center) {
-            Text("Description: \(description)")
+            Text(description)
 
             Spacer()
 
