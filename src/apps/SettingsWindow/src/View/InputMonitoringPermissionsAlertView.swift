@@ -18,11 +18,13 @@ struct InputMonitoringPermissionsAlertView: View {
         )
         .fixedSize(horizontal: false, vertical: true)
 
-        Button(action: { openSystemSettingsSecurity() }) {
-          Label(
-            "Open Privacy & Security System Settings...",
-            systemImage: "arrow.forward.circle.fill")
-        }
+        Button(
+          action: { openSystemSettingsSecurity() },
+          label: {
+            Label(
+              "Open Privacy & Security System Settings...",
+              systemImage: "arrow.forward.circle.fill")
+          })
 
         Image(decorative: "input-monitoring")
           .resizable()

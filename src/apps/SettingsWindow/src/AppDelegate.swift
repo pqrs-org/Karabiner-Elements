@@ -147,15 +147,13 @@ public class AppDelegate: NSObject, NSApplicationDelegate {
 
       if urlComponents?.path == "/assets/complex_modifications/import" {
         if let queryItems = urlComponents?.queryItems {
-          for pair in queryItems {
-            if pair.name == "url" {
-              ComplexModificationsFileImport.shared.fetchJson(URL(string: pair.value!)!)
+          for pair in queryItems where pair.name == "url" {
+            ComplexModificationsFileImport.shared.fetchJson(URL(string: pair.value!)!)
 
-              ContentViewStates.shared.navigationSelection = .complexModifications
-              ContentViewStates.shared.complexModificationsViewSheetView = .fileImport
-              ContentViewStates.shared.complexModificationsViewSheetPresented = true
-              return
-            }
+            ContentViewStates.shared.navigationSelection = .complexModifications
+            ContentViewStates.shared.complexModificationsViewSheetView = .fileImport
+            ContentViewStates.shared.complexModificationsViewSheetPresented = true
+            return
           }
         }
       }

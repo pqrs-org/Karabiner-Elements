@@ -29,26 +29,30 @@ struct LogView: View {
       HStack {
         Text("Current time: \(logMessages.currentTimeString)")
 
-        Button(action: {
-          logMessages.addDivider()
-        }) {
-          Label("Add divider", systemImage: "scissors")
-        }
+        Button(
+          action: {
+            logMessages.addDivider()
+          },
+          label: {
+            Label("Add divider", systemImage: "scissors")
+          })
 
         Spacer()
 
-        Button(action: {
-          var text = ""
-          for e in logMessages.entries {
-            text += e.text + "\n"
-          }
+        Button(
+          action: {
+            var text = ""
+            for e in logMessages.entries {
+              text += e.text + "\n"
+            }
 
-          let pboard = NSPasteboard.general
-          pboard.clearContents()
-          pboard.writeObjects([text as NSString])
-        }) {
-          Label("Copy to pasteboard", systemImage: "arrow.right.doc.on.clipboard")
-        }
+            let pboard = NSPasteboard.general
+            pboard.clearContents()
+            pboard.writeObjects([text as NSString])
+          },
+          label: {
+            Label("Copy to pasteboard", systemImage: "arrow.right.doc.on.clipboard")
+          })
       }
     }
     .padding()

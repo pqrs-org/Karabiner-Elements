@@ -21,22 +21,27 @@ struct ProfileEditView: View {
             HStack(alignment: .center) {
               Spacer()
 
-              Button(action: {
-                showing = false
-              }) {
-                Label("Cancel", systemImage: "xmark")
-              }
+              Button(
+                action: {
+                  showing = false
+                },
+                label: {
+                  Label("Cancel", systemImage: "xmark")
+                })
 
               Spacer()
                 .frame(width: 24.0)
 
-              Button(action: {
-                settings.updateProfileName(profile!, name)
-                showing = false
-              }) {
-                Label("Save", systemImage: "checkmark")
-                  .buttonLabelStyle()
-              }
+              Button(
+                action: {
+                  settings.updateProfileName(profile!, name)
+                  showing = false
+                },
+                label: {
+                  Label("Save", systemImage: "checkmark")
+                    .buttonLabelStyle()
+                }
+              )
               .prominentButtonStyle()
 
               Spacer()

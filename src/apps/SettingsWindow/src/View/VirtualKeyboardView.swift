@@ -38,22 +38,25 @@ struct VirtualKeyboardView: View {
           // Use `ScrollView` instead of `List` to avoid `AttributeGraph: cycle detected through attribute` error.
           ForEach($systemPreferences.keyboardTypes) { $keyboardType in
             HStack {
-              Button(action: {
-                settings.virtualHIDKeyboardCountryCode = keyboardType.countryCode
-              }) {
-                HStack {
+              Button(
+                action: {
+                  settings.virtualHIDKeyboardCountryCode = keyboardType.countryCode
+                },
+                label: {
                   HStack {
-                    if settings.virtualHIDKeyboardCountryCode == keyboardType.countryCode {
-                      Image(systemName: "circle.circle.fill")
-                    } else {
-                      Image(systemName: "circle")
+                    HStack {
+                      if settings.virtualHIDKeyboardCountryCode == keyboardType.countryCode {
+                        Image(systemName: "circle.circle.fill")
+                      } else {
+                        Image(systemName: "circle")
+                      }
                     }
-                  }
-                  .foregroundColor(.accentColor)
+                    .foregroundColor(.accentColor)
 
-                  Text("Country code: \(keyboardType.countryCode)")
+                    Text("Country code: \(keyboardType.countryCode)")
+                  }
                 }
-              }
+              )
               .buttonStyle(.plain)
 
               Picker("", selection: $keyboardType.keyboardType) {

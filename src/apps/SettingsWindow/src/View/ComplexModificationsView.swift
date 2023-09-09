@@ -15,12 +15,15 @@ struct ComplexModificationsView: View {
   var body: some View {
     VStack(alignment: .leading, spacing: 12.0) {
       HStack {
-        Button(action: {
-          contentViewStates.complexModificationsViewSheetView = ComplexModificationsSheetView.assets
-          contentViewStates.complexModificationsViewSheetPresented = true
-        }) {
-          AccentColorIconLabel(title: "Add rule", systemImage: "plus.circle.fill")
-        }
+        Button(
+          action: {
+            contentViewStates.complexModificationsViewSheetView =
+              ComplexModificationsSheetView.assets
+            contentViewStates.complexModificationsViewSheetPresented = true
+          },
+          label: {
+            AccentColorIconLabel(title: "Add predefined rule", systemImage: "plus.circle.fill")
+          })
 
         Spacer()
 
@@ -53,20 +56,25 @@ struct ComplexModificationsView: View {
 
               Spacer()
 
-              Button(action: {
-                editingRule = complexModificationRule
-                showingEditSheet = true
-              }) {
-                Label("Edit", systemImage: "pencil.circle.fill")
-                  .padding(.horizontal, 10.0)
-              }
+              Button(
+                action: {
+                  editingRule = complexModificationRule
+                  showingEditSheet = true
+                },
+                label: {
+                  Label("Edit", systemImage: "pencil.circle.fill")
+                    .padding(.horizontal, 10.0)
+                })
 
-              Button(action: {
-                settings.removeComplexModificationsRule(complexModificationRule)
-              }) {
-                Image(systemName: "trash.fill")
-                  .buttonLabelStyle()
-              }
+              Button(
+                action: {
+                  settings.removeComplexModificationsRule(complexModificationRule)
+                },
+                label: {
+                  Image(systemName: "trash.fill")
+                    .buttonLabelStyle()
+                }
+              )
               .deleteButtonStyle()
               .frame(width: 60)
             }

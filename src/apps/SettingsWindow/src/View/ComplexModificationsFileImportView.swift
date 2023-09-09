@@ -41,24 +41,30 @@ struct ComplexModificationsFileImportView: View {
       HStack(alignment: .center) {
         Spacer()
 
-        Button(action: {
-          contentViewStates.complexModificationsViewSheetPresented = false
-        }) {
-          Label("Cancel", systemImage: "xmark")
-        }
+        Button(
+          action: {
+            contentViewStates.complexModificationsViewSheetPresented = false
+          },
+          label: {
+            Label("Cancel", systemImage: "xmark")
+          })
 
         Spacer()
           .frame(width: 24.0)
 
-        Button(action: {
-          complexModificationsFileImport.save()
-          ComplexModificationsAssetFiles.shared.updateFiles()
+        Button(
+          action: {
+            complexModificationsFileImport.save()
+            ComplexModificationsAssetFiles.shared.updateFiles()
 
-          contentViewStates.complexModificationsViewSheetView = ComplexModificationsSheetView.assets
-        }) {
-          Label("Import", systemImage: "tray.and.arrow.down.fill")
-            .buttonLabelStyle()
-        }
+            contentViewStates.complexModificationsViewSheetView =
+              ComplexModificationsSheetView.assets
+          },
+          label: {
+            Label("Import", systemImage: "tray.and.arrow.down.fill")
+              .buttonLabelStyle()
+          }
+        )
         .prominentButtonStyle()
         .disabled(complexModificationsFileImport.jsonData == nil)
 

@@ -25,11 +25,13 @@ struct DriverNotLoadedAlertView: View {
                 )
               }
 
-              Button(action: { openSystemSettingsSecurity() }) {
-                Label(
-                  "Open Privacy & Security System Settings...",
-                  systemImage: "arrow.forward.circle.fill")
-              }
+              Button(
+                action: { openSystemSettingsSecurity() },
+                label: {
+                  Label(
+                    "Open Privacy & Security System Settings...",
+                    systemImage: "arrow.forward.circle.fill")
+                })
 
               Image(decorative: "dext-allow")
                 .resizable()
@@ -37,11 +39,13 @@ struct DriverNotLoadedAlertView: View {
                 .frame(height: 300)
                 .border(Color.gray, width: 1)
 
-              Button(action: { showingAdvanced = true }) {
-                Label(
-                  "If the Allow button is not displayed on Privacy & Security.",
-                  systemImage: "questionmark.circle")
-              }
+              Button(
+                action: { showingAdvanced = true },
+                label: {
+                  Label(
+                    "If the Allow button is not displayed on Privacy & Security.",
+                    systemImage: "questionmark.circle")
+                })
             }.padding()
           }.frame(width: showingAdvanced ? 400 : 800)
 

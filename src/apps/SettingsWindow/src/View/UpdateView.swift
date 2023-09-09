@@ -3,7 +3,7 @@ import SwiftUI
 struct UpdateView: View {
   @ObservedObject private var settings = LibKrbn.Settings.shared
   @ObservedObject private var updater = Updater.shared
-  let version = Bundle.main.object(forInfoDictionaryKey: "CFBundleVersion") as! String
+  let version = Bundle.main.object(forInfoDictionaryKey: "CFBundleVersion") as? String ?? ""
 
   var body: some View {
     VStack(alignment: .leading, spacing: 24.0) {
@@ -24,20 +24,26 @@ struct UpdateView: View {
           }
 
           HStack {
-            Button(action: {
-              updater.checkForUpdatesStableOnly()
-            }) {
-              Label("Check for updates", systemImage: "star")
-            }
+            Button(
+              action: {
+                updater.checkForUpdatesStableOnly()
+              },
+              label: {
+                Label("Check for updates", systemImage: "star")
+              }
+            )
             .disabled(!updater.canCheckForUpdates)
 
             Spacer()
 
-            Button(action: {
-              updater.checkForUpdatesWithBetaVersion()
-            }) {
-              Label("Check for beta updates", systemImage: "star.circle")
-            }
+            Button(
+              action: {
+                updater.checkForUpdatesWithBetaVersion()
+              },
+              label: {
+                Label("Check for beta updates", systemImage: "star.circle")
+              }
+            )
             .disabled(!updater.canCheckForUpdates)
           }
 
@@ -56,17 +62,21 @@ struct UpdateView: View {
       GroupBox(label: Text("Web sites")) {
         VStack(alignment: .leading, spacing: 12.0) {
           HStack {
-            Button(action: {
-              NSWorkspace.shared.open(URL(string: "https://karabiner-elements.pqrs.org/")!)
-            }) {
-              Label("Open official website", systemImage: "house")
-            }
-            Button(action: {
-              NSWorkspace.shared.open(
-                URL(string: "https://github.com/pqrs-org/Karabiner-Elements")!)
-            }) {
-              Label("Open GitHub (source code)", systemImage: "network")
-            }
+            Button(
+              action: {
+                NSWorkspace.shared.open(URL(string: "https://karabiner-elements.pqrs.org/")!)
+              },
+              label: {
+                Label("Open official website", systemImage: "house")
+              })
+            Button(
+              action: {
+                NSWorkspace.shared.open(
+                  URL(string: "https://github.com/pqrs-org/Karabiner-Elements")!)
+              },
+              label: {
+                Label("Open GitHub (source code)", systemImage: "network")
+              })
             Spacer()
           }
         }

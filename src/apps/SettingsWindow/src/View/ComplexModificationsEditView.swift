@@ -20,25 +20,30 @@ struct ComplexModificationsEditView: View {
 
             Spacer()
 
-            Button(action: {
-              showing = false
-            }) {
-              Label(disabled ? "Close" : "Cancel", systemImage: "xmark")
-            }
+            Button(
+              action: {
+                showing = false
+              },
+              label: {
+                Label(disabled ? "Close" : "Cancel", systemImage: "xmark")
+              })
 
             if !disabled {
               Spacer()
                 .frame(width: 24.0)
 
-              Button(action: {
-                errorMessage = settings.replaceComplexModificationsRule(rule!, jsonString)
-                if errorMessage == nil {
-                  showing = false
+              Button(
+                action: {
+                  errorMessage = settings.replaceComplexModificationsRule(rule!, jsonString)
+                  if errorMessage == nil {
+                    showing = false
+                  }
+                },
+                label: {
+                  Label("Save", systemImage: "checkmark")
+                    .buttonLabelStyle()
                 }
-              }) {
-                Label("Save", systemImage: "checkmark")
-                  .buttonLabelStyle()
-              }
+              )
               .prominentButtonStyle()
             }
           }

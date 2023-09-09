@@ -73,14 +73,17 @@ struct SimpleModificationsView: View {
               )
               .padding(.trailing, 24.0)
 
-              Button(action: {
-                LibKrbn.Settings.shared.removeSimpleModification(
-                  index: simpleModification.index,
-                  device: selectedDevice)
-              }) {
-                Image(systemName: "trash.fill")
-                  .buttonLabelStyle()
-              }
+              Button(
+                action: {
+                  LibKrbn.Settings.shared.removeSimpleModification(
+                    index: simpleModification.index,
+                    device: selectedDevice)
+                },
+                label: {
+                  Image(systemName: "trash.fill")
+                    .buttonLabelStyle()
+                }
+              )
               .deleteButtonStyle()
             }
 
@@ -88,13 +91,16 @@ struct SimpleModificationsView: View {
           }
 
           HStack {
-            Button(action: {
-              LibKrbn.Settings.shared.appendSimpleModification(device: selectedDevice)
-            }) {
-              // Use `Image` and `Text` instead of `Label` to set icon color like `Button` in `List`.
-              Image(systemName: "plus.circle.fill").foregroundColor(.blue)
-              Text("Add item")
-            }
+            Button(
+              action: {
+                LibKrbn.Settings.shared.appendSimpleModification(device: selectedDevice)
+              },
+              label: {
+                // Use `Image` and `Text` instead of `Label` to set icon color like `Button` in `List`.
+                Image(systemName: "plus.circle.fill").foregroundColor(.blue)
+                Text("Add item")
+              }
+            )
             .buttonStyle(.automatic)
 
             Spacer()

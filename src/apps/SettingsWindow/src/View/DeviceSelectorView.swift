@@ -7,56 +7,62 @@ struct DeviceSelectorView: View {
   var body: some View {
     List {
       VStack(alignment: .leading, spacing: 0) {
-        Button(action: {
-          selectedDevice = nil
-        }) {
-          HStack {
-            Text("For all devices")
+        Button(
+          action: {
+            selectedDevice = nil
+          },
+          label: {
+            HStack {
+              Text("For all devices")
 
-            Spacer()
+              Spacer()
+            }
+            .sidebarButtonLabelStyle()
           }
-          .sidebarButtonLabelStyle()
-        }
+        )
         .sidebarButtonStyle(selected: selectedDevice == nil)
 
         Divider()
 
         ForEach($settings.connectedDeviceSettings) { $connectedDeviceSetting in
-          Button(action: {
-            selectedDevice = connectedDeviceSetting.connectedDevice
-          }) {
-            let noId =
-              connectedDeviceSetting.connectedDevice.vendorId == 0
-              && connectedDeviceSetting.connectedDevice.productId == 0
-            let label =
-              noId
-              ? connectedDeviceSetting.connectedDevice.deviceAddress
-              : "\(String(connectedDeviceSetting.connectedDevice.vendorId)),\(String(connectedDeviceSetting.connectedDevice.productId))"
-            HStack {
-              Text(
-                """
-                \(connectedDeviceSetting.connectedDevice.productName) \
-                (\(connectedDeviceSetting.connectedDevice.manufacturerName)) \
-                [\(label)]
-                """
-              )
+          Button(
+            action: {
+              selectedDevice = connectedDeviceSetting.connectedDevice
+            },
+            label: {
+              let noId =
+                connectedDeviceSetting.connectedDevice.vendorId == 0
+                && connectedDeviceSetting.connectedDevice.productId == 0
+              let label =
+                noId
+                ? connectedDeviceSetting.connectedDevice.deviceAddress
+                : "\(String(connectedDeviceSetting.connectedDevice.vendorId)),\(String(connectedDeviceSetting.connectedDevice.productId))"
+              HStack {
+                Text(
+                  """
+                  \(connectedDeviceSetting.connectedDevice.productName) \
+                  (\(connectedDeviceSetting.connectedDevice.manufacturerName)) \
+                  [\(label)]
+                  """
+                )
 
-              Spacer()
+                Spacer()
 
-              VStack {
-                if connectedDeviceSetting.connectedDevice.isKeyboard {
-                  Image(systemName: "keyboard")
-                }
-                if connectedDeviceSetting.connectedDevice.isPointingDevice {
-                  Image(systemName: "capsule.portrait")
-                }
-                if connectedDeviceSetting.connectedDevice.isGamePad {
-                  Image(systemName: "gamecontroller")
+                VStack {
+                  if connectedDeviceSetting.connectedDevice.isKeyboard {
+                    Image(systemName: "keyboard")
+                  }
+                  if connectedDeviceSetting.connectedDevice.isPointingDevice {
+                    Image(systemName: "capsule.portrait")
+                  }
+                  if connectedDeviceSetting.connectedDevice.isGamePad {
+                    Image(systemName: "gamecontroller")
+                  }
                 }
               }
+              .sidebarButtonLabelStyle()
             }
-            .sidebarButtonLabelStyle()
-          }
+          )
           .sidebarButtonStyle(
             selected: selectedDevice?.id == connectedDeviceSetting.connectedDevice.id)
 

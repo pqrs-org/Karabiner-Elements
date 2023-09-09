@@ -21,7 +21,7 @@ final class ComplexModificationsFileImport: ObservableObject {
     title = ""
     descriptions = []
 
-    task = URLSession.shared.dataTask(with: url) { [weak self] (data, response, error) in
+    task = URLSession.shared.dataTask(with: url) { [weak self] (data, _, error) in
       DispatchQueue.main.async {
         guard let self = self else { return }
         guard let data = data else { return }
@@ -35,9 +35,9 @@ final class ComplexModificationsFileImport: ObservableObject {
             self.jsonData = data
             let json = try JSONSerialization.jsonObject(with: data) as? [String: Any]
 
-            self.title = json?["title"] as! String
-            for rule in (json?["rules"] as! [[String: Any]]) {
-              self.descriptions.append(rule["description"] as! String)
+            self.title = json?["title"] as? String ?? ""
+            for rule in (json?["rules"] as? [[String: Any]] ?? []) {
+              self.descriptions.append(rule["description"] as? String ?? "")
             }
           } catch {
             self.jsonData = nil

@@ -6,14 +6,17 @@ struct UninstallView: View {
       GroupBox(label: Text("Uninstall")) {
         VStack(alignment: .leading, spacing: 12.0) {
           HStack {
-            Button(action: {
-              libkrbn_launch_uninstaller()
+            Button(
+              action: {
+                libkrbn_launch_uninstaller()
 
-              NSApplication.shared.terminate(nil)
-            }) {
-              Label("Launch uninstaller", systemImage: "trash")
-                .buttonLabelStyle()
-            }
+                NSApplication.shared.terminate(nil)
+              },
+              label: {
+                Label("Launch uninstaller", systemImage: "trash")
+                  .buttonLabelStyle()
+              }
+            )
             .deleteButtonStyle()
 
             Spacer()

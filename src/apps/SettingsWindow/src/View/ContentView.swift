@@ -21,26 +21,28 @@ struct ContentView: View {
   @ObservedObject private var contentViewStates = ContentViewStates.shared
   @ObservedObject private var settings = LibKrbn.Settings.shared
 
-  let version = Bundle.main.object(forInfoDictionaryKey: "CFBundleVersion") as! String
-  let padding = 6.0
+  private let padding = 6.0
 
   var body: some View {
     VStack {
       HStack {
         VStack(alignment: .leading, spacing: 0) {
           if settings.unsafeUI {
-            Button(action: {
-              contentViewStates.navigationSelection = .pro
-            }) {
-              HStack {
-                Spacer()
+            Button(
+              action: {
+                contentViewStates.navigationSelection = .pro
+              },
+              label: {
+                HStack {
+                  Spacer()
 
-                Text("Unsafe configuration is enabled")
+                  Text("Unsafe configuration is enabled")
 
-                Spacer()
+                  Spacer()
+                }
+                .sidebarButtonLabelStyle()
               }
-              .sidebarButtonLabelStyle()
-            }
+            )
             .buttonStyle(PlainButtonStyle())
             .background(Color.red)
             .foregroundColor(.white)
@@ -51,38 +53,51 @@ struct ContentView: View {
           }
 
           Group {
-            Button(action: {
-              contentViewStates.navigationSelection = .simpleModifications
-            }) {
-              SidebarLabelView(text: "Simple Modifications", systemImage: "gearshape", padding: 2.0)
-            }
+            Button(
+              action: {
+                contentViewStates.navigationSelection = .simpleModifications
+              },
+              label: {
+                SidebarLabelView(
+                  text: "Simple Modifications", systemImage: "gearshape", padding: 2.0)
+              }
+            )
             .sidebarButtonStyle(
               selected: contentViewStates.navigationSelection == .simpleModifications)
 
-            Button(action: {
-              contentViewStates.navigationSelection = .functionKeys
-            }) {
-              SidebarLabelView(
-                text: "Function Keys", systemImage: "speaker.wave.2.circle", padding: 2.0)
-            }
+            Button(
+              action: {
+                contentViewStates.navigationSelection = .functionKeys
+              },
+              label: {
+                SidebarLabelView(
+                  text: "Function Keys", systemImage: "speaker.wave.2.circle", padding: 2.0)
+              }
+            )
             .sidebarButtonStyle(
               selected: contentViewStates.navigationSelection == .functionKeys
             )
 
-            Button(action: {
-              contentViewStates.navigationSelection = .complexModifications
-            }) {
-              SidebarLabelView(
-                text: "Complex Modifications", systemImage: "gearshape.2", padding: 2.0)
-            }
+            Button(
+              action: {
+                contentViewStates.navigationSelection = .complexModifications
+              },
+              label: {
+                SidebarLabelView(
+                  text: "Complex Modifications", systemImage: "gearshape.2", padding: 2.0)
+              }
+            )
             .sidebarButtonStyle(
               selected: contentViewStates.navigationSelection == .complexModifications)
 
-            Button(action: {
-              contentViewStates.navigationSelection = .complexModificationsAdvanced
-            }) {
-              SidebarLabelView(text: "Parameters", systemImage: "dial.min", padding: 2.0)
-            }
+            Button(
+              action: {
+                contentViewStates.navigationSelection = .complexModificationsAdvanced
+              },
+              label: {
+                SidebarLabelView(text: "Parameters", systemImage: "dial.min", padding: 2.0)
+              }
+            )
             .sidebarButtonStyle(
               selected: contentViewStates.navigationSelection == .complexModificationsAdvanced)
           }
@@ -91,35 +106,47 @@ struct ContentView: View {
             .padding(.vertical, 10.0)
 
           Group {
-            Button(action: {
-              contentViewStates.navigationSelection = .devices
-            }) {
-              SidebarLabelView(text: "Devices", systemImage: "keyboard", padding: 2.0)
-            }
+            Button(
+              action: {
+                contentViewStates.navigationSelection = .devices
+              },
+              label: {
+                SidebarLabelView(text: "Devices", systemImage: "keyboard", padding: 2.0)
+              }
+            )
             .sidebarButtonStyle(
               selected: contentViewStates.navigationSelection == .devices)
 
-            Button(action: {
-              contentViewStates.navigationSelection = .virtualKeyboard
-            }) {
-              SidebarLabelView(text: "Virtual Keyboard", systemImage: "puzzlepiece", padding: 2.0)
-            }
+            Button(
+              action: {
+                contentViewStates.navigationSelection = .virtualKeyboard
+              },
+              label: {
+                SidebarLabelView(text: "Virtual Keyboard", systemImage: "puzzlepiece", padding: 2.0)
+              }
+            )
             .sidebarButtonStyle(
               selected: contentViewStates.navigationSelection == .virtualKeyboard)
 
-            Button(action: {
-              contentViewStates.navigationSelection = .profiles
-            }) {
-              SidebarLabelView(text: "Profiles", systemImage: "person.3", padding: 2.0)
-            }
+            Button(
+              action: {
+                contentViewStates.navigationSelection = .profiles
+              },
+              label: {
+                SidebarLabelView(text: "Profiles", systemImage: "person.3", padding: 2.0)
+              }
+            )
             .sidebarButtonStyle(
               selected: contentViewStates.navigationSelection == .profiles)
 
-            Button(action: {
-              contentViewStates.navigationSelection = .ui
-            }) {
-              SidebarLabelView(text: "UI", systemImage: "switch.2", padding: 2.0)
-            }
+            Button(
+              action: {
+                contentViewStates.navigationSelection = .ui
+              },
+              label: {
+                SidebarLabelView(text: "UI", systemImage: "switch.2", padding: 2.0)
+              }
+            )
             .sidebarButtonStyle(
               selected: contentViewStates.navigationSelection == .ui)
           }
@@ -128,27 +155,36 @@ struct ContentView: View {
             .padding(.vertical, 10.0)
 
           Group {
-            Button(action: {
-              contentViewStates.navigationSelection = .update
-            }) {
-              SidebarLabelView(text: "Update", systemImage: "network", padding: 2.0)
-            }
+            Button(
+              action: {
+                contentViewStates.navigationSelection = .update
+              },
+              label: {
+                SidebarLabelView(text: "Update", systemImage: "network", padding: 2.0)
+              }
+            )
             .sidebarButtonStyle(
               selected: contentViewStates.navigationSelection == .update)
 
-            Button(action: {
-              contentViewStates.navigationSelection = .misc
-            }) {
-              SidebarLabelView(text: "Misc", systemImage: "leaf", padding: 2.0)
-            }
+            Button(
+              action: {
+                contentViewStates.navigationSelection = .misc
+              },
+              label: {
+                SidebarLabelView(text: "Misc", systemImage: "leaf", padding: 2.0)
+              }
+            )
             .sidebarButtonStyle(
               selected: contentViewStates.navigationSelection == .misc)
 
-            Button(action: {
-              contentViewStates.navigationSelection = .uninstall
-            }) {
-              SidebarLabelView(text: "Uninstall", systemImage: "trash", padding: 2.0)
-            }
+            Button(
+              action: {
+                contentViewStates.navigationSelection = .uninstall
+              },
+              label: {
+                SidebarLabelView(text: "Uninstall", systemImage: "trash", padding: 2.0)
+              }
+            )
             .sidebarButtonStyle(
               selected: contentViewStates.navigationSelection == .uninstall)
           }
@@ -157,27 +193,36 @@ struct ContentView: View {
             .padding(.vertical, 10.0)
 
           Group {
-            Button(action: {
-              contentViewStates.navigationSelection = .log
-            }) {
-              SidebarLabelView(text: "Log", systemImage: "doc.plaintext", padding: 2.0)
-            }
+            Button(
+              action: {
+                contentViewStates.navigationSelection = .log
+              },
+              label: {
+                SidebarLabelView(text: "Log", systemImage: "doc.plaintext", padding: 2.0)
+              }
+            )
             .sidebarButtonStyle(
               selected: contentViewStates.navigationSelection == .log)
 
-            Button(action: {
-              contentViewStates.navigationSelection = .pro
-            }) {
-              SidebarLabelView(text: "Pro", systemImage: "flame", padding: 2.0)
-            }
+            Button(
+              action: {
+                contentViewStates.navigationSelection = .pro
+              },
+              label: {
+                SidebarLabelView(text: "Pro", systemImage: "flame", padding: 2.0)
+              }
+            )
             .sidebarButtonStyle(
               selected: contentViewStates.navigationSelection == .pro)
 
-            Button(action: {
-              contentViewStates.navigationSelection = .action
-            }) {
-              SidebarLabelView(text: "Quit, Restart", systemImage: "bolt.circle", padding: 2.0)
-            }
+            Button(
+              action: {
+                contentViewStates.navigationSelection = .action
+              },
+              label: {
+                SidebarLabelView(text: "Quit, Restart", systemImage: "bolt.circle", padding: 2.0)
+              }
+            )
             .sidebarButtonStyle(
               selected: contentViewStates.navigationSelection == .action)
           }

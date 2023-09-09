@@ -39,14 +39,16 @@ struct ComplexModificationsAssetsView: View {
                   HStack(alignment: .center, spacing: 16.0) {
                     Text(assetRule.description)
 
-                    Button(action: {
-                      LibKrbn.Settings.shared.addComplexModificationRule(assetRule)
-                      contentViewStates.complexModificationsViewSheetPresented = false
-                    }) {
-                      // Use `Image` and `Text` instead of `Label` to set icon color like `Button` in `List`.
-                      Image(systemName: "plus.circle.fill").foregroundColor(.blue)
-                      Text("Enable")
-                    }
+                    Button(
+                      action: {
+                        LibKrbn.Settings.shared.addComplexModificationRule(assetRule)
+                        contentViewStates.complexModificationsViewSheetPresented = false
+                      },
+                      label: {
+                        // Use `Image` and `Text` instead of `Label` to set icon color like `Button` in `List`.
+                        Image(systemName: "plus.circle.fill").foregroundColor(.blue)
+                        Text("Enable")
+                      })
 
                     Spacer()
                   }
@@ -65,21 +67,26 @@ struct ComplexModificationsAssetsView: View {
                     .font(.caption)
                   }
 
-                  Button(action: {
-                    LibKrbn.Settings.shared.addComplexModificationRules(assetFile)
-                    contentViewStates.complexModificationsViewSheetPresented = false
-                  }) {
-                    Text("Enable All")
-                      .font(.caption)
-                  }
+                  Button(
+                    action: {
+                      LibKrbn.Settings.shared.addComplexModificationRules(assetFile)
+                      contentViewStates.complexModificationsViewSheetPresented = false
+                    },
+                    label: {
+                      Text("Enable All")
+                        .font(.caption)
+                    })
 
                   if assetFile.userFile {
-                    Button(action: {
-                      assetFiles.removeFile(assetFile)
-                    }) {
-                      Image(systemName: "trash.fill")
-                        .buttonLabelStyle()
-                    }
+                    Button(
+                      action: {
+                        assetFiles.removeFile(assetFile)
+                      },
+                      label: {
+                        Image(systemName: "trash.fill")
+                          .buttonLabelStyle()
+                      }
+                    )
                     .deleteButtonStyle()
                   }
                 }
@@ -94,20 +101,24 @@ struct ComplexModificationsAssetsView: View {
 
       Spacer()
 
-      Button(action: {
-        NSWorkspace.shared.open(URL(string: "https://ke-complex-modifications.pqrs.org/")!)
-      }) {
-        Label(
-          "Import more rules from the Internet (Open a web browser)",
-          systemImage: "icloud.and.arrow.down.fill")
-      }
+      Button(
+        action: {
+          NSWorkspace.shared.open(URL(string: "https://ke-complex-modifications.pqrs.org/")!)
+        },
+        label: {
+          Label(
+            "Import more rules from the Internet (Open a web browser)",
+            systemImage: "icloud.and.arrow.down.fill")
+        })
 
-      Button(action: {
-        contentViewStates.complexModificationsViewSheetPresented = false
-      }) {
-        Label("Close", systemImage: "xmark")
-          .frame(minWidth: 0, maxWidth: .infinity)
-      }
+      Button(
+        action: {
+          contentViewStates.complexModificationsViewSheetPresented = false
+        },
+        label: {
+          Label("Close", systemImage: "xmark")
+            .frame(minWidth: 0, maxWidth: .infinity)
+        })
     }
     .padding()
     .frame(width: 1000, height: 600)

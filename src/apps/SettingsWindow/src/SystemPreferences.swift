@@ -43,8 +43,7 @@ final class SystemPreferences: ObservableObject {
       systemPreferencesProperties.use_fkeys_as_standard_function_keys
 
     let keyboardTypesSize = libkrbn_system_preferences_properties_get_keyboard_types_size()
-    withUnsafePointer(to: &(systemPreferencesProperties.keyboard_types.0)) {
-      keyboardTypesPtr in
+    withUnsafePointer(to: &(systemPreferencesProperties.keyboard_types.0)) { keyboardTypesPtr in
       var newKeyboardTypes: [LibKrbn.KeyboardType] = []
       for i in 0..<keyboardTypesSize {
         newKeyboardTypes.append(LibKrbn.KeyboardType(i, Int(keyboardTypesPtr[i])))

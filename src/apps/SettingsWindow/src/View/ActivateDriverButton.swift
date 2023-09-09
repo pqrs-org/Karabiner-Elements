@@ -7,22 +7,24 @@ struct ActivateDriverButton: View {
 
   var body: some View {
     VStack(alignment: .leading) {
-      Button(action: {
-        self.showingProgress = true
-        self.showingResult = false
+      Button(
+        action: {
+          self.showingProgress = true
+          self.showingResult = false
 
-        VirtualHIDDeviceManager.shared.activateDriver(completion: { status in
-          DispatchQueue.main.async {
-            self.status = status
-            self.showingProgress = false
-            self.showingResult = true
-          }
+          VirtualHIDDeviceManager.shared.activateDriver(completion: { status in
+            DispatchQueue.main.async {
+              self.status = status
+              self.showingProgress = false
+              self.showingResult = true
+            }
+          })
+        },
+        label: {
+          Label(
+            "Activate driver",
+            systemImage: "star.fill")
         })
-      }) {
-        Label(
-          "Activate driver",
-          systemImage: "star.fill")
-      }
 
       if self.showingProgress {
         Text("Activating ...")

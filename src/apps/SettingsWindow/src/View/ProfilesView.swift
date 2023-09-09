@@ -11,43 +11,51 @@ struct ProfilesView: View {
         VStack(alignment: .leading, spacing: 0.0) {
           ForEach($settings.profiles) { $profile in
             HStack(alignment: .center, spacing: 0) {
-              Button(action: {
-                settings.selectProfile(profile)
-              }) {
-                HStack {
+              Button(
+                action: {
+                  settings.selectProfile(profile)
+                },
+                label: {
                   HStack {
-                    if profile.selected {
-                      Image(systemName: "circle.circle.fill")
-                    } else {
-                      Image(systemName: "circle")
+                    HStack {
+                      if profile.selected {
+                        Image(systemName: "circle.circle.fill")
+                      } else {
+                        Image(systemName: "circle")
+                      }
                     }
-                  }
-                  .foregroundColor(.accentColor)
+                    .foregroundColor(.accentColor)
 
-                  Text(profile.name)
+                    Text(profile.name)
+                  }
                 }
-              }
+              )
               .buttonStyle(.plain)
 
               Spacer()
 
-              Button(action: {
-                editingProfile = profile
-                showingSheet = true
-              }) {
-                Label("Edit", systemImage: "pencil.circle.fill")
-              }
+              Button(
+                action: {
+                  editingProfile = profile
+                  showingSheet = true
+                },
+                label: {
+                  Label("Edit", systemImage: "pencil.circle.fill")
+                })
 
               HStack {
                 Spacer()
 
                 if !profile.selected {
-                  Button(action: {
-                    settings.removeProfile(profile)
-                  }) {
-                    Image(systemName: "trash.fill")
-                      .buttonLabelStyle()
-                  }
+                  Button(
+                    action: {
+                      settings.removeProfile(profile)
+                    },
+                    label: {
+                      Image(systemName: "trash.fill")
+                        .buttonLabelStyle()
+                    }
+                  )
                   .deleteButtonStyle()
                 }
               }
@@ -58,11 +66,14 @@ struct ProfilesView: View {
             Divider()
           }
 
-          Button(action: {
-            settings.appendProfile()
-          }) {
-            Label("Add new profile", systemImage: "plus.circle.fill")
-          }
+          Button(
+            action: {
+              settings.appendProfile()
+            },
+            label: {
+              Label("Add new profile", systemImage: "plus.circle.fill")
+            }
+          )
           .padding(.top, 20.0)
 
           Spacer()

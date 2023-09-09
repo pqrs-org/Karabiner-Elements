@@ -8,11 +8,13 @@ struct MiscView: View {
       GroupBox(label: Text("Extra tool")) {
         VStack(alignment: .leading, spacing: 12.0) {
           HStack {
-            Button(action: {
-              libkrbn_launch_multitouch_extension()
-            }) {
-              Label("Open Karabiner-MultitouchExtension app", systemImage: "arrow.up.forward.app")
-            }
+            Button(
+              action: {
+                libkrbn_launch_multitouch_extension()
+              },
+              label: {
+                Label("Open Karabiner-MultitouchExtension app", systemImage: "arrow.up.forward.app")
+              })
 
             Spacer()
           }
@@ -23,14 +25,17 @@ struct MiscView: View {
       GroupBox(label: Text("Export & Import")) {
         VStack(alignment: .leading, spacing: 12.0) {
           HStack {
-            Button(action: {
-              let url = URL(
-                fileURLWithPath: String(cString: libkrbn_get_user_configuration_directory()),
-                isDirectory: true)
-              NSWorkspace.shared.open(url)
-            }) {
-              Label("Open config folder (~/.config/karabiner)", systemImage: "arrow.up.forward.app")
-            }
+            Button(
+              action: {
+                let url = URL(
+                  fileURLWithPath: String(cString: libkrbn_get_user_configuration_directory()),
+                  isDirectory: true)
+                NSWorkspace.shared.open(url)
+              },
+              label: {
+                Label(
+                  "Open config folder (~/.config/karabiner)", systemImage: "arrow.up.forward.app")
+              })
 
             Spacer()
           }
@@ -47,21 +52,26 @@ struct MiscView: View {
             Text("(These operations require the administrator privilege.)")
           }
 
-          Button(action: {
-            settings.installSystemDefaultProfile()
-          }) {
-            Label(
-              "Copy the current configuration to the system default configuration",
-              systemImage: "square.and.arrow.down")
-          }
+          Button(
+            action: {
+              settings.installSystemDefaultProfile()
+            },
+            label: {
+              Label(
+                "Copy the current configuration to the system default configuration",
+                systemImage: "square.and.arrow.down")
+            })
 
           if settings.systemDefaultProfileExists {
-            Button(action: {
-              settings.removeSystemDefaultProfile()
-            }) {
-              Label("Remove the system default configuration", systemImage: "trash")
-                .buttonLabelStyle()
-            }
+            Button(
+              action: {
+                settings.removeSystemDefaultProfile()
+              },
+              label: {
+                Label("Remove the system default configuration", systemImage: "trash")
+                  .buttonLabelStyle()
+              }
+            )
             .deleteButtonStyle()
           } else {
             Text("System default configuration is not set.").foregroundColor(

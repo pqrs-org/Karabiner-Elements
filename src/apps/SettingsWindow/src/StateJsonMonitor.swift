@@ -15,9 +15,9 @@ private func callback(
 }
 
 private struct State: Codable {
-  var driver_loaded: Bool?
-  var driver_version_matched: Bool?
-  var hid_device_open_permitted: Bool?
+  var driverLoaded: Bool?
+  var driverVersionMatched: Bool?
+  var hidDeviceOpenPermitted: Bool?
 }
 
 public class StateJsonMonitor {
@@ -43,6 +43,7 @@ public class StateJsonMonitor {
   public func update(_ filePath: String) {
     if let jsonData = try? Data(contentsOf: URL(fileURLWithPath: filePath)) {
       let decoder = JSONDecoder()
+      decoder.keyDecodingStrategy = .convertFromSnakeCase
       if let state = try? decoder.decode(State.self, from: jsonData) {
         states[filePath] = state
       }
@@ -56,13 +57,13 @@ public class StateJsonMonitor {
     var driverVersionNotMatched = false
     var inputMonitoringNotPermitted = false
     for state in states {
-      if state.value.driver_loaded == false {
+      if state.value.driverLoaded == false {
         driverNotLoaded = true
       }
-      if state.value.driver_version_matched == false {
+      if state.value.driverVersionMatched == false {
         driverVersionNotMatched = true
       }
-      if state.value.hid_device_open_permitted == false {
+      if state.value.hidDeviceOpenPermitted == false {
         inputMonitoringNotPermitted = true
       }
     }
