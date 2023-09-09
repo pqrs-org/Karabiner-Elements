@@ -9,6 +9,8 @@ struct ComplexModificationsView: View {
   @ObservedObject private var contentViewStates = ContentViewStates.shared
   @ObservedObject private var settings = LibKrbn.Settings.shared
   @State private var moveDisabled: Bool = true
+  @State private var showingEditSheet = false
+  @State private var editingRule: LibKrbn.ComplexModificationsRule?
 
   var body: some View {
     VStack(alignment: .leading, spacing: 12.0) {
@@ -52,12 +54,20 @@ struct ComplexModificationsView: View {
               Spacer()
 
               Button(action: {
+                editingRule = complexModificationRule
+                showingEditSheet = true
+              }) {
+                Label("Edit", systemImage: "pencil.circle.fill")
+              }
+
+              Button(action: {
                 settings.removeComplexModificationsRule(complexModificationRule)
               }) {
                 Image(systemName: "trash.fill")
                   .buttonLabelStyle()
               }
               .deleteButtonStyle()
+              .frame(width: 60)
             }
             .contextMenu {
               Section(header: Text("Position")) {
@@ -97,6 +107,9 @@ struct ComplexModificationsView: View {
           ComplexModificationsFileImportView()
         }
       }
+    }
+    .sheet(isPresented: $showingEditSheet) {
+      ComplexModificationsEditView(rule: $editingRule, showing: $showingEditSheet)
     }
   }
 }
