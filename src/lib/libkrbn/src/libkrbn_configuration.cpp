@@ -337,6 +337,24 @@ const char* _Nullable libkrbn_core_configuration_get_selected_profile_complex_mo
   return 0;
 }
 
+bool libkrbn_core_configuration_get_selected_profile_complex_modifications_rule_json_string(libkrbn_core_configuration* p,
+                                                                                            size_t index,
+                                                                                            char* buffer,
+                                                                                            size_t length) {
+  if (auto c = reinterpret_cast<libkrbn_core_configuration_class*>(p)) {
+    const auto& rules = c->get_core_configuration().get_selected_profile().get_complex_modifications().get_rules();
+    if (index < rules.size()) {
+      auto json_string = krbn::json_utility::dump(rules[index].get_json());
+      // Return false if no enough space.
+      if (json_string.length() < length) {
+        strlcpy(buffer, json_string.c_str(), length);
+        return true;
+      }
+    }
+  }
+  return false;
+}
+
 int libkrbn_core_configuration_get_selected_profile_complex_modifications_parameter(libkrbn_core_configuration* p,
                                                                                     const char* name) {
   if (auto c = reinterpret_cast<libkrbn_core_configuration_class*>(p)) {
