@@ -20,18 +20,24 @@ struct MainView: View {
       GroupBox(label: Text("Keyboard & pointing events")) {
         VStack(alignment: .leading, spacing: 6.0) {
           HStack(alignment: .center, spacing: 12.0) {
-            Button(action: {
-              eventHistory.copyToPasteboard()
-            }) {
-              Label("Copy to pasteboard", systemImage: "arrow.right.doc.on.clipboard")
-            }
+            Button(
+              action: {
+                eventHistory.copyToPasteboard()
+              },
+              label: {
+                Label("Copy to pasteboard", systemImage: "arrow.right.doc.on.clipboard")
+              }
+            )
             .disabled(eventHistory.entries.isEmpty)
 
-            Button(action: {
-              eventHistory.clear()
-            }) {
-              Label("Clear", systemImage: "clear")
-            }
+            Button(
+              action: {
+                eventHistory.clear()
+              },
+              label: {
+                Label("Clear", systemImage: "clear")
+              }
+            )
             .disabled(eventHistory.entries.isEmpty)
 
             Spacer()

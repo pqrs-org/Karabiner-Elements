@@ -12,17 +12,21 @@ struct UnknownEventsView: View {
             Spacer()
           } else {
             HStack(alignment: .center, spacing: 12.0) {
-              Button(action: {
-                eventHistory.copyToPasteboardUnknownEvents()
-              }) {
-                Label("Copy to pasteboard", systemImage: "arrow.right.doc.on.clipboard")
-              }
+              Button(
+                action: {
+                  eventHistory.copyToPasteboardUnknownEvents()
+                },
+                label: {
+                  Label("Copy to pasteboard", systemImage: "arrow.right.doc.on.clipboard")
+                })
 
-              Button(action: {
-                eventHistory.clearUnknownEvents()
-              }) {
-                Label("Clear", systemImage: "clear")
-              }
+              Button(
+                action: {
+                  eventHistory.clearUnknownEvents()
+                },
+                label: {
+                  Label("Clear", systemImage: "clear")
+                })
 
               Spacer()
             }

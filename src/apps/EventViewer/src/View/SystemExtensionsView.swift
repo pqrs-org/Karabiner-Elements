@@ -8,19 +8,23 @@ struct SystemExtensionsView: View {
       GroupBox(label: Text("System Extensions")) {
         VStack(alignment: .leading, spacing: 12.0) {
           HStack(alignment: .center, spacing: 12.0) {
-            Button(action: {
-              let pboard = NSPasteboard.general
-              pboard.clearContents()
-              pboard.writeObjects([systemExtensions.list as NSString])
-            }) {
-              Label("Copy to pasteboard", systemImage: "arrow.right.doc.on.clipboard")
-            }
+            Button(
+              action: {
+                let pboard = NSPasteboard.general
+                pboard.clearContents()
+                pboard.writeObjects([systemExtensions.list as NSString])
+              },
+              label: {
+                Label("Copy to pasteboard", systemImage: "arrow.right.doc.on.clipboard")
+              })
 
-            Button(action: {
-              SystemExtensions.shared.updateList()
-            }) {
-              Label("Refresh", systemImage: "arrow.clockwise.circle")
-            }
+            Button(
+              action: {
+                SystemExtensions.shared.updateList()
+              },
+              label: {
+                Label("Refresh", systemImage: "arrow.clockwise.circle")
+              })
           }
 
           ScrollView {

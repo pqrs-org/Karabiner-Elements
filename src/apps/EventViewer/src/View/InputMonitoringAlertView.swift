@@ -22,11 +22,13 @@ struct InputMonitoringAlertView: View {
         Text("Please allow on Privacy & Security System Settings.")
       }
 
-      Button(action: { openSystemSettingsSecurity() }) {
-        Label(
-          "Open Privacy & Security System Settings...",
-          systemImage: "arrow.forward.circle.fill")
-      }
+      Button(
+        action: { openSystemSettingsSecurity() },
+        label: {
+          Label(
+            "Open Privacy & Security System Settings...",
+            systemImage: "arrow.forward.circle.fill")
+        })
 
       Image(decorative: "input_monitoring")
         .resizable()

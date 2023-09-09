@@ -16,8 +16,6 @@ struct ContentView: View {
   @ObservedObject var inputMonitoringAlertData = InputMonitoringAlertData.shared
   @State private var selection: NavigationTag = .main
 
-  let version = Bundle.main.object(forInfoDictionaryKey: "CFBundleVersion") as! String
-
   var body: some View {
     VStack {
       if inputMonitoringAlertData.showing {
@@ -25,53 +23,74 @@ struct ContentView: View {
       } else {
         HStack {
           VStack(alignment: .leading, spacing: 0) {
-            Button(action: {
-              selection = .main
-            }) {
-              SidebarLabelView(text: "Main", systemImage: "magnifyingglass")
-            }
+            Button(
+              action: {
+                selection = .main
+              },
+              label: {
+                SidebarLabelView(text: "Main", systemImage: "magnifyingglass")
+              }
+            )
             .sidebarButtonStyle(selected: selection == .main)
 
-            Button(action: {
-              selection = .frontmostApplication
-            }) {
-              SidebarLabelView(text: "Frontmost Application", systemImage: "triangle.circle")
-            }
+            Button(
+              action: {
+                selection = .frontmostApplication
+              },
+              label: {
+                SidebarLabelView(text: "Frontmost Application", systemImage: "triangle.circle")
+              }
+            )
             .sidebarButtonStyle(selected: selection == .frontmostApplication)
 
-            Button(action: {
-              selection = .variables
-            }) {
-              SidebarLabelView(text: "Variables", systemImage: "cube")
-            }
+            Button(
+              action: {
+                selection = .variables
+              },
+              label: {
+                SidebarLabelView(text: "Variables", systemImage: "cube")
+              }
+            )
             .sidebarButtonStyle(selected: selection == .variables)
 
-            Button(action: {
-              selection = .devices
-            }) {
-              SidebarLabelView(text: "Devices", systemImage: "keyboard")
-            }
+            Button(
+              action: {
+                selection = .devices
+              },
+              label: {
+                SidebarLabelView(text: "Devices", systemImage: "keyboard")
+              }
+            )
             .sidebarButtonStyle(selected: selection == .devices)
 
-            Button(action: {
-              selection = .systemExtensions
-            }) {
-              SidebarLabelView(text: "System Extensions", systemImage: "puzzlepiece")
-            }
+            Button(
+              action: {
+                selection = .systemExtensions
+              },
+              label: {
+                SidebarLabelView(text: "System Extensions", systemImage: "puzzlepiece")
+              }
+            )
             .sidebarButtonStyle(selected: selection == .systemExtensions)
 
-            Button(action: {
-              selection = .unknownEvents
-            }) {
-              SidebarLabelView(text: "Unknown Events", systemImage: "questionmark.square.dashed")
-            }
+            Button(
+              action: {
+                selection = .unknownEvents
+              },
+              label: {
+                SidebarLabelView(text: "Unknown Events", systemImage: "questionmark.square.dashed")
+              }
+            )
             .sidebarButtonStyle(selected: selection == .unknownEvents)
 
-            Button(action: {
-              selection = .settings
-            }) {
-              SidebarLabelView(text: "Settings", systemImage: "gearshape")
-            }
+            Button(
+              action: {
+                selection = .settings
+              },
+              label: {
+                SidebarLabelView(text: "Settings", systemImage: "gearshape")
+              }
+            )
             .sidebarButtonStyle(selected: selection == .settings)
 
             Spacer()

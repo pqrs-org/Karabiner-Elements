@@ -19,11 +19,13 @@ struct FrontmostApplicationView: View {
             Spacer()
           } else {
             HStack(alignment: .center, spacing: 12.0) {
-              Button(action: {
-                frontmostApplicationHistory.clear()
-              }) {
-                Label("Clear", systemImage: "clear")
-              }
+              Button(
+                action: {
+                  frontmostApplicationHistory.clear()
+                },
+                label: {
+                  Label("Clear", systemImage: "clear")
+                })
 
               Spacer()
             }
@@ -58,11 +60,13 @@ struct FrontmostApplicationView: View {
                       Spacer()
 
                       if entry.bundleIdentifier.count > 0 || entry.filePath.count > 0 {
-                        Button(action: {
-                          entry.copyToPasteboard()
-                        }) {
-                          Label("Copy to pasteboard", systemImage: "arrow.right.doc.on.clipboard")
-                        }
+                        Button(
+                          action: {
+                            entry.copyToPasteboard()
+                          },
+                          label: {
+                            Label("Copy to pasteboard", systemImage: "arrow.right.doc.on.clipboard")
+                          })
                       }
                     }
                     .padding(.vertical, 6.0)
