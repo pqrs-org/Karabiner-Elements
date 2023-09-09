@@ -52,6 +52,12 @@ public:
     rules_.push_back(rule);
   }
 
+  void replace_rule(size_t index, const complex_modifications_rule& rule) {
+    if (index < rules_.size()) {
+      rules_[index] = rule;
+    }
+  }
+
   void erase_rule(size_t index) {
     if (index < rules_.size()) {
       rules_.erase(std::begin(rules_) + index);

@@ -65,6 +65,7 @@ std::vector<std::pair<std::string, std::string>> make_default_fn_function_keys_p
 void run_core_configuration_test(void) {
   using namespace boost::ut;
   using namespace boost::ut::literals;
+  using namespace std::literals;
 
   "valid"_test = [] {
     krbn::core_configuration::core_configuration configuration("json/example.jsonc", geteuid());
@@ -1200,6 +1201,67 @@ void run_core_configuration_test(void) {
       expect(rules[1].get_description() == "rule 2");
       expect(rules[2].get_description() == "rule 3");
       expect(rules[3].get_description() == "rule 4");
+    }
+  };
+
+  "complex_modifications.replace_rule"_test = [] {
+    {
+      auto manipulators = nlohmann::json::array({
+          nlohmann::json::object({
+              {"from", nlohmann::json::object({{"key_code", "spacebar"}})},
+              {"type", "basic"},
+          }),
+      });
+
+      nlohmann::json json({
+          {
+              "rules",
+              {
+                  {
+                      {"description", "rule 1"},
+                      {"manipulators", manipulators},
+                  },
+                  {
+                      {"description", "rule 2"},
+                      {"manipulators", manipulators},
+                  },
+                  {
+                      {"description", "rule 3"},
+                      {"manipulators", manipulators},
+                  },
+              },
+          },
+      });
+      krbn::core_configuration::details::complex_modifications complex_modifications(json);
+      auto& rules = complex_modifications.get_rules();
+      expect(3 == rules.size());
+      expect("rule 1"sv == rules[0].get_description());
+      expect("rule 2"sv == rules[1].get_description());
+      expect("rule 3"sv == rules[2].get_description());
+
+      complex_modifications.replace_rule(1,
+                                         krbn::core_configuration::details::complex_modifications_rule(
+                                             nlohmann::json({
+                                                 {"description", "replaced 2"},
+                                                 {"manipulators", manipulators},
+                                             }),
+                                             krbn::core_configuration::details::complex_modifications_parameters()));
+      expect(3 == rules.size());
+      expect("rule 1"sv == rules[0].get_description());
+      expect("replaced 2"sv == rules[1].get_description());
+      expect("rule 3"sv == rules[2].get_description());
+
+      complex_modifications.replace_rule(3,
+                                         krbn::core_configuration::details::complex_modifications_rule(
+                                             nlohmann::json({
+                                                 {"description", "ignored"},
+                                                 {"manipulators", manipulators},
+                                             }),
+                                             krbn::core_configuration::details::complex_modifications_parameters()));
+      expect(3 == rules.size());
+      expect("rule 1"sv == rules[0].get_description());
+      expect("replaced 2"sv == rules[1].get_description());
+      expect("rule 3"sv == rules[2].get_description());
     }
   };
 
