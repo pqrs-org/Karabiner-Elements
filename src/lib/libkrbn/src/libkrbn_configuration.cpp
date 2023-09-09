@@ -1,3 +1,4 @@
+#include "complex_modifications_utility.hpp"
 #include "libkrbn/impl/libkrbn_configuration_monitor.hpp"
 #include "libkrbn/impl/libkrbn_cpp.hpp"
 
@@ -353,6 +354,42 @@ bool libkrbn_core_configuration_get_selected_profile_complex_modifications_rule_
     }
   }
   return false;
+}
+
+void libkrbn_core_configuration_replace_selected_profile_complex_modifications_rule(libkrbn_core_configuration* p,
+                                                                                    size_t index,
+                                                                                    const char* json_string,
+                                                                                    char* error_message_buffer,
+                                                                                    size_t error_message_buffer_length) {
+  if (error_message_buffer_length > 0) {
+    error_message_buffer[0] = '\0';
+  }
+
+  try {
+    if (auto c = reinterpret_cast<libkrbn_core_configuration_class*>(p)) {
+      auto complex_modifications = c->get_core_configuration().get_selected_profile().get_complex_modifications();
+      krbn::core_configuration::details::complex_modifications_rule rule(
+          krbn::json_utility::parse_jsonc(std::string(json_string)),
+          complex_modifications.get_parameters());
+
+      auto error_messages = krbn::complex_modifications_utility::lint_rule(rule);
+      if (error_messages.size() > 0) {
+        std::ostringstream os;
+        std::copy(std::begin(error_messages),
+                  std::end(error_messages),
+                  std::ostream_iterator<std::string>(os, "\n"));
+        strlcpy(error_message_buffer,
+                pqrs::string::trim_copy(os.str()).c_str(),
+                error_message_buffer_length);
+        return;
+      }
+
+      complex_modifications.replace_rule(index, rule);
+    }
+  } catch (const std::exception& e) {
+    auto message = fmt::format("error: {0}", e.what());
+    strlcpy(error_message_buffer, message.c_str(), error_message_buffer_length);
+  }
 }
 
 int libkrbn_core_configuration_get_selected_profile_complex_modifications_parameter(libkrbn_core_configuration* p,
