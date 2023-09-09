@@ -367,7 +367,7 @@ void libkrbn_core_configuration_replace_selected_profile_complex_modifications_r
 
   try {
     if (auto c = reinterpret_cast<libkrbn_core_configuration_class*>(p)) {
-      auto complex_modifications = c->get_core_configuration().get_selected_profile().get_complex_modifications();
+      auto&& complex_modifications = c->get_core_configuration().get_selected_profile().get_complex_modifications();
       krbn::core_configuration::details::complex_modifications_rule rule(
           krbn::json_utility::parse_jsonc(std::string(json_string)),
           complex_modifications.get_parameters());

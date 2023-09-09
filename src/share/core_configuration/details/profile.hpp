@@ -225,6 +225,10 @@ public:
     return complex_modifications_;
   }
 
+  details::complex_modifications& get_complex_modifications(void) {
+    return const_cast<details::complex_modifications&>(static_cast<const details::profile&>(*this).get_complex_modifications());
+  }
+
   void push_back_complex_modifications_rule(const details::complex_modifications_rule& rule) {
     complex_modifications_.push_back_rule(rule);
   }
