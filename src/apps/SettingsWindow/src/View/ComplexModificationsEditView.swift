@@ -1,3 +1,4 @@
+import CodeEditor
 import SwiftUI
 
 struct ComplexModificationsEditView: View {
@@ -8,6 +9,7 @@ struct ComplexModificationsEditView: View {
   @State private var jsonString = ""
   @State private var errorMessage: String?
   @ObservedObject private var settings = LibKrbn.Settings.shared
+  @Environment(\.colorScheme) var colorScheme
 
   var body: some View {
     VStack(alignment: .leading, spacing: 12.0) {
@@ -60,7 +62,10 @@ struct ComplexModificationsEditView: View {
               .background(Color.errorBackground)
             }
 
-            TextEditor(text: $jsonString)
+            CodeEditor(
+              source: $jsonString, language: .json,
+              theme: CodeEditor.ThemeName(
+                rawValue: colorScheme == .dark ? "qtcreator_dark" : "qtcreator_light"))
           }
 
           Spacer()
