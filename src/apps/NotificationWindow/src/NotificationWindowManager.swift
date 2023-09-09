@@ -111,22 +111,22 @@ public class NotificationWindowManager {
     //
 
     for (i, screenWindow) in screenWindows.enumerated() {
-      var screenFrame = NSZeroRect
+      var screenFrame = NSRect.zero
       if i < screens.count {
         screenFrame = screens[i].visibleFrame
 
         screenWindow.mainWindow.setFrameOrigin(
-          NSMakePoint(
-            screenFrame.origin.x + screenFrame.size.width - 410,
-            screenFrame.origin.y + 10
+          NSPoint(
+            x: screenFrame.origin.x + screenFrame.size.width - 410,
+            y: screenFrame.origin.y + 10
           ))
 
         screenWindow.closeButtonWindow.setFrame(
-          NSMakeRect(
-            screenWindow.mainWindow.frame.origin.x - 8,
-            screenWindow.mainWindow.frame.origin.y + 36,
-            CGFloat(24.0),
-            CGFloat(24.0)),
+          NSRect(
+            x: screenWindow.mainWindow.frame.origin.x - 8,
+            y: screenWindow.mainWindow.frame.origin.y + 36,
+            width: CGFloat(24.0),
+            height: CGFloat(24.0)),
           display: false)
       }
     }

@@ -9,13 +9,14 @@ struct ButtonView: View {
       action: {
         mainWindow.orderOut(self)
         buttonWindow.orderOut(self)
+      },
+      label: {
+        Image(systemName: "xmark.circle")
+          .resizable()
+          .frame(width: 24.0, height: 24.0)
+          .foregroundColor(Color.gray)
       }
-    ) {
-      Image(systemName: "xmark.circle")
-        .resizable()
-        .frame(width: 24.0, height: 24.0)
-        .foregroundColor(Color.gray)
-    }
+    )
     .buttonStyle(PlainButtonStyle())
     // Do not set opacity to Button because the mouse click will be ignored.
     .background(
