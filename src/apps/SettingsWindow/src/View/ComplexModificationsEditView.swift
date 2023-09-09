@@ -6,6 +6,7 @@ struct ComplexModificationsEditView: View {
   @State private var description = ""
   @State private var disabled = true
   @State private var jsonString = ""
+  @State private var errorMessage: String?
   @ObservedObject private var settings = LibKrbn.Settings.shared
 
   var body: some View {
@@ -28,7 +29,10 @@ struct ComplexModificationsEditView: View {
                 .frame(width: 24.0)
 
               Button(action: {
-                showing = false
+                errorMessage = settings.replaceComplexModificationsRule(rule!, jsonString)
+                if errorMessage == nil {
+                  showing = false
+                }
               }) {
                 Label("Save", systemImage: "checkmark")
                   .buttonLabelStyle()
@@ -47,6 +51,15 @@ struct ComplexModificationsEditView: View {
             .foregroundColor(Color.errorForeground)
             .background(Color.errorBackground)
           } else {
+            if errorMessage != nil {
+              VStack {
+                Text(errorMessage!)
+              }
+              .padding()
+              .foregroundColor(Color.errorForeground)
+              .background(Color.errorBackground)
+            }
+
             TextEditor(text: $jsonString)
           }
 
