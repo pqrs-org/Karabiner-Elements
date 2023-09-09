@@ -1,5 +1,6 @@
 #pragma once
 
+#include "complex_modifications_utility.hpp"
 #include "constants.hpp"
 #include "core_configuration/core_configuration.hpp"
 #include "json_utility.hpp"
@@ -93,19 +94,8 @@ public:
     std::vector<std::string> error_messages;
 
     for (const auto& rule : rules_) {
-      for (const auto& manipulator : rule.get_manipulators()) {
-        try {
-          manipulator::manipulator_factory::make_manipulator(manipulator.get_json(),
-                                                             manipulator.get_parameters());
-          for (const auto& c : manipulator.get_conditions()) {
-            manipulator::manipulator_factory::make_condition(c.get_json());
-          }
-
-        } catch (const std::exception& e) {
-          error_messages.push_back(fmt::format("`{0}` error: {1}",
-                                               rule.get_description(),
-                                               e.what()));
-        }
+      for (const auto& message : complex_modifications_utility::lint_rule(rule)) {
+        error_messages.push_back(message);
       }
     }
 
