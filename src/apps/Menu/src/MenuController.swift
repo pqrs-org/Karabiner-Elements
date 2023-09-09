@@ -97,7 +97,7 @@ public class MenuController: NSObject, NSMenuDelegate {
     // Append items
     //
 
-    let version = Bundle.main.object(forInfoDictionaryKey: "CFBundleVersion") as! String
+    let version = Bundle.main.object(forInfoDictionaryKey: "CFBundleVersion") as? String ?? ""
     menu.addItem(
       withTitle: "Karabiner-Elements \(version)",
       action: nil,
