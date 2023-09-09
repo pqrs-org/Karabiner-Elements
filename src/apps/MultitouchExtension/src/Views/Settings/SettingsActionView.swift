@@ -6,21 +6,25 @@ struct SettingsActionView: View {
       GroupBox(label: Text("Action")) {
         VStack(alignment: .leading, spacing: 16) {
           HStack {
-            Button(action: {
-              Relauncher.relaunch()
-            }) {
-              Label("Restart app", systemImage: "arrow.clockwise")
-            }
+            Button(
+              action: {
+                Relauncher.relaunch()
+              },
+              label: {
+                Label("Restart app", systemImage: "arrow.clockwise")
+              })
 
             Spacer()
           }
 
           HStack {
-            Button(action: {
-              NSApplication.shared.terminate(self)
-            }) {
-              Label("Quit app", systemImage: "xmark.circle.fill")
-            }
+            Button(
+              action: {
+                NSApplication.shared.terminate(self)
+              },
+              label: {
+                Label("Quit app", systemImage: "xmark.circle.fill")
+              })
 
             Spacer()
           }

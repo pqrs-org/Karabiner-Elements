@@ -55,14 +55,14 @@ class FingerManager: ObservableObject {
       let s = getFingerState(device: device, identifier: Int(finger.identifier))
       s.frame = Int(frame)
       s.size = Double(finger.size)
-      s.point = NSMakePoint(
-        CGFloat(finger.normalized.position.x),
-        CGFloat(finger.normalized.position.y))
+      s.point = NSPoint(
+        x: CGFloat(finger.normalized.position.x),
+        y: CGFloat(finger.normalized.position.y))
 
       // Note:
       // Once the point in targetArea, keep `ignored == NO`.
       if s.ignored {
-        if NSPointInRect(s.point, targetArea) {
+        if targetArea.contains(s.point) {
           s.ignored = false
         }
       }
@@ -94,7 +94,7 @@ class FingerManager: ObservableObject {
         s.setDelayTask(mode: FingerState.DelayMode.untouched)
       }
 
-      //print("\(e.touchedPhysically) \(e.point)")
+      // print("\(e.touchedPhysically) \(e.point)")
     }
 
     //

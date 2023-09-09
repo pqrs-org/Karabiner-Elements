@@ -86,10 +86,10 @@ final class UserSettings: ObservableObject {
     let left = Double(ignoredAreaLeft) / 100
     let right = Double(ignoredAreaRight) / 100
 
-    return NSMakeRect(
-      left,
-      bottom,
-      (1.0 - left - right),
-      (1.0 - top - bottom))
+    return NSRect(
+      x: left,
+      y: bottom,
+      width: (1.0 - left - right),
+      height: (1.0 - top - bottom))
   }
 }

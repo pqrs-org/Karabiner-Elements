@@ -25,8 +25,8 @@ struct UserDefault<T> {
       get: {
         self.wrappedValue
       },
-      set: {
-        newValue in self.wrappedValue = newValue
+      set: { newValue in
+        self.wrappedValue = newValue
       }
     )
   }

@@ -16,7 +16,7 @@ class FingerState: Identifiable {
 
   var frame = 0
 
-  var point = NSZeroPoint
+  var point = NSPoint.zero
 
   var size = 0.0
 

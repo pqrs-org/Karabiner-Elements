@@ -10,32 +10,39 @@ enum NavigationTag: String {
 struct SettingsView: View {
   @State private var selection: NavigationTag = .main
 
-  let version = Bundle.main.object(forInfoDictionaryKey: "CFBundleVersion") as! String
-
   var body: some View {
     VStack {
       HStack {
         VStack(alignment: .leading, spacing: 0) {
           Group {
-            Button(action: {
-              selection = .main
-            }) {
-              SidebarLabelView(text: "Main", systemImage: "gearshape")
-            }
+            Button(
+              action: {
+                selection = .main
+              },
+              label: {
+                SidebarLabelView(text: "Main", systemImage: "gearshape")
+              }
+            )
             .sidebarButtonStyle(selected: selection == .main)
 
-            Button(action: {
-              selection = .area
-            }) {
-              SidebarLabelView(text: "Area", systemImage: "rectangle")
-            }
+            Button(
+              action: {
+                selection = .area
+              },
+              label: {
+                SidebarLabelView(text: "Area", systemImage: "rectangle")
+              }
+            )
             .sidebarButtonStyle(selected: selection == .area)
 
-            Button(action: {
-              selection = .advanced
-            }) {
-              SidebarLabelView(text: "Advanced", systemImage: "hammer")
-            }
+            Button(
+              action: {
+                selection = .advanced
+              },
+              label: {
+                SidebarLabelView(text: "Advanced", systemImage: "hammer")
+              }
+            )
             .sidebarButtonStyle(selected: selection == .advanced)
           }
 
@@ -43,11 +50,14 @@ struct SettingsView: View {
             .padding(.vertical, 10.0)
 
           Group {
-            Button(action: {
-              selection = .action
-            }) {
-              SidebarLabelView(text: "Quit, Restart", systemImage: "bolt.circle")
-            }
+            Button(
+              action: {
+                selection = .action
+              },
+              label: {
+                SidebarLabelView(text: "Quit, Restart", systemImage: "bolt.circle")
+              }
+            )
             .sidebarButtonStyle(selected: selection == .action)
           }
 

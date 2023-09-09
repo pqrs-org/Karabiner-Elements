@@ -99,16 +99,14 @@ private func staticSetGrabberVariable(_ count: FingerCount, _ sync: Bool) {
       value: count.totalPalmCount,
       previousValue: previousFingerCount.totalPalmCount
     ),
-  ] {
-    if gv.previousValue.value != gv.value {
-      if sync {
-        libkrbn_grabber_client_sync_set_variable(gv.name, Int32(gv.value))
-      } else {
-        libkrbn_grabber_client_async_set_variable(gv.name, Int32(gv.value))
-      }
-
-      gv.previousValue.value = gv.value
+  ] where gv.previousValue.value != gv.value {
+    if sync {
+      libkrbn_grabber_client_sync_set_variable(gv.name, Int32(gv.value))
+    } else {
+      libkrbn_grabber_client_async_set_variable(gv.name, Int32(gv.value))
     }
+
+    gv.previousValue.value = gv.value
   }
 }
 
