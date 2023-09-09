@@ -1,0 +1,44 @@
+disabled_rules:
+  - opening_brace
+  - trailing_comma
+
+excluded:
+  - '**/build'
+  - '**/vendor'
+
+#
+# parameters
+#
+
+cyclomatic_complexity:
+  warning: 100
+  error: 150
+
+file_length:
+  warning: 2000
+  error: 3000
+
+function_body_length:
+  warning: 1200
+  error: 1500
+
+identifier_name:
+  max_length:
+    warning: 100
+  min_length:
+    warning: 1
+
+large_tuple:
+  warning: 5
+
+line_length:
+  warning: 1000
+  error: 2000
+
+nesting:
+  type_level:
+    warning: 2
+
+type_body_length:
+  warning: 1200
+  error: 1500
