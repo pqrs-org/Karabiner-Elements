@@ -312,13 +312,22 @@ extension LibKrbn {
       let size = libkrbn_core_configuration_get_selected_profile_complex_modifications_rules_size(
         libkrbnCoreConfiguration)
       for i in 0..<size {
+        var jsonString: String?
+        var buffer = [Int8](repeating: 0, count: 1024 * 1024)  // 1MB
+        if libkrbn_core_configuration_get_selected_profile_complex_modifications_rule_json_string(
+          libkrbnCoreConfiguration, i, &buffer, buffer.count)
+        {
+          jsonString = String(cString: buffer)
+        }
+
         let complexModificationsRule = ComplexModificationsRule(
           i,
           String(
             cString:
               libkrbn_core_configuration_get_selected_profile_complex_modifications_rule_description(
                 libkrbnCoreConfiguration, i
-              ))
+              )),
+          jsonString
         )
         newComplexModificationsRules.append(complexModificationsRule)
       }
