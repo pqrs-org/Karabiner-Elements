@@ -58,6 +58,7 @@ struct ComplexModificationsView: View {
                 showingEditSheet = true
               }) {
                 Label("Edit", systemImage: "pencil.circle.fill")
+                  .padding(.horizontal, 10.0)
               }
 
               Button(action: {
