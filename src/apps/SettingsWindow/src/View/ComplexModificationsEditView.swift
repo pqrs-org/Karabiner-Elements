@@ -77,7 +77,9 @@ struct ComplexModificationsEditView: View {
             CodeEditor(
               source: $jsonString, language: .json,
               theme: CodeEditor.ThemeName(
-                rawValue: colorScheme == .dark ? "qtcreator_dark" : "qtcreator_light"))
+                rawValue: colorScheme == .dark ? "qtcreator_dark" : "qtcreator_light")
+            )
+            .border(Color(NSColor.textColor), width: 1)
           }
 
           Spacer()
