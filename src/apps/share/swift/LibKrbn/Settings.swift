@@ -357,6 +357,26 @@ extension LibKrbn {
       return nil
     }
 
+    public func pushFrontComplexModificationsRule(
+      _ jsonString: String
+    ) -> String? {
+      var errorMessageBuffer = [Int8](repeating: 0, count: 4 * 1024)
+      libkrbn_core_configuration_push_front_selected_profile_complex_modifications_rule(
+        libkrbnCoreConfiguration,
+        jsonString.cString(using: .utf8),
+        &errorMessageBuffer,
+        errorMessageBuffer.count
+      )
+
+      let errorMessage = String(cString: errorMessageBuffer)
+      if errorMessage != "" {
+        return errorMessage
+      }
+
+      save()
+      return nil
+    }
+
     public func moveComplexModificationsRule(_ sourceIndex: Int, _ destinationIndex: Int) {
       libkrbn_core_configuration_move_selected_profile_complex_modifications_rule(
         libkrbnCoreConfiguration,
