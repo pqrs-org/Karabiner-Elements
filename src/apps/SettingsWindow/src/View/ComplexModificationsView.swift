@@ -33,7 +33,7 @@ struct ComplexModificationsView: View {
 
             editingRule = LibKrbn.ComplexModificationsRule(
               -1,
-              "Change the following setting and press the Save button.",
+              "Edit the following setting and press the Save button.",
               String(cString: buffer)
             )
             showingEditSheet = true
