@@ -1,7 +1,7 @@
 import Foundation
 
 extension LibKrbn {
-  struct ComplexModificationsRule: Identifiable {
+  struct ComplexModificationsRule: Identifiable, Equatable {
     var id = UUID()
     var index: Int
     var description: String
@@ -15,6 +15,10 @@ extension LibKrbn {
       self.index = index
       self.description = description
       self.jsonString = jsonString
+    }
+
+    public static func == (lhs: ComplexModificationsRule, rhs: ComplexModificationsRule) -> Bool {
+      lhs.id == rhs.id
     }
   }
 }
