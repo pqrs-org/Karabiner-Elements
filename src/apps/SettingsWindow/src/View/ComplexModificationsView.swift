@@ -31,7 +31,11 @@ struct ComplexModificationsView: View {
             libkrbn_core_configuration_get_new_complex_modifications_rule_json_string(
               &buffer, buffer.count)
 
-            editingRule = LibKrbn.ComplexModificationsRule(-1, "New rule", String(cString: buffer))
+            editingRule = LibKrbn.ComplexModificationsRule(
+              -1,
+              "Change the following setting and press the Save button.",
+              String(cString: buffer)
+            )
             showingEditSheet = true
           },
           label: {
