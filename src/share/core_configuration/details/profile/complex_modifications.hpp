@@ -52,6 +52,10 @@ public:
     rules_.push_back(rule);
   }
 
+  void push_front_rule(const complex_modifications_rule& rule) {
+    rules_.insert(std::begin(rules_), rule);
+  }
+
   void replace_rule(size_t index, const complex_modifications_rule& rule) {
     if (index < rules_.size()) {
       rules_[index] = rule;
