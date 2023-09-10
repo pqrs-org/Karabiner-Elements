@@ -6,10 +6,11 @@ import AppKit
 
 @_cdecl("pqrs_osx_process_info_create_globally_unique_string")
 func pqrs_osx_process_info_create_globally_unique_string(
-  _ buffer: UnsafeMutablePointer<Int8>, _ buffer_size: Int32
+  _ buffer: UnsafeMutablePointer<Int8>,
+  _ bufferSize: Int32
 ) {
-  let _ = ProcessInfo.processInfo.globallyUniqueString.utf8CString.withUnsafeBufferPointer { ptr in
-    strlcpy(buffer, ptr.baseAddress, Int(buffer_size))
+  _ = ProcessInfo.processInfo.globallyUniqueString.utf8CString.withUnsafeBufferPointer { ptr in
+    strlcpy(buffer, ptr.baseAddress, Int(bufferSize))
   }
 }
 

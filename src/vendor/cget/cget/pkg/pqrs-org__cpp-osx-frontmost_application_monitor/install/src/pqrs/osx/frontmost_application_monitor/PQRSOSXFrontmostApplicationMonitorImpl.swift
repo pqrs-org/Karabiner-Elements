@@ -32,7 +32,14 @@ private class PQRSOSXFrontmostApplicationMonitor {
         print("Missing notification info on NSWorkspace.didActivateApplicationNotification")
         return
       }
-      let runningApplication = userInfo[NSWorkspace.applicationUserInfoKey] as! NSRunningApplication
+
+      guard
+        let runningApplication = userInfo[NSWorkspace.applicationUserInfoKey]
+          as? NSRunningApplication
+      else {
+        print("Missing runningApplication on NSWorkspace.didActivateApplicationNotification")
+        return
+      }
 
       self.queue.async { [weak self] in
         guard let self = self else { return }

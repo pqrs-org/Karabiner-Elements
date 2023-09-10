@@ -8,14 +8,14 @@ import AppKit
 func pqrs_osx_workspace_find_application_url_by_bundle_identifier(
   _ bundleIdentifierPtr: UnsafePointer<Int8>,
   _ buffer: UnsafeMutablePointer<Int8>,
-  _ buffer_size: Int32
+  _ bufferSize: Int32
 ) {
   let bundleIdentifier = String(cString: bundleIdentifierPtr)
   let urlString =
     NSWorkspace.shared.urlForApplication(withBundleIdentifier: bundleIdentifier)?.absoluteString
     ?? ""
 
-  let _ = urlString.utf8CString.withUnsafeBufferPointer { ptr in
-    strlcpy(buffer, ptr.baseAddress, Int(buffer_size))
+  _ = urlString.utf8CString.withUnsafeBufferPointer { ptr in
+    strlcpy(buffer, ptr.baseAddress, Int(bufferSize))
   }
 }
