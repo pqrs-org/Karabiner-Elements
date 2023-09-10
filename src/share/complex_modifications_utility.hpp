@@ -28,30 +28,54 @@ inline std::vector<std::string> lint_rule(const core_configuration::details::com
 }
 
 inline std::string get_new_rule_json_string(void) {
-  nlohmann::json json({{"description", "New Rule"},
-                       {"manipulators", nlohmann::json::array({nlohmann::json::object({
-                                            {
-                                                "from",
-                                                nlohmann::json::object({
-                                                    {"key_code", "REPLACE_ME"},
-                                                    {"modifiers", nlohmann::json::object({
-                                                                      {"mandatory", nlohmann::json::array({})},
-                                                                      {"optional", nlohmann::json::array({"any"})},
-                                                                  })},
-                                                }),
-                                            },
-                                            {
-                                                "to",
-                                                nlohmann::json::array({
+  nlohmann::json json({{"description", "New Rule (change left_shift+caps_lock to page_down, right_shift+caps_lock to left_command+mission_control)"},
+                       {"manipulators", nlohmann::json::array({
+                                            nlohmann::json::object({
+                                                {
+                                                    "from",
                                                     nlohmann::json::object({
-                                                        {"key_code", "REPLACE_ME"},
-                                                        {"modifiers", nlohmann::json::array({})},
+                                                        {"key_code", "caps_lock"},
+                                                        {"modifiers", nlohmann::json::object({
+                                                                          {"mandatory", nlohmann::json::array({"left_shift"})},
+                                                                          {"optional", nlohmann::json::array({"any"})},
+                                                                      })},
                                                     }),
+                                                },
+                                                {
+                                                    "to",
+                                                    nlohmann::json::array({
+                                                        nlohmann::json::object({
+                                                            {"key_code", "page_down"},
+                                                            {"modifiers", nlohmann::json::array({})},
+                                                        }),
 
-                                                }),
-                                            },
-                                            {"type", "basic"},
-                                        })})}});
+                                                    }),
+                                                },
+                                                {"type", "basic"},
+                                            }),
+                                            nlohmann::json::object({
+                                                {
+                                                    "from",
+                                                    nlohmann::json::object({
+                                                        {"key_code", "caps_lock"},
+                                                        {"modifiers", nlohmann::json::object({
+                                                                          {"mandatory", nlohmann::json::array({"right_shift"})},
+                                                                          {"optional", nlohmann::json::array({"any"})},
+                                                                      })},
+                                                    }),
+                                                },
+                                                {
+                                                    "to",
+                                                    nlohmann::json::array({
+                                                        nlohmann::json::object({
+                                                            {"apple_vendor_keyboard_key_code", "mission_control"},
+                                                            {"modifiers", nlohmann::json::array({"left_command"})},
+                                                        }),
+                                                    }),
+                                                },
+                                                {"type", "basic"},
+                                            }),
+                                        })}});
 
   return json_utility::dump(json);
 }

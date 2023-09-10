@@ -27,7 +27,7 @@ struct ComplexModificationsView: View {
 
         Button(
           action: {
-            var buffer = [Int8](repeating: 0, count: 1024)
+            var buffer = [Int8](repeating: 0, count: 32 * 1024)
             libkrbn_core_configuration_get_new_complex_modifications_rule_json_string(
               &buffer, buffer.count)
 
