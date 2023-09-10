@@ -1,10 +1,8 @@
 #pragma once
 
-#include "constants.hpp"
 #include "core_configuration/core_configuration.hpp"
 #include "json_utility.hpp"
 #include "manipulator/manipulator_factory.hpp"
-#include <pqrs/string.hpp>
 
 namespace krbn {
 namespace complex_modifications_utility {
@@ -27,6 +25,35 @@ inline std::vector<std::string> lint_rule(const core_configuration::details::com
   }
 
   return error_messages;
+}
+
+inline std::string get_new_rule_json_string(void) {
+  nlohmann::json json({{"description", "New Rule"},
+                       {"manipulators", nlohmann::json::array({nlohmann::json::object({
+                                            {
+                                                "from",
+                                                nlohmann::json::object({
+                                                    {"key_code", "REPLACE_ME"},
+                                                    {"modifiers", nlohmann::json::object({
+                                                                      {"mandatory", nlohmann::json::array({})},
+                                                                      {"optional", nlohmann::json::array({"any"})},
+                                                                  })},
+                                                }),
+                                            },
+                                            {
+                                                "to",
+                                                nlohmann::json::array({
+                                                    nlohmann::json::object({
+                                                        {"key_code", "REPLACE_ME"},
+                                                        {"modifiers", nlohmann::json::array({})},
+                                                    }),
+
+                                                }),
+                                            },
+                                            {"type", "basic"},
+                                        })})}});
+
+  return json_utility::dump(json);
 }
 }; // namespace complex_modifications_utility
 } // namespace krbn
