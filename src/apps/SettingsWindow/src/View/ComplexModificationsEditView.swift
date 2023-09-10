@@ -34,9 +34,16 @@ struct ComplexModificationsEditView: View {
 
               Button(
                 action: {
-                  errorMessage = settings.replaceComplexModificationsRule(rule!, jsonString)
-                  if errorMessage == nil {
-                    showing = false
+                  if rule!.index < 0 {
+                    errorMessage = settings.pushFrontComplexModificationsRule(jsonString)
+                    if errorMessage == nil {
+                      showing = false
+                    }
+                  } else {
+                    errorMessage = settings.replaceComplexModificationsRule(rule!, jsonString)
+                    if errorMessage == nil {
+                      showing = false
+                    }
                   }
                 },
                 label: {
@@ -80,7 +87,6 @@ struct ComplexModificationsEditView: View {
     }
     .padding()
     .frame(width: 1000, height: 600)
-
     .onAppear {
       description = rule?.description ?? ""
 

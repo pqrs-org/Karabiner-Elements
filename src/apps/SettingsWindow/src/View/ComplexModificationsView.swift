@@ -25,6 +25,19 @@ struct ComplexModificationsView: View {
             AccentColorIconLabel(title: "Add predefined rule", systemImage: "plus.circle.fill")
           })
 
+        Button(
+          action: {
+            var buffer = [Int8](repeating: 0, count: 1024)
+            libkrbn_core_configuration_get_new_complex_modifications_rule_json_string(
+              &buffer, buffer.count)
+
+            editingRule = LibKrbn.ComplexModificationsRule(-1, "New rule", String(cString: buffer))
+            showingEditSheet = true
+          },
+          label: {
+            AccentColorIconLabel(title: "Add new rule", systemImage: "pencil.circle.fill")
+          })
+
         Spacer()
 
         if settings.complexModificationsRules.count > 1 {
