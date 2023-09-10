@@ -392,6 +392,41 @@ void libkrbn_core_configuration_replace_selected_profile_complex_modifications_r
   }
 }
 
+void libkrbn_core_configuration_push_front_selected_profile_complex_modifications_rule(libkrbn_core_configuration* p,
+                                                                                       const char* json_string,
+                                                                                       char* error_message_buffer,
+                                                                                       size_t error_message_buffer_length) {
+  if (error_message_buffer_length > 0) {
+    error_message_buffer[0] = '\0';
+  }
+
+  try {
+    if (auto c = reinterpret_cast<libkrbn_core_configuration_class*>(p)) {
+      auto&& complex_modifications = c->get_core_configuration().get_selected_profile().get_complex_modifications();
+      krbn::core_configuration::details::complex_modifications_rule rule(
+          krbn::json_utility::parse_jsonc(std::string(json_string)),
+          complex_modifications.get_parameters());
+
+      auto error_messages = krbn::complex_modifications_utility::lint_rule(rule);
+      if (error_messages.size() > 0) {
+        std::ostringstream os;
+        std::copy(std::begin(error_messages),
+                  std::end(error_messages),
+                  std::ostream_iterator<std::string>(os, "\n"));
+        strlcpy(error_message_buffer,
+                pqrs::string::trim_copy(os.str()).c_str(),
+                error_message_buffer_length);
+        return;
+      }
+
+      complex_modifications.push_front_rule(rule);
+    }
+  } catch (const std::exception& e) {
+    auto message = fmt::format("error: {0}", e.what());
+    strlcpy(error_message_buffer, message.c_str(), error_message_buffer_length);
+  }
+}
+
 int libkrbn_core_configuration_get_selected_profile_complex_modifications_parameter(libkrbn_core_configuration* p,
                                                                                     const char* name) {
   if (auto c = reinterpret_cast<libkrbn_core_configuration_class*>(p)) {
@@ -412,6 +447,12 @@ void libkrbn_core_configuration_set_selected_profile_complex_modifications_param
       c->get_core_configuration().get_selected_profile().set_complex_modifications_parameter(name, value);
     }
   }
+}
+
+void libkrbn_core_configuration_get_new_complex_modifications_rule_json_string(char* buffer,
+                                                                               size_t length) {
+  auto json_string = krbn::complex_modifications_utility::get_new_rule_json_string();
+  strlcpy(buffer, json_string.c_str(), length);
 }
 
 uint8_t libkrbn_core_configuration_get_selected_profile_virtual_hid_keyboard_country_code(libkrbn_core_configuration* p) {

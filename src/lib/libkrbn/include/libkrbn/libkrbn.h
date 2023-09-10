@@ -149,6 +149,10 @@ void libkrbn_core_configuration_replace_selected_profile_complex_modifications_r
                                                                                     const char* json_string,
                                                                                     char* error_message_buffer,
                                                                                     size_t error_message_buffer_length);
+void libkrbn_core_configuration_push_front_selected_profile_complex_modifications_rule(libkrbn_core_configuration* p,
+                                                                                       const char* json_string,
+                                                                                       char* error_message_buffer,
+                                                                                       size_t error_message_buffer_length);
 void libkrbn_core_configuration_erase_selected_profile_complex_modifications_rule(libkrbn_core_configuration* p, size_t index);
 void libkrbn_core_configuration_swap_selected_profile_complex_modifications_rules(libkrbn_core_configuration* p, size_t index1, size_t index2);
 void libkrbn_core_configuration_move_selected_profile_complex_modifications_rule(libkrbn_core_configuration* p, size_t source_index, size_t destination_index);
@@ -157,6 +161,8 @@ int libkrbn_core_configuration_get_selected_profile_complex_modifications_parame
 void libkrbn_core_configuration_set_selected_profile_complex_modifications_parameter(libkrbn_core_configuration* p,
                                                                                      const char* name,
                                                                                      int value);
+void libkrbn_core_configuration_get_new_complex_modifications_rule_json_string(char* buffer,
+                                                                               size_t length);
 
 // profile::virtual_hid_device
 
