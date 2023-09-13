@@ -70,7 +70,9 @@ void run_event_queue_utility_test(void) {
                                                        pqrs::hid::usage_page::generic_desktop,
                                                        pqrs::hid::usage::generic_desktop::x));
 
-    auto queue = krbn::event_queue::utility::make_queue(krbn::device_id(1),
+    auto device_properties = krbn::device_properties(krbn::device_id(1),
+                                                     nullptr);
+    auto queue = krbn::event_queue::utility::make_queue(device_properties,
                                                         hid_values,
                                                         krbn::event_origin::grabbed_device);
     expect(queue->get_entries().size() == 8);

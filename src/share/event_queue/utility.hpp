@@ -1,5 +1,6 @@
 #pragma once
 
+#include "device_properties.hpp"
 #include "hat_switch_convert.hpp"
 #include "pressed_keys_manager.hpp"
 #include "queue.hpp"
@@ -7,7 +8,7 @@
 namespace krbn {
 namespace event_queue {
 namespace utility {
-static inline std::shared_ptr<queue> make_queue(device_id device_id,
+static inline std::shared_ptr<queue> make_queue(const device_properties& device_properties,
                                                 const std::vector<pqrs::osx::iokit_hid_value>& hid_values,
                                                 event_origin event_origin) {
   auto result = std::make_shared<queue>();
@@ -31,7 +32,7 @@ static inline std::shared_ptr<queue> make_queue(device_id device_id,
 
       event_queue::event event(pointing_motion);
 
-      result->emplace_back_entry(device_id,
+      result->emplace_back_entry(device_properties.get_device_id(),
                                  event_time_stamp(*pointing_motion_time_stamp),
                                  event,
                                  event_type::single,
@@ -53,7 +54,7 @@ static inline std::shared_ptr<queue> make_queue(device_id device_id,
 
         if (momentary_switch_event::target(*usage_page, *usage)) {
           event_queue::event event(momentary_switch_event(*usage_page, *usage));
-          result->emplace_back_entry(device_id,
+          result->emplace_back_entry(device_properties.get_device_id(),
                                      event_time_stamp(v.get_time_stamp()),
                                      event,
                                      v.get_integer_value() ? event_type::key_down : event_type::key_up,
@@ -96,11 +97,11 @@ static inline std::shared_ptr<queue> make_queue(device_id device_id,
         } else if (v.conforms_to(pqrs::hid::usage_page::generic_desktop,
                                  pqrs::hid::usage::generic_desktop::hat_switch)) {
           // Convert hat switch to dpad.
-          auto pairs = hat_switch_converter::get_global_hat_switch_converter()->to_dpad_events(device_id,
+          auto pairs = hat_switch_converter::get_global_hat_switch_converter()->to_dpad_events(device_properties.get_device_id(),
                                                                                                v.get_integer_value());
           for (const auto& pair : pairs) {
             event_queue::event event(pair.first);
-            result->emplace_back_entry(device_id,
+            result->emplace_back_entry(device_properties.get_device_id(),
                                        event_time_stamp(v.get_time_stamp()),
                                        event,
                                        pair.second,
@@ -112,19 +113,25 @@ static inline std::shared_ptr<queue> make_queue(device_id device_id,
         } else if (v.conforms_to(pqrs::hid::usage_page::generic_desktop,
                                  pqrs::hid::usage::generic_desktop::rz)) {
           // Convert vertical wheel
+          if (pointing_motion_vertical_wheel) {
+            emplace_back_pointing_motion_event();
+          }
           pointing_motion_time_stamp = v.get_time_stamp();
           pointing_motion_vertical_wheel = static_cast<int>(v.get_integer_value());
 
         } else if (v.conforms_to(pqrs::hid::usage_page::generic_desktop,
                                  pqrs::hid::usage::generic_desktop::z)) {
           // Convert horizontal wheel
+          if (pointing_motion_horizontal_wheel) {
+            emplace_back_pointing_motion_event();
+          }
           pointing_motion_time_stamp = v.get_time_stamp();
           pointing_motion_horizontal_wheel = -static_cast<int>(v.get_integer_value());
 
         } else if (v.conforms_to(pqrs::hid::usage_page::leds,
                                  pqrs::hid::usage::led::caps_lock)) {
           auto event = event_queue::event::make_caps_lock_state_changed_event(v.get_integer_value());
-          result->emplace_back_entry(device_id,
+          result->emplace_back_entry(device_properties.get_device_id(),
                                      event_time_stamp(v.get_time_stamp()),
                                      event,
                                      event_type::single,

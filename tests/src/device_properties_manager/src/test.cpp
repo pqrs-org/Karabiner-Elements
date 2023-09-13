@@ -20,8 +20,7 @@ int main(void) {
     {
       auto dp = manager.find(krbn::device_id(1));
       expect(dp.get() != nullptr);
-      expect(dp->get_device_id() != std::nullopt);
-      expect(*(dp->get_device_id()) == krbn::device_id(1));
+      expect(dp->get_device_id() == krbn::device_id(1));
     }
 
     // iokit_device_id(2)
@@ -29,8 +28,7 @@ int main(void) {
     {
       auto dp = manager.find(krbn::device_id(2));
       expect(dp.get() != nullptr);
-      expect(dp->get_device_id() != std::nullopt);
-      expect(*(dp->get_device_id()) == krbn::device_id(2));
+      expect(dp->get_device_id() == krbn::device_id(2));
     }
 
     // iokit_device_id(3)
@@ -38,8 +36,7 @@ int main(void) {
     {
       auto dp = manager.find(krbn::device_id(3));
       expect(dp.get() != nullptr);
-      expect(dp->get_device_id() != std::nullopt);
-      expect(*(dp->get_device_id()) == krbn::device_id(3));
+      expect(dp->get_device_id() == krbn::device_id(3));
     }
 
     // iokit_device_id(4)

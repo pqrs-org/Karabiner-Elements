@@ -230,7 +230,7 @@ public:
         entry->get_hid_queue_value_monitor()->values_arrived.connect([this, device_id](auto&& values_ptr) {
           auto it = entries_.find(device_id);
           if (it != std::end(entries_)) {
-            auto event_queue = event_queue::utility::make_queue(device_id,
+            auto event_queue = event_queue::utility::make_queue(it->second->get_device_properties(),
                                                                 hid_queue_values_converter_.make_hid_values(device_id,
                                                                                                             values_ptr),
                                                                 it->second->get_event_origin());
@@ -309,14 +309,13 @@ public:
                                      it->second->get_device_name());
           logger_unique_filter_.reset();
 
-          if (auto device_properties = it->second->get_device_properties()) {
-            if (device_properties->get_is_keyboard().value_or(false) &&
-                device_properties->get_is_karabiner_virtual_hid_device().value_or(false)) {
-              virtual_hid_device_service_client_->async_stop();
-              async_ungrab_devices();
+          auto device_properties = it->second->get_device_properties();
+          if (device_properties.get_is_keyboard().value_or(false) &&
+              device_properties.get_is_karabiner_virtual_hid_device().value_or(false)) {
+            virtual_hid_device_service_client_->async_stop();
+            async_ungrab_devices();
 
-              virtual_hid_device_service_client_->async_start();
-            }
+            virtual_hid_device_service_client_->async_start();
           }
 
           entries_.erase(it);
@@ -736,23 +735,19 @@ private:
     }
   }
 
-  void post_device_grabbed_event(std::shared_ptr<device_properties> device_properties) {
-    if (device_properties) {
-      if (auto device_id = device_properties->get_device_id()) {
-        auto event = event_queue::event::make_device_grabbed_event(*device_properties);
-        event_queue::entry entry(*device_id,
-                                 event_queue::event_time_stamp(pqrs::osx::chrono::mach_absolute_time_point()),
-                                 event,
-                                 event_type::single,
-                                 event,
-                                 event_origin::virtual_device,
-                                 event_queue::state::virtual_event);
+  void post_device_grabbed_event(const device_properties& device_properties) {
+    auto event = event_queue::event::make_device_grabbed_event(device_properties);
+    event_queue::entry entry(device_properties.get_device_id(),
+                             event_queue::event_time_stamp(pqrs::osx::chrono::mach_absolute_time_point()),
+                             event,
+                             event_type::single,
+                             event,
+                             event_origin::virtual_device,
+                             event_queue::state::virtual_event);
 
-        merged_input_event_queue_->push_back_entry(entry);
+    merged_input_event_queue_->push_back_entry(entry);
 
-        krbn_notification_center::get_instance().enqueue_input_event_arrived(*this);
-      }
-    }
+    krbn_notification_center::get_instance().enqueue_input_event_arrived(*this);
   }
 
   void post_device_ungrabbed_event(device_id device_id) {
@@ -945,12 +940,11 @@ private:
     //
 
     for (const auto& e : entries_) {
-      if (auto device_properties = e.second->get_device_properties()) {
-        if (e.second->get_event_origin() == event_origin::grabbed_device) {
-          if (device_properties->get_is_pointing_device().value_or(false) ||
-              device_properties->get_is_game_pad().value_or(false)) {
-            return true;
-          }
+      auto device_properties = e.second->get_device_properties();
+      if (e.second->get_event_origin() == event_origin::grabbed_device) {
+        if (device_properties.get_is_pointing_device().value_or(false) ||
+            device_properties.get_is_game_pad().value_or(false)) {
+          return true;
         }
       }
     }
@@ -1003,10 +997,8 @@ private:
   void output_devices_json(void) const {
     connected_devices::connected_devices connected_devices;
     for (const auto& e : entries_) {
-      if (auto device_properties = e.second->get_device_properties()) {
-        connected_devices::details::device d(*device_properties);
-        connected_devices.push_back_device(d);
-      }
+      connected_devices::details::device d(e.second->get_device_properties());
+      connected_devices.push_back_device(d);
     }
 
     auto file_path = constants::get_devices_json_file_path();
@@ -1016,9 +1008,7 @@ private:
   void output_device_details_json(void) const {
     std::vector<device_properties> device_details;
     for (const auto& e : entries_) {
-      if (auto device_properties = e.second->get_device_properties()) {
-        device_details.push_back(*device_properties);
-      }
+      device_details.push_back(e.second->get_device_properties());
     }
 
     std::sort(std::begin(device_details),

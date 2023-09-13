@@ -243,7 +243,7 @@ public:
     return *this;
   }
 
-  std::optional<device_id> get_device_id(void) const {
+  device_id get_device_id(void) const {
     return device_id_;
   }
 
@@ -298,7 +298,7 @@ public:
     return is_karabiner_virtual_hid_device_;
   }
 
-  std::shared_ptr<device_identifiers> get_device_identifiers(void) const {
+  const device_identifiers& get_device_identifiers(void) const {
     return device_identifiers_;
   }
 
@@ -377,7 +377,7 @@ public:
 
 private:
   void update_device_identifiers(void) {
-    device_identifiers_ = std::make_shared<device_identifiers>(
+    device_identifiers_ = device_identifiers(
         vendor_id_.value_or(pqrs::hid::vendor_id::value_t(0)),
         product_id_.value_or(pqrs::hid::product_id::value_t(0)),
         is_keyboard_.value_or(false),
@@ -402,7 +402,7 @@ private:
   std::optional<bool> is_built_in_pointing_device_;
   std::optional<bool> is_built_in_touch_bar_;
   std::optional<bool> is_karabiner_virtual_hid_device_;
-  std::shared_ptr<device_identifiers> device_identifiers_;
+  device_identifiers device_identifiers_;
 };
 
 inline void to_json(nlohmann::json& json, const device_properties& device_properties) {
@@ -417,9 +417,7 @@ struct hash<krbn::device_properties> final {
     std::size_t h = 0;
 
     // We can treat device_id_ as the unique value of device_properties.
-    if (auto device_id = value.get_device_id()) {
-      pqrs::hash::combine(h, *device_id);
-    }
+    pqrs::hash::combine(h, value.get_device_id());
 
     return h;
   }

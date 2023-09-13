@@ -58,6 +58,8 @@ public:
         auto device_id = make_device_id(registry_entry_id);
         auto device_name = iokit_utility::make_device_name_for_log(device_id,
                                                                    *device_ptr);
+        auto device_properties = krbn::device_properties(device_id,
+                                                         *device_ptr);
 
         auto hid_queue_value_monitor = std::make_shared<pqrs::osx::iokit_hid_queue_value_monitor>(weak_dispatcher_,
                                                                                                   pqrs::cf::run_loop_thread::extra::get_shared_run_loop_thread(),
@@ -66,8 +68,8 @@ public:
 
         if (iokit_utility::is_karabiner_virtual_hid_device(*device_ptr)) {
           // Handle caps_lock_state_changed event only if the hid is Karabiner-DriverKit-VirtualHIDDevice.
-          hid_queue_value_monitor->values_arrived.connect([this, device_id](auto&& values_ptr) {
-            auto event_queue = event_queue::utility::make_queue(device_id,
+          hid_queue_value_monitor->values_arrived.connect([this, device_id, device_properties](auto&& values_ptr) {
+            auto event_queue = event_queue::utility::make_queue(device_properties,
                                                                 hid_queue_values_converter_.make_hid_values(device_id,
                                                                                                             values_ptr),
                                                                 event_origin::observed_device);
@@ -82,8 +84,8 @@ public:
             }
           });
         } else {
-          hid_queue_value_monitor->values_arrived.connect([this, device_id](auto&& values_ptr) {
-            auto event_queue = event_queue::utility::make_queue(device_id,
+          hid_queue_value_monitor->values_arrived.connect([this, device_id, device_properties](auto&& values_ptr) {
+            auto event_queue = event_queue::utility::make_queue(device_properties,
                                                                 hid_queue_values_converter_.make_hid_values(device_id,
                                                                                                             values_ptr),
                                                                 event_origin::observed_device);

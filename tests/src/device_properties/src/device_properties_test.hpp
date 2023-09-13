@@ -6,9 +6,8 @@ void run_device_properties_test(void) {
   using namespace boost::ut::literals;
 
   "device_properties"_test = [] {
-    auto device_properties = krbn::device_properties(krbn::device_id(0),
+    auto device_properties = krbn::device_properties(krbn::device_id(42),
                                                      nullptr);
-    expect(device_properties.get_device_id() != std::nullopt);
-    expect(*(device_properties.get_device_id()) == krbn::device_id(0));
+    expect(device_properties.get_device_id() == krbn::device_id(42));
   };
 }

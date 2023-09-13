@@ -23,9 +23,7 @@ public:
   device(const device_properties& device_properties) {
     descriptions_ = descriptions(device_properties);
 
-    if (auto device_identifiers = device_properties.get_device_identifiers()) {
-      identifiers_ = *device_identifiers;
-    }
+    identifiers_ = device_properties.get_device_identifiers();
 
     is_built_in_keyboard_ = device_properties.get_is_built_in_keyboard().value_or(false);
 

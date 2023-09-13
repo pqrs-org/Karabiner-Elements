@@ -28,8 +28,8 @@ public:
                                                                                           event_origin_(event_origin::none),
                                                                                           grabbed_time_stamp_(0),
                                                                                           ungrabbed_time_stamp_(0) {
-    device_properties_ = std::make_shared<device_properties>(device_id,
-                                                             device);
+    device_properties_ = device_properties(device_id,
+                                           device);
 
     pressed_keys_manager_ = std::make_shared<pressed_keys_manager>();
     hid_queue_value_monitor_ = std::make_shared<pqrs::osx::iokit_hid_queue_value_monitor>(pqrs::dispatcher::extra::get_shared_dispatcher(),
@@ -70,7 +70,7 @@ public:
     control_caps_lock_led_state_manager();
   }
 
-  std::shared_ptr<device_properties> get_device_properties(void) const {
+  const device_properties& get_device_properties(void) const {
     return device_properties_;
   }
 
@@ -133,28 +133,23 @@ public:
   }
 
   bool is_disable_built_in_keyboard_if_exists(void) const {
-    if (device_properties_) {
-      if (device_properties_->get_is_built_in_keyboard() ||
-          device_properties_->get_is_built_in_pointing_device() ||
-          device_properties_->get_is_built_in_touch_bar()) {
-        return false;
-      }
-
-      if (auto c = core_configuration_.lock()) {
-        if (auto device_identifiers = device_properties_->get_device_identifiers()) {
-          return c->get_selected_profile().get_device_disable_built_in_keyboard_if_exists(
-              *device_identifiers);
-        }
-      }
+    if (device_properties_.get_is_built_in_keyboard() ||
+        device_properties_.get_is_built_in_pointing_device() ||
+        device_properties_.get_is_built_in_touch_bar()) {
+      return false;
     }
+
+    if (auto c = core_configuration_.lock()) {
+      return c->get_selected_profile().get_device_disable_built_in_keyboard_if_exists(
+          device_properties_.get_device_identifiers());
+    }
+
     return false;
   }
 
   bool determine_is_built_in_keyboard(void) const {
     if (auto c = core_configuration_.lock()) {
-      if (device_properties_) {
-        return device_utility::determine_is_built_in_keyboard(*c, *device_properties_);
-      }
+      return device_utility::determine_is_built_in_keyboard(*c, device_properties_);
     }
 
     return false;
@@ -220,13 +215,9 @@ public:
 
 private:
   bool is_ignored_device(void) const {
-    if (device_properties_) {
-      if (auto c = core_configuration_.lock()) {
-        if (auto device_identifiers = device_properties_->get_device_identifiers()) {
-          return c->get_selected_profile().get_device_ignore(
-              *device_identifiers);
-        }
-      }
+    if (auto c = core_configuration_.lock()) {
+      return c->get_selected_profile().get_device_ignore(
+          device_properties_.get_device_identifiers());
     }
 
     return false;
@@ -255,15 +246,11 @@ private:
 
   void control_caps_lock_led_state_manager(void) {
     if (caps_lock_led_state_manager_) {
-      if (device_properties_) {
-        if (auto c = core_configuration_.lock()) {
-          if (auto device_identifiers = device_properties_->get_device_identifiers()) {
-            if (c->get_selected_profile().get_device_manipulate_caps_lock_led(*device_identifiers)) {
-              if (grabbed_ && event_origin_ == event_origin::grabbed_device) {
-                caps_lock_led_state_manager_->async_start();
-                return;
-              }
-            }
+      if (auto c = core_configuration_.lock()) {
+        if (c->get_selected_profile().get_device_manipulate_caps_lock_led(device_properties_.get_device_identifiers())) {
+          if (grabbed_ && event_origin_ == event_origin::grabbed_device) {
+            caps_lock_led_state_manager_->async_start();
+            return;
           }
         }
       }
@@ -274,7 +261,7 @@ private:
 
   device_id device_id_;
   std::weak_ptr<const core_configuration::core_configuration> core_configuration_;
-  std::shared_ptr<device_properties> device_properties_;
+  device_properties device_properties_;
   std::shared_ptr<pressed_keys_manager> pressed_keys_manager_;
 
   std::shared_ptr<pqrs::osx::iokit_hid_queue_value_monitor> hid_queue_value_monitor_;
