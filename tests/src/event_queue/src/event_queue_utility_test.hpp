@@ -143,6 +143,112 @@ void run_event_queue_utility_test(void) {
     }
   };
 
+  "utility::make_queue not game_pad"_test = [] {
+    std::vector<pqrs::osx::iokit_hid_value> hid_values;
+
+    hid_values.emplace_back(pqrs::osx::iokit_hid_value(krbn::absolute_time_point(1000),
+                                                       1,
+                                                       pqrs::hid::usage_page::generic_desktop,
+                                                       pqrs::hid::usage::generic_desktop::hat_switch));
+    hid_values.emplace_back(pqrs::osx::iokit_hid_value(krbn::absolute_time_point(1001),
+                                                       -1,
+                                                       pqrs::hid::usage_page::generic_desktop,
+                                                       pqrs::hid::usage::generic_desktop::hat_switch));
+
+    hid_values.emplace_back(pqrs::osx::iokit_hid_value(krbn::absolute_time_point(2000),
+                                                       10,
+                                                       pqrs::hid::usage_page::generic_desktop,
+                                                       pqrs::hid::usage::generic_desktop::z));
+
+    hid_values.emplace_back(pqrs::osx::iokit_hid_value(krbn::absolute_time_point(3000),
+                                                       10,
+                                                       pqrs::hid::usage_page::generic_desktop,
+                                                       pqrs::hid::usage::generic_desktop::rz));
+
+    auto device_properties = krbn::device_properties(krbn::device_id(1),
+                                                     nullptr);
+    auto queue = krbn::event_queue::utility::make_queue(device_properties,
+                                                        hid_values,
+                                                        krbn::event_origin::grabbed_device);
+    expect(0_ul == queue->get_entries().size());
+  };
+
+  "utility::make_queue game_pad"_test = [] {
+    std::vector<pqrs::osx::iokit_hid_value> hid_values;
+
+    hid_values.emplace_back(pqrs::osx::iokit_hid_value(krbn::absolute_time_point(1000),
+                                                       1,
+                                                       pqrs::hid::usage_page::generic_desktop,
+                                                       pqrs::hid::usage::generic_desktop::hat_switch));
+    hid_values.emplace_back(pqrs::osx::iokit_hid_value(krbn::absolute_time_point(1001),
+                                                       -1,
+                                                       pqrs::hid::usage_page::generic_desktop,
+                                                       pqrs::hid::usage::generic_desktop::hat_switch));
+
+    hid_values.emplace_back(pqrs::osx::iokit_hid_value(krbn::absolute_time_point(2000),
+                                                       10,
+                                                       pqrs::hid::usage_page::generic_desktop,
+                                                       pqrs::hid::usage::generic_desktop::z));
+
+    hid_values.emplace_back(pqrs::osx::iokit_hid_value(krbn::absolute_time_point(3000),
+                                                       20,
+                                                       pqrs::hid::usage_page::generic_desktop,
+                                                       pqrs::hid::usage::generic_desktop::rz));
+
+    auto device_properties = krbn::device_properties(krbn::device_id(1),
+                                                     nullptr);
+    device_properties.set_is_game_pad(true);
+
+    auto queue = krbn::event_queue::utility::make_queue(device_properties,
+                                                        hid_values,
+                                                        krbn::event_origin::grabbed_device);
+    expect(5_ul == queue->get_entries().size());
+
+    {
+      auto& e = queue->get_entries()[0];
+      expect(e.get_device_id() == krbn::device_id(1));
+      expect(e.get_event_time_stamp().get_time_stamp() == krbn::absolute_time_point(1000));
+      expect(e.get_event().get_if<krbn::momentary_switch_event>()->get_usage_pair() ==
+             pqrs::hid::usage_pair(pqrs::hid::usage_page::generic_desktop,
+                                   pqrs::hid::usage::generic_desktop::dpad_up));
+      expect(e.get_event_type() == krbn::event_type::key_down);
+    }
+    {
+      auto& e = queue->get_entries()[1];
+      expect(e.get_device_id() == krbn::device_id(1));
+      expect(e.get_event_time_stamp().get_time_stamp() == krbn::absolute_time_point(1000));
+      expect(e.get_event().get_if<krbn::momentary_switch_event>()->get_usage_pair() ==
+             pqrs::hid::usage_pair(pqrs::hid::usage_page::generic_desktop,
+                                   pqrs::hid::usage::generic_desktop::dpad_right));
+      expect(e.get_event_type() == krbn::event_type::key_down);
+    }
+    {
+      auto& e = queue->get_entries()[2];
+      expect(e.get_device_id() == krbn::device_id(1));
+      expect(e.get_event_time_stamp().get_time_stamp() == krbn::absolute_time_point(1001));
+      expect(e.get_event().get_if<krbn::momentary_switch_event>()->get_usage_pair() ==
+             pqrs::hid::usage_pair(pqrs::hid::usage_page::generic_desktop,
+                                   pqrs::hid::usage::generic_desktop::dpad_up));
+      expect(e.get_event_type() == krbn::event_type::key_up);
+    }
+    {
+      auto& e = queue->get_entries()[3];
+      expect(e.get_device_id() == krbn::device_id(1));
+      expect(e.get_event_time_stamp().get_time_stamp() == krbn::absolute_time_point(1001));
+      expect(e.get_event().get_if<krbn::momentary_switch_event>()->get_usage_pair() ==
+             pqrs::hid::usage_pair(pqrs::hid::usage_page::generic_desktop,
+                                   pqrs::hid::usage::generic_desktop::dpad_right));
+      expect(e.get_event_type() == krbn::event_type::key_up);
+    }
+    {
+      auto& e = queue->get_entries()[4];
+      expect(e.get_device_id() == krbn::device_id(1));
+      expect(e.get_event_time_stamp().get_time_stamp() == krbn::absolute_time_point(3000));
+      expect(e.get_event().get_pointing_motion() == krbn::pointing_motion(0, 0, 20, -10));
+      expect(e.get_event_type() == krbn::event_type::single);
+    }
+  };
+
   "utility::insert_device_keys_and_pointing_buttons_are_released_event"_test = [] {
     krbn::event_queue::event a_event(
         krbn::momentary_switch_event(pqrs::hid::usage_page::keyboard_or_keypad,

@@ -94,40 +94,6 @@ static inline std::shared_ptr<queue> make_queue(const device_properties& device_
           pointing_motion_time_stamp = v.get_time_stamp();
           pointing_motion_horizontal_wheel = static_cast<int>(v.get_integer_value());
 
-        } else if (v.conforms_to(pqrs::hid::usage_page::generic_desktop,
-                                 pqrs::hid::usage::generic_desktop::hat_switch)) {
-          // Convert hat switch to dpad.
-          auto pairs = hat_switch_converter::get_global_hat_switch_converter()->to_dpad_events(device_properties.get_device_id(),
-                                                                                               v.get_integer_value());
-          for (const auto& pair : pairs) {
-            event_queue::event event(pair.first);
-            result->emplace_back_entry(device_properties.get_device_id(),
-                                       event_time_stamp(v.get_time_stamp()),
-                                       event,
-                                       pair.second,
-                                       event,
-                                       event_origin,
-                                       state::original);
-          }
-
-        } else if (v.conforms_to(pqrs::hid::usage_page::generic_desktop,
-                                 pqrs::hid::usage::generic_desktop::rz)) {
-          // Convert vertical wheel
-          if (pointing_motion_vertical_wheel) {
-            emplace_back_pointing_motion_event();
-          }
-          pointing_motion_time_stamp = v.get_time_stamp();
-          pointing_motion_vertical_wheel = static_cast<int>(v.get_integer_value());
-
-        } else if (v.conforms_to(pqrs::hid::usage_page::generic_desktop,
-                                 pqrs::hid::usage::generic_desktop::z)) {
-          // Convert horizontal wheel
-          if (pointing_motion_horizontal_wheel) {
-            emplace_back_pointing_motion_event();
-          }
-          pointing_motion_time_stamp = v.get_time_stamp();
-          pointing_motion_horizontal_wheel = -static_cast<int>(v.get_integer_value());
-
         } else if (v.conforms_to(pqrs::hid::usage_page::leds,
                                  pqrs::hid::usage::led::caps_lock)) {
           auto event = event_queue::event::make_caps_lock_state_changed_event(v.get_integer_value());
@@ -138,6 +104,44 @@ static inline std::shared_ptr<queue> make_queue(const device_properties& device_
                                      event,
                                      event_origin,
                                      state::virtual_event);
+
+        } else if (auto is_game_pad = device_properties.get_is_game_pad()) {
+          if (*is_game_pad) {
+            if (v.conforms_to(pqrs::hid::usage_page::generic_desktop,
+                              pqrs::hid::usage::generic_desktop::hat_switch)) {
+              // Convert hat switch to dpad.
+              auto pairs = hat_switch_converter::get_global_hat_switch_converter()->to_dpad_events(device_properties.get_device_id(),
+                                                                                                   v.get_integer_value());
+              for (const auto& pair : pairs) {
+                event_queue::event event(pair.first);
+                result->emplace_back_entry(device_properties.get_device_id(),
+                                           event_time_stamp(v.get_time_stamp()),
+                                           event,
+                                           pair.second,
+                                           event,
+                                           event_origin,
+                                           state::original);
+              }
+
+            } else if (v.conforms_to(pqrs::hid::usage_page::generic_desktop,
+                                     pqrs::hid::usage::generic_desktop::rz)) {
+              // Convert vertical wheel
+              if (pointing_motion_vertical_wheel) {
+                emplace_back_pointing_motion_event();
+              }
+              pointing_motion_time_stamp = v.get_time_stamp();
+              pointing_motion_vertical_wheel = static_cast<int>(v.get_integer_value());
+
+            } else if (v.conforms_to(pqrs::hid::usage_page::generic_desktop,
+                                     pqrs::hid::usage::generic_desktop::z)) {
+              // Convert horizontal wheel
+              if (pointing_motion_horizontal_wheel) {
+                emplace_back_pointing_motion_event();
+              }
+              pointing_motion_time_stamp = v.get_time_stamp();
+              pointing_motion_horizontal_wheel = -static_cast<int>(v.get_integer_value());
+            }
+          }
         }
       }
     }
