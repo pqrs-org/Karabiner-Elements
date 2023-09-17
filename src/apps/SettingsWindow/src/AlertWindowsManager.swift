@@ -6,26 +6,26 @@ public class AlertWindowsManager {
   static let shared = AlertWindowsManager()
 
   var parentWindow: NSWindow?
-  var driverNotLoadedAlertWindow: NSWindow?
-  var driverVersionNotMatchedAlertWindow: NSWindow?
+  var driverNotActivatedAlertWindow: NSWindow?
+  var driverVersionMismatchedAlertWindow: NSWindow?
   var inputMonitoringPermissionsAlertWindow: NSWindow?
 
   //
-  // driverNotLoadedAlertWindow
+  // driverNotActivatedAlertWindow
   //
 
-  public func showDriverNotLoadedAlertWindow() {
+  public func showDriverNotActivatedAlertWindow() {
     if let parentWindow = parentWindow {
-      if driverNotLoadedAlertWindow == nil {
-        let view = DriverNotLoadedAlertView(
+      if driverNotActivatedAlertWindow == nil {
+        let view = DriverNotActivatedAlertView(
           parentWindow: parentWindow,
           onCloseButtonPressed: { [weak self] in
             guard let self = self else { return }
 
-            self.hideDriverNotLoadedAlertWindow()
+            self.hideDriverNotActivatedAlertWindow()
           })
 
-        driverNotLoadedAlertWindow = NSPanel(
+        driverNotActivatedAlertWindow = NSPanel(
           contentRect: .zero,
           styleMask: [
             .titled,
@@ -35,39 +35,39 @@ public class AlertWindowsManager {
           backing: .buffered,
           defer: false
         )
-        driverNotLoadedAlertWindow!.contentView = NSHostingView(rootView: view)
+        driverNotActivatedAlertWindow!.contentView = NSHostingView(rootView: view)
 
-        parentWindow.beginSheet(driverNotLoadedAlertWindow!) { [weak self] _ in
+        parentWindow.beginSheet(driverNotActivatedAlertWindow!) { [weak self] _ in
           guard let self = self else { return }
 
-          self.driverNotLoadedAlertWindow = nil
+          self.driverNotActivatedAlertWindow = nil
         }
       }
     }
   }
 
-  public func hideDriverNotLoadedAlertWindow() {
+  public func hideDriverNotActivatedAlertWindow() {
     if let parentWindow = parentWindow {
-      if driverNotLoadedAlertWindow != nil {
-        parentWindow.endSheet(driverNotLoadedAlertWindow!)
+      if driverNotActivatedAlertWindow != nil {
+        parentWindow.endSheet(driverNotActivatedAlertWindow!)
       }
     }
   }
 
   //
-  // driverVersionNotMatchedAlertWindow
+  // driverVersionMismatchedAlertWindow
   //
 
-  public func showDriverVersionNotMatchedAlertWindow() {
+  public func showDriverVersionMismatchedAlertWindow() {
     if let parentWindow = parentWindow {
-      if driverVersionNotMatchedAlertWindow == nil {
-        let view = DriverVersionNotMatchedAlertView(onCloseButtonPressed: { [weak self] in
+      if driverVersionMismatchedAlertWindow == nil {
+        let view = DriverVersionMismatchedAlertView(onCloseButtonPressed: { [weak self] in
           guard let self = self else { return }
 
-          self.hideDriverVersionNotMatchedAlertWindow()
+          self.hideDriverVersionMismatchedAlertWindow()
         })
 
-        driverVersionNotMatchedAlertWindow = NSPanel(
+        driverVersionMismatchedAlertWindow = NSPanel(
           contentRect: .zero,
           styleMask: [
             .titled,
@@ -77,21 +77,21 @@ public class AlertWindowsManager {
           backing: .buffered,
           defer: false
         )
-        driverVersionNotMatchedAlertWindow!.contentView = NSHostingView(rootView: view)
+        driverVersionMismatchedAlertWindow!.contentView = NSHostingView(rootView: view)
 
-        parentWindow.beginSheet(driverVersionNotMatchedAlertWindow!) { [weak self] _ in
+        parentWindow.beginSheet(driverVersionMismatchedAlertWindow!) { [weak self] _ in
           guard let self = self else { return }
 
-          self.driverVersionNotMatchedAlertWindow = nil
+          self.driverVersionMismatchedAlertWindow = nil
         }
       }
     }
   }
 
-  public func hideDriverVersionNotMatchedAlertWindow() {
+  public func hideDriverVersionMismatchedAlertWindow() {
     if let parentWindow = parentWindow {
-      if driverVersionNotMatchedAlertWindow != nil {
-        parentWindow.endSheet(driverVersionNotMatchedAlertWindow!)
+      if driverVersionMismatchedAlertWindow != nil {
+        parentWindow.endSheet(driverVersionMismatchedAlertWindow!)
       }
     }
   }

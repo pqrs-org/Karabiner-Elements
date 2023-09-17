@@ -15,8 +15,8 @@ private func callback(
 }
 
 private struct State: Codable {
-  var driverLoaded: Bool?
-  var driverVersionMatched: Bool?
+  var driverActivated: Bool?
+  var driverVersionMismatched: Bool?
   var hidDeviceOpenPermitted: Bool?
 }
 
@@ -25,8 +25,8 @@ public class StateJsonMonitor {
 
   private var states: [String: State] = [:]
 
-  public var needsDriverNotLoadedAlert = false
-  public var needsDriverVersionNotMatchedAlert = false
+  public var needsDriverNotActivatedAlert = false
+  public var needsDriverVersionMismatchedAlert = false
   public var needsInputMonitoringPermissionsAlert = false
 
   public func start() {
@@ -53,49 +53,49 @@ public class StateJsonMonitor {
     // Show alerts
     //
 
-    var driverNotLoaded = false
-    var driverVersionNotMatched = false
+    var driverNotActivated = false
+    var driverVersionMismatched = false
     var inputMonitoringNotPermitted = false
     for state in states {
-      if state.value.driverLoaded == false {
-        driverNotLoaded = true
+      if state.value.driverActivated == false {
+        driverNotActivated = true
       }
-      if state.value.driverVersionMatched == false {
-        driverVersionNotMatched = true
+      if state.value.driverVersionMismatched == true {
+        driverVersionMismatched = true
       }
       if state.value.hidDeviceOpenPermitted == false {
         inputMonitoringNotPermitted = true
       }
     }
 
-    // print("driverNotLoaded \(driverNotLoaded)")
-    // print("driverVersionNotMatched \(driverVersionNotMatched)")
+    // print("driverNotActivated \(driverNotActivated)")
+    // print("driverVersionMismatched \(driverVersionMismatched)")
     // print("inputMonitoringNotPermitted \(inputMonitoringNotPermitted)")
 
     //
-    // - DriverNotLoadedAlertWindow
-    // - DriverVersionNotMatchedAlertWindow
+    // - DriverNotActivatedAlertWindow
+    // - DriverVersionMismatchedAlertWindow
     //
 
-    if needsDriverVersionNotMatchedAlert {
-      // If DriverVersionNotMatchedAlertWindow is shown,
-      // keep needsDriverNotLoadedAlert to prevent showing DriverNotLoadedAlertWindow after the driver is deactivated.
+    if needsDriverVersionMismatchedAlert {
+      // If DriverVersionMismatchedAlertWindow is shown,
+      // keep needsDriverNotActivatedAlert to prevent showing DriverNotActivatedAlertWindow after the driver is deactivated.
 
-      if !driverVersionNotMatched {
-        needsDriverVersionNotMatchedAlert = false
+      if !driverVersionMismatched {
+        needsDriverVersionMismatchedAlert = false
       }
 
     } else {
-      if driverNotLoaded {
-        needsDriverNotLoadedAlert = true
-        needsDriverVersionNotMatchedAlert = false
+      if driverNotActivated {
+        needsDriverNotActivatedAlert = true
+        needsDriverVersionMismatchedAlert = false
       } else {
-        needsDriverNotLoadedAlert = false
+        needsDriverNotActivatedAlert = false
 
-        if driverVersionNotMatched {
-          needsDriverVersionNotMatchedAlert = true
+        if driverVersionMismatched {
+          needsDriverVersionMismatchedAlert = true
         } else {
-          needsDriverVersionNotMatchedAlert = false
+          needsDriverVersionMismatchedAlert = false
         }
       }
     }
@@ -110,8 +110,8 @@ public class StateJsonMonitor {
       needsInputMonitoringPermissionsAlert = false
     }
 
-    print("needsDriverNotLoadedAlert \(needsDriverNotLoadedAlert)")
-    print("needsDriverVersionNotMatchedAlert \(needsDriverVersionNotMatchedAlert)")
+    print("needsDriverNotActivatedAlert \(needsDriverNotActivatedAlert)")
+    print("needsDriverVersionMismatchedAlert \(needsDriverVersionMismatchedAlert)")
     print("needsInputMonitoringPermissionsAlert \(needsInputMonitoringPermissionsAlert)")
 
     //
@@ -119,14 +119,14 @@ public class StateJsonMonitor {
     //
 
     updateAlertWindow(
-      needsAlert: { return StateJsonMonitor.shared.needsDriverNotLoadedAlert },
-      show: { AlertWindowsManager.shared.showDriverNotLoadedAlertWindow() },
-      hide: { AlertWindowsManager.shared.hideDriverNotLoadedAlertWindow() })
+      needsAlert: { return StateJsonMonitor.shared.needsDriverNotActivatedAlert },
+      show: { AlertWindowsManager.shared.showDriverNotActivatedAlertWindow() },
+      hide: { AlertWindowsManager.shared.hideDriverNotActivatedAlertWindow() })
 
     updateAlertWindow(
-      needsAlert: { return StateJsonMonitor.shared.needsDriverVersionNotMatchedAlert },
-      show: { AlertWindowsManager.shared.showDriverVersionNotMatchedAlertWindow() },
-      hide: { AlertWindowsManager.shared.hideDriverVersionNotMatchedAlertWindow() })
+      needsAlert: { return StateJsonMonitor.shared.needsDriverVersionMismatchedAlert },
+      show: { AlertWindowsManager.shared.showDriverVersionMismatchedAlertWindow() },
+      hide: { AlertWindowsManager.shared.hideDriverVersionMismatchedAlertWindow() })
 
     updateAlertWindow(
       needsAlert: { return StateJsonMonitor.shared.needsInputMonitoringPermissionsAlert },
@@ -139,18 +139,12 @@ public class StateJsonMonitor {
     show: @escaping () -> Void,
     hide: @escaping () -> Void
   ) {
-    // Note:
-    // Delay before displaying the alert to avoid the alert appearing momentarily.
-    // (e.g, when karabiner_grabbedr is restarted)
-
-    if needsAlert() {
-      DispatchQueue.main.asyncAfter(deadline: .now() + 3) {
-        if needsAlert() {
-          show()
-        }
+    Task { @MainActor in
+      if needsAlert() {
+        show()
+      } else {
+        hide()
       }
-    } else {
-      hide()
     }
   }
 }

@@ -1,6 +1,6 @@
 import SwiftUI
 
-struct DriverVersionNotMatchedAlertView: View {
+struct DriverVersionMismatchedAlertView: View {
   let onCloseButtonPressed: () -> Void
 
   var body: some View {
@@ -43,10 +43,10 @@ struct DriverVersionNotMatchedAlertView: View {
   }
 }
 
-struct DriverVersionNotMatchedAlertView_Previews: PreviewProvider {
+struct DriverVersionMismatchedAlertView_Previews: PreviewProvider {
   static var previews: some View {
     Group {
-      DriverVersionNotMatchedAlertView(onCloseButtonPressed: {})
+      DriverVersionMismatchedAlertView(onCloseButtonPressed: {})
         .previewLayout(.sizeThatFits)
     }
   }

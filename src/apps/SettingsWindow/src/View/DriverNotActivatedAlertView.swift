@@ -1,6 +1,6 @@
 import SwiftUI
 
-struct DriverNotLoadedAlertView: View {
+struct DriverNotActivatedAlertView: View {
   let parentWindow: NSWindow?
   let onCloseButtonPressed: () -> Void
 
@@ -110,10 +110,10 @@ struct DriverNotLoadedAlertView: View {
   }
 }
 
-struct DriverNotLoadedAlertView_Previews: PreviewProvider {
+struct DriverNotActivatedAlertView_Previews: PreviewProvider {
   static var previews: some View {
     Group {
-      DriverNotLoadedAlertView(
+      DriverNotActivatedAlertView(
         parentWindow: nil,
         onCloseButtonPressed: {}
       )
