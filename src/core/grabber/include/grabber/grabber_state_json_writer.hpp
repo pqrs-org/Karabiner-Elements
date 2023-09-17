@@ -12,7 +12,8 @@ class grabber_state_json_writer final {
 public:
   grabber_state_json_writer(void) : state_json_writer_(constants::get_grabber_state_json_file_path()) {
     set_hid_device_open_permitted(std::nullopt);
-    set_driver_loaded(std::nullopt);
+    set_driver_activated(std::nullopt);
+    set_driver_connected(std::nullopt);
     set_driver_version_mismatched(std::nullopt);
   }
 
@@ -20,8 +21,12 @@ public:
     state_json_writer_.set("hid_device_open_permitted", value);
   }
 
-  void set_driver_loaded(std::optional<bool> value) {
-    state_json_writer_.set("driver_loaded", value);
+  void set_driver_activated(std::optional<bool> value) {
+    state_json_writer_.set("driver_activated", value);
+  }
+
+  void set_driver_connected(std::optional<bool> value) {
+    state_json_writer_.set("driver_connected", value);
   }
 
   void set_driver_version_mismatched(std::optional<bool> value) {

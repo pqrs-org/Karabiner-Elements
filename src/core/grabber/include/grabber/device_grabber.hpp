@@ -102,9 +102,15 @@ public:
       logger::get_logger()->info("virtual_hid_device_service_client_ error_occurred: {0}", error_code.message());
     });
 
-    virtual_hid_device_service_client_->driver_loaded.connect([weak_grabber_state_json_writer](auto&& driver_loaded) {
+    virtual_hid_device_service_client_->driver_activated.connect([weak_grabber_state_json_writer](auto&& driver_activated) {
       if (auto writer = weak_grabber_state_json_writer.lock()) {
-        writer->set_driver_loaded(driver_loaded);
+        writer->set_driver_activated(driver_activated);
+      }
+    });
+
+    virtual_hid_device_service_client_->driver_connected.connect([weak_grabber_state_json_writer](auto&& driver_connected) {
+      if (auto writer = weak_grabber_state_json_writer.lock()) {
+        writer->set_driver_connected(driver_connected);
       }
     });
 
