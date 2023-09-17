@@ -102,19 +102,19 @@ public:
       logger::get_logger()->info("virtual_hid_device_service_client_ error_occurred: {0}", error_code.message());
     });
 
-    virtual_hid_device_service_client_->driver_loaded_response.connect([weak_grabber_state_json_writer](auto&& driver_loaded) {
+    virtual_hid_device_service_client_->driver_loaded.connect([weak_grabber_state_json_writer](auto&& driver_loaded) {
       if (auto writer = weak_grabber_state_json_writer.lock()) {
         writer->set_driver_loaded(driver_loaded);
       }
     });
 
-    virtual_hid_device_service_client_->driver_version_matched_response.connect([weak_grabber_state_json_writer](auto&& driver_version_matched) {
+    virtual_hid_device_service_client_->driver_version_mismatched.connect([weak_grabber_state_json_writer](auto&& driver_version_mismatched) {
       if (auto writer = weak_grabber_state_json_writer.lock()) {
-        writer->set_driver_version_matched(driver_version_matched);
+        writer->set_driver_version_mismatched(driver_version_mismatched);
       }
     });
 
-    virtual_hid_device_service_client_->virtual_hid_keyboard_ready_response.connect([this](auto&& ready) {
+    virtual_hid_device_service_client_->virtual_hid_keyboard_ready.connect([this](auto&& ready) {
       if (virtual_hid_devices_state_.get_virtual_hid_keyboard_ready() != ready) {
         logger::get_logger()->info("virtual_hid_device_service_client_ virtual_hid_keyboard_ready_response: {0}", ready);
 
@@ -133,7 +133,7 @@ public:
       }
     });
 
-    virtual_hid_device_service_client_->virtual_hid_pointing_ready_response.connect([this](auto&& ready) {
+    virtual_hid_device_service_client_->virtual_hid_pointing_ready.connect([this](auto&& ready) {
       if (virtual_hid_devices_state_.get_virtual_hid_pointing_ready() != ready) {
         logger::get_logger()->info("virtual_hid_device_service_client_ virtual_hid_pointing_ready_response: {0}", ready);
 
