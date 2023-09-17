@@ -11,7 +11,7 @@ class VirtualHIDDeviceManager {
 
   func activateDriver(completion: @escaping (Int32) -> Void) {
     run(
-      argument: "activate",
+      argument: "forceActivate",
       completion: completion)
   }
 

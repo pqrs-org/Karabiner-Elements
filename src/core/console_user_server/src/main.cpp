@@ -66,7 +66,7 @@ int main(int argc, const char* argv[]) {
   // Activate driver
   //
 
-  system("/Applications/.Karabiner-VirtualHIDDevice-Manager.app/Contents/MacOS/Karabiner-VirtualHIDDevice-Manager activate &");
+  system("/Applications/.Karabiner-VirtualHIDDevice-Manager.app/Contents/MacOS/Karabiner-VirtualHIDDevice-Manager forceActivate &");
 
   //
   // Create directories
