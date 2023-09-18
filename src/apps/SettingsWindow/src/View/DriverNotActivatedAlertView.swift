@@ -92,6 +92,7 @@ struct DriverNotActivatedAlertView: View {
           }
         }
       }
+      .padding()
       .frame(width: 850)
 
       SheetCloseButton {
