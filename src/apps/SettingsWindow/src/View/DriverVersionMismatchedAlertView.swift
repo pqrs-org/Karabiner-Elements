@@ -1,36 +1,62 @@
 import SwiftUI
 
 struct DriverVersionMismatchedAlertView: View {
+  @State private var showingAdvanced = false
+
   var body: some View {
     ZStack(alignment: .topLeading) {
       VStack(alignment: .leading, spacing: 20.0) {
         Label(
-          "Driver Alert",
-          systemImage: "exclamationmark.triangle"
+          "macOS restart required",
+          systemImage: "lightbulb"
         )
         .font(.system(size: 24))
 
-        Text(
-          "The current virtual keyboard and mouse driver is outdated.\nPlease deactivate driver and restart macOS to upgrade the driver."
-        )
-        .fixedSize(horizontal: false, vertical: true)
-
-        Text("How to upgrade the driver:")
-
-        VStack(alignment: .leading, spacing: 10.0) {
+        VStack(alignment: .leading, spacing: 0) {
           Text(
-            "1. Press the following button to deactivate driver.\n(The administrator password will be required.)"
+            "The current virtual keyboard and mouse driver is outdated."
           )
-          .fixedSize(horizontal: false, vertical: true)
 
-          DeactivateDriverButton()
-            .padding(.vertical, 10)
-            .padding(.leading, 20)
+          Text(
+            "Please restart macOS to upgrade the driver."
+          )
+          .fontWeight(.bold)
+        }
 
-          Text("2. Restart macOS.")
-            .fontWeight(.bold)
+        if !showingAdvanced {
+          Button(
+            action: { showingAdvanced = true },
+            label: {
+              Label(
+                "If this message still appears after restarting macOS.",
+                systemImage: "questionmark.circle")
+            }
+          )
+        }
 
-          Text("3. Activate the driver after restarting macOS.")
+        if showingAdvanced {
+          GroupBox(label: Text("Advanced")) {
+            VStack(alignment: .leading, spacing: 10.0) {
+              Text(
+                "If you continue to get this message after restarting macOS, try deactivating the virtual driver once by the following steps."
+              )
+
+              VStack(alignment: .leading, spacing: 10.0) {
+                Text(
+                  "1. Press the following button to deactivate driver.\n(The administrator password will be required.)"
+                )
+                .fixedSize(horizontal: false, vertical: true)
+
+                DeactivateDriverButton()
+                  .padding(.vertical, 10)
+                  .padding(.leading, 20)
+
+                Text("2. Restart macOS.")
+                  .fontWeight(.bold)
+              }
+            }
+            .padding()
+          }
         }
       }
       .padding()

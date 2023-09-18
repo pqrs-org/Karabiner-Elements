@@ -36,13 +36,15 @@ struct DriverNotActivatedAlertView: View {
                 .frame(height: 300)
                 .border(Color.gray, width: 1)
 
-              Button(
-                action: { showingAdvanced = true },
-                label: {
-                  Label(
-                    "If the Allow button is not displayed on Privacy & Security.",
-                    systemImage: "questionmark.circle")
-                })
+              if !showingAdvanced {
+                Button(
+                  action: { showingAdvanced = true },
+                  label: {
+                    Label(
+                      "If the Allow button is not displayed on Privacy & Security.",
+                      systemImage: "questionmark.circle")
+                  })
+              }
             }.padding()
           }.frame(width: showingAdvanced ? 400 : 800)
 
