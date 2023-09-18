@@ -8,38 +8,40 @@ class InputMonitoringAlertData: ObservableObject {
 
 struct InputMonitoringAlertView: View {
   var body: some View {
-    VStack(alignment: .center, spacing: 20.0) {
-      Label(
-        "Please allow Karabiner-EventViewer to monitor input events",
-        systemImage: "lightbulb"
-      )
-      .font(.system(size: 24))
+    ZStack(alignment: .topLeading) {
+      VStack(alignment: .center, spacing: 20.0) {
+        Label(
+          "Please allow Karabiner-EventViewer to monitor input events",
+          systemImage: "lightbulb"
+        )
+        .font(.system(size: 24))
 
-      VStack(spacing: 0) {
-        Text("Karabiner-EventViewer requires Input Monitoring permission to show input events.")
-        Text("Please allow on Privacy & Security System Settings.")
+        VStack(spacing: 0) {
+          Text("Karabiner-EventViewer requires Input Monitoring permission to show input events.")
+          Text("Please allow on Privacy & Security System Settings.")
+        }
+
+        Button(
+          action: { openSystemSettingsSecurity() },
+          label: {
+            Label(
+              "Open Privacy & Security System Settings...",
+              systemImage: "arrow.forward.circle.fill")
+          })
+
+        Image(decorative: "input_monitoring")
+          .resizable()
+          .aspectRatio(contentMode: .fit)
+          .frame(height: 300.0)
+          .border(Color.gray, width: 1)
       }
-
-      Button(
-        action: { openSystemSettingsSecurity() },
-        label: {
-          Label(
-            "Open Privacy & Security System Settings...",
-            systemImage: "arrow.forward.circle.fill")
-        })
-
-      Image(decorative: "input_monitoring")
-        .resizable()
-        .aspectRatio(contentMode: .fit)
-        .frame(height: 300.0)
-        .border(Color.gray, width: 1)
+      .padding()
+      .frame(width: 800)
 
       SheetCloseButton {
         InputMonitoringAlertData.shared.showing = false
       }
     }
-    .frame(width: 800)
-    .padding()
   }
 
   func openSystemSettingsSecurity() {
