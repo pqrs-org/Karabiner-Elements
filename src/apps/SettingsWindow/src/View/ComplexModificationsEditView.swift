@@ -18,7 +18,8 @@ struct ComplexModificationsEditView: View {
           VStack(alignment: .leading, spacing: 12.0) {
             HStack(alignment: .center) {
               Text(description)
-                .padding(.leading, 40)
+                .padding(.leading, 32)
+                .font(.system(size: 24))
 
               Spacer()
 
