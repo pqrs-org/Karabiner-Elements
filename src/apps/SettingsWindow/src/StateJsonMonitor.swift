@@ -25,10 +25,6 @@ public class StateJsonMonitor {
 
   private var states: [String: State] = [:]
 
-  public var needsDriverNotActivatedAlert = false
-  public var needsDriverVersionMismatchedAlert = false
-  public var needsInputMonitoringPermissionsAlert = false
-
   public func start() {
     let obj = unsafeBitCast(self, to: UnsafeMutableRawPointer.self)
     libkrbn_enable_observer_state_json_file_monitor(callback, obj)
@@ -72,79 +68,44 @@ public class StateJsonMonitor {
     // print("driverVersionMismatched \(driverVersionMismatched)")
     // print("inputMonitoringNotPermitted \(inputMonitoringNotPermitted)")
 
+    let contentViewStates = ContentViewStates.shared
+
     //
-    // - DriverNotActivatedAlertWindow
-    // - DriverVersionMismatchedAlertWindow
+    // - DriverNotActivatedAlert
+    // - DriverVersionMismatchedAlert
     //
 
-    if needsDriverVersionMismatchedAlert {
-      // If DriverVersionMismatchedAlertWindow is shown,
-      // keep needsDriverNotActivatedAlert to prevent showing DriverNotActivatedAlertWindow after the driver is deactivated.
+    if contentViewStates.showDriverVersionMismatchedAlert {
+      // If diverVersionMismatchedAlert is shown,
+      // keep needsDriverNotActivatedAlert to prevent showing DriverNotActivatedAlert after the driver is deactivated.
 
       if !driverVersionMismatched {
-        needsDriverVersionMismatchedAlert = false
+        contentViewStates.showDriverVersionMismatchedAlert = false
       }
 
     } else {
       if driverNotActivated {
-        needsDriverNotActivatedAlert = true
-        needsDriverVersionMismatchedAlert = false
+        contentViewStates.showDriverNotActivatedAlert = true
+        contentViewStates.showDriverVersionMismatchedAlert = false
       } else {
-        needsDriverNotActivatedAlert = false
+        contentViewStates.showDriverNotActivatedAlert = false
 
         if driverVersionMismatched {
-          needsDriverVersionMismatchedAlert = true
+          contentViewStates.showDriverVersionMismatchedAlert = true
         } else {
-          needsDriverVersionMismatchedAlert = false
+          contentViewStates.showDriverVersionMismatchedAlert = false
         }
       }
     }
 
     //
-    // - InputMonitoringPermissionsAlertWindow
+    // - InputMonitoringPermissionsAlert
     //
 
     if inputMonitoringNotPermitted {
-      needsInputMonitoringPermissionsAlert = true
+      contentViewStates.showInputMonitoringPermissionsAlert = true
     } else {
-      needsInputMonitoringPermissionsAlert = false
-    }
-
-    print("needsDriverNotActivatedAlert \(needsDriverNotActivatedAlert)")
-    print("needsDriverVersionMismatchedAlert \(needsDriverVersionMismatchedAlert)")
-    print("needsInputMonitoringPermissionsAlert \(needsInputMonitoringPermissionsAlert)")
-
-    //
-    // Update alert window
-    //
-
-    updateAlertWindow(
-      needsAlert: { return StateJsonMonitor.shared.needsDriverNotActivatedAlert },
-      show: { AlertWindowsManager.shared.showDriverNotActivatedAlertWindow() },
-      hide: { AlertWindowsManager.shared.hideDriverNotActivatedAlertWindow() })
-
-    updateAlertWindow(
-      needsAlert: { return StateJsonMonitor.shared.needsDriverVersionMismatchedAlert },
-      show: { AlertWindowsManager.shared.showDriverVersionMismatchedAlertWindow() },
-      hide: { AlertWindowsManager.shared.hideDriverVersionMismatchedAlertWindow() })
-
-    updateAlertWindow(
-      needsAlert: { return StateJsonMonitor.shared.needsInputMonitoringPermissionsAlert },
-      show: { AlertWindowsManager.shared.showInputMonitoringPermissionsAlertWindow() },
-      hide: { AlertWindowsManager.shared.hideInputMonitoringPermissionsAlertWindow() })
-  }
-
-  private func updateAlertWindow(
-    needsAlert: @escaping () -> Bool,
-    show: @escaping () -> Void,
-    hide: @escaping () -> Void
-  ) {
-    Task { @MainActor in
-      if needsAlert() {
-        show()
-      } else {
-        hide()
-      }
+      contentViewStates.showInputMonitoringPermissionsAlert = false
     }
   }
 }

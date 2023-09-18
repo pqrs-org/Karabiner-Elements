@@ -1,8 +1,6 @@
 import SwiftUI
 
 struct DriverVersionMismatchedAlertView: View {
-  let onCloseButtonPressed: () -> Void
-
   var body: some View {
     ZStack(alignment: .topLeading) {
       VStack(alignment: .leading, spacing: 20.0) {
@@ -38,7 +36,9 @@ struct DriverVersionMismatchedAlertView: View {
       .padding()
       .frame(width: 500)
 
-      SheetCloseButton(onCloseButtonPressed: onCloseButtonPressed)
+      SheetCloseButton {
+        ContentViewStates.shared.showDriverVersionMismatchedAlert = false
+      }
     }
   }
 }
@@ -46,7 +46,7 @@ struct DriverVersionMismatchedAlertView: View {
 struct DriverVersionMismatchedAlertView_Previews: PreviewProvider {
   static var previews: some View {
     Group {
-      DriverVersionMismatchedAlertView(onCloseButtonPressed: {})
+      DriverVersionMismatchedAlertView()
         .previewLayout(.sizeThatFits)
     }
   }

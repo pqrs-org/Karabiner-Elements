@@ -105,7 +105,6 @@ public class AppDelegate: NSObject, NSApplicationDelegate {
     // Start StateJsonMonitor
     //
 
-    AlertWindowsManager.shared.parentWindow = window
     StateJsonMonitor.shared.start()
 
     //

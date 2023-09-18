@@ -1,9 +1,6 @@
 import SwiftUI
 
 struct DriverNotActivatedAlertView: View {
-  let parentWindow: NSWindow?
-  let onCloseButtonPressed: () -> Void
-
   @State private var showingAdvanced = false
 
   var body: some View {
@@ -96,9 +93,10 @@ struct DriverNotActivatedAlertView: View {
         }
       }
       .frame(width: 850)
-      .padding()
 
-      SheetCloseButton(onCloseButtonPressed: onCloseButtonPressed)
+      SheetCloseButton {
+        ContentViewStates.shared.showDriverNotActivatedAlert = false
+      }
     }
   }
 
@@ -106,18 +104,15 @@ struct DriverNotActivatedAlertView: View {
     let url = URL(string: "x-apple.systempreferences:com.apple.preference.security?General")!
     NSWorkspace.shared.open(url)
 
-    parentWindow?.orderBack(self)
+    NSApp.miniaturizeAll(nil)
   }
 }
 
 struct DriverNotActivatedAlertView_Previews: PreviewProvider {
   static var previews: some View {
     Group {
-      DriverNotActivatedAlertView(
-        parentWindow: nil,
-        onCloseButtonPressed: {}
-      )
-      .previewLayout(.sizeThatFits)
+      DriverNotActivatedAlertView()
+        .previewLayout(.sizeThatFits)
     }
   }
 }
