@@ -12,6 +12,5 @@ struct SheetCloseButton: View {
         .frame(width: 24.0, height: 24.0)
     }
     .buttonStyle(PlainButtonStyle())
-    .offset(x: 10, y: 10)
   }
 }
