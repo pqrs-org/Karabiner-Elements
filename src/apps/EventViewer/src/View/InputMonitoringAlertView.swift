@@ -7,8 +7,6 @@ class InputMonitoringAlertData: ObservableObject {
 }
 
 struct InputMonitoringAlertView: View {
-  let window: NSWindow?
-
   var body: some View {
     VStack(alignment: .center, spacing: 20.0) {
       Label(
@@ -35,6 +33,10 @@ struct InputMonitoringAlertView: View {
         .aspectRatio(contentMode: .fit)
         .frame(height: 300.0)
         .border(Color.gray, width: 1)
+
+      SheetCloseButton {
+        InputMonitoringAlertData.shared.showing = false
+      }
     }
     .frame(width: 800)
     .padding()
@@ -45,14 +47,14 @@ struct InputMonitoringAlertView: View {
       string: "x-apple.systempreferences:com.apple.preference.security?Privacy_ListenEvent")!
     NSWorkspace.shared.open(url)
 
-    window?.orderBack(self)
+    NSApp.miniaturizeAll(nil)
   }
 }
 
 struct InputMonitoringAlertView_Previews: PreviewProvider {
   static var previews: some View {
     Group {
-      InputMonitoringAlertView(window: nil)
+      InputMonitoringAlertView()
         .previewLayout(.sizeThatFits)
     }
   }
