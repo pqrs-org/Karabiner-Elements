@@ -10,6 +10,7 @@
 #include "core_configuration/core_configuration.hpp"
 #include "manipulator/manipulators/base.hpp"
 #include "manipulator/manipulators/basic/basic.hpp"
+#include "manipulator/manipulators/mouse_basic/mouse_basic.hpp"
 #include "manipulator/manipulators/mouse_motion_to_scroll/mouse_motion_to_scroll.hpp"
 #include "manipulator/manipulators/nop.hpp"
 #include "manipulator/types.hpp"
