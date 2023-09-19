@@ -31,6 +31,10 @@ inline std::shared_ptr<manipulators::base> make_manipulator(const nlohmann::json
   if (type == "basic") {
     return std::make_shared<manipulators::basic::basic>(json,
                                                         parameters);
+  } else if (type == "mouse_basic") {
+    return std::make_shared<manipulators::mouse_basic::mouse_basic>(json,
+                                                                    parameters);
+
   } else if (type == "mouse_motion_to_scroll") {
     return std::make_shared<manipulators::mouse_motion_to_scroll::mouse_motion_to_scroll>(json,
                                                                                           parameters);
