@@ -17,6 +17,7 @@
     -   Changes for users who write their own json.
         -   The `device_address` condition has been added into `device_if` and `device_unless`. (Thanks to @stackia)
         -   Added `key_up_value` to `set_variable`.
+        -   Added `mouse_basic` manipulator.
 -   ⚡️ Improvements
     -   Added the ability to filter by keywords when adding Complex Modifications rules.
     -   Adjusted the position of the Add rule button in Complex Modifications. (Thanks to @GanZhiXiong)
