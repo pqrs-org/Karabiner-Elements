@@ -357,6 +357,90 @@ public:
     }
   }
 
+  bool get_device_mouse_flip_x(const device_identifiers& identifiers) const {
+    for (const auto& d : devices_) {
+      if (d.get_identifiers() == identifiers) {
+        return d.get_mouse_flip_x();
+      }
+    }
+    return false;
+  }
+
+  void set_device_mouse_flip_x(const device_identifiers& identifiers,
+                               bool value) {
+    add_device(identifiers);
+
+    for (auto&& device : devices_) {
+      if (device.get_identifiers() == identifiers) {
+        device.set_mouse_flip_x(value);
+        return;
+      }
+    }
+  }
+
+  bool get_device_mouse_flip_y(const device_identifiers& identifiers) const {
+    for (const auto& d : devices_) {
+      if (d.get_identifiers() == identifiers) {
+        return d.get_mouse_flip_y();
+      }
+    }
+    return false;
+  }
+
+  void set_device_mouse_flip_y(const device_identifiers& identifiers,
+                               bool value) {
+    add_device(identifiers);
+
+    for (auto&& device : devices_) {
+      if (device.get_identifiers() == identifiers) {
+        device.set_mouse_flip_y(value);
+        return;
+      }
+    }
+  }
+
+  bool get_device_mouse_flip_vertical_wheel(const device_identifiers& identifiers) const {
+    for (const auto& d : devices_) {
+      if (d.get_identifiers() == identifiers) {
+        return d.get_mouse_flip_vertical_wheel();
+      }
+    }
+    return false;
+  }
+
+  void set_device_mouse_flip_vertical_wheel(const device_identifiers& identifiers,
+                                            bool value) {
+    add_device(identifiers);
+
+    for (auto&& device : devices_) {
+      if (device.get_identifiers() == identifiers) {
+        device.set_mouse_flip_vertical_wheel(value);
+        return;
+      }
+    }
+  }
+
+  bool get_device_mouse_flip_horizontal_wheel(const device_identifiers& identifiers) const {
+    for (const auto& d : devices_) {
+      if (d.get_identifiers() == identifiers) {
+        return d.get_mouse_flip_horizontal_wheel();
+      }
+    }
+    return false;
+  }
+
+  void set_device_mouse_flip_horizontal_wheel(const device_identifiers& identifiers,
+                                              bool value) {
+    add_device(identifiers);
+
+    for (auto&& device : devices_) {
+      if (device.get_identifiers() == identifiers) {
+        device.set_mouse_flip_horizontal_wheel(value);
+        return;
+      }
+    }
+  }
+
 private:
   void add_device(const device_identifiers& identifiers) {
     for (auto&& device : devices_) {
