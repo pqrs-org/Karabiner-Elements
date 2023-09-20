@@ -55,6 +55,46 @@
         "error": "`disable_built_in_keyboard_if_exists` must be boolean, but is `null`"
     },
 
+    // mouse_flip_x
+
+    {
+        "class": "devices",
+        "input": {
+            "mouse_flip_x": null
+        },
+        "error": "`mouse_flip_x` must be boolean, but is `null`"
+    },
+
+    // mouse_flip_y
+
+    {
+        "class": "devices",
+        "input": {
+            "mouse_flip_y": null
+        },
+        "error": "`mouse_flip_y` must be boolean, but is `null`"
+    },
+
+    // mouse_flip_vertical_wheel
+
+    {
+        "class": "devices",
+        "input": {
+            "mouse_flip_vertical_wheel": null
+        },
+        "error": "`mouse_flip_vertical_wheel` must be boolean, but is `null`"
+    },
+
+    // mouse_flip_horizontal_wheel
+
+    {
+        "class": "devices",
+        "input": {
+            "mouse_flip_horizontal_wheel": null
+        },
+        "error": "`mouse_flip_horizontal_wheel` must be boolean, but is `null`"
+    },
+
     // simple_modifications
 
     {

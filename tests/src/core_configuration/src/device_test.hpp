@@ -290,6 +290,10 @@ void run_device_test(void) {
           {"ignore", false},
           {"fn_function_keys", nlohmann::json::array()},
           {"manipulate_caps_lock_led", false},
+          {"mouse_flip_horizontal_wheel", false},
+          {"mouse_flip_vertical_wheel", false},
+          {"mouse_flip_x", false},
+          {"mouse_flip_y", false},
           {"simple_modifications", nlohmann::json::array()},
           {"treat_as_built_in_keyboard", false},
       });
@@ -314,6 +318,8 @@ void run_device_test(void) {
           {"ignore", true},
           {"manipulate_caps_lock_led", true},
           {"treat_as_built_in_keyboard", true},
+          {"mouse_flip_horizontal_wheel", true},
+          {"mouse_flip_x", true},
       });
       krbn::core_configuration::details::device device(json);
       nlohmann::json expected({
@@ -348,6 +354,10 @@ void run_device_test(void) {
                           }},
           {"ignore", true},
           {"manipulate_caps_lock_led", true},
+          {"mouse_flip_horizontal_wheel", true},
+          {"mouse_flip_vertical_wheel", false},
+          {"mouse_flip_x", true},
+          {"mouse_flip_y", false},
           {"simple_modifications", nlohmann::json::array()},
           {"treat_as_built_in_keyboard", true},
       });

@@ -41,7 +41,7 @@ void run_errors_test(void) {
             handle_json(e);
             expect(false);
           } catch (pqrs::json::unmarshal_error& ex) {
-            expect(e.at("error").get<std::string>() == ex.what());
+            expect(std::string_view(e.at("error").get<std::string>()) == ex.what());
           } catch (...) {
             expect(false);
           }

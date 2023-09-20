@@ -150,6 +150,10 @@
                         "is_pointing_device": false
                     },
                     "ignore": false,
+                    "mouse_flip_horizontal_wheel": false,
+                    "mouse_flip_vertical_wheel": false,
+                    "mouse_flip_x": false,
+                    "mouse_flip_y": false,
                     "simple_modifications": [
                         {
                             "from": {
