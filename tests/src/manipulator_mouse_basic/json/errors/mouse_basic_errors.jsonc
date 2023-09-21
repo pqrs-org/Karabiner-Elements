@@ -1,0 +1,37 @@
+[
+    // mouse_basic
+
+    {
+        "class": "mouse_basic",
+        "input": null,
+        "error": "json must be object, but is `null`"
+    },
+
+    // flip
+
+    {
+        "class": "mouse_basic",
+        "input": {
+            "flip": null
+        },
+        "error": "`flip` must be array, but is `null`"
+    },
+
+    {
+        "class": "mouse_basic",
+        "input": {
+            "flip": [null]
+        },
+        "error": "items in `flip` must be string, but is `null`"
+    },
+
+    // unknown key
+
+    {
+        "class": "mouse_basic",
+        "input": {
+            "option": {}
+        },
+        "error": "unknown key `option` in `{\"option\":{}}`"
+    }
+]
