@@ -1,0 +1,7 @@
+[
+    {
+        "description": "flip vertical_wheel",
+        "type": "mouse_basic",
+        "flip": ["vertical_wheel"]
+    }
+]
