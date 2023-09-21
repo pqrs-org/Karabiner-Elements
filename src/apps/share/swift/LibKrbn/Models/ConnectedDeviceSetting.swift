@@ -30,6 +30,26 @@ extension LibKrbn {
           Settings.shared.libkrbnCoreConfiguration,
           connectedDevice.libkrbnDeviceIdentifiers)
 
+      self.mouseFlipX =
+        libkrbn_core_configuration_get_selected_profile_device_mouse_flip_x(
+          Settings.shared.libkrbnCoreConfiguration,
+          connectedDevice.libkrbnDeviceIdentifiers)
+
+      self.mouseFlipY =
+        libkrbn_core_configuration_get_selected_profile_device_mouse_flip_y(
+          Settings.shared.libkrbnCoreConfiguration,
+          connectedDevice.libkrbnDeviceIdentifiers)
+
+      self.mouseFlipVerticalWheel =
+        libkrbn_core_configuration_get_selected_profile_device_mouse_flip_vertical_wheel(
+          Settings.shared.libkrbnCoreConfiguration,
+          connectedDevice.libkrbnDeviceIdentifiers)
+
+      self.mouseFlipHorizontalWheel =
+        libkrbn_core_configuration_get_selected_profile_device_mouse_flip_horizontal_wheel(
+          Settings.shared.libkrbnCoreConfiguration,
+          connectedDevice.libkrbnDeviceIdentifiers)
+
       simpleModifications = LibKrbn.Settings.shared.makeSimpleModifications(connectedDevice)
       fnFunctionKeys = LibKrbn.Settings.shared.makeFnFunctionKeys(connectedDevice)
 
@@ -79,6 +99,53 @@ extension LibKrbn {
             Settings.shared.libkrbnCoreConfiguration,
             connectedDevice.libkrbnDeviceIdentifiers,
             disableBuiltInKeyboardIfExists)
+          Settings.shared.save()
+        }
+      }
+    }
+
+    @Published var mouseFlipX: Bool = false {
+      didSet {
+        if didSetEnabled {
+          libkrbn_core_configuration_set_selected_profile_device_mouse_flip_x(
+            Settings.shared.libkrbnCoreConfiguration,
+            connectedDevice.libkrbnDeviceIdentifiers,
+            mouseFlipX)
+          Settings.shared.save()
+        }
+      }
+    }
+
+    @Published var mouseFlipY: Bool = false {
+      didSet {
+        if didSetEnabled {
+          libkrbn_core_configuration_set_selected_profile_device_mouse_flip_y(
+            Settings.shared.libkrbnCoreConfiguration,
+            connectedDevice.libkrbnDeviceIdentifiers,
+            mouseFlipY)
+          Settings.shared.save()
+        }
+      }
+    }
+
+    @Published var mouseFlipVerticalWheel: Bool = false {
+      didSet {
+        if didSetEnabled {
+          libkrbn_core_configuration_set_selected_profile_device_mouse_flip_vertical_wheel(
+            Settings.shared.libkrbnCoreConfiguration,
+            connectedDevice.libkrbnDeviceIdentifiers,
+            mouseFlipVerticalWheel)
+          Settings.shared.save()
+        }
+      }
+    }
+    @Published var mouseFlipHorizontalWheel: Bool = false {
+      didSet {
+        if didSetEnabled {
+          libkrbn_core_configuration_set_selected_profile_device_mouse_flip_horizontal_wheel(
+            Settings.shared.libkrbnCoreConfiguration,
+            connectedDevice.libkrbnDeviceIdentifiers,
+            mouseFlipHorizontalWheel)
           Settings.shared.save()
         }
       }

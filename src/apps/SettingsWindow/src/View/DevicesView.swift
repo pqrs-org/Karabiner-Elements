@@ -87,6 +87,41 @@ struct DevicesView: View {
                             .switchToggleStyle(controlSize: .mini, font: .callout)
                           }
                         }
+
+                        VStack(alignment: .leading, spacing: 0.0) {
+                          if connectedDeviceSetting.connectedDevice.isPointingDevice
+                            || connectedDeviceSetting.connectedDevice.isGamePad
+                          {
+                            Toggle(isOn: $connectedDeviceSetting.mouseFlipX) {
+                              Text("Flip mouse X")
+
+                              Spacer()
+                            }
+                            .switchToggleStyle(controlSize: .mini, font: .callout)
+
+                            Toggle(isOn: $connectedDeviceSetting.mouseFlipY) {
+                              Text("Flip mouse Y")
+
+                              Spacer()
+                            }
+                            .switchToggleStyle(controlSize: .mini, font: .callout)
+
+                            Toggle(isOn: $connectedDeviceSetting.mouseFlipVerticalWheel) {
+                              Text("Flip mouse vertical wheel")
+
+                              Spacer()
+                            }
+                            .switchToggleStyle(controlSize: .mini, font: .callout)
+
+                            Toggle(isOn: $connectedDeviceSetting.mouseFlipHorizontalWheel) {
+                              Text("Flip mouse horizontal wheel")
+
+                              Spacer()
+                            }
+                            .switchToggleStyle(controlSize: .mini, font: .callout)
+                          }
+                        }
+                        .frame(width: 200.0)
                       }.padding(.leading, 20)
                     }
                     .frame(width: 400.0)
