@@ -197,6 +197,26 @@ bool libkrbn_core_configuration_get_selected_profile_device_disable_built_in_key
 void libkrbn_core_configuration_set_selected_profile_device_disable_built_in_keyboard_if_exists(libkrbn_core_configuration* p,
                                                                                                 const libkrbn_device_identifiers* device_identifiers,
                                                                                                 bool value);
+bool libkrbn_core_configuration_get_selected_profile_device_mouse_flip_x(libkrbn_core_configuration* p,
+                                                                         const libkrbn_device_identifiers* device_identifiers);
+void libkrbn_core_configuration_set_selected_profile_device_mouse_flip_x(libkrbn_core_configuration* p,
+                                                                         const libkrbn_device_identifiers* device_identifiers,
+                                                                         bool value);
+bool libkrbn_core_configuration_get_selected_profile_device_mouse_flip_y(libkrbn_core_configuration* p,
+                                                                         const libkrbn_device_identifiers* device_identifiers);
+void libkrbn_core_configuration_set_selected_profile_device_mouse_flip_y(libkrbn_core_configuration* p,
+                                                                         const libkrbn_device_identifiers* device_identifiers,
+                                                                         bool value);
+bool libkrbn_core_configuration_get_selected_profile_device_mouse_flip_vertical_wheel(libkrbn_core_configuration* p,
+                                                                                      const libkrbn_device_identifiers* device_identifiers);
+void libkrbn_core_configuration_set_selected_profile_device_mouse_flip_vertical_wheel(libkrbn_core_configuration* p,
+                                                                                      const libkrbn_device_identifiers* device_identifiers,
+                                                                                      bool value);
+bool libkrbn_core_configuration_get_selected_profile_device_mouse_flip_horizontal_wheel(libkrbn_core_configuration* p,
+                                                                                        const libkrbn_device_identifiers* device_identifiers);
+void libkrbn_core_configuration_set_selected_profile_device_mouse_flip_horizontal_wheel(libkrbn_core_configuration* p,
+                                                                                        const libkrbn_device_identifiers* device_identifiers,
+                                                                                        bool value);
 
 //
 // libkrbn_complex_modifications_assets_manager
