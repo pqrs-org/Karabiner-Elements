@@ -23,6 +23,10 @@ public:
     manipulator_manager_->invalidate_manipulators();
 
     for (const auto& device : profile.get_devices()) {
+      //
+      // Add profile.device.simple_modifications
+      //
+
       for (const auto& pair : device.get_simple_modifications().get_pairs()) {
         try {
           if (auto m = make_manipulator(pair)) {
@@ -34,6 +38,40 @@ public:
         } catch (const pqrs::json::unmarshal_error& e) {
           logger::get_logger()->error(fmt::format("karabiner.json error: {0}", e.what()));
 
+        } catch (const std::exception& e) {
+          logger::get_logger()->error(e.what());
+        }
+      }
+
+      //
+      // Add profile.device.mouse_flip_*
+      //
+
+      auto flip = nlohmann::json::array();
+      if (device.get_mouse_flip_x()) {
+        flip.push_back("x");
+      }
+      if (device.get_mouse_flip_y()) {
+        flip.push_back("y");
+      }
+      if (device.get_mouse_flip_vertical_wheel()) {
+        flip.push_back("vertical_wheel");
+      }
+      if (device.get_mouse_flip_horizontal_wheel()) {
+        flip.push_back("horizontal_wheel");
+      }
+      if (flip.size() > 0) {
+        try {
+          auto json = nlohmann::json::object({
+              {"type", "mouse_basic"},
+              {"flip", flip},
+          });
+          auto parameters = krbn::core_configuration::details::complex_modifications_parameters();
+          auto m = std::make_shared<manipulator::manipulators::mouse_basic::mouse_basic>(json,
+                                                                                         parameters);
+          auto c = manipulator::manipulator_factory::make_device_if_condition(device);
+          m->push_back_condition(c);
+          manipulator_manager_->push_back_manipulator(m);
         } catch (const std::exception& e) {
           logger::get_logger()->error(e.what());
         }
