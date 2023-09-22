@@ -95,6 +95,26 @@
         "error": "`mouse_flip_horizontal_wheel` must be boolean, but is `null`"
     },
 
+    // mouse_swap_xy
+
+    {
+        "class": "devices",
+        "input": {
+            "mouse_swap_xy": null
+        },
+        "error": "`mouse_swap_xy` must be boolean, but is `null`"
+    },
+
+    // mouse_swap_wheel
+
+    {
+        "class": "devices",
+        "input": {
+            "mouse_swap_wheel": null
+        },
+        "error": "`mouse_swap_wheel` must be boolean, but is `null`"
+    },
+
     // simple_modifications
 
     {

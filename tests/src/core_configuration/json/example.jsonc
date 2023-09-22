@@ -154,6 +154,8 @@
                     "mouse_flip_vertical_wheel": false,
                     "mouse_flip_x": false,
                     "mouse_flip_y": false,
+                    "mouse_swap_wheel": false,
+                    "mouse_swap_xy": false,
                     "simple_modifications": [
                         {
                             "from": {
