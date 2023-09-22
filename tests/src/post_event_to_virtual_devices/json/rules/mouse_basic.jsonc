@@ -2,6 +2,7 @@
     {
         "description": "flip vertical_wheel",
         "type": "mouse_basic",
-        "flip": ["vertical_wheel"]
+        "flip": ["vertical_wheel"],
+        "swap": ["xy"]
     }
 ]
