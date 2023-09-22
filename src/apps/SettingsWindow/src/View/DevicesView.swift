@@ -198,7 +198,7 @@ struct DevicesView: View {
       {
         if connectedDeviceSetting.modifyEvents {
           HStack(alignment: .top, spacing: 100.0) {
-            VStack(alignment: .leading, spacing: 0.0) {
+            VStack(alignment: .leading, spacing: 2.0) {
               Toggle(isOn: $connectedDeviceSetting.mouseFlipX) {
                 Text("Flip mouse X")
 
@@ -231,7 +231,7 @@ struct DevicesView: View {
             }
             .frame(width: 200.0)
 
-            VStack(alignment: .leading, spacing: 0.0) {
+            VStack(alignment: .leading, spacing: 2.0) {
               Toggle(isOn: $connectedDeviceSetting.mouseSwapXY) {
                 Text("Swap mouse X and Y")
 
