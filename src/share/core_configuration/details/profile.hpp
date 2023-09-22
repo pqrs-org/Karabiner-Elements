@@ -441,6 +441,48 @@ public:
     }
   }
 
+  bool get_device_mouse_swap_xy(const device_identifiers& identifiers) const {
+    for (const auto& d : devices_) {
+      if (d.get_identifiers() == identifiers) {
+        return d.get_mouse_swap_xy();
+      }
+    }
+    return false;
+  }
+
+  void set_device_mouse_swap_xy(const device_identifiers& identifiers,
+                                bool value) {
+    add_device(identifiers);
+
+    for (auto&& device : devices_) {
+      if (device.get_identifiers() == identifiers) {
+        device.set_mouse_swap_xy(value);
+        return;
+      }
+    }
+  }
+
+  bool get_device_mouse_swap_wheel(const device_identifiers& identifiers) const {
+    for (const auto& d : devices_) {
+      if (d.get_identifiers() == identifiers) {
+        return d.get_mouse_swap_wheel();
+      }
+    }
+    return false;
+  }
+
+  void set_device_mouse_swap_wheel(const device_identifiers& identifiers,
+                                   bool value) {
+    add_device(identifiers);
+
+    for (auto&& device : devices_) {
+      if (device.get_identifiers() == identifiers) {
+        device.set_mouse_swap_wheel(value);
+        return;
+      }
+    }
+  }
+
 private:
   void add_device(const device_identifiers& identifiers) {
     for (auto&& device : devices_) {

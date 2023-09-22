@@ -87,41 +87,6 @@ struct DevicesView: View {
                             .switchToggleStyle(controlSize: .mini, font: .callout)
                           }
                         }
-
-                        VStack(alignment: .leading, spacing: 0.0) {
-                          if connectedDeviceSetting.connectedDevice.isPointingDevice
-                            || connectedDeviceSetting.connectedDevice.isGamePad
-                          {
-                            Toggle(isOn: $connectedDeviceSetting.mouseFlipX) {
-                              Text("Flip mouse X")
-
-                              Spacer()
-                            }
-                            .switchToggleStyle(controlSize: .mini, font: .callout)
-
-                            Toggle(isOn: $connectedDeviceSetting.mouseFlipY) {
-                              Text("Flip mouse Y")
-
-                              Spacer()
-                            }
-                            .switchToggleStyle(controlSize: .mini, font: .callout)
-
-                            Toggle(isOn: $connectedDeviceSetting.mouseFlipVerticalWheel) {
-                              Text("Flip mouse vertical wheel")
-
-                              Spacer()
-                            }
-                            .switchToggleStyle(controlSize: .mini, font: .callout)
-
-                            Toggle(isOn: $connectedDeviceSetting.mouseFlipHorizontalWheel) {
-                              Text("Flip mouse horizontal wheel")
-
-                              Spacer()
-                            }
-                            .switchToggleStyle(controlSize: .mini, font: .callout)
-                          }
-                        }
-                        .frame(width: 200.0)
                       }.padding(.leading, 20)
                     }
                     .frame(width: 400.0)
@@ -177,6 +142,69 @@ struct DevicesView: View {
               }
               .padding(.leading, 62.0)
               .padding(.top, 4.0)
+
+              if connectedDeviceSetting.connectedDevice.isPointingDevice
+                || connectedDeviceSetting.connectedDevice.isGamePad
+              {
+                if connectedDeviceSetting.modifyEvents {
+                  HStack(alignment: .top, spacing: 100.0) {
+                    VStack(alignment: .leading, spacing: 0.0) {
+                      Toggle(isOn: $connectedDeviceSetting.mouseFlipX) {
+                        Text("Flip mouse X")
+
+                        Spacer()
+                      }
+                      .switchToggleStyle(controlSize: .mini, font: .callout)
+
+                      Toggle(isOn: $connectedDeviceSetting.mouseFlipY) {
+                        Text("Flip mouse Y")
+
+                        Spacer()
+                      }
+                      .switchToggleStyle(controlSize: .mini, font: .callout)
+
+                      Toggle(isOn: $connectedDeviceSetting.mouseFlipVerticalWheel) {
+                        Text("Flip mouse vertical wheel")
+
+                        Spacer()
+                      }
+                      .switchToggleStyle(controlSize: .mini, font: .callout)
+
+                      Toggle(isOn: $connectedDeviceSetting.mouseFlipHorizontalWheel) {
+                        Text("Flip mouse horizontal wheel")
+
+                        Spacer()
+                      }
+                      .switchToggleStyle(controlSize: .mini, font: .callout)
+
+                      Spacer()
+                    }
+                    .frame(width: 200.0)
+
+                    VStack(alignment: .leading, spacing: 0.0) {
+                      Toggle(isOn: $connectedDeviceSetting.mouseSwapXY) {
+                        Text("Swap mouse X and Y")
+
+                        Spacer()
+                      }
+                      .switchToggleStyle(controlSize: .mini, font: .callout)
+
+                      Toggle(isOn: $connectedDeviceSetting.mouseSwapWheel) {
+                        Text("Swap mouse wheels")
+
+                        Spacer()
+                      }
+                      .switchToggleStyle(controlSize: .mini, font: .callout)
+
+                      Spacer()
+                    }
+                    .frame(width: 200.0)
+
+                    Spacer()
+                  }
+                  .padding(.leading, 62.0 + 20.0)
+                }
+              }
             }
             .padding(.vertical, 12.0)
             .padding(.trailing, 12.0)

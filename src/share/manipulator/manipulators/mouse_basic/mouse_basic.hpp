@@ -15,7 +15,9 @@ public:
         flip_x_(false),
         flip_y_(false),
         flip_vertical_wheel_(false),
-        flip_horizontal_wheel_(false) {
+        flip_horizontal_wheel_(false),
+        swap_xy_(false),
+        swap_wheel_(false) {
     pqrs::json::requires_object(json, "json");
 
     for (const auto& [key, value] : json.items()) {
@@ -33,6 +35,19 @@ public:
             flip_vertical_wheel_ = true;
           } else if (j == "horizontal_wheel") {
             flip_horizontal_wheel_ = true;
+          }
+        }
+
+      } else if (key == "swap") {
+        pqrs::json::requires_array(value, "`" + key + "`");
+
+        for (const auto& j : value) {
+          pqrs::json::requires_string(j, "items in `" + key + "`");
+
+          if (j == "xy") {
+            swap_xy_ = true;
+          } else if (j == "wheel") {
+            swap_wheel_ = true;
           }
         }
 
@@ -85,7 +100,9 @@ public:
         if (flip_x_ ||
             flip_y_ ||
             flip_vertical_wheel_ ||
-            flip_horizontal_wheel_) {
+            flip_horizontal_wheel_ ||
+            swap_xy_ ||
+            swap_wheel_) {
           front_input_event.set_validity(validity::invalid);
 
           auto motion = *m;
@@ -104,6 +121,20 @@ public:
 
           if (flip_horizontal_wheel_) {
             motion.set_horizontal_wheel(-motion.get_horizontal_wheel());
+          }
+
+          if (swap_xy_) {
+            auto x = motion.get_x();
+            auto y = motion.get_y();
+            motion.set_x(y);
+            motion.set_y(x);
+          }
+
+          if (swap_wheel_) {
+            auto v = motion.get_vertical_wheel();
+            auto h = motion.get_horizontal_wheel();
+            motion.set_vertical_wheel(h);
+            motion.set_horizontal_wheel(v);
           }
 
           output_event_queue->emplace_back_entry(front_input_event.get_device_id(),
@@ -149,6 +180,8 @@ private:
   bool flip_y_;
   bool flip_vertical_wheel_;
   bool flip_horizontal_wheel_;
+  bool swap_xy_;
+  bool swap_wheel_;
 };
 } // namespace mouse_basic
 } // namespace manipulators

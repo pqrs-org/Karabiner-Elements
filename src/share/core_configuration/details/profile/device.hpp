@@ -15,7 +15,9 @@ public:
                                        mouse_flip_x_(false),
                                        mouse_flip_y_(false),
                                        mouse_flip_vertical_wheel_(false),
-                                       mouse_flip_horizontal_wheel_(false) {
+                                       mouse_flip_horizontal_wheel_(false),
+                                       mouse_swap_xy_(false),
+                                       mouse_swap_wheel_(false) {
     auto ignore_configured = false;
     auto manipulate_caps_lock_led_configured = false;
 
@@ -80,6 +82,16 @@ public:
         pqrs::json::requires_boolean(value, "`" + key + "`");
 
         mouse_flip_horizontal_wheel_ = value.get<bool>();
+
+      } else if (key == "mouse_swap_xy") {
+        pqrs::json::requires_boolean(value, "`" + key + "`");
+
+        mouse_swap_xy_ = value.get<bool>();
+
+      } else if (key == "mouse_swap_wheel") {
+        pqrs::json::requires_boolean(value, "`" + key + "`");
+
+        mouse_swap_wheel_ = value.get<bool>();
 
       } else if (key == "simple_modifications") {
         try {
@@ -152,6 +164,8 @@ public:
     j["mouse_flip_y"] = mouse_flip_y_;
     j["mouse_flip_vertical_wheel"] = mouse_flip_vertical_wheel_;
     j["mouse_flip_horizontal_wheel"] = mouse_flip_horizontal_wheel_;
+    j["mouse_swap_xy"] = mouse_swap_xy_;
+    j["mouse_swap_wheel"] = mouse_swap_wheel_;
     j["simple_modifications"] = simple_modifications_.to_json();
     j["fn_function_keys"] = fn_function_keys_.to_json();
     return j;
@@ -233,6 +247,24 @@ public:
     coordinate_between_properties();
   }
 
+  bool get_mouse_swap_xy(void) const {
+    return mouse_swap_xy_;
+  }
+  void set_mouse_swap_xy(bool value) {
+    mouse_swap_xy_ = value;
+
+    coordinate_between_properties();
+  }
+
+  bool get_mouse_swap_wheel(void) const {
+    return mouse_swap_wheel_;
+  }
+  void set_mouse_swap_wheel(bool value) {
+    mouse_swap_wheel_ = value;
+
+    coordinate_between_properties();
+  }
+
   const simple_modifications& get_simple_modifications(void) const {
     return simple_modifications_;
   }
@@ -267,6 +299,8 @@ private:
   bool mouse_flip_y_;
   bool mouse_flip_vertical_wheel_;
   bool mouse_flip_horizontal_wheel_;
+  bool mouse_swap_xy_;
+  bool mouse_swap_wheel_;
   simple_modifications simple_modifications_;
   simple_modifications fn_function_keys_;
 };
