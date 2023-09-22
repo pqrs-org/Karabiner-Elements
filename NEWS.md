@@ -12,6 +12,8 @@
         -   `Flip mouse Y`
         -   `Flip mouse vertical wheel`
         -   `Flip mouse horizontal wheel`
+        -   `Swap mouse X and Y`
+        -   `Swap mouse wheels`
     -   Gamepad support (DirectInput devices are supported. Xinput is not supported at all)
     -   Added "Add new rule" button into Complex Modifications settings.
     -   Added "Move item to top" and "Move item to bottom" into the context menu of the Complex Modifications list.
