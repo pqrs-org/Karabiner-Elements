@@ -6,6 +6,7 @@
 #include "constants.hpp"
 #include "device_grabber_details/entry.hpp"
 #include "device_grabber_details/fn_function_keys_manipulator_manager.hpp"
+#include "device_grabber_details/game_pad_stick_converter.hpp"
 #include "device_grabber_details/simple_modifications_manipulator_manager.hpp"
 #include "event_tap_utility.hpp"
 #include "filesystem_utility.hpp"
@@ -50,6 +51,8 @@ public:
                                                                                             logger_unique_filter_(logger::get_logger()) {
     notification_message_manager_ = std::make_shared<notification_message_manager>(
         constants::get_notification_message_file_path());
+
+    game_pad_stick_converter_ = std::make_shared<device_grabber_details::game_pad_stick_converter>();
 
     simple_modifications_manipulator_manager_ = std::make_shared<device_grabber_details::simple_modifications_manipulator_manager>();
     complex_modifications_manipulator_manager_ = std::make_shared<manipulator::manipulator_manager>();
@@ -444,6 +447,8 @@ public:
       fn_function_keys_manipulator_manager_ = nullptr;
       post_event_to_virtual_devices_manipulator_manager_ = nullptr;
       virtual_hid_device_service_client_ = nullptr;
+
+      game_pad_stick_converter_ = nullptr;
 
       notification_message_manager_ = nullptr;
 
@@ -1110,6 +1115,8 @@ private:
   std::shared_ptr<notification_message_manager> notification_message_manager_;
 
   std::shared_ptr<event_queue::queue> merged_input_event_queue_;
+
+  std::shared_ptr<device_grabber_details::game_pad_stick_converter> game_pad_stick_converter_;
 
   std::shared_ptr<device_grabber_details::simple_modifications_manipulator_manager> simple_modifications_manipulator_manager_;
   std::shared_ptr<event_queue::queue> simple_modifications_applied_event_queue_;
