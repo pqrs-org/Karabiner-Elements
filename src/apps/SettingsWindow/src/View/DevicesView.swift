@@ -153,14 +153,6 @@ struct DevicesView: View {
     var body: some View {
       if connectedDeviceSetting.connectedDevice.isKeyboard {
         VStack(alignment: .leading, spacing: 2.0) {
-          if connectedDeviceSetting.modifyEvents {
-            Toggle(isOn: $connectedDeviceSetting.manipulateCapsLockLed) {
-              Text("Manipulate caps lock LED")
-                .frame(maxWidth: .infinity, alignment: .leading)
-            }
-            .switchToggleStyle(controlSize: .mini, font: .callout)
-          }
-
           if !connectedDeviceSetting.connectedDevice.isBuiltInKeyboard
             && !connectedDeviceSetting.disableBuiltInKeyboardIfExists
           {
@@ -176,6 +168,14 @@ struct DevicesView: View {
           {
             Toggle(isOn: $connectedDeviceSetting.disableBuiltInKeyboardIfExists) {
               Text("Disable the built-in keyboard while this device is connected")
+                .frame(maxWidth: .infinity, alignment: .leading)
+            }
+            .switchToggleStyle(controlSize: .mini, font: .callout)
+          }
+
+          if connectedDeviceSetting.modifyEvents {
+            Toggle(isOn: $connectedDeviceSetting.manipulateCapsLockLed) {
+              Text("Manipulate caps lock LED")
                 .frame(maxWidth: .infinity, alignment: .leading)
             }
             .switchToggleStyle(controlSize: .mini, font: .callout)
