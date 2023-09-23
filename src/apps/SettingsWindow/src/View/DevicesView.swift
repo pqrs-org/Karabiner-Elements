@@ -14,13 +14,13 @@ struct DevicesView: View {
               VStack(alignment: .leading, spacing: 0.0) {
                 ModifyEventsSetting(connectedDeviceSetting: $connectedDeviceSetting)
 
-                VStack(alignment: .leading, spacing: 0.0) {
+                VStack(alignment: .leading, spacing: 8.0) {
                   KeyboardSettings(connectedDeviceSetting: $connectedDeviceSetting)
 
                   MouseSettings(connectedDeviceSetting: $connectedDeviceSetting)
                 }
                 .padding(.leading, 20.0)
-                .padding(.top, 20.0)
+                .padding(.top, 8.0)
               }
               .padding(.leading, 62.0)
               .padding(.top, 20.0)
@@ -88,7 +88,7 @@ struct DevicesView: View {
         {
           Text("Apple pointing devices are not supported")
             .foregroundColor(Color(NSColor.placeholderTextColor))
-          Spacer()
+            .frame(maxWidth: .infinity, alignment: .leading)
         } else {
           Toggle(isOn: $connectedDeviceSetting.modifyEvents) {
             Text("Modify events")
@@ -156,8 +156,7 @@ struct DevicesView: View {
           if connectedDeviceSetting.modifyEvents {
             Toggle(isOn: $connectedDeviceSetting.manipulateCapsLockLed) {
               Text("Manipulate caps lock LED")
-
-              Spacer()
+                .frame(maxWidth: .infinity, alignment: .leading)
             }
             .switchToggleStyle(controlSize: .mini, font: .callout)
           }
@@ -167,8 +166,7 @@ struct DevicesView: View {
           {
             Toggle(isOn: $connectedDeviceSetting.treatAsBuiltInKeyboard) {
               Text("Treat as a built-in keyboard")
-
-              Spacer()
+                .frame(maxWidth: .infinity, alignment: .leading)
             }
             .switchToggleStyle(controlSize: .mini, font: .callout)
           }
@@ -178,8 +176,7 @@ struct DevicesView: View {
           {
             Toggle(isOn: $connectedDeviceSetting.disableBuiltInKeyboardIfExists) {
               Text("Disable the built-in keyboard while this device is connected")
-
-              Spacer()
+                .frame(maxWidth: .infinity, alignment: .leading)
             }
             .switchToggleStyle(controlSize: .mini, font: .callout)
           }
@@ -201,56 +198,44 @@ struct DevicesView: View {
             VStack(alignment: .leading, spacing: 2.0) {
               Toggle(isOn: $connectedDeviceSetting.mouseFlipX) {
                 Text("Flip mouse X")
-
-                Spacer()
+                  .frame(maxWidth: .infinity, alignment: .leading)
               }
               .switchToggleStyle(controlSize: .mini, font: .callout)
 
               Toggle(isOn: $connectedDeviceSetting.mouseFlipY) {
                 Text("Flip mouse Y")
-
-                Spacer()
+                  .frame(maxWidth: .infinity, alignment: .leading)
               }
               .switchToggleStyle(controlSize: .mini, font: .callout)
 
               Toggle(isOn: $connectedDeviceSetting.mouseFlipVerticalWheel) {
                 Text("Flip mouse vertical wheel")
-
-                Spacer()
+                  .frame(maxWidth: .infinity, alignment: .leading)
               }
               .switchToggleStyle(controlSize: .mini, font: .callout)
 
               Toggle(isOn: $connectedDeviceSetting.mouseFlipHorizontalWheel) {
                 Text("Flip mouse horizontal wheel")
-
-                Spacer()
+                  .frame(maxWidth: .infinity, alignment: .leading)
               }
               .switchToggleStyle(controlSize: .mini, font: .callout)
-
-              Spacer()
             }
             .frame(width: 200.0)
 
             VStack(alignment: .leading, spacing: 2.0) {
               Toggle(isOn: $connectedDeviceSetting.mouseSwapXY) {
                 Text("Swap mouse X and Y")
-
-                Spacer()
+                  .frame(maxWidth: .infinity, alignment: .leading)
               }
               .switchToggleStyle(controlSize: .mini, font: .callout)
 
               Toggle(isOn: $connectedDeviceSetting.mouseSwapWheel) {
                 Text("Swap mouse wheels")
-
-                Spacer()
+                  .frame(maxWidth: .infinity, alignment: .leading)
               }
               .switchToggleStyle(controlSize: .mini, font: .callout)
-
-              Spacer()
             }
             .frame(width: 200.0)
-
-            Spacer()
           }
         }
       }
