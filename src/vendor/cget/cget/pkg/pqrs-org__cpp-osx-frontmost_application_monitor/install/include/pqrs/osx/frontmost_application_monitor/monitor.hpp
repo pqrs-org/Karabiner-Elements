@@ -8,6 +8,7 @@
 
 #include "application.hpp"
 #include "impl/impl.h"
+#include "monitor_manager.hpp"
 #include <nod/nod.hpp>
 #include <pqrs/dispatcher.hpp>
 
@@ -25,12 +26,19 @@ public:
   monitor(const monitor&) = delete;
 
   monitor(std::weak_ptr<dispatcher::dispatcher> weak_dispatcher) : dispatcher_client(weak_dispatcher) {
+    std::lock_guard<std::mutex> guard(global_monitor_manager_mutex_);
+
+    monitor_manager::get_global_monitor_manager()->insert(this);
   }
 
   virtual ~monitor(void) {
+    std::lock_guard<std::mutex> guard(global_monitor_manager_mutex_);
+
     detach_from_dispatcher([this] {
       stop();
     });
+
+    monitor_manager::get_global_monitor_manager()->erase(this);
   }
 
   void async_start(void) {
@@ -57,9 +65,16 @@ private:
   static void static_cpp_callback(const char* bundle_identifier,
                                   const char* file_path,
                                   void* context) {
+    std::lock_guard<std::mutex> guard(global_monitor_manager_mutex_);
+
     auto m = reinterpret_cast<monitor*>(context);
     if (m) {
-      m->cpp_callback(bundle_identifier, file_path);
+      // `static_cpp_callback` may be called even after the monitor instance has been deleted,
+      // so we need to check whether monitor is still alive.
+      if (monitor_manager::get_global_monitor_manager()->contains(m)) {
+        m->cpp_callback(bundle_identifier,
+                        file_path);
+      }
     }
   }
 
@@ -77,6 +92,8 @@ private:
       frontmost_application_changed(application_ptr);
     });
   }
+
+  static inline std::mutex global_monitor_manager_mutex_;
 };
 } // namespace frontmost_application_monitor
 } // namespace osx
