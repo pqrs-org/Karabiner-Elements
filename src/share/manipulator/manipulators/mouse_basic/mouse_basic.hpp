@@ -107,6 +107,24 @@ public:
 
           auto motion = *m;
 
+          //
+          // When swap and flip are used simultaneously, it is more natural for humans to apply swap first.
+          //
+
+          if (swap_xy_) {
+            auto x = motion.get_x();
+            auto y = motion.get_y();
+            motion.set_x(y);
+            motion.set_y(x);
+          }
+
+          if (swap_wheel_) {
+            auto v = motion.get_vertical_wheel();
+            auto h = motion.get_horizontal_wheel();
+            motion.set_vertical_wheel(h);
+            motion.set_horizontal_wheel(v);
+          }
+
           if (flip_x_) {
             motion.set_x(-motion.get_x());
           }
@@ -121,20 +139,6 @@ public:
 
           if (flip_horizontal_wheel_) {
             motion.set_horizontal_wheel(-motion.get_horizontal_wheel());
-          }
-
-          if (swap_xy_) {
-            auto x = motion.get_x();
-            auto y = motion.get_y();
-            motion.set_x(y);
-            motion.set_y(x);
-          }
-
-          if (swap_wheel_) {
-            auto v = motion.get_vertical_wheel();
-            auto h = motion.get_horizontal_wheel();
-            motion.set_vertical_wheel(h);
-            motion.set_horizontal_wheel(v);
           }
 
           output_event_queue->emplace_back_entry(front_input_event.get_device_id(),
