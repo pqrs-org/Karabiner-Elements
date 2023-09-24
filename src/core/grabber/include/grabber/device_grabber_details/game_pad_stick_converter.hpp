@@ -79,16 +79,16 @@ public:
 
                 if (v.conforms_to(pqrs::hid::usage_page::generic_desktop,
                                   pqrs::hid::usage::generic_desktop::x)) {
-                  it->second.set_x(-1 * integer_value);
+                  it->second.set_x(integer_value);
                 } else if (v.conforms_to(pqrs::hid::usage_page::generic_desktop,
                                          pqrs::hid::usage::generic_desktop::y)) {
-                  it->second.set_y(-1 * integer_value);
+                  it->second.set_y(integer_value);
                 } else if (v.conforms_to(pqrs::hid::usage_page::generic_desktop,
                                          pqrs::hid::usage::generic_desktop::rz)) {
                   it->second.set_vertical_wheel(-1 * integer_value);
                 } else if (v.conforms_to(pqrs::hid::usage_page::generic_desktop,
                                          pqrs::hid::usage::generic_desktop::z)) {
-                  it->second.set_horizontal_wheel(-1 * integer_value);
+                  it->second.set_horizontal_wheel(integer_value);
                 }
               }
             }
