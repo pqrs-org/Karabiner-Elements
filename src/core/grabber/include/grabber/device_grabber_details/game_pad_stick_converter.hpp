@@ -21,7 +21,8 @@ namespace device_grabber_details {
 //
 class game_pad_stick_converter final : public pqrs::dispatcher::extra::dispatcher_client {
 public:
-  static constexpr int timer_interval = 20;
+  static constexpr int xy_timer_interval = 20;
+  static constexpr int wheel_timer_interval = 100;
 
   //
   // Signals (invoked from the dispatcher thread)
@@ -35,12 +36,16 @@ public:
 
   game_pad_stick_converter(void)
       : dispatcher_client(),
-        timer_(*this) {
+        xy_timer_(*this),
+        xy_timer_active_(false),
+        wheel_timer_(*this),
+        wheel_timer_active_(false) {
   }
 
   ~game_pad_stick_converter(void) {
     detach_from_dispatcher([this] {
-      timer_.stop();
+      wheel_timer_.stop();
+      xy_timer_.stop();
     });
   }
 
@@ -69,25 +74,68 @@ public:
           if (auto logical_max = v.get_logical_max()) {
             if (auto logical_min = v.get_logical_min()) {
               if (*logical_max != *logical_min) {
-                // 0.0 ... 1.0
-                auto value = static_cast<double>(v.get_integer_value() - *logical_min) /
-                             (*logical_max - *logical_min);
-                // The logical value range of Karabiner-DriverKit-VirtualHIDPointing is -127 ... 127.
-                auto integer_value = static_cast<int>((value - 0.5) * 127);
-                integer_value = std::min(integer_value, 127);
-                integer_value = std::max(integer_value, -127);
+                // -1.0 ... 1.0
+                auto value = ((static_cast<double>(v.get_integer_value() - *logical_min) /
+                               (*logical_max - *logical_min)) -
+                              0.5) *
+                             2;
+
+                // TODO: Move config
+                double deadzone = 0.05;
+                if (value > 0.0) {
+                  if (value < deadzone) {
+                    value = 0.0;
+                  } else {
+                    value = (value - deadzone) / (1.0 - deadzone);
+                  }
+                } else if (value < 0.0) {
+                  if (value > -deadzone) {
+                    value = 0.0;
+                  } else {
+                    value = (value + deadzone) / (1.0 - deadzone);
+                  }
+                }
 
                 if (v.conforms_to(pqrs::hid::usage_page::generic_desktop,
                                   pqrs::hid::usage::generic_desktop::x)) {
+                  // The logical value range of Karabiner-DriverKit-VirtualHIDPointing is -127 ... 127.
+                  auto integer_value = static_cast<int>(value * 127);
+                  integer_value = std::min(integer_value, 127);
+                  integer_value = std::max(integer_value, -127);
+
                   it->second.set_x(integer_value);
+
                 } else if (v.conforms_to(pqrs::hid::usage_page::generic_desktop,
                                          pqrs::hid::usage::generic_desktop::y)) {
+                  // The logical value range of Karabiner-DriverKit-VirtualHIDPointing is -127 ... 127.
+                  auto integer_value = static_cast<int>(value * 127);
+                  integer_value = std::min(integer_value, 127);
+                  integer_value = std::max(integer_value, -127);
+
                   it->second.set_y(integer_value);
+
                 } else if (v.conforms_to(pqrs::hid::usage_page::generic_desktop,
                                          pqrs::hid::usage::generic_desktop::rz)) {
+                  // The logical value range of Karabiner-DriverKit-VirtualHIDPointing is -127 ... 127.
+                  int integer_value = 0;
+                  if (std::abs(value) > 0.5) {
+                    integer_value = 2 * (std::signbit(value) ? -1 : 1);
+                  } else if (std::abs(value) > 0) {
+                    integer_value = 1 * (std::signbit(value) ? -1 : 1);
+                  }
+
                   it->second.set_vertical_wheel(-1 * integer_value);
+
                 } else if (v.conforms_to(pqrs::hid::usage_page::generic_desktop,
                                          pqrs::hid::usage::generic_desktop::z)) {
+                  // The logical value range of Karabiner-DriverKit-VirtualHIDPointing is -127 ... 127.
+                  int integer_value = 0;
+                  if (std::abs(value) > 0.5) {
+                    integer_value = 2 * (std::signbit(value) ? -1 : 1);
+                  } else if (std::abs(value) > 0) {
+                    integer_value = 1 * (std::signbit(value) ? -1 : 1);
+                  }
+
                   it->second.set_horizontal_wheel(integer_value);
                 }
               }
@@ -97,43 +145,110 @@ public:
       }
     }
 
+    logger::get_logger()->info("pointing_motion: {0},{1},{2},{3}",
+                               it->second.get_x(),
+                               it->second.get_y(),
+                               it->second.get_vertical_wheel(),
+                               it->second.get_horizontal_wheel());
+
     set_timer();
   }
 
 private:
   void set_timer(void) {
-    timer_.start(
-        [this] {
-          bool needs_stop = true;
+    //
+    // xy
+    //
 
-          for (const auto& [device_id, pointing_motion] : states_) {
-            if (!pointing_motion.is_zero()) {
-              event_queue::event_time_stamp event_time_stamp(pqrs::osx::chrono::mach_absolute_time_point());
-              event_queue::event event(pointing_motion);
-              event_queue::entry entry(device_id,
-                                       event_time_stamp,
-                                       event,
-                                       event_type::single,
-                                       event,
-                                       event_origin::grabbed_device,
-                                       event_queue::state::original);
+    if (!xy_timer_active_) {
+      xy_timer_.start(
+          [this] {
+            bool needs_stop = true;
 
-              enqueue_to_dispatcher([this, entry] {
-                pointing_motion_arrived(entry);
-              });
+            for (const auto& [device_id, device_pointing_motion] : states_) {
+              pointing_motion m(device_pointing_motion.get_x(),
+                                device_pointing_motion.get_y(),
+                                0,
+                                0);
 
-              needs_stop = false;
+              if (!m.is_zero()) {
+                event_queue::event_time_stamp event_time_stamp(pqrs::osx::chrono::mach_absolute_time_point());
+                event_queue::event event(m);
+                event_queue::entry entry(device_id,
+                                         event_time_stamp,
+                                         event,
+                                         event_type::single,
+                                         event,
+                                         event_origin::grabbed_device,
+                                         event_queue::state::original);
+
+                enqueue_to_dispatcher([this, entry] {
+                  pointing_motion_arrived(entry);
+                });
+
+                needs_stop = false;
+              }
             }
-          }
 
-          if (needs_stop) {
-            timer_.stop();
-          }
-        },
-        std::chrono::milliseconds(timer_interval));
+            if (needs_stop) {
+              xy_timer_.stop();
+              xy_timer_active_ = false;
+            }
+          },
+          std::chrono::milliseconds(xy_timer_interval));
+
+      xy_timer_active_ = true;
+    }
+
+    //
+    // wheel
+    //
+
+    if (!wheel_timer_active_) {
+      wheel_timer_.start(
+          [this] {
+            bool needs_stop = true;
+
+            for (const auto& [device_id, device_pointing_motion] : states_) {
+              pointing_motion m(0,
+                                0,
+                                device_pointing_motion.get_vertical_wheel(),
+                                device_pointing_motion.get_horizontal_wheel());
+
+              if (!m.is_zero()) {
+                event_queue::event_time_stamp event_time_stamp(pqrs::osx::chrono::mach_absolute_time_point());
+                event_queue::event event(m);
+                event_queue::entry entry(device_id,
+                                         event_time_stamp,
+                                         event,
+                                         event_type::single,
+                                         event,
+                                         event_origin::grabbed_device,
+                                         event_queue::state::original);
+
+                enqueue_to_dispatcher([this, entry] {
+                  pointing_motion_arrived(entry);
+                });
+
+                needs_stop = false;
+              }
+            }
+
+            if (needs_stop) {
+              wheel_timer_.stop();
+              wheel_timer_active_ = false;
+            }
+          },
+          std::chrono::milliseconds(wheel_timer_interval));
+
+      wheel_timer_active_ = true;
+    }
   }
 
-  pqrs::dispatcher::extra::timer timer_;
+  pqrs::dispatcher::extra::timer xy_timer_;
+  bool xy_timer_active_;
+  pqrs::dispatcher::extra::timer wheel_timer_;
+  bool wheel_timer_active_;
   std::unordered_map<device_id, pointing_motion> states_;
 };
 } // namespace device_grabber_details
