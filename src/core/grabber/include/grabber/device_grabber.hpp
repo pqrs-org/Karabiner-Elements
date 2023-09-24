@@ -223,13 +223,15 @@ public:
           return;
         }
 
-        // ----------------------------------------
-        // probable_stuck_events_managers_
+        //
+        // Register device
+        //
 
         add_probable_stuck_events_manager(device_id);
 
-        // ----------------------------------------
+        //
         // entries_
+        //
 
         auto entry = std::make_shared<device_grabber_details::entry>(device_id,
                                                                      *device_ptr,
@@ -239,14 +241,22 @@ public:
         entry->get_hid_queue_value_monitor()->values_arrived.connect([this, device_id](auto&& values_ptr) {
           auto it = entries_.find(device_id);
           if (it != std::end(entries_)) {
+            auto hid_values = hid_queue_values_converter_.make_hid_values(device_id,
+                                                                          values_ptr);
             auto event_queue = event_queue::utility::make_queue(it->second->get_device_properties(),
-                                                                hid_queue_values_converter_.make_hid_values(device_id,
-                                                                                                            values_ptr),
+                                                                hid_values,
                                                                 it->second->get_event_origin());
             event_queue = event_queue::utility::insert_device_keys_and_pointing_buttons_are_released_event(event_queue,
                                                                                                            device_id,
                                                                                                            it->second->get_pressed_keys_manager());
             values_arrived(it->second, event_queue);
+
+            //
+            // game pad stick to pointing motion
+            //
+
+            game_pad_stick_converter_->convert(it->second->get_device_properties(),
+                                               hid_values);
           }
         });
 
@@ -292,6 +302,8 @@ public:
           }
         });
 
+        game_pad_stick_converter_->register_device(entry->get_device_properties());
+
         // ----------------------------------------
 
         output_devices_json();
@@ -331,21 +343,17 @@ public:
         }
       }
 
-      // hid_queue_values_converter_
+      //
+      // Unregister device
+      //
 
+      game_pad_stick_converter_->unregister_device(device_id);
       hid_queue_values_converter_.erase_device(device_id);
-
-      // probable_stuck_events_managers_
-
       probable_stuck_events_managers_.erase(device_id);
-
-      // notification_message_manager_
 
       if (notification_message_manager_) {
         notification_message_manager_->async_erase_device(device_id);
       }
-
-      // hat_switch_converter
 
       hat_switch_converter::get_global_hat_switch_converter()->erase_device(device_id);
 
@@ -428,6 +436,18 @@ public:
     });
 
     power_management_monitor_->async_start();
+
+    //
+    // game_pad_stick_converter_
+    //
+
+    game_pad_stick_converter_->pointing_motion_arrived.connect([this](auto&& entry) {
+      logger::get_logger()->info("pointing_motion_arrived");
+
+      merged_input_event_queue_->push_back_entry(entry);
+
+      krbn_notification_center::get_instance().enqueue_input_event_arrived(*this);
+    });
   }
 
   virtual ~device_grabber(void) {
