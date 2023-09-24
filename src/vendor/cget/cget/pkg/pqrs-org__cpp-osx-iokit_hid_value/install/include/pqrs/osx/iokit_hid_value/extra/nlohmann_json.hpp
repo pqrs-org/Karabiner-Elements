@@ -26,6 +26,14 @@ inline void to_json(nlohmann::json& j, const iokit_hid_value& value) {
   if (auto usage = value.get_usage()) {
     j["usage"] = *usage;
   }
+
+  if (auto logical_max = value.get_logical_max()) {
+    j["logical_max"] = *logical_max;
+  }
+
+  if (auto logical_min = value.get_logical_min()) {
+    j["logical_min"] = *logical_min;
+  }
 }
 
 inline void from_json(const nlohmann::json& j, iokit_hid_value& hid_value) {
@@ -55,6 +63,16 @@ inline void from_json(const nlohmann::json& j, iokit_hid_value& hid_value) {
       json::requires_number(value, "`"s + key + "`");
 
       hid_value.set_usage(value.get<hid::usage::value_t>());
+
+    } else if (key == "logical_max") {
+      json::requires_number(value, "`"s + key + "`");
+
+      hid_value.set_logical_max(value.get<CFIndex>());
+
+    } else if (key == "logical_min") {
+      json::requires_number(value, "`"s + key + "`");
+
+      hid_value.set_logical_min(value.get<CFIndex>());
 
     } else {
       throw json::unmarshal_error("unknown key: `"s + key + "`"s);
