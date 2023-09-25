@@ -246,21 +246,23 @@ private:
     }
   }
 
-  void emit_vertical_wheel_event(const device_id device_id) {
+  void emit_event(const device_id device_id,
+                  std::function<std::chrono::milliseconds(const state&)> get_interval,
+                  std::function<void(state&)> unset_active,
+                  std::function<pointing_motion(const state&)> make_pointing_motion) {
     auto it = states_.find(device_id);
     if (it == std::end(states_)) {
       return;
     }
 
-    if (it->second.vertical_wheel_interval == std::chrono::milliseconds(0)) {
-      it->second.vertical_wheel_active = false;
+    auto interval = get_interval(it->second);
+
+    if (interval <= std::chrono::milliseconds(0)) {
+      unset_active(it->second);
       return;
     }
 
-    pointing_motion m(0,
-                      0,
-                      it->second.vertical_wheel,
-                      0);
+    auto m = make_pointing_motion(it->second);
 
     event_queue::event_time_stamp event_time_stamp(pqrs::osx::chrono::mach_absolute_time_point());
     event_queue::event event(m);
@@ -273,47 +275,59 @@ private:
                              event_queue::state::original);
 
     enqueue_to_dispatcher(
-        [this, device_id, entry] {
+        [this, device_id, get_interval, unset_active, make_pointing_motion, entry] {
           pointing_motion_arrived(entry);
 
-          emit_vertical_wheel_event(device_id);
+          emit_event(device_id,
+                     get_interval,
+                     unset_active,
+                     make_pointing_motion);
         },
-        when_now() + it->second.vertical_wheel_interval);
+        when_now() + interval);
+  }
+
+  void emit_vertical_wheel_event(const device_id device_id) {
+    auto get_interval = [](const state& s) {
+      return s.vertical_wheel_interval;
+    };
+
+    auto unset_active = [](state& s) {
+      s.vertical_wheel_active = false;
+    };
+
+    auto make_pointing_motion = [](const state& s) {
+      return pointing_motion(0,
+                             0,
+                             s.vertical_wheel,
+                             0);
+    };
+
+    emit_event(device_id,
+               get_interval,
+               unset_active,
+               make_pointing_motion);
   }
 
   void emit_horizontal_wheel_event(const device_id device_id) {
-    auto it = states_.find(device_id);
-    if (it == std::end(states_)) {
-      return;
-    }
+    auto get_interval = [](const state& s) {
+      return s.horizontal_wheel_interval;
+    };
 
-    if (it->second.horizontal_wheel_interval <= std::chrono::milliseconds(0)) {
-      it->second.horizontal_wheel_active = false;
-      return;
-    }
+    auto unset_active = [](state& s) {
+      s.horizontal_wheel_active = false;
+    };
 
-    pointing_motion m(0,
-                      0,
-                      0,
-                      it->second.horizontal_wheel);
+    auto make_pointing_motion = [](const state& s) {
+      return pointing_motion(0,
+                             0,
+                             0,
+                             s.horizontal_wheel);
+    };
 
-    event_queue::event_time_stamp event_time_stamp(pqrs::osx::chrono::mach_absolute_time_point());
-    event_queue::event event(m);
-    event_queue::entry entry(device_id,
-                             event_time_stamp,
-                             event,
-                             event_type::single,
-                             event,
-                             event_origin::grabbed_device,
-                             event_queue::state::original);
-
-    enqueue_to_dispatcher(
-        [this, device_id, entry] {
-          pointing_motion_arrived(entry);
-
-          emit_horizontal_wheel_event(device_id);
-        },
-        when_now() + it->second.horizontal_wheel_interval);
+    emit_event(device_id,
+               get_interval,
+               unset_active,
+               make_pointing_motion);
   }
 
   pqrs::dispatcher::extra::timer xy_timer_;
