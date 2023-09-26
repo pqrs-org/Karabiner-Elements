@@ -21,28 +21,35 @@ namespace device_grabber_details {
 //
 class game_pad_stick_converter final : public pqrs::dispatcher::extra::dispatcher_client {
 public:
-  static constexpr int xy_timer_interval = 20;
-
   struct state final {
     state(void)
         : x(0),
-          y(0),
-          vertical_wheel(0),
-          horizontal_wheel(0),
           x_interval(0),
+          x_active(false),
+          y(0),
           y_interval(0),
+          y_active(false),
+          vertical_wheel(0),
           vertical_wheel_interval(0),
-          horizontal_wheel_interval(0) {
+          vertical_wheel_active(false),
+          horizontal_wheel(0),
+          horizontal_wheel_interval(0),
+          horizontal_wheel_active(false) {
     }
 
     int x;
-    int y;
-    int vertical_wheel;
-    int horizontal_wheel;
     std::chrono::milliseconds x_interval;
+    bool x_active;
+
+    int y;
     std::chrono::milliseconds y_interval;
+    bool y_active;
+
+    int vertical_wheel;
     std::chrono::milliseconds vertical_wheel_interval;
     bool vertical_wheel_active;
+
+    int horizontal_wheel;
     std::chrono::milliseconds horizontal_wheel_interval;
     bool horizontal_wheel_active;
   };
@@ -59,15 +66,11 @@ public:
   //
 
   game_pad_stick_converter(void)
-      : dispatcher_client(),
-        xy_timer_(*this),
-        xy_timer_active_(false) {
+      : dispatcher_client() {
   }
 
   ~game_pad_stick_converter(void) {
-    detach_from_dispatcher([this] {
-      xy_timer_.stop();
-    });
+    detach_from_dispatcher();
   }
 
   void register_device(const device_properties& device_properties) {
@@ -96,74 +99,38 @@ public:
             if (auto logical_min = v.get_logical_min()) {
               if (*logical_max != *logical_min) {
                 // -1.0 ... 1.0
-                auto value = ((static_cast<double>(v.get_integer_value() - *logical_min) /
-                               (*logical_max - *logical_min)) -
-                              0.5) *
-                             2;
+                auto double_value = ((static_cast<double>(v.get_integer_value() - *logical_min) / (*logical_max - *logical_min)) - 0.5) * 2.0;
 
                 // TODO: Move config
-                const double deadzone = 0.04;
-                if (value > 0.0) {
-                  if (value < deadzone) {
-                    value = 0.0;
-                  } else {
-                    value = (value - deadzone) / (1.0 - deadzone);
-                  }
-                } else if (value < 0.0) {
-                  if (value > -deadzone) {
-                    value = 0.0;
-                  } else {
-                    value = (value + deadzone) / (1.0 - deadzone);
-                  }
-                }
+                const double deadzone = 0.05;
 
                 if (v.conforms_to(pqrs::hid::usage_page::generic_desktop,
                                   pqrs::hid::usage::generic_desktop::x)) {
-                  // The logical value range of Karabiner-DriverKit-VirtualHIDPointing is -127 ... 127.
-                  auto integer_value = static_cast<int>(value * 127);
-                  integer_value = std::min(integer_value, 127);
-                  integer_value = std::max(integer_value, -127);
-
-                  it->second.x = integer_value;
+                  it->second.x = calculate_xy_value(double_value,
+                                                    deadzone);
+                  it->second.x_interval = calculate_xy_interval(double_value,
+                                                                deadzone);
 
                 } else if (v.conforms_to(pqrs::hid::usage_page::generic_desktop,
                                          pqrs::hid::usage::generic_desktop::y)) {
-                  // The logical value range of Karabiner-DriverKit-VirtualHIDPointing is -127 ... 127.
-                  auto integer_value = static_cast<int>(value * 127);
-                  integer_value = std::min(integer_value, 127);
-                  integer_value = std::max(integer_value, -127);
-
-                  it->second.y = integer_value;
+                  it->second.y = calculate_xy_value(double_value,
+                                                    deadzone);
+                  it->second.y_interval = calculate_xy_interval(double_value,
+                                                                deadzone);
 
                 } else if (v.conforms_to(pqrs::hid::usage_page::generic_desktop,
                                          pqrs::hid::usage::generic_desktop::rz)) {
-                  // The logical value range of Karabiner-DriverKit-VirtualHIDPointing is -127 ... 127.
-                  it->second.vertical_wheel = std::signbit(value) ? 1 : -1;
-
-                  std::chrono::milliseconds interval(0);
-                  if (std::abs(value) > 0.8) {
-                    interval = std::chrono::milliseconds(25);
-                  } else if (std::abs(value) > 0.5) {
-                    interval = std::chrono::milliseconds(50);
-                  } else if (std::abs(value) > deadzone) {
-                    interval = std::chrono::milliseconds(100);
-                  }
-                  it->second.vertical_wheel_interval = interval;
+                  it->second.vertical_wheel = -1 * calculate_wheel_value(double_value,
+                                                                         deadzone);
+                  it->second.vertical_wheel_interval = calculate_wheel_interval(double_value,
+                                                                                deadzone);
 
                 } else if (v.conforms_to(pqrs::hid::usage_page::generic_desktop,
                                          pqrs::hid::usage::generic_desktop::z)) {
-                  // The logical value range of Karabiner-DriverKit-VirtualHIDPointing is -127 ... 127.
-                  it->second.horizontal_wheel = std::signbit(value) ? -1 : 1;
-
-                  std::chrono::milliseconds interval(0);
-                  if (std::abs(value) > 0.8) {
-                    interval = std::chrono::milliseconds(25);
-                  } else if (std::abs(value) > 0.5) {
-                    interval = std::chrono::milliseconds(50);
-                  } else if (std::abs(value) > deadzone) {
-                    interval = std::chrono::milliseconds(100);
-                  }
-                  it->second.horizontal_wheel_interval = interval;
+                  it->second.horizontal_wheel = calculate_wheel_value(double_value,
+                                                                      deadzone);
+                  it->second.horizontal_wheel_interval = calculate_wheel_interval(double_value,
+                                                                                  deadzone);
                 }
               }
             }
@@ -172,66 +139,25 @@ public:
       }
     }
 
-    logger::get_logger()->info("pointing_motion: {0},{1},{2},{3}",
-                               it->second.x,
-                               it->second.y,
-                               it->second.vertical_wheel,
-                               it->second.horizontal_wheel);
-
-    set_timer();
-  }
-
-private:
-  void set_timer(void) {
-    //
-    // xy
-    //
-
-    if (!xy_timer_active_) {
-      xy_timer_.start(
-          [this] {
-            bool needs_stop = true;
-
-            for (const auto& [device_id, state] : states_) {
-              pointing_motion m(state.x,
-                                state.y,
-                                0,
-                                0);
-
-              if (!m.is_zero()) {
-                event_queue::event_time_stamp event_time_stamp(pqrs::osx::chrono::mach_absolute_time_point());
-                event_queue::event event(m);
-                event_queue::entry entry(device_id,
-                                         event_time_stamp,
-                                         event,
-                                         event_type::single,
-                                         event,
-                                         event_origin::grabbed_device,
-                                         event_queue::state::original);
-
-                enqueue_to_dispatcher([this, entry] {
-                  pointing_motion_arrived(entry);
-                });
-
-                needs_stop = false;
-              }
-            }
-
-            if (needs_stop) {
-              xy_timer_.stop();
-              xy_timer_active_ = false;
-            }
-          },
-          std::chrono::milliseconds(xy_timer_interval));
-
-      xy_timer_active_ = true;
-    }
-
-    //
-    // wheel
-    //
+    // logger::get_logger()->info("pointing_motion: {0},{1},{2},{3}",
+    //                            it->second.x,
+    //                            it->second.y,
+    //                            it->second.vertical_wheel,
+    //                            it->second.horizontal_wheel);
 
     for (auto&& [device_id, state] : states_) {
+      if (!state.x_active &&
+          state.x_interval > std::chrono::milliseconds(0)) {
+        state.x_active = true;
+        emit_x_event(device_id);
+      }
+
+      if (!state.y_active &&
+          state.y_interval > std::chrono::milliseconds(0)) {
+        state.y_active = true;
+        emit_y_event(device_id);
+      }
+
       if (!state.vertical_wheel_active &&
           state.vertical_wheel_interval > std::chrono::milliseconds(0)) {
         state.vertical_wheel_active = true;
@@ -244,6 +170,81 @@ private:
         emit_horizontal_wheel_event(device_id);
       }
     }
+  }
+
+private:
+  int calculate_xy_value(double double_value,
+                         double deadzone) const {
+    int mode = 0; // 0: linear, 1: quadratic
+    if (mode == 0) {
+      // Linear
+      if (double_value > 0.0) {
+        if (double_value < deadzone) {
+          double_value = 0.0;
+        } else {
+          double_value = (double_value - deadzone) / (1.0 - deadzone);
+        }
+      } else if (double_value < 0.0) {
+        if (double_value > -deadzone) {
+          double_value = 0.0;
+        } else {
+          double_value = (double_value + deadzone) / (1.0 - deadzone);
+        }
+      }
+    } else {
+      // Quadratic
+      if (double_value > 0.0) {
+        if (double_value < deadzone) {
+          double_value = 0.0;
+        } else {
+          double_value = ((double_value - deadzone) * (double_value - deadzone)) / ((1.0 - deadzone) * (1.0 - deadzone));
+        }
+      } else if (double_value < 0.0) {
+        if (double_value > -deadzone) {
+          double_value = 0.0;
+        } else {
+          double_value = ((double_value + deadzone) * (double_value + deadzone)) / ((1.0 - deadzone) * (1.0 - deadzone));
+        }
+      }
+    }
+
+    // The logical value range of Karabiner-DriverKit-VirtualHIDPointing is -127 ... 127.
+    auto result = static_cast<int>(double_value * 32);
+    result = std::min(result, 32);
+    result = std::max(result, -32);
+    return result;
+  }
+
+  std::chrono::milliseconds calculate_xy_interval(double double_value,
+                                                  double deadzone) const {
+    if (std::abs(double_value) > 0.8) {
+      return std::chrono::milliseconds(5);
+    } else if (std::abs(double_value) > 0.5) {
+      return std::chrono::milliseconds(10);
+    } else if (std::abs(double_value) > deadzone) {
+      return std::chrono::milliseconds(20);
+    }
+
+    return std::chrono::milliseconds(0);
+  }
+
+  int calculate_wheel_value(double double_value,
+                            double deadzone) const {
+    // The logical value range of Karabiner-DriverKit-VirtualHIDPointing is -127 ... 127.
+    return std::signbit(double_value) ? -1 : 1;
+  }
+
+  std::chrono::milliseconds calculate_wheel_interval(double double_value,
+                                                     double deadzone) const {
+    if (std::abs(double_value) > 0.8) {
+      return std::chrono::milliseconds(25);
+    } else if (std::abs(double_value) > 0.5) {
+      return std::chrono::milliseconds(50);
+    } else if (std::abs(double_value) > deadzone) {
+      return std::chrono::milliseconds(100);
+    }
+
+    return std::chrono::milliseconds(0);
   }
 
   void emit_event(const device_id device_id,
@@ -284,6 +285,50 @@ private:
                      make_pointing_motion);
         },
         when_now() + interval);
+  }
+
+  void emit_x_event(const device_id device_id) {
+    auto get_interval = [](const state& s) {
+      return s.x_interval;
+    };
+
+    auto unset_active = [](state& s) {
+      s.x_active = false;
+    };
+
+    auto make_pointing_motion = [](const state& s) {
+      return pointing_motion(s.x,
+                             0,
+                             0,
+                             0);
+    };
+
+    emit_event(device_id,
+               get_interval,
+               unset_active,
+               make_pointing_motion);
+  }
+
+  void emit_y_event(const device_id device_id) {
+    auto get_interval = [](const state& s) {
+      return s.y_interval;
+    };
+
+    auto unset_active = [](state& s) {
+      s.y_active = false;
+    };
+
+    auto make_pointing_motion = [](const state& s) {
+      return pointing_motion(0,
+                             s.y,
+                             0,
+                             0);
+    };
+
+    emit_event(device_id,
+               get_interval,
+               unset_active,
+               make_pointing_motion);
   }
 
   void emit_vertical_wheel_event(const device_id device_id) {
@@ -330,8 +375,6 @@ private:
                make_pointing_motion);
   }
 
-  pqrs::dispatcher::extra::timer xy_timer_;
-  bool xy_timer_active_;
   std::unordered_map<device_id, state> states_;
 };
 } // namespace device_grabber_details
