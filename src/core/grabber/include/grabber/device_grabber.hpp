@@ -442,8 +442,6 @@ public:
     //
 
     game_pad_stick_converter_->pointing_motion_arrived.connect([this](auto&& entry) {
-      logger::get_logger()->info("pointing_motion_arrived");
-
       merged_input_event_queue_->push_back_entry(entry);
 
       krbn_notification_center::get_instance().enqueue_input_event_arrived(*this);
