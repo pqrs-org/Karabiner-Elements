@@ -256,7 +256,8 @@ public:
             //
 
             game_pad_stick_converter_->convert(it->second->get_device_properties(),
-                                               hid_values);
+                                               hid_values,
+                                               it->second->get_event_origin());
           }
         });
 
