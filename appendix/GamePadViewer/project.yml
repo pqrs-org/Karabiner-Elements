@@ -1,0 +1,40 @@
+name: Karabiner-GamePadViewer
+
+targets:
+  Karabiner-GamePadViewer:
+    settings:
+      PRODUCT_BUNDLE_IDENTIFIER: org.pqrs.Karabiner-GamePadViewer
+      CODE_SIGN_ENTITLEMENTS: ''
+      CODE_SIGN_IDENTITY: '-'
+      CODE_SIGN_STYLE: Manual
+      HEADER_SEARCH_PATHS:
+        - ../../src/lib/libkrbn/include
+      OTHER_LDFLAGS:
+        - -L../../src/lib/libkrbn/build/Release
+        - -lkrbn
+      OTHER_SWIFT_FLAGS: '-warnings-as-errors'
+      SWIFT_OBJC_BRIDGING_HEADER: src/Bridging-Header.h
+      SYSTEM_HEADER_SEARCH_PATHS:
+        - ../../src/vendor/cget/include
+    type: application
+    platform: macOS
+    deploymentTarget: 11.0
+    sources:
+      - path: src
+        compilerFlags:
+          - -Wall
+          - -Werror
+      - path: ../../src/apps/share/swift
+        compilerFlags:
+          - -Wall
+          - -Werror
+      - path: ../../src/vendor/cget/src/pqrs/osx/frontmost_application_monitor
+      - path: ../../src/vendor/cget/src/pqrs/osx/process_info
+      - path: Resources
+        excludes:
+          - .gitignore
+          - '*.orig.png'
+          - '*.plist.in'
+      - path: ../../src/apps/share/Resources/app.icns
+    dependencies:
+      - sdk: libc++.tbd
