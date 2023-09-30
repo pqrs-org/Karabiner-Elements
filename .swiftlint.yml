@@ -22,6 +22,10 @@ function_body_length:
   warning: 1200
   error: 1500
 
+function_parmeter_count:
+  warning: 10
+  error: 20
+
 identifier_name:
   max_length:
     warning: 100
