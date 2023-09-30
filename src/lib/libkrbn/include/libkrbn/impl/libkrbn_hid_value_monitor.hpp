@@ -100,12 +100,17 @@ private:
 
       if (auto usage_page = v.get_usage_page()) {
         if (auto usage = v.get_usage()) {
-
-          callback(type_safe::get(device_id),
-                   type_safe::get(*usage_page),
-                   type_safe::get(*usage),
-                   v.get_integer_value(),
-                   refcon);
+          if (auto logical_max = v.get_logical_max()) {
+            if (auto logical_min = v.get_logical_min()) {
+              callback(type_safe::get(device_id),
+                       type_safe::get(*usage_page),
+                       type_safe::get(*usage),
+                       *logical_max,
+                       *logical_min,
+                       v.get_integer_value(),
+                       refcon);
+            }
+          }
         }
       }
     }

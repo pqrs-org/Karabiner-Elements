@@ -4,6 +4,8 @@ private func callback(
   _ deviceId: UInt64,
   _ usagePage: Int32,
   _ usage: Int32,
+  _ logicalMax: Int64,
+  _ logicalMin: Int64,
   _ integerValue: Int64,
   _ context: UnsafeMutableRawPointer?
 ) {

@@ -398,6 +398,8 @@ typedef enum {
 typedef void (*libkrbn_hid_value_monitor_callback)(uint64_t device_id,
                                                    int32_t usage_page,
                                                    int32_t usage,
+                                                   int64_t logical_max,
+                                                   int64_t logical_min,
                                                    int64_t integet_value,
                                                    void* refcon);
 void libkrbn_enable_hid_value_monitor(libkrbn_hid_value_monitor_callback callback,
