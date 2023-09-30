@@ -6,13 +6,12 @@ struct ContentView: View {
 
   var body: some View {
     VStack {
-      Text("counter: \(eventObserver.counter)")
-      Text(
-        "right stick X: \(eventObserver.rightStickX.value) (acceleration: \(eventObserver.rightStickX.acceleration))"
-      )
-      Text(
-        "right stick Y: \(eventObserver.rightStickY.value) (acceleration: \(eventObserver.rightStickY.acceleration))"
-      )
+      VStack(alignment: .leading) {
+        Text("counter: \(eventObserver.counter)")
+
+        StickInfo(label: "Right Stick X", stick: $eventObserver.rightStickX)
+        StickInfo(label: "Right Stick Y", stick: $eventObserver.rightStickY)
+      }
 
       ZStack(alignment: .center) {
         Circle()
@@ -35,6 +34,20 @@ struct ContentView: View {
       maxWidth: .infinity,
       minHeight: 650,
       maxHeight: .infinity)
+  }
+}
+
+struct StickInfo: View {
+  let label: String
+  @Binding var stick: EventObserver.Stick
+
+  var body: some View {
+    VStack(alignment: .leading) {
+      Text("\(label):")
+      Text("    value: \(stick.value)")
+      Text("    interval: \(stick.interval)")
+      Text("    acceleration: \(stick.acceleration))")
+    }
   }
 }
 

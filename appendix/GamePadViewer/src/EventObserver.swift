@@ -18,6 +18,7 @@ public class EventObserver: ObservableObject {
   class Stick: ObservableObject {
     @Published var value = 0.0
     @Published var arrivedAt = Date()
+    @Published var interval = 0.0
     @Published var acceleration = 0.0
 
     func update(
@@ -32,7 +33,7 @@ public class EventObserver: ObservableObject {
         value = (Double(integerValue - logicalMin) / Double(logicalMax - logicalMin) - 0.5) * 2.0
         arrivedAt = Date()
 
-        let interval = arrivedAt.timeIntervalSince(previousArrivedAt)
+        interval = arrivedAt.timeIntervalSince(previousArrivedAt)
         if interval > 0 {
           acceleration = (value - previousValue) / interval
         } else {
@@ -45,8 +46,8 @@ public class EventObserver: ObservableObject {
   public static let shared = EventObserver()
 
   @Published var counter = 0
-  @ObservedObject var rightStickX = Stick()
-  @ObservedObject var rightStickY = Stick()
+  @Published var rightStickX = Stick()
+  @Published var rightStickY = Stick()
 
   private init() {
     libkrbn_enable_hid_value_monitor(callback, nil)
