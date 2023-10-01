@@ -7,6 +7,18 @@ public class StickManager: ObservableObject {
   struct Event {
     var arrivedAt: Date
     var acceleration: Double
+
+    func attenuatedAcceleration(_ now: Date) -> Double {
+      let attenuation = 5 * now.timeIntervalSince(arrivedAt)
+      if abs(acceleration) < attenuation {
+        return 0
+      }
+      if acceleration > 0 {
+        return acceleration - attenuation
+      } else {
+        return acceleration + attenuation
+      }
+    }
   }
 
   class Stick: ObservableObject {
@@ -15,28 +27,6 @@ public class StickManager: ObservableObject {
     @Published var lastInterval = 0.0
     @Published var lastAcceleration = 0.0
     var eventHistories: [Event] = []
-    var timer: AnyCancellable?
-
-    init() {
-      timer = Timer.publish(
-        every: 0.02,  //  20 ms
-        on: .main,
-        in: .common
-      )
-      .autoconnect()
-      .sink { [unowned self] _ in
-        let attenuation = 0.5
-        if abs(self.lastAcceleration) < attenuation {
-          self.lastAcceleration = 0.0
-        } else {
-          if self.lastAcceleration > 0 {
-            self.lastAcceleration -= attenuation
-          } else {
-            self.lastAcceleration += attenuation
-          }
-        }
-      }
-    }
 
     @MainActor
     func update(
@@ -60,23 +50,27 @@ public class StickManager: ObservableObject {
           0.001  // 1 ms
         )
 
-        // let deadzone = 0.1
-        //        if abs(value) < deadzone {
-        //          lastAcceleration = 0.0
-        //        } else {
+        let deadzone = 0.1
+        if abs(value) < deadzone {
+          eventHistories.removeAll()
+          lastAcceleration = 0.0
+        } else {
+          // -1000.0 ... 1000.0
+          let acceleration = (value - previousValue) / lastInterval
 
-        // -1000.0 ... 1000.0
-        let acceleration = (value - previousValue) / lastInterval
+          eventHistories.append(Event(arrivedAt: now, acceleration: acceleration))
 
-        while eventHistories.count > 0 && now.timeIntervalSince(eventHistories[0].arrivedAt) > 1.0 {
-          eventHistories.removeFirst()
+          var sum = 0.0
+          eventHistories.forEach { e in
+            sum += e.attenuatedAcceleration(now)
+          }
+          lastAcceleration = sum
+
+          eventHistories.removeAll(where: {
+            let attenuatedAcceleration = $0.attenuatedAcceleration(now)
+            return attenuatedAcceleration == 0 || sum * attenuatedAcceleration < 0
+          })
         }
-        eventHistories.append(Event(arrivedAt: now, acceleration: acceleration))
-
-        //let max = eventHistories.max { a, b in abs(a.acceleration) < abs(b.acceleration) }
-        //lastAcceleration = max?.acceleration ?? 0.0
-        lastAcceleration += acceleration
-        //        }
       }
     }
   }

@@ -6,6 +6,7 @@ struct ContentView: View {
   @ObservedObject var stickManager = StickManager.shared
 
   let circleSize = 100.0
+  let stickDivider = 20.0
 
   var body: some View {
     VStack {
@@ -25,8 +26,10 @@ struct ContentView: View {
           path.move(to: CGPoint(x: circleSize / 2.0, y: circleSize / 2.0))
           path.addLine(
             to: CGPoint(
-              x: stickManager.rightStickX.lastAcceleration * circleSize,
-              y: stickManager.rightStickY.lastAcceleration * circleSize
+              x: stickManager.rightStickX.lastAcceleration / stickDivider * circleSize
+                + circleSize / 2.0,
+              y: stickManager.rightStickY.lastAcceleration / stickDivider * circleSize
+                + circleSize / 2.0
             ))
         }
         .stroke(Color.red, lineWidth: 2)
@@ -53,7 +56,7 @@ struct StickInfo: View {
       Text("\(label):")
       Text("    value: \(stick.value)")
       Text("    interval: \(stick.lastInterval)")
-      Text("    acceleration: \(stick.lastAcceleration))")
+      Text("    acceleration: \(stick.lastAcceleration)")
     }
   }
 }

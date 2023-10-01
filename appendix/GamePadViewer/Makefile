@@ -9,6 +9,7 @@ clean:
 	rm -fr build
 
 run:
+	-killall Karabiner-GamePadViewer
 	bash ../../scripts/codesign.sh build/Release
 	# Do not execute Karabiner-GamePadViewer.app/Contents/MacOS/Karabiner-GamePadViewer directly.
 	# We have to run as app in order to apply the user approval for Input Monitoring.
