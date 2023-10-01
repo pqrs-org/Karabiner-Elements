@@ -3,14 +3,15 @@ import SwiftUI
 struct ContentView: View {
   @ObservedObject var inputMonitoringAlertData = InputMonitoringAlertData.shared
   @ObservedObject var eventObserver = EventObserver.shared
+  @ObservedObject var stickManager = StickManager.shared
 
   var body: some View {
     VStack {
       VStack(alignment: .leading) {
         Text("counter: \(eventObserver.counter)")
 
-        StickInfo(label: "Right Stick X", stick: $eventObserver.rightStickX)
-        StickInfo(label: "Right Stick Y", stick: $eventObserver.rightStickY)
+        StickInfo(label: "Right Stick X", stick: $stickManager.rightStickX)
+        StickInfo(label: "Right Stick Y", stick: $stickManager.rightStickY)
       }
 
       ZStack(alignment: .center) {
@@ -19,8 +20,8 @@ struct ContentView: View {
           .frame(width: 100, height: 100)
 
         Line(
-          x: eventObserver.rightStickX.acceleration / 20.0,
-          y: eventObserver.rightStickY.acceleration / 20.0
+          x: stickManager.rightStickX.acceleration / 5.0,
+          y: stickManager.rightStickY.acceleration / 5.0
         )
         .stroke(Color.red, lineWidth: 2)
         .frame(width: 100, height: 100)
@@ -39,7 +40,7 @@ struct ContentView: View {
 
 struct StickInfo: View {
   let label: String
-  @Binding var stick: EventObserver.Stick
+  @Binding var stick: StickManager.Stick
 
   var body: some View {
     VStack(alignment: .leading) {
