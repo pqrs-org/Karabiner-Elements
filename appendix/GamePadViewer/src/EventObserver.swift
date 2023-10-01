@@ -17,6 +17,7 @@ private func callback(
 public class EventObserver: ObservableObject {
   public static let shared = EventObserver()
 
+  @ObservedObject var stickManager = StickManager.shared
   @Published var counter = 0
 
   private init() {
@@ -45,13 +46,17 @@ public class EventObserver: ObservableObject {
     // usage::generic_desktop::z
     if usagePage == 0x1, usage == 0x32 {
       counter += 1
-      StickManager.shared.rightStickX.update(logicalMax, logicalMin, integerValue)
+      Task { @MainActor in
+        stickManager.rightStickX.update(logicalMax, logicalMin, integerValue)
+      }
     }
 
     // usage::generic_desktop::rz
     if usagePage == 0x1, usage == 0x35 {
       counter += 1
-      StickManager.shared.rightStickY.update(logicalMax, logicalMin, integerValue)
+      Task { @MainActor in
+        stickManager.rightStickY.update(logicalMax, logicalMin, integerValue)
+      }
     }
   }
 }

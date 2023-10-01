@@ -10,8 +10,8 @@ struct ContentView: View {
       VStack(alignment: .leading) {
         Text("counter: \(eventObserver.counter)")
 
-        StickInfo(label: "Right Stick X", stick: $stickManager.rightStickX)
-        StickInfo(label: "Right Stick Y", stick: $stickManager.rightStickY)
+        StickInfo(label: "Right Stick X", stick: stickManager.rightStickX)
+        StickInfo(label: "Right Stick Y", stick: stickManager.rightStickY)
       }
 
       ZStack(alignment: .center) {
@@ -20,8 +20,8 @@ struct ContentView: View {
           .frame(width: 100, height: 100)
 
         Line(
-          x: stickManager.rightStickX.acceleration / 5.0,
-          y: stickManager.rightStickY.acceleration / 5.0
+          x: stickManager.rightStickX.lastAcceleration / 5.0,
+          y: stickManager.rightStickY.lastAcceleration / 5.0
         )
         .stroke(Color.red, lineWidth: 2)
         .frame(width: 100, height: 100)
@@ -40,14 +40,14 @@ struct ContentView: View {
 
 struct StickInfo: View {
   let label: String
-  @Binding var stick: StickManager.Stick
+  @ObservedObject var stick: StickManager.Stick
 
   var body: some View {
     VStack(alignment: .leading) {
       Text("\(label):")
       Text("    value: \(stick.value)")
-      Text("    interval: \(stick.interval)")
-      Text("    acceleration: \(stick.acceleration))")
+      Text("    interval: \(stick.lastInterval)")
+      Text("    acceleration: \(stick.lastAcceleration))")
     }
   }
 }
