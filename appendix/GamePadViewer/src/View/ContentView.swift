@@ -6,7 +6,7 @@ struct ContentView: View {
   @ObservedObject var stickManager = StickManager.shared
 
   let circleSize = 100.0
-  let stickDivider = 20.0
+  let stickDivider = 50.0
 
   var body: some View {
     VStack {

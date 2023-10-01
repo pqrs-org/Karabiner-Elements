@@ -6,6 +6,7 @@ public class StickManager: ObservableObject {
 
   struct Event {
     var arrivedAt: Date
+    var value: Double
     var acceleration: Double
 
     func attenuatedAcceleration(_ now: Date) -> Double {
@@ -29,7 +30,7 @@ public class StickManager: ObservableObject {
     var eventHistories: [Event] = []
 
     @MainActor
-    func update(
+    func add(
       _ logicalMax: Int64,
       _ logicalMin: Int64,
       _ integerValue: Int64
@@ -50,27 +51,40 @@ public class StickManager: ObservableObject {
           0.001  // 1 ms
         )
 
-        let deadzone = 0.1
-        if abs(value) < deadzone {
-          eventHistories.removeAll()
-          lastAcceleration = 0.0
-        } else {
-          // -1000.0 ... 1000.0
-          let acceleration = (value - previousValue) / lastInterval
+        // -1000.0 ... 1000.0
+        let acceleration = (value - previousValue) / lastInterval
 
-          eventHistories.append(Event(arrivedAt: now, acceleration: acceleration))
+        eventHistories.append(
+          Event(
+            arrivedAt: now,
+            value: value,
+            acceleration: acceleration))
+      }
+    }
 
-          var sum = 0.0
-          eventHistories.forEach { e in
-            sum += e.attenuatedAcceleration(now)
-          }
-          lastAcceleration = sum
+    @MainActor
+    func update() {
+      guard let last = eventHistories.last else {
+        lastAcceleration = 0.0
+        return
+      }
 
-          eventHistories.removeAll(where: {
-            let attenuatedAcceleration = $0.attenuatedAcceleration(now)
-            return attenuatedAcceleration == 0 || sum * attenuatedAcceleration < 0
-          })
+      let deadzone = 0.1
+      if abs(last.value) < deadzone {
+        eventHistories.removeAll()
+        lastAcceleration = 0.0
+      } else {
+        let now = Date()
+        var sum = 0.0
+        eventHistories.forEach { e in
+          sum += e.attenuatedAcceleration(now)
         }
+        lastAcceleration = sum
+
+        eventHistories.removeAll(where: {
+          let attenuatedAcceleration = $0.attenuatedAcceleration(now)
+          return attenuatedAcceleration == 0 || sum * attenuatedAcceleration < 0
+        })
       }
     }
   }
