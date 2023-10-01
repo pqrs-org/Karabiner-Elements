@@ -25,7 +25,7 @@ public class StickManager: ObservableObject {
       )
       .autoconnect()
       .sink { [unowned self] _ in
-        let attenuation = 0.01
+        let attenuation = 0.5
         if abs(self.lastAcceleration) < attenuation {
           self.lastAcceleration = 0.0
         } else {
@@ -52,7 +52,6 @@ public class StickManager: ObservableObject {
 
         // -1.0 ... 1.0
         value = (Double(integerValue - logicalMin) / Double(logicalMax - logicalMin) - 0.5) * 2.0
-        print("value \(value)")
 
         lastArrivedAt = now
 
@@ -61,22 +60,23 @@ public class StickManager: ObservableObject {
           0.001  // 1 ms
         )
 
-        let deadzone = 0.1
-        if abs(value) < deadzone {
-          lastAcceleration = 0.0
-        } else {
-          // -1000.0 ... 1000.0
-          let acceleration = (value - previousValue) / lastInterval
+        // let deadzone = 0.1
+        //        if abs(value) < deadzone {
+        //          lastAcceleration = 0.0
+        //        } else {
 
-          while eventHistories.count > 0 && now.timeIntervalSince(eventHistories[0].arrivedAt) > 1.0
-          {
-            eventHistories.removeFirst()
-          }
-          eventHistories.append(Event(arrivedAt: now, acceleration: acceleration))
+        // -1000.0 ... 1000.0
+        let acceleration = (value - previousValue) / lastInterval
 
-          let max = eventHistories.max { a, b in abs(a.acceleration) < abs(b.acceleration) }
-          lastAcceleration = max?.acceleration ?? 0.0
+        while eventHistories.count > 0 && now.timeIntervalSince(eventHistories[0].arrivedAt) > 1.0 {
+          eventHistories.removeFirst()
         }
+        eventHistories.append(Event(arrivedAt: now, acceleration: acceleration))
+
+        //let max = eventHistories.max { a, b in abs(a.acceleration) < abs(b.acceleration) }
+        //lastAcceleration = max?.acceleration ?? 0.0
+        lastAcceleration += acceleration
+        //        }
       }
     }
   }

@@ -5,6 +5,8 @@ struct ContentView: View {
   @ObservedObject var eventObserver = EventObserver.shared
   @ObservedObject var stickManager = StickManager.shared
 
+  let circleSize = 100.0
+
   var body: some View {
     VStack {
       VStack(alignment: .leading) {
@@ -17,14 +19,18 @@ struct ContentView: View {
       ZStack(alignment: .center) {
         Circle()
           .stroke(Color.gray, lineWidth: 2)
-          .frame(width: 100, height: 100)
+          .frame(width: circleSize, height: circleSize)
 
-        Line(
-          x: stickManager.rightStickX.lastAcceleration / 5.0,
-          y: stickManager.rightStickY.lastAcceleration / 5.0
-        )
+        Path { path in
+          path.move(to: CGPoint(x: circleSize / 2.0, y: circleSize / 2.0))
+          path.addLine(
+            to: CGPoint(
+              x: stickManager.rightStickX.lastAcceleration * circleSize,
+              y: stickManager.rightStickY.lastAcceleration * circleSize
+            ))
+        }
         .stroke(Color.red, lineWidth: 2)
-        .frame(width: 100, height: 100)
+        .frame(width: circleSize, height: circleSize)
       }
     }
     .alert(isPresented: inputMonitoringAlertData.showing) {
@@ -49,27 +55,6 @@ struct StickInfo: View {
       Text("    interval: \(stick.lastInterval)")
       Text("    acceleration: \(stick.lastAcceleration))")
     }
-  }
-}
-
-struct Line: Shape {
-  let x: CGFloat  // -1.0 ... 1.0
-  let y: CGFloat  // -1.0 ... 1.0
-
-  func path(in rect: CGRect) -> Path {
-    var path = Path()
-
-    path.move(to: CGPoint(x: rect.maxX / 2.0, y: rect.maxY / 2.0))
-    // x:1.0  => rect.maxX
-    // x:0.0  => rect.maxX / 2.0
-    // x:-1.0 => 0.0
-    path.addLine(
-      to: CGPoint(
-        x: (x + 1.0) / 2.0 * rect.maxX,
-        y: (y + 1.0) / 2.0 * rect.maxY
-      ))
-
-    return path
   }
 }
 
