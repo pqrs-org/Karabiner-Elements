@@ -5,12 +5,12 @@ public class StickManager: ObservableObject {
   public static let shared = StickManager()
 
   struct Event {
-    var arrivedAt: Date
+    var timeStamp: Date
     var value: Double
     var acceleration: Double
 
     func attenuatedAcceleration(_ now: Date) -> Double {
-      let attenuation = 5 * now.timeIntervalSince(arrivedAt)
+      let attenuation = 5 * now.timeIntervalSince(timeStamp)
       if abs(acceleration) < attenuation {
         return 0
       }
@@ -24,7 +24,7 @@ public class StickManager: ObservableObject {
 
   class Stick: ObservableObject {
     @Published var value = 0.0
-    @Published var lastArrivedAt = Date()
+    @Published var lastTimeStamp = Date()
     @Published var lastInterval = 0.0
     @Published var lastAcceleration = 0.0
     var eventHistories: [Event] = []
@@ -37,17 +37,17 @@ public class StickManager: ObservableObject {
     ) {
       if logicalMax != logicalMin {
         let previousValue = value
-        let previousArrivedAt = lastArrivedAt
+        let previousTimeStamp = lastTimeStamp
 
         let now = Date()
 
         // -1.0 ... 1.0
         value = (Double(integerValue - logicalMin) / Double(logicalMax - logicalMin) - 0.5) * 2.0
 
-        lastArrivedAt = now
+        lastTimeStamp = now
 
         lastInterval = max(
-          now.timeIntervalSince(previousArrivedAt),
+          now.timeIntervalSince(previousTimeStamp),
           0.001  // 1 ms
         )
 
@@ -56,7 +56,7 @@ public class StickManager: ObservableObject {
 
         eventHistories.append(
           Event(
-            arrivedAt: now,
+            timeStamp: now,
             value: value,
             acceleration: acceleration))
       }
