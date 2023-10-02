@@ -82,7 +82,7 @@ public:
       active_ = value;
     }
 
-    int integer_value(void) const {
+    int xy_value(void) const {
       // The logical value range of Karabiner-DriverKit-VirtualHIDPointing is -127 ... 127.
       auto divider = 50.0;
       auto result = static_cast<int>(stick_value_ / divider);
@@ -91,12 +91,34 @@ public:
       return result;
     }
 
-    std::chrono::milliseconds interval(void) const {
+    int wheel_value(void) const {
+      // The logical value range of Karabiner-DriverKit-VirtualHIDPointing is -127 ... 127.
+      int result = std::signbit(stick_value_) ? -1 : 1;
+      return result;
+    }
+
+    std::chrono::milliseconds xy_interval(void) const {
       if (std::abs(stick_value_) == 0.0) {
         return std::chrono::milliseconds(0);
       }
 
       return std::chrono::milliseconds(20);
+    }
+
+    std::chrono::milliseconds wheel_interval(void) const {
+      if (std::abs(stick_value_) == 0.0) {
+        return std::chrono::milliseconds(0);
+      }
+
+      if (std::abs(stick_value_) > 500.0) {
+        return std::chrono::milliseconds(50);
+      }
+
+      if (std::abs(stick_value_) > 250.0) {
+        return std::chrono::milliseconds(75);
+      }
+
+      return std::chrono::milliseconds(100);
     }
 
     void add_event(CFIndex logical_max,
@@ -380,7 +402,7 @@ private:
   void emit_x_event(const device_id device_id,
                     event_origin event_origin) {
     auto get_interval = [](const state& s) {
-      return s.x.interval();
+      return s.x.xy_interval();
     };
 
     auto unset_active = [](state& s) {
@@ -388,7 +410,7 @@ private:
     };
 
     auto make_pointing_motion = [](const state& s) {
-      return pointing_motion(s.x.integer_value(),
+      return pointing_motion(s.x.xy_value(),
                              0,
                              0,
                              0);
@@ -404,7 +426,7 @@ private:
   void emit_y_event(const device_id device_id,
                     event_origin event_origin) {
     auto get_interval = [](const state& s) {
-      return s.y.interval();
+      return s.y.xy_interval();
     };
 
     auto unset_active = [](state& s) {
@@ -413,7 +435,7 @@ private:
 
     auto make_pointing_motion = [](const state& s) {
       return pointing_motion(0,
-                             s.y.integer_value(),
+                             s.y.xy_value(),
                              0,
                              0);
     };
@@ -428,7 +450,7 @@ private:
   void emit_vertical_wheel_event(const device_id device_id,
                                  event_origin event_origin) {
     auto get_interval = [](const state& s) {
-      return s.vertical_wheel.interval();
+      return s.vertical_wheel.wheel_interval();
     };
 
     auto unset_active = [](state& s) {
@@ -438,7 +460,7 @@ private:
     auto make_pointing_motion = [](const state& s) {
       return pointing_motion(0,
                              0,
-                             -s.vertical_wheel.integer_value(),
+                             -s.vertical_wheel.wheel_value(),
                              0);
     };
 
@@ -452,7 +474,7 @@ private:
   void emit_horizontal_wheel_event(const device_id device_id,
                                    event_origin event_origin) {
     auto get_interval = [](const state& s) {
-      return s.horizontal_wheel.interval();
+      return s.horizontal_wheel.wheel_interval();
     };
 
     auto unset_active = [](state& s) {
@@ -463,7 +485,7 @@ private:
       return pointing_motion(0,
                              0,
                              0,
-                             s.horizontal_wheel.integer_value());
+                             s.horizontal_wheel.wheel_value());
     };
 
     emit_event(device_id,
