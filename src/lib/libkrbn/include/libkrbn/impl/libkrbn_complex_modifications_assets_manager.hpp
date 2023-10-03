@@ -74,7 +74,7 @@ public:
                                                        libkrbn_core_configuration* core_configuration) const {
     if (auto r = find_rule(file_index, index)) {
       if (auto c = reinterpret_cast<libkrbn_core_configuration_class*>(core_configuration)) {
-        c->get_core_configuration().get_selected_profile().push_back_complex_modifications_rule(*r);
+        c->get_core_configuration().get_selected_profile().push_front_complex_modifications_rule(*r);
       }
     }
   }

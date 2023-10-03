@@ -398,7 +398,7 @@ extension LibKrbn {
     public func addComplexModificationRules(
       _ complexModificationsAssetFile: ComplexModificationsAssetFile
     ) {
-      for rule in complexModificationsAssetFile.assetRules {
+      for rule in complexModificationsAssetFile.assetRules.reversed() {
         libkrbn_complex_modifications_assets_manager_add_rule_to_core_configuration_selected_profile(
           rule.fileIndex,
           rule.ruleIndex,

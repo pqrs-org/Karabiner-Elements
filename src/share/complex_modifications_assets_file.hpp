@@ -60,10 +60,10 @@ public:
     return rules_;
   }
 
-  void push_back_rule_to_core_configuration_profile(core_configuration::details::profile& profile,
-                                                    size_t index) {
+  void push_front_rule_to_core_configuration_profile(core_configuration::details::profile& profile,
+                                                     size_t index) {
     if (index < rules_.size()) {
-      profile.push_back_complex_modifications_rule(rules_[index]);
+      profile.push_front_complex_modifications_rule(rules_[index]);
     }
   }
 
