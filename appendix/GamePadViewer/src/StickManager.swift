@@ -22,7 +22,7 @@ public class StickManager: ObservableObject {
     }
   }
 
-  class Stick: ObservableObject {
+  class StickSensor: ObservableObject {
     @Published var value = 0.0
     @Published var lastTimeStamp = Date()
     @Published var lastInterval = 0.0
@@ -89,6 +89,6 @@ public class StickManager: ObservableObject {
     }
   }
 
-  @Published var rightStickX = Stick()
-  @Published var rightStickY = Stick()
+  @Published var rightStickX = StickSensor()
+  @Published var rightStickY = StickSensor()
 }

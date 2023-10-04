@@ -13,8 +13,8 @@ struct ContentView: View {
       VStack(alignment: .leading) {
         Text("counter: \(eventObserver.counter)")
 
-        StickInfo(label: "Right Stick X", stick: stickManager.rightStickX)
-        StickInfo(label: "Right Stick Y", stick: stickManager.rightStickY)
+        StickSensorInfo(label: "Right Stick X", stick: stickManager.rightStickX)
+        StickSensorInfo(label: "Right Stick Y", stick: stickManager.rightStickY)
       }
 
       ZStack(alignment: .center) {
@@ -47,9 +47,9 @@ struct ContentView: View {
   }
 }
 
-struct StickInfo: View {
+struct StickSensorInfo: View {
   let label: String
-  @ObservedObject var stick: StickManager.Stick
+  @ObservedObject var stick: StickManager.StickSensor
 
   var body: some View {
     VStack(alignment: .leading) {
