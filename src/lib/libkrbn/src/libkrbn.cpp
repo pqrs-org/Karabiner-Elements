@@ -76,6 +76,40 @@ const char* libkrbn_get_system_app_icon_configuration_file_path(void) {
   return krbn::constants::get_system_app_icon_configuration_file_path().c_str();
 }
 
+bool libkrbn_user_pid_directory_writable(void) {
+  auto pid_directory = krbn::constants::get_user_pid_directory();
+
+  pqrs::filesystem::create_directory_with_intermediate_directories(pid_directory, 0755);
+  if (!pqrs::filesystem::is_directory(pid_directory)) {
+    return false;
+  }
+
+  auto doctor_file = pid_directory / "doctor";
+
+  if (pqrs::filesystem::exists(doctor_file)) {
+    std::error_code error_code;
+    std::filesystem::remove(pid_directory / "doctor", error_code);
+  }
+
+  if (pqrs::filesystem::exists(doctor_file)) {
+    return false;
+  }
+
+  std::ofstream ofs(doctor_file);
+  if (!ofs) {
+    return false;
+  }
+
+  ofs << "writable";
+  ofs.close();
+
+  if (!pqrs::filesystem::exists(doctor_file)) {
+    return false;
+  }
+
+  return true;
+}
+
 bool libkrbn_lock_single_application_with_user_pid_file(const char* _Nonnull pid_file_name) {
   return krbn::process_utility::lock_single_application_with_user_pid_file(pid_file_name);
 }

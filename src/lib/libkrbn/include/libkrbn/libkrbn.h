@@ -30,6 +30,8 @@ const char* libkrbn_get_user_configuration_directory(void);
 const char* libkrbn_get_user_complex_modifications_assets_directory(void);
 const char* libkrbn_get_system_app_icon_configuration_file_path(void);
 
+bool libkrbn_user_pid_directory_writable(void);
+
 bool libkrbn_lock_single_application_with_user_pid_file(const char* pid_file_name);
 void libkrbn_unlock_single_application(void);
 
