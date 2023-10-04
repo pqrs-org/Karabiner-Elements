@@ -17,6 +17,9 @@ struct ContentView: View {
         .alert(
           isPresented: contentViewStates.showInputMonitoringPermissionsAlert
         ) { InputMonitoringPermissionsAlertView() }
+        .alert(
+          isPresented: contentViewStates.showDoctorAlert
+        ) { DoctorAlertView() }
     }
     .frame(
       minWidth: 1100,
