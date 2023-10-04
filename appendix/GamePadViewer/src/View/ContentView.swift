@@ -12,6 +12,7 @@ struct ContentView: View {
     VStack {
       VStack(alignment: .leading) {
         Text("counter: \(eventObserver.counter)")
+        Text("Right Stick radian: \(stickManager.rightStick.radian)")
 
         StickSensorInfo(label: "Right Stick X", stick: stickManager.rightStick.horizontal)
         StickSensorInfo(label: "Right Stick Y", stick: stickManager.rightStick.vertical)
@@ -34,6 +35,19 @@ struct ContentView: View {
         }
         .stroke(Color.red, lineWidth: 2)
         .frame(width: circleSize, height: circleSize)
+
+        Path { path in
+          path.move(to: CGPoint(x: circleSize / 2.0, y: circleSize / 2.0))
+          path.addLine(
+            to: CGPoint(
+              x: cos(stickManager.rightStick.radian) * circleSize / 2.0
+                + circleSize / 2.0,
+              y: sin(stickManager.rightStick.radian) * circleSize / 2.0
+                + circleSize / 2.0
+            ))
+        }
+        .stroke(Color.blue, lineWidth: 2)
+        .frame(width: circleSize, height: circleSize)
       }
     }
     .alert(isPresented: inputMonitoringAlertData.showing) {
@@ -54,7 +68,7 @@ struct StickSensorInfo: View {
   var body: some View {
     VStack(alignment: .leading) {
       Text("\(label):")
-      Text("    value: \(stick.value)")
+      Text("    value: \(stick.lastDoubleValue)")
       Text("    interval: \(stick.lastInterval)")
       Text("    acceleration: \(stick.lastAcceleration)")
     }

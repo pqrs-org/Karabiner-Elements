@@ -23,7 +23,7 @@ public class StickManager: ObservableObject {
   }
 
   class StickSensor: ObservableObject {
-    @Published var value = 0.0
+    @Published var lastDoubleValue = 0.0
     @Published var lastTimeStamp = Date()
     @Published var lastInterval = 0.0
     @Published var lastAcceleration = 0.0
@@ -36,13 +36,14 @@ public class StickManager: ObservableObject {
       _ integerValue: Int64
     ) {
       if logicalMax != logicalMin {
-        let previousValue = value
+        let previousDoubleValue = lastDoubleValue
         let previousTimeStamp = lastTimeStamp
 
         let now = Date()
 
         // -1.0 ... 1.0
-        value = (Double(integerValue - logicalMin) / Double(logicalMax - logicalMin) - 0.5) * 2.0
+        lastDoubleValue =
+          (Double(integerValue - logicalMin) / Double(logicalMax - logicalMin) - 0.5) * 2.0
 
         lastTimeStamp = now
 
@@ -52,12 +53,12 @@ public class StickManager: ObservableObject {
         )
 
         // -1000.0 ... 1000.0
-        let acceleration = (value - previousValue) / lastInterval
+        let acceleration = (lastDoubleValue - previousDoubleValue) / lastInterval
 
         eventHistories.append(
           Event(
             timeStamp: now,
-            value: value,
+            value: lastDoubleValue,
             acceleration: acceleration))
       }
     }
@@ -92,6 +93,15 @@ public class StickManager: ObservableObject {
   class Stick: ObservableObject {
     @Published var horizontal = StickSensor()
     @Published var vertical = StickSensor()
+    @Published var radian: Double = 0
+
+    @MainActor
+    func update() {
+      horizontal.update()
+      vertical.update()
+
+      radian = atan2(vertical.lastDoubleValue, horizontal.lastDoubleValue)
+    }
   }
 
   @Published var rightStick = Stick()
