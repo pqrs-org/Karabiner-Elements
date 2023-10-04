@@ -13,8 +13,8 @@ struct ContentView: View {
       VStack(alignment: .leading) {
         Text("counter: \(eventObserver.counter)")
 
-        StickSensorInfo(label: "Right Stick X", stick: stickManager.rightStickX)
-        StickSensorInfo(label: "Right Stick Y", stick: stickManager.rightStickY)
+        StickSensorInfo(label: "Right Stick X", stick: stickManager.rightStick.horizontal)
+        StickSensorInfo(label: "Right Stick Y", stick: stickManager.rightStick.vertical)
       }
 
       ZStack(alignment: .center) {
@@ -26,9 +26,9 @@ struct ContentView: View {
           path.move(to: CGPoint(x: circleSize / 2.0, y: circleSize / 2.0))
           path.addLine(
             to: CGPoint(
-              x: stickManager.rightStickX.lastAcceleration / stickDivider * circleSize
+              x: stickManager.rightStick.horizontal.lastAcceleration / stickDivider * circleSize
                 + circleSize / 2.0,
-              y: stickManager.rightStickY.lastAcceleration / stickDivider * circleSize
+              y: stickManager.rightStick.vertical.lastAcceleration / stickDivider * circleSize
                 + circleSize / 2.0
             ))
         }

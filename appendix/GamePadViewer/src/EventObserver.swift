@@ -47,10 +47,10 @@ public class EventObserver: ObservableObject {
     if usagePage == 0x1, usage == 0x32 {
       counter += 1
       Task { @MainActor in
-        stickManager.rightStickX.add(logicalMax, logicalMin, integerValue)
+        stickManager.rightStick.horizontal.add(logicalMax, logicalMin, integerValue)
 
-        stickManager.rightStickX.update()
-        stickManager.rightStickY.update()
+        stickManager.rightStick.horizontal.update()
+        stickManager.rightStick.vertical.update()
       }
     }
 
@@ -58,10 +58,10 @@ public class EventObserver: ObservableObject {
     if usagePage == 0x1, usage == 0x35 {
       counter += 1
       Task { @MainActor in
-        stickManager.rightStickY.add(logicalMax, logicalMin, integerValue)
+        stickManager.rightStick.vertical.add(logicalMax, logicalMin, integerValue)
 
-        stickManager.rightStickX.update()
-        stickManager.rightStickY.update()
+        stickManager.rightStick.horizontal.update()
+        stickManager.rightStick.vertical.update()
       }
     }
   }

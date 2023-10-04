@@ -89,6 +89,10 @@ public class StickManager: ObservableObject {
     }
   }
 
-  @Published var rightStickX = StickSensor()
-  @Published var rightStickY = StickSensor()
+  class Stick: ObservableObject {
+    @Published var horizontal = StickSensor()
+    @Published var vertical = StickSensor()
+  }
+
+  @Published var rightStick = Stick()
 }
