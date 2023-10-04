@@ -61,7 +61,7 @@ public class AppDelegate: NSObject, NSApplicationDelegate {
       switch command {
       case "checkForUpdatesInBackground":
         #if USE_SPARKLE
-          if !libkrbn_lock_single_application_with_user_pid_file("check_for_updates_in_background")
+          if !libkrbn_lock_single_application_with_user_pid_file("check_for_updates_in_background.pid")
           {
             print("Exit since another process is running.")
             NSApplication.shared.terminate(self)
@@ -102,9 +102,10 @@ public class AppDelegate: NSObject, NSApplicationDelegate {
     NSApp.activate(ignoringOtherApps: true)
 
     //
-    // Start StateJsonMonitor
+    // Start components
     //
 
+    _ = Doctor.shared
     StateJsonMonitor.shared.start()
 
     //
