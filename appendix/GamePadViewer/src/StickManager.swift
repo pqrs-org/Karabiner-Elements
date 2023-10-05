@@ -93,7 +93,8 @@ public class StickManager: ObservableObject {
   class Stick: ObservableObject {
     @Published var horizontal = StickSensor()
     @Published var vertical = StickSensor()
-    @Published var radian: Double = 0
+    @Published var radian = 0.0
+    @Published var magnitude = 0.0
 
     @MainActor
     func update() {
@@ -101,6 +102,7 @@ public class StickManager: ObservableObject {
       vertical.update()
 
       radian = atan2(vertical.lastDoubleValue, horizontal.lastDoubleValue)
+      magnitude = sqrt(pow(vertical.lastDoubleValue, 2) + pow(horizontal.lastDoubleValue, 2))
     }
   }
 

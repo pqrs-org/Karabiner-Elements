@@ -13,6 +13,7 @@ struct ContentView: View {
       VStack(alignment: .leading) {
         Text("counter: \(eventObserver.counter)")
         Text("Right Stick radian: \(stickManager.rightStick.radian)")
+        Text("Right Stick magnitude: \(stickManager.rightStick.magnitude)")
 
         StickSensorInfo(label: "Right Stick X", stick: stickManager.rightStick.horizontal)
         StickSensorInfo(label: "Right Stick Y", stick: stickManager.rightStick.vertical)
@@ -40,9 +41,11 @@ struct ContentView: View {
           path.move(to: CGPoint(x: circleSize / 2.0, y: circleSize / 2.0))
           path.addLine(
             to: CGPoint(
-              x: cos(stickManager.rightStick.radian) * circleSize / 2.0
+              x: cos(stickManager.rightStick.radian) * stickManager.rightStick.magnitude
+                * circleSize / 2.0
                 + circleSize / 2.0,
-              y: sin(stickManager.rightStick.radian) * circleSize / 2.0
+              y: sin(stickManager.rightStick.radian) * stickManager.rightStick.magnitude
+                * circleSize / 2.0
                 + circleSize / 2.0
             ))
         }
