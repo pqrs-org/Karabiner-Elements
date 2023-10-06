@@ -98,11 +98,11 @@ public class StickManager: ObservableObject {
 
     @MainActor
     func update() {
-      horizontal.update()
-      vertical.update()
-
       radian = atan2(vertical.lastDoubleValue, horizontal.lastDoubleValue)
       magnitude = sqrt(pow(vertical.lastDoubleValue, 2) + pow(horizontal.lastDoubleValue, 2))
+
+      horizontal.update()
+      vertical.update()
     }
   }
 

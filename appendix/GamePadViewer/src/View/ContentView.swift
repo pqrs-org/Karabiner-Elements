@@ -6,6 +6,7 @@ struct ContentView: View {
   @ObservedObject var stickManager = StickManager.shared
 
   let circleSize = 100.0
+  let indicatorSize = 10.0
   let stickDivider = 50.0
 
   var body: some View {
@@ -19,10 +20,24 @@ struct ContentView: View {
         StickSensorInfo(label: "Right Stick Y", stick: stickManager.rightStick.vertical)
       }
 
-      ZStack(alignment: .center) {
+      ZStack(alignment: .topLeading) {
         Circle()
           .stroke(Color.gray, lineWidth: 2)
           .frame(width: circleSize, height: circleSize)
+
+        Circle()
+          .fill(Color.blue)
+          .frame(width: indicatorSize, height: indicatorSize)
+          .padding(
+            .leading,
+            circleSize / 2.0 + cos(stickManager.rightStick.radian)
+              * stickManager.rightStick.magnitude * circleSize / 2.0 - indicatorSize / 2.0
+          )
+          .padding(
+            .top,
+            circleSize / 2.0 + sin(stickManager.rightStick.radian)
+              * stickManager.rightStick.magnitude * circleSize / 2.0 - indicatorSize / 2.0
+          )
 
         Path { path in
           path.move(to: CGPoint(x: circleSize / 2.0, y: circleSize / 2.0))
@@ -35,21 +50,6 @@ struct ContentView: View {
             ))
         }
         .stroke(Color.red, lineWidth: 2)
-        .frame(width: circleSize, height: circleSize)
-
-        Path { path in
-          path.move(to: CGPoint(x: circleSize / 2.0, y: circleSize / 2.0))
-          path.addLine(
-            to: CGPoint(
-              x: cos(stickManager.rightStick.radian) * stickManager.rightStick.magnitude
-                * circleSize / 2.0
-                + circleSize / 2.0,
-              y: sin(stickManager.rightStick.radian) * stickManager.rightStick.magnitude
-                * circleSize / 2.0
-                + circleSize / 2.0
-            ))
-        }
-        .stroke(Color.blue, lineWidth: 2)
         .frame(width: circleSize, height: circleSize)
       }
     }
