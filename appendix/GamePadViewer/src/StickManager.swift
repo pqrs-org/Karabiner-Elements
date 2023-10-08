@@ -74,7 +74,7 @@ public class StickManager: ObservableObject {
         }
       } else {
         // Decrease acceleration if magnitude is decreased.
-        if magnitude < holdingMagnitude {
+        if magnitude < holdingMagnitude - 0.1 {
           holdingAcceleration = a
         }
       }
