@@ -4,30 +4,14 @@ import SwiftUI
 public class StickManager: ObservableObject {
   public static let shared = StickManager()
 
-  struct Event {
-    var timeStamp: Date
-    var value: Double
-    var acceleration: Double
-
-    func attenuatedAcceleration(_ now: Date) -> Double {
-      let attenuation = 5 * now.timeIntervalSince(timeStamp)
-      if abs(acceleration) < attenuation {
-        return 0
-      }
-      if acceleration > 0 {
-        return acceleration - attenuation
-      } else {
-        return acceleration + attenuation
-      }
-    }
+  struct History {
+    let timeStamp: Date
+    let radian: Double
+    var magnitude: Double
   }
 
   class StickSensor: ObservableObject {
     @Published var lastDoubleValue = 0.0
-    @Published var lastTimeStamp = Date()
-    @Published var lastInterval = 0.0
-    @Published var lastAcceleration = 0.0
-    var eventHistories: [Event] = []
 
     @MainActor
     func add(
@@ -36,56 +20,9 @@ public class StickManager: ObservableObject {
       _ integerValue: Int64
     ) {
       if logicalMax != logicalMin {
-        let previousDoubleValue = lastDoubleValue
-        let previousTimeStamp = lastTimeStamp
-
-        let now = Date()
-
         // -1.0 ... 1.0
         lastDoubleValue =
           (Double(integerValue - logicalMin) / Double(logicalMax - logicalMin) - 0.5) * 2.0
-
-        lastTimeStamp = now
-
-        lastInterval = max(
-          now.timeIntervalSince(previousTimeStamp),
-          0.001  // 1 ms
-        )
-
-        // -1000.0 ... 1000.0
-        let acceleration = (lastDoubleValue - previousDoubleValue) / lastInterval
-
-        eventHistories.append(
-          Event(
-            timeStamp: now,
-            value: lastDoubleValue,
-            acceleration: acceleration))
-      }
-    }
-
-    @MainActor
-    func update() {
-      guard let last = eventHistories.last else {
-        lastAcceleration = 0.0
-        return
-      }
-
-      let deadzone = 0.1
-      if abs(last.value) < deadzone {
-        eventHistories.removeAll()
-        lastAcceleration = 0.0
-      } else {
-        let now = Date()
-        var sum = 0.0
-        eventHistories.forEach { e in
-          sum += e.attenuatedAcceleration(now)
-        }
-        lastAcceleration = sum
-
-        eventHistories.removeAll(where: {
-          let attenuatedAcceleration = $0.attenuatedAcceleration(now)
-          return attenuatedAcceleration == 0 || sum * attenuatedAcceleration < 0
-        })
       }
     }
   }
@@ -95,14 +32,54 @@ public class StickManager: ObservableObject {
     @Published var vertical = StickSensor()
     @Published var radian = 0.0
     @Published var magnitude = 0.0
+    @Published var holdingAcceleration = 0.0
+    @Published var holdingMagnitude = 0.0
+    var histories: [History] = []
 
     @MainActor
     func update() {
       radian = atan2(vertical.lastDoubleValue, horizontal.lastDoubleValue)
-      magnitude = sqrt(pow(vertical.lastDoubleValue, 2) + pow(horizontal.lastDoubleValue, 2))
+      magnitude = min(
+        1.0,
+        sqrt(pow(vertical.lastDoubleValue, 2) + pow(horizontal.lastDoubleValue, 2)))
 
-      horizontal.update()
-      vertical.update()
+      let deadzone = 0.1
+      if abs(vertical.lastDoubleValue) < deadzone && abs(horizontal.lastDoubleValue) < deadzone {
+        histories.removeAll()
+        holdingAcceleration = 0.0
+        holdingMagnitude = 0.0
+        return
+      }
+
+      let now = Date()
+
+      histories.removeAll(where: {
+        return now.timeIntervalSince($0.timeStamp) > 0.02  // 20 ms
+      })
+
+      histories.append(
+        History(
+          timeStamp: now,
+          radian: radian,
+          magnitude: magnitude))
+
+      let minMagnitude = histories.min(by: { $0.magnitude < $1.magnitude })
+      let maxMagnitude = histories.max(by: { $0.magnitude < $1.magnitude })
+      let a = (maxMagnitude?.magnitude ?? 0) - (minMagnitude?.magnitude ?? 0)
+
+      if holdingAcceleration < a {
+        // Increase acceleration if magnitude is increased.
+        if magnitude > holdingMagnitude {
+          holdingAcceleration = a
+        }
+      } else {
+        // Decrease acceleration if magnitude is decreased.
+        if magnitude < holdingMagnitude {
+          holdingAcceleration = a
+        }
+      }
+
+      holdingMagnitude = magnitude
     }
   }
 

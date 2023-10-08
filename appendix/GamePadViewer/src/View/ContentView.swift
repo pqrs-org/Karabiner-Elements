@@ -7,7 +7,7 @@ struct ContentView: View {
 
   let circleSize = 100.0
   let indicatorSize = 10.0
-  let stickDivider = 50.0
+  let accelerationScale = 10.0
 
   var body: some View {
     VStack {
@@ -15,6 +15,8 @@ struct ContentView: View {
         Text("counter: \(eventObserver.counter)")
         Text("Right Stick radian: \(stickManager.rightStick.radian)")
         Text("Right Stick magnitude: \(stickManager.rightStick.magnitude)")
+        Text("Right stick holding acceleration: \(stickManager.rightStick.holdingAcceleration)")
+        Text("Right stick holding magnitude: \(stickManager.rightStick.holdingMagnitude)")
 
         StickSensorInfo(label: "Right Stick X", stick: stickManager.rightStick.horizontal)
         StickSensorInfo(label: "Right Stick Y", stick: stickManager.rightStick.vertical)
@@ -43,10 +45,11 @@ struct ContentView: View {
           path.move(to: CGPoint(x: circleSize / 2.0, y: circleSize / 2.0))
           path.addLine(
             to: CGPoint(
-              x: stickManager.rightStick.horizontal.lastAcceleration / stickDivider * circleSize
-                + circleSize / 2.0,
-              y: stickManager.rightStick.vertical.lastAcceleration / stickDivider * circleSize
-                + circleSize / 2.0
+              x: circleSize / 2.0 + cos(stickManager.rightStick.radian)
+                * stickManager.rightStick.holdingAcceleration * accelerationScale * circleSize
+                / 2.0,
+              y: circleSize / 2.0 + sin(stickManager.rightStick.radian)
+                * stickManager.rightStick.holdingAcceleration * accelerationScale * circleSize / 2.0
             ))
         }
         .stroke(Color.red, lineWidth: 2)
@@ -72,8 +75,6 @@ struct StickSensorInfo: View {
     VStack(alignment: .leading) {
       Text("\(label):")
       Text("    value: \(stick.lastDoubleValue)")
-      Text("    interval: \(stick.lastInterval)")
-      Text("    acceleration: \(stick.lastAcceleration)")
     }
   }
 }
