@@ -102,7 +102,7 @@ public:
 
     std::pair<int, int> xy_value(void) const {
       // The logical value range of Karabiner-DriverKit-VirtualHIDPointing is -127 ... 127.
-      double scale = 3.0;
+      double scale = 1.0;
       auto x = static_cast<int>(std::cos(radian_) * holding_magnitude_ * scale * 127);
       auto y = static_cast<int>(std::sin(radian_) * holding_magnitude_ * scale * 127);
 
@@ -373,6 +373,8 @@ private:
                              event,
                              event_origin,
                              event_queue::state::original);
+
+    pointing_motion_arrived(entry);
 
     enqueue_to_dispatcher(
         [this, device_id, event_origin, get_interval, unset_active, make_pointing_motion, entry] {
