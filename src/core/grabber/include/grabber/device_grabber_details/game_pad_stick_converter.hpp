@@ -21,57 +21,57 @@ namespace device_grabber_details {
 //
 class game_pad_stick_converter final : public pqrs::dispatcher::extra::dispatcher_client {
 public:
-  class stick_event final {
+  class history final {
   public:
-    stick_event(absolute_time_point time_stamp,
-                double double_value,
-                double acceleration)
+    history(absolute_time_point time_stamp,
+            double radian,
+            double magnitude)
         : time_stamp_(time_stamp),
-          double_value_(double_value),
-          acceleration_(acceleration) {
+          radian_(radian),
+          magnitude_(magnitude) {
     }
 
     absolute_time_point get_time_stamp(void) const {
       return time_stamp_;
     }
 
-    double get_double_value(void) const {
-      return double_value_;
+    double get_radian(void) const {
+      return radian_;
     }
 
-    double get_acceleration(void) const {
-      return acceleration_;
-    }
-
-    double attenuated_acceleration(absolute_time_point now) const {
-      auto interval = static_cast<double>(pqrs::osx::chrono::make_milliseconds(now - time_stamp_).count()) / 1000.0;
-      auto attenuation = 5.0 * interval;
-      if (std::abs(acceleration_) < attenuation) {
-        return 0.0;
-      }
-
-      if (acceleration_ > 0) {
-        return acceleration_ - attenuation;
-      } else {
-        return acceleration_ + attenuation;
-      }
+    double get_magnitude(void) const {
+      return magnitude_;
     }
 
   private:
     absolute_time_point time_stamp_;
-    double double_value_; // -1.0 ... 1.0
-    double acceleration_;
+    double radian_;
+    double magnitude_;
+  };
+
+  class stick_sensor {
+  public:
+    double get_value(void) const {
+      return value_;
+    }
+
+    void update_stick_sensor_value(CFIndex logical_max,
+                                   CFIndex logical_min,
+                                   CFIndex integer_value) {
+      if (logical_max != logical_min) {
+        // -1.0 ... 1.0
+        value_ = ((static_cast<double>(integer_value - logical_min) / static_cast<double>(logical_max - logical_min)) - 0.5) * 2.0;
+      }
+    }
+
+  private:
+    double value_; // -1.0 ... 1.0
   };
 
   class stick final {
   public:
     stick(void)
-        : stick_value_(0.0),
-          active_(false) {
-    }
-
-    double get_stick_value(void) const {
-      return stick_value_;
+        : active_(false) {
     }
 
     bool get_active(void) const {
@@ -82,115 +82,147 @@ public:
       active_ = value;
     }
 
-    int xy_value(void) const {
-      // The logical value range of Karabiner-DriverKit-VirtualHIDPointing is -127 ... 127.
-      auto divider = 50.0;
-      auto result = static_cast<int>(stick_value_ / divider);
-      result = std::min(result, 127);
-      result = std::max(result, -127);
-      return result;
+    void update_horizontal_stick_sensor_value(CFIndex logical_max,
+                                              CFIndex logical_min,
+                                              CFIndex integer_value) {
+      horizontal_stick_sensor_.update_stick_sensor_value(logical_max,
+                                                         logical_min,
+                                                         integer_value);
+      update();
     }
 
-    int wheel_value(void) const {
+    void update_vertical_stick_sensor_value(CFIndex logical_max,
+                                            CFIndex logical_min,
+                                            CFIndex integer_value) {
+      vertical_stick_sensor_.update_stick_sensor_value(logical_max,
+                                                       logical_min,
+                                                       integer_value);
+      update();
+    }
+
+    std::pair<int, int> xy_value(void) const {
       // The logical value range of Karabiner-DriverKit-VirtualHIDPointing is -127 ... 127.
-      int result = std::signbit(stick_value_) ? -1 : 1;
-      return result;
+      double scale = 3.0;
+      auto x = static_cast<int>(std::cos(radian_) * holding_magnitude_ * scale * 127);
+      auto y = static_cast<int>(std::sin(radian_) * holding_magnitude_ * scale * 127);
+
+      return std::make_pair(adjust_integer_value(x),
+                            adjust_integer_value(y));
+    }
+
+    std::pair<int, int> wheels_value(void) const {
+      // The logical value range of Karabiner-DriverKit-VirtualHIDPointing is -127 ... 127.
+      auto h = std::cos(radian_);
+      auto v = std::sin(radian_);
+
+      return std::make_pair(std::signbit(v) ? -1 : 1,
+                            std::signbit(h) ? -1 : 1);
     }
 
     std::chrono::milliseconds xy_interval(void) const {
-      if (std::abs(stick_value_) == 0.0) {
+      if (holding_acceleration_ == 0.0) {
         return std::chrono::milliseconds(0);
       }
 
       return std::chrono::milliseconds(20);
     }
 
-    std::chrono::milliseconds wheel_interval(void) const {
-      if (std::abs(stick_value_) == 0.0) {
+    std::chrono::milliseconds wheels_interval(void) const {
+      if (holding_acceleration_ == 0.0) {
         return std::chrono::milliseconds(0);
       }
 
-      if (std::abs(stick_value_) > 500.0) {
+      if (holding_acceleration_ > 0.3) {
         return std::chrono::milliseconds(50);
       }
 
-      if (std::abs(stick_value_) > 250.0) {
+      if (holding_acceleration_ > 0.1) {
         return std::chrono::milliseconds(75);
       }
 
       return std::chrono::milliseconds(100);
     }
 
-    void add_event(CFIndex logical_max,
-                   CFIndex logical_min,
-                   CFIndex integer_value) {
-      if (logical_max != logical_min) {
-        // -1.0 ... 1.0
-        auto double_value = ((static_cast<double>(integer_value - logical_min) / static_cast<double>(logical_max - logical_min)) - 0.5) * 2.0;
-        auto now = pqrs::osx::chrono::mach_absolute_time_point();
-
-        double previous_double_value = 0.0;
-        auto previous_time_stamp = now;
-        if (stick_events_.size() > 0) {
-          previous_double_value = stick_events_.back().get_double_value();
-          previous_time_stamp = stick_events_.back().get_time_stamp();
-        }
-
-        auto interval_seconds = std::max(
-            static_cast<double>(pqrs::osx::chrono::make_milliseconds(now - previous_time_stamp).count()) / 1000.0,
-            0.001 // 1 ms
-        );
-
-        // -1000.0 ... 1000.0
-        auto acceleration = (double_value - previous_double_value) / interval_seconds;
-
-        stick_events_.push_back(stick_event(now,
-                                            double_value,
-                                            acceleration));
-      }
-    }
-
+  private:
     void update(void) {
-      if (stick_events_.empty()) {
-        stick_value_ = 0.0;
+      radian_ = std::atan2(vertical_stick_sensor_.get_value(),
+                           horizontal_stick_sensor_.get_value());
+      magnitude_ = std::min(1.0,
+                            std::sqrt(std::pow(vertical_stick_sensor_.get_value(), 2) +
+                                      std::pow(horizontal_stick_sensor_.get_value(), 2)));
+
+      //
+      // Update holding_acceleration_, holding_magnitude_
+      //
+
+      const double deadzone = 0.1;
+      if (std::abs(vertical_stick_sensor_.get_value()) < deadzone &&
+          std::abs(horizontal_stick_sensor_.get_value()) < deadzone) {
+        histories_.clear();
+        holding_acceleration_ = 0.0;
+        holding_magnitude_ = 0.0;
         return;
       }
 
-      double deadzone = 0.1;
-      if (std::abs(stick_events_.back().get_double_value()) < deadzone) {
-        stick_events_.clear();
-        stick_value_ = 0.0;
+      auto now = pqrs::osx::chrono::mach_absolute_time_point();
 
-      } else {
-        auto now = pqrs::osx::chrono::mach_absolute_time_point();
+      histories_.erase(std::remove_if(std::begin(histories_),
+                                      std::end(histories_),
+                                      [now](const auto& h) {
+                                        auto interval = pqrs::osx::chrono::make_milliseconds(now - h.get_time_stamp()).count();
+                                        return interval > 20;
+                                      }),
+                       histories_.end());
 
-        double sum = 0.0;
-        for (const auto& stick_event : stick_events_) {
-          sum += stick_event.attenuated_acceleration(now);
+      histories_.push_back(history(now,
+                                   radian_,
+                                   magnitude_));
+
+      auto [min, max] = std::minmax_element(std::begin(histories_),
+                                            std::end(histories_),
+                                            [](const auto& a, const auto& b) {
+                                              return a.get_magnitude() < b.get_magnitude();
+                                            });
+      if (min != std::end(histories_) && max != std::end(histories_)) {
+        auto acceleration = max->get_magnitude() - min->get_magnitude();
+
+        if (holding_acceleration_ < acceleration) {
+          // Increase acceleration if magnitude is increased.
+          if (magnitude_ > holding_magnitude_) {
+            holding_acceleration_ = acceleration;
+          }
+        } else {
+          // Decrease acceleration if magnitude is decreased.
+          if (magnitude_ < holding_magnitude_ - 0.1) {
+            holding_acceleration_ = acceleration;
+          }
         }
-        stick_value_ = sum;
 
-        stick_events_.erase(std::remove_if(stick_events_.begin(),
-                                           stick_events_.end(),
-                                           [now, sum](const auto& e) {
-                                             auto attenuated_acceleration = e.attenuated_acceleration(now);
-                                             return attenuated_acceleration == 0.0 || sum * attenuated_acceleration < 0;
-                                           }),
-                            stick_events_.end());
+        holding_magnitude_ = magnitude_;
       }
     }
 
-  private:
-    double stick_value_; // Close to the additive value of acceleration
-    bool active_;        // Whether the process of calling `pointing_motion_arrived` is working or not
-    std::vector<stick_event> stick_events_;
+    int adjust_integer_value(int value) const {
+      // The logical value range of Karabiner-DriverKit-VirtualHIDPointing is -127 ... 127.
+      value = std::min(value, 127);
+      value = std::max(value, -127);
+      return value;
+    }
+
+    stick_sensor horizontal_stick_sensor_;
+    stick_sensor vertical_stick_sensor_;
+    double radian_;
+    double magnitude_;
+    double holding_acceleration_;
+    double holding_magnitude_;
+    std::vector<history> histories_;
+
+    bool active_; // Whether the process of calling `pointing_motion_arrived` is working or not
   };
 
   struct state final {
-    stick x;
-    stick y;
-    stick vertical_wheel;
-    stick horizontal_wheel;
+    stick xy;
+    stick wheels;
   };
 
   //
@@ -243,73 +275,49 @@ public:
                 if (v.conforms_to(pqrs::hid::usage_page::generic_desktop,
                                   pqrs::hid::usage::generic_desktop::x)) {
                   if (flip_sticks) {
-                    it->second.horizontal_wheel.add_event(*logical_max,
-                                                          *logical_min,
-                                                          v.get_integer_value());
-
-                    it->second.vertical_wheel.update();
-                    it->second.horizontal_wheel.update();
+                    it->second.wheels.update_horizontal_stick_sensor_value(*logical_max,
+                                                                           *logical_min,
+                                                                           v.get_integer_value());
                   } else {
-                    it->second.x.add_event(*logical_max,
-                                           *logical_min,
-                                           v.get_integer_value());
-
-                    it->second.x.update();
-                    it->second.y.update();
+                    it->second.xy.update_horizontal_stick_sensor_value(*logical_max,
+                                                                       *logical_min,
+                                                                       v.get_integer_value());
                   }
 
                 } else if (v.conforms_to(pqrs::hid::usage_page::generic_desktop,
                                          pqrs::hid::usage::generic_desktop::y)) {
                   if (flip_sticks) {
-                    it->second.vertical_wheel.add_event(*logical_max,
-                                                        *logical_min,
-                                                        v.get_integer_value());
-
-                    it->second.vertical_wheel.update();
-                    it->second.horizontal_wheel.update();
+                    it->second.wheels.update_vertical_stick_sensor_value(*logical_max,
+                                                                         *logical_min,
+                                                                         v.get_integer_value());
                   } else {
-                    it->second.y.add_event(*logical_max,
-                                           *logical_min,
-                                           v.get_integer_value());
-
-                    it->second.x.update();
-                    it->second.y.update();
+                    it->second.xy.update_vertical_stick_sensor_value(*logical_max,
+                                                                     *logical_min,
+                                                                     v.get_integer_value());
                   }
 
                 } else if (v.conforms_to(pqrs::hid::usage_page::generic_desktop,
                                          pqrs::hid::usage::generic_desktop::rz)) {
                   if (flip_sticks) {
-                    it->second.y.add_event(*logical_max,
-                                           *logical_min,
-                                           v.get_integer_value());
-
-                    it->second.x.update();
-                    it->second.y.update();
+                    it->second.xy.update_vertical_stick_sensor_value(*logical_max,
+                                                                     *logical_min,
+                                                                     v.get_integer_value());
                   } else {
-                    it->second.vertical_wheel.add_event(*logical_max,
-                                                        *logical_min,
-                                                        v.get_integer_value());
-
-                    it->second.vertical_wheel.update();
-                    it->second.horizontal_wheel.update();
+                    it->second.wheels.update_vertical_stick_sensor_value(*logical_max,
+                                                                         *logical_min,
+                                                                         v.get_integer_value());
                   }
 
                 } else if (v.conforms_to(pqrs::hid::usage_page::generic_desktop,
                                          pqrs::hid::usage::generic_desktop::z)) {
                   if (flip_sticks) {
-                    it->second.x.add_event(*logical_max,
-                                           *logical_min,
-                                           v.get_integer_value());
-
-                    it->second.x.update();
-                    it->second.y.update();
+                    it->second.xy.update_horizontal_stick_sensor_value(*logical_max,
+                                                                       *logical_min,
+                                                                       v.get_integer_value());
                   } else {
-                    it->second.horizontal_wheel.add_event(*logical_max,
-                                                          *logical_min,
-                                                          v.get_integer_value());
-
-                    it->second.vertical_wheel.update();
-                    it->second.horizontal_wheel.update();
+                    it->second.wheels.update_horizontal_stick_sensor_value(*logical_max,
+                                                                           *logical_min,
+                                                                           v.get_integer_value());
                   }
                 }
               }
@@ -319,39 +327,19 @@ public:
       }
     }
 
-    // logger::get_logger()->info("pointing_motion: {0},{1},{2},{3}",
-    //                            it->second.x,
-    //                            it->second.y,
-    //                            it->second.vertical_wheel,
-    //                            it->second.horizontal_wheel);
-
     for (auto&& [device_id, state] : states_) {
-      if (!state.x.get_active() &&
-          std::abs(state.x.get_stick_value()) > 0.0) {
-        state.x.set_active(true);
-        emit_x_event(device_id,
-                     event_origin);
+      if (!state.xy.get_active() &&
+          state.xy.xy_interval().count() > 0) {
+        state.xy.set_active(true);
+        emit_xy_event(device_id,
+                      event_origin);
       }
 
-      if (!state.y.get_active() &&
-          std::abs(state.y.get_stick_value()) > 0.0) {
-        state.y.set_active(true);
-        emit_y_event(device_id,
-                     event_origin);
-      }
-
-      if (!state.vertical_wheel.get_active() &&
-          std::abs(state.vertical_wheel.get_stick_value()) > 0.0) {
-        state.vertical_wheel.set_active(true);
-        emit_vertical_wheel_event(device_id,
-                                  event_origin);
-      }
-
-      if (!state.horizontal_wheel.get_active() &&
-          std::abs(state.horizontal_wheel.get_stick_value()) > 0.0) {
-        state.horizontal_wheel.set_active(true);
-        emit_horizontal_wheel_event(device_id,
-                                    event_origin);
+      if (!state.wheels.get_active() &&
+          state.wheels.wheels_interval().count() > 0) {
+        state.wheels.set_active(true);
+        emit_wheels_event(device_id,
+                          event_origin);
       }
     }
   }
@@ -399,19 +387,21 @@ private:
         when_now() + interval);
   }
 
-  void emit_x_event(const device_id device_id,
-                    event_origin event_origin) {
+  void emit_xy_event(const device_id device_id,
+                     event_origin event_origin) {
     auto get_interval = [](const state& s) {
-      return s.x.xy_interval();
+      return s.xy.xy_interval();
     };
 
     auto unset_active = [](state& s) {
-      s.x.set_active(false);
+      s.xy.set_active(false);
     };
 
     auto make_pointing_motion = [](const state& s) {
-      return pointing_motion(s.x.xy_value(),
-                             0,
+      auto [x, y] = s.xy.xy_value();
+
+      return pointing_motion(x,
+                             y,
                              0,
                              0);
     };
@@ -423,69 +413,23 @@ private:
                make_pointing_motion);
   }
 
-  void emit_y_event(const device_id device_id,
-                    event_origin event_origin) {
+  void emit_wheels_event(const device_id device_id,
+                         event_origin event_origin) {
     auto get_interval = [](const state& s) {
-      return s.y.xy_interval();
+      return s.wheels.wheels_interval();
     };
 
     auto unset_active = [](state& s) {
-      s.y.set_active(false);
+      s.wheels.set_active(false);
     };
 
     auto make_pointing_motion = [](const state& s) {
-      return pointing_motion(0,
-                             s.y.xy_value(),
-                             0,
-                             0);
-    };
+      auto [v, h] = s.wheels.wheels_value();
 
-    emit_event(device_id,
-               event_origin,
-               get_interval,
-               unset_active,
-               make_pointing_motion);
-  }
-
-  void emit_vertical_wheel_event(const device_id device_id,
-                                 event_origin event_origin) {
-    auto get_interval = [](const state& s) {
-      return s.vertical_wheel.wheel_interval();
-    };
-
-    auto unset_active = [](state& s) {
-      s.vertical_wheel.set_active(false);
-    };
-
-    auto make_pointing_motion = [](const state& s) {
       return pointing_motion(0,
                              0,
-                             -s.vertical_wheel.wheel_value(),
-                             0);
-    };
-
-    emit_event(device_id,
-               event_origin,
-               get_interval,
-               unset_active,
-               make_pointing_motion);
-  }
-
-  void emit_horizontal_wheel_event(const device_id device_id,
-                                   event_origin event_origin) {
-    auto get_interval = [](const state& s) {
-      return s.horizontal_wheel.wheel_interval();
-    };
-
-    auto unset_active = [](state& s) {
-      s.horizontal_wheel.set_active(false);
-    };
-
-    auto make_pointing_motion = [](const state& s) {
-      return pointing_motion(0,
-                             0,
-                             0,
-                             s.horizontal_wheel.wheel_value());
+                             -v,
+                             h);
     };
 
     emit_event(device_id,
