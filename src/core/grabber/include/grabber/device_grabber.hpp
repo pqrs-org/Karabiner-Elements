@@ -52,7 +52,7 @@ public:
     notification_message_manager_ = std::make_shared<notification_message_manager>(
         constants::get_notification_message_file_path());
 
-    game_pad_stick_converter_ = std::make_shared<device_grabber_details::game_pad_stick_converter>();
+    game_pad_stick_converter_ = std::make_shared<device_grabber_details::game_pad_stick_converter>(core_configuration_);
 
     simple_modifications_manipulator_manager_ = std::make_shared<device_grabber_details::simple_modifications_manipulator_manager>();
     complex_modifications_manipulator_manager_ = std::make_shared<manipulator::manipulator_manager>();
@@ -512,6 +512,7 @@ public:
             e.second->set_core_configuration(core_configuration);
           }
 
+          game_pad_stick_converter_->set_core_configuration(core_configuration);
           manipulator_managers_connector_.set_manipulator_environment_core_configuration(core_configuration);
 
           logger_unique_filter_.reset();

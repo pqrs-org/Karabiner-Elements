@@ -235,12 +235,17 @@ public:
   // Methods
   //
 
-  game_pad_stick_converter(void)
-      : dispatcher_client() {
+  game_pad_stick_converter(std::weak_ptr<const core_configuration::core_configuration> core_configuration)
+      : dispatcher_client(),
+        core_configuration_(core_configuration) {
   }
 
   ~game_pad_stick_converter(void) {
     detach_from_dispatcher();
+  }
+
+  void set_core_configuration(std::weak_ptr<const core_configuration::core_configuration> core_configuration) {
+    core_configuration_ = core_configuration;
   }
 
   void register_device(const device_properties& device_properties) {
@@ -441,6 +446,7 @@ private:
                make_pointing_motion);
   }
 
+  std::weak_ptr<const core_configuration::core_configuration> core_configuration_;
   std::unordered_map<device_id, state> states_;
 };
 } // namespace device_grabber_details
