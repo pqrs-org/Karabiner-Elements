@@ -9,7 +9,8 @@ class device final {
 public:
   static constexpr double game_pad_stick_left_stick_deadzone_default_value = 0.1;
   static constexpr double game_pad_stick_right_stick_deadzone_default_value = 0.1;
-  static constexpr double game_pad_stick_xy_scale_default_value = 0.5;
+  static constexpr std::string_view game_pad_stick_x_formula_default_value = "cos(radian) * acceleration";
+  static constexpr std::string_view game_pad_stick_y_formula_default_value = "sin(radian) * acceleration";
 
   device(const nlohmann::json& json) : json_(json),
                                        ignore_(false),
@@ -107,10 +108,15 @@ public:
 
         game_pad_stick_right_stick_deadzone_ = value.get<double>();
 
-      } else if (key == "game_pad_stick_xy_scale") {
-        pqrs::json::requires_number(value, "`" + key + "`");
+      } else if (key == "game_pad_stick_x_formula") {
+        pqrs::json::requires_string(value, "`" + key + "`");
 
-        game_pad_stick_xy_scale_ = value.get<double>();
+        game_pad_stick_x_formula_ = value.get<std::string>();
+
+      } else if (key == "game_pad_stick_y_formula") {
+        pqrs::json::requires_string(value, "`" + key + "`");
+
+        game_pad_stick_y_formula_ = value.get<std::string>();
 
       } else if (key == "simple_modifications") {
         try {
@@ -191,8 +197,11 @@ public:
     if (game_pad_stick_right_stick_deadzone_ != std::nullopt) {
       j["game_pad_stick_right_stick_deadzone"] = *game_pad_stick_right_stick_deadzone_;
     }
-    if (game_pad_stick_xy_scale_ != std::nullopt) {
-      j["game_pad_stick_xy_scale"] = *game_pad_stick_xy_scale_;
+    if (game_pad_stick_x_formula_ != std::nullopt) {
+      j["game_pad_stick_x_formula"] = *game_pad_stick_x_formula_;
+    }
+    if (game_pad_stick_y_formula_ != std::nullopt) {
+      j["game_pad_stick_y_formula"] = *game_pad_stick_y_formula_;
     }
     j["simple_modifications"] = simple_modifications_.to_json();
     j["fn_function_keys"] = fn_function_keys_.to_json();
@@ -311,11 +320,20 @@ public:
     coordinate_between_properties();
   }
 
-  std::optional<double> get_game_pad_stick_xy_scale(void) const {
-    return game_pad_stick_xy_scale_;
+  const std::optional<std::string>& get_game_pad_stick_x_formula(void) const {
+    return game_pad_stick_x_formula_;
   }
-  void set_game_pad_stick_xy_scale(std::optional<double> value) {
-    game_pad_stick_xy_scale_ = value;
+  void set_game_pad_stick_x_formula(const std::optional<std::string>& value) {
+    game_pad_stick_x_formula_ = value;
+
+    coordinate_between_properties();
+  }
+
+  const std::optional<std::string>& get_game_pad_stick_y_formula(void) const {
+    return game_pad_stick_y_formula_;
+  }
+  void set_game_pad_stick_y_formula(const std::optional<std::string>& value) {
+    game_pad_stick_y_formula_ = value;
 
     coordinate_between_properties();
   }
@@ -358,7 +376,8 @@ private:
   bool mouse_swap_wheel_;
   std::optional<double> game_pad_stick_left_stick_deadzone_;
   std::optional<double> game_pad_stick_right_stick_deadzone_;
-  std::optional<double> game_pad_stick_xy_scale_;
+  std::optional<std::string> game_pad_stick_x_formula_;
+  std::optional<std::string> game_pad_stick_y_formula_;
   simple_modifications simple_modifications_;
   simple_modifications fn_function_keys_;
 };

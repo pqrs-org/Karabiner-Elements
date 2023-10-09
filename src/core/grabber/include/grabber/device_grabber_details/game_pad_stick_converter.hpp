@@ -1,5 +1,7 @@
 #pragma once
 
+#include "exprtk_utility.hpp"
+#include "logger.hpp"
 #include "types/device_id.hpp"
 #include <memory>
 #include <unordered_map>
@@ -102,13 +104,39 @@ public:
       update(deadzone);
     }
 
-    std::pair<int, int> xy_value(double scale) const {
-      // The logical value range of Karabiner-DriverKit-VirtualHIDPointing is -127 ... 127.
-      auto x = static_cast<int>(std::cos(radian_) * holding_magnitude_ * scale * 127);
-      auto y = static_cast<int>(std::sin(radian_) * holding_magnitude_ * scale * 127);
+    void update_xy_formula(const std::string& x_formula_string,
+                           const std::string& y_formula_string) {
+      x_formula_string_ = x_formula_string;
+      y_formula_string_ = y_formula_string;
 
-      return std::make_pair(adjust_integer_value(x),
-                            adjust_integer_value(y));
+      x_formula_ = make_formula_expression(x_formula_string_);
+      y_formula_ = make_formula_expression(y_formula_string_);
+    }
+
+    std::pair<int, int> xy_value(void) const {
+      // The logical value range of Karabiner-DriverKit-VirtualHIDPointing is -127 ... 127.
+      auto x = x_formula_.value();
+      if (std::isnan(x)) {
+        logger::get_logger()->error("game_pad_stick_converter x_formula returns nan: {0} (radian: {1}, magnitude: {2}, acceleration: {3})",
+                                    x_formula_string_,
+                                    radian_,
+                                    magnitude_,
+                                    holding_acceleration_);
+        x = 0.0;
+      }
+
+      auto y = y_formula_.value();
+      if (std::isnan(y)) {
+        logger::get_logger()->error("game_pad_stick_converter y_formula returns nan: {0} (radian: {1}, magnitude: {2}, acceleration: {3})",
+                                    y_formula_string_,
+                                    radian_,
+                                    magnitude_,
+                                    holding_acceleration_);
+        y = 0.0;
+      }
+
+      return std::make_pair(adjust_integer_value(static_cast<int>(x * 127)),
+                            adjust_integer_value(static_cast<int>(y * 127)));
     }
 
     std::pair<int, int> wheels_value(void) const {
@@ -147,6 +175,7 @@ public:
   private:
     void update(double deadzone) {
       radian_ = std::atan2(vertical_stick_sensor_.get_value(),
+
                            horizontal_stick_sensor_.get_value());
       magnitude_ = std::min(1.0,
                             std::sqrt(std::pow(vertical_stick_sensor_.get_value(), 2) +
@@ -202,11 +231,14 @@ public:
       }
     }
 
-    int adjust_integer_value(int value) const {
-      // The logical value range of Karabiner-DriverKit-VirtualHIDPointing is -127 ... 127.
-      value = std::min(value, 127);
-      value = std::max(value, -127);
-      return value;
+    exprtk_utility::expression_t make_formula_expression(const std::string& formula) {
+      return exprtk_utility::compile(formula,
+                                     {},
+                                     {
+                                         {"radian", radian_},
+                                         {"magnitude", magnitude_},
+                                         {"acceleration", holding_acceleration_},
+                                     });
     }
 
     stick_sensor horizontal_stick_sensor_;
@@ -217,20 +249,33 @@ public:
     double holding_magnitude_;
     std::vector<history> histories_;
 
+    std::string x_formula_string_;
+    std::string y_formula_string_;
+    exprtk_utility::expression_t x_formula_;
+    exprtk_utility::expression_t y_formula_;
+
     bool active_; // Whether the process of calling `pointing_motion_arrived` is working or not
   };
 
-  struct state final {
+  class state final {
+  public:
     state(void) {
     }
 
     state(const device_identifiers& di)
-        : device_identifiers(di) {
+        : device_identifiers_(di) {
     }
 
-    device_identifiers device_identifiers;
+    void update_formula(const core_configuration::core_configuration& core_configuration) {
+      xy.update_xy_formula(core_configuration.get_selected_profile().get_device_game_pad_stick_x_formula(device_identifiers_),
+                           core_configuration.get_selected_profile().get_device_game_pad_stick_y_formula(device_identifiers_));
+    }
+
     stick xy;
     stick wheels;
+
+  private:
+    device_identifiers device_identifiers_;
   };
 
   //
@@ -244,8 +289,8 @@ public:
   //
 
   game_pad_stick_converter(std::weak_ptr<const core_configuration::core_configuration> core_configuration)
-      : dispatcher_client(),
-        core_configuration_(core_configuration) {
+      : dispatcher_client() {
+    set_core_configuration(core_configuration);
   }
 
   ~game_pad_stick_converter(void) {
@@ -254,12 +299,23 @@ public:
 
   void set_core_configuration(std::weak_ptr<const core_configuration::core_configuration> core_configuration) {
     core_configuration_ = core_configuration;
+
+    if (auto c = core_configuration_.lock()) {
+      for (auto&& [device_id, state] : states_) {
+        state.update_formula(*c);
+      }
+    }
   }
 
   void register_device(const device_properties& device_properties) {
     if (auto is_game_pad = device_properties.get_is_game_pad()) {
       if (*is_game_pad) {
-        states_[device_properties.get_device_id()] = state(device_properties.get_device_identifiers());
+        auto s = state(device_properties.get_device_identifiers());
+        if (auto c = core_configuration_.lock()) {
+          s.update_formula(*c);
+        }
+
+        states_[device_properties.get_device_id()] = s;
       }
     }
   }
@@ -373,6 +429,13 @@ public:
     }
   }
 
+  static int adjust_integer_value(int value) {
+    // The logical value range of Karabiner-DriverKit-VirtualHIDPointing is -127 ... 127.
+    value = std::min(value, 127);
+    value = std::max(value, -127);
+    return value;
+  }
+
 private:
   void emit_event(const device_id device_id,
                   event_origin event_origin,
@@ -426,13 +489,8 @@ private:
       s.xy.set_active(false);
     };
 
-    auto make_pointing_motion = [this](const state& s) {
-      double scale = 0.0;
-      if (auto c = core_configuration_.lock()) {
-        scale = c->get_selected_profile().get_device_game_pad_stick_xy_scale(s.device_identifiers);
-      }
-
-      auto [x, y] = s.xy.xy_value(scale);
+    auto make_pointing_motion = [](const state& s) {
+      auto [x, y] = s.xy.xy_value();
 
       return pointing_motion(x,
                              y,
