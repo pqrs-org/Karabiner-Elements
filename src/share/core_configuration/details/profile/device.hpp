@@ -7,6 +7,10 @@ namespace core_configuration {
 namespace details {
 class device final {
 public:
+  static constexpr double game_pad_stick_left_stick_deadzone_default_value = 0.1;
+  static constexpr double game_pad_stick_right_stick_deadzone_default_value = 0.1;
+  static constexpr double game_pad_stick_xy_scale_default_value = 0.5;
+
   device(const nlohmann::json& json) : json_(json),
                                        ignore_(false),
                                        manipulate_caps_lock_led_(false),
@@ -18,9 +22,9 @@ public:
                                        mouse_flip_horizontal_wheel_(false),
                                        mouse_swap_xy_(false),
                                        mouse_swap_wheel_(false),
-                                       game_pad_stick_left_stick_deadzone_(0.1),
-                                       game_pad_stick_right_stick_deadzone_(0.1),
-                                       game_pad_stick_xy_scale_(0) {
+                                       game_pad_stick_left_stick_deadzone_(game_pad_stick_left_stick_deadzone_default_value),
+                                       game_pad_stick_right_stick_deadzone_(game_pad_stick_right_stick_deadzone_default_value),
+                                       game_pad_stick_xy_scale_(game_pad_stick_xy_scale_default_value) {
     auto ignore_configured = false;
     auto manipulate_caps_lock_led_configured = false;
 
