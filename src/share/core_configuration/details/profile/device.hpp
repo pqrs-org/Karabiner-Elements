@@ -9,8 +9,8 @@ class device final {
 public:
   static constexpr double game_pad_stick_left_stick_deadzone_default_value = 0.1;
   static constexpr double game_pad_stick_right_stick_deadzone_default_value = 0.1;
-  static constexpr std::string_view game_pad_stick_x_formula_default_value = "cos(radian) * acceleration";
-  static constexpr std::string_view game_pad_stick_y_formula_default_value = "sin(radian) * acceleration";
+  static constexpr std::string_view game_pad_stick_x_formula_default_value = "if (acceleration < 0.2, cos(radian) * acceleration * 0.5, cos(radian) * acceleration)";
+  static constexpr std::string_view game_pad_stick_y_formula_default_value = "if (acceleration < 0.2, sin(radian) * acceleration * 0.5, sin(radian) * acceleration)";
 
   device(const nlohmann::json& json) : json_(json),
                                        ignore_(false),
