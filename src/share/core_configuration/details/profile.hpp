@@ -486,14 +486,16 @@ public:
   double get_device_game_pad_stick_left_stick_deadzone(const device_identifiers& identifiers) const {
     for (const auto& d : devices_) {
       if (d.get_identifiers() == identifiers) {
-        return d.get_game_pad_stick_left_stick_deadzone();
+        if (auto value = d.get_game_pad_stick_left_stick_deadzone()) {
+          return *value;
+        }
       }
     }
     return device::game_pad_stick_left_stick_deadzone_default_value;
   }
 
   void set_device_game_pad_stick_left_stick_deadzone(const device_identifiers& identifiers,
-                                                     double value) {
+                                                     std::optional<double> value) {
     add_device(identifiers);
 
     for (auto&& device : devices_) {
@@ -507,14 +509,16 @@ public:
   double get_device_game_pad_stick_right_stick_deadzone(const device_identifiers& identifiers) const {
     for (const auto& d : devices_) {
       if (d.get_identifiers() == identifiers) {
-        return d.get_game_pad_stick_right_stick_deadzone();
+        if (auto value = d.get_game_pad_stick_right_stick_deadzone()) {
+          return *value;
+        }
       }
     }
     return device::game_pad_stick_right_stick_deadzone_default_value;
   }
 
   void set_device_game_pad_stick_right_stick_deadzone(const device_identifiers& identifiers,
-                                                      double value) {
+                                                      std::optional<double> value) {
     add_device(identifiers);
 
     for (auto&& device : devices_) {
@@ -528,14 +532,16 @@ public:
   double get_device_game_pad_stick_xy_scale(const device_identifiers& identifiers) const {
     for (const auto& d : devices_) {
       if (d.get_identifiers() == identifiers) {
-        return d.get_game_pad_stick_xy_scale();
+        if (auto value = d.get_game_pad_stick_xy_scale()) {
+          return *value;
+        }
       }
     }
     return device::game_pad_stick_xy_scale_default_value;
   }
 
   void set_device_game_pad_stick_xy_scale(const device_identifiers& identifiers,
-                                          double value) {
+                                          std::optional<double> value) {
     add_device(identifiers);
 
     for (auto&& device : devices_) {
