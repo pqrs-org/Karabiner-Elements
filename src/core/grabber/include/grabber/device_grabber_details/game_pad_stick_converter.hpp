@@ -109,6 +109,9 @@ public:
       x_formula_string_ = x_formula_string;
       y_formula_string_ = y_formula_string;
 
+      logger::get_logger()->info("game_pad_stick_converter update x_formula {0}", x_formula_string_);
+      logger::get_logger()->info("game_pad_stick_converter update y_formula {0}", y_formula_string_);
+
       x_formula_ = make_formula_expression(x_formula_string_);
       y_formula_ = make_formula_expression(y_formula_string_);
     }
