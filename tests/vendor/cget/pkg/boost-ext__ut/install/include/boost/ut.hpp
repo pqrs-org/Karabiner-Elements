@@ -8,12 +8,26 @@
 #if defined(__cpp_modules) && !defined(BOOST_UT_DISABLE_MODULE)
 export module boost.ut;
 export import std;
+#define BOOST_UT_EXPORT export
 #else
 #pragma once
+#define BOOST_UT_EXPORT
 #endif
 
 #if __has_include(<iso646.h>)
 #include <iso646.h>  // and, or, not, ...
+#endif
+
+#include <version>
+// Before libc++ 17 had experimental support for format and it required a
+// special build flag. Currently libc++ has not implemented all C++20 chrono
+// improvements. Therefore doesn't define __cpp_lib_format, instead query the
+// library version to detect the support status.
+//
+// MSVC STL and libstdc++ provide __cpp_lib_format.
+#if defined(__cpp_lib_format) or \
+    (defined(_LIBCPP_VERSION) and _LIBCPP_VERSION >= 170000)
+#define BOOST_UT_HAS_FORMAT
 #endif
 
 #if not defined(__cpp_rvalue_references)
@@ -37,7 +51,7 @@ export import std;
 #elif not defined(__cpp_static_assert)
 #error "[Boost::ext].UT requires support for static assert";
 #else
-#define BOOST_UT_VERSION 1'1'8
+#define BOOST_UT_VERSION 2'0'0
 
 #if defined(__has_builtin) and defined(__GNUC__) and (__GNUC__ < 10) and \
     not defined(__clang__)
@@ -52,13 +66,24 @@ export import std;
 #define __has_builtin(...) __has_##__VA_ARGS__
 #endif
 
+#include <algorithm>
 #include <array>
+#include <chrono>
+#include <concepts>
 #include <cstdint>
+#include <functional>
 #include <iostream>
+#include <memory>
+#include <optional>
 #include <sstream>
+#include <stack>
 #include <string_view>
+#include <type_traits>
+#include <unordered_map>
 #include <utility>
+#include <variant>
 #include <vector>
+#include <fstream>
 #if __has_include(<unistd.h>) and __has_include(<sys/wait.h>)
 #include <sys/wait.h>
 #include <unistd.h>
@@ -67,14 +92,18 @@ export import std;
 #include <exception>
 #endif
 
-#if defined(__cpp_lib_source_location)
+#if __has_include(<format>)
+#include <format>
+#endif
+#if __has_include(<source_location>)
 #include <source_location>
 #endif
 
-#if defined(__cpp_modules) && !defined(BOOST_UT_DISABLE_MODULE)
-export
-#endif
-    namespace boost::inline ext::ut::inline v1_1_8 {
+struct _unique_name_for_auto_detect_prefix_and_suffix_lenght_0123456789_struct {
+};
+
+BOOST_UT_EXPORT
+namespace boost::inline ext::ut::inline v2_0_0 {
 namespace utility {
 template <class>
 class function;
@@ -202,6 +231,18 @@ template <class T = std::string_view, class TDelim>
   }
   return output;
 }
+constexpr auto regex_match(const char *str, const char *pattern) -> bool {
+  if (*pattern == '\0' && *str == '\0') return true;
+  if (*pattern == '\0' && *str != '\0') return false;
+  if (*str == '\0' && *pattern != '\0') return false;
+  if (*pattern == '.') {
+    return regex_match(str+1, pattern+1);
+  }
+  if (*pattern == *str) {
+    return regex_match(str+1, pattern+1);
+  }
+  return false;
+}
 }  // namespace utility
 
 namespace reflection {
@@ -230,22 +271,72 @@ class source_location {
   int line_{};
 };
 #endif
-
-template <class T>
-[[nodiscard]] constexpr auto type_name() -> std::string_view {
-#if defined(_MSC_VER) and not defined(__clang__)
-  return {&__FUNCSIG__[120], sizeof(__FUNCSIG__) - 128};
-#elif defined(__clang_analyzer__)
-  return {&__PRETTY_FUNCTION__[57], sizeof(__PRETTY_FUNCTION__) - 59};
-#elif defined(__clang__) and (__clang_major__ >= 13) and defined(__APPLE__)
-  return {&__PRETTY_FUNCTION__[57], sizeof(__PRETTY_FUNCTION__) - 59};
-#elif defined(__clang__) and (__clang_major__ >= 12) and not defined(__APPLE__)
-  return {&__PRETTY_FUNCTION__[57], sizeof(__PRETTY_FUNCTION__) - 59};
-#elif defined(__clang__)
-  return {&__PRETTY_FUNCTION__[70], sizeof(__PRETTY_FUNCTION__) - 72};
-#elif defined(__GNUC__)
-  return {&__PRETTY_FUNCTION__[85], sizeof(__PRETTY_FUNCTION__) - 136};
+namespace detail {
+template <typename TargetType>
+[[nodiscard]] constexpr auto get_template_function_name_use_type()
+    -> const std::string_view {
+// for over compiler need over macros
+#if defined(_MSC_VER) && !defined(__clang__)
+  return {&__FUNCSIG__[0], sizeof(__FUNCSIG__)};
+#else
+  return {&__PRETTY_FUNCTION__[0], sizeof(__PRETTY_FUNCTION__)};
 #endif
+}
+
+// decay allows you to highlight a cleaner name
+template <typename TargetType>
+[[nodiscard]] constexpr auto get_template_function_name_use_decay_type()
+    -> const std::string_view {
+  return get_template_function_name_use_type<std::decay_t<TargetType>>();
+}
+
+inline constexpr const std::string_view raw_type_name =
+    get_template_function_name_use_decay_type<
+        _unique_name_for_auto_detect_prefix_and_suffix_lenght_0123456789_struct>();
+
+inline constexpr const std::size_t raw_length = raw_type_name.length();
+inline constexpr const std::string_view need_name =
+#if defined(_MSC_VER) and not defined(__clang__)
+    "struct "
+    "_unique_name_for_auto_detect_prefix_and_suffix_lenght_0123456789_struct";
+#else
+    "_unique_name_for_auto_detect_prefix_and_suffix_lenght_0123456789_struct";
+#endif
+inline constexpr const std::size_t need_length = need_name.length();
+static_assert(need_length <= raw_length,
+              "Auto find prefix and suffix lenght broken error 1");
+inline constexpr const std::size_t prefix_length =
+    raw_type_name.find(need_name);
+static_assert(prefix_length != std::string_view::npos,
+              "Auto find prefix and suffix lenght broken error 2");
+static_assert(prefix_length <= raw_length,
+              "Auto find prefix and suffix lenght broken error 3");
+inline constexpr const std::size_t tail_lenght = raw_length - prefix_length;
+static_assert(need_length <= tail_lenght,
+              "Auto find prefix and suffix lenght broken error 4");
+inline constexpr const std::size_t suffix_length = tail_lenght - need_length;
+
+}  // namespace detail
+
+template <typename TargetType>
+[[nodiscard]] constexpr auto type_name() -> const std::string_view {
+  const std::string_view raw_type_name =
+      detail::get_template_function_name_use_type<TargetType>();
+  const std::size_t end = raw_type_name.length() - detail::suffix_length;
+  const std::size_t len = end - detail::prefix_length;
+  std::string_view result = raw_type_name.substr(detail::prefix_length, len);
+  return result;
+}
+
+// decay allows you to highlight a cleaner name
+template <typename TargetType>
+[[nodiscard]] constexpr auto decay_type_name() -> const std::string_view {
+  const std::string_view raw_type_name =
+      detail::get_template_function_name_use_decay_type<TargetType>();
+  const std::size_t end = raw_type_name.length() - detail::suffix_length;
+  const std::size_t len = end - detail::prefix_length;
+  std::string_view result = raw_type_name.substr(detail::prefix_length, len);
+  return result;
 }
 }  // namespace reflection
 
@@ -253,6 +344,12 @@ namespace math {
 template <class T>
 [[nodiscard]] constexpr auto abs(const T t) -> T {
   return t < T{} ? -t : t;
+}
+
+template <class T, class U>
+[[nodiscard]] constexpr auto abs_diff(const T t, const U u)
+    -> decltype(t < u ? u - t : t - u) {
+  return t < u ? u - t : t - u;
 }
 
 template <class T>
@@ -270,7 +367,7 @@ template <class T, char... Cs>
   static_assert(
       ((Cs == '.' or Cs == '\'' or (Cs >= '0' and Cs <= '9')) and ...));
   T result{};
-  for (const char c : {Cs...}) {
+  for (const char c : std::array{Cs...}) {
     if (c == '.') {
       break;
     }
@@ -370,20 +467,38 @@ constexpr auto is_valid(...) -> bool {
 }
 
 template <class T>
-static constexpr auto is_container_v =
+inline constexpr auto is_container_v =
     is_valid<T>([](auto t) -> decltype(t.begin(), t.end(), void()) {});
 
 template <class T>
-static constexpr auto has_npos_v =
-    is_valid<T>([](auto t) -> decltype(void(t.npos)) {});
+inline constexpr auto has_user_print = is_valid<T>(
+    [](auto t) -> decltype(void(declval<std::ostringstream&>() << t)) {});
+
+template <class T, class = void>
+struct has_static_member_object_value : std::false_type {};
 
 template <class T>
-static constexpr auto has_value_v =
-    is_valid<T>([](auto t) -> decltype(void(t.value)) {});
+struct has_static_member_object_value<T,
+                                      std::void_t<decltype(declval<T>().value)>>
+    : std::bool_constant<!std::is_member_pointer_v<decltype(&T::value)> &&
+                         !std::is_function_v<decltype(T::value)>> {};
 
 template <class T>
-static constexpr auto has_epsilon_v =
-    is_valid<T>([](auto t) -> decltype(void(t.epsilon)) {});
+inline constexpr bool has_static_member_object_value_v =
+    has_static_member_object_value<T>::value;
+
+template <class T, class = void>
+struct has_static_member_object_epsilon : std::false_type {};
+
+template <class T>
+struct has_static_member_object_epsilon<
+    T, std::void_t<decltype(declval<T>().epsilon)>>
+    : std::bool_constant<!std::is_member_pointer_v<decltype(&T::epsilon)> &&
+                         !std::is_function_v<decltype(T::epsilon)>> {};
+
+template <class T>
+inline constexpr bool has_static_member_object_epsilon_v =
+    has_static_member_object_epsilon<T>::value;
 
 template <class T>
 inline constexpr auto is_floating_point_v = false;
@@ -396,7 +511,7 @@ inline constexpr auto is_floating_point_v<long double> = true;
 
 #if defined(__clang__) or defined(_MSC_VER)
 template <class From, class To>
-static constexpr auto is_convertible_v = __is_convertible_to(From, To);
+inline constexpr auto is_convertible_v = __is_convertible_to(From, To);
 #else
 template <class From, class To>
 constexpr auto is_convertible(int) -> decltype(bool(To(declval<From>()))) {
@@ -421,10 +536,54 @@ template <bool Cond>
 using requires_t = typename requires_<Cond>::type;
 }  // namespace type_traits
 
+template <typename CharT, std::size_t SIZE>
+struct fixed_string {
+  constexpr static std::size_t N = SIZE;
+  CharT _data[N + 1] = {};
+
+  constexpr explicit(false) fixed_string(const CharT (&str)[N + 1]) noexcept {
+    if constexpr (N != 0)
+      for (std::size_t i = 0; i < N; ++i) _data[i] = str[i];
+  }
+
+  [[nodiscard]] constexpr std::size_t size() const noexcept { return N; }
+  [[nodiscard]] constexpr bool empty() const noexcept { return N == 0; }
+  [[nodiscard]] constexpr explicit operator std::string_view() const noexcept {
+    return {_data, N};
+  }
+  [[nodiscard]] explicit operator std::string() const noexcept {
+    return {_data, N};
+  }
+  [[nodiscard]] operator const char*() const noexcept { return _data; }
+  [[nodiscard]] constexpr bool operator==(
+      const fixed_string& other) const noexcept {
+    return std::string_view{_data, N} == std::string_view(other);
+  }
+
+  template <std::size_t N2>
+  [[nodiscard]] friend constexpr bool operator==(
+      const fixed_string&, const fixed_string<CharT, N2>&) {
+    return false;
+  }
+};
+
+template <typename CharT, std::size_t N>
+fixed_string(const CharT (&str)[N]) -> fixed_string<CharT, N - 1>;
+
 struct none {};
 
 namespace events {
 struct test_begin {
+  std::string_view type{};
+  std::string_view name{};
+  reflection::source_location location{};
+};
+struct suite_begin {
+  std::string_view type{};
+  std::string_view name{};
+  reflection::source_location location{};
+};
+struct suite_end {
   std::string_view type{};
   std::string_view name{};
   reflection::source_location location{};
@@ -462,12 +621,17 @@ test(std::string_view, std::string_view, std::string_view,
 template <class TSuite>
 struct suite {
   TSuite run{};
+  std::string_view name{};
   constexpr auto operator()() { run(); }
   constexpr auto operator()() const { run(); }
 };
 template <class TSuite>
 suite(TSuite) -> suite<TSuite>;
 struct test_run {
+  std::string_view type{};
+  std::string_view name{};
+};
+struct test_finish {
   std::string_view type{};
   std::string_view name{};
 };
@@ -524,10 +688,201 @@ struct summary {};
 
 namespace detail {
 struct op {};
-struct fatal {};
+
+template <class>
+struct fatal_;
+
+struct fatal {
+  template <class T>
+  [[nodiscard]] inline auto operator()(const T& t) const {
+    return detail::fatal_{t};
+  }
+};
 struct cfg {
+  using value_ref = std::variant<std::monostate, std::reference_wrapper<bool>,
+                                 std::reference_wrapper<std::size_t>,
+                                 std::reference_wrapper<std::string>>;
+  using option = std::tuple<std::string, std::string, value_ref, std::string>;
   static inline reflection::source_location location{};
   static inline bool wip{};
+
+#if defined(_MSC_VER)
+  static inline int largc = __argc;
+  static inline const char** largv = const_cast<const char**>(__argv);
+#else
+  static inline int largc = 0;
+  static inline const char** largv = nullptr;
+#endif
+
+  static inline std::string executable_name = "unknown executable";
+  static inline std::string query_pattern = "";        // <- done
+  static inline bool invert_query_pattern = false;     // <- done
+  static inline std::string query_regex_pattern = "";  // <- done
+  static inline bool show_help = false;                // <- done
+  static inline bool show_tests = false;               // <- done
+  static inline bool list_tags = false;                // <- done
+  static inline bool show_successful_tests = false;    // <- done
+  static inline std::string output_filename = "";
+  static inline std::string use_reporter = "console";  // <- done
+  static inline std::string suite_name = "";
+  static inline bool abort_early = false;  // <- done
+  static inline std::size_t abort_after_n_failures =
+      std::numeric_limits<std::size_t>::max();  // <- done
+  static inline bool show_duration = false;     // <- done
+  static inline std::size_t show_min_duration = 0;
+  static inline std::string input_filename = "";
+  static inline bool show_test_names = false;  // <- done
+  static inline bool show_reporters = false;   // <- done
+  static inline std::string sort_order = "decl";
+  static inline std::size_t rnd_seed = 0;        // 0: use time
+  static inline std::string use_colour = "yes";  // <- done
+  static inline bool show_lib_identity = false;  // <- done
+  static inline std::string wait_for_keypress = "never";
+
+  static inline const std::vector<option> options = {
+      // clang-format off
+  // <short long option name>, <option arg>, <ref to cfg>, <description>
+  {"-? -h --help", "", std::ref(show_help), "display usage information"},
+  {"-l --list-tests", "", std::ref(show_tests), "list all/matching test cases"},
+  {"-t, --list-tags", "", std::ref(list_tags), "list all/matching tags"},
+  {"-s, --success", "", std::ref(show_successful_tests), "include successful tests in output"},
+  {"-o, --out", "<filename>", std::ref(output_filename), "output filename"},
+  {"-r, --reporter", "<name>", std::ref(use_reporter), "reporter to use (defaults to console)"},
+  {"-n, --name", "<name>", std::ref(suite_name), "suite name"},
+  {"-a, --abort", "", std::ref(abort_early), "abort at first failure"},
+  {"-x, --abortx", "<no. failures>", std::ref(abort_after_n_failures), "abort after x failures"},
+  {"-d, --durations", "", std::ref(show_duration), "show test durations"},
+  {"-D, --min-duration", "<seconds>", std::ref(show_min_duration), "show test durations for [...]"},
+  {"-f, --input-file", "<filename>", std::ref(input_filename), "load test names to run from a file"},
+  {"--list-test-names-only", "", std::ref(show_test_names), "list all/matching test cases names only"},
+  {"--list-reporters", "", std::ref(show_reporters), "list all reporters"},
+  {"--order <decl|lex|rand>", "", std::ref(sort_order), "test case order (defaults to decl)"},
+  {"--rng-seed", "<'time'|number>", std::ref(rnd_seed), "set a specific seed for random numbers"},
+  {"--use-colour", "<yes|no>", std::ref(use_colour), "should output be colourised"},
+  {"--libidentify", "", std::ref(show_lib_identity), "report name and version according to libidentify standard"},
+  {"--wait-for-keypress", "<never|start|exit|both>", std::ref(wait_for_keypress), "waits for a keypress before exiting"}
+      // clang-format on
+  };
+
+  static std::optional<cfg::option> find_arg(std::string_view arg) {
+    for (const auto& option : cfg::options) {
+      if (std::get<0>(option).find(arg) != std::string::npos) {
+        return option;
+      }
+    }
+    return std::nullopt;
+  }
+
+  static void print_usage() {
+    std::size_t opt_width = 30;
+    std::cout << cfg::executable_name
+              << " [<test name|pattern|tags> ... ] options\n\nwith options:\n";
+    for (const auto& [cmd, arg, val, description] : cfg::options) {
+      std::string s = cmd;
+      s.append(" ");
+      s.append(arg);
+      // pad fixed column width
+      const auto pad_by = (s.size() <= opt_width) ? opt_width - s.size() : 0;
+      s.insert(s.end(), pad_by, ' ');
+      std::cout << "  " << s << description << std::endl;
+    }
+  }
+
+  static void print_identity() {
+    // according to: https://github.com/janwilmans/LibIdentify
+    std::cout << "description:    A UT / μt test executable\n";
+    std::cout << "category:       testframework\n";
+    std::cout << "framework:      UT: C++20 μ(micro)/Unit Testing Framework\n";
+    std::cout << "version:        " << BOOST_UT_VERSION << std::endl;
+  }
+
+  static inline void parse(int argc, const char* argv[]) {
+    const std::size_t n_args = static_cast<std::size_t>(argc);
+    if (n_args > 0 && argv != nullptr) {
+      cfg::largc = argc;
+      cfg::largv = argv;
+      executable_name = argv[0];
+    }
+    query_pattern = "";
+    bool found_first_option = false;
+    for (auto i = 1U; i < n_args; i++) {
+      std::string cmd(argv[i]);
+      auto cmd_option = find_arg(cmd);
+      if (!cmd_option.has_value()) {
+        if (found_first_option) {
+          std::cerr << "unknown option: '" << argv[i] << "' run:" << std::endl;
+          std::cerr << "'" << argv[0] << " --help'" << std::endl;
+          std::cerr << "for additional help" << std::endl;
+          std::exit(-1);
+        } else {
+          if (i > 1U) {
+            query_pattern.append(" ");
+          }
+          query_pattern.append(argv[i]);
+        }
+        continue;
+      }
+      found_first_option = true;
+      auto var = std::get<value_ref>(*cmd_option);
+      const bool has_option_arg = !std::get<1>(*cmd_option).empty();
+      if (!has_option_arg &&
+          std::holds_alternative<std::reference_wrapper<bool>>(var)) {
+        std::get<std::reference_wrapper<bool>>(var).get() = true;
+        continue;
+      }
+      if ((i + 1) >= n_args) {
+        std::cerr << "missing argument for option " << argv[i] << std::endl;
+        std::exit(-1);
+      }
+      i += 1;  // skip to next argv for parsing
+      if (std::holds_alternative<std::reference_wrapper<std::size_t>>(var)) {
+        // parse size argument
+        std::size_t last;
+        std::string argument(argv[i]);
+        std::size_t val = std::stoull(argument, &last);
+        if (last != argument.length()) {
+          std::cerr << "cannot parse option of " << argv[i - 1] << " "
+                    << argv[i] << std::endl;
+          std::exit(-1);
+        }
+        std::get<std::reference_wrapper<std::size_t>>(var).get() = val;
+      }
+      if (std::holds_alternative<std::reference_wrapper<std::string>>(var)) {
+        // parse string argument
+        std::get<std::reference_wrapper<std::string>>(var).get() = argv[i];
+        continue;
+      }
+    }
+
+    if (show_help) {
+      print_usage();
+      std::exit(0);
+    }
+
+    if (show_lib_identity) {
+      print_identity();
+      std::exit(0);
+    }
+
+    if (!query_pattern.empty()) {  // simple glob-like search
+      query_regex_pattern = "";
+      for (const char c : query_pattern) {
+        if (c == '!') {
+          invert_query_pattern = true;
+        } else if (c == '*') {
+          query_regex_pattern += ".*";
+        } else if (c == '?') {
+          query_regex_pattern += '.';
+        } else if (c == '.') {
+          query_regex_pattern += "\\.";
+        } else if (c == '\\') {
+          query_regex_pattern += "\\\\";
+        } else {
+          query_regex_pattern += c;
+        }
+      }
+    }
+  }
 };
 
 template <class T>
@@ -559,7 +914,7 @@ struct type_ : op {
   [[nodiscard]] constexpr auto operator==(const TOther&) -> bool {
     return std::is_same_v<TOther, T>;
   }
-  [[nodiscard]] constexpr auto operator!=(type_<T>) -> bool { return true; }
+  [[nodiscard]] constexpr auto operator!=(type_<T>) -> bool { return false; }
   template <class TOther>
   [[nodiscard]] constexpr auto operator!=(type_<TOther>) -> bool {
     return true;
@@ -651,16 +1006,20 @@ struct eq_ : op {
           using std::operator==;
           using std::operator<;
 
-          if constexpr (type_traits::has_value_v<TLhs> and
-                        type_traits::has_value_v<TRhs>) {
+          if constexpr (type_traits::has_static_member_object_value_v<TLhs> and
+                        type_traits::has_static_member_object_value_v<TRhs>) {
             return TLhs::value == TRhs::value;
-          } else if constexpr (type_traits::has_epsilon_v<TLhs> and
-                               type_traits::has_epsilon_v<TRhs>) {
+          } else if constexpr (type_traits::has_static_member_object_epsilon_v<
+                                   TLhs> and
+                               type_traits::has_static_member_object_epsilon_v<
+                                   TRhs>) {
             return math::abs(get(lhs) - get(rhs)) <
                    math::min_value(TLhs::epsilon, TRhs::epsilon);
-          } else if constexpr (type_traits::has_epsilon_v<TLhs>) {
+          } else if constexpr (type_traits::has_static_member_object_epsilon_v<
+                                   TLhs>) {
             return math::abs(get(lhs) - get(rhs)) < TLhs::epsilon;
-          } else if constexpr (type_traits::has_epsilon_v<TRhs>) {
+          } else if constexpr (type_traits::has_static_member_object_epsilon_v<
+                                   TRhs>) {
             return math::abs(get(lhs) - get(rhs)) < TRhs::epsilon;
           } else {
             return get(lhs) == get(rhs);
@@ -676,6 +1035,34 @@ struct eq_ : op {
   const bool value_{};
 };
 
+template <class TLhs, class TRhs, class TEpsilon>
+struct approx_ : op {
+  constexpr approx_(const TLhs& lhs = {}, const TRhs& rhs = {},
+                    const TEpsilon& epsilon = {})
+      : lhs_{lhs}, rhs_{rhs}, epsilon_{epsilon}, value_{[&] {
+          using std::operator<;
+
+          if constexpr (type_traits::has_static_member_object_value_v<TLhs> and
+                        type_traits::has_static_member_object_value_v<TRhs> and
+                        type_traits::has_static_member_object_value_v<
+                            TEpsilon>) {
+            return math::abs_diff(TLhs::value, TRhs::value) < TEpsilon::value;
+          } else {
+            return math::abs_diff(get(lhs), get(rhs)) < get(epsilon);
+          }
+        }()} {}
+
+  [[nodiscard]] constexpr operator bool() const { return value_; }
+  [[nodiscard]] constexpr auto lhs() const { return get(lhs_); }
+  [[nodiscard]] constexpr auto rhs() const { return get(rhs_); }
+  [[nodiscard]] constexpr auto epsilon() const { return get(epsilon_); }
+
+  const TLhs lhs_{};
+  const TRhs rhs_{};
+  const TEpsilon epsilon_{};
+  const bool value_{};
+};
+
 template <class TLhs, class TRhs>
 struct neq_ : op {
   constexpr neq_(const TLhs& lhs = {}, const TRhs& rhs = {})
@@ -684,16 +1071,20 @@ struct neq_ : op {
           using std::operator!=;
           using std::operator>;
 
-          if constexpr (type_traits::has_value_v<TLhs> and
-                        type_traits::has_value_v<TRhs>) {
+          if constexpr (type_traits::has_static_member_object_value_v<TLhs> and
+                        type_traits::has_static_member_object_value_v<TRhs>) {
             return TLhs::value != TRhs::value;
-          } else if constexpr (type_traits::has_epsilon_v<TLhs> and
-                               type_traits::has_epsilon_v<TRhs>) {
+          } else if constexpr (type_traits::has_static_member_object_epsilon_v<
+                                   TLhs> and
+                               type_traits::has_static_member_object_epsilon_v<
+                                   TRhs>) {
             return math::abs(get(lhs_) - get(rhs_)) >
                    math::min_value(TLhs::epsilon, TRhs::epsilon);
-          } else if constexpr (type_traits::has_epsilon_v<TLhs>) {
+          } else if constexpr (type_traits::has_static_member_object_epsilon_v<
+                                   TLhs>) {
             return math::abs(get(lhs_) - get(rhs_)) > TLhs::epsilon;
-          } else if constexpr (type_traits::has_epsilon_v<TRhs>) {
+          } else if constexpr (type_traits::has_static_member_object_epsilon_v<
+                                   TRhs>) {
             return math::abs(get(lhs_) - get(rhs_)) > TRhs::epsilon;
           } else {
             return get(lhs_) != get(rhs_);
@@ -715,8 +1106,8 @@ struct gt_ : op {
       : lhs_{lhs}, rhs_{rhs}, value_{[&] {
           using std::operator>;
 
-          if constexpr (type_traits::has_value_v<TLhs> and
-                        type_traits::has_value_v<TRhs>) {
+          if constexpr (type_traits::has_static_member_object_value_v<TLhs> and
+                        type_traits::has_static_member_object_value_v<TRhs>) {
             return TLhs::value > TRhs::value;
           } else {
             return get(lhs_) > get(rhs_);
@@ -738,8 +1129,8 @@ struct ge_ : op {
       : lhs_{lhs}, rhs_{rhs}, value_{[&] {
           using std::operator>=;
 
-          if constexpr (type_traits::has_value_v<TLhs> and
-                        type_traits::has_value_v<TRhs>) {
+          if constexpr (type_traits::has_static_member_object_value_v<TLhs> and
+                        type_traits::has_static_member_object_value_v<TRhs>) {
             return TLhs::value >= TRhs::value;
           } else {
             return get(lhs_) >= get(rhs_);
@@ -761,8 +1152,8 @@ struct lt_ : op {
       : lhs_{lhs}, rhs_{rhs}, value_{[&] {
           using std::operator<;
 
-          if constexpr (type_traits::has_value_v<TLhs> and
-                        type_traits::has_value_v<TRhs>) {
+          if constexpr (type_traits::has_static_member_object_value_v<TLhs> and
+                        type_traits::has_static_member_object_value_v<TRhs>) {
             return TLhs::value < TRhs::value;
           } else {
             return get(lhs_) < get(rhs_);
@@ -785,8 +1176,8 @@ struct le_ : op {
       : lhs_{lhs}, rhs_{rhs}, value_{[&] {
           using std::operator<=;
 
-          if constexpr (type_traits::has_value_v<TLhs> and
-                        type_traits::has_value_v<TRhs>) {
+          if constexpr (type_traits::has_static_member_object_value_v<TLhs> and
+                        type_traits::has_static_member_object_value_v<TRhs>) {
             return TLhs::value <= TRhs::value;
           } else {
             return get(lhs_) <= get(rhs_);
@@ -856,12 +1247,12 @@ struct throws_ : op {
       : value_{[&expr] {
           try {
             expr();
+            return false;
           } catch (const TException&) {
             return true;
           } catch (...) {
             return false;
           }
-          return false;
         }()} {}
 
   [[nodiscard]] constexpr operator bool() const { return value_; }
@@ -875,10 +1266,10 @@ struct throws_<TExpr, void> : op {
       : value_{[&expr] {
           try {
             expr();
+            return false;
           } catch (...) {
             return true;
           }
-          return false;
         }()} {}
 
   [[nodiscard]] constexpr operator bool() const { return value_; }
@@ -892,10 +1283,10 @@ struct nothrow_ : op {
       : value_{[&expr] {
           try {
             expr();
+            return true;
           } catch (...) {
             return false;
           }
-          return true;
         }()} {}
 
   [[nodiscard]] constexpr operator bool() const { return value_; }
@@ -911,7 +1302,7 @@ struct aborts_ : op {
       : value_{[&expr]() -> bool {
           if (const auto pid = fork(); not pid) {
             expr();
-            exit(0);
+            std::exit(0);
           }
           auto exit_status = 0;
           wait(&exit_status);
@@ -934,6 +1325,7 @@ struct colors {
   std::string_view none = "\033[0m";
   std::string_view pass = "\033[32m";
   std::string_view fail = "\033[31m";
+  std::string_view skip = "\033[33m";
 };
 
 class printer {
@@ -952,8 +1344,8 @@ class printer {
   }
 
   template <class T,
-            type_traits::requires_t<type_traits::is_container_v<T> and
-                                    not type_traits::has_npos_v<T>> = 0>
+            type_traits::requires_t<not type_traits::has_user_print<T> and
+                                    type_traits::is_container_v<T>> = 0>
   auto& operator<<(T&& t) {
     *this << '{';
     auto first = true;
@@ -974,6 +1366,12 @@ class printer {
   auto& operator<<(const detail::eq_<TLhs, TRhs>& op) {
     return (*this << color(op) << op.lhs() << " == " << op.rhs()
                   << colors_.none);
+  }
+
+  template <class TLhs, class TRhs, class TEpsilon>
+  auto& operator<<(const detail::approx_<TLhs, TRhs, TEpsilon>& op) {
+    return (*this << color(op) << op.lhs() << " ~ (" << op.rhs() << " +/- "
+                  << op.epsilon() << ')' << colors_.none);
   }
 
   template <class TLhs, class TRhs>
@@ -1064,7 +1462,7 @@ class printer {
 
  private:
   ut::colors colors_{};
-  std::stringstream out_{};
+  std::ostringstream out_{};
 };
 
 template <class TPrinter = printer>
@@ -1135,30 +1533,27 @@ class reporter {
   auto on(events::fatal_assertion) -> void {}
 
   auto on(events::summary) -> void {
-    if (static auto once = true; once) {
-      once = false;
-      if (tests_.fail or asserts_.fail) {
-        printer_ << "\n========================================================"
-                    "=======================\n"
-                 << "tests:   " << (tests_.pass + tests_.fail) << " | "
-                 << printer_.colors().fail << tests_.fail << " failed"
-                 << printer_.colors().none << '\n'
-                 << "asserts: " << (asserts_.pass + asserts_.fail) << " | "
-                 << asserts_.pass << " passed"
-                 << " | " << printer_.colors().fail << asserts_.fail
-                 << " failed" << printer_.colors().none << '\n';
-        std::cerr << printer_.str() << std::endl;
-      } else {
-        std::cout << printer_.colors().pass << "All tests passed"
-                  << printer_.colors().none << " (" << asserts_.pass
-                  << " asserts in " << tests_.pass << " tests)\n";
+    if (tests_.fail or asserts_.fail) {
+      printer_ << "\n========================================================"
+                  "=======================\n"
+               << "tests:   " << (tests_.pass + tests_.fail) << " | "
+               << printer_.colors().fail << tests_.fail << " failed"
+               << printer_.colors().none << '\n'
+               << "asserts: " << (asserts_.pass + asserts_.fail) << " | "
+               << asserts_.pass << " passed"
+               << " | " << printer_.colors().fail << asserts_.fail << " failed"
+               << printer_.colors().none << '\n';
+      std::cerr << printer_.str() << std::endl;
+    } else {
+      std::cout << printer_.colors().pass << "All tests passed"
+                << printer_.colors().none << " (" << asserts_.pass
+                << " asserts in " << tests_.pass << " tests)\n";
 
-        if (tests_.skip) {
-          std::cout << tests_.skip << " tests skipped\n";
-        }
-
-        std::cout.flush();
+      if (tests_.skip) {
+        std::cout << tests_.skip << " tests skipped\n";
       }
+
+      std::cout.flush();
     }
   }
 
@@ -1177,6 +1572,404 @@ class reporter {
   std::size_t fails_{};
 
   TPrinter printer_{};
+};
+
+template <class TPrinter = printer>
+class reporter_junit {
+  template <typename Key, typename T>
+  using map = std::unordered_map<Key, T>;
+  using clock_ref = std::chrono::high_resolution_clock;
+  using timePoint = std::chrono::time_point<clock_ref>;
+  using timeDiff = std::chrono::milliseconds;
+  enum class ReportType { CONSOLE, JUNIT } report_type_;
+  static constexpr ReportType CONSOLE = ReportType::CONSOLE;
+  static constexpr ReportType JUNIT = ReportType::JUNIT;
+
+  struct test_result {
+    test_result* parent = nullptr;
+    std::string class_name;
+    std::string suite_name;
+    std::string test_name;
+    std::string status = "STARTED";
+    timePoint run_start = clock_ref::now();
+    timePoint run_stop = clock_ref::now();
+    std::size_t n_tests = 0LU;
+    std::size_t assertions = 0LU;
+    std::size_t passed = 0LU;
+    std::size_t skipped = 0LU;
+    std::size_t fails = 0LU;
+    std::string report_string{};
+    std::unique_ptr<map<std::string, test_result>> nested_tests =
+        std::make_unique<map<std::string, test_result>>();
+  };
+  colors color_{};
+  map<std::string, test_result> results_;
+  std::string active_suite_{"global"};
+  test_result* active_scope_ = &results_[active_suite_];
+  std::stack<std::string> active_test_{};
+
+  std::streambuf* cout_save = std::cout.rdbuf();
+  std::ostream lcout_;
+  TPrinter printer_;
+  std::stringstream ss_out_{};
+
+  void reset_printer() {
+    ss_out_.str("");
+    ss_out_.clear();
+  }
+
+  void check_for_scope(std::string_view test_name) {
+    const std::string str_name(test_name);
+    active_test_.push(str_name);
+    const auto [iter, inserted] = active_scope_->nested_tests->try_emplace(
+        str_name, test_result{active_scope_, detail::cfg::executable_name,
+                              active_suite_, str_name});
+    active_scope_ = &active_scope_->nested_tests->at(str_name);
+    if (active_test_.size() == 1) {
+      reset_printer();
+    }
+    active_scope_->run_start = clock_ref::now();
+    if (!inserted) {
+      std::cout << "WARNING test '" << str_name << "' for test suite '"
+                << active_suite_ << "' already present\n";
+    }
+  }
+
+  void pop_scope(std::string_view test_name_sv) {
+    const std::string test_name(test_name_sv);
+    active_scope_->run_stop = clock_ref::now();
+    if (active_scope_->skipped) {
+      active_scope_->status = "SKIPPED";
+    } else {
+      active_scope_->status = active_scope_->fails > 0 ? "FAILED" : "PASSED";
+    }
+    active_scope_->assertions =
+        active_scope_->assertions + active_scope_->fails;
+
+    if (active_test_.top() == test_name) {
+      active_test_.pop();
+      auto old_scope = active_scope_;
+      if (active_scope_->parent != nullptr) {
+        active_scope_ = active_scope_->parent;
+      } else {
+        active_scope_ = &results_[std::string{"global"}];
+      }
+      active_scope_->n_tests += old_scope->n_tests + 1LU;
+      active_scope_->assertions += old_scope->assertions;
+      active_scope_->passed += old_scope->passed;
+      active_scope_->skipped += old_scope->skipped;
+      active_scope_->fails += old_scope->fails;
+      return;
+    }
+    std::stringstream ss("runner returned from test w/o signaling: ");
+    ss << "not popping because '" << active_test_.top() << "' differs from '"
+       << test_name << "'" << std::endl;
+#if defined(__cpp_exceptions)
+    throw std::logic_error(ss.str());
+#else
+    std::abort();
+#endif
+  }
+
+ public:
+  constexpr auto operator=(TPrinter printer) {
+    printer_ = static_cast<TPrinter&&>(printer);
+  }
+  reporter_junit() : lcout_(std::cout.rdbuf()) {
+    ::boost::ut::detail::cfg::parse(detail::cfg::largc, detail::cfg::largv);
+
+    if (detail::cfg::show_reporters) {
+      std::cout << "available reporter:\n";
+      std::cout << "  console (default)\n";
+      std::cout << "  junit" << std::endl;
+      std::exit(0);
+    }
+    if (detail::cfg::use_reporter.starts_with("junit")) {
+      report_type_ = JUNIT;
+    } else {
+      report_type_ = CONSOLE;
+    }
+    if (!detail::cfg::use_colour.starts_with("yes")) {
+      color_ = {"", "", "", ""};
+    }
+    if (!detail::cfg::show_tests && !detail::cfg::show_test_names) {
+      std::cout.rdbuf(ss_out_.rdbuf());
+    }
+  }
+  ~reporter_junit() { std::cout.rdbuf(cout_save); }
+
+  auto on(events::suite_begin suite) -> void {
+    while (active_test_.size() > 0) {
+      pop_scope(active_test_.top());
+    }
+    active_suite_ = suite.name;
+    active_scope_ = &results_[active_suite_];
+  }
+
+  auto on(events::suite_end) -> void {
+    while (active_test_.size() > 0) {
+      pop_scope(active_test_.top());
+    }
+    active_suite_ = "global";
+    active_scope_ = &results_[active_suite_];
+  }
+
+  auto on(events::test_begin test_event) -> void {  // starts outermost test
+    check_for_scope(test_event.name);
+
+    if (report_type_ == CONSOLE) {
+      ss_out_ << "\n";
+      ss_out_ << std::string(2 * active_test_.size() - 2, ' ');
+      ss_out_ << "Running test \"" << test_event.name << "\"... ";
+    }
+  }
+
+  auto on(events::test_end test_event) -> void {
+    if (active_scope_->fails > 0) {
+      reset_printer();
+    } else {
+      active_scope_->report_string = ss_out_.str();
+      active_scope_->passed += 1LU;
+      if (report_type_ == CONSOLE) {
+        if (detail::cfg::show_successful_tests) {
+          if (!active_scope_->nested_tests->empty()) {
+            ss_out_ << "\n";
+            ss_out_ << std::string(2 * active_test_.size() - 2, ' ');
+            ss_out_ << "Running test \"" << test_event.name << "\" - ";
+          }
+          ss_out_ << color_.pass << "PASSED" << color_.none;
+          print_duration(ss_out_);
+          lcout_ << ss_out_.str();
+          reset_printer();
+        }
+      }
+    }
+
+    pop_scope(test_event.name);
+  }
+
+  auto on(events::test_run test_event) -> void {  // starts nested test
+    on(events::test_begin{.type = test_event.type, .name = test_event.name});
+  }
+
+  auto on(events::test_finish test_event) -> void {  // finishes nested test
+    on(events::test_end{.type = test_event.type, .name = test_event.name});
+  }
+
+  auto on(events::test_skip test_event) -> void {
+    ss_out_.clear();
+    if (!active_scope_->nested_tests->contains(std::string(test_event.name))) {
+      check_for_scope(test_event.name);
+      active_scope_->status = "SKIPPED";
+      active_scope_->skipped += 1;
+      if (report_type_ == CONSOLE) {
+        lcout_ << '\n' << std::string(2 * active_test_.size() - 2, ' ');
+        lcout_ << "Running \"" << test_event.name << "\"... ";
+        lcout_ << color_.skip << "SKIPPED" << color_.none;
+      }
+      reset_printer();
+      pop_scope(test_event.name);
+    }
+  }
+
+  template <class TMsg>
+  auto on(events::log<TMsg> log) -> void {
+    ss_out_ << log.msg;
+    if (report_type_ == CONSOLE) {
+      lcout_ << log.msg;
+    }
+  }
+
+  auto on(events::exception exception) -> void {
+    active_scope_->fails++;
+    if (!active_test_.empty()) {
+      active_scope_->report_string += color_.fail;
+      active_scope_->report_string += "Unexpected exception with message:\n";
+      active_scope_->report_string += exception.what();
+      active_scope_->report_string += color_.none;
+    }
+    if (report_type_ == CONSOLE) {
+      lcout_ << std::string(2 * active_test_.size() - 2, ' ');
+      lcout_ << "Running test \"" << active_test_.top() << "\"... ";
+      lcout_ << color_.fail << "FAILED" << color_.none;
+      print_duration(lcout_);
+      lcout_ << '\n';
+      lcout_ << active_scope_->report_string << '\n';
+    }
+    if (detail::cfg::abort_early ||
+        active_scope_->fails >= detail::cfg::abort_after_n_failures) {
+      std::cerr << "early abort for test : " << active_test_.top() << "after ";
+      std::cerr << active_scope_->fails << " failures total." << std::endl;
+      std::exit(-1);
+    }
+  }
+
+  template <class TExpr>
+  auto on(events::assertion_pass<TExpr>) -> void {
+    active_scope_->assertions++;
+  }
+
+  template <class TExpr>
+  auto on(events::assertion_fail<TExpr> assertion) -> void {
+    TPrinter ss{};
+    ss << ss_out_.str();
+    if (report_type_ == CONSOLE) {
+      ss << color_.fail << "FAILED\n" << color_.none;
+      print_duration(ss);
+    }
+    ss << "in: " << assertion.location.file_name() << ':'
+       << assertion.location.line();
+    ss << color_.fail << " - test condition: ";
+    ss << " [" << std::boolalpha << assertion.expr;
+    ss << color_.fail << ']' << color_.none;
+    active_scope_->report_string += ss.str();
+    active_scope_->fails++;
+    reset_printer();
+    if (report_type_ == CONSOLE) {
+      lcout_ << active_scope_->report_string << "\n\n";
+    }
+    if (detail::cfg::abort_early ||
+        active_scope_->fails >= detail::cfg::abort_after_n_failures) {
+      std::cerr << "early abort for test : " << active_test_.top() << "after ";
+      std::cerr << active_scope_->fails << " failures total." << std::endl;
+      std::exit(-1);
+    }
+  }
+
+  auto on(events::fatal_assertion) -> void { active_scope_->fails++; }
+
+  auto on(events::summary) -> void {
+    std::cout.flush();
+    std::cout.rdbuf(cout_save);
+    std::ofstream maybe_of;
+    if (detail::cfg::output_filename != "") { maybe_of = std::ofstream(detail::cfg::output_filename); }
+
+    if (report_type_ == JUNIT) {
+      print_junit_summary(detail::cfg::output_filename != "" ? maybe_of : std::cout);
+      return;
+    }
+    print_console_summary(
+      detail::cfg::output_filename != "" ? maybe_of : std::cout,
+      detail::cfg::output_filename != "" ? maybe_of : std::cerr
+    );
+  }
+
+ protected:
+  void print_duration(auto& printer) const noexcept {
+    if (detail::cfg::show_duration) {
+      std::int64_t time_ms =
+          std::chrono::duration_cast<std::chrono::milliseconds>(
+              active_scope_->run_stop - active_scope_->run_start)
+              .count();
+      // rounded to nearest ms
+      double time_s = static_cast<double>(time_ms) / 1000.0;
+      printer << " after " << time_s << " seconds";
+    }
+  }
+
+  void print_console_summary(std::ostream &out_stream, std::ostream &err_stream) {
+    for (const auto& [suite_name, suite_result] : results_) {
+      if (suite_result.fails) {
+        err_stream
+            << "\n========================================================"
+               "=======================\n"
+            << "Suite " << suite_name  //
+            << "tests:   " << (suite_result.n_tests) << " | " << color_.fail
+            << suite_result.fails << " failed" << color_.none << '\n'
+            << "asserts: " << (suite_result.assertions) << " | "
+            << suite_result.passed << " passed"
+            << " | " << color_.fail << suite_result.fails << " failed"
+            << color_.none << '\n';
+        std::cerr << std::endl;
+      } else {
+        out_stream << color_.pass << "Suite '" << suite_name
+                  << "': all tests passed" << color_.none << " ("
+                  << suite_result.assertions << " asserts in "
+                  << suite_result.n_tests << " tests)\n";
+
+        if (suite_result.skipped) {
+          std::cout << suite_result.skipped << " tests skipped\n";
+        }
+
+        std::cout.flush();
+      }
+    }
+  }
+
+  void print_junit_summary(std::ostream &stream) {
+    // aggregate results
+    size_t n_tests=0, n_fails=0;
+    double total_time = 0.0;
+    auto suite_time = [](auto const& suite_result) {
+      std::int64_t time_ms =
+          std::chrono::duration_cast<std::chrono::milliseconds>(
+              suite_result.run_stop - suite_result.run_start)
+              .count();
+      return static_cast<double>(time_ms) / 1000.0;
+    };
+    for (const auto& [suite_name, suite_result] : results_) {
+      n_tests += suite_result.assertions;
+      n_fails += suite_result.fails;
+      total_time += suite_time(suite_result);
+    }
+
+    // mock junit output:
+    stream << "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n";
+    stream << "<testsuites";
+      stream << " name=\"all\"";
+      stream << " tests=\"" << n_tests << '\"';
+      stream << " failures=\"" << n_fails << '\"';
+      stream << " time=\"" << total_time << '\"';
+      stream << ">\n";
+
+    for (const auto& [suite_name, suite_result] : results_) {
+      stream << "<testsuite";
+      stream << " classname=\"" << detail::cfg::executable_name << '\"';
+      stream << " name=\"" << suite_name << '\"';
+      stream << " tests=\"" << suite_result.assertions << '\"';
+      stream << " errors=\"" << suite_result.fails << '\"';
+      stream << " failures=\"" << suite_result.fails << '\"';
+      stream << " skipped=\"" << suite_result.skipped << '\"';
+      stream << " time=\"" << suite_time(suite_result) << '\"';
+      stream << " version=\"" << BOOST_UT_VERSION << "\">\n";
+      print_result(stream, suite_name, " ", suite_result);
+      stream << "</testsuite>\n";
+      stream.flush();
+    }
+    stream << "</testsuites>";
+  }
+  void print_result(std::ostream &stream, const std::string& suite_name, std::string indent,
+                    const test_result& parent) {
+    for (const auto& [name, result] : *parent.nested_tests) {
+      stream << indent;
+      stream << "<testcase classname=\"" << result.suite_name << '\"';
+      stream << " name=\"" << name << '\"';
+      stream << " tests=\"" << result.assertions << '\"';
+      stream << " errors=\"" << result.fails << '\"';
+      stream << " failures=\"" << result.fails << '\"';
+      stream << " skipped=\"" << result.skipped << '\"';
+      std::int64_t time_ms =
+          std::chrono::duration_cast<std::chrono::milliseconds>(
+              result.run_stop - result.run_start)
+              .count();
+      stream << " time=\"" << (static_cast<double>(time_ms) / 1000.0)
+                << "\"";
+      stream << " status=\"" << result.status << '\"';
+      if (result.report_string.empty() && result.nested_tests->empty()) {
+        stream << " />\n";
+      } else if (!result.nested_tests->empty()) {
+        stream << " />\n";
+        print_result(stream, suite_name, indent + "  ", result);
+        stream << indent << "</testcase>\n";
+      } else if (!result.report_string.empty()) {
+        stream << ">\n";
+        stream << indent << indent << "<system-out>\n";
+        stream << result.report_string << "\n";
+        stream << indent << indent << "</system-out>\n";
+        stream << indent << "</testcase>\n";
+      }
+    }
+  }
 };
 
 struct options {
@@ -1227,7 +2020,7 @@ class runner {
     }
 
     if (not dry_run_) {
-      reporter_.on(events::summary{});
+      report_summary();
     }
 
     if (should_run and fails_) {
@@ -1244,16 +2037,24 @@ class runner {
 
   template <class TSuite>
   auto on(events::suite<TSuite> suite) {
-    suites_.push_back(suite.run);
+    suites_.emplace_back(suite.run, suite.name);
   }
 
   template <class... Ts>
   auto on(events::test<Ts...> test) {
     path_[level_] = test.name;
 
+    if (detail::cfg::list_tags) {
+      std::for_each(test.tag.cbegin(), test.tag.cend(), [](const auto& tag) {
+        std::cout << "tag: " << tag << std::endl;
+      });
+      return;
+    }
+
     auto execute = std::empty(test.tag);
     for (const auto& tag_element : test.tag) {
-      if (utility::is_match(tag_element, "skip")) {
+      if (utility::is_match(tag_element, "skip") && !detail::cfg::show_tests &&
+          !detail::cfg::show_test_names) {
         on(events::skip<>{.type = test.type, .name = test.name});
         return;
       }
@@ -1264,6 +2065,27 @@ class runner {
           break;
         }
       }
+    }
+
+    if (!detail::cfg::query_pattern.empty()) {
+      const static auto regex = detail::cfg::query_regex_pattern;
+      bool matches = utility::regex_match(test.name.data(), regex.c_str());
+      for (const auto& tag2 : test.tag) {
+        matches |= utility::regex_match(tag2.data(), regex.c_str());
+      }
+      if (matches) {
+        execute = !detail::cfg::invert_query_pattern;
+      } else {
+        execute = detail::cfg::invert_query_pattern;
+      }
+    }
+
+    if (detail::cfg::show_tests || detail::cfg::show_test_names) {
+      if (!detail::cfg::show_test_names) {
+        std::cout << "matching test: ";
+      }
+      std::cout << test.name << std::endl;
+      return;
     }
 
     if (not execute) {
@@ -1303,6 +2125,14 @@ class runner {
 
       if (not --level_) {
         reporter_.on(events::test_end{.type = test.type, .name = test.name});
+      } else {  // N.B. prev. only root-level tests were signalled on finish
+        if constexpr (requires {
+                        reporter_.on(events::test_finish{.type = test.type,
+                                                         .name = test.name});
+                      }) {
+          reporter_.on(
+              events::test_finish{.type = test.type, .name = test.name});
+        }
       }
     }
   }
@@ -1335,14 +2165,14 @@ class runner {
 
 #if defined(__cpp_exceptions)
     if (not level_) {
-      reporter_.on(events::summary{});
+      report_summary();
     }
     throw fatal_assertion;
 #else
     if (level_) {
       reporter_.on(events::test_end{});
     }
-    reporter_.on(events::summary{});
+    report_summary();
     std::abort();
 #endif
   }
@@ -1354,21 +2184,35 @@ class runner {
 
   [[nodiscard]] auto run(run_cfg rc = {}) -> bool {
     run_ = true;
-    for (const auto& suite : suites_) {
+    for (const auto& [suite, suite_name] : suites_) {
+      // add reporter in/out
+      if constexpr (requires { reporter_.on(events::suite_begin{}); }) {
+        reporter_.on(events::suite_begin{.type = "suite", .name = suite_name});
+      }
       suite();
+      if constexpr (requires { reporter_.on(events::suite_end{}); }) {
+        reporter_.on(events::suite_end{.type = "suite", .name = suite_name});
+      }
     }
     suites_.clear();
 
     if (rc.report_errors) {
-      reporter_.on(events::summary{});
+      report_summary();
     }
 
     return fails_ > 0;
   }
 
+  auto report_summary() -> void {
+    if (static auto once = true; once) {
+      once = false;
+      reporter_.on(events::summary{});
+    }
+  }
+
  protected:
   TReporter reporter_{};
-  std::vector<void (*)()> suites_{};
+  std::vector<std::pair<void (*)(), std::string_view>> suites_{};
   std::size_t level_{};
   bool run_{};
   std::size_t fails_{};
@@ -1381,7 +2225,8 @@ class runner {
 struct override {};
 
 template <class = override, class...>
-[[maybe_unused]] inline auto cfg = runner<reporter<printer>>{};
+//[[maybe_unused]] inline auto cfg = runner<reporter<printer>>{};// alt reporter
+[[maybe_unused]] inline auto cfg = runner<reporter_junit<printer>>{};
 
 namespace detail {
 struct tag {
@@ -1465,6 +2310,22 @@ struct log {
     on<TMsg>(events::log{msg});
     return next{};
   }
+
+#if defined(BOOST_UT_HAS_FORMAT)
+#if __cpp_lib_format >= 202207L
+  template <class... Args>
+  void operator()(std::format_string<Args...> fmt, Args&&... args) {
+    on<std::string>(
+        events::log{std::vformat(fmt.get(), std::make_format_args(args...))});
+  }
+#else
+  template <class... Args>
+  void operator()(std::string_view fmt, Args&&... args) {
+    on<std::string>(
+        events::log{std::vformat(fmt, std::make_format_args(args...))});
+  }
+#endif
+#endif
 };
 
 template <class TExpr>
@@ -1571,7 +2432,22 @@ struct expect_ {
   auto& operator<<(const TMsg& msg) {
     if (not value_) {
       on<T>(events::log{' '});
-      on<T>(events::log{msg});
+      if constexpr (requires {
+                      requires std::invocable<TMsg> and
+                                   not std::is_void_v<
+                                       std::invoke_result_t<TMsg>>;
+                    }) {
+        on<T>(events::log{std::invoke(msg)});
+      } else {
+        on<T>(events::log{msg});
+      }
+    }
+    return *this;
+  }
+
+  auto& operator<<(detail::fatal) {
+    if (not value_) {
+      on<T>(events::fatal_assertion{});
     }
     return *this;
   }
@@ -1583,8 +2459,7 @@ struct expect_ {
 }  // namespace detail
 
 namespace literals {
-[[nodiscard]] inline auto operator""_test(const char* name,
-                                          decltype(sizeof("")) size) {
+[[nodiscard]] inline auto operator""_test(const char* name, std::size_t size) {
   return detail::test{"test", std::string_view{name, size}};
 }
 
@@ -1880,9 +2755,9 @@ inline auto operator>>(const T& t,
                        const detail::value_location<detail::fatal>&) {
   using fatal_t = detail::fatal_<T>;
   struct fatal_ : fatal_t, detail::log {
-    using type [[maybe_unused]] = fatal_t;
+    using type = fatal_t;
     using fatal_t::fatal_t;
-    const detail::terse_<fatal_t> _{*this};
+    const detail::terse_<type> _{*this};
   };
   return fatal_{t};
 }
@@ -1892,9 +2767,9 @@ constexpr auto operator==(
     const T& lhs, const detail::value_location<typename T::value_type>& rhs) {
   using eq_t = detail::eq_<T, detail::value_location<typename T::value_type>>;
   struct eq_ : eq_t, detail::log {
-    using type [[maybe_unused]] = eq_t;
+    using type = eq_t;
     using eq_t::eq_t;
-    const detail::terse_<eq_t> _{*this};
+    const detail::terse_<type> _{*this};
   };
   return eq_{lhs, rhs};
 }
@@ -1904,9 +2779,9 @@ constexpr auto operator==(
     const detail::value_location<typename T::value_type>& lhs, const T& rhs) {
   using eq_t = detail::eq_<detail::value_location<typename T::value_type>, T>;
   struct eq_ : eq_t, detail::log {
-    using type [[maybe_unused]] = eq_t;
+    using type = eq_t;
     using eq_t::eq_t;
-    const detail::terse_<eq_t> _{*this};
+    const detail::terse_<type> _{*this};
   };
   return eq_{lhs, rhs};
 }
@@ -1916,9 +2791,9 @@ constexpr auto operator!=(
     const T& lhs, const detail::value_location<typename T::value_type>& rhs) {
   using neq_t = detail::neq_<T, detail::value_location<typename T::value_type>>;
   struct neq_ : neq_t, detail::log {
-    using type [[maybe_unused]] = neq_t;
+    using type = neq_t;
     using neq_t::neq_t;
-    const detail::terse_<neq_t> _{*this};
+    const detail::terse_<type> _{*this};
   };
   return neq_{lhs, rhs};
 }
@@ -1928,9 +2803,9 @@ constexpr auto operator!=(
     const detail::value_location<typename T::value_type>& lhs, const T& rhs) {
   using neq_t = detail::neq_<detail::value_location<typename T::value_type>, T>;
   struct neq_ : neq_t {
-    using type [[maybe_unused]] = neq_t;
+    using type = neq_t;
     using neq_t::neq_t;
-    const detail::terse_<neq_t> _{*this};
+    const detail::terse_<type> _{*this};
   };
   return neq_{lhs, rhs};
 }
@@ -1940,9 +2815,9 @@ constexpr auto operator>(
     const T& lhs, const detail::value_location<typename T::value_type>& rhs) {
   using gt_t = detail::gt_<T, detail::value_location<typename T::value_type>>;
   struct gt_ : gt_t, detail::log {
-    using type [[maybe_unused]] = gt_t;
+    using type = gt_t;
     using gt_t::gt_t;
-    const detail::terse_<gt_t> _{*this};
+    const detail::terse_<type> _{*this};
   };
   return gt_{lhs, rhs};
 }
@@ -1952,9 +2827,9 @@ constexpr auto operator>(
     const detail::value_location<typename T::value_type>& lhs, const T& rhs) {
   using gt_t = detail::gt_<detail::value_location<typename T::value_type>, T>;
   struct gt_ : gt_t, detail::log {
-    using type [[maybe_unused]] = gt_t;
+    using type = gt_t;
     using gt_t::gt_t;
-    const detail::terse_<gt_t> _{*this};
+    const detail::terse_<type> _{*this};
   };
   return gt_{lhs, rhs};
 }
@@ -1964,9 +2839,9 @@ constexpr auto operator>=(
     const T& lhs, const detail::value_location<typename T::value_type>& rhs) {
   using ge_t = detail::ge_<T, detail::value_location<typename T::value_type>>;
   struct ge_ : ge_t, detail::log {
-    using type [[maybe_unused]] = ge_t;
+    using type = ge_t;
     using ge_t::ge_t;
-    const detail::terse_<ge_t> _{*this};
+    const detail::terse_<type> _{*this};
   };
   return ge_{lhs, rhs};
 }
@@ -1976,9 +2851,9 @@ constexpr auto operator>=(
     const detail::value_location<typename T::value_type>& lhs, const T& rhs) {
   using ge_t = detail::ge_<detail::value_location<typename T::value_type>, T>;
   struct ge_ : ge_t, detail::log {
-    using type [[maybe_unused]] = ge_t;
+    using type = ge_t;
     using ge_t::ge_t;
-    const detail::terse_<ge_t> _{*this};
+    const detail::terse_<type> _{*this};
   };
   return ge_{lhs, rhs};
 }
@@ -1988,9 +2863,9 @@ constexpr auto operator<(
     const T& lhs, const detail::value_location<typename T::value_type>& rhs) {
   using lt_t = detail::lt_<T, detail::value_location<typename T::value_type>>;
   struct lt_ : lt_t, detail::log {
-    using type [[maybe_unused]] = lt_t;
+    using type = lt_t;
     using lt_t::lt_t;
-    const detail::terse_<lt_t> _{*this};
+    const detail::terse_<type> _{*this};
   };
   return lt_{lhs, rhs};
 }
@@ -2000,9 +2875,9 @@ constexpr auto operator<(
     const detail::value_location<typename T::value_type>& lhs, const T& rhs) {
   using lt_t = detail::lt_<detail::value_location<typename T::value_type>, T>;
   struct lt_ : lt_t, detail::log {
-    using type [[maybe_unused]] = lt_t;
+    using type = lt_t;
     using lt_t::lt_t;
-    const detail::terse_<lt_t> _{*this};
+    const detail::terse_<type> _{*this};
   };
   return lt_{lhs, rhs};
 }
@@ -2012,9 +2887,9 @@ constexpr auto operator<=(
     const T& lhs, const detail::value_location<typename T::value_type>& rhs) {
   using le_t = detail::le_<T, detail::value_location<typename T::value_type>>;
   struct le_ : le_t, detail::log {
-    using type [[maybe_unused]] = le_t;
+    using type = le_t;
     using le_t::le_t;
-    const detail::terse_<le_t> _{*this};
+    const detail::terse_<type> _{*this};
   };
   return le_{lhs, rhs};
 }
@@ -2024,9 +2899,9 @@ constexpr auto operator<=(
     const detail::value_location<typename T::value_type>& lhs, const T& rhs) {
   using le_t = detail::le_<detail::value_location<typename T::value_type>, T>;
   struct le_ : le_t {
-    using type [[maybe_unused]] = le_t;
+    using type = le_t;
     using le_t::le_t;
-    const detail::terse_<le_t> _{*this};
+    const detail::terse_<type> _{*this};
   };
   return le_{lhs, rhs};
 }
@@ -2037,9 +2912,9 @@ template <class TLhs, class TRhs,
 constexpr auto operator and(const TLhs& lhs, const TRhs& rhs) {
   using and_t = detail::and_<typename TLhs::type, typename TRhs::type>;
   struct and_ : and_t, detail::log {
-    using type [[maybe_unused]] = and_t;
+    using type = and_t;
     using and_t::and_t;
-    const detail::terse_<and_t> _{*this};
+    const detail::terse_<type> _{*this};
   };
   return and_{lhs, rhs};
 }
@@ -2050,9 +2925,9 @@ template <class TLhs, class TRhs,
 constexpr auto operator or(const TLhs& lhs, const TRhs& rhs) {
   using or_t = detail::or_<typename TLhs::type, typename TRhs::type>;
   struct or_ : or_t, detail::log {
-    using type [[maybe_unused]] = or_t;
+    using type = or_t;
     using or_t::or_t;
-    const detail::terse_<or_t> _{*this};
+    const detail::terse_<type> _{*this};
   };
   return or_{lhs, rhs};
 }
@@ -2061,9 +2936,9 @@ template <class T, type_traits::requires_t<type_traits::is_op_v<T>> = 0>
 constexpr auto operator not(const T& t) {
   using not_t = detail::not_<typename T::type>;
   struct not_ : not_t, detail::log {
-    using type [[maybe_unused]] = not_t;
+    using type = not_t;
     using not_t::not_t;
-    const detail::terse_<not_t> _{*this};
+    const detail::terse_<type> _{*this};
   };
   return not_{t};
 }
@@ -2081,7 +2956,7 @@ constexpr auto expect(const TExpr& expr,
       events::assertion<TExpr>{.expr = expr, .location = sl})};
 }
 
-[[maybe_unused]] constexpr auto fatal = detail::fatal{};
+[[maybe_unused]] inline constexpr auto fatal = detail::fatal{};
 
 #if defined(__cpp_nontype_template_parameter_class)
 template <auto Constant>
@@ -2143,12 +3018,15 @@ struct _t : detail::value<T> {
   constexpr explicit _t(const T& t) : detail::value<T>{t} {}
 };
 
+template <fixed_string suite_name = "unnamed suite">
 struct suite {
+  reflection::source_location location{};
+  std::string_view name = std::string_view(suite_name);
   template <class TSuite>
   constexpr /*explicit(false)*/ suite(TSuite _suite) {
     static_assert(1 == sizeof(_suite));
     detail::on<decltype(+_suite)>(
-        events::suite<decltype(+_suite)>{.run = +_suite});
+        events::suite<decltype(+_suite)>{.run = +_suite, .name = name});
   }
 };
 
@@ -2168,6 +3046,11 @@ template <class T = void>
 template <class TLhs, class TRhs>
 [[nodiscard]] constexpr auto eq(const TLhs& lhs, const TRhs& rhs) {
   return detail::eq_{lhs, rhs};
+}
+template <class TLhs, class TRhs, class TEpsilon>
+[[nodiscard]] constexpr auto approx(const TLhs& lhs, const TRhs& rhs,
+                                    const TEpsilon& epsilon) {
+  return detail::approx_{lhs, rhs, epsilon};
 }
 template <class TLhs, class TRhs>
 [[nodiscard]] constexpr auto neq(const TLhs& lhs, const TRhs& rhs) {
@@ -2243,8 +3126,7 @@ class steps {
               auto i = 0u;
               const auto& ms = utility::match(pattern, _step);
               expr(lexical_cast<TArgs>(ms[i++])...);
-            }
-            (typename type_traits::function_traits<TExpr>::args{});
+            }(typename type_traits::function_traits<TExpr>::args{});
           });
     }
 
@@ -2387,5 +3269,17 @@ using operators::operator not;
 using operators::operator|;
 using operators::operator/;
 using operators::operator>>;
-}  // namespace boost::inline ext::ut::inline v1_1_8
+}  // namespace boost::inline ext::ut::inline v2_0_0
+
+#if (defined(__GNUC__) || defined(__clang__) || defined(__INTEL_COMPILER)) && \
+    !defined(__EMSCRIPTEN__)
+__attribute__((constructor)) inline void cmd_line_args(int argc,
+                                                       const char* argv[]) {
+  ::boost::ut::detail::cfg::largc = argc;
+  ::boost::ut::detail::cfg::largv = argv;
+}
+#else
+// For MSVC, largc/largv are initialized with __argc/__argv
+#endif
+
 #endif
