@@ -38,3 +38,4 @@ pqrs-org/cpp-spdlog
 pqrs-org/cpp-string
 pqrs-org/objc-weakify
 scopeInfinity/NaturalSort
+ArashPartow/exprtk
