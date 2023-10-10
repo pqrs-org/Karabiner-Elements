@@ -116,8 +116,19 @@ public:
       y_formula_ = make_formula_expression(y_formula_string_);
     }
 
+    void update_wheels_formula(const std::string& vertical_wheel_formula_string,
+                               const std::string& horizontal_wheel_formula_string) {
+      vertical_wheel_formula_string_ = vertical_wheel_formula_string;
+      horizontal_wheel_formula_string_ = horizontal_wheel_formula_string;
+
+      logger::get_logger()->info("game_pad_stick_converter update vertical_wheel_formula {0}", vertical_wheel_formula_string_);
+      logger::get_logger()->info("game_pad_stick_converter update horizontal_wheel_formula {0}", horizontal_wheel_formula_string_);
+
+      vertical_wheel_formula_ = make_formula_expression(vertical_wheel_formula_string_);
+      horizontal_wheel_formula_ = make_formula_expression(horizontal_wheel_formula_string_);
+    }
+
     std::pair<int, int> xy_value(void) const {
-      // The logical value range of Karabiner-DriverKit-VirtualHIDPointing is -127 ... 127.
       auto x = x_formula_.value();
       if (std::isnan(x)) {
         logger::get_logger()->error("game_pad_stick_converter x_formula returns nan: {0} (radian: {1}, magnitude: {2}, acceleration: {3})",
@@ -138,17 +149,17 @@ public:
         y = 0.0;
       }
 
-      return std::make_pair(adjust_integer_value(static_cast<int>(x * 127)),
-                            adjust_integer_value(static_cast<int>(y * 127)));
+      return std::make_pair(adjust_integer_value(static_cast<int>(x)),
+                            adjust_integer_value(static_cast<int>(y)));
     }
 
     std::pair<int, int> wheels_value(void) const {
       // The logical value range of Karabiner-DriverKit-VirtualHIDPointing is -127 ... 127.
-      auto h = std::cos(radian_);
-      auto v = std::sin(radian_);
+      auto v = vertical_wheel_formula_.value();
+      auto h = horizontal_wheel_formula_.value();
 
-      return std::make_pair(std::signbit(v) ? -1 : 1,
-                            std::signbit(h) ? -1 : 1);
+      return std::make_pair(adjust_integer_value(static_cast<int>(v)),
+                            adjust_integer_value(static_cast<int>(h)));
     }
 
     std::chrono::milliseconds xy_interval(void) const {
@@ -162,14 +173,6 @@ public:
     std::chrono::milliseconds wheels_interval(void) const {
       if (holding_acceleration_ == 0.0) {
         return std::chrono::milliseconds(0);
-      }
-
-      if (holding_acceleration_ > 0.3) {
-        return std::chrono::milliseconds(50);
-      }
-
-      if (holding_acceleration_ > 0.1) {
-        return std::chrono::milliseconds(75);
       }
 
       return std::chrono::milliseconds(100);
@@ -254,8 +257,12 @@ public:
 
     std::string x_formula_string_;
     std::string y_formula_string_;
+    std::string vertical_wheel_formula_string_;
+    std::string horizontal_wheel_formula_string_;
     exprtk_utility::expression_t x_formula_;
     exprtk_utility::expression_t y_formula_;
+    exprtk_utility::expression_t vertical_wheel_formula_;
+    exprtk_utility::expression_t horizontal_wheel_formula_;
 
     bool active_; // Whether the process of calling `pointing_motion_arrived` is working or not
   };
@@ -272,6 +279,8 @@ public:
     void update_formula(const core_configuration::core_configuration& core_configuration) {
       xy.update_xy_formula(core_configuration.get_selected_profile().get_device_game_pad_stick_x_formula(device_identifiers_),
                            core_configuration.get_selected_profile().get_device_game_pad_stick_y_formula(device_identifiers_));
+      wheels.update_wheels_formula(core_configuration.get_selected_profile().get_device_game_pad_stick_vertical_wheel_formula(device_identifiers_),
+                                   core_configuration.get_selected_profile().get_device_game_pad_stick_horizontal_wheel_formula(device_identifiers_));
     }
 
     stick xy;

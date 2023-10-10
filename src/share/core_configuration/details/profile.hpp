@@ -575,6 +575,52 @@ public:
     }
   }
 
+  std::string get_device_game_pad_stick_vertical_wheel_formula(const device_identifiers& identifiers) const {
+    for (const auto& d : devices_) {
+      if (d.get_identifiers() == identifiers) {
+        if (auto value = d.get_game_pad_stick_vertical_wheel_formula()) {
+          return *value;
+        }
+      }
+    }
+    return std::string(device::game_pad_stick_vertical_wheel_formula_default_value);
+  }
+
+  void set_device_game_pad_stick_vertical_wheel_formula(const device_identifiers& identifiers,
+                                                        const std::optional<std::string>& value) {
+    add_device(identifiers);
+
+    for (auto&& device : devices_) {
+      if (device.get_identifiers() == identifiers) {
+        device.set_game_pad_stick_vertical_wheel_formula(value);
+        return;
+      }
+    }
+  }
+
+  std::string get_device_game_pad_stick_horizontal_wheel_formula(const device_identifiers& identifiers) const {
+    for (const auto& d : devices_) {
+      if (d.get_identifiers() == identifiers) {
+        if (auto value = d.get_game_pad_stick_horizontal_wheel_formula()) {
+          return *value;
+        }
+      }
+    }
+    return std::string(device::game_pad_stick_horizontal_wheel_formula_default_value);
+  }
+
+  void set_device_game_pad_stick_horizontal_wheel_formula(const device_identifiers& identifiers,
+                                                          const std::optional<std::string>& value) {
+    add_device(identifiers);
+
+    for (auto&& device : devices_) {
+      if (device.get_identifiers() == identifiers) {
+        device.set_game_pad_stick_horizontal_wheel_formula(value);
+        return;
+      }
+    }
+  }
+
 private:
   void add_device(const device_identifiers& identifiers) {
     for (auto&& device : devices_) {
