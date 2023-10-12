@@ -124,6 +124,12 @@ void run_device_test(void) {
       expect(device.get_manipulate_caps_lock_led() == false);
       expect(device.get_treat_as_built_in_keyboard() == false);
       expect(device.get_disable_built_in_keyboard_if_exists() == false);
+      expect(device.get_game_pad_stick_left_stick_deadzone() == std::nullopt);
+      expect(device.get_game_pad_stick_right_stick_deadzone() == std::nullopt);
+      expect(device.get_game_pad_stick_x_formula() == std::nullopt);
+      expect(device.get_game_pad_stick_y_formula() == std::nullopt);
+      expect(device.get_game_pad_stick_vertical_wheel_formula() == std::nullopt);
+      expect(device.get_game_pad_stick_horizontal_wheel_formula() == std::nullopt);
     }
 
     // load values from json
@@ -140,6 +146,16 @@ void run_device_test(void) {
           {"ignore", true},
           {"manipulate_caps_lock_led", true},
           {"treat_as_built_in_keyboard", false},
+          {"game_pad_stick_left_stick_deadzone", 0.08},
+          // string
+          {"game_pad_stick_x_formula", "cos(radian) * acceleration * 127"},
+          // array of string
+          {"game_pad_stick_y_formula", nlohmann::json::array({
+                                           "if (acceleration < 0.5,",
+                                           "  cos(radian) * acceleration * 127 * 0.5,",
+                                           "  cos(radian) * acceleration * 127",
+                                           ")",
+                                       })},
       });
       krbn::core_configuration::details::device device(json);
       expect(device.get_identifiers().get_vendor_id() == pqrs::hid::vendor_id::value_t(1234));
@@ -151,6 +167,12 @@ void run_device_test(void) {
       expect(device.get_manipulate_caps_lock_led() == true);
       expect(device.get_treat_as_built_in_keyboard() == false);
       expect(device.get_disable_built_in_keyboard_if_exists() == true);
+      expect(device.get_game_pad_stick_left_stick_deadzone() == 0.08);
+      expect(device.get_game_pad_stick_x_formula() == "cos(radian) * acceleration * 127");
+      expect(device.get_game_pad_stick_y_formula() == "if (acceleration < 0.5,"
+                                                      "  cos(radian) * acceleration * 127 * 0.5,"
+                                                      "  cos(radian) * acceleration * 127"
+                                                      ")");
     }
 
     // Special default value for specific devices

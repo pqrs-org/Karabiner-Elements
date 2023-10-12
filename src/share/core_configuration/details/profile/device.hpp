@@ -147,24 +147,16 @@ public:
         game_pad_stick_right_stick_deadzone_ = value.get<double>();
 
       } else if (key == "game_pad_stick_x_formula") {
-        pqrs::json::requires_string(value, "`" + key + "`");
-
-        game_pad_stick_x_formula_ = value.get<std::string>();
+        game_pad_stick_x_formula_ = unmarshal_formula(value, key);
 
       } else if (key == "game_pad_stick_y_formula") {
-        pqrs::json::requires_string(value, "`" + key + "`");
-
-        game_pad_stick_y_formula_ = value.get<std::string>();
+        game_pad_stick_y_formula_ = unmarshal_formula(value, key);
 
       } else if (key == "game_pad_stick_vertical_wheel_formula") {
-        pqrs::json::requires_string(value, "`" + key + "`");
-
-        game_pad_stick_vertical_wheel_formula_ = value.get<std::string>();
+        game_pad_stick_vertical_wheel_formula_ = unmarshal_formula(value, key);
 
       } else if (key == "game_pad_stick_horizontal_wheel_formula") {
-        pqrs::json::requires_string(value, "`" + key + "`");
-
-        game_pad_stick_horizontal_wheel_formula_ = value.get<std::string>();
+        game_pad_stick_horizontal_wheel_formula_ = unmarshal_formula(value, key);
 
       } else if (key == "simple_modifications") {
         try {
@@ -425,6 +417,30 @@ public:
   }
 
 private:
+  static std::string unmarshal_formula(const nlohmann::json& json, const std::string& name) {
+    if (json.is_string()) {
+      return json.get<std::string>();
+
+    } else if (json.is_array()) {
+      std::stringstream ss;
+
+      for (const auto& j : json) {
+        if (!j.is_string()) {
+          goto error;
+        }
+
+        ss << j.get<std::string>();
+      }
+
+      return ss.str();
+    }
+
+  error:
+    throw pqrs::json::unmarshal_error(fmt::format("{0} json must be array of string, or string, but is `{1}`",
+                                                  name,
+                                                  pqrs::json::dump_for_error_message(json)));
+  }
+
   void coordinate_between_properties(void) {
     // Set `disable_built_in_keyboard_if_exists_` false if `treat_as_built_in_keyboard_` is true.
     // If both settings are true, the device will always be disabled.
