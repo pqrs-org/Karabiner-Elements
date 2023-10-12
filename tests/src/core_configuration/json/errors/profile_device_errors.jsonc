@@ -115,6 +115,66 @@
         "error": "`mouse_swap_wheel` must be boolean, but is `null`"
     },
 
+    // game_pad_stick_left_stick_deadzone
+
+    {
+        "class": "devices",
+        "input": {
+            "game_pad_stick_left_stick_deadzone": null
+        },
+        "error": "`game_pad_stick_left_stick_deadzone` must be number, but is `null`"
+    },
+
+    // game_pad_stick_right_stick_deadzone
+
+    {
+        "class": "devices",
+        "input": {
+            "game_pad_stick_right_stick_deadzone": null
+        },
+        "error": "`game_pad_stick_right_stick_deadzone` must be number, but is `null`"
+    },
+
+    // game_pad_stick_x_formula
+
+    {
+        "class": "devices",
+        "input": {
+            "game_pad_stick_x_formula": null
+        },
+        "error": "`game_pad_stick_x_formula` must be array of string, or string, but is `null`"
+    },
+
+    // game_pad_stick_y_formula
+
+    {
+        "class": "devices",
+        "input": {
+            "game_pad_stick_y_formula": null
+        },
+        "error": "`game_pad_stick_y_formula` must be array of string, or string, but is `null`"
+    },
+
+    // game_pad_stick_vertical_wheel_formula
+
+    {
+        "class": "devices",
+        "input": {
+            "game_pad_stick_vertical_wheel_formula": null
+        },
+        "error": "`game_pad_stick_vertical_wheel_formula` must be array of string, or string, but is `null`"
+    },
+
+    // game_pad_stick_horizontal_wheel_formula
+
+    {
+        "class": "devices",
+        "input": {
+            "game_pad_stick_horizontal_wheel_formula": null
+        },
+        "error": "`game_pad_stick_horizontal_wheel_formula` must be array of string, or string, but is `null`"
+    },
+
     // simple_modifications
 
     {

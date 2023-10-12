@@ -436,7 +436,7 @@ private:
     }
 
   error:
-    throw pqrs::json::unmarshal_error(fmt::format("{0} json must be array of string, or string, but is `{1}`",
+    throw pqrs::json::unmarshal_error(fmt::format("`{0}` must be array of string, or string, but is `{1}`",
                                                   name,
                                                   pqrs::json::dump_for_error_message(json)));
   }
