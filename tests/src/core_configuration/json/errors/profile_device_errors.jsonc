@@ -135,6 +135,26 @@
         "error": "`game_pad_stick_right_stick_deadzone` must be number, but is `null`"
     },
 
+    // game_pad_stick_xy_interval_milliseconds
+
+    {
+        "class": "devices",
+        "input": {
+            "game_pad_stick_xy_interval_milliseconds": null
+        },
+        "error": "`game_pad_stick_xy_interval_milliseconds` must be number, but is `null`"
+    },
+
+    // game_pad_stick_wheels_interval_milliseconds
+
+    {
+        "class": "devices",
+        "input": {
+            "game_pad_stick_wheels_interval_milliseconds": null
+        },
+        "error": "`game_pad_stick_wheels_interval_milliseconds` must be number, but is `null`"
+    },
+
     // game_pad_stick_x_formula
 
     {
