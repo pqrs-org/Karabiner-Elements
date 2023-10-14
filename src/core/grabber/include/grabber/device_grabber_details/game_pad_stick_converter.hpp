@@ -73,7 +73,9 @@ public:
   class stick final {
   public:
     stick(void)
-        : active_(false) {
+        : xy_interval_milliseconds_(0),
+          wheels_interval_milliseconds_(0),
+          active_(false) {
     }
 
     bool get_active(void) const {
@@ -104,26 +106,18 @@ public:
       update(deadzone);
     }
 
-    void update_xy_formula(const std::string& x_formula_string,
-                           const std::string& y_formula_string) {
-      x_formula_string_ = x_formula_string;
-      y_formula_string_ = y_formula_string;
+    void update_configurations(const core_configuration::core_configuration& core_configuration,
+                               const device_identifiers& device_identifiers) {
+      xy_interval_milliseconds_ = core_configuration.get_selected_profile().get_device_game_pad_stick_xy_interval_milliseconds(device_identifiers);
+      wheels_interval_milliseconds_ = core_configuration.get_selected_profile().get_device_game_pad_stick_wheels_interval_milliseconds(device_identifiers);
 
-      logger::get_logger()->info("game_pad_stick_converter update x_formula {0}", x_formula_string_);
-      logger::get_logger()->info("game_pad_stick_converter update y_formula {0}", y_formula_string_);
+      x_formula_string_ = core_configuration.get_selected_profile().get_device_game_pad_stick_x_formula(device_identifiers);
+      y_formula_string_ = core_configuration.get_selected_profile().get_device_game_pad_stick_y_formula(device_identifiers);
+      vertical_wheel_formula_string_ = core_configuration.get_selected_profile().get_device_game_pad_stick_vertical_wheel_formula(device_identifiers);
+      horizontal_wheel_formula_string_ = core_configuration.get_selected_profile().get_device_game_pad_stick_horizontal_wheel_formula(device_identifiers);
 
       x_formula_ = make_formula_expression(x_formula_string_);
       y_formula_ = make_formula_expression(y_formula_string_);
-    }
-
-    void update_wheels_formula(const std::string& vertical_wheel_formula_string,
-                               const std::string& horizontal_wheel_formula_string) {
-      vertical_wheel_formula_string_ = vertical_wheel_formula_string;
-      horizontal_wheel_formula_string_ = horizontal_wheel_formula_string;
-
-      logger::get_logger()->info("game_pad_stick_converter update vertical_wheel_formula {0}", vertical_wheel_formula_string_);
-      logger::get_logger()->info("game_pad_stick_converter update horizontal_wheel_formula {0}", horizontal_wheel_formula_string_);
-
       vertical_wheel_formula_ = make_formula_expression(vertical_wheel_formula_string_);
       horizontal_wheel_formula_ = make_formula_expression(horizontal_wheel_formula_string_);
     }
@@ -167,7 +161,7 @@ public:
         return std::chrono::milliseconds(0);
       }
 
-      return std::chrono::milliseconds(20);
+      return std::chrono::milliseconds(xy_interval_milliseconds_);
     }
 
     std::chrono::milliseconds wheels_interval(void) const {
@@ -175,7 +169,7 @@ public:
         return std::chrono::milliseconds(0);
       }
 
-      return std::chrono::milliseconds(100);
+      return std::chrono::milliseconds(wheels_interval_milliseconds_);
     }
 
   private:
@@ -255,6 +249,8 @@ public:
     double holding_magnitude_;
     std::vector<history> histories_;
 
+    int xy_interval_milliseconds_;
+    int wheels_interval_milliseconds_;
     std::string x_formula_string_;
     std::string y_formula_string_;
     std::string vertical_wheel_formula_string_;
@@ -276,11 +272,11 @@ public:
         : device_identifiers_(di) {
     }
 
-    void update_formula(const core_configuration::core_configuration& core_configuration) {
-      xy.update_xy_formula(core_configuration.get_selected_profile().get_device_game_pad_stick_x_formula(device_identifiers_),
-                           core_configuration.get_selected_profile().get_device_game_pad_stick_y_formula(device_identifiers_));
-      wheels.update_wheels_formula(core_configuration.get_selected_profile().get_device_game_pad_stick_vertical_wheel_formula(device_identifiers_),
-                                   core_configuration.get_selected_profile().get_device_game_pad_stick_horizontal_wheel_formula(device_identifiers_));
+    void update_configurations(const core_configuration::core_configuration& core_configuration) {
+      xy.update_configurations(core_configuration,
+                               device_identifiers_);
+      wheels.update_configurations(core_configuration,
+                                   device_identifiers_);
     }
 
     stick xy;
@@ -314,7 +310,7 @@ public:
 
     if (auto c = core_configuration_.lock()) {
       for (auto&& [device_id, state] : states_) {
-        state->update_formula(*c);
+        state->update_configurations(*c);
       }
     }
   }
@@ -324,7 +320,7 @@ public:
       if (*is_game_pad) {
         auto s = std::make_shared<state>(device_properties.get_device_identifiers());
         if (auto c = core_configuration_.lock()) {
-          s->update_formula(*c);
+          s->update_configurations(*c);
         }
 
         states_[device_properties.get_device_id()] = s;
