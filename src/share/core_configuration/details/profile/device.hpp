@@ -11,7 +11,7 @@ public:
   static constexpr double game_pad_stick_right_stick_deadzone_default_value = 0.1;
 
   static constexpr int game_pad_stick_xy_interval_milliseconds_default_value = 20;
-  static constexpr int game_pad_stick_wheels_interval_milliseconds_default_value = 20;
+  static constexpr int game_pad_stick_wheels_interval_milliseconds_default_value = 100;
 
   // The logical value range of Karabiner-DriverKit-VirtualHIDPointing is -127 ... 127.
   static constexpr std::string_view game_pad_stick_x_formula_default_value =
