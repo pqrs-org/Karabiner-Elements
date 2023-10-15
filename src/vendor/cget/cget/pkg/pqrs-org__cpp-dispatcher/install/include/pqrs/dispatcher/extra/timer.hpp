@@ -2,11 +2,12 @@
 
 // (C) Copyright Takayama Fumihiko 2018.
 // Distributed under the Boost Software License, Version 1.0.
-// (See http://www.boost.org/LICENSE_1_0.txt)
+// (See https://www.boost.org/LICENSE_1_0.txt)
 
 // `pqrs::dispatcher::extra::timer` can be used safely in a multi-threaded environment.
 
 #include "dispatcher_client.hpp"
+#include <atomic>
 
 namespace pqrs {
 namespace dispatcher {
@@ -23,7 +24,8 @@ class timer final {
 public:
   timer(dispatcher_client& dispatcher_client) : dispatcher_client_(dispatcher_client),
                                                 current_function_id_(0),
-                                                interval_(0) {
+                                                interval_(0),
+                                                enabled_(false) {
   }
 
   ~timer(void) {
@@ -35,6 +37,8 @@ public:
 
   void start(std::function<void(void)> function,
              duration interval) {
+    enabled_ = true;
+
     dispatcher_client_.enqueue_to_dispatcher([this, function, interval] {
       ++current_function_id_;
       function_ = function;
@@ -45,11 +49,17 @@ public:
   }
 
   void stop(void) {
+    enabled_ = false;
+
     dispatcher_client_.enqueue_to_dispatcher([this] {
       ++current_function_id_;
       function_ = nullptr;
       interval_ = duration(0);
     });
+  }
+
+  bool enabled(void) const {
+    return enabled_;
   }
 
 private:
@@ -80,6 +90,8 @@ private:
   int current_function_id_;
   std::function<void(void)> function_;
   duration interval_;
+
+  std::atomic<bool> enabled_;
 };
 } // namespace extra
 } // namespace dispatcher
