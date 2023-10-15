@@ -52,24 +52,23 @@ public class StickManager: ObservableObject {
 
       let deadzone = 0.1
       if abs(vertical.lastDoubleValue) < deadzone && abs(horizontal.lastDoubleValue) < deadzone {
-        deadzoneTask = Task { @MainActor in
-          do {
-            try await Task.sleep(nanoseconds: remainDeadzoneThresholdMilliseconds * NSEC_PER_MSEC)
+        if deadzoneTask == nil {
+          deadzoneTask = Task { @MainActor in
+            do {
+              try await Task.sleep(nanoseconds: remainDeadzoneThresholdMilliseconds * NSEC_PER_MSEC)
 
-            if let last = histories.last {
-              if last.timeStamp == now {
-                deadzoneEnteredAt = now
+              deadzoneEnteredAt = now
 
-                histories.removeAll()
-                strokeAcceleration = 0.0
-              }
+              histories.removeAll()
+              strokeAcceleration = 0.0
+            } catch {
+              print("cancelled")
             }
-          } catch {
-            print("cancelled")
           }
         }
       } else {
         deadzoneTask?.cancel()
+        deadzoneTask = nil
 
         if deadzoneEnteredAt > deadzoneLeftAt {
           deadzoneLeftAt = now
