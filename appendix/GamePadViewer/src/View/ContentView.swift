@@ -15,11 +15,9 @@ struct ContentView: View {
         Text("counter: \(eventObserver.counter)")
         Text("deadzoneEnteredAt: \(rightStick.deadzoneEnteredAt)")
         Text("deadzoneLeftAt: \(rightStick.deadzoneLeftAt)")
-        Text("startingStroke: \(rightStick.startingStroke ? "true":"false")")
         Text("Right Stick radian: \(rightStick.radian)")
         Text("Right Stick magnitude: \(rightStick.magnitude)")
-        Text("Right stick holding acceleration: \(rightStick.holdingAcceleration)")
-        Text("Right stick holding magnitude: \(rightStick.holdingMagnitude)")
+        Text("Right stick stroke acceleration: \(rightStick.strokeAcceleration)")
 
         StickSensorInfo(label: "Right Stick X", stick: rightStick.horizontal)
         StickSensorInfo(label: "Right Stick Y", stick: rightStick.vertical)
@@ -49,10 +47,10 @@ struct ContentView: View {
           path.addLine(
             to: CGPoint(
               x: circleSize / 2.0 + cos(rightStick.radian)
-                * rightStick.holdingAcceleration * accelerationScale * circleSize
+                * rightStick.strokeAcceleration * accelerationScale * circleSize
                 / 2.0,
               y: circleSize / 2.0 + sin(rightStick.radian)
-                * rightStick.holdingAcceleration * accelerationScale * circleSize / 2.0
+                * rightStick.strokeAcceleration * accelerationScale * circleSize / 2.0
             ))
         }
         .stroke(Color.red, lineWidth: 2)

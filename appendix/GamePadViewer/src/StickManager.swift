@@ -32,12 +32,11 @@ public class StickManager: ObservableObject {
     @Published var vertical = StickSensor()
     @Published var radian = 0.0
     @Published var magnitude = 0.0
-    @Published var startingStroke = false
     @Published var deadzoneEnteredAt = Date()
     @Published var deadzoneLeftAt = Date()
-    @Published var holdingAcceleration = 0.0
-    @Published var holdingMagnitude = 0.0
+    @Published var strokeAcceleration = 0.0
     var histories: [History] = []
+    let remainDeadzoneThresholdMilliseconds: UInt64 = 100
     let strokeAccelerationMeasurementTime = 0.05  // 50 ms
 
     var deadzoneTask: Task<(), Never>?
@@ -55,16 +54,14 @@ public class StickManager: ObservableObject {
       if abs(vertical.lastDoubleValue) < deadzone && abs(horizontal.lastDoubleValue) < deadzone {
         deadzoneTask = Task { @MainActor in
           do {
-            try await Task.sleep(nanoseconds: 200 * NSEC_PER_MSEC)
+            try await Task.sleep(nanoseconds: remainDeadzoneThresholdMilliseconds * NSEC_PER_MSEC)
 
             if let last = histories.last {
               if last.timeStamp == now {
                 deadzoneEnteredAt = now
-                startingStroke = false
 
                 histories.removeAll()
-                holdingAcceleration = 0.0
-                holdingMagnitude = 0.0
+                strokeAcceleration = 0.0
               }
             }
           } catch {
@@ -76,12 +73,6 @@ public class StickManager: ObservableObject {
 
         if deadzoneEnteredAt > deadzoneLeftAt {
           deadzoneLeftAt = now
-        }
-
-        if now.timeIntervalSince(deadzoneLeftAt) > strokeAccelerationMeasurementTime {
-          startingStroke = false
-        } else {
-          startingStroke = true
         }
       }
 
@@ -99,24 +90,14 @@ public class StickManager: ObservableObject {
           radian: radian,
           magnitude: magnitude))
 
-      if startingStroke {
+      if now.timeIntervalSince(deadzoneLeftAt) < strokeAccelerationMeasurementTime {
         let minMagnitude = histories.min(by: { $0.magnitude < $1.magnitude })
         let maxMagnitude = histories.max(by: { $0.magnitude < $1.magnitude })
         let a = (maxMagnitude?.magnitude ?? 0) - (minMagnitude?.magnitude ?? 0)
 
-        if holdingAcceleration < a {
-          // Increase acceleration if magnitude is increased.
-          if magnitude > holdingMagnitude {
-            holdingAcceleration = a
-          }
-        } else {
-          // Decrease acceleration if magnitude is decreased.
-          if magnitude < holdingMagnitude - 0.1 {
-            holdingAcceleration = a
-          }
+        if a > strokeAcceleration {
+          strokeAcceleration = a
         }
-
-        holdingMagnitude = magnitude
       }
     }
   }
