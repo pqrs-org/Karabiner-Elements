@@ -38,7 +38,8 @@ public class StickManager: ObservableObject {
     @Published var holdingAcceleration = 0.0
     @Published var holdingMagnitude = 0.0
     var histories: [History] = []
-    let strokeStartThreshold = 0.1  // 100 ms
+    let strokeAccelerationMeasurementTime = 0.05  // 50 ms
+
     var deadzoneTask: Task<(), Never>?
 
     @MainActor
@@ -77,7 +78,7 @@ public class StickManager: ObservableObject {
           deadzoneLeftAt = now
         }
 
-        if now.timeIntervalSince(deadzoneLeftAt) > strokeStartThreshold {
+        if now.timeIntervalSince(deadzoneLeftAt) > strokeAccelerationMeasurementTime {
           startingStroke = false
         } else {
           startingStroke = true
@@ -89,7 +90,7 @@ public class StickManager: ObservableObject {
           return true
         }
 
-        return now.timeIntervalSince($0.timeStamp) > 0.1  // 100 ms
+        return now.timeIntervalSince($0.timeStamp) > strokeAccelerationMeasurementTime
       })
 
       histories.append(
