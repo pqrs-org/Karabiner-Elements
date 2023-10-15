@@ -70,12 +70,25 @@ public:
     double value_; // -1.0 ... 1.0
   };
 
-  class stick final {
+  class stick final : public pqrs::dispatcher::extra::dispatcher_client {
   public:
     stick(void)
-        : xy_interval_milliseconds_(0),
+        : dispatcher_client(),
+          deadzone_timer_(*this),
+          remain_deadzone_threshold_milliseconds_(0),
+          stroke_acceleration_measurement_milliseconds_(0),
+          xy_interval_milliseconds_(0),
           wheels_interval_milliseconds_(0),
           active_(false) {
+      auto now = pqrs::osx::chrono::mach_absolute_time_point();
+      deadzone_entered_at_ = now;
+      deadzone_left_at_ = now;
+    }
+
+    ~stick(void) {
+      detach_from_dispatcher([this] {
+        deadzone_timer_.stop();
+      });
     }
 
     bool get_active(void) const {
@@ -108,6 +121,10 @@ public:
 
     void update_configurations(const core_configuration::core_configuration& core_configuration,
                                const device_identifiers& device_identifiers) {
+      // TODO: Add config
+      remain_deadzone_threshold_milliseconds_ = 100;
+      stroke_acceleration_measurement_milliseconds_ = 50;
+
       xy_interval_milliseconds_ = core_configuration.get_selected_profile().get_device_game_pad_stick_xy_interval_milliseconds(device_identifiers);
       wheels_interval_milliseconds_ = core_configuration.get_selected_profile().get_device_game_pad_stick_wheels_interval_milliseconds(device_identifiers);
 
@@ -129,7 +146,7 @@ public:
                                     x_formula_string_,
                                     radian_,
                                     magnitude_,
-                                    holding_acceleration_);
+                                    stroke_acceleration_);
         x = 0.0;
       }
 
@@ -139,7 +156,7 @@ public:
                                     y_formula_string_,
                                     radian_,
                                     magnitude_,
-                                    holding_acceleration_);
+                                    stroke_acceleration_);
         y = 0.0;
       }
 
@@ -157,7 +174,7 @@ public:
     }
 
     std::chrono::milliseconds xy_interval(void) const {
-      if (holding_acceleration_ == 0.0) {
+      if (stroke_acceleration_ == 0.0) {
         return std::chrono::milliseconds(0);
       }
 
@@ -165,7 +182,7 @@ public:
     }
 
     std::chrono::milliseconds wheels_interval(void) const {
-      if (holding_acceleration_ == 0.0) {
+      if (stroke_acceleration_ == 0.0) {
         return std::chrono::milliseconds(0);
       }
 
@@ -174,6 +191,8 @@ public:
 
   private:
     void update(double deadzone) {
+      auto now = pqrs::osx::chrono::mach_absolute_time_point();
+
       radian_ = std::atan2(vertical_stick_sensor_.get_value(),
 
                            horizontal_stick_sensor_.get_value());
@@ -182,24 +201,37 @@ public:
                                       std::pow(horizontal_stick_sensor_.get_value(), 2)));
 
       //
-      // Update holding_acceleration_, holding_magnitude_
+      // Update stroke_acceleration_
       //
 
       if (std::abs(vertical_stick_sensor_.get_value()) < deadzone &&
           std::abs(horizontal_stick_sensor_.get_value()) < deadzone) {
-        histories_.clear();
-        holding_acceleration_ = 0.0;
-        holding_magnitude_ = 0.0;
-        return;
-      }
+        if (!deadzone_timer_.enabled()) {
+          deadzone_timer_.start(
+              [this, now] {
+                deadzone_entered_at_ = now;
+                stroke_acceleration_ = 0.0;
+                histories_.clear();
+              },
+              std::chrono::milliseconds(remain_deadzone_threshold_milliseconds_));
+        }
+      } else {
+        deadzone_timer_.stop();
 
-      auto now = pqrs::osx::chrono::mach_absolute_time_point();
+        if (deadzone_left_at_ < deadzone_entered_at_) {
+          deadzone_left_at_ = now;
+        }
+      }
 
       histories_.erase(std::remove_if(std::begin(histories_),
                                       std::end(histories_),
-                                      [now](const auto& h) {
+                                      [this, now](const auto& h) {
+                                        if (h.get_time_stamp() < deadzone_left_at_) {
+                                          return true;
+                                        }
+
                                         auto interval = pqrs::osx::chrono::make_milliseconds(now - h.get_time_stamp()).count();
-                                        return interval > 20;
+                                        return interval > stroke_acceleration_measurement_milliseconds_;
                                       }),
                        histories_.end());
 
@@ -207,27 +239,16 @@ public:
                                    radian_,
                                    magnitude_));
 
-      auto [min, max] = std::minmax_element(std::begin(histories_),
-                                            std::end(histories_),
-                                            [](const auto& a, const auto& b) {
-                                              return a.get_magnitude() < b.get_magnitude();
-                                            });
-      if (min != std::end(histories_) && max != std::end(histories_)) {
-        auto acceleration = max->get_magnitude() - min->get_magnitude();
-
-        if (holding_acceleration_ < acceleration) {
-          // Increase acceleration if magnitude is increased.
-          if (magnitude_ > holding_magnitude_) {
-            holding_acceleration_ = acceleration;
-          }
-        } else {
-          // Decrease acceleration if magnitude is decreased.
-          if (magnitude_ < holding_magnitude_ - 0.1) {
-            holding_acceleration_ = acceleration;
-          }
+      if (pqrs::osx::chrono::make_milliseconds(now - deadzone_left_at_).count() < stroke_acceleration_measurement_milliseconds_) {
+        auto [min, max] = std::minmax_element(std::begin(histories_),
+                                              std::end(histories_),
+                                              [](const auto& a, const auto& b) {
+                                                return a.get_magnitude() < b.get_magnitude();
+                                              });
+        if (min != std::end(histories_) && max != std::end(histories_)) {
+          auto acceleration = max->get_magnitude() - min->get_magnitude();
+          stroke_acceleration_ = std::max(stroke_acceleration_, acceleration);
         }
-
-        holding_magnitude_ = magnitude_;
       }
     }
 
@@ -237,18 +258,24 @@ public:
                                      {
                                          {"radian", radian_},
                                          {"magnitude", magnitude_},
-                                         {"acceleration", holding_acceleration_},
+                                         {"acceleration", stroke_acceleration_},
                                      });
     }
 
+    pqrs::dispatcher::extra::timer deadzone_timer_;
+
     stick_sensor horizontal_stick_sensor_;
     stick_sensor vertical_stick_sensor_;
+
     double radian_;
     double magnitude_;
-    double holding_acceleration_;
-    double holding_magnitude_;
+    absolute_time_point deadzone_entered_at_;
+    absolute_time_point deadzone_left_at_;
+    double stroke_acceleration_;
     std::vector<history> histories_;
 
+    int remain_deadzone_threshold_milliseconds_;
+    int stroke_acceleration_measurement_milliseconds_;
     int xy_interval_milliseconds_;
     int wheels_interval_milliseconds_;
     std::string x_formula_string_;
