@@ -23,34 +23,6 @@ namespace device_grabber_details {
 //
 class game_pad_stick_converter final : public pqrs::dispatcher::extra::dispatcher_client {
 public:
-  class history final {
-  public:
-    history(absolute_time_point time_stamp,
-            double radian,
-            double magnitude)
-        : time_stamp_(time_stamp),
-          radian_(radian),
-          magnitude_(magnitude) {
-    }
-
-    absolute_time_point get_time_stamp(void) const {
-      return time_stamp_;
-    }
-
-    double get_radian(void) const {
-      return radian_;
-    }
-
-    double get_magnitude(void) const {
-      return magnitude_;
-    }
-
-  private:
-    absolute_time_point time_stamp_;
-    double radian_;
-    double magnitude_;
-  };
-
   class stick_sensor {
   public:
     double get_value(void) const {
@@ -211,7 +183,6 @@ public:
               [this, now] {
                 deadzone_entered_at_ = now;
                 stroke_acceleration_ = 0.0;
-                histories_.clear();
               },
               std::chrono::milliseconds(remain_deadzone_threshold_milliseconds_));
         }
@@ -223,32 +194,8 @@ public:
         }
       }
 
-      histories_.erase(std::remove_if(std::begin(histories_),
-                                      std::end(histories_),
-                                      [this, now](const auto& h) {
-                                        if (h.get_time_stamp() < deadzone_left_at_) {
-                                          return true;
-                                        }
-
-                                        auto interval = pqrs::osx::chrono::make_milliseconds(now - h.get_time_stamp()).count();
-                                        return interval > stroke_acceleration_measurement_milliseconds_;
-                                      }),
-                       histories_.end());
-
-      histories_.push_back(history(now,
-                                   radian_,
-                                   magnitude_));
-
       if (pqrs::osx::chrono::make_milliseconds(now - deadzone_left_at_).count() < stroke_acceleration_measurement_milliseconds_) {
-        auto [min, max] = std::minmax_element(std::begin(histories_),
-                                              std::end(histories_),
-                                              [](const auto& a, const auto& b) {
-                                                return a.get_magnitude() < b.get_magnitude();
-                                              });
-        if (min != std::end(histories_) && max != std::end(histories_)) {
-          auto acceleration = max->get_magnitude() - min->get_magnitude();
-          stroke_acceleration_ = std::max(stroke_acceleration_, acceleration);
-        }
+        stroke_acceleration_ = std::max(stroke_acceleration_, magnitude_);
       }
     }
 
@@ -272,7 +219,6 @@ public:
     absolute_time_point deadzone_entered_at_;
     absolute_time_point deadzone_left_at_;
     double stroke_acceleration_;
-    std::vector<history> histories_;
 
     int remain_deadzone_threshold_milliseconds_;
     int stroke_acceleration_measurement_milliseconds_;
