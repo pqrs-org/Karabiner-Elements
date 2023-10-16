@@ -59,6 +59,9 @@ public:
     stick(void)
         : dispatcher_client(),
           deadzone_timer_(*this),
+          radian_(0.0),
+          magnitude_(0.0),
+          stroke_acceleration_(0.0),
           remain_deadzone_threshold_milliseconds_(0),
           stroke_acceleration_measurement_milliseconds_(0),
           xy_interval_milliseconds_(0),
@@ -81,7 +84,7 @@ public:
       horizontal_stick_sensor_.update_stick_sensor_value(logical_max,
                                                          logical_min,
                                                          integer_value);
-      update(deadzone);
+      update_values(deadzone);
     }
 
     void update_vertical_stick_sensor_value(CFIndex logical_max,
@@ -91,7 +94,7 @@ public:
       vertical_stick_sensor_.update_stick_sensor_value(logical_max,
                                                        logical_min,
                                                        integer_value);
-      update(deadzone);
+      update_values(deadzone);
     }
 
     void update_configurations(const core_configuration::core_configuration& core_configuration,
@@ -165,12 +168,12 @@ public:
     }
 
   private:
-    void update(double deadzone) {
+    void update_values(double deadzone) {
       auto now = pqrs::osx::chrono::mach_absolute_time_point();
 
       radian_ = std::atan2(vertical_stick_sensor_.get_value(),
-
                            horizontal_stick_sensor_.get_value());
+
       magnitude_ = std::min(1.0,
                             std::sqrt(std::pow(vertical_stick_sensor_.get_value(), 2) +
                                       std::pow(horizontal_stick_sensor_.get_value(), 2)));
@@ -226,9 +229,9 @@ public:
 
     double radian_;
     double magnitude_;
+    double stroke_acceleration_;
     absolute_time_point deadzone_entered_at_;
     absolute_time_point deadzone_left_at_;
-    double stroke_acceleration_;
 
     int remain_deadzone_threshold_milliseconds_;
     int stroke_acceleration_measurement_milliseconds_;
@@ -253,6 +256,8 @@ public:
           device_id_(device_id),
           device_identifiers_(di),
           pointing_motion_arrived_(pointing_motion_arrived),
+          xy_deadzone_(0.0),
+          wheels_deadzone_(0.0),
           xy_timer_(*this),
           wheels_timer_(*this) {
     }
@@ -265,83 +270,141 @@ public:
     }
 
     void update_configurations(const core_configuration::core_configuration& core_configuration) {
-      xy.update_configurations(core_configuration,
-                               device_identifiers_);
-      wheels.update_configurations(core_configuration,
-                                   device_identifiers_);
+      xy_.update_configurations(core_configuration,
+                                device_identifiers_);
+      wheels_.update_configurations(core_configuration,
+                                    device_identifiers_);
+
+      xy_deadzone_ = core_configuration.get_selected_profile().get_device_game_pad_stick_left_stick_deadzone(device_identifiers_);
+      wheels_deadzone_ = core_configuration.get_selected_profile().get_device_game_pad_stick_right_stick_deadzone(device_identifiers_);
+    }
+
+    void update_x_stick_sensor_value(CFIndex logical_max,
+                                     CFIndex logical_min,
+                                     CFIndex integer_value) {
+      xy_.update_horizontal_stick_sensor_value(logical_max,
+                                               logical_min,
+                                               integer_value,
+                                               xy_deadzone_);
+    }
+
+    void update_y_stick_sensor_value(CFIndex logical_max,
+                                     CFIndex logical_min,
+                                     CFIndex integer_value) {
+      xy_.update_vertical_stick_sensor_value(logical_max,
+                                             logical_min,
+                                             integer_value,
+                                             xy_deadzone_);
+    }
+
+    void update_vertical_wheel_stick_sensor_value(CFIndex logical_max,
+                                                  CFIndex logical_min,
+                                                  CFIndex integer_value) {
+      wheels_.update_vertical_stick_sensor_value(logical_max,
+                                                 logical_min,
+                                                 integer_value,
+                                                 wheels_deadzone_);
+    }
+
+    void update_horizontal_wheel_stick_sensor_value(CFIndex logical_max,
+                                                    CFIndex logical_min,
+                                                    CFIndex integer_value) {
+      wheels_.update_horizontal_stick_sensor_value(logical_max,
+                                                   logical_min,
+                                                   integer_value,
+                                                   wheels_deadzone_);
     }
 
     void update_xy_timer(event_origin event_origin) {
-      auto interval = xy.xy_interval();
+      auto interval = xy_.xy_interval();
       if (interval == std::chrono::milliseconds(0)) {
         xy_timer_.stop();
-      } else {
-        if (!xy_timer_.enabled()) {
-          xy_timer_.start(
-              [this, event_origin] {
-                auto [x, y] = xy.xy_value();
-
-                pointing_motion m(x,
-                                  y,
-                                  0,
-                                  0);
-
-                event_queue::event_time_stamp event_time_stamp(pqrs::osx::chrono::mach_absolute_time_point());
-                event_queue::event event(m);
-                event_queue::entry entry(device_id_,
-                                         event_time_stamp,
-                                         event,
-                                         event_type::single,
-                                         event,
-                                         event_origin,
-                                         event_queue::state::original);
-
-                pointing_motion_arrived_(entry);
-              },
-              interval);
-        }
+        return;
       }
+
+      if (xy_timer_.enabled()) {
+        return;
+      }
+
+      xy_timer_.start(
+          [this, event_origin] {
+            if (xy_.xy_interval() == std::chrono::milliseconds(0)) {
+              xy_timer_.stop();
+              return;
+            }
+
+            auto [x, y] = xy_.xy_value();
+
+            pointing_motion m(x,
+                              y,
+                              0,
+                              0);
+
+            event_queue::event_time_stamp event_time_stamp(pqrs::osx::chrono::mach_absolute_time_point());
+            event_queue::event event(m);
+            event_queue::entry entry(device_id_,
+                                     event_time_stamp,
+                                     event,
+                                     event_type::single,
+                                     event,
+                                     event_origin,
+                                     event_queue::state::original);
+
+            pointing_motion_arrived_(entry);
+          },
+          interval);
     }
 
     void update_wheels_timer(event_origin event_origin) {
-      auto interval = wheels.wheels_interval();
+      auto interval = wheels_.wheels_interval();
       if (interval == std::chrono::milliseconds(0)) {
         wheels_timer_.stop();
-      } else {
-        if (!wheels_timer_.enabled()) {
-          wheels_timer_.start(
-              [this, event_origin] {
-                auto [v, h] = wheels.wheels_value();
-
-                pointing_motion m(0,
-                                  0,
-                                  -v,
-                                  h);
-
-                event_queue::event_time_stamp event_time_stamp(pqrs::osx::chrono::mach_absolute_time_point());
-                event_queue::event event(m);
-                event_queue::entry entry(device_id_,
-                                         event_time_stamp,
-                                         event,
-                                         event_type::single,
-                                         event,
-                                         event_origin,
-                                         event_queue::state::original);
-
-                pointing_motion_arrived_(entry);
-              },
-              interval);
-        }
+        return;
       }
-    }
 
-    stick xy;
-    stick wheels;
+      if (wheels_timer_.enabled()) {
+        return;
+      }
+
+      wheels_timer_.start(
+          [this, event_origin] {
+            if (wheels_.wheels_interval() == std::chrono::milliseconds(0)) {
+              wheels_timer_.stop();
+              return;
+            }
+
+            auto [v, h] = wheels_.wheels_value();
+
+            pointing_motion m(0,
+                              0,
+                              -v,
+                              h);
+
+            event_queue::event_time_stamp event_time_stamp(pqrs::osx::chrono::mach_absolute_time_point());
+            event_queue::event event(m);
+            event_queue::entry entry(device_id_,
+                                     event_time_stamp,
+                                     event,
+                                     event_type::single,
+                                     event,
+                                     event_origin,
+                                     event_queue::state::original);
+
+            pointing_motion_arrived_(entry);
+          },
+          interval);
+    }
 
   private:
     device_id device_id_;
     device_identifiers device_identifiers_;
     const pointing_motion_arrived_t& pointing_motion_arrived_;
+
+    double xy_deadzone_;
+    double wheels_deadzone_;
+
+    stick xy_;
+    stick wheels_;
 
     pqrs::dispatcher::extra::timer xy_timer_;
     pqrs::dispatcher::extra::timer wheels_timer_;
@@ -402,73 +465,35 @@ public:
       return;
     }
 
-    auto left_stick_deadzone = c->get_selected_profile().get_device_game_pad_stick_left_stick_deadzone(device_properties.get_device_identifiers());
-    auto right_stick_deadzone = c->get_selected_profile().get_device_game_pad_stick_right_stick_deadzone(device_properties.get_device_identifiers());
-
     for (const auto& v : hid_values) {
       if (auto usage_page = v.get_usage_page()) {
         if (auto usage = v.get_usage()) {
           if (auto logical_max = v.get_logical_max()) {
             if (auto logical_min = v.get_logical_min()) {
               if (*logical_max != *logical_min) {
-                // TODO: Move config
-                const bool flip_sticks = false;
-
                 if (v.conforms_to(pqrs::hid::usage_page::generic_desktop,
                                   pqrs::hid::usage::generic_desktop::x)) {
-                  if (flip_sticks) {
-                    it->second->wheels.update_horizontal_stick_sensor_value(*logical_max,
-                                                                            *logical_min,
-                                                                            v.get_integer_value(),
-                                                                            right_stick_deadzone);
-                  } else {
-                    it->second->xy.update_horizontal_stick_sensor_value(*logical_max,
-                                                                        *logical_min,
-                                                                        v.get_integer_value(),
-                                                                        left_stick_deadzone);
-                  }
+                  it->second->update_x_stick_sensor_value(*logical_max,
+                                                          *logical_min,
+                                                          v.get_integer_value());
 
                 } else if (v.conforms_to(pqrs::hid::usage_page::generic_desktop,
                                          pqrs::hid::usage::generic_desktop::y)) {
-                  if (flip_sticks) {
-                    it->second->wheels.update_vertical_stick_sensor_value(*logical_max,
-                                                                          *logical_min,
-                                                                          v.get_integer_value(),
-                                                                          right_stick_deadzone);
-                  } else {
-                    it->second->xy.update_vertical_stick_sensor_value(*logical_max,
-                                                                      *logical_min,
-                                                                      v.get_integer_value(),
-                                                                      left_stick_deadzone);
-                  }
+                  it->second->update_y_stick_sensor_value(*logical_max,
+                                                          *logical_min,
+                                                          v.get_integer_value());
 
                 } else if (v.conforms_to(pqrs::hid::usage_page::generic_desktop,
                                          pqrs::hid::usage::generic_desktop::rz)) {
-                  if (flip_sticks) {
-                    it->second->xy.update_vertical_stick_sensor_value(*logical_max,
-                                                                      *logical_min,
-                                                                      v.get_integer_value(),
-                                                                      left_stick_deadzone);
-                  } else {
-                    it->second->wheels.update_vertical_stick_sensor_value(*logical_max,
-                                                                          *logical_min,
-                                                                          v.get_integer_value(),
-                                                                          right_stick_deadzone);
-                  }
+                  it->second->update_vertical_wheel_stick_sensor_value(*logical_max,
+                                                                       *logical_min,
+                                                                       v.get_integer_value());
 
                 } else if (v.conforms_to(pqrs::hid::usage_page::generic_desktop,
                                          pqrs::hid::usage::generic_desktop::z)) {
-                  if (flip_sticks) {
-                    it->second->xy.update_horizontal_stick_sensor_value(*logical_max,
-                                                                        *logical_min,
-                                                                        v.get_integer_value(),
-                                                                        left_stick_deadzone);
-                  } else {
-                    it->second->wheels.update_horizontal_stick_sensor_value(*logical_max,
-                                                                            *logical_min,
-                                                                            v.get_integer_value(),
-                                                                            right_stick_deadzone);
-                  }
+                  it->second->update_horizontal_wheel_stick_sensor_value(*logical_max,
+                                                                         *logical_min,
+                                                                         v.get_integer_value());
                 }
               }
             }
