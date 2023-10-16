@@ -15,43 +15,31 @@ public:
 
   // The logical value range of Karabiner-DriverKit-VirtualHIDPointing is -127 ... 127.
   static constexpr std::string_view game_pad_stick_x_formula_default_value =
-      "if (acceleration < 0.2,"
-      "  cos(radian) * acceleration * 127 * 0.5,"
-      "  cos(radian) * acceleration * 127"
-      ")";
+      "var a := acceleration ^ 2;"
+      "cos(radian) * a * 127;";
 
   // The logical value range of Karabiner-DriverKit-VirtualHIDPointing is -127 ... 127.
   static constexpr std::string_view game_pad_stick_y_formula_default_value =
-      "if (acceleration < 0.2,"
-      "  sin(radian) * acceleration * 127 * 0.5,"
-      "  sin(radian) * acceleration * 127"
-      ")";
+      "var a := acceleration ^ 2;"
+      "sin(radian) * a * 127;";
 
   // The logical value range of Karabiner-DriverKit-VirtualHIDPointing is -127 ... 127.
   static constexpr std::string_view game_pad_stick_vertical_wheel_formula_default_value =
-      "if (abs(cos(radian)) < abs(sin(radian)),"
-      "  if (acceleration > 0.3,"
-      "    sgn(sin(radian)) * 3,"
-      "    if (acceleration > 0.1,"
-      "      sgn(sin(radian)) * 2,"
-      "      sgn(sin(radian))"
-      "    )"
-      "  ),"
-      "  0"
-      ")";
+      "var scale := switch {"
+      "  case acceleration > 0.6: 5;"
+      "  default:                 1;"
+      "};"
+      "if (abs(cos(radian)) > abs(sin(radian))) { scale := 0; };"
+      "sgn(sin(radian)) * scale;";
 
   // The logical value range of Karabiner-DriverKit-VirtualHIDPointing is -127 ... 127.
   static constexpr std::string_view game_pad_stick_horizontal_wheel_formula_default_value =
-      "if (abs(cos(radian)) > abs(sin(radian)),"
-      "  if (acceleration > 0.3,"
-      "    sgn(cos(radian)) * 3,"
-      "    if (acceleration > 0.1,"
-      "      sgn(cos(radian)) * 2,"
-      "      sgn(cos(radian))"
-      "    )"
-      "  ),"
-      "  0"
-      ")";
+      "var scale := switch {"
+      "  case acceleration > 0.6: 5;"
+      "  default:                 1;"
+      "};"
+      "if (abs(cos(radian)) < abs(sin(radian))) { scale := 0; };"
+      "sgn(cos(radian)) * scale;";
 
   device(const nlohmann::json& json) : json_(json),
                                        ignore_(false),
