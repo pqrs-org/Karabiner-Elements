@@ -23,6 +23,18 @@ namespace device_grabber_details {
 //
 class game_pad_stick_converter final : public pqrs::dispatcher::extra::dispatcher_client {
 public:
+  //
+  // Signals (invoked from the dispatcher thread)
+  //
+
+  typedef nod::signal<void(const event_queue::entry&)> pointing_motion_arrived_t;
+
+  pointing_motion_arrived_t pointing_motion_arrived;
+
+  //
+  // Classes
+  //
+
   class stick_sensor {
   public:
     double get_value(void) const {
@@ -50,8 +62,7 @@ public:
           remain_deadzone_threshold_milliseconds_(0),
           stroke_acceleration_measurement_milliseconds_(0),
           xy_interval_milliseconds_(0),
-          wheels_interval_milliseconds_(0),
-          active_(false) {
+          wheels_interval_milliseconds_(0) {
       auto now = pqrs::osx::chrono::mach_absolute_time_point();
       deadzone_entered_at_ = now;
       deadzone_left_at_ = now;
@@ -61,14 +72,6 @@ public:
       detach_from_dispatcher([this] {
         deadzone_timer_.stop();
       });
-    }
-
-    bool get_active(void) const {
-      return active_;
-    }
-
-    void set_active(bool value) {
-      active_ = value;
     }
 
     void update_horizontal_stick_sensor_value(CFIndex logical_max,
@@ -209,6 +212,13 @@ public:
                                      });
     }
 
+    int adjust_integer_value(int value) const {
+      // The logical value range of Karabiner-DriverKit-VirtualHIDPointing is -127 ... 127.
+      value = std::min(value, 127);
+      value = std::max(value, -127);
+      return value;
+    }
+
     pqrs::dispatcher::extra::timer deadzone_timer_;
 
     stick_sensor horizontal_stick_sensor_;
@@ -232,17 +242,26 @@ public:
     exprtk_utility::expression_t y_formula_;
     exprtk_utility::expression_t vertical_wheel_formula_;
     exprtk_utility::expression_t horizontal_wheel_formula_;
-
-    bool active_; // Whether the process of calling `pointing_motion_arrived` is working or not
   };
 
-  class state final {
+  class state final : public pqrs::dispatcher::extra::dispatcher_client {
   public:
-    state(void) {
+    state(device_id device_id,
+          const device_identifiers& di,
+          const pointing_motion_arrived_t& pointing_motion_arrived)
+        : dispatcher_client(),
+          device_id_(device_id),
+          device_identifiers_(di),
+          pointing_motion_arrived_(pointing_motion_arrived),
+          xy_timer_(*this),
+          wheels_timer_(*this) {
     }
 
-    state(const device_identifiers& di)
-        : device_identifiers_(di) {
+    ~state(void) {
+      detach_from_dispatcher([this] {
+        xy_timer_.stop();
+        wheels_timer_.stop();
+      });
     }
 
     void update_configurations(const core_configuration::core_configuration& core_configuration) {
@@ -252,18 +271,81 @@ public:
                                    device_identifiers_);
     }
 
+    void update_xy_timer(event_origin event_origin) {
+      auto interval = xy.xy_interval();
+      if (interval == std::chrono::milliseconds(0)) {
+        xy_timer_.stop();
+      } else {
+        if (!xy_timer_.enabled()) {
+          xy_timer_.start(
+              [this, event_origin] {
+                auto [x, y] = xy.xy_value();
+
+                pointing_motion m(x,
+                                  y,
+                                  0,
+                                  0);
+
+                event_queue::event_time_stamp event_time_stamp(pqrs::osx::chrono::mach_absolute_time_point());
+                event_queue::event event(m);
+                event_queue::entry entry(device_id_,
+                                         event_time_stamp,
+                                         event,
+                                         event_type::single,
+                                         event,
+                                         event_origin,
+                                         event_queue::state::original);
+
+                pointing_motion_arrived_(entry);
+              },
+              interval);
+        }
+      }
+    }
+
+    void update_wheels_timer(event_origin event_origin) {
+      auto interval = wheels.wheels_interval();
+      if (interval == std::chrono::milliseconds(0)) {
+        wheels_timer_.stop();
+      } else {
+        if (!wheels_timer_.enabled()) {
+          wheels_timer_.start(
+              [this, event_origin] {
+                auto [v, h] = wheels.wheels_value();
+
+                pointing_motion m(0,
+                                  0,
+                                  -v,
+                                  h);
+
+                event_queue::event_time_stamp event_time_stamp(pqrs::osx::chrono::mach_absolute_time_point());
+                event_queue::event event(m);
+                event_queue::entry entry(device_id_,
+                                         event_time_stamp,
+                                         event,
+                                         event_type::single,
+                                         event,
+                                         event_origin,
+                                         event_queue::state::original);
+
+                pointing_motion_arrived_(entry);
+              },
+              interval);
+        }
+      }
+    }
+
     stick xy;
     stick wheels;
 
   private:
+    device_id device_id_;
     device_identifiers device_identifiers_;
+    const pointing_motion_arrived_t& pointing_motion_arrived_;
+
+    pqrs::dispatcher::extra::timer xy_timer_;
+    pqrs::dispatcher::extra::timer wheels_timer_;
   };
-
-  //
-  // Signals (invoked from the dispatcher thread)
-  //
-
-  nod::signal<void(const event_queue::entry&)> pointing_motion_arrived;
 
   //
   // Methods
@@ -291,7 +373,9 @@ public:
   void register_device(const device_properties& device_properties) {
     if (auto is_game_pad = device_properties.get_is_game_pad()) {
       if (*is_game_pad) {
-        auto s = std::make_shared<state>(device_properties.get_device_identifiers());
+        auto s = std::make_shared<state>(device_properties.get_device_id(),
+                                         device_properties.get_device_identifiers(),
+                                         pointing_motion_arrived);
         if (auto c = core_configuration_.lock()) {
           s->update_configurations(*c);
         }
@@ -393,125 +477,11 @@ public:
       }
     }
 
-    for (auto&& [device_id, state] : states_) {
-      if (!state->xy.get_active() &&
-          state->xy.xy_interval().count() > 0) {
-        state->xy.set_active(true);
-        emit_xy_event(device_id,
-                      event_origin);
-      }
-
-      if (!state->wheels.get_active() &&
-          state->wheels.wheels_interval().count() > 0) {
-        state->wheels.set_active(true);
-        emit_wheels_event(device_id,
-                          event_origin);
-      }
-    }
-  }
-
-  static int adjust_integer_value(int value) {
-    // The logical value range of Karabiner-DriverKit-VirtualHIDPointing is -127 ... 127.
-    value = std::min(value, 127);
-    value = std::max(value, -127);
-    return value;
+    it->second->update_xy_timer(event_origin);
+    it->second->update_wheels_timer(event_origin);
   }
 
 private:
-  void emit_event(const device_id device_id,
-                  event_origin event_origin,
-                  std::function<std::chrono::milliseconds(const state&)> get_interval,
-                  std::function<void(state&)> unset_active,
-                  std::function<pointing_motion(const state&)> make_pointing_motion) {
-    auto it = states_.find(device_id);
-    if (it == std::end(states_)) {
-      return;
-    }
-
-    auto interval = get_interval(*(it->second));
-
-    if (interval <= std::chrono::milliseconds(0)) {
-      unset_active(*(it->second));
-      return;
-    }
-
-    auto m = make_pointing_motion(*(it->second));
-
-    event_queue::event_time_stamp event_time_stamp(pqrs::osx::chrono::mach_absolute_time_point());
-    event_queue::event event(m);
-    event_queue::entry entry(device_id,
-                             event_time_stamp,
-                             event,
-                             event_type::single,
-                             event,
-                             event_origin,
-                             event_queue::state::original);
-
-    pointing_motion_arrived(entry);
-
-    enqueue_to_dispatcher(
-        [this, device_id, event_origin, get_interval, unset_active, make_pointing_motion, entry] {
-          emit_event(device_id,
-                     event_origin,
-                     get_interval,
-                     unset_active,
-                     make_pointing_motion);
-        },
-        when_now() + interval);
-  }
-
-  void emit_xy_event(const device_id device_id,
-                     event_origin event_origin) {
-    auto get_interval = [](const state& s) {
-      return s.xy.xy_interval();
-    };
-
-    auto unset_active = [](state& s) {
-      s.xy.set_active(false);
-    };
-
-    auto make_pointing_motion = [](const state& s) {
-      auto [x, y] = s.xy.xy_value();
-
-      return pointing_motion(x,
-                             y,
-                             0,
-                             0);
-    };
-
-    emit_event(device_id,
-               event_origin,
-               get_interval,
-               unset_active,
-               make_pointing_motion);
-  }
-
-  void emit_wheels_event(const device_id device_id,
-                         event_origin event_origin) {
-    auto get_interval = [](const state& s) {
-      return s.wheels.wheels_interval();
-    };
-
-    auto unset_active = [](state& s) {
-      s.wheels.set_active(false);
-    };
-
-    auto make_pointing_motion = [](const state& s) {
-      auto [v, h] = s.wheels.wheels_value();
-
-      return pointing_motion(0,
-                             0,
-                             -v,
-                             h);
-    };
-
-    emit_event(device_id,
-               event_origin,
-               get_interval,
-               unset_active,
-               make_pointing_motion);
-  }
-
   std::weak_ptr<const core_configuration::core_configuration> core_configuration_;
   std::unordered_map<device_id, std::shared_ptr<state>> states_;
 };
