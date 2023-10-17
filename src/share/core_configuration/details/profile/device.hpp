@@ -1,6 +1,9 @@
 #pragma once
 
 #include "simple_modifications.hpp"
+#include <pqrs/string.hpp>
+#include <ranges>
+#include <string_view>
 
 namespace krbn {
 namespace core_configuration {
@@ -245,16 +248,16 @@ public:
       j["game_pad_stick_wheels_interval_milliseconds"] = *game_pad_stick_wheels_interval_milliseconds_;
     }
     if (game_pad_stick_x_formula_ != std::nullopt) {
-      j["game_pad_stick_x_formula"] = *game_pad_stick_x_formula_;
+      j["game_pad_stick_x_formula"] = marshal_formula(*game_pad_stick_x_formula_);
     }
     if (game_pad_stick_y_formula_ != std::nullopt) {
-      j["game_pad_stick_y_formula"] = *game_pad_stick_y_formula_;
+      j["game_pad_stick_y_formula"] = marshal_formula(*game_pad_stick_y_formula_);
     }
     if (game_pad_stick_vertical_wheel_formula_ != std::nullopt) {
-      j["game_pad_stick_vertical_wheel_formula"] = *game_pad_stick_vertical_wheel_formula_;
+      j["game_pad_stick_vertical_wheel_formula"] = marshal_formula(*game_pad_stick_vertical_wheel_formula_);
     }
     if (game_pad_stick_horizontal_wheel_formula_ != std::nullopt) {
-      j["game_pad_stick_horizontal_wheel_formula"] = *game_pad_stick_horizontal_wheel_formula_;
+      j["game_pad_stick_horizontal_wheel_formula"] = marshal_formula(*game_pad_stick_horizontal_wheel_formula_);
     }
     j["simple_modifications"] = simple_modifications_.to_json();
     j["fn_function_keys"] = fn_function_keys_.to_json();
@@ -454,16 +457,37 @@ private:
           goto error;
         }
 
-        ss << j.get<std::string>();
+        ss << j.get<std::string>() << '\n';
       }
 
-      return ss.str();
+      auto s = ss.str();
+      if (!s.empty()) {
+        s.pop_back();
+      }
+
+      return s;
     }
 
   error:
     throw pqrs::json::unmarshal_error(fmt::format("`{0}` must be array of string, or string, but is `{1}`",
                                                   name,
                                                   pqrs::json::dump_for_error_message(json)));
+  }
+
+  static nlohmann::json marshal_formula(const std::string& formula) {
+    std::stringstream ss(formula);
+    std::string line;
+    std::vector<std::string> lines;
+
+    while (std::getline(ss, line, '\n')) {
+      lines.push_back(line);
+    }
+
+    if (lines.size() == 1) {
+      return formula;
+    }
+
+    return lines;
   }
 
   void coordinate_between_properties(void) {

@@ -173,9 +173,9 @@ void run_device_test(void) {
       expect(device.get_game_pad_stick_left_stick_deadzone() == 0.08);
       expect(device.get_game_pad_stick_xy_interval_milliseconds() == 15);
       expect(device.get_game_pad_stick_x_formula() == "cos(radian) * acceleration * 127");
-      expect(device.get_game_pad_stick_y_formula() == "if (acceleration < 0.5,"
-                                                      "  cos(radian) * acceleration * 127 * 0.5,"
-                                                      "  cos(radian) * acceleration * 127"
+      expect(device.get_game_pad_stick_y_formula() == "if (acceleration < 0.5,\n"
+                                                      "  cos(radian) * acceleration * 127 * 0.5,\n"
+                                                      "  cos(radian) * acceleration * 127\n"
                                                       ")");
     }
 
@@ -354,7 +354,10 @@ void run_device_test(void) {
           {"game_pad_stick_xy_interval_milliseconds", 20},
           {"game_pad_stick_wheels_interval_milliseconds", 20},
           {"game_pad_stick_x_formula", "cos(radian) * acceleration * 127"},
-          {"game_pad_stick_y_formula", "sin(radian) * acceleration * 127"},
+          {"game_pad_stick_y_formula", nlohmann::json::array({
+                                           "var a := acceleration ^ 2;",
+                                           "sin(radian) * a * 127",
+                                       })},
           {"game_pad_stick_vertical_wheel_formula", "sgn(sin(radian))"},
           {"game_pad_stick_horizontal_wheel_formula", "sgn(cos(radian))"},
       });
@@ -395,7 +398,10 @@ void run_device_test(void) {
           {"game_pad_stick_xy_interval_milliseconds", 20},
           {"game_pad_stick_wheels_interval_milliseconds", 20},
           {"game_pad_stick_x_formula", "cos(radian) * acceleration * 127"},
-          {"game_pad_stick_y_formula", "sin(radian) * acceleration * 127"},
+          {"game_pad_stick_y_formula", nlohmann::json::array({
+                                           "var a := acceleration ^ 2;",
+                                           "sin(radian) * a * 127",
+                                       })},
           {"game_pad_stick_vertical_wheel_formula", "sgn(sin(radian))"},
           {"game_pad_stick_horizontal_wheel_formula", "sgn(cos(radian))"},
           {"manipulate_caps_lock_led", true},
