@@ -712,25 +712,48 @@ void libkrbn_core_configuration_set_selected_profile_device_mouse_swap_xy(libkrb
   }
 }
 
-bool libkrbn_core_configuration_get_selected_profile_device_mouse_swap_wheel(libkrbn_core_configuration* p,
-                                                                             const libkrbn_device_identifiers* device_identifiers) {
+bool libkrbn_core_configuration_get_selected_profile_device_mouse_swap_wheels(libkrbn_core_configuration* p,
+                                                                              const libkrbn_device_identifiers* device_identifiers) {
   if (auto c = reinterpret_cast<libkrbn_core_configuration_class*>(p)) {
     if (device_identifiers) {
       auto identifiers = libkrbn_cpp::make_device_identifiers(*device_identifiers);
-      return c->get_core_configuration().get_selected_profile().get_device_mouse_swap_wheel(identifiers);
+      return c->get_core_configuration().get_selected_profile().get_device_mouse_swap_wheels(identifiers);
     }
   }
   return false;
 }
 
-void libkrbn_core_configuration_set_selected_profile_device_mouse_swap_wheel(libkrbn_core_configuration* p,
-                                                                             const libkrbn_device_identifiers* device_identifiers,
-                                                                             bool value) {
+void libkrbn_core_configuration_set_selected_profile_device_mouse_swap_wheels(libkrbn_core_configuration* p,
+                                                                              const libkrbn_device_identifiers* device_identifiers,
+                                                                              bool value) {
 
   if (auto c = reinterpret_cast<libkrbn_core_configuration_class*>(p)) {
     if (device_identifiers) {
       auto identifiers = libkrbn_cpp::make_device_identifiers(*device_identifiers);
-      c->get_core_configuration().get_selected_profile().set_device_mouse_swap_wheel(identifiers, value);
+      c->get_core_configuration().get_selected_profile().set_device_mouse_swap_wheels(identifiers, value);
+    }
+  }
+}
+
+bool libkrbn_core_configuration_get_selected_profile_device_game_pad_swap_sticks(libkrbn_core_configuration* p,
+                                                                                 const libkrbn_device_identifiers* device_identifiers) {
+  if (auto c = reinterpret_cast<libkrbn_core_configuration_class*>(p)) {
+    if (device_identifiers) {
+      auto identifiers = libkrbn_cpp::make_device_identifiers(*device_identifiers);
+      return c->get_core_configuration().get_selected_profile().get_device_game_pad_swap_sticks(identifiers);
+    }
+  }
+  return false;
+}
+
+void libkrbn_core_configuration_set_selected_profile_device_game_pad_swap_sticks(libkrbn_core_configuration* p,
+                                                                              const libkrbn_device_identifiers* device_identifiers,
+                                                                              bool value) {
+
+  if (auto c = reinterpret_cast<libkrbn_core_configuration_class*>(p)) {
+    if (device_identifiers) {
+      auto identifiers = libkrbn_cpp::make_device_identifiers(*device_identifiers);
+      c->get_core_configuration().get_selected_profile().set_device_game_pad_swap_sticks(identifiers, value);
     }
   }
 }

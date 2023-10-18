@@ -10,8 +10,8 @@ namespace core_configuration {
 namespace details {
 class device final {
 public:
-  static constexpr double game_pad_stick_left_stick_deadzone_default_value = 0.1;
-  static constexpr double game_pad_stick_right_stick_deadzone_default_value = 0.1;
+  static constexpr double game_pad_stick_xy_stick_deadzone_default_value = 0.1;
+  static constexpr double game_pad_stick_wheels_stick_deadzone_default_value = 0.1;
 
   static constexpr int game_pad_stick_xy_interval_milliseconds_default_value = 20;
   static constexpr int game_pad_stick_wheels_interval_milliseconds_default_value = 100;
@@ -54,7 +54,8 @@ public:
                                        mouse_flip_vertical_wheel_(false),
                                        mouse_flip_horizontal_wheel_(false),
                                        mouse_swap_xy_(false),
-                                       mouse_swap_wheel_(false) {
+                                       mouse_swap_wheels_(false),
+                                       game_pad_swap_sticks_(false) {
     auto ignore_configured = false;
     auto manipulate_caps_lock_led_configured = false;
 
@@ -125,20 +126,25 @@ public:
 
         mouse_swap_xy_ = value.get<bool>();
 
-      } else if (key == "mouse_swap_wheel") {
+      } else if (key == "mouse_swap_wheels") {
         pqrs::json::requires_boolean(value, "`" + key + "`");
 
-        mouse_swap_wheel_ = value.get<bool>();
+        mouse_swap_wheels_ = value.get<bool>();
 
-      } else if (key == "game_pad_stick_left_stick_deadzone") {
+      } else if (key == "game_pad_swap_sticks") {
+        pqrs::json::requires_boolean(value, "`" + key + "`");
+
+        game_pad_swap_sticks_ = value.get<bool>();
+
+      } else if (key == "game_pad_stick_xy_stick_deadzone") {
         pqrs::json::requires_number(value, "`" + key + "`");
 
-        game_pad_stick_left_stick_deadzone_ = value.get<double>();
+        game_pad_stick_xy_stick_deadzone_ = value.get<double>();
 
-      } else if (key == "game_pad_stick_right_stick_deadzone") {
+      } else if (key == "game_pad_stick_wheels_stick_deadzone") {
         pqrs::json::requires_number(value, "`" + key + "`");
 
-        game_pad_stick_right_stick_deadzone_ = value.get<double>();
+        game_pad_stick_wheels_stick_deadzone_ = value.get<double>();
 
       } else if (key == "game_pad_stick_xy_interval_milliseconds") {
         pqrs::json::requires_number(value, "`" + key + "`");
@@ -234,12 +240,13 @@ public:
     j["mouse_flip_vertical_wheel"] = mouse_flip_vertical_wheel_;
     j["mouse_flip_horizontal_wheel"] = mouse_flip_horizontal_wheel_;
     j["mouse_swap_xy"] = mouse_swap_xy_;
-    j["mouse_swap_wheel"] = mouse_swap_wheel_;
-    if (game_pad_stick_left_stick_deadzone_ != std::nullopt) {
-      j["game_pad_stick_left_stick_deadzone"] = *game_pad_stick_left_stick_deadzone_;
+    j["mouse_swap_wheels"] = mouse_swap_wheels_;
+    j["game_pad_swap_sticks"] = game_pad_swap_sticks_;
+    if (game_pad_stick_xy_stick_deadzone_ != std::nullopt) {
+      j["game_pad_stick_xy_stick_deadzone"] = *game_pad_stick_xy_stick_deadzone_;
     }
-    if (game_pad_stick_right_stick_deadzone_ != std::nullopt) {
-      j["game_pad_stick_right_stick_deadzone"] = *game_pad_stick_right_stick_deadzone_;
+    if (game_pad_stick_wheels_stick_deadzone_ != std::nullopt) {
+      j["game_pad_stick_wheels_stick_deadzone"] = *game_pad_stick_wheels_stick_deadzone_;
     }
     if (game_pad_stick_xy_interval_milliseconds_ != std::nullopt) {
       j["game_pad_stick_xy_interval_milliseconds"] = *game_pad_stick_xy_interval_milliseconds_;
@@ -349,29 +356,38 @@ public:
     coordinate_between_properties();
   }
 
-  bool get_mouse_swap_wheel(void) const {
-    return mouse_swap_wheel_;
+  bool get_mouse_swap_wheels(void) const {
+    return mouse_swap_wheels_;
   }
-  void set_mouse_swap_wheel(bool value) {
-    mouse_swap_wheel_ = value;
+  void set_mouse_swap_wheels(bool value) {
+    mouse_swap_wheels_ = value;
 
     coordinate_between_properties();
   }
 
-  std::optional<double> get_game_pad_stick_left_stick_deadzone(void) const {
-    return game_pad_stick_left_stick_deadzone_;
+  bool get_game_pad_swap_sticks(void) const {
+    return game_pad_swap_sticks_;
   }
-  void set_game_pad_stick_left_stick_deadzone(std::optional<double> value) {
-    game_pad_stick_left_stick_deadzone_ = value;
+  void set_game_pad_swap_sticks(bool value) {
+    game_pad_swap_sticks_ = value;
 
     coordinate_between_properties();
   }
 
-  std::optional<double> get_game_pad_stick_right_stick_deadzone(void) const {
-    return game_pad_stick_right_stick_deadzone_;
+  std::optional<double> get_game_pad_stick_xy_stick_deadzone(void) const {
+    return game_pad_stick_xy_stick_deadzone_;
   }
-  void set_game_pad_stick_right_stick_deadzone(std::optional<double> value) {
-    game_pad_stick_right_stick_deadzone_ = value;
+  void set_game_pad_stick_xy_stick_deadzone(std::optional<double> value) {
+    game_pad_stick_xy_stick_deadzone_ = value;
+
+    coordinate_between_properties();
+  }
+
+  std::optional<double> get_game_pad_stick_wheels_stick_deadzone(void) const {
+    return game_pad_stick_wheels_stick_deadzone_;
+  }
+  void set_game_pad_stick_wheels_stick_deadzone(std::optional<double> value) {
+    game_pad_stick_wheels_stick_deadzone_ = value;
 
     coordinate_between_properties();
   }
@@ -510,9 +526,10 @@ private:
   bool mouse_flip_vertical_wheel_;
   bool mouse_flip_horizontal_wheel_;
   bool mouse_swap_xy_;
-  bool mouse_swap_wheel_;
-  std::optional<double> game_pad_stick_left_stick_deadzone_;
-  std::optional<double> game_pad_stick_right_stick_deadzone_;
+  bool mouse_swap_wheels_;
+  bool game_pad_swap_sticks_;
+  std::optional<double> game_pad_stick_xy_stick_deadzone_;
+  std::optional<double> game_pad_stick_wheels_stick_deadzone_;
   std::optional<int> game_pad_stick_xy_interval_milliseconds_;
   std::optional<int> game_pad_stick_wheels_interval_milliseconds_;
   std::optional<std::string> game_pad_stick_x_formula_;

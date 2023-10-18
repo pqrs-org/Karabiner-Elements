@@ -55,8 +55,8 @@ extension LibKrbn {
           Settings.shared.libkrbnCoreConfiguration,
           connectedDevice.libkrbnDeviceIdentifiers)
 
-      self.mouseSwapWheel =
-        libkrbn_core_configuration_get_selected_profile_device_mouse_swap_wheel(
+      self.mouseSwapWheels =
+        libkrbn_core_configuration_get_selected_profile_device_mouse_swap_wheels(
           Settings.shared.libkrbnCoreConfiguration,
           connectedDevice.libkrbnDeviceIdentifiers)
 
@@ -176,7 +176,7 @@ extension LibKrbn {
     @Published var mouseSwapWheel: Bool = false {
       didSet {
         if didSetEnabled {
-          libkrbn_core_configuration_set_selected_profile_device_mouse_swap_wheel(
+          libkrbn_core_configuration_set_selected_profile_device_mouse_swap_wheels(
             Settings.shared.libkrbnCoreConfiguration,
             connectedDevice.libkrbnDeviceIdentifiers,
             mouseSwapWheel)

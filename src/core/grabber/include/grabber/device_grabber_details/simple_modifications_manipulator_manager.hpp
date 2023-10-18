@@ -66,8 +66,8 @@ public:
         if (device.get_mouse_swap_xy()) {
           swap.push_back("xy");
         }
-        if (device.get_mouse_swap_wheel()) {
-          swap.push_back("wheel");
+        if (device.get_mouse_swap_wheels()) {
+          swap.push_back("wheels");
         }
 
         if (flip.size() > 0 || swap.size() > 0) {

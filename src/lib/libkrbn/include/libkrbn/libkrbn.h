@@ -224,11 +224,16 @@ bool libkrbn_core_configuration_get_selected_profile_device_mouse_swap_xy(libkrb
 void libkrbn_core_configuration_set_selected_profile_device_mouse_swap_xy(libkrbn_core_configuration* p,
                                                                           const libkrbn_device_identifiers* device_identifiers,
                                                                           bool value);
-bool libkrbn_core_configuration_get_selected_profile_device_mouse_swap_wheel(libkrbn_core_configuration* p,
-                                                                             const libkrbn_device_identifiers* device_identifiers);
-void libkrbn_core_configuration_set_selected_profile_device_mouse_swap_wheel(libkrbn_core_configuration* p,
-                                                                             const libkrbn_device_identifiers* device_identifiers,
-                                                                             bool value);
+bool libkrbn_core_configuration_get_selected_profile_device_mouse_swap_wheels(libkrbn_core_configuration* p,
+                                                                              const libkrbn_device_identifiers* device_identifiers);
+void libkrbn_core_configuration_set_selected_profile_device_mouse_swap_wheels(libkrbn_core_configuration* p,
+                                                                              const libkrbn_device_identifiers* device_identifiers,
+                                                                              bool value);
+bool libkrbn_core_configuration_get_selected_profile_device_game_pad_swap_sticks(libkrbn_core_configuration* p,
+                                                                                 const libkrbn_device_identifiers* device_identifiers);
+void libkrbn_core_configuration_set_selected_profile_device_game_pad_swap_sticks(libkrbn_core_configuration* p,
+                                                                                 const libkrbn_device_identifiers* device_identifiers,
+                                                                                 bool value);
 
 //
 // libkrbn_complex_modifications_assets_manager

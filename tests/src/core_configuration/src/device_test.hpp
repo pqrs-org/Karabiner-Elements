@@ -124,8 +124,8 @@ void run_device_test(void) {
       expect(device.get_manipulate_caps_lock_led() == false);
       expect(device.get_treat_as_built_in_keyboard() == false);
       expect(device.get_disable_built_in_keyboard_if_exists() == false);
-      expect(device.get_game_pad_stick_left_stick_deadzone() == std::nullopt);
-      expect(device.get_game_pad_stick_right_stick_deadzone() == std::nullopt);
+      expect(device.get_game_pad_stick_xy_stick_deadzone() == std::nullopt);
+      expect(device.get_game_pad_stick_wheels_stick_deadzone() == std::nullopt);
       expect(device.get_game_pad_stick_xy_interval_milliseconds() == std::nullopt);
       expect(device.get_game_pad_stick_wheels_interval_milliseconds() == std::nullopt);
       expect(device.get_game_pad_stick_x_formula() == std::nullopt);
@@ -148,7 +148,7 @@ void run_device_test(void) {
           {"ignore", true},
           {"manipulate_caps_lock_led", true},
           {"treat_as_built_in_keyboard", false},
-          {"game_pad_stick_left_stick_deadzone", 0.08},
+          {"game_pad_stick_xy_stick_deadzone", 0.08},
           {"game_pad_stick_xy_interval_milliseconds", 15},
           // string
           {"game_pad_stick_x_formula", "cos(radian) * acceleration * 127"},
@@ -170,7 +170,7 @@ void run_device_test(void) {
       expect(device.get_manipulate_caps_lock_led() == true);
       expect(device.get_treat_as_built_in_keyboard() == false);
       expect(device.get_disable_built_in_keyboard_if_exists() == true);
-      expect(device.get_game_pad_stick_left_stick_deadzone() == 0.08);
+      expect(device.get_game_pad_stick_xy_stick_deadzone() == 0.08);
       expect(device.get_game_pad_stick_xy_interval_milliseconds() == 15);
       expect(device.get_game_pad_stick_x_formula() == "cos(radian) * acceleration * 127");
       expect(device.get_game_pad_stick_y_formula() == "if (acceleration < 0.5,\n"
@@ -291,6 +291,8 @@ void run_device_test(void) {
       krbn::core_configuration::details::device device(json);
       nlohmann::json expected({
           {"disable_built_in_keyboard_if_exists", false},
+          {"fn_function_keys", nlohmann::json::array()},
+          {"game_pad_swap_sticks", false},
           {"identifiers", {
                               {
                                   "vendor_id",
@@ -314,13 +316,12 @@ void run_device_test(void) {
                               },
                           }},
           {"ignore", false},
-          {"fn_function_keys", nlohmann::json::array()},
           {"manipulate_caps_lock_led", false},
           {"mouse_flip_horizontal_wheel", false},
           {"mouse_flip_vertical_wheel", false},
           {"mouse_flip_x", false},
           {"mouse_flip_y", false},
-          {"mouse_swap_wheel", false},
+          {"mouse_swap_wheels", false},
           {"mouse_swap_xy", false},
           {"simple_modifications", nlohmann::json::array()},
           {"treat_as_built_in_keyboard", false},
@@ -348,9 +349,10 @@ void run_device_test(void) {
           {"treat_as_built_in_keyboard", true},
           {"mouse_flip_horizontal_wheel", true},
           {"mouse_flip_x", true},
-          {"mouse_swap_wheel", true},
-          {"game_pad_stick_left_stick_deadzone", 0.08},
-          {"game_pad_stick_right_stick_deadzone", 0.08},
+          {"mouse_swap_wheels", true},
+          {"game_pad_swap_sticks", true},
+          {"game_pad_stick_xy_stick_deadzone", 0.08},
+          {"game_pad_stick_wheels_stick_deadzone", 0.08},
           {"game_pad_stick_xy_interval_milliseconds", 20},
           {"game_pad_stick_wheels_interval_milliseconds", 20},
           {"game_pad_stick_x_formula", "cos(radian) * acceleration * 127"},
@@ -393,8 +395,9 @@ void run_device_test(void) {
                               },
                           }},
           {"ignore", true},
-          {"game_pad_stick_left_stick_deadzone", 0.08},
-          {"game_pad_stick_right_stick_deadzone", 0.08},
+          {"game_pad_swap_sticks", true},
+          {"game_pad_stick_xy_stick_deadzone", 0.08},
+          {"game_pad_stick_wheels_stick_deadzone", 0.08},
           {"game_pad_stick_xy_interval_milliseconds", 20},
           {"game_pad_stick_wheels_interval_milliseconds", 20},
           {"game_pad_stick_x_formula", "cos(radian) * acceleration * 127"},
@@ -409,7 +412,7 @@ void run_device_test(void) {
           {"mouse_flip_vertical_wheel", false},
           {"mouse_flip_x", true},
           {"mouse_flip_y", false},
-          {"mouse_swap_wheel", true},
+          {"mouse_swap_wheels", true},
           {"mouse_swap_xy", false},
           {"simple_modifications", nlohmann::json::array()},
           {"treat_as_built_in_keyboard", true},

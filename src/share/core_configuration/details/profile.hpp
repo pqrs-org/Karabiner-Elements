@@ -462,68 +462,89 @@ public:
     }
   }
 
-  bool get_device_mouse_swap_wheel(const device_identifiers& identifiers) const {
+  bool get_device_mouse_swap_wheels(const device_identifiers& identifiers) const {
     for (const auto& d : devices_) {
       if (d.get_identifiers() == identifiers) {
-        return d.get_mouse_swap_wheel();
+        return d.get_mouse_swap_wheels();
       }
     }
     return false;
   }
 
-  void set_device_mouse_swap_wheel(const device_identifiers& identifiers,
-                                   bool value) {
+  void set_device_mouse_swap_wheels(const device_identifiers& identifiers,
+                                    bool value) {
     add_device(identifiers);
 
     for (auto&& device : devices_) {
       if (device.get_identifiers() == identifiers) {
-        device.set_mouse_swap_wheel(value);
+        device.set_mouse_swap_wheels(value);
         return;
       }
     }
   }
 
-  double get_device_game_pad_stick_left_stick_deadzone(const device_identifiers& identifiers) const {
+  bool get_device_game_pad_swap_sticks(const device_identifiers& identifiers) const {
     for (const auto& d : devices_) {
       if (d.get_identifiers() == identifiers) {
-        if (auto value = d.get_game_pad_stick_left_stick_deadzone()) {
-          return *value;
-        }
+        return d.get_game_pad_swap_sticks();
       }
     }
-    return device::game_pad_stick_left_stick_deadzone_default_value;
+    return false;
   }
 
-  void set_device_game_pad_stick_left_stick_deadzone(const device_identifiers& identifiers,
-                                                     std::optional<double> value) {
+  void set_device_game_pad_swap_sticks(const device_identifiers& identifiers,
+                                       bool value) {
     add_device(identifiers);
 
     for (auto&& device : devices_) {
       if (device.get_identifiers() == identifiers) {
-        device.set_game_pad_stick_left_stick_deadzone(value);
+        device.set_game_pad_swap_sticks(value);
         return;
       }
     }
   }
 
-  double get_device_game_pad_stick_right_stick_deadzone(const device_identifiers& identifiers) const {
+  double get_device_game_pad_stick_xy_stick_deadzone(const device_identifiers& identifiers) const {
     for (const auto& d : devices_) {
       if (d.get_identifiers() == identifiers) {
-        if (auto value = d.get_game_pad_stick_right_stick_deadzone()) {
+        if (auto value = d.get_game_pad_stick_xy_stick_deadzone()) {
           return *value;
         }
       }
     }
-    return device::game_pad_stick_right_stick_deadzone_default_value;
+    return device::game_pad_stick_xy_stick_deadzone_default_value;
   }
 
-  void set_device_game_pad_stick_right_stick_deadzone(const device_identifiers& identifiers,
-                                                      std::optional<double> value) {
+  void set_device_game_pad_stick_xy_stick_deadzone(const device_identifiers& identifiers,
+                                                   std::optional<double> value) {
     add_device(identifiers);
 
     for (auto&& device : devices_) {
       if (device.get_identifiers() == identifiers) {
-        device.set_game_pad_stick_right_stick_deadzone(value);
+        device.set_game_pad_stick_xy_stick_deadzone(value);
+        return;
+      }
+    }
+  }
+
+  double get_device_game_pad_stick_wheels_stick_deadzone(const device_identifiers& identifiers) const {
+    for (const auto& d : devices_) {
+      if (d.get_identifiers() == identifiers) {
+        if (auto value = d.get_game_pad_stick_wheels_stick_deadzone()) {
+          return *value;
+        }
+      }
+    }
+    return device::game_pad_stick_wheels_stick_deadzone_default_value;
+  }
+
+  void set_device_game_pad_stick_wheels_stick_deadzone(const device_identifiers& identifiers,
+                                                       std::optional<double> value) {
+    add_device(identifiers);
+
+    for (auto&& device : devices_) {
+      if (device.get_identifiers() == identifiers) {
+        device.set_game_pad_stick_wheels_stick_deadzone(value);
         return;
       }
     }

@@ -105,34 +105,44 @@
         "error": "`mouse_swap_xy` must be boolean, but is `null`"
     },
 
-    // mouse_swap_wheel
+    // mouse_swap_wheels
 
     {
         "class": "devices",
         "input": {
-            "mouse_swap_wheel": null
+            "mouse_swap_wheels": null
         },
-        "error": "`mouse_swap_wheel` must be boolean, but is `null`"
+        "error": "`mouse_swap_wheels` must be boolean, but is `null`"
     },
 
-    // game_pad_stick_left_stick_deadzone
+    // game_pad_swap_sticks
 
     {
         "class": "devices",
         "input": {
-            "game_pad_stick_left_stick_deadzone": null
+            "game_pad_swap_sticks": null
         },
-        "error": "`game_pad_stick_left_stick_deadzone` must be number, but is `null`"
+        "error": "`game_pad_swap_sticks` must be boolean, but is `null`"
     },
 
-    // game_pad_stick_right_stick_deadzone
+    // game_pad_stick_xy_stick_deadzone
 
     {
         "class": "devices",
         "input": {
-            "game_pad_stick_right_stick_deadzone": null
+            "game_pad_stick_xy_stick_deadzone": null
         },
-        "error": "`game_pad_stick_right_stick_deadzone` must be number, but is `null`"
+        "error": "`game_pad_stick_xy_stick_deadzone` must be number, but is `null`"
+    },
+
+    // game_pad_stick_wheels_stick_deadzone
+
+    {
+        "class": "devices",
+        "input": {
+            "game_pad_stick_wheels_stick_deadzone": null
+        },
+        "error": "`game_pad_stick_wheels_stick_deadzone` must be number, but is `null`"
     },
 
     // game_pad_stick_xy_interval_milliseconds

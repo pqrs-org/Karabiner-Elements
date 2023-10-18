@@ -275,8 +275,8 @@ public:
       wheels_.update_configurations(core_configuration,
                                     device_identifiers_);
 
-      xy_deadzone_ = core_configuration.get_selected_profile().get_device_game_pad_stick_left_stick_deadzone(device_identifiers_);
-      wheels_deadzone_ = core_configuration.get_selected_profile().get_device_game_pad_stick_right_stick_deadzone(device_identifiers_);
+      xy_deadzone_ = core_configuration.get_selected_profile().get_device_game_pad_stick_xy_stick_deadzone(device_identifiers_);
+      wheels_deadzone_ = core_configuration.get_selected_profile().get_device_game_pad_stick_wheels_stick_deadzone(device_identifiers_);
     }
 
     void update_x_stick_sensor_value(CFIndex logical_max,
@@ -465,6 +465,8 @@ public:
       return;
     }
 
+    bool swap_sticks = c->get_selected_profile().get_device_game_pad_swap_sticks(device_properties.get_device_identifiers());
+
     for (const auto& v : hid_values) {
       if (auto usage_page = v.get_usage_page()) {
         if (auto usage = v.get_usage()) {
@@ -473,27 +475,48 @@ public:
               if (*logical_max != *logical_min) {
                 if (v.conforms_to(pqrs::hid::usage_page::generic_desktop,
                                   pqrs::hid::usage::generic_desktop::x)) {
-                  it->second->update_x_stick_sensor_value(*logical_max,
-                                                          *logical_min,
-                                                          v.get_integer_value());
-
+                  if (swap_sticks) {
+                    it->second->update_horizontal_wheel_stick_sensor_value(*logical_max,
+                                                                           *logical_min,
+                                                                           v.get_integer_value());
+                  } else {
+                    it->second->update_x_stick_sensor_value(*logical_max,
+                                                            *logical_min,
+                                                            v.get_integer_value());
+                  }
                 } else if (v.conforms_to(pqrs::hid::usage_page::generic_desktop,
                                          pqrs::hid::usage::generic_desktop::y)) {
-                  it->second->update_y_stick_sensor_value(*logical_max,
-                                                          *logical_min,
-                                                          v.get_integer_value());
-
-                } else if (v.conforms_to(pqrs::hid::usage_page::generic_desktop,
-                                         pqrs::hid::usage::generic_desktop::rz)) {
-                  it->second->update_vertical_wheel_stick_sensor_value(*logical_max,
-                                                                       *logical_min,
-                                                                       v.get_integer_value());
-
-                } else if (v.conforms_to(pqrs::hid::usage_page::generic_desktop,
-                                         pqrs::hid::usage::generic_desktop::z)) {
-                  it->second->update_horizontal_wheel_stick_sensor_value(*logical_max,
+                  if (swap_sticks) {
+                    it->second->update_vertical_wheel_stick_sensor_value(*logical_max,
                                                                          *logical_min,
                                                                          v.get_integer_value());
+                  } else {
+                    it->second->update_y_stick_sensor_value(*logical_max,
+                                                            *logical_min,
+                                                            v.get_integer_value());
+                  }
+                } else if (v.conforms_to(pqrs::hid::usage_page::generic_desktop,
+                                         pqrs::hid::usage::generic_desktop::rz)) {
+                  if (swap_sticks) {
+                    it->second->update_y_stick_sensor_value(*logical_max,
+                                                            *logical_min,
+                                                            v.get_integer_value());
+                  } else {
+                    it->second->update_vertical_wheel_stick_sensor_value(*logical_max,
+                                                                         *logical_min,
+                                                                         v.get_integer_value());
+                  }
+                } else if (v.conforms_to(pqrs::hid::usage_page::generic_desktop,
+                                         pqrs::hid::usage::generic_desktop::z)) {
+                  if (swap_sticks) {
+                    it->second->update_x_stick_sensor_value(*logical_max,
+                                                            *logical_min,
+                                                            v.get_integer_value());
+                  } else {
+                    it->second->update_horizontal_wheel_stick_sensor_value(*logical_max,
+                                                                           *logical_min,
+                                                                           v.get_integer_value());
+                  }
                 }
               }
             }

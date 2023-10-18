@@ -129,6 +129,7 @@
                             ]
                         }
                     ],
+                    "game_pad_swap_sticks": false,
                     "identifiers": {
                         "is_game_pad": false,
                         "is_keyboard": true,
@@ -142,7 +143,7 @@
                     "mouse_flip_vertical_wheel": false,
                     "mouse_flip_x": false,
                     "mouse_flip_y": false,
-                    "mouse_swap_wheel": false,
+                    "mouse_swap_wheels": false,
                     "mouse_swap_xy": false,
                     "simple_modifications": [
                         {
@@ -161,6 +162,7 @@
                 {
                     "disable_built_in_keyboard_if_exists": true,
                     "fn_function_keys": [],
+                    "game_pad_swap_sticks": false,
                     "identifiers": {
                         "is_game_pad": false,
                         "is_keyboard": true,
@@ -174,7 +176,7 @@
                     "mouse_flip_vertical_wheel": false,
                     "mouse_flip_x": false,
                     "mouse_flip_y": false,
-                    "mouse_swap_wheel": false,
+                    "mouse_swap_wheels": false,
                     "mouse_swap_xy": false,
                     "simple_modifications": [],
                     "treat_as_built_in_keyboard": false
@@ -203,6 +205,7 @@
                             ]
                         }
                     ],
+                    "game_pad_swap_sticks": false,
                     "identifiers": {
                         "is_game_pad": false,
                         "is_keyboard": true,
@@ -216,7 +219,7 @@
                     "mouse_flip_vertical_wheel": false,
                     "mouse_flip_x": false,
                     "mouse_flip_y": false,
-                    "mouse_swap_wheel": false,
+                    "mouse_swap_wheels": false,
                     "mouse_swap_xy": false,
                     "simple_modifications": [
                         {

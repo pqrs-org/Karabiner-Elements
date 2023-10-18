@@ -17,7 +17,7 @@ public:
         flip_vertical_wheel_(false),
         flip_horizontal_wheel_(false),
         swap_xy_(false),
-        swap_wheel_(false) {
+        swap_wheels_(false) {
     pqrs::json::requires_object(json, "json");
 
     for (const auto& [key, value] : json.items()) {
@@ -46,8 +46,8 @@ public:
 
           if (j == "xy") {
             swap_xy_ = true;
-          } else if (j == "wheel") {
-            swap_wheel_ = true;
+          } else if (j == "wheels") {
+            swap_wheels_ = true;
           }
         }
 
@@ -102,7 +102,7 @@ public:
             flip_vertical_wheel_ ||
             flip_horizontal_wheel_ ||
             swap_xy_ ||
-            swap_wheel_) {
+            swap_wheels_) {
           front_input_event.set_validity(validity::invalid);
 
           auto motion = *m;
@@ -118,7 +118,7 @@ public:
             motion.set_y(x);
           }
 
-          if (swap_wheel_) {
+          if (swap_wheels_) {
             auto v = motion.get_vertical_wheel();
             auto h = motion.get_horizontal_wheel();
             motion.set_vertical_wheel(h);
@@ -185,7 +185,7 @@ private:
   bool flip_vertical_wheel_;
   bool flip_horizontal_wheel_;
   bool swap_xy_;
-  bool swap_wheel_;
+  bool swap_wheels_;
 };
 } // namespace mouse_basic
 } // namespace manipulators
