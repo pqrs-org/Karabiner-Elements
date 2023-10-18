@@ -173,13 +173,13 @@ extension LibKrbn {
       }
     }
 
-    @Published var mouseSwapWheel: Bool = false {
+    @Published var mouseSwapWheels: Bool = false {
       didSet {
         if didSetEnabled {
           libkrbn_core_configuration_set_selected_profile_device_mouse_swap_wheels(
             Settings.shared.libkrbnCoreConfiguration,
             connectedDevice.libkrbnDeviceIdentifiers,
-            mouseSwapWheel)
+            mouseSwapWheels)
           Settings.shared.save()
         }
       }

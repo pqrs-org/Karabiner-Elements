@@ -229,7 +229,7 @@ struct DevicesView: View {
               }
               .switchToggleStyle(controlSize: .mini, font: .callout)
 
-              Toggle(isOn: $connectedDeviceSetting.mouseSwapWheel) {
+              Toggle(isOn: $connectedDeviceSetting.mouseSwapWheels) {
                 Text("Swap mouse wheels")
                   .frame(maxWidth: .infinity, alignment: .leading)
               }
