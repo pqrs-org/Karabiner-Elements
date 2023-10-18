@@ -64,7 +64,6 @@ public:
           stroke_acceleration_(0.0),
           remain_deadzone_threshold_milliseconds_(0),
           stroke_acceleration_measurement_milliseconds_(0),
-          xy_interval_milliseconds_(0),
           wheels_interval_milliseconds_(0) {
       auto now = pqrs::osx::chrono::mach_absolute_time_point();
       deadzone_entered_at_ = now;
@@ -103,14 +102,15 @@ public:
       remain_deadzone_threshold_milliseconds_ = 100;
       stroke_acceleration_measurement_milliseconds_ = 50;
 
-      xy_interval_milliseconds_ = core_configuration.get_selected_profile().get_device_game_pad_stick_xy_interval_milliseconds(device_identifiers);
       wheels_interval_milliseconds_ = core_configuration.get_selected_profile().get_device_game_pad_stick_wheels_interval_milliseconds(device_identifiers);
 
+      xy_stick_interval_milliseconds_formula_string_ = core_configuration.get_selected_profile().get_device_game_pad_xy_stick_interval_milliseconds_formula(device_identifiers);
       x_formula_string_ = core_configuration.get_selected_profile().get_device_game_pad_stick_x_formula(device_identifiers);
       y_formula_string_ = core_configuration.get_selected_profile().get_device_game_pad_stick_y_formula(device_identifiers);
       vertical_wheel_formula_string_ = core_configuration.get_selected_profile().get_device_game_pad_stick_vertical_wheel_formula(device_identifiers);
       horizontal_wheel_formula_string_ = core_configuration.get_selected_profile().get_device_game_pad_stick_horizontal_wheel_formula(device_identifiers);
 
+      xy_stick_interval_milliseconds_formula_ = make_formula_expression(xy_stick_interval_milliseconds_formula_string_);
       x_formula_ = make_formula_expression(x_formula_string_);
       y_formula_ = make_formula_expression(y_formula_string_);
       vertical_wheel_formula_ = make_formula_expression(vertical_wheel_formula_string_);
@@ -151,12 +151,22 @@ public:
                             adjust_integer_value(static_cast<int>(h)));
     }
 
-    std::chrono::milliseconds xy_interval(void) const {
+    std::chrono::milliseconds xy_stick_interval(void) const {
       if (stroke_acceleration_ == 0.0) {
         return std::chrono::milliseconds(0);
       }
 
-      return std::chrono::milliseconds(xy_interval_milliseconds_);
+      auto interval = xy_stick_interval_milliseconds_formula_.value();
+      if (std::isnan(interval)) {
+        logger::get_logger()->error("game_pad_stick_converter xy_stick_interval_milliseconds_formula_ returns nan: {0} (radian: {1}, magnitude: {2}, acceleration: {3})",
+                                    xy_stick_interval_milliseconds_formula_string_,
+                                    radian_,
+                                    magnitude_,
+                                    stroke_acceleration_);
+        interval = 0;
+      }
+
+      return std::chrono::milliseconds(static_cast<int>(interval));
     }
 
     std::chrono::milliseconds wheels_interval(void) const {
@@ -235,12 +245,13 @@ public:
 
     int remain_deadzone_threshold_milliseconds_;
     int stroke_acceleration_measurement_milliseconds_;
-    int xy_interval_milliseconds_;
+    std::string xy_stick_interval_milliseconds_formula_string_;
     int wheels_interval_milliseconds_;
     std::string x_formula_string_;
     std::string y_formula_string_;
     std::string vertical_wheel_formula_string_;
     std::string horizontal_wheel_formula_string_;
+    exprtk_utility::expression_t xy_stick_interval_milliseconds_formula_;
     exprtk_utility::expression_t x_formula_;
     exprtk_utility::expression_t y_formula_;
     exprtk_utility::expression_t vertical_wheel_formula_;
@@ -316,7 +327,7 @@ public:
     }
 
     void update_xy_timer(event_origin event_origin) {
-      auto interval = xy_.xy_interval();
+      auto interval = xy_.xy_stick_interval();
       if (interval == std::chrono::milliseconds(0)) {
         xy_timer_.stop();
         return;
@@ -328,10 +339,12 @@ public:
 
       xy_timer_.start(
           [this, event_origin] {
-            if (xy_.xy_interval() == std::chrono::milliseconds(0)) {
+            auto interval = xy_.xy_stick_interval();
+            if (interval == std::chrono::milliseconds(0)) {
               xy_timer_.stop();
               return;
             }
+            xy_timer_.set_interval(interval);
 
             auto [x, y] = xy_.xy_value();
 
