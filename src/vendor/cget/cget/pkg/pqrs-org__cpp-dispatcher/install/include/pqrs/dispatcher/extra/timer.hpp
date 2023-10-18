@@ -35,6 +35,7 @@ public:
     }
   }
 
+  // First, `function` is called once, and then `function` is called every interval specified by `interval`.
   void start(std::function<void(void)> function,
              duration interval) {
     enabled_ = true;
@@ -62,6 +63,25 @@ public:
     return enabled_;
   }
 
+  // Update the interval.
+  // Any `function` call reserved before calling this method will be canceled, and the `function` will be called after `interval` duration.
+  //
+  // Special cases:.
+  // - If `interval` == duration(0), this method works same as `stop`.
+  // - If `interval` is same as the current interval, this method does nothing.
+  void set_interval(duration interval) {
+    if (interval == duration(0)) {
+      stop();
+    } else if (interval != interval_) {
+      dispatcher_client_.enqueue_to_dispatcher([this, interval] {
+        ++current_function_id_;
+        interval_ = interval;
+
+        enqueue(current_function_id_);
+      });
+    }
+  }
+
 private:
   // This method is executed in the dispatcher thread.
   void call_function(int function_id) {
@@ -79,6 +99,10 @@ private:
       });
     }
 
+    enqueue(function_id);
+  }
+
+  void enqueue(int function_id) {
     dispatcher_client_.enqueue_to_dispatcher(
         [this, function_id] {
           call_function(function_id);
