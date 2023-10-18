@@ -275,8 +275,8 @@ public:
       wheels_.update_configurations(core_configuration,
                                     device_identifiers_);
 
-      xy_deadzone_ = core_configuration.get_selected_profile().get_device_game_pad_stick_xy_stick_deadzone(device_identifiers_);
-      wheels_deadzone_ = core_configuration.get_selected_profile().get_device_game_pad_stick_wheels_stick_deadzone(device_identifiers_);
+      xy_deadzone_ = core_configuration.get_selected_profile().get_device_game_pad_xy_stick_deadzone(device_identifiers_);
+      wheels_deadzone_ = core_configuration.get_selected_profile().get_device_game_pad_wheels_stick_deadzone(device_identifiers_);
     }
 
     void update_x_stick_sensor_value(CFIndex logical_max,
