@@ -10,6 +10,9 @@ namespace core_configuration {
 namespace details {
 class device final {
 public:
+  static constexpr int game_pad_stick_release_detection_threshold_milliseconds_default_value = 100;
+  static constexpr int game_pad_stick_stroke_acceleration_measurement_duration_milliseconds_default_value = 50;
+
   static constexpr double game_pad_xy_stick_deadzone_default_value = 0.1;
   static constexpr double game_pad_wheels_stick_deadzone_default_value = 0.1;
 
@@ -137,6 +140,16 @@ public:
 
         game_pad_swap_sticks_ = value.get<bool>();
 
+      } else if (key == "game_pad_stick_release_detection_threshold_milliseconds") {
+        pqrs::json::requires_number(value, "`" + key + "`");
+
+        game_pad_stick_release_detection_threshold_milliseconds_ = value.get<int>();
+
+      } else if (key == "game_pad_stick_stroke_acceleration_measurement_duration_milliseconds") {
+        pqrs::json::requires_number(value, "`" + key + "`");
+
+        game_pad_stick_stroke_acceleration_measurement_duration_milliseconds_ = value.get<int>();
+
       } else if (key == "game_pad_xy_stick_deadzone") {
         pqrs::json::requires_number(value, "`" + key + "`");
 
@@ -239,6 +252,12 @@ public:
     j["mouse_swap_xy"] = mouse_swap_xy_;
     j["mouse_swap_wheels"] = mouse_swap_wheels_;
     j["game_pad_swap_sticks"] = game_pad_swap_sticks_;
+    if (game_pad_stick_release_detection_threshold_milliseconds_ != std::nullopt) {
+      j["game_pad_stick_release_detection_threshold_milliseconds"] = *game_pad_stick_release_detection_threshold_milliseconds_;
+    }
+    if (game_pad_stick_stroke_acceleration_measurement_duration_milliseconds_ != std::nullopt) {
+      j["game_pad_stick_stroke_acceleration_measurement_duration_milliseconds"] = *game_pad_stick_stroke_acceleration_measurement_duration_milliseconds_;
+    }
     if (game_pad_xy_stick_deadzone_ != std::nullopt) {
       j["game_pad_xy_stick_deadzone"] = *game_pad_xy_stick_deadzone_;
     }
@@ -367,6 +386,24 @@ public:
   }
   void set_game_pad_swap_sticks(bool value) {
     game_pad_swap_sticks_ = value;
+
+    coordinate_between_properties();
+  }
+
+  std::optional<int> get_game_pad_stick_release_detection_threshold_milliseconds(void) const {
+    return game_pad_stick_release_detection_threshold_milliseconds_;
+  }
+  void set_game_pad_stick_release_detection_threshold_milliseconds(std::optional<int> value) {
+    game_pad_stick_release_detection_threshold_milliseconds_ = value;
+
+    coordinate_between_properties();
+  }
+
+  std::optional<int> get_game_pad_stick_stroke_acceleration_measurement_duration_milliseconds(void) const {
+    return game_pad_stick_stroke_acceleration_measurement_duration_milliseconds_;
+  }
+  void set_game_pad_stick_stroke_acceleration_measurement_duration_milliseconds(std::optional<int> value) {
+    game_pad_stick_stroke_acceleration_measurement_duration_milliseconds_ = value;
 
     coordinate_between_properties();
   }
@@ -525,6 +562,8 @@ private:
   bool mouse_swap_xy_;
   bool mouse_swap_wheels_;
   bool game_pad_swap_sticks_;
+  std::optional<int> game_pad_stick_release_detection_threshold_milliseconds_;
+  std::optional<int> game_pad_stick_stroke_acceleration_measurement_duration_milliseconds_;
   std::optional<double> game_pad_xy_stick_deadzone_;
   std::optional<double> game_pad_wheels_stick_deadzone_;
   std::optional<std::string> game_pad_xy_stick_interval_milliseconds_formula_;
