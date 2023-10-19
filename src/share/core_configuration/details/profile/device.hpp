@@ -15,35 +15,35 @@ public:
 
   static constexpr std::string_view game_pad_xy_stick_interval_milliseconds_formula_default_value =
       "20";
-  static constexpr int game_pad_stick_wheels_interval_milliseconds_default_value = 100;
+  static constexpr std::string_view game_pad_wheels_stick_interval_milliseconds_formula_default_value =
+      "switch {\n"
+      "  case acceleration > 0.5: 50;\n"
+      "  default:                 100;\n"
+      "}\n";
 
   // The logical value range of Karabiner-DriverKit-VirtualHIDPointing is -127 ... 127.
   static constexpr std::string_view game_pad_stick_x_formula_default_value =
-      "var a := acceleration ^ 2;"
-      "cos(radian) * a * 127;";
+      "var a := acceleration ^ 2;\n"
+      "cos(radian) * a * 127;\n";
 
   // The logical value range of Karabiner-DriverKit-VirtualHIDPointing is -127 ... 127.
   static constexpr std::string_view game_pad_stick_y_formula_default_value =
-      "var a := acceleration ^ 2;"
-      "sin(radian) * a * 127;";
+      "var a := acceleration ^ 2;\n"
+      "sin(radian) * a * 127;\n";
 
   // The logical value range of Karabiner-DriverKit-VirtualHIDPointing is -127 ... 127.
   static constexpr std::string_view game_pad_stick_vertical_wheel_formula_default_value =
-      "var scale := switch {"
-      "  case acceleration > 0.6: 5;"
-      "  default:                 1;"
-      "};"
-      "if (abs(cos(radian)) > abs(sin(radian))) { scale := 0; };"
-      "sgn(sin(radian)) * scale;";
+      "switch {\n"
+      "  case abs(cos(radian)) > abs(sin(radian)) : 0;\n"
+      "  default                                  : sgn(sin(radian));\n"
+      "}\n";
 
   // The logical value range of Karabiner-DriverKit-VirtualHIDPointing is -127 ... 127.
   static constexpr std::string_view game_pad_stick_horizontal_wheel_formula_default_value =
-      "var scale := switch {"
-      "  case acceleration > 0.6: 5;"
-      "  default:                 1;"
-      "};"
-      "if (abs(cos(radian)) < abs(sin(radian))) { scale := 0; };"
-      "sgn(cos(radian)) * scale;";
+      "switch {\n"
+      "  case abs(cos(radian)) < abs(sin(radian)) : 0;\n"
+      "  default                                  : sgn(cos(radian));\n"
+      "}\n";
 
   device(const nlohmann::json& json) : json_(json),
                                        ignore_(false),
@@ -150,10 +150,8 @@ public:
       } else if (key == "game_pad_xy_stick_interval_milliseconds_formula") {
         game_pad_xy_stick_interval_milliseconds_formula_ = unmarshal_formula(value, key);
 
-      } else if (key == "game_pad_stick_wheels_interval_milliseconds") {
-        pqrs::json::requires_number(value, "`" + key + "`");
-
-        game_pad_stick_wheels_interval_milliseconds_ = value.get<double>();
+      } else if (key == "game_pad_wheels_stick_interval_milliseconds_formula") {
+        game_pad_wheels_stick_interval_milliseconds_formula_ = unmarshal_formula(value, key);
 
       } else if (key == "game_pad_stick_x_formula") {
         game_pad_stick_x_formula_ = unmarshal_formula(value, key);
@@ -250,8 +248,8 @@ public:
     if (game_pad_xy_stick_interval_milliseconds_formula_ != std::nullopt) {
       j["game_pad_xy_stick_interval_milliseconds_formula"] = marshal_formula(*game_pad_xy_stick_interval_milliseconds_formula_);
     }
-    if (game_pad_stick_wheels_interval_milliseconds_ != std::nullopt) {
-      j["game_pad_stick_wheels_interval_milliseconds"] = *game_pad_stick_wheels_interval_milliseconds_;
+    if (game_pad_wheels_stick_interval_milliseconds_formula_ != std::nullopt) {
+      j["game_pad_wheels_stick_interval_milliseconds_formula"] = marshal_formula(*game_pad_wheels_stick_interval_milliseconds_formula_);
     }
     if (game_pad_stick_x_formula_ != std::nullopt) {
       j["game_pad_stick_x_formula"] = marshal_formula(*game_pad_stick_x_formula_);
@@ -400,11 +398,11 @@ public:
     coordinate_between_properties();
   }
 
-  std::optional<double> get_game_pad_stick_wheels_interval_milliseconds(void) const {
-    return game_pad_stick_wheels_interval_milliseconds_;
+  const std::optional<std::string>& get_game_pad_wheels_stick_interval_milliseconds_formula(void) const {
+    return game_pad_wheels_stick_interval_milliseconds_formula_;
   }
-  void set_game_pad_stick_wheels_interval_milliseconds(std::optional<double> value) {
-    game_pad_stick_wheels_interval_milliseconds_ = value;
+  void set_game_pad_wheels_stick_interval_milliseconds_formula(const std::optional<std::string>& value) {
+    game_pad_wheels_stick_interval_milliseconds_formula_ = value;
 
     coordinate_between_properties();
   }
@@ -530,7 +528,7 @@ private:
   std::optional<double> game_pad_xy_stick_deadzone_;
   std::optional<double> game_pad_wheels_stick_deadzone_;
   std::optional<std::string> game_pad_xy_stick_interval_milliseconds_formula_;
-  std::optional<int> game_pad_stick_wheels_interval_milliseconds_;
+  std::optional<std::string> game_pad_wheels_stick_interval_milliseconds_formula_;
   std::optional<std::string> game_pad_stick_x_formula_;
   std::optional<std::string> game_pad_stick_y_formula_;
   std::optional<std::string> game_pad_stick_vertical_wheel_formula_;

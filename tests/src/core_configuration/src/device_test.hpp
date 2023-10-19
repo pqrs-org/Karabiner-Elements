@@ -127,7 +127,7 @@ void run_device_test(void) {
       expect(device.get_game_pad_xy_stick_deadzone() == std::nullopt);
       expect(device.get_game_pad_wheels_stick_deadzone() == std::nullopt);
       expect(device.get_game_pad_xy_stick_interval_milliseconds_formula() == std::nullopt);
-      expect(device.get_game_pad_stick_wheels_interval_milliseconds() == std::nullopt);
+      expect(device.get_game_pad_wheels_stick_interval_milliseconds_formula() == std::nullopt);
       expect(device.get_game_pad_stick_x_formula() == std::nullopt);
       expect(device.get_game_pad_stick_y_formula() == std::nullopt);
       expect(device.get_game_pad_stick_vertical_wheel_formula() == std::nullopt);
@@ -354,7 +354,7 @@ void run_device_test(void) {
           {"game_pad_xy_stick_deadzone", 0.08},
           {"game_pad_wheels_stick_deadzone", 0.08},
           {"game_pad_xy_stick_interval_milliseconds_formula", "20"},
-          {"game_pad_stick_wheels_interval_milliseconds", 20},
+          {"game_pad_wheels_stick_interval_milliseconds_formula", "100"},
           {"game_pad_stick_x_formula", "cos(radian) * acceleration * 127"},
           {"game_pad_stick_y_formula", nlohmann::json::array({
                                            "var a := acceleration ^ 2;",
@@ -399,7 +399,7 @@ void run_device_test(void) {
           {"game_pad_xy_stick_deadzone", 0.08},
           {"game_pad_wheels_stick_deadzone", 0.08},
           {"game_pad_xy_stick_interval_milliseconds_formula", "20"},
-          {"game_pad_stick_wheels_interval_milliseconds", 20},
+          {"game_pad_wheels_stick_interval_milliseconds_formula", "100"},
           {"game_pad_stick_x_formula", "cos(radian) * acceleration * 127"},
           {"game_pad_stick_y_formula", nlohmann::json::array({
                                            "var a := acceleration ^ 2;",

@@ -63,8 +63,7 @@ public:
           magnitude_(0.0),
           stroke_acceleration_(0.0),
           remain_deadzone_threshold_milliseconds_(0),
-          stroke_acceleration_measurement_milliseconds_(0),
-          wheels_interval_milliseconds_(0) {
+          stroke_acceleration_measurement_milliseconds_(0) {
       auto now = pqrs::osx::chrono::mach_absolute_time_point();
       deadzone_entered_at_ = now;
       deadzone_left_at_ = now;
@@ -102,15 +101,15 @@ public:
       remain_deadzone_threshold_milliseconds_ = 100;
       stroke_acceleration_measurement_milliseconds_ = 50;
 
-      wheels_interval_milliseconds_ = core_configuration.get_selected_profile().get_device_game_pad_stick_wheels_interval_milliseconds(device_identifiers);
-
       xy_stick_interval_milliseconds_formula_string_ = core_configuration.get_selected_profile().get_device_game_pad_xy_stick_interval_milliseconds_formula(device_identifiers);
+      wheels_stick_interval_milliseconds_formula_string_ = core_configuration.get_selected_profile().get_device_game_pad_wheels_stick_interval_milliseconds_formula(device_identifiers);
       x_formula_string_ = core_configuration.get_selected_profile().get_device_game_pad_stick_x_formula(device_identifiers);
       y_formula_string_ = core_configuration.get_selected_profile().get_device_game_pad_stick_y_formula(device_identifiers);
       vertical_wheel_formula_string_ = core_configuration.get_selected_profile().get_device_game_pad_stick_vertical_wheel_formula(device_identifiers);
       horizontal_wheel_formula_string_ = core_configuration.get_selected_profile().get_device_game_pad_stick_horizontal_wheel_formula(device_identifiers);
 
       xy_stick_interval_milliseconds_formula_ = make_formula_expression(xy_stick_interval_milliseconds_formula_string_);
+      wheels_stick_interval_milliseconds_formula_ = make_formula_expression(wheels_stick_interval_milliseconds_formula_string_);
       x_formula_ = make_formula_expression(x_formula_string_);
       y_formula_ = make_formula_expression(y_formula_string_);
       vertical_wheel_formula_ = make_formula_expression(vertical_wheel_formula_string_);
@@ -169,12 +168,22 @@ public:
       return std::chrono::milliseconds(static_cast<int>(interval));
     }
 
-    std::chrono::milliseconds wheels_interval(void) const {
+    std::chrono::milliseconds wheels_stick_interval(void) const {
       if (stroke_acceleration_ == 0.0) {
         return std::chrono::milliseconds(0);
       }
 
-      return std::chrono::milliseconds(wheels_interval_milliseconds_);
+      auto interval = wheels_stick_interval_milliseconds_formula_.value();
+      if (std::isnan(interval)) {
+        logger::get_logger()->error("game_pad_stick_converter wheels_stick_interval_milliseconds_formula_ returns nan: {0} (radian: {1}, magnitude: {2}, acceleration: {3})",
+                                    wheels_stick_interval_milliseconds_formula_string_,
+                                    radian_,
+                                    magnitude_,
+                                    stroke_acceleration_);
+        interval = 0;
+      }
+
+      return std::chrono::milliseconds(static_cast<int>(interval));
     }
 
   private:
@@ -246,12 +255,13 @@ public:
     int remain_deadzone_threshold_milliseconds_;
     int stroke_acceleration_measurement_milliseconds_;
     std::string xy_stick_interval_milliseconds_formula_string_;
-    int wheels_interval_milliseconds_;
+    std::string wheels_stick_interval_milliseconds_formula_string_;
     std::string x_formula_string_;
     std::string y_formula_string_;
     std::string vertical_wheel_formula_string_;
     std::string horizontal_wheel_formula_string_;
     exprtk_utility::expression_t xy_stick_interval_milliseconds_formula_;
+    exprtk_utility::expression_t wheels_stick_interval_milliseconds_formula_;
     exprtk_utility::expression_t x_formula_;
     exprtk_utility::expression_t y_formula_;
     exprtk_utility::expression_t vertical_wheel_formula_;
@@ -339,12 +349,20 @@ public:
 
       xy_timer_.start(
           [this, event_origin] {
+            //
+            // Update interval
+            //
+
             auto interval = xy_.xy_stick_interval();
             if (interval == std::chrono::milliseconds(0)) {
               xy_timer_.stop();
               return;
             }
             xy_timer_.set_interval(interval);
+
+            //
+            // Post event
+            //
 
             auto [x, y] = xy_.xy_value();
 
@@ -363,13 +381,15 @@ public:
                                      event_origin,
                                      event_queue::state::original);
 
-            pointing_motion_arrived_(entry);
+            enqueue_to_dispatcher([this, entry] {
+              pointing_motion_arrived_(entry);
+            });
           },
           interval);
     }
 
     void update_wheels_timer(event_origin event_origin) {
-      auto interval = wheels_.wheels_interval();
+      auto interval = wheels_.wheels_stick_interval();
       if (interval == std::chrono::milliseconds(0)) {
         wheels_timer_.stop();
         return;
@@ -381,10 +401,20 @@ public:
 
       wheels_timer_.start(
           [this, event_origin] {
-            if (wheels_.wheels_interval() == std::chrono::milliseconds(0)) {
+            //
+            // Update interval
+            //
+
+            auto interval = wheels_.wheels_stick_interval();
+            if (interval == std::chrono::milliseconds(0)) {
               wheels_timer_.stop();
               return;
             }
+            wheels_timer_.set_interval(interval);
+
+            //
+            // Post event
+            //
 
             auto [v, h] = wheels_.wheels_value();
 
@@ -403,7 +433,9 @@ public:
                                      event_origin,
                                      event_queue::state::original);
 
-            pointing_motion_arrived_(entry);
+            enqueue_to_dispatcher([this, entry] {
+              pointing_motion_arrived_(entry);
+            });
           },
           interval);
     }

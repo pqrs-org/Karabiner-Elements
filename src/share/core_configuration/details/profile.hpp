@@ -562,7 +562,7 @@ public:
   }
 
   void set_device_game_pad_xy_stick_interval_milliseconds_formula(const device_identifiers& identifiers,
-                                                                  std::optional<std::string> value) {
+                                                                  const std::optional<std::string>& value) {
     add_device(identifiers);
 
     for (auto&& device : devices_) {
@@ -573,24 +573,24 @@ public:
     }
   }
 
-  int get_device_game_pad_stick_wheels_interval_milliseconds(const device_identifiers& identifiers) const {
+  std::string get_device_game_pad_wheels_stick_interval_milliseconds_formula(const device_identifiers& identifiers) const {
     for (const auto& d : devices_) {
       if (d.get_identifiers() == identifiers) {
-        if (auto value = d.get_game_pad_stick_wheels_interval_milliseconds()) {
+        if (auto value = d.get_game_pad_wheels_stick_interval_milliseconds_formula()) {
           return *value;
         }
       }
     }
-    return device::game_pad_stick_wheels_interval_milliseconds_default_value;
+    return std::string(device::game_pad_wheels_stick_interval_milliseconds_formula_default_value);
   }
 
-  void set_device_game_pad_stick_wheels_interval_milliseconds(const device_identifiers& identifiers,
-                                                              std::optional<int> value) {
+  void set_device_game_pad_wheels_stick_interval_milliseconds_formula(const device_identifiers& identifiers,
+                                                                      const std::optional<std::string>& value) {
     add_device(identifiers);
 
     for (auto&& device : devices_) {
       if (device.get_identifiers() == identifiers) {
-        device.set_game_pad_stick_wheels_interval_milliseconds(value);
+        device.set_game_pad_wheels_stick_interval_milliseconds_formula(value);
         return;
       }
     }
