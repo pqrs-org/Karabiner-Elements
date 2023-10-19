@@ -504,24 +504,24 @@ public:
     }
   }
 
-  int get_device_game_pad_stick_release_detection_threshold_milliseconds(const device_identifiers& identifiers) const {
+  int get_device_game_pad_stick_stroke_release_detection_threshold_milliseconds(const device_identifiers& identifiers) const {
     for (const auto& d : devices_) {
       if (d.get_identifiers() == identifiers) {
-        if (auto value = d.get_game_pad_stick_release_detection_threshold_milliseconds()) {
+        if (auto value = d.get_game_pad_stick_stroke_release_detection_threshold_milliseconds()) {
           return *value;
         }
       }
     }
-    return device::game_pad_stick_release_detection_threshold_milliseconds_default_value;
+    return device::game_pad_stick_stroke_release_detection_threshold_milliseconds_default_value;
   }
 
-  void set_device_game_pad_stick_release_detection_threshold_milliseconds(const device_identifiers& identifiers,
+  void set_device_game_pad_stick_stroke_release_detection_threshold_milliseconds(const device_identifiers& identifiers,
                                                                           std::optional<int> value) {
     add_device(identifiers);
 
     for (auto&& device : devices_) {
       if (device.get_identifiers() == identifiers) {
-        device.set_game_pad_stick_release_detection_threshold_milliseconds(value);
+        device.set_game_pad_stick_stroke_release_detection_threshold_milliseconds(value);
         return;
       }
     }

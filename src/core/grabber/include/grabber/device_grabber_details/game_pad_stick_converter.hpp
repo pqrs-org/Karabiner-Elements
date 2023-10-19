@@ -62,8 +62,8 @@ public:
           radian_(0.0),
           magnitude_(0.0),
           stroke_acceleration_(0.0),
-          remain_deadzone_threshold_milliseconds_(0),
-          stroke_acceleration_measurement_milliseconds_(0) {
+          stick_stroke_release_detection_threshold_milliseconds_(0),
+          stick_stroke_acceleration_measurement_duration_milliseconds_(0) {
       auto now = pqrs::osx::chrono::mach_absolute_time_point();
       deadzone_entered_at_ = now;
       deadzone_left_at_ = now;
@@ -97,9 +97,8 @@ public:
 
     void update_configurations(const core_configuration::core_configuration& core_configuration,
                                const device_identifiers& device_identifiers) {
-      // TODO: Add config
-      remain_deadzone_threshold_milliseconds_ = 100;
-      stroke_acceleration_measurement_milliseconds_ = 50;
+      stick_stroke_release_detection_threshold_milliseconds_ = core_configuration.get_selected_profile().get_device_game_pad_stick_stroke_release_detection_threshold_milliseconds(device_identifiers);
+      stick_stroke_acceleration_measurement_duration_milliseconds_ = core_configuration.get_selected_profile().get_device_game_pad_stick_stroke_acceleration_measurement_duration_milliseconds_(device_identifiers);
 
       xy_stick_interval_milliseconds_formula_string_ = core_configuration.get_selected_profile().get_device_game_pad_xy_stick_interval_milliseconds_formula(device_identifiers);
       wheels_stick_interval_milliseconds_formula_string_ = core_configuration.get_selected_profile().get_device_game_pad_wheels_stick_interval_milliseconds_formula(device_identifiers);
@@ -209,7 +208,7 @@ public:
                 deadzone_entered_at_ = now;
                 stroke_acceleration_ = 0.0;
               },
-              std::chrono::milliseconds(remain_deadzone_threshold_milliseconds_));
+              std::chrono::milliseconds(stick_stroke_release_detection_threshold_milliseconds_));
         }
       } else {
         deadzone_timer_.stop();
@@ -219,7 +218,7 @@ public:
         }
       }
 
-      if (pqrs::osx::chrono::make_milliseconds(now - deadzone_left_at_).count() < stroke_acceleration_measurement_milliseconds_) {
+      if (pqrs::osx::chrono::make_milliseconds(now - deadzone_left_at_).count() < stick_stroke_acceleration_measurement_duration_milliseconds_) {
         stroke_acceleration_ = std::max(stroke_acceleration_, magnitude_);
       }
     }
@@ -252,8 +251,8 @@ public:
     absolute_time_point deadzone_entered_at_;
     absolute_time_point deadzone_left_at_;
 
-    int remain_deadzone_threshold_milliseconds_;
-    int stroke_acceleration_measurement_milliseconds_;
+    int stick_stroke_release_detection_threshold_milliseconds_;
+    int stick_stroke_acceleration_measurement_duration_milliseconds_;
     std::string xy_stick_interval_milliseconds_formula_string_;
     std::string wheels_stick_interval_milliseconds_formula_string_;
     std::string x_formula_string_;
