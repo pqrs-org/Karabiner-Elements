@@ -18,6 +18,8 @@ struct DevicesView: View {
                   KeyboardSettings(connectedDeviceSetting: $connectedDeviceSetting)
 
                   MouseSettings(connectedDeviceSetting: $connectedDeviceSetting)
+
+                  GamePadSettings(connectedDeviceSetting: $connectedDeviceSetting)
                 }
                 .padding(.leading, 20.0)
                 .padding(.top, 8.0)
@@ -237,6 +239,25 @@ struct DevicesView: View {
             }
             .frame(width: 200.0)
           }
+        }
+      }
+    }
+  }
+
+  struct GamePadSettings: View {
+    @Binding var connectedDeviceSetting: LibKrbn.ConnectedDeviceSetting
+
+    var body: some View {
+      if connectedDeviceSetting.connectedDevice.isGamePad {
+        VStack(alignment: .leading, spacing: 2.0) {
+          VStack(alignment: .leading, spacing: 2.0) {
+            Toggle(isOn: $connectedDeviceSetting.gamePadSwapSticks) {
+              Text("Swap gamepad XY and wheels sticks")
+                .frame(maxWidth: .infinity, alignment: .leading)
+            }
+            .switchToggleStyle(controlSize: .mini, font: .callout)
+          }
+          Divider()
         }
       }
     }

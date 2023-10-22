@@ -60,6 +60,11 @@ extension LibKrbn {
           Settings.shared.libkrbnCoreConfiguration,
           connectedDevice.libkrbnDeviceIdentifiers)
 
+      self.gamePadSwapSticks =
+        libkrbn_core_configuration_get_selected_profile_device_game_pad_swap_sticks(
+          Settings.shared.libkrbnCoreConfiguration,
+          connectedDevice.libkrbnDeviceIdentifiers)
+
       simpleModifications = LibKrbn.Settings.shared.makeSimpleModifications(connectedDevice)
       fnFunctionKeys = LibKrbn.Settings.shared.makeFnFunctionKeys(connectedDevice)
 
@@ -180,6 +185,18 @@ extension LibKrbn {
             Settings.shared.libkrbnCoreConfiguration,
             connectedDevice.libkrbnDeviceIdentifiers,
             mouseSwapWheels)
+          Settings.shared.save()
+        }
+      }
+    }
+
+    @Published var gamePadSwapSticks: Bool = false {
+      didSet {
+        if didSetEnabled {
+          libkrbn_core_configuration_set_selected_profile_device_game_pad_swap_sticks(
+            Settings.shared.libkrbnCoreConfiguration,
+            connectedDevice.libkrbnDeviceIdentifiers,
+            gamePadSwapSticks)
           Settings.shared.save()
         }
       }
