@@ -65,6 +65,28 @@ extension LibKrbn {
           Settings.shared.libkrbnCoreConfiguration,
           connectedDevice.libkrbnDeviceIdentifiers)
 
+      self.gamePadOverwriteXYStickDeadzone =
+        libkrbn_core_configuration_has_selected_profile_device_game_pad_xy_stick_deadzone(
+          Settings.shared.libkrbnCoreConfiguration,
+          connectedDevice.libkrbnDeviceIdentifiers
+        )
+
+      self.gamePadXYStickDeadzone =
+        libkrbn_core_configuration_get_selected_profile_device_game_pad_xy_stick_deadzone(
+          Settings.shared.libkrbnCoreConfiguration,
+          connectedDevice.libkrbnDeviceIdentifiers)
+
+      self.gamePadOverwriteWheelsStickDeadzone =
+        libkrbn_core_configuration_has_selected_profile_device_game_pad_wheels_stick_deadzone(
+          Settings.shared.libkrbnCoreConfiguration,
+          connectedDevice.libkrbnDeviceIdentifiers
+        )
+
+      self.gamePadWheelsStickDeadzone =
+        libkrbn_core_configuration_get_selected_profile_device_game_pad_wheels_stick_deadzone(
+          Settings.shared.libkrbnCoreConfiguration,
+          connectedDevice.libkrbnDeviceIdentifiers)
+
       simpleModifications = LibKrbn.Settings.shared.makeSimpleModifications(connectedDevice)
       fnFunctionKeys = LibKrbn.Settings.shared.makeFnFunctionKeys(connectedDevice)
 
@@ -201,6 +223,69 @@ extension LibKrbn {
         }
       }
     }
+
+    @Published var gamePadOverwriteXYStickDeadzone: Bool = false {
+      didSet {
+        if didSetEnabled {
+          saveGamePadXYStickDeadzone()
+        }
+      }
+    }
+
+    @Published var gamePadXYStickDeadzone: Double = 0.0 {
+      didSet {
+        if didSetEnabled {
+          saveGamePadXYStickDeadzone()
+        }
+      }
+    }
+
+    private func saveGamePadXYStickDeadzone() {
+      if gamePadOverwriteXYStickDeadzone {
+        libkrbn_core_configuration_set_selected_profile_device_game_pad_xy_stick_deadzone(
+          Settings.shared.libkrbnCoreConfiguration,
+          connectedDevice.libkrbnDeviceIdentifiers,
+          gamePadXYStickDeadzone)
+      } else {
+        libkrbn_core_configuration_unset_selected_profile_device_game_pad_xy_stick_deadzone(
+          Settings.shared.libkrbnCoreConfiguration,
+          connectedDevice.libkrbnDeviceIdentifiers)
+      }
+
+      Settings.shared.save()
+    }
+
+    @Published var gamePadOverwriteWheelsStickDeadzone: Bool = false {
+      didSet {
+        if didSetEnabled {
+          saveGamePadWheelsStickDeadzone()
+        }
+      }
+    }
+
+    @Published var gamePadWheelsStickDeadzone: Double = 0.0 {
+      didSet {
+        if didSetEnabled {
+          saveGamePadWheelsStickDeadzone()
+        }
+      }
+    }
+
+    private func saveGamePadWheelsStickDeadzone() {
+      if gamePadOverwriteWheelsStickDeadzone {
+        libkrbn_core_configuration_set_selected_profile_device_game_pad_wheels_stick_deadzone(
+          Settings.shared.libkrbnCoreConfiguration,
+          connectedDevice.libkrbnDeviceIdentifiers,
+          gamePadWheelsStickDeadzone)
+      } else {
+        libkrbn_core_configuration_unset_selected_profile_device_game_pad_wheels_stick_deadzone(
+          Settings.shared.libkrbnCoreConfiguration,
+          connectedDevice.libkrbnDeviceIdentifiers)
+      }
+
+      Settings.shared.save()
+    }
+
 
     @Published var simpleModifications: [SimpleModification] = []
     @Published var fnFunctionKeys: [SimpleModification] = []
