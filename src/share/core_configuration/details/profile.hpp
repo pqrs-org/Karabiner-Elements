@@ -516,7 +516,7 @@ public:
   }
 
   void set_device_game_pad_stick_stroke_release_detection_threshold_milliseconds(const device_identifiers& identifiers,
-                                                                          std::optional<int> value) {
+                                                                                 std::optional<int> value) {
     add_device(identifiers);
 
     for (auto&& device : devices_) {
@@ -550,6 +550,17 @@ public:
     }
   }
 
+  bool has_device_game_pad_xy_stick_deadzone(const device_identifiers& identifiers) const {
+    for (const auto& d : devices_) {
+      if (d.get_identifiers() == identifiers) {
+        if (auto value = d.get_game_pad_xy_stick_deadzone()) {
+          return true;
+        }
+      }
+    }
+    return false;
+  }
+
   double get_device_game_pad_xy_stick_deadzone(const device_identifiers& identifiers) const {
     for (const auto& d : devices_) {
       if (d.get_identifiers() == identifiers) {
@@ -571,6 +582,17 @@ public:
         return;
       }
     }
+  }
+
+  bool has_device_game_pad_wheels_stick_deadzone(const device_identifiers& identifiers) const {
+    for (const auto& d : devices_) {
+      if (d.get_identifiers() == identifiers) {
+        if (auto value = d.get_game_pad_wheels_stick_deadzone()) {
+          return true;
+        }
+      }
+    }
+    return false;
   }
 
   double get_device_game_pad_wheels_stick_deadzone(const device_identifiers& identifiers) const {
