@@ -42,7 +42,7 @@ struct DeviceSelectorView: View {
                   """
                   \(connectedDeviceSetting.connectedDevice.productName) \
                   (\(connectedDeviceSetting.connectedDevice.manufacturerName)) \
-                  [\(label)]
+                  \(label != "" ? "[\(label)]" : "")
                   """
                 )
 
