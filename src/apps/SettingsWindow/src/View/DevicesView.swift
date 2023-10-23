@@ -331,7 +331,7 @@ struct DevicesView: View {
               }
               .switchToggleStyle(controlSize: .mini, font: .callout)
             }
-            .frame(width: 200.0)
+            .frame(width: 240.0)
           }
         }
       }
