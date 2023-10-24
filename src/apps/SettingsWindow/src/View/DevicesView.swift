@@ -250,89 +250,19 @@ struct DevicesView: View {
 
     var body: some View {
       if connectedDeviceSetting.connectedDevice.isGamePad {
-        if !showing {
-          Button(
-            action: {
-              showing = true
-            },
-            label: {
-              Label("Show game pad settings", systemImage: "gamecontroller")
-                .buttonLabelStyle()
-            }
-          )
-
-        } else {
-          VStack(alignment: .leading, spacing: 2.0) {
-            HStack {
-              Toggle(isOn: $connectedDeviceSetting.gamePadOverwriteXYStickDeadzone) {
-                Text("Overwrite XY stick deadzone: ")
-                  .frame(maxWidth: .infinity, alignment: .leading)
-              }
-              .switchToggleStyle(controlSize: .mini, font: .callout)
-              .frame(width: 240.0)
-
-              if connectedDeviceSetting.gamePadOverwriteXYStickDeadzone {
-                HStack(alignment: .center, spacing: 0) {
-                  Text(
-                    "Deadzone: \(connectedDeviceSetting.gamePadXYStickDeadzone, specifier: "%.2f")")
-
-                  Stepper(
-                    value: $connectedDeviceSetting.gamePadXYStickDeadzone,
-                    in: 0.05...1,
-                    step: 0.01
-                  ) {
-                    Text("")
-                  }
-                  .frame(width: 20)
-
-                  Text("(Default: 0.1)")
-
-                  Spacer().frame(maxWidth: .infinity)
-                }
-                .padding(.leading, 20)
-              }
-            }
-
-            HStack {
-              Toggle(isOn: $connectedDeviceSetting.gamePadOverwriteWheelsStickDeadzone) {
-                Text("Overwrite Wheels stick deadzone: ")
-                  .frame(maxWidth: .infinity, alignment: .leading)
-              }
-              .switchToggleStyle(controlSize: .mini, font: .callout)
-              .frame(width: 240.0)
-
-              if connectedDeviceSetting.gamePadOverwriteWheelsStickDeadzone {
-                HStack(alignment: .center, spacing: 0) {
-                  Text(
-                    "Deadzone: \(connectedDeviceSetting.gamePadWheelsStickDeadzone, specifier: "%.2f")"
-                  )
-
-                  Stepper(
-                    value: $connectedDeviceSetting.gamePadWheelsStickDeadzone,
-                    in: 0.05...1,
-                    step: 0.01
-                  ) {
-                    Text("")
-                  }
-                  .frame(width: 20)
-
-                  Text("(Default: 0.1)")
-
-                  Spacer().frame(maxWidth: .infinity)
-                }
-                .padding(.leading, 20)
-              }
-            }
-
-            VStack(alignment: .leading, spacing: 2.0) {
-              Toggle(isOn: $connectedDeviceSetting.gamePadSwapSticks) {
-                Text("Swap gamepad XY and wheels sticks")
-                  .frame(maxWidth: .infinity, alignment: .leading)
-              }
-              .switchToggleStyle(controlSize: .mini, font: .callout)
-            }
-            .frame(width: 240.0)
+        Button(
+          action: {
+            showing = true
+          },
+          label: {
+            Label("Open game pad settings", systemImage: "gamecontroller")
+              .buttonLabelStyle()
           }
+        )
+        .sheet(isPresented: $showing) {
+          DevicesGamePadSettingsView(
+            connectedDeviceSetting: $connectedDeviceSetting, showing: $showing
+          )
         }
       }
     }
