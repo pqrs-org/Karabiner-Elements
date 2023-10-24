@@ -90,6 +90,7 @@ struct SettingsAdvancedView: View {
                 value: $userSettings.palmThreshold,
                 range: 0...10,
                 step: 0.5,
+                maximumFractionDigits: 3,
                 width: 80)
 
               Text("touch size threshold (Default: 2)")

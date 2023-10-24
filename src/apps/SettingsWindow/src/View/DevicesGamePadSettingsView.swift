@@ -30,7 +30,8 @@ struct DevicesGamePadSettingsView: View {
                   value: $connectedDeviceSetting.gamePadXYStickDeadzone,
                   range: 0.05...1,
                   step: 0.01,
-                  width: 40)
+                  maximumFractionDigits: 3,
+                  width: 60)
 
                 Text("(Default: 0.1)")
               }
@@ -55,7 +56,8 @@ struct DevicesGamePadSettingsView: View {
                   value: $connectedDeviceSetting.gamePadWheelsStickDeadzone,
                   range: 0.05...1,
                   step: 0.01,
-                  width: 40)
+                  maximumFractionDigits: 3,
+                  width: 60)
 
                 Text("(Default: 0.1)")
               }
