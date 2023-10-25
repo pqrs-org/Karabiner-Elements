@@ -62,6 +62,7 @@ public:
           radian_(0.0),
           magnitude_(0.0),
           stroke_acceleration_(0.0),
+          deadzone_magnitude_(0.0),
           stick_stroke_release_detection_threshold_milliseconds_(0),
           stick_stroke_acceleration_measurement_duration_milliseconds_(0) {
       auto now = pqrs::osx::chrono::mach_absolute_time_point();
@@ -202,6 +203,8 @@ public:
 
       if (std::abs(vertical_stick_sensor_.get_value()) < deadzone &&
           std::abs(horizontal_stick_sensor_.get_value()) < deadzone) {
+        deadzone_magnitude_ = magnitude_;
+
         if (!deadzone_timer_.enabled()) {
           deadzone_timer_.start(
               [this, now] {
@@ -219,7 +222,7 @@ public:
       }
 
       if (pqrs::osx::chrono::make_milliseconds(now - deadzone_left_at_).count() < stick_stroke_acceleration_measurement_duration_milliseconds_) {
-        stroke_acceleration_ = std::max(stroke_acceleration_, magnitude_);
+        stroke_acceleration_ = std::max(stroke_acceleration_, magnitude_ - deadzone_magnitude_);
       }
     }
 
@@ -250,6 +253,7 @@ public:
     double stroke_acceleration_;
     absolute_time_point deadzone_entered_at_;
     absolute_time_point deadzone_left_at_;
+    double deadzone_magnitude_;
 
     int stick_stroke_release_detection_threshold_milliseconds_;
     int stick_stroke_acceleration_measurement_duration_milliseconds_;
