@@ -15,6 +15,7 @@ struct ContentView: View {
         Text("counter: \(eventObserver.counter)")
         Text("deadzoneEnteredAt: \(rightStick.deadzoneEnteredAt)")
         Text("deadzoneLeftAt: \(rightStick.deadzoneLeftAt)")
+        Text("deadzoneMagnitude \(rightStick.deadzoneMagnitude)")
         Text("Right Stick radian: \(rightStick.radian)")
         Text("Right Stick magnitude: \(rightStick.magnitude)")
         Text("Right stick stroke acceleration: \(rightStick.strokeAcceleration)")

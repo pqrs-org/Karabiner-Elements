@@ -28,6 +28,7 @@ public class StickManager: ObservableObject {
     @Published var magnitude = 0.0
     @Published var deadzoneEnteredAt = Date()
     @Published var deadzoneLeftAt = Date()
+    @Published var deadzoneMagnitude = 0.0
     @Published var strokeAcceleration = 0.0
     let remainDeadzoneThresholdMilliseconds: UInt64 = 100
     let strokeAccelerationMeasurementTime = 0.05  // 50 ms
@@ -45,6 +46,8 @@ public class StickManager: ObservableObject {
 
       let deadzone = 0.1
       if abs(vertical.lastDoubleValue) < deadzone && abs(horizontal.lastDoubleValue) < deadzone {
+        deadzoneMagnitude = magnitude
+
         if deadzoneTask == nil {
           deadzoneTask = Task { @MainActor in
             do {
@@ -68,8 +71,9 @@ public class StickManager: ObservableObject {
       }
 
       if now.timeIntervalSince(deadzoneLeftAt) < strokeAccelerationMeasurementTime {
-        if strokeAcceleration < magnitude {
-          strokeAcceleration = magnitude
+        let acceleration = magnitude - deadzoneMagnitude
+        if strokeAcceleration < acceleration {
+          strokeAcceleration = acceleration
         }
       }
     }
