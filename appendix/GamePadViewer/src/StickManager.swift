@@ -26,18 +26,38 @@ public class StickManager: ObservableObject {
     @Published var vertical = StickSensor()
     @Published var radian = 0.0
     @Published var magnitude = 0.0
-    @Published var deadzoneEnteredAt = Date()
-    @Published var deadzoneLeftAt = Date()
-    @Published var deadzoneMagnitude = 0.0
     @Published var strokeAcceleration = 0.0
+    @Published var deadzoneRadian = 0.0
+    @Published var deadzoneMagnitude = 0.0
+    @Published var accelerationFixed = false
+    @Published var radianDiff = 0.0
+    @Published var deltaHorizontal = 0.0
+    @Published var deltaVertical = 0.0
+    @Published var deltaRadian = 0.0
+    @Published var deltaMagnitude = 0.0
     let remainDeadzoneThresholdMilliseconds: UInt64 = 100
     let strokeAccelerationMeasurementTime = 0.05  // 50 ms
+    var previousHorizontalDoubleValue = 0.0
+    var previousVerticalDoubleValue = 0.0
 
     var deadzoneTask: Task<(), Never>?
+    var updateTimer: Cancellable?
 
     @MainActor
-    func update() {
-      let now = Date()
+    func setUpdateTimer() {
+      if updateTimer == nil {
+        updateTimer = Timer.publish(every: 0.02, on: .main, in: .default).autoconnect().sink { _ in
+          self.update()
+        }
+      }
+    }
+
+    @MainActor
+    private func update() {
+      deltaHorizontal = horizontal.lastDoubleValue - previousHorizontalDoubleValue
+      deltaVertical = vertical.lastDoubleValue - previousVerticalDoubleValue
+      deltaRadian = atan2(deltaVertical, deltaHorizontal)
+      deltaMagnitude = min(1.0, sqrt(pow(deltaHorizontal, 2) + pow(deltaVertical, 2)))
 
       radian = atan2(vertical.lastDoubleValue, horizontal.lastDoubleValue)
       magnitude = min(
@@ -46,36 +66,47 @@ public class StickManager: ObservableObject {
 
       let deadzone = 0.1
       if abs(vertical.lastDoubleValue) < deadzone && abs(horizontal.lastDoubleValue) < deadzone {
-        deadzoneMagnitude = magnitude
-
         if deadzoneTask == nil {
           deadzoneTask = Task { @MainActor in
             do {
               try await Task.sleep(nanoseconds: remainDeadzoneThresholdMilliseconds * NSEC_PER_MSEC)
 
-              deadzoneEnteredAt = now
-
               strokeAcceleration = 0.0
+              accelerationFixed = false
+
+              updateTimer?.cancel()
+              updateTimer = nil
             } catch {
               print("cancelled")
             }
           }
         }
       } else {
-        deadzoneTask?.cancel()
-        deadzoneTask = nil
+        if deadzoneTask != nil {
+          deadzoneRadian = deltaRadian
+          deadzoneMagnitude = magnitude
 
-        if deadzoneEnteredAt > deadzoneLeftAt {
-          deadzoneLeftAt = now
+          deadzoneTask?.cancel()
+          deadzoneTask = nil
         }
       }
 
-      if now.timeIntervalSince(deadzoneLeftAt) < strokeAccelerationMeasurementTime {
-        let acceleration = magnitude - deadzoneMagnitude
-        if strokeAcceleration < acceleration {
+      radianDiff = abs(radian - deadzoneRadian).truncatingRemainder(dividingBy: 2 * Double.pi)
+      if radianDiff > Double.pi {
+        radianDiff = 2 * Double.pi - radianDiff
+      }
+
+      if !accelerationFixed {
+        if radianDiff < 0.174533 {
+          let acceleration = max(0.0, magnitude - deadzoneMagnitude)
           strokeAcceleration = acceleration
+        } else {
+          accelerationFixed = true
         }
       }
+
+      previousHorizontalDoubleValue = horizontal.lastDoubleValue
+      previousVerticalDoubleValue = vertical.lastDoubleValue
     }
   }
 

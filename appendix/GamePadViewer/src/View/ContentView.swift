@@ -13,9 +13,14 @@ struct ContentView: View {
     VStack {
       VStack(alignment: .leading) {
         Text("counter: \(eventObserver.counter)")
-        Text("deadzoneEnteredAt: \(rightStick.deadzoneEnteredAt)")
-        Text("deadzoneLeftAt: \(rightStick.deadzoneLeftAt)")
+        Text("radian \(rightStick.radian)")
+        Text("deltaHorizontal: \(rightStick.deltaHorizontal)")
+        Text("deltaVertical: \(rightStick.deltaVertical)")
+        Text("deltaRadian: \(rightStick.deltaRadian)")
+        Text("deltaMagnitude: \(rightStick.deltaMagnitude)")
+        Text("deadzoneRadian \(rightStick.deadzoneRadian)")
         Text("deadzoneMagnitude \(rightStick.deadzoneMagnitude)")
+        Text("radianDiff \(rightStick.radianDiff)")
         Text("Right Stick radian: \(rightStick.radian)")
         Text("Right Stick magnitude: \(rightStick.magnitude)")
         Text("Right stick stroke acceleration: \(rightStick.strokeAcceleration)")
