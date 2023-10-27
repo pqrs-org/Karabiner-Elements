@@ -11,19 +11,25 @@ struct ContentView: View {
   var body: some View {
     VStack {
       VStack(alignment: .leading) {
-        Text("counter: \(eventObserver.counter)")
-        Text("horizontal: \(rightStick.horizontal.lastDoubleValue)")
-        Text("vertical: \(rightStick.vertical.lastDoubleValue)")
+        Group {
+          Text("counter: \(eventObserver.counter)")
+          Text("horizontal: \(rightStick.horizontal.lastDoubleValue)")
+          Text("vertical: \(rightStick.vertical.lastDoubleValue)")
+        }
         Divider()
-        Text("radian: \(rightStick.radian)")
-        Text("magnitude: \(rightStick.magnitude)")
-        Text("strokeAcceleration: \(rightStick.strokeAcceleration)")
+        Group {
+          Text("radian: \(rightStick.radian)")
+          Text("magnitude: \(rightStick.magnitude)")
+          Text("strokeAcceleration: \(rightStick.strokeAcceleration)")
+        }
         Divider()
-        Text("radianDiff \(rightStick.radianDiff)")
-        Text("deltaHorizontal: \(rightStick.deltaHorizontal)")
-        Text("deltaVertical: \(rightStick.deltaVertical)")
-        Text("deltaRadian: \(rightStick.deltaRadian)")
-        Text("deltaMagnitude: \(rightStick.deltaMagnitude)")
+        Group {
+          Text("radianDiff \(rightStick.radianDiff)")
+          Text("deltaHorizontal: \(rightStick.deltaHorizontal)")
+          Text("deltaVertical: \(rightStick.deltaVertical)")
+          Text("deltaRadian: \(rightStick.deltaRadian)")
+          Text("deltaMagnitude: \(rightStick.deltaMagnitude)")
+        }
       }
       .frame(width: 400)
 
