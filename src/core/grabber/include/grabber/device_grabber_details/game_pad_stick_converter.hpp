@@ -59,6 +59,7 @@ public:
     stick(void)
         : dispatcher_client(),
           deadzone_timer_(*this),
+          update_timer_(*this),
           radian_(0.0),
           magnitude_(0.0),
           stroke_acceleration_(0.0),
@@ -73,6 +74,7 @@ public:
     ~stick(void) {
       detach_from_dispatcher([this] {
         deadzone_timer_.stop();
+        update_timer_.stop();
       });
     }
 
@@ -83,7 +85,7 @@ public:
       horizontal_stick_sensor_.update_stick_sensor_value(logical_max,
                                                          logical_min,
                                                          integer_value);
-      update_values(deadzone);
+      set_update_timer(deadzone);
     }
 
     void update_vertical_stick_sensor_value(CFIndex logical_max,
@@ -93,7 +95,17 @@ public:
       vertical_stick_sensor_.update_stick_sensor_value(logical_max,
                                                        logical_min,
                                                        integer_value);
-      update_values(deadzone);
+      set_update_timer(deadzone);
+    }
+
+    void set_update_timer(double deadzone) {
+      if (!update_timer_.enabled()) {
+        update_timer_.start(
+            [this, deadzone] {
+              update_values(deadzone);
+            },
+            std::chrono::milliseconds(20));
+      }
     }
 
     void update_configurations(const core_configuration::core_configuration& core_configuration,
@@ -210,6 +222,7 @@ public:
               [this, now] {
                 deadzone_entered_at_ = now;
                 stroke_acceleration_ = 0.0;
+                update_timer_.stop();
               },
               std::chrono::milliseconds(stick_stroke_release_detection_threshold_milliseconds_));
         }
@@ -244,6 +257,7 @@ public:
     }
 
     pqrs::dispatcher::extra::timer deadzone_timer_;
+    pqrs::dispatcher::extra::timer update_timer_;
 
     stick_sensor horizontal_stick_sensor_;
     stick_sensor vertical_stick_sensor_;
