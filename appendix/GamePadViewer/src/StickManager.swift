@@ -91,17 +91,28 @@ public class StickManager: ObservableObject {
         }
       }
 
-      radianDiff = abs(radian - deadzoneRadian).truncatingRemainder(dividingBy: 2 * Double.pi)
-      if radianDiff > Double.pi {
-        radianDiff = 2 * Double.pi - radianDiff
-      }
+      if deltaMagnitude > 0 {
+        radianDiff = abs(deltaRadian - radian).truncatingRemainder(
+          dividingBy: 2 * Double.pi)
+        if radianDiff > Double.pi {
+          radianDiff = 2 * Double.pi - radianDiff
+        }
 
-      if !accelerationFixed {
-        if radianDiff < 0.174533 {
-          let acceleration = max(0.0, magnitude - deadzoneMagnitude)
-          strokeAcceleration = acceleration
-        } else {
-          accelerationFixed = true
+        if !accelerationFixed {
+          let threshold = 0.174533  // 10 degree
+          if radianDiff < threshold {
+            strokeAcceleration += deltaMagnitude
+            if strokeAcceleration > 1.0 {
+              strokeAcceleration = 1.0
+            }
+          } else if radianDiff > Double.pi - threshold && radianDiff < Double.pi + threshold {
+            strokeAcceleration -= deltaMagnitude
+            if strokeAcceleration < 0.0 {
+              strokeAcceleration = 0.0
+            }
+          } else {
+            // accelerationFixed = true
+          }
         }
       }
 

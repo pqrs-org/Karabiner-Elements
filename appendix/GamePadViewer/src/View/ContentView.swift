@@ -7,27 +7,25 @@ struct ContentView: View {
 
   let circleSize = 100.0
   let indicatorSize = 10.0
-  let accelerationScale = 10.0
 
   var body: some View {
     VStack {
       VStack(alignment: .leading) {
         Text("counter: \(eventObserver.counter)")
-        Text("radian \(rightStick.radian)")
+        Text("horizontal: \(rightStick.horizontal.lastDoubleValue)")
+        Text("vertical: \(rightStick.vertical.lastDoubleValue)")
+        Divider()
+        Text("radian: \(rightStick.radian)")
+        Text("magnitude: \(rightStick.magnitude)")
+        Text("strokeAcceleration: \(rightStick.strokeAcceleration)")
+        Divider()
+        Text("radianDiff \(rightStick.radianDiff)")
         Text("deltaHorizontal: \(rightStick.deltaHorizontal)")
         Text("deltaVertical: \(rightStick.deltaVertical)")
         Text("deltaRadian: \(rightStick.deltaRadian)")
         Text("deltaMagnitude: \(rightStick.deltaMagnitude)")
-        Text("deadzoneRadian \(rightStick.deadzoneRadian)")
-        Text("deadzoneMagnitude \(rightStick.deadzoneMagnitude)")
-        Text("radianDiff \(rightStick.radianDiff)")
-        Text("Right Stick radian: \(rightStick.radian)")
-        Text("Right Stick magnitude: \(rightStick.magnitude)")
-        Text("Right stick stroke acceleration: \(rightStick.strokeAcceleration)")
-
-        StickSensorInfo(label: "Right Stick X", stick: rightStick.horizontal)
-        StickSensorInfo(label: "Right Stick Y", stick: rightStick.vertical)
       }
+      .frame(width: 400)
 
       ZStack(alignment: .topLeading) {
         Circle()
@@ -52,11 +50,10 @@ struct ContentView: View {
           path.move(to: CGPoint(x: circleSize / 2.0, y: circleSize / 2.0))
           path.addLine(
             to: CGPoint(
-              x: circleSize / 2.0 + cos(rightStick.radian)
-                * rightStick.strokeAcceleration * accelerationScale * circleSize
-                / 2.0,
-              y: circleSize / 2.0 + sin(rightStick.radian)
-                * rightStick.strokeAcceleration * accelerationScale * circleSize / 2.0
+              x: circleSize / 2.0 + cos(rightStick.radian) * rightStick.strokeAcceleration
+                * circleSize / 2.0,
+              y: circleSize / 2.0 + sin(rightStick.radian) * rightStick.strokeAcceleration
+                * circleSize / 2.0
             ))
         }
         .stroke(Color.red, lineWidth: 2)
@@ -71,18 +68,6 @@ struct ContentView: View {
       maxWidth: .infinity,
       minHeight: 650,
       maxHeight: .infinity)
-  }
-}
-
-struct StickSensorInfo: View {
-  let label: String
-  @ObservedObject var stick: StickManager.StickSensor
-
-  var body: some View {
-    VStack(alignment: .leading) {
-      Text("\(label):")
-      Text("    value: \(stick.lastDoubleValue)")
-    }
   }
 }
 
