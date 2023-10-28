@@ -231,6 +231,7 @@ public:
       if (std::abs(vertical_stick_sensor_.get_value()) < deadzone &&
           std::abs(horizontal_stick_sensor_.get_value()) < deadzone) {
         deadzone_magnitude_ = magnitude_;
+        delta_magnitude = 0.0;
 
         if (!deadzone_timer_.enabled()) {
           deadzone_timer_.start(

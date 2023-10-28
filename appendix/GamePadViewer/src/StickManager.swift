@@ -70,6 +70,8 @@ public class StickManager: ObservableObject {
 
       let deadzone = 0.1
       if abs(vertical.lastDoubleValue) < deadzone && abs(horizontal.lastDoubleValue) < deadzone {
+        deltaMagnitude = 0.0
+
         if deadzoneTask == nil {
           deadzoneTask = Task { @MainActor in
             do {
