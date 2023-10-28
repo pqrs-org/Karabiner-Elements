@@ -20,7 +20,9 @@ struct ContentView: View {
         Group {
           Text("radian: \(rightStick.radian)")
           Text("magnitude: \(rightStick.magnitude)")
-          Text("strokeAcceleration: \(rightStick.strokeAcceleration)")
+          Text("strokeAccelerationTransitionValue: \(rightStick.strokeAccelerationTransitionValue)")
+          Text(
+            "strokeAccelerationDestinationValue: \(rightStick.strokeAccelerationDestinationValue)")
         }
         Divider()
         Group {
@@ -56,9 +58,11 @@ struct ContentView: View {
           path.move(to: CGPoint(x: circleSize / 2.0, y: circleSize / 2.0))
           path.addLine(
             to: CGPoint(
-              x: circleSize / 2.0 + cos(rightStick.radian) * rightStick.strokeAcceleration
+              x: circleSize / 2.0 + cos(rightStick.radian)
+                * rightStick.strokeAccelerationTransitionValue
                 * circleSize / 2.0,
-              y: circleSize / 2.0 + sin(rightStick.radian) * rightStick.strokeAcceleration
+              y: circleSize / 2.0 + sin(rightStick.radian)
+                * rightStick.strokeAccelerationTransitionValue
                 * circleSize / 2.0
             ))
         }

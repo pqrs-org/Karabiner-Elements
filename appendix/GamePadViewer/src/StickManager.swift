@@ -26,7 +26,9 @@ public class StickManager: ObservableObject {
     @Published var vertical = StickSensor()
     @Published var radian = 0.0
     @Published var magnitude = 0.0
-    @Published var strokeAcceleration = 0.0
+    @Published var strokeAccelerationDestinationValue = 0.0
+    @Published var strokeAccelerationTransitionValue = 0.0
+    @Published var strokeAccelerationTransitionMagnitude = 0.0
     @Published var deadzoneRadian = 0.0
     @Published var deadzoneMagnitude = 0.0
     @Published var accelerationFixed = false
@@ -37,6 +39,7 @@ public class StickManager: ObservableObject {
     @Published var deltaMagnitude = 0.0
     let remainDeadzoneThresholdMilliseconds: UInt64 = 100
     let strokeAccelerationMeasurementTime = 0.05  // 50 ms
+    let updateTimerInterval = 0.02  // 20 ms
     var previousHorizontalDoubleValue = 0.0
     var previousVerticalDoubleValue = 0.0
 
@@ -46,9 +49,10 @@ public class StickManager: ObservableObject {
     @MainActor
     func setUpdateTimer() {
       if updateTimer == nil {
-        updateTimer = Timer.publish(every: 0.02, on: .main, in: .default).autoconnect().sink { _ in
-          self.update()
-        }
+        updateTimer = Timer.publish(every: updateTimerInterval, on: .main, in: .default)
+          .autoconnect().sink { _ in
+            self.update()
+          }
       }
     }
 
@@ -71,7 +75,9 @@ public class StickManager: ObservableObject {
             do {
               try await Task.sleep(nanoseconds: remainDeadzoneThresholdMilliseconds * NSEC_PER_MSEC)
 
-              strokeAcceleration = 0.0
+              strokeAccelerationDestinationValue = 0.0
+              strokeAccelerationTransitionValue = 0.0
+              strokeAccelerationTransitionMagnitude = 0.0
               accelerationFixed = false
 
               updateTimer?.cancel()
@@ -101,18 +107,38 @@ public class StickManager: ObservableObject {
         if !accelerationFixed {
           let threshold = 0.174533  // 10 degree
           if radianDiff < threshold {
-            strokeAcceleration += deltaMagnitude
-            if strokeAcceleration > 1.0 {
-              strokeAcceleration = 1.0
+            strokeAccelerationDestinationValue += deltaMagnitude
+            if strokeAccelerationDestinationValue > 1.0 {
+              strokeAccelerationDestinationValue = 1.0
             }
+            strokeAccelerationTransitionMagnitude =
+              abs(strokeAccelerationDestinationValue - strokeAccelerationTransitionValue)
+              / (1.0 / updateTimerInterval)
           } else if radianDiff > Double.pi - threshold && radianDiff < Double.pi + threshold {
-            strokeAcceleration -= deltaMagnitude
-            if strokeAcceleration < 0.0 {
-              strokeAcceleration = 0.0
+            strokeAccelerationDestinationValue -= deltaMagnitude
+            if strokeAccelerationDestinationValue < 0.0 {
+              strokeAccelerationDestinationValue = 0.0
             }
+            strokeAccelerationTransitionMagnitude =
+              abs(strokeAccelerationDestinationValue - strokeAccelerationTransitionValue)
+              / (1.0 / updateTimerInterval)
           } else {
             // accelerationFixed = true
           }
+        }
+      }
+
+      if strokeAccelerationTransitionValue != strokeAccelerationDestinationValue {
+        if strokeAccelerationTransitionValue < strokeAccelerationDestinationValue {
+          strokeAccelerationTransitionValue += strokeAccelerationTransitionMagnitude
+        } else if strokeAccelerationTransitionValue > strokeAccelerationDestinationValue {
+          strokeAccelerationTransitionValue -= strokeAccelerationTransitionMagnitude
+        }
+
+        if abs(strokeAccelerationTransitionValue - strokeAccelerationDestinationValue)
+          < strokeAccelerationTransitionMagnitude
+        {
+          strokeAccelerationTransitionValue = strokeAccelerationDestinationValue
         }
       }
 
