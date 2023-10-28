@@ -6,10 +6,12 @@ struct DoubleTextField: View {
   // Specifically, if a user wants to enter "0.2" and enters a value of "0.", the value becomes "0.0".
   // To avoid this, do not specify the formatter directly in the TextField, but use onChange to format the value.
   @State private var text = ""
+  @State private var error = false
 
   private let step: Double
   private let range: ClosedRange<Double>
   private let width: CGFloat
+  private let maximumFractionDigits: Int
   private let formatter: NumberFormatter
 
   init(
@@ -25,6 +27,7 @@ struct DoubleTextField: View {
     self.step = step
     self.range = range
     self.width = width
+    self.maximumFractionDigits = maximumFractionDigits
 
     formatter = NumberFormatter()
     formatter.numberStyle = .decimal  // Use .decimal number style for double values
@@ -36,12 +39,6 @@ struct DoubleTextField: View {
   var body: some View {
     HStack(spacing: 0) {
       TextField("", text: $text).frame(width: width)
-        .onChange(of: text) { newText in
-          updateValue(newText)
-        }
-        .onChange(of: value) { newValue in
-          updateText(newValue)
-        }
 
       Stepper(
         value: $value,
@@ -58,27 +55,58 @@ struct DoubleTextField: View {
           }
         }
       }
+
+      if error {
+        Text(
+          String(
+            format: "must be between %.\(maximumFractionDigits)f and %.\(maximumFractionDigits)f",
+            range.lowerBound,
+            range.upperBound)
+        )
+        .foregroundColor(Color.errorForeground)
+        .background(Color.errorBackground)
+      }
+    }
+    .onChange(of: text) { newText in
+      update(byText: newText)
+    }
+    .onChange(of: value) { newValue in
+      update(byValue: newValue)
     }
   }
 
-  private func updateText(_ newValue: Double) {
+  private func update(byValue newValue: Double) {
     if let newText = formatter.string(for: newValue) {
-      if text != newText {
-        Task { @MainActor in
+      error = false
+
+      Task { @MainActor in
+        if value != newValue {
+          value = newValue
+        }
+        if text != newText {
           text = newText
         }
       }
+    } else {
+      error = true
     }
   }
 
-  private func updateValue(_ newText: String) {
+  private func update(byText newText: String) {
     if let number = formatter.number(from: newText) {
+      error = false
+
       let newValue = number.doubleValue
-      if value != newValue {
-        Task { @MainActor in
+      Task { @MainActor in
+        if value != newValue {
           value = newValue
         }
+        if text != newText {
+          text = newText
+        }
       }
+    } else {
+      error = true
     }
   }
 }

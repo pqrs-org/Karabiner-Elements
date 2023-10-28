@@ -2,6 +2,11 @@ import SwiftUI
 
 struct IntTextField: View {
   @Binding var value: Int
+  // When a formatter is applied directly to a TextField, unintended changes to the content may occur during input.
+  // Specifically, the moment the input content is cleared, the minimum value is automatically entered.
+  // To avoid this, do not apply the formatter directly to the TextField; instead, apply the formatting in the onChange event.
+  @State private var text = ""
+  @State private var error = false
 
   private let step: Int
   private let range: ClosedRange<Int>
@@ -15,6 +20,8 @@ struct IntTextField: View {
     width: CGFloat
   ) {
     _value = value
+    text = String(value.wrappedValue)
+
     self.step = step
     self.range = range
     self.width = width
@@ -27,7 +34,7 @@ struct IntTextField: View {
 
   var body: some View {
     HStack(spacing: 0) {
-      TextField("", value: $value, formatter: formatter).frame(width: width)
+      TextField("", text: $text).frame(width: width)
 
       Stepper(
         value: $value,
@@ -39,11 +46,58 @@ struct IntTextField: View {
         if hover {
           // In macOS 13.0.1, if the corresponding TextField has the focus, changing the value by Stepper will not be reflected in the TextField.
           // Therefore, we should remove the focus before Stepper will be clicked.
-          DispatchQueue.main.async {
+          Task { @MainActor in
             NSApp.keyWindow?.makeFirstResponder(nil)
           }
         }
       }
+
+      if error {
+        Text("must be between \(range.lowerBound) and \(range.upperBound)")
+          .foregroundColor(Color.errorForeground)
+          .background(Color.errorBackground)
+      }
+    }
+    .onChange(of: text) { newText in
+      update(byText: newText)
+    }
+    .onChange(of: value) { newValue in
+      update(byValue: newValue)
+    }
+  }
+
+  private func update(byValue newValue: Int) {
+    if let newText = formatter.string(for: newValue) {
+      error = false
+
+      Task { @MainActor in
+        if value != newValue {
+          value = newValue
+        }
+        if text != newText {
+          text = newText
+        }
+      }
+    } else {
+      error = true
+    }
+  }
+
+  private func update(byText newText: String) {
+    if let number = formatter.number(from: newText) {
+      error = false
+
+      let newValue = number.intValue
+      Task { @MainActor in
+        if value != newValue {
+          value = newValue
+        }
+        if text != newText {
+          text = newText
+        }
+      }
+    } else {
+      error = true
     }
   }
 }
