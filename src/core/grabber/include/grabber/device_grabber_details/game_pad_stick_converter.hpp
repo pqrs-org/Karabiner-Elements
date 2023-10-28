@@ -56,14 +56,20 @@ public:
 
   class stick final : public pqrs::dispatcher::extra::dispatcher_client {
   public:
+    static constexpr int update_timer_interval_milliseconds = 20;
+
     stick(void)
         : dispatcher_client(),
           deadzone_timer_(*this),
           update_timer_(*this),
           radian_(0.0),
           magnitude_(0.0),
-          stroke_acceleration_(0.0),
+          stroke_acceleration_destination_value_(0.0),
+          stroke_acceleration_transition_value_(0.0),
+          stroke_acceleration_transition_magnitude_(0.0),
           deadzone_magnitude_(0.0),
+          previous_horizontal_value_(0.0),
+          previous_vertical_value_(0.0),
           stick_stroke_release_detection_threshold_milliseconds_(0),
           stick_stroke_acceleration_measurement_duration_milliseconds_(0) {
       auto now = pqrs::osx::chrono::mach_absolute_time_point();
@@ -104,7 +110,7 @@ public:
             [this, deadzone] {
               update_values(deadzone);
             },
-            std::chrono::milliseconds(20));
+            std::chrono::milliseconds(update_timer_interval_milliseconds));
       }
     }
 
@@ -135,7 +141,7 @@ public:
                                     x_formula_string_,
                                     radian_,
                                     magnitude_,
-                                    stroke_acceleration_);
+                                    stroke_acceleration_transition_value_);
         x = 0.0;
       }
 
@@ -145,7 +151,7 @@ public:
                                     y_formula_string_,
                                     radian_,
                                     magnitude_,
-                                    stroke_acceleration_);
+                                    stroke_acceleration_transition_value_);
         y = 0.0;
       }
 
@@ -163,7 +169,7 @@ public:
     }
 
     std::chrono::milliseconds xy_stick_interval(void) const {
-      if (stroke_acceleration_ == 0.0) {
+      if (stroke_acceleration_transition_value_ == 0.0) {
         return std::chrono::milliseconds(0);
       }
 
@@ -173,7 +179,7 @@ public:
                                     xy_stick_interval_milliseconds_formula_string_,
                                     radian_,
                                     magnitude_,
-                                    stroke_acceleration_);
+                                    stroke_acceleration_transition_value_);
         interval = 0;
       }
 
@@ -181,7 +187,7 @@ public:
     }
 
     std::chrono::milliseconds wheels_stick_interval(void) const {
-      if (stroke_acceleration_ == 0.0) {
+      if (stroke_acceleration_transition_value_ == 0.0) {
         return std::chrono::milliseconds(0);
       }
 
@@ -191,7 +197,7 @@ public:
                                     wheels_stick_interval_milliseconds_formula_string_,
                                     radian_,
                                     magnitude_,
-                                    stroke_acceleration_);
+                                    stroke_acceleration_transition_value_);
         interval = 0;
       }
 
@@ -201,6 +207,14 @@ public:
   private:
     void update_values(double deadzone) {
       auto now = pqrs::osx::chrono::mach_absolute_time_point();
+
+      auto delta_vertical = vertical_stick_sensor_.get_value() - previous_vertical_value_;
+      auto delta_horizontal = horizontal_stick_sensor_.get_value() - previous_horizontal_value_;
+      auto delta_radian = std::atan2(delta_vertical, delta_horizontal);
+      auto delta_magnitude = std::min(1.0,
+                                      std::sqrt(
+                                          std::pow(delta_horizontal, 2) +
+                                          std::pow(delta_vertical, 2)));
 
       radian_ = std::atan2(vertical_stick_sensor_.get_value(),
                            horizontal_stick_sensor_.get_value());
@@ -221,7 +235,10 @@ public:
           deadzone_timer_.start(
               [this, now] {
                 deadzone_entered_at_ = now;
-                stroke_acceleration_ = 0.0;
+                stroke_acceleration_destination_value_ = 0.0;
+                stroke_acceleration_transition_value_ = 0.0;
+                stroke_acceleration_transition_magnitude_ = 0.0;
+
                 update_timer_.stop();
               },
               std::chrono::milliseconds(stick_stroke_release_detection_threshold_milliseconds_));
@@ -234,9 +251,51 @@ public:
         }
       }
 
-      if (pqrs::osx::chrono::make_milliseconds(now - deadzone_left_at_).count() < stick_stroke_acceleration_measurement_duration_milliseconds_) {
-        stroke_acceleration_ = std::max(stroke_acceleration_, magnitude_ - deadzone_magnitude_);
+      if (delta_magnitude > 0.0) {
+        auto radian_diff = std::fmod(std::abs(delta_radian - radian_), 2 * M_PI);
+        if (radian_diff > M_PI) {
+          radian_diff = 2 * M_PI - radian_diff;
+        }
+
+        const auto threshold = 0.174533; // 10 degree
+        auto stroke_acceleration_destination_value_changed = false;
+        if (radian_diff < threshold) {
+          stroke_acceleration_destination_value_ += delta_magnitude;
+          if (stroke_acceleration_destination_value_ > 1.0) {
+            stroke_acceleration_destination_value_ = 1.0;
+          }
+
+          stroke_acceleration_destination_value_changed = true;
+
+        } else if (radian_diff > M_PI - threshold && radian_diff < M_PI + threshold) {
+          stroke_acceleration_destination_value_ -= delta_magnitude;
+          if (stroke_acceleration_destination_value_ < 0.0) {
+            stroke_acceleration_destination_value_ = 0.0;
+          }
+
+          stroke_acceleration_destination_value_changed = true;
+        }
+
+        if (stroke_acceleration_destination_value_changed) {
+          stroke_acceleration_transition_magnitude_ = std::abs(stroke_acceleration_destination_value_ - stroke_acceleration_transition_value_) /
+                                                      (1000 / update_timer_interval_milliseconds);
+        }
       }
+
+      if (stroke_acceleration_transition_value_ != stroke_acceleration_destination_value_) {
+        if (stroke_acceleration_transition_value_ < stroke_acceleration_destination_value_) {
+          stroke_acceleration_transition_value_ += stroke_acceleration_transition_magnitude_;
+        } else if (stroke_acceleration_transition_value_ > stroke_acceleration_destination_value_) {
+          stroke_acceleration_transition_value_ -= stroke_acceleration_transition_magnitude_;
+        }
+
+        if (std::abs(stroke_acceleration_transition_value_ - stroke_acceleration_destination_value_) < stroke_acceleration_transition_magnitude_) {
+          stroke_acceleration_transition_value_ = stroke_acceleration_destination_value_;
+        }
+      }
+
+      previous_vertical_value_ = vertical_stick_sensor_.get_value();
+      previous_horizontal_value_ = horizontal_stick_sensor_.get_value();
     }
 
     exprtk_utility::expression_t make_formula_expression(const std::string& formula) {
@@ -245,7 +304,7 @@ public:
                                      {
                                          {"radian", radian_},
                                          {"magnitude", magnitude_},
-                                         {"acceleration", stroke_acceleration_},
+                                         {"acceleration", stroke_acceleration_transition_value_},
                                      });
     }
 
@@ -264,10 +323,14 @@ public:
 
     double radian_;
     double magnitude_;
-    double stroke_acceleration_;
+    double stroke_acceleration_destination_value_;
+    double stroke_acceleration_transition_value_;
+    double stroke_acceleration_transition_magnitude_;
     absolute_time_point deadzone_entered_at_;
     absolute_time_point deadzone_left_at_;
     double deadzone_magnitude_;
+    double previous_horizontal_value_;
+    double previous_vertical_value_;
 
     int stick_stroke_release_detection_threshold_milliseconds_;
     int stick_stroke_acceleration_measurement_duration_milliseconds_;
