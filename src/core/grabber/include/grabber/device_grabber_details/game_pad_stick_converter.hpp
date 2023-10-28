@@ -118,6 +118,7 @@ public:
                                const device_identifiers& device_identifiers) {
       stick_stroke_release_detection_threshold_milliseconds_ = core_configuration.get_selected_profile().get_device_game_pad_stick_stroke_release_detection_threshold_milliseconds(device_identifiers);
       stick_stroke_acceleration_measurement_duration_milliseconds_ = core_configuration.get_selected_profile().get_device_game_pad_stick_stroke_acceleration_measurement_duration_milliseconds_(device_identifiers);
+      stick_stroke_acceleration_transition_duration_milliseconds_ = core_configuration.get_selected_profile().get_device_game_pad_stick_stroke_acceleration_transition_duration_milliseconds(device_identifiers);
 
       xy_stick_interval_milliseconds_formula_string_ = core_configuration.get_selected_profile().get_device_game_pad_xy_stick_interval_milliseconds_formula(device_identifiers);
       wheels_stick_interval_milliseconds_formula_string_ = core_configuration.get_selected_profile().get_device_game_pad_wheels_stick_interval_milliseconds_formula(device_identifiers);
@@ -277,8 +278,8 @@ public:
         }
 
         if (stroke_acceleration_destination_value_changed) {
-          stroke_acceleration_transition_magnitude_ = std::abs(stroke_acceleration_destination_value_ - stroke_acceleration_transition_value_) /
-                                                      (1000 / update_timer_interval_milliseconds);
+          auto divisor = std::max(1, stick_stroke_acceleration_transition_duration_milliseconds_ / update_timer_interval_milliseconds);
+          stroke_acceleration_transition_magnitude_ = std::abs(stroke_acceleration_destination_value_ - stroke_acceleration_transition_value_) / divisor;
         }
       }
 
@@ -332,8 +333,13 @@ public:
     double previous_horizontal_value_;
     double previous_vertical_value_;
 
+    //
+    // configurations
+    //
+
     int stick_stroke_release_detection_threshold_milliseconds_;
     int stick_stroke_acceleration_measurement_duration_milliseconds_;
+    int stick_stroke_acceleration_transition_duration_milliseconds_;
     std::string xy_stick_interval_milliseconds_formula_string_;
     std::string wheels_stick_interval_milliseconds_formula_string_;
     std::string x_formula_string_;
