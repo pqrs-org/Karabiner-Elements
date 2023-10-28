@@ -12,6 +12,7 @@ class device final {
 public:
   static constexpr int game_pad_stick_stroke_release_detection_threshold_milliseconds_default_value = 100;
   static constexpr int game_pad_stick_stroke_acceleration_measurement_duration_milliseconds_default_value = 50;
+  static constexpr int game_pad_stick_stroke_acceleration_transition_duration_milliseconds_default_value = 500;
 
   static constexpr double game_pad_xy_stick_deadzone_default_value = 0.1;
   static constexpr double game_pad_wheels_stick_deadzone_default_value = 0.1;
@@ -180,6 +181,11 @@ public:
 
         game_pad_wheels_stick_deadzone_ = value.get<double>();
 
+      } else if (key == "game_pad_stick_stroke_acceleration_transition_duration_milliseconds") {
+        pqrs::json::requires_number(value, "`" + key + "`");
+
+        game_pad_stick_stroke_acceleration_transition_duration_milliseconds_ = value.get<int>();
+
       } else if (key == "game_pad_xy_stick_interval_milliseconds_formula") {
         game_pad_xy_stick_interval_milliseconds_formula_ = unmarshal_formula(value, key);
 
@@ -283,6 +289,9 @@ public:
     }
     if (game_pad_wheels_stick_deadzone_ != std::nullopt) {
       j["game_pad_wheels_stick_deadzone"] = *game_pad_wheels_stick_deadzone_;
+    }
+    if (game_pad_stick_stroke_acceleration_transition_duration_milliseconds_ != std::nullopt) {
+      j["game_pad_stick_stroke_acceleration_transition_duration_milliseconds"] = *game_pad_stick_stroke_acceleration_transition_duration_milliseconds_;
     }
     if (game_pad_xy_stick_interval_milliseconds_formula_ != std::nullopt) {
       j["game_pad_xy_stick_interval_milliseconds_formula"] = marshal_formula(*game_pad_xy_stick_interval_milliseconds_formula_);
@@ -446,6 +455,15 @@ public:
     coordinate_between_properties();
   }
 
+  std::optional<double> get_game_pad_stick_stroke_acceleration_transition_duration_milliseconds(void) const {
+    return game_pad_stick_stroke_acceleration_transition_duration_milliseconds_;
+  }
+  void set_game_pad_stick_stroke_acceleration_transition_duration_milliseconds(std::optional<double> value) {
+    game_pad_stick_stroke_acceleration_transition_duration_milliseconds_ = value;
+
+    coordinate_between_properties();
+  }
+
   const std::optional<std::string>& get_game_pad_xy_stick_interval_milliseconds_formula(void) const {
     return game_pad_xy_stick_interval_milliseconds_formula_;
   }
@@ -586,6 +604,7 @@ private:
   std::optional<int> game_pad_stick_stroke_acceleration_measurement_duration_milliseconds_;
   std::optional<double> game_pad_xy_stick_deadzone_;
   std::optional<double> game_pad_wheels_stick_deadzone_;
+  std::optional<int> game_pad_stick_stroke_acceleration_transition_duration_milliseconds_;
   std::optional<std::string> game_pad_xy_stick_interval_milliseconds_formula_;
   std::optional<std::string> game_pad_wheels_stick_interval_milliseconds_formula_;
   std::optional<std::string> game_pad_stick_x_formula_;

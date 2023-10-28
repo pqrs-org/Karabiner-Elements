@@ -145,6 +145,16 @@
         "error": "`game_pad_wheels_stick_deadzone` must be number, but is `null`"
     },
 
+    // game_pad_stick_stroke_acceleration_transition_duration_milliseconds
+
+    {
+        "class": "devices",
+        "input": {
+            "game_pad_stick_stroke_acceleration_transition_duration_milliseconds": null
+        },
+        "error": "`game_pad_stick_stroke_acceleration_transition_duration_milliseconds` must be number, but is `null`"
+    },
+
     // game_pad_xy_stick_interval_milliseconds_formula
 
     {

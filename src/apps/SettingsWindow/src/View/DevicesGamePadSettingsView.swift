@@ -23,7 +23,7 @@ struct DevicesGamePadSettingsView: View {
               .switchToggleStyle(controlSize: .mini, font: .callout)
               .frame(width: 250.0)
 
-              HStack(alignment: .center, spacing: 0) {
+              HStack(alignment: .center, spacing: 8.0) {
                 Text("Deadzone:")
 
                 DoubleTextField(
@@ -49,7 +49,7 @@ struct DevicesGamePadSettingsView: View {
               .switchToggleStyle(controlSize: .mini, font: .callout)
               .frame(width: 250.0)
 
-              HStack(alignment: .center, spacing: 0) {
+              HStack(alignment: .center, spacing: 8.0) {
                 Text("Deadzone:")
 
                 DoubleTextField(
@@ -67,14 +67,45 @@ struct DevicesGamePadSettingsView: View {
           }.padding()
         }
 
-        VStack(alignment: .leading, spacing: 2.0) {
-          Toggle(isOn: $connectedDeviceSetting.gamePadSwapSticks) {
-            Text("Swap gamepad XY and wheels sticks")
-              .frame(maxWidth: .infinity, alignment: .leading)
+        GroupBox(label: Text("Stick parameters")) {
+          VStack(alignment: .leading) {
+            HStack {
+              Toggle(
+                isOn: $connectedDeviceSetting
+                  .gamePadOverwriteStickStrokeAccelerationTransitionDurationMilliseconds
+              ) {
+                Text("Overwrite stick stroke acceleration transition duration: ")
+                  .frame(maxWidth: .infinity, alignment: .leading)
+              }
+              .switchToggleStyle(controlSize: .mini, font: .callout)
+              .frame(width: 250.0)
+
+              HStack(alignment: .center, spacing: 8.0) {
+                Text("Duration:")
+
+                IntTextField(
+                  value: $connectedDeviceSetting
+                    .gamePadStickStrokeAccelerationTransitionDurationMilliseconds,
+                  range: 0...10000,
+                  step: 100,
+                  width: 60)
+
+                Text("milliseconds (Default: 500)")
+              }
+              .padding(.leading, 20)
+              .disabled(
+                !connectedDeviceSetting
+                  .gamePadOverwriteStickStrokeAccelerationTransitionDurationMilliseconds)
+
+              Spacer()
+            }
+
+            Toggle(isOn: $connectedDeviceSetting.gamePadSwapSticks) {
+              Text("Swap gamepad XY and wheels sticks")
+            }
+            .switchToggleStyle(controlSize: .mini, font: .callout)
           }
-          .switchToggleStyle(controlSize: .mini, font: .callout)
         }
-        .frame(width: 240.0)
 
         Spacer()
       }
