@@ -278,39 +278,42 @@ public:
     j["mouse_swap_xy"] = mouse_swap_xy_;
     j["mouse_swap_wheels"] = mouse_swap_wheels_;
     j["game_pad_swap_sticks"] = game_pad_swap_sticks_;
-    if (game_pad_stick_stroke_release_detection_threshold_milliseconds_ != std::nullopt) {
-      j["game_pad_stick_stroke_release_detection_threshold_milliseconds"] = *game_pad_stick_stroke_release_detection_threshold_milliseconds_;
-    }
-    if (game_pad_stick_stroke_acceleration_measurement_duration_milliseconds_ != std::nullopt) {
-      j["game_pad_stick_stroke_acceleration_measurement_duration_milliseconds"] = *game_pad_stick_stroke_acceleration_measurement_duration_milliseconds_;
-    }
-    if (game_pad_xy_stick_deadzone_ != std::nullopt) {
-      j["game_pad_xy_stick_deadzone"] = *game_pad_xy_stick_deadzone_;
-    }
-    if (game_pad_wheels_stick_deadzone_ != std::nullopt) {
-      j["game_pad_wheels_stick_deadzone"] = *game_pad_wheels_stick_deadzone_;
-    }
-    if (game_pad_stick_stroke_acceleration_transition_duration_milliseconds_ != std::nullopt) {
-      j["game_pad_stick_stroke_acceleration_transition_duration_milliseconds"] = *game_pad_stick_stroke_acceleration_transition_duration_milliseconds_;
-    }
-    if (game_pad_xy_stick_interval_milliseconds_formula_ != std::nullopt) {
-      j["game_pad_xy_stick_interval_milliseconds_formula"] = marshal_formula(*game_pad_xy_stick_interval_milliseconds_formula_);
-    }
-    if (game_pad_wheels_stick_interval_milliseconds_formula_ != std::nullopt) {
-      j["game_pad_wheels_stick_interval_milliseconds_formula"] = marshal_formula(*game_pad_wheels_stick_interval_milliseconds_formula_);
-    }
-    if (game_pad_stick_x_formula_ != std::nullopt) {
-      j["game_pad_stick_x_formula"] = marshal_formula(*game_pad_stick_x_formula_);
-    }
-    if (game_pad_stick_y_formula_ != std::nullopt) {
-      j["game_pad_stick_y_formula"] = marshal_formula(*game_pad_stick_y_formula_);
-    }
-    if (game_pad_stick_vertical_wheel_formula_ != std::nullopt) {
-      j["game_pad_stick_vertical_wheel_formula"] = marshal_formula(*game_pad_stick_vertical_wheel_formula_);
-    }
-    if (game_pad_stick_horizontal_wheel_formula_ != std::nullopt) {
-      j["game_pad_stick_horizontal_wheel_formula"] = marshal_formula(*game_pad_stick_horizontal_wheel_formula_);
-    }
+
+#define OPTIONAL_SETTING(name)     \
+  {                                \
+    if (name##_ != std::nullopt) { \
+      j[#name] = *name##_;         \
+    } else {                       \
+      j.erase(#name);              \
+    }                              \
+  }
+
+    OPTIONAL_SETTING(game_pad_stick_stroke_release_detection_threshold_milliseconds);
+    OPTIONAL_SETTING(game_pad_stick_stroke_acceleration_measurement_duration_milliseconds);
+    OPTIONAL_SETTING(game_pad_xy_stick_deadzone);
+    OPTIONAL_SETTING(game_pad_wheels_stick_deadzone);
+    OPTIONAL_SETTING(game_pad_stick_stroke_acceleration_transition_duration_milliseconds);
+
+#undef OPTIONAL_SETTING
+
+#define OPTIONAL_FORMULA(name)              \
+  {                                         \
+    if (name##_ != std::nullopt) {          \
+      j[#name] = marshal_formula(*name##_); \
+    } else {                                \
+      j.erase(#name);                       \
+    }                                       \
+  }
+
+    OPTIONAL_FORMULA(game_pad_xy_stick_interval_milliseconds_formula);
+    OPTIONAL_FORMULA(game_pad_wheels_stick_interval_milliseconds_formula);
+    OPTIONAL_FORMULA(game_pad_stick_x_formula);
+    OPTIONAL_FORMULA(game_pad_stick_y_formula);
+    OPTIONAL_FORMULA(game_pad_stick_vertical_wheel_formula);
+    OPTIONAL_FORMULA(game_pad_stick_horizontal_wheel_formula);
+
+#undef OPTIONAL_FORMULA
+
     j["simple_modifications"] = simple_modifications_.to_json();
     j["fn_function_keys"] = fn_function_keys_.to_json();
     return j;
