@@ -1,7 +1,7 @@
 import Foundation
 
 extension LibKrbn {
-  class ConnectedDevice: Identifiable {
+  class ConnectedDevice: Identifiable, Equatable {
     let id = UUID()
     let index: Int
     let manufacturerName: String
@@ -67,6 +67,10 @@ extension LibKrbn {
 
     deinit {
       libkrbnDeviceIdentifiers.deallocate()
+    }
+
+    public static func == (lhs: ConnectedDevice, rhs: ConnectedDevice) -> Bool {
+      lhs.id == rhs.id
     }
   }
 }
