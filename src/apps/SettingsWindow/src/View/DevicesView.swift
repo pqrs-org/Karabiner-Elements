@@ -9,7 +9,7 @@ struct DevicesView: View {
         VStack(alignment: .leading, spacing: 0.0) {
           ForEach($settings.connectedDeviceSettings) { $connectedDeviceSetting in
             VStack(alignment: .leading, spacing: 0.0) {
-              DeviceName(connectedDeviceSetting: connectedDeviceSetting)
+              DeviceName(connectedDevice: connectedDeviceSetting.connectedDevice)
 
               VStack(alignment: .leading, spacing: 0.0) {
                 ModifyEventsSetting(connectedDeviceSetting: $connectedDeviceSetting)
@@ -50,28 +50,26 @@ struct DevicesView: View {
   }
 
   struct DeviceName: View {
-    let connectedDeviceSetting: LibKrbn.ConnectedDeviceSetting
+    let connectedDevice: LibKrbn.ConnectedDevice
 
     var body: some View {
       HStack(alignment: .center, spacing: 0) {
         HStack(spacing: 4.0) {
           Spacer()
-          if connectedDeviceSetting.connectedDevice.isKeyboard {
+          if connectedDevice.isKeyboard {
             Image(systemName: "keyboard")
           }
-          if connectedDeviceSetting.connectedDevice.isPointingDevice {
+          if connectedDevice.isPointingDevice {
             Image(systemName: "capsule.portrait")
           }
-          if connectedDeviceSetting.connectedDevice.isGamePad {
+          if connectedDevice.isGamePad {
             Image(systemName: "gamecontroller")
           }
         }
         .frame(width: 50.0)
 
-        Text(
-          "\(connectedDeviceSetting.connectedDevice.productName) (\(connectedDeviceSetting.connectedDevice.manufacturerName))"
-        )
-        .padding(.leading, 12.0)
+        Text("\(connectedDevice.productName) (\(connectedDevice.manufacturerName))")
+          .padding(.leading, 12.0)
 
         Spacer()
       }
