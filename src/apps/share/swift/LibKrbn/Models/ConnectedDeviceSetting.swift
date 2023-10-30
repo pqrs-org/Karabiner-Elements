@@ -1,7 +1,7 @@
 import Foundation
 
 extension LibKrbn {
-  final class ConnectedDeviceSetting: Identifiable, ObservableObject {
+  final class ConnectedDeviceSetting: Identifiable, Equatable, ObservableObject {
     private var didSetEnabled = false
 
     var id = UUID()
@@ -344,5 +344,9 @@ extension LibKrbn {
 
     @Published var simpleModifications: [SimpleModification] = []
     @Published var fnFunctionKeys: [SimpleModification] = []
+
+    public static func == (lhs: ConnectedDeviceSetting, rhs: ConnectedDeviceSetting) -> Bool {
+      lhs.id == rhs.id
+    }
   }
 }
