@@ -258,13 +258,6 @@ void libkrbn_get_simple_modification_json_string(char* buffer, size_t length, in
   }
 }
 
-bool libkrbn_device_identifiers_is_apple(const libkrbn_device_identifiers* p) {
-  if (p) {
-    return libkrbn_cpp::make_device_identifiers(*p).is_apple();
-  }
-  return false;
-}
-
 //
 // version_monitor
 //

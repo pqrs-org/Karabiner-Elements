@@ -61,10 +61,6 @@ void libkrbn_get_momentary_switch_event_usage_name(char* buffer, size_t length, 
 void libkrbn_get_modifier_flag_name(char* buffer, size_t length, int32_t usage_page, int32_t usage);
 void libkrbn_get_simple_modification_json_string(char* buffer, size_t length, int32_t usage_page, int32_t usage);
 
-// device_identifiers
-
-bool libkrbn_device_identifiers_is_apple(const libkrbn_device_identifiers* p);
-
 //
 // libkrbn_core_configuration
 //
