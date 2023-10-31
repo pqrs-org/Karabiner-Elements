@@ -7,19 +7,19 @@ struct DevicesView: View {
     VStack(alignment: .leading, spacing: 12.0) {
       List {
         VStack(alignment: .leading, spacing: 0.0) {
-          ForEach($settings.connectedDeviceSettings) { $connectedDeviceSetting in
+          ForEach(LibKrbn.ConnectedDevices.shared.connectedDevices) { connectedDevice in
             VStack(alignment: .leading, spacing: 0.0) {
-              DeviceName(connectedDevice: connectedDeviceSetting.connectedDevice)
+              DeviceName(connectedDevice: connectedDevice)
 
               VStack(alignment: .leading, spacing: 0.0) {
-                ModifyEventsSetting(connectedDevice: connectedDeviceSetting.connectedDevice)
+                ModifyEventsSetting(connectedDevice: connectedDevice)
 
                 VStack(alignment: .leading, spacing: 12.0) {
-                  KeyboardSettings(connectedDevice: connectedDeviceSetting.connectedDevice)
+                  KeyboardSettings(connectedDevice: connectedDevice)
 
-                  MouseSettings(connectedDevice: connectedDeviceSetting.connectedDevice)
+                  MouseSettings(connectedDevice: connectedDevice)
 
-                  GamePadSettings(connectedDeviceSetting: $connectedDeviceSetting)
+                  GamePadSettings(connectedDevice: connectedDevice)
                 }
                 .padding(.leading, 20.0)
                 .padding(.top, 8.0)
@@ -33,7 +33,9 @@ struct DevicesView: View {
               RoundedRectangle(cornerRadius: 8)
                 .stroke(
                   Color(NSColor.selectedControlColor),
-                  lineWidth: connectedDeviceSetting.modifyEvents ? 3 : 0
+                  lineWidth: settings.findConnectedDeviceSetting(connectedDevice)?.modifyEvents
+                    ?? false
+                    ? 3 : 0
                 )
                 .padding(2)
             )
@@ -304,24 +306,27 @@ struct DevicesView: View {
   }
 
   struct GamePadSettings: View {
-    @Binding var connectedDeviceSetting: LibKrbn.ConnectedDeviceSetting
+    let connectedDevice: LibKrbn.ConnectedDevice
     @State var showing = false
 
     var body: some View {
-      if connectedDeviceSetting.connectedDevice.isGamePad {
-        Button(
-          action: {
-            showing = true
-          },
-          label: {
-            Label("Open game pad settings", systemImage: "gamecontroller")
-              .buttonLabelStyle()
-          }
-        )
-        .sheet(isPresented: $showing) {
-          DevicesGamePadSettingsView(
-            connectedDeviceSetting: $connectedDeviceSetting, showing: $showing
+      VStack {
+        if connectedDevice.isGamePad {
+          Button(
+            action: {
+              showing = true
+            },
+            label: {
+              Label("Open game pad settings", systemImage: "gamecontroller")
+                .buttonLabelStyle()
+            }
           )
+          .sheet(isPresented: $showing) {
+            DevicesGamePadSettingsView(
+              connectedDevice: connectedDevice,
+              showing: $showing
+            )
+          }
         }
       }
     }
