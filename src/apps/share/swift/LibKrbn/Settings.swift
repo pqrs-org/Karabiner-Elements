@@ -504,7 +504,7 @@ extension LibKrbn {
       -> ConnectedDeviceSetting?
     {
       for connectedDeviceSetting in connectedDeviceSettings
-      where connectedDeviceSetting.connectedDevice.id == connectedDevice.id {
+      where connectedDeviceSetting.connectedDevice == connectedDevice {
         return connectedDeviceSetting
       }
 

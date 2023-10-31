@@ -12,7 +12,7 @@ struct DevicesView: View {
               DeviceName(connectedDevice: connectedDeviceSetting.connectedDevice)
 
               VStack(alignment: .leading, spacing: 0.0) {
-                ModifyEventsSetting(connectedDeviceSetting: $connectedDeviceSetting)
+                ModifyEventsSetting(connectedDevice: connectedDeviceSetting.connectedDevice)
 
                 VStack(alignment: .leading, spacing: 12.0) {
                   KeyboardSettings(connectedDeviceSetting: $connectedDeviceSetting)
@@ -77,31 +77,39 @@ struct DevicesView: View {
   }
 
   struct ModifyEventsSetting: View {
-    @Binding var connectedDeviceSetting: LibKrbn.ConnectedDeviceSetting
+    let connectedDevice: LibKrbn.ConnectedDevice
     @ObservedObject private var settings = LibKrbn.Settings.shared
+    @State var connectedDeviceSetting: LibKrbn.ConnectedDeviceSetting?
 
     var body: some View {
       HStack(alignment: .top) {
-        if connectedDeviceSetting.connectedDevice.isAppleDevice,
-          !connectedDeviceSetting.connectedDevice.isKeyboard,
+        if connectedDevice.isAppleDevice,
+          !connectedDevice.isKeyboard,
           !settings.unsafeUI
         {
           Text("Apple pointing devices are not supported")
             .foregroundColor(Color(NSColor.placeholderTextColor))
             .frame(maxWidth: .infinity, alignment: .leading)
         } else {
-          Toggle(isOn: $connectedDeviceSetting.modifyEvents) {
-            Text("Modify events")
+          if let c = connectedDeviceSetting {
+            let binding = Binding {
+              c
+            } set: {
+              connectedDeviceSetting = $0
+            }
+            Toggle(isOn: binding.modifyEvents) {
+              Text("Modify events")
+            }
+            .switchToggleStyle()
+            .frame(width: 140.0)
           }
-          .switchToggleStyle()
-          .frame(width: 140.0)
         }
 
         Spacer()
 
-        if connectedDeviceSetting.connectedDevice.transport != "FIFO" {
+        if connectedDevice.transport != "FIFO" {
           VStack(alignment: .trailing, spacing: 4.0) {
-            if connectedDeviceSetting.connectedDevice.vendorId != 0 {
+            if connectedDevice.vendorId != 0 {
               HStack(alignment: .firstTextBaseline, spacing: 0) {
                 Spacer()
 
@@ -110,13 +118,13 @@ struct DevicesView: View {
                 Text(
                   String(
                     format: "%5d (0x%04x)",
-                    connectedDeviceSetting.connectedDevice.vendorId,
-                    connectedDeviceSetting.connectedDevice.vendorId)
+                    connectedDevice.vendorId,
+                    connectedDevice.vendorId)
                 )
               }
             }
 
-            if connectedDeviceSetting.connectedDevice.productId != 0 {
+            if connectedDevice.productId != 0 {
               HStack(alignment: .center, spacing: 0) {
                 Spacer()
 
@@ -125,25 +133,35 @@ struct DevicesView: View {
                 Text(
                   String(
                     format: "%5d (0x%04x)",
-                    connectedDeviceSetting.connectedDevice.productId,
-                    connectedDeviceSetting.connectedDevice.productId)
+                    connectedDevice.productId,
+                    connectedDevice.productId)
                 )
               }
             }
 
-            if !connectedDeviceSetting.connectedDevice.deviceAddress.isEmpty {
+            if !connectedDevice.deviceAddress.isEmpty {
               HStack(alignment: .center, spacing: 0) {
                 Spacer()
 
                 Text("Device Address: ")
 
-                Text(connectedDeviceSetting.connectedDevice.deviceAddress)
+                Text(connectedDevice.deviceAddress)
               }
             }
           }
           .font(.custom("Menlo", size: 12.0))
         }
       }
+      .onAppear {
+        setConnectedDeviceSetting()
+      }
+      .onChange(of: settings.connectedDeviceSettings) { _ in
+        setConnectedDeviceSetting()
+      }
+    }
+
+    private func setConnectedDeviceSetting() {
+      connectedDeviceSetting = settings.findConnectedDeviceSetting(connectedDevice)
     }
   }
 
