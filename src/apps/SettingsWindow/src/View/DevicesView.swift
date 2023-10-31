@@ -15,7 +15,7 @@ struct DevicesView: View {
                 ModifyEventsSetting(connectedDevice: connectedDeviceSetting.connectedDevice)
 
                 VStack(alignment: .leading, spacing: 12.0) {
-                  KeyboardSettings(connectedDeviceSetting: $connectedDeviceSetting)
+                  KeyboardSettings(connectedDevice: connectedDeviceSetting.connectedDevice)
 
                   MouseSettings(connectedDeviceSetting: $connectedDeviceSetting)
 
@@ -91,9 +91,9 @@ struct DevicesView: View {
             .foregroundColor(Color(NSColor.placeholderTextColor))
             .frame(maxWidth: .infinity, alignment: .leading)
         } else {
-          if let c = connectedDeviceSetting {
+          if let s = connectedDeviceSetting {
             let binding = Binding {
-              c
+              s
             } set: {
               connectedDeviceSetting = $0
             }
@@ -166,41 +166,61 @@ struct DevicesView: View {
   }
 
   struct KeyboardSettings: View {
-    @Binding var connectedDeviceSetting: LibKrbn.ConnectedDeviceSetting
+    let connectedDevice: LibKrbn.ConnectedDevice
+    @ObservedObject private var settings = LibKrbn.Settings.shared
+    @State var connectedDeviceSetting: LibKrbn.ConnectedDeviceSetting?
 
     var body: some View {
-      if connectedDeviceSetting.connectedDevice.isKeyboard {
+      if connectedDevice.isKeyboard {
         VStack(alignment: .leading, spacing: 2.0) {
-          if !connectedDeviceSetting.connectedDevice.isBuiltInKeyboard
-            && !connectedDeviceSetting.disableBuiltInKeyboardIfExists
-          {
-            Toggle(isOn: $connectedDeviceSetting.treatAsBuiltInKeyboard) {
-              Text("Treat as a built-in keyboard")
-                .frame(maxWidth: .infinity, alignment: .leading)
+          if let s = connectedDeviceSetting {
+            let binding = Binding {
+              s
+            } set: {
+              connectedDeviceSetting = $0
             }
-            .switchToggleStyle(controlSize: .mini, font: .callout)
-          }
 
-          if !connectedDeviceSetting.connectedDevice.isBuiltInKeyboard
-            && !connectedDeviceSetting.treatAsBuiltInKeyboard
-          {
-            Toggle(isOn: $connectedDeviceSetting.disableBuiltInKeyboardIfExists) {
-              Text("Disable the built-in keyboard while this device is connected")
-                .frame(maxWidth: .infinity, alignment: .leading)
+            if !connectedDevice.isBuiltInKeyboard
+              && !s.disableBuiltInKeyboardIfExists
+            {
+              Toggle(isOn: binding.treatAsBuiltInKeyboard) {
+                Text("Treat as a built-in keyboard")
+                  .frame(maxWidth: .infinity, alignment: .leading)
+              }
+              .switchToggleStyle(controlSize: .mini, font: .callout)
             }
-            .switchToggleStyle(controlSize: .mini, font: .callout)
-          }
 
-          if connectedDeviceSetting.modifyEvents {
-            Toggle(isOn: $connectedDeviceSetting.manipulateCapsLockLed) {
-              Text("Manipulate caps lock LED")
-                .frame(maxWidth: .infinity, alignment: .leading)
+            if !connectedDevice.isBuiltInKeyboard
+              && !s.treatAsBuiltInKeyboard
+            {
+              Toggle(isOn: binding.disableBuiltInKeyboardIfExists) {
+                Text("Disable the built-in keyboard while this device is connected")
+                  .frame(maxWidth: .infinity, alignment: .leading)
+              }
+              .switchToggleStyle(controlSize: .mini, font: .callout)
             }
-            .switchToggleStyle(controlSize: .mini, font: .callout)
+
+            if s.modifyEvents {
+              Toggle(isOn: binding.manipulateCapsLockLed) {
+                Text("Manipulate caps lock LED")
+                  .frame(maxWidth: .infinity, alignment: .leading)
+              }
+              .switchToggleStyle(controlSize: .mini, font: .callout)
+            }
           }
         }
         .frame(width: 400.0)
+        .onAppear {
+          setConnectedDeviceSetting()
+        }
+        .onChange(of: settings.connectedDeviceSettings) { _ in
+          setConnectedDeviceSetting()
+        }
       }
+    }
+
+    private func setConnectedDeviceSetting() {
+      connectedDeviceSetting = settings.findConnectedDeviceSetting(connectedDevice)
     }
   }
 
