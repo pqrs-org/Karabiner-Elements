@@ -17,7 +17,7 @@ struct DevicesView: View {
                 VStack(alignment: .leading, spacing: 12.0) {
                   KeyboardSettings(connectedDevice: connectedDeviceSetting.connectedDevice)
 
-                  MouseSettings(connectedDeviceSetting: $connectedDeviceSetting)
+                  MouseSettings(connectedDevice: connectedDeviceSetting.connectedDevice)
 
                   GamePadSettings(connectedDeviceSetting: $connectedDeviceSetting)
                 }
@@ -171,51 +171,53 @@ struct DevicesView: View {
     @State var connectedDeviceSetting: LibKrbn.ConnectedDeviceSetting?
 
     var body: some View {
-      if connectedDevice.isKeyboard {
-        VStack(alignment: .leading, spacing: 2.0) {
-          if let s = connectedDeviceSetting {
-            let binding = Binding {
-              s
-            } set: {
-              connectedDeviceSetting = $0
-            }
-
-            if !connectedDevice.isBuiltInKeyboard
-              && !s.disableBuiltInKeyboardIfExists
-            {
-              Toggle(isOn: binding.treatAsBuiltInKeyboard) {
-                Text("Treat as a built-in keyboard")
-                  .frame(maxWidth: .infinity, alignment: .leading)
+      VStack {
+        if connectedDevice.isKeyboard {
+          VStack(alignment: .leading, spacing: 2.0) {
+            if let s = connectedDeviceSetting {
+              let binding = Binding {
+                s
+              } set: {
+                connectedDeviceSetting = $0
               }
-              .switchToggleStyle(controlSize: .mini, font: .callout)
-            }
 
-            if !connectedDevice.isBuiltInKeyboard
-              && !s.treatAsBuiltInKeyboard
-            {
-              Toggle(isOn: binding.disableBuiltInKeyboardIfExists) {
-                Text("Disable the built-in keyboard while this device is connected")
-                  .frame(maxWidth: .infinity, alignment: .leading)
+              if !connectedDevice.isBuiltInKeyboard
+                && !s.disableBuiltInKeyboardIfExists
+              {
+                Toggle(isOn: binding.treatAsBuiltInKeyboard) {
+                  Text("Treat as a built-in keyboard")
+                    .frame(maxWidth: .infinity, alignment: .leading)
+                }
+                .switchToggleStyle(controlSize: .mini, font: .callout)
               }
-              .switchToggleStyle(controlSize: .mini, font: .callout)
-            }
 
-            if s.modifyEvents {
-              Toggle(isOn: binding.manipulateCapsLockLed) {
-                Text("Manipulate caps lock LED")
-                  .frame(maxWidth: .infinity, alignment: .leading)
+              if !connectedDevice.isBuiltInKeyboard
+                && !s.treatAsBuiltInKeyboard
+              {
+                Toggle(isOn: binding.disableBuiltInKeyboardIfExists) {
+                  Text("Disable the built-in keyboard while this device is connected")
+                    .frame(maxWidth: .infinity, alignment: .leading)
+                }
+                .switchToggleStyle(controlSize: .mini, font: .callout)
               }
-              .switchToggleStyle(controlSize: .mini, font: .callout)
+
+              if s.modifyEvents {
+                Toggle(isOn: binding.manipulateCapsLockLed) {
+                  Text("Manipulate caps lock LED")
+                    .frame(maxWidth: .infinity, alignment: .leading)
+                }
+                .switchToggleStyle(controlSize: .mini, font: .callout)
+              }
             }
           }
+          .frame(width: 400.0)
         }
-        .frame(width: 400.0)
-        .onAppear {
-          setConnectedDeviceSetting()
-        }
-        .onChange(of: settings.connectedDeviceSettings) { _ in
-          setConnectedDeviceSetting()
-        }
+      }
+      .onAppear {
+        setConnectedDeviceSetting()
+      }
+      .onChange(of: settings.connectedDeviceSettings) { _ in
+        setConnectedDeviceSetting()
       }
     }
 
@@ -225,58 +227,79 @@ struct DevicesView: View {
   }
 
   struct MouseSettings: View {
-    @Binding var connectedDeviceSetting: LibKrbn.ConnectedDeviceSetting
+    let connectedDevice: LibKrbn.ConnectedDevice
+    @ObservedObject private var settings = LibKrbn.Settings.shared
+    @State var connectedDeviceSetting: LibKrbn.ConnectedDeviceSetting?
 
     var body: some View {
-      if connectedDeviceSetting.connectedDevice.isPointingDevice
-        || connectedDeviceSetting.connectedDevice.isGamePad
-      {
-        if connectedDeviceSetting.modifyEvents {
-          HStack(alignment: .top, spacing: 100.0) {
-            VStack(alignment: .leading, spacing: 2.0) {
-              Toggle(isOn: $connectedDeviceSetting.mouseFlipX) {
-                Text("Flip mouse X")
-                  .frame(maxWidth: .infinity, alignment: .leading)
-              }
-              .switchToggleStyle(controlSize: .mini, font: .callout)
-
-              Toggle(isOn: $connectedDeviceSetting.mouseFlipY) {
-                Text("Flip mouse Y")
-                  .frame(maxWidth: .infinity, alignment: .leading)
-              }
-              .switchToggleStyle(controlSize: .mini, font: .callout)
-
-              Toggle(isOn: $connectedDeviceSetting.mouseFlipVerticalWheel) {
-                Text("Flip mouse vertical wheel")
-                  .frame(maxWidth: .infinity, alignment: .leading)
-              }
-              .switchToggleStyle(controlSize: .mini, font: .callout)
-
-              Toggle(isOn: $connectedDeviceSetting.mouseFlipHorizontalWheel) {
-                Text("Flip mouse horizontal wheel")
-                  .frame(maxWidth: .infinity, alignment: .leading)
-              }
-              .switchToggleStyle(controlSize: .mini, font: .callout)
+      VStack {
+        if connectedDevice.isPointingDevice
+          || connectedDevice.isGamePad
+        {
+          if let s = connectedDeviceSetting {
+            let binding = Binding {
+              s
+            } set: {
+              connectedDeviceSetting = $0
             }
-            .frame(width: 200.0)
+            if s.modifyEvents {
+              HStack(alignment: .top, spacing: 100.0) {
+                VStack(alignment: .leading, spacing: 2.0) {
+                  Toggle(isOn: binding.mouseFlipX) {
+                    Text("Flip mouse X")
+                      .frame(maxWidth: .infinity, alignment: .leading)
+                  }
+                  .switchToggleStyle(controlSize: .mini, font: .callout)
 
-            VStack(alignment: .leading, spacing: 2.0) {
-              Toggle(isOn: $connectedDeviceSetting.mouseSwapXY) {
-                Text("Swap mouse X and Y")
-                  .frame(maxWidth: .infinity, alignment: .leading)
-              }
-              .switchToggleStyle(controlSize: .mini, font: .callout)
+                  Toggle(isOn: binding.mouseFlipY) {
+                    Text("Flip mouse Y")
+                      .frame(maxWidth: .infinity, alignment: .leading)
+                  }
+                  .switchToggleStyle(controlSize: .mini, font: .callout)
 
-              Toggle(isOn: $connectedDeviceSetting.mouseSwapWheels) {
-                Text("Swap mouse wheels")
-                  .frame(maxWidth: .infinity, alignment: .leading)
+                  Toggle(isOn: binding.mouseFlipVerticalWheel) {
+                    Text("Flip mouse vertical wheel")
+                      .frame(maxWidth: .infinity, alignment: .leading)
+                  }
+                  .switchToggleStyle(controlSize: .mini, font: .callout)
+
+                  Toggle(isOn: binding.mouseFlipHorizontalWheel) {
+                    Text("Flip mouse horizontal wheel")
+                      .frame(maxWidth: .infinity, alignment: .leading)
+                  }
+                  .switchToggleStyle(controlSize: .mini, font: .callout)
+                }
+                .frame(width: 200.0)
+
+                VStack(alignment: .leading, spacing: 2.0) {
+                  Toggle(isOn: binding.mouseSwapXY) {
+                    Text("Swap mouse X and Y")
+                      .frame(maxWidth: .infinity, alignment: .leading)
+                  }
+                  .switchToggleStyle(controlSize: .mini, font: .callout)
+
+                  Toggle(isOn: binding.mouseSwapWheels) {
+                    Text("Swap mouse wheels")
+                      .frame(maxWidth: .infinity, alignment: .leading)
+                  }
+                  .switchToggleStyle(controlSize: .mini, font: .callout)
+                }
+                .frame(width: 200.0)
               }
-              .switchToggleStyle(controlSize: .mini, font: .callout)
             }
-            .frame(width: 200.0)
           }
         }
       }
+      .onAppear {
+        setConnectedDeviceSetting()
+      }
+      .onChange(of: settings.connectedDeviceSettings) { _ in
+        setConnectedDeviceSetting()
+      }
+    }
+
+    private func setConnectedDeviceSetting() {
+      connectedDeviceSetting = settings.findConnectedDeviceSetting(connectedDevice)
     }
   }
 
