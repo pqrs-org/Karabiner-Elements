@@ -1,7 +1,6 @@
 import SwiftUI
 
 struct DeviceSelectorView: View {
-  @ObservedObject private var settings = LibKrbn.Settings.shared
   @Binding var selectedDevice: LibKrbn.ConnectedDevice?
 
   var body: some View {
@@ -24,24 +23,22 @@ struct DeviceSelectorView: View {
 
         Divider()
 
-        ForEach($settings.connectedDeviceSettings) { $connectedDeviceSetting in
+        ForEach(LibKrbn.ConnectedDevices.shared.connectedDevices) { connectedDevice in
           Button(
             action: {
-              selectedDevice = connectedDeviceSetting.connectedDevice
+              selectedDevice = connectedDevice
             },
             label: {
-              let noId =
-                connectedDeviceSetting.connectedDevice.vendorId == 0
-                && connectedDeviceSetting.connectedDevice.productId == 0
+              let noId = connectedDevice.vendorId == 0 && connectedDevice.productId == 0
               let label =
                 noId
-                ? connectedDeviceSetting.connectedDevice.deviceAddress
-                : "\(String(connectedDeviceSetting.connectedDevice.vendorId)),\(String(connectedDeviceSetting.connectedDevice.productId))"
+                ? connectedDevice.deviceAddress
+                : "\(String(connectedDevice.vendorId)),\(String(connectedDevice.productId))"
               HStack {
                 Text(
                   """
-                  \(connectedDeviceSetting.connectedDevice.productName) \
-                  (\(connectedDeviceSetting.connectedDevice.manufacturerName)) \
+                  \(connectedDevice.productName) \
+                  (\(connectedDevice.manufacturerName)) \
                   \(label != "" ? "[\(label)]" : "")
                   """
                 )
@@ -49,13 +46,13 @@ struct DeviceSelectorView: View {
                 Spacer()
 
                 VStack {
-                  if connectedDeviceSetting.connectedDevice.isKeyboard {
+                  if connectedDevice.isKeyboard {
                     Image(systemName: "keyboard")
                   }
-                  if connectedDeviceSetting.connectedDevice.isPointingDevice {
+                  if connectedDevice.isPointingDevice {
                     Image(systemName: "capsule.portrait")
                   }
-                  if connectedDeviceSetting.connectedDevice.isGamePad {
+                  if connectedDevice.isGamePad {
                     Image(systemName: "gamecontroller")
                   }
                 }
@@ -64,7 +61,7 @@ struct DeviceSelectorView: View {
             }
           )
           .sidebarButtonStyle(
-            selected: selectedDevice?.id == connectedDeviceSetting.connectedDevice.id)
+            selected: selectedDevice?.id == connectedDevice.id)
 
           Divider()
         }
