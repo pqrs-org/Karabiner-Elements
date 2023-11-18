@@ -19,7 +19,7 @@ clean:
 	$(MAKE) clean-launch-services-database
 
 clean-launch-services-database:
-	bash scripts/clean-launch-services-database.sh
+	$(MAKE) -C tools/clean-launch-services-database
 
 gitclean:
 	git clean -f -x -d
