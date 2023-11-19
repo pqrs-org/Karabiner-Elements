@@ -105,10 +105,16 @@ public:
     }
 
     void set_update_timer(double deadzone) {
+      // The deadzone may be changed even while update_timer is active.
+      // Therefore, we always update regardless of the update_timer status.
+      enqueue_to_dispatcher([this, deadzone] {
+        deadzone_ = deadzone;
+      });
+
       if (!update_timer_.enabled()) {
         update_timer_.start(
-            [this, deadzone] {
-              update_values(deadzone);
+            [this] {
+              update_values();
             },
             std::chrono::milliseconds(update_timer_interval_milliseconds));
       }
@@ -206,7 +212,7 @@ public:
     }
 
   private:
-    void update_values(double deadzone) {
+    void update_values(void) {
       auto now = pqrs::osx::chrono::mach_absolute_time_point();
 
       auto delta_vertical = vertical_stick_sensor_.get_value() - previous_vertical_value_;
@@ -228,8 +234,8 @@ public:
       // Update stroke_acceleration_
       //
 
-      if (std::abs(vertical_stick_sensor_.get_value()) < deadzone &&
-          std::abs(horizontal_stick_sensor_.get_value()) < deadzone) {
+      if (std::abs(vertical_stick_sensor_.get_value()) < deadzone_ &&
+          std::abs(horizontal_stick_sensor_.get_value()) < deadzone_) {
         deadzone_magnitude_ = magnitude_;
         delta_magnitude = 0.0;
 
@@ -323,6 +329,7 @@ public:
     stick_sensor horizontal_stick_sensor_;
     stick_sensor vertical_stick_sensor_;
 
+    double deadzone_;
     double radian_;
     double magnitude_;
     double stroke_acceleration_destination_value_;
@@ -552,7 +559,9 @@ public:
   }
 
   ~game_pad_stick_converter(void) {
-    detach_from_dispatcher();
+    detach_from_dispatcher([this] {
+      states_.clear();
+    });
   }
 
   void set_core_configuration(std::weak_ptr<const core_configuration::core_configuration> core_configuration) {
