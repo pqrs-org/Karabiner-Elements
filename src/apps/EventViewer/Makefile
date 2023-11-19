@@ -10,7 +10,6 @@ clean:
 
 purge-swift-package-manager-cache:
 	rm -fr ~/Library/Developer/Xcode/DerivedData/Karabiner-EventViewer-*
-	rm -fr ~/Library/Caches/org.swift.swiftpm/repositories/SwiftShell-*
 
 run:
 	bash ../../../scripts/codesign.sh build/Release

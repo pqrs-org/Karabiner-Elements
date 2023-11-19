@@ -1,4 +1,3 @@
-import SwiftShell
 import SwiftUI
 
 public class SystemExtensions: ObservableObject {
@@ -7,6 +6,24 @@ public class SystemExtensions: ObservableObject {
   @Published var list = ""
 
   public func updateList() {
-    list = run("/usr/bin/systemextensionsctl", "list").stdout
+    let command = Process()
+    command.launchPath = "/usr/bin/systemextensionsctl"
+    command.arguments = [
+      "list"
+    ]
+
+    command.environment = [
+      "LC_ALL": "C"
+    ]
+
+    let pipe = Pipe()
+    command.standardOutput = pipe
+
+    command.launch()
+    command.waitUntilExit()
+
+    if let data = try? pipe.fileHandleForReading.readToEnd() {
+      list = String(decoding: data, as: UTF8.self)
+    }
   }
 }
