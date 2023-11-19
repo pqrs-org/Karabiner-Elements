@@ -94,11 +94,6 @@ public:
     device_address_ = value;
   }
 
-  bool is_apple(void) const {
-    return vendor_id_ == pqrs::hid::vendor_id::value_t(0x05ac) ||
-           vendor_id_ == pqrs::hid::vendor_id::value_t(0x004c);
-  }
-
   bool operator==(const device_identifiers& other) const {
     return vendor_id_ == other.vendor_id_ &&
            product_id_ == other.product_id_ &&

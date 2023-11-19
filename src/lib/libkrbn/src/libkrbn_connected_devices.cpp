@@ -156,7 +156,7 @@ bool libkrbn_connected_devices_is_apple(libkrbn_connected_devices* p, size_t ind
   if (auto c = reinterpret_cast<libkrbn_connected_devices_class*>(p)) {
     const auto& devices = c->get_connected_devices().get_devices();
     if (index < devices.size()) {
-      return devices[index].get_identifiers().is_apple();
+      return devices[index].is_apple();
     }
   }
   return 0;

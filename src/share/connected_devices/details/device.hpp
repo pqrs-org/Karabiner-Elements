@@ -80,6 +80,12 @@ public:
     return is_built_in_touch_bar_;
   }
 
+  bool is_apple(void) const {
+    return identifiers_.get_vendor_id() == pqrs::hid::vendor_id::value_t(0x05ac) ||
+           identifiers_.get_vendor_id() == pqrs::hid::vendor_id::value_t(0x004c) ||
+           descriptions_.get_product() == "Apple Internal Keyboard / Trackpad";
+  }
+
   bool operator==(const device& other) const {
     return identifiers_ == other.identifiers_;
   }

@@ -87,6 +87,7 @@ struct DevicesView: View {
       HStack(alignment: .top) {
         if connectedDevice.isAppleDevice,
           !connectedDevice.isKeyboard,
+          connectedDevice.isPointingDevice,
           !settings.unsafeUI
         {
           Text("Apple pointing devices are not supported")

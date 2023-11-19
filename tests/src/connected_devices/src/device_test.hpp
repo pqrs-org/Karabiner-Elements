@@ -222,5 +222,37 @@ void run_device_test(void) {
         expect(device.get_is_built_in_touch_bar() == false);
       }
     }
+
+    // is_apple
+    {
+      krbn::device_properties device_properties;
+      device_properties
+          .set_manufacturer("manufacturer")
+          .set_product("product")
+          .set(pqrs::hid::vendor_id::value_t(1234))
+          .set(pqrs::hid::product_id::value_t(5678))
+          .set_is_keyboard(true);
+      expect(false == krbn::connected_devices::details::device(device_properties).is_apple());
+    }
+    {
+      krbn::device_properties device_properties;
+      device_properties
+          .set_manufacturer("manufacturer")
+          .set_product("product")
+          .set(pqrs::hid::vendor_id::value_t(1452))
+          .set(pqrs::hid::product_id::value_t(610))
+          .set_is_keyboard(true);
+      expect(true == krbn::connected_devices::details::device(device_properties).is_apple());
+    }
+    {
+      krbn::device_properties device_properties;
+      device_properties
+          .set_manufacturer("Apple")
+          .set_product("Apple Internal Keyboard / Trackpad")
+          .set(pqrs::hid::vendor_id::value_t(0))
+          .set(pqrs::hid::product_id::value_t(0))
+          .set_is_keyboard(true);
+      expect(true == krbn::connected_devices::details::device(device_properties).is_apple());
+    }
   };
 }

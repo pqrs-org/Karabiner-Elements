@@ -7,26 +7,6 @@ void run_device_identifiers_test(void) {
 
   "device_identifiers"_test = [] {
     {
-      krbn::device_identifiers di(pqrs::hid::vendor_id::value_t(1234),
-                                  pqrs::hid::product_id::value_t(5678),
-                                  true,  // is_keyboard
-                                  false, // is_pointing_device
-                                  false, // is_game_pad
-                                  ""     // device_address
-      );
-      expect(di.is_apple() == false);
-    }
-    {
-      krbn::device_identifiers di(pqrs::hid::vendor_id::value_t(1452),
-                                  pqrs::hid::product_id::value_t(610),
-                                  true,  // is_keyboard
-                                  false, // is_pointing_device
-                                  false, // is_game_pad
-                                  ""     // device_address
-      );
-      expect(di.is_apple() == true);
-    }
-    {
       auto json = nlohmann::json::object();
       auto di = json.get<krbn::device_identifiers>();
       expect(di.get_vendor_id() == pqrs::hid::vendor_id::value_t(0));
