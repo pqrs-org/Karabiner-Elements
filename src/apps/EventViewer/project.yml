@@ -35,3 +35,5 @@ targets:
           - .gitignore
           - '*.orig.png'
           - '*.plist.in'
+    dependencies:
+      - sdk: libc++.tbd
