@@ -19,6 +19,20 @@ struct DevicesGamePadSettingsView: View {
             .padding(.leading, 40)
             .padding(.top, 20)
 
+          HStack {
+            VStack(alignment: .leading, spacing: 0.0) {
+              Text("Note:")
+              Text(
+                "These parameters are still under development and may change in the next release."
+              )
+            }
+
+            Spacer()
+          }
+          .padding()
+          .foregroundColor(Color.warningForeground)
+          .background(Color.warningBackground)
+
           GroupBox(label: Text("Deadzone")) {
             VStack(alignment: .leading) {
               HStack {
