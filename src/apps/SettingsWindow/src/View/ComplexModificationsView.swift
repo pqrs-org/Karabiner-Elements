@@ -39,7 +39,7 @@ struct ComplexModificationsView: View {
             showingEditSheet = true
           },
           label: {
-            AccentColorIconLabel(title: "Add new rule", systemImage: "pencil.circle.fill")
+            AccentColorIconLabel(title: "Add your own rule", systemImage: "sparkles")
           })
 
         Spacer()
