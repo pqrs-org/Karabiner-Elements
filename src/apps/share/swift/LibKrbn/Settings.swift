@@ -176,6 +176,14 @@ extension LibKrbn {
       return result
     }
 
+    public func simpleModifications(connectedDevice: ConnectedDevice?) -> [SimpleModification] {
+      if let connectedDevice = connectedDevice {
+        return findConnectedDeviceSetting(connectedDevice)?.simpleModifications ?? []
+      } else {
+        return simpleModifications
+      }
+    }
+
     public func updateSimpleModification(
       index: Int,
       fromJsonString: String,

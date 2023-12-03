@@ -20,6 +20,12 @@ struct SimpleModificationsView: View {
       }
     }
     .padding()
+    .onChange(of: contentViewStates.simpleModificationsViewSelectedDevice) { newDevice in
+      // Add an entry if empty.
+      if settings.simpleModifications(connectedDevice: newDevice).count == 0 {
+        settings.appendSimpleModification(device: newDevice)
+      }
+    }
   }
 
   struct SimpleModificationView: View {
@@ -30,11 +36,8 @@ struct SimpleModificationsView: View {
 
     init(selectedDevice: LibKrbn.ConnectedDevice?) {
       self.selectedDevice = selectedDevice
-      self.simpleModifications =
-        selectedDevice == nil
-        ? LibKrbn.Settings.shared.simpleModifications
-        : LibKrbn.Settings.shared.findConnectedDeviceSetting(selectedDevice!)?.simpleModifications
-          ?? []
+      self.simpleModifications = LibKrbn.Settings.shared.simpleModifications(
+        connectedDevice: selectedDevice)
     }
 
     var body: some View {
