@@ -2,6 +2,7 @@ import SwiftUI
 
 struct DeviceSelectorView: View {
   @Binding var selectedDevice: LibKrbn.ConnectedDevice?
+  @ObservedObject private var connectedDevices = LibKrbn.ConnectedDevices.shared
 
   var body: some View {
     List {
@@ -23,7 +24,7 @@ struct DeviceSelectorView: View {
 
         Divider()
 
-        ForEach(LibKrbn.ConnectedDevices.shared.connectedDevices) { connectedDevice in
+        ForEach(connectedDevices.connectedDevices) { connectedDevice in
           Button(
             action: {
               selectedDevice = connectedDevice

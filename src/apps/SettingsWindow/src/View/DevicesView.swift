@@ -2,12 +2,13 @@ import SwiftUI
 
 struct DevicesView: View {
   @ObservedObject private var settings = LibKrbn.Settings.shared
+  @ObservedObject private var connectedDevices = LibKrbn.ConnectedDevices.shared
 
   var body: some View {
     VStack(alignment: .leading, spacing: 12.0) {
       List {
         VStack(alignment: .leading, spacing: 0.0) {
-          ForEach(LibKrbn.ConnectedDevices.shared.connectedDevices) { connectedDevice in
+          ForEach(connectedDevices.connectedDevices) { connectedDevice in
             VStack(alignment: .leading, spacing: 0.0) {
               DeviceName(connectedDevice: connectedDevice)
 
