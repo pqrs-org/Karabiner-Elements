@@ -108,6 +108,7 @@ struct IgnoredAreaView: View {
                   .frame(width: diameter, height: diameter)
                   .padding(.leading, leading)
                   .padding(.top, top)
+                  .clipped()
               }
 
               let palmThresholdLeading = areaSize.width * state.point.x - (thresholdDiameter / 2)
@@ -122,14 +123,20 @@ struct IgnoredAreaView: View {
                 .frame(width: thresholdDiameter, height: thresholdDiameter)
                 .padding(.leading, palmThresholdLeading)
                 .padding(.top, palmThresholdTop)
+                .clipped()
 
               Text("\(String(format: "%.1f", state.size))")
                 .padding(.leading, palmThresholdLeading)
                 .padding(.top, palmThresholdTop + thresholdDiameter)
+                .clipped()
             }
           }
         }
-        .frame(width: areaSize.width, height: areaSize.height)
+        .frame(
+          width: areaSize.width,
+          height: areaSize.height,
+          alignment: .topLeading
+        )
 
         VStack {
           Text("Ignored")
