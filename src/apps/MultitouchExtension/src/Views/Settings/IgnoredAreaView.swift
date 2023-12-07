@@ -56,42 +56,40 @@ struct IgnoredAreaView: View {
             .frame(width: areaWidth, height: areaHeight)
             .padding(.leading, areaLeading)
             .padding(.top, areaTop)
-            .overlay(
-              Group {
-                Path { path in
-                  path.addLines([
-                    CGPoint(x: areaX50, y: areaTop),
-                    CGPoint(x: areaX50, y: areaTop + areaHeight),
-                  ])
 
-                  path.addLines([
-                    CGPoint(x: areaLeading, y: areaY50),
-                    CGPoint(x: areaLeading + areaWidth, y: areaY50),
-                  ])
-                }.stroke(.black, lineWidth: 1)
+          Path { path in
+            path.addLines([
+              CGPoint(x: areaX50, y: areaTop),
+              CGPoint(x: areaX50, y: areaTop + areaHeight),
+            ])
 
-                Path { path in
-                  path.addLines([
-                    CGPoint(x: areaX25, y: areaTop),
-                    CGPoint(x: areaX25, y: areaTop + areaHeight),
-                  ])
+            path.addLines([
+              CGPoint(x: areaLeading, y: areaY50),
+              CGPoint(x: areaLeading + areaWidth, y: areaY50),
+            ])
+          }.stroke(.black, lineWidth: 1)
 
-                  path.addLines([
-                    CGPoint(x: areaX75, y: areaTop),
-                    CGPoint(x: areaX75, y: areaTop + areaHeight),
-                  ])
+          Path { path in
+            path.addLines([
+              CGPoint(x: areaX25, y: areaTop),
+              CGPoint(x: areaX25, y: areaTop + areaHeight),
+            ])
 
-                  path.addLines([
-                    CGPoint(x: areaLeading, y: areaY25),
-                    CGPoint(x: areaLeading + areaWidth, y: areaY25),
-                  ])
+            path.addLines([
+              CGPoint(x: areaX75, y: areaTop),
+              CGPoint(x: areaX75, y: areaTop + areaHeight),
+            ])
 
-                  path.addLines([
-                    CGPoint(x: areaLeading, y: areaY75),
-                    CGPoint(x: areaLeading + areaWidth, y: areaY75),
-                  ])
-                }.stroke(.black, style: StrokeStyle(lineWidth: 1, dash: [2]))
-              })
+            path.addLines([
+              CGPoint(x: areaLeading, y: areaY25),
+              CGPoint(x: areaLeading + areaWidth, y: areaY25),
+            ])
+
+            path.addLines([
+              CGPoint(x: areaLeading, y: areaY75),
+              CGPoint(x: areaLeading + areaWidth, y: areaY75),
+            ])
+          }.stroke(.black, style: StrokeStyle(lineWidth: 1, dash: [2]))
 
           ForEach(fingerManager.states) { state in
             if state.touchedPhysically || state.touchedFixed || state.palmed {
@@ -107,7 +105,7 @@ struct IgnoredAreaView: View {
               if state.touchedFixed {
                 Circle()
                   .fill(color)
-                  .frame(width: diameter)
+                  .frame(width: diameter, height: diameter)
                   .padding(.leading, leading)
                   .padding(.top, top)
               }
@@ -115,20 +113,23 @@ struct IgnoredAreaView: View {
               let palmThresholdLeading = areaSize.width * state.point.x - (thresholdDiameter / 2)
               let palmThresholdTop =
                 areaSize.height * (1.0 - state.point.y) - (thresholdDiameter / 2)
-              VStack {
-                Circle()
-                  .stroke(
-                    !state.touchedFixed ? Color.black : (state.palmed ? Color.gray : palmedColor),
-                    style: StrokeStyle(lineWidth: 2)
-                  )
-                  .frame(width: thresholdDiameter)
-                Text("\(String(format: "%.1f", state.size))")
-              }
-              .padding(.leading, palmThresholdLeading)
-              .padding(.top, palmThresholdTop)
+
+              Circle()
+                .stroke(
+                  !state.touchedFixed ? Color.black : (state.palmed ? Color.gray : palmedColor),
+                  style: StrokeStyle(lineWidth: 2)
+                )
+                .frame(width: thresholdDiameter, height: thresholdDiameter)
+                .padding(.leading, palmThresholdLeading)
+                .padding(.top, palmThresholdTop)
+
+              Text("\(String(format: "%.1f", state.size))")
+                .padding(.leading, palmThresholdLeading)
+                .padding(.top, palmThresholdTop + thresholdDiameter)
             }
           }
         }
+        .frame(width: areaSize.width, height: areaSize.height)
 
         VStack {
           Text("Ignored")
