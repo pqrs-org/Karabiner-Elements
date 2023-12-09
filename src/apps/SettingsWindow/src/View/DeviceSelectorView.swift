@@ -3,6 +3,7 @@ import SwiftUI
 struct DeviceSelectorView: View {
   @Binding var selectedDevice: LibKrbn.ConnectedDevice?
   @ObservedObject private var connectedDevices = LibKrbn.ConnectedDevices.shared
+  @ObservedObject private var settings = LibKrbn.Settings.shared
 
   var body: some View {
     List {
@@ -25,46 +26,48 @@ struct DeviceSelectorView: View {
         Divider()
 
         ForEach(connectedDevices.connectedDevices) { connectedDevice in
-          Button(
-            action: {
-              selectedDevice = connectedDevice
-            },
-            label: {
-              let noId = connectedDevice.vendorId == 0 && connectedDevice.productId == 0
-              let label =
-                noId
-                ? connectedDevice.deviceAddress
-                : "\(String(connectedDevice.vendorId)),\(String(connectedDevice.productId))"
-              HStack {
-                Text(
-                  """
-                  \(connectedDevice.productName) \
-                  (\(connectedDevice.manufacturerName)) \
-                  \(label != "" ? "[\(label)]" : "")
-                  """
-                )
+          if settings.findConnectedDeviceSetting(connectedDevice)?.modifyEvents ?? false {
+            Button(
+              action: {
+                selectedDevice = connectedDevice
+              },
+              label: {
+                let noId = connectedDevice.vendorId == 0 && connectedDevice.productId == 0
+                let label =
+                  noId
+                  ? connectedDevice.deviceAddress
+                  : "\(String(connectedDevice.vendorId)),\(String(connectedDevice.productId))"
+                HStack {
+                  Text(
+                    """
+                    \(connectedDevice.productName) \
+                    (\(connectedDevice.manufacturerName)) \
+                    \(label != "" ? "[\(label)]" : "")
+                    """
+                  )
 
-                Spacer()
+                  Spacer()
 
-                VStack {
-                  if connectedDevice.isKeyboard {
-                    Image(systemName: "keyboard")
-                  }
-                  if connectedDevice.isPointingDevice {
-                    Image(systemName: "capsule.portrait")
-                  }
-                  if connectedDevice.isGamePad {
-                    Image(systemName: "gamecontroller")
+                  VStack {
+                    if connectedDevice.isKeyboard {
+                      Image(systemName: "keyboard")
+                    }
+                    if connectedDevice.isPointingDevice {
+                      Image(systemName: "capsule.portrait")
+                    }
+                    if connectedDevice.isGamePad {
+                      Image(systemName: "gamecontroller")
+                    }
                   }
                 }
+                .sidebarButtonLabelStyle()
               }
-              .sidebarButtonLabelStyle()
-            }
-          )
-          .sidebarButtonStyle(
-            selected: selectedDevice?.id == connectedDevice.id)
+            )
+            .sidebarButtonStyle(
+              selected: selectedDevice?.id == connectedDevice.id)
 
-          Divider()
+            Divider()
+          }
         }
 
         Spacer()
