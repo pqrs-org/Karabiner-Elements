@@ -20,137 +20,82 @@
 #include "asio/async_result.hpp"
 #include "asio/detail/base_from_cancellation_state.hpp"
 #include "asio/detail/composed_work.hpp"
-#include "asio/detail/handler_alloc_helpers.hpp"
 #include "asio/detail/handler_cont_helpers.hpp"
-#include "asio/detail/handler_invoke_helpers.hpp"
 #include "asio/detail/type_traits.hpp"
-#include "asio/detail/variadic_templates.hpp"
 
 #include "asio/detail/push_options.hpp"
 
 namespace asio {
 namespace detail {
 
-#if defined(ASIO_HAS_VARIADIC_TEMPLATES)
 template <typename Impl, typename Work, typename Handler, typename Signature>
 class composed_op;
 
 template <typename Impl, typename Work, typename Handler,
     typename R, typename... Args>
 class composed_op<Impl, Work, Handler, R(Args...)>
-#else // defined(ASIO_HAS_VARIADIC_TEMPLATES)
-template <typename Impl, typename Work, typename Handler, typename Signature>
-class composed_op
-#endif // defined(ASIO_HAS_VARIADIC_TEMPLATES)
   : public base_from_cancellation_state<Handler>
 {
 public:
   template <typename I, typename W, typename H>
-  composed_op(ASIO_MOVE_ARG(I) impl,
-      ASIO_MOVE_ARG(W) work,
-      ASIO_MOVE_ARG(H) handler)
+  composed_op(I&& impl,
+      W&& work,
+      H&& handler)
     : base_from_cancellation_state<Handler>(
         handler, enable_terminal_cancellation()),
-      impl_(ASIO_MOVE_CAST(I)(impl)),
-      work_(ASIO_MOVE_CAST(W)(work)),
-      handler_(ASIO_MOVE_CAST(H)(handler)),
+      impl_(static_cast<I&&>(impl)),
+      work_(static_cast<W&&>(work)),
+      handler_(static_cast<H&&>(handler)),
       invocations_(0)
   {
   }
 
-#if defined(ASIO_HAS_MOVE)
   composed_op(composed_op&& other)
     : base_from_cancellation_state<Handler>(
-        ASIO_MOVE_CAST(base_from_cancellation_state<
-          Handler>)(other)),
-      impl_(ASIO_MOVE_CAST(Impl)(other.impl_)),
-      work_(ASIO_MOVE_CAST(Work)(other.work_)),
-      handler_(ASIO_MOVE_CAST(Handler)(other.handler_)),
+        static_cast<base_from_cancellation_state<Handler>&&>(other)),
+      impl_(static_cast<Impl&&>(other.impl_)),
+      work_(static_cast<Work&&>(other.work_)),
+      handler_(static_cast<Handler&&>(other.handler_)),
       invocations_(other.invocations_)
   {
   }
-#endif // defined(ASIO_HAS_MOVE)
 
   typedef typename composed_work_guard<
     typename Work::head_type>::executor_type io_executor_type;
 
-  io_executor_type get_io_executor() const ASIO_NOEXCEPT
+  io_executor_type get_io_executor() const noexcept
   {
     return work_.head_.get_executor();
   }
 
-  typedef typename associated_executor<Handler, io_executor_type>::type
-    executor_type;
+  typedef associated_executor_t<Handler, io_executor_type> executor_type;
 
-  executor_type get_executor() const ASIO_NOEXCEPT
+  executor_type get_executor() const noexcept
   {
     return (get_associated_executor)(handler_, work_.head_.get_executor());
   }
 
-  typedef typename associated_allocator<Handler,
-    std::allocator<void> >::type allocator_type;
+  typedef associated_allocator_t<Handler, std::allocator<void>> allocator_type;
 
-  allocator_type get_allocator() const ASIO_NOEXCEPT
+  allocator_type get_allocator() const noexcept
   {
     return (get_associated_allocator)(handler_, std::allocator<void>());
   }
 
-#if defined(ASIO_HAS_VARIADIC_TEMPLATES)
-
   template<typename... T>
-  void operator()(ASIO_MOVE_ARG(T)... t)
+  void operator()(T&&... t)
   {
     if (invocations_ < ~0u)
       ++invocations_;
     this->get_cancellation_state().slot().clear();
-    impl_(*this, ASIO_MOVE_CAST(T)(t)...);
+    impl_(*this, static_cast<T&&>(t)...);
   }
 
   void complete(Args... args)
   {
     this->work_.reset();
-    ASIO_MOVE_OR_LVALUE(Handler)(this->handler_)(
-        ASIO_MOVE_CAST(Args)(args)...);
+    static_cast<Handler&&>(this->handler_)(static_cast<Args&&>(args)...);
   }
-
-#else // defined(ASIO_HAS_VARIADIC_TEMPLATES)
-
-  void operator()()
-  {
-    if (invocations_ < ~0u)
-      ++invocations_;
-    this->get_cancellation_state().slot().clear();
-    impl_(*this);
-  }
-
-  void complete()
-  {
-    this->work_.reset();
-    ASIO_MOVE_OR_LVALUE(Handler)(this->handler_)();
-  }
-
-#define ASIO_PRIVATE_COMPOSED_OP_DEF(n) \
-  template<ASIO_VARIADIC_TPARAMS(n)> \
-  void operator()(ASIO_VARIADIC_MOVE_PARAMS(n)) \
-  { \
-    if (invocations_ < ~0u) \
-      ++invocations_; \
-    this->get_cancellation_state().slot().clear(); \
-    impl_(*this, ASIO_VARIADIC_MOVE_ARGS(n)); \
-  } \
-  \
-  template<ASIO_VARIADIC_TPARAMS(n)> \
-  void complete(ASIO_VARIADIC_MOVE_PARAMS(n)) \
-  { \
-    this->work_.reset(); \
-    ASIO_MOVE_OR_LVALUE(Handler)(this->handler_)( \
-        ASIO_VARIADIC_MOVE_ARGS(n)); \
-  } \
-  /**/
-  ASIO_VARIADIC_GENERATE(ASIO_PRIVATE_COMPOSED_OP_DEF)
-#undef ASIO_PRIVATE_COMPOSED_OP_DEF
-
-#endif // defined(ASIO_HAS_VARIADIC_TEMPLATES)
 
   void reset_cancellation_state()
   {
@@ -158,22 +103,22 @@ public:
   }
 
   template <typename Filter>
-  void reset_cancellation_state(ASIO_MOVE_ARG(Filter) filter)
+  void reset_cancellation_state(Filter&& filter)
   {
     base_from_cancellation_state<Handler>::reset_cancellation_state(handler_,
-        ASIO_MOVE_CAST(Filter)(filter));
+        static_cast<Filter&&>(filter));
   }
 
   template <typename InFilter, typename OutFilter>
-  void reset_cancellation_state(ASIO_MOVE_ARG(InFilter) in_filter,
-      ASIO_MOVE_ARG(OutFilter) out_filter)
+  void reset_cancellation_state(InFilter&& in_filter,
+      OutFilter&& out_filter)
   {
     base_from_cancellation_state<Handler>::reset_cancellation_state(handler_,
-        ASIO_MOVE_CAST(InFilter)(in_filter),
-        ASIO_MOVE_CAST(OutFilter)(out_filter));
+        static_cast<InFilter&&>(in_filter),
+        static_cast<OutFilter&&>(out_filter));
   }
 
-  cancellation_type_t cancelled() const ASIO_NOEXCEPT
+  cancellation_type_t cancelled() const noexcept
   {
     return base_from_cancellation_state<Handler>::cancelled();
   }
@@ -186,64 +131,12 @@ public:
 };
 
 template <typename Impl, typename Work, typename Handler, typename Signature>
-inline asio_handler_allocate_is_deprecated
-asio_handler_allocate(std::size_t size,
-    composed_op<Impl, Work, Handler, Signature>* this_handler)
-{
-#if defined(ASIO_NO_DEPRECATED)
-  asio_handler_alloc_helpers::allocate(size, this_handler->handler_);
-  return asio_handler_allocate_is_no_longer_used();
-#else // defined(ASIO_NO_DEPRECATED)
-  return asio_handler_alloc_helpers::allocate(
-      size, this_handler->handler_);
-#endif // defined(ASIO_NO_DEPRECATED)
-}
-
-template <typename Impl, typename Work, typename Handler, typename Signature>
-inline asio_handler_deallocate_is_deprecated
-asio_handler_deallocate(void* pointer, std::size_t size,
-    composed_op<Impl, Work, Handler, Signature>* this_handler)
-{
-  asio_handler_alloc_helpers::deallocate(
-      pointer, size, this_handler->handler_);
-#if defined(ASIO_NO_DEPRECATED)
-  return asio_handler_deallocate_is_no_longer_used();
-#endif // defined(ASIO_NO_DEPRECATED)
-}
-
-template <typename Impl, typename Work, typename Handler, typename Signature>
 inline bool asio_handler_is_continuation(
     composed_op<Impl, Work, Handler, Signature>* this_handler)
 {
   return this_handler->invocations_ > 1 ? true
     : asio_handler_cont_helpers::is_continuation(
         this_handler->handler_);
-}
-
-template <typename Function, typename Impl,
-    typename Work, typename Handler, typename Signature>
-inline asio_handler_invoke_is_deprecated
-asio_handler_invoke(Function& function,
-    composed_op<Impl, Work, Handler, Signature>* this_handler)
-{
-  asio_handler_invoke_helpers::invoke(
-      function, this_handler->handler_);
-#if defined(ASIO_NO_DEPRECATED)
-  return asio_handler_invoke_is_no_longer_used();
-#endif // defined(ASIO_NO_DEPRECATED)
-}
-
-template <typename Function, typename Impl,
-    typename Work, typename Handler, typename Signature>
-inline asio_handler_invoke_is_deprecated
-asio_handler_invoke(const Function& function,
-    composed_op<Impl, Work, Handler, Signature>* this_handler)
-{
-  asio_handler_invoke_helpers::invoke(
-      function, this_handler->handler_);
-#if defined(ASIO_NO_DEPRECATED)
-  return asio_handler_invoke_is_no_longer_used();
-#endif // defined(ASIO_NO_DEPRECATED)
 }
 
 template <typename Signature, typename Executors>
@@ -253,25 +146,25 @@ public:
   typedef typename composed_io_executors<Executors>::head_type executor_type;
 
   template <typename T>
-  explicit initiate_composed_op(int, ASIO_MOVE_ARG(T) executors)
-    : executors_(ASIO_MOVE_CAST(T)(executors))
+  explicit initiate_composed_op(int, T&& executors)
+    : executors_(static_cast<T&&>(executors))
   {
   }
 
-  executor_type get_executor() const ASIO_NOEXCEPT
+  executor_type get_executor() const noexcept
   {
     return executors_.head_;
   }
 
   template <typename Handler, typename Impl>
-  void operator()(ASIO_MOVE_ARG(Handler) handler,
-      ASIO_MOVE_ARG(Impl) impl) const
+  void operator()(Handler&& handler,
+      Impl&& impl) const
   {
-    composed_op<typename decay<Impl>::type, composed_work<Executors>,
-      typename decay<Handler>::type, Signature>(
-        ASIO_MOVE_CAST(Impl)(impl),
+    composed_op<decay_t<Impl>, composed_work<Executors>,
+      decay_t<Handler>, Signature>(
+        static_cast<Impl&&>(impl),
         composed_work<Executors>(executors_),
-        ASIO_MOVE_CAST(Handler)(handler))();
+        static_cast<Handler&&>(handler))();
   }
 
 private:
@@ -280,10 +173,10 @@ private:
 
 template <typename Signature, typename Executors>
 inline initiate_composed_op<Signature, Executors> make_initiate_composed_op(
-    ASIO_MOVE_ARG(composed_io_executors<Executors>) executors)
+    composed_io_executors<Executors>&& executors)
 {
   return initiate_composed_op<Signature, Executors>(0,
-      ASIO_MOVE_CAST(composed_io_executors<Executors>)(executors));
+      static_cast<composed_io_executors<Executors>&&>(executors));
 }
 
 } // namespace detail
@@ -298,28 +191,21 @@ struct associator<Associator,
     DefaultCandidate>
   : Associator<Handler, DefaultCandidate>
 {
-  static typename Associator<Handler, DefaultCandidate>::type
-  get(const detail::composed_op<Impl, Work, Handler, Signature>& h)
-    ASIO_NOEXCEPT
+  static typename Associator<Handler, DefaultCandidate>::type get(
+      const detail::composed_op<Impl, Work, Handler, Signature>& h) noexcept
   {
     return Associator<Handler, DefaultCandidate>::get(h.handler_);
   }
 
-  static ASIO_AUTO_RETURN_TYPE_PREFIX2(
-      typename Associator<Handler, DefaultCandidate>::type)
-  get(const detail::composed_op<Impl, Work, Handler, Signature>& h,
-      const DefaultCandidate& c) ASIO_NOEXCEPT
-    ASIO_AUTO_RETURN_TYPE_SUFFIX((
-      Associator<Handler, DefaultCandidate>::get(h.handler_, c)))
+  static auto get(const detail::composed_op<Impl, Work, Handler, Signature>& h,
+      const DefaultCandidate& c) noexcept
+    -> decltype(Associator<Handler, DefaultCandidate>::get(h.handler_, c))
   {
     return Associator<Handler, DefaultCandidate>::get(h.handler_, c);
   }
 };
 
 #endif // !defined(GENERATING_DOCUMENTATION)
-
-#if defined(ASIO_HAS_VARIADIC_TEMPLATES) \
-  || defined(GENERATING_DOCUMENTATION)
 
 /// Launch an asynchronous operation with a stateful implementation.
 /**
@@ -338,6 +224,13 @@ struct associator<Associator,
  *
  * @param io_objects_or_executors Zero or more I/O objects or I/O executors for
  * which outstanding work must be maintained.
+ *
+ * @par Per-Operation Cancellation
+ * By default, terminal per-operation cancellation is enabled for
+ * composed operations that are implemented using @c async_compose. To
+ * disable cancellation for the composed operation, or to alter its
+ * supported cancellation types, call the @c self object's @c
+ * reset_cancellation_state function.
  *
  * @par Example:
  *
@@ -398,131 +291,26 @@ struct associator<Associator,
  */
 template <typename CompletionToken, typename Signature,
     typename Implementation, typename... IoObjectsOrExecutors>
-ASIO_INITFN_AUTO_RESULT_TYPE_PREFIX(CompletionToken, Signature)
-async_compose(ASIO_MOVE_ARG(Implementation) implementation,
-    ASIO_NONDEDUCED_MOVE_ARG(CompletionToken) token,
-    ASIO_MOVE_ARG(IoObjectsOrExecutors)... io_objects_or_executors)
-  ASIO_INITFN_AUTO_RESULT_TYPE_SUFFIX((
+auto async_compose(Implementation&& implementation,
+    type_identity_t<CompletionToken>& token,
+    IoObjectsOrExecutors&&... io_objects_or_executors)
+  -> decltype(
     async_initiate<CompletionToken, Signature>(
-        detail::make_initiate_composed_op<Signature>(
-          detail::make_composed_io_executors(
-            detail::get_composed_io_executor(
-              ASIO_MOVE_CAST(IoObjectsOrExecutors)(
-                io_objects_or_executors))...)),
-        token, ASIO_MOVE_CAST(Implementation)(implementation))))
+      detail::make_initiate_composed_op<Signature>(
+        detail::make_composed_io_executors(
+          detail::get_composed_io_executor(
+            static_cast<IoObjectsOrExecutors&&>(
+              io_objects_or_executors))...)),
+      token, static_cast<Implementation&&>(implementation)))
 {
   return async_initiate<CompletionToken, Signature>(
       detail::make_initiate_composed_op<Signature>(
         detail::make_composed_io_executors(
           detail::get_composed_io_executor(
-            ASIO_MOVE_CAST(IoObjectsOrExecutors)(
+            static_cast<IoObjectsOrExecutors&&>(
               io_objects_or_executors))...)),
-      token, ASIO_MOVE_CAST(Implementation)(implementation));
+      token, static_cast<Implementation&&>(implementation));
 }
-
-#else // defined(ASIO_HAS_VARIADIC_TEMPLATES)
-      //   || defined(GENERATING_DOCUMENTATION)
-
-template <typename CompletionToken, typename Signature, typename Implementation>
-ASIO_INITFN_AUTO_RESULT_TYPE_PREFIX(CompletionToken, Signature)
-async_compose(ASIO_MOVE_ARG(Implementation) implementation,
-    ASIO_NONDEDUCED_MOVE_ARG(CompletionToken) token)
-  ASIO_INITFN_AUTO_RESULT_TYPE_SUFFIX((
-    async_initiate<CompletionToken, Signature>(
-        detail::make_initiate_composed_op<Signature>(
-          detail::make_composed_io_executors()),
-        token, ASIO_MOVE_CAST(Implementation)(implementation))))
-{
-  return async_initiate<CompletionToken, Signature>(
-      detail::make_initiate_composed_op<Signature>(
-        detail::make_composed_io_executors()),
-      token, ASIO_MOVE_CAST(Implementation)(implementation));
-}
-
-# define ASIO_PRIVATE_GET_COMPOSED_IO_EXECUTOR(n) \
-  ASIO_PRIVATE_GET_COMPOSED_IO_EXECUTOR_##n
-
-# define ASIO_PRIVATE_GET_COMPOSED_IO_EXECUTOR_1 \
-  detail::get_composed_io_executor(ASIO_MOVE_CAST(T1)(x1))
-# define ASIO_PRIVATE_GET_COMPOSED_IO_EXECUTOR_2 \
-  detail::get_composed_io_executor(ASIO_MOVE_CAST(T1)(x1)), \
-  detail::get_composed_io_executor(ASIO_MOVE_CAST(T2)(x2))
-# define ASIO_PRIVATE_GET_COMPOSED_IO_EXECUTOR_3 \
-  detail::get_composed_io_executor(ASIO_MOVE_CAST(T1)(x1)), \
-  detail::get_composed_io_executor(ASIO_MOVE_CAST(T2)(x2)), \
-  detail::get_composed_io_executor(ASIO_MOVE_CAST(T3)(x3))
-# define ASIO_PRIVATE_GET_COMPOSED_IO_EXECUTOR_4 \
-  detail::get_composed_io_executor(ASIO_MOVE_CAST(T1)(x1)), \
-  detail::get_composed_io_executor(ASIO_MOVE_CAST(T2)(x2)), \
-  detail::get_composed_io_executor(ASIO_MOVE_CAST(T3)(x3)), \
-  detail::get_composed_io_executor(ASIO_MOVE_CAST(T4)(x4))
-# define ASIO_PRIVATE_GET_COMPOSED_IO_EXECUTOR_5 \
-  detail::get_composed_io_executor(ASIO_MOVE_CAST(T1)(x1)), \
-  detail::get_composed_io_executor(ASIO_MOVE_CAST(T2)(x2)), \
-  detail::get_composed_io_executor(ASIO_MOVE_CAST(T3)(x3)), \
-  detail::get_composed_io_executor(ASIO_MOVE_CAST(T4)(x4)), \
-  detail::get_composed_io_executor(ASIO_MOVE_CAST(T5)(x5))
-# define ASIO_PRIVATE_GET_COMPOSED_IO_EXECUTOR_6 \
-  detail::get_composed_io_executor(ASIO_MOVE_CAST(T1)(x1)), \
-  detail::get_composed_io_executor(ASIO_MOVE_CAST(T2)(x2)), \
-  detail::get_composed_io_executor(ASIO_MOVE_CAST(T3)(x3)), \
-  detail::get_composed_io_executor(ASIO_MOVE_CAST(T4)(x4)), \
-  detail::get_composed_io_executor(ASIO_MOVE_CAST(T5)(x5)), \
-  detail::get_composed_io_executor(ASIO_MOVE_CAST(T6)(x6))
-# define ASIO_PRIVATE_GET_COMPOSED_IO_EXECUTOR_7 \
-  detail::get_composed_io_executor(ASIO_MOVE_CAST(T1)(x1)), \
-  detail::get_composed_io_executor(ASIO_MOVE_CAST(T2)(x2)), \
-  detail::get_composed_io_executor(ASIO_MOVE_CAST(T3)(x3)), \
-  detail::get_composed_io_executor(ASIO_MOVE_CAST(T4)(x4)), \
-  detail::get_composed_io_executor(ASIO_MOVE_CAST(T5)(x5)), \
-  detail::get_composed_io_executor(ASIO_MOVE_CAST(T6)(x6)), \
-  detail::get_composed_io_executor(ASIO_MOVE_CAST(T7)(x7))
-# define ASIO_PRIVATE_GET_COMPOSED_IO_EXECUTOR_8 \
-  detail::get_composed_io_executor(ASIO_MOVE_CAST(T1)(x1)), \
-  detail::get_composed_io_executor(ASIO_MOVE_CAST(T2)(x2)), \
-  detail::get_composed_io_executor(ASIO_MOVE_CAST(T3)(x3)), \
-  detail::get_composed_io_executor(ASIO_MOVE_CAST(T4)(x4)), \
-  detail::get_composed_io_executor(ASIO_MOVE_CAST(T5)(x5)), \
-  detail::get_composed_io_executor(ASIO_MOVE_CAST(T6)(x6)), \
-  detail::get_composed_io_executor(ASIO_MOVE_CAST(T7)(x7)), \
-  detail::get_composed_io_executor(ASIO_MOVE_CAST(T8)(x8))
-
-#define ASIO_PRIVATE_ASYNC_COMPOSE_DEF(n) \
-  template <typename CompletionToken, typename Signature, \
-      typename Implementation, ASIO_VARIADIC_TPARAMS(n)> \
-  ASIO_INITFN_AUTO_RESULT_TYPE_PREFIX(CompletionToken, Signature) \
-  async_compose(ASIO_MOVE_ARG(Implementation) implementation, \
-      ASIO_NONDEDUCED_MOVE_ARG(CompletionToken) token, \
-      ASIO_VARIADIC_MOVE_PARAMS(n)) \
-    ASIO_INITFN_AUTO_RESULT_TYPE_SUFFIX(( \
-      async_initiate<CompletionToken, Signature>( \
-          detail::make_initiate_composed_op<Signature>( \
-            detail::make_composed_io_executors( \
-              ASIO_PRIVATE_GET_COMPOSED_IO_EXECUTOR(n))), \
-          token, ASIO_MOVE_CAST(Implementation)(implementation)))) \
-  { \
-    return async_initiate<CompletionToken, Signature>( \
-        detail::make_initiate_composed_op<Signature>( \
-          detail::make_composed_io_executors( \
-            ASIO_PRIVATE_GET_COMPOSED_IO_EXECUTOR(n))), \
-        token, ASIO_MOVE_CAST(Implementation)(implementation)); \
-  } \
-  /**/
-  ASIO_VARIADIC_GENERATE(ASIO_PRIVATE_ASYNC_COMPOSE_DEF)
-#undef ASIO_PRIVATE_ASYNC_COMPOSE_DEF
-
-#undef ASIO_PRIVATE_GET_COMPOSED_IO_EXECUTOR
-#undef ASIO_PRIVATE_GET_COMPOSED_IO_EXECUTOR_1
-#undef ASIO_PRIVATE_GET_COMPOSED_IO_EXECUTOR_2
-#undef ASIO_PRIVATE_GET_COMPOSED_IO_EXECUTOR_3
-#undef ASIO_PRIVATE_GET_COMPOSED_IO_EXECUTOR_4
-#undef ASIO_PRIVATE_GET_COMPOSED_IO_EXECUTOR_5
-#undef ASIO_PRIVATE_GET_COMPOSED_IO_EXECUTOR_6
-#undef ASIO_PRIVATE_GET_COMPOSED_IO_EXECUTOR_7
-#undef ASIO_PRIVATE_GET_COMPOSED_IO_EXECUTOR_8
-
-#endif // defined(ASIO_HAS_VARIADIC_TEMPLATES)
-       //   || defined(GENERATING_DOCUMENTATION)
 
 } // namespace asio
 

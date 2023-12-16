@@ -25,55 +25,48 @@
 
 namespace asio {
 
-any_io_executor::any_io_executor() ASIO_NOEXCEPT
+any_io_executor::any_io_executor() noexcept
   : base_type()
 {
 }
 
-any_io_executor::any_io_executor(nullptr_t) ASIO_NOEXCEPT
+any_io_executor::any_io_executor(nullptr_t) noexcept
   : base_type(nullptr_t())
 {
 }
 
-any_io_executor::any_io_executor(const any_io_executor& e) ASIO_NOEXCEPT
+any_io_executor::any_io_executor(const any_io_executor& e) noexcept
   : base_type(static_cast<const base_type&>(e))
 {
 }
 
 any_io_executor::any_io_executor(std::nothrow_t,
-    const any_io_executor& e) ASIO_NOEXCEPT
+    const any_io_executor& e) noexcept
   : base_type(static_cast<const base_type&>(e))
 {
 }
 
-#if defined(ASIO_HAS_MOVE)
-any_io_executor::any_io_executor(any_io_executor&& e) ASIO_NOEXCEPT
+any_io_executor::any_io_executor(any_io_executor&& e) noexcept
   : base_type(static_cast<base_type&&>(e))
 {
 }
 
-any_io_executor::any_io_executor(std::nothrow_t,
-    any_io_executor&& e) ASIO_NOEXCEPT
+any_io_executor::any_io_executor(std::nothrow_t, any_io_executor&& e) noexcept
   : base_type(static_cast<base_type&&>(e))
 {
 }
-#endif // defined(ASIO_HAS_MOVE)
 
-any_io_executor& any_io_executor::operator=(
-    const any_io_executor& e) ASIO_NOEXCEPT
+any_io_executor& any_io_executor::operator=(const any_io_executor& e) noexcept
 {
   base_type::operator=(static_cast<const base_type&>(e));
   return *this;
 }
 
-#if defined(ASIO_HAS_MOVE)
-any_io_executor& any_io_executor::operator=(
-    any_io_executor&& e) ASIO_NOEXCEPT
+any_io_executor& any_io_executor::operator=(any_io_executor&& e) noexcept
 {
   base_type::operator=(static_cast<base_type&&>(e));
   return *this;
 }
-#endif // defined(ASIO_HAS_MOVE)
 
 any_io_executor& any_io_executor::operator=(nullptr_t)
 {
@@ -85,7 +78,7 @@ any_io_executor::~any_io_executor()
 {
 }
 
-void any_io_executor::swap(any_io_executor& other) ASIO_NOEXCEPT
+void any_io_executor::swap(any_io_executor& other) noexcept
 {
   static_cast<base_type&>(*this).swap(static_cast<base_type&>(other));
 }

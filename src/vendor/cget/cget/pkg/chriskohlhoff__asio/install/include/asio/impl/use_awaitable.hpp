@@ -258,7 +258,7 @@ class async_result<use_awaitable_t<Executor>, R(Args...)>
 {
 public:
   typedef typename detail::awaitable_handler<
-      Executor, typename decay<Args>::type...> handler_type;
+      Executor, decay_t<Args>...> handler_type;
   typedef typename handler_type::awaitable_type return_type;
 
   template <typename Initiation, typename... InitArgs>

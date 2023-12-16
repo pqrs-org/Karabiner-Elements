@@ -38,7 +38,7 @@ namespace detail
     template <typename ByteType>
     struct byte_type
     {
-      typedef typename add_const<ByteType>::type type;
+      typedef add_const_t<ByteType> type;
     };
   };
 
@@ -80,7 +80,7 @@ namespace detail
   struct buffers_iterator_types<const_buffer, ByteType>
   {
     typedef const_buffer buffer_type;
-    typedef typename add_const<ByteType>::type byte_type;
+    typedef add_const_t<ByteType> byte_type;
     typedef const const_buffer* const_iterator;
   };
 
@@ -98,7 +98,7 @@ namespace detail
   struct buffers_iterator_types<const_buffers_1, ByteType>
   {
     typedef const_buffer buffer_type;
-    typedef typename add_const<ByteType>::type byte_type;
+    typedef add_const_t<ByteType> byte_type;
     typedef const const_buffer* const_iterator;
   };
 

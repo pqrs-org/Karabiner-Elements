@@ -53,65 +53,59 @@ public:
   typedef std::input_iterator_tag iterator_category;
 
   /// Construct an iterator that points to the specified address.
-  basic_address_iterator(const address_v4& addr) ASIO_NOEXCEPT
+  basic_address_iterator(const address_v4& addr) noexcept
     : address_(addr)
   {
   }
 
   /// Copy constructor.
-  basic_address_iterator(
-      const basic_address_iterator& other) ASIO_NOEXCEPT
+  basic_address_iterator(const basic_address_iterator& other) noexcept
     : address_(other.address_)
   {
   }
 
-#if defined(ASIO_HAS_MOVE)
   /// Move constructor.
-  basic_address_iterator(basic_address_iterator&& other) ASIO_NOEXCEPT
-    : address_(ASIO_MOVE_CAST(address_v4)(other.address_))
+  basic_address_iterator(basic_address_iterator&& other) noexcept
+    : address_(static_cast<address_v4&&>(other.address_))
   {
   }
-#endif // defined(ASIO_HAS_MOVE)
 
   /// Assignment operator.
   basic_address_iterator& operator=(
-      const basic_address_iterator& other) ASIO_NOEXCEPT
+      const basic_address_iterator& other) noexcept
   {
     address_ = other.address_;
     return *this;
   }
 
-#if defined(ASIO_HAS_MOVE)
   /// Move assignment operator.
-  basic_address_iterator& operator=(
-      basic_address_iterator&& other) ASIO_NOEXCEPT
+  basic_address_iterator& operator=(basic_address_iterator&& other) noexcept
   {
-    address_ = ASIO_MOVE_CAST(address_v4)(other.address_);
+    address_ = static_cast<address_v4&&>(other.address_);
     return *this;
   }
-#endif // defined(ASIO_HAS_MOVE)
 
   /// Dereference the iterator.
-  const address_v4& operator*() const ASIO_NOEXCEPT
+  const address_v4& operator*() const noexcept
   {
     return address_;
   }
 
   /// Dereference the iterator.
-  const address_v4* operator->() const ASIO_NOEXCEPT
+  const address_v4* operator->() const noexcept
   {
     return &address_;
   }
 
   /// Pre-increment operator.
-  basic_address_iterator& operator++() ASIO_NOEXCEPT
+  basic_address_iterator& operator++() noexcept
   {
     address_ = address_v4((address_.to_uint() + 1) & 0xFFFFFFFF);
     return *this;
   }
 
   /// Post-increment operator.
-  basic_address_iterator operator++(int) ASIO_NOEXCEPT
+  basic_address_iterator operator++(int) noexcept
   {
     basic_address_iterator tmp(*this);
     ++*this;
@@ -119,7 +113,7 @@ public:
   }
 
   /// Pre-decrement operator.
-  basic_address_iterator& operator--() ASIO_NOEXCEPT
+  basic_address_iterator& operator--() noexcept
   {
     address_ = address_v4((address_.to_uint() - 1) & 0xFFFFFFFF);
     return *this;

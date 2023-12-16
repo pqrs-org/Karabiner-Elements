@@ -17,7 +17,6 @@
 
 #include "asio/detail/config.hpp"
 #include "asio/detail/type_traits.hpp"
-#include "asio/detail/variadic_templates.hpp"
 #include "asio/associated_allocator.hpp"
 #include "asio/associator.hpp"
 #include "asio/async_result.hpp"
@@ -37,8 +36,7 @@ protected:
 };
 
 template <typename T>
-struct allocator_binder_result_type<T,
-  typename void_type<typename T::result_type>::type>
+struct allocator_binder_result_type<T, void_t<typename T::result_type>>
 {
   typedef typename T::result_type result_type;
 protected:
@@ -99,8 +97,7 @@ template <typename T, typename = void>
 struct allocator_binder_argument_type {};
 
 template <typename T>
-struct allocator_binder_argument_type<T,
-  typename void_type<typename T::argument_type>::type>
+struct allocator_binder_argument_type<T, void_t<typename T::argument_type>>
 {
   typedef typename T::argument_type argument_type;
 };
@@ -125,7 +122,7 @@ struct allocator_binder_argument_types {};
 
 template <typename T>
 struct allocator_binder_argument_types<T,
-  typename void_type<typename T::first_argument_type>::type>
+    void_t<typename T::first_argument_type>>
 {
   typedef typename T::first_argument_type first_argument_type;
   typedef typename T::second_argument_type second_argument_type;
@@ -143,21 +140,6 @@ struct allocator_binder_argument_type<R(&)(A1, A2)>
 {
   typedef A1 first_argument_type;
   typedef A2 second_argument_type;
-};
-
-// Helper to enable SFINAE on zero-argument operator() below.
-
-template <typename T, typename = void>
-struct allocator_binder_result_of0
-{
-  typedef void type;
-};
-
-template <typename T>
-struct allocator_binder_result_of0<T,
-  typename void_type<typename result_of<T()>::type>::type>
-{
-  typedef typename result_of<T()>::type type;
 };
 
 } // namespace detail
@@ -247,10 +229,9 @@ public:
    * @c U.
    */
   template <typename U>
-  allocator_binder(const allocator_type& s,
-      ASIO_MOVE_ARG(U) u)
+  allocator_binder(const allocator_type& s, U&& u)
     : allocator_(s),
-      target_(ASIO_MOVE_CAST(U)(u))
+      target_(static_cast<U&&>(u))
   {
   }
 
@@ -262,8 +243,7 @@ public:
   }
 
   /// Construct a copy, but specify a different allocator.
-  allocator_binder(const allocator_type& s,
-      const allocator_binder& other)
+  allocator_binder(const allocator_type& s, const allocator_binder& other)
     : allocator_(s),
       target_(other.get())
   {
@@ -276,8 +256,7 @@ public:
    * constructible from type @c U.
    */
   template <typename U, typename OtherAllocator>
-  allocator_binder(
-      const allocator_binder<U, OtherAllocator>& other)
+  allocator_binder(const allocator_binder<U, OtherAllocator>& other)
     : allocator_(other.get_allocator()),
       target_(other.get())
   {
@@ -297,13 +276,11 @@ public:
   {
   }
 
-#if defined(ASIO_HAS_MOVE) || defined(GENERATING_DOCUMENTATION)
-
   /// Move constructor.
   allocator_binder(allocator_binder&& other)
-    : allocator_(ASIO_MOVE_CAST(allocator_type)(
+    : allocator_(static_cast<allocator_type&&>(
           other.get_allocator())),
-      target_(ASIO_MOVE_CAST(T)(other.get()))
+      target_(static_cast<T&&>(other.get()))
   {
   }
 
@@ -311,7 +288,7 @@ public:
   allocator_binder(const allocator_type& s,
       allocator_binder&& other)
     : allocator_(s),
-      target_(ASIO_MOVE_CAST(T)(other.get()))
+      target_(static_cast<T&&>(other.get()))
   {
   }
 
@@ -319,9 +296,9 @@ public:
   template <typename U, typename OtherAllocator>
   allocator_binder(
       allocator_binder<U, OtherAllocator>&& other)
-    : allocator_(ASIO_MOVE_CAST(OtherAllocator)(
+    : allocator_(static_cast<OtherAllocator&&>(
           other.get_allocator())),
-      target_(ASIO_MOVE_CAST(U)(other.get()))
+      target_(static_cast<U&&>(other.get()))
   {
   }
 
@@ -331,11 +308,9 @@ public:
   allocator_binder(const allocator_type& s,
       allocator_binder<U, OtherAllocator>&& other)
     : allocator_(s),
-      target_(ASIO_MOVE_CAST(U)(other.get()))
+      target_(static_cast<U&&>(other.get()))
   {
   }
-
-#endif // defined(ASIO_HAS_MOVE) || defined(GENERATING_DOCUMENTATION)
 
   /// Destructor.
   ~allocator_binder()
@@ -343,111 +318,36 @@ public:
   }
 
   /// Obtain a reference to the target object.
-  target_type& get() ASIO_NOEXCEPT
+  target_type& get() noexcept
   {
     return target_;
   }
 
   /// Obtain a reference to the target object.
-  const target_type& get() const ASIO_NOEXCEPT
+  const target_type& get() const noexcept
   {
     return target_;
   }
 
   /// Obtain the associated allocator.
-  allocator_type get_allocator() const ASIO_NOEXCEPT
+  allocator_type get_allocator() const noexcept
   {
     return allocator_;
   }
 
-#if defined(GENERATING_DOCUMENTATION)
-
-  template <typename... Args> auto operator()(Args&& ...);
-  template <typename... Args> auto operator()(Args&& ...) const;
-
-#elif defined(ASIO_HAS_VARIADIC_TEMPLATES)
-
   /// Forwarding function call operator.
   template <typename... Args>
-  typename result_of<T(Args...)>::type operator()(
-      ASIO_MOVE_ARG(Args)... args)
+  result_of_t<T(Args...)> operator()(Args&&... args)
   {
-    return target_(ASIO_MOVE_CAST(Args)(args)...);
+    return target_(static_cast<Args&&>(args)...);
   }
 
   /// Forwarding function call operator.
   template <typename... Args>
-  typename result_of<T(Args...)>::type operator()(
-      ASIO_MOVE_ARG(Args)... args) const
+  result_of_t<T(Args...)> operator()(Args&&... args) const
   {
-    return target_(ASIO_MOVE_CAST(Args)(args)...);
+    return target_(static_cast<Args&&>(args)...);
   }
-
-#elif defined(ASIO_HAS_STD_TYPE_TRAITS) && !defined(_MSC_VER)
-
-  typename detail::allocator_binder_result_of0<T>::type operator()()
-  {
-    return target_();
-  }
-
-  typename detail::allocator_binder_result_of0<T>::type
-  operator()() const
-  {
-    return target_();
-  }
-
-#define ASIO_PRIVATE_BINDER_CALL_DEF(n) \
-  template <ASIO_VARIADIC_TPARAMS(n)> \
-  typename result_of<T(ASIO_VARIADIC_TARGS(n))>::type operator()( \
-      ASIO_VARIADIC_MOVE_PARAMS(n)) \
-  { \
-    return target_(ASIO_VARIADIC_MOVE_ARGS(n)); \
-  } \
-  \
-  template <ASIO_VARIADIC_TPARAMS(n)> \
-  typename result_of<T(ASIO_VARIADIC_TARGS(n))>::type operator()( \
-      ASIO_VARIADIC_MOVE_PARAMS(n)) const \
-  { \
-    return target_(ASIO_VARIADIC_MOVE_ARGS(n)); \
-  } \
-  /**/
-  ASIO_VARIADIC_GENERATE(ASIO_PRIVATE_BINDER_CALL_DEF)
-#undef ASIO_PRIVATE_BINDER_CALL_DEF
-
-#else // defined(ASIO_HAS_STD_TYPE_TRAITS) && !defined(_MSC_VER)
-
-  typedef typename detail::allocator_binder_result_type<
-    T>::result_type_or_void result_type_or_void;
-
-  result_type_or_void operator()()
-  {
-    return target_();
-  }
-
-  result_type_or_void operator()() const
-  {
-    return target_();
-  }
-
-#define ASIO_PRIVATE_BINDER_CALL_DEF(n) \
-  template <ASIO_VARIADIC_TPARAMS(n)> \
-  result_type_or_void operator()( \
-      ASIO_VARIADIC_MOVE_PARAMS(n)) \
-  { \
-    return target_(ASIO_VARIADIC_MOVE_ARGS(n)); \
-  } \
-  \
-  template <ASIO_VARIADIC_TPARAMS(n)> \
-  result_type_or_void operator()( \
-      ASIO_VARIADIC_MOVE_PARAMS(n)) const \
-  { \
-    return target_(ASIO_VARIADIC_MOVE_ARGS(n)); \
-  } \
-  /**/
-  ASIO_VARIADIC_GENERATE(ASIO_PRIVATE_BINDER_CALL_DEF)
-#undef ASIO_PRIVATE_BINDER_CALL_DEF
-
-#endif // defined(ASIO_HAS_STD_TYPE_TRAITS) && !defined(_MSC_VER)
 
 private:
   Allocator allocator_;
@@ -457,34 +357,49 @@ private:
 /// Associate an object of type @c T with an allocator of type
 /// @c Allocator.
 template <typename Allocator, typename T>
-ASIO_NODISCARD inline allocator_binder<typename decay<T>::type, Allocator>
-bind_allocator(const Allocator& s, ASIO_MOVE_ARG(T) t)
+ASIO_NODISCARD inline allocator_binder<decay_t<T>, Allocator>
+bind_allocator(const Allocator& s, T&& t)
 {
-  return allocator_binder<
-    typename decay<T>::type, Allocator>(
-      s, ASIO_MOVE_CAST(T)(t));
+  return allocator_binder<decay_t<T>, Allocator>(s, static_cast<T&&>(t));
 }
 
 #if !defined(GENERATING_DOCUMENTATION)
 
 namespace detail {
 
-template <typename TargetAsyncResult,
-  typename Allocator, typename = void>
-struct allocator_binder_async_result_completion_handler_type
+template <typename TargetAsyncResult, typename Allocator, typename = void>
+class allocator_binder_completion_handler_async_result
 {
+public:
+  template <typename T>
+  explicit allocator_binder_completion_handler_async_result(T&)
+  {
+  }
 };
 
 template <typename TargetAsyncResult, typename Allocator>
-struct allocator_binder_async_result_completion_handler_type<
-  TargetAsyncResult, Allocator,
-  typename void_type<
-    typename TargetAsyncResult::completion_handler_type
-  >::type>
+class allocator_binder_completion_handler_async_result<
+    TargetAsyncResult, Allocator,
+    void_t<typename TargetAsyncResult::completion_handler_type>>
 {
+public:
   typedef allocator_binder<
     typename TargetAsyncResult::completion_handler_type, Allocator>
       completion_handler_type;
+
+  explicit allocator_binder_completion_handler_async_result(
+      typename TargetAsyncResult::completion_handler_type& handler)
+    : target_(handler)
+  {
+  }
+
+  typename TargetAsyncResult::return_type get()
+  {
+    return target_.get();
+  }
+
+private:
+  TargetAsyncResult target_;
 };
 
 template <typename TargetAsyncResult, typename = void>
@@ -494,10 +409,7 @@ struct allocator_binder_async_result_return_type
 
 template <typename TargetAsyncResult>
 struct allocator_binder_async_result_return_type<
-  TargetAsyncResult,
-  typename void_type<
-    typename TargetAsyncResult::return_type
-  >::type>
+    TargetAsyncResult, void_type<typename TargetAsyncResult::return_type>>
 {
   typedef typename TargetAsyncResult::return_type return_type;
 };
@@ -506,219 +418,98 @@ struct allocator_binder_async_result_return_type<
 
 template <typename T, typename Allocator, typename Signature>
 class async_result<allocator_binder<T, Allocator>, Signature> :
-  public detail::allocator_binder_async_result_completion_handler_type<
-    async_result<T, Signature>, Allocator>,
+  public detail::allocator_binder_completion_handler_async_result<
+      async_result<T, Signature>, Allocator>,
   public detail::allocator_binder_async_result_return_type<
-    async_result<T, Signature> >
+      async_result<T, Signature>>
 {
 public:
   explicit async_result(allocator_binder<T, Allocator>& b)
-    : target_(b.get())
+    : detail::allocator_binder_completion_handler_async_result<
+        async_result<T, Signature>, Allocator>(b.get())
   {
-  }
-
-  typename async_result<T, Signature>::return_type get()
-  {
-    return target_.get();
   }
 
   template <typename Initiation>
   struct init_wrapper
   {
     template <typename Init>
-    init_wrapper(const Allocator& allocator, ASIO_MOVE_ARG(Init) init)
+    init_wrapper(const Allocator& allocator, Init&& init)
       : allocator_(allocator),
-        initiation_(ASIO_MOVE_CAST(Init)(init))
+        initiation_(static_cast<Init&&>(init))
     {
-    }
-
-#if defined(ASIO_HAS_VARIADIC_TEMPLATES)
-
-    template <typename Handler, typename... Args>
-    void operator()(
-        ASIO_MOVE_ARG(Handler) handler,
-        ASIO_MOVE_ARG(Args)... args)
-    {
-      ASIO_MOVE_CAST(Initiation)(initiation_)(
-          allocator_binder<
-            typename decay<Handler>::type, Allocator>(
-              allocator_, ASIO_MOVE_CAST(Handler)(handler)),
-          ASIO_MOVE_CAST(Args)(args)...);
     }
 
     template <typename Handler, typename... Args>
-    void operator()(
-        ASIO_MOVE_ARG(Handler) handler,
-        ASIO_MOVE_ARG(Args)... args) const
+    void operator()(Handler&& handler, Args&&... args)
+    {
+      static_cast<Initiation&&>(initiation_)(
+          allocator_binder<decay_t<Handler>, Allocator>(
+              allocator_, static_cast<Handler&&>(handler)),
+          static_cast<Args&&>(args)...);
+    }
+
+    template <typename Handler, typename... Args>
+    void operator()(Handler&& handler, Args&&... args) const
     {
       initiation_(
-          allocator_binder<
-            typename decay<Handler>::type, Allocator>(
-              allocator_, ASIO_MOVE_CAST(Handler)(handler)),
-          ASIO_MOVE_CAST(Args)(args)...);
+          allocator_binder<decay_t<Handler>, Allocator>(
+              allocator_, static_cast<Handler&&>(handler)),
+          static_cast<Args&&>(args)...);
     }
-
-#else // defined(ASIO_HAS_VARIADIC_TEMPLATES)
-
-    template <typename Handler>
-    void operator()(
-        ASIO_MOVE_ARG(Handler) handler)
-    {
-      ASIO_MOVE_CAST(Initiation)(initiation_)(
-          allocator_binder<
-            typename decay<Handler>::type, Allocator>(
-              allocator_, ASIO_MOVE_CAST(Handler)(handler)));
-    }
-
-    template <typename Handler>
-    void operator()(
-        ASIO_MOVE_ARG(Handler) handler) const
-    {
-      initiation_(
-          allocator_binder<
-            typename decay<Handler>::type, Allocator>(
-              allocator_, ASIO_MOVE_CAST(Handler)(handler)));
-    }
-
-#define ASIO_PRIVATE_INIT_WRAPPER_DEF(n) \
-    template <typename Handler, ASIO_VARIADIC_TPARAMS(n)> \
-    void operator()( \
-        ASIO_MOVE_ARG(Handler) handler, \
-        ASIO_VARIADIC_MOVE_PARAMS(n)) \
-    { \
-      ASIO_MOVE_CAST(Initiation)(initiation_)( \
-          allocator_binder< \
-            typename decay<Handler>::type, Allocator>( \
-              allocator_, ASIO_MOVE_CAST(Handler)(handler)), \
-          ASIO_VARIADIC_MOVE_ARGS(n)); \
-    } \
-    \
-    template <typename Handler, ASIO_VARIADIC_TPARAMS(n)> \
-    void operator()( \
-        ASIO_MOVE_ARG(Handler) handler, \
-        ASIO_VARIADIC_MOVE_PARAMS(n)) const \
-    { \
-      initiation_( \
-          allocator_binder< \
-            typename decay<Handler>::type, Allocator>( \
-              allocator_, ASIO_MOVE_CAST(Handler)(handler)), \
-          ASIO_VARIADIC_MOVE_ARGS(n)); \
-    } \
-    /**/
-    ASIO_VARIADIC_GENERATE(ASIO_PRIVATE_INIT_WRAPPER_DEF)
-#undef ASIO_PRIVATE_INIT_WRAPPER_DEF
-
-#endif // defined(ASIO_HAS_VARIADIC_TEMPLATES)
 
     Allocator allocator_;
     Initiation initiation_;
   };
 
-#if defined(ASIO_HAS_VARIADIC_TEMPLATES)
-
   template <typename Initiation, typename RawCompletionToken, typename... Args>
-  static ASIO_INITFN_DEDUCED_RESULT_TYPE(T, Signature,
-    (async_initiate<T, Signature>(
-        declval<init_wrapper<typename decay<Initiation>::type> >(),
-        declval<RawCompletionToken>().get(),
-        declval<ASIO_MOVE_ARG(Args)>()...)))
-  initiate(
-      ASIO_MOVE_ARG(Initiation) initiation,
-      ASIO_MOVE_ARG(RawCompletionToken) token,
-      ASIO_MOVE_ARG(Args)... args)
+  static auto initiate(Initiation&& initiation,
+      RawCompletionToken&& token, Args&&... args)
+    -> decltype(
+      async_initiate<T, Signature>(
+        declval<init_wrapper<decay_t<Initiation>>>(),
+        token.get(), static_cast<Args&&>(args)...))
   {
     return async_initiate<T, Signature>(
-        init_wrapper<typename decay<Initiation>::type>(
-          token.get_allocator(),
-          ASIO_MOVE_CAST(Initiation)(initiation)),
-        token.get(), ASIO_MOVE_CAST(Args)(args)...);
+        init_wrapper<decay_t<Initiation>>(token.get_allocator(),
+          static_cast<Initiation&&>(initiation)),
+        token.get(), static_cast<Args&&>(args)...);
   }
-
-#else // defined(ASIO_HAS_VARIADIC_TEMPLATES)
-
-  template <typename Initiation, typename RawCompletionToken>
-  static ASIO_INITFN_DEDUCED_RESULT_TYPE(T, Signature,
-    (async_initiate<T, Signature>(
-        declval<init_wrapper<typename decay<Initiation>::type> >(),
-        declval<RawCompletionToken>().get())))
-  initiate(
-      ASIO_MOVE_ARG(Initiation) initiation,
-      ASIO_MOVE_ARG(RawCompletionToken) token)
-  {
-    return async_initiate<T, Signature>(
-        init_wrapper<typename decay<Initiation>::type>(
-          token.get_allocator(),
-          ASIO_MOVE_CAST(Initiation)(initiation)),
-        token.get());
-  }
-
-#define ASIO_PRIVATE_INITIATE_DEF(n) \
-  template <typename Initiation, typename RawCompletionToken, \
-      ASIO_VARIADIC_TPARAMS(n)> \
-  static ASIO_INITFN_DEDUCED_RESULT_TYPE(T, Signature, \
-    (async_initiate<T, Signature>( \
-        declval<init_wrapper<typename decay<Initiation>::type> >(), \
-        declval<RawCompletionToken>().get(), \
-        ASIO_VARIADIC_MOVE_DECLVAL(n)))) \
-  initiate( \
-      ASIO_MOVE_ARG(Initiation) initiation, \
-      ASIO_MOVE_ARG(RawCompletionToken) token, \
-      ASIO_VARIADIC_MOVE_PARAMS(n)) \
-  { \
-    return async_initiate<T, Signature>( \
-        init_wrapper<typename decay<Initiation>::type>( \
-          token.get_allocator(), \
-          ASIO_MOVE_CAST(Initiation)(initiation)), \
-        token.get(), ASIO_VARIADIC_MOVE_ARGS(n)); \
-  } \
-  /**/
-  ASIO_VARIADIC_GENERATE(ASIO_PRIVATE_INITIATE_DEF)
-#undef ASIO_PRIVATE_INITIATE_DEF
-
-#endif // defined(ASIO_HAS_VARIADIC_TEMPLATES)
 
 private:
-  async_result(const async_result&) ASIO_DELETED;
-  async_result& operator=(const async_result&) ASIO_DELETED;
+  async_result(const async_result&) = delete;
+  async_result& operator=(const async_result&) = delete;
 
   async_result<T, Signature> target_;
 };
 
 template <template <typename, typename> class Associator,
     typename T, typename Allocator, typename DefaultCandidate>
-struct associator<Associator,
-    allocator_binder<T, Allocator>,
-    DefaultCandidate>
+struct associator<Associator, allocator_binder<T, Allocator>, DefaultCandidate>
   : Associator<T, DefaultCandidate>
 {
-  static typename Associator<T, DefaultCandidate>::type
-  get(const allocator_binder<T, Allocator>& b) ASIO_NOEXCEPT
+  static typename Associator<T, DefaultCandidate>::type get(
+      const allocator_binder<T, Allocator>& b) noexcept
   {
     return Associator<T, DefaultCandidate>::get(b.get());
   }
 
-  static ASIO_AUTO_RETURN_TYPE_PREFIX2(
-      typename Associator<T, DefaultCandidate>::type)
-  get(const allocator_binder<T, Allocator>& b,
-      const DefaultCandidate& c) ASIO_NOEXCEPT
-    ASIO_AUTO_RETURN_TYPE_SUFFIX((
-      Associator<T, DefaultCandidate>::get(b.get(), c)))
+  static auto get(const allocator_binder<T, Allocator>& b,
+      const DefaultCandidate& c) noexcept
+    -> decltype(Associator<T, DefaultCandidate>::get(b.get(), c))
   {
     return Associator<T, DefaultCandidate>::get(b.get(), c);
   }
 };
 
 template <typename T, typename Allocator, typename Allocator1>
-struct associated_allocator<
-    allocator_binder<T, Allocator>,
-    Allocator1>
+struct associated_allocator<allocator_binder<T, Allocator>, Allocator1>
 {
   typedef Allocator type;
 
-  static ASIO_AUTO_RETURN_TYPE_PREFIX(type) get(
-      const allocator_binder<T, Allocator>& b,
-      const Allocator1& = Allocator1()) ASIO_NOEXCEPT
-    ASIO_AUTO_RETURN_TYPE_SUFFIX((b.get_allocator()))
+  static auto get(const allocator_binder<T, Allocator>& b,
+      const Allocator1& = Allocator1()) noexcept
+    -> decltype(b.get_allocator())
   {
     return b.get_allocator();
   }

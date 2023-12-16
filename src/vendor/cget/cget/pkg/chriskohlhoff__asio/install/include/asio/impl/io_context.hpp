@@ -50,12 +50,10 @@ inline detail::io_context_impl& use_service<detail::io_context_impl>(
 #endif // !defined(GENERATING_DOCUMENTATION)
 
 inline io_context::executor_type
-io_context::get_executor() ASIO_NOEXCEPT
+io_context::get_executor() noexcept
 {
   return executor_type(*this);
 }
-
-#if defined(ASIO_HAS_CHRONO)
 
 template <typename Rep, typename Period>
 std::size_t io_context::run_for(
@@ -108,8 +106,6 @@ std::size_t io_context::run_one_until(
   return 0;
 }
 
-#endif // defined(ASIO_HAS_CHRONO)
-
 #if !defined(ASIO_NO_DEPRECATED)
 
 inline void io_context::reset()
@@ -120,7 +116,7 @@ inline void io_context::reset()
 struct io_context::initiate_dispatch
 {
   template <typename LegacyCompletionHandler>
-  void operator()(ASIO_MOVE_ARG(LegacyCompletionHandler) handler,
+  void operator()(LegacyCompletionHandler&& handler,
       io_context* self) const
   {
     // If you get an error on the following line it means that your handler does
@@ -132,14 +128,13 @@ struct io_context::initiate_dispatch
     if (self->impl_.can_dispatch())
     {
       detail::fenced_block b(detail::fenced_block::full);
-      asio_handler_invoke_helpers::invoke(
-          handler2.value, handler2.value);
+      static_cast<decay_t<LegacyCompletionHandler>&&>(handler2.value)();
     }
     else
     {
       // Allocate and construct an operation to wrap the handler.
       typedef detail::completion_handler<
-        typename decay<LegacyCompletionHandler>::type, executor_type> op;
+        decay_t<LegacyCompletionHandler>, executor_type> op;
       typename op::ptr p = { detail::addressof(handler2.value),
         op::ptr::allocate(handler2.value), 0 };
       p.p = new (p.v) op(handler2.value, self->get_executor());
@@ -154,11 +149,10 @@ struct io_context::initiate_dispatch
 };
 
 template <typename LegacyCompletionHandler>
-ASIO_INITFN_AUTO_RESULT_TYPE_PREFIX(LegacyCompletionHandler, void ())
-io_context::dispatch(ASIO_MOVE_ARG(LegacyCompletionHandler) handler)
-  ASIO_INITFN_AUTO_RESULT_TYPE_SUFFIX((
+auto io_context::dispatch(LegacyCompletionHandler&& handler)
+  -> decltype(
     async_initiate<LegacyCompletionHandler, void ()>(
-        declval<initiate_dispatch>(), handler, this)))
+      declval<initiate_dispatch>(), handler, this))
 {
   return async_initiate<LegacyCompletionHandler, void ()>(
       initiate_dispatch(), handler, this);
@@ -167,7 +161,7 @@ io_context::dispatch(ASIO_MOVE_ARG(LegacyCompletionHandler) handler)
 struct io_context::initiate_post
 {
   template <typename LegacyCompletionHandler>
-  void operator()(ASIO_MOVE_ARG(LegacyCompletionHandler) handler,
+  void operator()(LegacyCompletionHandler&& handler,
       io_context* self) const
   {
     // If you get an error on the following line it means that your handler does
@@ -182,7 +176,7 @@ struct io_context::initiate_post
 
     // Allocate and construct an operation to wrap the handler.
     typedef detail::completion_handler<
-      typename decay<LegacyCompletionHandler>::type, executor_type> op;
+      decay_t<LegacyCompletionHandler>, executor_type> op;
     typename op::ptr p = { detail::addressof(handler2.value),
         op::ptr::allocate(handler2.value), 0 };
     p.p = new (p.v) op(handler2.value, self->get_executor());
@@ -196,11 +190,10 @@ struct io_context::initiate_post
 };
 
 template <typename LegacyCompletionHandler>
-ASIO_INITFN_AUTO_RESULT_TYPE_PREFIX(LegacyCompletionHandler, void ())
-io_context::post(ASIO_MOVE_ARG(LegacyCompletionHandler) handler)
-  ASIO_INITFN_AUTO_RESULT_TYPE_SUFFIX((
+auto io_context::post(LegacyCompletionHandler&& handler)
+  -> decltype(
     async_initiate<LegacyCompletionHandler, void ()>(
-        declval<initiate_post>(), handler, this)))
+      declval<initiate_post>(), handler, this))
 {
   return async_initiate<LegacyCompletionHandler, void ()>(
       initiate_post(), handler, this);
@@ -222,7 +215,7 @@ io_context::wrap(Handler handler)
 template <typename Allocator, uintptr_t Bits>
 io_context::basic_executor_type<Allocator, Bits>&
 io_context::basic_executor_type<Allocator, Bits>::operator=(
-    const basic_executor_type& other) ASIO_NOEXCEPT
+    const basic_executor_type& other) noexcept
 {
   if (this != &other)
   {
@@ -240,11 +233,10 @@ io_context::basic_executor_type<Allocator, Bits>::operator=(
   return *this;
 }
 
-#if defined(ASIO_HAS_MOVE)
 template <typename Allocator, uintptr_t Bits>
 io_context::basic_executor_type<Allocator, Bits>&
 io_context::basic_executor_type<Allocator, Bits>::operator=(
-    basic_executor_type&& other) ASIO_NOEXCEPT
+    basic_executor_type&& other) noexcept
 {
   if (this != &other)
   {
@@ -260,11 +252,10 @@ io_context::basic_executor_type<Allocator, Bits>::operator=(
   }
   return *this;
 }
-#endif // defined(ASIO_HAS_MOVE)
 
 template <typename Allocator, uintptr_t Bits>
 inline bool io_context::basic_executor_type<Allocator,
-    Bits>::running_in_this_thread() const ASIO_NOEXCEPT
+    Bits>::running_in_this_thread() const noexcept
 {
   return context_ptr()->impl_.can_dispatch();
 }
@@ -272,36 +263,32 @@ inline bool io_context::basic_executor_type<Allocator,
 template <typename Allocator, uintptr_t Bits>
 template <typename Function>
 void io_context::basic_executor_type<Allocator, Bits>::execute(
-    ASIO_MOVE_ARG(Function) f) const
+    Function&& f) const
 {
-  typedef typename decay<Function>::type function_type;
+  typedef decay_t<Function> function_type;
 
   // Invoke immediately if the blocking.possibly property is enabled and we are
   // already inside the thread pool.
   if ((bits() & blocking_never) == 0 && context_ptr()->impl_.can_dispatch())
   {
     // Make a local, non-const copy of the function.
-    function_type tmp(ASIO_MOVE_CAST(Function)(f));
+    function_type tmp(static_cast<Function&&>(f));
 
-#if defined(ASIO_HAS_STD_EXCEPTION_PTR) \
-  && !defined(ASIO_NO_EXCEPTIONS)
+#if !defined(ASIO_NO_EXCEPTIONS)
     try
     {
-#endif // defined(ASIO_HAS_STD_EXCEPTION_PTR)
-       //   && !defined(ASIO_NO_EXCEPTIONS)
+#endif // !defined(ASIO_NO_EXCEPTIONS)
       detail::fenced_block b(detail::fenced_block::full);
-      asio_handler_invoke_helpers::invoke(tmp, tmp);
+      static_cast<function_type&&>(tmp)();
       return;
-#if defined(ASIO_HAS_STD_EXCEPTION_PTR) \
-  && !defined(ASIO_NO_EXCEPTIONS)
+#if !defined(ASIO_NO_EXCEPTIONS)
     }
     catch (...)
     {
       context_ptr()->impl_.capture_current_exception();
       return;
     }
-#endif // defined(ASIO_HAS_STD_EXCEPTION_PTR)
-       //   && !defined(ASIO_NO_EXCEPTIONS)
+#endif // !defined(ASIO_NO_EXCEPTIONS)
   }
 
   // Allocate and construct an operation to wrap the function.
@@ -309,7 +296,7 @@ void io_context::basic_executor_type<Allocator, Bits>::execute(
   typename op::ptr p = {
       detail::addressof(static_cast<const Allocator&>(*this)),
       op::ptr::allocate(static_cast<const Allocator&>(*this)), 0 };
-  p.p = new (p.v) op(ASIO_MOVE_CAST(Function)(f),
+  p.p = new (p.v) op(static_cast<Function&&>(f),
       static_cast<const Allocator&>(*this));
 
   ASIO_HANDLER_CREATION((*context_ptr(), *p.p,
@@ -323,21 +310,21 @@ void io_context::basic_executor_type<Allocator, Bits>::execute(
 #if !defined(ASIO_NO_TS_EXECUTORS)
 template <typename Allocator, uintptr_t Bits>
 inline io_context& io_context::basic_executor_type<
-    Allocator, Bits>::context() const ASIO_NOEXCEPT
+    Allocator, Bits>::context() const noexcept
 {
   return *context_ptr();
 }
 
 template <typename Allocator, uintptr_t Bits>
 inline void io_context::basic_executor_type<Allocator,
-    Bits>::on_work_started() const ASIO_NOEXCEPT
+    Bits>::on_work_started() const noexcept
 {
   context_ptr()->impl_.work_started();
 }
 
 template <typename Allocator, uintptr_t Bits>
 inline void io_context::basic_executor_type<Allocator,
-    Bits>::on_work_finished() const ASIO_NOEXCEPT
+    Bits>::on_work_finished() const noexcept
 {
   context_ptr()->impl_.work_finished();
 }
@@ -345,18 +332,18 @@ inline void io_context::basic_executor_type<Allocator,
 template <typename Allocator, uintptr_t Bits>
 template <typename Function, typename OtherAllocator>
 void io_context::basic_executor_type<Allocator, Bits>::dispatch(
-    ASIO_MOVE_ARG(Function) f, const OtherAllocator& a) const
+    Function&& f, const OtherAllocator& a) const
 {
-  typedef typename decay<Function>::type function_type;
+  typedef decay_t<Function> function_type;
 
   // Invoke immediately if we are already inside the thread pool.
   if (context_ptr()->impl_.can_dispatch())
   {
     // Make a local, non-const copy of the function.
-    function_type tmp(ASIO_MOVE_CAST(Function)(f));
+    function_type tmp(static_cast<Function&&>(f));
 
     detail::fenced_block b(detail::fenced_block::full);
-    asio_handler_invoke_helpers::invoke(tmp, tmp);
+    static_cast<function_type&&>(tmp)();
     return;
   }
 
@@ -364,7 +351,7 @@ void io_context::basic_executor_type<Allocator, Bits>::dispatch(
   typedef detail::executor_op<function_type,
       OtherAllocator, detail::operation> op;
   typename op::ptr p = { detail::addressof(a), op::ptr::allocate(a), 0 };
-  p.p = new (p.v) op(ASIO_MOVE_CAST(Function)(f), a);
+  p.p = new (p.v) op(static_cast<Function&&>(f), a);
 
   ASIO_HANDLER_CREATION((*context_ptr(), *p.p,
         "io_context", context_ptr(), 0, "dispatch"));
@@ -376,15 +363,13 @@ void io_context::basic_executor_type<Allocator, Bits>::dispatch(
 template <typename Allocator, uintptr_t Bits>
 template <typename Function, typename OtherAllocator>
 void io_context::basic_executor_type<Allocator, Bits>::post(
-    ASIO_MOVE_ARG(Function) f, const OtherAllocator& a) const
+    Function&& f, const OtherAllocator& a) const
 {
-  typedef typename decay<Function>::type function_type;
-
   // Allocate and construct an operation to wrap the function.
-  typedef detail::executor_op<function_type,
+  typedef detail::executor_op<decay_t<Function>,
       OtherAllocator, detail::operation> op;
   typename op::ptr p = { detail::addressof(a), op::ptr::allocate(a), 0 };
-  p.p = new (p.v) op(ASIO_MOVE_CAST(Function)(f), a);
+  p.p = new (p.v) op(static_cast<Function&&>(f), a);
 
   ASIO_HANDLER_CREATION((*context_ptr(), *p.p,
         "io_context", context_ptr(), 0, "post"));
@@ -396,15 +381,13 @@ void io_context::basic_executor_type<Allocator, Bits>::post(
 template <typename Allocator, uintptr_t Bits>
 template <typename Function, typename OtherAllocator>
 void io_context::basic_executor_type<Allocator, Bits>::defer(
-    ASIO_MOVE_ARG(Function) f, const OtherAllocator& a) const
+    Function&& f, const OtherAllocator& a) const
 {
-  typedef typename decay<Function>::type function_type;
-
   // Allocate and construct an operation to wrap the function.
-  typedef detail::executor_op<function_type,
+  typedef detail::executor_op<decay_t<Function>,
       OtherAllocator, detail::operation> op;
   typename op::ptr p = { detail::addressof(a), op::ptr::allocate(a), 0 };
-  p.p = new (p.v) op(ASIO_MOVE_CAST(Function)(f), a);
+  p.p = new (p.v) op(static_cast<Function&&>(f), a);
 
   ASIO_HANDLER_CREATION((*context_ptr(), *p.p,
         "io_context", context_ptr(), 0, "defer"));

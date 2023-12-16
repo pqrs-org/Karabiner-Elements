@@ -107,11 +107,10 @@ public:
       start_(0),
       want_(engine::want_nothing),
       bytes_transferred_(0),
-      handler_(ASIO_MOVE_CAST(Handler)(handler))
+      handler_(static_cast<Handler&&>(handler))
   {
   }
 
-#if defined(ASIO_HAS_MOVE)
   io_op(const io_op& other)
     : asio::detail::base_from_cancellation_state<Handler>(other),
       next_layer_(other.next_layer_),
@@ -127,20 +126,18 @@ public:
 
   io_op(io_op&& other)
     : asio::detail::base_from_cancellation_state<Handler>(
-        ASIO_MOVE_CAST(
-          asio::detail::base_from_cancellation_state<Handler>)(
-            other)),
+        static_cast<
+          asio::detail::base_from_cancellation_state<Handler>&&>(other)),
       next_layer_(other.next_layer_),
       core_(other.core_),
-      op_(ASIO_MOVE_CAST(Operation)(other.op_)),
+      op_(static_cast<Operation&&>(other.op_)),
       start_(other.start_),
       want_(other.want_),
       ec_(other.ec_),
       bytes_transferred_(other.bytes_transferred_),
-      handler_(ASIO_MOVE_CAST(Handler)(other.handler_))
+      handler_(static_cast<Handler&&>(other.handler_))
   {
   }
-#endif // defined(ASIO_HAS_MOVE)
 
   void operator()(asio::error_code ec,
       std::size_t bytes_transferred = ~std::size_t(0), int start = 0)
@@ -177,7 +174,7 @@ public:
             // Start reading some data from the underlying transport.
             next_layer_.async_read_some(
                 asio::buffer(core_.input_buffer_),
-                ASIO_MOVE_CAST(io_op)(*this));
+                static_cast<io_op&&>(*this));
           }
           else
           {
@@ -185,7 +182,7 @@ public:
                   __FILE__, __LINE__, Operation::tracking_name()));
 
             // Wait until the current read operation completes.
-            core_.pending_read_.async_wait(ASIO_MOVE_CAST(io_op)(*this));
+            core_.pending_read_.async_wait(static_cast<io_op&&>(*this));
           }
 
           // Yield control until asynchronous operation completes. Control
@@ -210,7 +207,7 @@ public:
             // Start writing all the data to the underlying transport.
             asio::async_write(next_layer_,
                 core_.engine_.get_output(core_.output_buffer_),
-                ASIO_MOVE_CAST(io_op)(*this));
+                static_cast<io_op&&>(*this));
           }
           else
           {
@@ -218,7 +215,7 @@ public:
                   __FILE__, __LINE__, Operation::tracking_name()));
 
             // Wait until the current write operation completes.
-            core_.pending_write_.async_wait(ASIO_MOVE_CAST(io_op)(*this));
+            core_.pending_write_.async_wait(static_cast<io_op&&>(*this));
           }
 
           // Yield control until asynchronous operation completes. Control
@@ -239,7 +236,7 @@ public:
 
             next_layer_.async_read_some(
                 asio::buffer(core_.input_buffer_, 0),
-                ASIO_MOVE_CAST(io_op)(*this));
+                static_cast<io_op&&>(*this));
 
             // Yield control until asynchronous operation completes. Control
             // resumes at the "default:" label below.
@@ -331,63 +328,11 @@ public:
 };
 
 template <typename Stream, typename Operation, typename Handler>
-inline asio_handler_allocate_is_deprecated
-asio_handler_allocate(std::size_t size,
-    io_op<Stream, Operation, Handler>* this_handler)
-{
-#if defined(ASIO_NO_DEPRECATED)
-  asio_handler_alloc_helpers::allocate(size, this_handler->handler_);
-  return asio_handler_allocate_is_no_longer_used();
-#else // defined(ASIO_NO_DEPRECATED)
-  return asio_handler_alloc_helpers::allocate(
-      size, this_handler->handler_);
-#endif // defined(ASIO_NO_DEPRECATED)
-}
-
-template <typename Stream, typename Operation, typename Handler>
-inline asio_handler_deallocate_is_deprecated
-asio_handler_deallocate(void* pointer, std::size_t size,
-    io_op<Stream, Operation, Handler>* this_handler)
-{
-  asio_handler_alloc_helpers::deallocate(
-      pointer, size, this_handler->handler_);
-#if defined(ASIO_NO_DEPRECATED)
-  return asio_handler_deallocate_is_no_longer_used();
-#endif // defined(ASIO_NO_DEPRECATED)
-}
-
-template <typename Stream, typename Operation, typename Handler>
 inline bool asio_handler_is_continuation(
     io_op<Stream, Operation, Handler>* this_handler)
 {
   return this_handler->start_ == 0 ? true
     : asio_handler_cont_helpers::is_continuation(this_handler->handler_);
-}
-
-template <typename Function, typename Stream,
-    typename Operation, typename Handler>
-inline asio_handler_invoke_is_deprecated
-asio_handler_invoke(Function& function,
-    io_op<Stream, Operation, Handler>* this_handler)
-{
-  asio_handler_invoke_helpers::invoke(
-      function, this_handler->handler_);
-#if defined(ASIO_NO_DEPRECATED)
-  return asio_handler_invoke_is_no_longer_used();
-#endif // defined(ASIO_NO_DEPRECATED)
-}
-
-template <typename Function, typename Stream,
-    typename Operation, typename Handler>
-inline asio_handler_invoke_is_deprecated
-asio_handler_invoke(const Function& function,
-    io_op<Stream, Operation, Handler>* this_handler)
-{
-  asio_handler_invoke_helpers::invoke(
-      function, this_handler->handler_);
-#if defined(ASIO_NO_DEPRECATED)
-  return asio_handler_invoke_is_no_longer_used();
-#endif // defined(ASIO_NO_DEPRECATED)
 }
 
 template <typename Stream, typename Operation, typename Handler>
@@ -410,19 +355,15 @@ struct associator<Associator,
     DefaultCandidate>
   : Associator<Handler, DefaultCandidate>
 {
-  static typename Associator<Handler, DefaultCandidate>::type
-  get(const ssl::detail::io_op<Stream, Operation, Handler>& h)
-    ASIO_NOEXCEPT
+  static typename Associator<Handler, DefaultCandidate>::type get(
+      const ssl::detail::io_op<Stream, Operation, Handler>& h) noexcept
   {
     return Associator<Handler, DefaultCandidate>::get(h.handler_);
   }
 
-  static ASIO_AUTO_RETURN_TYPE_PREFIX2(
-      typename Associator<Handler, DefaultCandidate>::type)
-  get(const ssl::detail::io_op<Stream, Operation, Handler>& h,
-      const DefaultCandidate& c) ASIO_NOEXCEPT
-    ASIO_AUTO_RETURN_TYPE_SUFFIX((
-      Associator<Handler, DefaultCandidate>::get(h.handler_, c)))
+  static auto get(const ssl::detail::io_op<Stream, Operation, Handler>& h,
+      const DefaultCandidate& c) noexcept
+    -> decltype(Associator<Handler, DefaultCandidate>::get(h.handler_, c))
   {
     return Associator<Handler, DefaultCandidate>::get(h.handler_, c);
   }

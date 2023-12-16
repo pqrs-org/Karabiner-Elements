@@ -483,22 +483,18 @@ std::size_t write_at(SyncRandomAccessWriteDevice& d, uint64_t offset,
  */
 template <typename AsyncRandomAccessWriteDevice, typename ConstBufferSequence,
     ASIO_COMPLETION_TOKEN_FOR(void (asio::error_code,
-      std::size_t)) WriteToken
-        ASIO_DEFAULT_COMPLETION_TOKEN_TYPE(
-          typename AsyncRandomAccessWriteDevice::executor_type)>
-ASIO_INITFN_AUTO_RESULT_TYPE_PREFIX(WriteToken,
-    void (asio::error_code, std::size_t))
-async_write_at(AsyncRandomAccessWriteDevice& d, uint64_t offset,
-    const ConstBufferSequence& buffers,
-    ASIO_MOVE_ARG(WriteToken) token
-      ASIO_DEFAULT_COMPLETION_TOKEN(
-        typename AsyncRandomAccessWriteDevice::executor_type))
-  ASIO_INITFN_AUTO_RESULT_TYPE_SUFFIX((
+      std::size_t)) WriteToken = default_completion_token_t<
+        typename AsyncRandomAccessWriteDevice::executor_type>>
+auto async_write_at(AsyncRandomAccessWriteDevice& d,
+    uint64_t offset, const ConstBufferSequence& buffers,
+    WriteToken&& token = default_completion_token_t<
+      typename AsyncRandomAccessWriteDevice::executor_type>())
+  -> decltype(
     async_initiate<WriteToken,
       void (asio::error_code, std::size_t)>(
         declval<detail::initiate_async_write_at<
-          AsyncRandomAccessWriteDevice> >(),
-        token, offset, buffers, transfer_all())));
+          AsyncRandomAccessWriteDevice>>(),
+        token, offset, buffers, transfer_all()));
 
 /// Start an asynchronous operation to write a certain amount of data at the
 /// specified offset.
@@ -591,24 +587,20 @@ async_write_at(AsyncRandomAccessWriteDevice& d, uint64_t offset,
 template <typename AsyncRandomAccessWriteDevice,
     typename ConstBufferSequence, typename CompletionCondition,
     ASIO_COMPLETION_TOKEN_FOR(void (asio::error_code,
-      std::size_t)) WriteToken
-        ASIO_DEFAULT_COMPLETION_TOKEN_TYPE(
-          typename AsyncRandomAccessWriteDevice::executor_type)>
-ASIO_INITFN_AUTO_RESULT_TYPE_PREFIX(WriteToken,
-    void (asio::error_code, std::size_t))
-async_write_at(AsyncRandomAccessWriteDevice& d,
+      std::size_t)) WriteToken = default_completion_token_t<
+        typename AsyncRandomAccessWriteDevice::executor_type>>
+auto async_write_at(AsyncRandomAccessWriteDevice& d,
     uint64_t offset, const ConstBufferSequence& buffers,
     CompletionCondition completion_condition,
-    ASIO_MOVE_ARG(WriteToken) token
-      ASIO_DEFAULT_COMPLETION_TOKEN(
-        typename AsyncRandomAccessWriteDevice::executor_type))
-  ASIO_INITFN_AUTO_RESULT_TYPE_SUFFIX((
+    WriteToken&& token = default_completion_token_t<
+      typename AsyncRandomAccessWriteDevice::executor_type>())
+  -> decltype(
     async_initiate<WriteToken,
       void (asio::error_code, std::size_t)>(
         declval<detail::initiate_async_write_at<
-          AsyncRandomAccessWriteDevice> >(),
+          AsyncRandomAccessWriteDevice>>(),
         token, offset, buffers,
-        ASIO_MOVE_CAST(CompletionCondition)(completion_condition))));
+        static_cast<CompletionCondition&&>(completion_condition)));
 
 #if !defined(ASIO_NO_EXTENSIONS)
 #if !defined(ASIO_NO_IOSTREAM)
@@ -677,22 +669,18 @@ async_write_at(AsyncRandomAccessWriteDevice& d,
  */
 template <typename AsyncRandomAccessWriteDevice, typename Allocator,
     ASIO_COMPLETION_TOKEN_FOR(void (asio::error_code,
-      std::size_t)) WriteToken
-        ASIO_DEFAULT_COMPLETION_TOKEN_TYPE(
-          typename AsyncRandomAccessWriteDevice::executor_type)>
-ASIO_INITFN_AUTO_RESULT_TYPE_PREFIX(WriteToken,
-    void (asio::error_code, std::size_t))
-async_write_at(AsyncRandomAccessWriteDevice& d,
+      std::size_t)) WriteToken = default_completion_token_t<
+        typename AsyncRandomAccessWriteDevice::executor_type>>
+auto async_write_at(AsyncRandomAccessWriteDevice& d,
     uint64_t offset, basic_streambuf<Allocator>& b,
-    ASIO_MOVE_ARG(WriteToken) token
-      ASIO_DEFAULT_COMPLETION_TOKEN(
-        typename AsyncRandomAccessWriteDevice::executor_type))
-  ASIO_INITFN_AUTO_RESULT_TYPE_SUFFIX((
+    WriteToken&& token = default_completion_token_t<
+      typename AsyncRandomAccessWriteDevice::executor_type>())
+  -> decltype(
     async_initiate<WriteToken,
       void (asio::error_code, std::size_t)>(
         declval<detail::initiate_async_write_at_streambuf<
-          AsyncRandomAccessWriteDevice> >(),
-        token, offset, &b, transfer_all())));
+          AsyncRandomAccessWriteDevice>>(),
+        token, offset, &b, transfer_all()));
 
 /// Start an asynchronous operation to write a certain amount of data at the
 /// specified offset.
@@ -773,23 +761,19 @@ async_write_at(AsyncRandomAccessWriteDevice& d,
 template <typename AsyncRandomAccessWriteDevice,
     typename Allocator, typename CompletionCondition,
     ASIO_COMPLETION_TOKEN_FOR(void (asio::error_code,
-      std::size_t)) WriteToken
-        ASIO_DEFAULT_COMPLETION_TOKEN_TYPE(
-          typename AsyncRandomAccessWriteDevice::executor_type)>
-ASIO_INITFN_AUTO_RESULT_TYPE_PREFIX(WriteToken,
-    void (asio::error_code, std::size_t))
-async_write_at(AsyncRandomAccessWriteDevice& d, uint64_t offset,
+      std::size_t)) WriteToken = default_completion_token_t<
+        typename AsyncRandomAccessWriteDevice::executor_type>>
+auto async_write_at(AsyncRandomAccessWriteDevice& d, uint64_t offset,
     basic_streambuf<Allocator>& b, CompletionCondition completion_condition,
-    ASIO_MOVE_ARG(WriteToken) token
-      ASIO_DEFAULT_COMPLETION_TOKEN(
-        typename AsyncRandomAccessWriteDevice::executor_type))
-  ASIO_INITFN_AUTO_RESULT_TYPE_SUFFIX((
+    WriteToken&& token = default_completion_token_t<
+      typename AsyncRandomAccessWriteDevice::executor_type>())
+  -> decltype(
     async_initiate<WriteToken,
       void (asio::error_code, std::size_t)>(
         declval<detail::initiate_async_write_at_streambuf<
-          AsyncRandomAccessWriteDevice> >(),
+          AsyncRandomAccessWriteDevice>>(),
         token, offset, &b,
-        ASIO_MOVE_CAST(CompletionCondition)(completion_condition))));
+        static_cast<CompletionCondition&&>(completion_condition)));
 
 #endif // !defined(ASIO_NO_IOSTREAM)
 #endif // !defined(ASIO_NO_EXTENSIONS)

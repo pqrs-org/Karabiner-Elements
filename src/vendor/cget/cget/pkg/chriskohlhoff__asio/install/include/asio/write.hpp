@@ -85,9 +85,9 @@ template <typename> class initiate_async_write_dynbuf_v2;
  */
 template <typename SyncWriteStream, typename ConstBufferSequence>
 std::size_t write(SyncWriteStream& s, const ConstBufferSequence& buffers,
-    typename constraint<
+    constraint_t<
       is_const_buffer_sequence<ConstBufferSequence>::value
-    >::type = 0);
+    > = 0);
 
 /// Write all of the supplied data to a stream before returning.
 /**
@@ -128,9 +128,9 @@ std::size_t write(SyncWriteStream& s, const ConstBufferSequence& buffers,
 template <typename SyncWriteStream, typename ConstBufferSequence>
 std::size_t write(SyncWriteStream& s, const ConstBufferSequence& buffers,
     asio::error_code& ec,
-    typename constraint<
+    constraint_t<
       is_const_buffer_sequence<ConstBufferSequence>::value
-    >::type = 0);
+    > = 0);
 
 /// Write a certain amount of data to a stream before returning.
 /**
@@ -182,9 +182,9 @@ template <typename SyncWriteStream, typename ConstBufferSequence,
     typename CompletionCondition>
 std::size_t write(SyncWriteStream& s, const ConstBufferSequence& buffers,
     CompletionCondition completion_condition,
-    typename constraint<
+    constraint_t<
       is_const_buffer_sequence<ConstBufferSequence>::value
-    >::type = 0);
+    > = 0);
 
 /// Write a certain amount of data to a stream before returning.
 /**
@@ -229,9 +229,9 @@ template <typename SyncWriteStream, typename ConstBufferSequence,
     typename CompletionCondition>
 std::size_t write(SyncWriteStream& s, const ConstBufferSequence& buffers,
     CompletionCondition completion_condition, asio::error_code& ec,
-    typename constraint<
+    constraint_t<
       is_const_buffer_sequence<ConstBufferSequence>::value
-    >::type = 0);
+    > = 0);
 
 #if !defined(ASIO_NO_DYNAMIC_BUFFER_V1)
 
@@ -264,13 +264,13 @@ std::size_t write(SyncWriteStream& s, const ConstBufferSequence& buffers,
  */
 template <typename SyncWriteStream, typename DynamicBuffer_v1>
 std::size_t write(SyncWriteStream& s,
-    ASIO_MOVE_ARG(DynamicBuffer_v1) buffers,
-    typename constraint<
-      is_dynamic_buffer_v1<typename decay<DynamicBuffer_v1>::type>::value
-    >::type = 0,
-    typename constraint<
-      !is_dynamic_buffer_v2<typename decay<DynamicBuffer_v1>::type>::value
-    >::type = 0);
+    DynamicBuffer_v1&& buffers,
+    constraint_t<
+      is_dynamic_buffer_v1<decay_t<DynamicBuffer_v1>>::value
+    > = 0,
+    constraint_t<
+      !is_dynamic_buffer_v2<decay_t<DynamicBuffer_v1>>::value
+    > = 0);
 
 /// Write all of the supplied data to a stream before returning.
 /**
@@ -301,14 +301,14 @@ std::size_t write(SyncWriteStream& s,
  */
 template <typename SyncWriteStream, typename DynamicBuffer_v1>
 std::size_t write(SyncWriteStream& s,
-    ASIO_MOVE_ARG(DynamicBuffer_v1) buffers,
+    DynamicBuffer_v1&& buffers,
     asio::error_code& ec,
-    typename constraint<
-      is_dynamic_buffer_v1<typename decay<DynamicBuffer_v1>::type>::value
-    >::type = 0,
-    typename constraint<
-      !is_dynamic_buffer_v2<typename decay<DynamicBuffer_v1>::type>::value
-    >::type = 0);
+    constraint_t<
+      is_dynamic_buffer_v1<decay_t<DynamicBuffer_v1>>::value
+    > = 0,
+    constraint_t<
+      !is_dynamic_buffer_v2<decay_t<DynamicBuffer_v1>>::value
+    > = 0);
 
 /// Write a certain amount of data to a stream before returning.
 /**
@@ -349,14 +349,14 @@ std::size_t write(SyncWriteStream& s,
 template <typename SyncWriteStream, typename DynamicBuffer_v1,
     typename CompletionCondition>
 std::size_t write(SyncWriteStream& s,
-    ASIO_MOVE_ARG(DynamicBuffer_v1) buffers,
+    DynamicBuffer_v1&& buffers,
     CompletionCondition completion_condition,
-    typename constraint<
-      is_dynamic_buffer_v1<typename decay<DynamicBuffer_v1>::type>::value
-    >::type = 0,
-    typename constraint<
-      !is_dynamic_buffer_v2<typename decay<DynamicBuffer_v1>::type>::value
-    >::type = 0);
+    constraint_t<
+      is_dynamic_buffer_v1<decay_t<DynamicBuffer_v1>>::value
+    > = 0,
+    constraint_t<
+      !is_dynamic_buffer_v2<decay_t<DynamicBuffer_v1>>::value
+    > = 0);
 
 /// Write a certain amount of data to a stream before returning.
 /**
@@ -398,14 +398,14 @@ std::size_t write(SyncWriteStream& s,
 template <typename SyncWriteStream, typename DynamicBuffer_v1,
     typename CompletionCondition>
 std::size_t write(SyncWriteStream& s,
-    ASIO_MOVE_ARG(DynamicBuffer_v1) buffers,
+    DynamicBuffer_v1&& buffers,
     CompletionCondition completion_condition, asio::error_code& ec,
-    typename constraint<
-      is_dynamic_buffer_v1<typename decay<DynamicBuffer_v1>::type>::value
-    >::type = 0,
-    typename constraint<
-      !is_dynamic_buffer_v2<typename decay<DynamicBuffer_v1>::type>::value
-    >::type = 0);
+    constraint_t<
+      is_dynamic_buffer_v1<decay_t<DynamicBuffer_v1>>::value
+    > = 0,
+    constraint_t<
+      !is_dynamic_buffer_v2<decay_t<DynamicBuffer_v1>>::value
+    > = 0);
 
 #if !defined(ASIO_NO_EXTENSIONS)
 #if !defined(ASIO_NO_IOSTREAM)
@@ -583,9 +583,9 @@ std::size_t write(SyncWriteStream& s, basic_streambuf<Allocator>& b,
  */
 template <typename SyncWriteStream, typename DynamicBuffer_v2>
 std::size_t write(SyncWriteStream& s, DynamicBuffer_v2 buffers,
-    typename constraint<
+    constraint_t<
       is_dynamic_buffer_v2<DynamicBuffer_v2>::value
-    >::type = 0);
+    > = 0);
 
 /// Write all of the supplied data to a stream before returning.
 /**
@@ -617,9 +617,9 @@ std::size_t write(SyncWriteStream& s, DynamicBuffer_v2 buffers,
 template <typename SyncWriteStream, typename DynamicBuffer_v2>
 std::size_t write(SyncWriteStream& s, DynamicBuffer_v2 buffers,
     asio::error_code& ec,
-    typename constraint<
+    constraint_t<
       is_dynamic_buffer_v2<DynamicBuffer_v2>::value
-    >::type = 0);
+    > = 0);
 
 /// Write a certain amount of data to a stream before returning.
 /**
@@ -661,9 +661,9 @@ template <typename SyncWriteStream, typename DynamicBuffer_v2,
     typename CompletionCondition>
 std::size_t write(SyncWriteStream& s, DynamicBuffer_v2 buffers,
     CompletionCondition completion_condition,
-    typename constraint<
+    constraint_t<
       is_dynamic_buffer_v2<DynamicBuffer_v2>::value
-    >::type = 0);
+    > = 0);
 
 /// Write a certain amount of data to a stream before returning.
 /**
@@ -706,9 +706,9 @@ template <typename SyncWriteStream, typename DynamicBuffer_v2,
     typename CompletionCondition>
 std::size_t write(SyncWriteStream& s, DynamicBuffer_v2 buffers,
     CompletionCondition completion_condition, asio::error_code& ec,
-    typename constraint<
+    constraint_t<
       is_dynamic_buffer_v2<DynamicBuffer_v2>::value
-    >::type = 0);
+    > = 0);
 
 /*@}*/
 /**
@@ -790,22 +790,18 @@ std::size_t write(SyncWriteStream& s, DynamicBuffer_v2 buffers,
 template <typename AsyncWriteStream, typename ConstBufferSequence,
     ASIO_COMPLETION_TOKEN_FOR(void (asio::error_code,
       std::size_t)) WriteToken
-        ASIO_DEFAULT_COMPLETION_TOKEN_TYPE(
-          typename AsyncWriteStream::executor_type)>
-ASIO_INITFN_AUTO_RESULT_TYPE_PREFIX(WriteToken,
-    void (asio::error_code, std::size_t))
-async_write(AsyncWriteStream& s, const ConstBufferSequence& buffers,
-    ASIO_MOVE_ARG(WriteToken) token
-      ASIO_DEFAULT_COMPLETION_TOKEN(
-        typename AsyncWriteStream::executor_type),
-    typename constraint<
+        = default_completion_token_t<typename AsyncWriteStream::executor_type>>
+auto async_write(AsyncWriteStream& s, const ConstBufferSequence& buffers,
+    WriteToken&& token
+      = default_completion_token_t<typename AsyncWriteStream::executor_type>(),
+    constraint_t<
       is_const_buffer_sequence<ConstBufferSequence>::value
-    >::type = 0)
-  ASIO_INITFN_AUTO_RESULT_TYPE_SUFFIX((
+    > = 0)
+  -> decltype(
     async_initiate<WriteToken,
       void (asio::error_code, std::size_t)>(
-        declval<detail::initiate_async_write<AsyncWriteStream> >(),
-        token, buffers, transfer_all())));
+        declval<detail::initiate_async_write<AsyncWriteStream>>(),
+        token, buffers, transfer_all()));
 
 /// Start an asynchronous operation to write a certain amount of data to a
 /// stream.
@@ -894,20 +890,18 @@ template <typename AsyncWriteStream,
     typename ConstBufferSequence, typename CompletionCondition,
     ASIO_COMPLETION_TOKEN_FOR(void (asio::error_code,
       std::size_t)) WriteToken>
-ASIO_INITFN_AUTO_RESULT_TYPE_PREFIX(WriteToken,
-    void (asio::error_code, std::size_t))
-async_write(AsyncWriteStream& s, const ConstBufferSequence& buffers,
+auto async_write(AsyncWriteStream& s, const ConstBufferSequence& buffers,
     CompletionCondition completion_condition,
-    ASIO_MOVE_ARG(WriteToken) token,
-    typename constraint<
+    WriteToken&& token,
+    constraint_t<
       is_const_buffer_sequence<ConstBufferSequence>::value
-    >::type = 0)
-  ASIO_INITFN_AUTO_RESULT_TYPE_SUFFIX((
+    > = 0)
+  -> decltype(
     async_initiate<WriteToken,
       void (asio::error_code, std::size_t)>(
-        declval<detail::initiate_async_write<AsyncWriteStream> >(),
+        declval<detail::initiate_async_write<AsyncWriteStream>>(),
         token, buffers,
-        ASIO_MOVE_CAST(CompletionCondition)(completion_condition))));
+        static_cast<CompletionCondition&&>(completion_condition)));
 
 #if !defined(ASIO_NO_DYNAMIC_BUFFER_V1)
 
@@ -973,27 +967,22 @@ async_write(AsyncWriteStream& s, const ConstBufferSequence& buffers,
 template <typename AsyncWriteStream, typename DynamicBuffer_v1,
     ASIO_COMPLETION_TOKEN_FOR(void (asio::error_code,
       std::size_t)) WriteToken
-        ASIO_DEFAULT_COMPLETION_TOKEN_TYPE(
-          typename AsyncWriteStream::executor_type)>
-ASIO_INITFN_AUTO_RESULT_TYPE_PREFIX(WriteToken,
-    void (asio::error_code, std::size_t))
-async_write(AsyncWriteStream& s,
-    ASIO_MOVE_ARG(DynamicBuffer_v1) buffers,
-    ASIO_MOVE_ARG(WriteToken) token
-      ASIO_DEFAULT_COMPLETION_TOKEN(
-        typename AsyncWriteStream::executor_type),
-    typename constraint<
-      is_dynamic_buffer_v1<typename decay<DynamicBuffer_v1>::type>::value
-    >::type = 0,
-    typename constraint<
-      !is_dynamic_buffer_v2<typename decay<DynamicBuffer_v1>::type>::value
-    >::type = 0)
-  ASIO_INITFN_AUTO_RESULT_TYPE_SUFFIX((
+        = default_completion_token_t<typename AsyncWriteStream::executor_type>>
+auto async_write(AsyncWriteStream& s, DynamicBuffer_v1&& buffers,
+    WriteToken&& token
+      = default_completion_token_t<typename AsyncWriteStream::executor_type>(),
+    constraint_t<
+      is_dynamic_buffer_v1<decay_t<DynamicBuffer_v1>>::value
+    > = 0,
+    constraint_t<
+      !is_dynamic_buffer_v2<decay_t<DynamicBuffer_v1>>::value
+    > = 0)
+  -> decltype(
     async_initiate<WriteToken,
       void (asio::error_code, std::size_t)>(
-        declval<detail::initiate_async_write_dynbuf_v1<AsyncWriteStream> >(),
-        token, ASIO_MOVE_CAST(DynamicBuffer_v1)(buffers),
-        transfer_all())));
+        declval<detail::initiate_async_write_dynbuf_v1<AsyncWriteStream>>(),
+        token, static_cast<DynamicBuffer_v1&&>(buffers),
+        transfer_all()));
 
 /// Start an asynchronous operation to write a certain amount of data to a
 /// stream.
@@ -1072,24 +1061,20 @@ template <typename AsyncWriteStream,
     typename DynamicBuffer_v1, typename CompletionCondition,
     ASIO_COMPLETION_TOKEN_FOR(void (asio::error_code,
       std::size_t)) WriteToken>
-ASIO_INITFN_AUTO_RESULT_TYPE_PREFIX(WriteToken,
-    void (asio::error_code, std::size_t))
-async_write(AsyncWriteStream& s,
-    ASIO_MOVE_ARG(DynamicBuffer_v1) buffers,
-    CompletionCondition completion_condition,
-    ASIO_MOVE_ARG(WriteToken) token,
-    typename constraint<
-      is_dynamic_buffer_v1<typename decay<DynamicBuffer_v1>::type>::value
-    >::type = 0,
-    typename constraint<
-      !is_dynamic_buffer_v2<typename decay<DynamicBuffer_v1>::type>::value
-    >::type = 0)
-  ASIO_INITFN_AUTO_RESULT_TYPE_SUFFIX((
+auto async_write(AsyncWriteStream& s, DynamicBuffer_v1&& buffers,
+    CompletionCondition completion_condition, WriteToken&& token,
+    constraint_t<
+      is_dynamic_buffer_v1<decay_t<DynamicBuffer_v1>>::value
+    > = 0,
+    constraint_t<
+      !is_dynamic_buffer_v2<decay_t<DynamicBuffer_v1>>::value
+    > = 0)
+  -> decltype(
     async_initiate<WriteToken,
       void (asio::error_code, std::size_t)>(
-        declval<detail::initiate_async_write_dynbuf_v1<AsyncWriteStream> >(),
-        token, ASIO_MOVE_CAST(DynamicBuffer_v1)(buffers),
-        ASIO_MOVE_CAST(CompletionCondition)(completion_condition))));
+        declval<detail::initiate_async_write_dynbuf_v1<AsyncWriteStream>>(),
+        token, static_cast<DynamicBuffer_v1&&>(buffers),
+        static_cast<CompletionCondition&&>(completion_condition)));
 
 #if !defined(ASIO_NO_EXTENSIONS)
 #if !defined(ASIO_NO_IOSTREAM)
@@ -1154,17 +1139,15 @@ async_write(AsyncWriteStream& s,
 template <typename AsyncWriteStream, typename Allocator,
     ASIO_COMPLETION_TOKEN_FOR(void (asio::error_code,
       std::size_t)) WriteToken
-        ASIO_DEFAULT_COMPLETION_TOKEN_TYPE(
-          typename AsyncWriteStream::executor_type)>
-ASIO_INITFN_AUTO_RESULT_TYPE_PREFIX(WriteToken,
-    void (asio::error_code, std::size_t))
-async_write(AsyncWriteStream& s, basic_streambuf<Allocator>& b,
-    ASIO_MOVE_ARG(WriteToken) token
-      ASIO_DEFAULT_COMPLETION_TOKEN(
-        typename AsyncWriteStream::executor_type))
-  ASIO_INITFN_AUTO_RESULT_TYPE_SUFFIX((
-    async_write(s, basic_streambuf_ref<Allocator>(b),
-        ASIO_MOVE_CAST(WriteToken)(token))));
+        = default_completion_token_t<typename AsyncWriteStream::executor_type>>
+auto async_write(AsyncWriteStream& s, basic_streambuf<Allocator>& b,
+    WriteToken&& token
+      = default_completion_token_t<typename AsyncWriteStream::executor_type>())
+  -> decltype(
+    async_initiate<WriteToken,
+      void (asio::error_code, std::size_t)>(
+        declval<detail::initiate_async_write_dynbuf_v1<AsyncWriteStream>>(),
+        token, basic_streambuf_ref<Allocator>(b), transfer_all()));
 
 /// Start an asynchronous operation to write a certain amount of data to a
 /// stream.
@@ -1241,15 +1224,14 @@ template <typename AsyncWriteStream,
     typename Allocator, typename CompletionCondition,
     ASIO_COMPLETION_TOKEN_FOR(void (asio::error_code,
       std::size_t)) WriteToken>
-ASIO_INITFN_AUTO_RESULT_TYPE_PREFIX(WriteToken,
-    void (asio::error_code, std::size_t))
-async_write(AsyncWriteStream& s, basic_streambuf<Allocator>& b,
-    CompletionCondition completion_condition,
-    ASIO_MOVE_ARG(WriteToken) token)
-  ASIO_INITFN_AUTO_RESULT_TYPE_SUFFIX((
-    async_write(s, basic_streambuf_ref<Allocator>(b),
-        ASIO_MOVE_CAST(CompletionCondition)(completion_condition),
-        ASIO_MOVE_CAST(WriteToken)(token))));
+auto async_write(AsyncWriteStream& s, basic_streambuf<Allocator>& b,
+    CompletionCondition completion_condition, WriteToken&& token)
+  -> decltype(
+    async_initiate<WriteToken,
+      void (asio::error_code, std::size_t)>(
+        declval<detail::initiate_async_write_dynbuf_v1<AsyncWriteStream>>(),
+        token, basic_streambuf_ref<Allocator>(b),
+        static_cast<CompletionCondition&&>(completion_condition)));
 
 #endif // !defined(ASIO_NO_IOSTREAM)
 #endif // !defined(ASIO_NO_EXTENSIONS)
@@ -1317,23 +1299,19 @@ async_write(AsyncWriteStream& s, basic_streambuf<Allocator>& b,
 template <typename AsyncWriteStream, typename DynamicBuffer_v2,
     ASIO_COMPLETION_TOKEN_FOR(void (asio::error_code,
       std::size_t)) WriteToken
-        ASIO_DEFAULT_COMPLETION_TOKEN_TYPE(
-          typename AsyncWriteStream::executor_type)>
-ASIO_INITFN_AUTO_RESULT_TYPE_PREFIX(WriteToken,
-    void (asio::error_code, std::size_t))
-async_write(AsyncWriteStream& s, DynamicBuffer_v2 buffers,
-    ASIO_MOVE_ARG(WriteToken) token
-      ASIO_DEFAULT_COMPLETION_TOKEN(
-        typename AsyncWriteStream::executor_type),
-    typename constraint<
+        = default_completion_token_t<typename AsyncWriteStream::executor_type>>
+auto async_write(AsyncWriteStream& s, DynamicBuffer_v2 buffers,
+    WriteToken&& token
+      = default_completion_token_t<typename AsyncWriteStream::executor_type>(),
+    constraint_t<
       is_dynamic_buffer_v2<DynamicBuffer_v2>::value
-    >::type = 0)
-  ASIO_INITFN_AUTO_RESULT_TYPE_SUFFIX((
+    > = 0)
+  -> decltype(
     async_initiate<WriteToken,
       void (asio::error_code, std::size_t)>(
-        declval<detail::initiate_async_write_dynbuf_v2<AsyncWriteStream> >(),
-        token, ASIO_MOVE_CAST(DynamicBuffer_v2)(buffers),
-        transfer_all())));
+        declval<detail::initiate_async_write_dynbuf_v2<AsyncWriteStream>>(),
+        token, static_cast<DynamicBuffer_v2&&>(buffers),
+        transfer_all()));
 
 /// Start an asynchronous operation to write a certain amount of data to a
 /// stream.
@@ -1412,20 +1390,18 @@ template <typename AsyncWriteStream,
     typename DynamicBuffer_v2, typename CompletionCondition,
     ASIO_COMPLETION_TOKEN_FOR(void (asio::error_code,
       std::size_t)) WriteToken>
-ASIO_INITFN_AUTO_RESULT_TYPE_PREFIX(WriteToken,
-    void (asio::error_code, std::size_t))
-async_write(AsyncWriteStream& s, DynamicBuffer_v2 buffers,
+auto async_write(AsyncWriteStream& s, DynamicBuffer_v2 buffers,
     CompletionCondition completion_condition,
-    ASIO_MOVE_ARG(WriteToken) token,
-    typename constraint<
+    WriteToken&& token,
+    constraint_t<
       is_dynamic_buffer_v2<DynamicBuffer_v2>::value
-    >::type = 0)
-  ASIO_INITFN_AUTO_RESULT_TYPE_SUFFIX((
+    > = 0)
+  -> decltype(
     async_initiate<WriteToken,
       void (asio::error_code, std::size_t)>(
-        declval<detail::initiate_async_write_dynbuf_v2<AsyncWriteStream> >(),
-        token, ASIO_MOVE_CAST(DynamicBuffer_v2)(buffers),
-        ASIO_MOVE_CAST(CompletionCondition)(completion_condition))));
+        declval<detail::initiate_async_write_dynbuf_v2<AsyncWriteStream>>(),
+        token, static_cast<DynamicBuffer_v2&&>(buffers),
+        static_cast<CompletionCondition&&>(completion_condition)));
 
 /*@}*/
 

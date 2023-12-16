@@ -16,16 +16,10 @@
 #endif // defined(_MSC_VER) && (_MSC_VER >= 1200)
 
 #include "asio/detail/config.hpp"
-
-#if defined(ASIO_HAS_CSTDINT)
-# include <cstdint>
-#else // defined(ASIO_HAS_CSTDINT)
-# include <boost/cstdint.hpp>
-#endif // defined(ASIO_HAS_CSTDINT)
+#include <cstdint>
 
 namespace asio {
 
-#if defined(ASIO_HAS_CSTDINT)
 using std::int16_t;
 using std::int_least16_t;
 using std::uint16_t;
@@ -40,22 +34,6 @@ using std::uint64_t;
 using std::uint_least64_t;
 using std::uintptr_t;
 using std::uintmax_t;
-#else // defined(ASIO_HAS_CSTDINT)
-using boost::int16_t;
-using boost::int_least16_t;
-using boost::uint16_t;
-using boost::uint_least16_t;
-using boost::int32_t;
-using boost::int_least32_t;
-using boost::uint32_t;
-using boost::uint_least32_t;
-using boost::int64_t;
-using boost::int_least64_t;
-using boost::uint64_t;
-using boost::uint_least64_t;
-using boost::uintptr_t;
-using boost::uintmax_t;
-#endif // defined(ASIO_HAS_CSTDINT)
 
 } // namespace asio
 

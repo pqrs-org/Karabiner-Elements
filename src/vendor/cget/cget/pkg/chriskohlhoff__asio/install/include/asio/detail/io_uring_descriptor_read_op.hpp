@@ -130,7 +130,7 @@ public:
       Handler& handler, const IoExecutor& io_ex)
     : io_uring_descriptor_read_op_base<MutableBufferSequence>(success_ec,
         descriptor, state, buffers, &io_uring_descriptor_read_op::do_complete),
-      handler_(ASIO_MOVE_CAST(Handler)(handler)),
+      handler_(static_cast<Handler&&>(handler)),
       work_(handler_, io_ex)
   {
   }
@@ -149,7 +149,7 @@ public:
 
     // Take ownership of the operation's outstanding work.
     handler_work<Handler, IoExecutor> w(
-        ASIO_MOVE_CAST2(handler_work<Handler, IoExecutor>)(
+        static_cast<handler_work<Handler, IoExecutor>&&>(
           o->work_));
 
     ASIO_ERROR_LOCATION(o->ec_);

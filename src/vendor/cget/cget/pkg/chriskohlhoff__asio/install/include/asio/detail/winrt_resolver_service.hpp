@@ -42,7 +42,7 @@ namespace detail {
 
 template <typename Protocol>
 class winrt_resolver_service :
-  public execution_context_service_base<winrt_resolver_service<Protocol> >
+  public execution_context_service_base<winrt_resolver_service<Protocol>>
 {
 public:
   // The implementation type of the resolver. A cancellation token is used to
@@ -62,7 +62,7 @@ public:
   // Constructor.
   winrt_resolver_service(execution_context& context)
     : execution_context_service_base<
-        winrt_resolver_service<Protocol> >(context),
+        winrt_resolver_service<Protocol>>(context),
       scheduler_(use_service<scheduler_impl>(context)),
       async_manager_(use_service<winrt_async_manager>(context))
   {

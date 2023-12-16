@@ -19,11 +19,7 @@
 #include "asio/detail/type_traits.hpp"
 #include "asio/traits/static_query.hpp"
 
-#if defined(ASIO_HAS_DECLTYPE) \
-  && defined(ASIO_HAS_NOEXCEPT)
-# define ASIO_HAS_DEDUCED_STATIC_REQUIRE_CONCEPT_TRAIT 1
-#endif // defined(ASIO_HAS_DECLTYPE)
-       //   && defined(ASIO_HAS_NOEXCEPT)
+#define ASIO_HAS_DEDUCED_STATIC_REQUIRE_CONCEPT_TRAIT 1
 
 #include "asio/detail/push_options.hpp"
 
@@ -41,33 +37,31 @@ namespace detail {
 
 struct no_static_require_concept
 {
-  ASIO_STATIC_CONSTEXPR(bool, is_valid = false);
+  static constexpr bool is_valid = false;
 };
 
 template <typename T, typename Property, typename = void>
 struct static_require_concept_trait :
-  conditional<
-    is_same<T, typename decay<T>::type>::value
-      && is_same<Property, typename decay<Property>::type>::value,
+  conditional_t<
+    is_same<T, decay_t<T>>::value
+      && is_same<Property, decay_t<Property>>::value,
     no_static_require_concept,
     traits::static_require_concept<
-      typename decay<T>::type,
-      typename decay<Property>::type>
-  >::type
+      decay_t<T>,
+      decay_t<Property>>
+  >
 {
 };
-
-#if defined(ASIO_HAS_DEDUCED_STATIC_REQUIRE_CONCEPT_TRAIT)
 
 #if defined(ASIO_HAS_WORKING_EXPRESSION_SFINAE)
 
 template <typename T, typename Property>
 struct static_require_concept_trait<T, Property,
-  typename enable_if<
-    decay<Property>::type::value() == traits::static_query<T, Property>::value()
-  >::type>
+  enable_if_t<
+    decay_t<Property>::value() == traits::static_query<T, Property>::value()
+  >>
 {
-  ASIO_STATIC_CONSTEXPR(bool, is_valid = true);
+  static constexpr bool is_valid = true;
 };
 
 #else // defined(ASIO_HAS_WORKING_EXPRESSION_SFINAE)
@@ -76,31 +70,29 @@ false_type static_require_concept_test(...);
 
 template <typename T, typename Property>
 true_type static_require_concept_test(T*, Property*,
-    typename enable_if<
+    enable_if_t<
       Property::value() == traits::static_query<T, Property>::value()
-    >::type* = 0);
+    >* = 0);
 
 template <typename T, typename Property>
 struct has_static_require_concept
 {
-  ASIO_STATIC_CONSTEXPR(bool, value =
+  static constexpr bool value =
     decltype((static_require_concept_test)(
-      static_cast<T*>(0), static_cast<Property*>(0)))::value);
+      static_cast<T*>(0), static_cast<Property*>(0)))::value;
 };
 
 template <typename T, typename Property>
 struct static_require_concept_trait<T, Property,
-  typename enable_if<
-    has_static_require_concept<typename decay<T>::type,
-      typename decay<Property>::type>::value
-  >::type>
+  enable_if_t<
+    has_static_require_concept<decay_t<T>,
+      decay_t<Property>>::value
+  >>
 {
-  ASIO_STATIC_CONSTEXPR(bool, is_valid = true);
+  static constexpr bool is_valid = true;
 };
 
 #endif // defined(ASIO_HAS_WORKING_EXPRESSION_SFINAE)
-
-#endif // defined(ASIO_HAS_DEDUCED_STATIC_REQUIRE_CONCEPT_TRAIT)
 
 } // namespace detail
 namespace traits {

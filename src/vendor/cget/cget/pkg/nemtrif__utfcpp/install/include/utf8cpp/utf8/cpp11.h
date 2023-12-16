@@ -29,14 +29,12 @@ DEALINGS IN THE SOFTWARE.
 #define UTF8_FOR_CPP_a184c22c_d012_11e8_a8d5_f2801f1b9fd1
 
 #include "checked.h"
-#include <string>
 
 namespace utf8
 {
-
-    inline void append(char32_t cp, std::string& s)
+    inline void append16(utfchar32_t cp, std::u16string& s)
     {
-        append(uint32_t(cp), std::back_inserter(s));
+        append16(cp, std::back_inserter(s));
     }
 
     inline std::string utf16to8(const std::u16string& s)
@@ -66,37 +64,6 @@ namespace utf8
         utf8to32(s.begin(), s.end(), std::back_inserter(result));
         return result;
     }
-
-    inline std::size_t find_invalid(const std::string& s)
-    {
-        std::string::const_iterator invalid = find_invalid(s.begin(), s.end());
-        return (invalid == s.end()) ? std::string::npos : static_cast<std::size_t>(invalid - s.begin());
-    }
-
-    inline bool is_valid(const std::string& s)
-    {
-        return is_valid(s.begin(), s.end());
-    }
-
-    inline std::string replace_invalid(const std::string& s, char32_t replacement)
-    {
-        std::string result;
-        replace_invalid(s.begin(), s.end(), std::back_inserter(result), replacement);
-        return result;
-    }
-
-    inline std::string replace_invalid(const std::string& s)
-    {
-        std::string result;
-        replace_invalid(s.begin(), s.end(), std::back_inserter(result));
-        return result;
-    }
-
-    inline bool starts_with_bom(const std::string& s)
-    {
-        return starts_with_bom(s.begin(), s.end());
-    }
- 
 } // namespace utf8
 
 #endif // header guard

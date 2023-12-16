@@ -18,16 +18,10 @@
 #include "asio/detail/config.hpp"
 #include "asio/detail/type_traits.hpp"
 
-#if defined(ASIO_HAS_DECLTYPE) \
-  && defined(ASIO_HAS_NOEXCEPT) \
-  && defined(ASIO_HAS_CONSTEXPR) \
-  && defined(ASIO_HAS_VARIABLE_TEMPLATES) \
+#if defined(ASIO_HAS_VARIABLE_TEMPLATES) \
   && defined(ASIO_HAS_WORKING_EXPRESSION_SFINAE)
 # define ASIO_HAS_DEDUCED_STATIC_QUERY_TRAIT 1
-#endif // defined(ASIO_HAS_DECLTYPE)
-       //   && defined(ASIO_HAS_NOEXCEPT)
-       //   && defined(ASIO_HAS_CONSTEXPR)
-       //   && defined(ASIO_HAS_VARIABLE_TEMPLATES)
+#endif // defined(ASIO_HAS_VARIABLE_TEMPLATES)
        //   && defined(ASIO_HAS_WORKING_EXPRESSION_SFINAE)
 
 #include "asio/detail/push_options.hpp"
@@ -46,20 +40,20 @@ namespace detail {
 
 struct no_static_query
 {
-  ASIO_STATIC_CONSTEXPR(bool, is_valid = false);
-  ASIO_STATIC_CONSTEXPR(bool, is_noexcept = false);
+  static constexpr bool is_valid = false;
+  static constexpr bool is_noexcept = false;
 };
 
 template <typename T, typename Property, typename = void>
 struct static_query_trait :
-  conditional<
-    is_same<T, typename decay<T>::type>::value
-      && is_same<Property, typename decay<Property>::type>::value,
+  conditional_t<
+    is_same<T, decay_t<T>>::value
+      && is_same<Property, decay_t<Property>>::value,
     no_static_query,
     traits::static_query<
-      typename decay<T>::type,
-      typename decay<Property>::type>
-  >::type
+      decay_t<T>,
+      decay_t<Property>>
+  >
 {
 };
 
@@ -67,21 +61,21 @@ struct static_query_trait :
 
 template <typename T, typename Property>
 struct static_query_trait<T, Property,
-  typename void_type<
-    decltype(decay<Property>::type::template static_query_v<T>)
-  >::type>
+  void_t<
+    decltype(decay_t<Property>::template static_query_v<T>)
+  >>
 {
-  ASIO_STATIC_CONSTEXPR(bool, is_valid = true);
+  static constexpr bool is_valid = true;
 
   using result_type = decltype(
-      decay<Property>::type::template static_query_v<T>);
+      decay_t<Property>::template static_query_v<T>);
 
-  ASIO_STATIC_CONSTEXPR(bool, is_noexcept =
-    noexcept(decay<Property>::type::template static_query_v<T>));
+  static constexpr bool is_noexcept =
+    noexcept(decay_t<Property>::template static_query_v<T>);
 
-  static ASIO_CONSTEXPR result_type value() noexcept(is_noexcept)
+  static constexpr result_type value() noexcept(is_noexcept)
   {
-    return decay<Property>::type::template static_query_v<T>;
+    return decay_t<Property>::template static_query_v<T>;
   }
 };
 

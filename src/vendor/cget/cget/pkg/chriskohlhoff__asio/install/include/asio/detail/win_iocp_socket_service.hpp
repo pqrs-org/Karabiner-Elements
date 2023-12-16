@@ -27,7 +27,6 @@
 #include "asio/detail/buffer_sequence_adapter.hpp"
 #include "asio/detail/fenced_block.hpp"
 #include "asio/detail/handler_alloc_helpers.hpp"
-#include "asio/detail/handler_invoke_helpers.hpp"
 #include "asio/detail/memory.hpp"
 #include "asio/detail/mutex.hpp"
 #include "asio/detail/operation.hpp"
@@ -51,7 +50,7 @@ namespace detail {
 
 template <typename Protocol>
 class win_iocp_socket_service :
-  public execution_context_service_base<win_iocp_socket_service<Protocol> >,
+  public execution_context_service_base<win_iocp_socket_service<Protocol>>,
   public win_iocp_socket_service_base
 {
 public:
@@ -131,7 +130,7 @@ public:
   // Constructor.
   win_iocp_socket_service(execution_context& context)
     : execution_context_service_base<
-        win_iocp_socket_service<Protocol> >(context),
+        win_iocp_socket_service<Protocol>>(context),
       win_iocp_socket_service_base(context)
   {
   }
@@ -144,7 +143,7 @@ public:
 
   // Move-construct a new socket implementation.
   void move_construct(implementation_type& impl,
-      implementation_type& other_impl) ASIO_NOEXCEPT
+      implementation_type& other_impl) noexcept
   {
     this->base_move_construct(impl, other_impl);
 
@@ -349,7 +348,7 @@ public:
       socket_base::message_flags flags, Handler& handler,
       const IoExecutor& io_ex)
   {
-    typename associated_cancellation_slot<Handler>::type slot
+    associated_cancellation_slot_t<Handler> slot
       = asio::get_associated_cancellation_slot(handler);
 
     // Allocate and construct an operation to wrap the handler.
@@ -443,7 +442,7 @@ public:
       socket_base::message_flags flags, Handler& handler,
       const IoExecutor& io_ex)
   {
-    typename associated_cancellation_slot<Handler>::type slot
+    associated_cancellation_slot_t<Handler> slot
       = asio::get_associated_cancellation_slot(handler);
 
     // Allocate and construct an operation to wrap the handler.
@@ -475,7 +474,7 @@ public:
       endpoint_type& sender_endpoint, socket_base::message_flags flags,
       Handler& handler, const IoExecutor& io_ex)
   {
-    typename associated_cancellation_slot<Handler>::type slot
+    associated_cancellation_slot_t<Handler> slot
       = asio::get_associated_cancellation_slot(handler);
 
     // Allocate and construct an operation to wrap the handler.
@@ -548,7 +547,7 @@ public:
   void async_accept(implementation_type& impl, Socket& peer,
       endpoint_type* peer_endpoint, Handler& handler, const IoExecutor& io_ex)
   {
-    typename associated_cancellation_slot<Handler>::type slot
+    associated_cancellation_slot_t<Handler> slot
       = asio::get_associated_cancellation_slot(handler);
 
     // Allocate and construct an operation to wrap the handler.
@@ -580,7 +579,6 @@ public:
     p.v = p.p = 0;
   }
 
-#if defined(ASIO_HAS_MOVE)
   // Start an asynchronous accept. The peer and peer_endpoint objects
   // must be valid until the accept's handler is invoked.
   template <typename PeerIoExecutor, typename Handler, typename IoExecutor>
@@ -588,7 +586,7 @@ public:
       const PeerIoExecutor& peer_io_ex, endpoint_type* peer_endpoint,
       Handler& handler, const IoExecutor& io_ex)
   {
-    typename associated_cancellation_slot<Handler>::type slot
+    associated_cancellation_slot_t<Handler> slot
       = asio::get_associated_cancellation_slot(handler);
 
     // Allocate and construct an operation to wrap the handler.
@@ -620,7 +618,6 @@ public:
         p.p->address_length(), o);
     p.v = p.p = 0;
   }
-#endif // defined(ASIO_HAS_MOVE)
 
   // Connect the socket to the specified endpoint.
   asio::error_code connect(implementation_type& impl,
@@ -638,7 +635,7 @@ public:
       const endpoint_type& peer_endpoint, Handler& handler,
       const IoExecutor& io_ex)
   {
-    typename associated_cancellation_slot<Handler>::type slot
+    associated_cancellation_slot_t<Handler> slot
       = asio::get_associated_cancellation_slot(handler);
 
     // Allocate and construct an operation to wrap the handler.

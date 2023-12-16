@@ -28,7 +28,7 @@ namespace detail {
 class ssl_category : public asio::error_category
 {
 public:
-  const char* name() const ASIO_ERROR_CATEGORY_NOEXCEPT
+  const char* name() const noexcept
   {
     return "asio.ssl";
   }
@@ -88,7 +88,7 @@ namespace detail {
 class stream_category : public asio::error_category
 {
 public:
-  const char* name() const ASIO_ERROR_CATEGORY_NOEXCEPT
+  const char* name() const noexcept
   {
     return "asio.ssl.stream";
   }

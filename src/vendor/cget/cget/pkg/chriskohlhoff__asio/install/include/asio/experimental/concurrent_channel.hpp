@@ -42,10 +42,10 @@ struct concurrent_channel_type
 
 template <typename ExecutorOrSignature>
 struct concurrent_channel_type<ExecutorOrSignature,
-    typename enable_if<
+    enable_if_t<
       is_executor<ExecutorOrSignature>::value
         || execution::is_executor<ExecutorOrSignature>::value
-    >::type>
+    >>
 {
   template <typename... Signatures>
   struct inner

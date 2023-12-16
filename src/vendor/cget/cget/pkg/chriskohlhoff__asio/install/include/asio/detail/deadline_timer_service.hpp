@@ -45,7 +45,7 @@ namespace detail {
 
 template <typename Time_Traits>
 class deadline_timer_service
-  : public execution_context_service_base<deadline_timer_service<Time_Traits> >
+  : public execution_context_service_base<deadline_timer_service<Time_Traits>>
 {
 public:
   // The time type.
@@ -67,7 +67,7 @@ public:
   // Constructor.
   deadline_timer_service(execution_context& context)
     : execution_context_service_base<
-        deadline_timer_service<Time_Traits> >(context),
+        deadline_timer_service<Time_Traits>>(context),
       scheduler_(asio::use_service<timer_scheduler>(context))
   {
     scheduler_.init_task();
@@ -247,7 +247,7 @@ public:
   void async_wait(implementation_type& impl,
       Handler& handler, const IoExecutor& io_ex)
   {
-    typename associated_cancellation_slot<Handler>::type slot
+    associated_cancellation_slot_t<Handler> slot
       = asio::get_associated_cancellation_slot(handler);
 
     // Allocate and construct an operation to wrap the handler.

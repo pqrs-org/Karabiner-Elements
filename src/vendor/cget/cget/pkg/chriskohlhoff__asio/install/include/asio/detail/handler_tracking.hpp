@@ -99,8 +99,8 @@ public:
 
   private:
     // Disallow copying and assignment.
-    location(const location&) ASIO_DELETED;
-    location& operator=(const location&) ASIO_DELETED;
+    location(const location&) = delete;
+    location& operator=(const location&) = delete;
 
     friend class handler_tracking;
     const char* file_;

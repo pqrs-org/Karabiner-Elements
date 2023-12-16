@@ -22,7 +22,6 @@
 #include "asio/detail/bind_handler.hpp"
 #include "asio/detail/fenced_block.hpp"
 #include "asio/detail/handler_alloc_helpers.hpp"
-#include "asio/detail/handler_invoke_helpers.hpp"
 #include "asio/detail/handler_work.hpp"
 #include "asio/detail/memory.hpp"
 #include "asio/detail/operation.hpp"
@@ -55,7 +54,7 @@ public:
       enable_connection_aborted_(enable_connection_aborted),
       proxy_op_(0),
       cancel_requested_(0),
-      handler_(ASIO_MOVE_CAST(Handler)(handler)),
+      handler_(static_cast<Handler&&>(handler)),
       work_(handler_, io_ex)
   {
   }
@@ -138,7 +137,7 @@ public:
 
     // Take ownership of the operation's outstanding work.
     handler_work<Handler, IoExecutor> w(
-        ASIO_MOVE_CAST2(handler_work<Handler, IoExecutor>)(
+        static_cast<handler_work<Handler, IoExecutor>&&>(
           o->work_));
 
     ASIO_ERROR_LOCATION(ec);
@@ -179,8 +178,6 @@ private:
   handler_work<Handler, IoExecutor> work_;
 };
 
-#if defined(ASIO_HAS_MOVE)
-
 template <typename Protocol, typename PeerIoExecutor,
     typename Handler, typename IoExecutor>
 class win_iocp_socket_move_accept_op : public operation
@@ -202,7 +199,7 @@ public:
       enable_connection_aborted_(enable_connection_aborted),
       cancel_requested_(0),
       proxy_op_(0),
-      handler_(ASIO_MOVE_CAST(Handler)(handler)),
+      handler_(static_cast<Handler&&>(handler)),
       work_(handler_, io_ex)
   {
   }
@@ -286,7 +283,7 @@ public:
 
     // Take ownership of the operation's outstanding work.
     handler_work<Handler, IoExecutor> w(
-        ASIO_MOVE_CAST2(handler_work<Handler, IoExecutor>)(
+        static_cast<handler_work<Handler, IoExecutor>&&>(
           o->work_));
 
     ASIO_ERROR_LOCATION(ec);
@@ -299,8 +296,8 @@ public:
     // deallocated the memory here.
     detail::move_binder2<Handler,
       asio::error_code, peer_socket_type>
-        handler(0, ASIO_MOVE_CAST(Handler)(o->handler_), ec,
-          ASIO_MOVE_CAST(peer_socket_type)(o->peer_));
+        handler(0, static_cast<Handler&&>(o->handler_), ec,
+          static_cast<peer_socket_type&&>(o->peer_));
     p.h = asio::detail::addressof(handler.handler_);
     p.reset();
 
@@ -331,8 +328,6 @@ private:
   Handler handler_;
   handler_work<Handler, IoExecutor> work_;
 };
-
-#endif // defined(ASIO_HAS_MOVE)
 
 } // namespace detail
 } // namespace asio

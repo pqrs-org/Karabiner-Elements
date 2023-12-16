@@ -40,7 +40,7 @@ public:
   template <typename Handler>
   void receive(Handler& handler)
   {
-    ASIO_MOVE_OR_LVALUE(Handler)(handler)();
+    static_cast<Handler&&>(handler)();
   }
 };
 
@@ -49,20 +49,20 @@ class channel_message<R(Arg0)>
 {
 public:
   template <typename T0>
-  channel_message(int, ASIO_MOVE_ARG(T0) t0)
-    : arg0_(ASIO_MOVE_CAST(T0)(t0))
+  channel_message(int, T0&& t0)
+    : arg0_(static_cast<T0&&>(t0))
   {
   }
 
   template <typename Handler>
   void receive(Handler& handler)
   {
-    ASIO_MOVE_OR_LVALUE(Handler)(handler)(
-        ASIO_MOVE_CAST(arg0_type)(arg0_));
+    static_cast<Handler&&>(handler)(
+        static_cast<arg0_type&&>(arg0_));
   }
 
 private:
-  typedef typename decay<Arg0>::type arg0_type;
+  typedef decay_t<Arg0> arg0_type;
   arg0_type arg0_;
 };
 
@@ -71,24 +71,24 @@ class channel_message<R(Arg0, Arg1)>
 {
 public:
   template <typename T0, typename T1>
-  channel_message(int, ASIO_MOVE_ARG(T0) t0, ASIO_MOVE_ARG(T1) t1)
-    : arg0_(ASIO_MOVE_CAST(T0)(t0)),
-      arg1_(ASIO_MOVE_CAST(T1)(t1))
+  channel_message(int, T0&& t0, T1&& t1)
+    : arg0_(static_cast<T0&&>(t0)),
+      arg1_(static_cast<T1&&>(t1))
   {
   }
 
   template <typename Handler>
   void receive(Handler& handler)
   {
-    ASIO_MOVE_OR_LVALUE(Handler)(handler)(
-        ASIO_MOVE_CAST(arg0_type)(arg0_),
-        ASIO_MOVE_CAST(arg1_type)(arg1_));
+    static_cast<Handler&&>(handler)(
+        static_cast<arg0_type&&>(arg0_),
+        static_cast<arg1_type&&>(arg1_));
   }
 
 private:
-  typedef typename decay<Arg0>::type arg0_type;
+  typedef decay_t<Arg0> arg0_type;
   arg0_type arg0_;
-  typedef typename decay<Arg1>::type arg1_type;
+  typedef decay_t<Arg1> arg1_type;
   arg1_type arg1_;
 };
 
@@ -97,8 +97,8 @@ class channel_message<R(Args...)>
 {
 public:
   template <typename... T>
-  channel_message(int, ASIO_MOVE_ARG(T)... t)
-    : args_(ASIO_MOVE_CAST(T)(t)...)
+  channel_message(int, T&&... t)
+    : args_(static_cast<T&&>(t)...)
   {
   }
 
@@ -112,11 +112,11 @@ private:
   template <typename Handler, std::size_t... I>
   void do_receive(Handler& h, asio::detail::index_sequence<I...>)
   {
-    ASIO_MOVE_OR_LVALUE(Handler)(h)(
-        std::get<I>(ASIO_MOVE_CAST(args_type)(args_))...);
+    static_cast<Handler&&>(h)(
+        std::get<I>(static_cast<args_type&&>(args_))...);
   }
 
-  typedef std::tuple<typename decay<Args>::type...> args_type;
+  typedef std::tuple<decay_t<Args>...> args_type;
   args_type args_;
 };
 

@@ -51,23 +51,23 @@ public:
   /// Construct an overlapped_ptr to contain the specified handler.
   template <typename ExecutionContext, typename Handler>
   explicit overlapped_ptr(ExecutionContext& context,
-      ASIO_MOVE_ARG(Handler) handler,
-      typename constraint<
+      Handler&& handler,
+      constraint_t<
         is_convertible<ExecutionContext&, execution_context&>::value
-      >::type = 0)
-    : impl_(context.get_executor(), ASIO_MOVE_CAST(Handler)(handler))
+      > = 0)
+    : impl_(context.get_executor(), static_cast<Handler&&>(handler))
   {
   }
 
   /// Construct an overlapped_ptr to contain the specified handler.
   template <typename Executor, typename Handler>
   explicit overlapped_ptr(const Executor& ex,
-      ASIO_MOVE_ARG(Handler) handler,
-      typename constraint<
+      Handler&& handler,
+      constraint_t<
         execution::is_executor<Executor>::value
           || is_executor<Executor>::value
-      >::type = 0)
-    : impl_(ex, ASIO_MOVE_CAST(Handler)(handler))
+      > = 0)
+    : impl_(ex, static_cast<Handler&&>(handler))
   {
   }
 
@@ -85,24 +85,24 @@ public:
   /// Reset to contain the specified handler, freeing any current OVERLAPPED
   /// object.
   template <typename ExecutionContext, typename Handler>
-  void reset(ExecutionContext& context, ASIO_MOVE_ARG(Handler) handler,
-      typename constraint<
+  void reset(ExecutionContext& context, Handler&& handler,
+      constraint_t<
         is_convertible<ExecutionContext&, execution_context&>::value
-      >::type = 0)
+      > = 0)
   {
-    impl_.reset(context.get_executor(), ASIO_MOVE_CAST(Handler)(handler));
+    impl_.reset(context.get_executor(), static_cast<Handler&&>(handler));
   }
 
   /// Reset to contain the specified handler, freeing any current OVERLAPPED
   /// object.
   template <typename Executor, typename Handler>
-  void reset(const Executor& ex, ASIO_MOVE_ARG(Handler) handler,
-      typename constraint<
+  void reset(const Executor& ex, Handler&& handler,
+      constraint_t<
         execution::is_executor<Executor>::value
           || is_executor<Executor>::value
-      >::type = 0)
+      > = 0)
   {
-    impl_.reset(ex, ASIO_MOVE_CAST(Handler)(handler));
+    impl_.reset(ex, static_cast<Handler&&>(handler));
   }
 
   /// Get the contained OVERLAPPED object.

@@ -72,7 +72,7 @@ void win_iocp_socket_service_base::construct(
 void win_iocp_socket_service_base::base_move_construct(
     win_iocp_socket_service_base::base_implementation_type& impl,
     win_iocp_socket_service_base::base_implementation_type& other_impl)
-  ASIO_NOEXCEPT
+  noexcept
 {
   impl.socket_ = other_impl.socket_;
   other_impl.socket_ = invalid_socket;

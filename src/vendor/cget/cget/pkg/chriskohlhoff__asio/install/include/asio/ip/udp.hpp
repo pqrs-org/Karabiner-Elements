@@ -46,31 +46,31 @@ public:
   typedef basic_endpoint<udp> endpoint;
 
   /// Construct to represent the IPv4 UDP protocol.
-  static udp v4() ASIO_NOEXCEPT
+  static udp v4() noexcept
   {
     return udp(ASIO_OS_DEF(AF_INET));
   }
 
   /// Construct to represent the IPv6 UDP protocol.
-  static udp v6() ASIO_NOEXCEPT
+  static udp v6() noexcept
   {
     return udp(ASIO_OS_DEF(AF_INET6));
   }
 
   /// Obtain an identifier for the type of the protocol.
-  int type() const ASIO_NOEXCEPT
+  int type() const noexcept
   {
     return ASIO_OS_DEF(SOCK_DGRAM);
   }
 
   /// Obtain an identifier for the protocol.
-  int protocol() const ASIO_NOEXCEPT
+  int protocol() const noexcept
   {
     return ASIO_OS_DEF(IPPROTO_UDP);
   }
 
   /// Obtain an identifier for the protocol family.
-  int family() const ASIO_NOEXCEPT
+  int family() const noexcept
   {
     return family_;
   }
@@ -95,7 +95,7 @@ public:
 
 private:
   // Construct with a specific family.
-  explicit udp(int protocol_family) ASIO_NOEXCEPT
+  explicit udp(int protocol_family) noexcept
     : family_(protocol_family)
   {
   }

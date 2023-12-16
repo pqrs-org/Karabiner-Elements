@@ -50,7 +50,7 @@ public:
   {
     void* p = thread_info_base::allocate(Purpose(),
         thread_context::top_of_thread_call_stack(),
-        sizeof(T) * n, ASIO_ALIGNOF(T));
+        sizeof(T) * n, alignof(T));
     return static_cast<T*>(p);
   }
 

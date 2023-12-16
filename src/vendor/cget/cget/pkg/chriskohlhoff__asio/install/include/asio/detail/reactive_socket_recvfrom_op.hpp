@@ -20,7 +20,6 @@
 #include "asio/detail/buffer_sequence_adapter.hpp"
 #include "asio/detail/fenced_block.hpp"
 #include "asio/detail/handler_alloc_helpers.hpp"
-#include "asio/detail/handler_invoke_helpers.hpp"
 #include "asio/detail/handler_work.hpp"
 #include "asio/detail/memory.hpp"
 #include "asio/detail/reactor_op.hpp"
@@ -113,7 +112,7 @@ public:
     : reactive_socket_recvfrom_op_base<MutableBufferSequence, Endpoint>(
         success_ec, socket, protocol_type, buffers, endpoint, flags,
         &reactive_socket_recvfrom_op::do_complete),
-      handler_(ASIO_MOVE_CAST(Handler)(handler)),
+      handler_(static_cast<Handler&&>(handler)),
       work_(handler_, io_ex)
   {
   }
@@ -132,7 +131,7 @@ public:
 
     // Take ownership of the operation's outstanding work.
     handler_work<Handler, IoExecutor> w(
-        ASIO_MOVE_CAST2(handler_work<Handler, IoExecutor>)(
+        static_cast<handler_work<Handler, IoExecutor>&&>(
           o->work_));
 
     ASIO_ERROR_LOCATION(o->ec_);
@@ -170,7 +169,7 @@ public:
 
     // Take ownership of the operation's outstanding work.
     immediate_handler_work<Handler, IoExecutor> w(
-        ASIO_MOVE_CAST2(handler_work<Handler, IoExecutor>)(
+        static_cast<handler_work<Handler, IoExecutor>&&>(
           o->work_));
 
     ASIO_ERROR_LOCATION(o->ec_);

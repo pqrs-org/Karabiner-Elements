@@ -53,7 +53,7 @@ template <typename Executor = any_io_executor>
 struct use_awaitable_t
 {
   /// Default constructor.
-  ASIO_CONSTEXPR use_awaitable_t(
+  constexpr use_awaitable_t(
 #if defined(ASIO_ENABLE_HANDLER_TRACKING)
 # if defined(ASIO_HAS_SOURCE_LOCATION)
       detail::source_location location = detail::source_location::current()
@@ -75,7 +75,7 @@ struct use_awaitable_t
   }
 
   /// Constructor used to specify file name, line, and function name.
-  ASIO_CONSTEXPR use_awaitable_t(const char* file_name,
+  constexpr use_awaitable_t(const char* file_name,
       int line, const char* function_name)
 #if defined(ASIO_ENABLE_HANDLER_TRACKING)
     : file_name_(file_name),
@@ -101,13 +101,13 @@ struct use_awaitable_t
     /// Construct the adapted executor from the inner executor type.
     template <typename InnerExecutor1>
     executor_with_default(const InnerExecutor1& ex,
-        typename constraint<
-          conditional<
+        constraint_t<
+          conditional_t<
             !is_same<InnerExecutor1, executor_with_default>::value,
             is_convertible<InnerExecutor1, InnerExecutor>,
             false_type
-          >::type::value
-        >::type = 0) ASIO_NOEXCEPT
+          >::value
+        > = 0) noexcept
       : InnerExecutor(ex)
     {
     }
@@ -115,25 +115,21 @@ struct use_awaitable_t
 
   /// Type alias to adapt an I/O object to use @c use_awaitable_t as its
   /// default completion token type.
-#if defined(ASIO_HAS_ALIAS_TEMPLATES) \
-  || defined(GENERATING_DOCUMENTATION)
   template <typename T>
   using as_default_on_t = typename T::template rebind_executor<
-      executor_with_default<typename T::executor_type> >::other;
-#endif // defined(ASIO_HAS_ALIAS_TEMPLATES)
-       //   || defined(GENERATING_DOCUMENTATION)
+      executor_with_default<typename T::executor_type>>::other;
 
   /// Function helper to adapt an I/O object to use @c use_awaitable_t as its
   /// default completion token type.
   template <typename T>
-  static typename decay<T>::type::template rebind_executor<
-      executor_with_default<typename decay<T>::type::executor_type>
+  static typename decay_t<T>::template rebind_executor<
+      executor_with_default<typename decay_t<T>::executor_type>
     >::other
-  as_default_on(ASIO_MOVE_ARG(T) object)
+  as_default_on(T&& object)
   {
-    return typename decay<T>::type::template rebind_executor<
-        executor_with_default<typename decay<T>::type::executor_type>
-      >::other(ASIO_MOVE_CAST(T)(object));
+    return typename decay_t<T>::template rebind_executor<
+        executor_with_default<typename decay_t<T>::executor_type>
+      >::other(static_cast<T&&>(object));
   }
 
 #if defined(ASIO_ENABLE_HANDLER_TRACKING)
@@ -150,10 +146,8 @@ struct use_awaitable_t
  */
 #if defined(GENERATING_DOCUMENTATION)
 constexpr use_awaitable_t<> use_awaitable;
-#elif defined(ASIO_HAS_CONSTEXPR)
+#else
 constexpr use_awaitable_t<> use_awaitable(0, 0, 0);
-#elif defined(ASIO_MSVC)
-__declspec(selectany) use_awaitable_t<> use_awaitable(0, 0, 0);
 #endif
 
 } // namespace asio

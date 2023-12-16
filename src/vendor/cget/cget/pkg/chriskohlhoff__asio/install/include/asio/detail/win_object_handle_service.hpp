@@ -20,7 +20,6 @@
 
 #if defined(ASIO_HAS_WINDOWS_OBJECT_HANDLE)
 
-#include "asio/detail/handler_alloc_helpers.hpp"
 #include "asio/detail/memory.hpp"
 #include "asio/detail/wait_handler.hpp"
 #include "asio/error.hpp"

@@ -103,7 +103,7 @@ namespace asio {
  * @endcode
  */
 #if defined(GENERATING_DOCUMENTATION)
-template <typename Allocator = std::allocator<char> >
+template <typename Allocator = std::allocator<char>>
 #else
 template <typename Allocator>
 #endif
@@ -155,7 +155,7 @@ public:
    * }
    * @endcode
    */
-  std::size_t size() const ASIO_NOEXCEPT
+  std::size_t size() const noexcept
   {
     return pptr() - gptr();
   }
@@ -165,7 +165,7 @@ public:
    * @returns The allowed maximum of the sum of the sizes of the input sequence
    * and output sequence.
    */
-  std::size_t max_size() const ASIO_NOEXCEPT
+  std::size_t max_size() const noexcept
   {
     return max_size_;
   }
@@ -175,7 +175,7 @@ public:
    * @returns The current total capacity of the streambuf, i.e. for both the
    * input sequence and output sequence.
    */
-  std::size_t capacity() const ASIO_NOEXCEPT
+  std::size_t capacity() const noexcept
   {
     return buffer_.capacity();
   }
@@ -189,7 +189,7 @@ public:
    * @note The returned object is invalidated by any @c basic_streambuf member
    * function that modifies the input sequence or output sequence.
    */
-  const_buffers_type data() const ASIO_NOEXCEPT
+  const_buffers_type data() const noexcept
   {
     return asio::buffer(asio::const_buffer(gptr(),
           (pptr() - gptr()) * sizeof(char_type)));
@@ -361,7 +361,7 @@ private:
 
 /// Adapts basic_streambuf to the dynamic buffer sequence type requirements.
 #if defined(GENERATING_DOCUMENTATION)
-template <typename Allocator = std::allocator<char> >
+template <typename Allocator = std::allocator<char>>
 #else
 template <typename Allocator>
 #endif
@@ -383,39 +383,37 @@ public:
   }
 
   /// Copy construct a basic_streambuf_ref.
-  basic_streambuf_ref(const basic_streambuf_ref& other) ASIO_NOEXCEPT
+  basic_streambuf_ref(const basic_streambuf_ref& other) noexcept
     : sb_(other.sb_)
   {
   }
 
-#if defined(ASIO_HAS_MOVE) || defined(GENERATING_DOCUMENTATION)
   /// Move construct a basic_streambuf_ref.
-  basic_streambuf_ref(basic_streambuf_ref&& other) ASIO_NOEXCEPT
+  basic_streambuf_ref(basic_streambuf_ref&& other) noexcept
     : sb_(other.sb_)
   {
   }
-#endif // defined(ASIO_HAS_MOVE) || defined(GENERATING_DOCUMENTATION)
 
   /// Get the size of the input sequence.
-  std::size_t size() const ASIO_NOEXCEPT
+  std::size_t size() const noexcept
   {
     return sb_.size();
   }
 
   /// Get the maximum size of the dynamic buffer.
-  std::size_t max_size() const ASIO_NOEXCEPT
+  std::size_t max_size() const noexcept
   {
     return sb_.max_size();
   }
 
   /// Get the current capacity of the dynamic buffer.
-  std::size_t capacity() const ASIO_NOEXCEPT
+  std::size_t capacity() const noexcept
   {
     return sb_.capacity();
   }
 
   /// Get a list of buffers that represents the input sequence.
-  const_buffers_type data() const ASIO_NOEXCEPT
+  const_buffers_type data() const noexcept
   {
     return sb_.data();
   }

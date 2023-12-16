@@ -60,7 +60,7 @@ public:
 #endif
 
   /// Default constructor.
-  basic_endpoint() ASIO_NOEXCEPT
+  basic_endpoint() noexcept
   {
   }
 
@@ -90,13 +90,11 @@ public:
   {
   }
 
-#if defined(ASIO_HAS_MOVE)
   /// Move constructor.
   basic_endpoint(basic_endpoint&& other)
     : impl_(other.impl_)
   {
   }
-#endif // defined(ASIO_HAS_MOVE)
 
   /// Assign from another endpoint.
   basic_endpoint& operator=(const basic_endpoint& other)
@@ -105,14 +103,12 @@ public:
     return *this;
   }
 
-#if defined(ASIO_HAS_MOVE)
   /// Move-assign from another endpoint.
   basic_endpoint& operator=(basic_endpoint&& other)
   {
     impl_ = other.impl_;
     return *this;
   }
-#endif // defined(ASIO_HAS_MOVE)
 
   /// The protocol associated with the endpoint.
   protocol_type protocol() const

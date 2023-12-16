@@ -29,7 +29,7 @@ template <typename ConstBufferSequence>
 class buffered_handshake_op
 {
 public:
-  static ASIO_CONSTEXPR const char* tracking_name()
+  static constexpr const char* tracking_name()
   {
     return "ssl::stream<>::async_buffered_handshake";
   }
@@ -56,7 +56,7 @@ public:
       const asio::error_code& ec,
       const std::size_t& bytes_transferred) const
   {
-    ASIO_MOVE_OR_LVALUE(Handler)(handler)(ec, bytes_transferred);
+    static_cast<Handler&&>(handler)(ec, bytes_transferred);
   }
 
 private:

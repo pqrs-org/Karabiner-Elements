@@ -50,7 +50,7 @@ void io_uring_descriptor_service::construct(
 void io_uring_descriptor_service::move_construct(
     io_uring_descriptor_service::implementation_type& impl,
     io_uring_descriptor_service::implementation_type& other_impl)
-  ASIO_NOEXCEPT
+  noexcept
 {
   impl.descriptor_ = other_impl.descriptor_;
   other_impl.descriptor_ = -1;

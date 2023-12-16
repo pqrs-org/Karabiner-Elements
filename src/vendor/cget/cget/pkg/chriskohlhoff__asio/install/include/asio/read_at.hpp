@@ -486,21 +486,17 @@ std::size_t read_at(SyncRandomAccessReadDevice& d,
  */
 template <typename AsyncRandomAccessReadDevice, typename MutableBufferSequence,
     ASIO_COMPLETION_TOKEN_FOR(void (asio::error_code,
-      std::size_t)) ReadToken
-        ASIO_DEFAULT_COMPLETION_TOKEN_TYPE(
-          typename AsyncRandomAccessReadDevice::executor_type)>
-ASIO_INITFN_AUTO_RESULT_TYPE_PREFIX(ReadToken,
-    void (asio::error_code, std::size_t))
-async_read_at(AsyncRandomAccessReadDevice& d, uint64_t offset,
-    const MutableBufferSequence& buffers,
-    ASIO_MOVE_ARG(ReadToken) token
-      ASIO_DEFAULT_COMPLETION_TOKEN(
-        typename AsyncRandomAccessReadDevice::executor_type))
-  ASIO_INITFN_AUTO_RESULT_TYPE_SUFFIX((
+      std::size_t)) ReadToken = default_completion_token_t<
+        typename AsyncRandomAccessReadDevice::executor_type>>
+auto async_read_at(AsyncRandomAccessReadDevice& d,
+    uint64_t offset, const MutableBufferSequence& buffers,
+    ReadToken&& token = default_completion_token_t<
+      typename AsyncRandomAccessReadDevice::executor_type>())
+  -> decltype(
     async_initiate<ReadToken,
       void (asio::error_code, std::size_t)>(
-        declval<detail::initiate_async_read_at<AsyncRandomAccessReadDevice> >(),
-        token, offset, buffers, transfer_all())));
+        declval<detail::initiate_async_read_at<AsyncRandomAccessReadDevice>>(),
+        token, offset, buffers, transfer_all()));
 
 /// Start an asynchronous operation to read a certain amount of data at the
 /// specified offset.
@@ -587,23 +583,19 @@ async_read_at(AsyncRandomAccessReadDevice& d, uint64_t offset,
 template <typename AsyncRandomAccessReadDevice,
     typename MutableBufferSequence, typename CompletionCondition,
     ASIO_COMPLETION_TOKEN_FOR(void (asio::error_code,
-      std::size_t)) ReadToken
-        ASIO_DEFAULT_COMPLETION_TOKEN_TYPE(
-          typename AsyncRandomAccessReadDevice::executor_type)>
-ASIO_INITFN_AUTO_RESULT_TYPE_PREFIX(ReadToken,
-    void (asio::error_code, std::size_t))
-async_read_at(AsyncRandomAccessReadDevice& d,
+      std::size_t)) ReadToken = default_completion_token_t<
+        typename AsyncRandomAccessReadDevice::executor_type>>
+auto async_read_at(AsyncRandomAccessReadDevice& d,
     uint64_t offset, const MutableBufferSequence& buffers,
     CompletionCondition completion_condition,
-    ASIO_MOVE_ARG(ReadToken) token
-      ASIO_DEFAULT_COMPLETION_TOKEN(
-        typename AsyncRandomAccessReadDevice::executor_type))
-  ASIO_INITFN_AUTO_RESULT_TYPE_SUFFIX((
+    ReadToken&& token = default_completion_token_t<
+      typename AsyncRandomAccessReadDevice::executor_type>())
+  -> decltype(
     async_initiate<ReadToken,
       void (asio::error_code, std::size_t)>(
-        declval<detail::initiate_async_read_at<AsyncRandomAccessReadDevice> >(),
+        declval<detail::initiate_async_read_at<AsyncRandomAccessReadDevice>>(),
         token, offset, buffers,
-        ASIO_MOVE_CAST(CompletionCondition)(completion_condition))));
+        static_cast<CompletionCondition&&>(completion_condition)));
 
 #if !defined(ASIO_NO_EXTENSIONS)
 #if !defined(ASIO_NO_IOSTREAM)
@@ -672,22 +664,18 @@ async_read_at(AsyncRandomAccessReadDevice& d,
  */
 template <typename AsyncRandomAccessReadDevice, typename Allocator,
     ASIO_COMPLETION_TOKEN_FOR(void (asio::error_code,
-      std::size_t)) ReadToken
-        ASIO_DEFAULT_COMPLETION_TOKEN_TYPE(
-          typename AsyncRandomAccessReadDevice::executor_type)>
-ASIO_INITFN_AUTO_RESULT_TYPE_PREFIX(ReadToken,
-    void (asio::error_code, std::size_t))
-async_read_at(AsyncRandomAccessReadDevice& d,
+      std::size_t)) ReadToken = default_completion_token_t<
+        typename AsyncRandomAccessReadDevice::executor_type>>
+auto async_read_at(AsyncRandomAccessReadDevice& d,
     uint64_t offset, basic_streambuf<Allocator>& b,
-    ASIO_MOVE_ARG(ReadToken) token
-      ASIO_DEFAULT_COMPLETION_TOKEN(
-        typename AsyncRandomAccessReadDevice::executor_type))
-  ASIO_INITFN_AUTO_RESULT_TYPE_SUFFIX((
+    ReadToken&& token = default_completion_token_t<
+      typename AsyncRandomAccessReadDevice::executor_type>())
+  -> decltype(
     async_initiate<ReadToken,
       void (asio::error_code, std::size_t)>(
         declval<detail::initiate_async_read_at_streambuf<
-          AsyncRandomAccessReadDevice> >(),
-        token, offset, &b, transfer_all())));
+          AsyncRandomAccessReadDevice>>(),
+        token, offset, &b, transfer_all()));
 
 /// Start an asynchronous operation to read a certain amount of data at the
 /// specified offset.
@@ -762,24 +750,19 @@ async_read_at(AsyncRandomAccessReadDevice& d,
 template <typename AsyncRandomAccessReadDevice,
     typename Allocator, typename CompletionCondition,
     ASIO_COMPLETION_TOKEN_FOR(void (asio::error_code,
-      std::size_t)) ReadToken
-        ASIO_DEFAULT_COMPLETION_TOKEN_TYPE(
-          typename AsyncRandomAccessReadDevice::executor_type)>
-ASIO_INITFN_AUTO_RESULT_TYPE_PREFIX(ReadToken,
-    void (asio::error_code, std::size_t))
-async_read_at(AsyncRandomAccessReadDevice& d,
-    uint64_t offset, basic_streambuf<Allocator>& b,
-    CompletionCondition completion_condition,
-    ASIO_MOVE_ARG(ReadToken) token
-      ASIO_DEFAULT_COMPLETION_TOKEN(
-        typename AsyncRandomAccessReadDevice::executor_type))
-  ASIO_INITFN_AUTO_RESULT_TYPE_SUFFIX((
+      std::size_t)) ReadToken = default_completion_token_t<
+        typename AsyncRandomAccessReadDevice::executor_type>>
+auto async_read_at(AsyncRandomAccessReadDevice& d, uint64_t offset,
+    basic_streambuf<Allocator>& b, CompletionCondition completion_condition,
+    ReadToken&& token = default_completion_token_t<
+      typename AsyncRandomAccessReadDevice::executor_type>())
+  -> decltype(
     async_initiate<ReadToken,
       void (asio::error_code, std::size_t)>(
         declval<detail::initiate_async_read_at_streambuf<
-          AsyncRandomAccessReadDevice> >(),
+          AsyncRandomAccessReadDevice>>(),
         token, offset, &b,
-        ASIO_MOVE_CAST(CompletionCondition)(completion_condition))));
+        static_cast<CompletionCondition&&>(completion_condition)));
 
 #endif // !defined(ASIO_NO_IOSTREAM)
 #endif // !defined(ASIO_NO_EXTENSIONS)

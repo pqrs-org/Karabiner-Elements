@@ -36,9 +36,7 @@ struct has_allocator_type : false_type
 };
 
 template <typename T>
-struct has_allocator_type<T,
-  typename void_type<typename T::allocator_type>::type>
-    : true_type
+struct has_allocator_type<T, void_t<typename T::allocator_type>> : true_type
 {
 };
 
@@ -49,33 +47,30 @@ struct associated_allocator_impl
 
   typedef A type;
 
-  static type get(const T&) ASIO_NOEXCEPT
+  static type get(const T&) noexcept
   {
     return type();
   }
 
-  static const type& get(const T&, const A& a) ASIO_NOEXCEPT
+  static const type& get(const T&, const A& a) noexcept
   {
     return a;
   }
 };
 
 template <typename T, typename A>
-struct associated_allocator_impl<T, A,
-  typename void_type<typename T::allocator_type>::type>
+struct associated_allocator_impl<T, A, void_t<typename T::allocator_type>>
 {
   typedef typename T::allocator_type type;
 
-  static ASIO_AUTO_RETURN_TYPE_PREFIX(type) get(
-      const T& t) ASIO_NOEXCEPT
-    ASIO_AUTO_RETURN_TYPE_SUFFIX((t.get_allocator()))
+  static auto get(const T& t) noexcept
+    -> decltype(t.get_allocator())
   {
     return t.get_allocator();
   }
 
-  static ASIO_AUTO_RETURN_TYPE_PREFIX(type) get(
-      const T& t, const A&) ASIO_NOEXCEPT
-    ASIO_AUTO_RETURN_TYPE_SUFFIX((t.get_allocator()))
+  static auto get(const T& t, const A&) noexcept
+    -> decltype(t.get_allocator())
   {
     return t.get_allocator();
   }
@@ -83,12 +78,12 @@ struct associated_allocator_impl<T, A,
 
 template <typename T, typename A>
 struct associated_allocator_impl<T, A,
-  typename enable_if<
+  enable_if_t<
     !has_allocator_type<T>::value
-  >::type,
-  typename void_type<
+  >,
+  void_t<
     typename associator<associated_allocator, T, A>::type
-  >::type> : associator<associated_allocator, T, A>
+  >> : associator<associated_allocator, T, A>
 {
 };
 
@@ -115,7 +110,7 @@ struct associated_allocator_impl<T, A,
  * get(t,a) and with return type @c type or a (possibly const) reference to @c
  * type.
  */
-template <typename T, typename Allocator = std::allocator<void> >
+template <typename T, typename Allocator = std::allocator<void>>
 struct associated_allocator
 #if !defined(GENERATING_DOCUMENTATION)
   : detail::associated_allocator_impl<T, Allocator>
@@ -128,11 +123,11 @@ struct associated_allocator
 
   /// If @c T has a nested type @c allocator_type, returns
   /// <tt>t.get_allocator()</tt>. Otherwise returns @c type().
-  static decltype(auto) get(const T& t) ASIO_NOEXCEPT;
+  static decltype(auto) get(const T& t) noexcept;
 
   /// If @c T has a nested type @c allocator_type, returns
   /// <tt>t.get_allocator()</tt>. Otherwise returns @c a.
-  static decltype(auto) get(const T& t, const Allocator& a) ASIO_NOEXCEPT;
+  static decltype(auto) get(const T& t, const Allocator& a) noexcept;
 #endif // defined(GENERATING_DOCUMENTATION)
 };
 
@@ -142,7 +137,7 @@ struct associated_allocator
  */
 template <typename T>
 ASIO_NODISCARD inline typename associated_allocator<T>::type
-get_associated_allocator(const T& t) ASIO_NOEXCEPT
+get_associated_allocator(const T& t) noexcept
 {
   return associated_allocator<T>::get(t);
 }
@@ -152,22 +147,16 @@ get_associated_allocator(const T& t) ASIO_NOEXCEPT
  * @returns <tt>associated_allocator<T, Allocator>::get(t, a)</tt>
  */
 template <typename T, typename Allocator>
-ASIO_NODISCARD inline ASIO_AUTO_RETURN_TYPE_PREFIX2(
-    typename associated_allocator<T, Allocator>::type)
-get_associated_allocator(const T& t, const Allocator& a) ASIO_NOEXCEPT
-  ASIO_AUTO_RETURN_TYPE_SUFFIX((
-    associated_allocator<T, Allocator>::get(t, a)))
+ASIO_NODISCARD inline auto get_associated_allocator(
+    const T& t, const Allocator& a) noexcept
+  -> decltype(associated_allocator<T, Allocator>::get(t, a))
 {
   return associated_allocator<T, Allocator>::get(t, a);
 }
 
-#if defined(ASIO_HAS_ALIAS_TEMPLATES)
-
-template <typename T, typename Allocator = std::allocator<void> >
+template <typename T, typename Allocator = std::allocator<void>>
 using associated_allocator_t
   = typename associated_allocator<T, Allocator>::type;
-
-#endif // defined(ASIO_HAS_ALIAS_TEMPLATES)
 
 namespace detail {
 
@@ -178,21 +167,18 @@ struct associated_allocator_forwarding_base
 
 template <typename T, typename A>
 struct associated_allocator_forwarding_base<T, A,
-    typename enable_if<
+    enable_if_t<
       is_same<
         typename associated_allocator<T,
           A>::asio_associated_allocator_is_unspecialised,
         void
       >::value
-    >::type>
+    >>
 {
   typedef void asio_associated_allocator_is_unspecialised;
 };
 
 } // namespace detail
-
-#if defined(ASIO_HAS_STD_REFERENCE_WRAPPER) \
-  || defined(GENERATING_DOCUMENTATION)
 
 /// Specialisation of associated_allocator for @c std::reference_wrapper.
 template <typename T, typename Allocator>
@@ -207,24 +193,19 @@ struct associated_allocator<reference_wrapper<T>, Allocator>
 
   /// Forwards the request to get the allocator to the associator specialisation
   /// for the unwrapped type @c T.
-  static type get(reference_wrapper<T> t) ASIO_NOEXCEPT
+  static type get(reference_wrapper<T> t) noexcept
   {
     return associated_allocator<T, Allocator>::get(t.get());
   }
 
   /// Forwards the request to get the allocator to the associator specialisation
   /// for the unwrapped type @c T.
-  static ASIO_AUTO_RETURN_TYPE_PREFIX(type) get(
-      reference_wrapper<T> t, const Allocator& a) ASIO_NOEXCEPT
-    ASIO_AUTO_RETURN_TYPE_SUFFIX((
-      associated_allocator<T, Allocator>::get(t.get(), a)))
+  static auto get(reference_wrapper<T> t, const Allocator& a) noexcept
+    -> decltype(associated_allocator<T, Allocator>::get(t.get(), a))
   {
     return associated_allocator<T, Allocator>::get(t.get(), a);
   }
 };
-
-#endif // defined(ASIO_HAS_STD_REFERENCE_WRAPPER)
-       //   || defined(GENERATING_DOCUMENTATION)
 
 } // namespace asio
 

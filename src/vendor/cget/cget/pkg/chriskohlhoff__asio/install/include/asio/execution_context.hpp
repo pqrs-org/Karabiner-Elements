@@ -20,7 +20,6 @@
 #include <stdexcept>
 #include <typeinfo>
 #include "asio/detail/noncopyable.hpp"
-#include "asio/detail/variadic_templates.hpp"
 
 #include "asio/detail/push_options.hpp"
 
@@ -224,8 +223,6 @@ public:
   template <typename Service>
   friend Service& use_service(io_context& ioc);
 
-#if defined(GENERATING_DOCUMENTATION)
-
   /// Creates a service object and adds it to the execution_context.
   /**
    * This function is used to add a service to the execution_context.
@@ -240,27 +237,6 @@ public:
    */
   template <typename Service, typename... Args>
   friend Service& make_service(execution_context& e, Args&&... args);
-
-#elif defined(ASIO_HAS_VARIADIC_TEMPLATES)
-
-  template <typename Service, typename... Args>
-  friend Service& make_service(execution_context& e,
-      ASIO_MOVE_ARG(Args)... args);
-
-#else // defined(ASIO_HAS_VARIADIC_TEMPLATES)
-
-  template <typename Service>
-  friend Service& make_service(execution_context& e);
-
-#define ASIO_PRIVATE_MAKE_SERVICE_DEF(n) \
-  template <typename Service, ASIO_VARIADIC_TPARAMS(n)> \
-  friend Service& make_service(execution_context& e, \
-      ASIO_VARIADIC_MOVE_PARAMS(n)); \
-  /**/
-  ASIO_VARIADIC_GENERATE(ASIO_PRIVATE_MAKE_SERVICE_DEF)
-#undef ASIO_PRIVATE_MAKE_SERVICE_DEF
-
-#endif // defined(ASIO_HAS_VARIADIC_TEMPLATES)
 
   /// (Deprecated: Use make_service().) Add a service object to the
   /// execution_context.

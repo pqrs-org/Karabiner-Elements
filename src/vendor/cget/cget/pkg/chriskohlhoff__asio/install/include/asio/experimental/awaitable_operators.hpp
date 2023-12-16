@@ -37,28 +37,28 @@ namespace detail {
 
 template <typename T, typename Executor>
 awaitable<T, Executor> awaitable_wrap(awaitable<T, Executor> a,
-    typename constraint<is_constructible<T>::value>::type* = 0)
+    constraint_t<is_constructible<T>::value>* = 0)
 {
   return a;
 }
 
 template <typename T, typename Executor>
 awaitable<std::optional<T>, Executor> awaitable_wrap(awaitable<T, Executor> a,
-    typename constraint<!is_constructible<T>::value>::type* = 0)
+    constraint_t<!is_constructible<T>::value>* = 0)
 {
   co_return std::optional<T>(co_await std::move(a));
 }
 
 template <typename T>
-T& awaitable_unwrap(typename conditional<true, T, void>::type& r,
-    typename constraint<is_constructible<T>::value>::type* = 0)
+T& awaitable_unwrap(conditional_t<true, T, void>& r,
+    constraint_t<is_constructible<T>::value>* = 0)
 {
   return r;
 }
 
 template <typename T>
-T& awaitable_unwrap(std::optional<typename conditional<true, T, void>::type>& r,
-    typename constraint<!is_constructible<T>::value>::type* = 0)
+T& awaitable_unwrap(std::optional<conditional_t<true, T, void>>& r,
+    constraint_t<!is_constructible<T>::value>* = 0)
 {
   return *r;
 }

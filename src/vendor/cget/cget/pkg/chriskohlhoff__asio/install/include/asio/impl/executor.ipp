@@ -25,11 +25,11 @@
 
 namespace asio {
 
-bad_executor::bad_executor() ASIO_NOEXCEPT
+bad_executor::bad_executor() noexcept
 {
 }
 
-const char* bad_executor::what() const ASIO_NOEXCEPT_OR_NOTHROW
+const char* bad_executor::what() const noexcept
 {
   return "bad executor";
 }

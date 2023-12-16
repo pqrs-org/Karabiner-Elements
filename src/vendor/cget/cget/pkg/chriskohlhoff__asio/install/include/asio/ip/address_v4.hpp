@@ -16,6 +16,7 @@
 #endif // defined(_MSC_VER) && (_MSC_VER >= 1200)
 
 #include "asio/detail/config.hpp"
+#include <functional>
 #include <string>
 #include "asio/detail/array.hpp"
 #include "asio/detail/cstdint.hpp"
@@ -23,10 +24,6 @@
 #include "asio/detail/string_view.hpp"
 #include "asio/detail/winsock_init.hpp"
 #include "asio/error_code.hpp"
-
-#if defined(ASIO_HAS_STD_HASH)
-# include <functional>
-#endif // defined(ASIO_HAS_STD_HASH)
 
 #if !defined(ASIO_NO_IOSTREAM)
 # include <iosfwd>
@@ -69,7 +66,7 @@ public:
    * @li <tt>to_bytes()</tt> yields <tt>{0, 0, 0, 0}</tt>; and
    * @li <tt>to_uint() == 0</tt>.
    */
-  address_v4() ASIO_NOEXCEPT
+  address_v4() noexcept
   {
     addr_.s_addr = 0;
   }
@@ -92,40 +89,36 @@ public:
   ASIO_DECL explicit address_v4(uint_type addr);
 
   /// Copy constructor.
-  address_v4(const address_v4& other) ASIO_NOEXCEPT
+  address_v4(const address_v4& other) noexcept
     : addr_(other.addr_)
   {
   }
 
-#if defined(ASIO_HAS_MOVE)
   /// Move constructor.
-  address_v4(address_v4&& other) ASIO_NOEXCEPT
+  address_v4(address_v4&& other) noexcept
     : addr_(other.addr_)
   {
   }
-#endif // defined(ASIO_HAS_MOVE)
 
   /// Assign from another address.
-  address_v4& operator=(const address_v4& other) ASIO_NOEXCEPT
+  address_v4& operator=(const address_v4& other) noexcept
   {
     addr_ = other.addr_;
     return *this;
   }
 
-#if defined(ASIO_HAS_MOVE)
   /// Move-assign from another address.
-  address_v4& operator=(address_v4&& other) ASIO_NOEXCEPT
+  address_v4& operator=(address_v4&& other) noexcept
   {
     addr_ = other.addr_;
     return *this;
   }
-#endif // defined(ASIO_HAS_MOVE)
 
   /// Get the address in bytes, in network byte order.
-  ASIO_DECL bytes_type to_bytes() const ASIO_NOEXCEPT;
+  ASIO_DECL bytes_type to_bytes() const noexcept;
 
   /// Get the address as an unsigned integer in host byte order.
-  ASIO_DECL uint_type to_uint() const ASIO_NOEXCEPT;
+  ASIO_DECL uint_type to_uint() const noexcept;
 
 #if !defined(ASIO_NO_DEPRECATED)
   /// (Deprecated: Use to_uint().) Get the address as an unsigned long in host
@@ -168,7 +161,7 @@ public:
    *
    * @returns <tt>(to_uint() & 0xFF000000) == 0x7F000000</tt>.
    */
-  ASIO_DECL bool is_loopback() const ASIO_NOEXCEPT;
+  ASIO_DECL bool is_loopback() const noexcept;
 
   /// Determine whether the address is unspecified.
   /**
@@ -177,7 +170,7 @@ public:
    *
    * @returns <tt>to_uint() == 0</tt>.
    */
-  ASIO_DECL bool is_unspecified() const ASIO_NOEXCEPT;
+  ASIO_DECL bool is_unspecified() const noexcept;
 
 #if !defined(ASIO_NO_DEPRECATED)
   /// (Deprecated: Use network_v4 class.) Determine whether the address is a
@@ -201,18 +194,18 @@ public:
    *
    * @returns <tt>(to_uint() & 0xF0000000) == 0xE0000000</tt>.
    */
-  ASIO_DECL bool is_multicast() const ASIO_NOEXCEPT;
+  ASIO_DECL bool is_multicast() const noexcept;
 
   /// Compare two addresses for equality.
   friend bool operator==(const address_v4& a1,
-      const address_v4& a2) ASIO_NOEXCEPT
+      const address_v4& a2) noexcept
   {
     return a1.addr_.s_addr == a2.addr_.s_addr;
   }
 
   /// Compare two addresses for inequality.
   friend bool operator!=(const address_v4& a1,
-      const address_v4& a2) ASIO_NOEXCEPT
+      const address_v4& a2) noexcept
   {
     return a1.addr_.s_addr != a2.addr_.s_addr;
   }
@@ -224,7 +217,7 @@ public:
    * @returns <tt>a1.to_uint() < a2.to_uint()</tt>.
    */
   friend bool operator<(const address_v4& a1,
-      const address_v4& a2) ASIO_NOEXCEPT
+      const address_v4& a2) noexcept
   {
     return a1.to_uint() < a2.to_uint();
   }
@@ -236,7 +229,7 @@ public:
    * @returns <tt>a1.to_uint() > a2.to_uint()</tt>.
    */
   friend bool operator>(const address_v4& a1,
-      const address_v4& a2) ASIO_NOEXCEPT
+      const address_v4& a2) noexcept
   {
     return a1.to_uint() > a2.to_uint();
   }
@@ -248,7 +241,7 @@ public:
    * @returns <tt>a1.to_uint() <= a2.to_uint()</tt>.
    */
   friend bool operator<=(const address_v4& a1,
-      const address_v4& a2) ASIO_NOEXCEPT
+      const address_v4& a2) noexcept
   {
     return a1.to_uint() <= a2.to_uint();
   }
@@ -260,7 +253,7 @@ public:
    * @returns <tt>a1.to_uint() >= a2.to_uint()</tt>.
    */
   friend bool operator>=(const address_v4& a1,
-      const address_v4& a2) ASIO_NOEXCEPT
+      const address_v4& a2) noexcept
   {
     return a1.to_uint() >= a2.to_uint();
   }
@@ -272,7 +265,7 @@ public:
    *
    * @returns A default-constructed @c address_v4 object.
    */
-  static address_v4 any() ASIO_NOEXCEPT
+  static address_v4 any() noexcept
   {
     return address_v4();
   }
@@ -284,7 +277,7 @@ public:
    *
    * @returns <tt>address_v4(0x7F000001)</tt>.
    */
-  static address_v4 loopback() ASIO_NOEXCEPT
+  static address_v4 loopback() noexcept
   {
     return address_v4(0x7F000001);
   }
@@ -296,7 +289,7 @@ public:
    *
    * @returns <tt>address_v4(0xFFFFFFFF)</tt>.
    */
-  static address_v4 broadcast() ASIO_NOEXCEPT
+  static address_v4 broadcast() noexcept
   {
     return address_v4(0xFFFFFFFF);
   }
@@ -347,7 +340,7 @@ ASIO_DECL address_v4 make_address_v4(const char* str);
  * @relates address_v4
  */
 ASIO_DECL address_v4 make_address_v4(const char* str,
-    asio::error_code& ec) ASIO_NOEXCEPT;
+    asio::error_code& ec) noexcept;
 
 /// Create an IPv4 address from an IP address string in dotted decimal form.
 /**
@@ -360,7 +353,7 @@ ASIO_DECL address_v4 make_address_v4(const std::string& str);
  * @relates address_v4
  */
 ASIO_DECL address_v4 make_address_v4(const std::string& str,
-    asio::error_code& ec) ASIO_NOEXCEPT;
+    asio::error_code& ec) noexcept;
 
 #if defined(ASIO_HAS_STRING_VIEW) \
   || defined(GENERATING_DOCUMENTATION)
@@ -376,7 +369,7 @@ ASIO_DECL address_v4 make_address_v4(string_view str);
  * @relates address_v4
  */
 ASIO_DECL address_v4 make_address_v4(string_view str,
-    asio::error_code& ec) ASIO_NOEXCEPT;
+    asio::error_code& ec) noexcept;
 
 #endif // defined(ASIO_HAS_STRING_VIEW)
        //  || defined(GENERATING_DOCUMENTATION)
@@ -404,21 +397,19 @@ std::basic_ostream<Elem, Traits>& operator<<(
 } // namespace ip
 } // namespace asio
 
-#if defined(ASIO_HAS_STD_HASH)
 namespace std {
 
 template <>
 struct hash<asio::ip::address_v4>
 {
   std::size_t operator()(const asio::ip::address_v4& addr)
-    const ASIO_NOEXCEPT
+    const noexcept
   {
     return std::hash<unsigned int>()(addr.to_uint());
   }
 };
 
 } // namespace std
-#endif // defined(ASIO_HAS_STD_HASH)
 
 #include "asio/detail/pop_options.hpp"
 

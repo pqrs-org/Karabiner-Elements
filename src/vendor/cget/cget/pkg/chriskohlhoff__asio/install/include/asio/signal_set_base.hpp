@@ -56,7 +56,9 @@ public:
 
   /// Portability typedef.
   typedef flags flags_t;
-#elif defined(ASIO_HAS_ENUM_CLASS)
+
+#else // defined(GENERATING_DOCUMENTATION)
+
   enum class flags : int
   {
     none = 0,
@@ -67,21 +69,8 @@ public:
   };
 
   typedef flags flags_t;
-#else // defined(ASIO_HAS_ENUM_CLASS)
-  struct flags
-  {
-    enum flags_t
-    {
-      none = 0,
-      restart = ASIO_OS_DEF(SA_RESTART),
-      no_child_stop = ASIO_OS_DEF(SA_NOCLDSTOP),
-      no_child_wait = ASIO_OS_DEF(SA_NOCLDWAIT),
-      dont_care = -1
-    };
-  };
 
-  typedef flags::flags_t flags_t;
-#endif // defined(ASIO_HAS_ENUM_CLASS)
+#endif // defined(GENERATING_DOCUMENTATION)
 
 protected:
   /// Protected destructor to prevent deletion through this type.
@@ -94,7 +83,7 @@ protected:
 /**
  * @relates signal_set_base::flags
  */
-inline ASIO_CONSTEXPR bool operator!(signal_set_base::flags_t x)
+inline constexpr bool operator!(signal_set_base::flags_t x)
 {
   return static_cast<int>(x) == 0;
 }
@@ -103,7 +92,7 @@ inline ASIO_CONSTEXPR bool operator!(signal_set_base::flags_t x)
 /**
  * @relates signal_set_base::flags
  */
-inline ASIO_CONSTEXPR signal_set_base::flags_t operator&(
+inline constexpr signal_set_base::flags_t operator&(
     signal_set_base::flags_t x, signal_set_base::flags_t y)
 {
   return static_cast<signal_set_base::flags_t>(
@@ -114,7 +103,7 @@ inline ASIO_CONSTEXPR signal_set_base::flags_t operator&(
 /**
  * @relates signal_set_base::flags
  */
-inline ASIO_CONSTEXPR signal_set_base::flags_t operator|(
+inline constexpr signal_set_base::flags_t operator|(
     signal_set_base::flags_t x, signal_set_base::flags_t y)
 {
   return static_cast<signal_set_base::flags_t>(
@@ -125,7 +114,7 @@ inline ASIO_CONSTEXPR signal_set_base::flags_t operator|(
 /**
  * @relates signal_set_base::flags
  */
-inline ASIO_CONSTEXPR signal_set_base::flags_t operator^(
+inline constexpr signal_set_base::flags_t operator^(
     signal_set_base::flags_t x, signal_set_base::flags_t y)
 {
   return static_cast<signal_set_base::flags_t>(
@@ -136,7 +125,7 @@ inline ASIO_CONSTEXPR signal_set_base::flags_t operator^(
 /**
  * @relates signal_set_base::flags
  */
-inline ASIO_CONSTEXPR signal_set_base::flags_t operator~(
+inline constexpr signal_set_base::flags_t operator~(
     signal_set_base::flags_t x)
 {
   return static_cast<signal_set_base::flags_t>(~static_cast<int>(x));

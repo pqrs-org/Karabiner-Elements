@@ -66,7 +66,7 @@ void winrt_ssocket_service_base::construct(
 void winrt_ssocket_service_base::base_move_construct(
     winrt_ssocket_service_base::base_implementation_type& impl,
     winrt_ssocket_service_base::base_implementation_type& other_impl)
-  ASIO_NOEXCEPT
+  noexcept
 {
   impl.socket_ = other_impl.socket_;
   other_impl.socket_ = nullptr;

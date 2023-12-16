@@ -46,7 +46,6 @@ public:
   /// Construct to take ownership of a native handle.
   ASIO_DECL explicit context(native_handle_type native_handle);
 
-#if defined(ASIO_HAS_MOVE) || defined(GENERATING_DOCUMENTATION)
   /// Move-construct a context from another.
   /**
    * This constructor moves an SSL context from one object to another.
@@ -72,7 +71,6 @@ public:
    * @li As a target for move-assignment.
    */
   ASIO_DECL context& operator=(context&& other);
-#endif // defined(ASIO_HAS_MOVE) || defined(GENERATING_DOCUMENTATION)
 
   /// Destructor.
   ASIO_DECL ~context();

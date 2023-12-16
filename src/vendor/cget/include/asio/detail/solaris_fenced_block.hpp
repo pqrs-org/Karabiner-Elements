@@ -1,1 +1,0 @@
-../../../cget/pkg/chriskohlhoff__asio/install/include/asio/detail/solaris_fenced_block.hpp

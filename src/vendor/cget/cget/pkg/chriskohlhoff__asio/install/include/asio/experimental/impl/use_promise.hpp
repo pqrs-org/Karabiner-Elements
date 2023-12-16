@@ -44,11 +44,11 @@ struct async_result<experimental::use_promise_t<Allocator>, R(Args...)>
   template <typename Initiation, typename... InitArgs>
   static auto initiate(Initiation initiation,
       experimental::use_promise_t<Allocator> up, InitArgs... args)
-    -> experimental::promise<void(typename decay<Args>::type...),
+    -> experimental::promise<void(decay_t<Args>...),
       asio::associated_executor_t<Initiation>, Allocator>
   {
     using handler_type = experimental::detail::promise_handler<
-      void(typename decay<Args>::type...),
+      void(decay_t<Args>...),
       asio::associated_executor_t<Initiation>, Allocator>;
 
     handler_type ht{up.get_allocator(), get_associated_executor(initiation)};

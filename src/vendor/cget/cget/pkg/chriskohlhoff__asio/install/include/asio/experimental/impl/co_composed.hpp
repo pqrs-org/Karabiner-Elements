@@ -587,7 +587,7 @@ public:
   using co_composed_handler_base<Executors,
     Handler, Return>::co_composed_handler_base;
 
-  using result_type = std::tuple<typename decay<Args>::type...>;
+  using result_type = std::tuple<decay_t<Args>...>;
 
   template <typename... T>
   void operator()(T&&... args)
@@ -618,7 +618,7 @@ public:
   using co_composed_handler_base<Executors,
     Handler, Return>::co_composed_handler_base;
 
-  using args_type = std::tuple<typename decay<Args>::type...>;
+  using args_type = std::tuple<decay_t<Args>...>;
   using result_type = std::tuple<asio::error_code, args_type>;
 
   template <typename... T>
@@ -651,7 +651,7 @@ public:
   using co_composed_handler_base<Executors,
     Handler, Return>::co_composed_handler_base;
 
-  using args_type = std::tuple<typename decay<Args>::type...>;
+  using args_type = std::tuple<decay_t<Args>...>;
   using result_type = std::tuple<std::exception_ptr, args_type>;
 
   template <typename... T>
@@ -959,7 +959,7 @@ public:
               Return> composed_handler(a.promise_);
 
             Handler handler(std::move(a.promise_.state_.handler_));
-            std::tuple<typename decay<Args>::type...> result(
+            std::tuple<decay_t<Args>...> result(
                 std::move(static_cast<std::tuple<Args&&...>>(a.result_)));
 
             co_composed_handler_base<Executors, Handler,
@@ -1026,7 +1026,7 @@ public:
   template <typename Handler, typename... InitArgs>
   void operator()(Handler&& handler, InitArgs&&... init_args) const &
   {
-    using handler_type = typename decay<Handler>::type;
+    using handler_type = decay_t<Handler>;
     using returns_type = co_composed_returns<Signatures...>;
     co_composed_on_suspend on_suspend{};
     implementation_(
@@ -1040,7 +1040,7 @@ public:
   template <typename Handler, typename... InitArgs>
   void operator()(Handler&& handler, InitArgs&&... init_args) &&
   {
-    using handler_type = typename decay<Handler>::type;
+    using handler_type = decay_t<Handler>;
     using returns_type = co_composed_returns<Signatures...>;
     co_composed_on_suspend on_suspend{};
     std::move(implementation_)(
@@ -1062,7 +1062,7 @@ make_initiate_co_composed(Implementation&& implementation,
     composed_io_executors<Executors>&& executors)
 {
   return initiate_co_composed<
-    typename decay<Implementation>::type, Executors, Signatures...>(
+    decay_t<Implementation>, Executors, Signatures...>(
         std::forward<Implementation>(implementation), std::move(executors));
 }
 
@@ -1094,22 +1094,21 @@ struct associator<Associator,
     DefaultCandidate>
   : Associator<Handler, DefaultCandidate>
 {
-  static typename Associator<Handler, DefaultCandidate>::type
-  get(const experimental::detail::co_composed_handler<
-        Executors, Handler, Return, Signature>& h) ASIO_NOEXCEPT
+  static typename Associator<Handler, DefaultCandidate>::type get(
+      const experimental::detail::co_composed_handler<
+        Executors, Handler, Return, Signature>& h) noexcept
   {
     return Associator<Handler, DefaultCandidate>::get(
         h.promise().state().handler());
   }
 
-  static ASIO_AUTO_RETURN_TYPE_PREFIX2(
-      typename Associator<Handler, DefaultCandidate>::type)
-  get(const experimental::detail::co_composed_handler<
+  static auto get(
+      const experimental::detail::co_composed_handler<
         Executors, Handler, Return, Signature>& h,
-      const DefaultCandidate& c) ASIO_NOEXCEPT
-    ASIO_AUTO_RETURN_TYPE_SUFFIX((
+      const DefaultCandidate& c) noexcept
+    -> decltype(
       Associator<Handler, DefaultCandidate>::get(
-        h.promise().state().handler(), c)))
+        h.promise().state().handler(), c))
   {
     return Associator<Handler, DefaultCandidate>::get(
         h.promise().state().handler(), c);

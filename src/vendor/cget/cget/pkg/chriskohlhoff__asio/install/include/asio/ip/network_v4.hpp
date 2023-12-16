@@ -40,7 +40,7 @@ class network_v4
 {
 public:
   /// Default constructor.
-  network_v4() ASIO_NOEXCEPT
+  network_v4() noexcept
     : address_(),
       prefix_length_(0)
   {
@@ -55,78 +55,74 @@ public:
       const address_v4& mask);
 
   /// Copy constructor.
-  network_v4(const network_v4& other) ASIO_NOEXCEPT
+  network_v4(const network_v4& other) noexcept
     : address_(other.address_),
       prefix_length_(other.prefix_length_)
   {
   }
 
-#if defined(ASIO_HAS_MOVE)
   /// Move constructor.
-  network_v4(network_v4&& other) ASIO_NOEXCEPT
-    : address_(ASIO_MOVE_CAST(address_v4)(other.address_)),
+  network_v4(network_v4&& other) noexcept
+    : address_(static_cast<address_v4&&>(other.address_)),
       prefix_length_(other.prefix_length_)
   {
   }
-#endif // defined(ASIO_HAS_MOVE)
 
   /// Assign from another network.
-  network_v4& operator=(const network_v4& other) ASIO_NOEXCEPT
+  network_v4& operator=(const network_v4& other) noexcept
   {
     address_ = other.address_;
     prefix_length_ = other.prefix_length_;
     return *this;
   }
 
-#if defined(ASIO_HAS_MOVE)
   /// Move-assign from another network.
-  network_v4& operator=(network_v4&& other) ASIO_NOEXCEPT
+  network_v4& operator=(network_v4&& other) noexcept
   {
-    address_ = ASIO_MOVE_CAST(address_v4)(other.address_);
+    address_ = static_cast<address_v4&&>(other.address_);
     prefix_length_ = other.prefix_length_;
     return *this;
   }
-#endif // defined(ASIO_HAS_MOVE)
 
   /// Obtain the address object specified when the network object was created.
-  address_v4 address() const ASIO_NOEXCEPT
+  address_v4 address() const noexcept
   {
     return address_;
   }
 
   /// Obtain the prefix length that was specified when the network object was
   /// created.
-  unsigned short prefix_length() const ASIO_NOEXCEPT
+  unsigned short prefix_length() const noexcept
   {
     return prefix_length_;
   }
 
   /// Obtain the netmask that was specified when the network object was created.
-  ASIO_DECL address_v4 netmask() const ASIO_NOEXCEPT;
+  ASIO_DECL address_v4 netmask() const noexcept;
 
   /// Obtain an address object that represents the network address.
-  address_v4 network() const ASIO_NOEXCEPT
+  address_v4 network() const noexcept
   {
     return address_v4(address_.to_uint() & netmask().to_uint());
   }
 
   /// Obtain an address object that represents the network's broadcast address.
-  address_v4 broadcast() const ASIO_NOEXCEPT
+  address_v4 broadcast() const noexcept
   {
     return address_v4(network().to_uint() | (netmask().to_uint() ^ 0xFFFFFFFF));
   }
 
   /// Obtain an address range corresponding to the hosts in the network.
-  ASIO_DECL address_v4_range hosts() const ASIO_NOEXCEPT;
+  ASIO_DECL address_v4_range hosts() const noexcept;
 
   /// Obtain the true network address, omitting any host bits.
-  network_v4 canonical() const ASIO_NOEXCEPT
+  network_v4 canonical() const noexcept
   {
     return network_v4(network(), prefix_length());
   }
 
   /// Test if network is a valid host address.
-  bool is_host() const ASIO_NOEXCEPT
+  bool is_host() const noexcept
   {
     return prefix_length_ == 32;
   }

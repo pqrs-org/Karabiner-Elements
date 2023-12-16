@@ -18,6 +18,8 @@
 #include "asio/detail/config.hpp"
 #include "asio/cancellation_signal.hpp"
 #include "asio/detail/utility.hpp"
+#include "asio/error.hpp"
+#include "asio/system_error.hpp"
 #include <tuple>
 
 #include "asio/detail/push_options.hpp"
@@ -56,8 +58,7 @@ struct promise_impl<void(Ts...), Executor, Allocator>
       reinterpret_cast<result_type*>(&result)->~result_type();
   }
 
-  typename aligned_storage<sizeof(result_type),
-    alignof(result_type)>::type result;
+  aligned_storage_t<sizeof(result_type), alignof(result_type)> result;
   std::atomic<bool> done{false};
   cancellation_signal cancel;
   Allocator allocator;

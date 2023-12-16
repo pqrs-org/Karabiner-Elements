@@ -53,7 +53,7 @@ void reactive_descriptor_service::construct(
 void reactive_descriptor_service::move_construct(
     reactive_descriptor_service::implementation_type& impl,
     reactive_descriptor_service::implementation_type& other_impl)
-  ASIO_NOEXCEPT
+  noexcept
 {
   impl.descriptor_ = other_impl.descriptor_;
   other_impl.descriptor_ = -1;

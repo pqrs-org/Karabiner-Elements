@@ -21,6 +21,7 @@
   || defined(GENERATING_DOCUMENTATION)
 
 #include <string>
+#include <utility>
 #include "asio/any_io_executor.hpp"
 #include "asio/async_result.hpp"
 #include "asio/detail/handler_type_requirements.hpp"
@@ -37,10 +38,6 @@
 #else
 # include "asio/detail/reactive_descriptor_service.hpp"
 #endif
-
-#if defined(ASIO_HAS_MOVE)
-# include <utility>
-#endif // defined(ASIO_HAS_MOVE)
 
 #include "asio/detail/push_options.hpp"
 
@@ -112,10 +109,10 @@ public:
    */
   template <typename ExecutionContext>
   explicit basic_readable_pipe(ExecutionContext& context,
-      typename constraint<
+      constraint_t<
         is_convertible<ExecutionContext&, execution_context&>::value,
         defaulted_constraint
-      >::type = defaulted_constraint())
+      > = defaulted_constraint())
     : impl_(0, 0, context)
   {
   }
@@ -159,9 +156,9 @@ public:
   template <typename ExecutionContext>
   basic_readable_pipe(ExecutionContext& context,
       const native_handle_type& native_pipe,
-      typename constraint<
+      constraint_t<
         is_convertible<ExecutionContext&, execution_context&>::value
-      >::type = 0)
+      > = 0)
     : impl_(0, 0, context)
   {
     asio::error_code ec;
@@ -170,7 +167,6 @@ public:
     asio::detail::throw_error(ec, "assign");
   }
 
-#if defined(ASIO_HAS_MOVE) || defined(GENERATING_DOCUMENTATION)
   /// Move-construct a basic_readable_pipe from another.
   /**
    * This constructor moves a pipe from one object to another.
@@ -221,10 +217,10 @@ public:
    */
   template <typename Executor1>
   basic_readable_pipe(basic_readable_pipe<Executor1>&& other,
-      typename constraint<
+      constraint_t<
         is_convertible<Executor1, Executor>::value,
         defaulted_constraint
-      >::type = defaulted_constraint())
+      > = defaulted_constraint())
     : impl_(std::move(other.impl_))
   {
   }
@@ -241,16 +237,15 @@ public:
    * constructor.
    */
   template <typename Executor1>
-  typename constraint<
+  constraint_t<
     is_convertible<Executor1, Executor>::value,
     basic_readable_pipe&
-  >::type operator=(basic_readable_pipe<Executor1>&& other)
+  > operator=(basic_readable_pipe<Executor1>&& other)
   {
     basic_readable_pipe tmp(std::move(other));
     impl_ = std::move(tmp.impl_);
     return *this;
   }
-#endif // defined(ASIO_HAS_MOVE) || defined(GENERATING_DOCUMENTATION)
 
   /// Destroys the pipe.
   /**
@@ -263,7 +258,7 @@ public:
   }
 
   /// Get the executor associated with the object.
-  const executor_type& get_executor() ASIO_NOEXCEPT
+  const executor_type& get_executor() noexcept
   {
     return impl_.get_executor();
   }
@@ -561,17 +556,13 @@ public:
    */
   template <typename MutableBufferSequence,
       ASIO_COMPLETION_TOKEN_FOR(void (asio::error_code,
-        std::size_t)) ReadToken
-          ASIO_DEFAULT_COMPLETION_TOKEN_TYPE(executor_type)>
-  ASIO_INITFN_AUTO_RESULT_TYPE_PREFIX(ReadToken,
-      void (asio::error_code, std::size_t))
-  async_read_some(const MutableBufferSequence& buffers,
-      ASIO_MOVE_ARG(ReadToken) token
-        ASIO_DEFAULT_COMPLETION_TOKEN(executor_type))
-    ASIO_INITFN_AUTO_RESULT_TYPE_SUFFIX((
+        std::size_t)) ReadToken = default_completion_token_t<executor_type>>
+  auto async_read_some(const MutableBufferSequence& buffers,
+      ReadToken&& token = default_completion_token_t<executor_type>())
+    -> decltype(
       async_initiate<ReadToken,
         void (asio::error_code, std::size_t)>(
-          declval<initiate_async_read_some>(), token, buffers)))
+          declval<initiate_async_read_some>(), token, buffers))
   {
     return async_initiate<ReadToken,
       void (asio::error_code, std::size_t)>(
@@ -580,8 +571,8 @@ public:
 
 private:
   // Disallow copying and assignment.
-  basic_readable_pipe(const basic_readable_pipe&) ASIO_DELETED;
-  basic_readable_pipe& operator=(const basic_readable_pipe&) ASIO_DELETED;
+  basic_readable_pipe(const basic_readable_pipe&) = delete;
+  basic_readable_pipe& operator=(const basic_readable_pipe&) = delete;
 
   class initiate_async_read_some
   {
@@ -593,13 +584,13 @@ private:
     {
     }
 
-    const executor_type& get_executor() const ASIO_NOEXCEPT
+    const executor_type& get_executor() const noexcept
     {
       return self_->get_executor();
     }
 
     template <typename ReadHandler, typename MutableBufferSequence>
-    void operator()(ASIO_MOVE_ARG(ReadHandler) handler,
+    void operator()(ReadHandler&& handler,
         const MutableBufferSequence& buffers) const
     {
       // If you get an error on the following line it means that your handler

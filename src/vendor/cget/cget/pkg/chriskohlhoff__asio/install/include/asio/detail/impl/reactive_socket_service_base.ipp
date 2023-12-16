@@ -50,7 +50,7 @@ void reactive_socket_service_base::construct(
 void reactive_socket_service_base::base_move_construct(
     reactive_socket_service_base::base_implementation_type& impl,
     reactive_socket_service_base::base_implementation_type& other_impl)
-  ASIO_NOEXCEPT
+  noexcept
 {
   impl.socket_ = other_impl.socket_;
   other_impl.socket_ = invalid_socket;

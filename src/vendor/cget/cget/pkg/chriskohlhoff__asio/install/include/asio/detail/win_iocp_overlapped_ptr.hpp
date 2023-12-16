@@ -47,11 +47,11 @@ public:
   // Construct an win_iocp_overlapped_ptr to contain the specified handler.
   template <typename Executor, typename Handler>
   explicit win_iocp_overlapped_ptr(const Executor& ex,
-      ASIO_MOVE_ARG(Handler) handler)
+      Handler&& handler)
     : ptr_(0),
       iocp_service_(0)
   {
-    this->reset(ex, ASIO_MOVE_CAST(Handler)(handler));
+    this->reset(ex, static_cast<Handler&&>(handler));
   }
 
   // Destructor automatically frees the OVERLAPPED object unless released.
@@ -134,9 +134,9 @@ public:
 private:
   template <typename Executor>
   static win_iocp_io_context* get_iocp_service(const Executor& ex,
-      typename enable_if<
+      enable_if_t<
         can_query<const Executor&, execution::context_t>::value
-      >::type* = 0)
+      >* = 0)
   {
     return &use_service<win_iocp_io_context>(
         asio::query(ex, execution::context));
@@ -144,9 +144,9 @@ private:
 
   template <typename Executor>
   static win_iocp_io_context* get_iocp_service(const Executor& ex,
-      typename enable_if<
+      enable_if_t<
         !can_query<const Executor&, execution::context_t>::value
-      >::type* = 0)
+      >* = 0)
   {
     return &use_service<win_iocp_io_context>(ex.context());
   }

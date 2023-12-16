@@ -17,7 +17,6 @@
 
 #include "asio/detail/config.hpp"
 #include "asio/detail/type_traits.hpp"
-#include "asio/detail/variadic_templates.hpp"
 #include "asio/execution/executor.hpp"
 #include "asio/execution/outstanding_work.hpp"
 #include "asio/executor_work_guard.hpp"
@@ -33,11 +32,9 @@ template <typename Executor, typename = void>
 class composed_work_guard
 {
 public:
-  typedef typename decay<
-      typename prefer_result<Executor,
-        execution::outstanding_work_t::tracked_t
-      >::type
-    >::type executor_type;
+  typedef decay_t<
+      prefer_result_t<Executor, execution::outstanding_work_t::tracked_t>
+    > executor_type;
 
   composed_work_guard(const Executor& ex)
     : executor_(asio::prefer(ex, execution::outstanding_work.tracked))
@@ -48,7 +45,7 @@ public:
   {
   }
 
-  executor_type get_executor() const ASIO_NOEXCEPT
+  executor_type get_executor() const noexcept
   {
     return executor_;
   }
@@ -71,7 +68,7 @@ public:
   {
   }
 
-  executor_type get_executor() const ASIO_NOEXCEPT
+  executor_type get_executor() const noexcept
   {
     return system_executor();
   }
@@ -81,9 +78,10 @@ public:
 
 template <typename Executor>
 struct composed_work_guard<Executor,
-    typename enable_if<
+    enable_if_t<
       !execution::is_executor<Executor>::value
-    >::type> : executor_work_guard<Executor>
+    >
+  > : executor_work_guard<Executor>
 {
   composed_work_guard(const Executor& ex)
     : executor_work_guard<Executor>(ex)
@@ -99,7 +97,7 @@ struct composed_io_executors;
 template <>
 struct composed_io_executors<void()>
 {
-  composed_io_executors() ASIO_NOEXCEPT
+  composed_io_executors() noexcept
     : head_(system_executor())
   {
   }
@@ -116,7 +114,7 @@ inline composed_io_executors<void()> make_composed_io_executors()
 template <typename Head>
 struct composed_io_executors<void(Head)>
 {
-  explicit composed_io_executors(const Head& ex) ASIO_NOEXCEPT
+  explicit composed_io_executors(const Head& ex) noexcept
     : head_(ex)
   {
   }
@@ -132,13 +130,11 @@ make_composed_io_executors(const Head& head)
   return composed_io_executors<void(Head)>(head);
 }
 
-#if defined(ASIO_HAS_VARIADIC_TEMPLATES)
-
 template <typename Head, typename... Tail>
 struct composed_io_executors<void(Head, Tail...)>
 {
   explicit composed_io_executors(const Head& head,
-      const Tail&... tail) ASIO_NOEXCEPT
+      const Tail&... tail) noexcept
     : head_(head),
       tail_(tail...)
   {
@@ -162,45 +158,6 @@ make_composed_io_executors(const Head& head, const Tail&... tail)
   return composed_io_executors<void(Head, Tail...)>(head, tail...);
 }
 
-#else // defined(ASIO_HAS_VARIADIC_TEMPLATES)
-
-#define ASIO_PRIVATE_COMPOSED_IO_EXECUTORS_DEF(n) \
-template <typename Head, ASIO_VARIADIC_TPARAMS(n)> \
-struct composed_io_executors<void(Head, ASIO_VARIADIC_TARGS(n))> \
-{ \
-  explicit composed_io_executors(const Head& head, \
-      ASIO_VARIADIC_CONSTREF_PARAMS(n)) ASIO_NOEXCEPT \
-    : head_(head), \
-      tail_(ASIO_VARIADIC_BYVAL_ARGS(n)) \
-  { \
-  } \
-\
-  void reset() \
-  { \
-    head_.reset(); \
-    tail_.reset(); \
-  } \
-\
-  typedef Head head_type; \
-  Head head_; \
-  composed_io_executors<void(ASIO_VARIADIC_TARGS(n))> tail_; \
-}; \
-\
-template <typename Head, ASIO_VARIADIC_TPARAMS(n)> \
-inline composed_io_executors<void(Head, ASIO_VARIADIC_TARGS(n))> \
-make_composed_io_executors(const Head& head, \
-    ASIO_VARIADIC_CONSTREF_PARAMS(n)) \
-{ \
-  return composed_io_executors< \
-    void(Head, ASIO_VARIADIC_TARGS(n))>( \
-      head, ASIO_VARIADIC_BYVAL_ARGS(n)); \
-} \
-/**/
-ASIO_VARIADIC_GENERATE(ASIO_PRIVATE_COMPOSED_IO_EXECUTORS_DEF)
-#undef ASIO_PRIVATE_COMPOSED_IO_EXECUTORS_DEF
-
-#endif // defined(ASIO_HAS_VARIADIC_TEMPLATES)
-
 template <typename>
 struct composed_work;
 
@@ -209,7 +166,7 @@ struct composed_work<void()>
 {
   typedef composed_io_executors<void()> executors_type;
 
-  composed_work(const executors_type&) ASIO_NOEXCEPT
+  composed_work(const executors_type&) noexcept
     : head_(system_executor())
   {
   }
@@ -228,7 +185,7 @@ struct composed_work<void(Head)>
 {
   typedef composed_io_executors<void(Head)> executors_type;
 
-  explicit composed_work(const executors_type& ex) ASIO_NOEXCEPT
+  explicit composed_work(const executors_type& ex) noexcept
     : head_(ex.head_)
   {
   }
@@ -242,14 +199,12 @@ struct composed_work<void(Head)>
   composed_work_guard<Head> head_;
 };
 
-#if defined(ASIO_HAS_VARIADIC_TEMPLATES)
-
 template <typename Head, typename... Tail>
 struct composed_work<void(Head, Tail...)>
 {
   typedef composed_io_executors<void(Head, Tail...)> executors_type;
 
-  explicit composed_work(const executors_type& ex) ASIO_NOEXCEPT
+  explicit composed_work(const executors_type& ex) noexcept
     : head_(ex.head_),
       tail_(ex.tail_)
   {
@@ -266,56 +221,25 @@ struct composed_work<void(Head, Tail...)>
   composed_work<void(Tail...)> tail_;
 };
 
-#else // defined(ASIO_HAS_VARIADIC_TEMPLATES)
-
-#define ASIO_PRIVATE_COMPOSED_WORK_DEF(n) \
-template <typename Head, ASIO_VARIADIC_TPARAMS(n)> \
-struct composed_work<void(Head, ASIO_VARIADIC_TARGS(n))> \
-{ \
-  typedef composed_io_executors<void(Head, \
-    ASIO_VARIADIC_TARGS(n))> executors_type; \
-\
-  explicit composed_work(const executors_type& ex) ASIO_NOEXCEPT \
-    : head_(ex.head_), \
-      tail_(ex.tail_) \
-  { \
-  } \
-\
-  void reset() \
-  { \
-    head_.reset(); \
-    tail_.reset(); \
-  } \
-\
-  typedef Head head_type; \
-  composed_work_guard<Head> head_; \
-  composed_work<void(ASIO_VARIADIC_TARGS(n))> tail_; \
-}; \
-/**/
-ASIO_VARIADIC_GENERATE(ASIO_PRIVATE_COMPOSED_WORK_DEF)
-#undef ASIO_PRIVATE_COMPOSED_WORK_DEF
-
-#endif // defined(ASIO_HAS_VARIADIC_TEMPLATES)
-
 template <typename IoObject>
 inline typename IoObject::executor_type
 get_composed_io_executor(IoObject& io_object,
-    typename enable_if<
+    enable_if_t<
       !is_executor<IoObject>::value
-    >::type* = 0,
-    typename enable_if<
+    >* = 0,
+    enable_if_t<
       !execution::is_executor<IoObject>::value
-    >::type* = 0)
+    >* = 0)
 {
   return io_object.get_executor();
 }
 
 template <typename Executor>
 inline const Executor& get_composed_io_executor(const Executor& ex,
-    typename enable_if<
+    enable_if_t<
       is_executor<Executor>::value
         || execution::is_executor<Executor>::value
-    >::type* = 0)
+    >* = 0)
 {
   return ex;
 }

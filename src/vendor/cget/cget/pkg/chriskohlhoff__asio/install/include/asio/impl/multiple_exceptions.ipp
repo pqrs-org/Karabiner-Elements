@@ -22,15 +22,13 @@
 
 namespace asio {
 
-#if defined(ASIO_HAS_STD_EXCEPTION_PTR)
-
 multiple_exceptions::multiple_exceptions(
-    std::exception_ptr first) ASIO_NOEXCEPT
-  : first_(ASIO_MOVE_CAST(std::exception_ptr)(first))
+    std::exception_ptr first) noexcept
+  : first_(static_cast<std::exception_ptr&&>(first))
 {
 }
 
-const char* multiple_exceptions::what() const ASIO_NOEXCEPT_OR_NOTHROW
+const char* multiple_exceptions::what() const noexcept
 {
   return "multiple exceptions";
 }
@@ -39,8 +37,6 @@ std::exception_ptr multiple_exceptions::first_exception() const
 {
   return first_;
 }
-
-#endif // defined(ASIO_HAS_STD_EXCEPTION_PTR)
 
 } // namespace asio
 

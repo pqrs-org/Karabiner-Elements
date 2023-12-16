@@ -1,9 +1,9 @@
 //     __ _____ _____ _____
 //  __|  |   __|     |   | |  JSON for Modern C++
-// |  |  |__   |  |  | | | |  version 3.11.2
+// |  |  |__   |  |  | | | |  version 3.11.3
 // |_____|_____|_____|_|___|  https://github.com/nlohmann/json
 //
-// SPDX-FileCopyrightText: 2013-2022 Niels Lohmann <https://nlohmann.me>
+// SPDX-FileCopyrightText: 2013-2023 Niels Lohmann <https://nlohmann.me>
 // SPDX-License-Identifier: MIT
 
 #ifndef INCLUDE_NLOHMANN_JSON_FWD_HPP_
@@ -46,7 +46,8 @@ template<template<typename U, typename V, typename... Args> class ObjectType =
          template<typename U> class AllocatorType = std::allocator,
          template<typename T, typename SFINAE = void> class JSONSerializer =
          adl_serializer,
-         class BinaryType = std::vector<std::uint8_t>>
+         class BinaryType = std::vector<std::uint8_t>, // cppcheck-suppress syntaxError
+         class CustomBaseClass = void>
 class basic_json;
 
 /// @brief JSON Pointer defines a string syntax for identifying a specific value within a JSON document

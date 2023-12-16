@@ -34,7 +34,7 @@ namespace detail {
 
 template <typename Protocol>
 class resolver_service :
-  public execution_context_service_base<resolver_service<Protocol> >,
+  public execution_context_service_base<resolver_service<Protocol>>,
   public resolver_service_base
 {
 public:
@@ -53,7 +53,7 @@ public:
 
   // Constructor.
   resolver_service(execution_context& context)
-    : execution_context_service_base<resolver_service<Protocol> >(context),
+    : execution_context_service_base<resolver_service<Protocol>>(context),
       resolver_service_base(context)
   {
   }

@@ -29,10 +29,8 @@
 # else
 #  include "asio/detail/win_thread.hpp"
 # endif
-#elif defined(ASIO_HAS_STD_THREAD)
-# include "asio/detail/std_thread.hpp"
 #else
-# error Only Windows, POSIX and std::thread are supported!
+# include "asio/detail/std_thread.hpp"
 #endif
 
 namespace asio {
@@ -50,7 +48,7 @@ typedef winapp_thread thread;
 # else
 typedef win_thread thread;
 # endif
-#elif defined(ASIO_HAS_STD_THREAD)
+#else
 typedef std_thread thread;
 #endif
 

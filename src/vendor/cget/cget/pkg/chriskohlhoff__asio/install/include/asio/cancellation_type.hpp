@@ -51,7 +51,7 @@ enum cancellation_type
 /// Portability typedef.
 typedef cancellation_type cancellation_type_t;
 
-#elif defined(ASIO_HAS_ENUM_CLASS)
+#else // defined(GENERATING_DOCUMENTATION)
 
 enum class cancellation_type : unsigned int
 {
@@ -64,30 +64,13 @@ enum class cancellation_type : unsigned int
 
 typedef cancellation_type cancellation_type_t;
 
-#else // defined(ASIO_HAS_ENUM_CLASS)
-
-namespace cancellation_type {
-
-enum cancellation_type_t
-{
-  none = 0,
-  terminal = 1,
-  partial = 2,
-  total = 4,
-  all = 0xFFFFFFFF
-};
-
-} // namespace cancellation_type
-
-typedef cancellation_type::cancellation_type_t cancellation_type_t;
-
-#endif // defined(ASIO_HAS_ENUM_CLASS)
+#endif // defined(GENERATING_DOCUMENTATION)
 
 /// Negation operator.
 /**
  * @relates cancellation_type
  */
-inline ASIO_CONSTEXPR bool operator!(cancellation_type_t x)
+inline constexpr bool operator!(cancellation_type_t x)
 {
   return static_cast<unsigned int>(x) == 0;
 }
@@ -96,7 +79,7 @@ inline ASIO_CONSTEXPR bool operator!(cancellation_type_t x)
 /**
  * @relates cancellation_type
  */
-inline ASIO_CONSTEXPR cancellation_type_t operator&(
+inline constexpr cancellation_type_t operator&(
     cancellation_type_t x, cancellation_type_t y)
 {
   return static_cast<cancellation_type_t>(
@@ -107,7 +90,7 @@ inline ASIO_CONSTEXPR cancellation_type_t operator&(
 /**
  * @relates cancellation_type
  */
-inline ASIO_CONSTEXPR cancellation_type_t operator|(
+inline constexpr cancellation_type_t operator|(
     cancellation_type_t x, cancellation_type_t y)
 {
   return static_cast<cancellation_type_t>(
@@ -118,7 +101,7 @@ inline ASIO_CONSTEXPR cancellation_type_t operator|(
 /**
  * @relates cancellation_type
  */
-inline ASIO_CONSTEXPR cancellation_type_t operator^(
+inline constexpr cancellation_type_t operator^(
     cancellation_type_t x, cancellation_type_t y)
 {
   return static_cast<cancellation_type_t>(
@@ -129,7 +112,7 @@ inline ASIO_CONSTEXPR cancellation_type_t operator^(
 /**
  * @relates cancellation_type
  */
-inline ASIO_CONSTEXPR cancellation_type_t operator~(cancellation_type_t x)
+inline constexpr cancellation_type_t operator~(cancellation_type_t x)
 {
   return static_cast<cancellation_type_t>(~static_cast<unsigned int>(x));
 }

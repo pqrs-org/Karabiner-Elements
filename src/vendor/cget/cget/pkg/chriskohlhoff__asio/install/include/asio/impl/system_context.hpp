@@ -22,7 +22,7 @@
 namespace asio {
 
 inline system_context::executor_type
-system_context::get_executor() ASIO_NOEXCEPT
+system_context::get_executor() noexcept
 {
   return system_executor();
 }

@@ -22,6 +22,8 @@
 
 #if defined(ASIO_HAS_STD_VARIANT)
 # include <variant>
+#else // defined(ASIO_HAS_STD_VARIANT)
+# include <new>
 #endif // defined(ASIO_HAS_STD_VARIANT)
 
 #include "asio/detail/push_options.hpp"
@@ -44,7 +46,7 @@ public:
   template <typename Handler>
   void receive(Handler& handler)
   {
-    ASIO_MOVE_OR_LVALUE(Handler)(handler)();
+    static_cast<Handler&&>(handler)();
   }
 };
 
@@ -52,8 +54,8 @@ template <typename Signature>
 class channel_payload<Signature>
 {
 public:
-  channel_payload(ASIO_MOVE_ARG(channel_message<Signature>) m)
-    : message_(ASIO_MOVE_CAST(channel_message<Signature>)(m))
+  channel_payload(channel_message<Signature>&& m)
+    : message_(static_cast<channel_message<Signature>&&>(m))
   {
   }
 
@@ -74,8 +76,8 @@ class channel_payload
 {
 public:
   template <typename Signature>
-  channel_payload(ASIO_MOVE_ARG(channel_message<Signature>) m)
-    : message_(ASIO_MOVE_CAST(channel_message<Signature>)(m))
+  channel_payload(channel_message<Signature>&& m)
+    : message_(static_cast<channel_message<Signature>&&>(m))
   {
   }
 
@@ -102,14 +104,14 @@ public:
   typedef channel_message<R1()> void_message_type;
   typedef channel_message<R2(asio::error_code)> error_message_type;
 
-  channel_payload(ASIO_MOVE_ARG(void_message_type))
+  channel_payload(void_message_type&&)
     : message_(0, asio::error_code()),
       empty_(true)
   {
   }
 
-  channel_payload(ASIO_MOVE_ARG(error_message_type) m)
-    : message_(ASIO_MOVE_CAST(error_message_type)(m)),
+  channel_payload(error_message_type&& m)
+    : message_(static_cast<error_message_type&&>(m)),
       empty_(false)
   {
   }
@@ -126,6 +128,87 @@ public:
 private:
   error_message_type message_;
   bool empty_;
+};
+
+template <typename Sig1, typename Sig2>
+class channel_payload<Sig1, Sig2>
+{
+public:
+  typedef channel_message<Sig1> message_1_type;
+  typedef channel_message<Sig2> message_2_type;
+
+  channel_payload(message_1_type&& m)
+    : index_(1)
+  {
+    new (&storage_.message_1_) message_1_type(static_cast<message_1_type&&>(m));
+  }
+
+  channel_payload(message_2_type&& m)
+    : index_(2)
+  {
+    new (&storage_.message_2_) message_2_type(static_cast<message_2_type&&>(m));
+  }
+
+  channel_payload(channel_payload&& other)
+    : index_(other.index_)
+  {
+    switch (index_)
+    {
+    case 1:
+      new (&storage_.message_1_) message_1_type(
+          static_cast<message_1_type&&>(other.storage_.message_1_));
+      break;
+    case 2:
+      new (&storage_.message_2_) message_2_type(
+          static_cast<message_2_type&&>(other.storage_.message_2_));
+      break;
+    default:
+      break;
+    }
+  }
+
+  ~channel_payload()
+  {
+    switch (index_)
+    {
+    case 1:
+      storage_.message_1_.~message_1_type();
+      break;
+    case 2:
+      storage_.message_2_.~message_2_type();
+      break;
+    default:
+      break;
+    }
+  }
+
+  template <typename Handler>
+  void receive(Handler& handler)
+  {
+    switch (index_)
+    {
+    case 1:
+      storage_.message_1_.receive(handler);
+      break;
+    case 2:
+      storage_.message_2_.receive(handler);
+      break;
+    default:
+      break;
+    }
+  }
+
+private:
+  union storage
+  {
+    storage() {}
+    ~storage() {}
+
+    char dummy_;
+    message_1_type message_1_;
+    message_2_type message_2_;
+  } storage_;
+  unsigned char index_;
 };
 
 #endif // defined(ASIO_HAS_STD_VARIANT)

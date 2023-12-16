@@ -35,7 +35,7 @@ class channel_send : public channel_operation
 public:
   Payload get_payload()
   {
-    return ASIO_MOVE_CAST(Payload)(payload_);
+    return static_cast<Payload&&>(payload_);
   }
 
   void immediate()
@@ -43,9 +43,9 @@ public:
     func_(this, immediate_op, 0);
   }
 
-  void complete()
+  void post()
   {
-    func_(this, complete_op, 0);
+    func_(this, post_op, 0);
   }
 
   void cancel()
@@ -59,9 +59,9 @@ public:
   }
 
 protected:
-  channel_send(func_type func, ASIO_MOVE_ARG(Payload) payload)
+  channel_send(func_type func, Payload&& payload)
     : channel_operation(func),
-      payload_(ASIO_MOVE_CAST(Payload)(payload))
+      payload_(static_cast<Payload&&>(payload))
   {
   }
 
@@ -75,11 +75,11 @@ class channel_send_op : public channel_send<Payload>
 public:
   ASIO_DEFINE_HANDLER_PTR(channel_send_op);
 
-  channel_send_op(ASIO_MOVE_ARG(Payload) payload,
+  channel_send_op(Payload&& payload,
       Handler& handler, const IoExecutor& io_ex)
     : channel_send<Payload>(&channel_send_op::do_action,
-        ASIO_MOVE_CAST(Payload)(payload)),
-      handler_(ASIO_MOVE_CAST(Handler)(handler)),
+        static_cast<Payload&&>(payload)),
+      handler_(static_cast<Handler&&>(handler)),
       work_(handler_, io_ex)
   {
   }
@@ -95,8 +95,8 @@ public:
 
     // Take ownership of the operation's outstanding work.
     channel_operation::handler_work<Handler, IoExecutor> w(
-        ASIO_MOVE_CAST2(channel_operation::handler_work<
-          Handler, IoExecutor>)(o->work_));
+        static_cast<channel_operation::handler_work<Handler, IoExecutor>&&>(
+          o->work_));
 
     asio::error_code ec;
     switch (a)
@@ -129,7 +129,7 @@ public:
       if (a == channel_operation::immediate_op)
         w.immediate(handler, handler.handler_, 0);
       else
-        w.complete(handler, handler.handler_);
+        w.post(handler, handler.handler_);
       ASIO_HANDLER_INVOCATION_END;
     }
   }

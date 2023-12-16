@@ -23,55 +23,6 @@
 #include <ostream>
 #include "asio/basic_socket_streambuf.hpp"
 
-#if !defined(ASIO_HAS_VARIADIC_TEMPLATES)
-
-# include "asio/detail/variadic_templates.hpp"
-
-// A macro that should expand to:
-//   template <typename T1, ..., typename Tn>
-//   explicit basic_socket_iostream(T1 x1, ..., Tn xn)
-//     : std::basic_iostream<char>(
-//         &this->detail::socket_iostream_base<
-//           Protocol, Clock, WaitTraits>::streambuf_)
-//   {
-//     if (rdbuf()->connect(x1, ..., xn) == 0)
-//       this->setstate(std::ios_base::failbit);
-//   }
-// This macro should only persist within this file.
-
-# define ASIO_PRIVATE_CTR_DEF(n) \
-  template <ASIO_VARIADIC_TPARAMS(n)> \
-  explicit basic_socket_iostream(ASIO_VARIADIC_BYVAL_PARAMS(n)) \
-    : std::basic_iostream<char>( \
-        &this->detail::socket_iostream_base< \
-          Protocol, Clock, WaitTraits>::streambuf_) \
-  { \
-    this->setf(std::ios_base::unitbuf); \
-    if (rdbuf()->connect(ASIO_VARIADIC_BYVAL_ARGS(n)) == 0) \
-      this->setstate(std::ios_base::failbit); \
-  } \
-  /**/
-
-// A macro that should expand to:
-//   template <typename T1, ..., typename Tn>
-//   void connect(T1 x1, ..., Tn xn)
-//   {
-//     if (rdbuf()->connect(x1, ..., xn) == 0)
-//       this->setstate(std::ios_base::failbit);
-//   }
-// This macro should only persist within this file.
-
-# define ASIO_PRIVATE_CONNECT_DEF(n) \
-  template <ASIO_VARIADIC_TPARAMS(n)> \
-  void connect(ASIO_VARIADIC_BYVAL_PARAMS(n)) \
-  { \
-    if (rdbuf()->connect(ASIO_VARIADIC_BYVAL_ARGS(n)) == 0) \
-      this->setstate(std::ios_base::failbit); \
-  } \
-  /**/
-
-#endif // !defined(ASIO_HAS_VARIADIC_TEMPLATES)
-
 #include "asio/detail/push_options.hpp"
 
 namespace asio {
@@ -87,7 +38,6 @@ protected:
   {
   }
 
-#if defined(ASIO_HAS_MOVE)
   socket_iostream_base(socket_iostream_base&& other)
     : streambuf_(std::move(other.streambuf_))
   {
@@ -103,7 +53,6 @@ protected:
     streambuf_ = std::move(other.streambuf_);
     return *this;
   }
-#endif // defined(ASIO_HAS_MOVE)
 
   basic_socket_streambuf<Protocol, Clock, WaitTraits> streambuf_;
 };
@@ -118,11 +67,11 @@ template <typename Protocol,
 #if defined(ASIO_HAS_BOOST_DATE_TIME) \
   && defined(ASIO_USE_BOOST_DATE_TIME_FOR_SOCKET_IOSTREAM)
     typename Clock = boost::posix_time::ptime,
-    typename WaitTraits = time_traits<Clock> >
+    typename WaitTraits = time_traits<Clock>>
 #else // defined(ASIO_HAS_BOOST_DATE_TIME)
       // && defined(ASIO_USE_BOOST_DATE_TIME_FOR_SOCKET_IOSTREAM)
     typename Clock = chrono::steady_clock,
-    typename WaitTraits = wait_traits<Clock> >
+    typename WaitTraits = wait_traits<Clock>>
 #endif // defined(ASIO_HAS_BOOST_DATE_TIME)
        // && defined(ASIO_USE_BOOST_DATE_TIME_FOR_SOCKET_IOSTREAM)
 class basic_socket_iostream;
@@ -133,7 +82,7 @@ class basic_socket_iostream;
 #if defined(GENERATING_DOCUMENTATION)
 template <typename Protocol,
     typename Clock = chrono::steady_clock,
-    typename WaitTraits = wait_traits<Clock> >
+    typename WaitTraits = wait_traits<Clock>>
 #else // defined(GENERATING_DOCUMENTATION)
 template <typename Protocol, typename Clock, typename WaitTraits>
 #endif // defined(GENERATING_DOCUMENTATION)
@@ -193,7 +142,6 @@ public:
     this->setf(std::ios_base::unitbuf);
   }
 
-#if defined(ASIO_HAS_MOVE) || defined(GENERATING_DOCUMENTATION)
   /// Construct a basic_socket_iostream from the supplied socket.
   explicit basic_socket_iostream(basic_stream_socket<protocol_type> s)
     : detail::socket_iostream_base<
@@ -205,8 +153,6 @@ public:
     this->setf(std::ios_base::unitbuf);
   }
 
-#if defined(ASIO_HAS_STD_IOSTREAM_MOVE) \
-  || defined(GENERATING_DOCUMENTATION)
   /// Move-construct a basic_socket_iostream from another.
   basic_socket_iostream(basic_socket_iostream&& other)
     : detail::socket_iostream_base<
@@ -225,20 +171,13 @@ public:
         Protocol, Clock, WaitTraits>::operator=(std::move(other));
     return *this;
   }
-#endif // defined(ASIO_HAS_STD_IOSTREAM_MOVE)
-       //   || defined(GENERATING_DOCUMENTATION)
-#endif // defined(ASIO_HAS_MOVE) || defined(GENERATING_DOCUMENTATION)
 
-#if defined(GENERATING_DOCUMENTATION)
   /// Establish a connection to an endpoint corresponding to a resolver query.
   /**
    * This constructor automatically establishes a connection based on the
    * supplied resolver query parameters. The arguments are used to construct
    * a resolver query object.
    */
-  template <typename T1, ..., typename TN>
-  explicit basic_socket_iostream(T1 t1, ..., TN tn);
-#elif defined(ASIO_HAS_VARIADIC_TEMPLATES)
   template <typename... T>
   explicit basic_socket_iostream(T... x)
     : std::basic_iostream<char>(
@@ -249,29 +188,19 @@ public:
     if (rdbuf()->connect(x...) == 0)
       this->setstate(std::ios_base::failbit);
   }
-#else
-  ASIO_VARIADIC_GENERATE(ASIO_PRIVATE_CTR_DEF)
-#endif
 
-#if defined(GENERATING_DOCUMENTATION)
   /// Establish a connection to an endpoint corresponding to a resolver query.
   /**
    * This function automatically establishes a connection based on the supplied
    * resolver query parameters. The arguments are used to construct a resolver
    * query object.
    */
-  template <typename T1, ..., typename TN>
-  void connect(T1 t1, ..., TN tn);
-#elif defined(ASIO_HAS_VARIADIC_TEMPLATES)
   template <typename... T>
   void connect(T... x)
   {
     if (rdbuf()->connect(x...) == 0)
       this->setstate(std::ios_base::failbit);
   }
-#else
-  ASIO_VARIADIC_GENERATE(ASIO_PRIVATE_CONNECT_DEF)
-#endif
 
   /// Close the connection.
   void close()
@@ -388,19 +317,14 @@ public:
 
 private:
   // Disallow copying and assignment.
-  basic_socket_iostream(const basic_socket_iostream&) ASIO_DELETED;
+  basic_socket_iostream(const basic_socket_iostream&) = delete;
   basic_socket_iostream& operator=(
-      const basic_socket_iostream&) ASIO_DELETED;
+      const basic_socket_iostream&) = delete;
 };
 
 } // namespace asio
 
 #include "asio/detail/pop_options.hpp"
-
-#if !defined(ASIO_HAS_VARIADIC_TEMPLATES)
-# undef ASIO_PRIVATE_CTR_DEF
-# undef ASIO_PRIVATE_CONNECT_DEF
-#endif // !defined(ASIO_HAS_VARIADIC_TEMPLATES)
 
 #endif // !defined(ASIO_NO_IOSTREAM)
 

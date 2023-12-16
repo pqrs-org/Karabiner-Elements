@@ -38,9 +38,14 @@ public:
     func_(this, immediate_op, &payload);
   }
 
-  void complete(Payload payload)
+  void post(Payload payload)
   {
-    func_(this, complete_op, &payload);
+    func_(this, post_op, &payload);
+  }
+
+  void dispatch(Payload payload)
+  {
+    func_(this, dispatch_op, &payload);
   }
 
 protected:
@@ -59,7 +64,7 @@ public:
   template <typename... Args>
   channel_receive_op(Handler& handler, const IoExecutor& io_ex)
     : channel_receive<Payload>(&channel_receive_op::do_action),
-      handler_(ASIO_MOVE_CAST(Handler)(handler)),
+      handler_(static_cast<Handler&&>(handler)),
       work_(handler_, io_ex)
   {
   }
@@ -75,8 +80,8 @@ public:
 
     // Take ownership of the operation's outstanding work.
     channel_operation::handler_work<Handler, IoExecutor> w(
-        ASIO_MOVE_CAST2(channel_operation::handler_work<
-          Handler, IoExecutor>)(o->work_));
+        static_cast<channel_operation::handler_work<Handler, IoExecutor>&&>(
+          o->work_));
 
     // Make a copy of the handler so that the memory can be deallocated before
     // the handler is posted. Even if we're not about to post the handler, a
@@ -88,14 +93,16 @@ public:
     {
       Payload* payload = static_cast<Payload*>(v);
       channel_handler<Payload, Handler> handler(
-          ASIO_MOVE_CAST(Payload)(*payload), o->handler_);
+          static_cast<Payload&&>(*payload), o->handler_);
       p.h = asio::detail::addressof(handler.handler_);
       p.reset();
       ASIO_HANDLER_INVOCATION_BEGIN(());
       if (a == channel_operation::immediate_op)
         w.immediate(handler, handler.handler_, 0);
+      else if (a == channel_operation::dispatch_op)
+        w.dispatch(handler, handler.handler_);
       else
-        w.complete(handler, handler.handler_);
+        w.post(handler, handler.handler_);
       ASIO_HANDLER_INVOCATION_END;
     }
     else

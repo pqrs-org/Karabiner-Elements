@@ -23,10 +23,8 @@
 # include "asio/detail/win_event.hpp"
 #elif defined(ASIO_HAS_PTHREADS)
 # include "asio/detail/posix_event.hpp"
-#elif defined(ASIO_HAS_STD_MUTEX_AND_CONDVAR)
-# include "asio/detail/std_event.hpp"
 #else
-# error Only Windows, POSIX and std::condition_variable are supported!
+# include "asio/detail/std_event.hpp"
 #endif
 
 namespace asio {
@@ -38,7 +36,7 @@ typedef null_event event;
 typedef win_event event;
 #elif defined(ASIO_HAS_PTHREADS)
 typedef posix_event event;
-#elif defined(ASIO_HAS_STD_MUTEX_AND_CONDVAR)
+#else
 typedef std_event event;
 #endif
 

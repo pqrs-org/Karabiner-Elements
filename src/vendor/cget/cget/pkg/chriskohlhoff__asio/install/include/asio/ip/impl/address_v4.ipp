@@ -57,19 +57,15 @@ address_v4::address_v4(address_v4::uint_type addr)
       static_cast<asio::detail::u_long_type>(addr));
 }
 
-address_v4::bytes_type address_v4::to_bytes() const ASIO_NOEXCEPT
+address_v4::bytes_type address_v4::to_bytes() const noexcept
 {
   using namespace std; // For memcpy.
   bytes_type bytes;
-#if defined(ASIO_HAS_STD_ARRAY)
   memcpy(bytes.data(), &addr_.s_addr, 4);
-#else // defined(ASIO_HAS_STD_ARRAY)
-  memcpy(bytes.elems, &addr_.s_addr, 4);
-#endif // defined(ASIO_HAS_STD_ARRAY)
   return bytes;
 }
 
-address_v4::uint_type address_v4::to_uint() const ASIO_NOEXCEPT
+address_v4::uint_type address_v4::to_uint() const noexcept
 {
   return asio::detail::socket_ops::network_to_host_long(addr_.s_addr);
 }
@@ -108,12 +104,12 @@ std::string address_v4::to_string(asio::error_code& ec) const
 }
 #endif // !defined(ASIO_NO_DEPRECATED)
 
-bool address_v4::is_loopback() const ASIO_NOEXCEPT
+bool address_v4::is_loopback() const noexcept
 {
   return (to_uint() & 0xFF000000) == 0x7F000000;
 }
 
-bool address_v4::is_unspecified() const ASIO_NOEXCEPT
+bool address_v4::is_unspecified() const noexcept
 {
   return to_uint() == 0;
 }
@@ -135,7 +131,7 @@ bool address_v4::is_class_c() const
 }
 #endif // !defined(ASIO_NO_DEPRECATED)
 
-bool address_v4::is_multicast() const ASIO_NOEXCEPT
+bool address_v4::is_multicast() const noexcept
 {
   return (to_uint() & 0xF0000000) == 0xE0000000;
 }
@@ -167,7 +163,7 @@ address_v4 make_address_v4(const char* str)
 }
 
 address_v4 make_address_v4(const char* str,
-    asio::error_code& ec) ASIO_NOEXCEPT
+    asio::error_code& ec) noexcept
 {
   address_v4::bytes_type bytes;
   if (asio::detail::socket_ops::inet_pton(
@@ -182,7 +178,7 @@ address_v4 make_address_v4(const std::string& str)
 }
 
 address_v4 make_address_v4(const std::string& str,
-    asio::error_code& ec) ASIO_NOEXCEPT
+    asio::error_code& ec) noexcept
 {
   return make_address_v4(str.c_str(), ec);
 }
@@ -195,7 +191,7 @@ address_v4 make_address_v4(string_view str)
 }
 
 address_v4 make_address_v4(string_view str,
-    asio::error_code& ec) ASIO_NOEXCEPT
+    asio::error_code& ec) noexcept
 {
   return make_address_v4(static_cast<std::string>(str), ec);
 }

@@ -37,38 +37,6 @@
 #endif // defined(ASIO_HAS_BOOST_DATE_TIME)
        // && defined(ASIO_USE_BOOST_DATE_TIME_FOR_SOCKET_IOSTREAM)
 
-#if !defined(ASIO_HAS_VARIADIC_TEMPLATES)
-
-# include "asio/detail/variadic_templates.hpp"
-
-// A macro that should expand to:
-//   template <typename T1, ..., typename Tn>
-//   basic_socket_streambuf* connect(T1 x1, ..., Tn xn)
-//   {
-//     init_buffers();
-//     typedef typename Protocol::resolver resolver_type;
-//     resolver_type resolver(socket().get_executor());
-//     connect_to_endpoints(
-//         resolver.resolve(x1, ..., xn, ec_));
-//     return !ec_ ? this : 0;
-//   }
-// This macro should only persist within this file.
-
-# define ASIO_PRIVATE_CONNECT_DEF(n) \
-  template <ASIO_VARIADIC_TPARAMS(n)> \
-  basic_socket_streambuf* connect(ASIO_VARIADIC_BYVAL_PARAMS(n)) \
-  { \
-    init_buffers(); \
-    typedef typename Protocol::resolver resolver_type; \
-    resolver_type resolver(socket().get_executor()); \
-    connect_to_endpoints( \
-        resolver.resolve(ASIO_VARIADIC_BYVAL_ARGS(n), ec_)); \
-    return !ec_ ? this : 0; \
-  } \
-  /**/
-
-#endif // !defined(ASIO_HAS_VARIADIC_TEMPLATES)
-
 #include "asio/detail/push_options.hpp"
 
 namespace asio {
@@ -116,11 +84,11 @@ template <typename Protocol,
 #if defined(ASIO_HAS_BOOST_DATE_TIME) \
   && defined(ASIO_USE_BOOST_DATE_TIME_FOR_SOCKET_IOSTREAM)
     typename Clock = boost::posix_time::ptime,
-    typename WaitTraits = time_traits<Clock> >
+    typename WaitTraits = time_traits<Clock>>
 #else // defined(ASIO_HAS_BOOST_DATE_TIME)
       // && defined(ASIO_USE_BOOST_DATE_TIME_FOR_SOCKET_IOSTREAM)
     typename Clock = chrono::steady_clock,
-    typename WaitTraits = wait_traits<Clock> >
+    typename WaitTraits = wait_traits<Clock>>
 #endif // defined(ASIO_HAS_BOOST_DATE_TIME)
        // && defined(ASIO_USE_BOOST_DATE_TIME_FOR_SOCKET_IOSTREAM)
 class basic_socket_streambuf;
@@ -131,7 +99,7 @@ class basic_socket_streambuf;
 #if defined(GENERATING_DOCUMENTATION)
 template <typename Protocol,
     typename Clock = chrono::steady_clock,
-    typename WaitTraits = wait_traits<Clock> >
+    typename WaitTraits = wait_traits<Clock>>
 #else // defined(GENERATING_DOCUMENTATION)
 template <typename Protocol, typename Clock, typename WaitTraits>
 #endif // defined(GENERATING_DOCUMENTATION)
@@ -197,7 +165,6 @@ public:
     init_buffers();
   }
 
-#if defined(ASIO_HAS_MOVE) || defined(GENERATING_DOCUMENTATION)
   /// Construct a basic_socket_streambuf from the supplied socket.
   explicit basic_socket_streambuf(basic_stream_socket<protocol_type> s)
     : detail::socket_streambuf_io_context(0),
@@ -241,7 +208,6 @@ public:
     other.init_buffers();
     return *this;
   }
-#endif // defined(ASIO_HAS_MOVE) || defined(GENERATING_DOCUMENTATION)
 
   /// Destructor flushes buffered data.
   virtual ~basic_socket_streambuf()
@@ -265,7 +231,6 @@ public:
     return !ec_ ? this : 0;
   }
 
-#if defined(GENERATING_DOCUMENTATION)
   /// Establish a connection.
   /**
    * This function automatically establishes a connection based on the supplied
@@ -275,9 +240,6 @@ public:
    * @return \c this if a connection was successfully established, a null
    * pointer otherwise.
    */
-  template <typename T1, ..., typename TN>
-  basic_socket_streambuf* connect(T1 t1, ..., TN tn);
-#elif defined(ASIO_HAS_VARIADIC_TEMPLATES)
   template <typename... T>
   basic_socket_streambuf* connect(T... x)
   {
@@ -287,9 +249,6 @@ public:
     connect_to_endpoints(resolver.resolve(x..., ec_));
     return !ec_ ? this : 0;
   }
-#else
-  ASIO_VARIADIC_GENERATE(ASIO_PRIVATE_CONNECT_DEF)
-#endif
 
   /// Close the connection.
   /**
@@ -559,9 +518,9 @@ protected:
 
 private:
   // Disallow copying and assignment.
-  basic_socket_streambuf(const basic_socket_streambuf&) ASIO_DELETED;
+  basic_socket_streambuf(const basic_socket_streambuf&) = delete;
   basic_socket_streambuf& operator=(
-      const basic_socket_streambuf&) ASIO_DELETED;
+      const basic_socket_streambuf&) = delete;
 
   void init_buffers()
   {
@@ -677,10 +636,6 @@ private:
 } // namespace asio
 
 #include "asio/detail/pop_options.hpp"
-
-#if !defined(ASIO_HAS_VARIADIC_TEMPLATES)
-# undef ASIO_PRIVATE_CONNECT_DEF
-#endif // !defined(ASIO_HAS_VARIADIC_TEMPLATES)
 
 #endif // !defined(ASIO_NO_IOSTREAM)
 

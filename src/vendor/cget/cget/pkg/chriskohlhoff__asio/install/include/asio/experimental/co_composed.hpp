@@ -42,8 +42,9 @@ namespace experimental {
  * which outstanding work must be maintained while the operation is incomplete.
  *
  * @par Per-Operation Cancellation
- * By default, per-operation cancellation is disabled for composed operations
- * that use experimental::co_composed. It must be explicitly enabled by calling
+ * By default, terminal per-operation cancellation is enabled for composed
+ * operations that use experimental::co_composed. To disable cancellation for
+ * the composed operation, or to alter its supported cancellation types, call
  * the state's @c reset_cancellation_state function.
  *
  * @par Examples

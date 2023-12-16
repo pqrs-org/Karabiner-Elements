@@ -175,7 +175,7 @@ public:
 
   template <typename Op>
   auto await_transform(Op&& op,
-      typename constraint<is_async_operation<Op>::value>::type = 0
+      constraint_t<is_async_operation<Op>::value> = 0
 #if defined(ASIO_ENABLE_HANDLER_TRACKING)
 # if defined(ASIO_HAS_SOURCE_LOCATION)
       , detail::source_location location = detail::source_location::current()
@@ -187,8 +187,8 @@ public:
       if (!!attached_thread_->get_cancellation_state().cancelled())
         throw_error(asio::error::operation_aborted, "co_await");
 
-    return awaitable_async_op<typename completion_signature_of<Op>::type,
-      typename decay<Op>::type, Executor>{
+    return awaitable_async_op<
+      completion_signature_of_t<Op>, decay_t<Op>, Executor>{
         std::forward<Op>(op), this
 #if defined(ASIO_ENABLE_HANDLER_TRACKING)
 # if defined(ASIO_HAS_SOURCE_LOCATION)
@@ -297,11 +297,11 @@ public:
       auto await_resume()
       {
         return this_->attached_thread_->reset_cancellation_state(
-            ASIO_MOVE_CAST(Filter)(filter_));
+            static_cast<Filter&&>(filter_));
       }
     };
 
-    return result{this, ASIO_MOVE_CAST(Filter)(reset.filter)};
+    return result{this, static_cast<Filter&&>(reset.filter)};
   }
 
   // This await transformation resets the associated cancellation state.
@@ -328,14 +328,14 @@ public:
       auto await_resume()
       {
         return this_->attached_thread_->reset_cancellation_state(
-            ASIO_MOVE_CAST(InFilter)(in_filter_),
-            ASIO_MOVE_CAST(OutFilter)(out_filter_));
+            static_cast<InFilter&&>(in_filter_),
+            static_cast<OutFilter&&>(out_filter_));
       }
     };
 
     return result{this,
-        ASIO_MOVE_CAST(InFilter)(reset.in_filter),
-        ASIO_MOVE_CAST(OutFilter)(reset.out_filter)};
+        static_cast<InFilter&&>(reset.in_filter),
+        static_cast<OutFilter&&>(reset.out_filter)};
   }
 
   // This await transformation determines whether cancellation is propagated as
@@ -399,12 +399,12 @@ public:
   // race condition.
   template <typename Function>
   auto await_transform(Function f,
-      typename enable_if<
+      enable_if_t<
         is_convertible<
-          typename result_of<Function(awaitable_frame_base*)>::type,
+          result_of_t<Function(awaitable_frame_base*)>,
           awaitable_thread<Executor>*
         >::value
-      >::type* = nullptr)
+      >* = nullptr)
   {
     struct result
     {
@@ -718,21 +718,21 @@ public:
   }
 
   template <typename Filter>
-  void reset_cancellation_state(ASIO_MOVE_ARG(Filter) filter)
+  void reset_cancellation_state(Filter&& filter)
   {
     bottom_of_stack_.frame_->cancellation_state_ =
       cancellation_state(bottom_of_stack_.frame_->parent_cancellation_slot_,
-        ASIO_MOVE_CAST(Filter)(filter));
+        static_cast<Filter&&>(filter));
   }
 
   template <typename InFilter, typename OutFilter>
-  void reset_cancellation_state(ASIO_MOVE_ARG(InFilter) in_filter,
-      ASIO_MOVE_ARG(OutFilter) out_filter)
+  void reset_cancellation_state(InFilter&& in_filter,
+      OutFilter&& out_filter)
   {
     bottom_of_stack_.frame_->cancellation_state_ =
       cancellation_state(bottom_of_stack_.frame_->parent_cancellation_slot_,
-        ASIO_MOVE_CAST(InFilter)(in_filter),
-        ASIO_MOVE_CAST(OutFilter)(out_filter));
+        static_cast<InFilter&&>(in_filter),
+        static_cast<OutFilter&&>(out_filter));
   }
 
   bool throw_if_cancelled() const

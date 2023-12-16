@@ -178,9 +178,9 @@ public:
    */
   template <typename ExecutionContext>
   explicit basic_deadline_timer(ExecutionContext& context,
-      typename constraint<
+      constraint_t<
         is_convertible<ExecutionContext&, execution_context&>::value
-      >::type = 0)
+      > = 0)
     : impl_(0, 0, context)
   {
   }
@@ -216,9 +216,9 @@ public:
    */
   template <typename ExecutionContext>
   basic_deadline_timer(ExecutionContext& context, const time_type& expiry_time,
-      typename constraint<
+      constraint_t<
         is_convertible<ExecutionContext&, execution_context&>::value
-      >::type = 0)
+      > = 0)
     : impl_(0, 0, context)
   {
     asio::error_code ec;
@@ -260,9 +260,9 @@ public:
   template <typename ExecutionContext>
   basic_deadline_timer(ExecutionContext& context,
       const duration_type& expiry_time,
-      typename constraint<
+      constraint_t<
         is_convertible<ExecutionContext&, execution_context&>::value
-      >::type = 0)
+      > = 0)
     : impl_(0, 0, context)
   {
     asio::error_code ec;
@@ -271,7 +271,6 @@ public:
     asio::detail::throw_error(ec, "expires_from_now");
   }
 
-#if defined(ASIO_HAS_MOVE) || defined(GENERATING_DOCUMENTATION)
   /// Move-construct a basic_deadline_timer from another.
   /**
    * This constructor moves a timer from one object to another.
@@ -305,7 +304,6 @@ public:
     impl_ = std::move(other.impl_);
     return *this;
   }
-#endif // defined(ASIO_HAS_MOVE) || defined(GENERATING_DOCUMENTATION)
 
   /// Destroys the timer.
   /**
@@ -317,7 +315,7 @@ public:
   }
 
   /// Get the executor associated with the object.
-  const executor_type& get_executor() ASIO_NOEXCEPT
+  const executor_type& get_executor() noexcept
   {
     return impl_.get_executor();
   }
@@ -649,15 +647,12 @@ public:
    */
   template <
       ASIO_COMPLETION_TOKEN_FOR(void (asio::error_code))
-        WaitToken ASIO_DEFAULT_COMPLETION_TOKEN_TYPE(executor_type)>
-  ASIO_INITFN_AUTO_RESULT_TYPE_PREFIX(WaitToken,
-      void (asio::error_code))
-  async_wait(
-      ASIO_MOVE_ARG(WaitToken) token
-        ASIO_DEFAULT_COMPLETION_TOKEN(executor_type))
-    ASIO_INITFN_AUTO_RESULT_TYPE_SUFFIX((
+        WaitToken = default_completion_token_t<executor_type>>
+  auto async_wait(
+      WaitToken&& token = default_completion_token_t<executor_type>())
+    -> decltype(
       async_initiate<WaitToken, void (asio::error_code)>(
-          declval<initiate_async_wait>(), token)))
+        declval<initiate_async_wait>(), token))
   {
     return async_initiate<WaitToken, void (asio::error_code)>(
         initiate_async_wait(this), token);
@@ -665,9 +660,9 @@ public:
 
 private:
   // Disallow copying and assignment.
-  basic_deadline_timer(const basic_deadline_timer&) ASIO_DELETED;
+  basic_deadline_timer(const basic_deadline_timer&) = delete;
   basic_deadline_timer& operator=(
-      const basic_deadline_timer&) ASIO_DELETED;
+      const basic_deadline_timer&) = delete;
 
   class initiate_async_wait
   {
@@ -679,13 +674,13 @@ private:
     {
     }
 
-    const executor_type& get_executor() const ASIO_NOEXCEPT
+    const executor_type& get_executor() const noexcept
     {
       return self_->get_executor();
     }
 
     template <typename WaitHandler>
-    void operator()(ASIO_MOVE_ARG(WaitHandler) handler) const
+    void operator()(WaitHandler&& handler) const
     {
       // If you get an error on the following line it means that your handler
       // does not meet the documented type requirements for a WaitHandler.

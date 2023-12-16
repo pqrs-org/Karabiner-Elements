@@ -34,7 +34,7 @@ namespace asio {
 struct executor_arg_t
 {
   /// Constructor.
-  ASIO_CONSTEXPR executor_arg_t() ASIO_NOEXCEPT
+  constexpr executor_arg_t() noexcept
   {
   }
 };
@@ -45,11 +45,7 @@ struct executor_arg_t
  * See asio::executor_arg_t and asio::uses_executor
  * for more information.
  */
-#if defined(ASIO_HAS_CONSTEXPR) || defined(GENERATING_DOCUMENTATION)
 constexpr executor_arg_t executor_arg;
-#elif defined(ASIO_MSVC)
-__declspec(selectany) executor_arg_t executor_arg;
-#endif
 
 /// The uses_executor trait detects whether a type T has an associated executor
 /// that is convertible from type Executor.

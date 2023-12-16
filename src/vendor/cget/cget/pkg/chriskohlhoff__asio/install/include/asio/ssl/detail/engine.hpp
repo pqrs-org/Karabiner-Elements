@@ -61,18 +61,14 @@ public:
   // Construct a new engine for an existing native SSL implementation.
   ASIO_DECL explicit engine(SSL* ssl_impl);
 
-#if defined(ASIO_HAS_MOVE)
   // Move construct from another engine.
-  ASIO_DECL engine(engine&& other) ASIO_NOEXCEPT;
-#endif // defined(ASIO_HAS_MOVE)
+  ASIO_DECL engine(engine&& other) noexcept;
 
   // Destructor.
   ASIO_DECL ~engine();
 
-#if defined(ASIO_HAS_MOVE)
   // Move assign from another engine.
-  ASIO_DECL engine& operator=(engine&& other) ASIO_NOEXCEPT;
-#endif // defined(ASIO_HAS_MOVE)
+  ASIO_DECL engine& operator=(engine&& other) noexcept;
 
   // Get the underlying implementation in the native type.
   ASIO_DECL SSL* native_handle();

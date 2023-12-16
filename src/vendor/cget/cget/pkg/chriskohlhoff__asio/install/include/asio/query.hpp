@@ -100,10 +100,10 @@ struct query_result
 
 namespace asio_query_fn {
 
-using asio::conditional;
-using asio::decay;
+using asio::conditional_t;
+using asio::decay_t;
 using asio::declval;
-using asio::enable_if;
+using asio::enable_if_t;
 using asio::is_applicable_property;
 using asio::traits::query_free;
 using asio::traits::query_member;
@@ -123,66 +123,66 @@ template <typename Impl, typename T, typename Properties,
     typename = void, typename = void, typename = void, typename = void>
 struct call_traits
 {
-  ASIO_STATIC_CONSTEXPR(overload_type, overload = ill_formed);
-  ASIO_STATIC_CONSTEXPR(bool, is_noexcept = false);
+  static constexpr overload_type overload = ill_formed;
+  static constexpr bool is_noexcept = false;
   typedef void result_type;
 };
 
 template <typename Impl, typename T, typename Property>
 struct call_traits<Impl, T, void(Property),
-  typename enable_if<
+  enable_if_t<
     is_applicable_property<
-      typename decay<T>::type,
-      typename decay<Property>::type
+      decay_t<T>,
+      decay_t<Property>
     >::value
-  >::type,
-  typename enable_if<
+  >,
+  enable_if_t<
     static_query<T, Property>::is_valid
-  >::type> :
+  >> :
   static_query<T, Property>
 {
-  ASIO_STATIC_CONSTEXPR(overload_type, overload = static_value);
+  static constexpr overload_type overload = static_value;
 };
 
 template <typename Impl, typename T, typename Property>
 struct call_traits<Impl, T, void(Property),
-  typename enable_if<
+  enable_if_t<
     is_applicable_property<
-      typename decay<T>::type,
-      typename decay<Property>::type
+      decay_t<T>,
+      decay_t<Property>
     >::value
-  >::type,
-  typename enable_if<
+  >,
+  enable_if_t<
     !static_query<T, Property>::is_valid
-  >::type,
-  typename enable_if<
+  >,
+  enable_if_t<
     query_member<typename Impl::template proxy<T>::type, Property>::is_valid
-  >::type> :
+  >> :
   query_member<typename Impl::template proxy<T>::type, Property>
 {
-  ASIO_STATIC_CONSTEXPR(overload_type, overload = call_member);
+  static constexpr overload_type overload = call_member;
 };
 
 template <typename Impl, typename T, typename Property>
 struct call_traits<Impl, T, void(Property),
-  typename enable_if<
+  enable_if_t<
     is_applicable_property<
-      typename decay<T>::type,
-      typename decay<Property>::type
+      decay_t<T>,
+      decay_t<Property>
     >::value
-  >::type,
-  typename enable_if<
+  >,
+  enable_if_t<
     !static_query<T, Property>::is_valid
-  >::type,
-  typename enable_if<
+  >,
+  enable_if_t<
     !query_member<typename Impl::template proxy<T>::type, Property>::is_valid
-  >::type,
-  typename enable_if<
+  >,
+  enable_if_t<
     query_free<T, Property>::is_valid
-  >::type> :
+  >> :
   query_free<T, Property>
 {
-  ASIO_STATIC_CONSTEXPR(overload_type, overload = call_free);
+  static constexpr overload_type overload = call_free;
 };
 
 struct impl
@@ -194,16 +194,14 @@ struct impl
     struct type
     {
       template <typename P>
-      auto query(ASIO_MOVE_ARG(P) p)
+      auto query(P&& p)
         noexcept(
           noexcept(
-            declval<typename conditional<true, T, P>::type>().query(
-              ASIO_MOVE_CAST(P)(p))
+            declval<conditional_t<true, T, P>>().query(static_cast<P&&>(p))
           )
         )
         -> decltype(
-          declval<typename conditional<true, T, P>::type>().query(
-            ASIO_MOVE_CAST(P)(p))
+          declval<conditional_t<true, T, P>>().query(static_cast<P&&>(p))
         );
     };
 #else // defined(ASIO_HAS_DEDUCED_QUERY_MEMBER_TRAIT)
@@ -212,48 +210,36 @@ struct impl
   };
 
   template <typename T, typename Property>
-  ASIO_NODISCARD ASIO_CONSTEXPR typename enable_if<
+  ASIO_NODISCARD constexpr enable_if_t<
     call_traits<impl, T, void(Property)>::overload == static_value,
     typename call_traits<impl, T, void(Property)>::result_type
-  >::type
-  operator()(
-      ASIO_MOVE_ARG(T),
-      ASIO_MOVE_ARG(Property)) const
-    ASIO_NOEXCEPT_IF((
-      call_traits<impl, T, void(Property)>::is_noexcept))
+  >
+  operator()(T&&, Property&&) const
+    noexcept(call_traits<impl, T, void(Property)>::is_noexcept)
   {
-    return static_query<
-      typename decay<T>::type,
-      typename decay<Property>::type
-    >::value();
+    return static_query<decay_t<T>, decay_t<Property>>::value();
   }
 
   template <typename T, typename Property>
-  ASIO_NODISCARD ASIO_CONSTEXPR typename enable_if<
+  ASIO_NODISCARD constexpr enable_if_t<
     call_traits<impl, T, void(Property)>::overload == call_member,
     typename call_traits<impl, T, void(Property)>::result_type
-  >::type
-  operator()(
-      ASIO_MOVE_ARG(T) t,
-      ASIO_MOVE_ARG(Property) p) const
-    ASIO_NOEXCEPT_IF((
-      call_traits<impl, T, void(Property)>::is_noexcept))
+  >
+  operator()(T&& t, Property&& p) const
+    noexcept(call_traits<impl, T, void(Property)>::is_noexcept)
   {
-    return ASIO_MOVE_CAST(T)(t).query(ASIO_MOVE_CAST(Property)(p));
+    return static_cast<T&&>(t).query(static_cast<Property&&>(p));
   }
 
   template <typename T, typename Property>
-  ASIO_NODISCARD ASIO_CONSTEXPR typename enable_if<
+  ASIO_NODISCARD constexpr enable_if_t<
     call_traits<impl, T, void(Property)>::overload == call_free,
     typename call_traits<impl, T, void(Property)>::result_type
-  >::type
-  operator()(
-      ASIO_MOVE_ARG(T) t,
-      ASIO_MOVE_ARG(Property) p) const
-    ASIO_NOEXCEPT_IF((
-      call_traits<impl, T, void(Property)>::is_noexcept))
+  >
+  operator()(T&& t, Property&& p) const
+    noexcept(call_traits<impl, T, void(Property)>::is_noexcept)
   {
-    return query(ASIO_MOVE_CAST(T)(t), ASIO_MOVE_CAST(Property)(p));
+    return query(static_cast<T&&>(t), static_cast<Property&&>(p));
   }
 };
 
@@ -270,7 +256,7 @@ const T static_instance<T>::instance = {};
 namespace asio {
 namespace {
 
-static ASIO_CONSTEXPR const asio_query_fn::impl&
+static constexpr const asio_query_fn::impl&
   query = asio_query_fn::static_instance<>::instance;
 
 } // namespace
@@ -288,8 +274,7 @@ struct can_query :
 #if defined(ASIO_HAS_VARIABLE_TEMPLATES)
 
 template <typename T, typename Property>
-constexpr bool can_query_v
-  = can_query<T, Property>::value;
+constexpr bool can_query_v = can_query<T, Property>::value;
 
 #endif // defined(ASIO_HAS_VARIABLE_TEMPLATES)
 
@@ -303,8 +288,7 @@ struct is_nothrow_query :
 #if defined(ASIO_HAS_VARIABLE_TEMPLATES)
 
 template <typename T, typename Property>
-constexpr bool is_nothrow_query_v
-  = is_nothrow_query<T, Property>::value;
+constexpr bool is_nothrow_query_v = is_nothrow_query<T, Property>::value;
 
 #endif // defined(ASIO_HAS_VARIABLE_TEMPLATES)
 
@@ -314,6 +298,9 @@ struct query_result
   typedef typename asio_query_fn::call_traits<
       query_t, T, void(Property)>::result_type type;
 };
+
+template <typename T, typename Property>
+using query_result_t = typename query_result<T, Property>::type;
 
 } // namespace asio
 

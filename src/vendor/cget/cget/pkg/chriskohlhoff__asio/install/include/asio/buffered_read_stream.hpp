@@ -55,7 +55,7 @@ class buffered_read_stream
 {
 public:
   /// The type of the next layer.
-  typedef typename remove_reference<Stream>::type next_layer_type;
+  typedef remove_reference_t<Stream> next_layer_type;
 
   /// The type of the lowest layer.
   typedef typename next_layer_type::lowest_layer_type lowest_layer_type;
@@ -72,17 +72,17 @@ public:
 
   /// Construct, passing the specified argument to initialise the next layer.
   template <typename Arg>
-  explicit buffered_read_stream(ASIO_MOVE_OR_LVALUE_ARG(Arg) a)
-    : next_layer_(ASIO_MOVE_OR_LVALUE(Arg)(a)),
+  explicit buffered_read_stream(Arg&& a)
+    : next_layer_(static_cast<Arg&&>(a)),
       storage_(default_buffer_size)
   {
   }
 
   /// Construct, passing the specified argument to initialise the next layer.
   template <typename Arg>
-  buffered_read_stream(ASIO_MOVE_OR_LVALUE_ARG(Arg) a,
+  buffered_read_stream(Arg&& a,
       std::size_t buffer_size)
-    : next_layer_(ASIO_MOVE_OR_LVALUE(Arg)(a)),
+    : next_layer_(static_cast<Arg&&>(a)),
       storage_(buffer_size)
   {
   }
@@ -106,7 +106,7 @@ public:
   }
 
   /// Get the executor associated with the object.
-  executor_type get_executor() ASIO_NOEXCEPT
+  executor_type get_executor() noexcept
   {
     return next_layer_.lowest_layer().get_executor();
   }
@@ -149,20 +149,15 @@ public:
    */
   template <typename ConstBufferSequence,
       ASIO_COMPLETION_TOKEN_FOR(void (asio::error_code,
-        std::size_t)) WriteHandler
-          ASIO_DEFAULT_COMPLETION_TOKEN_TYPE(executor_type)>
-  ASIO_INITFN_AUTO_RESULT_TYPE_PREFIX(WriteHandler,
-      void (asio::error_code, std::size_t))
-  async_write_some(const ConstBufferSequence& buffers,
-      ASIO_MOVE_ARG(WriteHandler) handler
-        ASIO_DEFAULT_COMPLETION_TOKEN(executor_type))
-    ASIO_INITFN_AUTO_RESULT_TYPE_SUFFIX((
-      declval<typename conditional<true, Stream&, WriteHandler>::type>()
-        .async_write_some(buffers,
-          ASIO_MOVE_CAST(WriteHandler)(handler))))
+        std::size_t)) WriteHandler = default_completion_token_t<executor_type>>
+  auto async_write_some(const ConstBufferSequence& buffers,
+      WriteHandler&& handler = default_completion_token_t<executor_type>())
+    -> decltype(
+      declval<conditional_t<true, Stream&, WriteHandler>>().async_write_some(
+        buffers, static_cast<WriteHandler&&>(handler)))
   {
     return next_layer_.async_write_some(buffers,
-        ASIO_MOVE_CAST(WriteHandler)(handler));
+        static_cast<WriteHandler&&>(handler));
   }
 
   /// Fill the buffer with some data. Returns the number of bytes placed in the
@@ -180,18 +175,14 @@ public:
    */
   template <
       ASIO_COMPLETION_TOKEN_FOR(void (asio::error_code,
-        std::size_t)) ReadHandler
-          ASIO_DEFAULT_COMPLETION_TOKEN_TYPE(executor_type)>
-  ASIO_INITFN_AUTO_RESULT_TYPE_PREFIX(ReadHandler,
-      void (asio::error_code, std::size_t))
-  async_fill(
-      ASIO_MOVE_ARG(ReadHandler) handler
-        ASIO_DEFAULT_COMPLETION_TOKEN(executor_type))
-    ASIO_INITFN_AUTO_RESULT_TYPE_SUFFIX((
+        std::size_t)) ReadHandler = default_completion_token_t<executor_type>>
+  auto async_fill(
+      ReadHandler&& handler = default_completion_token_t<executor_type>())
+    -> decltype(
       async_initiate<ReadHandler,
         void (asio::error_code, std::size_t)>(
-          declval<detail::initiate_async_buffered_fill<Stream> >(),
-          handler, declval<detail::buffered_stream_storage*>())));
+          declval<detail::initiate_async_buffered_fill<Stream>>(),
+          handler, declval<detail::buffered_stream_storage*>()));
 
   /// Read some data from the stream. Returns the number of bytes read. Throws
   /// an exception on failure.
@@ -212,18 +203,14 @@ public:
    */
   template <typename MutableBufferSequence,
       ASIO_COMPLETION_TOKEN_FOR(void (asio::error_code,
-        std::size_t)) ReadHandler
-          ASIO_DEFAULT_COMPLETION_TOKEN_TYPE(executor_type)>
-  ASIO_INITFN_AUTO_RESULT_TYPE_PREFIX(ReadHandler,
-      void (asio::error_code, std::size_t))
-  async_read_some(const MutableBufferSequence& buffers,
-      ASIO_MOVE_ARG(ReadHandler) handler
-        ASIO_DEFAULT_COMPLETION_TOKEN(executor_type))
-    ASIO_INITFN_AUTO_RESULT_TYPE_SUFFIX((
+        std::size_t)) ReadHandler = default_completion_token_t<executor_type>>
+  auto async_read_some(const MutableBufferSequence& buffers,
+      ReadHandler&& handler = default_completion_token_t<executor_type>())
+    -> decltype(
       async_initiate<ReadHandler,
         void (asio::error_code, std::size_t)>(
-          declval<detail::initiate_async_buffered_read_some<Stream> >(),
-          handler, declval<detail::buffered_stream_storage*>(), buffers)));
+          declval<detail::initiate_async_buffered_read_some<Stream>>(),
+          handler, declval<detail::buffered_stream_storage*>(), buffers));
 
   /// Peek at the incoming data on the stream. Returns the number of bytes read.
   /// Throws an exception on failure.

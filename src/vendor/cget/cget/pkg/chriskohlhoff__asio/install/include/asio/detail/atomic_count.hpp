@@ -19,11 +19,9 @@
 
 #if !defined(ASIO_HAS_THREADS)
 // Nothing to include.
-#elif defined(ASIO_HAS_STD_ATOMIC)
+#else // !defined(ASIO_HAS_THREADS)
 # include <atomic>
-#else // defined(ASIO_HAS_STD_ATOMIC)
-# include <boost/detail/atomic_count.hpp>
-#endif // defined(ASIO_HAS_STD_ATOMIC)
+#endif // !defined(ASIO_HAS_THREADS)
 
 namespace asio {
 namespace detail {
@@ -34,7 +32,7 @@ inline void increment(atomic_count& a, long b) { a += b; }
 inline void decrement(atomic_count& a, long b) { a -= b; }
 inline void ref_count_up(atomic_count& a) { ++a; }
 inline bool ref_count_down(atomic_count& a) { return --a == 0; }
-#elif defined(ASIO_HAS_STD_ATOMIC)
+#else // !defined(ASIO_HAS_THREADS)
 typedef std::atomic<long> atomic_count;
 inline void increment(atomic_count& a, long b) { a += b; }
 inline void decrement(atomic_count& a, long b) { a -= b; }
@@ -53,13 +51,7 @@ inline bool ref_count_down(atomic_count& a)
   }
   return false;
 }
-#else // defined(ASIO_HAS_STD_ATOMIC)
-typedef boost::detail::atomic_count atomic_count;
-inline void increment(atomic_count& a, long b) { while (b > 0) ++a, --b; }
-inline void decrement(atomic_count& a, long b) { while (b > 0) --a, --b; }
-inline void ref_count_up(atomic_count& a) { ++a; }
-inline bool ref_count_down(atomic_count& a) { return --a == 0; }
-#endif // defined(ASIO_HAS_STD_ATOMIC)
+#endif // !defined(ASIO_HAS_THREADS)
 
 } // namespace detail
 } // namespace asio

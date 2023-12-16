@@ -46,33 +46,33 @@ public:
   typedef basic_endpoint<icmp> endpoint;
 
   /// Construct to represent the IPv4 ICMP protocol.
-  static icmp v4() ASIO_NOEXCEPT
+  static icmp v4() noexcept
   {
     return icmp(ASIO_OS_DEF(IPPROTO_ICMP),
         ASIO_OS_DEF(AF_INET));
   }
 
   /// Construct to represent the IPv6 ICMP protocol.
-  static icmp v6() ASIO_NOEXCEPT
+  static icmp v6() noexcept
   {
     return icmp(ASIO_OS_DEF(IPPROTO_ICMPV6),
         ASIO_OS_DEF(AF_INET6));
   }
 
   /// Obtain an identifier for the type of the protocol.
-  int type() const ASIO_NOEXCEPT
+  int type() const noexcept
   {
     return ASIO_OS_DEF(SOCK_RAW);
   }
 
   /// Obtain an identifier for the protocol.
-  int protocol() const ASIO_NOEXCEPT
+  int protocol() const noexcept
   {
     return protocol_;
   }
 
   /// Obtain an identifier for the protocol family.
-  int family() const ASIO_NOEXCEPT
+  int family() const noexcept
   {
     return family_;
   }
@@ -97,7 +97,7 @@ public:
 
 private:
   // Construct with a specific family.
-  explicit icmp(int protocol_id, int protocol_family) ASIO_NOEXCEPT
+  explicit icmp(int protocol_id, int protocol_family) noexcept
     : protocol_(protocol_id),
       family_(protocol_family)
   {

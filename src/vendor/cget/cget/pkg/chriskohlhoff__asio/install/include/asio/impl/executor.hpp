@@ -47,7 +47,7 @@ public:
     return p;
   }
 
-  impl(const Executor& e, const Allocator& a) ASIO_NOEXCEPT
+  impl(const Executor& e, const Allocator& a) noexcept
     : impl_base(false),
       ref_count_(1),
       executor_(e),
@@ -55,13 +55,13 @@ public:
   {
   }
 
-  impl_base* clone() const ASIO_NOEXCEPT
+  impl_base* clone() const noexcept
   {
     detail::ref_count_up(ref_count_);
     return const_cast<impl_base*>(static_cast<const impl_base*>(this));
   }
 
-  void destroy() ASIO_NOEXCEPT
+  void destroy() noexcept
   {
     if (detail::ref_count_down(ref_count_))
     {
@@ -72,52 +72,52 @@ public:
     }
   }
 
-  void on_work_started() ASIO_NOEXCEPT
+  void on_work_started() noexcept
   {
     executor_.on_work_started();
   }
 
-  void on_work_finished() ASIO_NOEXCEPT
+  void on_work_finished() noexcept
   {
     executor_.on_work_finished();
   }
 
-  execution_context& context() ASIO_NOEXCEPT
+  execution_context& context() noexcept
   {
     return executor_.context();
   }
 
-  void dispatch(ASIO_MOVE_ARG(function) f)
+  void dispatch(function&& f)
   {
-    executor_.dispatch(ASIO_MOVE_CAST(function)(f), allocator_);
+    executor_.dispatch(static_cast<function&&>(f), allocator_);
   }
 
-  void post(ASIO_MOVE_ARG(function) f)
+  void post(function&& f)
   {
-    executor_.post(ASIO_MOVE_CAST(function)(f), allocator_);
+    executor_.post(static_cast<function&&>(f), allocator_);
   }
 
-  void defer(ASIO_MOVE_ARG(function) f)
+  void defer(function&& f)
   {
-    executor_.defer(ASIO_MOVE_CAST(function)(f), allocator_);
+    executor_.defer(static_cast<function&&>(f), allocator_);
   }
 
-  type_id_result_type target_type() const ASIO_NOEXCEPT
+  type_id_result_type target_type() const noexcept
   {
     return type_id<Executor>();
   }
 
-  void* target() ASIO_NOEXCEPT
+  void* target() noexcept
   {
     return &executor_;
   }
 
-  const void* target() const ASIO_NOEXCEPT
+  const void* target() const noexcept
   {
     return &executor_;
   }
 
-  bool equals(const impl_base* e) const ASIO_NOEXCEPT
+  bool equals(const impl_base* e) const noexcept
   {
     if (this == e)
       return true;
@@ -164,7 +164,7 @@ public:
   static impl_base* create(const system_executor&,
       const Allocator& = Allocator())
   {
-    return &detail::global<impl<system_executor, std::allocator<void> > >();
+    return &detail::global<impl<system_executor, std::allocator<void>> >();
   }
 
   impl()
@@ -172,64 +172,64 @@ public:
   {
   }
 
-  impl_base* clone() const ASIO_NOEXCEPT
+  impl_base* clone() const noexcept
   {
     return const_cast<impl_base*>(static_cast<const impl_base*>(this));
   }
 
-  void destroy() ASIO_NOEXCEPT
+  void destroy() noexcept
   {
   }
 
-  void on_work_started() ASIO_NOEXCEPT
+  void on_work_started() noexcept
   {
     executor_.on_work_started();
   }
 
-  void on_work_finished() ASIO_NOEXCEPT
+  void on_work_finished() noexcept
   {
     executor_.on_work_finished();
   }
 
-  execution_context& context() ASIO_NOEXCEPT
+  execution_context& context() noexcept
   {
     return executor_.context();
   }
 
-  void dispatch(ASIO_MOVE_ARG(function) f)
+  void dispatch(function&& f)
   {
-    executor_.dispatch(ASIO_MOVE_CAST(function)(f),
+    executor_.dispatch(static_cast<function&&>(f),
         std::allocator<void>());
   }
 
-  void post(ASIO_MOVE_ARG(function) f)
+  void post(function&& f)
   {
-    executor_.post(ASIO_MOVE_CAST(function)(f),
+    executor_.post(static_cast<function&&>(f),
         std::allocator<void>());
   }
 
-  void defer(ASIO_MOVE_ARG(function) f)
+  void defer(function&& f)
   {
-    executor_.defer(ASIO_MOVE_CAST(function)(f),
+    executor_.defer(static_cast<function&&>(f),
         std::allocator<void>());
   }
 
-  type_id_result_type target_type() const ASIO_NOEXCEPT
+  type_id_result_type target_type() const noexcept
   {
     return type_id<system_executor>();
   }
 
-  void* target() ASIO_NOEXCEPT
+  void* target() noexcept
   {
     return &executor_;
   }
 
-  const void* target() const ASIO_NOEXCEPT
+  const void* target() const noexcept
   {
     return &executor_;
   }
 
-  bool equals(const impl_base* e) const ASIO_NOEXCEPT
+  bool equals(const impl_base* e) const noexcept
   {
     return this == e;
   }
@@ -240,7 +240,7 @@ private:
 
 template <typename Executor>
 executor::executor(Executor e)
-  : impl_(impl<Executor, std::allocator<void> >::create(e))
+  : impl_(impl<Executor, std::allocator<void>>::create(e))
 {
 }
 
@@ -251,39 +251,39 @@ executor::executor(allocator_arg_t, const Allocator& a, Executor e)
 }
 
 template <typename Function, typename Allocator>
-void executor::dispatch(ASIO_MOVE_ARG(Function) f,
+void executor::dispatch(Function&& f,
     const Allocator& a) const
 {
   impl_base* i = get_impl();
   if (i->fast_dispatch_)
-    system_executor().dispatch(ASIO_MOVE_CAST(Function)(f), a);
+    system_executor().dispatch(static_cast<Function&&>(f), a);
   else
-    i->dispatch(function(ASIO_MOVE_CAST(Function)(f), a));
+    i->dispatch(function(static_cast<Function&&>(f), a));
 }
 
 template <typename Function, typename Allocator>
-void executor::post(ASIO_MOVE_ARG(Function) f,
+void executor::post(Function&& f,
     const Allocator& a) const
 {
-  get_impl()->post(function(ASIO_MOVE_CAST(Function)(f), a));
+  get_impl()->post(function(static_cast<Function&&>(f), a));
 }
 
 template <typename Function, typename Allocator>
-void executor::defer(ASIO_MOVE_ARG(Function) f,
+void executor::defer(Function&& f,
     const Allocator& a) const
 {
-  get_impl()->defer(function(ASIO_MOVE_CAST(Function)(f), a));
+  get_impl()->defer(function(static_cast<Function&&>(f), a));
 }
 
 template <typename Executor>
-Executor* executor::target() ASIO_NOEXCEPT
+Executor* executor::target() noexcept
 {
   return impl_ && impl_->target_type() == type_id<Executor>()
     ? static_cast<Executor*>(impl_->target()) : 0;
 }
 
 template <typename Executor>
-const Executor* executor::target() const ASIO_NOEXCEPT
+const Executor* executor::target() const noexcept
 {
   return impl_ && impl_->target_type() == type_id<Executor>()
     ? static_cast<Executor*>(impl_->target()) : 0;
