@@ -44,6 +44,7 @@ public class StickManager: ObservableObject {
     let updateTimerInterval = 0.02  // 20 ms
     var previousHorizontalDoubleValue = 0.0
     var previousVerticalDoubleValue = 0.0
+    var previousMagnitude = 0.0
 
     var deadzoneTask: Task<(), Never>?
     var updateTimer: Cancellable?
@@ -102,11 +103,7 @@ public class StickManager: ObservableObject {
       }
 
       if deltaMagnitude > 0 {
-        radianDiff = abs(deltaRadian - radian).truncatingRemainder(
-          dividingBy: 2 * Double.pi)
-        if radianDiff > Double.pi {
-          radianDiff = 2 * Double.pi - radianDiff
-        }
+        radianDiff = StickManager.radianDifference(deltaRadian, radian)
 
         if !accelerationFixed {
           let threshold = 0.174533  // 10 degree
@@ -146,14 +143,27 @@ public class StickManager: ObservableObject {
         }
       }
 
-      pointerX += deltaMagnitude * cos(deltaRadian)
-      pointerX = max(0.0, min(1.0, pointerX))
-      pointerY += deltaMagnitude * sin(deltaRadian)
-      pointerY = max(0.0, min(1.0, pointerY))
+      if magnitude >= previousMagnitude {
+        let scale = 1.0 / 64
+
+        pointerX += deltaMagnitude * cos(deltaRadian) * scale
+        pointerX = max(0.0, min(1.0, pointerX))
+        pointerY -= deltaMagnitude * sin(deltaRadian) * scale
+        pointerY = max(0.0, min(1.0, pointerY))
+      }
 
       previousHorizontalDoubleValue = horizontal.lastDoubleValue
       previousVerticalDoubleValue = vertical.lastDoubleValue
+      previousMagnitude = magnitude
     }
+  }
+
+  static public func radianDifference(_ r1: Double, _ r2: Double) -> Double {
+    let diff = abs(r1 - r2).truncatingRemainder(dividingBy: 2 * Double.pi)
+    if diff > Double.pi {
+      return 2 * Double.pi - diff
+    }
+    return diff
   }
 
   @Published var rightStick = Stick()

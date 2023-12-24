@@ -49,6 +49,11 @@ struct InformationView: View {
         Text("deltaRadian: \(rightStick.deltaRadian)")
         Text("deltaMagnitude: \(rightStick.deltaMagnitude)")
       }
+      Divider()
+      Group {
+        Text("pointerX \(rightStick.pointerX)")
+        Text("pointerY \(rightStick.pointerY)")
+      }
     }
     .frame(width: 350)
   }
@@ -76,7 +81,7 @@ struct StickView: View {
         )
         .padding(
           .top,
-          circleSize / 2.0 + sin(rightStick.radian)
+          circleSize / 2.0 - sin(rightStick.radian)
             * rightStick.magnitude * circleSize / 2.0 - indicatorSize / 2.0
         )
     }
