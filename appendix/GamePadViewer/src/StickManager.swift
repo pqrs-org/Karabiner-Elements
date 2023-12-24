@@ -37,6 +37,8 @@ public class StickManager: ObservableObject {
     @Published var deltaVertical = 0.0
     @Published var deltaRadian = 0.0
     @Published var deltaMagnitude = 0.0
+    @Published var pointerX = 0.5  // 0.0 ... 1.0
+    @Published var pointerY = 0.5  // 0.0 ... 1.0
     let remainDeadzoneThresholdMilliseconds: UInt64 = 100
     let strokeAccelerationMeasurementTime = 0.05  // 50 ms
     let updateTimerInterval = 0.02  // 20 ms
@@ -143,6 +145,11 @@ public class StickManager: ObservableObject {
           strokeAccelerationTransitionValue = strokeAccelerationDestinationValue
         }
       }
+
+      pointerX += deltaMagnitude * cos(deltaRadian)
+      pointerX = max(0.0, min(1.0, pointerX))
+      pointerY += deltaMagnitude * sin(deltaRadian)
+      pointerY = max(0.0, min(1.0, pointerY))
 
       previousHorizontalDoubleValue = horizontal.lastDoubleValue
       previousVerticalDoubleValue = vertical.lastDoubleValue
