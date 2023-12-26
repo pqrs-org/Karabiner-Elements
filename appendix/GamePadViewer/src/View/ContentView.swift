@@ -68,11 +68,11 @@ struct StickView: View {
   var body: some View {
     ZStack(alignment: .topLeading) {
       Circle()
-        .stroke(Color.gray, lineWidth: 2)
+        .stroke(.gray, lineWidth: 2)
         .frame(width: circleSize, height: circleSize)
 
       Circle()
-        .fill(Color.blue)
+        .fill(.blue)
         .frame(width: indicatorSize, height: indicatorSize)
         .padding(
           .leading,
@@ -97,15 +97,45 @@ struct PointerView: View {
   private let boxWidth = 400.0
   private let boxHeight = 225.0
   private let indicatorSize = 10.0
+  private let gridCount = 10
 
   var body: some View {
     ZStack(alignment: .topLeading) {
       Rectangle()
-        .stroke(Color.gray, lineWidth: 2)
+        .stroke(.gray, lineWidth: 2)
         .frame(width: boxWidth, height: boxHeight)
 
+      Path { path in
+        for i in 1..<gridCount {
+          path.addLines([
+            CGPoint(
+              x: (boxWidth * Double(i)) / Double(gridCount),
+              y: 0.0
+            ),
+            CGPoint(
+              x: (boxWidth * Double(i)) / Double(gridCount),
+              y: boxHeight
+            ),
+          ])
+
+          path.addLines([
+            CGPoint(
+              x: 0.0,
+              y: (boxHeight * Double(i)) / Double(gridCount)
+            ),
+            CGPoint(
+              x: boxWidth,
+              y: (boxHeight * Double(i)) / Double(gridCount)
+            ),
+          ])
+
+        }
+      }
+      .stroke(.gray)
+      .frame(width: boxWidth, height: boxHeight)
+
       Circle()
-        .fill(Color.blue)
+        .fill(.blue)
         .frame(width: indicatorSize, height: indicatorSize)
         .padding(.leading, rightStick.pointerX * boxWidth - indicatorSize / 2)
         .padding(.top, rightStick.pointerY * boxHeight - indicatorSize / 2)
