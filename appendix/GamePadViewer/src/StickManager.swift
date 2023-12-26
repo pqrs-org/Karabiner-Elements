@@ -29,9 +29,6 @@ public class StickManager: ObservableObject {
     @Published var strokeAccelerationDestinationValue = 0.0
     @Published var strokeAccelerationTransitionValue = 0.0
     @Published var strokeAccelerationTransitionMagnitude = 0.0
-    @Published var deadzoneRadian = 0.0
-    @Published var deadzoneMagnitude = 0.0
-    @Published var accelerationFixed = false
     @Published var radianDiff = 0.0
     @Published var deltaHorizontal = 0.0
     @Published var deltaVertical = 0.0
@@ -39,14 +36,12 @@ public class StickManager: ObservableObject {
     @Published var deltaMagnitude = 0.0
     @Published var pointerX = 0.5  // 0.0 ... 1.0
     @Published var pointerY = 0.5  // 0.0 ... 1.0
-    let remainDeadzoneThresholdMilliseconds: UInt64 = 100
     let strokeAccelerationMeasurementTime = 0.05  // 50 ms
     let updateTimerInterval = 0.02  // 20 ms
     var previousHorizontalDoubleValue = 0.0
     var previousVerticalDoubleValue = 0.0
     var previousMagnitude = 0.0
 
-    var deadzoneTask: Task<(), Never>?
     var updateTimer: Cancellable?
 
     @MainActor
@@ -71,85 +66,29 @@ public class StickManager: ObservableObject {
         1.0,
         sqrt(pow(vertical.lastDoubleValue, 2) + pow(horizontal.lastDoubleValue, 2)))
 
-      let deadzone = 0.1
-      if abs(vertical.lastDoubleValue) < deadzone && abs(horizontal.lastDoubleValue) < deadzone {
-        deltaMagnitude = 0.0
-
-        if deadzoneTask == nil {
-          deadzoneTask = Task { @MainActor in
-            do {
-              try await Task.sleep(nanoseconds: remainDeadzoneThresholdMilliseconds * NSEC_PER_MSEC)
-
-              strokeAccelerationDestinationValue = 0.0
-              strokeAccelerationTransitionValue = 0.0
-              strokeAccelerationTransitionMagnitude = 0.0
-              accelerationFixed = false
-
-              updateTimer?.cancel()
-              updateTimer = nil
-            } catch {
-              print("cancelled")
-            }
-          }
-        }
-      } else {
-        if deadzoneTask != nil {
-          deadzoneRadian = deltaRadian
-          deadzoneMagnitude = magnitude
-
-          deadzoneTask?.cancel()
-          deadzoneTask = nil
-        }
+      let continuedMovementThreshold = 1.0
+      if magnitude >= continuedMovementThreshold {
+        deltaMagnitude = 0.1
+        deltaRadian = radian
       }
 
-      if deltaMagnitude > 0 {
-        radianDiff = StickManager.radianDifference(deltaRadian, radian)
-
-        if !accelerationFixed {
-          let threshold = 0.174533  // 10 degree
-          if radianDiff < threshold {
-            strokeAccelerationDestinationValue += deltaMagnitude
-            if strokeAccelerationDestinationValue > 1.0 {
-              strokeAccelerationDestinationValue = 1.0
-            }
-            strokeAccelerationTransitionMagnitude =
-              abs(strokeAccelerationDestinationValue - strokeAccelerationTransitionValue)
-              / (1.0 / updateTimerInterval)
-          } else if radianDiff > Double.pi - threshold && radianDiff < Double.pi + threshold {
-            strokeAccelerationDestinationValue -= deltaMagnitude
-            if strokeAccelerationDestinationValue < 0.0 {
-              strokeAccelerationDestinationValue = 0.0
-            }
-            strokeAccelerationTransitionMagnitude =
-              abs(strokeAccelerationDestinationValue - strokeAccelerationTransitionValue)
-              / (1.0 / updateTimerInterval)
-          } else {
-            // accelerationFixed = true
-          }
-        }
-      }
-
-      if strokeAccelerationTransitionValue != strokeAccelerationDestinationValue {
-        if strokeAccelerationTransitionValue < strokeAccelerationDestinationValue {
-          strokeAccelerationTransitionValue += strokeAccelerationTransitionMagnitude
-        } else if strokeAccelerationTransitionValue > strokeAccelerationDestinationValue {
-          strokeAccelerationTransitionValue -= strokeAccelerationTransitionMagnitude
-        }
-
-        if abs(strokeAccelerationTransitionValue - strokeAccelerationDestinationValue)
-          < strokeAccelerationTransitionMagnitude
-        {
-          strokeAccelerationTransitionValue = strokeAccelerationDestinationValue
-        }
+      let deltaMagnitudeThreshold = 0.01
+      if deltaMagnitude < deltaMagnitudeThreshold {
+        return
       }
 
       if magnitude >= previousMagnitude {
-        let scale = 1.0 / 64
+        let scale = 1.0 / 16
 
         pointerX += deltaMagnitude * cos(deltaRadian) * scale
         pointerX = max(0.0, min(1.0, pointerX))
         pointerY -= deltaMagnitude * sin(deltaRadian) * scale
         pointerY = max(0.0, min(1.0, pointerY))
+      }
+
+      if magnitude < 1.0 {
+        updateTimer?.cancel()
+        updateTimer = nil
       }
 
       previousHorizontalDoubleValue = horizontal.lastDoubleValue
