@@ -35,11 +35,6 @@ struct InformationView: View {
       Group {
         Text("radian: \(rightStick.radian)")
         Text("magnitude: \(rightStick.magnitude)")
-        Text(
-          "strokeAccelerationTransitionValue: \(rightStick.strokeAccelerationTransitionValue)")
-        Text(
-          "strokeAccelerationDestinationValue: \(rightStick.strokeAccelerationDestinationValue)"
-        )
       }
       Divider()
       Group {
@@ -49,6 +44,13 @@ struct InformationView: View {
         Text("deltaRadian: \(rightStick.deltaRadian)")
         Text("deltaMagnitude: \(rightStick.deltaMagnitude)")
       }
+      Divider()
+      Group {
+        Text("lastMovedAt: \(rightStick.lastMovedAt)")
+        Text("moveStartedAt: \(rightStick.moveStartedAt)")
+        Text("continuedMovementMagnitude: \(rightStick.continuedMovementMagnitude)")
+      }
+
       Divider()
       Group {
         Text("pointerX \(rightStick.pointerX)")

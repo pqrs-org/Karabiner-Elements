@@ -26,9 +26,6 @@ public class StickManager: ObservableObject {
     @Published var vertical = StickSensor()
     @Published var radian = 0.0
     @Published var magnitude = 0.0
-    @Published var strokeAccelerationDestinationValue = 0.0
-    @Published var strokeAccelerationTransitionValue = 0.0
-    @Published var strokeAccelerationTransitionMagnitude = 0.0
     @Published var radianDiff = 0.0
     @Published var deltaHorizontal = 0.0
     @Published var deltaVertical = 0.0
@@ -36,7 +33,9 @@ public class StickManager: ObservableObject {
     @Published var deltaMagnitude = 0.0
     @Published var pointerX = 0.5  // 0.0 ... 1.0
     @Published var pointerY = 0.5  // 0.0 ... 1.0
-    let strokeAccelerationMeasurementTime = 0.05  // 50 ms
+    @Published var lastMovedAt = Date()
+    @Published var moveStartedAt = Date()
+    @Published var continuedMovementMagnitude = 0.0
     let updateTimerInterval = 0.02  // 20 ms
     var previousHorizontalDoubleValue = 0.0
     var previousVerticalDoubleValue = 0.0
@@ -56,6 +55,8 @@ public class StickManager: ObservableObject {
 
     @MainActor
     private func update() {
+      let now = Date()
+
       deltaHorizontal = horizontal.lastDoubleValue - previousHorizontalDoubleValue
       deltaVertical = vertical.lastDoubleValue - previousVerticalDoubleValue
       deltaRadian = atan2(deltaVertical, deltaHorizontal)
@@ -67,9 +68,22 @@ public class StickManager: ObservableObject {
         sqrt(pow(vertical.lastDoubleValue, 2) + pow(horizontal.lastDoubleValue, 2)))
 
       let continuedMovementThreshold = 1.0
+
+      if now.timeIntervalSince(lastMovedAt) > 0.1 {  // 100 ms
+        continuedMovementMagnitude = 0.0
+        moveStartedAt = Date()
+      }
+
+      if now.timeIntervalSince(moveStartedAt) < 0.05 {  // 50 ms
+        if previousMagnitude < continuedMovementThreshold {
+          continuedMovementMagnitude += deltaMagnitude
+          continuedMovementMagnitude = min(1.0, continuedMovementMagnitude)
+        }
+      }
+
       if magnitude >= continuedMovementThreshold {
-        deltaMagnitude = 0.1
         deltaRadian = radian
+        deltaMagnitude = continuedMovementMagnitude
       }
 
       let deltaMagnitudeThreshold = 0.01
@@ -94,6 +108,7 @@ public class StickManager: ObservableObject {
       previousHorizontalDoubleValue = horizontal.lastDoubleValue
       previousVerticalDoubleValue = vertical.lastDoubleValue
       previousMagnitude = magnitude
+      lastMovedAt = now
     }
   }
 
