@@ -87,6 +87,7 @@ public:
     void update_horizontal_stick_sensor_value(CFIndex logical_max,
                                               CFIndex logical_min,
                                               CFIndex integer_value,
+                                              event_origin event_origin,
                                               double deadzone) {
       horizontal_stick_sensor_.update_stick_sensor_value(logical_max,
                                                          logical_min,
@@ -97,6 +98,7 @@ public:
     void update_vertical_stick_sensor_value(CFIndex logical_max,
                                             CFIndex logical_min,
                                             CFIndex integer_value,
+                                            event_origin event_origin,
                                             double deadzone) {
       vertical_stick_sensor_.update_stick_sensor_value(logical_max,
                                                        logical_min,
@@ -396,37 +398,45 @@ public:
 
     void update_x_stick_sensor_value(CFIndex logical_max,
                                      CFIndex logical_min,
-                                     CFIndex integer_value) {
+                                     CFIndex integer_value,
+                                     event_origin event_origin) {
       xy_.update_horizontal_stick_sensor_value(logical_max,
                                                logical_min,
                                                integer_value,
+                                               event_origin,
                                                xy_deadzone_);
     }
 
     void update_y_stick_sensor_value(CFIndex logical_max,
                                      CFIndex logical_min,
-                                     CFIndex integer_value) {
+                                     CFIndex integer_value,
+                                     event_origin event_origin) {
       xy_.update_vertical_stick_sensor_value(logical_max,
                                              logical_min,
                                              integer_value,
+                                             event_origin,
                                              xy_deadzone_);
     }
 
     void update_vertical_wheel_stick_sensor_value(CFIndex logical_max,
                                                   CFIndex logical_min,
-                                                  CFIndex integer_value) {
+                                                  CFIndex integer_value,
+                                                  event_origin event_origin) {
       wheels_.update_vertical_stick_sensor_value(logical_max,
                                                  logical_min,
                                                  integer_value,
+                                                 event_origin,
                                                  wheels_deadzone_);
     }
 
     void update_horizontal_wheel_stick_sensor_value(CFIndex logical_max,
                                                     CFIndex logical_min,
-                                                    CFIndex integer_value) {
+                                                    CFIndex integer_value,
+                                                    event_origin event_origin) {
       wheels_.update_horizontal_stick_sensor_value(logical_max,
                                                    logical_min,
                                                    integer_value,
+                                                   event_origin,
                                                    wheels_deadzone_);
     }
 
@@ -619,44 +629,52 @@ public:
                   if (swap_sticks) {
                     it->second->update_horizontal_wheel_stick_sensor_value(*logical_max,
                                                                            *logical_min,
-                                                                           v.get_integer_value());
+                                                                           v.get_integer_value(),
+                                                                           event_origin);
                   } else {
                     it->second->update_x_stick_sensor_value(*logical_max,
                                                             *logical_min,
-                                                            v.get_integer_value());
+                                                            v.get_integer_value(),
+                                                            event_origin);
                   }
                 } else if (v.conforms_to(pqrs::hid::usage_page::generic_desktop,
                                          pqrs::hid::usage::generic_desktop::y)) {
                   if (swap_sticks) {
                     it->second->update_vertical_wheel_stick_sensor_value(*logical_max,
                                                                          *logical_min,
-                                                                         v.get_integer_value());
+                                                                         v.get_integer_value(),
+                                                                         event_origin);
                   } else {
                     it->second->update_y_stick_sensor_value(*logical_max,
                                                             *logical_min,
-                                                            v.get_integer_value());
+                                                            v.get_integer_value(),
+                                                            event_origin);
                   }
                 } else if (v.conforms_to(pqrs::hid::usage_page::generic_desktop,
                                          pqrs::hid::usage::generic_desktop::rz)) {
                   if (swap_sticks) {
                     it->second->update_y_stick_sensor_value(*logical_max,
                                                             *logical_min,
-                                                            v.get_integer_value());
+                                                            v.get_integer_value(),
+                                                            event_origin);
                   } else {
                     it->second->update_vertical_wheel_stick_sensor_value(*logical_max,
                                                                          *logical_min,
-                                                                         v.get_integer_value());
+                                                                         v.get_integer_value(),
+                                                                         event_origin);
                   }
                 } else if (v.conforms_to(pqrs::hid::usage_page::generic_desktop,
                                          pqrs::hid::usage::generic_desktop::z)) {
                   if (swap_sticks) {
                     it->second->update_x_stick_sensor_value(*logical_max,
                                                             *logical_min,
-                                                            v.get_integer_value());
+                                                            v.get_integer_value(),
+                                                            event_origin);
                   } else {
                     it->second->update_horizontal_wheel_stick_sensor_value(*logical_max,
                                                                            *logical_min,
-                                                                           v.get_integer_value());
+                                                                           v.get_integer_value(),
+                                                                           event_origin);
                   }
                 }
               }
