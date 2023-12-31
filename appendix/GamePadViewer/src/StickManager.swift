@@ -33,8 +33,6 @@ public class StickManager: ObservableObject {
     @Published var deltaMagnitude = 0.0
     @Published var pointerX = 0.5  // 0.0 ... 1.0
     @Published var pointerY = 0.5  // 0.0 ... 1.0
-    @Published var lastMovedAt = Date()
-    @Published var moveStartedAt = Date()
     @Published var continuedMovementMagnitude = 0.0
     let updateTimerInterval = 0.02  // 20 ms
     var previousHorizontalDoubleValue = 0.0
@@ -55,8 +53,6 @@ public class StickManager: ObservableObject {
 
     @MainActor
     private func update() {
-      let now = Date()
-
       deltaHorizontal = horizontal.lastDoubleValue - previousHorizontalDoubleValue
       deltaVertical = vertical.lastDoubleValue - previousVerticalDoubleValue
       deltaRadian = atan2(deltaVertical, deltaHorizontal)
@@ -68,22 +64,18 @@ public class StickManager: ObservableObject {
         sqrt(pow(vertical.lastDoubleValue, 2) + pow(horizontal.lastDoubleValue, 2)))
 
       let continuedMovementThreshold = 1.0
-
-      if now.timeIntervalSince(lastMovedAt) > 0.1 {  // 100 ms
-        continuedMovementMagnitude = 0.0
-        moveStartedAt = Date()
-      }
-
-      if now.timeIntervalSince(moveStartedAt) < 0.05 {  // 50 ms
-        if previousMagnitude < continuedMovementThreshold {
-          continuedMovementMagnitude += deltaMagnitude
-          continuedMovementMagnitude = min(1.0, continuedMovementMagnitude)
-        }
-      }
+      let continuedMovementMinimumValue = 0.01
 
       if magnitude >= continuedMovementThreshold {
+        if continuedMovementMagnitude == 0.0 {
+          continuedMovementMagnitude = deltaMagnitude
+        }
+        continuedMovementMagnitude = max(continuedMovementMinimumValue, continuedMovementMagnitude)
+
         deltaRadian = radian
         deltaMagnitude = continuedMovementMagnitude
+      } else {
+        continuedMovementMagnitude = 0.0
       }
 
       let deltaMagnitudeThreshold = 0.01
@@ -108,7 +100,6 @@ public class StickManager: ObservableObject {
       previousHorizontalDoubleValue = horizontal.lastDoubleValue
       previousVerticalDoubleValue = vertical.lastDoubleValue
       previousMagnitude = magnitude
-      lastMovedAt = now
     }
   }
 

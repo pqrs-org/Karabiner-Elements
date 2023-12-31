@@ -46,8 +46,6 @@ struct InformationView: View {
       }
       Divider()
       Group {
-        Text("lastMovedAt: \(rightStick.lastMovedAt)")
-        Text("moveStartedAt: \(rightStick.moveStartedAt)")
         Text("continuedMovementMagnitude: \(rightStick.continuedMovementMagnitude)")
       }
 
