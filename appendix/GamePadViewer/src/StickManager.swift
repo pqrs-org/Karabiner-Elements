@@ -26,7 +26,6 @@ public class StickManager: ObservableObject {
     @Published var vertical = StickSensor()
     @Published var radian = 0.0
     @Published var magnitude = 0.0
-    @Published var radianDiff = 0.0
     @Published var deltaHorizontal = 0.0
     @Published var deltaVertical = 0.0
     @Published var deltaRadian = 0.0
@@ -101,14 +100,6 @@ public class StickManager: ObservableObject {
       previousVerticalDoubleValue = vertical.lastDoubleValue
       previousMagnitude = magnitude
     }
-  }
-
-  static public func radianDifference(_ r1: Double, _ r2: Double) -> Double {
-    let diff = abs(r1 - r2).truncatingRemainder(dividingBy: 2 * Double.pi)
-    if diff > Double.pi {
-      return 2 * Double.pi - diff
-    }
-    return diff
   }
 
   @Published var rightStick = Stick()
