@@ -56,10 +56,38 @@ public:
 
   class stick final : public pqrs::dispatcher::extra::dispatcher_client {
   public:
+    //
+    // Signals (invoked from the dispatcher thread)
+    //
+
+    nod::signal<void(int horizontal_value,
+                     int vertical_value,
+                     std::chrono::milliseconds interval,
+                     event_origin event_origin)>
+        values_updated;
+
+    //
+    // Classes
+    //
+
+    enum class stick_type {
+      xy,
+      wheels,
+    };
+
+    //
+    // Constants
+    //
+
     static constexpr int update_timer_interval_milliseconds = 20;
 
-    stick(void)
+    //
+    // Methods
+    //
+
+    stick(stick_type stick_type)
         : dispatcher_client(),
+          stick_type_(stick_type),
           deadzone_timer_(*this),
           update_timer_(*this),
           radian_(0.0),
@@ -92,7 +120,8 @@ public:
       horizontal_stick_sensor_.update_stick_sensor_value(logical_max,
                                                          logical_min,
                                                          integer_value);
-      set_update_timer(deadzone);
+      set_update_timer(event_origin,
+                       deadzone);
     }
 
     void update_vertical_stick_sensor_value(CFIndex logical_max,
@@ -103,10 +132,12 @@ public:
       vertical_stick_sensor_.update_stick_sensor_value(logical_max,
                                                        logical_min,
                                                        integer_value);
-      set_update_timer(deadzone);
+      set_update_timer(event_origin,
+                       deadzone);
     }
 
-    void set_update_timer(double deadzone) {
+    void set_update_timer(event_origin event_origin,
+                          double deadzone) {
       // The deadzone may be changed even while update_timer is active.
       // Therefore, we always update regardless of the update_timer status.
       enqueue_to_dispatcher([this, deadzone] {
@@ -115,8 +146,8 @@ public:
 
       if (!update_timer_.enabled()) {
         update_timer_.start(
-            [this] {
-              update_values();
+            [this, event_origin] {
+              update_values(event_origin);
             },
             std::chrono::milliseconds(update_timer_interval_milliseconds));
       }
@@ -214,7 +245,8 @@ public:
     }
 
   private:
-    void update_values(void) {
+    // This method is executed in the shared dispatcher thread.
+    void update_values(event_origin event_origin) {
       auto now = pqrs::osx::chrono::mach_absolute_time_point();
 
       auto delta_vertical = vertical_stick_sensor_.get_value() - previous_vertical_value_;
@@ -306,6 +338,22 @@ public:
 
       previous_vertical_value_ = vertical_stick_sensor_.get_value();
       previous_horizontal_value_ = horizontal_stick_sensor_.get_value();
+
+      //
+      // Signal
+      //
+
+      switch (stick_type_) {
+        case stick_type::xy: {
+          auto [x, y] = xy_value();
+          auto interval = xy_stick_interval();
+          values_updated(x, y, interval, event_origin);
+          break;
+        }
+        case stick_type::wheels: {
+          break;
+        }
+      }
     }
 
     exprtk_utility::expression_t make_formula_expression(const std::string& formula) {
@@ -324,6 +372,8 @@ public:
       value = std::max(value, -127);
       return value;
     }
+
+    stick_type stick_type_;
 
     pqrs::dispatcher::extra::timer deadzone_timer_;
     pqrs::dispatcher::extra::timer update_timer_;
@@ -375,8 +425,22 @@ public:
           pointing_motion_arrived_(pointing_motion_arrived),
           xy_deadzone_(0.0),
           wheels_deadzone_(0.0),
+          xy_(stick::stick_type::xy),
+          wheels_(stick::stick_type::wheels),
           xy_timer_(*this),
           wheels_timer_(*this) {
+      xy_.values_updated.connect([this](auto&& x, auto&& y, auto&& interval, auto&& event_origin) {
+        if (interval == std::chrono::milliseconds(0)) {
+          xy_timer_.stop();
+          return;
+        }
+
+        xy_timer_.start(
+            [this, x, y, event_origin] {
+              post_xy_event(x, y, event_origin);
+            },
+            interval);
+      });
     }
 
     ~state(void) {
@@ -440,58 +504,6 @@ public:
                                                    wheels_deadzone_);
     }
 
-    void update_xy_timer(event_origin event_origin) {
-      auto interval = xy_.xy_stick_interval();
-      if (interval == std::chrono::milliseconds(0)) {
-        xy_timer_.stop();
-        return;
-      }
-
-      if (xy_timer_.enabled()) {
-        return;
-      }
-
-      xy_timer_.start(
-          [this, event_origin] {
-            //
-            // Update interval
-            //
-
-            auto interval = xy_.xy_stick_interval();
-            if (interval == std::chrono::milliseconds(0)) {
-              xy_timer_.stop();
-              return;
-            }
-            xy_timer_.set_interval(interval);
-
-            //
-            // Post event
-            //
-
-            auto [x, y] = xy_.xy_value();
-
-            pointing_motion m(x,
-                              y,
-                              0,
-                              0);
-
-            event_queue::event_time_stamp event_time_stamp(pqrs::osx::chrono::mach_absolute_time_point());
-            event_queue::event event(m);
-            event_queue::entry entry(device_id_,
-                                     event_time_stamp,
-                                     event,
-                                     event_type::single,
-                                     event,
-                                     event_origin,
-                                     event_queue::state::original);
-
-            enqueue_to_dispatcher([this, entry] {
-              pointing_motion_arrived_(entry);
-            });
-          },
-          interval);
-    }
-
     void update_wheels_timer(event_origin event_origin) {
       auto interval = wheels_.wheels_stick_interval();
       if (interval == std::chrono::milliseconds(0)) {
@@ -521,30 +533,54 @@ public:
             //
 
             auto [v, h] = wheels_.wheels_value();
-
-            pointing_motion m(0,
-                              0,
-                              -v,
-                              h);
-
-            event_queue::event_time_stamp event_time_stamp(pqrs::osx::chrono::mach_absolute_time_point());
-            event_queue::event event(m);
-            event_queue::entry entry(device_id_,
-                                     event_time_stamp,
-                                     event,
-                                     event_type::single,
-                                     event,
-                                     event_origin,
-                                     event_queue::state::original);
-
-            enqueue_to_dispatcher([this, entry] {
-              pointing_motion_arrived_(entry);
-            });
+            post_wheels_event(-v, h, event_origin);
           },
           interval);
     }
 
   private:
+    void post_xy_event(int x, int y, event_origin event_origin) {
+      pointing_motion m(x,
+                        y,
+                        0,
+                        0);
+
+      event_queue::event_time_stamp event_time_stamp(pqrs::osx::chrono::mach_absolute_time_point());
+      event_queue::event event(m);
+      event_queue::entry entry(device_id_,
+                               event_time_stamp,
+                               event,
+                               event_type::single,
+                               event,
+                               event_origin,
+                               event_queue::state::original);
+
+      enqueue_to_dispatcher([this, entry] {
+        pointing_motion_arrived_(entry);
+      });
+    }
+
+    void post_wheels_event(int vertical, int horizontal, event_origin event_origin) {
+      pointing_motion m(0,
+                        0,
+                        vertical,
+                        horizontal);
+
+      event_queue::event_time_stamp event_time_stamp(pqrs::osx::chrono::mach_absolute_time_point());
+      event_queue::event event(m);
+      event_queue::entry entry(device_id_,
+                               event_time_stamp,
+                               event,
+                               event_type::single,
+                               event,
+                               event_origin,
+                               event_queue::state::original);
+
+      enqueue_to_dispatcher([this, entry] {
+        pointing_motion_arrived_(entry);
+      });
+    }
+
     device_id device_id_;
     device_identifiers device_identifiers_;
     const pointing_motion_arrived_t& pointing_motion_arrived_;
@@ -684,7 +720,6 @@ public:
       }
     }
 
-    it->second->update_xy_timer(event_origin);
     it->second->update_wheels_timer(event_origin);
   }
 
