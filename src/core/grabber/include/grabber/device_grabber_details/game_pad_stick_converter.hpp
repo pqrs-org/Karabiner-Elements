@@ -351,6 +351,9 @@ public:
           break;
         }
         case stick_type::wheels: {
+          auto [v, h] = wheels_value();
+          auto interval = wheels_stick_interval();
+          values_updated(h, -v, interval, event_origin);
           break;
         }
       }
@@ -441,6 +444,19 @@ public:
             },
             interval);
       });
+
+      wheels_.values_updated.connect([this](auto&& h, auto&& v, auto&& interval, auto&& event_origin) {
+        if (interval == std::chrono::milliseconds(0)) {
+          wheels_timer_.stop();
+          return;
+        }
+
+        wheels_timer_.start(
+            [this, h, v, event_origin] {
+              post_wheels_event(h, v, event_origin);
+            },
+            interval);
+      });
     }
 
     ~state(void) {
@@ -504,40 +520,6 @@ public:
                                                    wheels_deadzone_);
     }
 
-    void update_wheels_timer(event_origin event_origin) {
-      auto interval = wheels_.wheels_stick_interval();
-      if (interval == std::chrono::milliseconds(0)) {
-        wheels_timer_.stop();
-        return;
-      }
-
-      if (wheels_timer_.enabled()) {
-        return;
-      }
-
-      wheels_timer_.start(
-          [this, event_origin] {
-            //
-            // Update interval
-            //
-
-            auto interval = wheels_.wheels_stick_interval();
-            if (interval == std::chrono::milliseconds(0)) {
-              wheels_timer_.stop();
-              return;
-            }
-            wheels_timer_.set_interval(interval);
-
-            //
-            // Post event
-            //
-
-            auto [v, h] = wheels_.wheels_value();
-            post_wheels_event(-v, h, event_origin);
-          },
-          interval);
-    }
-
   private:
     void post_xy_event(int x, int y, event_origin event_origin) {
       pointing_motion m(x,
@@ -560,7 +542,7 @@ public:
       });
     }
 
-    void post_wheels_event(int vertical, int horizontal, event_origin event_origin) {
+    void post_wheels_event(int horizontal, int vertical, event_origin event_origin) {
       pointing_motion m(0,
                         0,
                         vertical,
@@ -719,8 +701,6 @@ public:
         }
       }
     }
-
-    it->second->update_wheels_timer(event_origin);
   }
 
 private:
