@@ -15,11 +15,13 @@ namespace device_grabber_details {
 // This conversion is necessary because it is difficult to use game pad sticks as natural pointing devices due to the following characteristics.
 //
 // - The game pad's stick only sends events when the value changes.
-//   We want the pointer to move while the stick is tilted, even if the value does not change.
+//   We want the pointer to move while the stick is completely tilted, even if the value does not change.
 //   So we need to send events periodically with a timer.
 // - The game pad's stick may send events slightly in the opposite direction when it is released and returns to neutral.
 //   This event should be properly ignored.
-// - The game pad's stick may have a value in the neutral state. The deadzone must be properly set and ignored neutral values.
+// - The game pad's stick may have slight values instead of (0,0) even in the neutral position.
+//   It is also known that Hall Effect Joysticks repeat minute value changes in the neutral position.
+//   We should ignore these values.
 //
 class game_pad_stick_converter final : public pqrs::dispatcher::extra::dispatcher_client {
 public:
@@ -60,8 +62,8 @@ public:
     // Signals (invoked from the dispatcher thread)
     //
 
-    nod::signal<void(int horizontal_value,
-                     int vertical_value,
+    nod::signal<void(double horizontal_hid_value,
+                     double vertical_hid_value,
                      std::chrono::milliseconds interval,
                      event_origin event_origin)>
         values_updated;
@@ -88,26 +90,17 @@ public:
     stick(stick_type stick_type)
         : dispatcher_client(),
           stick_type_(stick_type),
-          deadzone_timer_(*this),
           update_timer_(*this),
-          radian_(0.0),
-          magnitude_(0.0),
-          stroke_acceleration_destination_value_(0.0),
-          stroke_acceleration_transition_value_(0.0),
-          stroke_acceleration_transition_magnitude_(0.0),
-          deadzone_magnitude_(0.0),
+          delta_radian_(0.0),
+          delta_magnitude_(0.0),
+          continued_movement_magnitude_(0.0),
           previous_horizontal_value_(0.0),
           previous_vertical_value_(0.0),
-          stick_stroke_release_detection_threshold_milliseconds_(0),
-          stick_stroke_acceleration_measurement_duration_milliseconds_(0) {
-      auto now = pqrs::osx::chrono::mach_absolute_time_point();
-      deadzone_entered_at_ = now;
-      deadzone_left_at_ = now;
+          previous_magnitude_(0.0) {
     }
 
     ~stick(void) {
       detach_from_dispatcher([this] {
-        deadzone_timer_.stop();
         update_timer_.stop();
       });
     }
@@ -115,35 +108,24 @@ public:
     void update_horizontal_stick_sensor_value(CFIndex logical_max,
                                               CFIndex logical_min,
                                               CFIndex integer_value,
-                                              event_origin event_origin,
-                                              double deadzone) {
+                                              event_origin event_origin) {
       horizontal_stick_sensor_.update_stick_sensor_value(logical_max,
                                                          logical_min,
                                                          integer_value);
-      set_update_timer(event_origin,
-                       deadzone);
+      set_update_timer(event_origin);
     }
 
     void update_vertical_stick_sensor_value(CFIndex logical_max,
                                             CFIndex logical_min,
                                             CFIndex integer_value,
-                                            event_origin event_origin,
-                                            double deadzone) {
+                                            event_origin event_origin) {
       vertical_stick_sensor_.update_stick_sensor_value(logical_max,
                                                        logical_min,
                                                        integer_value);
-      set_update_timer(event_origin,
-                       deadzone);
+      set_update_timer(event_origin);
     }
 
-    void set_update_timer(event_origin event_origin,
-                          double deadzone) {
-      // The deadzone may be changed even while update_timer is active.
-      // Therefore, we always update regardless of the update_timer status.
-      enqueue_to_dispatcher([this, deadzone] {
-        deadzone_ = deadzone;
-      });
-
+    void set_update_timer(event_origin event_origin) {
       if (!update_timer_.enabled()) {
         update_timer_.start(
             [this, event_origin] {
@@ -155,10 +137,6 @@ public:
 
     void update_configurations(const core_configuration::core_configuration& core_configuration,
                                const device_identifiers& device_identifiers) {
-      stick_stroke_release_detection_threshold_milliseconds_ = core_configuration.get_selected_profile().get_device_game_pad_stick_stroke_release_detection_threshold_milliseconds(device_identifiers);
-      stick_stroke_acceleration_measurement_duration_milliseconds_ = core_configuration.get_selected_profile().get_device_game_pad_stick_stroke_acceleration_measurement_duration_milliseconds_(device_identifiers);
-      stick_stroke_acceleration_transition_duration_milliseconds_ = core_configuration.get_selected_profile().get_device_game_pad_stick_stroke_acceleration_transition_duration_milliseconds(device_identifiers);
-
       xy_stick_interval_milliseconds_formula_string_ = core_configuration.get_selected_profile().get_device_game_pad_xy_stick_interval_milliseconds_formula(device_identifiers);
       wheels_stick_interval_milliseconds_formula_string_ = core_configuration.get_selected_profile().get_device_game_pad_wheels_stick_interval_milliseconds_formula(device_identifiers);
       x_formula_string_ = core_configuration.get_selected_profile().get_device_game_pad_stick_x_formula(device_identifiers);
@@ -174,52 +152,146 @@ public:
       horizontal_wheel_formula_ = make_formula_expression(horizontal_wheel_formula_string_);
     }
 
-    std::pair<int, int> xy_value(void) const {
+  private:
+    // This method is executed in the shared dispatcher thread.
+    void update_values(event_origin event_origin) {
+      auto delta_vertical = vertical_stick_sensor_.get_value() - previous_vertical_value_;
+      auto delta_horizontal = horizontal_stick_sensor_.get_value() - previous_horizontal_value_;
+      delta_radian_ = std::atan2(delta_vertical, delta_horizontal);
+      delta_magnitude_ = std::min(1.0,
+                                  std::sqrt(
+                                      std::pow(delta_horizontal, 2) +
+                                      std::pow(delta_vertical, 2)));
+
+      auto radian = std::atan2(vertical_stick_sensor_.get_value(),
+                               horizontal_stick_sensor_.get_value());
+
+      auto magnitude = std::min(1.0,
+                                std::sqrt(std::pow(vertical_stick_sensor_.get_value(), 2) +
+                                          std::pow(horizontal_stick_sensor_.get_value(), 2)));
+
+      auto continued_movement_threshold = 1.0;
+      auto continued_movement_minimum_value = 0.01;
+
+      if (magnitude >= continued_movement_threshold) {
+        if (continued_movement_magnitude_ == 0.0) {
+          continued_movement_magnitude_ = delta_magnitude_;
+        }
+        continued_movement_magnitude_ = std::max(continued_movement_minimum_value, continued_movement_magnitude_);
+
+        delta_radian_ = radian;
+        delta_magnitude_ = continued_movement_magnitude_;
+      } else {
+        continued_movement_magnitude_ = 0.0;
+      }
+
+      auto delta_magnitude_threshold = 0.01;
+      if (delta_magnitude_ < delta_magnitude_threshold) {
+        return;
+      }
+
+      if (magnitude >= continued_movement_threshold) {
+        update_timer_.stop();
+      }
+
+      //
+      // Signal
+      //
+
+      bool needs_update_previous_values = false;
+
+      if (magnitude >= previous_magnitude_) {
+        switch (stick_type_) {
+          case stick_type::xy: {
+            auto [x, y] = xy_hid_values();
+            auto interval = xy_stick_interval();
+            values_updated(x, y, interval, event_origin);
+            if (x != 0 || y != 0) {
+              needs_update_previous_values = true;
+            }
+            break;
+          }
+          case stick_type::wheels: {
+            auto [h, v] = wheels_hid_values();
+            auto interval = wheels_stick_interval();
+            values_updated(h, -v, interval, event_origin);
+            if (v != 0 || h != 0) {
+              needs_update_previous_values = true;
+            }
+            break;
+          }
+        }
+      } else {
+        values_updated(0, 0, std::chrono::milliseconds(0), event_origin);
+        needs_update_previous_values = true;
+      }
+
+      //
+      // Update previous values
+      //
+
+      if (needs_update_previous_values) {
+        previous_vertical_value_ = vertical_stick_sensor_.get_value();
+        previous_horizontal_value_ = horizontal_stick_sensor_.get_value();
+        previous_magnitude_ = magnitude;
+      }
+    }
+
+    std::pair<double, double> xy_hid_values(void) const {
       auto x = x_formula_.value();
       if (std::isnan(x)) {
-        logger::get_logger()->error("game_pad_stick_converter x_formula returns nan: {0} (radian: {1}, magnitude: {2}, acceleration: {3})",
+        logger::get_logger()->error("game_pad_stick_converter x_formula returns nan: {0} (radian: {1}, magnitude: {2})",
                                     x_formula_string_,
-                                    radian_,
-                                    magnitude_,
-                                    stroke_acceleration_transition_value_);
+                                    delta_radian_,
+                                    delta_magnitude_);
         x = 0.0;
       }
 
       auto y = y_formula_.value();
       if (std::isnan(y)) {
-        logger::get_logger()->error("game_pad_stick_converter y_formula returns nan: {0} (radian: {1}, magnitude: {2}, acceleration: {3})",
+        logger::get_logger()->error("game_pad_stick_converter y_formula returns nan: {0} (radian: {1}, magnitude: {2})",
                                     y_formula_string_,
-                                    radian_,
-                                    magnitude_,
-                                    stroke_acceleration_transition_value_);
+                                    delta_radian_,
+                                    delta_magnitude_);
         y = 0.0;
       }
 
-      return std::make_pair(adjust_integer_value(static_cast<int>(x)),
-                            adjust_integer_value(static_cast<int>(y)));
+      return std::make_pair(x, y);
     }
 
-    std::pair<int, int> wheels_value(void) const {
-      // The logical value range of Karabiner-DriverKit-VirtualHIDPointing is -127 ... 127.
-      auto v = vertical_wheel_formula_.value();
+    std::pair<int, int> wheels_hid_values(void) const {
       auto h = horizontal_wheel_formula_.value();
+      if (std::isnan(h)) {
+        logger::get_logger()->error("game_pad_stick_converter horizontal_wheel_formula returns nan: {0} (radian: {1}, magnitude: {2})",
+                                    horizontal_wheel_formula_string_,
+                                    delta_radian_,
+                                    delta_magnitude_);
+        h = 0.0;
+      }
 
-      return std::make_pair(adjust_integer_value(static_cast<int>(v)),
-                            adjust_integer_value(static_cast<int>(h)));
+      auto v = vertical_wheel_formula_.value();
+      if (std::isnan(v)) {
+        logger::get_logger()->error("game_pad_stick_converter vertical_wheel_formula returns nan: {0} (radian: {1}, magnitude: {2})",
+                                    vertical_wheel_formula_string_,
+                                    delta_radian_,
+                                    delta_magnitude_);
+        v = 0.0;
+      }
+
+      return std::make_pair(h, v);
     }
 
     std::chrono::milliseconds xy_stick_interval(void) const {
-      if (stroke_acceleration_transition_value_ == 0.0) {
+      if (continued_movement_magnitude_ == 0.0) {
         return std::chrono::milliseconds(0);
       }
 
       auto interval = xy_stick_interval_milliseconds_formula_.value();
       if (std::isnan(interval)) {
-        logger::get_logger()->error("game_pad_stick_converter xy_stick_interval_milliseconds_formula_ returns nan: {0} (radian: {1}, magnitude: {2}, acceleration: {3})",
+        logger::get_logger()->error("game_pad_stick_converter xy_stick_interval_milliseconds_formula_ returns nan: {0} (radian: {1}, magnitude: {2})",
                                     xy_stick_interval_milliseconds_formula_string_,
-                                    radian_,
-                                    magnitude_,
-                                    stroke_acceleration_transition_value_);
+                                    delta_radian_,
+                                    delta_magnitude_);
         interval = 0;
       }
 
@@ -227,182 +299,49 @@ public:
     }
 
     std::chrono::milliseconds wheels_stick_interval(void) const {
-      if (stroke_acceleration_transition_value_ == 0.0) {
+      if (continued_movement_magnitude_ == 0.0) {
         return std::chrono::milliseconds(0);
       }
 
       auto interval = wheels_stick_interval_milliseconds_formula_.value();
       if (std::isnan(interval)) {
-        logger::get_logger()->error("game_pad_stick_converter wheels_stick_interval_milliseconds_formula_ returns nan: {0} (radian: {1}, magnitude: {2}, acceleration: {3})",
+        logger::get_logger()->error("game_pad_stick_converter wheels_stick_interval_milliseconds_formula_ returns nan: {0} (radian: {1}, magnitude: {2})",
                                     wheels_stick_interval_milliseconds_formula_string_,
-                                    radian_,
-                                    magnitude_,
-                                    stroke_acceleration_transition_value_);
+                                    delta_radian_,
+                                    delta_magnitude_);
         interval = 0;
       }
 
       return std::chrono::milliseconds(static_cast<int>(interval));
     }
 
-  private:
-    // This method is executed in the shared dispatcher thread.
-    void update_values(event_origin event_origin) {
-      auto now = pqrs::osx::chrono::mach_absolute_time_point();
-
-      auto delta_vertical = vertical_stick_sensor_.get_value() - previous_vertical_value_;
-      auto delta_horizontal = horizontal_stick_sensor_.get_value() - previous_horizontal_value_;
-      auto delta_radian = std::atan2(delta_vertical, delta_horizontal);
-      auto delta_magnitude = std::min(1.0,
-                                      std::sqrt(
-                                          std::pow(delta_horizontal, 2) +
-                                          std::pow(delta_vertical, 2)));
-
-      radian_ = std::atan2(vertical_stick_sensor_.get_value(),
-                           horizontal_stick_sensor_.get_value());
-
-      magnitude_ = std::min(1.0,
-                            std::sqrt(std::pow(vertical_stick_sensor_.get_value(), 2) +
-                                      std::pow(horizontal_stick_sensor_.get_value(), 2)));
-
-      //
-      // Update stroke_acceleration_
-      //
-
-      if (std::abs(vertical_stick_sensor_.get_value()) < deadzone_ &&
-          std::abs(horizontal_stick_sensor_.get_value()) < deadzone_) {
-        deadzone_magnitude_ = magnitude_;
-        delta_magnitude = 0.0;
-
-        if (!deadzone_timer_.enabled()) {
-          deadzone_timer_.start(
-              [this, now] {
-                deadzone_entered_at_ = now;
-                stroke_acceleration_destination_value_ = 0.0;
-                stroke_acceleration_transition_value_ = 0.0;
-                stroke_acceleration_transition_magnitude_ = 0.0;
-
-                update_timer_.stop();
-              },
-              std::chrono::milliseconds(stick_stroke_release_detection_threshold_milliseconds_));
-        }
-      } else {
-        deadzone_timer_.stop();
-
-        if (deadzone_left_at_ < deadzone_entered_at_) {
-          deadzone_left_at_ = now;
-        }
-      }
-
-      if (delta_magnitude > 0.0) {
-        auto radian_diff = std::fmod(std::abs(delta_radian - radian_), 2 * M_PI);
-        if (radian_diff > M_PI) {
-          radian_diff = 2 * M_PI - radian_diff;
-        }
-
-        const auto threshold = 0.174533; // 10 degree
-        auto stroke_acceleration_destination_value_changed = false;
-        if (radian_diff < threshold) {
-          stroke_acceleration_destination_value_ += delta_magnitude;
-          if (stroke_acceleration_destination_value_ > 1.0) {
-            stroke_acceleration_destination_value_ = 1.0;
-          }
-
-          stroke_acceleration_destination_value_changed = true;
-
-        } else if (radian_diff > M_PI - threshold && radian_diff < M_PI + threshold) {
-          stroke_acceleration_destination_value_ -= delta_magnitude;
-          if (stroke_acceleration_destination_value_ < 0.0) {
-            stroke_acceleration_destination_value_ = 0.0;
-          }
-
-          stroke_acceleration_destination_value_changed = true;
-        }
-
-        if (stroke_acceleration_destination_value_changed) {
-          auto divisor = std::max(1, stick_stroke_acceleration_transition_duration_milliseconds_ / update_timer_interval_milliseconds);
-          stroke_acceleration_transition_magnitude_ = std::abs(stroke_acceleration_destination_value_ - stroke_acceleration_transition_value_) / divisor;
-        }
-      }
-
-      if (stroke_acceleration_transition_value_ != stroke_acceleration_destination_value_) {
-        if (stroke_acceleration_transition_value_ < stroke_acceleration_destination_value_) {
-          stroke_acceleration_transition_value_ += stroke_acceleration_transition_magnitude_;
-        } else if (stroke_acceleration_transition_value_ > stroke_acceleration_destination_value_) {
-          stroke_acceleration_transition_value_ -= stroke_acceleration_transition_magnitude_;
-        }
-
-        if (std::abs(stroke_acceleration_transition_value_ - stroke_acceleration_destination_value_) < stroke_acceleration_transition_magnitude_) {
-          stroke_acceleration_transition_value_ = stroke_acceleration_destination_value_;
-        }
-      }
-
-      previous_vertical_value_ = vertical_stick_sensor_.get_value();
-      previous_horizontal_value_ = horizontal_stick_sensor_.get_value();
-
-      //
-      // Signal
-      //
-
-      switch (stick_type_) {
-        case stick_type::xy: {
-          auto [x, y] = xy_value();
-          auto interval = xy_stick_interval();
-          values_updated(x, y, interval, event_origin);
-          break;
-        }
-        case stick_type::wheels: {
-          auto [v, h] = wheels_value();
-          auto interval = wheels_stick_interval();
-          values_updated(h, -v, interval, event_origin);
-          break;
-        }
-      }
-    }
-
     exprtk_utility::expression_t make_formula_expression(const std::string& formula) {
       return exprtk_utility::compile(formula,
                                      {},
                                      {
-                                         {"radian", radian_},
-                                         {"magnitude", magnitude_},
-                                         {"acceleration", stroke_acceleration_transition_value_},
+                                         {"radian", delta_radian_},
+                                         {"magnitude", delta_magnitude_},
                                      });
-    }
-
-    int adjust_integer_value(int value) const {
-      // The logical value range of Karabiner-DriverKit-VirtualHIDPointing is -127 ... 127.
-      value = std::min(value, 127);
-      value = std::max(value, -127);
-      return value;
     }
 
     stick_type stick_type_;
 
-    pqrs::dispatcher::extra::timer deadzone_timer_;
     pqrs::dispatcher::extra::timer update_timer_;
 
     stick_sensor horizontal_stick_sensor_;
     stick_sensor vertical_stick_sensor_;
 
-    double deadzone_;
-    double radian_;
-    double magnitude_;
-    double stroke_acceleration_destination_value_;
-    double stroke_acceleration_transition_value_;
-    double stroke_acceleration_transition_magnitude_;
-    absolute_time_point deadzone_entered_at_;
-    absolute_time_point deadzone_left_at_;
-    double deadzone_magnitude_;
+    double delta_radian_;
+    double delta_magnitude_;
+    double continued_movement_magnitude_;
     double previous_horizontal_value_;
     double previous_vertical_value_;
+    double previous_magnitude_;
 
     //
     // configurations
     //
 
-    int stick_stroke_release_detection_threshold_milliseconds_;
-    int stick_stroke_acceleration_measurement_duration_milliseconds_;
-    int stick_stroke_acceleration_transition_duration_milliseconds_;
     std::string xy_stick_interval_milliseconds_formula_string_;
     std::string wheels_stick_interval_milliseconds_formula_string_;
     std::string x_formula_string_;
@@ -426,36 +365,40 @@ public:
           device_id_(device_id),
           device_identifiers_(di),
           pointing_motion_arrived_(pointing_motion_arrived),
-          xy_deadzone_(0.0),
-          wheels_deadzone_(0.0),
           xy_(stick::stick_type::xy),
           wheels_(stick::stick_type::wheels),
+          x_remainder_(0.0),
+          y_remainder_(0.0),
+          horizontal_wheel_remainder_(0.0),
+          vertical_wheel_remainder_(0.0),
           xy_timer_(*this),
           wheels_timer_(*this) {
       xy_.values_updated.connect([this](auto&& x, auto&& y, auto&& interval, auto&& event_origin) {
         if (interval == std::chrono::milliseconds(0)) {
           xy_timer_.stop();
-          return;
-        }
+          post_xy_event(x, y, event_origin);
 
-        xy_timer_.start(
-            [this, x, y, event_origin] {
-              post_xy_event(x, y, event_origin);
-            },
-            interval);
+        } else {
+          xy_timer_.start(
+              [this, x, y, event_origin] {
+                post_xy_event(x, y, event_origin);
+              },
+              interval);
+        }
       });
 
       wheels_.values_updated.connect([this](auto&& h, auto&& v, auto&& interval, auto&& event_origin) {
         if (interval == std::chrono::milliseconds(0)) {
           wheels_timer_.stop();
-          return;
-        }
+          post_wheels_event(h, v, event_origin);
 
-        wheels_timer_.start(
-            [this, h, v, event_origin] {
-              post_wheels_event(h, v, event_origin);
-            },
-            interval);
+        } else {
+          wheels_timer_.start(
+              [this, h, v, event_origin] {
+                post_wheels_event(h, v, event_origin);
+              },
+              interval);
+        }
       });
     }
 
@@ -471,9 +414,6 @@ public:
                                 device_identifiers_);
       wheels_.update_configurations(core_configuration,
                                     device_identifiers_);
-
-      xy_deadzone_ = core_configuration.get_selected_profile().get_device_game_pad_xy_stick_deadzone(device_identifiers_);
-      wheels_deadzone_ = core_configuration.get_selected_profile().get_device_game_pad_wheels_stick_deadzone(device_identifiers_);
     }
 
     void update_x_stick_sensor_value(CFIndex logical_max,
@@ -483,8 +423,7 @@ public:
       xy_.update_horizontal_stick_sensor_value(logical_max,
                                                logical_min,
                                                integer_value,
-                                               event_origin,
-                                               xy_deadzone_);
+                                               event_origin);
     }
 
     void update_y_stick_sensor_value(CFIndex logical_max,
@@ -494,8 +433,7 @@ public:
       xy_.update_vertical_stick_sensor_value(logical_max,
                                              logical_min,
                                              integer_value,
-                                             event_origin,
-                                             xy_deadzone_);
+                                             event_origin);
     }
 
     void update_vertical_wheel_stick_sensor_value(CFIndex logical_max,
@@ -505,8 +443,7 @@ public:
       wheels_.update_vertical_stick_sensor_value(logical_max,
                                                  logical_min,
                                                  integer_value,
-                                                 event_origin,
-                                                 wheels_deadzone_);
+                                                 event_origin);
     }
 
     void update_horizontal_wheel_stick_sensor_value(CFIndex logical_max,
@@ -516,14 +453,19 @@ public:
       wheels_.update_horizontal_stick_sensor_value(logical_max,
                                                    logical_min,
                                                    integer_value,
-                                                   event_origin,
-                                                   wheels_deadzone_);
+                                                   event_origin);
     }
 
   private:
-    void post_xy_event(int x, int y, event_origin event_origin) {
-      pointing_motion m(x,
-                        y,
+    void post_xy_event(double x, double y, event_origin event_origin) {
+      auto x_truncated = std::trunc(x + x_remainder_);
+      x_remainder_ = x - x_truncated;
+
+      auto y_truncated = std::trunc(y + y_remainder_);
+      y_remainder_ = y - y_truncated;
+
+      pointing_motion m(adjust_integer_value(x_truncated),
+                        adjust_integer_value(y_truncated),
                         0,
                         0);
 
@@ -542,11 +484,17 @@ public:
       });
     }
 
-    void post_wheels_event(int horizontal, int vertical, event_origin event_origin) {
+    void post_wheels_event(double horizontal_wheel, double vertical_wheel, event_origin event_origin) {
+      auto horizontal_wheel_truncated = std::trunc(horizontal_wheel + horizontal_wheel_remainder_);
+      horizontal_wheel_remainder_ = horizontal_wheel - horizontal_wheel_truncated;
+
+      auto vertical_wheel_truncated = std::trunc(vertical_wheel + vertical_wheel_remainder_);
+      vertical_wheel_remainder_ = vertical_wheel - vertical_wheel_truncated;
+
       pointing_motion m(0,
                         0,
-                        vertical,
-                        horizontal);
+                        adjust_integer_value(vertical_wheel_truncated),
+                        adjust_integer_value(horizontal_wheel_truncated));
 
       event_queue::event_time_stamp event_time_stamp(pqrs::osx::chrono::mach_absolute_time_point());
       event_queue::event event(m);
@@ -563,15 +511,26 @@ public:
       });
     }
 
+    int adjust_integer_value(double truncated_value) const {
+      auto value = static_cast<int>(truncated_value);
+
+      // The logical value range of Karabiner-DriverKit-VirtualHIDPointing is -127 ... 127.
+      value = std::min(value, 127);
+      value = std::max(value, -127);
+      return value;
+    }
+
     device_id device_id_;
     device_identifiers device_identifiers_;
     const pointing_motion_arrived_t& pointing_motion_arrived_;
 
-    double xy_deadzone_;
-    double wheels_deadzone_;
-
     stick xy_;
     stick wheels_;
+
+    double x_remainder_;
+    double y_remainder_;
+    double horizontal_wheel_remainder_;
+    double vertical_wheel_remainder_;
 
     pqrs::dispatcher::extra::timer xy_timer_;
     pqrs::dispatcher::extra::timer wheels_timer_;
