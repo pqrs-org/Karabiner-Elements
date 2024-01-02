@@ -20,54 +20,29 @@ public:
   static constexpr std::string_view game_pad_xy_stick_interval_milliseconds_formula_default_value =
       "20";
   static constexpr std::string_view game_pad_wheels_stick_interval_milliseconds_formula_default_value =
-      "switch {"
-      "\n"
-      "  case acceleration > 0.5: 50;"
-      "\n"
-      "  default:                 100;"
-      "\n"
-      "}"
-      "\n";
+      "50";
 
   // The logical value range of Karabiner-DriverKit-VirtualHIDPointing is -127 ... 127.
   static constexpr std::string_view game_pad_stick_x_formula_default_value =
-      "var a := acceleration ^ 2;"
-      "\n"
-      "a := max(a, 1.0 / (127-1) * sqrt(2));"
-      "\n"
-      "cos(radian) * a * 127;"
-      "\n";
+      "cos(radian) * magnitude * 64;";
 
   // The logical value range of Karabiner-DriverKit-VirtualHIDPointing is -127 ... 127.
   static constexpr std::string_view game_pad_stick_y_formula_default_value =
-      "var a := acceleration ^ 2;"
-      "\n"
-      "a := max(a, 1.0 / (127-1) * sqrt(2));"
-      "\n"
-      "sin(radian) * a * 127;"
-      "\n";
+      "sin(radian) * magnitude * 64;";
 
   // The logical value range of Karabiner-DriverKit-VirtualHIDPointing is -127 ... 127.
   static constexpr std::string_view game_pad_stick_vertical_wheel_formula_default_value =
-      "switch {"
-      "\n"
-      "  case abs(cos(radian)) > abs(sin(radian)) : 0;"
-      "\n"
-      "  default                                  : sgn(sin(radian));"
-      "\n"
-      "}"
-      "\n";
+      "switch {\n"
+      "  case abs(cos(radian)) > abs(sin(radian)) : 0;\n"
+      "  default                                  : sin(radian) * min(0.4, max(0.05, magnitude) * 4);\n"
+      "}";
 
   // The logical value range of Karabiner-DriverKit-VirtualHIDPointing is -127 ... 127.
   static constexpr std::string_view game_pad_stick_horizontal_wheel_formula_default_value =
-      "switch {"
-      "\n"
-      "  case abs(cos(radian)) < abs(sin(radian)) : 0;"
-      "\n"
-      "  default                                  : sgn(cos(radian));"
-      "\n"
-      "}"
-      "\n";
+      "switch {\n"
+      "  case abs(cos(radian)) < abs(sin(radian)) : 0;\n"
+      "  default                                  : cos(radian) * min(0.4, max(0.05, magnitude) * 4);\n"
+      "}";
 
   device(const nlohmann::json& json) : json_(json),
                                        ignore_(false),
