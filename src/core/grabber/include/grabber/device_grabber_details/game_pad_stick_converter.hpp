@@ -3,6 +3,7 @@
 #include "exprtk_utility.hpp"
 #include "logger.hpp"
 #include "types/device_id.hpp"
+#include <deque>
 #include <memory>
 #include <unordered_map>
 #include <vector>
@@ -157,6 +158,12 @@ public:
                                       std::pow(delta_horizontal, 2) +
                                       std::pow(delta_vertical, 2)));
 
+      delta_magnitude_history_.push_back(delta_magnitude_);
+      // Drop history entries before 100 ms.
+      while (delta_magnitude_history_.size() > 5) {
+        delta_magnitude_history_.pop_front();
+      }
+
       auto radian = std::atan2(vertical_stick_sensor_.get_value(),
                                horizontal_stick_sensor_.get_value());
 
@@ -169,7 +176,9 @@ public:
 
       if (magnitude >= continued_movement_threshold) {
         if (continued_movement_magnitude_ == 0.0) {
-          continued_movement_magnitude_ = delta_magnitude_;
+          auto it = std::max_element(std::begin(delta_magnitude_history_),
+                                     std::end(delta_magnitude_history_));
+          continued_movement_magnitude_ = *it;
         }
         continued_movement_magnitude_ = std::max(continued_movement_minimum_value, continued_movement_magnitude_);
 
@@ -316,6 +325,7 @@ public:
     double previous_horizontal_value_;
     double previous_vertical_value_;
     double previous_magnitude_;
+    std::deque<double> delta_magnitude_history_;
     std::atomic<event_origin> event_origin_;
 
     //
@@ -449,6 +459,10 @@ public:
                         0,
                         0);
 
+      if (m.is_zero()) {
+        return;
+      }
+
       event_queue::event_time_stamp event_time_stamp(pqrs::osx::chrono::mach_absolute_time_point());
       event_queue::event event(m);
       event_queue::entry entry(device_id_,
@@ -475,6 +489,10 @@ public:
                         0,
                         adjust_integer_value(vertical_wheel_truncated),
                         adjust_integer_value(horizontal_wheel_truncated));
+
+      if (m.is_zero()) {
+        return;
+      }
 
       event_queue::event_time_stamp event_time_stamp(pqrs::osx::chrono::mach_absolute_time_point());
       event_queue::event event(m);
