@@ -78,12 +78,6 @@ public:
     };
 
     //
-    // Constants
-    //
-
-    static constexpr int update_timer_interval_milliseconds = 20;
-
-    //
     // Methods
     //
 
@@ -96,7 +90,15 @@ public:
           continued_movement_magnitude_(0.0),
           previous_horizontal_value_(0.0),
           previous_vertical_value_(0.0),
-          previous_magnitude_(0.0) {
+          previous_magnitude_(0.0),
+          event_origin_(event_origin::none) {
+      auto update_timer_interval_milliseconds = std::chrono::milliseconds(20);
+
+      update_timer_.start(
+          [this] {
+            update_values();
+          },
+          update_timer_interval_milliseconds);
     }
 
     ~stick(void) {
@@ -109,30 +111,22 @@ public:
                                               CFIndex logical_min,
                                               CFIndex integer_value,
                                               event_origin event_origin) {
+      event_origin_ = event_origin;
+
       horizontal_stick_sensor_.update_stick_sensor_value(logical_max,
                                                          logical_min,
                                                          integer_value);
-      set_update_timer(event_origin);
     }
 
     void update_vertical_stick_sensor_value(CFIndex logical_max,
                                             CFIndex logical_min,
                                             CFIndex integer_value,
                                             event_origin event_origin) {
+      event_origin_ = event_origin;
+
       vertical_stick_sensor_.update_stick_sensor_value(logical_max,
                                                        logical_min,
                                                        integer_value);
-      set_update_timer(event_origin);
-    }
-
-    void set_update_timer(event_origin event_origin) {
-      if (!update_timer_.enabled()) {
-        update_timer_.start(
-            [this, event_origin] {
-              update_values(event_origin);
-            },
-            std::chrono::milliseconds(update_timer_interval_milliseconds));
-      }
     }
 
     void update_configurations(const core_configuration::core_configuration& core_configuration,
@@ -154,7 +148,7 @@ public:
 
   private:
     // This method is executed in the shared dispatcher thread.
-    void update_values(event_origin event_origin) {
+    void update_values(void) {
       auto delta_vertical = vertical_stick_sensor_.get_value() - previous_vertical_value_;
       auto delta_horizontal = horizontal_stick_sensor_.get_value() - previous_horizontal_value_;
       delta_radian_ = std::atan2(delta_vertical, delta_horizontal);
@@ -190,51 +184,36 @@ public:
         return;
       }
 
-      if (magnitude >= continued_movement_threshold) {
-        update_timer_.stop();
-      }
-
       //
       // Signal
       //
-
-      bool needs_update_previous_values = false;
 
       if (magnitude >= previous_magnitude_) {
         switch (stick_type_) {
           case stick_type::xy: {
             auto [x, y] = xy_hid_values();
             auto interval = xy_stick_interval();
-            values_updated(x, y, interval, event_origin);
-            if (x != 0 || y != 0) {
-              needs_update_previous_values = true;
-            }
+            values_updated(x, y, interval, event_origin_);
             break;
           }
           case stick_type::wheels: {
             auto [h, v] = wheels_hid_values();
             auto interval = wheels_stick_interval();
-            values_updated(h, -v, interval, event_origin);
-            if (v != 0 || h != 0) {
-              needs_update_previous_values = true;
-            }
+            values_updated(h, -v, interval, event_origin_);
             break;
           }
         }
       } else {
-        values_updated(0, 0, std::chrono::milliseconds(0), event_origin);
-        needs_update_previous_values = true;
+        values_updated(0, 0, std::chrono::milliseconds(0), event_origin_);
       }
 
       //
       // Update previous values
       //
 
-      if (needs_update_previous_values) {
-        previous_vertical_value_ = vertical_stick_sensor_.get_value();
-        previous_horizontal_value_ = horizontal_stick_sensor_.get_value();
-        previous_magnitude_ = magnitude;
-      }
+      previous_vertical_value_ = vertical_stick_sensor_.get_value();
+      previous_horizontal_value_ = horizontal_stick_sensor_.get_value();
+      previous_magnitude_ = magnitude;
     }
 
     std::pair<double, double> xy_hid_values(void) const {
@@ -337,6 +316,7 @@ public:
     double previous_horizontal_value_;
     double previous_vertical_value_;
     double previous_magnitude_;
+    std::atomic<event_origin> event_origin_;
 
     //
     // configurations
