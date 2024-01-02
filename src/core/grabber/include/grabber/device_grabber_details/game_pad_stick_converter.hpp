@@ -67,7 +67,7 @@ public:
                      double vertical_hid_value,
                      std::chrono::milliseconds interval,
                      event_origin event_origin)>
-        values_updated;
+        hid_values_updated;
 
     //
     // Classes
@@ -202,18 +202,18 @@ public:
           case stick_type::xy: {
             auto [x, y] = xy_hid_values();
             auto interval = xy_stick_interval();
-            values_updated(x, y, interval, event_origin_);
+            hid_values_updated(x, y, interval, event_origin_);
             break;
           }
           case stick_type::wheels: {
             auto [h, v] = wheels_hid_values();
             auto interval = wheels_stick_interval();
-            values_updated(h, -v, interval, event_origin_);
+            hid_values_updated(h, -v, interval, event_origin_);
             break;
           }
         }
       } else {
-        values_updated(0, 0, std::chrono::milliseconds(0), event_origin_);
+        hid_values_updated(0, 0, std::chrono::milliseconds(0), event_origin_);
       }
 
       //
@@ -247,7 +247,7 @@ public:
       return std::make_pair(x, y);
     }
 
-    std::pair<int, int> wheels_hid_values(void) const {
+    std::pair<double, double> wheels_hid_values(void) const {
       auto h = horizontal_wheel_formula_.value();
       if (std::isnan(h)) {
         logger::get_logger()->error("game_pad_stick_converter horizontal_wheel_formula returns nan: {0} (radian: {1}, magnitude: {2})",
@@ -363,7 +363,7 @@ public:
           vertical_wheel_remainder_(0.0),
           xy_timer_(*this),
           wheels_timer_(*this) {
-      xy_.values_updated.connect([this](auto&& x, auto&& y, auto&& interval, auto&& event_origin) {
+      xy_.hid_values_updated.connect([this](auto&& x, auto&& y, auto&& interval, auto&& event_origin) {
         if (interval == std::chrono::milliseconds(0)) {
           xy_timer_.stop();
           post_xy_event(x, y, event_origin);
@@ -377,7 +377,7 @@ public:
         }
       });
 
-      wheels_.values_updated.connect([this](auto&& h, auto&& v, auto&& interval, auto&& event_origin) {
+      wheels_.hid_values_updated.connect([this](auto&& h, auto&& v, auto&& interval, auto&& event_origin) {
         if (interval == std::chrono::milliseconds(0)) {
           wheels_timer_.stop();
           post_wheels_event(h, v, event_origin);
@@ -449,10 +449,10 @@ public:
   private:
     void post_xy_event(double x, double y, event_origin event_origin) {
       auto x_truncated = std::trunc(x + x_remainder_);
-      x_remainder_ = x - x_truncated;
+      x_remainder_ += x - x_truncated;
 
       auto y_truncated = std::trunc(y + y_remainder_);
-      y_remainder_ = y - y_truncated;
+      y_remainder_ += y - y_truncated;
 
       pointing_motion m(adjust_integer_value(x_truncated),
                         adjust_integer_value(y_truncated),
@@ -480,10 +480,10 @@ public:
 
     void post_wheels_event(double horizontal_wheel, double vertical_wheel, event_origin event_origin) {
       auto horizontal_wheel_truncated = std::trunc(horizontal_wheel + horizontal_wheel_remainder_);
-      horizontal_wheel_remainder_ = horizontal_wheel - horizontal_wheel_truncated;
+      horizontal_wheel_remainder_ += horizontal_wheel - horizontal_wheel_truncated;
 
       auto vertical_wheel_truncated = std::trunc(vertical_wheel + vertical_wheel_remainder_);
-      vertical_wheel_remainder_ = vertical_wheel - vertical_wheel_truncated;
+      vertical_wheel_remainder_ += vertical_wheel - vertical_wheel_truncated;
 
       pointing_motion m(0,
                         0,
