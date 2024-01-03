@@ -39,11 +39,11 @@ struct DevicesGamePadSettingsView: View {
                 Toggle(
                   isOn: binding.gamePadXYStickContinuedMovementAbsoluteMagnitudeThreshold.overwrite
                 ) {
-                  Text("Overwrite XY stick continued movement absolute magnitude threshold: ")
+                  Text("Overwrite XY stick continued movement absolute magnitude threshold:")
                     .frame(maxWidth: .infinity, alignment: .leading)
                 }
                 .switchToggleStyle(controlSize: .mini, font: .callout)
-                .frame(width: 450.0)
+                .frame(width: 480.0)
 
                 HStack(alignment: .center, spacing: 8.0) {
                   Text("Threshold:")
@@ -64,27 +64,32 @@ struct DevicesGamePadSettingsView: View {
               }
 
               HStack {
-                Toggle(isOn: binding.gamePadOverwriteWheelsStickDeadzone) {
-                  Text("Overwrite Wheels stick deadzone: ")
+                Toggle(
+                  isOn: binding.gamePadWheelsStickContinuedMovementAbsoluteMagnitudeThreshold
+                    .overwrite
+                ) {
+                  Text("Overwrite wheels stick continued movement absolute magnitude threshold:")
                     .frame(maxWidth: .infinity, alignment: .leading)
                 }
                 .switchToggleStyle(controlSize: .mini, font: .callout)
-                .frame(width: 250.0)
+                .frame(width: 480.0)
 
                 HStack(alignment: .center, spacing: 8.0) {
-                  Text("Deadzone:")
+                  Text("Threshold:")
 
                   DoubleTextField(
-                    value: binding.gamePadWheelsStickDeadzone,
-                    range: 0.05...1,
-                    step: 0.01,
-                    maximumFractionDigits: 3,
+                    value: binding.gamePadWheelsStickContinuedMovementAbsoluteMagnitudeThreshold
+                      .value,
+                    range: 0...1,
+                    step: 0.1,
+                    maximumFractionDigits: 2,
                     width: 60)
 
                   Text("(Default: 0.1)")
                 }
                 .padding(.leading, 20)
-                .disabled(!s.gamePadOverwriteWheelsStickDeadzone)
+                .disabled(
+                  !s.gamePadWheelsStickContinuedMovementAbsoluteMagnitudeThreshold.overwrite)
               }
             }.padding()
           }

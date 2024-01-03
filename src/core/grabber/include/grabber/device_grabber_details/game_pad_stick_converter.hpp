@@ -92,7 +92,8 @@ public:
           previous_horizontal_value_(0.0),
           previous_vertical_value_(0.0),
           previous_magnitude_(0.0),
-          event_origin_(event_origin::none) {
+          event_origin_(event_origin::none),
+          continued_movement_absolute_magnitude_threshold_(1.0) {
       auto update_timer_interval_milliseconds = std::chrono::milliseconds(20);
 
       update_timer_.start(
@@ -132,6 +133,15 @@ public:
 
     void update_configurations(const core_configuration::core_configuration& core_configuration,
                                const device_identifiers& device_identifiers) {
+      switch (stick_type_) {
+        case stick_type::xy:
+          continued_movement_absolute_magnitude_threshold_ = core_configuration.get_selected_profile().get_device_game_pad_xy_stick_continued_movement_absolute_magnitude_threshold(device_identifiers);
+          break;
+        case stick_type::wheels:
+          continued_movement_absolute_magnitude_threshold_ = core_configuration.get_selected_profile().get_device_game_pad_wheels_stick_continued_movement_absolute_magnitude_threshold(device_identifiers);
+          break;
+      }
+
       xy_stick_interval_milliseconds_formula_string_ = core_configuration.get_selected_profile().get_device_game_pad_xy_stick_interval_milliseconds_formula(device_identifiers);
       wheels_stick_interval_milliseconds_formula_string_ = core_configuration.get_selected_profile().get_device_game_pad_wheels_stick_interval_milliseconds_formula(device_identifiers);
       x_formula_string_ = core_configuration.get_selected_profile().get_device_game_pad_stick_x_formula(device_identifiers);
@@ -171,10 +181,9 @@ public:
                                 std::sqrt(std::pow(vertical_stick_sensor_.get_value(), 2) +
                                           std::pow(horizontal_stick_sensor_.get_value(), 2)));
 
-      auto continued_movement_threshold = 1.0;
       auto continued_movement_minimum_value = 0.01;
 
-      if (magnitude >= continued_movement_threshold) {
+      if (magnitude >= continued_movement_absolute_magnitude_threshold_) {
         if (continued_movement_magnitude_ == 0.0) {
           auto it = std::max_element(std::begin(delta_magnitude_history_),
                                      std::end(delta_magnitude_history_));
@@ -332,6 +341,7 @@ public:
     // configurations
     //
 
+    double continued_movement_absolute_magnitude_threshold_;
     std::string xy_stick_interval_milliseconds_formula_string_;
     std::string wheels_stick_interval_milliseconds_formula_string_;
     std::string x_formula_string_;

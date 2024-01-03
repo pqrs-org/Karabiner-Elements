@@ -125,7 +125,7 @@ void run_device_test(void) {
       expect(device.get_treat_as_built_in_keyboard() == false);
       expect(device.get_disable_built_in_keyboard_if_exists() == false);
       expect(device.get_game_pad_xy_stick_continued_movement_absolute_magnitude_threshold() == std::nullopt);
-      expect(device.get_game_pad_wheels_stick_deadzone() == std::nullopt);
+      expect(device.get_game_pad_wheels_stick_continued_movement_absolute_magnitude_threshold() == std::nullopt);
       expect(device.get_game_pad_stick_stroke_acceleration_transition_duration_milliseconds() == std::nullopt);
       expect(device.get_game_pad_xy_stick_interval_milliseconds_formula() == std::nullopt);
       expect(device.get_game_pad_wheels_stick_interval_milliseconds_formula() == std::nullopt);
@@ -355,7 +355,7 @@ void run_device_test(void) {
           {"game_pad_stick_stroke_release_detection_threshold_milliseconds", 200},
           {"game_pad_stick_stroke_acceleration_measurement_duration_milliseconds", 100},
           {"game_pad_xy_stick_continued_movement_absolute_magnitude_threshold", 0.5},
-          {"game_pad_wheels_stick_deadzone", 0.08},
+          {"game_pad_wheels_stick_continued_movement_absolute_magnitude_threshold", 0.08},
           {"game_pad_stick_stroke_acceleration_transition_duration_milliseconds", 20},
           {"game_pad_xy_stick_interval_milliseconds_formula", "20"},
           {"game_pad_wheels_stick_interval_milliseconds_formula", "100"},
@@ -403,7 +403,7 @@ void run_device_test(void) {
           {"game_pad_stick_stroke_release_detection_threshold_milliseconds", 200},
           {"game_pad_stick_stroke_acceleration_measurement_duration_milliseconds", 100},
           {"game_pad_xy_stick_continued_movement_absolute_magnitude_threshold", 0.5},
-          {"game_pad_wheels_stick_deadzone", 0.08},
+          {"game_pad_wheels_stick_continued_movement_absolute_magnitude_threshold", 0.08},
           {"game_pad_stick_stroke_acceleration_transition_duration_milliseconds", 20},
           {"game_pad_xy_stick_interval_milliseconds_formula", "20"},
           {"game_pad_wheels_stick_interval_milliseconds_formula", "100"},

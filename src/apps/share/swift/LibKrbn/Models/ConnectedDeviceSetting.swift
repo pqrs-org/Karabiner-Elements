@@ -95,16 +95,35 @@ extension LibKrbn {
         }
       )
 
-      self.gamePadOverwriteWheelsStickDeadzone =
-        libkrbn_core_configuration_has_selected_profile_device_game_pad_wheels_stick_deadzone(
-          Settings.shared.libkrbnCoreConfiguration,
-          connectedDevice.libkrbnDeviceIdentifiers
-        )
-
-      self.gamePadWheelsStickDeadzone =
-        libkrbn_core_configuration_get_selected_profile_device_game_pad_wheels_stick_deadzone(
-          Settings.shared.libkrbnCoreConfiguration,
-          connectedDevice.libkrbnDeviceIdentifiers)
+      gamePadWheelsStickContinuedMovementAbsoluteMagnitudeThreshold = OptionalSettingValue<Double>(
+        hasFunction: {
+          return
+            libkrbn_core_configuration_has_selected_profile_device_game_pad_wheels_stick_continued_movement_absolute_magnitude_threshold(
+              Settings.shared.libkrbnCoreConfiguration,
+              connectedDevice.libkrbnDeviceIdentifiers
+            )
+        },
+        getFunction: {
+          return
+            libkrbn_core_configuration_get_selected_profile_device_game_pad_wheels_stick_continued_movement_absolute_magnitude_threshold(
+              Settings.shared.libkrbnCoreConfiguration,
+              connectedDevice.libkrbnDeviceIdentifiers
+            )
+        },
+        setFunction: { (_ newValue: Double) in
+          libkrbn_core_configuration_set_selected_profile_device_game_pad_wheels_stick_continued_movement_absolute_magnitude_threshold(
+            Settings.shared.libkrbnCoreConfiguration,
+            connectedDevice.libkrbnDeviceIdentifiers,
+            newValue
+          )
+        },
+        unsetFunction: {
+          libkrbn_core_configuration_unset_selected_profile_device_game_pad_wheels_stick_continued_movement_absolute_magnitude_threshold(
+            Settings.shared.libkrbnCoreConfiguration,
+            connectedDevice.libkrbnDeviceIdentifiers
+          )
+        }
+      )
 
       self.gamePadOverwriteStickStrokeAccelerationTransitionDurationMilliseconds =
         libkrbn_core_configuration_has_selected_profile_device_game_pad_stick_stroke_acceleration_transition_duration_milliseconds(
@@ -255,41 +274,7 @@ extension LibKrbn {
     }
 
     var gamePadXYStickContinuedMovementAbsoluteMagnitudeThreshold: OptionalSettingValue<Double>
-
-    //
-    // gamePadWheelsStickDeadzone
-    //
-
-    @Published var gamePadOverwriteWheelsStickDeadzone: Bool = false {
-      didSet {
-        if didSetEnabled {
-          saveGamePadWheelsStickDeadzone()
-        }
-      }
-    }
-
-    @Published var gamePadWheelsStickDeadzone: Double = 0.0 {
-      didSet {
-        if didSetEnabled {
-          saveGamePadWheelsStickDeadzone()
-        }
-      }
-    }
-
-    private func saveGamePadWheelsStickDeadzone() {
-      if gamePadOverwriteWheelsStickDeadzone {
-        libkrbn_core_configuration_set_selected_profile_device_game_pad_wheels_stick_deadzone(
-          Settings.shared.libkrbnCoreConfiguration,
-          connectedDevice.libkrbnDeviceIdentifiers,
-          gamePadWheelsStickDeadzone)
-      } else {
-        libkrbn_core_configuration_unset_selected_profile_device_game_pad_wheels_stick_deadzone(
-          Settings.shared.libkrbnCoreConfiguration,
-          connectedDevice.libkrbnDeviceIdentifiers)
-      }
-
-      Settings.shared.save()
-    }
+    var gamePadWheelsStickContinuedMovementAbsoluteMagnitudeThreshold: OptionalSettingValue<Double>
 
     //
     // gamePadStickStrokeAccelerationTransitionDurationMilliseconds

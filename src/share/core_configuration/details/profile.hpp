@@ -584,10 +584,10 @@ public:
     }
   }
 
-  bool has_device_game_pad_wheels_stick_deadzone(const device_identifiers& identifiers) const {
+  bool has_device_game_pad_wheels_stick_continued_movement_absolute_magnitude_threshold(const device_identifiers& identifiers) const {
     for (const auto& d : devices_) {
       if (d.get_identifiers() == identifiers) {
-        if (auto value = d.get_game_pad_wheels_stick_deadzone()) {
+        if (auto value = d.get_game_pad_wheels_stick_continued_movement_absolute_magnitude_threshold()) {
           return true;
         }
       }
@@ -595,24 +595,24 @@ public:
     return false;
   }
 
-  double get_device_game_pad_wheels_stick_deadzone(const device_identifiers& identifiers) const {
+  double get_device_game_pad_wheels_stick_continued_movement_absolute_magnitude_threshold(const device_identifiers& identifiers) const {
     for (const auto& d : devices_) {
       if (d.get_identifiers() == identifiers) {
-        if (auto value = d.get_game_pad_wheels_stick_deadzone()) {
+        if (auto value = d.get_game_pad_wheels_stick_continued_movement_absolute_magnitude_threshold()) {
           return *value;
         }
       }
     }
-    return device::game_pad_wheels_stick_deadzone_default_value;
+    return device::game_pad_wheels_stick_continued_movement_absolute_magnitude_threshold_default_value;
   }
 
-  void set_device_game_pad_wheels_stick_deadzone(const device_identifiers& identifiers,
-                                                 std::optional<double> value) {
+  void set_device_game_pad_wheels_stick_continued_movement_absolute_magnitude_threshold(const device_identifiers& identifiers,
+                                                                                        std::optional<double> value) {
     add_device(identifiers);
 
     for (auto&& device : devices_) {
       if (device.get_identifiers() == identifiers) {
-        device.set_game_pad_wheels_stick_deadzone(value);
+        device.set_game_pad_wheels_stick_continued_movement_absolute_magnitude_threshold(value);
         return;
       }
     }

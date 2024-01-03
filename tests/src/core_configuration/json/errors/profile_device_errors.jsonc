@@ -135,14 +135,14 @@
         "error": "`game_pad_xy_stick_continued_movement_absolute_magnitude_threshold` must be number, but is `null`"
     },
 
-    // game_pad_wheels_stick_deadzone
+    // game_pad_wheels_stick_continued_movement_absolute_magnitude_threshold
 
     {
         "class": "devices",
         "input": {
-            "game_pad_wheels_stick_deadzone": null
+            "game_pad_wheels_stick_continued_movement_absolute_magnitude_threshold": null
         },
-        "error": "`game_pad_wheels_stick_deadzone` must be number, but is `null`"
+        "error": "`game_pad_wheels_stick_continued_movement_absolute_magnitude_threshold` must be number, but is `null`"
     },
 
     // game_pad_stick_stroke_acceleration_transition_duration_milliseconds

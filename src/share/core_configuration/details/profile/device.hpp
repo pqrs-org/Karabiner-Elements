@@ -15,7 +15,7 @@ public:
   static constexpr int game_pad_stick_stroke_acceleration_transition_duration_milliseconds_default_value = 500;
 
   static constexpr double game_pad_xy_stick_continued_movement_absolute_magnitude_threshold_default_value = 1.0;
-  static constexpr double game_pad_wheels_stick_deadzone_default_value = 0.1;
+  static constexpr double game_pad_wheels_stick_continued_movement_absolute_magnitude_threshold_default_value = 1.0;
 
   static constexpr std::string_view game_pad_xy_stick_interval_milliseconds_formula_default_value =
       "20";
@@ -151,10 +151,10 @@ public:
 
         game_pad_xy_stick_continued_movement_absolute_magnitude_threshold_ = value.get<double>();
 
-      } else if (key == "game_pad_wheels_stick_deadzone") {
+      } else if (key == "game_pad_wheels_stick_continued_movement_absolute_magnitude_threshold") {
         pqrs::json::requires_number(value, "`" + key + "`");
 
-        game_pad_wheels_stick_deadzone_ = value.get<double>();
+        game_pad_wheels_stick_continued_movement_absolute_magnitude_threshold_ = value.get<double>();
 
       } else if (key == "game_pad_stick_stroke_acceleration_transition_duration_milliseconds") {
         pqrs::json::requires_number(value, "`" + key + "`");
@@ -266,7 +266,7 @@ public:
     OPTIONAL_SETTING(game_pad_stick_stroke_release_detection_threshold_milliseconds);
     OPTIONAL_SETTING(game_pad_stick_stroke_acceleration_measurement_duration_milliseconds);
     OPTIONAL_SETTING(game_pad_xy_stick_continued_movement_absolute_magnitude_threshold);
-    OPTIONAL_SETTING(game_pad_wheels_stick_deadzone);
+    OPTIONAL_SETTING(game_pad_wheels_stick_continued_movement_absolute_magnitude_threshold);
     OPTIONAL_SETTING(game_pad_stick_stroke_acceleration_transition_duration_milliseconds);
 
 #undef OPTIONAL_SETTING
@@ -424,11 +424,11 @@ public:
     coordinate_between_properties();
   }
 
-  std::optional<double> get_game_pad_wheels_stick_deadzone(void) const {
-    return game_pad_wheels_stick_deadzone_;
+  std::optional<double> get_game_pad_wheels_stick_continued_movement_absolute_magnitude_threshold(void) const {
+    return game_pad_wheels_stick_continued_movement_absolute_magnitude_threshold_;
   }
-  void set_game_pad_wheels_stick_deadzone(std::optional<double> value) {
-    game_pad_wheels_stick_deadzone_ = value;
+  void set_game_pad_wheels_stick_continued_movement_absolute_magnitude_threshold(std::optional<double> value) {
+    game_pad_wheels_stick_continued_movement_absolute_magnitude_threshold_ = value;
 
     coordinate_between_properties();
   }
@@ -581,7 +581,7 @@ private:
   std::optional<int> game_pad_stick_stroke_release_detection_threshold_milliseconds_;
   std::optional<int> game_pad_stick_stroke_acceleration_measurement_duration_milliseconds_;
   std::optional<double> game_pad_xy_stick_continued_movement_absolute_magnitude_threshold_;
-  std::optional<double> game_pad_wheels_stick_deadzone_;
+  std::optional<double> game_pad_wheels_stick_continued_movement_absolute_magnitude_threshold_;
   std::optional<int> game_pad_stick_stroke_acceleration_transition_duration_milliseconds_;
   std::optional<std::string> game_pad_xy_stick_interval_milliseconds_formula_;
   std::optional<std::string> game_pad_wheels_stick_interval_milliseconds_formula_;
