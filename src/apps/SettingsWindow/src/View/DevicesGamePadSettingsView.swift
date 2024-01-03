@@ -33,30 +33,32 @@ struct DevicesGamePadSettingsView: View {
           .foregroundColor(Color.warningForeground)
           .background(Color.warningBackground)
 
-          GroupBox(label: Text("Deadzone")) {
+          GroupBox(label: Text("Stick parameters")) {
             VStack(alignment: .leading) {
               HStack {
-                Toggle(isOn: binding.gamePadOverwriteXYStickDeadzone) {
-                  Text("Overwrite XY stick deadzone: ")
+                Toggle(
+                  isOn: binding.gamePadXYStickContinuedMovementAbsoluteMagnitudeThreshold.overwrite
+                ) {
+                  Text("Overwrite XY stick continued movement absolute magnitude threshold: ")
                     .frame(maxWidth: .infinity, alignment: .leading)
                 }
                 .switchToggleStyle(controlSize: .mini, font: .callout)
-                .frame(width: 250.0)
+                .frame(width: 450.0)
 
                 HStack(alignment: .center, spacing: 8.0) {
-                  Text("Deadzone:")
+                  Text("Threshold:")
 
                   DoubleTextField(
-                    value: binding.gamePadXYStickDeadzone,
-                    range: 0.05...1,
-                    step: 0.01,
-                    maximumFractionDigits: 3,
+                    value: binding.gamePadXYStickContinuedMovementAbsoluteMagnitudeThreshold.value,
+                    range: 0...1,
+                    step: 0.1,
+                    maximumFractionDigits: 2,
                     width: 60)
 
-                  Text("(Default: 0.1)")
+                  Text("(Default: 1.0)")
                 }
                 .padding(.leading, 20)
-                .disabled(!s.gamePadOverwriteXYStickDeadzone)
+                .disabled(!s.gamePadXYStickContinuedMovementAbsoluteMagnitudeThreshold.overwrite)
 
                 Spacer()
               }
