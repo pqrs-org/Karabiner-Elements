@@ -125,17 +125,6 @@ extension LibKrbn {
         }
       )
 
-      self.gamePadOverwriteStickStrokeAccelerationTransitionDurationMilliseconds =
-        libkrbn_core_configuration_has_selected_profile_device_game_pad_stick_stroke_acceleration_transition_duration_milliseconds(
-          Settings.shared.libkrbnCoreConfiguration,
-          connectedDevice.libkrbnDeviceIdentifiers)
-
-      self.gamePadStickStrokeAccelerationTransitionDurationMilliseconds =
-        Int(
-          libkrbn_core_configuration_get_selected_profile_device_game_pad_stick_stroke_acceleration_transition_duration_milliseconds(
-            Settings.shared.libkrbnCoreConfiguration,
-            connectedDevice.libkrbnDeviceIdentifiers))
-
       simpleModifications = LibKrbn.Settings.shared.makeSimpleModifications(connectedDevice)
       fnFunctionKeys = LibKrbn.Settings.shared.makeFnFunctionKeys(connectedDevice)
 
@@ -275,43 +264,6 @@ extension LibKrbn {
 
     var gamePadXYStickContinuedMovementAbsoluteMagnitudeThreshold: OptionalSettingValue<Double>
     var gamePadWheelsStickContinuedMovementAbsoluteMagnitudeThreshold: OptionalSettingValue<Double>
-
-    //
-    // gamePadStickStrokeAccelerationTransitionDurationMilliseconds
-    //
-
-    @Published var gamePadOverwriteStickStrokeAccelerationTransitionDurationMilliseconds: Bool =
-      false
-    {
-      didSet {
-        if didSetEnabled {
-          saveGamePadStickStrokeAccelerationTransitionDurationMilliseconds()
-        }
-      }
-    }
-
-    @Published var gamePadStickStrokeAccelerationTransitionDurationMilliseconds: Int = 0 {
-      didSet {
-        if didSetEnabled {
-          saveGamePadStickStrokeAccelerationTransitionDurationMilliseconds()
-        }
-      }
-    }
-
-    private func saveGamePadStickStrokeAccelerationTransitionDurationMilliseconds() {
-      if gamePadOverwriteStickStrokeAccelerationTransitionDurationMilliseconds {
-        libkrbn_core_configuration_set_selected_profile_device_game_pad_stick_stroke_acceleration_transition_duration_milliseconds(
-          Settings.shared.libkrbnCoreConfiguration,
-          connectedDevice.libkrbnDeviceIdentifiers,
-          Int32(gamePadStickStrokeAccelerationTransitionDurationMilliseconds))
-      } else {
-        libkrbn_core_configuration_unset_selected_profile_device_game_pad_stick_stroke_acceleration_transition_duration_milliseconds(
-          Settings.shared.libkrbnCoreConfiguration,
-          connectedDevice.libkrbnDeviceIdentifiers)
-      }
-
-      Settings.shared.save()
-    }
 
     @Published var simpleModifications: [SimpleModification] = []
     @Published var fnFunctionKeys: [SimpleModification] = []

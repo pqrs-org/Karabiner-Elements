@@ -10,10 +10,6 @@ namespace core_configuration {
 namespace details {
 class device final {
 public:
-  static constexpr int game_pad_stick_stroke_release_detection_threshold_milliseconds_default_value = 100;
-  static constexpr int game_pad_stick_stroke_acceleration_measurement_duration_milliseconds_default_value = 50;
-  static constexpr int game_pad_stick_stroke_acceleration_transition_duration_milliseconds_default_value = 500;
-
   static constexpr double game_pad_xy_stick_continued_movement_absolute_magnitude_threshold_default_value = 1.0;
   static constexpr double game_pad_wheels_stick_continued_movement_absolute_magnitude_threshold_default_value = 1.0;
 
@@ -136,16 +132,6 @@ public:
 
         game_pad_swap_sticks_ = value.get<bool>();
 
-      } else if (key == "game_pad_stick_stroke_release_detection_threshold_milliseconds") {
-        pqrs::json::requires_number(value, "`" + key + "`");
-
-        game_pad_stick_stroke_release_detection_threshold_milliseconds_ = value.get<int>();
-
-      } else if (key == "game_pad_stick_stroke_acceleration_measurement_duration_milliseconds") {
-        pqrs::json::requires_number(value, "`" + key + "`");
-
-        game_pad_stick_stroke_acceleration_measurement_duration_milliseconds_ = value.get<int>();
-
       } else if (key == "game_pad_xy_stick_continued_movement_absolute_magnitude_threshold") {
         pqrs::json::requires_number(value, "`" + key + "`");
 
@@ -155,11 +141,6 @@ public:
         pqrs::json::requires_number(value, "`" + key + "`");
 
         game_pad_wheels_stick_continued_movement_absolute_magnitude_threshold_ = value.get<double>();
-
-      } else if (key == "game_pad_stick_stroke_acceleration_transition_duration_milliseconds") {
-        pqrs::json::requires_number(value, "`" + key + "`");
-
-        game_pad_stick_stroke_acceleration_transition_duration_milliseconds_ = value.get<int>();
 
       } else if (key == "game_pad_xy_stick_interval_milliseconds_formula") {
         game_pad_xy_stick_interval_milliseconds_formula_ = unmarshal_formula(value, key);
@@ -263,11 +244,8 @@ public:
     }                              \
   }
 
-    OPTIONAL_SETTING(game_pad_stick_stroke_release_detection_threshold_milliseconds);
-    OPTIONAL_SETTING(game_pad_stick_stroke_acceleration_measurement_duration_milliseconds);
     OPTIONAL_SETTING(game_pad_xy_stick_continued_movement_absolute_magnitude_threshold);
     OPTIONAL_SETTING(game_pad_wheels_stick_continued_movement_absolute_magnitude_threshold);
-    OPTIONAL_SETTING(game_pad_stick_stroke_acceleration_transition_duration_milliseconds);
 
 #undef OPTIONAL_SETTING
 
@@ -397,24 +375,6 @@ public:
     coordinate_between_properties();
   }
 
-  std::optional<int> get_game_pad_stick_stroke_release_detection_threshold_milliseconds(void) const {
-    return game_pad_stick_stroke_release_detection_threshold_milliseconds_;
-  }
-  void set_game_pad_stick_stroke_release_detection_threshold_milliseconds(std::optional<int> value) {
-    game_pad_stick_stroke_release_detection_threshold_milliseconds_ = value;
-
-    coordinate_between_properties();
-  }
-
-  std::optional<int> get_game_pad_stick_stroke_acceleration_measurement_duration_milliseconds(void) const {
-    return game_pad_stick_stroke_acceleration_measurement_duration_milliseconds_;
-  }
-  void set_game_pad_stick_stroke_acceleration_measurement_duration_milliseconds(std::optional<int> value) {
-    game_pad_stick_stroke_acceleration_measurement_duration_milliseconds_ = value;
-
-    coordinate_between_properties();
-  }
-
   std::optional<double> get_game_pad_xy_stick_continued_movement_absolute_magnitude_threshold(void) const {
     return game_pad_xy_stick_continued_movement_absolute_magnitude_threshold_;
   }
@@ -429,15 +389,6 @@ public:
   }
   void set_game_pad_wheels_stick_continued_movement_absolute_magnitude_threshold(std::optional<double> value) {
     game_pad_wheels_stick_continued_movement_absolute_magnitude_threshold_ = value;
-
-    coordinate_between_properties();
-  }
-
-  std::optional<double> get_game_pad_stick_stroke_acceleration_transition_duration_milliseconds(void) const {
-    return game_pad_stick_stroke_acceleration_transition_duration_milliseconds_;
-  }
-  void set_game_pad_stick_stroke_acceleration_transition_duration_milliseconds(std::optional<double> value) {
-    game_pad_stick_stroke_acceleration_transition_duration_milliseconds_ = value;
 
     coordinate_between_properties();
   }
@@ -578,11 +529,8 @@ private:
   bool mouse_swap_xy_;
   bool mouse_swap_wheels_;
   bool game_pad_swap_sticks_;
-  std::optional<int> game_pad_stick_stroke_release_detection_threshold_milliseconds_;
-  std::optional<int> game_pad_stick_stroke_acceleration_measurement_duration_milliseconds_;
   std::optional<double> game_pad_xy_stick_continued_movement_absolute_magnitude_threshold_;
   std::optional<double> game_pad_wheels_stick_continued_movement_absolute_magnitude_threshold_;
-  std::optional<int> game_pad_stick_stroke_acceleration_transition_duration_milliseconds_;
   std::optional<std::string> game_pad_xy_stick_interval_milliseconds_formula_;
   std::optional<std::string> game_pad_wheels_stick_interval_milliseconds_formula_;
   std::optional<std::string> game_pad_stick_x_formula_;
