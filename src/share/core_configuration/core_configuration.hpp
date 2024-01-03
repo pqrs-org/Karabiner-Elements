@@ -104,11 +104,13 @@ public:
   const std::vector<details::profile>& get_profiles(void) const {
     return profiles_;
   }
+
   void set_profile_name(size_t index, const std::string name) {
     if (index < profiles_.size()) {
       profiles_[index].set_name(name);
     }
   }
+
   void select_profile(size_t index) {
     if (index < profiles_.size()) {
       for (size_t i = 0; i < profiles_.size(); ++i) {
@@ -120,11 +122,20 @@ public:
       }
     }
   }
+
   void push_back_profile(void) {
     profiles_.emplace_back(nlohmann::json({
         {"name", "New profile"},
     }));
   }
+
+  void duplicate_profile(const details::profile& profile) {
+    auto p = details::profile(nlohmann::json(profile));
+    p.set_name(p.get_name() + " (copy)");
+    p.set_selected(false);
+    profiles_.push_back(p);
+  }
+
   void erase_profile(size_t index) {
     if (index < profiles_.size()) {
       if (profiles_.size() > 1) {

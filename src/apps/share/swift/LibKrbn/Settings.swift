@@ -606,6 +606,11 @@ extension LibKrbn {
       save()
     }
 
+    public func duplicateProfile(_ profile: Profile) {
+      libkrbn_core_configuration_duplicate_profile(libkrbnCoreConfiguration, profile.index)
+      save()
+    }
+
     public func removeProfile(_ profile: Profile) {
       libkrbn_core_configuration_erase_profile(libkrbnCoreConfiguration, profile.index)
       save()

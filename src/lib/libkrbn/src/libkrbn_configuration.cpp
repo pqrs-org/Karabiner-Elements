@@ -171,6 +171,15 @@ void libkrbn_core_configuration_push_back_profile(libkrbn_core_configuration* p)
   }
 }
 
+void libkrbn_core_configuration_duplicate_profile(libkrbn_core_configuration* p, size_t source_index) {
+  if (auto c = reinterpret_cast<libkrbn_core_configuration_class*>(p)) {
+    const auto& profiles = c->get_core_configuration().get_profiles();
+    if (source_index < profiles.size()) {
+      c->get_core_configuration().duplicate_profile(profiles[source_index]);
+    }
+  }
+}
+
 void libkrbn_core_configuration_erase_profile(libkrbn_core_configuration* p, size_t index) {
   if (auto c = reinterpret_cast<libkrbn_core_configuration_class*>(p)) {
     c->get_core_configuration().erase_profile(index);

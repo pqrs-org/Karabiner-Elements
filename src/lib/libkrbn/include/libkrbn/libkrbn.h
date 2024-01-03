@@ -92,6 +92,7 @@ bool libkrbn_core_configuration_get_profile_selected(libkrbn_core_configuration*
 void libkrbn_core_configuration_select_profile(libkrbn_core_configuration* p, size_t index);
 const char* libkrbn_core_configuration_get_selected_profile_name(libkrbn_core_configuration* p);
 void libkrbn_core_configuration_push_back_profile(libkrbn_core_configuration* p);
+void libkrbn_core_configuration_duplicate_profile(libkrbn_core_configuration* p, size_t source_index);
 void libkrbn_core_configuration_erase_profile(libkrbn_core_configuration* p, size_t index);
 
 // profile::parameters

@@ -10,7 +10,7 @@ struct ProfilesView: View {
       List {
         VStack(alignment: .leading, spacing: 0.0) {
           ForEach($settings.profiles) { $profile in
-            HStack(alignment: .center, spacing: 0) {
+            HStack(alignment: .center, spacing: 12.0) {
               Button(
                 action: {
                   settings.selectProfile(profile)
@@ -40,7 +40,15 @@ struct ProfilesView: View {
                   showingSheet = true
                 },
                 label: {
-                  Label("Edit", systemImage: "pencil.circle.fill")
+                  Label("Rename", systemImage: "pencil.circle.fill")
+                })
+
+              Button(
+                action: {
+                  settings.duplicateProfile(profile)
+                },
+                label: {
+                  Label("Duplicate", systemImage: "person.2.fill")
                 })
 
               HStack {
