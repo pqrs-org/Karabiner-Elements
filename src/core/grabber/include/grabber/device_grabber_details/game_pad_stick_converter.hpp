@@ -181,15 +181,12 @@ public:
                                 std::sqrt(std::pow(vertical_stick_sensor_.get_value(), 2) +
                                           std::pow(horizontal_stick_sensor_.get_value(), 2)));
 
-      auto continued_movement_minimum_value = 0.01;
-
       if (magnitude >= continued_movement_absolute_magnitude_threshold_) {
         if (continued_movement_magnitude_ == 0.0) {
           auto it = std::max_element(std::begin(delta_magnitude_history_),
                                      std::end(delta_magnitude_history_));
           continued_movement_magnitude_ = *it;
         }
-        continued_movement_magnitude_ = std::max(continued_movement_minimum_value, continued_movement_magnitude_);
 
         delta_radian_ = radian;
         delta_magnitude_ = continued_movement_magnitude_;
