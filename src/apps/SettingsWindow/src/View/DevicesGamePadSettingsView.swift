@@ -91,45 +91,12 @@ struct DevicesGamePadSettingsView: View {
                 .disabled(
                   !s.gamePadWheelsStickContinuedMovementAbsoluteMagnitudeThreshold.overwrite)
               }
-            }.padding()
-          }
-
-          GroupBox(label: Text("Stick parameters")) {
-            VStack(alignment: .leading) {
-              HStack {
-                Toggle(
-                  isOn: binding
-                    .gamePadOverwriteStickStrokeAccelerationTransitionDurationMilliseconds
-                ) {
-                  Text("Overwrite stick stroke acceleration transition duration: ")
-                    .frame(maxWidth: .infinity, alignment: .leading)
-                }
-                .switchToggleStyle(controlSize: .mini, font: .callout)
-                .frame(width: 250.0)
-
-                HStack(alignment: .center, spacing: 8.0) {
-                  Text("Duration:")
-
-                  IntTextField(
-                    value: binding.gamePadStickStrokeAccelerationTransitionDurationMilliseconds,
-                    range: 0...10000,
-                    step: 100,
-                    width: 60)
-
-                  Text("milliseconds (Default: 500)")
-                }
-                .padding(.leading, 20)
-                .disabled(
-                  !s.gamePadOverwriteStickStrokeAccelerationTransitionDurationMilliseconds)
-
-                Spacer()
-              }
 
               Toggle(isOn: binding.gamePadSwapSticks) {
                 Text("Swap gamepad XY and wheels sticks")
               }
               .switchToggleStyle(controlSize: .mini, font: .callout)
-            }
+            }.padding()
           }
         }
 
