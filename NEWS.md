@@ -1,5 +1,12 @@
 # Changelog
 
+## Beta
+
+-   ✨ New Features
+    -   Added the ability to duplicate and reorder profiles.
+-   ⚡️ Improvements
+    -   Improved behaviour when using the gamepad stick as a pointing device.
+
 ## Karabiner-Elements 14.13.0
 
 -   [📦 Download](https://github.com/pqrs-org/Karabiner-Elements/releases/download/v14.13.0/Karabiner-Elements-14.13.0.dmg)
