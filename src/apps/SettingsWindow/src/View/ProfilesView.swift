@@ -4,6 +4,7 @@ struct ProfilesView: View {
   @ObservedObject private var settings = LibKrbn.Settings.shared
   @State private var moveDisabled: Bool = true
   @State private var showingSheet = false
+  @State private var hoverProfile: LibKrbn.Profile?
   @State private var editingProfile: LibKrbn.Profile?
 
   var body: some View {
@@ -59,6 +60,9 @@ struct ProfilesView: View {
                   .foregroundColor(.accentColor)
 
                   Text(profile.name)
+                    .if(hoverProfile == profile) {
+                      $0.font(.body.weight(.bold))
+                    }
                 }
               }
             )
@@ -103,6 +107,15 @@ struct ProfilesView: View {
           }
           .padding(.vertical, 5.0)
           .moveDisabled(moveDisabled)
+          .onHover { hovering in
+            if hovering {
+              hoverProfile = profile
+            } else {
+              if hoverProfile == profile {
+                hoverProfile = nil
+              }
+            }
+          }
         }
         .onMove { indices, destination in
           if let first = indices.first {

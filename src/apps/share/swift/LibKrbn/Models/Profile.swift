@@ -1,7 +1,7 @@
 import Foundation
 
 extension LibKrbn {
-  struct Profile: Identifiable {
+  struct Profile: Identifiable, Equatable {
     var id = UUID()
     var index: Int
     var name: String
@@ -11,6 +11,10 @@ extension LibKrbn {
       self.index = index
       self.name = name
       self.selected = selected
+    }
+
+    public static func == (lhs: Profile, rhs: Profile) -> Bool {
+      lhs.id == rhs.id
     }
   }
 }
