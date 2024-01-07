@@ -15,7 +15,7 @@ struct ProfilesView: View {
             settings.appendProfile()
           },
           label: {
-            Label("Add new profile", systemImage: "plus.circle.fill")
+            AccentColorIconLabel(title: "Add new profile", systemImage: "plus.circle.fill")
           }
         )
 
