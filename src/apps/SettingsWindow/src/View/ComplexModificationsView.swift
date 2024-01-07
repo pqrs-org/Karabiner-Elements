@@ -58,6 +58,10 @@ struct ComplexModificationsView: View {
 
       List {
         ForEach($settings.complexModificationsRules) { $complexModificationRule in
+          // Make a copy to use it in onHover.
+          // (Without copy, the program crashes with an incorrect reference when the complexModificationRule is deleted.)
+          let complexModificationRuleCopy = complexModificationRule
+
           HStack(alignment: .center, spacing: 0) {
             if settings.complexModificationsRules.count > 1 {
               Image(systemName: "arrow.up.arrow.down.square.fill")
@@ -118,9 +122,9 @@ struct ComplexModificationsView: View {
           .moveDisabled(moveDisabled)
           .onHover { hovering in
             if hovering {
-              hoverRule = complexModificationRule
+              hoverRule = complexModificationRuleCopy
             } else {
-              if hoverRule == complexModificationRule {
+              if hoverRule == complexModificationRuleCopy {
                 hoverRule = nil
               }
             }

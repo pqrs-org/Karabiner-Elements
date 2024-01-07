@@ -34,6 +34,10 @@ struct ProfilesView: View {
 
       List {
         ForEach($settings.profiles) { $profile in
+          // Make a copy to use it in onHover.
+          // (Without copy, the program crashes with an incorrect reference when the profile is deleted.)
+          let profileCopy = profile
+
           HStack(alignment: .center, spacing: 12.0) {
             if settings.profiles.count > 1 {
               Image(systemName: "arrow.up.arrow.down.square.fill")
@@ -109,9 +113,9 @@ struct ProfilesView: View {
           .moveDisabled(moveDisabled)
           .onHover { hovering in
             if hovering {
-              hoverProfile = profile
+              hoverProfile = profileCopy
             } else {
-              if hoverProfile == profile {
+              if hoverProfile == profileCopy {
                 hoverProfile = nil
               }
             }
