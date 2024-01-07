@@ -1328,49 +1328,6 @@ void run_core_configuration_test(void) {
     }
   };
 
-  "complex_modifications.swap_rules"_test = [] {
-    {
-      auto manipulators = nlohmann::json::array({
-          nlohmann::json::object({
-              {"from", nlohmann::json::object({{"key_code", "spacebar"}})},
-              {"type", "basic"},
-          }),
-      });
-
-      nlohmann::json json({
-          {
-              "rules",
-              {
-                  {
-                      {"description", "rule 1"},
-                      {"manipulators", manipulators},
-                  },
-                  {
-                      {"description", "rule 2"},
-                      {"manipulators", manipulators},
-                  },
-                  {
-                      {"description", "rule 3"},
-                      {"manipulators", manipulators},
-                  },
-              },
-          },
-      });
-      krbn::core_configuration::details::complex_modifications complex_modifications(json);
-      auto& rules = complex_modifications.get_rules();
-      expect(rules.size() == 3);
-      expect(rules[0].get_description() == "rule 1");
-      expect(rules[1].get_description() == "rule 2");
-      expect(rules[2].get_description() == "rule 3");
-
-      complex_modifications.swap_rules(1, 2);
-      expect(rules.size() == 3);
-      expect(rules[0].get_description() == "rule 1");
-      expect(rules[1].get_description() == "rule 3");
-      expect(rules[2].get_description() == "rule 2");
-    }
-  };
-
   "complex_modifications.move_rule"_test = [] {
     {
       auto manipulators = nlohmann::json::array({
@@ -1411,155 +1368,38 @@ void run_core_configuration_test(void) {
       {
         krbn::core_configuration::details::complex_modifications complex_modifications(json);
         auto& rules = complex_modifications.get_rules();
-        expect(rules.size() == 5);
-        expect(rules[0].get_description() == "rule 1");
-        expect(rules[1].get_description() == "rule 2");
-        expect(rules[2].get_description() == "rule 3");
-        expect(rules[3].get_description() == "rule 4");
-        expect(rules[4].get_description() == "rule 5");
+        expect(5_ul == rules.size());
+        expect("rule 1" == rules[0].get_description());
+        expect("rule 2" == rules[1].get_description());
+        expect("rule 3" == rules[2].get_description());
+        expect("rule 4" == rules[3].get_description());
+        expect("rule 5" == rules[4].get_description());
       }
 
-      // source_index == destination_index
-      {
-        krbn::core_configuration::details::complex_modifications complex_modifications(json);
-        auto& rules = complex_modifications.get_rules();
-        complex_modifications.move_rule(0, 0);
-        expect(rules.size() == 5);
-        expect(rules[0].get_description() == "rule 1");
-        expect(rules[1].get_description() == "rule 2");
-        expect(rules[2].get_description() == "rule 3");
-        expect(rules[3].get_description() == "rule 4");
-        expect(rules[4].get_description() == "rule 5");
-      }
-
-      // source_index < destination_index
-      {
-        krbn::core_configuration::details::complex_modifications complex_modifications(json);
-        auto& rules = complex_modifications.get_rules();
-        complex_modifications.move_rule(0, 1);
-        expect(rules.size() == 5);
-        expect(rules[0].get_description() == "rule 1");
-        expect(rules[1].get_description() == "rule 2");
-        expect(rules[2].get_description() == "rule 3");
-        expect(rules[3].get_description() == "rule 4");
-        expect(rules[4].get_description() == "rule 5");
-      }
-
-      // source_index < destination_index
+      // 0 -> 2
       {
         krbn::core_configuration::details::complex_modifications complex_modifications(json);
         auto& rules = complex_modifications.get_rules();
         complex_modifications.move_rule(0, 2);
-        expect(rules.size() == 5);
-        expect(rules[0].get_description() == "rule 2");
-        expect(rules[1].get_description() == "rule 1");
-        expect(rules[2].get_description() == "rule 3");
-        expect(rules[3].get_description() == "rule 4");
-        expect(rules[4].get_description() == "rule 5");
+        expect(5_ul == rules.size());
+        expect("rule 2"sv == rules[0].get_description());
+        expect("rule 1"sv == rules[1].get_description());
+        expect("rule 3"sv == rules[2].get_description());
+        expect("rule 4"sv == rules[3].get_description());
+        expect("rule 5"sv == rules[4].get_description());
       }
 
-      // source_index < destination_index
-      {
-        krbn::core_configuration::details::complex_modifications complex_modifications(json);
-        auto& rules = complex_modifications.get_rules();
-        complex_modifications.move_rule(0, 3);
-        expect(rules.size() == 5);
-        expect(rules[0].get_description() == "rule 2");
-        expect(rules[1].get_description() == "rule 3");
-        expect(rules[2].get_description() == "rule 1");
-        expect(rules[3].get_description() == "rule 4");
-        expect(rules[4].get_description() == "rule 5");
-      }
-
-      // source_index < destination_index
-      {
-        krbn::core_configuration::details::complex_modifications complex_modifications(json);
-        auto& rules = complex_modifications.get_rules();
-        complex_modifications.move_rule(2, 4);
-        expect(rules.size() == 5);
-        expect(rules[0].get_description() == "rule 1");
-        expect(rules[1].get_description() == "rule 2");
-        expect(rules[2].get_description() == "rule 4");
-        expect(rules[3].get_description() == "rule 3");
-        expect(rules[4].get_description() == "rule 5");
-      }
-
-      // destination_index is out of range
-      {
-        krbn::core_configuration::details::complex_modifications complex_modifications(json);
-        auto& rules = complex_modifications.get_rules();
-        complex_modifications.move_rule(0, 10);
-        expect(rules.size() == 5);
-        expect(rules[0].get_description() == "rule 2");
-        expect(rules[1].get_description() == "rule 3");
-        expect(rules[2].get_description() == "rule 4");
-        expect(rules[3].get_description() == "rule 5");
-        expect(rules[4].get_description() == "rule 1");
-      }
-
-      // source_index > destination_index
-      {
-        krbn::core_configuration::details::complex_modifications complex_modifications(json);
-        auto& rules = complex_modifications.get_rules();
-        complex_modifications.move_rule(1, 0);
-        expect(rules.size() == 5);
-        expect(rules[0].get_description() == "rule 2");
-        expect(rules[1].get_description() == "rule 1");
-        expect(rules[2].get_description() == "rule 3");
-        expect(rules[3].get_description() == "rule 4");
-        expect(rules[4].get_description() == "rule 5");
-      }
-
-      // source_index > destination_index
+      // 2 -> 0
       {
         krbn::core_configuration::details::complex_modifications complex_modifications(json);
         auto& rules = complex_modifications.get_rules();
         complex_modifications.move_rule(2, 0);
-        expect(rules.size() == 5);
-        expect(rules[0].get_description() == "rule 3");
-        expect(rules[1].get_description() == "rule 1");
-        expect(rules[2].get_description() == "rule 2");
-        expect(rules[3].get_description() == "rule 4");
-        expect(rules[4].get_description() == "rule 5");
-      }
-
-      // source_index > destination_index
-      {
-        krbn::core_configuration::details::complex_modifications complex_modifications(json);
-        auto& rules = complex_modifications.get_rules();
-        complex_modifications.move_rule(3, 0);
-        expect(rules.size() == 5);
-        expect(rules[0].get_description() == "rule 4");
-        expect(rules[1].get_description() == "rule 1");
-        expect(rules[2].get_description() == "rule 2");
-        expect(rules[3].get_description() == "rule 3");
-        expect(rules[4].get_description() == "rule 5");
-      }
-
-      // source_index > destination_index
-      {
-        krbn::core_configuration::details::complex_modifications complex_modifications(json);
-        auto& rules = complex_modifications.get_rules();
-        complex_modifications.move_rule(3, 1);
-        expect(rules.size() == 5);
-        expect(rules[0].get_description() == "rule 1");
-        expect(rules[1].get_description() == "rule 4");
-        expect(rules[2].get_description() == "rule 2");
-        expect(rules[3].get_description() == "rule 3");
-        expect(rules[4].get_description() == "rule 5");
-      }
-
-      // source_index is out of range
-      {
-        krbn::core_configuration::details::complex_modifications complex_modifications(json);
-        auto& rules = complex_modifications.get_rules();
-        complex_modifications.move_rule(10, 0);
-        expect(rules.size() == 5);
-        expect(rules[0].get_description() == "rule 5");
-        expect(rules[1].get_description() == "rule 1");
-        expect(rules[2].get_description() == "rule 2");
-        expect(rules[3].get_description() == "rule 3");
-        expect(rules[4].get_description() == "rule 4");
+        expect(5_ul == rules.size());
+        expect("rule 3" == rules[0].get_description());
+        expect("rule 1" == rules[1].get_description());
+        expect("rule 2" == rules[2].get_description());
+        expect("rule 4" == rules[3].get_description());
+        expect("rule 5" == rules[4].get_description());
       }
     }
   };

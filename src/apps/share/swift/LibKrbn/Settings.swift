@@ -611,6 +611,15 @@ extension LibKrbn {
       save()
     }
 
+    public func moveProfile(_ sourceIndex: Int, _ destinationIndex: Int) {
+      libkrbn_core_configuration_move_profile(
+        libkrbnCoreConfiguration,
+        sourceIndex,
+        destinationIndex
+      )
+      save()
+    }
+
     public func removeProfile(_ profile: Profile) {
       libkrbn_core_configuration_erase_profile(libkrbnCoreConfiguration, profile.index)
       save()

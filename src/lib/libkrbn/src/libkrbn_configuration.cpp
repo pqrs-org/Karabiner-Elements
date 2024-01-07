@@ -180,6 +180,12 @@ void libkrbn_core_configuration_duplicate_profile(libkrbn_core_configuration* p,
   }
 }
 
+void libkrbn_core_configuration_move_profile(libkrbn_core_configuration* p, size_t source_index, size_t destination_index) {
+  if (auto c = reinterpret_cast<libkrbn_core_configuration_class*>(p)) {
+    c->get_core_configuration().move_profile(source_index, destination_index);
+  }
+}
+
 void libkrbn_core_configuration_erase_profile(libkrbn_core_configuration* p, size_t index) {
   if (auto c = reinterpret_cast<libkrbn_core_configuration_class*>(p)) {
     c->get_core_configuration().erase_profile(index);
@@ -322,12 +328,6 @@ void libkrbn_core_configuration_push_front_complex_modifications_rule_to_selecte
 void libkrbn_core_configuration_erase_selected_profile_complex_modifications_rule(libkrbn_core_configuration* p, size_t index) {
   if (auto c = reinterpret_cast<libkrbn_core_configuration_class*>(p)) {
     c->get_core_configuration().get_selected_profile().erase_complex_modifications_rule(index);
-  }
-}
-
-void libkrbn_core_configuration_swap_selected_profile_complex_modifications_rules(libkrbn_core_configuration* p, size_t index1, size_t index2) {
-  if (auto c = reinterpret_cast<libkrbn_core_configuration_class*>(p)) {
-    c->get_core_configuration().get_selected_profile().swap_complex_modifications_rules(index1, index2);
   }
 }
 

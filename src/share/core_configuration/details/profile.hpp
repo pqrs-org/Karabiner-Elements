@@ -237,10 +237,6 @@ public:
     complex_modifications_.erase_rule(index);
   }
 
-  void swap_complex_modifications_rules(size_t index1, size_t index2) {
-    complex_modifications_.swap_rules(index1, index2);
-  }
-
   void move_complex_modifications_rule(size_t source_index, size_t destination_index) {
     complex_modifications_.move_rule(source_index, destination_index);
   }

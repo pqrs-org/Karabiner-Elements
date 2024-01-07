@@ -12,6 +12,7 @@
 #include "json_writer.hpp"
 #include "logger.hpp"
 #include "types.hpp"
+#include "vector_utility.hpp"
 #include <fstream>
 #include <glob/glob.hpp>
 #include <pqrs/filesystem.hpp>
@@ -142,6 +143,10 @@ public:
         profiles_.erase(profiles_.begin() + index);
       }
     }
+  }
+
+  void move_profile(size_t source_index, size_t destination_index) {
+    vector_utility::move_element(profiles_, source_index, destination_index);
   }
 
   const details::profile& get_selected_profile(void) const {

@@ -2,6 +2,7 @@
 
 #include "complex_modifications_parameters.hpp"
 #include "complex_modifications_rule.hpp"
+#include "vector_utility.hpp"
 
 namespace krbn {
 namespace core_configuration {
@@ -68,30 +69,8 @@ public:
     }
   }
 
-  void swap_rules(size_t index1, size_t index2) {
-    if (index1 < rules_.size() &&
-        index2 < rules_.size()) {
-      std::swap(rules_[index1], rules_[index2]);
-    }
-  }
-
   void move_rule(size_t source_index, size_t destination_index) {
-    if (source_index < destination_index) {
-      for (size_t i = source_index; i < destination_index - 1; ++i) {
-        swap_rules(i, i + 1);
-      }
-    } else if (destination_index < source_index) {
-      size_t i = source_index - 1;
-      while (i >= destination_index) {
-        swap_rules(i, i + 1);
-
-        if (i == 0) {
-          break;
-        }
-
-        --i;
-      }
-    }
+    vector_utility::move_element(rules_, source_index, destination_index);
   }
 
   std::optional<std::pair<int, int>> minmax_parameter_value(const std::string& name) const {
