@@ -86,7 +86,6 @@ public:
         : dispatcher_client(),
           stick_type_(stick_type),
           update_timer_(*this),
-          delta_radian_(0.0),
           delta_magnitude_(0.0),
           continued_movement_magnitude_(0.0),
           previous_horizontal_value_(0.0),
@@ -162,7 +161,6 @@ public:
     void update_values(void) {
       auto delta_vertical = vertical_stick_sensor_.get_value() - previous_vertical_value_;
       auto delta_horizontal = horizontal_stick_sensor_.get_value() - previous_horizontal_value_;
-      delta_radian_ = std::atan2(delta_vertical, delta_horizontal);
       delta_magnitude_ = std::min(1.0,
                                   std::sqrt(
                                       std::pow(delta_horizontal, 2) +
@@ -174,8 +172,8 @@ public:
         delta_magnitude_history_.pop_front();
       }
 
-      auto radian = std::atan2(vertical_stick_sensor_.get_value(),
-                               horizontal_stick_sensor_.get_value());
+      radian_ = std::atan2(vertical_stick_sensor_.get_value(),
+                           horizontal_stick_sensor_.get_value());
 
       auto magnitude = std::min(1.0,
                                 std::sqrt(std::pow(vertical_stick_sensor_.get_value(), 2) +
@@ -188,7 +186,6 @@ public:
           continued_movement_magnitude_ = *it;
         }
 
-        delta_radian_ = radian;
         delta_magnitude_ = continued_movement_magnitude_;
       } else {
         continued_movement_magnitude_ = 0.0;
@@ -236,7 +233,7 @@ public:
       if (std::isnan(x)) {
         logger::get_logger()->error("game_pad_stick_converter x_formula returns nan: {0} (radian: {1}, magnitude: {2})",
                                     x_formula_string_,
-                                    delta_radian_,
+                                    radian_,
                                     delta_magnitude_);
         x = 0.0;
       }
@@ -245,7 +242,7 @@ public:
       if (std::isnan(y)) {
         logger::get_logger()->error("game_pad_stick_converter y_formula returns nan: {0} (radian: {1}, magnitude: {2})",
                                     y_formula_string_,
-                                    delta_radian_,
+                                    radian_,
                                     delta_magnitude_);
         y = 0.0;
       }
@@ -258,7 +255,7 @@ public:
       if (std::isnan(h)) {
         logger::get_logger()->error("game_pad_stick_converter horizontal_wheel_formula returns nan: {0} (radian: {1}, magnitude: {2})",
                                     horizontal_wheel_formula_string_,
-                                    delta_radian_,
+                                    radian_,
                                     delta_magnitude_);
         h = 0.0;
       }
@@ -267,7 +264,7 @@ public:
       if (std::isnan(v)) {
         logger::get_logger()->error("game_pad_stick_converter vertical_wheel_formula returns nan: {0} (radian: {1}, magnitude: {2})",
                                     vertical_wheel_formula_string_,
-                                    delta_radian_,
+                                    radian_,
                                     delta_magnitude_);
         v = 0.0;
       }
@@ -284,7 +281,7 @@ public:
       if (std::isnan(interval)) {
         logger::get_logger()->error("game_pad_stick_converter xy_stick_interval_milliseconds_formula_ returns nan: {0} (radian: {1}, magnitude: {2})",
                                     xy_stick_interval_milliseconds_formula_string_,
-                                    delta_radian_,
+                                    radian_,
                                     delta_magnitude_);
         interval = 0;
       }
@@ -301,7 +298,7 @@ public:
       if (std::isnan(interval)) {
         logger::get_logger()->error("game_pad_stick_converter wheels_stick_interval_milliseconds_formula_ returns nan: {0} (radian: {1}, magnitude: {2})",
                                     wheels_stick_interval_milliseconds_formula_string_,
-                                    delta_radian_,
+                                    radian_,
                                     delta_magnitude_);
         interval = 0;
       }
@@ -313,7 +310,7 @@ public:
       return exprtk_utility::compile(formula,
                                      {},
                                      {
-                                         {"radian", delta_radian_},
+                                         {"radian", radian_},
                                          {"magnitude", delta_magnitude_},
                                      });
     }
@@ -325,7 +322,7 @@ public:
     stick_sensor horizontal_stick_sensor_;
     stick_sensor vertical_stick_sensor_;
 
-    double delta_radian_;
+    double radian_;
     double delta_magnitude_;
     double continued_movement_magnitude_;
     double previous_horizontal_value_;
