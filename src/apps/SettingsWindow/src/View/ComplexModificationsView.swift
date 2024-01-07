@@ -10,6 +10,7 @@ struct ComplexModificationsView: View {
   @ObservedObject private var settings = LibKrbn.Settings.shared
   @State private var moveDisabled: Bool = true
   @State private var showingEditSheet = false
+  @State private var hoverRule: LibKrbn.ComplexModificationsRule?
   @State private var editingRule: LibKrbn.ComplexModificationsRule?
 
   var body: some View {
@@ -53,69 +54,79 @@ struct ComplexModificationsView: View {
             Text("icon")
           }
         }
-      }.padding([.leading, .trailing], 16)
+      }
 
       List {
         ForEach($settings.complexModificationsRules) { $complexModificationRule in
-          VStack {
-            HStack(alignment: .center, spacing: 0) {
-              if settings.complexModificationsRules.count > 1 {
-                Image(systemName: "arrow.up.arrow.down.square.fill")
-                  .resizable(resizingMode: .stretch)
-                  .frame(width: 16.0, height: 16.0)
-                  .onHover { hovering in
-                    moveDisabled = !hovering
-                  }
-              }
-
-              Text(complexModificationRule.description)
-                .padding(.leading, 6.0)
-
-              Spacer()
-
-              Button(
-                action: {
-                  editingRule = complexModificationRule
-                  showingEditSheet = true
-                },
-                label: {
-                  Label("Edit", systemImage: "pencil.circle.fill")
-                    .padding(.horizontal, 10.0)
-                })
-
-              Button(
-                action: {
-                  settings.removeComplexModificationsRule(complexModificationRule)
-                },
-                label: {
-                  Image(systemName: "trash.fill")
-                    .buttonLabelStyle()
+          HStack(alignment: .center, spacing: 0) {
+            if settings.complexModificationsRules.count > 1 {
+              Image(systemName: "arrow.up.arrow.down.square.fill")
+                .resizable(resizingMode: .stretch)
+                .frame(width: 16.0, height: 16.0)
+                .onHover { hovering in
+                  moveDisabled = !hovering
                 }
-              )
-              .deleteButtonStyle()
-              .frame(width: 60)
-            }
-            .contextMenu {
-              Section(header: Text("Position")) {
-                Button {
-                  settings.moveComplexModificationsRule(complexModificationRule.index, 0)
-                } label: {
-                  Label("Move item to top", systemImage: "arrow.up.to.line")
-                }
-
-                Button {
-                  settings.moveComplexModificationsRule(
-                    complexModificationRule.index, settings.complexModificationsRules.count)
-                } label: {
-                  Label("Move item to bottom", systemImage: "arrow.down.to.line")
-                }
-              }
             }
 
-            Divider()
+            Text(complexModificationRule.description)
+              .padding(.leading, 6.0)
+              .if(hoverRule == complexModificationRule) {
+                $0.font(.body.weight(.bold))
+              }
+
+            Spacer()
+
+            Button(
+              action: {
+                editingRule = complexModificationRule
+                showingEditSheet = true
+              },
+              label: {
+                Label("Edit", systemImage: "pencil.circle.fill")
+                  .padding(.horizontal, 10.0)
+              })
+
+            Button(
+              action: {
+                settings.removeComplexModificationsRule(complexModificationRule)
+              },
+              label: {
+                Image(systemName: "trash.fill")
+                  .buttonLabelStyle()
+              }
+            )
+            .deleteButtonStyle()
+            .frame(width: 60)
           }
+          .contextMenu {
+            Section(header: Text("Position")) {
+              Button {
+                settings.moveComplexModificationsRule(complexModificationRule.index, 0)
+              } label: {
+                Label("Move item to top", systemImage: "arrow.up.to.line")
+              }
+
+              Button {
+                settings.moveComplexModificationsRule(
+                  complexModificationRule.index, settings.complexModificationsRules.count)
+              } label: {
+                Label("Move item to bottom", systemImage: "arrow.down.to.line")
+              }
+            }
+          }
+          .padding(.vertical, 5.0)
           .moveDisabled(moveDisabled)
-        }.onMove { indices, destination in
+          .onHover { hovering in
+            if hovering {
+              hoverRule = complexModificationRule
+            } else {
+              if hoverRule == complexModificationRule {
+                hoverRule = nil
+              }
+            }
+          }
+        }
+        .onMove { indices, destination in
           if let first = indices.first {
             settings.moveComplexModificationsRule(first, destination)
           }
