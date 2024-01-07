@@ -28,7 +28,6 @@ public class StickManager: ObservableObject {
     @Published var magnitude = 0.0
     @Published var deltaHorizontal = 0.0
     @Published var deltaVertical = 0.0
-    @Published var deltaRadian = 0.0
     @Published var deltaMagnitude = 0.0
     @Published var pointerX = 0.5  // 0.0 ... 1.0
     @Published var pointerY = 0.5  // 0.0 ... 1.0
@@ -54,7 +53,6 @@ public class StickManager: ObservableObject {
     private func update() {
       deltaHorizontal = horizontal.lastDoubleValue - previousHorizontalDoubleValue
       deltaVertical = vertical.lastDoubleValue - previousVerticalDoubleValue
-      deltaRadian = atan2(deltaVertical, deltaHorizontal)
       deltaMagnitude = min(1.0, sqrt(pow(deltaHorizontal, 2) + pow(deltaVertical, 2)))
 
       radian = atan2(vertical.lastDoubleValue, horizontal.lastDoubleValue)
@@ -71,7 +69,6 @@ public class StickManager: ObservableObject {
         }
         continuedMovementMagnitude = max(continuedMovementMinimumValue, continuedMovementMagnitude)
 
-        deltaRadian = radian
         deltaMagnitude = continuedMovementMagnitude
       } else {
         continuedMovementMagnitude = 0.0
@@ -85,9 +82,9 @@ public class StickManager: ObservableObject {
       if magnitude >= previousMagnitude {
         let scale = 1.0 / 16
 
-        pointerX += deltaMagnitude * cos(deltaRadian) * scale
+        pointerX += deltaMagnitude * cos(radian) * scale
         pointerX = max(0.0, min(1.0, pointerX))
-        pointerY -= deltaMagnitude * sin(deltaRadian) * scale
+        pointerY -= deltaMagnitude * sin(radian) * scale
         pointerY = max(0.0, min(1.0, pointerY))
       }
 

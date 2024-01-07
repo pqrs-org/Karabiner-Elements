@@ -40,7 +40,6 @@ struct InformationView: View {
       Group {
         Text("deltaHorizontal: \(rightStick.deltaHorizontal)")
         Text("deltaVertical: \(rightStick.deltaVertical)")
-        Text("deltaRadian: \(rightStick.deltaRadian)")
         Text("deltaMagnitude: \(rightStick.deltaMagnitude)")
       }
       Divider()
