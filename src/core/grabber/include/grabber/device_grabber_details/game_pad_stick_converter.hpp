@@ -78,6 +78,27 @@ public:
       wheels,
     };
 
+    class delta_magnitude_history_entry final {
+    public:
+      delta_magnitude_history_entry(absolute_time_point time,
+                                    double delta_magnitude)
+          : time_(time),
+            delta_magnitude_(delta_magnitude) {
+      }
+
+      absolute_time_point get_time(void) const {
+        return time_;
+      }
+
+      double get_delta_magnitude(void) const {
+        return delta_magnitude_;
+      }
+
+    private:
+      absolute_time_point time_;
+      double delta_magnitude_;
+    };
+
     //
     // Methods
     //
@@ -85,29 +106,18 @@ public:
     stick(stick_type stick_type)
         : dispatcher_client(),
           stick_type_(stick_type),
-          update_timer_(*this),
           delta_magnitude_(0.0),
           continued_movement_magnitude_(0.0),
-          previous_horizontal_value_(0.0),
-          previous_vertical_value_(0.0),
           previous_magnitude_(0.0),
           event_origin_(event_origin::none),
           continued_movement_absolute_magnitude_threshold_(1.0) {
-      auto update_timer_interval_milliseconds = std::chrono::milliseconds(20);
-
-      update_timer_.start(
-          [this] {
-            update_values();
-          },
-          update_timer_interval_milliseconds);
     }
 
     ~stick(void) {
-      detach_from_dispatcher([this] {
-        update_timer_.stop();
-      });
+      detach_from_dispatcher();
     }
 
+    // This method should be called in the shared dispatcher thread.
     void update_horizontal_stick_sensor_value(CFIndex logical_max,
                                               CFIndex logical_min,
                                               CFIndex integer_value,
@@ -117,8 +127,11 @@ public:
       horizontal_stick_sensor_.update_stick_sensor_value(logical_max,
                                                          logical_min,
                                                          integer_value);
+
+      update_values();
     }
 
+    // This method should be called in the shared dispatcher thread.
     void update_vertical_stick_sensor_value(CFIndex logical_max,
                                             CFIndex logical_min,
                                             CFIndex integer_value,
@@ -128,6 +141,8 @@ public:
       vertical_stick_sensor_.update_stick_sensor_value(logical_max,
                                                        logical_min,
                                                        integer_value);
+
+      update_values();
     }
 
     void update_configurations(const core_configuration::core_configuration& core_configuration,
@@ -159,48 +174,59 @@ public:
   private:
     // This method is executed in the shared dispatcher thread.
     void update_values(void) {
-      auto delta_vertical = vertical_stick_sensor_.get_value() - previous_vertical_value_;
-      auto delta_horizontal = horizontal_stick_sensor_.get_value() - previous_horizontal_value_;
-      delta_magnitude_ = std::min(1.0,
-                                  std::sqrt(
-                                      std::pow(delta_horizontal, 2) +
-                                      std::pow(delta_vertical, 2)));
-
-      delta_magnitude_history_.push_back(delta_magnitude_);
-      // Drop history entries before 100 ms.
-      while (delta_magnitude_history_.size() > 5) {
-        delta_magnitude_history_.pop_front();
-      }
+      auto now = pqrs::osx::chrono::mach_absolute_time_point();
 
       radian_ = std::atan2(vertical_stick_sensor_.get_value(),
                            horizontal_stick_sensor_.get_value());
-
       auto magnitude = std::min(1.0,
                                 std::sqrt(std::pow(vertical_stick_sensor_.get_value(), 2) +
                                           std::pow(horizontal_stick_sensor_.get_value(), 2)));
 
+      auto dm = std::max(0.0, magnitude - previous_magnitude_);
+
+      //
+      // Update delta_magnitude_history_
+      //
+
+      delta_magnitude_history_.push_back(delta_magnitude_history_entry(now, dm));
+      delta_magnitude_history_.erase(std::remove_if(std::begin(delta_magnitude_history_),
+                                                    std::end(delta_magnitude_history_),
+                                                    [now](auto&& e) {
+                                                      return pqrs::osx::chrono::make_milliseconds(now - e.get_time()) > std::chrono::milliseconds(100);
+                                                    }),
+                                     std::end(delta_magnitude_history_));
+
+      //
+      // Update delta_magnitude_
+      //
+
       if (magnitude >= continued_movement_absolute_magnitude_threshold_) {
         if (continued_movement_magnitude_ == 0.0) {
           auto it = std::max_element(std::begin(delta_magnitude_history_),
-                                     std::end(delta_magnitude_history_));
-          continued_movement_magnitude_ = *it;
+                                     std::end(delta_magnitude_history_),
+                                     [](auto&& a, auto&& b) {
+                                       return a.get_delta_magnitude() < b.get_delta_magnitude();
+                                     });
+          continued_movement_magnitude_ = it->get_delta_magnitude();
         }
 
         delta_magnitude_ = continued_movement_magnitude_;
       } else {
         continued_movement_magnitude_ = 0.0;
-      }
-
-      auto delta_magnitude_threshold = 0.01;
-      if (delta_magnitude_ < delta_magnitude_threshold) {
-        return;
+        delta_magnitude_ = dm;
       }
 
       //
       // Signal
       //
 
-      if (magnitude >= previous_magnitude_) {
+      if (delta_magnitude_ > 0) {
+        auto delta_magnitude_threshold = 0.01;
+        if (delta_magnitude_ < delta_magnitude_threshold) {
+          // Return in here to prevent previous_magnitude_ from being updated.
+          return;
+        }
+
         switch (stick_type_) {
           case stick_type::xy: {
             auto [x, y] = xy_hid_values();
@@ -223,8 +249,6 @@ public:
       // Update previous values
       //
 
-      previous_vertical_value_ = vertical_stick_sensor_.get_value();
-      previous_horizontal_value_ = horizontal_stick_sensor_.get_value();
       previous_magnitude_ = magnitude;
     }
 
@@ -317,18 +341,14 @@ public:
 
     stick_type stick_type_;
 
-    pqrs::dispatcher::extra::timer update_timer_;
-
     stick_sensor horizontal_stick_sensor_;
     stick_sensor vertical_stick_sensor_;
 
     double radian_;
     double delta_magnitude_;
     double continued_movement_magnitude_;
-    double previous_horizontal_value_;
-    double previous_vertical_value_;
     double previous_magnitude_;
-    std::deque<double> delta_magnitude_history_;
+    std::deque<delta_magnitude_history_entry> delta_magnitude_history_;
     std::atomic<event_origin> event_origin_;
 
     //
@@ -373,11 +393,13 @@ public:
           post_xy_event(x, y, event_origin);
 
         } else {
-          xy_timer_.start(
-              [this, x, y, event_origin] {
-                post_xy_event(x, y, event_origin);
-              },
-              interval);
+          if (!xy_timer_.enabled()) {
+            xy_timer_.start(
+                [this, x, y, event_origin] {
+                  post_xy_event(x, y, event_origin);
+                },
+                interval);
+          }
         }
       });
 
@@ -387,11 +409,13 @@ public:
           post_wheels_event(h, v, event_origin);
 
         } else {
-          wheels_timer_.start(
-              [this, h, v, event_origin] {
-                post_wheels_event(h, v, event_origin);
-              },
-              interval);
+          if (!wheels_timer_.enabled()) {
+            wheels_timer_.start(
+                [this, h, v, event_origin] {
+                  post_wheels_event(h, v, event_origin);
+                },
+                interval);
+          }
         }
       });
     }
@@ -410,6 +434,7 @@ public:
                                     device_identifiers_);
     }
 
+    // This method should be called in the shared dispatcher thread.
     void update_x_stick_sensor_value(CFIndex logical_max,
                                      CFIndex logical_min,
                                      CFIndex integer_value,
@@ -420,6 +445,7 @@ public:
                                                event_origin);
     }
 
+    // This method should be called in the shared dispatcher thread.
     void update_y_stick_sensor_value(CFIndex logical_max,
                                      CFIndex logical_min,
                                      CFIndex integer_value,
@@ -430,6 +456,7 @@ public:
                                              event_origin);
     }
 
+    // This method should be called in the shared dispatcher thread.
     void update_vertical_wheel_stick_sensor_value(CFIndex logical_max,
                                                   CFIndex logical_min,
                                                   CFIndex integer_value,
@@ -440,6 +467,7 @@ public:
                                                  event_origin);
     }
 
+    // This method should be called in the shared dispatcher thread.
     void update_horizontal_wheel_stick_sensor_value(CFIndex logical_max,
                                                     CFIndex logical_min,
                                                     CFIndex integer_value,
@@ -582,6 +610,7 @@ public:
     states_.erase(device_id);
   }
 
+  // This method should be called in the shared dispatcher thread.
   void convert(const device_properties& device_properties,
                const std::vector<pqrs::osx::iokit_hid_value>& hid_values,
                event_origin event_origin) {
