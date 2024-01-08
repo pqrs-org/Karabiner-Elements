@@ -21,6 +21,11 @@ public class StickManager: ObservableObject {
     }
   }
 
+  struct HistoryEntry {
+    let time = Date()
+    let magnitude: Double
+  }
+
   class Stick: ObservableObject {
     @Published var horizontal = StickSensor()
     @Published var vertical = StickSensor()
@@ -37,9 +42,13 @@ public class StickManager: ObservableObject {
     var previousMagnitude = 0.0
 
     var continuedMovementTimer: Cancellable?
+    var continuedMovementCalled = false
+    var history: [HistoryEntry] = []
 
     @MainActor
     public func update() {
+      let now = Date()
+
       deltaHorizontal = horizontal.lastDoubleValue - previousHorizontalDoubleValue
       deltaVertical = vertical.lastDoubleValue - previousVerticalDoubleValue
       deltaMagnitude = min(1.0, sqrt(pow(deltaHorizontal, 2) + pow(deltaVertical, 2)))
@@ -49,16 +58,38 @@ public class StickManager: ObservableObject {
         1.0,
         sqrt(pow(vertical.lastDoubleValue, 2) + pow(horizontal.lastDoubleValue, 2)))
 
+      history.append(HistoryEntry(magnitude: magnitude))
+      history.removeAll(where: { now.timeIntervalSince($0.time) > 0.1 })
+
       let continuedMovementThreshold = 1.0
-      let continuedMovementMinimumValue = 0.01
 
       if magnitude >= continuedMovementThreshold {
-        if continuedMovementMagnitude == 0.0 {
-          continuedMovementMagnitude = deltaMagnitude
+        if continuedMovementTimer == nil {
+          continuedMovementMagnitude =
+            (history.max { a, b in a.magnitude < b.magnitude })?.magnitude ?? 0.0
+          continuedMovementTimer = Timer.publish(
+            every: 0.3,  // 300 ms
+            on: .main, in: .default
+          ).autoconnect()
+            .sink { _ in
+              self.updatePointerXY(magnitude: self.continuedMovementMagnitude, radian: self.radian)
+              if !self.continuedMovementCalled {
+                self.continuedMovementTimer = Timer.publish(
+                  every: 0.02,  // 20 ms
+                  on: .main, in: .default
+                )
+                .autoconnect().sink { _ in
+                  self.updatePointerXY(
+                    magnitude: self.continuedMovementMagnitude, radian: self.radian)
+                }
+                self.continuedMovementCalled = true
+              }
+            }
+
+          continuedMovementCalled = false
         }
-        continuedMovementMagnitude = max(continuedMovementMinimumValue, continuedMovementMagnitude)
       } else {
-        continuedMovementMagnitude = 0.0
+        continuedMovementTimer = nil
       }
 
       let deltaMagnitudeThreshold = 0.01
