@@ -32,25 +32,14 @@ public class StickManager: ObservableObject {
     @Published var pointerX = 0.5  // 0.0 ... 1.0
     @Published var pointerY = 0.5  // 0.0 ... 1.0
     @Published var continuedMovementMagnitude = 0.0
-    let updateTimerInterval = 0.02  // 20 ms
     var previousHorizontalDoubleValue = 0.0
     var previousVerticalDoubleValue = 0.0
     var previousMagnitude = 0.0
 
-    var updateTimer: Cancellable?
+    var continuedMovementTimer: Cancellable?
 
     @MainActor
-    func setUpdateTimer() {
-      if updateTimer == nil {
-        updateTimer = Timer.publish(every: updateTimerInterval, on: .main, in: .default)
-          .autoconnect().sink { _ in
-            self.update()
-          }
-      }
-    }
-
-    @MainActor
-    private func update() {
+    public func update() {
       deltaHorizontal = horizontal.lastDoubleValue - previousHorizontalDoubleValue
       deltaVertical = vertical.lastDoubleValue - previousVerticalDoubleValue
       deltaMagnitude = min(1.0, sqrt(pow(deltaHorizontal, 2) + pow(deltaVertical, 2)))
@@ -68,8 +57,6 @@ public class StickManager: ObservableObject {
           continuedMovementMagnitude = deltaMagnitude
         }
         continuedMovementMagnitude = max(continuedMovementMinimumValue, continuedMovementMagnitude)
-
-        deltaMagnitude = continuedMovementMagnitude
       } else {
         continuedMovementMagnitude = 0.0
       }
@@ -80,22 +67,22 @@ public class StickManager: ObservableObject {
       }
 
       if magnitude >= previousMagnitude {
-        let scale = 1.0 / 16
-
-        pointerX += deltaMagnitude * cos(radian) * scale
-        pointerX = max(0.0, min(1.0, pointerX))
-        pointerY -= deltaMagnitude * sin(radian) * scale
-        pointerY = max(0.0, min(1.0, pointerY))
-      }
-
-      if magnitude < 1.0 {
-        updateTimer?.cancel()
-        updateTimer = nil
+        updatePointerXY(magnitude: deltaMagnitude, radian: radian)
       }
 
       previousHorizontalDoubleValue = horizontal.lastDoubleValue
       previousVerticalDoubleValue = vertical.lastDoubleValue
       previousMagnitude = magnitude
+    }
+
+    @MainActor
+    private func updatePointerXY(magnitude: Double, radian: Double) {
+      let scale = 1.0 / 16
+
+      pointerX += magnitude * cos(radian) * scale
+      pointerX = max(0.0, min(1.0, pointerX))
+      pointerY -= magnitude * sin(radian) * scale
+      pointerY = max(0.0, min(1.0, pointerY))
     }
   }
 

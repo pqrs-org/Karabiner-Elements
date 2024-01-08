@@ -48,7 +48,7 @@ public class EventObserver: ObservableObject {
       counter += 1
       Task { @MainActor in
         stickManager.rightStick.horizontal.add(logicalMax, logicalMin, integerValue)
-        stickManager.rightStick.setUpdateTimer()
+        stickManager.rightStick.update()
       }
     }
 
@@ -57,7 +57,7 @@ public class EventObserver: ObservableObject {
       counter += 1
       Task { @MainActor in
         stickManager.rightStick.vertical.add(logicalMax, logicalMin, integerValue)
-        stickManager.rightStick.setUpdateTimer()
+        stickManager.rightStick.update()
       }
     }
   }
