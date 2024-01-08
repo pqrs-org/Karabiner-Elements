@@ -23,7 +23,7 @@ public class StickManager: ObservableObject {
 
   struct HistoryEntry {
     let time = Date()
-    let magnitude: Double
+    let deltaMagnitude: Double
   }
 
   class Stick: ObservableObject {
@@ -37,13 +37,13 @@ public class StickManager: ObservableObject {
     @Published var pointerX = 0.5  // 0.0 ... 1.0
     @Published var pointerY = 0.5  // 0.0 ... 1.0
     @Published var continuedMovementMagnitude = 0.0
+    @Published var history: [HistoryEntry] = []
     var previousHorizontalDoubleValue = 0.0
     var previousVerticalDoubleValue = 0.0
     var previousMagnitude = 0.0
 
     var continuedMovementTimer: Cancellable?
     var continuedMovementCalled = false
-    var history: [HistoryEntry] = []
 
     @MainActor
     public func update() {
@@ -58,7 +58,7 @@ public class StickManager: ObservableObject {
         1.0,
         sqrt(pow(vertical.lastDoubleValue, 2) + pow(horizontal.lastDoubleValue, 2)))
 
-      history.append(HistoryEntry(magnitude: magnitude))
+      history.append(HistoryEntry(deltaMagnitude: deltaMagnitude))
       history.removeAll(where: { now.timeIntervalSince($0.time) > 0.1 })
 
       let continuedMovementThreshold = 1.0
@@ -66,7 +66,8 @@ public class StickManager: ObservableObject {
       if magnitude >= continuedMovementThreshold {
         if continuedMovementTimer == nil {
           continuedMovementMagnitude =
-            (history.max { a, b in a.magnitude < b.magnitude })?.magnitude ?? 0.0
+            (history.max { a, b in a.deltaMagnitude < b.deltaMagnitude })?.deltaMagnitude ?? 0.0
+
           continuedMovementTimer = Timer.publish(
             every: 0.3,  // 300 ms
             on: .main, in: .default

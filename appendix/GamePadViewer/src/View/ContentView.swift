@@ -41,6 +41,7 @@ struct InformationView: View {
         Text("deltaHorizontal: \(rightStick.deltaHorizontal)")
         Text("deltaVertical: \(rightStick.deltaVertical)")
         Text("deltaMagnitude: \(rightStick.deltaMagnitude)")
+        Text("history.count: \(rightStick.history.count)")
       }
       Divider()
       Group {
