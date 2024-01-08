@@ -31,15 +31,11 @@ public class StickManager: ObservableObject {
     @Published var vertical = StickSensor()
     @Published var radian = 0.0
     @Published var magnitude = 0.0
-    @Published var deltaHorizontal = 0.0
-    @Published var deltaVertical = 0.0
     @Published var deltaMagnitude = 0.0
     @Published var pointerX = 0.5  // 0.0 ... 1.0
     @Published var pointerY = 0.5  // 0.0 ... 1.0
     @Published var continuedMovementMagnitude = 0.0
     @Published var history: [HistoryEntry] = []
-    var previousHorizontalDoubleValue = 0.0
-    var previousVerticalDoubleValue = 0.0
     var previousMagnitude = 0.0
 
     var continuedMovementTimer: Cancellable?
@@ -49,14 +45,12 @@ public class StickManager: ObservableObject {
     public func update() {
       let now = Date()
 
-      deltaHorizontal = horizontal.lastDoubleValue - previousHorizontalDoubleValue
-      deltaVertical = vertical.lastDoubleValue - previousVerticalDoubleValue
-      deltaMagnitude = min(1.0, sqrt(pow(deltaHorizontal, 2) + pow(deltaVertical, 2)))
-
       radian = atan2(vertical.lastDoubleValue, horizontal.lastDoubleValue)
       magnitude = min(
         1.0,
         sqrt(pow(vertical.lastDoubleValue, 2) + pow(horizontal.lastDoubleValue, 2)))
+
+      deltaMagnitude = max(0.0, magnitude - previousMagnitude)
 
       history.append(HistoryEntry(deltaMagnitude: deltaMagnitude))
       history.removeAll(where: { now.timeIntervalSince($0.time) > 0.1 })
@@ -94,16 +88,14 @@ public class StickManager: ObservableObject {
       }
 
       let deltaMagnitudeThreshold = 0.01
-      if deltaMagnitude < deltaMagnitudeThreshold {
-        return
-      }
+      if 0 < deltaMagnitude {
+        if deltaMagnitude < deltaMagnitudeThreshold {
+          return
+        }
 
-      if magnitude >= previousMagnitude {
         updatePointerXY(magnitude: deltaMagnitude, radian: radian)
       }
 
-      previousHorizontalDoubleValue = horizontal.lastDoubleValue
-      previousVerticalDoubleValue = vertical.lastDoubleValue
       previousMagnitude = magnitude
     }
 
