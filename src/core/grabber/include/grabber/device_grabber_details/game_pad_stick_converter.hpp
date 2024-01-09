@@ -192,6 +192,7 @@ public:
       delta_magnitude_history_.erase(std::remove_if(std::begin(delta_magnitude_history_),
                                                     std::end(delta_magnitude_history_),
                                                     [now](auto&& e) {
+                                                      // TODO: Replace hard-coded threshold
                                                       return pqrs::osx::chrono::make_milliseconds(now - e.get_time()) > std::chrono::milliseconds(100);
                                                     }),
                                      std::end(delta_magnitude_history_));
@@ -202,12 +203,9 @@ public:
 
       if (magnitude >= continued_movement_absolute_magnitude_threshold_) {
         if (continued_movement_magnitude_ == 0.0) {
-          auto it = std::max_element(std::begin(delta_magnitude_history_),
-                                     std::end(delta_magnitude_history_),
-                                     [](auto&& a, auto&& b) {
-                                       return a.get_delta_magnitude() < b.get_delta_magnitude();
-                                     });
-          continued_movement_magnitude_ = it->get_delta_magnitude();
+          for (const auto& e : delta_magnitude_history_) {
+            continued_movement_magnitude_ += e.get_delta_magnitude();
+          }
         }
 
         delta_magnitude_ = continued_movement_magnitude_;
@@ -443,6 +441,7 @@ public:
                       post_xy_event();
                   }
                 },
+                // TODO: Replace hard-coded interval
                 std::chrono::milliseconds(300));
           }
         }
@@ -476,6 +475,7 @@ public:
                       post_wheels_event();
                   }
                 },
+                // TODO: Replace hard-coded interval
                 std::chrono::milliseconds(300));
           }
         }
