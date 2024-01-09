@@ -14,30 +14,30 @@ public:
   static constexpr double game_pad_wheels_stick_continued_movement_absolute_magnitude_threshold_default_value = 1.0;
 
   static constexpr std::string_view game_pad_xy_stick_interval_milliseconds_formula_default_value =
-      "20";
+      "10";
   static constexpr std::string_view game_pad_wheels_stick_interval_milliseconds_formula_default_value =
       "50";
 
   // The logical value range of Karabiner-DriverKit-VirtualHIDPointing is -127 ... 127.
   static constexpr std::string_view game_pad_stick_x_formula_default_value =
-      "cos(radian) * magnitude * 64;";
+      "cos(radian) * magnitude * 32;";
 
   // The logical value range of Karabiner-DriverKit-VirtualHIDPointing is -127 ... 127.
   static constexpr std::string_view game_pad_stick_y_formula_default_value =
-      "sin(radian) * magnitude * 64;";
+      "sin(radian) * magnitude * 32;";
 
   // The logical value range of Karabiner-DriverKit-VirtualHIDPointing is -127 ... 127.
   static constexpr std::string_view game_pad_stick_vertical_wheel_formula_default_value =
       "switch {\n"
       "  case abs(cos(radian)) > abs(sin(radian)) : 0;\n"
-      "  default                                  : sin(radian) * min(0.4, max(0.05, magnitude) * 4);\n"
+      "  default                                  : sin(radian) * max(0.05, magnitude) * 2;\n"
       "}";
 
   // The logical value range of Karabiner-DriverKit-VirtualHIDPointing is -127 ... 127.
   static constexpr std::string_view game_pad_stick_horizontal_wheel_formula_default_value =
       "switch {\n"
       "  case abs(cos(radian)) < abs(sin(radian)) : 0;\n"
-      "  default                                  : cos(radian) * min(0.4, max(0.05, magnitude) * 4);\n"
+      "  default                                  : cos(radian) * max(0.05, magnitude) * 2;\n"
       "}";
 
   device(const nlohmann::json& json) : json_(json),
