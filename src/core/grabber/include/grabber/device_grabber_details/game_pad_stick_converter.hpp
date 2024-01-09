@@ -370,6 +370,34 @@ public:
     exprtk_utility::expression_t horizontal_wheel_formula_;
   };
 
+  class event_value final {
+  public:
+    event_value(void)
+        : value_(0.0),
+          remainder_(0.0) {
+    }
+
+    void set_value(double value) {
+      value_ = value;
+      // Keep remainder_.
+    }
+
+    int truncated_value(void) {
+      auto truncated = std::trunc(value_ + remainder_);
+      remainder_ += value_ - truncated;
+
+      // The logical value range of Karabiner-DriverKit-VirtualHIDPointing is -127 ... 127.
+      auto v = static_cast<int>(truncated);
+      v = std::min(v, 127);
+      v = std::max(v, -127);
+      return v;
+    }
+
+  private:
+    double value_;
+    double remainder_;
+  };
+
   class state final : public pqrs::dispatcher::extra::dispatcher_client {
   public:
     state(device_id device_id,
@@ -381,40 +409,74 @@ public:
           pointing_motion_arrived_(pointing_motion_arrived),
           xy_(stick::stick_type::xy),
           wheels_(stick::stick_type::wheels),
-          x_remainder_(0.0),
-          y_remainder_(0.0),
-          horizontal_wheel_remainder_(0.0),
-          vertical_wheel_remainder_(0.0),
+          xy_event_origin_(event_origin::none),
+          wheels_event_origin_(event_origin::none),
           xy_timer_(*this),
-          wheels_timer_(*this) {
+          xy_timer_count_(0),
+          wheels_timer_(*this),
+          wheels_timer_count_(0) {
       xy_.hid_values_updated.connect([this](auto&& x, auto&& y, auto&& interval, auto&& event_origin) {
+        x_value_.set_value(x);
+        y_value_.set_value(y);
+        xy_event_origin_ = event_origin;
+
         if (interval == std::chrono::milliseconds(0)) {
           xy_timer_.stop();
-          post_xy_event(x, y, event_origin);
+          post_xy_event();
 
         } else {
           if (!xy_timer_.enabled()) {
+            xy_timer_count_ = 0;
+
             xy_timer_.start(
-                [this, x, y, event_origin] {
-                  post_xy_event(x, y, event_origin);
+                [this, interval] {
+                  ++xy_timer_count_;
+                  switch (xy_timer_count_) {
+                    case 1:
+                      // Ignore immediately fire after start.
+                      return;
+                    case 2:
+                      post_xy_event();
+                      xy_timer_.set_interval(interval);
+                      break;
+                    default:
+                      post_xy_event();
+                  }
                 },
-                interval);
+                std::chrono::milliseconds(300));
           }
         }
       });
 
       wheels_.hid_values_updated.connect([this](auto&& h, auto&& v, auto&& interval, auto&& event_origin) {
+        horizontal_wheel_value_.set_value(h);
+        vertical_wheel_value_.set_value(v);
+        wheels_event_origin_ = event_origin;
+
         if (interval == std::chrono::milliseconds(0)) {
           wheels_timer_.stop();
-          post_wheels_event(h, v, event_origin);
+          post_wheels_event();
 
         } else {
           if (!wheels_timer_.enabled()) {
+            wheels_timer_count_ = 0;
+
             wheels_timer_.start(
-                [this, h, v, event_origin] {
-                  post_wheels_event(h, v, event_origin);
+                [this, interval] {
+                  ++wheels_timer_count_;
+                  switch (wheels_timer_count_) {
+                    case 1:
+                      // Ignore immediately fire after start.
+                      return;
+                    case 2:
+                      post_wheels_event();
+                      wheels_timer_.set_interval(interval);
+                      break;
+                    default:
+                      post_wheels_event();
+                  }
                 },
-                interval);
+                std::chrono::milliseconds(300));
           }
         }
       });
@@ -479,15 +541,9 @@ public:
     }
 
   private:
-    void post_xy_event(double x, double y, event_origin event_origin) {
-      auto x_truncated = std::trunc(x + x_remainder_);
-      x_remainder_ += x - x_truncated;
-
-      auto y_truncated = std::trunc(y + y_remainder_);
-      y_remainder_ += y - y_truncated;
-
-      pointing_motion m(adjust_integer_value(x_truncated),
-                        adjust_integer_value(y_truncated),
+    void post_xy_event(void) {
+      pointing_motion m(x_value_.truncated_value(),
+                        y_value_.truncated_value(),
                         0,
                         0);
 
@@ -502,7 +558,7 @@ public:
                                event,
                                event_type::single,
                                event,
-                               event_origin,
+                               xy_event_origin_,
                                event_queue::state::original);
 
       enqueue_to_dispatcher([this, entry] {
@@ -510,17 +566,11 @@ public:
       });
     }
 
-    void post_wheels_event(double horizontal_wheel, double vertical_wheel, event_origin event_origin) {
-      auto horizontal_wheel_truncated = std::trunc(horizontal_wheel + horizontal_wheel_remainder_);
-      horizontal_wheel_remainder_ += horizontal_wheel - horizontal_wheel_truncated;
-
-      auto vertical_wheel_truncated = std::trunc(vertical_wheel + vertical_wheel_remainder_);
-      vertical_wheel_remainder_ += vertical_wheel - vertical_wheel_truncated;
-
+    void post_wheels_event(void) {
       pointing_motion m(0,
                         0,
-                        adjust_integer_value(vertical_wheel_truncated),
-                        adjust_integer_value(horizontal_wheel_truncated));
+                        vertical_wheel_value_.truncated_value(),
+                        horizontal_wheel_value_.truncated_value());
 
       if (m.is_zero()) {
         return;
@@ -533,21 +583,12 @@ public:
                                event,
                                event_type::single,
                                event,
-                               event_origin,
+                               wheels_event_origin_,
                                event_queue::state::original);
 
       enqueue_to_dispatcher([this, entry] {
         pointing_motion_arrived_(entry);
       });
-    }
-
-    int adjust_integer_value(double truncated_value) const {
-      auto value = static_cast<int>(truncated_value);
-
-      // The logical value range of Karabiner-DriverKit-VirtualHIDPointing is -127 ... 127.
-      value = std::min(value, 127);
-      value = std::max(value, -127);
-      return value;
     }
 
     device_id device_id_;
@@ -557,13 +598,19 @@ public:
     stick xy_;
     stick wheels_;
 
-    double x_remainder_;
-    double y_remainder_;
-    double horizontal_wheel_remainder_;
-    double vertical_wheel_remainder_;
+    event_value x_value_;
+    event_value y_value_;
+    event_origin xy_event_origin_;
+
+    event_value horizontal_wheel_value_;
+    event_value vertical_wheel_value_;
+    event_origin wheels_event_origin_;
 
     pqrs::dispatcher::extra::timer xy_timer_;
+    int xy_timer_count_;
+
     pqrs::dispatcher::extra::timer wheels_timer_;
+    int wheels_timer_count_;
   };
 
   //
@@ -614,6 +661,13 @@ public:
   void convert(const device_properties& device_properties,
                const std::vector<pqrs::osx::iokit_hid_value>& hid_values,
                event_origin event_origin) {
+    if (auto d = weak_dispatcher_.lock()) {
+      if (!d->dispatcher_thread()) {
+        logger::get_logger()->error("game_pad_stick_converter::convert is called in invalid thread");
+        return;
+      }
+    }
+
     auto it = states_.find(device_properties.get_device_id());
     if (it == std::end(states_)) {
       return;
