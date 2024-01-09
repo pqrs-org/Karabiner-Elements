@@ -14,7 +14,7 @@ public:
   static constexpr double game_pad_wheels_stick_continued_movement_absolute_magnitude_threshold_default_value = 1.0;
 
   static constexpr std::string_view game_pad_xy_stick_interval_milliseconds_formula_default_value =
-      "10";
+      "20";
   static constexpr std::string_view game_pad_wheels_stick_interval_milliseconds_formula_default_value =
       "50";
 
