@@ -500,6 +500,10 @@ public:
     }
   }
 
+  //
+  // game_pad_xy_stick_continued_movement_absolute_magnitude_threshold
+  //
+
   bool has_device_game_pad_xy_stick_continued_movement_absolute_magnitude_threshold(const device_identifiers& identifiers) const {
     for (const auto& d : devices_) {
       if (d.get_identifiers() == identifiers) {
@@ -534,6 +538,48 @@ public:
     }
   }
 
+  //
+  // game_pad_xy_stick_flicking_input_window_milliseconds
+  //
+
+  bool has_device_game_pad_xy_stick_flicking_input_window_milliseconds(const device_identifiers& identifiers) const {
+    for (const auto& d : devices_) {
+      if (d.get_identifiers() == identifiers) {
+        if (auto value = d.get_game_pad_xy_stick_flicking_input_window_milliseconds()) {
+          return true;
+        }
+      }
+    }
+    return false;
+  }
+
+  double get_device_game_pad_xy_stick_flicking_input_window_milliseconds(const device_identifiers& identifiers) const {
+    for (const auto& d : devices_) {
+      if (d.get_identifiers() == identifiers) {
+        if (auto value = d.get_game_pad_xy_stick_flicking_input_window_milliseconds()) {
+          return *value;
+        }
+      }
+    }
+    return device::game_pad_xy_stick_flicking_input_window_milliseconds_default_value;
+  }
+
+  void set_device_game_pad_xy_stick_flicking_input_window_milliseconds(const device_identifiers& identifiers,
+                                                                       std::optional<double> value) {
+    add_device(identifiers);
+
+    for (auto&& device : devices_) {
+      if (device.get_identifiers() == identifiers) {
+        device.set_game_pad_xy_stick_flicking_input_window_milliseconds(value);
+        return;
+      }
+    }
+  }
+
+  //
+  // game_pad_wheels_stick_continued_movement_absolute_magnitude_threshold
+  //
+
   bool has_device_game_pad_wheels_stick_continued_movement_absolute_magnitude_threshold(const device_identifiers& identifiers) const {
     for (const auto& d : devices_) {
       if (d.get_identifiers() == identifiers) {
@@ -563,6 +609,44 @@ public:
     for (auto&& device : devices_) {
       if (device.get_identifiers() == identifiers) {
         device.set_game_pad_wheels_stick_continued_movement_absolute_magnitude_threshold(value);
+        return;
+      }
+    }
+  }
+
+  //
+  // game_pad_wheels_stick_flicking_input_window_milliseconds
+  //
+
+  bool has_device_game_pad_wheels_stick_flicking_input_window_milliseconds(const device_identifiers& identifiers) const {
+    for (const auto& d : devices_) {
+      if (d.get_identifiers() == identifiers) {
+        if (auto value = d.get_game_pad_wheels_stick_flicking_input_window_milliseconds()) {
+          return true;
+        }
+      }
+    }
+    return false;
+  }
+
+  double get_device_game_pad_wheels_stick_flicking_input_window_milliseconds(const device_identifiers& identifiers) const {
+    for (const auto& d : devices_) {
+      if (d.get_identifiers() == identifiers) {
+        if (auto value = d.get_game_pad_wheels_stick_flicking_input_window_milliseconds()) {
+          return *value;
+        }
+      }
+    }
+    return device::game_pad_wheels_stick_flicking_input_window_milliseconds_default_value;
+  }
+
+  void set_device_game_pad_wheels_stick_flicking_input_window_milliseconds(const device_identifiers& identifiers,
+                                                                           std::optional<double> value) {
+    add_device(identifiers);
+
+    for (auto&& device : devices_) {
+      if (device.get_identifiers() == identifiers) {
+        device.set_game_pad_wheels_stick_flicking_input_window_milliseconds(value);
         return;
       }
     }

@@ -110,7 +110,8 @@ public:
           continued_movement_magnitude_(0.0),
           previous_magnitude_(0.0),
           event_origin_(event_origin::none),
-          continued_movement_absolute_magnitude_threshold_(1.0) {
+          continued_movement_absolute_magnitude_threshold_(1.0),
+          flicking_input_window_milliseconds_(0) {
     }
 
     ~stick(void) {
@@ -150,9 +151,11 @@ public:
       switch (stick_type_) {
         case stick_type::xy:
           continued_movement_absolute_magnitude_threshold_ = core_configuration.get_selected_profile().get_device_game_pad_xy_stick_continued_movement_absolute_magnitude_threshold(device_identifiers);
+          flicking_input_window_milliseconds_ = core_configuration.get_selected_profile().get_device_game_pad_xy_stick_flicking_input_window_milliseconds(device_identifiers);
           break;
         case stick_type::wheels:
           continued_movement_absolute_magnitude_threshold_ = core_configuration.get_selected_profile().get_device_game_pad_wheels_stick_continued_movement_absolute_magnitude_threshold(device_identifiers);
+          flicking_input_window_milliseconds_ = core_configuration.get_selected_profile().get_device_game_pad_wheels_stick_flicking_input_window_milliseconds(device_identifiers);
           break;
       }
 
@@ -191,9 +194,8 @@ public:
       delta_magnitude_history_.push_back(delta_magnitude_history_entry(now, dm));
       delta_magnitude_history_.erase(std::remove_if(std::begin(delta_magnitude_history_),
                                                     std::end(delta_magnitude_history_),
-                                                    [now](auto&& e) {
-                                                      // TODO: Replace hard-coded threshold
-                                                      return pqrs::osx::chrono::make_milliseconds(now - e.get_time()) > std::chrono::milliseconds(100);
+                                                    [this, now](auto&& e) {
+                                                      return pqrs::osx::chrono::make_milliseconds(now - e.get_time()) > std::chrono::milliseconds(flicking_input_window_milliseconds_);
                                                     }),
                                      std::end(delta_magnitude_history_));
 
@@ -354,6 +356,7 @@ public:
     //
 
     double continued_movement_absolute_magnitude_threshold_;
+    int flicking_input_window_milliseconds_;
     std::string xy_stick_interval_milliseconds_formula_string_;
     std::string wheels_stick_interval_milliseconds_formula_string_;
     std::string x_formula_string_;
