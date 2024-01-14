@@ -106,9 +106,11 @@ public:
     stick(stick_type stick_type)
         : dispatcher_client(),
           stick_type_(stick_type),
+          radian_(0.0),
+          absolute_magnitude_(0.0),
           delta_magnitude_(0.0),
           continued_movement_magnitude_(0.0),
-          previous_magnitude_(0.0),
+          previous_absolute_magnitude_(0.0),
           event_origin_(event_origin::none),
           continued_movement_absolute_magnitude_threshold_(1.0),
           flicking_input_window_milliseconds_(0) {
@@ -181,11 +183,13 @@ public:
 
       radian_ = std::atan2(vertical_stick_sensor_.get_value(),
                            horizontal_stick_sensor_.get_value());
-      auto magnitude = std::min(1.0,
-                                std::sqrt(std::pow(vertical_stick_sensor_.get_value(), 2) +
-                                          std::pow(horizontal_stick_sensor_.get_value(), 2)));
+      // When the stick is tilted diagonally, the distance from the centre may exceed 1.0 (e.g. 1.2).
+      // Therefore, we correct the value <= 1.0.
+      absolute_magnitude_ = std::min(1.0,
+                                     std::sqrt(std::pow(vertical_stick_sensor_.get_value(), 2) +
+                                               std::pow(horizontal_stick_sensor_.get_value(), 2)));
 
-      auto dm = std::max(0.0, magnitude - previous_magnitude_);
+      auto dm = std::max(0.0, absolute_magnitude_ - previous_absolute_magnitude_);
 
       //
       // Update delta_magnitude_history_
@@ -203,7 +207,7 @@ public:
       // Update delta_magnitude_
       //
 
-      if (magnitude >= continued_movement_absolute_magnitude_threshold_) {
+      if (absolute_magnitude_ >= continued_movement_absolute_magnitude_threshold_) {
         if (continued_movement_magnitude_ == 0.0) {
           for (const auto& e : delta_magnitude_history_) {
             continued_movement_magnitude_ += e.get_delta_magnitude();
@@ -223,7 +227,7 @@ public:
       if (delta_magnitude_ > 0) {
         auto delta_magnitude_threshold = 0.01;
         if (delta_magnitude_ < delta_magnitude_threshold) {
-          // Return in here to prevent previous_magnitude_ from being updated.
+          // Return in here to prevent previous_absolute_magnitude_ from being updated.
           return;
         }
 
@@ -249,7 +253,7 @@ public:
       // Update previous values
       //
 
-      previous_magnitude_ = magnitude;
+      previous_absolute_magnitude_ = absolute_magnitude_;
     }
 
     std::pair<double, double> xy_hid_values(void) const {
@@ -335,7 +339,8 @@ public:
                                      {},
                                      {
                                          {"radian", radian_},
-                                         {"magnitude", delta_magnitude_},
+                                         {"delta_magnitude", delta_magnitude_},
+                                         {"absolute_magnitude", absolute_magnitude_},
                                      });
     }
 
@@ -345,9 +350,10 @@ public:
     stick_sensor vertical_stick_sensor_;
 
     double radian_;
+    double absolute_magnitude_;
     double delta_magnitude_;
     double continued_movement_magnitude_;
-    double previous_magnitude_;
+    double previous_absolute_magnitude_;
     std::deque<delta_magnitude_history_entry> delta_magnitude_history_;
     std::atomic<event_origin> event_origin_;
 

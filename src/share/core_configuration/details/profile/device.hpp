@@ -17,31 +17,59 @@ public:
   static constexpr int game_pad_wheels_stick_flicking_input_window_milliseconds_default_value = 50;
 
   static constexpr std::string_view game_pad_xy_stick_interval_milliseconds_formula_default_value =
-      "20";
+      "10";
   static constexpr std::string_view game_pad_wheels_stick_interval_milliseconds_formula_default_value =
-      "50";
+      "20";
 
   // The logical value range of Karabiner-DriverKit-VirtualHIDPointing is -127 ... 127.
   static constexpr std::string_view game_pad_stick_x_formula_default_value =
-      "cos(radian) * magnitude * 32;";
+      "cos(radian) * delta_magnitude * 32;";
 
   // The logical value range of Karabiner-DriverKit-VirtualHIDPointing is -127 ... 127.
   static constexpr std::string_view game_pad_stick_y_formula_default_value =
-      "sin(radian) * magnitude * 32;";
+      "sin(radian) * delta_magnitude * 32;";
 
   // The logical value range of Karabiner-DriverKit-VirtualHIDPointing is -127 ... 127.
-  static constexpr std::string_view game_pad_stick_vertical_wheel_formula_default_value =
-      "switch {\n"
-      "  case abs(cos(radian)) > abs(sin(radian)) : 0;\n"
-      "  default                                  : sin(radian) * max(0.05, magnitude) * 2;\n"
-      "}";
+  static constexpr std::string_view game_pad_stick_vertical_wheel_formula_default_value = R"(
+
+if (abs(cos(radian)) >= abs(sin(radian))) {
+  0;
+} else {
+  var m := 0;
+  if (absolute_magnitude < 1.0) {
+    m := max(0.05, delta_magnitude * 5);
+  } else {
+    if (delta_magnitude > 0.3) {
+      m := 0.5;
+    } else {
+      m := 0.3;
+    }
+  }
+  sin(radian) * m;
+}
+
+)";
 
   // The logical value range of Karabiner-DriverKit-VirtualHIDPointing is -127 ... 127.
-  static constexpr std::string_view game_pad_stick_horizontal_wheel_formula_default_value =
-      "switch {\n"
-      "  case abs(cos(radian)) < abs(sin(radian)) : 0;\n"
-      "  default                                  : cos(radian) * max(0.05, magnitude) * 2;\n"
-      "}";
+  static constexpr std::string_view game_pad_stick_horizontal_wheel_formula_default_value = R"(
+
+if (abs(cos(radian)) <= abs(sin(radian))) {
+  0;
+} else {
+  var m := 0;
+  if (absolute_magnitude < 1.0) {
+    m := max(0.05, delta_magnitude * 5);
+  } else {
+    if (delta_magnitude > 0.3) {
+      m := 0.5;
+    } else {
+      m := 0.3;
+    }
+  }
+  cos(radian) * m;
+}
+
+)";
 
   device(const nlohmann::json& json) : json_(json),
                                        ignore_(false),
