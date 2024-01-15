@@ -539,6 +539,44 @@ public:
   }
 
   //
+  // game_pad_xy_stick_continued_movement_interval_milliseconds
+  //
+
+  bool has_device_game_pad_xy_stick_continued_movement_interval_milliseconds(const device_identifiers& identifiers) const {
+    for (const auto& d : devices_) {
+      if (d.get_identifiers() == identifiers) {
+        if (auto value = d.get_game_pad_xy_stick_continued_movement_interval_milliseconds()) {
+          return true;
+        }
+      }
+    }
+    return false;
+  }
+
+  int get_device_game_pad_xy_stick_continued_movement_interval_milliseconds(const device_identifiers& identifiers) const {
+    for (const auto& d : devices_) {
+      if (d.get_identifiers() == identifiers) {
+        if (auto value = d.get_game_pad_xy_stick_continued_movement_interval_milliseconds()) {
+          return *value;
+        }
+      }
+    }
+    return device::game_pad_xy_stick_continued_movement_interval_milliseconds_default_value;
+  }
+
+  void set_device_game_pad_xy_stick_continued_movement_interval_milliseconds(const device_identifiers& identifiers,
+                                                                             std::optional<int> value) {
+    add_device(identifiers);
+
+    for (auto&& device : devices_) {
+      if (device.get_identifiers() == identifiers) {
+        device.set_game_pad_xy_stick_continued_movement_interval_milliseconds(value);
+        return;
+      }
+    }
+  }
+
+  //
   // game_pad_xy_stick_flicking_input_window_milliseconds
   //
 
@@ -553,7 +591,7 @@ public:
     return false;
   }
 
-  double get_device_game_pad_xy_stick_flicking_input_window_milliseconds(const device_identifiers& identifiers) const {
+  int get_device_game_pad_xy_stick_flicking_input_window_milliseconds(const device_identifiers& identifiers) const {
     for (const auto& d : devices_) {
       if (d.get_identifiers() == identifiers) {
         if (auto value = d.get_game_pad_xy_stick_flicking_input_window_milliseconds()) {
@@ -565,7 +603,7 @@ public:
   }
 
   void set_device_game_pad_xy_stick_flicking_input_window_milliseconds(const device_identifiers& identifiers,
-                                                                       std::optional<double> value) {
+                                                                       std::optional<int> value) {
     add_device(identifiers);
 
     for (auto&& device : devices_) {
@@ -615,6 +653,44 @@ public:
   }
 
   //
+  // game_pad_wheels_stick_continued_movement_interval_milliseconds
+  //
+
+  bool has_device_game_pad_wheels_stick_continued_movement_interval_milliseconds(const device_identifiers& identifiers) const {
+    for (const auto& d : devices_) {
+      if (d.get_identifiers() == identifiers) {
+        if (auto value = d.get_game_pad_wheels_stick_continued_movement_interval_milliseconds()) {
+          return true;
+        }
+      }
+    }
+    return false;
+  }
+
+  int get_device_game_pad_wheels_stick_continued_movement_interval_milliseconds(const device_identifiers& identifiers) const {
+    for (const auto& d : devices_) {
+      if (d.get_identifiers() == identifiers) {
+        if (auto value = d.get_game_pad_wheels_stick_continued_movement_interval_milliseconds()) {
+          return *value;
+        }
+      }
+    }
+    return device::game_pad_wheels_stick_continued_movement_interval_milliseconds_default_value;
+  }
+
+  void set_device_game_pad_wheels_stick_continued_movement_interval_milliseconds(const device_identifiers& identifiers,
+                                                                                 std::optional<int> value) {
+    add_device(identifiers);
+
+    for (auto&& device : devices_) {
+      if (device.get_identifiers() == identifiers) {
+        device.set_game_pad_wheels_stick_continued_movement_interval_milliseconds(value);
+        return;
+      }
+    }
+  }
+
+  //
   // game_pad_wheels_stick_flicking_input_window_milliseconds
   //
 
@@ -629,7 +705,7 @@ public:
     return false;
   }
 
-  double get_device_game_pad_wheels_stick_flicking_input_window_milliseconds(const device_identifiers& identifiers) const {
+  int get_device_game_pad_wheels_stick_flicking_input_window_milliseconds(const device_identifiers& identifiers) const {
     for (const auto& d : devices_) {
       if (d.get_identifiers() == identifiers) {
         if (auto value = d.get_game_pad_wheels_stick_flicking_input_window_milliseconds()) {
@@ -641,7 +717,7 @@ public:
   }
 
   void set_device_game_pad_wheels_stick_flicking_input_window_milliseconds(const device_identifiers& identifiers,
-                                                                           std::optional<double> value) {
+                                                                           std::optional<int> value) {
     add_device(identifiers);
 
     for (auto&& device : devices_) {
@@ -652,51 +728,9 @@ public:
     }
   }
 
-  std::string get_device_game_pad_xy_stick_interval_milliseconds_formula(const device_identifiers& identifiers) const {
-    for (const auto& d : devices_) {
-      if (d.get_identifiers() == identifiers) {
-        if (auto value = d.get_game_pad_xy_stick_interval_milliseconds_formula()) {
-          return *value;
-        }
-      }
-    }
-    return std::string(device::game_pad_xy_stick_interval_milliseconds_formula_default_value);
-  }
-
-  void set_device_game_pad_xy_stick_interval_milliseconds_formula(const device_identifiers& identifiers,
-                                                                  const std::optional<std::string>& value) {
-    add_device(identifiers);
-
-    for (auto&& device : devices_) {
-      if (device.get_identifiers() == identifiers) {
-        device.set_game_pad_xy_stick_interval_milliseconds_formula(value);
-        return;
-      }
-    }
-  }
-
-  std::string get_device_game_pad_wheels_stick_interval_milliseconds_formula(const device_identifiers& identifiers) const {
-    for (const auto& d : devices_) {
-      if (d.get_identifiers() == identifiers) {
-        if (auto value = d.get_game_pad_wheels_stick_interval_milliseconds_formula()) {
-          return *value;
-        }
-      }
-    }
-    return std::string(device::game_pad_wheels_stick_interval_milliseconds_formula_default_value);
-  }
-
-  void set_device_game_pad_wheels_stick_interval_milliseconds_formula(const device_identifiers& identifiers,
-                                                                      const std::optional<std::string>& value) {
-    add_device(identifiers);
-
-    for (auto&& device : devices_) {
-      if (device.get_identifiers() == identifiers) {
-        device.set_game_pad_wheels_stick_interval_milliseconds_formula(value);
-        return;
-      }
-    }
-  }
+  //
+  // game_pad_stick_x_formula
+  //
 
   std::string get_device_game_pad_stick_x_formula(const device_identifiers& identifiers) const {
     for (const auto& d : devices_) {
@@ -721,6 +755,10 @@ public:
     }
   }
 
+  //
+  // game_pad_stick_y_formula
+  //
+
   std::string get_device_game_pad_stick_y_formula(const device_identifiers& identifiers) const {
     for (const auto& d : devices_) {
       if (d.get_identifiers() == identifiers) {
@@ -744,6 +782,10 @@ public:
     }
   }
 
+  //
+  // game_pad_stick_vertical_wheel_formula
+  //
+
   std::string get_device_game_pad_stick_vertical_wheel_formula(const device_identifiers& identifiers) const {
     for (const auto& d : devices_) {
       if (d.get_identifiers() == identifiers) {
@@ -766,6 +808,10 @@ public:
       }
     }
   }
+
+  //
+  // game_pad_stick_horizontal_wheel_formula
+  //
 
   std::string get_device_game_pad_stick_horizontal_wheel_formula(const device_identifiers& identifiers) const {
     for (const auto& d : devices_) {

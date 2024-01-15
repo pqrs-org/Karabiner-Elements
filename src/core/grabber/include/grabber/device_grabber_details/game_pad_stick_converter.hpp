@@ -153,23 +153,21 @@ public:
       switch (stick_type_) {
         case stick_type::xy:
           continued_movement_absolute_magnitude_threshold_ = core_configuration.get_selected_profile().get_device_game_pad_xy_stick_continued_movement_absolute_magnitude_threshold(device_identifiers);
+          continued_movement_interval_milliseconds_ = core_configuration.get_selected_profile().get_device_game_pad_xy_stick_continued_movement_interval_milliseconds(device_identifiers);
           flicking_input_window_milliseconds_ = core_configuration.get_selected_profile().get_device_game_pad_xy_stick_flicking_input_window_milliseconds(device_identifiers);
           break;
         case stick_type::wheels:
           continued_movement_absolute_magnitude_threshold_ = core_configuration.get_selected_profile().get_device_game_pad_wheels_stick_continued_movement_absolute_magnitude_threshold(device_identifiers);
+          continued_movement_interval_milliseconds_ = core_configuration.get_selected_profile().get_device_game_pad_wheels_stick_continued_movement_interval_milliseconds(device_identifiers);
           flicking_input_window_milliseconds_ = core_configuration.get_selected_profile().get_device_game_pad_wheels_stick_flicking_input_window_milliseconds(device_identifiers);
           break;
       }
 
-      xy_stick_interval_milliseconds_formula_string_ = core_configuration.get_selected_profile().get_device_game_pad_xy_stick_interval_milliseconds_formula(device_identifiers);
-      wheels_stick_interval_milliseconds_formula_string_ = core_configuration.get_selected_profile().get_device_game_pad_wheels_stick_interval_milliseconds_formula(device_identifiers);
       x_formula_string_ = core_configuration.get_selected_profile().get_device_game_pad_stick_x_formula(device_identifiers);
       y_formula_string_ = core_configuration.get_selected_profile().get_device_game_pad_stick_y_formula(device_identifiers);
       vertical_wheel_formula_string_ = core_configuration.get_selected_profile().get_device_game_pad_stick_vertical_wheel_formula(device_identifiers);
       horizontal_wheel_formula_string_ = core_configuration.get_selected_profile().get_device_game_pad_stick_horizontal_wheel_formula(device_identifiers);
 
-      xy_stick_interval_milliseconds_formula_ = make_formula_expression(xy_stick_interval_milliseconds_formula_string_);
-      wheels_stick_interval_milliseconds_formula_ = make_formula_expression(wheels_stick_interval_milliseconds_formula_string_);
       x_formula_ = make_formula_expression(x_formula_string_);
       y_formula_ = make_formula_expression(y_formula_string_);
       vertical_wheel_formula_ = make_formula_expression(vertical_wheel_formula_string_);
@@ -234,13 +232,13 @@ public:
         switch (stick_type_) {
           case stick_type::xy: {
             auto [x, y] = xy_hid_values();
-            auto interval = xy_stick_interval();
+            auto interval = continued_movement_interval_milliseconds();
             hid_values_updated(x, y, interval, event_origin_);
             break;
           }
           case stick_type::wheels: {
             auto [h, v] = wheels_hid_values();
-            auto interval = wheels_stick_interval();
+            auto interval = continued_movement_interval_milliseconds();
             hid_values_updated(h, -v, interval, event_origin_);
             break;
           }
@@ -300,38 +298,12 @@ public:
       return std::make_pair(h, v);
     }
 
-    std::chrono::milliseconds xy_stick_interval(void) const {
+    std::chrono::milliseconds continued_movement_interval_milliseconds(void) const {
       if (continued_movement_magnitude_ == 0.0) {
         return std::chrono::milliseconds(0);
       }
 
-      auto interval = xy_stick_interval_milliseconds_formula_.value();
-      if (std::isnan(interval)) {
-        logger::get_logger()->error("game_pad_stick_converter xy_stick_interval_milliseconds_formula_ returns nan: {0} (radian: {1}, magnitude: {2})",
-                                    xy_stick_interval_milliseconds_formula_string_,
-                                    radian_,
-                                    delta_magnitude_);
-        interval = 0;
-      }
-
-      return std::chrono::milliseconds(static_cast<int>(interval));
-    }
-
-    std::chrono::milliseconds wheels_stick_interval(void) const {
-      if (continued_movement_magnitude_ == 0.0) {
-        return std::chrono::milliseconds(0);
-      }
-
-      auto interval = wheels_stick_interval_milliseconds_formula_.value();
-      if (std::isnan(interval)) {
-        logger::get_logger()->error("game_pad_stick_converter wheels_stick_interval_milliseconds_formula_ returns nan: {0} (radian: {1}, magnitude: {2})",
-                                    wheels_stick_interval_milliseconds_formula_string_,
-                                    radian_,
-                                    delta_magnitude_);
-        interval = 0;
-      }
-
-      return std::chrono::milliseconds(static_cast<int>(interval));
+      return std::chrono::milliseconds(continued_movement_interval_milliseconds_);
     }
 
     exprtk_utility::expression_t make_formula_expression(const std::string& formula) {
@@ -362,15 +334,12 @@ public:
     //
 
     double continued_movement_absolute_magnitude_threshold_;
+    int continued_movement_interval_milliseconds_;
     int flicking_input_window_milliseconds_;
-    std::string xy_stick_interval_milliseconds_formula_string_;
-    std::string wheels_stick_interval_milliseconds_formula_string_;
     std::string x_formula_string_;
     std::string y_formula_string_;
     std::string vertical_wheel_formula_string_;
     std::string horizontal_wheel_formula_string_;
-    exprtk_utility::expression_t xy_stick_interval_milliseconds_formula_;
-    exprtk_utility::expression_t wheels_stick_interval_milliseconds_formula_;
     exprtk_utility::expression_t x_formula_;
     exprtk_utility::expression_t y_formula_;
     exprtk_utility::expression_t vertical_wheel_formula_;
