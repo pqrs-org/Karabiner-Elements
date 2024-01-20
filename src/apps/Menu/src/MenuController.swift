@@ -150,14 +150,35 @@ public class MenuController: NSObject, NSMenuDelegate {
       menu.addItem(newItem)
     }
 
-    // Quit
+    // Restart
 
     menu.addItem(NSMenuItem.separator())
+    do {
+      let newItem = NSMenuItem(
+        title: "Restart Karabiner-Elements",
+        action: #selector(restartKarabiner),
+        keyEquivalent: "")
+
+      newItem.image = NSImage(
+        systemSymbolName: "arrow.clockwise",
+        accessibilityDescription: nil)
+
+      newItem.target = self
+      menu.addItem(newItem)
+    }
+
+    // Quit
+
     do {
       let newItem = NSMenuItem(
         title: "Quit Karabiner-Elements",
         action: #selector(quitKarabiner),
         keyEquivalent: "")
+
+      newItem.image = NSImage(
+        systemSymbolName: "xmark.circle.fill",
+        accessibilityDescription: nil)
+
       newItem.target = self
       menu.addItem(newItem)
     }
@@ -184,6 +205,11 @@ public class MenuController: NSObject, NSMenuDelegate {
   @objc
   func launchEventViewer(_: Any) {
     libkrbn_launch_event_viewer()
+  }
+
+  @objc
+  func restartKarabiner(_: Any) {
+    libkrbn_launchctl_restart_console_user_server()
   }
 
   @objc
