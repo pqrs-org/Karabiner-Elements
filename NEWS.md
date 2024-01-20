@@ -4,6 +4,7 @@
 
 -   ✨ New Features
     -   Added the ability to duplicate and reorder profiles.
+    -   Added the ability to restart Karabiner-Elements from the menu.
 -   ⚡️ Improvements
     -   Improved behaviour when using the gamepad stick as a pointing device.
 
