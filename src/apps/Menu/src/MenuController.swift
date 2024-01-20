@@ -106,10 +106,19 @@ public class MenuController: NSObject, NSMenuDelegate {
     // Profiles
 
     menu.addItem(NSMenuItem.separator())
-    menu.addItem(
-      withTitle: "Profiles",
-      action: nil,
-      keyEquivalent: "")
+
+    do {
+      let newItem = NSMenuItem(
+        title: "Profiles",
+        action: nil,
+        keyEquivalent: "")
+
+      newItem.image = NSImage(
+        systemSymbolName: "person.3",
+        accessibilityDescription: nil)
+
+      menu.addItem(newItem)
+    }
 
     LibKrbn.Settings.shared.profiles.forEach { profile in
       let newItem = NSMenuItem(
@@ -133,11 +142,17 @@ public class MenuController: NSObject, NSMenuDelegate {
     // Others
 
     menu.addItem(NSMenuItem.separator())
+
     do {
       let newItem = NSMenuItem(
         title: "Settings...",
         action: #selector(openSettings),
         keyEquivalent: "")
+
+      newItem.image = NSImage(
+        systemSymbolName: "gearshape",
+        accessibilityDescription: nil)
+
       newItem.target = self
       menu.addItem(newItem)
     }
@@ -146,6 +161,11 @@ public class MenuController: NSObject, NSMenuDelegate {
         title: "Launch EventViewer...",
         action: #selector(launchEventViewer),
         keyEquivalent: "")
+
+      newItem.image = NSImage(
+        systemSymbolName: "magnifyingglass",
+        accessibilityDescription: nil)
+
       newItem.target = self
       menu.addItem(newItem)
     }
@@ -153,6 +173,7 @@ public class MenuController: NSObject, NSMenuDelegate {
     // Restart
 
     menu.addItem(NSMenuItem.separator())
+
     do {
       let newItem = NSMenuItem(
         title: "Restart Karabiner-Elements",
