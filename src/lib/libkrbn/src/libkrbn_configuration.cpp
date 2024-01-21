@@ -857,6 +857,10 @@ void libkrbn_core_configuration_unset_selected_profile_device_game_pad_xy_stick_
   }
 }
 
+int libkrbn_core_configuration_game_pad_xy_stick_continued_movement_interval_milliseconds_default_value(void) {
+  return krbn::core_configuration::details::device::game_pad_xy_stick_continued_movement_interval_milliseconds_default_value;
+}
+
 // game_pad_wheels_stick_continued_movement_absolute_magnitude_threshold
 
 bool libkrbn_core_configuration_has_selected_profile_device_game_pad_wheels_stick_continued_movement_absolute_magnitude_threshold(libkrbn_core_configuration* p,
@@ -945,4 +949,8 @@ void libkrbn_core_configuration_unset_selected_profile_device_game_pad_wheels_st
       c->get_core_configuration().get_selected_profile().set_device_game_pad_wheels_stick_continued_movement_interval_milliseconds(identifiers, std::nullopt);
     }
   }
+}
+
+int libkrbn_core_configuration_game_pad_wheels_stick_continued_movement_interval_milliseconds_default_value(void) {
+  return krbn::core_configuration::details::device::game_pad_wheels_stick_continued_movement_interval_milliseconds_default_value;
 }

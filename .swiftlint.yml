@@ -46,3 +46,8 @@ nesting:
 type_body_length:
   warning: 1200
   error: 1500
+
+type_name:
+  max_length:
+    warning: 80
+    error: 200

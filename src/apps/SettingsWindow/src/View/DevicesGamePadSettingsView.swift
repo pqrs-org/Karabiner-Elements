@@ -33,65 +33,40 @@ struct DevicesGamePadSettingsView: View {
           .foregroundColor(Color.warningForeground)
           .background(Color.warningBackground)
 
-          GroupBox(label: Text("Stick parameters")) {
+          GroupBox(label: Text("XY Stick")) {
             VStack(alignment: .leading) {
-              HStack {
-                Toggle(
-                  isOn: binding.gamePadXYStickContinuedMovementAbsoluteMagnitudeThreshold.overwrite
-                ) {
-                  Text("Overwrite XY stick continued movement absolute magnitude threshold:")
-                    .frame(maxWidth: .infinity, alignment: .leading)
-                }
-                .switchToggleStyle(controlSize: .mini, font: .callout)
-                .frame(width: 480.0)
+              StickContinuedMovementAbsoluteMagnitudeThresholdView(
+                stickName: "XY",
+                value: binding.gamePadXYStickContinuedMovementAbsoluteMagnitudeThreshold)
 
-                HStack(alignment: .center, spacing: 8.0) {
-                  Text("Threshold:")
+              StickContinuedMovementIntervalMillisecondsView(
+                stickName: "XY",
+                defaultValue: Int(
+                  libkrbn_core_configuration_game_pad_xy_stick_continued_movement_interval_milliseconds_default_value()
+                ),
+                value: binding.gamePadXYStickContinuedMovementIntervalMilliseconds
+              )
+            }.padding()
+          }
 
-                  DoubleTextField(
-                    value: binding.gamePadXYStickContinuedMovementAbsoluteMagnitudeThreshold.value,
-                    range: 0...1,
-                    step: 0.1,
-                    maximumFractionDigits: 2,
-                    width: 60)
+          GroupBox(label: Text("Wheels Stick")) {
+            VStack(alignment: .leading) {
+              StickContinuedMovementAbsoluteMagnitudeThresholdView(
+                stickName: "wheels",
+                value: binding.gamePadWheelsStickContinuedMovementAbsoluteMagnitudeThreshold)
 
-                  Text("(Default: 1.0)")
-                }
-                .padding(.leading, 20)
-                .disabled(!s.gamePadXYStickContinuedMovementAbsoluteMagnitudeThreshold.overwrite)
+              StickContinuedMovementIntervalMillisecondsView(
+                stickName: "wheels",
+                defaultValue: Int(
+                  libkrbn_core_configuration_game_pad_wheels_stick_continued_movement_interval_milliseconds_default_value()
+                ),
+                value: binding.gamePadWheelsStickContinuedMovementIntervalMilliseconds
+              )
+            }.padding()
+          }
 
-                Spacer()
-              }
-
-              HStack {
-                Toggle(
-                  isOn: binding.gamePadWheelsStickContinuedMovementAbsoluteMagnitudeThreshold
-                    .overwrite
-                ) {
-                  Text("Overwrite wheels stick continued movement absolute magnitude threshold:")
-                    .frame(maxWidth: .infinity, alignment: .leading)
-                }
-                .switchToggleStyle(controlSize: .mini, font: .callout)
-                .frame(width: 480.0)
-
-                HStack(alignment: .center, spacing: 8.0) {
-                  Text("Threshold:")
-
-                  DoubleTextField(
-                    value: binding.gamePadWheelsStickContinuedMovementAbsoluteMagnitudeThreshold
-                      .value,
-                    range: 0...1,
-                    step: 0.1,
-                    maximumFractionDigits: 2,
-                    width: 60)
-
-                  Text("(Default: 0.1)")
-                }
-                .padding(.leading, 20)
-                .disabled(
-                  !s.gamePadWheelsStickContinuedMovementAbsoluteMagnitudeThreshold.overwrite)
-              }
-
+          GroupBox(label: Text("Others")) {
+            VStack(alignment: .leading) {
               Toggle(isOn: binding.gamePadSwapSticks) {
                 Text("Swap gamepad XY and wheels sticks")
               }
@@ -119,6 +94,76 @@ struct DevicesGamePadSettingsView: View {
 
   private func setConnectedDeviceSetting() {
     connectedDeviceSetting = settings.findConnectedDeviceSetting(connectedDevice)
+  }
+
+  struct StickContinuedMovementAbsoluteMagnitudeThresholdView: View {
+    let stickName: String
+    @Binding var value: LibKrbn.OptionalSettingValue<Double>
+
+    var body: some View {
+      HStack {
+        Toggle(
+          isOn: $value.overwrite
+        ) {
+          Text("Overwrite \(stickName) stick continued movement absolute magnitude threshold:")
+            .frame(maxWidth: .infinity, alignment: .leading)
+        }
+        .switchToggleStyle(controlSize: .mini, font: .callout)
+        .frame(width: 480.0)
+
+        HStack(alignment: .center, spacing: 8.0) {
+          Text("Threshold:")
+            .frame(width: 150.0, alignment: .trailing)
+
+          DoubleTextField(
+            value: $value.value,
+            range: 0...1,
+            step: 0.1,
+            maximumFractionDigits: 2,
+            width: 60)
+
+          Text("(Default: 1.0)")
+        }
+        .padding(.leading, 20)
+        .disabled(!value.overwrite)
+      }
+    }
+  }
+
+  struct StickContinuedMovementIntervalMillisecondsView: View {
+    let stickName: String
+    let defaultValue: Int
+    @Binding var value: LibKrbn.OptionalSettingValue<Int>
+
+    var body: some View {
+      HStack {
+        Toggle(
+          isOn: $value.overwrite
+        ) {
+          Text("Overwrite \(stickName) stick continued movement interval milliseconds:")
+            .frame(maxWidth: .infinity, alignment: .leading)
+        }
+        .switchToggleStyle(controlSize: .mini, font: .callout)
+        .frame(width: 480.0)
+
+        HStack(alignment: .center, spacing: 8.0) {
+          Text("Interval milliseconds:")
+            .frame(width: 150.0, alignment: .trailing)
+
+          IntTextField(
+            value: $value.value,
+            range: 0...1000,
+            step: 1,
+            width: 60)
+
+          Text(
+            "(Default: \(defaultValue))"
+          )
+        }
+        .padding(.leading, 20)
+        .disabled(!value.overwrite)
+      }
+    }
   }
 }
 
