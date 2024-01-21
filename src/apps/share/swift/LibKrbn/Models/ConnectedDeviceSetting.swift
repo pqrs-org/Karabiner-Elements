@@ -125,6 +125,36 @@ extension LibKrbn {
         }
       )
 
+      gamePadXYStickFlickingInputWindowMilliseconds = OptionalSettingValue<Int>(
+        hasFunction: {
+          return
+            libkrbn_core_configuration_has_selected_profile_device_game_pad_xy_stick_flicking_input_window_milliseconds(
+              Settings.shared.libkrbnCoreConfiguration,
+              connectedDevice.libkrbnDeviceIdentifiers
+            )
+        },
+        getFunction: {
+          return Int(
+            libkrbn_core_configuration_get_selected_profile_device_game_pad_xy_stick_flicking_input_window_milliseconds(
+              Settings.shared.libkrbnCoreConfiguration,
+              connectedDevice.libkrbnDeviceIdentifiers
+            ))
+        },
+        setFunction: { (_ newValue: Int) in
+          libkrbn_core_configuration_set_selected_profile_device_game_pad_xy_stick_flicking_input_window_milliseconds(
+            Settings.shared.libkrbnCoreConfiguration,
+            connectedDevice.libkrbnDeviceIdentifiers,
+            Int32(newValue)
+          )
+        },
+        unsetFunction: {
+          libkrbn_core_configuration_unset_selected_profile_device_game_pad_xy_stick_flicking_input_window_milliseconds(
+            Settings.shared.libkrbnCoreConfiguration,
+            connectedDevice.libkrbnDeviceIdentifiers
+          )
+        }
+      )
+
       gamePadWheelsStickContinuedMovementAbsoluteMagnitudeThreshold = OptionalSettingValue<Double>(
         hasFunction: {
           return
@@ -180,6 +210,36 @@ extension LibKrbn {
         },
         unsetFunction: {
           libkrbn_core_configuration_unset_selected_profile_device_game_pad_wheels_stick_continued_movement_interval_milliseconds(
+            Settings.shared.libkrbnCoreConfiguration,
+            connectedDevice.libkrbnDeviceIdentifiers
+          )
+        }
+      )
+
+      gamePadWheelsStickFlickingInputWindowMilliseconds = OptionalSettingValue<Int>(
+        hasFunction: {
+          return
+            libkrbn_core_configuration_has_selected_profile_device_game_pad_wheels_stick_flicking_input_window_milliseconds(
+              Settings.shared.libkrbnCoreConfiguration,
+              connectedDevice.libkrbnDeviceIdentifiers
+            )
+        },
+        getFunction: {
+          return Int(
+            libkrbn_core_configuration_get_selected_profile_device_game_pad_wheels_stick_flicking_input_window_milliseconds(
+              Settings.shared.libkrbnCoreConfiguration,
+              connectedDevice.libkrbnDeviceIdentifiers
+            ))
+        },
+        setFunction: { (_ newValue: Int) in
+          libkrbn_core_configuration_set_selected_profile_device_game_pad_wheels_stick_flicking_input_window_milliseconds(
+            Settings.shared.libkrbnCoreConfiguration,
+            connectedDevice.libkrbnDeviceIdentifiers,
+            Int32(newValue)
+          )
+        },
+        unsetFunction: {
+          libkrbn_core_configuration_unset_selected_profile_device_game_pad_wheels_stick_flicking_input_window_milliseconds(
             Settings.shared.libkrbnCoreConfiguration,
             connectedDevice.libkrbnDeviceIdentifiers
           )
@@ -325,8 +385,10 @@ extension LibKrbn {
 
     var gamePadXYStickContinuedMovementAbsoluteMagnitudeThreshold: OptionalSettingValue<Double>
     var gamePadXYStickContinuedMovementIntervalMilliseconds: OptionalSettingValue<Int>
+    var gamePadXYStickFlickingInputWindowMilliseconds: OptionalSettingValue<Int>
     var gamePadWheelsStickContinuedMovementAbsoluteMagnitudeThreshold: OptionalSettingValue<Double>
     var gamePadWheelsStickContinuedMovementIntervalMilliseconds: OptionalSettingValue<Int>
+    var gamePadWheelsStickFlickingInputWindowMilliseconds: OptionalSettingValue<Int>
 
     @Published var simpleModifications: [SimpleModification] = []
     @Published var fnFunctionKeys: [SimpleModification] = []
