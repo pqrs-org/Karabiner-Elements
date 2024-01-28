@@ -732,6 +732,17 @@ public:
   // game_pad_stick_x_formula
   //
 
+  bool has_device_game_pad_stick_x_formula(const device_identifiers& identifiers) const {
+    for (const auto& d : devices_) {
+      if (d.get_identifiers() == identifiers) {
+        if (auto value = d.get_game_pad_stick_x_formula()) {
+          return true;
+        }
+      }
+    }
+    return false;
+  }
+
   std::string get_device_game_pad_stick_x_formula(const device_identifiers& identifiers) const {
     for (const auto& d : devices_) {
       if (d.get_identifiers() == identifiers) {

@@ -1,5 +1,6 @@
 #pragma once
 
+#include "exprtk_utility.hpp"
 #include "simple_modifications.hpp"
 #include <pqrs/string.hpp>
 #include <ranges>
@@ -19,15 +20,15 @@ public:
   static constexpr int game_pad_wheels_stick_flicking_input_window_milliseconds_default_value = 50;
 
   // The logical value range of Karabiner-DriverKit-VirtualHIDPointing is -127 ... 127.
-  static constexpr std::string_view game_pad_stick_x_formula_default_value =
+  static constexpr const char* game_pad_stick_x_formula_default_value =
       "cos(radian) * delta_magnitude * 32;";
 
   // The logical value range of Karabiner-DriverKit-VirtualHIDPointing is -127 ... 127.
-  static constexpr std::string_view game_pad_stick_y_formula_default_value =
+  static constexpr const char* game_pad_stick_y_formula_default_value =
       "sin(radian) * delta_magnitude * 32;";
 
   // The logical value range of Karabiner-DriverKit-VirtualHIDPointing is -127 ... 127.
-  static constexpr std::string_view game_pad_stick_vertical_wheel_formula_default_value = R"(
+  static constexpr const char* game_pad_stick_vertical_wheel_formula_default_value = R"(
 
 if (abs(cos(radian)) >= abs(sin(radian))) {
   0;
@@ -48,7 +49,7 @@ if (abs(cos(radian)) >= abs(sin(radian))) {
 )";
 
   // The logical value range of Karabiner-DriverKit-VirtualHIDPointing is -127 ... 127.
-  static constexpr std::string_view game_pad_stick_horizontal_wheel_formula_default_value = R"(
+  static constexpr const char* game_pad_stick_horizontal_wheel_formula_default_value = R"(
 
 if (abs(cos(radian)) <= abs(sin(radian))) {
   0;
@@ -521,6 +522,16 @@ if (abs(cos(radian)) <= abs(sin(radian))) {
   }
   simple_modifications& get_fn_function_keys(void) {
     return fn_function_keys_;
+  }
+
+  static bool validate_stick_formula(const std::string& formula) {
+    auto value = krbn::exprtk_utility::eval(formula,
+                                            {
+                                                {"radian", 0.0},
+                                                {"delta_magnitude", 0.1},
+                                                {"absolute_magnitude", 0.5},
+                                            });
+    return !std::isnan(value);
   }
 
 private:
