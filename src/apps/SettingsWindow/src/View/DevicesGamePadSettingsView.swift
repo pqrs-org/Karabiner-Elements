@@ -33,77 +33,81 @@ struct DevicesGamePadSettingsView: View {
           .foregroundColor(Color.warningForeground)
           .background(Color.warningBackground)
 
-          GroupBox(label: Text("XY Stick")) {
+          ScrollView {
             VStack(alignment: .leading) {
-              StickContinuedMovementAbsoluteMagnitudeThresholdView(
-                stickName: "XY",
-                value: binding.gamePadXYStickContinuedMovementAbsoluteMagnitudeThreshold)
+              GroupBox(label: Text("XY Stick")) {
+                VStack(alignment: .leading) {
+                  StickContinuedMovementAbsoluteMagnitudeThresholdView(
+                    stickName: "XY",
+                    value: binding.gamePadXYStickContinuedMovementAbsoluteMagnitudeThreshold)
 
-              StickContinuedMovementIntervalMillisecondsView(
-                stickName: "XY",
-                defaultValue: Int(
-                  libkrbn_core_configuration_game_pad_xy_stick_continued_movement_interval_milliseconds_default_value()
-                ),
-                value: binding.gamePadXYStickContinuedMovementIntervalMilliseconds
-              )
+                  StickContinuedMovementIntervalMillisecondsView(
+                    stickName: "XY",
+                    defaultValue: Int(
+                      libkrbn_core_configuration_game_pad_xy_stick_continued_movement_interval_milliseconds_default_value()
+                    ),
+                    value: binding.gamePadXYStickContinuedMovementIntervalMilliseconds
+                  )
 
-              StickFlickingInputWindowMillisecondsView(
-                stickName: "XY",
-                defaultValue: Int(
-                  libkrbn_core_configuration_game_pad_xy_stick_flicking_input_window_milliseconds_default_value()
-                ),
-                value: binding.gamePadXYStickFlickingInputWindowMilliseconds
-              )
+                  StickFlickingInputWindowMillisecondsView(
+                    stickName: "XY",
+                    defaultValue: Int(
+                      libkrbn_core_configuration_game_pad_xy_stick_flicking_input_window_milliseconds_default_value()
+                    ),
+                    value: binding.gamePadXYStickFlickingInputWindowMilliseconds
+                  )
 
-              FormulaView(
-                name: "X formula",
-                defaultValue: String(
-                  cString: libkrbn_core_configuration_game_pad_stick_x_formula_default_value()
-                ),
-                value: binding.gamePadStickXFormula
-              )
+                  FormulaView(
+                    name: "X formula",
+                    defaultValue: String(
+                      cString: libkrbn_core_configuration_game_pad_stick_x_formula_default_value()
+                    ),
+                    value: binding.gamePadStickXFormula
+                  )
 
-              FormulaView(
-                name: "Y formula",
-                defaultValue: String(
-                  cString: libkrbn_core_configuration_game_pad_stick_y_formula_default_value()
-                ),
-                value: binding.gamePadStickYFormula
-              )
-            }.padding()
-          }
-
-          GroupBox(label: Text("Wheels Stick")) {
-            VStack(alignment: .leading) {
-              StickContinuedMovementAbsoluteMagnitudeThresholdView(
-                stickName: "wheels",
-                value: binding.gamePadWheelsStickContinuedMovementAbsoluteMagnitudeThreshold)
-
-              StickContinuedMovementIntervalMillisecondsView(
-                stickName: "wheels",
-                defaultValue: Int(
-                  libkrbn_core_configuration_game_pad_wheels_stick_continued_movement_interval_milliseconds_default_value()
-                ),
-                value: binding.gamePadWheelsStickContinuedMovementIntervalMilliseconds
-              )
-
-              StickFlickingInputWindowMillisecondsView(
-                stickName: "wheels",
-                defaultValue: Int(
-                  libkrbn_core_configuration_game_pad_wheels_stick_flicking_input_window_milliseconds_default_value()
-                ),
-                value: binding.gamePadWheelsStickFlickingInputWindowMilliseconds
-              )
-            }.padding()
-          }
-
-          GroupBox(label: Text("Others")) {
-            VStack(alignment: .leading) {
-              Toggle(isOn: binding.gamePadSwapSticks) {
-                Text("Swap gamepad XY and wheels sticks")
+                  FormulaView(
+                    name: "Y formula",
+                    defaultValue: String(
+                      cString: libkrbn_core_configuration_game_pad_stick_y_formula_default_value()
+                    ),
+                    value: binding.gamePadStickYFormula
+                  )
+                }.padding()
               }
-              .switchToggleStyle(controlSize: .mini, font: .callout)
-            }.padding()
+
+              GroupBox(label: Text("Wheels Stick")) {
+                VStack(alignment: .leading) {
+                  StickContinuedMovementAbsoluteMagnitudeThresholdView(
+                    stickName: "wheels",
+                    value: binding.gamePadWheelsStickContinuedMovementAbsoluteMagnitudeThreshold)
+
+                  StickContinuedMovementIntervalMillisecondsView(
+                    stickName: "wheels",
+                    defaultValue: Int(
+                      libkrbn_core_configuration_game_pad_wheels_stick_continued_movement_interval_milliseconds_default_value()
+                    ),
+                    value: binding.gamePadWheelsStickContinuedMovementIntervalMilliseconds
+                  )
+
+                  StickFlickingInputWindowMillisecondsView(
+                    stickName: "wheels",
+                    defaultValue: Int(
+                      libkrbn_core_configuration_game_pad_wheels_stick_flicking_input_window_milliseconds_default_value()
+                    ),
+                    value: binding.gamePadWheelsStickFlickingInputWindowMilliseconds
+                  )
+                }.padding()
+              }
+
+              GroupBox(label: Text("Others")) {
+                VStack(alignment: .leading) {
+                  Toggle(isOn: binding.gamePadSwapSticks) {
+                    Text("Swap gamepad XY and wheels sticks")
+                  }
+                  .switchToggleStyle(controlSize: .mini, font: .callout)
+                }.padding()
+              }
+            }
           }
         }
 
@@ -271,6 +275,7 @@ struct DevicesGamePadSettingsView: View {
           }
 
           TextEditor(text: $text)
+            .frame(height: 200.0)
             .if(!value.overwrite) {
               $0
                 .disabled(true)
