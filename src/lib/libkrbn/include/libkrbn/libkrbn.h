@@ -312,6 +312,26 @@ void libkrbn_core_configuration_unset_selected_profile_device_game_pad_wheels_st
 
 int libkrbn_core_configuration_game_pad_wheels_stick_flicking_input_window_milliseconds_default_value(void);
 
+// game_pad_stick_x_formula
+
+bool libkrbn_core_configuration_has_selected_profile_device_game_pad_stick_x_formula(libkrbn_core_configuration* p,
+                                                                                     const libkrbn_device_identifiers* device_identifiers);
+bool libkrbn_core_configuration_get_selected_profile_device_game_pad_stick_x_formula(libkrbn_core_configuration* p,
+                                                                                     const libkrbn_device_identifiers* device_identifiers,
+                                                                                     char* buffer,
+                                                                                     size_t length);
+bool libkrbn_core_configuration_set_selected_profile_device_game_pad_stick_x_formula(libkrbn_core_configuration* p,
+                                                                                     const libkrbn_device_identifiers* device_identifiers,
+                                                                                     const char* value);
+void libkrbn_core_configuration_unset_selected_profile_device_game_pad_stick_x_formula(libkrbn_core_configuration* p,
+                                                                                       const libkrbn_device_identifiers* device_identifiers);
+
+const char* libkrbn_core_configuration_game_pad_stick_x_formula_default_value(void);
+
+// game_pad_*
+
+bool libkrbn_core_configuration_game_pad_validate_stick_formula(const char* formula);
+
 //
 // libkrbn_complex_modifications_assets_manager
 //
