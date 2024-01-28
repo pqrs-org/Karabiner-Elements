@@ -263,7 +263,7 @@ extension LibKrbn {
             buffer.count
           )
 
-          return String(cString: buffer)
+          return String(cString: buffer).trimmingCharacters(in: .whitespacesAndNewlines)
         },
         setFunction: { (_ newValue: String) in
           libkrbn_core_configuration_set_selected_profile_device_game_pad_stick_x_formula(
@@ -297,7 +297,7 @@ extension LibKrbn {
             buffer.count
           )
 
-          return String(cString: buffer)
+          return String(cString: buffer).trimmingCharacters(in: .whitespacesAndNewlines)
         },
         setFunction: { (_ newValue: String) in
           libkrbn_core_configuration_set_selected_profile_device_game_pad_stick_y_formula(
@@ -308,6 +308,40 @@ extension LibKrbn {
         },
         unsetFunction: {
           libkrbn_core_configuration_unset_selected_profile_device_game_pad_stick_y_formula(
+            Settings.shared.libkrbnCoreConfiguration,
+            connectedDevice.libkrbnDeviceIdentifiers
+          )
+        }
+      )
+
+      gamePadStickVerticalWheelFormula = OptionalSettingValue<String>(
+        hasFunction: {
+          return
+            libkrbn_core_configuration_has_selected_profile_device_game_pad_stick_vertical_wheel_formula(
+              Settings.shared.libkrbnCoreConfiguration,
+              connectedDevice.libkrbnDeviceIdentifiers
+            )
+        },
+        getFunction: {
+          var buffer = [Int8](repeating: 0, count: 16384)
+          libkrbn_core_configuration_get_selected_profile_device_game_pad_stick_vertical_wheel_formula(
+            Settings.shared.libkrbnCoreConfiguration,
+            connectedDevice.libkrbnDeviceIdentifiers,
+            &buffer,
+            buffer.count
+          )
+
+          return String(cString: buffer).trimmingCharacters(in: .whitespacesAndNewlines)
+        },
+        setFunction: { (_ newValue: String) in
+          libkrbn_core_configuration_set_selected_profile_device_game_pad_stick_vertical_wheel_formula(
+            Settings.shared.libkrbnCoreConfiguration,
+            connectedDevice.libkrbnDeviceIdentifiers,
+            newValue.cString(using: .utf8)
+          )
+        },
+        unsetFunction: {
+          libkrbn_core_configuration_unset_selected_profile_device_game_pad_stick_vertical_wheel_formula(
             Settings.shared.libkrbnCoreConfiguration,
             connectedDevice.libkrbnDeviceIdentifiers
           )
@@ -459,6 +493,7 @@ extension LibKrbn {
     var gamePadWheelsStickFlickingInputWindowMilliseconds: OptionalSettingValue<Int>
     var gamePadStickXFormula: OptionalSettingValue<String>
     var gamePadStickYFormula: OptionalSettingValue<String>
+    var gamePadStickVerticalWheelFormula: OptionalSettingValue<String>
 
     @Published var simpleModifications: [SimpleModification] = []
     @Published var fnFunctionKeys: [SimpleModification] = []

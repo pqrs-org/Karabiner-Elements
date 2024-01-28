@@ -19,20 +19,6 @@ struct DevicesGamePadSettingsView: View {
             .padding(.leading, 40)
             .padding(.top, 20)
 
-          HStack {
-            VStack(alignment: .leading, spacing: 0.0) {
-              Text("Note:")
-              Text(
-                "These parameters are still under development and may change in the next release."
-              )
-            }
-
-            Spacer()
-          }
-          .padding()
-          .foregroundColor(Color.warningForeground)
-          .background(Color.warningBackground)
-
           ScrollView {
             VStack(alignment: .leading) {
               GroupBox(label: Text("XY Stick")) {
@@ -60,17 +46,11 @@ struct DevicesGamePadSettingsView: View {
                   HStack {
                     FormulaView(
                       name: "X formula",
-                      defaultValue: String(
-                        cString: libkrbn_core_configuration_game_pad_stick_x_formula_default_value()
-                      ),
                       value: binding.gamePadStickXFormula
                     )
 
                     FormulaView(
                       name: "Y formula",
-                      defaultValue: String(
-                        cString: libkrbn_core_configuration_game_pad_stick_y_formula_default_value()
-                      ),
                       value: binding.gamePadStickYFormula
                     )
                   }
@@ -98,6 +78,13 @@ struct DevicesGamePadSettingsView: View {
                     ),
                     value: binding.gamePadWheelsStickFlickingInputWindowMilliseconds
                   )
+
+                  HStack {
+                    FormulaView(
+                      name: "vertical wheel formula",
+                      value: binding.gamePadStickVerticalWheelFormula
+                    )
+                  }
                 }.padding()
               }
 
@@ -242,18 +229,15 @@ struct DevicesGamePadSettingsView: View {
 
   struct FormulaView: View {
     let name: String
-    let defaultValue: String
     @Binding var value: LibKrbn.OptionalSettingValue<String>
     @State private var text = ""
     @State private var error = false
 
     init(
       name: String,
-      defaultValue: String,
       value: Binding<LibKrbn.OptionalSettingValue<String>>
     ) {
       self.name = name
-      self.defaultValue = defaultValue
       _value = value
       _text = State(initialValue: value.value.wrappedValue)
     }
@@ -278,7 +262,7 @@ struct DevicesGamePadSettingsView: View {
         }
 
         TextEditor(text: $text)
-          .frame(height: 200.0)
+          .frame(height: 250.0)
           .disabled(!value.overwrite)
           .if(!value.overwrite) {
             $0.foregroundColor(.gray)
@@ -287,6 +271,19 @@ struct DevicesGamePadSettingsView: View {
       .onChange(of: text) { newText in
         update(byText: newText)
       }
+      .onChange(of: value) { newValue in
+        update(byValue: newValue)
+      }
+    }
+
+    private func update(byValue newValue: LibKrbn.OptionalSettingValue<String>) {
+      error = false
+
+      Task { @MainActor in
+        if text != newValue.value {
+          text = newValue.value
+        }
+      }
     }
 
     private func update(byText newText: String) {
@@ -294,7 +291,9 @@ struct DevicesGamePadSettingsView: View {
         error = false
 
         Task { @MainActor in
-          value.value = newText
+          if value.value != newText {
+            value.value = newText
+          }
         }
       } else {
         error = true
