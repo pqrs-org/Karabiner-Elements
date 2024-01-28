@@ -57,21 +57,23 @@ struct DevicesGamePadSettingsView: View {
                     value: binding.gamePadXYStickFlickingInputWindowMilliseconds
                   )
 
-                  FormulaView(
-                    name: "X formula",
-                    defaultValue: String(
-                      cString: libkrbn_core_configuration_game_pad_stick_x_formula_default_value()
-                    ),
-                    value: binding.gamePadStickXFormula
-                  )
+                  HStack {
+                    FormulaView(
+                      name: "X formula",
+                      defaultValue: String(
+                        cString: libkrbn_core_configuration_game_pad_stick_x_formula_default_value()
+                      ),
+                      value: binding.gamePadStickXFormula
+                    )
 
-                  FormulaView(
-                    name: "Y formula",
-                    defaultValue: String(
-                      cString: libkrbn_core_configuration_game_pad_stick_y_formula_default_value()
-                    ),
-                    value: binding.gamePadStickYFormula
-                  )
+                    FormulaView(
+                      name: "Y formula",
+                      defaultValue: String(
+                        cString: libkrbn_core_configuration_game_pad_stick_y_formula_default_value()
+                      ),
+                      value: binding.gamePadStickYFormula
+                    )
+                  }
                 }.padding()
               }
 
@@ -257,33 +259,30 @@ struct DevicesGamePadSettingsView: View {
     }
 
     var body: some View {
-      HStack {
-        Toggle(
-          isOn: $value.overwrite
-        ) {
-          Text("Overwrite \(name) formula:")
-            .frame(maxWidth: .infinity, alignment: .leading)
-        }
-        .switchToggleStyle(controlSize: .mini, font: .callout)
-        .frame(width: 480.0)
+      VStack {
+        HStack {
+          Toggle(
+            isOn: $value.overwrite
+          ) {
+            Text("Overwrite \(name) formula:")
+          }
+          .switchToggleStyle(controlSize: .mini, font: .callout)
 
-        VStack(alignment: .leading) {
           if error {
             Text("invalid formula")
               .foregroundColor(Color.errorForeground)
               .background(Color.errorBackground)
           }
 
-          TextEditor(text: $text)
-            .frame(height: 200.0)
-            .if(!value.overwrite) {
-              $0
-                .disabled(true)
-                .foregroundColor(.gray)
-            }
+          Spacer()
         }
-        .padding(.leading, 20)
-        .disabled(!value.overwrite)
+
+        TextEditor(text: $text)
+          .frame(height: 200.0)
+          .disabled(!value.overwrite)
+          .if(!value.overwrite) {
+            $0.foregroundColor(.gray)
+          }
       }
       .onChange(of: text) { newText in
         update(byText: newText)
