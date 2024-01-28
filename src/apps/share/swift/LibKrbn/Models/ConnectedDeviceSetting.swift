@@ -280,6 +280,40 @@ extension LibKrbn {
         }
       )
 
+      gamePadStickYFormula = OptionalSettingValue<String>(
+        hasFunction: {
+          return
+            libkrbn_core_configuration_has_selected_profile_device_game_pad_stick_y_formula(
+              Settings.shared.libkrbnCoreConfiguration,
+              connectedDevice.libkrbnDeviceIdentifiers
+            )
+        },
+        getFunction: {
+          var buffer = [Int8](repeating: 0, count: 16384)
+          libkrbn_core_configuration_get_selected_profile_device_game_pad_stick_y_formula(
+            Settings.shared.libkrbnCoreConfiguration,
+            connectedDevice.libkrbnDeviceIdentifiers,
+            &buffer,
+            buffer.count
+          )
+
+          return String(cString: buffer)
+        },
+        setFunction: { (_ newValue: String) in
+          libkrbn_core_configuration_set_selected_profile_device_game_pad_stick_y_formula(
+            Settings.shared.libkrbnCoreConfiguration,
+            connectedDevice.libkrbnDeviceIdentifiers,
+            newValue.cString(using: .utf8)
+          )
+        },
+        unsetFunction: {
+          libkrbn_core_configuration_unset_selected_profile_device_game_pad_stick_y_formula(
+            Settings.shared.libkrbnCoreConfiguration,
+            connectedDevice.libkrbnDeviceIdentifiers
+          )
+        }
+      )
+
       simpleModifications = LibKrbn.Settings.shared.makeSimpleModifications(connectedDevice)
       fnFunctionKeys = LibKrbn.Settings.shared.makeFnFunctionKeys(connectedDevice)
 
@@ -424,6 +458,7 @@ extension LibKrbn {
     var gamePadWheelsStickContinuedMovementIntervalMilliseconds: OptionalSettingValue<Int>
     var gamePadWheelsStickFlickingInputWindowMilliseconds: OptionalSettingValue<Int>
     var gamePadStickXFormula: OptionalSettingValue<String>
+    var gamePadStickYFormula: OptionalSettingValue<String>
 
     @Published var simpleModifications: [SimpleModification] = []
     @Published var fnFunctionKeys: [SimpleModification] = []

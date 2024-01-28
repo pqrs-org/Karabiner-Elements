@@ -62,6 +62,14 @@ struct DevicesGamePadSettingsView: View {
                 ),
                 value: binding.gamePadStickXFormula
               )
+
+              FormulaView(
+                name: "Y formula",
+                defaultValue: String(
+                  cString: libkrbn_core_configuration_game_pad_stick_y_formula_default_value()
+                ),
+                value: binding.gamePadStickYFormula
+              )
             }.padding()
           }
 
