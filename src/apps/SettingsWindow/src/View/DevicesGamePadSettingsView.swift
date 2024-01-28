@@ -84,6 +84,11 @@ struct DevicesGamePadSettingsView: View {
                       name: "vertical wheel formula",
                       value: binding.gamePadStickVerticalWheelFormula
                     )
+
+                    FormulaView(
+                      name: "horizontal wheel formula",
+                      value: binding.gamePadStickHorizontalWheelFormula
+                    )
                   }
                 }.padding()
               }
