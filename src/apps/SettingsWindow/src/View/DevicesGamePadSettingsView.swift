@@ -54,6 +54,14 @@ struct DevicesGamePadSettingsView: View {
                 ),
                 value: binding.gamePadXYStickFlickingInputWindowMilliseconds
               )
+
+              FormulaView(
+                name: "X formula",
+                defaultValue: String(
+                  cString: libkrbn_core_configuration_game_pad_stick_x_formula_default_value()
+                ),
+                value: binding.gamePadStickXFormula
+              )
             }.padding()
           }
 
@@ -214,6 +222,70 @@ struct DevicesGamePadSettingsView: View {
         }
         .padding(.leading, 20)
         .disabled(!value.overwrite)
+      }
+    }
+  }
+
+  struct FormulaView: View {
+    let name: String
+    let defaultValue: String
+    @Binding var value: LibKrbn.OptionalSettingValue<String>
+    @State private var text = ""
+    @State private var error = false
+
+    init(
+      name: String,
+      defaultValue: String,
+      value: Binding<LibKrbn.OptionalSettingValue<String>>
+    ) {
+      self.name = name
+      self.defaultValue = defaultValue
+      _value = value
+      _text = State(initialValue: value.value.wrappedValue)
+    }
+
+    var body: some View {
+      HStack {
+        Toggle(
+          isOn: $value.overwrite
+        ) {
+          Text("Overwrite \(name) formula:")
+            .frame(maxWidth: .infinity, alignment: .leading)
+        }
+        .switchToggleStyle(controlSize: .mini, font: .callout)
+        .frame(width: 480.0)
+
+        VStack(alignment: .leading) {
+          if error {
+            Text("invalid formula")
+              .foregroundColor(Color.errorForeground)
+              .background(Color.errorBackground)
+          }
+
+          TextEditor(text: $text)
+            .if(!value.overwrite) {
+              $0
+                .disabled(true)
+                .foregroundColor(.gray)
+            }
+        }
+        .padding(.leading, 20)
+        .disabled(!value.overwrite)
+      }
+      .onChange(of: text) { newText in
+        update(byText: newText)
+      }
+    }
+
+    private func update(byText newText: String) {
+      if libkrbn_core_configuration_game_pad_validate_stick_formula(newText.cString(using: .utf8)) {
+        error = false
+
+        Task { @MainActor in
+          value.value = newText
+        }
+      } else {
+        error = true
       }
     }
   }

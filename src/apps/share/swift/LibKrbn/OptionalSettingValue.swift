@@ -1,7 +1,7 @@
 import Combine
 
 extension LibKrbn {
-  class OptionalSettingValue<T>: ObservableObject {
+  class OptionalSettingValue<T: Equatable>: ObservableObject, Equatable {
     private let setFunction: (_ newValue: T) -> Void
     private let unsetFunction: () -> Void
     private var didSetEnabled = false
@@ -45,6 +45,10 @@ extension LibKrbn {
       }
 
       Settings.shared.save()
+    }
+
+    public static func == (lhs: OptionalSettingValue, rhs: OptionalSettingValue) -> Bool {
+      lhs.overwrite == rhs.overwrite && lhs.value == rhs.value
     }
   }
 }
