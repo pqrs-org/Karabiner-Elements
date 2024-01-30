@@ -126,6 +126,6 @@ echo "Make Archive"
 # Therefore, we use dmg instead of zip.
 
 rm -f $archiveName.dmg
-hdiutil create -nospotlight $archiveName.dmg -srcfolder $archiveName -fs 'Journaled HFS+'
+hdiutil create -nospotlight $archiveName.dmg -srcfolder $archiveName -fs 'Journaled HFS+' -format ULMO
 rm -rf $archiveName
 chmod 644 $archiveName.dmg
