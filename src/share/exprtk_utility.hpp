@@ -1,5 +1,8 @@
 #pragma once
 
+// With `exprtk_disable_enhanced_features`, the binary size is reduced by about 4 MB.
+// And for simple calculations, such as those used in game_pad_stick_converter, there is no speed reduction.
+#define exprtk_disable_enhanced_features
 #define exprtk_disable_string_capabilities
 #define exprtk_disable_rtl_io
 #define exprtk_disable_rtl_io_file
