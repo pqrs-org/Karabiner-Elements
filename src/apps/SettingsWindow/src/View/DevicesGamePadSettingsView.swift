@@ -67,12 +67,10 @@ struct DevicesGamePadSettingsView: View {
     var body: some View {
       VStack(alignment: .leading) {
         StickContinuedMovementAbsoluteMagnitudeThresholdView(
-          stickName: "XY",
           value: $connectedDeviceSetting
             .gamePadXYStickContinuedMovementAbsoluteMagnitudeThreshold)
 
         StickContinuedMovementIntervalMillisecondsView(
-          stickName: "XY",
           defaultValue: Int(
             libkrbn_core_configuration_game_pad_xy_stick_continued_movement_interval_milliseconds_default_value()
           ),
@@ -80,7 +78,6 @@ struct DevicesGamePadSettingsView: View {
         )
 
         StickFlickingInputWindowMillisecondsView(
-          stickName: "XY",
           defaultValue: Int(
             libkrbn_core_configuration_game_pad_xy_stick_flicking_input_window_milliseconds_default_value()
           ),
@@ -111,12 +108,10 @@ struct DevicesGamePadSettingsView: View {
     var body: some View {
       VStack(alignment: .leading) {
         StickContinuedMovementAbsoluteMagnitudeThresholdView(
-          stickName: "wheels",
           value: $connectedDeviceSetting
             .gamePadWheelsStickContinuedMovementAbsoluteMagnitudeThreshold)
 
         StickContinuedMovementIntervalMillisecondsView(
-          stickName: "wheels",
           defaultValue: Int(
             libkrbn_core_configuration_game_pad_wheels_stick_continued_movement_interval_milliseconds_default_value()
           ),
@@ -124,7 +119,6 @@ struct DevicesGamePadSettingsView: View {
         )
 
         StickFlickingInputWindowMillisecondsView(
-          stickName: "wheels",
           defaultValue: Int(
             libkrbn_core_configuration_game_pad_wheels_stick_flicking_input_window_milliseconds_default_value()
           ),
@@ -169,7 +163,6 @@ struct DevicesGamePadSettingsView: View {
   }
 
   struct StickContinuedMovementAbsoluteMagnitudeThresholdView: View {
-    let stickName: String
     @Binding var value: LibKrbn.OptionalSettingValue<Double>
 
     var body: some View {
@@ -177,16 +170,13 @@ struct DevicesGamePadSettingsView: View {
         Toggle(
           isOn: $value.overwrite
         ) {
-          Text("Overwrite \(stickName) stick continued movement absolute magnitude threshold:")
+          Text("Overwrite continued movement absolute magnitude threshold:")
             .frame(maxWidth: .infinity, alignment: .leading)
         }
         .switchToggleStyle(controlSize: .mini, font: .callout)
-        .frame(width: 480.0)
+        .frame(width: 400.0)
 
         HStack(alignment: .center, spacing: 8.0) {
-          Text("Threshold:")
-            .frame(width: 150.0, alignment: .trailing)
-
           DoubleTextField(
             value: $value.value,
             range: 0...1,
@@ -203,7 +193,6 @@ struct DevicesGamePadSettingsView: View {
   }
 
   struct StickContinuedMovementIntervalMillisecondsView: View {
-    let stickName: String
     let defaultValue: Int
     @Binding var value: LibKrbn.OptionalSettingValue<Int>
 
@@ -212,16 +201,13 @@ struct DevicesGamePadSettingsView: View {
         Toggle(
           isOn: $value.overwrite
         ) {
-          Text("Overwrite \(stickName) stick continued movement interval milliseconds:")
+          Text("Overwrite continued movement interval milliseconds:")
             .frame(maxWidth: .infinity, alignment: .leading)
         }
         .switchToggleStyle(controlSize: .mini, font: .callout)
-        .frame(width: 480.0)
+        .frame(width: 400.0)
 
         HStack(alignment: .center, spacing: 8.0) {
-          Text("Interval milliseconds:")
-            .frame(width: 150.0, alignment: .trailing)
-
           IntTextField(
             value: $value.value,
             range: 0...1000,
@@ -239,7 +225,6 @@ struct DevicesGamePadSettingsView: View {
   }
 
   struct StickFlickingInputWindowMillisecondsView: View {
-    let stickName: String
     let defaultValue: Int
     @Binding var value: LibKrbn.OptionalSettingValue<Int>
 
@@ -248,16 +233,13 @@ struct DevicesGamePadSettingsView: View {
         Toggle(
           isOn: $value.overwrite
         ) {
-          Text("Overwrite \(stickName) stick flicking input window milliseconds:")
+          Text("Overwrite flicking input window milliseconds:")
             .frame(maxWidth: .infinity, alignment: .leading)
         }
         .switchToggleStyle(controlSize: .mini, font: .callout)
-        .frame(width: 480.0)
+        .frame(width: 400.0)
 
         HStack(alignment: .center, spacing: 8.0) {
-          Text("Milliseconds:")
-            .frame(width: 150.0, alignment: .trailing)
-
           IntTextField(
             value: $value.value,
             range: 0...1000,
