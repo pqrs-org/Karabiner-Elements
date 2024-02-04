@@ -23,7 +23,8 @@ public class StickManager: ObservableObject {
 
   struct HistoryEntry {
     let time = Date()
-    let deltaMagnitude: Double
+    let horizontalStickSensorValue: Double
+    let verticalStickSensorValue: Double
   }
 
   class Stick: ObservableObject {
@@ -52,15 +53,17 @@ public class StickManager: ObservableObject {
 
       deltaMagnitude = max(0.0, magnitude - previousMagnitude)
 
-      history.append(HistoryEntry(deltaMagnitude: deltaMagnitude))
+      history.append(
+        HistoryEntry(
+          horizontalStickSensorValue: horizontal.lastDoubleValue,
+          verticalStickSensorValue: vertical.lastDoubleValue))
       history.removeAll(where: { now.timeIntervalSince($0.time) > 0.1 })
 
       let continuedMovementThreshold = 1.0
 
       if magnitude >= continuedMovementThreshold {
         if continuedMovementTimer == nil {
-          continuedMovementMagnitude =
-            (history.max { a, b in a.deltaMagnitude < b.deltaMagnitude })?.deltaMagnitude ?? 0.0
+          continuedMovementMagnitude = getMaxDistanceInHistory()
 
           continuedMovementTimer = Timer.publish(
             every: 0.3,  // 300 ms
@@ -107,6 +110,24 @@ public class StickManager: ObservableObject {
       pointerX = max(0.0, min(1.0, pointerX))
       pointerY -= magnitude * sin(radian) * scale
       pointerY = max(0.0, min(1.0, pointerY))
+    }
+
+    @MainActor
+    private func getMaxDistanceInHistory() -> Double {
+      var distance = 0.0
+
+      history.forEach { h1 in
+        history.forEach { h2 in
+          let h = h1.horizontalStickSensorValue - h2.horizontalStickSensorValue
+          let v = h1.verticalStickSensorValue - h2.verticalStickSensorValue
+          let d = sqrt(h * h + v * v)
+          if d > distance {
+            distance = d
+          }
+        }
+      }
+
+      return distance
     }
   }
 
