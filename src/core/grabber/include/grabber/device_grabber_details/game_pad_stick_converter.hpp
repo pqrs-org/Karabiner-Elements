@@ -78,25 +78,32 @@ public:
       wheels,
     };
 
-    class delta_magnitude_history_entry final {
+    class stick_history_entry final {
     public:
-      delta_magnitude_history_entry(absolute_time_point time,
-                                    double delta_magnitude)
+      stick_history_entry(absolute_time_point time,
+                          double horizontal_stick_sensor_value,
+                          double vertical_stick_sensor_value)
           : time_(time),
-            delta_magnitude_(delta_magnitude) {
+            horizontal_stick_sensor_value_(horizontal_stick_sensor_value),
+            vertical_stick_sensor_value_(vertical_stick_sensor_value) {
       }
 
       absolute_time_point get_time(void) const {
         return time_;
       }
 
-      double get_delta_magnitude(void) const {
-        return delta_magnitude_;
+      double get_horizontal_stick_sensor_value(void) const {
+        return horizontal_stick_sensor_value_;
+      }
+
+      double get_vertical_stick_sensor_value(void) const {
+        return vertical_stick_sensor_value_;
       }
 
     private:
       absolute_time_point time_;
-      double delta_magnitude_;
+      double horizontal_stick_sensor_value_;
+      double vertical_stick_sensor_value_;
     };
 
     //
@@ -190,16 +197,18 @@ public:
       auto dm = std::max(0.0, absolute_magnitude_ - previous_absolute_magnitude_);
 
       //
-      // Update delta_magnitude_history_
+      // Update stick_history_
       //
 
-      delta_magnitude_history_.push_back(delta_magnitude_history_entry(now, dm));
-      delta_magnitude_history_.erase(std::remove_if(std::begin(delta_magnitude_history_),
-                                                    std::end(delta_magnitude_history_),
-                                                    [this, now](auto&& e) {
-                                                      return pqrs::osx::chrono::make_milliseconds(now - e.get_time()) > std::chrono::milliseconds(flicking_input_window_milliseconds_);
-                                                    }),
-                                     std::end(delta_magnitude_history_));
+      stick_history_.push_back(stick_history_entry(now,
+                                                   horizontal_stick_sensor_.get_value(),
+                                                   vertical_stick_sensor_.get_value()));
+      stick_history_.erase(std::remove_if(std::begin(stick_history_),
+                                          std::end(stick_history_),
+                                          [this, now](auto&& e) {
+                                            return pqrs::osx::chrono::make_milliseconds(now - e.get_time()) > std::chrono::milliseconds(flicking_input_window_milliseconds_);
+                                          }),
+                           std::end(stick_history_));
 
       //
       // Update delta_magnitude_
@@ -207,9 +216,18 @@ public:
 
       if (absolute_magnitude_ >= continued_movement_absolute_magnitude_threshold_) {
         if (continued_movement_magnitude_ == 0.0) {
-          for (const auto& e : delta_magnitude_history_) {
-            continued_movement_magnitude_ += e.get_delta_magnitude();
+          double max = 0;
+          for (int i = 0; i < stick_history_.size(); ++i) {
+            for (int j = i + 1; j < stick_history_.size(); ++j) {
+              auto h = stick_history_[i].get_horizontal_stick_sensor_value() - stick_history_[j].get_horizontal_stick_sensor_value();
+              auto v = stick_history_[i].get_vertical_stick_sensor_value() - stick_history_[j].get_vertical_stick_sensor_value();
+              auto d = std::sqrt(h * h + v * v);
+              if (max < d) {
+                max = d;
+              }
+            }
           }
+          continued_movement_magnitude_ = max;
         }
 
         delta_magnitude_ = continued_movement_magnitude_;
@@ -326,7 +344,7 @@ public:
     double delta_magnitude_;
     double continued_movement_magnitude_;
     double previous_absolute_magnitude_;
-    std::deque<delta_magnitude_history_entry> delta_magnitude_history_;
+    std::deque<stick_history_entry> stick_history_;
     std::atomic<event_origin> event_origin_;
 
     //
