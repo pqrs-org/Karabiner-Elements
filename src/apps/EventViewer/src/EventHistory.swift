@@ -102,11 +102,7 @@ private func callback(
   // Add entry
   //
 
-  let obj: EventHistory! = unsafeBitCast(context, to: EventHistory.self)
-
-  DispatchQueue.main.async { [weak obj] in
-    guard let obj = obj else { return }
-
+  Task { @MainActor in
     let entry = EventHistoryEntry()
 
     //
@@ -128,7 +124,7 @@ private func callback(
 
     if !libkrbn_is_momentary_switch_event_target(usagePage, usage) {
       entry.eventType = "\(integerValue)"
-      obj.appendUnknownEvent(entry)
+      EventHistory.shared.appendUnknownEvent(entry)
       return
     }
 
@@ -150,14 +146,14 @@ private func callback(
       libkrbn_get_modifier_flag_name(&buffer, buffer.count, usagePage, usage)
       let modifierFlagName = String(cString: buffer)
 
-      if obj.modifierFlags[deviceId] == nil {
-        obj.modifierFlags[deviceId] = Set()
+      if EventHistory.shared.modifierFlags[deviceId] == nil {
+        EventHistory.shared.modifierFlags[deviceId] = Set()
       }
 
       if integerValue != 0 {
-        obj.modifierFlags[deviceId]!.insert(modifierFlagName)
+        EventHistory.shared.modifierFlags[deviceId]!.insert(modifierFlagName)
       } else {
-        obj.modifierFlags[deviceId]!.remove(modifierFlagName)
+        EventHistory.shared.modifierFlags[deviceId]!.remove(modifierFlagName)
       }
     }
 
@@ -175,7 +171,7 @@ private func callback(
     // entry.misc
     //
 
-    if let set = obj.modifierFlags[deviceId] {
+    if let set = EventHistory.shared.modifierFlags[deviceId] {
       if set.count > 0 {
         let flags = set.sorted().joined(separator: ",")
         entry.misc = "flags \(flags)"
@@ -186,7 +182,7 @@ private func callback(
     // Add to entries
     //
 
-    obj.append(entry)
+    EventHistory.shared.append(entry)
   }
 }
 
@@ -214,8 +210,7 @@ public class EventHistory: ObservableObject {
   @Published var unknownEventEntries: [EventHistoryEntry] = []
 
   private init() {
-    let obj = unsafeBitCast(self, to: UnsafeMutableRawPointer.self)
-    libkrbn_enable_hid_value_monitor(callback, obj)
+    libkrbn_enable_hid_value_monitor(callback, nil)
   }
 
   deinit {

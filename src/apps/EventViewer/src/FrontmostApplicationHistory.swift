@@ -10,19 +10,15 @@ private func callback(
 
   let identifier = String(cString: bundleIdentifier!)
   let path = String(cString: filePath!)
-  let obj: FrontmostApplicationHistory! = unsafeBitCast(
-    context, to: FrontmostApplicationHistory.self)
 
   if identifier == "org.pqrs.Karabiner-EventViewer" { return }
 
-  DispatchQueue.main.async { [weak obj] in
-    guard let obj = obj else { return }
-
+  Task { @MainActor in
     let e = FrontmostApplicationEntry()
     e.bundleIdentifier = identifier
     e.filePath = path
 
-    obj.append(e)
+    FrontmostApplicationHistory.shared.append(e)
   }
 }
 
@@ -53,8 +49,7 @@ public class FrontmostApplicationHistory: ObservableObject {
   @Published var entries: [FrontmostApplicationEntry] = []
 
   private init() {
-    let obj = unsafeBitCast(self, to: UnsafeMutableRawPointer.self)
-    libkrbn_enable_frontmost_application_monitor(callback, obj)
+    libkrbn_enable_frontmost_application_monitor(callback, nil)
   }
 
   deinit {

@@ -4,14 +4,11 @@ private func callback(_ filePath: UnsafePointer<Int8>?, _ context: UnsafeMutable
   if filePath == nil { return }
 
   let path = String(cString: filePath!)
-  let obj: VariablesJsonString? = unsafeBitCast(context, to: VariablesJsonString.self)
 
   guard let text = try? String(contentsOfFile: path, encoding: .utf8) else { return }
 
-  DispatchQueue.main.async { [weak obj] in
-    guard let obj = obj else { return }
-
-    obj.text = text
+  Task { @MainActor in
+    VariablesJsonString.shared.text = text
   }
 }
 
@@ -21,8 +18,7 @@ public class VariablesJsonString: ObservableObject {
   @Published var text = ""
 
   private init() {
-    let obj = unsafeBitCast(self, to: UnsafeMutableRawPointer.self)
-    libkrbn_enable_manipulator_environment_json_file_monitor(callback, obj)
+    libkrbn_enable_manipulator_environment_json_file_monitor(callback, nil)
   }
 
   deinit {
