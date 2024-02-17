@@ -1,21 +1,20 @@
 import SwiftUI
 
 private func callback(
-  _: UnsafePointer<Int8>?,
+  _ filePath: UnsafePointer<Int8>?,
   _ context: UnsafeMutableRawPointer?
 ) {
-  let obj: NotificationWindowManager! = unsafeBitCast(context, to: NotificationWindowManager.self)
 
-  DispatchQueue.main.async { [weak obj] in
-    guard let obj = obj else { return }
-
+  Task { @MainActor in
     let body = String(cString: libkrbn_get_notification_message_body())
     NotificationMessage.shared.text = body.trimmingCharacters(in: .whitespacesAndNewlines)
-    obj.updateWindowsVisibility()
+    NotificationWindowManager.shared.updateWindowsVisibility()
   }
 }
 
 public class NotificationWindowManager {
+  static let shared = NotificationWindowManager()
+
   private struct ScreenWindow {
     var mainWindow: NSWindow
     var closeButtonWindow: NSWindow
@@ -36,8 +35,7 @@ public class NotificationWindowManager {
 
     updateWindows()
 
-    let obj = unsafeBitCast(self, to: UnsafeMutableRawPointer.self)
-    libkrbn_enable_notification_message_json_file_monitor(callback, obj)
+    libkrbn_enable_notification_message_json_file_monitor(callback, nil)
   }
 
   deinit {

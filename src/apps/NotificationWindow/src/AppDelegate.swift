@@ -2,8 +2,6 @@ import AppKit
 
 @NSApplicationMain
 public class AppDelegate: NSObject, NSApplicationDelegate {
-  private var notificationWindowManager: NotificationWindowManager?
-
   public func applicationDidFinishLaunching(_: Notification) {
     ProcessInfo.processInfo.enableSuddenTermination()
 
@@ -11,12 +9,10 @@ public class AppDelegate: NSObject, NSApplicationDelegate {
 
     KarabinerAppHelper.shared.observeVersionChange()
 
-    notificationWindowManager = NotificationWindowManager()
+    NotificationWindowManager.shared.updateWindowsVisibility()
   }
 
   public func applicationWillTerminate(_: Notification) {
-    notificationWindowManager = nil
-
     libkrbn_terminate()
   }
 }
