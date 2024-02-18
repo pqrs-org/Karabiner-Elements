@@ -1,11 +1,11 @@
 import SwiftUI
 
-struct ProView: View {
+struct ExpertView: View {
   @ObservedObject private var settings = LibKrbn.Settings.shared
 
   var body: some View {
     VStack(alignment: .leading, spacing: 24.0) {
-      GroupBox(label: Text("Pro mode")) {
+      GroupBox(label: Text("Expert mode")) {
         VStack(alignment: .leading, spacing: 12.0) {
           HStack {
             Toggle(isOn: $settings.unsafeUI) {
@@ -69,8 +69,8 @@ struct ProView: View {
   }
 }
 
-struct ProView_Previews: PreviewProvider {
+struct ExpertView_Previews: PreviewProvider {
   static var previews: some View {
-    ProView()
+    ExpertView()
   }
 }

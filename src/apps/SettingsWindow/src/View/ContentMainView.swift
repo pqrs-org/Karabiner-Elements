@@ -13,7 +13,7 @@ enum NavigationTag: String {
   case misc
   case uninstall
   case log
-  case pro
+  case expert
   case action
 }
 
@@ -29,7 +29,7 @@ struct ContentMainView: View {
         if settings.unsafeUI {
           Button(
             action: {
-              contentViewStates.navigationSelection = .pro
+              contentViewStates.navigationSelection = .expert
             },
             label: {
               HStack {
@@ -206,14 +206,14 @@ struct ContentMainView: View {
 
           Button(
             action: {
-              contentViewStates.navigationSelection = .pro
+              contentViewStates.navigationSelection = .expert
             },
             label: {
-              SidebarLabelView(text: "Pro", systemImage: "flame", padding: 2.0)
+              SidebarLabelView(text: "Expert", systemImage: "flame", padding: 2.0)
             }
           )
           .sidebarButtonStyle(
-            selected: contentViewStates.navigationSelection == .pro)
+            selected: contentViewStates.navigationSelection == .expert)
 
           Button(
             action: {
@@ -271,8 +271,8 @@ struct ContentMainView: View {
           UninstallView()
         case .log:
           LogView()
-        case .pro:
-          ProView()
+        case .expert:
+          ExpertView()
         case .action:
           ActionView()
         }
