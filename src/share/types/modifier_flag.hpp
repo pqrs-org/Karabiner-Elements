@@ -74,6 +74,11 @@ inline std::optional<std::string_view> get_modifier_flag_name(modifier_flag valu
   }
 }
 
+inline std::ostream& operator<<(std::ostream& stream, const modifier_flag& value) {
+  stream << nlohmann::json(value);
+  return stream;
+}
+
 inline void to_json(nlohmann::json& json, const modifier_flag& value) {
   if (auto name = get_modifier_flag_name(value)) {
     json = *name;
