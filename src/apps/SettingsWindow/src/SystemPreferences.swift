@@ -7,15 +7,12 @@ private func callback(
   _ context: UnsafeMutableRawPointer?
 ) {
   if systemPreferencesProperties == nil { return }
-  if context == nil { return }
 
-  let obj: SystemPreferences! = unsafeBitCast(context, to: SystemPreferences.self)
   let systemPreferencesPropertiesCopy = systemPreferencesProperties!.pointee
-  DispatchQueue.main.async { [weak obj, systemPreferencesPropertiesCopy] in
-    guard let obj = obj else { return }
 
+  Task { @MainActor in
     var properties = systemPreferencesPropertiesCopy
-    obj.updateProperties(&properties)
+    SystemPreferences.shared.updateProperties(&properties)
   }
 }
 
@@ -30,8 +27,7 @@ final class SystemPreferences: ObservableObject {
   private init() {
     didSetEnabled = true
 
-    let obj = unsafeBitCast(self, to: UnsafeMutableRawPointer.self)
-    libkrbn_enable_system_preferences_monitor(callback, obj)
+    libkrbn_enable_system_preferences_monitor(callback, nil)
   }
 
   public func updateProperties(

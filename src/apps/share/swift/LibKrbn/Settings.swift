@@ -7,14 +7,9 @@ private func callback(
   _ context: UnsafeMutableRawPointer?
 ) {
   if initializedCoreConfiguration == nil { return }
-  if context == nil { return }
 
-  let obj: LibKrbn.Settings! = unsafeBitCast(context, to: LibKrbn.Settings.self)
-
-  DispatchQueue.main.async { [weak obj] in
-    guard let obj = obj else { return }
-
-    obj.updateProperties(initializedCoreConfiguration)
+  Task { @MainActor in
+    LibKrbn.Settings.shared.updateProperties(initializedCoreConfiguration)
 
     NotificationCenter.default.post(
       name: LibKrbn.Settings.didConfigurationLoad,
@@ -41,8 +36,7 @@ extension LibKrbn {
     }
 
     func start() {
-      let obj = unsafeBitCast(self, to: UnsafeMutableRawPointer.self)
-      libkrbn_enable_configuration_monitor(callback, obj)
+      libkrbn_enable_configuration_monitor(callback, nil)
 
       NotificationCenter.default.addObserver(
         forName: ConnectedDevices.didConnectedDevicesUpdate,

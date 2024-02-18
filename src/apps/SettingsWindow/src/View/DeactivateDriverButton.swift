@@ -13,7 +13,7 @@ struct DeactivateDriverButton: View {
           self.showingResult = false
 
           VirtualHIDDeviceManager.shared.deactivateDriver(completion: { status in
-            DispatchQueue.main.async {
+            Task { @MainActor in
               self.status = status
               self.showingProgress = false
               self.showingResult = true

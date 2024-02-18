@@ -16,7 +16,7 @@ class VirtualHIDDeviceManager {
   }
 
   private func run(argument: String, completion: @escaping (Int32) -> Void) {
-    DispatchQueue.global().async {
+    Task {
       let task = Process()
       task.executableURL = URL(
         fileURLWithPath:

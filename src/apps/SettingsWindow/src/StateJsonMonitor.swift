@@ -4,13 +4,10 @@ private func callback(
   _ filePath: UnsafePointer<Int8>?,
   _ context: UnsafeMutableRawPointer?
 ) {
-  let obj: StateJsonMonitor! = unsafeBitCast(context, to: StateJsonMonitor.self)
   let path = String(cString: filePath!)
 
-  DispatchQueue.main.async { [weak obj] in
-    guard let obj = obj else { return }
-
-    obj.update(path)
+  Task { @MainActor in
+    StateJsonMonitor.shared.update(path)
   }
 }
 
@@ -26,9 +23,8 @@ public class StateJsonMonitor {
   private var states: [String: State] = [:]
 
   public func start() {
-    let obj = unsafeBitCast(self, to: UnsafeMutableRawPointer.self)
-    libkrbn_enable_observer_state_json_file_monitor(callback, obj)
-    libkrbn_enable_grabber_state_json_file_monitor(callback, obj)
+    libkrbn_enable_observer_state_json_file_monitor(callback, nil)
+    libkrbn_enable_grabber_state_json_file_monitor(callback, nil)
   }
 
   public func stop() {

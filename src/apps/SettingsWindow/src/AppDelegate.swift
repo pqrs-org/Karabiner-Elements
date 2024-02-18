@@ -137,9 +137,7 @@ public class AppDelegate: NSObject, NSApplicationDelegate {
     guard let url = event.paramDescriptor(forKeyword: AEKeyword(keyDirectObject))?.stringValue
     else { return }
 
-    DispatchQueue.main.async { [weak self] in
-      guard let self = self else { return }
-
+    Task { @MainActor in
       if let window = self.window {
         KarabinerAppHelper.shared.endAllAttachedSheets(window)
       }

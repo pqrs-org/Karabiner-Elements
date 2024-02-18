@@ -21,11 +21,10 @@ final class ComplexModificationsFileImport: ObservableObject {
     title = ""
     descriptions = []
 
-    task = URLSession.shared.dataTask(with: url) { [weak self] (data, _, error) in
-      DispatchQueue.main.async {
-        guard let self = self else { return }
-        guard let data = data else { return }
+    task = URLSession.shared.dataTask(with: url) { data, _, error in
+      guard let data = data else { return }
 
+      Task { @MainActor in
         self.fetching = false
 
         if let error = error {

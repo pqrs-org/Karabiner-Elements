@@ -11,9 +11,6 @@ private func callback(
   _ context: UnsafeMutableRawPointer?
 ) {
   if logLines == nil { return }
-  if context == nil { return }
-
-  let obj: LogMessages! = unsafeBitCast(context, to: LogMessages.self)
 
   var logMessageEntries: [LogMessageEntry] = []
   let size = libkrbn_log_lines_get_size(logLines)
@@ -36,10 +33,9 @@ private func callback(
     }
   }
 
-  DispatchQueue.main.async { [weak obj] in
-    guard let obj = obj else { return }
-
-    obj.setEntries(logMessageEntries)
+  let logMessageEntriesCopy = logMessageEntries
+  Task { @MainActor in
+    LogMessages.shared.setEntries(logMessageEntriesCopy)
   }
 }
 
@@ -89,8 +85,7 @@ public class LogMessages: ObservableObject {
   public func watch() {
     entries = []
 
-    let obj = unsafeBitCast(self, to: UnsafeMutableRawPointer.self)
-    libkrbn_enable_log_monitor(callback, obj)
+    libkrbn_enable_log_monitor(callback, nil)
 
     //
     // Create timer

@@ -7,14 +7,9 @@ private func callback(
   _ context: UnsafeMutableRawPointer?
 ) {
   if initializedConnectedDevices == nil { return }
-  if context == nil { return }
 
-  let obj: LibKrbn.ConnectedDevices! = unsafeBitCast(context, to: LibKrbn.ConnectedDevices.self)
-
-  DispatchQueue.main.async { [weak obj] in
-    guard let obj = obj else { return }
-
-    obj.update(initializedConnectedDevices)
+  Task { @MainActor in
+    LibKrbn.ConnectedDevices.shared.update(initializedConnectedDevices)
   }
 }
 
@@ -26,8 +21,7 @@ extension LibKrbn {
     @Published var connectedDevices: [ConnectedDevice] = []
 
     private init() {
-      let obj = unsafeBitCast(self, to: UnsafeMutableRawPointer.self)
-      libkrbn_enable_connected_devices_monitor(callback, obj)
+      libkrbn_enable_connected_devices_monitor(callback, nil)
     }
 
     public func update(_ libkrbnConnectedDevices: UnsafeMutableRawPointer?) {

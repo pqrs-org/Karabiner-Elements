@@ -1,13 +1,13 @@
 import SwiftUI
 
 private func enable() {
-  DispatchQueue.main.async {
+  Task { @MainActor in
     LibKrbn.GrabberClient.shared.enabled = true
   }
 }
 
 private func disable() {
-  DispatchQueue.main.async {
+  Task { @MainActor in
     LibKrbn.GrabberClient.shared.enabled = false
   }
 }
