@@ -2,6 +2,7 @@
 
 #include "types.hpp"
 #include <array>
+#include <set>
 #include <thread>
 #include <vector>
 
@@ -9,6 +10,7 @@ namespace krbn {
 class modifier_flag_manager final {
 public:
 #include "modifier_flag_manager/active_modifier_flag.hpp"
+#include "modifier_flag_manager/scoped_modifier_flag.hpp"
 
   modifier_flag_manager(const modifier_flag_manager&) = delete;
 
@@ -118,6 +120,10 @@ public:
     }
   }
 
+  const std::vector<active_modifier_flag>& get_active_modifier_flags(void) const {
+    return active_modifier_flags_;
+  }
+
   size_t active_modifier_flags_size(void) const {
     return active_modifier_flags_.size();
   }
@@ -175,6 +181,29 @@ public:
     return modifiers;
   }
 
+  std::set<modifier_flag> make_modifier_flags(void) const {
+    std::set<modifier_flag> modifier_flags;
+
+    for (const auto& m : {
+             modifier_flag::caps_lock,
+             modifier_flag::left_control,
+             modifier_flag::left_shift,
+             modifier_flag::left_option,
+             modifier_flag::left_command,
+             modifier_flag::right_control,
+             modifier_flag::right_shift,
+             modifier_flag::right_option,
+             modifier_flag::right_command,
+             modifier_flag::fn,
+         }) {
+      if (is_pressed(m)) {
+        modifier_flags.insert(m);
+      }
+    }
+
+    return modifier_flags;
+  }
+
 private:
   void erase_pairs(void) {
     for (size_t i1 = 0; i1 < active_modifier_flags_.size(); ++i1) {
@@ -193,4 +222,16 @@ private:
 
   std::vector<active_modifier_flag> active_modifier_flags_;
 };
+
+inline std::ostream& operator<<(std::ostream& stream, const modifier_flag_manager::active_modifier_flag& value) {
+  stream << value.to_json();
+  return stream;
+}
+
+inline std::ostream& operator<<(std::ostream& stream, const std::vector<modifier_flag_manager::active_modifier_flag>& value) {
+  for (const auto& v : value) {
+    stream << v.to_json() << std::endl;
+  }
+  return stream;
+}
 } // namespace krbn

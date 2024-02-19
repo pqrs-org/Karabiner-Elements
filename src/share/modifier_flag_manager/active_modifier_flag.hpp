@@ -148,6 +148,42 @@ public:
 
   constexpr auto operator<=>(const active_modifier_flag&) const = default;
 
+  nlohmann::json to_json(void) const {
+    nlohmann::json json;
+
+    switch (type_) {
+      case type::increase:
+        json["type"] = "increase";
+        break;
+      case type::decrease:
+        json["type"] = "decrease";
+        break;
+      case type::increase_lock:
+        json["type"] = "increase_lock";
+        break;
+      case type::decrease_lock:
+        json["type"] = "decrease_lock";
+        break;
+      case type::increase_led_lock:
+        json["type"] = "increase_led_lock";
+        break;
+      case type::decrease_led_lock:
+        json["type"] = "decrease_led_lock";
+        break;
+      case type::increase_sticky:
+        json["type"] = "increase_sticky";
+        break;
+      case type::decrease_sticky:
+        json["type"] = "decrease_sticky";
+        break;
+    }
+
+    json["modifier_flag"] = modifier_flag_;
+    json["device_id"] = device_id_;
+
+    return json;
+  }
+
 private:
   type type_;
   modifier_flag modifier_flag_;

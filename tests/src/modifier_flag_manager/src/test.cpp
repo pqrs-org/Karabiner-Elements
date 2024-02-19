@@ -1,4 +1,5 @@
 #include "modifier_flag_manager.hpp"
+#include "scoped_modifier_flags_test.hpp"
 #include <boost/ut.hpp>
 
 namespace {
@@ -65,6 +66,9 @@ krbn::modifier_flag_manager::active_modifier_flag right_shift_1(krbn::modifier_f
 krbn::modifier_flag_manager::active_modifier_flag right_command_1(krbn::modifier_flag_manager::active_modifier_flag::type::increase,
                                                                   krbn::modifier_flag::right_command,
                                                                   krbn::device_id(1));
+krbn::modifier_flag_manager::active_modifier_flag fn_1(krbn::modifier_flag_manager::active_modifier_flag::type::increase,
+                                                       krbn::modifier_flag::fn,
+                                                       krbn::device_id(1));
 } // namespace
 
 int main(void) {
@@ -354,6 +358,28 @@ int main(void) {
       expect(modifier_flag_manager.make_hid_report_modifiers() == expected);
     }
   };
+
+  "modifier_flag_manager::make_modifier_flags"_test = [] {
+    {
+      krbn::modifier_flag_manager modifier_flag_manager;
+
+      expect(std::set<krbn::modifier_flag>({}) == modifier_flag_manager.make_modifier_flags());
+
+      modifier_flag_manager.push_back_active_modifier_flag(led_lock_caps_lock);
+      modifier_flag_manager.push_back_active_modifier_flag(left_shift_1);
+      modifier_flag_manager.push_back_active_modifier_flag(right_command_1);
+      modifier_flag_manager.push_back_active_modifier_flag(fn_1);
+
+      expect(std::set<krbn::modifier_flag>({
+                 krbn::modifier_flag::caps_lock,
+                 krbn::modifier_flag::left_shift,
+                 krbn::modifier_flag::right_command,
+                 krbn::modifier_flag::fn,
+             }) == modifier_flag_manager.make_modifier_flags());
+    }
+  };
+
+  run_scoped_modifier_flags_test();
 
   return 0;
 }
