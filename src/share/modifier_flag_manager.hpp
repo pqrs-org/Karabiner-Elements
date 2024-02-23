@@ -2,15 +2,15 @@
 
 #include "types.hpp"
 #include <array>
-#include <set>
 #include <thread>
+#include <unordered_set>
 #include <vector>
 
 namespace krbn {
 class modifier_flag_manager final {
 public:
 #include "modifier_flag_manager/active_modifier_flag.hpp"
-#include "modifier_flag_manager/scoped_modifier_flag.hpp"
+#include "modifier_flag_manager/scoped_modifier_flags.hpp"
 
   modifier_flag_manager(const modifier_flag_manager&) = delete;
 
@@ -181,8 +181,8 @@ public:
     return modifiers;
   }
 
-  std::set<modifier_flag> make_modifier_flags(void) const {
-    std::set<modifier_flag> modifier_flags;
+  std::unordered_set<modifier_flag> make_modifier_flags(void) const {
+    std::unordered_set<modifier_flag> modifier_flags;
 
     for (const auto& m : {
              modifier_flag::caps_lock,

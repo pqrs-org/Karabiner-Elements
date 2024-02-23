@@ -1,9 +1,9 @@
 #pragma once
 
-class scoped_modifier_flag final {
+class scoped_modifier_flags final {
 public:
-  scoped_modifier_flag(modifier_flag_manager& modifier_flag_manager,
-                       std::set<modifier_flag> modifier_flags)
+  scoped_modifier_flags(modifier_flag_manager& modifier_flag_manager,
+                        std::unordered_set<modifier_flag> modifier_flags)
       : modifier_flag_manager_(modifier_flag_manager) {
     for (const auto& m : {
              modifier_flag::caps_lock,
@@ -38,7 +38,7 @@ public:
     }
   }
 
-  ~scoped_modifier_flag(void) {
+  ~scoped_modifier_flags(void) {
     for (const auto& f : get_inverse_active_modifier_flags()) {
       modifier_flag_manager_.push_back_active_modifier_flag(f);
     }
