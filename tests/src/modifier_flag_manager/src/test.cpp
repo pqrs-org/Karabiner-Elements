@@ -363,14 +363,14 @@ int main(void) {
     {
       krbn::modifier_flag_manager modifier_flag_manager;
 
-      expect(std::set<krbn::modifier_flag>({}) == modifier_flag_manager.make_modifier_flags());
+      expect(std::unordered_set<krbn::modifier_flag>({}) == modifier_flag_manager.make_modifier_flags());
 
       modifier_flag_manager.push_back_active_modifier_flag(led_lock_caps_lock);
       modifier_flag_manager.push_back_active_modifier_flag(left_shift_1);
       modifier_flag_manager.push_back_active_modifier_flag(right_command_1);
       modifier_flag_manager.push_back_active_modifier_flag(fn_1);
 
-      expect(std::set<krbn::modifier_flag>({
+      expect(std::unordered_set<krbn::modifier_flag>({
                  krbn::modifier_flag::caps_lock,
                  krbn::modifier_flag::left_shift,
                  krbn::modifier_flag::right_command,
