@@ -1,0 +1,116 @@
+[
+    // Rules:
+    //   - right_control -> left_command (escape)
+    //   - spacebar -> left_shift (spacebar)
+    //
+    // Send events:
+    //   - right_control key_down
+    //   - spacebar key_down
+    //   - right_control key_up
+    //   - spacebar key_up
+    //
+    // Expected result:
+    //   - left_command key_down
+    //   - left_shift key_down
+    //   - left_command key_up
+    //   - left_shift key_up
+    //   - left_command key_down
+    //   - spacebar key_down
+    //   - spacebar key_up
+
+    // right_control key_down
+    {
+        "device_id": 1,
+        "event": {
+            "momentary_switch_event": {
+                "key_code": "right_control"
+            },
+            "type": "momentary_switch_event"
+        },
+        "event_origin": "grabbed_device",
+        "event_time_stamp": {
+            "time_stamp": 2
+        },
+        "event_type": "key_down",
+        "lazy": false,
+        "original_event": {
+            "momentary_switch_event": {
+                "key_code": "right_control"
+            },
+            "type": "momentary_switch_event"
+        },
+        "validity": true
+    },
+
+    // spacebar key_down
+    {
+        "device_id": 1,
+        "event": {
+            "momentary_switch_event": {
+                "key_code": "spacebar"
+            },
+            "type": "momentary_switch_event"
+        },
+        "event_origin": "grabbed_device",
+        "event_time_stamp": {
+            "time_stamp": 4
+        },
+        "event_type": "key_down",
+        "lazy": false,
+        "original_event": {
+            "momentary_switch_event": {
+                "key_code": "spacebar"
+            },
+            "type": "momentary_switch_event"
+        },
+        "validity": true
+    },
+
+    // right_control key_up
+    {
+        "device_id": 1,
+        "event": {
+            "momentary_switch_event": {
+                "key_code": "right_control"
+            },
+            "type": "momentary_switch_event"
+        },
+        "event_origin": "grabbed_device",
+        "event_time_stamp": {
+            "time_stamp": 6
+        },
+        "event_type": "key_up",
+        "lazy": false,
+        "original_event": {
+            "momentary_switch_event": {
+                "key_code": "right_control"
+            },
+            "type": "momentary_switch_event"
+        },
+        "validity": true
+    },
+
+    // spacebar key_up
+    {
+        "device_id": 1,
+        "event": {
+            "momentary_switch_event": {
+                "key_code": "spacebar"
+            },
+            "type": "momentary_switch_event"
+        },
+        "event_origin": "grabbed_device",
+        "event_time_stamp": {
+            "time_stamp": 8
+        },
+        "event_type": "key_up",
+        "lazy": false,
+        "original_event": {
+            "momentary_switch_event": {
+                "key_code": "spacebar"
+            },
+            "type": "momentary_switch_event"
+        },
+        "validity": true
+    }
+]

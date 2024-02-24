@@ -1,0 +1,170 @@
+[
+    // Rules:
+    //   - spacebar -> left_shift (spacebar)
+    //   - shift+tab -> return_or_enter (spacebar)
+    //
+    // Send events:
+    //   - left_option key_down
+    //   - spacebar key_down
+    //   - tab key_down
+    //   - left_option key_up
+    //   - spacebar key_up
+    //   - tab key_up
+    //
+    // Expected result:
+    //   - left_option key_down
+    //   - left_shift key_down
+    //   - left_shift key_up
+    //   - return_or_enter key_down
+    //   - left_shift key_down
+    //   - left_option key_up
+    //   - left_shift key_up
+    //   - return_or_enter key_up
+    //   - left_option key_down
+    //   - spacebar key_down
+    //   - spacebar key_up
+
+    // left_option key_down
+    {
+        "device_id": 1,
+        "event": {
+            "momentary_switch_event": {
+                "key_code": "left_option"
+            },
+            "type": "momentary_switch_event"
+        },
+        "event_origin": "grabbed_device",
+        "event_time_stamp": {
+            "time_stamp": 2
+        },
+        "event_type": "key_down",
+        "lazy": false,
+        "original_event": {
+            "momentary_switch_event": {
+                "key_code": "left_option"
+            },
+            "type": "momentary_switch_event"
+        },
+        "validity": true
+    },
+
+    // spacebar key_down
+    {
+        "device_id": 1,
+        "event": {
+            "momentary_switch_event": {
+                "key_code": "spacebar"
+            },
+            "type": "momentary_switch_event"
+        },
+        "event_origin": "grabbed_device",
+        "event_time_stamp": {
+            "time_stamp": 4
+        },
+        "event_type": "key_down",
+        "lazy": false,
+        "original_event": {
+            "momentary_switch_event": {
+                "key_code": "spacebar"
+            },
+            "type": "momentary_switch_event"
+        },
+        "validity": true
+    },
+
+    // tab key_down
+    {
+        "device_id": 1,
+        "event": {
+            "momentary_switch_event": {
+                "key_code": "tab"
+            },
+            "type": "momentary_switch_event"
+        },
+        "event_origin": "grabbed_device",
+        "event_time_stamp": {
+            "time_stamp": 6
+        },
+        "event_type": "key_down",
+        "lazy": false,
+        "original_event": {
+            "momentary_switch_event": {
+                "key_code": "tab"
+            },
+            "type": "momentary_switch_event"
+        },
+        "validity": true
+    },
+
+    // left_option key_up
+    {
+        "device_id": 1,
+        "event": {
+            "momentary_switch_event": {
+                "key_code": "left_option"
+            },
+            "type": "momentary_switch_event"
+        },
+        "event_origin": "grabbed_device",
+        "event_time_stamp": {
+            "time_stamp": 8
+        },
+        "event_type": "key_up",
+        "lazy": false,
+        "original_event": {
+            "momentary_switch_event": {
+                "key_code": "left_option"
+            },
+            "type": "momentary_switch_event"
+        },
+        "validity": true
+    },
+
+    // spacebar key_up
+    {
+        "device_id": 1,
+        "event": {
+            "momentary_switch_event": {
+                "key_code": "spacebar"
+            },
+            "type": "momentary_switch_event"
+        },
+        "event_origin": "grabbed_device",
+        "event_time_stamp": {
+            "time_stamp": 10
+        },
+        "event_type": "key_up",
+        "lazy": false,
+        "original_event": {
+            "momentary_switch_event": {
+                "key_code": "spacebar"
+            },
+            "type": "momentary_switch_event"
+        },
+        "validity": true
+    },
+
+    // tab key_up
+    {
+        "device_id": 1,
+        "event": {
+            "momentary_switch_event": {
+                "key_code": "tab"
+            },
+            "type": "momentary_switch_event"
+        },
+        "event_origin": "grabbed_device",
+        "event_time_stamp": {
+            "time_stamp": 12
+        },
+        "event_type": "key_up",
+        "lazy": false,
+        "original_event": {
+            "momentary_switch_event": {
+                "key_code": "tab"
+            },
+            "type": "momentary_switch_event"
+        },
+        "validity": true
+    }
+]
