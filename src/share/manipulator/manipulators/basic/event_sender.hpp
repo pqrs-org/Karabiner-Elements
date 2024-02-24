@@ -320,6 +320,22 @@ inline void post_extra_to_events(const event_queue::entry& front_input_event,
     }
   }
 }
+
+inline void post_active_modifier_flags(const event_queue::entry& front_input_event,
+                                       const std::vector<modifier_flag_manager::active_modifier_flag>& active_modifier_flags,
+                                       absolute_time_duration& time_stamp_delay,
+                                       event_queue::queue& output_event_queue) {
+  for (const auto& f : active_modifier_flags) {
+    base::post_lazy_modifier_key_event(momentary_switch_event(f.get_modifier_flag()),
+                                       f.get_count() > 0 ? event_type::key_down : event_type::key_up,
+                                       f.get_device_id(),
+                                       front_input_event.get_event_time_stamp(),
+                                       time_stamp_delay,
+                                       front_input_event.get_original_event(),
+                                       front_input_event.get_event_origin(),
+                                       output_event_queue);
+  }
+}
 } // namespace event_sender
 } // namespace basic
 } // namespace manipulators
