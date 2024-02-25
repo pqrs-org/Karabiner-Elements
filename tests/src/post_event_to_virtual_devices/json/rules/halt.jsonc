@@ -64,5 +64,24 @@
                 "halt": true
             }
         ]
+    },
+    {
+        "description": "with modifiers",
+        "type": "basic",
+        "from": {
+            "key_code": "f13"
+        },
+        "to_after_key_up": [
+            {
+                "key_code": "f15",
+                "modifiers": ["left_shift"]
+            }
+        ],
+        "to_if_alone": [
+            {
+                "key_code": "f14",
+                "halt": true
+            }
+        ]
     }
 ]
