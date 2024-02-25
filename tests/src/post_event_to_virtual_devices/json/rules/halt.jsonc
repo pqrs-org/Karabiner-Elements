@@ -83,5 +83,27 @@
                 "halt": true
             }
         ]
+    },
+    {
+        "description": "with from modifiers",
+        "type": "basic",
+        "from": {
+            "key_code": "f16",
+            "modifiers": {
+                "mandatory": ["left_control"]
+            }
+        },
+        "to_after_key_up": [
+            {
+                "key_code": "f18",
+                "modifiers": ["left_shift"]
+            }
+        ],
+        "to_if_alone": [
+            {
+                "key_code": "f17",
+                "halt": true
+            }
+        ]
     }
 ]

@@ -1,0 +1,108 @@
+[
+    // Send events:
+    //   - left_control key_down
+    //   - f16 key_down
+    //   - f16 key_up
+    //   - tab key_down
+    //
+    // Expected result:
+    //   - left_control key_down
+    //   - left_control key_up
+    //   - f17 key_down
+    //   - f17 key_up
+    //   - left_control key_down
+    //   - tab key_down
+
+    // left_control key_down
+    {
+        "device_id": 1,
+        "event": {
+            "momentary_switch_event": {
+                "key_code": "left_control"
+            },
+            "type": "momentary_switch_event"
+        },
+        "event_origin": "grabbed_device",
+        "event_time_stamp": {
+            "time_stamp": 2
+        },
+        "event_type": "key_down",
+        "lazy": false,
+        "original_event": {
+            "momentary_switch_event": {
+                "key_code": "left_control"
+            },
+            "type": "momentary_switch_event"
+        },
+        "validity": true
+    },
+    // f16 key_down
+    {
+        "device_id": 1,
+        "event": {
+            "momentary_switch_event": {
+                "key_code": "f16"
+            },
+            "type": "momentary_switch_event"
+        },
+        "event_origin": "grabbed_device",
+        "event_time_stamp": {
+            "time_stamp": 4
+        },
+        "event_type": "key_down",
+        "lazy": false,
+        "original_event": {
+            "momentary_switch_event": {
+                "key_code": "f16"
+            },
+            "type": "momentary_switch_event"
+        },
+        "validity": true
+    },
+    // f16 key_up
+    {
+        "device_id": 1,
+        "event": {
+            "momentary_switch_event": {
+                "key_code": "f16"
+            },
+            "type": "momentary_switch_event"
+        },
+        "event_origin": "grabbed_device",
+        "event_time_stamp": {
+            "time_stamp": 6
+        },
+        "event_type": "key_up",
+        "lazy": false,
+        "original_event": {
+            "momentary_switch_event": {
+                "key_code": "f16"
+            },
+            "type": "momentary_switch_event"
+        },
+        "validity": true
+    },
+    // tab key_down
+    {
+        "device_id": 1,
+        "event": {
+            "momentary_switch_event": {
+                "key_code": "tab"
+            },
+            "type": "momentary_switch_event"
+        },
+        "event_origin": "grabbed_device",
+        "event_time_stamp": {
+            "time_stamp": 8
+        },
+        "event_type": "key_down",
+        "lazy": false,
+        "original_event": {
+            "momentary_switch_event": {
+                "key_code": "tab"
+            },
+            "type": "momentary_switch_event"
+        },
+        "validity": true
+    }
+]
