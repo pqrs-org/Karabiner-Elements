@@ -17,7 +17,11 @@ public:
         flip_vertical_wheel_(false),
         flip_horizontal_wheel_(false),
         swap_xy_(false),
-        swap_wheels_(false) {
+        swap_wheels_(false),
+        discard_x_(false),
+        discard_y_(false),
+        discard_vertical_wheel_(false),
+        discard_horizontal_wheel_(false) {
     pqrs::json::requires_object(json, "json");
 
     for (const auto& [key, value] : json.items()) {
@@ -48,6 +52,23 @@ public:
             swap_xy_ = true;
           } else if (j == "wheels") {
             swap_wheels_ = true;
+          }
+        }
+
+      } else if (key == "discard") {
+        pqrs::json::requires_array(value, "`" + key + "`");
+
+        for (const auto& j : value) {
+          pqrs::json::requires_string(j, "items in `" + key + "`");
+
+          if (j == "x") {
+            discard_x_ = true;
+          } else if (j == "y") {
+            discard_y_ = true;
+          } else if (j == "vertical_wheel") {
+            discard_vertical_wheel_ = true;
+          } else if (j == "horizontal_wheel") {
+            discard_horizontal_wheel_ = true;
           }
         }
 
@@ -102,7 +123,11 @@ public:
             flip_vertical_wheel_ ||
             flip_horizontal_wheel_ ||
             swap_xy_ ||
-            swap_wheels_) {
+            swap_wheels_ ||
+            discard_x_ ||
+            discard_y_ ||
+            discard_vertical_wheel_ ||
+            discard_horizontal_wheel_) {
           front_input_event.set_validity(validity::invalid);
 
           auto motion = *m;
@@ -139,6 +164,22 @@ public:
 
           if (flip_horizontal_wheel_) {
             motion.set_horizontal_wheel(-motion.get_horizontal_wheel());
+          }
+
+          if (discard_x_) {
+            motion.set_x(0);
+          }
+
+          if (discard_y_) {
+            motion.set_y(0);
+          }
+
+          if (discard_vertical_wheel_) {
+            motion.set_vertical_wheel(0);
+          }
+
+          if (discard_horizontal_wheel_) {
+            motion.set_horizontal_wheel(0);
           }
 
           output_event_queue->emplace_back_entry(front_input_event.get_device_id(),
@@ -186,6 +227,10 @@ private:
   bool flip_horizontal_wheel_;
   bool swap_xy_;
   bool swap_wheels_;
+  bool discard_x_;
+  bool discard_y_;
+  bool discard_vertical_wheel_;
+  bool discard_horizontal_wheel_;
 };
 } // namespace mouse_basic
 } // namespace manipulators
