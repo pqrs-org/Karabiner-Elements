@@ -405,7 +405,8 @@ public:
                       std::make_shared<manipulated_original_event::manipulated_original_event>(
                           from_events,
                           *from_mandatory_modifiers,
-                          front_input_event.get_event_time_stamp().get_time_stamp());
+                          front_input_event.get_event_time_stamp().get_time_stamp(),
+                          output_event_queue->get_modifier_flag_manager().make_modifier_flags());
                   manipulated_original_events_.push_back(current_manipulated_original_event);
                 }
               }
@@ -504,6 +505,31 @@ public:
                     auto duration = pqrs::osx::chrono::make_milliseconds(front_input_event.get_event_time_stamp().get_time_stamp() - current_manipulated_original_event->get_key_down_time_stamp());
                     if (current_manipulated_original_event->get_alone() &&
                         duration < std::chrono::milliseconds(parameters_.get_basic_to_if_alone_timeout_milliseconds())) {
+                      //
+                      // Before sending to_if_alone events, we should restore the modifier flags to the state they were in when the from-key was pressed.
+                      //
+
+                      std::vector<modifier_flag_manager::active_modifier_flag> scoped_active_modifier_flags;
+                      std::vector<modifier_flag_manager::active_modifier_flag> inverse_active_modifier_flags;
+
+                      {
+                        // It's not only necessary to change the state of the output_event_queue::modifier_flag_manager, but also to send the key event here.
+                        // So, once we use scoped_modifier_flags to find out which key events we need to send, and then send them.
+                        modifier_flag_manager::scoped_modifier_flags scoped_modifier_flags(output_event_queue->get_modifier_flag_manager(),
+                                                                                           current_manipulated_original_event->get_key_down_modifier_flags());
+                        scoped_active_modifier_flags = scoped_modifier_flags.get_scoped_active_modifier_flags();
+                        inverse_active_modifier_flags = scoped_modifier_flags.get_inverse_active_modifier_flags();
+                      }
+
+                      event_sender::post_active_modifier_flags(front_input_event,
+                                                               scoped_active_modifier_flags,
+                                                               time_stamp_delay,
+                                                               *output_event_queue);
+
+                      //
+                      // Send to_if_alone events
+                      //
+
                       event_sender::post_from_mandatory_modifiers_key_up(front_input_event,
                                                                          *current_manipulated_original_event,
                                                                          time_stamp_delay,
@@ -519,6 +545,15 @@ public:
                                                                            *current_manipulated_original_event,
                                                                            time_stamp_delay,
                                                                            *output_event_queue);
+
+                      //
+                      // Revert scoped modifier flags changes.
+                      //
+
+                      event_sender::post_active_modifier_flags(front_input_event,
+                                                               inverse_active_modifier_flags,
+                                                               time_stamp_delay,
+                                                               *output_event_queue);
                     }
                   }
 
