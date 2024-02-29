@@ -80,6 +80,10 @@ if (abs(cos(radian)) <= abs(sin(radian))) {
                                        mouse_flip_horizontal_wheel_(false),
                                        mouse_swap_xy_(false),
                                        mouse_swap_wheels_(false),
+                                       mouse_discard_x_(false),
+                                       mouse_discard_y_(false),
+                                       mouse_discard_vertical_wheel_(false),
+                                       mouse_discard_horizontal_wheel_(false),
                                        game_pad_swap_sticks_(false) {
     auto ignore_configured = false;
     auto manipulate_caps_lock_led_configured = false;
@@ -155,6 +159,26 @@ if (abs(cos(radian)) <= abs(sin(radian))) {
         pqrs::json::requires_boolean(value, "`" + key + "`");
 
         mouse_swap_wheels_ = value.get<bool>();
+
+      } else if (key == "mouse_discard_x") {
+        pqrs::json::requires_boolean(value, "`" + key + "`");
+
+        mouse_discard_x_ = value.get<bool>();
+
+      } else if (key == "mouse_discard_y") {
+        pqrs::json::requires_boolean(value, "`" + key + "`");
+
+        mouse_discard_y_ = value.get<bool>();
+
+      } else if (key == "mouse_discard_vertical_wheel") {
+        pqrs::json::requires_boolean(value, "`" + key + "`");
+
+        mouse_discard_vertical_wheel_ = value.get<bool>();
+
+      } else if (key == "mouse_discard_horizontal_wheel") {
+        pqrs::json::requires_boolean(value, "`" + key + "`");
+
+        mouse_discard_horizontal_wheel_ = value.get<bool>();
 
       } else if (key == "game_pad_swap_sticks") {
         pqrs::json::requires_boolean(value, "`" + key + "`");
@@ -276,6 +300,10 @@ if (abs(cos(radian)) <= abs(sin(radian))) {
     j["mouse_flip_horizontal_wheel"] = mouse_flip_horizontal_wheel_;
     j["mouse_swap_xy"] = mouse_swap_xy_;
     j["mouse_swap_wheels"] = mouse_swap_wheels_;
+    j["mouse_discard_x"] = mouse_discard_x_;
+    j["mouse_discard_y"] = mouse_discard_y_;
+    j["mouse_discard_vertical_wheel"] = mouse_discard_vertical_wheel_;
+    j["mouse_discard_horizontal_wheel"] = mouse_discard_horizontal_wheel_;
     j["game_pad_swap_sticks"] = game_pad_swap_sticks_;
 
 #define OPTIONAL_SETTING(name)     \
@@ -407,6 +435,42 @@ if (abs(cos(radian)) <= abs(sin(radian))) {
   }
   void set_mouse_swap_wheels(bool value) {
     mouse_swap_wheels_ = value;
+
+    coordinate_between_properties();
+  }
+
+  bool get_mouse_discard_x(void) const {
+    return mouse_discard_x_;
+  }
+  void set_mouse_discard_x(bool value) {
+    mouse_discard_x_ = value;
+
+    coordinate_between_properties();
+  }
+
+  bool get_mouse_discard_y(void) const {
+    return mouse_discard_y_;
+  }
+  void set_mouse_discard_y(bool value) {
+    mouse_discard_y_ = value;
+
+    coordinate_between_properties();
+  }
+
+  bool get_mouse_discard_vertical_wheel(void) const {
+    return mouse_discard_vertical_wheel_;
+  }
+  void set_mouse_discard_vertical_wheel(bool value) {
+    mouse_discard_vertical_wheel_ = value;
+
+    coordinate_between_properties();
+  }
+
+  bool get_mouse_discard_horizontal_wheel(void) const {
+    return mouse_discard_horizontal_wheel_;
+  }
+  void set_mouse_discard_horizontal_wheel(bool value) {
+    mouse_discard_horizontal_wheel_ = value;
 
     coordinate_between_properties();
   }
@@ -601,6 +665,10 @@ private:
   bool mouse_flip_horizontal_wheel_;
   bool mouse_swap_xy_;
   bool mouse_swap_wheels_;
+  bool mouse_discard_x_;
+  bool mouse_discard_y_;
+  bool mouse_discard_vertical_wheel_;
+  bool mouse_discard_horizontal_wheel_;
   bool game_pad_swap_sticks_;
   std::optional<double> game_pad_xy_stick_continued_movement_absolute_magnitude_threshold_;
   std::optional<int> game_pad_xy_stick_continued_movement_interval_milliseconds_;

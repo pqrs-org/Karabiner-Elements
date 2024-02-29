@@ -115,6 +115,46 @@
         "error": "`mouse_swap_wheels` must be boolean, but is `null`"
     },
 
+    // mouse_discard_x
+
+    {
+        "class": "devices",
+        "input": {
+            "mouse_discard_x": null
+        },
+        "error": "`mouse_discard_x` must be boolean, but is `null`"
+    },
+
+    // mouse_discard_y
+
+    {
+        "class": "devices",
+        "input": {
+            "mouse_discard_y": null
+        },
+        "error": "`mouse_discard_y` must be boolean, but is `null`"
+    },
+
+    // mouse_discard_vertical_wheel
+
+    {
+        "class": "devices",
+        "input": {
+            "mouse_discard_vertical_wheel": null
+        },
+        "error": "`mouse_discard_vertical_wheel` must be boolean, but is `null`"
+    },
+
+    // mouse_discard_horizontal_wheel
+
+    {
+        "class": "devices",
+        "input": {
+            "mouse_discard_horizontal_wheel": null
+        },
+        "error": "`mouse_discard_horizontal_wheel` must be boolean, but is `null`"
+    },
+
     // game_pad_swap_sticks
 
     {

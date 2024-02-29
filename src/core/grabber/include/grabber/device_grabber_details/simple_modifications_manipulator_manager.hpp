@@ -70,12 +70,27 @@ public:
           swap.push_back("wheels");
         }
 
-        if (flip.size() > 0 || swap.size() > 0) {
+        auto discard = nlohmann::json::array();
+        if (device.get_mouse_discard_x()) {
+          discard.push_back("x");
+        }
+        if (device.get_mouse_discard_y()) {
+          discard.push_back("y");
+        }
+        if (device.get_mouse_discard_vertical_wheel()) {
+          discard.push_back("vertical_wheel");
+        }
+        if (device.get_mouse_discard_horizontal_wheel()) {
+          discard.push_back("horizontal_wheel");
+        }
+
+        if (flip.size() > 0 || swap.size() > 0 || discard.size() > 0) {
           try {
             auto json = nlohmann::json::object({
                 {"type", "mouse_basic"},
                 {"flip", flip},
                 {"swap", swap},
+                {"discard", discard},
             });
             auto parameters = krbn::core_configuration::details::complex_modifications_parameters();
             auto m = std::make_shared<manipulator::manipulators::mouse_basic::mouse_basic>(json,
