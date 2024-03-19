@@ -2484,6 +2484,10 @@
         "category": "Application Launch keys"
     },
     {
+        "label": "al_music_player",
+        "data": [{ "consumer_key_code": "al_music_player" }]
+    },
+    {
         "label": "al_word_processor",
         "data": [{ "consumer_key_code": "al_word_processor" }]
     },
