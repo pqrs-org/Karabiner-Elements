@@ -346,6 +346,7 @@ constexpr value_t volume_decrement(0x00ea);
 
 // application launch buttons
 
+constexpr value_t al_consumer_control_configuration(0x0183);
 constexpr value_t al_word_processor(0x0184);
 constexpr value_t al_text_editor(0x0185);
 constexpr value_t al_spreadsheet(0x0186);
