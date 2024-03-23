@@ -2484,8 +2484,8 @@
         "category": "Application Launch keys"
     },
     {
-        "label": "al_music_player",
-        "data": [{ "consumer_key_code": "al_music_player" }]
+        "label": "al_consumer_control_configuration",
+        "data": [{ "consumer_key_code": "al_consumer_control_configuration" }]
     },
     {
         "label": "al_word_processor",
