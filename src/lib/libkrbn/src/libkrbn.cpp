@@ -381,13 +381,14 @@ const char* libkrbn_complex_modifications_assets_manager_get_rule_description(si
 }
 
 void libkrbn_complex_modifications_assets_manager_add_rule_to_core_configuration_selected_profile(size_t file_index,
-                                                                                                  size_t index,
-                                                                                                  libkrbn_core_configuration* core_configuration) {
+                                                                                                  size_t index) {
   if (libkrbn_components_manager_) {
     if (auto m = libkrbn_components_manager_->get_complex_modifications_assets_manager()) {
-      m->add_rule_to_core_configuration_selected_profile(file_index,
-                                                         index,
-                                                         core_configuration);
+      if (auto c = libkrbn_components_manager_->get_current_core_configuration()) {
+        m->add_rule_to_core_configuration_selected_profile(file_index,
+                                                           index,
+                                                           *c);
+      }
     }
   }
 }

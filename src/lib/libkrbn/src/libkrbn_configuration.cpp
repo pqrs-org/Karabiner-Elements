@@ -6,9 +6,7 @@
 namespace {
 std::shared_ptr<krbn::core_configuration::core_configuration> get_current_core_configuration(void) {
   if (auto manager = libkrbn_cpp::get_components_manager()) {
-    if (auto m = manager->get_libkrbn_configuration_monitor()) {
-      return m->get_weak_core_configuration().lock();
-    }
+    return manager->get_current_core_configuration();
   }
 
   return nullptr;

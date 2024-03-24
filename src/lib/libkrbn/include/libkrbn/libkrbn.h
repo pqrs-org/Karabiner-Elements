@@ -65,7 +65,6 @@ void libkrbn_get_simple_modification_json_string(char* buffer, size_t length, in
 // libkrbn_core_configuration
 //
 
-typedef void libkrbn_core_configuration;
 bool libkrbn_core_configuration_save(char* error_message_buffer,
                                      size_t error_message_buffer_length);
 
@@ -326,8 +325,7 @@ const char* libkrbn_complex_modifications_assets_manager_get_rule_description(si
                                                                               size_t index);
 
 void libkrbn_complex_modifications_assets_manager_add_rule_to_core_configuration_selected_profile(size_t file_index,
-                                                                                                  size_t index,
-                                                                                                  libkrbn_core_configuration* core_configuration);
+                                                                                                  size_t index);
 bool libkrbn_complex_modifications_assets_manager_user_file(size_t index);
 void libkrbn_complex_modifications_assets_manager_erase_file(size_t index);
 

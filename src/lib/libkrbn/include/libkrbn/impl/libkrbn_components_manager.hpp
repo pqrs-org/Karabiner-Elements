@@ -43,6 +43,13 @@ public:
     return configuration_monitor_;
   }
 
+  std::shared_ptr<krbn::core_configuration::core_configuration> get_current_core_configuration(void) {
+    if (auto m = configuration_monitor_) {
+      return m->get_weak_core_configuration().lock();
+    }
+    return nullptr;
+  }
+
   //
   // complex_modifications_assets_manager_;
   //
