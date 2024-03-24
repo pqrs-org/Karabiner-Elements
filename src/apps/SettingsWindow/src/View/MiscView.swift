@@ -27,9 +27,11 @@ struct MiscView: View {
           HStack {
             Button(
               action: {
-                let url = URL(
-                  fileURLWithPath: String(cString: libkrbn_get_user_configuration_directory()),
-                  isDirectory: true)
+                var buffer = [Int8](repeating: 0, count: 32 * 1024)
+                libkrbn_get_user_configuration_directory(&buffer, buffer.count)
+                let path = String(cString: buffer)
+
+                let url = URL(fileURLWithPath: path, isDirectory: true)
                 NSWorkspace.shared.open(url)
               },
               label: {

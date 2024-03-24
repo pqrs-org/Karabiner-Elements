@@ -57,24 +57,29 @@ void libkrbn_terminate(void) {
   scoped_dispatcher_manager_ = nullptr;
 }
 
-const char* libkrbn_get_distributed_notification_observed_object(void) {
-  return krbn::constants::get_distributed_notification_observed_object();
+void libkrbn_get_distributed_notification_observed_object(char* buffer,
+                                                          size_t length) {
+  strlcpy(buffer, krbn::constants::get_distributed_notification_observed_object(), length);
 }
 
-const char* libkrbn_get_distributed_notification_console_user_server_is_disabled(void) {
-  return krbn::constants::get_distributed_notification_console_user_server_is_disabled();
+void libkrbn_get_distributed_notification_console_user_server_is_disabled(char* buffer,
+                                                                          size_t length) {
+  strlcpy(buffer, krbn::constants::get_distributed_notification_console_user_server_is_disabled(), length);
 }
 
-const char* libkrbn_get_user_configuration_directory(void) {
-  return krbn::constants::get_user_configuration_directory().c_str();
+void libkrbn_get_user_configuration_directory(char* buffer,
+                                              size_t length) {
+  strlcpy(buffer, krbn::constants::get_user_configuration_directory().c_str(), length);
 }
 
-const char* libkrbn_get_user_complex_modifications_assets_directory(void) {
-  return krbn::constants::get_user_complex_modifications_assets_directory().c_str();
+void libkrbn_get_user_complex_modifications_assets_directory(char* buffer,
+                                                             size_t length) {
+  strlcpy(buffer, krbn::constants::get_user_complex_modifications_assets_directory().c_str(), length);
 }
 
-const char* libkrbn_get_system_app_icon_configuration_file_path(void) {
-  return krbn::constants::get_system_app_icon_configuration_file_path().c_str();
+void libkrbn_get_system_app_icon_configuration_file_path(char* buffer,
+                                                         size_t length) {
+  strlcpy(buffer, krbn::constants::get_system_app_icon_configuration_file_path().c_str(), length);
 }
 
 bool libkrbn_user_pid_directory_writable(void) {

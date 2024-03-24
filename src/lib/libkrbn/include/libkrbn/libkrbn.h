@@ -24,11 +24,16 @@ void libkrbn_set_logging_level_info(void);
 void libkrbn_initialize(void);
 void libkrbn_terminate(void);
 
-const char* libkrbn_get_distributed_notification_observed_object(void);
-const char* libkrbn_get_distributed_notification_console_user_server_is_disabled(void);
-const char* libkrbn_get_user_configuration_directory(void);
-const char* libkrbn_get_user_complex_modifications_assets_directory(void);
-const char* libkrbn_get_system_app_icon_configuration_file_path(void);
+void libkrbn_get_distributed_notification_observed_object(char* buffer,
+                                                          size_t length);
+void libkrbn_get_distributed_notification_console_user_server_is_disabled(char* buffer,
+                                                                          size_t length);
+void libkrbn_get_user_configuration_directory(char* buffer,
+                                              size_t length);
+void libkrbn_get_user_complex_modifications_assets_directory(char* buffer,
+                                                             size_t length);
+void libkrbn_get_system_app_icon_configuration_file_path(char* buffer,
+                                                         size_t length);
 
 bool libkrbn_user_pid_directory_writable(void);
 

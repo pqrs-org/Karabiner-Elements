@@ -44,10 +44,11 @@ public class AppIcons: ObservableObject {
     icons.append(AppIcon(1))
     icons.append(AppIcon(2))
 
-    if let jsonData = try? Data(
-      contentsOf: URL(
-        fileURLWithPath: String(cString: libkrbn_get_system_app_icon_configuration_file_path())))
-    {
+    var buffer = [Int8](repeating: 0, count: 32 * 1024)
+    libkrbn_get_system_app_icon_configuration_file_path(&buffer, buffer.count)
+    let path = String(cString: buffer)
+
+    if let jsonData = try? Data(contentsOf: URL(fileURLWithPath: path)) {
       if let jsonDict =
         try? JSONSerialization.jsonObject(with: jsonData, options: []) as? [String: Any]
       {
