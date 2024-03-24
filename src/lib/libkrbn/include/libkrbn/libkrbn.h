@@ -84,16 +84,19 @@ void libkrbn_core_configuration_set_global_configuration_unsafe_ui(bool value);
 
 // profiles
 
-size_t libkrbn_core_configuration_get_profiles_size(libkrbn_core_configuration* p);
-const char* libkrbn_core_configuration_get_profile_name(libkrbn_core_configuration* p, size_t index);
-void libkrbn_core_configuration_set_profile_name(libkrbn_core_configuration* p, size_t index, const char* value);
-bool libkrbn_core_configuration_get_profile_selected(libkrbn_core_configuration* p, size_t index);
-void libkrbn_core_configuration_select_profile(libkrbn_core_configuration* p, size_t index);
-const char* libkrbn_core_configuration_get_selected_profile_name(libkrbn_core_configuration* p);
-void libkrbn_core_configuration_push_back_profile(libkrbn_core_configuration* p);
-void libkrbn_core_configuration_duplicate_profile(libkrbn_core_configuration* p, size_t source_index);
-void libkrbn_core_configuration_move_profile(libkrbn_core_configuration* p, size_t source_index, size_t destination_index);
-void libkrbn_core_configuration_erase_profile(libkrbn_core_configuration* p, size_t index);
+size_t libkrbn_core_configuration_get_profiles_size(void);
+bool libkrbn_core_configuration_get_profile_name(size_t index,
+                                                 char* buffer,
+                                                 size_t length);
+void libkrbn_core_configuration_set_profile_name(size_t index, const char* value);
+bool libkrbn_core_configuration_get_profile_selected(size_t index);
+void libkrbn_core_configuration_select_profile(size_t index);
+bool libkrbn_core_configuration_get_selected_profile_name(char* buffer,
+                                                          size_t length);
+void libkrbn_core_configuration_push_back_profile(void);
+void libkrbn_core_configuration_duplicate_profile(size_t source_index);
+void libkrbn_core_configuration_move_profile(size_t source_index, size_t destination_index);
+void libkrbn_core_configuration_erase_profile(size_t index);
 
 // profile::parameters
 
