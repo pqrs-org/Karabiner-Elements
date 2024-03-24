@@ -565,225 +565,205 @@ void libkrbn_core_configuration_set_selected_profile_virtual_hid_keyboard_indica
   }
 }
 
-bool libkrbn_core_configuration_get_selected_profile_device_ignore(libkrbn_core_configuration* p,
-                                                                   const libkrbn_device_identifiers* device_identifiers) {
-  if (auto c = reinterpret_cast<libkrbn_core_configuration_class*>(p)) {
+bool libkrbn_core_configuration_get_selected_profile_device_ignore(const libkrbn_device_identifiers* device_identifiers) {
+  if (auto c = get_current_core_configuration()) {
     if (device_identifiers) {
       auto identifiers = libkrbn_cpp::make_device_identifiers(*device_identifiers);
-      return c->get_core_configuration().get_selected_profile().get_device_ignore(identifiers);
+      return c->get_selected_profile().get_device_ignore(identifiers);
     }
   }
   return false;
 }
 
-void libkrbn_core_configuration_set_selected_profile_device_ignore(libkrbn_core_configuration* p,
-                                                                   const libkrbn_device_identifiers* device_identifiers,
+void libkrbn_core_configuration_set_selected_profile_device_ignore(const libkrbn_device_identifiers* device_identifiers,
                                                                    bool value) {
-  if (auto c = reinterpret_cast<libkrbn_core_configuration_class*>(p)) {
+  if (auto c = get_current_core_configuration()) {
     if (device_identifiers) {
       auto identifiers = libkrbn_cpp::make_device_identifiers(*device_identifiers);
-      c->get_core_configuration().get_selected_profile().set_device_ignore(identifiers, value);
+      c->get_selected_profile().set_device_ignore(identifiers, value);
     }
   }
 }
 
-bool libkrbn_core_configuration_get_selected_profile_device_manipulate_caps_lock_led(libkrbn_core_configuration* p,
-                                                                                     const libkrbn_device_identifiers* device_identifiers) {
-  if (auto c = reinterpret_cast<libkrbn_core_configuration_class*>(p)) {
+bool libkrbn_core_configuration_get_selected_profile_device_manipulate_caps_lock_led(const libkrbn_device_identifiers* device_identifiers) {
+  if (auto c = get_current_core_configuration()) {
     if (device_identifiers) {
       auto identifiers = libkrbn_cpp::make_device_identifiers(*device_identifiers);
-      return c->get_core_configuration().get_selected_profile().get_device_manipulate_caps_lock_led(identifiers);
+      return c->get_selected_profile().get_device_manipulate_caps_lock_led(identifiers);
     }
   }
   return false;
 }
 
-void libkrbn_core_configuration_set_selected_profile_device_manipulate_caps_lock_led(libkrbn_core_configuration* p,
-                                                                                     const libkrbn_device_identifiers* device_identifiers,
+void libkrbn_core_configuration_set_selected_profile_device_manipulate_caps_lock_led(const libkrbn_device_identifiers* device_identifiers,
                                                                                      bool value) {
-  if (auto c = reinterpret_cast<libkrbn_core_configuration_class*>(p)) {
+  if (auto c = get_current_core_configuration()) {
     if (device_identifiers) {
       auto identifiers = libkrbn_cpp::make_device_identifiers(*device_identifiers);
-      c->get_core_configuration().get_selected_profile().set_device_manipulate_caps_lock_led(identifiers, value);
+      c->get_selected_profile().set_device_manipulate_caps_lock_led(identifiers, value);
     }
   }
 }
 
-bool libkrbn_core_configuration_get_selected_profile_device_treat_as_built_in_keyboard(libkrbn_core_configuration* p,
-                                                                                       const libkrbn_device_identifiers* device_identifiers) {
-  if (auto c = reinterpret_cast<libkrbn_core_configuration_class*>(p)) {
+bool libkrbn_core_configuration_get_selected_profile_device_treat_as_built_in_keyboard(const libkrbn_device_identifiers* device_identifiers) {
+  if (auto c = get_current_core_configuration()) {
     if (device_identifiers) {
       auto identifiers = libkrbn_cpp::make_device_identifiers(*device_identifiers);
-      return c->get_core_configuration().get_selected_profile().get_device_treat_as_built_in_keyboard(identifiers);
+      return c->get_selected_profile().get_device_treat_as_built_in_keyboard(identifiers);
     }
   }
   return false;
 }
 
-void libkrbn_core_configuration_set_selected_profile_device_treat_as_built_in_keyboard(libkrbn_core_configuration* p,
-                                                                                       const libkrbn_device_identifiers* device_identifiers,
+void libkrbn_core_configuration_set_selected_profile_device_treat_as_built_in_keyboard(const libkrbn_device_identifiers* device_identifiers,
                                                                                        bool value) {
-  if (auto c = reinterpret_cast<libkrbn_core_configuration_class*>(p)) {
+  if (auto c = get_current_core_configuration()) {
     if (device_identifiers) {
       auto identifiers = libkrbn_cpp::make_device_identifiers(*device_identifiers);
-      c->get_core_configuration().get_selected_profile().set_device_treat_as_built_in_keyboard(identifiers, value);
+      c->get_selected_profile().set_device_treat_as_built_in_keyboard(identifiers, value);
     }
   }
 }
 
-bool libkrbn_core_configuration_get_selected_profile_device_disable_built_in_keyboard_if_exists(libkrbn_core_configuration* p,
-                                                                                                const libkrbn_device_identifiers* device_identifiers) {
-  if (auto c = reinterpret_cast<libkrbn_core_configuration_class*>(p)) {
+bool libkrbn_core_configuration_get_selected_profile_device_disable_built_in_keyboard_if_exists(const libkrbn_device_identifiers* device_identifiers) {
+  if (auto c = get_current_core_configuration()) {
     if (device_identifiers) {
       auto identifiers = libkrbn_cpp::make_device_identifiers(*device_identifiers);
-      return c->get_core_configuration().get_selected_profile().get_device_disable_built_in_keyboard_if_exists(identifiers);
+      return c->get_selected_profile().get_device_disable_built_in_keyboard_if_exists(identifiers);
     }
   }
   return false;
 }
 
-void libkrbn_core_configuration_set_selected_profile_device_disable_built_in_keyboard_if_exists(libkrbn_core_configuration* p,
-                                                                                                const libkrbn_device_identifiers* device_identifiers,
+void libkrbn_core_configuration_set_selected_profile_device_disable_built_in_keyboard_if_exists(const libkrbn_device_identifiers* device_identifiers,
                                                                                                 bool value) {
-  if (auto c = reinterpret_cast<libkrbn_core_configuration_class*>(p)) {
+  if (auto c = get_current_core_configuration()) {
     if (device_identifiers) {
       auto identifiers = libkrbn_cpp::make_device_identifiers(*device_identifiers);
-      c->get_core_configuration().get_selected_profile().set_device_disable_built_in_keyboard_if_exists(identifiers, value);
+      c->get_selected_profile().set_device_disable_built_in_keyboard_if_exists(identifiers, value);
     }
   }
 }
 
-bool libkrbn_core_configuration_get_selected_profile_device_mouse_flip_x(libkrbn_core_configuration* p,
-                                                                         const libkrbn_device_identifiers* device_identifiers) {
-  if (auto c = reinterpret_cast<libkrbn_core_configuration_class*>(p)) {
+bool libkrbn_core_configuration_get_selected_profile_device_mouse_flip_x(const libkrbn_device_identifiers* device_identifiers) {
+  if (auto c = get_current_core_configuration()) {
     if (device_identifiers) {
       auto identifiers = libkrbn_cpp::make_device_identifiers(*device_identifiers);
-      return c->get_core_configuration().get_selected_profile().get_device_mouse_flip_x(identifiers);
+      return c->get_selected_profile().get_device_mouse_flip_x(identifiers);
     }
   }
   return false;
 }
 
-void libkrbn_core_configuration_set_selected_profile_device_mouse_flip_x(libkrbn_core_configuration* p,
-                                                                         const libkrbn_device_identifiers* device_identifiers,
+void libkrbn_core_configuration_set_selected_profile_device_mouse_flip_x(const libkrbn_device_identifiers* device_identifiers,
                                                                          bool value) {
 
-  if (auto c = reinterpret_cast<libkrbn_core_configuration_class*>(p)) {
+  if (auto c = get_current_core_configuration()) {
     if (device_identifiers) {
       auto identifiers = libkrbn_cpp::make_device_identifiers(*device_identifiers);
-      c->get_core_configuration().get_selected_profile().set_device_mouse_flip_x(identifiers, value);
+      c->get_selected_profile().set_device_mouse_flip_x(identifiers, value);
     }
   }
 }
 
-bool libkrbn_core_configuration_get_selected_profile_device_mouse_flip_y(libkrbn_core_configuration* p,
-                                                                         const libkrbn_device_identifiers* device_identifiers) {
-  if (auto c = reinterpret_cast<libkrbn_core_configuration_class*>(p)) {
+bool libkrbn_core_configuration_get_selected_profile_device_mouse_flip_y(const libkrbn_device_identifiers* device_identifiers) {
+  if (auto c = get_current_core_configuration()) {
     if (device_identifiers) {
       auto identifiers = libkrbn_cpp::make_device_identifiers(*device_identifiers);
-      return c->get_core_configuration().get_selected_profile().get_device_mouse_flip_y(identifiers);
+      return c->get_selected_profile().get_device_mouse_flip_y(identifiers);
     }
   }
   return false;
 }
 
-void libkrbn_core_configuration_set_selected_profile_device_mouse_flip_y(libkrbn_core_configuration* p,
-                                                                         const libkrbn_device_identifiers* device_identifiers,
+void libkrbn_core_configuration_set_selected_profile_device_mouse_flip_y(const libkrbn_device_identifiers* device_identifiers,
                                                                          bool value) {
-  if (auto c = reinterpret_cast<libkrbn_core_configuration_class*>(p)) {
+  if (auto c = get_current_core_configuration()) {
     if (device_identifiers) {
       auto identifiers = libkrbn_cpp::make_device_identifiers(*device_identifiers);
-      c->get_core_configuration().get_selected_profile().set_device_mouse_flip_y(identifiers, value);
+      c->get_selected_profile().set_device_mouse_flip_y(identifiers, value);
     }
   }
 }
 
-bool libkrbn_core_configuration_get_selected_profile_device_mouse_flip_vertical_wheel(libkrbn_core_configuration* p,
-                                                                                      const libkrbn_device_identifiers* device_identifiers) {
-  if (auto c = reinterpret_cast<libkrbn_core_configuration_class*>(p)) {
+bool libkrbn_core_configuration_get_selected_profile_device_mouse_flip_vertical_wheel(const libkrbn_device_identifiers* device_identifiers) {
+  if (auto c = get_current_core_configuration()) {
     if (device_identifiers) {
       auto identifiers = libkrbn_cpp::make_device_identifiers(*device_identifiers);
-      return c->get_core_configuration().get_selected_profile().get_device_mouse_flip_vertical_wheel(identifiers);
+      return c->get_selected_profile().get_device_mouse_flip_vertical_wheel(identifiers);
     }
   }
   return false;
 }
 
-void libkrbn_core_configuration_set_selected_profile_device_mouse_flip_vertical_wheel(libkrbn_core_configuration* p,
-                                                                                      const libkrbn_device_identifiers* device_identifiers,
+void libkrbn_core_configuration_set_selected_profile_device_mouse_flip_vertical_wheel(const libkrbn_device_identifiers* device_identifiers,
                                                                                       bool value) {
-  if (auto c = reinterpret_cast<libkrbn_core_configuration_class*>(p)) {
+  if (auto c = get_current_core_configuration()) {
     if (device_identifiers) {
       auto identifiers = libkrbn_cpp::make_device_identifiers(*device_identifiers);
-      c->get_core_configuration().get_selected_profile().set_device_mouse_flip_vertical_wheel(identifiers, value);
+      c->get_selected_profile().set_device_mouse_flip_vertical_wheel(identifiers, value);
     }
   }
 }
 
-bool libkrbn_core_configuration_get_selected_profile_device_mouse_flip_horizontal_wheel(libkrbn_core_configuration* p,
-                                                                                        const libkrbn_device_identifiers* device_identifiers) {
-  if (auto c = reinterpret_cast<libkrbn_core_configuration_class*>(p)) {
+bool libkrbn_core_configuration_get_selected_profile_device_mouse_flip_horizontal_wheel(const libkrbn_device_identifiers* device_identifiers) {
+  if (auto c = get_current_core_configuration()) {
     if (device_identifiers) {
       auto identifiers = libkrbn_cpp::make_device_identifiers(*device_identifiers);
-      return c->get_core_configuration().get_selected_profile().get_device_mouse_flip_horizontal_wheel(identifiers);
+      return c->get_selected_profile().get_device_mouse_flip_horizontal_wheel(identifiers);
     }
   }
   return false;
 }
 
-void libkrbn_core_configuration_set_selected_profile_device_mouse_flip_horizontal_wheel(libkrbn_core_configuration* p,
-                                                                                        const libkrbn_device_identifiers* device_identifiers,
+void libkrbn_core_configuration_set_selected_profile_device_mouse_flip_horizontal_wheel(const libkrbn_device_identifiers* device_identifiers,
                                                                                         bool value) {
-  if (auto c = reinterpret_cast<libkrbn_core_configuration_class*>(p)) {
+  if (auto c = get_current_core_configuration()) {
     if (device_identifiers) {
       auto identifiers = libkrbn_cpp::make_device_identifiers(*device_identifiers);
-      c->get_core_configuration().get_selected_profile().set_device_mouse_flip_horizontal_wheel(identifiers, value);
+      c->get_selected_profile().set_device_mouse_flip_horizontal_wheel(identifiers, value);
     }
   }
 }
 
-bool libkrbn_core_configuration_get_selected_profile_device_mouse_swap_xy(libkrbn_core_configuration* p,
-                                                                          const libkrbn_device_identifiers* device_identifiers) {
-  if (auto c = reinterpret_cast<libkrbn_core_configuration_class*>(p)) {
+bool libkrbn_core_configuration_get_selected_profile_device_mouse_swap_xy(const libkrbn_device_identifiers* device_identifiers) {
+  if (auto c = get_current_core_configuration()) {
     if (device_identifiers) {
       auto identifiers = libkrbn_cpp::make_device_identifiers(*device_identifiers);
-      return c->get_core_configuration().get_selected_profile().get_device_mouse_swap_xy(identifiers);
+      return c->get_selected_profile().get_device_mouse_swap_xy(identifiers);
     }
   }
   return false;
 }
 
-void libkrbn_core_configuration_set_selected_profile_device_mouse_swap_xy(libkrbn_core_configuration* p,
-                                                                          const libkrbn_device_identifiers* device_identifiers,
+void libkrbn_core_configuration_set_selected_profile_device_mouse_swap_xy(const libkrbn_device_identifiers* device_identifiers,
                                                                           bool value) {
 
-  if (auto c = reinterpret_cast<libkrbn_core_configuration_class*>(p)) {
+  if (auto c = get_current_core_configuration()) {
     if (device_identifiers) {
       auto identifiers = libkrbn_cpp::make_device_identifiers(*device_identifiers);
-      c->get_core_configuration().get_selected_profile().set_device_mouse_swap_xy(identifiers, value);
+      c->get_selected_profile().set_device_mouse_swap_xy(identifiers, value);
     }
   }
 }
 
-bool libkrbn_core_configuration_get_selected_profile_device_mouse_swap_wheels(libkrbn_core_configuration* p,
-                                                                              const libkrbn_device_identifiers* device_identifiers) {
-  if (auto c = reinterpret_cast<libkrbn_core_configuration_class*>(p)) {
+bool libkrbn_core_configuration_get_selected_profile_device_mouse_swap_wheels(const libkrbn_device_identifiers* device_identifiers) {
+  if (auto c = get_current_core_configuration()) {
     if (device_identifiers) {
       auto identifiers = libkrbn_cpp::make_device_identifiers(*device_identifiers);
-      return c->get_core_configuration().get_selected_profile().get_device_mouse_swap_wheels(identifiers);
+      return c->get_selected_profile().get_device_mouse_swap_wheels(identifiers);
     }
   }
   return false;
 }
 
-void libkrbn_core_configuration_set_selected_profile_device_mouse_swap_wheels(libkrbn_core_configuration* p,
-                                                                              const libkrbn_device_identifiers* device_identifiers,
+void libkrbn_core_configuration_set_selected_profile_device_mouse_swap_wheels(const libkrbn_device_identifiers* device_identifiers,
                                                                               bool value) {
 
-  if (auto c = reinterpret_cast<libkrbn_core_configuration_class*>(p)) {
+  if (auto c = get_current_core_configuration()) {
     if (device_identifiers) {
       auto identifiers = libkrbn_cpp::make_device_identifiers(*device_identifiers);
-      c->get_core_configuration().get_selected_profile().set_device_mouse_swap_wheels(identifiers, value);
+      c->get_selected_profile().set_device_mouse_swap_wheels(identifiers, value);
     }
   }
 }

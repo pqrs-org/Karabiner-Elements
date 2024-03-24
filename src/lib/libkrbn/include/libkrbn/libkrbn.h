@@ -174,60 +174,38 @@ void libkrbn_core_configuration_set_selected_profile_virtual_hid_keyboard_indica
 
 // profile::devices
 
-bool libkrbn_core_configuration_get_selected_profile_device_ignore(libkrbn_core_configuration* p,
-                                                                   const libkrbn_device_identifiers* device_identifiers);
-void libkrbn_core_configuration_set_selected_profile_device_ignore(libkrbn_core_configuration* p,
-                                                                   const libkrbn_device_identifiers* device_identifiers,
+bool libkrbn_core_configuration_get_selected_profile_device_ignore(const libkrbn_device_identifiers* device_identifiers);
+void libkrbn_core_configuration_set_selected_profile_device_ignore(const libkrbn_device_identifiers* device_identifiers,
                                                                    bool value);
-bool libkrbn_core_configuration_get_selected_profile_device_manipulate_caps_lock_led(libkrbn_core_configuration* p,
-                                                                                     const libkrbn_device_identifiers* device_identifiers);
-void libkrbn_core_configuration_set_selected_profile_device_manipulate_caps_lock_led(libkrbn_core_configuration* p,
-                                                                                     const libkrbn_device_identifiers* device_identifiers,
+bool libkrbn_core_configuration_get_selected_profile_device_manipulate_caps_lock_led(const libkrbn_device_identifiers* device_identifiers);
+void libkrbn_core_configuration_set_selected_profile_device_manipulate_caps_lock_led(const libkrbn_device_identifiers* device_identifiers,
                                                                                      bool value);
-bool libkrbn_core_configuration_get_selected_profile_device_treat_as_built_in_keyboard(libkrbn_core_configuration* p,
-                                                                                       const libkrbn_device_identifiers* device_identifiers);
-void libkrbn_core_configuration_set_selected_profile_device_treat_as_built_in_keyboard(libkrbn_core_configuration* p,
-                                                                                       const libkrbn_device_identifiers* device_identifiers,
+bool libkrbn_core_configuration_get_selected_profile_device_treat_as_built_in_keyboard(const libkrbn_device_identifiers* device_identifiers);
+void libkrbn_core_configuration_set_selected_profile_device_treat_as_built_in_keyboard(const libkrbn_device_identifiers* device_identifiers,
                                                                                        bool value);
-bool libkrbn_core_configuration_get_selected_profile_device_disable_built_in_keyboard_if_exists(libkrbn_core_configuration* p,
-                                                                                                const libkrbn_device_identifiers* device_identifiers);
-void libkrbn_core_configuration_set_selected_profile_device_disable_built_in_keyboard_if_exists(libkrbn_core_configuration* p,
-                                                                                                const libkrbn_device_identifiers* device_identifiers,
+bool libkrbn_core_configuration_get_selected_profile_device_disable_built_in_keyboard_if_exists(const libkrbn_device_identifiers* device_identifiers);
+void libkrbn_core_configuration_set_selected_profile_device_disable_built_in_keyboard_if_exists(const libkrbn_device_identifiers* device_identifiers,
                                                                                                 bool value);
-bool libkrbn_core_configuration_get_selected_profile_device_mouse_flip_x(libkrbn_core_configuration* p,
-                                                                         const libkrbn_device_identifiers* device_identifiers);
-void libkrbn_core_configuration_set_selected_profile_device_mouse_flip_x(libkrbn_core_configuration* p,
-                                                                         const libkrbn_device_identifiers* device_identifiers,
+bool libkrbn_core_configuration_get_selected_profile_device_mouse_flip_x(const libkrbn_device_identifiers* device_identifiers);
+void libkrbn_core_configuration_set_selected_profile_device_mouse_flip_x(const libkrbn_device_identifiers* device_identifiers,
                                                                          bool value);
-bool libkrbn_core_configuration_get_selected_profile_device_mouse_flip_y(libkrbn_core_configuration* p,
-                                                                         const libkrbn_device_identifiers* device_identifiers);
-void libkrbn_core_configuration_set_selected_profile_device_mouse_flip_y(libkrbn_core_configuration* p,
-                                                                         const libkrbn_device_identifiers* device_identifiers,
+bool libkrbn_core_configuration_get_selected_profile_device_mouse_flip_y(const libkrbn_device_identifiers* device_identifiers);
+void libkrbn_core_configuration_set_selected_profile_device_mouse_flip_y(const libkrbn_device_identifiers* device_identifiers,
                                                                          bool value);
-bool libkrbn_core_configuration_get_selected_profile_device_mouse_flip_vertical_wheel(libkrbn_core_configuration* p,
-                                                                                      const libkrbn_device_identifiers* device_identifiers);
-void libkrbn_core_configuration_set_selected_profile_device_mouse_flip_vertical_wheel(libkrbn_core_configuration* p,
-                                                                                      const libkrbn_device_identifiers* device_identifiers,
+bool libkrbn_core_configuration_get_selected_profile_device_mouse_flip_vertical_wheel(const libkrbn_device_identifiers* device_identifiers);
+void libkrbn_core_configuration_set_selected_profile_device_mouse_flip_vertical_wheel(const libkrbn_device_identifiers* device_identifiers,
                                                                                       bool value);
-bool libkrbn_core_configuration_get_selected_profile_device_mouse_flip_horizontal_wheel(libkrbn_core_configuration* p,
-                                                                                        const libkrbn_device_identifiers* device_identifiers);
-void libkrbn_core_configuration_set_selected_profile_device_mouse_flip_horizontal_wheel(libkrbn_core_configuration* p,
-                                                                                        const libkrbn_device_identifiers* device_identifiers,
+bool libkrbn_core_configuration_get_selected_profile_device_mouse_flip_horizontal_wheel(const libkrbn_device_identifiers* device_identifiers);
+void libkrbn_core_configuration_set_selected_profile_device_mouse_flip_horizontal_wheel(const libkrbn_device_identifiers* device_identifiers,
                                                                                         bool value);
-bool libkrbn_core_configuration_get_selected_profile_device_mouse_swap_xy(libkrbn_core_configuration* p,
-                                                                          const libkrbn_device_identifiers* device_identifiers);
-void libkrbn_core_configuration_set_selected_profile_device_mouse_swap_xy(libkrbn_core_configuration* p,
-                                                                          const libkrbn_device_identifiers* device_identifiers,
+bool libkrbn_core_configuration_get_selected_profile_device_mouse_swap_xy(const libkrbn_device_identifiers* device_identifiers);
+void libkrbn_core_configuration_set_selected_profile_device_mouse_swap_xy(const libkrbn_device_identifiers* device_identifiers,
                                                                           bool value);
-bool libkrbn_core_configuration_get_selected_profile_device_mouse_swap_wheels(libkrbn_core_configuration* p,
-                                                                              const libkrbn_device_identifiers* device_identifiers);
-void libkrbn_core_configuration_set_selected_profile_device_mouse_swap_wheels(libkrbn_core_configuration* p,
-                                                                              const libkrbn_device_identifiers* device_identifiers,
+bool libkrbn_core_configuration_get_selected_profile_device_mouse_swap_wheels(const libkrbn_device_identifiers* device_identifiers);
+void libkrbn_core_configuration_set_selected_profile_device_mouse_swap_wheels(const libkrbn_device_identifiers* device_identifiers,
                                                                               bool value);
-bool libkrbn_core_configuration_get_selected_profile_device_game_pad_swap_sticks(libkrbn_core_configuration* p,
-                                                                                 const libkrbn_device_identifiers* device_identifiers);
-void libkrbn_core_configuration_set_selected_profile_device_game_pad_swap_sticks(libkrbn_core_configuration* p,
-                                                                                 const libkrbn_device_identifiers* device_identifiers,
+bool libkrbn_core_configuration_get_selected_profile_device_game_pad_swap_sticks(const libkrbn_device_identifiers* device_identifiers);
+void libkrbn_core_configuration_set_selected_profile_device_game_pad_swap_sticks(const libkrbn_device_identifiers* device_identifiers,
                                                                                  bool value);
 
 // game_pad_xy_stick_continued_movement_absolute_magnitude_threshold
