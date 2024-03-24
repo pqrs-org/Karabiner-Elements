@@ -514,58 +514,52 @@ void libkrbn_core_configuration_get_new_complex_modifications_rule_json_string(c
   strlcpy(buffer, json_string.c_str(), length);
 }
 
-uint8_t libkrbn_core_configuration_get_selected_profile_virtual_hid_keyboard_country_code(libkrbn_core_configuration* p) {
-  if (auto c = reinterpret_cast<libkrbn_core_configuration_class*>(p)) {
-    return static_cast<uint8_t>(type_safe::get(c->get_core_configuration()
-                                                   .get_selected_profile()
+uint8_t libkrbn_core_configuration_get_selected_profile_virtual_hid_keyboard_country_code() {
+  if (auto c = get_current_core_configuration()) {
+    return static_cast<uint8_t>(type_safe::get(c->get_selected_profile()
                                                    .get_virtual_hid_keyboard()
                                                    .get_country_code()));
   }
   return 0;
 }
 
-void libkrbn_core_configuration_set_selected_profile_virtual_hid_keyboard_country_code(libkrbn_core_configuration* p, uint8_t value) {
-  if (auto c = reinterpret_cast<libkrbn_core_configuration_class*>(p)) {
-    c->get_core_configuration()
-        .get_selected_profile()
+void libkrbn_core_configuration_set_selected_profile_virtual_hid_keyboard_country_code(uint8_t value) {
+  if (auto c = get_current_core_configuration()) {
+    c->get_selected_profile()
         .get_virtual_hid_keyboard()
         .set_country_code(pqrs::hid::country_code::value_t(value));
   }
 }
 
-int libkrbn_core_configuration_get_selected_profile_virtual_hid_keyboard_mouse_key_xy_scale(libkrbn_core_configuration* p) {
-  if (auto c = reinterpret_cast<libkrbn_core_configuration_class*>(p)) {
-    return c->get_core_configuration()
-        .get_selected_profile()
+int libkrbn_core_configuration_get_selected_profile_virtual_hid_keyboard_mouse_key_xy_scale(void) {
+  if (auto c = get_current_core_configuration()) {
+    return c->get_selected_profile()
         .get_virtual_hid_keyboard()
         .get_mouse_key_xy_scale();
   }
   return 0;
 }
 
-void libkrbn_core_configuration_set_selected_profile_virtual_hid_keyboard_mouse_key_xy_scale(libkrbn_core_configuration* p, int value) {
-  if (auto c = reinterpret_cast<libkrbn_core_configuration_class*>(p)) {
-    c->get_core_configuration()
-        .get_selected_profile()
+void libkrbn_core_configuration_set_selected_profile_virtual_hid_keyboard_mouse_key_xy_scale(int value) {
+  if (auto c = get_current_core_configuration()) {
+    c->get_selected_profile()
         .get_virtual_hid_keyboard()
         .set_mouse_key_xy_scale(value);
   }
 }
 
-bool libkrbn_core_configuration_get_selected_profile_virtual_hid_keyboard_indicate_sticky_modifier_keys_state(libkrbn_core_configuration* p) {
-  if (auto c = reinterpret_cast<libkrbn_core_configuration_class*>(p)) {
-    return c->get_core_configuration()
-        .get_selected_profile()
+bool libkrbn_core_configuration_get_selected_profile_virtual_hid_keyboard_indicate_sticky_modifier_keys_state(void) {
+  if (auto c = get_current_core_configuration()) {
+    return c->get_selected_profile()
         .get_virtual_hid_keyboard()
         .get_indicate_sticky_modifier_keys_state();
   }
   return true;
 }
 
-void libkrbn_core_configuration_set_selected_profile_virtual_hid_keyboard_indicate_sticky_modifier_keys_state(libkrbn_core_configuration* p, bool value) {
-  if (auto c = reinterpret_cast<libkrbn_core_configuration_class*>(p)) {
-    c->get_core_configuration()
-        .get_selected_profile()
+void libkrbn_core_configuration_set_selected_profile_virtual_hid_keyboard_indicate_sticky_modifier_keys_state(bool value) {
+  if (auto c = get_current_core_configuration()) {
+    c->get_selected_profile()
         .get_virtual_hid_keyboard()
         .set_indicate_sticky_modifier_keys_state(value);
   }
