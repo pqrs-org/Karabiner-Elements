@@ -360,33 +360,37 @@ size_t libkrbn_system_preferences_properties_get_keyboard_types_size(void);
 // libkrbn_connected_devices
 //
 
-typedef void libkrbn_connected_devices;
-void libkrbn_connected_devices_terminate(libkrbn_connected_devices** p);
-
-size_t libkrbn_connected_devices_get_size(libkrbn_connected_devices* p);
-const char* libkrbn_connected_devices_get_descriptions_manufacturer(libkrbn_connected_devices* p, size_t index);
-const char* libkrbn_connected_devices_get_descriptions_product(libkrbn_connected_devices* p, size_t index);
-const char* libkrbn_connected_devices_get_descriptions_transport(libkrbn_connected_devices* p, size_t index);
-bool libkrbn_connected_devices_get_device_identifiers(libkrbn_connected_devices* p,
-                                                      size_t index,
+size_t libkrbn_connected_devices_get_size(void);
+bool libkrbn_connected_devices_get_descriptions_manufacturer(size_t index,
+                                                             char* buffer,
+                                                             size_t length);
+bool libkrbn_connected_devices_get_descriptions_product(size_t index,
+                                                        char* buffer,
+                                                        size_t length);
+bool libkrbn_connected_devices_get_descriptions_transport(size_t index,
+                                                          char* buffer,
+                                                          size_t length);
+bool libkrbn_connected_devices_get_device_identifiers(size_t index,
                                                       libkrbn_device_identifiers* device_identifiers);
-uint64_t libkrbn_connected_devices_get_vendor_id(libkrbn_connected_devices* p, size_t index);
-uint64_t libkrbn_connected_devices_get_product_id(libkrbn_connected_devices* p, size_t index);
-const char* libkrbn_connected_devices_get_device_address(libkrbn_connected_devices* p, size_t index);
-bool libkrbn_connected_devices_get_is_keyboard(libkrbn_connected_devices* p, size_t index);
-bool libkrbn_connected_devices_get_is_pointing_device(libkrbn_connected_devices* p, size_t index);
-bool libkrbn_connected_devices_get_is_game_pad(libkrbn_connected_devices* p, size_t index);
-bool libkrbn_connected_devices_get_is_built_in_keyboard(libkrbn_connected_devices* p, size_t index);
-bool libkrbn_connected_devices_get_is_built_in_trackpad(libkrbn_connected_devices* p, size_t index);
-bool libkrbn_connected_devices_get_is_built_in_touch_bar(libkrbn_connected_devices* p, size_t index);
-bool libkrbn_connected_devices_is_apple(libkrbn_connected_devices* p, size_t index);
+uint64_t libkrbn_connected_devices_get_vendor_id(size_t index);
+uint64_t libkrbn_connected_devices_get_product_id(size_t index);
+bool libkrbn_connected_devices_get_device_address(size_t index,
+                                                  char* buffer,
+                                                  size_t length);
+bool libkrbn_connected_devices_get_is_keyboard(size_t index);
+bool libkrbn_connected_devices_get_is_pointing_device(size_t index);
+bool libkrbn_connected_devices_get_is_game_pad(size_t index);
+bool libkrbn_connected_devices_get_is_built_in_keyboard(size_t index);
+bool libkrbn_connected_devices_get_is_built_in_trackpad(size_t index);
+bool libkrbn_connected_devices_get_is_built_in_touch_bar(size_t index);
+bool libkrbn_connected_devices_is_apple(size_t index);
 
-// You have to call `libkrbn_connected_devices_terminate(&initialized_connected_devices)`.
-typedef void (*libkrbn_connected_devices_monitor_callback)(libkrbn_connected_devices* initialized_connected_devices,
-                                                           void* refcon);
-void libkrbn_enable_connected_devices_monitor(libkrbn_connected_devices_monitor_callback callback,
-                                              void* refcon);
+typedef void (*libkrbn_connected_devices_updated)(void);
+void libkrbn_enable_connected_devices_monitor(void);
 void libkrbn_disable_connected_devices_monitor(void);
+
+void libkrbn_register_connected_devices_updated_callback(libkrbn_connected_devices_updated callback);
+void libkrbn_unregister_connected_devices_updated_callback(libkrbn_connected_devices_updated callback);
 
 //
 // libkrbn_version_monitor

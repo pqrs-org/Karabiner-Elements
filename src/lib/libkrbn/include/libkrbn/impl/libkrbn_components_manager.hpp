@@ -84,14 +84,23 @@ public:
   // connected_devices_monitor_
   //
 
-  void enable_connected_devices_monitor(libkrbn_connected_devices_monitor_callback callback,
-                                        void* refcon) {
-    connected_devices_monitor_ = std::make_unique<libkrbn_connected_devices_monitor>(callback,
-                                                                                     refcon);
+  void enable_connected_devices_monitor(void) {
+    connected_devices_monitor_ = std::make_shared<libkrbn_connected_devices_monitor>();
   }
 
   void disable_connected_devices_monitor(void) {
     connected_devices_monitor_ = nullptr;
+  }
+
+  std::shared_ptr<libkrbn_connected_devices_monitor> get_libkrbn_connected_devices_monitor(void) {
+    return connected_devices_monitor_;
+  }
+
+  std::shared_ptr<const krbn::connected_devices::connected_devices> get_current_connected_devices(void) {
+    if (auto m = connected_devices_monitor_) {
+      return m->get_weak_connected_devices().lock();
+    }
+    return nullptr;
   }
 
   //
@@ -264,7 +273,7 @@ private:
   std::shared_ptr<libkrbn_configuration_monitor> configuration_monitor_;
   std::shared_ptr<libkrbn_complex_modifications_assets_manager> complex_modifications_assets_manager_;
   std::unique_ptr<libkrbn_system_preferences_monitor> system_preferences_monitor_;
-  std::unique_ptr<libkrbn_connected_devices_monitor> connected_devices_monitor_;
+  std::shared_ptr<libkrbn_connected_devices_monitor> connected_devices_monitor_;
   std::unique_ptr<libkrbn_file_monitor> observer_state_json_file_monitor_;
   std::unique_ptr<libkrbn_file_monitor> grabber_state_json_file_monitor_;
   std::unique_ptr<libkrbn_file_monitor> device_details_json_file_monitor_;

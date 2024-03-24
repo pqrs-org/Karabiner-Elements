@@ -437,17 +437,31 @@ size_t libkrbn_system_preferences_properties_get_keyboard_types_size(void) {
 // connected_devices_monitor
 //
 
-void libkrbn_enable_connected_devices_monitor(libkrbn_connected_devices_monitor_callback callback,
-                                              void* refcon) {
+void libkrbn_enable_connected_devices_monitor(void) {
   if (libkrbn_components_manager_) {
-    libkrbn_components_manager_->enable_connected_devices_monitor(callback,
-                                                                  refcon);
+    libkrbn_components_manager_->enable_connected_devices_monitor();
   }
 }
 
 void libkrbn_disable_connected_devices_monitor(void) {
   if (libkrbn_components_manager_) {
     libkrbn_components_manager_->disable_connected_devices_monitor();
+  }
+}
+
+void libkrbn_register_connected_devices_updated_callback(libkrbn_connected_devices_updated callback) {
+  if (auto manager = libkrbn_components_manager_) {
+    if (auto m = manager->get_libkrbn_connected_devices_monitor()) {
+      m->register_libkrbn_connected_devices_updated_callback(callback);
+    }
+  }
+}
+
+void libkrbn_unregister_connected_devices_updated_callback(libkrbn_connected_devices_updated callback) {
+  if (auto manager = libkrbn_components_manager_) {
+    if (auto m = manager->get_libkrbn_connected_devices_monitor()) {
+      m->unregister_libkrbn_connected_devices_updated_callback(callback);
+    }
   }
 }
 

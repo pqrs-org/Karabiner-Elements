@@ -18,33 +18,62 @@ private:
   krbn::connected_devices::connected_devices connected_devices_;
 };
 
-class libkrbn_connected_devices_monitor final {
+class libkrbn_connected_devices_monitor final : public pqrs::dispatcher::extra::dispatcher_client {
 public:
   libkrbn_connected_devices_monitor(const libkrbn_connected_devices_monitor&) = delete;
 
-  libkrbn_connected_devices_monitor(libkrbn_connected_devices_monitor_callback callback, void* refcon) {
-    krbn::logger::get_logger()->info(__func__);
-
+  libkrbn_connected_devices_monitor(void)
+      : dispatcher_client() {
     monitor_ = std::make_unique<krbn::connected_devices_monitor>(
         krbn::constants::get_devices_json_file_path());
 
-    monitor_->connected_devices_updated.connect([callback, refcon](auto&& weak_connected_devices) {
-      if (auto connected_devices = weak_connected_devices.lock()) {
-        if (callback) {
-          auto* p = new libkrbn_connected_devices_class(*connected_devices);
-          callback(p, refcon);
-        }
+    auto wait = pqrs::make_thread_wait();
+
+    monitor_->connected_devices_updated.connect([this, wait](auto&& weak_connected_devices) {
+      weak_connected_devices_ = weak_connected_devices;
+
+      for (const auto& c : libkrbn_connected_devices_updated_callbacks_) {
+        c();
       }
+
+      wait->notify();
     });
 
     monitor_->async_start();
+
+    wait->wait_notice();
   }
 
   ~libkrbn_connected_devices_monitor(void) {
-    krbn::logger::get_logger()->info(__func__);
+    detach_from_dispatcher([this] {
+      monitor_ = nullptr;
+    });
+  }
+
+  std::weak_ptr<const krbn::connected_devices::connected_devices> get_weak_connected_devices(void) {
+    return weak_connected_devices_;
+  }
+
+  void register_libkrbn_connected_devices_updated_callback(libkrbn_connected_devices_updated callback) {
+    enqueue_to_dispatcher([this, callback] {
+      libkrbn_connected_devices_updated_callbacks_.push_back(callback);
+    });
+  }
+
+  void unregister_libkrbn_connected_devices_updated_callback(libkrbn_connected_devices_updated callback) {
+    enqueue_to_dispatcher([this, callback] {
+      libkrbn_connected_devices_updated_callbacks_.erase(std::remove_if(std::begin(libkrbn_connected_devices_updated_callbacks_),
+                                                                        std::end(libkrbn_connected_devices_updated_callbacks_),
+                                                                        [&](auto& c) {
+                                                                          return c == callback;
+                                                                        }),
+                                                         std::end(libkrbn_connected_devices_updated_callbacks_));
+    });
   }
 
 private:
   std::unique_ptr<krbn::connected_devices_monitor> monitor_;
+  std::weak_ptr<const krbn::connected_devices::connected_devices> weak_connected_devices_;
+  std::vector<libkrbn_connected_devices_updated> libkrbn_connected_devices_updated_callbacks_;
 };
 } // namespace
