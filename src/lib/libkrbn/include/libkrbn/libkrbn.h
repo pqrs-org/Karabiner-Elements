@@ -322,12 +322,16 @@ void libkrbn_disable_complex_modifications_assets_manager(void);
 void libkrbn_complex_modifications_assets_manager_reload(void);
 
 size_t libkrbn_complex_modifications_assets_manager_get_files_size(void);
-const char* libkrbn_complex_modifications_assets_manager_get_file_title(size_t index);
+bool libkrbn_complex_modifications_assets_manager_get_file_title(size_t index,
+                                                                 char* buffer,
+                                                                 size_t length);
 time_t libkrbn_complex_modifications_assets_manager_get_file_last_write_time(size_t index);
 
 size_t libkrbn_complex_modifications_assets_manager_get_rules_size(size_t file_index);
-const char* libkrbn_complex_modifications_assets_manager_get_rule_description(size_t file_index,
-                                                                              size_t index);
+bool libkrbn_complex_modifications_assets_manager_get_rule_description(size_t file_index,
+                                                                       size_t index,
+                                                                       char* buffer,
+                                                                       size_t length);
 
 void libkrbn_complex_modifications_assets_manager_add_rule_to_core_configuration_selected_profile(size_t file_index,
                                                                                                   size_t index);
@@ -443,7 +447,8 @@ void libkrbn_enable_notification_message_json_file_monitor(libkrbn_file_monitor_
                                                            void* refcon);
 void libkrbn_disable_notification_message_json_file_monitor(void);
 
-const char* libkrbn_get_notification_message_body(void);
+bool libkrbn_get_notification_message_body(char* buffer,
+                                           size_t length);
 
 //
 // libkrbn_frontmost_application_monitor
@@ -467,7 +472,10 @@ void libkrbn_enable_log_monitor(libkrbn_log_monitor_callback callback,
 void libkrbn_disable_log_monitor(void);
 
 size_t libkrbn_log_lines_get_size(libkrbn_log_lines* p);
-const char* libkrbn_log_lines_get_line(libkrbn_log_lines* p, size_t index);
+bool libkrbn_log_lines_get_line(libkrbn_log_lines* p,
+                                size_t index,
+                                char* buffer,
+                                size_t length);
 bool libkrbn_log_lines_is_warn_line(const char* line);
 bool libkrbn_log_lines_is_error_line(const char* line);
 uint64_t libkrbn_log_lines_get_date_number(const char* line);

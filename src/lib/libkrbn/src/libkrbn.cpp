@@ -347,13 +347,21 @@ size_t libkrbn_complex_modifications_assets_manager_get_files_size(void) {
   return 0;
 }
 
-const char* libkrbn_complex_modifications_assets_manager_get_file_title(size_t index) {
+bool libkrbn_complex_modifications_assets_manager_get_file_title(size_t index,
+                                                                 char* buffer,
+                                                                 size_t length) {
+  if (buffer && length > 0) {
+    buffer[0] = '\0';
+  }
+
   if (libkrbn_components_manager_) {
     if (auto m = libkrbn_components_manager_->get_complex_modifications_assets_manager()) {
-      return m->get_file_title(index);
+      strlcpy(buffer, m->get_file_title(index), length);
+      return true;
     }
   }
-  return nullptr;
+
+  return false;
 }
 
 time_t libkrbn_complex_modifications_assets_manager_get_file_last_write_time(size_t index) {
@@ -374,15 +382,22 @@ size_t libkrbn_complex_modifications_assets_manager_get_rules_size(size_t file_i
   return 0;
 }
 
-const char* libkrbn_complex_modifications_assets_manager_get_rule_description(size_t file_index,
-                                                                              size_t index) {
+bool libkrbn_complex_modifications_assets_manager_get_rule_description(size_t file_index,
+                                                                       size_t index,
+                                                                       char* buffer,
+                                                                       size_t length) {
+  if (buffer && length > 0) {
+    buffer[0] = '\0';
+  }
+
   if (libkrbn_components_manager_) {
     if (auto m = libkrbn_components_manager_->get_complex_modifications_assets_manager()) {
-      return m->get_rule_description(file_index,
-                                     index);
+      strlcpy(buffer, m->get_rule_description(file_index, index), length);
+      return true;
     }
   }
-  return nullptr;
+
+  return false;
 }
 
 void libkrbn_complex_modifications_assets_manager_add_rule_to_core_configuration_selected_profile(size_t file_index,
@@ -560,20 +575,23 @@ void libkrbn_disable_notification_message_json_file_monitor(void) {
   }
 }
 
-const char* libkrbn_get_notification_message_body(void) {
-  static std::string message;
+bool libkrbn_get_notification_message_body(char* buffer,
+                                           size_t length) {
+  if (buffer && length > 0) {
+    buffer[0] = '\0';
+  }
 
   std::ifstream input(krbn::constants::get_notification_message_file_path());
   if (input) {
     try {
       auto json = krbn::json_utility::parse_jsonc(input);
-      message = json["body"].get<std::string>();
+      strlcpy(buffer, json["body"].get<std::string>().c_str(), length);
+      return true;
     } catch (const std::exception& e) {
-      message = "";
     }
   }
 
-  return message.c_str();
+  return false;
 }
 
 //

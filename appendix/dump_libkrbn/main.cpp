@@ -31,6 +31,8 @@ int main(int argc, const char* argv[]) {
   libkrbn_register_connected_devices_updated_callback(connected_devices_updated_callback);
   connected_devices_updated_callback();
 
+  char buffer[32 * 1024];
+
   {
     libkrbn_enable_complex_modifications_assets_manager();
 
@@ -41,13 +43,17 @@ int main(int argc, const char* argv[]) {
       std::cout << "libkrbn_complex_modifications_assets_manager_get_files_size: " << size << std::endl;
 
       for (size_t i = 0; i < size; ++i) {
-        std::cout << "  " << libkrbn_complex_modifications_assets_manager_get_file_title(i) << std::endl;
+        if (libkrbn_complex_modifications_assets_manager_get_file_title(i, buffer, sizeof(buffer))) {
+          std::cout << "  " << buffer << std::endl;
+        }
 
         auto rules_size = libkrbn_complex_modifications_assets_manager_get_rules_size(i);
         std::cout << "    libkrbn_complex_modifications_assets_manager_get_rules_size: " << rules_size << std::endl;
 
         for (size_t j = 0; j < rules_size; ++j) {
-          std::cout << "      " << libkrbn_complex_modifications_assets_manager_get_rule_description(i, j) << std::endl;
+          if (libkrbn_complex_modifications_assets_manager_get_rule_description(i, j, buffer, sizeof(buffer))) {
+            std::cout << "      " << buffer << std::endl;
+          }
 
           if (j >= 2) {
             if (rules_size - j > 1) {
@@ -80,7 +86,9 @@ int main(int argc, const char* argv[]) {
       system_preferences_monitor_callback,
       nullptr);
 
-  std::cout << "libkrbn_get_notification_message_body: " << libkrbn_get_notification_message_body() << std::endl;
+  if (libkrbn_get_notification_message_body(buffer, sizeof(buffer))) {
+    std::cout << "libkrbn_get_notification_message_body: " << buffer << std::endl;
+  }
 
   std::thread thread([] {
     global_wait->wait_notice();

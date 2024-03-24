@@ -14,22 +14,30 @@ size_t libkrbn_log_lines_get_size(libkrbn_log_lines* p) {
   return lines->size();
 }
 
-const char* libkrbn_log_lines_get_line(libkrbn_log_lines* p, size_t index) {
+bool libkrbn_log_lines_get_line(libkrbn_log_lines* p,
+                                size_t index,
+                                char* buffer,
+                                size_t length) {
+  if (buffer && length > 0) {
+    buffer[0] = '\0';
+  }
+
   auto log_lines = reinterpret_cast<libkrbn_log_lines_class*>(p);
   if (!log_lines) {
-    return nullptr;
+    return false;
   }
 
   auto lines = log_lines->get_lines();
   if (!lines) {
-    return nullptr;
+    return false;
   }
 
   if (index >= lines->size()) {
-    return nullptr;
+    return false;
   }
 
-  return (*lines)[index].c_str();
+  strlcpy(buffer, (*lines)[index].c_str(), length);
+  return true;
 }
 
 bool libkrbn_log_lines_is_warn_line(const char* line) {

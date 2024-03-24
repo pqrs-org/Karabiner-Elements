@@ -6,7 +6,13 @@ private func callback(
 ) {
 
   Task { @MainActor in
-    let body = String(cString: libkrbn_get_notification_message_body())
+    var buffer = [Int8](repeating: 0, count: 32 * 1024)
+    var body = ""
+
+    if libkrbn_get_notification_message_body(&buffer, buffer.count) {
+      body = String(cString: buffer)
+    }
+
     NotificationMessage.shared.text = body.trimmingCharacters(in: .whitespacesAndNewlines)
     NotificationWindowManager.shared.updateWindowsVisibility()
   }

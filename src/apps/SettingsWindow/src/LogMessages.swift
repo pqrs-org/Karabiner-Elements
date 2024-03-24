@@ -15,8 +15,13 @@ private func callback(
   var logMessageEntries: [LogMessageEntry] = []
   let size = libkrbn_log_lines_get_size(logLines)
   for i in 0..<size {
-    let line = libkrbn_log_lines_get_line(logLines, i)
-    if line != nil {
+    var buffer = [Int8](repeating: 0, count: 32 * 1024)
+    var line = ""
+    if libkrbn_log_lines_get_line(logLines, i, &buffer, buffer.count) {
+      line = String(cString: buffer)
+    }
+
+    if line != "" {
       var logLevel = LogLevel.info
       if libkrbn_log_lines_is_warn_line(line) {
         logLevel = LogLevel.warn
@@ -27,7 +32,7 @@ private func callback(
 
       logMessageEntries.append(
         LogMessageEntry(
-          text: String(cString: line!),
+          text: line,
           logLevel: logLevel,
           dateNumber: libkrbn_log_lines_get_date_number(line)))
     }
