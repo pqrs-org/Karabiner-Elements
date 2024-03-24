@@ -33,9 +33,8 @@ private func callback(
     }
   }
 
-  let logMessageEntriesCopy = logMessageEntries
-  Task { @MainActor in
-    LogMessages.shared.setEntries(logMessageEntriesCopy)
+  Task { @MainActor [logMessageEntries] in
+    LogMessages.shared.setEntries(logMessageEntries)
   }
 }
 
