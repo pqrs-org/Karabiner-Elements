@@ -210,139 +210,99 @@ void libkrbn_core_configuration_set_selected_profile_device_game_pad_swap_sticks
 
 // game_pad_xy_stick_continued_movement_absolute_magnitude_threshold
 
-bool libkrbn_core_configuration_has_selected_profile_device_game_pad_xy_stick_continued_movement_absolute_magnitude_threshold(libkrbn_core_configuration* p,
-                                                                                                                              const libkrbn_device_identifiers* device_identifiers);
-double libkrbn_core_configuration_get_selected_profile_device_game_pad_xy_stick_continued_movement_absolute_magnitude_threshold(libkrbn_core_configuration* p,
-                                                                                                                                const libkrbn_device_identifiers* device_identifiers);
-void libkrbn_core_configuration_set_selected_profile_device_game_pad_xy_stick_continued_movement_absolute_magnitude_threshold(libkrbn_core_configuration* p,
-                                                                                                                              const libkrbn_device_identifiers* device_identifiers,
+bool libkrbn_core_configuration_has_selected_profile_device_game_pad_xy_stick_continued_movement_absolute_magnitude_threshold(const libkrbn_device_identifiers* device_identifiers);
+double libkrbn_core_configuration_get_selected_profile_device_game_pad_xy_stick_continued_movement_absolute_magnitude_threshold(const libkrbn_device_identifiers* device_identifiers);
+void libkrbn_core_configuration_set_selected_profile_device_game_pad_xy_stick_continued_movement_absolute_magnitude_threshold(const libkrbn_device_identifiers* device_identifiers,
                                                                                                                               double value);
-void libkrbn_core_configuration_unset_selected_profile_device_game_pad_xy_stick_continued_movement_absolute_magnitude_threshold(libkrbn_core_configuration* p,
-                                                                                                                                const libkrbn_device_identifiers* device_identifiers);
+void libkrbn_core_configuration_unset_selected_profile_device_game_pad_xy_stick_continued_movement_absolute_magnitude_threshold(const libkrbn_device_identifiers* device_identifiers);
 
 // game_pad_xy_stick_continued_movement_interval_milliseconds
 
-bool libkrbn_core_configuration_has_selected_profile_device_game_pad_xy_stick_continued_movement_interval_milliseconds(libkrbn_core_configuration* p,
-                                                                                                                       const libkrbn_device_identifiers* device_identifiers);
-int libkrbn_core_configuration_get_selected_profile_device_game_pad_xy_stick_continued_movement_interval_milliseconds(libkrbn_core_configuration* p,
-                                                                                                                      const libkrbn_device_identifiers* device_identifiers);
-void libkrbn_core_configuration_set_selected_profile_device_game_pad_xy_stick_continued_movement_interval_milliseconds(libkrbn_core_configuration* p,
-                                                                                                                       const libkrbn_device_identifiers* device_identifiers,
+bool libkrbn_core_configuration_has_selected_profile_device_game_pad_xy_stick_continued_movement_interval_milliseconds(const libkrbn_device_identifiers* device_identifiers);
+int libkrbn_core_configuration_get_selected_profile_device_game_pad_xy_stick_continued_movement_interval_milliseconds(const libkrbn_device_identifiers* device_identifiers);
+void libkrbn_core_configuration_set_selected_profile_device_game_pad_xy_stick_continued_movement_interval_milliseconds(const libkrbn_device_identifiers* device_identifiers,
                                                                                                                        int value);
-void libkrbn_core_configuration_unset_selected_profile_device_game_pad_xy_stick_continued_movement_interval_milliseconds(libkrbn_core_configuration* p,
-                                                                                                                         const libkrbn_device_identifiers* device_identifiers);
+void libkrbn_core_configuration_unset_selected_profile_device_game_pad_xy_stick_continued_movement_interval_milliseconds(const libkrbn_device_identifiers* device_identifiers);
 
 int libkrbn_core_configuration_game_pad_xy_stick_continued_movement_interval_milliseconds_default_value(void);
 
 // game_pad_xy_stick_flicking_input_window_milliseconds
 
-bool libkrbn_core_configuration_has_selected_profile_device_game_pad_xy_stick_flicking_input_window_milliseconds(libkrbn_core_configuration* p,
-                                                                                                                 const libkrbn_device_identifiers* device_identifiers);
-int libkrbn_core_configuration_get_selected_profile_device_game_pad_xy_stick_flicking_input_window_milliseconds(libkrbn_core_configuration* p,
-                                                                                                                const libkrbn_device_identifiers* device_identifiers);
-void libkrbn_core_configuration_set_selected_profile_device_game_pad_xy_stick_flicking_input_window_milliseconds(libkrbn_core_configuration* p,
-                                                                                                                 const libkrbn_device_identifiers* device_identifiers,
+bool libkrbn_core_configuration_has_selected_profile_device_game_pad_xy_stick_flicking_input_window_milliseconds(const libkrbn_device_identifiers* device_identifiers);
+int libkrbn_core_configuration_get_selected_profile_device_game_pad_xy_stick_flicking_input_window_milliseconds(const libkrbn_device_identifiers* device_identifiers);
+void libkrbn_core_configuration_set_selected_profile_device_game_pad_xy_stick_flicking_input_window_milliseconds(const libkrbn_device_identifiers* device_identifiers,
                                                                                                                  int value);
-void libkrbn_core_configuration_unset_selected_profile_device_game_pad_xy_stick_flicking_input_window_milliseconds(libkrbn_core_configuration* p,
-                                                                                                                   const libkrbn_device_identifiers* device_identifiers);
+void libkrbn_core_configuration_unset_selected_profile_device_game_pad_xy_stick_flicking_input_window_milliseconds(const libkrbn_device_identifiers* device_identifiers);
 
 int libkrbn_core_configuration_game_pad_xy_stick_flicking_input_window_milliseconds_default_value(void);
 
 // game_pad_wheels_stick_continued_movement_absolute_magnitude_threshold
 
-bool libkrbn_core_configuration_has_selected_profile_device_game_pad_wheels_stick_continued_movement_absolute_magnitude_threshold(libkrbn_core_configuration* p,
-                                                                                                                                  const libkrbn_device_identifiers* device_identifiers);
-double libkrbn_core_configuration_get_selected_profile_device_game_pad_wheels_stick_continued_movement_absolute_magnitude_threshold(libkrbn_core_configuration* p,
-                                                                                                                                    const libkrbn_device_identifiers* device_identifiers);
-void libkrbn_core_configuration_set_selected_profile_device_game_pad_wheels_stick_continued_movement_absolute_magnitude_threshold(libkrbn_core_configuration* p,
-                                                                                                                                  const libkrbn_device_identifiers* device_identifiers,
+bool libkrbn_core_configuration_has_selected_profile_device_game_pad_wheels_stick_continued_movement_absolute_magnitude_threshold(const libkrbn_device_identifiers* device_identifiers);
+double libkrbn_core_configuration_get_selected_profile_device_game_pad_wheels_stick_continued_movement_absolute_magnitude_threshold(const libkrbn_device_identifiers* device_identifiers);
+void libkrbn_core_configuration_set_selected_profile_device_game_pad_wheels_stick_continued_movement_absolute_magnitude_threshold(const libkrbn_device_identifiers* device_identifiers,
                                                                                                                                   double value);
-void libkrbn_core_configuration_unset_selected_profile_device_game_pad_wheels_stick_continued_movement_absolute_magnitude_threshold(libkrbn_core_configuration* p,
-                                                                                                                                    const libkrbn_device_identifiers* device_identifiers);
+void libkrbn_core_configuration_unset_selected_profile_device_game_pad_wheels_stick_continued_movement_absolute_magnitude_threshold(const libkrbn_device_identifiers* device_identifiers);
 
 // game_pad_wheels_stick_continued_movement_interval_milliseconds
 
-bool libkrbn_core_configuration_has_selected_profile_device_game_pad_wheels_stick_continued_movement_interval_milliseconds(libkrbn_core_configuration* p,
-                                                                                                                           const libkrbn_device_identifiers* device_identifiers);
-int libkrbn_core_configuration_get_selected_profile_device_game_pad_wheels_stick_continued_movement_interval_milliseconds(libkrbn_core_configuration* p,
-                                                                                                                          const libkrbn_device_identifiers* device_identifiers);
-void libkrbn_core_configuration_set_selected_profile_device_game_pad_wheels_stick_continued_movement_interval_milliseconds(libkrbn_core_configuration* p,
-                                                                                                                           const libkrbn_device_identifiers* device_identifiers,
+bool libkrbn_core_configuration_has_selected_profile_device_game_pad_wheels_stick_continued_movement_interval_milliseconds(const libkrbn_device_identifiers* device_identifiers);
+int libkrbn_core_configuration_get_selected_profile_device_game_pad_wheels_stick_continued_movement_interval_milliseconds(const libkrbn_device_identifiers* device_identifiers);
+void libkrbn_core_configuration_set_selected_profile_device_game_pad_wheels_stick_continued_movement_interval_milliseconds(const libkrbn_device_identifiers* device_identifiers,
                                                                                                                            int value);
-void libkrbn_core_configuration_unset_selected_profile_device_game_pad_wheels_stick_continued_movement_interval_milliseconds(libkrbn_core_configuration* p,
-                                                                                                                             const libkrbn_device_identifiers* device_identifiers);
+void libkrbn_core_configuration_unset_selected_profile_device_game_pad_wheels_stick_continued_movement_interval_milliseconds(const libkrbn_device_identifiers* device_identifiers);
 
 int libkrbn_core_configuration_game_pad_wheels_stick_continued_movement_interval_milliseconds_default_value(void);
 
 // game_pad_wheels_stick_flicking_input_window_milliseconds
 
-bool libkrbn_core_configuration_has_selected_profile_device_game_pad_wheels_stick_flicking_input_window_milliseconds(libkrbn_core_configuration* p,
-                                                                                                                     const libkrbn_device_identifiers* device_identifiers);
-int libkrbn_core_configuration_get_selected_profile_device_game_pad_wheels_stick_flicking_input_window_milliseconds(libkrbn_core_configuration* p,
-                                                                                                                    const libkrbn_device_identifiers* device_identifiers);
-void libkrbn_core_configuration_set_selected_profile_device_game_pad_wheels_stick_flicking_input_window_milliseconds(libkrbn_core_configuration* p,
-                                                                                                                     const libkrbn_device_identifiers* device_identifiers,
+bool libkrbn_core_configuration_has_selected_profile_device_game_pad_wheels_stick_flicking_input_window_milliseconds(const libkrbn_device_identifiers* device_identifiers);
+int libkrbn_core_configuration_get_selected_profile_device_game_pad_wheels_stick_flicking_input_window_milliseconds(const libkrbn_device_identifiers* device_identifiers);
+void libkrbn_core_configuration_set_selected_profile_device_game_pad_wheels_stick_flicking_input_window_milliseconds(const libkrbn_device_identifiers* device_identifiers,
                                                                                                                      int value);
-void libkrbn_core_configuration_unset_selected_profile_device_game_pad_wheels_stick_flicking_input_window_milliseconds(libkrbn_core_configuration* p,
-                                                                                                                       const libkrbn_device_identifiers* device_identifiers);
+void libkrbn_core_configuration_unset_selected_profile_device_game_pad_wheels_stick_flicking_input_window_milliseconds(const libkrbn_device_identifiers* device_identifiers);
 
 int libkrbn_core_configuration_game_pad_wheels_stick_flicking_input_window_milliseconds_default_value(void);
 
 // game_pad_stick_x_formula
 
-bool libkrbn_core_configuration_has_selected_profile_device_game_pad_stick_x_formula(libkrbn_core_configuration* p,
-                                                                                     const libkrbn_device_identifiers* device_identifiers);
-bool libkrbn_core_configuration_get_selected_profile_device_game_pad_stick_x_formula(libkrbn_core_configuration* p,
-                                                                                     const libkrbn_device_identifiers* device_identifiers,
+bool libkrbn_core_configuration_has_selected_profile_device_game_pad_stick_x_formula(const libkrbn_device_identifiers* device_identifiers);
+bool libkrbn_core_configuration_get_selected_profile_device_game_pad_stick_x_formula(const libkrbn_device_identifiers* device_identifiers,
                                                                                      char* buffer,
                                                                                      size_t length);
-bool libkrbn_core_configuration_set_selected_profile_device_game_pad_stick_x_formula(libkrbn_core_configuration* p,
-                                                                                     const libkrbn_device_identifiers* device_identifiers,
+bool libkrbn_core_configuration_set_selected_profile_device_game_pad_stick_x_formula(const libkrbn_device_identifiers* device_identifiers,
                                                                                      const char* value);
-void libkrbn_core_configuration_unset_selected_profile_device_game_pad_stick_x_formula(libkrbn_core_configuration* p,
-                                                                                       const libkrbn_device_identifiers* device_identifiers);
+void libkrbn_core_configuration_unset_selected_profile_device_game_pad_stick_x_formula(const libkrbn_device_identifiers* device_identifiers);
 
 // game_pad_stick_y_formula
 
-bool libkrbn_core_configuration_has_selected_profile_device_game_pad_stick_y_formula(libkrbn_core_configuration* p,
-                                                                                     const libkrbn_device_identifiers* device_identifiers);
-bool libkrbn_core_configuration_get_selected_profile_device_game_pad_stick_y_formula(libkrbn_core_configuration* p,
-                                                                                     const libkrbn_device_identifiers* device_identifiers,
+bool libkrbn_core_configuration_has_selected_profile_device_game_pad_stick_y_formula(const libkrbn_device_identifiers* device_identifiers);
+bool libkrbn_core_configuration_get_selected_profile_device_game_pad_stick_y_formula(const libkrbn_device_identifiers* device_identifiers,
                                                                                      char* buffer,
                                                                                      size_t length);
-bool libkrbn_core_configuration_set_selected_profile_device_game_pad_stick_y_formula(libkrbn_core_configuration* p,
-                                                                                     const libkrbn_device_identifiers* device_identifiers,
+bool libkrbn_core_configuration_set_selected_profile_device_game_pad_stick_y_formula(const libkrbn_device_identifiers* device_identifiers,
                                                                                      const char* value);
-void libkrbn_core_configuration_unset_selected_profile_device_game_pad_stick_y_formula(libkrbn_core_configuration* p,
-                                                                                       const libkrbn_device_identifiers* device_identifiers);
+void libkrbn_core_configuration_unset_selected_profile_device_game_pad_stick_y_formula(const libkrbn_device_identifiers* device_identifiers);
 
 // game_pad_stick_vertical_wheel_formula
 
-bool libkrbn_core_configuration_has_selected_profile_device_game_pad_stick_vertical_wheel_formula(libkrbn_core_configuration* p,
-                                                                                                  const libkrbn_device_identifiers* device_identifiers);
-bool libkrbn_core_configuration_get_selected_profile_device_game_pad_stick_vertical_wheel_formula(libkrbn_core_configuration* p,
-                                                                                                  const libkrbn_device_identifiers* device_identifiers,
+bool libkrbn_core_configuration_has_selected_profile_device_game_pad_stick_vertical_wheel_formula(const libkrbn_device_identifiers* device_identifiers);
+bool libkrbn_core_configuration_get_selected_profile_device_game_pad_stick_vertical_wheel_formula(const libkrbn_device_identifiers* device_identifiers,
                                                                                                   char* buffer,
                                                                                                   size_t length);
-bool libkrbn_core_configuration_set_selected_profile_device_game_pad_stick_vertical_wheel_formula(libkrbn_core_configuration* p,
-                                                                                                  const libkrbn_device_identifiers* device_identifiers,
+bool libkrbn_core_configuration_set_selected_profile_device_game_pad_stick_vertical_wheel_formula(const libkrbn_device_identifiers* device_identifiers,
                                                                                                   const char* value);
-void libkrbn_core_configuration_unset_selected_profile_device_game_pad_stick_vertical_wheel_formula(libkrbn_core_configuration* p,
-                                                                                                    const libkrbn_device_identifiers* device_identifiers);
+void libkrbn_core_configuration_unset_selected_profile_device_game_pad_stick_vertical_wheel_formula(const libkrbn_device_identifiers* device_identifiers);
 
 // game_pad_stick_horizontal_wheel_formula
 
-bool libkrbn_core_configuration_has_selected_profile_device_game_pad_stick_horizontal_wheel_formula(libkrbn_core_configuration* p,
-                                                                                                    const libkrbn_device_identifiers* device_identifiers);
-bool libkrbn_core_configuration_get_selected_profile_device_game_pad_stick_horizontal_wheel_formula(libkrbn_core_configuration* p,
-                                                                                                    const libkrbn_device_identifiers* device_identifiers,
+bool libkrbn_core_configuration_has_selected_profile_device_game_pad_stick_horizontal_wheel_formula(const libkrbn_device_identifiers* device_identifiers);
+bool libkrbn_core_configuration_get_selected_profile_device_game_pad_stick_horizontal_wheel_formula(const libkrbn_device_identifiers* device_identifiers,
                                                                                                     char* buffer,
                                                                                                     size_t length);
-bool libkrbn_core_configuration_set_selected_profile_device_game_pad_stick_horizontal_wheel_formula(libkrbn_core_configuration* p,
-                                                                                                    const libkrbn_device_identifiers* device_identifiers,
+bool libkrbn_core_configuration_set_selected_profile_device_game_pad_stick_horizontal_wheel_formula(const libkrbn_device_identifiers* device_identifiers,
                                                                                                     const char* value);
-void libkrbn_core_configuration_unset_selected_profile_device_game_pad_stick_horizontal_wheel_formula(libkrbn_core_configuration* p,
-                                                                                                      const libkrbn_device_identifiers* device_identifiers);
+void libkrbn_core_configuration_unset_selected_profile_device_game_pad_stick_horizontal_wheel_formula(const libkrbn_device_identifiers* device_identifiers);
 
 // game_pad_*
 
