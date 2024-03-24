@@ -3,19 +3,6 @@
 #include "libkrbn/libkrbn.h"
 #include "monitor/configuration_monitor.hpp"
 
-class libkrbn_core_configuration_class final {
-public:
-  libkrbn_core_configuration_class(std::shared_ptr<krbn::core_configuration::core_configuration> core_configuration) : core_configuration_(core_configuration) {
-  }
-
-  krbn::core_configuration::core_configuration& get_core_configuration(void) {
-    return *core_configuration_;
-  }
-
-private:
-  std::shared_ptr<krbn::core_configuration::core_configuration> core_configuration_;
-};
-
 class libkrbn_configuration_monitor final : public pqrs::dispatcher::extra::dispatcher_client {
 public:
   libkrbn_configuration_monitor(const libkrbn_configuration_monitor&) = delete;

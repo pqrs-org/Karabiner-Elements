@@ -616,17 +616,31 @@ void libkrbn_disable_frontmost_application_monitor(void) {
 // log_monitor
 //
 
-void libkrbn_enable_log_monitor(libkrbn_log_monitor_callback callback,
-                                void* refcon) {
+void libkrbn_enable_log_monitor(void) {
   if (libkrbn_components_manager_) {
-    libkrbn_components_manager_->enable_log_monitor(callback,
-                                                    refcon);
+    libkrbn_components_manager_->enable_log_monitor();
   }
 }
 
 void libkrbn_disable_log_monitor(void) {
   if (libkrbn_components_manager_) {
     libkrbn_components_manager_->disable_log_monitor();
+  }
+}
+
+void libkrbn_register_log_messages_updated_callback(libkrbn_log_messages_updated callback) {
+  if (auto manager = libkrbn_components_manager_) {
+    if (auto m = manager->get_libkrbn_log_monitor()) {
+      m->register_libkrbn_log_messages_updated_callback(callback);
+    }
+  }
+}
+
+void libkrbn_unregister_log_messages_updated_callback(libkrbn_log_messages_updated callback) {
+  if (auto manager = libkrbn_components_manager_) {
+    if (auto m = manager->get_libkrbn_log_monitor()) {
+      m->unregister_libkrbn_log_messages_updated_callback(callback);
+    }
   }
 }
 

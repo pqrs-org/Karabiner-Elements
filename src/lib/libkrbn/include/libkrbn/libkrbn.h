@@ -465,15 +465,15 @@ void libkrbn_disable_frontmost_application_monitor(void);
 // libkrbn_log_monitor
 //
 
-typedef void libkrbn_log_lines;
-typedef void (*libkrbn_log_monitor_callback)(libkrbn_log_lines* log_lines, void* refcon);
-void libkrbn_enable_log_monitor(libkrbn_log_monitor_callback callback,
-                                void* refcon);
+typedef void (*libkrbn_log_messages_updated)(void);
+void libkrbn_enable_log_monitor(void);
 void libkrbn_disable_log_monitor(void);
 
-size_t libkrbn_log_lines_get_size(libkrbn_log_lines* p);
-bool libkrbn_log_lines_get_line(libkrbn_log_lines* p,
-                                size_t index,
+void libkrbn_register_log_messages_updated_callback(libkrbn_log_messages_updated callback);
+void libkrbn_unregister_log_messages_updated_callback(libkrbn_log_messages_updated callback);
+
+size_t libkrbn_log_lines_get_size(void);
+bool libkrbn_log_lines_get_line(size_t index,
                                 char* buffer,
                                 size_t length);
 bool libkrbn_log_lines_is_warn_line(const char* line);

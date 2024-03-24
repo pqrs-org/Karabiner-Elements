@@ -5,27 +5,12 @@
 #include "logger.hpp"
 #include <pqrs/spdlog.hpp>
 
-class libkrbn_log_lines_class final {
-public:
-  libkrbn_log_lines_class(std::shared_ptr<std::deque<std::string>> lines) : lines_(lines) {
-  }
-
-  std::shared_ptr<std::deque<std::string>> get_lines(void) const {
-    return lines_;
-  }
-
-private:
-  std::shared_ptr<std::deque<std::string>> lines_;
-};
-
-class libkrbn_log_monitor final {
+class libkrbn_log_monitor final : public pqrs::dispatcher::extra::dispatcher_client {
 public:
   libkrbn_log_monitor(const libkrbn_log_monitor&) = delete;
 
-  libkrbn_log_monitor(libkrbn_log_monitor_callback callback,
-                      void* refcon) {
-    krbn::logger::get_logger()->info(__func__);
-
+  libkrbn_log_monitor(void)
+      : dispatcher_client() {
     std::vector<std::string> targets = {
         "/var/log/karabiner/grabber.log",
         "/var/log/karabiner/observer.log",
@@ -41,11 +26,11 @@ public:
                                                        targets,
                                                        250);
 
-    monitor_->log_file_updated.connect([callback, refcon](auto&& lines) {
-      if (callback) {
-        auto log_lines = new libkrbn_log_lines_class(lines);
-        callback(reinterpret_cast<libkrbn_log_lines*>(log_lines), refcon);
-        delete log_lines;
+    monitor_->log_file_updated.connect([this](auto&& lines) {
+      lines_ = lines;
+
+      for (const auto& c : libkrbn_log_messages_updated_callbacks_) {
+        c();
       }
     });
 
@@ -53,9 +38,34 @@ public:
   }
 
   ~libkrbn_log_monitor(void) {
-    krbn::logger::get_logger()->info(__func__);
+    detach_from_dispatcher([this] {
+      monitor_ = nullptr;
+    });
+  }
+
+  std::shared_ptr<std::deque<std::string>> get_lines(void) {
+    return lines_;
+  }
+
+  void register_libkrbn_log_messages_updated_callback(libkrbn_log_messages_updated callback) {
+    enqueue_to_dispatcher([this, callback] {
+      libkrbn_log_messages_updated_callbacks_.push_back(callback);
+    });
+  }
+
+  void unregister_libkrbn_log_messages_updated_callback(libkrbn_log_messages_updated callback) {
+    enqueue_to_dispatcher([this, callback] {
+      libkrbn_log_messages_updated_callbacks_.erase(std::remove_if(std::begin(libkrbn_log_messages_updated_callbacks_),
+                                                                   std::end(libkrbn_log_messages_updated_callbacks_),
+                                                                   [&](auto& c) {
+                                                                     return c == callback;
+                                                                   }),
+                                                    std::end(libkrbn_log_messages_updated_callbacks_));
+    });
   }
 
 private:
   std::unique_ptr<pqrs::spdlog::monitor> monitor_;
+  std::shared_ptr<std::deque<std::string>> lines_;
+  std::vector<libkrbn_log_messages_updated> libkrbn_log_messages_updated_callbacks_;
 };

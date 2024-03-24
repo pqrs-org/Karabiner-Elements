@@ -6,18 +6,13 @@ enum LogLevel {
   case error
 }
 
-private func callback(
-  _ logLines: UnsafeMutableRawPointer?,
-  _ context: UnsafeMutableRawPointer?
-) {
-  if logLines == nil { return }
-
+private func callback() {
   var logMessageEntries: [LogMessageEntry] = []
-  let size = libkrbn_log_lines_get_size(logLines)
+  let size = libkrbn_log_lines_get_size()
   for i in 0..<size {
     var buffer = [Int8](repeating: 0, count: 32 * 1024)
     var line = ""
-    if libkrbn_log_lines_get_line(logLines, i, &buffer, buffer.count) {
+    if libkrbn_log_lines_get_line(i, &buffer, buffer.count) {
       line = String(cString: buffer)
     }
 
@@ -89,7 +84,9 @@ public class LogMessages: ObservableObject {
   public func watch() {
     entries = []
 
-    libkrbn_enable_log_monitor(callback, nil)
+    libkrbn_enable_log_monitor()
+    libkrbn_register_log_messages_updated_callback(callback)
+    callback()
 
     //
     // Create timer

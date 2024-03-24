@@ -4,20 +4,6 @@
 #include "libkrbn/libkrbn.h"
 #include "monitor/connected_devices_monitor.hpp"
 
-namespace {
-class libkrbn_connected_devices_class final {
-public:
-  libkrbn_connected_devices_class(const krbn::connected_devices::connected_devices& connected_devices) : connected_devices_(connected_devices) {
-  }
-
-  krbn::connected_devices::connected_devices& get_connected_devices(void) {
-    return connected_devices_;
-  }
-
-private:
-  krbn::connected_devices::connected_devices connected_devices_;
-};
-
 class libkrbn_connected_devices_monitor final : public pqrs::dispatcher::extra::dispatcher_client {
 public:
   libkrbn_connected_devices_monitor(const libkrbn_connected_devices_monitor&) = delete;
@@ -76,4 +62,3 @@ private:
   std::weak_ptr<const krbn::connected_devices::connected_devices> weak_connected_devices_;
   std::vector<libkrbn_connected_devices_updated> libkrbn_connected_devices_updated_callbacks_;
 };
-} // namespace

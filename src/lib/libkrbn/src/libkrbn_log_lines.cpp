@@ -1,43 +1,40 @@
+#include "libkrbn/impl/libkrbn_components_manager.hpp"
+#include "libkrbn/impl/libkrbn_cpp.hpp"
 #include "libkrbn/impl/libkrbn_log_monitor.hpp"
 
-size_t libkrbn_log_lines_get_size(libkrbn_log_lines* p) {
-  auto log_lines = reinterpret_cast<libkrbn_log_lines_class*>(p);
-  if (!log_lines) {
-    return 0;
+namespace {
+std::shared_ptr<std::deque<std::string>> get_current_log_lines(void) {
+  if (auto manager = libkrbn_cpp::get_components_manager()) {
+    return manager->get_current_log_lines();
   }
 
-  auto lines = log_lines->get_lines();
-  if (!lines) {
-    return 0;
+  return nullptr;
+}
+} // namespace
+
+size_t libkrbn_log_lines_get_size(void) {
+  if (auto lines = get_current_log_lines()) {
+    return lines->size();
   }
 
-  return lines->size();
+  return 0;
 }
 
-bool libkrbn_log_lines_get_line(libkrbn_log_lines* p,
-                                size_t index,
+bool libkrbn_log_lines_get_line(size_t index,
                                 char* buffer,
                                 size_t length) {
   if (buffer && length > 0) {
     buffer[0] = '\0';
   }
 
-  auto log_lines = reinterpret_cast<libkrbn_log_lines_class*>(p);
-  if (!log_lines) {
-    return false;
+  if (auto lines = get_current_log_lines()) {
+    if (index < lines->size()) {
+      strlcpy(buffer, (*lines)[index].c_str(), length);
+      return true;
+    }
   }
 
-  auto lines = log_lines->get_lines();
-  if (!lines) {
-    return false;
-  }
-
-  if (index >= lines->size()) {
-    return false;
-  }
-
-  strlcpy(buffer, (*lines)[index].c_str(), length);
-  return true;
+  return false;
 }
 
 bool libkrbn_log_lines_is_warn_line(const char* line) {

@@ -196,14 +196,23 @@ public:
   // log_monitor_
   //
 
-  void enable_log_monitor(libkrbn_log_monitor_callback callback,
-                          void* refcon) {
-    log_monitor_ = std::make_unique<libkrbn_log_monitor>(callback,
-                                                         refcon);
+  void enable_log_monitor(void) {
+    log_monitor_ = std::make_shared<libkrbn_log_monitor>();
   }
 
   void disable_log_monitor(void) {
     log_monitor_ = nullptr;
+  }
+
+  std::shared_ptr<libkrbn_log_monitor> get_libkrbn_log_monitor(void) {
+    return log_monitor_;
+  }
+
+  std::shared_ptr<std::deque<std::string>> get_current_log_lines(void) {
+    if (auto m = log_monitor_) {
+      return m->get_lines();
+    }
+    return nullptr;
   }
 
   //
@@ -280,7 +289,7 @@ private:
   std::unique_ptr<libkrbn_file_monitor> manipulator_environment_json_file_monitor_;
   std::unique_ptr<libkrbn_file_monitor> notification_message_json_file_monitor_;
   std::unique_ptr<libkrbn_frontmost_application_monitor> frontmost_application_monitor_;
-  std::unique_ptr<libkrbn_log_monitor> log_monitor_;
+  std::shared_ptr<libkrbn_log_monitor> log_monitor_;
   std::unique_ptr<libkrbn_hid_value_monitor> hid_value_monitor_;
   std::unique_ptr<libkrbn_grabber_client> grabber_client_;
 };
