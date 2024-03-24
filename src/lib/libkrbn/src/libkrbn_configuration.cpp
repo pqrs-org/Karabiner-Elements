@@ -355,48 +355,58 @@ void libkrbn_core_configuration_replace_selected_profile_fn_function_key(const c
   }
 }
 
-size_t libkrbn_core_configuration_get_selected_profile_complex_modifications_rules_size(libkrbn_core_configuration* p) {
-  if (auto c = reinterpret_cast<libkrbn_core_configuration_class*>(p)) {
-    return c->get_core_configuration().get_selected_profile().get_complex_modifications().get_rules().size();
+size_t libkrbn_core_configuration_get_selected_profile_complex_modifications_rules_size(void) {
+  if (auto c = get_current_core_configuration()) {
+    return c->get_selected_profile().get_complex_modifications().get_rules().size();
   }
   return 0;
 }
 
-void libkrbn_core_configuration_push_front_complex_modifications_rule_to_selected_profile(libkrbn_core_configuration* p,
-                                                                                          const krbn::core_configuration::details::complex_modifications_rule& rule) {
-  if (auto c = reinterpret_cast<libkrbn_core_configuration_class*>(p)) {
-    c->get_core_configuration().get_selected_profile().push_front_complex_modifications_rule(rule);
+void libkrbn_core_configuration_push_front_complex_modifications_rule_to_selected_profile(const krbn::core_configuration::details::complex_modifications_rule& rule) {
+  if (auto c = get_current_core_configuration()) {
+    c->get_selected_profile().push_front_complex_modifications_rule(rule);
   }
 }
 
-void libkrbn_core_configuration_erase_selected_profile_complex_modifications_rule(libkrbn_core_configuration* p, size_t index) {
-  if (auto c = reinterpret_cast<libkrbn_core_configuration_class*>(p)) {
-    c->get_core_configuration().get_selected_profile().erase_complex_modifications_rule(index);
+void libkrbn_core_configuration_erase_selected_profile_complex_modifications_rule(size_t index) {
+  if (auto c = get_current_core_configuration()) {
+    c->get_selected_profile().erase_complex_modifications_rule(index);
   }
 }
 
-void libkrbn_core_configuration_move_selected_profile_complex_modifications_rule(libkrbn_core_configuration* p, size_t source_index, size_t destination_index) {
-  if (auto c = reinterpret_cast<libkrbn_core_configuration_class*>(p)) {
-    c->get_core_configuration().get_selected_profile().move_complex_modifications_rule(source_index, destination_index);
+void libkrbn_core_configuration_move_selected_profile_complex_modifications_rule(size_t source_index, size_t destination_index) {
+  if (auto c = get_current_core_configuration()) {
+    c->get_selected_profile().move_complex_modifications_rule(source_index, destination_index);
   }
 }
 
-const char* _Nullable libkrbn_core_configuration_get_selected_profile_complex_modifications_rule_description(libkrbn_core_configuration* p, size_t index) {
-  if (auto c = reinterpret_cast<libkrbn_core_configuration_class*>(p)) {
-    const auto& rules = c->get_core_configuration().get_selected_profile().get_complex_modifications().get_rules();
-    if (index < rules.size()) {
-      return rules[index].get_description().c_str();
-    }
-  }
-  return 0;
-}
-
-bool libkrbn_core_configuration_get_selected_profile_complex_modifications_rule_json_string(libkrbn_core_configuration* p,
-                                                                                            size_t index,
+bool libkrbn_core_configuration_get_selected_profile_complex_modifications_rule_description(size_t index,
                                                                                             char* buffer,
                                                                                             size_t length) {
-  if (auto c = reinterpret_cast<libkrbn_core_configuration_class*>(p)) {
-    const auto& rules = c->get_core_configuration().get_selected_profile().get_complex_modifications().get_rules();
+  if (buffer && length > 0) {
+    buffer[0] = '\0';
+  }
+
+  if (auto c = get_current_core_configuration()) {
+    const auto& rules = c->get_selected_profile().get_complex_modifications().get_rules();
+    if (index < rules.size()) {
+      strlcpy(buffer, rules[index].get_description().c_str(), length);
+      return true;
+    }
+  }
+
+  return false;
+}
+
+bool libkrbn_core_configuration_get_selected_profile_complex_modifications_rule_json_string(size_t index,
+                                                                                            char* buffer,
+                                                                                            size_t length) {
+  if (buffer && length > 0) {
+    buffer[0] = '\0';
+  }
+
+  if (auto c = get_current_core_configuration()) {
+    const auto& rules = c->get_selected_profile().get_complex_modifications().get_rules();
     if (index < rules.size()) {
       auto json_string = krbn::json_utility::dump(rules[index].get_json());
       // Return false if no enough space.
@@ -409,8 +419,7 @@ bool libkrbn_core_configuration_get_selected_profile_complex_modifications_rule_
   return false;
 }
 
-void libkrbn_core_configuration_replace_selected_profile_complex_modifications_rule(libkrbn_core_configuration* p,
-                                                                                    size_t index,
+void libkrbn_core_configuration_replace_selected_profile_complex_modifications_rule(size_t index,
                                                                                     const char* json_string,
                                                                                     char* error_message_buffer,
                                                                                     size_t error_message_buffer_length) {
@@ -419,8 +428,8 @@ void libkrbn_core_configuration_replace_selected_profile_complex_modifications_r
   }
 
   try {
-    if (auto c = reinterpret_cast<libkrbn_core_configuration_class*>(p)) {
-      auto&& complex_modifications = c->get_core_configuration().get_selected_profile().get_complex_modifications();
+    if (auto c = get_current_core_configuration()) {
+      auto&& complex_modifications = c->get_selected_profile().get_complex_modifications();
       krbn::core_configuration::details::complex_modifications_rule rule(
           krbn::json_utility::parse_jsonc(std::string(json_string)),
           complex_modifications.get_parameters());
@@ -445,8 +454,7 @@ void libkrbn_core_configuration_replace_selected_profile_complex_modifications_r
   }
 }
 
-void libkrbn_core_configuration_push_front_selected_profile_complex_modifications_rule(libkrbn_core_configuration* p,
-                                                                                       const char* json_string,
+void libkrbn_core_configuration_push_front_selected_profile_complex_modifications_rule(const char* json_string,
                                                                                        char* error_message_buffer,
                                                                                        size_t error_message_buffer_length) {
   if (error_message_buffer && error_message_buffer_length > 0) {
@@ -454,8 +462,8 @@ void libkrbn_core_configuration_push_front_selected_profile_complex_modification
   }
 
   try {
-    if (auto c = reinterpret_cast<libkrbn_core_configuration_class*>(p)) {
-      auto&& complex_modifications = c->get_core_configuration().get_selected_profile().get_complex_modifications();
+    if (auto c = get_current_core_configuration()) {
+      auto&& complex_modifications = c->get_selected_profile().get_complex_modifications();
       krbn::core_configuration::details::complex_modifications_rule rule(
           krbn::json_utility::parse_jsonc(std::string(json_string)),
           complex_modifications.get_parameters());
@@ -480,11 +488,10 @@ void libkrbn_core_configuration_push_front_selected_profile_complex_modification
   }
 }
 
-int libkrbn_core_configuration_get_selected_profile_complex_modifications_parameter(libkrbn_core_configuration* p,
-                                                                                    const char* name) {
-  if (auto c = reinterpret_cast<libkrbn_core_configuration_class*>(p)) {
+int libkrbn_core_configuration_get_selected_profile_complex_modifications_parameter(const char* name) {
+  if (auto c = get_current_core_configuration()) {
     if (name) {
-      if (auto value = c->get_core_configuration().get_selected_profile().get_complex_modifications().get_parameters().get_value(name)) {
+      if (auto value = c->get_selected_profile().get_complex_modifications().get_parameters().get_value(name)) {
         return *value;
       }
     }
@@ -492,12 +499,11 @@ int libkrbn_core_configuration_get_selected_profile_complex_modifications_parame
   return 0;
 }
 
-void libkrbn_core_configuration_set_selected_profile_complex_modifications_parameter(libkrbn_core_configuration* p,
-                                                                                     const char* name,
+void libkrbn_core_configuration_set_selected_profile_complex_modifications_parameter(const char* name,
                                                                                      int value) {
-  if (auto c = reinterpret_cast<libkrbn_core_configuration_class*>(p)) {
+  if (auto c = get_current_core_configuration()) {
     if (name) {
-      c->get_core_configuration().get_selected_profile().set_complex_modifications_parameter(name, value);
+      c->get_selected_profile().set_complex_modifications_parameter(name, value);
     }
   }
 }
@@ -1114,6 +1120,10 @@ bool libkrbn_core_configuration_get_selected_profile_device_game_pad_stick_x_for
                                                                                      const libkrbn_device_identifiers* device_identifiers,
                                                                                      char* buffer,
                                                                                      size_t length) {
+  if (buffer && length > 0) {
+    buffer[0] = '\0';
+  }
+
   if (auto c = reinterpret_cast<libkrbn_core_configuration_class*>(p)) {
     if (device_identifiers) {
       auto identifiers = libkrbn_cpp::make_device_identifiers(*device_identifiers);
@@ -1174,6 +1184,10 @@ bool libkrbn_core_configuration_get_selected_profile_device_game_pad_stick_y_for
                                                                                      const libkrbn_device_identifiers* device_identifiers,
                                                                                      char* buffer,
                                                                                      size_t length) {
+  if (buffer && length > 0) {
+    buffer[0] = '\0';
+  }
+
   if (auto c = reinterpret_cast<libkrbn_core_configuration_class*>(p)) {
     if (device_identifiers) {
       auto identifiers = libkrbn_cpp::make_device_identifiers(*device_identifiers);
@@ -1234,6 +1248,10 @@ bool libkrbn_core_configuration_get_selected_profile_device_game_pad_stick_verti
                                                                                                   const libkrbn_device_identifiers* device_identifiers,
                                                                                                   char* buffer,
                                                                                                   size_t length) {
+  if (buffer && length > 0) {
+    buffer[0] = '\0';
+  }
+
   if (auto c = reinterpret_cast<libkrbn_core_configuration_class*>(p)) {
     if (device_identifiers) {
       auto identifiers = libkrbn_cpp::make_device_identifiers(*device_identifiers);
@@ -1294,6 +1312,10 @@ bool libkrbn_core_configuration_get_selected_profile_device_game_pad_stick_horiz
                                                                                                     const libkrbn_device_identifiers* device_identifiers,
                                                                                                     char* buffer,
                                                                                                     size_t length) {
+  if (buffer && length > 0) {
+    buffer[0] = '\0';
+  }
+
   if (auto c = reinterpret_cast<libkrbn_core_configuration_class*>(p)) {
     if (device_identifiers) {
       auto identifiers = libkrbn_cpp::make_device_identifiers(*device_identifiers);
