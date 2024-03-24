@@ -213,6 +213,13 @@ public:
     {
       nlohmann::json data = nlohmann::json::array();
 
+      // Typically al_consumer_control_configuration is used as the key to open the music player.
+      // https://source.android.com/docs/core/interaction/input/keyboard-devices
+      data.push_back(nlohmann::json::object({
+          {"from", nlohmann::json::object({{"consumer_key_code", "al_consumer_control_configuration"}})},
+          {"to", nlohmann::json::object({{"shell_command", "open -a 'Music.app'"}})},
+      }));
+
       data.push_back(nlohmann::json::object({
           {"from", nlohmann::json::object({{"consumer_key_code", "al_word_processor"}})},
           {"to", nlohmann::json::object({{"shell_command", "open -a 'Pages.app'"}})},

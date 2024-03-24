@@ -52,6 +52,7 @@ constexpr std::pair<const mapbox::eternal::string, const pqrs::hid::usage::value
     {"volume_decrement", pqrs::hid::usage::consumer::volume_decrement},
 
     // Application launch buttons
+    {"al_consumer_control_configuration", pqrs::hid::usage::consumer::al_consumer_control_configuration},
     {"al_word_processor", pqrs::hid::usage::consumer::al_word_processor},
     {"al_text_editor", pqrs::hid::usage::consumer::al_text_editor},
     {"al_spreadsheet", pqrs::hid::usage::consumer::al_spreadsheet},
