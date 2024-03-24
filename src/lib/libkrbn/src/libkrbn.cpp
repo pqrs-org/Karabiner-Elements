@@ -280,17 +280,31 @@ void libkrbn_disable_version_monitor(void) {
 // configuration_monitor
 //
 
-void libkrbn_enable_configuration_monitor(libkrbn_configuration_monitor_callback callback,
-                                          void* refcon) {
+void libkrbn_enable_configuration_monitor(void) {
   if (libkrbn_components_manager_) {
-    libkrbn_components_manager_->enable_configuration_monitor(callback,
-                                                              refcon);
+    libkrbn_components_manager_->enable_configuration_monitor();
   }
 }
 
 void libkrbn_disable_configuration_monitor(void) {
   if (libkrbn_components_manager_) {
     libkrbn_components_manager_->disable_configuration_monitor();
+  }
+}
+
+void libkrbn_register_core_configuration_updated_callback(libkrbn_core_configuration_updated callback) {
+  if (libkrbn_components_manager_) {
+    if (auto m = libkrbn_components_manager_->get_libkrbn_configuration_monitor()) {
+      m->register_libkrbn_core_configuration_updated_callback(callback);
+    }
+  }
+}
+
+void libkrbn_unregister_core_configuration_updated_callback(libkrbn_core_configuration_updated callback) {
+  if (libkrbn_components_manager_) {
+    if (auto m = libkrbn_components_manager_->get_libkrbn_configuration_monitor()) {
+      m->unregister_libkrbn_core_configuration_updated_callback(callback);
+    }
   }
 }
 

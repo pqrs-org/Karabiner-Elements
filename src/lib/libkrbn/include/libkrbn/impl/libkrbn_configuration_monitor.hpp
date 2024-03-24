@@ -16,24 +16,23 @@ private:
   std::shared_ptr<krbn::core_configuration::core_configuration> core_configuration_;
 };
 
-class libkrbn_configuration_monitor final {
+class libkrbn_configuration_monitor final : public pqrs::dispatcher::extra::dispatcher_client {
 public:
   libkrbn_configuration_monitor(const libkrbn_configuration_monitor&) = delete;
 
-  libkrbn_configuration_monitor(libkrbn_configuration_monitor_callback callback, void* refcon) {
+  libkrbn_configuration_monitor(void)
+      : dispatcher_client() {
     monitor_ = std::make_unique<krbn::configuration_monitor>(
         krbn::constants::get_user_core_configuration_file_path(),
         geteuid());
 
     auto wait = pqrs::make_thread_wait();
 
-    monitor_->core_configuration_updated.connect([callback, refcon, wait](auto&& weak_core_configuration) {
-      if (auto core_configuration = weak_core_configuration.lock()) {
-        if (callback) {
-          auto* p = new libkrbn_core_configuration_class(core_configuration);
-          callback(p, refcon);
-        }
+    monitor_->core_configuration_updated.connect([this, wait](auto&& weak_core_configuration) {
+      for (const auto& c : libkrbn_core_configuration_updated_callbacks_) {
+        c();
       }
+
       wait->notify();
     });
 
@@ -43,9 +42,29 @@ public:
   }
 
   ~libkrbn_configuration_monitor(void) {
-    krbn::logger::get_logger()->info(__func__);
+    detach_from_dispatcher([this] {
+      monitor_ = nullptr;
+    });
+  }
+
+  void register_libkrbn_core_configuration_updated_callback(libkrbn_core_configuration_updated callback) {
+    enqueue_to_dispatcher([this, callback] {
+      libkrbn_core_configuration_updated_callbacks_.push_back(callback);
+    });
+  }
+
+  void unregister_libkrbn_core_configuration_updated_callback(libkrbn_core_configuration_updated callback) {
+    enqueue_to_dispatcher([this, callback] {
+      libkrbn_core_configuration_updated_callbacks_.erase(std::remove_if(std::begin(libkrbn_core_configuration_updated_callbacks_),
+                                                                         std::end(libkrbn_core_configuration_updated_callbacks_),
+                                                                         [&](auto& c) {
+                                                                           return c == callback;
+                                                                         }),
+                                                          std::end(libkrbn_core_configuration_updated_callbacks_));
+    });
   }
 
 private:
   std::unique_ptr<krbn::configuration_monitor> monitor_;
+  std::vector<libkrbn_core_configuration_updated> libkrbn_core_configuration_updated_callbacks_;
 };

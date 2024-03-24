@@ -31,14 +31,16 @@ public:
   // configuration_monitor_
   //
 
-  void enable_configuration_monitor(libkrbn_configuration_monitor_callback callback,
-                                    void* refcon) {
-    configuration_monitor_ = std::make_unique<libkrbn_configuration_monitor>(callback,
-                                                                             refcon);
+  void enable_configuration_monitor(void) {
+    configuration_monitor_ = std::make_shared<libkrbn_configuration_monitor>();
   }
 
   void disable_configuration_monitor(void) {
     configuration_monitor_ = nullptr;
+  }
+
+  std::shared_ptr<libkrbn_configuration_monitor> get_libkrbn_configuration_monitor(void) {
+    return configuration_monitor_;
   }
 
   //
@@ -252,7 +254,7 @@ public:
 
 private:
   std::unique_ptr<libkrbn_version_monitor> version_monitor_;
-  std::unique_ptr<libkrbn_configuration_monitor> configuration_monitor_;
+  std::shared_ptr<libkrbn_configuration_monitor> configuration_monitor_;
   std::shared_ptr<libkrbn_complex_modifications_assets_manager> complex_modifications_assets_manager_;
   std::unique_ptr<libkrbn_system_preferences_monitor> system_preferences_monitor_;
   std::unique_ptr<libkrbn_connected_devices_monitor> connected_devices_monitor_;
