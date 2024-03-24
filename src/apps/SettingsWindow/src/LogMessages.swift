@@ -6,17 +6,17 @@ enum LogLevel {
   case error
 }
 
-private func callback(
-  _ logLines: UnsafeMutableRawPointer?,
-  _ context: UnsafeMutableRawPointer?
-) {
-  if logLines == nil { return }
-
+private func callback() {
   var logMessageEntries: [LogMessageEntry] = []
-  let size = libkrbn_log_lines_get_size(logLines)
+  let size = libkrbn_log_lines_get_size()
   for i in 0..<size {
-    let line = libkrbn_log_lines_get_line(logLines, i)
-    if line != nil {
+    var buffer = [Int8](repeating: 0, count: 32 * 1024)
+    var line = ""
+    if libkrbn_log_lines_get_line(i, &buffer, buffer.count) {
+      line = String(cString: buffer)
+    }
+
+    if line != "" {
       var logLevel = LogLevel.info
       if libkrbn_log_lines_is_warn_line(line) {
         logLevel = LogLevel.warn
@@ -27,15 +27,14 @@ private func callback(
 
       logMessageEntries.append(
         LogMessageEntry(
-          text: String(cString: line!),
+          text: line,
           logLevel: logLevel,
           dateNumber: libkrbn_log_lines_get_date_number(line)))
     }
   }
 
-  let logMessageEntriesCopy = logMessageEntries
-  Task { @MainActor in
-    LogMessages.shared.setEntries(logMessageEntriesCopy)
+  Task { @MainActor [logMessageEntries] in
+    LogMessages.shared.setEntries(logMessageEntries)
   }
 }
 
@@ -85,7 +84,9 @@ public class LogMessages: ObservableObject {
   public func watch() {
     entries = []
 
-    libkrbn_enable_log_monitor(callback, nil)
+    libkrbn_enable_log_monitor()
+    libkrbn_register_log_messages_updated_callback(callback)
+    callback()
 
     //
     // Create timer

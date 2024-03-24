@@ -31,14 +31,23 @@ public:
   // configuration_monitor_
   //
 
-  void enable_configuration_monitor(libkrbn_configuration_monitor_callback callback,
-                                    void* refcon) {
-    configuration_monitor_ = std::make_unique<libkrbn_configuration_monitor>(callback,
-                                                                             refcon);
+  void enable_configuration_monitor(void) {
+    configuration_monitor_ = std::make_shared<libkrbn_configuration_monitor>();
   }
 
   void disable_configuration_monitor(void) {
     configuration_monitor_ = nullptr;
+  }
+
+  std::shared_ptr<libkrbn_configuration_monitor> get_libkrbn_configuration_monitor(void) {
+    return configuration_monitor_;
+  }
+
+  std::shared_ptr<krbn::core_configuration::core_configuration> get_current_core_configuration(void) {
+    if (auto m = configuration_monitor_) {
+      return m->get_weak_core_configuration().lock();
+    }
+    return nullptr;
   }
 
   //
@@ -75,14 +84,23 @@ public:
   // connected_devices_monitor_
   //
 
-  void enable_connected_devices_monitor(libkrbn_connected_devices_monitor_callback callback,
-                                        void* refcon) {
-    connected_devices_monitor_ = std::make_unique<libkrbn_connected_devices_monitor>(callback,
-                                                                                     refcon);
+  void enable_connected_devices_monitor(void) {
+    connected_devices_monitor_ = std::make_shared<libkrbn_connected_devices_monitor>();
   }
 
   void disable_connected_devices_monitor(void) {
     connected_devices_monitor_ = nullptr;
+  }
+
+  std::shared_ptr<libkrbn_connected_devices_monitor> get_libkrbn_connected_devices_monitor(void) {
+    return connected_devices_monitor_;
+  }
+
+  std::shared_ptr<const krbn::connected_devices::connected_devices> get_current_connected_devices(void) {
+    if (auto m = connected_devices_monitor_) {
+      return m->get_weak_connected_devices().lock();
+    }
+    return nullptr;
   }
 
   //
@@ -178,14 +196,23 @@ public:
   // log_monitor_
   //
 
-  void enable_log_monitor(libkrbn_log_monitor_callback callback,
-                          void* refcon) {
-    log_monitor_ = std::make_unique<libkrbn_log_monitor>(callback,
-                                                         refcon);
+  void enable_log_monitor(void) {
+    log_monitor_ = std::make_shared<libkrbn_log_monitor>();
   }
 
   void disable_log_monitor(void) {
     log_monitor_ = nullptr;
+  }
+
+  std::shared_ptr<libkrbn_log_monitor> get_libkrbn_log_monitor(void) {
+    return log_monitor_;
+  }
+
+  std::shared_ptr<std::deque<std::string>> get_current_log_lines(void) {
+    if (auto m = log_monitor_) {
+      return m->get_lines();
+    }
+    return nullptr;
   }
 
   //
@@ -252,17 +279,17 @@ public:
 
 private:
   std::unique_ptr<libkrbn_version_monitor> version_monitor_;
-  std::unique_ptr<libkrbn_configuration_monitor> configuration_monitor_;
+  std::shared_ptr<libkrbn_configuration_monitor> configuration_monitor_;
   std::shared_ptr<libkrbn_complex_modifications_assets_manager> complex_modifications_assets_manager_;
   std::unique_ptr<libkrbn_system_preferences_monitor> system_preferences_monitor_;
-  std::unique_ptr<libkrbn_connected_devices_monitor> connected_devices_monitor_;
+  std::shared_ptr<libkrbn_connected_devices_monitor> connected_devices_monitor_;
   std::unique_ptr<libkrbn_file_monitor> observer_state_json_file_monitor_;
   std::unique_ptr<libkrbn_file_monitor> grabber_state_json_file_monitor_;
   std::unique_ptr<libkrbn_file_monitor> device_details_json_file_monitor_;
   std::unique_ptr<libkrbn_file_monitor> manipulator_environment_json_file_monitor_;
   std::unique_ptr<libkrbn_file_monitor> notification_message_json_file_monitor_;
   std::unique_ptr<libkrbn_frontmost_application_monitor> frontmost_application_monitor_;
-  std::unique_ptr<libkrbn_log_monitor> log_monitor_;
+  std::shared_ptr<libkrbn_log_monitor> log_monitor_;
   std::unique_ptr<libkrbn_hid_value_monitor> hid_value_monitor_;
   std::unique_ptr<libkrbn_grabber_client> grabber_client_;
 };

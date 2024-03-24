@@ -19,8 +19,9 @@
 namespace {
 std::shared_ptr<krbn::dispatcher_utility::scoped_dispatcher_manager> scoped_dispatcher_manager_;
 std::shared_ptr<krbn::run_loop_thread_utility::scoped_run_loop_thread_manager> scoped_run_loop_thread_manager_;
-std::unique_ptr<libkrbn_components_manager> libkrbn_components_manager_;
 } // namespace
+
+std::shared_ptr<libkrbn_components_manager> libkrbn_components_manager_;
 
 void libkrbn_set_logging_level_off(void) {
   krbn::logger::get_logger()->set_level(spdlog::level::off);
@@ -42,7 +43,7 @@ void libkrbn_initialize(void) {
   }
 
   if (!libkrbn_components_manager_) {
-    libkrbn_components_manager_ = std::make_unique<libkrbn_components_manager>();
+    libkrbn_components_manager_ = std::make_shared<libkrbn_components_manager>();
   }
 }
 
@@ -56,24 +57,29 @@ void libkrbn_terminate(void) {
   scoped_dispatcher_manager_ = nullptr;
 }
 
-const char* libkrbn_get_distributed_notification_observed_object(void) {
-  return krbn::constants::get_distributed_notification_observed_object();
+void libkrbn_get_distributed_notification_observed_object(char* buffer,
+                                                          size_t length) {
+  strlcpy(buffer, krbn::constants::get_distributed_notification_observed_object(), length);
 }
 
-const char* libkrbn_get_distributed_notification_console_user_server_is_disabled(void) {
-  return krbn::constants::get_distributed_notification_console_user_server_is_disabled();
+void libkrbn_get_distributed_notification_console_user_server_is_disabled(char* buffer,
+                                                                          size_t length) {
+  strlcpy(buffer, krbn::constants::get_distributed_notification_console_user_server_is_disabled(), length);
 }
 
-const char* libkrbn_get_user_configuration_directory(void) {
-  return krbn::constants::get_user_configuration_directory().c_str();
+void libkrbn_get_user_configuration_directory(char* buffer,
+                                              size_t length) {
+  strlcpy(buffer, krbn::constants::get_user_configuration_directory().c_str(), length);
 }
 
-const char* libkrbn_get_user_complex_modifications_assets_directory(void) {
-  return krbn::constants::get_user_complex_modifications_assets_directory().c_str();
+void libkrbn_get_user_complex_modifications_assets_directory(char* buffer,
+                                                             size_t length) {
+  strlcpy(buffer, krbn::constants::get_user_complex_modifications_assets_directory().c_str(), length);
 }
 
-const char* libkrbn_get_system_app_icon_configuration_file_path(void) {
-  return krbn::constants::get_system_app_icon_configuration_file_path().c_str();
+void libkrbn_get_system_app_icon_configuration_file_path(char* buffer,
+                                                         size_t length) {
+  strlcpy(buffer, krbn::constants::get_system_app_icon_configuration_file_path().c_str(), length);
 }
 
 bool libkrbn_user_pid_directory_writable(void) {
@@ -280,17 +286,31 @@ void libkrbn_disable_version_monitor(void) {
 // configuration_monitor
 //
 
-void libkrbn_enable_configuration_monitor(libkrbn_configuration_monitor_callback callback,
-                                          void* refcon) {
+void libkrbn_enable_configuration_monitor(void) {
   if (libkrbn_components_manager_) {
-    libkrbn_components_manager_->enable_configuration_monitor(callback,
-                                                              refcon);
+    libkrbn_components_manager_->enable_configuration_monitor();
   }
 }
 
 void libkrbn_disable_configuration_monitor(void) {
   if (libkrbn_components_manager_) {
     libkrbn_components_manager_->disable_configuration_monitor();
+  }
+}
+
+void libkrbn_register_core_configuration_updated_callback(libkrbn_core_configuration_updated callback) {
+  if (auto manager = libkrbn_components_manager_) {
+    if (auto m = manager->get_libkrbn_configuration_monitor()) {
+      m->register_libkrbn_core_configuration_updated_callback(callback);
+    }
+  }
+}
+
+void libkrbn_unregister_core_configuration_updated_callback(libkrbn_core_configuration_updated callback) {
+  if (auto manager = libkrbn_components_manager_) {
+    if (auto m = manager->get_libkrbn_configuration_monitor()) {
+      m->unregister_libkrbn_core_configuration_updated_callback(callback);
+    }
   }
 }
 
@@ -327,13 +347,21 @@ size_t libkrbn_complex_modifications_assets_manager_get_files_size(void) {
   return 0;
 }
 
-const char* libkrbn_complex_modifications_assets_manager_get_file_title(size_t index) {
+bool libkrbn_complex_modifications_assets_manager_get_file_title(size_t index,
+                                                                 char* buffer,
+                                                                 size_t length) {
+  if (buffer && length > 0) {
+    buffer[0] = '\0';
+  }
+
   if (libkrbn_components_manager_) {
     if (auto m = libkrbn_components_manager_->get_complex_modifications_assets_manager()) {
-      return m->get_file_title(index);
+      strlcpy(buffer, m->get_file_title(index), length);
+      return true;
     }
   }
-  return nullptr;
+
+  return false;
 }
 
 time_t libkrbn_complex_modifications_assets_manager_get_file_last_write_time(size_t index) {
@@ -354,25 +382,33 @@ size_t libkrbn_complex_modifications_assets_manager_get_rules_size(size_t file_i
   return 0;
 }
 
-const char* libkrbn_complex_modifications_assets_manager_get_rule_description(size_t file_index,
-                                                                              size_t index) {
+bool libkrbn_complex_modifications_assets_manager_get_rule_description(size_t file_index,
+                                                                       size_t index,
+                                                                       char* buffer,
+                                                                       size_t length) {
+  if (buffer && length > 0) {
+    buffer[0] = '\0';
+  }
+
   if (libkrbn_components_manager_) {
     if (auto m = libkrbn_components_manager_->get_complex_modifications_assets_manager()) {
-      return m->get_rule_description(file_index,
-                                     index);
+      strlcpy(buffer, m->get_rule_description(file_index, index), length);
+      return true;
     }
   }
-  return nullptr;
+
+  return false;
 }
 
 void libkrbn_complex_modifications_assets_manager_add_rule_to_core_configuration_selected_profile(size_t file_index,
-                                                                                                  size_t index,
-                                                                                                  libkrbn_core_configuration* core_configuration) {
+                                                                                                  size_t index) {
   if (libkrbn_components_manager_) {
     if (auto m = libkrbn_components_manager_->get_complex_modifications_assets_manager()) {
-      m->add_rule_to_core_configuration_selected_profile(file_index,
-                                                         index,
-                                                         core_configuration);
+      if (auto c = libkrbn_components_manager_->get_current_core_configuration()) {
+        m->add_rule_to_core_configuration_selected_profile(file_index,
+                                                           index,
+                                                           *c);
+      }
     }
   }
 }
@@ -421,17 +457,31 @@ size_t libkrbn_system_preferences_properties_get_keyboard_types_size(void) {
 // connected_devices_monitor
 //
 
-void libkrbn_enable_connected_devices_monitor(libkrbn_connected_devices_monitor_callback callback,
-                                              void* refcon) {
+void libkrbn_enable_connected_devices_monitor(void) {
   if (libkrbn_components_manager_) {
-    libkrbn_components_manager_->enable_connected_devices_monitor(callback,
-                                                                  refcon);
+    libkrbn_components_manager_->enable_connected_devices_monitor();
   }
 }
 
 void libkrbn_disable_connected_devices_monitor(void) {
   if (libkrbn_components_manager_) {
     libkrbn_components_manager_->disable_connected_devices_monitor();
+  }
+}
+
+void libkrbn_register_connected_devices_updated_callback(libkrbn_connected_devices_updated callback) {
+  if (auto manager = libkrbn_components_manager_) {
+    if (auto m = manager->get_libkrbn_connected_devices_monitor()) {
+      m->register_libkrbn_connected_devices_updated_callback(callback);
+    }
+  }
+}
+
+void libkrbn_unregister_connected_devices_updated_callback(libkrbn_connected_devices_updated callback) {
+  if (auto manager = libkrbn_components_manager_) {
+    if (auto m = manager->get_libkrbn_connected_devices_monitor()) {
+      m->unregister_libkrbn_connected_devices_updated_callback(callback);
+    }
   }
 }
 
@@ -525,20 +575,23 @@ void libkrbn_disable_notification_message_json_file_monitor(void) {
   }
 }
 
-const char* libkrbn_get_notification_message_body(void) {
-  static std::string message;
+bool libkrbn_get_notification_message_body(char* buffer,
+                                           size_t length) {
+  if (buffer && length > 0) {
+    buffer[0] = '\0';
+  }
 
   std::ifstream input(krbn::constants::get_notification_message_file_path());
   if (input) {
     try {
       auto json = krbn::json_utility::parse_jsonc(input);
-      message = json["body"].get<std::string>();
+      strlcpy(buffer, json["body"].get<std::string>().c_str(), length);
+      return true;
     } catch (const std::exception& e) {
-      message = "";
     }
   }
 
-  return message.c_str();
+  return false;
 }
 
 //
@@ -563,17 +616,31 @@ void libkrbn_disable_frontmost_application_monitor(void) {
 // log_monitor
 //
 
-void libkrbn_enable_log_monitor(libkrbn_log_monitor_callback callback,
-                                void* refcon) {
+void libkrbn_enable_log_monitor(void) {
   if (libkrbn_components_manager_) {
-    libkrbn_components_manager_->enable_log_monitor(callback,
-                                                    refcon);
+    libkrbn_components_manager_->enable_log_monitor();
   }
 }
 
 void libkrbn_disable_log_monitor(void) {
   if (libkrbn_components_manager_) {
     libkrbn_components_manager_->disable_log_monitor();
+  }
+}
+
+void libkrbn_register_log_messages_updated_callback(libkrbn_log_messages_updated callback) {
+  if (auto manager = libkrbn_components_manager_) {
+    if (auto m = manager->get_libkrbn_log_monitor()) {
+      m->register_libkrbn_log_messages_updated_callback(callback);
+    }
+  }
+}
+
+void libkrbn_unregister_log_messages_updated_callback(libkrbn_log_messages_updated callback) {
+  if (auto manager = libkrbn_components_manager_) {
+    if (auto m = manager->get_libkrbn_log_monitor()) {
+      m->unregister_libkrbn_log_messages_updated_callback(callback);
+    }
   }
 }
 

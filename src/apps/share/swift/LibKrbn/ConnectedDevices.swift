@@ -2,14 +2,9 @@ import Combine
 import Foundation
 import SwiftUI
 
-private func callback(
-  _ initializedConnectedDevices: UnsafeMutableRawPointer?,
-  _ context: UnsafeMutableRawPointer?
-) {
-  if initializedConnectedDevices == nil { return }
-
+private func callback() {
   Task { @MainActor in
-    LibKrbn.ConnectedDevices.shared.update(initializedConnectedDevices)
+    LibKrbn.ConnectedDevices.shared.update()
   }
 }
 
@@ -21,32 +16,38 @@ extension LibKrbn {
     @Published var connectedDevices: [ConnectedDevice] = []
 
     private init() {
-      libkrbn_enable_connected_devices_monitor(callback, nil)
+      libkrbn_enable_connected_devices_monitor()
+      libkrbn_register_connected_devices_updated_callback(callback)
+      callback()
     }
 
-    public func update(_ libkrbnConnectedDevices: UnsafeMutableRawPointer?) {
-      var newConnectedDevices: [ConnectedDevice] = []
+    public func update() {
+      var newConnectedDevices: [LibKrbn.ConnectedDevice] = []
 
-      let size = libkrbn_connected_devices_get_size(libkrbnConnectedDevices)
+      let size = libkrbn_connected_devices_get_size()
       for i in 0..<size {
-        let transport = String(
-          cString: libkrbn_connected_devices_get_descriptions_transport(
-            libkrbnConnectedDevices, i)
-        )
+        var buffer = [Int8](repeating: 0, count: 32 * 1024)
+        var transport = ""
+        var manufacturerName = ""
+        var productName = ""
+        var deviceAddress = ""
 
-        var manufacturerName = String(
-          cString: libkrbn_connected_devices_get_descriptions_manufacturer(
-            libkrbnConnectedDevices, i)
-        )
-        .replacingOccurrences(of: "[\r\n]", with: " ", options: .regularExpression)
+        if libkrbn_connected_devices_get_descriptions_transport(i, &buffer, buffer.count) {
+          transport = String(cString: buffer)
+        }
+
+        if libkrbn_connected_devices_get_descriptions_manufacturer(i, &buffer, buffer.count) {
+          manufacturerName = String(cString: buffer)
+            .replacingOccurrences(of: "[\r\n]", with: " ", options: .regularExpression)
+        }
         if manufacturerName == "" {
           manufacturerName = "No manufacturer name"
         }
 
-        var productName = String(
-          cString: libkrbn_connected_devices_get_descriptions_product(libkrbnConnectedDevices, i)
-        )
-        .replacingOccurrences(of: "[\r\n]", with: " ", options: .regularExpression)
+        if libkrbn_connected_devices_get_descriptions_product(i, &buffer, buffer.count) {
+          productName = String(cString: buffer)
+            .replacingOccurrences(of: "[\r\n]", with: " ", options: .regularExpression)
+        }
         if productName == "" {
           if transport == "FIFO" {
             productName = "Apple Internal Keyboard / Trackpad"
@@ -55,26 +56,25 @@ extension LibKrbn {
           }
         }
 
-        let connectedDevice = ConnectedDevice(
+        if libkrbn_connected_devices_get_device_address(i, &buffer, buffer.count) {
+          deviceAddress = String(cString: buffer)
+        }
+
+        let connectedDevice = LibKrbn.ConnectedDevice(
           index: i,
           manufacturerName: manufacturerName,
           productName: productName,
           transport: transport,
-          vendorId: libkrbn_connected_devices_get_vendor_id(libkrbnConnectedDevices, i),
-          productId: libkrbn_connected_devices_get_product_id(libkrbnConnectedDevices, i),
-          deviceAddress: libkrbn_connected_devices_get_device_address(libkrbnConnectedDevices, i),
-          isKeyboard: libkrbn_connected_devices_get_is_keyboard(libkrbnConnectedDevices, i),
-          isPointingDevice: libkrbn_connected_devices_get_is_pointing_device(
-            libkrbnConnectedDevices, i),
-          isGamePad: libkrbn_connected_devices_get_is_game_pad(
-            libkrbnConnectedDevices, i),
-          isBuiltInKeyboard: libkrbn_connected_devices_get_is_built_in_keyboard(
-            libkrbnConnectedDevices, i),
-          isBuiltInTrackpad: libkrbn_connected_devices_get_is_built_in_trackpad(
-            libkrbnConnectedDevices, i),
-          isBuiltInTouchBar: libkrbn_connected_devices_get_is_built_in_touch_bar(
-            libkrbnConnectedDevices, i),
-          isAppleDevice: libkrbn_connected_devices_is_apple(libkrbnConnectedDevices, i)
+          vendorId: libkrbn_connected_devices_get_vendor_id(i),
+          productId: libkrbn_connected_devices_get_product_id(i),
+          deviceAddress: deviceAddress,
+          isKeyboard: libkrbn_connected_devices_get_is_keyboard(i),
+          isPointingDevice: libkrbn_connected_devices_get_is_pointing_device(i),
+          isGamePad: libkrbn_connected_devices_get_is_game_pad(i),
+          isBuiltInKeyboard: libkrbn_connected_devices_get_is_built_in_keyboard(i),
+          isBuiltInTrackpad: libkrbn_connected_devices_get_is_built_in_trackpad(i),
+          isBuiltInTouchBar: libkrbn_connected_devices_get_is_built_in_touch_bar(i),
+          isAppleDevice: libkrbn_connected_devices_is_apple(i)
         )
 
         newConnectedDevices.append(connectedDevice)

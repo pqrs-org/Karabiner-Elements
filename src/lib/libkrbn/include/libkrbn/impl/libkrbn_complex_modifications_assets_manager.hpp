@@ -71,11 +71,9 @@ public:
 
   void add_rule_to_core_configuration_selected_profile(size_t file_index,
                                                        size_t index,
-                                                       libkrbn_core_configuration* core_configuration) const {
+                                                       krbn::core_configuration::core_configuration& core_configuration) const {
     if (auto r = find_rule(file_index, index)) {
-      if (auto c = reinterpret_cast<libkrbn_core_configuration_class*>(core_configuration)) {
-        c->get_core_configuration().get_selected_profile().push_front_complex_modifications_rule(*r);
-      }
+      core_configuration.get_selected_profile().push_front_complex_modifications_rule(*r);
     }
   }
 

@@ -13,9 +13,13 @@ final class KarabinerAppHelper: NSObject {
   }
 
   func observeConsoleUserServerIsDisabledNotification() {
-    let name = String(
-      cString: libkrbn_get_distributed_notification_console_user_server_is_disabled())
-    let object = String(cString: libkrbn_get_distributed_notification_observed_object())
+    var buffer = [Int8](repeating: 0, count: 32 * 1024)
+
+    libkrbn_get_distributed_notification_console_user_server_is_disabled(&buffer, buffer.count)
+    let name = String(cString: buffer)
+
+    libkrbn_get_distributed_notification_observed_object(&buffer, buffer.count)
+    let object = String(cString: buffer)
 
     DistributedNotificationCenter.default().addObserver(
       self,

@@ -16,27 +16,33 @@ final class ComplexModificationsAssetFiles: ObservableObject {
 
     let filesSize = libkrbn_complex_modifications_assets_manager_get_files_size()
     for fileIndex in 0..<filesSize {
+      var buffer = [Int8](repeating: 0, count: 32 * 1024)
+
       var rules: [LibKrbn.ComplexModificationsAssetRule] = []
 
       let rulesSize = libkrbn_complex_modifications_assets_manager_get_rules_size(fileIndex)
       for ruleIndex in 0..<rulesSize {
-        rules.append(
-          LibKrbn.ComplexModificationsAssetRule(
-            fileIndex,
-            ruleIndex,
-            String(
-              cString: libkrbn_complex_modifications_assets_manager_get_rule_description(
-                fileIndex, ruleIndex
-              )
-            )
-          ))
+        var ruleDescription = ""
+        if libkrbn_complex_modifications_assets_manager_get_rule_description(
+          fileIndex, ruleIndex, &buffer, buffer.count)
+        {
+          ruleDescription = String(cString: buffer)
+        }
+
+        rules.append(LibKrbn.ComplexModificationsAssetRule(fileIndex, ruleIndex, ruleDescription))
+      }
+
+      var fileTitle = ""
+      if libkrbn_complex_modifications_assets_manager_get_file_title(
+        fileIndex, &buffer, buffer.count)
+      {
+        fileTitle = String(cString: buffer)
       }
 
       newFiles.append(
         LibKrbn.ComplexModificationsAssetFile(
           fileIndex,
-          String(
-            cString: libkrbn_complex_modifications_assets_manager_get_file_title(fileIndex)),
+          fileTitle,
           libkrbn_complex_modifications_assets_manager_user_file(fileIndex),
           Date(
             timeIntervalSince1970: TimeInterval(

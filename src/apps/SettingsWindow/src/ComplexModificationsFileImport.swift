@@ -52,7 +52,10 @@ final class ComplexModificationsFileImport: ObservableObject {
 
   public func save() {
     if let data = self.jsonData {
-      let directory = String(cString: libkrbn_get_user_complex_modifications_assets_directory())
+      var buffer = [Int8](repeating: 0, count: 32 * 1024)
+      libkrbn_get_user_complex_modifications_assets_directory(&buffer, buffer.count)
+      let directory = String(cString: buffer)
+
       let time = Int(NSDate().timeIntervalSince1970)
       let path = URL(fileURLWithPath: "\(directory)/\(time).json")
 
