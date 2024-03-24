@@ -4,13 +4,22 @@
 #include "libkrbn/impl/libkrbn_cpp.hpp"
 
 namespace {
-krbn::core_configuration::details::simple_modifications* find_simple_modifications(libkrbn_core_configuration* p,
-                                                                                   const libkrbn_device_identifiers* device_identifiers) {
-  if (auto c = reinterpret_cast<libkrbn_core_configuration_class*>(p)) {
+std::shared_ptr<krbn::core_configuration::core_configuration> get_current_core_configuration(void) {
+  if (auto manager = libkrbn_cpp::get_components_manager()) {
+    if (auto m = manager->get_libkrbn_configuration_monitor()) {
+      return m->get_weak_core_configuration().lock();
+    }
+  }
+
+  return nullptr;
+}
+
+krbn::core_configuration::details::simple_modifications* find_simple_modifications(const libkrbn_device_identifiers* device_identifiers) {
+  if (auto c = get_current_core_configuration()) {
     if (device_identifiers) {
-      return c->get_core_configuration().get_selected_profile().find_simple_modifications(libkrbn_cpp::make_device_identifiers(*device_identifiers));
+      return c->get_selected_profile().find_simple_modifications(libkrbn_cpp::make_device_identifiers(*device_identifiers));
     } else {
-      return &(c->get_core_configuration().get_selected_profile().get_simple_modifications());
+      return &(c->get_selected_profile().get_simple_modifications());
     }
   }
   return nullptr;
@@ -208,44 +217,55 @@ void libkrbn_core_configuration_set_selected_profile_parameters_delay_millisecon
   }
 }
 
-size_t libkrbn_core_configuration_get_selected_profile_simple_modifications_size(libkrbn_core_configuration* p,
-                                                                                 const libkrbn_device_identifiers* device_identifiers) {
-  if (auto m = find_simple_modifications(p, device_identifiers)) {
+size_t libkrbn_core_configuration_get_selected_profile_simple_modifications_size(const libkrbn_device_identifiers* device_identifiers) {
+  if (auto m = find_simple_modifications(device_identifiers)) {
     return m->get_pairs().size();
   }
   return 0;
 }
 
-const char* libkrbn_core_configuration_get_selected_profile_simple_modification_from_json_string(libkrbn_core_configuration* p,
-                                                                                                 size_t index,
-                                                                                                 const libkrbn_device_identifiers* device_identifiers) {
-  if (auto m = find_simple_modifications(p, device_identifiers)) {
+bool libkrbn_core_configuration_get_selected_profile_simple_modification_from_json_string(size_t index,
+                                                                                          const libkrbn_device_identifiers* device_identifiers,
+                                                                                          char* buffer,
+                                                                                          size_t length) {
+  if (buffer && length > 0) {
+    buffer[0] = '\0';
+  }
+
+  if (auto m = find_simple_modifications(device_identifiers)) {
     const auto& pairs = m->get_pairs();
     if (index < pairs.size()) {
-      return pairs[index].first.c_str();
+      strlcpy(buffer, pairs[index].first.c_str(), length);
+      return true;
     }
   }
-  return nullptr;
+
+  return false;
 }
 
-const char* libkrbn_core_configuration_get_selected_profile_simple_modification_to_json_string(libkrbn_core_configuration* p,
-                                                                                               size_t index,
-                                                                                               const libkrbn_device_identifiers* device_identifiers) {
-  if (auto m = find_simple_modifications(p, device_identifiers)) {
+bool libkrbn_core_configuration_get_selected_profile_simple_modification_to_json_string(size_t index,
+                                                                                        const libkrbn_device_identifiers* device_identifiers,
+                                                                                        char* buffer,
+                                                                                        size_t length) {
+  if (buffer && length > 0) {
+    buffer[0] = '\0';
+  }
+
+  if (auto m = find_simple_modifications(device_identifiers)) {
     const auto& pairs = m->get_pairs();
     if (index < pairs.size()) {
-      return pairs[index].second.c_str();
+      strlcpy(buffer, pairs[index].second.c_str(), length);
+      return true;
     }
   }
-  return nullptr;
+  return false;
 }
 
-void libkrbn_core_configuration_replace_selected_profile_simple_modification(libkrbn_core_configuration* p,
-                                                                             size_t index,
+void libkrbn_core_configuration_replace_selected_profile_simple_modification(size_t index,
                                                                              const char* from_json_string,
                                                                              const char* to_json_string,
                                                                              const libkrbn_device_identifiers* device_identifiers) {
-  if (auto m = find_simple_modifications(p, device_identifiers)) {
+  if (auto m = find_simple_modifications(device_identifiers)) {
     if (from_json_string &&
         to_json_string) {
       m->replace_pair(index, from_json_string, to_json_string);
@@ -253,17 +273,15 @@ void libkrbn_core_configuration_replace_selected_profile_simple_modification(lib
   }
 }
 
-void libkrbn_core_configuration_push_back_selected_profile_simple_modification(libkrbn_core_configuration* p,
-                                                                               const libkrbn_device_identifiers* device_identifiers) {
-  if (auto m = find_simple_modifications(p, device_identifiers)) {
+void libkrbn_core_configuration_push_back_selected_profile_simple_modification(const libkrbn_device_identifiers* device_identifiers) {
+  if (auto m = find_simple_modifications(device_identifiers)) {
     m->push_back_pair();
   }
 }
 
-void libkrbn_core_configuration_erase_selected_profile_simple_modification(libkrbn_core_configuration* p,
-                                                                           size_t index,
+void libkrbn_core_configuration_erase_selected_profile_simple_modification(size_t index,
                                                                            const libkrbn_device_identifiers* device_identifiers) {
-  if (auto m = find_simple_modifications(p, device_identifiers)) {
+  if (auto m = find_simple_modifications(device_identifiers)) {
     m->erase_pair(index);
   }
 }

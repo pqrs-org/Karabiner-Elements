@@ -102,22 +102,21 @@ void libkrbn_core_configuration_set_selected_profile_parameters_delay_millisecon
 
 // profile::simple_modifications
 
-size_t libkrbn_core_configuration_get_selected_profile_simple_modifications_size(libkrbn_core_configuration* p,
-                                                                                 const libkrbn_device_identifiers* device_identifiers);
-const char* libkrbn_core_configuration_get_selected_profile_simple_modification_from_json_string(libkrbn_core_configuration* p,
-                                                                                                 size_t index,
-                                                                                                 const libkrbn_device_identifiers* device_identifiers);
-const char* libkrbn_core_configuration_get_selected_profile_simple_modification_to_json_string(libkrbn_core_configuration* p,
-                                                                                               size_t index,
-                                                                                               const libkrbn_device_identifiers* device_identifiers);
-void libkrbn_core_configuration_replace_selected_profile_simple_modification(libkrbn_core_configuration* p,
-                                                                             size_t index,
+size_t libkrbn_core_configuration_get_selected_profile_simple_modifications_size(const libkrbn_device_identifiers* device_identifiers);
+bool libkrbn_core_configuration_get_selected_profile_simple_modification_from_json_string(size_t index,
+                                                                                          const libkrbn_device_identifiers* device_identifiers,
+                                                                                          char* buffer,
+                                                                                          size_t length);
+bool libkrbn_core_configuration_get_selected_profile_simple_modification_to_json_string(size_t index,
+                                                                                        const libkrbn_device_identifiers* device_identifiers,
+                                                                                        char* buffer,
+                                                                                        size_t length);
+void libkrbn_core_configuration_replace_selected_profile_simple_modification(size_t index,
                                                                              const char* from_json_string,
                                                                              const char* to_json_string,
                                                                              const libkrbn_device_identifiers* device_identifiers);
-void libkrbn_core_configuration_push_back_selected_profile_simple_modification(libkrbn_core_configuration* p,
-                                                                               const libkrbn_device_identifiers* device_identifiers);
-void libkrbn_core_configuration_erase_selected_profile_simple_modification(libkrbn_core_configuration* p, size_t index,
+void libkrbn_core_configuration_push_back_selected_profile_simple_modification(const libkrbn_device_identifiers* device_identifiers);
+void libkrbn_core_configuration_erase_selected_profile_simple_modification(size_t index,
                                                                            const libkrbn_device_identifiers* device_identifiers);
 
 // profile::fn_function_keys
