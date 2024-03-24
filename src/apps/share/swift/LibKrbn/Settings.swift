@@ -2,14 +2,9 @@ import Combine
 import Foundation
 import SwiftUI
 
-private func callback(
-  _ initializedCoreConfiguration: UnsafeMutableRawPointer?,
-  _ context: UnsafeMutableRawPointer?
-) {
-  if initializedCoreConfiguration == nil { return }
-
+private func callback() {
   Task { @MainActor in
-    LibKrbn.Settings.shared.updateProperties(initializedCoreConfiguration)
+    LibKrbn.Settings.shared.updateProperties()
 
     NotificationCenter.default.post(
       name: LibKrbn.Settings.didConfigurationLoad,
@@ -24,19 +19,20 @@ extension LibKrbn {
 
     static let didConfigurationLoad = Notification.Name("didConfigurationLoad")
 
-    var libkrbnCoreConfiguration: UnsafeMutableRawPointer?
     private var didSetEnabled = false
     private var saveDebouncer = Debouncer(delay: 0.2)
 
     @Published var saveErrorMessage = ""
 
     private init() {
-      updateProperties(nil)
+      updateProperties()
       didSetEnabled = true
     }
 
     func start() {
-      libkrbn_enable_configuration_monitor(callback, nil)
+      libkrbn_enable_configuration_monitor()
+      libkrbn_register_core_configuration_updated_callback(callback)
+      callback()
 
       NotificationCenter.default.addObserver(
         forName: ConnectedDevices.didConnectedDevicesUpdate,
@@ -54,17 +50,19 @@ extension LibKrbn {
         guard let self = self else { return }
 
         print("save")
-        libkrbn_core_configuration_save(self.libkrbnCoreConfiguration)
-        self.saveErrorMessage = String(cString: libkrbn_core_configuration_get_save_error_message())
+
+        self.saveErrorMessage = ""
+        var errorMessageBuffer = [Int8](repeating: 0, count: 4 * 1024)
+        if !libkrbn_core_configuration_save(&errorMessageBuffer, errorMessageBuffer.count) {
+          self.saveErrorMessage = String(cString: errorMessageBuffer)
+        }
       }
 
-      self.updateProperties(self.libkrbnCoreConfiguration)
+      self.updateProperties()
     }
 
-    public func updateProperties(_ initializedCoreConfiguration: UnsafeMutableRawPointer?) {
+    public func updateProperties() {
       didSetEnabled = false
-
-      libkrbnCoreConfiguration = initializedCoreConfiguration
 
       simpleModifications = makeSimpleModifications(nil)
       fnFunctionKeys = makeFnFunctionKeys(nil)
@@ -72,60 +70,47 @@ extension LibKrbn {
       updateComplexModificationsRules()
       complexModificationsParameterToIfAloneTimeoutMilliseconds = Int(
         libkrbn_core_configuration_get_selected_profile_complex_modifications_parameter(
-          libkrbnCoreConfiguration,
           "basic.to_if_alone_timeout_milliseconds"
         ))
       complexModificationsParameterToIfHeldDownThresholdMilliseconds = Int(
         libkrbn_core_configuration_get_selected_profile_complex_modifications_parameter(
-          libkrbnCoreConfiguration,
           "basic.to_if_held_down_threshold_milliseconds"
         ))
       complexModificationsParameterToDelayedActionDelayMilliseconds = Int(
         libkrbn_core_configuration_get_selected_profile_complex_modifications_parameter(
-          libkrbnCoreConfiguration,
           "basic.to_delayed_action_delay_milliseconds"
         ))
       complexModificationsParameterSimultaneousThresholdMilliseconds = Int(
         libkrbn_core_configuration_get_selected_profile_complex_modifications_parameter(
-          libkrbnCoreConfiguration,
           "basic.simultaneous_threshold_milliseconds"
         ))
       complexModificationsParameterMouseMotionToScrollSpeed = Int(
         libkrbn_core_configuration_get_selected_profile_complex_modifications_parameter(
-          libkrbnCoreConfiguration,
           "mouse_motion_to_scroll.speed"
         ))
 
       updateConnectedDeviceSettings()
       delayMillisecondsBeforeOpenDevice = Int(
-        libkrbn_core_configuration_get_selected_profile_parameters_delay_milliseconds_before_open_device(
-          libkrbnCoreConfiguration))
+        libkrbn_core_configuration_get_selected_profile_parameters_delay_milliseconds_before_open_device()
+      )
 
       virtualHIDKeyboardCountryCode = Int(
-        libkrbn_core_configuration_get_selected_profile_virtual_hid_keyboard_country_code(
-          libkrbnCoreConfiguration))
+        libkrbn_core_configuration_get_selected_profile_virtual_hid_keyboard_country_code())
       virtualHIDKeyboardMouseKeyXYScale = Int(
-        libkrbn_core_configuration_get_selected_profile_virtual_hid_keyboard_mouse_key_xy_scale(
-          libkrbnCoreConfiguration))
+        libkrbn_core_configuration_get_selected_profile_virtual_hid_keyboard_mouse_key_xy_scale())
       virtualHIDKeyboardIndicateStickyModifierKeysState =
-        libkrbn_core_configuration_get_selected_profile_virtual_hid_keyboard_indicate_sticky_modifier_keys_state(
-          libkrbnCoreConfiguration)
+        libkrbn_core_configuration_get_selected_profile_virtual_hid_keyboard_indicate_sticky_modifier_keys_state()
 
       updateProfiles()
 
       checkForUpdatesOnStartup =
-        libkrbn_core_configuration_get_global_configuration_check_for_updates_on_startup(
-          libkrbnCoreConfiguration)
-      showIconInMenuBar = libkrbn_core_configuration_get_global_configuration_show_in_menu_bar(
-        libkrbnCoreConfiguration)
+        libkrbn_core_configuration_get_global_configuration_check_for_updates_on_startup()
+      showIconInMenuBar = libkrbn_core_configuration_get_global_configuration_show_in_menu_bar()
       showProfileNameInMenuBar =
-        libkrbn_core_configuration_get_global_configuration_show_profile_name_in_menu_bar(
-          libkrbnCoreConfiguration)
+        libkrbn_core_configuration_get_global_configuration_show_profile_name_in_menu_bar()
       askForConfirmationBeforeQuitting =
-        libkrbn_core_configuration_get_global_configuration_ask_for_confirmation_before_quitting(
-          libkrbnCoreConfiguration)
-      unsafeUI = libkrbn_core_configuration_get_global_configuration_unsafe_ui(
-        libkrbnCoreConfiguration)
+        libkrbn_core_configuration_get_global_configuration_ask_for_confirmation_before_quitting()
+      unsafeUI = libkrbn_core_configuration_get_global_configuration_unsafe_ui()
 
       updateSystemDefaultProfileExists()
 
@@ -143,24 +128,31 @@ extension LibKrbn {
       var result: [SimpleModification] = []
 
       let size = libkrbn_core_configuration_get_selected_profile_simple_modifications_size(
-        libkrbnCoreConfiguration,
         connectedDevice?.libkrbnDeviceIdentifiers)
 
       for i in 0..<size {
+        var buffer = [Int8](repeating: 0, count: 32 * 1024)
+        var fromJsonString = ""
+        var toJsonString = ""
+
+        if libkrbn_core_configuration_get_selected_profile_simple_modification_from_json_string(
+          i, connectedDevice?.libkrbnDeviceIdentifiers,
+          &buffer, buffer.count)
+        {
+          fromJsonString = String(cString: buffer)
+        }
+
+        if libkrbn_core_configuration_get_selected_profile_simple_modification_to_json_string(
+          i, connectedDevice?.libkrbnDeviceIdentifiers,
+          &buffer, buffer.count)
+        {
+          toJsonString = String(cString: buffer)
+        }
+
         let simpleModification = SimpleModification(
           index: i,
-          fromJsonString: String(
-            cString:
-              libkrbn_core_configuration_get_selected_profile_simple_modification_from_json_string(
-                libkrbnCoreConfiguration,
-                i,
-                connectedDevice?.libkrbnDeviceIdentifiers)),
-          toJsonString: String(
-            cString:
-              libkrbn_core_configuration_get_selected_profile_simple_modification_to_json_string(
-                libkrbnCoreConfiguration,
-                i,
-                connectedDevice?.libkrbnDeviceIdentifiers)),
+          fromJsonString: fromJsonString,
+          toJsonString: toJsonString,
           toCategories: SimpleModificationDefinitions.shared.toCategories
         )
 
@@ -185,7 +177,6 @@ extension LibKrbn {
       device: ConnectedDevice?
     ) {
       libkrbn_core_configuration_replace_selected_profile_simple_modification(
-        libkrbnCoreConfiguration,
         index,
         fromJsonString.cString(using: .utf8),
         toJsonString.cString(using: .utf8),
@@ -196,11 +187,10 @@ extension LibKrbn {
 
     public func appendSimpleModification(device: ConnectedDevice?) {
       libkrbn_core_configuration_push_back_selected_profile_simple_modification(
-        libkrbnCoreConfiguration,
         device?.libkrbnDeviceIdentifiers)
 
       // Do not to call `save()` here because partial settings will be erased at save.
-      updateProperties(libkrbnCoreConfiguration)
+      updateProperties()
     }
 
     public func appendSimpleModification(
@@ -217,22 +207,19 @@ extension LibKrbn {
             SimpleModification.formatCompactJsonString(jsonObject: jsonDict["to"] ?? "") ?? "[]"
 
           libkrbn_core_configuration_push_back_selected_profile_simple_modification(
-            libkrbnCoreConfiguration,
             device?.libkrbnDeviceIdentifiers)
 
           let size = libkrbn_core_configuration_get_selected_profile_simple_modifications_size(
-            libkrbnCoreConfiguration,
             device?.libkrbnDeviceIdentifiers)
 
           libkrbn_core_configuration_replace_selected_profile_simple_modification(
-            libkrbnCoreConfiguration,
             size - 1,
             fromJsonString.cString(using: .utf8),
             toJsonString.cString(using: .utf8),
             device?.libkrbnDeviceIdentifiers)
 
           // Do not to call `save()` here because partial settings will be erased at save.
-          updateProperties(libkrbnCoreConfiguration)
+          updateProperties()
         }
       }
     }
@@ -242,7 +229,6 @@ extension LibKrbn {
       device: ConnectedDevice?
     ) {
       libkrbn_core_configuration_erase_selected_profile_simple_modification(
-        libkrbnCoreConfiguration,
         index,
         device?.libkrbnDeviceIdentifiers)
 
@@ -259,24 +245,31 @@ extension LibKrbn {
       var result: [SimpleModification] = []
 
       let size = libkrbn_core_configuration_get_selected_profile_fn_function_keys_size(
-        libkrbnCoreConfiguration,
         connectedDevice?.libkrbnDeviceIdentifiers)
 
       for i in 0..<size {
+        var buffer = [Int8](repeating: 0, count: 32 * 1024)
+        var fromJsonString = ""
+        var toJsonString = ""
+
+        if libkrbn_core_configuration_get_selected_profile_fn_function_key_from_json_string(
+          i, connectedDevice?.libkrbnDeviceIdentifiers,
+          &buffer, buffer.count)
+        {
+          fromJsonString = String(cString: buffer)
+        }
+
+        if libkrbn_core_configuration_get_selected_profile_fn_function_key_to_json_string(
+          i, connectedDevice?.libkrbnDeviceIdentifiers,
+          &buffer, buffer.count)
+        {
+          toJsonString = String(cString: buffer)
+        }
+
         let simpleModification = SimpleModification(
           index: i,
-          fromJsonString: String(
-            cString:
-              libkrbn_core_configuration_get_selected_profile_fn_function_key_from_json_string(
-                libkrbnCoreConfiguration,
-                i,
-                connectedDevice?.libkrbnDeviceIdentifiers)),
-          toJsonString: String(
-            cString:
-              libkrbn_core_configuration_get_selected_profile_fn_function_key_to_json_string(
-                libkrbnCoreConfiguration,
-                i,
-                connectedDevice?.libkrbnDeviceIdentifiers)),
+          fromJsonString: fromJsonString,
+          toJsonString: toJsonString,
           toCategories: connectedDevice == nil
             ? SimpleModificationDefinitions.shared.toCategories
             : SimpleModificationDefinitions.shared.toCategoriesWithInheritBase
@@ -294,7 +287,6 @@ extension LibKrbn {
       device: ConnectedDevice?
     ) {
       libkrbn_core_configuration_replace_selected_profile_fn_function_key(
-        libkrbnCoreConfiguration,
         fromJsonString.cString(using: .utf8),
         toJsonString.cString(using: .utf8),
         device?.libkrbnDeviceIdentifiers)
@@ -311,24 +303,26 @@ extension LibKrbn {
     private func updateComplexModificationsRules() {
       var newComplexModificationsRules: [ComplexModificationsRule] = []
 
-      let size = libkrbn_core_configuration_get_selected_profile_complex_modifications_rules_size(
-        libkrbnCoreConfiguration)
+      let size = libkrbn_core_configuration_get_selected_profile_complex_modifications_rules_size()
       for i in 0..<size {
         var jsonString: String?
         var buffer = [Int8](repeating: 0, count: 1024 * 1024)  // 1MB
         if libkrbn_core_configuration_get_selected_profile_complex_modifications_rule_json_string(
-          libkrbnCoreConfiguration, i, &buffer, buffer.count)
+          i, &buffer, buffer.count)
         {
           jsonString = String(cString: buffer)
         }
 
+        var ruleDescription = ""
+        if libkrbn_core_configuration_get_selected_profile_complex_modifications_rule_description(
+          i, &buffer, buffer.count)
+        {
+          ruleDescription = String(cString: buffer)
+        }
+
         let complexModificationsRule = ComplexModificationsRule(
           i,
-          String(
-            cString:
-              libkrbn_core_configuration_get_selected_profile_complex_modifications_rule_description(
-                libkrbnCoreConfiguration, i
-              )),
+          ruleDescription,
           jsonString
         )
         newComplexModificationsRules.append(complexModificationsRule)
@@ -343,7 +337,6 @@ extension LibKrbn {
     ) -> String? {
       var errorMessageBuffer = [Int8](repeating: 0, count: 4 * 1024)
       libkrbn_core_configuration_replace_selected_profile_complex_modifications_rule(
-        libkrbnCoreConfiguration,
         complexModificationRule.index,
         jsonString.cString(using: .utf8),
         &errorMessageBuffer,
@@ -364,7 +357,6 @@ extension LibKrbn {
     ) -> String? {
       var errorMessageBuffer = [Int8](repeating: 0, count: 4 * 1024)
       libkrbn_core_configuration_push_front_selected_profile_complex_modifications_rule(
-        libkrbnCoreConfiguration,
         jsonString.cString(using: .utf8),
         &errorMessageBuffer,
         errorMessageBuffer.count
@@ -381,7 +373,6 @@ extension LibKrbn {
 
     public func moveComplexModificationsRule(_ sourceIndex: Int, _ destinationIndex: Int) {
       libkrbn_core_configuration_move_selected_profile_complex_modifications_rule(
-        libkrbnCoreConfiguration,
         sourceIndex,
         destinationIndex
       )
@@ -391,7 +382,6 @@ extension LibKrbn {
     public func removeComplexModificationsRule(_ complexModificationRule: ComplexModificationsRule)
     {
       libkrbn_core_configuration_erase_selected_profile_complex_modifications_rule(
-        libkrbnCoreConfiguration,
         complexModificationRule.index
       )
       save()
@@ -402,10 +392,7 @@ extension LibKrbn {
     ) {
       for rule in complexModificationsAssetFile.assetRules.reversed() {
         libkrbn_complex_modifications_assets_manager_add_rule_to_core_configuration_selected_profile(
-          rule.fileIndex,
-          rule.ruleIndex,
-          libkrbnCoreConfiguration
-        )
+          rule.fileIndex, rule.ruleIndex)
       }
       save()
     }
@@ -414,10 +401,7 @@ extension LibKrbn {
       _ complexModificationsAssetRule: ComplexModificationsAssetRule
     ) {
       libkrbn_complex_modifications_assets_manager_add_rule_to_core_configuration_selected_profile(
-        complexModificationsAssetRule.fileIndex,
-        complexModificationsAssetRule.ruleIndex,
-        libkrbnCoreConfiguration
-      )
+        complexModificationsAssetRule.fileIndex, complexModificationsAssetRule.ruleIndex)
       save()
     }
 
@@ -425,7 +409,6 @@ extension LibKrbn {
       didSet {
         if didSetEnabled {
           libkrbn_core_configuration_set_selected_profile_complex_modifications_parameter(
-            libkrbnCoreConfiguration,
             "basic.to_if_alone_timeout_milliseconds",
             Int32(complexModificationsParameterToIfAloneTimeoutMilliseconds)
           )
@@ -438,7 +421,6 @@ extension LibKrbn {
       didSet {
         if didSetEnabled {
           libkrbn_core_configuration_set_selected_profile_complex_modifications_parameter(
-            libkrbnCoreConfiguration,
             "basic.to_if_held_down_threshold_milliseconds",
             Int32(complexModificationsParameterToIfHeldDownThresholdMilliseconds)
           )
@@ -451,7 +433,6 @@ extension LibKrbn {
       didSet {
         if didSetEnabled {
           libkrbn_core_configuration_set_selected_profile_complex_modifications_parameter(
-            libkrbnCoreConfiguration,
             "basic.to_delayed_action_delay_milliseconds",
             Int32(complexModificationsParameterToDelayedActionDelayMilliseconds)
           )
@@ -464,7 +445,6 @@ extension LibKrbn {
       didSet {
         if didSetEnabled {
           libkrbn_core_configuration_set_selected_profile_complex_modifications_parameter(
-            libkrbnCoreConfiguration,
             "basic.simultaneous_threshold_milliseconds",
             Int32(complexModificationsParameterSimultaneousThresholdMilliseconds)
           )
@@ -477,7 +457,6 @@ extension LibKrbn {
       didSet {
         if didSetEnabled {
           libkrbn_core_configuration_set_selected_profile_complex_modifications_parameter(
-            libkrbnCoreConfiguration,
             "mouse_motion_to_scroll.speed",
             Int32(complexModificationsParameterMouseMotionToScrollSpeed)
           )
@@ -517,7 +496,7 @@ extension LibKrbn {
       didSet {
         if didSetEnabled {
           libkrbn_core_configuration_set_selected_profile_parameters_delay_milliseconds_before_open_device(
-            libkrbnCoreConfiguration, Int32(delayMillisecondsBeforeOpenDevice)
+            Int32(delayMillisecondsBeforeOpenDevice)
           )
           save()
         }
@@ -532,7 +511,7 @@ extension LibKrbn {
       didSet {
         if didSetEnabled {
           libkrbn_core_configuration_set_selected_profile_virtual_hid_keyboard_country_code(
-            libkrbnCoreConfiguration, UInt8(virtualHIDKeyboardCountryCode)
+            UInt8(virtualHIDKeyboardCountryCode)
           )
           save()
         }
@@ -543,7 +522,7 @@ extension LibKrbn {
       didSet {
         if didSetEnabled {
           libkrbn_core_configuration_set_selected_profile_virtual_hid_keyboard_mouse_key_xy_scale(
-            libkrbnCoreConfiguration, Int32(virtualHIDKeyboardMouseKeyXYScale)
+            Int32(virtualHIDKeyboardMouseKeyXYScale)
           )
           save()
         }
@@ -554,7 +533,7 @@ extension LibKrbn {
       didSet {
         if didSetEnabled {
           libkrbn_core_configuration_set_selected_profile_virtual_hid_keyboard_indicate_sticky_modifier_keys_state(
-            libkrbnCoreConfiguration, virtualHIDKeyboardIndicateStickyModifierKeysState
+            virtualHIDKeyboardIndicateStickyModifierKeysState
           )
           save()
         }
@@ -570,13 +549,15 @@ extension LibKrbn {
     private func updateProfiles() {
       var newProfiles: [Profile] = []
 
-      let size = libkrbn_core_configuration_get_profiles_size(libkrbnCoreConfiguration)
+      let size = libkrbn_core_configuration_get_profiles_size()
       for i in 0..<size {
-        let profile = Profile(
-          i,
-          String(cString: libkrbn_core_configuration_get_profile_name(libkrbnCoreConfiguration, i)),
-          libkrbn_core_configuration_get_profile_selected(libkrbnCoreConfiguration, i)
-        )
+        var buffer = [Int8](repeating: 0, count: 32 * 1024)
+        var name = ""
+        if libkrbn_core_configuration_get_profile_name(i, &buffer, buffer.count) {
+          name = String(cString: buffer)
+        }
+
+        let profile = Profile(i, name, libkrbn_core_configuration_get_profile_selected(i))
         newProfiles.append(profile)
       }
 
@@ -584,30 +565,29 @@ extension LibKrbn {
     }
 
     public func selectProfile(_ profile: Profile) {
-      libkrbn_core_configuration_select_profile(libkrbnCoreConfiguration, profile.index)
+      libkrbn_core_configuration_select_profile(profile.index)
       save()
     }
 
     public func updateProfileName(_ profile: Profile, _ name: String) {
       libkrbn_core_configuration_set_profile_name(
-        libkrbnCoreConfiguration, profile.index, name.cString(using: .utf8)
+        profile.index, name.cString(using: .utf8)
       )
       save()
     }
 
     public func appendProfile() {
-      libkrbn_core_configuration_push_back_profile(libkrbnCoreConfiguration)
+      libkrbn_core_configuration_push_back_profile()
       save()
     }
 
     public func duplicateProfile(_ profile: Profile) {
-      libkrbn_core_configuration_duplicate_profile(libkrbnCoreConfiguration, profile.index)
+      libkrbn_core_configuration_duplicate_profile(profile.index)
       save()
     }
 
     public func moveProfile(_ sourceIndex: Int, _ destinationIndex: Int) {
       libkrbn_core_configuration_move_profile(
-        libkrbnCoreConfiguration,
         sourceIndex,
         destinationIndex
       )
@@ -615,7 +595,7 @@ extension LibKrbn {
     }
 
     public func removeProfile(_ profile: Profile) {
-      libkrbn_core_configuration_erase_profile(libkrbnCoreConfiguration, profile.index)
+      libkrbn_core_configuration_erase_profile(profile.index)
       save()
     }
 
@@ -627,7 +607,7 @@ extension LibKrbn {
       didSet {
         if didSetEnabled {
           libkrbn_core_configuration_set_global_configuration_check_for_updates_on_startup(
-            libkrbnCoreConfiguration, checkForUpdatesOnStartup
+            checkForUpdatesOnStartup
           )
           save()
         }
@@ -638,7 +618,7 @@ extension LibKrbn {
       didSet {
         if didSetEnabled {
           libkrbn_core_configuration_set_global_configuration_show_in_menu_bar(
-            libkrbnCoreConfiguration, showIconInMenuBar
+            showIconInMenuBar
           )
           save()
           libkrbn_launch_menu()
@@ -650,7 +630,7 @@ extension LibKrbn {
       didSet {
         if didSetEnabled {
           libkrbn_core_configuration_set_global_configuration_show_profile_name_in_menu_bar(
-            libkrbnCoreConfiguration, showProfileNameInMenuBar
+            showProfileNameInMenuBar
           )
           save()
           libkrbn_launch_menu()
@@ -662,7 +642,7 @@ extension LibKrbn {
       didSet {
         if didSetEnabled {
           libkrbn_core_configuration_set_global_configuration_ask_for_confirmation_before_quitting(
-            libkrbnCoreConfiguration, askForConfirmationBeforeQuitting
+            askForConfirmationBeforeQuitting
           )
           save()
         }
@@ -673,7 +653,7 @@ extension LibKrbn {
       didSet {
         if didSetEnabled {
           libkrbn_core_configuration_set_global_configuration_unsafe_ui(
-            libkrbnCoreConfiguration, unsafeUI
+            unsafeUI
           )
           save()
         }
