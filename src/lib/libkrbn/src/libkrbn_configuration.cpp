@@ -1,10 +1,9 @@
 #include "complex_modifications_utility.hpp"
+#include "libkrbn/impl/libkrbn_components_manager.hpp"
 #include "libkrbn/impl/libkrbn_configuration_monitor.hpp"
 #include "libkrbn/impl/libkrbn_cpp.hpp"
 
 namespace {
-std::string save_error_message;
-
 krbn::core_configuration::details::simple_modifications* find_simple_modifications(libkrbn_core_configuration* p,
                                                                                    const libkrbn_device_identifiers* device_identifiers) {
   if (auto c = reinterpret_cast<libkrbn_core_configuration_class*>(p)) {
@@ -30,26 +29,28 @@ krbn::core_configuration::details::simple_modifications* find_fn_function_keys(l
 }
 } // namespace
 
-void libkrbn_core_configuration_terminate(libkrbn_core_configuration** p) {
-  if (p && *p) {
-    delete reinterpret_cast<libkrbn_core_configuration_class*>(*p);
-    *p = nullptr;
+bool libkrbn_core_configuration_save(char* error_message_buffer,
+                                     size_t error_message_buffer_length) {
+  if (error_message_buffer && error_message_buffer_length > 0) {
+    error_message_buffer[0] = '\0';
   }
-}
 
-void libkrbn_core_configuration_save(libkrbn_core_configuration* p) {
-  try {
-    if (auto c = reinterpret_cast<libkrbn_core_configuration_class*>(p)) {
-      c->get_core_configuration().sync_save_to_file();
+  if (auto manager = libkrbn_cpp::get_components_manager()) {
+    if (auto m = manager->get_libkrbn_configuration_monitor()) {
+      if (auto c = m->get_weak_core_configuration().lock()) {
+        try {
+          c->sync_save_to_file();
+          return true;
+        } catch (const std::exception& e) {
+          strlcpy(error_message_buffer, e.what(), error_message_buffer_length);
+          return false;
+        }
+      }
     }
-    save_error_message.clear();
-  } catch (const std::exception& e) {
-    save_error_message = e.what();
   }
-}
 
-const char* libkrbn_core_configuration_get_save_error_message(void) {
-  return save_error_message.c_str();
+  strlcpy(error_message_buffer, "core_configuration is not ready", error_message_buffer_length);
+  return false;
 }
 
 bool libkrbn_core_configuration_get_global_configuration_check_for_updates_on_startup(libkrbn_core_configuration* p) {
@@ -370,7 +371,7 @@ void libkrbn_core_configuration_replace_selected_profile_complex_modifications_r
                                                                                     const char* json_string,
                                                                                     char* error_message_buffer,
                                                                                     size_t error_message_buffer_length) {
-  if (error_message_buffer_length > 0) {
+  if (error_message_buffer && error_message_buffer_length > 0) {
     error_message_buffer[0] = '\0';
   }
 
@@ -405,7 +406,7 @@ void libkrbn_core_configuration_push_front_selected_profile_complex_modification
                                                                                        const char* json_string,
                                                                                        char* error_message_buffer,
                                                                                        size_t error_message_buffer_length) {
-  if (error_message_buffer_length > 0) {
+  if (error_message_buffer && error_message_buffer_length > 0) {
     error_message_buffer[0] = '\0';
   }
 

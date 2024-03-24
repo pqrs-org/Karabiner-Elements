@@ -66,9 +66,8 @@ void libkrbn_get_simple_modification_json_string(char* buffer, size_t length, in
 //
 
 typedef void libkrbn_core_configuration;
-void libkrbn_core_configuration_terminate(libkrbn_core_configuration** p);
-void libkrbn_core_configuration_save(libkrbn_core_configuration* p);
-const char* libkrbn_core_configuration_get_save_error_message(void);
+bool libkrbn_core_configuration_save(char* error_message_buffer,
+                                     size_t error_message_buffer_length);
 
 // global_configuration
 
@@ -399,7 +398,6 @@ void libkrbn_complex_modifications_assets_manager_erase_file(size_t index);
 // libkrbn_configuration_monitor
 //
 
-// You have to call `libkrbn_core_configuration_terminate(&initialized_core_configuration)`.
 typedef void (*libkrbn_core_configuration_updated)(void);
 void libkrbn_enable_configuration_monitor(void);
 void libkrbn_disable_configuration_monitor(void);

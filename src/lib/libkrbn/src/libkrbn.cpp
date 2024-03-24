@@ -19,8 +19,9 @@
 namespace {
 std::shared_ptr<krbn::dispatcher_utility::scoped_dispatcher_manager> scoped_dispatcher_manager_;
 std::shared_ptr<krbn::run_loop_thread_utility::scoped_run_loop_thread_manager> scoped_run_loop_thread_manager_;
-std::unique_ptr<libkrbn_components_manager> libkrbn_components_manager_;
 } // namespace
+
+std::shared_ptr<libkrbn_components_manager> libkrbn_components_manager_;
 
 void libkrbn_set_logging_level_off(void) {
   krbn::logger::get_logger()->set_level(spdlog::level::off);
@@ -42,7 +43,7 @@ void libkrbn_initialize(void) {
   }
 
   if (!libkrbn_components_manager_) {
-    libkrbn_components_manager_ = std::make_unique<libkrbn_components_manager>();
+    libkrbn_components_manager_ = std::make_shared<libkrbn_components_manager>();
   }
 }
 
@@ -293,16 +294,16 @@ void libkrbn_disable_configuration_monitor(void) {
 }
 
 void libkrbn_register_core_configuration_updated_callback(libkrbn_core_configuration_updated callback) {
-  if (libkrbn_components_manager_) {
-    if (auto m = libkrbn_components_manager_->get_libkrbn_configuration_monitor()) {
+  if (auto manager = libkrbn_components_manager_) {
+    if (auto m = manager->get_libkrbn_configuration_monitor()) {
       m->register_libkrbn_core_configuration_updated_callback(callback);
     }
   }
 }
 
 void libkrbn_unregister_core_configuration_updated_callback(libkrbn_core_configuration_updated callback) {
-  if (libkrbn_components_manager_) {
-    if (auto m = libkrbn_components_manager_->get_libkrbn_configuration_monitor()) {
+  if (auto manager = libkrbn_components_manager_) {
+    if (auto m = manager->get_libkrbn_configuration_monitor()) {
       m->unregister_libkrbn_core_configuration_updated_callback(callback);
     }
   }

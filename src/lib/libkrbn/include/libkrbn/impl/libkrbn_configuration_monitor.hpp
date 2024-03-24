@@ -29,6 +29,8 @@ public:
     auto wait = pqrs::make_thread_wait();
 
     monitor_->core_configuration_updated.connect([this, wait](auto&& weak_core_configuration) {
+      weak_core_configuration_ = weak_core_configuration;
+
       for (const auto& c : libkrbn_core_configuration_updated_callbacks_) {
         c();
       }
@@ -45,6 +47,10 @@ public:
     detach_from_dispatcher([this] {
       monitor_ = nullptr;
     });
+  }
+
+  std::weak_ptr<krbn::core_configuration::core_configuration> get_weak_core_configuration(void) {
+    return weak_core_configuration_;
   }
 
   void register_libkrbn_core_configuration_updated_callback(libkrbn_core_configuration_updated callback) {
@@ -66,5 +72,6 @@ public:
 
 private:
   std::unique_ptr<krbn::configuration_monitor> monitor_;
+  std::weak_ptr<krbn::core_configuration::core_configuration> weak_core_configuration_;
   std::vector<libkrbn_core_configuration_updated> libkrbn_core_configuration_updated_callbacks_;
 };
