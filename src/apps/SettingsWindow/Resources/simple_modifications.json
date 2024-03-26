@@ -2484,19 +2484,19 @@
         "category": "Application Launch keys"
     },
     {
-        "label": "al_consumer_control_configuration",
+        "label": "al_consumer_control_configuration (Music)",
         "data": [{ "consumer_key_code": "al_consumer_control_configuration" }]
     },
     {
-        "label": "al_word_processor",
+        "label": "al_word_processor (Pages)",
         "data": [{ "consumer_key_code": "al_word_processor" }]
     },
     {
-        "label": "al_text_editor",
+        "label": "al_text_editor (TextEdit)",
         "data": [{ "consumer_key_code": "al_text_editor" }]
     },
     {
-        "label": "al_spreadsheet",
+        "label": "al_spreadsheet (Numbers)",
         "data": [{ "consumer_key_code": "al_spreadsheet" }]
     },
     {
@@ -2505,7 +2505,7 @@
         "data": [{ "consumer_key_code": "al_graphics_editor" }]
     },
     {
-        "label": "al_presentation_app",
+        "label": "al_presentation_app (Keynote)",
         "data": [{ "consumer_key_code": "al_presentation_app" }]
     },
     {
@@ -2514,7 +2514,7 @@
         "data": [{ "consumer_key_code": "al_database_app" }]
     },
     {
-        "label": "al_email_reader",
+        "label": "al_email_reader (Mail)",
         "data": [{ "consumer_key_code": "al_email_reader" }]
     },
     {
@@ -2553,7 +2553,7 @@
         "data": [{ "consumer_key_code": "al_checkbook_or_finance" }]
     },
     {
-        "label": "al_calculator",
+        "label": "al_calculator (Calculator)",
         "data": [{ "consumer_key_code": "al_calculator" }]
     },
     {
@@ -2562,7 +2562,7 @@
         "data": [{ "consumer_key_code": "al_a_or_v_capture_or_playback" }]
     },
     {
-        "label": "al_local_machine_browser",
+        "label": "al_local_machine_browser (Finder)",
         "data": [{ "consumer_key_code": "al_local_machine_browser" }]
     },
     {
@@ -2571,7 +2571,7 @@
         "data": [{ "consumer_key_code": "al_lan_or_wan_browser" }]
     },
     {
-        "label": "al_internet_browser",
+        "label": "al_internet_browser (Safari)",
         "data": [{ "consumer_key_code": "al_internet_browser" }]
     },
     {
@@ -2662,7 +2662,7 @@
         "data": [{ "consumer_key_code": "al_thesaurus" }]
     },
     {
-        "label": "al_dictionary",
+        "label": "al_dictionary (Dictionary)",
         "data": [{ "consumer_key_code": "al_dictionary" }]
     },
     {
