@@ -12,7 +12,7 @@ extern "C" {
 typedef struct {
   uint64_t vendor_id;
   uint64_t product_id;
-  const char* device_address;
+  char device_address[1024];
   bool is_keyboard;
   bool is_pointing_device;
   bool is_game_pad;

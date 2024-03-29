@@ -19,7 +19,7 @@ public:
                                          device_identifiers.is_keyboard,
                                          device_identifiers.is_pointing_device,
                                          device_identifiers.is_game_pad,
-                                         device_identifiers.device_address ? std::string(device_identifiers.device_address) : "");
+                                         device_identifiers.device_address);
     return identifiers;
   }
 };
