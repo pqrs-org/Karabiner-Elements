@@ -36,7 +36,7 @@ public:
     });
   }
 
-  std::weak_ptr<krbn::core_configuration::core_configuration> get_weak_core_configuration(void) {
+  std::weak_ptr<krbn::core_configuration::core_configuration> get_weak_core_configuration(void) const {
     return weak_core_configuration_;
   }
 

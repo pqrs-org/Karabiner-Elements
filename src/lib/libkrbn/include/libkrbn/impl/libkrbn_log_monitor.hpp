@@ -43,7 +43,7 @@ public:
     });
   }
 
-  std::shared_ptr<std::deque<std::string>> get_lines(void) {
+  std::shared_ptr<std::deque<std::string>> get_lines(void) const {
     return lines_;
   }
 

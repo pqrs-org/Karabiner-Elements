@@ -36,7 +36,7 @@ public:
     });
   }
 
-  std::weak_ptr<const krbn::connected_devices::connected_devices> get_weak_connected_devices(void) {
+  std::weak_ptr<const krbn::connected_devices::connected_devices> get_weak_connected_devices(void) const {
     return weak_connected_devices_;
   }
 
