@@ -339,7 +339,7 @@ struct DevicesGamePadSettingsView_Previews: PreviewProvider {
     transport: "",
     vendorId: 0,
     productId: 0,
-    deviceAddress: nil,
+    deviceAddress: "",
     isKeyboard: false,
     isPointingDevice: false,
     isGamePad: true,

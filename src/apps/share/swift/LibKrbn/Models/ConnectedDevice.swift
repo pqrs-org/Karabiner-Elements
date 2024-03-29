@@ -27,7 +27,7 @@ extension LibKrbn {
       transport: String,
       vendorId: UInt64,
       productId: UInt64,
-      deviceAddress: UnsafePointer<CChar>?,
+      deviceAddress: String,
       isKeyboard: Bool,
       isPointingDevice: Bool,
       isGamePad: Bool,
@@ -42,11 +42,7 @@ extension LibKrbn {
       self.transport = transport
       self.vendorId = vendorId
       self.productId = productId
-      if let deviceAddress = deviceAddress {
-        self.deviceAddress = String(cString: deviceAddress)
-      } else {
-        self.deviceAddress = ""
-      }
+      self.deviceAddress = deviceAddress
       self.isKeyboard = isKeyboard
       self.isPointingDevice = isPointingDevice
       self.isGamePad = isGamePad
@@ -59,7 +55,15 @@ extension LibKrbn {
         capacity: 1)
       libkrbnDeviceIdentifiers.pointee.vendor_id = vendorId
       libkrbnDeviceIdentifiers.pointee.product_id = productId
-      libkrbnDeviceIdentifiers.pointee.device_address = deviceAddress
+
+      deviceAddress.withCString {
+        _ = strlcpy(
+          &libkrbnDeviceIdentifiers.pointee.device_address,
+          $0,
+          MemoryLayout.size(ofValue: libkrbnDeviceIdentifiers.pointee.device_address)
+        )
+      }
+
       libkrbnDeviceIdentifiers.pointee.is_keyboard = isKeyboard
       libkrbnDeviceIdentifiers.pointee.is_pointing_device = isPointingDevice
       libkrbnDeviceIdentifiers.pointee.is_game_pad = isGamePad
