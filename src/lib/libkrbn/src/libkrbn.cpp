@@ -434,11 +434,9 @@ void libkrbn_complex_modifications_assets_manager_erase_file(size_t index) {
 // system_preferences_monitor
 //
 
-void libkrbn_enable_system_preferences_monitor(libkrbn_system_preferences_monitor_callback _Nullable callback,
-                                               void* _Nullable refcon) {
+void libkrbn_enable_system_preferences_monitor(void) {
   if (libkrbn_components_manager_) {
-    libkrbn_components_manager_->enable_system_preferences_monitor(callback,
-                                                                   refcon);
+    libkrbn_components_manager_->enable_system_preferences_monitor();
   }
 }
 
@@ -448,9 +446,49 @@ void libkrbn_disable_system_preferences_monitor(void) {
   }
 }
 
-size_t libkrbn_system_preferences_properties_get_keyboard_types_size(void) {
-  libkrbn_system_preferences_properties p;
-  return std::size(p.keyboard_types);
+void libkrbn_register_system_preferences_updated_callback(libkrbn_system_preferences_updated callback) {
+  if (auto manager = libkrbn_components_manager_) {
+    if (auto m = manager->get_libkrbn_system_preferences_monitor()) {
+      m->register_libkrbn_system_preferences_updated_callback(callback);
+    }
+  }
+}
+
+void libkrbn_unregister_system_preferences_updated_callback(libkrbn_system_preferences_updated callback) {
+  if (auto manager = libkrbn_components_manager_) {
+    if (auto m = manager->get_libkrbn_system_preferences_monitor()) {
+      m->unregister_libkrbn_system_preferences_updated_callback(callback);
+    }
+  }
+}
+
+bool libkrbn_system_preferences_properties_get_use_fkeys_as_standard_function_keys(void) {
+  if (auto manager = libkrbn_components_manager_) {
+    if (auto p = manager->get_current_system_preferences_properties()) {
+      return p->get_use_fkeys_as_standard_function_keys();
+    }
+  }
+
+  return false;
+}
+
+int32_t libkrbn_system_preferences_properties_get_keyboard_type(uint64_t country_code) {
+  if (auto manager = libkrbn_components_manager_) {
+    if (auto p = manager->get_current_system_preferences_properties()) {
+      auto&& keyboard_types = p->get_keyboard_types();
+
+      auto it = keyboard_types.find(
+          pqrs::osx::system_preferences::keyboard_type_key(
+              krbn::hid::vendor_id::karabiner_virtual_hid_device,
+              krbn::hid::product_id::karabiner_virtual_hid_keyboard,
+              pqrs::hid::country_code::value_t(country_code)));
+      if (it != std::end(keyboard_types)) {
+        return static_cast<int32_t>(type_safe::get(it->second));
+      }
+    }
+  }
+
+  return -1;
 }
 
 //

@@ -39,11 +39,11 @@ public:
     configuration_monitor_ = nullptr;
   }
 
-  std::shared_ptr<libkrbn_configuration_monitor> get_libkrbn_configuration_monitor(void) {
+  std::shared_ptr<libkrbn_configuration_monitor> get_libkrbn_configuration_monitor(void) const {
     return configuration_monitor_;
   }
 
-  std::shared_ptr<krbn::core_configuration::core_configuration> get_current_core_configuration(void) {
+  std::shared_ptr<krbn::core_configuration::core_configuration> get_current_core_configuration(void) const {
     if (auto m = configuration_monitor_) {
       return m->get_weak_core_configuration().lock();
     }
@@ -70,14 +70,23 @@ public:
   // system_preferences_monitor_
   //
 
-  void enable_system_preferences_monitor(libkrbn_system_preferences_monitor_callback callback,
-                                         void* refcon) {
-    system_preferences_monitor_ = std::make_unique<libkrbn_system_preferences_monitor>(callback,
-                                                                                       refcon);
+  void enable_system_preferences_monitor(void) {
+    system_preferences_monitor_ = std::make_shared<libkrbn_system_preferences_monitor>();
   }
 
   void disable_system_preferences_monitor(void) {
     system_preferences_monitor_ = nullptr;
+  }
+
+  std::shared_ptr<libkrbn_system_preferences_monitor> get_libkrbn_system_preferences_monitor(void) const {
+    return system_preferences_monitor_;
+  }
+
+  std::shared_ptr<pqrs::osx::system_preferences::properties> get_current_system_preferences_properties(void) const {
+    if (auto m = system_preferences_monitor_) {
+      return m->get_weak_system_preferences_properties().lock();
+    }
+    return nullptr;
   }
 
   //
@@ -92,11 +101,11 @@ public:
     connected_devices_monitor_ = nullptr;
   }
 
-  std::shared_ptr<libkrbn_connected_devices_monitor> get_libkrbn_connected_devices_monitor(void) {
+  std::shared_ptr<libkrbn_connected_devices_monitor> get_libkrbn_connected_devices_monitor(void) const {
     return connected_devices_monitor_;
   }
 
-  std::shared_ptr<const krbn::connected_devices::connected_devices> get_current_connected_devices(void) {
+  std::shared_ptr<const krbn::connected_devices::connected_devices> get_current_connected_devices(void) const {
     if (auto m = connected_devices_monitor_) {
       return m->get_weak_connected_devices().lock();
     }
@@ -204,11 +213,11 @@ public:
     log_monitor_ = nullptr;
   }
 
-  std::shared_ptr<libkrbn_log_monitor> get_libkrbn_log_monitor(void) {
+  std::shared_ptr<libkrbn_log_monitor> get_libkrbn_log_monitor(void) const {
     return log_monitor_;
   }
 
-  std::shared_ptr<std::deque<std::string>> get_current_log_lines(void) {
+  std::shared_ptr<std::deque<std::string>> get_current_log_lines(void) const {
     if (auto m = log_monitor_) {
       return m->get_lines();
     }
@@ -281,7 +290,7 @@ private:
   std::unique_ptr<libkrbn_version_monitor> version_monitor_;
   std::shared_ptr<libkrbn_configuration_monitor> configuration_monitor_;
   std::shared_ptr<libkrbn_complex_modifications_assets_manager> complex_modifications_assets_manager_;
-  std::unique_ptr<libkrbn_system_preferences_monitor> system_preferences_monitor_;
+  std::shared_ptr<libkrbn_system_preferences_monitor> system_preferences_monitor_;
   std::shared_ptr<libkrbn_connected_devices_monitor> connected_devices_monitor_;
   std::unique_ptr<libkrbn_file_monitor> observer_state_json_file_monitor_;
   std::unique_ptr<libkrbn_file_monitor> grabber_state_json_file_monitor_;

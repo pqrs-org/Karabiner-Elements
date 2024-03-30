@@ -353,17 +353,15 @@ void libkrbn_unregister_core_configuration_updated_callback(libkrbn_core_configu
 // libkrbn_system_preferences_monitor
 //
 
-struct libkrbn_system_preferences_properties {
-  bool use_fkeys_as_standard_function_keys;
-  int32_t keyboard_types[8];
-};
-
-typedef void (*libkrbn_system_preferences_monitor_callback)(const struct libkrbn_system_preferences_properties* properties,
-                                                            void* refcon);
-void libkrbn_enable_system_preferences_monitor(libkrbn_system_preferences_monitor_callback callback,
-                                               void* refcon);
+typedef void (*libkrbn_system_preferences_updated)(void);
+void libkrbn_enable_system_preferences_monitor(void);
 void libkrbn_disable_system_preferences_monitor(void);
-size_t libkrbn_system_preferences_properties_get_keyboard_types_size(void);
+
+void libkrbn_register_system_preferences_updated_callback(libkrbn_system_preferences_updated callback);
+void libkrbn_unregister_system_preferences_updated_callback(libkrbn_system_preferences_updated callback);
+
+bool libkrbn_system_preferences_properties_get_use_fkeys_as_standard_function_keys(void);
+int32_t libkrbn_system_preferences_properties_get_keyboard_type(uint64_t country_code);
 
 //
 // libkrbn_connected_devices
