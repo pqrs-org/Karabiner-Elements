@@ -5,12 +5,17 @@
 #include <thread>
 
 namespace {
-void system_preferences_monitor_callback(const struct libkrbn_system_preferences_properties* properties,
-                                         void* refcon) {
-  std::cout << "system_preferences_monitor_callback" << std::endl;
+void system_preferences_updated_callback(void) {
+  std::cout << "system_preferences_updated_callback" << std::endl;
   std::cout << "  use_fkeys_as_standard_function_keys: "
-            << properties->use_fkeys_as_standard_function_keys
+            << libkrbn_system_preferences_properties_get_use_fkeys_as_standard_function_keys()
             << std::endl;
+
+  for (int country_code = 0; country_code < 8; ++country_code) {
+    std::cout << "  keyboard_type (country_code: " << country_code << "): "
+              << libkrbn_system_preferences_properties_get_keyboard_type(country_code)
+              << std::endl;
+  }
 }
 
 void connected_devices_updated_callback(void) {
@@ -82,9 +87,9 @@ int main(int argc, const char* argv[]) {
   }
   std::cout << std::endl;
 
-  libkrbn_enable_system_preferences_monitor(
-      system_preferences_monitor_callback,
-      nullptr);
+  libkrbn_enable_system_preferences_monitor();
+  libkrbn_register_system_preferences_updated_callback(system_preferences_updated_callback);
+  system_preferences_updated_callback();
 
   if (libkrbn_get_notification_message_body(buffer, sizeof(buffer))) {
     std::cout << "libkrbn_get_notification_message_body: " << buffer << std::endl;

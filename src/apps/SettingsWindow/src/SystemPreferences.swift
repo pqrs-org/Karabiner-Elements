@@ -2,17 +2,9 @@ import Combine
 import Foundation
 import SwiftUI
 
-private func callback(
-  _ systemPreferencesProperties: UnsafePointer<libkrbn_system_preferences_properties>?,
-  _ context: UnsafeMutableRawPointer?
-) {
-  if systemPreferencesProperties == nil { return }
-
-  let systemPreferencesPropertiesCopy = systemPreferencesProperties!.pointee
-
+private func callback() {
   Task { @MainActor in
-    var properties = systemPreferencesPropertiesCopy
-    SystemPreferences.shared.updateProperties(&properties)
+    SystemPreferences.shared.updateProperties()
   }
 }
 
@@ -27,25 +19,26 @@ final class SystemPreferences: ObservableObject {
   private init() {
     didSetEnabled = true
 
-    libkrbn_enable_system_preferences_monitor(callback, nil)
+    libkrbn_enable_system_preferences_monitor()
+    libkrbn_register_system_preferences_updated_callback(callback)
+    callback()
   }
 
-  public func updateProperties(
-    _ systemPreferencesProperties: inout libkrbn_system_preferences_properties
-  ) {
+  public func updateProperties() {
     didSetEnabled = false
 
     useFkeysAsStandardFunctionKeys =
-      systemPreferencesProperties.use_fkeys_as_standard_function_keys
+      libkrbn_system_preferences_properties_get_use_fkeys_as_standard_function_keys()
 
-    let keyboardTypesSize = libkrbn_system_preferences_properties_get_keyboard_types_size()
-    withUnsafePointer(to: &(systemPreferencesProperties.keyboard_types.0)) { keyboardTypesPtr in
-      var newKeyboardTypes: [LibKrbn.KeyboardType] = []
-      for i in 0..<keyboardTypesSize {
-        newKeyboardTypes.append(LibKrbn.KeyboardType(i, Int(keyboardTypesPtr[i])))
-      }
-      keyboardTypes = newKeyboardTypes
+    let countryCodesCount = 8
+    var newKeyboardTypes: [LibKrbn.KeyboardType] = []
+    for i in 0..<countryCodesCount {
+      newKeyboardTypes.append(
+        LibKrbn.KeyboardType(
+          i,
+          Int(libkrbn_system_preferences_properties_get_keyboard_type(UInt64(i)))))
     }
+    keyboardTypes = newKeyboardTypes
 
     didSetEnabled = true
   }
