@@ -403,10 +403,15 @@ void libkrbn_unregister_connected_devices_updated_callback(libkrbn_connected_dev
 // libkrbn_version_monitor
 //
 
-typedef void (*libkrbn_version_monitor_callback)(void* refcon);
-void libkrbn_enable_version_monitor(libkrbn_version_monitor_callback callback,
-                                    void* refcon);
+typedef void (*libkrbn_version_updated)(void);
+void libkrbn_enable_version_monitor(void);
 void libkrbn_disable_version_monitor(void);
+
+void libkrbn_register_version_updated_callback(libkrbn_version_updated callback);
+void libkrbn_unregister_version_updated_callback(libkrbn_version_updated callback);
+
+bool libkrbn_get_version(char* buffer,
+                         size_t length);
 
 //
 // libkrbn_file_monitor

@@ -268,11 +268,9 @@ void libkrbn_get_simple_modification_json_string(char* buffer, size_t length, in
 // version_monitor
 //
 
-void libkrbn_enable_version_monitor(libkrbn_version_monitor_callback callback,
-                                    void* refcon) {
+void libkrbn_enable_version_monitor(void) {
   if (libkrbn_components_manager_) {
-    libkrbn_components_manager_->enable_version_monitor(callback,
-                                                        refcon);
+    libkrbn_components_manager_->enable_version_monitor();
   }
 }
 
@@ -280,6 +278,38 @@ void libkrbn_disable_version_monitor(void) {
   if (libkrbn_components_manager_) {
     libkrbn_components_manager_->disable_version_monitor();
   }
+}
+
+void libkrbn_register_version_updated_callback(libkrbn_version_updated callback) {
+  if (auto manager = libkrbn_components_manager_) {
+    if (auto m = manager->get_libkrbn_version_monitor()) {
+      m->register_libkrbn_version_updated_callback(callback);
+    }
+  }
+}
+
+void libkrbn_unregister_version_updated_callback(libkrbn_version_updated callback) {
+  if (auto manager = libkrbn_components_manager_) {
+    if (auto m = manager->get_libkrbn_version_monitor()) {
+      m->unregister_libkrbn_version_updated_callback(callback);
+    }
+  }
+}
+
+bool libkrbn_get_version(char* buffer,
+                         size_t length) {
+  if (buffer && length > 0) {
+    buffer[0] = '\0';
+  }
+
+  if (auto manager = libkrbn_components_manager_) {
+    if (auto m = manager->get_libkrbn_version_monitor()) {
+      strlcpy(buffer, m->get_version().c_str(), length);
+      return true;
+    }
+  }
+
+  return false;
 }
 
 //

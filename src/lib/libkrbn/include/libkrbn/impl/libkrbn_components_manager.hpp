@@ -17,14 +17,23 @@ public:
   // version_monitor_
   //
 
-  void enable_version_monitor(libkrbn_version_monitor_callback callback,
-                              void* refcon) {
-    version_monitor_ = std::make_unique<libkrbn_version_monitor>(callback,
-                                                                 refcon);
+  void enable_version_monitor(void) {
+    version_monitor_ = std::make_shared<libkrbn_version_monitor>();
   }
 
   void disable_version_monitor(void) {
     version_monitor_ = nullptr;
+  }
+
+  std::shared_ptr<libkrbn_version_monitor> get_libkrbn_version_monitor(void) const {
+    return version_monitor_;
+  }
+
+  std::string get_current_version(void) const {
+    if (auto m = version_monitor_) {
+      return m->get_version();
+    }
+    return "";
   }
 
   //
@@ -287,7 +296,7 @@ public:
   }
 
 private:
-  std::unique_ptr<libkrbn_version_monitor> version_monitor_;
+  std::shared_ptr<libkrbn_version_monitor> version_monitor_;
   std::shared_ptr<libkrbn_configuration_monitor> configuration_monitor_;
   std::shared_ptr<libkrbn_complex_modifications_assets_manager> complex_modifications_assets_manager_;
   std::shared_ptr<libkrbn_system_preferences_monitor> system_preferences_monitor_;
