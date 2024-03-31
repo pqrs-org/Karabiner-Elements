@@ -6,8 +6,7 @@ private func callback(
   _ usage: Int32,
   _ logicalMax: Int64,
   _ logicalMin: Int64,
-  _ integerValue: Int64,
-  _ context: UnsafeMutableRawPointer?
+  _ integerValue: Int64
 ) {
   //
   // Skip specific events
@@ -210,7 +209,8 @@ public class EventHistory: ObservableObject {
   @Published var unknownEventEntries: [EventHistoryEntry] = []
 
   private init() {
-    libkrbn_enable_hid_value_monitor(callback, nil)
+    libkrbn_enable_hid_value_monitor()
+    libkrbn_register_hid_value_arrived_callback(callback)
   }
 
   deinit {

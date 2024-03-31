@@ -6,8 +6,7 @@ private func callback(
   _ usage: Int32,
   _ logicalMax: Int64,
   _ logicalMin: Int64,
-  _ integerValue: Int64,
-  _ context: UnsafeMutableRawPointer?
+  _ integerValue: Int64
 ) {
   Task { @MainActor in
     EventObserver.shared.update(usagePage, usage, logicalMax, logicalMin, integerValue)
@@ -21,7 +20,8 @@ public class EventObserver: ObservableObject {
   @Published var counter = 0
 
   private init() {
-    libkrbn_enable_hid_value_monitor(callback, nil)
+    libkrbn_enable_hid_value_monitor()
+    libkrbn_register_hid_value_arrived_callback(callback)
   }
 
   deinit {
