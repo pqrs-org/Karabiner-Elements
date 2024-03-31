@@ -25,7 +25,7 @@ public class AppDelegate: NSObject, NSApplicationDelegate {
 
     ProcessInfo.processInfo.enableSuddenTermination()
 
-    KarabinerAppHelper.shared.observeVersionChange()
+    KarabinerAppHelper.shared.observeVersionUpdated()
     KarabinerAppHelper.shared.observeConsoleUserServerIsDisabledNotification()
     LibKrbn.Settings.shared.start()
 

@@ -5,8 +5,18 @@
 #include <thread>
 
 namespace {
+void version_updated_callback(void) {
+  std::cout << __func__ << std::endl;
+
+  char buffer[1024];
+  if (libkrbn_get_version(buffer, sizeof(buffer))) {
+    std::cout << "version: " << buffer << std::endl;
+  }
+}
+
 void system_preferences_updated_callback(void) {
-  std::cout << "system_preferences_updated_callback" << std::endl;
+  std::cout << __func__ << std::endl;
+
   std::cout << "  use_fkeys_as_standard_function_keys: "
             << libkrbn_system_preferences_properties_get_use_fkeys_as_standard_function_keys()
             << std::endl;
@@ -19,7 +29,7 @@ void system_preferences_updated_callback(void) {
 }
 
 void connected_devices_updated_callback(void) {
-  std::cout << "connected_devices_updated_callback" << std::endl;
+  std::cout << __func__ << std::endl;
 }
 
 auto global_wait = pqrs::make_thread_wait();
@@ -31,6 +41,9 @@ int main(int argc, const char* argv[]) {
   signal(SIGINT, [](int) {
     global_wait->notify();
   });
+
+  libkrbn_enable_version_monitor();
+  libkrbn_register_version_updated_callback(version_updated_callback);
 
   libkrbn_enable_connected_devices_monitor();
   libkrbn_register_connected_devices_updated_callback(connected_devices_updated_callback);

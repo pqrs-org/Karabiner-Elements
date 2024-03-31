@@ -1,15 +1,16 @@
 import AppKit
 import Foundation
 
-private func versionChangedCallback(_ context: UnsafeMutableRawPointer?) {
+private func versionUpdatedCallback() {
   Relauncher.relaunch()
 }
 
 final class KarabinerAppHelper: NSObject {
   public static let shared = KarabinerAppHelper()
 
-  func observeVersionChange() {
-    libkrbn_enable_version_monitor(versionChangedCallback, nil)
+  func observeVersionUpdated() {
+    libkrbn_enable_version_monitor()
+    libkrbn_register_version_updated_callback(versionUpdatedCallback)
   }
 
   func observeConsoleUserServerIsDisabledNotification() {

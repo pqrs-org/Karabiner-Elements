@@ -13,7 +13,7 @@ public class AppDelegate: NSObject, NSApplicationDelegate {
 
     libkrbn_initialize()
 
-    KarabinerAppHelper.shared.observeVersionChange()
+    KarabinerAppHelper.shared.observeVersionUpdated()
     KarabinerAppHelper.shared.observeConsoleUserServerIsDisabledNotification()
 
     NSApplication.shared.disableRelaunchOnLogin()
