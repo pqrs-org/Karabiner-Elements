@@ -1,6 +1,7 @@
 #pragma once
 
 #include "libkrbn/libkrbn.h"
+#include "libkrbn_callback_manager.hpp"
 #include "monitor/configuration_monitor.hpp"
 
 class libkrbn_configuration_monitor final : public pqrs::dispatcher::extra::dispatcher_client {
@@ -18,9 +19,7 @@ public:
     monitor_->core_configuration_updated.connect([this, wait](auto&& weak_core_configuration) {
       weak_core_configuration_ = weak_core_configuration;
 
-      for (const auto& c : libkrbn_core_configuration_updated_callbacks_) {
-        c();
-      }
+      callback_manager_.trigger();
 
       wait->notify();
     });
@@ -42,23 +41,18 @@ public:
 
   void register_libkrbn_core_configuration_updated_callback(libkrbn_core_configuration_updated callback) {
     enqueue_to_dispatcher([this, callback] {
-      libkrbn_core_configuration_updated_callbacks_.push_back(callback);
+      callback_manager_.register_callback(callback);
     });
   }
 
   void unregister_libkrbn_core_configuration_updated_callback(libkrbn_core_configuration_updated callback) {
     enqueue_to_dispatcher([this, callback] {
-      libkrbn_core_configuration_updated_callbacks_.erase(std::remove_if(std::begin(libkrbn_core_configuration_updated_callbacks_),
-                                                                         std::end(libkrbn_core_configuration_updated_callbacks_),
-                                                                         [&](auto& c) {
-                                                                           return c == callback;
-                                                                         }),
-                                                          std::end(libkrbn_core_configuration_updated_callbacks_));
+      callback_manager_.unregister_callback(callback);
     });
   }
 
 private:
   std::unique_ptr<krbn::configuration_monitor> monitor_;
   std::weak_ptr<krbn::core_configuration::core_configuration> weak_core_configuration_;
-  std::vector<libkrbn_core_configuration_updated> libkrbn_core_configuration_updated_callbacks_;
+  libkrbn_callback_manager<libkrbn_core_configuration_updated> callback_manager_;
 };

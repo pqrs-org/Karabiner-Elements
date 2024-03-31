@@ -2,6 +2,7 @@
 
 #include "constants.hpp"
 #include "libkrbn/libkrbn.h"
+#include "libkrbn_callback_manager.hpp"
 #include "logger.hpp"
 #include <pqrs/spdlog.hpp>
 
@@ -29,9 +30,7 @@ public:
     monitor_->log_file_updated.connect([this](auto&& lines) {
       lines_ = lines;
 
-      for (const auto& c : libkrbn_log_messages_updated_callbacks_) {
-        c();
-      }
+      callback_manager_.trigger();
     });
 
     monitor_->async_start(std::chrono::milliseconds(1000));
@@ -49,23 +48,18 @@ public:
 
   void register_libkrbn_log_messages_updated_callback(libkrbn_log_messages_updated callback) {
     enqueue_to_dispatcher([this, callback] {
-      libkrbn_log_messages_updated_callbacks_.push_back(callback);
+      callback_manager_.register_callback(callback);
     });
   }
 
   void unregister_libkrbn_log_messages_updated_callback(libkrbn_log_messages_updated callback) {
     enqueue_to_dispatcher([this, callback] {
-      libkrbn_log_messages_updated_callbacks_.erase(std::remove_if(std::begin(libkrbn_log_messages_updated_callbacks_),
-                                                                   std::end(libkrbn_log_messages_updated_callbacks_),
-                                                                   [&](auto& c) {
-                                                                     return c == callback;
-                                                                   }),
-                                                    std::end(libkrbn_log_messages_updated_callbacks_));
+      callback_manager_.unregister_callback(callback);
     });
   }
 
 private:
   std::unique_ptr<pqrs::spdlog::monitor> monitor_;
   std::shared_ptr<std::deque<std::string>> lines_;
-  std::vector<libkrbn_log_messages_updated> libkrbn_log_messages_updated_callbacks_;
+  libkrbn_callback_manager<libkrbn_log_messages_updated> callback_manager_;
 };

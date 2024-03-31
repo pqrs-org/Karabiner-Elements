@@ -1,6 +1,7 @@
 #pragma once
 
 #include "libkrbn/libkrbn.h"
+#include "libkrbn_callback_manager.hpp"
 #include <pqrs/osx/system_preferences_monitor.hpp>
 
 class libkrbn_system_preferences_monitor final : public pqrs::dispatcher::extra::dispatcher_client {
@@ -17,9 +18,7 @@ public:
     monitor_->system_preferences_changed.connect([this, wait](auto&& properties_ptr) {
       weak_system_preferences_properties_ = properties_ptr;
 
-      for (const auto& c : libkrbn_system_preferences_updated_callbacks_) {
-        c();
-      }
+      callback_manager_.trigger();
 
       wait->notify();
     });
@@ -41,23 +40,18 @@ public:
 
   void register_libkrbn_system_preferences_updated_callback(libkrbn_system_preferences_updated callback) {
     enqueue_to_dispatcher([this, callback] {
-      libkrbn_system_preferences_updated_callbacks_.push_back(callback);
+      callback_manager_.register_callback(callback);
     });
   }
 
   void unregister_libkrbn_system_preferences_updated_callback(libkrbn_system_preferences_updated callback) {
     enqueue_to_dispatcher([this, callback] {
-      libkrbn_system_preferences_updated_callbacks_.erase(std::remove_if(std::begin(libkrbn_system_preferences_updated_callbacks_),
-                                                                         std::end(libkrbn_system_preferences_updated_callbacks_),
-                                                                         [&](auto& c) {
-                                                                           return c == callback;
-                                                                         }),
-                                                          std::end(libkrbn_system_preferences_updated_callbacks_));
+      callback_manager_.unregister_callback(callback);
     });
   }
 
 private:
   std::unique_ptr<pqrs::osx::system_preferences_monitor> monitor_;
   std::weak_ptr<pqrs::osx::system_preferences::properties> weak_system_preferences_properties_;
-  std::vector<libkrbn_system_preferences_updated> libkrbn_system_preferences_updated_callbacks_;
+  libkrbn_callback_manager<libkrbn_system_preferences_updated> callback_manager_;
 };

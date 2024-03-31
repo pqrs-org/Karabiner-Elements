@@ -2,6 +2,7 @@
 
 #include "constants.hpp"
 #include "libkrbn/libkrbn.h"
+#include "libkrbn_callback_manager.hpp"
 #include "monitor/connected_devices_monitor.hpp"
 
 class libkrbn_connected_devices_monitor final : public pqrs::dispatcher::extra::dispatcher_client {
@@ -18,9 +19,7 @@ public:
     monitor_->connected_devices_updated.connect([this, wait](auto&& weak_connected_devices) {
       weak_connected_devices_ = weak_connected_devices;
 
-      for (const auto& c : libkrbn_connected_devices_updated_callbacks_) {
-        c();
-      }
+      callback_manager_.trigger();
 
       wait->notify();
     });
@@ -42,23 +41,18 @@ public:
 
   void register_libkrbn_connected_devices_updated_callback(libkrbn_connected_devices_updated callback) {
     enqueue_to_dispatcher([this, callback] {
-      libkrbn_connected_devices_updated_callbacks_.push_back(callback);
+      callback_manager_.register_callback(callback);
     });
   }
 
   void unregister_libkrbn_connected_devices_updated_callback(libkrbn_connected_devices_updated callback) {
     enqueue_to_dispatcher([this, callback] {
-      libkrbn_connected_devices_updated_callbacks_.erase(std::remove_if(std::begin(libkrbn_connected_devices_updated_callbacks_),
-                                                                        std::end(libkrbn_connected_devices_updated_callbacks_),
-                                                                        [&](auto& c) {
-                                                                          return c == callback;
-                                                                        }),
-                                                         std::end(libkrbn_connected_devices_updated_callbacks_));
+      callback_manager_.unregister_callback(callback);
     });
   }
 
 private:
   std::unique_ptr<krbn::connected_devices_monitor> monitor_;
   std::weak_ptr<const krbn::connected_devices::connected_devices> weak_connected_devices_;
-  std::vector<libkrbn_connected_devices_updated> libkrbn_connected_devices_updated_callbacks_;
+  libkrbn_callback_manager<libkrbn_connected_devices_updated> callback_manager_;
 };
