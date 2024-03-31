@@ -110,20 +110,20 @@ private func staticSetGrabberVariable(_ count: FingerCount, _ sync: Bool) {
   }
 }
 
-private func enable() {
+private func callback() {
+  let status = libkrbn_grabber_client_get_status()
+
   Task { @MainActor in
     // sleep until devices are settled.
     try await Task.sleep(nanoseconds: NSEC_PER_SEC)
 
-    MultitouchDeviceManager.shared.setCallback(true)
+    if status == libkrbn_grabber_client_status_connected {
+      MultitouchDeviceManager.shared.setCallback(true)
+    } else {
+      MultitouchDeviceManager.shared.setCallback(false)
+    }
 
     staticSetGrabberVariable(FingerCount(), false)
-  }
-}
-
-private func disable() {
-  Task { @MainActor in
-    MultitouchDeviceManager.shared.setCallback(false)
   }
 }
 
@@ -141,10 +141,9 @@ final class MEGrabberClient {
       }
     }
 
-    libkrbn_enable_grabber_client(
-      enable,
-      disable,
-      disable)
+    libkrbn_enable_grabber_client()
+    libkrbn_register_grabber_client_status_changed_callback(callback)
+    callback()
   }
 
   @MainActor

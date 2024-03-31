@@ -1,14 +1,14 @@
 import SwiftUI
 
-private func enable() {
-  Task { @MainActor in
-    LibKrbn.GrabberClient.shared.enabled = true
-  }
-}
+private func callback() {
+  let status = libkrbn_grabber_client_get_status()
 
-private func disable() {
   Task { @MainActor in
-    LibKrbn.GrabberClient.shared.enabled = false
+    if status == libkrbn_grabber_client_status_connected {
+      LibKrbn.GrabberClient.shared.enabled = true
+    } else {
+      LibKrbn.GrabberClient.shared.enabled = false
+    }
   }
 }
 
@@ -19,10 +19,9 @@ extension LibKrbn {
     @Published public fileprivate(set) var enabled = false
 
     private init() {
-      libkrbn_enable_grabber_client(
-        enable,
-        disable,
-        disable)
+      libkrbn_enable_grabber_client()
+      libkrbn_register_grabber_client_status_changed_callback(callback)
+      callback()
     }
 
     public func setAppIcon(_ number: Int32) {
