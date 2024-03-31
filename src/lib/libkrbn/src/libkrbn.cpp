@@ -269,14 +269,14 @@ void libkrbn_get_simple_modification_json_string(char* buffer, size_t length, in
 //
 
 void libkrbn_enable_version_monitor(void) {
-  if (libkrbn_components_manager_) {
-    libkrbn_components_manager_->enable_version_monitor();
+  if (auto manager = libkrbn_components_manager_) {
+    manager->enable_version_monitor();
   }
 }
 
 void libkrbn_disable_version_monitor(void) {
-  if (libkrbn_components_manager_) {
-    libkrbn_components_manager_->disable_version_monitor();
+  if (auto manager = libkrbn_components_manager_) {
+    manager->disable_version_monitor();
   }
 }
 
@@ -317,14 +317,14 @@ bool libkrbn_get_version(char* buffer,
 //
 
 void libkrbn_enable_configuration_monitor(void) {
-  if (libkrbn_components_manager_) {
-    libkrbn_components_manager_->enable_configuration_monitor();
+  if (auto manager = libkrbn_components_manager_) {
+    manager->enable_configuration_monitor();
   }
 }
 
 void libkrbn_disable_configuration_monitor(void) {
-  if (libkrbn_components_manager_) {
-    libkrbn_components_manager_->disable_configuration_monitor();
+  if (auto manager = libkrbn_components_manager_) {
+    manager->disable_configuration_monitor();
   }
 }
 
@@ -349,28 +349,28 @@ void libkrbn_unregister_core_configuration_updated_callback(libkrbn_core_configu
 //
 
 void libkrbn_enable_complex_modifications_assets_manager(void) {
-  if (libkrbn_components_manager_) {
-    libkrbn_components_manager_->enable_complex_modifications_assets_manager();
+  if (auto manager = libkrbn_components_manager_) {
+    manager->enable_complex_modifications_assets_manager();
   }
 }
 
 void libkrbn_disable_complex_modifications_assets_manager(void) {
-  if (libkrbn_components_manager_) {
-    libkrbn_components_manager_->disable_complex_modifications_assets_manager();
+  if (auto manager = libkrbn_components_manager_) {
+    manager->disable_complex_modifications_assets_manager();
   }
 }
 
 void libkrbn_complex_modifications_assets_manager_reload(void) {
-  if (libkrbn_components_manager_) {
-    if (auto m = libkrbn_components_manager_->get_complex_modifications_assets_manager()) {
+  if (auto manager = libkrbn_components_manager_) {
+    if (auto m = manager->get_complex_modifications_assets_manager()) {
       m->reload();
     }
   }
 }
 
 size_t libkrbn_complex_modifications_assets_manager_get_files_size(void) {
-  if (libkrbn_components_manager_) {
-    if (auto m = libkrbn_components_manager_->get_complex_modifications_assets_manager()) {
+  if (auto manager = libkrbn_components_manager_) {
+    if (auto m = manager->get_complex_modifications_assets_manager()) {
       return m->get_files_size();
     }
   }
@@ -384,8 +384,8 @@ bool libkrbn_complex_modifications_assets_manager_get_file_title(size_t index,
     buffer[0] = '\0';
   }
 
-  if (libkrbn_components_manager_) {
-    if (auto m = libkrbn_components_manager_->get_complex_modifications_assets_manager()) {
+  if (auto manager = libkrbn_components_manager_) {
+    if (auto m = manager->get_complex_modifications_assets_manager()) {
       strlcpy(buffer, m->get_file_title(index), length);
       return true;
     }
@@ -395,8 +395,8 @@ bool libkrbn_complex_modifications_assets_manager_get_file_title(size_t index,
 }
 
 time_t libkrbn_complex_modifications_assets_manager_get_file_last_write_time(size_t index) {
-  if (libkrbn_components_manager_) {
-    if (auto m = libkrbn_components_manager_->get_complex_modifications_assets_manager()) {
+  if (auto manager = libkrbn_components_manager_) {
+    if (auto m = manager->get_complex_modifications_assets_manager()) {
       return m->get_file_last_write_time(index);
     }
   }
@@ -404,8 +404,8 @@ time_t libkrbn_complex_modifications_assets_manager_get_file_last_write_time(siz
 }
 
 size_t libkrbn_complex_modifications_assets_manager_get_rules_size(size_t file_index) {
-  if (libkrbn_components_manager_) {
-    if (auto m = libkrbn_components_manager_->get_complex_modifications_assets_manager()) {
+  if (auto manager = libkrbn_components_manager_) {
+    if (auto m = manager->get_complex_modifications_assets_manager()) {
       return m->get_rules_size(file_index);
     }
   }
@@ -420,8 +420,8 @@ bool libkrbn_complex_modifications_assets_manager_get_rule_description(size_t fi
     buffer[0] = '\0';
   }
 
-  if (libkrbn_components_manager_) {
-    if (auto m = libkrbn_components_manager_->get_complex_modifications_assets_manager()) {
+  if (auto manager = libkrbn_components_manager_) {
+    if (auto m = manager->get_complex_modifications_assets_manager()) {
       strlcpy(buffer, m->get_rule_description(file_index, index), length);
       return true;
     }
@@ -432,9 +432,9 @@ bool libkrbn_complex_modifications_assets_manager_get_rule_description(size_t fi
 
 void libkrbn_complex_modifications_assets_manager_add_rule_to_core_configuration_selected_profile(size_t file_index,
                                                                                                   size_t index) {
-  if (libkrbn_components_manager_) {
-    if (auto m = libkrbn_components_manager_->get_complex_modifications_assets_manager()) {
-      if (auto c = libkrbn_components_manager_->get_current_core_configuration()) {
+  if (auto manager = libkrbn_components_manager_) {
+    if (auto m = manager->get_complex_modifications_assets_manager()) {
+      if (auto c = manager->get_current_core_configuration()) {
         m->add_rule_to_core_configuration_selected_profile(file_index,
                                                            index,
                                                            *c);
@@ -444,8 +444,8 @@ void libkrbn_complex_modifications_assets_manager_add_rule_to_core_configuration
 }
 
 bool libkrbn_complex_modifications_assets_manager_user_file(size_t index) {
-  if (libkrbn_components_manager_) {
-    if (auto m = libkrbn_components_manager_->get_complex_modifications_assets_manager()) {
+  if (auto manager = libkrbn_components_manager_) {
+    if (auto m = manager->get_complex_modifications_assets_manager()) {
       return m->user_file(index);
     }
   }
@@ -453,8 +453,8 @@ bool libkrbn_complex_modifications_assets_manager_user_file(size_t index) {
 }
 
 void libkrbn_complex_modifications_assets_manager_erase_file(size_t index) {
-  if (libkrbn_components_manager_) {
-    if (auto m = libkrbn_components_manager_->get_complex_modifications_assets_manager()) {
+  if (auto manager = libkrbn_components_manager_) {
+    if (auto m = manager->get_complex_modifications_assets_manager()) {
       return m->erase_file(index);
     }
   }
@@ -465,14 +465,14 @@ void libkrbn_complex_modifications_assets_manager_erase_file(size_t index) {
 //
 
 void libkrbn_enable_system_preferences_monitor(void) {
-  if (libkrbn_components_manager_) {
-    libkrbn_components_manager_->enable_system_preferences_monitor();
+  if (auto manager = libkrbn_components_manager_) {
+    manager->enable_system_preferences_monitor();
   }
 }
 
 void libkrbn_disable_system_preferences_monitor(void) {
-  if (libkrbn_components_manager_) {
-    libkrbn_components_manager_->disable_system_preferences_monitor();
+  if (auto manager = libkrbn_components_manager_) {
+    manager->disable_system_preferences_monitor();
   }
 }
 
@@ -526,14 +526,14 @@ int32_t libkrbn_system_preferences_properties_get_keyboard_type(uint64_t country
 //
 
 void libkrbn_enable_connected_devices_monitor(void) {
-  if (libkrbn_components_manager_) {
-    libkrbn_components_manager_->enable_connected_devices_monitor();
+  if (auto manager = libkrbn_components_manager_) {
+    manager->enable_connected_devices_monitor();
   }
 }
 
 void libkrbn_disable_connected_devices_monitor(void) {
-  if (libkrbn_components_manager_) {
-    libkrbn_components_manager_->disable_connected_devices_monitor();
+  if (auto manager = libkrbn_components_manager_) {
+    manager->disable_connected_devices_monitor();
   }
 }
 
@@ -559,15 +559,15 @@ void libkrbn_unregister_connected_devices_updated_callback(libkrbn_connected_dev
 
 void libkrbn_enable_observer_state_json_file_monitor(libkrbn_file_monitor_callback callback,
                                                      void* refcon) {
-  if (libkrbn_components_manager_) {
-    libkrbn_components_manager_->enable_observer_state_json_file_monitor(callback,
-                                                                         refcon);
+  if (auto manager = libkrbn_components_manager_) {
+    manager->enable_observer_state_json_file_monitor(callback,
+                                                     refcon);
   }
 }
 
 void libkrbn_disable_observer_state_json_file_monitor(void) {
-  if (libkrbn_components_manager_) {
-    libkrbn_components_manager_->disable_observer_state_json_file_monitor();
+  if (auto manager = libkrbn_components_manager_) {
+    manager->disable_observer_state_json_file_monitor();
   }
 }
 
@@ -577,15 +577,15 @@ void libkrbn_disable_observer_state_json_file_monitor(void) {
 
 void libkrbn_enable_grabber_state_json_file_monitor(libkrbn_file_monitor_callback callback,
                                                     void* refcon) {
-  if (libkrbn_components_manager_) {
-    libkrbn_components_manager_->enable_grabber_state_json_file_monitor(callback,
-                                                                        refcon);
+  if (auto manager = libkrbn_components_manager_) {
+    manager->enable_grabber_state_json_file_monitor(callback,
+                                                    refcon);
   }
 }
 
 void libkrbn_disable_grabber_state_json_file_monitor(void) {
-  if (libkrbn_components_manager_) {
-    libkrbn_components_manager_->disable_grabber_state_json_file_monitor();
+  if (auto manager = libkrbn_components_manager_) {
+    manager->disable_grabber_state_json_file_monitor();
   }
 }
 
@@ -595,15 +595,15 @@ void libkrbn_disable_grabber_state_json_file_monitor(void) {
 
 void libkrbn_enable_device_details_json_file_monitor(libkrbn_file_monitor_callback callback,
                                                      void* refcon) {
-  if (libkrbn_components_manager_) {
-    libkrbn_components_manager_->enable_device_details_json_file_monitor(callback,
-                                                                         refcon);
+  if (auto manager = libkrbn_components_manager_) {
+    manager->enable_device_details_json_file_monitor(callback,
+                                                     refcon);
   }
 }
 
 void libkrbn_disable_device_details_json_file_monitor(void) {
-  if (libkrbn_components_manager_) {
-    libkrbn_components_manager_->disable_device_details_json_file_monitor();
+  if (auto manager = libkrbn_components_manager_) {
+    manager->disable_device_details_json_file_monitor();
   }
 }
 
@@ -613,15 +613,15 @@ void libkrbn_disable_device_details_json_file_monitor(void) {
 
 void libkrbn_enable_manipulator_environment_json_file_monitor(libkrbn_file_monitor_callback callback,
                                                               void* refcon) {
-  if (libkrbn_components_manager_) {
-    libkrbn_components_manager_->enable_manipulator_environment_json_file_monitor(callback,
-                                                                                  refcon);
+  if (auto manager = libkrbn_components_manager_) {
+    manager->enable_manipulator_environment_json_file_monitor(callback,
+                                                              refcon);
   }
 }
 
 void libkrbn_disable_manipulator_environment_json_file_monitor(void) {
-  if (libkrbn_components_manager_) {
-    libkrbn_components_manager_->disable_manipulator_environment_json_file_monitor();
+  if (auto manager = libkrbn_components_manager_) {
+    manager->disable_manipulator_environment_json_file_monitor();
   }
 }
 
@@ -631,15 +631,15 @@ void libkrbn_disable_manipulator_environment_json_file_monitor(void) {
 
 void libkrbn_enable_notification_message_json_file_monitor(libkrbn_file_monitor_callback callback,
                                                            void* refcon) {
-  if (libkrbn_components_manager_) {
-    libkrbn_components_manager_->enable_notification_message_json_file_monitor(callback,
-                                                                               refcon);
+  if (auto manager = libkrbn_components_manager_) {
+    manager->enable_notification_message_json_file_monitor(callback,
+                                                           refcon);
   }
 }
 
 void libkrbn_disable_notification_message_json_file_monitor(void) {
-  if (libkrbn_components_manager_) {
-    libkrbn_components_manager_->disable_notification_message_json_file_monitor();
+  if (auto manager = libkrbn_components_manager_) {
+    manager->disable_notification_message_json_file_monitor();
   }
 }
 
@@ -667,14 +667,14 @@ bool libkrbn_get_notification_message_body(char* buffer,
 //
 
 void libkrbn_enable_frontmost_application_monitor(void) {
-  if (libkrbn_components_manager_) {
-    libkrbn_components_manager_->enable_frontmost_application_monitor();
+  if (auto manager = libkrbn_components_manager_) {
+    manager->enable_frontmost_application_monitor();
   }
 }
 
 void libkrbn_disable_frontmost_application_monitor(void) {
-  if (libkrbn_components_manager_) {
-    libkrbn_components_manager_->disable_frontmost_application_monitor();
+  if (auto manager = libkrbn_components_manager_) {
+    manager->disable_frontmost_application_monitor();
   }
 }
 
@@ -798,45 +798,45 @@ bool libkrbn_hid_value_monitor_observed(void) {
 void libkrbn_enable_grabber_client(libkrbn_grabber_client_connected_callback connected_callback,
                                    libkrbn_grabber_client_connect_failed_callback connect_failed_callback,
                                    libkrbn_grabber_client_closed_callback closed_callback) {
-  if (libkrbn_components_manager_) {
-    libkrbn_components_manager_->enable_grabber_client(connected_callback,
-                                                       connect_failed_callback,
-                                                       closed_callback);
+  if (auto manager = libkrbn_components_manager_) {
+    manager->enable_grabber_client(connected_callback,
+                                   connect_failed_callback,
+                                   closed_callback);
   }
 }
 
 void libkrbn_disable_grabber_client(void) {
-  if (libkrbn_components_manager_) {
-    libkrbn_components_manager_->disable_grabber_client();
+  if (auto manager = libkrbn_components_manager_) {
+    manager->disable_grabber_client();
   }
 }
 
 void libkrbn_grabber_client_async_set_app_icon(int number) {
-  if (libkrbn_components_manager_) {
-    libkrbn_components_manager_->grabber_client_async_set_app_icon(number);
+  if (auto manager = libkrbn_components_manager_) {
+    manager->grabber_client_async_set_app_icon(number);
   }
 }
 
 void libkrbn_grabber_client_async_set_keyboard_type(uint64_t country_code, uint64_t keyboard_type) {
-  if (libkrbn_components_manager_) {
-    libkrbn_components_manager_->grabber_client_async_set_keyboard_type(
+  if (auto manager = libkrbn_components_manager_) {
+    manager->grabber_client_async_set_keyboard_type(
         pqrs::hid::country_code::value_t(country_code),
         pqrs::osx::iokit_keyboard_type::value_t(keyboard_type));
   }
 }
 
 void libkrbn_grabber_client_async_set_variable(const char* name, int value) {
-  if (libkrbn_components_manager_) {
+  if (auto manager = libkrbn_components_manager_) {
     if (name) {
-      libkrbn_components_manager_->grabber_client_async_set_variable(name, value);
+      manager->grabber_client_async_set_variable(name, value);
     }
   }
 }
 
 void libkrbn_grabber_client_sync_set_variable(const char* name, int value) {
-  if (libkrbn_components_manager_) {
+  if (auto manager = libkrbn_components_manager_) {
     if (name) {
-      libkrbn_components_manager_->grabber_client_sync_set_variable(name, value);
+      manager->grabber_client_sync_set_variable(name, value);
     }
   }
 }
