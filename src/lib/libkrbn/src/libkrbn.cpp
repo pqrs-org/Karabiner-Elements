@@ -723,14 +723,14 @@ bool libkrbn_get_frontmost_application(char* bundle_identifier_buffer,
 //
 
 void libkrbn_enable_log_monitor(void) {
-  if (libkrbn_components_manager_) {
-    libkrbn_components_manager_->enable_log_monitor();
+  if (auto manager = libkrbn_components_manager_) {
+    manager->enable_log_monitor();
   }
 }
 
 void libkrbn_disable_log_monitor(void) {
-  if (libkrbn_components_manager_) {
-    libkrbn_components_manager_->disable_log_monitor();
+  if (auto manager = libkrbn_components_manager_) {
+    manager->disable_log_monitor();
   }
 }
 
@@ -754,23 +754,39 @@ void libkrbn_unregister_log_messages_updated_callback(libkrbn_log_messages_updat
 // hid_value_monitor
 //
 
-void libkrbn_enable_hid_value_monitor(libkrbn_hid_value_monitor_callback callback,
-                                      void* refcon) {
-  if (libkrbn_components_manager_) {
-    libkrbn_components_manager_->enable_hid_value_monitor(callback,
-                                                          refcon);
+void libkrbn_enable_hid_value_monitor(void) {
+  if (auto manager = libkrbn_components_manager_) {
+    manager->enable_hid_value_monitor();
   }
 }
 
 void libkrbn_disable_hid_value_monitor(void) {
-  if (libkrbn_components_manager_) {
-    libkrbn_components_manager_->disable_hid_value_monitor();
+  if (auto manager = libkrbn_components_manager_) {
+    manager->disable_hid_value_monitor();
+  }
+}
+
+void libkrbn_register_hid_value_arrived_callback(libkrbn_hid_value_arrived callback) {
+  if (auto manager = libkrbn_components_manager_) {
+    if (auto m = manager->get_libkrbn_hid_value_monitor()) {
+      m->register_libkrbn_hid_value_arrived_callback(callback);
+    }
+  }
+}
+
+void libkrbn_unregister_hid_value_arrived_callback(libkrbn_hid_value_arrived callback) {
+  if (auto manager = libkrbn_components_manager_) {
+    if (auto m = manager->get_libkrbn_hid_value_monitor()) {
+      m->unregister_libkrbn_hid_value_arrived_callback(callback);
+    }
   }
 }
 
 bool libkrbn_hid_value_monitor_observed(void) {
-  if (libkrbn_components_manager_) {
-    return libkrbn_components_manager_->hid_value_monitor_observed();
+  if (auto manager = libkrbn_components_manager_) {
+    if (auto m = manager->get_libkrbn_hid_value_monitor()) {
+      return m->get_observed();
+    }
   }
   return false;
 }

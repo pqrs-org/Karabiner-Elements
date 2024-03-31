@@ -239,21 +239,16 @@ public:
   // hid_value_monitor_
   //
 
-  void enable_hid_value_monitor(libkrbn_hid_value_monitor_callback callback,
-                                void* refcon) {
-    hid_value_monitor_ = std::make_unique<libkrbn_hid_value_monitor>(callback,
-                                                                     refcon);
+  void enable_hid_value_monitor(void) {
+    hid_value_monitor_ = std::make_unique<libkrbn_hid_value_monitor>();
   }
 
   void disable_hid_value_monitor(void) {
     hid_value_monitor_ = nullptr;
   }
 
-  bool hid_value_monitor_observed(void) {
-    if (hid_value_monitor_) {
-      return hid_value_monitor_->get_observed();
-    }
-    return false;
+  std::shared_ptr<libkrbn_hid_value_monitor> get_libkrbn_hid_value_monitor(void) const {
+    return hid_value_monitor_;
   }
 
   //
@@ -310,6 +305,6 @@ private:
   std::unique_ptr<libkrbn_file_monitor> notification_message_json_file_monitor_;
   std::shared_ptr<libkrbn_frontmost_application_monitor> frontmost_application_monitor_;
   std::shared_ptr<libkrbn_log_monitor> log_monitor_;
-  std::unique_ptr<libkrbn_hid_value_monitor> hid_value_monitor_;
+  std::shared_ptr<libkrbn_hid_value_monitor> hid_value_monitor_;
   std::unique_ptr<libkrbn_grabber_client> grabber_client_;
 };

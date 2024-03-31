@@ -500,16 +500,18 @@ typedef enum {
   libkrbn_hid_value_event_type_single,
 } libkrbn_hid_value_event_type;
 
-typedef void (*libkrbn_hid_value_monitor_callback)(uint64_t device_id,
-                                                   int32_t usage_page,
-                                                   int32_t usage,
-                                                   int64_t logical_max,
-                                                   int64_t logical_min,
-                                                   int64_t integet_value,
-                                                   void* refcon);
-void libkrbn_enable_hid_value_monitor(libkrbn_hid_value_monitor_callback callback,
-                                      void* refcon);
+void libkrbn_enable_hid_value_monitor(void);
 void libkrbn_disable_hid_value_monitor(void);
+
+typedef void (*libkrbn_hid_value_arrived)(uint64_t device_id,
+                                          int32_t usage_page,
+                                          int32_t usage,
+                                          int64_t logical_max,
+                                          int64_t logical_min,
+                                          int64_t integet_value);
+void libkrbn_register_hid_value_arrived_callback(libkrbn_hid_value_arrived callback);
+void libkrbn_unregister_hid_value_arrived_callback(libkrbn_hid_value_arrived callback);
+
 bool libkrbn_hid_value_monitor_observed(void);
 
 //
