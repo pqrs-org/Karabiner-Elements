@@ -200,14 +200,16 @@ public:
   // frontmost_application_monitor_
   //
 
-  void enable_frontmost_application_monitor(libkrbn_frontmost_application_monitor_callback callback,
-                                            void* refcon) {
-    frontmost_application_monitor_ = std::make_unique<libkrbn_frontmost_application_monitor>(callback,
-                                                                                             refcon);
+  void enable_frontmost_application_monitor(void) {
+    frontmost_application_monitor_ = std::make_unique<libkrbn_frontmost_application_monitor>();
   }
 
   void disable_frontmost_application_monitor(void) {
     frontmost_application_monitor_ = nullptr;
+  }
+
+  std::shared_ptr<libkrbn_frontmost_application_monitor> get_libkrbn_frontmost_application_monitor(void) const {
+    return frontmost_application_monitor_;
   }
 
   //
@@ -306,7 +308,7 @@ private:
   std::unique_ptr<libkrbn_file_monitor> device_details_json_file_monitor_;
   std::unique_ptr<libkrbn_file_monitor> manipulator_environment_json_file_monitor_;
   std::unique_ptr<libkrbn_file_monitor> notification_message_json_file_monitor_;
-  std::unique_ptr<libkrbn_frontmost_application_monitor> frontmost_application_monitor_;
+  std::shared_ptr<libkrbn_frontmost_application_monitor> frontmost_application_monitor_;
   std::shared_ptr<libkrbn_log_monitor> log_monitor_;
   std::unique_ptr<libkrbn_hid_value_monitor> hid_value_monitor_;
   std::unique_ptr<libkrbn_grabber_client> grabber_client_;

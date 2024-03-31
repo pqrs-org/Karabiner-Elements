@@ -342,10 +342,10 @@ void libkrbn_complex_modifications_assets_manager_erase_file(size_t index);
 // libkrbn_configuration_monitor
 //
 
-typedef void (*libkrbn_core_configuration_updated)(void);
 void libkrbn_enable_configuration_monitor(void);
 void libkrbn_disable_configuration_monitor(void);
 
+typedef void (*libkrbn_core_configuration_updated)(void);
 void libkrbn_register_core_configuration_updated_callback(libkrbn_core_configuration_updated callback);
 void libkrbn_unregister_core_configuration_updated_callback(libkrbn_core_configuration_updated callback);
 
@@ -353,10 +353,10 @@ void libkrbn_unregister_core_configuration_updated_callback(libkrbn_core_configu
 // libkrbn_system_preferences_monitor
 //
 
-typedef void (*libkrbn_system_preferences_updated)(void);
 void libkrbn_enable_system_preferences_monitor(void);
 void libkrbn_disable_system_preferences_monitor(void);
 
+typedef void (*libkrbn_system_preferences_updated)(void);
 void libkrbn_register_system_preferences_updated_callback(libkrbn_system_preferences_updated callback);
 void libkrbn_unregister_system_preferences_updated_callback(libkrbn_system_preferences_updated callback);
 
@@ -392,10 +392,12 @@ bool libkrbn_connected_devices_get_is_built_in_trackpad(size_t index);
 bool libkrbn_connected_devices_get_is_built_in_touch_bar(size_t index);
 bool libkrbn_connected_devices_is_apple(size_t index);
 
-typedef void (*libkrbn_connected_devices_updated)(void);
+// connected_devices_monitor
+
 void libkrbn_enable_connected_devices_monitor(void);
 void libkrbn_disable_connected_devices_monitor(void);
 
+typedef void (*libkrbn_connected_devices_updated)(void);
 void libkrbn_register_connected_devices_updated_callback(libkrbn_connected_devices_updated callback);
 void libkrbn_unregister_connected_devices_updated_callback(libkrbn_connected_devices_updated callback);
 
@@ -403,10 +405,10 @@ void libkrbn_unregister_connected_devices_updated_callback(libkrbn_connected_dev
 // libkrbn_version_monitor
 //
 
-typedef void (*libkrbn_version_updated)(void);
 void libkrbn_enable_version_monitor(void);
 void libkrbn_disable_version_monitor(void);
 
+typedef void (*libkrbn_version_updated)(void);
 void libkrbn_register_version_updated_callback(libkrbn_version_updated callback);
 void libkrbn_unregister_version_updated_callback(libkrbn_version_updated callback);
 
@@ -457,21 +459,26 @@ bool libkrbn_get_notification_message_body(char* buffer,
 // libkrbn_frontmost_application_monitor
 //
 
-typedef void (*libkrbn_frontmost_application_monitor_callback)(const char* bundle_identifier,
-                                                               const char* file_path,
-                                                               void* refcon);
-void libkrbn_enable_frontmost_application_monitor(libkrbn_frontmost_application_monitor_callback callback,
-                                                  void* refcon);
+void libkrbn_enable_frontmost_application_monitor(void);
 void libkrbn_disable_frontmost_application_monitor(void);
+
+typedef void (*libkrbn_frontmost_application_changed)(void);
+void libkrbn_register_frontmost_application_changed_callback(libkrbn_frontmost_application_changed callback);
+void libkrbn_unregister_frontmost_application_changed_callback(libkrbn_frontmost_application_changed callback);
+
+bool libkrbn_get_frontmost_application(char* bundle_identifier_buffer,
+                                       size_t bundle_identifier_buffer_length,
+                                       char* file_path_buffer,
+                                       size_t file_path_buffer_length);
 
 //
 // libkrbn_log_monitor
 //
 
-typedef void (*libkrbn_log_messages_updated)(void);
 void libkrbn_enable_log_monitor(void);
 void libkrbn_disable_log_monitor(void);
 
+typedef void (*libkrbn_log_messages_updated)(void);
 void libkrbn_register_log_messages_updated_callback(libkrbn_log_messages_updated callback);
 void libkrbn_unregister_log_messages_updated_callback(libkrbn_log_messages_updated callback);
 

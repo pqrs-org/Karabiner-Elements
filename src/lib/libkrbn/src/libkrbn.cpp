@@ -666,11 +666,9 @@ bool libkrbn_get_notification_message_body(char* buffer,
 // frontmost_application_monitor
 //
 
-void libkrbn_enable_frontmost_application_monitor(libkrbn_frontmost_application_monitor_callback callback,
-                                                  void* refcon) {
+void libkrbn_enable_frontmost_application_monitor(void) {
   if (libkrbn_components_manager_) {
-    libkrbn_components_manager_->enable_frontmost_application_monitor(callback,
-                                                                      refcon);
+    libkrbn_components_manager_->enable_frontmost_application_monitor();
   }
 }
 
@@ -678,6 +676,46 @@ void libkrbn_disable_frontmost_application_monitor(void) {
   if (libkrbn_components_manager_) {
     libkrbn_components_manager_->disable_frontmost_application_monitor();
   }
+}
+
+void libkrbn_register_frontmost_application_changed_callback(libkrbn_frontmost_application_changed callback) {
+  if (auto manager = libkrbn_components_manager_) {
+    if (auto m = manager->get_libkrbn_frontmost_application_monitor()) {
+      m->register_libkrbn_frontmost_application_changed_callback(callback);
+    }
+  }
+}
+
+void libkrbn_unregister_frontmost_application_changed_callback(libkrbn_frontmost_application_changed callback) {
+  if (auto manager = libkrbn_components_manager_) {
+    if (auto m = manager->get_libkrbn_frontmost_application_monitor()) {
+      m->unregister_libkrbn_frontmost_application_changed_callback(callback);
+    }
+  }
+}
+
+bool libkrbn_get_frontmost_application(char* bundle_identifier_buffer,
+                                       size_t bundle_identifier_buffer_length,
+                                       char* file_path_buffer,
+                                       size_t file_path_buffer_length) {
+  if (bundle_identifier_buffer && bundle_identifier_buffer_length > 0) {
+    bundle_identifier_buffer[0] = '\0';
+  }
+  if (file_path_buffer && file_path_buffer_length > 0) {
+    file_path_buffer[0] = '\0';
+  }
+
+  if (auto manager = libkrbn_components_manager_) {
+    if (auto m = manager->get_libkrbn_frontmost_application_monitor()) {
+      if (auto a = m->get_application()) {
+        strlcpy(bundle_identifier_buffer, a->get_bundle_identifier().value_or("").c_str(), bundle_identifier_buffer_length);
+        strlcpy(file_path_buffer, a->get_file_path().value_or("").c_str(), file_path_buffer_length);
+        return true;
+      }
+    }
+  }
+
+  return false;
 }
 
 //
