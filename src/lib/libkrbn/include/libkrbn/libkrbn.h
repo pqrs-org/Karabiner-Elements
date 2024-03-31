@@ -494,12 +494,6 @@ uint64_t libkrbn_log_lines_get_date_number(const char* line);
 // libkrbn_hid_value_monitor
 //
 
-typedef enum {
-  libkrbn_hid_value_event_type_key_down,
-  libkrbn_hid_value_event_type_key_up,
-  libkrbn_hid_value_event_type_single,
-} libkrbn_hid_value_event_type;
-
 void libkrbn_enable_hid_value_monitor(void);
 void libkrbn_disable_hid_value_monitor(void);
 
@@ -518,14 +512,22 @@ bool libkrbn_hid_value_monitor_observed(void);
 // libkrbn_grabber_client
 //
 
-typedef void (*libkrbn_grabber_client_connected_callback)(void);
-typedef void (*libkrbn_grabber_client_connect_failed_callback)(void);
-typedef void (*libkrbn_grabber_client_closed_callback)(void);
+typedef enum {
+  libkrbn_grabber_client_status_none,
+  libkrbn_grabber_client_status_connected,
+  libkrbn_grabber_client_status_connect_failed,
+  libkrbn_grabber_client_status_closed,
+} libkrbn_grabber_client_status;
 
-void libkrbn_enable_grabber_client(libkrbn_grabber_client_connected_callback connected_callback,
-                                   libkrbn_grabber_client_connect_failed_callback connect_failed_callback,
-                                   libkrbn_grabber_client_closed_callback closed_callback);
+void libkrbn_enable_grabber_client(void);
 void libkrbn_disable_grabber_client(void);
+
+typedef void (*libkrbn_grabber_client_status_changed)(void);
+void libkrbn_register_grabber_client_status_changed_callback(libkrbn_grabber_client_status_changed callback);
+void libkrbn_unregister_grabber_client_status_changed_callback(libkrbn_grabber_client_status_changed callback);
+
+libkrbn_grabber_client_status libkrbn_grabber_client_get_status(void);
+
 void libkrbn_grabber_client_async_set_app_icon(int number);
 void libkrbn_grabber_client_async_set_keyboard_type(uint64_t country_code, uint64_t keyboard_type);
 void libkrbn_grabber_client_async_set_variable(const char* name, int value);

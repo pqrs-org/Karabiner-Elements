@@ -255,41 +255,16 @@ public:
   // grabber_client_
   //
 
-  void enable_grabber_client(libkrbn_grabber_client_connected_callback connected_callback,
-                             libkrbn_grabber_client_connect_failed_callback connect_failed_callback,
-                             libkrbn_grabber_client_closed_callback closed_callback) {
-    grabber_client_ = std::make_unique<libkrbn_grabber_client>(connected_callback,
-                                                               connect_failed_callback,
-                                                               closed_callback);
+  void enable_grabber_client(void) {
+    grabber_client_ = std::make_shared<libkrbn_grabber_client>();
   }
 
   void disable_grabber_client(void) {
     grabber_client_ = nullptr;
   }
 
-  void grabber_client_async_set_app_icon(int number) const {
-    if (grabber_client_) {
-      grabber_client_->async_set_app_icon(number);
-    }
-  }
-
-  void grabber_client_async_set_keyboard_type(pqrs::hid::country_code::value_t country_code,
-                                              pqrs::osx::iokit_keyboard_type::value_t keyboard_type) const {
-    if (grabber_client_) {
-      grabber_client_->async_set_keyboard_type(country_code, keyboard_type);
-    }
-  }
-
-  void grabber_client_async_set_variable(const std::string& name, int value) {
-    if (grabber_client_) {
-      grabber_client_->async_set_variable(name, value);
-    }
-  }
-
-  void grabber_client_sync_set_variable(const std::string& name, int value) {
-    if (grabber_client_) {
-      grabber_client_->sync_set_variable(name, value);
-    }
+  std::shared_ptr<libkrbn_grabber_client> get_libkrbn_grabber_client(void) const {
+    return grabber_client_;
   }
 
 private:
@@ -306,5 +281,5 @@ private:
   std::shared_ptr<libkrbn_frontmost_application_monitor> frontmost_application_monitor_;
   std::shared_ptr<libkrbn_log_monitor> log_monitor_;
   std::shared_ptr<libkrbn_hid_value_monitor> hid_value_monitor_;
-  std::unique_ptr<libkrbn_grabber_client> grabber_client_;
+  std::shared_ptr<libkrbn_grabber_client> grabber_client_;
 };

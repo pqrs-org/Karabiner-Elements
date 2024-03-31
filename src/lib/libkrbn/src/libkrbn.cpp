@@ -795,13 +795,9 @@ bool libkrbn_hid_value_monitor_observed(void) {
 // grabber_client
 //
 
-void libkrbn_enable_grabber_client(libkrbn_grabber_client_connected_callback connected_callback,
-                                   libkrbn_grabber_client_connect_failed_callback connect_failed_callback,
-                                   libkrbn_grabber_client_closed_callback closed_callback) {
+void libkrbn_enable_grabber_client(void) {
   if (auto manager = libkrbn_components_manager_) {
-    manager->enable_grabber_client(connected_callback,
-                                   connect_failed_callback,
-                                   closed_callback);
+    manager->enable_grabber_client();
   }
 }
 
@@ -811,32 +807,66 @@ void libkrbn_disable_grabber_client(void) {
   }
 }
 
+void libkrbn_register_grabber_client_status_changed_callback(libkrbn_grabber_client_status_changed callback) {
+  if (auto manager = libkrbn_components_manager_) {
+    if (auto c = manager->get_libkrbn_grabber_client()) {
+      c->register_libkrbn_grabber_client_status_changed_callback(callback);
+    }
+  }
+}
+
+void libkrbn_unregister_grabber_client_status_changed_callback(libkrbn_grabber_client_status_changed callback) {
+  if (auto manager = libkrbn_components_manager_) {
+    if (auto c = manager->get_libkrbn_grabber_client()) {
+      c->unregister_libkrbn_grabber_client_status_changed_callback(callback);
+    }
+  }
+}
+
+libkrbn_grabber_client_status libkrbn_grabber_client_get_status(void) {
+  if (auto manager = libkrbn_components_manager_) {
+    if (auto c = manager->get_libkrbn_grabber_client()) {
+      return c->get_status();
+    }
+  }
+
+  return libkrbn_grabber_client_status_none;
+}
+
 void libkrbn_grabber_client_async_set_app_icon(int number) {
   if (auto manager = libkrbn_components_manager_) {
-    manager->grabber_client_async_set_app_icon(number);
+    if (auto c = manager->get_libkrbn_grabber_client()) {
+      c->async_set_app_icon(number);
+    }
   }
 }
 
 void libkrbn_grabber_client_async_set_keyboard_type(uint64_t country_code, uint64_t keyboard_type) {
   if (auto manager = libkrbn_components_manager_) {
-    manager->grabber_client_async_set_keyboard_type(
-        pqrs::hid::country_code::value_t(country_code),
-        pqrs::osx::iokit_keyboard_type::value_t(keyboard_type));
+    if (auto c = manager->get_libkrbn_grabber_client()) {
+      c->async_set_keyboard_type(
+          pqrs::hid::country_code::value_t(country_code),
+          pqrs::osx::iokit_keyboard_type::value_t(keyboard_type));
+    }
   }
 }
 
 void libkrbn_grabber_client_async_set_variable(const char* name, int value) {
   if (auto manager = libkrbn_components_manager_) {
-    if (name) {
-      manager->grabber_client_async_set_variable(name, value);
+    if (auto c = manager->get_libkrbn_grabber_client()) {
+      if (name) {
+        c->async_set_variable(name, value);
+      }
     }
   }
 }
 
 void libkrbn_grabber_client_sync_set_variable(const char* name, int value) {
   if (auto manager = libkrbn_components_manager_) {
-    if (name) {
-      manager->grabber_client_sync_set_variable(name, value);
+    if (auto c = manager->get_libkrbn_grabber_client()) {
+      if (name) {
+        c->sync_set_variable(name, value);
+      }
     }
   }
 }
