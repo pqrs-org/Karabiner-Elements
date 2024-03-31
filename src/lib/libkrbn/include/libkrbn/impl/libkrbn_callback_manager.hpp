@@ -10,6 +10,10 @@ public:
   libkrbn_callback_manager(void) {
   }
 
+  const std::vector<T>& get_callbacks(void) const {
+    return callbacks_;
+  }
+
   void register_callback(T callback) {
     callbacks_.push_back(callback);
   }
@@ -21,12 +25,6 @@ public:
                                       return c == callback;
                                     }),
                      std::end(callbacks_));
-  }
-
-  void trigger(void) {
-    for (const auto& callback : callbacks_) {
-      callback();
-    }
   }
 
 private:

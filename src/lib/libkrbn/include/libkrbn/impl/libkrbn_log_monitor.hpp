@@ -30,7 +30,9 @@ public:
     monitor_->log_file_updated.connect([this](auto&& lines) {
       lines_ = lines;
 
-      callback_manager_.trigger();
+      for (const auto& c : callback_manager_.get_callbacks()) {
+        c();
+      }
     });
 
     monitor_->async_start(std::chrono::milliseconds(1000));

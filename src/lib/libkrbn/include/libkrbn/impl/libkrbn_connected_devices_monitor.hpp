@@ -19,7 +19,9 @@ public:
     monitor_->connected_devices_updated.connect([this, wait](auto&& weak_connected_devices) {
       weak_connected_devices_ = weak_connected_devices;
 
-      callback_manager_.trigger();
+      for (const auto& c : callback_manager_.get_callbacks()) {
+        c();
+      }
 
       wait->notify();
     });

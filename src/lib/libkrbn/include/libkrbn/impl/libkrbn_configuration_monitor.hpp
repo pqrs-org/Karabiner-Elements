@@ -19,7 +19,9 @@ public:
     monitor_->core_configuration_updated.connect([this, wait](auto&& weak_core_configuration) {
       weak_core_configuration_ = weak_core_configuration;
 
-      callback_manager_.trigger();
+      for (const auto& c : callback_manager_.get_callbacks()) {
+        c();
+      }
 
       wait->notify();
     });

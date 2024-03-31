@@ -15,7 +15,9 @@ public:
     monitor_->changed.connect([this](auto&& version) {
       version_ = version;
 
-      callback_manager_.trigger();
+      for (const auto& c : callback_manager_.get_callbacks()) {
+        c();
+      }
     });
 
     monitor_->async_start();

@@ -18,7 +18,9 @@ public:
     monitor_->system_preferences_changed.connect([this, wait](auto&& properties_ptr) {
       weak_system_preferences_properties_ = properties_ptr;
 
-      callback_manager_.trigger();
+      for (const auto& c : callback_manager_.get_callbacks()) {
+        c();
+      }
 
       wait->notify();
     });
