@@ -28,6 +28,20 @@ void system_preferences_updated_callback(void) {
   }
 }
 
+void frontmost_application_changed_callback(void) {
+  std::cout << __func__ << std::endl;
+
+  char bundle_identifier_buffer[1024];
+  char file_path_buffer[1024];
+  if (libkrbn_get_frontmost_application(bundle_identifier_buffer,
+                                        sizeof(bundle_identifier_buffer),
+                                        file_path_buffer,
+                                        sizeof(file_path_buffer))) {
+    std::cout << "  bundle_identifier: " << bundle_identifier_buffer << std::endl;
+    std::cout << "  file_path: " << file_path_buffer << std::endl;
+  }
+}
+
 void connected_devices_updated_callback(void) {
   std::cout << __func__ << std::endl;
 }
@@ -48,6 +62,10 @@ int main(int argc, const char* argv[]) {
   libkrbn_enable_connected_devices_monitor();
   libkrbn_register_connected_devices_updated_callback(connected_devices_updated_callback);
   connected_devices_updated_callback();
+
+  libkrbn_enable_frontmost_application_monitor();
+  libkrbn_register_frontmost_application_changed_callback(frontmost_application_changed_callback);
+  frontmost_application_changed_callback();
 
   char buffer[32 * 1024];
 

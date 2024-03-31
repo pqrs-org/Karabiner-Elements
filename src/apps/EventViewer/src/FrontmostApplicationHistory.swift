@@ -1,24 +1,27 @@
 import SwiftUI
 
-private func callback(
-  _ bundleIdentifier: UnsafePointer<Int8>?,
-  _ filePath: UnsafePointer<Int8>?,
-  _ context: UnsafeMutableRawPointer?
-) {
-  if bundleIdentifier == nil { return }
-  if filePath == nil { return }
+private func callback() {
+  var bundleIdentifierBuffer = [Int8](repeating: 0, count: 1024)
+  var filePathBuffer = [Int8](repeating: 0, count: 1024)
 
-  let identifier = String(cString: bundleIdentifier!)
-  let path = String(cString: filePath!)
+  if libkrbn_get_frontmost_application(
+    &bundleIdentifierBuffer,
+    bundleIdentifierBuffer.count,
+    &filePathBuffer,
+    filePathBuffer.count)
+  {
+    let bundleIdentifier = String(cString: bundleIdentifierBuffer)
+    let filePath = String(cString: filePathBuffer)
 
-  if identifier == "org.pqrs.Karabiner-EventViewer" { return }
+    if bundleIdentifier == "org.pqrs.Karabiner-EventViewer" { return }
 
-  Task { @MainActor in
-    let e = FrontmostApplicationEntry()
-    e.bundleIdentifier = identifier
-    e.filePath = path
+    Task { @MainActor in
+      let e = FrontmostApplicationEntry()
+      e.bundleIdentifier = bundleIdentifier
+      e.filePath = filePath
 
-    FrontmostApplicationHistory.shared.append(e)
+      FrontmostApplicationHistory.shared.append(e)
+    }
   }
 }
 
@@ -49,7 +52,8 @@ public class FrontmostApplicationHistory: ObservableObject {
   @Published var entries: [FrontmostApplicationEntry] = []
 
   private init() {
-    libkrbn_enable_frontmost_application_monitor(callback, nil)
+    libkrbn_enable_frontmost_application_monitor()
+    libkrbn_register_frontmost_application_changed_callback(callback)
   }
 
   deinit {
