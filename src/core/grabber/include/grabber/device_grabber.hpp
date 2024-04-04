@@ -911,7 +911,10 @@ private:
 
     if (auto m = find_probable_stuck_events_manager(entry->get_device_id())) {
       if (auto event = m->find_probable_stuck_event()) {
-        auto message = fmt::format("{0} is ignored temporarily until {1} is pressed again.",
+        auto message = fmt::format("Probable stuck key detected! "
+                                   "{0} is ignored temporarily until {1} is pressed again. "
+                                   "Key may have been held when keyboard was grabbed. "
+                                   "Is the keyboard reconnecting while in use?",
                                    entry->get_device_name(),
                                    nlohmann::json(*event).dump());
         logger_unique_filter_.warn(message);
@@ -919,7 +922,8 @@ private:
         if (notification_message_manager_) {
           notification_message_manager_->async_set_device_ungrabbable_temporarily_message(
               entry->get_device_id(),
-              fmt::format("{0} is ignored temporarily until {1} is pressed again.",
+              fmt::format("Probable stuck key detected! "
+                          "{0} is ignored temporarily until {1} is pressed again.",
                           entry->get_device_short_name(),
                           nlohmann::json(*event).dump()));
         }
