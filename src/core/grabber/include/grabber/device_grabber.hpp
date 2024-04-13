@@ -922,8 +922,10 @@ private:
         if (notification_message_manager_) {
           notification_message_manager_->async_set_device_ungrabbable_temporarily_message(
               entry->get_device_id(),
-              fmt::format("Probable stuck key detected! "
-                          "{0} is ignored temporarily until {1} is pressed again.",
+              fmt::format("Probable stuck key detected!\n\n"
+                          "{0} is ignored temporarily until {1} is pressed again.\n\n"
+                          "Key may have been held when keyboard was grabbed. "
+                          "Is the keyboard reconnecting while in use?",
                           entry->get_device_short_name(),
                           nlohmann::json(*event).dump()));
         }

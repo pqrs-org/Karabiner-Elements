@@ -5,7 +5,7 @@ struct MainView: View {
   @State var opacity = 1.0
 
   var body: some View {
-    HStack(alignment: .center) {
+    HStack(alignment: .top) {
       Image(decorative: "app")
         .resizable()
         .frame(width: 48.0, height: 48.0)
@@ -13,7 +13,9 @@ struct MainView: View {
       Text(notificationMessage.text)
         .font(.body)
         .multilineTextAlignment(.leading)
-        .frame(width: 340.0, height: 52.0, alignment: .leading)
+        .fixedSize(horizontal: false, vertical: true)
+        .padding(4.0)
+        .frame(width: 340.0, alignment: .leading)
     }
     .background(
       RoundedRectangle(cornerRadius: 12)
