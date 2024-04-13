@@ -6,9 +6,10 @@
     -   Added the ability to duplicate and reorder profiles.
     -   Added the ability to restart Karabiner-Elements from the menu.
 -   ⚡️ Improvements
+    -   Improved "{device} is ignored temporarily until {key_code} is pressed again" message for to make it more understandable. (Thanks to @adamnovak)
+    -   Support `al_consumer_control_configuration` key, used as the Music key. (Thanks to @kambala-decapitator)
     -   Improved behaviour when using the gamepad stick as a pointing device.
     -   Improved `to_if_alone` behavior to use the modifier flags of the time the key is pressed, when sending events.
-    -   Support `al_consumer_control_configuration` key, used as the Music key. (Thanks to @kambala-decapitator)
 
 ## Karabiner-Elements 14.13.0
 
