@@ -18,7 +18,7 @@ private func callback(
   }
 }
 
-public class NotificationWindowManager {
+public class NotificationWindowManager: NSObject {
   static let shared = NotificationWindowManager()
 
   private struct ScreenWindow {
@@ -28,7 +28,9 @@ public class NotificationWindowManager {
 
   private var screenWindows: [ScreenWindow] = []
 
-  init() {
+  override public init() {
+    super.init()
+
     NotificationCenter.default.addObserver(
       forName: NSApplication.didChangeScreenParametersNotification,
       object: nil,
@@ -89,6 +91,7 @@ public class NotificationWindowManager {
       screenWindow.mainWindow.ignoresMouseEvents = true
       screenWindow.mainWindow.collectionBehavior.insert(.canJoinAllSpaces)
       screenWindow.mainWindow.collectionBehavior.insert(.ignoresCycle)
+      screenWindow.mainWindow.delegate = self
       // screenWindow.mainWindow.collectionBehavior.insert(.stationary)
 
       //
@@ -110,9 +113,12 @@ public class NotificationWindowManager {
       screenWindows.append(screenWindow)
     }
 
-    //
-    // Update window frame
-    //
+    updateWindowsFrameOrigin()
+    updateWindowsVisibility()
+  }
+
+  func updateWindowsFrameOrigin() {
+    let screens = NSScreen.screens
 
     for (i, screenWindow) in screenWindows.enumerated() {
       var screenFrame = NSRect.zero
@@ -128,14 +134,13 @@ public class NotificationWindowManager {
         screenWindow.closeButtonWindow.setFrame(
           NSRect(
             x: screenWindow.mainWindow.frame.origin.x - 8,
-            y: screenWindow.mainWindow.frame.origin.y + 36,
+            y: screenWindow.mainWindow.frame.origin.y + screenWindow.mainWindow.frame.size.height
+              - 16,
             width: CGFloat(24.0),
             height: CGFloat(24.0)),
           display: false)
       }
     }
-
-    updateWindowsVisibility()
   }
 
   func updateWindowsVisibility() {
@@ -151,5 +156,11 @@ public class NotificationWindowManager {
         screenWindow.closeButtonWindow.orderFront(self)
       }
     }
+  }
+}
+
+extension NotificationWindowManager: NSWindowDelegate {
+  public func windowDidResize(_ notification: Notification) {
+    updateWindowsFrameOrigin()
   }
 }
