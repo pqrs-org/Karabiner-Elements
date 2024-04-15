@@ -416,44 +416,21 @@ bool libkrbn_get_version(char* buffer,
                          size_t length);
 
 //
-// libkrbn_file_monitor
+// libkrbn_file_monitors
 //
 
-typedef void (*libkrbn_file_monitor_callback)(const char* file_path,
-                                              void* refcon);
+void libkrbn_enable_file_monitors(void);
+void libkrbn_disable_file_monitors(void);
 
-// libkrbn_observer_state_json_file_monitor
+typedef void (*libkrbn_file_updated)(void);
+void libkrbn_register_file_updated_callback(const char* file_path, libkrbn_file_updated callback);
+void libkrbn_unregister_file_updated_callback(const char* file_path, libkrbn_file_updated callback);
 
-void libkrbn_enable_observer_state_json_file_monitor(libkrbn_file_monitor_callback callback,
-                                                     void* refcon);
-void libkrbn_disable_observer_state_json_file_monitor(void);
-
-// libkrbn_grabber_state_json_file_monitor
-
-void libkrbn_enable_grabber_state_json_file_monitor(libkrbn_file_monitor_callback callback,
-                                                    void* refcon);
-void libkrbn_disable_grabber_state_json_file_monitor(void);
-
-// libkrbn_device_details_json_file_monitor
-
-void libkrbn_enable_device_details_json_file_monitor(libkrbn_file_monitor_callback callback,
-                                                     void* refcon);
-void libkrbn_disable_device_details_json_file_monitor(void);
-
-// libkrbn_manipulator_environment_json_file_monitor
-
-void libkrbn_enable_manipulator_environment_json_file_monitor(libkrbn_file_monitor_callback callback,
-                                                              void* refcon);
-void libkrbn_disable_manipulator_environment_json_file_monitor(void);
-
-// libkrbn_notification_message_json_file_monitor
-
-void libkrbn_enable_notification_message_json_file_monitor(libkrbn_file_monitor_callback callback,
-                                                           void* refcon);
-void libkrbn_disable_notification_message_json_file_monitor(void);
-
-bool libkrbn_get_notification_message_body(char* buffer,
-                                           size_t length);
+void libkrbn_get_device_details_json_file_path(char* buffer, size_t length);
+void libkrbn_get_grabber_state_json_file_path(char* buffer, size_t length);
+void libkrbn_get_manipulator_environment_json_file_path(char* buffer, size_t length);
+void libkrbn_get_notification_message_json_file_path(char* buffer, size_t length);
+void libkrbn_get_observer_state_json_file_path(char* buffer, size_t length);
 
 //
 // libkrbn_frontmost_application_monitor

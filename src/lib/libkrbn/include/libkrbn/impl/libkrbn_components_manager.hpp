@@ -3,7 +3,7 @@
 #include "libkrbn/impl/libkrbn_complex_modifications_assets_manager.hpp"
 #include "libkrbn/impl/libkrbn_configuration_monitor.hpp"
 #include "libkrbn/impl/libkrbn_connected_devices_monitor.hpp"
-#include "libkrbn/impl/libkrbn_file_monitor.hpp"
+#include "libkrbn/impl/libkrbn_file_monitors.hpp"
 #include "libkrbn/impl/libkrbn_frontmost_application_monitor.hpp"
 #include "libkrbn/impl/libkrbn_grabber_client.hpp"
 #include "libkrbn/impl/libkrbn_hid_value_monitor.hpp"
@@ -18,7 +18,9 @@ public:
   //
 
   void enable_version_monitor(void) {
-    version_monitor_ = std::make_shared<libkrbn_version_monitor>();
+    if (!version_monitor_) {
+      version_monitor_ = std::make_shared<libkrbn_version_monitor>();
+    }
   }
 
   void disable_version_monitor(void) {
@@ -41,7 +43,9 @@ public:
   //
 
   void enable_configuration_monitor(void) {
-    configuration_monitor_ = std::make_shared<libkrbn_configuration_monitor>();
+    if (!configuration_monitor_) {
+      configuration_monitor_ = std::make_shared<libkrbn_configuration_monitor>();
+    }
   }
 
   void disable_configuration_monitor(void) {
@@ -64,7 +68,9 @@ public:
   //
 
   void enable_complex_modifications_assets_manager(void) {
-    complex_modifications_assets_manager_ = std::make_unique<libkrbn_complex_modifications_assets_manager>();
+    if (!complex_modifications_assets_manager_) {
+      complex_modifications_assets_manager_ = std::make_unique<libkrbn_complex_modifications_assets_manager>();
+    }
   }
 
   void disable_complex_modifications_assets_manager(void) {
@@ -80,7 +86,9 @@ public:
   //
 
   void enable_system_preferences_monitor(void) {
-    system_preferences_monitor_ = std::make_shared<libkrbn_system_preferences_monitor>();
+    if (!system_preferences_monitor_) {
+      system_preferences_monitor_ = std::make_shared<libkrbn_system_preferences_monitor>();
+    }
   }
 
   void disable_system_preferences_monitor(void) {
@@ -103,7 +111,9 @@ public:
   //
 
   void enable_connected_devices_monitor(void) {
-    connected_devices_monitor_ = std::make_shared<libkrbn_connected_devices_monitor>();
+    if (!connected_devices_monitor_) {
+      connected_devices_monitor_ = std::make_shared<libkrbn_connected_devices_monitor>();
+    }
   }
 
   void disable_connected_devices_monitor(void) {
@@ -122,78 +132,21 @@ public:
   }
 
   //
-  // observer_state_json_file_monitor
+  // file_monitors_
   //
 
-  void enable_observer_state_json_file_monitor(libkrbn_file_monitor_callback callback,
-                                               void* refcon) {
-    observer_state_json_file_monitor_ = std::make_unique<libkrbn_file_monitor>(krbn::constants::get_observer_state_json_file_path(),
-                                                                               callback,
-                                                                               refcon);
+  void enable_file_monitors(void) {
+    if (!file_monitors_) {
+      file_monitors_ = std::make_shared<libkrbn_file_monitors>();
+    }
   }
 
-  void disable_observer_state_json_file_monitor(void) {
-    observer_state_json_file_monitor_ = nullptr;
+  void disable_file_monitors(void) {
+    file_monitors_ = nullptr;
   }
 
-  //
-  // grabber_state_json_file_monitor
-  //
-
-  void enable_grabber_state_json_file_monitor(libkrbn_file_monitor_callback callback,
-                                              void* refcon) {
-    grabber_state_json_file_monitor_ = std::make_unique<libkrbn_file_monitor>(krbn::constants::get_grabber_state_json_file_path(),
-                                                                              callback,
-                                                                              refcon);
-  }
-
-  void disable_grabber_state_json_file_monitor(void) {
-    grabber_state_json_file_monitor_ = nullptr;
-  }
-
-  //
-  // device_details_json_file_monitor
-  //
-
-  void enable_device_details_json_file_monitor(libkrbn_file_monitor_callback callback,
-                                               void* refcon) {
-    device_details_json_file_monitor_ = std::make_unique<libkrbn_file_monitor>(krbn::constants::get_device_details_json_file_path(),
-                                                                               callback,
-                                                                               refcon);
-  }
-
-  void disable_device_details_json_file_monitor(void) {
-    device_details_json_file_monitor_ = nullptr;
-  }
-
-  //
-  // manipulator_environment_json_file_monitor
-  //
-
-  void enable_manipulator_environment_json_file_monitor(libkrbn_file_monitor_callback callback,
-                                                        void* refcon) {
-    manipulator_environment_json_file_monitor_ = std::make_unique<libkrbn_file_monitor>(krbn::constants::get_manipulator_environment_json_file_path(),
-                                                                                        callback,
-                                                                                        refcon);
-  }
-
-  void disable_manipulator_environment_json_file_monitor(void) {
-    manipulator_environment_json_file_monitor_ = nullptr;
-  }
-
-  //
-  // notification_message_json_file_monitor
-  //
-
-  void enable_notification_message_json_file_monitor(libkrbn_file_monitor_callback callback,
-                                                     void* refcon) {
-    notification_message_json_file_monitor_ = std::make_unique<libkrbn_file_monitor>(krbn::constants::get_notification_message_file_path(),
-                                                                                     callback,
-                                                                                     refcon);
-  }
-
-  void disable_notification_message_json_file_monitor(void) {
-    notification_message_json_file_monitor_ = nullptr;
+  std::shared_ptr<libkrbn_file_monitors> get_libkrbn_file_monitors(void) const {
+    return file_monitors_;
   }
 
   //
@@ -201,7 +154,9 @@ public:
   //
 
   void enable_frontmost_application_monitor(void) {
-    frontmost_application_monitor_ = std::make_unique<libkrbn_frontmost_application_monitor>();
+    if (!frontmost_application_monitor_) {
+      frontmost_application_monitor_ = std::make_unique<libkrbn_frontmost_application_monitor>();
+    }
   }
 
   void disable_frontmost_application_monitor(void) {
@@ -217,7 +172,9 @@ public:
   //
 
   void enable_log_monitor(void) {
-    log_monitor_ = std::make_shared<libkrbn_log_monitor>();
+    if (!log_monitor_) {
+      log_monitor_ = std::make_shared<libkrbn_log_monitor>();
+    }
   }
 
   void disable_log_monitor(void) {
@@ -240,7 +197,9 @@ public:
   //
 
   void enable_hid_value_monitor(void) {
-    hid_value_monitor_ = std::make_unique<libkrbn_hid_value_monitor>();
+    if (!hid_value_monitor_) {
+      hid_value_monitor_ = std::make_unique<libkrbn_hid_value_monitor>();
+    }
   }
 
   void disable_hid_value_monitor(void) {
@@ -256,7 +215,9 @@ public:
   //
 
   void enable_grabber_client(void) {
-    grabber_client_ = std::make_shared<libkrbn_grabber_client>();
+    if (!grabber_client_) {
+      grabber_client_ = std::make_shared<libkrbn_grabber_client>();
+    }
   }
 
   void disable_grabber_client(void) {
@@ -273,11 +234,7 @@ private:
   std::shared_ptr<libkrbn_complex_modifications_assets_manager> complex_modifications_assets_manager_;
   std::shared_ptr<libkrbn_system_preferences_monitor> system_preferences_monitor_;
   std::shared_ptr<libkrbn_connected_devices_monitor> connected_devices_monitor_;
-  std::unique_ptr<libkrbn_file_monitor> observer_state_json_file_monitor_;
-  std::unique_ptr<libkrbn_file_monitor> grabber_state_json_file_monitor_;
-  std::unique_ptr<libkrbn_file_monitor> device_details_json_file_monitor_;
-  std::unique_ptr<libkrbn_file_monitor> manipulator_environment_json_file_monitor_;
-  std::unique_ptr<libkrbn_file_monitor> notification_message_json_file_monitor_;
+  std::shared_ptr<libkrbn_file_monitors> file_monitors_;
   std::shared_ptr<libkrbn_frontmost_application_monitor> frontmost_application_monitor_;
   std::shared_ptr<libkrbn_log_monitor> log_monitor_;
   std::shared_ptr<libkrbn_hid_value_monitor> hid_value_monitor_;

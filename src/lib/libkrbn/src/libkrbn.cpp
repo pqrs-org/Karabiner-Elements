@@ -554,112 +554,55 @@ void libkrbn_unregister_connected_devices_updated_callback(libkrbn_connected_dev
 }
 
 //
-// observer_state_json_file_monitor
+// file_monitor
 //
 
-void libkrbn_enable_observer_state_json_file_monitor(libkrbn_file_monitor_callback callback,
-                                                     void* refcon) {
+void libkrbn_enable_file_monitors(void) {
   if (auto manager = libkrbn_components_manager_) {
-    manager->enable_observer_state_json_file_monitor(callback,
-                                                     refcon);
+    manager->enable_file_monitors();
   }
 }
 
-void libkrbn_disable_observer_state_json_file_monitor(void) {
+void libkrbn_disable_file_monitors(void) {
   if (auto manager = libkrbn_components_manager_) {
-    manager->disable_observer_state_json_file_monitor();
+    manager->disable_file_monitors();
   }
 }
 
-//
-// grabber_state_json_file_monitor
-//
-
-void libkrbn_enable_grabber_state_json_file_monitor(libkrbn_file_monitor_callback callback,
-                                                    void* refcon) {
+void libkrbn_register_file_updated_callback(const char* file_path, libkrbn_file_updated callback) {
   if (auto manager = libkrbn_components_manager_) {
-    manager->enable_grabber_state_json_file_monitor(callback,
-                                                    refcon);
-  }
-}
-
-void libkrbn_disable_grabber_state_json_file_monitor(void) {
-  if (auto manager = libkrbn_components_manager_) {
-    manager->disable_grabber_state_json_file_monitor();
-  }
-}
-
-//
-// device_details_json_file_monitor
-//
-
-void libkrbn_enable_device_details_json_file_monitor(libkrbn_file_monitor_callback callback,
-                                                     void* refcon) {
-  if (auto manager = libkrbn_components_manager_) {
-    manager->enable_device_details_json_file_monitor(callback,
-                                                     refcon);
-  }
-}
-
-void libkrbn_disable_device_details_json_file_monitor(void) {
-  if (auto manager = libkrbn_components_manager_) {
-    manager->disable_device_details_json_file_monitor();
-  }
-}
-
-//
-// manipulator_environment_json_file_monitor
-//
-
-void libkrbn_enable_manipulator_environment_json_file_monitor(libkrbn_file_monitor_callback callback,
-                                                              void* refcon) {
-  if (auto manager = libkrbn_components_manager_) {
-    manager->enable_manipulator_environment_json_file_monitor(callback,
-                                                              refcon);
-  }
-}
-
-void libkrbn_disable_manipulator_environment_json_file_monitor(void) {
-  if (auto manager = libkrbn_components_manager_) {
-    manager->disable_manipulator_environment_json_file_monitor();
-  }
-}
-
-//
-// notification_message_json_file_monitor
-//
-
-void libkrbn_enable_notification_message_json_file_monitor(libkrbn_file_monitor_callback callback,
-                                                           void* refcon) {
-  if (auto manager = libkrbn_components_manager_) {
-    manager->enable_notification_message_json_file_monitor(callback,
-                                                           refcon);
-  }
-}
-
-void libkrbn_disable_notification_message_json_file_monitor(void) {
-  if (auto manager = libkrbn_components_manager_) {
-    manager->disable_notification_message_json_file_monitor();
-  }
-}
-
-bool libkrbn_get_notification_message_body(char* buffer,
-                                           size_t length) {
-  if (buffer && length > 0) {
-    buffer[0] = '\0';
-  }
-
-  std::ifstream input(krbn::constants::get_notification_message_file_path());
-  if (input) {
-    try {
-      auto json = krbn::json_utility::parse_jsonc(input);
-      strlcpy(buffer, json["body"].get<std::string>().c_str(), length);
-      return true;
-    } catch (const std::exception& e) {
+    if (auto m = manager->get_libkrbn_file_monitors()) {
+      m->register_libkrbn_file_updated_callback(file_path, callback);
     }
   }
+}
 
-  return false;
+void libkrbn_unregister_file_updated_callback(const char* file_path, libkrbn_file_updated callback) {
+  if (auto manager = libkrbn_components_manager_) {
+    if (auto m = manager->get_libkrbn_file_monitors()) {
+      m->unregister_libkrbn_file_updated_callback(file_path, callback);
+    }
+  }
+}
+
+void libkrbn_get_device_details_json_file_path(char* buffer, size_t length) {
+  strlcpy(buffer, krbn::constants::get_device_details_json_file_path().c_str(), length);
+}
+
+void libkrbn_get_grabber_state_json_file_path(char* buffer, size_t length) {
+  strlcpy(buffer, krbn::constants::get_grabber_state_json_file_path().c_str(), length);
+}
+
+void libkrbn_get_manipulator_environment_json_file_path(char* buffer, size_t length) {
+  strlcpy(buffer, krbn::constants::get_manipulator_environment_json_file_path().c_str(), length);
+}
+
+void libkrbn_get_notification_message_json_file_path(char* buffer, size_t length) {
+  strlcpy(buffer, krbn::constants::get_notification_message_file_path().c_str(), length);
+}
+
+void libkrbn_get_observer_state_json_file_path(char* buffer, size_t length) {
+  strlcpy(buffer, krbn::constants::get_observer_state_json_file_path().c_str(), length);
 }
 
 //
