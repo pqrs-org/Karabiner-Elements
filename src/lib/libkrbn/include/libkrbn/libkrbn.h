@@ -24,6 +24,8 @@ void libkrbn_set_logging_level_info(void);
 void libkrbn_initialize(void);
 void libkrbn_terminate(void);
 
+void libkrbn_enqueue_callback(void (*callback)(void));
+
 void libkrbn_get_distributed_notification_observed_object(char* buffer,
                                                           size_t length);
 void libkrbn_get_distributed_notification_console_user_server_is_disabled(char* buffer,

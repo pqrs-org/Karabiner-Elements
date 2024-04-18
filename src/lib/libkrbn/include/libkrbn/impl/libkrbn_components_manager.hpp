@@ -3,6 +3,7 @@
 #include "libkrbn/impl/libkrbn_complex_modifications_assets_manager.hpp"
 #include "libkrbn/impl/libkrbn_configuration_monitor.hpp"
 #include "libkrbn/impl/libkrbn_connected_devices_monitor.hpp"
+#include "libkrbn/impl/libkrbn_dispatcher_client.hpp"
 #include "libkrbn/impl/libkrbn_file_monitors.hpp"
 #include "libkrbn/impl/libkrbn_frontmost_application_monitor.hpp"
 #include "libkrbn/impl/libkrbn_grabber_client.hpp"
@@ -13,6 +14,14 @@
 
 class libkrbn_components_manager {
 public:
+  libkrbn_components_manager(void) {
+    dispatcher_client_ = std::make_shared<libkrbn_dispatcher_client>();
+  }
+
+  void enqueue_callback(void (*callback)(void)) {
+    dispatcher_client_->enqueue(callback);
+  }
+
   //
   // version_monitor_
   //
@@ -229,6 +238,7 @@ public:
   }
 
 private:
+  std::shared_ptr<libkrbn_dispatcher_client> dispatcher_client_;
   std::shared_ptr<libkrbn_version_monitor> version_monitor_;
   std::shared_ptr<libkrbn_configuration_monitor> configuration_monitor_;
   std::shared_ptr<libkrbn_complex_modifications_assets_manager> complex_modifications_assets_manager_;

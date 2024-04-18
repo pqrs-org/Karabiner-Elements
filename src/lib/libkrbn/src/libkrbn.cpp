@@ -57,6 +57,12 @@ void libkrbn_terminate(void) {
   scoped_dispatcher_manager_ = nullptr;
 }
 
+void libkrbn_enqueue_callback(void (*callback)(void)) {
+  if (auto manager = libkrbn_components_manager_) {
+    manager->enqueue_callback(callback);
+  }
+}
+
 void libkrbn_get_distributed_notification_observed_object(char* buffer,
                                                           size_t length) {
   strlcpy(buffer, krbn::constants::get_distributed_notification_observed_object(), length);
