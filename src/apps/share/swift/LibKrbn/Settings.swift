@@ -19,6 +19,7 @@ extension LibKrbn {
 
     static let didConfigurationLoad = Notification.Name("didConfigurationLoad")
 
+    private var watching = false
     private var didSetEnabled = false
     private var saveDebouncer = Debouncer(delay: 0.2)
 
@@ -29,10 +30,20 @@ extension LibKrbn {
       didSetEnabled = true
     }
 
-    func start() {
+    // We register the callback in the `watch` method rather than in `init`.
+    // If libkrbn_register_*_callback is called within init, there is a risk that `init` could be invoked again from the callback through `shared` before the initial `init` completes.
+
+    public func watch() {
+      if watching {
+        return
+      }
+      watching = true
+
       libkrbn_enable_configuration_monitor()
       libkrbn_register_core_configuration_updated_callback(callback)
-      callback()
+      libkrbn_enqueue_callback(callback)
+
+      ConnectedDevices.shared.watch()
 
       NotificationCenter.default.addObserver(
         forName: ConnectedDevices.didConnectedDevicesUpdate,

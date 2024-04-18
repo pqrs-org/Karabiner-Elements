@@ -86,7 +86,7 @@ public class LogMessages: ObservableObject {
 
     libkrbn_enable_log_monitor()
     libkrbn_register_log_messages_updated_callback(callback)
-    callback()
+    libkrbn_enqueue_callback(callback)
 
     //
     // Create timer

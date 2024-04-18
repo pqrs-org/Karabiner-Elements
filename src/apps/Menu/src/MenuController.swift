@@ -35,7 +35,7 @@ public class MenuController: NSObject, NSMenuDelegate {
       self.setStatusItemTitle()
     }
 
-    LibKrbn.Settings.shared.start()
+    LibKrbn.Settings.shared.watch()
   }
 
   func terminateIfHidden() {

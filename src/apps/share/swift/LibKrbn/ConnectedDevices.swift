@@ -13,12 +13,22 @@ extension LibKrbn {
     static let shared = ConnectedDevices()
     static let didConnectedDevicesUpdate = Notification.Name("didConnectedDevicesUpdate")
 
+    private var watching = false
+
     @Published var connectedDevices: [ConnectedDevice] = []
 
-    private init() {
+    // We register the callback in the `watch` method rather than in `init`.
+    // If libkrbn_register_*_callback is called within init, there is a risk that `init` could be invoked again from the callback through `shared` before the initial `init` completes.
+
+    public func watch() {
+      if watching {
+        return
+      }
+      watching = true
+
       libkrbn_enable_connected_devices_monitor()
       libkrbn_register_connected_devices_updated_callback(callback)
-      callback()
+      libkrbn_enqueue_callback(callback)
     }
 
     public func update() {

@@ -27,7 +27,6 @@ public class AppDelegate: NSObject, NSApplicationDelegate {
 
     KarabinerAppHelper.shared.observeVersionUpdated()
     KarabinerAppHelper.shared.observeConsoleUserServerIsDisabledNotification()
-    LibKrbn.Settings.shared.start()
 
     NotificationCenter.default.addObserver(
       forName: Updater.didFindValidUpdate,
@@ -51,6 +50,18 @@ public class AppDelegate: NSObject, NSApplicationDelegate {
         NSApplication.shared.terminate(nil)
       }
     }
+
+    //
+    // Start components
+    //
+
+    _ = Doctor.shared
+
+    LibKrbn.ConnectedDevices.shared.watch()
+    LibKrbn.GrabberClient.shared.start()
+    LibKrbn.Settings.shared.watch()
+    StateJsonMonitor.shared.start()
+    SystemPreferences.shared.start()
 
     //
     // Run updater or open settings.
@@ -101,13 +112,6 @@ public class AppDelegate: NSObject, NSApplicationDelegate {
     window!.makeKeyAndOrderFront(self)
 
     NSApp.activate(ignoringOtherApps: true)
-
-    //
-    // Start components
-    //
-
-    _ = Doctor.shared
-    StateJsonMonitor.shared.start()
 
     //
     // launchctl
