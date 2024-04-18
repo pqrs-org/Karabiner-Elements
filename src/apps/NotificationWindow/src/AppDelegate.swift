@@ -9,7 +9,7 @@ public class AppDelegate: NSObject, NSApplicationDelegate {
 
     KarabinerAppHelper.shared.observeVersionUpdated()
 
-    NotificationWindowManager.shared.updateWindowsVisibility()
+    NotificationWindowManager.shared.start()
   }
 
   public func applicationWillTerminate(_: Notification) {

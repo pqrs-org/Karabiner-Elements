@@ -1,25 +1,34 @@
 import SwiftUI
 
-private func callback(
-  _ filePath: UnsafePointer<Int8>?,
-  _ context: UnsafeMutableRawPointer?
-) {
+private struct NotificationMessageJson: Codable {
+  var body: String?
+}
 
-  Task { @MainActor in
-    var buffer = [Int8](repeating: 0, count: 32 * 1024)
-    var body = ""
+private func callback() {
+  var body = ""
 
-    if libkrbn_get_notification_message_body(&buffer, buffer.count) {
-      body = String(cString: buffer)
+  if let jsonData = try? Data(
+    contentsOf: URL(
+      fileURLWithPath: NotificationWindowManager.shared.notificationMessageJsonFilePath))
+  {
+    let decoder = JSONDecoder()
+    decoder.keyDecodingStrategy = .convertFromSnakeCase
+    if let message = try? decoder.decode(NotificationMessageJson.self, from: jsonData) {
+      body = message.body ?? ""
+      body = body.trimmingCharacters(in: .whitespacesAndNewlines)
     }
+  }
 
-    NotificationMessage.shared.text = body.trimmingCharacters(in: .whitespacesAndNewlines)
+  Task { @MainActor [body] in
+    NotificationMessage.shared.body = body
     NotificationWindowManager.shared.updateWindowsVisibility()
   }
 }
 
 public class NotificationWindowManager: NSObject {
   static let shared = NotificationWindowManager()
+
+  let notificationMessageJsonFilePath = LibKrbn.notificationMessageJsonFilePath()
 
   private struct ScreenWindow {
     var mainWindow: NSWindow
@@ -40,14 +49,29 @@ public class NotificationWindowManager: NSObject {
 
       self.updateWindows()
     }
-
-    updateWindows()
-
-    libkrbn_enable_notification_message_json_file_monitor(callback, nil)
   }
 
-  deinit {
-    libkrbn_disable_notification_message_json_file_monitor()
+  // We register the callback in the `start` method rather than in `init`.
+  // If libkrbn_register_*_callback is called within init, there is a risk that `init` could be invoked again from the callback through `shared` before the initial `init` completes.
+
+  public func start() {
+    libkrbn_enable_file_monitors()
+
+    libkrbn_register_file_updated_callback(
+      notificationMessageJsonFilePath.cString(using: .utf8),
+      callback)
+    libkrbn_enqueue_callback(callback)
+
+    updateWindows()
+    updateWindowsVisibility()
+  }
+
+  public func stop() {
+    libkrbn_unregister_file_updated_callback(
+      notificationMessageJsonFilePath.cString(using: .utf8),
+      callback)
+
+    // We don't call `libkrbn_disable_file_monitors` because the file monitors may be used elsewhere.
   }
 
   func updateWindows() {
@@ -144,7 +168,7 @@ public class NotificationWindowManager: NSObject {
   }
 
   func updateWindowsVisibility() {
-    let hide = NotificationMessage.shared.text.isEmpty
+    let hide = NotificationMessage.shared.body.isEmpty
     let screens = NSScreen.screens
 
     for (i, screenWindow) in screenWindows.enumerated() {

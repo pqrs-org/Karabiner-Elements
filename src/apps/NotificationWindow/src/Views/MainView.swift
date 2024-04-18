@@ -10,7 +10,7 @@ struct MainView: View {
         .resizable()
         .frame(width: 48.0, height: 48.0)
         .padding(.leading, 2.0)
-      Text(notificationMessage.text)
+      Text(notificationMessage.body)
         .font(.body)
         .multilineTextAlignment(.leading)
         .fixedSize(horizontal: false, vertical: true)
@@ -29,8 +29,6 @@ struct MainView: View {
 }
 
 struct MainView_Previews: PreviewProvider {
-  @State private static var text = "hello\nworld"
-
   static var previews: some View {
     Group {
       MainView()
