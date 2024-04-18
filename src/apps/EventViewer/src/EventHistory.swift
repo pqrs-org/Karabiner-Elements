@@ -208,12 +208,16 @@ public class EventHistory: ObservableObject {
   @Published var entries: [EventHistoryEntry] = []
   @Published var unknownEventEntries: [EventHistoryEntry] = []
 
-  private init() {
+  // We register the callback in the `start` method rather than in `init`.
+  // If libkrbn_register_*_callback is called within init, there is a risk that `init` could be invoked again from the callback through `shared` before the initial `init` completes.
+
+  public func start() {
     libkrbn_enable_hid_value_monitor()
+
     libkrbn_register_hid_value_arrived_callback(callback)
   }
 
-  deinit {
+  public func stop() {
     libkrbn_disable_hid_value_monitor()
   }
 

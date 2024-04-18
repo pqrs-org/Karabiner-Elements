@@ -1,11 +1,12 @@
 import SwiftUI
 
-private func callback(_ filePath: UnsafePointer<Int8>?, _ context: UnsafeMutableRawPointer?) {
-  if filePath == nil { return }
-
-  let path = String(cString: filePath!)
-
-  guard let text = try? String(contentsOfFile: path, encoding: .utf8) else { return }
+private func callback() {
+  guard
+    let text = try? String(
+      contentsOfFile: VariablesJsonString.shared.manipulatorEnvironmentJsonFilePath,
+      encoding: .utf8
+    )
+  else { return }
 
   Task { @MainActor in
     VariablesJsonString.shared.text = text
@@ -15,13 +16,27 @@ private func callback(_ filePath: UnsafePointer<Int8>?, _ context: UnsafeMutable
 public class VariablesJsonString: ObservableObject {
   public static let shared = VariablesJsonString()
 
+  let manipulatorEnvironmentJsonFilePath = LibKrbn.manipulatorEnvironmentJsonFilePath()
+
   @Published var text = ""
 
-  private init() {
-    libkrbn_enable_manipulator_environment_json_file_monitor(callback, nil)
+  // We register the callback in the `start` method rather than in `init`.
+  // If libkrbn_register_*_callback is called within init, there is a risk that `init` could be invoked again from the callback through `shared` before the initial `init` completes.
+
+  public func start() {
+    libkrbn_enable_file_monitors()
+
+    libkrbn_register_file_updated_callback(
+      manipulatorEnvironmentJsonFilePath.cString(using: .utf8),
+      callback)
+    libkrbn_enqueue_callback(callback)
   }
 
-  deinit {
-    libkrbn_disable_manipulator_environment_json_file_monitor()
+  public func stop() {
+    libkrbn_unregister_file_updated_callback(
+      manipulatorEnvironmentJsonFilePath.cString(using: .utf8),
+      callback)
+
+    // We don't call `libkrbn_disable_file_monitors` because the file monitors may be used elsewhere.
   }
 }

@@ -14,6 +14,7 @@ private func callback() {
     let filePath = String(cString: filePathBuffer)
 
     if bundleIdentifier == "org.pqrs.Karabiner-EventViewer" { return }
+    if bundleIdentifier == "" && filePath == "" { return }
 
     Task { @MainActor in
       let e = FrontmostApplicationEntry()
@@ -51,12 +52,17 @@ public class FrontmostApplicationHistory: ObservableObject {
 
   @Published var entries: [FrontmostApplicationEntry] = []
 
-  private init() {
+  // We register the callback in the `start` method rather than in `init`.
+  // If libkrbn_register_*_callback is called within init, there is a risk that `init` could be invoked again from the callback through `shared` before the initial `init` completes.
+
+  public func start() {
     libkrbn_enable_frontmost_application_monitor()
+
     libkrbn_register_frontmost_application_changed_callback(callback)
+    libkrbn_enqueue_callback(callback)
   }
 
-  deinit {
+  public func stop() {
     libkrbn_disable_frontmost_application_monitor()
   }
 

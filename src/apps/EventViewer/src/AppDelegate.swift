@@ -42,6 +42,11 @@ public class AppDelegate: NSObject, NSApplicationDelegate {
 
       self.setWindowProperty()
     }
+
+    DevicesJsonString.shared.start()
+    EventHistory.shared.start()
+    FrontmostApplicationHistory.shared.start()
+    VariablesJsonString.shared.start()
   }
 
   public func applicationWillTerminate(_: Notification) {
