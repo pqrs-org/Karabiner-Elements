@@ -111,19 +111,21 @@ private func staticSetGrabberVariable(_ count: FingerCount, _ sync: Bool) {
 }
 
 private func callback() {
-  let status = libkrbn_grabber_client_get_status()
-
-  Task { @MainActor in
+  Task {
     // sleep until devices are settled.
     try await Task.sleep(nanoseconds: NSEC_PER_SEC)
 
-    if status == libkrbn_grabber_client_status_connected {
-      MultitouchDeviceManager.shared.setCallback(true)
-    } else {
-      MultitouchDeviceManager.shared.setCallback(false)
-    }
+    Task { @MainActor in
+      let status = libkrbn_grabber_client_get_status()
 
-    staticSetGrabberVariable(FingerCount(), false)
+      if status == libkrbn_grabber_client_status_connected {
+        MultitouchDeviceManager.shared.setCallback(true)
+      } else {
+        MultitouchDeviceManager.shared.setCallback(false)
+      }
+
+      staticSetGrabberVariable(FingerCount(), false)
+    }
   }
 }
 
@@ -140,10 +142,16 @@ final class MEGrabberClient {
         staticSetGrabberVariable(FingerManager.shared.fingerCount, false)
       }
     }
+  }
 
+  // We register the callback in the `start` method rather than in `init`.
+  // If libkrbn_register_*_callback is called within init, there is a risk that `init` could be invoked again from the callback through `shared` before the initial `init` completes.
+
+  public func start() {
     libkrbn_enable_grabber_client()
+
     libkrbn_register_grabber_client_status_changed_callback(callback)
-    callback()
+    libkrbn_enqueue_callback(callback)
   }
 
   @MainActor

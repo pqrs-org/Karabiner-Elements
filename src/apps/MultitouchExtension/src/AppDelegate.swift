@@ -51,6 +51,7 @@ public class AppDelegate: NSObject, NSApplicationDelegate {
     //
 
     MEGrabberClient.shared.setGrabberVariable(FingerCount(), true)
+    MEGrabberClient.shared.start()
     MultitouchDeviceManager.shared.observeIONotification()
 
     //

@@ -30,6 +30,8 @@ public class AppDelegate: NSObject, NSApplicationDelegate {
     window!.contentView = NSHostingView(rootView: ContentView())
     window!.center()
     window!.makeKeyAndOrderFront(self)
+
+    EventObserver.shared.start()
   }
 
   public func applicationWillTerminate(_: Notification) {

@@ -28,6 +28,10 @@ void system_preferences_updated_callback(void) {
   }
 }
 
+void manipulator_environment_json_file_updated_callback(void) {
+  std::cout << __func__ << std::endl;
+}
+
 void frontmost_application_changed_callback(void) {
   std::cout << __func__ << std::endl;
 
@@ -50,6 +54,8 @@ auto global_wait = pqrs::make_thread_wait();
 } // namespace
 
 int main(int argc, const char* argv[]) {
+  char buffer[32 * 1024];
+
   libkrbn_initialize();
 
   signal(SIGINT, [](int) {
@@ -67,7 +73,9 @@ int main(int argc, const char* argv[]) {
   libkrbn_register_frontmost_application_changed_callback(frontmost_application_changed_callback);
   frontmost_application_changed_callback();
 
-  char buffer[32 * 1024];
+  libkrbn_enable_file_monitors();
+  libkrbn_get_manipulator_environment_json_file_path(buffer, sizeof(buffer));
+  libkrbn_register_file_updated_callback(buffer, manipulator_environment_json_file_updated_callback);
 
   {
     libkrbn_enable_complex_modifications_assets_manager();
@@ -121,10 +129,6 @@ int main(int argc, const char* argv[]) {
   libkrbn_enable_system_preferences_monitor();
   libkrbn_register_system_preferences_updated_callback(system_preferences_updated_callback);
   system_preferences_updated_callback();
-
-  if (libkrbn_get_notification_message_body(buffer, sizeof(buffer))) {
-    std::cout << "libkrbn_get_notification_message_body: " << buffer << std::endl;
-  }
 
   std::thread thread([] {
     global_wait->wait_notice();
