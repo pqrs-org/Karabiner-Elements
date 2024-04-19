@@ -10,6 +10,8 @@
     -   Support `al_consumer_control_configuration` key, used as the Music key. (Thanks to @kambala-decapitator)
     -   Improved behaviour when using the gamepad stick as a pointing device.
     -   Improved `to_if_alone` behavior to use the modifier flags of the time the key is pressed, when sending events.
+    -   Internal changes:
+        -   Improved the interface of libkrbn to minimize the use of unsafe pointers in Swift.
 
 ## Karabiner-Elements 14.13.0
 
