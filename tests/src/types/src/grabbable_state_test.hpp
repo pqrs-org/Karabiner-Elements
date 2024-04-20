@@ -31,7 +31,7 @@ void run_grabbable_state_test(void) {
                                              krbn::grabbable_state::state::ungrabbable_temporarily,
                                              krbn::absolute_time_point(2000));
       krbn::grabbable_state grabbable_state3(krbn::device_id(1234),
-                                             krbn::grabbable_state::state::device_error,
+                                             krbn::grabbable_state::state::ungrabbable_permanently,
                                              krbn::absolute_time_point(3000));
       expect(grabbable_state1 != grabbable_state2);
       expect(grabbable_state1.equals_except_time_stamp(grabbable_state2));
