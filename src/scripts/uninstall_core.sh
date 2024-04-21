@@ -7,12 +7,16 @@ export PATH
 # Unload before install
 #
 
-if [ /Library/LaunchDaemons/org.pqrs.karabiner.karabiner_kextd.plist ]; then
-    launchctl bootout system /Library/LaunchDaemons/org.pqrs.karabiner.karabiner_kextd.plist
-fi
-
 if [ /Library/LaunchDaemons/org.pqrs.karabiner.karabiner_grabber.plist ]; then
     launchctl bootout system /Library/LaunchDaemons/org.pqrs.karabiner.karabiner_grabber.plist
+fi
+
+#
+# Unload files which are installed in previous versions
+#
+
+if [ /Library/LaunchDaemons/org.pqrs.karabiner.karabiner_kextd.plist ]; then
+    launchctl bootout system /Library/LaunchDaemons/org.pqrs.karabiner.karabiner_kextd.plist
 fi
 
 if [ /Library/LaunchDaemons/org.pqrs.karabiner.karabiner_observer.plist ]; then
@@ -27,14 +31,11 @@ chflags nouchg,noschg /Applications/Karabiner-Elements.app
 chflags nouchg,noschg /Applications/Karabiner-EventViewer.app
 
 #
-# Uninstall
+# Remove files
 #
 
-rm -f '/Library/LaunchDaemons/org.pqrs.karabiner.karabiner_kextd.plist'
 rm -f '/Library/LaunchDaemons/org.pqrs.karabiner.karabiner_grabber.plist'
-rm -f '/Library/LaunchDaemons/org.pqrs.karabiner.karabiner_observer.plist'
 rm -f '/Library/LaunchAgents/org.pqrs.karabiner.agent.karabiner_grabber.plist'
-rm -f '/Library/LaunchAgents/org.pqrs.karabiner.agent.karabiner_observer.plist'
 rm -f '/Library/LaunchAgents/org.pqrs.karabiner.karabiner_console_user_server.plist'
 rm -f '/Library/LaunchAgents/org.pqrs.karabiner.karabiner_session_monitor.plist'
 rm -f '/Library/LaunchAgents/org.pqrs.karabiner.NotificationWindow.plist'
@@ -51,5 +52,13 @@ if [ -f '/Library/Application Support/org.pqrs/Karabiner-Elements/scripts/uninst
 
     kextcache -prune-staging
 fi
+
+#
+# Remove files which are installed in previous versions
+#
+
+rm -f '/Library/LaunchDaemons/org.pqrs.karabiner.karabiner_kextd.plist'
+rm -f '/Library/LaunchDaemons/org.pqrs.karabiner.karabiner_observer.plist'
+rm -f '/Library/LaunchAgents/org.pqrs.karabiner.agent.karabiner_observer.plist'
 
 exit 0
