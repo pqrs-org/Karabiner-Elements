@@ -155,17 +155,36 @@ public:
     return false;
   }
 
-  void async_start_queue_value_monitor(void) {
+  void async_start_queue_value_monitor(grabbable_state::state state) {
     auto options = kIOHIDOptionsTypeSeizeDevice;
-    if (event_origin_ == event_origin::observed_device) {
-      options = kIOHIDOptionsTypeNone;
+
+    switch (state) {
+      case grabbable_state::state::grabbable:
+        if (event_origin_ == event_origin::observed_device) {
+          options = kIOHIDOptionsTypeNone;
+        }
+        break;
+
+      case grabbable_state::state::ungrabbable_temporarily:
+        options = kIOHIDOptionsTypeNone;
+        break;
+
+      case grabbable_state::state::ungrabbable_permanently:
+      case grabbable_state::state::none:
+      case grabbable_state::state::end_:
+        return;
+    }
+
+    // Skip the process if the same options have already been processed.
+    if (hid_queue_value_monitor_async_start_options_ == options) {
+      return;
     }
 
     //
     // Stop if already started with different options.
     //
 
-    if (options != hid_queue_value_monitor_async_start_option_) {
+    if (options != hid_queue_value_monitor_async_start_options_) {
       async_stop_queue_value_monitor();
     }
 
@@ -179,10 +198,12 @@ public:
         hid_queue_value_monitor_async_start_called_ = true;
       }
 
-      hid_queue_value_monitor_async_start_option_ = options;
+      if (hid_queue_value_monitor_async_start_options_ != options) {
+        hid_queue_value_monitor_async_start_options_ = options;
 
-      hid_queue_value_monitor_->async_start(options,
-                                            std::chrono::milliseconds(1000));
+        hid_queue_value_monitor_->async_start(options,
+                                              std::chrono::milliseconds(1000));
+      }
     }
   }
 
@@ -194,7 +215,7 @@ public:
     }
   }
 
-  bool is_grabbed(absolute_time_point time_stamp) {
+  bool grabbed(absolute_time_point time_stamp) const {
     if (grabbed_) {
       if (grabbed_time_stamp_ <= time_stamp) {
         return true;
@@ -208,6 +229,14 @@ public:
           time_stamp <= ungrabbed_time_stamp_) {
         return true;
       }
+    }
+
+    return false;
+  }
+
+  bool seized(void) const {
+    if (auto options = hid_queue_value_monitor_async_start_options_) {
+      return *options & kIOHIDOptionsTypeSeizeDevice;
     }
 
     return false;
@@ -266,7 +295,7 @@ private:
 
   std::shared_ptr<pqrs::osx::iokit_hid_queue_value_monitor> hid_queue_value_monitor_;
   bool hid_queue_value_monitor_async_start_called_;
-  std::optional<IOOptionBits> hid_queue_value_monitor_async_start_option_;
+  std::optional<IOOptionBits> hid_queue_value_monitor_async_start_options_;
   bool first_value_arrived_;
 
   std::shared_ptr<hid_keyboard_caps_lock_led_state_manager> caps_lock_led_state_manager_;

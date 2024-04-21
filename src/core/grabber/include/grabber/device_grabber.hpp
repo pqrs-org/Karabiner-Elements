@@ -540,7 +540,7 @@ public:
       // `karabiner_observer` may catch input events
       // while the device is grabbed due to macOS event handling issue.
       // Thus, we have to ignore events manually while the device is grabbed.
-      if (!is_grabbed(device_id, time_stamp)) {
+      if (!grabbed(device_id, time_stamp)) {
         auto m = add_probable_stuck_events_manager(device_id);
 
         bool needs_regrab = m->update(event,
@@ -744,7 +744,7 @@ private:
                   : device_state::ungrabbed);
         }
 
-        if (!entry->get_disabled()) {
+        if (!entry->get_disabled() && entry->seized()) {
           event_queue::entry qe(e.get_device_id(),
                                 e.get_event_time_stamp(),
                                 e.get_event(),
@@ -832,10 +832,18 @@ private:
 
   // This method is executed in the shared dispatcher thread.
   void grab_device(std::shared_ptr<device_grabber_details::entry> entry) const {
-    if (make_grabbable_state(entry) == grabbable_state::state::grabbable) {
-      entry->async_start_queue_value_monitor();
-    } else {
-      entry->async_stop_queue_value_monitor();
+    auto state = make_grabbable_state(entry);
+    switch (state) {
+      case grabbable_state::state::grabbable:
+      case grabbable_state::state::ungrabbable_temporarily:
+        entry->async_start_queue_value_monitor(state);
+        break;
+
+      case grabbable_state::state::ungrabbable_permanently:
+      case grabbable_state::state::none:
+      case grabbable_state::state::end_:
+        entry->async_stop_queue_value_monitor();
+        break;
     }
   }
 
@@ -961,11 +969,11 @@ private:
     }
   }
 
-  bool is_grabbed(device_id device_id,
-                  absolute_time_point time_stamp) const {
+  bool grabbed(device_id device_id,
+               absolute_time_point time_stamp) const {
     auto it = entries_.find(device_id);
     if (it != std::end(entries_)) {
-      return it->second->is_grabbed(time_stamp);
+      return it->second->grabbed(time_stamp);
     }
     return false;
   }
