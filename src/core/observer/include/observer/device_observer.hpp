@@ -53,6 +53,10 @@ public:
 
     hid_manager_->device_matched.connect([this](auto&& registry_entry_id, auto&& device_ptr) {
       if (device_ptr) {
+        if (iokit_utility::is_karabiner_virtual_hid_device(*device_ptr)) {
+          return;
+        }
+
         iokit_utility::log_matching_device(registry_entry_id, *device_ptr);
 
         auto device_id = make_device_id(registry_entry_id);
@@ -66,41 +70,22 @@ public:
                                                                                                   *device_ptr);
         hid_queue_value_monitors_[device_id] = hid_queue_value_monitor;
 
-        if (iokit_utility::is_karabiner_virtual_hid_device(*device_ptr)) {
-          // Handle caps_lock_state_changed event only if the hid is Karabiner-DriverKit-VirtualHIDDevice.
-          hid_queue_value_monitor->values_arrived.connect([this, device_id, device_properties](auto&& values_ptr) {
-            auto event_queue = event_queue::utility::make_queue(device_properties,
-                                                                hid_queue_values_converter_.make_hid_values(device_id,
-                                                                                                            values_ptr),
-                                                                event_origin::observed_device);
-            for (const auto& e : event_queue->get_entries()) {
-              if (e.get_event().get_type() == event_queue::event::type::caps_lock_state_changed) {
-                if (auto client = grabber_client_.lock()) {
-                  if (auto state = e.get_event().get_integer_value()) {
-                    client->async_caps_lock_state_changed(*state);
-                  }
-                }
+        hid_queue_value_monitor->values_arrived.connect([this, device_id, device_properties](auto&& values_ptr) {
+          auto event_queue = event_queue::utility::make_queue(device_properties,
+                                                              hid_queue_values_converter_.make_hid_values(device_id,
+                                                                                                          values_ptr),
+                                                              event_origin::observed_device);
+          for (const auto& entry : event_queue->get_entries()) {
+            if (auto e = entry.get_event().template get_if<momentary_switch_event>()) {
+              if (auto client = grabber_client_.lock()) {
+                client->async_momentary_switch_event_arrived(device_id,
+                                                             *e,
+                                                             entry.get_event_type(),
+                                                             entry.get_event_time_stamp().get_time_stamp());
               }
             }
-          });
-        } else {
-          hid_queue_value_monitor->values_arrived.connect([this, device_id, device_properties](auto&& values_ptr) {
-            auto event_queue = event_queue::utility::make_queue(device_properties,
-                                                                hid_queue_values_converter_.make_hid_values(device_id,
-                                                                                                            values_ptr),
-                                                                event_origin::observed_device);
-            for (const auto& entry : event_queue->get_entries()) {
-              if (auto e = entry.get_event().template get_if<momentary_switch_event>()) {
-                if (auto client = grabber_client_.lock()) {
-                  client->async_momentary_switch_event_arrived(device_id,
-                                                               *e,
-                                                               entry.get_event_type(),
-                                                               entry.get_event_time_stamp().get_time_stamp());
-                }
-              }
-            }
-          });
-        }
+          }
+        });
 
         hid_queue_value_monitor->started.connect([this, device_id, device_name] {
           logger::get_logger()->info("{0} is observed.", device_name);

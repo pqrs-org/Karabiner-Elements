@@ -219,10 +219,6 @@ public:
       if (device_ptr) {
         auto device_id = make_device_id(registry_entry_id);
 
-        if (iokit_utility::is_karabiner_virtual_hid_device(*device_ptr)) {
-          return;
-        }
-
         //
         // Register device
         //
@@ -246,18 +242,32 @@ public:
             auto event_queue = event_queue::utility::make_queue(it->second->get_device_properties(),
                                                                 hid_values,
                                                                 it->second->get_event_origin());
-            event_queue = event_queue::utility::insert_device_keys_and_pointing_buttons_are_released_event(event_queue,
-                                                                                                           device_id,
-                                                                                                           it->second->get_pressed_keys_manager());
-            values_arrived(it->second, event_queue);
 
-            //
-            // game pad stick to pointing motion
-            //
+            if (it->second->is_karabiner_virtual_hid_device()) {
+              // Handle caps_lock_state_changed event only if the hid is Karabiner-DriverKit-VirtualHIDDevice.
+              for (const auto& e : event_queue->get_entries()) {
+                if (e.get_event().get_type() == event_queue::event::type::caps_lock_state_changed) {
+                  if (auto state = e.get_event().get_integer_value()) {
+                    last_caps_lock_state_ = *state;
+                    post_caps_lock_state_changed_event(*state);
+                    update_caps_lock_led();
+                  }
+                }
+              }
+            } else {
+              event_queue = event_queue::utility::insert_device_keys_and_pointing_buttons_are_released_event(event_queue,
+                                                                                                             device_id,
+                                                                                                             it->second->get_pressed_keys_manager());
+              values_arrived(it->second, event_queue);
 
-            game_pad_stick_converter_->convert(it->second->get_device_properties(),
-                                               hid_values,
-                                               it->second->get_event_origin());
+              //
+              // game pad stick to pointing motion
+              //
+
+              game_pad_stick_converter_->convert(it->second->get_device_properties(),
+                                                 hid_values,
+                                                 it->second->get_event_origin());
+            }
           }
         });
 
@@ -580,14 +590,6 @@ public:
     });
   }
 
-  void async_set_caps_lock_state(bool state) {
-    enqueue_to_dispatcher([this, state] {
-      last_caps_lock_state_ = state;
-      post_caps_lock_state_changed_event(state);
-      update_caps_lock_led();
-    });
-  }
-
   void async_set_system_preferences_properties(const pqrs::osx::system_preferences::properties& value) {
     enqueue_to_dispatcher([this, value] {
       system_preferences_properties_ = value;
@@ -732,6 +734,7 @@ private:
       }
 
       bool needs_regrab = false;
+      bool notify = false;
 
       for (const auto& e : event_queue->get_entries()) {
         if (auto ev = e.get_event().get_if<momentary_switch_event>()) {
@@ -754,6 +757,8 @@ private:
                                 e.get_state());
 
           merged_input_event_queue_->push_back_entry(qe);
+
+          notify = true;
         }
       }
 
@@ -761,8 +766,9 @@ private:
         grab_device(entry);
       }
 
-      krbn_notification_center::get_instance().enqueue_input_event_arrived(*this);
-      // manipulator_managers_connector_.log_events_sizes(logger::get_logger());
+      if (notify) {
+        krbn_notification_center::get_instance().enqueue_input_event_arrived(*this);
+      }
     }
   }
 

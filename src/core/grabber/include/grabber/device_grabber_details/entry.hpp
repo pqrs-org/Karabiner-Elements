@@ -172,6 +172,7 @@ public:
       case grabbable_state::state::ungrabbable_permanently:
       case grabbable_state::state::none:
       case grabbable_state::state::end_:
+        // Do not
         return;
     }
 
@@ -242,6 +243,14 @@ public:
     return false;
   }
 
+  bool is_karabiner_virtual_hid_device(void) const {
+    if (auto v = device_properties_.get_is_karabiner_virtual_hid_device()) {
+      return *v;
+    }
+
+    return false;
+  }
+
 private:
   bool is_ignored_device(void) const {
     if (auto c = core_configuration_.lock()) {
@@ -255,13 +264,17 @@ private:
   void update_event_origin(void) {
     auto old_event_origin = event_origin_;
 
-    if (disabled_) {
-      event_origin_ = event_origin::grabbed_device;
+    if (is_karabiner_virtual_hid_device()) {
+      event_origin_ = event_origin::observed_device;
     } else {
-      if (is_ignored_device()) {
-        event_origin_ = event_origin::observed_device;
-      } else {
+      if (disabled_) {
         event_origin_ = event_origin::grabbed_device;
+      } else {
+        if (is_ignored_device()) {
+          event_origin_ = event_origin::observed_device;
+        } else {
+          event_origin_ = event_origin::grabbed_device;
+        }
       }
     }
 
