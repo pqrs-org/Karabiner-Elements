@@ -135,19 +135,6 @@ public:
     });
   }
 
-  void async_observed_devices_updated(const std::unordered_set<device_id>& observed_devices) const {
-    enqueue_to_dispatcher([this, observed_devices] {
-      nlohmann::json json{
-          {"operation_type", operation_type::observed_devices_updated},
-          {"observed_devices", observed_devices},
-      };
-
-      if (client_) {
-        client_->async_send(nlohmann::json::to_msgpack(json));
-      }
-    });
-  }
-
   void async_connect_console_user_server(void) const {
     enqueue_to_dispatcher([this] {
       nlohmann::json json{

@@ -91,8 +91,6 @@ public:
           logger::get_logger()->info("{0} is observed.", device_name);
 
           observed_devices_.insert(device_id);
-
-          send_observed_devices();
         });
 
         hid_queue_value_monitor->error_occurred.connect([](auto&& message, auto&& kr) {
@@ -121,8 +119,6 @@ public:
       observed_devices_.erase(device_id);
 
       hat_switch_converter::get_global_hat_switch_converter()->erase_device(device_id);
-
-      send_observed_devices();
 
       async_rescan();
     });
@@ -159,19 +155,7 @@ public:
     });
   }
 
-  void async_send_observed_devices(void) const {
-    enqueue_to_dispatcher([this] {
-      send_observed_devices();
-    });
-  }
-
 private:
-  void send_observed_devices(void) const {
-    if (auto client = grabber_client_.lock()) {
-      client->async_observed_devices_updated(observed_devices_);
-    }
-  }
-
   std::weak_ptr<grabber_client> grabber_client_;
 
   std::unique_ptr<pqrs::osx::iokit_hid_manager> hid_manager_;

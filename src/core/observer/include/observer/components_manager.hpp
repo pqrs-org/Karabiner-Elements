@@ -38,7 +38,6 @@ public:
       version_monitor_->async_start();
 
       if (device_observer_) {
-        device_observer_->async_send_observed_devices();
         device_observer_->async_rescan();
       }
     });
