@@ -5,8 +5,6 @@
 namespace krbn {
 enum class operation_type : uint8_t {
   none,
-  // observer -> grabber
-  momentary_switch_event_arrived,
   // session_monitor -> grabber
   console_user_id_changed,
   // console_user_server -> grabber
@@ -29,7 +27,6 @@ NLOHMANN_JSON_SERIALIZE_ENUM(
     operation_type,
     {
         {operation_type::none, nullptr},
-        {operation_type::momentary_switch_event_arrived, "momentary_switch_event_arrived"},
         {operation_type::console_user_id_changed, "console_user_id_changed"},
         {operation_type::connect_console_user_server, "connect_console_user_server"},
         {operation_type::system_preferences_updated, "system_preferences_updated"},

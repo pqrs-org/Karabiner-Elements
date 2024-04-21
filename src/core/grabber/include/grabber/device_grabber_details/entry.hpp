@@ -21,7 +21,6 @@ public:
         std::weak_ptr<const core_configuration::core_configuration> core_configuration) : dispatcher_client(),
                                                                                           device_id_(device_id),
                                                                                           core_configuration_(core_configuration),
-                                                                                          hid_queue_value_monitor_async_start_called_(false),
                                                                                           first_value_arrived_(false),
                                                                                           grabbed_(false),
                                                                                           disabled_(false),
@@ -193,27 +192,17 @@ public:
     // Start
     //
 
-    if (hid_queue_value_monitor_) {
-      if (!hid_queue_value_monitor_async_start_called_) {
-        first_value_arrived_ = false;
-        hid_queue_value_monitor_async_start_called_ = true;
-      }
+    first_value_arrived_ = false;
+    hid_queue_value_monitor_async_start_options_ = options;
 
-      if (hid_queue_value_monitor_async_start_options_ != options) {
-        hid_queue_value_monitor_async_start_options_ = options;
-
-        hid_queue_value_monitor_->async_start(options,
-                                              std::chrono::milliseconds(1000));
-      }
-    }
+    hid_queue_value_monitor_->async_start(options,
+                                          std::chrono::milliseconds(1000));
   }
 
   void async_stop_queue_value_monitor(void) {
-    if (hid_queue_value_monitor_) {
-      hid_queue_value_monitor_async_start_called_ = false;
+    hid_queue_value_monitor_->async_stop();
 
-      hid_queue_value_monitor_->async_stop();
-    }
+    hid_queue_value_monitor_async_start_options_ = std::nullopt;
   }
 
   bool grabbed(absolute_time_point time_stamp) const {
@@ -307,7 +296,6 @@ private:
   std::shared_ptr<pressed_keys_manager> pressed_keys_manager_;
 
   std::shared_ptr<pqrs::osx::iokit_hid_queue_value_monitor> hid_queue_value_monitor_;
-  bool hid_queue_value_monitor_async_start_called_;
   std::optional<IOOptionBits> hid_queue_value_monitor_async_start_options_;
   bool first_value_arrived_;
 

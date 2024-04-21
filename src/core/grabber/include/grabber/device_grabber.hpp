@@ -542,28 +542,6 @@ public:
     });
   }
 
-  void async_update_probable_stuck_events_by_observer(device_id device_id,
-                                                      const momentary_switch_event& event,
-                                                      event_type event_type,
-                                                      absolute_time_point time_stamp) {
-    enqueue_to_dispatcher([this, device_id, event, event_type, time_stamp] {
-      // `karabiner_observer` may catch input events
-      // while the device is grabbed due to macOS event handling issue.
-      // Thus, we have to ignore events manually while the device is grabbed.
-      if (!grabbed(device_id, time_stamp)) {
-        auto m = add_probable_stuck_events_manager(device_id);
-
-        bool needs_regrab = m->update(event,
-                                      event_type,
-                                      time_stamp,
-                                      device_state::ungrabbed);
-        if (needs_regrab) {
-          grab_device(device_id);
-        }
-      }
-    });
-  }
-
   void async_grab_devices(void) {
     enqueue_to_dispatcher([this] {
       for (auto&& e : entries_) {
@@ -722,7 +700,10 @@ private:
         // First grabbed event is arrived.
 
         entry->set_first_value_arrived(true);
-        probable_stuck_events_manager->clear();
+
+        if (entry->seized()) {
+          probable_stuck_events_manager->clear();
+        }
       }
 
       bool needs_regrab = false;
@@ -734,9 +715,8 @@ private:
               *ev,
               e.get_event_type(),
               e.get_event_time_stamp().get_time_stamp(),
-              entry->get_event_origin() == event_origin::grabbed_device
-                  ? device_state::grabbed
-                  : device_state::ungrabbed);
+              entry->seized() ? device_state::grabbed
+                              : device_state::ungrabbed);
         }
 
         if (!entry->get_disabled() && entry->seized()) {

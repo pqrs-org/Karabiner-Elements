@@ -116,25 +116,6 @@ public:
     });
   }
 
-  void async_momentary_switch_event_arrived(device_id device_id,
-                                            const momentary_switch_event& event,
-                                            event_type event_type,
-                                            absolute_time_point time_stamp) const {
-    enqueue_to_dispatcher([this, device_id, event, event_type, time_stamp] {
-      nlohmann::json json{
-          {"operation_type", operation_type::momentary_switch_event_arrived},
-          {"device_id", device_id},
-          {"momentary_switch_event", event},
-          {"event_type", event_type},
-          {"time_stamp", time_stamp},
-      };
-
-      if (client_) {
-        client_->async_send(nlohmann::json::to_msgpack(json));
-      }
-    });
-  }
-
   void async_connect_console_user_server(void) const {
     enqueue_to_dispatcher([this] {
       nlohmann::json json{
