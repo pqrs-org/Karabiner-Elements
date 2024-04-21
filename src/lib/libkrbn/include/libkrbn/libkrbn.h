@@ -432,7 +432,6 @@ void libkrbn_get_device_details_json_file_path(char* buffer, size_t length);
 void libkrbn_get_grabber_state_json_file_path(char* buffer, size_t length);
 void libkrbn_get_manipulator_environment_json_file_path(char* buffer, size_t length);
 void libkrbn_get_notification_message_json_file_path(char* buffer, size_t length);
-void libkrbn_get_observer_state_json_file_path(char* buffer, size_t length);
 
 //
 // libkrbn_frontmost_application_monitor
