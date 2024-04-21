@@ -9,13 +9,6 @@ cd src/core/grabber
 make install
 ```
 
-### Replace `karabiner_observer`
-
-```shell
-cd src/core/observer
-make install
-```
-
 ### Replace `karabiner_session_monitor`
 
 ```shell
@@ -35,10 +28,6 @@ make install
 -   `karabiner_grabber`
     -   Run with root privilege.
     -   Seize the input devices and modify events then post events using `Karabiner-DriverKit-VirtualHIDDevice`.
--   `karabiner_observer`
-    -   Run with root privilege.
-    -   Observe input devices and manage the grabbable state.
-    -   Tell the grabbable state to `karabiner_grabber`.
 -   `karabiner_session_monitor`
     -   Run with root privilege.
     -   (Opened by console user privilege in order to use CoreGraphics session API.
@@ -62,11 +51,6 @@ make install
 2.  `karabiner_grabber` opens session_monitor_receiver Unix domain socket which only root can access.
 3.  `karabiner_grabber` opens grabber server Unix domain socket.
 4.  When a window server session state is changed, `karabiner_grabber` changes the Unix domain socket owner to console user.
-
-`karabiner_observer`
-
-1.  Run `karabiner_observer`.
-2.  `karabiner_observer` observes devices and send the input events to `karabiner_grabber`.
 
 `karabiner_session_monitor`
 
@@ -293,8 +277,8 @@ The caps lock is quite different from the normal modifier.
 -   Send the event via virtual hid keyboard.
 -   macOS update the caps lock LED of virtual hid keyboard.
 -   Virtual hid keyboard sends the LED updated event.
--   karabiner_observer receives the LED updated event and tells it karabiner_grabber.
--   karabiner_grabber makes `event::type::caps_lock_state_changed` event and processes it.
+-   karabiner_grabber observes events from the virtual hid keyboard.
+    When an event {usage_page::leds, usage::led::caps_lock} is detected, karabiner_grabber generates an `event::type::caps_lock_state_changed` and adds it to the queue.
 -   The state of `modifier_flag_manager` is changed by `event::type::caps_lock_state_changed`.
 
 ### modifier state holders
@@ -332,7 +316,7 @@ Example:
     -   `key_event_dispatcher` is updated.
         -   `pressed_keys_.insert(caps_lock)`
     -   macOS update the caps lock LED state (on).
-    -   `event::type::caps_lock_state_changed (on)` is sent via `karabiner_observer`.
+    -   `event::type::caps_lock_state_changed (on)` is sent via `krbn::event_queue::utility::make_queue` in `karabiner_grabber`.
         -   `modifier_flag_manager increase_led_lock (caps_lock)`
         -   `key_event_dispatcher` is updated.
             -   `pressed_modifier_flags_.insert(caps_lock)`
@@ -350,7 +334,7 @@ Example:
     -   `sticky_modifier caps_lock true` is sent by `modifiers.mandatory`.
         -   `modifier_flag_manager increase_sticky (caps_lock)`
     -   macOS update the caps lock LED state (off).
-    -   `event::type::caps_lock_state_changed (off)` is sent via `karabiner_observer`.
+    -   `event::type::caps_lock_state_changed (off)` is sent via `krbn::event_queue::utility::make_queue` in `karabiner_grabber`.
         -   `modifier_flag_manager decrease_led_lock (caps_lock)`
             -   Note: led_lock will be ignored while other counter is active in modifier_flag_manager.
 -   Release `down_arrow` key.
