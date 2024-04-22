@@ -9,6 +9,11 @@
 
 namespace pqrs {
 namespace hid {
+
+//
+// number values
+//
+
 namespace country_code {
 inline void to_json(nlohmann::json& j, const value_t& value) {
   j = type_safe::get(value);
@@ -80,6 +85,34 @@ inline void from_json(const nlohmann::json& j, value_t& value) {
   value = value_t(j.get<type_safe::underlying_type<value_t>>());
 }
 } // namespace vendor_id
+
+//
+// string values
+//
+
+namespace manufacturer_string {
+inline void to_json(nlohmann::json& j, const value_t& value) {
+  j = type_safe::get(value);
+}
+
+inline void from_json(const nlohmann::json& j, value_t& value) {
+  json::requires_string(j, "json");
+
+  value = value_t(j.get<type_safe::underlying_type<value_t>>());
+}
+} // namespace manufacturer_string
+
+namespace product_string {
+inline void to_json(nlohmann::json& j, const value_t& value) {
+  j = type_safe::get(value);
+}
+
+inline void from_json(const nlohmann::json& j, value_t& value) {
+  json::requires_string(j, "json");
+
+  value = value_t(j.get<type_safe::underlying_type<value_t>>());
+}
+} // namespace product_string
 
 //
 // usage_pair
