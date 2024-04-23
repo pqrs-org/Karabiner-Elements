@@ -39,10 +39,10 @@ public:
     if (vendor_id_ == pqrs::hid::vendor_id::value_t(1452) &&
         product_id_ == pqrs::hid::product_id::value_t(34304)) {
       if (!manufacturer_) {
-        manufacturer_ = "Apple Inc.";
+        manufacturer_ = pqrs::hid::manufacturer_string::value_t("Apple Inc.");
       }
       if (!product_) {
-        product_ = "Apple Internal Touch Bar";
+        product_ = pqrs::hid::product_string::value_t("Apple Internal Touch Bar");
       }
     }
 
@@ -51,12 +51,12 @@ public:
     //
 
     if (product_ && is_keyboard_ && is_pointing_device_) {
-      if (*product_ == "Apple Internal Touch Bar") {
+      if (*product_ == pqrs::hid::product_string::value_t("Apple Internal Touch Bar")) {
         is_built_in_touch_bar_ = true;
-      } else if (*product_ == "TouchBarUserDevice") {
+      } else if (*product_ == pqrs::hid::product_string::value_t("TouchBarUserDevice")) {
         is_built_in_touch_bar_ = true;
       } else {
-        if ((*product_).find("Apple Internal ") != std::string::npos) {
+        if (type_safe::get(*product_).find("Apple Internal ") != std::string::npos) {
           if (*is_keyboard_ == true && *is_pointing_device_ == false) {
             is_built_in_keyboard_ = true;
           }
@@ -197,20 +197,20 @@ public:
     return *this;
   }
 
-  std::optional<std::string> get_manufacturer(void) const {
+  std::optional<pqrs::hid::manufacturer_string::value_t> get_manufacturer(void) const {
     return manufacturer_;
   }
 
-  device_properties& set_manufacturer(const std::string& value) {
+  device_properties& set_manufacturer(const pqrs::hid::manufacturer_string::value_t& value) {
     manufacturer_ = value;
     return *this;
   }
 
-  std::optional<std::string> get_product(void) const {
+  std::optional<pqrs::hid::product_string::value_t> get_product(void) const {
     return product_;
   }
 
-  device_properties& set_product(const std::string& value) {
+  device_properties& set_product(const pqrs::hid::product_string::value_t& value) {
     product_ = value;
     return *this;
   }
@@ -305,8 +305,8 @@ public:
   bool compare(const device_properties& other) const {
     // product
     {
-      auto p1 = product_.value_or("");
-      auto p2 = other.product_.value_or("");
+      auto p1 = product_.value_or(pqrs::hid::product_string::value_t(""));
+      auto p2 = other.product_.value_or(pqrs::hid::product_string::value_t(""));
       if (p1 != p2) {
         return p1 < p2;
       }
@@ -314,8 +314,8 @@ public:
 
     // manufacturer
     {
-      auto m1 = manufacturer_.value_or("");
-      auto m2 = other.manufacturer_.value_or("");
+      auto m1 = manufacturer_.value_or(pqrs::hid::manufacturer_string::value_t(""));
+      auto m2 = other.manufacturer_.value_or(pqrs::hid::manufacturer_string::value_t(""));
       if (m1 != m2) {
         return m1 < m2;
       }
@@ -390,8 +390,8 @@ private:
   std::optional<pqrs::hid::vendor_id::value_t> vendor_id_;
   std::optional<pqrs::hid::product_id::value_t> product_id_;
   std::optional<location_id> location_id_;
-  std::optional<std::string> manufacturer_;
-  std::optional<std::string> product_;
+  std::optional<pqrs::hid::manufacturer_string::value_t> manufacturer_;
+  std::optional<pqrs::hid::product_string::value_t> product_;
   std::optional<std::string> serial_number_;
   std::optional<std::string> transport_;
   std::optional<std::string> device_address_;

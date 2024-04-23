@@ -29,7 +29,7 @@ bool libkrbn_connected_devices_get_descriptions_manufacturer(size_t index,
   if (auto c = get_current_connected_devices()) {
     const auto& devices = c->get_devices();
     if (index < devices.size()) {
-      strlcpy(buffer, devices[index].get_descriptions().get_manufacturer().c_str(), length);
+      strlcpy(buffer, type_safe::get(devices[index].get_descriptions().get_manufacturer()).c_str(), length);
       return true;
     }
   }
@@ -47,7 +47,7 @@ bool libkrbn_connected_devices_get_descriptions_product(size_t index,
   if (auto c = get_current_connected_devices()) {
     const auto& devices = c->get_devices();
     if (index < devices.size()) {
-      strlcpy(buffer, devices[index].get_descriptions().get_product().c_str(), length);
+      strlcpy(buffer, type_safe::get(devices[index].get_descriptions().get_product()).c_str(), length);
       return true;
     }
   }

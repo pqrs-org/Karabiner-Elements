@@ -83,7 +83,7 @@ public:
   bool is_apple(void) const {
     return identifiers_.get_vendor_id() == pqrs::hid::vendor_id::value_t(0x05ac) ||
            identifiers_.get_vendor_id() == pqrs::hid::vendor_id::value_t(0x004c) ||
-           descriptions_.get_product() == "Apple Internal Keyboard / Trackpad";
+           descriptions_.get_product() == pqrs::hid::product_string::value_t("Apple Internal Keyboard / Trackpad");
   }
 
   bool operator==(const device& other) const {

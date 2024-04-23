@@ -8,18 +8,18 @@ void run_descriptions_test(void) {
 
   "connected_devices::details::descriptions"_test = [] {
     {
-      krbn::connected_devices::details::descriptions descriptions1("manufacturer1",
-                                                                   "product1",
+      krbn::connected_devices::details::descriptions descriptions1(pqrs::hid::manufacturer_string::value_t("manufacturer1"),
+                                                                   pqrs::hid::product_string::value_t("product1"),
                                                                    "USB");
-      krbn::connected_devices::details::descriptions descriptions2("manufacturer2",
-                                                                   "product2",
+      krbn::connected_devices::details::descriptions descriptions2(pqrs::hid::manufacturer_string::value_t("manufacturer2"),
+                                                                   pqrs::hid::product_string::value_t("product2"),
                                                                    "USB");
-      krbn::connected_devices::details::descriptions descriptions3("manufacturer1",
-                                                                   "product1",
+      krbn::connected_devices::details::descriptions descriptions3(pqrs::hid::manufacturer_string::value_t("manufacturer1"),
+                                                                   pqrs::hid::product_string::value_t("product1"),
                                                                    "USB");
 
-      expect(descriptions1.get_manufacturer() == "manufacturer1"sv);
-      expect(descriptions1.get_product() == "product1"sv);
+      expect(descriptions1.get_manufacturer() == pqrs::hid::manufacturer_string::value_t("manufacturer1"));
+      expect(descriptions1.get_product() == pqrs::hid::product_string::value_t("product1"));
       expect(descriptions1.get_transport() == "USB"sv);
 
       expect(descriptions1.to_json() == nlohmann::json({
@@ -41,12 +41,12 @@ void run_descriptions_test(void) {
               {"transport", "Bluetooth"},
           }));
 
-      expect(descriptions1.get_manufacturer() == ""sv);
-      expect(descriptions1.get_product() == ""sv);
+      expect(descriptions1.get_manufacturer() == pqrs::hid::manufacturer_string::value_t(""));
+      expect(descriptions1.get_product() == pqrs::hid::product_string::value_t(""));
       expect(descriptions1.get_transport() == ""sv);
 
-      expect(descriptions2.get_manufacturer() == "manufacturer2"sv);
-      expect(descriptions2.get_product() == "product2"sv);
+      expect(descriptions2.get_manufacturer() == pqrs::hid::manufacturer_string::value_t("manufacturer2"));
+      expect(descriptions2.get_product() == pqrs::hid::product_string::value_t("product2"));
       expect(descriptions2.get_transport() == "Bluetooth"sv);
     }
 
@@ -56,20 +56,20 @@ void run_descriptions_test(void) {
       krbn::device_properties device_properties;
       krbn::connected_devices::details::descriptions descriptions(device_properties);
 
-      expect(descriptions.get_manufacturer() == ""sv);
-      expect(descriptions.get_product() == ""sv);
+      expect(descriptions.get_manufacturer() == pqrs::hid::manufacturer_string::value_t(""));
+      expect(descriptions.get_product() == pqrs::hid::product_string::value_t(""));
       expect(descriptions.get_transport() == ""sv);
     }
     {
       krbn::device_properties device_properties;
       device_properties
-          .set_manufacturer("manufacturer")
-          .set_product("product")
+          .set_manufacturer(pqrs::hid::manufacturer_string::value_t("manufacturer"))
+          .set_product(pqrs::hid::product_string::value_t("product"))
           .set_transport("FIFO");
       krbn::connected_devices::details::descriptions descriptions(device_properties);
 
-      expect(descriptions.get_manufacturer() == "manufacturer"sv);
-      expect(descriptions.get_product() == "product"sv);
+      expect(descriptions.get_manufacturer() == pqrs::hid::manufacturer_string::value_t("manufacturer"));
+      expect(descriptions.get_product() == pqrs::hid::product_string::value_t("product"));
       expect(descriptions.get_transport() == "FIFO"sv);
     }
   };

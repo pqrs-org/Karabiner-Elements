@@ -8,24 +8,28 @@ namespace connected_devices {
 namespace details {
 class descriptions {
 public:
-  descriptions(void) : descriptions("", "", "") {
+  descriptions(void)
+      : descriptions(pqrs::hid::manufacturer_string::value_t(""),
+                     pqrs::hid::product_string::value_t(""),
+                     "") {
   }
 
-  descriptions(const std::string& manufacturer,
-               const std::string& product,
+  descriptions(const pqrs::hid::manufacturer_string::value_t& manufacturer,
+               const pqrs::hid::product_string::value_t& product,
                const std::string& transport) : manufacturer_(manufacturer),
                                                product_(product),
                                                transport_(transport) {
   }
 
-  descriptions(const device_properties& device_properties) : descriptions(device_properties.get_manufacturer().value_or(""),
-                                                                          device_properties.get_product().value_or(""),
-                                                                          device_properties.get_transport().value_or("")) {
+  descriptions(const device_properties& device_properties)
+      : descriptions(device_properties.get_manufacturer().value_or(pqrs::hid::manufacturer_string::value_t("")),
+                     device_properties.get_product().value_or(pqrs::hid::product_string::value_t("")),
+                     device_properties.get_transport().value_or("")) {
   }
 
   static descriptions make_from_json(const nlohmann::json& json) {
-    return descriptions(pqrs::json::find<std::string>(json, "manufacturer").value_or(""),
-                        pqrs::json::find<std::string>(json, "product").value_or(""),
+    return descriptions(pqrs::json::find<pqrs::hid::manufacturer_string::value_t>(json, "manufacturer").value_or(pqrs::hid::manufacturer_string::value_t("")),
+                        pqrs::json::find<pqrs::hid::product_string::value_t>(json, "product").value_or(pqrs::hid::product_string::value_t("")),
                         pqrs::json::find<std::string>(json, "transport").value_or(""));
   }
 
@@ -37,11 +41,11 @@ public:
     });
   }
 
-  const std::string& get_manufacturer(void) const {
+  const pqrs::hid::manufacturer_string::value_t& get_manufacturer(void) const {
     return manufacturer_;
   }
 
-  const std::string& get_product(void) const {
+  const pqrs::hid::product_string::value_t& get_product(void) const {
     return product_;
   }
 
@@ -59,8 +63,8 @@ public:
   }
 
 private:
-  std::string manufacturer_;
-  std::string product_;
+  pqrs::hid::manufacturer_string::value_t manufacturer_;
+  pqrs::hid::product_string::value_t product_;
   std::string transport_;
 };
 
