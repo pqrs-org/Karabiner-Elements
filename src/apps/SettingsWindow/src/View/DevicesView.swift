@@ -11,6 +11,9 @@ struct DevicesView: View {
           ForEach(connectedDevices.connectedDevices) { connectedDevice in
             VStack(alignment: .leading, spacing: 0.0) {
               DeviceName(connectedDevice: connectedDevice)
+                .if(connectedDevice.isKarabinerVirtualHidDevice) {
+                  $0.foregroundColor(Color(NSColor.placeholderTextColor))
+                }
 
               if !connectedDevice.isKarabinerVirtualHidDevice {
                 VStack(alignment: .leading, spacing: 0.0) {
