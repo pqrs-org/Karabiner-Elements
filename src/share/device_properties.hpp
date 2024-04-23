@@ -109,7 +109,9 @@ public:
     // Set is_karabiner_virtual_hid_device_
     //
 
-    is_karabiner_virtual_hid_device_ = iokit_utility::is_karabiner_virtual_hid_device(device);
+    is_karabiner_virtual_hid_device_ = (manufacturer_ && product_)
+                                           ? iokit_utility::is_karabiner_virtual_hid_device(*manufacturer_, *product_)
+                                           : false;
 
     update_device_identifiers();
   }

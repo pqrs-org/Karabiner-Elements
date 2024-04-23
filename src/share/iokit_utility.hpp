@@ -43,11 +43,11 @@ public:
     return false;
   }
 
-  static bool is_karabiner_virtual_hid_device(IOHIDDeviceRef _Nonnull device) {
-    pqrs::osx::iokit_hid_device hid_device(device);
-
-    if (auto manufacturer = hid_device.find_manufacturer()) {
-      if (*manufacturer == pqrs::hid::manufacturer_string::value_t("pqrs.org")) {
+  static bool is_karabiner_virtual_hid_device(const pqrs::hid::manufacturer_string::value_t& manufacturer,
+                                              const pqrs::hid::product_string::value_t& product) {
+    if (manufacturer == pqrs::hid::manufacturer_string::value_t("pqrs.org")) {
+      if (pqrs::string::starts_with(type_safe::get(product), "Karabiner DriverKit VirtualHIDKeyboard") ||
+          pqrs::string::starts_with(type_safe::get(product), "Karabiner DriverKit VirtualHIDPointing")) {
         return true;
       }
     }

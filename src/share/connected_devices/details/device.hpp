@@ -86,6 +86,11 @@ public:
            descriptions_.get_product() == pqrs::hid::product_string::value_t("Apple Internal Keyboard / Trackpad");
   }
 
+  bool is_karabiner_virtual_hid_device(void) const {
+    return iokit_utility::is_karabiner_virtual_hid_device(descriptions_.get_manufacturer(),
+                                                          descriptions_.get_product());
+  }
+
   bool operator==(const device& other) const {
     return identifiers_ == other.identifiers_;
   }

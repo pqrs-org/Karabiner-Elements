@@ -12,21 +12,23 @@ struct DevicesView: View {
             VStack(alignment: .leading, spacing: 0.0) {
               DeviceName(connectedDevice: connectedDevice)
 
-              VStack(alignment: .leading, spacing: 0.0) {
-                ModifyEventsSetting(connectedDevice: connectedDevice)
+              if !connectedDevice.isKarabinerVirtualHidDevice {
+                VStack(alignment: .leading, spacing: 0.0) {
+                  ModifyEventsSetting(connectedDevice: connectedDevice)
 
-                VStack(alignment: .leading, spacing: 12.0) {
-                  KeyboardSettings(connectedDevice: connectedDevice)
+                  VStack(alignment: .leading, spacing: 12.0) {
+                    KeyboardSettings(connectedDevice: connectedDevice)
 
-                  MouseSettings(connectedDevice: connectedDevice)
+                    MouseSettings(connectedDevice: connectedDevice)
 
-                  GamePadSettings(connectedDevice: connectedDevice)
+                    GamePadSettings(connectedDevice: connectedDevice)
+                  }
+                  .padding(.leading, 20.0)
+                  .padding(.top, 8.0)
                 }
-                .padding(.leading, 20.0)
-                .padding(.top, 8.0)
+                .padding(.leading, 62.0)
+                .padding(.top, 20.0)
               }
-              .padding(.leading, 62.0)
-              .padding(.top, 20.0)
             }
             .padding(.vertical, 12.0)
             .padding(.trailing, 12.0)

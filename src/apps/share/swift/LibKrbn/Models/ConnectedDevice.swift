@@ -17,6 +17,7 @@ extension LibKrbn {
     let isBuiltInTrackpad: Bool
     let isBuiltInTouchBar: Bool
     let isAppleDevice: Bool
+    let isKarabinerVirtualHidDevice: Bool
 
     let libkrbnDeviceIdentifiers: UnsafeMutablePointer<libkrbn_device_identifiers>
 
@@ -34,7 +35,8 @@ extension LibKrbn {
       isBuiltInKeyboard: Bool,
       isBuiltInTrackpad: Bool,
       isBuiltInTouchBar: Bool,
-      isAppleDevice: Bool
+      isAppleDevice: Bool,
+      isKarabinerVirtualHidDevice: Bool
     ) {
       self.index = index
       self.manufacturerName = manufacturerName
@@ -50,6 +52,7 @@ extension LibKrbn {
       self.isBuiltInTrackpad = isBuiltInTrackpad
       self.isBuiltInTouchBar = isBuiltInTouchBar
       self.isAppleDevice = isAppleDevice
+      self.isKarabinerVirtualHidDevice = isKarabinerVirtualHidDevice
 
       libkrbnDeviceIdentifiers = UnsafeMutablePointer<libkrbn_device_identifiers>.allocate(
         capacity: 1)

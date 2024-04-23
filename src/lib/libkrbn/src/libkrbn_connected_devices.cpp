@@ -198,3 +198,13 @@ bool libkrbn_connected_devices_is_apple(size_t index) {
   }
   return 0;
 }
+
+bool libkrbn_connected_devices_is_karabiner_virtual_hid_device(size_t index) {
+  if (auto c = get_current_connected_devices()) {
+    const auto& devices = c->get_devices();
+    if (index < devices.size()) {
+      return devices[index].is_karabiner_virtual_hid_device();
+    }
+  }
+  return 0;
+}

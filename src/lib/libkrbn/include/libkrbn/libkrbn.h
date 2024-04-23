@@ -393,6 +393,7 @@ bool libkrbn_connected_devices_get_is_built_in_keyboard(size_t index);
 bool libkrbn_connected_devices_get_is_built_in_trackpad(size_t index);
 bool libkrbn_connected_devices_get_is_built_in_touch_bar(size_t index);
 bool libkrbn_connected_devices_is_apple(size_t index);
+bool libkrbn_connected_devices_is_karabiner_virtual_hid_device(size_t index);
 
 // connected_devices_monitor
 
