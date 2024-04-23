@@ -932,7 +932,7 @@ private:
     }
 
     for (auto&& e : entries_) {
-      e.second->get_caps_lock_led_state_manager()->set_state(state);
+      e.second->set_caps_lock_led_state(state);
     }
   }
 

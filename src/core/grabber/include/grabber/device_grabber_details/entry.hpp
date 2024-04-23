@@ -89,8 +89,8 @@ public:
     first_value_arrived_ = value;
   }
 
-  std::shared_ptr<hid_keyboard_caps_lock_led_state_manager> get_caps_lock_led_state_manager(void) const {
-    return caps_lock_led_state_manager_;
+  void set_caps_lock_led_state(std::optional<led_state> state) {
+    caps_lock_led_state_manager_->set_state(state);
   }
 
   const std::string& get_device_name(void) const {
@@ -122,6 +122,10 @@ public:
   }
 
   void set_disabled(bool value) {
+    if (is_karabiner_virtual_hid_device()) {
+      return;
+    }
+
     disabled_ = value;
 
     update_event_origin();
@@ -132,6 +136,10 @@ public:
   }
 
   bool is_disable_built_in_keyboard_if_exists(void) const {
+    if (is_karabiner_virtual_hid_device()) {
+      return false;
+    }
+
     if (device_properties_.get_is_built_in_keyboard() ||
         device_properties_.get_is_built_in_pointing_device() ||
         device_properties_.get_is_built_in_touch_bar()) {
@@ -157,22 +165,26 @@ public:
   void async_start_queue_value_monitor(grabbable_state::state state) {
     auto options = kIOHIDOptionsTypeSeizeDevice;
 
-    switch (state) {
-      case grabbable_state::state::grabbable:
-        if (event_origin_ == event_origin::observed_device) {
+    if (is_karabiner_virtual_hid_device()) {
+      options = kIOHIDOptionsTypeNone;
+    } else {
+      switch (state) {
+        case grabbable_state::state::grabbable:
+          if (event_origin_ == event_origin::observed_device) {
+            options = kIOHIDOptionsTypeNone;
+          }
+          break;
+
+        case grabbable_state::state::ungrabbable_temporarily:
           options = kIOHIDOptionsTypeNone;
-        }
-        break;
+          break;
 
-      case grabbable_state::state::ungrabbable_temporarily:
-        options = kIOHIDOptionsTypeNone;
-        break;
-
-      case grabbable_state::state::ungrabbable_permanently:
-      case grabbable_state::state::none:
-      case grabbable_state::state::end_:
-        // Do not
-        return;
+        case grabbable_state::state::ungrabbable_permanently:
+        case grabbable_state::state::none:
+        case grabbable_state::state::end_:
+          // Do not
+          return;
+      }
     }
 
     // Skip the process if the same options have already been processed.
@@ -242,6 +254,10 @@ public:
 
 private:
   bool is_ignored_device(void) const {
+    if (is_karabiner_virtual_hid_device()) {
+      return false;
+    }
+
     if (auto c = core_configuration_.lock()) {
       return c->get_selected_profile().get_device_ignore(
           device_properties_.get_device_identifiers());
@@ -276,6 +292,10 @@ private:
   }
 
   void control_caps_lock_led_state_manager(void) {
+    if (is_karabiner_virtual_hid_device()) {
+      return;
+    }
+
     if (caps_lock_led_state_manager_) {
       if (auto c = core_configuration_.lock()) {
         if (c->get_selected_profile().get_device_manipulate_caps_lock_led(device_properties_.get_device_identifiers())) {
