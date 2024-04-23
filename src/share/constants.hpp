@@ -68,11 +68,6 @@ public:
     return get_rootonly_directory() / fmt::format("krbn_session.{0}", uid);
   }
 
-  static const std::filesystem::path& get_observer_state_json_file_path(void) {
-    static auto path = get_tmp_directory() / "karabiner_observer_state.json";
-    return path;
-  }
-
   static const std::filesystem::path& get_grabber_state_json_file_path(void) {
     static auto path = get_tmp_directory() / "karabiner_grabber_state.json";
     return path;
@@ -273,14 +268,6 @@ public:
 
   static pqrs::osx::launchctl::service_path get_grabber_daemon_launchctl_service_path(void) {
     return pqrs::osx::launchctl::service_path("/Library/LaunchDaemons/org.pqrs.karabiner.karabiner_grabber.plist");
-  }
-
-  static pqrs::osx::launchctl::service_name get_observer_agent_launchctl_service_name(void) {
-    return pqrs::osx::launchctl::service_name("org.pqrs.karabiner.agent.karabiner_observer");
-  }
-
-  static pqrs::osx::launchctl::service_path get_observer_agent_launchctl_service_path(void) {
-    return pqrs::osx::launchctl::service_path("/Library/LaunchAgents/org.pqrs.karabiner.agent.karabiner_observer.plist");
   }
 
   static pqrs::osx::launchctl::service_name get_grabber_agent_launchctl_service_name(void) {

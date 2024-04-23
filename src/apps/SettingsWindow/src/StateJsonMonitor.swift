@@ -1,14 +1,8 @@
 import Foundation
 
-private func grabberStateJsonFileUpdatedCallback() {
+private func callback() {
   Task { @MainActor in
     StateJsonMonitor.shared.update(StateJsonMonitor.shared.grabberStateJsonFilePath)
-  }
-}
-
-private func observerStateJsonFileUpdatedCallback() {
-  Task { @MainActor in
-    StateJsonMonitor.shared.update(StateJsonMonitor.shared.observerStateJsonFilePath)
   }
 }
 
@@ -22,7 +16,6 @@ public class StateJsonMonitor {
   static let shared = StateJsonMonitor()
 
   let grabberStateJsonFilePath = LibKrbn.grabberStateJsonFilePath()
-  let observerStateJsonFilePath = LibKrbn.observerStateJsonFilePath()
 
   private var states: [String: State] = [:]
 
@@ -34,23 +27,14 @@ public class StateJsonMonitor {
 
     libkrbn_register_file_updated_callback(
       grabberStateJsonFilePath.cString(using: .utf8),
-      grabberStateJsonFileUpdatedCallback)
-    libkrbn_enqueue_callback(grabberStateJsonFileUpdatedCallback)
-
-    libkrbn_register_file_updated_callback(
-      observerStateJsonFilePath.cString(using: .utf8),
-      observerStateJsonFileUpdatedCallback)
-    libkrbn_enqueue_callback(observerStateJsonFileUpdatedCallback)
+      callback)
+    libkrbn_enqueue_callback(callback)
   }
 
   public func stop() {
     libkrbn_unregister_file_updated_callback(
       grabberStateJsonFilePath.cString(using: .utf8),
-      grabberStateJsonFileUpdatedCallback)
-
-    libkrbn_unregister_file_updated_callback(
-      observerStateJsonFilePath.cString(using: .utf8),
-      observerStateJsonFileUpdatedCallback)
+      callback)
 
     // We don't call `libkrbn_disable_file_monitors` because the file monitors may be used elsewhere.
   }

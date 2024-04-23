@@ -15,8 +15,8 @@ void run_connected_devices_test(void) {
       krbn::connected_devices::connected_devices connected_devices;
 
       {
-        krbn::connected_devices::details::descriptions descriptions("manufacturer1",
-                                                                    "product1",
+        krbn::connected_devices::details::descriptions descriptions(pqrs::hid::manufacturer_string::value_t("manufacturer1"),
+                                                                    pqrs::hid::product_string::value_t("product1"),
                                                                     "USB");
         krbn::device_identifiers identifiers(pqrs::hid::vendor_id::value_t(1234),
                                              pqrs::hid::product_id::value_t(5678),
@@ -34,8 +34,8 @@ void run_connected_devices_test(void) {
         connected_devices.push_back_device(device);
       }
       {
-        krbn::connected_devices::details::descriptions descriptions("manufacturer1 (ignored)",
-                                                                    "product1 (ignored)",
+        krbn::connected_devices::details::descriptions descriptions(pqrs::hid::manufacturer_string::value_t("manufacturer1 (ignored)"),
+                                                                    pqrs::hid::product_string::value_t("product1 (ignored)"),
                                                                     "USB");
         krbn::device_identifiers identifiers(pqrs::hid::vendor_id::value_t(1234),
                                              pqrs::hid::product_id::value_t(5678),
@@ -53,8 +53,8 @@ void run_connected_devices_test(void) {
         connected_devices.push_back_device(device);
       }
       {
-        krbn::connected_devices::details::descriptions descriptions("manufacturer3",
-                                                                    "product3",
+        krbn::connected_devices::details::descriptions descriptions(pqrs::hid::manufacturer_string::value_t("manufacturer3"),
+                                                                    pqrs::hid::product_string::value_t("product3"),
                                                                     "USB");
         krbn::device_identifiers identifiers(pqrs::hid::vendor_id::value_t(2345),
                                              pqrs::hid::product_id::value_t(6789),
@@ -72,8 +72,8 @@ void run_connected_devices_test(void) {
         connected_devices.push_back_device(device);
       }
       {
-        krbn::connected_devices::details::descriptions descriptions("manufacturer2",
-                                                                    "product2",
+        krbn::connected_devices::details::descriptions descriptions(pqrs::hid::manufacturer_string::value_t("manufacturer2"),
+                                                                    pqrs::hid::product_string::value_t("product2"),
                                                                     "USB");
         krbn::device_identifiers identifiers(pqrs::hid::vendor_id::value_t(1234),
                                              pqrs::hid::product_id::value_t(5679),
@@ -92,8 +92,8 @@ void run_connected_devices_test(void) {
       }
       // product4 is a combined device.
       {
-        krbn::connected_devices::details::descriptions descriptions("manufacturer1",
-                                                                    "product4",
+        krbn::connected_devices::details::descriptions descriptions(pqrs::hid::manufacturer_string::value_t("manufacturer1"),
+                                                                    pqrs::hid::product_string::value_t("product4"),
                                                                     "Bluetooth");
         krbn::device_identifiers identifiers(pqrs::hid::vendor_id::value_t(123),
                                              pqrs::hid::product_id::value_t(678),
@@ -111,8 +111,8 @@ void run_connected_devices_test(void) {
         connected_devices.push_back_device(device);
       }
       {
-        krbn::connected_devices::details::descriptions descriptions("manufacturer1",
-                                                                    "product4",
+        krbn::connected_devices::details::descriptions descriptions(pqrs::hid::manufacturer_string::value_t("manufacturer1"),
+                                                                    pqrs::hid::product_string::value_t("product4"),
                                                                     "Bluetooth");
         krbn::device_identifiers identifiers(pqrs::hid::vendor_id::value_t(123),
                                              pqrs::hid::product_id::value_t(678),
@@ -131,8 +131,8 @@ void run_connected_devices_test(void) {
       }
       // product5 is a bluetooth HID device that has no vendor_id/product_id
       {
-        krbn::connected_devices::details::descriptions descriptions("manufacturer1",
-                                                                    "product5",
+        krbn::connected_devices::details::descriptions descriptions(pqrs::hid::manufacturer_string::value_t("manufacturer1"),
+                                                                    pqrs::hid::product_string::value_t("product5"),
                                                                     "Bluetooth");
         krbn::device_identifiers identifiers(pqrs::hid::vendor_id::value_t(0),
                                              pqrs::hid::product_id::value_t(0),
@@ -210,8 +210,8 @@ void run_connected_devices_test(void) {
     krbn::connected_devices::connected_devices connected_devices;
 
     {
-      krbn::connected_devices::details::descriptions descriptions(ill_formed_name,
-                                                                  ill_formed_name,
+      krbn::connected_devices::details::descriptions descriptions(pqrs::hid::manufacturer_string::value_t(ill_formed_name),
+                                                                  pqrs::hid::product_string::value_t(ill_formed_name),
                                                                   "USB");
       krbn::device_identifiers identifiers(pqrs::hid::vendor_id::value_t(1234),
                                            pqrs::hid::product_id::value_t(5678),

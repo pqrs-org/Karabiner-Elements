@@ -16,18 +16,6 @@ inline void bootout_grabber_daemon(void) {
                                 service_path);
 }
 
-inline void manage_observer_agent(void) {
-  auto domain_target = pqrs::osx::launchctl::make_gui_domain_target();
-  auto service_name = constants::get_observer_agent_launchctl_service_name();
-  auto service_path = constants::get_observer_agent_launchctl_service_path();
-
-  pqrs::osx::launchctl::enable(domain_target,
-                               service_name,
-                               service_path);
-  pqrs::osx::launchctl::kickstart(domain_target,
-                                  service_name);
-}
-
 inline void manage_grabber_agent(void) {
   auto domain_target = pqrs::osx::launchctl::make_gui_domain_target();
   auto service_name = constants::get_grabber_agent_launchctl_service_name();

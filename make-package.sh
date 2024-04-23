@@ -53,7 +53,6 @@ mkdir -p "$basedir"
 cp src/bin/cli/build/Release/karabiner_cli "$basedir"
 cp src/core/console_user_server/build/Release/karabiner_console_user_server "$basedir"
 cp src/core/grabber/build/Release/karabiner_grabber "$basedir"
-cp src/core/observer/build/Release/karabiner_observer "$basedir"
 cp src/core/session_monitor/build/Release/karabiner_session_monitor "$basedir"
 
 mkdir -p "pkgroot/Library"

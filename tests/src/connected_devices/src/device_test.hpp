@@ -7,8 +7,8 @@ void run_device_test(void) {
 
   "connected_devices::details::device"_test = [] {
     {
-      krbn::connected_devices::details::descriptions descriptions("manufacturer1",
-                                                                  "product1",
+      krbn::connected_devices::details::descriptions descriptions(pqrs::hid::manufacturer_string::value_t("manufacturer1"),
+                                                                  pqrs::hid::product_string::value_t("product1"),
                                                                   "USB");
       krbn::device_identifiers identifiers(pqrs::hid::vendor_id::value_t(1234),
                                            pqrs::hid::product_id::value_t(5678),
@@ -133,8 +133,8 @@ void run_device_test(void) {
                true,
            }}));
 
-      expect(device1.get_descriptions().get_manufacturer() == "");
-      expect(device1.get_descriptions().get_product() == "");
+      expect(device1.get_descriptions().get_manufacturer() == pqrs::hid::manufacturer_string::value_t(""));
+      expect(device1.get_descriptions().get_product() == pqrs::hid::product_string::value_t(""));
       expect(device1.get_identifiers().get_vendor_id() == pqrs::hid::vendor_id::value_t(0));
       expect(device1.get_identifiers().get_product_id() == pqrs::hid::product_id::value_t(0));
       expect(device1.get_identifiers().get_device_address() == "");
@@ -144,8 +144,8 @@ void run_device_test(void) {
       expect(device1.get_is_built_in_trackpad() == false);
       expect(device1.get_is_built_in_touch_bar() == false);
 
-      expect(device2.get_descriptions().get_manufacturer() == "manufacturer2");
-      expect(device2.get_descriptions().get_product() == "product2");
+      expect(device2.get_descriptions().get_manufacturer() == pqrs::hid::manufacturer_string::value_t("manufacturer2"));
+      expect(device2.get_descriptions().get_product() == pqrs::hid::product_string::value_t("product2"));
       expect(device2.get_identifiers().get_vendor_id() == pqrs::hid::vendor_id::value_t(1234));
       expect(device2.get_identifiers().get_product_id() == pqrs::hid::product_id::value_t(5678));
       expect(device2.get_identifiers().get_is_keyboard() == true);
@@ -161,8 +161,8 @@ void run_device_test(void) {
       krbn::device_properties device_properties;
       krbn::connected_devices::details::device device(device_properties);
 
-      expect(device.get_descriptions().get_manufacturer() == "");
-      expect(device.get_descriptions().get_product() == "");
+      expect(device.get_descriptions().get_manufacturer() == pqrs::hid::manufacturer_string::value_t(""));
+      expect(device.get_descriptions().get_product() == pqrs::hid::product_string::value_t(""));
       expect(device.get_identifiers().get_vendor_id() == pqrs::hid::vendor_id::value_t(0));
       expect(device.get_identifiers().get_product_id() == pqrs::hid::product_id::value_t(0));
       expect(device.get_identifiers().get_device_address() == "");
@@ -175,8 +175,8 @@ void run_device_test(void) {
     {
       krbn::device_properties device_properties;
       device_properties
-          .set_manufacturer("manufacturer")
-          .set_product("product")
+          .set_manufacturer(pqrs::hid::manufacturer_string::value_t("manufacturer"))
+          .set_product(pqrs::hid::product_string::value_t("product"))
           .set(pqrs::hid::vendor_id::value_t(1234))
           .set(pqrs::hid::product_id::value_t(5678))
           .set_device_address("ec-ba-73-21-e6-f4") // ignored
@@ -185,8 +185,8 @@ void run_device_test(void) {
       {
         krbn::connected_devices::details::device device(device_properties);
 
-        expect(device.get_descriptions().get_manufacturer() == "manufacturer");
-        expect(device.get_descriptions().get_product() == "product");
+        expect(device.get_descriptions().get_manufacturer() == pqrs::hid::manufacturer_string::value_t("manufacturer"));
+        expect(device.get_descriptions().get_product() == pqrs::hid::product_string::value_t("product"));
         expect(device.get_identifiers().get_vendor_id() == pqrs::hid::vendor_id::value_t(1234));
         expect(device.get_identifiers().get_product_id() == pqrs::hid::product_id::value_t(5678));
         expect(device.get_identifiers().get_device_address() == "");
@@ -200,8 +200,8 @@ void run_device_test(void) {
     {
       krbn::device_properties device_properties;
       device_properties
-          .set_manufacturer("manufacturer")
-          .set_product("product")
+          .set_manufacturer(pqrs::hid::manufacturer_string::value_t("manufacturer"))
+          .set_product(pqrs::hid::product_string::value_t("product"))
           .set(pqrs::hid::vendor_id::value_t(0))
           .set(pqrs::hid::product_id::value_t(0))
           .set_device_address("ec-ba-73-21-e6-f5")
@@ -210,8 +210,8 @@ void run_device_test(void) {
       {
         krbn::connected_devices::details::device device(device_properties);
 
-        expect(device.get_descriptions().get_manufacturer() == "manufacturer");
-        expect(device.get_descriptions().get_product() == "product");
+        expect(device.get_descriptions().get_manufacturer() == pqrs::hid::manufacturer_string::value_t("manufacturer"));
+        expect(device.get_descriptions().get_product() == pqrs::hid::product_string::value_t("product"));
         expect(device.get_identifiers().get_vendor_id() == pqrs::hid::vendor_id::value_t(0));
         expect(device.get_identifiers().get_product_id() == pqrs::hid::product_id::value_t(0));
         expect(device.get_identifiers().get_device_address() == "ec-ba-73-21-e6-f5");
@@ -227,8 +227,8 @@ void run_device_test(void) {
     {
       krbn::device_properties device_properties;
       device_properties
-          .set_manufacturer("manufacturer")
-          .set_product("product")
+          .set_manufacturer(pqrs::hid::manufacturer_string::value_t("manufacturer"))
+          .set_product(pqrs::hid::product_string::value_t("product"))
           .set(pqrs::hid::vendor_id::value_t(1234))
           .set(pqrs::hid::product_id::value_t(5678))
           .set_is_keyboard(true);
@@ -237,8 +237,8 @@ void run_device_test(void) {
     {
       krbn::device_properties device_properties;
       device_properties
-          .set_manufacturer("manufacturer")
-          .set_product("product")
+          .set_manufacturer(pqrs::hid::manufacturer_string::value_t("manufacturer"))
+          .set_product(pqrs::hid::product_string::value_t("product"))
           .set(pqrs::hid::vendor_id::value_t(1452))
           .set(pqrs::hid::product_id::value_t(610))
           .set_is_keyboard(true);
@@ -247,8 +247,8 @@ void run_device_test(void) {
     {
       krbn::device_properties device_properties;
       device_properties
-          .set_manufacturer("Apple")
-          .set_product("Apple Internal Keyboard / Trackpad")
+          .set_manufacturer(pqrs::hid::manufacturer_string::value_t("Apple"))
+          .set_product(pqrs::hid::product_string::value_t("Apple Internal Keyboard / Trackpad"))
           .set(pqrs::hid::vendor_id::value_t(0))
           .set(pqrs::hid::product_id::value_t(0))
           .set_is_keyboard(true);

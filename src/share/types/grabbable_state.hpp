@@ -13,7 +13,6 @@ public:
     grabbable,
     ungrabbable_temporarily,
     ungrabbable_permanently,
-    device_error,
     end_,
   };
 
@@ -79,7 +78,6 @@ NLOHMANN_JSON_SERIALIZE_ENUM(
         {grabbable_state::state::grabbable, "grabbable"},
         {grabbable_state::state::ungrabbable_temporarily, "ungrabbable_temporarily"},
         {grabbable_state::state::ungrabbable_permanently, "ungrabbable_permanently"},
-        {grabbable_state::state::device_error, "device_error"},
         {grabbable_state::state::end_, "end_"},
     });
 

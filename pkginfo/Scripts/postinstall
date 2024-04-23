@@ -11,9 +11,7 @@ chmod 4755 '/Library/Application Support/org.pqrs/Karabiner-Elements/bin/karabin
 # ------------------------------------------------------------
 # Relaunch karabiner processes
 
-killall karabiner_kextd
 killall karabiner_grabber
-killall karabiner_observer
 killall karabiner_session_monitor
 killall karabiner_console_user_server
 killall Karabiner-NotificationWindow
@@ -30,9 +28,5 @@ cp \
 launchctl enable system/org.pqrs.karabiner.karabiner_grabber
 launchctl bootstrap system /Library/LaunchDaemons/org.pqrs.karabiner.karabiner_grabber.plist
 launchctl enable system/org.pqrs.karabiner.karabiner_grabber
-
-launchctl enable system/org.pqrs.karabiner.karabiner_observer
-launchctl bootstrap system /Library/LaunchDaemons/org.pqrs.karabiner.karabiner_observer.plist
-launchctl enable system/org.pqrs.karabiner.karabiner_observer
 
 exit 0

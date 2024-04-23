@@ -29,7 +29,7 @@ bool libkrbn_connected_devices_get_descriptions_manufacturer(size_t index,
   if (auto c = get_current_connected_devices()) {
     const auto& devices = c->get_devices();
     if (index < devices.size()) {
-      strlcpy(buffer, devices[index].get_descriptions().get_manufacturer().c_str(), length);
+      strlcpy(buffer, type_safe::get(devices[index].get_descriptions().get_manufacturer()).c_str(), length);
       return true;
     }
   }
@@ -47,7 +47,7 @@ bool libkrbn_connected_devices_get_descriptions_product(size_t index,
   if (auto c = get_current_connected_devices()) {
     const auto& devices = c->get_devices();
     if (index < devices.size()) {
-      strlcpy(buffer, devices[index].get_descriptions().get_product().c_str(), length);
+      strlcpy(buffer, type_safe::get(devices[index].get_descriptions().get_product()).c_str(), length);
       return true;
     }
   }
@@ -194,6 +194,16 @@ bool libkrbn_connected_devices_is_apple(size_t index) {
     const auto& devices = c->get_devices();
     if (index < devices.size()) {
       return devices[index].is_apple();
+    }
+  }
+  return 0;
+}
+
+bool libkrbn_connected_devices_is_karabiner_virtual_hid_device(size_t index) {
+  if (auto c = get_current_connected_devices()) {
+    const auto& devices = c->get_devices();
+    if (index < devices.size()) {
+      return devices[index].is_karabiner_virtual_hid_device();
     }
   }
   return 0;

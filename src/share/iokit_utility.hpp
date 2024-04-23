@@ -43,11 +43,11 @@ public:
     return false;
   }
 
-  static bool is_karabiner_virtual_hid_device(IOHIDDeviceRef _Nonnull device) {
-    pqrs::osx::iokit_hid_device hid_device(device);
-
-    if (auto manufacturer = hid_device.find_manufacturer()) {
-      if (*manufacturer == "pqrs.org") {
+  static bool is_karabiner_virtual_hid_device(const pqrs::hid::manufacturer_string::value_t& manufacturer,
+                                              const pqrs::hid::product_string::value_t& product) {
+    if (manufacturer == pqrs::hid::manufacturer_string::value_t("pqrs.org")) {
+      if (pqrs::string::starts_with(type_safe::get(product), "Karabiner DriverKit VirtualHIDKeyboard") ||
+          pqrs::string::starts_with(type_safe::get(product), "Karabiner DriverKit VirtualHIDPointing")) {
         return true;
       }
     }
@@ -60,7 +60,7 @@ public:
     pqrs::osx::iokit_hid_device hid_device(device);
 
     if (auto product_name = hid_device.find_product()) {
-      stream << pqrs::string::trim_copy(*product_name);
+      stream << pqrs::string::trim_copy(type_safe::get(*product_name));
     } else {
       if (auto vendor_id = hid_device.find_vendor_id()) {
         if (auto product_id = hid_device.find_product_id()) {
@@ -91,10 +91,10 @@ public:
     logger::get_logger()->info("  registry_entry_id: {0}", type_safe::get(registry_entry_id));
 
     if (auto manufacturer = hid_device.find_manufacturer()) {
-      logger::get_logger()->info("  manufacturer: {0}", *manufacturer);
+      logger::get_logger()->info("  manufacturer: {0}", type_safe::get(*manufacturer));
     }
     if (auto product = hid_device.find_product()) {
-      logger::get_logger()->info("  product: {0}", *product);
+      logger::get_logger()->info("  product: {0}", type_safe::get(*product));
     }
     if (auto vendor_id = hid_device.find_vendor_id()) {
       logger::get_logger()->info("  vendor_id: {0}", type_safe::get(*vendor_id));

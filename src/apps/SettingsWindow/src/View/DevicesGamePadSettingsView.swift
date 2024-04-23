@@ -346,7 +346,8 @@ struct DevicesGamePadSettingsView_Previews: PreviewProvider {
     isBuiltInKeyboard: false,
     isBuiltInTrackpad: false,
     isBuiltInTouchBar: false,
-    isAppleDevice: false
+    isAppleDevice: false,
+    isKarabinerVirtualHidDevice: false
   )
   @State static var showing = true
 

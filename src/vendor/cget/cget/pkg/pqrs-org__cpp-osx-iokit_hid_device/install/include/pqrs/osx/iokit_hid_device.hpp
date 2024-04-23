@@ -1,6 +1,6 @@
 #pragma once
 
-// pqrs::osx::iokit_hid_device v4.2
+// pqrs::osx::iokit_hid_device v5.0
 
 // (C) Copyright Takayama Fumihiko 2018.
 // Distributed under the Boost Software License, Version 1.0.
@@ -122,14 +122,20 @@ public:
     return std::nullopt;
   }
 
-  std::optional<std::string> find_manufacturer(void) const {
-    return find_string_property(CFSTR(kIOHIDManufacturerKey),
-                                true);
+  std::optional<hid::manufacturer_string::value_t> find_manufacturer(void) const {
+    if (auto value = find_string_property(CFSTR(kIOHIDManufacturerKey),
+                                          true)) {
+      return hid::manufacturer_string::value_t(*value);
+    }
+    return std::nullopt;
   }
 
-  std::optional<std::string> find_product(void) const {
-    return find_string_property(CFSTR(kIOHIDProductKey),
-                                true);
+  std::optional<hid::product_string::value_t> find_product(void) const {
+    if (auto value = find_string_property(CFSTR(kIOHIDProductKey),
+                                          true)) {
+      return hid::product_string::value_t(*value);
+    }
+    return std::nullopt;
   }
 
   std::optional<std::string> find_serial_number(void) const {

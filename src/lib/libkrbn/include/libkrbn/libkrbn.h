@@ -393,6 +393,7 @@ bool libkrbn_connected_devices_get_is_built_in_keyboard(size_t index);
 bool libkrbn_connected_devices_get_is_built_in_trackpad(size_t index);
 bool libkrbn_connected_devices_get_is_built_in_touch_bar(size_t index);
 bool libkrbn_connected_devices_is_apple(size_t index);
+bool libkrbn_connected_devices_is_karabiner_virtual_hid_device(size_t index);
 
 // connected_devices_monitor
 
@@ -432,7 +433,6 @@ void libkrbn_get_device_details_json_file_path(char* buffer, size_t length);
 void libkrbn_get_grabber_state_json_file_path(char* buffer, size_t length);
 void libkrbn_get_manipulator_environment_json_file_path(char* buffer, size_t length);
 void libkrbn_get_notification_message_json_file_path(char* buffer, size_t length);
-void libkrbn_get_observer_state_json_file_path(char* buffer, size_t length);
 
 //
 // libkrbn_frontmost_application_monitor

@@ -11,22 +11,27 @@ struct DevicesView: View {
           ForEach(connectedDevices.connectedDevices) { connectedDevice in
             VStack(alignment: .leading, spacing: 0.0) {
               DeviceName(connectedDevice: connectedDevice)
-
-              VStack(alignment: .leading, spacing: 0.0) {
-                ModifyEventsSetting(connectedDevice: connectedDevice)
-
-                VStack(alignment: .leading, spacing: 12.0) {
-                  KeyboardSettings(connectedDevice: connectedDevice)
-
-                  MouseSettings(connectedDevice: connectedDevice)
-
-                  GamePadSettings(connectedDevice: connectedDevice)
+                .if(connectedDevice.isKarabinerVirtualHidDevice) {
+                  $0.foregroundColor(Color(NSColor.placeholderTextColor))
                 }
-                .padding(.leading, 20.0)
-                .padding(.top, 8.0)
+
+              if !connectedDevice.isKarabinerVirtualHidDevice {
+                VStack(alignment: .leading, spacing: 0.0) {
+                  ModifyEventsSetting(connectedDevice: connectedDevice)
+
+                  VStack(alignment: .leading, spacing: 12.0) {
+                    KeyboardSettings(connectedDevice: connectedDevice)
+
+                    MouseSettings(connectedDevice: connectedDevice)
+
+                    GamePadSettings(connectedDevice: connectedDevice)
+                  }
+                  .padding(.leading, 20.0)
+                  .padding(.top, 8.0)
+                }
+                .padding(.leading, 62.0)
+                .padding(.top, 20.0)
               }
-              .padding(.leading, 62.0)
-              .padding(.top, 20.0)
             }
             .padding(.vertical, 12.0)
             .padding(.trailing, 12.0)

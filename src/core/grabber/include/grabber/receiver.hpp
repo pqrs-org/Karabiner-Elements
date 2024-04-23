@@ -70,33 +70,6 @@ public:
         try {
           nlohmann::json json = nlohmann::json::from_msgpack(*buffer);
           switch (json.at("operation_type").get<operation_type>()) {
-            case operation_type::momentary_switch_event_arrived: {
-              if (device_grabber_) {
-                device_grabber_->async_update_probable_stuck_events_by_observer(
-                    json.at("device_id").get<device_id>(),
-                    json.at("momentary_switch_event").get<momentary_switch_event>(),
-                    json.at("event_type").get<event_type>(),
-                    json.at("time_stamp").get<absolute_time_point>());
-              }
-              break;
-            }
-
-            case operation_type::observed_devices_updated: {
-              observed_devices_ = json.at("observed_devices").get<std::unordered_set<device_id>>();
-              if (device_grabber_) {
-                device_grabber_->async_set_observed_devices(observed_devices_);
-              }
-              break;
-            }
-
-            case operation_type::caps_lock_state_changed: {
-              auto caps_lock_state = json.at("caps_lock_state").get<bool>();
-              if (device_grabber_) {
-                device_grabber_->async_set_caps_lock_state(caps_lock_state);
-              }
-              break;
-            }
-
             case operation_type::connect_console_user_server: {
               auto user_core_configuration_file_path =
                   json.at("user_core_configuration_file_path").get<std::string>();
@@ -239,7 +212,6 @@ private:
     device_grabber_ = std::make_unique<device_grabber>(console_user_server_client_,
                                                        weak_grabber_state_json_writer_);
 
-    device_grabber_->async_set_observed_devices(observed_devices_);
     device_grabber_->async_set_system_preferences_properties(system_preferences_properties_);
     device_grabber_->async_post_frontmost_application_changed_event(frontmost_application_);
     device_grabber_->async_post_input_source_changed_event(input_source_properties_);
@@ -267,7 +239,6 @@ private:
   std::shared_ptr<console_user_server_client> console_user_server_client_;
   std::unique_ptr<device_grabber> device_grabber_;
 
-  std::unordered_set<device_id> observed_devices_;
   pqrs::osx::system_preferences::properties system_preferences_properties_;
   pqrs::osx::frontmost_application_monitor::application frontmost_application_;
   pqrs::osx::input_source::properties input_source_properties_;

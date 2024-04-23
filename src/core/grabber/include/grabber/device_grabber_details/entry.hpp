@@ -21,7 +21,6 @@ public:
         std::weak_ptr<const core_configuration::core_configuration> core_configuration) : dispatcher_client(),
                                                                                           device_id_(device_id),
                                                                                           core_configuration_(core_configuration),
-                                                                                          hid_queue_value_monitor_async_start_called_(false),
                                                                                           first_value_arrived_(false),
                                                                                           grabbed_(false),
                                                                                           disabled_(false),
@@ -90,8 +89,8 @@ public:
     first_value_arrived_ = value;
   }
 
-  std::shared_ptr<hid_keyboard_caps_lock_led_state_manager> get_caps_lock_led_state_manager(void) const {
-    return caps_lock_led_state_manager_;
+  void set_caps_lock_led_state(std::optional<led_state> state) {
+    caps_lock_led_state_manager_->set_state(state);
   }
 
   const std::string& get_device_name(void) const {
@@ -123,6 +122,10 @@ public:
   }
 
   void set_disabled(bool value) {
+    if (is_karabiner_virtual_hid_device()) {
+      return;
+    }
+
     disabled_ = value;
 
     update_event_origin();
@@ -133,6 +136,10 @@ public:
   }
 
   bool is_disable_built_in_keyboard_if_exists(void) const {
+    if (is_karabiner_virtual_hid_device()) {
+      return false;
+    }
+
     if (device_properties_.get_is_built_in_keyboard() ||
         device_properties_.get_is_built_in_pointing_device() ||
         device_properties_.get_is_built_in_touch_bar()) {
@@ -155,17 +162,41 @@ public:
     return false;
   }
 
-  void async_start_queue_value_monitor(void) {
+  void async_start_queue_value_monitor(grabbable_state::state state) {
     auto options = kIOHIDOptionsTypeSeizeDevice;
-    if (event_origin_ == event_origin::observed_device) {
+
+    if (is_karabiner_virtual_hid_device()) {
       options = kIOHIDOptionsTypeNone;
+    } else {
+      switch (state) {
+        case grabbable_state::state::grabbable:
+          if (event_origin_ == event_origin::observed_device) {
+            options = kIOHIDOptionsTypeNone;
+          }
+          break;
+
+        case grabbable_state::state::ungrabbable_temporarily:
+          options = kIOHIDOptionsTypeNone;
+          break;
+
+        case grabbable_state::state::ungrabbable_permanently:
+        case grabbable_state::state::none:
+        case grabbable_state::state::end_:
+          // Do not
+          return;
+      }
+    }
+
+    // Skip the process if the same options have already been processed.
+    if (hid_queue_value_monitor_async_start_options_ == options) {
+      return;
     }
 
     //
     // Stop if already started with different options.
     //
 
-    if (options != hid_queue_value_monitor_async_start_option_) {
+    if (options != hid_queue_value_monitor_async_start_options_) {
       async_stop_queue_value_monitor();
     }
 
@@ -173,28 +204,20 @@ public:
     // Start
     //
 
-    if (hid_queue_value_monitor_) {
-      if (!hid_queue_value_monitor_async_start_called_) {
-        first_value_arrived_ = false;
-        hid_queue_value_monitor_async_start_called_ = true;
-      }
+    first_value_arrived_ = false;
+    hid_queue_value_monitor_async_start_options_ = options;
 
-      hid_queue_value_monitor_async_start_option_ = options;
-
-      hid_queue_value_monitor_->async_start(options,
-                                            std::chrono::milliseconds(1000));
-    }
+    hid_queue_value_monitor_->async_start(options,
+                                          std::chrono::milliseconds(1000));
   }
 
   void async_stop_queue_value_monitor(void) {
-    if (hid_queue_value_monitor_) {
-      hid_queue_value_monitor_async_start_called_ = false;
+    hid_queue_value_monitor_->async_stop();
 
-      hid_queue_value_monitor_->async_stop();
-    }
+    hid_queue_value_monitor_async_start_options_ = std::nullopt;
   }
 
-  bool is_grabbed(absolute_time_point time_stamp) {
+  bool grabbed(absolute_time_point time_stamp) const {
     if (grabbed_) {
       if (grabbed_time_stamp_ <= time_stamp) {
         return true;
@@ -213,8 +236,28 @@ public:
     return false;
   }
 
+  bool seized(void) const {
+    if (auto options = hid_queue_value_monitor_async_start_options_) {
+      return *options & kIOHIDOptionsTypeSeizeDevice;
+    }
+
+    return false;
+  }
+
+  bool is_karabiner_virtual_hid_device(void) const {
+    if (auto v = device_properties_.get_is_karabiner_virtual_hid_device()) {
+      return *v;
+    }
+
+    return false;
+  }
+
 private:
   bool is_ignored_device(void) const {
+    if (is_karabiner_virtual_hid_device()) {
+      return false;
+    }
+
     if (auto c = core_configuration_.lock()) {
       return c->get_selected_profile().get_device_ignore(
           device_properties_.get_device_identifiers());
@@ -226,13 +269,17 @@ private:
   void update_event_origin(void) {
     auto old_event_origin = event_origin_;
 
-    if (disabled_) {
-      event_origin_ = event_origin::grabbed_device;
+    if (is_karabiner_virtual_hid_device()) {
+      event_origin_ = event_origin::observed_device;
     } else {
-      if (is_ignored_device()) {
-        event_origin_ = event_origin::observed_device;
-      } else {
+      if (disabled_) {
         event_origin_ = event_origin::grabbed_device;
+      } else {
+        if (is_ignored_device()) {
+          event_origin_ = event_origin::observed_device;
+        } else {
+          event_origin_ = event_origin::grabbed_device;
+        }
       }
     }
 
@@ -245,6 +292,10 @@ private:
   }
 
   void control_caps_lock_led_state_manager(void) {
+    if (is_karabiner_virtual_hid_device()) {
+      return;
+    }
+
     if (caps_lock_led_state_manager_) {
       if (auto c = core_configuration_.lock()) {
         if (c->get_selected_profile().get_device_manipulate_caps_lock_led(device_properties_.get_device_identifiers())) {
@@ -265,8 +316,7 @@ private:
   std::shared_ptr<pressed_keys_manager> pressed_keys_manager_;
 
   std::shared_ptr<pqrs::osx::iokit_hid_queue_value_monitor> hid_queue_value_monitor_;
-  bool hid_queue_value_monitor_async_start_called_;
-  std::optional<IOOptionBits> hid_queue_value_monitor_async_start_option_;
+  std::optional<IOOptionBits> hid_queue_value_monitor_async_start_options_;
   bool first_value_arrived_;
 
   std::shared_ptr<hid_keyboard_caps_lock_led_state_manager> caps_lock_led_state_manager_;

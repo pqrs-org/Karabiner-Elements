@@ -8,6 +8,11 @@
 
 namespace pqrs {
 namespace hid {
+
+//
+// number values
+//
+
 namespace country_code {
 inline std::size_t hash_value(const value_t& value) {
   return std::hash<value_t>{}(value);
@@ -43,6 +48,26 @@ inline std::size_t hash_value(const value_t& value) {
   return std::hash<value_t>{}(value);
 }
 } // namespace vendor_id
+
+//
+// string values
+//
+
+namespace manufacturer_string {
+inline std::size_t hash_value(const value_t& value) {
+  return std::hash<value_t>{}(value);
+}
+} // namespace manufacturer_string
+
+namespace product_string {
+inline std::size_t hash_value(const value_t& value) {
+  return std::hash<value_t>{}(value);
+}
+} // namespace product_string
+
+//
+// usage_pair
+//
 
 inline std::size_t hash_value(const usage_pair& value) {
   return std::hash<usage_pair>{}(value);
