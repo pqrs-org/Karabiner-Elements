@@ -4,13 +4,18 @@ struct ContentView: View {
   @ObservedObject private var inputMonitoringAlertData = InputMonitoringAlertData.shared
 
   var body: some View {
-    HStack {
-      InformationView()
-      StickView()
-      PointerView()
-    }
-    .alert(isPresented: inputMonitoringAlertData.showing) {
-      InputMonitoringAlertView()
+    ZStack {
+      HStack {
+        InformationView()
+        StickView()
+        PointerView()
+      }
+
+      if inputMonitoringAlertData.showing {
+        OverlayAlertView {
+          InputMonitoringAlertView()
+        }
+      }
     }
     .frame(
       minWidth: 1100,

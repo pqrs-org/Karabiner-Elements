@@ -6,20 +6,26 @@ struct ContentView: View {
   private let padding = 6.0
 
   var body: some View {
-    VStack {
+    ZStack {
       ContentMainView()
-        .alert(
-          isPresented: contentViewStates.showDriverNotActivatedAlert
-        ) { DriverNotActivatedAlertView() }
-        .alert(
-          isPresented: contentViewStates.showDriverVersionMismatchedAlert
-        ) { DriverVersionMismatchedAlertView() }
-        .alert(
-          isPresented: contentViewStates.showInputMonitoringPermissionsAlert
-        ) { InputMonitoringPermissionsAlertView() }
-        .alert(
-          isPresented: contentViewStates.showDoctorAlert
-        ) { DoctorAlertView() }
+
+      if contentViewStates.showDoctorAlert {
+        OverlayAlertView {
+          DoctorAlertView()
+        }
+      } else if contentViewStates.showInputMonitoringPermissionsAlert {
+        OverlayAlertView {
+          InputMonitoringPermissionsAlertView()
+        }
+      } else if contentViewStates.showDriverVersionMismatchedAlert {
+        OverlayAlertView {
+          DriverVersionMismatchedAlertView()
+        }
+      } else if contentViewStates.showDriverNotActivatedAlert {
+        OverlayAlertView {
+          DriverNotActivatedAlertView()
+        }
+      }
     }
     .frame(
       minWidth: 1100,

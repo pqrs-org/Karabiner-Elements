@@ -2,7 +2,7 @@ import Foundation
 
 private func callback() {
   Task { @MainActor in
-    StateJsonMonitor.shared.update(StateJsonMonitor.shared.grabberStateJsonFilePath)
+    StateJsonMonitor.shared.update()
   }
 }
 
@@ -10,6 +10,12 @@ private struct State: Codable {
   var driverActivated: Bool?
   var driverVersionMismatched: Bool?
   var hidDeviceOpenPermitted: Bool?
+
+  public mutating func update(_ s: State) {
+    driverActivated = s.driverActivated ?? driverActivated
+    driverVersionMismatched = s.driverVersionMismatched ?? driverVersionMismatched
+    hidDeviceOpenPermitted = s.hidDeviceOpenPermitted ?? hidDeviceOpenPermitted
+  }
 }
 
 public class StateJsonMonitor {
@@ -17,7 +23,7 @@ public class StateJsonMonitor {
 
   let grabberStateJsonFilePath = LibKrbn.grabberStateJsonFilePath()
 
-  private var states: [String: State] = [:]
+  private var state = State()
 
   // We register the callback in the `start` method rather than in `init`.
   // If libkrbn_register_*_callback is called within init, there is a risk that `init` could be invoked again from the callback through `shared` before the initial `init` completes.
@@ -39,76 +45,56 @@ public class StateJsonMonitor {
     // We don't call `libkrbn_disable_file_monitors` because the file monitors may be used elsewhere.
   }
 
-  public func update(_ filePath: String) {
-    if let jsonData = try? Data(contentsOf: URL(fileURLWithPath: filePath)) {
+  public func update() {
+    if let jsonData = try? Data(contentsOf: URL(fileURLWithPath: grabberStateJsonFilePath)) {
       let decoder = JSONDecoder()
       decoder.keyDecodingStrategy = .convertFromSnakeCase
-      if let state = try? decoder.decode(State.self, from: jsonData) {
-        states[filePath] = state
+      if let s = try? decoder.decode(State.self, from: jsonData) {
+        state.update(s)
       }
     }
 
     //
-    // Show alerts
+    // Update show alerts
     //
 
-    var driverNotActivated = false
-    var driverVersionMismatched = false
-    var inputMonitoringNotPermitted = false
-    for state in states {
-      if state.value.driverActivated == false {
-        driverNotActivated = true
-      }
-      if state.value.driverVersionMismatched == true {
-        driverVersionMismatched = true
-      }
-      if state.value.hidDeviceOpenPermitted == false {
-        inputMonitoringNotPermitted = true
-      }
+    if let v = state.driverActivated {
+      print("driverActivated \(v)")
     }
-
-    // print("driverNotActivated \(driverNotActivated)")
-    // print("driverVersionMismatched \(driverVersionMismatched)")
-    // print("inputMonitoringNotPermitted \(inputMonitoringNotPermitted)")
+    if let v = state.driverVersionMismatched {
+      print("driverVersionMismatched \(v)")
+    }
+    if let v = state.hidDeviceOpenPermitted {
+      print("hidDeviceOpenPermitted \(v)")
+    }
 
     let contentViewStates = ContentViewStates.shared
 
-    //
-    // - DriverNotActivatedAlert
-    // - DriverVersionMismatchedAlert
-    //
-
-    if contentViewStates.showDriverVersionMismatchedAlert {
-      // If diverVersionMismatchedAlert is shown,
-      // keep needsDriverNotActivatedAlert to prevent showing DriverNotActivatedAlert after the driver is deactivated.
-
-      if !driverVersionMismatched {
-        contentViewStates.showDriverVersionMismatchedAlert = false
-      }
-
-    } else {
-      if driverNotActivated {
-        contentViewStates.showDriverNotActivatedAlert = true
-        contentViewStates.showDriverVersionMismatchedAlert = false
-      } else {
-        contentViewStates.showDriverNotActivatedAlert = false
-
-        if driverVersionMismatched {
-          contentViewStates.showDriverVersionMismatchedAlert = true
-        } else {
-          contentViewStates.showDriverVersionMismatchedAlert = false
-        }
-      }
+    switch state.driverActivated {
+    case true:
+      contentViewStates.showDriverNotActivatedAlert = false
+    case false:
+      contentViewStates.showDriverNotActivatedAlert = true
+    default:  // nil
+      break
     }
 
-    //
-    // - InputMonitoringPermissionsAlert
-    //
+    switch state.driverVersionMismatched {
+    case true:
+      contentViewStates.showDriverVersionMismatchedAlert = true
+    case false:
+      contentViewStates.showDriverVersionMismatchedAlert = false
+    default:  // nil
+      break
+    }
 
-    if inputMonitoringNotPermitted {
-      contentViewStates.showInputMonitoringPermissionsAlert = true
-    } else {
+    switch state.hidDeviceOpenPermitted {
+    case true:
       contentViewStates.showInputMonitoringPermissionsAlert = false
+    case false:
+      contentViewStates.showInputMonitoringPermissionsAlert = true
+    default:  // nil
+      break
     }
   }
 }
