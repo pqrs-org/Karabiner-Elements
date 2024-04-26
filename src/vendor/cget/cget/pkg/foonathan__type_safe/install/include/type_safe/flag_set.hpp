@@ -115,6 +115,11 @@ namespace detail
             return flag_set_impl(int_type(0));
         }
 
+        static constexpr flag_set_impl from_int(int_type intVal)
+        {
+            return flag_set_impl(int_type(intVal));
+        }
+
         explicit constexpr flag_set_impl(const Enum& e) : bits_(mask(e)) {}
         template <typename Tag2>
         explicit constexpr flag_set_impl(const flag_set_impl<Enum, Tag2>& other)
@@ -416,6 +421,17 @@ class flag_set
     static_assert(flag_set_traits<Enum>::value, "invalid enum for flag_set");
 
 public:
+    using int_type = typename detail::flag_set_impl<Enum>::int_type;
+
+    /// \returns a flag_set based on the given integer value.
+    /// \requires `T` must be of the same type as `int_type`.
+    template <typename T>
+    static constexpr flag_set from_int(T intVal)
+    {
+        static_assert(std::is_same<T, int_type>::value, "invalid integer type, lossy conversion");
+        return flag_set(intVal);
+    }
+
     //=== constructors/assignment ===//
     /// \effects Creates a set where all flags are set to `0`.
     /// \group ctor_null
@@ -609,6 +625,9 @@ public:
     }
 
 private:
+    explicit constexpr flag_set(int_type rawvalue) noexcept : flags_(detail::flag_set_impl<Enum>::from_int(rawvalue))
+    {}
+
     detail::flag_set_impl<Enum> flags_;
 
     friend detail::get_flag_set_impl;

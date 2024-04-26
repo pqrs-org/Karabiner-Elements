@@ -2,7 +2,7 @@
 // async_result.hpp
 // ~~~~~~~~~~~~~~~~
 //
-// Copyright (c) 2003-2023 Christopher M. Kohlhoff (chris at kohlhoff dot com)
+// Copyright (c) 2003-2024 Christopher M. Kohlhoff (chris at kohlhoff dot com)
 //
 // Distributed under the Boost Software License, Version 1.0. (See accompanying
 // file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
@@ -97,19 +97,19 @@ struct is_completion_handler_for : false_type
 
 template <typename T, typename R, typename... Args>
 struct is_completion_handler_for<T, R(Args...)>
-  : integral_constant<bool, (callable_with<T, Args...>)>
+  : integral_constant<bool, (callable_with<decay_t<T>, Args...>)>
 {
 };
 
 template <typename T, typename R, typename... Args>
 struct is_completion_handler_for<T, R(Args...) &>
-  : integral_constant<bool, (callable_with<T&, Args...>)>
+  : integral_constant<bool, (callable_with<decay_t<T>&, Args...>)>
 {
 };
 
 template <typename T, typename R, typename... Args>
 struct is_completion_handler_for<T, R(Args...) &&>
-  : integral_constant<bool, (callable_with<T&&, Args...>)>
+  : integral_constant<bool, (callable_with<decay_t<T>&&, Args...>)>
 {
 };
 
@@ -117,19 +117,19 @@ struct is_completion_handler_for<T, R(Args...) &&>
 
 template <typename T, typename R, typename... Args>
 struct is_completion_handler_for<T, R(Args...) noexcept>
-  : integral_constant<bool, (callable_with<T, Args...>)>
+  : integral_constant<bool, (callable_with<decay_t<T>, Args...>)>
 {
 };
 
 template <typename T, typename R, typename... Args>
 struct is_completion_handler_for<T, R(Args...) & noexcept>
-  : integral_constant<bool, (callable_with<T&, Args...>)>
+  : integral_constant<bool, (callable_with<decay_t<T>&, Args...>)>
 {
 };
 
 template <typename T, typename R, typename... Args>
 struct is_completion_handler_for<T, R(Args...) && noexcept>
-  : integral_constant<bool, (callable_with<T&&, Args...>)>
+  : integral_constant<bool, (callable_with<decay_t<T>&&, Args...>)>
 {
 };
 
@@ -176,36 +176,83 @@ ASIO_CONCEPT completion_handler_for =
 namespace detail {
 
 template <typename T>
-struct is_simple_completion_signature : false_type
+struct is_lvalue_completion_signature : false_type
+{
+};
+
+template <typename R, typename... Args>
+struct is_lvalue_completion_signature<R(Args...) &> : true_type
+{
+};
+
+# if defined(ASIO_HAS_NOEXCEPT_FUNCTION_TYPE)
+
+template <typename R, typename... Args>
+struct is_lvalue_completion_signature<R(Args...) & noexcept> : true_type
+{
+};
+
+# endif // defined(ASIO_HAS_NOEXCEPT_FUNCTION_TYPE)
+
+template <typename... Signatures>
+struct are_any_lvalue_completion_signatures : false_type
+{
+};
+
+template <typename Sig0>
+struct are_any_lvalue_completion_signatures<Sig0>
+  : is_lvalue_completion_signature<Sig0>
+{
+};
+
+template <typename Sig0, typename... SigN>
+struct are_any_lvalue_completion_signatures<Sig0, SigN...>
+  : integral_constant<bool, (
+      is_lvalue_completion_signature<Sig0>::value
+        || are_any_lvalue_completion_signatures<SigN...>::value)>
+{
+};
+
+template <typename T>
+struct is_rvalue_completion_signature : false_type
+{
+};
+
+template <typename R, typename... Args>
+struct is_rvalue_completion_signature<R(Args...) &&> : true_type
+{
+};
+
+# if defined(ASIO_HAS_NOEXCEPT_FUNCTION_TYPE)
+
+template <typename R, typename... Args>
+struct is_rvalue_completion_signature<R(Args...) && noexcept> : true_type
+{
+};
+
+# endif // defined(ASIO_HAS_NOEXCEPT_FUNCTION_TYPE)
+
+template <typename... Signatures>
+struct are_any_rvalue_completion_signatures : false_type
+{
+};
+
+template <typename Sig0>
+struct are_any_rvalue_completion_signatures<Sig0>
+  : is_rvalue_completion_signature<Sig0>
+{
+};
+
+template <typename Sig0, typename... SigN>
+struct are_any_rvalue_completion_signatures<Sig0, SigN...>
+  : integral_constant<bool, (
+      is_rvalue_completion_signature<Sig0>::value
+        || are_any_rvalue_completion_signatures<SigN...>::value)>
 {
 };
 
 template <typename T>
 struct simple_completion_signature;
-
-template <typename R, typename... Args>
-struct is_simple_completion_signature<R(Args...)> : true_type
-{
-};
-
-template <typename... Signatures>
-struct are_simple_completion_signatures : false_type
-{
-};
-
-template <typename Sig0>
-struct are_simple_completion_signatures<Sig0>
-  : is_simple_completion_signature<Sig0>
-{
-};
-
-template <typename Sig0, typename... SigN>
-struct are_simple_completion_signatures<Sig0, SigN...>
-  : integral_constant<bool, (
-      is_simple_completion_signature<Sig0>::value
-        && are_simple_completion_signatures<SigN...>::value)>
-{
-};
 
 template <typename R, typename... Args>
 struct simple_completion_signature<R(Args...)>
@@ -344,7 +391,8 @@ template <typename CompletionToken,
     ASIO_COMPLETION_SIGNATURE... Signatures>
 class async_result :
   public conditional_t<
-      detail::are_simple_completion_signatures<Signatures...>::value,
+      detail::are_any_lvalue_completion_signatures<Signatures...>::value
+        || !detail::are_any_rvalue_completion_signatures<Signatures...>::value,
       detail::completion_handler_async_result<CompletionToken, Signatures...>,
       async_result<CompletionToken,
         typename detail::simple_completion_signature<Signatures>::type...>
@@ -352,7 +400,8 @@ class async_result :
 {
 public:
   typedef conditional_t<
-      detail::are_simple_completion_signatures<Signatures...>::value,
+      detail::are_any_lvalue_completion_signatures<Signatures...>::value
+        || !detail::are_any_rvalue_completion_signatures<Signatures...>::value,
       detail::completion_handler_async_result<CompletionToken, Signatures...>,
       async_result<CompletionToken,
         typename detail::simple_completion_signature<Signatures>::type...>

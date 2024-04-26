@@ -2,7 +2,7 @@
 // ip/impl/network_v4.ipp
 // ~~~~~~~~~~~~~~~~~~~~~~
 //
-// Copyright (c) 2003-2023 Christopher M. Kohlhoff (chris at kohlhoff dot com)
+// Copyright (c) 2003-2024 Christopher M. Kohlhoff (chris at kohlhoff dot com)
 // Copyright (c) 2014 Oliver Kowalke (oliver dot kowalke at gmail dot com)
 //
 // Distributed under the Boost Software License, Version 1.0. (See accompanying

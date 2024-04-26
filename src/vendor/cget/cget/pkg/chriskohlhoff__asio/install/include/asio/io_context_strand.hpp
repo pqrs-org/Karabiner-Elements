@@ -2,7 +2,7 @@
 // io_context_strand.hpp
 // ~~~~~~~~~~~~~~~~~~~~~
 //
-// Copyright (c) 2003-2023 Christopher M. Kohlhoff (chris at kohlhoff dot com)
+// Copyright (c) 2003-2024 Christopher M. Kohlhoff (chris at kohlhoff dot com)
 //
 // Distributed under the Boost Software License, Version 1.0. (See accompanying
 // file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
@@ -106,6 +106,17 @@ public:
         asio::detail::strand_service>(io_context))
   {
     service_.construct(impl_);
+  }
+
+  /// Copy constructor.
+  /**
+   * Creates a copy such that both strand objects share the same underlying
+   * state.
+   */
+  strand(const strand& other) noexcept
+    : service_(other.service_),
+      impl_(other.impl_)
+  {
   }
 
   /// Destructor.

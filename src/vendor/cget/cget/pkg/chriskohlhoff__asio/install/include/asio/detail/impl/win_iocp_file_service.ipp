@@ -2,7 +2,7 @@
 // detail/impl/win_iocp_file_service.ipp
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 //
-// Copyright (c) 2003-2023 Christopher M. Kohlhoff (chris at kohlhoff dot com)
+// Copyright (c) 2003-2024 Christopher M. Kohlhoff (chris at kohlhoff dot com)
 //
 // Distributed under the Boost Software License, Version 1.0. (See accompanying
 // file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
@@ -97,15 +97,30 @@ asio::error_code win_iocp_file_service::open(
   HANDLE handle = ::CreateFileA(path, access, share, 0, disposition, flags, 0);
   if (handle != INVALID_HANDLE_VALUE)
   {
-    if (disposition == OPEN_ALWAYS && (open_flags & file_base::truncate) != 0)
+    if (disposition == OPEN_ALWAYS)
     {
-      if (!::SetEndOfFile(handle))
+      if ((open_flags & file_base::truncate) != 0)
       {
-        DWORD last_error = ::GetLastError();
-        ::CloseHandle(handle);
-        ec.assign(last_error, asio::error::get_system_category());
-        ASIO_ERROR_LOCATION(ec);
-        return ec;
+        if (!::SetEndOfFile(handle))
+        {
+          DWORD last_error = ::GetLastError();
+          ::CloseHandle(handle);
+          ec.assign(last_error, asio::error::get_system_category());
+          ASIO_ERROR_LOCATION(ec);
+          return ec;
+        }
+      }
+      else if ((open_flags & file_base::append) != 0)
+      {
+        if (::SetFilePointer(handle, 0, 0, FILE_END)
+            == INVALID_SET_FILE_POINTER)
+        {
+          DWORD last_error = ::GetLastError();
+          ::CloseHandle(handle);
+          ec.assign(last_error, asio::error::get_system_category());
+          ASIO_ERROR_LOCATION(ec);
+          return ec;
+        }
       }
     }
 

@@ -84,6 +84,31 @@ SPDLOG_INLINE std::shared_ptr<logger> registry::get(const std::string &logger_na
     return found == loggers_.end() ? nullptr : found->second;
 }
 
+#if __cplusplus >= 201703L  // C++17
+// if the map is small do a sequential search and avoid creating string for find(logger_name)
+// otherwise use the standard find()
+SPDLOG_INLINE std::shared_ptr<logger> registry::get(std::string_view logger_name) {
+    std::lock_guard<std::mutex> lock(logger_map_mutex_);
+    if (loggers_.size() <= 10) {
+        for (const auto &[key, val]: loggers_) {
+            if (logger_name == key) {
+                return val;
+            }
+        }
+        return nullptr;
+    }
+    // otherwise use the normal map lookup
+    else {
+        auto found = loggers_.find(std::string(logger_name));
+        return found == loggers_.end() ? nullptr : found->second;
+    }
+}
+
+SPDLOG_INLINE std::shared_ptr<logger> registry::get(const char *logger_name) {
+    return get(std::string_view(logger_name));
+}
+#endif
+
 SPDLOG_INLINE std::shared_ptr<logger> registry::default_logger() {
     std::lock_guard<std::mutex> lock(logger_map_mutex_);
     return default_logger_;
@@ -98,11 +123,7 @@ SPDLOG_INLINE logger *registry::get_default_raw() { return default_logger_.get()
 // set default logger.
 // default logger is stored in default_logger_ (for faster retrieval) and in the loggers_ map.
 SPDLOG_INLINE void registry::set_default_logger(std::shared_ptr<logger> new_default_logger) {
-    std::lock_guard<std::mutex> lock(logger_map_mutex_);
-    // remove previous default logger from the map
-    if (default_logger_ != nullptr) {
-        loggers_.erase(default_logger_->name());
-    }
+    std::lock_guard<std::mutex> lock(logger_map_mutex_);    
     if (new_default_logger != nullptr) {
         loggers_[new_default_logger->name()] = new_default_logger;
     }

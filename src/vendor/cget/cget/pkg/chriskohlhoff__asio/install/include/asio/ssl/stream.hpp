@@ -2,7 +2,7 @@
 // ssl/stream.hpp
 // ~~~~~~~~~~~~~~
 //
-// Copyright (c) 2003-2023 Christopher M. Kohlhoff (chris at kohlhoff dot com)
+// Copyright (c) 2003-2024 Christopher M. Kohlhoff (chris at kohlhoff dot com)
 //
 // Distributed under the Boost Software License, Version 1.0. (See accompanying
 // file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
@@ -18,6 +18,7 @@
 #include "asio/detail/config.hpp"
 
 #include "asio/async_result.hpp"
+#include "asio/buffer.hpp"
 #include "asio/detail/buffer_sequence_adapter.hpp"
 #include "asio/detail/handler_type_requirements.hpp"
 #include "asio/detail/non_const_lvalue.hpp"
@@ -54,7 +55,7 @@ namespace ssl {
  * @code
  * asio::io_context my_context;
  * asio::ssl::context ctx(asio::ssl::context::sslv23);
- * asio::ssl::stream<asio:ip::tcp::socket> sock(my_context, ctx);
+ * asio::ssl::stream<asio::ip::tcp::socket> sock(my_context, ctx);
  * @endcode
  *
  * @par Concepts:
@@ -186,7 +187,7 @@ public:
    * suitable for passing to functions such as @c SSL_get_verify_result and
    * @c SSL_get_peer_certificate:
    * @code
-   * asio::ssl::stream<asio:ip::tcp::socket> sock(my_context, ctx);
+   * asio::ssl::stream<asio::ip::tcp::socket> sock(io_ctx, ctx);
    *
    * // ... establish connection and perform handshake ...
    *
@@ -559,7 +560,10 @@ public:
           = default_completion_token_t<executor_type>>
   auto async_handshake(handshake_type type, const ConstBufferSequence& buffers,
       BufferedHandshakeToken&& token
-        = default_completion_token_t<executor_type>())
+        = default_completion_token_t<executor_type>(),
+      constraint_t<
+        is_const_buffer_sequence<ConstBufferSequence>::value
+      > = 0)
     -> decltype(
       async_initiate<BufferedHandshakeToken,
         void (asio::error_code, std::size_t)>(

@@ -129,7 +129,7 @@ using underlying_type
 /// \group is_strong_typedef
 /// Whether a type `T` is a [ts::strong_type]()
 template <class T, typename = detail::void_t<>>
-struct TYPE_SAFE_MSC_EMPTY_BASES is_strong_typedef : std::false_type
+struct is_strong_typedef : std::false_type
 {};
 
 /// \group is_strong_typedef
@@ -425,35 +425,35 @@ namespace strong_typedef_op
 /// \exclude
 #define TYPE_SAFE_DETAIL_MAKE_STRONG_TYPEDEF_OP(Name, Op)                                          \
     template <class StrongTypedef>                                                                 \
-    struct Name                                                                                    \
+    struct TYPE_SAFE_MSC_EMPTY_BASES Name                                                          \
     {};                                                                                            \
     TYPE_SAFE_DETAIL_MAKE_OP(Op, Name, StrongTypedef)                                              \
     TYPE_SAFE_DETAIL_MAKE_OP_COMPOUND(Op## =, Name)                                                \
     template <class StrongTypedef, typename Other>                                                 \
-    struct mixed_##Name                                                                            \
+    struct TYPE_SAFE_MSC_EMPTY_BASES mixed_##Name                                                  \
     {};                                                                                            \
     TYPE_SAFE_DETAIL_MAKE_OP_MIXED(Op, mixed_##Name, StrongTypedef)                                \
     TYPE_SAFE_DETAIL_MAKE_OP_COMPOUND_MIXED(Op## =, mixed_##Name)                                  \
     template <class StrongTypedef, typename Other>                                                 \
-    struct mixed_##Name##_noncommutative                                                           \
+    struct TYPE_SAFE_MSC_EMPTY_BASES mixed_##Name##_noncommutative                                 \
     {};                                                                                            \
     TYPE_SAFE_DETAIL_MAKE_OP_STRONGTYPEDEF_OTHER(Op, mixed_##Name##_noncommutative, StrongTypedef) \
     TYPE_SAFE_DETAIL_MAKE_OP_COMPOUND_MIXED(Op## =, mixed_##Name##_noncommutative)
 
     template <class StrongTypedef>
-    struct equality_comparison
+    struct TYPE_SAFE_MSC_EMPTY_BASES equality_comparison
     {};
     TYPE_SAFE_DETAIL_MAKE_OP(==, equality_comparison, bool)
     TYPE_SAFE_DETAIL_MAKE_OP(!=, equality_comparison, bool)
 
     template <class StrongTypedef, typename Other>
-    struct mixed_equality_comparison
+    struct TYPE_SAFE_MSC_EMPTY_BASES mixed_equality_comparison
     {};
     TYPE_SAFE_DETAIL_MAKE_OP_MIXED(==, mixed_equality_comparison, bool)
     TYPE_SAFE_DETAIL_MAKE_OP_MIXED(!=, mixed_equality_comparison, bool)
 
     template <class StrongTypedef>
-    struct relational_comparison
+    struct TYPE_SAFE_MSC_EMPTY_BASES relational_comparison
     {};
     TYPE_SAFE_DETAIL_MAKE_OP(<, relational_comparison, bool)
     TYPE_SAFE_DETAIL_MAKE_OP(<=, relational_comparison, bool)
@@ -461,7 +461,7 @@ namespace strong_typedef_op
     TYPE_SAFE_DETAIL_MAKE_OP(>=, relational_comparison, bool)
 
     template <class StrongTypedef, typename Other>
-    struct mixed_relational_comparison
+    struct TYPE_SAFE_MSC_EMPTY_BASES mixed_relational_comparison
     {};
     TYPE_SAFE_DETAIL_MAKE_OP_MIXED(<, mixed_relational_comparison, bool)
     TYPE_SAFE_DETAIL_MAKE_OP_MIXED(<=, mixed_relational_comparison, bool)
@@ -475,7 +475,7 @@ namespace strong_typedef_op
     TYPE_SAFE_DETAIL_MAKE_STRONG_TYPEDEF_OP(modulo, %)
 
     template <class StrongTypedef>
-    struct explicit_bool
+    struct TYPE_SAFE_MSC_EMPTY_BASES explicit_bool
     {
         /// \exclude
         explicit constexpr operator bool() const
@@ -486,7 +486,7 @@ namespace strong_typedef_op
     };
 
     template <class StrongTypedef>
-    struct increment
+    struct TYPE_SAFE_MSC_EMPTY_BASES increment
     {
         /// \exclude
         TYPE_SAFE_CONSTEXPR14 StrongTypedef& operator++()
@@ -506,7 +506,7 @@ namespace strong_typedef_op
     };
 
     template <class StrongTypedef>
-    struct decrement
+    struct TYPE_SAFE_MSC_EMPTY_BASES decrement
     {
         /// \exclude
         TYPE_SAFE_CONSTEXPR14 StrongTypedef& operator--()
@@ -526,7 +526,7 @@ namespace strong_typedef_op
     };
 
     template <class StrongTypedef>
-    struct unary_plus
+    struct TYPE_SAFE_MSC_EMPTY_BASES unary_plus
     {};
 
     /// \exclude
@@ -543,7 +543,7 @@ namespace strong_typedef_op
     }
 
     template <class StrongTypedef>
-    struct unary_minus
+    struct TYPE_SAFE_MSC_EMPTY_BASES unary_minus
     {};
 
     /// \exclude
@@ -581,7 +581,7 @@ namespace strong_typedef_op
     {};
 
     template <class StrongTypedef>
-    struct complement
+    struct TYPE_SAFE_MSC_EMPTY_BASES complement
     {};
 
     /// \exclude
@@ -609,7 +609,7 @@ namespace strong_typedef_op
     {};
 
     template <class StrongTypedef, typename IntT>
-    struct bitshift
+    struct TYPE_SAFE_MSC_EMPTY_BASES bitshift
     {};
     TYPE_SAFE_DETAIL_MAKE_OP_MIXED(<<, bitshift, StrongTypedef)
     TYPE_SAFE_DETAIL_MAKE_OP_MIXED(>>, bitshift, StrongTypedef)
@@ -618,7 +618,7 @@ namespace strong_typedef_op
 
     template <class StrongTypedef, typename Result, typename ResultPtr = Result*,
               typename ResultConstPtr = const Result*>
-    struct dereference
+    struct TYPE_SAFE_MSC_EMPTY_BASES dereference
     {
         /// \exclude
         Result& operator*()
@@ -650,7 +650,7 @@ namespace strong_typedef_op
     };
 
     template <class StrongTypedef, typename Result, typename Index = std::size_t>
-    struct array_subscript
+    struct TYPE_SAFE_MSC_EMPTY_BASES array_subscript
     {
         /// \exclude
         Result& operator[](const Index& i)
@@ -752,7 +752,7 @@ namespace strong_typedef_op
     };
 
     template <class StrongTypedef>
-    struct input_operator
+    struct TYPE_SAFE_MSC_EMPTY_BASES input_operator
     {
         /// \exclude
         template <typename Char, class CharTraits>
@@ -765,7 +765,7 @@ namespace strong_typedef_op
     };
 
     template <class StrongTypedef>
-    struct output_operator
+    struct TYPE_SAFE_MSC_EMPTY_BASES output_operator
     {
         /// \exclude
         template <typename Char, class CharTraits>

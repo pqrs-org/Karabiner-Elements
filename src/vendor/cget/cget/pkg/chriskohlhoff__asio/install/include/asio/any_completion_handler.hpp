@@ -2,7 +2,7 @@
 // any_completion_handler.hpp
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~
 //
-// Copyright (c) 2003-2023 Christopher M. Kohlhoff (chris at kohlhoff dot com)
+// Copyright (c) 2003-2024 Christopher M. Kohlhoff (chris at kohlhoff dot com)
 //
 // Distributed under the Boost Software License, Version 1.0. (See accompanying
 // file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
@@ -514,9 +514,15 @@ public:
   /// Allocate space for @c n objects of the allocator's value type.
   T* allocate(std::size_t n) const
   {
-    return static_cast<T*>(
-        fn_table_->allocate(
-          impl_, sizeof(T) * n, alignof(T)));
+    if (fn_table_)
+    {
+      return static_cast<T*>(
+          fn_table_->allocate(
+            impl_, sizeof(T) * n, alignof(T)));
+    }
+    std::bad_alloc ex;
+    asio::detail::throw_exception(ex);
+    return nullptr;
   }
 
   /// Deallocate space for @c n objects of the allocator's value type.
@@ -724,7 +730,7 @@ public:
   /// Get the associated cancellation slot.
   cancellation_slot_type get_cancellation_slot() const noexcept
   {
-    return impl_->get_cancellation_slot();
+    return impl_ ? impl_->get_cancellation_slot() : cancellation_slot_type();
   }
 
   /// Function call operator.
@@ -786,8 +792,10 @@ struct associated_executor<any_completion_handler<Signatures...>, Candidate>
   static type get(const any_completion_handler<Signatures...>& handler,
       const Candidate& candidate = Candidate()) noexcept
   {
-    return handler.fn_table_->executor(handler.impl_,
-        any_completion_executor(std::nothrow, candidate));
+    any_completion_executor any_candidate(std::nothrow, candidate);
+    return handler.fn_table_
+      ? handler.fn_table_->executor(handler.impl_, any_candidate)
+      : any_candidate;
   }
 };
 
@@ -800,8 +808,10 @@ struct associated_immediate_executor<
   static type get(const any_completion_handler<Signatures...>& handler,
       const Candidate& candidate = Candidate()) noexcept
   {
-    return handler.fn_table_->immediate_executor(handler.impl_,
-        any_io_executor(std::nothrow, candidate));
+    any_io_executor any_candidate(std::nothrow, candidate);
+    return handler.fn_table_
+      ? handler.fn_table_->immediate_executor(handler.impl_, any_candidate)
+      : any_candidate;
   }
 };
 

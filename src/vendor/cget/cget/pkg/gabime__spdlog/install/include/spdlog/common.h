@@ -319,7 +319,7 @@ struct source_loc {
           line{line_in},
           funcname{funcname_in} {}
 
-    SPDLOG_CONSTEXPR bool empty() const SPDLOG_NOEXCEPT { return line == 0; }
+    SPDLOG_CONSTEXPR bool empty() const SPDLOG_NOEXCEPT { return line <= 0; }
     const char *filename{nullptr};
     int line{0};
     const char *funcname{nullptr};

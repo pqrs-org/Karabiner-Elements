@@ -2,7 +2,7 @@
 // impl/awaitable.hpp
 // ~~~~~~~~~~~~~~~~~~
 //
-// Copyright (c) 2003-2023 Christopher M. Kohlhoff (chris at kohlhoff dot com)
+// Copyright (c) 2003-2024 Christopher M. Kohlhoff (chris at kohlhoff dot com)
 //
 // Distributed under the Boost Software License, Version 1.0. (See accompanying
 // file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
@@ -538,7 +538,7 @@ public:
   ~awaitable_frame()
   {
     if (has_result_)
-      static_cast<T*>(static_cast<void*>(result_))->~T();
+      std::launder(static_cast<T*>(static_cast<void*>(result_)))->~T();
   }
 
   awaitable<T, Executor> get_return_object() noexcept
@@ -564,7 +564,8 @@ public:
   {
     this->caller_ = nullptr;
     this->rethrow_exception();
-    return std::move(*static_cast<T*>(static_cast<void*>(result_)));
+    return std::move(*std::launder(
+          static_cast<T*>(static_cast<void*>(result_))));
   }
 
 private:

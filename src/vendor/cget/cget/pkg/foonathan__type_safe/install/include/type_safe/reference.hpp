@@ -527,6 +527,20 @@ namespace detail
 template <typename Signature>
 class function_ref;
 
+namespace detail
+{
+    template<typename>
+    struct function_ref_trait { using type = void; };
+
+    template<typename Signature>
+    struct function_ref_trait<function_ref<Signature>>
+    {
+        using type = function_ref<Signature>;
+
+        using return_type = typename type::return_type;
+    };
+} // namespace detail
+
 /// A reference to a function.
 ///
 /// This is a lightweight reference to a function.
@@ -549,6 +563,8 @@ template <typename Return, typename... Args>
 class function_ref<Return(Args...)>
 {
 public:
+    using return_type = Return;
+
     using signature = Return(Args...);
 
     /// \effects Creates a reference to the function specified by the function pointer.
@@ -596,10 +612,15 @@ public:
     /// unless the functor is compatible with the specified signature.
     /// \param 1
     /// \exclude
-    template <typename Functor, typename = detail::enable_function_tag<detail::matching_functor_tag,
-                                                                       Functor, Return, Args...>>
+    template <
+        typename Functor,
+        typename = detail::enable_function_tag<detail::matching_functor_tag, Functor, Return, Args...>,
+        // This overload restricts us to not directly referencing another function_ref.
+        typename std::enable_if<std::is_same<typename detail::function_ref_trait<Functor>::type, void>::value, int>::type = 0
+    >
     explicit function_ref(Functor& f) : cb_(&invoke_functor<Functor>)
     {
+        // Ref to this functor
         ::new (storage_.get()) void*(&f);
     }
 
@@ -612,13 +633,20 @@ public:
     /// `std::string`. If this signature than accepts a type `T` implicitly convertible to `const
     /// char*`, calling this will call the function taking `std::string`, converting `T ->
     /// std::string`, even though such a conversion would be ill-formed otherwise. \param 1 \exclude
-    template <typename Return2, typename... Args2>
-    explicit function_ref(
-        const function_ref<Return2(Args2...)>& other,
-        typename std::enable_if<detail::compatible_return_type<Return2, Return>::value, int>::type
-        = 0)
-    : storage_(other.storage_), cb_(other.cb_)
-    {}
+    template <
+        typename Functor,
+        // This overloading allows us to directly referencing another function_ref.
+        typename std::enable_if<!std::is_same<typename detail::function_ref_trait<Functor>::type, void>::value, int>::type = 0,
+        // Requires that the signature not be consistent (if it is then the copy construct should be called).
+        typename std::enable_if<!std::is_same<typename detail::function_ref_trait<Functor>::type, function_ref>::value, int>::type = 0,
+        // Of course, the return type and parameter types must be compatible.
+        typename = detail::enable_function_tag<detail::matching_functor_tag, Functor, Return, Args...>
+    >
+    explicit function_ref(Functor& f) : cb_(&invoke_functor<Functor>)
+    {
+        // Ref to this function_ref
+        ::new (storage_.get()) void*(&f);
+    }
 
     /// \effects Rebinds the reference to the specified functor.
     /// \notes This assignment operator only participates in overload resolution,

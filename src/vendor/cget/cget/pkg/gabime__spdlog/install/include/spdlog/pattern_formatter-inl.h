@@ -10,6 +10,7 @@
 #include <spdlog/details/fmt_helper.h>
 #include <spdlog/details/log_msg.h>
 #include <spdlog/details/os.h>
+#include <spdlog/mdc.h>
 #include <spdlog/fmt/fmt.h>
 #include <spdlog/formatter.h>
 
@@ -783,6 +784,49 @@ private:
     log_clock::time_point last_message_time_;
 };
 
+// Class for formatting Mapped Diagnostic Context (MDC) in log messages.
+// Example: [logger-name] [info] [mdc_key_1:mdc_value_1 mdc_key_2:mdc_value_2] some message
+template <typename ScopedPadder>
+class mdc_formatter : public flag_formatter {
+public:
+    explicit mdc_formatter(padding_info padinfo)
+            : flag_formatter(padinfo) {}
+
+    void format(const details::log_msg &, const std::tm &, memory_buf_t &dest) override {
+        auto &mdc_map = mdc::get_context();
+        if (mdc_map.empty()) {
+            ScopedPadder p(0, padinfo_, dest);
+            return;
+        } else {
+            format_mdc(mdc_map, dest);
+        }
+    }
+
+    void format_mdc(const mdc::mdc_map_t &mdc_map, memory_buf_t &dest){
+        auto last_element = --mdc_map.end();
+        for (auto it = mdc_map.begin(); it != mdc_map.end(); ++it) {
+            auto &pair = *it;
+            const auto &key = pair.first;
+            const auto &value = pair.second;
+            size_t content_size = key.size() + value.size() + 1;  // 1 for ':'
+
+            if (it != last_element) {
+                content_size++;  // 1 for ' '
+            }
+
+            ScopedPadder p(content_size, padinfo_, dest);
+            fmt_helper::append_string_view(key, dest);
+            fmt_helper::append_string_view(":", dest);
+            fmt_helper::append_string_view(value, dest);
+            if (it != last_element) {
+                fmt_helper::append_string_view(" ", dest);
+            }
+        }
+    }
+};
+
+
+
 // Full info formatter
 // pattern: [%Y-%m-%d %H:%M:%S.%e] [%n] [%l] [%s:%#] %v
 class full_formatter final : public flag_formatter {
@@ -858,6 +902,15 @@ public:
             dest.push_back(']');
             dest.push_back(' ');
         }
+
+        // add mdc if present
+        auto &mdc_map = mdc::get_context();
+        if (!mdc_map.empty()) {
+            dest.push_back('[');
+            mdc_formatter_.format_mdc(mdc_map, dest);
+            dest.push_back(']');
+            dest.push_back(' ');
+        }
         // fmt_helper::append_string_view(msg.msg(), dest);
         fmt_helper::append_string_view(msg.payload, dest);
     }
@@ -865,7 +918,10 @@ public:
 private:
     std::chrono::seconds cache_timestamp_{0};
     memory_buf_t cached_datetime_;
+    mdc_formatter<null_scoped_padder> mdc_formatter_{padding_info{}};
 };
+
+
 
 }  // namespace details
 
@@ -1157,6 +1213,10 @@ SPDLOG_INLINE void pattern_formatter::handle_flag_(char flag, details::padding_i
             formatters_.push_back(
                 details::make_unique<details::elapsed_formatter<Padder, std::chrono::seconds>>(
                     padding));
+            break;
+
+        case ('&'):
+            formatters_.push_back(details::make_unique<details::mdc_formatter<Padder>>(padding));
             break;
 
         default:  // Unknown flag appears as is

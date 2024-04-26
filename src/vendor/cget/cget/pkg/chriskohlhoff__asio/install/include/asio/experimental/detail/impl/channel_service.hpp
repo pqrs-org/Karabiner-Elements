@@ -2,7 +2,7 @@
 // experimental/detail/impl/channel_service.hpp
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 //
-// Copyright (c) 2003-2023 Christopher M. Kohlhoff (chris at kohlhoff dot com)
+// Copyright (c) 2003-2024 Christopher M. Kohlhoff (chris at kohlhoff dot com)
 //
 // Distributed under the Boost Software License, Version 1.0. (See accompanying
 // file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
@@ -22,7 +22,8 @@ namespace experimental {
 namespace detail {
 
 template <typename Mutex>
-inline channel_service<Mutex>::channel_service(execution_context& ctx)
+inline channel_service<Mutex>::channel_service(
+    asio::execution_context& ctx)
   : asio::detail::execution_context_service_base<channel_service>(ctx),
     mutex_(),
     impl_list_(0)

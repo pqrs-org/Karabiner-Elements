@@ -2,7 +2,7 @@
 // ip/basic_resolver_query.hpp
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~
 //
-// Copyright (c) 2003-2023 Christopher M. Kohlhoff (chris at kohlhoff dot com)
+// Copyright (c) 2003-2024 Christopher M. Kohlhoff (chris at kohlhoff dot com)
 //
 // Distributed under the Boost Software License, Version 1.0. (See accompanying
 // file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
@@ -210,6 +210,22 @@ public:
     hints_.ai_canonname = 0;
     hints_.ai_addr = 0;
     hints_.ai_next = 0;
+  }
+
+  /// Copy construct a @c basic_resolver_query from another.
+  basic_resolver_query(const basic_resolver_query& other)
+    : hints_(other.hints_),
+      host_name_(other.host_name_),
+      service_name_(other.service_name_)
+  {
+  }
+
+  /// Move construct a @c basic_resolver_query from another.
+  basic_resolver_query(basic_resolver_query&& other)
+    : hints_(other.hints_),
+      host_name_(static_cast<std::string&&>(other.host_name_)),
+      service_name_(static_cast<std::string&&>(other.service_name_))
+  {
   }
 
   /// Get the hints associated with the query.
