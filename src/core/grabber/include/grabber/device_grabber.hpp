@@ -276,7 +276,7 @@ public:
           if (it != std::end(entries_)) {
             logger::get_logger()->info("{0} hid queue value monitor is started ({1}).",
                                        it->second->get_device_name(),
-                                       it->second->get_event_origin() == event_origin::grabbed_device ? "grabbed" : "observed");
+                                       it->second->seized() ? "grabbed" : "observed");
             logger_unique_filter_.reset();
 
             post_device_grabbed_event(it->second->get_device_properties());
