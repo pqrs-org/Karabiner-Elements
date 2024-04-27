@@ -182,7 +182,7 @@ public:
         case grabbable_state::state::ungrabbable_permanently:
         case grabbable_state::state::none:
         case grabbable_state::state::end_:
-          // Do not
+          // Do not start hid_queue_value_monitor_.
           return;
       }
     }
