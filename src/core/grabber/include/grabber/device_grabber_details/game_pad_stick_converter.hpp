@@ -674,6 +674,11 @@ public:
       return;
     }
 
+    if (c->get_selected_profile().get_device_ignore(
+            device_properties.get_device_identifiers())) {
+      return;
+    }
+
     bool swap_sticks = c->get_selected_profile().get_device_game_pad_swap_sticks(device_properties.get_device_identifiers());
 
     for (const auto& v : hid_values) {
