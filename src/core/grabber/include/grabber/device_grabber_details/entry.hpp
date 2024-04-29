@@ -177,6 +177,14 @@ public:
     return false;
   }
 
+  bool needs_to_observe_device(void) const {
+    if (is_karabiner_virtual_hid_device()) {
+      return true;
+    }
+
+    return false;
+  }
+
   // Return whether the device is a target for modifying input events.
   bool needs_to_seize_device(void) const {
     if (is_karabiner_virtual_hid_device()) {

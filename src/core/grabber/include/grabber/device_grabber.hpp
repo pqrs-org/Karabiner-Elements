@@ -822,6 +822,14 @@ private:
       return grabbable_state::state::ungrabbable_permanently;
     }
 
+    // The device is always grabbable if it is observed device
+    // because karabiner_grabber does not seize the device and do not affect existing hidd processing.
+    // (e.g. key repeat)
+
+    if (entry->needs_to_observe_device()) {
+      return grabbable_state::state::grabbable;
+    }
+
     if (!entry->needs_to_seize_device()) {
       return grabbable_state::state::ungrabbable_permanently;
     }
