@@ -241,7 +241,7 @@ public:
                                                                           values_ptr);
             auto event_queue = event_queue::utility::make_queue(it->second->get_device_properties(),
                                                                 hid_values,
-                                                                it->second->get_event_origin());
+                                                                it->second->seized() ? event_origin::grabbed_device : event_origin::observed_device);
 
             if (it->second->is_karabiner_virtual_hid_device()) {
               // Handle caps_lock_state_changed event only if the hid is Karabiner-DriverKit-VirtualHIDDevice.
@@ -264,9 +264,11 @@ public:
               // game pad stick to pointing motion
               //
 
-              game_pad_stick_converter_->convert(it->second->get_device_properties(),
-                                                 hid_values,
-                                                 it->second->get_event_origin());
+              if (it->second->seized()) {
+                game_pad_stick_converter_->convert(it->second->get_device_properties(),
+                                                   hid_values,
+                                                   event_origin::grabbed_device);
+              }
             }
           }
         });
@@ -720,7 +722,7 @@ private:
                                 e.get_event(),
                                 e.get_event_type(),
                                 e.get_original_event(),
-                                e.get_event_origin(),
+                                event_origin::grabbed_device,
                                 e.get_state());
 
           merged_input_event_queue_->push_back_entry(qe);
@@ -834,6 +836,10 @@ private:
       return grabbable_state::state::ungrabbable_permanently;
     }
 
+    if (!entry->needs_to_seize_device()) {
+      return grabbable_state::state::ungrabbable_permanently;
+    }
+
     //
     // In macOS, the behavior of devices in sleep differs depending on whether the device is seized or not.
     // For devices that have been seized, it will attempt to wake up on any event.
@@ -848,17 +854,8 @@ private:
     }
 
     //
-    // The device is always grabbable if it is ignored devices
-    // because karabiner_grabber does not seize the device and do not affect existing hidd processing.
-    // (e.g. key repeat)
-    //
-
-    if (entry->get_event_origin() == event_origin::observed_device) {
-      return grabbable_state::state::grabbable;
-    }
-
-    // ----------------------------------------
     // Ungrabbable while virtual_hid_device_service_client_ is not ready.
+    //
 
     if (!virtual_hid_devices_state_.get_virtual_hid_keyboard_ready()) {
       std::string message = "virtual_hid_keyboard is not ready. Please wait for a while.";
@@ -876,8 +873,9 @@ private:
       }
     }
 
-    // ----------------------------------------
+    //
     // Ungrabbable while probable stuck events exist
+    //
 
     if (auto m = find_probable_stuck_events_manager(entry->get_device_id())) {
       if (auto event = m->find_probable_stuck_event()) {
@@ -938,8 +936,8 @@ private:
     //
 
     for (const auto& e : entries_) {
-      auto device_properties = e.second->get_device_properties();
-      if (e.second->get_event_origin() == event_origin::grabbed_device) {
+      if (e.second->needs_to_seize_device()) {
+        auto device_properties = e.second->get_device_properties();
         if (device_properties.get_is_pointing_device().value_or(false) ||
             device_properties.get_is_game_pad().value_or(false)) {
           return true;

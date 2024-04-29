@@ -21,8 +21,7 @@ public:
         std::weak_ptr<const core_configuration::core_configuration> core_configuration) : dispatcher_client(),
                                                                                           device_id_(device_id),
                                                                                           core_configuration_(core_configuration),
-                                                                                          disabled_(false),
-                                                                                          event_origin_(event_origin::none) {
+                                                                                          disabled_(false) {
     device_properties_ = device_properties(device_id,
                                            device);
 
@@ -43,8 +42,6 @@ public:
     device_name_ = iokit_utility::make_device_name_for_log(device_id,
                                                            device);
     device_short_name_ = iokit_utility::make_device_name(device);
-
-    update_event_origin();
   }
 
   ~entry(void) {
@@ -60,12 +57,6 @@ public:
 
   void set_core_configuration(std::weak_ptr<const core_configuration::core_configuration> core_configuration) {
     core_configuration_ = core_configuration;
-
-    //
-    // Update event_origin_
-    //
-
-    update_event_origin();
 
     //
     // Update caps_lock_led_state_manager state
@@ -108,12 +99,6 @@ public:
     }
 
     disabled_ = value;
-
-    update_event_origin();
-  }
-
-  event_origin get_event_origin(void) const {
-    return event_origin_;
   }
 
   bool is_disable_built_in_keyboard_if_exists(void) const {
@@ -144,15 +129,15 @@ public:
   }
 
   void async_start_queue_value_monitor(grabbable_state::state state) {
-    auto options = kIOHIDOptionsTypeSeizeDevice;
+    auto options = kIOHIDOptionsTypeNone;
 
     if (is_karabiner_virtual_hid_device()) {
       options = kIOHIDOptionsTypeNone;
     } else {
       switch (state) {
         case grabbable_state::state::grabbable:
-          if (event_origin_ == event_origin::observed_device) {
-            options = kIOHIDOptionsTypeNone;
+          if (needs_to_seize_device()) {
+            options = kIOHIDOptionsTypeSeizeDevice;
           }
           break;
 
@@ -192,45 +177,25 @@ public:
     return false;
   }
 
-private:
-  bool is_ignored_device(void) const {
+  // Return whether the device is a target for modifying input events.
+  bool needs_to_seize_device(void) const {
     if (is_karabiner_virtual_hid_device()) {
       return false;
     }
 
+    // We have to seize the device in order to discard all input events.
+    if (disabled_) {
+      return true;
+    }
+
     if (auto c = core_configuration_.lock()) {
-      return c->get_selected_profile().get_device_ignore(
-          device_properties_.get_device_identifiers());
+      return !(c->get_selected_profile().get_device_ignore(device_properties_.get_device_identifiers()));
     }
 
     return false;
   }
 
-  void update_event_origin(void) {
-    auto old_event_origin = event_origin_;
-
-    if (is_karabiner_virtual_hid_device()) {
-      event_origin_ = event_origin::observed_device;
-    } else {
-      if (disabled_) {
-        event_origin_ = event_origin::grabbed_device;
-      } else {
-        if (is_ignored_device()) {
-          event_origin_ = event_origin::observed_device;
-        } else {
-          event_origin_ = event_origin::grabbed_device;
-        }
-      }
-    }
-
-    if (old_event_origin != event_origin_) {
-      logger::get_logger()->info("device_grabber_details::entry event_origin_ is updated. {0}: {1} -> {2}",
-                                 device_name_,
-                                 nlohmann::json(old_event_origin),
-                                 nlohmann::json(event_origin_));
-    }
-  }
-
+private:
   void control_caps_lock_led_state_manager(void) {
     if (is_karabiner_virtual_hid_device()) {
       return;
@@ -260,7 +225,6 @@ private:
   std::string device_short_name_;
 
   bool disabled_;
-  event_origin event_origin_;
 };
 } // namespace device_grabber_details
 } // namespace grabber
