@@ -10,7 +10,6 @@
             },
             "type": "momentary_switch_event"
         },
-        "event_origin": "grabbed_device",
         "event_time_stamp": {
             "time_stamp": 2
         },
@@ -32,7 +31,6 @@
             },
             "type": "momentary_switch_event"
         },
-        "event_origin": "grabbed_device",
         "event_time_stamp": {
             "time_stamp": 4
         },
@@ -54,7 +52,6 @@
             },
             "type": "momentary_switch_event"
         },
-        "event_origin": "grabbed_device",
         "event_time_stamp": {
             "time_stamp": 6
         },
@@ -76,7 +73,6 @@
             },
             "type": "momentary_switch_event"
         },
-        "event_origin": "grabbed_device",
         "event_time_stamp": {
             "time_stamp": 8
         },
@@ -98,7 +94,6 @@
             },
             "type": "momentary_switch_event"
         },
-        "event_origin": "grabbed_device",
         "event_time_stamp": {
             "time_stamp": 10
         },
@@ -120,7 +115,6 @@
             },
             "type": "momentary_switch_event"
         },
-        "event_origin": "grabbed_device",
         "event_time_stamp": {
             "time_stamp": 12
         },
@@ -142,7 +136,6 @@
             },
             "type": "momentary_switch_event"
         },
-        "event_origin": "grabbed_device",
         "event_time_stamp": {
             "time_stamp": 14
         },
@@ -164,7 +157,6 @@
             },
             "type": "momentary_switch_event"
         },
-        "event_origin": "grabbed_device",
         "event_time_stamp": {
             "time_stamp": 16
         },

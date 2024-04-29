@@ -115,8 +115,7 @@ void run_event_queue_utility_test(void) {
     auto device_properties = krbn::device_properties(krbn::device_id(1),
                                                      nullptr);
     auto queue = krbn::event_queue::utility::make_queue(device_properties,
-                                                        hid_values,
-                                                        krbn::event_origin::grabbed_device);
+                                                        hid_values);
     assert(queue->get_entries().size() == 8);
 
     {
@@ -222,8 +221,7 @@ void run_event_queue_utility_test(void) {
     auto device_properties = krbn::device_properties(krbn::device_id(1),
                                                      nullptr);
     auto queue = krbn::event_queue::utility::make_queue(device_properties,
-                                                        hid_values,
-                                                        krbn::event_origin::grabbed_device);
+                                                        hid_values);
     assert(0_ul == queue->get_entries().size());
   };
 
@@ -266,8 +264,7 @@ void run_event_queue_utility_test(void) {
     device_properties.set_is_game_pad(true);
 
     auto queue = krbn::event_queue::utility::make_queue(device_properties,
-                                                        hid_values,
-                                                        krbn::event_origin::grabbed_device);
+                                                        hid_values);
     assert(4_ul == queue->get_entries().size());
 
     {

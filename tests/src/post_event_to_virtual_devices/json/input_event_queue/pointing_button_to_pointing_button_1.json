@@ -7,7 +7,6 @@
             },
             "type": "momentary_switch_event"
         },
-        "event_origin": "grabbed_device",
         "event_time_stamp": {
             "time_stamp": 2
         },
@@ -26,7 +25,6 @@
         "event": {
             "type": "pointing_device_event_from_event_tap"
         },
-        "event_origin": "grabbed_device",
         "event_time_stamp": {
             "time_stamp": 4
         },
@@ -48,7 +46,6 @@
             },
             "type": "pointing_motion"
         },
-        "event_origin": "grabbed_device",
         "event_time_stamp": {
             "time_stamp": 6
         },
@@ -67,7 +64,6 @@
         "event": {
             "type": "pointing_device_event_from_event_tap"
         },
-        "event_origin": "grabbed_device",
         "event_time_stamp": {
             "time_stamp": 8
         },
@@ -89,7 +85,6 @@
             },
             "type": "momentary_switch_event"
         },
-        "event_origin": "grabbed_device",
         "event_time_stamp": {
             "time_stamp": 10
         },
@@ -108,7 +103,6 @@
         "event": {
             "type": "pointing_device_event_from_event_tap"
         },
-        "event_origin": "grabbed_device",
         "event_time_stamp": {
             "time_stamp": 12
         },

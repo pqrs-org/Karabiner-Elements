@@ -8,7 +8,6 @@
                            EVENT,                                                                      \
                            krbn::event_type::EVENT_TYPE,                                               \
                            ORIGINAL_EVENT,                                                             \
-                           krbn::event_origin::grabbed_device,                                         \
                            krbn::event_queue::state::original)
 
 #define PUSH_BACK_ENTRY(VECTOR, DEVICE_ID, TIME_STAMP, EVENT, EVENT_TYPE, ORIGINAL_EVENT)                               \
@@ -17,5 +16,4 @@
                                             EVENT,                                                                      \
                                             krbn::event_type::EVENT_TYPE,                                               \
                                             ORIGINAL_EVENT,                                                             \
-                                            krbn::event_origin::grabbed_device,                                         \
                                             krbn::event_queue::state::original))

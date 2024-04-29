@@ -8,18 +8,15 @@ import json
 
 def migrate(paths):
     '''
-    - Add event_origin
+    - Remove event_origin
     '''
 
     for path in paths:
         with open(path, encoding='utf-8') as file:
             j = json.load(file)
             for entry in j:
-                if 'action' in entry or 'pause_manipulation' in entry:
-                    if 'event_origin' in entry:
-                        del entry['event_origin']
-                else:
-                    entry['event_origin'] = 'grabbed_device'
+                if 'event_origin' in entry:
+                    del entry['event_origin']
 
             with open(path, 'w', encoding='utf-8') as output:
                 json.dump(j, output, sort_keys=True, indent=4)

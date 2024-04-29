@@ -7,7 +7,6 @@
             },
             "type": "momentary_switch_event"
         },
-        "event_origin": "grabbed_device",
         "event_time_stamp": {
             "input_delay_duration": 0,
             "time_stamp": 100
@@ -31,7 +30,6 @@
             },
             "type": "momentary_switch_event"
         },
-        "event_origin": "grabbed_device",
         "event_time_stamp": {
             "input_delay_duration": 0,
             "time_stamp": 200
@@ -55,7 +53,6 @@
             },
             "type": "momentary_switch_event"
         },
-        "event_origin": "grabbed_device",
         "event_time_stamp": {
             "input_delay_duration": 0,
             "time_stamp": 300
@@ -76,7 +73,6 @@
         "event": {
             "type": "device_ungrabbed"
         },
-        "event_origin": "grabbed_device",
         "event_time_stamp": {
             "input_delay_duration": 0,
             "time_stamp": 400
@@ -97,7 +93,6 @@
             },
             "type": "momentary_switch_event"
         },
-        "event_origin": "grabbed_device",
         "event_time_stamp": {
             "input_delay_duration": 0,
             "time_stamp": 600

@@ -7,7 +7,6 @@
             },
             "type": "momentary_switch_event"
         },
-        "event_origin": "grabbed_device",
         "event_time_stamp": {
             "time_stamp": 2
         },
@@ -26,7 +25,6 @@
         "event": {
             "type": "device_keys_and_pointing_buttons_are_released"
         },
-        "event_origin": "grabbed_device",
         "event_time_stamp": {
             "time_stamp": 4
         },
