@@ -40,7 +40,7 @@ struct DevicesView: View {
                 .stroke(
                   Color(NSColor.selectedControlColor),
                   lineWidth: settings.findConnectedDeviceSetting(connectedDevice)?.modifyEvents
-                    ?? false
+                    ?? false && !connectedDevice.isKarabinerVirtualHidDevice
                     ? 3 : 0
                 )
                 .padding(2)

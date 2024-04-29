@@ -26,7 +26,9 @@ struct DeviceSelectorView: View {
         Divider()
 
         ForEach(connectedDevices.connectedDevices) { connectedDevice in
-          if settings.findConnectedDeviceSetting(connectedDevice)?.modifyEvents ?? false {
+          if settings.findConnectedDeviceSetting(connectedDevice)?.modifyEvents ?? false,
+            !connectedDevice.isKarabinerVirtualHidDevice
+          {
             Button(
               action: {
                 selectedDevice = connectedDevice
