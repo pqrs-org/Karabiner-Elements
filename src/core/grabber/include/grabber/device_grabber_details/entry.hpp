@@ -178,6 +178,7 @@ public:
   }
 
   bool needs_to_observe_device(void) const {
+    // We must monitor the {pqrs::hid::usage_page::leds, pqrs::hid::usage::led::caps_lock} event from the virtual HID keyboard to manage the caps lock LED on physical keyboards.
     if (is_karabiner_virtual_hid_device()) {
       return true;
     }
