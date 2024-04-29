@@ -21,20 +21,25 @@ public:
         std::weak_ptr<const core_configuration::core_configuration> core_configuration) : dispatcher_client(),
                                                                                           device_id_(device_id),
                                                                                           core_configuration_(core_configuration),
-                                                                                          first_value_arrived_(false),
-                                                                                          grabbed_(false),
                                                                                           disabled_(false),
-                                                                                          event_origin_(event_origin::none),
-                                                                                          grabbed_time_stamp_(0),
-                                                                                          ungrabbed_time_stamp_(0) {
+                                                                                          event_origin_(event_origin::none) {
     device_properties_ = device_properties(device_id,
                                            device);
 
     pressed_keys_manager_ = std::make_shared<pressed_keys_manager>();
+
+    caps_lock_led_state_manager_ = std::make_shared<krbn::hid_keyboard_caps_lock_led_state_manager>(device);
+
     hid_queue_value_monitor_ = std::make_shared<pqrs::osx::iokit_hid_queue_value_monitor>(pqrs::dispatcher::extra::get_shared_dispatcher(),
                                                                                           pqrs::cf::run_loop_thread::extra::get_shared_run_loop_thread(),
                                                                                           device);
-    caps_lock_led_state_manager_ = std::make_shared<krbn::hid_keyboard_caps_lock_led_state_manager>(device);
+    hid_queue_value_monitor_->started.connect([this] {
+      control_caps_lock_led_state_manager();
+    });
+    hid_queue_value_monitor_->stopped.connect([this] {
+      control_caps_lock_led_state_manager();
+    });
+
     device_name_ = iokit_utility::make_device_name_for_log(device_id,
                                                            device);
     device_short_name_ = iokit_utility::make_device_name(device);
@@ -81,14 +86,6 @@ public:
     return hid_queue_value_monitor_;
   }
 
-  bool get_first_value_arrived(void) const {
-    return first_value_arrived_;
-  }
-
-  void set_first_value_arrived(bool value) {
-    first_value_arrived_ = value;
-  }
-
   void set_caps_lock_led_state(std::optional<led_state> state) {
     caps_lock_led_state_manager_->set_state(state);
   }
@@ -99,22 +96,6 @@ public:
 
   const std::string& get_device_short_name(void) const {
     return device_short_name_;
-  }
-
-  bool get_grabbed(void) const {
-    return grabbed_;
-  }
-
-  void set_grabbed(bool value) {
-    grabbed_ = value;
-
-    if (grabbed_) {
-      grabbed_time_stamp_ = pqrs::osx::chrono::mach_absolute_time_point();
-    } else {
-      ungrabbed_time_stamp_ = pqrs::osx::chrono::mach_absolute_time_point();
-    }
-
-    control_caps_lock_led_state_manager();
   }
 
   bool get_disabled(void) const {
@@ -187,25 +168,9 @@ public:
       }
     }
 
-    // Skip the process if the same options have already been processed.
-    if (hid_queue_value_monitor_async_start_options_ == options) {
-      return;
-    }
-
-    //
-    // Stop if already started with different options.
-    //
-
-    if (options != hid_queue_value_monitor_async_start_options_) {
-      async_stop_queue_value_monitor();
-    }
-
     //
     // Start
     //
-
-    first_value_arrived_ = false;
-    hid_queue_value_monitor_async_start_options_ = options;
 
     hid_queue_value_monitor_->async_start(options,
                                           std::chrono::milliseconds(1000));
@@ -213,35 +178,10 @@ public:
 
   void async_stop_queue_value_monitor(void) {
     hid_queue_value_monitor_->async_stop();
-
-    hid_queue_value_monitor_async_start_options_ = std::nullopt;
-  }
-
-  bool grabbed(absolute_time_point time_stamp) const {
-    if (grabbed_) {
-      if (grabbed_time_stamp_ <= time_stamp) {
-        return true;
-      }
-    } else {
-      //
-      // (grabbed_time_stamp_ <= ungrabbed_time_stamp_) when (grabbed_ == false)
-      //
-
-      if (grabbed_time_stamp_ <= time_stamp &&
-          time_stamp <= ungrabbed_time_stamp_) {
-        return true;
-      }
-    }
-
-    return false;
   }
 
   bool seized(void) const {
-    if (auto options = hid_queue_value_monitor_async_start_options_) {
-      return *options & kIOHIDOptionsTypeSeizeDevice;
-    }
-
-    return false;
+    return hid_queue_value_monitor_->seized();
   }
 
   bool is_karabiner_virtual_hid_device(void) const {
@@ -299,7 +239,7 @@ private:
     if (caps_lock_led_state_manager_) {
       if (auto c = core_configuration_.lock()) {
         if (c->get_selected_profile().get_device_manipulate_caps_lock_led(device_properties_.get_device_identifiers())) {
-          if (grabbed_ && event_origin_ == event_origin::grabbed_device) {
+          if (seized()) {
             caps_lock_led_state_manager_->async_start();
             return;
           }
@@ -314,21 +254,13 @@ private:
   std::weak_ptr<const core_configuration::core_configuration> core_configuration_;
   device_properties device_properties_;
   std::shared_ptr<pressed_keys_manager> pressed_keys_manager_;
-
-  std::shared_ptr<pqrs::osx::iokit_hid_queue_value_monitor> hid_queue_value_monitor_;
-  std::optional<IOOptionBits> hid_queue_value_monitor_async_start_options_;
-  bool first_value_arrived_;
-
   std::shared_ptr<hid_keyboard_caps_lock_led_state_manager> caps_lock_led_state_manager_;
+  std::shared_ptr<pqrs::osx::iokit_hid_queue_value_monitor> hid_queue_value_monitor_;
   std::string device_name_;
   std::string device_short_name_;
 
-  bool grabbed_;
   bool disabled_;
   event_origin event_origin_;
-
-  absolute_time_point grabbed_time_stamp_;
-  absolute_time_point ungrabbed_time_stamp_;
 };
 } // namespace device_grabber_details
 } // namespace grabber

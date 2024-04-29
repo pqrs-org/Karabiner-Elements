@@ -279,9 +279,16 @@ public:
                                        it->second->seized() ? "grabbed" : "observed");
             logger_unique_filter_.reset();
 
-            post_device_grabbed_event(it->second->get_device_properties());
+            if (it->second->seized()) {
+              if (auto probable_stuck_events_manager = find_probable_stuck_events_manager(device_id)) {
+                logger::get_logger()->info("{0} probable_stuck_events_manager->clear()",
+                                           it->second->get_device_name());
 
-            it->second->set_grabbed(true);
+                probable_stuck_events_manager->clear();
+              }
+            }
+
+            post_device_grabbed_event(it->second->get_device_properties());
 
             update_caps_lock_led();
 
@@ -295,8 +302,6 @@ public:
             logger::get_logger()->info("{0} hid queue value monitor is stopped.",
                                        it->second->get_device_name());
             logger_unique_filter_.reset();
-
-            it->second->set_grabbed(false);
 
             post_device_ungrabbed_event(device_id);
 
@@ -696,16 +701,6 @@ private:
     // Manipulate events
 
     if (auto probable_stuck_events_manager = find_probable_stuck_events_manager(entry->get_device_id())) {
-      if (!entry->get_first_value_arrived()) {
-        // First grabbed event is arrived.
-
-        entry->set_first_value_arrived(true);
-
-        if (entry->seized()) {
-          probable_stuck_events_manager->clear();
-        }
-      }
-
       bool needs_regrab = false;
       bool notify = false;
 
@@ -934,15 +929,6 @@ private:
     for (auto&& e : entries_) {
       e.second->set_caps_lock_led_state(state);
     }
-  }
-
-  bool grabbed(device_id device_id,
-               absolute_time_point time_stamp) const {
-    auto it = entries_.find(device_id);
-    if (it != std::end(entries_)) {
-      return it->second->grabbed(time_stamp);
-    }
-    return false;
   }
 
   bool needs_prepare_virtual_hid_pointing_device(void) const {
