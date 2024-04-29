@@ -74,7 +74,6 @@ inline void post_from_mandatory_modifiers_key_up(const event_queue::entry& front
                                       front_input_event.get_event_time_stamp(),
                                       time_stamp_delay,
                                       front_input_event.get_original_event(),
-                                      front_input_event.get_event_origin(),
                                       output_event_queue);
 }
 
@@ -106,7 +105,6 @@ inline void post_from_mandatory_modifiers_key_down(const event_queue::entry& fro
                                       front_input_event.get_event_time_stamp(),
                                       time_stamp_delay,
                                       front_input_event.get_original_event(),
-                                      front_input_event.get_event_origin(),
                                       output_event_queue);
 }
 
@@ -150,7 +148,6 @@ inline void post_events_at_key_down(const event_queue::entry& front_input_event,
                                              front_input_event.get_event_time_stamp(),
                                              time_stamp_delay,
                                              front_input_event.get_original_event(),
-                                             front_input_event.get_event_origin(),
                                              output_event_queue,
                                              lazy);
         }
@@ -167,7 +164,6 @@ inline void post_events_at_key_down(const event_queue::entry& front_input_event,
                                               *event,
                                               event_type::key_down,
                                               front_input_event.get_original_event(),
-                                              front_input_event.get_event_origin(),
                                               event_queue::state::manipulated,
                                               it->get_lazy());
 
@@ -189,7 +185,6 @@ inline void post_events_at_key_down(const event_queue::entry& front_input_event,
                                               *event,
                                               event_type::key_up,
                                               front_input_event.get_original_event(),
-                                              front_input_event.get_event_origin(),
                                               event_queue::state::manipulated,
                                               it->get_lazy());
       } else {
@@ -197,7 +192,6 @@ inline void post_events_at_key_down(const event_queue::entry& front_input_event,
                                                                                      *event,
                                                                                      event_type::key_up,
                                                                                      front_input_event.get_original_event(),
-                                                                                     front_input_event.get_event_origin(),
                                                                                      it->get_lazy());
       }
 
@@ -210,7 +204,6 @@ inline void post_events_at_key_down(const event_queue::entry& front_input_event,
                                                                                          pair.first,
                                                                                          pair.second,
                                                                                          front_input_event.get_original_event(),
-                                                                                         front_input_event.get_event_origin(),
                                                                                          true);
           } else {
             base::post_lazy_modifier_key_event(e,
@@ -219,7 +212,6 @@ inline void post_events_at_key_down(const event_queue::entry& front_input_event,
                                                front_input_event.get_event_time_stamp(),
                                                time_stamp_delay,
                                                front_input_event.get_original_event(),
-                                               front_input_event.get_event_origin(),
                                                output_event_queue);
           }
         }
@@ -263,7 +255,6 @@ inline void post_extra_to_events(const event_queue::entry& front_input_event,
                                            front_input_event.get_event_time_stamp(),
                                            time_stamp_delay,
                                            front_input_event.get_original_event(),
-                                           front_input_event.get_event_origin(),
                                            output_event_queue);
       }
 
@@ -278,7 +269,6 @@ inline void post_extra_to_events(const event_queue::entry& front_input_event,
                                               *event,
                                               event_type::key_down,
                                               front_input_event.get_original_event(),
-                                              front_input_event.get_event_origin(),
                                               event_queue::state::manipulated,
                                               it->get_lazy());
 
@@ -300,7 +290,6 @@ inline void post_extra_to_events(const event_queue::entry& front_input_event,
                                               *event,
                                               event_type::key_up,
                                               front_input_event.get_original_event(),
-                                              front_input_event.get_event_origin(),
                                               event_queue::state::manipulated,
                                               it->get_lazy());
       }
@@ -314,7 +303,6 @@ inline void post_extra_to_events(const event_queue::entry& front_input_event,
                                            front_input_event.get_event_time_stamp(),
                                            time_stamp_delay,
                                            front_input_event.get_original_event(),
-                                           front_input_event.get_event_origin(),
                                            output_event_queue);
       }
     }
@@ -332,7 +320,6 @@ inline void post_active_modifier_flags(const event_queue::entry& front_input_eve
                                        front_input_event.get_event_time_stamp(),
                                        time_stamp_delay,
                                        front_input_event.get_original_event(),
-                                       front_input_event.get_event_origin(),
                                        output_event_queue);
   }
 }

@@ -187,7 +187,6 @@ public:
                                                  event_queue::event(motion),
                                                  front_input_event.get_event_type(),
                                                  front_input_event.get_original_event(),
-                                                 front_input_event.get_event_origin(),
                                                  event_queue::state::manipulated,
                                                  front_input_event.get_lazy());
 

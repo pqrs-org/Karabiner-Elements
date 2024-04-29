@@ -65,8 +65,7 @@ public:
 
     nod::signal<void(double horizontal_hid_value,
                      double vertical_hid_value,
-                     std::chrono::milliseconds interval,
-                     event_origin event_origin)>
+                     std::chrono::milliseconds interval)>
         hid_values_updated;
 
     //
@@ -118,7 +117,6 @@ public:
           delta_magnitude_(0.0),
           continued_movement_magnitude_(0.0),
           previous_absolute_magnitude_(0.0),
-          event_origin_(event_origin::none),
           continued_movement_absolute_magnitude_threshold_(1.0),
           flicking_input_window_milliseconds_(0) {
     }
@@ -130,10 +128,7 @@ public:
     // This method should be called in the shared dispatcher thread.
     void update_horizontal_stick_sensor_value(CFIndex logical_max,
                                               CFIndex logical_min,
-                                              CFIndex integer_value,
-                                              event_origin event_origin) {
-      event_origin_ = event_origin;
-
+                                              CFIndex integer_value) {
       horizontal_stick_sensor_.update_stick_sensor_value(logical_max,
                                                          logical_min,
                                                          integer_value);
@@ -144,10 +139,7 @@ public:
     // This method should be called in the shared dispatcher thread.
     void update_vertical_stick_sensor_value(CFIndex logical_max,
                                             CFIndex logical_min,
-                                            CFIndex integer_value,
-                                            event_origin event_origin) {
-      event_origin_ = event_origin;
-
+                                            CFIndex integer_value) {
       vertical_stick_sensor_.update_stick_sensor_value(logical_max,
                                                        logical_min,
                                                        integer_value);
@@ -251,18 +243,18 @@ public:
           case stick_type::xy: {
             auto [x, y] = xy_hid_values();
             auto interval = continued_movement_interval_milliseconds();
-            hid_values_updated(x, y, interval, event_origin_);
+            hid_values_updated(x, y, interval);
             break;
           }
           case stick_type::wheels: {
             auto [h, v] = wheels_hid_values();
             auto interval = continued_movement_interval_milliseconds();
-            hid_values_updated(h, -v, interval, event_origin_);
+            hid_values_updated(h, -v, interval);
             break;
           }
         }
       } else {
-        hid_values_updated(0, 0, std::chrono::milliseconds(0), event_origin_);
+        hid_values_updated(0, 0, std::chrono::milliseconds(0));
       }
 
       //
@@ -345,7 +337,6 @@ public:
     double continued_movement_magnitude_;
     double previous_absolute_magnitude_;
     std::deque<stick_history_entry> stick_history_;
-    std::atomic<event_origin> event_origin_;
 
     //
     // configurations
@@ -403,16 +394,13 @@ public:
           pointing_motion_arrived_(pointing_motion_arrived),
           xy_(stick::stick_type::xy),
           wheels_(stick::stick_type::wheels),
-          xy_event_origin_(event_origin::none),
-          wheels_event_origin_(event_origin::none),
           xy_timer_(*this),
           xy_timer_count_(0),
           wheels_timer_(*this),
           wheels_timer_count_(0) {
-      xy_.hid_values_updated.connect([this](auto&& x, auto&& y, auto&& interval, auto&& event_origin) {
+      xy_.hid_values_updated.connect([this](auto&& x, auto&& y, auto&& interval) {
         x_value_.set_value(x);
         y_value_.set_value(y);
-        xy_event_origin_ = event_origin;
 
         if (interval == std::chrono::milliseconds(0)) {
           xy_timer_.stop();
@@ -443,10 +431,9 @@ public:
         }
       });
 
-      wheels_.hid_values_updated.connect([this](auto&& h, auto&& v, auto&& interval, auto&& event_origin) {
+      wheels_.hid_values_updated.connect([this](auto&& h, auto&& v, auto&& interval) {
         horizontal_wheel_value_.set_value(h);
         vertical_wheel_value_.set_value(v);
-        wheels_event_origin_ = event_origin;
 
         if (interval == std::chrono::milliseconds(0)) {
           wheels_timer_.stop();
@@ -495,45 +482,37 @@ public:
     // This method should be called in the shared dispatcher thread.
     void update_x_stick_sensor_value(CFIndex logical_max,
                                      CFIndex logical_min,
-                                     CFIndex integer_value,
-                                     event_origin event_origin) {
+                                     CFIndex integer_value) {
       xy_.update_horizontal_stick_sensor_value(logical_max,
                                                logical_min,
-                                               integer_value,
-                                               event_origin);
+                                               integer_value);
     }
 
     // This method should be called in the shared dispatcher thread.
     void update_y_stick_sensor_value(CFIndex logical_max,
                                      CFIndex logical_min,
-                                     CFIndex integer_value,
-                                     event_origin event_origin) {
+                                     CFIndex integer_value) {
       xy_.update_vertical_stick_sensor_value(logical_max,
                                              logical_min,
-                                             integer_value,
-                                             event_origin);
+                                             integer_value);
     }
 
     // This method should be called in the shared dispatcher thread.
     void update_vertical_wheel_stick_sensor_value(CFIndex logical_max,
                                                   CFIndex logical_min,
-                                                  CFIndex integer_value,
-                                                  event_origin event_origin) {
+                                                  CFIndex integer_value) {
       wheels_.update_vertical_stick_sensor_value(logical_max,
                                                  logical_min,
-                                                 integer_value,
-                                                 event_origin);
+                                                 integer_value);
     }
 
     // This method should be called in the shared dispatcher thread.
     void update_horizontal_wheel_stick_sensor_value(CFIndex logical_max,
                                                     CFIndex logical_min,
-                                                    CFIndex integer_value,
-                                                    event_origin event_origin) {
+                                                    CFIndex integer_value) {
       wheels_.update_horizontal_stick_sensor_value(logical_max,
                                                    logical_min,
-                                                   integer_value,
-                                                   event_origin);
+                                                   integer_value);
     }
 
   private:
@@ -554,7 +533,6 @@ public:
                                event,
                                event_type::single,
                                event,
-                               xy_event_origin_,
                                event_queue::state::original);
 
       enqueue_to_dispatcher([this, entry] {
@@ -579,7 +557,6 @@ public:
                                event,
                                event_type::single,
                                event,
-                               wheels_event_origin_,
                                event_queue::state::original);
 
       enqueue_to_dispatcher([this, entry] {
@@ -596,11 +573,9 @@ public:
 
     event_value x_value_;
     event_value y_value_;
-    event_origin xy_event_origin_;
 
     event_value horizontal_wheel_value_;
     event_value vertical_wheel_value_;
-    event_origin wheels_event_origin_;
 
     pqrs::dispatcher::extra::timer xy_timer_;
     int xy_timer_count_;
@@ -655,8 +630,7 @@ public:
 
   // This method should be called in the shared dispatcher thread.
   void convert(const device_properties& device_properties,
-               const std::vector<pqrs::osx::iokit_hid_value>& hid_values,
-               event_origin event_origin) {
+               const std::vector<pqrs::osx::iokit_hid_value>& hid_values) {
     if (auto d = weak_dispatcher_.lock()) {
       if (!d->dispatcher_thread()) {
         logger::get_logger()->error("game_pad_stick_converter::convert is called in invalid thread");
@@ -687,52 +661,44 @@ public:
                   if (swap_sticks) {
                     it->second->update_horizontal_wheel_stick_sensor_value(*logical_max,
                                                                            *logical_min,
-                                                                           v.get_integer_value(),
-                                                                           event_origin);
+                                                                           v.get_integer_value());
                   } else {
                     it->second->update_x_stick_sensor_value(*logical_max,
                                                             *logical_min,
-                                                            v.get_integer_value(),
-                                                            event_origin);
+                                                            v.get_integer_value());
                   }
                 } else if (v.conforms_to(pqrs::hid::usage_page::generic_desktop,
                                          pqrs::hid::usage::generic_desktop::y)) {
                   if (swap_sticks) {
                     it->second->update_vertical_wheel_stick_sensor_value(*logical_max,
                                                                          *logical_min,
-                                                                         v.get_integer_value(),
-                                                                         event_origin);
+                                                                         v.get_integer_value());
                   } else {
                     it->second->update_y_stick_sensor_value(*logical_max,
                                                             *logical_min,
-                                                            v.get_integer_value(),
-                                                            event_origin);
+                                                            v.get_integer_value());
                   }
                 } else if (v.conforms_to(pqrs::hid::usage_page::generic_desktop,
                                          pqrs::hid::usage::generic_desktop::rz)) {
                   if (swap_sticks) {
                     it->second->update_y_stick_sensor_value(*logical_max,
                                                             *logical_min,
-                                                            v.get_integer_value(),
-                                                            event_origin);
+                                                            v.get_integer_value());
                   } else {
                     it->second->update_vertical_wheel_stick_sensor_value(*logical_max,
                                                                          *logical_min,
-                                                                         v.get_integer_value(),
-                                                                         event_origin);
+                                                                         v.get_integer_value());
                   }
                 } else if (v.conforms_to(pqrs::hid::usage_page::generic_desktop,
                                          pqrs::hid::usage::generic_desktop::z)) {
                   if (swap_sticks) {
                     it->second->update_x_stick_sensor_value(*logical_max,
                                                             *logical_min,
-                                                            v.get_integer_value(),
-                                                            event_origin);
+                                                            v.get_integer_value());
                   } else {
                     it->second->update_horizontal_wheel_stick_sensor_value(*logical_max,
                                                                            *logical_min,
-                                                                           v.get_integer_value(),
-                                                                           event_origin);
+                                                                           v.get_integer_value());
                   }
                 }
               }

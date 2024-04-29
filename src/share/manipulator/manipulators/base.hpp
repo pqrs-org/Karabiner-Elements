@@ -55,7 +55,6 @@ public:
                                             const event_queue::event_time_stamp& event_time_stamp,
                                             absolute_time_duration& time_stamp_delay,
                                             const event_queue::event& original_event,
-                                            event_origin event_origin,
                                             event_queue::queue& output_event_queue) {
     for (const auto& m : modifiers) {
       post_lazy_modifier_key_event(momentary_switch_event(m),
@@ -64,7 +63,6 @@ public:
                                    event_time_stamp,
                                    time_stamp_delay,
                                    original_event,
-                                   event_origin,
                                    output_event_queue);
     }
   }
@@ -75,7 +73,6 @@ public:
                                            const event_queue::event_time_stamp& event_time_stamp,
                                            absolute_time_duration& time_stamp_delay,
                                            const event_queue::event& original_event,
-                                           event_origin event_origin,
                                            event_queue::queue& output_event_queue,
                                            bool lazy = true) {
     if (momentary_switch_event.valid()) {
@@ -89,7 +86,6 @@ public:
                                pair.first,
                                pair.second,
                                original_event,
-                               event_origin,
                                event_queue::state::manipulated,
                                lazy);
       output_event_queue.push_back_entry(entry);

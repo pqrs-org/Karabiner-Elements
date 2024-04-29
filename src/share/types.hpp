@@ -5,7 +5,6 @@
 #include "types/device_id.hpp"
 #include "types/device_identifiers.hpp"
 #include "types/device_state.hpp"
-#include "types/event_origin.hpp"
 #include "types/event_type.hpp"
 #include "types/grabbable_state.hpp"
 #include "types/led_state.hpp"

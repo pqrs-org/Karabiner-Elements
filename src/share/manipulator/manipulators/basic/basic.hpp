@@ -380,7 +380,6 @@ public:
                                                              event_queue::event::make_stop_keyboard_repeat_event(),
                                                              event_type::single,
                                                              front_input_event.get_original_event(),
-                                                             front_input_event.get_event_origin(),
                                                              event_queue::state::virtual_event,
                                                              true);
 

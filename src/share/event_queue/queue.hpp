@@ -29,7 +29,6 @@ public:
                           const class event& event,
                           event_type event_type,
                           const class event& original_event,
-                          event_origin event_origin,
                           state state,
                           bool lazy = false,
                           validity validity = validity::valid) {
@@ -41,7 +40,6 @@ public:
                          event,
                          event_type,
                          original_event,
-                         event_origin,
                          state,
                          lazy,
                          validity);
@@ -53,24 +51,22 @@ public:
     //
 
     if (auto e = event.get_if<momentary_switch_event>()) {
-      if (event_origin == event_origin::grabbed_device) {
-        if (auto modifier_flag = e->make_modifier_flag()) {
-          auto type = (event_type == event_type::key_down ? modifier_flag_manager::active_modifier_flag::type::increase
-                                                          : modifier_flag_manager::active_modifier_flag::type::decrease);
-          modifier_flag_manager::active_modifier_flag active_modifier_flag(type,
-                                                                           *modifier_flag,
-                                                                           device_id);
-          modifier_flag_manager_.push_back_active_modifier_flag(active_modifier_flag);
-        }
+      if (auto modifier_flag = e->make_modifier_flag()) {
+        auto type = (event_type == event_type::key_down ? modifier_flag_manager::active_modifier_flag::type::increase
+                                                        : modifier_flag_manager::active_modifier_flag::type::decrease);
+        modifier_flag_manager::active_modifier_flag active_modifier_flag(type,
+                                                                         *modifier_flag,
+                                                                         device_id);
+        modifier_flag_manager_.push_back_active_modifier_flag(active_modifier_flag);
+      }
 
-        if (e->pointing_button()) {
-          auto type = (event_type == event_type::key_down ? pointing_button_manager::active_pointing_button::type::increase
-                                                          : pointing_button_manager::active_pointing_button::type::decrease);
-          pointing_button_manager::active_pointing_button active_pointing_button(type,
-                                                                                 e->get_usage_pair(),
-                                                                                 device_id);
-          pointing_button_manager_.push_back_active_pointing_button(active_pointing_button);
-        }
+      if (e->pointing_button()) {
+        auto type = (event_type == event_type::key_down ? pointing_button_manager::active_pointing_button::type::increase
+                                                        : pointing_button_manager::active_pointing_button::type::decrease);
+        pointing_button_manager::active_pointing_button active_pointing_button(type,
+                                                                               e->get_usage_pair(),
+                                                                               device_id);
+        pointing_button_manager_.push_back_active_pointing_button(active_pointing_button);
       }
 
       // Erase sticky modifiers
@@ -166,7 +162,6 @@ public:
                        entry.get_event(),
                        entry.get_event_type(),
                        entry.get_original_event(),
-                       entry.get_event_origin(),
                        entry.get_state(),
                        entry.get_lazy(),
                        entry.get_validity());

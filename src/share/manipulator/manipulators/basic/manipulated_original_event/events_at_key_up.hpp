@@ -15,12 +15,10 @@ public:
           const event_queue::event& event,
           event_type event_type,
           const event_queue::event& original_event,
-          event_origin event_origin,
           bool lazy) : device_id_(device_id),
                        event_(event),
                        event_type_(event_type),
                        original_event_(original_event),
-                       event_origin_(event_origin),
                        lazy_(lazy) {
     }
 
@@ -30,7 +28,6 @@ public:
                                 event_,
                                 event_type_,
                                 original_event_,
-                                event_origin_,
                                 event_queue::state::manipulated,
                                 lazy_);
     }
@@ -40,7 +37,6 @@ public:
     event_queue::event event_;
     event_type event_type_;
     event_queue::event original_event_;
-    event_origin event_origin_;
     bool lazy_;
   };
 
@@ -52,13 +48,11 @@ public:
                           const event_queue::event& event,
                           event_type event_type,
                           const event_queue::event& original_event,
-                          event_origin event_origin,
                           bool lazy) {
     events_.emplace_back(device_id,
                          event,
                          event_type,
                          original_event,
-                         event_origin,
                          lazy);
   }
 

@@ -240,8 +240,7 @@ public:
             auto hid_values = hid_queue_values_converter_.make_hid_values(device_id,
                                                                           values_ptr);
             auto event_queue = event_queue::utility::make_queue(it->second->get_device_properties(),
-                                                                hid_values,
-                                                                it->second->seized() ? event_origin::grabbed_device : event_origin::observed_device);
+                                                                hid_values);
 
             if (it->second->is_karabiner_virtual_hid_device()) {
               // Handle caps_lock_state_changed event only if the hid is Karabiner-DriverKit-VirtualHIDDevice.
@@ -265,8 +264,7 @@ public:
               //
 
               game_pad_stick_converter_->convert(it->second->get_device_properties(),
-                                                 hid_values,
-                                                 event_origin::grabbed_device);
+                                                 hid_values);
             }
           }
         });
@@ -506,7 +504,6 @@ public:
                                  e,
                                  event_type,
                                  event,
-                                 event_origin::virtual_device,
                                  event_queue::state::virtual_event);
 
         merged_input_event_queue_->push_back_entry(entry);
@@ -585,7 +582,6 @@ public:
                                  event,
                                  t,
                                  event,
-                                 event_origin::virtual_device,
                                  event_queue::state::virtual_event);
         merged_input_event_queue_->push_back_entry(entry);
       }
@@ -602,7 +598,6 @@ public:
                                event,
                                event_type::single,
                                event,
-                               event_origin::virtual_device,
                                event_queue::state::virtual_event);
 
       merged_input_event_queue_->push_back_entry(entry);
@@ -619,7 +614,6 @@ public:
                                event,
                                event_type::single,
                                event,
-                               event_origin::virtual_device,
                                event_queue::state::virtual_event);
 
       merged_input_event_queue_->push_back_entry(entry);
@@ -637,7 +631,6 @@ public:
                                event,
                                event_type::single,
                                event,
-                               event_origin::virtual_device,
                                event_queue::state::virtual_event);
 
       merged_input_event_queue_->push_back_entry(entry);
@@ -654,7 +647,6 @@ public:
                                event,
                                event_type::single,
                                event,
-                               event_origin::virtual_device,
                                event_queue::state::virtual_event);
 
       merged_input_event_queue_->push_back_entry(entry);
@@ -720,7 +712,6 @@ private:
                                 e.get_event(),
                                 e.get_event_type(),
                                 e.get_original_event(),
-                                event_origin::grabbed_device,
                                 e.get_state());
 
           merged_input_event_queue_->push_back_entry(qe);
@@ -746,7 +737,6 @@ private:
                              event,
                              event_type::single,
                              event,
-                             event_origin::virtual_device,
                              event_queue::state::virtual_event);
 
     merged_input_event_queue_->push_back_entry(entry);
@@ -761,7 +751,6 @@ private:
                              event,
                              event_type::single,
                              event,
-                             event_origin::virtual_device,
                              event_queue::state::virtual_event);
 
     merged_input_event_queue_->push_back_entry(entry);
@@ -776,7 +765,6 @@ private:
                              event,
                              event_type::single,
                              event,
-                             event_origin::virtual_device,
                              event_queue::state::virtual_event);
 
     merged_input_event_queue_->push_back_entry(entry);

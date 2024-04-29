@@ -154,7 +154,6 @@ private:
                                               front_input_event_->get_event_time_stamp(),
                                               time_stamp_delay,
                                               front_input_event_->get_original_event(),
-                                              front_input_event_->get_event_origin(),
                                               *oeq);
 
           // Post events
@@ -173,7 +172,6 @@ private:
                                               front_input_event_->get_event_time_stamp(),
                                               time_stamp_delay,
                                               front_input_event_->get_original_event(),
-                                              front_input_event_->get_event_origin(),
                                               *oeq);
 
           krbn_notification_center::get_instance().enqueue_input_event_arrived(*this);
