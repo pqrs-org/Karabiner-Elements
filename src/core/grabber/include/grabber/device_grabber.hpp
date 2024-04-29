@@ -264,11 +264,9 @@ public:
               // game pad stick to pointing motion
               //
 
-              if (it->second->seized()) {
-                game_pad_stick_converter_->convert(it->second->get_device_properties(),
-                                                   hid_values,
-                                                   event_origin::grabbed_device);
-              }
+              game_pad_stick_converter_->convert(it->second->get_device_properties(),
+                                                 hid_values,
+                                                 event_origin::grabbed_device);
             }
           }
         });
