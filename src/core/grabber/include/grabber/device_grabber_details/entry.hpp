@@ -7,6 +7,7 @@
 #include "hid_keyboard_caps_lock_led_state_manager.hpp"
 #include "iokit_utility.hpp"
 #include "pressed_keys_manager.hpp"
+#include "probable_stuck_events_manager.hpp"
 #include "run_loop_thread_utility.hpp"
 #include "types.hpp"
 #include <pqrs/osx/iokit_hid_queue_value_monitor.hpp>
@@ -25,6 +26,8 @@ public:
     device_properties_ = device_properties(device_id,
                                            device);
 
+    probable_stuck_events_manager_ = std::make_shared<probable_stuck_events_manager>();
+
     pressed_keys_manager_ = std::make_shared<pressed_keys_manager>();
 
     caps_lock_led_state_manager_ = std::make_shared<krbn::hid_keyboard_caps_lock_led_state_manager>(device);
@@ -34,6 +37,13 @@ public:
                                                                                           device);
     hid_queue_value_monitor_->started.connect([this] {
       control_caps_lock_led_state_manager();
+
+      if (seized()) {
+        logger::get_logger()->info("{0} probable_stuck_events_manager_->clear()",
+                                   device_name_);
+
+        probable_stuck_events_manager_->clear();
+      }
     });
     hid_queue_value_monitor_->stopped.connect([this] {
       control_caps_lock_led_state_manager();
@@ -67,6 +77,10 @@ public:
 
   const device_properties& get_device_properties(void) const {
     return device_properties_;
+  }
+
+  std::shared_ptr<probable_stuck_events_manager> get_probable_stuck_events_manager(void) const {
+    return probable_stuck_events_manager_;
   }
 
   std::shared_ptr<pressed_keys_manager> get_pressed_keys_manager(void) const {
@@ -227,6 +241,7 @@ private:
   device_id device_id_;
   std::weak_ptr<const core_configuration::core_configuration> core_configuration_;
   device_properties device_properties_;
+  std::shared_ptr<probable_stuck_events_manager> probable_stuck_events_manager_;
   std::shared_ptr<pressed_keys_manager> pressed_keys_manager_;
   std::shared_ptr<hid_keyboard_caps_lock_led_state_manager> caps_lock_led_state_manager_;
   std::shared_ptr<pqrs::osx::iokit_hid_queue_value_monitor> hid_queue_value_monitor_;

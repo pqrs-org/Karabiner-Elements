@@ -22,7 +22,6 @@
 #include "monitor/configuration_monitor.hpp"
 #include "monitor/event_tap_monitor.hpp"
 #include "notification_message_manager.hpp"
-#include "probable_stuck_events_manager.hpp"
 #include "run_loop_thread_utility.hpp"
 #include "types.hpp"
 #include <deque>
@@ -220,12 +219,6 @@ public:
         auto device_id = make_device_id(registry_entry_id);
 
         //
-        // Register device
-        //
-
-        add_probable_stuck_events_manager(device_id);
-
-        //
         // entries_
         //
 
@@ -263,8 +256,10 @@ public:
               // game pad stick to pointing motion
               //
 
-              game_pad_stick_converter_->convert(it->second->get_device_properties(),
-                                                 hid_values);
+              if (it->second->seized()) {
+                game_pad_stick_converter_->convert(it->second->get_device_properties(),
+                                                   hid_values);
+              }
             }
           }
         });
@@ -276,15 +271,6 @@ public:
                                        it->second->get_device_name(),
                                        it->second->seized() ? "grabbed" : "observed");
             logger_unique_filter_.reset();
-
-            if (it->second->seized()) {
-              if (auto probable_stuck_events_manager = find_probable_stuck_events_manager(device_id)) {
-                logger::get_logger()->info("{0} probable_stuck_events_manager->clear()",
-                                           it->second->get_device_name());
-
-                probable_stuck_events_manager->clear();
-              }
-            }
 
             post_device_grabbed_event(it->second->get_device_properties());
 
@@ -363,7 +349,6 @@ public:
 
       game_pad_stick_converter_->unregister_device(device_id);
       hid_queue_values_converter_.erase_device(device_id);
-      probable_stuck_events_managers_.erase(device_id);
 
       if (notification_message_manager_) {
         notification_message_manager_->async_erase_device(device_id);
@@ -692,41 +677,39 @@ private:
                       std::shared_ptr<event_queue::queue> event_queue) {
     // Manipulate events
 
-    if (auto probable_stuck_events_manager = find_probable_stuck_events_manager(entry->get_device_id())) {
-      bool needs_regrab = false;
-      bool notify = false;
+    bool needs_regrab = false;
+    bool notify = false;
 
-      for (const auto& e : event_queue->get_entries()) {
-        if (auto ev = e.get_event().get_if<momentary_switch_event>()) {
-          needs_regrab |= probable_stuck_events_manager->update(
-              *ev,
-              e.get_event_type(),
-              e.get_event_time_stamp().get_time_stamp(),
-              entry->seized() ? device_state::grabbed
-                              : device_state::ungrabbed);
-        }
-
-        if (!entry->get_disabled() && entry->seized()) {
-          event_queue::entry qe(e.get_device_id(),
-                                e.get_event_time_stamp(),
-                                e.get_event(),
-                                e.get_event_type(),
-                                e.get_original_event(),
-                                e.get_state());
-
-          merged_input_event_queue_->push_back_entry(qe);
-
-          notify = true;
-        }
+    for (const auto& e : event_queue->get_entries()) {
+      if (auto ev = e.get_event().get_if<momentary_switch_event>()) {
+        needs_regrab |= entry->get_probable_stuck_events_manager()->update(
+            *ev,
+            e.get_event_type(),
+            e.get_event_time_stamp().get_time_stamp(),
+            entry->seized() ? device_state::grabbed
+                            : device_state::ungrabbed);
       }
 
-      if (needs_regrab) {
-        grab_device(entry);
-      }
+      if (!entry->get_disabled() && entry->seized()) {
+        event_queue::entry qe(e.get_device_id(),
+                              e.get_event_time_stamp(),
+                              e.get_event(),
+                              e.get_event_type(),
+                              e.get_original_event(),
+                              e.get_state());
 
-      if (notify) {
-        krbn_notification_center::get_instance().enqueue_input_event_arrived(*this);
+        merged_input_event_queue_->push_back_entry(qe);
+
+        notify = true;
       }
+    }
+
+    if (needs_regrab) {
+      grab_device(entry);
+    }
+
+    if (notify) {
+      krbn_notification_center::get_instance().enqueue_input_event_arrived(*this);
     }
   }
 
@@ -770,25 +753,6 @@ private:
     merged_input_event_queue_->push_back_entry(entry);
 
     krbn_notification_center::get_instance().enqueue_input_event_arrived(*this);
-  }
-
-  std::shared_ptr<probable_stuck_events_manager> add_probable_stuck_events_manager(device_id device_id) {
-    auto it = probable_stuck_events_managers_.find(device_id);
-    if (it != std::end(probable_stuck_events_managers_)) {
-      return it->second;
-    }
-
-    auto m = std::make_shared<probable_stuck_events_manager>();
-    probable_stuck_events_managers_[device_id] = m;
-    return m;
-  }
-
-  std::shared_ptr<probable_stuck_events_manager> find_probable_stuck_events_manager(device_id device_id) const {
-    auto it = probable_stuck_events_managers_.find(device_id);
-    if (it != std::end(probable_stuck_events_managers_)) {
-      return it->second;
-    }
-    return nullptr;
   }
 
   // This method is executed in the shared dispatcher thread.
@@ -871,29 +835,27 @@ private:
     // Ungrabbable while probable stuck events exist
     //
 
-    if (auto m = find_probable_stuck_events_manager(entry->get_device_id())) {
-      if (auto event = m->find_probable_stuck_event()) {
-        auto message = fmt::format("Probable stuck key detected! "
-                                   "{0} is ignored temporarily until {1} is pressed again. "
-                                   "Key may have been held when keyboard was grabbed. "
-                                   "Is the keyboard reconnecting while in use?",
-                                   entry->get_device_name(),
-                                   nlohmann::json(*event).dump());
-        logger_unique_filter_.warn(message);
+    if (auto event = entry->get_probable_stuck_events_manager()->find_probable_stuck_event()) {
+      auto message = fmt::format("Probable stuck key detected! "
+                                 "{0} is ignored temporarily until {1} is pressed again. "
+                                 "Key may have been held when keyboard was grabbed. "
+                                 "Is the keyboard reconnecting while in use?",
+                                 entry->get_device_name(),
+                                 nlohmann::json(*event).dump());
+      logger_unique_filter_.warn(message);
 
-        if (notification_message_manager_) {
-          notification_message_manager_->async_set_device_ungrabbable_temporarily_message(
-              entry->get_device_id(),
-              fmt::format("Probable stuck key detected!\n\n"
-                          "{0} is ignored temporarily until {1} is pressed again.\n\n"
-                          "Key may have been held when keyboard was grabbed. "
-                          "Is the keyboard reconnecting while in use?",
-                          entry->get_device_short_name(),
-                          nlohmann::json(*event).dump()));
-        }
-
-        return grabbable_state::state::ungrabbable_temporarily;
+      if (notification_message_manager_) {
+        notification_message_manager_->async_set_device_ungrabbable_temporarily_message(
+            entry->get_device_id(),
+            fmt::format("Probable stuck key detected!\n\n"
+                        "{0} is ignored temporarily until {1} is pressed again.\n\n"
+                        "Key may have been held when keyboard was grabbed. "
+                        "Is the keyboard reconnecting while in use?",
+                        entry->get_device_short_name(),
+                        nlohmann::json(*event).dump()));
       }
+
+      return grabbable_state::state::ungrabbable_temporarily;
     }
 
     // ----------------------------------------
@@ -907,9 +869,6 @@ private:
     if (notification_message_manager_) {
       notification_message_manager_->async_set_device_ungrabbable_temporarily_message(id, "");
     }
-  }
-
-  void event_tap_pointing_device_event_callback(CGEventType type, CGEventRef event) {
   }
 
   void update_caps_lock_led(void) {
@@ -1075,7 +1034,6 @@ private:
   std::unique_ptr<event_tap_monitor> event_tap_monitor_;
   std::optional<bool> last_caps_lock_state_;
   std::unique_ptr<pqrs::osx::iokit_hid_manager> hid_manager_;
-  std::unordered_map<device_id, std::shared_ptr<probable_stuck_events_manager>> probable_stuck_events_managers_;
   std::unordered_map<device_id, std::shared_ptr<device_grabber_details::entry>> entries_;
   hid_queue_values_converter hid_queue_values_converter_;
 
