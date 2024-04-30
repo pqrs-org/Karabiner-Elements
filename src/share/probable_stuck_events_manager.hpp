@@ -8,13 +8,19 @@
 namespace krbn {
 // `probable_stuck_events_manager` manages events which may be stuck with ungrabbed device.
 //
-// macOS keeps the key state after the device is grabbed.
-// This behavior causes several problems:
-//   - A key repeating cannot be stopped if the key is held down before the device is grabbed.
-//   - Modifier keys will be stuck if they are held down before the device is grabbed.
+// On macOS, even after karabiner_grabber has seized a device, the original hardware key press status is retained.
+// Once the device is seized, karabiner_grabber emits events from a virtual HID keyboard,
+// so the status of the hardware keys does not change after being seized
 //
-// Thus, we should not grab (or should ungrab) the device in such cases.
-// `probable_stuck_events_manager` is used to detect such states.
+// This behavior leads to several problems:
+//   - If a key, such as an arrow key, is held down before the device is seized, the key repeat does not stop.
+//   - If a modifier key is pressed before the device is seized, that modifier is always applied to mouse button events.
+//
+// Therefore, if it is detected that a key has been continuously pressed since before the device was seized,
+// it is necessary to temporarily un-seize the device.
+//
+// Specifically, for each key, if a key_up event is received before a key_down event,
+// it is determined that the key was pressed before the device was seized.
 
 class probable_stuck_events_manager {
 public:
