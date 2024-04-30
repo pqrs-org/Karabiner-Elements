@@ -24,24 +24,13 @@ namespace krbn {
 
 class probable_stuck_events_manager {
 public:
-  probable_stuck_events_manager(void) : last_time_stamp_(0) {
+  probable_stuck_events_manager(void) {
   }
 
   bool update(const momentary_switch_event& event,
               event_type t,
-              absolute_time_point time_stamp,
               device_state state) {
     std::lock_guard<std::mutex> lock(mutex_);
-
-    //
-    // Skip old event
-    //
-
-    if (time_stamp < last_time_stamp_) {
-      return false;
-    }
-
-    last_time_stamp_ = time_stamp;
 
     //
     // Handle event
@@ -122,7 +111,6 @@ public:
     key_down_arrived_events_.clear();
     key_up_events_.clear();
     // Do not clear `exceptional_key_up_events_` here.
-    last_time_stamp_ = absolute_time_point(0);
   }
 
   std::optional<momentary_switch_event> find_probable_stuck_event(void) const {
@@ -155,7 +143,6 @@ private:
   // Some devices sends key_up events continuously and never sends paired key_down events.
   // Store them into `exceptional_key_up_events_`.
   std::set<momentary_switch_event> exceptional_key_up_events_;
-  absolute_time_point last_time_stamp_;
   mutable std::mutex mutex_;
 };
 } // namespace krbn
