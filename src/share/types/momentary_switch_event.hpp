@@ -149,6 +149,27 @@ public:
     return usage_pair_.get_usage_page() == pqrs::hid::usage_page::button;
   }
 
+  // Return true if this event interrupts the current key repeat.
+  // - true: Letter keys
+  // - true: Number keys
+  // - true: Controls and symbol keys (escape, return, tab, etc)
+  // - true: Media control keys
+  // - true: Arrow keys
+  // - false: Modifier keys
+  // - false: Pointing Buttons
+  // - false: D-pad
+  bool interrupts_key_repeat(void) const {
+    if (!valid() ||
+        modifier_flag() ||
+        caps_lock() ||
+        pointing_button() ||
+        usage_pair_.get_usage_page() == pqrs::hid::usage_page::generic_desktop) {
+      return false;
+    }
+
+    return true;
+  }
+
   auto operator<=>(const momentary_switch_event&) const = default;
 
 private:

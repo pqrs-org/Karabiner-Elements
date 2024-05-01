@@ -457,4 +457,36 @@ void run_momentary_switch_event_test(void) {
                                         pqrs::hid::usage::apple_vendor_top_case::keyboard_fn)
                .make_modifier_flag() == krbn::modifier_flag::fn);
   };
+
+  "momentary_switch_event::interrupts_key_repeat"_test = [] {
+    expect(true == krbn::momentary_switch_event(pqrs::hid::usage_page::keyboard_or_keypad,
+                                                pqrs::hid::usage::keyboard_or_keypad::keyboard_a)
+                       .interrupts_key_repeat());
+    expect(true == krbn::momentary_switch_event(pqrs::hid::usage_page::keyboard_or_keypad,
+                                                pqrs::hid::usage::keyboard_or_keypad::keyboard_spacebar)
+                       .interrupts_key_repeat());
+    expect(true == krbn::momentary_switch_event(pqrs::hid::usage_page::consumer,
+                                                pqrs::hid::usage::consumer::mute)
+                       .interrupts_key_repeat());
+    expect(true == krbn::momentary_switch_event(pqrs::hid::usage_page::apple_vendor_top_case,
+                                                pqrs::hid::usage::apple_vendor_top_case::brightness_up)
+                       .interrupts_key_repeat());
+    expect(true == krbn::momentary_switch_event(pqrs::hid::usage_page::apple_vendor_keyboard,
+                                                pqrs::hid::usage::apple_vendor_keyboard::expose_all)
+                       .interrupts_key_repeat());
+
+    expect(false == krbn::momentary_switch_event().interrupts_key_repeat());
+    expect(false == krbn::momentary_switch_event(pqrs::hid::usage_page::keyboard_or_keypad,
+                                                 pqrs::hid::usage::keyboard_or_keypad::keyboard_left_control)
+                        .interrupts_key_repeat());
+    expect(false == krbn::momentary_switch_event(pqrs::hid::usage_page::keyboard_or_keypad,
+                                                 pqrs::hid::usage::keyboard_or_keypad::keyboard_caps_lock)
+                        .interrupts_key_repeat());
+    expect(false == krbn::momentary_switch_event(pqrs::hid::usage_page::button,
+                                                 pqrs::hid::usage::button::button_1)
+                        .interrupts_key_repeat());
+    expect(false == krbn::momentary_switch_event(pqrs::hid::usage_page::generic_desktop,
+                                                 pqrs::hid::usage::generic_desktop::dpad_up)
+                        .interrupts_key_repeat());
+  };
 }
