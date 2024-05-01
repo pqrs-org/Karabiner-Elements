@@ -30,78 +30,78 @@ public:
   bool update(const momentary_switch_event& event,
               event_type t,
               device_state state) {
-    std::lock_guard<std::mutex> lock(mutex_);
+    if (!event.valid()) {
+      return false;
+    }
 
-    //
-    // Handle event
-    //
+    auto previous_probable_stuck_event = find_probable_stuck_event();
 
-    auto previous_size = probable_stuck_events_.size();
+    {
+      std::lock_guard<std::mutex> lock(mutex_);
 
-    switch (t) {
-      case event_type::key_down:
-        key_down_arrived_events_.insert(event);
-        key_up_events_.erase(event);
-        exceptional_key_up_events_.erase(event);
+      //
+      // Handle event
+      //
 
-        // We register a key (or button) to probable_stuck_events_
-        // unless the event is sent from grabbed device.
-        // (The key may be repeating.)
+      auto previous_probable_stuck_events = probable_stuck_events_;
 
-        if (state == device_state::ungrabbed) {
-          if (event.modifier_flag()) {
-            // Do nothing (Do not erase existing keys.)
+      switch (t) {
+        case event_type::key_down:
+          key_down_arrived_events_.insert(event);
+          key_up_events_.erase(event);
+          exceptional_key_up_events_.erase(event);
+
+          // When the device is not seized, more aggressive actions can be taken at key_down event.
+          // If the pressed key is neither a modifier nor a mouse button, key repeat will occur with that key,
+          // allowing other keys to be removed from probable_stuck_events_.
+
+          if (state == device_state::ungrabbed) {
+            if (event.interrupts_key_repeat()) {
+              erase_except_modifier_flags(event.get_usage_pair().get_usage_page());
+            }
+
+            probable_stuck_events_.insert(event);
+          }
+
+          break;
+
+        case event_type::key_up: {
+          // Some devices send key_up event periodically without paired `key_down`.
+          // For example, Swiftpoint ProPoint sends pqrs::hid::usage::consumer::play_or_pause key_up after each button1 click.
+          // So, we ignore such key_up event if key_up event sent twice without key_down event.
+
+          auto already_key_up = (key_up_events_.find(event) != std::end(key_up_events_));
+
+          if (already_key_up) {
+            exceptional_key_up_events_.insert(event);
+            probable_stuck_events_.erase(event);
           } else {
-            if (event.valid()) {
-              if (event.pointing_button()) {
-                // Do nothing with pointing_button.
-              } else {
-                erase_except_modifier_flags(event.get_usage_pair().get_usage_page());
-              }
+            // The key was held down before the device is grabbed
+            // if `key_up` is came without paired `key_down`.
+
+            auto key_down_arrived = (key_down_arrived_events_.find(event) != std::end(key_down_arrived_events_));
+
+            auto exceptional = exceptional_key_up_events_.find(event) != std::end(exceptional_key_up_events_);
+
+            if (!key_down_arrived && !exceptional) {
+              probable_stuck_events_.insert(event);
+            } else {
+              probable_stuck_events_.erase(event);
             }
           }
 
-          probable_stuck_events_.insert(event);
+          key_up_events_.insert(event);
+
+          break;
         }
 
-        break;
-
-      case event_type::key_up: {
-        // Some devices send key_up event periodically without paired `key_down`.
-        // For example, Swiftpoint ProPoint sends pqrs::hid::usage::consumer::play_or_pause key_up after each button1 click.
-        // So, we ignore such key_up event if key_up event sent twice without key_down event.
-
-        auto already_key_up = (key_up_events_.find(event) != std::end(key_up_events_));
-
-        if (already_key_up) {
-          exceptional_key_up_events_.insert(event);
-          probable_stuck_events_.erase(event);
-        } else {
-          // The key was held down before the device is grabbed
-          // if `key_up` is came without paired `key_down`.
-
-          auto key_down_arrived = (key_down_arrived_events_.find(event) != std::end(key_down_arrived_events_));
-
-          auto exceptional = exceptional_key_up_events_.find(event) != std::end(exceptional_key_up_events_);
-
-          if (!key_down_arrived && !exceptional) {
-            probable_stuck_events_.insert(event);
-          } else {
-            probable_stuck_events_.erase(event);
-          }
-        }
-
-        key_up_events_.insert(event);
-
-        break;
+        case event_type::single:
+          // Do nothing
+          break;
       }
-
-      case event_type::single:
-        // Do nothing
-        break;
     }
 
-    return probable_stuck_events_.size() != previous_size;
+    return find_probable_stuck_event() != previous_probable_stuck_event;
   }
 
   void clear(void) {
@@ -127,11 +127,9 @@ private:
   void erase_except_modifier_flags(pqrs::hid::usage_page::value_t usage_page) {
     auto it = std::begin(probable_stuck_events_);
     while (it != std::end(probable_stuck_events_)) {
-      if (it->valid()) {
-        if (it->get_usage_pair().get_usage_page() == usage_page && !it->modifier_flag()) {
-          it = probable_stuck_events_.erase(it);
-          continue;
-        }
+      if (it->get_usage_pair().get_usage_page() == usage_page && !it->modifier_flag()) {
+        it = probable_stuck_events_.erase(it);
+        continue;
       }
       std::advance(it, 1);
     }
