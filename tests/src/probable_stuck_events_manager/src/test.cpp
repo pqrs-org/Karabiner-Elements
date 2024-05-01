@@ -1,4 +1,4 @@
-#include "probable_stuck_events_manager.hpp"
+#include "../../../src/core/grabber/include/grabber/device_grabber_details/probable_stuck_events_manager.hpp"
 #include <boost/ut.hpp>
 
 int main(void) {
