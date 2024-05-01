@@ -112,6 +112,9 @@ extension LibKrbn {
       virtualHIDKeyboardIndicateStickyModifierKeysState =
         libkrbn_core_configuration_get_selected_profile_virtual_hid_keyboard_indicate_sticky_modifier_keys_state()
 
+      enableNotifications =
+        libkrbn_core_configuration_get_selected_profile_enable_notifications()
+
       updateProfiles()
 
       checkForUpdatesOnStartup =
@@ -545,6 +548,17 @@ extension LibKrbn {
         if didSetEnabled {
           libkrbn_core_configuration_set_selected_profile_virtual_hid_keyboard_indicate_sticky_modifier_keys_state(
             virtualHIDKeyboardIndicateStickyModifierKeysState
+          )
+          save()
+        }
+      }
+    }
+
+    @Published var enableNotifications: Bool = false {
+      didSet {
+        if didSetEnabled {
+          libkrbn_core_configuration_set_selected_profile_enable_notifications(
+            enableNotifications
           )
           save()
         }
