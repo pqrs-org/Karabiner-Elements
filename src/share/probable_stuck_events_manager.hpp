@@ -55,7 +55,7 @@ public:
           // If the pressed key is neither a modifier nor a mouse button, key repeat will occur with that key,
           // allowing other keys to be removed from probable_stuck_events_.
 
-          if (state == device_state::ungrabbed) {
+          if (state == device_state::observed) {
             if (event.interrupts_key_repeat()) {
               erase_except_modifier_flags(event.get_usage_pair().get_usage_page());
             }

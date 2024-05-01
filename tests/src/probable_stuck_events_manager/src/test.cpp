@@ -15,13 +15,13 @@ int main(void) {
     expect(m.update(krbn::momentary_switch_event(pqrs::hid::usage_page::keyboard_or_keypad,
                                                  pqrs::hid::usage::keyboard_or_keypad::keyboard_a),
                     krbn::event_type::key_down,
-                    krbn::device_state::grabbed) == false);
+                    krbn::device_state::seized) == false);
     expect(m.find_probable_stuck_event() == std::nullopt);
 
     expect(m.update(krbn::momentary_switch_event(pqrs::hid::usage_page::keyboard_or_keypad,
                                                  pqrs::hid::usage::keyboard_or_keypad::keyboard_a),
                     krbn::event_type::key_up,
-                    krbn::device_state::grabbed) == false);
+                    krbn::device_state::seized) == false);
     expect(m.find_probable_stuck_event() == std::nullopt);
 
     //
@@ -31,7 +31,7 @@ int main(void) {
     expect(m.update(krbn::momentary_switch_event(pqrs::hid::usage_page::keyboard_or_keypad,
                                                  pqrs::hid::usage::keyboard_or_keypad::keyboard_b),
                     krbn::event_type::key_up,
-                    krbn::device_state::grabbed) == true);
+                    krbn::device_state::seized) == true);
     expect(m.find_probable_stuck_event() ==
            krbn::momentary_switch_event(pqrs::hid::usage_page::keyboard_or_keypad,
                                         pqrs::hid::usage::keyboard_or_keypad::keyboard_b));
@@ -39,7 +39,7 @@ int main(void) {
     expect(m.update(krbn::momentary_switch_event(pqrs::hid::usage_page::keyboard_or_keypad,
                                                  pqrs::hid::usage::keyboard_or_keypad::keyboard_b),
                     krbn::event_type::key_down,
-                    krbn::device_state::grabbed) == false);
+                    krbn::device_state::seized) == false);
     expect(m.find_probable_stuck_event() ==
            krbn::momentary_switch_event(pqrs::hid::usage_page::keyboard_or_keypad,
                                         pqrs::hid::usage::keyboard_or_keypad::keyboard_b));
@@ -47,19 +47,19 @@ int main(void) {
     expect(m.update(krbn::momentary_switch_event(pqrs::hid::usage_page::keyboard_or_keypad,
                                                  pqrs::hid::usage::keyboard_or_keypad::keyboard_b),
                     krbn::event_type::key_up,
-                    krbn::device_state::grabbed) == true);
+                    krbn::device_state::seized) == true);
     expect(m.find_probable_stuck_event() == std::nullopt);
 
     expect(m.update(krbn::momentary_switch_event(pqrs::hid::usage_page::keyboard_or_keypad,
                                                  pqrs::hid::usage::keyboard_or_keypad::keyboard_b),
                     krbn::event_type::key_down,
-                    krbn::device_state::grabbed) == false);
+                    krbn::device_state::seized) == false);
     expect(m.find_probable_stuck_event() == std::nullopt);
 
     expect(m.update(krbn::momentary_switch_event(pqrs::hid::usage_page::keyboard_or_keypad,
                                                  pqrs::hid::usage::keyboard_or_keypad::keyboard_b),
                     krbn::event_type::key_up,
-                    krbn::device_state::grabbed) == false);
+                    krbn::device_state::seized) == false);
     expect(m.find_probable_stuck_event() == std::nullopt);
 
     //
@@ -72,7 +72,7 @@ int main(void) {
     expect(m.update(krbn::momentary_switch_event(pqrs::hid::usage_page::keyboard_or_keypad,
                                                  pqrs::hid::usage::keyboard_or_keypad::keyboard_a),
                     krbn::event_type::key_up,
-                    krbn::device_state::grabbed) == true);
+                    krbn::device_state::seized) == true);
     expect(m.find_probable_stuck_event() ==
            krbn::momentary_switch_event(pqrs::hid::usage_page::keyboard_or_keypad,
                                         pqrs::hid::usage::keyboard_or_keypad::keyboard_a));
@@ -88,7 +88,7 @@ int main(void) {
     expect(m.update(krbn::momentary_switch_event(pqrs::hid::usage_page::keyboard_or_keypad,
                                                  pqrs::hid::usage::keyboard_or_keypad::keyboard_b),
                     krbn::event_type::key_up,
-                    krbn::device_state::grabbed) == true);
+                    krbn::device_state::seized) == true);
     expect(m.find_probable_stuck_event() == krbn::momentary_switch_event(pqrs::hid::usage_page::keyboard_or_keypad,
                                                                          pqrs::hid::usage::keyboard_or_keypad::keyboard_b));
 
@@ -99,7 +99,7 @@ int main(void) {
     expect(m.update(krbn::momentary_switch_event(pqrs::hid::usage_page::keyboard_or_keypad,
                                                  pqrs::hid::usage::keyboard_or_keypad::keyboard_a),
                     krbn::event_type::key_up,
-                    krbn::device_state::grabbed) == true);
+                    krbn::device_state::seized) == true);
     expect(m.find_probable_stuck_event() == krbn::momentary_switch_event(pqrs::hid::usage_page::keyboard_or_keypad,
                                                                          pqrs::hid::usage::keyboard_or_keypad::keyboard_a));
 
@@ -110,14 +110,14 @@ int main(void) {
     expect(m.update(krbn::momentary_switch_event(pqrs::hid::usage_page::keyboard_or_keypad,
                                                  pqrs::hid::usage::keyboard_or_keypad::keyboard_b),
                     krbn::event_type::key_down,
-                    krbn::device_state::grabbed) == false);
+                    krbn::device_state::seized) == false);
     expect(m.find_probable_stuck_event() == krbn::momentary_switch_event(pqrs::hid::usage_page::keyboard_or_keypad,
                                                                          pqrs::hid::usage::keyboard_or_keypad::keyboard_a));
 
     expect(m.update(krbn::momentary_switch_event(pqrs::hid::usage_page::keyboard_or_keypad,
                                                  pqrs::hid::usage::keyboard_or_keypad::keyboard_b),
                     krbn::event_type::key_up,
-                    krbn::device_state::grabbed) == false);
+                    krbn::device_state::seized) == false);
     expect(m.find_probable_stuck_event() == krbn::momentary_switch_event(pqrs::hid::usage_page::keyboard_or_keypad,
                                                                          pqrs::hid::usage::keyboard_or_keypad::keyboard_a));
 
@@ -128,14 +128,14 @@ int main(void) {
     expect(m.update(krbn::momentary_switch_event(pqrs::hid::usage_page::keyboard_or_keypad,
                                                  pqrs::hid::usage::keyboard_or_keypad::keyboard_a),
                     krbn::event_type::key_down,
-                    krbn::device_state::grabbed) == false);
+                    krbn::device_state::seized) == false);
     expect(m.find_probable_stuck_event() == krbn::momentary_switch_event(pqrs::hid::usage_page::keyboard_or_keypad,
                                                                          pqrs::hid::usage::keyboard_or_keypad::keyboard_a));
 
     expect(m.update(krbn::momentary_switch_event(pqrs::hid::usage_page::keyboard_or_keypad,
                                                  pqrs::hid::usage::keyboard_or_keypad::keyboard_a),
                     krbn::event_type::key_up,
-                    krbn::device_state::grabbed) == true);
+                    krbn::device_state::seized) == true);
     expect(m.find_probable_stuck_event() == std::nullopt);
   };
 
@@ -149,19 +149,19 @@ int main(void) {
     expect(m.update(krbn::momentary_switch_event(pqrs::hid::usage_page::keyboard_or_keypad,
                                                  pqrs::hid::usage::keyboard_or_keypad::keyboard_a),
                     krbn::event_type::key_down,
-                    krbn::device_state::grabbed) == false);
+                    krbn::device_state::seized) == false);
     expect(m.find_probable_stuck_event() == std::nullopt);
 
     expect(m.update(krbn::momentary_switch_event(pqrs::hid::usage_page::keyboard_or_keypad,
                                                  pqrs::hid::usage::keyboard_or_keypad::keyboard_a),
                     krbn::event_type::key_up,
-                    krbn::device_state::grabbed) == false);
+                    krbn::device_state::seized) == false);
     expect(m.find_probable_stuck_event() == std::nullopt);
 
     expect(m.update(krbn::momentary_switch_event(pqrs::hid::usage_page::keyboard_or_keypad,
                                                  pqrs::hid::usage::keyboard_or_keypad::keyboard_a),
                     krbn::event_type::key_up,
-                    krbn::device_state::grabbed) == false);
+                    krbn::device_state::seized) == false);
     expect(m.find_probable_stuck_event() == std::nullopt);
   };
 
@@ -176,7 +176,7 @@ int main(void) {
       expect(m.update(krbn::momentary_switch_event(pqrs::hid::usage_page::keyboard_or_keypad,
                                                    pqrs::hid::usage::keyboard_or_keypad::keyboard_a),
                       krbn::event_type::key_up,
-                      krbn::device_state::grabbed) == true);
+                      krbn::device_state::seized) == true);
       expect(m.find_probable_stuck_event() ==
              krbn::momentary_switch_event(pqrs::hid::usage_page::keyboard_or_keypad,
                                           pqrs::hid::usage::keyboard_or_keypad::keyboard_a));
@@ -184,14 +184,14 @@ int main(void) {
       expect(m.update(krbn::momentary_switch_event(pqrs::hid::usage_page::keyboard_or_keypad,
                                                    pqrs::hid::usage::keyboard_or_keypad::keyboard_a),
                       krbn::event_type::key_up,
-                      krbn::device_state::grabbed) == true);
+                      krbn::device_state::seized) == true);
       // Added to exceptional_key_up_events_
       expect(m.find_probable_stuck_event() == std::nullopt);
 
       expect(m.update(krbn::momentary_switch_event(pqrs::hid::usage_page::keyboard_or_keypad,
                                                    pqrs::hid::usage::keyboard_or_keypad::keyboard_a),
                       krbn::event_type::key_up,
-                      krbn::device_state::grabbed) == false);
+                      krbn::device_state::seized) == false);
       expect(m.find_probable_stuck_event() == std::nullopt);
 
       m.clear();
@@ -199,7 +199,7 @@ int main(void) {
       expect(m.update(krbn::momentary_switch_event(pqrs::hid::usage_page::keyboard_or_keypad,
                                                    pqrs::hid::usage::keyboard_or_keypad::keyboard_a),
                       krbn::event_type::key_up,
-                      krbn::device_state::grabbed) == false);
+                      krbn::device_state::seized) == false);
       expect(m.find_probable_stuck_event() == std::nullopt);
     }
   };
@@ -214,7 +214,7 @@ int main(void) {
     expect(m.update(krbn::momentary_switch_event(pqrs::hid::usage_page::keyboard_or_keypad,
                                                  pqrs::hid::usage::keyboard_or_keypad::keyboard_b),
                     krbn::event_type::key_up,
-                    krbn::device_state::grabbed) == true);
+                    krbn::device_state::seized) == true);
     expect(m.find_probable_stuck_event() == krbn::momentary_switch_event(pqrs::hid::usage_page::keyboard_or_keypad,
                                                                          pqrs::hid::usage::keyboard_or_keypad::keyboard_b));
 
@@ -225,7 +225,7 @@ int main(void) {
     expect(m.update(krbn::momentary_switch_event(pqrs::hid::usage_page::keyboard_or_keypad,
                                                  pqrs::hid::usage::keyboard_or_keypad::keyboard_a),
                     krbn::event_type::key_up,
-                    krbn::device_state::grabbed) == true);
+                    krbn::device_state::seized) == true);
     expect(m.find_probable_stuck_event() == krbn::momentary_switch_event(pqrs::hid::usage_page::keyboard_or_keypad,
                                                                          pqrs::hid::usage::keyboard_or_keypad::keyboard_a));
 
@@ -236,14 +236,14 @@ int main(void) {
     expect(m.update(krbn::momentary_switch_event(pqrs::hid::usage_page::keyboard_or_keypad,
                                                  pqrs::hid::usage::keyboard_or_keypad::keyboard_c),
                     krbn::event_type::key_down,
-                    krbn::device_state::ungrabbed) == true);
+                    krbn::device_state::observed) == true);
     expect(m.find_probable_stuck_event() == krbn::momentary_switch_event(pqrs::hid::usage_page::keyboard_or_keypad,
                                                                          pqrs::hid::usage::keyboard_or_keypad::keyboard_c));
 
     expect(m.update(krbn::momentary_switch_event(pqrs::hid::usage_page::keyboard_or_keypad,
                                                  pqrs::hid::usage::keyboard_or_keypad::keyboard_c),
                     krbn::event_type::key_up,
-                    krbn::device_state::ungrabbed) == true);
+                    krbn::device_state::observed) == true);
     expect(m.find_probable_stuck_event() == std::nullopt);
   };
 

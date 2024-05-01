@@ -685,8 +685,8 @@ private:
         needs_regrab |= entry->get_probable_stuck_events_manager()->update(
             *ev,
             e.get_event_type(),
-            entry->seized() ? device_state::grabbed
-                            : device_state::ungrabbed);
+            entry->seized() ? device_state::seized
+                            : device_state::observed);
       }
 
       if (!entry->get_disabled() && entry->seized()) {

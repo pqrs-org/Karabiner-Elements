@@ -4,14 +4,14 @@
 
 namespace krbn {
 enum class device_state : uint32_t {
-  grabbed,
-  ungrabbed,
+  seized,
+  observed,
 };
 
 NLOHMANN_JSON_SERIALIZE_ENUM(
     device_state,
     {
-        {device_state::grabbed, "grabbed"},
-        {device_state::ungrabbed, "ungrabbed"},
+        {device_state::seized, "seized"},
+        {device_state::observed, "observed"},
     });
 } // namespace krbn
