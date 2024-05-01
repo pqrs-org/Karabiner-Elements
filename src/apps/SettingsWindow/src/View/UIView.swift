@@ -53,6 +53,20 @@ struct UIView: View {
         .padding(6.0)
       }
 
+      GroupBox(label: Text("System")) {
+        VStack(alignment: .leading, spacing: 12.0) {
+          HStack {
+            Toggle(isOn: $settings.enableNotifications) {
+              Text("Enable notifications (Default: on)")
+            }
+            .switchToggleStyle()
+
+            Spacer()
+          }
+        }
+        .padding(6.0)
+      }
+
       GroupBox(label: Text("App icon")) {
         VStack(alignment: .leading, spacing: 12.0) {
           VStack {

@@ -563,6 +563,23 @@ void libkrbn_core_configuration_set_selected_profile_virtual_hid_keyboard_indica
   }
 }
 
+bool libkrbn_core_configuration_get_selected_profile_enable_notifications(void) {
+  if (auto c = get_current_core_configuration()) {
+    return c->get_selected_profile()
+        .get_system()
+        .get_enable_notifications();
+  }
+  return true;
+}
+
+void libkrbn_core_configuration_set_selected_profile_enable_notifications(bool value) {
+  if (auto c = get_current_core_configuration()) {
+    c->get_selected_profile()
+        .get_system()
+        .set_enable_notifications(value);
+  }
+}
+
 bool libkrbn_core_configuration_get_selected_profile_device_ignore(const libkrbn_device_identifiers* device_identifiers) {
   if (auto c = get_current_core_configuration()) {
     if (device_identifiers) {

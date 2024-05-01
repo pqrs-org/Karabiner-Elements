@@ -178,6 +178,10 @@ void libkrbn_core_configuration_set_selected_profile_virtual_hid_keyboard_mouse_
 bool libkrbn_core_configuration_get_selected_profile_virtual_hid_keyboard_indicate_sticky_modifier_keys_state(void);
 void libkrbn_core_configuration_set_selected_profile_virtual_hid_keyboard_indicate_sticky_modifier_keys_state(bool value);
 
+// profile::system
+bool libkrbn_core_configuration_get_selected_profile_enable_notifications(void);
+void libkrbn_core_configuration_set_selected_profile_enable_notifications(bool value);
+
 // profile::devices
 
 bool libkrbn_core_configuration_get_selected_profile_device_ignore(const libkrbn_device_identifiers* device_identifiers);
