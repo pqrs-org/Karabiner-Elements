@@ -5,6 +5,7 @@
 #include "device_utility.hpp"
 #include "event_queue.hpp"
 #include "hid_keyboard_caps_lock_led_state_manager.hpp"
+#include "hid_queue_values_converter.hpp"
 #include "iokit_utility.hpp"
 #include "pressed_keys_manager.hpp"
 #include "probable_stuck_events_manager.hpp"
@@ -17,6 +18,21 @@ namespace grabber {
 namespace device_grabber_details {
 class entry final : public pqrs::dispatcher::extra::dispatcher_client {
 public:
+  //
+  // Signals (invoked from the shared dispatcher thread)
+  //
+
+  nod::signal<void(entry&,
+                   std::shared_ptr<event_queue::queue> event_queue,
+                   const std::vector<pqrs::osx::iokit_hid_value>& hid_values)>
+      hid_queue_values_arrived;
+
+  //
+  // Methods
+  //
+
+  entry(const entry&) = delete;
+
   entry(device_id device_id,
         IOHIDDeviceRef device,
         std::weak_ptr<const core_configuration::core_configuration> core_configuration) : dispatcher_client(),
@@ -47,6 +63,19 @@ public:
     });
     hid_queue_value_monitor_->stopped.connect([this] {
       control_caps_lock_led_state_manager();
+    });
+    hid_queue_value_monitor_->values_arrived.connect([this](auto&& values_ptr) {
+      auto hid_values = hid_queue_values_converter_.make_hid_values(device_id_,
+                                                                    values_ptr);
+      auto event_queue = event_queue::utility::make_queue(device_properties_,
+                                                          hid_values);
+
+      event_queue = event_queue::utility::insert_device_keys_and_pointing_buttons_are_released_event(event_queue,
+                                                                                                     device_id_,
+                                                                                                     pressed_keys_manager_);
+      hid_queue_values_arrived(*this,
+                               event_queue,
+                               hid_values);
     });
 
     device_name_ = iokit_utility::make_device_name_for_log(device_id,
@@ -245,6 +274,7 @@ private:
   std::shared_ptr<pressed_keys_manager> pressed_keys_manager_;
   std::shared_ptr<hid_keyboard_caps_lock_led_state_manager> caps_lock_led_state_manager_;
   std::shared_ptr<pqrs::osx::iokit_hid_queue_value_monitor> hid_queue_value_monitor_;
+  hid_queue_values_converter hid_queue_values_converter_;
   std::string device_name_;
   std::string device_short_name_;
 

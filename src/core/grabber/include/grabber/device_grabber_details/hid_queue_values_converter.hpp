@@ -6,17 +6,13 @@
 namespace krbn {
 class hid_queue_values_converter final {
 public:
+  hid_queue_values_converter(void)
+      : last_time_stamp_(0) {
+  }
+
   std::vector<pqrs::osx::iokit_hid_value> make_hid_values(device_id device_id,
                                                           std::shared_ptr<std::vector<pqrs::cf::cf_ptr<IOHIDValueRef>>> values) {
     std::vector<pqrs::osx::iokit_hid_value> hid_values;
-
-    std::optional<absolute_time_point> last_time_stamp;
-    {
-      auto it = last_time_stamps_.find(device_id);
-      if (it != std::end(last_time_stamps_)) {
-        last_time_stamp = it->second;
-      }
-    }
 
     for (const auto& v : *values) {
       hid_values.emplace_back(*v);
@@ -38,26 +34,18 @@ public:
       // (If the time_stamp is set by device driver, the assumption is appropriate.)
       // If device_observer and device_grabber use generated time_stamp, the time_stamp will be differ.
 
-      if (last_time_stamp &&
-          hid_values.back().get_time_stamp() < *last_time_stamp) {
-        hid_values.back().set_time_stamp(*last_time_stamp);
+      auto t = hid_values.back().get_time_stamp();
+      if (t < last_time_stamp_) {
+        hid_values.back().set_time_stamp(last_time_stamp_);
+      } else {
+        last_time_stamp_ = t;
       }
-
-      last_time_stamp = hid_values.back().get_time_stamp();
-    }
-
-    if (last_time_stamp) {
-      last_time_stamps_[device_id] = *last_time_stamp;
     }
 
     return hid_values;
   }
 
-  void erase_device(device_id device_id) {
-    last_time_stamps_.erase(device_id);
-  }
-
 private:
-  std::unordered_map<device_id, pqrs::osx::chrono::absolute_time_point> last_time_stamps_;
+  pqrs::osx::chrono::absolute_time_point last_time_stamp_;
 }; // namespace krbn
 } // namespace krbn

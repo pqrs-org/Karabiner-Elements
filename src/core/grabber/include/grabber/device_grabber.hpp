@@ -12,7 +12,6 @@
 #include "filesystem_utility.hpp"
 #include "grabber/grabber_state_json_writer.hpp"
 #include "hid_keyboard_caps_lock_led_state_manager.hpp"
-#include "hid_queue_values_converter.hpp"
 #include "iokit_utility.hpp"
 #include "json_writer.hpp"
 #include "krbn_notification_center.hpp"
@@ -227,39 +226,28 @@ public:
                                                                      core_configuration_);
         entries_[device_id] = entry;
 
-        entry->get_hid_queue_value_monitor()->values_arrived.connect([this, device_id](auto&& values_ptr) {
-          auto it = entries_.find(device_id);
-          if (it != std::end(entries_)) {
-            auto hid_values = hid_queue_values_converter_.make_hid_values(device_id,
-                                                                          values_ptr);
-            auto event_queue = event_queue::utility::make_queue(it->second->get_device_properties(),
-                                                                hid_values);
-
-            if (it->second->is_karabiner_virtual_hid_device()) {
-              // Handle caps_lock_state_changed event only if the hid is Karabiner-DriverKit-VirtualHIDDevice.
-              for (const auto& e : event_queue->get_entries()) {
-                if (e.get_event().get_type() == event_queue::event::type::caps_lock_state_changed) {
-                  if (auto state = e.get_event().get_integer_value()) {
-                    last_caps_lock_state_ = *state;
-                    post_caps_lock_state_changed_event(*state);
-                    update_caps_lock_led();
-                  }
+        entry->hid_queue_values_arrived.connect([this](auto&& entry, auto&& event_queue, auto&& hid_values) {
+          if (entry.is_karabiner_virtual_hid_device()) {
+            // Handle caps_lock_state_changed event only if the hid is Karabiner-DriverKit-VirtualHIDDevice.
+            for (const auto& e : event_queue->get_entries()) {
+              if (e.get_event().get_type() == event_queue::event::type::caps_lock_state_changed) {
+                if (auto state = e.get_event().get_integer_value()) {
+                  last_caps_lock_state_ = *state;
+                  post_caps_lock_state_changed_event(*state);
+                  update_caps_lock_led();
                 }
               }
-            } else {
-              event_queue = event_queue::utility::insert_device_keys_and_pointing_buttons_are_released_event(event_queue,
-                                                                                                             device_id,
-                                                                                                             it->second->get_pressed_keys_manager());
-              values_arrived(it->second, event_queue);
+            }
+          } else {
+            values_arrived(entry, event_queue);
 
-              //
-              // game pad stick to pointing motion
-              //
+            //
+            // game pad stick to pointing motion
+            //
 
-              if (it->second->seized()) {
-                game_pad_stick_converter_->convert(it->second->get_device_properties(),
-                                                   hid_values);
-              }
+            if (entry.seized()) {
+              game_pad_stick_converter_->convert(entry.get_device_properties(),
+                                                 hid_values);
             }
           }
         });
@@ -348,7 +336,6 @@ public:
       //
 
       game_pad_stick_converter_->unregister_device(device_id);
-      hid_queue_values_converter_.erase_device(device_id);
 
       if (notification_message_manager_) {
         notification_message_manager_->async_erase_device(device_id);
@@ -532,7 +519,7 @@ public:
   void async_grab_devices(void) {
     enqueue_to_dispatcher([this] {
       for (auto&& e : entries_) {
-        grab_device(e.second);
+        grab_device(*(e.second));
       }
     });
   }
@@ -673,7 +660,7 @@ private:
   }
 
   // This method is executed in the shared dispatcher thread.
-  void values_arrived(std::shared_ptr<device_grabber_details::entry> entry,
+  void values_arrived(device_grabber_details::entry& entry,
                       std::shared_ptr<event_queue::queue> event_queue) {
     // Manipulate events
 
@@ -682,14 +669,14 @@ private:
 
     for (const auto& e : event_queue->get_entries()) {
       if (auto ev = e.get_event().get_if<momentary_switch_event>()) {
-        needs_regrab |= entry->get_probable_stuck_events_manager()->update(
+        needs_regrab |= entry.get_probable_stuck_events_manager()->update(
             *ev,
             e.get_event_type(),
-            entry->seized() ? device_state::seized
-                            : device_state::observed);
+            entry.seized() ? device_state::seized
+                           : device_state::observed);
       }
 
-      if (!entry->get_disabled() && entry->seized()) {
+      if (!entry.get_disabled() && entry.seized()) {
         event_queue::entry qe(e.get_device_id(),
                               e.get_event_time_stamp(),
                               e.get_event(),
@@ -755,18 +742,18 @@ private:
   }
 
   // This method is executed in the shared dispatcher thread.
-  void grab_device(std::shared_ptr<device_grabber_details::entry> entry) const {
+  void grab_device(device_grabber_details::entry& entry) const {
     auto state = make_grabbable_state(entry);
     switch (state) {
       case grabbable_state::state::grabbable:
       case grabbable_state::state::ungrabbable_temporarily:
-        entry->async_start_queue_value_monitor(state);
+        entry.async_start_queue_value_monitor(state);
         break;
 
       case grabbable_state::state::ungrabbable_permanently:
       case grabbable_state::state::none:
       case grabbable_state::state::end_:
-        entry->async_stop_queue_value_monitor();
+        entry.async_stop_queue_value_monitor();
         break;
     }
   }
@@ -775,25 +762,21 @@ private:
   void grab_device(device_id device_id) const {
     auto it = entries_.find(device_id);
     if (it != std::end(entries_)) {
-      grab_device(it->second);
+      grab_device(*(it->second));
     }
   }
 
   // This method is executed in the shared dispatcher thread.
-  grabbable_state::state make_grabbable_state(std::shared_ptr<device_grabber_details::entry> entry) const {
-    if (!entry) {
-      return grabbable_state::state::ungrabbable_permanently;
-    }
-
+  grabbable_state::state make_grabbable_state(const device_grabber_details::entry& entry) const {
     // The device is always grabbable if it is observed device
     // because karabiner_grabber does not seize the device and do not affect existing hidd processing.
     // (e.g. key repeat)
 
-    if (entry->needs_to_observe_device()) {
+    if (entry.needs_to_observe_device()) {
       return grabbable_state::state::grabbable;
     }
 
-    if (!entry->needs_to_seize_device()) {
+    if (!entry.needs_to_seize_device()) {
       return grabbable_state::state::ungrabbable_permanently;
     }
 
@@ -817,7 +800,7 @@ private:
     if (!virtual_hid_devices_state_.get_virtual_hid_keyboard_ready()) {
       std::string message = "virtual_hid_keyboard is not ready. Please wait for a while.";
       logger_unique_filter_.warn(message);
-      unset_device_ungrabbable_temporarily_notification_message(entry->get_device_id());
+      unset_device_ungrabbable_temporarily_notification_message(entry.get_device_id());
       return grabbable_state::state::ungrabbable_temporarily;
     }
 
@@ -825,7 +808,7 @@ private:
       if (!virtual_hid_devices_state_.get_virtual_hid_pointing_ready()) {
         std::string message = "virtual_hid_pointing is not ready. Please wait for a while.";
         logger_unique_filter_.warn(message);
-        unset_device_ungrabbable_temporarily_notification_message(entry->get_device_id());
+        unset_device_ungrabbable_temporarily_notification_message(entry.get_device_id());
         return grabbable_state::state::ungrabbable_temporarily;
       }
     }
@@ -834,23 +817,23 @@ private:
     // Ungrabbable while probable stuck events exist
     //
 
-    if (auto event = entry->get_probable_stuck_events_manager()->find_probable_stuck_event()) {
+    if (auto event = entry.get_probable_stuck_events_manager()->find_probable_stuck_event()) {
       auto message = fmt::format("Probable stuck key detected! "
                                  "{0} is ignored temporarily until {1} is pressed again. "
                                  "Key may have been held when keyboard was grabbed. "
                                  "Is the keyboard reconnecting while in use?",
-                                 entry->get_device_name(),
+                                 entry.get_device_name(),
                                  nlohmann::json(*event).dump());
       logger_unique_filter_.warn(message);
 
       if (notification_message_manager_) {
         notification_message_manager_->async_set_device_ungrabbable_temporarily_message(
-            entry->get_device_id(),
+            entry.get_device_id(),
             fmt::format("Probable stuck key detected!\n\n"
                         "{0} is ignored temporarily until {1} is pressed again.\n\n"
                         "Key may have been held when keyboard was grabbed. "
                         "Is the keyboard reconnecting while in use?",
-                        entry->get_device_short_name(),
+                        entry.get_device_short_name(),
                         nlohmann::json(*event).dump()));
       }
 
@@ -859,7 +842,7 @@ private:
 
     // ----------------------------------------
 
-    unset_device_ungrabbable_temporarily_notification_message(entry->get_device_id());
+    unset_device_ungrabbable_temporarily_notification_message(entry.get_device_id());
 
     return grabbable_state::state::grabbable;
   }
@@ -1034,7 +1017,6 @@ private:
   std::optional<bool> last_caps_lock_state_;
   std::unique_ptr<pqrs::osx::iokit_hid_manager> hid_manager_;
   std::unordered_map<device_id, std::shared_ptr<device_grabber_details::entry>> entries_;
-  hid_queue_values_converter hid_queue_values_converter_;
 
   std::unique_ptr<pqrs::osx::iokit_power_management::monitor> power_management_monitor_;
   bool system_sleeping_;
