@@ -227,28 +227,15 @@ public:
         entries_[device_id] = entry;
 
         entry->hid_queue_values_arrived.connect([this](auto&& entry, auto&& event_queue, auto&& hid_values) {
-          if (entry.is_karabiner_virtual_hid_device()) {
-            // Handle caps_lock_state_changed event only if the hid is Karabiner-DriverKit-VirtualHIDDevice.
-            for (const auto& e : event_queue->get_entries()) {
-              if (e.get_event().get_type() == event_queue::event::type::caps_lock_state_changed) {
-                if (auto state = e.get_event().get_integer_value()) {
-                  last_caps_lock_state_ = *state;
-                  post_caps_lock_state_changed_event(*state);
-                  update_caps_lock_led();
-                }
-              }
-            }
-          } else {
-            values_arrived(entry, event_queue);
+          values_arrived(entry, event_queue);
 
-            //
-            // game pad stick to pointing motion
-            //
+          //
+          // game pad stick to pointing motion
+          //
 
-            if (entry.seized()) {
-              game_pad_stick_converter_->convert(entry.get_device_properties(),
-                                                 hid_values);
-            }
+          if (entry.seized()) {
+            game_pad_stick_converter_->convert(entry.get_device_properties(),
+                                               hid_values);
           }
         });
 
@@ -662,40 +649,53 @@ private:
   // This method is executed in the shared dispatcher thread.
   void values_arrived(device_grabber_details::entry& entry,
                       std::shared_ptr<event_queue::queue> event_queue) {
-    // Manipulate events
+    if (entry.is_karabiner_virtual_hid_device()) {
+      // Handle caps_lock_state_changed event only if the hid is Karabiner-DriverKit-VirtualHIDDevice.
+      for (const auto& e : event_queue->get_entries()) {
+        if (e.get_event().get_type() == event_queue::event::type::caps_lock_state_changed) {
+          if (auto state = e.get_event().get_integer_value()) {
+            last_caps_lock_state_ = *state;
+            post_caps_lock_state_changed_event(*state);
+            update_caps_lock_led();
+          }
+        }
+      }
+    } else {
+      // Manipulate events
 
-    bool needs_regrab = false;
-    bool notify = false;
+      bool needs_regrab = false;
+      bool notify = false;
 
-    for (const auto& e : event_queue->get_entries()) {
-      if (auto ev = e.get_event().get_if<momentary_switch_event>()) {
-        needs_regrab |= entry.get_probable_stuck_events_manager()->update(
-            *ev,
-            e.get_event_type(),
-            entry.seized() ? device_state::seized
-                           : device_state::observed);
+      for (const auto& e : event_queue->get_entries()) {
+        if (auto ev = e.get_event().get_if<momentary_switch_event>()) {
+          needs_regrab |= entry.get_probable_stuck_events_manager()->update(
+              *ev,
+              e.get_event_type(),
+              entry.seized() ? device_state::seized
+                             : device_state::observed);
+        }
+
+        if (!entry.get_disabled() && entry.seized()) {
+          event_queue::entry qe(e.get_device_id(),
+                                e.get_event_time_stamp(),
+                                e.get_event(),
+                                e.get_event_type(),
+                                e.get_original_event(),
+                                e.get_state());
+
+          merged_input_event_queue_->push_back_entry(qe);
+
+          notify = true;
+        }
       }
 
-      if (!entry.get_disabled() && entry.seized()) {
-        event_queue::entry qe(e.get_device_id(),
-                              e.get_event_time_stamp(),
-                              e.get_event(),
-                              e.get_event_type(),
-                              e.get_original_event(),
-                              e.get_state());
-
-        merged_input_event_queue_->push_back_entry(qe);
-
-        notify = true;
+      if (needs_regrab) {
+        grab_device(entry);
       }
-    }
 
-    if (needs_regrab) {
-      grab_device(entry);
-    }
-
-    if (notify) {
-      krbn_notification_center::get_instance().enqueue_input_event_arrived(*this);
+      if (notify) {
+        krbn_notification_center::get_instance().enqueue_input_event_arrived(*this);
+      }
     }
   }
 
