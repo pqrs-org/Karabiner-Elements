@@ -13,7 +13,7 @@ namespace grabber {
 namespace device_grabber_details {
 //
 // game_pad_stick_converter takes value_arrived data as input and outputs poinitng motion.
-// This conversion is necessary because it is difficult to use game pad sticks as natural pointing devices due to the following characteristics.
+// Due to the following characteristics, it is not possible to directly convert HID values from a gamepad into poinitng motion without using a converter.
 //
 // - The game pad's stick only sends events when the value changes.
 //   We want the pointer to move while the stick is completely tilted, even if the value does not change.
@@ -383,254 +383,142 @@ public:
     double remainder_;
   };
 
-  class state final : public pqrs::dispatcher::extra::dispatcher_client {
-  public:
-    state(device_id device_id,
-          const device_identifiers& di,
-          const pointing_motion_arrived_t& pointing_motion_arrived)
-        : dispatcher_client(),
-          device_id_(device_id),
-          device_identifiers_(di),
-          pointing_motion_arrived_(pointing_motion_arrived),
-          xy_(stick::stick_type::xy),
-          wheels_(stick::stick_type::wheels),
-          xy_timer_(*this),
-          xy_timer_count_(0),
-          wheels_timer_(*this),
-          wheels_timer_count_(0) {
-      xy_.hid_values_updated.connect([this](auto&& x, auto&& y, auto&& interval) {
-        x_value_.set_value(x);
-        y_value_.set_value(y);
-
-        if (interval == std::chrono::milliseconds(0)) {
-          xy_timer_.stop();
-          post_xy_event();
-
-        } else {
-          if (!xy_timer_.enabled()) {
-            xy_timer_count_ = 0;
-
-            xy_timer_.start(
-                [this, interval] {
-                  ++xy_timer_count_;
-                  switch (xy_timer_count_) {
-                    case 1:
-                      // Ignore immediately fire after start.
-                      return;
-                    case 2:
-                      post_xy_event();
-                      xy_timer_.set_interval(interval);
-                      break;
-                    default:
-                      post_xy_event();
-                  }
-                },
-                // TODO: Replace hard-coded interval
-                std::chrono::milliseconds(300));
-          }
-        }
-      });
-
-      wheels_.hid_values_updated.connect([this](auto&& h, auto&& v, auto&& interval) {
-        horizontal_wheel_value_.set_value(h);
-        vertical_wheel_value_.set_value(v);
-
-        if (interval == std::chrono::milliseconds(0)) {
-          wheels_timer_.stop();
-          post_wheels_event();
-
-        } else {
-          if (!wheels_timer_.enabled()) {
-            wheels_timer_count_ = 0;
-
-            wheels_timer_.start(
-                [this, interval] {
-                  ++wheels_timer_count_;
-                  switch (wheels_timer_count_) {
-                    case 1:
-                      // Ignore immediately fire after start.
-                      return;
-                    case 2:
-                      post_wheels_event();
-                      wheels_timer_.set_interval(interval);
-                      break;
-                    default:
-                      post_wheels_event();
-                  }
-                },
-                // TODO: Replace hard-coded interval
-                std::chrono::milliseconds(300));
-          }
-        }
-      });
-    }
-
-    ~state(void) {
-      detach_from_dispatcher([this] {
-        xy_timer_.stop();
-        wheels_timer_.stop();
-      });
-    }
-
-    void update_configurations(const core_configuration::core_configuration& core_configuration) {
-      xy_.update_configurations(core_configuration,
-                                device_identifiers_);
-      wheels_.update_configurations(core_configuration,
-                                    device_identifiers_);
-    }
-
-    // This method should be called in the shared dispatcher thread.
-    void update_x_stick_sensor_value(CFIndex logical_max,
-                                     CFIndex logical_min,
-                                     CFIndex integer_value) {
-      xy_.update_horizontal_stick_sensor_value(logical_max,
-                                               logical_min,
-                                               integer_value);
-    }
-
-    // This method should be called in the shared dispatcher thread.
-    void update_y_stick_sensor_value(CFIndex logical_max,
-                                     CFIndex logical_min,
-                                     CFIndex integer_value) {
-      xy_.update_vertical_stick_sensor_value(logical_max,
-                                             logical_min,
-                                             integer_value);
-    }
-
-    // This method should be called in the shared dispatcher thread.
-    void update_vertical_wheel_stick_sensor_value(CFIndex logical_max,
-                                                  CFIndex logical_min,
-                                                  CFIndex integer_value) {
-      wheels_.update_vertical_stick_sensor_value(logical_max,
-                                                 logical_min,
-                                                 integer_value);
-    }
-
-    // This method should be called in the shared dispatcher thread.
-    void update_horizontal_wheel_stick_sensor_value(CFIndex logical_max,
-                                                    CFIndex logical_min,
-                                                    CFIndex integer_value) {
-      wheels_.update_horizontal_stick_sensor_value(logical_max,
-                                                   logical_min,
-                                                   integer_value);
-    }
-
-  private:
-    void post_xy_event(void) {
-      pointing_motion m(x_value_.truncated_value(),
-                        y_value_.truncated_value(),
-                        0,
-                        0);
-
-      if (m.is_zero()) {
-        return;
-      }
-
-      event_queue::event_time_stamp event_time_stamp(pqrs::osx::chrono::mach_absolute_time_point());
-      event_queue::event event(m);
-      event_queue::entry entry(device_id_,
-                               event_time_stamp,
-                               event,
-                               event_type::single,
-                               event,
-                               event_queue::state::original);
-
-      enqueue_to_dispatcher([this, entry] {
-        pointing_motion_arrived_(entry);
-      });
-    }
-
-    void post_wheels_event(void) {
-      pointing_motion m(0,
-                        0,
-                        vertical_wheel_value_.truncated_value(),
-                        horizontal_wheel_value_.truncated_value());
-
-      if (m.is_zero()) {
-        return;
-      }
-
-      event_queue::event_time_stamp event_time_stamp(pqrs::osx::chrono::mach_absolute_time_point());
-      event_queue::event event(m);
-      event_queue::entry entry(device_id_,
-                               event_time_stamp,
-                               event,
-                               event_type::single,
-                               event,
-                               event_queue::state::original);
-
-      enqueue_to_dispatcher([this, entry] {
-        pointing_motion_arrived_(entry);
-      });
-    }
-
-    device_id device_id_;
-    device_identifiers device_identifiers_;
-    const pointing_motion_arrived_t& pointing_motion_arrived_;
-
-    stick xy_;
-    stick wheels_;
-
-    event_value x_value_;
-    event_value y_value_;
-
-    event_value horizontal_wheel_value_;
-    event_value vertical_wheel_value_;
-
-    pqrs::dispatcher::extra::timer xy_timer_;
-    int xy_timer_count_;
-
-    pqrs::dispatcher::extra::timer wheels_timer_;
-    int wheels_timer_count_;
-  };
-
   //
   // Methods
   //
 
-  game_pad_stick_converter(std::weak_ptr<const core_configuration::core_configuration> core_configuration)
-      : dispatcher_client() {
-    set_core_configuration(core_configuration);
+  game_pad_stick_converter(const device_properties& device_properties,
+                           std::weak_ptr<const core_configuration::core_configuration> weak_core_configuration)
+      : dispatcher_client(),
+        device_properties_(device_properties),
+        xy_(stick::stick_type::xy),
+        wheels_(stick::stick_type::wheels),
+        xy_timer_(*this),
+        xy_timer_count_(0),
+        wheels_timer_(*this),
+        wheels_timer_count_(0) {
+    set_weak_core_configuration(weak_core_configuration);
+
+    xy_.hid_values_updated.connect([this](auto&& x, auto&& y, auto&& interval) {
+      x_value_.set_value(x);
+      y_value_.set_value(y);
+
+      if (interval == std::chrono::milliseconds(0)) {
+        xy_timer_.stop();
+        post_xy_event();
+
+      } else {
+        if (!xy_timer_.enabled()) {
+          xy_timer_count_ = 0;
+
+          xy_timer_.start(
+              [this, interval] {
+                ++xy_timer_count_;
+                switch (xy_timer_count_) {
+                  case 1:
+                    // Ignore immediately fire after start.
+                    return;
+                  case 2:
+                    post_xy_event();
+                    xy_timer_.set_interval(interval);
+                    break;
+                  default:
+                    post_xy_event();
+                }
+              },
+              // TODO: Replace hard-coded interval
+              std::chrono::milliseconds(300));
+        }
+      }
+    });
+
+    wheels_.hid_values_updated.connect([this](auto&& h, auto&& v, auto&& interval) {
+      horizontal_wheel_value_.set_value(h);
+      vertical_wheel_value_.set_value(v);
+
+      if (interval == std::chrono::milliseconds(0)) {
+        wheels_timer_.stop();
+        post_wheels_event();
+
+      } else {
+        if (!wheels_timer_.enabled()) {
+          wheels_timer_count_ = 0;
+
+          wheels_timer_.start(
+              [this, interval] {
+                ++wheels_timer_count_;
+                switch (wheels_timer_count_) {
+                  case 1:
+                    // Ignore immediately fire after start.
+                    return;
+                  case 2:
+                    post_wheels_event();
+                    wheels_timer_.set_interval(interval);
+                    break;
+                  default:
+                    post_wheels_event();
+                }
+              },
+              // TODO: Replace hard-coded interval
+              std::chrono::milliseconds(300));
+        }
+      }
+    });
   }
 
   ~game_pad_stick_converter(void) {
     detach_from_dispatcher([this] {
-      states_.clear();
+      xy_timer_.stop();
+      wheels_timer_.stop();
     });
   }
 
-  void set_core_configuration(std::weak_ptr<const core_configuration::core_configuration> core_configuration) {
-    core_configuration_ = core_configuration;
-
-    if (auto c = core_configuration_.lock()) {
-      for (auto&& [device_id, state] : states_) {
-        state->update_configurations(*c);
-      }
-    }
-  }
-
-  void register_device(const device_properties& device_properties) {
-    if (auto is_game_pad = device_properties.get_is_game_pad()) {
-      if (*is_game_pad) {
-        auto s = std::make_shared<state>(device_properties.get_device_id(),
-                                         device_properties.get_device_identifiers(),
-                                         pointing_motion_arrived);
-        if (auto c = core_configuration_.lock()) {
-          s->update_configurations(*c);
-        }
-
-        states_[device_properties.get_device_id()] = s;
-      }
-    }
-  }
-
-  void unregister_device(device_id device_id) {
-    states_.erase(device_id);
+  // This method should be called in the shared dispatcher thread.
+  void update_x_stick_sensor_value(CFIndex logical_max,
+                                   CFIndex logical_min,
+                                   CFIndex integer_value) {
+    xy_.update_horizontal_stick_sensor_value(logical_max,
+                                             logical_min,
+                                             integer_value);
   }
 
   // This method should be called in the shared dispatcher thread.
-  void convert(const device_properties& device_properties,
-               const std::vector<pqrs::osx::iokit_hid_value>& hid_values) {
+  void update_y_stick_sensor_value(CFIndex logical_max,
+                                   CFIndex logical_min,
+                                   CFIndex integer_value) {
+    xy_.update_vertical_stick_sensor_value(logical_max,
+                                           logical_min,
+                                           integer_value);
+  }
+
+  // This method should be called in the shared dispatcher thread.
+  void update_vertical_wheel_stick_sensor_value(CFIndex logical_max,
+                                                CFIndex logical_min,
+                                                CFIndex integer_value) {
+    wheels_.update_vertical_stick_sensor_value(logical_max,
+                                               logical_min,
+                                               integer_value);
+  }
+
+  // This method should be called in the shared dispatcher thread.
+  void update_horizontal_wheel_stick_sensor_value(CFIndex logical_max,
+                                                  CFIndex logical_min,
+                                                  CFIndex integer_value) {
+    wheels_.update_horizontal_stick_sensor_value(logical_max,
+                                                 logical_min,
+                                                 integer_value);
+  }
+
+  void set_weak_core_configuration(std::weak_ptr<const core_configuration::core_configuration> weak_core_configuration) {
+    weak_core_configuration_ = weak_core_configuration;
+
+    if (auto c = weak_core_configuration_.lock()) {
+      update_configurations(*c);
+    }
+  }
+
+  // This method should be called in the shared dispatcher thread.
+  void convert(const std::vector<pqrs::osx::iokit_hid_value>& hid_values) {
     if (auto d = weak_dispatcher_.lock()) {
       if (!d->dispatcher_thread()) {
         logger::get_logger()->error("game_pad_stick_converter::convert is called in invalid thread");
@@ -638,17 +526,12 @@ public:
       }
     }
 
-    auto it = states_.find(device_properties.get_device_id());
-    if (it == std::end(states_)) {
-      return;
-    }
-
-    auto c = core_configuration_.lock();
+    auto c = weak_core_configuration_.lock();
     if (!c) {
       return;
     }
 
-    bool swap_sticks = c->get_selected_profile().get_device_game_pad_swap_sticks(device_properties.get_device_identifiers());
+    bool swap_sticks = c->get_selected_profile().get_device_game_pad_swap_sticks(device_properties_.get_device_identifiers());
 
     for (const auto& v : hid_values) {
       if (auto usage_page = v.get_usage_page()) {
@@ -659,46 +542,46 @@ public:
                 if (v.conforms_to(pqrs::hid::usage_page::generic_desktop,
                                   pqrs::hid::usage::generic_desktop::x)) {
                   if (swap_sticks) {
-                    it->second->update_horizontal_wheel_stick_sensor_value(*logical_max,
-                                                                           *logical_min,
-                                                                           v.get_integer_value());
+                    update_horizontal_wheel_stick_sensor_value(*logical_max,
+                                                               *logical_min,
+                                                               v.get_integer_value());
                   } else {
-                    it->second->update_x_stick_sensor_value(*logical_max,
-                                                            *logical_min,
-                                                            v.get_integer_value());
+                    update_x_stick_sensor_value(*logical_max,
+                                                *logical_min,
+                                                v.get_integer_value());
                   }
                 } else if (v.conforms_to(pqrs::hid::usage_page::generic_desktop,
                                          pqrs::hid::usage::generic_desktop::y)) {
                   if (swap_sticks) {
-                    it->second->update_vertical_wheel_stick_sensor_value(*logical_max,
-                                                                         *logical_min,
-                                                                         v.get_integer_value());
+                    update_vertical_wheel_stick_sensor_value(*logical_max,
+                                                             *logical_min,
+                                                             v.get_integer_value());
                   } else {
-                    it->second->update_y_stick_sensor_value(*logical_max,
-                                                            *logical_min,
-                                                            v.get_integer_value());
+                    update_y_stick_sensor_value(*logical_max,
+                                                *logical_min,
+                                                v.get_integer_value());
                   }
                 } else if (v.conforms_to(pqrs::hid::usage_page::generic_desktop,
                                          pqrs::hid::usage::generic_desktop::rz)) {
                   if (swap_sticks) {
-                    it->second->update_y_stick_sensor_value(*logical_max,
-                                                            *logical_min,
-                                                            v.get_integer_value());
+                    update_y_stick_sensor_value(*logical_max,
+                                                *logical_min,
+                                                v.get_integer_value());
                   } else {
-                    it->second->update_vertical_wheel_stick_sensor_value(*logical_max,
-                                                                         *logical_min,
-                                                                         v.get_integer_value());
+                    update_vertical_wheel_stick_sensor_value(*logical_max,
+                                                             *logical_min,
+                                                             v.get_integer_value());
                   }
                 } else if (v.conforms_to(pqrs::hid::usage_page::generic_desktop,
                                          pqrs::hid::usage::generic_desktop::z)) {
                   if (swap_sticks) {
-                    it->second->update_x_stick_sensor_value(*logical_max,
-                                                            *logical_min,
-                                                            v.get_integer_value());
+                    update_x_stick_sensor_value(*logical_max,
+                                                *logical_min,
+                                                v.get_integer_value());
                   } else {
-                    it->second->update_horizontal_wheel_stick_sensor_value(*logical_max,
-                                                                           *logical_min,
-                                                                           v.get_integer_value());
+                    update_horizontal_wheel_stick_sensor_value(*logical_max,
+                                                               *logical_min,
+                                                               v.get_integer_value());
                   }
                 }
               }
@@ -710,8 +593,78 @@ public:
   }
 
 private:
-  std::weak_ptr<const core_configuration::core_configuration> core_configuration_;
-  std::unordered_map<device_id, std::shared_ptr<state>> states_;
+  void update_configurations(const core_configuration::core_configuration& core_configuration) {
+    xy_.update_configurations(core_configuration,
+                              device_properties_.get_device_identifiers());
+    wheels_.update_configurations(core_configuration,
+                                  device_properties_.get_device_identifiers());
+  }
+
+  void post_xy_event(void) {
+    pointing_motion m(x_value_.truncated_value(),
+                      y_value_.truncated_value(),
+                      0,
+                      0);
+
+    if (m.is_zero()) {
+      return;
+    }
+
+    event_queue::event_time_stamp event_time_stamp(pqrs::osx::chrono::mach_absolute_time_point());
+    event_queue::event event(m);
+    event_queue::entry entry(device_properties_.get_device_id(),
+                             event_time_stamp,
+                             event,
+                             event_type::single,
+                             event,
+                             event_queue::state::original);
+
+    enqueue_to_dispatcher([this, entry] {
+      pointing_motion_arrived(entry);
+    });
+  }
+
+  void post_wheels_event(void) {
+    pointing_motion m(0,
+                      0,
+                      vertical_wheel_value_.truncated_value(),
+                      horizontal_wheel_value_.truncated_value());
+
+    if (m.is_zero()) {
+      return;
+    }
+
+    event_queue::event_time_stamp event_time_stamp(pqrs::osx::chrono::mach_absolute_time_point());
+    event_queue::event event(m);
+    event_queue::entry entry(device_properties_.get_device_id(),
+                             event_time_stamp,
+                             event,
+                             event_type::single,
+                             event,
+                             event_queue::state::original);
+
+    enqueue_to_dispatcher([this, entry] {
+      pointing_motion_arrived(entry);
+    });
+  }
+
+  device_properties device_properties_;
+  std::weak_ptr<const core_configuration::core_configuration> weak_core_configuration_;
+
+  stick xy_;
+  stick wheels_;
+
+  event_value x_value_;
+  event_value y_value_;
+
+  event_value horizontal_wheel_value_;
+  event_value vertical_wheel_value_;
+
+  pqrs::dispatcher::extra::timer xy_timer_;
+  int xy_timer_count_;
+
+  pqrs::dispatcher::extra::timer wheels_timer_;
+  int wheels_timer_count_;
 };
 } // namespace device_grabber_details
 } // namespace grabber

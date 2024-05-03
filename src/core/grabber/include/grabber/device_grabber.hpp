@@ -6,7 +6,6 @@
 #include "constants.hpp"
 #include "device_grabber_details/entry.hpp"
 #include "device_grabber_details/fn_function_keys_manipulator_manager.hpp"
-#include "device_grabber_details/game_pad_stick_converter.hpp"
 #include "device_grabber_details/simple_modifications_manipulator_manager.hpp"
 #include "event_tap_utility.hpp"
 #include "filesystem_utility.hpp"
@@ -49,8 +48,6 @@ public:
                                                                                             logger_unique_filter_(logger::get_logger()) {
     notification_message_manager_ = std::make_shared<notification_message_manager>(
         constants::get_notification_message_file_path());
-
-    game_pad_stick_converter_ = std::make_shared<device_grabber_details::game_pad_stick_converter>(core_configuration_);
 
     simple_modifications_manipulator_manager_ = std::make_shared<device_grabber_details::simple_modifications_manipulator_manager>();
     complex_modifications_manipulator_manager_ = std::make_shared<manipulator::manipulator_manager>();
@@ -226,17 +223,8 @@ public:
                                                                      core_configuration_);
         entries_[device_id] = entry;
 
-        entry->hid_queue_values_arrived.connect([this](auto&& entry, auto&& event_queue, auto&& hid_values) {
+        entry->hid_queue_values_arrived.connect([this](auto&& entry, auto&& event_queue) {
           values_arrived(entry, event_queue);
-
-          //
-          // game pad stick to pointing motion
-          //
-
-          if (entry.seized()) {
-            game_pad_stick_converter_->convert(entry.get_device_properties(),
-                                               hid_values);
-          }
         });
 
         entry->get_hid_queue_value_monitor()->started.connect([this, device_id] {
@@ -276,8 +264,6 @@ public:
             }
           }
         });
-
-        game_pad_stick_converter_->register_device(entry->get_device_properties());
 
         // ----------------------------------------
 
@@ -321,8 +307,6 @@ public:
       //
       // Unregister device
       //
-
-      game_pad_stick_converter_->unregister_device(device_id);
 
       if (notification_message_manager_) {
         notification_message_manager_->async_erase_device(device_id);
@@ -409,16 +393,6 @@ public:
     });
 
     power_management_monitor_->async_start();
-
-    //
-    // game_pad_stick_converter_
-    //
-
-    game_pad_stick_converter_->pointing_motion_arrived.connect([this](auto&& entry) {
-      merged_input_event_queue_->push_back_entry(entry);
-
-      krbn_notification_center::get_instance().enqueue_input_event_arrived(*this);
-    });
   }
 
   virtual ~device_grabber(void) {
@@ -438,8 +412,6 @@ public:
       fn_function_keys_manipulator_manager_ = nullptr;
       post_event_to_virtual_devices_manipulator_manager_ = nullptr;
       virtual_hid_device_service_client_ = nullptr;
-
-      game_pad_stick_converter_ = nullptr;
 
       notification_message_manager_ = nullptr;
 
@@ -480,10 +452,9 @@ public:
           core_configuration_ = core_configuration;
 
           for (auto&& e : entries_) {
-            e.second->set_core_configuration(core_configuration);
+            e.second->set_weak_core_configuration(core_configuration);
           }
 
-          game_pad_stick_converter_->set_core_configuration(core_configuration);
           manipulator_managers_connector_.set_manipulator_environment_core_configuration(core_configuration);
 
           logger_unique_filter_.reset();
@@ -1029,8 +1000,6 @@ private:
   std::shared_ptr<notification_message_manager> notification_message_manager_;
 
   std::shared_ptr<event_queue::queue> merged_input_event_queue_;
-
-  std::shared_ptr<device_grabber_details::game_pad_stick_converter> game_pad_stick_converter_;
 
   std::shared_ptr<device_grabber_details::simple_modifications_manipulator_manager> simple_modifications_manipulator_manager_;
   std::shared_ptr<event_queue::queue> simple_modifications_applied_event_queue_;

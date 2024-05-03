@@ -4,6 +4,7 @@
 #include "device_properties.hpp"
 #include "device_utility.hpp"
 #include "event_queue.hpp"
+#include "game_pad_stick_converter.hpp"
 #include "hid_keyboard_caps_lock_led_state_manager.hpp"
 #include "hid_queue_values_converter.hpp"
 #include "iokit_utility.hpp"
@@ -23,8 +24,7 @@ public:
   //
 
   nod::signal<void(entry&,
-                   std::shared_ptr<event_queue::queue> event_queue,
-                   const std::vector<pqrs::osx::iokit_hid_value>& hid_values)>
+                   std::shared_ptr<event_queue::queue> event_queue)>
       hid_queue_values_arrived;
 
   //
@@ -35,10 +35,10 @@ public:
 
   entry(device_id device_id,
         IOHIDDeviceRef device,
-        std::weak_ptr<const core_configuration::core_configuration> core_configuration) : dispatcher_client(),
-                                                                                          device_id_(device_id),
-                                                                                          core_configuration_(core_configuration),
-                                                                                          disabled_(false) {
+        std::weak_ptr<const core_configuration::core_configuration> weak_core_configuration) : dispatcher_client(),
+                                                                                               device_id_(device_id),
+                                                                                               weak_core_configuration_(weak_core_configuration),
+                                                                                               disabled_(false) {
     device_properties_ = device_properties(device_id,
                                            device);
 
@@ -47,6 +47,16 @@ public:
     pressed_keys_manager_ = std::make_shared<pressed_keys_manager>();
 
     caps_lock_led_state_manager_ = std::make_shared<krbn::hid_keyboard_caps_lock_led_state_manager>(device);
+
+    game_pad_stick_converter_ = std::make_unique<game_pad_stick_converter>(device_properties_,
+                                                                           weak_core_configuration_);
+    game_pad_stick_converter_->pointing_motion_arrived.connect([this](auto&& event_queue_entry) {
+      auto event_queue = std::make_shared<event_queue::queue>();
+      event_queue->push_back_entry(event_queue_entry);
+
+      hid_queue_values_arrived(*this,
+                               event_queue);
+    });
 
     hid_queue_value_monitor_ = std::make_shared<pqrs::osx::iokit_hid_queue_value_monitor>(pqrs::dispatcher::extra::get_shared_dispatcher(),
                                                                                           pqrs::cf::run_loop_thread::extra::get_shared_run_loop_thread(),
@@ -74,8 +84,15 @@ public:
                                                                                                      device_id_,
                                                                                                      pressed_keys_manager_);
       hid_queue_values_arrived(*this,
-                               event_queue,
-                               hid_values);
+                               event_queue);
+
+      //
+      // game pad stick to pointing motion
+      //
+
+      if (seized()) {
+        game_pad_stick_converter_->convert(hid_values);
+      }
     });
 
     device_name_ = iokit_utility::make_device_name_for_log(device_id,
@@ -86,6 +103,7 @@ public:
   ~entry(void) {
     detach_from_dispatcher([this] {
       hid_queue_value_monitor_ = nullptr;
+      game_pad_stick_converter_ = nullptr;
       caps_lock_led_state_manager_ = nullptr;
     });
   }
@@ -94,14 +112,11 @@ public:
     return device_id_;
   }
 
-  void set_core_configuration(std::weak_ptr<const core_configuration::core_configuration> core_configuration) {
-    core_configuration_ = core_configuration;
-
-    //
-    // Update caps_lock_led_state_manager state
-    //
+  void set_weak_core_configuration(std::weak_ptr<const core_configuration::core_configuration> weak_core_configuration) {
+    weak_core_configuration_ = weak_core_configuration;
 
     control_caps_lock_led_state_manager();
+    game_pad_stick_converter_->set_weak_core_configuration(weak_core_configuration);
   }
 
   const device_properties& get_device_properties(void) const {
@@ -155,7 +170,7 @@ public:
       return false;
     }
 
-    if (auto c = core_configuration_.lock()) {
+    if (auto c = weak_core_configuration_.lock()) {
       return c->get_selected_profile().get_device_disable_built_in_keyboard_if_exists(
           device_properties_.get_device_identifiers());
     }
@@ -164,7 +179,7 @@ public:
   }
 
   bool determine_is_built_in_keyboard(void) const {
-    if (auto c = core_configuration_.lock()) {
+    if (auto c = weak_core_configuration_.lock()) {
       return device_utility::determine_is_built_in_keyboard(*c, device_properties_);
     }
 
@@ -240,7 +255,7 @@ public:
       return true;
     }
 
-    if (auto c = core_configuration_.lock()) {
+    if (auto c = weak_core_configuration_.lock()) {
       return !(c->get_selected_profile().get_device_ignore(device_properties_.get_device_identifiers()));
     }
 
@@ -254,7 +269,7 @@ private:
     }
 
     if (caps_lock_led_state_manager_) {
-      if (auto c = core_configuration_.lock()) {
+      if (auto c = weak_core_configuration_.lock()) {
         if (c->get_selected_profile().get_device_manipulate_caps_lock_led(device_properties_.get_device_identifiers())) {
           if (seized()) {
             caps_lock_led_state_manager_->async_start();
@@ -268,12 +283,13 @@ private:
   }
 
   device_id device_id_;
-  std::weak_ptr<const core_configuration::core_configuration> core_configuration_;
+  std::weak_ptr<const core_configuration::core_configuration> weak_core_configuration_;
   device_properties device_properties_;
   std::shared_ptr<probable_stuck_events_manager> probable_stuck_events_manager_;
   std::shared_ptr<pressed_keys_manager> pressed_keys_manager_;
   std::shared_ptr<hid_keyboard_caps_lock_led_state_manager> caps_lock_led_state_manager_;
   std::shared_ptr<pqrs::osx::iokit_hid_queue_value_monitor> hid_queue_value_monitor_;
+  std::unique_ptr<game_pad_stick_converter> game_pad_stick_converter_;
   hid_queue_values_converter hid_queue_values_converter_;
   std::string device_name_;
   std::string device_short_name_;
