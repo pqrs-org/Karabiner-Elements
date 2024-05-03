@@ -40,6 +40,10 @@ public:
 
   class stick_sensor {
   public:
+    stick_sensor(void)
+        : value_(0) {
+    }
+
     double get_value(void) const {
       return value_;
     }
@@ -50,6 +54,8 @@ public:
       if (logical_max != logical_min) {
         // -1.0 ... 1.0
         value_ = ((static_cast<double>(integer_value - logical_min) / static_cast<double>(logical_max - logical_min)) - 0.5) * 2.0;
+      } else {
+        value_ = 0;
       }
     }
 
@@ -424,6 +430,7 @@ public:
                     break;
                   default:
                     post_xy_event();
+                    break;
                 }
               },
               // TODO: Replace hard-coded interval
@@ -457,6 +464,7 @@ public:
                     break;
                   default:
                     post_wheels_event();
+                    break;
                 }
               },
               // TODO: Replace hard-coded interval
