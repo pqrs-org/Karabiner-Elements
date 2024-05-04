@@ -41,7 +41,7 @@ struct UI1View: View {
       GroupBox(label: Text("Karabiner Notification Window")) {
         VStack(alignment: .leading, spacing: 12.0) {
           HStack {
-            Toggle(isOn: $settings.enableNotifications) {
+            Toggle(isOn: $settings.enableNotificationWindow) {
               Text("Enable Karabiner Notification Window (Default: on)")
             }
             .switchToggleStyle()
