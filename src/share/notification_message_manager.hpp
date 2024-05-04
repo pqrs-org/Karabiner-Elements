@@ -15,7 +15,6 @@ public:
   notification_message_manager(const std::filesystem::path& notification_message_file_path)
       : dispatcher_client(),
         notification_message_file_path_(notification_message_file_path) {
-    core_configuration_ = std::make_shared<krbn::core_configuration::core_configuration>("", geteuid());
     enqueue_to_dispatcher([this] {
       save_message("");
     });
@@ -27,7 +26,7 @@ public:
 
   void async_set_device_ungrabbable_temporarily_message(device_id id,
                                                         const std::string& message) {
-    send_message([this, id, message] {
+    enqueue_to_dispatcher([this, id, message] {
       device_ungrabbable_temporarily_messages_[id] = message;
 
       save_message_if_needed();
@@ -58,7 +57,7 @@ public:
         auto id = fmt::format("__system__sticky_{0}", *name);
 
         if (modifier_flag_manager.is_sticky_active(f)) {
-          send_message([this, id, name] {
+          enqueue_to_dispatcher([this, id, name] {
             messages_[id] = fmt::format("sticky {0}", *name);
           });
         } else {
@@ -83,7 +82,7 @@ public:
   }
 
   void async_set_notification_message(const notification_message& notification_message) {
-    send_message([this, notification_message] {
+    enqueue_to_dispatcher([this, notification_message] {
       messages_[fmt::format("__user__{0}", notification_message.get_id())] = notification_message.get_text();
 
       save_message_if_needed();
@@ -91,13 +90,6 @@ public:
   }
 
 private:
-  void send_message(std::function<void(void)> function,
-                             pqrs::dispatcher::time_point when = pqrs::dispatcher::dispatcher::when_immediately()) const {
-    if (core_configuration_->get_selected_profile().get_system().get_enable_notifications()) {
-      enqueue_to_dispatcher(function, when);
-    }
-  }
-
   void save_message(const std::string& message) const {
     json_writer::async_save_to_file(
         nlohmann::json::object({
@@ -141,7 +133,6 @@ private:
     return ss.str();
   }
 
-  std::shared_ptr<const core_configuration::core_configuration> core_configuration_;
   std::filesystem::path notification_message_file_path_;
   std::map<device_id, std::string> device_ungrabbable_temporarily_messages_;
   std::map<std::string, std::string> messages_;
