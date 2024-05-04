@@ -209,14 +209,15 @@ private:
   void start_child_components(void) {
     configuration_monitor_ = std::make_shared<configuration_monitor>(constants::get_user_core_configuration_file_path(),
                                                                      geteuid());
+    configuration_monitor_->core_configuration_updated.connect([](auto&& weak_core_configuration) {
+      if (auto c = weak_core_configuration.lock()) {
+        launchctl_utility::manage_notification_window(c->get_global_configuration().get_enable_notification_window());
+      }
+    });
 
     // menu_process_manager_
 
     menu_process_manager_ = std::make_unique<menu_process_manager>(configuration_monitor_);
-
-    // Restart NotificationWindow
-
-    launchctl_utility::restart_notification_window();
 
     // Run MultitouchExtension
 
