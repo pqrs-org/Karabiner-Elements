@@ -5,7 +5,6 @@
 #include "profile/parameters.hpp"
 #include "profile/simple_modifications.hpp"
 #include "profile/virtual_hid_keyboard.hpp"
-#include "profile/system.hpp"
 #include <pqrs/json.hpp>
 
 namespace krbn {
@@ -67,13 +66,6 @@ public:
       } else if (key == "virtual_hid_keyboard") {
         try {
           virtual_hid_keyboard_ = value.get<virtual_hid_keyboard>();
-        } catch (const pqrs::json::unmarshal_error& e) {
-          throw pqrs::json::unmarshal_error(fmt::format("`{0}` error: {1}", key, e.what()));
-        }
-
-      } else if (key == "system") {
-        try {
-          system_ = value.get<system>();
         } catch (const pqrs::json::unmarshal_error& e) {
           throw pqrs::json::unmarshal_error(fmt::format("`{0}` error: {1}", key, e.what()));
         }
@@ -155,7 +147,6 @@ public:
     j["fn_function_keys"] = fn_function_keys_.to_json();
     j["complex_modifications"] = complex_modifications_.to_json();
     j["virtual_hid_keyboard"] = virtual_hid_keyboard_;
-    j["system"] = system_;
     j["devices"] = devices_;
     return j;
   }
@@ -260,14 +251,6 @@ public:
 
   details::virtual_hid_keyboard& get_virtual_hid_keyboard(void) {
     return virtual_hid_keyboard_;
-  }
-
-  const details::system& get_system(void) const {
-    return system_;
-  }
-
-  details::system& get_system(void) {
-    return system_;
   }
 
   const std::vector<details::device>& get_devices(void) const {
@@ -1003,7 +986,6 @@ private:
   details::simple_modifications fn_function_keys_;
   details::complex_modifications complex_modifications_;
   details::virtual_hid_keyboard virtual_hid_keyboard_;
-  details::system system_;
   std::vector<details::device> devices_;
 };
 
