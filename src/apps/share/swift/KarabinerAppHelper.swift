@@ -1,16 +1,28 @@
 import AppKit
 import Foundation
 
-private func versionUpdatedCallback() {
+private func versionUpdatedCallbackRelaunch() {
   Relauncher.relaunch()
+}
+
+private func versionUpdatedCallbackTerminate() {
+  NSApplication.shared.terminate(nil)
 }
 
 final class KarabinerAppHelper: NSObject {
   public static let shared = KarabinerAppHelper()
 
   func observeVersionUpdated() {
+    observeVersionUpdated(relaunch: true)
+  }
+
+  func observeVersionUpdated(relaunch: Bool) {
     libkrbn_enable_version_monitor()
-    libkrbn_register_version_updated_callback(versionUpdatedCallback)
+    if relaunch {
+      libkrbn_register_version_updated_callback(versionUpdatedCallbackRelaunch)
+    } else {
+      libkrbn_register_version_updated_callback(versionUpdatedCallbackTerminate)
+    }
   }
 
   func observeConsoleUserServerIsDisabledNotification() {
