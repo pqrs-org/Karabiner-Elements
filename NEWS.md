@@ -7,6 +7,7 @@
     -   Added the ability to restart Karabiner-Elements from the menu.
 -   ⚡️ Improvements
     -   Improved "{device} is ignored temporarily until {key_code} is pressed again" message for to make it more understandable. (Thanks to @adamnovak)
+    -   Added "Enable Karabiner Notification Window" configuration, which allows you to hide the notification window by turning off this setting. (Thanks to @jwodnicki)
     -   Support `al_consumer_control_configuration` key, used as the Music key. (Thanks to @kambala-decapitator)
     -   Improved behaviour when using the gamepad stick as a pointing device.
     -   Improved `to_if_alone` behavior to use the modifier flags of the time the key is pressed, when sending events.
