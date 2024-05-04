@@ -8,7 +8,8 @@ enum NavigationTag: String {
   case devices
   case virtualKeyboard
   case profiles
-  case ui
+  case ui1
+  case ui2
   case update
   case misc
   case uninstall
@@ -141,14 +142,25 @@ struct ContentMainView: View {
 
           Button(
             action: {
-              contentViewStates.navigationSelection = .ui
+              contentViewStates.navigationSelection = .ui1
             },
             label: {
-              SidebarLabelView(text: "UI", systemImage: "switch.2", padding: 2.0)
+              SidebarLabelView(text: "UI #1", systemImage: "switch.2", padding: 2.0)
             }
           )
           .sidebarButtonStyle(
-            selected: contentViewStates.navigationSelection == .ui)
+            selected: contentViewStates.navigationSelection == .ui1)
+
+          Button(
+            action: {
+              contentViewStates.navigationSelection = .ui2
+            },
+            label: {
+              SidebarLabelView(text: "UI #2", systemImage: "switch.2", padding: 2.0)
+            }
+          )
+          .sidebarButtonStyle(
+            selected: contentViewStates.navigationSelection == .ui2)
         }
 
         Divider()
@@ -261,8 +273,10 @@ struct ContentMainView: View {
           VirtualKeyboardView()
         case .profiles:
           ProfilesView()
-        case .ui:
-          UIView()
+        case .ui1:
+          UI1View()
+        case .ui2:
+          UI2View()
         case .update:
           UpdateView()
         case .misc:
