@@ -98,6 +98,19 @@ void libkrbn_core_configuration_set_global_configuration_show_profile_name_in_me
   }
 }
 
+bool libkrbn_core_configuration_get_global_configuration_enable_notification_window(void) {
+  if (auto c = get_current_core_configuration()) {
+    return c->get_global_configuration().get_enable_notification_window();
+  }
+  return false;
+}
+
+void libkrbn_core_configuration_set_global_configuration_enable_notification_window(bool value) {
+  if (auto c = get_current_core_configuration()) {
+    return c->get_global_configuration().set_enable_notification_window(value);
+  }
+}
+
 bool libkrbn_core_configuration_get_global_configuration_ask_for_confirmation_before_quitting(void) {
   if (auto c = get_current_core_configuration()) {
     return c->get_global_configuration().get_ask_for_confirmation_before_quitting();

@@ -119,6 +119,8 @@ extension LibKrbn {
       showIconInMenuBar = libkrbn_core_configuration_get_global_configuration_show_in_menu_bar()
       showProfileNameInMenuBar =
         libkrbn_core_configuration_get_global_configuration_show_profile_name_in_menu_bar()
+      enableNotificationWindow =
+        libkrbn_core_configuration_get_global_configuration_enable_notification_window()
       askForConfirmationBeforeQuitting =
         libkrbn_core_configuration_get_global_configuration_ask_for_confirmation_before_quitting()
       unsafeUI = libkrbn_core_configuration_get_global_configuration_unsafe_ui()
@@ -645,6 +647,17 @@ extension LibKrbn {
           )
           save()
           libkrbn_launch_menu()
+        }
+      }
+    }
+
+    @Published var enableNotificationWindow: Bool = false {
+      didSet {
+        if didSetEnabled {
+          libkrbn_core_configuration_set_global_configuration_enable_notification_window(
+            enableNotificationWindow
+          )
+          save()
         }
       }
     }
