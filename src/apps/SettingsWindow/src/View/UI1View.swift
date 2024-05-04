@@ -38,8 +38,17 @@ struct UI1View: View {
         .padding(6.0)
       }
 
-      GroupBox(label: Text("Sticky modifier keys")) {
+      GroupBox(label: Text("Karabiner Notification Window")) {
         VStack(alignment: .leading, spacing: 12.0) {
+          HStack {
+            Toggle(isOn: $settings.enableNotifications) {
+              Text("Enable Karabiner Notification Window (Default: on)")
+            }
+            .switchToggleStyle()
+
+            Spacer()
+          }
+
           HStack {
             Toggle(isOn: $settings.virtualHIDKeyboardIndicateStickyModifierKeysState) {
               Text("Indicate sticky modifier keys state (Default: on)")
@@ -48,20 +57,30 @@ struct UI1View: View {
 
             Spacer()
           }
-        }
-        .padding(6.0)
-      }
 
-      GroupBox(label: Text("System")) {
-        VStack(alignment: .leading, spacing: 12.0) {
-          HStack {
-            Toggle(isOn: $settings.enableNotifications) {
-              Text("Enable notifications (Default: on)")
+          VStack(alignment: .leading, spacing: 12.0) {
+            Label(
+              "What is the Karabiner Notification Window?",
+              systemImage: "lightbulb"
+            )
+            VStack(alignment: .leading, spacing: 0.0) {
+              Text(
+                "Karabiner Notification Window is a window that displays messages, located at the bottom right of the screen. "
+              )
+              Text(
+                "It is used for temporary alerts, displaying the status of sticky modifiers, and showing messages for some complex modifications."
+              )
             }
-            .switchToggleStyle()
 
-            Spacer()
+            Image(decorative: "notification-window")
+              .resizable()
+              .aspectRatio(contentMode: .fit)
+              .frame(height: 150)
+
           }
+          .padding()
+          .foregroundColor(Color.warningForeground)
+          .background(Color.warningBackground)
         }
         .padding(6.0)
       }
