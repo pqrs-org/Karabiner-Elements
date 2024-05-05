@@ -5,7 +5,9 @@
     <key>Label</key>
     <string>org.pqrs.karabiner.karabiner_session_monitor</string>
     <key>AssociatedBundleIdentifiers</key>
-    <string>org.pqrs.Karabiner-Elements.Settings</string>
+    <array>
+      <string>org.pqrs.Karabiner-Elements.Settings</string>
+    </array>
     <key>Disabled</key>
     <false/>
     <key>KeepAlive</key>
