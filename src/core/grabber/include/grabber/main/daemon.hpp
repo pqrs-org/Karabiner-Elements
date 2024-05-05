@@ -84,22 +84,6 @@ int daemon(void) {
   }
 
   //
-  // Touch /Library/LaunchAgents/*.plist and /Library/LaunchDaemons/*.plist to refresh the name in Login Items System Settings.
-  //
-  // Note:
-  // Login Items maybe refer the Launch Services database before the applications registration is completed.
-  // If the application registration of AssociatedBundleIdentifiers is not completed at the time,
-  // Login Items displays the developer name instead of the application name.
-  // And the result is cached, the developer name will be displayed permanently.
-  // (We have confirmed this behaivor on macOS 13.1)
-  //
-  // In order to refresh the cache, we update the modification time of *.plist.
-  //
-
-  system("/usr/bin/touch /Library/LaunchAgents/org.pqrs.karabiner.*");
-  system("/usr/bin/touch /Library/LaunchDaemons/org.pqrs.karabiner.*");
-
-  //
   // Prepare state_json_writer
   //
 
