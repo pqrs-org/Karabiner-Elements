@@ -11,7 +11,6 @@
 #include "process_utility.hpp"
 #include <iostream>
 #include <mach/mach.h>
-#include <pqrs/osx/launch_services.hpp>
 #include <pqrs/osx/workspace.hpp>
 
 namespace krbn {
@@ -64,15 +63,6 @@ int daemon(void) {
     if (error_code) {
       logger::get_logger()->error("Failed to restore /Applications/Karabiner-Elements.app: {0}", error_code.message());
     }
-  }
-
-  //
-  // Register /Applications/Karabiner-Elements.app to launch services
-  //
-
-  {
-    auto status = pqrs::osx::launch_services::register_application("/Applications/Karabiner-Elements.app");
-    logger::get_logger()->info("launch_services::register_application /Applications/Karabiner-Elements.app: {0}", status.to_string());
   }
 
   //

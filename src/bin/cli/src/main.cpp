@@ -15,6 +15,7 @@
 #include "run_loop_thread_utility.hpp"
 #include <iostream>
 #include <nlohmann/json.hpp>
+#include <pqrs/osx/launch_services.hpp>
 #include <pqrs/thread_wait.hpp>
 #include <spdlog/sinks/stdout_color_sinks.h>
 
@@ -118,31 +119,57 @@ int main(int argc, char** argv) {
   krbn::logger::set_stdout_color_logger("karabiner_cli",
                                         "[%l] %v");
 
-  cxxopts::Options options("karabiner_cli", "A command line utility of Karabiner-Elements.");
+  cxxopts::Options options("karabiner_cli",
+                           "A command line utility of Karabiner-Elements");
 
-  options.add_options()("select-profile", "Select a profile by name.", cxxopts::value<std::string>());
-  options.add_options()("show-current-profile-name", "Show current profile name");
-  options.add_options()("list-profile-names", "Show all profile names");
-  options.add_options()("set-variables", "Json string: {[key: string]: number|boolean|string}", cxxopts::value<std::string>());
-  options.add_options()("copy-current-profile-to-system-default-profile", "Copy the current profile to system default profile.");
-  options.add_options()("remove-system-default-profile", "Remove the system default profile.");
+  options.add_options()("select-profile",
+                        "Select a profile by name", cxxopts::value<std::string>());
+
+  options.add_options()("show-current-profile-name",
+                        "Show current profile name");
+
+  options.add_options()("list-profile-names",
+                        "Show all profile names");
+
+  options.add_options()("set-variables",
+                        "Json string: {[key: string]: number|boolean|string}",
+                        cxxopts::value<std::string>());
+
+  options.add_options()("copy-current-profile-to-system-default-profile",
+                        "Copy the current profile to system default profile");
+
+  options.add_options()("remove-system-default-profile",
+                        "Remove the system default profile");
+
   options.add_options()("lint-complex-modifications",
                         "Check complex_modifications.json",
                         cxxopts::value<std::vector<std::string>>(),
                         "glob-patterns");
+
   options.add_options()("format-json",
                         "Format json files",
                         cxxopts::value<std::vector<std::string>>(),
                         "glob-patterns");
+
   options.add_options()("eval-js",
                         "Run javascript files using Duktape",
                         cxxopts::value<std::vector<std::string>>(),
                         "glob-patterns");
-  options.add_options()("version", "Displays version.");
-  options.add_options()("version-number", "Displays version_number.");
-  options.add_options()("help", "Print help.");
+
+  options.add_options()("lsregister-karabiner-elements",
+                        "Register Karabier-Elements.app in the Launch Services database");
+
+  options.add_options()("version",
+                        "Displays version");
+
+  options.add_options()("version-number",
+                        "Displays version_number");
+
+  options.add_options()("help",
+                        "Print help");
+
   options.add_options()("silent",
-                        "Suppress messages.",
+                        "Suppress messages",
                         cxxopts::value<bool>()->default_value("false"));
 
   options.parse_positional({
@@ -303,6 +330,16 @@ int main(int argc, char** argv) {
             }
           }
         }
+
+        goto finish;
+      }
+    }
+
+    {
+      std::string key = "lsregister-karabiner-elements";
+      if (parse_result.count(key)) {
+        auto status = pqrs::osx::launch_services::register_application("/Applications/Karabiner-Elements.app", false);
+        std::cout << fmt::format("{0}: {1}", key, status.to_string()) << std::endl;
 
         goto finish;
       }

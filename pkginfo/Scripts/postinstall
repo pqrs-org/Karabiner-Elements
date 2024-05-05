@@ -3,20 +3,30 @@
 PATH=/bin:/sbin:/usr/bin:/usr/sbin
 export PATH
 
-# ------------------------------------------------------------
+#
 # Set suid
+#
 
 chmod 4755 '/Library/Application Support/org.pqrs/Karabiner-Elements/bin/karabiner_session_monitor'
 
-# ------------------------------------------------------------
+#
+# Register /Applications/Karabiner-Elements.app in the Launch Services database.
+#
+
+'/Library/Application Support/org.pqrs/Karabiner-Elements/bin/karabiner_cli' --lsregister-karabiner-elements
+
+#
 # Relaunch karabiner processes
+#
 
 killall karabiner_grabber
 killall karabiner_session_monitor
 killall karabiner_console_user_server
 killall Karabiner-NotificationWindow
 
+#
 # Update version file
+#
 
 cp \
     '/Library/Application Support/org.pqrs/Karabiner-Elements/package-version' \
