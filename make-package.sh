@@ -18,8 +18,10 @@ set -e # forbid command failure
 # Therefore, we extract the version from the Info.plist of Xcode.app
 
 xcodeVersion=$(plutil -extract CFBundleShortVersionString raw "$(xcode-select -p)/../Info.plist")
+xcodeMajorVersion=$(echo "$xcodeVersion" | sed 's|\..*$||')
 echo "Xcode version: $xcodeVersion"
-if [[ ${xcodeVersion%.*} -lt 15 ]]; then
+echo "Xcode major version: $xcodeMajorVersion"
+if [[ "$xcodeMajorVersion" -lt 15 ]]; then
     echo
     echo 'ERROR:'
     echo '  Xcode is too old.'
@@ -85,11 +87,7 @@ cp -R "src/apps/SettingsWindow/build/Release/Karabiner-Elements.app" "$basedir"
 # Sign with Developer ID
 #
 
-set +e # allow command failure
-
 bash scripts/codesign.sh "pkgroot"
-
-set -e # forbid command failure
 
 #
 # Update file permissions
@@ -148,11 +146,7 @@ rm -f $archiveName/Karabiner-DriverKit-VirtualHIDDevice.pkg
 
 echo "Sign with Developer ID"
 
-set +e # allow command failure
-
 bash scripts/codesign-pkg.sh $archiveName/$pkgName
-
-set -e # forbid command failure
 
 #
 # Create dmg
