@@ -157,7 +157,7 @@ int main(int argc, char** argv) {
                         "glob-patterns");
 
   options.add_options()("lsregister-karabiner-elements",
-                        "Register Karabier-Elements.app in the Launch Services database");
+                        "[Maintenance Command] Register Karabier-Elements.app in the Launch Services database");
 
   options.add_options()("version",
                         "Displays version");
