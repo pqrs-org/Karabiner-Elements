@@ -1,30 +1,49 @@
 #!/bin/bash
 
-set -u
+set -u # forbid undefined variables
+set -e # forbid command failure
 
+#
 # Check Xcode version
+#
 
-sdkversion=$(xcrun --show-sdk-version)
-if [ ${sdkversion%.*} -lt 12 ]; then
+# Note:
+# Using `xcrun --show-sdk-version` in GitHub Actions results in the following error.
+#
+# ```
+# xcodebuild: error: SDK "/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk" cannot be located.
+# xcrun: error: unable to lookup item 'SDKVersion' in SDK '/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk'
+# ```
+#
+# Therefore, we extract the version from the Info.plist of Xcode.app
+
+xcodeVersion=$(plutil -extract CFBundleShortVersionString raw "$(xcode-select -p)/../Info.plist")
+xcodeMajorVersion=$(echo "$xcodeVersion" | sed 's|\..*$||')
+echo "Xcode version: $xcodeVersion"
+echo "Xcode major version: $xcodeMajorVersion"
+if [[ "$xcodeMajorVersion" -lt 15 ]]; then
     echo
     echo 'ERROR:'
     echo '  Xcode is too old.'
-    echo '  You have to use Xcode 13.1 or later.'
+    echo '  You have to use Xcode 15.0.1 or later.'
     echo
     exit 1
 fi
 
-# Package build into a signed .dmg file
-
 version=$(cat version)
+
+#
+# Build
+#
 
 echo "make build"
 ruby scripts/reduce-logs.rb 'make build' || exit 99
 
-# --------------------------------------------------
-echo "Copy Files"
+#
+# Copy files
+#
 
-set -e
+echo "Copy Files"
 
 rm -rf pkgroot
 mkdir -p pkgroot
@@ -64,10 +83,15 @@ mkdir -p "$basedir"
 cp -R "src/apps/EventViewer/build/Release/Karabiner-EventViewer.app" "$basedir"
 cp -R "src/apps/SettingsWindow/build/Release/Karabiner-Elements.app" "$basedir"
 
-set +e
-
+#
 # Sign with Developer ID
+#
+
 bash scripts/codesign.sh "pkgroot"
+
+#
+# Update file permissions
+#
 
 sh "scripts/setpermissions.sh" pkginfo
 sh "scripts/setpermissions.sh" pkgroot
@@ -75,7 +99,10 @@ sh "scripts/setpermissions.sh" pkgroot
 chmod 755 pkginfo/Scripts/postinstall
 chmod 755 pkginfo/Scripts/preinstall
 
-# --------------------------------------------------
+#
+# Create pkg
+#
+
 echo "Create pkg"
 
 pkgName="Karabiner-Elements.pkg"
@@ -113,11 +140,18 @@ productbuild \
 rm -f $archiveName/Installer.pkg
 rm -f $archiveName/Karabiner-DriverKit-VirtualHIDDevice.pkg
 
-# --------------------------------------------------
+#
+# Sign
+#
+
 echo "Sign with Developer ID"
+
 bash scripts/codesign-pkg.sh $archiveName/$pkgName
 
-# --------------------------------------------------
+#
+# Create dmg
+#
+
 echo "Make Archive"
 
 # Note:

@@ -7,6 +7,12 @@ readonly PATH=/bin:/sbin:/usr/bin:/usr/sbin
 export PATH
 
 readonly CODE_SIGN_IDENTITY=$(bash $(dirname $0)/get-installer-codesign-identity.sh)
+
+if [[ -z $CODE_SIGN_IDENTITY ]]; then
+    echo "Skip codesign"
+    exit 0
+fi
+
 readonly LOGFILE="$(dirname $0)/productsign.log"
 
 err() {

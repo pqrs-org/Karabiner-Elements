@@ -38,8 +38,8 @@ If you would like to contribute financially to the development of Karabiner-Elem
 
 System requirements to build Karabiner-Elements:
 
--   macOS 12+
--   Xcode 13.3+
+-   macOS 13+
+-   Xcode 15.0.1+
 -   Command Line Tools for Xcode (`xcode-select --install`)
 -   xz (`brew install xz`)
 -   [XcodeGen](https://github.com/yonaskolb/XcodeGen) (`brew install xcodegen`)
