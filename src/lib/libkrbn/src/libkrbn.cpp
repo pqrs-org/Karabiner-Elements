@@ -146,10 +146,6 @@ void libkrbn_launchctl_restart_console_user_server(void) {
   krbn::launchctl_utility::restart_console_user_server();
 }
 
-void libkrbn_launchctl_bootout_console_user_server(void) {
-  krbn::launchctl_utility::bootout_console_user_server();
-}
-
 void libkrbn_launch_event_viewer(void) {
   krbn::application_launcher::launch_event_viewer();
 }
