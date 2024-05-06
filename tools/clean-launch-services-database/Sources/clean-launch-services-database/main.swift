@@ -15,6 +15,7 @@ if #available(macOS 13.0, *) {
   let lsregisterCommandPath =
     "/System/Library/Frameworks/CoreServices.framework/Versions/A/Frameworks/LaunchServices.framework/Versions/A/Support/lsregister"
   let deleteTargetPathRegex = #/
+  /pkgroot/ |
   /build/ |
   /Build/
 /#
