@@ -43,27 +43,10 @@ int daemon(void) {
   }
 
   //
-  // Restore /Applications/Karabiner-Elements.app if it was removed manually
+  // Run repair.sh
   //
 
-  if (!std::filesystem::exists("/Applications/Karabiner-Elements.app")) {
-    logger::get_logger()->info("Restore /Applications/Karabiner-Elements.app");
-
-    // In order to have it registered with launch services,
-    // we have to copy application files instead of creating symlink at /Applications/Karabiner-Elements.app.
-
-    auto copy_options = std::filesystem::copy_options::update_existing |
-                        std::filesystem::copy_options::recursive |
-                        std::filesystem::copy_options::copy_symlinks;
-    std::error_code error_code;
-    std::filesystem::copy("/Library/Application Support/org.pqrs/Karabiner-Elements/Karabiner-Elements.app",
-                          "/Applications/Karabiner-Elements.app",
-                          copy_options,
-                          error_code);
-    if (error_code) {
-      logger::get_logger()->error("Failed to restore /Applications/Karabiner-Elements.app: {0}", error_code.message());
-    }
-  }
+  system("/bin/sh '/Library/Application Support/org.pqrs/Karabiner-Elements/repair.sh'");
 
   //
   // Check Karabiner-Elements.app exists

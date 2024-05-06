@@ -39,4 +39,10 @@ launchctl enable system/org.pqrs.karabiner.karabiner_grabber
 launchctl bootstrap system /Library/LaunchDaemons/org.pqrs.karabiner.karabiner_grabber.plist
 launchctl enable system/org.pqrs.karabiner.karabiner_grabber
 
+#
+# Create a backup to allow recovery if the user manually deletes Karabiner-Elements without using the uninstaller
+#
+
+tar -C /Applications -cf '/Library/Application Support/org.pqrs/Karabiner-Elements/Karabiner-Elements.app.tar.gz' Karabiner-Elements.app
+
 exit 0
