@@ -7,7 +7,7 @@ export PATH
 # Unload before install
 #
 
-if [ /Library/LaunchDaemons/org.pqrs.karabiner.karabiner_grabber.plist ]; then
+if [ -f /Library/LaunchDaemons/org.pqrs.karabiner.karabiner_grabber.plist ]; then
     launchctl bootout system /Library/LaunchDaemons/org.pqrs.karabiner.karabiner_grabber.plist
 fi
 
@@ -15,11 +15,11 @@ fi
 # Unload files which are installed in previous versions
 #
 
-if [ /Library/LaunchDaemons/org.pqrs.karabiner.karabiner_kextd.plist ]; then
+if [ -f /Library/LaunchDaemons/org.pqrs.karabiner.karabiner_kextd.plist ]; then
     launchctl bootout system /Library/LaunchDaemons/org.pqrs.karabiner.karabiner_kextd.plist
 fi
 
-if [ /Library/LaunchDaemons/org.pqrs.karabiner.karabiner_observer.plist ]; then
+if [ -f /Library/LaunchDaemons/org.pqrs.karabiner.karabiner_observer.plist ]; then
     launchctl bootout system /Library/LaunchDaemons/org.pqrs.karabiner.karabiner_observer.plist
 fi
 
