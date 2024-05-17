@@ -18,7 +18,7 @@ targets:
         - ../../src/vendor/Karabiner-DriverKit-VirtualHIDDevice/include
     type: tool
     platform: macOS
-    deploymentTarget: 11.0
+    deploymentTarget: 13.0
     sources:
       - path: main.cpp
         compilerFlags:

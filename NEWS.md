@@ -2,6 +2,8 @@
 
 ## Beta
 
+-   💥 Breaking changes
+    -   macOS 11 and macOS 12 are no longer supported.
 -   ✨ New Features
     -   Added the ability to duplicate and reorder profiles.
     -   Added the ability to restart Karabiner-Elements from the menu.

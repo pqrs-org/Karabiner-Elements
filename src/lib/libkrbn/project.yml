@@ -17,7 +17,7 @@ targets:
         - ../../vendor/Karabiner-DriverKit-VirtualHIDDevice/include
     type: library.static
     platform: macOS
-    deploymentTarget: 11.0
+    deploymentTarget: 13.0
     sources:
       - path: src
         compilerFlags:

@@ -3,33 +3,6 @@
 set -u # forbid undefined variables
 set -e # forbid command failure
 
-#
-# Check Xcode version
-#
-
-# Note:
-# Using `xcrun --show-sdk-version` in GitHub Actions results in the following error.
-#
-# ```
-# xcodebuild: error: SDK "/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk" cannot be located.
-# xcrun: error: unable to lookup item 'SDKVersion' in SDK '/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk'
-# ```
-#
-# Therefore, we extract the version from the Info.plist of Xcode.app
-
-xcodeVersion=$(plutil -extract CFBundleShortVersionString raw "$(xcode-select -p)/../Info.plist")
-xcodeMajorVersion=$(echo "$xcodeVersion" | sed 's|\..*$||')
-echo "Xcode version: $xcodeVersion"
-echo "Xcode major version: $xcodeMajorVersion"
-if [[ "$xcodeMajorVersion" -lt 15 ]]; then
-    echo
-    echo 'ERROR:'
-    echo '  Xcode is too old.'
-    echo '  You have to use Xcode 15.0.1 or later.'
-    echo
-    exit 1
-fi
-
 version=$(cat version)
 
 #

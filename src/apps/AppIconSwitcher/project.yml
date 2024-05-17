@@ -10,7 +10,7 @@ targets:
       OTHER_SWIFT_FLAGS: '-warnings-as-errors'
     type: application
     platform: macOS
-    deploymentTarget: 11.0
+    deploymentTarget: 13.0
     sources:
       - path: src
         compilerFlags:
