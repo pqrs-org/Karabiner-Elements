@@ -15,7 +15,6 @@
 #include "run_loop_thread_utility.hpp"
 #include <iostream>
 #include <nlohmann/json.hpp>
-#include <pqrs/osx/launch_services.hpp>
 #include <pqrs/thread_wait.hpp>
 #include <spdlog/sinks/stdout_color_sinks.h>
 
@@ -155,9 +154,6 @@ int main(int argc, char** argv) {
                         "Run javascript files using Duktape",
                         cxxopts::value<std::vector<std::string>>(),
                         "glob-patterns");
-
-  options.add_options()("lsregister-karabiner-elements",
-                        "[Maintenance Command] Register Karabier-Elements.app in the Launch Services database");
 
   options.add_options()("version",
                         "Displays version");
@@ -330,16 +326,6 @@ int main(int argc, char** argv) {
             }
           }
         }
-
-        goto finish;
-      }
-    }
-
-    {
-      std::string key = "lsregister-karabiner-elements";
-      if (parse_result.count(key)) {
-        auto status = pqrs::osx::launch_services::register_application("/Applications/Karabiner-Elements.app", false);
-        std::cout << fmt::format("{0}: {1}", key, status.to_string()) << std::endl;
 
         goto finish;
       }
