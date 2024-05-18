@@ -38,8 +38,11 @@ RunLoop.main.perform {
           try s.register()
           print("Successfully registered \(s)")
         } catch {
+          // Note:
+          // When calling `SMAppService.daemon.register`, if user approval has not been granted, an `Operation not permitted` error will be returned.
+          // To call `register` for all agents and daemons, the loop continues even if an error occurs.
+          // Therefore, only log output will be performed here.
           print("Unable to register \(error)")
-          exit(1)
         }
       }
       exit(0)
@@ -51,7 +54,6 @@ RunLoop.main.perform {
           print("Successfully unregistered \(s)")
         } catch {
           print("Unable to unregister \(error)")
-          exit(1)
         }
       }
       exit(0)
@@ -71,7 +73,6 @@ RunLoop.main.perform {
           print("\(s) unknown \(s.status)")
         }
       }
-
       exit(0)
     }
   }
