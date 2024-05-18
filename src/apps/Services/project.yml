@@ -1,0 +1,24 @@
+name: Karabiner-Elements-Services
+
+targets:
+  Karabiner-Elements-Services:
+    settings:
+      PRODUCT_BUNDLE_IDENTIFIER: org.pqrs.Karabiner-Elements-Services
+      # SMAppService requires codesigning
+      CODE_SIGN_ENTITLEMENTS: ''
+      CODE_SIGN_IDENTITY: 'Apple Development'
+      CODE_SIGN_STYLE: Automatic
+      # Sign to Run Locally
+      CODE_SIGN_IDENTITY[sdk=macosx*]: '-'
+      OTHER_SWIFT_FLAGS: '-warnings-as-errors'
+    type: application
+    platform: macOS
+    deploymentTarget: 13.0
+    sources:
+      - path: src
+      - path: Resources
+        excludes:
+          - Info.plist.in
+      - path: ../share/Resources/app.icns
+    dependencies:
+      - sdk: ServiceManagement.framework
