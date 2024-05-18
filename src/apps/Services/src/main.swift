@@ -1,15 +1,39 @@
 import Foundation
 import ServiceManagement
 
+let agentPlistNames = [
+  "org.pqrs.karabiner.agent.karabiner_grabber.plist",
+  "org.pqrs.karabiner.karabiner_console_user_server.plist",
+  "org.pqrs.karabiner.karabiner_session_monitor.plist",
+  "org.pqrs.karabiner.NotificationWindow.plist",
+]
+
 let daemonPlistNames = [
-  "org.pqrs.Karabiner-VirtualHIDDevice-Daemon.plist"
+  "org.pqrs.Karabiner-VirtualHIDDevice-Daemon.plist",
+  "org.pqrs.karabiner.karabiner_grabber.plist",
 ]
 
 RunLoop.main.perform {
+  //
+  // Prepare services
+  //
+
+  var services: [SMAppService] = []
+
+  for n in agentPlistNames {
+    services.append(SMAppService.agent(plistName: n))
+  }
+  for n in daemonPlistNames {
+    services.append(SMAppService.daemon(plistName: n))
+  }
+
+  //
+  // Process
+  //
+
   for argument in CommandLine.arguments {
     if argument == "register" {
-      for daemonPlistName in daemonPlistNames {
-        let s = SMAppService.daemon(plistName: daemonPlistName)
+      for s in services {
         do {
           try s.register()
           print("Successfully registered \(s)")
@@ -21,8 +45,7 @@ RunLoop.main.perform {
       exit(0)
 
     } else if argument == "unregister" {
-      for daemonPlistName in daemonPlistNames {
-        let s = SMAppService.daemon(plistName: daemonPlistName)
+      for s in services {
         do {
           try s.unregister()
           print("Successfully unregistered \(s)")
@@ -34,8 +57,7 @@ RunLoop.main.perform {
       exit(0)
 
     } else if argument == "status" {
-      for daemonPlistName in daemonPlistNames {
-        let s = SMAppService.daemon(plistName: daemonPlistName)
+      for s in services {
         switch s.status {
         case .notRegistered:
           print("\(s) notRegistered")
@@ -55,7 +77,7 @@ RunLoop.main.perform {
   }
 
   print("Usage:")
-  print("    SMAppServiceExample register|unregister|status")
+  print("    Karabiner-Elements-Services register|unregister|status")
   exit(0)
 }
 

@@ -46,10 +46,6 @@ cp src/core/console_user_server/build/Release/karabiner_console_user_server "$ba
 cp src/core/grabber/build/Release/karabiner_grabber "$basedir"
 cp src/core/session_monitor/build/Release/karabiner_session_monitor "$basedir"
 
-mkdir -p "pkgroot/Library"
-cp -R files/LaunchDaemons "pkgroot/Library"
-cp -R files/LaunchAgents "pkgroot/Library"
-
 basedir="pkgroot/Applications"
 mkdir -p "$basedir"
 cp -R "src/apps/EventViewer/build/Release/Karabiner-EventViewer.app" "$basedir"
