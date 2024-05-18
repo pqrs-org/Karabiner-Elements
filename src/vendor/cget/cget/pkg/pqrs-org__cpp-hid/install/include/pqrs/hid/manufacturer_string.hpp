@@ -15,10 +15,6 @@ namespace manufacturer_string {
 struct value_t : type_safe::strong_typedef<value_t, std::string>,
                  type_safe::strong_typedef_op::equality_comparison<value_t> {
   using strong_typedef::strong_typedef;
-
-  constexpr auto operator<=>(const value_t& other) const {
-    return type_safe::get(*this) <=> type_safe::get(other);
-  }
 };
 
 inline std::ostream& operator<<(std::ostream& stream, const value_t& value) {
