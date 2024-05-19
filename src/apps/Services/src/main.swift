@@ -97,10 +97,10 @@ RunLoop.main.perform {
   print("Subcommands:")
   print("    register-core")
   print("    unregister-core")
-  print("    register-notification-window-agent")
-  print("    unregister-notification-window-agent")
   print("    register-console-user-server-agent")
+  print("    register-notification-window-agent")
   print("    unregister-console-user-server-agent")
+  print("    unregister-notification-window-agent")
   print("    status")
 
   exit(0)
