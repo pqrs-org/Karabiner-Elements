@@ -1,6 +1,19 @@
 import Foundation
 import ServiceManagement
 
+enum Subcommand: String {
+  case registerCoreDaemons = "register-core-daemons"
+  case unregisterCoreDaemons = "unregister-core-daemons"
+
+  case registerCoreAgents = "register-core-agents"
+  case unregisterCoreAgents = "unregister-core-agents"
+
+  case registerNotificationWindowAgent = "register-notification-window-agent"
+  case unregisterNotificationWindowAgent = "unregister-notification-window-agent"
+
+  case status = "status"
+}
+
 func registerService(_ service: SMAppService) {
   do {
     try service.register()
@@ -24,55 +37,66 @@ func unregisterService(_ service: SMAppService) {
 }
 
 RunLoop.main.perform {
-  let coreServices: [SMAppService] = [
-    SMAppService.agent(plistName: "org.pqrs.karabiner.agent.karabiner_grabber.plist"),
-    SMAppService.agent(plistName: "org.pqrs.karabiner.karabiner_session_monitor.plist"),
+  let coreDaemons: [SMAppService] = [
     SMAppService.daemon(plistName: "org.pqrs.Karabiner-VirtualHIDDevice-Daemon.plist"),
     SMAppService.daemon(plistName: "org.pqrs.karabiner.karabiner_grabber.plist"),
   ]
 
-  let consoleUserServerAgentService = SMAppService.agent(
-    plistName: "org.pqrs.karabiner.karabiner_console_user_server.plist")
+  let coreAgents: [SMAppService] = [
+    SMAppService.agent(plistName: "org.pqrs.karabiner.agent.karabiner_grabber.plist"),
+    SMAppService.agent(plistName: "org.pqrs.karabiner.karabiner_console_user_server.plist"),
+    SMAppService.agent(plistName: "org.pqrs.karabiner.karabiner_session_monitor.plist"),
+  ]
+
   let notificationWindowAgentService = SMAppService.agent(
     plistName: "org.pqrs.karabiner.NotificationWindow.plist")
 
   var allServices: [SMAppService] = []
-  for s in coreServices {
+  for s in coreDaemons {
     allServices.append(s)
   }
-  allServices.append(consoleUserServerAgentService)
+  for s in coreAgents {
+    allServices.append(s)
+  }
   allServices.append(notificationWindowAgentService)
 
-  for argument in CommandLine.arguments {
-    if argument == "register-core" {
-      for s in coreServices {
+  if CommandLine.arguments.count > 1 {
+    let subcommand = CommandLine.arguments[1]
+
+    switch Subcommand(rawValue: subcommand) {
+    case .registerCoreDaemons:
+      for s in coreDaemons {
         registerService(s)
       }
       exit(0)
 
-    } else if argument == "unregister-core" {
-      for s in coreServices {
+    case .unregisterCoreDaemons:
+      for s in coreDaemons {
         unregisterService(s)
       }
       exit(0)
 
-    } else if argument == "register-console-user-server-agent" {
-      registerService(consoleUserServerAgentService)
+    case .registerCoreAgents:
+      for s in coreAgents {
+        registerService(s)
+      }
       exit(0)
 
-    } else if argument == "unregister-console-user-server-agent" {
-      unregisterService(consoleUserServerAgentService)
+    case .unregisterCoreAgents:
+      for s in coreAgents {
+        unregisterService(s)
+      }
       exit(0)
 
-    } else if argument == "register-notification-window-agent" {
+    case .registerNotificationWindowAgent:
       registerService(notificationWindowAgentService)
       exit(0)
 
-    } else if argument == "unregister-notification-window-agent" {
+    case .unregisterNotificationWindowAgent:
       unregisterService(notificationWindowAgentService)
       exit(0)
 
-    } else if argument == "status" {
+    case .status:
       for s in allServices {
         switch s.status {
         case .notRegistered:
@@ -88,6 +112,10 @@ RunLoop.main.perform {
         }
       }
       exit(0)
+
+    default:
+      print("Unknown subcommand \(subcommand)")
+      exit(1)
     }
   }
 
@@ -95,13 +123,16 @@ RunLoop.main.perform {
   print("    Karabiner-Elements-Services subcommand")
   print("")
   print("Subcommands:")
-  print("    register-core")
-  print("    unregister-core")
-  print("    register-console-user-server-agent")
-  print("    register-notification-window-agent")
-  print("    unregister-console-user-server-agent")
-  print("    unregister-notification-window-agent")
-  print("    status")
+  print("    \(Subcommand.registerCoreDaemons.rawValue)")
+  print("    \(Subcommand.unregisterCoreDaemons.rawValue)")
+
+  print("    \(Subcommand.registerCoreAgents.rawValue)")
+  print("    \(Subcommand.unregisterCoreAgents.rawValue)")
+
+  print("    \(Subcommand.registerNotificationWindowAgent.rawValue)")
+  print("    \(Subcommand.unregisterNotificationWindowAgent.rawValue)")
+
+  print("    \(Subcommand.status.rawValue)")
 
   exit(0)
 }
