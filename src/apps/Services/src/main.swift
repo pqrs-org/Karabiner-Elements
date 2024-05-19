@@ -1,65 +1,79 @@
 import Foundation
 import ServiceManagement
 
-let agentPlistNames = [
-  "org.pqrs.karabiner.agent.karabiner_grabber.plist",
-  "org.pqrs.karabiner.karabiner_console_user_server.plist",
-  "org.pqrs.karabiner.karabiner_session_monitor.plist",
-  "org.pqrs.karabiner.NotificationWindow.plist",
-]
+func registerService(_ service: SMAppService) {
+  do {
+    try service.register()
+    print("Successfully registered \(service)")
+  } catch {
+    // Note:
+    // When calling `SMAppService.daemon.register`, if user approval has not been granted, an `Operation not permitted` error will be returned.
+    // To call `register` for all agents and daemons, the loop continues even if an error occurs.
+    // Therefore, only log output will be performed here.
+    print("Unable to register \(error)")
+  }
+}
 
-let daemonPlistNames = [
-  "org.pqrs.Karabiner-VirtualHIDDevice-Daemon.plist",
-  "org.pqrs.karabiner.karabiner_grabber.plist",
-]
+func unregisterService(_ service: SMAppService) {
+  do {
+    try service.unregister()
+    print("Successfully unregistered \(service)")
+  } catch {
+    print("Unable to unregister \(error)")
+  }
+}
 
 RunLoop.main.perform {
-  //
-  // Prepare services
-  //
+  let coreServices: [SMAppService] = [
+    SMAppService.agent(plistName: "org.pqrs.karabiner.agent.karabiner_grabber.plist"),
+    SMAppService.agent(plistName: "org.pqrs.karabiner.karabiner_session_monitor.plist"),
+    SMAppService.daemon(plistName: "org.pqrs.Karabiner-VirtualHIDDevice-Daemon.plist"),
+    SMAppService.daemon(plistName: "org.pqrs.karabiner.karabiner_grabber.plist"),
+  ]
 
-  var services: [SMAppService] = []
+  let consoleUserServerAgentService = SMAppService.agent(
+    plistName: "org.pqrs.karabiner.karabiner_console_user_server.plist")
+  let notificationWindowAgentService = SMAppService.agent(
+    plistName: "org.pqrs.karabiner.NotificationWindow.plist")
 
-  for n in agentPlistNames {
-    services.append(SMAppService.agent(plistName: n))
+  var allServices: [SMAppService] = []
+  for s in coreServices {
+    allServices.append(s)
   }
-  for n in daemonPlistNames {
-    services.append(SMAppService.daemon(plistName: n))
-  }
-
-  //
-  // Process
-  //
+  allServices.append(consoleUserServerAgentService)
+  allServices.append(notificationWindowAgentService)
 
   for argument in CommandLine.arguments {
-    if argument == "register" {
-      for s in services {
-        do {
-          try s.register()
-          print("Successfully registered \(s)")
-        } catch {
-          // Note:
-          // When calling `SMAppService.daemon.register`, if user approval has not been granted, an `Operation not permitted` error will be returned.
-          // To call `register` for all agents and daemons, the loop continues even if an error occurs.
-          // Therefore, only log output will be performed here.
-          print("Unable to register \(error)")
-        }
+    if argument == "register-core" {
+      for s in coreServices {
+        registerService(s)
       }
       exit(0)
 
-    } else if argument == "unregister" {
-      for s in services {
-        do {
-          try s.unregister()
-          print("Successfully unregistered \(s)")
-        } catch {
-          print("Unable to unregister \(error)")
-        }
+    } else if argument == "unregister-core" {
+      for s in coreServices {
+        unregisterService(s)
       }
+      exit(0)
+
+    } else if argument == "register-console-user-server-agent" {
+      registerService(consoleUserServerAgentService)
+      exit(0)
+
+    } else if argument == "unregister-console-user-server-agent" {
+      unregisterService(consoleUserServerAgentService)
+      exit(0)
+
+    } else if argument == "register-notification-window-agent" {
+      registerService(notificationWindowAgentService)
+      exit(0)
+
+    } else if argument == "unregister-notification-window-agent" {
+      unregisterService(notificationWindowAgentService)
       exit(0)
 
     } else if argument == "status" {
-      for s in services {
+      for s in allServices {
         switch s.status {
         case .notRegistered:
           print("\(s) notRegistered")
@@ -78,7 +92,17 @@ RunLoop.main.perform {
   }
 
   print("Usage:")
-  print("    Karabiner-Elements-Services register|unregister|status")
+  print("    Karabiner-Elements-Services subcommand")
+  print("")
+  print("Subcommands:")
+  print("    register-core")
+  print("    unregister-core")
+  print("    register-notification-window-agent")
+  print("    unregister-notification-window-agent")
+  print("    register-console-user-server-agent")
+  print("    unregister-console-user-server-agent")
+  print("    status")
+
   exit(0)
 }
 
