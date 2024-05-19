@@ -1,10 +1,10 @@
 #pragma once
 
-// pqrs::osx::launchctl v2.1
+// pqrs::osx::launchctl v3.0
 
 // (C) Copyright Takayama Fumihiko 2019.
 // Distributed under the Boost Software License, Version 1.0.
-// (See http://www.boost.org/LICENSE_1_0.txt)
+// (See https://www.boost.org/LICENSE_1_0.txt)
 
 // `pqrs::osx::launchctl` can be used safely in a multi-threaded environment.
 
@@ -34,37 +34,19 @@ inline void bootout(const domain_target& domain_target,
 }
 
 inline void enable(const domain_target& domain_target,
-                   const service_name& service_name,
-                   const service_path& service_path) {
+                   const service_name& service_name) {
   auto service_target = make_service_target(domain_target, service_name);
 
-  // If service_path is already bootstrapped and disabled, launchctl bootstrap will fail until it is enabled again.
-  // So we should enable it first, and then bootstrap and enable it.
-
-  {
-    auto command = (std::stringstream() << "/bin/launchctl enable " << service_target).str();
-    system(command.c_str());
-  }
-
-  bootstrap(domain_target, service_path);
-
-  {
-    auto command = (std::stringstream() << "/bin/launchctl enable " << service_target).str();
-    system(command.c_str());
-  }
+  auto command = (std::stringstream() << "/bin/launchctl enable " << service_target).str();
+  system(command.c_str());
 }
 
 inline void disable(const domain_target& domain_target,
-                    const service_name& service_name,
-                    const service_path& service_path) {
+                    const service_name& service_name) {
   auto service_target = make_service_target(domain_target, service_name);
 
-  bootout(domain_target, service_path);
-
-  {
-    auto command = (std::stringstream() << "/bin/launchctl disable " << service_target).str();
-    system(command.c_str());
-  }
+  auto command = (std::stringstream() << "/bin/launchctl disable " << service_target).str();
+  system(command.c_str());
 }
 
 enum class kickstart_flags {
