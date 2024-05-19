@@ -4,12 +4,6 @@
   <dict>
     <key>Label</key>
     <string>org.pqrs.karabiner.NotificationWindow</string>
-    <key>AssociatedBundleIdentifiers</key>
-    <array>
-      <string>org.pqrs.Karabiner-Elements.Settings</string>
-    </array>
-    <key>Disabled</key>
-    <true/>
     <key>KeepAlive</key>
     <true/>
     <key>ProgramArguments</key>
