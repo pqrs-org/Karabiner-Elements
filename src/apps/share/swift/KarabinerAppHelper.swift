@@ -72,8 +72,7 @@ final class KarabinerAppHelper: NSObject {
         quitKarabiner(askForConfirmation: false)
       }
     } else {
-      libkrbn_launchctl_manage_console_user_server(false)
-      libkrbn_launchctl_manage_notification_window(false)
+      libkrbn_services_unregister_core_agents()
     }
   }
 }

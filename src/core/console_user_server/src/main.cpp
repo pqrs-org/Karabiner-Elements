@@ -3,7 +3,6 @@
 #include "constants.hpp"
 #include "dispatcher_utility.hpp"
 #include "karabiner_version.h"
-#include "launchctl_utility.hpp"
 #include "logger.hpp"
 #include "process_utility.hpp"
 #include "run_loop_thread_utility.hpp"
@@ -45,14 +44,6 @@ int main(int argc, const char* argv[]) {
     std::cerr << message << std::endl;
     return 1;
   }
-
-  //
-  // Manage launchctl
-  //
-
-  krbn::launchctl_utility::manage_session_monitor();
-  krbn::launchctl_utility::manage_console_user_server(true);
-  krbn::launchctl_utility::manage_grabber_agent();
 
   //
   // Migrate old configuration file

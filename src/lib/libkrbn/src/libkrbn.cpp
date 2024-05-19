@@ -3,11 +3,11 @@
 #include "constants.hpp"
 #include "core_configuration/core_configuration.hpp"
 #include "dispatcher_utility.hpp"
-#include "launchctl_utility.hpp"
 #include "libkrbn/impl/libkrbn_components_manager.hpp"
 #include "libkrbn/impl/libkrbn_cpp.hpp"
 #include "process_utility.hpp"
 #include "run_loop_thread_utility.hpp"
+#include "services_utility.hpp"
 #include "types.hpp"
 #include "update_utility.hpp"
 #include <fstream>
@@ -130,20 +130,28 @@ void libkrbn_unlock_single_application(void) {
   krbn::process_utility::unlock_single_application();
 }
 
-void libkrbn_launchctl_manage_console_user_server(bool load) {
-  krbn::launchctl_utility::manage_console_user_server(load);
+void libkrbn_services_register_core_agents(void) {
+  krbn::services_utility::register_core_agents();
 }
 
-void libkrbn_launchctl_manage_notification_window(bool load) {
-  krbn::launchctl_utility::manage_notification_window(load);
+void libkrbn_services_unregister_core_agents(void) {
+  krbn::services_utility::unregister_core_agents();
 }
 
-void libkrbn_launchctl_manage_session_monitor(void) {
-  krbn::launchctl_utility::manage_session_monitor();
+void libkrbn_services_restart_console_user_server_agent(void) {
+  krbn::services_utility::restart_console_user_server_agent();
 }
 
-void libkrbn_launchctl_restart_console_user_server(void) {
-  krbn::launchctl_utility::restart_console_user_server();
+void libkrbn_services_register_notification_window_agent(void) {
+  krbn::services_utility::register_notification_window_agent();
+}
+
+void libkrbn_services_unregister_notification_window_agent(void) {
+  krbn::services_utility::unregister_notification_window_agent();
+}
+
+void libkrbn_services_restart_notification_window_agent(void) {
+  krbn::services_utility::restart_notification_window_agent();
 }
 
 void libkrbn_launch_event_viewer(void) {

@@ -8,11 +8,11 @@
 #include "constants.hpp"
 #include "filesystem_utility.hpp"
 #include "grabber_client.hpp"
-#include "launchctl_utility.hpp"
 #include "logger.hpp"
 #include "menu_process_manager.hpp"
 #include "monitor/configuration_monitor.hpp"
 #include "monitor/version_monitor.hpp"
+#include "services_utility.hpp"
 #include "shell_command_handler.hpp"
 #include "software_function_handler.hpp"
 #include "updater_process_manager.hpp"
@@ -211,7 +211,11 @@ private:
                                                                      geteuid());
     configuration_monitor_->core_configuration_updated.connect([](auto&& weak_core_configuration) {
       if (auto c = weak_core_configuration.lock()) {
-        launchctl_utility::manage_notification_window(c->get_global_configuration().get_enable_notification_window());
+        if (c->get_global_configuration().get_enable_notification_window()) {
+          services_utility::register_notification_window_agent();
+        } else {
+          services_utility::unregister_notification_window_agent();
+        }
       }
     });
 
