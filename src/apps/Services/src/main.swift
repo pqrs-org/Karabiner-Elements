@@ -38,18 +38,23 @@ func unregisterService(_ service: SMAppService) {
 
 RunLoop.main.perform {
   let coreDaemons: [SMAppService] = [
-    SMAppService.daemon(plistName: "org.pqrs.Karabiner-VirtualHIDDevice-Daemon.plist"),
-    SMAppService.daemon(plistName: "org.pqrs.karabiner.karabiner_grabber.plist"),
+    SMAppService.daemon(
+      plistName: "org.pqrs.service.daemon.Karabiner-VirtualHIDDevice-Daemon.plist"),
+    SMAppService.daemon(
+      plistName: "org.pqrs.service.daemon.karabiner.karabiner_grabber.plist"),
   ]
 
   let coreAgents: [SMAppService] = [
-    SMAppService.agent(plistName: "org.pqrs.karabiner.agent.karabiner_grabber.plist"),
-    SMAppService.agent(plistName: "org.pqrs.karabiner.karabiner_console_user_server.plist"),
-    SMAppService.agent(plistName: "org.pqrs.karabiner.karabiner_session_monitor.plist"),
+    SMAppService.agent(
+      plistName: "org.pqrs.service.agent.karabiner_console_user_server.plist"),
+    SMAppService.agent(
+      plistName: "org.pqrs.service.agent.karabiner_grabber.plist"),
+    SMAppService.agent(
+      plistName: "org.pqrs.service.agent.karabiner_session_monitor.plist"),
   ]
 
   let notificationWindowAgentService = SMAppService.agent(
-    plistName: "org.pqrs.karabiner.NotificationWindow.plist")
+    plistName: "org.pqrs.service.agent.Karabiner-NotificationWindow")
 
   var allServices: [SMAppService] = []
   for s in coreDaemons {

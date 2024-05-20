@@ -3,15 +3,12 @@
 <plist version="1.0">
   <dict>
     <key>Label</key>
-    <string>org.pqrs.karabiner.agent.karabiner_grabber</string>
+    <string>org.pqrs.service.agent.karabiner_console_user_server</string>
     <key>KeepAlive</key>
-    <dict>
-      <key>SuccessfulExit</key>
-      <false/>
-    </dict>
+    <true/>
     <key>ProgramArguments</key>
     <array>
-      <string>/Library/Application Support/org.pqrs/Karabiner-Elements/bin/karabiner_grabber</string>
+      <string>/Library/Application Support/org.pqrs/Karabiner-Elements/bin/karabiner_console_user_server</string>
     </array>
   </dict>
 </plist>

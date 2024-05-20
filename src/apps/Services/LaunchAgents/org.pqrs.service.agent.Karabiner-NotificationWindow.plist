@@ -3,12 +3,12 @@
 <plist version="1.0">
   <dict>
     <key>Label</key>
-    <string>org.pqrs.karabiner.karabiner_console_user_server</string>
+    <string>org.pqrs.service.agent.Karabiner-NotificationWindow</string>
     <key>KeepAlive</key>
     <true/>
     <key>ProgramArguments</key>
     <array>
-      <string>/Library/Application Support/org.pqrs/Karabiner-Elements/bin/karabiner_console_user_server</string>
+      <string>/Library/Application Support/org.pqrs/Karabiner-Elements/Karabiner-NotificationWindow.app/Contents/MacOS/Karabiner-NotificationWindow</string>
     </array>
   </dict>
 </plist>

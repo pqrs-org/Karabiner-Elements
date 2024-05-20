@@ -7,7 +7,7 @@ all:
 	cp LaunchAgents/*.plist build/Release/Karabiner-Elements-Services.app/Contents/Library/LaunchAgents
 # Copy LaunchDaemons
 	mkdir -p build/Release/Karabiner-Elements-Services.app/Contents/Library/LaunchDaemons
-	cp ../../vendor/Karabiner-DriverKit-VirtualHIDDevice/files/LaunchDaemons/org.pqrs.Karabiner-VirtualHIDDevice-Daemon.plist build/Release/Karabiner-Elements-Services.app/Contents/Library/LaunchDaemons
+	cp ../../vendor/Karabiner-DriverKit-VirtualHIDDevice/files/LaunchDaemons/*.plist build/Release/Karabiner-Elements-Services.app/Contents/Library/LaunchDaemons
 	cp LaunchDaemons/*.plist build/Release/Karabiner-Elements-Services.app/Contents/Library/LaunchDaemons
 
 clean:
