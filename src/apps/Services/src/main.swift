@@ -54,7 +54,7 @@ RunLoop.main.perform {
   ]
 
   let notificationWindowAgentService = SMAppService.agent(
-    plistName: "org.pqrs.service.agent.Karabiner-NotificationWindow")
+    plistName: "org.pqrs.service.agent.Karabiner-NotificationWindow.plist")
 
   var allServices: [SMAppService] = []
   for s in coreDaemons {
