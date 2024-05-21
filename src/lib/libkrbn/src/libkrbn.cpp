@@ -150,10 +150,6 @@ void libkrbn_services_unregister_notification_window_agent(void) {
   krbn::services_utility::unregister_notification_window_agent();
 }
 
-void libkrbn_services_restart_notification_window_agent(void) {
-  krbn::services_utility::restart_notification_window_agent();
-}
-
 void libkrbn_launch_event_viewer(void) {
   krbn::application_launcher::launch_event_viewer();
 }

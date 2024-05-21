@@ -265,11 +265,7 @@ public:
   }
 
   static pqrs::osx::launchctl::service_name get_console_user_server_agent_service_name(void) {
-    return pqrs::osx::launchctl::service_name("org.pqrs.karabiner.karabiner_console_user_server");
-  }
-
-  static pqrs::osx::launchctl::service_name get_notification_window_agent_service_name(void) {
-    return pqrs::osx::launchctl::service_name("org.pqrs.karabiner.NotificationWindow");
+    return pqrs::osx::launchctl::service_name("org.pqrs.service.agent.karabiner_console_user_server");
   }
 };
 } // namespace krbn

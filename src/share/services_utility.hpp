@@ -53,16 +53,5 @@ inline void unregister_notification_window_agent(void) {
              .c_str());
 }
 
-inline void restart_notification_window_agent(void) {
-  auto domain_target = pqrs::osx::launchctl::make_gui_domain_target();
-  auto service_name = constants::get_notification_window_agent_service_name();
-
-  auto flags = pqrs::osx::launchctl::kickstart_flags::kill |
-               pqrs::osx::launchctl::kickstart_flags::background;
-  pqrs::osx::launchctl::kickstart(domain_target,
-                                  service_name,
-                                  flags);
-}
-
 } // namespace services_utility
 } // namespace krbn

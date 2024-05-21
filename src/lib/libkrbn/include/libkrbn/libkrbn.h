@@ -49,7 +49,6 @@ void libkrbn_services_restart_console_user_server_agent(void);
 
 void libkrbn_services_register_notification_window_agent(void);
 void libkrbn_services_unregister_notification_window_agent(void);
-void libkrbn_services_restart_notification_window_agent(void);
 
 void libkrbn_launch_event_viewer(void);
 void libkrbn_launch_menu(void);
