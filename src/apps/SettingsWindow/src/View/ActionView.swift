@@ -10,7 +10,7 @@ struct ActionView: View {
           HStack {
             Button(
               action: {
-                libkrbn_launchctl_restart_console_user_server()
+                libkrbn_services_restart_console_user_server_agent()
                 Relauncher.relaunch()
               },
               label: {

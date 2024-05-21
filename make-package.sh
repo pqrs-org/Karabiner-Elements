@@ -3,33 +3,6 @@
 set -u # forbid undefined variables
 set -e # forbid command failure
 
-#
-# Check Xcode version
-#
-
-# Note:
-# Using `xcrun --show-sdk-version` in GitHub Actions results in the following error.
-#
-# ```
-# xcodebuild: error: SDK "/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk" cannot be located.
-# xcrun: error: unable to lookup item 'SDKVersion' in SDK '/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk'
-# ```
-#
-# Therefore, we extract the version from the Info.plist of Xcode.app
-
-xcodeVersion=$(plutil -extract CFBundleShortVersionString raw "$(xcode-select -p)/../Info.plist")
-xcodeMajorVersion=$(echo "$xcodeVersion" | sed 's|\..*$||')
-echo "Xcode version: $xcodeVersion"
-echo "Xcode major version: $xcodeMajorVersion"
-if [[ "$xcodeMajorVersion" -lt 15 ]]; then
-    echo
-    echo 'ERROR:'
-    echo '  Xcode is too old.'
-    echo '  You have to use Xcode 15.0.1 or later.'
-    echo
-    exit 1
-fi
-
 version=$(cat version)
 
 #
@@ -59,6 +32,7 @@ cp -R "src/apps/AppIconSwitcher/build/Release/Karabiner-AppIconSwitcher.app" "$b
 cp -R "src/apps/Menu/build/Release/Karabiner-Menu.app" "$basedir"
 cp -R "src/apps/MultitouchExtension/build/Release/Karabiner-MultitouchExtension.app" "$basedir"
 cp -R "src/apps/NotificationWindow/build/Release/Karabiner-NotificationWindow.app" "$basedir"
+cp -R "src/apps/Services/build/Release/Karabiner-Elements-Services.app" "$basedir"
 
 basedir="pkgroot/Library/Application Support/org.pqrs/Karabiner-Elements/scripts"
 mkdir -p "$basedir"
@@ -72,10 +46,6 @@ cp src/bin/cli/build/Release/karabiner_cli "$basedir"
 cp src/core/console_user_server/build/Release/karabiner_console_user_server "$basedir"
 cp src/core/grabber/build/Release/karabiner_grabber "$basedir"
 cp src/core/session_monitor/build/Release/karabiner_session_monitor "$basedir"
-
-mkdir -p "pkgroot/Library"
-cp -R files/LaunchDaemons "pkgroot/Library"
-cp -R files/LaunchAgents "pkgroot/Library"
 
 basedir="pkgroot/Applications"
 mkdir -p "$basedir"

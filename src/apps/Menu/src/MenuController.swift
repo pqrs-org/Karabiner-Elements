@@ -230,7 +230,7 @@ public class MenuController: NSObject, NSMenuDelegate {
 
   @objc
   func restartKarabiner(_: Any) {
-    libkrbn_launchctl_restart_console_user_server()
+    libkrbn_services_restart_console_user_server_agent()
   }
 
   @objc

@@ -37,7 +37,12 @@ int agent(void) {
 
   //
   // Open IOHIDDevices in order to gain input monitoring permission.
-  // (It requires to be run from from LaunchAgents.)
+  //
+  // Note:
+  // It needs to be run with user permissions to trigger the approval request for Input Monitoring built into macOS.
+  // Additionally, if another process starts grabber as a child process, macOS will determine that the Input Monitoring permission request came from the parent process.
+  // Therefore, grabber needs to be called via launchd.
+  // In conclusion, grabber must be started through LaunchAgents.
   //
 
   iokit_hid_device_open_checker_utility::run_checker();

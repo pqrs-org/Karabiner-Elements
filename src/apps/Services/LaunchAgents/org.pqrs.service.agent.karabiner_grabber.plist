@@ -3,17 +3,12 @@
 <plist version="1.0">
   <dict>
     <key>Label</key>
-    <string>org.pqrs.karabiner.karabiner_grabber</string>
-    <key>AssociatedBundleIdentifiers</key>
-    <array>
-      <string>org.pqrs.Karabiner-Elements.Settings</string>
-    </array>
-    <key>Disabled</key>
-    <false/>
+    <string>org.pqrs.service.agent.karabiner_grabber</string>
     <key>KeepAlive</key>
-    <true/>
-    <key>ProcessType</key>
-    <string>Interactive</string>
+    <dict>
+      <key>SuccessfulExit</key>
+      <false/>
+    </dict>
     <key>ProgramArguments</key>
     <array>
       <string>/Library/Application Support/org.pqrs/Karabiner-Elements/bin/karabiner_grabber</string>

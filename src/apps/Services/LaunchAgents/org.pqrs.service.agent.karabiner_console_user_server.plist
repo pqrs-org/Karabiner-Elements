@@ -3,13 +3,7 @@
 <plist version="1.0">
   <dict>
     <key>Label</key>
-    <string>org.pqrs.karabiner.karabiner_console_user_server</string>
-    <key>AssociatedBundleIdentifiers</key>
-    <array>
-      <string>org.pqrs.Karabiner-Elements.Settings</string>
-    </array>
-    <key>Disabled</key>
-    <true/>
+    <string>org.pqrs.service.agent.karabiner_console_user_server</string>
     <key>KeepAlive</key>
     <true/>
     <key>ProgramArguments</key>

@@ -42,10 +42,13 @@ bool libkrbn_user_pid_directory_writable(void);
 bool libkrbn_lock_single_application_with_user_pid_file(const char* pid_file_name);
 void libkrbn_unlock_single_application(void);
 
-void libkrbn_launchctl_manage_console_user_server(bool load);
-void libkrbn_launchctl_manage_notification_window(bool load);
-void libkrbn_launchctl_manage_session_monitor(void);
-void libkrbn_launchctl_restart_console_user_server(void);
+void libkrbn_services_register_core_agents(void);
+void libkrbn_services_unregister_core_agents(void);
+
+void libkrbn_services_restart_console_user_server_agent(void);
+
+void libkrbn_services_register_notification_window_agent(void);
+void libkrbn_services_unregister_notification_window_agent(void);
 
 void libkrbn_launch_event_viewer(void);
 void libkrbn_launch_menu(void);

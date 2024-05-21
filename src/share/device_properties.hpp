@@ -310,7 +310,7 @@ public:
       auto p1 = product_.value_or(pqrs::hid::product_string::value_t(""));
       auto p2 = other.product_.value_or(pqrs::hid::product_string::value_t(""));
       if (p1 != p2) {
-        return p1 < p2;
+        return type_safe::get(p1).compare(type_safe::get(p2)) < 0;
       }
     }
 
@@ -319,7 +319,7 @@ public:
       auto m1 = manufacturer_.value_or(pqrs::hid::manufacturer_string::value_t(""));
       auto m2 = other.manufacturer_.value_or(pqrs::hid::manufacturer_string::value_t(""));
       if (m1 != m2) {
-        return m1 < m2;
+        return type_safe::get(m1).compare(type_safe::get(m2)) < 0;
       }
     }
 

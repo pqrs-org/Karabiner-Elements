@@ -13,6 +13,8 @@
 namespace krbn {
 class constants final {
 public:
+  static constexpr const char* karabiner_elements_services_path = "/Library/Application Support/org.pqrs/Karabiner-Elements/Karabiner-Elements-Services.app/Contents/MacOS/Karabiner-Elements-Services";
+
   static const std::filesystem::path& get_version_file_path(void) {
     static auto path = std::filesystem::path("/Library/Application Support/org.pqrs/Karabiner-Elements/version");
     return path;
@@ -262,44 +264,8 @@ public:
     return 32 * 1024;
   }
 
-  static pqrs::osx::launchctl::service_name get_grabber_daemon_launchctl_service_name(void) {
-    return pqrs::osx::launchctl::service_name("org.pqrs.karabiner.karabiner_grabber");
-  }
-
-  static pqrs::osx::launchctl::service_path get_grabber_daemon_launchctl_service_path(void) {
-    return pqrs::osx::launchctl::service_path("/Library/LaunchDaemons/org.pqrs.karabiner.karabiner_grabber.plist");
-  }
-
-  static pqrs::osx::launchctl::service_name get_grabber_agent_launchctl_service_name(void) {
-    return pqrs::osx::launchctl::service_name("org.pqrs.karabiner.agent.karabiner_grabber");
-  }
-
-  static pqrs::osx::launchctl::service_path get_grabber_agent_launchctl_service_path(void) {
-    return pqrs::osx::launchctl::service_path("/Library/LaunchAgents/org.pqrs.karabiner.agent.karabiner_grabber.plist");
-  }
-
-  static pqrs::osx::launchctl::service_name get_session_monitor_launchctl_service_name(void) {
-    return pqrs::osx::launchctl::service_name("org.pqrs.karabiner.karabiner_session_monitor");
-  }
-
-  static pqrs::osx::launchctl::service_path get_session_monitor_launchctl_service_path(void) {
-    return pqrs::osx::launchctl::service_path("/Library/LaunchAgents/org.pqrs.karabiner.karabiner_session_monitor.plist");
-  }
-
-  static pqrs::osx::launchctl::service_name get_console_user_server_launchctl_service_name(void) {
-    return pqrs::osx::launchctl::service_name("org.pqrs.karabiner.karabiner_console_user_server");
-  }
-
-  static pqrs::osx::launchctl::service_path get_console_user_server_launchctl_service_path(void) {
-    return pqrs::osx::launchctl::service_path("/Library/LaunchAgents/org.pqrs.karabiner.karabiner_console_user_server.plist");
-  }
-
-  static pqrs::osx::launchctl::service_name get_notification_window_launchctl_service_name(void) {
-    return pqrs::osx::launchctl::service_name("org.pqrs.karabiner.NotificationWindow");
-  }
-
-  static pqrs::osx::launchctl::service_path get_notification_window_launchctl_service_path(void) {
-    return pqrs::osx::launchctl::service_path("/Library/LaunchAgents/org.pqrs.karabiner.NotificationWindow.plist");
+  static pqrs::osx::launchctl::service_name get_console_user_server_agent_service_name(void) {
+    return pqrs::osx::launchctl::service_name("org.pqrs.service.agent.karabiner_console_user_server");
   }
 };
 } // namespace krbn

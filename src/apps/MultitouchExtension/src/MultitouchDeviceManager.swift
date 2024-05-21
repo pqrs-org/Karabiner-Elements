@@ -27,7 +27,7 @@ private func callback(
 class MultitouchDeviceManager {
   static let shared = MultitouchDeviceManager()
 
-  private let notificationPort = IONotificationPortCreate(kIOMasterPortDefault)
+  private let notificationPort = IONotificationPortCreate(kIOMainPortDefault)
 
   private var devices: [MTDevice] = []
   private var wakeObserver: NSObjectProtocol?

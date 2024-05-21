@@ -3,7 +3,7 @@
 
 # Karabiner-Elements
 
-Karabiner-Elements is a powerful utility for keyboard customization on macOS Sierra or later.
+Karabiner-Elements is a powerful key remapper for macOS.
 
 ## Download
 
@@ -17,10 +17,10 @@ You can download previous versions of Karabiner-Elements from [here](https://kar
 
 ## Supported systems
 
--   macOS 11 Big Sur
--   macOS 12 Monterey
--   macOS 13 Ventura
 -   macOS 14 Sonoma
+    -   Both Intel-based Macs and Apple Silicon Macs
+-   macOS 13 Ventura
+    -   Both Intel-based Macs and Apple Silicon Macs
 
 ## Usage
 

@@ -114,12 +114,10 @@ public class AppDelegate: NSObject, NSApplicationDelegate {
     NSApp.activate(ignoringOtherApps: true)
 
     //
-    // launchctl
+    // Register services
     //
 
-    libkrbn_launchctl_manage_session_monitor()
-    libkrbn_launchctl_manage_console_user_server(true)
-    // Do not manage grabber_agent and observer_agent because they are designed to run only once.
+    libkrbn_services_register_core_agents()
   }
 
   public func applicationWillTerminate(_: Notification) {
