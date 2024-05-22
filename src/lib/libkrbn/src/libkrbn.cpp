@@ -142,14 +142,6 @@ void libkrbn_services_restart_console_user_server_agent(void) {
   krbn::services_utility::restart_console_user_server_agent();
 }
 
-void libkrbn_services_register_notification_window_agent(void) {
-  krbn::services_utility::register_notification_window_agent();
-}
-
-void libkrbn_services_unregister_notification_window_agent(void) {
-  krbn::services_utility::unregister_notification_window_agent();
-}
-
 void libkrbn_launch_event_viewer(void) {
   krbn::application_launcher::launch_event_viewer();
 }
