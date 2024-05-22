@@ -35,6 +35,14 @@ void run_global_configuration_test(void) {
       expect(global_configuration.get_enable_notification_window() == false);
       expect(global_configuration.get_ask_for_confirmation_before_quitting() == false);
       expect(global_configuration.get_unsafe_ui() == true);
+
+      //
+      // Set default values
+      //
+
+      global_configuration.set_enable_notification_window(true);
+      nlohmann::json j(global_configuration);
+      expect(!j.contains("enable_notification_window"));
     }
 
     // invalid values in json
