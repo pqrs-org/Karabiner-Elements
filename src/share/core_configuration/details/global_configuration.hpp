@@ -49,6 +49,8 @@ public:
 
     if (enable_notification_window_ != enable_notification_window_default_value) {
       j["enable_notification_window"] = enable_notification_window_;
+    } else {
+      j.erase("enable_notification_window");
     }
 
     j["ask_for_confirmation_before_quitting"] = ask_for_confirmation_before_quitting;
