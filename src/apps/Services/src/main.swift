@@ -15,6 +15,24 @@ enum Subcommand: String {
 }
 
 func registerService(_ service: SMAppService) {
+  // Regarding daemons, performing the following steps causes inconsistencies in the user approval database,
+  // so the process will not start again until it is unregistered and then registered again.
+  //
+  // 1. Register a daemon.
+  // 2. Approve the daemon.
+  // 3. The database is reset using `sfltool resetbtm`.
+  // 4. Restart macOS.
+  //
+  // When this happens, the service status becomes .notFound.
+  // So, if the service status is .notFound, we call unregister before register to avoid this issue.
+  //
+  // Another case where it becomes .notFound is when it has never actually been registered before.
+  // Even in this case, calling unregister will not have any negative impact.
+
+  if service.status == .notFound {
+    unregisterService(service)
+  }
+
   do {
     try service.register()
     print("Successfully registered \(service)")
@@ -105,12 +123,14 @@ RunLoop.main.perform {
       for s in allServices {
         switch s.status {
         case .notRegistered:
+          // A service that was once registered but then unregistered becomes notRegistered.
           print("\(s) notRegistered")
         case .enabled:
           print("\(s) enabled")
         case .requiresApproval:
           print("\(s) requiresApproval")
         case .notFound:
+          // A service that has never been registered becomes notFound. Resetting the database with `sfltool resetbtm` also results in notFound.
           print("\(s) notFound")
         @unknown default:
           print("\(s) unknown \(s.status)")
