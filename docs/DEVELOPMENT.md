@@ -26,18 +26,23 @@ make install
 ## Core Processes
 
 -   `karabiner_grabber`
-    -   Run with root privilege.
     -   Seize the input devices and modify events then post events using `Karabiner-DriverKit-VirtualHIDDevice`.
+    -   It is run with root privileges which are required to seize the device and send events to the virtual driver.
 -   `karabiner_session_monitor`
-    -   Run with root privilege.
-    -   (Opened by console user privilege in order to use CoreGraphics session API.
-        And then, effective uid is changed to root by SUID in order to communicate a secure Unix domain socket of `karabiner_grabber`.)
-    -   Monitor a window server session state and notify it to `karabiner_grabber`.
+    -   It informs `karabiner_grabber` of the user currently using the console.
+        karabiner_grabber will change the owner of the Unix domain socket that `karabiner_grabber` provides for `karabiner_console_user_server`.
+    -   The methods for accurately detecting the console user, including when multiple people are logged in through Screen Sharing, are very limited.
+        Even in macOS 14, there is no alternative to using the Core Graphics API `CGSessionCopyCurrentDictionary`.
+        To use this API, it must be launched from a GUI session. Specifically, it needs to be started from LaunchAgents.
+        Therefore, the function to detect the console user cannot be integrated into `karabiner_grabber` and is implemented as a separate process.
+    -   It is run with root privileges because if the notification of the console user to `karabiner_grabber` can be done by anyone, the console user could be spoofed.
+        This would allow a user who is not currently using the console to send requests to `karabiner_grabber` via `karabiner_console_user_server`.
 -   `karabiner_console_user_server`
-    -   Run with console user privilege.
-    -   Monitor system preferences values (key repeat, etc) and notify them to `karabiner_grabber`.
-    -   Execute shell commands which are specified by `shell_command` in `complex_modifications`.
-    -   `karabiner_grabber` seizes devices only when `karabiner_console_user_server` is running.
+    -   `karabiner_console_user_server` connects to the Unix domain socket provided by `karabiner_grabber` and requests the start of processing input events.
+        `karabiner_grabber` will not modify the input events until it receives a connection from `karabiner_console_user_server` (unless the system default configuration is enabled).
+    -   The execution of `shell_command`, `software_function`, and `select_input_source` is carried out by karabiner_console_user_server.
+    -   It notifies `karabiner_grabber` of the information needed to reference the filter function when modifying input events, such as the active application and the current input source.
+    -   Run with the console user privilege.
 
 ![processes](images/processes.svg)
 
