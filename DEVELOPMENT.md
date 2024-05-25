@@ -44,7 +44,7 @@ make install
     -   It notifies `karabiner_grabber` of the information needed to reference the filter function when modifying input events, such as the active application and the current input source.
     -   Run with the console user privilege.
 
-![processes](images/processes.svg)
+![processes](files/images/processes.svg)
 
 ### program sequence
 
