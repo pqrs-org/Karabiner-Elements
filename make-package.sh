@@ -62,8 +62,8 @@ bash scripts/codesign.sh "pkgroot"
 # Update file permissions
 #
 
-sh "scripts/setpermissions.sh" pkginfo
-sh "scripts/setpermissions.sh" pkgroot
+bash "scripts/setpermissions.sh" pkginfo
+bash "scripts/setpermissions.sh" pkgroot
 
 chmod 755 pkginfo/Scripts/postinstall
 chmod 755 pkginfo/Scripts/preinstall
