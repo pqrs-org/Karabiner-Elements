@@ -10,12 +10,6 @@ export PATH
 chmod 4755 '/Library/Application Support/org.pqrs/Karabiner-Elements/bin/karabiner_session_monitor'
 
 #
-# Register /Applications/Karabiner-Elements.app in the Launch Services database.
-#
-
-'/Library/Application Support/org.pqrs/Karabiner-Elements/Karabiner-Elements-Services.app/Contents/MacOS/Karabiner-Elements-Services' register-core-daemons
-
-#
 # Relaunch karabiner processes
 #
 

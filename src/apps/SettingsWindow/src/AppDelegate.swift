@@ -117,6 +117,8 @@ public class AppDelegate: NSObject, NSApplicationDelegate {
     // Register services
     //
 
+    libkrbn_services_bootout_old_agents()
+    libkrbn_services_register_core_daemons()
     libkrbn_services_register_core_agents()
   }
 

@@ -42,10 +42,11 @@ bool libkrbn_user_pid_directory_writable(void);
 bool libkrbn_lock_single_application_with_user_pid_file(const char* pid_file_name);
 void libkrbn_unlock_single_application(void);
 
+void libkrbn_services_register_core_daemons(void);
 void libkrbn_services_register_core_agents(void);
 void libkrbn_services_unregister_core_agents(void);
-
 void libkrbn_services_restart_console_user_server_agent(void);
+void libkrbn_services_bootout_old_agents(void);
 
 void libkrbn_launch_event_viewer(void);
 void libkrbn_launch_menu(void);

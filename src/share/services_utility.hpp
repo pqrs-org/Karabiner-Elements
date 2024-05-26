@@ -7,6 +7,16 @@ namespace krbn {
 namespace services_utility {
 
 //
+// core_daemons
+//
+
+inline void register_core_daemons(void) {
+  system(fmt::format("'{0}' register-core-daemons",
+                     constants::karabiner_elements_services_path)
+             .c_str());
+}
+
+//
 // core_agents
 //
 
@@ -51,6 +61,27 @@ inline void unregister_notification_window_agent(void) {
   system(fmt::format("'{0}' unregister-notification-window-agent",
                      constants::karabiner_elements_services_path)
              .c_str());
+}
+
+//
+// Old agents
+//
+
+// For old daemons, the installer can stop them, but for agents, the user needs to handle the stopping process, so the installer cannot do it.
+// Additionally, simply deleting /Library/LaunchAgents will not stop launchd from processing; the old services will continue to run until bootout is explicitly called or macOS is restarted.
+// Therefore, explicitly call bootout at the start of Settings and console_user_server to stop the old agents.
+inline void bootout_old_agents(void) {
+  auto domain_target = pqrs::osx::launchctl::make_gui_domain_target();
+
+  for (const auto& service_name : {
+           "org.pqrs.karabiner.NotificationWindow",
+           "org.pqrs.karabiner.agent.karabiner_grabber",
+           "org.pqrs.karabiner.karabiner_console_user_server",
+           "org.pqrs.karabiner.karabiner_session_monitor",
+       }) {
+    pqrs::osx::launchctl::bootout(domain_target,
+                                  pqrs::osx::launchctl::service_name(service_name));
+  }
 }
 
 } // namespace services_utility

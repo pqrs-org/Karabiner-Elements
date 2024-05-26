@@ -6,6 +6,7 @@
 #include "logger.hpp"
 #include "process_utility.hpp"
 #include "run_loop_thread_utility.hpp"
+#include "services_utility.hpp"
 #include <pqrs/dispatcher.hpp>
 #include <pqrs/filesystem.hpp>
 
@@ -56,6 +57,14 @@ int main(int argc, const char* argv[]) {
   //
 
   system("/Applications/.Karabiner-VirtualHIDDevice-Manager.app/Contents/MacOS/Karabiner-VirtualHIDDevice-Manager forceActivate &");
+
+  //
+  // Register services
+  //
+
+  krbn::services_utility::bootout_old_agents();
+  krbn::services_utility::register_core_daemons();
+  krbn::services_utility::register_core_agents();
 
   //
   // Create directories

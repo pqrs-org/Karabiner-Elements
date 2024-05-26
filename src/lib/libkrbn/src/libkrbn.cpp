@@ -130,6 +130,10 @@ void libkrbn_unlock_single_application(void) {
   krbn::process_utility::unlock_single_application();
 }
 
+void libkrbn_services_register_core_daemons(void) {
+  krbn::services_utility::register_core_daemons();
+}
+
 void libkrbn_services_register_core_agents(void) {
   krbn::services_utility::register_core_agents();
 }
@@ -140,6 +144,10 @@ void libkrbn_services_unregister_core_agents(void) {
 
 void libkrbn_services_restart_console_user_server_agent(void) {
   krbn::services_utility::restart_console_user_server_agent();
+}
+
+void libkrbn_services_bootout_old_agents(void) {
+  krbn::services_utility::bootout_old_agents();
 }
 
 void libkrbn_launch_event_viewer(void) {
