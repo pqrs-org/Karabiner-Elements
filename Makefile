@@ -16,7 +16,6 @@ clean:
 	$(MAKE) -C tests clean
 	rm -rf pkgroot
 	rm -f *.dmg
-	$(MAKE) clean-launch-services-database
 
 clean-launch-services-database:
 	$(MAKE) -C tools/clean-launch-services-database
@@ -24,7 +23,6 @@ clean-launch-services-database:
 gitclean:
 	git clean -f -x -d
 	(cd src/vendor/Karabiner-DriverKit-VirtualHIDDevice && git clean -f -x -d)
-	$(MAKE) clean-launch-services-database
 
 notarize:
 	xcrun notarytool \
