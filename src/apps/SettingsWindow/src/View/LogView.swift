@@ -14,7 +14,7 @@ struct LogView: View {
                 .font(.custom("Menlo", size: 11.0))
                 .foregroundColor(e.foregroundColor)
                 .background(e.backgroundColor)
-                .macOS12EnableTextSelection()
+                .textSelection(.enabled)
             }
             Spacer()
           }
