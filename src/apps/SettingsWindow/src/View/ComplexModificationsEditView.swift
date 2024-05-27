@@ -46,7 +46,7 @@ struct ComplexModificationsEditView: View {
                       .buttonLabelStyle()
                   }
                 )
-                .prominentButtonStyle()
+                .buttonStyle(BorderedProminentButtonStyle())
               }
             }
 

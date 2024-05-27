@@ -42,7 +42,7 @@ struct ProfileEditView: View {
                     .buttonLabelStyle()
                 }
               )
-              .prominentButtonStyle()
+              .buttonStyle(BorderedProminentButtonStyle())
 
               Spacer()
             }

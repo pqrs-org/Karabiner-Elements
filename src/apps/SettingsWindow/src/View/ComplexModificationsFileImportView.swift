@@ -65,7 +65,7 @@ struct ComplexModificationsFileImportView: View {
               .buttonLabelStyle()
           }
         )
-        .prominentButtonStyle()
+        .buttonStyle(BorderedProminentButtonStyle())
         .disabled(complexModificationsFileImport.jsonData == nil)
 
         Spacer()
