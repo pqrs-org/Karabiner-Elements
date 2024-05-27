@@ -3,6 +3,7 @@ import SwiftUI
 // `.tint` and `.role` are available since macOS 12.0, so we cannot use it in order to support macOS 11.0.
 
 extension Button {
+  // `role: .destructive` does not change the button color, so change the button color explicitly.
   func deleteButtonStyle() -> some View {
     // Do not put padding here.
     // The padding area ignores click.

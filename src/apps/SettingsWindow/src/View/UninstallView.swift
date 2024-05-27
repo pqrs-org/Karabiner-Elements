@@ -7,6 +7,7 @@ struct UninstallView: View {
         VStack(alignment: .leading, spacing: 12.0) {
           HStack {
             Button(
+              role: .destructive,
               action: {
                 libkrbn_launch_uninstaller()
 

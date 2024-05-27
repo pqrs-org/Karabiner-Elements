@@ -66,6 +66,7 @@ struct MiscView: View {
 
           if settings.systemDefaultProfileExists {
             Button(
+              role: .destructive,
               action: {
                 settings.removeSystemDefaultProfile()
               },

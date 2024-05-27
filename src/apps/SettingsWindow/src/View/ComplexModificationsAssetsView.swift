@@ -91,11 +91,12 @@ struct ComplexModificationsAssetsView: View {
 
                     if assetFile.userFile {
                       Button(
+                        role: .destructive,
                         action: {
                           assetFiles.removeFile(assetFile)
                         },
                         label: {
-                          Image(systemName: "trash.fill")
+                          Image(systemName: "trash")
                             .buttonLabelStyle()
                         }
                       )

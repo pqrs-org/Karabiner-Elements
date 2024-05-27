@@ -91,11 +91,12 @@ struct ComplexModificationsView: View {
               })
 
             Button(
+              role: .destructive,
               action: {
                 settings.removeComplexModificationsRule(complexModificationRule)
               },
               label: {
-                Image(systemName: "trash.fill")
+                Image(systemName: "trash")
                   .buttonLabelStyle()
               }
             )

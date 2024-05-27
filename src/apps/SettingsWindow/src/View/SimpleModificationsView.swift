@@ -77,13 +77,14 @@ struct SimpleModificationsView: View {
               .padding(.trailing, 24.0)
 
               Button(
+                role: .destructive,
                 action: {
                   LibKrbn.Settings.shared.removeSimpleModification(
                     index: simpleModification.index,
                     device: selectedDevice)
                 },
                 label: {
-                  Image(systemName: "trash.fill")
+                  Image(systemName: "trash")
                     .buttonLabelStyle()
                 }
               )

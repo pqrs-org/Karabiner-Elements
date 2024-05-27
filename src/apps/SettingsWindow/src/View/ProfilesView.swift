@@ -96,11 +96,12 @@ struct ProfilesView: View {
 
               if !profile.selected {
                 Button(
+                  role: .destructive,
                   action: {
                     settings.removeProfile(profile)
                   },
                   label: {
-                    Image(systemName: "trash.fill")
+                    Image(systemName: "trash")
                       .buttonLabelStyle()
                   }
                 )
