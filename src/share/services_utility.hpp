@@ -84,5 +84,16 @@ inline void bootout_old_agents(void) {
   }
 }
 
+//
+// Utilities
+//
+
+inline bool grabber_daemon_running(void) {
+  auto pid = pqrs::osx::launchctl::get_pid(pqrs::dispatcher::extra::get_shared_dispatcher(),
+                                           pqrs::osx::launchctl::make_system_domain_target(),
+                                           pqrs::osx::launchctl::service_name("org.pqrs.service.daemon.karabiner_grabber"));
+  return pid != std::nullopt;
+}
+
 } // namespace services_utility
 } // namespace krbn

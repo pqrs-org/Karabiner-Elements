@@ -142,12 +142,16 @@ void libkrbn_services_unregister_core_agents(void) {
   krbn::services_utility::unregister_core_agents();
 }
 
+void libkrbn_services_bootout_old_agents(void) {
+  krbn::services_utility::bootout_old_agents();
+}
+
 void libkrbn_services_restart_console_user_server_agent(void) {
   krbn::services_utility::restart_console_user_server_agent();
 }
 
-void libkrbn_services_bootout_old_agents(void) {
-  krbn::services_utility::bootout_old_agents();
+bool libkrbn_services_grabber_daemon_running(void) {
+  return krbn::services_utility::grabber_daemon_running();
 }
 
 void libkrbn_launch_event_viewer(void) {
