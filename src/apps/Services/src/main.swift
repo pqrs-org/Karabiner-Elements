@@ -59,7 +59,7 @@ RunLoop.main.perform {
     SMAppService.daemon(
       plistName: "org.pqrs.service.daemon.Karabiner-VirtualHIDDevice-Daemon.plist"),
     SMAppService.daemon(
-      plistName: "org.pqrs.service.daemon.karabiner.karabiner_grabber.plist"),
+      plistName: "org.pqrs.service.daemon.karabiner_grabber.plist"),
   ]
 
   let coreAgents: [SMAppService] = [

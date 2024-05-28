@@ -3,7 +3,7 @@
 <plist version="1.0">
   <dict>
     <key>Label</key>
-    <string>org.pqrs.service.daemon.karabiner.karabiner_grabber</string>
+    <string>org.pqrs.service.daemon.karabiner_grabber</string>
     <key>KeepAlive</key>
     <true/>
     <key>ProcessType</key>
