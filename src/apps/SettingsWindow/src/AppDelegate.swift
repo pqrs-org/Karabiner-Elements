@@ -60,6 +60,7 @@ public class AppDelegate: NSObject, NSApplicationDelegate {
     LibKrbn.ConnectedDevices.shared.watch()
     LibKrbn.GrabberClient.shared.start()
     LibKrbn.Settings.shared.watch()
+    ServicesMonitor.shared.start()
     StateJsonMonitor.shared.start()
     SystemPreferences.shared.start()
 
