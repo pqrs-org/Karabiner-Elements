@@ -13,6 +13,8 @@ public class ServicesMonitor {
       ContentViewStates.shared.showServicesNotRunningAlert =
         !libkrbn_services_grabber_daemon_running()
     }
+
+    timer?.fire()
   }
 
   public func stop() {
