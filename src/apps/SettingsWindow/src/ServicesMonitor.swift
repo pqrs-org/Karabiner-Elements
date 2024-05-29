@@ -10,8 +10,17 @@ public class ServicesMonitor {
       withTimeInterval: 3.0,
       repeats: true
     ) { (_: Timer) in
-      ContentViewStates.shared.showServicesNotRunningAlert =
-        !libkrbn_services_grabber_daemon_running()
+      let servicesRunning = libkrbn_services_grabber_daemon_running()
+
+      ContentViewStates.shared.showServicesNotRunningAlert = !servicesRunning
+
+      if !servicesRunning {
+        // For approved services, once they are disabled from System Settings > General > Login Items,
+        // re-enabling them will not automatically start the service, and it is necessary to call SMAppService.register again.
+        // Therefore, if the service is not running, periodically register daemons and agents to restart them after enabled.
+        libkrbn_services_register_core_daemons()
+        libkrbn_services_register_core_agents()
+      }
     }
 
     timer?.fire()
