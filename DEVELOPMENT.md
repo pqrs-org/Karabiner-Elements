@@ -348,3 +348,73 @@ Example:
     -   `hid::usage::keyboard_or_keypad::keyboard_caps_lock` is sent via virtual hid keyboard by sticky_modifier.
     -   sticky_modifiers are erased.
     -   `tab` is sent via virtual hid keyboard.
+
+--
+
+## macOS Service Management
+
+The elements related to managing services on macOS are as follows:
+
+-   `SMAppService`:
+    -   Register `LaunchDaemons/*.plist` and `LaunchAgents/*.plist`.
+-   `launchd`:
+    -   Starts processes according to the contents of plist files.
+-   `sfltool`:
+    -   A command to reset approval settings for LaunchDaemons.
+
+There are two types of background processes: `daemon` and `agent`. Their characteristics are as follows:
+
+-   `daemon`:
+    -   Runs with root privileges.
+    -   Executes with the startup of macOS, even before the user logs in.
+    -   After the plist is registered by `SMAppService`, it is executed only after being approved by the user from `System Settings > General > Login Items`.
+-   `agent`:
+    -   Runs with user privileges.
+    -   Executes when the user logs in.
+    -   Executes as soon as the plist is registered by `SMAppService`.
+
+The behavior of agents is straightforward, and they operate as expected.
+However, daemons require user approval, which can easily lead to configuration inconsistencies on macOS.
+Specifically, the following issues occur on macOS 13:
+
+-   The daemon does not automatically start after user approval if the following steps are taken:
+    -   Reproduction steps:
+        1.  Register a daemon using `SMAppService.register`.
+        2.  Approve the daemon in System Settings > General > Login Items.
+        3.  Revoke the approval.
+        4.  Restart macOS.
+        5.  Re-approve the daemon.
+    -   Workaround:
+        -   After re-approving the daemon, register it using `SMAppService.register` to start the daemon.
+        -   Alternatively, restarting macOS also resolves the issue.
+-   The following steps can lead to various issues:
+    -   Reproduction steps:
+        1.  Register a daemon using `SMAppService.register`.
+        2.  Approve the daemon in System Settings > General > Login Items.
+        3.  Reset the Login Items settings with `sfltool resetbtm`.
+        4.  Restart macOS.
+        5.  Register the daemon with SMAppService.register.
+            -   Problem #1: Although the user has not approved the daemon, it appears as if it is approved in System Settings > General > Login Items.
+                The status of SMAppService correctly shows requiresApproval.
+                This is a problem with the System Settings UI.
+            -   Problem #2: In this state, even if the user re-approves the daemon, it will not start.
+                Restarting macOS will not start the daemon either.
+                To get it running, you need to call `SMAppService.unregister` once before `SMAppService.register`.
+
+To avoid these issues, the application should adhere to the following:
+
+-   To avoid an issue after `sfltool resetbtm`, if the status of SMAppService is `.notFound`, call `unregister` before calling `register`.
+-   To avoid an issue of the daemon not starting, periodically check if the daemon is running using `launchctl print` command.
+    If the process is not running, call `SMAppService.register` to start the daemon.
+-   To avoid an issue with the System Settings UI, prompt the user to approve the daemon if it is not running.
+    Inform them that it may already appear as approved and, if it does not work correctly, guide them to revoke and re-approve the daemon.
+
+### How to check if a process is running using `launchctl print`
+
+First, run the following command:
+
+```shell
+launchctl print system/org.pqrs.service.daemon.karabiner_grabber
+```
+
+If the output includes a line like `pid = 658`, this indicates the process ID, and the daemon is running if such a line is present.
