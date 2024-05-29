@@ -6,7 +6,7 @@ struct ServicesNotRunningAlertView: View {
     ZStack(alignment: .topLeading) {
       VStack(alignment: .center, spacing: 20.0) {
         Label(
-          "The background service is not running. Please enable it.",
+          "The background services are not running. Please enable them.",
           systemImage: "exclamationmark.triangle"
         )
         .font(.system(size: 24))
@@ -14,7 +14,7 @@ struct ServicesNotRunningAlertView: View {
         GroupBox {
           VStack(alignment: .center, spacing: 12.0) {
             VStack(alignment: .center, spacing: 0.0) {
-              Text("To use Karabiner-Elements, you need to run the background service.")
+              Text("To use Karabiner-Elements, you need to run the background services.")
               Text(
                 "Please enable Karabiner-Elements-Services from System Settings > General > Login Items."
               )
