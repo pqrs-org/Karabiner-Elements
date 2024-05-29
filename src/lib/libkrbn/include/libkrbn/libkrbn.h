@@ -50,7 +50,6 @@ void libkrbn_services_restart_console_user_server_agent(void);
 bool libkrbn_services_grabber_daemon_running(void);
 
 void libkrbn_launch_event_viewer(void);
-void libkrbn_launch_menu(void);
 void libkrbn_launch_settings(void);
 void libkrbn_launch_multitouch_extension(void);
 void libkrbn_launch_uninstaller(void);

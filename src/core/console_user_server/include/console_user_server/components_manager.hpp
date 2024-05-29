@@ -9,7 +9,6 @@
 #include "filesystem_utility.hpp"
 #include "grabber_client.hpp"
 #include "logger.hpp"
-#include "menu_process_manager.hpp"
 #include "monitor/configuration_monitor.hpp"
 #include "monitor/version_monitor.hpp"
 #include "services_utility.hpp"
@@ -211,6 +210,21 @@ private:
                                                                      geteuid());
     configuration_monitor_->core_configuration_updated.connect([](auto&& weak_core_configuration) {
       if (auto c = weak_core_configuration.lock()) {
+        //
+        // menu
+        //
+
+        if (c->get_global_configuration().get_show_in_menu_bar() ||
+            c->get_global_configuration().get_show_profile_name_in_menu_bar()) {
+          services_utility::register_menu_agent();
+        } else {
+          services_utility::unregister_menu_agent();
+        }
+
+        //
+        // notification_window
+        //
+
         if (c->get_global_configuration().get_enable_notification_window()) {
           services_utility::register_notification_window_agent();
         } else {
@@ -218,10 +232,6 @@ private:
         }
       }
     });
-
-    // menu_process_manager_
-
-    menu_process_manager_ = std::make_unique<menu_process_manager>(configuration_monitor_);
 
     // Run MultitouchExtension
 
@@ -294,7 +304,6 @@ private:
   }
 
   void stop_child_components(void) {
-    menu_process_manager_ = nullptr;
     updater_process_manager_ = nullptr;
     system_preferences_monitor_ = nullptr;
     frontmost_application_monitor_ = nullptr;
@@ -317,7 +326,6 @@ private:
   // Child components
 
   std::shared_ptr<configuration_monitor> configuration_monitor_;
-  std::unique_ptr<menu_process_manager> menu_process_manager_;
   std::unique_ptr<updater_process_manager> updater_process_manager_;
   std::unique_ptr<pqrs::osx::system_preferences_monitor> system_preferences_monitor_;
   // `frontmost_application_monitor` does not work properly in karabiner_grabber after fast user switching.

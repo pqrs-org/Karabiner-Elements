@@ -48,6 +48,22 @@ inline void restart_console_user_server_agent(void) {
 }
 
 //
+// menu_agent
+//
+
+inline void register_menu_agent(void) {
+  system(fmt::format("'{0}' register-menu-agent",
+                     constants::karabiner_elements_services_path)
+             .c_str());
+}
+
+inline void unregister_menu_agent(void) {
+  system(fmt::format("'{0}' unregister-menu-agent",
+                     constants::karabiner_elements_services_path)
+             .c_str());
+}
+
+//
 // notification_window_agent
 //
 

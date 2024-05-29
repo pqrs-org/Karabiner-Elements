@@ -634,7 +634,6 @@ extension LibKrbn {
             showIconInMenuBar
           )
           save()
-          libkrbn_launch_menu()
         }
       }
     }
@@ -646,7 +645,6 @@ extension LibKrbn {
             showProfileNameInMenuBar
           )
           save()
-          libkrbn_launch_menu()
         }
       }
     }

@@ -8,6 +8,9 @@ enum Subcommand: String {
   case registerCoreAgents = "register-core-agents"
   case unregisterCoreAgents = "unregister-core-agents"
 
+  case registerMenuAgent = "register-menu-agent"
+  case unregisterMenuAgent = "unregister-menu-agent"
+
   case registerNotificationWindowAgent = "register-notification-window-agent"
   case unregisterNotificationWindowAgent = "unregister-notification-window-agent"
 
@@ -71,6 +74,9 @@ RunLoop.main.perform {
       plistName: "org.pqrs.service.agent.karabiner_session_monitor.plist"),
   ]
 
+  let menuAgentService = SMAppService.agent(
+    plistName: "org.pqrs.service.agent.Karabiner-Menu.plist")
+
   let notificationWindowAgentService = SMAppService.agent(
     plistName: "org.pqrs.service.agent.Karabiner-NotificationWindow.plist")
 
@@ -81,6 +87,7 @@ RunLoop.main.perform {
   for s in coreAgents {
     allServices.append(s)
   }
+  allServices.append(menuAgentService)
   allServices.append(notificationWindowAgentService)
 
   if CommandLine.arguments.count > 1 {
@@ -109,6 +116,14 @@ RunLoop.main.perform {
       for s in coreAgents {
         unregisterService(s)
       }
+      exit(0)
+
+    case .registerMenuAgent:
+      registerService(menuAgentService)
+      exit(0)
+
+    case .unregisterMenuAgent:
+      unregisterService(menuAgentService)
       exit(0)
 
     case .registerNotificationWindowAgent:
@@ -153,6 +168,9 @@ RunLoop.main.perform {
 
   print("    \(Subcommand.registerCoreAgents.rawValue)")
   print("    \(Subcommand.unregisterCoreAgents.rawValue)")
+
+  print("    \(Subcommand.registerMenuAgent.rawValue)")
+  print("    \(Subcommand.unregisterMenuAgent.rawValue)")
 
   print("    \(Subcommand.registerNotificationWindowAgent.rawValue)")
   print("    \(Subcommand.unregisterNotificationWindowAgent.rawValue)")

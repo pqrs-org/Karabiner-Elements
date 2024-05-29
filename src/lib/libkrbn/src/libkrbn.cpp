@@ -158,10 +158,6 @@ void libkrbn_launch_event_viewer(void) {
   krbn::application_launcher::launch_event_viewer();
 }
 
-void libkrbn_launch_menu(void) {
-  krbn::application_launcher::launch_menu();
-}
-
 void libkrbn_launch_settings(void) {
   krbn::application_launcher::launch_settings();
 }
