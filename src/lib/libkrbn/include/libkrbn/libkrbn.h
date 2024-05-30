@@ -44,9 +44,9 @@ void libkrbn_unlock_single_application(void);
 
 void libkrbn_services_register_core_daemons(void);
 void libkrbn_services_register_core_agents(void);
-void libkrbn_services_unregister_core_agents(void);
 void libkrbn_services_bootout_old_agents(void);
 void libkrbn_services_restart_console_user_server_agent(void);
+void libkrbn_services_unregister_all_agents(void);
 bool libkrbn_services_grabber_daemon_running(void);
 
 void libkrbn_launch_event_viewer(void);

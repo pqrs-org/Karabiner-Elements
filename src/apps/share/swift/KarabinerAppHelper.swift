@@ -72,7 +72,7 @@ final class KarabinerAppHelper: NSObject {
         quitKarabiner(askForConfirmation: false)
       }
     } else {
-      libkrbn_services_unregister_core_agents()
+      libkrbn_services_unregister_all_agents()
     }
   }
 }

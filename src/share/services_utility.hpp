@@ -104,6 +104,12 @@ inline void bootout_old_agents(void) {
 // Utilities
 //
 
+inline void unregister_all_agents(void) {
+  unregister_core_agents();
+  unregister_menu_agent();
+  unregister_notification_window_agent();
+}
+
 inline bool grabber_daemon_running(void) {
   auto pid = pqrs::osx::launchctl::get_pid(pqrs::dispatcher::extra::get_shared_dispatcher(),
                                            pqrs::osx::launchctl::make_system_domain_target(),
