@@ -4,6 +4,13 @@
 
 -   💥 Breaking changes
     -   macOS 11 and macOS 12 are no longer supported.
+    -   The background service management method has been changed to a new method compatible with macOS 13 and later.
+        Therefore, permission needs to be granted for the background service to run. Please follow the steps below.
+        -   Open Karabiner-Elements Settings.
+        -   Follow the instructions to allow Karabiner-Elements-Services to run in the System Settings.
+            <br/><br/>
+            <img src="https://karabiner-elements.pqrs.org/docs/releasenotes/images/v15.0.0/settings.png" alt="Karabiner-Elements Setttings" />
+            <br/><br/>
 -   ✨ New Features
     -   Added the ability to duplicate and reorder profiles.
     -   Added the ability to restart Karabiner-Elements from the menu.
