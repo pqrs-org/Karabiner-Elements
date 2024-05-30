@@ -349,7 +349,7 @@ Example:
     -   sticky_modifiers are erased.
     -   `tab` is sent via virtual hid keyboard.
 
---
+---
 
 ## macOS Service Management
 
