@@ -16,6 +16,7 @@ chmod 4755 '/Library/Application Support/org.pqrs/Karabiner-Elements/bin/karabin
 killall karabiner_grabber
 killall karabiner_session_monitor
 killall karabiner_console_user_server
+killall Karabiner-Menu
 killall Karabiner-NotificationWindow
 
 #
