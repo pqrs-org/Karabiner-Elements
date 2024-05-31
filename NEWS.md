@@ -9,8 +9,9 @@
         -   Open Karabiner-Elements Settings.
         -   Follow the instructions to allow Karabiner-Elements-Services to run in the System Settings.
             <br/><br/>
-            <img src="https://karabiner-elements.pqrs.org/docs/releasenotes/images/v15.0.0/settings.png" alt="Karabiner-Elements Setttings" />
-            <br/><br/>
+            <table><tbody><tr><td><!-- border hack -->
+                <img src="https://karabiner-elements.pqrs.org/docs/releasenotes/images/v15.0.0/settings.png" alt="Karabiner-Elements Setttings" />
+            </td></tr></tbody></table>
 -   ✨ New Features
     -   Added the ability to duplicate and reorder profiles.
     -   Added the ability to restart Karabiner-Elements from the menu.
