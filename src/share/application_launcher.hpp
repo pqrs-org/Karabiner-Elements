@@ -20,6 +20,10 @@ public:
     system("open '/Applications/Karabiner-Elements.app'");
   }
 
+  static void killall_settings(void) {
+    system("killall Karabiner-Elements");
+  }
+
   static void launch_multitouch_extension(bool as_start_at_login) {
     //
     // Kill an existing process

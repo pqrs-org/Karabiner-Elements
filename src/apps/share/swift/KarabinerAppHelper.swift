@@ -5,49 +5,12 @@ private func versionUpdatedCallbackRelaunch() {
   Relauncher.relaunch()
 }
 
-private func versionUpdatedCallbackTerminate() {
-  NSApplication.shared.terminate(nil)
-}
-
-final class KarabinerAppHelper: NSObject {
+final class KarabinerAppHelper {
   public static let shared = KarabinerAppHelper()
 
   func observeVersionUpdated() {
-    observeVersionUpdated(relaunch: true)
-  }
-
-  func observeVersionUpdated(relaunch: Bool) {
     libkrbn_enable_version_monitor()
-    if relaunch {
-      libkrbn_register_version_updated_callback(versionUpdatedCallbackRelaunch)
-    } else {
-      libkrbn_register_version_updated_callback(versionUpdatedCallbackTerminate)
-    }
-  }
-
-  func observeConsoleUserServerIsDisabledNotification() {
-    var buffer = [Int8](repeating: 0, count: 32 * 1024)
-
-    libkrbn_get_distributed_notification_console_user_server_is_disabled(&buffer, buffer.count)
-    let name = String(cString: buffer)
-
-    libkrbn_get_distributed_notification_observed_object(&buffer, buffer.count)
-    let object = String(cString: buffer)
-
-    DistributedNotificationCenter.default().addObserver(
-      self,
-      selector: #selector(consoleUserServerIsDisabledCallback),
-      name: Notification.Name(name),
-      object: object,
-      suspensionBehavior: .deliverImmediately)
-  }
-
-  @objc
-  private func consoleUserServerIsDisabledCallback() {
-    Task { @MainActor in
-      print("console_user_server is disabled")
-      NSApplication.shared.terminate(self)
-    }
+    libkrbn_register_version_updated_callback(versionUpdatedCallbackRelaunch)
   }
 
   func endAllAttachedSheets(_ window: NSWindow) {
@@ -73,6 +36,7 @@ final class KarabinerAppHelper: NSObject {
       }
     } else {
       libkrbn_services_unregister_all_agents()
+      libkrbn_killall_settings()
     }
   }
 }

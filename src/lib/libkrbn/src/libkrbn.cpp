@@ -63,16 +63,6 @@ void libkrbn_enqueue_callback(void (*callback)(void)) {
   }
 }
 
-void libkrbn_get_distributed_notification_observed_object(char* buffer,
-                                                          size_t length) {
-  strlcpy(buffer, krbn::constants::get_distributed_notification_observed_object(), length);
-}
-
-void libkrbn_get_distributed_notification_console_user_server_is_disabled(char* buffer,
-                                                                          size_t length) {
-  strlcpy(buffer, krbn::constants::get_distributed_notification_console_user_server_is_disabled(), length);
-}
-
 void libkrbn_get_user_configuration_directory(char* buffer,
                                               size_t length) {
   strlcpy(buffer, krbn::constants::get_user_configuration_directory().c_str(), length);
@@ -160,6 +150,10 @@ void libkrbn_launch_event_viewer(void) {
 
 void libkrbn_launch_settings(void) {
   krbn::application_launcher::launch_settings();
+}
+
+void libkrbn_killall_settings(void) {
+  krbn::application_launcher::killall_settings();
 }
 
 void libkrbn_launch_multitouch_extension(void) {

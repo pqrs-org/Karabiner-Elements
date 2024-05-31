@@ -7,9 +7,6 @@ public class AppDelegate: NSObject, NSApplicationDelegate {
 
     libkrbn_initialize()
 
-    // There is no need for Karabiner-NotificationWindow to relaunch itself, as it is restarted by launchd.
-    KarabinerAppHelper.shared.observeVersionUpdated(relaunch: false)
-
     NotificationWindowManager.shared.start()
   }
 

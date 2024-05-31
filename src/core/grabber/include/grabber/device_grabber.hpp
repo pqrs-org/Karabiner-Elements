@@ -1,6 +1,5 @@
 #pragma once
 
-#include "apple_notification_center.hpp"
 #include "chrono_utility.hpp"
 #include "components_manager_killer.hpp"
 #include "constants.hpp"

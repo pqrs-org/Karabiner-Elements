@@ -26,10 +26,6 @@ void libkrbn_terminate(void);
 
 void libkrbn_enqueue_callback(void (*callback)(void));
 
-void libkrbn_get_distributed_notification_observed_object(char* buffer,
-                                                          size_t length);
-void libkrbn_get_distributed_notification_console_user_server_is_disabled(char* buffer,
-                                                                          size_t length);
 void libkrbn_get_user_configuration_directory(char* buffer,
                                               size_t length);
 void libkrbn_get_user_complex_modifications_assets_directory(char* buffer,
@@ -51,6 +47,7 @@ bool libkrbn_services_grabber_daemon_running(void);
 
 void libkrbn_launch_event_viewer(void);
 void libkrbn_launch_settings(void);
+void libkrbn_killall_settings(void);
 void libkrbn_launch_multitouch_extension(void);
 void libkrbn_launch_uninstaller(void);
 

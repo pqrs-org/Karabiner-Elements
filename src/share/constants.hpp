@@ -252,14 +252,6 @@ public:
     return directory;
   }
 
-  static const char* get_distributed_notification_observed_object(void) {
-    return "org.pqrs.karabiner";
-  }
-
-  static const char* get_distributed_notification_console_user_server_is_disabled(void) {
-    return "console_user_server_is_disabled";
-  }
-
   static const size_t get_local_datagram_buffer_size(void) {
     return 32 * 1024;
   }

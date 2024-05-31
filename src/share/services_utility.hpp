@@ -1,6 +1,5 @@
 #pragma once
 
-#include "apple_notification_center.hpp"
 #include "constants.hpp"
 
 namespace krbn {
