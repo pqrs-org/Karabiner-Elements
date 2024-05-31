@@ -37,7 +37,7 @@ inline void unregister_core_agents(void) {
 
 inline void restart_console_user_server_agent(void) {
   auto domain_target = pqrs::osx::launchctl::make_gui_domain_target();
-  auto service_name = constants::get_console_user_server_agent_service_name();
+  auto service_name = pqrs::osx::launchctl::service_name("org.pqrs.service.agent.karabiner_console_user_server");
 
   auto flags = pqrs::osx::launchctl::kickstart_flags::kill |
                pqrs::osx::launchctl::kickstart_flags::background;

@@ -255,9 +255,5 @@ public:
   static const size_t get_local_datagram_buffer_size(void) {
     return 32 * 1024;
   }
-
-  static pqrs::osx::launchctl::service_name get_console_user_server_agent_service_name(void) {
-    return pqrs::osx::launchctl::service_name("org.pqrs.service.agent.karabiner_console_user_server");
-  }
 };
 } // namespace krbn
