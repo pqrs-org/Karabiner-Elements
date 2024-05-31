@@ -3,8 +3,8 @@ import Foundation
 final class UserSettings: ObservableObject {
   static let shared = UserSettings()
 
-  @UserDefault("kStartAtLogin", defaultValue: false)
-  var openAtLogin: Bool {
+  @UserDefault("initialOpenAtLoginRegistered", defaultValue: false)
+  var initialOpenAtLoginRegistered: Bool {
     willSet {
       objectWillChange.send()
     }

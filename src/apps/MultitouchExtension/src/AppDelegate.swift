@@ -16,6 +16,17 @@ public class AppDelegate: NSObject, NSApplicationDelegate {
     NSApplication.shared.disableRelaunchOnLogin()
 
     //
+    // Register OpenAtLogin
+    //
+
+    if !OpenAtLogin.shared.developmentBinary {
+      if !UserSettings.shared.initialOpenAtLoginRegistered {
+        OpenAtLogin.shared.update(register: true)
+        UserSettings.shared.initialOpenAtLoginRegistered = true
+      }
+    }
+
+    //
     // Handle kHideIconInDock
     //
 
@@ -23,16 +34,6 @@ public class AppDelegate: NSObject, NSApplicationDelegate {
       var psn = ProcessSerialNumber(highLongOfPSN: 0, lowLongOfPSN: UInt32(kCurrentProcess))
       TransformProcessType(
         &psn, ProcessApplicationTransformState(kProcessTransformToForegroundApplication))
-    }
-
-    //
-    // Handle --start-at-login
-    //
-
-    if CommandLine.arguments.contains("--start-at-login") {
-      if !UserSettings.shared.openAtLogin {
-        NSApplication.shared.terminate(self)
-      }
     }
 
     //
