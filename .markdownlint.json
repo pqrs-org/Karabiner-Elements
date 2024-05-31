@@ -10,7 +10,7 @@
         "ol_multi": 2
     },
     "MD033": {
-        "allowed_elements": ["br", "img"]
+        "allowed_elements": ["br", "img", "table", "tbody", "tr", "td"]
     },
     "MD041": false
 }
