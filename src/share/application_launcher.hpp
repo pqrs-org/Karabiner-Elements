@@ -24,35 +24,8 @@ public:
     system("killall Karabiner-Elements");
   }
 
-  static void launch_multitouch_extension(bool as_start_at_login) {
-    //
-    // Kill an existing process
-    //
-
-    if (as_start_at_login) {
-      system("killall Karabiner-MultitouchExtension");
-    }
-
-    //
-    // Launch process
-    //
-
-    std::stringstream command;
-    command << "open ";
-
-    if (as_start_at_login) {
-      command << " -n ";
-    }
-
-    command << "'/Library/Application Support/org.pqrs/Karabiner-Elements/Karabiner-MultitouchExtension.app'";
-
-    if (as_start_at_login) {
-      command << " --args --start-at-login";
-    } else {
-      command << " --args --show-ui";
-    }
-
-    system(command.str().c_str());
+  static void launch_multitouch_extension(void) {
+    system("open '/Library/Application Support/org.pqrs/Karabiner-Elements/Karabiner-MultitouchExtension.app' --args --show-ui");
   }
 
   static void launch_uninstaller(void) {

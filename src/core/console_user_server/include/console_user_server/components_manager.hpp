@@ -233,10 +233,6 @@ private:
       }
     });
 
-    // Run MultitouchExtension
-
-    application_launcher::launch_multitouch_extension(true);
-
     // updater_process_manager_
 
     updater_process_manager_ = std::make_unique<updater_process_manager>(configuration_monitor_);
