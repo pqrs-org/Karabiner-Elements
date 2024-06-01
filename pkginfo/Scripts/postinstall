@@ -4,6 +4,15 @@ PATH=/bin:/sbin:/usr/bin:/usr/sbin
 export PATH
 
 #
+# Create karabiner_machine_identifier
+#
+
+if [ ! -f '/Library/Application Support/org.pqrs/tmp/karabiner_machine_identifier.json' ]; then
+    echo "{\"karabiner_machine_identifier\":\"krbn-$(uuidgen | tr '[:upper:]' '[:lower:]')\"}" |
+        tee '/Library/Application Support/org.pqrs/tmp/karabiner_machine_identifier.json'
+fi
+
+#
 # Set suid
 #
 
