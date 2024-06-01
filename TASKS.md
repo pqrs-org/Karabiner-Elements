@@ -1,7 +1,5 @@
 # Tasks
 
--   [ ] Update launch daemons and agents with dropping macOS 12 support.
-    -   <https://developer.apple.com/documentation/servicemanagement/updating_helper_executables_from_earlier_versions_of_macos>
 -   [ ] Add disable scroll wheel feature.
 -   [ ] Add scroll wheel to source events.
 -   [ ] Add mouse movement to source events.
@@ -10,6 +8,8 @@
 
 ## Done
 
+-   [x] Update launch daemons and agents with dropping macOS 12 support.
+    -   <https://developer.apple.com/documentation/servicemanagement/updating_helper_executables_from_earlier_versions_of_macos>
 -   [x] Support sticky keys without lock
         <https://github.com/pqrs-org/Karabiner-Elements/issues/477>
 -   [x] Migrate Catch2 to boost-ext/ut.
