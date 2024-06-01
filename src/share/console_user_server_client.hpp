@@ -40,7 +40,7 @@ public:
       client_ = std::make_unique<pqrs::local_datagram::client>(weak_dispatcher_,
                                                                endpoint_path,
                                                                std::nullopt,
-                                                               constants::get_local_datagram_buffer_size());
+                                                               constants::local_datagram_buffer_size);
       client_->set_server_check_interval(std::chrono::milliseconds(3000));
       client_->set_next_heartbeat_deadline(std::chrono::milliseconds(10000));
       client_->set_client_socket_check_interval(std::chrono::milliseconds(3000));

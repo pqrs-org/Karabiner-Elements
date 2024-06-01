@@ -14,6 +14,7 @@ namespace krbn {
 class constants final {
 public:
   static constexpr const char* karabiner_elements_services_path = "/Library/Application Support/org.pqrs/Karabiner-Elements/Karabiner-Elements-Services.app/Contents/MacOS/Karabiner-Elements-Services";
+  static constexpr size_t local_datagram_buffer_size = 32 * 1024;
 
   static const std::filesystem::path& get_version_file_path(void) {
     static auto path = std::filesystem::path("/Library/Application Support/org.pqrs/Karabiner-Elements/version");
@@ -250,10 +251,6 @@ public:
     }
 
     return directory;
-  }
-
-  static const size_t get_local_datagram_buffer_size(void) {
-    return 32 * 1024;
   }
 };
 } // namespace krbn

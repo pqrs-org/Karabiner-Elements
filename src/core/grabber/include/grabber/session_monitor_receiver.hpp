@@ -33,7 +33,7 @@ public:
 
     server_ = std::make_unique<pqrs::local_datagram::server>(weak_dispatcher_,
                                                              socket_directory_path / filesystem_utility::make_socket_file_basename(),
-                                                             constants::get_local_datagram_buffer_size());
+                                                             constants::local_datagram_buffer_size);
     server_->set_server_check_interval(std::chrono::milliseconds(3000));
     server_->set_reconnect_interval(std::chrono::milliseconds(1000));
 
@@ -126,7 +126,7 @@ private:
       auto client = std::make_shared<pqrs::local_datagram::client>(weak_dispatcher_,
                                                                    endpoint_path,
                                                                    std::nullopt,
-                                                                   constants::get_local_datagram_buffer_size());
+                                                                   constants::local_datagram_buffer_size);
       session_monitor_clients_[uid] = client;
 
       client->set_server_check_interval(std::chrono::milliseconds(3000));
