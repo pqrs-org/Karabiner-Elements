@@ -63,6 +63,22 @@ inline void unregister_menu_agent(void) {
 }
 
 //
+// multitouch_extension_agent
+//
+
+inline void register_multitouch_extension_agent(void) {
+  system(fmt::format("'{0}' register-multitouch-extension-agent",
+                     constants::karabiner_elements_services_path)
+             .c_str());
+}
+
+inline void unregister_multitouch_extension_agent(void) {
+  system(fmt::format("'{0}' unregister-multitouch-extension-agen",
+                     constants::karabiner_elements_services_path)
+             .c_str());
+}
+
+//
 // notification_window_agent
 //
 
@@ -106,6 +122,7 @@ inline void bootout_old_agents(void) {
 inline void unregister_all_agents(void) {
   unregister_core_agents();
   unregister_menu_agent();
+  unregister_multitouch_extension_agent();
   unregister_notification_window_agent();
 }
 

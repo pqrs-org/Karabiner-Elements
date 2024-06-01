@@ -70,7 +70,7 @@ public:
     return json;
   }
 
-  entry& get_entry(const karabiner_machine_identifier& identifier) {
+  entry& get_entry(const karabiner_machine_identifier& identifier = constants::get_karabiner_machine_identifier()) {
     if (!entries_.contains(identifier)) {
       entries_[identifier] = std::make_unique<entry>(nlohmann::json::object());
     }

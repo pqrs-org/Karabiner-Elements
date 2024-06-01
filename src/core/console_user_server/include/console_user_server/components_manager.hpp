@@ -222,6 +222,16 @@ private:
         }
 
         //
+        // multitouch_extension
+        //
+
+        if (c->get_machine_specific().get_entry().get_enable_multitouch_extension()) {
+          services_utility::register_multitouch_extension_agent();
+        } else {
+          services_utility::unregister_multitouch_extension_agent();
+        }
+
+        //
         // notification_window
         //
 
