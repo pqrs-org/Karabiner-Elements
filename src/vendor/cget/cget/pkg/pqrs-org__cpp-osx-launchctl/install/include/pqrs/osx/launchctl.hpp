@@ -1,6 +1,6 @@
 #pragma once
 
-// pqrs::osx::launchctl v3.2
+// pqrs::osx::launchctl v4.0
 
 // (C) Copyright Takayama Fumihiko 2019.
 // Distributed under the Boost Software License, Version 1.0.
@@ -82,9 +82,9 @@ inline void kickstart(const domain_target& domain_target,
   system(command.c_str());
 }
 
-inline std::optional<pid_t> get_pid(std::weak_ptr<dispatcher::dispatcher> weak_dispatcher,
-                                    const domain_target& domain_target,
-                                    const service_name& service_name) {
+inline std::optional<pid_t> find_pid(std::weak_ptr<dispatcher::dispatcher> weak_dispatcher,
+                                     const domain_target& domain_target,
+                                     const service_name& service_name) {
   auto service_target = make_service_target(domain_target, service_name);
 
   auto wait = pqrs::make_thread_wait();
