@@ -8,10 +8,15 @@ import AppKit
 public class AppDelegate: NSObject, NSApplicationDelegate {
   private var activity: NSObjectProtocol?
 
+  override public init() {
+    super.init()
+    libkrbn_initialize()
+  }
+
   public func applicationDidFinishLaunching(_: Notification) {
     ProcessInfo.processInfo.enableSuddenTermination()
 
-    libkrbn_initialize()
+    KarabinerAppHelper.shared.observeVersionUpdated()
 
     NSApplication.shared.disableRelaunchOnLogin()
 
