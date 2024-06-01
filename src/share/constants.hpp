@@ -1,5 +1,8 @@
 #pragma once
 
+#include "json_utility.hpp"
+#include "logger.hpp"
+#include "types.hpp"
 #include <CoreFoundation/CoreFoundation.h>
 #include <chrono>
 #include <cstdlib>
@@ -69,6 +72,11 @@ public:
     // So we use the shorten name karabiner_session_monitor_receiver_client => krbn_session.501.
 
     return get_rootonly_directory() / fmt::format("krbn_session.{0}", uid);
+  }
+
+  static const std::filesystem::path& get_karabiner_machine_identifier_json_file_path(void) {
+    static auto path = get_tmp_directory() / "karabiner_machine_identifier.json";
+    return path;
   }
 
   static const std::filesystem::path& get_grabber_state_json_file_path(void) {
@@ -251,6 +259,32 @@ public:
     }
 
     return directory;
+  }
+
+  static const karabiner_machine_identifier& get_karabiner_machine_identifier(void) {
+    static std::mutex mutex;
+    std::lock_guard<std::mutex> guard(mutex);
+
+    static bool once = false;
+    static karabiner_machine_identifier identifier;
+
+    if (!once) {
+      once = true;
+
+      auto file_path = get_karabiner_machine_identifier_json_file_path();
+      std::ifstream input(file_path);
+      if (input) {
+        try {
+          auto json = json_utility::parse_jsonc(input);
+          identifier = karabiner_machine_identifier(json["karabiner_machine_identifier"].get<std::string>());
+        } catch (std::exception& e) {
+          logger::get_logger()->error("parse error in {0}: {1}", file_path.string(), e.what());
+          identifier = karabiner_machine_identifier("krbn-empty-machine-identifier");
+        }
+      }
+    }
+
+    return identifier;
   }
 };
 } // namespace krbn

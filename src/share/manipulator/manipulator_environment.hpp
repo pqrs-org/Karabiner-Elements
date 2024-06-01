@@ -23,6 +23,7 @@ public:
   manipulator_environment(const manipulator_environment&) = delete;
 
   manipulator_environment(void) {
+    karabiner_machine_identifier_ = constants::get_karabiner_machine_identifier();
   }
 
   nlohmann::json to_json(void) const {
@@ -40,6 +41,7 @@ public:
     return nlohmann::json({
         {"frontmost_application", frontmost_application_},
         {"input_source", input_source_json},
+        {"karabiner_machine_identifier", type_safe::get(karabiner_machine_identifier_)},
         {"variables", variables_},
         {"system_preferences_properties", system_preferences_properties_},
         {"virtual_hid_devices_state", virtual_hid_devices_state_},
@@ -160,6 +162,7 @@ private:
   }
 
   std::string output_json_file_path_;
+  karabiner_machine_identifier karabiner_machine_identifier_;
   device_properties_manager device_properties_manager_;
   pqrs::osx::frontmost_application_monitor::application frontmost_application_;
   pqrs::osx::input_source::properties input_source_properties_;
