@@ -279,8 +279,11 @@ public:
           identifier = karabiner_machine_identifier(json["karabiner_machine_identifier"].get<std::string>());
         } catch (std::exception& e) {
           logger::get_logger()->error("parse error in {0}: {1}", file_path.string(), e.what());
-          identifier = karabiner_machine_identifier("krbn-empty-machine-identifier");
         }
+      }
+
+      if (identifier == karabiner_machine_identifier("")) {
+        identifier = karabiner_machine_identifier("krbn-empty-machine-identifier");
       }
     }
 
