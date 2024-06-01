@@ -121,6 +121,8 @@ extension LibKrbn {
         libkrbn_core_configuration_get_global_configuration_show_profile_name_in_menu_bar()
       enableNotificationWindow =
         libkrbn_core_configuration_get_global_configuration_enable_notification_window()
+      enableMultitouchExtension =
+        libkrbn_core_configuration_get_machine_specific_enable_multitouch_extension()
       askForConfirmationBeforeQuitting =
         libkrbn_core_configuration_get_global_configuration_ask_for_confirmation_before_quitting()
       unsafeUI = libkrbn_core_configuration_get_global_configuration_unsafe_ui()
@@ -654,6 +656,17 @@ extension LibKrbn {
         if didSetEnabled {
           libkrbn_core_configuration_set_global_configuration_enable_notification_window(
             enableNotificationWindow
+          )
+          save()
+        }
+      }
+    }
+
+    @Published var enableMultitouchExtension: Bool = false {
+      didSet {
+        if didSetEnabled {
+          libkrbn_core_configuration_set_machine_specific_enable_multitouch_extension(
+            enableMultitouchExtension
           )
           save()
         }

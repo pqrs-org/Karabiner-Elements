@@ -5,15 +5,35 @@ struct MiscView: View {
 
   var body: some View {
     VStack(alignment: .leading, spacing: 24.0) {
-      GroupBox(label: Text("Extra tool")) {
+      GroupBox(label: Text("Extra tool: Multitouch Extension")) {
         VStack(alignment: .leading, spacing: 12.0) {
+          HStack {
+            Toggle(isOn: $settings.enableMultitouchExtension) {
+              Text("Enable Multitouch Extension (Default: off)")
+            }
+            .switchToggleStyle()
+
+            Spacer()
+          }
+
+          VStack(alignment: .leading, spacing: 0.0) {
+            Text(
+              "Note: This setting is hardware-specific. "
+                + "When you import Karabiner-Elements settings to another Mac, "
+                + "the enabled state of the Multitouch Extension is not carried over."
+            )
+          }
+          .padding()
+          .foregroundColor(Color.infoForeground)
+          .background(Color.infoBackground)
+
           HStack {
             Button(
               action: {
                 libkrbn_launch_multitouch_extension()
               },
               label: {
-                Label("Open Karabiner-MultitouchExtension app", systemImage: "arrow.up.forward.app")
+                Label("Open Multitouch Extension Settings", systemImage: "arrow.up.forward.app")
               })
 
             Spacer()
