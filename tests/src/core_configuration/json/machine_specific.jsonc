@@ -1,0 +1,7 @@
+{
+    "machine_specific": {
+        "krbn-identifier1": {
+            "enable_multitouch_extension": true
+        }
+    }
+}

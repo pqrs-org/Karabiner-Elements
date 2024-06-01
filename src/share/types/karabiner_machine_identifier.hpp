@@ -18,3 +18,9 @@ inline std::ostream& operator<<(std::ostream& stream, const karabiner_machine_id
   return stream << type_safe::get(value);
 }
 } // namespace krbn
+
+namespace std {
+template <>
+struct hash<krbn::karabiner_machine_identifier> : type_safe::hashable<krbn::karabiner_machine_identifier> {
+};
+} // namespace std

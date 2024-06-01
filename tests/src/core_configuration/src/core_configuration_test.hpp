@@ -270,6 +270,53 @@ void run_core_configuration_test(void) {
     }
   };
 
+  "machine_specific.to_json"_test = [] {
+    {
+      krbn::core_configuration::core_configuration configuration("json/machine_specific.jsonc", geteuid());
+
+      std::ifstream input("json/machine_specific.jsonc");
+      auto expected = krbn::json_utility::parse_jsonc(input);
+
+      {
+        auto& e = configuration.get_machine_specific().get_entry(krbn::karabiner_machine_identifier("krbn-identifier1"));
+        expect(true == e.get_enable_multitouch_extension());
+      }
+
+      auto json = configuration.to_json();
+      expect(expected["machine_specific"] == json["machine_specific"]);
+    }
+
+    // from emtpy json
+    {
+      krbn::core_configuration::core_configuration configuration("", geteuid());
+
+      auto json = configuration.to_json();
+      expect(!json.contains("machine_specific"));
+
+      // set value
+      {
+        auto& e = configuration.get_machine_specific().get_entry(krbn::karabiner_machine_identifier("krbn-identifier1"));
+        e.set_enable_multitouch_extension(true);
+      }
+
+      json = configuration.to_json();
+      expect(nlohmann::json::object({
+                 {"krbn-identifier1", nlohmann::json::object({
+                                          {"enable_multitouch_extension", true},
+                                      })},
+             }) == json["machine_specific"]);
+
+      // set default value (omitted in to_json)
+      {
+        auto& e = configuration.get_machine_specific().get_entry(krbn::karabiner_machine_identifier("krbn-identifier1"));
+        e.set_enable_multitouch_extension(false);
+      }
+
+      json = configuration.to_json();
+      expect(!json.contains("machine_specific"));
+    }
+  };
+
   "profile"_test = [] {
     // empty json
     {

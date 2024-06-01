@@ -3,6 +3,7 @@
 #include "connected_devices/connected_devices.hpp"
 #include "constants.hpp"
 #include "details/global_configuration.hpp"
+#include "details/machine_specific.hpp"
 #include "details/profile.hpp"
 #include "details/profile/complex_modifications.hpp"
 #include "details/profile/device.hpp"
@@ -33,7 +34,8 @@ public:
 
   core_configuration(const std::string& file_path,
                      uid_t expected_file_owner) : loaded_(false),
-                                                  global_configuration_(nlohmann::json::object()) {
+                                                  global_configuration_(nlohmann::json::object()),
+                                                  machine_specific_(nlohmann::json::object()) {
     bool valid_file_owner = false;
 
     // Load karabiner.json only when the owner is root or current session user.
@@ -57,6 +59,10 @@ public:
 
             if (auto v = pqrs::json::find_object(json_, "global")) {
               global_configuration_ = details::global_configuration(v->value());
+            }
+
+            if (auto v = pqrs::json::find_object(json_, "machine_specific")) {
+              machine_specific_ = details::machine_specific(v->value());
             }
 
             if (auto v = pqrs::json::find_array(json_, "profiles")) {
@@ -87,10 +93,22 @@ public:
   }
 
   nlohmann::json to_json(void) const {
-    auto j = json_;
-    j["global"] = global_configuration_.to_json();
-    j["profiles"] = profiles_;
-    return j;
+    auto json = json_;
+
+    json["global"] = global_configuration_.to_json();
+
+    {
+      auto j = machine_specific_.to_json();
+      if (!j.empty()) {
+        json["machine_specific"] = j;
+      } else {
+        json.erase("machine_specific");
+      }
+    }
+
+    json["profiles"] = profiles_;
+
+    return json;
   }
 
   bool is_loaded(void) const { return loaded_; }
@@ -100,6 +118,13 @@ public:
   }
   details::global_configuration& get_global_configuration(void) {
     return global_configuration_;
+  }
+
+  const details::machine_specific& get_machine_specific(void) const {
+    return machine_specific_;
+  }
+  details::machine_specific& get_machine_specific(void) {
+    return machine_specific_;
   }
 
   const std::vector<details::profile>& get_profiles(void) const {
@@ -236,6 +261,7 @@ private:
   bool loaded_;
 
   details::global_configuration global_configuration_;
+  details::machine_specific machine_specific_;
   std::vector<details::profile> profiles_;
 };
 } // namespace core_configuration
