@@ -7,6 +7,7 @@
         "input_source_id": "com.apple.keylayout.US",
         "language": "en"
     },
+    "karabiner_machine_identifier": "krbn-identifier1",
     "system_preferences_properties": {
         "keyboard_types": [
             [

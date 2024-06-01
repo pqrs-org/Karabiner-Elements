@@ -96,6 +96,8 @@ void run_manipulator_conditions_test(void) {
     krbn::manipulator::manipulator_environment manipulator_environment;
     manipulator_environment.enable_json_output("tmp/manipulator_environment.json");
 
+    manipulator_environment.set_karabiner_machine_identifier(krbn::karabiner_machine_identifier("krbn-identifier1"));
+
     pqrs::osx::frontmost_application_monitor::application application;
     application.set_bundle_identifier("com.apple.Terminal");
     application.set_file_path("/Applications/Utilities/Terminal.app/Contents/MacOS/Terminal");

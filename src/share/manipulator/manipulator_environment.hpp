@@ -57,6 +57,15 @@ public:
     output_json_file_path_.clear();
   }
 
+  const karabiner_machine_identifier& get_karabiner_machine_identifier(void) const {
+    return karabiner_machine_identifier_;
+  }
+
+  void set_karabiner_machine_identifier(const karabiner_machine_identifier& value) {
+    karabiner_machine_identifier_ = value;
+    async_save_to_file();
+  }
+
   const device_properties_manager& get_device_properties_manager(void) const {
     return device_properties_manager_;
   }
