@@ -8,7 +8,8 @@ struct SettingsActionView: View {
           HStack {
             Button(
               action: {
-                Relauncher.relaunch()
+                // MultitouchExtension will be relaunched by launchd.
+                NSApplication.shared.terminate(self)
               },
               label: {
                 Label("Restart app", systemImage: "arrow.clockwise")
@@ -17,17 +18,14 @@ struct SettingsActionView: View {
             Spacer()
           }
 
-          HStack {
-            Button(
-              action: {
-                NSApplication.shared.terminate(self)
-              },
-              label: {
-                Label("Quit app", systemImage: "xmark.circle.fill")
-              })
-
-            Spacer()
+          VStack {
+            Text(
+              "To disable the Multitouch Extension, configure it in the Misc tab of the Karabiner-Elements settings."
+            )
           }
+          .padding()
+          .foregroundColor(Color.infoForeground)
+          .background(Color.infoBackground)
         }.padding()
       }
 

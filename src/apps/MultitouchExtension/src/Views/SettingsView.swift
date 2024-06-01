@@ -44,7 +44,7 @@ struct SettingsView: View {
                 selection = .action
               },
               label: {
-                SidebarLabelView(text: "Quit, Restart", systemImage: "bolt.circle")
+                SidebarLabelView(text: "Restart", systemImage: "bolt.circle")
               }
             )
             .sidebarButtonStyle(selected: selection == .action)

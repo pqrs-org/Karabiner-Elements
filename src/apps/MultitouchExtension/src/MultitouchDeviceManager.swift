@@ -96,7 +96,8 @@ class MultitouchDeviceManager {
           notification,
           match,
           { _, _ in
-            Relauncher.relaunch()
+            // MultitouchExtension will be relaunched by launchd.
+            NSApplication.shared.terminate(nil)
           },
           nil,
           &it)
@@ -134,7 +135,8 @@ class MultitouchDeviceManager {
             try await Task.sleep(
               nanoseconds: UInt64(UserSettings.shared.relaunchWait) * NSEC_PER_SEC)
 
-            Relauncher.relaunch()
+            // MultitouchExtension will be relaunched by launchd.
+            NSApplication.shared.terminate(self)
           }
 
           MultitouchDeviceManager.shared.setCallback(true)
