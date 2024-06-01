@@ -3,13 +3,6 @@ import Foundation
 final class UserSettings: ObservableObject {
   static let shared = UserSettings()
 
-  @UserDefault("initialOpenAtLoginRegistered", defaultValue: false)
-  var initialOpenAtLoginRegistered: Bool {
-    willSet {
-      objectWillChange.send()
-    }
-  }
-
   @UserDefault("kHideIconInDock", defaultValue: false)
   var hideIconInDock: Bool {
     willSet {

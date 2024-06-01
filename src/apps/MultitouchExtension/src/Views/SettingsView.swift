@@ -2,7 +2,6 @@ import SwiftUI
 
 enum NavigationTag: String {
   case main
-  case area
   case advanced
   case action
 }
@@ -24,16 +23,6 @@ struct SettingsView: View {
               }
             )
             .sidebarButtonStyle(selected: selection == .main)
-
-            Button(
-              action: {
-                selection = .area
-              },
-              label: {
-                SidebarLabelView(text: "Area", systemImage: "rectangle")
-              }
-            )
-            .sidebarButtonStyle(selected: selection == .area)
 
             Button(
               action: {
@@ -70,8 +59,6 @@ struct SettingsView: View {
         switch selection {
         case .main:
           SettingsMainView()
-        case .area:
-          SettingsAreaView()
         case .advanced:
           SettingsAdvancedView()
         case .action:

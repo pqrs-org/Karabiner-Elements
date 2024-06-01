@@ -16,20 +16,7 @@ public class AppDelegate: NSObject, NSApplicationDelegate {
   public func applicationDidFinishLaunching(_: Notification) {
     ProcessInfo.processInfo.enableSuddenTermination()
 
-    KarabinerAppHelper.shared.observeVersionUpdated()
-
     NSApplication.shared.disableRelaunchOnLogin()
-
-    //
-    // Register OpenAtLogin
-    //
-
-    if !OpenAtLogin.shared.developmentBinary {
-      if !UserSettings.shared.initialOpenAtLoginRegistered {
-        OpenAtLogin.shared.update(register: true)
-        UserSettings.shared.initialOpenAtLoginRegistered = true
-      }
-    }
 
     //
     // Handle kHideIconInDock
