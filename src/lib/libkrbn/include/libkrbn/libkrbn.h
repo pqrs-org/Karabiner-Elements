@@ -87,6 +87,11 @@ void libkrbn_core_configuration_set_global_configuration_ask_for_confirmation_be
 bool libkrbn_core_configuration_get_global_configuration_unsafe_ui(void);
 void libkrbn_core_configuration_set_global_configuration_unsafe_ui(bool value);
 
+// machine_specific
+
+bool libkrbn_core_configuration_get_machine_specific_enable_multitouch_extension(void);
+void libkrbn_core_configuration_set_machine_specific_enable_multitouch_extension(bool value);
+
 // profiles
 
 size_t libkrbn_core_configuration_get_profiles_size(void);

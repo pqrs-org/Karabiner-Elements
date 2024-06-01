@@ -137,6 +137,23 @@ void libkrbn_core_configuration_set_global_configuration_unsafe_ui(bool value) {
   }
 }
 
+bool libkrbn_core_configuration_get_machine_specific_enable_multitouch_extension(void) {
+  if (auto c = get_current_core_configuration()) {
+    return c->get_machine_specific()
+        .get_entry(krbn::constants::get_karabiner_machine_identifier())
+        .get_enable_multitouch_extension();
+  }
+  return krbn::core_configuration::details::machine_specific::entry::enable_multitouch_extension_default_value;
+}
+
+void libkrbn_core_configuration_set_machine_specific_enable_multitouch_extension(bool value) {
+  if (auto c = get_current_core_configuration()) {
+    return c->get_machine_specific()
+        .get_entry(krbn::constants::get_karabiner_machine_identifier())
+        .set_enable_multitouch_extension(value);
+  }
+}
+
 size_t libkrbn_core_configuration_get_profiles_size(void) {
   if (auto c = get_current_core_configuration()) {
     return c->get_profiles().size();
