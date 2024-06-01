@@ -11,6 +11,9 @@ enum Subcommand: String {
   case registerMenuAgent = "register-menu-agent"
   case unregisterMenuAgent = "unregister-menu-agent"
 
+  case registerMultitouchExtensionAgent = "register-multitouch-extension-agent"
+  case unregisterMultitouchExtensionAgent = "unregister-multitouch-extension-agent"
+
   case registerNotificationWindowAgent = "register-notification-window-agent"
   case unregisterNotificationWindowAgent = "unregister-notification-window-agent"
 
@@ -77,6 +80,9 @@ RunLoop.main.perform {
   let menuAgentService = SMAppService.agent(
     plistName: "org.pqrs.service.agent.Karabiner-Menu.plist")
 
+  let multitouchExtensionAgentService = SMAppService.agent(
+    plistName: "org.pqrs.service.agent.Karabiner-MultitouchExtension.plist")
+
   let notificationWindowAgentService = SMAppService.agent(
     plistName: "org.pqrs.service.agent.Karabiner-NotificationWindow.plist")
 
@@ -88,6 +94,7 @@ RunLoop.main.perform {
     allServices.append(s)
   }
   allServices.append(menuAgentService)
+  allServices.append(multitouchExtensionAgentService)
   allServices.append(notificationWindowAgentService)
 
   if CommandLine.arguments.count > 1 {
@@ -124,6 +131,14 @@ RunLoop.main.perform {
 
     case .unregisterMenuAgent:
       unregisterService(menuAgentService)
+      exit(0)
+
+    case .registerMultitouchExtensionAgent:
+      registerService(multitouchExtensionAgentService)
+      exit(0)
+
+    case .unregisterMultitouchExtensionAgent:
+      unregisterService(multitouchExtensionAgentService)
       exit(0)
 
     case .registerNotificationWindowAgent:
@@ -171,6 +186,9 @@ RunLoop.main.perform {
 
   print("    \(Subcommand.registerMenuAgent.rawValue)")
   print("    \(Subcommand.unregisterMenuAgent.rawValue)")
+
+  print("    \(Subcommand.registerMultitouchExtensionAgent.rawValue)")
+  print("    \(Subcommand.unregisterMultitouchExtensionAgent.rawValue)")
 
   print("    \(Subcommand.registerNotificationWindowAgent.rawValue)")
   print("    \(Subcommand.unregisterNotificationWindowAgent.rawValue)")
