@@ -73,7 +73,7 @@ inline void register_multitouch_extension_agent(void) {
 }
 
 inline void unregister_multitouch_extension_agent(void) {
-  system(fmt::format("'{0}' unregister-multitouch-extension-agen",
+  system(fmt::format("'{0}' unregister-multitouch-extension-agent",
                      constants::karabiner_elements_services_path)
              .c_str());
 }
