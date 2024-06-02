@@ -33,7 +33,7 @@ public:
 
   grabber_client(const grabber_client&) = delete;
 
-  grabber_client(std::optional<std::string> client_socket_directory_name = std::nullopt)
+  grabber_client(std::optional<std::string> client_socket_directory_name)
       : dispatcher_client(),
         client_socket_directory_name_(client_socket_directory_name) {
   }
