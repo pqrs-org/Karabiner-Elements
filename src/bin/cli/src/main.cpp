@@ -70,7 +70,7 @@ void set_variables(const std::string& variables) {
 
     auto wait = pqrs::make_thread_wait();
 
-    krbn::grabber_client client;
+    krbn::grabber_client client(std::nullopt);
     client.async_start();
     client.async_set_variables(json, [&wait] {
       wait->notify();
