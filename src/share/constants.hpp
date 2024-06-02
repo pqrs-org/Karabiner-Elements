@@ -51,7 +51,10 @@ public:
   static const std::filesystem::path& get_grabber_socket_directory_path(void) {
     // Note:
     // The socket file path length must be <= 103 because sizeof(sockaddr_un.sun_path) == 104.
-    // So we use the shorten name karabiner_grabber => krbn_grabber.
+    // So we use the shorten name karabiner_grabber -> krbn_grabber.
+    //
+    // Example:
+    // `/Library/Application Support/org.pqrs/tmp/krbn_grabber/17d52868a28b3858.sock`
 
     static auto path = get_tmp_directory() / "krbn_grabber";
     return path;
@@ -60,7 +63,10 @@ public:
   static const std::filesystem::path& get_grabber_session_monitor_receiver_socket_directory_path(void) {
     // Note:
     // The socket file path length must be <= 103 because sizeof(sockaddr_un.sun_path) == 104.
-    // So we use the shorten name karabiner_session_monitor_receiver => krbn_session.
+    // So we use the shorten name karabiner_session_monitor_receiver -> krbn_session.
+    //
+    // Example:
+    // `/Library/Application Support/org.pqrs/tmp/rootonly/krbn_session/17d528684c113450.sock`
 
     static auto path = get_rootonly_directory() / std::filesystem::path("krbn_session");
     return path;
@@ -69,7 +75,10 @@ public:
   static std::filesystem::path get_session_monitor_receiver_client_socket_directory_path(uid_t uid) {
     // Note:
     // The socket file path length must be <= 103 because sizeof(sockaddr_un.sun_path) == 104.
-    // So we use the shorten name karabiner_session_monitor_receiver_client => krbn_session.501.
+    // So we use the shorten name karabiner_session_monitor_receiver_client -> krbn_session.501.
+    //
+    // Example:
+    // `/Library/Application Support/org.pqrs/tmp/rootonly/krbn_session.501/17d4e667c981d270.sock`
 
     return get_rootonly_directory() / fmt::format("krbn_session.{0}", uid);
   }
