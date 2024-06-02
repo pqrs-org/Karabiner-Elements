@@ -32,6 +32,8 @@ class FingerState: Identifiable {
   // True if the palm is larger than the threshold
   var palmed = false
 
+  var contactFrameArrivedAt = Date()
+
   private var delayTask: Task<(), Never>?
 
   enum DelayMode {

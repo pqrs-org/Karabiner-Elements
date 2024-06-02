@@ -41,6 +41,7 @@ class FingerManager: ObservableObject {
   ) {
     let targetArea = UserSettings.shared.targetArea
     let palmThreshold = UserSettings.shared.palmThreshold
+    let now = Date()
 
     //
     // Update physical touched fingers
@@ -58,6 +59,7 @@ class FingerManager: ObservableObject {
       s.point = NSPoint(
         x: CGFloat(finger.normalized.position.x),
         y: CGFloat(finger.normalized.position.y))
+      s.contactFrameArrivedAt = now
 
       // Note:
       // Once the point in targetArea, keep `ignored == NO`.
@@ -102,6 +104,12 @@ class FingerManager: ObservableObject {
     //
 
     states.removeAll(where: { $0.touchedPhysically == false && $0.touchedFixed == false })
+
+    //
+    // Remove FingerState which the contact frame has not been received for a certain period.
+    //
+
+    states.removeAll(where: { now.timeIntervalSince($0.contactFrameArrivedAt) > 3.0 })
 
     //
     // Post notifications
