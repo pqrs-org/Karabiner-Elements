@@ -8,10 +8,10 @@ class libkrbn_grabber_client final : public pqrs::dispatcher::extra::dispatcher_
 public:
   libkrbn_grabber_client(const libkrbn_grabber_client&) = delete;
 
-  libkrbn_grabber_client(std::optional<std::string> client_socket_directory_name = std::nullopt)
+  libkrbn_grabber_client(std::optional<std::string> client_socket_directory_name)
       : dispatcher_client(),
         status_(libkrbn_grabber_client_status_none) {
-    grabber_client_ = std::make_unique<krbn::grabber_client>();
+    grabber_client_ = std::make_unique<krbn::grabber_client>(client_socket_directory_name);
 
     grabber_client_->connected.connect([this] {
       set_status(libkrbn_grabber_client_status_connected);

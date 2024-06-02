@@ -223,9 +223,9 @@ public:
   // grabber_client_
   //
 
-  void enable_grabber_client(void) {
+  void enable_grabber_client(std::optional<std::string> client_socket_directory_name) {
     if (!grabber_client_) {
-      grabber_client_ = std::make_shared<libkrbn_grabber_client>();
+      grabber_client_ = std::make_shared<libkrbn_grabber_client>(client_socket_directory_name);
     }
   }
 

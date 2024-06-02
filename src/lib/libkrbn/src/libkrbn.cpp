@@ -734,9 +734,14 @@ bool libkrbn_hid_value_monitor_observed(void) {
 // grabber_client
 //
 
-void libkrbn_enable_grabber_client(void) {
+void libkrbn_enable_grabber_client(const char* client_socket_directory_name) {
   if (auto manager = libkrbn_components_manager_) {
-    manager->enable_grabber_client();
+    std::optional<std::string> name;
+    if (client_socket_directory_name) {
+      name = client_socket_directory_name;
+    }
+
+    manager->enable_grabber_client(name);
   }
 }
 

@@ -502,7 +502,7 @@ typedef enum {
   libkrbn_grabber_client_status_closed,
 } libkrbn_grabber_client_status;
 
-void libkrbn_enable_grabber_client(void);
+void libkrbn_enable_grabber_client(const char* client_socket_directory_name);
 void libkrbn_disable_grabber_client(void);
 
 typedef void (*libkrbn_grabber_client_status_changed)(void);
