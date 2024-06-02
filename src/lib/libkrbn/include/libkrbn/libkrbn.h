@@ -511,6 +511,7 @@ void libkrbn_unregister_grabber_client_status_changed_callback(libkrbn_grabber_c
 
 libkrbn_grabber_client_status libkrbn_grabber_client_get_status(void);
 
+void libkrbn_grabber_client_async_connect_multitouch_extension(void);
 void libkrbn_grabber_client_async_set_app_icon(int number);
 void libkrbn_grabber_client_async_set_keyboard_type(uint64_t country_code, uint64_t keyboard_type);
 void libkrbn_grabber_client_async_set_variable(const char* name, int value);

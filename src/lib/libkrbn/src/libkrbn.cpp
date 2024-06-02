@@ -772,6 +772,14 @@ libkrbn_grabber_client_status libkrbn_grabber_client_get_status(void) {
   return libkrbn_grabber_client_status_none;
 }
 
+void libkrbn_grabber_client_async_connect_multitouch_extension(void) {
+  if (auto manager = libkrbn_components_manager_) {
+    if (auto c = manager->get_libkrbn_grabber_client()) {
+      c->async_connect_multitouch_extension();
+    }
+  }
+}
+
 void libkrbn_grabber_client_async_set_app_icon(int number) {
   if (auto manager = libkrbn_components_manager_) {
     if (auto c = manager->get_libkrbn_grabber_client()) {

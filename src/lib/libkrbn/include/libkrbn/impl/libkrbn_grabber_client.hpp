@@ -8,7 +8,7 @@ class libkrbn_grabber_client final : public pqrs::dispatcher::extra::dispatcher_
 public:
   libkrbn_grabber_client(const libkrbn_grabber_client&) = delete;
 
-  libkrbn_grabber_client(void)
+  libkrbn_grabber_client(std::optional<std::string> client_socket_directory_name = std::nullopt)
       : dispatcher_client(),
         status_(libkrbn_grabber_client_status_none) {
     grabber_client_ = std::make_unique<krbn::grabber_client>();
@@ -36,6 +36,10 @@ public:
 
   libkrbn_grabber_client_status get_status(void) const {
     return status_;
+  }
+
+  void async_connect_multitouch_extension(void) {
+    grabber_client_->async_connect_multitouch_extension();
   }
 
   void async_set_app_icon(int number) const {
