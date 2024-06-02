@@ -34,7 +34,9 @@ struct MiscView: View {
               },
               label: {
                 Label("Open Multitouch Extension Settings", systemImage: "arrow.up.forward.app")
-              })
+              }
+            )
+            .disabled(!settings.enableMultitouchExtension)
 
             Spacer()
           }
