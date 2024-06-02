@@ -33,9 +33,9 @@ public:
 
   grabber_client(const grabber_client&) = delete;
 
-  grabber_client(std::optional<std::string> client_socket_file_path = std::nullopt)
+  grabber_client(std::optional<std::string> client_socket_directory_name = std::nullopt)
       : dispatcher_client(),
-        client_socket_file_path_(client_socket_file_path) {
+        client_socket_directory_name_(client_socket_directory_name) {
   }
 
   virtual ~grabber_client(void) {
@@ -51,9 +51,11 @@ public:
         return;
       }
 
+      prepare_grabber_client_socket_directory();
+
       client_ = std::make_unique<pqrs::local_datagram::client>(weak_dispatcher_,
                                                                find_grabber_socket_file_path(),
-                                                               client_socket_file_path_,
+                                                               grabber_client_socket_file_path(),
                                                                constants::local_datagram_buffer_size);
       client_->set_server_check_interval(std::chrono::milliseconds(3000));
       client_->set_client_socket_check_interval(std::chrono::milliseconds(3000));
@@ -76,6 +78,11 @@ public:
         enqueue_to_dispatcher([this, error_code] {
           connect_failed(error_code);
         });
+
+        // connect_failed will be triggered if grabber_client_socket_directory does not exist
+        // due to the parent directory (system_user_directory) is not ready.
+        // For this case, we have to create grabber_client_socket_directory each time.
+        prepare_grabber_client_socket_directory();
       });
 
       client_->closed.connect([this] {
@@ -242,6 +249,41 @@ private:
         constants::get_grabber_socket_directory_path());
   }
 
+  std::optional<std::filesystem::path> grabber_client_socket_directory_path(void) const {
+    if (client_socket_directory_name_ != std::nullopt &&
+        client_socket_directory_name_ != "") {
+      return constants::get_system_user_directory(geteuid()) / *client_socket_directory_name_;
+    }
+
+    return std::nullopt;
+  }
+
+  std::optional<std::filesystem::path> grabber_client_socket_file_path(void) const {
+    if (auto d = grabber_client_socket_directory_path()) {
+      return *d / filesystem_utility::make_socket_file_basename();
+    }
+
+    return std::nullopt;
+  }
+
+  void prepare_grabber_client_socket_directory(void) {
+    if (auto d = grabber_client_socket_directory_path()) {
+
+      //
+      // Remove old socket files.
+      //
+
+      std::error_code ec;
+      std::filesystem::remove_all(*d, ec);
+
+      //
+      // Create directory.
+      //
+
+      std::filesystem::create_directory(*d, ec);
+    }
+  }
+
   void stop(void) {
     if (!client_) {
       return;
@@ -252,7 +294,7 @@ private:
     logger::get_logger()->info("grabber_client is stopped.");
   }
 
-  std::optional<std::string> client_socket_file_path_;
+  std::optional<std::string> client_socket_directory_name_;
   std::unique_ptr<pqrs::local_datagram::client> client_;
 };
 } // namespace krbn

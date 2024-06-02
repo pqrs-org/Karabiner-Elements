@@ -83,30 +83,6 @@ public:
   }
 
 private:
-  std::filesystem::path grabber_client_socket_directory_path(void) const {
-    return constants::get_system_user_directory(geteuid()) / "grabber_client";
-  }
-
-  std::filesystem::path grabber_client_socket_file_path(void) const {
-    return grabber_client_socket_directory_path() / filesystem_utility::make_socket_file_basename();
-  }
-
-  void prepare_grabber_client_socket_directory(void) {
-    //
-    // Remove old socket files.
-    //
-
-    auto directory_path = grabber_client_socket_directory_path();
-    std::error_code ec;
-    std::filesystem::remove_all(directory_path, ec);
-
-    //
-    // Create directory.
-    //
-
-    std::filesystem::create_directory(directory_path, ec);
-  }
-
   void start_grabber_client(void) {
     if (grabber_client_) {
       return;
@@ -116,9 +92,14 @@ private:
       return;
     }
 
-    prepare_grabber_client_socket_directory();
+    // Note:
+    // The socket file path length must be <= 103 because sizeof(sockaddr_un.sun_path) == 104.
+    // So we use the shorten name console_user_server_grabber_client -> con_usr_srv_grb_clnt.
+    //
+    // Example:
+    // `/Library/Application Support/org.pqrs/tmp/user/501/con_usr_srv_grb_clnt/17d502ed0dd6f828.sock`
 
-    grabber_client_ = std::make_shared<grabber_client>(grabber_client_socket_file_path());
+    grabber_client_ = std::make_shared<grabber_client>("con_usr_srv_grb_clnt");
 
     grabber_client_->connected.connect([this] {
       version_monitor_->async_manual_check();
@@ -135,11 +116,6 @@ private:
       version_monitor_->async_manual_check();
 
       stop_child_components();
-
-      // connect_failed will be triggered if grabber_client_socket_directory does not exist
-      // due to the parent directory (system_user_directory) is not ready.
-      // For this case, we have to create grabber_client_socket_directory each time.
-      prepare_grabber_client_socket_directory();
     });
 
     grabber_client_->closed.connect([this] {
