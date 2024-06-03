@@ -21,8 +21,10 @@ extension LibKrbn {
     // We register the callback in the `start` method rather than in `init`.
     // If libkrbn_register_*_callback is called within init, there is a risk that `init` could be invoked again from the callback through `shared` before the initial `init` completes.
 
-    public func start() {
-      libkrbn_enable_grabber_client()
+    public func start(_ clientSocketDirectoryName: String) {
+      clientSocketDirectoryName.withCString {
+        libkrbn_enable_grabber_client(clientSocketDirectoryName == "" ? nil : $0)
+      }
       libkrbn_register_grabber_client_status_changed_callback(callback)
       libkrbn_enqueue_callback(callback)
     }

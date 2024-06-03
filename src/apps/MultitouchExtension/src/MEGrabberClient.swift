@@ -120,6 +120,7 @@ private func callback() {
 
       if status == libkrbn_grabber_client_status_connected {
         MultitouchDeviceManager.shared.setCallback(true)
+        libkrbn_grabber_client_async_connect_multitouch_extension()
       } else {
         MultitouchDeviceManager.shared.setCallback(false)
       }
@@ -148,7 +149,14 @@ final class MEGrabberClient {
   // If libkrbn_register_*_callback is called within init, there is a risk that `init` could be invoked again from the callback through `shared` before the initial `init` completes.
 
   public func start() {
-    libkrbn_enable_grabber_client()
+    // Note:
+    // The socket file path length must be <= 103 because sizeof(sockaddr_un.sun_path) == 104.
+    // So we use the shorten name multitouch_extension_grabber_client -> mt_ext_grb_clnt.
+    //
+    // Example:
+    // `/Library/Application Support/org.pqrs/tmp/user/501/mt_ext_grb_clnt/17d5344d2176c048.sock`
+
+    libkrbn_enable_grabber_client("mt_ext_grb_clnt")
 
     libkrbn_register_grabber_client_status_changed_callback(callback)
     libkrbn_enqueue_callback(callback)

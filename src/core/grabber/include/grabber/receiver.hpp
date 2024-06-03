@@ -131,6 +131,42 @@ public:
               }
               break;
 
+            case operation_type::connect_multitouch_extension: {
+              logger::get_logger()->info("multitouch_extension is connected.");
+
+              multitouch_extension_client_ = std::make_unique<pqrs::local_datagram::client>(weak_dispatcher_,
+                                                                                            sender_endpoint->path(),
+                                                                                            std::nullopt,
+                                                                                            constants::local_datagram_buffer_size);
+              multitouch_extension_client_->set_server_check_interval(std::chrono::milliseconds(3000));
+              multitouch_extension_client_->set_next_heartbeat_deadline(std::chrono::milliseconds(10000));
+              multitouch_extension_client_->set_client_socket_check_interval(std::chrono::milliseconds(3000));
+
+              multitouch_extension_client_->connected.connect([] {
+                logger::get_logger()->info("multitouch_extension_client_->connected");
+              });
+
+              multitouch_extension_client_->connect_failed.connect([this](auto&& error_code) {
+                logger::get_logger()->info("multitouch_extension_client_->connect_failed");
+
+                multitouch_extension_client_ = nullptr;
+              });
+
+              multitouch_extension_client_->closed.connect([this] {
+                logger::get_logger()->info("multitouch_extension_client_->closed");
+
+                multitouch_extension_client_ = nullptr;
+              });
+
+              multitouch_extension_client_->error_occurred.connect([](auto&& error_code) {
+                logger::get_logger()->error("multitouch_extension_client_->error_occurred: {0}", error_code.message());
+              });
+
+              multitouch_extension_client_->async_start();
+
+              break;
+            }
+
             case operation_type::set_app_icon: {
               // `set_app_icon` requires root privileges.
               auto number = json.at("number").get<int>();
@@ -237,6 +273,7 @@ private:
 
   std::unique_ptr<pqrs::local_datagram::server> server_;
   std::shared_ptr<console_user_server_client> console_user_server_client_;
+  std::unique_ptr<pqrs::local_datagram::client> multitouch_extension_client_;
   std::unique_ptr<device_grabber> device_grabber_;
 
   pqrs::osx::system_preferences::properties system_preferences_properties_;
