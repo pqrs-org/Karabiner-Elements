@@ -38,7 +38,7 @@ void run_errors_test(void) {
       for (const auto& e : error_json) {
         try {
           handle_json(e);
-          expect(false);
+          expect(false) << e.at("input") << " does not throw the expected exceptions";
         } catch (pqrs::json::unmarshal_error& ex) {
           expect(std::string_view(e.at("error").get<std::string>()) == ex.what());
         } catch (...) {

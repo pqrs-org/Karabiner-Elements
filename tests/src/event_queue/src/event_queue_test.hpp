@@ -166,6 +166,7 @@ void run_event_queue_test(void) {
       expected["set_variable"] = nlohmann::json::object({
           {"name", "example1"},
           {"value", 100},
+          {"type", "set"},
       });
       auto json = krbn::event_queue::event::make_set_variable_event(
                       krbn::manipulator_environment_variable_set_variable(

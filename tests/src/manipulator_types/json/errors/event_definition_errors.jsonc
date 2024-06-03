@@ -168,7 +168,27 @@
                 "name": "flag"
             }
         },
-        "error": "`set_variable.value` is not found in `{\"name\":\"flag\"}`"
+        "error": "neither `set_variable.value` nor `set_variable.key_up_value` are not found in `{\"name\":\"flag\"}`"
+    },
+    {
+        "class": "event_definition",
+        "input": {
+            "set_variable": {
+                "name": "flag",
+                "type": null
+            }
+        },
+        "error": "`set_variable` error: `type` must be string, but is `null`"
+    },
+    {
+        "class": "event_definition",
+        "input": {
+            "set_variable": {
+                "name": "flag",
+                "type": "unknown_type"
+            }
+        },
+        "error": "`set_variable` error: unknown type: `unknown_type`"
     },
     {
         "class": "event_definition",

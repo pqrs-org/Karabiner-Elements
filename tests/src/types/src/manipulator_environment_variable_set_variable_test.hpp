@@ -32,6 +32,10 @@ void run_manipulator_environment_variable_set_variable_test(void) {
     t no_key_up_value("n",
                       value_t("v"),
                       std::nullopt);
+    t unset("u",
+            std::nullopt,
+            std::nullopt,
+            t::type::unset);
 
     expect(empty == empty);
     expect(full == full);
@@ -39,22 +43,31 @@ void run_manipulator_environment_variable_set_variable_test(void) {
     expect(no_name != full);
     expect(no_value != full);
     expect(no_key_up_value != full);
+    expect(unset != full);
 
-    expect(nlohmann::json::object({}) == nlohmann::json(empty));
+    expect(nlohmann::json::object({{"type", "set"}}) == nlohmann::json(empty));
     expect(nlohmann::json::object({
                {"name", "n"},
                {"value", "v"},
                {"key_up_value", "kuv"},
+               {"type", "set"},
            }) == nlohmann::json(full));
     expect(nlohmann::json::object({
                {"name", "n"},
+               {"type", "set"},
            }) == nlohmann::json(name_only));
     expect(nlohmann::json::object({
                {"value", "v"},
+               {"type", "set"},
            }) == nlohmann::json(value_only));
     expect(nlohmann::json::object({
                {"key_up_value", "kuv"},
+               {"type", "set"},
            }) == nlohmann::json(key_up_value_only));
+    expect(nlohmann::json::object({
+               {"name", "u"},
+               {"type", "unset"},
+           }) == nlohmann::json(unset));
 
     expect(nlohmann::json(empty).get<t>() == empty);
     expect(nlohmann::json(full).get<t>() == full);
@@ -64,5 +77,6 @@ void run_manipulator_environment_variable_set_variable_test(void) {
     expect(nlohmann::json(no_name).get<t>() == no_name);
     expect(nlohmann::json(no_value).get<t>() == no_value);
     expect(nlohmann::json(no_key_up_value).get<t>() == no_key_up_value);
+    expect(nlohmann::json(unset).get<t>() == unset);
   };
 }

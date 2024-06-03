@@ -188,5 +188,35 @@ void run_event_definition_test(void) {
       expect("variable3"sv == pair->get_name());
       expect(krbn::manipulator_environment_variable_value("on") == pair->get_value());
     }
+    // key_up_value only
+    {
+      auto json = nlohmann::json::object({
+          {"set_variable", nlohmann::json::object({
+                               {"name", "variable4"},
+                               {"key_up_value", "up"},
+                           })},
+      });
+
+      krbn::manipulator::to_event_definition event_definition(json);
+      auto pair = event_definition.get_event_definition().get_set_variable();
+      expect(pair != std::nullopt);
+      expect("variable4"sv == pair->get_name());
+      expect(krbn::manipulator_environment_variable_value("up") == pair->get_key_up_value());
+    }
+    // type::unset
+    {
+      auto json = nlohmann::json::object({
+          {"set_variable", nlohmann::json::object({
+                               {"name", "variable5"},
+                               {"type", "unset"},
+                           })},
+      });
+
+      krbn::manipulator::to_event_definition event_definition(json);
+      auto pair = event_definition.get_event_definition().get_set_variable();
+      expect(pair != std::nullopt);
+      expect("variable5"sv == pair->get_name());
+      expect(krbn::manipulator_environment_variable_set_variable::type::unset == pair->get_type());
+    }
   };
 }
