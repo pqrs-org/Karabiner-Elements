@@ -150,12 +150,14 @@ public:
                 logger::get_logger()->info("multitouch_extension_client_->connect_failed");
 
                 multitouch_extension_client_ = nullptr;
+                clear_multitouch_extension_environment_variables();
               });
 
               multitouch_extension_client_->closed.connect([this] {
                 logger::get_logger()->info("multitouch_extension_client_->closed");
 
                 multitouch_extension_client_ = nullptr;
+                clear_multitouch_extension_environment_variables();
               });
 
               multitouch_extension_client_->error_occurred.connect([](auto&& error_code) {
@@ -221,6 +223,7 @@ public:
     detach_from_dispatcher([this] {
       server_ = nullptr;
       console_user_server_client_ = nullptr;
+      multitouch_extension_client_ = nullptr;
       stop_device_grabber();
     });
 
@@ -266,6 +269,33 @@ private:
     device_grabber_ = nullptr;
 
     logger::get_logger()->info("device_grabber is stopped.");
+  }
+
+  void clear_multitouch_extension_environment_variables(void) {
+    if (device_grabber_) {
+      for (const auto& name : {
+               "multitouch_extension_finger_count_upper_quarter_area",
+               "multitouch_extension_finger_count_lower_quarter_area",
+               "multitouch_extension_finger_count_left_quarter_area",
+               "multitouch_extension_finger_count_right_quarter_area",
+               "multitouch_extension_finger_count_upper_half_area",
+               "multitouch_extension_finger_count_lower_half_area",
+               "multitouch_extension_finger_count_left_half_area",
+               "multitouch_extension_finger_count_right_half_area",
+               "multitouch_extension_finger_count_total",
+               "multitouch_extension_palm_count_upper_half_area",
+               "multitouch_extension_palm_count_lower_half_area",
+               "multitouch_extension_palm_count_left_half_area",
+               "multitouch_extension_palm_count_right_half_area",
+               "multitouch_extension_palm_count_total",
+           }) {
+        device_grabber_->async_post_set_variable_event(
+            manipulator_environment_variable_set_variable(
+                name,
+                manipulator_environment_variable_value(),
+                std::nullopt));
+      }
+    }
   }
 
   uid_t current_console_user_id_;
