@@ -131,15 +131,30 @@ public:
       switch (event_type) {
         case event_type::key_down:
           if (auto n = set_variable->get_name()) {
-            if (auto v = set_variable->get_value()) {
-              manipulator_environment_.set_variable(*n, *v);
+            switch (set_variable->get_type()) {
+              case manipulator_environment_variable_set_variable::type::set:
+                if (auto v = set_variable->get_value()) {
+                  manipulator_environment_.set_variable(*n, *v);
+                }
+                break;
+
+              case manipulator_environment_variable_set_variable::type::unset:
+                manipulator_environment_.unset_variable(*n);
+                break;
             }
           }
           break;
         case event_type::key_up:
           if (auto n = set_variable->get_name()) {
-            if (auto v = set_variable->get_key_up_value()) {
-              manipulator_environment_.set_variable(*n, *v);
+            switch (set_variable->get_type()) {
+              case manipulator_environment_variable_set_variable::type::set:
+                if (auto v = set_variable->get_key_up_value()) {
+                  manipulator_environment_.set_variable(*n, *v);
+                }
+                break;
+              case manipulator_environment_variable_set_variable::type::unset:
+                // Do nothing
+                break;
             }
           }
           break;

@@ -292,8 +292,9 @@ private:
         device_grabber_->async_post_set_variable_event(
             manipulator_environment_variable_set_variable(
                 name,
-                manipulator_environment_variable_value(),
-                std::nullopt));
+                std::nullopt,
+                std::nullopt,
+                manipulator_environment_variable_set_variable::type::unset));
       }
     }
   }

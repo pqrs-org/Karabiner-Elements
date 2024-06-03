@@ -115,6 +115,11 @@ public:
     async_save_to_file();
   }
 
+  void unset_variable(const std::string& name) {
+    variables_.erase(name);
+    async_save_to_file();
+  }
+
   std::weak_ptr<const core_configuration::core_configuration> get_core_configuration(void) const {
     return core_configuration_;
   }
