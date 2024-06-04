@@ -40,7 +40,6 @@ public class AppDelegate: NSObject, NSApplicationDelegate {
     // Enable grabber_client
     //
 
-    MEGrabberClient.shared.setGrabberVariable(FingerCount(), true)
     MEGrabberClient.shared.start()
     MultitouchDeviceManager.shared.observeIONotification()
 
@@ -67,8 +66,6 @@ public class AppDelegate: NSObject, NSApplicationDelegate {
     }
 
     MultitouchDeviceManager.shared.setCallback(false)
-
-    MEGrabberClient.shared.setGrabberVariable(FingerCount(), true)
 
     libkrbn_terminate()
   }

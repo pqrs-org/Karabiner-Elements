@@ -21,7 +21,7 @@ private class PreviousFingerCount {
 
 private var previousFingerCount = PreviousFingerCount()
 
-private func staticSetGrabberVariable(_ count: FingerCount, _ sync: Bool) {
+private func staticSetGrabberVariable(_ count: FingerCount) {
   struct GrabberVariable {
     var name: String
     var value: Int
@@ -100,11 +100,7 @@ private func staticSetGrabberVariable(_ count: FingerCount, _ sync: Bool) {
       previousValue: previousFingerCount.totalPalmCount
     ),
   ] where gv.previousValue.value != gv.value {
-    if sync {
-      libkrbn_grabber_client_sync_set_variable(gv.name, Int32(gv.value))
-    } else {
-      libkrbn_grabber_client_async_set_variable(gv.name, Int32(gv.value))
-    }
+    libkrbn_grabber_client_async_set_variable(gv.name, Int32(gv.value))
 
     gv.previousValue.value = gv.value
   }
@@ -125,7 +121,7 @@ private func callback() {
         MultitouchDeviceManager.shared.setCallback(false)
       }
 
-      staticSetGrabberVariable(FingerCount(), false)
+      staticSetGrabberVariable(FingerCount())
     }
   }
 }
@@ -140,7 +136,7 @@ final class MEGrabberClient {
       queue: .main
     ) { _ in
       Task { @MainActor in
-        staticSetGrabberVariable(FingerManager.shared.fingerCount, false)
+        staticSetGrabberVariable(FingerManager.shared.fingerCount)
       }
     }
   }
@@ -160,10 +156,5 @@ final class MEGrabberClient {
 
     libkrbn_register_grabber_client_status_changed_callback(callback)
     libkrbn_enqueue_callback(callback)
-  }
-
-  @MainActor
-  func setGrabberVariable(_ count: FingerCount, _ sync: Bool) {
-    staticSetGrabberVariable(count, sync)
   }
 }
