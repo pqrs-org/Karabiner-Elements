@@ -68,7 +68,7 @@ struct VirtualKeyboardView: View {
                 Text("ISO (Europe, Latin America, Middle-East and others)").tag(
                   LibKrbn.KeyboardType.NamedType.iso.rawValue)
                 Text("JIS (Japanese)").tag(LibKrbn.KeyboardType.NamedType.jis.rawValue)
-              }.disabled(!grabberClient.enabled)
+              }.disabled(!grabberClient.connected)
 
               Spacer()
             }

@@ -5,9 +5,9 @@ private func callback() {
 
   Task { @MainActor in
     if status == libkrbn_grabber_client_status_connected {
-      LibKrbn.GrabberClient.shared.enabled = true
+      LibKrbn.GrabberClient.shared.connected = true
     } else {
-      LibKrbn.GrabberClient.shared.enabled = false
+      LibKrbn.GrabberClient.shared.connected = false
     }
   }
 }
@@ -16,7 +16,7 @@ extension LibKrbn {
   public class GrabberClient: ObservableObject {
     public static let shared = GrabberClient()
 
-    @Published public fileprivate(set) var enabled = false
+    @Published public fileprivate(set) var connected = false
 
     // We register the callback in the `start` method rather than in `init`.
     // If libkrbn_register_*_callback is called within init, there is a risk that `init` could be invoked again from the callback through `shared` before the initial `init` completes.
@@ -26,7 +26,7 @@ extension LibKrbn {
         libkrbn_enable_grabber_client(clientSocketDirectoryName == "" ? nil : $0)
       }
       libkrbn_register_grabber_client_status_changed_callback(callback)
-      libkrbn_enqueue_callback(callback)
+      libkrbn_grabber_client_async_start()
     }
 
     public func setAppIcon(_ number: Int32) {

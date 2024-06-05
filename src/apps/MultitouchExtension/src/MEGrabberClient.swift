@@ -155,6 +155,7 @@ final class MEGrabberClient {
     libkrbn_enable_grabber_client("mt_ext_grb_clnt")
 
     libkrbn_register_grabber_client_status_changed_callback(callback)
-    libkrbn_enqueue_callback(callback)
+
+    libkrbn_grabber_client_async_start()
   }
 }

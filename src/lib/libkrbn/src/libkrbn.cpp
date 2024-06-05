@@ -751,6 +751,14 @@ void libkrbn_disable_grabber_client(void) {
   }
 }
 
+void libkrbn_grabber_client_async_start(void) {
+  if (auto manager = libkrbn_components_manager_) {
+    if (auto c = manager->get_libkrbn_grabber_client()) {
+      c->async_start();
+    }
+  }
+}
+
 void libkrbn_register_grabber_client_status_changed_callback(libkrbn_grabber_client_status_changed callback) {
   if (auto manager = libkrbn_components_manager_) {
     if (auto c = manager->get_libkrbn_grabber_client()) {

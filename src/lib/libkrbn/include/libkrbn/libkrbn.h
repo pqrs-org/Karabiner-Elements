@@ -505,6 +505,8 @@ typedef enum {
 void libkrbn_enable_grabber_client(const char* client_socket_directory_name);
 void libkrbn_disable_grabber_client(void);
 
+void libkrbn_grabber_client_async_start(void);
+
 typedef void (*libkrbn_grabber_client_status_changed)(void);
 void libkrbn_register_grabber_client_status_changed_callback(libkrbn_grabber_client_status_changed callback);
 void libkrbn_unregister_grabber_client_status_changed_callback(libkrbn_grabber_client_status_changed callback);

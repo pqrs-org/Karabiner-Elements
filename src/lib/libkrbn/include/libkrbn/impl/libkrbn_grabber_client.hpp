@@ -24,14 +24,16 @@ public:
     grabber_client_->closed.connect([this] {
       set_status(libkrbn_grabber_client_status_closed);
     });
-
-    grabber_client_->async_start();
   }
 
   ~libkrbn_grabber_client(void) {
     detach_from_dispatcher([this] {
       grabber_client_ = nullptr;
     });
+  }
+
+  void async_start(void) const {
+    grabber_client_->async_start();
   }
 
   libkrbn_grabber_client_status get_status(void) const {
