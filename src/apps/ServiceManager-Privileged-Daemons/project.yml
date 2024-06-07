@@ -1,0 +1,25 @@
+name: Karabiner-Elements-Privileged-Daemons
+
+targets:
+  Karabiner-Elements-Privileged-Daemons:
+    settings:
+      PRODUCT_BUNDLE_IDENTIFIER: org.pqrs.Karabiner-Elements-Privileged-Daemons
+      # SMAppService requires codesigning
+      CODE_SIGN_ENTITLEMENTS: ''
+      CODE_SIGN_IDENTITY: 'Apple Development'
+      CODE_SIGN_STYLE: Automatic
+      # Sign to Run Locally
+      CODE_SIGN_IDENTITY[sdk=macosx*]: '-'
+      OTHER_SWIFT_FLAGS: '-warnings-as-errors'
+    type: application
+    platform: macOS
+    deploymentTarget: 13.0
+    sources:
+      - path: src
+      - path: Resources
+        excludes:
+          - Info.plist.in
+      - path: ../share/Resources/app.icns
+      - path: ../share/swift/ServiceManagementHelper.swift
+    dependencies:
+      - sdk: ServiceManagement.framework
