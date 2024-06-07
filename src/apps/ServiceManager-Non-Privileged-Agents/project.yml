@@ -1,9 +1,9 @@
-name: Karabiner-Elements-Services
+name: Karabiner-Elements-Non-Privileged-Agents
 
 targets:
-  Karabiner-Elements-Services:
+  Karabiner-Elements-Non-Privileged-Agents:
     settings:
-      PRODUCT_BUNDLE_IDENTIFIER: org.pqrs.Karabiner-Elements-Services
+      PRODUCT_BUNDLE_IDENTIFIER: org.pqrs.Karabiner-Elements-Non-Privileged-Agents
       # SMAppService requires codesigning
       CODE_SIGN_ENTITLEMENTS: ''
       CODE_SIGN_IDENTITY: 'Apple Development'
@@ -20,5 +20,6 @@ targets:
         excludes:
           - Info.plist.in
       - path: ../share/Resources/app.icns
+      - path: ../share/swift/ServiceManagementHelper.swift
     dependencies:
       - sdk: ServiceManagement.framework
