@@ -7,7 +7,7 @@
     -   The background service management method has been changed to a new method compatible with macOS 13 and later.
         Therefore, permission needs to be granted for the background service to run. Please follow the steps below.
         -   Open Karabiner-Elements Settings.
-        -   Follow the instructions to allow Karabiner-Elements-Services to run in the System Settings.
+        -   Follow the instructions to allow Karabiner-Elements-Privileged-Daemons to run in the System Settings.
             <br/><br/>
             <table><tbody><tr><td><!-- border hack -->
                 <img src="https://karabiner-elements.pqrs.org/docs/releasenotes/images/v15.0.0/settings.png" alt="Karabiner-Elements Setttings" />

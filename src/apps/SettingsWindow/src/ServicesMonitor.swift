@@ -10,7 +10,10 @@ public class ServicesMonitor {
       withTimeInterval: 3.0,
       repeats: true
     ) { (_: Timer) in
-      let servicesRunning = libkrbn_services_grabber_daemon_running()
+      let daemonRunning = libkrbn_services_grabber_daemon_running()
+      let agentRunning = libkrbn_services_console_user_server_agent_running()
+
+      let servicesRunning = daemonRunning && agentRunning
 
       ContentViewStates.shared.showServicesNotRunningAlert = !servicesRunning
 

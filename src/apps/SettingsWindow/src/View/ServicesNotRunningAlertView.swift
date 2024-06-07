@@ -16,7 +16,7 @@ struct ServicesNotRunningAlertView: View {
             VStack(alignment: .center, spacing: 0.0) {
               Text("To use Karabiner-Elements, you need to run the background services.")
               Text(
-                "Please enable Karabiner-Elements-Services from System Settings > General > Login Items."
+                "Please enable Karabiner-Elements-Non-Privileged-Agents and Karabiner-Elements-Privileged-Daemons from System Settings > General > Login Items."
               )
             }
 
@@ -38,7 +38,7 @@ struct ServicesNotRunningAlertView: View {
 
             VStack {
               Label(
-                "If it is already enabled, the settings might not be properly reflected on the macOS side. Please disable Karabiner-Elements-Services once and then enable it again.",
+                "If it is already enabled, the settings might not be properly reflected on the macOS side. Please disable Karabiner-Elements-Privileged-Daemons once and then enable it again.",
                 systemImage: "lightbulb"
               )
               .padding()

@@ -1,9 +1,10 @@
 #pragma once
 
-#include "constants.hpp"
-
 namespace krbn {
 namespace services_utility {
+
+static constexpr const char* daemons_path = "/Library/Application Support/org.pqrs/Karabiner-Elements/Karabiner-Elements-Privileged-Daemons.app/Contents/MacOS/Karabiner-Elements-Privileged-Daemons";
+static constexpr const char* agents_path = "/Library/Application Support/org.pqrs/Karabiner-Elements/Karabiner-Elements-Non-Privileged-Agents.app/Contents/MacOS/Karabiner-Elements-Non-Privileged-Agents";
 
 //
 // core_daemons
@@ -11,7 +12,7 @@ namespace services_utility {
 
 inline void register_core_daemons(void) {
   system(fmt::format("'{0}' register-core-daemons",
-                     constants::karabiner_elements_services_path)
+                     daemons_path)
              .c_str());
 }
 
@@ -21,13 +22,13 @@ inline void register_core_daemons(void) {
 
 inline void register_core_agents(void) {
   system(fmt::format("'{0}' register-core-agents",
-                     constants::karabiner_elements_services_path)
+                     agents_path)
              .c_str());
 }
 
 inline void unregister_core_agents(void) {
   system(fmt::format("'{0}' unregister-core-agents",
-                     constants::karabiner_elements_services_path)
+                     agents_path)
              .c_str());
 }
 
@@ -52,13 +53,13 @@ inline void restart_console_user_server_agent(void) {
 
 inline void register_menu_agent(void) {
   system(fmt::format("'{0}' register-menu-agent",
-                     constants::karabiner_elements_services_path)
+                     agents_path)
              .c_str());
 }
 
 inline void unregister_menu_agent(void) {
   system(fmt::format("'{0}' unregister-menu-agent",
-                     constants::karabiner_elements_services_path)
+                     agents_path)
              .c_str());
 }
 
@@ -68,13 +69,13 @@ inline void unregister_menu_agent(void) {
 
 inline void register_multitouch_extension_agent(void) {
   system(fmt::format("'{0}' register-multitouch-extension-agent",
-                     constants::karabiner_elements_services_path)
+                     agents_path)
              .c_str());
 }
 
 inline void unregister_multitouch_extension_agent(void) {
   system(fmt::format("'{0}' unregister-multitouch-extension-agent",
-                     constants::karabiner_elements_services_path)
+                     agents_path)
              .c_str());
 }
 
@@ -84,13 +85,13 @@ inline void unregister_multitouch_extension_agent(void) {
 
 inline void register_notification_window_agent(void) {
   system(fmt::format("'{0}' register-notification-window-agent",
-                     constants::karabiner_elements_services_path)
+                     agents_path)
              .c_str());
 }
 
 inline void unregister_notification_window_agent(void) {
   system(fmt::format("'{0}' unregister-notification-window-agent",
-                     constants::karabiner_elements_services_path)
+                     agents_path)
              .c_str());
 }
 
@@ -130,6 +131,13 @@ inline bool grabber_daemon_running(void) {
   auto pid = pqrs::osx::launchctl::find_pid(pqrs::dispatcher::extra::get_shared_dispatcher(),
                                             pqrs::osx::launchctl::make_system_domain_target(),
                                             pqrs::osx::launchctl::service_name("org.pqrs.service.daemon.karabiner_grabber"));
+  return pid != std::nullopt;
+}
+
+inline bool console_user_server_agent_running(void) {
+  auto pid = pqrs::osx::launchctl::find_pid(pqrs::dispatcher::extra::get_shared_dispatcher(),
+                                            pqrs::osx::launchctl::make_gui_domain_target(),
+                                            pqrs::osx::launchctl::service_name("org.pqrs.service.agent.karabiner_console_user_server"));
   return pid != std::nullopt;
 }
 
