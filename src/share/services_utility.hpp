@@ -127,17 +127,17 @@ inline void unregister_all_agents(void) {
   unregister_notification_window_agent();
 }
 
-inline bool grabber_daemon_running(void) {
+inline bool daemon_running(const std::string& service_name) {
   auto pid = pqrs::osx::launchctl::find_pid(pqrs::dispatcher::extra::get_shared_dispatcher(),
                                             pqrs::osx::launchctl::make_system_domain_target(),
-                                            pqrs::osx::launchctl::service_name("org.pqrs.service.daemon.karabiner_grabber"));
+                                            pqrs::osx::launchctl::service_name(service_name));
   return pid != std::nullopt;
 }
 
-inline bool console_user_server_agent_running(void) {
+inline bool agent_running(const std::string& service_name) {
   auto pid = pqrs::osx::launchctl::find_pid(pqrs::dispatcher::extra::get_shared_dispatcher(),
                                             pqrs::osx::launchctl::make_gui_domain_target(),
-                                            pqrs::osx::launchctl::service_name("org.pqrs.service.agent.karabiner_console_user_server"));
+                                            pqrs::osx::launchctl::service_name(service_name));
   return pid != std::nullopt;
 }
 
