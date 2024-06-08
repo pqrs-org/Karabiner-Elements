@@ -2,6 +2,8 @@ import ServiceManagement
 import SwiftUI
 
 struct ServicesNotRunningAlertView: View {
+  @ObservedObject private var servicesMonitor = ServicesMonitor.shared
+
   var body: some View {
     ZStack(alignment: .topLeading) {
       VStack(alignment: .center, spacing: 20.0) {
@@ -24,11 +26,11 @@ struct ServicesNotRunningAlertView: View {
               Label(
                 "Karabiner-Elements Non-Privileged Agents",
                 systemImage:
-                  ServicesMonitor.shared.agentRunning ? "checkmark.circle" : "circle")
+                  servicesMonitor.agentRunning ? "checkmark.circle" : "circle")
               Label(
                 "Karabiner-Elements Privileged Daemons",
                 systemImage:
-                  ServicesMonitor.shared.daemonRunning ? "checkmark.circle" : "circle")
+                  servicesMonitor.daemonRunning ? "checkmark.circle" : "circle")
             }
 
             Button(

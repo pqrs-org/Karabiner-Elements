@@ -1,6 +1,6 @@
 import Foundation
 
-public class ServicesMonitor {
+public class ServicesMonitor: ObservableObject {
   static let shared = ServicesMonitor()
 
   private var timer: Timer?
