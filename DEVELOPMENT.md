@@ -409,7 +409,7 @@ To avoid these issues, the application should adhere to the following:
 -   To avoid an issue with the System Settings UI, prompt the user to approve the daemon if it is not running.
     Inform them that it may already appear as approved and, if it does not work correctly, guide them to revoke and re-approve the daemon.
 
-### Separate the applications that manage Daemons and Agents
+### Separate the applications that manage daemons and agents
 
 As mentioned above, daemons and agents have different approval statuses when registered.
 In the macOS System Settings > General > Login Items UI, a display issue occurs if these two services are managed by a single application.
