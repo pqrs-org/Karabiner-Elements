@@ -3,8 +3,8 @@ all:
 	xcodegen generate
 	xcodebuild -configuration Release -alltargets SYMROOT="$(CURDIR)/build"
 # Copy LaunchAgents
-	mkdir -p build/Release/Karabiner-Elements-Non-Privileged-Agents.app/Contents/Library/LaunchAgents
-	cp LaunchAgents/*.plist build/Release/Karabiner-Elements-Non-Privileged-Agents.app/Contents/Library/LaunchAgents
+	mkdir -p 'build/Release/Karabiner-Elements Non-Privileged Agents.app/Contents/Library/LaunchAgents'
+	cp LaunchAgents/*.plist 'build/Release/Karabiner-Elements Non-Privileged Agents.app/Contents/Library/LaunchAgents'
 
 clean:
 	rm -rf *.xcodeproj
@@ -17,5 +17,5 @@ install:
 	bash ../../../scripts/codesign.sh build/Release
 
 	sudo rsync -a --delete \
-		build/Release/Karabiner-Elements-Non-Privileged-Agents \
+		'build/Release/Karabiner-Elements Non-Privileged Agents' \
 		'/Library/Application Support/org.pqrs/Karabiner-Elements'

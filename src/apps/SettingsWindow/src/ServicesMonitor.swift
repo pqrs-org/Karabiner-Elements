@@ -5,13 +5,19 @@ public class ServicesMonitor {
 
   private var timer: Timer?
 
+  @Published var daemonRunning = true
+  @Published var agentRunning = true
+
   public func start() {
     timer = Timer.scheduledTimer(
       withTimeInterval: 3.0,
       repeats: true
-    ) { (_: Timer) in
-      let daemonRunning = libkrbn_services_grabber_daemon_running()
-      let agentRunning = libkrbn_services_console_user_server_agent_running()
+    ) { [weak self] (_: Timer) in
+      guard let self = self else { return }
+
+      self.daemonRunning = libkrbn_services_grabber_daemon_running()
+      //let agentRunning = libkrbn_services_console_user_server_agent_running()
+      self.agentRunning = false
 
       let servicesRunning = daemonRunning && agentRunning
 

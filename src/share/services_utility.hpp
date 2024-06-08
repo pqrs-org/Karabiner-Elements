@@ -3,8 +3,8 @@
 namespace krbn {
 namespace services_utility {
 
-static constexpr const char* daemons_path = "/Library/Application Support/org.pqrs/Karabiner-Elements/Karabiner-Elements-Privileged-Daemons.app/Contents/MacOS/Karabiner-Elements-Privileged-Daemons";
-static constexpr const char* agents_path = "/Library/Application Support/org.pqrs/Karabiner-Elements/Karabiner-Elements-Non-Privileged-Agents.app/Contents/MacOS/Karabiner-Elements-Non-Privileged-Agents";
+static constexpr const char* daemons_path = "/Library/Application Support/org.pqrs/Karabiner-Elements/Karabiner-Elements Privileged Daemons.app/Contents/MacOS/Karabiner-Elements Privileged Daemons";
+static constexpr const char* agents_path = "/Library/Application Support/org.pqrs/Karabiner-Elements/Karabiner-Elements Non-Privileged Agents.app/Contents/MacOS/Karabiner-Elements Non-Privileged Agents";
 
 //
 // core_daemons

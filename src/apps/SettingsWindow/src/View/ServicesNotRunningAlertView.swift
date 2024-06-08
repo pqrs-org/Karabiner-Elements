@@ -12,12 +12,23 @@ struct ServicesNotRunningAlertView: View {
         .font(.system(size: 24))
 
         GroupBox {
-          VStack(alignment: .center, spacing: 12.0) {
+          VStack(alignment: .center, spacing: 20.0) {
             VStack(alignment: .center, spacing: 0.0) {
               Text("To use Karabiner-Elements, you need to run the background services.")
               Text(
-                "Please enable Karabiner-Elements-Non-Privileged-Agents and Karabiner-Elements-Privileged-Daemons from System Settings > General > Login Items."
+                "Please enable the following items from System Settings > General > Login Items."
               )
+            }
+
+            VStack(alignment: .leading, spacing: 0.0) {
+              Label(
+                "Karabiner-Elements Non-Privileged Agents",
+                systemImage:
+                  ServicesMonitor.shared.agentRunning ? "checkmark.circle" : "circle")
+              Label(
+                "Karabiner-Elements Privileged Daemons",
+                systemImage:
+                  ServicesMonitor.shared.daemonRunning ? "checkmark.circle" : "circle")
             }
 
             Button(
@@ -38,7 +49,7 @@ struct ServicesNotRunningAlertView: View {
 
             VStack {
               Label(
-                "If it is already enabled, the settings might not be properly reflected on the macOS side. Please disable Karabiner-Elements-Privileged-Daemons once and then enable it again.",
+                "If it is already enabled, the settings might not be properly reflected on the macOS side. Please disable Karabiner-Elements Privileged Daemons once and then enable it again.",
                 systemImage: "lightbulb"
               )
               .padding()

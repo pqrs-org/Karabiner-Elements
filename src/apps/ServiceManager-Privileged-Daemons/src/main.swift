@@ -44,7 +44,7 @@ RunLoop.main.perform {
   }
 
   print("Usage:")
-  print("    Karabiner-Elements-Daemons subcommand")
+  print("    'Karabiner-Elements Privileged Daemons' subcommand")
   print("")
   print("Subcommands:")
   print("    \(Subcommand.registerCoreDaemons.rawValue)")
