@@ -26,11 +26,11 @@ struct ServicesNotRunningAlertView: View {
               Label(
                 "Karabiner-Elements Non-Privileged Agents",
                 systemImage:
-                  servicesMonitor.agentRunning ? "checkmark.circle" : "circle")
+                  servicesMonitor.coreAgentsRunning ? "checkmark.circle.fill" : "circle")
               Label(
                 "Karabiner-Elements Privileged Daemons",
                 systemImage:
-                  servicesMonitor.daemonRunning ? "checkmark.circle" : "circle")
+                  servicesMonitor.coreDaemonsRunning ? "checkmark.circle.fill" : "circle")
             }
 
             Button(

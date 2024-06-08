@@ -148,6 +148,14 @@ bool libkrbn_services_agent_running(const char* service_name) {
   return krbn::services_utility::agent_running(service_name);
 }
 
+bool libkrbn_services_core_daemons_running(void) {
+  return krbn::services_utility::core_daemons_running();
+}
+
+bool libkrbn_services_core_agents_running(void) {
+  return krbn::services_utility::core_agents_running();
+}
+
 void libkrbn_launch_event_viewer(void) {
   krbn::application_launcher::launch_event_viewer();
 }

@@ -141,5 +141,19 @@ inline bool agent_running(const std::string& service_name) {
   return pid != std::nullopt;
 }
 
+inline bool core_daemons_running(void) {
+  auto exit_code = system(fmt::format("'{0}' running",
+                                      daemons_path)
+                              .c_str());
+  return exit_code == 0;
+}
+
+inline bool core_agents_running(void) {
+  auto exit_code = system(fmt::format("'{0}' running",
+                                      agents_path)
+                              .c_str());
+  return exit_code == 0;
+}
+
 } // namespace services_utility
 } // namespace krbn

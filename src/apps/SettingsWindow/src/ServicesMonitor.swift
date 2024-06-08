@@ -5,8 +5,8 @@ public class ServicesMonitor: ObservableObject {
 
   private var timer: Timer?
 
-  @Published var daemonRunning = true
-  @Published var agentRunning = true
+  @Published var coreDaemonsRunning = true
+  @Published var coreAgentsRunning = true
 
   public func start() {
     timer = Timer.scheduledTimer(
@@ -15,10 +15,10 @@ public class ServicesMonitor: ObservableObject {
     ) { [weak self] (_: Timer) in
       guard let self = self else { return }
 
-      self.daemonRunning = libkrbn_services_grabber_daemon_running()
-      self.agentRunning = libkrbn_services_console_user_server_agent_running()
+      self.coreDaemonsRunning = libkrbn_services_core_daemons_running()
+      self.coreAgentsRunning = libkrbn_services_core_agents_running()
 
-      let servicesRunning = daemonRunning && agentRunning
+      let servicesRunning = coreDaemonsRunning && coreAgentsRunning
 
       ContentViewStates.shared.showServicesNotRunningAlert = !servicesRunning
 
