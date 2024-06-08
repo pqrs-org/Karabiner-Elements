@@ -140,12 +140,12 @@ void libkrbn_services_unregister_all_agents(void) {
   krbn::services_utility::unregister_all_agents();
 }
 
-bool libkrbn_services_grabber_daemon_running(void) {
-  return krbn::services_utility::grabber_daemon_running();
+bool libkrbn_services_daemon_running(const char* service_name) {
+  return krbn::services_utility::daemon_running(service_name);
 }
 
-bool libkrbn_services_console_user_server_agent_running(void) {
-  return krbn::services_utility::console_user_server_agent_running();
+bool libkrbn_services_agent_running(const char* service_name) {
+  return krbn::services_utility::agent_running(service_name);
 }
 
 void libkrbn_launch_event_viewer(void) {
