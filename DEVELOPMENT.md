@@ -409,6 +409,22 @@ To avoid these issues, the application should adhere to the following:
 -   To avoid an issue with the System Settings UI, prompt the user to approve the daemon if it is not running.
     Inform them that it may already appear as approved and, if it does not work correctly, guide them to revoke and re-approve the daemon.
 
+### Separate the applications that manage Daemons and Agents
+
+As mentioned above, daemons and agents have different approval statuses when registered.
+In the macOS System Settings > General > Login Items UI, a display issue occurs if these two services are managed by a single application.
+Specifically, if either daemons or agents are in the `requiresApproval` state, the checkbox in Login Items should be off.
+However, in reality, if either one is in the `enabled` state, the checkbox appears on.
+This results in the checkbox being on even though either daemons or agents are not actually enabled.
+
+Separating the applications that manage daemons and agents can avoid this issue.
+Additionally, by thoughtfully naming the management applications, it becomes clearer that privileged processes are running, which enhances the user experience.
+Therefore, separating them is preferable from a user experience perspective.
+
+| Good example                                                | Bad example                                                   |
+| ----------------------------------------------------------- | ------------------------------------------------------------- |
+| ![processes](files/images/daemons-and-agents-separated.png) | ![processes](files/images/daemons-and-agents-in-same-app.png) |
+
 ### How to check if a process is running using `launchctl print`
 
 First, run the following command:
