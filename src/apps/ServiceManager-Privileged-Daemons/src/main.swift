@@ -9,12 +9,12 @@ enum Subcommand: String {
   case running = "running"
 }
 
-let coreDaemonServiceNames = [
-  "org.pqrs.service.daemon.Karabiner-VirtualHIDDevice-Daemon",
-  "org.pqrs.service.daemon.karabiner_grabber",
-]
-
 RunLoop.main.perform {
+  let coreDaemonServiceNames = [
+    "org.pqrs.service.daemon.Karabiner-VirtualHIDDevice-Daemon",
+    "org.pqrs.service.daemon.karabiner_grabber",
+  ]
+
   let coreDaemons = coreDaemonServiceNames.map {
     SMAppService.daemon(plistName: "\($0).plist")
   }
@@ -46,6 +46,7 @@ RunLoop.main.perform {
       for n in coreDaemonServiceNames {
         n.withCString {
           if !libkrbn_services_daemon_running($0) {
+            print("\(n) is not running")
             exitCode = 1
           }
         }
