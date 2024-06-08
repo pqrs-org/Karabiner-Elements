@@ -16,8 +16,7 @@ public class ServicesMonitor {
       guard let self = self else { return }
 
       self.daemonRunning = libkrbn_services_grabber_daemon_running()
-      //let agentRunning = libkrbn_services_console_user_server_agent_running()
-      self.agentRunning = false
+      self.agentRunning = libkrbn_services_console_user_server_agent_running()
 
       let servicesRunning = daemonRunning && agentRunning
 
