@@ -41,21 +41,20 @@ struct ServicesNotRunningAlertView: View {
                   systemImage: "arrow.forward.circle.fill")
               })
 
+            Label(
+              "If these are already enabled, the settings might not be properly reflected on the macOS side. Please disable them once and then enable them again.",
+              systemImage: "lightbulb"
+            )
+            .padding()
+            .foregroundColor(Color.warningForeground)
+            .background(Color.warningBackground)
+
             Image(decorative: "login-items")
               .resizable()
               .aspectRatio(contentMode: .fit)
-              .frame(height: 300)
+              //.frame(height: 250)
               .border(Color.gray, width: 1)
 
-            VStack {
-              Label(
-                "If it is already enabled, the settings might not be properly reflected on the macOS side. Please disable Karabiner-Elements Privileged Daemons once and then enable it again.",
-                systemImage: "lightbulb"
-              )
-              .padding()
-              .foregroundColor(Color.warningForeground)
-              .background(Color.warningBackground)
-            }
           }
           .padding()
         }
