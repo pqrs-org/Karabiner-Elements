@@ -10,7 +10,15 @@ targets:
       CODE_SIGN_STYLE: Automatic
       # Sign to Run Locally
       CODE_SIGN_IDENTITY[sdk=macosx*]: '-'
+      HEADER_SEARCH_PATHS:
+        - ../../lib/libkrbn/include
+      OTHER_LDFLAGS:
+        - -L../../lib/libkrbn/build/Release
+        - -lkrbn
       OTHER_SWIFT_FLAGS: '-warnings-as-errors'
+      SWIFT_OBJC_BRIDGING_HEADER: src/Bridging-Header.h
+      SYSTEM_HEADER_SEARCH_PATHS:
+        - ../../vendor/cget/include
     type: application
     platform: macOS
     deploymentTarget: 13.0
@@ -22,4 +30,5 @@ targets:
       - path: ../share/Resources/app.icns
       - path: ../share/swift/ServiceManagementHelper.swift
     dependencies:
+      - sdk: libc++.tbd
       - sdk: ServiceManagement.framework

@@ -15,17 +15,19 @@ enum Subcommand: String {
   case unregisterNotificationWindowAgent = "unregister-notification-window-agent"
 
   case status = "status"
+  case running = "running"
 }
 
 RunLoop.main.perform {
-  let coreAgents: [SMAppService] = [
-    SMAppService.agent(
-      plistName: "org.pqrs.service.agent.karabiner_console_user_server.plist"),
-    SMAppService.agent(
-      plistName: "org.pqrs.service.agent.karabiner_grabber.plist"),
-    SMAppService.agent(
-      plistName: "org.pqrs.service.agent.karabiner_session_monitor.plist"),
+  let coreAgentServiceNames = [
+    "org.pqrs.service.agent.karabiner_console_user_server",
+    "org.pqrs.service.agent.karabiner_grabber",
+    "org.pqrs.service.agent.karabiner_session_monitor",
   ]
+
+  let coreAgents = coreAgentServiceNames.map {
+    SMAppService.agent(plistName: "\($0).plist")
+  }
 
   let menuAgentService = SMAppService.agent(
     plistName: "org.pqrs.service.agent.Karabiner-Menu.plist")
@@ -84,6 +86,25 @@ RunLoop.main.perform {
       ServiceManagementHelper.printStatuses(services: allServices)
       exit(0)
 
+    case .running:
+      var exitCode: Int32 = 0
+      libkrbn_initialize()
+      for n in coreAgentServiceNames {
+        // A non-resident agent that runs only once
+        if n == "org.pqrs.service.agent.karabiner_grabber" {
+          continue
+        }
+
+        n.withCString {
+          if !libkrbn_services_agent_running($0) {
+            print("\(n) is not running")
+            exitCode = 1
+          }
+        }
+      }
+      libkrbn_terminate()
+      exit(exitCode)
+
     default:
       print("Unknown subcommand \(subcommand)")
       exit(1)
@@ -107,6 +128,7 @@ RunLoop.main.perform {
   print("    \(Subcommand.unregisterNotificationWindowAgent.rawValue)")
 
   print("    \(Subcommand.status.rawValue)")
+  print("    \(Subcommand.running.rawValue)")
 
   exit(0)
 }
