@@ -8,7 +8,7 @@ void run_global_configuration_test(void) {
   "global_configuration"_test = [] {
     // empty json
     {
-      nlohmann::json json;
+      auto json = nlohmann::json::object();
       krbn::core_configuration::details::global_configuration global_configuration(json);
       expect(global_configuration.get_check_for_updates_on_startup() == true);
       expect(global_configuration.get_show_in_menu_bar() == true);
@@ -40,8 +40,10 @@ void run_global_configuration_test(void) {
       // Set default values
       //
 
+      global_configuration.set_check_for_updates_on_startup(true);
       global_configuration.set_enable_notification_window(true);
       nlohmann::json j(global_configuration);
+      expect(!j.contains("check_for_updates_on_startup"));
       expect(!j.contains("enable_notification_window"));
     }
 

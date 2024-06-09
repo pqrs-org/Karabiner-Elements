@@ -7,15 +7,18 @@ namespace core_configuration {
 namespace details {
 class global_configuration final {
 public:
+  static constexpr bool check_for_updates_on_startup_default_value = true;
   static constexpr bool enable_notification_window_default_value = true;
 
   global_configuration(const nlohmann::json& json) : json_(json),
-                                                     check_for_updates_on_startup_(true),
+                                                     check_for_updates_on_startup_(check_for_updates_on_startup_default_value),
                                                      show_in_menu_bar_(true),
                                                      show_profile_name_in_menu_bar_(false),
                                                      enable_notification_window_(enable_notification_window_default_value),
                                                      ask_for_confirmation_before_quitting(true),
                                                      unsafe_ui_(false) {
+    pqrs::json::requires_object(json, "json");
+
     if (auto v = pqrs::json::find<bool>(json, "check_for_updates_on_startup")) {
       check_for_updates_on_startup_ = *v;
     }
@@ -43,7 +46,13 @@ public:
 
   nlohmann::json to_json(void) const {
     auto j = json_;
-    j["check_for_updates_on_startup"] = check_for_updates_on_startup_;
+
+    if (check_for_updates_on_startup_ != check_for_updates_on_startup_default_value) {
+      j["check_for_updates_on_startup"] = check_for_updates_on_startup_;
+    } else {
+      j.erase("check_for_updates_on_startup");
+    }
+
     j["show_in_menu_bar"] = show_in_menu_bar_;
     j["show_profile_name_in_menu_bar"] = show_profile_name_in_menu_bar_;
 
