@@ -3,7 +3,6 @@
 ## Beta
 
 -   💥 Breaking changes
-
     -   macOS 11 and macOS 12 are no longer supported.
     -   The background service management method has been changed to a new method compatible with macOS 13 and later.
         Therefore, permission needs to be granted for the background service to run. Please follow the steps below.
@@ -19,7 +18,6 @@
         <table><tbody><tr><td><!-- border hack -->
         <img src="https://karabiner-elements.pqrs.org/docs/releasenotes/images/v15.0.0/multitouch-extension@2x.png" alt="Karabiner-Elements Setttings" />
         </td></tr></tbody></table>
-
 -   🔔 Important Notes
     -   A unique random ID called `karabiner_machine_identifier` is now generated during installation.
         This ID is used for machine-specific settings and may be included in the karabiner.json file.
