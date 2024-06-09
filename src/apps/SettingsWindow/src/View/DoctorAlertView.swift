@@ -2,6 +2,7 @@ import SwiftUI
 
 struct DoctorAlertView: View {
   @ObservedObject private var doctor = Doctor.shared
+  @FocusState var focus: Bool
 
   var body: some View {
     ZStack(alignment: .topLeading) {
@@ -35,7 +36,9 @@ struct DoctorAlertView: View {
                     Label(
                       "Open Home folder...",
                       systemImage: "arrow.forward.circle.fill")
-                  })
+                  }
+                )
+                .focused($focus)
               }
 
               Text("2. Press Command + Shift + . (period) to show hidden files")
@@ -53,6 +56,9 @@ struct DoctorAlertView: View {
       SheetCloseButton {
         ContentViewStates.shared.showDoctorAlert = false
       }
+    }
+    .onAppear {
+      focus = true
     }
   }
 

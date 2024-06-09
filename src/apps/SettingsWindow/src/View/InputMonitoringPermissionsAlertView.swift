@@ -1,6 +1,8 @@
 import SwiftUI
 
 struct InputMonitoringPermissionsAlertView: View {
+  @FocusState var focus: Bool
+
   var body: some View {
     ZStack(alignment: .topLeading) {
       VStack(spacing: 20.0) {
@@ -21,7 +23,9 @@ struct InputMonitoringPermissionsAlertView: View {
             Label(
               "Open Privacy & Security System Settings...",
               systemImage: "arrow.forward.circle.fill")
-          })
+          }
+        )
+        .focused($focus)
 
         Image(decorative: "input-monitoring")
           .resizable()
@@ -35,6 +39,9 @@ struct InputMonitoringPermissionsAlertView: View {
       SheetCloseButton {
         ContentViewStates.shared.showInputMonitoringPermissionsAlert = false
       }
+    }
+    .onAppear {
+      focus = true
     }
   }
 

@@ -2,6 +2,7 @@ import SwiftUI
 
 struct DriverNotActivatedAlertView: View {
   @State private var showingAdvanced = false
+  @FocusState var focus: Bool
 
   var body: some View {
     ZStack(alignment: .topLeading) {
@@ -28,7 +29,9 @@ struct DriverNotActivatedAlertView: View {
                   Label(
                     "Open Privacy & Security System Settings...",
                     systemImage: "arrow.forward.circle.fill")
-                })
+                }
+              )
+              .focused($focus)
 
               Image(decorative: "dext-allow")
                 .resizable()
@@ -100,6 +103,9 @@ struct DriverNotActivatedAlertView: View {
       SheetCloseButton {
         ContentViewStates.shared.showDriverNotActivatedAlert = false
       }
+    }
+    .onAppear {
+      focus = true
     }
   }
 

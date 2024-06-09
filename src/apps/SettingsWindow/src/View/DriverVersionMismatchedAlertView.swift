@@ -2,6 +2,7 @@ import SwiftUI
 
 struct DriverVersionMismatchedAlertView: View {
   @State private var showingAdvanced = false
+  @FocusState var focus: Bool
 
   var body: some View {
     ZStack(alignment: .topLeading) {
@@ -32,6 +33,7 @@ struct DriverVersionMismatchedAlertView: View {
                 systemImage: "questionmark.circle")
             }
           )
+          .focused($focus)
         }
 
         if showingAdvanced {
@@ -65,6 +67,9 @@ struct DriverVersionMismatchedAlertView: View {
       SheetCloseButton {
         ContentViewStates.shared.showDriverVersionMismatchedAlert = false
       }
+    }
+    .onAppear {
+      focus = true
     }
   }
 }

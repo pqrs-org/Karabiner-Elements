@@ -3,6 +3,7 @@ import SwiftUI
 
 struct ServicesNotRunningAlertView: View {
   @ObservedObject private var servicesMonitor = ServicesMonitor.shared
+  @FocusState var focus: Bool
 
   var body: some View {
     ZStack(alignment: .topLeading) {
@@ -41,7 +42,9 @@ struct ServicesNotRunningAlertView: View {
                 Label(
                   "Open System Settings > General > Login Items",
                   systemImage: "arrow.forward.circle.fill")
-              })
+              }
+            )
+            .focused($focus)
 
             Label(
               "If these are already enabled, the settings might not be properly reflected on the macOS side. Please disable them once and then enable them again.",
@@ -67,6 +70,9 @@ struct ServicesNotRunningAlertView: View {
       SheetCloseButton {
         ContentViewStates.shared.showServicesNotRunningAlert = false
       }
+    }
+    .onAppear {
+      focus = true
     }
   }
 }
