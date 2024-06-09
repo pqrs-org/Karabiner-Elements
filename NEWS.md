@@ -37,6 +37,7 @@
     -   Support `al_consumer_control_configuration` key, used as the Music key. (Thanks to @kambala-decapitator)
     -   Improved behaviour when using the gamepad stick as a pointing device.
     -   Improved `to_if_alone` behavior to use the modifier flags of the time the key is pressed, when sending events.
+    -   Added `{"type": "unset"}` option to `set_variable`.
     -   Integrated `karabiner_observer` functions into `karabiner_grabber`, and then `karabiner_observer` has been removed.
         The number of background processes has been reduced, resolving performance issues caused by inter-process communication that were occurring in some environments.
     -   Internal changes:
