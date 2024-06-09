@@ -7,6 +7,8 @@ class InputMonitoringAlertData: ObservableObject {
 }
 
 struct InputMonitoringAlertView: View {
+  @FocusState var focus: Bool
+
   var body: some View {
     ZStack(alignment: .topLeading) {
       VStack(alignment: .center, spacing: 20.0) {
@@ -27,7 +29,9 @@ struct InputMonitoringAlertView: View {
             Label(
               "Open Privacy & Security System Settings...",
               systemImage: "arrow.forward.circle.fill")
-          })
+          }
+        )
+        .focused($focus)
       }
       .padding()
       .frame(width: 800)
@@ -35,6 +39,9 @@ struct InputMonitoringAlertView: View {
       SheetCloseButton {
         InputMonitoringAlertData.shared.showing = false
       }
+    }
+    .onAppear {
+      focus = true
     }
   }
 
