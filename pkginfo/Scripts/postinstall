@@ -8,7 +8,7 @@ export PATH
 #
 
 if [ ! -f '/Library/Application Support/org.pqrs/tmp/karabiner_machine_identifier.json' ]; then
-    echo "{\"karabiner_machine_identifier\":\"krbn-$(uuidgen | tr '[:upper:]' '[:lower:]')\"}" |
+    echo "{\"karabiner_machine_identifier\": \"krbn-$(uuidgen | tr '[:upper:]' '[:lower:]')\"}" |
         tee '/Library/Application Support/org.pqrs/tmp/karabiner_machine_identifier.json'
     chmod 0644 '/Library/Application Support/org.pqrs/tmp/karabiner_machine_identifier.json'
 fi
