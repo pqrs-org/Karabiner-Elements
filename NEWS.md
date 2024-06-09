@@ -3,6 +3,7 @@
 ## Beta
 
 -   💥 Breaking changes
+
     -   macOS 11 and macOS 12 are no longer supported.
     -   The background service management method has been changed to a new method compatible with macOS 13 and later.
         Therefore, permission needs to be granted for the background service to run. Please follow the steps below.
@@ -10,8 +11,25 @@
         -   Follow the instructions to allow Karabiner-Elements Privileged Daemons to run in the System Settings.
             <br/><br/>
             <table><tbody><tr><td><!-- border hack -->
-                <img src="https://karabiner-elements.pqrs.org/docs/releasenotes/images/v15.0.0/settings.png" alt="Karabiner-Elements Setttings" />
+                <img src="https://karabiner-elements.pqrs.org/docs/releasenotes/images/v15.0.0/settings@2x.png" alt="Karabiner-Elements Setttings" />
             </td></tr></tbody></table>
+    -   The method to enable the Multitouch Extension has changed.
+        To enable the Multitouch Extension, go to the Misc tab in the settings and turn on `Enable Multitouch Extension`.
+        <br/><br/>
+        <table><tbody><tr><td><!-- border hack -->
+        <img src="https://karabiner-elements.pqrs.org/docs/releasenotes/images/v15.0.0/multitouch-extension@2x.png" alt="Karabiner-Elements Setttings" />
+        </td></tr></tbody></table>
+
+-   🔔 Important Notes
+    -   A unique random ID called `karabiner_machine_identifier` is now generated during installation.
+        This ID is used for machine-specific settings and may be included in the karabiner.json file.
+        If you are sharing karabiner.json with others, you might be interested in how this ID is generated and whether it is safe to share.
+        Since it is a safe ID to share with others, and there is no need to mask it when you share karabiner.json with others.
+        For more details, please refer to the [Privacy](https://karabiner-elements.pqrs.org/docs/privacy/) page.
+        <br/><br/>
+        <table><tbody><tr><td><!-- border hack -->
+        <img src="https://karabiner-elements.pqrs.org/docs/releasenotes/images/v15.0.0/karabiner-machine-identifier@2x.png" alt="karabiner_machine_identifier" />
+        </td></tr></tbody></table>
 -   ✨ New Features
     -   Added the ability to duplicate and reorder profiles.
     -   Added the ability to restart Karabiner-Elements from the menu.
