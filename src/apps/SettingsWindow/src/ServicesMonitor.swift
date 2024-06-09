@@ -4,6 +4,7 @@ public class ServicesMonitor: ObservableObject {
   static let shared = ServicesMonitor()
 
   private var timer: Timer?
+  private var previousServicesRunning: Bool?
 
   @Published var coreDaemonsRunning = true
   @Published var coreAgentsRunning = true
@@ -20,7 +21,12 @@ public class ServicesMonitor: ObservableObject {
 
       let servicesRunning = coreDaemonsRunning && coreAgentsRunning
 
-      ContentViewStates.shared.showServicesNotRunningAlert = !servicesRunning
+      // Display alerts only when the status changes.
+      if previousServicesRunning == nil || previousServicesRunning != servicesRunning {
+        previousServicesRunning = servicesRunning
+
+        ContentViewStates.shared.showServicesNotRunningAlert = !servicesRunning
+      }
 
       if !servicesRunning {
         // For approved services, once they are disabled from System Settings > General > Login Items,
