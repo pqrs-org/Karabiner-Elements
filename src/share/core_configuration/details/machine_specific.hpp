@@ -1,5 +1,6 @@
 #pragma once
 
+#include "../configuration_json_helper.hpp"
 #include <pqrs/json.hpp>
 #include <unordered_map>
 
@@ -12,22 +13,25 @@ public:
   public:
     static constexpr bool enable_multitouch_extension_default_value = false;
 
-    entry(const nlohmann::json& json) : json_(json),
-                                        enable_multitouch_extension_(enable_multitouch_extension_default_value) {
+    entry(const nlohmann::json& json)
+        : json_(json),
+          enable_multitouch_extension_(enable_multitouch_extension_default_value) {
+      helper_values_.push_back(std::make_unique<configuration_json_helper::value_t<bool>>("enable_multitouch_extension",
+                                                                                          enable_multitouch_extension_,
+                                                                                          enable_multitouch_extension_default_value));
+
       pqrs::json::requires_object(json, "json");
 
-      if (auto v = pqrs::json::find<bool>(json, "enable_multitouch_extension")) {
-        enable_multitouch_extension_ = *v;
+      for (const auto& v : helper_values_) {
+        v->update_value(json);
       }
     }
 
     nlohmann::json to_json(void) const {
       auto j = json_;
 
-      if (enable_multitouch_extension_ != enable_multitouch_extension_default_value) {
-        j["enable_multitouch_extension"] = enable_multitouch_extension_;
-      } else {
-        j.erase("enable_multitouch_extension");
+      for (const auto& v : helper_values_) {
+        v->update_json(j);
       }
 
       return j;
@@ -43,9 +47,11 @@ public:
   private:
     nlohmann::json json_;
     bool enable_multitouch_extension_;
+    std::vector<std::unique_ptr<configuration_json_helper::base_t>> helper_values_;
   };
 
-  machine_specific(const nlohmann::json& json) : json_(json) {
+  machine_specific(const nlohmann::json& json)
+      : json_(json) {
     pqrs::json::requires_object(json, "json");
 
     for (const auto& [key, value] : json.items()) {
