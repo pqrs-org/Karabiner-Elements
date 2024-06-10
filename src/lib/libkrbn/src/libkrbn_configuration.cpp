@@ -167,7 +167,7 @@ bool libkrbn_core_configuration_get_profile_name(size_t index,
   if (auto c = get_current_core_configuration()) {
     const auto& profiles = c->get_profiles();
     if (index < profiles.size()) {
-      strlcpy(buffer, profiles[index].get_name().c_str(), length);
+      strlcpy(buffer, profiles[index]->get_name().c_str(), length);
       return true;
     }
   }
@@ -187,7 +187,7 @@ bool libkrbn_core_configuration_get_profile_selected(size_t index) {
   if (auto c = get_current_core_configuration()) {
     const auto& profiles = c->get_profiles();
     if (index < profiles.size()) {
-      return profiles[index].get_selected();
+      return profiles[index]->get_selected();
     }
   }
   return false;
@@ -222,7 +222,7 @@ void libkrbn_core_configuration_duplicate_profile(size_t source_index) {
   if (auto c = get_current_core_configuration()) {
     const auto& profiles = c->get_profiles();
     if (source_index < profiles.size()) {
-      c->duplicate_profile(profiles[source_index]);
+      c->duplicate_profile(*(profiles[source_index]));
     }
   }
 }
