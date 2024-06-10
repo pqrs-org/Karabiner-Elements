@@ -17,6 +17,8 @@ You can download previous versions of Karabiner-Elements from [here](https://kar
 
 ## Supported systems
 
+-   macOS 15 Sequoia
+    -   Both Intel-based Macs and Apple Silicon Macs
 -   macOS 14 Sonoma
     -   Both Intel-based Macs and Apple Silicon Macs
 -   macOS 13 Ventura
