@@ -41,9 +41,11 @@ void run_global_configuration_test(void) {
       //
 
       global_configuration.set_check_for_updates_on_startup(true);
+      global_configuration.set_show_in_menu_bar(true);
       global_configuration.set_enable_notification_window(true);
       nlohmann::json j(global_configuration);
       expect(!j.contains("check_for_updates_on_startup"));
+      expect(!j.contains("show_in_menu_bar"));
       expect(!j.contains("enable_notification_window"));
     }
 

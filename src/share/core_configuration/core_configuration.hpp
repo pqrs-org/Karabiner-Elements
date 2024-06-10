@@ -33,9 +33,10 @@ public:
   core_configuration(const core_configuration&) = delete;
 
   core_configuration(const std::string& file_path,
-                     uid_t expected_file_owner) : loaded_(false),
-                                                  global_configuration_(nlohmann::json::object()),
-                                                  machine_specific_(nlohmann::json::object()) {
+                     uid_t expected_file_owner)
+      : loaded_(false),
+        global_configuration_(std::make_unique<details::global_configuration>(nlohmann::json::object())),
+        machine_specific_(nlohmann::json::object()) {
     bool valid_file_owner = false;
 
     // Load karabiner.json only when the owner is root or current session user.
@@ -58,7 +59,7 @@ public:
             json_ = json_utility::parse_jsonc(input);
 
             if (auto v = pqrs::json::find_object(json_, "global")) {
-              global_configuration_ = details::global_configuration(v->value());
+              global_configuration_ = std::make_unique<details::global_configuration>(v->value());
             }
 
             if (auto v = pqrs::json::find_object(json_, "machine_specific")) {
@@ -95,7 +96,7 @@ public:
   nlohmann::json to_json(void) const {
     auto json = json_;
 
-    json["global"] = global_configuration_.to_json();
+    json["global"] = global_configuration_->to_json();
 
     {
       auto j = machine_specific_.to_json();
@@ -114,10 +115,10 @@ public:
   bool is_loaded(void) const { return loaded_; }
 
   const details::global_configuration& get_global_configuration(void) const {
-    return global_configuration_;
+    return *global_configuration_;
   }
   details::global_configuration& get_global_configuration(void) {
-    return global_configuration_;
+    return *global_configuration_;
   }
 
   const details::machine_specific& get_machine_specific(void) const {
@@ -260,7 +261,7 @@ private:
   nlohmann::json json_;
   bool loaded_;
 
-  details::global_configuration global_configuration_;
+  std::unique_ptr<details::global_configuration> global_configuration_;
   details::machine_specific machine_specific_;
   std::vector<details::profile> profiles_;
 };

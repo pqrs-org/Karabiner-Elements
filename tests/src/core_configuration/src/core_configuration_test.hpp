@@ -173,7 +173,7 @@ void run_core_configuration_test(void) {
     {
       std::ifstream input("json/to_json_example.json");
       auto expected = krbn::json_utility::parse_jsonc(input);
-      expect(configuration.to_json() == expected);
+      expect(configuration.to_json() == expected) << "json/to_json_example.json is not match";
     }
   };
 
@@ -237,7 +237,6 @@ void run_core_configuration_test(void) {
       auto json = nlohmann::json::object();
       krbn::core_configuration::details::global_configuration global_configuration(json);
       nlohmann::json expected({
-          {"show_in_menu_bar", true},
           {"show_profile_name_in_menu_bar", false},
           {"ask_for_confirmation_before_quitting", true},
           {"unsafe_ui", false},
