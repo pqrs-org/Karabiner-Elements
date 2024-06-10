@@ -198,9 +198,9 @@ void run_core_configuration_test(void) {
       expect(configuration.get_global_configuration().get_ask_for_confirmation_before_quitting() == true);
       expect(configuration.get_global_configuration().get_unsafe_ui() == false);
       expect(configuration.get_profiles().size() == 1);
-      expect((configuration.get_profiles())[0].get_name() == "Default profile");
-      expect((configuration.get_profiles())[0].get_selected() == true);
-      expect((configuration.get_profiles())[0].get_fn_function_keys().get_pairs().size() == 12);
+      expect((configuration.get_profiles())[0]->get_name() == "Default profile");
+      expect((configuration.get_profiles())[0]->get_selected() == true);
+      expect((configuration.get_profiles())[0]->get_fn_function_keys().get_pairs().size() == 12);
 
       {
         // to_json result is default json if is_loaded == false

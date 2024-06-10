@@ -40,6 +40,10 @@ public:
         machine_specific_(std::make_unique<details::machine_specific>(nlohmann::json::object())) {
     helper_values_.push_back(std::make_unique<configuration_json_helper::object_t<details::global_configuration>>("global",
                                                                                                                   global_configuration_));
+    helper_values_.push_back(std::make_unique<configuration_json_helper::object_t<details::machine_specific>>("machine_specific",
+                                                                                                              machine_specific_));
+    helper_values_.push_back(std::make_unique<configuration_json_helper::array_t<details::profile>>("profiles",
+                                                                                                    profiles_));
 
     bool valid_file_owner = false;
 
@@ -66,16 +70,6 @@ public:
               v->update_value(json_);
             }
 
-            if (auto v = pqrs::json::find_object(json_, "machine_specific")) {
-              machine_specific_ = std::make_unique<details::machine_specific>(v->value());
-            }
-
-            if (auto v = pqrs::json::find_array(json_, "profiles")) {
-              for (const auto& profile_json : v->value()) {
-                profiles_.emplace_back(profile_json);
-              }
-            }
-
             loaded_ = true;
 
           } catch (std::exception& e) {
@@ -89,10 +83,10 @@ public:
 
     // Fallbacks
     if (profiles_.empty()) {
-      profiles_.emplace_back(nlohmann::json({
+      profiles_.push_back(std::make_unique<details::profile>(nlohmann::json({
           {"name", "Default profile"},
           {"selected", true},
-      }));
+      })));
     }
   }
 
@@ -102,17 +96,6 @@ public:
     for (const auto& v : helper_values_) {
       v->update_json(json);
     }
-
-    {
-      auto j = machine_specific_->to_json();
-      if (!j.empty()) {
-        json["machine_specific"] = j;
-      } else {
-        json.erase("machine_specific");
-      }
-    }
-
-    json["profiles"] = profiles_;
 
     return json;
   }
@@ -133,13 +116,13 @@ public:
     return *machine_specific_;
   }
 
-  const std::vector<details::profile>& get_profiles(void) const {
+  const std::vector<std::unique_ptr<details::profile>>& get_profiles(void) const {
     return profiles_;
   }
 
   void set_profile_name(size_t index, const std::string name) {
     if (index < profiles_.size()) {
-      profiles_[index].set_name(name);
+      profiles_[index]->set_name(name);
     }
   }
 
@@ -147,25 +130,26 @@ public:
     if (index < profiles_.size()) {
       for (size_t i = 0; i < profiles_.size(); ++i) {
         if (i == index) {
-          profiles_[i].set_selected(true);
+          profiles_[i]->set_selected(true);
         } else {
-          profiles_[i].set_selected(false);
+          profiles_[i]->set_selected(false);
         }
       }
     }
   }
 
   void push_back_profile(void) {
-    profiles_.emplace_back(nlohmann::json({
+    profiles_.push_back(std::make_unique<details::profile>(nlohmann::json({
         {"name", "New profile"},
-    }));
+    })));
   }
 
   void duplicate_profile(const details::profile& profile) {
-    auto p = details::profile(nlohmann::json(profile));
+    profiles_.push_back(std::make_unique<details::profile>(nlohmann::json(profile)));
+
+    auto& p = *(profiles_.back());
     p.set_name(p.get_name() + " (copy)");
     p.set_selected(false);
-    profiles_.push_back(p);
   }
 
   void erase_profile(size_t index) {
@@ -181,12 +165,12 @@ public:
   }
 
   const details::profile& get_selected_profile(void) const {
-    for (auto&& profile : profiles_) {
-      if (profile.get_selected()) {
-        return profile;
+    for (auto&& p : profiles_) {
+      if (p->get_selected()) {
+        return *p;
       }
     }
-    return profiles_[0];
+    return *(profiles_[0]);
   }
   details::profile& get_selected_profile(void) {
     return const_cast<details::profile&>(static_cast<const core_configuration&>(*this).get_selected_profile());
@@ -268,7 +252,7 @@ private:
 
   std::unique_ptr<details::global_configuration> global_configuration_;
   std::unique_ptr<details::machine_specific> machine_specific_;
-  std::vector<details::profile> profiles_;
+  std::vector<std::unique_ptr<details::profile>> profiles_;
   std::vector<std::unique_ptr<configuration_json_helper::base_t>> helper_values_;
 };
 } // namespace core_configuration

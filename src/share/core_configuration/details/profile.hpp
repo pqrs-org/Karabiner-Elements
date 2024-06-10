@@ -12,6 +12,8 @@ namespace core_configuration {
 namespace details {
 class profile final {
 public:
+  profile(const profile&) = delete;
+
   profile(const nlohmann::json& json) : json_(json),
                                         selected_(false) {
     // ----------------------------------------

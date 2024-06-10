@@ -86,6 +86,49 @@ private:
   std::unique_ptr<T>& value_;
 };
 
+template <typename T>
+class array_t final : public base_t {
+public:
+  array_t(const std::string& key,
+          std::vector<std::unique_ptr<T>>& value)
+      : key_(key),
+        value_(value) {
+  }
+
+  const std::string& get_key(void) const override {
+    return key_;
+  }
+
+  void update_value(const nlohmann::json& json) override {
+    if (auto v = pqrs::json::find_array(json, key_)) {
+      for (const auto& j : v->value()) {
+        value_.push_back(std::make_unique<T>(j));
+      }
+    }
+  }
+
+  void update_json(nlohmann::json& json) const override {
+    auto array = nlohmann::json::array();
+
+    for (const auto& v : value_) {
+      auto j = v->to_json();
+      if (!j.empty()) {
+        array.push_back(j);
+      }
+    }
+
+    if (!array.empty()) {
+      json[key_] = array;
+    } else {
+      json.erase(key_);
+    }
+  }
+
+private:
+  std::string key_;
+  std::vector<std::unique_ptr<T>>& value_;
+};
+
 } // namespace configuration_json_helper
 } // namespace core_configuration
 } // namespace krbn
