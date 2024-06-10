@@ -236,11 +236,7 @@ void run_core_configuration_test(void) {
     {
       auto json = nlohmann::json::object();
       krbn::core_configuration::details::global_configuration global_configuration(json);
-      nlohmann::json expected({
-          {"show_profile_name_in_menu_bar", false},
-          {"ask_for_confirmation_before_quitting", true},
-          {"unsafe_ui", false},
-      });
+      nlohmann::json expected({});
       expect(global_configuration.to_json() == expected);
 
       auto actual = global_configuration.to_json();

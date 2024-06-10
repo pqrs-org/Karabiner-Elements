@@ -6,15 +6,15 @@ namespace krbn {
 namespace core_configuration {
 namespace configuration_json_helper {
 
-class value_base {
+class base_t {
 public:
-  virtual ~value_base() = default;
+  virtual ~base_t() = default;
   virtual void update_value(const nlohmann::json& json) = 0;
   virtual void update_json(nlohmann::json& json) const = 0;
 };
 
 template <typename T>
-class value_t final : public value_base {
+class value_t final : public base_t {
 public:
   value_t(const std::string& key,
           T& value,
@@ -42,6 +42,35 @@ private:
   std::string key_;
   T& value_;
   const T& default_value_;
+};
+
+template <typename T>
+class object_t final : public base_t {
+public:
+  object_t(const std::string& key,
+           std::unique_ptr<T>& value)
+      : key_(key),
+        value_(value) {
+  }
+
+  void update_value(const nlohmann::json& json) override {
+    if (auto v = pqrs::json::find_object(json, key_)) {
+      value_ = std::make_unique<T>(v->value());
+    }
+  }
+
+  void update_json(nlohmann::json& json) const override {
+    auto j = value_->to_json();
+    if (!j.empty()) {
+      json[key_] = j;
+    } else {
+      json.erase(key_);
+    }
+  }
+
+private:
+  std::string key_;
+  std::unique_ptr<T>& value_;
 };
 
 } // namespace configuration_json_helper

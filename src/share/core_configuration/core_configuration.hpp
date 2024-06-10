@@ -34,9 +34,13 @@ public:
 
   core_configuration(const std::string& file_path,
                      uid_t expected_file_owner)
-      : loaded_(false),
+      : json_(nlohmann::json::object()),
+        loaded_(false),
         global_configuration_(std::make_unique<details::global_configuration>(nlohmann::json::object())),
         machine_specific_(nlohmann::json::object()) {
+    helper_values_.push_back(std::make_unique<configuration_json_helper::object_t<details::global_configuration>>("global",
+                                                                                                                  global_configuration_));
+
     bool valid_file_owner = false;
 
     // Load karabiner.json only when the owner is root or current session user.
@@ -58,8 +62,8 @@ public:
           try {
             json_ = json_utility::parse_jsonc(input);
 
-            if (auto v = pqrs::json::find_object(json_, "global")) {
-              global_configuration_ = std::make_unique<details::global_configuration>(v->value());
+            for (const auto& v : helper_values_) {
+              v->update_value(json_);
             }
 
             if (auto v = pqrs::json::find_object(json_, "machine_specific")) {
@@ -76,7 +80,6 @@ public:
 
           } catch (std::exception& e) {
             logger::get_logger()->error("parse error in {0}: {1}", file_path, e.what());
-            json_ = nlohmann::json::object();
           }
         } else {
           logger::get_logger()->error("failed to open {0}", file_path);
@@ -96,7 +99,9 @@ public:
   nlohmann::json to_json(void) const {
     auto json = json_;
 
-    json["global"] = global_configuration_->to_json();
+    for (const auto& v : helper_values_) {
+      v->update_json(json);
+    }
 
     {
       auto j = machine_specific_.to_json();
@@ -264,6 +269,7 @@ private:
   std::unique_ptr<details::global_configuration> global_configuration_;
   details::machine_specific machine_specific_;
   std::vector<details::profile> profiles_;
+  std::vector<std::unique_ptr<configuration_json_helper::base_t>> helper_values_;
 };
 } // namespace core_configuration
 } // namespace krbn
