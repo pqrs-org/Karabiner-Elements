@@ -37,7 +37,7 @@ public:
       : json_(nlohmann::json::object()),
         loaded_(false),
         global_configuration_(std::make_unique<details::global_configuration>(nlohmann::json::object())),
-        machine_specific_(nlohmann::json::object()) {
+        machine_specific_(std::make_unique<details::machine_specific>(nlohmann::json::object())) {
     helper_values_.push_back(std::make_unique<configuration_json_helper::object_t<details::global_configuration>>("global",
                                                                                                                   global_configuration_));
 
@@ -67,7 +67,7 @@ public:
             }
 
             if (auto v = pqrs::json::find_object(json_, "machine_specific")) {
-              machine_specific_ = details::machine_specific(v->value());
+              machine_specific_ = std::make_unique<details::machine_specific>(v->value());
             }
 
             if (auto v = pqrs::json::find_array(json_, "profiles")) {
@@ -104,7 +104,7 @@ public:
     }
 
     {
-      auto j = machine_specific_.to_json();
+      auto j = machine_specific_->to_json();
       if (!j.empty()) {
         json["machine_specific"] = j;
       } else {
@@ -127,10 +127,10 @@ public:
   }
 
   const details::machine_specific& get_machine_specific(void) const {
-    return machine_specific_;
+    return *machine_specific_;
   }
   details::machine_specific& get_machine_specific(void) {
-    return machine_specific_;
+    return *machine_specific_;
   }
 
   const std::vector<details::profile>& get_profiles(void) const {
@@ -267,7 +267,7 @@ private:
   bool loaded_;
 
   std::unique_ptr<details::global_configuration> global_configuration_;
-  details::machine_specific machine_specific_;
+  std::unique_ptr<details::machine_specific> machine_specific_;
   std::vector<details::profile> profiles_;
   std::vector<std::unique_ptr<configuration_json_helper::base_t>> helper_values_;
 };

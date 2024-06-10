@@ -9,6 +9,7 @@ namespace configuration_json_helper {
 class base_t {
 public:
   virtual ~base_t() = default;
+  virtual const std::string& get_key(void) const = 0;
   virtual void update_value(const nlohmann::json& json) = 0;
   virtual void update_json(nlohmann::json& json) const = 0;
 };
@@ -22,6 +23,14 @@ public:
       : key_(key),
         value_(value),
         default_value_(default_value) {
+  }
+
+  const std::string& get_key(void) const override {
+    return key_;
+  }
+
+  T& get_value(void) const {
+    return value_;
   }
 
   void update_value(const nlohmann::json& json) override {
@@ -51,6 +60,10 @@ public:
            std::unique_ptr<T>& value)
       : key_(key),
         value_(value) {
+  }
+
+  const std::string& get_key(void) const override {
+    return key_;
   }
 
   void update_value(const nlohmann::json& json) override {

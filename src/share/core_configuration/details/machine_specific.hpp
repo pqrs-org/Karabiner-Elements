@@ -13,6 +13,8 @@ public:
   public:
     static constexpr bool enable_multitouch_extension_default_value = false;
 
+    entry(const entry&) = delete;
+
     entry(const nlohmann::json& json)
         : json_(json),
           enable_multitouch_extension_(enable_multitouch_extension_default_value) {
@@ -49,6 +51,8 @@ public:
     bool enable_multitouch_extension_;
     std::vector<std::unique_ptr<configuration_json_helper::base_t>> helper_values_;
   };
+
+  machine_specific(const machine_specific&) = delete;
 
   machine_specific(const nlohmann::json& json)
       : json_(json) {
