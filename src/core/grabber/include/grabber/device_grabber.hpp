@@ -9,6 +9,7 @@
 #include "event_tap_utility.hpp"
 #include "filesystem_utility.hpp"
 #include "grabber/grabber_state_json_writer.hpp"
+#include "gsl/gsl"
 #include "hid_keyboard_caps_lock_led_state_manager.hpp"
 #include "iokit_utility.hpp"
 #include "json_writer.hpp"
@@ -220,7 +221,7 @@ public:
 
         auto entry = std::make_shared<device_grabber_details::entry>(device_id,
                                                                      *device_ptr,
-                                                                     core_configuration_);
+                                                                     core_configuration_.get());
         entries_[device_id] = entry;
 
         entry->hid_queue_values_arrived.connect([this](auto&& entry, auto&& event_queue) {
@@ -983,7 +984,7 @@ private:
   std::vector<nod::scoped_connection> external_signal_connections_;
 
   std::unique_ptr<configuration_monitor> configuration_monitor_;
-  std::shared_ptr<const core_configuration::core_configuration> core_configuration_;
+  gsl::not_null<std::shared_ptr<const core_configuration::core_configuration>> core_configuration_;
 
   std::unique_ptr<event_tap_monitor> event_tap_monitor_;
   std::optional<bool> last_caps_lock_state_;
