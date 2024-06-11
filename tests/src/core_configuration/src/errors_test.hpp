@@ -39,11 +39,11 @@ void run_errors_test(void) {
         if (!e.at("error").is_null()) {
           try {
             handle_json(e);
-            expect(false);
+            expect(false) << "The expected exception is not thrown";
           } catch (pqrs::json::unmarshal_error& ex) {
             expect(std::string_view(e.at("error").get<std::string>()) == ex.what());
           } catch (...) {
-            expect(false);
+            expect(false) << "An unexpected exception is thrown";
           }
         }
       }

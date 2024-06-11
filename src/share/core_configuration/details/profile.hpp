@@ -1,5 +1,6 @@
 #pragma once
 
+#include "../configuration_json_helper.hpp"
 #include "profile/complex_modifications.hpp"
 #include "profile/device.hpp"
 #include "profile/parameters.hpp"
@@ -14,8 +15,12 @@ class profile final {
 public:
   profile(const profile&) = delete;
 
-  profile(const nlohmann::json& json) : json_(json),
-                                        selected_(false) {
+  profile(const nlohmann::json& json)
+      : json_(json),
+        selected_(false) {
+    helper_values_.push_back(std::make_unique<configuration_json_helper::array_t<details::device>>("devices",
+                                                                                                   devices_));
+
     // ----------------------------------------
     // Set default value
 
@@ -25,6 +30,10 @@ public:
     // Load from json
 
     pqrs::json::requires_object(json, "json");
+
+    for (const auto& v : helper_values_) {
+      v->update_value(json);
+    }
 
     for (const auto& [key, value] : json.items()) {
       if (key == "name") {
@@ -70,17 +79,6 @@ public:
           virtual_hid_keyboard_ = value.get<virtual_hid_keyboard>();
         } catch (const pqrs::json::unmarshal_error& e) {
           throw pqrs::json::unmarshal_error(fmt::format("`{0}` error: {1}", key, e.what()));
-        }
-
-      } else if (key == "devices") {
-        pqrs::json::requires_array(value, "`" + key + "`");
-
-        for (const auto& j : value) {
-          try {
-            devices_.emplace_back(j);
-          } catch (const pqrs::json::unmarshal_error& e) {
-            throw pqrs::json::unmarshal_error(fmt::format("`{0}` entry error: {1}", key, e.what()));
-          }
         }
       }
     }
@@ -142,6 +140,11 @@ public:
 
   nlohmann::json to_json(void) const {
     auto j = json_;
+
+    for (const auto& v : helper_values_) {
+      v->update_json(j);
+    }
+
     j["name"] = name_;
     j["selected"] = selected_;
     j["parameters"] = parameters_;
@@ -149,7 +152,7 @@ public:
     j["fn_function_keys"] = fn_function_keys_.to_json();
     j["complex_modifications"] = complex_modifications_.to_json();
     j["virtual_hid_keyboard"] = virtual_hid_keyboard_;
-    j["devices"] = devices_;
+
     return j;
   }
 
@@ -187,8 +190,8 @@ public:
 
   const details::simple_modifications* find_simple_modifications(const device_identifiers& identifiers) const {
     for (const auto& d : devices_) {
-      if (d.get_identifiers() == identifiers) {
-        return &(d.get_simple_modifications());
+      if (d->get_identifiers() == identifiers) {
+        return &(d->get_simple_modifications());
       }
     }
     return nullptr;
@@ -210,8 +213,8 @@ public:
 
   const details::simple_modifications* find_fn_function_keys(const device_identifiers& identifiers) const {
     for (const auto& d : devices_) {
-      if (d.get_identifiers() == identifiers) {
-        return &(d.get_fn_function_keys());
+      if (d->get_identifiers() == identifiers) {
+        return &(d->get_fn_function_keys());
       }
     }
     return nullptr;
@@ -255,14 +258,14 @@ public:
     return virtual_hid_keyboard_;
   }
 
-  const std::vector<details::device>& get_devices(void) const {
+  const std::vector<std::unique_ptr<details::device>>& get_devices(void) const {
     return devices_;
   }
 
   bool get_device_ignore(const device_identifiers& identifiers) const {
     for (const auto& d : devices_) {
-      if (d.get_identifiers() == identifiers) {
-        return d.get_ignore();
+      if (d->get_identifiers() == identifiers) {
+        return d->get_ignore();
       }
     }
 
@@ -276,9 +279,9 @@ public:
                          bool ignore) {
     add_device(identifiers);
 
-    for (auto&& device : devices_) {
-      if (device.get_identifiers() == identifiers) {
-        device.set_ignore(ignore);
+    for (auto&& d : devices_) {
+      if (d->get_identifiers() == identifiers) {
+        d->set_ignore(ignore);
         return;
       }
     }
@@ -286,8 +289,8 @@ public:
 
   bool get_device_manipulate_caps_lock_led(const device_identifiers& identifiers) const {
     for (const auto& d : devices_) {
-      if (d.get_identifiers() == identifiers) {
-        return d.get_manipulate_caps_lock_led();
+      if (d->get_identifiers() == identifiers) {
+        return d->get_manipulate_caps_lock_led();
       }
     }
 
@@ -301,9 +304,9 @@ public:
                                            bool manipulate_caps_lock_led) {
     add_device(identifiers);
 
-    for (auto&& device : devices_) {
-      if (device.get_identifiers() == identifiers) {
-        device.set_manipulate_caps_lock_led(manipulate_caps_lock_led);
+    for (auto&& d : devices_) {
+      if (d->get_identifiers() == identifiers) {
+        d->set_manipulate_caps_lock_led(manipulate_caps_lock_led);
         return;
       }
     }
@@ -311,8 +314,8 @@ public:
 
   bool get_device_treat_as_built_in_keyboard(const device_identifiers& identifiers) const {
     for (const auto& d : devices_) {
-      if (d.get_identifiers() == identifiers) {
-        return d.get_treat_as_built_in_keyboard();
+      if (d->get_identifiers() == identifiers) {
+        return d->get_treat_as_built_in_keyboard();
       }
     }
 
@@ -326,9 +329,9 @@ public:
                                              bool treat_as_built_in_keyboard) {
     add_device(identifiers);
 
-    for (auto&& device : devices_) {
-      if (device.get_identifiers() == identifiers) {
-        device.set_treat_as_built_in_keyboard(treat_as_built_in_keyboard);
+    for (auto&& d : devices_) {
+      if (d->get_identifiers() == identifiers) {
+        d->set_treat_as_built_in_keyboard(treat_as_built_in_keyboard);
         return;
       }
     }
@@ -336,8 +339,8 @@ public:
 
   bool get_device_disable_built_in_keyboard_if_exists(const device_identifiers& identifiers) const {
     for (const auto& d : devices_) {
-      if (d.get_identifiers() == identifiers) {
-        return d.get_disable_built_in_keyboard_if_exists();
+      if (d->get_identifiers() == identifiers) {
+        return d->get_disable_built_in_keyboard_if_exists();
       }
     }
     return false;
@@ -347,9 +350,9 @@ public:
                                                       bool disable_built_in_keyboard_if_exists) {
     add_device(identifiers);
 
-    for (auto&& device : devices_) {
-      if (device.get_identifiers() == identifiers) {
-        device.set_disable_built_in_keyboard_if_exists(disable_built_in_keyboard_if_exists);
+    for (auto&& d : devices_) {
+      if (d->get_identifiers() == identifiers) {
+        d->set_disable_built_in_keyboard_if_exists(disable_built_in_keyboard_if_exists);
         return;
       }
     }
@@ -357,8 +360,8 @@ public:
 
   bool get_device_mouse_flip_x(const device_identifiers& identifiers) const {
     for (const auto& d : devices_) {
-      if (d.get_identifiers() == identifiers) {
-        return d.get_mouse_flip_x();
+      if (d->get_identifiers() == identifiers) {
+        return d->get_mouse_flip_x();
       }
     }
     return false;
@@ -368,9 +371,9 @@ public:
                                bool value) {
     add_device(identifiers);
 
-    for (auto&& device : devices_) {
-      if (device.get_identifiers() == identifiers) {
-        device.set_mouse_flip_x(value);
+    for (auto&& d : devices_) {
+      if (d->get_identifiers() == identifiers) {
+        d->set_mouse_flip_x(value);
         return;
       }
     }
@@ -378,8 +381,8 @@ public:
 
   bool get_device_mouse_flip_y(const device_identifiers& identifiers) const {
     for (const auto& d : devices_) {
-      if (d.get_identifiers() == identifiers) {
-        return d.get_mouse_flip_y();
+      if (d->get_identifiers() == identifiers) {
+        return d->get_mouse_flip_y();
       }
     }
     return false;
@@ -389,9 +392,9 @@ public:
                                bool value) {
     add_device(identifiers);
 
-    for (auto&& device : devices_) {
-      if (device.get_identifiers() == identifiers) {
-        device.set_mouse_flip_y(value);
+    for (auto&& d : devices_) {
+      if (d->get_identifiers() == identifiers) {
+        d->set_mouse_flip_y(value);
         return;
       }
     }
@@ -399,8 +402,8 @@ public:
 
   bool get_device_mouse_flip_vertical_wheel(const device_identifiers& identifiers) const {
     for (const auto& d : devices_) {
-      if (d.get_identifiers() == identifiers) {
-        return d.get_mouse_flip_vertical_wheel();
+      if (d->get_identifiers() == identifiers) {
+        return d->get_mouse_flip_vertical_wheel();
       }
     }
     return false;
@@ -410,9 +413,9 @@ public:
                                             bool value) {
     add_device(identifiers);
 
-    for (auto&& device : devices_) {
-      if (device.get_identifiers() == identifiers) {
-        device.set_mouse_flip_vertical_wheel(value);
+    for (auto&& d : devices_) {
+      if (d->get_identifiers() == identifiers) {
+        d->set_mouse_flip_vertical_wheel(value);
         return;
       }
     }
@@ -420,8 +423,8 @@ public:
 
   bool get_device_mouse_flip_horizontal_wheel(const device_identifiers& identifiers) const {
     for (const auto& d : devices_) {
-      if (d.get_identifiers() == identifiers) {
-        return d.get_mouse_flip_horizontal_wheel();
+      if (d->get_identifiers() == identifiers) {
+        return d->get_mouse_flip_horizontal_wheel();
       }
     }
     return false;
@@ -431,9 +434,9 @@ public:
                                               bool value) {
     add_device(identifiers);
 
-    for (auto&& device : devices_) {
-      if (device.get_identifiers() == identifiers) {
-        device.set_mouse_flip_horizontal_wheel(value);
+    for (auto&& d : devices_) {
+      if (d->get_identifiers() == identifiers) {
+        d->set_mouse_flip_horizontal_wheel(value);
         return;
       }
     }
@@ -441,8 +444,8 @@ public:
 
   bool get_device_mouse_swap_xy(const device_identifiers& identifiers) const {
     for (const auto& d : devices_) {
-      if (d.get_identifiers() == identifiers) {
-        return d.get_mouse_swap_xy();
+      if (d->get_identifiers() == identifiers) {
+        return d->get_mouse_swap_xy();
       }
     }
     return false;
@@ -452,9 +455,9 @@ public:
                                 bool value) {
     add_device(identifiers);
 
-    for (auto&& device : devices_) {
-      if (device.get_identifiers() == identifiers) {
-        device.set_mouse_swap_xy(value);
+    for (auto&& d : devices_) {
+      if (d->get_identifiers() == identifiers) {
+        d->set_mouse_swap_xy(value);
         return;
       }
     }
@@ -462,8 +465,8 @@ public:
 
   bool get_device_mouse_swap_wheels(const device_identifiers& identifiers) const {
     for (const auto& d : devices_) {
-      if (d.get_identifiers() == identifiers) {
-        return d.get_mouse_swap_wheels();
+      if (d->get_identifiers() == identifiers) {
+        return d->get_mouse_swap_wheels();
       }
     }
     return false;
@@ -473,9 +476,9 @@ public:
                                     bool value) {
     add_device(identifiers);
 
-    for (auto&& device : devices_) {
-      if (device.get_identifiers() == identifiers) {
-        device.set_mouse_swap_wheels(value);
+    for (auto&& d : devices_) {
+      if (d->get_identifiers() == identifiers) {
+        d->set_mouse_swap_wheels(value);
         return;
       }
     }
@@ -483,8 +486,8 @@ public:
 
   bool get_device_mouse_discard_x(const device_identifiers& identifiers) const {
     for (const auto& d : devices_) {
-      if (d.get_identifiers() == identifiers) {
-        return d.get_mouse_discard_x();
+      if (d->get_identifiers() == identifiers) {
+        return d->get_mouse_discard_x();
       }
     }
     return false;
@@ -494,9 +497,9 @@ public:
                                   bool value) {
     add_device(identifiers);
 
-    for (auto&& device : devices_) {
-      if (device.get_identifiers() == identifiers) {
-        device.set_mouse_discard_x(value);
+    for (auto&& d : devices_) {
+      if (d->get_identifiers() == identifiers) {
+        d->set_mouse_discard_x(value);
         return;
       }
     }
@@ -504,8 +507,8 @@ public:
 
   bool get_device_mouse_discard_y(const device_identifiers& identifiers) const {
     for (const auto& d : devices_) {
-      if (d.get_identifiers() == identifiers) {
-        return d.get_mouse_discard_y();
+      if (d->get_identifiers() == identifiers) {
+        return d->get_mouse_discard_y();
       }
     }
     return false;
@@ -515,9 +518,9 @@ public:
                                   bool value) {
     add_device(identifiers);
 
-    for (auto&& device : devices_) {
-      if (device.get_identifiers() == identifiers) {
-        device.set_mouse_discard_y(value);
+    for (auto&& d : devices_) {
+      if (d->get_identifiers() == identifiers) {
+        d->set_mouse_discard_y(value);
         return;
       }
     }
@@ -525,8 +528,8 @@ public:
 
   bool get_device_mouse_discard_vertical_wheel(const device_identifiers& identifiers) const {
     for (const auto& d : devices_) {
-      if (d.get_identifiers() == identifiers) {
-        return d.get_mouse_discard_vertical_wheel();
+      if (d->get_identifiers() == identifiers) {
+        return d->get_mouse_discard_vertical_wheel();
       }
     }
     return false;
@@ -536,9 +539,9 @@ public:
                                                bool value) {
     add_device(identifiers);
 
-    for (auto&& device : devices_) {
-      if (device.get_identifiers() == identifiers) {
-        device.set_mouse_discard_vertical_wheel(value);
+    for (auto&& d : devices_) {
+      if (d->get_identifiers() == identifiers) {
+        d->set_mouse_discard_vertical_wheel(value);
         return;
       }
     }
@@ -546,8 +549,8 @@ public:
 
   bool get_device_mouse_discard_horizontal_wheel(const device_identifiers& identifiers) const {
     for (const auto& d : devices_) {
-      if (d.get_identifiers() == identifiers) {
-        return d.get_mouse_discard_horizontal_wheel();
+      if (d->get_identifiers() == identifiers) {
+        return d->get_mouse_discard_horizontal_wheel();
       }
     }
     return false;
@@ -557,9 +560,9 @@ public:
                                                  bool value) {
     add_device(identifiers);
 
-    for (auto&& device : devices_) {
-      if (device.get_identifiers() == identifiers) {
-        device.set_mouse_discard_horizontal_wheel(value);
+    for (auto&& d : devices_) {
+      if (d->get_identifiers() == identifiers) {
+        d->set_mouse_discard_horizontal_wheel(value);
         return;
       }
     }
@@ -567,8 +570,8 @@ public:
 
   bool get_device_game_pad_swap_sticks(const device_identifiers& identifiers) const {
     for (const auto& d : devices_) {
-      if (d.get_identifiers() == identifiers) {
-        return d.get_game_pad_swap_sticks();
+      if (d->get_identifiers() == identifiers) {
+        return d->get_game_pad_swap_sticks();
       }
     }
     return false;
@@ -578,9 +581,9 @@ public:
                                        bool value) {
     add_device(identifiers);
 
-    for (auto&& device : devices_) {
-      if (device.get_identifiers() == identifiers) {
-        device.set_game_pad_swap_sticks(value);
+    for (auto&& d : devices_) {
+      if (d->get_identifiers() == identifiers) {
+        d->set_game_pad_swap_sticks(value);
         return;
       }
     }
@@ -592,8 +595,8 @@ public:
 
   bool has_device_game_pad_xy_stick_continued_movement_absolute_magnitude_threshold(const device_identifiers& identifiers) const {
     for (const auto& d : devices_) {
-      if (d.get_identifiers() == identifiers) {
-        if (auto value = d.get_game_pad_xy_stick_continued_movement_absolute_magnitude_threshold()) {
+      if (d->get_identifiers() == identifiers) {
+        if (auto value = d->get_game_pad_xy_stick_continued_movement_absolute_magnitude_threshold()) {
           return true;
         }
       }
@@ -603,8 +606,8 @@ public:
 
   double get_device_game_pad_xy_stick_continued_movement_absolute_magnitude_threshold(const device_identifiers& identifiers) const {
     for (const auto& d : devices_) {
-      if (d.get_identifiers() == identifiers) {
-        if (auto value = d.get_game_pad_xy_stick_continued_movement_absolute_magnitude_threshold()) {
+      if (d->get_identifiers() == identifiers) {
+        if (auto value = d->get_game_pad_xy_stick_continued_movement_absolute_magnitude_threshold()) {
           return *value;
         }
       }
@@ -616,9 +619,9 @@ public:
                                                                                     std::optional<double> value) {
     add_device(identifiers);
 
-    for (auto&& device : devices_) {
-      if (device.get_identifiers() == identifiers) {
-        device.set_game_pad_xy_stick_continued_movement_absolute_magnitude_threshold(value);
+    for (auto&& d : devices_) {
+      if (d->get_identifiers() == identifiers) {
+        d->set_game_pad_xy_stick_continued_movement_absolute_magnitude_threshold(value);
         return;
       }
     }
@@ -630,8 +633,8 @@ public:
 
   bool has_device_game_pad_xy_stick_continued_movement_interval_milliseconds(const device_identifiers& identifiers) const {
     for (const auto& d : devices_) {
-      if (d.get_identifiers() == identifiers) {
-        if (auto value = d.get_game_pad_xy_stick_continued_movement_interval_milliseconds()) {
+      if (d->get_identifiers() == identifiers) {
+        if (auto value = d->get_game_pad_xy_stick_continued_movement_interval_milliseconds()) {
           return true;
         }
       }
@@ -641,8 +644,8 @@ public:
 
   int get_device_game_pad_xy_stick_continued_movement_interval_milliseconds(const device_identifiers& identifiers) const {
     for (const auto& d : devices_) {
-      if (d.get_identifiers() == identifiers) {
-        if (auto value = d.get_game_pad_xy_stick_continued_movement_interval_milliseconds()) {
+      if (d->get_identifiers() == identifiers) {
+        if (auto value = d->get_game_pad_xy_stick_continued_movement_interval_milliseconds()) {
           return *value;
         }
       }
@@ -654,9 +657,9 @@ public:
                                                                              std::optional<int> value) {
     add_device(identifiers);
 
-    for (auto&& device : devices_) {
-      if (device.get_identifiers() == identifiers) {
-        device.set_game_pad_xy_stick_continued_movement_interval_milliseconds(value);
+    for (auto&& d : devices_) {
+      if (d->get_identifiers() == identifiers) {
+        d->set_game_pad_xy_stick_continued_movement_interval_milliseconds(value);
         return;
       }
     }
@@ -668,8 +671,8 @@ public:
 
   bool has_device_game_pad_xy_stick_flicking_input_window_milliseconds(const device_identifiers& identifiers) const {
     for (const auto& d : devices_) {
-      if (d.get_identifiers() == identifiers) {
-        if (auto value = d.get_game_pad_xy_stick_flicking_input_window_milliseconds()) {
+      if (d->get_identifiers() == identifiers) {
+        if (auto value = d->get_game_pad_xy_stick_flicking_input_window_milliseconds()) {
           return true;
         }
       }
@@ -679,8 +682,8 @@ public:
 
   int get_device_game_pad_xy_stick_flicking_input_window_milliseconds(const device_identifiers& identifiers) const {
     for (const auto& d : devices_) {
-      if (d.get_identifiers() == identifiers) {
-        if (auto value = d.get_game_pad_xy_stick_flicking_input_window_milliseconds()) {
+      if (d->get_identifiers() == identifiers) {
+        if (auto value = d->get_game_pad_xy_stick_flicking_input_window_milliseconds()) {
           return *value;
         }
       }
@@ -692,9 +695,9 @@ public:
                                                                        std::optional<int> value) {
     add_device(identifiers);
 
-    for (auto&& device : devices_) {
-      if (device.get_identifiers() == identifiers) {
-        device.set_game_pad_xy_stick_flicking_input_window_milliseconds(value);
+    for (auto&& d : devices_) {
+      if (d->get_identifiers() == identifiers) {
+        d->set_game_pad_xy_stick_flicking_input_window_milliseconds(value);
         return;
       }
     }
@@ -706,8 +709,8 @@ public:
 
   bool has_device_game_pad_wheels_stick_continued_movement_absolute_magnitude_threshold(const device_identifiers& identifiers) const {
     for (const auto& d : devices_) {
-      if (d.get_identifiers() == identifiers) {
-        if (auto value = d.get_game_pad_wheels_stick_continued_movement_absolute_magnitude_threshold()) {
+      if (d->get_identifiers() == identifiers) {
+        if (auto value = d->get_game_pad_wheels_stick_continued_movement_absolute_magnitude_threshold()) {
           return true;
         }
       }
@@ -717,8 +720,8 @@ public:
 
   double get_device_game_pad_wheels_stick_continued_movement_absolute_magnitude_threshold(const device_identifiers& identifiers) const {
     for (const auto& d : devices_) {
-      if (d.get_identifiers() == identifiers) {
-        if (auto value = d.get_game_pad_wheels_stick_continued_movement_absolute_magnitude_threshold()) {
+      if (d->get_identifiers() == identifiers) {
+        if (auto value = d->get_game_pad_wheels_stick_continued_movement_absolute_magnitude_threshold()) {
           return *value;
         }
       }
@@ -730,9 +733,9 @@ public:
                                                                                         std::optional<double> value) {
     add_device(identifiers);
 
-    for (auto&& device : devices_) {
-      if (device.get_identifiers() == identifiers) {
-        device.set_game_pad_wheels_stick_continued_movement_absolute_magnitude_threshold(value);
+    for (auto&& d : devices_) {
+      if (d->get_identifiers() == identifiers) {
+        d->set_game_pad_wheels_stick_continued_movement_absolute_magnitude_threshold(value);
         return;
       }
     }
@@ -744,8 +747,8 @@ public:
 
   bool has_device_game_pad_wheels_stick_continued_movement_interval_milliseconds(const device_identifiers& identifiers) const {
     for (const auto& d : devices_) {
-      if (d.get_identifiers() == identifiers) {
-        if (auto value = d.get_game_pad_wheels_stick_continued_movement_interval_milliseconds()) {
+      if (d->get_identifiers() == identifiers) {
+        if (auto value = d->get_game_pad_wheels_stick_continued_movement_interval_milliseconds()) {
           return true;
         }
       }
@@ -755,8 +758,8 @@ public:
 
   int get_device_game_pad_wheels_stick_continued_movement_interval_milliseconds(const device_identifiers& identifiers) const {
     for (const auto& d : devices_) {
-      if (d.get_identifiers() == identifiers) {
-        if (auto value = d.get_game_pad_wheels_stick_continued_movement_interval_milliseconds()) {
+      if (d->get_identifiers() == identifiers) {
+        if (auto value = d->get_game_pad_wheels_stick_continued_movement_interval_milliseconds()) {
           return *value;
         }
       }
@@ -768,9 +771,9 @@ public:
                                                                                  std::optional<int> value) {
     add_device(identifiers);
 
-    for (auto&& device : devices_) {
-      if (device.get_identifiers() == identifiers) {
-        device.set_game_pad_wheels_stick_continued_movement_interval_milliseconds(value);
+    for (auto&& d : devices_) {
+      if (d->get_identifiers() == identifiers) {
+        d->set_game_pad_wheels_stick_continued_movement_interval_milliseconds(value);
         return;
       }
     }
@@ -782,8 +785,8 @@ public:
 
   bool has_device_game_pad_wheels_stick_flicking_input_window_milliseconds(const device_identifiers& identifiers) const {
     for (const auto& d : devices_) {
-      if (d.get_identifiers() == identifiers) {
-        if (auto value = d.get_game_pad_wheels_stick_flicking_input_window_milliseconds()) {
+      if (d->get_identifiers() == identifiers) {
+        if (auto value = d->get_game_pad_wheels_stick_flicking_input_window_milliseconds()) {
           return true;
         }
       }
@@ -793,8 +796,8 @@ public:
 
   int get_device_game_pad_wheels_stick_flicking_input_window_milliseconds(const device_identifiers& identifiers) const {
     for (const auto& d : devices_) {
-      if (d.get_identifiers() == identifiers) {
-        if (auto value = d.get_game_pad_wheels_stick_flicking_input_window_milliseconds()) {
+      if (d->get_identifiers() == identifiers) {
+        if (auto value = d->get_game_pad_wheels_stick_flicking_input_window_milliseconds()) {
           return *value;
         }
       }
@@ -806,9 +809,9 @@ public:
                                                                            std::optional<int> value) {
     add_device(identifiers);
 
-    for (auto&& device : devices_) {
-      if (device.get_identifiers() == identifiers) {
-        device.set_game_pad_wheels_stick_flicking_input_window_milliseconds(value);
+    for (auto&& d : devices_) {
+      if (d->get_identifiers() == identifiers) {
+        d->set_game_pad_wheels_stick_flicking_input_window_milliseconds(value);
         return;
       }
     }
@@ -820,8 +823,8 @@ public:
 
   bool has_device_game_pad_stick_x_formula(const device_identifiers& identifiers) const {
     for (const auto& d : devices_) {
-      if (d.get_identifiers() == identifiers) {
-        if (auto value = d.get_game_pad_stick_x_formula()) {
+      if (d->get_identifiers() == identifiers) {
+        if (auto value = d->get_game_pad_stick_x_formula()) {
           return true;
         }
       }
@@ -831,8 +834,8 @@ public:
 
   std::string get_device_game_pad_stick_x_formula(const device_identifiers& identifiers) const {
     for (const auto& d : devices_) {
-      if (d.get_identifiers() == identifiers) {
-        if (auto value = d.get_game_pad_stick_x_formula()) {
+      if (d->get_identifiers() == identifiers) {
+        if (auto value = d->get_game_pad_stick_x_formula()) {
           return *value;
         }
       }
@@ -844,9 +847,9 @@ public:
                                            const std::optional<std::string>& value) {
     add_device(identifiers);
 
-    for (auto&& device : devices_) {
-      if (device.get_identifiers() == identifiers) {
-        device.set_game_pad_stick_x_formula(value);
+    for (auto&& d : devices_) {
+      if (d->get_identifiers() == identifiers) {
+        d->set_game_pad_stick_x_formula(value);
         return;
       }
     }
@@ -858,8 +861,8 @@ public:
 
   bool has_device_game_pad_stick_y_formula(const device_identifiers& identifiers) const {
     for (const auto& d : devices_) {
-      if (d.get_identifiers() == identifiers) {
-        if (auto value = d.get_game_pad_stick_y_formula()) {
+      if (d->get_identifiers() == identifiers) {
+        if (auto value = d->get_game_pad_stick_y_formula()) {
           return true;
         }
       }
@@ -869,8 +872,8 @@ public:
 
   std::string get_device_game_pad_stick_y_formula(const device_identifiers& identifiers) const {
     for (const auto& d : devices_) {
-      if (d.get_identifiers() == identifiers) {
-        if (auto value = d.get_game_pad_stick_y_formula()) {
+      if (d->get_identifiers() == identifiers) {
+        if (auto value = d->get_game_pad_stick_y_formula()) {
           return *value;
         }
       }
@@ -882,9 +885,9 @@ public:
                                            const std::optional<std::string>& value) {
     add_device(identifiers);
 
-    for (auto&& device : devices_) {
-      if (device.get_identifiers() == identifiers) {
-        device.set_game_pad_stick_y_formula(value);
+    for (auto&& d : devices_) {
+      if (d->get_identifiers() == identifiers) {
+        d->set_game_pad_stick_y_formula(value);
         return;
       }
     }
@@ -896,8 +899,8 @@ public:
 
   bool has_device_game_pad_stick_vertical_wheel_formula(const device_identifiers& identifiers) const {
     for (const auto& d : devices_) {
-      if (d.get_identifiers() == identifiers) {
-        if (auto value = d.get_game_pad_stick_vertical_wheel_formula()) {
+      if (d->get_identifiers() == identifiers) {
+        if (auto value = d->get_game_pad_stick_vertical_wheel_formula()) {
           return true;
         }
       }
@@ -907,8 +910,8 @@ public:
 
   std::string get_device_game_pad_stick_vertical_wheel_formula(const device_identifiers& identifiers) const {
     for (const auto& d : devices_) {
-      if (d.get_identifiers() == identifiers) {
-        if (auto value = d.get_game_pad_stick_vertical_wheel_formula()) {
+      if (d->get_identifiers() == identifiers) {
+        if (auto value = d->get_game_pad_stick_vertical_wheel_formula()) {
           return *value;
         }
       }
@@ -920,9 +923,9 @@ public:
                                                         const std::optional<std::string>& value) {
     add_device(identifiers);
 
-    for (auto&& device : devices_) {
-      if (device.get_identifiers() == identifiers) {
-        device.set_game_pad_stick_vertical_wheel_formula(value);
+    for (auto&& d : devices_) {
+      if (d->get_identifiers() == identifiers) {
+        d->set_game_pad_stick_vertical_wheel_formula(value);
         return;
       }
     }
@@ -934,8 +937,8 @@ public:
 
   bool has_device_game_pad_stick_horizontal_wheel_formula(const device_identifiers& identifiers) const {
     for (const auto& d : devices_) {
-      if (d.get_identifiers() == identifiers) {
-        if (auto value = d.get_game_pad_stick_horizontal_wheel_formula()) {
+      if (d->get_identifiers() == identifiers) {
+        if (auto value = d->get_game_pad_stick_horizontal_wheel_formula()) {
           return true;
         }
       }
@@ -945,8 +948,8 @@ public:
 
   std::string get_device_game_pad_stick_horizontal_wheel_formula(const device_identifiers& identifiers) const {
     for (const auto& d : devices_) {
-      if (d.get_identifiers() == identifiers) {
-        if (auto value = d.get_game_pad_stick_horizontal_wheel_formula()) {
+      if (d->get_identifiers() == identifiers) {
+        if (auto value = d->get_game_pad_stick_horizontal_wheel_formula()) {
           return *value;
         }
       }
@@ -958,9 +961,9 @@ public:
                                                           const std::optional<std::string>& value) {
     add_device(identifiers);
 
-    for (auto&& device : devices_) {
-      if (device.get_identifiers() == identifiers) {
-        device.set_game_pad_stick_horizontal_wheel_formula(value);
+    for (auto&& d : devices_) {
+      if (d->get_identifiers() == identifiers) {
+        d->set_game_pad_stick_horizontal_wheel_formula(value);
         return;
       }
     }
@@ -968,16 +971,15 @@ public:
 
 private:
   void add_device(const device_identifiers& identifiers) {
-    for (auto&& device : devices_) {
-      if (device.get_identifiers() == identifiers) {
+    for (auto&& d : devices_) {
+      if (d->get_identifiers() == identifiers) {
         return;
       }
     }
 
-    auto json = nlohmann::json({
+    devices_.push_back(std::make_unique<details::device>(nlohmann::json({
         {"identifiers", identifiers},
-    });
-    devices_.emplace_back(json);
+    })));
   }
 
   nlohmann::json json_;
@@ -988,7 +990,8 @@ private:
   details::simple_modifications fn_function_keys_;
   details::complex_modifications complex_modifications_;
   details::virtual_hid_keyboard virtual_hid_keyboard_;
-  std::vector<details::device> devices_;
+  std::vector<std::unique_ptr<details::device>> devices_;
+  std::vector<std::unique_ptr<configuration_json_helper::base_t>> helper_values_;
 };
 
 inline void to_json(nlohmann::json& json, const profile& profile) {

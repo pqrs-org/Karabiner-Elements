@@ -147,19 +147,19 @@ void run_core_configuration_test(void) {
       auto& actual = configuration.get_selected_profile().get_devices();
       expect(actual.size() == 3);
 
-      expect(actual[0].get_identifiers().get_vendor_id() == pqrs::hid::vendor_id::value_t(1133));
-      expect(actual[0].get_identifiers().get_product_id() == pqrs::hid::product_id::value_t(50475));
-      expect(actual[0].get_identifiers().get_is_keyboard() == true);
-      expect(actual[0].get_identifiers().get_is_pointing_device() == false);
-      expect(actual[0].get_ignore() == false);
-      expect(actual[0].get_disable_built_in_keyboard_if_exists() == false);
+      expect(actual[0]->get_identifiers().get_vendor_id() == pqrs::hid::vendor_id::value_t(1133));
+      expect(actual[0]->get_identifiers().get_product_id() == pqrs::hid::product_id::value_t(50475));
+      expect(actual[0]->get_identifiers().get_is_keyboard() == true);
+      expect(actual[0]->get_identifiers().get_is_pointing_device() == false);
+      expect(actual[0]->get_ignore() == false);
+      expect(actual[0]->get_disable_built_in_keyboard_if_exists() == false);
 
-      expect(actual[1].get_identifiers().get_vendor_id() == pqrs::hid::vendor_id::value_t(1452));
-      expect(actual[1].get_identifiers().get_product_id() == pqrs::hid::product_id::value_t(610));
-      expect(actual[1].get_identifiers().get_is_keyboard() == true);
-      expect(actual[1].get_identifiers().get_is_pointing_device() == false);
-      expect(actual[1].get_ignore() == true);
-      expect(actual[1].get_disable_built_in_keyboard_if_exists() == true);
+      expect(actual[1]->get_identifiers().get_vendor_id() == pqrs::hid::vendor_id::value_t(1452));
+      expect(actual[1]->get_identifiers().get_product_id() == pqrs::hid::product_id::value_t(610));
+      expect(actual[1]->get_identifiers().get_is_keyboard() == true);
+      expect(actual[1]->get_identifiers().get_is_pointing_device() == false);
+      expect(actual[1]->get_ignore() == true);
+      expect(actual[1]->get_disable_built_in_keyboard_if_exists() == true);
     }
 
     expect(configuration.get_global_configuration().get_check_for_updates_on_startup() == false);
@@ -481,18 +481,18 @@ void run_core_configuration_test(void) {
       }
       {
         expect(profile.get_devices().size() == 3);
-        expect((profile.get_devices())[0].get_identifiers().get_vendor_id() == pqrs::hid::vendor_id::value_t(1234));
-        expect((profile.get_devices())[0].get_identifiers().get_product_id() == pqrs::hid::product_id::value_t(5678));
-        expect((profile.get_devices())[0].get_ignore() == true);
-        expect((profile.get_devices())[0].get_disable_built_in_keyboard_if_exists() == true);
-        expect((profile.get_devices())[1].get_identifiers().get_vendor_id() == pqrs::hid::vendor_id::value_t(1234));
-        expect((profile.get_devices())[1].get_identifiers().get_product_id() == pqrs::hid::product_id::value_t(5678));
-        expect((profile.get_devices())[1].get_ignore() == true);
-        expect((profile.get_devices())[1].get_disable_built_in_keyboard_if_exists() == true);
-        expect((profile.get_devices())[2].get_identifiers().get_vendor_id() == pqrs::hid::vendor_id::value_t(4321));
-        expect((profile.get_devices())[2].get_identifiers().get_product_id() == pqrs::hid::product_id::value_t(8765));
-        expect((profile.get_devices())[2].get_ignore() == false);
-        expect((profile.get_devices())[2].get_disable_built_in_keyboard_if_exists() == true);
+        expect((profile.get_devices())[0]->get_identifiers().get_vendor_id() == pqrs::hid::vendor_id::value_t(1234));
+        expect((profile.get_devices())[0]->get_identifiers().get_product_id() == pqrs::hid::product_id::value_t(5678));
+        expect((profile.get_devices())[0]->get_ignore() == true);
+        expect((profile.get_devices())[0]->get_disable_built_in_keyboard_if_exists() == true);
+        expect((profile.get_devices())[1]->get_identifiers().get_vendor_id() == pqrs::hid::vendor_id::value_t(1234));
+        expect((profile.get_devices())[1]->get_identifiers().get_product_id() == pqrs::hid::product_id::value_t(5678));
+        expect((profile.get_devices())[1]->get_ignore() == true);
+        expect((profile.get_devices())[1]->get_disable_built_in_keyboard_if_exists() == true);
+        expect((profile.get_devices())[2]->get_identifiers().get_vendor_id() == pqrs::hid::vendor_id::value_t(4321));
+        expect((profile.get_devices())[2]->get_identifiers().get_product_id() == pqrs::hid::product_id::value_t(8765));
+        expect((profile.get_devices())[2]->get_ignore() == false);
+        expect((profile.get_devices())[2]->get_disable_built_in_keyboard_if_exists() == true);
       }
 
       // set_device (existing identifiers)
@@ -520,36 +520,36 @@ void run_core_configuration_test(void) {
         profile.set_device_ignore(identifiers, false);
         expect(profile.get_devices().size() == 3);
         // devices[0] is changed.
-        expect((profile.get_devices())[0].get_identifiers().get_vendor_id() == pqrs::hid::vendor_id::value_t(1234));
-        expect((profile.get_devices())[0].get_identifiers().get_product_id() == pqrs::hid::product_id::value_t(5678));
-        expect((profile.get_devices())[0].get_ignore() == false);
-        expect((profile.get_devices())[0].get_disable_built_in_keyboard_if_exists() == true);
+        expect((profile.get_devices())[0]->get_identifiers().get_vendor_id() == pqrs::hid::vendor_id::value_t(1234));
+        expect((profile.get_devices())[0]->get_identifiers().get_product_id() == pqrs::hid::product_id::value_t(5678));
+        expect((profile.get_devices())[0]->get_ignore() == false);
+        expect((profile.get_devices())[0]->get_disable_built_in_keyboard_if_exists() == true);
         // devices[1] is not changed.
-        expect((profile.get_devices())[1].get_identifiers().get_vendor_id() == pqrs::hid::vendor_id::value_t(1234));
-        expect((profile.get_devices())[1].get_identifiers().get_product_id() == pqrs::hid::product_id::value_t(5678));
-        expect((profile.get_devices())[1].get_ignore() == true);
-        expect((profile.get_devices())[1].get_disable_built_in_keyboard_if_exists() == true);
-        expect((profile.get_devices())[2].get_identifiers().get_vendor_id() == pqrs::hid::vendor_id::value_t(4321));
-        expect((profile.get_devices())[2].get_identifiers().get_product_id() == pqrs::hid::product_id::value_t(8765));
-        expect((profile.get_devices())[2].get_ignore() == false);
-        expect((profile.get_devices())[2].get_disable_built_in_keyboard_if_exists() == true);
+        expect((profile.get_devices())[1]->get_identifiers().get_vendor_id() == pqrs::hid::vendor_id::value_t(1234));
+        expect((profile.get_devices())[1]->get_identifiers().get_product_id() == pqrs::hid::product_id::value_t(5678));
+        expect((profile.get_devices())[1]->get_ignore() == true);
+        expect((profile.get_devices())[1]->get_disable_built_in_keyboard_if_exists() == true);
+        expect((profile.get_devices())[2]->get_identifiers().get_vendor_id() == pqrs::hid::vendor_id::value_t(4321));
+        expect((profile.get_devices())[2]->get_identifiers().get_product_id() == pqrs::hid::product_id::value_t(8765));
+        expect((profile.get_devices())[2]->get_ignore() == false);
+        expect((profile.get_devices())[2]->get_disable_built_in_keyboard_if_exists() == true);
 
         profile.set_device_disable_built_in_keyboard_if_exists(identifiers, false);
         expect(profile.get_devices().size() == 3);
         // devices[0] is changed.
-        expect((profile.get_devices())[0].get_identifiers().get_vendor_id() == pqrs::hid::vendor_id::value_t(1234));
-        expect((profile.get_devices())[0].get_identifiers().get_product_id() == pqrs::hid::product_id::value_t(5678));
-        expect((profile.get_devices())[0].get_ignore() == false);
-        expect((profile.get_devices())[0].get_disable_built_in_keyboard_if_exists() == false);
+        expect((profile.get_devices())[0]->get_identifiers().get_vendor_id() == pqrs::hid::vendor_id::value_t(1234));
+        expect((profile.get_devices())[0]->get_identifiers().get_product_id() == pqrs::hid::product_id::value_t(5678));
+        expect((profile.get_devices())[0]->get_ignore() == false);
+        expect((profile.get_devices())[0]->get_disable_built_in_keyboard_if_exists() == false);
         // devices[1] is not changed.
-        expect((profile.get_devices())[1].get_identifiers().get_vendor_id() == pqrs::hid::vendor_id::value_t(1234));
-        expect((profile.get_devices())[1].get_identifiers().get_product_id() == pqrs::hid::product_id::value_t(5678));
-        expect((profile.get_devices())[1].get_ignore() == true);
-        expect((profile.get_devices())[1].get_disable_built_in_keyboard_if_exists() == true);
-        expect((profile.get_devices())[2].get_identifiers().get_vendor_id() == pqrs::hid::vendor_id::value_t(4321));
-        expect((profile.get_devices())[2].get_identifiers().get_product_id() == pqrs::hid::product_id::value_t(8765));
-        expect((profile.get_devices())[2].get_ignore() == false);
-        expect((profile.get_devices())[2].get_disable_built_in_keyboard_if_exists() == true);
+        expect((profile.get_devices())[1]->get_identifiers().get_vendor_id() == pqrs::hid::vendor_id::value_t(1234));
+        expect((profile.get_devices())[1]->get_identifiers().get_product_id() == pqrs::hid::product_id::value_t(5678));
+        expect((profile.get_devices())[1]->get_ignore() == true);
+        expect((profile.get_devices())[1]->get_disable_built_in_keyboard_if_exists() == true);
+        expect((profile.get_devices())[2]->get_identifiers().get_vendor_id() == pqrs::hid::vendor_id::value_t(4321));
+        expect((profile.get_devices())[2]->get_identifiers().get_product_id() == pqrs::hid::product_id::value_t(8765));
+        expect((profile.get_devices())[2]->get_ignore() == false);
+        expect((profile.get_devices())[2]->get_disable_built_in_keyboard_if_exists() == true);
       }
       // set_device (new identifiers)
       {
@@ -576,12 +576,12 @@ void run_core_configuration_test(void) {
                                  .get<krbn::device_identifiers>();
           profile.set_device_ignore(identifiers, true);
           expect(profile.get_devices().size() == 4);
-          expect((profile.get_devices())[3].get_identifiers().get_vendor_id() == pqrs::hid::vendor_id::value_t(1111));
-          expect((profile.get_devices())[3].get_identifiers().get_product_id() == pqrs::hid::product_id::value_t(2222));
-          expect((profile.get_devices())[3].get_identifiers().get_is_keyboard() == false);
-          expect((profile.get_devices())[3].get_identifiers().get_is_pointing_device() == true);
-          expect((profile.get_devices())[3].get_ignore() == true);
-          expect((profile.get_devices())[3].get_disable_built_in_keyboard_if_exists() == false);
+          expect((profile.get_devices())[3]->get_identifiers().get_vendor_id() == pqrs::hid::vendor_id::value_t(1111));
+          expect((profile.get_devices())[3]->get_identifiers().get_product_id() == pqrs::hid::product_id::value_t(2222));
+          expect((profile.get_devices())[3]->get_identifiers().get_is_keyboard() == false);
+          expect((profile.get_devices())[3]->get_identifiers().get_is_pointing_device() == true);
+          expect((profile.get_devices())[3]->get_ignore() == true);
+          expect((profile.get_devices())[3]->get_disable_built_in_keyboard_if_exists() == false);
         }
 
         {
@@ -594,13 +594,13 @@ void run_core_configuration_test(void) {
           );
           profile.set_device_disable_built_in_keyboard_if_exists(identifiers, true);
           expect(profile.get_devices().size() == 5);
-          expect((profile.get_devices())[4].get_identifiers().get_vendor_id() == pqrs::hid::vendor_id::value_t(1112));
-          expect((profile.get_devices())[4].get_identifiers().get_product_id() == pqrs::hid::product_id::value_t(2222));
-          expect((profile.get_devices())[4].get_identifiers().get_device_address() == "");
-          expect((profile.get_devices())[4].get_identifiers().get_is_keyboard() == false);
-          expect((profile.get_devices())[4].get_identifiers().get_is_pointing_device() == true);
-          expect((profile.get_devices())[4].get_ignore() == true);
-          expect((profile.get_devices())[4].get_disable_built_in_keyboard_if_exists() == true);
+          expect((profile.get_devices())[4]->get_identifiers().get_vendor_id() == pqrs::hid::vendor_id::value_t(1112));
+          expect((profile.get_devices())[4]->get_identifiers().get_product_id() == pqrs::hid::product_id::value_t(2222));
+          expect((profile.get_devices())[4]->get_identifiers().get_device_address() == "");
+          expect((profile.get_devices())[4]->get_identifiers().get_is_keyboard() == false);
+          expect((profile.get_devices())[4]->get_identifiers().get_is_pointing_device() == true);
+          expect((profile.get_devices())[4]->get_ignore() == true);
+          expect((profile.get_devices())[4]->get_disable_built_in_keyboard_if_exists() == true);
         }
 
         {
@@ -613,13 +613,13 @@ void run_core_configuration_test(void) {
           );
           profile.set_device_disable_built_in_keyboard_if_exists(identifiers, true);
           expect(profile.get_devices().size() == 6);
-          expect((profile.get_devices())[5].get_identifiers().get_vendor_id() == pqrs::hid::vendor_id::value_t(0));
-          expect((profile.get_devices())[5].get_identifiers().get_product_id() == pqrs::hid::product_id::value_t(0));
-          expect((profile.get_devices())[5].get_identifiers().get_device_address() == "ec-ba-73-21-e6-f5");
-          expect((profile.get_devices())[5].get_identifiers().get_is_keyboard() == false);
-          expect((profile.get_devices())[5].get_identifiers().get_is_pointing_device() == true);
-          expect((profile.get_devices())[5].get_ignore() == true);
-          expect((profile.get_devices())[5].get_disable_built_in_keyboard_if_exists() == true);
+          expect((profile.get_devices())[5]->get_identifiers().get_vendor_id() == pqrs::hid::vendor_id::value_t(0));
+          expect((profile.get_devices())[5]->get_identifiers().get_product_id() == pqrs::hid::product_id::value_t(0));
+          expect((profile.get_devices())[5]->get_identifiers().get_device_address() == "ec-ba-73-21-e6-f5");
+          expect((profile.get_devices())[5]->get_identifiers().get_is_keyboard() == false);
+          expect((profile.get_devices())[5]->get_identifiers().get_is_pointing_device() == true);
+          expect((profile.get_devices())[5]->get_ignore() == true);
+          expect((profile.get_devices())[5]->get_disable_built_in_keyboard_if_exists() == true);
         }
       }
     }
@@ -672,7 +672,6 @@ void run_core_configuration_test(void) {
                                                            {"mouse_motion_to_scroll.speed", 100},
                                                        })},
                                     })},
-          {"devices", nlohmann::json::array()},
           {"name", ""},
           {"selected", false},
           {"parameters", nlohmann::json::object({

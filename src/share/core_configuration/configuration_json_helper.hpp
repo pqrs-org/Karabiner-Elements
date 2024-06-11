@@ -100,9 +100,17 @@ public:
   }
 
   void update_value(const nlohmann::json& json) override {
-    if (auto v = pqrs::json::find_array(json, key_)) {
-      for (const auto& j : v->value()) {
+    if (!json.contains(key_)) {
+      return;
+    }
+
+    pqrs::json::requires_array(json[key_], "`" + key_ + "`");
+
+    for (const auto& j : json[key_]) {
+      try {
         value_.push_back(std::make_unique<T>(j));
+      } catch (const pqrs::json::unmarshal_error& e) {
+        throw pqrs::json::unmarshal_error(fmt::format("`{0}` entry error: {1}", key_, e.what()));
       }
     }
   }

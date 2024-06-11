@@ -69,6 +69,8 @@ if (abs(cos(radian)) <= abs(sin(radian))) {
 
 )";
 
+  device(const device&) = delete;
+
   device(const nlohmann::json& json) : json_(json),
                                        ignore_(false),
                                        manipulate_caps_lock_led_(false),
