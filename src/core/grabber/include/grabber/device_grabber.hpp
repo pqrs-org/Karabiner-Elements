@@ -41,10 +41,11 @@ public:
   device_grabber(const device_grabber&) = delete;
 
   device_grabber(std::weak_ptr<console_user_server_client> weak_console_user_server_client,
-                 std::weak_ptr<grabber_state_json_writer> weak_grabber_state_json_writer) : dispatcher_client(),
-                                                                                            system_sleeping_(false),
-                                                                                            profile_(nlohmann::json::object()),
-                                                                                            logger_unique_filter_(logger::get_logger()) {
+                 std::weak_ptr<grabber_state_json_writer> weak_grabber_state_json_writer)
+      : dispatcher_client(),
+        core_configuration_(std::make_shared<core_configuration::core_configuration>()),
+        system_sleeping_(false),
+        logger_unique_filter_(logger::get_logger()) {
     notification_message_manager_ = std::make_shared<notification_message_manager>(
         constants::get_notification_message_file_path());
 
@@ -457,7 +458,30 @@ public:
           manipulator_managers_connector_.set_manipulator_environment_core_configuration(core_configuration);
 
           logger_unique_filter_.reset();
-          set_profile(core_configuration->get_selected_profile());
+
+          //
+          // Reflect profile changes
+          //
+
+          auto& profile = core_configuration_->get_selected_profile();
+
+          if (hid_manager_) {
+            hid_manager_->async_set_device_matched_delay(
+                profile.get_parameters().get_delay_milliseconds_before_open_device());
+            hid_manager_->async_start();
+          }
+
+          simple_modifications_manipulator_manager_->update(profile);
+          fn_function_keys_manipulator_manager_->update(profile,
+                                                        system_preferences_properties_);
+          update_complex_modifications_manipulators();
+
+          update_virtual_hid_keyboard();
+          update_virtual_hid_pointing();
+
+          update_devices_disabled();
+          async_grab_devices();
+          async_post_system_preferences_properties_changed_event();
         }
       });
 
@@ -495,7 +519,7 @@ public:
     enqueue_to_dispatcher([this, value] {
       system_preferences_properties_ = value;
 
-      fn_function_keys_manipulator_manager_->update(profile_,
+      fn_function_keys_manipulator_manager_->update(core_configuration_->get_selected_profile(),
                                                     system_preferences_properties_);
       async_post_system_preferences_properties_changed_event();
     });
@@ -863,7 +887,7 @@ private:
 
   void update_virtual_hid_keyboard(void) {
     virtual_hid_device_service_client_->async_virtual_hid_keyboard_initialize(
-        profile_.get_virtual_hid_keyboard().get_country_code());
+        core_configuration_->get_selected_profile().get_virtual_hid_keyboard().get_country_code());
   }
 
   void update_virtual_hid_pointing(void) {
@@ -922,32 +946,10 @@ private:
     json_writer::async_save_to_file(nlohmann::json(device_details), file_path, 0755, 0644);
   }
 
-  void set_profile(const core_configuration::details::profile& profile) {
-    profile_ = profile;
-
-    if (hid_manager_) {
-      hid_manager_->async_set_device_matched_delay(
-          profile_.get_parameters().get_delay_milliseconds_before_open_device());
-      hid_manager_->async_start();
-    }
-
-    simple_modifications_manipulator_manager_->update(profile_);
-    update_complex_modifications_manipulators();
-    fn_function_keys_manipulator_manager_->update(profile_,
-                                                  system_preferences_properties_);
-
-    update_virtual_hid_keyboard();
-    update_virtual_hid_pointing();
-
-    update_devices_disabled();
-    async_grab_devices();
-    async_post_system_preferences_properties_changed_event();
-  }
-
   void update_complex_modifications_manipulators(void) {
     complex_modifications_manipulator_manager_->invalidate_manipulators();
 
-    for (const auto& rule : profile_.get_complex_modifications().get_rules()) {
+    for (const auto& rule : core_configuration_->get_selected_profile().get_complex_modifications().get_rules()) {
       for (const auto& manipulator : rule.get_manipulators()) {
         try {
           auto m = manipulator::manipulator_factory::make_manipulator(manipulator.get_json(),
@@ -991,7 +993,6 @@ private:
   std::unique_ptr<pqrs::osx::iokit_power_management::monitor> power_management_monitor_;
   bool system_sleeping_;
 
-  core_configuration::details::profile profile_;
   pqrs::osx::system_preferences::properties system_preferences_properties_;
 
   manipulator::manipulator_managers_connector manipulator_managers_connector_;

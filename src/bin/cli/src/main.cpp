@@ -40,7 +40,7 @@ void select_profile(const std::string& name) {
   apply_core_configuration_function([name](auto core_configuration) {
     auto& profiles = core_configuration->get_profiles();
     for (size_t i = 0; i < profiles.size(); ++i) {
-      if (profiles[i].get_name() == name) {
+      if (profiles[i]->get_name() == name) {
         core_configuration->select_profile(i);
         core_configuration->sync_save_to_file();
         return;
@@ -59,7 +59,7 @@ void show_current_profile_name(void) {
 void list_profile_names(void) {
   apply_core_configuration_function([](auto core_configuration) {
     for (const auto& profile : core_configuration->get_profiles()) {
-      std::cout << profile.get_name() << std::endl;
+      std::cout << profile->get_name() << std::endl;
     }
   });
 }

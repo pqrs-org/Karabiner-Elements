@@ -80,7 +80,7 @@ public:
     // from_modifiers+f1 -> display_brightness_decrement ...
 
     for (const auto& device : profile.get_devices()) {
-      for (const auto& pair : device.get_fn_function_keys().get_pairs()) {
+      for (const auto& pair : device->get_fn_function_keys().get_pairs()) {
         try {
           if (auto m = make_manipulator(pair,
                                         from_mandatory_modifiers,
@@ -89,7 +89,7 @@ public:
             m->push_back_condition(manipulator::manipulator_factory::make_event_changed_if_condition(false));
             m->push_back_condition(manipulator::manipulator_factory::make_device_unless_touch_bar_condition());
 
-            auto c = manipulator::manipulator_factory::make_device_if_condition(device);
+            auto c = manipulator::manipulator_factory::make_device_if_condition(*device);
             m->push_back_condition(c);
 
             manipulator_manager_->push_back_manipulator(m);

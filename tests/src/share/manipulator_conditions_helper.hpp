@@ -12,7 +12,7 @@ namespace unit_testing {
 class manipulator_conditions_helper final {
 public:
   manipulator_conditions_helper(void) : last_device_id_(0) {
-    core_configuration_ = std::make_shared<krbn::core_configuration::core_configuration>("", geteuid());
+    core_configuration_ = std::make_shared<krbn::core_configuration::core_configuration>();
     manipulator_environment_.set_core_configuration(core_configuration_);
   }
 

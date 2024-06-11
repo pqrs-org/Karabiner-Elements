@@ -27,10 +27,10 @@ public:
       // Add profile.device.simple_modifications
       //
 
-      for (const auto& pair : device.get_simple_modifications().get_pairs()) {
+      for (const auto& pair : device->get_simple_modifications().get_pairs()) {
         try {
           if (auto m = make_manipulator(pair)) {
-            auto c = manipulator::manipulator_factory::make_device_if_condition(device);
+            auto c = manipulator::manipulator_factory::make_device_if_condition(*device);
             m->push_back_condition(c);
             manipulator_manager_->push_back_manipulator(m);
           }
@@ -49,38 +49,38 @@ public:
 
       {
         auto flip = nlohmann::json::array();
-        if (device.get_mouse_flip_x()) {
+        if (device->get_mouse_flip_x()) {
           flip.push_back("x");
         }
-        if (device.get_mouse_flip_y()) {
+        if (device->get_mouse_flip_y()) {
           flip.push_back("y");
         }
-        if (device.get_mouse_flip_vertical_wheel()) {
+        if (device->get_mouse_flip_vertical_wheel()) {
           flip.push_back("vertical_wheel");
         }
-        if (device.get_mouse_flip_horizontal_wheel()) {
+        if (device->get_mouse_flip_horizontal_wheel()) {
           flip.push_back("horizontal_wheel");
         }
 
         auto swap = nlohmann::json::array();
-        if (device.get_mouse_swap_xy()) {
+        if (device->get_mouse_swap_xy()) {
           swap.push_back("xy");
         }
-        if (device.get_mouse_swap_wheels()) {
+        if (device->get_mouse_swap_wheels()) {
           swap.push_back("wheels");
         }
 
         auto discard = nlohmann::json::array();
-        if (device.get_mouse_discard_x()) {
+        if (device->get_mouse_discard_x()) {
           discard.push_back("x");
         }
-        if (device.get_mouse_discard_y()) {
+        if (device->get_mouse_discard_y()) {
           discard.push_back("y");
         }
-        if (device.get_mouse_discard_vertical_wheel()) {
+        if (device->get_mouse_discard_vertical_wheel()) {
           discard.push_back("vertical_wheel");
         }
-        if (device.get_mouse_discard_horizontal_wheel()) {
+        if (device->get_mouse_discard_horizontal_wheel()) {
           discard.push_back("horizontal_wheel");
         }
 
@@ -95,7 +95,7 @@ public:
             auto parameters = krbn::core_configuration::details::complex_modifications_parameters();
             auto m = std::make_shared<manipulator::manipulators::mouse_basic::mouse_basic>(json,
                                                                                            parameters);
-            auto c = manipulator::manipulator_factory::make_device_if_condition(device);
+            auto c = manipulator::manipulator_factory::make_device_if_condition(*device);
             m->push_back_condition(c);
             manipulator_manager_->push_back_manipulator(m);
           } catch (const std::exception& e) {

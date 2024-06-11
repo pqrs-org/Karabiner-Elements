@@ -32,6 +32,9 @@ class core_configuration final {
 public:
   core_configuration(const core_configuration&) = delete;
 
+  core_configuration(void) : core_configuration("", 0) {
+  }
+
   core_configuration(const std::string& file_path,
                      uid_t expected_file_owner)
       : json_(nlohmann::json::object()),
