@@ -18,10 +18,6 @@
 #include <string>
 #include <unordered_map>
 
-#if __cplusplus >= 201703L  // C++17
-    #include <string_view>
-#endif
-
 namespace spdlog {
 class logger;
 
@@ -37,10 +33,6 @@ public:
     void register_logger(std::shared_ptr<logger> new_logger);
     void initialize_logger(std::shared_ptr<logger> new_logger);
     std::shared_ptr<logger> get(const std::string &logger_name);
-#if __cplusplus >= 201703L  // C++17
-    std::shared_ptr<logger> get(std::string_view logger_name);
-    std::shared_ptr<logger> get(const char *logger_name);
-#endif
     std::shared_ptr<logger> default_logger();
 
     // Return raw ptr to the default logger.
@@ -52,7 +44,8 @@ public:
 
     // set default logger and add it to the registry if not registered already.
     // default logger is stored in default_logger_ (for faster retrieval) and in the loggers_ map.
-    // Note: Make sure to unregister it when no longer needed or before calling again with a new logger.
+    // Note: Make sure to unregister it when no longer needed or before calling again with a new
+    // logger.
     void set_default_logger(std::shared_ptr<logger> new_default_logger);
 
     void set_tp(std::shared_ptr<thread_pool> tp);
@@ -78,8 +71,8 @@ public:
     }
 
     std::unique_ptr<periodic_worker> &get_flusher() {
-        std::lock_guard<std::mutex> lock(flusher_mutex_); 
-        return periodic_flusher_; 
+        std::lock_guard<std::mutex> lock(flusher_mutex_);
+        return periodic_flusher_;
     }
 
     void set_error_handler(err_handler handler);

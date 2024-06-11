@@ -534,6 +534,15 @@ SPDLOG_INLINE bool create_dir(const filename_t &path) {
         }
 
         auto subdir = path.substr(0, token_pos);
+#ifdef _WIN32
+        // if subdir is just a drive letter, add a slash e.g. "c:"=>"c:\",
+        // otherwise path_exists(subdir) returns false (issue #3079)
+        const bool is_drive = subdir.length() == 2 && subdir[1] == ':';
+        if (is_drive) {
+            subdir += '\\';
+            token_pos++;
+        }
+#endif
 
         if (!subdir.empty() && !path_exists(subdir) && !mkdir_(subdir)) {
             return false;  // return error if failed creating dir

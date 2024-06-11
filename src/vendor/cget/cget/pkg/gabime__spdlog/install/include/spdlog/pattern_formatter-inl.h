@@ -790,7 +790,7 @@ template <typename ScopedPadder>
 class mdc_formatter : public flag_formatter {
 public:
     explicit mdc_formatter(padding_info padinfo)
-            : flag_formatter(padinfo) {}
+        : flag_formatter(padinfo) {}
 
     void format(const details::log_msg &, const std::tm &, memory_buf_t &dest) override {
         auto &mdc_map = mdc::get_context();
@@ -802,7 +802,7 @@ public:
         }
     }
 
-    void format_mdc(const mdc::mdc_map_t &mdc_map, memory_buf_t &dest){
+    void format_mdc(const mdc::mdc_map_t &mdc_map, memory_buf_t &dest) {
         auto last_element = --mdc_map.end();
         for (auto it = mdc_map.begin(); it != mdc_map.end(); ++it) {
             auto &pair = *it;
@@ -824,8 +824,6 @@ public:
         }
     }
 };
-
-
 
 // Full info formatter
 // pattern: [%Y-%m-%d %H:%M:%S.%e] [%n] [%l] [%s:%#] %v
@@ -920,8 +918,6 @@ private:
     memory_buf_t cached_datetime_;
     mdc_formatter<null_scoped_padder> mdc_formatter_{padding_info{}};
 };
-
-
 
 }  // namespace details
 

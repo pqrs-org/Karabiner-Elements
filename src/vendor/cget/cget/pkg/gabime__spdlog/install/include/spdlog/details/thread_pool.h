@@ -67,9 +67,7 @@ struct async_msg : log_msg_buffer {
           worker_ptr{std::move(worker)},
           flush_promise{} {}
 
-    async_msg(async_logger_ptr &&worker,
-              async_msg_type the_type,
-              std::promise<void> &&promise)
+    async_msg(async_logger_ptr &&worker, async_msg_type the_type, std::promise<void> &&promise)
         : log_msg_buffer{},
           msg_type{the_type},
           worker_ptr{std::move(worker)},
