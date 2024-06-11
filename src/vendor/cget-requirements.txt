@@ -1,4 +1,5 @@
 jarro2783/cxxopts
+microsoft/GSL
 p-ranav/glob
 pqrs-org/cpp-cf-dictionary
 pqrs-org/cpp-cf-number
