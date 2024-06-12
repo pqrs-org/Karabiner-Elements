@@ -18,8 +18,8 @@ public:
   profile(const nlohmann::json& json)
       : json_(json),
         selected_(false) {
-    helper_values_.push_back(std::make_unique<configuration_json_helper::array_t<details::device>>("devices",
-                                                                                                   devices_));
+    helper_values_.push_back_array<details::device>("devices",
+                                                    devices_);
 
     // ----------------------------------------
     // Set default value
@@ -31,9 +31,7 @@ public:
 
     pqrs::json::requires_object(json, "json");
 
-    for (const auto& v : helper_values_) {
-      v->update_value(json);
-    }
+    helper_values_.update_value(json);
 
     for (const auto& [key, value] : json.items()) {
       if (key == "name") {
@@ -141,9 +139,7 @@ public:
   nlohmann::json to_json(void) const {
     auto j = json_;
 
-    for (const auto& v : helper_values_) {
-      v->update_json(j);
-    }
+    helper_values_.update_json(j);
 
     j["name"] = name_;
     j["selected"] = selected_;
@@ -258,7 +254,7 @@ public:
     return virtual_hid_keyboard_;
   }
 
-  const std::vector<std::unique_ptr<details::device>>& get_devices(void) const {
+  const std::vector<gsl::not_null<std::shared_ptr<details::device>>>& get_devices(void) const {
     return devices_;
   }
 
@@ -977,7 +973,7 @@ private:
       }
     }
 
-    devices_.push_back(std::make_unique<details::device>(nlohmann::json({
+    devices_.push_back(std::make_shared<details::device>(nlohmann::json({
         {"identifiers", identifiers},
     })));
   }
@@ -990,8 +986,8 @@ private:
   details::simple_modifications fn_function_keys_;
   details::complex_modifications complex_modifications_;
   details::virtual_hid_keyboard virtual_hid_keyboard_;
-  std::vector<std::unique_ptr<details::device>> devices_;
-  std::vector<std::unique_ptr<configuration_json_helper::base_t>> helper_values_;
+  std::vector<gsl::not_null<std::shared_ptr<details::device>>> devices_;
+  configuration_json_helper::helper_values helper_values_;
 };
 
 inline void to_json(nlohmann::json& json, const profile& profile) {

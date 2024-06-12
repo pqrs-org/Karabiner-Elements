@@ -39,14 +39,14 @@ public:
                      uid_t expected_file_owner)
       : json_(nlohmann::json::object()),
         loaded_(false),
-        global_configuration_(std::make_unique<details::global_configuration>(nlohmann::json::object())),
-        machine_specific_(std::make_unique<details::machine_specific>(nlohmann::json::object())) {
-    helper_values_.push_back(std::make_unique<configuration_json_helper::object_t<details::global_configuration>>("global",
-                                                                                                                  global_configuration_));
-    helper_values_.push_back(std::make_unique<configuration_json_helper::object_t<details::machine_specific>>("machine_specific",
-                                                                                                              machine_specific_));
-    helper_values_.push_back(std::make_unique<configuration_json_helper::array_t<details::profile>>("profiles",
-                                                                                                    profiles_));
+        global_configuration_(std::make_shared<details::global_configuration>(nlohmann::json::object())),
+        machine_specific_(std::make_shared<details::machine_specific>(nlohmann::json::object())) {
+    helper_values_.push_back_object<details::global_configuration>("global",
+                                                                   global_configuration_);
+    helper_values_.push_back_object<details::machine_specific>("machine_specific",
+                                                               machine_specific_);
+    helper_values_.push_back_array<details::profile>("profiles",
+                                                     profiles_);
 
     bool valid_file_owner = false;
 
@@ -69,9 +69,7 @@ public:
           try {
             json_ = json_utility::parse_jsonc(input);
 
-            for (const auto& v : helper_values_) {
-              v->update_value(json_);
-            }
+            helper_values_.update_value(json_);
 
             loaded_ = true;
 
@@ -86,7 +84,7 @@ public:
 
     // Fallbacks
     if (profiles_.empty()) {
-      profiles_.push_back(std::make_unique<details::profile>(nlohmann::json({
+      profiles_.push_back(std::make_shared<details::profile>(nlohmann::json({
           {"name", "Default profile"},
           {"selected", true},
       })));
@@ -94,13 +92,11 @@ public:
   }
 
   nlohmann::json to_json(void) const {
-    auto json = json_;
+    auto j = json_;
 
-    for (const auto& v : helper_values_) {
-      v->update_json(json);
-    }
+    helper_values_.update_json(j);
 
-    return json;
+    return j;
   }
 
   bool is_loaded(void) const { return loaded_; }
@@ -119,7 +115,7 @@ public:
     return *machine_specific_;
   }
 
-  const std::vector<std::unique_ptr<details::profile>>& get_profiles(void) const {
+  const std::vector<gsl::not_null<std::shared_ptr<details::profile>>>& get_profiles(void) const {
     return profiles_;
   }
 
@@ -142,13 +138,13 @@ public:
   }
 
   void push_back_profile(void) {
-    profiles_.push_back(std::make_unique<details::profile>(nlohmann::json({
+    profiles_.push_back(std::make_shared<details::profile>(nlohmann::json({
         {"name", "New profile"},
     })));
   }
 
   void duplicate_profile(const details::profile& profile) {
-    profiles_.push_back(std::make_unique<details::profile>(nlohmann::json(profile)));
+    profiles_.push_back(std::make_shared<details::profile>(nlohmann::json(profile)));
 
     auto& p = *(profiles_.back());
     p.set_name(p.get_name() + " (copy)");
@@ -253,10 +249,10 @@ private:
   nlohmann::json json_;
   bool loaded_;
 
-  std::unique_ptr<details::global_configuration> global_configuration_;
-  std::unique_ptr<details::machine_specific> machine_specific_;
-  std::vector<std::unique_ptr<details::profile>> profiles_;
-  std::vector<std::unique_ptr<configuration_json_helper::base_t>> helper_values_;
+  gsl::not_null<std::shared_ptr<details::global_configuration>> global_configuration_;
+  gsl::not_null<std::shared_ptr<details::machine_specific>> machine_specific_;
+  std::vector<gsl::not_null<std::shared_ptr<details::profile>>> profiles_;
+  configuration_json_helper::helper_values helper_values_;
 };
 } // namespace core_configuration
 } // namespace krbn

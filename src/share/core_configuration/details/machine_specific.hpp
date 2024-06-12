@@ -18,23 +18,19 @@ public:
     entry(const nlohmann::json& json)
         : json_(json),
           enable_multitouch_extension_(enable_multitouch_extension_default_value) {
-      helper_values_.push_back(std::make_unique<configuration_json_helper::value_t<bool>>("enable_multitouch_extension",
-                                                                                          enable_multitouch_extension_,
-                                                                                          enable_multitouch_extension_default_value));
+      helper_values_.push_back_value<bool>("enable_multitouch_extension",
+                                           enable_multitouch_extension_,
+                                           enable_multitouch_extension_default_value);
 
       pqrs::json::requires_object(json, "json");
 
-      for (const auto& v : helper_values_) {
-        v->update_value(json);
-      }
+      helper_values_.update_value(json);
     }
 
     nlohmann::json to_json(void) const {
       auto j = json_;
 
-      for (const auto& v : helper_values_) {
-        v->update_json(j);
-      }
+      helper_values_.update_json(j);
 
       return j;
     }
@@ -49,7 +45,7 @@ public:
   private:
     nlohmann::json json_;
     bool enable_multitouch_extension_;
-    std::vector<std::unique_ptr<configuration_json_helper::base_t>> helper_values_;
+    configuration_json_helper::helper_values helper_values_;
   };
 
   machine_specific(const machine_specific&) = delete;
@@ -60,7 +56,7 @@ public:
 
     for (const auto& [key, value] : json.items()) {
       if (value.is_object()) {
-        entries_[karabiner_machine_identifier(key)] = std::make_unique<entry>(value);
+        entries_[karabiner_machine_identifier(key)] = std::make_shared<entry>(value);
       }
     }
   }
@@ -82,7 +78,7 @@ public:
 
   entry& get_entry(const karabiner_machine_identifier& identifier = constants::get_karabiner_machine_identifier()) {
     if (!entries_.contains(identifier)) {
-      entries_[identifier] = std::make_unique<entry>(nlohmann::json::object());
+      entries_[identifier] = std::make_shared<entry>(nlohmann::json::object());
     }
 
     return *(entries_[identifier]);
@@ -90,7 +86,7 @@ public:
 
 private:
   nlohmann::json json_;
-  std::unordered_map<karabiner_machine_identifier, std::unique_ptr<entry>> entries_;
+  std::unordered_map<karabiner_machine_identifier, std::shared_ptr<entry>> entries_;
 };
 
 inline void to_json(nlohmann::json& json, const machine_specific& value) {

@@ -17,6 +17,7 @@
 #include "logger.hpp"
 #include "manipulator/manipulator_managers_connector.hpp"
 #include "manipulator/manipulators/post_event_to_virtual_devices/post_event_to_virtual_devices.hpp"
+#include "memory_utility.hpp"
 #include "monitor/configuration_monitor.hpp"
 #include "monitor/event_tap_monitor.hpp"
 #include "notification_message_manager.hpp"
@@ -221,7 +222,7 @@ public:
 
         auto entry = std::make_shared<device_grabber_details::entry>(device_id,
                                                                      *device_ptr,
-                                                                     core_configuration_.get());
+                                                                     memory_utility::make_weak(core_configuration_));
         entries_[device_id] = entry;
 
         entry->hid_queue_values_arrived.connect([this](auto&& entry, auto&& event_queue) {

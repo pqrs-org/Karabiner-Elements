@@ -1,5 +1,6 @@
 #pragma once
 
+#include <gsl/gsl>
 #include <pqrs/json.hpp>
 
 namespace krbn {
@@ -57,7 +58,7 @@ template <typename T>
 class object_t final : public base_t {
 public:
   object_t(const std::string& key,
-           std::unique_ptr<T>& value)
+           gsl::not_null<std::shared_ptr<T>>& value)
       : key_(key),
         value_(value) {
   }
@@ -68,7 +69,7 @@ public:
 
   void update_value(const nlohmann::json& json) override {
     if (auto v = pqrs::json::find_object(json, key_)) {
-      value_ = std::make_unique<T>(v->value());
+      value_ = std::make_shared<T>(v->value());
     }
   }
 
@@ -83,14 +84,14 @@ public:
 
 private:
   std::string key_;
-  std::unique_ptr<T>& value_;
+  gsl::not_null<std::shared_ptr<T>>& value_;
 };
 
 template <typename T>
 class array_t final : public base_t {
 public:
   array_t(const std::string& key,
-          std::vector<std::unique_ptr<T>>& value)
+          std::vector<gsl::not_null<std::shared_ptr<T>>>& value)
       : key_(key),
         value_(value) {
   }
@@ -108,7 +109,7 @@ public:
 
     for (const auto& j : json[key_]) {
       try {
-        value_.push_back(std::make_unique<T>(j));
+        value_.push_back(std::make_shared<T>(j));
       } catch (const pqrs::json::unmarshal_error& e) {
         throw pqrs::json::unmarshal_error(fmt::format("`{0}` entry error: {1}", key_, e.what()));
       }
@@ -134,7 +135,48 @@ public:
 
 private:
   std::string key_;
-  std::vector<std::unique_ptr<T>>& value_;
+  std::vector<gsl::not_null<std::shared_ptr<T>>>& value_;
+};
+
+class helper_values final {
+public:
+  template <typename T>
+  void push_back_value(const std::string& key,
+                       T& value,
+                       const T& default_value) {
+    values_.push_back(std::make_shared<value_t<T>>(key,
+                                                   value,
+                                                   default_value));
+  }
+
+  template <typename T>
+  void push_back_object(const std::string& key,
+                        gsl::not_null<std::shared_ptr<T>>& value) {
+    values_.push_back(std::make_shared<object_t<T>>(key,
+                                                    value));
+  }
+
+  template <typename T>
+  void push_back_array(const std::string& key,
+                       std::vector<gsl::not_null<std::shared_ptr<T>>>& value) {
+    values_.push_back(std::make_shared<array_t<T>>(key,
+                                                   value));
+  }
+
+  void update_value(const nlohmann::json& json) {
+    for (const auto& v : values_) {
+      v->update_value(json);
+    }
+  }
+
+  void update_json(nlohmann::json& json) const {
+    for (const auto& v : values_) {
+      v->update_json(json);
+    }
+  }
+
+private:
+  std::vector<gsl::not_null<std::shared_ptr<configuration_json_helper::base_t>>> values_;
 };
 
 } // namespace configuration_json_helper
