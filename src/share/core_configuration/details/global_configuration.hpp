@@ -8,41 +8,28 @@ namespace core_configuration {
 namespace details {
 class global_configuration final {
 public:
-  static constexpr bool check_for_updates_on_startup_default_value = true;
-  static constexpr bool show_in_menu_bar_default_value = true;
-  static constexpr bool show_profile_name_in_menu_bar_default_value = false;
-  static constexpr bool enable_notification_window_default_value = true;
-  static constexpr bool ask_for_confirmation_before_quitting_default_value = true;
-  static constexpr bool unsafe_ui_default_value = false;
-
   global_configuration(const global_configuration&) = delete;
 
   global_configuration(const nlohmann::json& json)
-      : json_(json),
-        check_for_updates_on_startup_(check_for_updates_on_startup_default_value),
-        show_in_menu_bar_(show_in_menu_bar_default_value),
-        show_profile_name_in_menu_bar_(show_profile_name_in_menu_bar_default_value),
-        enable_notification_window_(enable_notification_window_default_value),
-        ask_for_confirmation_before_quitting_(ask_for_confirmation_before_quitting_default_value),
-        unsafe_ui_(unsafe_ui_default_value) {
+      : json_(json) {
     helper_values_.push_back_value<bool>("check_for_updates_on_startup",
                                          check_for_updates_on_startup_,
-                                         check_for_updates_on_startup_default_value);
+                                         true);
     helper_values_.push_back_value<bool>("show_in_menu_bar",
                                          show_in_menu_bar_,
-                                         show_in_menu_bar_default_value);
+                                         true);
     helper_values_.push_back_value<bool>("show_profile_name_in_menu_bar",
                                          show_profile_name_in_menu_bar_,
-                                         show_profile_name_in_menu_bar_default_value);
+                                         false);
     helper_values_.push_back_value<bool>("enable_notification_window",
                                          enable_notification_window_,
-                                         enable_notification_window_default_value);
+                                         true);
     helper_values_.push_back_value<bool>("ask_for_confirmation_before_quitting",
                                          ask_for_confirmation_before_quitting_,
-                                         ask_for_confirmation_before_quitting_default_value);
+                                         true);
     helper_values_.push_back_value<bool>("unsafe_ui",
                                          unsafe_ui_,
-                                         unsafe_ui_default_value);
+                                         false);
 
     pqrs::json::requires_object(json, "json");
 

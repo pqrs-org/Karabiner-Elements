@@ -20,10 +20,11 @@ class value_t final : public base_t {
 public:
   value_t(const std::string& key,
           T& value,
-          const T& default_value)
+          T default_value)
       : key_(key),
         value_(value),
         default_value_(default_value) {
+    value_ = default_value_;
   }
 
   const std::string& get_key(void) const override {
@@ -51,7 +52,7 @@ public:
 private:
   std::string key_;
   T& value_;
-  const T& default_value_;
+  const T default_value_;
 };
 
 template <typename T>

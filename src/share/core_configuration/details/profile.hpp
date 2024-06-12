@@ -21,13 +21,15 @@ public:
     helper_values_.push_back_array<details::device>("devices",
                                                     devices_);
 
-    // ----------------------------------------
+    //
     // Set default value
+    //
 
     fn_function_keys_.update(make_default_fn_function_keys_json());
 
-    // ----------------------------------------
+    //
     // Load from json
+    //
 
     pqrs::json::requires_object(json, "json");
 

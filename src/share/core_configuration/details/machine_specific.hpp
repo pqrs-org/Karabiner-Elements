@@ -11,16 +11,13 @@ class machine_specific final {
 public:
   class entry final {
   public:
-    static constexpr bool enable_multitouch_extension_default_value = false;
-
     entry(const entry&) = delete;
 
     entry(const nlohmann::json& json)
-        : json_(json),
-          enable_multitouch_extension_(enable_multitouch_extension_default_value) {
+        : json_(json) {
       helper_values_.push_back_value<bool>("enable_multitouch_extension",
                                            enable_multitouch_extension_,
-                                           enable_multitouch_extension_default_value);
+                                           false);
 
       pqrs::json::requires_object(json, "json");
 
