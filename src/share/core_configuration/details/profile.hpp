@@ -15,8 +15,10 @@ class profile final {
 public:
   profile(const profile&) = delete;
 
-  profile(const nlohmann::json& json)
+  profile(const nlohmann::json& json,
+          error_handling error_handling)
       : json_(json),
+        error_handling_(error_handling),
         selected_(false) {
     helper_values_.push_back_array<details::device>("devices",
                                                     devices_);
@@ -33,7 +35,7 @@ public:
 
     pqrs::json::requires_object(json, "json");
 
-    helper_values_.update_value(json);
+    helper_values_.update_value(json, error_handling);
 
     for (const auto& [key, value] : json.items()) {
       if (key == "name") {
@@ -268,8 +270,9 @@ public:
     }
 
     details::device d(nlohmann::json({
-        {"identifiers", identifiers},
-    }));
+                          {"identifiers", identifiers},
+                      }),
+                      error_handling_);
     return d.get_ignore();
   }
 
@@ -293,8 +296,9 @@ public:
     }
 
     details::device d(nlohmann::json({
-        {"identifiers", identifiers},
-    }));
+                          {"identifiers", identifiers},
+                      }),
+                      error_handling_);
     return d.get_manipulate_caps_lock_led();
   }
 
@@ -318,8 +322,9 @@ public:
     }
 
     details::device d(nlohmann::json({
-        {"identifiers", identifiers},
-    }));
+                          {"identifiers", identifiers},
+                      }),
+                      error_handling_);
     return d.get_treat_as_built_in_keyboard();
   }
 
@@ -976,11 +981,13 @@ private:
     }
 
     devices_.push_back(std::make_shared<details::device>(nlohmann::json({
-        {"identifiers", identifiers},
-    })));
+                                                             {"identifiers", identifiers},
+                                                         }),
+                                                         error_handling_));
   }
 
   nlohmann::json json_;
+  error_handling error_handling_;
   std::string name_;
   bool selected_;
   details::parameters parameters_;

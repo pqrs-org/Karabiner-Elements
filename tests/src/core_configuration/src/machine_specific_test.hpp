@@ -13,7 +13,8 @@ void run_machine_specific_test(void) {
     // empty json
     {
       auto json = nlohmann::json::object();
-      krbn::core_configuration::details::machine_specific machine_specific(json);
+      krbn::core_configuration::details::machine_specific machine_specific(json,
+                                                                           krbn::core_configuration::error_handling::strict);
 
       nlohmann::json j(machine_specific);
       expect(nlohmann::json::object() == j);
@@ -31,7 +32,8 @@ void run_machine_specific_test(void) {
                                     {"enable_multitouch_extension", true},
                                 })},
       });
-      krbn::core_configuration::details::machine_specific machine_specific(json);
+      krbn::core_configuration::details::machine_specific machine_specific(json,
+                                                                           krbn::core_configuration::error_handling::strict);
       expect(true == machine_specific.get_entry(id1).get_enable_multitouch_extension());
       // new entry
       expect(false == machine_specific.get_entry(id2).get_enable_multitouch_extension());
@@ -68,7 +70,8 @@ void run_machine_specific_test(void) {
                                     {"enable_multitouch_extension", 42},
                                 })},
       });
-      krbn::core_configuration::details::machine_specific machine_specific(json);
+      krbn::core_configuration::details::machine_specific machine_specific(json,
+                                                                           krbn::core_configuration::error_handling::loose);
       expect(false == machine_specific.get_entry(id1).get_enable_multitouch_extension());
     }
   };

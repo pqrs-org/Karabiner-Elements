@@ -10,7 +10,8 @@ class global_configuration final {
 public:
   global_configuration(const global_configuration&) = delete;
 
-  global_configuration(const nlohmann::json& json)
+  global_configuration(const nlohmann::json& json,
+                       error_handling error_handling)
       : json_(json) {
     helper_values_.push_back_value<bool>("check_for_updates_on_startup",
                                          check_for_updates_on_startup_,
@@ -33,7 +34,7 @@ public:
 
     pqrs::json::requires_object(json, "json");
 
-    helper_values_.update_value(json);
+    helper_values_.update_value(json, error_handling);
   }
 
   nlohmann::json to_json(void) const {

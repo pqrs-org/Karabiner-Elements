@@ -1,5 +1,6 @@
 #pragma once
 
+#include "../../configuration_json_helper.hpp"
 #include "exprtk_utility.hpp"
 #include "simple_modifications.hpp"
 #include <pqrs/string.hpp>
@@ -71,22 +72,47 @@ if (abs(cos(radian)) <= abs(sin(radian))) {
 
   device(const device&) = delete;
 
-  device(const nlohmann::json& json) : json_(json),
-                                       ignore_(false),
-                                       manipulate_caps_lock_led_(false),
-                                       treat_as_built_in_keyboard_(false),
-                                       disable_built_in_keyboard_if_exists_(false),
-                                       mouse_flip_x_(false),
-                                       mouse_flip_y_(false),
-                                       mouse_flip_vertical_wheel_(false),
-                                       mouse_flip_horizontal_wheel_(false),
-                                       mouse_swap_xy_(false),
-                                       mouse_swap_wheels_(false),
-                                       mouse_discard_x_(false),
-                                       mouse_discard_y_(false),
-                                       mouse_discard_vertical_wheel_(false),
-                                       mouse_discard_horizontal_wheel_(false),
-                                       game_pad_swap_sticks_(false) {
+  device(const nlohmann::json& json,
+         error_handling error_handling)
+      : json_(json),
+        ignore_(false),
+        manipulate_caps_lock_led_(false),
+        treat_as_built_in_keyboard_(false),
+        disable_built_in_keyboard_if_exists_(false) {
+    helper_values_.push_back_value<bool>("mouse_flip_x",
+                                         mouse_flip_x_,
+                                         false);
+    helper_values_.push_back_value<bool>("mouse_flip_y",
+                                         mouse_flip_y_,
+                                         false);
+    helper_values_.push_back_value<bool>("mouse_flip_vertical_wheel",
+                                         mouse_flip_vertical_wheel_,
+                                         false);
+    helper_values_.push_back_value<bool>("mouse_flip_horizontal_wheel",
+                                         mouse_flip_horizontal_wheel_,
+                                         false);
+    helper_values_.push_back_value<bool>("mouse_swap_xy",
+                                         mouse_swap_xy_,
+                                         false);
+    helper_values_.push_back_value<bool>("mouse_swap_wheels",
+                                         mouse_swap_wheels_,
+                                         false);
+    helper_values_.push_back_value<bool>("mouse_discard_x",
+                                         mouse_discard_x_,
+                                         false);
+    helper_values_.push_back_value<bool>("mouse_discard_y",
+                                         mouse_discard_y_,
+                                         false);
+    helper_values_.push_back_value<bool>("mouse_discard_vertical_wheel",
+                                         mouse_discard_vertical_wheel_,
+                                         false);
+    helper_values_.push_back_value<bool>("mouse_discard_horizontal_wheel",
+                                         mouse_discard_horizontal_wheel_,
+                                         false);
+    helper_values_.push_back_value<bool>("game_pad_swap_sticks",
+                                         game_pad_swap_sticks_,
+                                         false);
+
     auto ignore_configured = false;
     auto manipulate_caps_lock_led_configured = false;
 
@@ -101,6 +127,8 @@ if (abs(cos(radian)) <= abs(sin(radian))) {
     // Load from json
 
     pqrs::json::requires_object(json, "json");
+
+    helper_values_.update_value(json, error_handling);
 
     for (const auto& [key, value] : json.items()) {
       if (key == "identifiers") {
@@ -131,61 +159,6 @@ if (abs(cos(radian)) <= abs(sin(radian))) {
         pqrs::json::requires_boolean(value, "`" + key + "`");
 
         disable_built_in_keyboard_if_exists_ = value.get<bool>();
-
-      } else if (key == "mouse_flip_x") {
-        pqrs::json::requires_boolean(value, "`" + key + "`");
-
-        mouse_flip_x_ = value.get<bool>();
-
-      } else if (key == "mouse_flip_y") {
-        pqrs::json::requires_boolean(value, "`" + key + "`");
-
-        mouse_flip_y_ = value.get<bool>();
-
-      } else if (key == "mouse_flip_vertical_wheel") {
-        pqrs::json::requires_boolean(value, "`" + key + "`");
-
-        mouse_flip_vertical_wheel_ = value.get<bool>();
-
-      } else if (key == "mouse_flip_horizontal_wheel") {
-        pqrs::json::requires_boolean(value, "`" + key + "`");
-
-        mouse_flip_horizontal_wheel_ = value.get<bool>();
-
-      } else if (key == "mouse_swap_xy") {
-        pqrs::json::requires_boolean(value, "`" + key + "`");
-
-        mouse_swap_xy_ = value.get<bool>();
-
-      } else if (key == "mouse_swap_wheels") {
-        pqrs::json::requires_boolean(value, "`" + key + "`");
-
-        mouse_swap_wheels_ = value.get<bool>();
-
-      } else if (key == "mouse_discard_x") {
-        pqrs::json::requires_boolean(value, "`" + key + "`");
-
-        mouse_discard_x_ = value.get<bool>();
-
-      } else if (key == "mouse_discard_y") {
-        pqrs::json::requires_boolean(value, "`" + key + "`");
-
-        mouse_discard_y_ = value.get<bool>();
-
-      } else if (key == "mouse_discard_vertical_wheel") {
-        pqrs::json::requires_boolean(value, "`" + key + "`");
-
-        mouse_discard_vertical_wheel_ = value.get<bool>();
-
-      } else if (key == "mouse_discard_horizontal_wheel") {
-        pqrs::json::requires_boolean(value, "`" + key + "`");
-
-        mouse_discard_horizontal_wheel_ = value.get<bool>();
-
-      } else if (key == "game_pad_swap_sticks") {
-        pqrs::json::requires_boolean(value, "`" + key + "`");
-
-        game_pad_swap_sticks_ = value.get<bool>();
 
       } else if (key == "game_pad_xy_stick_continued_movement_absolute_magnitude_threshold") {
         pqrs::json::requires_number(value, "`" + key + "`");
@@ -291,22 +264,14 @@ if (abs(cos(radian)) <= abs(sin(radian))) {
 
   nlohmann::json to_json(void) const {
     auto j = json_;
+
+    helper_values_.update_json(j);
+
     j["identifiers"] = identifiers_;
     j["ignore"] = ignore_;
     j["manipulate_caps_lock_led"] = manipulate_caps_lock_led_;
     j["treat_as_built_in_keyboard"] = treat_as_built_in_keyboard_;
     j["disable_built_in_keyboard_if_exists"] = disable_built_in_keyboard_if_exists_;
-    j["mouse_flip_x"] = mouse_flip_x_;
-    j["mouse_flip_y"] = mouse_flip_y_;
-    j["mouse_flip_vertical_wheel"] = mouse_flip_vertical_wheel_;
-    j["mouse_flip_horizontal_wheel"] = mouse_flip_horizontal_wheel_;
-    j["mouse_swap_xy"] = mouse_swap_xy_;
-    j["mouse_swap_wheels"] = mouse_swap_wheels_;
-    j["mouse_discard_x"] = mouse_discard_x_;
-    j["mouse_discard_y"] = mouse_discard_y_;
-    j["mouse_discard_vertical_wheel"] = mouse_discard_vertical_wheel_;
-    j["mouse_discard_horizontal_wheel"] = mouse_discard_horizontal_wheel_;
-    j["game_pad_swap_sticks"] = game_pad_swap_sticks_;
 
 #define OPTIONAL_SETTING(name)     \
   {                                \
@@ -684,6 +649,7 @@ private:
   std::optional<std::string> game_pad_stick_horizontal_wheel_formula_;
   simple_modifications simple_modifications_;
   simple_modifications fn_function_keys_;
+  configuration_json_helper::helper_values helper_values_;
 };
 
 inline void to_json(nlohmann::json& json, const device& device) {

@@ -114,7 +114,8 @@ void run_device_test(void) {
     // empty json
     {
       auto json = nlohmann::json::object();
-      krbn::core_configuration::details::device device(json);
+      krbn::core_configuration::details::device device(json,
+                                                       krbn::core_configuration::error_handling::strict);
       expect(device.get_identifiers().get_vendor_id() == pqrs::hid::vendor_id::value_t(0));
       expect(device.get_identifiers().get_product_id() == pqrs::hid::product_id::value_t(0));
       expect(device.get_identifiers().get_device_address() == "");
@@ -163,7 +164,8 @@ void run_device_test(void) {
                                            ")",
                                        })},
       });
-      krbn::core_configuration::details::device device(json);
+      krbn::core_configuration::details::device device(json,
+                                                       krbn::core_configuration::error_handling::strict);
       expect(device.get_identifiers().get_vendor_id() == pqrs::hid::vendor_id::value_t(1234));
       expect(device.get_identifiers().get_product_id() == pqrs::hid::product_id::value_t(5678));
       expect(device.get_identifiers().get_device_address() == "ec-ba-73-21-e6-f5");
@@ -196,12 +198,14 @@ void run_device_test(void) {
                           }},
       });
       {
-        krbn::core_configuration::details::device device(json);
+        krbn::core_configuration::details::device device(json,
+                                                         krbn::core_configuration::error_handling::strict);
         expect(device.get_ignore() == true);
       }
       {
         json["ignore"] = false;
-        krbn::core_configuration::details::device device(json);
+        krbn::core_configuration::details::device device(json,
+                                                         krbn::core_configuration::error_handling::strict);
         expect(device.get_ignore() == false);
       }
     }
@@ -217,12 +221,14 @@ void run_device_test(void) {
                           }},
       });
       {
-        krbn::core_configuration::details::device device(json);
+        krbn::core_configuration::details::device device(json,
+                                                         krbn::core_configuration::error_handling::strict);
         expect(device.get_ignore() == true);
       }
       {
         json["ignore"] = false;
-        krbn::core_configuration::details::device device(json);
+        krbn::core_configuration::details::device device(json,
+                                                         krbn::core_configuration::error_handling::strict);
         expect(device.get_ignore() == false);
       }
     }
@@ -238,12 +244,14 @@ void run_device_test(void) {
                           }},
       });
       {
-        krbn::core_configuration::details::device device(json);
+        krbn::core_configuration::details::device device(json,
+                                                         krbn::core_configuration::error_handling::strict);
         expect(device.get_manipulate_caps_lock_led() == true);
       }
       {
         json["manipulate_caps_lock_led"] = false;
-        krbn::core_configuration::details::device device(json);
+        krbn::core_configuration::details::device device(json,
+                                                         krbn::core_configuration::error_handling::strict);
         expect(device.get_manipulate_caps_lock_led() == false);
       }
     }
@@ -262,7 +270,8 @@ void run_device_test(void) {
       {
         // disable_built_in_keyboard_if_exists will be false when treat_as_built_in_keyboard is true.
 
-        krbn::core_configuration::details::device device(json);
+        krbn::core_configuration::details::device device(json,
+                                                         krbn::core_configuration::error_handling::strict);
         expect(device.get_treat_as_built_in_keyboard() == true);
         expect(device.get_disable_built_in_keyboard_if_exists() == false);
 
@@ -292,11 +301,11 @@ void run_device_test(void) {
   "device.to_json"_test = [] {
     {
       auto json = nlohmann::json::object();
-      krbn::core_configuration::details::device device(json);
+      krbn::core_configuration::details::device empty_device(json,
+                                                             krbn::core_configuration::error_handling::strict);
       nlohmann::json expected({
           {"disable_built_in_keyboard_if_exists", false},
           {"fn_function_keys", nlohmann::json::array()},
-          {"game_pad_swap_sticks", false},
           {"identifiers", {
                               {
                                   "vendor_id",
@@ -321,24 +330,12 @@ void run_device_test(void) {
                           }},
           {"ignore", false},
           {"manipulate_caps_lock_led", false},
-          {"mouse_discard_horizontal_wheel", false},
-          {"mouse_discard_vertical_wheel", false},
-          {"mouse_discard_x", false},
-          {"mouse_discard_y", false},
-          {"mouse_flip_horizontal_wheel", false},
-          {"mouse_flip_vertical_wheel", false},
-          {"mouse_flip_x", false},
-          {"mouse_flip_y", false},
-          {"mouse_swap_wheels", false},
-          {"mouse_swap_xy", false},
           {"simple_modifications", nlohmann::json::array()},
           {"treat_as_built_in_keyboard", false},
       });
-      expect(device.to_json() == expected);
-
-      nlohmann::json actual = device.to_json();
-      expect(actual == expected);
+      expect(empty_device.to_json() == expected) << "empty_device.to_json() == expected";
     }
+
     {
       nlohmann::json json({
           {"dummy", {{"keep_me", true}}},
@@ -355,11 +352,16 @@ void run_device_test(void) {
           {"ignore", true},
           {"manipulate_caps_lock_led", true},
           {"treat_as_built_in_keyboard", true},
+          {"mouse_discard_horizontal_wheel", true},
           {"mouse_discard_vertical_wheel", true},
+          {"mouse_discard_x", true},
           {"mouse_discard_y", true},
           {"mouse_flip_horizontal_wheel", true},
+          {"mouse_flip_vertical_wheel", true},
           {"mouse_flip_x", true},
+          {"mouse_flip_y", true},
           {"mouse_swap_wheels", true},
+          {"mouse_swap_xy", true},
           {"game_pad_swap_sticks", true},
           {"game_pad_xy_stick_continued_movement_absolute_magnitude_threshold", 0.5},
           {"game_pad_xy_stick_continued_movement_interval_milliseconds", 10},
@@ -375,7 +377,8 @@ void run_device_test(void) {
           {"game_pad_stick_vertical_wheel_formula", "sgn(sin(radian))"},
           {"game_pad_stick_horizontal_wheel_formula", "sgn(cos(radian))"},
       });
-      krbn::core_configuration::details::device device(json);
+      krbn::core_configuration::details::device device(json,
+                                                       krbn::core_configuration::error_handling::strict);
       nlohmann::json expected({
           {"disable_built_in_keyboard_if_exists", false},
           {"dummy", {{"keep_me", true}}},
@@ -422,16 +425,16 @@ void run_device_test(void) {
           {"game_pad_stick_vertical_wheel_formula", "sgn(sin(radian))"},
           {"game_pad_stick_horizontal_wheel_formula", "sgn(cos(radian))"},
           {"manipulate_caps_lock_led", true},
-          {"mouse_discard_horizontal_wheel", false},
+          {"mouse_discard_horizontal_wheel", true},
           {"mouse_discard_vertical_wheel", true},
-          {"mouse_discard_x", false},
+          {"mouse_discard_x", true},
           {"mouse_discard_y", true},
           {"mouse_flip_horizontal_wheel", true},
-          {"mouse_flip_vertical_wheel", false},
+          {"mouse_flip_vertical_wheel", true},
           {"mouse_flip_x", true},
-          {"mouse_flip_y", false},
+          {"mouse_flip_y", true},
           {"mouse_swap_wheels", true},
-          {"mouse_swap_xy", false},
+          {"mouse_swap_xy", true},
           {"simple_modifications", nlohmann::json::array()},
           {"treat_as_built_in_keyboard", true},
       });

@@ -9,7 +9,8 @@ void run_global_configuration_test(void) {
     // empty json
     {
       auto json = nlohmann::json::object();
-      krbn::core_configuration::details::global_configuration global_configuration(json);
+      krbn::core_configuration::details::global_configuration global_configuration(json,
+                                                                                   krbn::core_configuration::error_handling::strict);
       expect(global_configuration.get_check_for_updates_on_startup() == true);
       expect(global_configuration.get_show_in_menu_bar() == true);
       expect(global_configuration.get_show_profile_name_in_menu_bar() == false);
@@ -28,7 +29,8 @@ void run_global_configuration_test(void) {
           {"ask_for_confirmation_before_quitting", false},
           {"unsafe_ui", true},
       };
-      krbn::core_configuration::details::global_configuration global_configuration(json);
+      krbn::core_configuration::details::global_configuration global_configuration(json,
+                                                                                   krbn::core_configuration::error_handling::strict);
       expect(global_configuration.get_check_for_updates_on_startup() == false);
       expect(global_configuration.get_show_in_menu_bar() == false);
       expect(global_configuration.get_show_profile_name_in_menu_bar() == true);
@@ -59,7 +61,8 @@ void run_global_configuration_test(void) {
           {"enable_notification_window", nlohmann::json::object()},
           {"unsafe_ui", false},
       };
-      krbn::core_configuration::details::global_configuration global_configuration(json);
+      krbn::core_configuration::details::global_configuration global_configuration(json,
+                                                                                   krbn::core_configuration::error_handling::loose);
       expect(global_configuration.get_check_for_updates_on_startup() == true);
       expect(global_configuration.get_show_in_menu_bar() == true);
       expect(global_configuration.get_show_profile_name_in_menu_bar() == false);

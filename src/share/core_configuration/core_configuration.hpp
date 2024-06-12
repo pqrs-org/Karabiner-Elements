@@ -32,15 +32,20 @@ class core_configuration final {
 public:
   core_configuration(const core_configuration&) = delete;
 
-  core_configuration(void) : core_configuration("", 0) {
+  core_configuration(error_handling error_handling)
+      : core_configuration("", 0, error_handling) {
   }
 
   core_configuration(const std::string& file_path,
-                     uid_t expected_file_owner)
+                     uid_t expected_file_owner,
+                     error_handling error_handling)
       : json_(nlohmann::json::object()),
+        error_handling_(error_handling),
         loaded_(false),
-        global_configuration_(std::make_shared<details::global_configuration>(nlohmann::json::object())),
-        machine_specific_(std::make_shared<details::machine_specific>(nlohmann::json::object())) {
+        global_configuration_(std::make_shared<details::global_configuration>(nlohmann::json::object(),
+                                                                              error_handling)),
+        machine_specific_(std::make_shared<details::machine_specific>(nlohmann::json::object(),
+                                                                      error_handling)) {
     helper_values_.push_back_object<details::global_configuration>("global",
                                                                    global_configuration_);
     helper_values_.push_back_object<details::machine_specific>("machine_specific",
@@ -69,7 +74,8 @@ public:
           try {
             json_ = json_utility::parse_jsonc(input);
 
-            helper_values_.update_value(json_);
+            helper_values_.update_value(json_,
+                                        error_handling);
 
             loaded_ = true;
 
@@ -85,9 +91,10 @@ public:
     // Fallbacks
     if (profiles_.empty()) {
       profiles_.push_back(std::make_shared<details::profile>(nlohmann::json({
-          {"name", "Default profile"},
-          {"selected", true},
-      })));
+                                                                 {"name", "Default profile"},
+                                                                 {"selected", true},
+                                                             }),
+                                                             error_handling_));
     }
   }
 
@@ -139,12 +146,14 @@ public:
 
   void push_back_profile(void) {
     profiles_.push_back(std::make_shared<details::profile>(nlohmann::json({
-        {"name", "New profile"},
-    })));
+                                                               {"name", "New profile"},
+                                                           }),
+                                                           error_handling_));
   }
 
   void duplicate_profile(const details::profile& profile) {
-    profiles_.push_back(std::make_shared<details::profile>(nlohmann::json(profile)));
+    profiles_.push_back(std::make_shared<details::profile>(nlohmann::json(profile),
+                                                           error_handling_));
 
     auto& p = *(profiles_.back());
     p.set_name(p.get_name() + " (copy)");
@@ -247,6 +256,7 @@ private:
   }
 
   nlohmann::json json_;
+  error_handling error_handling_;
   bool loaded_;
 
   gsl::not_null<std::shared_ptr<details::global_configuration>> global_configuration_;

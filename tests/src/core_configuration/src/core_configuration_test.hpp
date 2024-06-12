@@ -68,7 +68,9 @@ void run_core_configuration_test(void) {
   using namespace std::literals;
 
   "valid"_test = [] {
-    krbn::core_configuration::core_configuration configuration("json/example.jsonc", geteuid());
+    krbn::core_configuration::core_configuration configuration("json/example.jsonc",
+                                                               geteuid(),
+                                                               krbn::core_configuration::error_handling::strict);
 
     {
       std::vector<std::pair<std::string, std::string>> expected;
@@ -173,13 +175,15 @@ void run_core_configuration_test(void) {
     {
       std::ifstream input("json/to_json_example.json");
       auto expected = krbn::json_utility::parse_jsonc(input);
-      expect(configuration.to_json() == expected) << "json/to_json_example.json is not match";
+      expect(configuration.to_json() == expected) << "configuration.to_json() == expected";
     }
   };
 
   "not found"_test = [] {
     {
-      krbn::core_configuration::core_configuration configuration("json/not_found.json", geteuid());
+      krbn::core_configuration::core_configuration configuration("json/not_found.json",
+                                                                 geteuid(),
+                                                                 krbn::core_configuration::error_handling::strict);
       expect(configuration.get_selected_profile().get_name() == "Default profile");
       expect(configuration.is_loaded() == false);
     }
@@ -187,7 +191,9 @@ void run_core_configuration_test(void) {
 
   "broken.json"_test = [] {
     {
-      krbn::core_configuration::core_configuration configuration("json/broken.json", geteuid());
+      krbn::core_configuration::core_configuration configuration("json/broken.json",
+                                                                 geteuid(),
+                                                                 krbn::core_configuration::error_handling::strict);
 
       expect(configuration.get_selected_profile().get_simple_modifications().get_pairs().empty());
       expect(configuration.is_loaded() == false);
@@ -210,7 +216,9 @@ void run_core_configuration_test(void) {
       }
     }
     {
-      krbn::core_configuration::core_configuration configuration("/bin/ls", geteuid());
+      krbn::core_configuration::core_configuration configuration("/bin/ls",
+                                                                 geteuid(),
+                                                                 krbn::core_configuration::error_handling::strict);
 
       expect(configuration.get_selected_profile().get_simple_modifications().get_pairs().empty());
       expect(configuration.is_loaded() == false);
@@ -218,7 +226,9 @@ void run_core_configuration_test(void) {
   };
 
   "invalid_key_code_name.json"_test = [] {
-    krbn::core_configuration::core_configuration configuration("json/invalid_key_code_name.json", geteuid());
+    krbn::core_configuration::core_configuration configuration("json/invalid_key_code_name.json",
+                                                               geteuid(),
+                                                               krbn::core_configuration::error_handling::strict);
 
     std::vector<std::pair<std::string, std::string>> expected;
 
@@ -235,7 +245,8 @@ void run_core_configuration_test(void) {
   "global_configuration.to_json"_test = [] {
     {
       auto json = nlohmann::json::object();
-      krbn::core_configuration::details::global_configuration global_configuration(json);
+      krbn::core_configuration::details::global_configuration global_configuration(json,
+                                                                                   krbn::core_configuration::error_handling::strict);
       nlohmann::json expected({});
       expect(global_configuration.to_json() == expected);
 
@@ -246,7 +257,8 @@ void run_core_configuration_test(void) {
       nlohmann::json json{
           {"dummy", {{"keep_me", true}}},
       };
-      krbn::core_configuration::details::global_configuration global_configuration(json);
+      krbn::core_configuration::details::global_configuration global_configuration(json,
+                                                                                   krbn::core_configuration::error_handling::strict);
       global_configuration.set_check_for_updates_on_startup(false);
       global_configuration.set_show_in_menu_bar(false);
       global_configuration.set_show_profile_name_in_menu_bar(true);
@@ -266,7 +278,9 @@ void run_core_configuration_test(void) {
 
   "machine_specific.to_json"_test = [] {
     {
-      krbn::core_configuration::core_configuration configuration("json/machine_specific.jsonc", geteuid());
+      krbn::core_configuration::core_configuration configuration("json/machine_specific.jsonc",
+                                                                 geteuid(),
+                                                                 krbn::core_configuration::error_handling::strict);
 
       std::ifstream input("json/machine_specific.jsonc");
       auto expected = krbn::json_utility::parse_jsonc(input);
@@ -282,7 +296,9 @@ void run_core_configuration_test(void) {
 
     // from emtpy json
     {
-      krbn::core_configuration::core_configuration configuration("", geteuid());
+      krbn::core_configuration::core_configuration configuration("",
+                                                                 geteuid(),
+                                                                 krbn::core_configuration::error_handling::strict);
 
       auto json = configuration.to_json();
       expect(!json.contains("machine_specific"));
@@ -315,7 +331,8 @@ void run_core_configuration_test(void) {
     // empty json
     {
       auto json = nlohmann::json::object();
-      krbn::core_configuration::details::profile profile(json);
+      krbn::core_configuration::details::profile profile(json,
+                                                         krbn::core_configuration::error_handling::strict);
       expect(profile.get_name() == std::string(""));
       expect(profile.get_selected() == false);
       expect(profile.get_simple_modifications().get_pairs().size() == 0);
@@ -451,7 +468,8 @@ void run_core_configuration_test(void) {
                           },
                       }},
       });
-      krbn::core_configuration::details::profile profile(json);
+      krbn::core_configuration::details::profile profile(json,
+                                                         krbn::core_configuration::error_handling::strict);
       expect(profile.get_name() == std::string("profile 1"));
       expect(profile.get_selected() == true);
       {
@@ -645,7 +663,8 @@ void run_core_configuration_test(void) {
                                        },
                                    }},
       });
-      krbn::core_configuration::details::profile profile(json);
+      krbn::core_configuration::details::profile profile(json,
+                                                         krbn::core_configuration::error_handling::strict);
       {
         std::vector<std::pair<std::string, std::string>> expected;
 
@@ -660,7 +679,8 @@ void run_core_configuration_test(void) {
   "profile.to_json"_test = [] {
     {
       auto json = nlohmann::json::object();
-      krbn::core_configuration::details::profile profile(json);
+      krbn::core_configuration::details::profile empty_profile(json,
+                                                               krbn::core_configuration::error_handling::strict);
       nlohmann::json expected({
           {"complex_modifications", nlohmann::json::object({
                                         {"rules", nlohmann::json::array()},
@@ -681,7 +701,7 @@ void run_core_configuration_test(void) {
           {"fn_function_keys", get_default_fn_function_keys_json()},
           {"virtual_hid_keyboard", get_default_virtual_hid_keyboard_json()},
       });
-      expect(profile.to_json() == expected);
+      expect(empty_profile.to_json() == expected) << "empty_profile.to_json() == expected";
     }
     {
       nlohmann::json json({
@@ -710,22 +730,12 @@ void run_core_configuration_test(void) {
                               {"ignore", true},
                               {"disable_built_in_keyboard_if_exists", true},
                               {"manipulate_caps_lock_led", false},
-                              {"mouse_discard_horizontal_wheel", false},
-                              {"mouse_discard_vertical_wheel", false},
-                              {"mouse_discard_x", false},
-                              {"mouse_discard_y", false},
-                              {"mouse_flip_horizontal_wheel", false},
-                              {"mouse_flip_vertical_wheel", false},
-                              {"mouse_flip_x", false},
-                              {"mouse_flip_y", false},
-                              {"mouse_swap_xy", false},
-                              {"mouse_swap_wheels", false},
-                              {"game_pad_swap_sticks", false},
                               {"treat_as_built_in_keyboard", false},
                           },
                       }},
       });
-      krbn::core_configuration::details::profile profile(json);
+      krbn::core_configuration::details::profile profile(json,
+                                                         krbn::core_configuration::error_handling::strict);
       profile.set_name("profile 1");
       profile.set_selected(true);
 
@@ -895,18 +905,7 @@ void run_core_configuration_test(void) {
                               {"ignore", true},
                               {"disable_built_in_keyboard_if_exists", true},
                               {"fn_function_keys", nlohmann::json::array()},
-                              {"game_pad_swap_sticks", false},
                               {"manipulate_caps_lock_led", false},
-                              {"mouse_discard_horizontal_wheel", false},
-                              {"mouse_discard_vertical_wheel", false},
-                              {"mouse_discard_x", false},
-                              {"mouse_discard_y", false},
-                              {"mouse_flip_horizontal_wheel", false},
-                              {"mouse_flip_vertical_wheel", false},
-                              {"mouse_flip_x", false},
-                              {"mouse_flip_y", false},
-                              {"mouse_swap_wheels", false},
-                              {"mouse_swap_xy", false},
                               {"simple_modifications", nlohmann::json::array()},
                               {"treat_as_built_in_keyboard", false},
                           },
@@ -1530,26 +1529,34 @@ void run_core_configuration_test(void) {
 
   "complex_modifications.minmax_parameter_value"_test = [] {
     {
-      krbn::core_configuration::core_configuration configuration("json/minmax_parameter_value_test1.json", geteuid());
+      krbn::core_configuration::core_configuration configuration("json/minmax_parameter_value_test1.json",
+                                                                 geteuid(),
+                                                                 krbn::core_configuration::error_handling::strict);
       auto actual = configuration.get_selected_profile().get_complex_modifications().minmax_parameter_value("basic.simultaneous_threshold_milliseconds");
       expect(actual->first == 101);
       expect(actual->second == 401);
     }
     {
-      krbn::core_configuration::core_configuration configuration("json/minmax_parameter_value_test2.json", geteuid());
+      krbn::core_configuration::core_configuration configuration("json/minmax_parameter_value_test2.json",
+                                                                 geteuid(),
+                                                                 krbn::core_configuration::error_handling::strict);
       auto actual = configuration.get_selected_profile().get_complex_modifications().minmax_parameter_value("basic.simultaneous_threshold_milliseconds");
       expect(actual->first == 102);
       expect(actual->second == 402);
     }
     {
-      krbn::core_configuration::core_configuration configuration("json/minmax_parameter_value_test3.json", geteuid());
+      krbn::core_configuration::core_configuration configuration("json/minmax_parameter_value_test3.json",
+                                                                 geteuid(),
+                                                                 krbn::core_configuration::error_handling::strict);
       auto actual = configuration.get_selected_profile().get_complex_modifications().minmax_parameter_value("basic.simultaneous_threshold_milliseconds");
       expect(actual->first == 103);
       expect(actual->second == 403);
     }
 
     {
-      krbn::core_configuration::core_configuration configuration("json/minmax_parameter_value_test1.json", geteuid());
+      krbn::core_configuration::core_configuration configuration("json/minmax_parameter_value_test1.json",
+                                                                 geteuid(),
+                                                                 krbn::core_configuration::error_handling::strict);
       expect(!configuration.get_selected_profile().get_complex_modifications().minmax_parameter_value("unknown"));
     }
   };

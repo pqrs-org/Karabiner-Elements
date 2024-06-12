@@ -11,11 +11,13 @@ void handle_json(const nlohmann::json& json) {
   if (c == "complex_modifications") {
     krbn::core_configuration::details::complex_modifications(json.at("input"));
   } else if (c == "devices") {
-    krbn::core_configuration::details::device(json.at("input"));
+    krbn::core_configuration::details::device(json.at("input"),
+                                              krbn::core_configuration::error_handling::strict);
   } else if (c == "parameters") {
     json.at("input").get<krbn::core_configuration::details::parameters>();
   } else if (c == "profile") {
-    krbn::core_configuration::details::profile(json.at("input"));
+    krbn::core_configuration::details::profile(json.at("input"),
+                                               krbn::core_configuration::error_handling::strict);
   } else if (c == "simple_modifications") {
     krbn::core_configuration::details::simple_modifications m;
     m.update(json.at("input"));
@@ -42,8 +44,8 @@ void run_errors_test(void) {
             expect(false) << "The expected exception is not thrown";
           } catch (pqrs::json::unmarshal_error& ex) {
             expect(std::string_view(e.at("error").get<std::string>()) == ex.what());
-          } catch (...) {
-            expect(false) << "An unexpected exception is thrown";
+          } catch (std::exception& ex) {
+            expect(false) << "An unexpected exception is thrown [" << ex.what() << "] " << e.at("input");
           }
         }
       }

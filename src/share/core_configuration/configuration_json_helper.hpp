@@ -1,5 +1,7 @@
 #pragma once
 
+#include "logger.hpp"
+#include "types.hpp"
 #include <gsl/gsl>
 #include <pqrs/json.hpp>
 
@@ -11,7 +13,8 @@ class base_t {
 public:
   virtual ~base_t() = default;
   virtual const std::string& get_key(void) const = 0;
-  virtual void update_value(const nlohmann::json& json) = 0;
+  virtual void update_value(const nlohmann::json& json,
+                            error_handling error_handling) = 0;
   virtual void update_json(nlohmann::json& json) const = 0;
 };
 
@@ -35,9 +38,27 @@ public:
     return value_;
   }
 
-  void update_value(const nlohmann::json& json) override {
-    if (auto v = pqrs::json::find<T>(json, key_)) {
-      value_ = *v;
+  void update_value(const nlohmann::json& json,
+                    error_handling error_handling) override {
+    pqrs::json::requires_object(json, "json");
+
+    auto it = json.find(key_);
+    if (it == std::end(json)) {
+      return;
+    }
+
+    try {
+      if constexpr (std::is_same<T, bool>::value) {
+        pqrs::json::requires_boolean(*it, "`" + key_ + "`");
+      } else if constexpr (std::is_same<T, int>::value) {
+        pqrs::json::requires_number(*it, "`" + key_ + "`");
+      }
+
+      value_ = it->template get<T>();
+    } catch (...) {
+      if (error_handling == error_handling::strict) {
+        throw;
+      }
     }
   }
 
@@ -68,9 +89,11 @@ public:
     return key_;
   }
 
-  void update_value(const nlohmann::json& json) override {
+  void update_value(const nlohmann::json& json,
+                    error_handling error_handling) override {
     if (auto v = pqrs::json::find_object(json, key_)) {
-      value_ = std::make_shared<T>(v->value());
+      value_ = std::make_shared<T>(v->value(),
+                                   error_handling);
     }
   }
 
@@ -101,16 +124,21 @@ public:
     return key_;
   }
 
-  void update_value(const nlohmann::json& json) override {
-    if (!json.contains(key_)) {
+  void update_value(const nlohmann::json& json,
+                    error_handling error_handling) override {
+    pqrs::json::requires_object(json, "json");
+
+    auto it = json.find(key_);
+    if (it == std::end(json)) {
       return;
     }
 
-    pqrs::json::requires_array(json[key_], "`" + key_ + "`");
+    pqrs::json::requires_array(*it, "`" + key_ + "`");
 
-    for (const auto& j : json[key_]) {
+    for (const auto& j : *it) {
       try {
-        value_.push_back(std::make_shared<T>(j));
+        value_.push_back(std::make_shared<T>(j,
+                                             error_handling));
       } catch (const pqrs::json::unmarshal_error& e) {
         throw pqrs::json::unmarshal_error(fmt::format("`{0}` entry error: {1}", key_, e.what()));
       }
@@ -164,9 +192,10 @@ public:
                                                    value));
   }
 
-  void update_value(const nlohmann::json& json) {
+  void update_value(const nlohmann::json& json,
+                    error_handling error_handling) {
     for (const auto& v : values_) {
-      v->update_value(json);
+      v->update_value(json, error_handling);
     }
   }
 
