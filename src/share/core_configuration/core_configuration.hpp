@@ -32,8 +32,10 @@ class core_configuration final {
 public:
   core_configuration(const core_configuration&) = delete;
 
-  core_configuration(error_handling error_handling)
-      : core_configuration("", 0, error_handling) {
+  core_configuration(void)
+      : core_configuration("",
+                           0,
+                           krbn::core_configuration::error_handling::loose) {
   }
 
   core_configuration(const std::string& file_path,

@@ -141,7 +141,7 @@ bool libkrbn_core_configuration_get_machine_specific_enable_multitouch_extension
   if (auto c = get_current_core_configuration()) {
     return c->get_machine_specific().get_entry().get_enable_multitouch_extension();
   }
-  return krbn::core_configuration::details::machine_specific::entry::enable_multitouch_extension_default_value;
+  return false;
 }
 
 void libkrbn_core_configuration_set_machine_specific_enable_multitouch_extension(bool value) {

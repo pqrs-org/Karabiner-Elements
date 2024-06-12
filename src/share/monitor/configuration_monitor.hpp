@@ -19,6 +19,7 @@ public:
 
   configuration_monitor(const std::string& user_core_configuration_file_path,
                         uid_t expected_user_core_configuration_file_owner,
+                        core_configuration::error_handling error_handling,
                         const std::string& system_core_configuration_file_path = constants::get_system_core_configuration_file_path()) : dispatcher_client() {
     std::vector<std::string> targets = {
         user_core_configuration_file_path,
@@ -31,6 +32,7 @@ public:
     file_monitor_->file_changed.connect([this,
                                          user_core_configuration_file_path,
                                          expected_user_core_configuration_file_owner,
+                                         error_handling,
                                          system_core_configuration_file_path](auto&& changed_file_path,
                                                                               auto&& changed_file_body) {
       auto file_path = changed_file_path;
@@ -61,7 +63,8 @@ public:
       }
 
       auto c = std::make_shared<core_configuration::core_configuration>(file_path,
-                                                                        expected_user_core_configuration_file_owner);
+                                                                        expected_user_core_configuration_file_owner,
+                                                                        error_handling);
 
       if (core_configuration_ && !c->is_loaded()) {
         return;

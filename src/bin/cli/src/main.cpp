@@ -22,7 +22,8 @@ namespace {
 void apply_core_configuration_function(std::function<void(std::shared_ptr<krbn::core_configuration::core_configuration>)> function) {
   auto wait = pqrs::make_thread_wait();
   krbn::configuration_monitor monitor(krbn::constants::get_user_core_configuration_file_path(),
-                                      geteuid());
+                                      geteuid(),
+                                      krbn::core_configuration::error_handling::loose);
 
   monitor.core_configuration_updated.connect([wait, function](auto&& weak_core_configuration) {
     if (auto core_configuration = weak_core_configuration.lock()) {

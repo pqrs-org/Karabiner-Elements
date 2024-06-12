@@ -183,7 +183,8 @@ private:
 
   void start_child_components(void) {
     configuration_monitor_ = std::make_shared<configuration_monitor>(constants::get_user_core_configuration_file_path(),
-                                                                     geteuid());
+                                                                     geteuid(),
+                                                                     krbn::core_configuration::error_handling::loose);
     configuration_monitor_->core_configuration_updated.connect([](auto&& weak_core_configuration) {
       if (auto c = weak_core_configuration.lock()) {
         //

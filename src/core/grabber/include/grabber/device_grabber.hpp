@@ -447,7 +447,8 @@ public:
       event_tap_monitor_->async_start();
 
       configuration_monitor_ = std::make_unique<configuration_monitor>(user_core_configuration_file_path,
-                                                                       expected_user_core_configuration_file_owner);
+                                                                       expected_user_core_configuration_file_owner,
+                                                                       krbn::core_configuration::error_handling::loose);
 
       configuration_monitor_->core_configuration_updated.connect([this](auto&& weak_core_configuration) {
         if (auto core_configuration = weak_core_configuration.lock()) {

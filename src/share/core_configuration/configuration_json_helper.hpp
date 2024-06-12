@@ -55,9 +55,11 @@ public:
       }
 
       value_ = it->template get<T>();
-    } catch (...) {
+    } catch (std::exception& e) {
       if (error_handling == error_handling::strict) {
         throw;
+      } else {
+        logger::get_logger()->error(e.what());
       }
     }
   }

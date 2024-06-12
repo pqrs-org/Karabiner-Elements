@@ -99,7 +99,8 @@ void run_manipulator_factory_test(void) {
                             },
                         }},
     });
-    krbn::core_configuration::details::device device(json);
+    krbn::core_configuration::details::device device(json,
+                                                     krbn::core_configuration::error_handling::loose);
 
     auto device_id_1234_5678_keyboard = manipulator_conditions_helper.prepare_device(
         pqrs::hid::vendor_id::value_t(1234),  // vendor_id

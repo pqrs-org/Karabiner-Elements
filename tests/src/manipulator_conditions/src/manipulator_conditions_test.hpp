@@ -126,7 +126,9 @@ void run_manipulator_conditions_test(void) {
         }));
     manipulator_environment.set_system_preferences_properties(system_preferences_properties);
 
-    auto core_configuration = std::make_shared<krbn::core_configuration::core_configuration>("json/core_configuration.json", geteuid());
+    auto core_configuration = std::make_shared<krbn::core_configuration::core_configuration>("json/core_configuration.json",
+                                                                                             geteuid(),
+                                                                                             krbn::core_configuration::error_handling::loose);
     manipulator_environment.set_core_configuration(core_configuration);
 
     krbn::async_file_writer::wait();
@@ -348,7 +350,9 @@ void run_manipulator_conditions_test(void) {
         }));
     manipulator_environment.set_system_preferences_properties(system_preferences_properties);
 
-    auto core_configuration = std::make_shared<krbn::core_configuration::core_configuration>("json/core_configuration.json", geteuid());
+    auto core_configuration = std::make_shared<krbn::core_configuration::core_configuration>("json/core_configuration.json",
+                                                                                             geteuid(),
+                                                                                             krbn::core_configuration::error_handling::loose);
     manipulator_environment.set_core_configuration(core_configuration);
 
     {

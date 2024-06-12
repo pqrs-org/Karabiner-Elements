@@ -12,7 +12,8 @@ public:
       : dispatcher_client() {
     monitor_ = std::make_unique<krbn::configuration_monitor>(
         krbn::constants::get_user_core_configuration_file_path(),
-        geteuid());
+        geteuid(),
+        krbn::core_configuration::error_handling::loose);
 
     auto wait = pqrs::make_thread_wait();
 
