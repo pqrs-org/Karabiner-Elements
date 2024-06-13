@@ -50,7 +50,7 @@ public:
     try {
       if constexpr (std::is_same<T, bool>::value) {
         pqrs::json::requires_boolean(*it, "`" + key_ + "`");
-      } else if constexpr (std::is_same<T, int>::value) {
+      } else if constexpr (std::is_same<T, int>::value || std::is_same<T, double>::value) {
         pqrs::json::requires_number(*it, "`" + key_ + "`");
       }
 
