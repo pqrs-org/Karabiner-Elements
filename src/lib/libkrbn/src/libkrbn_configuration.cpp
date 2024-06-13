@@ -16,20 +16,14 @@ gsl::not_null<std::shared_ptr<krbn::core_configuration::core_configuration>> get
 
 krbn::core_configuration::details::simple_modifications* find_simple_modifications(const libkrbn_device_identifiers* device_identifiers) {
   auto c = get_current_core_configuration();
-  if (device_identifiers) {
-    return c->get_selected_profile().find_simple_modifications(libkrbn_cpp::make_device_identifiers(*device_identifiers));
-  } else {
-    return &(c->get_selected_profile().get_simple_modifications());
-  }
+  return c->get_selected_profile().find_simple_modifications(
+      libkrbn_cpp::make_device_identifiers(device_identifiers));
 }
 
 krbn::core_configuration::details::simple_modifications* find_fn_function_keys(const libkrbn_device_identifiers* device_identifiers) {
   auto c = get_current_core_configuration();
-  if (device_identifiers) {
-    return c->get_selected_profile().find_fn_function_keys(libkrbn_cpp::make_device_identifiers(*device_identifiers));
-  } else {
-    return &(c->get_selected_profile().get_fn_function_keys());
-  }
+  return c->get_selected_profile().find_fn_function_keys(
+      libkrbn_cpp::make_device_identifiers(device_identifiers));
 }
 } // namespace
 
@@ -535,293 +529,215 @@ void libkrbn_core_configuration_set_selected_profile_virtual_hid_keyboard_indica
 }
 
 bool libkrbn_core_configuration_get_selected_profile_device_ignore(const libkrbn_device_identifiers* device_identifiers) {
-  if (device_identifiers) {
-    auto identifiers = libkrbn_cpp::make_device_identifiers(*device_identifiers);
-    auto c = get_current_core_configuration();
-    return c->get_selected_profile().get_device_ignore(identifiers);
-  }
-
-  return false;
+  auto c = get_current_core_configuration();
+  return c->get_selected_profile().get_device_ignore(
+      libkrbn_cpp::make_device_identifiers(device_identifiers));
 }
 
 void libkrbn_core_configuration_set_selected_profile_device_ignore(const libkrbn_device_identifiers* device_identifiers,
                                                                    bool value) {
-  if (device_identifiers) {
-    auto identifiers = libkrbn_cpp::make_device_identifiers(*device_identifiers);
-    auto c = get_current_core_configuration();
-    c->get_selected_profile().set_device_ignore(identifiers, value);
-  }
+  auto c = get_current_core_configuration();
+  c->get_selected_profile().set_device_ignore(
+      libkrbn_cpp::make_device_identifiers(device_identifiers),
+      value);
 }
 
 bool libkrbn_core_configuration_get_selected_profile_device_manipulate_caps_lock_led(const libkrbn_device_identifiers* device_identifiers) {
-  if (device_identifiers) {
-    auto identifiers = libkrbn_cpp::make_device_identifiers(*device_identifiers);
-    auto c = get_current_core_configuration();
-    return c->get_selected_profile().get_device_manipulate_caps_lock_led(identifiers);
-  }
-
-  return false;
+  auto c = get_current_core_configuration();
+  return c->get_selected_profile().get_device_manipulate_caps_lock_led(
+      libkrbn_cpp::make_device_identifiers(device_identifiers));
 }
 
 void libkrbn_core_configuration_set_selected_profile_device_manipulate_caps_lock_led(const libkrbn_device_identifiers* device_identifiers,
                                                                                      bool value) {
-  if (device_identifiers) {
-    auto identifiers = libkrbn_cpp::make_device_identifiers(*device_identifiers);
-    auto c = get_current_core_configuration();
-    c->get_selected_profile().set_device_manipulate_caps_lock_led(identifiers, value);
-  }
+  auto c = get_current_core_configuration();
+  c->get_selected_profile().set_device_manipulate_caps_lock_led(
+      libkrbn_cpp::make_device_identifiers(device_identifiers),
+      value);
 }
 
 bool libkrbn_core_configuration_get_selected_profile_device_treat_as_built_in_keyboard(const libkrbn_device_identifiers* device_identifiers) {
-  if (device_identifiers) {
-    auto identifiers = libkrbn_cpp::make_device_identifiers(*device_identifiers);
-    auto c = get_current_core_configuration();
-    return c->get_selected_profile().get_device_treat_as_built_in_keyboard(identifiers);
-  }
-
-  return false;
+  auto c = get_current_core_configuration();
+  return c->get_selected_profile().get_device_treat_as_built_in_keyboard(
+      libkrbn_cpp::make_device_identifiers(device_identifiers));
 }
 
 void libkrbn_core_configuration_set_selected_profile_device_treat_as_built_in_keyboard(const libkrbn_device_identifiers* device_identifiers,
                                                                                        bool value) {
-  if (device_identifiers) {
-    auto identifiers = libkrbn_cpp::make_device_identifiers(*device_identifiers);
-    auto c = get_current_core_configuration();
-    c->get_selected_profile().set_device_treat_as_built_in_keyboard(identifiers, value);
-  }
+  auto c = get_current_core_configuration();
+  c->get_selected_profile().set_device_treat_as_built_in_keyboard(
+      libkrbn_cpp::make_device_identifiers(device_identifiers),
+      value);
 }
 
 bool libkrbn_core_configuration_get_selected_profile_device_disable_built_in_keyboard_if_exists(const libkrbn_device_identifiers* device_identifiers) {
-  if (device_identifiers) {
-    auto identifiers = libkrbn_cpp::make_device_identifiers(*device_identifiers);
-    auto c = get_current_core_configuration();
-    return c->get_selected_profile().get_device_disable_built_in_keyboard_if_exists(identifiers);
-  }
-
-  return false;
+  auto c = get_current_core_configuration();
+  return c->get_selected_profile().get_device_disable_built_in_keyboard_if_exists(
+      libkrbn_cpp::make_device_identifiers(device_identifiers));
 }
 
 void libkrbn_core_configuration_set_selected_profile_device_disable_built_in_keyboard_if_exists(const libkrbn_device_identifiers* device_identifiers,
                                                                                                 bool value) {
-  if (device_identifiers) {
-    auto identifiers = libkrbn_cpp::make_device_identifiers(*device_identifiers);
-    auto c = get_current_core_configuration();
-    c->get_selected_profile().set_device_disable_built_in_keyboard_if_exists(identifiers, value);
-  }
+  auto c = get_current_core_configuration();
+  c->get_selected_profile().set_device_disable_built_in_keyboard_if_exists(
+      libkrbn_cpp::make_device_identifiers(device_identifiers),
+      value);
 }
 
 bool libkrbn_core_configuration_get_selected_profile_device_mouse_flip_x(const libkrbn_device_identifiers* device_identifiers) {
-  if (device_identifiers) {
-    auto identifiers = libkrbn_cpp::make_device_identifiers(*device_identifiers);
-    auto c = get_current_core_configuration();
-    return c->get_selected_profile().get_device_mouse_flip_x(identifiers);
-  }
-
-  return false;
+  auto c = get_current_core_configuration();
+  return c->get_selected_profile().get_device_mouse_flip_x(
+      libkrbn_cpp::make_device_identifiers(device_identifiers));
 }
 
 void libkrbn_core_configuration_set_selected_profile_device_mouse_flip_x(const libkrbn_device_identifiers* device_identifiers,
                                                                          bool value) {
-
-  if (device_identifiers) {
-    auto identifiers = libkrbn_cpp::make_device_identifiers(*device_identifiers);
-    auto c = get_current_core_configuration();
-    c->get_selected_profile().set_device_mouse_flip_x(identifiers, value);
-  }
+  auto c = get_current_core_configuration();
+  c->get_selected_profile().set_device_mouse_flip_x(
+      libkrbn_cpp::make_device_identifiers(device_identifiers),
+      value);
 }
 
 bool libkrbn_core_configuration_get_selected_profile_device_mouse_flip_y(const libkrbn_device_identifiers* device_identifiers) {
-  if (device_identifiers) {
-    auto identifiers = libkrbn_cpp::make_device_identifiers(*device_identifiers);
-    auto c = get_current_core_configuration();
-    return c->get_selected_profile().get_device_mouse_flip_y(identifiers);
-  }
-
-  return false;
+  auto c = get_current_core_configuration();
+  return c->get_selected_profile().get_device_mouse_flip_y(
+      libkrbn_cpp::make_device_identifiers(device_identifiers));
 }
 
 void libkrbn_core_configuration_set_selected_profile_device_mouse_flip_y(const libkrbn_device_identifiers* device_identifiers,
                                                                          bool value) {
-  if (device_identifiers) {
-    auto identifiers = libkrbn_cpp::make_device_identifiers(*device_identifiers);
-    auto c = get_current_core_configuration();
-    c->get_selected_profile().set_device_mouse_flip_y(identifiers, value);
-  }
+  auto c = get_current_core_configuration();
+  c->get_selected_profile().set_device_mouse_flip_y(
+      libkrbn_cpp::make_device_identifiers(device_identifiers),
+      value);
 }
 
 bool libkrbn_core_configuration_get_selected_profile_device_mouse_flip_vertical_wheel(const libkrbn_device_identifiers* device_identifiers) {
-  if (device_identifiers) {
-    auto identifiers = libkrbn_cpp::make_device_identifiers(*device_identifiers);
-    auto c = get_current_core_configuration();
-    return c->get_selected_profile().get_device_mouse_flip_vertical_wheel(identifiers);
-  }
-
-  return false;
+  auto c = get_current_core_configuration();
+  return c->get_selected_profile().get_device_mouse_flip_vertical_wheel(
+      libkrbn_cpp::make_device_identifiers(device_identifiers));
 }
 
 void libkrbn_core_configuration_set_selected_profile_device_mouse_flip_vertical_wheel(const libkrbn_device_identifiers* device_identifiers,
                                                                                       bool value) {
-  if (device_identifiers) {
-    auto identifiers = libkrbn_cpp::make_device_identifiers(*device_identifiers);
-    auto c = get_current_core_configuration();
-    c->get_selected_profile().set_device_mouse_flip_vertical_wheel(identifiers, value);
-  }
+  auto c = get_current_core_configuration();
+  c->get_selected_profile().set_device_mouse_flip_vertical_wheel(
+      libkrbn_cpp::make_device_identifiers(device_identifiers),
+      value);
 }
 
 bool libkrbn_core_configuration_get_selected_profile_device_mouse_flip_horizontal_wheel(const libkrbn_device_identifiers* device_identifiers) {
-  if (device_identifiers) {
-    auto identifiers = libkrbn_cpp::make_device_identifiers(*device_identifiers);
-    auto c = get_current_core_configuration();
-    return c->get_selected_profile().get_device_mouse_flip_horizontal_wheel(identifiers);
-  }
-
-  return false;
+  auto c = get_current_core_configuration();
+  return c->get_selected_profile().get_device_mouse_flip_horizontal_wheel(
+      libkrbn_cpp::make_device_identifiers(device_identifiers));
 }
 
 void libkrbn_core_configuration_set_selected_profile_device_mouse_flip_horizontal_wheel(const libkrbn_device_identifiers* device_identifiers,
                                                                                         bool value) {
-  if (device_identifiers) {
-    auto identifiers = libkrbn_cpp::make_device_identifiers(*device_identifiers);
-    auto c = get_current_core_configuration();
-    c->get_selected_profile().set_device_mouse_flip_horizontal_wheel(identifiers, value);
-  }
+  auto c = get_current_core_configuration();
+  c->get_selected_profile().set_device_mouse_flip_horizontal_wheel(
+      libkrbn_cpp::make_device_identifiers(device_identifiers),
+      value);
 }
 
 bool libkrbn_core_configuration_get_selected_profile_device_mouse_swap_xy(const libkrbn_device_identifiers* device_identifiers) {
-  if (device_identifiers) {
-    auto identifiers = libkrbn_cpp::make_device_identifiers(*device_identifiers);
-    auto c = get_current_core_configuration();
-    return c->get_selected_profile().get_device_mouse_swap_xy(identifiers);
-  }
-
-  return false;
+  auto c = get_current_core_configuration();
+  return c->get_selected_profile().get_device_mouse_swap_xy(
+      libkrbn_cpp::make_device_identifiers(device_identifiers));
 }
 
 void libkrbn_core_configuration_set_selected_profile_device_mouse_swap_xy(const libkrbn_device_identifiers* device_identifiers,
                                                                           bool value) {
-
-  if (device_identifiers) {
-    auto identifiers = libkrbn_cpp::make_device_identifiers(*device_identifiers);
-    auto c = get_current_core_configuration();
-    c->get_selected_profile().set_device_mouse_swap_xy(identifiers, value);
-  }
+  auto c = get_current_core_configuration();
+  c->get_selected_profile().set_device_mouse_swap_xy(
+      libkrbn_cpp::make_device_identifiers(device_identifiers),
+      value);
 }
 
 bool libkrbn_core_configuration_get_selected_profile_device_mouse_swap_wheels(const libkrbn_device_identifiers* device_identifiers) {
-  if (device_identifiers) {
-    auto identifiers = libkrbn_cpp::make_device_identifiers(*device_identifiers);
-    auto c = get_current_core_configuration();
-    return c->get_selected_profile().get_device_mouse_swap_wheels(identifiers);
-  }
-
-  return false;
+  auto c = get_current_core_configuration();
+  return c->get_selected_profile().get_device_mouse_swap_wheels(
+      libkrbn_cpp::make_device_identifiers(device_identifiers));
 }
 
 void libkrbn_core_configuration_set_selected_profile_device_mouse_swap_wheels(const libkrbn_device_identifiers* device_identifiers,
                                                                               bool value) {
-
-  if (device_identifiers) {
-    auto identifiers = libkrbn_cpp::make_device_identifiers(*device_identifiers);
-    auto c = get_current_core_configuration();
-    c->get_selected_profile().set_device_mouse_swap_wheels(identifiers, value);
-  }
+  auto c = get_current_core_configuration();
+  c->get_selected_profile().set_device_mouse_swap_wheels(
+      libkrbn_cpp::make_device_identifiers(device_identifiers),
+      value);
 }
 
 bool libkrbn_core_configuration_get_selected_profile_device_game_pad_swap_sticks(const libkrbn_device_identifiers* device_identifiers) {
-  if (device_identifiers) {
-    auto identifiers = libkrbn_cpp::make_device_identifiers(*device_identifiers);
-    auto c = get_current_core_configuration();
-    return c->get_selected_profile().get_device_game_pad_swap_sticks(identifiers);
-  }
-
-  return false;
+  auto c = get_current_core_configuration();
+  return c->get_selected_profile().get_device_game_pad_swap_sticks(
+      libkrbn_cpp::make_device_identifiers(device_identifiers));
 }
 
 void libkrbn_core_configuration_set_selected_profile_device_game_pad_swap_sticks(const libkrbn_device_identifiers* device_identifiers,
                                                                                  bool value) {
-  if (device_identifiers) {
-    auto identifiers = libkrbn_cpp::make_device_identifiers(*device_identifiers);
-    auto c = get_current_core_configuration();
-    c->get_selected_profile().set_device_game_pad_swap_sticks(identifiers, value);
-  }
+  auto c = get_current_core_configuration();
+  c->get_selected_profile().set_device_game_pad_swap_sticks(
+      libkrbn_cpp::make_device_identifiers(device_identifiers),
+      value);
 }
 
 // game_pad_xy_stick_continued_movement_absolute_magnitude_threshold
 
 bool libkrbn_core_configuration_has_selected_profile_device_game_pad_xy_stick_continued_movement_absolute_magnitude_threshold(const libkrbn_device_identifiers* device_identifiers) {
-  if (device_identifiers) {
-    auto identifiers = libkrbn_cpp::make_device_identifiers(*device_identifiers);
-    auto c = get_current_core_configuration();
-    return c->get_selected_profile().has_device_game_pad_xy_stick_continued_movement_absolute_magnitude_threshold(identifiers);
-  }
-
-  return false;
+  auto c = get_current_core_configuration();
+  return c->get_selected_profile().has_device_game_pad_xy_stick_continued_movement_absolute_magnitude_threshold(
+      libkrbn_cpp::make_device_identifiers(device_identifiers));
 }
 
 double libkrbn_core_configuration_get_selected_profile_device_game_pad_xy_stick_continued_movement_absolute_magnitude_threshold(const libkrbn_device_identifiers* device_identifiers) {
-  if (device_identifiers) {
-    auto identifiers = libkrbn_cpp::make_device_identifiers(*device_identifiers);
-    auto c = get_current_core_configuration();
-    return c->get_selected_profile().get_device_game_pad_xy_stick_continued_movement_absolute_magnitude_threshold(identifiers);
-  }
-
-  return 0.0;
+  auto c = get_current_core_configuration();
+  return c->get_selected_profile().get_device_game_pad_xy_stick_continued_movement_absolute_magnitude_threshold(
+      libkrbn_cpp::make_device_identifiers(device_identifiers));
 }
 
 void libkrbn_core_configuration_set_selected_profile_device_game_pad_xy_stick_continued_movement_absolute_magnitude_threshold(const libkrbn_device_identifiers* device_identifiers,
                                                                                                                               double value) {
-  if (device_identifiers) {
-    auto identifiers = libkrbn_cpp::make_device_identifiers(*device_identifiers);
-    auto c = get_current_core_configuration();
-    c->get_selected_profile().set_device_game_pad_xy_stick_continued_movement_absolute_magnitude_threshold(identifiers, value);
-  }
+  auto c = get_current_core_configuration();
+  c->get_selected_profile().set_device_game_pad_xy_stick_continued_movement_absolute_magnitude_threshold(
+      libkrbn_cpp::make_device_identifiers(device_identifiers),
+      value);
 }
 
 void libkrbn_core_configuration_unset_selected_profile_device_game_pad_xy_stick_continued_movement_absolute_magnitude_threshold(const libkrbn_device_identifiers* device_identifiers) {
-  if (device_identifiers) {
-    auto identifiers = libkrbn_cpp::make_device_identifiers(*device_identifiers);
-    auto c = get_current_core_configuration();
-    c->get_selected_profile().set_device_game_pad_xy_stick_continued_movement_absolute_magnitude_threshold(identifiers, std::nullopt);
-  }
+  auto c = get_current_core_configuration();
+  c->get_selected_profile().set_device_game_pad_xy_stick_continued_movement_absolute_magnitude_threshold(
+      libkrbn_cpp::make_device_identifiers(device_identifiers),
+      std::nullopt);
 }
 
 // game_pad_xy_stick_continued_movement_interval_milliseconds
 
 bool libkrbn_core_configuration_has_selected_profile_device_game_pad_xy_stick_continued_movement_interval_milliseconds(const libkrbn_device_identifiers* device_identifiers) {
-  if (device_identifiers) {
-    auto identifiers = libkrbn_cpp::make_device_identifiers(*device_identifiers);
-    auto c = get_current_core_configuration();
-    return c->get_selected_profile().has_device_game_pad_xy_stick_continued_movement_interval_milliseconds(identifiers);
-  }
-
-  return false;
+  auto c = get_current_core_configuration();
+  return c->get_selected_profile().has_device_game_pad_xy_stick_continued_movement_interval_milliseconds(
+      libkrbn_cpp::make_device_identifiers(device_identifiers));
 }
 
 int libkrbn_core_configuration_get_selected_profile_device_game_pad_xy_stick_continued_movement_interval_milliseconds(const libkrbn_device_identifiers* device_identifiers) {
-  if (device_identifiers) {
-    auto identifiers = libkrbn_cpp::make_device_identifiers(*device_identifiers);
-    auto c = get_current_core_configuration();
-    return c->get_selected_profile().get_device_game_pad_xy_stick_continued_movement_interval_milliseconds(identifiers);
-  }
-
-  return 0.0;
+  auto c = get_current_core_configuration();
+  return c->get_selected_profile().get_device_game_pad_xy_stick_continued_movement_interval_milliseconds(
+      libkrbn_cpp::make_device_identifiers(device_identifiers));
 }
 
 void libkrbn_core_configuration_set_selected_profile_device_game_pad_xy_stick_continued_movement_interval_milliseconds(const libkrbn_device_identifiers* device_identifiers,
                                                                                                                        int value) {
-  if (device_identifiers) {
-    auto identifiers = libkrbn_cpp::make_device_identifiers(*device_identifiers);
-    auto c = get_current_core_configuration();
-    c->get_selected_profile().set_device_game_pad_xy_stick_continued_movement_interval_milliseconds(identifiers, value);
-  }
+  auto c = get_current_core_configuration();
+  c->get_selected_profile().set_device_game_pad_xy_stick_continued_movement_interval_milliseconds(
+      libkrbn_cpp::make_device_identifiers(device_identifiers),
+      value);
 }
 
 void libkrbn_core_configuration_unset_selected_profile_device_game_pad_xy_stick_continued_movement_interval_milliseconds(const libkrbn_device_identifiers* device_identifiers) {
-  if (device_identifiers) {
-    auto identifiers = libkrbn_cpp::make_device_identifiers(*device_identifiers);
-    auto c = get_current_core_configuration();
-    c->get_selected_profile().set_device_game_pad_xy_stick_continued_movement_interval_milliseconds(identifiers, std::nullopt);
-  }
+  auto c = get_current_core_configuration();
+  c->get_selected_profile().set_device_game_pad_xy_stick_continued_movement_interval_milliseconds(
+      libkrbn_cpp::make_device_identifiers(device_identifiers),
+      std::nullopt);
 }
 
 int libkrbn_core_configuration_game_pad_xy_stick_continued_movement_interval_milliseconds_default_value(void) {
@@ -831,40 +747,30 @@ int libkrbn_core_configuration_game_pad_xy_stick_continued_movement_interval_mil
 // game_pad_xy_stick_flicking_input_window_milliseconds
 
 bool libkrbn_core_configuration_has_selected_profile_device_game_pad_xy_stick_flicking_input_window_milliseconds(const libkrbn_device_identifiers* device_identifiers) {
-  if (device_identifiers) {
-    auto identifiers = libkrbn_cpp::make_device_identifiers(*device_identifiers);
-    auto c = get_current_core_configuration();
-    return c->get_selected_profile().has_device_game_pad_xy_stick_flicking_input_window_milliseconds(identifiers);
-  }
-
-  return false;
+  auto c = get_current_core_configuration();
+  return c->get_selected_profile().has_device_game_pad_xy_stick_flicking_input_window_milliseconds(
+      libkrbn_cpp::make_device_identifiers(device_identifiers));
 }
 
 int libkrbn_core_configuration_get_selected_profile_device_game_pad_xy_stick_flicking_input_window_milliseconds(const libkrbn_device_identifiers* device_identifiers) {
-  if (device_identifiers) {
-    auto identifiers = libkrbn_cpp::make_device_identifiers(*device_identifiers);
-    auto c = get_current_core_configuration();
-    return c->get_selected_profile().get_device_game_pad_xy_stick_flicking_input_window_milliseconds(identifiers);
-  }
-
-  return 0.0;
+  auto c = get_current_core_configuration();
+  return c->get_selected_profile().get_device_game_pad_xy_stick_flicking_input_window_milliseconds(
+      libkrbn_cpp::make_device_identifiers(device_identifiers));
 }
 
 void libkrbn_core_configuration_set_selected_profile_device_game_pad_xy_stick_flicking_input_window_milliseconds(const libkrbn_device_identifiers* device_identifiers,
                                                                                                                  int value) {
-  if (device_identifiers) {
-    auto identifiers = libkrbn_cpp::make_device_identifiers(*device_identifiers);
-    auto c = get_current_core_configuration();
-    c->get_selected_profile().set_device_game_pad_xy_stick_flicking_input_window_milliseconds(identifiers, value);
-  }
+  auto c = get_current_core_configuration();
+  c->get_selected_profile().set_device_game_pad_xy_stick_flicking_input_window_milliseconds(
+      libkrbn_cpp::make_device_identifiers(device_identifiers),
+      value);
 }
 
 void libkrbn_core_configuration_unset_selected_profile_device_game_pad_xy_stick_flicking_input_window_milliseconds(const libkrbn_device_identifiers* device_identifiers) {
-  if (device_identifiers) {
-    auto identifiers = libkrbn_cpp::make_device_identifiers(*device_identifiers);
-    auto c = get_current_core_configuration();
-    c->get_selected_profile().set_device_game_pad_xy_stick_flicking_input_window_milliseconds(identifiers, std::nullopt);
-  }
+  auto c = get_current_core_configuration();
+  c->get_selected_profile().set_device_game_pad_xy_stick_flicking_input_window_milliseconds(
+      libkrbn_cpp::make_device_identifiers(device_identifiers),
+      std::nullopt);
 }
 
 int libkrbn_core_configuration_game_pad_xy_stick_flicking_input_window_milliseconds_default_value(void) {
@@ -874,79 +780,59 @@ int libkrbn_core_configuration_game_pad_xy_stick_flicking_input_window_milliseco
 // game_pad_wheels_stick_continued_movement_absolute_magnitude_threshold
 
 bool libkrbn_core_configuration_has_selected_profile_device_game_pad_wheels_stick_continued_movement_absolute_magnitude_threshold(const libkrbn_device_identifiers* device_identifiers) {
-  if (device_identifiers) {
-    auto identifiers = libkrbn_cpp::make_device_identifiers(*device_identifiers);
-    auto c = get_current_core_configuration();
-    return c->get_selected_profile().has_device_game_pad_wheels_stick_continued_movement_absolute_magnitude_threshold(identifiers);
-  }
-
-  return false;
+  auto c = get_current_core_configuration();
+  return c->get_selected_profile().has_device_game_pad_wheels_stick_continued_movement_absolute_magnitude_threshold(
+      libkrbn_cpp::make_device_identifiers(device_identifiers));
 }
 
 double libkrbn_core_configuration_get_selected_profile_device_game_pad_wheels_stick_continued_movement_absolute_magnitude_threshold(const libkrbn_device_identifiers* device_identifiers) {
-  if (device_identifiers) {
-    auto identifiers = libkrbn_cpp::make_device_identifiers(*device_identifiers);
-    auto c = get_current_core_configuration();
-    return c->get_selected_profile().get_device_game_pad_wheels_stick_continued_movement_absolute_magnitude_threshold(identifiers);
-  }
-
-  return 0.0;
+  auto c = get_current_core_configuration();
+  return c->get_selected_profile().get_device_game_pad_wheels_stick_continued_movement_absolute_magnitude_threshold(
+      libkrbn_cpp::make_device_identifiers(device_identifiers));
 }
 
 void libkrbn_core_configuration_set_selected_profile_device_game_pad_wheels_stick_continued_movement_absolute_magnitude_threshold(const libkrbn_device_identifiers* device_identifiers,
                                                                                                                                   double value) {
-  if (device_identifiers) {
-    auto identifiers = libkrbn_cpp::make_device_identifiers(*device_identifiers);
-    auto c = get_current_core_configuration();
-    c->get_selected_profile().set_device_game_pad_wheels_stick_continued_movement_absolute_magnitude_threshold(identifiers, value);
-  }
+  auto c = get_current_core_configuration();
+  c->get_selected_profile().set_device_game_pad_wheels_stick_continued_movement_absolute_magnitude_threshold(
+      libkrbn_cpp::make_device_identifiers(device_identifiers),
+      value);
 }
 
 void libkrbn_core_configuration_unset_selected_profile_device_game_pad_wheels_stick_continued_movement_absolute_magnitude_threshold(const libkrbn_device_identifiers* device_identifiers) {
-  if (device_identifiers) {
-    auto identifiers = libkrbn_cpp::make_device_identifiers(*device_identifiers);
-    auto c = get_current_core_configuration();
-    c->get_selected_profile().set_device_game_pad_wheels_stick_continued_movement_absolute_magnitude_threshold(identifiers, std::nullopt);
-  }
+  auto c = get_current_core_configuration();
+  c->get_selected_profile().set_device_game_pad_wheels_stick_continued_movement_absolute_magnitude_threshold(
+      libkrbn_cpp::make_device_identifiers(device_identifiers),
+      std::nullopt);
 }
 
 // game_pad_wheels_stick_continued_movement_interval_milliseconds
 
 bool libkrbn_core_configuration_has_selected_profile_device_game_pad_wheels_stick_continued_movement_interval_milliseconds(const libkrbn_device_identifiers* device_identifiers) {
-  if (device_identifiers) {
-    auto identifiers = libkrbn_cpp::make_device_identifiers(*device_identifiers);
-    auto c = get_current_core_configuration();
-    return c->get_selected_profile().has_device_game_pad_wheels_stick_continued_movement_interval_milliseconds(identifiers);
-  }
-
-  return false;
+  auto c = get_current_core_configuration();
+  return c->get_selected_profile().has_device_game_pad_wheels_stick_continued_movement_interval_milliseconds(
+      libkrbn_cpp::make_device_identifiers(device_identifiers));
 }
 
 int libkrbn_core_configuration_get_selected_profile_device_game_pad_wheels_stick_continued_movement_interval_milliseconds(const libkrbn_device_identifiers* device_identifiers) {
-  if (device_identifiers) {
-    auto identifiers = libkrbn_cpp::make_device_identifiers(*device_identifiers);
-    auto c = get_current_core_configuration();
-    return c->get_selected_profile().get_device_game_pad_wheels_stick_continued_movement_interval_milliseconds(identifiers);
-  }
-
-  return 0.0;
+  auto c = get_current_core_configuration();
+  return c->get_selected_profile().get_device_game_pad_wheels_stick_continued_movement_interval_milliseconds(
+      libkrbn_cpp::make_device_identifiers(device_identifiers));
 }
 
 void libkrbn_core_configuration_set_selected_profile_device_game_pad_wheels_stick_continued_movement_interval_milliseconds(const libkrbn_device_identifiers* device_identifiers,
                                                                                                                            int value) {
-  if (device_identifiers) {
-    auto identifiers = libkrbn_cpp::make_device_identifiers(*device_identifiers);
-    auto c = get_current_core_configuration();
-    c->get_selected_profile().set_device_game_pad_wheels_stick_continued_movement_interval_milliseconds(identifiers, value);
-  }
+  auto c = get_current_core_configuration();
+  c->get_selected_profile().set_device_game_pad_wheels_stick_continued_movement_interval_milliseconds(
+      libkrbn_cpp::make_device_identifiers(device_identifiers),
+      value);
 }
 
 void libkrbn_core_configuration_unset_selected_profile_device_game_pad_wheels_stick_continued_movement_interval_milliseconds(const libkrbn_device_identifiers* device_identifiers) {
-  if (device_identifiers) {
-    auto identifiers = libkrbn_cpp::make_device_identifiers(*device_identifiers);
-    auto c = get_current_core_configuration();
-    c->get_selected_profile().set_device_game_pad_wheels_stick_continued_movement_interval_milliseconds(identifiers, std::nullopt);
-  }
+  auto c = get_current_core_configuration();
+  c->get_selected_profile().set_device_game_pad_wheels_stick_continued_movement_interval_milliseconds(
+      libkrbn_cpp::make_device_identifiers(device_identifiers),
+      std::nullopt);
 }
 
 int libkrbn_core_configuration_game_pad_wheels_stick_continued_movement_interval_milliseconds_default_value(void) {
@@ -956,40 +842,30 @@ int libkrbn_core_configuration_game_pad_wheels_stick_continued_movement_interval
 // game_pad_wheels_stick_flicking_input_window_milliseconds
 
 bool libkrbn_core_configuration_has_selected_profile_device_game_pad_wheels_stick_flicking_input_window_milliseconds(const libkrbn_device_identifiers* device_identifiers) {
-  if (device_identifiers) {
-    auto identifiers = libkrbn_cpp::make_device_identifiers(*device_identifiers);
-    auto c = get_current_core_configuration();
-    return c->get_selected_profile().has_device_game_pad_wheels_stick_flicking_input_window_milliseconds(identifiers);
-  }
-
-  return false;
+  auto c = get_current_core_configuration();
+  return c->get_selected_profile().has_device_game_pad_wheels_stick_flicking_input_window_milliseconds(
+      libkrbn_cpp::make_device_identifiers(device_identifiers));
 }
 
 int libkrbn_core_configuration_get_selected_profile_device_game_pad_wheels_stick_flicking_input_window_milliseconds(const libkrbn_device_identifiers* device_identifiers) {
-  if (device_identifiers) {
-    auto identifiers = libkrbn_cpp::make_device_identifiers(*device_identifiers);
-    auto c = get_current_core_configuration();
-    return c->get_selected_profile().get_device_game_pad_wheels_stick_flicking_input_window_milliseconds(identifiers);
-  }
-
-  return 0.0;
+  auto c = get_current_core_configuration();
+  return c->get_selected_profile().get_device_game_pad_wheels_stick_flicking_input_window_milliseconds(
+      libkrbn_cpp::make_device_identifiers(device_identifiers));
 }
 
 void libkrbn_core_configuration_set_selected_profile_device_game_pad_wheels_stick_flicking_input_window_milliseconds(const libkrbn_device_identifiers* device_identifiers,
                                                                                                                      int value) {
-  if (device_identifiers) {
-    auto identifiers = libkrbn_cpp::make_device_identifiers(*device_identifiers);
-    auto c = get_current_core_configuration();
-    c->get_selected_profile().set_device_game_pad_wheels_stick_flicking_input_window_milliseconds(identifiers, value);
-  }
+  auto c = get_current_core_configuration();
+  c->get_selected_profile().set_device_game_pad_wheels_stick_flicking_input_window_milliseconds(
+      libkrbn_cpp::make_device_identifiers(device_identifiers),
+      value);
 }
 
 void libkrbn_core_configuration_unset_selected_profile_device_game_pad_wheels_stick_flicking_input_window_milliseconds(const libkrbn_device_identifiers* device_identifiers) {
-  if (device_identifiers) {
-    auto identifiers = libkrbn_cpp::make_device_identifiers(*device_identifiers);
-    auto c = get_current_core_configuration();
-    c->get_selected_profile().set_device_game_pad_wheels_stick_flicking_input_window_milliseconds(identifiers, std::nullopt);
-  }
+  auto c = get_current_core_configuration();
+  c->get_selected_profile().set_device_game_pad_wheels_stick_flicking_input_window_milliseconds(
+      libkrbn_cpp::make_device_identifiers(device_identifiers),
+      std::nullopt);
 }
 
 int libkrbn_core_configuration_game_pad_wheels_stick_flicking_input_window_milliseconds_default_value(void) {
@@ -999,13 +875,9 @@ int libkrbn_core_configuration_game_pad_wheels_stick_flicking_input_window_milli
 // game_pad_stick_x_formula
 
 bool libkrbn_core_configuration_has_selected_profile_device_game_pad_stick_x_formula(const libkrbn_device_identifiers* device_identifiers) {
-  if (device_identifiers) {
-    auto identifiers = libkrbn_cpp::make_device_identifiers(*device_identifiers);
-    auto c = get_current_core_configuration();
-    return c->get_selected_profile().has_device_game_pad_stick_x_formula(identifiers);
-  }
-
-  return false;
+  auto c = get_current_core_configuration();
+  return c->get_selected_profile().has_device_game_pad_stick_x_formula(
+      libkrbn_cpp::make_device_identifiers(device_identifiers));
 }
 
 bool libkrbn_core_configuration_get_selected_profile_device_game_pad_stick_x_formula(const libkrbn_device_identifiers* device_identifiers,
@@ -1015,15 +887,13 @@ bool libkrbn_core_configuration_get_selected_profile_device_game_pad_stick_x_for
     buffer[0] = '\0';
   }
 
-  if (device_identifiers) {
-    auto identifiers = libkrbn_cpp::make_device_identifiers(*device_identifiers);
-    auto c = get_current_core_configuration();
-    auto formula = c->get_selected_profile().get_device_game_pad_stick_x_formula(identifiers);
-    // Return false if no enough space.
-    if (formula.length() < length) {
-      strlcpy(buffer, formula.c_str(), length);
-      return true;
-    }
+  auto c = get_current_core_configuration();
+  auto formula = c->get_selected_profile().get_device_game_pad_stick_x_formula(
+      libkrbn_cpp::make_device_identifiers(device_identifiers));
+  // Return false if no enough space.
+  if (formula.length() < length) {
+    strlcpy(buffer, formula.c_str(), length);
+    return true;
   }
 
   return false;
@@ -1035,35 +905,27 @@ bool libkrbn_core_configuration_set_selected_profile_device_game_pad_stick_x_for
     return false;
   }
 
-  if (device_identifiers) {
-    auto identifiers = libkrbn_cpp::make_device_identifiers(*device_identifiers);
-    auto c = get_current_core_configuration();
-    c->get_selected_profile().set_device_game_pad_stick_x_formula(identifiers, value);
+  auto c = get_current_core_configuration();
+  c->get_selected_profile().set_device_game_pad_stick_x_formula(
+      libkrbn_cpp::make_device_identifiers(device_identifiers),
+      value);
 
-    return true;
-  }
-
-  return false;
+  return true;
 }
 
 void libkrbn_core_configuration_unset_selected_profile_device_game_pad_stick_x_formula(const libkrbn_device_identifiers* device_identifiers) {
-  if (device_identifiers) {
-    auto identifiers = libkrbn_cpp::make_device_identifiers(*device_identifiers);
-    auto c = get_current_core_configuration();
-    c->get_selected_profile().set_device_game_pad_stick_x_formula(identifiers, std::nullopt);
-  }
+  auto c = get_current_core_configuration();
+  c->get_selected_profile().set_device_game_pad_stick_x_formula(
+      libkrbn_cpp::make_device_identifiers(device_identifiers),
+      std::nullopt);
 }
 
 // game_pad_stick_y_formula
 
 bool libkrbn_core_configuration_has_selected_profile_device_game_pad_stick_y_formula(const libkrbn_device_identifiers* device_identifiers) {
-  if (device_identifiers) {
-    auto identifiers = libkrbn_cpp::make_device_identifiers(*device_identifiers);
-    auto c = get_current_core_configuration();
-    return c->get_selected_profile().has_device_game_pad_stick_y_formula(identifiers);
-  }
-
-  return false;
+  auto c = get_current_core_configuration();
+  return c->get_selected_profile().has_device_game_pad_stick_y_formula(
+      libkrbn_cpp::make_device_identifiers(device_identifiers));
 }
 
 bool libkrbn_core_configuration_get_selected_profile_device_game_pad_stick_y_formula(const libkrbn_device_identifiers* device_identifiers,
@@ -1073,15 +935,13 @@ bool libkrbn_core_configuration_get_selected_profile_device_game_pad_stick_y_for
     buffer[0] = '\0';
   }
 
-  if (device_identifiers) {
-    auto identifiers = libkrbn_cpp::make_device_identifiers(*device_identifiers);
-    auto c = get_current_core_configuration();
-    auto formula = c->get_selected_profile().get_device_game_pad_stick_y_formula(identifiers);
-    // Return false if no enough space.
-    if (formula.length() < length) {
-      strlcpy(buffer, formula.c_str(), length);
-      return true;
-    }
+  auto c = get_current_core_configuration();
+  auto formula = c->get_selected_profile().get_device_game_pad_stick_y_formula(
+      libkrbn_cpp::make_device_identifiers(device_identifiers));
+  // Return false if no enough space.
+  if (formula.length() < length) {
+    strlcpy(buffer, formula.c_str(), length);
+    return true;
   }
 
   return false;
@@ -1093,35 +953,27 @@ bool libkrbn_core_configuration_set_selected_profile_device_game_pad_stick_y_for
     return false;
   }
 
-  if (device_identifiers) {
-    auto identifiers = libkrbn_cpp::make_device_identifiers(*device_identifiers);
-    auto c = get_current_core_configuration();
-    c->get_selected_profile().set_device_game_pad_stick_y_formula(identifiers, value);
+  auto c = get_current_core_configuration();
+  c->get_selected_profile().set_device_game_pad_stick_y_formula(
+      libkrbn_cpp::make_device_identifiers(device_identifiers),
+      value);
 
-    return true;
-  }
-
-  return false;
+  return true;
 }
 
 void libkrbn_core_configuration_unset_selected_profile_device_game_pad_stick_y_formula(const libkrbn_device_identifiers* device_identifiers) {
-  if (device_identifiers) {
-    auto identifiers = libkrbn_cpp::make_device_identifiers(*device_identifiers);
-    auto c = get_current_core_configuration();
-    c->get_selected_profile().set_device_game_pad_stick_y_formula(identifiers, std::nullopt);
-  }
+  auto c = get_current_core_configuration();
+  c->get_selected_profile().set_device_game_pad_stick_y_formula(
+      libkrbn_cpp::make_device_identifiers(device_identifiers),
+      std::nullopt);
 }
 
 // game_pad_stick_vertical_wheel_formula
 
 bool libkrbn_core_configuration_has_selected_profile_device_game_pad_stick_vertical_wheel_formula(const libkrbn_device_identifiers* device_identifiers) {
-  if (device_identifiers) {
-    auto identifiers = libkrbn_cpp::make_device_identifiers(*device_identifiers);
-    auto c = get_current_core_configuration();
-    return c->get_selected_profile().has_device_game_pad_stick_vertical_wheel_formula(identifiers);
-  }
-
-  return false;
+  auto c = get_current_core_configuration();
+  return c->get_selected_profile().has_device_game_pad_stick_vertical_wheel_formula(
+      libkrbn_cpp::make_device_identifiers(device_identifiers));
 }
 
 bool libkrbn_core_configuration_get_selected_profile_device_game_pad_stick_vertical_wheel_formula(const libkrbn_device_identifiers* device_identifiers,
@@ -1131,15 +983,13 @@ bool libkrbn_core_configuration_get_selected_profile_device_game_pad_stick_verti
     buffer[0] = '\0';
   }
 
-  if (device_identifiers) {
-    auto identifiers = libkrbn_cpp::make_device_identifiers(*device_identifiers);
-    auto c = get_current_core_configuration();
-    auto formula = c->get_selected_profile().get_device_game_pad_stick_vertical_wheel_formula(identifiers);
-    // Return false if no enough space.
-    if (formula.length() < length) {
-      strlcpy(buffer, formula.c_str(), length);
-      return true;
-    }
+  auto c = get_current_core_configuration();
+  auto formula = c->get_selected_profile().get_device_game_pad_stick_vertical_wheel_formula(
+      libkrbn_cpp::make_device_identifiers(device_identifiers));
+  // Return false if no enough space.
+  if (formula.length() < length) {
+    strlcpy(buffer, formula.c_str(), length);
+    return true;
   }
 
   return false;
@@ -1151,35 +1001,27 @@ bool libkrbn_core_configuration_set_selected_profile_device_game_pad_stick_verti
     return false;
   }
 
-  if (device_identifiers) {
-    auto identifiers = libkrbn_cpp::make_device_identifiers(*device_identifiers);
-    auto c = get_current_core_configuration();
-    c->get_selected_profile().set_device_game_pad_stick_vertical_wheel_formula(identifiers, value);
+  auto c = get_current_core_configuration();
+  c->get_selected_profile().set_device_game_pad_stick_vertical_wheel_formula(
+      libkrbn_cpp::make_device_identifiers(device_identifiers),
+      value);
 
-    return true;
-  }
-
-  return false;
+  return true;
 }
 
 void libkrbn_core_configuration_unset_selected_profile_device_game_pad_stick_vertical_wheel_formula(const libkrbn_device_identifiers* device_identifiers) {
-  if (device_identifiers) {
-    auto identifiers = libkrbn_cpp::make_device_identifiers(*device_identifiers);
-    auto c = get_current_core_configuration();
-    c->get_selected_profile().set_device_game_pad_stick_vertical_wheel_formula(identifiers, std::nullopt);
-  }
+  auto c = get_current_core_configuration();
+  c->get_selected_profile().set_device_game_pad_stick_vertical_wheel_formula(
+      libkrbn_cpp::make_device_identifiers(device_identifiers),
+      std::nullopt);
 }
 
 // game_pad_stick_horizontal_wheel_formula
 
 bool libkrbn_core_configuration_has_selected_profile_device_game_pad_stick_horizontal_wheel_formula(const libkrbn_device_identifiers* device_identifiers) {
-  if (device_identifiers) {
-    auto identifiers = libkrbn_cpp::make_device_identifiers(*device_identifiers);
-    auto c = get_current_core_configuration();
-    return c->get_selected_profile().has_device_game_pad_stick_horizontal_wheel_formula(identifiers);
-  }
-
-  return false;
+  auto c = get_current_core_configuration();
+  return c->get_selected_profile().has_device_game_pad_stick_horizontal_wheel_formula(
+      libkrbn_cpp::make_device_identifiers(device_identifiers));
 }
 
 bool libkrbn_core_configuration_get_selected_profile_device_game_pad_stick_horizontal_wheel_formula(const libkrbn_device_identifiers* device_identifiers,
@@ -1189,15 +1031,13 @@ bool libkrbn_core_configuration_get_selected_profile_device_game_pad_stick_horiz
     buffer[0] = '\0';
   }
 
-  if (device_identifiers) {
-    auto identifiers = libkrbn_cpp::make_device_identifiers(*device_identifiers);
-    auto c = get_current_core_configuration();
-    auto formula = c->get_selected_profile().get_device_game_pad_stick_horizontal_wheel_formula(identifiers);
-    // Return false if no enough space.
-    if (formula.length() < length) {
-      strlcpy(buffer, formula.c_str(), length);
-      return true;
-    }
+  auto c = get_current_core_configuration();
+  auto formula = c->get_selected_profile().get_device_game_pad_stick_horizontal_wheel_formula(
+      libkrbn_cpp::make_device_identifiers(device_identifiers));
+  // Return false if no enough space.
+  if (formula.length() < length) {
+    strlcpy(buffer, formula.c_str(), length);
+    return true;
   }
 
   return false;
@@ -1209,23 +1049,19 @@ bool libkrbn_core_configuration_set_selected_profile_device_game_pad_stick_horiz
     return false;
   }
 
-  if (device_identifiers) {
-    auto identifiers = libkrbn_cpp::make_device_identifiers(*device_identifiers);
-    auto c = get_current_core_configuration();
-    c->get_selected_profile().set_device_game_pad_stick_horizontal_wheel_formula(identifiers, value);
+  auto c = get_current_core_configuration();
+  c->get_selected_profile().set_device_game_pad_stick_horizontal_wheel_formula(
+      libkrbn_cpp::make_device_identifiers(device_identifiers),
+      value);
 
-    return true;
-  }
-
-  return false;
+  return true;
 }
 
 void libkrbn_core_configuration_unset_selected_profile_device_game_pad_stick_horizontal_wheel_formula(const libkrbn_device_identifiers* device_identifiers) {
-  if (device_identifiers) {
-    auto identifiers = libkrbn_cpp::make_device_identifiers(*device_identifiers);
-    auto c = get_current_core_configuration();
-    c->get_selected_profile().set_device_game_pad_stick_horizontal_wheel_formula(identifiers, std::nullopt);
-  }
+  auto c = get_current_core_configuration();
+  c->get_selected_profile().set_device_game_pad_stick_horizontal_wheel_formula(
+      libkrbn_cpp::make_device_identifiers(device_identifiers),
+      std::nullopt);
 }
 
 // game_pad_*
