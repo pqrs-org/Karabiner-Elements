@@ -110,6 +110,24 @@ void run_device_test(void) {
     }
   };
 
+  "device.find_default_value"_test = [] {
+    auto json = nlohmann::json::object();
+    krbn::core_configuration::details::device device(json,
+                                                     krbn::core_configuration::error_handling::strict);
+    expect(1.0_d == *(device.find_default_value(
+                        device.get_game_pad_xy_stick_continued_movement_absolute_magnitude_threshold())));
+    expect(20_i == *(device.find_default_value(
+                       device.get_game_pad_xy_stick_continued_movement_interval_milliseconds())));
+    expect(50_i == *(device.find_default_value(
+                       device.get_game_pad_xy_stick_flicking_input_window_milliseconds())));
+    expect(1.0_d == *(device.find_default_value(
+                        device.get_game_pad_wheels_stick_continued_movement_absolute_magnitude_threshold())));
+    expect(10_i == *(device.find_default_value(
+                       device.get_game_pad_wheels_stick_continued_movement_interval_milliseconds())));
+    expect(50_i == *(device.find_default_value(
+                       device.get_game_pad_wheels_stick_flicking_input_window_milliseconds())));
+  };
+
   "device"_test = [] {
     // empty json
     {
@@ -125,12 +143,30 @@ void run_device_test(void) {
       expect(false == device.get_manipulate_caps_lock_led());
       expect(false == device.get_treat_as_built_in_keyboard());
       expect(false == device.get_disable_built_in_keyboard_if_exists());
-      expect(1.0_d == device.get_game_pad_xy_stick_continued_movement_absolute_magnitude_threshold());
-      expect(20_i == device.get_game_pad_xy_stick_continued_movement_interval_milliseconds());
-      expect(50_i == device.get_game_pad_xy_stick_flicking_input_window_milliseconds());
-      expect(1.0_d == device.get_game_pad_wheels_stick_continued_movement_absolute_magnitude_threshold());
-      expect(10_i == device.get_game_pad_wheels_stick_continued_movement_interval_milliseconds());
-      expect(50_i == device.get_game_pad_wheels_stick_flicking_input_window_milliseconds());
+      {
+        auto& v = device.get_game_pad_xy_stick_continued_movement_absolute_magnitude_threshold();
+        expect(*(device.find_default_value(v)) == v);
+      }
+      {
+        auto& v = device.get_game_pad_xy_stick_continued_movement_interval_milliseconds();
+        expect(*(device.find_default_value(v)) == v);
+      }
+      {
+        auto& v = device.get_game_pad_xy_stick_flicking_input_window_milliseconds();
+        expect(*(device.find_default_value(v)) == v);
+      }
+      {
+        auto& v = device.get_game_pad_wheels_stick_continued_movement_absolute_magnitude_threshold();
+        expect(*(device.find_default_value(v)) == v);
+      }
+      {
+        auto& v = device.get_game_pad_wheels_stick_continued_movement_interval_milliseconds();
+        expect(*(device.find_default_value(v)) == v);
+      }
+      {
+        auto& v = device.get_game_pad_wheels_stick_flicking_input_window_milliseconds();
+        expect(*(device.find_default_value(v)) == v);
+      }
       expect(device.get_game_pad_stick_x_formula() == std::nullopt);
       expect(device.get_game_pad_stick_y_formula() == std::nullopt);
       expect(device.get_game_pad_stick_vertical_wheel_formula() == std::nullopt);

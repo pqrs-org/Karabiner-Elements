@@ -424,7 +424,7 @@ if (abs(cos(radian)) <= abs(sin(radian))) {
     coordinate_between_properties();
   }
 
-  double get_game_pad_xy_stick_continued_movement_absolute_magnitude_threshold(void) const {
+  const double& get_game_pad_xy_stick_continued_movement_absolute_magnitude_threshold(void) const {
     return game_pad_xy_stick_continued_movement_absolute_magnitude_threshold_;
   }
   void set_game_pad_xy_stick_continued_movement_absolute_magnitude_threshold(double value) {
@@ -433,7 +433,7 @@ if (abs(cos(radian)) <= abs(sin(radian))) {
     coordinate_between_properties();
   }
 
-  int get_game_pad_xy_stick_continued_movement_interval_milliseconds(void) const {
+  const int& get_game_pad_xy_stick_continued_movement_interval_milliseconds(void) const {
     return game_pad_xy_stick_continued_movement_interval_milliseconds_;
   }
   void set_game_pad_xy_stick_continued_movement_interval_milliseconds(int value) {
@@ -442,7 +442,7 @@ if (abs(cos(radian)) <= abs(sin(radian))) {
     coordinate_between_properties();
   }
 
-  int get_game_pad_xy_stick_flicking_input_window_milliseconds(void) const {
+  const int& get_game_pad_xy_stick_flicking_input_window_milliseconds(void) const {
     return game_pad_xy_stick_flicking_input_window_milliseconds_;
   }
   void set_game_pad_xy_stick_flicking_input_window_milliseconds(int value) {
@@ -451,7 +451,7 @@ if (abs(cos(radian)) <= abs(sin(radian))) {
     coordinate_between_properties();
   }
 
-  double get_game_pad_wheels_stick_continued_movement_absolute_magnitude_threshold(void) const {
+  const double& get_game_pad_wheels_stick_continued_movement_absolute_magnitude_threshold(void) const {
     return game_pad_wheels_stick_continued_movement_absolute_magnitude_threshold_;
   }
   void set_game_pad_wheels_stick_continued_movement_absolute_magnitude_threshold(double value) {
@@ -460,7 +460,7 @@ if (abs(cos(radian)) <= abs(sin(radian))) {
     coordinate_between_properties();
   }
 
-  int get_game_pad_wheels_stick_continued_movement_interval_milliseconds(void) const {
+  const int& get_game_pad_wheels_stick_continued_movement_interval_milliseconds(void) const {
     return game_pad_wheels_stick_continued_movement_interval_milliseconds_;
   }
   void set_game_pad_wheels_stick_continued_movement_interval_milliseconds(int value) {
@@ -469,7 +469,7 @@ if (abs(cos(radian)) <= abs(sin(radian))) {
     coordinate_between_properties();
   }
 
-  int get_game_pad_wheels_stick_flicking_input_window_milliseconds(void) const {
+  const int& get_game_pad_wheels_stick_flicking_input_window_milliseconds(void) const {
     return game_pad_wheels_stick_flicking_input_window_milliseconds_;
   }
   void set_game_pad_wheels_stick_flicking_input_window_milliseconds(int value) {
@@ -536,6 +536,11 @@ if (abs(cos(radian)) <= abs(sin(radian))) {
                                                 {"absolute_magnitude", 0.5},
                                             });
     return !std::isnan(value);
+  }
+
+  template <typename T>
+  std::optional<T> find_default_value(const T& value) {
+    return helper_values_.find_default_value(value);
   }
 
 private:

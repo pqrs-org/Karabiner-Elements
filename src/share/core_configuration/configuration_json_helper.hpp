@@ -1,6 +1,7 @@
 #pragma once
 
 #include "logger.hpp"
+#include "memory_utility.hpp"
 #include "types.hpp"
 #include <gsl/gsl>
 #include <pqrs/json.hpp>
@@ -36,6 +37,10 @@ public:
 
   T& get_value(void) const {
     return value_;
+  }
+
+  const T& get_default_value(void) const {
+    return default_value_;
   }
 
   void update_value(const nlohmann::json& json,
@@ -205,6 +210,18 @@ public:
     for (const auto& v : values_) {
       v->update_json(json);
     }
+  }
+
+  template <typename T>
+  std::optional<T> find_default_value(const T& value) const {
+    for (const auto& v : values_) {
+      if (auto p = std::dynamic_pointer_cast<value_t<T>>(memory_utility::unwrap_not_null(v))) {
+        if (&(p->get_value()) == &value) {
+          return p->get_default_value();
+        }
+      }
+    }
+    return std::nullopt;
   }
 
 private:
