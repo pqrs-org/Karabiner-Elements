@@ -54,133 +54,29 @@ extension LibKrbn {
         libkrbn_core_configuration_get_selected_profile_device_game_pad_swap_sticks(
           connectedDevice.libkrbnDeviceIdentifiers)
 
-      gamePadXYStickContinuedMovementAbsoluteMagnitudeThreshold = OptionalSettingValue<Double>(
-        hasFunction: {
-          return
-            libkrbn_core_configuration_has_selected_profile_device_game_pad_xy_stick_continued_movement_absolute_magnitude_threshold(
-              connectedDevice.libkrbnDeviceIdentifiers)
-        },
-        getFunction: {
-          return
-            libkrbn_core_configuration_get_selected_profile_device_game_pad_xy_stick_continued_movement_absolute_magnitude_threshold(
-              connectedDevice.libkrbnDeviceIdentifiers)
-        },
-        setFunction: { (_ newValue: Double) in
-          libkrbn_core_configuration_set_selected_profile_device_game_pad_xy_stick_continued_movement_absolute_magnitude_threshold(
-            connectedDevice.libkrbnDeviceIdentifiers, newValue)
-        },
-        unsetFunction: {
-          libkrbn_core_configuration_unset_selected_profile_device_game_pad_xy_stick_continued_movement_absolute_magnitude_threshold(
-            connectedDevice.libkrbnDeviceIdentifiers)
-        }
-      )
+      self.gamePadXYStickContinuedMovementAbsoluteMagnitudeThreshold =
+        libkrbn_core_configuration_get_selected_profile_device_game_pad_xy_stick_continued_movement_absolute_magnitude_threshold(
+          connectedDevice.libkrbnDeviceIdentifiers)
 
-      gamePadXYStickContinuedMovementIntervalMilliseconds = OptionalSettingValue<Int>(
-        hasFunction: {
-          return
-            libkrbn_core_configuration_has_selected_profile_device_game_pad_xy_stick_continued_movement_interval_milliseconds(
-              connectedDevice.libkrbnDeviceIdentifiers)
-        },
-        getFunction: {
-          return Int(
-            libkrbn_core_configuration_get_selected_profile_device_game_pad_xy_stick_continued_movement_interval_milliseconds(
-              connectedDevice.libkrbnDeviceIdentifiers))
-        },
-        setFunction: { (_ newValue: Int) in
-          libkrbn_core_configuration_set_selected_profile_device_game_pad_xy_stick_continued_movement_interval_milliseconds(
-            connectedDevice.libkrbnDeviceIdentifiers, Int32(newValue))
-        },
-        unsetFunction: {
-          libkrbn_core_configuration_unset_selected_profile_device_game_pad_xy_stick_continued_movement_interval_milliseconds(
-            connectedDevice.libkrbnDeviceIdentifiers)
-        }
-      )
+      self.gamePadXYStickContinuedMovementIntervalMilliseconds = Int(
+        libkrbn_core_configuration_get_selected_profile_device_game_pad_xy_stick_continued_movement_interval_milliseconds(
+          connectedDevice.libkrbnDeviceIdentifiers))
 
-      gamePadXYStickFlickingInputWindowMilliseconds = OptionalSettingValue<Int>(
-        hasFunction: {
-          return
-            libkrbn_core_configuration_has_selected_profile_device_game_pad_xy_stick_flicking_input_window_milliseconds(
-              connectedDevice.libkrbnDeviceIdentifiers)
-        },
-        getFunction: {
-          return Int(
-            libkrbn_core_configuration_get_selected_profile_device_game_pad_xy_stick_flicking_input_window_milliseconds(
-              connectedDevice.libkrbnDeviceIdentifiers))
-        },
-        setFunction: { (_ newValue: Int) in
-          libkrbn_core_configuration_set_selected_profile_device_game_pad_xy_stick_flicking_input_window_milliseconds(
-            connectedDevice.libkrbnDeviceIdentifiers, Int32(newValue))
-        },
-        unsetFunction: {
-          libkrbn_core_configuration_unset_selected_profile_device_game_pad_xy_stick_flicking_input_window_milliseconds(
-            connectedDevice.libkrbnDeviceIdentifiers)
-        }
-      )
+      self.gamePadXYStickFlickingInputWindowMilliseconds = Int(
+        libkrbn_core_configuration_get_selected_profile_device_game_pad_xy_stick_flicking_input_window_milliseconds(
+          connectedDevice.libkrbnDeviceIdentifiers))
 
-      gamePadWheelsStickContinuedMovementAbsoluteMagnitudeThreshold = OptionalSettingValue<Double>(
-        hasFunction: {
-          return
-            libkrbn_core_configuration_has_selected_profile_device_game_pad_wheels_stick_continued_movement_absolute_magnitude_threshold(
-              connectedDevice.libkrbnDeviceIdentifiers
-            )
-        },
-        getFunction: {
-          return
-            libkrbn_core_configuration_get_selected_profile_device_game_pad_wheels_stick_continued_movement_absolute_magnitude_threshold(
-              connectedDevice.libkrbnDeviceIdentifiers)
-        },
-        setFunction: { (_ newValue: Double) in
-          libkrbn_core_configuration_set_selected_profile_device_game_pad_wheels_stick_continued_movement_absolute_magnitude_threshold(
-            connectedDevice.libkrbnDeviceIdentifiers, newValue)
-        },
-        unsetFunction: {
-          libkrbn_core_configuration_unset_selected_profile_device_game_pad_wheels_stick_continued_movement_absolute_magnitude_threshold(
-            connectedDevice.libkrbnDeviceIdentifiers)
-        }
-      )
+      self.gamePadWheelsStickContinuedMovementAbsoluteMagnitudeThreshold =
+        libkrbn_core_configuration_get_selected_profile_device_game_pad_wheels_stick_continued_movement_absolute_magnitude_threshold(
+          connectedDevice.libkrbnDeviceIdentifiers)
 
-      gamePadWheelsStickContinuedMovementIntervalMilliseconds = OptionalSettingValue<Int>(
-        hasFunction: {
-          return
-            libkrbn_core_configuration_has_selected_profile_device_game_pad_wheels_stick_continued_movement_interval_milliseconds(
-              connectedDevice.libkrbnDeviceIdentifiers)
-        },
-        getFunction: {
-          return Int(
-            libkrbn_core_configuration_get_selected_profile_device_game_pad_wheels_stick_continued_movement_interval_milliseconds(
-              connectedDevice.libkrbnDeviceIdentifiers)
-          )
-        },
-        setFunction: { (_ newValue: Int) in
-          libkrbn_core_configuration_set_selected_profile_device_game_pad_wheels_stick_continued_movement_interval_milliseconds(
-            connectedDevice.libkrbnDeviceIdentifiers, Int32(newValue))
-        },
-        unsetFunction: {
-          libkrbn_core_configuration_unset_selected_profile_device_game_pad_wheels_stick_continued_movement_interval_milliseconds(
-            connectedDevice.libkrbnDeviceIdentifiers)
-        }
-      )
+      self.gamePadWheelsStickContinuedMovementIntervalMilliseconds = Int(
+        libkrbn_core_configuration_get_selected_profile_device_game_pad_wheels_stick_continued_movement_interval_milliseconds(
+          connectedDevice.libkrbnDeviceIdentifiers))
 
-      gamePadWheelsStickFlickingInputWindowMilliseconds = OptionalSettingValue<Int>(
-        hasFunction: {
-          return
-            libkrbn_core_configuration_has_selected_profile_device_game_pad_wheels_stick_flicking_input_window_milliseconds(
-              connectedDevice.libkrbnDeviceIdentifiers)
-        },
-        getFunction: {
-          return Int(
-            libkrbn_core_configuration_get_selected_profile_device_game_pad_wheels_stick_flicking_input_window_milliseconds(
-              connectedDevice.libkrbnDeviceIdentifiers))
-        },
-        setFunction: { (_ newValue: Int) in
-          libkrbn_core_configuration_set_selected_profile_device_game_pad_wheels_stick_flicking_input_window_milliseconds(
-            connectedDevice.libkrbnDeviceIdentifiers, Int32(newValue))
-        },
-        unsetFunction: {
-          libkrbn_core_configuration_unset_selected_profile_device_game_pad_wheels_stick_flicking_input_window_milliseconds(
-            connectedDevice.libkrbnDeviceIdentifiers)
-        }
-      )
+      self.gamePadWheelsStickFlickingInputWindowMilliseconds = Int(
+        libkrbn_core_configuration_get_selected_profile_device_game_pad_wheels_stick_flicking_input_window_milliseconds(
+          connectedDevice.libkrbnDeviceIdentifiers))
 
       gamePadStickXFormula = OptionalSettingValue<String>(
         hasFunction: {
@@ -286,6 +182,7 @@ extension LibKrbn {
         if didSetEnabled {
           libkrbn_core_configuration_set_selected_profile_device_ignore(
             connectedDevice.libkrbnDeviceIdentifiers, !modifyEvents)
+
           Settings.shared.save()
         }
       }
@@ -296,6 +193,7 @@ extension LibKrbn {
         if didSetEnabled {
           libkrbn_core_configuration_set_selected_profile_device_manipulate_caps_lock_led(
             connectedDevice.libkrbnDeviceIdentifiers, manipulateCapsLockLed)
+
           Settings.shared.save()
         }
       }
@@ -306,6 +204,7 @@ extension LibKrbn {
         if didSetEnabled {
           libkrbn_core_configuration_set_selected_profile_device_treat_as_built_in_keyboard(
             connectedDevice.libkrbnDeviceIdentifiers, treatAsBuiltInKeyboard)
+
           Settings.shared.save()
         }
       }
@@ -316,6 +215,7 @@ extension LibKrbn {
         if didSetEnabled {
           libkrbn_core_configuration_set_selected_profile_device_disable_built_in_keyboard_if_exists(
             connectedDevice.libkrbnDeviceIdentifiers, disableBuiltInKeyboardIfExists)
+
           Settings.shared.save()
         }
       }
@@ -326,6 +226,7 @@ extension LibKrbn {
         if didSetEnabled {
           libkrbn_core_configuration_set_selected_profile_device_mouse_flip_x(
             connectedDevice.libkrbnDeviceIdentifiers, mouseFlipX)
+
           Settings.shared.save()
         }
       }
@@ -336,6 +237,7 @@ extension LibKrbn {
         if didSetEnabled {
           libkrbn_core_configuration_set_selected_profile_device_mouse_flip_y(
             connectedDevice.libkrbnDeviceIdentifiers, mouseFlipY)
+
           Settings.shared.save()
         }
       }
@@ -346,6 +248,7 @@ extension LibKrbn {
         if didSetEnabled {
           libkrbn_core_configuration_set_selected_profile_device_mouse_flip_vertical_wheel(
             connectedDevice.libkrbnDeviceIdentifiers, mouseFlipVerticalWheel)
+
           Settings.shared.save()
         }
       }
@@ -355,6 +258,7 @@ extension LibKrbn {
         if didSetEnabled {
           libkrbn_core_configuration_set_selected_profile_device_mouse_flip_horizontal_wheel(
             connectedDevice.libkrbnDeviceIdentifiers, mouseFlipHorizontalWheel)
+
           Settings.shared.save()
         }
       }
@@ -365,6 +269,7 @@ extension LibKrbn {
         if didSetEnabled {
           libkrbn_core_configuration_set_selected_profile_device_mouse_swap_xy(
             connectedDevice.libkrbnDeviceIdentifiers, mouseSwapXY)
+
           Settings.shared.save()
         }
       }
@@ -375,6 +280,7 @@ extension LibKrbn {
         if didSetEnabled {
           libkrbn_core_configuration_set_selected_profile_device_mouse_swap_wheels(
             connectedDevice.libkrbnDeviceIdentifiers, mouseSwapWheels)
+
           Settings.shared.save()
         }
       }
@@ -385,17 +291,84 @@ extension LibKrbn {
         if didSetEnabled {
           libkrbn_core_configuration_set_selected_profile_device_game_pad_swap_sticks(
             connectedDevice.libkrbnDeviceIdentifiers, gamePadSwapSticks)
+
           Settings.shared.save()
         }
       }
     }
 
-    var gamePadXYStickContinuedMovementAbsoluteMagnitudeThreshold: OptionalSettingValue<Double>
-    var gamePadXYStickContinuedMovementIntervalMilliseconds: OptionalSettingValue<Int>
-    var gamePadXYStickFlickingInputWindowMilliseconds: OptionalSettingValue<Int>
-    var gamePadWheelsStickContinuedMovementAbsoluteMagnitudeThreshold: OptionalSettingValue<Double>
-    var gamePadWheelsStickContinuedMovementIntervalMilliseconds: OptionalSettingValue<Int>
-    var gamePadWheelsStickFlickingInputWindowMilliseconds: OptionalSettingValue<Int>
+    @Published var gamePadXYStickContinuedMovementAbsoluteMagnitudeThreshold: Double = 0.0 {
+      didSet {
+        if didSetEnabled {
+          libkrbn_core_configuration_set_selected_profile_device_game_pad_xy_stick_continued_movement_absolute_magnitude_threshold(
+            connectedDevice.libkrbnDeviceIdentifiers,
+            gamePadXYStickContinuedMovementAbsoluteMagnitudeThreshold)
+
+          Settings.shared.save()
+        }
+      }
+    }
+
+    @Published var gamePadXYStickContinuedMovementIntervalMilliseconds: Int = 0 {
+      didSet {
+        if didSetEnabled {
+          libkrbn_core_configuration_set_selected_profile_device_game_pad_xy_stick_continued_movement_interval_milliseconds(
+            connectedDevice.libkrbnDeviceIdentifiers,
+            Int32(gamePadXYStickContinuedMovementIntervalMilliseconds))
+
+          Settings.shared.save()
+        }
+      }
+    }
+
+    @Published var gamePadXYStickFlickingInputWindowMilliseconds: Int = 0 {
+      didSet {
+        if didSetEnabled {
+          libkrbn_core_configuration_set_selected_profile_device_game_pad_xy_stick_flicking_input_window_milliseconds(
+            connectedDevice.libkrbnDeviceIdentifiers,
+            Int32(gamePadXYStickFlickingInputWindowMilliseconds))
+
+          Settings.shared.save()
+        }
+      }
+    }
+
+    @Published var gamePadWheelsStickContinuedMovementAbsoluteMagnitudeThreshold: Double = 0.0 {
+      didSet {
+        if didSetEnabled {
+          libkrbn_core_configuration_set_selected_profile_device_game_pad_wheels_stick_continued_movement_absolute_magnitude_threshold(
+            connectedDevice.libkrbnDeviceIdentifiers,
+            gamePadWheelsStickContinuedMovementAbsoluteMagnitudeThreshold)
+
+          Settings.shared.save()
+        }
+      }
+    }
+
+    @Published var gamePadWheelsStickContinuedMovementIntervalMilliseconds: Int = 0 {
+      didSet {
+        if didSetEnabled {
+          libkrbn_core_configuration_set_selected_profile_device_game_pad_wheels_stick_continued_movement_interval_milliseconds(
+            connectedDevice.libkrbnDeviceIdentifiers,
+            Int32(gamePadWheelsStickContinuedMovementIntervalMilliseconds))
+
+          Settings.shared.save()
+        }
+      }
+    }
+
+    @Published var gamePadWheelsStickFlickingInputWindowMilliseconds: Int = 0 {
+      didSet {
+        if didSetEnabled {
+          libkrbn_core_configuration_set_selected_profile_device_game_pad_wheels_stick_flicking_input_window_milliseconds(
+            connectedDevice.libkrbnDeviceIdentifiers,
+            Int32(gamePadWheelsStickFlickingInputWindowMilliseconds))
+
+          Settings.shared.save()
+        }
+      }
+    }
+
     var gamePadStickXFormula: OptionalSettingValue<String>
     var gamePadStickYFormula: OptionalSettingValue<String>
     var gamePadStickVerticalWheelFormula: OptionalSettingValue<String>
