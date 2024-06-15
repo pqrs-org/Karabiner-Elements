@@ -9,22 +9,32 @@ auto empty_device = gsl::make_not_null(std::make_shared<krbn::core_configuration
 
 gsl::not_null<std::shared_ptr<krbn::core_configuration::core_configuration>> get_current_core_configuration(void) {
   if (auto manager = libkrbn_cpp::get_components_manager()) {
-    return manager->get_current_core_configuration();
+    if (auto c = manager->get_current_core_configuration()) {
+      return c;
+    }
   }
 
   return empty_core_configuration;
 }
 
 krbn::core_configuration::details::simple_modifications* find_simple_modifications(const libkrbn_device_identifiers* device_identifiers) {
+  auto di = libkrbn_cpp::make_device_identifiers(device_identifiers);
   auto c = get_current_core_configuration();
-  return c->get_selected_profile().find_simple_modifications(
-      libkrbn_cpp::make_device_identifiers(device_identifiers));
+  if (di.empty()) {
+    return &(c->get_selected_profile().get_simple_modifications());
+  } else {
+    return c->get_selected_profile().find_simple_modifications(di);
+  }
 }
 
 krbn::core_configuration::details::simple_modifications* find_fn_function_keys(const libkrbn_device_identifiers* device_identifiers) {
+  auto di = libkrbn_cpp::make_device_identifiers(device_identifiers);
   auto c = get_current_core_configuration();
-  return c->get_selected_profile().find_fn_function_keys(
-      libkrbn_cpp::make_device_identifiers(device_identifiers));
+  if (di.empty()) {
+    return &(c->get_selected_profile().get_fn_function_keys());
+  } else {
+    return c->get_selected_profile().find_fn_function_keys(di);
+  }
 }
 } // namespace
 
