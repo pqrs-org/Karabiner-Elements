@@ -1,3 +1,4 @@
+#include "../../share/ut_helper.hpp"
 #include "core_configuration/core_configuration.hpp"
 #include <boost/ut.hpp>
 
@@ -369,7 +370,7 @@ void run_device_test(void) {
           {"simple_modifications", nlohmann::json::array()},
           {"treat_as_built_in_keyboard", false},
       });
-      expect(empty_device.to_json() == expected) << "empty_device.to_json() == expected";
+      expect(empty_device.to_json() == expected) << UT_SHOW_LINE;
     }
 
     {

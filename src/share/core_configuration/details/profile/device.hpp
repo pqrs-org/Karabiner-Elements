@@ -285,8 +285,8 @@ if (abs(cos(radian)) <= abs(sin(radian))) {
 
 #undef OPTIONAL_FORMULA
 
-    j["simple_modifications"] = simple_modifications_.to_json();
-    j["fn_function_keys"] = fn_function_keys_.to_json();
+    j["simple_modifications"] = simple_modifications_.to_json(nlohmann::json::array());
+    j["fn_function_keys"] = fn_function_keys_.to_json(make_default_fn_function_keys_json());
     return j;
   }
 

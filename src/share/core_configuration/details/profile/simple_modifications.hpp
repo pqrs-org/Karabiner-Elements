@@ -13,7 +13,8 @@ public:
   simple_modifications(void) {
   }
 
-  nlohmann::json to_json(void) const {
+  nlohmann::json to_json(const nlohmann::json& default_json) const {
+    // If there are multiple identical `from` entries, the first one takes precedence.
     std::unordered_set<std::string> froms;
 
     auto json = nlohmann::json::array();
@@ -27,11 +28,31 @@ public:
           if (!from_json.empty() &&
               !to_json.empty() &&
               froms.find(it.first) == std::end(froms)) {
-            json.push_back(nlohmann::json{
-                {"from", from_json},
-                {"to", to_json},
-            });
+            //
+            // Remember the from value.
+            //
+
             froms.insert(it.first);
+
+            //
+            // Skip if `to` is the default value.
+            //
+
+            bool skip = false;
+            for (const auto& j : default_json) {
+              if (from_json == j["from"] &&
+                  to_json == j["to"]) {
+                skip = true;
+                break;
+              }
+            }
+
+            if (!skip) {
+              json.push_back(nlohmann::json{
+                  {"from", from_json},
+                  {"to", to_json},
+              });
+            }
           }
         }
       } catch (std::exception&) {
@@ -200,9 +221,6 @@ private:
   std::vector<std::pair<std::string, std::string>> pairs_;
 };
 
-inline void to_json(nlohmann::json& json, const simple_modifications& simple_modifications) {
-  json = simple_modifications.to_json();
-}
 } // namespace details
 } // namespace core_configuration
 } // namespace krbn

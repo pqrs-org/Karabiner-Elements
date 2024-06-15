@@ -1,3 +1,4 @@
+#include "../../share/ut_helper.hpp"
 #include "core_configuration/core_configuration.hpp"
 #include "json_utility.hpp"
 #include "manipulator/manipulators/basic/basic.hpp"
@@ -6,59 +7,12 @@
 #include <iostream>
 
 namespace {
-nlohmann::json get_default_fn_function_keys_json(void) {
-  std::ifstream input("json/default_fn_function_keys.json");
-  return krbn::json_utility::parse_jsonc(input);
-}
-
 nlohmann::json get_default_virtual_hid_keyboard_json(void) {
   return nlohmann::json{
       {"country_code", 0},
       {"indicate_sticky_modifier_keys_state", true},
       {"mouse_key_xy_scale", 100},
   };
-}
-
-std::vector<std::pair<std::string, std::string>> make_default_fn_function_keys_pairs(void) {
-  std::vector<std::pair<std::string, std::string>> pairs;
-
-  pairs.emplace_back(nlohmann::json::object({{"key_code", "f1"}}).dump(),
-                     nlohmann::json::array({nlohmann::json::object({{"consumer_key_code", "display_brightness_decrement"}})}).dump());
-
-  pairs.emplace_back(nlohmann::json::object({{"key_code", "f2"}}).dump(),
-                     nlohmann::json::array({nlohmann::json::object({{"consumer_key_code", "display_brightness_increment"}})}).dump());
-
-  pairs.emplace_back(nlohmann::json::object({{"key_code", "f3"}}).dump(),
-                     nlohmann::json::array({nlohmann::json::object({{"apple_vendor_keyboard_key_code", "mission_control"}})}).dump());
-
-  pairs.emplace_back(nlohmann::json::object({{"key_code", "f4"}}).dump(),
-                     nlohmann::json::array({nlohmann::json::object({{"apple_vendor_keyboard_key_code", "spotlight"}})}).dump());
-
-  pairs.emplace_back(nlohmann::json::object({{"key_code", "f5"}}).dump(),
-                     nlohmann::json::array({nlohmann::json::object({{"consumer_key_code", "dictation"}})}).dump());
-
-  pairs.emplace_back(nlohmann::json::object({{"key_code", "f6"}}).dump(),
-                     nlohmann::json::array({nlohmann::json::object({{"key_code", "f6"}})}).dump());
-
-  pairs.emplace_back(nlohmann::json::object({{"key_code", "f7"}}).dump(),
-                     nlohmann::json::array({nlohmann::json::object({{"consumer_key_code", "rewind"}})}).dump());
-
-  pairs.emplace_back(nlohmann::json::object({{"key_code", "f8"}}).dump(),
-                     nlohmann::json::array({nlohmann::json::object({{"consumer_key_code", "play_or_pause"}})}).dump());
-
-  pairs.emplace_back(nlohmann::json::object({{"key_code", "f9"}}).dump(),
-                     nlohmann::json::array({nlohmann::json::object({{"consumer_key_code", "fast_forward"}})}).dump());
-
-  pairs.emplace_back(nlohmann::json::object({{"key_code", "f10"}}).dump(),
-                     nlohmann::json::array({nlohmann::json::object({{"consumer_key_code", "mute"}})}).dump());
-
-  pairs.emplace_back(nlohmann::json::object({{"key_code", "f11"}}).dump(),
-                     nlohmann::json::array({nlohmann::json::object({{"consumer_key_code", "volume_decrement"}})}).dump());
-
-  pairs.emplace_back(nlohmann::json::object({{"key_code", "f12"}}).dump(),
-                     nlohmann::json::array({nlohmann::json::object({{"consumer_key_code", "volume_increment"}})}).dump());
-
-  return pairs;
 }
 } // namespace
 
@@ -81,12 +35,12 @@ void run_core_configuration_test(void) {
       expected.emplace_back(nlohmann::json::object({{"key_code", "escape"}}).dump(),
                             nlohmann::json::array({nlohmann::json::object({{"key_code", "spacebar"}})}).dump());
 
-      expect(configuration.get_selected_profile().get_simple_modifications().get_pairs() == expected);
+      expect(expected == configuration.get_selected_profile().get_simple_modifications().get_pairs()) << UT_SHOW_LINE;
     }
     {
       auto manipulator = configuration.get_selected_profile().get_complex_modifications().get_rules()[0].get_manipulators()[0].get_json();
-      expect(manipulator["type"] == "basic");
-      expect(manipulator["from"]["key_code"] == "open_bracket");
+      expect("basic" == manipulator["type"]);
+      expect("open_bracket" == manipulator["from"]["key_code"]);
     }
     {
       std::vector<std::pair<std::string, std::string>> expected;
@@ -127,7 +81,7 @@ void run_core_configuration_test(void) {
       expected.emplace_back(nlohmann::json::object({{"key_code", "f12"}}).dump(),
                             nlohmann::json::array({nlohmann::json::object({{"consumer_key_code", "volume_increment"}})}).dump());
 
-      expect(configuration.get_selected_profile().get_fn_function_keys().get_pairs() == expected);
+      expect(expected == configuration.get_selected_profile().get_fn_function_keys().get_pairs()) << UT_SHOW_LINE;
     }
     {
       auto& complex_modifications = configuration.get_selected_profile().get_complex_modifications();
@@ -175,7 +129,7 @@ void run_core_configuration_test(void) {
     {
       std::ifstream input("json/to_json_example.json");
       auto expected = krbn::json_utility::parse_jsonc(input);
-      expect(configuration.to_json() == expected) << "configuration.to_json() == expected";
+      expect(configuration.to_json() == expected) << UT_SHOW_LINE;
     }
   };
 
@@ -212,7 +166,7 @@ void run_core_configuration_test(void) {
         // to_json result is default json if is_loaded == false
         std::ifstream input("json/to_json_default.json");
         auto expected = krbn::json_utility::parse_jsonc(input);
-        expect(configuration.to_json() == expected);
+        expect(configuration.to_json() == expected) << UT_SHOW_LINE;
       }
     }
     {
@@ -335,8 +289,8 @@ void run_core_configuration_test(void) {
                                                          krbn::core_configuration::error_handling::strict);
       expect(profile.get_name() == std::string(""));
       expect(profile.get_selected() == false);
-      expect(profile.get_simple_modifications().get_pairs().size() == 0);
-      expect(profile.get_fn_function_keys().get_pairs() == make_default_fn_function_keys_pairs());
+      expect(profile.get_simple_modifications().get_pairs().empty());
+      expect(profile.get_fn_function_keys().get_pairs().size() == 12);
       expect(profile.get_devices().size() == 0);
 
       expect(profile.get_device_ignore(krbn::device_identifiers(pqrs::hid::vendor_id::value_t(4176),
@@ -487,15 +441,50 @@ void run_core_configuration_test(void) {
         expected.emplace_back(nlohmann::json::object({{"key_code", "from 10"}}).dump(),
                               nlohmann::json::array({nlohmann::json::object({{"key_code", "to 10"}})}).dump());
 
-        expect(profile.get_simple_modifications().get_pairs() == expected);
+        expect(profile.get_simple_modifications().get_pairs() == expected) << UT_SHOW_LINE;
       }
       {
-        auto expected = make_default_fn_function_keys_pairs();
-        expected[2].second = nlohmann::json::array({nlohmann::json::object({{"key_code", "to f3"}})}).dump();
-        expected[3].second = nlohmann::json::array({nlohmann::json::object({{"key_code", "to f4"}})}).dump();
+        std::vector<std::pair<std::string, std::string>> expected;
+        expected.emplace_back(nlohmann::json::object({{"key_code", "f1"}}).dump(),
+                              nlohmann::json::array({nlohmann::json::object({{"consumer_key_code", "display_brightness_decrement"}})}).dump());
+
+        expected.emplace_back(nlohmann::json::object({{"key_code", "f2"}}).dump(),
+                              nlohmann::json::array({nlohmann::json::object({{"consumer_key_code", "display_brightness_increment"}})}).dump());
+
+        expected.emplace_back(nlohmann::json::object({{"key_code", "f3"}}).dump(),
+                              nlohmann::json::array({nlohmann::json::object({{"key_code", "to f3"}})}).dump());
+
+        expected.emplace_back(nlohmann::json::object({{"key_code", "f4"}}).dump(),
+                              nlohmann::json::array({nlohmann::json::object({{"key_code", "to f4"}})}).dump());
+
+        expected.emplace_back(nlohmann::json::object({{"key_code", "f5"}}).dump(),
+                              nlohmann::json::array({nlohmann::json::object({{"consumer_key_code", "dictation"}})}).dump());
+
+        expected.emplace_back(nlohmann::json::object({{"key_code", "f6"}}).dump(),
+                              nlohmann::json::array({nlohmann::json::object({{"key_code", "f6"}})}).dump());
+
+        expected.emplace_back(nlohmann::json::object({{"key_code", "f7"}}).dump(),
+                              nlohmann::json::array({nlohmann::json::object({{"consumer_key_code", "rewind"}})}).dump());
+
+        expected.emplace_back(nlohmann::json::object({{"key_code", "f8"}}).dump(),
+                              nlohmann::json::array({nlohmann::json::object({{"consumer_key_code", "play_or_pause"}})}).dump());
+
+        expected.emplace_back(nlohmann::json::object({{"key_code", "f9"}}).dump(),
+                              nlohmann::json::array({nlohmann::json::object({{"consumer_key_code", "fast_forward"}})}).dump());
+
+        expected.emplace_back(nlohmann::json::object({{"key_code", "f10"}}).dump(),
+                              nlohmann::json::array({nlohmann::json::object({{"consumer_key_code", "mute"}})}).dump());
+
+        expected.emplace_back(nlohmann::json::object({{"key_code", "f11"}}).dump(),
+                              nlohmann::json::array({nlohmann::json::object({{"consumer_key_code", "volume_decrement"}})}).dump());
+
+        expected.emplace_back(nlohmann::json::object({{"key_code", "f12"}}).dump(),
+                              nlohmann::json::array({nlohmann::json::object({{"consumer_key_code", "volume_increment"}})}).dump());
+
         expected.emplace_back(nlohmann::json::object({{"key_code", "f13"}}).dump(),
                               nlohmann::json::array({nlohmann::json::object({{"key_code", "to f13"}})}).dump());
-        expect(profile.get_fn_function_keys().get_pairs() == expected);
+
+        expect(expected == profile.get_fn_function_keys().get_pairs()) << UT_SHOW_LINE;
       }
       {
         expect(profile.get_devices().size() == 3);
@@ -671,7 +660,7 @@ void run_core_configuration_test(void) {
         expected.emplace_back(nlohmann::json::object({{"key_code", "key"}}).dump(),
                               nlohmann::json::array({nlohmann::json::object({{"key_code", "value"}})}).dump());
 
-        expect(profile.get_simple_modifications().get_pairs() == expected);
+        expect(expected == profile.get_simple_modifications().get_pairs()) << UT_SHOW_LINE;
       }
     }
   };
@@ -698,10 +687,10 @@ void run_core_configuration_test(void) {
                              {"delay_milliseconds_before_open_device", 1000},
                          })},
           {"simple_modifications", nlohmann::json::array()},
-          {"fn_function_keys", get_default_fn_function_keys_json()},
+          {"fn_function_keys", nlohmann::json::array()},
           {"virtual_hid_keyboard", get_default_virtual_hid_keyboard_json()},
       });
-      expect(empty_profile.to_json() == expected) << "empty_profile.to_json() == expected";
+      expect(empty_profile.to_json() == expected) << UT_SHOW_LINE;
     }
     {
       nlohmann::json json({
@@ -860,9 +849,6 @@ void run_core_configuration_test(void) {
       profile.get_virtual_hid_keyboard().set_country_code(pqrs::hid::country_code::value_t(20));
       profile.get_virtual_hid_keyboard().set_mouse_key_xy_scale(250);
 
-      auto expected_fn_function_keys = get_default_fn_function_keys_json();
-      expected_fn_function_keys[2]["to"][0]["key_code"] = "to f3";
-      expected_fn_function_keys[2]["to"][0].erase("apple_vendor_keyboard_key_code"); // Remove expose_all
       auto expected_virtual_hid_keyboard = get_default_virtual_hid_keyboard_json();
       expected_virtual_hid_keyboard["country_code"] = 20;
       expected_virtual_hid_keyboard["mouse_key_xy_scale"] = 250;
@@ -917,7 +903,18 @@ void run_core_configuration_test(void) {
                              {"delay_milliseconds_before_open_device", 500},
                          })},
           {"simple_modifications", nlohmann::json::array()},
-          {"fn_function_keys", expected_fn_function_keys},
+          {"fn_function_keys", nlohmann::json::array({
+                                   nlohmann::json::object({
+                                       {"from", nlohmann::json::object({
+                                                    {"key_code", "f3"},
+                                                })},
+                                       {"to", nlohmann::json::array({
+                                                  nlohmann::json::object({
+                                                      {"key_code", "to f3"},
+                                                  }),
+                                              })},
+                                   }),
+                               })},
           {"virtual_hid_keyboard", expected_virtual_hid_keyboard},
       });
 
@@ -934,7 +931,7 @@ void run_core_configuration_test(void) {
       expected["simple_modifications"].back()["from"]["key_code"] = "from 5";
       expected["simple_modifications"].back()["to"] = nlohmann::json::array({nlohmann::json::object({{"key_code", "to 5"}})});
 
-      expect(profile.to_json() == expected);
+      expect(expected == profile.to_json()) << UT_SHOW_LINE << profile.to_json();
     }
   };
 
@@ -1129,7 +1126,7 @@ void run_core_configuration_test(void) {
       expected.back()["from"]["key_code"] = "c";
       expected.back()["to"] = nlohmann::json::array({nlohmann::json::object({{"key_code", "f6"}})});
 
-      expect(simple_modifications.to_json() == expected);
+      expect(expected == simple_modifications.to_json(nlohmann::json::array()));
     }
     {
       // simple_modifications.to_json have to be compatible with manipulator::event_definition

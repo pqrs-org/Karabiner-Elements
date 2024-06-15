@@ -150,8 +150,8 @@ public:
     j["name"] = name_;
     j["selected"] = selected_;
     j["parameters"] = parameters_;
-    j["simple_modifications"] = simple_modifications_.to_json();
-    j["fn_function_keys"] = fn_function_keys_.to_json();
+    j["simple_modifications"] = simple_modifications_.to_json(nlohmann::json::array());
+    j["fn_function_keys"] = fn_function_keys_.to_json(make_default_fn_function_keys_json());
     j["complex_modifications"] = complex_modifications_.to_json();
     j["virtual_hid_keyboard"] = virtual_hid_keyboard_;
 
