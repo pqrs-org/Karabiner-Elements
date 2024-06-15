@@ -64,6 +64,11 @@ if (abs(cos(radian)) <= abs(sin(radian))) {
 
   device(const device&) = delete;
 
+  device(void)
+      : device(nlohmann::json::object(),
+               krbn::core_configuration::error_handling::loose) {
+  }
+
   device(const nlohmann::json& json,
          error_handling error_handling)
       : json_(json),
@@ -539,7 +544,7 @@ if (abs(cos(radian)) <= abs(sin(radian))) {
   }
 
   template <typename T>
-  std::optional<T> find_default_value(const T& value) {
+  T find_default_value(const T& value) {
     return helper_values_.find_default_value(value);
   }
 

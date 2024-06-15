@@ -213,7 +213,7 @@ public:
   }
 
   template <typename T>
-  std::optional<T> find_default_value(const T& value) const {
+  T find_default_value(const T& value, T fallback_value) const {
     for (const auto& v : values_) {
       if (auto p = std::dynamic_pointer_cast<value_t<T>>(memory_utility::unwrap_not_null(v))) {
         if (&(p->get_value()) == &value) {
@@ -221,7 +221,21 @@ public:
         }
       }
     }
-    return std::nullopt;
+
+    // Unreachable in a normal case
+    return fallback_value;
+  }
+
+  bool find_default_value(const bool& value) const {
+    return find_default_value(value, false);
+  }
+
+  double find_default_value(const double& value) const {
+    return find_default_value(value, 0.0);
+  }
+
+  int find_default_value(const int& value) const {
+    return find_default_value(value, 0);
   }
 
 private:
