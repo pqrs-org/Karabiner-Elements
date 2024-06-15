@@ -94,6 +94,15 @@ public:
     device_address_ = value;
   }
 
+  bool empty(void) const {
+    return vendor_id_ == pqrs::hid::vendor_id::value_t(0) &&
+           product_id_ == pqrs::hid::product_id::value_t(0) &&
+           !is_keyboard_ &&
+           !is_pointing_device_ &&
+           !is_game_pad_ &&
+           device_address_.empty();
+  }
+
   bool operator==(const device_identifiers& other) const {
     return vendor_id_ == other.vendor_id_ &&
            product_id_ == other.product_id_ &&
