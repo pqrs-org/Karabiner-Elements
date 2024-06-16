@@ -888,7 +888,6 @@ void run_core_configuration_test(void) {
                                                       false,
                                                   },
                                               }},
-                              {"ignore", true},
                               {"disable_built_in_keyboard_if_exists", true},
                               {"fn_function_keys", nlohmann::json::array()},
                               {"manipulate_caps_lock_led", false},

@@ -71,8 +71,11 @@ if (abs(cos(radian)) <= abs(sin(radian))) {
 
   device(const nlohmann::json& json,
          error_handling error_handling)
-      : json_(json),
-        ignore_(false) {
+      : json_(json) {
+    helper_values_.push_back_value<bool>("ignore",
+                                         ignore_,
+                                         false);
+
     helper_values_.push_back_value<bool>("manipulate_caps_lock_led",
                                          manipulate_caps_lock_led_,
                                          false);
@@ -153,8 +156,6 @@ if (abs(cos(radian)) <= abs(sin(radian))) {
                                         game_pad_wheels_stick_flicking_input_window_milliseconds_,
                                         50);
 
-    auto ignore_configured = false;
-
     // ----------------------------------------
     // Set default value
 
@@ -176,12 +177,6 @@ if (abs(cos(radian)) <= abs(sin(radian))) {
         } catch (const pqrs::json::unmarshal_error& e) {
           throw pqrs::json::unmarshal_error(fmt::format("`{0}` error: {1}", key, e.what()));
         }
-
-      } else if (key == "ignore") {
-        pqrs::json::requires_boolean(value, "`" + key + "`");
-
-        ignore_ = value.get<bool>();
-        ignore_configured = true;
 
       } else if (key == "game_pad_stick_x_formula") {
         game_pad_stick_x_formula_ = unmarshal_formula(value, key);
@@ -217,14 +212,12 @@ if (abs(cos(radian)) <= abs(sin(radian))) {
 
     // ignore_
 
-    if (!ignore_configured) {
-      if (identifiers_.get_is_pointing_device() ||
-          identifiers_.get_is_game_pad()) {
-        ignore_ = true;
-      } else if (identifiers_.get_vendor_id() == pqrs::hid::vendor_id::value_t(0x1050)) {
+    if (identifiers_.get_is_pointing_device() ||
+        identifiers_.get_is_game_pad() ||
         // YubiKey token
-        ignore_ = true;
-      }
+        identifiers_.get_vendor_id() == pqrs::hid::vendor_id::value_t(0x1050)) {
+      helper_values_.set_default_value(ignore_,
+                                       true);
     }
 
     // manipulate_caps_lock_led_
@@ -260,7 +253,6 @@ if (abs(cos(radian)) <= abs(sin(radian))) {
     helper_values_.update_json(j);
 
     j["identifiers"] = identifiers_;
-    j["ignore"] = ignore_;
 
 #define OPTIONAL_SETTING(name)     \
   {                                \

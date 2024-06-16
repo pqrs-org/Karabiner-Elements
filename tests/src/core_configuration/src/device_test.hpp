@@ -364,7 +364,6 @@ void run_device_test(void) {
                                   false,
                               },
                           }},
-          {"ignore", false},
           {"simple_modifications", nlohmann::json::array()},
       });
       expect(empty_device.to_json() == expected) << UT_SHOW_LINE;
