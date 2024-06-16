@@ -50,8 +50,10 @@ public:
                                                                       error_handling)) {
     helper_values_.push_back_object<details::global_configuration>("global",
                                                                    global_configuration_);
+
     helper_values_.push_back_object<details::machine_specific>("machine_specific",
                                                                machine_specific_);
+
     helper_values_.push_back_array<details::profile>("profiles",
                                                      profiles_);
 

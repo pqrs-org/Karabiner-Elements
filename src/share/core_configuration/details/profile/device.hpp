@@ -72,64 +72,88 @@ if (abs(cos(radian)) <= abs(sin(radian))) {
   device(const nlohmann::json& json,
          error_handling error_handling)
       : json_(json),
-        ignore_(false),
-        manipulate_caps_lock_led_(false),
-        treat_as_built_in_keyboard_(false),
-        disable_built_in_keyboard_if_exists_(false) {
+        ignore_(false) {
+    helper_values_.push_back_value<bool>("manipulate_caps_lock_led",
+                                         manipulate_caps_lock_led_,
+                                         false);
+
+    helper_values_.push_back_value<bool>("treat_as_built_in_keyboard",
+                                         treat_as_built_in_keyboard_,
+                                         false);
+
+    helper_values_.push_back_value<bool>("disable_built_in_keyboard_if_exists",
+                                         disable_built_in_keyboard_if_exists_,
+                                         false);
+
     helper_values_.push_back_value<bool>("mouse_flip_x",
                                          mouse_flip_x_,
                                          false);
+
     helper_values_.push_back_value<bool>("mouse_flip_y",
                                          mouse_flip_y_,
                                          false);
+
     helper_values_.push_back_value<bool>("mouse_flip_vertical_wheel",
                                          mouse_flip_vertical_wheel_,
                                          false);
+
     helper_values_.push_back_value<bool>("mouse_flip_horizontal_wheel",
                                          mouse_flip_horizontal_wheel_,
                                          false);
+
     helper_values_.push_back_value<bool>("mouse_swap_xy",
                                          mouse_swap_xy_,
                                          false);
+
     helper_values_.push_back_value<bool>("mouse_swap_wheels",
                                          mouse_swap_wheels_,
                                          false);
+
     helper_values_.push_back_value<bool>("mouse_discard_x",
                                          mouse_discard_x_,
                                          false);
+
     helper_values_.push_back_value<bool>("mouse_discard_y",
                                          mouse_discard_y_,
                                          false);
+
     helper_values_.push_back_value<bool>("mouse_discard_vertical_wheel",
                                          mouse_discard_vertical_wheel_,
                                          false);
+
     helper_values_.push_back_value<bool>("mouse_discard_horizontal_wheel",
                                          mouse_discard_horizontal_wheel_,
                                          false);
+
     helper_values_.push_back_value<bool>("game_pad_swap_sticks",
                                          game_pad_swap_sticks_,
                                          false);
+
     helper_values_.push_back_value<double>("game_pad_xy_stick_continued_movement_absolute_magnitude_threshold",
                                            game_pad_xy_stick_continued_movement_absolute_magnitude_threshold_,
                                            1.0);
+
     helper_values_.push_back_value<int>("game_pad_xy_stick_continued_movement_interval_milliseconds",
                                         game_pad_xy_stick_continued_movement_interval_milliseconds_,
                                         20);
+
     helper_values_.push_back_value<int>("game_pad_xy_stick_flicking_input_window_milliseconds",
                                         game_pad_xy_stick_flicking_input_window_milliseconds_,
                                         50);
+
     helper_values_.push_back_value<double>("game_pad_wheels_stick_continued_movement_absolute_magnitude_threshold",
                                            game_pad_wheels_stick_continued_movement_absolute_magnitude_threshold_,
                                            1.0);
+
     helper_values_.push_back_value<int>("game_pad_wheels_stick_continued_movement_interval_milliseconds",
                                         game_pad_wheels_stick_continued_movement_interval_milliseconds_,
                                         10);
+
     helper_values_.push_back_value<int>("game_pad_wheels_stick_flicking_input_window_milliseconds",
                                         game_pad_wheels_stick_flicking_input_window_milliseconds_,
                                         50);
 
     auto ignore_configured = false;
-    auto manipulate_caps_lock_led_configured = false;
 
     // ----------------------------------------
     // Set default value
@@ -158,22 +182,6 @@ if (abs(cos(radian)) <= abs(sin(radian))) {
 
         ignore_ = value.get<bool>();
         ignore_configured = true;
-
-      } else if (key == "manipulate_caps_lock_led") {
-        pqrs::json::requires_boolean(value, "`" + key + "`");
-
-        manipulate_caps_lock_led_ = value.get<bool>();
-        manipulate_caps_lock_led_configured = true;
-
-      } else if (key == "treat_as_built_in_keyboard") {
-        pqrs::json::requires_boolean(value, "`" + key + "`");
-
-        treat_as_built_in_keyboard_ = value.get<bool>();
-
-      } else if (key == "disable_built_in_keyboard_if_exists") {
-        pqrs::json::requires_boolean(value, "`" + key + "`");
-
-        disable_built_in_keyboard_if_exists_ = value.get<bool>();
 
       } else if (key == "game_pad_stick_x_formula") {
         game_pad_stick_x_formula_ = unmarshal_formula(value, key);
@@ -221,10 +229,9 @@ if (abs(cos(radian)) <= abs(sin(radian))) {
 
     // manipulate_caps_lock_led_
 
-    if (!manipulate_caps_lock_led_configured) {
-      if (identifiers_.get_is_keyboard()) {
-        manipulate_caps_lock_led_ = true;
-      }
+    if (identifiers_.get_is_keyboard()) {
+      helper_values_.set_default_value(manipulate_caps_lock_led_,
+                                       true);
     }
 
     //
@@ -254,9 +261,6 @@ if (abs(cos(radian)) <= abs(sin(radian))) {
 
     j["identifiers"] = identifiers_;
     j["ignore"] = ignore_;
-    j["manipulate_caps_lock_led"] = manipulate_caps_lock_led_;
-    j["treat_as_built_in_keyboard"] = treat_as_built_in_keyboard_;
-    j["disable_built_in_keyboard_if_exists"] = disable_built_in_keyboard_if_exists_;
 
 #define OPTIONAL_SETTING(name)     \
   {                                \

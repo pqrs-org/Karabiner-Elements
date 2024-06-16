@@ -893,7 +893,6 @@ void run_core_configuration_test(void) {
                               {"fn_function_keys", nlohmann::json::array()},
                               {"manipulate_caps_lock_led", false},
                               {"simple_modifications", nlohmann::json::array()},
-                              {"treat_as_built_in_keyboard", false},
                           },
                       }},
           {"dummy", {{"keep_me", true}}},
@@ -931,7 +930,7 @@ void run_core_configuration_test(void) {
       expected["simple_modifications"].back()["from"]["key_code"] = "from 5";
       expected["simple_modifications"].back()["to"] = nlohmann::json::array({nlohmann::json::object({{"key_code", "to 5"}})});
 
-      expect(expected == profile.to_json()) << UT_SHOW_LINE << profile.to_json();
+      expect(expected == profile.to_json()) << UT_SHOW_LINE;
     }
   };
 

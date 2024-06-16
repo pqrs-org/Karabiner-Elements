@@ -186,7 +186,7 @@ void run_device_test(void) {
                           }},
           {"disable_built_in_keyboard_if_exists", true},
           {"ignore", true},
-          {"manipulate_caps_lock_led", true},
+          {"manipulate_caps_lock_led", false},
           {"treat_as_built_in_keyboard", false},
           {"game_pad_xy_stick_continued_movement_absolute_magnitude_threshold", 0.5},
           {"game_pad_xy_stick_continued_movement_interval_milliseconds", 15},
@@ -209,7 +209,7 @@ void run_device_test(void) {
       expect(device.get_identifiers().get_is_keyboard() == true);
       expect(device.get_identifiers().get_is_pointing_device() == true);
       expect(device.get_ignore() == true);
-      expect(device.get_manipulate_caps_lock_led() == true);
+      expect(device.get_manipulate_caps_lock_led() == false);
       expect(device.get_treat_as_built_in_keyboard() == false);
       expect(device.get_disable_built_in_keyboard_if_exists() == true);
       expect(device.get_game_pad_xy_stick_continued_movement_absolute_magnitude_threshold() == 0.5);
@@ -341,7 +341,6 @@ void run_device_test(void) {
       krbn::core_configuration::details::device empty_device(json,
                                                              krbn::core_configuration::error_handling::strict);
       nlohmann::json expected({
-          {"disable_built_in_keyboard_if_exists", false},
           {"fn_function_keys", nlohmann::json::array()},
           {"identifiers", {
                               {
@@ -366,9 +365,7 @@ void run_device_test(void) {
                               },
                           }},
           {"ignore", false},
-          {"manipulate_caps_lock_led", false},
           {"simple_modifications", nlohmann::json::array()},
-          {"treat_as_built_in_keyboard", false},
       });
       expect(empty_device.to_json() == expected) << UT_SHOW_LINE;
     }
@@ -387,7 +384,7 @@ void run_device_test(void) {
                               },
                           }},
           {"ignore", true},
-          {"manipulate_caps_lock_led", true},
+          {"manipulate_caps_lock_led", false},
           {"treat_as_built_in_keyboard", true},
           {"mouse_discard_horizontal_wheel", true},
           {"mouse_discard_vertical_wheel", true},
@@ -417,7 +414,6 @@ void run_device_test(void) {
       krbn::core_configuration::details::device device(json,
                                                        krbn::core_configuration::error_handling::strict);
       nlohmann::json expected({
-          {"disable_built_in_keyboard_if_exists", false},
           {"dummy", {{"keep_me", true}}},
           {"fn_function_keys", nlohmann::json::array()},
           {"identifiers", {
@@ -461,7 +457,7 @@ void run_device_test(void) {
                                        })},
           {"game_pad_stick_vertical_wheel_formula", "sgn(sin(radian))"},
           {"game_pad_stick_horizontal_wheel_formula", "sgn(cos(radian))"},
-          {"manipulate_caps_lock_led", true},
+          {"manipulate_caps_lock_led", false},
           {"mouse_discard_horizontal_wheel", true},
           {"mouse_discard_vertical_wheel", true},
           {"mouse_discard_x", true},
@@ -475,7 +471,7 @@ void run_device_test(void) {
           {"simple_modifications", nlohmann::json::array()},
           {"treat_as_built_in_keyboard", true},
       });
-      expect(device.to_json() == expected);
+      expect(device.to_json() == expected) << UT_SHOW_LINE;
     }
   };
 
