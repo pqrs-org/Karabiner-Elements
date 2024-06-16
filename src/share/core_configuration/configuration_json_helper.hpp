@@ -10,6 +10,11 @@ namespace krbn {
 namespace core_configuration {
 namespace configuration_json_helper {
 
+enum class value_origin {
+  default_value,
+  json,
+};
+
 class base_t {
 public:
   virtual ~base_t() = default;
@@ -24,10 +29,11 @@ class value_t final : public base_t {
 public:
   value_t(const std::string& key,
           T& value,
-          T default_value)
+          const T& default_value)
       : key_(key),
         value_(value),
-        default_value_(default_value) {
+        default_value_(default_value),
+        value_origin_(value_origin::default_value) {
     value_ = default_value_;
   }
 
@@ -41,6 +47,14 @@ public:
 
   const T& get_default_value(void) const {
     return default_value_;
+  }
+
+  void set_default_value(const T& value) {
+    default_value_ = value;
+
+    if (value_origin_ == value_origin::default_value) {
+      value_ = value;
+    }
   }
 
   void update_value(const nlohmann::json& json,
@@ -60,6 +74,7 @@ public:
       }
 
       value_ = it->template get<T>();
+      value_origin_ = value_origin::json;
     } catch (std::exception& e) {
       if (error_handling == error_handling::strict) {
         throw;
@@ -80,7 +95,8 @@ public:
 private:
   std::string key_;
   T& value_;
-  const T default_value_;
+  T default_value_;
+  value_origin value_origin_;
 };
 
 template <typename T>
@@ -213,13 +229,22 @@ public:
   }
 
   template <typename T>
-  T find_default_value(const T& value, T fallback_value) const {
+  std::shared_ptr<value_t<T>> find_value(const T& value) const {
     for (const auto& v : values_) {
       if (auto p = std::dynamic_pointer_cast<value_t<T>>(memory_utility::unwrap_not_null(v))) {
         if (&(p->get_value()) == &value) {
-          return p->get_default_value();
+          return p;
         }
       }
+    }
+
+    return nullptr;
+  }
+
+  template <typename T>
+  T find_default_value(const T& value, T fallback_value) const {
+    if (auto v = find_value(value)) {
+      return v->get_default_value();
     }
 
     // Unreachable in a normal case
@@ -238,8 +263,15 @@ public:
     return find_default_value(value, 0);
   }
 
+  template <typename T>
+  void set_default_value(const T& value, const T& default_value) const {
+    if (auto v = find_value(value)) {
+      v->set_default_value(default_value);
+    }
+  }
+
 private:
-  std::vector<gsl::not_null<std::shared_ptr<configuration_json_helper::base_t>>> values_;
+  std::vector<gsl::not_null<std::shared_ptr<base_t>>> values_;
 };
 
 } // namespace configuration_json_helper
