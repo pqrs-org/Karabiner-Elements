@@ -281,8 +281,24 @@ if (abs(cos(radian)) <= abs(sin(radian))) {
 
 #undef OPTIONAL_FORMULA
 
-    j["simple_modifications"] = simple_modifications_.to_json(nlohmann::json::array());
-    j["fn_function_keys"] = fn_function_keys_.to_json(make_default_fn_function_keys_json());
+    {
+      auto jj = simple_modifications_.to_json(nlohmann::json::array());
+      if (!jj.empty()) {
+        j["simple_modifications"] = jj;
+      } else {
+        j.erase("simple_modifications");
+      }
+    }
+
+    {
+      auto jj = fn_function_keys_.to_json(make_default_fn_function_keys_json());
+      if (!jj.empty()) {
+        j["fn_function_keys"] = jj;
+      } else {
+        j.erase("fn_function_keys");
+      }
+    }
+
     return j;
   }
 

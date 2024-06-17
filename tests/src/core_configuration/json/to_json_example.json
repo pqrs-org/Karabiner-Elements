@@ -150,7 +150,6 @@
                 },
                 {
                     "disable_built_in_keyboard_if_exists": true,
-                    "fn_function_keys": [],
                     "identifiers": {
                         "is_game_pad": false,
                         "is_keyboard": true,
@@ -158,8 +157,7 @@
                         "product_id": 610,
                         "vendor_id": 1452
                     },
-                    "ignore": true,
-                    "simple_modifications": []
+                    "ignore": true
                 },
                 {
                     "fn_function_keys": [

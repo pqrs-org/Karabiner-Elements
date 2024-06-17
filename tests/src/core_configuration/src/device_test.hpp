@@ -341,7 +341,6 @@ void run_device_test(void) {
       krbn::core_configuration::details::device empty_device(json,
                                                              krbn::core_configuration::error_handling::strict);
       nlohmann::json expected({
-          {"fn_function_keys", nlohmann::json::array()},
           {"identifiers", {
                               {
                                   "vendor_id",
@@ -364,7 +363,6 @@ void run_device_test(void) {
                                   false,
                               },
                           }},
-          {"simple_modifications", nlohmann::json::array()},
       });
       expect(empty_device.to_json() == expected) << UT_SHOW_LINE;
     }
@@ -414,7 +412,6 @@ void run_device_test(void) {
                                                        krbn::core_configuration::error_handling::strict);
       nlohmann::json expected({
           {"dummy", {{"keep_me", true}}},
-          {"fn_function_keys", nlohmann::json::array()},
           {"identifiers", {
                               {
                                   "dummy",
@@ -467,7 +464,6 @@ void run_device_test(void) {
           {"mouse_flip_y", true},
           {"mouse_swap_wheels", true},
           {"mouse_swap_xy", true},
-          {"simple_modifications", nlohmann::json::array()},
           {"treat_as_built_in_keyboard", true},
       });
       expect(device.to_json() == expected) << UT_SHOW_LINE;
