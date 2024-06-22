@@ -1,6 +1,7 @@
 #pragma once
 
 #include <nlohmann/json.hpp>
+#include <pqrs/json.hpp>
 
 namespace krbn {
 namespace json_utility {
@@ -26,10 +27,17 @@ inline nlohmann::json parse_jsonc(T first, T last) {
 }
 
 inline std::string dump(const nlohmann::json& json) {
-  return json.dump(4,
-                   ' ',
-                   false,
-                   nlohmann::json::error_handler_t::ignore);
+  return pqrs::json::pqrs_formatter::format(
+      json,
+      {.indent_size = 4,
+       .error_handler = nlohmann::json::error_handler_t::ignore,
+       .force_multi_line_array_object_keys = {
+           "bundle_identifiers",
+           "game_pad_stick_horizontal_wheel_formula",
+           "game_pad_stick_vertical_wheel_formula",
+           "game_pad_stick_x_formula",
+           "game_pad_stick_y_formula",
+       }});
 }
 }; // namespace json_utility
 } // namespace krbn
