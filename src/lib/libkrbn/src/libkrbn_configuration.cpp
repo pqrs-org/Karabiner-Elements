@@ -593,100 +593,93 @@ void libkrbn_core_configuration_set_selected_profile_device_disable_built_in_key
 
 bool libkrbn_core_configuration_get_selected_profile_device_mouse_flip_x(const libkrbn_device_identifiers* device_identifiers) {
   auto c = get_current_core_configuration();
-  return c->get_selected_profile().get_device_mouse_flip_x(
-      libkrbn_cpp::make_device_identifiers(device_identifiers));
+  auto d = c->get_selected_profile().get_device(libkrbn_cpp::make_device_identifiers(device_identifiers));
+  return d->get_mouse_flip_x();
 }
 
 void libkrbn_core_configuration_set_selected_profile_device_mouse_flip_x(const libkrbn_device_identifiers* device_identifiers,
                                                                          bool value) {
   auto c = get_current_core_configuration();
-  c->get_selected_profile().set_device_mouse_flip_x(
-      libkrbn_cpp::make_device_identifiers(device_identifiers),
-      value);
+  auto d = c->get_selected_profile().get_device(libkrbn_cpp::make_device_identifiers(device_identifiers));
+  d->set_mouse_flip_x(value);
 }
 
 bool libkrbn_core_configuration_get_selected_profile_device_mouse_flip_y(const libkrbn_device_identifiers* device_identifiers) {
   auto c = get_current_core_configuration();
-  return c->get_selected_profile().get_device_mouse_flip_y(
-      libkrbn_cpp::make_device_identifiers(device_identifiers));
+  auto d = c->get_selected_profile().get_device(libkrbn_cpp::make_device_identifiers(device_identifiers));
+  return d->get_mouse_flip_y();
 }
 
 void libkrbn_core_configuration_set_selected_profile_device_mouse_flip_y(const libkrbn_device_identifiers* device_identifiers,
                                                                          bool value) {
   auto c = get_current_core_configuration();
-  c->get_selected_profile().set_device_mouse_flip_y(
-      libkrbn_cpp::make_device_identifiers(device_identifiers),
-      value);
+  auto d = c->get_selected_profile().get_device(libkrbn_cpp::make_device_identifiers(device_identifiers));
+  d->set_mouse_flip_y(value);
 }
 
 bool libkrbn_core_configuration_get_selected_profile_device_mouse_flip_vertical_wheel(const libkrbn_device_identifiers* device_identifiers) {
   auto c = get_current_core_configuration();
-  return c->get_selected_profile().get_device_mouse_flip_vertical_wheel(
-      libkrbn_cpp::make_device_identifiers(device_identifiers));
+  auto d = c->get_selected_profile().get_device(libkrbn_cpp::make_device_identifiers(device_identifiers));
+  return d->get_mouse_flip_vertical_wheel();
 }
 
 void libkrbn_core_configuration_set_selected_profile_device_mouse_flip_vertical_wheel(const libkrbn_device_identifiers* device_identifiers,
                                                                                       bool value) {
   auto c = get_current_core_configuration();
-  c->get_selected_profile().set_device_mouse_flip_vertical_wheel(
-      libkrbn_cpp::make_device_identifiers(device_identifiers),
-      value);
+  auto d = c->get_selected_profile().get_device(libkrbn_cpp::make_device_identifiers(device_identifiers));
+  d->set_mouse_flip_vertical_wheel(value);
 }
 
 bool libkrbn_core_configuration_get_selected_profile_device_mouse_flip_horizontal_wheel(const libkrbn_device_identifiers* device_identifiers) {
   auto c = get_current_core_configuration();
-  return c->get_selected_profile().get_device_mouse_flip_horizontal_wheel(
-      libkrbn_cpp::make_device_identifiers(device_identifiers));
+  auto d = c->get_selected_profile().get_device(libkrbn_cpp::make_device_identifiers(device_identifiers));
+  return d->get_mouse_flip_horizontal_wheel();
 }
 
 void libkrbn_core_configuration_set_selected_profile_device_mouse_flip_horizontal_wheel(const libkrbn_device_identifiers* device_identifiers,
                                                                                         bool value) {
   auto c = get_current_core_configuration();
-  c->get_selected_profile().set_device_mouse_flip_horizontal_wheel(
-      libkrbn_cpp::make_device_identifiers(device_identifiers),
-      value);
+  auto d = c->get_selected_profile().get_device(libkrbn_cpp::make_device_identifiers(device_identifiers));
+  d->set_mouse_flip_horizontal_wheel(value);
 }
 
 bool libkrbn_core_configuration_get_selected_profile_device_mouse_swap_xy(const libkrbn_device_identifiers* device_identifiers) {
   auto c = get_current_core_configuration();
-  return c->get_selected_profile().get_device_mouse_swap_xy(
-      libkrbn_cpp::make_device_identifiers(device_identifiers));
+  auto d = c->get_selected_profile().get_device(libkrbn_cpp::make_device_identifiers(device_identifiers));
+  return d->get_mouse_swap_xy();
 }
 
 void libkrbn_core_configuration_set_selected_profile_device_mouse_swap_xy(const libkrbn_device_identifiers* device_identifiers,
                                                                           bool value) {
   auto c = get_current_core_configuration();
-  c->get_selected_profile().set_device_mouse_swap_xy(
-      libkrbn_cpp::make_device_identifiers(device_identifiers),
-      value);
+  auto d = c->get_selected_profile().get_device(libkrbn_cpp::make_device_identifiers(device_identifiers));
+  d->set_mouse_swap_xy(value);
 }
 
 bool libkrbn_core_configuration_get_selected_profile_device_mouse_swap_wheels(const libkrbn_device_identifiers* device_identifiers) {
   auto c = get_current_core_configuration();
-  return c->get_selected_profile().get_device_mouse_swap_wheels(
-      libkrbn_cpp::make_device_identifiers(device_identifiers));
+  auto d = c->get_selected_profile().get_device(libkrbn_cpp::make_device_identifiers(device_identifiers));
+  return d->get_mouse_swap_wheels();
 }
 
 void libkrbn_core_configuration_set_selected_profile_device_mouse_swap_wheels(const libkrbn_device_identifiers* device_identifiers,
                                                                               bool value) {
   auto c = get_current_core_configuration();
-  c->get_selected_profile().set_device_mouse_swap_wheels(
-      libkrbn_cpp::make_device_identifiers(device_identifiers),
-      value);
+  auto d = c->get_selected_profile().get_device(libkrbn_cpp::make_device_identifiers(device_identifiers));
+  d->set_mouse_swap_wheels(value);
 }
 
 bool libkrbn_core_configuration_get_selected_profile_device_game_pad_swap_sticks(const libkrbn_device_identifiers* device_identifiers) {
   auto c = get_current_core_configuration();
-  return c->get_selected_profile().get_device_game_pad_swap_sticks(
-      libkrbn_cpp::make_device_identifiers(device_identifiers));
+  auto d = c->get_selected_profile().get_device(libkrbn_cpp::make_device_identifiers(device_identifiers));
+  return d->get_game_pad_swap_sticks();
 }
 
 void libkrbn_core_configuration_set_selected_profile_device_game_pad_swap_sticks(const libkrbn_device_identifiers* device_identifiers,
                                                                                  bool value) {
   auto c = get_current_core_configuration();
-  c->get_selected_profile().set_device_game_pad_swap_sticks(
-      libkrbn_cpp::make_device_identifiers(device_identifiers),
-      value);
+  auto d = c->get_selected_profile().get_device(libkrbn_cpp::make_device_identifiers(device_identifiers));
+  d->set_game_pad_swap_sticks(value);
 }
 
 // game_pad_xy_stick_continued_movement_absolute_magnitude_threshold

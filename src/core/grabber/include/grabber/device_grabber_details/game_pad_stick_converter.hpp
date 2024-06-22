@@ -539,7 +539,8 @@ public:
       return;
     }
 
-    bool swap_sticks = c->get_selected_profile().get_device_game_pad_swap_sticks(device_properties_.get_device_identifiers());
+    auto device = c->get_selected_profile().get_device(device_properties_.get_device_identifiers());
+    bool swap_sticks = device->get_game_pad_swap_sticks();
 
     for (const auto& v : hid_values) {
       if (auto usage_page = v.get_usage_page()) {
