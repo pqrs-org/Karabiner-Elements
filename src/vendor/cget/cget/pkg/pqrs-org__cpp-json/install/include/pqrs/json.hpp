@@ -1,6 +1,6 @@
 #pragma once
 
-// pqrs::json v1.4
+// pqrs::json v1.7
 
 // (C) Copyright Takayama Fumihiko 2019.
 // Distributed under the Boost Software License, Version 1.0.
@@ -8,6 +8,7 @@
 
 #include "json/formatter.hpp"
 #include "json/marshal_error.hpp"
+#include "json/pqrs_formatter.hpp"
 #include "json/unmarshal_error.hpp"
 #include <nlohmann/json.hpp>
 #include <optional>
