@@ -219,6 +219,30 @@ void run_configuration_json_helper_test(void) {
   };
 
   //
+  // Multi-line string
+  //
+
+  {
+    auto json = R"(
+
+{
+  "string": [
+    "1",
+    "22",
+    "333",
+    "4444"
+  ]
+}
+
+)"_json;
+
+    auto actual = test_class(json, krbn::core_configuration::error_handling::strict);
+    expect(std::string("1\n22\n333\n4444") == actual.s);
+
+    expect(json == actual.to_json()) << UT_SHOW_LINE;
+  }
+
+  //
   // Invalid values
   //
 
