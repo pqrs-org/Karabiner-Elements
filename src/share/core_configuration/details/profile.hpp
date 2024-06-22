@@ -288,96 +288,6 @@ public:
   }
 
   //
-  // game_pad_xy_stick_continued_movement_absolute_magnitude_threshold
-  //
-
-  double get_device_game_pad_xy_stick_continued_movement_absolute_magnitude_threshold(const device_identifiers& identifiers) const {
-    auto d = get_device_or_new(identifiers);
-    return d->get_game_pad_xy_stick_continued_movement_absolute_magnitude_threshold();
-  }
-
-  void set_device_game_pad_xy_stick_continued_movement_absolute_magnitude_threshold(const device_identifiers& identifiers,
-                                                                                    double value) {
-    auto d = add_device(identifiers);
-    d->set_game_pad_xy_stick_continued_movement_absolute_magnitude_threshold(value);
-  }
-
-  //
-  // game_pad_xy_stick_continued_movement_interval_milliseconds
-  //
-
-  int get_device_game_pad_xy_stick_continued_movement_interval_milliseconds(const device_identifiers& identifiers) const {
-    auto d = get_device_or_new(identifiers);
-    return d->get_game_pad_xy_stick_continued_movement_interval_milliseconds();
-  }
-
-  void set_device_game_pad_xy_stick_continued_movement_interval_milliseconds(const device_identifiers& identifiers,
-                                                                             int value) {
-    auto d = add_device(identifiers);
-    d->set_game_pad_xy_stick_continued_movement_interval_milliseconds(value);
-  }
-
-  //
-  // game_pad_xy_stick_flicking_input_window_milliseconds
-  //
-
-  int get_device_game_pad_xy_stick_flicking_input_window_milliseconds(const device_identifiers& identifiers) const {
-    auto d = get_device_or_new(identifiers);
-    return d->get_game_pad_xy_stick_flicking_input_window_milliseconds();
-  }
-
-  void set_device_game_pad_xy_stick_flicking_input_window_milliseconds(const device_identifiers& identifiers,
-                                                                       int value) {
-    auto d = add_device(identifiers);
-    d->set_game_pad_xy_stick_flicking_input_window_milliseconds(value);
-  }
-
-  //
-  // game_pad_wheels_stick_continued_movement_absolute_magnitude_threshold
-  //
-
-  double get_device_game_pad_wheels_stick_continued_movement_absolute_magnitude_threshold(const device_identifiers& identifiers) const {
-    auto d = get_device_or_new(identifiers);
-    return d->get_game_pad_wheels_stick_continued_movement_absolute_magnitude_threshold();
-  }
-
-  void set_device_game_pad_wheels_stick_continued_movement_absolute_magnitude_threshold(const device_identifiers& identifiers,
-                                                                                        double value) {
-    auto d = add_device(identifiers);
-    d->set_game_pad_wheels_stick_continued_movement_absolute_magnitude_threshold(value);
-  }
-
-  //
-  // game_pad_wheels_stick_continued_movement_interval_milliseconds
-  //
-
-  int get_device_game_pad_wheels_stick_continued_movement_interval_milliseconds(const device_identifiers& identifiers) const {
-    auto d = get_device_or_new(identifiers);
-    return d->get_game_pad_wheels_stick_continued_movement_interval_milliseconds();
-  }
-
-  void set_device_game_pad_wheels_stick_continued_movement_interval_milliseconds(const device_identifiers& identifiers,
-                                                                                 int value) {
-    auto d = add_device(identifiers);
-    d->set_game_pad_wheels_stick_continued_movement_interval_milliseconds(value);
-  }
-
-  //
-  // game_pad_wheels_stick_flicking_input_window_milliseconds
-  //
-
-  int get_device_game_pad_wheels_stick_flicking_input_window_milliseconds(const device_identifiers& identifiers) const {
-    auto d = get_device_or_new(identifiers);
-    return d->get_game_pad_wheels_stick_flicking_input_window_milliseconds();
-  }
-
-  void set_device_game_pad_wheels_stick_flicking_input_window_milliseconds(const device_identifiers& identifiers,
-                                                                           int value) {
-    auto d = add_device(identifiers);
-    d->set_game_pad_wheels_stick_flicking_input_window_milliseconds(value);
-  }
-
-  //
   // game_pad_stick_x_formula
   //
 
@@ -540,14 +450,6 @@ private:
       return *it;
     }
     return nullptr;
-  }
-
-  gsl::not_null<std::shared_ptr<details::device>> get_device_or_new(const device_identifiers& identifiers) const {
-    if (auto d = find_device(identifiers)) {
-      return d;
-    }
-
-    return add_device(identifiers);
   }
 
   gsl::not_null<std::shared_ptr<details::device>> add_device(const device_identifiers& identifiers) const {

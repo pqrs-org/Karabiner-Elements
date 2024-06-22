@@ -155,23 +155,25 @@ public:
 
     void update_configurations(const core_configuration::core_configuration& core_configuration,
                                const device_identifiers& device_identifiers) {
+      auto d = core_configuration.get_selected_profile().get_device(device_identifiers);
+
       switch (stick_type_) {
         case stick_type::xy:
-          continued_movement_absolute_magnitude_threshold_ = core_configuration.get_selected_profile().get_device_game_pad_xy_stick_continued_movement_absolute_magnitude_threshold(device_identifiers);
-          continued_movement_interval_milliseconds_ = core_configuration.get_selected_profile().get_device_game_pad_xy_stick_continued_movement_interval_milliseconds(device_identifiers);
-          flicking_input_window_milliseconds_ = core_configuration.get_selected_profile().get_device_game_pad_xy_stick_flicking_input_window_milliseconds(device_identifiers);
+          continued_movement_absolute_magnitude_threshold_ = d->get_game_pad_xy_stick_continued_movement_absolute_magnitude_threshold();
+          continued_movement_interval_milliseconds_ = d->get_game_pad_xy_stick_continued_movement_interval_milliseconds();
+          flicking_input_window_milliseconds_ = d->get_game_pad_xy_stick_flicking_input_window_milliseconds();
           break;
         case stick_type::wheels:
-          continued_movement_absolute_magnitude_threshold_ = core_configuration.get_selected_profile().get_device_game_pad_wheels_stick_continued_movement_absolute_magnitude_threshold(device_identifiers);
-          continued_movement_interval_milliseconds_ = core_configuration.get_selected_profile().get_device_game_pad_wheels_stick_continued_movement_interval_milliseconds(device_identifiers);
-          flicking_input_window_milliseconds_ = core_configuration.get_selected_profile().get_device_game_pad_wheels_stick_flicking_input_window_milliseconds(device_identifiers);
+          continued_movement_absolute_magnitude_threshold_ = d->get_game_pad_wheels_stick_continued_movement_absolute_magnitude_threshold();
+          continued_movement_interval_milliseconds_ = d->get_game_pad_wheels_stick_continued_movement_interval_milliseconds();
+          flicking_input_window_milliseconds_ = d->get_game_pad_wheels_stick_flicking_input_window_milliseconds();
           break;
       }
 
-      x_formula_string_ = core_configuration.get_selected_profile().get_device_game_pad_stick_x_formula(device_identifiers);
-      y_formula_string_ = core_configuration.get_selected_profile().get_device_game_pad_stick_y_formula(device_identifiers);
-      vertical_wheel_formula_string_ = core_configuration.get_selected_profile().get_device_game_pad_stick_vertical_wheel_formula(device_identifiers);
-      horizontal_wheel_formula_string_ = core_configuration.get_selected_profile().get_device_game_pad_stick_horizontal_wheel_formula(device_identifiers);
+      x_formula_string_ = d->get_game_pad_stick_x_formula().value_or("");
+      y_formula_string_ = d->get_game_pad_stick_y_formula().value_or("");
+      vertical_wheel_formula_string_ = d->get_game_pad_stick_vertical_wheel_formula().value_or("");
+      horizontal_wheel_formula_string_ = d->get_game_pad_stick_horizontal_wheel_formula().value_or("");
 
       x_formula_ = make_formula_expression(x_formula_string_);
       y_formula_ = make_formula_expression(y_formula_string_);
