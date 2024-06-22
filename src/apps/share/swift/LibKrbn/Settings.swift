@@ -68,8 +68,6 @@ extension LibKrbn {
           self.saveErrorMessage = String(cString: errorMessageBuffer)
         }
       }
-
-      self.updateProperties()
     }
 
     public func updateProperties() {
