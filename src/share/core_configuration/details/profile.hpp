@@ -287,22 +287,6 @@ public:
     return devices_.back();
   }
 
-  bool get_device_manipulate_caps_lock_led(const device_identifiers& identifiers) const {
-    return get_device_or_new(identifiers)->get_manipulate_caps_lock_led();
-  }
-
-  void set_device_manipulate_caps_lock_led(const device_identifiers& identifiers,
-                                           bool manipulate_caps_lock_led) {
-    add_device(identifiers);
-
-    for (auto&& d : devices_) {
-      if (d->get_identifiers() == identifiers) {
-        d->set_manipulate_caps_lock_led(manipulate_caps_lock_led);
-        return;
-      }
-    }
-  }
-
   bool get_device_treat_as_built_in_keyboard(const device_identifiers& identifiers) const {
     for (const auto& d : devices_) {
       if (d->get_identifiers() == identifiers) {

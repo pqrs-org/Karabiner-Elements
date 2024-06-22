@@ -271,7 +271,8 @@ private:
 
     if (caps_lock_led_state_manager_) {
       if (auto c = weak_core_configuration_.lock()) {
-        if (c->get_selected_profile().get_device_manipulate_caps_lock_led(device_properties_.get_device_identifiers())) {
+        auto d = c->get_selected_profile().get_device(device_properties_.get_device_identifiers());
+        if (d->get_manipulate_caps_lock_led()) {
           if (seized()) {
             caps_lock_led_state_manager_->async_start();
             return;
