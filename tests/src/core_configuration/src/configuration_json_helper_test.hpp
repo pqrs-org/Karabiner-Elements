@@ -33,6 +33,7 @@ public:
     helper_values.push_back_value<bool>("bool", b, true);
     helper_values.push_back_value<double>("double", d, 1042.0);
     helper_values.push_back_value<int>("int", i, 2042);
+    helper_values.push_back_value<std::string>("string", s, "42");
     helper_values.push_back_object<test_object>("object", o);
     helper_values.push_back_array<test_object>("array", a);
 
@@ -50,6 +51,7 @@ public:
   bool b;
   double d;
   int i;
+  std::string s;
   gsl::not_null<std::shared_ptr<test_object>> o;
   std::vector<gsl::not_null<std::shared_ptr<test_object>>> a;
   krbn::core_configuration::configuration_json_helper::helper_values helper_values;
@@ -66,6 +68,7 @@ void run_configuration_json_helper_test(void) {
     expect(true == actual.b);
     expect(1042.0_d == actual.d);
     expect(2042_i == actual.i);
+    expect(std::string("42") == actual.s);
     expect(42_i == actual.o->i);
     expect(actual.a.empty());
 
@@ -82,6 +85,7 @@ void run_configuration_json_helper_test(void) {
   "bool": false,
   "double": 1.0,
   "int": 2,
+  "string": "4242",
   "object": {
     "int": 3
   },
@@ -98,6 +102,7 @@ void run_configuration_json_helper_test(void) {
     expect(false == actual.b);
     expect(1.0_d == actual.d);
     expect(2_i == actual.i);
+    expect(std::string("4242") == actual.s);
     expect(3_i == actual.o->i);
     expect(1_l == actual.a.size());
     expect(4_i == actual.a[0]->i);
@@ -111,6 +116,7 @@ void run_configuration_json_helper_test(void) {
     actual.b = true;
     actual.d = 1042.0;
     actual.i = 2042;
+    actual.s = "42";
     actual.o->i = 42;
     actual.a.clear();
 
@@ -125,6 +131,7 @@ void run_configuration_json_helper_test(void) {
     expect(true == actual.helper_values.find_default_value(actual.b));
     expect(1042.0_d == actual.helper_values.find_default_value(actual.d));
     expect(2042_i == actual.helper_values.find_default_value(actual.i));
+    expect(std::string("42") == actual.helper_values.find_default_value(actual.s));
   };
 
   "set_default_value"_test = [] {
@@ -210,4 +217,56 @@ void run_configuration_json_helper_test(void) {
       expect(nlohmann::json::object() == actual.to_json()) << UT_SHOW_LINE;
     }
   };
+
+  //
+  // Invalid values
+  //
+
+  // strict
+  {
+    expect(throws([] {
+      auto json = nlohmann::json::parse(R"( { "bool": null } )");
+      test_class(json, krbn::core_configuration::error_handling::strict);
+    }));
+  }
+  {
+    expect(throws([] {
+      auto json = nlohmann::json::parse(R"( { "double": null } )");
+      test_class(json, krbn::core_configuration::error_handling::strict);
+    }));
+  }
+  {
+    expect(throws([] {
+      auto json = nlohmann::json::parse(R"( { "int": null } )");
+      test_class(json, krbn::core_configuration::error_handling::strict);
+    }));
+  }
+  {
+    expect(throws([] {
+      auto json = nlohmann::json::parse(R"( { "string": null } )");
+      test_class(json, krbn::core_configuration::error_handling::strict);
+    }));
+  }
+
+  // loose
+  {
+    auto json = nlohmann::json::parse(R"( { "bool": null } )");
+    auto actual = test_class(json, krbn::core_configuration::error_handling::loose);
+    expect(true == actual.b);
+  }
+  {
+    auto json = nlohmann::json::parse(R"( { "double": null } )");
+    auto actual = test_class(json, krbn::core_configuration::error_handling::loose);
+    expect(1042.0_d == actual.d);
+  }
+  {
+    auto json = nlohmann::json::parse(R"( { "int": null } )");
+    auto actual = test_class(json, krbn::core_configuration::error_handling::loose);
+    expect(2042_i == actual.i);
+  }
+  {
+    auto json = nlohmann::json::parse(R"( { "string": null } )");
+    auto actual = test_class(json, krbn::core_configuration::error_handling::loose);
+    expect(std::string("42") == actual.s);
+  }
 }

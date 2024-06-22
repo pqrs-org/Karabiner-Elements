@@ -71,6 +71,8 @@ public:
         pqrs::json::requires_boolean(*it, "`" + key_ + "`");
       } else if constexpr (std::is_same<T, int>::value || std::is_same<T, double>::value) {
         pqrs::json::requires_number(*it, "`" + key_ + "`");
+      } else if constexpr (std::is_same<T, std::string>::value) {
+        pqrs::json::requires_string(*it, "`" + key_ + "`");
       }
 
       value_ = it->template get<T>();
@@ -79,7 +81,7 @@ public:
       if (error_handling == error_handling::strict) {
         throw;
       } else {
-        logger::get_logger()->error(e.what());
+        logger::get_logger()->warn(e.what());
       }
     }
   }
@@ -218,7 +220,8 @@ public:
   void update_value(const nlohmann::json& json,
                     error_handling error_handling) {
     for (const auto& v : values_) {
-      v->update_value(json, error_handling);
+      v->update_value(json,
+                      error_handling);
     }
   }
 
@@ -261,6 +264,10 @@ public:
 
   int find_default_value(const int& value) const {
     return find_default_value(value, 0);
+  }
+
+  std::string find_default_value(const std::string& value) const {
+    return find_default_value(value, std::string(""));
   }
 
   template <typename T>
