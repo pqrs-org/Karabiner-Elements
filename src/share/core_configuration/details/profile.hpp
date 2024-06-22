@@ -287,32 +287,6 @@ public:
     return devices_.back();
   }
 
-  bool get_device_treat_as_built_in_keyboard(const device_identifiers& identifiers) const {
-    for (const auto& d : devices_) {
-      if (d->get_identifiers() == identifiers) {
-        return d->get_treat_as_built_in_keyboard();
-      }
-    }
-
-    details::device d(nlohmann::json({
-                          {"identifiers", identifiers},
-                      }),
-                      error_handling_);
-    return d.get_treat_as_built_in_keyboard();
-  }
-
-  void set_device_treat_as_built_in_keyboard(const device_identifiers& identifiers,
-                                             bool treat_as_built_in_keyboard) {
-    add_device(identifiers);
-
-    for (auto&& d : devices_) {
-      if (d->get_identifiers() == identifiers) {
-        d->set_treat_as_built_in_keyboard(treat_as_built_in_keyboard);
-        return;
-      }
-    }
-  }
-
   bool get_device_disable_built_in_keyboard_if_exists(const device_identifiers& identifiers) const {
     for (const auto& d : devices_) {
       if (d->get_identifiers() == identifiers) {

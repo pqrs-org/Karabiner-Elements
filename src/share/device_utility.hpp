@@ -11,8 +11,10 @@ inline bool determine_is_built_in_keyboard(const core_configuration::core_config
     return true;
   }
 
-  return core_configuration.get_selected_profile().get_device_treat_as_built_in_keyboard(
+  auto d = core_configuration.get_selected_profile().get_device(
       device_properties.get_device_identifiers());
+
+  return d->get_treat_as_built_in_keyboard();
 }
 } // namespace device_utility
 } // namespace krbn
