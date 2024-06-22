@@ -256,7 +256,8 @@ public:
     }
 
     if (auto c = weak_core_configuration_.lock()) {
-      return !(c->get_selected_profile().get_device_ignore(device_properties_.get_device_identifiers()));
+      auto d = c->get_selected_profile().get_device(device_properties_.get_device_identifiers());
+      return !(d->get_ignore());
     }
 
     return false;

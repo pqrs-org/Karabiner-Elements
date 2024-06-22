@@ -293,20 +293,22 @@ void run_core_configuration_test(void) {
       expect(profile.get_fn_function_keys().get_pairs().size() == 12);
       expect(profile.get_devices().size() == 0);
 
-      expect(profile.get_device_ignore(krbn::device_identifiers(pqrs::hid::vendor_id::value_t(4176),
-                                                                pqrs::hid::product_id::value_t(1031),
-                                                                true,  // is_keyboard
-                                                                false, // is_pointing_device
-                                                                false, // is_game_pad
-                                                                ""     // device_address
-                                                                )) == true);
-      expect(profile.get_device_ignore(krbn::device_identifiers(pqrs::hid::vendor_id::value_t(0x05ac),
-                                                                pqrs::hid::product_id::value_t(0x262),
-                                                                true,  // is_keyboard
-                                                                false, // is_pointing_device
-                                                                false, // is_game_pad
-                                                                ""     // device_address
-                                                                )) == false);
+      expect(profile.get_device(krbn::device_identifiers(pqrs::hid::vendor_id::value_t(4176),
+                                                         pqrs::hid::product_id::value_t(1031),
+                                                         true,  // is_keyboard
+                                                         false, // is_pointing_device
+                                                         false, // is_game_pad
+                                                         ""     // device_address
+                                                         ))
+                 ->get_ignore() == true);
+      expect(profile.get_device(krbn::device_identifiers(pqrs::hid::vendor_id::value_t(0x05ac),
+                                                         pqrs::hid::product_id::value_t(0x262),
+                                                         true,  // is_keyboard
+                                                         false, // is_pointing_device
+                                                         false, // is_game_pad
+                                                         ""     // device_address
+                                                         ))
+                 ->get_ignore() == false);
     }
 
     // load values from json
@@ -524,7 +526,7 @@ void run_core_configuration_test(void) {
                                    },
                                })
                                .get<krbn::device_identifiers>();
-        profile.set_device_ignore(identifiers, false);
+        profile.get_device(identifiers)->set_ignore(false);
         expect(profile.get_devices().size() == 3);
         // devices[0] is changed.
         expect((profile.get_devices())[0]->get_identifiers().get_vendor_id() == pqrs::hid::vendor_id::value_t(1234));
@@ -581,7 +583,7 @@ void run_core_configuration_test(void) {
                                      },
                                  })
                                  .get<krbn::device_identifiers>();
-          profile.set_device_ignore(identifiers, true);
+          profile.get_device(identifiers)->set_ignore(true);
           expect(profile.get_devices().size() == 4);
           expect((profile.get_devices())[3]->get_identifiers().get_vendor_id() == pqrs::hid::vendor_id::value_t(1111));
           expect((profile.get_devices())[3]->get_identifiers().get_product_id() == pqrs::hid::product_id::value_t(2222));

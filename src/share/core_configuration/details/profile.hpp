@@ -19,9 +19,7 @@ public:
           error_handling error_handling)
       : json_(json),
         error_handling_(error_handling),
-        selected_(false),
-        empty_device_(std::make_shared<details::device>(nlohmann::json::object(),
-                                                        error_handling_)) {
+        selected_(false) {
     helper_values_.push_back_array<details::device>("devices",
                                                     devices_);
 
@@ -264,44 +262,33 @@ public:
     return devices_;
   }
 
-  bool get_device_ignore(const device_identifiers& identifiers) const {
-    for (const auto& d : devices_) {
-      if (d->get_identifiers() == identifiers) {
-        return d->get_ignore();
-      }
+  gsl::not_null<std::shared_ptr<details::device>> get_device(const device_identifiers& identifiers) const {
+    //
+    // Find device
+    //
+
+    auto it = std::find_if(std::begin(devices_),
+                           std::end(devices_),
+                           [&](auto&& d) {
+                             return d->get_identifiers() == identifiers;
+                           });
+    if (it != std::end(devices_)) {
+      return *it;
     }
 
-    details::device d(nlohmann::json({
-                          {"identifiers", identifiers},
-                      }),
-                      error_handling_);
-    return d.get_ignore();
-  }
+    //
+    // Add device
+    //
 
-  void set_device_ignore(const device_identifiers& identifiers,
-                         bool ignore) {
-    add_device(identifiers);
-
-    for (auto&& d : devices_) {
-      if (d->get_identifiers() == identifiers) {
-        d->set_ignore(ignore);
-        return;
-      }
-    }
+    devices_.push_back(std::make_shared<details::device>(nlohmann::json({
+                                                             {"identifiers", identifiers},
+                                                         }),
+                                                         error_handling_));
+    return devices_.back();
   }
 
   bool get_device_manipulate_caps_lock_led(const device_identifiers& identifiers) const {
-    for (const auto& d : devices_) {
-      if (d->get_identifiers() == identifiers) {
-        return d->get_manipulate_caps_lock_led();
-      }
-    }
-
-    details::device d(nlohmann::json({
-                          {"identifiers", identifiers},
-                      }),
-                      error_handling_);
-    return d.get_manipulate_caps_lock_led();
+    return get_device_or_new(identifiers)->get_manipulate_caps_lock_led();
   }
 
   void set_device_manipulate_caps_lock_led(const device_identifiers& identifiers,
@@ -599,7 +586,7 @@ public:
   //
 
   double get_device_game_pad_xy_stick_continued_movement_absolute_magnitude_threshold(const device_identifiers& identifiers) const {
-    auto d = get_device_or_emtpy(identifiers);
+    auto d = get_device_or_new(identifiers);
     return d->get_game_pad_xy_stick_continued_movement_absolute_magnitude_threshold();
   }
 
@@ -614,7 +601,7 @@ public:
   //
 
   int get_device_game_pad_xy_stick_continued_movement_interval_milliseconds(const device_identifiers& identifiers) const {
-    auto d = get_device_or_emtpy(identifiers);
+    auto d = get_device_or_new(identifiers);
     return d->get_game_pad_xy_stick_continued_movement_interval_milliseconds();
   }
 
@@ -629,7 +616,7 @@ public:
   //
 
   int get_device_game_pad_xy_stick_flicking_input_window_milliseconds(const device_identifiers& identifiers) const {
-    auto d = get_device_or_emtpy(identifiers);
+    auto d = get_device_or_new(identifiers);
     return d->get_game_pad_xy_stick_flicking_input_window_milliseconds();
   }
 
@@ -644,7 +631,7 @@ public:
   //
 
   double get_device_game_pad_wheels_stick_continued_movement_absolute_magnitude_threshold(const device_identifiers& identifiers) const {
-    auto d = get_device_or_emtpy(identifiers);
+    auto d = get_device_or_new(identifiers);
     return d->get_game_pad_wheels_stick_continued_movement_absolute_magnitude_threshold();
   }
 
@@ -659,7 +646,7 @@ public:
   //
 
   int get_device_game_pad_wheels_stick_continued_movement_interval_milliseconds(const device_identifiers& identifiers) const {
-    auto d = get_device_or_emtpy(identifiers);
+    auto d = get_device_or_new(identifiers);
     return d->get_game_pad_wheels_stick_continued_movement_interval_milliseconds();
   }
 
@@ -674,7 +661,7 @@ public:
   //
 
   int get_device_game_pad_wheels_stick_flicking_input_window_milliseconds(const device_identifiers& identifiers) const {
-    auto d = get_device_or_emtpy(identifiers);
+    auto d = get_device_or_new(identifiers);
     return d->get_game_pad_wheels_stick_flicking_input_window_milliseconds();
   }
 
@@ -849,14 +836,15 @@ private:
     return nullptr;
   }
 
-  gsl::not_null<std::shared_ptr<details::device>> get_device_or_emtpy(const device_identifiers& identifiers) const {
+  gsl::not_null<std::shared_ptr<details::device>> get_device_or_new(const device_identifiers& identifiers) const {
     if (auto d = find_device(identifiers)) {
       return d;
     }
-    return empty_device_;
+
+    return add_device(identifiers);
   }
 
-  gsl::not_null<std::shared_ptr<details::device>> add_device(const device_identifiers& identifiers) {
+  gsl::not_null<std::shared_ptr<details::device>> add_device(const device_identifiers& identifiers) const {
     if (auto d = find_device(identifiers)) {
       return d;
     }
@@ -877,8 +865,7 @@ private:
   details::simple_modifications fn_function_keys_;
   details::complex_modifications complex_modifications_;
   details::virtual_hid_keyboard virtual_hid_keyboard_;
-  std::vector<gsl::not_null<std::shared_ptr<details::device>>> devices_;
-  gsl::not_null<std::shared_ptr<details::device>> empty_device_;
+  mutable std::vector<gsl::not_null<std::shared_ptr<details::device>>> devices_;
   configuration_json_helper::helper_values helper_values_;
 };
 
