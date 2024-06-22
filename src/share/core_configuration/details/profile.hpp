@@ -287,27 +287,6 @@ public:
     return devices_.back();
   }
 
-  bool get_device_disable_built_in_keyboard_if_exists(const device_identifiers& identifiers) const {
-    for (const auto& d : devices_) {
-      if (d->get_identifiers() == identifiers) {
-        return d->get_disable_built_in_keyboard_if_exists();
-      }
-    }
-    return false;
-  }
-
-  void set_device_disable_built_in_keyboard_if_exists(const device_identifiers& identifiers,
-                                                      bool disable_built_in_keyboard_if_exists) {
-    add_device(identifiers);
-
-    for (auto&& d : devices_) {
-      if (d->get_identifiers() == identifiers) {
-        d->set_disable_built_in_keyboard_if_exists(disable_built_in_keyboard_if_exists);
-        return;
-      }
-    }
-  }
-
   bool get_device_mouse_flip_x(const device_identifiers& identifiers) const {
     for (const auto& d : devices_) {
       if (d->get_identifiers() == identifiers) {

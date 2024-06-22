@@ -543,7 +543,7 @@ void run_core_configuration_test(void) {
         expect((profile.get_devices())[2]->get_ignore() == false);
         expect((profile.get_devices())[2]->get_disable_built_in_keyboard_if_exists() == true);
 
-        profile.set_device_disable_built_in_keyboard_if_exists(identifiers, false);
+        profile.get_device(identifiers)->set_disable_built_in_keyboard_if_exists(false);
         expect(profile.get_devices().size() == 3);
         // devices[0] is changed.
         expect((profile.get_devices())[0]->get_identifiers().get_vendor_id() == pqrs::hid::vendor_id::value_t(1234));
@@ -601,7 +601,7 @@ void run_core_configuration_test(void) {
                                                false,              // is_game_pad
                                                "ec-ba-73-21-e6-f5" // device_address (ignored)
           );
-          profile.set_device_disable_built_in_keyboard_if_exists(identifiers, true);
+          profile.get_device(identifiers)->set_disable_built_in_keyboard_if_exists(true);
           expect(profile.get_devices().size() == 5);
           expect((profile.get_devices())[4]->get_identifiers().get_vendor_id() == pqrs::hid::vendor_id::value_t(1112));
           expect((profile.get_devices())[4]->get_identifiers().get_product_id() == pqrs::hid::product_id::value_t(2222));
@@ -620,7 +620,7 @@ void run_core_configuration_test(void) {
                                                false,              // is_game_pad
                                                "ec-ba-73-21-e6-f5" // device_address
           );
-          profile.set_device_disable_built_in_keyboard_if_exists(identifiers, true);
+          profile.get_device(identifiers)->set_disable_built_in_keyboard_if_exists(true);
           expect(profile.get_devices().size() == 6);
           expect((profile.get_devices())[5]->get_identifiers().get_vendor_id() == pqrs::hid::vendor_id::value_t(0));
           expect((profile.get_devices())[5]->get_identifiers().get_product_id() == pqrs::hid::product_id::value_t(0));

@@ -580,16 +580,15 @@ void libkrbn_core_configuration_set_selected_profile_device_treat_as_built_in_ke
 
 bool libkrbn_core_configuration_get_selected_profile_device_disable_built_in_keyboard_if_exists(const libkrbn_device_identifiers* device_identifiers) {
   auto c = get_current_core_configuration();
-  return c->get_selected_profile().get_device_disable_built_in_keyboard_if_exists(
-      libkrbn_cpp::make_device_identifiers(device_identifiers));
+  auto d = c->get_selected_profile().get_device(libkrbn_cpp::make_device_identifiers(device_identifiers));
+  return d->get_disable_built_in_keyboard_if_exists();
 }
 
 void libkrbn_core_configuration_set_selected_profile_device_disable_built_in_keyboard_if_exists(const libkrbn_device_identifiers* device_identifiers,
                                                                                                 bool value) {
   auto c = get_current_core_configuration();
-  c->get_selected_profile().set_device_disable_built_in_keyboard_if_exists(
-      libkrbn_cpp::make_device_identifiers(device_identifiers),
-      value);
+  auto d = c->get_selected_profile().get_device(libkrbn_cpp::make_device_identifiers(device_identifiers));
+  d->set_disable_built_in_keyboard_if_exists(value);
 }
 
 bool libkrbn_core_configuration_get_selected_profile_device_mouse_flip_x(const libkrbn_device_identifiers* device_identifiers) {
