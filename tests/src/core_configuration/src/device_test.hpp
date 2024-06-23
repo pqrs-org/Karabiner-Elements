@@ -352,31 +352,7 @@ void run_device_test(void) {
       auto json = nlohmann::json::object();
       krbn::core_configuration::details::device empty_device(json,
                                                              krbn::core_configuration::error_handling::strict);
-      nlohmann::json expected({
-          {"identifiers", {
-                              {
-                                  "vendor_id",
-                                  0,
-                              },
-                              {
-                                  "product_id",
-                                  0,
-                              },
-                              {
-                                  "is_keyboard",
-                                  false,
-                              },
-                              {
-                                  "is_pointing_device",
-                                  false,
-                              },
-                              {
-                                  "is_game_pad",
-                                  false,
-                              },
-                          }},
-      });
-      expect(empty_device.to_json() == expected) << UT_SHOW_LINE;
+      expect(json == empty_device.to_json()) << UT_SHOW_LINE;
     }
 
     {

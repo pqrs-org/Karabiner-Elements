@@ -265,6 +265,14 @@ if (abs(cos(radian)) <= abs(sin(radian))) {
       }
     }
 
+    //
+    // Add `identifiers` only if it contains some settings.
+    //
+
+    if (j.size() == 1) {
+      j.erase("identifiers");
+    }
+
     return j;
   }
 
