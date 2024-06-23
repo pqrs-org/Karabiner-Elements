@@ -77,6 +77,7 @@ extension LibKrbn {
       fnFunctionKeys = makeFnFunctionKeys(nil)
 
       updateComplexModificationsRules()
+
       complexModificationsParameterToIfAloneTimeoutMilliseconds = Int(
         libkrbn_core_configuration_get_selected_profile_complex_modifications_parameter(
           "basic.to_if_alone_timeout_milliseconds"
@@ -99,6 +100,7 @@ extension LibKrbn {
         ))
 
       updateConnectedDeviceSettings()
+
       delayMillisecondsBeforeOpenDevice = Int(
         libkrbn_core_configuration_get_selected_profile_parameters_delay_milliseconds_before_open_device()
       )
@@ -183,6 +185,14 @@ extension LibKrbn {
       }
     }
 
+    private func reflectSimpleModificationChanges(_ connectedDevice: ConnectedDevice?) {
+      if connectedDevice == nil {
+        simpleModifications = makeSimpleModifications(nil)
+      } else {
+        updateConnectedDeviceSettings()
+      }
+    }
+
     public func updateSimpleModification(
       index: Int,
       fromJsonString: String,
@@ -195,6 +205,8 @@ extension LibKrbn {
         toJsonString.cString(using: .utf8),
         device?.libkrbnDeviceIdentifiers)
 
+      reflectSimpleModificationChanges(device)
+
       save()
     }
 
@@ -202,8 +214,9 @@ extension LibKrbn {
       libkrbn_core_configuration_push_back_selected_profile_simple_modification(
         device?.libkrbnDeviceIdentifiers)
 
+      reflectSimpleModificationChanges(device)
+
       // Do not to call `save()` here because partial settings will be erased at save.
-      updateProperties()
     }
 
     public func appendSimpleModification(
@@ -231,8 +244,9 @@ extension LibKrbn {
             toJsonString.cString(using: .utf8),
             device?.libkrbnDeviceIdentifiers)
 
+          reflectSimpleModificationChanges(device)
+
           // Do not to call `save()` here because partial settings will be erased at save.
-          updateProperties()
         }
       }
     }
@@ -244,6 +258,8 @@ extension LibKrbn {
       libkrbn_core_configuration_erase_selected_profile_simple_modification(
         index,
         device?.libkrbnDeviceIdentifiers)
+
+      reflectSimpleModificationChanges(device)
 
       save()
     }
@@ -294,6 +310,14 @@ extension LibKrbn {
       return result
     }
 
+    private func reflectFnFunctionKeyChanges(_ connectedDevice: ConnectedDevice?) {
+      if connectedDevice == nil {
+        fnFunctionKeys = makeFnFunctionKeys(nil)
+      } else {
+        updateConnectedDeviceSettings()
+      }
+    }
+
     public func updateFnFunctionKey(
       fromJsonString: String,
       toJsonString: String,
@@ -303,6 +327,8 @@ extension LibKrbn {
         fromJsonString.cString(using: .utf8),
         toJsonString.cString(using: .utf8),
         device?.libkrbnDeviceIdentifiers)
+
+      reflectFnFunctionKeyChanges(device)
 
       save()
     }
@@ -344,6 +370,10 @@ extension LibKrbn {
       complexModificationsRules = newComplexModificationsRules
     }
 
+    private func reflectComplexModificationsRuleChanges() {
+      updateComplexModificationsRules()
+    }
+
     public func replaceComplexModificationsRule(
       _ complexModificationRule: ComplexModificationsRule,
       _ jsonString: String
@@ -360,6 +390,8 @@ extension LibKrbn {
       if errorMessage != "" {
         return errorMessage
       }
+
+      reflectComplexModificationsRuleChanges()
 
       save()
       return nil
@@ -380,6 +412,8 @@ extension LibKrbn {
         return errorMessage
       }
 
+      reflectComplexModificationsRuleChanges()
+
       save()
       return nil
     }
@@ -389,6 +423,9 @@ extension LibKrbn {
         sourceIndex,
         destinationIndex
       )
+
+      reflectComplexModificationsRuleChanges()
+
       save()
     }
 
@@ -397,6 +434,9 @@ extension LibKrbn {
       libkrbn_core_configuration_erase_selected_profile_complex_modifications_rule(
         complexModificationRule.index
       )
+
+      reflectComplexModificationsRuleChanges()
+
       save()
     }
 
@@ -407,6 +447,9 @@ extension LibKrbn {
         libkrbn_complex_modifications_assets_manager_add_rule_to_core_configuration_selected_profile(
           rule.fileIndex, rule.ruleIndex)
       }
+
+      reflectComplexModificationsRuleChanges()
+
       save()
     }
 
@@ -415,6 +458,9 @@ extension LibKrbn {
     ) {
       libkrbn_complex_modifications_assets_manager_add_rule_to_core_configuration_selected_profile(
         complexModificationsAssetRule.fileIndex, complexModificationsAssetRule.ruleIndex)
+
+      reflectComplexModificationsRuleChanges()
+
       save()
     }
 
@@ -577,8 +623,16 @@ extension LibKrbn {
       profiles = newProfiles
     }
 
+    private func reflectProfileChanges() {
+      updateProfiles()
+    }
+
     public func selectProfile(_ profile: Profile) {
       libkrbn_core_configuration_select_profile(profile.index)
+
+      // To update all settings to the new profile’s contents, it is necessary to call `updateProperties`.
+      updateProperties()
+
       save()
     }
 
@@ -586,16 +640,25 @@ extension LibKrbn {
       libkrbn_core_configuration_set_profile_name(
         profile.index, name.cString(using: .utf8)
       )
+
+      reflectProfileChanges()
+
       save()
     }
 
     public func appendProfile() {
       libkrbn_core_configuration_push_back_profile()
+
+      reflectProfileChanges()
+
       save()
     }
 
     public func duplicateProfile(_ profile: Profile) {
       libkrbn_core_configuration_duplicate_profile(profile.index)
+
+      reflectProfileChanges()
+
       save()
     }
 
@@ -604,11 +667,17 @@ extension LibKrbn {
         sourceIndex,
         destinationIndex
       )
+
+      reflectProfileChanges()
+
       save()
     }
 
     public func removeProfile(_ profile: Profile) {
       libkrbn_core_configuration_erase_profile(profile.index)
+
+      reflectProfileChanges()
+
       save()
     }
 
