@@ -40,6 +40,8 @@
     -   Added `{"type": "unset"}` option to `set_variable`.
     -   Integrated `karabiner_observer` functions into `karabiner_grabber`, and then `karabiner_observer` has been removed.
         The number of background processes has been reduced, resolving performance issues caused by inter-process communication that were occurring in some environments.
+    -   A custom JSON formatter has been introduced to save JSON in a more compact format.
+    -   The process for saving the configuration file has been optimized so that settings that have not been changed from their default values are not included in karabiner.json.
     -   Internal changes:
         -   Improved the interface of libkrbn to minimize the use of unsafe pointers in Swift.
 
