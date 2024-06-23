@@ -170,10 +170,10 @@ public:
           break;
       }
 
-      x_formula_string_ = d->get_game_pad_stick_x_formula().value_or("");
-      y_formula_string_ = d->get_game_pad_stick_y_formula().value_or("");
-      vertical_wheel_formula_string_ = d->get_game_pad_stick_vertical_wheel_formula().value_or("");
-      horizontal_wheel_formula_string_ = d->get_game_pad_stick_horizontal_wheel_formula().value_or("");
+      x_formula_string_ = d->get_game_pad_stick_x_formula();
+      y_formula_string_ = d->get_game_pad_stick_y_formula();
+      vertical_wheel_formula_string_ = d->get_game_pad_stick_vertical_wheel_formula();
+      horizontal_wheel_formula_string_ = d->get_game_pad_stick_horizontal_wheel_formula();
 
       x_formula_ = make_formula_expression(x_formula_string_);
       y_formula_ = make_formula_expression(y_formula_string_);

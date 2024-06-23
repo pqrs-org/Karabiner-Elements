@@ -168,10 +168,22 @@ void run_device_test(void) {
         auto& v = device.get_game_pad_wheels_stick_flicking_input_window_milliseconds();
         expect(device.find_default_value(v) == v);
       }
-      expect(device.get_game_pad_stick_x_formula() == std::nullopt);
-      expect(device.get_game_pad_stick_y_formula() == std::nullopt);
-      expect(device.get_game_pad_stick_vertical_wheel_formula() == std::nullopt);
-      expect(device.get_game_pad_stick_horizontal_wheel_formula() == std::nullopt);
+      {
+        auto& v = device.get_game_pad_stick_x_formula();
+        expect(device.find_default_value(v) == v);
+      }
+      {
+        auto& v = device.get_game_pad_stick_y_formula();
+        expect(device.find_default_value(v) == v);
+      }
+      {
+        auto& v = device.get_game_pad_stick_vertical_wheel_formula();
+        expect(device.find_default_value(v) == v);
+      }
+      {
+        auto& v = device.get_game_pad_stick_horizontal_wheel_formula();
+        expect(device.find_default_value(v) == v);
+      }
     }
 
     // load values from json

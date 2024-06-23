@@ -12,56 +12,6 @@ namespace core_configuration {
 namespace details {
 class device final {
 public:
-  // The logical value range of Karabiner-DriverKit-VirtualHIDPointing is -127 ... 127.
-  static constexpr const char* game_pad_stick_x_formula_default_value =
-      "cos(radian) * delta_magnitude * 32;";
-
-  // The logical value range of Karabiner-DriverKit-VirtualHIDPointing is -127 ... 127.
-  static constexpr const char* game_pad_stick_y_formula_default_value =
-      "sin(radian) * delta_magnitude * 32;";
-
-  // The logical value range of Karabiner-DriverKit-VirtualHIDPointing is -127 ... 127.
-  static constexpr const char* game_pad_stick_vertical_wheel_formula_default_value = R"(
-
-if (abs(cos(radian)) >= abs(sin(radian))) {
-  0;
-} else {
-  var m := 0;
-  if (absolute_magnitude < 1.0) {
-    m := max(0.05, delta_magnitude * 5);
-  } else {
-    if (delta_magnitude > 0.3) {
-      m := 0.5;
-    } else {
-      m := 0.3;
-    }
-  }
-  sin(radian) * m;
-}
-
-)";
-
-  // The logical value range of Karabiner-DriverKit-VirtualHIDPointing is -127 ... 127.
-  static constexpr const char* game_pad_stick_horizontal_wheel_formula_default_value = R"(
-
-if (abs(cos(radian)) <= abs(sin(radian))) {
-  0;
-} else {
-  var m := 0;
-  if (absolute_magnitude < 1.0) {
-    m := max(0.05, delta_magnitude * 5);
-  } else {
-    if (delta_magnitude > 0.3) {
-      m := 0.5;
-    } else {
-      m := 0.3;
-    }
-  }
-  cos(radian) * m;
-}
-
-)";
-
   device(const device&) = delete;
 
   device(void)
@@ -156,6 +106,62 @@ if (abs(cos(radian)) <= abs(sin(radian))) {
                                         game_pad_wheels_stick_flicking_input_window_milliseconds_,
                                         50);
 
+    helper_values_.push_back_value<std::string>("game_pad_stick_x_formula",
+                                                game_pad_stick_x_formula_,
+                                                // The logical value range of Karabiner-DriverKit-VirtualHIDPointing is -127 ... 127.
+                                                "cos(radian) * delta_magnitude * 32;");
+
+    helper_values_.push_back_value<std::string>("game_pad_stick_y_formula",
+                                                game_pad_stick_y_formula_,
+                                                // The logical value range of Karabiner-DriverKit-VirtualHIDPointing is -127 ... 127.
+                                                "sin(radian) * delta_magnitude * 32;");
+
+    helper_values_.push_back_value<std::string>("game_pad_stick_vertical_wheel_formula",
+                                                game_pad_stick_vertical_wheel_formula_,
+                                                // The logical value range of Karabiner-DriverKit-VirtualHIDPointing is -127 ... 127.
+                                                R"(
+
+if (abs(cos(radian)) >= abs(sin(radian))) {
+  0;
+} else {
+  var m := 0;
+  if (absolute_magnitude < 1.0) {
+    m := max(0.05, delta_magnitude * 5);
+  } else {
+    if (delta_magnitude > 0.3) {
+      m := 0.5;
+    } else {
+      m := 0.3;
+    }
+  }
+  sin(radian) * m;
+}
+
+)");
+
+    helper_values_.push_back_value<std::string>("game_pad_stick_horizontal_wheel_formula",
+                                                game_pad_stick_horizontal_wheel_formula_,
+                                                // The logical value range of Karabiner-DriverKit-VirtualHIDPointing is -127 ... 127.
+                                                R"(
+
+if (abs(cos(radian)) <= abs(sin(radian))) {
+  0;
+} else {
+  var m := 0;
+  if (absolute_magnitude < 1.0) {
+    m := max(0.05, delta_magnitude * 5);
+  } else {
+    if (delta_magnitude > 0.3) {
+      m := 0.5;
+    } else {
+      m := 0.3;
+    }
+  }
+  cos(radian) * m;
+}
+
+)");
+
     // ----------------------------------------
     // Set default value
 
@@ -177,19 +183,6 @@ if (abs(cos(radian)) <= abs(sin(radian))) {
         } catch (const pqrs::json::unmarshal_error& e) {
           throw pqrs::json::unmarshal_error(fmt::format("`{0}` error: {1}", key, e.what()));
         }
-
-      } else if (key == "game_pad_stick_x_formula") {
-        game_pad_stick_x_formula_ = unmarshal_formula(value, key);
-
-      } else if (key == "game_pad_stick_y_formula") {
-        game_pad_stick_y_formula_ = unmarshal_formula(value, key);
-
-      } else if (key == "game_pad_stick_vertical_wheel_formula") {
-        game_pad_stick_vertical_wheel_formula_ = unmarshal_formula(value, key);
-
-      } else if (key == "game_pad_stick_horizontal_wheel_formula") {
-        game_pad_stick_horizontal_wheel_formula_ = unmarshal_formula(value, key);
-
       } else if (key == "simple_modifications") {
         try {
           simple_modifications_.update(value);
@@ -253,33 +246,6 @@ if (abs(cos(radian)) <= abs(sin(radian))) {
     helper_values_.update_json(j);
 
     j["identifiers"] = identifiers_;
-
-#define OPTIONAL_SETTING(name)     \
-  {                                \
-    if (name##_ != std::nullopt) { \
-      j[#name] = *name##_;         \
-    } else {                       \
-      j.erase(#name);              \
-    }                              \
-  }
-
-#undef OPTIONAL_SETTING
-
-#define OPTIONAL_FORMULA(name)              \
-  {                                         \
-    if (name##_ != std::nullopt) {          \
-      j[#name] = marshal_formula(*name##_); \
-    } else {                                \
-      j.erase(#name);                       \
-    }                                       \
-  }
-
-    OPTIONAL_FORMULA(game_pad_stick_x_formula);
-    OPTIONAL_FORMULA(game_pad_stick_y_formula);
-    OPTIONAL_FORMULA(game_pad_stick_vertical_wheel_formula);
-    OPTIONAL_FORMULA(game_pad_stick_horizontal_wheel_formula);
-
-#undef OPTIONAL_FORMULA
 
     {
       auto jj = simple_modifications_.to_json(nlohmann::json::array());
@@ -495,38 +461,38 @@ if (abs(cos(radian)) <= abs(sin(radian))) {
     coordinate_between_properties();
   }
 
-  const std::optional<std::string>& get_game_pad_stick_x_formula(void) const {
+  const std::string& get_game_pad_stick_x_formula(void) const {
     return game_pad_stick_x_formula_;
   }
-  void set_game_pad_stick_x_formula(const std::optional<std::string>& value) {
-    game_pad_stick_x_formula_ = value;
+  void set_game_pad_stick_x_formula(const std::string& value) {
+    game_pad_stick_x_formula_ = pqrs::string::trim_copy(value);
 
     coordinate_between_properties();
   }
 
-  const std::optional<std::string>& get_game_pad_stick_y_formula(void) const {
+  const std::string& get_game_pad_stick_y_formula(void) const {
     return game_pad_stick_y_formula_;
   }
-  void set_game_pad_stick_y_formula(const std::optional<std::string>& value) {
-    game_pad_stick_y_formula_ = value;
+  void set_game_pad_stick_y_formula(const std::string& value) {
+    game_pad_stick_y_formula_ = pqrs::string::trim_copy(value);
 
     coordinate_between_properties();
   }
 
-  const std::optional<std::string>& get_game_pad_stick_vertical_wheel_formula(void) const {
+  const std::string& get_game_pad_stick_vertical_wheel_formula(void) const {
     return game_pad_stick_vertical_wheel_formula_;
   }
-  void set_game_pad_stick_vertical_wheel_formula(const std::optional<std::string>& value) {
-    game_pad_stick_vertical_wheel_formula_ = value;
+  void set_game_pad_stick_vertical_wheel_formula(const std::string& value) {
+    game_pad_stick_vertical_wheel_formula_ = pqrs::string::trim_copy(value);
 
     coordinate_between_properties();
   }
 
-  const std::optional<std::string>& get_game_pad_stick_horizontal_wheel_formula(void) const {
+  const std::string& get_game_pad_stick_horizontal_wheel_formula(void) const {
     return game_pad_stick_horizontal_wheel_formula_;
   }
-  void set_game_pad_stick_horizontal_wheel_formula(const std::optional<std::string>& value) {
-    game_pad_stick_horizontal_wheel_formula_ = value;
+  void set_game_pad_stick_horizontal_wheel_formula(const std::string& value) {
+    game_pad_stick_horizontal_wheel_formula_ = pqrs::string::trim_copy(value);
 
     coordinate_between_properties();
   }
@@ -561,51 +527,6 @@ if (abs(cos(radian)) <= abs(sin(radian))) {
   }
 
 private:
-  static std::string unmarshal_formula(const nlohmann::json& json, const std::string& name) {
-    if (json.is_string()) {
-      return json.get<std::string>();
-
-    } else if (json.is_array()) {
-      std::stringstream ss;
-
-      for (const auto& j : json) {
-        if (!j.is_string()) {
-          goto error;
-        }
-
-        ss << j.get<std::string>() << '\n';
-      }
-
-      auto s = ss.str();
-      if (!s.empty()) {
-        s.pop_back();
-      }
-
-      return s;
-    }
-
-  error:
-    throw pqrs::json::unmarshal_error(fmt::format("`{0}` must be array of string, or string, but is `{1}`",
-                                                  name,
-                                                  pqrs::json::dump_for_error_message(json)));
-  }
-
-  static nlohmann::json marshal_formula(const std::string& formula) {
-    std::stringstream ss(formula);
-    std::string line;
-    std::vector<std::string> lines;
-
-    while (std::getline(ss, line, '\n')) {
-      lines.push_back(line);
-    }
-
-    if (lines.size() == 1) {
-      return formula;
-    }
-
-    return lines;
-  }
-
   void coordinate_between_properties(void) {
     // Set `disable_built_in_keyboard_if_exists_` false if `treat_as_built_in_keyboard_` is true.
     // If both settings are true, the device will always be disabled.
@@ -638,10 +559,10 @@ private:
   double game_pad_wheels_stick_continued_movement_absolute_magnitude_threshold_;
   int game_pad_wheels_stick_continued_movement_interval_milliseconds_;
   int game_pad_wheels_stick_flicking_input_window_milliseconds_;
-  std::optional<std::string> game_pad_stick_x_formula_;
-  std::optional<std::string> game_pad_stick_y_formula_;
-  std::optional<std::string> game_pad_stick_vertical_wheel_formula_;
-  std::optional<std::string> game_pad_stick_horizontal_wheel_formula_;
+  std::string game_pad_stick_x_formula_;
+  std::string game_pad_stick_y_formula_;
+  std::string game_pad_stick_vertical_wheel_formula_;
+  std::string game_pad_stick_horizontal_wheel_formula_;
   simple_modifications simple_modifications_;
   simple_modifications fn_function_keys_;
   configuration_json_helper::helper_values helper_values_;

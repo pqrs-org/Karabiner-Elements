@@ -78,98 +78,35 @@ extension LibKrbn {
         libkrbn_core_configuration_get_selected_profile_device_game_pad_wheels_stick_flicking_input_window_milliseconds(
           connectedDevice.libkrbnDeviceIdentifiers))
 
-      gamePadStickXFormula = OptionalSettingValue<String>(
-        hasFunction: {
-          return
-            libkrbn_core_configuration_has_selected_profile_device_game_pad_stick_x_formula(
-              connectedDevice.libkrbnDeviceIdentifiers)
-        },
-        getFunction: {
-          var buffer = [Int8](repeating: 0, count: 16384)
-          libkrbn_core_configuration_get_selected_profile_device_game_pad_stick_x_formula(
-            connectedDevice.libkrbnDeviceIdentifiers, &buffer, buffer.count)
+      var buffer = [Int8](repeating: 0, count: 16384)
 
-          return String(cString: buffer).trimmingCharacters(in: .whitespacesAndNewlines)
-        },
-        setFunction: { (_ newValue: String) in
-          libkrbn_core_configuration_set_selected_profile_device_game_pad_stick_x_formula(
-            connectedDevice.libkrbnDeviceIdentifiers, newValue.cString(using: .utf8))
-        },
-        unsetFunction: {
-          libkrbn_core_configuration_unset_selected_profile_device_game_pad_stick_x_formula(
-            connectedDevice.libkrbnDeviceIdentifiers)
-        }
-      )
+      if libkrbn_core_configuration_get_selected_profile_device_game_pad_stick_x_formula(
+        connectedDevice.libkrbnDeviceIdentifiers, &buffer, buffer.count)
+      {
+        self.gamePadStickXFormula = String(cString: buffer).trimmingCharacters(
+          in: .whitespacesAndNewlines)
+      }
 
-      gamePadStickYFormula = OptionalSettingValue<String>(
-        hasFunction: {
-          return
-            libkrbn_core_configuration_has_selected_profile_device_game_pad_stick_y_formula(
-              connectedDevice.libkrbnDeviceIdentifiers)
-        },
-        getFunction: {
-          var buffer = [Int8](repeating: 0, count: 16384)
-          libkrbn_core_configuration_get_selected_profile_device_game_pad_stick_y_formula(
-            connectedDevice.libkrbnDeviceIdentifiers, &buffer, buffer.count)
+      if libkrbn_core_configuration_get_selected_profile_device_game_pad_stick_y_formula(
+        connectedDevice.libkrbnDeviceIdentifiers, &buffer, buffer.count)
+      {
+        self.gamePadStickYFormula = String(cString: buffer).trimmingCharacters(
+          in: .whitespacesAndNewlines)
+      }
 
-          return String(cString: buffer).trimmingCharacters(in: .whitespacesAndNewlines)
-        },
-        setFunction: { (_ newValue: String) in
-          libkrbn_core_configuration_set_selected_profile_device_game_pad_stick_y_formula(
-            connectedDevice.libkrbnDeviceIdentifiers, newValue.cString(using: .utf8)
-          )
-        },
-        unsetFunction: {
-          libkrbn_core_configuration_unset_selected_profile_device_game_pad_stick_y_formula(
-            connectedDevice.libkrbnDeviceIdentifiers)
-        }
-      )
+      if libkrbn_core_configuration_get_selected_profile_device_game_pad_stick_vertical_wheel_formula(
+        connectedDevice.libkrbnDeviceIdentifiers, &buffer, buffer.count)
+      {
+        self.gamePadStickVerticalWheelFormula = String(cString: buffer).trimmingCharacters(
+          in: .whitespacesAndNewlines)
+      }
 
-      gamePadStickVerticalWheelFormula = OptionalSettingValue<String>(
-        hasFunction: {
-          return
-            libkrbn_core_configuration_has_selected_profile_device_game_pad_stick_vertical_wheel_formula(
-              connectedDevice.libkrbnDeviceIdentifiers)
-        },
-        getFunction: {
-          var buffer = [Int8](repeating: 0, count: 16384)
-          libkrbn_core_configuration_get_selected_profile_device_game_pad_stick_vertical_wheel_formula(
-            connectedDevice.libkrbnDeviceIdentifiers, &buffer, buffer.count)
-
-          return String(cString: buffer).trimmingCharacters(in: .whitespacesAndNewlines)
-        },
-        setFunction: { (_ newValue: String) in
-          libkrbn_core_configuration_set_selected_profile_device_game_pad_stick_vertical_wheel_formula(
-            connectedDevice.libkrbnDeviceIdentifiers, newValue.cString(using: .utf8))
-        },
-        unsetFunction: {
-          libkrbn_core_configuration_unset_selected_profile_device_game_pad_stick_vertical_wheel_formula(
-            connectedDevice.libkrbnDeviceIdentifiers)
-        }
-      )
-
-      gamePadStickHorizontalWheelFormula = OptionalSettingValue<String>(
-        hasFunction: {
-          return
-            libkrbn_core_configuration_has_selected_profile_device_game_pad_stick_horizontal_wheel_formula(
-              connectedDevice.libkrbnDeviceIdentifiers)
-        },
-        getFunction: {
-          var buffer = [Int8](repeating: 0, count: 16384)
-          libkrbn_core_configuration_get_selected_profile_device_game_pad_stick_horizontal_wheel_formula(
-            connectedDevice.libkrbnDeviceIdentifiers, &buffer, buffer.count)
-
-          return String(cString: buffer).trimmingCharacters(in: .whitespacesAndNewlines)
-        },
-        setFunction: { (_ newValue: String) in
-          libkrbn_core_configuration_set_selected_profile_device_game_pad_stick_horizontal_wheel_formula(
-            connectedDevice.libkrbnDeviceIdentifiers, newValue.cString(using: .utf8))
-        },
-        unsetFunction: {
-          libkrbn_core_configuration_unset_selected_profile_device_game_pad_stick_horizontal_wheel_formula(
-            connectedDevice.libkrbnDeviceIdentifiers)
-        }
-      )
+      if libkrbn_core_configuration_get_selected_profile_device_game_pad_stick_horizontal_wheel_formula(
+        connectedDevice.libkrbnDeviceIdentifiers, &buffer, buffer.count)
+      {
+        self.gamePadStickHorizontalWheelFormula = String(cString: buffer).trimmingCharacters(
+          in: .whitespacesAndNewlines)
+      }
 
       simpleModifications = LibKrbn.Settings.shared.makeSimpleModifications(connectedDevice)
       fnFunctionKeys = LibKrbn.Settings.shared.makeFnFunctionKeys(connectedDevice)
@@ -369,10 +306,57 @@ extension LibKrbn {
       }
     }
 
-    var gamePadStickXFormula: OptionalSettingValue<String>
-    var gamePadStickYFormula: OptionalSettingValue<String>
-    var gamePadStickVerticalWheelFormula: OptionalSettingValue<String>
-    var gamePadStickHorizontalWheelFormula: OptionalSettingValue<String>
+    @Published var gamePadStickXFormula = "" {
+      didSet {
+        if didSetEnabled {
+          if libkrbn_core_configuration_set_selected_profile_device_game_pad_stick_x_formula(
+            connectedDevice.libkrbnDeviceIdentifiers,
+            gamePadStickXFormula.cString(using: .utf8))
+          {
+            Settings.shared.save()
+          }
+        }
+      }
+    }
+
+    @Published var gamePadStickYFormula = "" {
+      didSet {
+        if didSetEnabled {
+          if libkrbn_core_configuration_set_selected_profile_device_game_pad_stick_y_formula(
+            connectedDevice.libkrbnDeviceIdentifiers,
+            gamePadStickYFormula.cString(using: .utf8))
+          {
+            Settings.shared.save()
+          }
+        }
+      }
+    }
+
+    @Published var gamePadStickVerticalWheelFormula = "" {
+      didSet {
+        if didSetEnabled {
+          if libkrbn_core_configuration_set_selected_profile_device_game_pad_stick_vertical_wheel_formula(
+            connectedDevice.libkrbnDeviceIdentifiers,
+            gamePadStickVerticalWheelFormula.cString(using: .utf8))
+          {
+            Settings.shared.save()
+          }
+        }
+      }
+    }
+
+    @Published var gamePadStickHorizontalWheelFormula = "" {
+      didSet {
+        if didSetEnabled {
+          if libkrbn_core_configuration_set_selected_profile_device_game_pad_stick_horizontal_wheel_formula(
+            connectedDevice.libkrbnDeviceIdentifiers,
+            gamePadStickHorizontalWheelFormula.cString(using: .utf8))
+          {
+            Settings.shared.save()
+          }
+        }
+      }
+    }
 
     @Published var simpleModifications: [SimpleModification] = []
     @Published var fnFunctionKeys: [SimpleModification] = []

@@ -265,43 +265,39 @@ int libkrbn_core_configuration_game_pad_wheels_stick_flicking_input_window_milli
 
 // game_pad_stick_x_formula
 
-bool libkrbn_core_configuration_has_selected_profile_device_game_pad_stick_x_formula(const libkrbn_device_identifiers* device_identifiers);
 bool libkrbn_core_configuration_get_selected_profile_device_game_pad_stick_x_formula(const libkrbn_device_identifiers* device_identifiers,
                                                                                      char* buffer,
                                                                                      size_t length);
 bool libkrbn_core_configuration_set_selected_profile_device_game_pad_stick_x_formula(const libkrbn_device_identifiers* device_identifiers,
                                                                                      const char* value);
-void libkrbn_core_configuration_unset_selected_profile_device_game_pad_stick_x_formula(const libkrbn_device_identifiers* device_identifiers);
+void libkrbn_core_configuration_reset_selected_profile_device_game_pad_stick_x_formula(const libkrbn_device_identifiers* device_identifiers);
 
 // game_pad_stick_y_formula
 
-bool libkrbn_core_configuration_has_selected_profile_device_game_pad_stick_y_formula(const libkrbn_device_identifiers* device_identifiers);
 bool libkrbn_core_configuration_get_selected_profile_device_game_pad_stick_y_formula(const libkrbn_device_identifiers* device_identifiers,
                                                                                      char* buffer,
                                                                                      size_t length);
 bool libkrbn_core_configuration_set_selected_profile_device_game_pad_stick_y_formula(const libkrbn_device_identifiers* device_identifiers,
                                                                                      const char* value);
-void libkrbn_core_configuration_unset_selected_profile_device_game_pad_stick_y_formula(const libkrbn_device_identifiers* device_identifiers);
+void libkrbn_core_configuration_reset_selected_profile_device_game_pad_stick_y_formula(const libkrbn_device_identifiers* device_identifiers);
 
 // game_pad_stick_vertical_wheel_formula
 
-bool libkrbn_core_configuration_has_selected_profile_device_game_pad_stick_vertical_wheel_formula(const libkrbn_device_identifiers* device_identifiers);
 bool libkrbn_core_configuration_get_selected_profile_device_game_pad_stick_vertical_wheel_formula(const libkrbn_device_identifiers* device_identifiers,
                                                                                                   char* buffer,
                                                                                                   size_t length);
 bool libkrbn_core_configuration_set_selected_profile_device_game_pad_stick_vertical_wheel_formula(const libkrbn_device_identifiers* device_identifiers,
                                                                                                   const char* value);
-void libkrbn_core_configuration_unset_selected_profile_device_game_pad_stick_vertical_wheel_formula(const libkrbn_device_identifiers* device_identifiers);
+void libkrbn_core_configuration_reset_selected_profile_device_game_pad_stick_vertical_wheel_formula(const libkrbn_device_identifiers* device_identifiers);
 
 // game_pad_stick_horizontal_wheel_formula
 
-bool libkrbn_core_configuration_has_selected_profile_device_game_pad_stick_horizontal_wheel_formula(const libkrbn_device_identifiers* device_identifiers);
 bool libkrbn_core_configuration_get_selected_profile_device_game_pad_stick_horizontal_wheel_formula(const libkrbn_device_identifiers* device_identifiers,
                                                                                                     char* buffer,
                                                                                                     size_t length);
 bool libkrbn_core_configuration_set_selected_profile_device_game_pad_stick_horizontal_wheel_formula(const libkrbn_device_identifiers* device_identifiers,
                                                                                                     const char* value);
-void libkrbn_core_configuration_unset_selected_profile_device_game_pad_stick_horizontal_wheel_formula(const libkrbn_device_identifiers* device_identifiers);
+void libkrbn_core_configuration_reset_selected_profile_device_game_pad_stick_horizontal_wheel_formula(const libkrbn_device_identifiers* device_identifiers);
 
 // game_pad_*
 

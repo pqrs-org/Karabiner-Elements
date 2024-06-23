@@ -804,12 +804,6 @@ int libkrbn_core_configuration_game_pad_wheels_stick_flicking_input_window_milli
 
 // game_pad_stick_x_formula
 
-bool libkrbn_core_configuration_has_selected_profile_device_game_pad_stick_x_formula(const libkrbn_device_identifiers* device_identifiers) {
-  auto c = get_current_core_configuration();
-  return c->get_selected_profile().has_device_game_pad_stick_x_formula(
-      libkrbn_cpp::make_device_identifiers(device_identifiers));
-}
-
 bool libkrbn_core_configuration_get_selected_profile_device_game_pad_stick_x_formula(const libkrbn_device_identifiers* device_identifiers,
                                                                                      char* buffer,
                                                                                      size_t length) {
@@ -818,8 +812,8 @@ bool libkrbn_core_configuration_get_selected_profile_device_game_pad_stick_x_for
   }
 
   auto c = get_current_core_configuration();
-  auto formula = c->get_selected_profile().get_device_game_pad_stick_x_formula(
-      libkrbn_cpp::make_device_identifiers(device_identifiers));
+  auto d = c->get_selected_profile().get_device(libkrbn_cpp::make_device_identifiers(device_identifiers));
+  auto formula = d->get_game_pad_stick_x_formula();
   // Return false if no enough space.
   if (formula.length() < length) {
     strlcpy(buffer, formula.c_str(), length);
@@ -836,27 +830,21 @@ bool libkrbn_core_configuration_set_selected_profile_device_game_pad_stick_x_for
   }
 
   auto c = get_current_core_configuration();
-  c->get_selected_profile().set_device_game_pad_stick_x_formula(
-      libkrbn_cpp::make_device_identifiers(device_identifiers),
-      value);
+  auto d = c->get_selected_profile().get_device(libkrbn_cpp::make_device_identifiers(device_identifiers));
+  d->set_game_pad_stick_x_formula(value);
 
   return true;
 }
 
-void libkrbn_core_configuration_unset_selected_profile_device_game_pad_stick_x_formula(const libkrbn_device_identifiers* device_identifiers) {
+void libkrbn_core_configuration_reset_selected_profile_device_game_pad_stick_x_formula(const libkrbn_device_identifiers* device_identifiers) {
   auto c = get_current_core_configuration();
-  c->get_selected_profile().set_device_game_pad_stick_x_formula(
-      libkrbn_cpp::make_device_identifiers(device_identifiers),
-      std::nullopt);
+  auto d = c->get_selected_profile().get_device(libkrbn_cpp::make_device_identifiers(device_identifiers));
+  d->set_game_pad_stick_x_formula(
+      d->find_default_value(
+          d->get_game_pad_stick_x_formula()));
 }
 
 // game_pad_stick_y_formula
-
-bool libkrbn_core_configuration_has_selected_profile_device_game_pad_stick_y_formula(const libkrbn_device_identifiers* device_identifiers) {
-  auto c = get_current_core_configuration();
-  return c->get_selected_profile().has_device_game_pad_stick_y_formula(
-      libkrbn_cpp::make_device_identifiers(device_identifiers));
-}
 
 bool libkrbn_core_configuration_get_selected_profile_device_game_pad_stick_y_formula(const libkrbn_device_identifiers* device_identifiers,
                                                                                      char* buffer,
@@ -866,8 +854,8 @@ bool libkrbn_core_configuration_get_selected_profile_device_game_pad_stick_y_for
   }
 
   auto c = get_current_core_configuration();
-  auto formula = c->get_selected_profile().get_device_game_pad_stick_y_formula(
-      libkrbn_cpp::make_device_identifiers(device_identifiers));
+  auto d = c->get_selected_profile().get_device(libkrbn_cpp::make_device_identifiers(device_identifiers));
+  auto formula = d->get_game_pad_stick_y_formula();
   // Return false if no enough space.
   if (formula.length() < length) {
     strlcpy(buffer, formula.c_str(), length);
@@ -884,27 +872,21 @@ bool libkrbn_core_configuration_set_selected_profile_device_game_pad_stick_y_for
   }
 
   auto c = get_current_core_configuration();
-  c->get_selected_profile().set_device_game_pad_stick_y_formula(
-      libkrbn_cpp::make_device_identifiers(device_identifiers),
-      value);
+  auto d = c->get_selected_profile().get_device(libkrbn_cpp::make_device_identifiers(device_identifiers));
+  d->set_game_pad_stick_y_formula(value);
 
   return true;
 }
 
 void libkrbn_core_configuration_unset_selected_profile_device_game_pad_stick_y_formula(const libkrbn_device_identifiers* device_identifiers) {
   auto c = get_current_core_configuration();
-  c->get_selected_profile().set_device_game_pad_stick_y_formula(
-      libkrbn_cpp::make_device_identifiers(device_identifiers),
-      std::nullopt);
+  auto d = c->get_selected_profile().get_device(libkrbn_cpp::make_device_identifiers(device_identifiers));
+  d->set_game_pad_stick_y_formula(
+      d->find_default_value(
+          d->get_game_pad_stick_y_formula()));
 }
 
 // game_pad_stick_vertical_wheel_formula
-
-bool libkrbn_core_configuration_has_selected_profile_device_game_pad_stick_vertical_wheel_formula(const libkrbn_device_identifiers* device_identifiers) {
-  auto c = get_current_core_configuration();
-  return c->get_selected_profile().has_device_game_pad_stick_vertical_wheel_formula(
-      libkrbn_cpp::make_device_identifiers(device_identifiers));
-}
 
 bool libkrbn_core_configuration_get_selected_profile_device_game_pad_stick_vertical_wheel_formula(const libkrbn_device_identifiers* device_identifiers,
                                                                                                   char* buffer,
@@ -914,8 +896,8 @@ bool libkrbn_core_configuration_get_selected_profile_device_game_pad_stick_verti
   }
 
   auto c = get_current_core_configuration();
-  auto formula = c->get_selected_profile().get_device_game_pad_stick_vertical_wheel_formula(
-      libkrbn_cpp::make_device_identifiers(device_identifiers));
+  auto d = c->get_selected_profile().get_device(libkrbn_cpp::make_device_identifiers(device_identifiers));
+  auto formula = d->get_game_pad_stick_vertical_wheel_formula();
   // Return false if no enough space.
   if (formula.length() < length) {
     strlcpy(buffer, formula.c_str(), length);
@@ -932,27 +914,21 @@ bool libkrbn_core_configuration_set_selected_profile_device_game_pad_stick_verti
   }
 
   auto c = get_current_core_configuration();
-  c->get_selected_profile().set_device_game_pad_stick_vertical_wheel_formula(
-      libkrbn_cpp::make_device_identifiers(device_identifiers),
-      value);
+  auto d = c->get_selected_profile().get_device(libkrbn_cpp::make_device_identifiers(device_identifiers));
+  d->set_game_pad_stick_vertical_wheel_formula(value);
 
   return true;
 }
 
 void libkrbn_core_configuration_unset_selected_profile_device_game_pad_stick_vertical_wheel_formula(const libkrbn_device_identifiers* device_identifiers) {
   auto c = get_current_core_configuration();
-  c->get_selected_profile().set_device_game_pad_stick_vertical_wheel_formula(
-      libkrbn_cpp::make_device_identifiers(device_identifiers),
-      std::nullopt);
+  auto d = c->get_selected_profile().get_device(libkrbn_cpp::make_device_identifiers(device_identifiers));
+  d->set_game_pad_stick_vertical_wheel_formula(
+      d->find_default_value(
+          d->get_game_pad_stick_vertical_wheel_formula()));
 }
 
 // game_pad_stick_horizontal_wheel_formula
-
-bool libkrbn_core_configuration_has_selected_profile_device_game_pad_stick_horizontal_wheel_formula(const libkrbn_device_identifiers* device_identifiers) {
-  auto c = get_current_core_configuration();
-  return c->get_selected_profile().has_device_game_pad_stick_horizontal_wheel_formula(
-      libkrbn_cpp::make_device_identifiers(device_identifiers));
-}
 
 bool libkrbn_core_configuration_get_selected_profile_device_game_pad_stick_horizontal_wheel_formula(const libkrbn_device_identifiers* device_identifiers,
                                                                                                     char* buffer,
@@ -962,8 +938,8 @@ bool libkrbn_core_configuration_get_selected_profile_device_game_pad_stick_horiz
   }
 
   auto c = get_current_core_configuration();
-  auto formula = c->get_selected_profile().get_device_game_pad_stick_horizontal_wheel_formula(
-      libkrbn_cpp::make_device_identifiers(device_identifiers));
+  auto d = c->get_selected_profile().get_device(libkrbn_cpp::make_device_identifiers(device_identifiers));
+  auto formula = d->get_game_pad_stick_horizontal_wheel_formula();
   // Return false if no enough space.
   if (formula.length() < length) {
     strlcpy(buffer, formula.c_str(), length);
@@ -980,18 +956,18 @@ bool libkrbn_core_configuration_set_selected_profile_device_game_pad_stick_horiz
   }
 
   auto c = get_current_core_configuration();
-  c->get_selected_profile().set_device_game_pad_stick_horizontal_wheel_formula(
-      libkrbn_cpp::make_device_identifiers(device_identifiers),
-      value);
+  auto d = c->get_selected_profile().get_device(libkrbn_cpp::make_device_identifiers(device_identifiers));
+  d->set_game_pad_stick_horizontal_wheel_formula(value);
 
   return true;
 }
 
 void libkrbn_core_configuration_unset_selected_profile_device_game_pad_stick_horizontal_wheel_formula(const libkrbn_device_identifiers* device_identifiers) {
   auto c = get_current_core_configuration();
-  c->get_selected_profile().set_device_game_pad_stick_horizontal_wheel_formula(
-      libkrbn_cpp::make_device_identifiers(device_identifiers),
-      std::nullopt);
+  auto d = c->get_selected_profile().get_device(libkrbn_cpp::make_device_identifiers(device_identifiers));
+  d->set_game_pad_stick_horizontal_wheel_formula(
+      d->find_default_value(
+          d->get_game_pad_stick_horizontal_wheel_formula()));
 }
 
 // game_pad_*
