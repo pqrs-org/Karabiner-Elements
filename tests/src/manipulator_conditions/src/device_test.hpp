@@ -322,28 +322,28 @@ void run_device_test(void) {
         expect(condition.is_fulfilled(e, environment) == false);
       }
       {
-        manipulator_conditions_helper.get_core_configuration()->get_selected_profile().set_device_treat_as_built_in_keyboard(
+        auto d = manipulator_conditions_helper.get_core_configuration()->get_selected_profile().get_device(
             krbn::device_identifiers(pqrs::hid::vendor_id::value_t(1000),
                                      pqrs::hid::product_id::value_t(2000),
                                      true,  // is_keyboard
                                      false, // is_pointing_device
                                      false, // is_game_pad
                                      ""     // device_address
-                                     ),
-            true);
+                                     ));
+        d->set_treat_as_built_in_keyboard(true);
         auto e = manipulator_conditions_helper.make_event_queue_entry(device_id_1000_2000);
         expect(condition.is_fulfilled(e, environment) == true);
       }
       {
-        manipulator_conditions_helper.get_core_configuration()->get_selected_profile().set_device_treat_as_built_in_keyboard(
+        auto d = manipulator_conditions_helper.get_core_configuration()->get_selected_profile().get_device(
             krbn::device_identifiers(pqrs::hid::vendor_id::value_t(1000),
                                      pqrs::hid::product_id::value_t(2000),
                                      true,  // is_keyboard
                                      false, // is_pointing_device
                                      false, // is_game_pad
                                      ""     // device_address
-                                     ),
-            false);
+                                     ));
+        d->set_treat_as_built_in_keyboard(false);
         auto e = manipulator_conditions_helper.make_event_queue_entry(device_id_1000_2000);
         expect(condition.is_fulfilled(e, environment) == false);
       }
