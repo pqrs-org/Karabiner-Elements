@@ -37,7 +37,14 @@ public class ServicesMonitor: ObservableObject {
       }
     }
 
-    timer?.fire()
+    // When updating Karabiner-Elements, after the new version is installed, the daemons, agents, and Settings will restart.
+    // To prevent alerts from appearing at that time, if the daemons or agents are enabled, wait for the timer to fire for the process startup check.
+    // If either the daemons or agents are not enabled, usually when the daemons are not approved, trigger the timer immediately after startup to show the alert right away.
+    if libkrbn_services_core_daemons_enabled() && libkrbn_services_core_agents_enabled() {
+      // Wait for the timer to fire.
+    } else {
+      timer?.fire()
+    }
   }
 
   public func stop() {

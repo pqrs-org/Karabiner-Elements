@@ -127,6 +127,20 @@ inline void unregister_all_agents(void) {
   unregister_notification_window_agent();
 }
 
+inline bool core_daemons_enabled(void) {
+  auto exit_code = system(fmt::format("'{0}' core-daemons-enabled",
+                                      daemons_path)
+                              .c_str());
+  return exit_code == 0;
+}
+
+inline bool core_agents_enabled(void) {
+  auto exit_code = system(fmt::format("'{0}' core-agents-enabled",
+                                      daemons_path)
+                              .c_str());
+  return exit_code == 0;
+}
+
 inline bool daemon_running(const std::string& service_name) {
   auto pid = pqrs::osx::launchctl::find_pid(pqrs::dispatcher::extra::get_shared_dispatcher(),
                                             pqrs::osx::launchctl::make_system_domain_target(),

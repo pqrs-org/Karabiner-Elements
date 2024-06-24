@@ -43,6 +43,8 @@ void libkrbn_services_register_core_agents(void);
 void libkrbn_services_bootout_old_agents(void);
 void libkrbn_services_restart_console_user_server_agent(void);
 void libkrbn_services_unregister_all_agents(void);
+bool libkrbn_services_core_daemons_enabled(void);
+bool libkrbn_services_core_agents_enabled(void);
 bool libkrbn_services_daemon_running(const char* service_name);
 bool libkrbn_services_agent_running(const char* service_name);
 bool libkrbn_services_core_daemons_running(void);
